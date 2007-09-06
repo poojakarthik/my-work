@@ -68,7 +68,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	function Render()
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		// Set Up the form for editting an existing user
 		$this->FormStart("EditService", "Service", "Edit");
 		DBO()->Service->Id->RenderHidden();
@@ -225,7 +225,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			DBO()->ServiceMobileDetail->Comments->RenderInput();		
 		}
 		
-		echo "</div>";  // Narrow-Form
+		echo "</div>";  // NarrowForm
 		
 		echo "<div class='Right'>\n";
 		$this->AjaxSubmit("Apply Changes");

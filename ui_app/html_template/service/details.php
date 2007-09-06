@@ -103,7 +103,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	private function _RenderBareDetail()
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();		
 		echo "</div>\n";
@@ -125,7 +125,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	private function _RenderMinimumDetail()
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
 		DBO()->Service->Id->RenderOutput();
@@ -149,7 +149,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	

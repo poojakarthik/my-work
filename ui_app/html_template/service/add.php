@@ -99,7 +99,7 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		
 		
 		echo "<h2 class='Service'>Service Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		$this->FormStart("AddService", "Service", "Add");
 		
 		DBO()->Account->Id->RenderHidden();
@@ -184,7 +184,7 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 			echo "</div>\n";		
 		}
 		
-		echo "</div>\n"; // Narrow-Form
+		echo "</div>\n"; // NarrowForm
 		
 		// Land line specific details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
@@ -196,7 +196,7 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 			echo "<div id='LandlineDetailDiv' style='display:none'>\n";			
 		}
 		echo "<h2 class='Service'>Landline Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 
 		DBO()->Service->Indial100->RenderInput();
 		DBO()->Service->ELB->RenderInput();
@@ -204,7 +204,7 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		// Display all the address details required to setup a landline
 		//TODO! Joel You were last working on this on Friday 17th, August.  It was the last thing you were working on before you packed up the springhill office
 		DBO()->ServiceAddress->Residential->RenderInput();
-		echo "</div>\n"; // Narrow-Form
+		echo "</div>\n"; // NarrowForm
 		echo "</div>\n"; // LandlineDetailDiv
 		
 		// Inbound 1300/1800 specific details
@@ -220,14 +220,14 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		}
 		// handle extra inbound phone details
 		echo "<h2 class='service'>Inbound Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		DBO()->ServiceInboundDetail->Id->RenderHidden();
 		DBO()->ServiceInboundDetail->AnswerPoint->RenderHidden();
 		DBO()->ServiceInboundDetail->Configuration->RenderHidden();
 		
 		DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
 		DBO()->ServiceInboundDetail->Configuration->RenderInput();
-		echo "</div>\n"; // Narrow-Form
+		echo "</div>\n"; // NarrowForm
 		echo "</div>\n"; // InboundDetailDiv
 		
 		// handle extra mobile phone details
@@ -242,7 +242,7 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 			echo "<div id='MobileDetailDiv' style='display:none;'>\n";
 		}
 		echo "<h2 class='service'>Mobile Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		DBO()->ServiceMobileDetail->SimPUK->RenderInput();
 		DBO()->ServiceMobileDetail->SimESN->RenderInput();
 						
@@ -281,7 +281,7 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		
 		DBO()->ServiceMobileDetail->DOB->RenderInput();				
 		DBO()->ServiceMobileDetail->Comments->RenderInput();
-		echo "</div>\n"; // Narrow-Form
+		echo "</div>\n"; // NarrowForm
 		echo "</div>\n"; // MobileDetailDiv
 		
 		

@@ -83,6 +83,8 @@ class <ClassName> extends HtmlTemplate
 				$this->_RenderFullDetail();
 				break;
 		}
+		
+		// If there is only one context then stick the Rendering code in this method, instead of having a switch and multiple private methods
 	}
 
 	//------------------------------------------------------------------------//
@@ -103,7 +105,7 @@ class <ClassName> extends HtmlTemplate
 		?>
 		
 		<!--EXAMPLE:
-		<div class='Narrow-Form'>
+		<div class='NarrowForm'>
 			<table border='0' cellpadding='3' cellspacing='0'>
 				<?php
 				/*foreach (DBO()->Account AS $strProperty=>$objValue)
@@ -119,58 +121,6 @@ class <ClassName> extends HtmlTemplate
 		<div class='Seperator'></div>
 		<?php
 
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderLedgerDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderLedgerDetail()
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * @method
-	 */
-	private function _RenderLedgerDetail()
-	{
-		echo "<h2 class='<ClassTitle>'><ClassDescription></h2>\n";
-		
-		//EXAMPLE:
-		/*
-		echo "<div class='NarrowContent'>\n";
-		
-		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
-		
-		// Render the Id of the Account as a hidden input
-		DBO()->Account->Id->RenderHidden();
-
-		// Render the details of the Account
-		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Account->Balance->RenderOutput();
-		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-
-
-		// Render the properties that can be changed
-		DBO()->Account->DisableDDR->RenderInput();
-		DBO()->Account->DisableLatePayment->RenderInput();
-		
-		// Render the submit button
-		echo "<div class='Right'>\n";
-		$this->Submit("Apply Changes");
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		
-		// Declare the end of the form
-		$this->FormEnd();
-		*/
 	}
 }
 

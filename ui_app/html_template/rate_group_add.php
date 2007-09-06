@@ -114,7 +114,6 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			case HTML_CONTEXT_DEFAULT:
 			default:
 				// This should only be called when the popup window is initially drawn
-				echo "<div class='PopupLarge'>\n";
 			
 				// Set Up the form for adding a rate group
 				$this->FormStart("RateGroup", "RateGroup", "Add");
@@ -131,7 +130,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				
 				// Render the RateGroupDetails
 				echo "<h2 class='Plan'>Rate Group Details</h2>\n";
-				echo "<div class='Wide-Form'>\n";
+				echo "<div class='WideForm'>\n";
 
 				echo "<div id='RateGroupDetailsId'>\n";
 				$this->_RenderRateGroupDetails();
@@ -211,7 +210,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeRecordType($intRecordType);</script>\n";
 				}
 				
-				echo "</div>\n"; // Wide-Form (RateGroup Details)
+				echo "</div>\n"; // WideForm (RateGroup Details)
 				echo "<div class='SmallSeperator'></div>\n";
 
 				// Stick in the div container for the RateSelectorControl section of the form
@@ -239,7 +238,6 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				echo "</div>\n";
 				$this->FormEnd();
 				
-				echo "</div>\n"; // PopupLarge
 				break;
 		}
 	}
@@ -284,7 +282,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	{
 		// Render a table for the user to specify a Rate Group for each Record Type required of the Service Type
 		echo "<h2 class='Plan'>Rates</h2>\n";
-		echo "<div class='Wide-Form'>\n";
+		echo "<div class='WideForm'>\n";
 		
 
 		$strAvailableRates = "";
@@ -378,7 +376,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Finish the table
 		echo "</table>\n";
 		
-		echo "</div>"; // Wide-Form
+		echo "</div>"; // WideForm
 	}
 	
 	

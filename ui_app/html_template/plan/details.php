@@ -94,7 +94,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<h2 class='plan'>Plan Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		
 		$mixServicePlan = GetCurrentPlan(DBO()->Service->Id->Value)	;
 		if ($mixServicePlan === FALSE)

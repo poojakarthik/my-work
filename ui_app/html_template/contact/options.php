@@ -51,10 +51,6 @@ class HtmlTemplateContactOptions extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -71,25 +67,8 @@ class HtmlTemplateContactOptions extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$this->_RenderFullDetail();
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderFullDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderFullDetail()
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * @method
-	 */
-	private function _RenderFullDetail()
-	{
 		echo "<h2 class='Options'>Contact Options</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		
 		$strEditContactLink = Href()->EditContact(DBO()->Contact->Id->Value);
 		echo "<li><a href='$strEditContactLink'>Edit Contact Details</a></li>\n";

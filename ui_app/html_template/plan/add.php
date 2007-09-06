@@ -171,7 +171,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	private function _RenderPlanDetails()
 	{
 		echo "<h2 class='Plan'>Plan Details</h2>\n";
-		echo "<div class='Wide-Form'>\n";
+		echo "<div class='WideForm'>\n";
 
 		// Only apply the output mask if the DBO()->RatePlan is not invalid
 		$bolApplyOutputMask = !DBO()->RatePlan->IsInvalid();
@@ -235,7 +235,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
 		
-		echo "</div>\n"; // Narrow-Form
+		echo "</div>\n"; // WideForm
 		echo "<div class='SmallSeperator'></div>\n";
 	}
 	

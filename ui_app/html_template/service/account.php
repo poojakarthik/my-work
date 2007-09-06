@@ -100,7 +100,7 @@ class HtmlTemplateserviceaccount extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<h2 class='account'>Account Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();	
 		echo "</div>\n";

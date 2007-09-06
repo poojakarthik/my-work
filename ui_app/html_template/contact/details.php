@@ -71,29 +71,12 @@ class HtmlTemplateContactDetails extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$this->_RenderFullDetail();
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderFullDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderFullDetail()
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * @method
-	 */
-	private function _RenderFullDetail()
-	{
 		echo "<h2 class='Contact'>Contact Details</h2>\n";
 		
 		$strFullName = DBO()->Contact->Title->Value ." ". DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value;
 		DBO()->Contact->FullName = $strFullName;
 		
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 		DBO()->Contact->FullName->RenderOutput();
 		DBO()->Contact->JobTitle->RenderOutput();
 		DBO()->Contact->DOB->RenderOutput();

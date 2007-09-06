@@ -101,10 +101,10 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<div class='PopupLarge'>\n";
-		echo "<h2 class='Payment'>Make Payment</h2>\n";
-		
 		$this->FormStart("MakePayment", "Payment", "Add");
+
+		echo "<h2 class='Payment'>Make Payment</h2>\n";
+		echo "<div class='WideForm'>\n";
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		DBO()->Account->Id->RenderHidden();
@@ -197,18 +197,19 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
 		
+		echo "</div>\n";  //WideForm
+		
 		// create the buttons
-		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Make Payment");
 		echo "</div>\n";
 		
-		$this->FormEnd();
 		
 		// give the AccountCombo initial focus
 		echo "<script type='text/javascript'>document.getElementById('AccountCombo').focus();</script>\n";
-		echo "</div>\n";
+
+		$this->FormEnd();
 	}
 }
 

@@ -102,7 +102,7 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 	function _RenderContactEdit()
 	{
 		echo "<h2 class='Contact'>Contact Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 
 		// Set Up the form for editting an existing user
 		$this->FormStart("EditContact", "Contact", "Edit");
@@ -172,7 +172,7 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 	function _RenderContactAdd()
 	{
 		echo "<h2 class='Contact'>Contact Details</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowForm'>\n";
 
 		// Set up the form for adding a new user
 		$this->FormStart("AddContact", "Contact", "Add");

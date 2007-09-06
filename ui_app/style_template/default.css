@@ -99,8 +99,11 @@
 
 	div#PopupPageBody
 	{
-		margin-left:		5px;
-		margin-top:			10px;
+		/*margin-left:		5px;*/
+		padding-top:		3px;
+		padding-left:		3px;
+		padding-right:		3px;
+		padding-bottom:		3px;
 		/*width:				450px;*/
 	}
 	
@@ -371,7 +374,7 @@
 		margin:              0;
 		padding-top:         5px;
 		padding-left:        5px;
-		padding-right:       0px;
+		padding-right:       5px;
 		padding-bottom:      5px;
 		
 		border:              solid 1px #D1D1D1;
@@ -413,7 +416,7 @@
 	}
 	
 	
-	.Wide-Form
+	.WideForm
 	{
 		margin:              0;
 		padding-top:         5px;
@@ -428,17 +431,19 @@
 		/*width:				 863px;*/ /*875 - (padding-left + pading-right) - (2 pixels of border) */
 	}
 	
-	.Narrow-Form
+	.NarrowForm
 	{
 		margin:              0;
 		padding-top:         5px;
 		padding-left:        5px;
-		padding-right:       0px;
+		padding-right:       5px;
 		padding-bottom:      5px;
 		
 		border:              solid 1px #D1D1D1;
 		background-color:    #F3F3F3;
-		width:				 425px;
+		/* The width of the form should be dictated by the width of the column that the form sits in */
+		/* I realise this is now exactly the same as the WideForm Class*/
+		/*width:				 425px;*/
 	}
 
 /**************************************************************************/
