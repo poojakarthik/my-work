@@ -319,6 +319,8 @@ $GLOBALS['*arrConstant']	['InvoiceStatus']	[104]	['Constant']	= 'INVOICE_DISPUTE
 $GLOBALS['*arrConstant']	['InvoiceStatus']	[104]	['Description']	= 'Dispute Settled';
 $GLOBALS['*arrConstant']	['InvoiceStatus']	[105]	['Constant']	= 'INVOICE_PRINT';
 $GLOBALS['*arrConstant']	['InvoiceStatus']	[105]	['Description']	= 'Printing';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[106]	['Constant']	= 'INVOICE_WRITTEN_OFF';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[106]	['Description']	= 'Written Off';
 
 
 //Where Constants

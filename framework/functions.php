@@ -2658,4 +2658,94 @@ function GetPdfFilename($intAccount, $intYear, $intMonth)
  	
  	return FALSE;
  }
+ 
+
+
+
+ 
+//------------------------------------------------------------------------//
+// WriteOffAccount
+//------------------------------------------------------------------------//
+/**
+ * WriteOffAccount()
+ *
+ * Writes off all outstanding debt for a given Account
+ *
+ * Writes off all outstanding debt for a given Account
+ * 
+ * @param	integer		$intAccount				Account to write off
+ *
+ * @return	float								Value of written-off invoices					
+ *
+ * @method
+ */
+function WriteOffAccount($intAccount)
+{
+	// Find all Invoices to write off
+	$fltTotal		= 0;
+	$strStatus		= implode(', ', INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_SETTLED, INVOICE_DISPUTED_SETTLED);
+	$selInvoices	= new StatementSelect("Invoice", "*", "Account = <Account> AND Balance > 0 AND Status IN ($strStatus)");
+	if ($intInvoices	= $selInvoices->Execute(Array('Account' => $intAccount)))
+	{
+		// Write off each Invoice
+		while ($arrInvoice = $selInvoices->Fetch())
+		{
+			$fltTotal			+= WriteOffInvoice($arrInvoice['Id'], FALSE);
+			$intAccountGroup	= $arrInvoice['AccountGroup'];
+		}
+			
+		// Add System Note
+		$strContent	= "$intInvoices Invoices written off for the value of \${$fltTotal}";
+		$GLOBALS['fwkFramework']->AddNote($strContent, 7, NULL, $intAccountGroup, $intAccount);
+	}
+
+	return $fltTotal;
+}
+
+
+//------------------------------------------------------------------------//
+// WriteOffInvoice
+//------------------------------------------------------------------------//
+/**
+ * WriteOffInvoice()
+ *
+ * Writes off all outstanding debt for a given Invoice
+ *
+ * Writes off all outstanding debt for a given Invoice
+ * 
+ * @param	integer		$intInvoice					Invoice to write off
+ * @param	boolean		$bolAddNote		[optional]	Add a System Note about the write-off (default: TRUE)
+ *
+ * @return	float									Value of written-off invoice
+ *
+ * @method
+ */
+function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
+{
+	// Find Invoice
+	$arrData = Array();
+	$arrData['Id']		= $intInvoice;
+	$arrData['Status']	= INVOICE_WRITTEN_OFF;
+	$selInvoice	= new StatementSelect("Invoice", "*", "Id = <Id>");
+	$selInvoice->Execute($arrData);
+	if ($arrInvoice	= $selInvoice->Fetch())
+	{
+		// Write off Invoice
+		$ubiInvoice	= new StatementUpdateById("Invoice");
+		$ubiInvoice->Execute($arrData);
+		
+		// Add System Note
+		if ($bolAddNote)
+		{
+			$strContent	= "1 Invoice written off for the value of \${$arrInvoice['Balance']}";
+			$GLOBALS['fwkFramework']->AddNote($strContent, 7, NULL, $arrInvoice['AccountGroup'], $arrInvoice['Account']);
+		}
+		
+		return $arrInvoice['Balance'];
+	}
+	else
+	{
+		return 0;
+	}
+}
 ?>
