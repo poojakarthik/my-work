@@ -73,11 +73,6 @@ class AppTemplateRate extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 
-		if (SubmittedForm("AddRate","Cancel"))
-		{
-			// cancel code
-		}
-		
 		// The form is being submitted via an AJAX submit the name of the form is 'AddRate'
 		// and the method to call wtihin this class is 'Add'
 		if (SubmittedForm("AddRate","Commit"))
@@ -162,7 +157,13 @@ class AppTemplateRate extends ApplicationTemplate
 		// check if the Id of a rate has been supplied and if so load the rate
 		if (DBO()->Rate->Id->Value)
 		{
-			DBO()->Rate->Load();
+			// We want to display an existing Rate
+			if (!DBO()->Rate->Load())
+			{
+				// Could not load the Rate
+				Ajax()->AddCommand("Alert", "ERROR: The Rate could not be found");
+				return TRUE;
+			}
 			
 			if (DBO()->Action->CreateNewBasedOnOld->Value == TRUE)
 			{
@@ -185,26 +186,6 @@ class AppTemplateRate extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	//------------------------------------------------------------------------//
-	// Summary
-	//------------------------------------------------------------------------//
-	/**
-	 * Summary()
-	 *
-	 * 
-	 * 
-	 * 
-	 *
-	 *
-	 * 
-	 *
-	 */
-	function Summary()
-	{
-		$this->LoadPage('rate_summary');
-		return TRUE;
-	}
-
 	//------------------------------------------------------------------------//
 	// _UpdateAddRateGroupPage
 	//------------------------------------------------------------------------//
@@ -262,19 +243,19 @@ class AppTemplateRate extends ApplicationTemplate
 			if (DBO()->Rate->IsInvalid())
 			{
 				// The form has not passed initial validation
-				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 				return "Could not save the rate.  Invalid fields are highlighted";
-			}		
+			}
 		}
 		
-		// Check if a rate with the same name and isn't archived exists
-		$strWhere = "NAME LIKE \"". DBO()->Rate->Name->Value. "\"";//. "AND ARCHIVED = 0";
+		// Check if a rate with the same name exists
+		$strWhere = "NAME LIKE \"". DBO()->Rate->Name->Value. "\"";
 		DBL()->Rate->Where->SetString($strWhere);
 		DBL()->Rate->Load();
 		if (DBL()->Rate->RecordCount() > 0)
 		{	
 			DBO()->Rate->Name->SetToInvalid();
-			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 			return "This RateName already exists in the Database";
 		}
 	
@@ -297,7 +278,7 @@ class AppTemplateRate extends ApplicationTemplate
 		}
 		if (!$intDaySelected)
 		{
-			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 			return "Atleast one day in the week has to be clicked";			
 		}
 		
@@ -312,7 +293,7 @@ class AppTemplateRate extends ApplicationTemplate
 					if (!Validate('IsMoneyValue', DBO()->Rate->StdRatePerUnit->Value))
 					{
 						DBO()->Rate->StdRatePerUnit->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 						return "The value entered is not a correct monetary value";
 					}
 					break;
@@ -321,7 +302,7 @@ class AppTemplateRate extends ApplicationTemplate
 					if (!Validate('IsMoneyValue', DBO()->Rate->StdMarkup->Value))
 					{
 						DBO()->Rate->StdMarkup->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 						return "The value entered is not a correct monetary value";
 					}
 					break;
@@ -330,7 +311,7 @@ class AppTemplateRate extends ApplicationTemplate
 					if (!Validate('IsMoneyValue', DBO()->Rate->StdPercentage->Value))
 					{
 						DBO()->Rate->StdPercentage->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 						return "The value entered is not a correct monetary value";
 					}
 					break;
@@ -343,7 +324,7 @@ class AppTemplateRate extends ApplicationTemplate
 					if (!Validate('IsMoneyValue', DBO()->Rate->CapCost->Value))
 					{
 						DBO()->Rate->CapCost->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 						return "The value entered is not a correct monetary value";
 					}
 					break;
@@ -352,7 +333,7 @@ class AppTemplateRate extends ApplicationTemplate
 					if (!Validate('Integer', DBO()->Rate->CapUnits->Value))
 					{
 						DBO()->Rate->CapUnits->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 						return "The value entered is not a correct value";
 					}
 					break;
@@ -371,7 +352,7 @@ class AppTemplateRate extends ApplicationTemplate
 						if (!Validate('IsMoneyValue', DBO()->Rate->CapLimit->Value))
 						{
 							DBO()->Rate->CapLimit->SetToInvalid();
-							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 							return "The value entered is not a correct monetary value";
 						}
 						break;
@@ -382,20 +363,20 @@ class AppTemplateRate extends ApplicationTemplate
 						if (!Validate('Integer', DBO()->Rate->CapUsage->Value))
 						{
 							DBO()->Rate->CapUsage->SetToInvalid();
-							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 							return "The value entered is not a correct monetary value";
 	
 						}
 						if (!Validate('Integer', DBO()->Rate->ExsUnits->Value))
 						{
 							DBO()->Rate->ExsUnits->SetToInvalid();
-							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 							return "The value entered is not a correct value";
 						}
 						if (!Validate('IsMoneyValue', DBO()->Rate->ExsFlagfall->Value))
 						{
 							DBO()->Rate->ExsFlagfall->SetToInvalid();
-							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 							return "The value entered is not a correct monetary value";
 						}
 					switch (DBO()->Rate->ExsChargeType->Value)
@@ -405,7 +386,7 @@ class AppTemplateRate extends ApplicationTemplate
 							if (!Validate('IsMoneyValue', DBO()->Rate->ExsRatePerUnit->Value))
 							{
 								DBO()->Rate->ExsRatePerUnit->SetToInvalid();
-								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 								return "The value entered is not a correct monetary value";
 							}
 							break;
@@ -414,7 +395,7 @@ class AppTemplateRate extends ApplicationTemplate
 							if (!Validate('IsMoneyValue', DBO()->Rate->ExsMarkup->Value))
 							{
 								DBO()->Rate->ExsMarkup->SetToInvalid();
-								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 								return "The value entered is not a correct monetary value";
 							}
 							break;
@@ -423,7 +404,7 @@ class AppTemplateRate extends ApplicationTemplate
 							if (!is_numeric(DBO()->Rate->ExsPercentage->Value))
 							{
 								DBO()->Rate->ExsPercentage->SetToInvalid();
-								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 								return "The value entered is not a correct value";
 							}
 							break;

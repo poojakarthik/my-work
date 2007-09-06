@@ -2050,11 +2050,14 @@ class AjaxFramework
 	 * @param	integer		$intContext			Context with which to render the Html Template (ie HTML_CONTEXT_CONTACT_EDIT)
 	 * @param	integer		$intContainerDivId	The id of the Div that the HtmlTemplate will be rendered in.
 	 *											Anything currently in this div will be destroyed.
+	 * @param	obj			$objAjax			optional, Ajax object
+	 * @param	integer		$intMode			optional, The mode number to set
+	 *											ie AJAX_MODE, HTML_MODE
 	 *
 	 * @return	void
 	 * @method
 	 */
-	function RenderHtmlTemplate($strHtmlTemplate, $intContext, $intContainerDivId)
+	function RenderHtmlTemplate($strHtmlTemplate, $intContext, $intContainerDivId, $objAjax=NULL, $intTemplateMode=HTML_MODE)
 	{
 		// Start output buffering as we want to be able to capture rendered Html code
 		ob_start();
@@ -2062,6 +2065,7 @@ class AjaxFramework
 		// Create the Html Template object
 		$strClassName = "HtmlTemplate$strHtmlTemplate";
 		$objHtmlTemplate = new $strClassName($intContext, $intContainerDivId);
+		$objHtmlTemplate->SetMode($intTemplateMode, $objAjax);
 
 		// Capture the rendered html code
 		$objHtmlTemplate->Render();

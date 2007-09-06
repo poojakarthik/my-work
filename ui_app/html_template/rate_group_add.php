@@ -103,58 +103,144 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	{
 		switch ($this->_intContext)
 		{
-		case HTML_CONTEXT_DETAILS:
-			// Just draw the "Rate Group Details" part of the form
-			$this->_RenderRateGroupDetails();
-			break;
-		case HTML_CONTEXT_RATES:
-			// Just draw the "Rate Selector control" part of the form
-			$this->_RenderRateSelectorControl();
-			break;
-		case HTML_CONTEXT_DEFAULT:
-		default:
-			// This should only be called when the popup window is initially drawn
-			echo "<div class='PopupLarge'>\n";
-		
-			// Set Up the form for adding a rate group
-			$this->FormStart("RateGroup", "RateGroup", "Add");
-		
-			// Include the flag which specifies whether this Rate Group will be added to a RatePlan
-			DBO()->CallingPage->AddRatePlan->RenderHidden();
+			case HTML_CONTEXT_DETAILS:
+				// Just draw the "Rate Group Details" part of the form
+				$this->_RenderRateGroupDetails();
+				break;
+			case HTML_CONTEXT_RATES:
+				// Just draw the "Rate Selector control" part of the form
+				$this->_RenderRateSelectorControl();
+				break;
+			case HTML_CONTEXT_DEFAULT:
+			default:
+				// This should only be called when the popup window is initially drawn
+				echo "<div class='PopupLarge'>\n";
 			
-			DBO()->RateGroup->Id->RenderHidden();
+				// Set Up the form for adding a rate group
+				$this->FormStart("RateGroup", "RateGroup", "Add");
 			
-			echo "<div id='RateGroupDetailsId'>\n";
-			$this->_RenderRateGroupDetails();
-			echo "</div>\n";
-	
-			// Stick in the div container for the DeclareRates section of the form
-			echo "<div id='RateSelectorControlDiv'>\n";
-			$this->_RenderRateSelectorControl();
-			echo "</div>\n";
-			
-			// create the buttons
-			echo "<div class='SmallSeperator'></div>\n";
-			echo "<div class='Right'>\n";
-			
-			// The old method, before confirmation boxes were implemented
-			//$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-			//$this->AjaxSubmit("Save as Draft");  
-			//$this->AjaxSubmit("Commit");
+				// Include the flag which specifies whether this Rate Group will be added to a RatePlan
+				DBO()->CallingPage->AddRatePlan->RenderHidden();
+				
+				// Include RateGroup.Id as a hidden, and BaseRateGroup.Id if it is set
+				DBO()->RateGroup->Id->RenderHidden();
+				if (DBO()->BaseRateGroup->Id->IsSet)
+				{
+					DBO()->BaseRateGroup->Id->RenderHidden();
+				}
+				
+				// Render the RateGroupDetails
+				echo "<h2 class='Plan'>Rate Group Details</h2>\n";
+				echo "<div class='Wide-Form'>\n";
 
-			// The new method
-			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to Cancel?\", Vixen.RateGroupAdd.Close, null, null, \"Yes\", \"No\")");
-			$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate Group as a Draft?\", Vixen.RateGroupAdd.SaveAsDraft)");
-			$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate Group?<br />The Rate Group cannot be edited once it is committed\", Vixen.RateGroupAdd.Commit)");
-			
-			// Javascript methods Vixen.RateGroupAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
-			echo "<input type='hidden' id='AddRateGroupPopupId' value='{$this->_objAjax->strId}'></input>\n";
-			
-			echo "</div>\n";
-			$this->FormEnd();
-			
-			echo "</div>\n"; // PopupLarge
-			break;
+				echo "<div id='RateGroupDetailsId'>\n";
+				$this->_RenderRateGroupDetails();
+				echo "</div>\n";
+		
+				DBO()->RateGroup->Fleet->RenderInput(CONTEXT_DEFAULT, TRUE);
+
+				// Set the record type and service type, if they have already been defined
+				$intServiceType	= 0;
+				$intRecordType	= 0;
+				if (DBO()->RecordType->Id->Value)
+				{
+					DBO()->RecordType->Load();
+					$intRecordType	= DBO()->RecordType->Id->Value;
+					$intServiceType	= DBO()->RecordType->ServiceType->Value;
+				}
+				if (DBO()->RateGroup->RecordType->Value)
+				{
+					$intRecordType = DBO()->RateGroup->RecordType->Value;
+				}
+				if (DBO()->RateGroup->ServiceType->Value)
+				{
+					$intServiceType = DBO()->RateGroup->ServiceType->Value;
+				}
+				
+				// Build the ServiceType Combobox
+				echo "<div class='DefaultElement'>\n";
+				echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type:</div>\n";
+				echo "      <select id='ServiceTypeCombo' name='RateGroup.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='Vixen.RateGroupAdd.ChangeServiceType(this.value)'>\n";
+				echo "         <option value='0' selected='selected'>&nbsp;</option>";
+				foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
+				{
+					// Check if this is the currently selected ServiceType
+					$strSelected = ($intServiceType == $intKey) ? "selected='selected'" : "";
+					echo "         <option value='". $intKey ."' $strSelected>". $arrValue['Description'] ."</option>\n";
+				}
+				echo "      </select>\n";
+				echo "</div>\n"; // DefaultElement
+				
+				// Build the RecordType Combobox
+				echo "<div class='DefaultElement'>\n";
+				echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Record Type:</div>\n";
+				echo "      <select id='RecordTypeCombo' name='RateGroup.RecordType' class='DefaultInputComboBox' style='width:250px;' onchange='Vixen.RateGroupAdd.ChangeRecordType(this.value)'>\n";
+				echo "         <option value='0' selected='selected'>&nbsp;</option>";
+				echo "      </select>\n";
+				echo "</div>\n"; // DefaultElement
+				
+				
+				// Retrieve a list of all Record Types
+				DBL()->RecordType->OrderBy("Name");
+				DBL()->RecordType->Load();
+				
+				// Load all the record types into an array.  This will be used by javascript to populate the RecordTypeCombo when a Service Type has been selected
+				$arrRecordTypes = Array();
+				$arrRecordType = Array();
+				foreach (DBL()->RecordType as $dboRecordType)
+				{
+					$arrRecordType['Id'] = $dboRecordType->Id->Value;
+					$arrRecordType['ServiceType'] = $dboRecordType->ServiceType->Value;
+					$arrRecordType['Description'] = $dboRecordType->Description->Value;
+					
+					$arrRecordTypes[] = $arrRecordType;
+				}
+				
+				// Define the data required of the javascript that handles events and validation of this form
+				$strJsonCode = Json()->encode($arrRecordTypes);
+		
+				// Initialise the javascript object
+				$strIsDraft = (DBO()->RateGroup->Id->Value > 0) ? "1" : "0";
+				echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseForm($strJsonCode, $strIsDraft);</script>\n";
+				if ($intServiceType != 0)
+				{
+					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeServiceType($intServiceType);</script>\n";
+				}
+				if ($intRecordType != 0)
+				{
+					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeRecordType($intRecordType);</script>\n";
+				}
+				
+				echo "</div>\n"; // Wide-Form (RateGroup Details)
+				echo "<div class='SmallSeperator'></div>\n";
+
+				// Stick in the div container for the RateSelectorControl section of the form
+				echo "<div id='RateSelectorControlDiv'>\n";
+				$this->_RenderRateSelectorControl();
+				echo "</div>\n";
+				
+				// create the buttons
+				echo "<div class='SmallSeperator'></div>\n";
+				echo "<div class='Right'>\n";
+				
+				// The old method, before confirmation boxes were implemented
+				//$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+				//$this->AjaxSubmit("Save as Draft");  
+				//$this->AjaxSubmit("Commit");
+	
+				// The new method
+				$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to Cancel?\", Vixen.RateGroupAdd.Close, null, null, \"Yes\", \"No\")");
+				$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate Group as a Draft?\", Vixen.RateGroupAdd.SaveAsDraft)");
+				$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate Group?<br />The Rate Group cannot be edited once it is committed\", Vixen.RateGroupAdd.Commit)");
+				
+				// Javascript methods Vixen.RateGroupAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
+				echo "<input type='hidden' id='AddRateGroupPopupId' value='{$this->_objAjax->strId}'></input>\n";
+				
+				echo "</div>\n";
+				$this->FormEnd();
+				
+				echo "</div>\n"; // PopupLarge
+				break;
 		}
 	}
 	
@@ -165,16 +251,14 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	/**
 	 * _RenderRateGroupDetails()
 	 *
-	 * Render this HTML Template
+	 * Render the part of the RateGroup Details that may require rerendering, when invalid
 	 *
-	 * Render this HTML Template
+	 * Render the part of the RateGroup Details that may require rerendering, when invalid
 	 *
 	 * @method
 	 */
 	private function _RenderRateGroupDetails()
 	{
-		echo "<h2 class='Plan'>Rate Group Details</h2>\n";
-		echo "<div class='Wide-Form'>\n";
 
 		// Only apply the output mask if the DBO()->RateGroup is not invalid
 		$bolApplyOutputMask = !DBO()->RateGroup->IsInvalid();
@@ -182,82 +266,6 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		
-		DBO()->RateGroup->Fleet->RenderInput(CONTEXT_DEFAULT, TRUE);
-
-		// Set the record type and service type, if they have already been defined
-		$intServiceType	= 0;
-		$intRecordType	= 0;
-		if (DBO()->RecordType->Id->Value)
-		{
-			DBO()->RecordType->Load();
-			$intRecordType	= DBO()->RecordType->Id->Value;
-			$intServiceType	= DBO()->RecordType->ServiceType->Value;
-		}
-		if (DBO()->RateGroup->RecordType->Value)
-		{
-			$intRecordType = DBO()->RateGroup->RecordType->Value;
-		}
-		if (DBO()->RateGroup->ServiceType->Value)
-		{
-			$intServiceType = DBO()->RateGroup->ServiceType->Value;
-		}
-		
-		// Build the ServiceType Combobox
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type:</div>\n";
-		echo "      <select id='ServiceTypeCombo' name='RateGroup.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='Vixen.RateGroupAdd.ChangeServiceType(this.value)'>\n";
-		echo "         <option value='0' selected='selected'>&nbsp;</option>";
-		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
-		{
-			// Check if this is the currently selected ServiceType
-			$strSelected = ($intServiceType == $intKey) ? "selected='selected'" : "";
-			echo "         <option value='". $intKey ."' $strSelected>". $arrValue['Description'] ."</option>\n";
-		}
-		echo "      </select>\n";
-		echo "</div>\n"; // DefaultElement
-		
-		// Build the RecordType Combobox
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Record Type:</div>\n";
-		echo "      <select id='RecordTypeCombo' name='RateGroup.RecordType' class='DefaultInputComboBox' style='width:250px;' onchange='Vixen.RateGroupAdd.ChangeRecordType(this.value)'>\n";
-		echo "         <option value='0' selected='selected'>&nbsp;</option>";
-		echo "      </select>\n";
-		echo "</div>\n"; // DefaultElement
-		
-		
-		// Retrieve a list of all Record Types
-		DBL()->RecordType->OrderBy("Name");
-		DBL()->RecordType->Load();
-		
-		// Load all the record types into an array.  This will be used by javascript to populate the RecordTypeCombo when a Service Type has been selected
-		$arrRecordTypes = Array();
-		$arrRecordType = Array();
-		foreach (DBL()->RecordType as $dboRecordType)
-		{
-			$arrRecordType['Id'] = $dboRecordType->Id->Value;
-			$arrRecordType['ServiceType'] = $dboRecordType->ServiceType->Value;
-			$arrRecordType['Description'] = $dboRecordType->Description->Value;
-			
-			$arrRecordTypes[] = $arrRecordType;
-		}
-		
-		// Define the data required of the javascript that handles events and validation of this form
-		$strJsonCode = Json()->encode($arrRecordTypes);
-
-		// Initialise the javascript object
-		$strIsDraft = (DBO()->RateGroup->Id->Value > 0) ? "1" : "0";
-		echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseForm($strJsonCode, $strIsDraft);</script>\n";
-		if ($intServiceType != 0)
-		{
-			echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeServiceType($intServiceType);</script>\n";
-		}
-		if ($intRecordType != 0)
-		{
-			echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeRecordType($intRecordType);</script>\n";
-		}
-		
-		echo "</div>\n"; // Wide-Form
-		echo "<div class='SmallSeperator'></div>\n";
 	}
 	
 	//------------------------------------------------------------------------//

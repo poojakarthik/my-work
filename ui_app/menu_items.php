@@ -308,16 +308,18 @@ class MenuItems
 	 * This will not compile a bread crumb label because the AddRateGroup functionality is in a popup
 	 * 
 	 * @param	int		$intRecordType		record type that the Rate Group will belong to
+	 * @param	bool	$bolFleet			[optional] TRUE if the new Rate Group will be a fleet rate group
 	 *
 	 * @return	string						Href to be executed when the AddRateGroupToRatePlan menu item is clicked
 	 *
 	 * @method
 	 */
-	function AddRateGroupToRatePlan($intRecordType)
+	function AddRateGroupToRatePlan($intRecordType, $bolFleet=FALSE)
 	{
 		// Setup data to send
-		$arrData['Objects']['RecordType']['Id'] = $intRecordType;
-		
+		$arrData['Objects']['RecordType']['Id']		= $intRecordType;
+		$arrData['Objects']['RateGroup']['Fleet']	= $bolFleet;
+
 		// This is used to flag that the Rate Group will be added to a Rate Plan
 		$arrData['Objects']['CallingPage']['AddRatePlan'] = TRUE;
 		

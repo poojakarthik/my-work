@@ -417,8 +417,7 @@ function VixenAjaxClass()
 				case "ReplaceDivContents":
 					// The html code defined in objInput[intKey].Data will be placed in the declared Container Div
 					// The current contents of the Container Div will be destroyed
-					// TODO! Make sure this doesn't change the order of the elements belonging to the parent element of the one you want to change
-				
+//alert("objInput[intKey].ContainerDivId = " + objInput[intKey].ContainerDivId);				
 					// retrieve the current container div element
 					var elmOldContainer = document.getElementById(objInput[intKey].ContainerDivId);
 					if (!elmOldContainer)

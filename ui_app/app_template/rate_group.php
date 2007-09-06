@@ -56,6 +56,11 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * Performs the logic for the Add Rate Group webpage
 	 * 
 	 * Performs the logic for the Add Rate Group webpage
+	 *		DBO()->CallingPage->AddRatePlan		Set to TRUE if this popup is being called from the "Add Rate Plan" page
+	 *		DBO()->RateGroup->Id		If you want to edit an existing draft Rate Group
+	 *		XOR
+	 *		DBO()->BaseRateGroup->Id	If you want to add a new Rate Group, based on an existing one defined by this value
+	 *		
 	 *
 	 * @return		void
 	 * @method
@@ -132,10 +137,24 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			}
 		}
 		
-		// Check if we are to display an existing RateGroup or if we are adding a new one
-		if (DBO()->RateGroup->Id->Value)
+		// Check if there has been a BaseRateGroup.Id specified, to base the new RateGroup on
+		if (DBO()->BaseRateGroup->Id->Value)
 		{
-			// We want to display an existing RateGroup
+			// There is, so load it
+			DBO()->RateGroup->Id = DBO()->BaseRateGroup->Id->Value;
+			if (!DBO()->RateGroup->Load())
+			{
+				// Could not load the RateGroup
+				Ajax()->AddCommand("Alert", "ERROR: The RateGroup to base the new rate group on, could not be found");
+				return TRUE;
+			}
+			
+			// Reset the Id of the RateGroup, because we are creating a new one, not editing an existing one
+			DBO()->RateGroup->Id = 0;
+		}
+		elseif (DBO()->RateGroup->Id->Value)
+		{
+			// Display the existing rate group.  (It must be a draft)
 			if (!DBO()->RateGroup->Load())
 			{
 				// Could not load the RateGroup
@@ -149,6 +168,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			DBO()->RateGroup->Id = 0;
 		}
 		
+		// Declare which PageTemplate to use
 		$this->LoadPage('rate_group_add');
 
 		return TRUE;
@@ -530,7 +550,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * Draws the Rate Selector Control used in the "Add Rate Group" form
 	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
 	 * This function expects DBO()->RecordType->Id to be set, as it only displays the Rates for a specified RecordType
-	 * If DBO()->RateGroup->Id is set then it will flag which Rates are currently used by the RateGroup
+	 * If (DBO()->RateGroup->Id is set XOR DBO()->BaseRateGroup->Id is set) then it will flag which Rates are currently used by the RateGroup
+	 * 
 	 *
 	 * @return		bool			TRUE
 	 * @method
@@ -542,11 +563,20 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
 		$arrRecords = $selRates->FetchAll();
 
-		// If a RateGroup.Id has been specified then we want to mark which of these rates belong to it
+		// If a RateGroup.Id xor BaseRateGroup.Id has been specified then we want to mark which of these rates belong to it
 		if (DBO()->RateGroup->Id->Value)
 		{
+			$intRateGroupId = DBO()->RateGroup->Id->Value;
+		}
+		elseif (DBO()->BaseRateGroup->Id->Value)
+		{
+			$intRateGroupId = DBO()->BaseRateGroup->Id->Value;
+		}
+		
+		if (IsSet($intRateGroupId))
+		{
 			$selRateGroupRates = new StatementSelect("RateGroupRate", "Id, RateGroup, Rate", "RateGroup=<RateGroup>", NULL, NULL);
-			$selRateGroupRates->Execute(Array("RateGroup" => DBO()->RateGroup->Id->Value));
+			$selRateGroupRates->Execute(Array("RateGroup" => $intRateGroupId));
 			$arrRateGroupRates = $selRateGroupRates->FetchAll();
 		}
 
@@ -562,7 +592,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			
 			// Check if this Rate currently belongs to the specified RateGroup
 			$arrRate['Selected']	= FALSE;
-			if (DBO()->RateGroup->Id->Value)
+			if (IsSet($intRateGroupId))
 			{
 				foreach ($arrRateGroupRates as $arrRateGroupRate)
 				{

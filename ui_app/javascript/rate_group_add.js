@@ -89,7 +89,10 @@ function VixenRateGroupAddClass()
 		}
 		
 		// Set the focus to the Name text field
-		document.getElementById("RateGroup.Name").focus();
+		// This line has been causing an Exception to be thrown.  The exception is a well documented bug in Firefox which can be 
+		// protected against by setting the "autocomplete" attribute of all text input elements to "off"
+		//Exception... "'Permission denied to set property XULElement.selectedIndex' when calling method: [nsIAutoCompletePopup::selectedIndex]"
+		//document.getElementById("RateGroup.Name").focus();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -181,7 +184,8 @@ function VixenRateGroupAddClass()
 		elmRecordTypeCombo.value = intRecordType;
 		
 		// check if we are showing this for a draft RateGroup
-		var intRateGroupId = document.getElementById("RateGroup.Id").value;
+		var elmRateGroupId = document.getElementById("RateGroup.Id");
+		var elmBaseRateGroupId = document.getElementById("BaseRateGroup.Id");
 		
 		// Set up the Rate selector control
 		var objObjects = {};
@@ -189,11 +193,17 @@ function VixenRateGroupAddClass()
 		objObjects.RecordType.Id = intRecordType;
 		
 		// If the RateGroup already has an Id then it is a draft
-		if (intRateGroupId > 0)
+		if (elmRateGroupId.value > 0)
 		{
 			// pass the RateGroup.Id as well
 			objObjects.RateGroup = {};
-			objObjects.RateGroup.Id = intRateGroupId;
+			objObjects.RateGroup.Id = elmRateGroupId.value;
+		}
+		if (elmBaseRateGroupId != null)
+		{
+			// pass the BaseRateGroup.Id as well (Note you will only ever have elmRateGroupId.value > 0 or elmBaseRateGroupId.value > 0, never both)
+			objObjects.BaseRateGroup = {};
+			objObjects.BaseRateGroup.Id = elmBaseRateGroupId.value;
 		}
 		
 		Vixen.Ajax.CallAppTemplate("RateGroup", "SetRateSelectorControl", objObjects);
@@ -603,8 +613,7 @@ function VixenRateGroupAddClass()
 	this.SaveAsDraft = function()
 	{
 		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
-		var strFormId = "VixenForm_" + document.getElementById("VixenFormId").value;
-		Vixen.Ajax.SendForm(strFormId, "Save as Draft", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
+		Vixen.Ajax.SendForm("VixenForm_RateGroup", "Save as Draft", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -626,8 +635,7 @@ function VixenRateGroupAddClass()
 		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
 		//TODO! I shouldn't have to hardcode the id of the form.  This isn't very elegant because the form's id and the 
 		//AppTemplate and method are defined in more than one place
-		var strFormId = "VixenForm_" + document.getElementById("VixenFormId").value;
-		Vixen.Ajax.SendForm(strFormId, "Commit", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
+		Vixen.Ajax.SendForm("VixenForm_RateGroup", "Commit", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
 	}
 	
 	//------------------------------------------------------------------------//

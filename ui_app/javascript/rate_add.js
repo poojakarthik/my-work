@@ -5,10 +5,10 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// rate_group_add.js
+// rate_add.js
 //----------------------------------------------------------------------------//
 /**
- * rate_group_add
+ * rate_add
  *
  * javascript required of the "Add Rate Group" popup webpage
  *
@@ -42,15 +42,16 @@
  */
 function VixenRateAddClass()
 {
-	const RATE_CAP_NO_CAP = 100;
-	const RATE_CAP_CAP_UNITS = 101;
-	const RATE_CAP_CAP_COST = 102;
-	const RATE_CAP_NO_CAP_LIMITS = 103;
-	const RATE_CAP_CAP_LIMIT = 104;
-	const RATE_CAP_CAP_USAGE = 105;
+	const RATE_CAP_NO_CAP 			= 100;
+	const RATE_CAP_CAP_UNITS 		= 101;
+	const RATE_CAP_CAP_COST 		= 102;
+	const RATE_CAP_NO_CAP_LIMITS 	= 103;
+	const RATE_CAP_CAP_LIMIT 		= 104;
+	const RATE_CAP_CAP_USAGE 		= 105;
 	
-	const RATE_CHARGES_SHOW = 112;
-	const RATE_CHARGES_HIDE = 113;
+	const RATE_CHARGES_SHOW 		= 112;
+	const RATE_CHARGES_HIDE 		= 113;
+	
 	//------------------------------------------------------------------------//
 	// InitialiseForm
 	//------------------------------------------------------------------------//
@@ -184,8 +185,7 @@ function VixenRateAddClass()
 	this.SaveAsDraft = function()
 	{
 		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
-		var strFormId = "VixenForm_" + document.getElementById("VixenFormId").value;
-		Vixen.Ajax.SendForm(strFormId, "Save as Draft", "Rate", "Add", "", document.getElementById("AddRatePopupId").value);
+		Vixen.Ajax.SendForm("VixenForm_AddRate", "Save as Draft", "Rate", "Add", "", document.getElementById("AddRatePopupId").value);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -207,8 +207,7 @@ function VixenRateAddClass()
 		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
 		//TODO! I shouldn't have to hardcode the id of the form.  This isn't very elegant because the form's id and the 
 		//AppTemplate and method are defined in more than one place
-		var strFormId = "VixenForm_" + document.getElementById("VixenFormId").value;
-		Vixen.Ajax.SendForm(strFormId, "Commit", "Rate", "Add", "", document.getElementById("AddRatePopupId").value);
+		Vixen.Ajax.SendForm("VixenForm_AddRate", "Commit", "Rate", "Add", "", document.getElementById("AddRatePopupId").value);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -229,8 +228,6 @@ function VixenRateAddClass()
 		// The PopupId, containing this form, has been rendered as a hidden
 		Vixen.Popup.Close(document.getElementById("AddRatePopupId").value);
 	}
-	
-	
 }
 
 

@@ -123,6 +123,11 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			
 			// Include the Id of the RatePlan as a hidden input.  This will be zero when adding a new plan
 			DBO()->RatePlan->Id->RenderHidden();
+			if (DBO()->BaseRatePlan->Id->IsSet)
+			{
+				// Render the BaseRatePlan.Id if it is set
+				DBO()->BaseRatePlan->Id->RenderHidden();
+			}
 			
 			echo "<div id='RatePlanDetailsId'>\n";
 			$this->_RenderPlanDetails();
@@ -250,9 +255,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	{
 		// Render a table for the user to specify a Rate Group for each Record Type required of the Service Type
 		echo "<h2 class='Plan'>Rate Groups</h2>\n";
-		Table()->RateGroups->SetHeader("&nbsp;", "Record Type", "Rate Group", "&nbsp;", "Fleet Rate Group", "&nbsp;", "&nbsp;");
-		Table()->RateGroups->SetWidth("1%", "24%", "30%", "5%", "30%", "5%", "5%");
-		Table()->RateGroups->SetAlignment("Center", "Left", "Left", "Center", "Left", "Center", "Center");
+		Table()->RateGroups->SetHeader("&nbsp;", "Record Type", "Rate Group", "&nbsp;", "Fleet Rate Group", "&nbsp;");
+		Table()->RateGroups->SetWidth("1%", "25%", "29%", "8%", "29%", "8%");
+		Table()->RateGroups->SetAlignment("Center", "Left", "Left", "Center", "Left", "Center");
 		
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
@@ -302,8 +307,12 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			$strRateGroupCell .= "</div>\n";
 			
 			// Build the Edit Rate Group Button
-			$strEditRateGroupHref = "javascript: Vixen.RatePlanAdd.EditRateGroup(". $dboRecordType->Id->Value .", false)";
-			$strEditRateGroupCell = "<span class='DefaultOutputSpan'><a href='$strEditRateGroupHref' style='color:blue; text-decoration: none;'>Edit</a></span>";
+			$strEditRateGroupHref		= "javascript: Vixen.RatePlanAdd.EditRateGroup(". $dboRecordType->Id->Value .", false)";
+			$strRateGroupActionsCell	= "<span class='DefaultOutputSpan'><a href='$strEditRateGroupHref' style='color:blue; text-decoration: none;'>Edit</a></span>";
+			
+			// Build the Add Rate Group Button
+			$strAddRateGroupHref		= "javascript: Vixen.RatePlanAdd.AddRateGroup(". $dboRecordType->Id->Value .", false)";
+			$strRateGroupActionsCell	.= "&nbsp;<span class='DefaultOutputSpan'><a href='$strAddRateGroupHref' style='color:blue; text-decoration: none;'>New</a></span>";
 			
 			// Build the FleetRateGroup Combobox
 			$strProperty	= "FleetRateGroupId";
@@ -341,15 +350,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			$strFleetRateGroupCell .= "</div>\n";
 
 			// Build the Edit Fleet Rate Group Button
-			$strEditRateGroupHref = "javascript: Vixen.RatePlanAdd.EditRateGroup(". $dboRecordType->Id->Value .", true)";
-			$strEditFleetRateGroupCell = "<span class='DefaultOutputSpan'><a href='$strEditRateGroupHref' style='color:blue; text-decoration: none;'>Edit</a></span>";
+			$strEditRateGroupHref			= "javascript: Vixen.RatePlanAdd.EditRateGroup(". $dboRecordType->Id->Value .", true)";
+			$strFleetRateGroupActionsCell	= "<span class='DefaultOutputSpan'><a href='$strEditRateGroupHref' style='color:blue; text-decoration: none;'>Edit</a></span>";
+			// Build the Add Fleet Rate Group Button
+			$strAddRateGroupHref			= "javascript: Vixen.RatePlanAdd.AddRateGroup(". $dboRecordType->Id->Value .", true)";
+			$strFleetRateGroupActionsCell	.= "&nbsp;<span class='DefaultOutputSpan'><a href='$strAddRateGroupHref' style='color:blue; text-decoration: none;'>New</a></span>";
 
-			// Build the Add Rate Group Button
-			$strAddRateGroupHref = Href()->AddRateGroupToRatePlan($dboRecordType->Id->Value);
-			$strActionsCell = "<span class='DefaultOutputSpan'><a href='$strAddRateGroupHref' style='color:blue; text-decoration: none;'>New</a></span>";
-			
 			// Add this row to the table
-			Table()->RateGroups->AddRow($strRequiredCell, $strRecordTypeCell, $strRateGroupCell, $strEditRateGroupCell, $strFleetRateGroupCell, $strEditFleetRateGroupCell, $strActionsCell);
+			Table()->RateGroups->AddRow($strRequiredCell, $strRecordTypeCell, $strRateGroupCell, $strRateGroupActionsCell, $strFleetRateGroupCell, $strFleetRateGroupActionsCell);
 		}
 		
 		if (DBL()->RecordType->RecordCount() == 0)
@@ -358,7 +366,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			// There are no RecordTypes required for the ServiceType chosen
 			Table()->RateGroups->AddRow("<span class='DefaultOutputSpan Default'>No Record Types required for Service Type: $strServiceType</span>");
 			Table()->RateGroups->SetRowAlignment("left");
-			Table()->RateGroups->SetRowColumnSpan(7);
+			Table()->RateGroups->SetRowColumnSpan(6);
 		}
 		
 		Table()->RateGroups->Render();

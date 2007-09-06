@@ -74,7 +74,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div class='PopupLarge' style='overflow:auto; height:600px; width:auto;'>\n";
+		echo "<div class='PopupLarge' style='overflow:auto; height:515px; width:auto;'>\n";
 			
 			// define javascript to be triggered when the Cap and Excess radiobuttons change
 			$strRateCapOnClick = 'Vixen.RateAdd.RateCapOnChange(this.value)';
@@ -454,7 +454,6 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			
 			// Javascript methods Vixen.RateAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
 			echo "<input type='hidden' id='AddRatePopupId' value='{$this->_objAjax->strId}'></input>\n";
-			
 		echo "</div>\n";
 		$this->FormEnd();
 		

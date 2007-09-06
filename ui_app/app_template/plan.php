@@ -190,6 +190,7 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * Performs the logic for the Add Rate Plan webpage
 	 * Initial DBObjects that can be set through GET or POST variables are:
 	 *		DBO()->RatePlan->Id			If you want to edit an existing draft Rate Plan
+	 *		DBO()->BaseRatePlan->Id		If you want to add a new Rate Plan, based on an existing one defined by this value
 	 *		DBO()->CallingPage->Href	If you want to specify the href of the page that called this one
 	 *
 	 * @return		void
@@ -274,9 +275,25 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 		}
 		
-		// Check if we are to display an existing RatePlan or if we are adding a new one
-		if (DBO()->RatePlan->Id->Value)
+		// Check if there has been a BaseRatePlan.Id specified, to base the new RatePlan on
+		if (DBO()->BaseRatePlan->Id->Value)
 		{
+			// There is, so load it
+			DBO()->RatePlan->Id = DBO()->BaseRatePlan->Id->Value;
+			if (!DBO()->RatePlan->Load())
+			{
+				// Could not load the RatePlan
+				DBO()->Error->Message = "The RatePlan with id:". DBO()->RatePlan->Id->value ." could not be found";
+				$this->LoadPage('error');
+				return FALSE;
+			}
+			
+			// Reset the Id of the RatePlan, because we are creating a new one, not editing an existing one
+			DBO()->RatePlan->Id = 0;
+		}
+		elseif (DBO()->RatePlan->Id->Value)
+		{
+			// We are opening an existing RatePlan for editing
 			// Update the Breadcrumb menu
 			BreadCrumb()->SetCurrentPage("Edit Draft Rate Plan");
 			
@@ -548,7 +565,7 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * Renders the Rate Groups delaration section of the "Add Rate Plan" form, via an ajax command
 	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
 	 * This function expects DBO()->ServiceType->Id to be set, as it only displays the RateGroups for the RecordTypes belonging to the ServiceType
-	 * If DBO()->RatePlan->Id is set then it will flag which RateGroups are currently used by the RatePlan
+	 * If (DBO()->RatePlan->Id is set XOR DBO()->BaseRatePlan->Id is set) then it will flag which RateGroups are currently used by the RatePlan
 	 *
 	 * @return		bool			TRUE if successfull
 	 * @method
@@ -574,10 +591,19 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RateGroup->OrderBy("Description");
 		DBL()->RateGroup->Load();
 		
+		// If a RatePlan.Id xor BaseRatePlan.Id has been specified then we want to mark which of these rate groups belong to it
 		if (DBO()->RatePlan->Id->Value)
 		{
+			$intRatePlanId = DBO()->RatePlan->Id->Value;
+		}
+		elseif (DBO()->BaseRatePlan->Id->Value)
+		{
+			$intRatePlanId = DBO()->BaseRatePlan->Id->Value;
+		}
+		if (IsSet($intRatePlanId))
+		{
 			// Find all the RateGroups currently used by this RatePlan
-			DBL()->RatePlanRateGroup->RatePlan = DBO()->RatePlan->Id->Value;
+			DBL()->RatePlanRateGroup->RatePlan = $intRatePlanId;
 			DBL()->RatePlanRateGroup->Load();
 			
 			// Mark the RateGroups that are currently used

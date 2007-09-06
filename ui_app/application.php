@@ -250,7 +250,7 @@ class Application
 	}
 	
 	//------------------------------------------------------------------------//
-	// AjaxLoad INCOMPLETE
+	// AjaxLoad
 	//------------------------------------------------------------------------//
 	/**
 	 * AjaxLoad()
@@ -270,7 +270,7 @@ class Application
 		$objSubmit = new SubmittedData();
 		$objAjax = $objSubmit->Ajax();
 
-		$strClass 		= 'AppTemplate'.$objAjax->Class;
+		$strClass 		= 'AppTemplate' . $objAjax->Class;
 		$strMethod 		= $objAjax->Method;
 		
 		//Get user details (inc Permissions)
@@ -968,7 +968,7 @@ class HtmlTemplate extends BaseTemplate
 		
 		echo "<form id='{$this->_strForm}' method='post' action='vixen.php/$strTemplate/$strMethod/$strParams'>\n";
 		//echo "<form id='{$this->_strForm}' method='get' action='vixen.php/$strTemplate/$strMethod'>\n";
-		echo "<input type='hidden' value='$strId' id='VixenFormId' name='VixenFormId'>\n";
+		echo "<input type='hidden' value='$strId' name='VixenFormId' />\n";
 	}
 	
 	function FormEnd()
