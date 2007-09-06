@@ -186,6 +186,28 @@ class AppTemplateRate extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	// function will be stay named this
+	function Temporary_Not_Belonging_RateGroups
+	{
+		$selServiceRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan, StartDatetime, StartEndtime" "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
+		$selServiceRatePlan->Execute(Array('Service' => DBO()->Service->Id->Value));
+		$arrServiceRatePlan = $selServiceRatePlan->Fetch();
+		
+		//$arrServiceRatePlan['RatePlan'];
+		//$arrServiceRatePlan['StartDatetime'];
+		//$arrServiceRatePlan['EndDatetime'];
+
+		$selRateGroup = new StatementSelect("RateGroup", "*", "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = $arrServiceRatePlan['RatePlan'])", "StartDatetime DESC");
+		$selRateGroup->Execute(Array('Service' => DBO()->Service->Id->Value));
+		$arrRateGroup = $selRateGroup->FetchAll();
+
+		$selRateGroupService = new StatementSelect("RateGroup", "*", "Id IN (SELECT RateGroup FROM ServiceRateGroup WHERE Service = <Service> AND NOW() BETWEEN $arrServiceRatePlan['StartDatetime'] AND $arrServiceRatePlan['EndDatetime']");
+		$selRateGroupService->Execute(Array('Service' => DBO()->Service->Id->Value));
+		$arrRateGroupService = $selRateGroupService->FetchAll();
+
+		//loop through both arrays comparing, output any that can't be compared?
+	}
+	
 	//------------------------------------------------------------------------//
 	// _UpdateAddRateGroupPage
 	//------------------------------------------------------------------------//
