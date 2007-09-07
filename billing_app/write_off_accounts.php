@@ -18,22 +18,22 @@ $ptrFile		= fopen($strPath, 'r');
 $fltGrandTotal	= 0;
 $intAccounts	= 0;
 while ($strLine = trim(fgets($ptrFile)))
-{
-	// Check for header
-	if (substr($strLine, 0, 1) == "Account")
-	{
-		continue;
-	}
-	
+{	
 	// Split line
 	$arrLine = explode(',', $strLine);
-	if (count($arrLine) == 3)
+	if (count($arrLine) < 3)
 	{
 		$intAccount	= (int)trim($arrLine[0], '"');
+
+		// Check for header/footer
+		if ($intAccount < 1000000000)
+		{
+			continue;
+		}
 		
 		CliEcho("Writing off #$intAccount... ", FALSE);
 		//$fltTotal = WriteOffAccount($intAccount);
-		CliEcho("\${$fltTotal}\t\t\t[   OK   ]");
+		CliEcho("\${$fltTotal}");
 		
 		// Add to Grand Total
 		$fltGrandTotal += $fltTotal;

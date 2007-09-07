@@ -2683,8 +2683,8 @@ function WriteOffAccount($intAccount)
 {
 	// Find all Invoices to write off
 	$fltTotal		= 0;
-	$strStatus		= implode(', ', INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_SETTLED, INVOICE_DISPUTED_SETTLED);
-	$selInvoices	= new StatementSelect("Invoice", "*", "Account = <Account> AND Balance > 0 AND Status IN ($strStatus)");
+	$strStatus		= implode(', ', Array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_SETTLED, INVOICE_DISPUTED_SETTLED));
+	$selInvoices	= new StatementSelect("Invoice", "*", "Account = <Account> AND Status IN ($strStatus)");
 	if ($intInvoices	= $selInvoices->Execute(Array('Account' => $intAccount)))
 	{
 		// Write off each Invoice
@@ -2693,7 +2693,7 @@ function WriteOffAccount($intAccount)
 			$fltTotal			+= WriteOffInvoice($arrInvoice['Id'], FALSE);
 			$intAccountGroup	= $arrInvoice['AccountGroup'];
 		}
-			
+		
 		// Add System Note
 		$strContent	= "$intInvoices Invoices written off for the value of \${$fltTotal}";
 		$GLOBALS['fwkFramework']->AddNote($strContent, 7, NULL, $intAccountGroup, $intAccount);
@@ -2724,8 +2724,9 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
 {
 	// Find Invoice
 	$arrData = Array();
-	$arrData['Id']		= $intInvoice;
-	$arrData['Status']	= INVOICE_WRITTEN_OFF;
+	$arrData['Id']			= $intInvoice;
+	$arrData['Status']		= INVOICE_WRITTEN_OFF;
+	$arrData['SettledOn']	= new MySQLFunction("CURDATE()");
 	$selInvoice	= new StatementSelect("Invoice", "*", "Id = <Id>");
 	$selInvoice->Execute($arrData);
 	if ($arrInvoice	= $selInvoice->Fetch())
