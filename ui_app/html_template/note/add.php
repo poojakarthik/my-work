@@ -72,15 +72,14 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
-		
-		// Load all java script specific to the page here
-		//$this->LoadJavascript("note_popup");
+		$this->_strContainerDivId = $strId;
 	}
 
 	//------------------------------------------------------------------------//
@@ -97,121 +96,41 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
+		$this->FormStart("AddNote", "Note", "Add");
+		
+		// Include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		switch ($this->_intContext)
 		{
-			case HTML_CONTEXT_ACCOUNT_NOTE:
-				$this->_RenderAccountNote();
-				break;
 			case HTML_CONTEXT_CONTACT_NOTE:
-				$this->_RenderContactNote();
+				echo "<h2 class='Note'>Add Contact Note</h2>\n";
+				echo "<div class='WideForm'>\n";
+				DBO()->Contact->Id->RenderHidden();
+				DBO()->Note->Contact = DBO()->Contact->Id->Value;
+				DBO()->Note->Contact->RenderHidden();
+				
+				$strFullName = DBO()->Contact->FirstName->Value . " " . DBO()->Contact->LastName->Value;
+				DBO()->Contact->FullName->RenderArbitrary($strFullName, RENDER_OUTPUT);
+				DBO()->Contact->Id->RenderOutput();
 				break;
+				
 			case HTML_CONTEXT_SERVICE_NOTE:
-				$this->_RenderServiceNote();
-				break;
-			default:
-				$this->_RenderAccountNote();
-				break;
-		}
-	}
+				echo "<h2 class='Note'>Add Service Note</h2>\n";
+				echo "<div class='WideForm'>\n";
+				DBO()->Service->Id->RenderHidden();
+				DBO()->Note->Service = DBO()->Service->Id->Value;
+				DBO()->Note->Service->RenderHidden();
 
-	//------------------------------------------------------------------------//
-	// RenderAccountNote
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderAccountNote()
-	 *
-	 * Render this HTML Template
-	 *
-	 * Render this HTML Template
-	 *
-	 * @method
-	 */
-	private function _RenderAccountNote()
-	{	
-		echo "<div class='PopupMedium'>\n";
-		echo "<h2 class='Note'>Add Account Note</h2>\n";
-		
-		$this->FormStart("AddNote", "Note", "AddAccount");
-		
-		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
-		DBO()->Account->Id->RenderHidden();
-		
-		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Note->Note->RenderInput(CONTEXT_DEFAULT, TRUE);
-		
-		// create a combobox containing all Note Types
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Note Type:</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='NoteTypeCombo' name='Note.NoteType'>\n";
-		
-		// add each Note Type
-		foreach (DBL()->AvailableNoteTypes as $dboNoteType)
-		{
-			$strNoteTypeLabel	= $dboNoteType->TypeLabel->Value;
-			$intNoteTypeId		= $dboNoteType->Id->Value;
-			$strNoteTypeStyle	= "border: solid 1px #{$dboNoteType->BorderColor->Value};"; 
-			$strNoteTypeStyle	.= " background-color: #{$dboNoteType->BackgroundColor->Value};";
-			$strNoteTypeStyle	.= " color: #{$dboNoteType->TextColor->Value};";
-			
-			// check if the row that you are adding is the currently selected row
-			if ((DBO()->Note->NoteType->Value) && ($intNoteTypeId == DBO()->Note->NoteType->Value))
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
-			
-			echo "         <option id='NoteType.$intNoteTypeId' value='$intNoteTypeId' $strSelected style='$strNoteTypeStyle'>$strNoteTypeLabel</option>\n";
+				DBO()->Service->FNN->RenderOutput();
+				DBO()->Service->Id->RenderOutput();
+				break;
+				
+			case HTML_CONTEXT_ACCOUNT_NOTE:
+			default:
+				echo "<h2 class='Note'>Add Account Note</h2>\n";
+				echo "<div class='WideForm'>\n";
+				DBO()->Account->Id->RenderHidden();
+				break;
 		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";
-		
-		// output the manditory field message
-		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
-		
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
-		
-		// create the submit button
-		echo "<div class='SmallSeperator'></div>\n";
-		echo "<div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-		$this->AjaxSubmit("Add Note");
-		echo "</div>\n";
-		
-		// give the Note text area initial focus
-		echo "<script type='text/javascript'>document.getElementById('Note.Note').focus();</script>\n";
-		
-		$this->FormEnd();
-		echo "</div>\n";
-	}
-	
-	//------------------------------------------------------------------------//
-	// _RenderContactNote
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderContactNote()
-	 *
-	 * Render this HTML Template
-	 *
-	 * Render this HTML Template
-	 *
-	 * @method
-	 */
-	private function _RenderContactNote()
-	{	
-		echo "<div class='PopupMedium'>\n";
-		echo "<h2 class='Note'>Add Contact Note</h2>\n";
-		
-		$this->FormStart("AddNote", "Note", "AddContact");
-		
-		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
-		DBO()->Contact->Id->RenderHidden();
 		
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
@@ -219,7 +138,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		
 		// create a combobox containing all Note Types
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Note Type:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Note Type:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='NoteTypeCombo' name='Note.NoteType'>\n";
 		
@@ -233,14 +152,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 			$strNoteTypeStyle	.= " color: #{$dboNoteType->TextColor->Value};";
 			
 			// check if the row that you are adding is the currently selected row
-			if ((DBO()->Note->NoteType->Value) && ($intNoteTypeId == DBO()->Note->NoteType->Value))
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
+			$strSelected = ((DBO()->Note->NoteType->Value) && ($intNoteTypeId == DBO()->Note->NoteType->Value)) ? "selected='selected'" : "";
 			
 			echo "         <option id='NoteType.$intNoteTypeId' value='$intNoteTypeId' $strSelected style='$strNoteTypeStyle'>$strNoteTypeLabel</option>\n";
 		}
@@ -249,101 +161,17 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		echo "</div>\n";
 		
 		// Output the "Show this note in Account Notes" checkbox
-		DBO()->Note->IsAccountNote->RenderInput();
-		
-		
-		// output the manditory field message
-		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
-		
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
-		
-		// create the submit button
-		echo "<div class='SmallSeperator'></div>\n";
-		echo "<div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-		$this->AjaxSubmit("Add Note");
-		echo "</div>\n";
-		
-		// give the Note text area initial focus
-		echo "<script type='text/javascript'>document.getElementById('Note.Note').focus();</script>\n";
-		
-		$this->FormEnd();
-		echo "</div>\n";
-	}
-	
-	//------------------------------------------------------------------------//
-	// _RenderServiceNote
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderServiceNote()
-	 *
-	 * Render this HTML Template
-	 *
-	 * Render this HTML Template
-	 *
-	 * @method
-	 */
-	private function _RenderServiceNote()
-	{	
-		echo "<div class='PopupMedium'>\n";
-		echo "<h2 class='Note'>Add Service Note</h2>\n";
-		
-		$this->FormStart("AddNote", "Note", "AddService");
-		
-		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
-		DBO()->Account->Id->RenderHidden();
-		DBO()->Service->Id->RenderHidden();
-		
-		DBO()->Service->FNN->RenderOutput();
-		DBO()->Service->Id->RenderOutput();
-		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Note->Note->RenderInput(CONTEXT_DEFAULT, TRUE);
-		
-		// create a combobox containing all Note Types
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Note Type:</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='NoteTypeCombo' name='Note.NoteType'>\n";
-		
-		// add each Note Type
-		foreach (DBL()->AvailableNoteTypes as $dboNoteType)
+		if (($this->_intContext == HTML_CONTEXT_CONTACT_NOTE) || ($this->_intContext == HTML_CONTEXT_SERVICE_NOTE))
 		{
-			$strNoteTypeLabel	= $dboNoteType->TypeLabel->Value;
-			$intNoteTypeId		= $dboNoteType->Id->Value;
-			$strNoteTypeStyle	= "border: solid 1px #{$dboNoteType->BorderColor->Value};"; 
-			$strNoteTypeStyle	.= " background-color: #{$dboNoteType->BackgroundColor->Value};";
-			$strNoteTypeStyle	.= " color: #{$dboNoteType->TextColor->Value};";
-			
-			// check if the row that you are adding is the currently selected row
-			if ((DBO()->Note->NoteType->Value) && ($intNoteTypeId == DBO()->Note->NoteType->Value))
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
-			
-			echo "         <option id='NoteType.$intNoteTypeId' value='$intNoteTypeId' $strSelected style='$strNoteTypeStyle'>$strNoteTypeLabel</option>\n";
+			DBO()->Note->IsAccountNote->RenderInput();
 		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";
-		
-		// Output the "Show this note in Account Notes" checkbox
-		DBO()->Note->IsAccountNote->RenderInput();
-		
 		
 		// output the manditory field message
 		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
 		
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
+		echo "</div>\n";  // WideForm
 		
 		// create the submit button
-		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Note");
@@ -353,8 +181,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		echo "<script type='text/javascript'>document.getElementById('Note.Note').focus();</script>\n";
 		
 		$this->FormEnd();
-		echo "</div>\n";
-	}	
+	}
 }
 
 ?>

@@ -72,6 +72,12 @@ class AppTemplatePayment extends ApplicationTemplate
 			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
 			return TRUE;
 		}
+
+		// Load DBO and DBL objects required of the page
+		// Get all accounts that belong to the same AccountGroup as this one
+		DBL()->AvailableAccounts->AccountGroup = DBO()->Account->AccountGroup->Value;
+		DBL()->AvailableAccounts->SetTable("Account");
+		DBL()->AvailableAccounts->Load();
 		
 		// check if a new payment is being submitted
 		if (SubmittedForm('MakePayment', 'Make Payment'))
@@ -139,16 +145,11 @@ class AppTemplatePayment extends ApplicationTemplate
 			else
 			{
 				// Something was invalid 
-				DBO()->Status->Message = "The Payment could not be saved. Invalid fields are highlighted.";
+				Ajax()->RenderHtmlTemplate("AccountPaymentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+				Ajax()->AddCommand("Alert", "ERROR: The Payment could not be saved. Invalid fields are highlighted");
+				return TRUE;
 			}
 		}
-		
-		
-		// Load DBO and DBL objects required of the page
-		// Get all accounts that belong to the same AccountGroup as this one
-		DBL()->AvailableAccounts->AccountGroup = DBO()->Account->AccountGroup->Value;
-		DBL()->AvailableAccounts->SetTable("Account");
-		DBL()->AvailableAccounts->Load();
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('payment_add');

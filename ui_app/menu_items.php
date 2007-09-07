@@ -485,38 +485,6 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
-	// AddRate
-	//------------------------------------------------------------------------//
-	/**
-	 * AddRate()
-	 *
-	 * Compiles the javascript to be executed when the AddRate menu item is clicked
-	 *
-	 * Compiles the javascript to be executed when the AddRate menu item is clicked
-	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
-	 * @param	int		$intId		id of the account associated with the notes to view
-	 *
-	 * @return	string				action to be executed when the AddRate menu item is clicked
-	 *
-	 * @method
-	 */
-	function AddRate($intId)
-	{
-		$this->strLabel	= "view contact notes";
-		
-		// Setup data to send
-		//$arrData['Objects']['Note']['NoteGroupId'] = $intId;
-		//$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_CONTACT_NOTES;
-		
-		// Convert to JSON notation
-		//$strJsonCode = Json()->encode($arrData);
-		
-		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"large\", \"Rate\", \"Add\", $strJsonCode)";
-	}
-
-	//------------------------------------------------------------------------//
 	// AddContactNote
 	//------------------------------------------------------------------------//
 	/**
@@ -527,7 +495,7 @@ class MenuItems
 	 * Compiles the javascript to be executed when the AddContactNote menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the account associated with the note to add
+	 * @param	int		$intId		id of the contact associated with the note to add
 	 *
 	 * @return	string				action to be executed when the AddContactNotes menu item is clicked
 	 *
@@ -535,7 +503,7 @@ class MenuItems
 	 */
 	function AddContactNote($intId)
 	{
-		$this->strLabel	= "add note";
+		$this->strLabel	= "Add Contact Note";
 		
 		// Setup data to send
 		$arrData['Objects']['Contact']['Id'] = $intId;
@@ -543,7 +511,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"AddContact\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -565,7 +533,7 @@ class MenuItems
 	 */
 	function AddAccountNote($intId)
 	{
-		$this->strLabel	= "add account note";
+		$this->strLabel	= "Add Account Note";
 		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
@@ -573,7 +541,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"AddAccount\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -587,7 +555,7 @@ class MenuItems
 	 * Compiles the javascript to be executed when the AddServiceNote menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the account associated with the note to add
+	 * @param	int		$intId		id of the service associated with the note to add
 	 *
 	 * @return	string				action to be executed when the AddServiceNotes menu item is clicked
 	 *
@@ -595,7 +563,7 @@ class MenuItems
 	 */
 	function AddServiceNote($intId)
 	{
-		$this->strLabel	= "add service note";
+		$this->strLabel	= "Add Service Note";
 		
 		// Setup data to send
 		$arrData['Objects']['Service']['Id'] = $intId;
@@ -603,7 +571,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", \"Note\", \"AddService\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//

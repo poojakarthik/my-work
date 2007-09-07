@@ -37,6 +37,6 @@ $this->Page->SetName('Make Payment');
 $this->Page->SetLayout('popup_layout');
 
 // add the Html Objects to their respective columns
-$this->Page->AddObject('AccountPaymentAdd', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('AccountPaymentAdd', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "PaymentAddDiv");
 
 ?>

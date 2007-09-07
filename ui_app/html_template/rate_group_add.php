@@ -74,7 +74,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
-	 * @param	string	$_strId			the id of the div that this HtmlTemplate is rendered in
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */

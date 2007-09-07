@@ -83,9 +83,22 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				Ajax()->AddCommand("AlertReload", "The service with service id: '". DBO()->Service->Id->value ."' could not be found");
 				return TRUE;
 			}
-			
 		}
-		
+
+		// Load all charge types that aren't archived
+		DBL()->ChargeTypesAvailable->Archived = 0;
+		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
+		DBL()->ChargeTypesAvailable->Load();
+
+		// load the last 6 invoices with the most recent being first
+		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
+		DBL()->AccountInvoices->SetTable("Invoice");
+		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->AccountInvoices->SetLimit(6);
+		DBL()->AccountInvoices->Load();
+
+
 		// check if an adjustment is being submitted
 		if (SubmittedForm('AddAdjustment', 'Add Adjustment'))
 		{
@@ -131,14 +144,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				}
 				
 				// status is dependent on the nature of the charge
-				if (DBO()->Charge->Nature->Value == "CR")
-				{
-					DBO()->Charge->Status	= CHARGE_WAITING;
-				}
-				else
-				{
-					DBO()->Charge->Status	= CHARGE_APPROVED;
-				}
+				DBO()->Charge->Status = (DBO()->Charge->Nature->Value == "CR") ? CHARGE_WAITING : CHARGE_APPROVED;
 
 				// Save the adjustment to the charge table of the vixen database
 				if (!DBO()->Charge->Save())
@@ -158,23 +164,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			}
 			else
 			{
-				// Something was invalid 
-				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are highlighted";
+				// Something was invalid
+				Ajax()->RenderHtmlTemplate("AdjustmentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+				Ajax()->AddCommand("Alert", "ERROR: Adjustment could not be saved. Invalid fields are highlighted");
+				return TRUE;
 			}
 		}
-		
-		// Load all charge types that aren't archived
-		DBL()->ChargeTypesAvailable->Archived = 0;
-		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
-		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
-		DBL()->ChargeTypesAvailable->Load();
-
-		// load the last 6 invoices with the most recent being first
-		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
-		DBL()->AccountInvoices->SetTable("Invoice");
-		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
-		DBL()->AccountInvoices->SetLimit(6);
-		DBL()->AccountInvoices->Load();
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('adjustment_add');
@@ -221,6 +216,19 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				return TRUE;
 			}
 		}
+
+		// Load all charge types that aren't archived
+		DBL()->ChargeTypesAvailable->Archived = 0;
+		DBL()->ChargeTypesAvailable->SetTable("RecurringChargeType");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
+		DBL()->ChargeTypesAvailable->Load();
+
+		// load the last 6 invoices with the most recent being first
+		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
+		DBL()->AccountInvoices->SetTable("Invoice");
+		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->AccountInvoices->SetLimit(6);
+		DBL()->AccountInvoices->Load();
 
 		// check if an adjustment is being submitted
 		if (SubmittedForm('AddRecurringAdjustment', 'Add Adjustment'))
@@ -299,23 +307,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			}
 			else
 			{
-				// Something was invalid 
-				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are highlighted";
+				// Something was invalid
+				Ajax()->RenderHtmlTemplate("RecurringAdjustmentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+				Ajax()->AddCommand("Alert", "ERROR: Adjustment could not be saved. Invalid fields have been reset and highlighted");
+				return TRUE;
 			}
 		}
-		
-		// Load all charge types that aren't archived
-		DBL()->ChargeTypesAvailable->Archived = 0;
-		DBL()->ChargeTypesAvailable->SetTable("RecurringChargeType");
-		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
-		DBL()->ChargeTypesAvailable->Load();
-
-		// load the last 6 invoices with the most recent being first
-		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
-		DBL()->AccountInvoices->SetTable("Invoice");
-		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
-		DBL()->AccountInvoices->SetLimit(6);
-		DBL()->AccountInvoices->Load();
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('recurring_adjustment_add');

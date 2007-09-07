@@ -37,6 +37,6 @@ $this->Page->SetName('Add Adjustment');
 $this->Page->SetLayout('popup_layout');
 
 // add the Html Objects to their respective columns
-$this->Page->AddObject('AdjustmentAdd', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('AdjustmentAdd', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "AddAdjustmentDiv");
 
 ?>

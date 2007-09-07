@@ -36,6 +36,9 @@ $this->Page->SetName('View Notes');
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
 
+// This is just an example of overriding the page style of the popup
+$this->Page->SetStyleOverride("background-color : #F3F3F3");
+
 // add the Html Objects to their respective columns
 $this->Page->AddObject('NoteView', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 

@@ -99,10 +99,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
-		//echo "<div id='NotesHolder' style='display:none;'>\n";
-		echo "<div  style='overflow:scroll; height:500px'>\n";
-		
+	{
 		switch (DBO()->Note->NoteClass->Value)
 		{	
 			case NOTE_CLASS_ACCOUNT_NOTES:
@@ -133,12 +130,14 @@ class HtmlTemplateNoteView extends HtmlTemplate
 				$strUser = 'checked';
 				break;				
 		}
-		echo "<br>";
+
 		echo "<input type='radio' name='Note.NoteType' value='All' $strAll onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
 		echo "<input type='radio' name='Note.NoteType' value='System' $strSystem onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
 		echo "<input type='radio' name='Note.NoteType' value='User' $strUser onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
 		//echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
 		$this->FormEnd();
+		
+		echo "<div id='NoteListContainer' style='overflow:auto; height:500px; border-left: 1px solid #D1D1D1; border-top: 1px solid #D1D1D1; border-bottom: 1px solid #D1D1D1'>\n";
 		
 		if (DBL()->Note->RecordCount() == 0)
 		{
@@ -162,7 +161,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			}
 			
 			// setup the div to reflect the Note Type
-			echo "<div style='border: solid 1px #{$strBorderColor}; background-color: #{$strBackgroundColor}; color: #{$strTextColor};'>\n";
+			echo "<div style='border: solid 1px #{$strBorderColor}; background-color: #{$strBackgroundColor}; color: #{$strTextColor}; padding: 3px'>\n";
 			
 			// Note details
 			$strDetailsHtml = "Created on ";
@@ -178,7 +177,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			}
 			
 			// Output the note details
-			echo $strDetailsHtml;
+			echo "<span style='font-size: 9pt'>$strDetailsHtml</span>\n";
 			echo "<div class='TinySeperator'></div>\n";
 			
 			// Output the actual note
@@ -186,9 +185,9 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			echo "</div>\n";
 			
 			// Include a separator
-			echo "<div class='Seperator'></div>\n";
+			echo "<div class='SmallSeperator'></div>\n";
 		}
-		echo "</div>\n";
+		echo "</div>\n";  //NoteListContainer
 	}
 }
 

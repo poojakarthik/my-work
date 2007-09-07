@@ -72,18 +72,16 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
 		
 		// Load all java script specific to the page here
-		// Note that if you execute any javascript in the Render function, that is included here, it will not have physically included it
-		// in time to execute it.  In that case you will have to explicitly include the javascript file in the Render method
-		// For example: echo "<script type='text/javascript' src='javascript/payment_popup.js'></script>\n";
-		
 		$this->LoadJavascript("payment_popup");
 	}
 	
@@ -101,6 +99,9 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{	
+		// Only apply the output mask if the DBO()->Payment is not invalid
+		$bolApplyOutputMask = !DBO()->Payment->IsInvalid();
+	
 		$this->FormStart("MakePayment", "Payment", "Add");
 
 		echo "<h2 class='Payment'>Make Payment</h2>\n";
@@ -122,7 +123,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		// create a combobox containing all Accounts or groups that the payment can be applied to
 		$intAccountGroup = DBO()->Account->AccountGroup->Value;
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Account(s):</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='AccountCombo' onchange='Vixen.PaymentPopup.DeclareAccount(this)'>\n";
 		
@@ -165,7 +166,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		
 		// Payment Type combobox
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Payment Type:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Payment Type:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Payment.PaymentType' name='Payment.PaymentType'>\n";
 		foreach ($GLOBALS['*arrConstant']['PaymentType'] as $intPaymentType=>$arrPaymentType)
@@ -173,14 +174,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 			$strDescription = $arrPaymentType['Description'];
 
 			// Check if this Payment Type was the last one selected
-			if ($intPaymentType == DBO()->Payment->PaymentType->Value)
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
+			$strSelected = ($intPaymentType == DBO()->Payment->PaymentType->Value) ? "selected='selected'" : "";
 			
 			echo "         <option id='Payment.$intPaymentType' value='$intPaymentType' $strSelected>$strDescription</option>\n";
 		}
@@ -188,14 +182,11 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 
-		DBO()->Payment->Amount->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->Payment->TXNReference->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->Payment->Amount->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Payment->TXNReference->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		
 		// output the manditory field message
 		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
-
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
 		
 		echo "</div>\n";  //WideForm
 		

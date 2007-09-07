@@ -99,12 +99,23 @@
 
 	div#PopupPageBody
 	{
-		/*margin-left:		5px;*/
+		/*
+		 * There is a function within the Page class, which can be used to override the styling applied to the page (Page->SetStyleOverride(...))
+		 * so long as it is included in the LayoutTemplate.  Currently it is only applied within the popup_layout.php LayoutTemplate and 
+		 * overrides this css class.
+		 * You would use this function within the Page Template.  
+		 */
+
+		background-color:	#F3F3F3;
+		
 		padding-top:		3px;
 		padding-left:		3px;
 		padding-right:		3px;
 		padding-bottom:		3px;
-		/*width:				450px;*/
+		
+		
+		
+		
 	}
 	
 	div#Header
@@ -690,7 +701,7 @@
 	
 	h2.Contact
 	{
-		background-image:              url('img/template/contact.png');
+		background-image:              url('img/template/contact_small.png');
 	}
 	
 	h2.Accounts

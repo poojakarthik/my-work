@@ -72,16 +72,16 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
 		
 		// Load all java script specific to the page here
-		// validate_adjustment is currently being explicitly included in the Render method as there was a 
-		// problem with it being accessed before it was included, when using $this->LoadJavascript(...)
 		$this->LoadJavascript("validate_recurring_adjustment");
 	}
 	
@@ -99,8 +99,6 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div class='PopupLarge'>\n";
-		
 		$this->FormStart("AddRecurringAdjustment", "Adjustment", "AddRecurring");
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
@@ -117,6 +115,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 			echo "<h2 class='Adjustment'>Add Recurring Adjustment</h2>\n";
 		}
 		
+		echo "<div class='WideForm'>\n";
 		
 		// Display account details
 		DBO()->Account->Id->RenderOutput();
@@ -137,15 +136,9 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
-			// check if this ChargeType was the last one selected
-			if ((DBO()->RecurringChargeType->Id->Value) && ($intChargeTypeId == DBO()->RecurringChargeType->Id->Value))
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
+			// flag this ChargeType if it was the last one selected
+			$strSelected = ((DBO()->RecurringChargeType->Id->Value) && ($intChargeTypeId == DBO()->RecurringChargeType->Id->Value)) ? "selected='selected'" : "";
+
 			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value;
 			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>$strDescription</option>\n";
 			
@@ -234,11 +227,9 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		// output the manditory field message
 		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
 		
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
+		echo "</div>\n"; // WideForm
 		
 		// create the buttons
-		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Adjustment");
@@ -251,7 +242,6 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<script type='text/javascript'>Vixen.ValidateRecurringAdjustment.InitialiseForm($strJsonCode, $intCurrentChargeTypeId);</script>\n";
 				
 		$this->FormEnd();
-		echo "</div>\n";
 	}
 }
 

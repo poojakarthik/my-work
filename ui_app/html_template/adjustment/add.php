@@ -72,16 +72,16 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
 		
 		// Load all java script specific to the page here
-		// validate_adjustment is currently being explicitly included in the Render method as there was a 
-		// problem with it being accessed before it was included, when using $this->LoadJavascript(...)
 		$this->LoadJavascript("validate_adjustment");
 	}
 	
@@ -99,9 +99,9 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		//$this->LoadAjaxJavascript("validate_adjustment");
-		echo "<div class='PopupMedium'>\n";
-		
+		// Only apply the output mask if the DBO()->Charge is not invalid
+		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
+
 		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
@@ -114,6 +114,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		{
 			echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
 		}
+		
+		echo "<div class='WideForm'>\n";
 		
 		DBO()->Account->Id->RenderHidden();
 		
@@ -130,9 +132,9 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		
 		// create a combobox containing all the charge types
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' style='width:240px' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select id='ChargeTypeCombo' style='width:230px' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
@@ -188,18 +190,16 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		DBO()->ChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->ChargeType->Nature->RenderOutput();
 		
-		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST, TRUE);
+		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST, TRUE, $bolApplyOutputMask);
 		// if the charge type has a fixed amount then disable the amount textbox
 		if ($arrChargeTypes[$intChargeTypeId]['Fixed'])
 		{
 			echo "<script type='text/javascript'>document.getElementById('Charge.Amount').disabled = TRUE;</script>\n";
 		}
 		
-
-		
 		// Create a combo box containing the last 6 invoices associated with the account
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Invoice:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Invoice:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='InvoiceComboBox' name='Charge.Invoice'>\n";
 		echo "         <option value=''>No Association</option>\n";
@@ -207,14 +207,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		{
 			$strInvoiceId = $dboInvoice->Id->Value;
 			// Check if this invoice Id was the last one selected
-			if ($strInvoiceId == DBO()->Charge->Invoice->Value)
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
+			$strSelected = ($strInvoiceId == DBO()->Charge->Invoice->Value) ? "selected='selected'" : "";
 			
 			echo "         <option value='$strInvoiceId' $strSelected>$strInvoiceId</option>\n";
 		}
@@ -228,11 +221,9 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// output the manditory field message
 		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
 		
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
+		echo "</div>\n"; // WideForm
 		
 		// create the buttons
-		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Adjustment");
@@ -248,7 +239,6 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<script type='text/javascript'>document.getElementById('ChargeTypeCombo').focus();</script>\n";
 		
 		$this->FormEnd();
-		echo "</div>\n";
 	}
 }
 

@@ -10,7 +10,7 @@
  *
  *
  *
- * @package	framework_ui
+ * @package	ui_app
  * @class	Vixen.Popup
  */
 function VixenPopupClass()
@@ -102,9 +102,6 @@ function VixenPopupClass()
 		elmPopup.setAttribute('class', 'PopupBox');
 		elmPopup.setAttribute('Id', 'VixenPopup__' + strId);
 		
-		// Quote the id of the popup (argh, double quoting kills me)
-		strTempId = '"' + strId + '"';
-				
 		// Set the content of the popup box
 		if (!strContent)
 		{
@@ -114,7 +111,7 @@ function VixenPopupClass()
 		this.strContentCode = strContent;
 		
 		strContent = "<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
-						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(" + strTempId + ")'>";
+						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(\"" + strId + "\")'>";
 		
 		// only display the debug button if we are operating in debug mode
 		if (DEBUG_MODE)
@@ -133,12 +130,13 @@ function VixenPopupClass()
 		
 		// set the content of the popup
 		elmPopup.innerHTML = strContent;
-		
+
+		// set the top of the popup to the body.scrollTop, so that it doesn't move the page when it is added to it
+		elmPopup.style.top	= document.body.scrollTop;
+
 		// Add the popup to the PopupHolder element
 		elmRoot = document.getElementById('PopupHolder');
 		elmRoot.appendChild(elmPopup);
-		
-		
 
 		//Going to run into some problems when having multiple popups
 		// on a single page, especially of different types

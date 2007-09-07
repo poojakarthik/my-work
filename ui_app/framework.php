@@ -80,6 +80,22 @@ class Page
 	private $_strPageLayout;
 
 	//------------------------------------------------------------------------//
+	// _strStyleOverride
+	//------------------------------------------------------------------------//
+	/**
+	 * _strStyleOverride
+	 *
+	 * Stores css styling used to override the standard styling of the page, which is defined in the LayoutTemplate
+	 *
+	 * Stores css styling used to override the standard styling of the page, which is defined in the LayoutTemplate
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 */
+	private $_strStyleOverride;
+
+	//------------------------------------------------------------------------//
 	// _arrObjects
 	//------------------------------------------------------------------------//
 	/**
@@ -531,6 +547,30 @@ class Page
 	{
 		$this->_intTemplateMode = $intMode;
 		$this->_objAjax = $objAjax;
+	}
+	
+	//------------------------------------------------------------------------//
+	// SetStyleOverride
+	//------------------------------------------------------------------------//
+	/**
+	 * SetStyleOverride()
+	 *
+	 * Allows the programmer to override the styling of the page, at the page level
+	 * 
+	 * Allows the programmer to override the styling of the page, at the page level
+	 * This will probably only be used with the popup_layout LayoutTemplate
+	 *
+	 * @param		string	$strStyleOverride	css styling
+	 *											What you would put in the "style" attribute of any HTML element tag
+	 *											ie $strStyleOverride = "border: 1px solid #FFFFFF; padding: 3px;" etc
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function SetStyleOverride($strStyleOverride)
+	{
+		$this->_strStyleOverride = $strStyleOverride;
 	}
 	
 }

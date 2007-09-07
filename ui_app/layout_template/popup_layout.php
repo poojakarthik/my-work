@@ -29,12 +29,11 @@
 $this->RenderJS();
 ?>
 
-<div id='PopupPageBody'>
+<div id='PopupPageBody' <?php echo (IsSet($this->_strStyleOverride)) ? "style='". $this->_strStyleOverride ."'" : ""; ?>>
 	<?php $this->RenderColumn(COLUMN_ONE); ?>
 </div>
 
 <?php
-//$this->RenderFooter();
 
 
 ?>
