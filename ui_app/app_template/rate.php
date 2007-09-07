@@ -185,8 +185,8 @@ class AppTemplateRate extends ApplicationTemplate
 		$this->LoadPage('rate_add');
 		return TRUE;
 	}
-	
-	// function will be stay named this
+
+	// function will not be staying named this
 	function Temporary_Not_Belonging_RateGroups
 	{
 		$selServiceRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan, StartDatetime, StartEndtime" "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
@@ -207,7 +207,7 @@ class AppTemplateRate extends ApplicationTemplate
 
 		//loop through both arrays comparing, output any that can't be compared?
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _UpdateAddRateGroupPage
 	//------------------------------------------------------------------------//
