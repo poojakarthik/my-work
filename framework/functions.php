@@ -2728,11 +2728,11 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
 	$arrData['Status']		= INVOICE_WRITTEN_OFF;
 	$arrData['SettledOn']	= new MySQLFunction("CURDATE()");
 	$selInvoice	= new StatementSelect("Invoice", "*", "Id = <Id>");
+	$ubiInvoice	= new StatementUpdateById("Invoice", $arrData);
 	$selInvoice->Execute($arrData);
 	if ($arrInvoice	= $selInvoice->Fetch())
 	{
 		// Write off Invoice
-		$ubiInvoice	= new StatementUpdateById("Invoice");
 		$ubiInvoice->Execute($arrData);
 		
 		// Add System Note
