@@ -107,6 +107,40 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 		}
 	}
 
+	function Temporary_Render()
+	{
+		$arrRatePlanRateGroupColumns = Array("RateGroupId"=>"RateGroup.Id", "RateGroupName"=>"RateGroup.Name", "RateGroupDescription"=>"RateGroup.Description", "RateGroupRecordType"=>"RateGroup.RecordType");
+		$selRatePlanRateGroup = new StatementSelect("RateGroup, RatePlanRateGroup", $arrRatePlanRateGroupColumns, "RateGroupId=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)", "RateGroupId");
+		$selRatePlanRateGroup->Execute(Array('Service' => DBO()->Service->Id->Value));
+		$arrRatePlanRateGroups = $selRatePlanRateGroup->FetchAll();
+
+		$arrServiceRateGroupColumns = Array("RateGroupId"=>"RateGroup.Id", "RateGroupName"=>"RateGroup.Name", "RateGroupDescription"=>"RateGroup.Description", "RateGroupRecordType"=>"RateGroup.RecordType");
+		$selServiceRateGroup = new StatementSelect("RateGroup, ServiceRateGroup", $arrServiceRateGroupColumns, "WHERE NOW() BETWEEN StartDatetime AND EndDatetime AND RateGroup.Id = ServiceRateGroup.RateGroup AND ServiceRateGroup.Service=<Service>", "RateGroup.Id");
+		$selServiceRateGroup->Execute(Array('Service' => DBO()->Service->Id->Value));
+		$arrServiceRateGroups = $selServiceRateGroup->FetchAll();
+		
+		// Loop through each RateGroup belonging to the Service and find out which ones actually belong to the RatePlan and which ones are OverRiders
+		foreach ($arrServiceRateGroups as &$arrServiceRateGroup)
+		{
+			// initialise the "IsPartOfRatePlan" flag to FALSE
+			$arrServiceRateGroup['IsPartOfRatePlan'] = FALSE;
+			
+			// Try and find the ServiceRateGroup in the list of RateGroups belonging to the RatePlan
+			foreach ($arrRatePlanRateGroups as $arrRatePlanRateGroup)
+			{
+				if ($arrServiceRateGroup['RateGroupId'] == $arrRatePlanRateGroup['RateGroupId'])
+				{
+					// This RateGroup belongs to the RatePlan; flag it as such
+					$arrServiceRateGroup['IsPartOfRatePlan'] = TRUE;
+					break;
+				}
+			}
+		}
+	
+		
+			
+	}
+
 	//------------------------------------------------------------------------//
 	// _RenderNormalDetail
 	//------------------------------------------------------------------------//
@@ -124,6 +158,8 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 		// Render each of the account invoices
 		echo "<h2 class='Invoice'>Rate Groups</h2>\n";
 		//echo "<div class='NarrowColumn'>\n";
+		
+		$this->Temporary_Render();
 		
 		Table()->RateGroupTable->SetHeader("Id", "Rate Group", "Description", "Fleet", "RecordType");
 		Table()->RateGroupTable->SetWidth("10%", "25%", "30%", "5%", "30%");

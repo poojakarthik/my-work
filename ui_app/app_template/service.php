@@ -666,20 +666,6 @@ class AppTemplateService extends ApplicationTemplate
 		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
 		
 		
-		// Setup all DBO and DBL objects required for the page
-		//TODO!
-		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
-		/*if (!DBO()->Account->Load())
-		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
-			$this->LoadPage('error');
-			return FALSE;
-		}*/
-		
-		// the DBList storing the invoices should be ordered so that the most recent is first
-		// same with the payments list
-		//DBL()->RatePlan->Load();
-	
 		$this->LoadPage('service_plan_view');
 		return TRUE;
 	}	
