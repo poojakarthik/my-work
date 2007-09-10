@@ -57,14 +57,10 @@ function VixenAjaxClass()
 		//objSend.TargetType = "Div";
 		// HACK HACK HACK *********************************************************************************************************************
 		
-		// add values from form to object
-		//TODO! Find each element and load it into objSend.Objects.Object.Property
-		
-		// instantiate the Objects structure
+		// Add values from form to object
+		// Instantiate the Objects structure
 		objSend.Objects = {};
-		
-
-		// retrieve the form which is being submitted (the form as an element)
+		// Retrieve the form which is being submitted (the form as an element)
 		objFormElement = document.getElementById(strFormId);
 
 		for (intKey in objFormElement.elements)
@@ -341,7 +337,7 @@ function VixenAjaxClass()
 						}
 						else
 						{
-							Vixen.Popup.Create(objObject.strId, strReply, objObject.strSize, "centre", objObject.WindowType);
+							Vixen.Popup.Create(objObject.strId, strReply, objObject.strSize, "centre", objObject.WindowType, objObject.strTitle);
 						}
 						break;
 					case "Div":
@@ -412,7 +408,7 @@ function VixenAjaxClass()
 					strContent = "<p><div align='center'>" + objInput[intKey].Data.Alert + 
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'><br></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', objInput[intKey].Data.Location);
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', null, objInput[intKey].Data.Location);
 					break;
 				case "ReplaceDivContents":
 					// The html code defined in objInput[intKey].Data will be placed in the declared Container Div

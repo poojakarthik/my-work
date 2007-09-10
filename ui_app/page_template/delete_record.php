@@ -30,9 +30,6 @@
  *
  */
 
-// set the page title
-$this->Page->SetName('Delete Record');
-
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
 

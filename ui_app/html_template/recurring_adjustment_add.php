@@ -107,12 +107,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		if (DBO()->Service->Id->Value)
 		{
-			echo "<h2 class='Adjustment'>Add Service Recurring Adjustment</h2>\n";
 			DBO()->Service->Id->RenderHidden();
-		}
-		else
-		{
-			echo "<h2 class='Adjustment'>Add Recurring Adjustment</h2>\n";
 		}
 		
 		echo "<div class='WideForm'>\n";

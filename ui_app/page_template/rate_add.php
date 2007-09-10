@@ -30,9 +30,6 @@
  *
  */
 
-// Set the page title
-$this->Page->SetName('Add a new Rate');
-
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
 

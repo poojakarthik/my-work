@@ -292,12 +292,12 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}EditPopup\", \"medium\", \"Employee\", \"Edit\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}EditPopup\", \"medium\", \"Edit Employee\", \"Employee\", \"Edit\", $strJsonCode)";
 
 	}
 	
 	//------------------------------------------------------------------------//
-	// AddRateGroupToRatePlan
+	// AddRateGroupToRatePlan - DEPRECIATED (currently this functionality is explicitly called from javascript)
 	//------------------------------------------------------------------------//
 	/**
 	 * AddRateGroupToRatePlan()
@@ -326,7 +326,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"Add New Rate Group\", \"RateGroup\", \"Add\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -346,7 +346,7 @@ class MenuItems
 	 */
 	function AddRateGroup()
 	{
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", \"\", \"modeless\")";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"Add New Rate Group\", \"RateGroup\", \"Add\", \"\", \"modeless\")";
 	}
 
 	//------------------------------------------------------------------------//
@@ -449,7 +449,7 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Note\", \"View\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Account Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -481,7 +481,7 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Note\", \"View\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Contact Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -511,7 +511,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Add Contact Note\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -541,7 +541,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Add Account Note\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -571,7 +571,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", \"Add Service Note\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -588,7 +588,7 @@ class MenuItems
 	 * @param	int		$intYear	year part of the date of the invoice to email
 	 * @param	int		$intMonth	month part of the date of the invoice to email
 	 *
-	 * @return	string				action to be executed when the AddNotes menu item is clicked
+	 * @return	string				action to be executed when the EmailPDFInvoice menu item is clicked
 	 *
 	 * @method
 	 */
@@ -604,7 +604,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmailPDFInvoicePopupId\", \"medium\", \"Invoice\", \"EmailPDFInvoice\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmailPDFInvoicePopupId\", \"medium\", \"Email PDF Invoice\", \"Invoice\", \"EmailPDFInvoice\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -617,11 +617,9 @@ class MenuItems
 	 *
 	 * Compiles the javascript to be executed when the RatesList menu item is clicked
 	 * 
-	 * @param	int		$intId		id of the account associated with the invoice to email
-	 * @param	int		$intYear	year part of the date of the invoice to email
-	 * @param	int		$intMonth	month part of the date of the invoice to email
+	 * @param	int		$intId		id of the RatePlan
 	 *
-	 * @return	string				action to be executed when the AddNotes menu item is clicked
+	 * @return	string				action to be executed when the RatesList menu item is clicked
 	 *
 	 * @method
 	 */
@@ -635,7 +633,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RatesListPopupId\", \"large\", \"Plan\", \"RateList\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RatesListPopupId\", \"large\", null, \"Plan\", \"RateList\", $strJsonCode)";
 	}
 	
 
@@ -668,7 +666,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Adjustment\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", null, \"Adjustment\", \"Add\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -700,7 +698,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"large\", \"Adjustment\", \"AddRecurring\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"large\", null, \"Adjustment\", \"AddRecurring\", $strJsonCode)";
 	}
 	
 	
@@ -731,7 +729,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"large\", \"Payment\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"large\", \"Make Payment\", \"Payment\", \"Add\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -763,7 +761,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeletePaymentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeletePaymentPopupId\", \"medium\", \"Reverse Payment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -794,7 +792,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteAdjustmentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteAdjustmentPopupId\", \"medium\", \"Delete Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -825,7 +823,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Cancel Recurring Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//

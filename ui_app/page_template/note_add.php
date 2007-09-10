@@ -46,7 +46,7 @@ elseif (DBO()->Contact->Id->IsSet)
 }
 else
 {
-	$strPageName = "Add Note";
+	$strPageName = "Add Account Note";
 	$this->Page->AddObject('NoteAdd', COLUMN_ONE, HTML_CONTEXT_ACCOUNT_NOTE, "AddNoteDiv");
 }
 

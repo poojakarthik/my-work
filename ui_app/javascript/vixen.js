@@ -1,6 +1,7 @@
 var FALSE = false;
 var TRUE = true;
 var DEBUG_MODE = FALSE;
+var VIXEN_APPLICATION_NAME = "TelcoBlue Internal System";
 
 //----------------------------------------------------------------------------//
 // VixenRootClass

@@ -221,7 +221,7 @@ function VixenRatePlanAddClass()
 			objObjects.Objects.CallingPage = {};
 			objObjects.Objects.CallingPage.AddRatePlan = true;
 			
-			Vixen.Popup.ShowAjaxPopup("AddRateGroupPopup", "large", "RateGroup", "Add", objObjects);
+			Vixen.Popup.ShowAjaxPopup("AddRateGroupPopup", "large", "Edit Rate Group", "RateGroup", "Add", objObjects);
 		}
 		else
 		{
@@ -291,7 +291,7 @@ function VixenRatePlanAddClass()
 		objObjects.Objects.CallingPage.AddRatePlan = true;
 		
 		// Call the "Add Rate Group" page
-		Vixen.Popup.ShowAjaxPopup("AddRateGroupPopup", "large", "RateGroup", "Add", objObjects);
+		Vixen.Popup.ShowAjaxPopup("AddRateGroupPopup", "large", "Add New Rate Group", "RateGroup", "Add", objObjects);
 	}
 	
 	

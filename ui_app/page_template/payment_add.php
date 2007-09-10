@@ -30,7 +30,7 @@
  *
  */
 
-// set the page title
+// set the page title (This should already be set)
 $this->Page->SetName('Make Payment');
 
 // set the layout template for the page.

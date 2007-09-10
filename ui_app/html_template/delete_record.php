@@ -69,15 +69,17 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 	 *
 	 * Constructor
 	 *
-	 * Constructor - java script required by the HTML object is loaded here
+	 * Constructor - javascript required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -94,15 +96,14 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<div class='PopupMedium'>\n";
 		// Start the form
 		$this->FormStart("DeleteRecord", DBO()->DeleteRecord->Application->Value, DBO()->DeleteRecord->Method->Value);
+		echo "<div class='NarrowContent'>\n";
 
 		// do code specific to the record type being deleted
 		switch (DBO()->DeleteRecord->RecordType->Value)
 		{
 			case "Payment":
-				echo "<h2 class='Payment'>Reverse Payment</h2>\n";
 				// Display the description for the reverse payment operation
 				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to reverse the payment with the following details?");
 				DBO()->Payment->PaidOn->RenderOutput();
@@ -112,7 +113,6 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				DBO()->Payment->Id->RenderHidden();
 				break;
 			case "Adjustment":
-				echo "<h2 class='Adjustment'>Delete Adjustment</h2>\n";
 				// Display the description for the delete operation
 				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to delete the adjustment with the following details?");
 				DBO()->Charge->CreatedOn->RenderOutput();
@@ -123,7 +123,6 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				DBO()->Charge->Id->RenderHidden();
 				break;
 			case "RecurringAdjustment":
-				echo "<h2 class='Adjustment'>Cancel Recurring Adjustment</h2>\n";
 				// Display the description for the delete operation
 				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to cancel the recurring adjustment with the following details?");
 				DBO()->RecurringCharge->CreatedOn->RenderOutput();
@@ -157,21 +156,15 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		// display the textarea for the accompanying note
 		echo "<div class='Seperator'></div>\n";
 		DBO()->Note->Note->RenderInput();
+		echo "</div>\n";  // NarrowContent
 		
 		// display the buttons
-		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("OK");
 		echo "</div>\n";
-		echo "<div class='SmallSeperator'></div>\n";
-		echo "<div class='Seperator'></div>\n";
 		
-		// give the Cancel button initial focus
-		echo "<script type='text/javascript'>document.getElementById('VixenButton_Cancel').focus();</script>\n";
-
 		$this->FormEnd();
-		echo "</div>\n";
 	}
 }
 

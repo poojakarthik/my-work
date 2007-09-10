@@ -100,19 +100,6 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch (DBO()->Note->NoteClass->Value)
-		{	
-			case NOTE_CLASS_ACCOUNT_NOTES:
-				echo "<h2 class='Notes'>Account Notes</h2>\n";
-				break;
-			case NOTE_CLASS_CONTACT_NOTES:
-				echo "<h2 class='Notes'>Contact Notes</h2>\n";
-				break;
-			default:
-				echo "<h2 class='Notes'>Notes</h2>\n";
-				break;
-		}
-		
 		$this->FormStart("NoteTypeForm", "Note", "View");
 		DBO()->Note->NoteGroupId->RenderHidden();
 		DBO()->Note->NoteClass->RenderHidden();

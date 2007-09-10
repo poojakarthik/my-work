@@ -46,16 +46,15 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
 		
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 		$this->LoadJavascript("date_selection");
 		$this->LoadJavascript("rate_add");
 	}
@@ -74,6 +73,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<h2 class='Plan'>Rate Details</h2>\n";
 		echo "<div class='PopupLarge' style='overflow:auto; height:515px; width:auto;'>\n";
 			
 			// define javascript to be triggered when the Cap and Excess radiobuttons change
@@ -92,22 +92,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			DBO()->Rate->ServiceType->RenderHidden();
 			DBO()->Rate->RecordType->RenderHidden();
 			
-			$strHeading = "";
-			if (DBO()->Rate->Id->Value)
-			{
-				DBO()->Rate->Id->RenderHidden();
-				$strHeading = "Update Existing Draft Rate";
-			}
-			elseif (DBO()->Action->CreateNewBasedOnOld->Value)
-			{
-				$strHeading = "Create new Rate based on Exisiting Rate";				
-			}
-			else
-			{
-				$strHeading = "Add New Rate";
-			}
-			
-			echo "<h2 class='Plan'>".$strHeading."</h2>\n";
+			DBO()->Rate->Id->RenderHidden();
 			echo "<div class='NarrowContent'>\n"; //beginning of the DIV for the rate name and duration
 				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 				echo "<tr><td width='2%' rowspan=10>&nbsp;</td><td width='98%'>".DBO()->Rate->Name->AsInput(CONTEXT_DEFAULT, TRUE)."</td></tr>\n";
@@ -456,7 +441,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			echo "<input type='hidden' id='AddRatePopupId' value='{$this->_objAjax->strId}'></input>\n";
 		echo "</div>\n";
 		$this->FormEnd();
-		
+
 		// Initialise the form's associated javascript object
 		echo "<script type='text/javascript'>Vixen.RateAdd.InitialiseForm();</script>";
 	}

@@ -102,7 +102,6 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		switch ($this->_intContext)
 		{
 			case HTML_CONTEXT_CONTACT_NOTE:
-				echo "<h2 class='Note'>Add Contact Note</h2>\n";
 				echo "<div class='WideForm'>\n";
 				DBO()->Contact->Id->RenderHidden();
 				DBO()->Note->Contact = DBO()->Contact->Id->Value;
@@ -114,7 +113,6 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 				break;
 				
 			case HTML_CONTEXT_SERVICE_NOTE:
-				echo "<h2 class='Note'>Add Service Note</h2>\n";
 				echo "<div class='WideForm'>\n";
 				DBO()->Service->Id->RenderHidden();
 				DBO()->Note->Service = DBO()->Service->Id->Value;
@@ -126,7 +124,6 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 				
 			case HTML_CONTEXT_ACCOUNT_NOTE:
 			default:
-				echo "<h2 class='Note'>Add Account Note</h2>\n";
 				echo "<div class='WideForm'>\n";
 				DBO()->Account->Id->RenderHidden();
 				break;

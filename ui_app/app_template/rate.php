@@ -187,9 +187,9 @@ class AppTemplateRate extends ApplicationTemplate
 	}
 
 	// function will not be staying named this
-	function Temporary_Not_Belonging_RateGroups
+	function Temporary_Not_Belonging_RateGroups()
 	{
-		$selServiceRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan, StartDatetime, StartEndtime" "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
+		$selServiceRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan, StartDatetime, StartEndtime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
 		$selServiceRatePlan->Execute(Array('Service' => DBO()->Service->Id->Value));
 		$arrServiceRatePlan = $selServiceRatePlan->Fetch();
 		
@@ -197,11 +197,11 @@ class AppTemplateRate extends ApplicationTemplate
 		//$arrServiceRatePlan['StartDatetime'];
 		//$arrServiceRatePlan['EndDatetime'];
 
-		$selRateGroup = new StatementSelect("RateGroup", "*", "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = $arrServiceRatePlan['RatePlan'])", "StartDatetime DESC");
+		$selRateGroup = new StatementSelect("RateGroup", "*", "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = {$arrServiceRatePlan['RatePlan']})", "StartDatetime DESC");
 		$selRateGroup->Execute(Array('Service' => DBO()->Service->Id->Value));
 		$arrRateGroup = $selRateGroup->FetchAll();
 
-		$selRateGroupService = new StatementSelect("RateGroup", "*", "Id IN (SELECT RateGroup FROM ServiceRateGroup WHERE Service = <Service> AND NOW() BETWEEN $arrServiceRatePlan['StartDatetime'] AND $arrServiceRatePlan['EndDatetime']");
+		$selRateGroupService = new StatementSelect("RateGroup", "*", "Id IN (SELECT RateGroup FROM ServiceRateGroup WHERE Service = <Service> AND NOW() BETWEEN {$arrServiceRatePlan['StartDatetime']} AND {$arrServiceRatePlan['EndDatetime']}");
 		$selRateGroupService->Execute(Array('Service' => DBO()->Service->Id->Value));
 		$arrRateGroupService = $selRateGroupService->FetchAll();
 

@@ -102,7 +102,7 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		$arrRateSummary = DBO()->RateSummary->ArrSummary->Value;
 
 		echo "<div class='PopupLarge'>\n";
-		echo "<h2 class='Plan'>Rate Summary</h2>\n";
+		//echo "<h2 class='Plan'>Rate Summary</h2>\n";
 		echo "<table border='0' cellpadding='0' cellspacing='0'>\n";
 		echo "<tr><td>&nbsp;</td>";
 		for ($i = 0; $i<24; $i++)

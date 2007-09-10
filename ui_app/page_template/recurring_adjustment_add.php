@@ -31,7 +31,14 @@
  */
 
 // set the page title
-$this->Page->SetName('Add Recurring Adjustment');
+if (DBO()->Service->Id->Value)
+{
+	$this->Page->SetName('Add Service Recurring Adjustment');
+}
+else
+{
+	$this->Page->SetName('Add Recurring Adjustment');
+}
 
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');

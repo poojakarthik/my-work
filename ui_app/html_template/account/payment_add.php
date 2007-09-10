@@ -104,7 +104,6 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 	
 		$this->FormStart("MakePayment", "Payment", "Add");
 
-		echo "<h2 class='Payment'>Make Payment</h2>\n";
 		echo "<div class='WideForm'>\n";
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form

@@ -25,12 +25,22 @@
  *
  */
 
+// Define the javascript code used to find the title of the popup and change it to the PageName defined within this Page object
+$strChangePopupTitleJsCode = "document.getElementById('VixenPopupTopBarTitle__{$this->_objAjax->strId}').innerHTML = '<PageName>';";
 
 $this->RenderJS();
 ?>
-
 <div id='PopupPageBody' <?php echo (IsSet($this->_strStyleOverride)) ? "style='". $this->_strStyleOverride ."'" : ""; ?>>
-	<?php $this->RenderColumn(COLUMN_ONE); ?>
+<?php 
+	$this->RenderColumn(COLUMN_ONE); 
+	
+	// Set the title of the popup to the page name, if the page name has been declared
+	if (IsSet($this->_strPageName))
+	{
+		echo "<script type='text/javascript'>". str_replace("<PageName>", $this->_strPageName, $strChangePopupTitleJsCode) ."</script>\n";
+	}
+?>
+	
 </div>
 
 <?php

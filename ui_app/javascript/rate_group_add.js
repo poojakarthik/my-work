@@ -283,7 +283,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.Action = {};
 		objObjects.Objects.Action.CreateNewBasedOnOld = true;
 		
-		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Add New Rate", "Rate", "Add", objObjects);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -313,7 +313,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.CallingPage.AddRateGroup = true;
 		
 		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
-		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Add New Rate", "Rate", "Add", objObjects);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -380,7 +380,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.CallingPage = {};
 		objObjects.Objects.CallingPage.AddRateGroup = true;
 		
-		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Edit Rate", "Rate", "Add", objObjects);
 	}
 
 
@@ -432,7 +432,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.CallingPage.AddRateGroup = true;
 		
 		// Execute that application template that creates the popup
-		Vixen.Popup.ShowAjaxPopup("PreviewRateSummaryPopup", "large", "RateGroup", "PreviewRateSummary", objObjects);
+		Vixen.Popup.ShowAjaxPopup("PreviewRateSummaryPopup", "large", "Rate Summary", "RateGroup", "PreviewRateSummary", objObjects);
 	}
 
 	//------------------------------------------------------------------------//

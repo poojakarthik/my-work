@@ -281,9 +281,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	private function _RenderRateSelectorControl()
 	{
 		// Render a table for the user to specify a Rate Group for each Record Type required of the Service Type
-		echo "<h2 class='Plan'>Rates</h2>\n";
 		echo "<div class='WideForm'>\n";
-		
 
 		$strAvailableRates = "";
 		$strSelectedRates = "";
@@ -336,7 +334,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Draw the Available Rates multi-select combo box
 		echo "<td>\n";
 		echo "<div class='DefaultElement'>\n";
-		echo "<select size='15' multiple='multiple' id='AvailableRatesCombo' class='DefaultInputComboBox' style='left:0px;width:300px;'>";
+		echo "<select size='15' multiple='multiple' id='AvailableRatesCombo' class='DefaultInputComboBox' style='left:0px;width:305px;'>";
 		echo $strAvailableRates;
 		echo "</select>\n";
 		echo "</div>\n";
@@ -353,7 +351,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Draw the Selected Rates multi-select combo box
 		echo "<td>\n";
 		echo "<div class='DefaultElement'>\n";
-		echo "<select size='15' multiple='multiple' valueIsList='valueIsList' id='SelectedRatesCombo' name='SelectedRates.ArrId' class='DefaultInputComboBox' style='left:0px;width:300px;'>";
+		echo "<select size='15' multiple='multiple' valueIsList='valueIsList' id='SelectedRatesCombo' name='SelectedRates.ArrId' class='DefaultInputComboBox' style='left:0px;width:305px;'>";
 		echo $strSelectedRates;
 		echo "</select>\n";
 		echo "</div>\n";

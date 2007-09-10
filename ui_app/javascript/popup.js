@@ -81,12 +81,15 @@ function VixenPopupClass()
 		return TRUE;
 	}
 	
-	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strLocationOnClose)
+	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strTitle, strLocationOnClose)
 	{
 		// set the location to relocate to, when the popup is closed.
 		// If null, then a page reload is not performed
 		// currently this only works when strModal == autohide 
 		this.strLocationOnClose = strLocationOnClose;
+		
+		// If the title isn't specified then use the application name
+		strTitle = (strTitle == null) ? VIXEN_APPLICATION_NAME : strTitle;
 	
 		// Try to find a previous popup
 		elmExists = document.getElementById('VixenPopup__' + strId);
@@ -110,7 +113,7 @@ function VixenPopupClass()
 				
 		this.strContentCode = strContent;
 		
-		strContent = "<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
+		strContent = 	"<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
 						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(\"" + strId + "\")'>";
 		
 		// only display the debug button if we are operating in debug mode
@@ -119,11 +122,8 @@ function VixenPopupClass()
 			strContent += "<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()'>";
 		}
 		
-		strContent += "TelcoBlue Internal System" +
-						"</div>" + 
-						"<div id='VixenPopupContent__" + strId + "'>" + this.strContentCode + "</div>";
-		
-
+		strContent += 	"<div id='VixenPopupTopBarTitle__" + strId + "'>" + strTitle + "</div></div>\n" +
+						"<div id='VixenPopupContent__" + strId + "'>\n" + this.strContentCode + "</div>\n";
 		
 		// initially hide the popup
 		elmPopup.style.visibility = 'hidden';
@@ -355,10 +355,11 @@ function VixenPopupClass()
 		}
 	}
 	
-	this.ShowAjaxPopup = function(strId, strSize, strClass, strMethod, objParams, strWindowType)
+	this.ShowAjaxPopup = function(strId, strSize, strTitle, strClass, strMethod, objParams, strWindowType)
 	{
-		objParams.strSize 		= strSize;
 		objParams.strId 		= strId;
+		objParams.strSize 		= strSize;
+		objParams.strTitle		= strTitle;
 		objParams.TargetType 	= "Popup";
 		if (strWindowType == undefined)
 		{

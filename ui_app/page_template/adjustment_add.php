@@ -31,7 +31,14 @@
  */
 
 // set the page title
-$this->Page->SetName('Add Adjustment');
+if (DBO()->Service->Id->Value)
+{
+	$this->Page->SetName('Add Service Adjustment');
+}
+else
+{
+	$this->Page->SetName('Add Adjustment');
+}
 
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');

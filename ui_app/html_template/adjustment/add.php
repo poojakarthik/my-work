@@ -107,12 +107,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		if (DBO()->Service->Id->Value)
 		{
-			echo "<h2 class='Adjustment'>Add Service Adjustment</h2>\n";
 			DBO()->Service->Id->RenderHidden();
-		}
-		else
-		{
-			echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
 		}
 		
 		echo "<div class='WideForm'>\n";

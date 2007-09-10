@@ -31,7 +31,21 @@
  */
 
 // set the page title
-$this->Page->SetName('View Notes');
+switch (DBO()->Note->NoteClass->Value)
+{	
+	case NOTE_CLASS_ACCOUNT_NOTES:
+		$this->Page->SetName('Account Notes');
+		break;
+	case NOTE_CLASS_CONTACT_NOTES:
+		$this->Page->SetName('Contact Notes');
+		break;
+	case NOTE_CLASS_SERVICE_NOTES:
+		$this->Page->SetName('Service Notes');
+		break;
+	default:
+		$this->Page->SetName('Notes');
+		break;
+}
 
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
