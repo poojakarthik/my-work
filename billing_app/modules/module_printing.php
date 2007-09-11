@@ -63,7 +63,7 @@
 		$this->db = $ptrThisDB;
 		
 		// Customer Config
-		$this->_arrConfig = $GLOBALS['**arrCustomerConfig']['PrintingModule'];
+		$this->_arrConfig = $GLOBALS['**arrCustomerConfig']['Billing']['PrintingModule'];
 		
 		// Init member variables
 		$this->_strFilename		= NULL;
@@ -86,6 +86,7 @@
 		$arrColumns['BusinessName']		= "Account.BusinessName";
 		$arrColumns['TradingName']		= "Account.TradingName";
 		$arrColumns['DeliveryMethod']	= "Account.BillingMethod";
+		$arrColumns['BillingType']		= "Account.BillingType";
 		$this->_selCustomerDetails		= new StatementSelect(	"Account LEFT OUTER JOIN Contact ON Account.PrimaryContact = Contact.Id",
 																$arrColumns,
 																"Account.Id = <Account>");
@@ -133,6 +134,10 @@
 		$this->_selServiceInstances		= new StatementSelect(	"Service LEFT JOIN ServiceExtension ON Service.Id = ServiceExtension.Service", 
 																"Service.Id AS Id", 
 																"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.RangeStart <=> <RangeStart>)");
+																
+		$this->_selRatePlan				= new StatementSelect(	"ServiceTotal JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan",
+																"RatePlan.*",
+																"Service = <Id>");
 		
 		/*$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"(TotalCharge + Debit - Credit) AS TotalCharge",
@@ -292,11 +297,11 @@
  	function Clean()
  	{
 		// Truncate the InvoiceOutput table
-		$qryTruncateInvoiceOutput = new QueryTruncate();
+		/*$qryTruncateInvoiceOutput = new QueryTruncate();
 		if (!$qryTruncateInvoiceOutput->Execute("InvoiceOutput"))
 		{
 			return FALSE;
-		}
+		}*/
 		
 		return TRUE;
  	}
@@ -362,17 +367,16 @@
 			switch ($arrCustomerData['CustomerGroup'])
 			{
 				case CUSTOMER_GROUP_VOICETALK:
-					$arrInserts[0]	= '1';
+					$arrInserts[1]	= '1';
 					break;
 					
 				default:
-					$arrInserts[1]	= '1';
+					$arrInserts[0]	= '1';
 					break;					
 					
 			}
-			$arrInserts[0]	= '1';
 		}
-		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";
+		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= implode($arrInserts);
 		
 		if($bolHasBillHistory)
 		{
@@ -1204,11 +1208,16 @@
  		//if ($this->_selDisplayServiceSummary->Execute($arrCols))
  		if ($arrServiceSummaries)
  		{
+			// Get Plan Details
+			$this->_selRatePlan->Execute($arrService);
+			$arrRatePlan	= $this->_selRatePlan->Fetch();
+			
 			// Service Header
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
+			$arrDefine['SvcSummSvcHeader']		['Plan']			['Value']	= $arrRatePlan['Name'];
 			//$arrDefine['SvcSummSvcHeader']		['CostCentre']		['Value']	= $strCostCentre;
 			$this->_arrFileData[] = $arrDefine['SvcSummSvcHeader'];
-	 		 		
+	 		
 	 		// Add each to the invoice
 	 		$fltTotal = 0.0;
 	 		foreach ($arrServiceSummaries as $arrServiceSummary)
@@ -1223,10 +1232,12 @@
 	 		
 			// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
 			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
+			$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
+			
 			if ($bolPrimary === TRUE || $bolPrimary === FALSE)
 			{
 				// An indial, so use the uncapped total
-				$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= $fltTotal;
+				$arrDefine['SvcSummSvcTotal']		['TotalCapped']		['Value']	= $fltTotal;
 			}
 			else
 			{
@@ -1240,10 +1251,24 @@
 		 			return FALSE;
 		 		}
 		 		
-				$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= (float)$arrServiceTotal[0]['TotalCharge'];
+				$arrDefine['SvcSummSvcTotal']		['TotalCapped']		['Value']	= (float)$arrServiceTotal[0]['TotalCharge'];
+				
+				// add in plan charge breakdown
+				if ($arrRatePlan['MinMonthly'])
+				{
+					// it must not be a shared plan (shared plans may be handled at a later date)
+					if (!$arrRatePlan['Shared'])
+					{
+						// add in breakdown
+						$fltPlanCredit = ((float)$arrServiceTotal[0]['TotalCharge'] - $fltTotal) - $arrRatePlan['MinMonthly'];
+						$arrDefine['SvcSummPlanSumm']		['PlanCharge']		['Value']	= $arrRatePlan['MinMonthly'];
+						$arrDefine['SvcSummPlanSumm']		['PlanCredit']		['Value']	= $fltPlanCredit;
+						$this->_arrFileData[] = $arrDefine['SvcSummPlanSumm'];
+					}
+				}
 			}
 			
-			$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
+			$this->_arrFileData[] = $arrDefine['SvcSummSvcTotal'];
  			
  			return $fltTotal;
  		}

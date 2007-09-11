@@ -7,7 +7,7 @@
 
 
 //----------------------------------------------------------------------------//
-// DEFINITIONS
+// CONFIG
 //----------------------------------------------------------------------------//
 /**
  * config
@@ -413,7 +413,7 @@
 		$arrPrintDefine['SvcSummCCFooter']	['Total']			['Type']	= BILL_TYPE_SHORTCURRENCY;
 		
 		
-				
+		
 		
 		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Length']	= 4;
@@ -423,6 +423,10 @@
 		$arrPrintDefine['SvcSummSvcHeader']	['FNN']				['Start']	= 4;
 		$arrPrintDefine['SvcSummSvcHeader']	['FNN']				['Length']	= 10;
 		$arrPrintDefine['SvcSummSvcHeader']	['FNN']				['Type']	= BILL_TYPE_CHAR;
+		
+		$arrPrintDefine['SvcSummSvcHeader']	['Plan']			['Start']	= 14;
+		$arrPrintDefine['SvcSummSvcHeader']	['Plan']			['Length']	= 50;
+		$arrPrintDefine['SvcSummSvcHeader']	['Plan']			['Type']	= BILL_TYPE_CHAR;
 		
 		
 		
@@ -451,15 +455,40 @@
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
-		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Value']	= "0068";
+		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Value']	= "0066";
 		
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Start']	= 4;
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Length']	= 11;
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Type']	= BILL_TYPE_SHORTCURRENCY;
 		
-		$arrPrintDefine['SvcSummSvcFooter']	['TotalCapped']		['Start']	= 15;
-		$arrPrintDefine['SvcSummSvcFooter']	['TotalCapped']		['Length']	= 11;
-		$arrPrintDefine['SvcSummSvcFooter']	['TotalCapped']		['Type']	= BILL_TYPE_SHORTCURRENCY;
+		
+		
+		
+		
+		$arrPrintDefine['SvcSummPlanSumm']	['RecordType']		['Start']	= 0;
+		$arrPrintDefine['SvcSummPlanSumm']	['RecordType']		['Length']	= 4;
+		$arrPrintDefine['SvcSummPlanSumm']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
+		$arrPrintDefine['SvcSummPlanSumm']	['RecordType']		['Value']	= "0067";
+		
+		$arrPrintDefine['SvcSummPlanSumm']	['PlanCharge']		['Start']	= 4;
+		$arrPrintDefine['SvcSummPlanSumm']	['PlanCharge']		['Length']	= 11;
+		$arrPrintDefine['SvcSummPlanSumm']	['PlanCharge']		['Type']	= BILL_TYPE_SHORTCURRENCY;
+		
+		$arrPrintDefine['SvcSummPlanSumm']	['PlanCredit']		['Start']	= 15;
+		$arrPrintDefine['SvcSummPlanSumm']	['PlanCredit']		['Length']	= 11;
+		$arrPrintDefine['SvcSummPlanSumm']	['PlanCredit']		['Type']	= BILL_TYPE_SHORTCURRENCY;
+		
+		
+		
+		
+		$arrPrintDefine['SvcSummSvcTotal']	['RecordType']		['Start']	= 0;
+		$arrPrintDefine['SvcSummSvcTotal']	['RecordType']		['Length']	= 4;
+		$arrPrintDefine['SvcSummSvcTotal']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
+		$arrPrintDefine['SvcSummSvcTotal']	['RecordType']		['Value']	= "0068";
+		
+		$arrPrintDefine['SvcSummSvcTotal']	['TotalCapped']		['Start']	= 4;
+		$arrPrintDefine['SvcSummSvcTotal']	['TotalCapped']		['Length']	= 11;
+		$arrPrintDefine['SvcSummSvcTotal']	['TotalCapped']		['Type']	= BILL_TYPE_SHORTCURRENCY;
 		
 		
 		
