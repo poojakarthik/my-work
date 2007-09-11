@@ -97,25 +97,21 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 	 *
 	 * @method
 	 */
-	function Render()
-	{
-		switch ($this->_intContext)
-		{
-			case HTML_CONTEXT_NORMAL_DETAIL:
-				$this->_RenderNormalDetail();
-				break;
-		}
-	}
+	//function Render()
+	//{
+		
+		
+	//}
 
-	function Temporary_Render()
+	/*function Temporary_Render()
 	{
 		$arrRatePlanRateGroupColumns = Array("RateGroupId"=>"RateGroup.Id", "RateGroupName"=>"RateGroup.Name", "RateGroupDescription"=>"RateGroup.Description", "RateGroupRecordType"=>"RateGroup.RecordType");
-		$selRatePlanRateGroup = new StatementSelect("RateGroup, RatePlanRateGroup", $arrRatePlanRateGroupColumns, "RateGroupId=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)", "RateGroupId");
+		$selRatePlanRateGroup = new StatementSelect("RateGroup, RatePlanRateGroup", $arrRatePlanRateGroupColumns, "RateGroup.Id=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)", "RateGroupId");
 		$selRatePlanRateGroup->Execute(Array('Service' => DBO()->Service->Id->Value));
 		$arrRatePlanRateGroups = $selRatePlanRateGroup->FetchAll();
 
 		$arrServiceRateGroupColumns = Array("RateGroupId"=>"RateGroup.Id", "RateGroupName"=>"RateGroup.Name", "RateGroupDescription"=>"RateGroup.Description", "RateGroupRecordType"=>"RateGroup.RecordType");
-		$selServiceRateGroup = new StatementSelect("RateGroup, ServiceRateGroup", $arrServiceRateGroupColumns, "WHERE NOW() BETWEEN StartDatetime AND EndDatetime AND RateGroup.Id = ServiceRateGroup.RateGroup AND ServiceRateGroup.Service=<Service>", "RateGroup.Id");
+		$selServiceRateGroup = new StatementSelect("RateGroup, ServiceRateGroup", $arrServiceRateGroupColumns, "NOW() BETWEEN StartDatetime AND EndDatetime AND RateGroup.Id = ServiceRateGroup.RateGroup AND ServiceRateGroup.Service=<Service>", "RateGroup.Id");
 		$selServiceRateGroup->Execute(Array('Service' => DBO()->Service->Id->Value));
 		$arrServiceRateGroups = $selServiceRateGroup->FetchAll();
 		
@@ -136,10 +132,7 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				}
 			}
 		}
-	
-		
-			
-	}
+	}*/
 
 	//------------------------------------------------------------------------//
 	// _RenderNormalDetail
@@ -153,30 +146,35 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 	 *
 	 * @method
 	 */
-	function _RenderNormalDetail()
+	function Render()
 	{	
 		// Render each of the account invoices
 		echo "<h2 class='Invoice'>Rate Groups</h2>\n";
 		//echo "<div class='NarrowColumn'>\n";
 		
-		$this->Temporary_Render();
+		//$this->Temporary_Render();
 		
-		Table()->RateGroupTable->SetHeader("Id", "Rate Group", "Description", "Fleet", "RecordType");
-		Table()->RateGroupTable->SetWidth("10%", "25%", "30%", "5%", "30%");
-		Table()->RateGroupTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
+		Table()->ServiceRateGroupTable->SetHeader("Rate Group", "Description", "Fleet", "RecordType", "Part Of RatePlan");
+		Table()->ServiceRateGroupTable->SetWidth("10%", "25%", "20%", "5%", "30%");
+		Table()->ServiceRateGroupTable->SetAlignment("Left", "Left", "Left", "Left", "Right");
 		
-		foreach (DBL()->RateGroup as $dboRateGroup)
+		foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
 		{
+			// match the RecordType Id with the Id in the ServiceRateGroup table
+			// and setup to display the actual RecordType not a number
+			DBO()->RecordType->Id = $dboServiceRateGroup->RecordType->Value;
+			DBO()->RecordType->Load();
 			// Add this row to Invoice table
-			Table()->RateGroupTable->AddRow(	$dboRateGroup->Id->AsValue(),
-												$dboRateGroup->Name->AsValue(), 
-												$dboRateGroup->Description->AsValue(), 
-												$dboRateGroup->Fleet->AsValue(),
-												$dboRateGroup->RecordTypeName->AsValue());
+			Table()->ServiceRateGroupTable->AddRow($dboServiceRateGroup->Name->AsValue(), 
+												$dboServiceRateGroup->Description->AsValue(), 
+												$dboServiceRateGroup->Fleet->AsValue(),
+												DBO()->RecordType->Name->AsValue(),
+												$dboServiceRateGroup->IsPartOfRatePlan->AsValue());
 			
 			//Retrieve the Rate information for this RateGroup
 			$strWhere = "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)";
-			DBL()->Rate->Where->Set($strWhere, Array('RateGroupId' => $dboRateGroup->Id->Value));
+			DBL()->Rate->Where->Set($strWhere, Array('RateGroupId' => $dboServiceRateGroup->Id->Value));
+			DBL()->Rate->SetLimit(11);
 			DBL()->Rate->Load();
 			if (DBL()->Rate->RecordCount() <= 10)
 			{
@@ -218,8 +216,7 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				$strDetailHtml .= "</table>\n";
 				$strDetailHtml .= "</div>\n";
 				
-				Table()->RateGroupTable->SetDetail($strDetailHtml);
-				
+				Table()->ServiceRateGroupTable->SetDetail($strDetailHtml);	
 			}
 			else
 			{
@@ -252,11 +249,11 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				$strBasicDetailHtml .= "</table>\n";
 				$strBasicDetailHtml .= "</div>\n";
 				
-				Table()->RateGroupTable->SetDetail($strBasicDetailHtml);
+				Table()->ServiceRateGroupTable->SetDetail($strBasicDetailHtml);
 			}
 		}
 		
-		Table()->RateGroupTable->Render();
+		Table()->ServiceRateGroupTable->Render();
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}

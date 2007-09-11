@@ -617,13 +617,12 @@ class AppTemplateService extends ApplicationTemplate
 	
 	function ViewPlan()
 	{
-		// Check user authorization here
-		AuthenticatedUser()->CheckAuth();
-
-		//DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
-		//if (DBO()->RatePlan->Id->Value !== FALSE)
-		//{
+		$pagePerms = PERMISSION_OPERATOR;
 		
+		// Should probably check user authorization here
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie($pagePerms);
+
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Service->Load())
 		{
@@ -640,21 +639,41 @@ class AppTemplateService extends ApplicationTemplate
 		}
 
 		// Retrieve all rate groups currently used by this service
-		// TODO! This currently doesn't work properly if any extra rate groups have been added to this service
-		// Rich is working on the proper query to use, to find this information
-		//DBL()->ServiceRateGroup->SetColumns(Array(""));
+		// Retrieve the list of RateGroups belonging to the RatePlan that the service is currently using
+		DBL()->RatePlanRateGroup->SetTable("RateGroup, RatePlanRateGroup");
+		$arrRatePlanRateGroupColumns = Array("RateGroupId"=>"RateGroup.Id", "RateGroupName"=>"RateGroup.Name", "RateGroupDescription"=>"RateGroup.Description", "RateGroupRecordType"=>"RateGroup.RecordType");
+		DBL()->RatePlanRateGroup->SetColumns($arrRatePlanRateGroupColumns);
+		$strWhere = "RateGroup.Id=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)";
+		DBL()->RatePlanRateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
+		DBL()->RatePlanRateGroup->OrderBy("RateGroup.Id");
+		DBL()->RatePlanRateGroup->Load();
 		
-		$strWhere = "RateGroup.Id in (SELECT RateGroup FROM ServiceRateGroup WHERE Service = <Service> AND StartDatetime = (SELECT MAX(StartDatetime)	FROM ServiceRatePlan WHERE Service = <Service>))";
-		DBL()->RateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
-		$arrColumns = Array();
-		$arrColumns['Id'] = "RateGroup.Id";
-		$arrColumns['Name'] = "RateGroup.Name";
-		$arrColumns['Description'] = "RateGroup.Description";
-		$arrColumns['Fleet'] = "RateGroup.Fleet";
-		$arrColumns['RecordTypeName'] = "RecordType.Name";
-		DBL()->RateGroup->SetColumns($arrColumns);
-		DBL()->RateGroup->SetTable("RateGroup INNER JOIN RecordType ON RateGroup.RecordType = RecordType.Id");
-		DBL()->RateGroup->Load();
+		// Retrieve the list of RateGroups currently used by the Service
+		DBL()->ServiceRateGroup->SetTable("RateGroup, ServiceRateGroup");
+		$arrServiceRateGroupColumns = Array("Id"=>"RateGroup.Id", "Name"=>"RateGroup.Name", "Description"=>"RateGroup.Description", "RecordType"=>"RateGroup.RecordType", "Fleet"=>"RateGroup.Fleet");
+		DBL()->ServiceRateGroup->SetColumns($arrServiceRateGroupColumns);
+		$strWhere = "NOW() BETWEEN StartDatetime AND EndDatetime AND RateGroup.Id = ServiceRateGroup.RateGroup AND ServiceRateGroup.Service=<Service>";
+		DBL()->ServiceRateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
+		DBL()->ServiceRateGroup->OrderBy("RateGroup.RecordType");
+		DBL()->ServiceRateGroup->Load();
+		
+		// Loop through each RateGroup belonging to the Service and find out which ones actually belong to the RatePlan and which ones are OverRiders
+		foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
+		{
+			// initialise the "IsPartOfRatePlan" flag to FALSE
+			$dboServiceRateGroup->IsPartOfRatePlan = FALSE;
+			
+			// Try and find the ServiceRateGroup in the list of RateGroups belonging to the RatePlan
+			foreach (DBL()->RatePlanRateGroup as $dboRatePlanRateGroup)
+			{
+				if ($dboServiceRateGroup->Id->Value == $dboRatePlanRateGroup->RateGroupId->Value)
+				{
+					// This RateGroup belongs to the RatePlan; flag it as such
+					$dboServiceRateGroup->IsPartOfRatePlan = TRUE;
+					break;
+				}
+			}
+		}
 		
 		// Load context menu items specific to the View Service page
 		// Context menu
