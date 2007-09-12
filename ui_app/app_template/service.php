@@ -693,10 +693,21 @@ class AppTemplateService extends ApplicationTemplate
 	{
 		// logic for loading the view groups on the drop down div
 		// last line should be a loadpage that loads the logic into a html page
+		// have to trap if the user has specified to search for nothing i.e. a blank search
+		// as this will attempt to retrieve every record and cripples the page
 		$strSearchString = DBO()->Rate->SearchString->Value;
-		$strWhere = "Name like '%$strSearchString%' AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup=<RateGroupId>)";
-		DBL()->Rate->Where->Set($strWhere, Array('RateGroupId' => DBO()->RateGroup->Id->Value));
-		DBL()->Rate->Load();
+		if (trim($strSearchString) != "")
+		{
+			$strWhere = "Name like '%$strSearchString%' AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup=<RateGroupId>)";
+			DBL()->Rate->Where->Set($strWhere, Array('RateGroupId' => DBO()->RateGroup->Id->Value));
+			DBL()->Rate->Load();
+		}
+		else
+		{
+			// An invalid search string was used (an empty string)
+			Ajax()->AddCommand("Alert", "ERROR: Please specify a name or partial name to search");
+			return TRUE;
+		}
 		
 		$this->LoadPage('rate_search_results');
 		return TRUE;		

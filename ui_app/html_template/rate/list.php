@@ -102,11 +102,10 @@ class HtmlTemplateRateList extends HtmlTemplate
 	{
 		echo "<div class='PopupLarge'>\n";
 		echo "<div  style='overflow:auto; height:300px'>\n";
-		echo "<h2 class='Plan'>Rate List</h2>\n";
-		
+	
 		Table()->RateTable->SetHeader("Name", "Days Available", "Start Time", "End Time");
 		Table()->RateTable->SetAlignment("Left", "Left", "Left", "Left");
-		Table()->RateTable->SetWidth("30%", "49%", "11%", "10%");
+		Table()->RateTable->SetWidth("49%", "30%", "11%", "10%");
 	
 		foreach (DBL()->Rate as $dboRate)
 		{
@@ -135,16 +134,15 @@ class HtmlTemplateRateList extends HtmlTemplate
 			$strBasicDetailHtml .= $dboRate->RecordType->AsValue();	
 			$strBasicDetailHtml .= "<br>\n";			
 			$strBasicDetailHtml .= $dboRate->ServiceType->AsValue();
-			$strBasicDetailHtml .= "<br>\n";
-			$strBasicDetailHtml .= $dboRate->Description->AsValue();			
-			
+			$strBasicDetailHtml .= "<br>\n";			
+			$strBasicDetailHtml .= $dboRate->StdFlagfall->AsValue();
+
 			$strBasicDetailHtml .= "		</td>\n";
 			$strBasicDetailHtml .= "	</tr>\n";			
 			$strBasicDetailHtml .= "</table>\n";
 			$strBasicDetailHtml .= "</div>\n";
 				
-			Table()->RateTable->SetDetail($strBasicDetailHtml);							
-										
+			Table()->RateTable->SetDetail($strBasicDetailHtml);												
 		}
 		
 		Table()->RateTable->Render();

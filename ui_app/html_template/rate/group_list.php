@@ -154,8 +154,8 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 		
 		//$this->Temporary_Render();
 		
-		Table()->ServiceRateGroupTable->SetHeader("Rate Group", "Description", "Fleet", "RecordType", "Part Of RatePlan");
-		Table()->ServiceRateGroupTable->SetWidth("10%", "25%", "20%", "5%", "30%");
+		Table()->ServiceRateGroupTable->SetHeader("Rate Group", "Description", "Fleet Rate", "Record Type", "Part Of RatePlan");
+		Table()->ServiceRateGroupTable->SetWidth("10%", "20%", "20%", "20%", "30%");
 		Table()->ServiceRateGroupTable->SetAlignment("Left", "Left", "Left", "Left", "Right");
 		
 		foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
@@ -181,7 +181,8 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				// Add the rate information to the DropDown div for the row
 				// Set the drop down detail
 				$strDetailHtml = "<div class='VixenTableDetail'>\n";
-				$strDetailHtml .= "<table width='100%' border=0 cellspacing=0 cellpadding=0>\n";
+				$strDetailHtml .= "<table width='100%' border='0' cellspacing='0' cellpadding='0'>\n";
+				$strDetailHtml .= "<tr bgcolor='#C0C0C0'><td><font size='2'>Rate Name</font></td><td><font size='2'>Days Available</font></td><td><font size='2'>Start Time</font></td><td><font size='2'>End Time</font></td></tr>\n";
 				
 				foreach (DBL()->Rate as $dboRate)
 				{
@@ -221,7 +222,7 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 			else
 			{
 				// there is more than 10 rate plans shown
-				$intRateGroupId = $dboRateGroup->Id->Value;
+				$intRateGroupId = $dboServiceRateGroup->Id->Value;
 				
 				$strOnClick = "javascript:
 							var objObject = {};
@@ -230,7 +231,7 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 							objObject.Objects.Rate = {};
 							objObject.Objects.Rate.SearchString = document.getElementById('SearchString_$intRateGroupId').value;
 							objObject.Objects.RateGroup.Id = $intRateGroupId;
-							Vixen.Popup.ShowAjaxPopup('RateGroupSearchId', 'large', 'Service', 'ViewRates', objObject);
+							Vixen.Popup.ShowAjaxPopup('RateGroupSearchId', 'large', null, 'Service', 'ViewRates', objObject);
 							";
 				
 				$strBasicDetailHtml =  "<div class='VixenTableDetail'>\n";
