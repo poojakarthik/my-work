@@ -104,13 +104,14 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 
 		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		
+		echo "<div class='WideForm'>\n";
+		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		if (DBO()->Service->Id->Value)
 		{
 			DBO()->Service->Id->RenderHidden();
 		}
 		
-		echo "<div class='WideForm'>\n";
 		
 		DBO()->Account->Id->RenderHidden();
 		
@@ -217,13 +218,13 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
 		
 		echo "</div>\n"; // WideForm
-		
+
 		// create the buttons
 		echo "<div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Adjustment");
 		echo "</div>\n";
-		
+
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
 		

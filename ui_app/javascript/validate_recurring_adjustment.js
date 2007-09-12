@@ -464,7 +464,10 @@ function VixenValidateRecurringAdjustmentClass()
 }
 
 // instanciate the objects
-Vixen.ValidateRecurringAdjustment = new VixenValidateRecurringAdjustmentClass;
+if (Vixen.ValidateRecurringAdjustment == undefined)
+{
+	Vixen.ValidateRecurringAdjustment = new VixenValidateRecurringAdjustmentClass;
+}
 
 /*
 window.addEventListener (

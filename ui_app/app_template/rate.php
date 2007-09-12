@@ -237,6 +237,11 @@ class AppTemplateRate extends ApplicationTemplate
 	 */
 	private function _ValidateAndSaveRate()
 	{
+		// BUG! BUG! BUG!
+		// Currently, if the Rate is a PassThrough rate, then some of the validation
+		// is not tested, such as the name of the rate, and description of the rate
+		// This is allowing for PassThrough rates to be saved without a name.
+		// BUG! BUG! BUG!
 		if (!DBO()->Rate->PassThrough->Value)
 		{
 			// test initial validation of fields
@@ -248,9 +253,12 @@ class AppTemplateRate extends ApplicationTemplate
 			}
 		}
 		
+		// BUG! BUG! BUG!
+		// This does not allow for saving (or commiting) a draft that already exists, if you have not changed the name
+		// BUG! BUG! BUG!
 		// Check if a rate with the same name exists
-		$strWhere = "NAME LIKE \"". DBO()->Rate->Name->Value. "\"";
-		DBL()->Rate->Where->SetString($strWhere);
+		$strWhere = "NAME LIKE <RateName>";
+		DBL()->Rate->Where->SetString($strWhere, Array("RateName"=>DBO()->Rate->Name->Value));
 		DBL()->Rate->Load();
 		if (DBL()->Rate->RecordCount() > 0)
 		{	

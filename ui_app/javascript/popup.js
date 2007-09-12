@@ -445,13 +445,14 @@ function VixenPopupClass()
 			// No action was specified so just close the popup
 			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox");}, false);
 		}
-
 		
 		// set focus to the Ok button
 		elmOkButton.focus();
 	}
-	
 }
 
-// Create an instance of the Vixen menu class
-Vixen.Popup = new VixenPopupClass();
+// Create an instance of the Vixen popup class if it has not already been created
+if (Vixen.Popup == undefined)
+{
+	Vixen.Popup = new VixenPopupClass();
+}

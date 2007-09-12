@@ -10,9 +10,9 @@
 /**
  * rate_add
  *
- * javascript required of the "Add Rate Group" popup webpage
+ * javascript required of the "Add Rate" popup webpage
  *
- * javascript required of the "Add Rate Group" popup webpage
+ * javascript required of the "Add Rate" popup webpage
  * 
  *
  * @file		rate_add.js
@@ -232,4 +232,7 @@ function VixenRateAddClass()
 
 
 // instantiate the object
-Vixen.RateAdd = new VixenRateAddClass;
+if (Vixen.RateAdd == undefined)
+{
+	Vixen.RateAdd = new VixenRateAddClass;
+}

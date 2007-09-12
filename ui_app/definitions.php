@@ -37,6 +37,10 @@ Define ('TEMPLATE_STYLE_DIR', "../ui_app/style_template/");
 Define ('MODULE_BASE_DIR', "../ui_app/");
 Define ('JAVASCRIPT_BASE_DIR', "../ui_app/");
 
+// Define which flavour of browsers are supported by this application
+Define ('SUPPORTED_BROWSER_IE',	FALSE);
+Define ('SUPPORTED_BROWSER_NS', TRUE);
+
 Define ('COLUMN_ONE'	, 1);
 Define ('COLUMN_TWO'	, 2);
 Define ('COLUMN_THREE'	, 3);

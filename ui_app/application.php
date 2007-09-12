@@ -214,6 +214,9 @@ class Application
 	 */
 	function Load($strTemplateName)
 	{
+		// Check that the user's browser is supported.  This will die if the user's browser is not supported
+		$this->CheckBrowser();
+	
 		// split template name
 		$arrTemplate 	= explode ('.', $strTemplateName);
 		$strClass 		= 'AppTemplate'.$arrTemplate[0];
@@ -308,6 +311,26 @@ class Application
 			$this->objAppTemplate->Page->SetMode($objSubmit->Mode, $objAjax);
 			$this->objAppTemplate->Page->Render();
 		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// CheckBrowser
+	//------------------------------------------------------------------------//
+	/**
+	 * CheckBrowser()
+	 *
+	 * Checks that the User's browser is supported, and dies if it is not
+	 *
+	 * Checks that the User's browser is supported, and dies if it is not
+	 * When it dies it should output an appropriate error message
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	private function CheckBrowser()
+	{
+		//TODO!
 	}
 	
 	//------------------------------------------------------------------------//

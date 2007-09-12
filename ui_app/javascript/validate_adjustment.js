@@ -138,27 +138,32 @@ function VixenValidateAdjustmentClass()
 		document.getElementById('ChargeType.ChargeType.Output').innerHTML = strChargeType;
 		document.getElementById('ChargeType.Description.Output').innerHTML = strDescription;
 		document.getElementById('ChargeType.Nature.Output').innerHTML = strNature;
-		document.getElementById('Charge.Amount').value = strDefaultAmount;
+		var elmChargeAmount = document.getElementById('Charge.Amount');
+		elmChargeAmount.value = strDefaultAmount;
+		elmChargeAmount.style.backgroundColor = "#FFFFFF";
 		document.getElementById('ChargeType.Id').value = intChargeTypeId;
 		
 		// If the charge type has a fixed amount then disable the amount textbox, else enable it
 		if (this._objChargeTypeData[intChargeTypeId].Fixed == 1)
 		{
 			// disable the charge amount textbox
-			document.getElementById('Charge.Amount').disabled = TRUE;
+			elmChargeAmount.disabled = TRUE;
 			document.getElementById('InvoiceComboBox').focus();
 		}
 		else
 		{
 			// enable the charge amount textbox
-			document.getElementById('Charge.Amount').disabled = FALSE;
-			document.getElementById('Charge.Amount').focus();
+			elmChargeAmount.disabled = FALSE;
+			elmChargeAmount.focus();
 		}
 	}
 }
 
-// instanciate the objects
-Vixen.ValidateAdjustment = new VixenValidateAdjustmentClass;
+// instantiate the object if it hasn't already been instantiated
+if (Vixen.ValidateAdjustment == undefined)
+{
+	Vixen.ValidateAdjustment = new VixenValidateAdjustmentClass;
+}
 
 /*
 window.addEventListener (

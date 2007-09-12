@@ -75,8 +75,7 @@ function VixenPaymentPopupClass()
 		if (strSelection.substr(0, 13) == "AccountGroup:")
 		{
 			// the payment is being applied to an account group
-			//document.getElementById("AccountGroup.Id").value = strSelection.substr(13,500);
-			document.getElementById("AccountToApplyTo.Id").value = strSelection.substr(13,500);
+			document.getElementById("AccountToApplyTo.Id").value = strSelection.substr(13);
 			document.getElementById("AccountToApplyTo.IsGroup").value = 1;
 		}
 		else
@@ -92,5 +91,8 @@ function VixenPaymentPopupClass()
 
 }
 
-// instanciate the object
-Vixen.PaymentPopup = new VixenPaymentPopupClass;
+// Instanciate the object, if it doesn't already exist
+if (Vixen.PaymentPopup == undefined)
+{
+	Vixen.PaymentPopup = new VixenPaymentPopupClass;
+}

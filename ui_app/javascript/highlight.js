@@ -253,4 +253,7 @@ function VixenHighlightClass()
 }
 
 // Create an instance of the Vixen highlight class
-Vixen.Highlight = new VixenHighlightClass();
+if (Vixen.Highlight == undefined)
+{
+	Vixen.Highlight = new VixenHighlightClass();
+}

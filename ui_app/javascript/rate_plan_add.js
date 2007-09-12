@@ -371,4 +371,7 @@ function VixenRatePlanAddClass()
 }
 
 // instanciate the objects
-Vixen.RatePlanAdd = new VixenRatePlanAddClass;
+if (Vixen.RatePlanAdd == undefined)
+{
+	Vixen.RatePlanAdd = new VixenRatePlanAddClass;
+}

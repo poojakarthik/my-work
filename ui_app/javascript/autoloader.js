@@ -35,11 +35,12 @@ function VixenIncludeJSOnce(strFilename, strElement)
 
 function VixenInArray(strNeedle, arrHaystack) 
 {
-    for (var i = 0; i < arrHaystack.length; i++) {
-        if (arrHaystack[i] == strNeedle) {
+    for (var i = 0; i < arrHaystack.length; i++)
+	{
+        if (arrHaystack[i] == strNeedle)
+		{
             return true;
         }
     }
     return false;
-
 }

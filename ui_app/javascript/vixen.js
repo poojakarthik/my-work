@@ -161,7 +161,10 @@ function VixenRootClass()
 }
 
 // Create an instance of the Vixen root class
-Vixen = new VixenRootClass();
+if (Vixen == undefined)
+{
+	var Vixen = new VixenRootClass();
+}
 
 //----------------------------------------------------------------------------//
 // Debug
@@ -177,7 +180,10 @@ Vixen = new VixenRootClass();
  *
  * @package	framework_ui
  */
-var dwin = null;
+if (dwin == undefined)
+{
+	var dwin = null;
+}
 function debug(mixMsg, bolFullShow)
 {
 	// Check for debug mode (set when page loads by php, check vixen_header) 

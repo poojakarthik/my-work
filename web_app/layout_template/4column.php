@@ -20,7 +20,7 @@
  * @file		4column.php
  * @language	PHP
  * @package		web_app
- * @author		Joel Dawkins
+ * @author		Joel 'MagnumSwordFortress' Dawkins
  * @version		7.07
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION

@@ -106,7 +106,8 @@
 		 * You would use this function within the Page Template.  
 		 */
 
-		background-color:	#F3F3F3;
+		/*background-color:	#F3F3F3;*/
+		background-color:	#EFEBE7;
 		
 		padding-top:		3px;
 		padding-left:		3px;
@@ -385,7 +386,8 @@
 		padding-bottom:      5px;
 		
 		border:              solid 1px #D1D1D1;
-		background-color:    #F3F3F3;
+		/*background-color:    #F3F3F3;*/
+		background-color:	#EFEBE7;
 		/*width:				 875px;*/
 	}
 	
@@ -398,7 +400,8 @@
 		padding-bottom:      5px;
 		
 		border:              solid 1px #D1D1D1;
-		background-color:    #F3F3F3;
+		/*background-color:    #F3F3F3;*/
+		background-color:	#EFEBE7;
 		/*width:				 425px;*/
 	}
 	
@@ -445,10 +448,9 @@
 		padding-bottom:      5px;
 		
 		border:              solid 1px #D1D1D1;
-		background-color:    #F3F3F3;
+		/*background-color:    #F3F3F3;*/
+		background-color:    #EFEBE7;
 		
-		/* The width of the form should be dictated by the width of the page body which in this case is 875px wide */
-		/*width:				 863px;*/ /*875 - (padding-left + pading-right) - (2 pixels of border) */
 	}
 	
 	.NarrowForm
@@ -460,10 +462,8 @@
 		padding-bottom:      5px;
 		
 		border:              solid 1px #D1D1D1;
-		background-color:    #F3F3F3;
-		/* The width of the form should be dictated by the width of the column that the form sits in */
-		/* I realise this is now exactly the same as the WideForm Class*/
-		/*width:				 425px;*/
+		/*background-color:    #F3F3F3;*/
+		background-color:    #EFEBE7;
 	}
 
 /**************************************************************************/

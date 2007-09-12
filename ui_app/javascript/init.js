@@ -1,3 +1,5 @@
+alert("init.js is being used");
+
 // Code from oblib which runs on page load
 // It could be incorporated into our Vixen.Init, not much of it is useful
 	window.addEventListener (

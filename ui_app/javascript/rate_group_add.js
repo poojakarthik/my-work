@@ -660,4 +660,7 @@ function VixenRateGroupAddClass()
 }
 
 // instanciate the objects
-Vixen.RateGroupAdd = new VixenRateGroupAddClass;
+if (Vixen.RateGroupAdd == undefined)
+{
+	Vixen.RateGroupAdd = new VixenRateGroupAddClass;
+}

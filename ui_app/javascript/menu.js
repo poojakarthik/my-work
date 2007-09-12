@@ -246,5 +246,8 @@ function VixenMenuClass(objMenu)
 	}  
 }
 
-// Create an instance of the Vixen menu class
-Vixen.Menu = new VixenMenuClass({});
+// Create an instance of the Vixen menu class, if it doesn't already exist
+if (Vixen.Menu == undefined)
+{
+	Vixen.Menu = new VixenMenuClass({});
+}

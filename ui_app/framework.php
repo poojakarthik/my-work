@@ -260,51 +260,104 @@ class Page
 	}
 	
 	//------------------------------------------------------------------------//
-	// RenderJS
+	// RenderHeaderJS
 	//------------------------------------------------------------------------//
 	/**
-	 * RenderJS()
+	 * RenderHeaderJS()
 	 *
 	 * Renders the JS part of the page
 	 *
 	 * Renders the JS part of the page
+	 * Any js files that are included in HtmlTemplate constructors, are loaded 
+	 * here, as well as the standard ones used by every page
 	 * 
+	 * @return	void
 	 * @method
 	 */
 	function RenderHeaderJS()
 	{
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/autoloader.js' ></script>\n";
-		echo "<script type='text/javascript'>VixenSetJavascriptBaseDir('". JAVASCRIPT_BASE_DIR ."')</script>\n";
+		// The Javascript autoloader is no longer used as it cannot guarantee 
+		// the files are interpreted before they are required by explicit calls 
+		// to the functions and objects they contain.  We can therefore no longer
+		// guarantee that a js file is loaded only once, but so long as any objects
+		// created in the js files, are only created if they don't already exist,
+		// then this shouldn't be a problem.
+		//echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/autoloader.js' ></script>\n";
+		//echo "<script type='text/javascript'>VixenSetJavascriptBaseDir('". JAVASCRIPT_BASE_DIR ."')</script>\n";
+		
+		/*
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('vixen')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('menu')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('popup')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('dhtml')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('ajax')</script>\n";
+		*/
+		
+		// The following line includes a FireBug console (accessed by pressing F12)
+		// for use within MSIE.  It's not very useful.
+		//echo "<script language='text/javascript' type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/firebug/firebug.js'></script>";
+		//echo "<script type='text/javascript'>VixenIncludeJSOnce('firebug/firebug')</script>\n";
 
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/vixen.js' ></script>\n";
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/menu.js' ></script>\n";
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/popup.js' ></script>\n";
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/dhtml.js' ></script>\n";
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/ajax.js' ></script>\n";
+
+		// I should really make sure that none of the above loaded javascript 
+		// files are included within the following list of files to include, but
+		// It shouldn't matter so long as the javascript files are made to not 
+		// instantiated any objects if they already exist.  While I can safeguard 
+		// against loading the same file twice here, I can't when a popup loads
+		// javascript using the Page->RenderJS() method
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
 			{
-				echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
+				echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' ></script>\n";
+				
+				// The autoloader method (we don't use this anymore)
+				//echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
 			}
 		}
 	}
 	
 	
+	//------------------------------------------------------------------------//
+	// RenderJS
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderJS()
+	 *
+	 * Includes any javascript files required of a popup page
+	 *
+	 * Includes any javascript files required of a popup page
+	 * Any js files that are included in HtmlTemplate constructors, are loaded 
+	 * here.  This is used when a popup is loaded, assuming it is called from
+	 * within the layout template of the popup (popup_layout)
+	 * 
+	 * @return	void
+	 * @method
+	 */
 	function RenderJS()
 	{
-		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
-		header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
-		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
-		header( 'Cache-Control: post-check=0, pre-check=0', false );
-		header( 'Pragma: no-cache' );	
+		// I don't know if these header calls are actually necessary as they will have already been run in Page->RenderHeader()
+		/*
+		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+		header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
+		header('Cache-Control: no-store, no-cache, must-revalidate');
+		header('Cache-Control: post-check=0, pre-check=0', FALSE);
+		header('Pragma: no-cache');
+		*/
+		
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
 			{
-				//TODO!!!!!!!!!!!!!
+				echo "<script type='text/javascript' src='". JAVASCRIPT_BASE_DIR ."javascript/$strValue.js'></script>\n";
+				
+				// The autoloader method; which never actually worked with popups
 				//echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
-				echo "<script type='text/javascript' src='".JAVASCRIPT_BASE_DIR."javascript/$strValue.js'></script>\n";
 			}
 		}
 	}
@@ -378,21 +431,27 @@ class Page
 			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
 
-		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
-		header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
-		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
-		header( 'Cache-Control: post-check=0, pre-check=0', false );
-		header( 'Pragma: no-cache' );
-		
+		// The following code is supposed to make the browser retrieve new js 
+		// files every time, although I don't think it works.  I think it was more so
+		// for testing purposes because the most recent js files weren't being used
+		// but, for general operation, you want the user's browser to cache the js,
+		// as it shouldn't be being changed that often
+		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+		header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
+		header('Cache-Control: no-store, no-cache, must-revalidate');
+		header('Cache-Control: post-check=0, pre-check=0', FALSE);
+		header('Pragma: no-cache');
 	
-		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
+		echo "<html><head onload='alert(\"head.onload has been triggered\");'><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
 		$this->RenderCSS();
+//echo "<script type='text/javascript'>window.onload=function(){alert(\"window.onload has been triggered\");};</script>";
 		echo "</head>\n";
-		echo "<body onload='Vixen.Init()'>\n";
-		
+		echo "<body onload='Vixen.Init();'>\n";
+// Now load the javascript files, which were declared in the header		
+//echo "<script type='text/javascript'>VixenLoadJSFiles()</script>\n";
 		// the following div holds any popup windows that are instantiated within the page
 		echo "<div id='PopupHolder'></div>\n";
 	}
@@ -437,7 +496,8 @@ class Page
 		$this->RenderCSS();
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init()'>\n";
-		
+// Now load the javascript files, which were declared in the header		
+echo "<script type='text/javascript'>VixenLoadJSFiles();</script>\n";		
 		// the following div holds any popup windows that are instantiated within the page
 		echo "<div id='PopupHolder'></div>\n";
 	}

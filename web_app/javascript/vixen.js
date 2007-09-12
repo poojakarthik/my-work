@@ -43,7 +43,7 @@ function VixenRootClass()
 		return FALSE;
 	}
 	
-	this.Init =function()
+	this.Init = function()
 	{
 		// An optional way to run code when the page loads
 		//  this code does not execute until bodyload
@@ -62,7 +62,7 @@ function VixenRootClass()
 		}
 	}
 	
-	this.AddCommand =function(strCommand)
+	this.AddCommand = function(strCommand)
 	{
 		var strParameters="";
 		for (var i=1; i<arguments.length; i++)
@@ -71,9 +71,9 @@ function VixenRootClass()
 		}
 		strParameters = strParameters.substr(0, strParameters.length - 2);
 		
-		this.initCommands.push (strCommand + "(" + strParameters + ")");
+		this.initCommands.push(strCommand + "(" + strParameters + ")");
 	}
-	
+
 	// --------------------------------------------------------------------------------------------------------------//
 	// BROWSER BEHAVIOUR
 	// --------------------------------------------------------------------------------------------------------------//
@@ -129,7 +129,7 @@ function VixenRootClass()
 			}
 		}
 	}
-	
+
 	/*this.FixFocus = function(div) 
 	{
 		var objInputs = div.getElementsByTagName("form");
@@ -156,7 +156,6 @@ function VixenRootClass()
 			}
   		}
 	}*/
-	
 }
 
 // Create an instance of the Vixen root class
@@ -210,7 +209,17 @@ function debug(mixMsg, bolFullShow)
 	//dwin.document.close();    // uncomment this if you want to see only last message , not all the previous messages
 }
 
+
 // prevent Enter key from being pressed
 document.onkeydown = function(event) {Vixen.EnterKiller(event)};
 document.onkeypress = function(event) {Vixen.EnterKiller(event)};
 document.onkeyup = function(event) {Vixen.EnterKiller(event)};
+
+if (Vixen != undefined)
+{
+	alert("The Vixen object has been loaded, apparently");
+}
+else
+{
+	alert("Apparently Vixen == undefined");
+}
