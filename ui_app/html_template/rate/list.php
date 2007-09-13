@@ -126,18 +126,101 @@ class HtmlTemplateRateList extends HtmlTemplate
 			$strBasicDetailHtml =  "<div class='VixenTableDetail'>\n";
 			$strBasicDetailHtml .= "<table width='100%' border='0' cellspacing='0' cellpadding='0'>\n";
 			$strBasicDetailHtml .= "	<tr>\n";
-			$strBasicDetailHtml .= "		<td>\n";
+			$strBasicDetailHtml .= "		<td><font size='2'>\n";
 			
-			//drop down div details still need to add flagfall min charge service type and record type
-			$strBasicDetailHtml .= $dboRate->Description->AsValue();
-			$strBasicDetailHtml .= "<br>\n";
-			$strBasicDetailHtml .= $dboRate->RecordType->AsValue();	
+			$strBasicDetailHtml .= "Description : ". $dboRate->Description->AsValue();
 			$strBasicDetailHtml .= "<br>\n";			
-			$strBasicDetailHtml .= $dboRate->ServiceType->AsValue();
+			$strBasicDetailHtml .= "Standard Units : ". $dboRate->StdUnits->AsValue();
 			$strBasicDetailHtml .= "<br>\n";			
-			$strBasicDetailHtml .= $dboRate->StdFlagfall->AsValue();
+			$strBasicDetailHtml .= "Standard Rate Per Unit : ". $dboRate->StdRatePerUnit->AsValue();
+			$strBasicDetailHtml .= "<br>\n";	
+			
+			if ($dboRate->StdMarkup->Value != 0)
+			{
+				$strBasicDetailHtml .= "Standard Markup : ". $dboRate->StdMarkup->AsValue();
+				$strBasicDetailHtml .= "<br>\n";
+			}
+		
+			if ($dboRate->StdPercentage->Value != 0)
+			{
+				$strBasicDetailHtml .= "Standard Percentage : ". $dboRate->StdPercentage->AsValue();
+				$strBasicDetailHtml .= "<br>\n";
+			}
+			
+			if ($dboRate->StdMinCharge->Value != 0)
+			{
 
-			$strBasicDetailHtml .= "		</td>\n";
+			}
+		
+			$strBasicDetailHtml .= "Standard Flagfall : ". $dboRate->StdFlagfall->AsValue();
+			$strBasicDetailHtml .= "<p>\n";	
+
+
+			if ($dboRate->CapUnits->Value != 0)
+			{
+				$strBasicDetailHtml .= "Cap Units : ". $dboRate->CapUnits->AsValue();
+				$strBasicDetailHtml .= "<br>\n";
+			}
+
+			if ($dboRate->CapCost->Value != 0)
+			{
+				$strBasicDetailHtml .= "Cap Cost : ". $dboRate->CapCost->AsValue();
+				$strBasicDetailHtml .= "<br>\n";
+			}
+			
+			//if (($dboRate->CapUnits->Value == 0) && ($dboRate->CapCost->Value == 0))
+			//{
+			//	$strBasicDetailHtml .="No Cap";
+			//	$strBasicDetailHtml .= "<br>\n";				
+			//}
+
+			if ($dboRate->CapLimit->Value != 0)
+			{
+				$strBasicDetailHtml .= "Cap Limit : ". $dboRate->CapLimit->AsValue();
+				$strBasicDetailHtml .= "<br>\n";			
+			}
+			if ($dboRate->CapUsage->Value != 0)
+			{
+				$strBasicDetailHtml .= "Cap Usage : ". $dboRate->CapUsage->AsValue();
+				$strBasicDetailHtml .= "<br>\n";			
+			}
+	
+			if (($dboRate->ExsRatePerUnit->Value != 0) || ($dboRate->ExsMarkup->Value != 0) || ($dboRate->ExsPercentage->Value != 0))
+			{
+				$strBasicDetailHtml .= "Excess Units : ". $dboRate->ExsUnits->AsValue();
+				$strBasicDetailHtml .= "<br>\n";			
+		
+				if ($dboRate->ExsRatePerUnit->Value != 0)
+				{
+					$strBasicDetailHtml .= "Excess Rate Per Unit : ". $dboRate->ExsRatePerUnit->AsValue();
+					$strBasicDetailHtml .= "<br>\n";			
+				}
+				if ($dboRate->ExsMarkup->Value != 0)
+				{		
+					$strBasicDetailHtml .= "Excess Markup : ". $dboRate->ExsMarkup->AsValue();
+					$strBasicDetailHtml .= "<br>\n";			
+				}
+				if ($dboRate->ExsPercentage->Value != 0)
+				{		
+					$strBasicDetailHtml .= "Excess Percentage : ". $dboRate->ExsPercentage->AsValue();
+					$strBasicDetailHtml .= "<br>\n";			
+				}
+
+				$strBasicDetailHtml .= "Excess Flagfall : ". $dboRate->ExsFlagfall->AsValue();
+				$strBasicDetailHtml .= "<p>\n";			
+			}
+			
+			$strBasicDetailHtml .= "Pro Rate : ". $dboRate->Prorate->AsValue();
+			$strBasicDetailHtml .= "<br>\n";			
+			$strBasicDetailHtml .= "Fleet Rate : ". $dboRate->Fleet->AsValue();
+			$strBasicDetailHtml .= "<br>\n";			
+			$strBasicDetailHtml .= "Uncapped : ". $dboRate->Uncapped->AsValue();
+			$strBasicDetailHtml .= "<br>\n";			
+			$strBasicDetailHtml .= "Archived : ". $dboRate->Archived->AsValue();
+			$strBasicDetailHtml .= "<br>\n";			
+			$strBasicDetailHtml .= "Pass Through : ". $dboRate->PassThrough->AsValue();
+
+			$strBasicDetailHtml .= "		</font></td>\n";
 			$strBasicDetailHtml .= "	</tr>\n";			
 			$strBasicDetailHtml .= "</table>\n";
 			$strBasicDetailHtml .= "</div>\n";
