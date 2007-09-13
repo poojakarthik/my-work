@@ -418,7 +418,7 @@
 		
 	 	// for each account that we are allowed to charge late payment fees
 		$intCount = 0;
-		$selLPAccounts = new StatementSelect('Account', 'Id, AccountGroup, DisableLatePayment', 'DisableLatePayment < 1 AND Archived != 1');
+		$selLPAccounts = new StatementSelect('Account', 'Id, AccountGroup, DisableLatePayment', 'DisableLatePayment < 1 AND Archived = 0');
 		$ubiAccount = new StatementUpdateById("Account", Array('DisableLatePayment' => NULL));
 		$selLPAccounts->Execute();
 		echo("Account : Overdue\n");
