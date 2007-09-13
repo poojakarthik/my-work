@@ -190,15 +190,30 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->Invoice->Load();
 		
+		// Retrieve the Payments
 		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId>) AND Account IS NULL) AND (Status conditions)"
-		$strWhere  = "((Account = ". DBO()->Account->Id->Value .")";
-		$strWhere .= " OR (AccountGroup = ". DBO()->Account->AccountGroup->Value .") AND (Account IS NULL))";
-		$strWhere .= " AND ((Status = ". PAYMENT_WAITING .")";
-		$strWhere .= " OR (Status = ". PAYMENT_PAYING .")";
-		$strWhere .= " OR (Status = ". PAYMENT_FINISHED .")";
-		$strWhere .= " OR (Status = ". PAYMENT_REVERSED ."))";
+		$strWhere  = "((Payment.Account = ". DBO()->Account->Id->Value .")";
+		$strWhere .= " OR (Payment.AccountGroup = ". DBO()->Account->AccountGroup->Value .") AND (Payment.Account IS NULL))";
+		$strWhere .= " AND ((Payment.Status = ". PAYMENT_WAITING .")";
+		$strWhere .= " OR (Payment.Status = ". PAYMENT_PAYING .")";
+		$strWhere .= " OR (Payment.Status = ". PAYMENT_FINISHED .")";
+		$strWhere .= " OR (Payment.Status = ". PAYMENT_REVERSED ."))";
 		DBL()->Payment->Where->SetString($strWhere);
-		DBL()->Payment->OrderBy("PaidOn DESC, Id DESC");
+		
+		$arrColumns = Array(	"Id"=>"Payment.Id",
+									"AccountGroup"=>"Payment.AccountGroup",
+									"Account"=>"Payment.Account",
+									"Status"=>"Payment.Status",
+									"Balance"=>"Payment.Balance",
+									"PaidOn"=>"Payment.PaidOn",
+									"Amount"=>"Payment.Amount",
+									"PaymentType"=>"Payment.PaymentType",
+									"EnteredBy"=>"Payment.EnteredBy",
+									"ImportedOn"=>"FileImport.ImportedOn"
+								);
+		DBL()->Payment->SetColumns($arrColumns);
+		DBL()->Payment->SetTable("Payment LEFT OUTER JOIN FileImport ON Payment.File = FileImport.Id");
+		DBL()->Payment->OrderBy("Payment.PaidOn DESC, Payment.Id DESC");
 		DBL()->Payment->Load();
 		
 		DBL()->InvoicePayment->Account = DBO()->Account->Id->Value;

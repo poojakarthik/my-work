@@ -36,6 +36,13 @@ Define ('TEMPLATE_BASE_DIR', "");
 Define ('TEMPLATE_STYLE_DIR', "../ui_app/style_template/");  //only used to load the html_elements.php file which is part of the app framework
 Define ('MODULE_BASE_DIR', "");
 
+// Define which flavour of browsers are supported by this application
+Define ('BROWSER_IE',	0x1);
+Define ('BROWSER_NS',	0x2);
+Define ('SUPPORTED_BROWSERS', BROWSER_NS | BROWSER_IE);
+Define ('SUPPORTED_BROWSERS_DESCRIPTION', "Firefox, MS Internet Explorer");
+Define ("APP_NAME", 	"TelcoBlue Customer System");
+
 Define ('JAVASCRIPT_BASE_DIR', "");  
 
 Define ('COLUMN_ONE'	, 1);

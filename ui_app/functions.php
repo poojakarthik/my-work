@@ -246,6 +246,27 @@ function Ajax()
 }
 
 //------------------------------------------------------------------------//
+// Browser
+//------------------------------------------------------------------------//
+/**
+ * Browser()
+ *
+ * Returns the singleton BrowserInfo object
+ *
+ * Returns the singleton BrowserInfo object
+ *
+ * @return	BrowserInfo object
+ *
+ * @function
+ * 
+ */
+function Browser()
+{
+	$objBrowserInfo = Singleton::Instance('BrowserInfo');
+	return $objBrowserInfo;
+}
+
+//------------------------------------------------------------------------//
 // PermCheck
 //------------------------------------------------------------------------//
 /**

@@ -215,7 +215,7 @@ class Application
 	function Load($strTemplateName)
 	{
 		// Check that the user's browser is supported.  This will die if the user's browser is not supported
-		$this->CheckBrowser();
+		$this->_CheckBrowser();
 	
 		// split template name
 		$arrTemplate 	= explode ('.', $strTemplateName);
@@ -314,10 +314,10 @@ class Application
 	}
 	
 	//------------------------------------------------------------------------//
-	// CheckBrowser
+	// _CheckBrowser
 	//------------------------------------------------------------------------//
 	/**
-	 * CheckBrowser()
+	 * _CheckBrowser()
 	 *
 	 * Checks that the User's browser is supported, and dies if it is not
 	 *
@@ -328,9 +328,14 @@ class Application
 	 * @method
 	 *
 	 */
-	private function CheckBrowser()
+	private function _CheckBrowser()
 	{
-		//TODO!
+		if (!Browser()->IsSupported)
+		{
+			echo APP_NAME . " does not support your current browser<br />\n";
+			echo "It only supports the following browsers: " . SUPPORTED_BROWSERS_DESCRIPTION . "\n";
+			die;
+		}
 	}
 	
 	//------------------------------------------------------------------------//

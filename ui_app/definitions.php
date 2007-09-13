@@ -38,8 +38,13 @@ Define ('MODULE_BASE_DIR', "../ui_app/");
 Define ('JAVASCRIPT_BASE_DIR', "../ui_app/");
 
 // Define which flavour of browsers are supported by this application
-Define ('SUPPORTED_BROWSER_IE',	FALSE);
-Define ('SUPPORTED_BROWSER_NS', TRUE);
+Define ('BROWSER_IE',	0x1);
+Define ('BROWSER_NS',	0x2);
+Define ('SUPPORTED_BROWSERS', BROWSER_NS);
+Define ('SUPPORTED_BROWSERS_DESCRIPTION', "Firefox");
+// If the app were to support both IE and NS then SUPPORTED_BROWSERS = BROWSER_IE | BROWSER_NS
+Define ("APP_NAME", 	"Vixen Internal System");
+
 
 Define ('COLUMN_ONE'	, 1);
 Define ('COLUMN_TWO'	, 2);

@@ -251,6 +251,12 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			// Payment Type
 			$strToolTipHtml = $dboPayment->PaymentType->AsCallBack("GetConstantDescription", Array("PaymentType"), RENDER_OUTPUT);
 			
+			// If there is a file import date associated with the payment, then include this too
+			if ($dboPayment->ImportedOn->Value != NULL)
+			{
+				$strToolTipHtml .= $dboPayment->ImportedOn->AsOutput();
+			}
+			
 			// EnteredBy
 			$strToolTipHtml .= $dboPayment->EnteredBy->AsCallBack("GetEmployeeName", NULL, RENDER_OUTPUT);
 			
