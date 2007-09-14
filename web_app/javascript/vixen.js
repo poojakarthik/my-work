@@ -1,6 +1,7 @@
 var FALSE = false;
 var TRUE = true;
 var DEBUG_MODE = FALSE;
+var VIXEN_APPLICATION_NAME = "TelcoBlue Customer System";
 
 //----------------------------------------------------------------------------//
 // VixenRootClass
@@ -43,7 +44,7 @@ function VixenRootClass()
 		return FALSE;
 	}
 	
-	this.Init = function()
+	this.Init =function()
 	{
 		// An optional way to run code when the page loads
 		//  this code does not execute until bodyload
@@ -62,7 +63,7 @@ function VixenRootClass()
 		}
 	}
 	
-	this.AddCommand = function(strCommand)
+	this.AddCommand =function(strCommand)
 	{
 		var strParameters="";
 		for (var i=1; i<arguments.length; i++)
@@ -71,9 +72,9 @@ function VixenRootClass()
 		}
 		strParameters = strParameters.substr(0, strParameters.length - 2);
 		
-		this.initCommands.push(strCommand + "(" + strParameters + ")");
+		this.initCommands.push (strCommand + "(" + strParameters + ")");
 	}
-
+	
 	// --------------------------------------------------------------------------------------------------------------//
 	// BROWSER BEHAVIOUR
 	// --------------------------------------------------------------------------------------------------------------//
@@ -100,11 +101,23 @@ function VixenRootClass()
 			var evt = window.event;
 		}
 		
-		if (evt.target.type == "textarea")
+		// get the target element
+		if (evt.target)
 		{
-			return TRUE;	
+			var elmTarget = evt.target;
+		}
+		else if (evt.srcElement)
+		{
+			var elmTarget = evt.srcElement;
+		}
+
+		// If the target element is a text area, then perform the default action
+		if (elmTarget.type == "textarea")
+		{
+			return TRUE;
 		}
 		
+		// Find out what key was pressed
 		if (evt.KeyCode)
 		{
 			var keycode = evt.KeyCode;
@@ -115,7 +128,7 @@ function VixenRootClass()
 		}
 
 		// prevent enter key being pressed, unless it is on a button or submit button
-		if ((keycode == 13) && (evt.target.type != "button") && (evt.target.type != "submit"))
+		if ((keycode == 13) && (elmTarget.type != "button") && (elmTarget.type != "submit"))
 		{
 			// stupid browsers
 			if (evt.srcElement && !evt.srcElement.aphplix_id)
@@ -128,6 +141,24 @@ function VixenRootClass()
 				evt.preventDefault();
 			}
 		}
+	}
+	
+	// This has been made to handle calls to window.location on account of the 
+	// fact that IE and Firefox do different things when dealing with relative
+	// urls.  This will only work for urls that use the "vixen.php/AppTemplateClass/Method/" syntax
+	this.SetLocation = function(strLocation)
+	{
+		if (window.location.href.indexOf("vixen.php") < 0)
+		{
+			// The current url does not contain vixen.php, just relocate the user to the desired location and hope for the best
+			window.location = strLocation;
+		}
+		
+		// split the current url on "vixen.php" can append strLocation to the first part
+		var arrHrefParts = window.location.href.split("vixen.php");
+		var strNewHref = arrHrefParts[0] + strLocation;
+		
+		window.location = strNewHref;
 	}
 
 	/*this.FixFocus = function(div) 
@@ -156,10 +187,14 @@ function VixenRootClass()
 			}
   		}
 	}*/
+	
 }
 
 // Create an instance of the Vixen root class
-Vixen = new VixenRootClass();
+if (Vixen == undefined)
+{
+	var Vixen = new VixenRootClass();
+}
 
 //----------------------------------------------------------------------------//
 // Debug
@@ -175,7 +210,10 @@ Vixen = new VixenRootClass();
  *
  * @package	framework_ui
  */
-var dwin = null;
+if (dwin == undefined)
+{
+	var dwin = null;
+}
 function debug(mixMsg, bolFullShow)
 {
 	// Check for debug mode (set when page loads by php, check vixen_header) 
@@ -209,17 +247,7 @@ function debug(mixMsg, bolFullShow)
 	//dwin.document.close();    // uncomment this if you want to see only last message , not all the previous messages
 }
 
-
 // prevent Enter key from being pressed
 document.onkeydown = function(event) {Vixen.EnterKiller(event)};
 document.onkeypress = function(event) {Vixen.EnterKiller(event)};
 document.onkeyup = function(event) {Vixen.EnterKiller(event)};
-
-if (Vixen != undefined)
-{
-	alert("The Vixen object has been loaded, apparently");
-}
-else
-{
-	alert("Apparently Vixen == undefined");
-}

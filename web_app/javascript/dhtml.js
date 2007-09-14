@@ -95,9 +95,10 @@ function VixenDhtmlClass()
 }
 
 // instanciate the dhtml object
-Vixen.Dhtml = new VixenDhtmlClass;
-
-
+if (Vixen.Dhtml == undefined)
+{
+	Vixen.Dhtml = new VixenDhtmlClass;
+}
 
 
 //----------------------------------------------------------------------------//
@@ -214,7 +215,12 @@ function browser_type()
 		}
 	}
 }
-Vixen.Browser = new browser_type();
+
+// Create the Browser object, if it has not already been created
+if (Vixen.Browser == undefined)
+{
+	Vixen.Browser = new browser_type();
+}
 
 // DRAGDROP
 // originaly based on code from brainjar.com
@@ -240,9 +246,11 @@ else
 }
 
 // Global object to hold drag information.
-
-var dragObj = new Object();
-dragObj.zIndex = 2;
+if (dragObj == undefined)
+{
+	var dragObj = new Object();
+	dragObj.zIndex = 2;
+}
 
 function dragStart(event, id) {
 	if (Vixen.dragging_now === TRUE)
@@ -278,7 +286,7 @@ function dragStart(event, id) {
     if (dragObj.elNode.nodeType == 3)
       dragObj.elNode = dragObj.elNode.parentNode;
   }
-  
+
   var popup_width = dragObj.elNode.style.width.substr(0, dragObj.elNode.style.width.length - 2) * 1;
   // HACK HACK HACK This is hardcoded to be the height of the top bar of the popup (18px currently) + a little bit
   var header_height = 25; 

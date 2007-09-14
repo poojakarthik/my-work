@@ -28,7 +28,7 @@ function VixenSlidingClass()
 		// How long to slide for (seconds)
 		this.duration = 1;
 		
-		this.height =function()
+		this.height = function()
 		{
 			if (!this.obj)
 			{
@@ -215,4 +215,7 @@ function VixenSlidingClass()
 }
 
 // Create an instance of the Vixen Sliding class
-Vixen.Slide = new VixenSlidingClass();
+if (Vixen.Slide == undefined)
+{
+	Vixen.Slide = new VixenSlidingClass();
+}

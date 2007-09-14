@@ -163,7 +163,12 @@ function VixenMenuClass(objMenu)
 			
 			// set the class
 			objNode.className 	= 'ContextMenuItem';
-			objNode.class 		= 'ContextMenuItem';
+			
+			//HACK! HACK! HACK!
+			// The following line has been commented out because it causes an error when run in MSIE.
+			// I have a feeling the .class prooperty is a reserved property in MSIE
+			//HACK! HACK! HACK!
+			//objNode.class 		= 'ContextMenuItem';
 		}
 	}
 	
@@ -246,5 +251,8 @@ function VixenMenuClass(objMenu)
 	}  
 }
 
-// Create an instance of the Vixen menu class
-Vixen.Menu = new VixenMenuClass({});
+// Create an instance of the Vixen menu class, if it doesn't already exist
+if (Vixen.Menu == undefined)
+{
+	Vixen.Menu = new VixenMenuClass({});
+}

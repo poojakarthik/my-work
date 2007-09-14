@@ -43,6 +43,9 @@ Define ('BROWSER_NS',	0x2);
 Define ('SUPPORTED_BROWSERS', BROWSER_NS);
 Define ('SUPPORTED_BROWSERS_DESCRIPTION', "Firefox");
 // If the app were to support both IE and NS then SUPPORTED_BROWSERS = BROWSER_IE | BROWSER_NS
+Define ("APPLICATION_VIXEN", 101);
+Define ("APPLICAITON_CLIENT", 102);
+Define ("APPLICATION", APPLICATION_VIXEN);
 Define ("APP_NAME", 	"Vixen Internal System");
 
 

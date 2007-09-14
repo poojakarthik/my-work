@@ -54,9 +54,6 @@ class HtmlTemplateAccountList extends HtmlTemplate
 		
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
-		//$this->LoadJavascript("tooltip");
-		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -90,14 +87,13 @@ class HtmlTemplateAccountList extends HtmlTemplate
 				//TODO! Make the mouse turn into a hand when it is hovering over rows of the table
 				
 				$strAccountHref = Href()->LoadAccountInConsole($dboAccount->Id->Value);
-				Table()->Accounts->SetOnClick("window.location='$strAccountHref'");
+				Table()->Accounts->SetOnClick("Vixen.SetLocation('$strAccountHref');");
 			}
 			
 			// Currently there are some javascript errors that occur if you don't turn on Row Highlighting
 			Table()->Accounts->RowHighlighting = TRUE;
 			
 			Table()->Accounts->Render();
-			
 		}
 		echo "</div>\n";
 	}

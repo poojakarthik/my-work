@@ -57,14 +57,10 @@ function VixenAjaxClass()
 		//objSend.TargetType = "Div";
 		// HACK HACK HACK *********************************************************************************************************************
 		
-		// add values from form to object
-		//TODO! Find each element and load it into objSend.Objects.Object.Property
-		
-		// instantiate the Objects structure
+		// Add values from form to object
+		// Instantiate the Objects structure
 		objSend.Objects = {};
-		
-
-		// retrieve the form which is being submitted (the form as an element)
+		// Retrieve the form which is being submitted (the form as an element)
 		objFormElement = document.getElementById(strFormId);
 
 		for (intKey in objFormElement.elements)
@@ -136,30 +132,29 @@ function VixenAjaxClass()
 					}
 					break;
 				case "select-multiple":
-					//if not null then calculate only whats in the list
-					//if null only calculate highlighted values in the list
+					// Check if the "valueIsList" attribute has been specified for the multi-select combobox
 					if (objFormElement.elements[intKey].getAttribute('valueIsList')==null)
 					{
-						//select only highlighted items in list
-						var intSelections = 0;
+						//mixValue will be an array storing each of the highlighted values
+						mixValue = new Array();
 						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
 						{
 							if (objFormElement.elements[intKey].options[intInnerKey].selected)
 							{
-								intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+								mixValue.push(objFormElement.elements[intKey].options[intInnerKey].value);
 							}
 						}
-						mixValue = intSelections;
 						break;
 					}
 					else
 					{
-						var intSelections = 0;
+						// mixValue will be an array storing the value of each item in the list
+						mixValue = new Array();
+						
 						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
 						{
-							intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+							mixValue.push(objFormElement.elements[intKey].options[intInnerKey].value);
 						}
-						mixValue = intSelections;
 						break;
 					}
 				case "checkbox":
@@ -189,11 +184,10 @@ function VixenAjaxClass()
 					break;
 			}
 			
-			
 			objSend.Objects[strObjectName][strPropertyName] = mixValue;
 		}			
 
-		/*		
+		/*
 		// Output each Object.Property stored in objSend.Objects
 		for (strObject in objSend.Objects)
 		{
@@ -211,6 +205,16 @@ function VixenAjaxClass()
 	// AJAX Send
 	this.Send = function(objObject)
 	{
+		/*
+		for (strObject in objObject.Objects)
+		{
+			for (strProperty in objObject.Objects[strObject])
+			{
+				alert("objObject.Objects."+ strObject +"."+ strProperty +" = "+ objObject.Objects[strObject][strProperty]);
+			}
+		}
+		*/
+		
 		// store our object before sending, along with a transaction ID
 		//this.objData = objObject;
 
@@ -333,7 +337,7 @@ function VixenAjaxClass()
 						}
 						else
 						{
-							Vixen.Popup.Create(objObject.strId, strReply, objObject.strSize, "centre", "modal");
+							Vixen.Popup.Create(objObject.strId, strReply, objObject.strSize, "centre", objObject.WindowType, objObject.strTitle);
 						}
 						break;
 					case "Div":
@@ -404,12 +408,12 @@ function VixenAjaxClass()
 					strContent = "<p><div align='center'>" + objInput[intKey].Data.Alert + 
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'><br></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', objInput[intKey].Data.Location);
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', null, objInput[intKey].Data.Location);
 					break;
 				case "ReplaceDivContents":
 					// The html code defined in objInput[intKey].Data will be placed in the declared Container Div
 					// The current contents of the Container Div will be destroyed
-				
+//alert("objInput[intKey].ContainerDivId = " + objInput[intKey].ContainerDivId);				
 					// retrieve the current container div element
 					var elmOldContainer = document.getElementById(objInput[intKey].ContainerDivId);
 					if (!elmOldContainer)
@@ -422,14 +426,12 @@ function VixenAjaxClass()
 					var elmNewContainer = document.createElement('div');
 					elmNewContainer.setAttribute('Id', objInput[intKey].ContainerDivId);
 					elmNewContainer.innerHTML = objInput[intKey].Data;
-					
+
 					// Retrieve the parent element of the current container div element
 					var elmParent = elmOldContainer.parentNode;
-					
-					// Remove the old content div and add the new one
-					elmParent.removeChild(elmOldContainer);
-					elmParent.appendChild(elmNewContainer);
-					
+
+					// Replace the element
+					elmParent.replaceChild(elmNewContainer, elmOldContainer);
 					break;
 				case "AppendHtmlToElement":
 					// The html code defined in objInput[intKey].Data will be Appended to the end of innerHtml of the parent element
@@ -463,6 +465,13 @@ function VixenAjaxClass()
 					}
 					
 					elmElement.focus();
+					break;
+				case "ExecuteJavascript":
+					// This probably isn't the safest way to do this. 
+					// This block of code may keep executing before the code in objInput[intKey].Data is finished executing, which may cause problems
+					//alert("About to execute some javascript");
+					eval(objInput[intKey].Data);
+					//alert("Finished executing the javascript");
 					break;
 				default:
 					alert("Command: (default case)\nError: Don't know how to process command type '" + objInput[intKey].Type + "'");

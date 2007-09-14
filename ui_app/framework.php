@@ -497,7 +497,7 @@ class Page
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init()'>\n";
 // Now load the javascript files, which were declared in the header		
-echo "<script type='text/javascript'>VixenLoadJSFiles();</script>\n";		
+//echo "<script type='text/javascript'>VixenLoadJSFiles();</script>\n";		
 		// the following div holds any popup windows that are instantiated within the page
 		echo "<div id='PopupHolder'></div>\n";
 	}

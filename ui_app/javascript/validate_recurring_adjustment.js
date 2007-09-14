@@ -104,15 +104,10 @@ function VixenValidateRecurringAdjustmentClass()
 		this._elmRecurringChargeTypeId	= document.getElementById("RecurringChargeType.Id");
 
 		//add event listeners
-		//BUG! The proper way to add this event listener is the following commented out line.  However this method doesn't currently work.
-		//so I am using the old method
-		//this._elmRecursionCharge.addEventListener('keyup', "Vixen.ValidateRecurringAdjustment.RecursionChargeChanged", FALSE);
-		//document.getElementById("RecurringCharge.RecursionCharge").onkeyup = Vixen.ValidateRecurringAdjustment.RecursionChargeChanged;
-		//this._elmRecursionCharge.onkeyup = Vixen.ValidateRecurringAdjustment.RecursionChargeChanged;
-		this._elmRecursionCharge.onkeyup	= this.RecursionChargeChanged;
-		this._elmRecursionCharge.onblur		= this.RecursionChargeLostFocus;
-		this._elmMinCharge.onkeyup			= this.MinChargeChanged;
-		this._elmMinCharge.onblur			= this.MinChargeLostFocus;
+		this._elmRecursionCharge.onkeyup	= function(){Vixen.ValidateRecurringAdjustment.RecursionChargeChanged()};
+		this._elmRecursionCharge.onblur		= function(){Vixen.ValidateRecurringAdjustment.RecursionChargeLostFocus()};
+		this._elmMinCharge.onkeyup			= function(){Vixen.ValidateRecurringAdjustment.MinChargeChanged()};
+		this._elmMinCharge.onblur			= function(){Vixen.ValidateRecurringAdjustment.MinChargeLostFocus()};
 		
 		this.DeclareChargeType(intCurrentChargeTypeId);
 
@@ -343,31 +338,26 @@ function VixenValidateRecurringAdjustmentClass()
 	}
 	
 	//Event handler for when the text within the Recursion charge text box, is changed
-	//HACK HACK HACK!!!
-	//I should be using the "this" pointer instead of using the Vixen.ValidateRecurringAdjustment object
-	//but the "this" pointer is pointing to the textbox on which the event was caught.
-	//Perhaps this function should not be a part of this class?
-	//HACK HACK HACK!!!
 	this.RecursionChargeChanged = function()
 	{
-		Vixen.ValidateRecurringAdjustment.GetTextFields();
+		this.GetTextFields();
 		
 		// if the event did not actually change the value (recursion charge) then don't do anything
-		if (Vixen.ValidateRecurringAdjustment._fltCurrentRecursionCharge == Vixen.ValidateRecurringAdjustment._fltRecursionCharge)
+		if (this._fltCurrentRecursionCharge == this._fltRecursionCharge)
 		{
 			return;
 		}
 		
-		if ((isNaN(Vixen.ValidateRecurringAdjustment._fltRecursionCharge)) || (Vixen.ValidateRecurringAdjustment._fltRecursionCharge <= 0))
+		if ((isNaN(this._fltRecursionCharge)) || (this._fltRecursionCharge <= 0))
 		{
-			Vixen.ValidateRecurringAdjustment._fltCurrentRecursionCharge = null;
+			this._fltCurrentRecursionCharge = null;
 			return;
 		}
 		
-		Vixen.ValidateRecurringAdjustment._intTimesToCharge = Math.ceil(Vixen.ValidateRecurringAdjustment._fltMinCharge / Vixen.ValidateRecurringAdjustment._fltRecursionCharge);
+		this._intTimesToCharge = Math.ceil(this._fltMinCharge / this._fltRecursionCharge);
 		
-		Vixen.ValidateRecurringAdjustment.SetTimesToChargeTextField();
-		Vixen.ValidateRecurringAdjustment.SetEndDate();
+		this.SetTimesToChargeTextField();
+		this.SetEndDate();
 		
 		//TODO!!!
 		// Make sure this field isn't updated if you tab off it and onto the Times to Charge field
@@ -378,43 +368,43 @@ function VixenValidateRecurringAdjustmentClass()
 	
 	this.MinChargeChanged = function(objEvent)
 	{
-		Vixen.ValidateRecurringAdjustment.GetTextFields();
+		this.GetTextFields();
 
 		// check if the Minimum charge has actually changed
-		if (Vixen.ValidateRecurringAdjustment._fltCurrentMinCharge == Vixen.ValidateRecurringAdjustment._fltMinCharge)
+		if (this._fltCurrentMinCharge == this._fltMinCharge)
 		{
 			// the value has not changed.
 			return;
 		}
 
-		if ((isNaN(Vixen.ValidateRecurringAdjustment._fltMinCharge)) || (Vixen.ValidateRecurringAdjustment._fltMinCharge <= 0))
+		if ((isNaN(this._fltMinCharge)) || (this._fltMinCharge <= 0))
 		{
-			Vixen.ValidateRecurringAdjustment._fltCurrentMinCharge = null;
+			this._fltCurrentMinCharge = null;
 			return;
 		}
 		
-		if (isNaN(Vixen.ValidateRecurringAdjustment._intTimesToCharge))
+		if (isNaN(this._intTimesToCharge))
 		{
 			// Times to charge is NaN so set it to 1
-			Vixen.ValidateRecurringAdjustment._intTimesToCharge = 1;
+			this._intTimesToCharge = 1;
 		}
 
 		// Calculate the new RecursionCharge based on the min charge and the times to charge
-		Vixen.ValidateRecurringAdjustment._fltRecursionCharge = Vixen.ValidateRecurringAdjustment._fltMinCharge / Vixen.ValidateRecurringAdjustment._intTimesToCharge;
+		this._fltRecursionCharge = this._fltMinCharge / this._intTimesToCharge;
 		
-		Vixen.ValidateRecurringAdjustment.SetTimesToChargeTextField();
-		Vixen.ValidateRecurringAdjustment.SetRecursionChargeTextField();
-		Vixen.ValidateRecurringAdjustment.SetEndDate();
+		this.SetTimesToChargeTextField();
+		this.SetRecursionChargeTextField();
+		this.SetEndDate();
 	}
 	
 	this.MinChargeLostFocus = function()
 	{
-		Vixen.ValidateRecurringAdjustment.SetMinChargeTextField();
+		this.SetMinChargeTextField();
 	}
 	
 	this.RecursionChargeLostFocus = function()
 	{
-		Vixen.ValidateRecurringAdjustment.SetRecursionChargeTextField();
+		this.SetRecursionChargeTextField();
 	}
 	
 

@@ -218,4 +218,7 @@ function VixenTooltipClass()
 }
 
 // Create an instance of the Vixen menu class
-Vixen.Tooltip = new VixenTooltipClass();
+if (Vixen.Tooltip == undefined)
+{
+	Vixen.Tooltip = new VixenTooltipClass();
+}

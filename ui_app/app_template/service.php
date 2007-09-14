@@ -776,6 +776,22 @@ class AppTemplateService extends ApplicationTemplate
 			}
 			
 			// Declare the new plan for the service
+			// Insert a record into the ServiceRatePlan table
+			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
+			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
+			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
+			DBO()->ServiceRatePlan->CreatedOn 		= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->StartDatetime 	= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
+			
+			if (!DBO()->ServiceRatePlan->Save())
+			{
+				// Could not save the record. Exit gracefully
+				TransactionRollback();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRatePlan table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				return TRUE;
+			}
+			
 			// Retrieve the rate groups belonging to the rate plan
 			DBL()->RatePlanRateGroup->RatePlan = DBO()->NewPlan->Id->Value;
 			DBL()->RatePlanRateGroup->Load();
@@ -803,22 +819,6 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRateGroup table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
 					return TRUE;
 				}
-			}
-			
-			// Insert a record into the ServiceRatePlan table
-			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
-			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
-			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRatePlan->CreatedOn 		= GetCurrentDateAndTimeForMySQL();
-			DBO()->ServiceRatePlan->StartDatetime 	= GetCurrentDateAndTimeForMySQL();
-			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
-			
-			if (!DBO()->ServiceRatePlan->Save())
-			{
-				// Could not save the record. Exit gracefully
-				TransactionRollback();
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRatePlan table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
-				return TRUE;
 			}
 			
 			//TODO! Do automatic provisioning here

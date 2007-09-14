@@ -15,7 +15,7 @@
  */
 function VixenHighlightClass()
 {
-	this.Unselect =function(strTableId)
+	this.Unselect = function(strTableId)
 	{
 		// Remove all highlighting/selection from a table
 		for (var i=0; i <= Vixen.table[strTableId].totalRows; i++)
@@ -36,7 +36,7 @@ function VixenHighlightClass()
 			
 		}
 	}
-	this.ToggleSelect =function (elmRow)
+	this.ToggleSelect = function(elmRow)
 	{
 		// get row number from elmRow
 		intPos = elmRow.id.lastIndexOf('_');
@@ -66,13 +66,13 @@ function VixenHighlightClass()
 		}
 	}
 	
-	this.LightsUp =function (elmRow)
+	this.LightsUp = function(elmRow)
 	{
 		// MouseOver on row, highlight the row
 		elmRow.className = "Hover";
 	}
 	
-	this.LightsDown =function (elmRow)
+	this.LightsDown = function(elmRow)
 	{
 		// MouseOut on row, remove highlight
 		
@@ -105,9 +105,31 @@ function VixenHighlightClass()
 		for (var i=0; i <=totalRows; i++)
 		{
 			var elmRow = document.getElementById(strTableId + '_' + i);
-			elmRow.addEventListener('mousedown', MouseDownHandler, TRUE);
-			elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
-			elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
+			/*  
+			switch (Vixen.Browser.mode)
+			{
+				case 'IE':
+					elmRow.attachEvent('onmousedown', MouseDownHandler);
+					elmRow.attachEvent('onmouseover', MouseOverHandler);
+					elmRow.attachEvent('onmouseout', MouseOutHandler);
+					break;
+				case 'NS':
+				default:
+					elmRow.addEventListener('mousedown', MouseDownHandler, TRUE);
+					elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
+					elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
+					break;
+			}
+			*/
+			
+			// The old method of event registration has been used because both 
+			// NS and IE support it, and IE does not properly reference the 'this' 
+			// pointer, when using obj.attachEvent(...)
+			// attachEvent() makes the 'this' pointer refer to the window instead 
+			// of the element.  We want it to refer to the element
+			elmRow.onmousedown	= MouseDownHandler;
+			elmRow.onmouseover	= MouseOverHandler;
+			elmRow.onmouseout	= MouseOutHandler;
 		}
 	}
 	
@@ -236,7 +258,6 @@ function VixenHighlightClass()
 						}
 					}
 				}
-				
 			}
 			
 			// if we are linked to other tables
@@ -253,4 +274,7 @@ function VixenHighlightClass()
 }
 
 // Create an instance of the Vixen highlight class
-Vixen.Highlight = new VixenHighlightClass();
+if (Vixen.Highlight == undefined)
+{
+	Vixen.Highlight = new VixenHighlightClass();
+}

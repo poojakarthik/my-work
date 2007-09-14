@@ -70,6 +70,8 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 	 */
 	function Render()
 	{
+		
+	
 		echo "<div class='WideContent'>\n";
 		echo "<h2 class='CDR'>Unbilled Calls</h2>\n";
 		
@@ -101,7 +103,7 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Call Type Filter:</div>\n";
 		echo "   <div class='DefaultOutput' style='padding-left:100px;'>\n";
-		echo "      <select id='RecordTypeCombo' style='width:300px' onchange='javascript:window.location = \"vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Filter.Id=\"+ this.value'>\n";
+		echo "      <select id='RecordTypeCombo' style='width:300px' onchange='window.location.search = \"Service.Id=$intServiceId&Filter.Id=\"+ this.value;'>\n";
 		echo "         <option selected='selected' value='0'>List all call types</option>\n";
 		foreach ($arrRecordTypes as $intRecordTypeId=>$arrRecordType)
 		{
