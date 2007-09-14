@@ -105,7 +105,7 @@ class HtmlTemplateRateList extends HtmlTemplate
 	
 		Table()->RateTable->SetHeader("Name", "Days Available", "Start Time", "End Time");
 		Table()->RateTable->SetAlignment("Left", "Left", "Left", "Left");
-		Table()->RateTable->SetWidth("49%", "30%", "11%", "10%");
+		Table()->RateTable->SetWidth("56%", "22%", "11%", "11%");
 	
 		foreach (DBL()->Rate as $dboRate)
 		{
@@ -230,7 +230,11 @@ class HtmlTemplateRateList extends HtmlTemplate
 		
 		Table()->RateTable->Render();
 		echo "</div>\n";
-		echo "<div class='SmallSeperator'></div>";
+
+		echo "<div class='right'>\n";
+			$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+		echo "</div>\n";		
+
 		echo "</div>\n";
 	}
 }

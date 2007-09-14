@@ -209,7 +209,26 @@ function VixenRateAddClass()
 		//AppTemplate and method are defined in more than one place
 		Vixen.Ajax.SendForm("VixenForm_AddRate", "Commit", "Rate", "Add", "", document.getElementById("AddRatePopupId").value);
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// Close
+	//------------------------------------------------------------------------//
+	/**
+	 * Close
+	 *
+	 * This is executed when the Cancel button is clicked and then the user confirms that they want to go through with it
+	 *  
+	 * This is executed when the Cancel button is clicked and then the user confirms that they want to go through with it
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.Closes = function()
+	{
+		// The PopupId, containing this form, has been rendered as a hidden
+		Vixen.Popup.Close(document.getElementById("RateGroupSearchId").value);
+	}
+
 	//------------------------------------------------------------------------//
 	// Close
 	//------------------------------------------------------------------------//

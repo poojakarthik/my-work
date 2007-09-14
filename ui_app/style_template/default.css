@@ -39,6 +39,30 @@
 		border:               0;
 	}
 	
+	a:link
+	{
+		color: 				#0000FF;
+		text-decoration:	none;		
+	}
+
+	a:active
+	{
+		color: 				#0000FF;
+		text-decoration:	none;		
+	}
+
+	a:visited
+	{
+		color: 				#0000FF;
+		text-decoration:	none;		
+	}
+	
+	a:hover
+	{
+		color:				#0000FF;
+		text-decoration:	none;
+	}
+
 	h1
 	{
 		color:                #006599;
@@ -535,7 +559,12 @@
 	{
 		background-color:    #FFFFAA;
 	}
-	
+/****************
+	tr.Summary
+	{
+		background-color:    #000000;	
+	}
+/******************/	
 	table.Summary
 	{
 		background-color:    #C0C0C0;		

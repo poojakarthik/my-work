@@ -177,6 +177,18 @@ class MenuItems
 	 */
 	function ChangePlan($intId)
 	{
+		//$this->strLabel	= "rates list";
+		
+		// Setup data to send
+		//$arrData['Objects']['RatePlan']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		//$strJsonCode = Json()->encode($arrData);
+		
+		//return "javascript:Vixen.Popup.ShowAjaxPopup(\"RatesListPopupId\", \"large\", null, \"Plan\", \"RateList\", $strJsonCode)";	
+		//============above code used for reference only==============================
+	
+		//return
 		return "vixen.php/Service/ChangePlan/?Service.Id=$intId";
 	}	
 
