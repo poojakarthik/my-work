@@ -161,14 +161,19 @@ function VixenMenuClass(objMenu)
 			elmNode.action = elmMenuItem.action[strKey];
 			elmNode.level = elmMenuItem.level + 1;
 			
-			// set the class
-			objNode.className 	= 'ContextMenuItem';
 			
 			//HACK! HACK! HACK!
 			// The following line has been commented out because it causes an error when run in MSIE.
-			// I have a feeling the .class prooperty is a reserved property in MSIE
+			// I have a feeling the .class property doesn't exist in MSIE.  It uses className
 			//HACK! HACK! HACK!
+			// set the class
+			//objNode.className 	= 'ContextMenuItem';
 			//objNode.class 		= 'ContextMenuItem';
+			
+			// set the class
+			objNode.setAttribute('className', 'ContextMenuItem');
+			objNode.setAttribute('class', 'ContextMenuItem');
+			
 		}
 	}
 	

@@ -114,12 +114,12 @@ function VixenPopupClass()
 		this.strContentCode = strContent;
 		
 		strContent = 	"<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
-						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(\"" + strId + "\")'>";
+						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(\"" + strId + "\")' />";
 		
 		// only display the debug button if we are operating in debug mode
 		if (DEBUG_MODE)
 		{
-			strContent += "<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()'>";
+			strContent += "<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()' />";
 		}
 		
 		strContent += 	"<div id='VixenPopupTopBarTitle__" + strId + "'>" + strTitle + "</div></div>\n" +

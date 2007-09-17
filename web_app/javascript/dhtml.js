@@ -271,22 +271,22 @@ function dragStart(event, id) {
   
   // If an element id was given, find it. Otherwise use the element being
   // clicked on.
-  
   if (id)
+  {
     dragObj.elNode = document.getElementById(id);
-	
-  else {
+  }
+  else
+  {
     if (browser.isIE)
       dragObj.elNode = window.event.srcElement;
     if (browser.isNS)
       dragObj.elNode = event.target;
 
     // If this is a text node, use its parent element.
-
     if (dragObj.elNode.nodeType == 3)
       dragObj.elNode = dragObj.elNode.parentNode;
   }
-
+  
   var popup_width = dragObj.elNode.style.width.substr(0, dragObj.elNode.style.width.length - 2) * 1;
   // HACK HACK HACK This is hardcoded to be the height of the top bar of the popup (18px currently) + a little bit
   var header_height = 25; 

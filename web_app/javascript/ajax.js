@@ -405,8 +405,8 @@ function VixenAjaxClass()
 					window.location.reload();
 					break;
 				case "AlertAndRelocate":
-					strContent = "<p><div align='center'>" + objInput[intKey].Data.Alert + 
-									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'><br></div>\n" +
+					strContent = "<div align='center'><p>" + objInput[intKey].Data.Alert + "</p>" +
+									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'></p></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', null, objInput[intKey].Data.Location);
 					break;
