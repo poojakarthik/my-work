@@ -108,6 +108,6 @@ $framework = $GLOBALS['fwkFramework'];
 //require_once($strApplicationDir."definitions.php");
 //require_once($strApplicationDir."config.php");
 //require_once($strApplicationDir."database_define.php");
-//require_once($strApplicationDir."application.php");
+require_once($strApplicationDir."application.php");
  
  ?>

@@ -8,6 +8,9 @@ $arrSkipTables = Array();
 // require application loader
 require_once('application_loader.php');
 
-// require hot copy script
-require_once('mysql_hot_copy.php');
+// load backup application
+$appBackup = new ApplicationBackup();
+
+// run MySQL backup
+$appBackup->MysqlHotCopy($arrSkipTables);
 ?>

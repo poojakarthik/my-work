@@ -14,7 +14,10 @@ $arrSkipTables['InvoiceOutputTemp']		= TRUE;
 // require application loader
 require_once('application_loader.php');
 
+// load backup application
+$appBackup = new ApplicationBackup();
 
-// require hot copy script
-require_once('mysql_hot_copy.php');
+// run MySQL backup
+$appBackup->MysqlHotCopy($arrSkipTables);
+
 ?>
