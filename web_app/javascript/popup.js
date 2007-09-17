@@ -334,6 +334,10 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 
 		function OpenHandler(event)
 		{
+			//BUG! BUG! BUG!
+			//TODO! Draging does not currently work in MSIE.  It is crashing in the dhtml.js function, dragStart(event, id)
+			//I have detailed the problem within that function.  This is where I (Joel) am up to in getting the js to work in MSIE
+			//BUG! BUG! BUG!
 			Vixen.Dhtml.Drag(event, 'VixenPopup__' + strId);	
 		}
 		

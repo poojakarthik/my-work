@@ -163,10 +163,24 @@ class AppTemplateConsole extends ApplicationTemplate
 	 */
 	function Logout()
 	{
-		AuthenticatedUser()->LogoutClient();
-		
-		// Redirect the user to the main page of the website
-		Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "Logout successful", "Location" => Href()->MainPage()));
+		if ($this->_objAjax != NULL)
+		{
+			// This method was executed via an ajax call.  Use a popup to notify the user, that they have been logged out
+			AuthenticatedUser()->LogoutClient();
+			
+			//TODO! Check if they were successfully logged out, or if their session is not the most recent.
+			// I have done this for the case, where this method is executed from a url.  It can be found in HtmlTemplateLoggedOut
+			
+			// Redirect the user to the main page of the website
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "Logout successful", "Location" => Href()->MainPage()));
+		}
+		else
+		{
+			// This method was executed via a url.  Use a page to notify the user, that they have been logged out
+			AuthenticatedUser()->LogoutClient();
+			
+			$this->LoadPage('logged_out');
+		}
 		
 		return TRUE;
 	}

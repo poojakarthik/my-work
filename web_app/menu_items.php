@@ -158,7 +158,11 @@ class MenuItems
 		
 		$this->strLabel	= "Logout";
 		
-		return "javascript:Vixen.Ajax.CallAppTemplate(\"Console\", \"Logout\")";
+		// Popup style logout
+		//return "javascript:Vixen.Ajax.CallAppTemplate(\"Console\", \"Logout\")";
+		
+		// Page style logout
+		return "vixen.php/Console/Logout/";
 	}
 
 

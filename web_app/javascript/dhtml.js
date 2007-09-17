@@ -273,6 +273,11 @@ function dragStart(event, id) {
   // clicked on.
   if (id)
   {
+    //BUG! BUG! BUG!
+	// For some reason the following line of code is not retrieving the popup div when executed within MSIE.
+	// It works fine in FireFox.  It might have something to do with not being able to retrieve the element
+	// before it is properly added to the DOM.
+    //BUG! BUG! BUG!
     dragObj.elNode = document.getElementById(id);
   }
   else

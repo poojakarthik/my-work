@@ -742,7 +742,7 @@ class Application
 			$selAuthenticated = new StatementSelect(
 					"Contact",
 					"*", 
-					"Id = <ClientId> AND SessionId = <ClientSessionId> AND SessionExpire > NOW() AND Archived = 0",
+					"Id = <ClientId> AND SessionId = <ClientSessionId> AND Archived = 0",
 					null,
 					1
 				);
