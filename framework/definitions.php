@@ -164,8 +164,17 @@ define("FATAL_ERROR_LEVEL"			, 10000);
 define("NON_FATAL_TEST_EXCEPTION"	, 1337);
 define("FATAL_TEST_EXCEPTION"		, 80085);
 
-// CDR status
+// Account Status
+$GLOBALS['*arrConstant']['Account'][0]['Constant']		= 'ACCOUNT_ACTIVE';
+$GLOBALS['*arrConstant']['Account'][0]['Description']	= 'Active';
+$GLOBALS['*arrConstant']['Account'][2]['Constant']		= 'ACCOUNT_CLOSED';
+$GLOBALS['*arrConstant']['Account'][2]['Description']	= 'Closed';
+$GLOBALS['*arrConstant']['Account'][3]['Constant']		= 'ACCOUNT_DEBT_COLLECTION';
+$GLOBALS['*arrConstant']['Account'][3]['Description']	= 'Debt Collection';
+$GLOBALS['*arrConstant']['Account'][1]['Constant']		= 'ACCOUNT_ARCHIVED';
+$GLOBALS['*arrConstant']['Account'][1]['Description']	= 'Archived';
 
+// CDR status
 // CDR Handling (Range is 100-199)
 $GLOBALS['*arrConstant']['CDR'][100]['Constant']	= 'CDR_READY';
 $GLOBALS['*arrConstant']['CDR'][100]['Description'] = 'Imported';
@@ -474,22 +483,15 @@ $GLOBALS['*arrConstant']	['RequestDirection']	[1]	['Description']	= 'Incoming';
 
 
 
-// Serivce Line Status
-/*define("LINE_ACTIVE"					, 400);
-define("LINE_DEACTIVATED"				, 401);
-define("LINE_PENDING"					, 402);
-define("LINE_SOFT_BARRED"				, 403);
-define("LINE_HARD_BARRED"				, 404);*/
-$GLOBALS['*arrConstant']	['LineStatus']	[400]	['Constant']	= 'LINE_ACTIVE';
-$GLOBALS['*arrConstant']	['LineStatus']	[400]	['Description']	= 'Active';
-$GLOBALS['*arrConstant']	['LineStatus']	[401]	['Constant']	= 'LINE_DEACTIVATED';
-$GLOBALS['*arrConstant']	['LineStatus']	[401]	['Description']	= 'Deactivated';
-$GLOBALS['*arrConstant']	['LineStatus']	[402]	['Constant']	= 'LINE_PENDING';
-$GLOBALS['*arrConstant']	['LineStatus']	[402]	['Description']	= 'Pending';
-$GLOBALS['*arrConstant']	['LineStatus']	[403]	['Constant']	= 'LINE_SOFT_BARRED';
-$GLOBALS['*arrConstant']	['LineStatus']	[403]	['Description']	= 'Soft-barred';
-$GLOBALS['*arrConstant']	['LineStatus']	[404]	['Constant']	= 'LINE_HARD_BARRED';
-$GLOBALS['*arrConstant']	['LineStatus']	[404]	['Description']	= 'Hard-barred';
+// Service Line Status
+$GLOBALS['*arrConstant']	['Service']	[400]	['Constant']	= 'SERVICE_ACTIVE';
+$GLOBALS['*arrConstant']	['Service']	[400]	['Description']	= 'Active';
+/*$GLOBALS['*arrConstant']	['Service']	[401]	['Constant']	= 'SERVICE_BARRED';
+$GLOBALS['*arrConstant']	['Service']	[401]	['Description']	= 'Barred';*/
+$GLOBALS['*arrConstant']	['Service']	[402]	['Constant']	= 'SERVICE_DISCONNECTED';
+$GLOBALS['*arrConstant']	['Service']	[402]	['Description']	= 'Disconnected';
+$GLOBALS['*arrConstant']	['Service']	[403]	['Constant']	= 'SERVICE_ARCHIVED';
+$GLOBALS['*arrConstant']	['Service']	[403]	['Description']	= 'Archived';
 
 // Provisioning Request Types
 /*define("REQUEST_FULL_SERVICE"			, 900);
