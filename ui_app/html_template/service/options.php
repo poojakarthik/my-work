@@ -68,7 +68,7 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 	function Render()
 	{
 		echo "<h2 class='options'>Service Options</h2>\n";
-		echo "<div class='NarrowColumn'>\n";
+		echo "<div class='NarrowForm DefaultOutput'>\n";
 	
 		$strEditServiceLink = Href()->EditService(DBO()->Service->Id->Value);
 		echo "<li><a href='$strEditServiceLink'>Edit Service Details</a></li>\n";
@@ -88,6 +88,7 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 	
 		$strAddRecurringAdjustmentLink = Href()->AddRecurringAdjustment(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
 		echo "<li><a href='$strAddRecurringAdjustmentLink'>Add Recurring Adjustment</a></li>\n";
+		
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}

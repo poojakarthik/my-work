@@ -86,6 +86,19 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		//$this->LoadJavascript("debug");  // Tools for debugging, only use when js-ing
 	}
 	
+	function Render()
+	{
+		switch ($this->_intContext)
+		{
+			case NOTE_CLASS_SERVICE_NOTES:
+				$this->NoteRender();
+				break;
+			default:
+				$this->RenderForm();
+				break;
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -98,13 +111,14 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	 *
 	 * @method
 	 */
-	function Render()
+	function RenderForm()
 	{
 		$this->FormStart("NoteTypeForm", "Note", "View");
 		DBO()->Note->NoteGroupId->RenderHidden();
 		DBO()->Note->NoteClass->RenderHidden();
 		
 		$strAll = 'checked';
+
 		switch (DBO()->Note->NoteType->Value)
 		{
 			case "All":
@@ -123,14 +137,23 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		echo "<input type='radio' name='Note.NoteType' value='User' $strUser onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
 		//echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
 		$this->FormEnd();
+		$this->NoteRender();
 		
-		echo "<div id='NoteListContainer' style='overflow:auto; height:500px; border-left: 1px solid #D1D1D1; border-top: 1px solid #D1D1D1; border-bottom: 1px solid #D1D1D1'>\n";
+	}
+	
+	function NoteRender()
+	{
+		//echo "<div id='NoteListContainer' style='overflow:auto; height:500px; border-left: 1px solid #D1D1D1; border-top: 1px solid #D1D1D1; border-bottom: 1px solid #D1D1D1'>\n";
+		
+		echo "<h2>Recent Notes</h2><div class='DefaultRegularOutput'>The 5 most recent notes are listed below:</div>";
 		
 		if (DBL()->Note->RecordCount() == 0)
 		{
 			echo "There are no viewable Notes.";
 		}
-				
+		
+		// not limitting to 5 records!!!
+
 		// Display each note
 		foreach (DBL()->Note as $dboNote)
 		{
@@ -174,7 +197,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			// Include a separator
 			echo "<div class='SmallSeperator'></div>\n";
 		}
-		echo "</div>\n";  //NoteListContainer
+		//echo "</div>\n";  //NoteListContainer
 	}
 }
 

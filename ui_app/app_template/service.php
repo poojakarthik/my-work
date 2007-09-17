@@ -108,6 +108,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Context menu
 		ContextMenu()->Admin_Console();
+		
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
@@ -116,6 +117,13 @@ class AppTemplateService extends ApplicationTemplate
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('service_view');
+
+		//load the notes associated with this service and account!
+		//DBO()->Service->Account->Value
+		DBL()->Note->Account = DBO()->Service->Account->Value;
+		DBL()->Note->SetLimit(5);
+		DBL()->Note->Load();
+		DBL()->NoteType->Load();
 
 		return TRUE;
 	}
@@ -751,13 +759,18 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 			
+			// problematic!!!!!!!!!!!!
+			$strNowTimeStamp = new MySQLFunction("NOW()");
+			// this line and GetCurrentDateAndTimeForMySQL() appear to be returning the same timestamp format
+			
 			// Change the service's plan
 			// Start the database transaction
 			TransactionStart();
 
 			// All current ServiceRateGroup and ServiceRatePlan records must have EndDatetime set to NOW()
-			$arrUpdate = Array('EndDatetime' => new MySQLFunction("NOW()"));
-			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime > NOW()", $arrUpdate);
+			// replace now() with variable that has now() declared once only
+			$arrUpdate = Array('EndDatetime' => $strEndDatetime);
+			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime > $strEndDatetime", $arrUpdate);
 			if (!$updServiceRateGroup->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value)))
 			{
 				// Could not update records in ServiceRateGroup table. Exit gracefully
@@ -766,7 +779,7 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime > NOW()", $arrUpdate);
+			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime > $strEndDatetime", $arrUpdate);
 			if (!$updServiceRatePlan->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value)))
 			{
 				// Could not update records in ServiceRatePlan table. Exit gracefully
@@ -780,8 +793,8 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
 			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
 			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRatePlan->CreatedOn 		= GetCurrentDateAndTimeForMySQL();
-			DBO()->ServiceRatePlan->StartDatetime 	= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->CreatedOn 		= $strNowTimeStamp;//GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->StartDatetime 	= $strNowTimeStamp;//GetCurrentDateAndTimeForMySQL();
 			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
 			
 			if (!DBO()->ServiceRatePlan->Save())
@@ -800,8 +813,8 @@ class AppTemplateService extends ApplicationTemplate
 			// Define constant properties for these records
 			DBO()->ServiceRateGroup->Service 		= DBO()->Service->Id->Value;
 			DBO()->ServiceRateGroup->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRateGroup->CreatedOn 		= GetCurrentDateAndTimeForMySQL();
-			DBO()->ServiceRateGroup->StartDatetime 	= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRateGroup->CreatedOn 		= $strNowTimeStamp;//GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRateGroup->StartDatetime 	= $strNowTimeStamp;//GetCurrentDateAndTimeForMySQL();
 			DBO()->ServiceRateGroup->EndDatetime 	= END_OF_TIME;
 			
 			

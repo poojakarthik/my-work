@@ -110,7 +110,6 @@ class AppTemplateNote extends ApplicationTemplate
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('view_notes');
-
 		return TRUE;
 	}
 

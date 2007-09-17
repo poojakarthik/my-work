@@ -125,10 +125,14 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		echo "   <input type='button' class='InputSubmit' value='View Plan Details' onClick=\"$strViewPlanButtonJavascript\"></input>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
-		echo "<div class='SmallSeperator'></div>\n";
+		echo "<div class='SmallSeperator'></div>\n";		
 		echo "</div>\n";
-		
-		echo "<div class='Right'>\n";
+
+ 		echo "<div class='Right'>\n";
+
+		echo "<div class='SmallSeperator'></div>\n";
+
+		$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Change Plan");
 		echo "</div>\n";
 		

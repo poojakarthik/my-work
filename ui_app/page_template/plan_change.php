@@ -33,7 +33,7 @@
 // set the page title
 $this->Page->SetName('Change Plan');
 
-$strLayout = '1Column';
+$strLayout = 'popup_layout';
 $this->Page->SetLayout($strLayout);
 $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_MINIMUM_DETAIL);
 $this->Page->AddObject('ServicePlanChange', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
