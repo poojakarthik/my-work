@@ -94,9 +94,9 @@
 		
 		$this->_selGetNormalisedPayments	= new StatementSelect("Payment", "*", "Status = ".PAYMENT_WAITING." OR Status = ".PAYMENT_PAYING);
 		
-		$this->_selAccountInvoices			= new StatementSelect("Invoice", "*", "Account = <Account> AND Balance > 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")", "DueOn ASC");
+		$this->_selAccountInvoices			= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Invoice.*", "Account.Archived != ".ACCOUNT_ARCHIVED." AND Invoice.Account = <Account> AND Invoice.Balance > 0 AND (Invoice.Status = ".INVOICE_COMMITTED." OR Invoice.Status = ".INVOICE_DISPUTED.")", "Invoice.DueOn ASC");
 		
-		$this->_selAccountGroupInvoices		= new StatementSelect("Invoice", "*", "AccountGroup = <AccountGroup> AND Balance > 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")", "DueOn ASC");
+		$this->_selAccountGroupInvoices		= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Invoice.*", "Account.Archived != ".ACCOUNT_ARCHIVED." AND Invoice.AccountGroup = <AccountGroup> AND Invoice.Balance > 0 AND (Invoice.Status = ".INVOICE_COMMITTED." OR Invoice.Status = ".INVOICE_DISPUTED.")", "Invoice.DueOn ASC");
 		
 		$this->_selCreditInvoices			= new StatementSelect("Invoice", "*", "Account = <Account> AND Balance < 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")");
 		
