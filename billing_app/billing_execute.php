@@ -19,7 +19,7 @@ $arrConfig = LoadApplication();
 $appBilling = new ApplicationBilling($arrConfig);
 
 // execute bill
-$bolResponse = $appBilling->Execute();
+//$bolResponse = $appBilling->Execute();
 
 // Email Invoice Total Data
 CliEcho(" + Calculating Profit Data...");
@@ -61,12 +61,13 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 	$strFilename	= "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/")."Plan_Summary_with_Breakdown_($strServiceType).xls";
 	
 	$arrReports = Array();
-	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
-	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
-	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
+	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
+	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
+	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
 	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('RecurringAdjustmentsSummary'));
-	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
-	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
+	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
+	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
+	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('CustomerSummary'));
 	
 	// Email Management Reports	
 	$strContent		= "Please find attached the Management Reports for ".date("Y-m-d H:i:s")."\n\nYellow Billing Services";
@@ -99,10 +100,10 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 				'mark@yellowbilling.com.au';
 	//$strEmail	= 'rich@voiptelsystems.com.au, turdminator@hotmail.com';
 
-	if (!$emlMail->send($strEmail, $strHeaders, $strBody))
+	/*if (!$emlMail->send($strEmail, $strHeaders, $strBody))
 	{
 		CliEcho("Email Failed!");
-	}
+	}*/
 }
 else
 {

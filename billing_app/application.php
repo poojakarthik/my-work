@@ -106,7 +106,7 @@
 																	"RatePlan",
 																	$this->arrServiceColumns,
 																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
-																	"Service.CreatedOn <= NOW() AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
+																	"Service.LineStatus IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.") AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
 																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC LIMIT 1)",
 																	"RatePlan.Id");
 		$this->strTestAccounts =		" AND " .
@@ -121,7 +121,7 @@
 																"Id = 1000158098 OR " .
 																"Id = 1000155964 OR " .
 																"Id = 1000160897";	//  limited to 11 specified accounts
-		$this->selAccounts					= new StatementSelect("Account", "*", "Archived = 0"); 
+		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.")"); 
 										
 		//$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		
@@ -1876,7 +1876,7 @@
 		//$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 3", NULL, 100);
 		
 		// full run
-		$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total != 0 OR AccountBalance != 0");
+		$selInvoices = new StatementSelect("InvoiceTemp", "*", "1");
 		
 		if ($selInvoices->Execute() === FALSE)
 		{
@@ -2120,12 +2120,10 @@
 	 * Sends invoices in emails from the specified directory
 	 *
 	 * @return		string		$strPath			Full path for directory to send invoices from
-	 * @return		string		$strBillingPeriod	optional Billing Period this applies for.  Defaults
-	 * 												to last month.
 	 *
 	 * @method
 	 */
- 	function EmailInvoicePDFs($strPath, $strBillingPeriod = NULL)
+ 	function EmailInvoicePDFs($strPath)
  	{
  		$this->_rptBillingReport->AddMessage("[ EMAILING INVOICE PDFS ]\n");
  		
@@ -2136,11 +2134,11 @@
  			return FALSE;
  		}
  		
- 		// Set default for $strBillingPeriod
- 		if (!$strBillingPeriod)
- 		{
- 			$strBillingPeriod = date("F Y", strtotime("-1 month", time()));
- 		}
+ 		// Get $strBillingPeriod & InvoiceRun
+ 		$strBillingPeriod 	= date("F Y", strtotime("-1 month", time()));
+ 		$selInvoiceRun		= new StatementSelect("InvoiceRun", "*", "1", "BillingDate DESC", 1);
+ 		$selInvoiceRun->Execute();
+ 		$arrInvoiceRun		= $selInvoiceRun->Fetch();
  		
  		// add trailing slash if not already there
  		if (substr($strPath, 0, -1) != '/')
@@ -2153,8 +2151,9 @@
  		
 		
  		$selAccountEmail	= new StatementSelect(	"Account JOIN Contact ON Account.Id = Contact.Account",
- 													"CustomerGroup, Email, FirstName",
+ 													"Account.Id AS Account, CustomerGroup, Email, FirstName",
  													"Account = <Account> AND Email != '' AND BillingMethod = ".BILLING_METHOD_EMAIL);
+		$updDeliveryMethod = new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
 		
  		// Loop through each PDF
  		$intPassed	= 0;
@@ -2180,7 +2179,7 @@
  			
  			// for each email-able contact
  			foreach ($arrDetails as $arrDetail)
- 			{				
+ 			{
 	 			// Set email details based on Customer Group
 	 			switch ($arrDetail['CustomerGroup'])
 	 			{
@@ -2239,10 +2238,25 @@
 		 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
 		 			{
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
-						//Die();
 		 				continue;
 		 			}
 					
+					// Update DeliveryMethod
+					$arrUpdateData	= Array();
+					$arrWhere		= Array();
+					$arrUpdateData['DeliveryMethod']	= BILLING_METHOD_EMAIL_SENT;
+					$arrWhere['InvoiceRun']	= $arrInvoiceRun['InvoiceRun'];
+					$arrWhere['Account']	= $arrDetail['Account'];
+					if ($updDeliveryMethod->Execute($arrUpdateData, $arrWhere))
+					{
+						Debug("Success!");
+					}
+					else
+					{
+						Debug("Failure!");
+					}
+					Debug($arrWhere);
+					//die;
 	 				
 	 				$this->_rptBillingReport->AddMessage("[   OK   ]");
 	 				$intPassed++;
@@ -2681,7 +2695,7 @@
 			return FALSE;
 		}
 		
-		/*// get temp invoice run id
+		// get temp invoice run id
 		$selFindTempInvoice = new StatementSelect("InvoiceTemp", "DISTINCT InvoiceRun", 1);
 		if (!$selFindTempInvoice->Execute())
 		{
@@ -2725,7 +2739,7 @@
 		
 		// Generate the invoice
 		$arrInfo = $this->GenerateInvoices($arrAccountDetails, FALSE, TRUE);
-		*/
+		
 		
 		//----------------------------------------------------------------//
 		// REGENERATE OUTPUT DATA

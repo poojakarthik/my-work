@@ -321,19 +321,19 @@ class BillingModuleReports
 	 * @method
 	 */
 	protected function _ReportServiceSummary()
-	{													
-		$selServicesClosed		= new StatementSelect(	"Service",
+	{
+		$selServicesArchived	= new StatementSelect(	"Service",
 														"Id",
 														"Id NOT IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>)");
 														
-		$selServicesOpen		= new StatementSelect(	"ServiceTotal",
+		$selServicesClosed		= new StatementSelect(	"ServiceTotal",
 														"Id",
 														"InvoiceRun = <InvoiceRun>");
 		
 		$selServicesActive		= new StatementSelect(	"ServiceTotal",
 														"Id",
 														"(ServiceTotal.Debit > 0 OR ServiceTotal.UncappedCharge > 0 OR ServiceTotal.CappedCharge > 0) AND ServiceTotal.Debit IS NOT NULL AND ServiceTotal.InvoiceRun = <InvoiceRun>");
-														
+
 		$selServicesByType		= new StatementSelect("Service LEFT JOIN ServiceTotal ON Service.Id = ServiceTotal.Service", "Service.ServiceType AS ServiceType, COUNT(Service.Id) AS ServiceCount", "ServiceTotal.InvoiceRun = <InvoiceRun>", "Service.ServiceType", NULL, "Service.ServiceType");
 		
 		$selServicesLost	= new StatementSelect("ServiceTotal ST", "ST.Id", "ST.InvoiceRun = <LastInvoiceRun> AND ST.Service NOT IN (SELECT ST2.Service FROM ServiceTotal ST2 WHERE ST2.InvoiceRun = <InvoiceRun>)");
@@ -383,7 +383,7 @@ class BillingModuleReports
 		$wksWorksheet->writeString(7, 3, "Last Month"					, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(7, 4, "% Change"						, $arrFormat['TitleItalic']);
 		
-		$wksWorksheet->writeString(8, 0, "Currently Active Services"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(8, 0, "Currently Tolling Services"	, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(9, 0, "Currently Open Services"		, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(10, 0, "Currently Archived Services"	, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(11, 0, "Services Lost"				, $arrFormat['TextBold']);
@@ -500,13 +500,13 @@ class BillingModuleReports
 												"ServiceTotal.RatePlan = <RatePlan> AND ServiceTotal.InvoiceRun = <InvoiceRun>");
 		$selServicesLost	= new StatementSelect("ServiceTotal ST", "ST.Id", "ST.InvoiceRun = <LastInvoiceRun> AND ST.Service NOT IN (SELECT ST2.Service FROM ServiceTotal ST2 WHERE ST2.InvoiceRun = <InvoiceRun> AND ST2.RatePlan = <RatePlan>) AND ST.RatePlan = <RatePlan>");
 		$selServicesGained	= new StatementSelect("ServiceTotal ST", "ST.Id", "ST.InvoiceRun = <InvoiceRun> AND ST.Service NOT IN (SELECT ST2.Service FROM ServiceTotal ST2 WHERE ST2.InvoiceRun = <LastInvoiceRun> AND ST2.RatePlan = <RatePlan>) AND ST.RatePlan = <RatePlan>");
-		/*$selCallTypes		= new StatementSelect(	"(RatePlanRateGroup RPRG JOIN RateGroup RG ON RPRG.RateGroup = RG.Id) JOIN RecordType ON RG.RecordType = RecordType.Id",
+		$selCallTypes		= new StatementSelect(	"(RatePlanRateGroup RPRG JOIN RateGroup RG ON RPRG.RateGroup = RG.Id) JOIN RecordType ON RG.RecordType = RecordType.Id",
 													"RPRG.RatePlan AS RatePlan, RecordType.DisplayType AS DisplayType, RG.Id AS RateGroup, RecordType.Id AS RecordType, RecordType.Description AS Description",
 													"RPRG.RatePlan = <RatePlan>",
-													"RecordType.Description");*/
-		$selCallTypes		= new StatementSelect(	"RecordType",
-													"*",
-													"ServiceType = <ServiceType>");
+													"RecordType.Description");
+		/*$selCallTypes		= new StatementSelect(	"RecordType",
+													"*, Id AS RecordType",
+													"ServiceType = <ServiceType>");*/
 		$arrCols = Array();
 		$arrCols['MeanCallDuration']	= "AVG(CDR.Units)";
 		$arrCols['MeanCallCost']		= "AVG(CDR.Cost)";
@@ -733,8 +733,8 @@ class BillingModuleReports
 					switch ($arrCallType['DisplayType'])
 					{
 						case RECORD_DISPLAY_CALL:
-							$wksWorksheet->writeNumber($intRow, 1, $arrCallSummary['MeanCallDuration'] / 3600	, $arrFormat['Time']);
-							$wksWorksheet->writeNumber($intRow, 5, $arrCallSummary['TotalCallDuration']	/ 3600	, $arrFormat['Time']);
+							$wksWorksheet->writeNumber($intRow, 1, $arrCallSummary['MeanCallDuration'] / 86400	, $arrFormat['Time']);
+							$wksWorksheet->writeNumber($intRow, 5, $arrCallSummary['TotalCallDuration']	/ 86400	, $arrFormat['Time']);
 							break;
 						
 						case RECORD_DISPLAY_DATA:

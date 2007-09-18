@@ -21,7 +21,7 @@ $appBilling = new ApplicationBilling($arrConfig);
 // ACCOUNTS
 $arrAccounts = Array();
 // Accounts with Special Charges double-applied
-$arrAccount[]	= 1000154803;
+/*$arrAccount[]	= 1000154803;
 $arrAccount[]	= 1000154838;
 $arrAccount[]	= 1000154873;
 $arrAccount[]	= 1000154909;
@@ -877,7 +877,9 @@ $arrAccount[]	= 1000164737;
 $arrAccount[]	= 1000164749;
 $arrAccount[]	= 1000164763;
 $arrAccount[]	= 1000164807;
-$arrAccount[]	= 1000164826;
+$arrAccount[]	= 1000164826;*/
+
+$arrAccount[]	= 1000162273;
 
 // START TRANSACTION
 /*if (!TransactionStart())

@@ -21,23 +21,28 @@ while ($strLine = trim(fgets($ptrFile)))
 {	
 	// Split line
 	$arrLine = explode(',', $strLine);
-	if (count($arrLine) < 3)
+	if (count($arrLine) >= 3)
 	{
 		$intAccount	= (int)trim($arrLine[0], '"');
 
 		// Check for header/footer
 		if ($intAccount < 1000000000)
 		{
+			CliEcho("Line '$strLine' has an invalid Account #!");
 			continue;
 		}
 		
 		CliEcho("Writing off #$intAccount... ", FALSE);
-		//$fltTotal = WriteOffAccount($intAccount);
+		$fltTotal = WriteOffAccount($intAccount);
 		CliEcho("\${$fltTotal}");
 		
 		// Add to Grand Total
 		$fltGrandTotal += $fltTotal;
 		$intAccounts++;
+	}
+	else
+	{
+		CliEcho("Line '$strLine' has less than 3 elements!");
 	}
 }
 fclose($ptrFile);
