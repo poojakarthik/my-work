@@ -1068,6 +1068,8 @@ $GLOBALS['*arrConstant']	['PaymentType']	[7]	['Constant']	= 'PAYMENT_TYPE_CASH';
 $GLOBALS['*arrConstant']	['PaymentType']	[7]	['Description']	= 'Cash';
 $GLOBALS['*arrConstant']	['PaymentType']	[8]	['Constant']	= 'PAYMENT_TYPE_AUSTRAL';
 $GLOBALS['*arrConstant']	['PaymentType']	[8]	['Description']	= 'Austral';
+$GLOBALS['*arrConstant']	['PaymentType']	[9]	['Constant']	= 'PAYMENT_TYPE_CONTRA';
+$GLOBALS['*arrConstant']	['PaymentType']	[9]	['Description']	= 'Contra';
 
 // Charge Types/Codes
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
