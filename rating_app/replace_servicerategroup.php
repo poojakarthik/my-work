@@ -25,9 +25,43 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+/*// Blue15CTM ,VV, VVF, Voicetalk Capped, T3CC, T3LS S&E
+$arrPlans = Array();
+$arrPlans[]	= 100000001;
+$arrPlans[]	= 22;
+$arrPlans[]	= 23;
+$arrPlans[]	= 25;
+$arrPlans[]	= 28;
+$arrPlans[]	= 30;
+
+$intNewRateGroup	= 167;
+$intRecordType		= 21;
+$intFleet			= 0;
+
+$arrOldRateGroups = Array();
+$arrOldRateGroups[]	= 20;
+$arrOldRateGroups[]	= 8;
+$arrOldRateGroups[]	= 15;
+$arrOldRateGroups[]	= 19;
+$arrOldRateGroups[]	= 16;*/
 
 
-$intPlan			= 23;
+/*// Virtual VOIP Fleet LL -> LL
+$arrPlans = Array();
+$arrPlans[]	= 100000001;
+
+$intNewRateGroup	= 168;
+$intRecordType		= 19;
+$intFleet			= 1;
+
+$arrOldRateGroups = Array();
+$arrOldRateGroups[]	= 6;*/
+
+
+/*// Virtual VOIP LL -> Mobile
+$arrPlans = Array();
+$arrPlans[]	= 23;
+
 $intNewRateGroup	= 166;
 $intRecordType		= 20;
 $intFleet			= 0;
@@ -35,9 +69,11 @@ $intFleet			= 0;
 $arrOldRateGroups = Array();
 $arrOldRateGroups[]	= 126;
 $arrOldRateGroups[]	= 127;
-$arrOldRateGroups[]	= 166;
+$arrOldRateGroups[]	= 166;*/
 
 require_once('../framework/require.php');
+
+$strPlans = implode(', ', $arrPlans);
 
 $arrServiceRateGroup = Array();
 $arrServiceRateGroup['Service']			= NULL;
@@ -47,7 +83,7 @@ $arrServiceRateGroup['CreatedOn']		= new MySQLFunction("NOW()");
 $arrServiceRateGroup['StartDatetime']	= NULL;
 $arrServiceRateGroup['EndDatetime']		= NULL;
 $insServiceRateGroup	= new StatementInsert("ServiceRateGroup", $arrServiceRateGroup);
-$selServices			= new StatementSelect("Service", "Id AS Service, FNN", "<RatePlan> = (SELECT RatePlan FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC LIMIT 1)");
+$selServices			= new StatementSelect("Service", "Id AS Service, FNN", "(SELECT RatePlan FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC LIMIT 1) IN ($strPlans)");
 $selServiceRateGroup	= new StatementSelect("ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup", "ServiceRateGroup.StartDatetime AS StartDatetime, ServiceRateGroup.EndDatetime, RateGroup.*", "Fleet = <Fleet> AND RecordType = <RecordType> AND Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
 
 Debug("[ REPLACE SERVICERATEGROUP ]\n");
