@@ -320,7 +320,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				$emlMail =& Mail::factory('mail');
 				
 				// Send the email
-				if (!$emlMail->send('flame@voiptelsystems.com.au', $strHeaders, $strBody))
+				if (!$emlMail->send('rich@voiptelsystems.com.au', $strHeaders, $strBody))
 				{
 					$this->_rptCollectionReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 					continue;
@@ -542,15 +542,8 @@ class ApplicationCollection extends ApplicationBaseClass
 		// Is this file type always unique?
 		if ($this->_arrCurrentModule['AlwaysUnique'])
 		{
-			// Always unique, just check Hash to be sure
-			if ($this->_selCheckHash()->Execute($arrWhere))
-			{
-				return $strHash;
-			}
-			else
-			{
-				return FALSE;
-			}
+			// Always unique
+			return $strHash;
 		}
 		else
 		{
