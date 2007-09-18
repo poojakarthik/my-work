@@ -98,7 +98,7 @@ $arrDataReport['Summary']		= "Shows how much each Account owes, grouped by how o
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
-$arrDataReport['SQLWhere']		= "(<ShowArchived> = 1) OR (<ShowArchived> = 0 AND Account.Archived = 0)";
+$arrDataReport['SQLWhere']		= "(<ShowArchived> = 1) OR (<ShowArchived> = 0 AND Account.Archived != 1)";
 $arrDataReport['SQLGroupBy']	= "Invoice.Account \nHAVING SUM(Balance) > 0";
 
 // Documentation Reqs
@@ -216,7 +216,7 @@ $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "Account";
 $arrDataReport['SQLWhere']		= "Account.BillingMethod = ".BILLING_METHOD_EMAIL." AND " .
-								"Account.Archived = 0 AND " .
+								"Account.Archived != 1 AND " .
 								"0 = (SELECT COUNT(Contact.Id) " .
 									"FROM Contact " .
 									"WHERE Contact.Email LIKE '%@%.%' AND " .
@@ -504,7 +504,7 @@ $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "DirectDebit JOIN Account ON (Account.DirectDebit = DirectDebit.Id) JOIN Invoice ON (Account.Id = Invoice.Account)";
 //$arrDataReport['SQLWhere']		= "DirectDebit.Archived = 0 AND Invoice.Balance > 0 AND Invoice.AccountBalance >= 0 AND Invoice.DueOn BETWEEN '$strStartDate' AND SUBDATE(ADDDATE('$strStartDate', INTERVAL 1 MONTH), INTERVAL 1 DAY)";
-$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND DirectDebit.Archived = 0 AND Account.BillingType = 1 AND Invoice.DueOn <= CURDATE()";
+$arrDataReport['SQLWhere']		= "Account.Archived IN (0, 2) AND DirectDebit.Archived = 0 AND Account.BillingType = 1 AND Invoice.DueOn <= CURDATE()";
 $arrDataReport['SQLGroupBy']	= "Invoice.Account\n HAVING SUM(Invoice.Balance) > 5";
 
 // Documentation Reqs
@@ -542,7 +542,7 @@ $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "CreditCard JOIN Account ON (Account.CreditCard = CreditCard.Id) JOIN Invoice ON (Account.Id = Invoice.Account)";
 //$arrDataReport['SQLWhere']		= "CreditCard.Archived = 0 AND Invoice.Balance > 0 AND Invoice.AccountBalance >= 0 AND Invoice.DueOn BETWEEN '$strStartDate' AND SUBDATE(ADDDATE('$strStartDate', INTERVAL 1 MONTH), INTERVAL 1 DAY)";
-$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND CreditCard.Archived = 0 AND Account.BillingType = 2 AND Invoice.DueOn <= CURDATE()";
+$arrDataReport['SQLWhere']		= "Account.Archived IN (0, 2) AND CreditCard.Archived = 0 AND Account.BillingType = 2 AND Invoice.DueOn <= CURDATE()";
 $arrDataReport['SQLGroupBy']	= "Invoice.Account\n HAVING SUM(Invoice.Balance) > 5";
 
 // Documentation Reqs
