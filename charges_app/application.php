@@ -67,8 +67,9 @@
 		// Get Charges Select Statement
 		$arrWhere				= "StartedOn <= NOW() " .
 								  "AND RecurringFreq > 0 " .
-								  "AND Archived = 0 " .
-								  "AND " .
+								  "AND RecurringCharge.Archived = 0 " .
+								  "AND Account.Archived = ".ACCOUNT_ACTIVE." " .
+								  "AND Service.ClosedOn IS NULL AND " .
 								  "(" .
 								  "		Continuable = 1 " .
 								  "		OR " .
@@ -108,7 +109,7 @@
 								  "			)" .
 								  "		)" .
 								  ")";
-		$this->_selGetCharges	= new StatementSelect("RecurringCharge", "*", $arrWhere, NULL, "1000");
+		$this->_selGetCharges	= new StatementSelect("(RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account) LEFT JOIN Service ON Service.Id = RecurringCharge.Service", "*", $arrWhere, NULL, "1000");
 		
 		$arrColumns = Array();
 		$arrColumns['Id']				= NULL;
@@ -403,6 +404,9 @@
 	 */
 	 function AddLatePaymentFees($strRef=NULL)
 	 {
+	 	// No longer used
+	 	return FALSE;
+	 	
 	 	if (!$strRef)
 		{
 			$strRef = date('my');
@@ -496,7 +500,7 @@
 		$selINB15Services->Execute();
 		echo("Service : CDR Count\n\n");
 		while ($arrService = $selINB15Services->Fetch())
-		{			
+		{
 			// add to report
 			//TODO!rich! replace this echo with report output
 			echo("{$arrService['Service']} : {$arrService['CDRCount']}\n");
@@ -544,6 +548,7 @@
 		$intCount = 0;
 		$selPM15Services = new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service",
 												"Service, Account, AccountGroup",
+												"(Service.ClosedOn IS NULL OR Service.ClosedOn > CURDATE()) AND " .
 												"ServiceRatePlan.RatePlan = 20 AND " .
 												"ServiceRatePlan.Id = (" .
 												" SELECT SRP.Id" .
@@ -653,6 +658,9 @@
 	 */
 	 function AddNonDDRFee()
 	 {
+	 	// No longer used
+	 	return FALSE;
+	 	
 	 	// set up charge
 		$arrCharge = Array();
 		$arrCharge ['Nature']		= 'DR';
