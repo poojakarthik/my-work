@@ -26,12 +26,16 @@
  *
  */
 
+$GLOBALS['**arrDatabase']['User']		= "root";
+$GLOBALS['**arrDatabase']['Password']	= "zeemu";
+
 require("../framework/require.php");
 
 // Check for customer parameter
-if (!($strCustomer = trim($argv[1])))
+if (!($strCustomer = trim($argv[1])) || !preg_match("/^([A-Za-z0-9])*(_([A-Za-z0-9])+)*$/", $strCustomer))
 {
-	Debug("Please specify a Customer name as the first parameter!");
+	CliEcho("\nPlease specify a vaild Customer name as the first parameter! (You entered '$strCustomer')\n" .
+			"Valid Customers names are alphlanumeric with words optionally separated by underscores (eg. 'telcoblue', 'yellow_billing101')\n");
 	die;
 }
 
@@ -92,6 +96,7 @@ $arrDirectory['log']	['SubDir']	[]	= "provisioning_app";
 $arrDirectory['log']	['SubDir']	[]	= "rating_app";
 
 $strHomeBase	= "/home/vixen/$strCustomer";
+$strVixenBase	= "/usr/share/vixen/customers/$strCustomer";
 
 // Header
 CliEcho("\t\t+----------------------------+");
@@ -101,7 +106,7 @@ CliEcho("\t\t+----------------------------+");
 //----------------------------------------------------------------------------//
 // Config Setup
 //----------------------------------------------------------------------------//
-Debug("[ CONFIG SETUP ]");
+Debug("[ CONFIG FILE SETUP ]");
 Debug("Creating Customer Config File '/etc/vixen/$strCustomer'");
 
 // Is there aready a config (and therefore an instance)
@@ -201,11 +206,46 @@ foreach ($arrDirectory as $strDir=>$arrProperties)
 	shell_exec("chmod -R {$arrProperties['Perms']} $strHomeBase/$strDir");
 }
 
+Debug(" * Creating viXen interface directories for '$strCustomer'...");
+mkdir("$strVixenBase/");
+mkdir("$strVixenBase/ui_app");
+mkdir("$strVixenBase/web");
+mkdir("$strVixenBase/intranet");
+shell_exec("chown -R www-data.www-data $strVixenBase");
+shell_exec("chmod -R 777 $strVixenBase");
+
 Debug(" # Directory Setup complete!");
 
 //----------------------------------------------------------------------------//
 // Database Setup
 //----------------------------------------------------------------------------//
 Debug("[ DATABASE SETUP ]");
-// TODO
+
+// Check to see if database exists
+$qryDBExists = new Query();
+$resResult	 = $qryDBExists->Execute("SHOW DATABASES WHERE `Database` = '$strCustomer'");
+if ($resResult->fetch_assoc())
+{
+	Debug("!!ERROR!! Database '$strCustomer' already exists! Please manually drop this database, and re-run this script.\n");
+	die;
+}
+
+// Copy from template database
+Debug("Creating new Database for '$strCustomer'...");
+
+// Set up ListTables object
+$qctCopyTable = new QueryListTables();
+
+// Get tables from vixen_template
+//$arrTables = $qctCopyTable->Execute('vixen_template');
+
+// Set up CopyTable object
+$qctCopyTable = new QueryCopyTable();
+
+// Clean Tables List
+foreach($arrTables AS $mixKey=>$strTable)
+{
+	// Copy a table
+	//$qctCopyTable->Execute($strTable, "$strCustomer.$strTable");
+}
 ?>
