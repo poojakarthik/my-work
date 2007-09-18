@@ -35,7 +35,7 @@ Define ('VIXEN_BASE_DIR', "../");
 Define ('TEMPLATE_BASE_DIR', "");
 Define ('TEMPLATE_STYLE_DIR', "../ui_app/style_template/");  //only used to load the html_elements.php file which is part of the app framework
 Define ('MODULE_BASE_DIR', "");
-Define ('JAVASCRIPT_BASE_DIR', "");  
+Define ('JAVASCRIPT_BASE_DIR', "");
 
 // Define which flavour of browsers are supported by this application
 Define ('BROWSER_IE',	0x1);

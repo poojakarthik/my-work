@@ -297,12 +297,22 @@ class Page
 		// for use within MSIE.  It's not very useful.
 		//echo "<script language='text/javascript' type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/firebug/firebug.js'></script>";
 		//echo "<script type='text/javascript'>VixenIncludeJSOnce('firebug/firebug')</script>\n";
-
+		
+//echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript.php?File=../../dir1/dir2/generic_javascript'></script>\n";
+		/*This is the old way of explicitly loading js files, before we had to worry about customer overridden files and application overridden files
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/vixen.js' ></script>\n";
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/menu.js' ></script>\n";
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/popup.js' ></script>\n";
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/dhtml.js' ></script>\n";
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/ajax.js' ></script>\n";
+		*/
+		
+		echo "<script type='text/javascript' src='javascript.php?File=vixen.js' ></script>\n";
+		echo "<script type='text/javascript' src='javascript.php?File=menu.js' ></script>\n";
+		echo "<script type='text/javascript' src='javascript.php?File=popup.js' ></script>\n";
+		echo "<script type='text/javascript' src='javascript.php?File=dhtml.js' ></script>\n";
+		echo "<script type='text/javascript' src='javascript.php?File=ajax.js' ></script>\n";
+		
 
 		// I should really make sure that none of the above loaded javascript 
 		// files are included within the following list of files to include, but
@@ -314,7 +324,10 @@ class Page
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
 			{
-				echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' ></script>\n";
+				echo "<script type='text/javascript' src='javascript.php?File=$strValue.js' ></script>\n";
+				
+				// The following method was used before we had to worry about applications and customers overridding the framework
+				//echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' ></script>\n";
 				
 				// The autoloader method (we don't use this anymore)
 				//echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
@@ -354,7 +367,10 @@ class Page
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
 			{
-				echo "<script type='text/javascript' src='". JAVASCRIPT_BASE_DIR ."javascript/$strValue.js'></script>\n";
+				echo "<script type='text/javascript' src='javascript.php?File=$strValue.js' ></script>\n";
+				
+				// The following method was used before we had to worry about applications and customers overridding the framework
+				//echo "<script type='text/javascript' src='". JAVASCRIPT_BASE_DIR ."javascript/$strValue.js'></script>\n";
 				
 				// The autoloader method; which never actually worked with popups
 				//echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
