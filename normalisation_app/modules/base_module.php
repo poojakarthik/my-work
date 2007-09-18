@@ -239,11 +239,14 @@ abstract class NormalisationModule
 		$this->_errErrorHander 			= $errErrorHandler;
 		$this->_rptNormalisationReport 	= $rptNormalisationReport;
 
-		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
-		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		//$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		//$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		$strAccountStatus = ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED;
+		$this->_selFindOwner			= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "FNN = <fnn> AND ((CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn AND LineStatus = ".SERVICE_DISCONNECTED.") OR ISNULL(ClosedOn)) AND Account.Archived IN ($strAccountStatus)", "CreatedOn DESC, Account DESC", "1");
+		$this->_selFindOwnerIndial100	= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "FNN LIKE <fnn> AND (Indial100 = TRUE) AND ((CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn AND LineStatus = ".SERVICE_DISCONNECTED.") OR ISNULL(ClosedOn)) AND Account.Archived IN ($strAccountStatus)", "CreatedOn DESC, Account DESC", "1");
 		
-		$this->_selFindOwnerNow 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>", "ISNULL(ClosedOn) DESC, ClosedOn DESC, Account DESC", "1");
-		$this->_selFindOwnerNowIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "ISNULL(ClosedOn) DESC, ClosedOn DESC, Account DESC", "1");
+		$this->_selFindOwnerNow 			= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "FNN = <fnn> AND Service.LineStatus != ".SERVICE_ARCHIVED." AND Account.Archived IN ($strAccountStatus)", "ISNULL(ClosedOn) DESC, ClosedOn DESC, Account DESC", "1");
+		$this->_selFindOwnerNowIndial100	= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "(FNN LIKE <fnn>) AND (Indial100 = TRUE) AND Service.LineStatus != ".SERVICE_ARCHIVED." AND Account.Archived IN ($strAccountStatus)", "ISNULL(ClosedOn) DESC, ClosedOn DESC, Account DESC", "1");
 		
 		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
