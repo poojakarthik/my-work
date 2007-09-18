@@ -105,7 +105,8 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 		DBO()->Account->Id->RenderOutput();
-		DBO()->Service->FNN->RenderOutput();		
+		DBO()->Service->FNN->RenderOutput();
+		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";	
 	}
@@ -129,7 +130,8 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
 		DBO()->Service->Id->RenderOutput();
-		DBO()->Service->FNN->RenderOutput();		
+		DBO()->Service->FNN->RenderOutput();
+		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";	
 	}
@@ -174,6 +176,8 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			DBO()->RatePlan->Name->RenderArbitrary("No Plan", RENDER_OUTPUT, 1);
 		}
 		
+		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
+
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}

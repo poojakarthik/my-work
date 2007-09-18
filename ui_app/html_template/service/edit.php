@@ -84,6 +84,45 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderInput();
 		DBO()->Service->FNNConfirm->RenderInput();
+		
+		// place holder for service status select HTML element
+		// Associate array of service status
+		
+		$arrServiceStatus = array();
+		$arrServiceStatus[SERVICE_ACTIVE] = "Active";
+		$arrServiceStatus[SERVICE_DISCONNECTED] = "Service Disconnected";
+		
+		// Check authentication here, archived is only available to admins only
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie($pagePerms);
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			$arrServiceStatus[SERVICE_ARCHIVED] = "Service Archived";
+		}
+		
+		echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Status:</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select name='Service.LineStatus' style='width:162px'>\n";
+		
+			foreach ($arrServiceStatus as $strKey=>$strServiceStatus)
+			{
+				if (DBO()->Service->LineStatus->Value == $strKey)
+				{
+					echo "	<option value='".$strKey."' selected='selected'>$strServiceStatus</option>\n";	
+				}
+				else
+				{
+					echo "	<option value='".$strKey."'>$strServiceStatus</option>\n";				
+				}
+			}
+		
+			echo "      </select>\n";
+			echo "   </div>\n";
+			echo "</div>\n";
+		
+		// ---------------------------------------------------
+		
 		if (DBO()->Service->Indial100->Value)
 		{
 			DBO()->Service->ELB->RenderInput();
@@ -141,14 +180,14 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 				// The service is currently active
 				echo "&nbsp;&nbsp;This service opened on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
 				// We want the checkbox action to be "archive this service"
-				DBO()->Service->ArchiveService->RenderInput();
+				//DBO()->Service->ArchiveService->RenderInput();
 			}
 			else
 			{
 				// This service hasn't yet been activated yet
 				echo "&nbsp;&nbsp;This service will be activated on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
 				// We want the checkbox action to be "archive this service"
-				DBO()->Service->ArchiveService->RenderInput();
+				//DBO()->Service->ArchiveService->RenderInput();
 			}
 		}
 		else
@@ -159,7 +198,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 				// The service has been closed
 				echo "&nbsp;&nbsp;This service was closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
 				// We want the checkbox action to be "activate this service"
-				DBO()->Service->ActivateService->RenderInput();
+				//DBO()->Service->ActivateService->RenderInput();
 			}
 			else
 			{

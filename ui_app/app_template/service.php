@@ -412,25 +412,26 @@ class AppTemplateService extends ApplicationTemplate
 				$arrUpdateProperties[] = "FNN";
 			}
 			
-			// test archive action
-			if (DBO()->Service->ArchiveService->Value)
-			{
+			// test archive action originally a checkbox testing if its checked i.e. true
+			//if (DBO()->Service->ArchiveService->Value)
+			//{
 				// we want to archive the service
-				$bolArchiveService = TRUE;
+				//$bolArchiveService = TRUE;
 				// set closedon date to todays date
-				DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
+				//DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
 				// set closedby to authenticated user ID
-				DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
+				//DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
 				
 				// Declare properties to update
-				$arrUpdateProperties[] = "ClosedOn";
-				$arrUpdateProperties[] = "ClosedBy";
+				//$arrUpdateProperties[] = "ClosedOn";
+				//$arrUpdateProperties[] = "ClosedBy";
+				//$arrUpdateProperties[] = "LineStatus";
 				
 				// Define system generated note
-				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-				$strNote = "Service archived on $strDateTime by $strUserName";
-			}
+				//$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+				//$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+				//$strNote = "Service archived on $strDateTime by $strUserName with status of ".DBO()->Service->LineStatus->Value;
+			//}
 			//**************************************************************************************************************************************
 			// NOTE! I was originally handling the ActivateService logic here, but have decided to handle it last, as it is the most complex
 			//**************************************************************************************************************************************
@@ -559,6 +560,88 @@ class AppTemplateService extends ApplicationTemplate
 					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 					$strNote = "Service unarchived on $strDateTime by $strUserName";
 				}
+			}
+
+			switch (DBO()->Service->LineStatus->Value)
+			{
+				case SERVICE_ACTIVE:
+					$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->ClosedOn->Value);
+					if ($mixResult !== TRUE && $mixResult !== FALSE)
+					{
+						// Activating the service failed, and an error message has been returned
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", $mixResult);
+						return TRUE;
+					}
+					if ($mixResult === TRUE)
+					{
+						// Activating the service was successfull. Define system generated note
+						$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+						$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+						$strNote = "Service unarchived on $strDateTime by $strUserName";
+					}
+					break;
+				case SERVICE_DISCONNECTED:
+					// set closedon date to todays date
+					DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
+					// set closedby to authenticated user ID
+					DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
+					
+					// Declare properties to update
+					$arrUpdateProperties[] = "ClosedOn";
+					$arrUpdateProperties[] = "ClosedBy";
+					$arrUpdateProperties[] = "LineStatus";
+					
+					// Define system generated note
+					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+					$strNote = "Service disconnected on $strDateTime by $strUserName with status of ".DBO()->Service->LineStatus->Value;
+					
+					if (count($arrUpdateProperties) > 0)
+					{
+						// Declare columns to update
+						DBO()->Service->SetColumns($arrUpdateProperties);			
+						// Save the service to the service table of the vixen database
+						if (!DBO()->Service->Save())
+						{
+							// The service did not save
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly");
+							return TRUE;
+						}
+					}
+					break;
+				case SERVICE_ARCHIVED:
+					// set closedon date to todays date
+					DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
+					// set closedby to authenticated user ID
+					DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
+					
+					// Declare properties to update
+					$arrUpdateProperties[] = "ClosedOn";
+					$arrUpdateProperties[] = "ClosedBy";
+					$arrUpdateProperties[] = "LineStatus";
+					
+					// Define system generated note
+					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+					$strNote = "Service archived on $strDateTime by $strUserName with status of ".DBO()->Service->LineStatus->Value;
+					
+					if (count($arrUpdateProperties) > 0)
+					{
+						// Declare columns to update
+						DBO()->Service->SetColumns($arrUpdateProperties);			
+						// Save the service to the service table of the vixen database
+						if (!DBO()->Service->Save())
+						{
+							// The service did not save
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly");
+							return TRUE;
+						}
+					}
+					
+					break;
 			}
 
 			// Add an automatic note if the service has been archived or unarchived
@@ -759,19 +842,18 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			// problematic!!!!!!!!!!!!
-			$strNowTimeStamp = new MySQLFunction("NOW()");
-			// this line and GetCurrentDateAndTimeForMySQL() appear to be returning the same timestamp format
-			
+			// Create a single variable that stores the current timestamp, solves similar timestamps with differing seconds
+			$strNowTimeStamp = GetCurrentDateAndTimeForMySQL();
+
 			// Change the service's plan
 			// Start the database transaction
 			TransactionStart();
 
 			// All current ServiceRateGroup and ServiceRatePlan records must have EndDatetime set to NOW()
 			// replace now() with variable that has now() declared once only
-			$arrUpdate = Array('EndDatetime' => $strEndDatetime);
-			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime > $strEndDatetime", $arrUpdate);
-			if (!$updServiceRateGroup->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value)))
+			$arrUpdate = Array('EndDatetime' => $strNowTimeStamp);
+			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime > <NowTimeStamp>", $arrUpdate);
+			if (!$updServiceRateGroup->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "NowTimeStamp"=>$strNowTimeStamp)))
 			{
 				// Could not update records in ServiceRateGroup table. Exit gracefully
 				TransactionRollback();
@@ -779,8 +861,8 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime > $strEndDatetime", $arrUpdate);
-			if (!$updServiceRatePlan->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value)))
+			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime > <NowTimeStamp>", $arrUpdate);
+			if (!$updServiceRatePlan->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "NowTimeStamp"=>$strNowTimeStamp)))
 			{
 				// Could not update records in ServiceRatePlan table. Exit gracefully
 				TransactionRollback();
@@ -793,8 +875,8 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
 			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
 			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRatePlan->CreatedOn 		= $strNowTimeStamp;//GetCurrentDateAndTimeForMySQL();
-			DBO()->ServiceRatePlan->StartDatetime 	= $strNowTimeStamp;//GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->CreatedOn 		= $strNowTimeStamp;
+			DBO()->ServiceRatePlan->StartDatetime 	= $strNowTimeStamp;
 			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
 			
 			if (!DBO()->ServiceRatePlan->Save())
@@ -813,8 +895,8 @@ class AppTemplateService extends ApplicationTemplate
 			// Define constant properties for these records
 			DBO()->ServiceRateGroup->Service 		= DBO()->Service->Id->Value;
 			DBO()->ServiceRateGroup->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRateGroup->CreatedOn 		= $strNowTimeStamp;//GetCurrentDateAndTimeForMySQL();
-			DBO()->ServiceRateGroup->StartDatetime 	= $strNowTimeStamp;//GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRateGroup->CreatedOn 		= $strNowTimeStamp;
+			DBO()->ServiceRateGroup->StartDatetime 	= $strNowTimeStamp;
 			DBO()->ServiceRateGroup->EndDatetime 	= END_OF_TIME;
 			
 			
@@ -912,6 +994,7 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ArchivedService->SetColumns("Id, ClosedOn");
 			DBO()->ArchivedService->Id = $intService;
 			DBO()->ArchivedService->ClosedOn = $strClosedOn;
+			DBO()->ArchivedService->LineStatus = DBO()->Service->LineStatus->Value;
 			if (!DBO()->ArchivedService->Save())
 			{
 				// There was an error while trying to unarchive the service
@@ -936,6 +1019,7 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->NewService->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
 		DBO()->NewService->ClosedOn	= NULL;
 		DBO()->NewService->ClosedBy	= NULL;
+		DBO()->NewService->LineStatus = DBO()->Service->LineStatus->Value;
 		if (!DBO()->NewService->Save())
 		{
 			return "ERROR: Unarchiving the service failed, unexpectedly";
