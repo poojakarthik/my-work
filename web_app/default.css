@@ -127,7 +127,9 @@
 	{
 		margin:							0 auto;
 		padding:						0;
-		
+		position:						absolute;
+		left:							50%;
+		margin-left:					-450px;
 		width:							900px;
 	}
 	
@@ -362,6 +364,7 @@
 		position:			relative;
 		overflow:			visible;
 		height:				auto;
+		border:				solid 1px, #FFFFFF;
 	}
 	
 	.DefaultHiddenElement
@@ -682,127 +685,127 @@
 	
 	h2.CDR
 	{
-		background-image:              url('img/template/cdr.png');
+		background-image:              url('img/template/cdr.gif');
 	}
 	
 	h2.Plan
 	{
-		background-image:              url('img/template/plan.png');
+		background-image:              url('img/template/plan.gif');
 	}
 	
 	h2.Date
 	{
-		background-image:              url('img/template/date.png');
+		background-image:              url('img/template/date.gif');
 	}
 	
 	h2.Payment
 	{
-		background-image:              url('img/template/payment.png');
+		background-image:              url('img/template/payment.gif');
 	}
 	
 	h2.Email
 	{
-		background-image:              url('img/template/email.png');
+		background-image:              url('img/template/email.gif');
 	}
 	
 	h2.Adjustment
 	{
-		background-image:              url('img/template/charge.png');
+		background-image:              url('img/template/charge.gif');
 	}
 	
 	h2.Address
 	{
-		background-image:              url('img/template/address.png');
+		background-image:              url('img/template/address.gif');
 	}
 	
 	h2.Provisioning
 	{
-		background-image:              url('img/template/provisioning.png');
+		background-image:              url('img/template/provisioning.gif');
 	}
 	
 	h2.Permissions
 	{
-		background-image:              url('img/template/console_admin.png');
+		background-image:              url('img/template/console_admin.gif');
 	}
 	
 	h2.PDF
 	{
-		background-image:              url('img/template/pdf.png');
+		background-image:              url('img/template/pdf.gif');
 	}
 	
 	h2.Archive
 	{
-		background-image:              url('img/template/archive.png');
+		background-image:              url('img/template/archive.gif');
 	}
 	
 	h2.Notes
 	{
-		background-image:              url('img/template/note.png');
+		background-image:              url('img/template/note.gif');
 	}
 	
 	h2.Note
 	{
-		background-image:              url('img/template/note.png');
+		background-image:              url('img/template/note.gif');
 	}
 	
 	h2.Services
 	{
-		background-image:              url('img/template/service.png');
+		background-image:              url('img/template/service.gif');
 	}
 	
 	h2.Service
 	{
-		background-image:              url('img/template/service.png');
+		background-image:              url('img/template/service.gif');
 	}
 	
 	h2.Contacts
 	{
-		background-image:              url('img/template/contacts.png');
+		background-image:              url('img/template/contacts.gif');
 	}
 	
 	h2.Employees
 	{
-		background-image:              url('img/template/contacts.png');
+		background-image:              url('img/template/contacts.gif');
 	}
 	
 	h2.Employee
 	{
-		background-image:              url('img/template/contact.png');
+		background-image:              url('img/template/contact.gif');
 	}
 	
 	h2.Contact
 	{
-		background-image:              url('img/template/contact.png');
+		background-image:              url('img/template/contact.gif');
 	}
 	
 	h2.Accounts
 	{
-		background-image:              url('img/template/accounts.png');
+		background-image:              url('img/template/accounts.gif');
 	}
 	
 	h2.Account
 	{
-		background-image:              url('img/template/account.png');
+		background-image:              url('img/template/account.gif');
 	}
 	
 	h2.Options
 	{
-		background-image:              url('img/template/options.png');
+		background-image:              url('img/template/options.gif');
 	}
 	
 	h2.Invoice
 	{
-		background-image:              url('img/template/invoice.png');
+		background-image:              url('img/template/invoice.gif');
 	}
 	
 	h2.Admin
 	{
-		background-image:              url('img/template/admin_console.png');
+		background-image:              url('img/template/admin_console.gif');
 	}
 	
 	h2.Report
 	{
-		background-image:              url('img/template/report.png');
+		background-image:              url('img/template/report.gif');
 	}
 	
 	h2.CostCentre
@@ -812,12 +815,12 @@
 	
 	h2.Bug
 	{
-		background-image:              url('img/template/lady-debug.png');
+		background-image:              url('img/template/lady-debug.gif');
 	}
 	
 	h2.Console
 	{
-		background-image:              url('img/template/contact.png');
+		background-image:              url('img/template/contact.gif');
 	}
 
 
