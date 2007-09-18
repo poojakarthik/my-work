@@ -2055,7 +2055,8 @@ echo "[accNum does not begin with 10]";
  */
 function AccountExists($intAccNum)
 {
-	$selAccount = new StatementSelect("Account", "Id", "Id = <Id> AND Archived != 1");
+	$strArchived = ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.", ".ACCOUNT_DEBT_COLLECTION;
+	$selAccount = new StatementSelect("Account", "Id", "Id = <Id> AND Archived IN ($strArchived)");
 	
 	// check for partial account number first
 	if (strlen($intAccNum) < 10)
@@ -2749,4 +2750,5 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
 		return 0;
 	}
 }
+
 ?>
