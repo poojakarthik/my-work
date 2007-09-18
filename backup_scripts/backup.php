@@ -71,7 +71,7 @@ class Backup
 			$this->strBackupPath = $arrConfig['BackupPath'];
 		}
 		
-		if ($this->strMySQLPath = $arrConfig['MySQL'])
+		if ($this->strMySQLPath == $arrConfig['MySQL'])
 		{
 			$this->bolMySQL = TRUE;
 		}
