@@ -2455,15 +2455,29 @@ function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPasswor
  * Calculates the Unbilled CDR Total for a Service
  * 
  * @param		integer	$intService					Service to generate total for
+ * @param		bool	$bolDontIncludeCreditCDRs	optional, Set to TRUE if you don't want to include Credit CDRs in the total
  * 
  * @return		float								Total excluding Tax
  *
  * @method
  */ 
-function UnbilledServiceCDRTotal($intService)
+function UnbilledServiceCDRTotal($intService, $bolDontIncludeCreditCDRs = FALSE)
 {
+	if ($bolDontIncludeCreditCDRs)
+	{
+		// Don't include credit CDRs in the calculation
+		$strColumns		= "SUM(Charge) AS TotalCharged";
+		$strWhereClause = "Service = <Service> AND (Status = ". CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .") AND Credit != 1";
+	}
+	else
+	{
+		// Include credit CDRs in the calculation
+		$strColumns 	= "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged";
+		$strWhereClause = "Service = <Service> AND (Status = ". CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")";
+	}
+	
 	// Get CDR Total
-	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged", "Service = <Service> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")");
+	$selCDRTotal = new StatementSelect("CDR", $strColumns, $strWhereClause);
 	$selCDRTotal->Execute(Array('Service' => $intService));
 	$arrCDRTotal = $selCDRTotal->Fetch();
 	
@@ -2507,15 +2521,29 @@ function UnbilledServiceChargeTotal($intService)
  * Calculates the Unbilled CDR Total for an Account.  Does not account for Adjustments
  * 
  * @param		integer	$intAccount					Account to generate total for
+ * @param		bool	$bolDontIncludeCreditCDRs	optional, Set to TRUE if you don't want to include Credit CDRs in the total
  *
  * @return		float								Total excluding Tax
  *
  * @method
  */ 
-function UnbilledAccountCDRTotal($intAccount)
+function UnbilledAccountCDRTotal($intAccount, $bolDontIncludeCreditCDRs = FALSE)
 {
+	if ($bolDontIncludeCreditCDRs)
+	{
+		// Don't include credit CDRs in the calculation
+		$strColumns		= "SUM(Charge) AS TotalCharged";
+		$strWhereClause = "Account = <Account> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .") AND Credit != 1";
+	}
+	else
+	{
+		// Include credit CDRs in the calculation
+		$strColumns 	= "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged";
+		$strWhereClause = "Account = <Account> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")";
+	}
+
 	// Get CDR Total
-	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged", "Account = <Account> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")");
+	$selCDRTotal = new StatementSelect("CDR", $strColumns, $strWhereClause);
 	$selCDRTotal->Execute(Array('Account' => $intAccount));
 	$arrCDRTotal = $selCDRTotal->Fetch();
 	

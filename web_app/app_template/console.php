@@ -134,8 +134,8 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Calculate the Account's total unbilled adjustments (inc GST)
 		DBO()->Account->UnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
-		// Calculate the total unbilled CDRs for the account (inc GST)
-		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value));
+		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
+		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
 		// Setup BreadCrumb Menu
 		//BreadCrumb()->Console();

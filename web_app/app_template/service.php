@@ -112,9 +112,13 @@ class AppTemplateService extends ApplicationTemplate
 			$strFilter = " AND RecordType = ". DBO()->Filter->Id->Value;
 		}
 		
+		// build the where clause and array for retrieving the relevant CDRs
+		$strCDRWhereClause = "Service = <Service> AND (Status = <CDRRated> OR Status = <CDRTempInvoice>)$strFilter AND Credit != 1";
+		$arrCDRWhereClause = Array("Service"=> DBO()->Service->Id->Value, "CDRRated"=> CDR_RATED, "CDRTempInvoice"=> CDR_TEMP_INVOICE);
+		
 		// Find out how many records we are dealing with in the CDR table
-		$selCDRCount = new StatementSelect("CDR", "COUNT(Id) AS NumOfCDRs", "Service = <Service> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")$strFilter");
-		$selCDRCount->Execute(Array('Service' => DBO()->Service->Id->Value));
+		$selCDRCount = new StatementSelect("CDR", "COUNT(Id) AS NumOfCDRs", $strCDRWhereClause);
+		$selCDRCount->Execute($arrCDRWhereClause);
 		$arrCDRCount = $selCDRCount->Fetch();
 	
 		$intNumOfCDRs = $arrCDRCount['NumOfCDRs'];
@@ -159,10 +163,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Retrieve the desired unbilled CDRs for the service
-		$strWhere  = "(Service = ". DBO()->Service->Id->Value .")";
-		$strWhere .= " AND ((Status = ". CDR_RATED .")";
-		$strWhere .= " OR (Status = ". CDR_TEMP_INVOICE ."))$strFilter";
-		DBL()->CDR->Where->SetString($strWhere);
+		DBL()->CDR->Where->Set($strCDRWhereClause, $arrCDRWhereClause);
 		DBL()->CDR->OrderBy("StartDatetime DESC, Id DESC");
 		DBL()->CDR->SetLimit(MAX_RECORDS_PER_PAGE, $intStartRecord);
 		DBL()->CDR->Load();
