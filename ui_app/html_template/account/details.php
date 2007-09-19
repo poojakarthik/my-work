@@ -79,6 +79,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			case HTML_CONTEXT_FULL_DETAIL:
 				$this->_RenderFullDetail();
 				break;
+			case HTML_CONTEXT_EDIT_DETAIL:
+				$this->_RenderEditDetail();
+				break;	
 			default:
 				$this->_RenderFullDetail();
 				break;
@@ -98,9 +101,50 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 * @method
 	 */
 	private function _RenderFullDetail()
+	{	
+		// put in ajax form to enable switching context 
+		echo "<h2 class='Account'>Account Full Details</h2>\n";
+		echo "<div class='NarrowForm'>\n";
+		$this->FormStart("EditAccount", "Account", "Edit");
+		DBO()->Account->Id->RenderOutput();
+		DBO()->Account->Balance->RenderOutput();
+		DBO()->Account->BusinessName->RenderOutput();
+		DBO()->Account->ABN->RenderOutput();
+		DBO()->Account->Address1->RenderOutput();
+		DBO()->Account->Suburb->RenderOutput();
+		DBO()->Account->Postcode->RenderOutput();
+		DBO()->Account->State->RenderOutput();
+		
+		DBO()->Account->Country->RenderOutput();
+		DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_OUTPUT);
+		DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("BillingMethod"), RENDER_OUTPUT);
+		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
+		
+		$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", Vixen.RateAdd.Commit)");
+			
+		//$this->Button("Edit", "Vixen.RateAdd.Close()");
+		$this->FormEnd();
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderEditDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderEditDetail()
+	 *
+	 * Render this HTML Template with full detail
+	 *
+	 * Render this HTML Template with full detail
+	 *
+	 * @method
+	 */
+	private function _RenderEditDetail()
 	{
 		?>
-		<h2 class='Account'>Account Details</h2>
+		<h2 class='Account'>Account Edit Details</h2>
 		<div class='NarrowForm'>
 			<table border='0' cellpadding='3' cellspacing='0'>
 				<?php
@@ -119,7 +163,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// _RenderLedgerDetail
+	// _RenderLedgerDetail (currently only used in invoice and payments)
 	//------------------------------------------------------------------------//
 	/**
 	 * _RenderLedgerDetail()

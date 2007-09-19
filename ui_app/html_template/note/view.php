@@ -149,7 +149,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		
 		if (DBL()->Note->RecordCount() == 0)
 		{
-			echo "There are no viewable Notes.";
+			echo "<div class='DefaultRegularOutput'>There are no viewable Notes.</div>";
 		}
 		
 		// not limitting to 5 records!!!

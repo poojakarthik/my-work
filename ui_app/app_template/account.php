@@ -44,6 +44,24 @@
  */
 class AppTemplateAccount extends ApplicationTemplate
 {
+	//------------------------------------------------------------------------//
+	// Edit
+	//------------------------------------------------------------------------//
+	/**
+	 * Edit()
+	 *
+	 * Performs the logic for the Account/Edit
+	 * 
+	 * Performs the logic for the Account/Edit
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Edit()
+	{
+		$this->LoadPage('Account_Edit');
+	}
 
 	//------------------------------------------------------------------------//
 	// View INCOMPLETE
@@ -88,7 +106,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Logout();
 			
 			// add to breadcrumb menu
-			BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
+			//BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
 			//BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
 			/*Menu
 			   |--Account
@@ -97,11 +115,11 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Load page
 			$this->LoadPage('Account_View');
 		}
-		else
-		{		
+		//else
+		//{		
 			// Load error page
-			$this->LoadPage('Account_Error');
-		}
+		//	$this->LoadPage('Account_Error');
+		//}
 		/*
 		//for additional functionality like change of lessee
 		$someThing = $this->Module->Account->Function()

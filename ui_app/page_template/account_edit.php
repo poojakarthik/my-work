@@ -5,13 +5,13 @@
 // The page object already exists
 
 // set the page title
-$this->Page->SetName('Account View');
+$this->Page->SetName('Account Edit');
 
 //$this->Page->SetLayout(CONSTANT_LAYOUT_TYPE|$strLayoutType??);
 $strLayout = '1Column';
 $this->Page->SetLayout($strLayout);
 
 // many other functions which arent needed, but could be included like destroy, getObjByID
-$id = $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
+$id = $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_EDIT_DETAIL);
 
 ?>

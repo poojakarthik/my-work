@@ -117,6 +117,7 @@ define('HTML_CONTEXT_SERVICE_NOTE',			402);
 define('HTML_CONTEXT_RATE_GROUPS', 			501);
 define('HTML_CONTEXT_RATE_GROUPS_EMPTY',	502);
 define('HTML_CONTEXT_RATES', 				503);
+define('HTML_CONTEXT_EDIT_DETAIL',			504);
 
 // constants for the cap/excess rates used within the rate add page
 define('RATE_CAP_NO_CAP', 100);

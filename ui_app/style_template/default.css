@@ -92,6 +92,13 @@
 		font-size:           12pt;
 	}
 	
+	li
+	{
+		font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height:		14pt;
+		font-size:			10pt;		
+	}
+	
 	body
 	{
 		margin:				0px;

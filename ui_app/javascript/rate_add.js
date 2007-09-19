@@ -247,6 +247,26 @@ function VixenRateAddClass()
 		// The PopupId, containing this form, has been rendered as a hidden
 		Vixen.Popup.Close(document.getElementById("AddRatePopupId").value);
 	}
+	
+	//------------------------------------------------------------------------//
+	// Edit (function doesnt really belong in this class)
+	//------------------------------------------------------------------------//
+	/**
+	 * Edit
+	 *
+	 * This is executed when the Edit button is clicked and then the user confirms that they want to go through with it
+	 *  
+	 * This is executed when the Edit button is clicked and then the user confirms that they want to go through with it
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.Edit = function()
+	{
+		// The PopupId, containing this form, has been rendered as a hidden
+		//alert("entered");
+		Vixen.Ajax.CallAppTemplate("RateGroup", "SetRateSelectorControl", objObjects);
+	}
 }
 
 
