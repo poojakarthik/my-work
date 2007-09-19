@@ -1691,11 +1691,11 @@ class OutputMasks
 	 */
 	function MoneyValue($fltValue, $intDecPlaces=2, $bolIncludeDollarSign=FALSE, $bolUseBracketsForNegative=FALSE)
 	{
-		if (fltValue < 0)
+		if ($fltValue < 0)
 		{
 			$bolIsNegative = TRUE;
 			// Change it to a positive
-			$fltValue = fltValue * (-1.0);
+			$fltValue = $fltValue * (-1.0);
 		}
 		else
 		{
@@ -1704,7 +1704,7 @@ class OutputMasks
 		
 		$strValue = number_format($fltValue, $intDecPlaces, ".", "");
 		
-		if ($bolIsNegative && ($strValue !== number_format(0, $intDecPlaces, ".", "")))
+		if ($bolIsNegative && ($strValue != 0))
 		{
 			if ($bolUseBracketsForNegative)
 			{
