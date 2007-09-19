@@ -146,13 +146,24 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			$arrRecord['Date'] 					= $dboPayment->PaidOn->AsValue();
 			
 			// Work out what will be displayed in the Debit and Credit columns of the table
-			$arrRecord['Credit']				= $dboPayment->Amount->AsValue();
 			$arrRecord['CreditValue']			= $dboPayment->Amount->Value;
 			$arrRecord['Debit']					= "&nbsp;";
 			$arrRecord['DebitValue']			= 0;
 			
+			// If the Payment is applied to an AccountGroup then flag it as such;
+			if ($dboPayment->Account->Value === NULL)
+			{
+				// Payment has been applied to the account group that this account belongs to
+				$arrRecord['Credit'] = "<span class='DefaultOutputSpan Default' style='float:left;'>(Group Payment)</span><span style='float:right;'>" . $dboPayment->Amount->AsValue() . "</span>";
+			}
+			else
+			{
+				// Payment is applied directly to the account
+				$arrRecord['Credit'] = $dboPayment->Amount->AsValue();
+			}
+			
 			// Append the record to the array to sort
-			$arrInvoicesAndPayments[] 			= $arrRecord;
+			$arrInvoicesAndPayments[] = $arrRecord;
 		}
 		
 		// sort the array in descending order of the date they were created on. (most recent record first)
@@ -160,7 +171,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		
 		// create the Invoices and Payments table
 		Table()->InvoicesAndPayments->SetHeader("Type", "Date", "Ref #", "Credit (inc GST)", "Debit (inc GST)", "&nbsp;");
-		Table()->InvoicesAndPayments->SetWidth("15%", "15%", "15%", "25%", "25%", "5%");
+		Table()->InvoicesAndPayments->SetWidth("15%", "15%", "25%", "25%", "15%", "5%");
 		Table()->InvoicesAndPayments->SetAlignment("left", "left", "left", "right", "right", "center");
 		
 		// Declare variables used to calculate the total Credits and Debits
@@ -190,11 +201,11 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 					// The pdf exists
 					// Build "download invoice pdf" link
 					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth);
-					$strInvoicePdfLabel	= "<span class='DefaultOutputSpan Default'><a href='$strInvoicePdfHref'><img src='img/template/pdf.png' title='Download PDF Invoice' /></a></span>";
+					$strInvoicePdfLabel	= "<span class='DefaultOutputSpan Default'><a href='$strInvoicePdfHref'><img src='img/template/pdf.gif' title='Download PDF Invoice' /></a></span>";
 				}
 				else
 				{
-					// don't allow the user to view the pdf for this invoice (or email it) because it doesn't exist
+					// don't allow the user to view the pdf for this invoice because it doesn't exist
 					$strInvoicePdfLabel	= "&nbsp;";
 				}
 			}

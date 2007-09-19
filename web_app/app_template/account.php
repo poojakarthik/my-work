@@ -193,9 +193,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("CreatedOn DESC");
 		DBL()->Invoice->Load();
 		
-		$strWhere = "Account = <Account> AND (Status = ". PAYMENT_PAYING ." OR Status = ". PAYMENT_FINISHED .")";
-		$arrWhere = Array('Account' => DBO()->Account->Id->Value);
-		DBL()->Payment->Where->Set($strWhere, $arrWhere);
+		$strWhere = "(Account = <Account> OR (AccountGroup = <AccountGroup> AND Account IS NULL)) AND (Status = <PaymentPaying> OR Status = <PaymentFinished> OR Status = <PaymentWaiting>)";
+		DBL()->Payment->Account				= DBO()->Account->Id->Value;
+		DBL()->Payment->AccountGroup		= DBO()->Account->AccountGroup->Value;
+		DBL()->Payment->PaymentPaying		= PAYMENT_PAYING;
+		DBL()->Payment->PaymentFinished		= PAYMENT_FINISHED;
+		DBL()->Payment->PaymentWaiting		= PAYMENT_WAITING;
+		DBL()->Payment->Where->SetString($strWhere);
 		DBL()->Payment->OrderBy("PaidOn DESC");
 		DBL()->Payment->Load();
 		
