@@ -110,6 +110,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Retrieve all Services for the account
 		DBL()->Service->Account = DBO()->Account->Id->Value;
+		DBL()->Service->OrderBy("ServiceType, FNN");
 		DBL()->Service->Load();
 
 		// Breadcrumb menu

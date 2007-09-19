@@ -1704,7 +1704,7 @@ class OutputMasks
 		
 		$strValue = number_format($fltValue, $intDecPlaces, ".", "");
 		
-		if ($bolIsNegative)
+		if ($bolIsNegative && ($strValue != 0))
 		{
 			if ($bolUseBracketsForNegative)
 			{
