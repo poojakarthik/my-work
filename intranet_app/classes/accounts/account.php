@@ -447,7 +447,7 @@
 				"CreatedBy"			=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				"Carrier"			=>	$srvService->Pull ('Carrier')->getValue (),
 				"CarrierPreselect"	=>	$srvService->Pull ('CarrierPreselect')->getValue (),
-				"LineStatus"		=>	$srvService->Pull ('LineStatus')->getValue ()
+				"Status"			=>	$srvService->Pull ('Status')->getValue ()
 			);
 			
 			$insService = new StatementInsert ('Service', $arrService);
