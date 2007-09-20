@@ -106,7 +106,7 @@
 																	"RatePlan",
 																	$this->arrServiceColumns,
 																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
-																	"Service.LineStatus IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.") AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
+																	"Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.") AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
 																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC LIMIT 1)",
 																	"RatePlan.Id");
 		$this->strTestAccounts =		" AND " .
