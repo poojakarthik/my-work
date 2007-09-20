@@ -743,7 +743,26 @@ class MenuItems
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"large\", \"Make Payment\", \"Payment\", \"Add\", $strJsonCode)";
 	}
-	
+
+	//*********************************
+	//*********************************
+
+	function EditAccount($intId)
+	{
+		//$this->strLabel	= "make payment";
+		
+		// Setup data to send
+		$arrData['Objects']['Account']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditAccountPopupId\", \"large\", \"Edit Account\", \"Account\", \"View\", $strJsonCode)";
+	}
+
+	//*********************************
+	//*********************************
+
 	//------------------------------------------------------------------------//
 	// DeletePayment
 	//------------------------------------------------------------------------//

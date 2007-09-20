@@ -155,8 +155,8 @@ $GLOBALS['*arrConstant']	['Carrier']	[3]	['Constant']	= 'CARRIER_AAPT';
 $GLOBALS['*arrConstant']	['Carrier']	[3]	['Description']	= 'AAPT';
 $GLOBALS['*arrConstant']	['Carrier']	[4]	['Constant']	= 'CARRIER_ISEEK';
 $GLOBALS['*arrConstant']	['Carrier']	[4]	['Description']	= 'iSeek';
-$GLOBALS['*arrConstant']	['Carrier']	[10]	['Constant']	= 'CARRIER_PAYMENT';
-$GLOBALS['*arrConstant']	['Carrier']	[10]	['Description']	= 'Payment';
+$GLOBALS['*arrConstant']	['Carrier']	[10]['Constant']	= 'CARRIER_PAYMENT';
+$GLOBALS['*arrConstant']	['Carrier']	[10]['Description']	= 'Payment';
 
 // ERROR TABLE
 define("FATAL_ERROR_LEVEL"			, 10000);

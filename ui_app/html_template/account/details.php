@@ -51,7 +51,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
+		$this->LoadJavascript("rate_add");
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
 		//$this->LoadJavascript("retractable");
@@ -103,6 +103,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	private function _RenderFullDetail()
 	{	
 		// put in ajax form to enable switching context 
+		echo "<div id='AccountDetailDiv'>\n";
 		echo "<h2 class='Account'>Account Full Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 		$this->FormStart("EditAccount", "Account", "Edit");
@@ -121,10 +122,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
 		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		
-		$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", Vixen.RateAdd.Commit)");
+		//$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", Vixen.RateAdd.Commit)");
 			
-		//$this->Button("Edit", "Vixen.RateAdd.Close()");
+		//$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");	
+		//echo $this->_objAjax->strId;
+		$this->Button("Edit", "Vixen.RateAdd.Edit(".DBO()->Account->Id->Value.")");
 		$this->FormEnd();
+		echo "--->>>".DBO()->Account->Id->Value;
+		echo "</div>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}
@@ -143,22 +148,23 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 */
 	private function _RenderEditDetail()
 	{
-		?>
-		<h2 class='Account'>Account Edit Details</h2>
-		<div class='NarrowForm'>
-			<table border='0' cellpadding='3' cellspacing='0'>
-				<?php
+		
+		//echo "->>>>>>>>>>>".DBO();
+		echo "<h2 class='Account'>Account Edit Details</h2>\n";
+		echo "<div class='NarrowForm'>\n";
+		echo"<table border='0' cellpadding='3' cellspacing='0'>\n";
+				
 				foreach (DBO()->Account AS $strProperty=>$objValue)
 				{	
 					echo "<tr>\n";
 					$objValue->RenderOutput();
 					echo "</tr>\n";
 				}
-				?>
-			</table>
-		</div>
-		<div class='Seperator'></div>
-		<?php
+				
+		echo "</table>\n";
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";
+		
 
 	}
 

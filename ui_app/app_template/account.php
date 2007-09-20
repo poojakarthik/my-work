@@ -60,7 +60,27 @@ class AppTemplateAccount extends ApplicationTemplate
 	 */
 	function Edit()
 	{
-		$this->LoadPage('Account_Edit');
+		//if (DBO()->Account->Id->Valid())
+		//{
+		
+				//foreach (DBO()->Account AS $strProperty=>$objValue)
+				//{	
+					Ajax()->AddCommand("Alert", DBO()->Account->Id->Value);
+				//}
+		
+		
+		//Ajax()->AddCommand("Alert", DBO());
+			//Load account + stuff
+			//DBO()->Account->Id = DBO()->Account->Id->Value;
+			DBO()->Account->Id = DBO()->Account->Id->Value;
+			DBO()->Account->Load();
+			DBO()->Service->Account = DBO()->Account->Id->Value;
+			DBO()->Service->Load();
+	
+	
+	
+		//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+		//}
 	}
 
 	//------------------------------------------------------------------------//
@@ -114,6 +134,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				*/
 			// Load page
 			$this->LoadPage('Account_View');
+			//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 		}
 		//else
 		//{		

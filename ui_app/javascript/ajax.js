@@ -195,8 +195,8 @@ function VixenAjaxClass()
 			{
 				alert("objSend.Objects."+ strObject +"."+ strProperty +" = "+ objSend.Objects[strObject][strProperty]);
 			}
-		}
-		*/
+		}*/
+		
 		
 		// send object
 		this.Send(objSend);
@@ -205,15 +205,15 @@ function VixenAjaxClass()
 	// AJAX Send
 	this.Send = function(objObject)
 	{
-		/*
+		
 		for (strObject in objObject.Objects)
 		{
 			for (strProperty in objObject.Objects[strObject])
 			{
-				alert("objObject.Objects."+ strObject +"."+ strProperty +" = "+ objObject.Objects[strObject][strProperty]);
+				alert("1). objObject.Objects."+ strObject +"."+ strProperty +" = "+ objObject.Objects[strObject][strProperty]);
 			}
 		}
-		*/
+		
 		
 		// store our object before sending, along with a transaction ID
 		//this.objData = objObject;

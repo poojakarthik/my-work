@@ -8,7 +8,7 @@
 $this->Page->SetName('Account Edit');
 
 //$this->Page->SetLayout(CONSTANT_LAYOUT_TYPE|$strLayoutType??);
-$strLayout = '1Column';
+$strLayout = 'popup_layout';
 $this->Page->SetLayout($strLayout);
 
 // many other functions which arent needed, but could be included like destroy, getObjByID
