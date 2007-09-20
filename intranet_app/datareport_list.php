@@ -20,6 +20,7 @@
 	// Get all reports
 	$rpsReports = $Style->attachObject (new DataReports);
 	$rpsReports->Constrain('Priviledges', '&', $athAuthentication->AuthenticatedEmployee()->Pull('Privileges')->getValue());
+	$rpsReports->Order('Name', TRUE);
 	$rpsReports->Sample ();
 	
 	// Explain the Fundamentals
