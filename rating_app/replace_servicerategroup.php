@@ -113,16 +113,19 @@ while ($arrService = $selServices->Fetch())
 	
 	$arrRateGroupCount[$arrServiceRateGroupOld['Name']]++;
 	
-	$arrServiceRateGroup = Array();
-	$arrServiceRateGroup['StartDatetime']	= $arrServiceRateGroupOld['StartDatetime'];
-	$arrServiceRateGroup['EndDatetime']		= $arrServiceRateGroupOld['EndDatetime'];
-	$arrServiceRateGroup['CreatedOn']		= new MySQLStatement("NOW()");
-	$arrServiceRateGroup['CreatedBy']		= 22;
-	$arrServiceRateGroup['RateGroup']		= $intNewRateGroup;
-	$arrServiceRateGroup['Service']			= $arrService['Service'];
-	//$intInsertId = $insServiceRateGroup->Execute($arrServiceRateGroup);
+	if (in_array($arrServiceRateGroupOld['Id'], $arrOldRateGroups))
+	{
+		$arrServiceRateGroup = Array();
+		$arrServiceRateGroup['StartDatetime']	= $arrServiceRateGroupOld['StartDatetime'];
+		$arrServiceRateGroup['EndDatetime']		= $arrServiceRateGroupOld['EndDatetime'];
+		$arrServiceRateGroup['CreatedOn']		= new MySQLFunction("NOW()");
+		$arrServiceRateGroup['CreatedBy']		= 22;
+		$arrServiceRateGroup['RateGroup']		= $intNewRateGroup;
+		$arrServiceRateGroup['Service']			= $arrService['Service'];
+		$intInsertId = $insServiceRateGroup->Execute($arrServiceRateGroup);
 	
-	fwrite($ptrFile, "{$arrService['Service']},$intInsertId\n");
+		fwrite($ptrFile, "{$arrService['Service']},$intInsertId\n");
+	}
 }
 fclose($ptrFile);
 
