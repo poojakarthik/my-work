@@ -15,9 +15,9 @@
  * Retrieves the desired javascript file
  *
  * Retrieves the desired javascript file
- * It will first look in the Customer's instance of the application,
- * then in the shared directory of the application (web_app) (currently not implemented)
- * then in the shared directory of the framework (ui_app)
+ * It will first look in the Customer's instance of the application, (currently not implemented)
+ * then in the shared directory of the application (LOCAL_BASE_DIR) 
+ * then in the shared directory of the framework (FRAMEWORK_BASE_DIR)
  * This assumes the constants LOCAL_BASE_DIR and FRAMEWORK_BASE_DIR have been declared
  * This is part of the core ui_app framework
  *
