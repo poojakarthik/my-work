@@ -152,6 +152,7 @@ function VixenRootClass()
 		{
 			// The current url does not contain vixen.php, just relocate the user to the desired location and hope for the best
 			window.location = strLocation;
+			return true;
 		}
 		
 		// split the current url on "vixen.php" can append strLocation to the first part
@@ -159,7 +160,9 @@ function VixenRootClass()
 		var strNewHref = arrHrefParts[0] + strLocation;
 		
 		window.location = strNewHref;
+		return true;
 	}
+	
 
 	/*this.FixFocus = function(div) 
 	{

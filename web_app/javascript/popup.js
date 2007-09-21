@@ -442,10 +442,10 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 			strSize = "medium";
 		}
 	
-		strContent =	"<p><div align='center'>" + strMessage + 
-						"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
+		strContent =	"<div align='center'><p>" + strMessage + "</p>" +
+						"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'></p></div>\n" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
+		this.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
 	}
 	
 	// Confirm box
@@ -464,7 +464,7 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 						"<tr><td colspan='2' align='center'><span class='DefaultOutputSpan'>" + strMessage + "</span></td></tr>" +
 						"<tr><td align='center'>" + strOkBtnHtml + "</td>" + 
 						"<td align='center'>" + strCancelBtnHtml + "</td></tr>";
-		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
+		this.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
 		
 		// get references to the Ok and Cancel buttons and attach the event listeners
 		var elmOkButton = document.getElementById("VixenConfirmOkButton");
@@ -505,6 +505,138 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		// set focus to the Ok button
 		elmOkButton.focus();
 	}
+	
+	// This alert box should be shown when the server could possibly take a long time to load a page
+	// All three parameters are optional
+	this.PageLoadingSplash = function(strMessage, strSize, strImage)
+	{
+		// set the default message
+		if (strMessage == null)
+		{
+			strMessage = "Page Loading";
+		}
+		// set a default value for strSize
+		if (strSize == null)
+		{
+			strSize = "small";
+		}
+		
+		if (strImage == null)
+		{
+			strImage = "img/template/pablo_load.gif";
+		}
+	
+		strContent = "<div align='center'><p>" + strMessage + "</p>" +
+					 "<p><img src='" + strImage + "' align='center'></img></p></div>\n";
+		//Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'modeless');
+		this.CreateSplash(strContent, strSize);
+	}
+	
+	this.ClosePageLoadingSplash = function()
+	{
+		this.Close("Splash");
+	}
+	
+	// A splash screen
+	// intTime is the period of time that the splash will be shown for.  If not supplied, 
+	// the splash will only be removed if the page reloads
+	this.CreateSplash = function(strContent, strSize, intTime)
+	{
+		// set defaults
+		if (strSize == null)
+		{
+			strSize = "medium";
+		}
+	
+		// Try to find a previous splash
+		var elmExists = document.getElementById('VixenPopup__Splash');
+		if (elmExists)
+		{
+			// destroy it . . .
+			elmExists.parentNode.removeChild(elmExists);
+		}
+		
+		// . . . and create it
+		var elmPopup = document.createElement('div');
+		elmPopup.setAttribute('className', 'PopupBox');
+		elmPopup.setAttribute('class', 'PopupBox');
+		elmPopup.setAttribute('Id', 'VixenPopup__Splash');
+		
+		// Set the content of the splash box
+		if (!strContent)
+		{
+			strContent = "No data<br />";
+		}
+				
+		// initially hide the splash
+		elmPopup.style.visibility = 'hidden';
+		
+		// set the content of the splash
+		elmPopup.innerHTML = strContent;
+
+		// set the top of the splash to the body.scrollTop, so that it doesn't move the page when it is added to it
+		elmPopup.style.top	= document.body.scrollTop;
+
+		// Add the splash to the PopupHolder element
+		elmRoot = document.getElementById('PopupHolder');
+		elmRoot.appendChild(elmPopup);
+		
+		// Bring the splash to the front
+		//  check the zindex in CSS, might need to be increased somewhat
+		elmPopup.style.zIndex = ++dragObj.zIndex;
+
+		// Set the size of the splash
+		switch (strSize)
+		{
+			case "small":
+				{	//small
+					elmPopup.style.width = '200px';
+					break;
+				}
+			case "medium":
+				{	//medium
+					elmPopup.style.width = '450px';
+					break;
+				}
+			case "large":
+				{	//large
+					elmPopup.style.width = '700px';
+					break;
+				}
+			default:
+				{   //default
+					elmPopup.style.width = '450px';
+					break;
+				}
+		}
+
+		// Set the position
+		// MSIE and Firefox use different properties to find out the width and height of the window
+		if (window.innerWidth)
+		{
+			var intWindowInnerWidth = window.innerWidth;
+			var intWindowInnerHeight = window.innerHeight;
+		}
+		else if (document.body.offsetWidth)
+		{
+			var intWindowInnerWidth = document.body.offsetWidth;
+			var intWindowInnerHeight = document.body.offsetHeight;
+		}
+	
+		// center the splash
+		elmPopup.style.left	= ((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
+		elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+		
+		// Display the splash
+		elmPopup.style.visibility = 'visible';
+
+		// Close the splash if intTime has been specified
+		if (intTime)
+		{
+			setTimeout(function(){Vixen.Popup.Close("Splash")}, intTime);
+		}
+	}
+	
 }
 
 // Create an instance of the Vixen popup class if it has not already been created

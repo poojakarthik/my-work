@@ -177,19 +177,28 @@ class MenuItems
 	 * Compiles the url to be executed when the ViewUnbilledChargesForService menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intServiceId		service id to load
-	 * @param	int		$intPage			[optional] page number of the paginated CDR table to load
-	 * @param 	int		$intFilterId		[optional] id of the record type to use as a filter for the CDR table
+	 * @param	int		$intServiceId				service id to load
+	 * @param	bool	$bolDontIncludeSplash		optional, If set to TRUE then the "Dancing Pablo - page loading" Splash is not displayed
+	 * @param	int		$intPage					optional, page number of the paginated CDR table to load
+	 * @param 	int		$intFilterId				optional, id of the record type to use as a filter for the CDR table
 	 *
 	 * @return	string						action to be executed when the ViewUnbilledChargesForService menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewUnbilledChargesForService($intServiceId, $intPage=1, $intFilterId=0)
+	function ViewUnbilledChargesForService($intServiceId, $bolDontIncludeSplash=FALSE, $intPage=1, $intFilterId=0)
 	{
 		$this->strLabel	= "Service: $intServiceId";
 		
-		return "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage&Filter.Id=$intFilterId";
+		$strAction = "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage&Filter.Id=$intFilterId";
+		
+		if ($bolDontIncludeSplash)
+		{
+			return $strAction;
+		}
+		
+		// Include the "loading" splash
+		return "javascript: setTimeout(function(){Vixen.Popup.PageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -203,17 +212,25 @@ class MenuItems
 	 * Compiles the url to be executed when the ViewUnbilledChargesForAccount menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intAccountId		Account id to load
+	 * @param	int		$intAccountId				Account id to load
+	 * @param	bool	$bolDontIncludeSplash		optional, If set to TRUE then the "Dancing Pablo - page loading" splash is not displayed
 	 *
 	 * @return	string						action to be executed when the ViewUnbilledChargesForAccount menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewUnbilledChargesForAccount($intAccountId)
+	function ViewUnbilledChargesForAccount($intAccountId, $bolDontIncludeSplash=FALSE)
 	{
 		$this->strLabel	= "Account Charges";
 		
-		return "vixen.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
+		$strAction = "vixen.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
+		
+		if ($bolDontIncludeSplash)
+		{
+			return $strAction;
+		}
+		
+		return "javascript: setTimeout(function(){Vixen.Popup.PageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
 	}
 
 	//------------------------------------------------------------------------//
@@ -227,17 +244,25 @@ class MenuItems
 	 * Compiles the url to be executed when the ViewInvoicesAndPayments menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intAccountId		Account id to load
+	 * @param	int		$intAccountId				Account id to load
+	 * @param	bool	$bolDontIncludeSplash		optional, If set to TRUE then the "Dancing Pablo - page loading" splash is not displayed
 	 *
 	 * @return	string						action to be executed when the ViewInvoicesAndPayments menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewInvoicesAndPayments($intAccountId)
+	function ViewInvoicesAndPayments($intAccountId, $bolDontIncludeSplash=FALSE)
 	{
 		$this->strLabel	= "Invoices and Payments";
 		
-		return "vixen.php/Account/ListInvoicesAndPayments/?Account.Id=$intAccountId";
+		$strAction = "vixen.php/Account/ListInvoicesAndPayments/?Account.Id=$intAccountId";
+		
+		if ($bolDontIncludeSplash)
+		{
+			return $strAction;
+		}
+		
+		return "javascript: setTimeout(function(){Vixen.Popup.PageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
 	}
 
 

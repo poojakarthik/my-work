@@ -100,22 +100,18 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		}
 		
 		// Build the filter combobox
+		$strOnChange =	"setTimeout(function(){Vixen.Popup.PageLoadingSplash()}, ". SPLASH_WAITING_TIME .");" .
+						"window.location.search = \"Service.Id=$intServiceId&Filter.Id=\"+ this.value;";
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Call Type Filter:</div>\n";
 		echo "   <div class='DefaultOutput' style='padding-left:100px;'>\n";
-		echo "      <select id='RecordTypeCombo' style='width:300px' onchange='window.location.search = \"Service.Id=$intServiceId&Filter.Id=\"+ this.value;'>\n";
+		echo "      <select id='RecordTypeCombo' style='width:300px' onchange='$strOnChange'>\n";
 		echo "         <option selected='selected' value='0'>List all call types</option>\n";
 		foreach ($arrRecordTypes as $intRecordTypeId=>$arrRecordType)
 		{
 			// check if this RecordType was the last one selected
-			if ($intRecordTypeId == $intFilterId)
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
+			$strSelected = ($intRecordTypeId == $intFilterId) ? "selected='selected'" : "";
+			
 			$strDescription = $arrRecordType['Name'];
 			echo "         <option $strSelected value='$intRecordTypeId'>$strDescription</option>\n";
 		}

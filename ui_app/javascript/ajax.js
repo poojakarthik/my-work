@@ -205,7 +205,7 @@ function VixenAjaxClass()
 	// AJAX Send
 	this.Send = function(objObject)
 	{
-		
+		/*
 		for (strObject in objObject.Objects)
 		{
 			for (strProperty in objObject.Objects[strObject])
@@ -213,7 +213,7 @@ function VixenAjaxClass()
 				alert("1). objObject.Objects."+ strObject +"."+ strProperty +" = "+ objObject.Objects[strObject][strProperty]);
 			}
 		}
-		
+		*/
 		
 		// store our object before sending, along with a transaction ID
 		//this.objData = objObject;
@@ -387,14 +387,14 @@ function VixenAjaxClass()
 					Vixen.Popup.Close(objInput[intKey].Data);
 					break;
 				case "Alert":
-					strContent = "<p><div align='center'>" + objInput[intKey].Data + 
-									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
+					strContent = "<div align='center'><p>" + objInput[intKey].Data + "</p>" +
+									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'></p></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide');
 					break;
 				case "AlertReload":
-					strContent = "<p><div align='center'>" + objInput[intKey].Data + 
-									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = window.location;'><br></div>\n" +
+					strContent = "<div align='center'><p>" + objInput[intKey].Data + "</p>" +
+									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = window.location;'></p></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide-reload');
 					break;
@@ -406,7 +406,7 @@ function VixenAjaxClass()
 					break;
 				case "AlertAndRelocate":
 					strContent = "<div align='center'><p>" + objInput[intKey].Data.Alert + "</p>" +
-									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'><br></div>\n" +
+									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'></p></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', null, objInput[intKey].Data.Location);
 					break;

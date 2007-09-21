@@ -118,4 +118,7 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "
 // number of records to show in a single page of a paginated table
 define("MAX_RECORDS_PER_PAGE",	20);
 
+// time to wait before displaying the "Dancing Pablo - page is loading" splash
+define("SPLASH_WAITING_TIME", 50);
+
 ?>
