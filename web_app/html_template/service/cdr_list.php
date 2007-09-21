@@ -179,9 +179,9 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		if (DBO()->Page->CurrentPage->Value > 1)
 		{
 			// Not currently on the first page
-			$strFirstPageHref 		= Href()->ViewUnbilledChargesForService($intServiceId, DBO()->Page->FirstPage->Value, $intFilterId);
+			$strFirstPageHref 		= Href()->ViewUnbilledChargesForService($intServiceId, FALSE, DBO()->Page->FirstPage->Value, $intFilterId);
 			$strFirstPageLabel 		= "<span class='DefaultOutputSpan Default'><a href='$strFirstPageHref' style='color:blue; text-decoration: none;'>&lt;&lt;&nbsp;First</a></span>";
-			$strPreviousPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, (DBO()->Page->CurrentPage->Value - 1), $intFilterId);
+			$strPreviousPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, FALSE, (DBO()->Page->CurrentPage->Value - 1), $intFilterId);
 			$strPreviousPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPreviousPageHref' style='color:blue; text-decoration: none;'>&lt;&nbsp;Previous</a></span>";
 		}
 		else
@@ -195,9 +195,9 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		if (DBO()->Page->CurrentPage->Value != DBO()->Page->LastPage->Value)
 		{
 			// Not currently on the last page
-			$strLastPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, DBO()->Page->LastPage->Value, $intFilterId);
+			$strLastPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, FALSE, DBO()->Page->LastPage->Value, $intFilterId);
 			$strLastPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strLastPageHref' style='color:blue; text-decoration: none;'>Last&nbsp;&gt;&gt;</a></span>";
-			$strNextPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, (DBO()->Page->CurrentPage->Value + 1), $intFilterId);
+			$strNextPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, FALSE, (DBO()->Page->CurrentPage->Value + 1), $intFilterId);
 			$strNextPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strNextPageHref' style='color:blue; text-decoration: none;'>Next&nbsp;&gt;</a></span>";
 		}
 		else

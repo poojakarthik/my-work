@@ -527,8 +527,7 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		}
 	
 		strContent = "<div align='center'><p>" + strMessage + "</p>" +
-					 "<p><img src='" + strImage + "' align='center'></img></p></div>\n";
-		//Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'modeless');
+					 "<p><img id='Vixen_DancingPablo' src='" + strImage + "' align='center'></img></p></div>\n";
 		this.CreateSplash(strContent, strSize);
 	}
 	
