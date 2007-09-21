@@ -508,7 +508,7 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 	
 	// This alert box should be shown when the server could possibly take a long time to load a page
 	// All three parameters are optional
-	this.PageLoadingSplash = function(strMessage, strSize, strImage)
+	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage)
 	{
 		// set the default message
 		if (strMessage == null)
@@ -526,10 +526,32 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 			strImage = "img/template/pablo_load.gif";
 		}
 	
-		strContent = "<div align='center'><p>" + strMessage + "</p>" +
-					 "<p><img id='Vixen_DancingPablo' src='" + strImage + "' align='center'></img></p></div>\n";
+		strContent =	"<div align='center' style='border: solid 2px #000000;'><p>" + strMessage + "</p>" +
+						"<p><span id='VixenSplashDots'>.</span></p>" + 
+						"<p><img id='Vixen_DancingPablo' src='" + strImage + "' align='center'></img></p>\n";
 		this.CreateSplash(strContent, strSize);
+		this.AnimateSplash();
 	}
+	
+	this.AnimateSplash = function(intNumOfDots)
+	{
+		if (intNumOfDots == null || intNumOfDots > 20)
+		{
+			intNumOfDots = 1;
+		}
+		
+		var elmDots = document.getElementById("VixenSplashDots");
+		
+		var strDots = "..................................";
+		
+		strDots = strDots.slice(0, intNumOfDots);
+		elmDots.innerHTML = strDots;
+		
+		intNumOfDots++;
+		setTimeout(function(){Vixen.Popup.AnimateSplash(intNumOfDots)}, 200);
+	}
+	
+	
 	
 	this.ClosePageLoadingSplash = function()
 	{

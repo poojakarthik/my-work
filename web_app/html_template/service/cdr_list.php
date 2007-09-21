@@ -100,7 +100,7 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		}
 		
 		// Build the filter combobox
-		$strOnChange =	"setTimeout(function(){Vixen.Popup.PageLoadingSplash()}, ". SPLASH_WAITING_TIME .");" .
+		$strOnChange =	"setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash()}, ". SPLASH_WAITING_TIME .");" .
 						"window.location.search = \"Service.Id=$intServiceId&Filter.Id=\"+ this.value;";
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Call Type Filter:</div>\n";

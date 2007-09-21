@@ -119,6 +119,6 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "
 define("MAX_RECORDS_PER_PAGE",	20);
 
 // time to wait before displaying the "Dancing Pablo - page is loading" splash
-define("SPLASH_WAITING_TIME", 500);
+define("SPLASH_WAITING_TIME", 50);
 
 ?>

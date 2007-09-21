@@ -198,7 +198,7 @@ class MenuItems
 		}
 		
 		// Include the "loading" splash
-		return "javascript: setTimeout(function(){Vixen.Popup.PageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
+		return "javascript: setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -230,7 +230,7 @@ class MenuItems
 			return $strAction;
 		}
 		
-		return "javascript: setTimeout(function(){Vixen.Popup.PageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
+		return "javascript: setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
 	}
 
 	//------------------------------------------------------------------------//
@@ -262,7 +262,7 @@ class MenuItems
 			return $strAction;
 		}
 		
-		return "javascript: setTimeout(function(){Vixen.Popup.PageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
+		return "javascript: setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
 	}
 
 
