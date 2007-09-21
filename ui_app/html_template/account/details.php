@@ -126,10 +126,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			
 		//$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");	
 		//echo $this->_objAjax->strId;
+		echo "</div>\n";
 		$this->Button("Edit", "Vixen.RateAdd.Edit(".DBO()->Account->Id->Value.")");
 		$this->FormEnd();
-		echo "--->>>".DBO()->Account->Id->Value;
-		echo "</div>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}
@@ -152,20 +151,182 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		//echo "->>>>>>>>>>>".DBO();
 		echo "<h2 class='Account'>Account Edit Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
-		echo"<table border='0' cellpadding='3' cellspacing='0'>\n";
+		//echo"<table border='0' cellpadding='3' cellspacing='0'>\n";
 				
-				foreach (DBO()->Account AS $strProperty=>$objValue)
-				{	
-					echo "<tr>\n";
-					$objValue->RenderOutput();
-					echo "</tr>\n";
-				}
-				
-		echo "</table>\n";
+				//foreach (DBO()->Account AS $strProperty=>$objValue)
+				//{	
+				//	echo "<tr>\n";
+				//	$objValue->RenderIntput();
+				//	echo "</tr>\n";
+				//}
+		
+		DBO()->Account->Id->RenderOutput();
+		//DBO()->Account->Balance->RenderOutput();
+		DBO()->Account->BusinessName->RenderInput();
+		DBO()->Account->TradingName->RenderInput();
+		DBO()->Account->ABN->RenderInput();
+		DBO()->Account->ACN->RenderInput();
+		DBO()->Account->Address1->RenderInput();
+		DBO()->Account->Address2->RenderInput();
+		DBO()->Account->Suburb->RenderInput();
+		DBO()->Account->Postcode->RenderInput();
+		
+		$arrState = array();
+		$arrState[SERVICE_STATE_TYPE_ACT] = "Australian Capital Territory";
+		$arrState[SERVICE_STATE_TYPE_NSW] = "New South Wales";
+		$arrState[SERVICE_STATE_TYPE_VIC] = "Victoria";
+		$arrState[SERVICE_STATE_TYPE_SA] = "South Australia";
+		$arrState[SERVICE_STATE_TYPE_WA] = "Western Australia";
+		$arrState[SERVICE_STATE_TYPE_TAS] = "Tasmania";
+		$arrState[SERVICE_STATE_TYPE_NT] = "Northern Territory";
+		$arrState[SERVICE_STATE_TYPE_QLD] = "Queensland";
+		
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select name='Account.State' style='width:152px'>\n";
+	
+		foreach ($arrState as $strKey=>$strStateSelection)
+		{
+			if (DBO()->Account->State->Value == $strKey)
+			{
+				// this is the currently selected combobox option
+				echo "		<option value='". $strKey . "' selected='selected'>$strStateSelection</option>\n";
+			}
+			else
+			{
+				// this is currently not the selected combobox option
+				echo "		<option value='". $strKey . "'>$strStateSelection</option>\n";
+			}
+		}
+		
+		echo "      </select>\n";
+		echo "   </div>\n";
 		echo "</div>\n";
+		
+		//DBO()->Account->State->RenderInput();
+		
+		DBO()->Account->Country->RenderOutput();
+		//DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_INPUT);
+	
+		/*echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Type:</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select name='Account.BillingType' style='width:152px'>\n";
+	
+		foreach ($GLOBALS['*arrConstant']['BillingType'] as $intConstant=>$arrBillingTypeSelection)
+		{
+			$strSelected = (DBO()->Account->BillingType->Value == $intConstant) ? "selected='selected'" : "";
+		
+			// this is the currently selected combobox option
+			echo "		<option value='$intConstant' $strSelected>{$arrBillingTypeSelection['Description']}</option>\n";
+		}
+		
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";*/	
+	
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method:</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select name='Account.BillingMethod' style='width:152px'>\n";
+	
+		foreach ($GLOBALS['*arrConstant']['BillingMethod'] as $intConstant=>$arrBillingMethodSelection)
+		{
+			$strSelected = (DBO()->Account->BillingMethod->Value == $intConstant) ? "selected='selected'" : "";
+		
+			// this is the currently selected combobox option
+			echo "		<option value='$intConstant' $strSelected>{$arrBillingMethodSelection['Description']}</option>\n";
+		}
+		
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";
+		
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;CustomerGroup:</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select name='Account.CustomerGroup' style='width:152px'>\n";
+	
+		foreach ($GLOBALS['*arrConstant']['CustomerGroup'] as $intConstant=>$arrCustomerGroupSelection)
+		{
+			$strSelected = (DBO()->Account->CustomerGroup->Value == $intConstant) ? "selected='selected'" : "";
+		
+			// this is the currently selected combobox option
+			echo "		<option value='$intConstant' $strSelected>{$arrCustomerGroupSelection['Description']}</option>\n";
+		}
+
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";		
+
+		echo "<div class='Seperator'></div>\n";
+
+		$strDisableDDRvalue = "";
+		if (DBO()->Account->DisableDDR->Value == 1)
+		{
+			$strDisableDDRvalue = "checked";
+		}
+		else
+		{
+			
+		}
+		
+		echo "&nbsp;<input type='checkbox' name='Account.DisableDDR'> Do not charge an admin fee\n";
+
+		//DBO()->Account->DisableDDR->RenderInput();
+		
+		
+		
+		$strLatePaymentValue_Case0 = "";
+		$strLatePaymentValue_Case1 = "";
+		$strLatePaymentValue_Case2 = "";
+		
+		switch (DBO()->Account->DisableLatePayment->Value)
+		{
+		case 0:
+			$strLatePaymentValue_Case0 = "'checked'";		
+			break;
+		case 1:
+			$strLatePaymentValue_Case1 = "'checked'";		
+			break;
+		case -1:
+			$strLatePaymentValue_Case2 = "'checked'";	
+			break;
+		default:
+			break;
+		}
+		
 		echo "<div class='Seperator'></div>\n";
 		
+		echo "<table border='0' cellpadding='1' cellspacing='0'>\n";
+		echo "<tr class='LatePayments'><td rowspan='4'>&nbsp;</td><td valign='top' rowspan='4' width='36%'>Late Payments:</td></tr>\n";
+		
+			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='0' $strLatePaymentValue_Case0>Charge a late payment fee</td></tr>\n";
+			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='-1' $strLatePaymentValue_Case1>Don't charge a late payment fee on the next invoice</td></tr>\n";
+			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='1' $strLatePaymentValue_Case2>Never charge a late payment fee</td></tr>\n";		
+		
+		echo "</td></tr>\n";
+		echo "</table>\n";
+		
+		echo "<div class='Seperator'></div>\n";		
+		
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status:</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select name='Account.Archived' style='width:152px'>\n";
+	
+		foreach ($GLOBALS['*arrConstant']['Account'] as $intConstant=>$arrArchivedSelection)
+		{
+			$strSelected = (DBO()->Account->Archived->Value == $intConstant) ? "selected='selected'" : "";
+		
+			// this is the currently selected combobox option
+			echo "		<option value='$intConstant' $strSelected>{$arrArchivedSelection['Description']}</option>\n";
+		}
 
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";		
 	}
 
 	//------------------------------------------------------------------------//

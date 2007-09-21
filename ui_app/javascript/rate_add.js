@@ -266,13 +266,12 @@ function VixenRateAddClass()
 		// The PopupId, containing this form, has been rendered as a hidden
 		//alert("entered");
 		var objObjects = {};
-		objObjects.Objects = {};
-		objObjects.Objects.Account = {};
-		objObjects.Objects.Account.Id = intAccountId;
+		objObjects.Account = {};
+		objObjects.Account.Id = intAccountId;
 		
-		alert("entered EDIT function in rate_add.js :- "+objObjects.Objects.Account.Id);
+		//alert("entered EDIT function in rate_add.js :- "+objObjects.Account.Id);
 		
-		Vixen.Ajax.CallAppTemplate("Account", "Edit", intAccountId, "AccountDetailDiv");
+		Vixen.Ajax.CallAppTemplate("Account", "Edit", objObjects);
 	}
 }
 

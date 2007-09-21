@@ -65,21 +65,21 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 				//foreach (DBO()->Account AS $strProperty=>$objValue)
 				//{	
-					Ajax()->AddCommand("Alert", DBO()->Account->Id->Value);
+			//Ajax()->AddCommand("Alert", DBO()->Account->Id->Value);
 				//}
 		
 		
 		//Ajax()->AddCommand("Alert", DBO());
 			//Load account + stuff
 			//DBO()->Account->Id = DBO()->Account->Id->Value;
-			DBO()->Account->Id = DBO()->Account->Id->Value;
+			//DBO()->Account->Id = DBO()->Account->Id->Value;
 			DBO()->Account->Load();
 			DBO()->Service->Account = DBO()->Account->Id->Value;
 			DBO()->Service->Load();
 	
 	
 	
-		//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 		//}
 	}
 

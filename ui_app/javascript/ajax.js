@@ -24,7 +24,7 @@ function VixenAjaxClass()
 		objSend.Method = strMethod;
 		objSend.Objects = objObjects;
 		objSend.TargetType = strTargetType;
-		
+	
 		// send object
 		this.Send(objSend);
 	}

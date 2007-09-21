@@ -591,7 +591,7 @@ define("SERVICE_ADDR_TYPE_OFFICE_2"					, "OFC");
 define("SERVICE_ADDR_TYPE_PENTHOUSE"				, "PHS");
 define("SERVICE_ADDR_TYPE_PIER"						, "PR");
 define("SERVICE_ADDR_TYPE_PO_BOX"					, "POB");
-define("SERVICE_ADDR_TYPE_POST_OFFICE"				, "PO");
+define("SERVICE_ADDR_TYPE_FF_OFFICE"				, "PO");
 define("SERVICE_ADDR_TYPE_PRIVATE_BAG"				, "BAG");
 define("SERVICE_ADDR_TYPE_PRIVATE_BAG_2"			, "PB");
 define("SERVICE_ADDR_TYPE_RMB"						, "RMB");

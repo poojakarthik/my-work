@@ -519,6 +519,11 @@
 		height:				auto;
 	}
 
+	tr.LatePayments
+	{
+		font-size:			 10pt;		
+	}
+
 	table.Listing
 	{
 		border:              solid 1px #C1C1C1;
