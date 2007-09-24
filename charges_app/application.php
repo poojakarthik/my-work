@@ -109,7 +109,7 @@
 								  "			)" .
 								  "		)" .
 								  ")";
-		$this->_selGetCharges	= new StatementSelect("(RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account) LEFT JOIN Service ON Service.Id = RecurringCharge.Service", "*", $arrWhere, NULL, "1000");
+		$this->_selGetCharges	= new StatementSelect("(RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account) LEFT JOIN Service ON Service.Id = RecurringCharge.Service", "RecurringCharge.*", $arrWhere, NULL, "1000");
 		
 		$arrColumns = Array();
 		$arrColumns['Id']				= NULL;
