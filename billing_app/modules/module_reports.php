@@ -322,11 +322,11 @@ class BillingModuleReports
 	 */
 	protected function _ReportServiceSummary()
 	{
-		$selServicesArchived	= new StatementSelect(	"Service",
+		$selServicesClosed		= new StatementSelect(	"Service",
 														"Id",
 														"Id NOT IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>)");
 														
-		$selServicesClosed		= new StatementSelect(	"ServiceTotal",
+		$selServicesOpen		= new StatementSelect(	"ServiceTotal",
 														"Id",
 														"InvoiceRun = <InvoiceRun>");
 		
