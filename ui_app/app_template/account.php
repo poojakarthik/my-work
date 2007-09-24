@@ -60,9 +60,114 @@ class AppTemplateAccount extends ApplicationTemplate
 	 */
 	function Edit()
 	{
-		//if (DBO()->Account->Id->Valid())
-		//{
-		
+
+
+		if (SubmittedForm('EditAccount', 'Apply Changes'))
+		{
+			//Ajax()->AddCommand("Alert", DBO()->Account->CurrentStatus->Value);
+			if (DBO()->Account->IsInvalid())
+			{
+				// The form has not passed initial validation
+				//Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
+				//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DEFAULT, "AccountDetailDiv");
+				//return TRUE;
+				//Ajax()->AddCommand("Alert", "invalid account");
+			}
+
+			if (!Validate("IsNotEmptyString", DBO()->Account->BusinessName->Value))
+			{
+				DBO()->Account->BusinessName->SetToInvalid();
+				Ajax()->AddCommand("Alert", "Could not save the account.  BusinessName cannot be nothing");
+				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+				return TRUE;
+			}
+			$arrUpdateProperties[] = "BusinessName";
+
+			if (Validate("Integer", DBO()->Account->ABN->Value))
+			{
+				DBO()->Account->ABN->SetToInvalid();
+				Ajax()->AddCommand("Alert", "Could not save the account.  Not a valid ABN number");
+				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+				return TRUE;
+			}
+			$arrUpdateProperties[] = "ABN";
+
+			if (!Validate("IsNotEmptyString", DBO()->Account->Address1->Value))
+			{
+				DBO()->Account->Address1->SetToInvalid();
+				Ajax()->AddCommand("Alert", "Could not save the account.  Address1 cannot be nothing");
+				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+				return TRUE;
+			}
+			$arrUpdateProperties[] = "Address1";
+
+			if (!Validate("IsNotEmptyString", DBO()->Account->Suburb->Value))
+			{
+				DBO()->Account->Suburb->SetToInvalid();
+				Ajax()->AddCommand("Alert", "Could not save the account.  Suburb cannot be nothing");
+				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+				return TRUE;
+			}
+			$arrUpdateProperties[] = "Suburb";
+
+			if (!Validate("IsNotEmptyString", DBO()->Account->Postcode->Value))
+			{
+				DBO()->Account->Postcode->SetToInvalid();
+				Ajax()->AddCommand("Alert", "Could not save the account.  Postcode cannot be nothing");
+				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+				return TRUE;
+			}
+			$arrUpdateProperties[] = "Postcode";			
+
+			if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
+			{
+				//TODO write a system note
+				//----------------------------------
+				//----------------------------------
+				Ajax()->AddCommand("Alert", "write a system note");
+			}
+
+			if (DBO()->Account->TradingName->Value)
+			{
+				$arrUpdateProperties[] = "TradingName";	
+			}
+			if (DBO()->Account->ACN->Value)
+			{
+				$arrUpdateProperties[] = "ACN";	
+			}
+			if (DBO()->Account->Address2->Value)
+			{
+				$arrUpdateProperties[] = "Address2";	
+			}			
+
+			$arrUpdateProperties[] = "State";	
+			$arrUpdateProperties[] = "BillingMethod";
+			$arrUpdateProperties[] = "CustomerGroup";
+			$arrUpdateProperties[] = "DisableLatePayment";
+			$arrUpdateProperties[] = "Archived";
+			$arrUpdateProperties[] = "DisableDDR";
+
+			//DBO()->Account->OldStatus = DBO()->Account->Archived->Value;
+
+			//if (count($arrUpdateProperties) > 0)
+			//{
+				// Declare columns to update
+				DBO()->Account->SetColumns($arrUpdateProperties);			
+				// Save the service to the service table of the vixen database
+				if (!DBO()->Account->Save())
+				{
+					// The service did not save
+					//TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
+					return TRUE;
+				}
+				else
+				{
+					Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
+					return TRUE;
+				}
+			}
+		//}
 				//foreach (DBO()->Account AS $strProperty=>$objValue)
 				//{	
 			//Ajax()->AddCommand("Alert", DBO()->Account->Id->Value);
@@ -73,12 +178,12 @@ class AppTemplateAccount extends ApplicationTemplate
 			//Load account + stuff
 			//DBO()->Account->Id = DBO()->Account->Id->Value;
 			//DBO()->Account->Id = DBO()->Account->Id->Value;
-			DBO()->Account->Load();
-			DBO()->Service->Account = DBO()->Account->Id->Value;
-			DBO()->Service->Load();
-	
-	
-	
+
+		DBO()->Account->SetColumns();
+		DBO()->Account->Load();
+		DBO()->Service->Account = DBO()->Account->Id->Value;
+		DBO()->Service->Load();	
+		
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 		//}
 	}
@@ -97,7 +202,8 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * @method
 	 *
 	 */
-	function View()
+	 
+function Render_View()
 	{	
 		
 		$pagePerms = PERMISSION_ADMIN;
@@ -134,6 +240,8 @@ class AppTemplateAccount extends ApplicationTemplate
 				*/
 			// Load page
 			$this->LoadPage('Account_View');
+			//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");
+			
 			//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 		}
 		//else
@@ -147,6 +255,47 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		*/
 		//$this->Module->Account->Method();	
+	}	 
+	 
+	function View()
+	{	
+		$pagePerms = PERMISSION_ADMIN;
+
+		AuthenticatedUser()->CheckAuth();
+		// Check perms
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+		}
+
+		if (DBO()->Account->Id->Valid())
+		{
+			//Load account + stuff
+			DBO()->Account->Load();
+			DBO()->Service->Account = DBO()->Account->Id->Value;
+			DBO()->Service->Load();
+		
+			// Context menu options
+			// context menu
+			ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Logout();
+			
+			// add to breadcrumb menu
+			//BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
+			//BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
+			/*Menu
+			   |--Account
+				|--View Account
+				*/
+			// Load page
+			//$this->LoadPage('Account_View');
+			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");
+		}
+		//else
+		//{		
+		// Load error page
+		//	$this->LoadPage('Account_Error');
+		//}
 	}
 	
 	
@@ -293,6 +442,7 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		return TRUE;
 	}
+	
 	
 
 	//------------------------------------------------------------------------//

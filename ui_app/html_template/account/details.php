@@ -120,6 +120,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_OUTPUT);
 		DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("BillingMethod"), RENDER_OUTPUT);
 		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		
 		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		
 		//$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", Vixen.RateAdd.Commit)");
@@ -149,8 +150,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		
 		//echo "->>>>>>>>>>>".DBO();
+		echo "<div id='AccountDetailDiv'>\n";
 		echo "<h2 class='Account'>Account Edit Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
+		$this->FormStart("EditAccount", "Account", "Edit");
 		//echo"<table border='0' cellpadding='3' cellspacing='0'>\n";
 				
 				//foreach (DBO()->Account AS $strProperty=>$objValue)
@@ -160,6 +163,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				//	echo "</tr>\n";
 				//}
 		
+		DBO()->Account->Id->RenderHidden();
+		DBO()->Account->Country->RenderHidden();
+		DBO()->Account->BillingType->RenderHidden();		
+		DBO()->Account->CurrentStatus = DBO()->Account->Archived->Value;
+		DBO()->Account->CurrentStatus->RenderHidden();
+
 		DBO()->Account->Id->RenderOutput();
 		//DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->BusinessName->RenderInput();
@@ -272,12 +281,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			
 		}
 		
-		echo "&nbsp;<input type='checkbox' name='Account.DisableDDR'> Do not charge an admin fee\n";
+		$strSelected = (DBO()->Account->DisableDDR->Value == 1) ? "'checked'" : "";
+		echo "&nbsp;<input type='checkbox' name='Account.DisableDDR' $strSelected> Do not charge an admin fee\n";
 
-		//DBO()->Account->DisableDDR->RenderInput();
-		
-		
-		
 		$strLatePaymentValue_Case0 = "";
 		$strLatePaymentValue_Case1 = "";
 		$strLatePaymentValue_Case2 = "";
@@ -303,8 +309,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<tr class='LatePayments'><td rowspan='4'>&nbsp;</td><td valign='top' rowspan='4' width='36%'>Late Payments:</td></tr>\n";
 		
 			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='0' $strLatePaymentValue_Case0>Charge a late payment fee</td></tr>\n";
-			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='-1' $strLatePaymentValue_Case1>Don't charge a late payment fee on the next invoice</td></tr>\n";
-			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='1' $strLatePaymentValue_Case2>Never charge a late payment fee</td></tr>\n";		
+			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='-1' $strLatePaymentValue_Case2>Don't charge a late payment fee on the next invoice</td></tr>\n";
+			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='1' $strLatePaymentValue_Case1>Never charge a late payment fee</td></tr>\n";		
 		
 		echo "</td></tr>\n";
 		echo "</table>\n";
@@ -319,15 +325,21 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		foreach ($GLOBALS['*arrConstant']['Account'] as $intConstant=>$arrArchivedSelection)
 		{
 			$strSelected = (DBO()->Account->Archived->Value == $intConstant) ? "selected='selected'" : "";
-		
+	
 			// this is the currently selected combobox option
-			echo "		<option value='$intConstant' $strSelected>{$arrArchivedSelection['Description']}</option>\n";
+			if (($intConstant != ACCOUNT_DEBT_COLLECTION) || ($intConstant != ACCOUNT_ARCHIVED))
+			{
+				echo "		<option value='$intConstant' $strSelected>{$arrArchivedSelection['Description']}</option>\n";
+			}
 		}
 
 		echo "      </select>\n";
 		echo "   </div>\n";
+		$this->Button("Cancel", "Vixen.RateAdd.Cancel(".DBO()->Account->Id->Value.")");
+		$this->AjaxSubmit("Apply Changes");
 		echo "</div>\n";		
-	}
+		echo "</div>\n";
+}
 
 	//------------------------------------------------------------------------//
 	// _RenderLedgerDetail (currently only used in invoice and payments)

@@ -247,7 +247,33 @@ function VixenRateAddClass()
 		// The PopupId, containing this form, has been rendered as a hidden
 		Vixen.Popup.Close(document.getElementById("AddRatePopupId").value);
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// Cancel (function doesnt really belong in this class)
+	//------------------------------------------------------------------------//
+	/**
+	 * Cancel
+	 *
+	 * 
+	 *  
+	 * 
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.Cancel = function(intAccountId)
+	{
+		// The PopupId, containing this form, has been rendered as a hidden
+		//alert("entered");
+		var objObjects = {};
+		objObjects.Account = {};
+		objObjects.Account.Id = intAccountId;
+		
+		//alert("entered EDIT function in rate_add.js :- "+objObjects.Account.Id);
+		
+		Vixen.Ajax.CallAppTemplate("Account", "View", objObjects);
+	}
+
 	//------------------------------------------------------------------------//
 	// Edit (function doesnt really belong in this class)
 	//------------------------------------------------------------------------//
