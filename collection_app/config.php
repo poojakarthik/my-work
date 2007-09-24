@@ -224,7 +224,7 @@
  		$arrConfig['Define']["Payments"]	["FinalDir"]														= DESTINATION_ROOT.'payment/';
 		$arrConfig['Define']["Payments"]	["FileType"]['/^TELCOBLUE \d{6}\.txt$/i']							= PAYMENT_TYPE_BILLEXPRESS;
 		$arrConfig['Define']["Payments"]	["FileType"]['/^bpay \d{6}\.csv$/i']								= PAYMENT_TYPE_BPAY;
-		$arrConfig['Define']["Payments"]	["FileType"]['/^SAE\d{2}_\d{4}-\d{2}-\d{2}_\d{2}_\d{4}\.txt$/i']	= PAYMENT_TYPE_SECUREPAY;
+		$arrConfig['Define']["Payments"]	["FileType"]['/^SAE\d{2}_\d{4}-\d{2}-\d{2}_\d{2}_\d{1,4}\.txt$/i']	= PAYMENT_TYPE_SECUREPAY;
 
 		
 ?>
