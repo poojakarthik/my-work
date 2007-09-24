@@ -19,7 +19,11 @@ $arrConfig = LoadApplication();
 $appBilling = new ApplicationBilling($arrConfig);
 
 // execute bill
+$strDateTime = date("Y-m-d H:i:s");
+SendEmail('turdminator@hotmail.com', "viXen Billing Started @ $strDateTime", "viXen Billing Started @ $strDateTime");
 //$bolResponse = $appBilling->Execute();
+$strDateTime = date("Y-m-d H:i:s");
+SendEmail('turdminator@hotmail.com', "viXen Billing Ended @ $strDateTime", "viXen Billing Started @ $strDateTime");
 
 // Email Invoice Total Data
 CliEcho(" + Calculating Profit Data...");
@@ -35,6 +39,8 @@ $arrProfitData['LastMonth']['LastInvoiceRun']	= $arrMonthBeforeLast['InvoiceRun'
 
 if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 {
+	$strDateTime = date("Y-m-d H:i:s");
+	SendEmail('turdminator@hotmail.com', "viXen Management Reports Started @ $strDateTime", "viXen Management Reports Started @ $strDateTime");
 	//Generate Management Reports
 	$bilManagementReports = new BillingModuleReports($arrProfitData);
 	
@@ -61,13 +67,13 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 	$strFilename	= "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/")."Plan_Summary_with_Breakdown_($strServiceType).xls";
 	
 	$arrReports = Array();
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
 	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('RecurringAdjustmentsSummary'));
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('CustomerSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('CustomerSummary'));
 	
 	// Email Management Reports	
 	$strContent		= "Please find attached the Management Reports for ".date("Y-m-d H:i:s")."\n\nYellow Billing Services";
@@ -107,6 +113,8 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 }
 else
 {
+	$strDateTime = date("Y-m-d H:i:s");
+	SendEmail('turdminator@hotmail.com', "viXen Management Reports Skipped @ $strDateTime", "viXen Management Reports Skipped @ $strDateTime");
 	CliEcho("No data in InvoiceTemp table!!");
 }
 

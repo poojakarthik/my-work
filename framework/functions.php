@@ -2779,4 +2779,40 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
 	}
 }
 
+
+//------------------------------------------------------------------------//
+// SendEmail
+//------------------------------------------------------------------------//
+/**
+ * SendEmail()
+ *
+ * Sends a simple email
+ *
+ * Sends a simple email
+ * 
+ * @param	string		$strAddresses				Comma-separated list of addresses to send to
+ * @param	string		$strSubject					Subject for the email
+ * @param	string		$strContent					Email content
+ * @param	string		$strFrom		[optional]	Sent from
+ *
+ * @return	boolean									Pass/Fail
+ *
+ * @method
+ */
+function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voiptelsystems.com.au')
+{
+	$arrHeaders = Array	(
+							'From'		=> $strFrom,
+							'Subject'	=> $strSubject
+						);
+	$mimMime = new Mail_mime("\n");
+	$mimMime->setTXTBody($strContent);
+	
+	$strBody = $mimMime->get();
+	$strHeaders = $mimMime->headers($arrHeaders);
+	$emlMail =& Mail::factory('mail');
+	
+	// Send the email
+	return (bool)$emlMail->send($strAddresses, $strHeaders, $strBody);
+}
 ?>
