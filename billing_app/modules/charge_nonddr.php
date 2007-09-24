@@ -91,7 +91,7 @@
 														"Archived = 0");
 		
 		// Config
-		$this->_arrConfig = $GLOBALS['**arrCustomerConfig']['BillingTimeModules']['ChargeNonDirectDebit'];
+		$this->_arrConfig = $GLOBALS['**arrCustomerConfig']['Billing']['BillingTimeModules']['ChargeNonDirectDebit'];
 		
 		$this->_strChargeType	= $this->_arrConfig['Code'];
  	}
