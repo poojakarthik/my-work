@@ -1256,7 +1256,7 @@
 				// add in plan charge breakdown
 				if ((float)$arrRatePlan['MinMonthly'])
 				{
-					Debug("Entered!");
+					//Debug("Entered!");
 					
 					// it must not be a shared plan (shared plans may be handled at a later date)
 					if (!$arrRatePlan['Shared'])
@@ -1270,7 +1270,7 @@
 				}
 				else
 				{
-					Debug("Skipped!");
+					//Debug("Skipped!");
 				}
 			}
 			
