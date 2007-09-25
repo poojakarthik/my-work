@@ -1254,16 +1254,13 @@
 				$arrDefine['SvcSummSvcTotal']		['TotalCapped']		['Value']	= (float)$arrServiceTotal[0]['TotalCharge'];
 				
 				// add in plan charge breakdown
-				Debug($arrRatePlan['MinMonthly']);
-				if ($arrRatePlan['MinMonthly'])
+				if ((float)$arrRatePlan['MinMonthly'])
 				{
 					Debug("Entered!");
 					
 					// it must not be a shared plan (shared plans may be handled at a later date)
 					if (!$arrRatePlan['Shared'])
 					{
-						Debug($arrRatePlan);
-						
 						// add in breakdown
 						$fltPlanCredit = ((float)$arrServiceTotal[0]['TotalCharge'] - $fltTotal) - $arrRatePlan['MinMonthly'];
 						$arrDefine['SvcSummPlanSumm']		['PlanCharge']		['Value']	= $arrRatePlan['MinMonthly'];
