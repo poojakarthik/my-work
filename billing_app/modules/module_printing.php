@@ -1209,7 +1209,7 @@
  		if ($arrServiceSummaries)
  		{
 			// Get Plan Details
-			$this->_selRatePlan->Execute($arrService);
+			$this->_selRatePlan->Execute(Array('Id' => end($arrService['Id'])));
 			$arrRatePlan	= $this->_selRatePlan->Fetch();
 			
 			// Service Header
