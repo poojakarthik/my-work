@@ -54,6 +54,8 @@
  		$arrDefine['RecordType']	['Length']	= 2;
  		$arrDefine['AccountNo']		['Start']	= 12;
  		$arrDefine['AccountNo']		['Length']	= 10;
+ 		$arrDefine['CheckDigit']	['Start']	= 22;
+ 		$arrDefine['CheckDigit']	['Length']	= 1;
  		$arrDefine['Date1']			['Start']	= 40;
  		$arrDefine['Date1']			['Length']	= 8;
  		$arrDefine['Amount']		['Start']	= 79;
@@ -94,6 +96,9 @@
  		
  		$strRecordType = $this->_FetchRaw('RecordType');
  		
+ 		// PaymentType
+ 		$this->_Append('PaymentType', PAYMENT_TYPE_BILLEXPRESS);
+ 		
  		// Check if this is a header or footer record...
  		if ($strRecordType == "00" || !trim($strPaymentRecord))
  		{
@@ -120,7 +125,7 @@
  		parent::Normalise($strPaymentRecord);
  		
  		// Apply AccountGroup Ownership
- 		$strAccount			= $this->_FetchRaw('AccountNo');
+ 		$strAccount			= (int)$this->_FetchRaw('AccountNo');
  		$intAccount			= (int)$strAccount;
  		$this->_Append('Account', $intAccount);
  		if (($intAccountGroup = $this->_FindAccountGroup($intAccount)) === FALSE)
@@ -130,8 +135,12 @@
  		}
  		$this->_Append('AccountGroup', $intAccountGroup);
  		
- 		// PaymentType
- 		$this->_Append('PaymentType', PAYMENT_TYPE_BILLEXPRESS);
+ 		// Validate Check Digit
+ 		if (MakeLuhn($intAccount) != (int)$this->_FetchRaw('CheckDigit'))
+ 		{
+			$this->_Append('Status', PAYMENT_INVALID_CHECK_DIGIT);
+ 			return $this->_Output();
+ 		}
  		
  		//----------------------------------------------------------------------
  		

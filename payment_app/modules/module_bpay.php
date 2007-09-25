@@ -137,6 +137,9 @@
  		{
  			return PAYMENT_CANT_NORMALISE_INVALID;
  		}
+		
+ 		// PaymentType
+ 		$this->_Append('PaymentType', PAYMENT_TYPE_BPAY);
 	 	
  		// BPay are idiots, so parse the file first, changing it from comma-delimited to pipe-delimited
 	 	$strRawRecord = str_replace("\",", "\"|", $strPaymentRecord);
@@ -179,9 +182,13 @@
  			return $this->_Output();
  		}
  		$this->_Append('AccountGroup', $intAccountGroup);
- 		 		
- 		// PaymentType
- 		$this->_Append('PaymentType', PAYMENT_TYPE_BPAY);
+ 		
+ 		// Validate Check Digit
+ 		if (MakeLuhn($intAccount) != (int)substr($strAccount, -1, 1))
+ 		{
+			$this->_Append('Status', PAYMENT_INVALID_CHECK_DIGIT);
+ 			return $this->_Output();
+ 		}
  		
  		//----------------------------------------------------------------------
  		

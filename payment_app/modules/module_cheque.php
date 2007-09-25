@@ -95,6 +95,9 @@
  		{
  			return PAYMENT_CANT_NORMALISE_HEADER;
  		}
+ 		 		
+ 		// PaymentType
+ 		$this->_Append('PaymentType', PAYMENT_TYPE_CHEQUE);
 
  		// Amount
  		$mixValue	= (float)$this->_FetchRaw('Amount');
@@ -121,9 +124,6 @@
  		$intAccountGroup	= $this->_FindAccountGroup($intAccount);
  		$this->_Append('AccountGroup', $intAccountGroup);
  		$this->_Append('Account', $intAccount);
- 		 		
- 		// PaymentType
- 		$this->_Append('PaymentType', PAYMENT_TYPE_CHEQUE);
  		
  		//----------------------------------------------------------------------
  		
