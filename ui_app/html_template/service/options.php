@@ -95,7 +95,10 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 			
 			$strEditAccountLink = Href()->EditAccount(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
 			echo "<li>[TEMPORARY LINK] ---->><a href='$strEditAccountLink'>Edit Account</a></li>\n";
-			
+
+			$strViewServicesLink = Href()->ViewServices(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+			echo "<li>[TEMPORARY LINK] ---->><a href='$strViewServicesLink'>View Services</a></li>\n";
+
 			//*************************************
 			
 		echo "</td></tr>\n";

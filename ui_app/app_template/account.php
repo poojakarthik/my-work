@@ -121,10 +121,63 @@ class AppTemplateAccount extends ApplicationTemplate
 
 			if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
 			{
-				//TODO write a system note
-				//----------------------------------
-				//----------------------------------
-				Ajax()->AddCommand("Alert", "write a system note");
+				// Define system generated note
+				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+				$strNote = "Account Status was changed on $strDateTime by $strUserName with status of ".DBO()->Account->Archived->Value;				
+				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
+				
+				switch (DBO()->Account->Archived->Value)
+				{
+					case ACCOUNT_ACTIVE:
+						break;
+					case ACCOUNT_CLOSED:
+						// get all the records DBL
+						// loop through
+						// change status
+						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
+						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
+						DBL()->Service->Where->SetString($strWhere);
+						DBL()->Service->Load();
+						
+						foreach (DBL()->Service as $dboService)
+						{
+							// set the Service Status to SERVICE_DISCONNECTED
+							$dboService->Status = SERVICE_DISCONNECTED;
+							$dboService->Save();
+						}
+						break;
+					case ACCOUNT_DEBT_COLLECTION:
+						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
+						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
+						DBL()->Service->Where->SetString($strWhere);
+						DBL()->Service->Load();
+						
+						foreach (DBL()->Service as $dboService)
+						{
+							// set the Service Status to SERVICE_DISCONNECTED
+							$dboService->Status = SERVICE_DISCONNECTED;
+							$dboService->Save();
+						}
+						break;
+					case ACCOUNT_ARCHIVED:
+						// get all the records DBL
+						// loop through
+						// change status
+						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
+						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
+						$strWhere .= " AND Status = '". SERVICE_DISCONNECTED . "'";
+						DBL()->Service->Where->SetString($strWhere);
+						DBL()->Service->Load();
+						
+						foreach (DBL()->Service as $dboService)
+						{
+							// set the Service Status to SERVICE_ARCHIVED
+							$dboService->Status = SERVICE_ARCHIVED;
+							$dboService->Save();
+						}
+						break;
+				}
 			}
 
 			if (DBO()->Account->TradingName->Value)

@@ -81,11 +81,54 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 				break;
 			case HTML_CONTEXT_BARE_DETAIL:
 				$this->_RenderBareDetail();
+				break;		
+			case HTML_CONTEXT_TABULAR_DETAIL:
+				$this->_RenderTabularDetail();
 				break;				
 			default:
 				$this->_RenderFullDetail();
 				break;
 		}
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderTabularDetail();
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderTabularDetail();
+	 *
+	 * Render this HTML Template with bare service detail
+	 *
+	 * Render this HTML Template with bare service detail
+	 *
+	 * @method
+	 */
+	private function _RenderTabularDetail()
+	{
+		echo "<h2 class='service'>Service Details</h2>\n";
+		echo "<div class='NarrowForm'>\n";
+		
+		$strLink = "View Notes, View Unbilled Charges";
+		
+		Table()->ServiceTable->SetHeader("Service #", "Service Type", "Plan Name", "Status", "Actions");
+		//Table()->ServiceTable->SetWidth("57%", "37%", "6%");
+		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
+		
+		foreach (DBL()->Service as $dboService)
+		{
+			//echo $dboService->Id->AsOutput();
+			Table()->ServiceTable->AddRow(	$dboService->Id->AsValue(), 
+										$dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
+										null,
+										$dboService->Status->AsCallBack("GetConstantDescription", Array("Service")),
+										null);									
+					
+		}
+		Table()->ServiceTable->Render();
+		//DBL()->Service->Id->RenderOutput();
+		
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";	
 	}
 
 	//------------------------------------------------------------------------//
@@ -106,7 +149,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<div class='NarrowForm'>\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();
-		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";	
 	}
@@ -131,7 +174,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		DBO()->Account->BusinessName->RenderOutput();
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();
-		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";	
 	}
@@ -176,7 +219,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			DBO()->RatePlan->Name->RenderArbitrary("No Plan", RENDER_OUTPUT, 1);
 		}
 		
-		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";

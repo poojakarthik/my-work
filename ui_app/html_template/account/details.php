@@ -148,20 +148,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 */
 	private function _RenderEditDetail()
 	{
-		
-		//echo "->>>>>>>>>>>".DBO();
 		echo "<div id='AccountDetailDiv'>\n";
 		echo "<h2 class='Account'>Account Edit Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 		$this->FormStart("EditAccount", "Account", "Edit");
-		//echo"<table border='0' cellpadding='3' cellspacing='0'>\n";
-				
-				//foreach (DBO()->Account AS $strProperty=>$objValue)
-				//{	
-				//	echo "<tr>\n";
-				//	$objValue->RenderIntput();
-				//	echo "</tr>\n";
-				//}
 		
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Account->Country->RenderHidden();
@@ -170,7 +160,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->CurrentStatus->RenderHidden();
 
 		DBO()->Account->Id->RenderOutput();
-		//DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->BusinessName->RenderInput();
 		DBO()->Account->TradingName->RenderInput();
 		DBO()->Account->ABN->RenderInput();
@@ -213,28 +202,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
-		//DBO()->Account->State->RenderInput();
-		
 		DBO()->Account->Country->RenderOutput();
-		//DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_INPUT);
-	
-		/*echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Type:</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Account.BillingType' style='width:152px'>\n";
-	
-		foreach ($GLOBALS['*arrConstant']['BillingType'] as $intConstant=>$arrBillingTypeSelection)
-		{
-			$strSelected = (DBO()->Account->BillingType->Value == $intConstant) ? "selected='selected'" : "";
-		
-			// this is the currently selected combobox option
-			echo "		<option value='$intConstant' $strSelected>{$arrBillingTypeSelection['Description']}</option>\n";
-		}
-		
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";*/	
-	
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
@@ -243,8 +211,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		foreach ($GLOBALS['*arrConstant']['BillingMethod'] as $intConstant=>$arrBillingMethodSelection)
 		{
 			$strSelected = (DBO()->Account->BillingMethod->Value == $intConstant) ? "selected='selected'" : "";
-		
-			// this is the currently selected combobox option
 			echo "		<option value='$intConstant' $strSelected>{$arrBillingMethodSelection['Description']}</option>\n";
 		}
 		
@@ -260,8 +226,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		foreach ($GLOBALS['*arrConstant']['CustomerGroup'] as $intConstant=>$arrCustomerGroupSelection)
 		{
 			$strSelected = (DBO()->Account->CustomerGroup->Value == $intConstant) ? "selected='selected'" : "";
-		
-			// this is the currently selected combobox option
 			echo "		<option value='$intConstant' $strSelected>{$arrCustomerGroupSelection['Description']}</option>\n";
 		}
 
@@ -271,16 +235,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 		echo "<div class='Seperator'></div>\n";
 
-		$strDisableDDRvalue = "";
-		if (DBO()->Account->DisableDDR->Value == 1)
-		{
-			$strDisableDDRvalue = "checked";
-		}
-		else
-		{
-			
-		}
-		
 		$strSelected = (DBO()->Account->DisableDDR->Value == 1) ? "'checked'" : "";
 		echo "&nbsp;<input type='checkbox' name='Account.DisableDDR' $strSelected> Do not charge an admin fee\n";
 
@@ -335,9 +289,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 		echo "      </select>\n";
 		echo "   </div>\n";
+		echo "</div>\n";
+		
 		$this->Button("Cancel", "Vixen.RateAdd.Cancel(".DBO()->Account->Id->Value.")");
 		$this->AjaxSubmit("Apply Changes");
-		echo "</div>\n";		
+		$this->FormEnd();
+		echo "</div>\n";
 		echo "</div>\n";
 }
 

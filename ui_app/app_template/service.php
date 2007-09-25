@@ -127,7 +127,103 @@ class AppTemplateService extends ApplicationTemplate
 
 		return TRUE;
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// View
+	//------------------------------------------------------------------------//
+	/**
+	 * View()
+	 *
+	 * Performs the logic for viewing a service
+	 * 
+	 * Performs the logic for viewing a service
+	 *
+	 * @return		void
+	 * @method		View
+	 *
+	 */
+	function View_Services()
+	{
+		$pagePerms = PERMISSION_ADMIN;
+		
+		// Should probably check user authorization here
+		AuthenticatedUser()->CheckAuth();
+		
+		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			// Add extra functionality for super-users
+		}
+		
+		$strWhere = "Account =\"". DBO()->Account->Id->Value . "\"";
+		$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
+		
+		DBL()->Service->Where->SetString($strWhere);
+		DBL()->Service->Load();
+
+		//DBL()->Service->Account = DBO()->Account->Id->Value;
+		//DBL()->Service->Load();
+
+		//Ajax()->AddCommand("Alert", DBL()->Service->Account->AsValue);
+
+		// Setup all DBO and DBL objects required for the page
+		/*if (!DBO()->Service->Load())
+		{
+			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}*/
+		/*DBO()->Account->Id = DBO()->Service->Account->Value;
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		if (DBO()->Service->Indial100->Value)
+		{
+			DBL()->ServiceExtension->Service = DBO()->Service->Id->Value;
+			DBL()->ServiceExtension->Archived = 0;
+			DBL()->ServiceExtension->Load();
+			DBO()->Service->ELB = (bool)DBL()->ServiceExtension->RecordCount();
+		}
+		
+		// Get the details of the current plan for the service
+		DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
+		if (DBO()->RatePlan->Id->Value !== FALSE)
+		{
+			DBO()->RatePlan->Load();
+		}
+		
+		// Calculate unbilled charges (this includes all unbilled Adjustments(charges) and CDRs for the service)
+		$fltUnbilledAdjustments					= UnbilledServiceChargeTotal(DBO()->Service->Id->Value);
+		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
+		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledAdjustments + $fltUnbilledCDRs);
+		
+		// Context menu
+		ContextMenu()->Admin_Console();
+		
+		ContextMenu()->Logout();
+		
+		// Breadcrumb menu
+		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
+		BreadCrumb()->SetCurrentPage("Service");
+
+		// All required data has been retrieved from the database so now load the page template
+		*/
+		$this->LoadPage('services_view');
+
+		//load the notes associated with this service and account!
+		//DBO()->Service->Account->Value
+		/*DBL()->Note->Account = DBO()->Service->Account->Value;
+		DBL()->Note->SetLimit(5);
+		DBL()->Note->Load();
+		DBL()->NoteType->Load();
+		*/
+		return TRUE;
+	}
+
+
 	//------------------------------------------------------------------------//
 	// Add
 	//------------------------------------------------------------------------//
