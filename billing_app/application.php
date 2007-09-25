@@ -767,14 +767,39 @@
 			$fltTotalOwing	= $fltBalance + $fltAccountBalance;
 			
 			// Determine Delivery Method
-			if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL || $arrAccount['BillingMethod'] == BILLING_METHOD_EMAIL)
+			switch($arrAccount['BillingMethod'])
+			{				
+				case BILLING_METHOD_EMAIL:
+					if ($fltTotal+$fltTax != 0 && $fltTotalOwing != 0)
+					{
+						$intDeliveryMethod	= $arrAccount['BillingMethod'];
+					}
+					else
+					{
+						$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+					}
+					break;
+					
+				default:
+					if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL)
+					{
+						$intDeliveryMethod	= $arrAccount['BillingMethod'];
+					}
+					else
+					{
+						$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+					}
+					break;
+			}
+						
+			/*if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL || $arrAccount['BillingMethod'] == BILLING_METHOD_EMAIL)
 			{
 				$intDeliveryMethod	= $arrAccount['BillingMethod'];
 			}
 			else
 			{
 				$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
-			}
+			}*/
 			
 			// get new values, and write to temporary invoice table
 			$arrInvoiceData['Credits']			= $fltTotalCredits;
@@ -2750,9 +2775,11 @@
 			foreach ($arrAccounts as $intAccount)
 			{
 				$selInvoice->Execute(Array('Account' => $intAccount));
-				$arrInvoice = $selInvoice->Fetch();
-				CliEcho(" + Generating Output for $intAccount...");
-				$this->_arrBillOutput[BILL_PRINT]->AddInvoice($arrInvoice);
+				if ($arrInvoice = $selInvoice->Fetch())
+				{
+					CliEcho(" + Generating Output for $intAccount...");
+					$this->_arrBillOutput[BILL_PRINT]->AddInvoice($arrInvoice);
+				}
 			}
 		}
 	}
