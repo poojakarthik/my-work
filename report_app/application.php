@@ -117,6 +117,10 @@
 			
 			// Instanciate & Run Data Report
 			$selReport = new StatementSelect($arrDataReport['SQLTable'], $arrColumns, $arrDataReport['SQLWhere'], NULL, NULL, $arrDataReport['SQLGroupBy']);
+			
+			Debug($arrWhere);
+			die;
+			
 			if (($intResultCount = $selReport->Execute($arrWhere)) === FALSE)
 			{
 				Debug($selReport->Error());
@@ -698,14 +702,14 @@
 				{
 					// Using namespace, need to do a DB Select
 					$arrDBSelect = $arrReport['SQLFields'][$arrVariable[0]]['DBSelect'];
-					$selVariable = new StatementSelect($arrDBSelect['Table'], $arrDBSelect['Columns'], $arrDBSelect['Where'] . " AND {$arrVariable[0]} = <Value>", $arrDBSelect['OrderBy'], $arrDBSelect['Limit'], $arrDBSelect['GroupBy']);
+					$selVariable = new StatementSelect($arrDBSelect['Table'], $arrDBSelect['Columns'], $arrDBSelect['Where'] . " AND {$arrDBSelect['Columns'][Value]} = <Value>", $arrDBSelect['OrderBy'], $arrDBSelect['Limit'], $arrDBSelect['GroupBy']);
 					$selVariable->Execute(Array('Value' => $arrReportParameters['SQLWhere'][$arrVariable[0]]));
 					$arrVariableData = $selVariable->Fetch();
 					$strVariable = $arrVariableData[$arrVariable[1]];
 				}
 				else
 				{
-					$strVariable = $arrVariable[0];
+					$strVariable = trim($arrReportParameters['SQLWhere'][$arrVariable[0]], '%');
 				}
 				
 				$strFileName = str_replace($arrMatch[0], $strVariable, $strFileName);
