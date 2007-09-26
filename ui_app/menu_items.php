@@ -465,6 +465,38 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// ViewServiceNotes
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewServiceNotes()
+	 *
+	 * Compiles the javascript to be executed when the ViewServiceNotes menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the ViewServiceNotes menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account associated with the notes to view
+	 *
+	 * @return	string				action to be executed when the ViewServiceNotes menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewServiceNotes($intId)
+	{
+		$this->strLabel	= "view service notes";
+		
+		// Setup data to send
+		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
+		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_SERVICE_NOTES;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Service Notes\", \"Note\", \"View\", $strJsonCode)";
+	}
+
+	//------------------------------------------------------------------------//
 	// ViewContactNotes
 	//------------------------------------------------------------------------//
 	/**

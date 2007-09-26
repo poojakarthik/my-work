@@ -107,25 +107,60 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
-		
-		$strLink = "View Notes, View Unbilled Charges";
-		
-		Table()->ServiceTable->SetHeader("Service #", "Service Type", "Plan Name", "Status", "Actions");
-		//Table()->ServiceTable->SetWidth("57%", "37%", "6%");
-		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
+
+		Table()->ServiceTable->SetHeader("Service Type", "Plan Name", "Status", "Actions");
+		Table()->ServiceTable->SetWidth("15%", "20%","20%","20%");
+		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left");
 		
 		foreach (DBL()->Service as $dboService)
 		{
-			//echo $dboService->Id->AsOutput();
-			Table()->ServiceTable->AddRow(	$dboService->Id->AsValue(), 
-										$dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
-										null,
-										$dboService->Status->AsCallBack("GetConstantDescription", Array("Service")),
-										null);									
+			switch ($dboService->Status->Value)
+			{
+				case SERVICE_ACTIVE:
+					$strStatus = "<div class='DefaultRegularOutput'>Opened On: ".$dboService->CreatedOn->Value."</div>";
+					break;
+				case SERVICE_DISCONNECTED:
+					$strStatus = "<div class='DefaultRegularOutput'>Closes On: ".$dboService->ClosedOn->Value."</div>";
+					break;
+			}
+		
+			// Returns the plan for each DBL object
+			$strWhere = "NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime AND";
+			$strWhere .= " ServiceRatePlan.Service = ".$dboService->Id->Value;
+			DBO()->RatePlan->Where->SetString($strWhere);
+		
+			$arrColumns = Array("Service"=>"ServiceRatePlan.Service",
+											"RatePlan"=>"ServiceRatePlan.RatePlan",
+											"StartDatetime"=>"ServiceRatePlan.StartDatetime",
+											"EndDatetime"=>"ServiceRatePlan.EndDatetime",
+											"CreatedWhen"=>"ServiceRatePlan.CreatedOn",
+											"Id"=>"RatePlan.Id",
+											"Name"=>"RatePlan.Name");
+	
+			DBO()->RatePlan->SetColumns($arrColumns);
+			DBO()->RatePlan->SetTable("ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan");
+			DBO()->RatePlan->OrderBy("ServiceRatePlan.CreatedOn DESC");
+			DBO()->RatePlan->Load();
+					
+			if (DBO()->RatePlan->Name->Value == NULL)
+			{
+				$strRatePlanName = "<div class='DefaultRegularOutput'>No Plan Selected</div>";
+			}
+			else
+			{
+				$strRatePlanName = "<div class='DefaultRegularOutput'>".DBO()->RatePlan->Name->Value."</div>";
+			}			
+					
+			$strViewServiceNotesLink = Href()->ViewServiceNotes($dboService->Id->Value);
+			$strOutputLink = "<div class='DefaultRegularOutput'><a href='$strViewServiceNotesLink'>View Notes</a></div>\n";
+				
+			Table()->ServiceTable->AddRow($dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
+															$strRatePlanName,
+															$strStatus,
+															$strOutputLink);									
 					
 		}
 		Table()->ServiceTable->Render();
-		//DBL()->Service->Id->RenderOutput();
 		
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";	

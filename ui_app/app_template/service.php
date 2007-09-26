@@ -155,11 +155,50 @@ class AppTemplateService extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 		
-		$strWhere = "Account =\"". DBO()->Account->Id->Value . "\"";
-		$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
+		//********************************************
 		
-		DBL()->Service->Where->SetString($strWhere);
-		DBL()->Service->Load();
+				// Retrieve the Payments
+		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId>) AND Account IS NULL) AND (Status conditions)"
+		/*$strWhere  = "((Payment.Account = ". DBO()->Account->Id->Value .")";
+		$strWhere .= " OR (Payment.AccountGroup = ". DBO()->Account->AccountGroup->Value .") AND (Payment.Account IS NULL))";
+		$strWhere .= " AND ((Payment.Status = ". PAYMENT_WAITING .")";
+		$strWhere .= " OR (Payment.Status = ". PAYMENT_PAYING .")";
+		$strWhere .= " OR (Payment.Status = ". PAYMENT_FINISHED .")";
+		$strWhere .= " OR (Payment.Status = ". PAYMENT_REVERSED ."))";
+		DBL()->Payment->Where->SetString($strWhere);
+		*/		
+			$strWhere = "Account =\"". DBO()->Account->Id->Value . "\"";
+			$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
+		
+			DBL()->Service->Where->SetString($strWhere);
+			DBL()->Service->Load();
+			
+			/*foreach (DBL()->Service as $dboService)
+			{
+				$strWhere = "NOW() BETWEEN ServiceRatePlan.StartDatetime AND";
+				$strWhere .= " ServiceRatePlan.Service = ".$dboService->Id->Value;
+				DBO()->RatePlan->Where->SetString($strWhere);
+			
+				$arrColumns = Array("Service"=>"ServiceRatePlan.Service",
+												"RatePlan"=>"ServiceRatePlan.RatePlan",
+												"StartDatetime"=>"ServiceRatePlan.StartDatetime",
+												"EndDatetime"=>"ServiceRatePlan.EndDatetime",
+												"CreatedWhen"=>"ServiceRatePlan.CreatedOn",
+												"Id"=>"RatePlan.Id",
+												"Name"=>"RatePlan.Name");
+		
+				DBO()->RatePlan->SetColumns($arrColumns);
+				DBO()->RatePlan->SetTable("ServiceRatePlan JOIN RatePlan ON RatePlan,Id = ServiceRatePlan.RatePlan");
+				DBO()->RatePlan->OrderBy("ServiceRatePlan.CreatedOn DESC");
+				DBO()->RatePlan->Load();
+			}
+		
+		//********************************************
+		
+		
+		
+		
+
 
 		//DBL()->Service->Account = DBO()->Account->Id->Value;
 		//DBL()->Service->Load();
