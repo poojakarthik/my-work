@@ -432,8 +432,23 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		Vixen.Ajax.Send(objParams);
 	}
 	
-	// Replicates the functionality of the standard javascript "alert" function
-	// the parameter strSize is optional and defaults to "medium"
+	//------------------------------------------------------------------------//
+	// Alert
+	//------------------------------------------------------------------------//
+	/**
+	 * Alert()
+	 *
+	 * Replicates the functionality of the standard javascript "alert" function
+	 *
+	 * Replicates the functionality of the standard javascript "alert" function
+	 * 
+	 * @param	string	strMessage			message to display
+	 * @param	string	strSize				optional, size of the popup box ("small|medium|large")
+	 *										Defaults to "medium"
+	 * @return	void
+	 *
+	 * @method
+	 */
 	this.Alert = function(strMessage, strSize)
 	{
 		// set a default value for strSize
@@ -448,7 +463,29 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		this.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
 	}
 	
-	// Confirm box
+	//------------------------------------------------------------------------//
+	// Confirm
+	//------------------------------------------------------------------------//
+	/**
+	 * Confirm()
+	 *
+	 * Replicates the functionality of the standard javascript "confirm" function
+	 *
+	 * Replicates the functionality of the standard javascript "confirm" function
+	 * Regardless of what button is clicked, the popup is always automatically closed
+	 * 
+	 * @param	string	strMessage			message to display
+	 * @param	mix		mixOkOnClick		can be either a function reference or a string containing code to execute when the Ok button is triggered
+	 * @param	mix		mixCancelOnClick	can be either a function reference or a string containing code to execute when the Cancel button is triggered
+	 *										if no value is given (null) then the Cancel action will close the confirm popup
+	 * @param	string	strSize				"small|mediam|large", defaults to medium
+	 * @param	string	strOkCaption		caption for the ok button
+	 * @param	string	strCancelCaption	caption for the cancel button
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
 	this.Confirm = function(strMessage, mixOkOnClick, mixCancelOnClick, strSize, strOkCaption, strCancelCaption)
 	{
 		// set default values
@@ -506,9 +543,27 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		elmOkButton.focus();
 	}
 	
-	// This alert box should be shown when the server could possibly take a long time to load a page
-	// All three parameters are optional
-	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage)
+	//------------------------------------------------------------------------//
+	// ShowPageLoadingSplash
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowPageLoadingSplash()
+	 *
+	 * Renders a Splash popup 
+	 *
+	 * Renders a Splash popup 
+	 * Used to show that a page is loading
+	 * 
+	 * @param	string	strMessage			optional, message to display.  Default = "Page Loading"
+	 * @param 	string	strSize				optional, size of the splash popup. Default = "medium"
+	 * @param 	string	strImage			optional, image to display. Default = "img/template/pablo_load.gif"
+	 * @param	string	strElement			optional, If supplied, the splash will appear above the element (not over the element)
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
+	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage, strElement)
 	{
 		// set the default message
 		if (strMessage == null)
@@ -525,14 +580,30 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		{
 			strImage = "img/template/pablo_load.gif";
 		}
-	
+		
 		strContent =	"<div align='center' style='border: solid 2px #000000;'><p>" + strMessage + "</p>" +
 						"<p><span id='VixenSplashDots'>.</span></p>" + 
 						"<p><img id='Vixen_DancingPablo' src='" + strImage + "' align='center'></img></p>\n";
-		this.CreateSplash(strContent, strSize);
+		this.CreateSplash(strContent, strSize, null, strElement);
 		this.AnimateSplash();
 	}
 	
+	//------------------------------------------------------------------------//
+	// AnimateSplash
+	//------------------------------------------------------------------------//
+	/**
+	 * AnimateSplash()
+	 *
+	 * Animates the PageLoadingSplash 
+	 *
+	 * Animates the PageLoadingSplash
+	 * 
+	 * @param	int		intNumOfDots	optional, The number of dots to display
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
 	this.AnimateSplash = function(intNumOfDots)
 	{
 		if (intNumOfDots == null || intNumOfDots > 20)
@@ -553,20 +624,54 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 	
 	
 	
+	//------------------------------------------------------------------------//
+	// ClosePageLoadingSplash
+	//------------------------------------------------------------------------//
+	/**
+	 * ClosePageLoadingSplash()
+	 *
+	 * Closes the Splash page
+	 *
+	 * Closes the Splash page
+	 * 
+	 * @return	void
+	 * @method
+	 */
 	this.ClosePageLoadingSplash = function()
 	{
 		this.Close("Splash");
 	}
 	
-	// A splash screen
-	// intTime is the period of time that the splash will be shown for.  If not supplied, 
-	// the splash will only be removed if the page reloads
-	this.CreateSplash = function(strContent, strSize, intTime)
+	//------------------------------------------------------------------------//
+	// CreateSplash
+	//------------------------------------------------------------------------//
+	/**
+	 * CreateSplash()
+	 *
+	 * Creates a splash, which is essentially a popup without a title bar
+	 *
+	 * Creates a splash, which is essentially a popup without a title bar
+	 * 
+	 * @param	string	strContent		html code to be displayed in the splash
+	 * @param	string	strSize			optional, Defaults to "medium"
+	 * @param	int		intTime			optional, If set, the splash will disapear after intTime miliseconds
+	 * @param	string	strElement		optional, If supplied, the splash will appear above the element (not over the element)
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.CreateSplash = function(strContent, strSize, intTime, strElement)
 	{
 		// set defaults
 		if (strSize == null)
 		{
 			strSize = "medium";
+		}
+		
+		var elmElement = null;
+		if (strElement)
+		{
+			elmElement = document.getElementById(strElement);
 		}
 	
 		// Try to find a previous splash
@@ -647,6 +752,23 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		// center the splash
 		elmPopup.style.left	= ((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
 		elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+		
+		// If elmElement has been defined, then position the splash above the element
+		// This has been incorporated into the functionality because sometimes in MSIE elements like comboboxes will
+		// always appear in front of the splash, regardless of their zIndex
+		if (elmElement)
+		{
+			// Find the absolute position of the element
+			var intOffsetTop = elmElement.offsetTop;
+
+			while (elmElement.offsetParent)
+			{
+				elmElement = elmElement.offsetParent;
+				intOffsetTop += elmElement.offsetTop;
+			}
+	
+			elmPopup.style.top = intOffsetTop - elmPopup.offsetHeight - 10;
+		}
 		
 		// Display the splash
 		elmPopup.style.visibility = 'visible';

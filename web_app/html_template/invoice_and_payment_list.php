@@ -244,7 +244,6 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		//Table()->InvoicesAndPayments->RowHighlighting = TRUE;
 		Table()->InvoicesAndPayments->Render();
 		
-		echo "<div class='Seperator'></div>\n";
 		echo "</div>\n";
 	}
 }

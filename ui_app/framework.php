@@ -293,11 +293,6 @@ class Page
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('ajax')</script>\n";
 		*/
 		
-		// The following line includes a FireBug console (accessed by pressing F12)
-		// for use within MSIE.  It's not very useful.
-		//echo "<script language='text/javascript' type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/firebug/firebug.js'></script>";
-		//echo "<script type='text/javascript'>VixenIncludeJSOnce('firebug/firebug')</script>\n";
-		
 //echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript.php?File=../../dir1/dir2/generic_javascript'></script>\n";
 		/*This is the old way of explicitly loading js files, before we had to worry about customer overridden files and application overridden files
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/vixen.js' ></script>\n";

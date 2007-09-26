@@ -241,7 +241,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	function DownloadInvoicePDF()
 	{
 		// Check user authorization
-		AuthenticatedUser()->CheckClientAuth();
+		AuthenticatedUser()->CheckClientAuth(TRUE);
 
 		// Load the account
 		if (!DBO()->Account->Load())

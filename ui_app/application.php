@@ -606,7 +606,7 @@ class Application
 	 * @method
 	 *
 	 */
-	function CheckClientAuth()
+	function CheckClientAuth($bolLinkBackToConsole=FALSE)
 	{
 		// If there is a cookie then use it to find the details of the user and check if their session is still valid
 		if (isset($_COOKIE['ClientId']) && isset($_COOKIE['ClientSessionId']))
@@ -711,7 +711,13 @@ class Application
 				die;
 			}
 			else
-			{				
+			{	
+				// If the location you are loading doesn't render a page, the user can get stuck on the login screen
+				// This can happen if the user's session has timed out, and they try and download a pdf
+				if ($bolLinkBackToConsole)
+				{
+					DBO()->Link->ShowLink = TRUE;
+				}
 				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
 			}	

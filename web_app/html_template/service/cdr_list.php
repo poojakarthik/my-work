@@ -100,12 +100,13 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		}
 		
 		// Build the filter combobox
-		$strOnChange =	"setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash()}, ". SPLASH_WAITING_TIME .");" .
+		$strOnChange =	"setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash(null, null, null, \"RecordTypeCombo\")}, ". SPLASH_WAITING_TIME .");" .
 						"window.location.search = \"Service.Id=$intServiceId&Filter.Id=\"+ this.value;";
+
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Call Type Filter:</div>\n";
 		echo "   <div class='DefaultOutput' style='padding-left:100px;'>\n";
-		echo "      <select id='RecordTypeCombo' style='width:300px' onchange='$strOnChange'>\n";
+		echo "      <select id='RecordTypeCombo' style='width:300px;' onchange='$strOnChange'>\n";
 		echo "         <option selected='selected' value='0'>List all call types</option>\n";
 		foreach ($arrRecordTypes as $intRecordTypeId=>$arrRecordType)
 		{
