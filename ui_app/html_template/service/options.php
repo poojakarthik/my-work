@@ -91,16 +91,6 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 			$strAddRecurringAdjustmentLink = Href()->AddRecurringAdjustment(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
 			echo "<li><a href='$strAddRecurringAdjustmentLink'>Add Recurring Adjustment</a></li>\n";
 			
-			//**************temporary link inserted
-			
-			$strEditAccountLink = Href()->EditAccount(DBO()->Service->Account->Value);//, DBO()->Service->Id->Value);
-			echo "<li>[TEMPORARY LINK] ---->><a href='$strEditAccountLink'>Edit Account</a></li>\n";
-
-			$strViewServicesLink = Href()->ViewServices(DBO()->Service->Account->Value);//, DBO()->Service->Id->Value);
-			echo "<li>[TEMPORARY LINK] ---->><a href='$strViewServicesLink'>View Services</a></li>\n";
-
-			//*************************************
-			
 		echo "</td></tr>\n";
 		echo "</table>\n";
 		

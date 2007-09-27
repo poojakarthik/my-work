@@ -200,37 +200,18 @@ class AppTemplateAccount extends ApplicationTemplate
 			$arrUpdateProperties[] = "Archived";
 			$arrUpdateProperties[] = "DisableDDR";
 
-			//DBO()->Account->OldStatus = DBO()->Account->Archived->Value;
-
-			//if (count($arrUpdateProperties) > 0)
-			//{
-				// Declare columns to update
-				DBO()->Account->SetColumns($arrUpdateProperties);			
-				// Save the service to the service table of the vixen database
-				if (!DBO()->Account->Save())
-				{
-					// The service did not save
-					//TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
-					return TRUE;
-				}
-				else
-				{
-					Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
-					return TRUE;
-				}
+			DBO()->Account->SetColumns($arrUpdateProperties);			
+			if (!DBO()->Account->Save())
+			{
+				Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
+				return TRUE;
 			}
-		//}
-				//foreach (DBO()->Account AS $strProperty=>$objValue)
-				//{	
-			//Ajax()->AddCommand("Alert", DBO()->Account->Id->Value);
-				//}
-		
-		
-		//Ajax()->AddCommand("Alert", DBO());
-			//Load account + stuff
-			//DBO()->Account->Id = DBO()->Account->Id->Value;
-			//DBO()->Account->Id = DBO()->Account->Id->Value;
+			else
+			{
+				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
+				return TRUE;
+			}
+		}
 
 		DBO()->Account->SetColumns();
 		DBO()->Account->Load();
@@ -238,7 +219,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBO()->Service->Load();	
 		
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
-		//}
 	}
 
 	//------------------------------------------------------------------------//

@@ -117,8 +117,6 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		DBO()->Note->NoteGroupId->RenderHidden();
 		DBO()->Note->NoteClass->RenderHidden();
 		
-		$strAll = 'checked';
-
 		switch (DBO()->Note->NoteType->Value)
 		{
 			case "All":
@@ -152,8 +150,6 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			echo "<div class='DefaultRegularOutput'>There are no viewable Notes.</div>";
 		}
 		
-		// not limitting to 5 records!!!
-
 		// Display each note
 		foreach (DBL()->Note as $dboNote)
 		{

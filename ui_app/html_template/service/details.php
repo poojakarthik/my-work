@@ -105,23 +105,28 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	 */
 	private function _RenderTabularDetail()
 	{
-		echo "<h2 class='service'>Service Details</h2>\n";
+		echo "<div class='PopupLarge'>\n";
+		echo "<div  style='overflow:auto; height:300px'>\n";
+	
 		echo "<div class='NarrowForm'>\n";
 
-		Table()->ServiceTable->SetHeader("Service Type", "Plan Name", "Status", "Actions");
-		Table()->ServiceTable->SetWidth("15%", "20%","20%","20%");
-		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left");
+		Table()->ServiceTable->SetHeader("FNN #", "Service Type", "Plan Name", "Status", "Actions");
+		Table()->ServiceTable->SetWidth("15%", "15%", "20%","20%","20%");
+		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
 		
 		foreach (DBL()->Service as $dboService)
 		{
 			switch ($dboService->Status->Value)
 			{
 				case SERVICE_ACTIVE:
-					$strStatus = "<div class='DefaultRegularOutput'>Opened On: ".$dboService->CreatedOn->Value."</div>";
+					$strStatus = "<div class='DefaultRegularOutput'>".Active."</div>";//Opened On: ".$dboService->CreatedOn->Value."</div>";
 					break;
 				case SERVICE_DISCONNECTED:
-					$strStatus = "<div class='DefaultRegularOutput'>Closes On: ".$dboService->ClosedOn->Value."</div>";
+					$strStatus = "<div class='DefaultRegularOutput'>".Disconnected."</div>";//Closes On: ".$dboService->ClosedOn->Value."</div>";
 					break;
+				case SERVICE_ARCHIVED:
+					$strStatus = "<div class='DefaultRegularOutput'>".Archived."</div>";//Closes On: ".$dboService->ClosedOn->Value."</div>";
+					break;					
 			}
 		
 			// Returns the plan for each DBL object
@@ -141,20 +146,25 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			DBO()->RatePlan->SetTable("ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan");
 			DBO()->RatePlan->OrderBy("ServiceRatePlan.CreatedOn DESC");
 			DBO()->RatePlan->Load();
-					
-			if (DBO()->RatePlan->Name->Value == NULL)
+
+			$strChangePlanLink = Href()->ChangePlan($dboService->Id->Value);
+			$strDivItem = $dboService->Id->Value;
+
+			if (DBO()->RatePlan->Name->Value != NULL)
 			{
-				$strRatePlanName = "<div class='DefaultRegularOutput'>No Plan Selected</div>";
+				$strRatePlanName = "<div class='DefaultRegularOutput' id='$strDivItem'><a href='$strChangePlanLink'>No Plan Selected</a></div>";
 			}
 			else
 			{
 				$strRatePlanName = "<div class='DefaultRegularOutput'>".DBO()->RatePlan->Name->Value."</div>";
 			}			
 					
-			$strViewServiceNotesLink = Href()->ViewServiceNotes($dboService->Id->Value);
+			$strViewServiceNotesLink = Href()->ViewServiceNotes($dboService->Id->Value, DBO()->Note->NoteType->Value);
 			$strOutputLink = "<div class='DefaultRegularOutput'><a href='$strViewServiceNotesLink'>View Notes</a></div>\n";
 				
-			Table()->ServiceTable->AddRow($dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
+			$strFNN = "<div class='DefaultRegularOutput'>".$dboService->FNN->Value."</div>";	
+				
+			Table()->ServiceTable->AddRow($strFNN, $dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
 															$strRatePlanName,
 															$strStatus,
 															$strOutputLink);									
@@ -163,7 +173,13 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		Table()->ServiceTable->Render();
 		
 		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";	
+		echo "</div>\n";
+	
+		echo "<div class='Right'>\n";
+			$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+		echo "</div>\n";
+
+		echo "</div>\n";
 	}
 
 	//------------------------------------------------------------------------//

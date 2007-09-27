@@ -70,7 +70,9 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		// define the javascript which is executed when the "View Plan Details" button is clicked
 		$strViewPlanButtonJavascript = "
 			var intPlanId = getElementById('SelectPlanCombo').value;
-			window.location = 'rates_plan_summary.php?Id=' + intPlanId;
+			//document.ViewServicePopupId.getElementById('".DBO()->Service->Id->Value."').value = 'dfgsa';
+			//window.location = 'rates_plan_summary.php?Id=' + intPlanId;
+			alert(document.getElementById('".DBO()->Service->Id->Value."').innerText);
 		";
 	
 		echo "<h2 class='plan'>Plan Details</h2>\n";

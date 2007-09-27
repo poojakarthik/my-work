@@ -186,7 +186,6 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ChangePlanPopupId\", \"large\", null, \"Service\", \"ChangePlan\", $strJsonCode)";	
-		//============above code used for reference only==============================
 	
 		//return
 		//return "vixen.php/Service/ChangePlan/?Service.Id=$intId";
@@ -362,6 +361,26 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// AddRatePlan
+	//------------------------------------------------------------------------//
+	/**
+	 * AddRatePlan()
+	 *
+	 * Compiles the Href to be executed when the AddRatePlan menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddRatePlan menu item is clicked
+	 * This will not compile a bread crumb label because the AddRatePlan functionality is in a popup
+	 * 
+	 * @return	string				Href to be executed when the AddRatePlan menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddRatePlan()
+	{
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RatePlanPopup\", \"large\", \"Add New Rate Plan\", \"Plan\", \"Add\", \"\", \"modeless\")";
+	}
+
+	//------------------------------------------------------------------------//
 	// AddAssociatedAccount
 	//------------------------------------------------------------------------//
 	/**
@@ -481,11 +500,13 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewServiceNotes($intId)
+	function ViewServiceNotes($intId, $strNoteType = NULL)
 	{
 		$this->strLabel	= "view service notes";
 		
 		// Setup data to send
+		
+		$arrData['Objects']['Note']['NoteType'] = $strNoteType;
 		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
 		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_SERVICE_NOTES;
 		

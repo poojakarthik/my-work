@@ -82,10 +82,41 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			case HTML_CONTEXT_EDIT_DETAIL:
 				$this->_RenderEditDetail();
 				break;	
+			case HTML_CONTEXT_OPTIONS_DETAIL:
+				$this->_RenderOptionsDetail();
+				break;
 			default:
 				$this->_RenderFullDetail();
 				break;
 		}
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderFullDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderFullDetail()
+	 *
+	 * Render this HTML Template with full detail
+	 *
+	 * Render this HTML Template with full detail
+	 *
+	 * @method
+	 */
+	private function _RenderOptionsDetail()
+	{	
+		//echo "<div id='AccountDetailDiv'>\n";
+		echo "<h2 class='Options'>Account Options</h2>\n";
+		echo "<div class='NarrowForm'>\n";
+		
+		$strEditAccountLink = Href()->EditAccount(DBO()->Account->Id->Value);//, DBO()->Service->Id->Value);
+		echo "<li><a href='$strEditAccountLink'>View/Edit Account</a></li>\n";
+
+		$strViewServicesLink = Href()->ViewServices(DBO()->Account->Id->Value);//, DBO()->Service->Id->Value);
+		echo "<li><a href='$strViewServicesLink'>View Services</a></li>\n";		
+		
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -128,8 +159,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		//$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");	
 		//echo $this->_objAjax->strId;
 		echo "</div>\n";
+		echo "<div class='Right'>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->Button("Edit", "Vixen.RateAdd.Edit(".DBO()->Account->Id->Value.")");
 		$this->FormEnd();
+		echo "</div>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}
@@ -291,9 +325,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
+		echo "<div class='SmallSeperator'></div>\n";
+		
+		echo "<div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.RateAdd.Cancel(".DBO()->Account->Id->Value.")");
 		$this->AjaxSubmit("Apply Changes");
 		$this->FormEnd();
+		echo "</div>\n";
+		
 		echo "</div>\n";
 		echo "</div>\n";
 }
