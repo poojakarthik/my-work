@@ -48,9 +48,17 @@
 						<div class="Seperator"></div>
 						<?php 
 						echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
+						echo "<div style='float:left; width:700px; height:50px;'>\n";
+						if (DBO()->Login->ShowLink->Value)
+						{
+							// Render a link back to the console page
+							$strConsoleHref = Href()->Console();
+							echo "<span id='VixenLinkToConsole' class='DefaultOutputSpan' style='display:none;'>Your PDF should begin downloading soon.  After which, please follow the link back to the console page.<br /><a href='$strConsoleHref' style='color:blue; text-decoration: none;'>Back to console</a></span>\n";
+						}
+
+						echo "</div>\n";
 						?>
-						
-						<div style='padding-left:200; padding-top:100'>
+						<div style='padding-left:200; padding-top:100; clear:both;'>
 							<table>
 								<tr>
 									<td colspan=2>
@@ -85,21 +93,13 @@
 								<tr>
 									<td colspan=2>
 										<input type="submit" id='VixenSubmit' value="Continue &#xBB;" class="Right"/>
-									</td>
-								</tr>
-								<tr>
-									<td colspan=2>
 										<?php
 											if (DBO()->Login->ShowLink->Value)
 											{
-												// Render a link back to the console page
-												$strConsoleHref = Href()->Console();
-												echo "<span id='VixenLinkToConsole' class='DefaultOutputSpan' style='display:none;'>Your PDF should begin downloading soon.  After which, please follow the link back to the console page.<br /><a href='$strConsoleHref' style='color:blue; text-decoration: none;'>Back to console</a></span>\n";
-												
 												// display the link back to the console, when the submit button has been clicked
-												$strDisplayLink = 	"function(){var elmLink = document.getElementById('VixenLinkToConsole');" .
-																	"elmLink.style.display = 'inline';}";
-												echo "<script type='text/javascript'>document.getElementById('VixenSubmit').onclick = $strDisplayLink</script>";
+												$strDisplayLink = 	"setTimeout(function(){var elmLink = document.getElementById('VixenLinkToConsole');" .
+																	"elmLink.style.display = 'inline';}, 1000)";
+												echo "<script type='text/javascript'>document.getElementById('VixenSubmit').onclick = \"$strDisplayLink\"</script>";
 											}
 										?>
 									</td>
@@ -123,7 +123,7 @@
 				</div>
 			</div>
 		</div>
-		<div style="height:300;"></div>
+		<div style="height:250;"></div>
 		<div class="clear"></div>
 	</div>
 	<div class="documentCurve Left documentCurveBottomLeft"></div>
