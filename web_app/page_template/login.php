@@ -60,9 +60,6 @@
 												// Render a link back to the console page
 												$strConsoleHref = Href()->Console();
 												echo "<div id='VixenLinkToConsole' style='display:none;'><span class='DefaultOutputSpan'>Your PDF should begin downloading soon.  After which, please follow the link back to the console page.</span><a href='$strConsoleHref' style='color:blue; text-decoration: none;'>Back to console</a></div>";
-												$strDisplayLink = 	"function(){var elmLink = document.getElementById('VixenLinkToConsole');" .
-																	"elmLink.style.display = 'inline';}";
-												echo "<script type='text/javascript'>document.getElementById('VixenSubmit').onclick = \"$strDisplayLink\"</script>";
 											}
 										
 											if (DBO()->Login->Failed->Value)
@@ -95,6 +92,12 @@
 								<tr>
 									<td colspan=2>
 										<input type="submit" id='VixenSubmit' value="Continue &#xBB;" class="Right"/>
+										<?php
+											// display the link back to the console, when the submit button has been clicked
+											$strDisplayLink = 	"function(){var elmLink = document.getElementById('VixenLinkToConsole');" .
+																"elmLink.style.display = 'inline';}";
+											echo "<script type='text/javascript'>document.getElementById('VixenSubmit').onclick = \"$strDisplayLink\"</script>";
+										?>
 									</td>
 								</tr>
 							</table>
