@@ -28,7 +28,7 @@ $arrFees['Inbound']		['Like']		= 'INB15';
 $arrFees['Inbound']		['BillTime']	= FALSE;
 
 // Statements
-$selFindCharges	= new StatementSelect("Charge LEFT JOIN InvoiceRun USING (InvoiceRun)", "Charge.*", "Nature = 'DR' AND ChargeType LIKE <Like> AND InvoiceRun.InvoiceRun IS NULL");
+$selFindCharges	= new StatementSelect("(Charge JOIN Account ON Account.Id = Charge.Account) LEFT JOIN InvoiceRun USING (InvoiceRun)", "Charge.*, Account.Archived", "Nature = 'DR' AND ChargeType LIKE <Like> AND InvoiceRun.InvoiceRun IS NULL");
 
 // Check for each charge
 $strContent	= "";
@@ -42,8 +42,8 @@ foreach ($arrFees as $strType=>$arrFee)
 	{
 		while ($arrCharge	= $selFindCharges->Fetch())
 		{
-			$arrCharge['Service'] = ($arrCharge['Service']) ? "::".$arrCharge['Service'] : "\t";
-			$strContent .= CliEcho("\t+ {$arrCharge['Account']}{$arrCharge['Service']}\t\${$arrCharge['Amount']}\t{$arrCharge['CreatedOn']}");
+			$arrCharge['Service'] = ($arrCharge['Service']) ? "::".$arrCharge['Service'] : "\t\t";
+			$strContent .= CliEcho("\t+ {$arrCharge['Account']}{$arrCharge['Service']} (".GetConstantDescription($arrCharge['Archived'], 'Account').")\t\${$arrCharge['Amount']}\t{$arrCharge['CreatedOn']}");
 			$intTotal += $arrCharge['Amount'];
 		}
 		$strContent .= CliEcho("\t! Found $intCount Charges, totalling \$$intTotal !");
