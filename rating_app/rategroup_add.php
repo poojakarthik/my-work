@@ -1,26 +1,31 @@
 <?php
 
 $arrRates = Array();
-$arrRates[]	= 91;		// Business Hours
-$arrRates[]	= 92;		// Morning
-$arrRates[]	= 93;		// Afternoon
-$arrRates[]	= 94;		// Weekend
-$arrRates[]	= 13974;	// Fleet
+$arrRates[]	= 144;		// Residential
+$arrRates[]	= 13975;	// Business
+$arrRates[]	= 13976;	// Fax
+$arrRates[]	= 133;		// ISDN HOME
+$arrRates[]	= 134;		// ISDN 2
+$arrRates[]	= 136;		// ISDN 10
+$arrRates[]	= 138;		// ISDN 20
+$arrRates[]	= 140;		// ISDN 30
+$arrRates[]	= 124;		// Rebilled @ Cost
+
 
 // Key = RatePlan; Value = Old RateGroup
 $arrPlans = Array();
-$arrPlans[100000001]	= 6;
+$arrPlans[30]	= 167;
 
 require_once('../framework/require.php');
 
 $arrRateGroup	= $GLOBALS['dbaDatabase']->FetchClean("RateGroup");
 
 // Create RateGroup
-$arrRateGroup['Name']			= "VirtualVoipFleet_LL-LL";
-$arrRateGroup['Description']	= "VirtualVoipFleet_LL-LL";
-$arrRateGroup['RecordType']		= 19;
+$arrRateGroup['Name']			= "S&E-R2979-B3567";
+$arrRateGroup['Description']	= "S&E Residential \$29.79 Business \$35.67";
+$arrRateGroup['RecordType']		= 21;
 $arrRateGroup['ServiceType']	= SERVICE_TYPE_LAND_LINE;
-$arrRateGroup['Fleet']			= 1;
+$arrRateGroup['Fleet']			= 0;
 $arrRateGroup['Archived']		= 0;
 $insRateGroup	= new StatementInsert("RateGroup");
 $intRateGroup	= $insRateGroup->Execute($arrRateGroup);

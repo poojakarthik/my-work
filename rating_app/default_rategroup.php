@@ -1,5 +1,4 @@
 <?php
-
 require_once('../framework/require.php');
 
 // Services to revert RateGroups to default on
