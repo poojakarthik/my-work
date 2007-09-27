@@ -97,9 +97,9 @@
 											if (DBO()->Login->ShowLink->Value)
 											{
 												// display the link back to the console, when the submit button has been clicked
-												$strDisplayLink = 	"setTimeout(function(){var elmLink = document.getElementById('VixenLinkToConsole');" .
-																	"elmLink.style.display = 'inline';}, 1000)";
-												echo "<script type='text/javascript'>document.getElementById('VixenSubmit').onclick = \"$strDisplayLink\"</script>";
+												$strDisplayLink = 	"function(){setTimeout(function(){var elmLink = document.getElementById('VixenLinkToConsole');" .
+																	"elmLink.style.display = 'inline';}, 1000);}";
+												echo "<script type='text/javascript'>document.getElementById('VixenSubmit').onclick = $strDisplayLink</script>";
 											}
 										?>
 									</td>
