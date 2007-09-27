@@ -1542,7 +1542,7 @@ function BankAccountValid ($strNumber)
  * @param	string	$strOutput				The string to write to stdout
  * @param	boolean	$bolNewLine	optional	Whether to automatically add a new line character
  *
- * @return	void
+ * @return	string							The string written to stdout
  * 
  * @function
  */
@@ -1555,6 +1555,8 @@ function CliEcho($strOutput, $bolNewLine=TRUE)
 	$stdout = $GLOBALS['**stdout'];
 	$strOutput .= ($bolNewLine) ? "\n" : "";
 	fwrite($stdout, $strOutput);
+	
+	return $strOutput;
 }
 
 //------------------------------------------------------------------------//

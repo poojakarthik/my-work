@@ -491,9 +491,9 @@
 		
 	 	// for each active inbound service
 		$intCount = 0;
-		$selINB15Services = new StatementSelect('CDR', 
-												'Service, Account, AccountGroup, COUNT(Id) AS CDRCount', 
-												"Service IS NOT NULL AND Credit = 0 AND Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND ServiceType = ".SERVICE_TYPE_INBOUND, 
+		$selINB15Services = new StatementSelect('CDR JOIN Account ON Account.Id = CDR.Account', 
+												'Service, Account, Account.AccountGroup, COUNT(CDR.Id) AS CDRCount', 
+												"Account.Archived NOT IN (1, 3) AND Service IS NOT NULL AND Credit = 0 AND Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND ServiceType = ".SERVICE_TYPE_INBOUND, 
 												NULL, 
 												NULL, 
 												"Service \n HAVING CDRCount > 0");
