@@ -508,6 +508,12 @@ $arrScript                                                      = Array();
 		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
 		$arrScript['SubScript']['BackupInvoiceOutput']	= $arrSubscript;
 		
+		// Check Un-Invoiced Special Charges
+		$arrSubscript = Array();
+		$arrSubscript['Command']	=       'php /usr/share/vixen/charges_app/charges_check_special.php';
+		$arrSubscript['Directory']	=       '/usr/share/vixen/charges_app/';
+		$arrScript['SubScript']['CheckSpecialCharges']	= $arrSubscript;
+		
 		// Special Charges
 		$arrSubscript = Array();
 		$arrSubscript['Command']	=       'php /usr/share/vixen/charges_app/special_charges.php';
