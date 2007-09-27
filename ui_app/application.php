@@ -675,7 +675,7 @@ class Application
 			else
 			{
 				// Could not find the user.  Login failed.
-				DBO()->Login->Failed = 1;
+				DBO()->Login->Failed = TRUE;
 				$bolLoggedIn = FALSE;
 			}
 		}
@@ -716,7 +716,7 @@ class Application
 				// This can happen if the user's session has timed out, and they try and download a pdf
 				if ($bolLinkBackToConsole)
 				{
-					DBO()->Link->ShowLink = TRUE;
+					DBO()->Login->ShowLink = TRUE;
 				}
 				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
