@@ -28,7 +28,7 @@
  
 // call application
 require_once("../framework/require.php");
-VixenRequire("billing_app/config.php");
+$arrConfig = LoadApplication();
 
 $bolVerbose = FALSE;
 if (trim($argv[1] == '-v'))
