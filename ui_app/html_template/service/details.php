@@ -52,6 +52,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		
+		$this->LoadJavascript("services_view");
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
 		//$this->LoadJavascript("retractable");
@@ -150,7 +151,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			$strChangePlanLink = Href()->ChangePlan($dboService->Id->Value);
 			$strDivItem = $dboService->Id->Value;
 
-			if (DBO()->RatePlan->Name->Value != NULL)
+			if (DBO()->RatePlan->Name->Value == NULL)
 			{
 				$strRatePlanName = "<div class='DefaultRegularOutput' id='$strDivItem'><a href='$strChangePlanLink'>No Plan Selected</a></div>";
 			}
@@ -176,7 +177,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "</div>\n";
 	
 		echo "<div class='Right'>\n";
-			$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+			$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		echo "</div>\n";
 
 		echo "</div>\n";

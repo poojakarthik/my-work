@@ -994,7 +994,21 @@ class AppTemplateService extends ApplicationTemplate
 			// All changes to the database, required to define the plan change, have been completed
 			// Commit the transaction
 			TransactionCommit();
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service's plan has been successfully changed", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			if (DBO()->Page->ViewService)
+			{
+				$arrServiceDetails['Id'] = DBO()->Service->Id->Value;
+				$arrServiceDetails['Name'] = DBO()->RatePlan->Name->Value;
+				$objarrServiceDetails = Json()->encode($arrServiceDetails);
+				
+				$strJavascript = "Vixen.ServicesView.ViewServicesPopupOnClose($objarrServiceDetails);";
+				Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
+				Ajax()->AddCommand("Alert","The service's plan has been successfully changed");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			}
+			else
+			{
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service's plan has been successfully changed", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			}
 			return TRUE;
 		}		
 		

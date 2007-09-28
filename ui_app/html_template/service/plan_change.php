@@ -70,9 +70,9 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		// define the javascript which is executed when the "View Plan Details" button is clicked
 		$strViewPlanButtonJavascript = "
 			var intPlanId = getElementById('SelectPlanCombo').value;
-			//document.ViewServicePopupId.getElementById('".DBO()->Service->Id->Value."').value = 'dfgsa';
-			//window.location = 'rates_plan_summary.php?Id=' + intPlanId;
-			alert(document.getElementById('".DBO()->Service->Id->Value."').innerText);
+			window.location = 'rates_plan_summary.php?Id=' + intPlanId;
+			//document.refresh();
+			//document.getElementById('32962').innerHTML='yellow';
 		";
 	
 		echo "<h2 class='plan'>Plan Details</h2>\n";
@@ -94,6 +94,8 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		
 		DBO()->RatePlan->Id->RenderHidden();
 		DBO()->Service->Id->RenderHidden();		
+		DBO()->Page->ViewService = TRUE;
+		DBO()->Page->ViewService->RenderHidden();
 		
 		// retrieve all available rate plans for this service type
 		DBL()->RatePlan->ServiceType = DBO()->Service->ServiceType->Value;

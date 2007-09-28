@@ -328,7 +328,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='SmallSeperator'></div>\n";
 		
 		echo "<div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.RateAdd.Cancel(".DBO()->Account->Id->Value.")");
+		$this->Button("View", "Vixen.RateAdd.Cancel(".DBO()->Account->Id->Value.")");
 		$this->AjaxSubmit("Apply Changes");
 		$this->FormEnd();
 		echo "</div>\n";

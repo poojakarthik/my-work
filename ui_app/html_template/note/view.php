@@ -142,9 +142,10 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	function NoteRender()
 	{
 		//echo "<div id='NoteListContainer' style='overflow:auto; height:500px; border-left: 1px solid #D1D1D1; border-top: 1px solid #D1D1D1; border-bottom: 1px solid #D1D1D1'>\n";
-		
-		echo "<h2>Recent Notes</h2><div class='DefaultRegularOutput'>The 5 most recent notes are listed below:</div>";
-		
+		//echo "<h2>Recent Notes</h2><div class='DefaultRegularOutput'>The 5 most recent notes are listed below:</div>";
+		echo "<div class='PopupLarge'>\n";
+		echo "<div  style='overflow:auto; height:300px'>\n";
+
 		if (DBL()->Note->RecordCount() == 0)
 		{
 			echo "<div class='DefaultRegularOutput'>There are no viewable Notes.</div>";
@@ -193,7 +194,11 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			// Include a separator
 			echo "<div class='SmallSeperator'></div>\n";
 		}
-		//echo "</div>\n";  //NoteListContainer
+		echo "</div>\n";
+		echo "<div class='Right'>\n";
+			$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+		echo "</div>\n";
+		echo "</div>\n";
 	}
 }
 

@@ -386,6 +386,10 @@ function VixenAjaxClass()
 				case "ClosePopup":
 					Vixen.Popup.Close(objInput[intKey].Data);
 					break;
+				case "UpdateServicePopup":
+					alert(objInput[intKey].Service);
+					document.getElementById(objInput[intKey].Service).innerHTML=objInput[intKey].Plan;			
+					break;
 				case "Alert":
 					strContent = "<div align='center'><p>" + objInput[intKey].Data + "</p>" +
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'></p></div>\n" +
@@ -470,6 +474,8 @@ function VixenAjaxClass()
 					// This probably isn't the safest way to do this. 
 					// This block of code may keep executing before the code in objInput[intKey].Data is finished executing, which may cause problems
 					//alert("About to execute some javascript");
+					//objInput[intKey].Service).innerHTML=objInput[intKey].Plan
+					//alert(">>>>"+objInput[intKey].Service);
 					eval(objInput[intKey].Data);
 					//alert("Finished executing the javascript");
 					break;
