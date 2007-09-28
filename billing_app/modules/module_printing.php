@@ -137,7 +137,7 @@
 																
 		$this->_selRatePlan				= new StatementSelect(	"ServiceTotal JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan",
 																"RatePlan.*",
-																"Service = <Id>");
+																"Service = <Id> AND InvoiceRun = <InvoiceRun>");
 		
 		/*$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"(TotalCharge + Debit - Credit) AS TotalCharge",
@@ -1209,7 +1209,7 @@
  		if ($arrServiceSummaries)
  		{
 			// Get Plan Details
-			$this->_selRatePlan->Execute(Array('Id' => end($arrService['Id'])));
+			$this->_selRatePlan->Execute(Array('Id' => end($arrService['Id']), 'InvoiceRun' => $this->_strInvoiceRun));
 			$arrRatePlan	= $this->_selRatePlan->Fetch();
 			
 			// Service Header
