@@ -197,7 +197,6 @@ function VixenAjaxClass()
 			}
 		}*/
 		
-		
 		// send object
 		this.Send(objSend);
 	}

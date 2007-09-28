@@ -73,9 +73,8 @@ class AppTemplateRate extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 
-		// The form is being submitted via an AJAX submit the name of the form is 'AddRate'
-		// and the method to call wtihin this class is 'Add'
-		if (SubmittedForm("AddRate","Commit"))
+		// Handle form submittion
+		if (SubmittedForm("AddRate","Commit") || SubmittedForm("AddRate","Save as Draft"))
 		{
 			TransactionStart();
 			$mixResult = $this->_ValidateAndSaveRate();
@@ -95,6 +94,17 @@ class AppTemplateRate extends ApplicationTemplate
 				// Commit the database transaction
 				TransactionCommit();
 				
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				if (SubmittedForm('AddRate', 'Commit'))
+				{
+					Ajax()->AddCommand("Alert", "The Rate was successfully committed to the database");
+				}
+				else
+				{
+					Ajax()->AddCommand("Alert", "The Rate was successfully saved as a draft");
+				}
+				
+				
 				// Check if this rate is being added to a rate group
 				if (DBO()->CallingPage->AddRateGroup->Value)
 				{
@@ -105,55 +115,11 @@ class AppTemplateRate extends ApplicationTemplate
 				else
 				{
 					// Close the popup normally
-					Ajax()->AddCommand("Alert", "The Rate has been successfully added");
-					Ajax()->AddCommand("ClosePopup", "AddRatePopup");
 					return TRUE;
 				}
 			}
-		}
-
-		// If the button clicked is 'Save as Draft' perform the same validation as to the 'Add'
-		// yet different validation is done within the '_ValidationPlan()'
-		if (SubmittedForm("AddRate","Save as Draft"))
-		{
-			TransactionStart();
-			$mixResult = $this->_ValidateAndSaveRate();
-			if ($mixResult !== TRUE && $mixResult !== FALSE)
-			{
-				TransactionRollback();
-				Ajax()->AddCommand("Alert", $mixResult);
-				return TRUE;
-			}
-			elseif ($mixResult == FALSE)
-			{
-				TransactionRollback();
-				return TRUE;
-			}
-			else
-			{		
-				TransactionCommit();			
-				// Check if this rate is being added to a rate group
-				if (DBO()->CallingPage->AddRateGroup->Value)
-				{
-					// This popup was called from the "Add Rate Group" page.  We have to update the appropriate combobox within the "Add Rate Group" page
-					$this->_UpdateAddRateGroupPage();
-					return TRUE;
-				}
-				else
-				{
-					// Close the popup normally
-					Ajax()->AddCommand("Alert", "The Rate has been successfully saved as a draft");
-					Ajax()->AddCommand("ClosePopup", "AddRatePopup");
-					return TRUE;
-				}			
-			}		
 		}
 		 
-		//**********************
-		// a removable hard coded value for a record within the rate table, change as necessary
-		//DBO()->Rate->Id = 12807;
-		//**********************
-		
 		// check if the Id of a rate has been supplied and if so load the rate
 		if (DBO()->Rate->Id->Value)
 		{
@@ -203,9 +169,6 @@ class AppTemplateRate extends ApplicationTemplate
 	 */
 	private function _UpdateAddRateGroupPage()
 	{
-		Ajax()->AddCommand("ClosePopup", "AddRatePopup");
-		Ajax()->AddCommand("Alert", "The Rate was successfully saved");
-		
 		$arrRate['Id']			= DBO()->Rate->Id->Value;
 		$arrRate['Description']	= DBO()->Rate->Description->Value;
 		$arrRate['Name']		= DBO()->Rate->Name->Value;
@@ -237,49 +200,46 @@ class AppTemplateRate extends ApplicationTemplate
 	 */
 	private function _ValidateAndSaveRate()
 	{
-		// BUG! BUG! BUG!
-		// Currently, if the Rate is a PassThrough rate, then some of the validation
-		// is not tested, such as the name of the rate, and description of the rate
-		// This is allowing for PassThrough rates to be saved without a name.
-		// BUG! BUG! BUG!
-		if (!DBO()->Rate->PassThrough->Value)
+		// Test initial validation of fields
+		if (DBO()->Rate->IsInvalid())
 		{
-			// test initial validation of fields
-			if (DBO()->Rate->IsInvalid())
-			{
-				// The form has not passed initial validation
-				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-				return "Could not save the rate.  Invalid fields are highlighted";
-			}
+			// The form has not passed initial validation
+			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
+			return "ERROR: Could not save the rate.  Invalid fields are highlighted";
 		}
 		
-		// BUG! BUG! BUG!
-		// This does not allow for saving (or commiting) a draft that already exists, if you have not changed the name
-		// BUG! BUG! BUG!
 		// Check if a rate with the same name exists
-		$strWhere = "NAME LIKE <RateName>";
-		DBL()->Rate->Where->SetString($strWhere, Array("RateName"=>DBO()->Rate->Name->Value));
-		DBL()->Rate->Load();
-		if (DBL()->Rate->RecordCount() > 0)
-		{	
+		if (DBO()->Rate->Id->Value == 0)
+		{
+			// The Rate name should not be in the database
+			$strWhere = "Name=<Name>";
+		}
+		else
+		{
+			// We are working with an already saved draft.  Check that the New name is not used by any other Rate
+			$strWhere = "Name=<Name> AND Id != ". DBO()->Rate->Id->Value;
+		}
+		$selRateName = new StatementSelect("Rate", "Id", $strWhere);
+		if ($selRateName->Execute(Array("Name" => DBO()->Rate->Name->Value)) > 0)
+		{
 			DBO()->Rate->Name->SetToInvalid();
 			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-			return "This RateName already exists in the Database";
+			return "ERROR: This rate name already exists in the Database";
 		}
 	
 		$intDaySelected = FALSE;
-		$arrDaysofWeek = array('Monday' => 'Rate.Monday',
-							'Tuesday' => 'Rate.Tuesday',
-							'Wednesday' => 'Rate.Wednesday',
-							'Thursday' => 'Rate.Thursday',
-							'Friday' => 'Rate.Friday',
-							'Saturday' => 'Rate.Saturday',
-							'Sunday' => 'Rate.Sunday');
+		$arrDaysOfWeek = array('Monday'	=> 'Rate.Monday',
+							'Tuesday'	=> 'Rate.Tuesday',
+							'Wednesday'	=> 'Rate.Wednesday',
+							'Thursday'	=> 'Rate.Thursday',
+							'Friday'	=> 'Rate.Friday',
+							'Saturday'	=> 'Rate.Saturday',
+							'Sunday'	=> 'Rate.Sunday');
 		
-		// validate that atleast one day in the week has been checked
-		foreach ($arrDaysofWeek as $key => $value)
+		// validate that at least one day in the week has been checked
+		foreach ($arrDaysOfWeek as $strKey => $strValue)
 		{
-			if (DBO()->Rate->$key->Value)
+			if (DBO()->Rate->$strKey->Value)
 			{
 				$intDaySelected = TRUE;
 			}
@@ -287,13 +247,21 @@ class AppTemplateRate extends ApplicationTemplate
 		if (!$intDaySelected)
 		{
 			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-			return "Atleast one day in the week has to be clicked";			
+			return "ERROR: Please specify which days the Rate applies to";			
 		}
 		
+		$bolFormIsInvalid = FALSE;
 		// if the passthrough checkbox is checked disable the form elements below it, 
 		// but dont perform any validation
 		if (!DBO()->Rate->PassThrough->Value)
 		{
+			// Check that the Standard Units has been specified
+			if (!Validate('Integer', DBO()->Rate->StdUnits->Value))
+			{
+				DBO()->Rate->StdUnits->SetToInvalid();
+				$bolFormIsInvalid = TRUE;
+			}
+			
 			switch (DBO()->Rate->ChargeType->Value)
 			{
 				case RATE_CAP_STANDARD_RATE_PER_UNIT:
@@ -301,8 +269,7 @@ class AppTemplateRate extends ApplicationTemplate
 					if (!Validate('IsMoneyValue', DBO()->Rate->StdRatePerUnit->Value))
 					{
 						DBO()->Rate->StdRatePerUnit->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-						return "The value entered is not a correct monetary value";
+						$bolFormIsInvalid = TRUE;
 					}
 					break;
 				case RATE_CAP_STANDARD_MARKUP:
@@ -310,39 +277,47 @@ class AppTemplateRate extends ApplicationTemplate
 					if (!Validate('IsMoneyValue', DBO()->Rate->StdMarkup->Value))
 					{
 						DBO()->Rate->StdMarkup->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-						return "The value entered is not a correct monetary value";
+						$bolFormIsInvalid = TRUE;
 					}
 					break;
 				case RATE_CAP_STANDARD_PERCENTAGE:
 					// validate percentage markup
-					if (!Validate('IsMoneyValue', DBO()->Rate->StdPercentage->Value))
+					if (!is_numeric(DBO()->Rate->StdPercentage->Value))
 					{
 						DBO()->Rate->StdPercentage->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-						return "The value entered is not a correct monetary value";
+						$bolFormIsInvalid = TRUE;
 					}
 					break;
 			}
 	
 			switch (DBO()->Rate->CapCalculation->Value)
 			{
-				case RATE_CAP_CAP_COST:
-					// validate cap cost
-					if (!Validate('IsMoneyValue', DBO()->Rate->CapCost->Value))
-					{
-						DBO()->Rate->CapCost->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-						return "The value entered is not a correct monetary value";
-					}
+				case RATE_CAP_NO_CAP:
+					// The Rate is not capped.  Set the appropriate fields to 0
+					DBO()->Rate->CapUnits		= 0;
+					DBO()->Rate->CapCost		= 0;
+					DBO()->Rate->CapLimit		= 0;
+					DBO()->Rate->CapUsage		= 0;
+					DBO()->Rate->ExsFlagfall	= 0;
+					DBO()->Rate->ExsUnits		= 0;
+					DBO()->Rate->ExsRatePerUnit	= 1649;
+					DBO()->Rate->ExsMarkup		= 0;
+					DBO()->Rate->ExsPercentage	= 0;
 					break;
 				case RATE_CAP_CAP_UNITS:
 					// validate cap units
 					if (!Validate('Integer', DBO()->Rate->CapUnits->Value))
 					{
 						DBO()->Rate->CapUnits->SetToInvalid();
-						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-						return "The value entered is not a correct value";
+						$bolFormIsInvalid = TRUE;
+					}
+					break;
+				case RATE_CAP_CAP_COST:
+					// validate cap cost
+					if (!Validate('IsMoneyValue', DBO()->Rate->CapCost->Value))
+					{
+						DBO()->Rate->CapCost->SetToInvalid();
+						$bolFormIsInvalid = TRUE;
 					}
 					break;
 			}
@@ -353,16 +328,33 @@ class AppTemplateRate extends ApplicationTemplate
 				switch (DBO()->Rate->CapLimitting->Value)
 				{
 					case RATE_CAP_NO_CAP_LIMITS:
-						// no further validation is required break
+						// The rate has no cap limit.  Set appropriate fields to 0
+						DBO()->Rate->CapLimit		= 0;
+						DBO()->Rate->CapUsage		= 0;
+						DBO()->Rate->ExsFlagfall	= 0;
+						DBO()->Rate->ExsUnits		= 0;
+						DBO()->Rate->ExsRatePerUnit	= 2101;
+						DBO()->Rate->ExsMarkup		= 0;
+						DBO()->Rate->ExsPercentage	= 0;
 						break;
 					case RATE_CAP_CAP_LIMIT:
 						// validate cap limit
 						if (!Validate('IsMoneyValue', DBO()->Rate->CapLimit->Value))
 						{
 							DBO()->Rate->CapLimit->SetToInvalid();
-							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-							return "The value entered is not a correct monetary value";
+							$bolFormIsInvalid = TRUE;
 						}
+						if (!Validate('IsMoneyValue', DBO()->Rate->ExsFlagfall->Value))
+						{
+							DBO()->Rate->ExsFlagfall->SetToInvalid();
+							$bolFormIsInvalid = TRUE;
+						}
+						
+						// Set appropriate fields to 0
+						DBO()->Rate->ExsUnits		= 0;
+						DBO()->Rate->ExsRatePerUnit	= 1111;
+						DBO()->Rate->ExsMarkup		= 0;
+						DBO()->Rate->ExsPercentage	= 0;
 						break;
 					case RATE_CAP_CAP_USAGE:
 						// validate cap usage and excess
@@ -371,68 +363,66 @@ class AppTemplateRate extends ApplicationTemplate
 						if (!Validate('Integer', DBO()->Rate->CapUsage->Value))
 						{
 							DBO()->Rate->CapUsage->SetToInvalid();
-							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-							return "The value entered is not a correct monetary value";
-	
+							$bolFormIsInvalid = TRUE;
 						}
 						if (!Validate('Integer', DBO()->Rate->ExsUnits->Value))
 						{
 							DBO()->Rate->ExsUnits->SetToInvalid();
-							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-							return "The value entered is not a correct value";
+							$bolFormIsInvalid = TRUE;
 						}
 						if (!Validate('IsMoneyValue', DBO()->Rate->ExsFlagfall->Value))
 						{
 							DBO()->Rate->ExsFlagfall->SetToInvalid();
-							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-							return "The value entered is not a correct monetary value";
+							$bolFormIsInvalid = TRUE;
 						}
-					switch (DBO()->Rate->ExsChargeType->Value)
-					{
-						case RATE_CAP_EXS_RATE_PER_UNIT:
-							// validate excess rate
-							if (!Validate('IsMoneyValue', DBO()->Rate->ExsRatePerUnit->Value))
-							{
-								DBO()->Rate->ExsRatePerUnit->SetToInvalid();
-								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-								return "The value entered is not a correct monetary value";
-							}
-							break;
-						case RATE_CAP_EXS_MARKUP:
-							// validate markup
-							if (!Validate('IsMoneyValue', DBO()->Rate->ExsMarkup->Value))
-							{
-								DBO()->Rate->ExsMarkup->SetToInvalid();
-								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-								return "The value entered is not a correct monetary value";
-							}
-							break;
-						case RATE_CAP_EXS_PERCENTAGE:
-							// validate percentage
-							if (!is_numeric(DBO()->Rate->ExsPercentage->Value))
-							{
-								DBO()->Rate->ExsPercentage->SetToInvalid();
-								Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-								return "The value entered is not a correct value";
-							}
-							break;
-					}
-					break;
-				default:
-					break;
+						switch (DBO()->Rate->ExsChargeType->Value)
+						{
+							case RATE_CAP_EXS_RATE_PER_UNIT:
+								// validate excess rate
+								if (!Validate('IsMoneyValue', DBO()->Rate->ExsRatePerUnit->Value))
+								{
+									DBO()->Rate->ExsRatePerUnit->SetToInvalid();
+									$bolFormIsInvalid = TRUE;
+								}
+								break;
+							case RATE_CAP_EXS_MARKUP:
+								// validate markup
+								if (!Validate('IsMoneyValue', DBO()->Rate->ExsMarkup->Value))
+								{
+									DBO()->Rate->ExsMarkup->SetToInvalid();
+									$bolFormIsInvalid = TRUE;
+								}
+								break;
+							case RATE_CAP_EXS_PERCENTAGE:
+								// validate percentage
+								if (!is_numeric(DBO()->Rate->ExsPercentage->Value))
+								{
+									DBO()->Rate->ExsPercentage->SetToInvalid();
+									$bolFormIsInvalid = TRUE;
+								}
+								break;
+						}
+						break;
 				}
 			}
-		}			
-		// everything has been validated
-		
+		}
+
+		if ($bolFormIsInvalid)
+		{
+			// at least one of the required fields in the form is invalid
+			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
+			return "ERROR: Invalid fields are highlighted";
+		}
+
+
+		// Everything has been validated, now prepare everything for saving
 		if (DBO()->Rate->PassThrough->Value)
 		{
+			// set default values for when the Rate is a Pass Through rate
 			DBO()->Rate->StdUnits 		= 0;
 			DBO()->Rate->StdRatePerUnit = 0;
 			DBO()->Rate->StdMarkup 		= 0;
 			DBO()->Rate->StdPercentage 	= 0;
-			DBO()->Rate->StdMinCharge 	= 0;
-			DBO()->Rate->StdFlagfall 	= 0;
 			DBO()->Rate->CapUnits 		= 0;
 			DBO()->Rate->CapCost 		= 0;
 			DBO()->Rate->CapLimit 		= 0;
@@ -446,38 +436,25 @@ class AppTemplateRate extends ApplicationTemplate
 		else
 		{		
 			//strip all $ signs off values
-			DBO()->Rate->StdRatePerUnit = (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_RATE_PER_UNIT) ? ltrim(DBO()->Rate->StdRatePerUnit->Value, '$') : 0;
-			DBO()->Rate->StdMarkup = (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_MARKUP) ? ltrim(DBO()->Rate->StdMarkup->Value, '$') : 0;
-			DBO()->Rate->StdPercentage = (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_PERCENTAGE) ? ltrim(DBO()->Rate->StdPercentage->Value, '$') : 0;
+			DBO()->Rate->StdRatePerUnit	= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_RATE_PER_UNIT) ? ltrim(DBO()->Rate->StdRatePerUnit->Value, '$') : 0;
+			DBO()->Rate->StdMarkup		= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_MARKUP) ? ltrim(DBO()->Rate->StdMarkup->Value, '$') : 0;
+			DBO()->Rate->StdPercentage	= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_PERCENTAGE) ? ltrim(DBO()->Rate->StdPercentage->Value, '$') : 0;
 			
-			DBO()->Rate->CapUnits = (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS) ? DBO()->Rate->CapUnits->Value : 0;
-			DBO()->Rate->CapCost = (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST) ? ltrim(DBO()->Rate->CapCost->Value, '$') : 0;
+			DBO()->Rate->CapUnits		= (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS) ? DBO()->Rate->CapUnits->Value : 0;
+			DBO()->Rate->CapCost		= (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST) ? ltrim(DBO()->Rate->CapCost->Value, '$') : 0;
 			
-			DBO()->Rate->CapLimit = (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? ltrim(DBO()->Rate->CapLimit->Value, '$') : 0;
-			DBO()->Rate->CapUsage = (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE) ? DBO()->Rate->CapCost->Value : 0;
+			DBO()->Rate->CapLimit		= (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? ltrim(DBO()->Rate->CapLimit->Value, '$') : 0;
+			DBO()->Rate->CapUsage		= (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE) ? DBO()->Rate->CapUsage->Value : 0;
+			DBO()->Rate->ExsFlagfall	= (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE || DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? ltrim(DBO()->Rate->ExsFlagfall->Value, '$') : 0;
 			
-			DBO()->Rate->ExsRatePerUnit = (DBO()->Rate->ExsRatePerUnit->Value == RATE_CAP_EXS_RATE_PER_UNIT) ? ltrim(DBO()->Rate->ExsRatePerUnit->Value, '$') : 0;
-			DBO()->Rate->ExsMarkup = (DBO()->Rate->ExsMarkup->Value == RATE_CAP_EXS_MARKUP) ? ltrim(DBO()->Rate->ExsMarkupt->Value, '$') : 0;
-			DBO()->Rate->ExsPercentage = (DBO()->Rate->ExsPercentage->Value == RATE_CAP_EXS_PERCENTAGE) ? DBO()->Rate->CapLimit->Value : 0;
-				
-			DBO()->Rate->StdRatePerUnit = (Validate('IsMoneyValue', DBO()->Rate->StdRatePerUnit->Value)) ? ltrim(DBO()->Rate->StdRatePerUnit->Value, '$') : 0;
-			DBO()->Rate->StdMarkup = (Validate('IsMoneyValue', DBO()->Rate->StdMarkup->Value)) ? ltrim(DBO()->Rate->StdMarkup->Value, '$') : 0;
-			DBO()->Rate->StdPercentage = (is_numeric(DBO()->Rate->StdMarkup->Value)) ? DBO()->Rate->StdMarkup->Value : 0;
-	
-			DBO()->Rate->StdMinCharge = (Validate('IsMoneyValue', DBO()->Rate->StdMinCharge->Value)) ? ltrim(DBO()->Rate->StdMinCharge->Value, '$') : 0;
-			DBO()->Rate->StdFlagfall = (Validate('IsMoneyValue', DBO()->Rate->StdFlagfall->Value)) ? ltrim(DBO()->Rate->StdFlagfall->Value, '$') : 0;
-			
-			DBO()->Rate->CapUnits = (is_numeric(DBO()->Rate->CapUnits->Value)) ? DBO()->Rate->CapUnits->Value : 0;
-			DBO()->Rate->CapCost = (Validate('IsMoneyValue', DBO()->Rate->CapCost->Value)) ? ltrim(DBO()->Rate->CapCost->Value, '$') : 0;			
-			DBO()->Rate->CapLimit = (Validate('IsMoneyValue', DBO()->Rate->CapLimit->Value)) ? ltrim(DBO()->Rate->CapLimit->Value, '$') : 0;
-			DBO()->Rate->CapUsage = (is_numeric(DBO()->Rate->CapUsage->Value)) ? DBO()->Rate->CapUsage->Value : 0;
-	
-			DBO()->Rate->ExsUnits = (is_numeric(DBO()->Rate->ExsUnits->Value)) ? DBO()->Rate->ExsUnits->Value : 1;  //Defaults to 1 if not included
-			DBO()->Rate->ExsRatePerUnit = (Validate('IsMoneyValue', DBO()->Rate->ExsRatePerUnit->Value)) ? ltrim(DBO()->Rate->ExsRatePerUnit->Value, '$') : 0;
-			DBO()->Rate->ExsMarkup = (Validate('IsMoneyValue', DBO()->Rate->ExsMarkup->Value)) ? ltrim(DBO()->Rate->ExsMarkup->Value, '$') : 0;
-			DBO()->Rate->ExsPercentage = (is_numeric(DBO()->Rate->ExsPercentage->Value)) ? DBO()->Rate->ExsPercentage->Value : 0;
-			DBO()->Rate->ExsFlagfall = (Validate('IsMoneyValue', DBO()->Rate->ExsFlagfall->Value)) ? ltrim(DBO()->Rate->ExsFlagfall->Value, '$') : 0;
+			DBO()->Rate->ExsRatePerUnit	= (DBO()->Rate->ExsChargeType->Value == RATE_CAP_EXS_RATE_PER_UNIT) ? ltrim(DBO()->Rate->ExsRatePerUnit->Value, '$') : 0;
+			DBO()->Rate->ExsMarkup		= (DBO()->Rate->ExsChargeType->Value == RATE_CAP_EXS_MARKUP) ? ltrim(DBO()->Rate->ExsMarkup->Value, '$') : 0;
+			DBO()->Rate->ExsPercentage	= (DBO()->Rate->ExsChargeType->Value == RATE_CAP_EXS_PERCENTAGE) ? DBO()->Rate->ExsPercentage->Value : 0;
 		}
+		
+		// Minimum Charge and Flagfall must be specified regardless of whether or not the Rate is a PassThrough
+		DBO()->Rate->StdFlagfall = ltrim(DBO()->Rate->StdFlagfall->Value, '$');
+		DBO()->Rate->StdMinCharge = ltrim(DBO()->Rate->StdMinCharge->Value, '$');
 		
 		if (!DBO()->Rate->Destination->IsSet)
 		{
@@ -486,14 +463,14 @@ class AppTemplateRate extends ApplicationTemplate
 		
 		if (SubmittedForm("AddRate","Save as Draft"))
 		{
-			DBO()->Rate->Archived = 2;
+			DBO()->Rate->Archived = ARCHIVE_STATUS_DRAFT;
 		}
 		
 		if (SubmittedForm("AddRate","Commit"))
 		{
-			DBO()->Rate->Archived = 0;
+			DBO()->Rate->Archived = ARCHIVE_STATUS_ACTIVE;
 		}
-		
+	
 		if (!DBO()->Rate->Save())
 		{
 			// Saving failed

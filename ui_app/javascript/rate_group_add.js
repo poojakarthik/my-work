@@ -76,12 +76,12 @@ function VixenRateGroupAddClass()
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseForm = function(arrRecordTypes, bolIsDraft)
+	this.InitialiseForm = function(arrRecordTypes, bolDisableElements)
 	{
 		this._arrRecordTypes = arrRecordTypes;
 		
-		// If the RateGroup is a draft then disable the Fleet Checkbox, Service Type Combobox and the Record Type combobox
-		if (bolIsDraft)
+		// Some of the controls can be disabled if they have already been set, and shouldn't change
+		if (bolDisableElements)
 		{
 			document.getElementById("RateGroup.Fleet").disabled		= true;
 			document.getElementById("ServiceTypeCombo").disabled	= true;
@@ -182,6 +182,7 @@ function VixenRateGroupAddClass()
 		// currently selected ones. Therefore we have to do it manually.
 		var elmRecordTypeCombo = document.getElementById("RecordTypeCombo");
 		elmRecordTypeCombo.value = intRecordType;
+		var elmFleet = document.getElementById("RateGroup.Fleet");
 		
 		// check if we are showing this for a draft RateGroup
 		var elmRateGroupId = document.getElementById("RateGroup.Id");
@@ -191,6 +192,7 @@ function VixenRateGroupAddClass()
 		var objObjects = {};
 		objObjects.RecordType = {};
 		objObjects.RecordType.Id = intRecordType;
+		objObjects.RecordType.IsFleet = elmFleet.checked;
 		
 		// If the RateGroup already has an Id then it is a draft
 		if (elmRateGroupId.value > 0)
@@ -302,15 +304,18 @@ function VixenRateGroupAddClass()
 		// Get the currently selected RecordType and ServiceType
 		var intRecordType	= document.getElementById("RecordTypeCombo").value;
 		var intServiceType	= document.getElementById("ServiceTypeCombo").value;
+		var bolIsFleet		= document.getElementById("RateGroup.Fleet").checked;
 
 		var objObjects = {};
 		objObjects.Objects = {};
 		objObjects.Objects.RecordType = {};
 		objObjects.Objects.RecordType.Id = intRecordType;
-		objObjects.Objects.ServiceType = {};
-		objObjects.Objects.ServiceType.Id = intServiceType;
+		//objObjects.Objects.ServiceType = {};
+		//objObjects.Objects.ServiceType.Id = intServiceType;
 		objObjects.Objects.CallingPage = {};
 		objObjects.Objects.CallingPage.AddRateGroup = true;
+		objObjects.Objects.Rate = {};
+		objObjects.Objects.Rate.Fleet = bolIsFleet;
 		
 		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
 		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Add New Rate", "Rate", "Add", objObjects);
@@ -551,10 +556,12 @@ function VixenRateGroupAddClass()
 		elmNewOption.selected	= TRUE;
 		
 		// If the Rate is a fleet rate then mark it as such
+		/* We don't do this anymore
 		if (objRate.Fleet)
 		{
 			elmNewOption.text = "Fleet: " + elmNewOption.text;
 		}
+		*/
 		
 		// If the Rate is a draft then flag it as such
 		if (objRate.Draft)

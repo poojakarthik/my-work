@@ -145,7 +145,14 @@ class HTMLElements
 	{
 		$strLabel = $arrParams['Definition']['Label'];
 		
-		$strValue = $this->BuildInputValue($arrParams);
+		if ($arrParams['Valid'] === FALSE)
+		{
+			$strValue = $arrParams['Value'	];
+		}
+		else
+		{
+			$strValue = $this->BuildInputValue($arrParams);
+		}
 		$strValue = nl2br($strValue);
 		
 		// convert any apostrophe's into &#39;
@@ -755,7 +762,7 @@ class HTMLElements
 		$strValue = $this->BuildOutputValue($arrParams);
 
 		// BuildOutputValue will never return an empty string, but BuildInputValue should be able to
-		if ($strValue == "&nbsp;")
+		if ("$strValue" == "&nbsp;")
 		{
 			$strValue = "";
 		}

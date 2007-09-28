@@ -182,9 +182,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		 *		Check that a Name and Description have been declared	(implemented)
 		 *		Check that a service type has been declared				(implemented)
 		 *		Check that a record type has been declared				(implemented)
-		 *		Check that the Name is unique when compared with all other Rate Groups	
-		 *		For every distination associated with the context of the RecordType of the RateGroup:
-		 *			Check that every minute of every day of the week is accounted for by a Rate and there are no overlaps
+		 *		Check that the Name is unique when compared with all other Rate Groups										(implemented)
+		 *		For every distination associated with the context of the RecordType of the RateGroup:	
+		 *			Check that every minute of every day of the week is accounted for by a Rate and there are no overlaps	(implemented)
 		 */
 	
 		// Validate the fields
@@ -549,7 +549,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * 
 	 * Draws the Rate Selector Control used in the "Add Rate Group" form
 	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
-	 * This function expects DBO()->RecordType->Id to be set, as it only displays the Rates for a specified RecordType
+	 * This function expects DBO()->RecordType->Id to be set, as it only displays the Rates for a specified RecordType.
+	 * It also expects DBO()->RecordType->IsFleet to be set to either TRUE or FALSE
 	 * If (DBO()->RateGroup->Id is set XOR DBO()->BaseRateGroup->Id is set) then it will flag which Rates are currently used by the RateGroup
 	 * 
 	 *
@@ -559,8 +560,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 */
 	function SetRateSelectorControl()
 	{
-		$selRates = new StatementSelect("Rate", "Id, Name, Description, Fleet, Archived", "RecordType=<RecordType> AND Archived != 1", "Name", NULL);
-		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
+		$intFleet = (DBO()->RecordType->IsFleet->Value) ? 1 : 0;
+		$selRates = new StatementSelect("Rate", "Id, Name, Description, Fleet, Archived", "RecordType=<RecordType> AND Fleet=<Fleet> AND Archived != 1", "Name", NULL);
+		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value, "Fleet" => $intFleet));
 		$arrRecords = $selRates->FetchAll();
 
 		// If a RateGroup.Id xor BaseRateGroup.Id has been specified then we want to mark which of these rates belong to it

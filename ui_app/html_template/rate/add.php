@@ -74,10 +74,11 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 	function Render()
 	{
 		echo "<h2 class='Plan'>Rate Details</h2>\n";
-		echo "<div class='PopupLarge' style='overflow:auto; height:515px; width:auto;'>\n";
+		echo "<div class='PopupLarge' style='overflow:auto; height:530px; width:auto;'>\n";
 			
 			// define javascript to be triggered when the Cap and Excess radiobuttons change
 			$strRateCapOnClick = 'Vixen.RateAdd.RateCapOnChange(this.value)';
+			
 			$this->FormStart("AddRate", "Rate", "Add");
 			
 			// Include the flag which specifies whether this Rate will be added to a RateGroup
@@ -150,7 +151,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 				// note the inline script tag, this enables the bar to reset itself if the page
 				// has been reloaded through AJAX, for example if a field is invalid
 			
-				echo "<script type='text/javascript'>new weekPlanner(document.getElementById ('weekScheduler_Container'))</script>\n";
+				echo "<script type='text/javascript'>new weekPlanner(document.getElementById('weekScheduler_Container'))</script>\n";
 				echo "<div id='weekScheduler_Constraint'>\n";
 				echo "	<div id='weekScheduler_Container'>\n";
 				
@@ -253,55 +254,69 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 		
 			echo "<div class='Seperator'></div>\n";	
 	
-			// determines which of the radio buttons has been selected, this retains the 'state'
-			// when the page is reload through AJAX
-	
-			switch (DBO()->Rate->ChargeType->Value)
+			// For the Std Rate properties determine which of the radio buttons has been selected
+			if (DBO()->Rate->ChargeType->IsSet)
 			{
-				case RATE_CAP_STANDARD_RATE_PER_UNIT:
-					$mixChargeStatus = RATE_CAP_STANDARD_RATE_PER_UNIT;
-					break;
-				case RATE_CAP_STANDARD_MARKUP:
-					$mixChargeStatus = RATE_CAP_STANDARD_MARKUP;
-					break;
-				case RATE_CAP_STANDARD_PERCENTAGE:
-					$mixChargeStatus = RATE_CAP_STANDARD_PERCENTAGE;
-					break;
-				default:
-					$mixChargeStatus = RATE_CAP_STANDARD_RATE_PER_UNIT;
-					break;
+				$mixChargeStatus = DBO()->Rate->ChargeType->Value;
 			}
-	
-			echo "<div class='NarrowContent'>\n"; //beginning of the pass through checkbox DIV
-				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
-				echo "<tr><td>".DBO()->Rate->PassThrough->AsInput()."</td></tr>\n";
-				echo "</table>\n";
-			echo "</div>\n"; //end of the pass through checkbox DIV
+			else
+			{
+				if (DBO()->Rate->StdPercentage->Value > 0)
+				{
+					$mixChargeStatus = RATE_CAP_STANDARD_PERCENTAGE;
+				}
+				elseif (DBO()->Rate->StdMarkup->Value > 0)
+				{
+					$mixChargeStatus = RATE_CAP_STANDARD_MARKUP;
+				}
+				else
+				{
+					$mixChargeStatus = RATE_CAP_STANDARD_RATE_PER_UNIT;
+				}
+			}
+
+			// PassThrough div
+			echo "<div class='NarrowContent' style='padding-left:25px'>\n";
+			DBO()->Rate->PassThrough->RenderInput(CONTEXT_DEFAULT, TRUE);
+			DBO()->Rate->Prorate->RenderInput(CONTEXT_DEFAULT, TRUE);
+			DBO()->Rate->Fleet->RenderInput(CONTEXT_DEFAULT, TRUE);
+			DBO()->Rate->Uncapped->RenderInput(CONTEXT_DEFAULT, TRUE);
+			DBO()->Rate->StdMinCharge->RenderInput(CONTEXT_DEFAULT, TRUE);
+			DBO()->Rate->StdFlagfall->RenderInput(CONTEXT_DEFAULT, TRUE);
+			echo "</div>\n"; // PassThrough
 
 			echo "<div id='RateDetailDiv' style='display:inline'>\n"; //beginning of the ratedetail DIV
 			echo "<div class='Seperator'></div>\n";	
 			
 				echo "<div class='NarrowContent'>\n"; //beginning of the stdunits DIV
 					echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
-					echo "<tr><td width='2%'>&nbsp;</td><td width='56%'>".DBO()->Rate->StdUnits->AsInput()."</td><td>&nbsp;</td></tr>\n";
+					echo "<tr><td width='2%'>&nbsp;</td><td width='56%'>".DBO()->Rate->StdUnits->AsInput(CONTEXT_DEFAULT, TRUE)."</td><td>&nbsp;</td></tr>\n";
 		
 					// set the 'state' of the radio button if this is selected then check it status else don't, used for when
 					// page is reloaded through AJAX in use for stdmarkup and stdpercentage and also the cap charges and excess rate
 					// charges, the line is split for readability for that one line retaining its full line length makes program logic
 					// easier to understand
 					
-					echo "<tr><td><input type='radio' name='Rate.ChargeType' value='";
-					echo RATE_CAP_STANDARD_RATE_PER_UNIT."'". ($mixChargeStatus == RATE_CAP_STANDARD_RATE_PER_UNIT ? "checked='checked'" : "") .">";
-					echo "</td><td>".DBO()->Rate->StdRatePerUnit->AsInput()."</td><td><span class='DefaultOutputSpan'>per Standard Unit</span></td></tr>\n";
+					echo "<tr>\n";
+					$strChecked = ($mixChargeStatus == RATE_CAP_STANDARD_RATE_PER_UNIT) ? "checked='checked'" : "";
+					echo "<td><input type='radio' name='Rate.ChargeType' value='". RATE_CAP_STANDARD_RATE_PER_UNIT."' $strChecked></td>\n";
+					echo "<td>". DBO()->Rate->StdRatePerUnit->AsInput() ."</td>\n";
+					echo "<td><span class='DefaultOutputSpan'>Per Standard Unit</span></td>\n";
+					echo "</tr>\n";
 					
-					$strLayout = 'popup_layout';
+					echo "<tr>\n";
+					$strChecked = ($mixChargeStatus == RATE_CAP_STANDARD_MARKUP) ? "checked='checked'" : "";
+					echo "<td><input type='radio' name='Rate.ChargeType' value='".RATE_CAP_STANDARD_MARKUP."' $strChecked></td>\n";
+					echo "<td>". DBO()->Rate->StdMarkup->AsInput() ."</td>\n";
+					echo "<td><span class='DefaultOutputSpan'>Per Standard Unit</span></td>\n";
+					echo "</tr>\n";
 					
-					echo "<tr><td><input type='radio' name='Rate.ChargeType' value='".
-							RATE_CAP_STANDARD_MARKUP."'". ($mixChargeStatus == RATE_CAP_STANDARD_MARKUP ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->StdMarkup->AsInput()."</td><td><span class='DefaultOutputSpan'>per Standard Unit</span></td></tr>\n";
-					echo "<tr><td><input type='radio' name='Rate.ChargeType' value='".
-							RATE_CAP_STANDARD_PERCENTAGE."'". ($mixChargeStatus == RATE_CAP_STANDARD_PERCENTAGE ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->StdPercentage->AsInput()."</td><td>&nbsp;</td></tr>\n";
-					echo "<tr><td>&nbsp;</td><td>".DBO()->Rate->StdMinCharge->AsInput()."</td><td>&nbsp;</td></tr>\n";
-					echo "<tr><td>&nbsp;</td><td>".DBO()->Rate->StdFlagfall->AsInput()."</td><td>&nbsp;</td></tr>\n";
+					echo "<tr>\n";
+					$strChecked = ($mixChargeStatus == RATE_CAP_STANDARD_PERCENTAGE) ? "checked='checked'" : "";
+					echo "<td><input type='radio' name='Rate.ChargeType' value='". RATE_CAP_STANDARD_PERCENTAGE."' $strChecked></td>\n";
+					echo "<td>".DBO()->Rate->StdPercentage->AsInput()."</td><td>&nbsp;</td>\n";
+					echo "</tr>\n";
+					
 					echo "</table>\n";
 				echo "</div>\n"; //end of the stdunits DIV
 			
@@ -309,22 +324,27 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			
 			echo "</div>\n"; // end of ratedetail DIV
 			
-			switch (DBO()->Rate->CapCalculation->Value)
+			// For the Rate Cap properties determine which of the radio buttons has been selected
+			if (DBO()->Rate->CapCalculation->IsSet)
 			{
-				case RATE_CAP_NO_CAP:
-					$mixCalculationStatus = RATE_CAP_NO_CAP;
-					break;
-				case RATE_CAP_CAP_UNITS:
-					$mixCalculationStatus = RATE_CAP_CAP_UNITS;
-					break;
-				case RATE_CAP_CAP_COST:
-					$mixCalculationStatus = RATE_CAP_CAP_COST;
-					break;
-				default:
-					$mixCalculationStatus = RATE_CAP_NO_CAP;
-					break;
+				$mixCalculationStatus = DBO()->Rate->CapCalculation->Value;
 			}
-	
+			else
+			{
+				if (DBO()->Rate->CapCost->Value > 0)
+				{
+					$mixCalculationStatus = RATE_CAP_CAP_COST;
+				}
+				elseif (DBO()->Rate->CapUnits->Value > 0)
+				{
+					$mixCalculationStatus = RATE_CAP_CAP_UNITS;
+				}
+				else
+				{
+					$mixCalculationStatus = RATE_CAP_NO_CAP;
+				}
+			}
+			
 			echo "<div id='CapMainDetailDiv' style='display:inline'>\n"; // beginning of capmaindetail DIV
 				echo "<div class='NarrowContent'>\n"; //beginning of capdetail DIV
 				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
@@ -332,10 +352,10 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 						RATE_CAP_NO_CAP."'". ($mixCalculationStatus == RATE_CAP_NO_CAP ? "checked='checked'" : "") .
 								" onchange=\"$strRateCapOnClick\"></td><td><span class='DefaultOutputSpan'>&nbsp;&nbsp;No Cap</span></td><td width='58%'>&nbsp;</td></tr>\n";
 				echo "<tr><td width='2%'><input type='radio' name='Rate.CapCalculation' value='".
-						RATE_CAP_CAP_UNITS."'". ($mixCalculationStatus == RATE_CAP_CAP_UNITS || DBO()->Rate->CapUnits->Value != 0  ? "checked='checked'" : "") .
+						RATE_CAP_CAP_UNITS."'". ($mixCalculationStatus == RATE_CAP_CAP_UNITS ? "checked='checked'" : "") .
 								" onchange=\"$strRateCapOnClick\"></td><td>".DBO()->Rate->CapUnits->AsInput()."</td><td width='58%'>&nbsp;</td></tr>\n";
 				echo "<tr><td width='2%'><input type='radio' name='Rate.CapCalculation' value='".
-						RATE_CAP_CAP_COST."'". ($mixCalculationStatus == RATE_CAP_CAP_COST || DBO()->Rate->CapCost->Value != 0 ? "checked='checked'" : "") .
+						RATE_CAP_CAP_COST."'". ($mixCalculationStatus == RATE_CAP_CAP_COST ? "checked='checked'" : "") .
 								" onchange=\"$strRateCapOnClick\"></td><td>".DBO()->Rate->CapCost->AsInput()."</td><td width='58%'>&nbsp;</td></tr>\n";
 				echo "</table>\n";
 	
@@ -343,6 +363,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 				// a multiple conditional OR comparing each value with '0' (the default value) if this has changed it would indivate that
 				// a new value has been entered and to set a boolean status to TRUE to show the hidden DIV
 				
+				/*
 				$bolShowExcessDiv = FALSE;
 				if (	(DBO()->Rate->ExsUnits->Value) ||
 						(DBO()->Rate->ExsRatePerUnit->Value) || 
@@ -363,7 +384,38 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 					$mixCapStatus = RATE_CAP_NO_CAP_LIMITS;
 					echo "<div id='CapDetailDiv' style='display:none'>\n"; //beginning of expandingcapdetail DIV
 				}
+				*/
+				if (DBO()->Rate->CapLimitting->IsSet)
+				{
+					$mixCapStatus = DBO()->Rate->CapLimitting->Value;
+				}
+				else
+				{	
+					if (DBO()->Rate->CapUsage->Value > 0)
+					{
+						$mixCapStatus = RATE_CAP_CAP_USAGE;
+					}
+					elseif (DBO()->Rate->CapLimit->Value > 0)
+					{
+						$mixCapStatus = RATE_CAP_CAP_LIMIT;
+					}
+					else
+					{
+						$mixCapStatus = RATE_CAP_NO_CAP_LIMITS;
+					}
+//TODO! Joel. You are up to here, with regard to showing and hiding the relevent divs when the popup is displayed					
+				}
 				
+				if ((DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST)||(DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS)||$bolShowExcessDiv)
+				{	
+					$mixCapStatus = DBO()->Rate->CapLimitting->Value;
+					echo "<div id='CapDetailDiv' style='display:inline'>\n"; //beginning of expandingcapdetail DIV
+				}
+				else
+				{
+					$mixCapStatus = RATE_CAP_NO_CAP_LIMITS;
+					echo "<div id='CapDetailDiv' style='display:none'>\n"; //beginning of expandingcapdetail DIV
+				}
 				// checking to see if both the caplimit and capusage fields in the database are empty, if so
 				// set the default radio button to TRUE so the default will be the 'no cap' option
 				$strDefaultCapRadioButton = FALSE;
@@ -378,7 +430,14 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 					echo "<tr><td width='2%'><input type='radio' name='Rate.CapLimitting' value='".RATE_CAP_NO_CAP_LIMITS."'". ($mixCapStatus == RATE_CAP_NO_CAP_LIMITS || $strDefaultCapRadioButton ? "checked='checked'" : "") ." onchange=\"$strRateCapOnClick\"></td><td><span class='DefaultOutputSpan'>&nbsp;&nbsp;No Cap Limits</span></td></tr>\n";
 					echo "<tr><td width='2%'><input type='radio' name='Rate.CapLimitting' value='".RATE_CAP_CAP_LIMIT."'". ($mixCapStatus == RATE_CAP_CAP_LIMIT || DBO()->Rate->CapLimit->Value != 0 ? "checked='checked'" : "") ." onchange=\"$strRateCapOnClick\"></td><td>".DBO()->Rate->CapLimit->AsInput()."</td></tr>\n";		
 					echo "<tr><td width='2%'><input type='radio' name='Rate.CapLimitting' value='".RATE_CAP_CAP_USAGE."'". ($mixCapStatus == RATE_CAP_CAP_USAGE || DBO()->Rate->CapUsage->Value != 0 ? "checked='checked'" : "") ." onchange=\"$strRateCapOnClick\"></td><td>".DBO()->Rate->CapUsage->AsInput()."</td></tr>\n";
-					echo "</table>\n";		
+					//echo "<tr><td width='2%'>&nbsp;</td><td>". DBO()->Rate->ExsFlagfall->AsInput() ."</td></tr>\n";
+					echo "</table>\n";
+
+					echo "<div id='ExsFlagfallDiv'>";
+					echo "<div style='padding-left:21px;'>";
+					DBO()->Rate->ExsFlagfall->RenderInput();
+					echo "</div></div>\n";
+					
 					echo "</div>\n"; //end of expandingcapdetail DIV	
 		
 				if ((DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE)||($bolShowExcessDiv))
@@ -403,10 +462,9 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 						echo "<div class='Seperator'></div>\n";
 						echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 						echo "<tr><td width='2%'>&nbsp;</td><td width='56%'>".DBO()->Rate->ExsUnits->AsInput()."</td><td width='55%'>&nbsp;</td></tr>\n";
-						echo "<tr><td width='2%'><input type='radio' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_RATE_PER_UNIT."'". ($mixCapLimittingStatus == RATE_CAP_EXS_RATE_PER_UNIT || DBO()->Rate->ExsRatePerUnit->Value != 0 || $strDefaultExsRadioButton ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->ExsRatePerUnit->AsInput()."</td><td><span class='DefaultOutputSpan'>per Standard Unit</span></td></tr>\n";
-						echo "<tr><td width='2%'><input type='radio' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_MARKUP."'". ($mixCapLimittingStatus == RATE_CAP_EXS_MARKUP || DBO()->Rate->ExsMarkup->Value != 0 ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->ExsMarkup->AsInput()."</td><td><span class='DefaultOutputSpan'>per Standard Unit</span></td></tr>\n";
+						echo "<tr><td width='2%'><input type='radio' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_RATE_PER_UNIT."'". ($mixCapLimittingStatus == RATE_CAP_EXS_RATE_PER_UNIT || DBO()->Rate->ExsRatePerUnit->Value != 0 || $strDefaultExsRadioButton ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->ExsRatePerUnit->AsInput()."</td><td><span class='DefaultOutputSpan'>Per Excess Unit</span></td></tr>\n";
+						echo "<tr><td width='2%'><input type='radio' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_MARKUP."'". ($mixCapLimittingStatus == RATE_CAP_EXS_MARKUP || DBO()->Rate->ExsMarkup->Value != 0 ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->ExsMarkup->AsInput()."</td><td><span class='DefaultOutputSpan'>Per Excess Unit</span></td></tr>\n";
 						echo "<tr><td width='2%'><input type='radio' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_PERCENTAGE."'". ($mixCapLimittingStatus == RATE_CAP_EXS_PERCENTAGE || DBO()->Rate->ExsPercentage->Value != 0 ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->ExsPercentage->AsInput()."</td><td>&nbsp;</td></tr>\n";
-						echo "<tr><td width='2%'>&nbsp;</td><td>&nbsp;&nbsp;".DBO()->Rate->ExsFlagfall->AsInput()."</td><td>&nbsp;</td></tr>\n";	
 						echo "</table>\n";	
 					echo "</div>\n";  //end of expandingexsdetail DIV
 					
@@ -415,13 +473,6 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 	
 			echo "<div class='Seperator'></div>\n";
 	
-			echo "<div class='NarrowContent'>\n";
-				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
-				echo "<tr><td>".DBO()->Rate->Prorate->AsInput()."</td></tr>\n";
-				echo "<tr><td>".DBO()->Rate->Fleet->AsInput()."</td></tr>\n";
-				echo "<tr><td>".DBO()->Rate->Uncapped->AsInput()."</td></tr>\n";
-				echo "</table>\n";	
-			echo "</div>\n";	
 			
 		echo "</div>\n"; // PopupLarge
 		echo "</div>\n"; // unknown closing DIV leave in as without it doesn't format correctly
@@ -429,11 +480,11 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 
 		echo "<div class='right'>\n";
 			// The old way of doing the buttons; before confirmation boxes were implemented
-			//$this->Button("Cancel", "Vixen.Popup.Close(\"AddRatePopup\");");
+			$this->Button("Cancel", "Vixen.Popup.Close(\"AddRatePopup\");");
 			//$this->AjaxSubmit("Save as Draft");
 			//$this->AjaxSubmit("Commit");
 			// The new method
-			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to Cancel?\", Vixen.RateAdd.Close, null, null, \"Yes\", \"No\")");
+			//$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to Cancel?\", Vixen.RateAdd.Close, null, null, \"Yes\", \"No\")");
 			$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate as a Draft?\", Vixen.RateAdd.SaveAsDraft)");
 			$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", Vixen.RateAdd.Commit)");
 			

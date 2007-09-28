@@ -199,8 +199,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				$strJsonCode = Json()->encode($arrRecordTypes);
 		
 				// Initialise the javascript object
-				$strIsDraft = (DBO()->RateGroup->Id->Value > 0) ? "1" : "0";
-				echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseForm($strJsonCode, $strIsDraft);</script>\n";
+				echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseForm($strJsonCode, true);</script>\n";
 				if ($intServiceType != 0)
 				{
 					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeServiceType($intServiceType);</script>\n";
@@ -298,10 +297,12 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				$strRateName 	= htmlspecialchars($arrRate['Name'], ENT_QUOTES);
 				$strDescription = htmlspecialchars($arrRate['Description'], ENT_QUOTES);
 				$strDraft 		= "";
+				/* This is no longer needed as fleet rates will only be shown if the RateGroup is a Fleet RateGroup
 				if ($arrRate['Fleet'])
 				{
 					$strRateName = "Fleet: " . $strRateName;
 				}
+				*/
 				if ($arrRate['Draft'])
 				{
 					$strDraft = "draft='draft'";

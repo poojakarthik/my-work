@@ -443,8 +443,8 @@ function VixenPopupClass()
 		
 		strContent =	"<table border='0' width='100%'>" + 
 						"<tr><td colspan='2' align='center'><span class='DefaultOutputSpan'>" + strMessage + "</span></td></tr>" +
-						"<tr><td align='center'>" + strOkBtnHtml + "</td>" + 
-						"<td align='center'>" + strCancelBtnHtml + "</td></tr>";
+						"<tr><td align='center' width='50%'>" + strOkBtnHtml + "</td>" + 
+						"<td align='center' width='50%'>" + strCancelBtnHtml + "</td></tr>";
 		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
 		
 		// get references to the Ok and Cancel buttons and attach the event listeners

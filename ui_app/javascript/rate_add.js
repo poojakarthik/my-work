@@ -68,19 +68,21 @@ function VixenRateAddClass()
 	 */
 	this.InitialiseForm = function()
 	{
-		document.getElementById("Rate.StartTime").disabled="true";
-		document.getElementById("Rate.EndTime").disabled="true";
-		document.getElementById("Rate.Duration").disabled="true";
+		document.getElementById("Rate.StartTime").disabled	= true;
+		document.getElementById("Rate.EndTime").disabled	= true;
+		document.getElementById("Rate.Duration").disabled	= true;
+		document.getElementById("Rate.Fleet").disabled		= true;
 		
-		document.getElementById("Rate.StartTime").style.color = "#000000";
-		document.getElementById("Rate.EndTime").style.color = "#000000";
-		document.getElementById("Rate.Duration").style.color = "#000000";
+		document.getElementById("Rate.StartTime").style.color	= "#000000";
+		document.getElementById("Rate.EndTime").style.color		= "#000000";
+		document.getElementById("Rate.Duration").style.color	= "#000000";
+		document.getElementById("Rate.Fleet").style.color		= "#000000";
 
 		var elmPassThroughCheckbox = document.getElementById("Rate.PassThrough");
 
 		elmPassThroughCheckbox.addEventListener("change", PassThroughOnChange, false);
 		
-		//  Initialise what is visible on the form
+		// Initialise what is visible on the form
 		PassThroughOnChange();
 	}
 	
@@ -111,28 +113,31 @@ function VixenRateAddClass()
 		{
 			case RATE_CAP_NO_CAP:
 				// hide any details not required for a no cap
-				document.getElementById('CapDetailDiv').style.display='none';
-				document.getElementById('ExcessDetailDiv').style.display='none';
+				document.getElementById('CapDetailDiv').style.display = 'none';
+				document.getElementById('ExcessDetailDiv').style.display = 'none';
 				break;
 			case RATE_CAP_CAP_UNITS:
 				// show any details required for a cap
-				document.getElementById('CapDetailDiv').style.display='inline';
+				document.getElementById('CapDetailDiv').style.display = 'inline';
 				break;
 			case RATE_CAP_CAP_COST:
 				// show the cap details required for a cap
-				document.getElementById('CapDetailDiv').style.display='inline';
+				document.getElementById('CapDetailDiv').style.display = 'inline';
 				break;
 			case RATE_CAP_NO_CAP_LIMITS:
-				// hide any details not required for a no cap
-				document.getElementById('ExcessDetailDiv').style.display='none';
+				// show/hide details required for when "No Cap Limits" is selected
+				document.getElementById('ExcessDetailDiv').style.display = 'none';
+				document.getElementById('ExsFlagfallDiv').style.display = 'none';
 				break;	
 			case RATE_CAP_CAP_LIMIT:
-				// hide any details not required for a no cap
-				document.getElementById('ExcessDetailDiv').style.display='none';
-				break;							
+				// show/hide details required for when "Cap Limit" is selected
+				document.getElementById('ExcessDetailDiv').style.display = 'none';
+				document.getElementById('ExsFlagfallDiv').style.display = 'inline';
+				break;
 			case RATE_CAP_CAP_USAGE:
-				// show the excess details required for a cap
-				document.getElementById('ExcessDetailDiv').style.display='inline';
+				// show/hide details required for when "Cap Usage" is selected
+				document.getElementById('ExcessDetailDiv').style.display = 'inline';
+				document.getElementById('ExsFlagfallDiv').style.display = 'inline';
 				break;
 			case RATE_CHARGES_SHOW:
 				document.getElementById('RateDetailDiv').style.display = 'inline';
@@ -155,8 +160,8 @@ function VixenRateAddClass()
 				{
 					if (document.getElementById(arrFormElements[intCounter]).value != "" && document.getElementById(arrFormElements[intCounter]).value.indexOf("0.0") == -1)
 					{
-						document.getElementById('CapDetailDiv').style.display='inline';
-						document.getElementById('ExcessDetailDiv').style.display='inline'
+						document.getElementById('CapDetailDiv').style.display = 'inline';
+						document.getElementById('ExcessDetailDiv').style.display = 'inline';
 					}
 				}
 				
