@@ -542,8 +542,9 @@
 		$arrDefine['PaymentData']		['AddressLine4']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine4']['Value'];
 		$arrDefine['PaymentData']		['AddressLine5']	['Value']	= "{$arrDefine['InvoiceDetails']['Suburb']['Value']}   {$arrDefine['InvoiceDetails']['State']['Value']}   {$arrDefine['InvoiceDetails']['Postcode']['Value']}";
 		$arrDefine['PaymentData']		['PaymentMethod']	['Value']	= $arrCustomerData['BillingType'];
-		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= $this->_arrConfig['SpecialOffer1'];
-		$arrDefine['PaymentData']		['SpecialOffer2']	['Value']	= $this->_arrConfig['SpecialOffer2'];
+		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= $this->_arrConfig[$arrCustomerData['CustomerGroup']]['SpecialOffer1'];
+		$arrDefine['PaymentData']		['SpecialOffer2']	['Value']	= $this->_arrConfig[$arrCustomerData['CustomerGroup']]['SpecialOffer2'];		
+		
 		$this->_arrFileData[] = $arrDefine['PaymentData'];
 		
 		

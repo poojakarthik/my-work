@@ -72,9 +72,15 @@ $arrBillingConfig = Array();
 	
 	//$arrBillingConfig['PrintingModule']	['SpecialOffer1']			= "Dear Customer, There is a minor adjustment to some of our service charges of up to 68c. However, while this has been unavoidable, you can rest assured that our call rates and customer service still remain as exceptional as ever!  ";
 	//$arrBillingConfig['PrintingModule']	['SpecialOffer2']			= "For your convenience we have included a direct debit application form should you wish to pay by this method, simply fill in your EFT or credit card details and fax to the Customer Service Team on 1300 733 393";
-	$arrBillingConfig['PrintingModule']	['SpecialOffer1']			= "As a valued customer, please feel free to contact customer service for a bill analysis or plan upgrade. Visit our website to view full disclosure of our Terms and Conditions at www.telcoblue.com.au.";
-	$arrBillingConfig['PrintingModule']	['SpecialOffer2']			= "One change as of 1st November will be a 1.5% surcharge on some credit card payments. Any enquiries can be made with our friendly customer service Team on 1300 835 262";
-		
+	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_TELCOBLUE]		= "As a valued customer, please feel free to contact customer service for a bill analysis or plan upgrade. Visit our website to view full disclosure of our Terms and Conditions at www.telcoblue.com.au.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_TELCOBLUE]		= "One change as of 1st November will be a 1.5% surcharge on some credit card payments. Any enquiries can be made with our friendly customer service Team on 1300 835 262";
+	
+	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_IMAGINE]		= "As a valued customer, please feel free to contact customer service for a bill analysis or plan upgrade. Visit our website to view full disclosure of our Terms and Conditions at www.telcoblue.com.au.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_IMAGINE]		= "One change as of 1st November will be a 1.5% surcharge on some credit card payments. Any enquiries can be made with our friendly customer service Team on 1300 835 262";
+	
+	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_VOICETALK]		= "As a valued customer, please feel free to contact customer service for a bill analysis or plan upgrade. Visit our website to view full disclosure of our Terms and Conditions at www.voicetalk.com.au.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_VOICETALK]		= "One change as of 1st November will be a 1.5% surcharge on some credit card payments. Any enquiries can be made with our friendly customer service Team on 1300 882 172";
+	
 $GLOBALS['**arrCustomerConfig']	['Billing']	= 	$arrBillingConfig;
 
 ?>
