@@ -53,9 +53,6 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		$this->LoadJavascript("services_view");
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -274,6 +271,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			DBO()->RatePlan->Name->RenderArbitrary("No Plan", RENDER_OUTPUT, 1);
 		}
 		
+		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("LineStatus"), RENDER_OUTPUT);
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 
 		echo "</div>\n";

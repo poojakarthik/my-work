@@ -483,7 +483,7 @@ $GLOBALS['*arrConstant']	['RequestDirection']	[1]	['Description']	= 'Incoming';
 
 
 
-// Service Line Status
+// Service Status
 $GLOBALS['*arrConstant']	['Service']	[400]	['Constant']	= 'SERVICE_ACTIVE';
 $GLOBALS['*arrConstant']	['Service']	[400]	['Description']	= 'Active';
 /*$GLOBALS['*arrConstant']	['Service']	[401]	['Constant']	= 'SERVICE_BARRED';
@@ -492,6 +492,16 @@ $GLOBALS['*arrConstant']	['Service']	[402]	['Constant']	= 'SERVICE_DISCONNECTED'
 $GLOBALS['*arrConstant']	['Service']	[402]	['Description']	= 'Disconnected';
 $GLOBALS['*arrConstant']	['Service']	[403]	['Constant']	= 'SERVICE_ARCHIVED';
 $GLOBALS['*arrConstant']	['Service']	[403]	['Description']	= 'Archived';
+
+
+// Service Line Status
+$GLOBALS['*arrConstant']	['LineStatus']	[500]	['Constant']	= 'SERVICE_LINE_ACTIVE';
+$GLOBALS['*arrConstant']	['LineStatus']	[500]	['Description']	= 'Active';
+$GLOBALS['*arrConstant']	['LineStatus']	[501]	['Constant']	= 'SERVICE_LINE_DISCONNECTED';
+$GLOBALS['*arrConstant']	['LineStatus']	[501]	['Description']	= 'Disconnected';
+$GLOBALS['*arrConstant']	['LineStatus']	[502]	['Constant']	= 'SERVICE_LINE_ARCHIVED';
+$GLOBALS['*arrConstant']	['LineStatus']	[502]	['Description']	= 'Archived';
+
 
 // Provisioning Request Types
 /*define("REQUEST_FULL_SERVICE"			, 900);

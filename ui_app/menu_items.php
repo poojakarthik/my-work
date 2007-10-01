@@ -128,7 +128,7 @@ class MenuItems
 	 */
 	function EmployeeConsole()
 	{
-		$this->strLabel	= "console";
+		$this->strLabel	= "Console";
 		return "console.php";
 	}
 
@@ -861,8 +861,6 @@ class MenuItems
 	 */
 	function ViewAccount($intId)
 	{
-		$this->strLabel	= "make payment";
-		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
@@ -891,8 +889,6 @@ class MenuItems
 	 */
 	function ViewServices($intId)
 	{
-		//$this->strLabel	= "make payment";
-		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
 		

@@ -51,10 +51,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		$this->LoadJavascript("rate_add");
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -133,9 +129,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 */
 	private function _RenderFullDetail()
 	{	
+		// Define javascript to execute when the "Edit" button is triggered
+		$strEditAccountJsCode =	"var objObjects = {};\n".
+								"objObjects.Account = {};\n".
+								"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
+								"Vixen.Ajax.CallAppTemplate(\"Account\", \"Edit\", objObjects);\n";
+	
 		// put in ajax form to enable switching context 
 		echo "<div id='AccountDetailDiv'>\n";
-		echo "<h2 class='Account'>Account Full Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 		$this->FormStart("EditAccount", "Account", "Edit");
 		DBO()->Account->Id->RenderOutput();
@@ -154,14 +155,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		
-		//$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", Vixen.RateAdd.Commit)");
-			
-		//$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");	
-		//echo $this->_objAjax->strId;
 		echo "</div>\n";
 		echo "<div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-		$this->Button("Edit", "Vixen.RateAdd.Edit(".DBO()->Account->Id->Value.")");
+		$this->Button("Close", "Vixen.Popup.Close(this);");
+		$this->Button("Edit", $strEditAccountJsCode);
 		$this->FormEnd();
 		echo "</div>\n";
 		echo "</div>\n";
@@ -182,8 +179,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 */
 	private function _RenderEditDetail()
 	{
+		// Define javascript to execute when the "Cancel" button is triggered
+		$strCancelJsCode =	"var objObjects = {};\n".
+							"objObjects.Account = {};\n".
+							"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
+							"Vixen.Ajax.CallAppTemplate(\"Account\", \"View\", objObjects);\n";
+	
 		echo "<div id='AccountDetailDiv'>\n";
-		echo "<h2 class='Account'>Account Edit Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 		$this->FormStart("EditAccount", "Account", "Edit");
 		
@@ -204,32 +206,24 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->Postcode->RenderInput();
 		
 		$arrState = array();
-		$arrState[SERVICE_STATE_TYPE_ACT] = "Australian Capital Territory";
-		$arrState[SERVICE_STATE_TYPE_NSW] = "New South Wales";
-		$arrState[SERVICE_STATE_TYPE_VIC] = "Victoria";
-		$arrState[SERVICE_STATE_TYPE_SA] = "South Australia";
-		$arrState[SERVICE_STATE_TYPE_WA] = "Western Australia";
-		$arrState[SERVICE_STATE_TYPE_TAS] = "Tasmania";
-		$arrState[SERVICE_STATE_TYPE_NT] = "Northern Territory";
-		$arrState[SERVICE_STATE_TYPE_QLD] = "Queensland";
+		$arrState[SERVICE_STATE_TYPE_ACT]	= SERVICE_STATE_TYPE_ACT;
+		$arrState[SERVICE_STATE_TYPE_NSW]	= SERVICE_STATE_TYPE_NSW;
+		$arrState[SERVICE_STATE_TYPE_VIC]	= SERVICE_STATE_TYPE_VIC;
+		$arrState[SERVICE_STATE_TYPE_SA]	= SERVICE_STATE_TYPE_SA;
+		$arrState[SERVICE_STATE_TYPE_WA]	= SERVICE_STATE_TYPE_WA;
+		$arrState[SERVICE_STATE_TYPE_TAS]	= SERVICE_STATE_TYPE_TAS;
+		$arrState[SERVICE_STATE_TYPE_NT]	= SERVICE_STATE_TYPE_NT;
+		$arrState[SERVICE_STATE_TYPE_QLD]	= SERVICE_STATE_TYPE_QLD;
 		
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Account.State' style='width:152px'>\n";
+		echo "      <select name='Account.State' style='width:158px'>\n";
 	
 		foreach ($arrState as $strKey=>$strStateSelection)
 		{
-			if (DBO()->Account->State->Value == $strKey)
-			{
-				// this is the currently selected combobox option
-				echo "		<option value='". $strKey . "' selected='selected'>$strStateSelection</option>\n";
-			}
-			else
-			{
-				// this is currently not the selected combobox option
-				echo "		<option value='". $strKey . "'>$strStateSelection</option>\n";
-			}
+			$strSelected = (DBO()->Account->State->Value == $strKey) ? "selected='selected'" : "";
+			echo "		<option value='$strKey' $strSelected>$strStateSelection</option>\n";
 		}
 		
 		echo "      </select>\n";
@@ -240,7 +234,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Account.BillingMethod' style='width:152px'>\n";
+		echo "      <select name='Account.BillingMethod' style='width:158px'>\n";
 	
 		foreach ($GLOBALS['*arrConstant']['BillingMethod'] as $intConstant=>$arrBillingMethodSelection)
 		{
@@ -253,9 +247,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 		
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;CustomerGroup:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Account.CustomerGroup' style='width:152px'>\n";
+		echo "      <select name='Account.CustomerGroup' style='width:158px'>\n";
 	
 		foreach ($GLOBALS['*arrConstant']['CustomerGroup'] as $intConstant=>$arrCustomerGroupSelection)
 		{
@@ -269,42 +263,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 		echo "<div class='Seperator'></div>\n";
 
-		$strSelected = (DBO()->Account->DisableDDR->Value == 1) ? "'checked'" : "";
-		echo "&nbsp;<input type='checkbox' name='Account.DisableDDR' $strSelected> Do not charge an admin fee\n";
-
-		$strLatePaymentValue_Case0 = "";
-		$strLatePaymentValue_Case1 = "";
-		$strLatePaymentValue_Case2 = "";
-		
-		switch (DBO()->Account->DisableLatePayment->Value)
-		{
-		case 0:
-			$strLatePaymentValue_Case0 = "'checked'";		
-			break;
-		case 1:
-			$strLatePaymentValue_Case1 = "'checked'";		
-			break;
-		case -1:
-			$strLatePaymentValue_Case2 = "'checked'";	
-			break;
-		default:
-			break;
-		}
-		
-		echo "<div class='Seperator'></div>\n";
-		
-		echo "<table border='0' cellpadding='1' cellspacing='0'>\n";
-		echo "<tr class='LatePayments'><td rowspan='4'>&nbsp;</td><td valign='top' rowspan='4' width='36%'>Late Payments:</td></tr>\n";
-		
-			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='0' $strLatePaymentValue_Case0>Charge a late payment fee</td></tr>\n";
-			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='-1' $strLatePaymentValue_Case2>Don't charge a late payment fee on the next invoice</td></tr>\n";
-			echo "<tr class='LatePayments'><td><input type='radio' name='Account.DisableLatePayment' value='1' $strLatePaymentValue_Case1>Never charge a late payment fee</td></tr>\n";		
-		
-		echo "</td></tr>\n";
-		echo "</table>\n";
+		DBO()->Account->DisableDDR->RenderInput();
+		DBO()->Account->DisableLatePayment->RenderInput();
 		
 		echo "<div class='Seperator'></div>\n";		
-		
+
+		// Render the Account Status Combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
@@ -312,13 +276,18 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	
 		foreach ($GLOBALS['*arrConstant']['Account'] as $intConstant=>$arrArchivedSelection)
 		{
-			$strSelected = (DBO()->Account->Archived->Value == $intConstant) ? "selected='selected'" : "";
-	
-			// this is the currently selected combobox option
-			if (($intConstant != ACCOUNT_DEBT_COLLECTION) || ($intConstant != ACCOUNT_ARCHIVED))
+			if (($intConstant == ACCOUNT_DEBT_COLLECTION) || ($intConstant == ACCOUNT_ARCHIVED))
 			{
-				echo "		<option value='$intConstant' $strSelected>{$arrArchivedSelection['Description']}</option>\n";
+				// Only users with Admin privileges can mark an account as ACCOUNT_DEBT_COLLECTION or ACCOUNT_ARCHIVED
+				if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+				{
+					// The user does not have permission to select these options
+					continue;
+				}
 			}
+
+			$strSelected = (DBO()->Account->Archived->Value == $intConstant) ? "selected='selected'" : "";
+			echo "         <option value='$intConstant' $strSelected>{$arrArchivedSelection['Description']}</option>\n";
 		}
 
 		echo "      </select>\n";
@@ -328,7 +297,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='SmallSeperator'></div>\n";
 		
 		echo "<div class='Right'>\n";
-		$this->Button("View", "Vixen.RateAdd.Cancel(".DBO()->Account->Id->Value.")");
+		$this->Button("Cancel", $strCancelJsCode);
 		$this->AjaxSubmit("Apply Changes");
 		$this->FormEnd();
 		echo "</div>\n";

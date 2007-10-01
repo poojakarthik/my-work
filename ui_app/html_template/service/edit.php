@@ -89,37 +89,31 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		// Associate array of service status
 		
 		$arrServiceStatus = array();
-		$arrServiceStatus[SERVICE_ACTIVE] = "Active";
-		$arrServiceStatus[SERVICE_DISCONNECTED] = "Service Disconnected";
+		$arrServiceStatus[SERVICE_ACTIVE] = GetConstantDescription(SERVICE_ACTIVE, "Service");
+		$arrServiceStatus[SERVICE_DISCONNECTED] = GetConstantDescription(SERVICE_DISCONNECTED, "Service");
 		
 		// Check authentication here, archived is only available to admins only
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie($pagePerms);
 		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
 		{
-			$arrServiceStatus[SERVICE_ARCHIVED] = "Service Archived";
+			$arrServiceStatus[SERVICE_ARCHIVED] = GetConstantDescription(SERVICE_ARCHIVED, "Service");
 		}
 		
 		echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Status:</div>\n";
-			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select name='Service.LineStatus' style='width:162px'>\n";
-		
-			foreach ($arrServiceStatus as $strKey=>$strServiceStatus)
-			{
-				if (DBO()->Service->LineStatus->Value == $strKey)
-				{
-					echo "	<option value='".$strKey."' selected='selected'>$strServiceStatus</option>\n";	
-				}
-				else
-				{
-					echo "	<option value='".$strKey."'>$strServiceStatus</option>\n";				
-				}
-			}
-		
-			echo "      </select>\n";
-			echo "   </div>\n";
-			echo "</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Status:</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select name='Service.LineStatus' style='width:152px'>\n";
+	
+		foreach ($arrServiceStatus as $intKey=>$strServiceStatus)
+		{
+			$strSelected = (DBO()->Service->LineStatus->Value == $intKey) ? "selected='selected'" : "";
+			echo "         <option value='$intKey' $strSelected>$strServiceStatus</option>\n";	
+		}
+	
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";
 		
 		// ---------------------------------------------------
 		

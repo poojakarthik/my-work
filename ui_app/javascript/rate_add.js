@@ -205,81 +205,10 @@ function VixenRateAddClass()
 	 * @return	void
 	 * @method
 	 */
-	this.Closes = function()
-	{
-		// The PopupId, containing this form, has been rendered as a hidden
-		Vixen.Popup.Close(document.getElementById("RateGroupSearchId").value);
-	}
-
-	//------------------------------------------------------------------------//
-	// Close
-	//------------------------------------------------------------------------//
-	/**
-	 * Close
-	 *
-	 * This is executed when the Cancel button is clicked and then the user confirms that they want to go through with it
-	 *  
-	 * This is executed when the Cancel button is clicked and then the user confirms that they want to go through with it
-	 *
-	 * @return	void
-	 * @method
-	 */
 	this.Close = function()
 	{
 		// The PopupId, containing this form, has been rendered as a hidden
 		Vixen.Popup.Close(document.getElementById("AddRatePopupId").value);
-	}
-
-	//------------------------------------------------------------------------//
-	// Cancel (function doesnt really belong in this class)
-	//------------------------------------------------------------------------//
-	/**
-	 * Cancel
-	 *
-	 * 
-	 *  
-	 * 
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.Cancel = function(intAccountId)
-	{
-		// The PopupId, containing this form, has been rendered as a hidden
-		//alert("entered");
-		var objObjects = {};
-		objObjects.Account = {};
-		objObjects.Account.Id = intAccountId;
-		
-		//alert("entered EDIT function in rate_add.js :- "+objObjects.Account.Id);
-		
-		Vixen.Ajax.CallAppTemplate("Account", "View", objObjects);
-	}
-
-	//------------------------------------------------------------------------//
-	// Edit (function doesnt really belong in this class)
-	//------------------------------------------------------------------------//
-	/**
-	 * Edit
-	 *
-	 * 
-	 *  
-	 * 
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.Edit = function(intAccountId)
-	{
-		// The PopupId, containing this form, has been rendered as a hidden
-		//alert("entered");
-		var objObjects = {};
-		objObjects.Account = {};
-		objObjects.Account.Id = intAccountId;
-		
-		//alert("entered EDIT function in rate_add.js :- "+objObjects.Account.Id);
-		
-		Vixen.Ajax.CallAppTemplate("Account", "Edit", objObjects);
 	}
 }
 

@@ -45,10 +45,10 @@
 class AppTemplateAccount extends ApplicationTemplate
 {
 	//------------------------------------------------------------------------//
-	// Edit
+	// EditDetails
 	//------------------------------------------------------------------------//
 	/**
-	 * Edit()
+	 * EditDetails()
 	 *
 	 * Performs the logic for the Account/Edit
 	 * 
@@ -58,9 +58,11 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * @method
 	 *
 	 */
-	function Edit()
+	function EditDetails()
 	{
-
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		if (SubmittedForm('EditAccount', 'Apply Changes'))
 		{
@@ -222,34 +224,24 @@ class AppTemplateAccount extends ApplicationTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// View INCOMPLETE
+	// ViewDetails
 	//------------------------------------------------------------------------//
 	/**
-	 * View()
+	 * ViewDetails()
 	 *
-	 * Performs the logic for the account_view.php webpage
+	 * Performs the logic for the Account Details popup
 	 * 
-	 * Performs the logic for the account_view.php webpage
+	 * Performs the logic for the Account Details popup
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	 
-function Render_View()
+	function ViewDetails()
 	{	
-		
-		$pagePerms = PERMISSION_ADMIN;
-
 		AuthenticatedUser()->CheckAuth();
 		// Check perms
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
-		//AuthenticatedUser()->PermissionOrDie(USER_PERMISSION_GOD);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			//echo "God!";
-			// add in debug info
-		}
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);	// dies if no permissions
 
 		if (DBO()->Account->Id->Valid())
 		{
@@ -296,7 +288,7 @@ function Render_View()
 
 		AuthenticatedUser()->CheckAuth();
 		// Check perms
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);	// dies if no permissions
 		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
 		{
 		}
@@ -391,9 +383,7 @@ function Render_View()
 		ContextMenu()->Logout();
 		
 		// breadcrumb menu
-		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
-		BreadCrumb()->View_Account(DBO()->Account->Id->Value);
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Invoices and Payments");
 		
 		

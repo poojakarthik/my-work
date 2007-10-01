@@ -222,7 +222,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				echo "<div class='Right'>\n";
 				
 				// The old method, before confirmation boxes were implemented
-				$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+				$this->Button("Cancel", "Vixen.Popup.Close(this);");
 				//$this->AjaxSubmit("Save as Draft");  
 				//$this->AjaxSubmit("Commit");
 	

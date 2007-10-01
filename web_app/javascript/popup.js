@@ -382,10 +382,44 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		}
 	}
 	
-	
-	this.Close = function(strId)
+	// mixId can be the id of the popup as a string or it can be a pointer to any element on the popup
+	this.Close = function(mixId)
 	{
-		var elmPopup = document.getElementById('VixenPopup__' + strId);
+		if (typeof(mixId) == 'string')
+		{
+			var strPopupId = 'VixenPopup__' + mixId
+			var elmPopup = document.getElementById(strPopupId);
+		}
+		else if (typeof(mixId) == 'object')
+		{
+			var elmElement = mixId;
+			var bolFoundPopup = false;
+			while (elmElement.tagName != "BODY")
+			{
+				if (elmElement.id.substr(0, 12) == "VixenPopup__")
+				{
+					bolFoundPopup = true;
+					break;
+				}
+				elmElement = elmElement.parentNode;
+			}
+			if (bolFoundPopup)
+			{
+				elmPopup = elmElement;
+			}
+			else
+			{
+				alert("Could not find the popup to close");
+				return;
+			}
+		}
+		else
+		{
+			alert("Could not close the popup.\nmixId must be a string or element on the popup.\nmixId = " + mixId.toString());
+			return;
+		}
+		
+		
 		if (elmPopup)
 		{
 			//objClose.removeEventListener('mousedown', OpenHandler, false);
@@ -410,6 +444,7 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 			}
 		}
 	}
+	
 	
 	this.ShowAjaxPopup = function(strId, strSize, strTitle, strClass, strMethod, objParams, strWindowType)
 	{

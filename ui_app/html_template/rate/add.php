@@ -482,7 +482,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 
 		echo "<div class='right'>\n";
 			// The old way of doing the buttons; before confirmation boxes were implemented
-			$this->Button("Cancel", "Vixen.Popup.Close(\"AddRatePopup\");");
+			$this->Button("Cancel", "Vixen.Popup.Close(this);");
 			//$this->AjaxSubmit("Save as Draft");
 			//$this->AjaxSubmit("Commit");
 			
