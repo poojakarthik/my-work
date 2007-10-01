@@ -200,6 +200,17 @@ class AppTemplateRate extends ApplicationTemplate
 	 */
 	private function _ValidateAndSaveRate()
 	{
+		// Strip dollar signs off the fields that can contain them
+		DBO()->Rate->StdRatePerUnit	= ltrim(DBO()->Rate->StdRatePerUnit->Value, '$');
+		DBO()->Rate->StdMarkup		= ltrim(DBO()->Rate->StdMarkup->Value, '$');
+		DBO()->Rate->CapCost		= ltrim(DBO()->Rate->CapCost->Value, '$');
+		DBO()->Rate->CapLimit		= ltrim(DBO()->Rate->CapLimit->Value, '$');
+		DBO()->Rate->ExsFlagfall	= ltrim(DBO()->Rate->ExsFlagfall->Value, '$');
+		DBO()->Rate->ExsRatePerUnit	= ltrim(DBO()->Rate->ExsRatePerUnit->Value, '$');
+		DBO()->Rate->ExsMarkup		= ltrim(DBO()->Rate->ExsMarkup->Value, '$');
+		DBO()->Rate->StdFlagfall	= ltrim(DBO()->Rate->StdFlagfall->Value, '$');
+		DBO()->Rate->StdMinCharge	= ltrim(DBO()->Rate->StdMinCharge->Value, '$');
+	
 		// Test initial validation of fields
 		if (DBO()->Rate->IsInvalid())
 		{
@@ -256,7 +267,7 @@ class AppTemplateRate extends ApplicationTemplate
 		if (!DBO()->Rate->PassThrough->Value)
 		{
 			// Check that the Standard Units has been specified
-			if (!Validate('Integer', DBO()->Rate->StdUnits->Value))
+			if (!(Validate('Integer', DBO()->Rate->StdUnits->Value) && DBO()->Rate->StdUnits->Value > 0))
 			{
 				DBO()->Rate->StdUnits->SetToInvalid();
 				$bolFormIsInvalid = TRUE;
@@ -299,22 +310,22 @@ class AppTemplateRate extends ApplicationTemplate
 					DBO()->Rate->CapLimit		= 0;
 					DBO()->Rate->CapUsage		= 0;
 					DBO()->Rate->ExsFlagfall	= 0;
-					DBO()->Rate->ExsUnits		= 0;
-					DBO()->Rate->ExsRatePerUnit	= 1649;
+					DBO()->Rate->ExsUnits		= 1;
+					DBO()->Rate->ExsRatePerUnit	= 0;
 					DBO()->Rate->ExsMarkup		= 0;
 					DBO()->Rate->ExsPercentage	= 0;
 					break;
 				case RATE_CAP_CAP_UNITS:
-					// validate cap units
-					if (!Validate('Integer', DBO()->Rate->CapUnits->Value))
+					// validate cap units.  CapUnits must be an integer greater than 0
+					if (!(Validate('Integer', DBO()->Rate->CapUnits->Value) && DBO()->Rate->CapUnits->Value > 0))
 					{
 						DBO()->Rate->CapUnits->SetToInvalid();
 						$bolFormIsInvalid = TRUE;
 					}
 					break;
 				case RATE_CAP_CAP_COST:
-					// validate cap cost
-					if (!Validate('IsMoneyValue', DBO()->Rate->CapCost->Value))
+					// validate cap cost.  CapCost must be an integer greater than 0
+					if (!(Validate('IsMoneyValue', DBO()->Rate->CapCost->Value) && DBO()->Rate->CapCost->Value > 0))
 					{
 						DBO()->Rate->CapCost->SetToInvalid();
 						$bolFormIsInvalid = TRUE;
@@ -322,9 +333,9 @@ class AppTemplateRate extends ApplicationTemplate
 					break;
 			}
 		
-			if ((DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST)||(DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS))
+			if ((DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST) || (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS))
 			{		
-				// validate caplimitting values
+				// A Cap has been specified.  Validate the Cap Limitting properties
 				switch (DBO()->Rate->CapLimitting->Value)
 				{
 					case RATE_CAP_NO_CAP_LIMITS:
@@ -332,14 +343,14 @@ class AppTemplateRate extends ApplicationTemplate
 						DBO()->Rate->CapLimit		= 0;
 						DBO()->Rate->CapUsage		= 0;
 						DBO()->Rate->ExsFlagfall	= 0;
-						DBO()->Rate->ExsUnits		= 0;
-						DBO()->Rate->ExsRatePerUnit	= 2101;
+						DBO()->Rate->ExsUnits		= 1;
+						DBO()->Rate->ExsRatePerUnit	= 0;
 						DBO()->Rate->ExsMarkup		= 0;
 						DBO()->Rate->ExsPercentage	= 0;
 						break;
 					case RATE_CAP_CAP_LIMIT:
 						// validate cap limit
-						if (!Validate('IsMoneyValue', DBO()->Rate->CapLimit->Value))
+						if (!(Validate('IsMoneyValue', DBO()->Rate->CapLimit->Value) && DBO()->Rate->CapLimit->Value > 0))
 						{
 							DBO()->Rate->CapLimit->SetToInvalid();
 							$bolFormIsInvalid = TRUE;
@@ -351,8 +362,8 @@ class AppTemplateRate extends ApplicationTemplate
 						}
 						
 						// Set appropriate fields to 0
-						DBO()->Rate->ExsUnits		= 0;
-						DBO()->Rate->ExsRatePerUnit	= 1111;
+						DBO()->Rate->ExsUnits		= 1;
+						DBO()->Rate->ExsRatePerUnit	= 0;
 						DBO()->Rate->ExsMarkup		= 0;
 						DBO()->Rate->ExsPercentage	= 0;
 						break;
@@ -360,12 +371,12 @@ class AppTemplateRate extends ApplicationTemplate
 						// validate cap usage and excess
 						// flag if invalid
 						// bu dont return allow to continue through the following lines
-						if (!Validate('Integer', DBO()->Rate->CapUsage->Value))
+						if (!(Validate('Integer', DBO()->Rate->CapUsage->Value) && DBO()->Rate->CapUsage->Value > 0))
 						{
 							DBO()->Rate->CapUsage->SetToInvalid();
 							$bolFormIsInvalid = TRUE;
 						}
-						if (!Validate('Integer', DBO()->Rate->ExsUnits->Value))
+						if (!(Validate('Integer', DBO()->Rate->ExsUnits->Value) && DBO()->Rate->ExsUnits->Value > 0))
 						{
 							DBO()->Rate->ExsUnits->SetToInvalid();
 							$bolFormIsInvalid = TRUE;
@@ -438,7 +449,7 @@ class AppTemplateRate extends ApplicationTemplate
 			//strip all $ signs off values
 			DBO()->Rate->StdRatePerUnit	= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_RATE_PER_UNIT) ? ltrim(DBO()->Rate->StdRatePerUnit->Value, '$') : 0;
 			DBO()->Rate->StdMarkup		= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_MARKUP) ? ltrim(DBO()->Rate->StdMarkup->Value, '$') : 0;
-			DBO()->Rate->StdPercentage	= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_PERCENTAGE) ? ltrim(DBO()->Rate->StdPercentage->Value, '$') : 0;
+			DBO()->Rate->StdPercentage	= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_PERCENTAGE) ? DBO()->Rate->StdPercentage->Value : 0;
 			
 			DBO()->Rate->CapUnits		= (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS) ? DBO()->Rate->CapUnits->Value : 0;
 			DBO()->Rate->CapCost		= (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST) ? ltrim(DBO()->Rate->CapCost->Value, '$') : 0;
