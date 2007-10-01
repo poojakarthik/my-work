@@ -44,7 +44,6 @@
  */
 class AppTemplatePlan extends ApplicationTemplate
 {
-
 	//------------------------------------------------------------------------//
 	// _arrRateGroups
 	//------------------------------------------------------------------------//
@@ -61,7 +60,6 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * @property
 	 */
 	private $_arrRateGroups = Array();
-	
 
 	function View()
 	{

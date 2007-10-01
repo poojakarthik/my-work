@@ -76,8 +76,41 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			case HTML_CONTEXT_FULL_DETAIL:
 				$this->_RenderFullDetail();
 				break;
+			case HTML_CONTEXT_RATE_DETAIL:
+				$this->_RenderRateDetail();
+				break;				
 		}
 	}
+
+	//------------------------------------------------------------------------//
+	// _RenderRateDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderRateDetail()
+	 *
+	 * Render this HTML Template with Rate detail
+	 *
+	 * Render this HTML Template with Rate detail
+	 *
+	 * @method
+	 */
+	private function _RenderRateDetail()
+	{
+		echo "<h2 class='plan'>Plan Details</h2>\n";
+		echo "<div class='NarrowForm'>\n";
+		
+		DBO()->RatePlan->Name->RenderOutput();
+		DBO()->RatePlan->Description->RenderOutput();
+		DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
+		DBO()->RatePlan->Archived->RenderOutput();
+		DBO()->RatePlan->ChargeCap->RenderOutput();
+		DBO()->RatePlan->UsageCap->RenderOutput();
+		DBO()->RatePlan->MinMonthly->RenderOutput();
+		DBO()->RatePlan->Shared->RenderOutput();
+
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";
+	}	
 
 	//------------------------------------------------------------------------//
 	// _RenderFullDetail

@@ -106,9 +106,16 @@ class AppTemplateService extends ApplicationTemplate
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
 		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledAdjustments + $fltUnbilledCDRs);
 		
-		// Context menu
+		// context menu
+		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Admin_Console();
-		
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
@@ -142,7 +149,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * @method		View
 	 *
 	 */
-	function View_Services()
+	function ViewServices()
 	{
 		$pagePerms = PERMISSION_ADMIN;
 		
@@ -748,8 +755,15 @@ class AppTemplateService extends ApplicationTemplate
 		// Store the current FNN to check between states that the FNN textbox has been changed
 		DBO()->Service->CurrentFNN = DBO()->Service->FNN->Value;
 
-		// Load context menu items specific to the View Service page
-		// Context menu
+		// context menu
+		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
 
@@ -770,6 +784,18 @@ class AppTemplateService extends ApplicationTemplate
 		// Should probably check user authorization here
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie($pagePerms);
+
+		// context menu
+		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
 
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Service->Load())

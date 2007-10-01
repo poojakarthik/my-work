@@ -108,7 +108,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	{
 		echo "<div class='PopupLarge'>\n";
 		echo "<div  style='overflow:auto; height:300px'>\n";
-	
+		
 		echo "<div class='NarrowForm'>\n";
 
 		Table()->ServiceTable->SetHeader("FNN #", "Service Type", "Plan Name", "Status", "Actions");
@@ -151,13 +151,16 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			$strChangePlanLink = Href()->ChangePlan($dboService->Id->Value);
 			$strDivItem = $dboService->Id->Value;
 
+			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($dboService->Id->Value, DBO()->Account->Id->Value);
+			$strDivItem = $dboService->Id->Value;
+
 			if (DBO()->RatePlan->Name->Value == NULL)
 			{
 				$strRatePlanName = "<div class='DefaultRegularOutput' id='$strDivItem'><a href='$strChangePlanLink'>No Plan Selected</a></div>";
 			}
 			else
 			{
-				$strRatePlanName = "<div class='DefaultRegularOutput'>".DBO()->RatePlan->Name->Value."</div>";
+				$strRatePlanName = "<div class='DefaultRegularOutput'><a href='$strViewServiceRatePlanLink'> ".DBO()->RatePlan->Name->Value."</a></div>";
 			}			
 					
 			$strViewServiceNotesLink = Href()->ViewServiceNotes($dboService->Id->Value, DBO()->Note->NoteType->Value);

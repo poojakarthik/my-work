@@ -66,7 +66,28 @@ class MenuItems
 	 * @property
 	 */
 	public $strLabel;
-	
+
+	//------------------------------------------------------------------------//
+	// ViewServiceRatePlan
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewServiceRatePlans()
+	 *
+	 * Compiles the Href to be executed when the ViewServiceRatePlan menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewServiceRatePlan menu item is clicked
+	 * 
+	 * @param	int		$intId		id of the service, to view the RatePlan of
+	 *
+	 * @return	string				Href to be executed when the ViewServiceRatePlan menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewServiceRatePlan($intId, $intAcc)
+	{
+		return "vixen.php/Service/ViewPlan/?Service.Id=$intId&Account.Id=$intAcc";
+	}
+
 	//------------------------------------------------------------------------//
 	// ViewAccount
 	//------------------------------------------------------------------------//
@@ -84,11 +105,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewAccount($intId)
-	{
-		$this->strLabel	= "Account: $intId";
-		return "account_view.php?Id=$intId";
-	}
+	//function ViewAccount($intId)
+	//{
+	//	$this->strLabel	= "Account: $intId";
+	//	return "account_view.php?Id=$intId";
+	//}
 
 	//------------------------------------------------------------------------//
 	// EmployeeConsole
@@ -484,6 +505,30 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// ViewServiceDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewServiceDetails()
+	 *
+	 * Compiles the Href to be executed when the ViewServiceDetails menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewServiceDetails menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the service to view
+	 								$intAcc	id of the account
+	 *
+	 * @return	string				Href to be executed when the ViewServiceDetails menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewServiceDetails($intId)
+	{
+		$this->strLabel	= "acc: $intId";
+		return "vixen.php/Service/View/?Service.Id=$intId";
+	}
+
+	//------------------------------------------------------------------------//
 	// ViewServiceNotes
 	//------------------------------------------------------------------------//
 	/**
@@ -814,9 +859,9 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditAccount($intId)
+	function ViewAccount($intId)
 	{
-		//$this->strLabel	= "make payment";
+		$this->strLabel	= "make payment";
 		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
@@ -854,7 +899,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewServicePopupId\", \"large\", \"View Service\", \"Service\", \"View_Services\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewServicePopupId\", \"large\", \"View Service\", \"Service\", \"ViewServices\", $strJsonCode)";
 	}
 
 

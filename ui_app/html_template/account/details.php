@@ -109,8 +109,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<h2 class='Options'>Account Options</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 		
-		$strEditAccountLink = Href()->EditAccount(DBO()->Account->Id->Value);//, DBO()->Service->Id->Value);
-		echo "<li><a href='$strEditAccountLink'>View/Edit Account</a></li>\n";
+		$strEditAccountLink = Href()->ViewAccount(DBO()->Account->Id->Value);//, DBO()->Service->Id->Value);
+		echo "<li><a href='$strEditAccountLink'>View Account</a></li>\n";
 
 		$strViewServicesLink = Href()->ViewServices(DBO()->Account->Id->Value);//, DBO()->Service->Id->Value);
 		echo "<li><a href='$strViewServicesLink'>View Services</a></li>\n";		

@@ -379,7 +379,8 @@ function Render_View()
 		}
 		
 		// context menu
-		ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
