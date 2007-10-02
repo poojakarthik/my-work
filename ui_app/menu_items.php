@@ -288,7 +288,8 @@ class MenuItems
 	 */
 	function InvoicesAndPayments($intId)
 	{
-		$this->strLabel	= "acc: $intId";
+		//$this->strLabel	= "account: $intId";
+		$this->strLabel	= "Invoices and Payments";
 		return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
 	}
 	

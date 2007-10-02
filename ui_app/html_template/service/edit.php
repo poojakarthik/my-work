@@ -69,8 +69,11 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
-		// Set Up the form for editting an existing user
+		
+		// Start the form
 		$this->FormStart("EditService", "Service", "Edit");
+		
+		// Render hidden properties
 		DBO()->Service->Id->RenderHidden();
 		DBO()->Service->ServiceType->RenderHidden();
 		DBO()->Service->ClosedOn->RenderHidden();
@@ -79,38 +82,36 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->Account->RenderHidden();
 		DBO()->Service->AccountGroup->RenderHidden();
 		DBO()->Service->Indial100->RenderHidden();
+		DBO()->Service->Status->RenderHidden();
 		
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderInput();
 		DBO()->Service->FNNConfirm->RenderInput();
 		
-		// place holder for service status select HTML element
-		// Associate array of service status
-		
-		$arrServiceStatus = array();
-		$arrServiceStatus[SERVICE_ACTIVE] = GetConstantDescription(SERVICE_ACTIVE, "Service");
-		$arrServiceStatus[SERVICE_DISCONNECTED] = GetConstantDescription(SERVICE_DISCONNECTED, "Service");
-		
-		// Check authentication here, archived is only available to admins only
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie($pagePerms);
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		// Intialise the value for the Service Status combobox
+		if (!DBO()->Service->NewStatus->IsSet)
 		{
-			$arrServiceStatus[SERVICE_ARCHIVED] = GetConstantDescription(SERVICE_ARCHIVED, "Service");
+			DBO()->Service->NewStatus = DBO()->Service->Status->Value;
 		}
 		
+		// Render the Service Status Combobox
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Status:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Status :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Service.LineStatus' style='width:152px'>\n";
-	
-		foreach ($arrServiceStatus as $intKey=>$strServiceStatus)
+		echo "      <select name='Service.NewStatus' style='width:158px'>\n";
+		foreach ($GLOBALS['*arrConstant']['Service'] as $intConstant=>$arrServiceStatus)
 		{
-			$strSelected = (DBO()->Service->LineStatus->Value == $intKey) ? "selected='selected'" : "";
-			echo "         <option value='$intKey' $strSelected>$strServiceStatus</option>\n";	
+			// Only users with admin privileges can archive an account
+			if (($intConstant == SERVICE_ARCHIVED) && (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN)))
+			{
+				// The user does not have admin privileges
+				continue;
+			}
+
+			$strSelected = (DBO()->Service->NewStatus->Value == $intConstant) ? "selected='selected'" : "";
+			echo "         <option value='$intConstant' $strSelected>{$arrServiceStatus['Description']}</option>\n";
 		}
-	
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
@@ -132,27 +133,14 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre:</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select name='Service.CostCentre' style='width:150px'>\n";
-			
-			if (DBO()->Service->CostCentre->Value == NULL)
-			{
-				echo "	<option value='0' selected='selected'>&nbsp;</option>";
-			}
-			else
-			{
-				echo "	<option value='0'>&nbsp;</option>";				
-			}
+			echo "      <select name='Service.CostCentre' style='width:158px'>\n";
+			$strSelected = (DBO()->Service->CostCentre->Value == NULL) ? "selected='selected'" : "";
+			echo "	       <option value='0' $strSelected>&nbsp;</option>";
 			
 			foreach (DBL()->CostCentre as $dboCostCentre)
 			{
-				if (DBO()->Service->CostCentre->Value == $dboCostCentre->Id->Value)
-				{
-					echo "<option value='".$dboCostCentre->Id->Value."' selected='selected'>".$dboCostCentre->Name->Value."</option>";
-				}
-				else
-				{
-					echo "<option value='".$dboCostCentre->Id->Value."'>".$dboCostCentre->Name->Value."</option>";
-				}
+				$strSelected = (DBO()->Service->CostCentre->Value == $dboCostCentre->Id->Value) ? "selected='selected'" : "";
+				echo "         <option value='".$dboCostCentre->Id->Value."' $strSelected>". $dboCostCentre->Name->Value ."</option>";
 			}
 			
 			echo "      </select>\n";

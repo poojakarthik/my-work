@@ -61,16 +61,9 @@ class AppTemplateService extends ApplicationTemplate
 	 */
 	function View()
 	{
-		$pagePerms = PERMISSION_ADMIN;
-		
 		// Should probably check user authorization here
 		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// Setup all DBO and DBL objects required for the page
 		if (!DBO()->Service->Load())
@@ -119,7 +112,7 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
-		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
+		BreadCrumb()->Invoices_And_Payments(DBO()->Service->Account->Value);
 		BreadCrumb()->SetCurrentPage("Service");
 
 		// All required data has been retrieved from the database so now load the page template
@@ -398,23 +391,16 @@ class AppTemplateService extends ApplicationTemplate
 	 */
 	function Edit()
 	{
-		$pagePerms = PERMISSION_ADMIN;
-		
 		// Should probably check user authorization here
 		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
 		if (SubmittedForm("EditService","Apply Changes"))
 		{
 			if (DBO()->Service->IsInvalid())
 			{
 				// The form has not passed initial validation
-				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
+				Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
 				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 				return TRUE;
 			}
@@ -430,7 +416,7 @@ class AppTemplateService extends ApplicationTemplate
 					// The FNN wasn't re-entered correctly
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
-					Ajax()->AddCommand("Alert", "Could not save the service.  Service # and Confirm Service # must be the same");
+					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Service # and Confirm Service # must be the same");
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
@@ -561,7 +547,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// The form has not passed initial validation
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
+					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
@@ -588,7 +574,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// The form has not passed initial validation
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
+					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
@@ -606,65 +592,46 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// all details regarding the service have been successfully updated
 
-			// Handle unarchiving a service
-			if (DBO()->Service->ActivateService->Value)
+			// Handle updating the Service Status
+			// First check that the Service Status has actually changed
+			if (DBO()->Service->NewStatus->Value != DBO()->Service->Status->Value)
 			{
-				$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->ClosedOn->Value);
-				if ($mixResult !== TRUE && $mixResult !== FALSE)
+				switch (DBO()->Service->NewStatus->Value)
 				{
-					// Activating the service failed, and an error message has been returned
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", $mixResult);
-					return TRUE;
-				}
-				if ($mixResult === TRUE)
-				{
-					// Activating the service was successfull. Define system generated note
-					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-					$strNote = "Service unarchived on $strDateTime by $strUserName";
-				}
-			}
-
-			switch (DBO()->Service->LineStatus->Value)
-			{
-				case SERVICE_ACTIVE:
-					$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->ClosedOn->Value);
-					if ($mixResult !== TRUE && $mixResult !== FALSE)
-					{
-						// Activating the service failed, and an error message has been returned
-						TransactionRollback();
-						Ajax()->AddCommand("Alert", $mixResult);
-						return TRUE;
-					}
-					if ($mixResult === TRUE)
-					{
-						// Activating the service was successfull. Define system generated note
-						$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-						$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-						$strNote = "Service unarchived on $strDateTime by $strUserName";
-					}
-					break;
-				case SERVICE_DISCONNECTED:
-					// set closedon date to todays date
-					DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
-					// set closedby to authenticated user ID
-					DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
-					
-					// Declare properties to update
-					$arrUpdateProperties[] = "ClosedOn";
-					$arrUpdateProperties[] = "ClosedBy";
-					$arrUpdateProperties[] = "LineStatus";
-					
-					// Define system generated note
-					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-					$strNote = "Service disconnected on $strDateTime by $strUserName with status of ".DBO()->Service->LineStatus->Value;
-					
-					if (count($arrUpdateProperties) > 0)
-					{
+					case SERVICE_ACTIVE:
+						$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->ClosedOn->Value);
+						if ($mixResult !== TRUE)
+						{
+							// Activating the service failed, and an error message has been returned
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", $mixResult);
+							return TRUE;
+						}
+						else
+						{
+							// Activating the service was successfull. Define system generated note
+							$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+							$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+							$strNote = "Service unarchived on $strDateTime by $strUserName";
+						}
+						break;
+					case SERVICE_DISCONNECTED:
+					case SERVICE_ARCHIVED:
+						// Set ClosedOn date to today's date
+						DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
+						// Set ClosedBy to authenticated user ID
+						DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
+						// Set the Status
+						DBO()->Service->Status = DBO()->Service->NewStatus->Value;
+						
+						// Define system generated note
+						$strDateTime	= OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+						$strUserName	= GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+						$strAction		= GetConstantDecription(DBO()->Service->Status->Value, "Service");
+						$strNote 		= "Service $strAction on $strDateTime by $strUserName";
+						
 						// Declare columns to update
-						DBO()->Service->SetColumns($arrUpdateProperties);			
+						DBO()->Service->SetColumns("ClosedOn, ClosedBy, Status");
 						// Save the service to the service table of the vixen database
 						if (!DBO()->Service->Save())
 						{
@@ -673,39 +640,8 @@ class AppTemplateService extends ApplicationTemplate
 							Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly");
 							return TRUE;
 						}
-					}
-					break;
-				case SERVICE_ARCHIVED:
-					// set closedon date to todays date
-					DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
-					// set closedby to authenticated user ID
-					DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
-					
-					// Declare properties to update
-					$arrUpdateProperties[] = "ClosedOn";
-					$arrUpdateProperties[] = "ClosedBy";
-					$arrUpdateProperties[] = "LineStatus";
-					
-					// Define system generated note
-					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-					$strNote = "Service archived on $strDateTime by $strUserName with status of ".DBO()->Service->LineStatus->Value;
-					
-					if (count($arrUpdateProperties) > 0)
-					{
-						// Declare columns to update
-						DBO()->Service->SetColumns($arrUpdateProperties);			
-						// Save the service to the service table of the vixen database
-						if (!DBO()->Service->Save())
-						{
-							// The service did not save
-							TransactionRollback();
-							Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly");
-							return TRUE;
-						}
-					}
-					
-					break;
+						break;
+				}
 			}
 
 			// Add an automatic note if the service has been archived or unarchived
@@ -768,7 +704,7 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Logout();
 
 		// Bread Crumb Menu
-		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
+		BreadCrumb()->Invoices_And_Payments(DBO()->Service->Account->Value);
 		BreadCrumb()->View_Service(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
 		BreadCrumb()->SetCurrentPage("Edit Service");
 
@@ -1070,32 +1006,57 @@ class AppTemplateService extends ApplicationTemplate
 	
 	}
 	
+	//------------------------------------------------------------------------//
+	// _ActivateService
+	//------------------------------------------------------------------------//
+	/**
+	 * _ActivateService()
+	 *
+	 * Performs the database modifications required of activating the service
+	 * 
+	 * Performs the database modifications required of activating the service
+	 *
+	 * @precondition	This function should be encapsulated by a database transaction (TransactionStart),
+	 *					which should be rolled back if the function returns anything other than TRUE
+	 * 		
+	 * @param			integer		$intService		Id of the service to activate
+	 * @param			string		$strFNN			FNN of the service to activate
+	 * @param			string		$strClosedOn	date on which the service was closed (YYYY-MM-DD)
+	 *	 
+	 * @return			mix			returns TRUE if the service can be activated, else it returns an error 
+	 *								message (string) detailing why the service could not be activated
+	 * @method
+	 */
+	// 
 	private function _ActivateService($intService, $strFNN, $strClosedOn)
 	{
 		// Check if the FNN is currently in use
 		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())");
-		
 		if ($selFNN->Execute(Array('FNN' => $strFNN)))
 		{
+			//TODO! If only one record is returned, and its id == $intService, and the ClosedOn date is equal to NOW()
+			// then you should be able to activate the Service.  If the ClosedOn date is in the future, then you should be 
+			// able to activate the service also.
+		
 			// At least one record was returned, which means the FNN is currently in use by an active service
 			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.". 
-					"<br>The other service must be archived before this service can be activated";
+					"<br>The other service must be disconnected or archived before this service can be activated";
 		}
 		
 		// Check if the FNN has been used by another archived service since $intService was archived
-		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND Id != <Service> AND ClosedOn > <ClosedOn>");
+		$selFNN = new StatementSelect("Service", "Id", "FNN = <FNN> AND Id != <Service> AND ClosedOn > <ClosedOn>");
 		if ($selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService, 'ClosedOn' => $strClosedOn)) == 0)
 		{
 			// The FNN has not been used since this service was archived.  Unarchive the service
 			DBO()->ArchivedService->SetTable("Service");
-			DBO()->ArchivedService->SetColumns("Id, ClosedOn");
-			DBO()->ArchivedService->Id = $intService;
-			DBO()->ArchivedService->ClosedOn = $strClosedOn;
-			DBO()->ArchivedService->LineStatus = DBO()->Service->LineStatus->Value;
+			DBO()->ArchivedService->SetColumns("Id, ClosedOn, Status");
+			DBO()->ArchivedService->Id 			= $intService;
+			DBO()->ArchivedService->ClosedOn 	= NULL;
+			DBO()->ArchivedService->Status 		= SERVICE_ACTIVE;
 			if (!DBO()->ArchivedService->Save())
 			{
 				// There was an error while trying to unarchive the service
-				return "ERROR: Unarchiving the service failed, unexpectedly";
+				return "ERROR: Activating the service failed, unexpectedly";
 			}
 			
 			// Service was unarchived successfully
@@ -1106,7 +1067,6 @@ class AppTemplateService extends ApplicationTemplate
 		// Now both services are archived.  Create a new service
 		$intOldServiceId = $intService;
 		DBO()->NewService->SetTable("Service");
-		DBO()->NewService->SetColumns();
 		DBO()->NewService->Id = $intOldServiceId;
 		DBO()->NewService->Load();
 		
@@ -1114,12 +1074,12 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->NewService->Id			= 0;
 		DBO()->NewService->CreatedOn	= GetCurrentDateForMySQL();
 		DBO()->NewService->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
-		DBO()->NewService->ClosedOn	= NULL;
-		DBO()->NewService->ClosedBy	= NULL;
-		DBO()->NewService->LineStatus = DBO()->Service->LineStatus->Value;
+		DBO()->NewService->ClosedOn		= NULL;
+		DBO()->NewService->ClosedBy		= NULL;
+		DBO()->NewService->Status		= SERVICE_ACTIVE;
 		if (!DBO()->NewService->Save())
 		{
-			return "ERROR: Unarchiving the service failed, unexpectedly";
+			return "ERROR: Activating the service failed, unexpectedly";
 		}
 		
 		// Save extra service details like mobile details, and inbound details and address details
@@ -1158,6 +1118,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// This will perform an insert query for each new record added to the ServiceExtension table.  It could have been done
 					// with just one query if StatementInsert could accomodate SELECT querys for the VALUES clause
+					// You could use the ExecuteQuery class defined in vixen/framework/db_access to do this in just one query
 					DBL()->NewServiceExtension->Service = $intOldServiceId;
 					DBL()->NewServiceExtension->SetTable("ServiceExtension");
 					DBL()->NewServiceExtension->Load();
@@ -1174,7 +1135,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Give the new service the same RatePlan as the old service
-		$strWhere = "Service=<OldService> AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service=<OldService> AND NOW() BETWEEN StartDatetime AND EndDatetime)";
+		$strWhere = "Service = <OldService> AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service = <OldService> AND NOW() BETWEEN StartDatetime AND EndDatetime)";
 		DBO()->ServiceRatePlan->Where->Set($strWhere, Array('OldService' => $intOldServiceId));
 		if (DBO()->ServiceRatePlan->Load())
 		{
@@ -1194,7 +1155,7 @@ class AppTemplateService extends ApplicationTemplate
 			// The discrepancy in the start times shouldn't be any more than a couple of seconds, but just to be on the safe side, I'm 
 			// retrieving all records added to the ServiceRateGroup table that were added up to a day before the current plan was added 
 			// to the ServiceRatePlan table
-			$strWhere = "Service=<OldService> AND StartDatetime > SUBTIME(<OldPlanStartDatetime>, SEC_TO_TIME(60*60*24))";
+			$strWhere = "Service = <OldService> AND StartDatetime > SUBTIME(<OldPlanStartDatetime>, SEC_TO_TIME(60*60*24))";
 			DBL()->ServiceRateGroup->Where->Set($strWhere, Array('OldService' => $intOldServiceId, 'OldPlanStartDatetime' => $strOldStartDatetime));
 			DBL()->ServiceRateGroup->Load();
 			foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
