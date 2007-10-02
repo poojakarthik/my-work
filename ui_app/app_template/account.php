@@ -45,6 +45,70 @@
 class AppTemplateAccount extends ApplicationTemplate
 {
 	//------------------------------------------------------------------------//
+	// ViewServices
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewServices()
+	 *
+	 * Performs the logic for viewing a service
+	 * 
+	 * Performs the logic for viewing a service linked to an account
+	 *
+	 * @return		void
+	 * @method		View
+	 *
+	 */
+	function ViewServices()
+	{
+		$pagePerms = PERMISSION_ADMIN;
+		
+		// Should probably check user authorization here
+		AuthenticatedUser()->CheckAuth();
+		
+		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			// Add extra functionality for super-users
+		}
+		
+		//validate if an account ID has been passed
+		if (!DBO()->Account->Id->Value)
+		{
+			Ajax()->AddCommand("Alert", "An Account could not be loaded");
+			return TRUE;
+		}
+		
+		$strWhere = "Account =\"". DBO()->Account->Id->Value . "\"";
+		$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
+		
+		DBL()->Service->Where->SetString($strWhere);
+		DBL()->Service->Load();
+			
+		//if DBL()->Service recordcount > 0 else alert
+
+		//Ajax()->AddCommand("Alert", DBL()->Service->Account->AsValue);
+		// All required data has been retrieved from the database so now load the page template
+		
+		if (DBL()->Service->RecordCount() > 0)
+		{
+			DBL()->Note->Account = DBO()->Account->Id->Value;
+			DBL()->Note->OrderBy("Datetime DESC");
+			DBL()->Note->Load();
+			DBL()->NoteType->Load();
+
+			DBO()->Note->NoteType = "System";
+
+			$this->LoadPage('services_view');
+			return TRUE;
+		}
+		else
+		{
+			Ajax()->AddCommand("Alert", "This account has no viewable services");
+			return TRUE;
+		}
+	}	
+
+	//------------------------------------------------------------------------//
 	// EditDetails
 	//------------------------------------------------------------------------//
 	/**
@@ -64,16 +128,21 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
+		DBO()->Account->SetColumns();
+		DBO()->Account->Load();
+		DBO()->Service->Account = DBO()->Account->Id->Value;
+		DBO()->Service->Load();	
+		
+		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+	}
+
+	function ValidateDetails()
+	{
 		if (SubmittedForm('EditAccount', 'Apply Changes'))
 		{
-			//Ajax()->AddCommand("Alert", DBO()->Account->CurrentStatus->Value);
 			if (DBO()->Account->IsInvalid())
 			{
 				// The form has not passed initial validation
-				//Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-				//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DEFAULT, "AccountDetailDiv");
-				//return TRUE;
-				//Ajax()->AddCommand("Alert", "invalid account");
 			}
 
 			if (!Validate("IsNotEmptyString", DBO()->Account->BusinessName->Value))
@@ -134,9 +203,6 @@ class AppTemplateAccount extends ApplicationTemplate
 					case ACCOUNT_ACTIVE:
 						break;
 					case ACCOUNT_CLOSED:
-						// get all the records DBL
-						// loop through
-						// change status
 						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
 						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
 						DBL()->Service->Where->SetString($strWhere);
@@ -163,9 +229,6 @@ class AppTemplateAccount extends ApplicationTemplate
 						}
 						break;
 					case ACCOUNT_ARCHIVED:
-						// get all the records DBL
-						// loop through
-						// change status
 						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
 						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
 						$strWhere .= " AND Status = '". SERVICE_DISCONNECTED . "'";
@@ -181,7 +244,7 @@ class AppTemplateAccount extends ApplicationTemplate
 						break;
 				}
 			}
-
+	
 			if (DBO()->Account->TradingName->Value)
 			{
 				$arrUpdateProperties[] = "TradingName";	
@@ -194,14 +257,14 @@ class AppTemplateAccount extends ApplicationTemplate
 			{
 				$arrUpdateProperties[] = "Address2";	
 			}			
-
+	
 			$arrUpdateProperties[] = "State";	
 			$arrUpdateProperties[] = "BillingMethod";
 			$arrUpdateProperties[] = "CustomerGroup";
 			$arrUpdateProperties[] = "DisableLatePayment";
 			$arrUpdateProperties[] = "Archived";
 			$arrUpdateProperties[] = "DisableDDR";
-
+	
 			DBO()->Account->SetColumns($arrUpdateProperties);			
 			if (!DBO()->Account->Save())
 			{
@@ -213,14 +276,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
 				return TRUE;
 			}
-		}
-
-		DBO()->Account->SetColumns();
-		DBO()->Account->Load();
-		DBO()->Service->Account = DBO()->Account->Id->Value;
-		DBO()->Service->Load();	
-		
-		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+		}		
 	}
 
 	//------------------------------------------------------------------------//
@@ -240,12 +296,13 @@ class AppTemplateAccount extends ApplicationTemplate
 	function ViewDetails()
 	{	
 		AuthenticatedUser()->CheckAuth();
-		// Check perms
+		// Check permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);	// dies if no permissions
 
-		if (DBO()->Account->Id->Valid())
+		if (DBO()->Account->Id->Value)
 		{
-			//Load account + stuff
+			//Load account and service
 			DBO()->Account->Load();
 			DBO()->Service->Account = DBO()->Account->Id->Value;
 			DBO()->Service->Load();
@@ -253,8 +310,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Context menu options
 			//$this->ContextMenu->Account->ViewAccount($this->Dbo->Account-Id->Value);
 			// context menu
-			ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Logout();
+			//ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+			//ContextMenu()->Logout();
 			
 			// add to breadcrumb menu
 			//BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
@@ -265,23 +322,24 @@ class AppTemplateAccount extends ApplicationTemplate
 				*/
 			// Load page
 			$this->LoadPage('Account_View');
-			//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");
-			
-			//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 		}
-		//else
-		//{		
-			// Load error page
-		//	$this->LoadPage('Account_Error');
-		//}
-		/*
-		//for additional functionality like change of lessee
-		$someThing = $this->Module->Account->Function()
-		
-		*/
-		//$this->Module->Account->Method();	
 	}	 
-	 
+	
+	//------------------------------------------------------------------------//
+	// View
+	//------------------------------------------------------------------------//
+	/**
+	 * View()
+	 *
+	 * Performs the logic for the account/view page
+	 * 
+	 * Performs the logic for the account/view page, loads the account and service
+	 * and renders the AccountDetails
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */	 
 	function View()
 	{	
 		$pagePerms = PERMISSION_ADMIN;
@@ -293,17 +351,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 		}
 
+		// change this is actually checking if account->id is there and alert out accordingly if not
 		if (DBO()->Account->Id->Valid())
 		{
-			//Load account + stuff
+			//Load account and service
 			DBO()->Account->Load();
 			DBO()->Service->Account = DBO()->Account->Id->Value;
 			DBO()->Service->Load();
 		
 			// Context menu options
 			// context menu
-			ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Logout();
+			//ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+			//ContextMenu()->Logout();
 			
 			// add to breadcrumb menu
 			//BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
@@ -316,11 +375,6 @@ class AppTemplateAccount extends ApplicationTemplate
 			//$this->LoadPage('Account_View');
 			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");
 		}
-		//else
-		//{		
-		// Load error page
-		//	$this->LoadPage('Account_Error');
-		//}
 	}
 	
 	

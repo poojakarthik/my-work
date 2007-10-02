@@ -163,7 +163,8 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			$strViewServiceNotesLink = Href()->ViewServiceNotes($dboService->Id->Value, DBO()->Note->NoteType->Value);
 			$strOutputLink = "<div class='DefaultRegularOutput'><a href='$strViewServiceNotesLink'>View Notes</a></div>\n";
 				
-			$strFNN = "<div class='DefaultRegularOutput'>".$dboService->FNN->Value."</div>";	
+			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
+			$strFNN = "<div class='DefaultRegularOutput'><a href='$strViewServiceLink'>".$dboService->FNN->Value."</a></div>";	
 				
 			Table()->ServiceTable->AddRow($strFNN, $dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
 															$strRatePlanName,

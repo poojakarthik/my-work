@@ -101,16 +101,19 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 */
 	private function _RenderOptionsDetail()
 	{	
-		//echo "<div id='AccountDetailDiv'>\n";
 		echo "<h2 class='Options'>Account Options</h2>\n";
 		echo "<div class='NarrowForm'>\n";
+		echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
+		echo "<tr><td width='2%'>&nbsp;</td><td>\n";
 		
-		$strEditAccountLink = Href()->ViewAccount(DBO()->Account->Id->Value);//, DBO()->Service->Id->Value);
+		$strEditAccountLink = Href()->ViewAccount(DBO()->Account->Id->Value);
 		echo "<li><a href='$strEditAccountLink'>View Account</a></li>\n";
 
-		$strViewServicesLink = Href()->ViewServices(DBO()->Account->Id->Value);//, DBO()->Service->Id->Value);
+		$strViewServicesLink = Href()->ViewServices(DBO()->Account->Id->Value);
 		echo "<li><a href='$strViewServicesLink'>View Services</a></li>\n";		
-		
+				
+		echo "</td></tr>\n";
+		echo "</table>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}
@@ -133,36 +136,33 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$strEditAccountJsCode =	"var objObjects = {};\n".
 								"objObjects.Account = {};\n".
 								"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
-								"Vixen.Ajax.CallAppTemplate(\"Account\", \"Edit\", objObjects);\n";
+								"Vixen.Ajax.CallAppTemplate(\"Account\", \"EditDetails\", objObjects);\n";
 	
-		// put in ajax form to enable switching context 
-		echo "<div id='AccountDetailDiv'>\n";
 		echo "<div class='NarrowForm'>\n";
-		$this->FormStart("EditAccount", "Account", "Edit");
-		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->Balance->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Account->ABN->RenderOutput();
-		DBO()->Account->Address1->RenderOutput();
-		DBO()->Account->Suburb->RenderOutput();
-		DBO()->Account->Postcode->RenderOutput();
-		DBO()->Account->State->RenderOutput();
-		
-		DBO()->Account->Country->RenderOutput();
-		DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_OUTPUT);
-		DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("BillingMethod"), RENDER_OUTPUT);
-		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
-		
-		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
-		
+			$this->FormStart("EditAccount", "Account", "Edit");
+			DBO()->Account->Id->RenderOutput();
+			DBO()->Account->Balance->RenderOutput();
+			DBO()->Account->BusinessName->RenderOutput();
+			DBO()->Account->ABN->RenderOutput();
+			DBO()->Account->Address1->RenderOutput();
+			DBO()->Account->Suburb->RenderOutput();
+			DBO()->Account->Postcode->RenderOutput();
+			DBO()->Account->State->RenderOutput();
+			
+			DBO()->Account->Country->RenderOutput();
+			DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_OUTPUT);
+			DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("BillingMethod"), RENDER_OUTPUT);
+			DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+			
+			DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		echo "</div>\n";
+
 		echo "<div class='Right'>\n";
-		$this->Button("Close", "Vixen.Popup.Close(this);");
-		$this->Button("Edit", $strEditAccountJsCode);
-		$this->FormEnd();
+			echo "<div class='SmallSeperator'></div>\n";
+			$this->Button("Close", "Vixen.Popup.Close(this);");
+			$this->Button("Edit", $strEditAccountJsCode);
+			$this->FormEnd();
 		echo "</div>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -185,9 +185,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 							"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
 							"Vixen.Ajax.CallAppTemplate(\"Account\", \"View\", objObjects);\n";
 	
-		echo "<div id='AccountDetailDiv'>\n";
+		//echo "<div id='AccountDetailDiv'>\n";
 		echo "<div class='NarrowForm'>\n";
-		$this->FormStart("EditAccount", "Account", "Edit");
+		$this->FormStart("EditAccount", "Account", "ValidateDetails");
 		
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Account->Country->RenderHidden();
@@ -294,15 +294,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
-		echo "<div class='SmallSeperator'></div>\n";
-		
 		echo "<div class='Right'>\n";
-		$this->Button("Cancel", $strCancelJsCode);
-		$this->AjaxSubmit("Apply Changes");
-		$this->FormEnd();
+			echo "<div class='SmallSeperator'></div>\n";
+			$this->Button("Cancel", $strCancelJsCode);
+			$this->AjaxSubmit("Apply Changes");
+			$this->FormEnd();
 		echo "</div>\n";
 		
-		echo "</div>\n";
 		echo "</div>\n";
 }
 

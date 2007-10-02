@@ -14,5 +14,5 @@ $this->Page->SetLayout($strLayout);
 $id = $this->Page->AddObject('ServiceAccount', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ServiceOptions', COLUMN_TWO, HTML_CONTEXT_DEFAULT);
-$this->Page->AddObject('NoteView', COLUMN_TWO, NOTE_CLASS_SERVICE_NOTES);
+$this->Page->AddObject('NoteView', COLUMN_TWO, NOTE_CLASS_SERVICE_NOTES, "ServiceNotes");
 ?>

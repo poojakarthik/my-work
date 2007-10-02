@@ -12,6 +12,6 @@ $strLayout = 'popup_layout';
 $this->Page->SetLayout($strLayout);
 
 // many other functions which arent needed, but could be included like destroy, getObjByID
-$id = $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
+$id = $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");
 
 ?>

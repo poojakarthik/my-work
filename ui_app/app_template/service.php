@@ -112,6 +112,7 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
+		BreadCrumb()->InvoicesAndPayments(DBO()->Service->Account->Value);
 		BreadCrumb()->Invoices_And_Payments(DBO()->Service->Account->Value);
 		BreadCrumb()->SetCurrentPage("Service");
 
@@ -127,63 +128,6 @@ class AppTemplateService extends ApplicationTemplate
 
 		return TRUE;
 	}
-
-	//------------------------------------------------------------------------//
-	// View
-	//------------------------------------------------------------------------//
-	/**
-	 * View()
-	 *
-	 * Performs the logic for viewing a service
-	 * 
-	 * Performs the logic for viewing a service
-	 *
-	 * @return		void
-	 * @method		View
-	 *
-	 */
-	function ViewServices()
-	{
-		$pagePerms = PERMISSION_ADMIN;
-		
-		// Should probably check user authorization here
-		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
-		
-		$strWhere = "Account =\"". DBO()->Account->Id->Value . "\"";
-		$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
-		
-		DBL()->Service->Where->SetString($strWhere);
-		DBL()->Service->Load();
-			
-		//if DBL()->Service recordcount > 0 else alert
-
-		//Ajax()->AddCommand("Alert", DBL()->Service->Account->AsValue);
-		// All required data has been retrieved from the database so now load the page template
-		
-		if (DBL()->Service->RecordCount() > 0)
-		{
-			DBL()->Note->Account = DBO()->Account->Id->Value;
-			DBL()->Note->OrderBy("Datetime DESC");
-			DBL()->Note->Load();
-			DBL()->NoteType->Load();
-
-			DBO()->Note->NoteType = "System";
-
-			$this->LoadPage('services_view');
-			return TRUE;
-		}
-		else
-		{
-			Ajax()->AddCommand("Alert", "This account has no viewable services");
-		}
-	}
-
 
 	//------------------------------------------------------------------------//
 	// Add
@@ -732,6 +676,11 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
+
+		// Bread Crumb Menu
+		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
+		BreadCrumb()->View_Service(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
+		BreadCrumb()->SetCurrentPage("View Service Plan");
 
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Service->Load())

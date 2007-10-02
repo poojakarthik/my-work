@@ -844,31 +844,33 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
-	// EditAccount
+	// ViewAccount
 	//------------------------------------------------------------------------//
 	/**
-	 * EditAccount()
+	 * ViewAccount()
 	 *
-	 * Compiles the javascript to be executed when the Edit/View Account menu item is clicked
+	 * Compiles the javascript to be executed when the View Account menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the Edit/View Account menu item is clicked
+	 * Compiles the javascript to be executed when the View Account menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intId		id of the payment to delete
 	 *
-	 * @return	string	action to be executed when the Edit/View Account menu item is clicked
+	 * @return	string	action to be executed when the View Account menu item is clicked
 	 *
 	 * @method
 	 */
 	function ViewAccount($intId)
 	{
+		$this->strLabel	= "view account";
+		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditAccountPopupId\", \"large\", \"Edit Account\", \"Account\", \"Render_View\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditAccountPopupId\", \"large\", \"Edit Account\", \"Account\", \"ViewDetails\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -896,10 +898,8 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewServicePopupId\", \"large\", \"View Service\", \"Service\", \"ViewServices\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewServicePopupId\", \"large\", \"View Service\", \"Account\", \"ViewServices\", $strJsonCode)";
 	}
-
-
 
 	//------------------------------------------------------------------------//
 	// DeletePayment
