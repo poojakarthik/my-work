@@ -169,13 +169,26 @@ function VixenPopupClass()
 				//intScrollLeft = document.body.scrollLeft;
                 //document.body.style.overflow = "hidden";
                	//document.body.scrollTop = intScroll;
-				//alert(window.innerHeight);
+				
+
+				
                 elmOverlay.style.height	= Math.max(document.body.offsetHeight, window.innerHeight);
 				
-				// BUG! FIXIT! FIX IT! TODO! This line currently isn't working because document.body.offsetWidth does not return the width of the document.  
-				// (Not like how document.body.offsetHeight does, anyway)
-				// The Vixen title bar always resizes horizontally to fit the window, maybe you should check out how it does it
-				elmOverlay.style.width	= Math.max(document.body.offsetWidth, window.innerWidth);
+				// all of these return width of browser, with or without scrollbars
+				// document.body.offsetWidth does not return the width of the document (like it does with the height)
+				//alert(window.innerWidth);
+				//alert(document.body.offsetWidth);
+				//alert(document.body.clientWidth);
+				
+				// Find the width of the actual page by using the PageBody div, and adding its own width
+				// to the offset from the left side of the page (needs to include margins?)
+				var divPageBody = document.getElementById("PageBody");
+				var intPageWidth = divPageBody.offsetWidth + divPageBody.offsetLeft;
+				
+				//var intPageWidth = parseInt(divPageBody.style.marginLeft) + parseInt(divPageBody.offsetWidth) + parseInt(divPageBody.offsetLeft);
+				// alert(intPageWidth);
+				
+				elmOverlay.style.width	= Math.max(document.body.offsetWidth, intPageWidth);
 				
 				if (this.arrOverlayZIndexHistory.length == 0)
 				{
