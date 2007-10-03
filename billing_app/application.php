@@ -561,14 +561,14 @@
 					$fltTotalCharge = $fltCappedCDRCharge;
 				}
 				
-				// add uncapped charges
-				$fltTotalCharge += $fltUncappedCDRCharge;
-
 				// If there is a minimum monthly charge, apply it
 				if ($fltMinMonthly > 0)
 				{
 					$fltTotalCharge = max($fltMinMonthly, $fltTotalCharge);
 				}
+				
+				// add uncapped charges
+				$fltTotalCharge += $fltUncappedCDRCharge;
 				
 				// if this is a shared plan
 				if ($arrService['Shared'] > 0)
