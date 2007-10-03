@@ -130,29 +130,34 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		DBO()->Account->SetColumns();
 		DBO()->Account->Load();
-		DBO()->Service->Account = DBO()->Account->Id->Value;
 		DBO()->Service->Load();	
 		
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 	}
 
+	//------------------------------------------------------------------------//
+	// ValidateDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * ValidateDetails()
+	 *
+	 * Validates the submitted form data
+	 * 
+	 * Validates the submitted form data
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function ValidateDetails()
 	{
 		if (SubmittedForm('EditAccount', 'Apply Changes'))
 		{
 			if (DBO()->Account->IsInvalid())
 			{
-				// The form has not passed initial validation
+				Ajax()->AddCommand("Alert", "ERROR: the form didnt pass initial validation, invalid fields are highlighted");
+				return TRUE;			
 			}
-
-			if (!Validate("IsNotEmptyString", DBO()->Account->BusinessName->Value))
-			{
-				DBO()->Account->BusinessName->SetToInvalid();
-				Ajax()->AddCommand("Alert", "Could not save the account.  BusinessName cannot be nothing");
-				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
-				return TRUE;
-			}
-			$arrUpdateProperties[] = "BusinessName";
 
 			if (Validate("Integer", DBO()->Account->ABN->Value))
 			{
@@ -163,33 +168,6 @@ class AppTemplateAccount extends ApplicationTemplate
 			}
 			$arrUpdateProperties[] = "ABN";
 
-			if (!Validate("IsNotEmptyString", DBO()->Account->Address1->Value))
-			{
-				DBO()->Account->Address1->SetToInvalid();
-				Ajax()->AddCommand("Alert", "Could not save the account.  Address1 cannot be nothing");
-				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
-				return TRUE;
-			}
-			$arrUpdateProperties[] = "Address1";
-
-			if (!Validate("IsNotEmptyString", DBO()->Account->Suburb->Value))
-			{
-				DBO()->Account->Suburb->SetToInvalid();
-				Ajax()->AddCommand("Alert", "Could not save the account.  Suburb cannot be nothing");
-				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
-				return TRUE;
-			}
-			$arrUpdateProperties[] = "Suburb";
-
-			if (!Validate("IsNotEmptyString", DBO()->Account->Postcode->Value))
-			{
-				DBO()->Account->Postcode->SetToInvalid();
-				Ajax()->AddCommand("Alert", "Could not save the account.  Postcode cannot be nothing");
-				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
-				return TRUE;
-			}
-			$arrUpdateProperties[] = "Postcode";			
-
 			if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
 			{
 				// Define system generated note
@@ -197,6 +175,8 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 				$strNote = "Account Status was changed on $strDateTime by $strUserName with status of ".DBO()->Account->Archived->Value;				
 				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
+				
+				//need to set the closed on dates here!!!
 				
 				switch (DBO()->Account->Archived->Value)
 				{
@@ -245,27 +225,22 @@ class AppTemplateAccount extends ApplicationTemplate
 				}
 			}
 	
-			if (DBO()->Account->TradingName->Value)
-			{
-				$arrUpdateProperties[] = "TradingName";	
-			}
-			if (DBO()->Account->ACN->Value)
-			{
-				$arrUpdateProperties[] = "ACN";	
-			}
-			if (DBO()->Account->Address2->Value)
-			{
-				$arrUpdateProperties[] = "Address2";	
-			}			
-	
-			$arrUpdateProperties[] = "State";	
-			$arrUpdateProperties[] = "BillingMethod";
-			$arrUpdateProperties[] = "CustomerGroup";
-			$arrUpdateProperties[] = "DisableLatePayment";
-			$arrUpdateProperties[] = "Archived";
-			$arrUpdateProperties[] = "DisableDDR";
-	
-			DBO()->Account->SetColumns($arrUpdateProperties);			
+			// problem with saving, this line here!
+			DBO()->Account->SetColumns("BusinessName, 
+															TradingName, 
+															ABN, 
+															ACN, 
+															Address1, 
+															Address2, 
+															Suburb, 
+															Postcode, 
+															State, 
+															BillingMethod, 
+															CustomerGroup, 
+															DisableLatePayment, 
+															Archived, 
+															DisableDDR");
+															
 			if (!DBO()->Account->Save())
 			{
 				Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
@@ -304,24 +279,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			//Load account and service
 			DBO()->Account->Load();
-			DBO()->Service->Account = DBO()->Account->Id->Value;
+			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+			$strWhere = "Account = \"".DBO()->Account->Id->Value."\"";
+			DBO()->Service->Where->SetString($strWhere);
 			DBO()->Service->Load();
-		
-			// Context menu options
-			//$this->ContextMenu->Account->ViewAccount($this->Dbo->Account-Id->Value);
-			// context menu
-			//ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-			//ContextMenu()->Logout();
-			
-			// add to breadcrumb menu
-			//BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
-			//BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
-			/*Menu
-			   |--Account
-				|--View Account
-				*/
+	
 			// Load page
 			$this->LoadPage('Account_View');
+		}
+		else
+		{
+			Ajax()->AddCommand("Alert", "ERROR: could not load the page as no Account Id was specified");
+			return TRUE;			
 		}
 	}	 
 	
@@ -351,29 +320,17 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 		}
 
-		// change this is actually checking if account->id is there and alert out accordingly if not
-		if (DBO()->Account->Id->Valid())
+		if (DBO()->Account->Id->Value)
 		{
 			//Load account and service
 			DBO()->Account->Load();
-			DBO()->Service->Account = DBO()->Account->Id->Value;
-			DBO()->Service->Load();
-		
-			// Context menu options
-			// context menu
-			//ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-			//ContextMenu()->Logout();
-			
-			// add to breadcrumb menu
-			//BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
-			//BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
-			/*Menu
-			   |--Account
-				|--View Account
-				*/
-			// Load page
-			//$this->LoadPage('Account_View');
+			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");
+		}
+		else
+		{
+			Ajax()->AddCommand("Alert", "ERROR: could not load the page as no Account Id was specified");
+			return TRUE;			
 		}
 	}
 	

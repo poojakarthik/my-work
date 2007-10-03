@@ -178,7 +178,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "</div>\n";
 	
 		echo "<div class='Right'>\n";
-			$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+		$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		echo "</div>\n";
 
 		echo "</div>\n";

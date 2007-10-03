@@ -113,7 +113,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->InvoicesAndPayments(DBO()->Service->Account->Value);
-		BreadCrumb()->Invoices_And_Payments(DBO()->Service->Account->Value);
+		//BreadCrumb()->Invoices_And_Payments(DBO()->Service->Account->Value);
 		BreadCrumb()->SetCurrentPage("Service");
 
 		// All required data has been retrieved from the database so now load the page template
@@ -1183,6 +1183,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		
 		// Retrieve the list of services that currently don't have an active plan
+		// Shouldn't constants be used here instead of the actual numbers?
 		$strWhere = "ServiceType >= 100 AND ServiceType <= 104 AND ClosedOn IS NULL AND Id NOT IN (SELECT Service FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime)";
 		DBL()->Service->Where->Set($strWhere);
 		DBL()->Service->Load();

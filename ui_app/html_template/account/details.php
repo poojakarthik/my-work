@@ -134,10 +134,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{	
 		// Define javascript to execute when the "Edit" button is triggered
 		$strEditAccountJsCode =	"var objObjects = {};\n".
+								"objObjects.Service = {};\n".
+								"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
 								"objObjects.Account = {};\n".
 								"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
 								"Vixen.Ajax.CallAppTemplate(\"Account\", \"EditDetails\", objObjects);\n";
-	
+
 		echo "<div class='NarrowForm'>\n";
 			$this->FormStart("EditAccount", "Account", "Edit");
 			DBO()->Account->Id->RenderOutput();
@@ -181,6 +183,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		// Define javascript to execute when the "Cancel" button is triggered
 		$strCancelJsCode =	"var objObjects = {};\n".
+							"objObjects.Service = {};\n".
+							"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
 							"objObjects.Account = {};\n".
 							"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
 							"Vixen.Ajax.CallAppTemplate(\"Account\", \"View\", objObjects);\n";
