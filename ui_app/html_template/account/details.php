@@ -342,6 +342,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
+		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		echo "      </td>\n";
 		
 		echo "      <td width='35%' valign='top'>\n";

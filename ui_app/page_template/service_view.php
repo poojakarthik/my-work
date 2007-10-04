@@ -4,10 +4,11 @@
 // to put into each column on the page
 
 // Set the page title
-$this->Page->SetName('View Service Details');
+$strServiceType	= GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType");
+$strFnn			= DBO()->Service->FNN->FormattedValue();
+$this->Page->SetName("Service Details: $strServiceType - $strFnn");
 
-$strLayout = '2Column';
-$this->Page->SetLayout($strLayout);
+$this->Page->SetLayout('2Column');
 
 // Add each html object to the appropriate column
 //EXAMPLE:

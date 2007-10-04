@@ -99,6 +99,12 @@ class AppTemplateService extends ApplicationTemplate
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
 		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledAdjustments + $fltUnbilledCDRs);
 		
+		//load the notes associated with this service and account!
+		//DBO()->Service->Account->Value
+		DBL()->Note->Service = DBO()->Service->Id->Value;
+		DBL()->Note->SetLimit(5);
+		DBL()->Note->Load();
+
 		// context menu
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
@@ -112,19 +118,13 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
-		BreadCrumb()->InvoicesAndPayments(DBO()->Service->Account->Value);
+		BreadCrumb()->Employee_Console();
 		//BreadCrumb()->Invoices_And_Payments(DBO()->Service->Account->Value);
 		BreadCrumb()->SetCurrentPage("Service");
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('service_view');
 
-		//load the notes associated with this service and account!
-		//DBO()->Service->Account->Value
-		DBL()->Note->Account = DBO()->Service->Account->Value;
-		DBL()->Note->SetLimit(5);
-		DBL()->Note->Load();
-		DBL()->NoteType->Load();
 
 		return TRUE;
 	}
@@ -145,20 +145,17 @@ class AppTemplateService extends ApplicationTemplate
 	 */
 	function Add()
 	{
-		$pagePerms = PERMISSION_ADMIN;
-		
-		// Should probably check user authorization here
+		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ." could not be found";
+			// The Account could not be loaded
+			BreadCrumb()->Employee_Console(DBO()->Account->Id->Value);
+			BreadCrumb()->SetCurrentPage("Error");
+		
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
@@ -295,7 +292,7 @@ class AppTemplateService extends ApplicationTemplate
 			// commit the transaction
 			TransactionCommit();
 
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "This service was successfully created", "Location" => Href()->ViewAccount(DBO()->Account->Id->Value)));
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "This service was successfully created", "Location" => Href()->InvoicesAndPayments(DBO()->Account->Id->Value)));
 			return TRUE;
 
 		}
@@ -305,17 +302,11 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
-		BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
 		BreadCrumb()->SetCurrentPage("Add Service");
 		
-		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
-		{
-			$this->LoadPage('service_edit');
-		}
-		else
-		{
-			$this->LoadPage('service_add');
-		}
+		$this->LoadPage('service_add');
 	}
 	
 	
@@ -335,7 +326,7 @@ class AppTemplateService extends ApplicationTemplate
 	 */
 	function Edit()
 	{
-		// Should probably check user authorization here
+		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
@@ -556,7 +547,7 @@ class AppTemplateService extends ApplicationTemplate
 							// Activating the service was successfull. Define system generated note
 							$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 							$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-							$strNote = "Service unarchived on $strDateTime by $strUserName";
+							$strNote = "Service Activated on $strDateTime by $strUserName";
 						}
 						break;
 					case SERVICE_DISCONNECTED:

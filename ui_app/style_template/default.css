@@ -285,6 +285,7 @@
 		padding-right:		3px;
 	}
 	
+	
 
 	.DefaultInputTextSmall
 	{
@@ -332,6 +333,8 @@
 	.DefaultInvalidInputTextArea
 	{
 		border:				solid 1px #000000;
+		padding-left:		3px;
+		padding-right:		3px;
 	}
 	
 	.DefaultInputSpan,

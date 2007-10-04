@@ -81,9 +81,6 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("debug");  // Tools for debugging, only use when js-ing
 	}
 
 	//------------------------------------------------------------------------//
@@ -170,6 +167,8 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		echo "<div class='PopupLarge'>\n";
 		echo "<div  style='overflow:auto; height:300px'>\n";
 
+		DBL()->NoteType->Load();
+		
 		if (DBL()->Note->RecordCount() == 0)
 		{
 			echo "<div class='DefaultRegularOutput'>There are no viewable Notes.</div>";

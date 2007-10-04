@@ -19,8 +19,8 @@
  * @file		<Class>.php
  * @language	PHP
  * @package		framework
- * @author		Sean, Jared 'flame' Herbohn
- * @version		7.05
+ * @author		[INSERT AUTHOR HERE]
+ * @version		7.05 <-- UPDATE THIS
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *

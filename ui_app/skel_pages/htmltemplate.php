@@ -1,5 +1,32 @@
 <?php
 //----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+
+//----------------------------------------------------------------------------//
+// <Class>
+//----------------------------------------------------------------------------//
+/**
+ * <Class>
+ *
+ * HTML Template for the <ClassName> HTML object
+ *
+ * HTML Template for the <ClassName> HTML object
+ *
+ * @file		<Class>.php
+ * @language	PHP
+ * @package		framework
+ * @author		[INSERT AUTHOR HERE]
+ * @version		7.05 <-- UPDATE THIS
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+ 
+//----------------------------------------------------------------------------//
 // <ClassName>
 //----------------------------------------------------------------------------//
 /**

@@ -82,6 +82,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
 		
 		DBL()->Service->Where->SetString($strWhere);
+		DBL()->Service->OrderBy("FNN");
 		DBL()->Service->Load();
 			
 		//if DBL()->Service recordcount > 0 else alert
@@ -91,6 +92,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		if (DBL()->Service->RecordCount() > 0)
 		{
+			// Why are you loading notes?
 			DBL()->Note->Account = DBO()->Account->Id->Value;
 			DBL()->Note->OrderBy("Datetime DESC");
 			DBL()->Note->Load();
@@ -128,9 +130,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
-		DBO()->Account->SetColumns();
 		DBO()->Account->Load();
-		DBO()->Service->Load();	
 		
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 	}
@@ -159,7 +159,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				return TRUE;			
 			}
 
-			if (Validate("Integer", DBO()->Account->ABN->Value))
+			if (!Validate("Integer", DBO()->Account->ABN->Value))
 			{
 				DBO()->Account->ABN->SetToInvalid();
 				Ajax()->AddCommand("Alert", "Could not save the account.  Not a valid ABN number");
@@ -174,6 +174,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 				$strNote = "Account Status was changed on $strDateTime by $strUserName with status of ".DBO()->Account->Archived->Value;				
+				//TODO! DBO()->Service is undefined
 				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 				
 				//need to set the closed on dates here!!!

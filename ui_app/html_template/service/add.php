@@ -45,12 +45,16 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
+		
+		$this->LoadJavascript("service_edit");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -67,40 +71,12 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		// define javascript to be triggered when the ServiceType combo changes value
-		$strServiceTypeComboOnChange = 
-		"switch (this.value)
-		{
-			case '". SERVICE_TYPE_MOBILE ."':
-				// hide any details not required for a mobile and display the mobile details
-				document.getElementById('InboundDetailDiv').style.display='none';
-				document.getElementById('LandlineDetailDiv').style.display='none';
-				document.getElementById('MobileDetailDiv').style.display='inline';
-				break;
-			case '". SERVICE_TYPE_INBOUND ."':
-				// hide any details not required for inbound services and show the inbound services details
-				document.getElementById('MobileDetailDiv').style.display='none';
-				document.getElementById('LandlineDetailDiv').style.display='none';
-				document.getElementById('InboundDetailDiv').style.display='inline';
-				break;
-			case '". SERVICE_TYPE_LAND_LINE ."':
-				// hide any details not required for inbound services and show the inbound services details
-				document.getElementById('MobileDetailDiv').style.display='none';
-				document.getElementById('InboundDetailDiv').style.display='none';
-				document.getElementById('LandlineDetailDiv').style.display='inline';
-				break;
-			default:
-				// hide all extra details
-				document.getElementById('MobileDetailDiv').style.display='none';
-				document.getElementById('InboundDetailDiv').style.display='none';
-				document.getElementById('LandlineDetailDiv').style.display='none';
-				break;
-		}";
-		
+		// Start the form
+		$this->FormStart("AddService", "Service", "Add");
 		
 		echo "<h2 class='Service'>Service Details</h2>\n";
+		// Start the Generic Details div
 		echo "<div class='NarrowForm'>\n";
-		$this->FormStart("AddService", "Service", "Add");
 		
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Account->AccountGroup->RenderHidden();
@@ -108,35 +84,22 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
 		
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Type:</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Service.ServiceType' style='width:152px' onchange=\"$strServiceTypeComboOnChange\">\n";
-		
-		$arrServiceType = array();
-		$arrServiceType[SERVICE_TYPE_LAND_LINE]	= GetConstantDescription(SERVICE_TYPE_LAND_LINE, "ServiceType");
-		$arrServiceType[SERVICE_TYPE_MOBILE]	= GetConstantDescription(SERVICE_TYPE_MOBILE, "ServiceType");
-		$arrServiceType[SERVICE_TYPE_INBOUND] 	= GetConstantDescription(SERVICE_TYPE_INBOUND, "ServiceType");
-		$arrServiceType[SERVICE_TYPE_ADSL] 		= GetConstantDescription(SERVICE_TYPE_ADSL, "ServiceType");
-		$arrServiceType[SERVICE_TYPE_DIALUP] 	= GetConstantDescription(SERVICE_TYPE_DIALUP, "ServiceType");
-		if (!DBO()->Service->ServiceType->Value)
+		// If the service type is not set, then set it to being a landline
+		if (!DBO()->Service->ServiceType->IsSet)
 		{
-			// default to landline
 			DBO()->Service->ServiceType = SERVICE_TYPE_LAND_LINE;
 		}
 		
-		foreach ($arrServiceType as $strKey=>$strServiceSelection)
+		// Render the ServiceType combobox
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Type :</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select name='Service.ServiceType' style='width:158px' onchange='Vixen.ServiceEdit.ServiceTypeOnChange(this.value)'>\n";
+		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrServiceSelection)
 		{
-			if (DBO()->Service->ServiceType->Value == $strKey)
-			{
-				echo "		<option value='". $strKey . "' selected='selected'>".$strServiceSelection."</option>\n";
-			}
-			else
-			{
-				echo "		<option value='". $strKey . "'>".$strServiceSelection."</option>\n";
-			}
+			$strSelected = (DBO()->Service->ServiceType->Value == $intKey) ? "selected='selected'" : "";
+			echo "		   <option value='$intKey' $strSelected>". $arrServiceSelection['Description'] ."</option>\n";
 		}
-		
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
@@ -146,55 +109,76 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		
 		DBL()->CostCentreCombo->Account = DBO()->Account->Id->Value;
 		DBL()->CostCentreCombo->SetTable('CostCentre');
+		DBL()->CostCentreCombo->OrderBy("Name");
 		DBL()->CostCentreCombo->Load();
 
 		if (DBL()->CostCentreCombo->RecordCount() > 0)
 		{
 			echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre:</div>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select name='Service.CostCentre' style='width:150px'>\n";
-			if (DBO()->Service->CostCentre->Value)
-			{
-				// the costcentre has been selected
-				echo "			<option value='0'>&nbsp;</option>\n";
-			}
-			else
-			{
-				// the costcentre hasn't been matched select the default item in the combobox
-				echo "			<option value='0' selected='selected'>&nbsp;</option>\n";
-			}
-			
+			echo "      <select name='Service.CostCentre' style='width:158px'>\n";
+			// If a CostCentre has not been selected then DBO()->Service->CostCentre->Value == NULL or 0
+			$strSelected = (!DBO()->Service->CostCentre->Value) ? "selected='selected'" : "";
+			echo "			<option value='0' $strSelected>&nbsp;</option>\n";
+
 			foreach (DBL()->CostCentreCombo as $dboCostCentre)
 			{
-				if (DBO()->Service->CostCentre->Value == $dboCostCentre->Id->Value)
-				{
-					// this is the currently selected costcentre
-					echo "         <option value='".$dboCostCentre->Id->Value."' selected='selected'>".$dboCostCentre->Name->Value."</option>";
-				}
-				else
-				{
-					// this is not the currently selected costcentre
-					echo "         <option value='".$dboCostCentre->Id->Value."'>".$dboCostCentre->Name->Value."</option>";
-				}
+				$strSelected = (DBO()->Service->CostCentre->Value == $dboCostCentre->Id->Value) ? "selected='selected'" : "";
+				echo "         <option value='". $dboCostCentre->Id->Value ."' $strSelected>". $dboCostCentre->Name->Value ."</option>\n";
 			}
-			
+
 			echo "      </select>\n";
 			echo "   </div>\n";
 			echo "</div>\n";		
 		}
 		
-		echo "</div>\n"; // NarrowForm
+		echo "</div>\n"; // NarrowForm - GenericDetailsDiv
 		
 		// Land line specific details
-		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+		$strStyleDisplay = (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE) ? "style='display:inline'" : "style='display:none'";
+		echo "<div id='LandlineDetailDiv' $strStyleDisplay>\n";
+		$this->_RenderLandlineDetails();
+		echo "</div>\n";
+		
+		// Mobile phone specific details
+		$strStyleDisplay = (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE) ? "style='display:inline'" : "style='display:none'";
+		echo "<div id='MobileDetailDiv' $strStyleDisplay>\n";
+		$this->_RenderMobileDetails();
+		echo "</div>\n";
+		
+		// Inbound specific details
+		$strStyleDisplay = (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND) ? "style='display:inline'" : "style='display:none'";
+		echo "<div id='InboundDetailDiv' $strStyleDisplay>\n";
+		$this->_RenderInboundDetails();
+		echo "</div>\n";
+		
+		// Render the buttons
+		echo "<div class='Right'>\n";
+		// workout where to go if cancel is triggered
+		if (DBO()->Account->Id->IsSet)
 		{
-			echo "<div id='LandlineDetailDiv'>\n";
+			$strCancelAction = Href()->InvoicesAndPayments(DBO()->Account->Id->Value);
+		}
+		elseif (DBO()->Service->Id->IsSet)
+		{
+			$strCancelAction = Href()->ViewService(DBO()->Service->Id-Value);
 		}
 		else
 		{
-			echo "<div id='LandlineDetailDiv' style='display:none'>\n";			
+			$strCancelAction = "javascript: window.history.go(-1)";
 		}
+		
+		$this->Button("Cancel", $strCancelAction);
+		$this->AjaxSubmit("Save");
+		echo "</div>\n";
+		
+		$this->FormEnd();
+	}
+	
+	function _RenderLandlineDetails()
+	{
+		echo "<div class='SmallSeperator'></div>\n";
 		echo "<h2 class='Service'>Landline Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 
@@ -228,53 +212,35 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
 		DBO()->ServiceInboundDetail->Configuration->RenderInput();
 		echo "</div>\n"; // NarrowForm
-		echo "</div>\n"; // InboundDetailDiv
-		
-		// handle extra mobile phone details
-		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
-		{
-			// show the mobile detail div
-			echo "<div id='MobileDetailDiv'>\n";
-		}
-		else
-		{
-			// hide the mobile detail div
-			echo "<div id='MobileDetailDiv' style='display:none;'>\n";
-		}
+	}
+	
+	function _RenderMobileDetails()
+	{
+		echo "<div class='SmallSeperator'></div>\n";
 		echo "<h2 class='service'>Mobile Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 		DBO()->ServiceMobileDetail->SimPUK->RenderInput();
 		DBO()->ServiceMobileDetail->SimESN->RenderInput();
 						
 		$arrState = array();
-		$arrState[SERVICE_STATE_TYPE_ACT] = "Australian Capital Territory";
-		$arrState[SERVICE_STATE_TYPE_NSW] = "New South Wales";
-		$arrState[SERVICE_STATE_TYPE_VIC] = "Victoria";
-		$arrState[SERVICE_STATE_TYPE_SA] = "South Australia";
-		$arrState[SERVICE_STATE_TYPE_WA] = "Western Australia";
-		$arrState[SERVICE_STATE_TYPE_TAS] = "Tasmania";
-		$arrState[SERVICE_STATE_TYPE_NT] = "Northern Territory";
-		$arrState[SERVICE_STATE_TYPE_QLD] = "Queensland";
+		$arrState[SERVICE_STATE_TYPE_ACT]	= "Australian Capital Territory";
+		$arrState[SERVICE_STATE_TYPE_NSW]	= "New South Wales";
+		$arrState[SERVICE_STATE_TYPE_VIC]	= "Victoria";
+		$arrState[SERVICE_STATE_TYPE_SA]	= "South Australia";
+		$arrState[SERVICE_STATE_TYPE_WA]	= "Western Australia";
+		$arrState[SERVICE_STATE_TYPE_TAS]	= "Tasmania";
+		$arrState[SERVICE_STATE_TYPE_NT]	= "Northern Territory";
+		$arrState[SERVICE_STATE_TYPE_QLD]	= "Queensland";
 		
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select name='ServiceMobileDetail.SimState' style='width:180px'>\n";
-	
 		foreach ($arrState as $strKey=>$strStateSelection)
 		{
-			if (DBO()->ServiceMobileDetail->SimState->Value == $strKey)
-			{
-				// this is the currently selected combobox option
-				echo "		<option value='". $strKey . "' selected='selected'>$strStateSelection</option>\n";
-			}
-			else
-			{
-				// this is currently not the selected combobox option
-				echo "		<option value='". $strKey . "'>$strStateSelection</option>\n";
-			}
+			$strSelected = (DBO()->ServiceMobileDetail->SimState->Value == $strKey) ? "selected='selected'" : "";
+			echo "         <option value='$strKey' $strSelected>$strStateSelection</option>\n";
 		}
-		
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
@@ -282,14 +248,11 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		DBO()->ServiceMobileDetail->DOB->RenderInput();				
 		DBO()->ServiceMobileDetail->Comments->RenderInput();
 		echo "</div>\n"; // NarrowForm
-		echo "</div>\n"; // MobileDetailDiv
-		
-		
-		echo "<div class='Right'>\n";
-		$this->AjaxSubmit("Save");
-		echo "</div>\n";
-		
-		$this->FormEnd();
+	}
+	
+	function _RenderInboundDetails()
+	{
+		//TODO! Check out the Service Edit page
 	}
 }
 
