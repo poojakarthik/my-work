@@ -4,9 +4,8 @@
 // to put into each column on the page
 
 // Set the page title
-$this->Page->SetName('Edit Service Details');
+$this->Page->SetName('Edit Service');
 
-$strLayout = '1Column';
-$this->Page->SetLayout($strLayout);
+$this->Page->SetLayout('popup_layout');
 $this->Page->AddObject('ServiceEdit', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 ?>

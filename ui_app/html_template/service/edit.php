@@ -1,9 +1,37 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateservicedetails
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+// service_edit.php
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateservicedetails
+ * service_edit
+ *
+ * HTML Template for the Edit Service popup
+ *
+ * HTML Template for the Edit Service popup
+ * This file defines the class responsible for defining and rendering the layout
+ * of the HTML Template used by the Edit Services popup
+ *
+ * @file		edit.php
+ * @language	PHP
+ * @package		ui_app
+ * @author		Ross
+ * @version		7.08
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+
+//----------------------------------------------------------------------------//
+// HtmlTemplateServiceEdit
+//----------------------------------------------------------------------------//
+/**
+ * HtmlTemplateServiceEdit
  *
  * A specific HTML Template object
  *
@@ -13,7 +41,7 @@
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateservicedetails
+ * @class	HtmlTemplateServiceEdit
  * @extends	HtmlTemplate
  */
 class HtmlTemplateServiceEdit extends HtmlTemplate
@@ -45,12 +73,16 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
+		
+		$this->LoadJavascript("service_edit");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -67,11 +99,11 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
-		
 		// Start the form
 		$this->FormStart("EditService", "Service", "Edit");
+
+		echo "<h2 class='service'>Service Details</h2>\n";
+		echo "<div class='NarrowForm'>\n";
 		
 		// Render hidden properties
 		DBO()->Service->Id->RenderHidden();
@@ -83,6 +115,11 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->AccountGroup->RenderHidden();
 		DBO()->Service->Indial100->RenderHidden();
 		DBO()->Service->Status->RenderHidden();
+		
+		if (DBO()->EventListenerOnServiceUpdate->Name->Value)
+		{
+			DBO()->EventListenerOnServiceUpdate->Name->RenderHidden();
+		}
 		
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
@@ -116,8 +153,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
-		// ---------------------------------------------------
-		
 		if (DBO()->Service->Indial100->Value)
 		{
 			DBO()->Service->ELB->RenderInput();
@@ -133,14 +168,14 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre:</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select name='Service.CostCentre' style='width:158px'>\n";
+			echo "      <select name='Service.CostCentre' >\n";
 			$strSelected = (DBO()->Service->CostCentre->Value == NULL) ? "selected='selected'" : "";
-			echo "	       <option value='0' $strSelected>&nbsp;</option>";
+			echo "<option value='0' $strSelected>&nbsp;</option>";
 			
 			foreach (DBL()->CostCentre as $dboCostCentre)
 			{
 				$strSelected = (DBO()->Service->CostCentre->Value == $dboCostCentre->Id->Value) ? "selected='selected'" : "";
-				echo "         <option value='".$dboCostCentre->Id->Value."' $strSelected>". $dboCostCentre->Name->Value ."</option>";
+				echo "<option value='".$dboCostCentre->Id->Value."' $strSelected>". $dboCostCentre->Name->Value ."</option>";
 			}
 			
 			echo "      </select>\n";
@@ -151,25 +186,22 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$intClosedOn = strtotime(DBO()->Service->ClosedOn->Value);
 		$intCurrentDate = strtotime(GetCurrentDateForMySQL());
 		
-		// Check if the closedon date has been set i.e. not null
+		// Check if the ClosedOn date has been set
 		if (DBO()->Service->ClosedOn->Value == NULL)
 		{
-			// The service is not scheduled to close it is either active or hasn't been activated yet
+			// The service is not scheduled to close.  It is either active or hasn't been activated yet
 			// Check if it is currently active
 			$intCreatedOn = strtotime(DBO()->Service->CreatedOn->Value);
 			if ($intCurrentDate > $intCreatedOn)
 			{
 				// The service is currently active
-				echo "&nbsp;&nbsp;This service opened on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
-				// We want the checkbox action to be "archive this service"
-				//DBO()->Service->ArchiveService->RenderInput();
+				echo "&nbsp;&nbsp;This service opened on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
 			}
 			else
 			{
-				// This service hasn't yet been activated yet
-				echo "&nbsp;&nbsp;This service will be activated on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
-				// We want the checkbox action to be "archive this service"
-				//DBO()->Service->ArchiveService->RenderInput();
+				// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
+				echo "&nbsp;&nbsp;This service is scheduled to be acquired by this lessee on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
+				//echo "&nbsp;&nbsp;This service will be activated on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
 			}
 		}
 		else
@@ -184,71 +216,58 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			}
 			else
 			{
-				// The service is scheduled to be closed in the future
+				// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date)
 				// We dont want the user to cancel the scheduled closure of the service
-				echo "&nbsp;&nbsp;This service is scheduled to be closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+				echo "&nbsp;&nbsp;This service is scheduled to change to a different lessee on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+				//echo "&nbsp;&nbsp;This service is scheduled to be closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
 			}
 		}
 	
+		echo "</div>\n";  // NarrowForm - Generic ServiceDetails
+		
 		// handle extra inbound phone details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 		{
-			echo "<div class='Seperator'></div>\n";
-			echo "<h2 class='service'>Inbound Details</h2>\n";
+			echo "<div class='SmallSeperator'></div>\n";
+			echo "<h2 class='service'>Inbound Specific Details</h2>\n";
+			echo "<div class='NarrowForm'>\n";
 			DBO()->ServiceInboundDetail->Id->RenderHidden();
 			DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
 			DBO()->ServiceInboundDetail->Configuration->RenderInput();
+			echo "</div>\n";
 		}
 		
 		// handle extra mobile phone details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
-			echo "<div class='Seperator'></div>\n";
-			echo "<h2 class='service'>Mobile Details</h2>\n";
+			echo "<div class='SmallSeperator'></div>\n";
+			echo "<h2 class='service'>Mobile Specific Details</h2>\n";
+			echo "<div class='NarrowForm'>\n";
 			DBO()->ServiceMobileDetail->Id->RenderHidden();
 			DBO()->ServiceMobileDetail->SimPUK->RenderInput();
 			DBO()->ServiceMobileDetail->SimESN->RenderInput();
-							
-			$arrState = array();
-			$arrState[SERVICE_STATE_TYPE_ACT] = "Australian Capital Territory";
-			$arrState[SERVICE_STATE_TYPE_NSW] = "New South Wales";
-			$arrState[SERVICE_STATE_TYPE_VIC] = "Victoria";
-			$arrState[SERVICE_STATE_TYPE_SA] = "South Australia";
-			$arrState[SERVICE_STATE_TYPE_WA] = "Western Australia";
-			$arrState[SERVICE_STATE_TYPE_TAS] = "Tasmania";
-			$arrState[SERVICE_STATE_TYPE_NT] = "Northern Territory";
-			$arrState[SERVICE_STATE_TYPE_QLD] = "Queensland";
 			
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select name='ServiceMobileDetail.SimState' style='width:152px'>\n";
-		
-			foreach ($arrState as $strKey=>$strStateSelection)
+			echo "      <select name='ServiceMobileDetail.SimState' >\n";
+			foreach ($GLOBALS['*arrConstant']['ServiceStateType'] as $strKey=>$arrState)
 			{
-				if (DBO()->ServiceMobileDetail->SimState->Value == $strKey)
-				{
-					// this is the currently selected combobox option
-					echo "		<option value='". $strKey . "' selected='selected'>$strStateSelection</option>\n";
-				}
-				else
-				{
-					// this is currently not the selected combobox option
-					echo "		<option value='". $strKey . "'>$strStateSelection</option>\n";
-				}
+				$strSelected = (DBO()->ServiceMobileDetail->SimState->Value == $strKey) ? "selected='selected'" : "";
+				echo "         <option value='$strKey' $strSelected><span class='DefaultOutputSpan'>". $arrState['Description'] ."</span></option>\n";
 			}
-			
 			echo "      </select>\n";
 			echo "   </div>\n";
 			echo "</div>\n";
 			
 			DBO()->ServiceMobileDetail->DOB->RenderInput();				
-			DBO()->ServiceMobileDetail->Comments->RenderInput();		
+			DBO()->ServiceMobileDetail->Comments->RenderInput();
+			echo "</div>\n";  // NarrowForm - MobileDetails
 		}
 		
-		echo "</div>";  // NarrowForm
 		
 		echo "<div class='Right'>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(this)");
 		$this->AjaxSubmit("Apply Changes");
 		echo "</div>\n";
 		

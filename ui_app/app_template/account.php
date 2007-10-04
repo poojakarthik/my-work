@@ -60,49 +60,36 @@ class AppTemplateAccount extends ApplicationTemplate
 	 */
 	function ViewServices()
 	{
-		$pagePerms = PERMISSION_ADMIN;
-		
-		// Should probably check user authorization here
+		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolIsAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		// Attempt to load the account
+		if (!DBO()->Account->Load())
 		{
-			// Add extra functionality for super-users
-		}
-		
-		//validate if an account ID has been passed
-		if (!DBO()->Account->Id->Value)
-		{
-			Ajax()->AddCommand("Alert", "An Account could not be loaded");
+			Ajax()->AddCommand("AlertReload", "The account ". DBO()->Account->Id->Value ." could not be found");
 			return TRUE;
 		}
 		
-		//$strWhere = "Account =\"". DBO()->Account->Id->Value . "\"";
-		//$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
-		//$strWhere .= " AND NOW( ) BETWEEN StartDatetime AND EndDatetime"
+		if (!$bolIsAdminUser)
+		{
+			// User does not have admin privileges and therefore cannot view archived services
+			$strWhere = "Account = <Account> AND Status != ". SERVICE_ARCHIVED;
+		}
+		else
+		{
+			// User has admin privileges and can view all services regardless of their status
+			$strWhere = "Account = <Account>";
+		}
 		
-		//DBL()->Service->Where->SetString($strWhere);
-		//DBL()->Service->Load();
-		DBL()->Service->Where->SetString($strWhere);
+		// Load all the services belonging to the account, that the user has permission to view
+		DBL()->Service->Where->Set($strWhere, Array("Account"=>DBO()->Account->Id->Value));
 		DBL()->Service->OrderBy("FNN");
 		DBL()->Service->Load();
-			
-		//if DBL()->Service recordcount > 0 else alert
-
-		//Ajax()->AddCommand("Alert", DBL()->Service->Account->AsValue);
-		// All required data has been retrieved from the database so now load the page template
 		
 		if (DBL()->Service->RecordCount() > 0)
 		{
-			// Why are you loading notes?
-			DBL()->Note->Account = DBO()->Account->Id->Value;
-			DBL()->Note->OrderBy("Datetime DESC");
-			DBL()->Note->Load();
-			DBL()->NoteType->Load();
-
-			DBO()->Note->NoteType = "System";
-
 			$this->LoadPage('services_view');
 			return TRUE;
 		}

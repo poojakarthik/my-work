@@ -67,29 +67,45 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<script type='text/javascript'>
+		function VixenOnServiceUpdate(objEvent)
+		{
+			if (objEvent.NewService.Id != null)
+			{
+				alert('objEvent.NewService.Id = ' + objEvent.NewService.Id);
+			}
+			else
+			{
+				alert('objEvent.NewService.Id = null');
+			}
+			
+			alert('objEvent.Service.Id = ' + objEvent.Service.Id);
+		}
+		</script>";
+	
 		echo "<h2 class='options'>Service Options</h2>\n";
 		echo "<div class='NarrowForm DefaultOutput'>\n";
 		echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 		echo "<tr><td width='2%'>&nbsp;</td><td>\n";
 	
-			$strEditServiceLink = Href()->EditService(DBO()->Service->Id->Value);
-			echo "<li><a href='$strEditServiceLink'>Edit Service Details</a></li>\n";
-			
-			echo "<li>[TODO] View Unbilled Charges</li>\n";
-			echo "<li>[TODO] View Recurring Adjustments</li>\n";
-			
-			$strChangePlanLink = Href()->ChangePlan(DBO()->Service->Id->Value);
-			echo "<li><a href='$strChangePlanLink'>Change Plan</a></li>\n";
-			echo "<li>[TODO] Change of Lessee</li>\n";
-			
-			$strAddServiceNoteLink = Href()->AddServiceNote(DBO()->Service->Id->Value);
-			echo "<li><a href='$strAddServiceNoteLink'>Add Service Note</a></li>\n";		
-			
-			$strAddAdjustmentLink = Href()->AddAdjustment(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
-			echo "<li><a href='$strAddAdjustmentLink'>Add Adjustment</a></li>\n";
+		$strEditServiceLink = Href()->EditService(DBO()->Service->Id->Value, "VixenOnServiceUpdate");
+		echo "<li><a href='$strEditServiceLink'>Edit Service Details</a></li>\n";
 		
-			$strAddRecurringAdjustmentLink = Href()->AddRecurringAdjustment(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
-			echo "<li><a href='$strAddRecurringAdjustmentLink'>Add Recurring Adjustment</a></li>\n";
+		echo "<li>[TODO] View Unbilled Charges</li>\n";
+		echo "<li>[TODO] View Recurring Adjustments</li>\n";
+		
+		$strChangePlanLink = Href()->ChangePlan(DBO()->Service->Id->Value);
+		echo "<li><a href='$strChangePlanLink'>Change Plan</a></li>\n";
+		echo "<li>[TODO] Change of Lessee</li>\n";
+		
+		$strAddServiceNoteLink = Href()->AddServiceNote(DBO()->Service->Id->Value);
+		echo "<li><a href='$strAddServiceNoteLink'>Add Service Note</a></li>\n";		
+		
+		$strAddAdjustmentLink = Href()->AddAdjustment(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+		echo "<li><a href='$strAddAdjustmentLink'>Add Adjustment</a></li>\n";
+	
+		$strAddRecurringAdjustmentLink = Href()->AddRecurringAdjustment(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+		echo "<li><a href='$strAddRecurringAdjustmentLink'>Add Recurring Adjustment</a></li>\n";
 			
 		echo "</td></tr>\n";
 		echo "</table>\n";

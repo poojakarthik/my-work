@@ -1,9 +1,37 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateservicedetails
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+// details.php
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateservicedetails
+ * details
+ *
+ * HTML Template for the Service Details HTML object
+ *
+ * HTML Template for the Service Details HTML object
+ * This file defines the class responsible for defining and rendering the layout
+ * of the HTML Template object which displays Service details
+ *
+ * @file		details.php
+ * @language	PHP
+ * @package		ui_app
+ * @author		Ross and Joel
+ * @version		7.07
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+
+//----------------------------------------------------------------------------//
+// HtmlTemplateServiceDetails
+//----------------------------------------------------------------------------//
+/**
+ * HtmlTemplateServiceDetails
  *
  * A specific HTML Template object
  *
@@ -13,7 +41,7 @@
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateservicedetails
+ * @class	HtmlTemplateServiceDetails
  * @extends	HtmlTemplate
  */
 class HtmlTemplateServiceDetails extends HtmlTemplate
@@ -95,9 +123,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	/**
 	 * _RenderTabularDetail();
 	 *
-	 * Render this HTML Template with bare service detail
+	 * Renders all services for a given Account
 	 *
-	 * Render this HTML Template with bare service detail
+	 * Renders all services for a given Account
+	 * This assumes it will be placed in a popup, as it includes a close button
 	 *
 	 * @method
 	 */

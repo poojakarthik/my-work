@@ -945,14 +945,25 @@ define("END_USER_TITLE_TYPE_MS"						, "MS");
 define("END_USER_TITLE_TYPE_PROFESSOR"				, "PROF");
 
 // Service State Type
-define("SERVICE_STATE_TYPE_ACT"		, "ACT");
-define("SERVICE_STATE_TYPE_NSW"		, "NSW");
-define("SERVICE_STATE_TYPE_NT"		, "NT");
-define("SERVICE_STATE_TYPE_QLD"		, "QLD");
-define("SERVICE_STATE_TYPE_SA"		, "SA");
-define("SERVICE_STATE_TYPE_TAS"		, "TAS");
-define("SERVICE_STATE_TYPE_VIC"		, "VIC");
-define("SERVICE_STATE_TYPE_WA"		, "WA");
+$GLOBALS['*arrConstant']	['ServiceStateType']	['ACT']	['Constant']	= 'SERVICE_STATE_TYPE_ACT';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['ACT']	['Description']	= 'Australian Capital Territory';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['NSW']	['Constant']	= 'SERVICE_STATE_TYPE_NSW';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['NSW']	['Description']	= 'New South Wales';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['NT']	['Constant']	= 'SERVICE_STATE_TYPE_NT';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['NT']	['Description']	= 'Northern Territory';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['QLD']	['Constant']	= 'SERVICE_STATE_TYPE_QLD';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['QLD']	['Description']	= 'Queensland';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['SA']	['Constant']	= 'SERVICE_STATE_TYPE_SA';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['SA']	['Description']	= 'South Australia';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['TAS']	['Constant']	= 'SERVICE_STATE_TYPE_TAS';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['TAS']	['Description']	= 'Tasmania';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['VIC']	['Constant']	= 'SERVICE_STATE_TYPE_VIC';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['VIC']	['Description']	= 'Victoria';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['WA']	['Constant']	= 'SERVICE_STATE_TYPE_WA';
+$GLOBALS['*arrConstant']	['ServiceStateType']	['WA']	['Description']	= 'Western Australia';
+
+
+
 
 // Billing Methods
 /*define("BILLING_METHOD_POST"			, 0);

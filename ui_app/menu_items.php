@@ -83,9 +83,9 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewServiceRatePlan($intId, $intAcc)
+	function ViewServiceRatePlan($intId)
 	{
-		return "vixen.php/Service/ViewPlan/?Service.Id=$intId&Account.Id=$intAcc";
+		return "vixen.php/Service/ViewPlan/?Service.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -168,15 +168,23 @@ class MenuItems
 	 * Compiles the Href to be executed when the EditService menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 *
-	 * @param	int		$intId		id of the service to view
+	 * @param	int		$intId						id of the service to view
+	 * @param	string	$strOnServiceUpdateFunc		javascript function name to execute if the Service is successfully updated
 	 *
-	 * @return	string				Href to be executed when the EditService menu item is clicked
+	 * @return	string								Href to be executed when the EditService menu item is clicked
 	 *
 	 * @method
 	 */
-	function EditService($intId)
+	function EditService($intId, $strOnServiceUpdateFunc = NULL)
 	{
-		return "vixen.php/Service/Edit/?Service.Id=$intId";
+		// Setup data to send
+		$arrData['Objects']['Service']['Id'] = $intId;
+		$arrData['Objects']['EventListenerOnServiceUpdate']['Name'] = $strOnServiceUpdateFunc;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditServicePopupId\", \"medium\", null, \"Service\", \"Edit\", $strJsonCode)";	
 	}	
 
 	//------------------------------------------------------------------------//
@@ -207,9 +215,6 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ChangePlanPopupId\", \"large\", null, \"Service\", \"ChangePlan\", $strJsonCode)";	
-	
-		//return
-		//return "vixen.php/Service/ChangePlan/?Service.Id=$intId";
 	}	
 
 	//------------------------------------------------------------------------//

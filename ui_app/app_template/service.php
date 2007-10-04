@@ -27,14 +27,14 @@
  */
 
 //----------------------------------------------------------------------------//
-// AppTemplateservice
+// AppTemplateService
 //----------------------------------------------------------------------------//
 /**
- * AppTemplateservice
+ * AppTemplateService
  *
- * The AppTemplateservice class
+ * The AppTemplateService class
  *
- * The AppTemplateservice class.  This incorporates all logic for all pages
+ * The AppTemplateService class.  This incorporates all logic for all pages
  * relating to services
  *
  *
@@ -319,6 +319,12 @@ class AppTemplateService extends ApplicationTemplate
 	 * Performs the logic for editting a service
 	 * 
 	 * Performs the logic for editting a service
+	 * If DBO()->EventListenerOnServiceUpdate->Name is set to the name of a globally accessible
+	 * javascript function, then this function will be executed if the service is successfully
+	 * updated.  It will pass an object to the function with the following properties defined:
+	 *					objObject.Service.Id	= id of the service which has been updated
+	 *					objObject.NewService.Id	= id of the new service, if the service being updated, 
+	 *					was activated, and a new service had to be made.  See KB article KB00005
 	 *
 	 * @return		void
 	 * @method		Edit
@@ -336,7 +342,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				// The form has not passed initial validation
 				Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				return TRUE;
 			}
 			
@@ -348,11 +354,11 @@ class AppTemplateService extends ApplicationTemplate
 				// The user wants to change the FNN
 				if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
 				{
-					// The FNN wasn't re-entered correctly
+					// The FNN was re-entered incorrectly
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
 					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Service # and Confirm Service # must be the same");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
 				
@@ -361,8 +367,8 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// The FNN is invalid
 					DBO()->Service->FNN->SetToInvalid();
-					Ajax()->AddCommand("Alert", "The FNN is not a valid Australian Full National Number");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->AddCommand("Alert", "ERROR: The FNN is not a valid Australian Full National Number");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
 				
@@ -370,10 +376,10 @@ class AppTemplateService extends ApplicationTemplate
 				$intServiceType = ServiceType(DBO()->Service->FNN->Value);
 				if ($intServiceType != DBO()->Service->ServiceType->Value)
 				{
-					// The FNN is invalid for the services ServiceType.
+					// The FNN is invalid for the service's ServiceType.
 					DBO()->Service->FNN->SetToInvalid();
-					Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->AddCommand("Alert", "ERROR: The FNN is invalid for the service type");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
 				
@@ -387,9 +393,8 @@ class AppTemplateService extends ApplicationTemplate
 				{	
 					// The FNN is currently being used
 					DBO()->Service->FNN->SetToInvalid();
-					DBO()->Service->FNNConfirm->SetToInvalid();
-					Ajax()->AddCommand("Alert", "This Service FNN is currently being used by another service");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->AddCommand("Alert", "ERROR: This FNN is currently being used by another service");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
 				
@@ -397,29 +402,7 @@ class AppTemplateService extends ApplicationTemplate
 				$arrUpdateProperties[] = "FNN";
 			}
 			
-			// test archive action originally a checkbox testing if its checked i.e. true
-			//if (DBO()->Service->ArchiveService->Value)
-			//{
-				// we want to archive the service
-				//$bolArchiveService = TRUE;
-				// set closedon date to todays date
-				//DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
-				// set closedby to authenticated user ID
-				//DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
-				
-				// Declare properties to update
-				//$arrUpdateProperties[] = "ClosedOn";
-				//$arrUpdateProperties[] = "ClosedBy";
-				//$arrUpdateProperties[] = "LineStatus";
-				
-				// Define system generated note
-				//$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-				//$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-				//$strNote = "Service archived on $strDateTime by $strUserName with status of ".DBO()->Service->LineStatus->Value;
-			//}
-			//**************************************************************************************************************************************
-			// NOTE! I was originally handling the ActivateService logic here, but have decided to handle it last, as it is the most complex
-			//**************************************************************************************************************************************
+			// Check if the CostCentre property has been updated
 			if (DBO()->Service->CostCentre->Value !== NULL)
 			{
 				if (DBO()->Service->CostCentre->Value == 0)
@@ -433,14 +416,15 @@ class AppTemplateService extends ApplicationTemplate
 			// Declare the transaction
 			TransactionStart();
 
+			// Check if the Extension Level Billing property has been updated
 			if (DBO()->Service->ELB->Value !== NULL)
 			{
 				if (DBO()->Service->ELB->Value)
 				{
-					//DBO()->Service->ELB->Value === 1
+					// Enable ELB
 					if (!$this->Framework->EnableELB(DBO()->Service->Id->Value))
 					{
-						//EnableELB failed
+						// EnableELB failed
 						TransactionRollback();
 						Ajax()->AddCommand("Alert", "ERROR: Enabling ELB failed, unexpectedly.  All modifications to the service have been aborted");
 						return TRUE;
@@ -448,10 +432,10 @@ class AppTemplateService extends ApplicationTemplate
 				}
 				else
 				{
-					//DBO()->Service->ELB->Value === 0
+					// Disable ELB
 					if (!$this->Framework->DisableELB(DBO()->Service->Id->Value))
 					{
-						//DisableELB failed
+						// DisableELB failed
 						TransactionRollback();
 						Ajax()->AddCommand("Alert", "ERROR: Disabling ELB failed, unexpectedly.  All modifications to the service have been aborted");
 						return TRUE;
@@ -459,13 +443,13 @@ class AppTemplateService extends ApplicationTemplate
 				}
 			}
 
-			// Save the changes to the Service Table, if count($arrUpdateProperties) > 0
-
+			// Save the changes to the Service Table, if any changes were made
 			if (count($arrUpdateProperties) > 0)
 			{
 				// Declare columns to update
-				DBO()->Service->SetColumns($arrUpdateProperties);			
-				// Save the service to the service table of the vixen database
+				DBO()->Service->SetColumns($arrUpdateProperties);
+				
+				// Save the service to the service table
 				if (!DBO()->Service->Save())
 				{
 					// The service did not save
@@ -483,7 +467,7 @@ class AppTemplateService extends ApplicationTemplate
 					// The form has not passed initial validation
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
 				
@@ -510,10 +494,11 @@ class AppTemplateService extends ApplicationTemplate
 					// The form has not passed initial validation
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
-				// set columns to update
+				
+				// Set columns to update
 				DBO()->ServiceInboundDetail->SetColumns("AnswerPoint, Configuration");
 				if (!DBO()->ServiceInboundDetail->Save())
 				{
@@ -567,7 +552,7 @@ class AppTemplateService extends ApplicationTemplate
 						
 						// Declare columns to update
 						DBO()->Service->SetColumns("ClosedOn, ClosedBy, Status");
-						// Save the service to the service table of the vixen database
+						// Save the service to the service table
 						if (!DBO()->Service->Save())
 						{
 							// The service did not save
@@ -587,15 +572,37 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Commit the transaction
 			TransactionCommit();
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service details were successfully updated", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			
+			// Close the popup
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			
+			// If there are any event listeners, fire the event
+			if (DBO()->EventListenerOnServiceUpdate->Name->Value)
+			{
+				// Build object to pass to listener
+				// The contents of this object should be declared in the doc block of this method
+				$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
+				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
+				
+				$jsonEvent = Json()->encode($arrEvent);
+				
+				// Build the javascript required to execute the event listener
+				$strJavascript = DBO()->EventListenerOnServiceUpdate->Name->Value ."($jsonEvent);";
+				
+				Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
+			}
+			else
+			{
+				// No event listeners
+				Ajax()->AddCommand("Alert", "The service was successfully updated");
+			}
 			return TRUE;
 		}
 		
 		// Load the service record
 		if (!DBO()->Service->Load())
 		{
-			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->Value ." you were attempting to view could not be found";
-			$this->LoadPage('error');
+			Ajax()->AddCommand("Alert", "ERROR: The service with id: ". DBO()->Service->Id->Value ." you were attempting to view could not be found");
 			return FALSE;
 		}
 	
@@ -625,24 +632,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Store the current FNN to check between states that the FNN textbox has been changed
 		DBO()->Service->CurrentFNN = DBO()->Service->FNN->Value;
-
-		// context menu
-		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
-
-		// Bread Crumb Menu
-		BreadCrumb()->Invoices_And_Payments(DBO()->Service->Account->Value);
-		BreadCrumb()->View_Service(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
-		BreadCrumb()->SetCurrentPage("Edit Service");
-
+		
 		// Declare which page to use
 		$this->LoadPage('service_edit');
 		return TRUE;
@@ -983,11 +973,11 @@ class AppTemplateService extends ApplicationTemplate
 					"<br>The other service must be disconnected or archived before this service can be activated";
 		}
 		
-		// Check if the FNN has been used by another archived service since $intService was archived
+		// Check if the FNN has been used by another de-activated service since $intService was de-activated
 		$selFNN = new StatementSelect("Service", "Id", "FNN = <FNN> AND Id != <Service> AND ClosedOn > <ClosedOn>");
 		if ($selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService, 'ClosedOn' => $strClosedOn)) == 0)
 		{
-			// The FNN has not been used since this service was archived.  Unarchive the service
+			// The FNN has not been used since this service was de-activated.  Activate the service
 			DBO()->ArchivedService->SetTable("Service");
 			DBO()->ArchivedService->SetColumns("Id, ClosedOn, Status");
 			DBO()->ArchivedService->Id 			= $intService;
@@ -995,16 +985,16 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ArchivedService->Status 		= SERVICE_ACTIVE;
 			if (!DBO()->ArchivedService->Save())
 			{
-				// There was an error while trying to unarchive the service
+				// There was an error while trying to activate the service
 				return "ERROR: Activating the service failed, unexpectedly";
 			}
 			
-			// Service was unarchived successfully
+			// Service was activated successfully
 			return TRUE;
 		}
 		
-		// The FNN has been used by another service, since this service was last archived
-		// Now both services are archived.  Create a new service
+		// The FNN has been used by another service since this service was last de-activated
+		// Now both services are de-activated.  Create a new service
 		$intOldServiceId = $intService;
 		DBO()->NewService->SetTable("Service");
 		DBO()->NewService->Id = $intOldServiceId;
@@ -1054,6 +1044,8 @@ class AppTemplateService extends ApplicationTemplate
 					DBO()->NewServiceAddress->Id = 0;
 					DBO()->NewServiceAddress->Save();
 				}
+				
+				// Handle ELB if in use
 				if (DBO()->NewService->Indial100->Value)
 				{
 					// This will perform an insert query for each new record added to the ServiceExtension table.  It could have been done
