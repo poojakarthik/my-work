@@ -134,11 +134,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{	
 		// Define javascript to execute when the "Edit" button is triggered
 		$strEditAccountJsCode =	"var objObjects = {};\n".
-								"objObjects.Service = {};\n".
-								"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
 								"objObjects.Account = {};\n".
 								"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
 								"Vixen.Ajax.CallAppTemplate(\"Account\", \"EditDetails\", objObjects);\n";
+
+								//"objObjects.Service = {};\n".
+								//"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
 
 		echo "<div class='NarrowForm'>\n";
 			$this->FormStart("EditAccount", "Account", "Edit");
@@ -183,12 +184,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		// Define javascript to execute when the "Cancel" button is triggered
 		$strCancelJsCode =	"var objObjects = {};\n".
-							"objObjects.Service = {};\n".
-							"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
 							"objObjects.Account = {};\n".
 							"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
 							"Vixen.Ajax.CallAppTemplate(\"Account\", \"View\", objObjects);\n";
-	
+
+							//"objObjects.Service = {};\n".
+							//"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
+
 		//echo "<div id='AccountDetailDiv'>\n";
 		echo "<div class='NarrowForm'>\n";
 		$this->FormStart("EditAccount", "Account", "ValidateDetails");
@@ -299,10 +301,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 		
 		echo "<div class='Right'>\n";
-			echo "<div class='SmallSeperator'></div>\n";
-			$this->Button("Cancel", $strCancelJsCode);
-			$this->AjaxSubmit("Apply Changes");
-			$this->FormEnd();
+		echo "<div class='SmallSeperator'></div>\n";
+		$this->Button("Cancel", $strCancelJsCode);
+		$this->AjaxSubmit("Apply Changes");
+		$this->FormEnd();
 		echo "</div>\n";
 		
 		echo "</div>\n";

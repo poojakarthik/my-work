@@ -78,9 +78,12 @@ class AppTemplateAccount extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		$strWhere = "Account =\"". DBO()->Account->Id->Value . "\"";
-		$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
+		//$strWhere = "Account =\"". DBO()->Account->Id->Value . "\"";
+		//$strWhere .= " AND Status !=\"". SERVICE_ARCHIVED . "\"";
+		//$strWhere .= " AND NOW( ) BETWEEN StartDatetime AND EndDatetime"
 		
+		//DBL()->Service->Where->SetString($strWhere);
+		//DBL()->Service->Load();
 		DBL()->Service->Where->SetString($strWhere);
 		DBL()->Service->OrderBy("FNN");
 		DBL()->Service->Load();
@@ -132,6 +135,15 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		DBO()->Account->Load();
 		
+		/*if (DBO()->Service->Id->Value == NULL)
+		{
+			//may need to add date time stamp to get most recent record!
+			$strWhere = "Account = \"".DBO()->Account->Id->Value."\"";
+			DBO()->Service->Where->SetString($strWhere);
+			DBO()->Service->Load();
+			Ajax()->AddCommand("Alert", "entered from editdetails-->>>>".DBO()->Service->Id->Value);
+		}*/
+		
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 	}
 
@@ -153,32 +165,53 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		if (SubmittedForm('EditAccount', 'Apply Changes'))
 		{
+			if (DBL()->Service->RecordCount() == 0)
+			{
+				$strWhere = "Account = \"".DBO()->Account->Id->Value."\"";
+				$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
+				DBL()->Service->Where->SetString($strWhere);
+				DBL()->Service->Load();
+			}
+			
 			if (DBO()->Account->IsInvalid())
 			{
 				Ajax()->AddCommand("Alert", "ERROR: the form didnt pass initial validation, invalid fields are highlighted");
 				return TRUE;			
 			}
 
+			/*if (Validate("Integer", DBO()->Account->ABN->Value))
 			if (!Validate("Integer", DBO()->Account->ABN->Value))
 			{
 				DBO()->Account->ABN->SetToInvalid();
 				Ajax()->AddCommand("Alert", "Could not save the account.  Not a valid ABN number");
 				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 				return TRUE;
-			}
-			$arrUpdateProperties[] = "ABN";
+			}*/
 
 			if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
 			{
 				// Define system generated note
 				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+
+				$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . " on $strDateTime by $strUserName Services Affected Are :\n\n";
+				foreach (DBL()->Service as $dboService)
+				{
+					$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
+				}
+				SaveSystemNote($strNote, $dboService->AccountGroup->Value, $dboService->Account->Value, NULL, $dboService->Id->Value);
+			
+				$mixTodaysDate = GetCurrentDateForMySQL();
+				$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
+			
+
 				$strNote = "Account Status was changed on $strDateTime by $strUserName with status of ".DBO()->Account->Archived->Value;				
 				//TODO! DBO()->Service is undefined
 				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 				
 				//need to set the closed on dates here!!!
 				
+
 				switch (DBO()->Account->Archived->Value)
 				{
 					case ACCOUNT_ACTIVE:
@@ -192,6 +225,8 @@ class AppTemplateAccount extends ApplicationTemplate
 						foreach (DBL()->Service as $dboService)
 						{
 							// set the Service Status to SERVICE_DISCONNECTED
+							$dboService->ClosedOn = $mixTodaysDate;
+							$dboService->ClosedBy = $intEmployeeId; 
 							$dboService->Status = SERVICE_DISCONNECTED;
 							$dboService->Save();
 						}
@@ -205,6 +240,8 @@ class AppTemplateAccount extends ApplicationTemplate
 						foreach (DBL()->Service as $dboService)
 						{
 							// set the Service Status to SERVICE_DISCONNECTED
+							$dboService->ClosedOn = $mixTodaysDate;
+							$dboService->ClosedBy = $intEmployeeId;							
 							$dboService->Status = SERVICE_DISCONNECTED;
 							$dboService->Save();
 						}
@@ -219,6 +256,8 @@ class AppTemplateAccount extends ApplicationTemplate
 						foreach (DBL()->Service as $dboService)
 						{
 							// set the Service Status to SERVICE_ARCHIVED
+							$dboService->ClosedOn = $mixTodaysDate;
+							$dboService->ClosedBy = $intEmployeeId;							
 							$dboService->Status = SERVICE_ARCHIVED;
 							$dboService->Save();
 						}
@@ -226,21 +265,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				}
 			}
 	
-			// problem with saving, this line here!
-			DBO()->Account->SetColumns("BusinessName, 
-															TradingName, 
-															ABN, 
-															ACN, 
-															Address1, 
-															Address2, 
-															Suburb, 
-															Postcode, 
-															State, 
-															BillingMethod, 
-															CustomerGroup, 
-															DisableLatePayment, 
-															Archived, 
-															DisableDDR");
+			DBO()->Account->SetColumns("BusinessName,TradingName,ABN,ACN,Address1,Address2,Suburb,Postcode,State,BillingMethod,CustomerGroup,DisableLatePayment,Archived,DisableDDR");
 															
 			if (!DBO()->Account->Save())
 			{
@@ -281,10 +306,13 @@ class AppTemplateAccount extends ApplicationTemplate
 			//Load account and service
 			DBO()->Account->Load();
 			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
-			$strWhere = "Account = \"".DBO()->Account->Id->Value."\"";
-			DBO()->Service->Where->SetString($strWhere);
-			DBO()->Service->Load();
-	
+			if (DBL()->Service->RecordCount() == 0)
+			{
+				$strWhere = "Account = \"".DBO()->Account->Id->Value."\"";
+				$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
+				DBL()->Service->Where->SetString($strWhere);
+				DBL()->Service->Load();
+			}
 			// Load page
 			$this->LoadPage('Account_View');
 		}
