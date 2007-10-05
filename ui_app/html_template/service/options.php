@@ -81,6 +81,9 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 			
 			alert('objEvent.Service.Id = ' + objEvent.Service.Id);
 		}
+		
+		Vixen.EventHandler.AddListener('OnServiceUpdate', VixenOnServiceUpdate);
+		
 		</script>";
 	
 		echo "<h2 class='options'>Service Options</h2>\n";

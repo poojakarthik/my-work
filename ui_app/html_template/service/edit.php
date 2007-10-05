@@ -116,11 +116,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->Indial100->RenderHidden();
 		DBO()->Service->Status->RenderHidden();
 		
-		if (DBO()->EventListenerOnServiceUpdate->Name->Value)
-		{
-			DBO()->EventListenerOnServiceUpdate->Name->RenderHidden();
-		}
-		
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderInput();

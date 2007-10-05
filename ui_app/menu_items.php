@@ -169,17 +169,15 @@ class MenuItems
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 *
 	 * @param	int		$intId						id of the service to view
-	 * @param	string	$strOnServiceUpdateFunc		javascript function name to execute if the Service is successfully updated
 	 *
 	 * @return	string								Href to be executed when the EditService menu item is clicked
 	 *
 	 * @method
 	 */
-	function EditService($intId, $strOnServiceUpdateFunc = NULL)
+	function EditService($intId)
 	{
 		// Setup data to send
 		$arrData['Objects']['Service']['Id'] = $intId;
-		$arrData['Objects']['EventListenerOnServiceUpdate']['Name'] = $strOnServiceUpdateFunc;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);

@@ -307,6 +307,7 @@ class Page
 		echo "<script type='text/javascript' src='javascript.php?File=popup.js' ></script>\n";
 		echo "<script type='text/javascript' src='javascript.php?File=dhtml.js' ></script>\n";
 		echo "<script type='text/javascript' src='javascript.php?File=ajax.js' ></script>\n";
+		echo "<script type='text/javascript' src='javascript.php?File=event_handler.js' ></script>\n";
 		
 
 		// I should really make sure that none of the above loaded javascript 

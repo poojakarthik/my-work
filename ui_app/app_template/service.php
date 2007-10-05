@@ -316,15 +316,14 @@ class AppTemplateService extends ApplicationTemplate
 	/**
 	 * Edit()
 	 *
-	 * Performs the logic for editting a service
+	 * Performs the logic for th "Edit Service" popup
 	 * 
-	 * Performs the logic for editting a service
-	 * If DBO()->EventListenerOnServiceUpdate->Name is set to the name of a globally accessible
-	 * javascript function, then this function will be executed if the service is successfully
-	 * updated.  It will pass an object to the function with the following properties defined:
-	 *					objObject.Service.Id	= id of the service which has been updated
-	 *					objObject.NewService.Id	= id of the new service, if the service being updated, 
-	 *					was activated, and a new service had to be made.  See KB article KB00005
+	 * Performs the logic for th "Edit Service" popup
+	 * If the service is successfully updated then it will fire an "OnServiceUpdate" event
+	 * passing the following object:
+	 *		objObject.Service.Id	= id of the service which has been updated
+	 *		objObject.NewService.Id	= id of the new service, if the service being updated, 
+	 *		was activated, and a new service had to be made.  See KB article KB00005
 	 *
 	 * @return		void
 	 * @method		Edit
@@ -535,8 +534,16 @@ class AppTemplateService extends ApplicationTemplate
 							$strNote = "Service Activated on $strDateTime by $strUserName";
 						}
 						break;
-					case SERVICE_DISCONNECTED:
 					case SERVICE_ARCHIVED:
+						// Check that the user has permission to archive the service
+						if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+						{
+							// The user does not have permission to Archive the service
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: You do not have permission to archive services");
+							return TRUE;
+						}
+					case SERVICE_DISCONNECTED:
 						// Set ClosedOn date to today's date
 						DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
 						// Set ClosedBy to authenticated user ID
@@ -575,27 +582,21 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+
+			// Build event object
+			// The contents of this object should be declared in the doc block of this method
+			$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
+			$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
+			$jsonEvent = Json()->encode($arrEvent);
 			
-			// If there are any event listeners, fire the event
-			if (DBO()->EventListenerOnServiceUpdate->Name->Value)
-			{
-				// Build object to pass to listener
-				// The contents of this object should be declared in the doc block of this method
-				$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
-				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
-				
-				$jsonEvent = Json()->encode($arrEvent);
-				
-				// Build the javascript required to execute the event listener
-				$strJavascript = DBO()->EventListenerOnServiceUpdate->Name->Value ."($jsonEvent);";
-				
-				Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
-			}
-			else
-			{
-				// No event listeners
-				Ajax()->AddCommand("Alert", "The service was successfully updated");
-			}
+			// Build the javascript required to execute the event listener
+			$strJavascript = "Vixen.EventHandler.FireEvent('OnServiceUpdate', $jsonEvent);";
+			
+			// Fire the "OnServiceUpdate" event
+			Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
+
+			Ajax()->AddCommand("Alert", "The service was successfully updated");
+			
 			return TRUE;
 		}
 		

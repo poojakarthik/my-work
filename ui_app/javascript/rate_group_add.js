@@ -43,10 +43,10 @@
 function VixenRateGroupAddClass()
 {
 	//------------------------------------------------------------------------//
-	// _objRecordTypes
+	// _arrRecordTypes
 	//------------------------------------------------------------------------//
 	/**
-	 * _objRecordTypes
+	 * _arrRecordTypes
 	 *
 	 * Stores data relating to each RecordType from the database table "RecordType"
 	 *

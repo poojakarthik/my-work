@@ -285,8 +285,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	{	
 		AuthenticatedUser()->CheckAuth();
 		// Check permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);	// dies if no permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC | PERMISSION_OPERATOR);
 
 		if (DBO()->Account->Id->Value)
 		{
@@ -301,7 +300,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBL()->Service->Load();
 			}
 			// Load page
-			$this->LoadPage('Account_View');
+			$this->LoadPage('account_view');
 		}
 		else
 		{
