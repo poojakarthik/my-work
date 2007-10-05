@@ -181,7 +181,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 
-				$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . " on $strDateTime by $strUserName Services Affected Are :\n\n";
+				$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\non $strDateTime by $strUserName Services Affected Are :\n\n";
 				foreach (DBL()->Service as $dboService)
 				{
 					$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";

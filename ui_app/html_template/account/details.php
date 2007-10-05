@@ -12,6 +12,10 @@
  *
  * @prefix	<prefix>
  *
+ *
+ *
+ * @prefix	<prefix>
+ *
  * @package	ui_app
  * @class	HtmlTemplateAccountDetails
  * @extends	HtmlTemplate

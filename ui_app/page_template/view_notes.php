@@ -54,6 +54,6 @@ $this->Page->SetLayout('popup_layout');
 $this->Page->SetStyleOverride("background-color : #F3F3F3");
 
 // add the Html Objects to their respective columns
-$this->Page->AddObject('NoteView', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('NoteView', COLUMN_ONE, HTML_CONTEXT_POPUP);
 
 ?>

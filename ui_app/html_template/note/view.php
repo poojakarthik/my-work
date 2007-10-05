@@ -101,11 +101,11 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	{
 		switch ($this->_intContext)
 		{
-			case NOTE_CLASS_SERVICE_NOTES:
-				$this->RenderNotes(TRUE);
+			case HTML_CONTEXT_POPUP:
+				$this->RenderAsPopup();		
 				break;
 			default:
-				$this->RenderForm();
+				$this->RenderNotes();	
 				break;
 		}
 	}
@@ -123,7 +123,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	 *
 	 * @method
 	 */
-	function RenderForm()
+	function RenderAsPopup()
 	{
 		$this->FormStart("NoteTypeForm", "Note", "View");
 		DBO()->Note->NoteGroupId->RenderHidden();
@@ -145,8 +145,6 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		echo "<input type='radio' name='Note.NoteType' value='All' $strAll onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
 		echo "<input type='radio' name='Note.NoteType' value='System' $strSystem onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
 		echo "<input type='radio' name='Note.NoteType' value='User' $strUser onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
-		// Whats this for? if useless delete rather than commenting out
-		//echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
 		
 		// Renders the radio buttons, the notes and the ending form elements in that order	
 		$this->RenderNotes();
@@ -158,15 +156,17 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	
 	function RenderNotes($bolShowHeading=FALSE)
 	{
-		// Shows the heading if true, $bolShowHeading is set if only the notes are being rendered on the page
-		// will no doubt be altered/deleted
-		if ($bolShowHeading)
+		// if context is not popup output the heading else create a scrollable div
+		if ($this->_intContext != HTML_CONTEXT_POPUP)
 		{
 			echo "<h2>Recent Notes</h2><div class='DefaultRegularOutput'>The 5 most recent notes are listed below:</div>";
 		}
-		echo "<div class='PopupLarge'>\n";
-		echo "<div  style='overflow:auto; height:300px'>\n";
-
+		else		
+		{
+			echo "<div class='PopupLarge'>\n";
+			echo "<div  style='overflow:auto; height:300px'>\n";
+		}
+		
 		DBL()->NoteType->Load();
 		
 		if (DBL()->Note->RecordCount() == 0)
@@ -217,8 +217,12 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			// Include a separator
 			echo "<div class='SmallSeperator'></div>\n";
 		}
-		echo "</div>\n";
-		echo "</div>\n";
+		
+		if ($this->_intContext == HTML_CONTEXT_POPUP)
+		{
+			echo "</div>\n";
+			echo "</div>\n";
+		}
 	}
 }
 
