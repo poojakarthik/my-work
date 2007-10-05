@@ -72,19 +72,19 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 		{
 			if (objEvent.NewService.Id != null)
 			{
-				alert('objEvent.NewService.Id = ' + objEvent.NewService.Id);
+				var intServiceId = objEvent.NewService.Id;
 			}
 			else
 			{
-				alert('objEvent.NewService.Id = null');
+				var intServiceId = objEvent.Service.Id;
 			}
 			
-			alert('objEvent.Service.Id = ' + objEvent.Service.Id);
+			window.location = 'vixen.php/Service/View/?Service.Id=' + intServiceId;
 		}
 		
 		Vixen.EventHandler.AddListener('OnServiceUpdate', VixenOnServiceUpdate);
 		
-		</script>";
+		</script>\n";
 	
 		echo "<h2 class='options'>Service Options</h2>\n";
 		echo "<div class='NarrowForm DefaultOutput'>\n";

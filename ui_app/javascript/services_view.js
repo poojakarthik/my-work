@@ -15,7 +15,7 @@
  * javascript required of the "View Services" popup webpage
  * 
  *
- * @file		rate_group_add.js
+ * @file		services_view.js
  * @language	Javascript
  * @package		ui_app
  * @author		Ross 'He looks good in camouflage' Mullen
@@ -57,10 +57,14 @@ function VixenServicesViewClass()
 	 * @return	void
 	 * @method
 	 */
-	this.ViewServicesPopupOnClose = function(objarrServiceDetails)
+	this.ViewServicesPopupOnClose = function(objEventData)
 	{
-		document.getElementById(objarrServiceDetails.Id).innerHTML= objarrServiceDetails.Name;
+		document.getElementById(objEventData.Service.Id).innerHTML = objEventData.NewRatePlan.Name;
+		//document.getElementById(objarrServiceDetails.Id).innerHTML= objarrServiceDetails.Name;
 	}
+	
+	// Initialisation (this should go in its own function which is called from within the HtmlTemplate)
+	Vixen.EventHandler.AddListener("OnServicePlanChange", this.ViewServicesPopupOnClose);
 }
 
 // instanciate the objects

@@ -171,6 +171,7 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "
 // This is used in the datbase to represent an "end Date" or "Closed on date" that should never be reached
 define('END_OF_TIME', 	'9999-12-31 23:59:59');
 
+// RatePlan, RateGroup and Rate archive status's
 define("ARCHIVE_STATUS_ACTIVE"			, 0);
 define("ARCHIVE_STATUS_ARCHIVED"		, 1);
 define("ARCHIVE_STATUS_DRAFT"			, 2);

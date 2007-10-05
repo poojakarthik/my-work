@@ -173,7 +173,7 @@ class AppTemplateRate extends ApplicationTemplate
 		$arrRate['Description']	= DBO()->Rate->Description->Value;
 		$arrRate['Name']		= DBO()->Rate->Name->Value;
 		$arrRate['RecordType'] 	= DBO()->Rate->RecordType->Value;
-		$arrRate['Draft']		= (DBO()->Rate->Archived->Value == 2) ? 1 : 0;
+		$arrRate['Draft']		= (DBO()->Rate->Archived->Value == ARCHIVE_STATUS_DRAFT) ? 1 : 0;
 		$arrRate['Fleet']		= (DBO()->Rate->Fleet->Value == TRUE) ? 1 : 0;
 		
 		$objRate = Json()->encode($arrRate);

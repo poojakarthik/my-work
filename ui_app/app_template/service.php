@@ -103,6 +103,7 @@ class AppTemplateService extends ApplicationTemplate
 		//DBO()->Service->Account->Value
 		DBL()->Note->Service = DBO()->Service->Id->Value;
 		DBL()->Note->SetLimit(5);
+		DBL()->Note->OrderBy("Datetime DESC");
 		DBL()->Note->Load();
 
 		// context menu
@@ -760,9 +761,15 @@ class AppTemplateService extends ApplicationTemplate
 	/**
 	 * ChangePlan()
 	 *
-	 * Performs the logic for changing a service's plan
+	 * Performs the logic for "Change Plan" popup
 	 * 
-	 * Performs the logic for changing a service's plan
+	 * Performs the logic for "Change Plan" popup
+	 * If the service successfully has its plan changed then it will fire an 
+	 * "OnServicePlanChange" event passing the following object:
+	 *		objObject.Service.Id		= id of the service which has had its plan changed
+	 *		objObject.OldRatePlan.Id	= id of the old RatePlan for the service
+	 *		objObject.NewRatePlan.Id	= id of the new RatePlan for the service
+	 *		objObject.NewRatePlan.Name	= name of the new RatePlan for the service
 	 *
 	 * @return		void
 	 * @method		ChangePlan
@@ -772,14 +779,9 @@ class AppTemplateService extends ApplicationTemplate
 	{		
 		$pagePerms = PERMISSION_ADMIN;
 		
-		// Should probably check user authorization here
+		// Check user authorization here
 		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
+		AuthenticatedUser()->PermissionOrDie($pagePerms);
 		
 		if (SubmittedForm("ChangePlan","Change Plan"))
 		{
@@ -788,35 +790,34 @@ class AppTemplateService extends ApplicationTemplate
 			if (DBO()->NewPlan->Id->Value == DBO()->RatePlan->Id->Value)
 			{
 				// The new plan is the same as the existing plan, exit gracefully
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "No update has been saved as the new plan is the same as the previous plan", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				Ajax()->AddCommand("Alert", "No update has been saved as the new plan is the same as the previous plan");
 				return TRUE;
 			}
 			
-			// Create a single variable that stores the current timestamp, solves similar timestamps with differing seconds
+			// Record the current time
 			$strNowTimeStamp = GetCurrentDateAndTimeForMySQL();
 
-			// Change the service's plan
 			// Start the database transaction
 			TransactionStart();
 
-			// All current ServiceRateGroup and ServiceRatePlan records must have EndDatetime set to NOW()
-			// replace now() with variable that has now() declared once only
+			// All current ServiceRateGroup records must have EndDatetime set to $strNowTimeStamp
 			$arrUpdate = Array('EndDatetime' => $strNowTimeStamp);
 			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime > <NowTimeStamp>", $arrUpdate);
-			if (!$updServiceRateGroup->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "NowTimeStamp"=>$strNowTimeStamp)))
+			if ($updServiceRateGroup->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "NowTimeStamp"=>$strNowTimeStamp)) === FALSE)
 			{
 				// Could not update records in ServiceRateGroup table. Exit gracefully
 				TransactionRollback();
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating the current plan's rate groups to end today)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating the current plan's rate groups to end today)");
 				return TRUE;
 			}
 			
+			// All current ServiceRatePlan records must have EndDatetime set to $strNowTimeStamp
 			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime > <NowTimeStamp>", $arrUpdate);
-			if (!$updServiceRatePlan->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "NowTimeStamp"=>$strNowTimeStamp)))
+			if ($updServiceRatePlan->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "NowTimeStamp"=>$strNowTimeStamp)) === FALSE)
 			{
 				// Could not update records in ServiceRatePlan table. Exit gracefully
 				TransactionRollback();
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating the current plan to end today)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating the current plan to end today)");
 				return TRUE;
 			}
 			
@@ -833,7 +834,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				// Could not save the record. Exit gracefully
 				TransactionRollback();
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRatePlan table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding record to ServiceRatePlan table)");
 				return TRUE;
 			}
 			
@@ -852,7 +853,7 @@ class AppTemplateService extends ApplicationTemplate
 			
 			foreach (DBL()->RatePlanRateGroup as $dboRatePlanRateGroup)
 			{
-				// Set the id of the record to null, so that it is inserted as a new record when saved
+				// Set the id of the record to 0, so that it is inserted as a new record when saved
 				DBO()->ServiceRateGroup->Id = 0;
 				DBO()->ServiceRateGroup->RateGroup = $dboRatePlanRateGroup->RateGroup->Value;
 				
@@ -861,7 +862,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// Could not save the record. Exit gracefully
 					TransactionRollback();
-					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRateGroup table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+					Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding new records to ServiceRateGroup table)");
 					return TRUE;
 				}
 			}
@@ -875,33 +876,39 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->NewPlan->Load();
 			if (DBO()->Service->FNN->Value)
 			{
-				$strFNN = "Service with FNN# ". DBO()->Service->FNN->Value ." has had its plan changed from '";
+				$strNote = "Service with Id: ". DBO()->Service->Id->Value ." and FNN: ". DBO()->Service->FNN->Value ." has had its plan changed from '";
 			}
 			else
 			{
-				$strFNN = "The service's plan has been changed from '";
+				$strNote = "Service with Id: ". DBO()->Service->Id->Value ." has had its plan changed from '";
 			}
-			$strNote = $strFNN . DBO()->RatePlan->Name->Value ."' to '". DBO()->NewPlan->Name->Value ."'";
+			$strNote .= DBO()->RatePlan->Name->Value ."' to '". DBO()->NewPlan->Name->Value ."'";
 			SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 			
 			// All changes to the database, required to define the plan change, have been completed
 			// Commit the transaction
 			TransactionCommit();
-			if (DBO()->Page->ViewService)
-			{
-				$arrServiceDetails['Id'] = DBO()->Service->Id->Value;
-				$arrServiceDetails['Name'] = DBO()->RatePlan->Name->Value;
-				$objarrServiceDetails = Json()->encode($arrServiceDetails);
-				
-				$strJavascript = "Vixen.ServicesView.ViewServicesPopupOnClose($objarrServiceDetails);";
-				Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
-				Ajax()->AddCommand("Alert","The service's plan has been successfully changed");
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			}
-			else
-			{
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service's plan has been successfully changed", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
-			}
+			
+			// Close the popup
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+
+			// Build event object
+			// The contents of this object should be declared in the doc block of this method
+			$arrEvent['Service']['Id']			= DBO()->Service->Id->Value;
+			$arrEvent['OldRatePlan']['Id']		= DBO()->RatePlan->Id->Value;
+			$arrEvent['NewRatePlan']['Id']		= DBO()->NewPlan->Id->Value;
+			$arrEvent['NewRatePlan']['Name']	= DBO()->NewPlan->Name->Value;
+			
+			$jsonEvent = Json()->encode($arrEvent);
+			
+			// Build the javascript required to execute the event listener
+			$strJavascript = "Vixen.EventHandler.FireEvent('OnServicePlanChange', $jsonEvent);";
+			
+			// Fire the "OnServiceUpdate" event
+			Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
+
+			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
+
 			return TRUE;
 		}		
 		

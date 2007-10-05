@@ -297,11 +297,11 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		if (SubmittedForm('RateGroup', 'Save as Draft'))
 		{
 			// Flag it as a draft
-			DBO()->RateGroup->Archived = 2;
+			DBO()->RateGroup->Archived = ARCHIVE_STATUS_DRAFT;
 		}
 		else
 		{
-			DBO()->RateGroup->Archived = 0;
+			DBO()->RateGroup->Archived = ARCHIVE_STATUS_ACTIVE;
 		}
 		
 		// Declare which fields you want to set
@@ -335,10 +335,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// If the RateGroup is being committed to the database, as opposed to being saved, make sure all its associated rates are also committed
-		if (DBO()->RateGroup->Archived->Value == 0)
+		if (DBO()->RateGroup->Archived->Value == ARCHIVE_STATUS_ACTIVE)
 		{
-			$arrUpdate = Array("Archived" => 0);
-			$updRates = new StatementUpdate("Rate", "Archived = 2 AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroup>)", $arrUpdate);
+			$arrUpdate = Array("Archived" => ARCHIVE_STATUS_ACTIVE);
+			$updRates = new StatementUpdate("Rate", "Archived = ". ARCHIVE_STATUS_DRAFT ." AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroup>)", $arrUpdate);
 			
 			if ($updRates->Execute($arrUpdate, Array("RateGroup" => DBO()->RateGroup->Id->Value)) === FALSE)
 			{
@@ -589,7 +589,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$arrRate['Id']			= $arrRecord['Id'];
 			$arrRate['Name']		= $arrRecord['Name'];
 			$arrRate['Description']	= $arrRecord['Description'];
-			$arrRate['Draft']		= ($arrRecord['Archived'] == 2);
+			$arrRate['Draft']		= ($arrRecord['Archived'] == ARCHIVE_STATUS_DRAFT);
 			$arrRate['Fleet']		= ($arrRecord['Fleet'] == 1);
 			
 			// Check if this Rate currently belongs to the specified RateGroup
@@ -641,7 +641,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$arrRateGroup['Name'] = DBO()->RateGroup->Name->Value;
 		$arrRateGroup['RecordType'] = DBO()->RateGroup->RecordType->Value;
 		$arrRateGroup['Fleet'] = DBO()->RateGroup->Fleet->Value ? 1 : 0;
-		$arrRateGroup['Draft'] = (DBO()->RateGroup->Archived->Value == 2) ? 1 : 0;
+		$arrRateGroup['Draft'] = (DBO()->RateGroup->Archived->Value == ARCHIVE_STATUS_DRAFT) ? 1 : 0;
 
 		$objRateGroup = Json()->encode($arrRateGroup);
 		

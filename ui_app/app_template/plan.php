@@ -258,7 +258,7 @@ class AppTemplatePlan extends ApplicationTemplate
 					}
 					
 					// Set the message appropriate to the action
-					if (DBO()->Plan->Archived->Value == 0)
+					if (DBO()->Plan->Archived->Value == ARCHIVE_STATUS_ACTIVE)
 					{
 						$strSuccessMsg = "The plan has been successfully saved";
 					}
@@ -494,12 +494,12 @@ class AppTemplatePlan extends ApplicationTemplate
 		if (SubmittedForm('AddPlan', 'Save as Draft'))
 		{
 			// Flag the plan as being a draft
-			DBO()->RatePlan->Archived = 2;
+			DBO()->RatePlan->Archived = ARCHIVE_STATUS_DRAFT;
 		}
 		else
 		{
 			// The plan is not being saved as a draft
-			DBO()->RatePlan->Archived = 0;
+			DBO()->RatePlan->Archived = ARCHIVE_STATUS_ACTIVE;
 		}
 		
 		// S2: Save the plan to the database
@@ -532,9 +532,9 @@ class AppTemplatePlan extends ApplicationTemplate
 		if ((SubmittedForm('AddPlan', 'Commit')) && (count($this->_arrRateGroups) > 0))
 		{
 			$strRateGroups 	= implode(',', $this->_arrRateGroups);
-			$arrUpdate		= Array("Archived" => 0);
-			$updRateGroups 	= new StatementUpdate("RateGroup", "Archived = 2 AND Id IN ($strRateGroups)", $arrUpdate);
-			$updRates 		= new StatementUpdate("Rate", "Archived = 2 AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup IN ($strRateGroups))", $arrUpdate);
+			$arrUpdate		= Array("Archived" => ARCHIVE_STATUS_ACTIVE);
+			$updRateGroups 	= new StatementUpdate("RateGroup", "Archived = ". ARCHIVE_STATUS_DRAFT ." AND Id IN ($strRateGroups)", $arrUpdate);
+			$updRates 		= new StatementUpdate("Rate", "Archived = ". ARCHIVE_STATUS_DRAFT ." AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup IN ($strRateGroups))", $arrUpdate);
 			
 			if ($updRateGroups->Execute($arrUpdate, NULL) === FALSE)
 			{
@@ -583,7 +583,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RecordType->Load();
 		
 		// Find all Rate Groups for this ServiceType that aren't archived (archived can equal, 0 (not archived), 1 (archived) or 2 (not yet committed/draft))
-		$strWhere = "ServiceType = <ServiceType> AND Archived != 1";
+		$strWhere = "ServiceType = <ServiceType> AND Archived != " + ARCHIVE_STATUS_ARCHIVED;
 		DBL()->RateGroup->Where->Set($strWhere, Array('ServiceType' => DBO()->RatePlan->ServiceType->Value));
 		DBL()->RateGroup->OrderBy("Description");
 		DBL()->RateGroup->Load();
