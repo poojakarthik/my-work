@@ -53,6 +53,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * Performs the logic for viewing a service
 	 * 
 	 * Performs the logic for viewing a service linked to an account
+	 * This will only ever be executed via an Ajax request
 	 *
 	 * @return		void
 	 * @method		View
@@ -64,6 +65,20 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		$bolIsAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		
+		// If Account.Id is not set, but Service.Id is, then find the account that the service belongs to
+		if ((!DBO()->Account->Id->Value) && (DBO()->Service->Id->Value))
+		{
+			if (!DBO()->Service->Load())
+			{
+				// The service could not be found
+				Ajax()->AddCommand("AlertReload", "The service with Id: ". DBO()->Service->Id->Value ." could not be found");
+				return TRUE;
+			}
+			
+			// We want to view all services belonging to the account that this service belongs to
+			DBO()->Account->Id = DBO()->Service->Account->Value;
+		}
 		
 		// Attempt to load the account
 		if (!DBO()->Account->Load())
@@ -88,17 +103,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Service->OrderBy("FNN");
 		DBL()->Service->Load();
 		
-		if (DBL()->Service->RecordCount() > 0)
-		{
-			DBO()->Note->NoteType = "All";
-			$this->LoadPage('services_view');
-			return TRUE;
-		}
-		else
-		{
-			Ajax()->AddCommand("Alert", "This account has no viewable services");
-			return TRUE;
-		}
+		$this->LoadPage('account_services');
+		return TRUE;
 	}	
 
 	//------------------------------------------------------------------------//
@@ -224,6 +230,7 @@ class AppTemplateAccount extends ApplicationTemplate
 						}
 						break;
 					case ACCOUNT_ARCHIVED:
+						//BUG! This query won't work because an Account can't have a status set to 2 different things at the same time
 						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
 						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
 						$strWhere .= " AND Status = '". SERVICE_DISCONNECTED . "'";
@@ -275,28 +282,30 @@ class AppTemplateAccount extends ApplicationTemplate
 	{	
 		AuthenticatedUser()->CheckAuth();
 		// Check permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC | PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
+		// Load the Account
+		if (!DBO()->Account->Load())
+		{
+			// The account could not be loaded
+			Ajax()->AddCommand("Alert", "ERROR: Account ". DBO()->Account->Id->Value ." could not be loaded");
+			return TRUE;
+		}
 
-		if (DBO()->Account->Id->Value)
+		// If the account is archived, make sure the user has permission to view it
+		if (DBO()->Account->Archived->Value == ACCOUNT_ARCHIVED && !AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
-			//Load account and service
-			DBO()->Account->Load();
-			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
-			if (DBL()->Service->RecordCount() == 0)
-			{
-				$strWhere = "Account = \"".DBO()->Account->Id->Value."\"";
-				$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
-				DBL()->Service->Where->SetString($strWhere);
-				DBL()->Service->Load();
-			}
-			// Load page
-			$this->LoadPage('account_view');
+			// The user does not have permission to view this account
+			Ajax()->AddCommand("Alert",	"ERROR: You do not have permission to view account ". DBO()->Account->Id->Value .
+										" because its status is set to " . GetConstantDescription(DBO()->Account->Archived->Value, "Account"));
+			return TRUE;
 		}
-		else
-		{
-			Ajax()->AddCommand("Alert", "ERROR: could not load the page as no Account Id was specified");
-			return TRUE;			
-		}
+
+		// Calculate the account balance
+		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+
+		// Load page
+		$this->LoadPage('account_view');
 	}	 
 	
 	//------------------------------------------------------------------------//
@@ -320,10 +329,7 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		AuthenticatedUser()->CheckAuth();
 		// Check perms
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-		}
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		if (DBO()->Account->Id->Value)
 		{
@@ -374,29 +380,18 @@ class AppTemplateAccount extends ApplicationTemplate
 				if (!DBO()->Account->Save())
 				{
 					// The account details could not be updated
-					Ajax()->AddCommand("AlertReload", "ERROR: The Account could not be updated.");
+					Ajax()->AddCommand("AlertReload", "ERROR: The Account could not be updated");
 					return TRUE;
 				}
 				else
 				{
 					// The account details were successfully updated
-					Ajax()->AddCommand("AlertReload", "The Account details have been successfully updated.");
+					Ajax()->AddCommand("AlertReload", "The Account details have been successfully updated");
 					return TRUE;
 				}
 			}
 		}
 		
-		// context menu
-		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
 		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
@@ -407,11 +402,34 @@ class AppTemplateAccount extends ApplicationTemplate
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ." could not be found";
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
 		
+		// If the account is archived, check that the user has permission to view it
+		if (DBO()->Account->Archived->Value == ACCOUNT_ARCHIVED && !AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+		{
+			// The user does not have permission to view this account
+			DBO()->Error->Message = "You do not have permission to view account: ". DBO()->Account->Id->value ." because its status = " . GetConstantDescription(DBO()->Account->Archived->Value, "Account");
+			$this->LoadPage('error');
+			return FALSE;
+		}
+
+		// context menu
+		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Employee_Console();
+		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+
+
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
 		DBL()->Invoice->Account = DBO()->Account->Id->Value;

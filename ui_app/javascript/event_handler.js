@@ -171,10 +171,18 @@ function VixenEventHandlerClass()
 		// Check that a list of event listeners actually exists
 		if (this._objEventListeners[strEventType] != undefined)
 		{
+			// Create the Event object to pass to the listener
+			var objEvent = {};
+			objEvent.Type = strEventType;
+			objEvent.Data = objEventData;
+			
 			// Execute each event listener in the list
 			for (var i=0; i < this._objEventListeners[strEventType].length; i++)
 			{
-				this._objEventListeners[strEventType][i](objEventData);
+				//TODO! I should probably check that the listener function still exists in memory
+				// although javascript has automatic garbage collection, and if this pointer points
+				// to the functoin, then it shouldn't be automatically freed.
+				this._objEventListeners[strEventType][i](objEvent);
 			}
 		}
 	}

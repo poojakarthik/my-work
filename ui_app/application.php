@@ -542,7 +542,7 @@ class Application
 			// ask user to login, then return to page
 			if ($this->_intMode == AJAX_MODE)
 			{
-				Ajax()->AddCommand("AlertReload", "You do not have the required user privileges to perform this action");
+				Ajax()->AddCommand("Alert", "You do not have the required user privileges to perform this action");
 				Ajax()->Reply();
 				die;
 			}

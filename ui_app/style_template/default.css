@@ -846,6 +846,15 @@
 		vertical-align:                bottom;
 	}
 	
+	/* This is used as a wrapper for the buttons if they are being floated
+	 * to the right
+	 */
+	 
+	.ButtonContainer
+	{
+		height: 		25px;
+	}
+	
 /**************************************************************************/
 /* SEPARATORS															  */
 /**************************************************************************/
@@ -1005,7 +1014,8 @@
 
 	.PopupMedium
 	{
-		width:				 440px;
+		/*width:				 440px;*/
+		width:		auto;
 	}
 	
 

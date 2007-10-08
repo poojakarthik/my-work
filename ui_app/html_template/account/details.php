@@ -163,10 +163,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		echo "</div>\n";
 
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 			$this->Button("Close", "Vixen.Popup.Close(this);");
 			$this->Button("Edit", $strEditAccountJsCode);
-		echo "</div>\n";
+		echo "</div></div>\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -193,8 +193,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 							//"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
 
 		//echo "<div id='AccountDetailDiv'>\n";
-		echo "<div class='NarrowForm'>\n";
 		$this->FormStart("EditAccount", "Account", "ValidateDetails");
+		echo "<div class='NarrowForm'>\n";
 		
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Account->Country->RenderHidden();
@@ -223,7 +223,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$arrState[SERVICE_STATE_TYPE_QLD]	= SERVICE_STATE_TYPE_QLD;
 		
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select name='Account.State' style='width:158px'>\n";
 	
@@ -239,7 +239,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		DBO()->Account->Country->RenderOutput();
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select name='Account.BillingMethod' style='width:158px'>\n";
 	
@@ -254,7 +254,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 		
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select name='Account.CustomerGroup' style='width:158px'>\n";
 	
@@ -277,7 +277,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 		// Render the Account Status Combobox
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select name='Account.Archived' style='width:152px'>\n";
 	
@@ -301,14 +301,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
-		echo "<div class='Right'>\n";
-		echo "<div class='SmallSeperator'></div>\n";
+		echo "</div>\n"; // NarrowForm
+
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", $strCancelJsCode);
 		$this->AjaxSubmit("Apply Changes");
-		$this->FormEnd();
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
-		echo "</div>\n";
+		$this->FormEnd();
 }
 
 	//------------------------------------------------------------------------//

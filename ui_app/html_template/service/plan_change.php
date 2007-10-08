@@ -75,17 +75,18 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 			//document.getElementById('32962').innerHTML='yellow';
 		";
 	
+		$this->FormStart("ChangePlan", "Service", "ChangePlan");
 		echo "<h2 class='plan'>Plan Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
-		$this->FormStart("ChangePlan", "Service", "ChangePlan");
-								
+		
 		$mixServicePlan = GetCurrentPlan(DBO()->Service->Id->Value)	;
 		if ($mixServicePlan === FALSE)
 		{
-			echo "this service does not currently have a plan\n";
+			echo "<span class='DefaultOutputSpan'>&nbsp;&nbsp;This service does not currently have a plan</span>\n";
 		}
 		else
 		{
+			// The service currently has a plan
 			DBO()->RatePlan->Id = $mixServicePlan;
 			DBO()->RatePlan->Load();
 			
@@ -107,38 +108,28 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Select Plan:</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select id='SelectPlanCombo' name='NewPlan.Id' style='width:220px'>\n";
+			echo "      <select id='SelectPlanCombo' name='NewPlan.Id'>\n";
 	
 			foreach (DBL()->RatePlan as $dboRatePlan)
 			{
-				if (DBO()->RatePlan->Id->Value == $dboRatePlan->Id->Value)
-				{
-					echo "<option value='".$dboRatePlan->Id->Value."' selected='selected'>".$dboRatePlan->Name->Value."</option>\n";
-				}
-				else
-				{
-					echo "<option value='".$dboRatePlan->Id->Value."'>".$dboRatePlan->Name->Value."</option>\n";
-				}
+				$strSelected = (DBO()->RatePlan->Id->Value == $dboRatePlan->Id->Value) ? "selected='selected'" : "";
+				echo "<option value='".$dboRatePlan->Id->Value."' $strSelected>". $dboRatePlan->Name->Value ."</option>\n";
 			}
 	
 			echo "      </select>\n";
 			echo "   </div>\n";
 			echo "</div>";
 		}
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		echo "   <input type='button' class='InputSubmit' value='View Plan Details' onClick=\"$strViewPlanButtonJavascript\"></input>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='SmallSeperator'></div>\n";		
-		echo "</div>\n";
+		echo "</div></div>\n";
+		
+		echo "</div>\n";  // NarrowForm
 
- 		echo "<div class='Right'>\n";
-
-		echo "<div class='SmallSeperator'></div>\n";
-
-		$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+ 		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$this->Button("Close", "Vixen.Popup.Close(this);");
 		$this->AjaxSubmit("Change Plan");
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
 		$this->FormEnd();
 		

@@ -79,8 +79,6 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		$this->LoadJavascript("services_view");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -258,7 +256,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		DBO()->Service->FNN->RenderOutput();
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
 		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";	
+		echo "<div class='SmallSeperator'></div>\n";	
 	}
 
 	//------------------------------------------------------------------------//

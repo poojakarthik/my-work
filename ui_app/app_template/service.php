@@ -555,7 +555,7 @@ class AppTemplateService extends ApplicationTemplate
 						// Define system generated note
 						$strDateTime	= OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 						$strUserName	= GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-						$strAction		= GetConstantDecription(DBO()->Service->Status->Value, "Service");
+						$strAction		= GetConstantDescription(DBO()->Service->Status->Value, "Service");
 						$strNote 		= "Service $strAction on $strDateTime by $strUserName";
 						
 						// Declare columns to update
@@ -587,14 +587,18 @@ class AppTemplateService extends ApplicationTemplate
 			// Build event object
 			// The contents of this object should be declared in the doc block of this method
 			$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
-			$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
-			$jsonEvent = Json()->encode($arrEvent);
+			if (DBO()->NewService->Id->Value)
+			{
+				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
+			}
+			//$jsonEvent = Json()->encode($arrEvent);
 			
 			// Build the javascript required to execute the event listener
-			$strJavascript = "Vixen.EventHandler.FireEvent('OnServiceUpdate', $jsonEvent);";
+			//$strJavascript = "Vixen.EventHandler.FireEvent('OnServiceUpdate', $jsonEvent);";
 			
 			// Fire the "OnServiceUpdate" event
-			Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
+			//Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
+			Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServiceUpdate", "EventData"=>$arrEvent));
 
 			Ajax()->AddCommand("Alert", "The service was successfully updated");
 			
@@ -871,7 +875,15 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Add a system note describing the change of plan
 			DBO()->Service->Load();
-			DBO()->RatePlan->Load();
+			if (DBO()->RatePlan->Id->Value)
+			{
+				DBO()->RatePlan->Load();
+			}
+			else
+			{
+				// The Service has not previously had a RatePlan
+				DBO()->RatePlan->Name = "undefined";
+			}
 			DBO()->NewPlan->SetTable("RatePlan");
 			DBO()->NewPlan->Load();
 			if (DBO()->Service->FNN->Value)
@@ -895,17 +907,11 @@ class AppTemplateService extends ApplicationTemplate
 			// Build event object
 			// The contents of this object should be declared in the doc block of this method
 			$arrEvent['Service']['Id']			= DBO()->Service->Id->Value;
-			$arrEvent['OldRatePlan']['Id']		= DBO()->RatePlan->Id->Value;
+			$arrEvent['OldRatePlan']['Id']		= (DBO()->RatePlan->Id->Value) ? DBO()->RatePlan->Id->Value : 0;
 			$arrEvent['NewRatePlan']['Id']		= DBO()->NewPlan->Id->Value;
 			$arrEvent['NewRatePlan']['Name']	= DBO()->NewPlan->Name->Value;
-			
-			$jsonEvent = Json()->encode($arrEvent);
-			
-			// Build the javascript required to execute the event listener
-			$strJavascript = "Vixen.EventHandler.FireEvent('OnServicePlanChange', $jsonEvent);";
-			
-			// Fire the "OnServiceUpdate" event
-			Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
+
+			Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServicePlanChange", "EventData"=>$arrEvent));
 
 			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
 
@@ -928,20 +934,10 @@ class AppTemplateService extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
-
-		// BreadCrumb menu
-		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
-		BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
-		BreadCrumb()->SetCurrentPage("Change Plan");
-
-		// Context menu
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
 		
 		$this->LoadPage('plan_change');
 
 		return TRUE;
-	
 	}
 	
 	//------------------------------------------------------------------------//
@@ -969,16 +965,12 @@ class AppTemplateService extends ApplicationTemplate
 	private function _ActivateService($intService, $strFNN, $strClosedOn)
 	{
 		// Check if the FNN is currently in use
-		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())");
-		if ($selFNN->Execute(Array('FNN' => $strFNN)))
+		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW()) AND Id != <Service>");
+		if ($selFNN->Execute(Array('FNN' => $strFNN, "Service" => $intService)))
 		{
-			//TODO! If only one record is returned, and its id == $intService, and the ClosedOn date is equal to NOW()
-			// then you should be able to activate the Service.  If the ClosedOn date is in the future, then you should be 
-			// able to activate the service also.
-		
 			// At least one record was returned, which means the FNN is currently in use by an active service
-			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.". 
-					"<br>The other service must be disconnected or archived before this service can be activated";
+			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.  ". 
+					"The other service must be disconnected or archived before this service can be activated";
 		}
 		
 		// Check if the FNN has been used by another de-activated service since $intService was de-activated

@@ -472,11 +472,10 @@ function VixenAjaxClass()
 				case "ExecuteJavascript":
 					// This probably isn't the safest way to do this. 
 					// This block of code may keep executing before the code in objInput[intKey].Data is finished executing, which may cause problems
-					//alert("About to execute some javascript");
-					//objInput[intKey].Service).innerHTML=objInput[intKey].Plan
-					//alert(">>>>"+objInput[intKey].Service);
 					eval(objInput[intKey].Data);
-					//alert("Finished executing the javascript");
+					break;
+				case "FireEvent":
+					Vixen.EventHandler.FireEvent(objInput[intKey].Data.Event, objInput[intKey].Data.EventData);
 					break;
 				default:
 					alert("Command: (default case)\nError: Don't know how to process command type '" + objInput[intKey].Type + "'");

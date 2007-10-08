@@ -225,10 +225,10 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "</div>\n"; // WideForm
 		
 		// create the buttons
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Adjustment");
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);

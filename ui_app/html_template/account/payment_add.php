@@ -190,11 +190,10 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "</div>\n";  //WideForm
 		
 		// create the buttons
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Make Payment");
-		echo "</div>\n";
-		
+		echo "</div></div>\n";	
 		
 		// give the AccountCombo initial focus
 		echo "<script type='text/javascript'>document.getElementById('AccountCombo').focus();</script>\n";
