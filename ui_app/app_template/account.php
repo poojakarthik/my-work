@@ -90,6 +90,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		if (DBL()->Service->RecordCount() > 0)
 		{
+			DBO()->Note->NoteType = "All";
 			$this->LoadPage('services_view');
 			return TRUE;
 		}
@@ -163,17 +164,9 @@ class AppTemplateAccount extends ApplicationTemplate
 			if (DBO()->Account->IsInvalid())
 			{
 				Ajax()->AddCommand("Alert", "ERROR: the form didnt pass initial validation, invalid fields are highlighted");
+				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 				return TRUE;			
 			}
-
-			/*if (Validate("Integer", DBO()->Account->ABN->Value))
-			if (!Validate("Integer", DBO()->Account->ABN->Value))
-			{
-				DBO()->Account->ABN->SetToInvalid();
-				Ajax()->AddCommand("Alert", "Could not save the account.  Not a valid ABN number");
-				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
-				return TRUE;
-			}*/
 
 			if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
 			{
@@ -196,9 +189,6 @@ class AppTemplateAccount extends ApplicationTemplate
 				//TODO! DBO()->Service is undefined
 				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 				
-				//need to set the closed on dates here!!!
-				
-
 				switch (DBO()->Account->Archived->Value)
 				{
 					case ACCOUNT_ACTIVE:

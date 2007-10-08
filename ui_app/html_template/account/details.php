@@ -146,7 +146,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 								//"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
 
 		echo "<div class='NarrowForm'>\n";
-			$this->FormStart("EditAccount", "Account", "Edit");
 			DBO()->Account->Id->RenderOutput();
 			DBO()->Account->Balance->RenderOutput();
 			DBO()->Account->BusinessName->RenderOutput();
@@ -165,10 +164,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 
 		echo "<div class='Right'>\n";
-			echo "<div class='SmallSeperator'></div>\n";
 			$this->Button("Close", "Vixen.Popup.Close(this);");
 			$this->Button("Edit", $strEditAccountJsCode);
-			$this->FormEnd();
 		echo "</div>\n";
 	}
 

@@ -1367,6 +1367,81 @@ class Validation
 	}
 	
 	//------------------------------------------------------------------------//
+	// IsValidABN
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidABN()
+	 *
+	 * Checks if a value is a valid ABN Number
+	 *
+	 * Checks if a value is a valid ABN Number
+	 *
+	 * @param	mix			$strValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function IsValidABN($strValue)
+	{
+		// 1. If the length is 0, it is invalid
+		if (strlen($strValue) == 0)
+		{
+			return FALSE;
+		}
+		
+		// 2. Check that the item has only Numbers and Spaces
+		if (ereg("/[^\d\s]/g", $strValue) != FALSE)
+		{
+			return FALSE;
+		}
+		
+		$strABN_without_spaces = ereg_replace(" ","", $strValue);
+		
+		// 3. Check there are 11 integers
+		if ((strlen($strABN_without_spaces) > 11) || (strlen($strABN_without_spaces) < 11))
+		{
+			return FALSE;
+		}
+			
+		// 4. ABN Calculation
+		// http://www.ato.gov.au/businesses/content.asp?doc=/content/13187.htm&pc=001/003/021/002/001&mnu=610&mfp=001/003&st=&cy=1
+		
+		//   1. Subtract 1 from the first (left) digit to give a new eleven digit number
+		//   2. Multiply each of the digits in this new number by its weighting factor
+		//   3. Sum the resulting 11 products
+		//   4. Divide the total by 89, noting the remainder
+		//   5. If the remainder is zero the number is valid
+		$arrWeights = Array(10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19);
+		
+		//   1. Subtract 1 from the first (left) digit to give a new eleven digit number
+		$intFirstDigitABN = substr($strABN_without_spaces, 0, 1) - 1;
+		$intNewABN =$intFirstDigitABN .= substr($strABN_without_spaces, 1);
+		
+		//   2. Multiply each of the digits in this new number by its weighting factor
+		//   3. Sum the resulting 11 products
+		$intNumberSum = 0;
+		
+		for ($i = 0; $i < 11; $i ++)
+		{
+			$intNumberSum += substr($intNewABN,$i,1) * $arrWeights[$i];
+		}
+		
+		//   4. Divide the total by 89, noting the remainder
+		//   5. If the remainder is zero the number is valid
+		
+		if ($intNumberSum % 89 != 0)
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+
+	
+	//------------------------------------------------------------------------//
 	// Integer
 	//------------------------------------------------------------------------//
 	/**
