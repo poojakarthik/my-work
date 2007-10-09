@@ -1440,6 +1440,41 @@ class Validation
 		}
 	}
 
+	//------------------------------------------------------------------------//
+	// IsValidPostcode
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidPostcode()
+	 *
+	 * Checks if a value is a valid Australian Postcode
+	 *
+	 * Checks if a value is a valid Australian Postcode
+	 *
+	 * @param	mix			$intValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function IsValidPostcode($intValue)
+	{
+		if (strlen($intValue) != 4)
+		{
+			return FALSE;
+		}
+		else
+		{
+			if ($this->Integer($intValue))
+			{
+				return TRUE;
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+	}
+
 	
 	//------------------------------------------------------------------------//
 	// Integer

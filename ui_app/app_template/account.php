@@ -128,7 +128,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		DBO()->Account->Load();
-		
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 	}
 
@@ -150,13 +149,14 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		if (SubmittedForm('EditAccount', 'Apply Changes'))
 		{
-			if (DBL()->Service->RecordCount() == 0)
-			{
-				$strWhere = "Account = \"".DBO()->Account->Id->Value."\"";
-				$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
-				DBL()->Service->Where->SetString($strWhere);
-				DBL()->Service->Load();
-			}
+			//if (DBL()->Service->RecordCount() == 0)
+			//{
+			
+			// Get Account
+			//$strWhere = "Account = <AccountId> AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
+			//DBO()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
+			//DBO()->Service->Load();
+			//}
 			
 			if (DBO()->Account->IsInvalid())
 			{
@@ -171,33 +171,27 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 
+				// SaveSystemNote($strNote, $dboService->AccountGroup->Value, $dboService->Account->Value, NULL, $dboService->Id->Value);
+			
+			
 				$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\non $strDateTime by $strUserName Services Affected Are :\n\n";
-				foreach (DBL()->Service as $dboService)
-				{
-					$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
-				}
-				SaveSystemNote($strNote, $dboService->AccountGroup->Value, $dboService->Account->Value, NULL, $dboService->Id->Value);
-			
-				$mixTodaysDate = GetCurrentDateForMySQL();
-				$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
-			
-
-				$strNote = "Account Status was changed on $strDateTime by $strUserName with status of ".DBO()->Account->Archived->Value;				
-				//TODO! DBO()->Service is undefined
-				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
-				
+		
 				switch (DBO()->Account->Archived->Value)
 				{
 					case ACCOUNT_ACTIVE:
 						break;
 					case ACCOUNT_CLOSED:
-						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
-						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
-						DBL()->Service->Where->SetString($strWhere);
+						$strWhere = "Account = <AccountId>";
+						$strWhere .= " AND Status = <ServiceStatus>";
+						$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
+						//$strWhere .= " AND ClosedOn = $strDateTime ClosedBy = $strUserName";
+						// AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
+						DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value, "ServiceStatus" => SERVICE_ACTIVE));
 						DBL()->Service->Load();
 						
 						foreach (DBL()->Service as $dboService)
 						{
+							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 							// set the Service Status to SERVICE_DISCONNECTED
 							$dboService->ClosedOn = $mixTodaysDate;
 							$dboService->ClosedBy = $intEmployeeId; 
@@ -206,13 +200,15 @@ class AppTemplateAccount extends ApplicationTemplate
 						}
 						break;
 					case ACCOUNT_DEBT_COLLECTION:
-						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
-						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
-						DBL()->Service->Where->SetString($strWhere);
+						$strWhere = "Account = <AccountId>";
+						$strWhere .= " AND Status = ". SERVICE_ACTIVE;
+						$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";						
+						DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
 						DBL()->Service->Load();
 						
 						foreach (DBL()->Service as $dboService)
 						{
+							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 							// set the Service Status to SERVICE_DISCONNECTED
 							$dboService->ClosedOn = $mixTodaysDate;
 							$dboService->ClosedBy = $intEmployeeId;							
@@ -221,15 +217,16 @@ class AppTemplateAccount extends ApplicationTemplate
 						}
 						break;
 					case ACCOUNT_ARCHIVED:
-						//BUG! This query won't work because an Account can't have a status set to 2 different things at the same time
-						$strWhere = "Account = '". DBO()->Service->Account->Value ."'";
-						$strWhere .= " AND Status = '". SERVICE_ACTIVE . "'";
-						$strWhere .= " AND Status = '". SERVICE_DISCONNECTED . "'";
-						DBL()->Service->Where->SetString($strWhere);
+						$strWhere = "Account = <AccountId>";
+						$strWhere .= " AND (Status = " . SERVICE_ACTIVE;
+						$strWhere .= " OR Status = " . SERVICE_DISCONNECTED . ")";
+						$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";						
+						DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
 						DBL()->Service->Load();
 						
 						foreach (DBL()->Service as $dboService)
 						{
+							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 							// set the Service Status to SERVICE_ARCHIVED
 							$dboService->ClosedOn = $mixTodaysDate;
 							$dboService->ClosedBy = $intEmployeeId;							
@@ -238,6 +235,7 @@ class AppTemplateAccount extends ApplicationTemplate
 						}
 						break;
 				}
+				SaveSystemNote($strNote, $dboService->AccountGroup->Value, $dboService->Account->Value, NULL, $dboService->Id->Value);
 			}
 	
 			DBO()->Account->SetColumns("BusinessName,TradingName,ABN,ACN,Address1,Address2,Suburb,Postcode,State,BillingMethod,CustomerGroup,DisableLatePayment,Archived,DisableDDR");

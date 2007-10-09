@@ -131,15 +131,18 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 								"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
 								"Vixen.Ajax.CallAppTemplate(\"Account\", \"EditDetails\", objObjects);\n";
 
-								//"objObjects.Service = {};\n".
-								//"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
-
 		echo "<div class='NarrowForm'>\n";
 			DBO()->Account->Id->RenderOutput();
 			DBO()->Account->Balance->RenderOutput();
 			DBO()->Account->BusinessName->RenderOutput();
 			DBO()->Account->ABN->RenderOutput();
 			DBO()->Account->Address1->RenderOutput();
+			
+			if (DBO()->Account->Address2->Value != "")
+			{
+				DBO()->Account->Address2->RenderOutput();
+			}
+			
 			DBO()->Account->Suburb->RenderOutput();
 			DBO()->Account->Postcode->RenderOutput();
 			DBO()->Account->State->RenderOutput();
@@ -186,6 +189,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='NarrowForm'>\n";
 		
 		DBO()->Account->Id->RenderHidden();
+		DBO()->Account->AccountGroup->RenderHidden();
 		DBO()->Account->Country->RenderHidden();
 		DBO()->Account->BillingType->RenderHidden();		
 		DBO()->Account->CurrentStatus = DBO()->Account->Archived->Value;
@@ -261,7 +265,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 		DBO()->Account->DisableDDR->RenderInput();
 		DBO()->Account->DisableLatePayment->RenderInput();
-		
+
+		// Disable the "Never Charge a late payment fee" radio option
+		echo "<script type='text/javascript'>document.getElementById('Account.DisableLatePayment_1').disabled = true;</script>";
+
 		echo "<div class='Seperator'></div>\n";		
 
 		// Render the Account Status Combobox
