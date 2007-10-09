@@ -282,7 +282,7 @@
 	{
 		border:				solid 1px #000000;
 		padding-left:		3px;
-		padding-right:		3px;
+		padding-right:		0px;
 	}
 	
 	
@@ -334,7 +334,7 @@
 	{
 		border:				solid 1px #000000;
 		padding-left:		3px;
-		padding-right:		3px;
+		padding-right:		0px;
 	}
 	
 	.DefaultInputSpan,

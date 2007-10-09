@@ -218,8 +218,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				echo "</div>\n";
 				
 				// create the buttons
-				echo "<div class='SmallSeperator'></div>\n";
-				echo "<div class='Right'>\n";
+				echo "<div class='ButtonContainer'><div class='Right'>\n";
 				
 				// The old method, before confirmation boxes were implemented
 				$this->Button("Cancel", "Vixen.Popup.Close(this);");
@@ -233,8 +232,8 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				
 				// Javascript methods Vixen.RateGroupAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
 				echo "<input type='hidden' id='AddRateGroupPopupId' value='{$this->_objAjax->strId}'></input>\n";
+				echo "</div></div>\n"; // Buttons
 				
-				echo "</div>\n";
 				$this->FormEnd();
 				
 				break;

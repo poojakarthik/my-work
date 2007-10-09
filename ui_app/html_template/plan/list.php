@@ -13,7 +13,7 @@
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateAccountDetails
+ * @class	HtmlTemplatePlanList
  * @extends	HtmlTemplate
  */
 class HtmlTemplatePlanList extends HtmlTemplate
@@ -45,12 +45,14 @@ class HtmlTemplatePlanList extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$_strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
@@ -169,70 +171,102 @@ class HtmlTemplatePlanList extends HtmlTemplate
 	 */
 	function RenderDefault()
 	{
-		echo "<h2 class='Plan'>Available Plans</h2>\n";
-		echo "<br>";
-
-		// Declare the start of the form		
-		$this->FormStart('RatePlanFilter', 'Plan', 'View', $_POST);
-		DBO()->RatePlan->Name->RenderInput();
-		
+		// RatePlan filtering functionality is not currently implemented
 		// Set up Payment Type combobox
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Service Type:</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='RatePlan.ServiceType' name='RatePlan.ServiceType'>\n";
-		echo "<option id='RatePlan.All' value='All' $strSelected>All</option>\n";// so we have an 'All' option
 		
-		// Extract service types from the defintions and add them to the combobox
+		// Add the Filter Combobox
+		$strOnFilterChange = "window.location=\"vixen.php/Plan/AvailablePlans/?RatePlan.ServiceType=\" + this.value;";
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>Filter :</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select id='FilterCombo' onchange='$strOnFilterChange'>\n";
+		// Add the blank option to the Filter combobox
+		$strSelected = (!DBO()->RatePlan->ServiceType->Value) ? "selected='selected'" : "";
+		echo "         <option value='0' $strSelected>All Rate Plans</option>";
+		
+		// Add each ServiceType to the Filter combobox
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intServiceType=>$arrServiceType)
 		{
-			$strDescription = $arrServiceType['Description'];		
-			echo "<option id='RatePlan.$intServiceType' value='$intServiceType' $strSelected>$strDescription</option>\n";
+			$strDescription = $arrServiceType['Description'];
+			$strSelected = (DBO()->RatePlan->ServiceType->Value == $intServiceType) ? "selected='selected'" : "";
+			echo "         <option value='$intServiceType' $strSelected>$strDescription</option>\n";
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
+		echo "</div>\n";		
 
-		$this->Submit("Filter");
-		$this->FormEnd();
-		
-		// Set up table
-		echo "<div class='Seperator'></div>\n";
-		
-		Table()->PlanTable->SetHeader("Name", "Service Type", "&nbsp;");
-		Table()->PlanTable->SetWidth("57%", "37%", "6%");
-		Table()->PlanTable->SetAlignment("Left", "Left", "Center");
+		// Render the "Add New Plan" button
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$this->Button("Add New Plan", "window.location=\"" . Href()->AddRatePlan(NULL, Href()->AvailablePlans(DBO()->RatePlan->ServiceType->Value)) . "\"");
+		echo "</div></div>\n";
+		echo "<div class='SmallSeperator'></div>";
 
-		foreach (DBL()->RatePlan as $dboPlan)
+		Table()->PlanTable->SetHeader("Type", "Name", "Description", "Shared", "Min Monthly", "Charge Cap", "Usage Cap", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetWidth("8%", "20%", "8%", "8%", "8%", "8%", "8%", "8%", "8%", "8%", "4%", "4%");
+		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Right", "Right", "Right", "Left", "Left", "Left", "Center", "Center");
+
+		foreach (DBL()->RatePlan as $dboRatePlan)
 		{
-			//build Rates Summary link
-			$strRatesHref = Href()->RatesList($dboPlan->Id->Value);
-			$strRatesLabel = "<span class='DefaultOutputSpan Default'><a href='$strRatesHref'><img src='img/template/charge.png' title='Rates Summary' /></a></span>";
+			// Build the Edit Rate Plan link, if the RatePlan is currently a draft
+			$strEditCell = "&nbsp;";
+			if ($dboRatePlan->Archived->Value == ARCHIVE_STATUS_DRAFT)
+			{
+				$strEditPlanLink	= Href()->EditRatePlan($dboRatePlan->Id->Value, Href()->AvailablePlans(DBO()->RatePlan->ServiceType->Value));
+				$strEditCell		= "<a href='$strEditPlanLink' title='Edit'><span class='DefaultOutputSpan'>Edit</span></a>";
+			}
 			
-			Table()->PlanTable->AddRow(	$dboPlan->Name->AsValue(), 
-										$dboPlan->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
-										$strRatesLabel);									
-		
-			// Set the drop down detail
-			$strDetailHtml = "<div class='VixenTableDetail'>\n";
-			$strDetailHtml .= $dboPlan->Description->AsOutput();
-			$strDetailHtml .= $dboPlan->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType'), RENDER_OUTPUT);
-			$strDetailHtml .= $dboPlan->ChargeCap->AsOutput();
-			$strDetailHtml .= $dboPlan->UsageCap->AsOutput();
-			$strDetailHtml .= $dboPlan->MinMonthly->AsOutput();
-			$strDetailHtml .= $dboPlan->Archived->AsOutput();
-			$strDetailHtml .= $dboPlan->Shared->AsOutput();
-			$strDetailHtml .= "</div>\n";
+			// Build the "Add Rate Plan Based On Existing" link
+			$strAddPlanLink	= Href()->AddRatePlan($dboRatePlan->Id->Value, Href()->AvailablePlans(DBO()->RatePlan->ServiceType->Value));
+			$strAddCell = "<a href='$strAddPlanLink' title='Create a new plan based on this one'><span class='DefaultOutputSpan'>New</span></a>";
 			
-			Table()->PlanTable->SetDetail($strDetailHtml);
+			// Workout the status of the Rate Plan
+			// Note these constants will eventually be declared in vixen/framework/definitions and you will be able to use the GetConstantDescription() function
+			switch ($dboRatePlan->Archived->Value)
+			{
+				case ARCHIVE_STATUS_ACTIVE:
+					$strStatusCell = "<span class='DefaultOutputSpan'>Active</span>";
+					break;
+				case ARCHIVE_STATUS_DRAFT:
+					$strStatusCell = "<span class='DefaultOutputSpan'>Draft</span>";
+					break;
+				default:
+					$strStatusCell = "Value = " . $dboRatePlan->Archived->Value;
+			}
+			
+			// Format the RatePlan->Shared boolean
+			$strSharedCell = ($dboRatePlan->Shared->Value) ? "Yes" : "No";
+			$strSharedCell = "<span class='DefaultOutputSpan'>$strSharedCell</span>";
+			
+			// Add the Rate Plan to the VixenTable
+			Table()->PlanTable->AddRow(	$dboRatePlan->ServiceType->AsCallBack("GetConstantDescription", Array('ServiceType')),
+										$dboRatePlan->Name->AsValue(),
+										$dboRatePlan->Description->AsValue(),
+										$strSharedCell,
+										$dboRatePlan->MinMonthly->AsValue(),
+										$dboRatePlan->ChargeCap->AsValue(),
+										$dboRatePlan->UsageCap->AsValue(),
+										$dboRatePlan->CarrierFullService->AsCallBack("GetConstantDescription", Array('Carrier')),
+										$dboRatePlan->CarrierPreselection->AsCallBack("GetConstantDescription", Array('Carrier')),
+										$strStatusCell,
+										$strAddCell,
+										$strEditCell);									
 		}
 		
-		Table()->PlanTable->RowHighlighting = TRUE;
+		// Check if the table is empty
+		if (Table()->PlanTable->RowCount() == 0)
+		{
+			// There are no RatePlans to stick in this table
+			Table()->PlanTable->AddRow("<span class='DefaultOutputSpan Default'>No Rate Plans to display</span>");
+			Table()->PlanTable->SetRowAlignment("left");
+			Table()->PlanTable->SetRowColumnSpan(12);
+		}
+		
 		Table()->PlanTable->Render();
+		
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$this->Button("Add New Plan", "window.location=\"" . Href()->AddRatePlan(NULL, Href()->AvailablePlans()) . "\"");
+		echo "</div></div>\n";
 	}
-
-
 }
 
 ?>

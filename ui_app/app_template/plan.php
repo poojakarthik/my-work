@@ -61,59 +61,58 @@ class AppTemplatePlan extends ApplicationTemplate
 	 */
 	private $_arrRateGroups = Array();
 
-	function View()
+	//------------------------------------------------------------------------//
+	// AvailablePlans
+	//------------------------------------------------------------------------//
+	/**
+	 * AvailablePlans()
+	 *
+	 * Performs the logic for the AvailablePlans webpage
+	 * 
+	 * Performs the logic for the AvailablePlans webpage
+	 * Initial DBObjects that can be set through GET or POST variables are:
+	 *		DBO()->RatePlan->ServiceType	If you want to restrict the Plans listed, to those of the specified ServiceType only
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function AvailablePlans()
 	{
-		if (SubmittedForm("RatePlanFilter"))
-		{
-			if (DBO()->RatePlan->Name->Value != NULL)
-			{
-				DBL()->RatePlan->Name = DBO()->RatePlan->Name->Value;
-			}
-			if (DBO()->RatePlan->ServiceType->Value != "All")
-			{
-				DBL()->RatePlan->ServiceType = DBO()->RatePlan->ServiceType->Value;
-			}
-		}
-		
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		// context menu
-		//TODO! define what goes in the context menu
-		/*ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);*/
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
-		// Console and logout should appear by default, no?
-		ContextMenu()->Console();
+		// context menu
+		ContextMenu()->Employee_Console();
+		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
 		
 		// breadcrumb menu
-		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
+		BreadCrumb()->AdminConsole();
+		BreadCrumb()->SetCurrentPage("Available Plans");
 		
+		// Retrieve all RatePlans that aren't currently archived
 		
-		// Setup all DBO and DBL objects required for the page
-		//TODO!
-		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
-		/*if (!DBO()->Account->Load())
+		// Check if a filter has been specified
+		if (DBO()->RatePlan->ServiceType->Value)
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
-			$this->LoadPage('error');
-			return FALSE;
-		}*/
+			// A filter has been specified.  Only retrieve records of the desired ServiceType
+			$strWhere = "Archived != <Archived> AND ServiceType = <ServiceType>";
+		}
+		else
+		{
+			// A filter has not been specified
+			$strWhere = "Archived != <Archived>";
+		}
 		
-		// the DBList storing the invoices should be ordered so that the most recent is first
-		// same with the payments list
+		DBL()->RatePlan->Where->Set($strWhere, Array("Archived" => ARCHIVE_STATUS_ARCHIVED, "ServiceType"=>DBO()->RatePlan->ServiceType->Value));
+		DBL()->RatePlan->OrderBy("ServiceType, Name");
 		DBL()->RatePlan->Load();
 	
 		$this->LoadPage('plans_list');
 
 		return TRUE;
-	
 	}
 	
 	function RateList()
@@ -201,11 +200,13 @@ class AppTemplatePlan extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		// context menu
+		ContextMenu()->Employee_Console();
 		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
 		
 		// breadcrumb menu
 		BreadCrumb()->Admin_Console();
+		BReadCrumb()->AvailablePlans();
 		BreadCrumb()->SetCurrentPage("Add Rate Plan");
 		
 		// Handle form submittion
@@ -280,7 +281,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			if (!DBO()->RatePlan->Load())
 			{
 				// Could not load the RatePlan
-				DBO()->Error->Message = "The RatePlan with id:". DBO()->RatePlan->Id->value ." could not be found";
+				DBO()->Error->Message = "The RatePlan with id: ". DBO()->RatePlan->Id->value ." could not be found";
 				$this->LoadPage('error');
 				return FALSE;
 			}
@@ -298,7 +299,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			if (!DBO()->RatePlan->Load())
 			{
 				// Could not load the RatePlan
-				DBO()->Error->Message = "The RatePlan with id:". DBO()->RatePlan->Id->value ." could not be found";
+				DBO()->Error->Message = "The RatePlan with id: ". DBO()->RatePlan->Id->value ." could not be found";
 				$this->LoadPage('error');
 				return FALSE;
 			}
@@ -307,7 +308,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			if (DBO()->RatePlan->Archived->Value != ARCHIVE_STATUS_DRAFT)
 			{
 				// Can't edit the Rate Plan
-				DBO()->Error->Message = "The RatePlan with id:". DBO()->RatePlan->Id->value ." and Name \"". DBO()->RatePlan->Name->Value ."\" is not a draft and therefore cannot be edited";
+				DBO()->Error->Message = "The RatePlan with id: ". DBO()->RatePlan->Id->value ." and Name \"". DBO()->RatePlan->Name->Value ."\" is not a draft and therefore cannot be edited";
 				$this->LoadPage('error');
 				return FALSE;
 			}

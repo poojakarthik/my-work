@@ -169,7 +169,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		// If the account has no services then output an appropriate message in the table
 		if (Table()->ServiceTable->RowCount() == 0)
 		{
-			// There are no payments to stick in this table
+			// There are no services to stick in this table
 			Table()->ServiceTable->AddRow("<span class='DefaultOutputSpan Default'>No services to display</span>");
 			Table()->ServiceTable->SetRowAlignment("left");
 			Table()->ServiceTable->SetRowColumnSpan(5);

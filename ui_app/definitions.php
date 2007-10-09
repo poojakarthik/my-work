@@ -173,6 +173,7 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "
 define('END_OF_TIME', 	'9999-12-31 23:59:59');
 
 // RatePlan, RateGroup and Rate archive status's
+// This should be changed to RATE_STATUS_BLAH and put in vixen/framework/definitions.php
 define("ARCHIVE_STATUS_ACTIVE"			, 0);
 define("ARCHIVE_STATUS_ARCHIVED"		, 1);
 define("ARCHIVE_STATUS_DRAFT"			, 2);

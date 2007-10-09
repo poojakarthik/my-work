@@ -397,16 +397,100 @@ class MenuItems
 	 * Compiles the Href to be executed when the AddRatePlan menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the AddRatePlan menu item is clicked
-	 * This will not compile a bread crumb label because the AddRatePlan functionality is in a popup
 	 * 
+	 * @param	int		$intBasePlanId			optional, Id of the RatePlan which the new one will be based on
+	 * @param	string	$strCallingPageHref		optional, href of the page that calls the AddRatePlan page.
+	 *											exiting the AddRatePlan page will relocate the user to this page
+	 *
 	 * @return	string				Href to be executed when the AddRatePlan menu item is clicked
 	 *
 	 * @method
 	 */
-	function AddRatePlan()
+	function AddRatePlan($intBasePlanId = NULL, $strCallingPageHref = NULL)
 	{
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RatePlanPopup\", \"large\", \"Add New Rate Plan\", \"Plan\", \"Add\", \"\", \"modeless\")";
+		$this->strLabel = "Add Plan";
+	
+		// Setup data to send as GET variables
+		$strBasePlan 	= ($intBasePlanId !== NULL) ? "BaseRatePlan.Id=$intBasePlanId" : "";
+		$strCallingPage = ($strCallingPageHref !== NULL) ? "CallingPage.Href=$strCallingPageHref" : "";
+
+		if ($intBasePlanId && $strCallingPageHref)
+		{
+			// Both parameters are set
+			$strGetVariables = "?$strBasePlan&$strCallingPage";
+		}
+		elseif ($intBasePlanId || $strCallingPageHref)
+		{
+			// Only one of the parameters is specified
+			$strGetVariables = "?" . $strBasePlan . $strCallingPage;
+		}
+		else
+		{
+			// No parameters have been specified
+			$strGetVariables = "";
+		}
+
+		return "vixen.php/Plan/Add/$strGetVariables";
 	}
+	
+	//------------------------------------------------------------------------//
+	// EditRatePlan
+	//------------------------------------------------------------------------//
+	/**
+	 * EditRatePlan()
+	 *
+	 * Compiles the Href to be executed when the EditRatePlan menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the EditRatePlan menu item is clicked
+	 * 
+	 * @param	int		$intPlanId				Id of the RatePlan to edit
+	 * @param	string	$strCallingPageHref		optional, href of the page that calls the EditRatePlan page.
+	 *											exiting the EditRatePlan page will relocate the user to this page
+	 *
+	 * @return	string				Href to be executed when the AddRatePlan menu item is clicked
+	 *
+	 * @method
+	 */
+	function EditRatePlan($intPlanId, $strCallingPageHref = NULL)
+	{
+		$this->strLabel = "Edit Plan";
+	
+		// Setup data to send as GET variables
+		$strGetVariables = "RatePlan.Id=$intPlanId";
+		if ($strCallingPageHref !== NULL)
+		{
+			$strGetVariables .= "&CallingPage.Href=$strCallingPageHref";
+		}
+
+		return "vixen.php/Plan/Add/?$strGetVariables";
+	}
+	
+	//------------------------------------------------------------------------//
+	// AvailablePlans
+	//------------------------------------------------------------------------//
+	/**
+	 * AvailablePlans()
+	 *
+	 * Compiles the Href to be executed when the AvailablePlans menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AvailablePlans menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intServiceType	optional, ServiceType used to filter the list of Rate Plans
+	 * @return	string					Href to be executed when the AvailablePlans menu item is clicked
+	 *
+	 * @method
+	 */
+	function AvailablePlans($intServiceType = 0)
+	{
+		$this->strLabel = "Available Plans";
+		
+		// Set up the filter if intServiceType was passed
+		$strFilter = ($intServiceType) ? "?RatePlan.ServiceType=$intServiceType" : "";
+		
+		return "vixen.php/Plan/AvailablePlans/$strFilter";
+	}
+	
 
 	//------------------------------------------------------------------------//
 	// AddAssociatedAccount
