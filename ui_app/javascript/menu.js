@@ -98,6 +98,7 @@ function VixenMenuClass(objMenu)
 	
 	this.RenderSubMenu = function(elmMenuItem)
 	{
+		
 		var strKey;
 		var objNode;
 		var objTextNode;
@@ -118,12 +119,17 @@ function VixenMenuClass(objMenu)
 		//Create and attach the container div for the rest of the submenu to sit in
 		var objContainer = document.createElement('div');
 		objContainer.setAttribute('Id', 'VixenMenu__' + elmMenuItem.level);
+		objContainer.style['top'] = this.RemovePx(elmMenuItem.style['top']);
+		objContainer.style['left'] = this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
+		objContainer.style['position'] = 'absolute';
+		objContainer.style['overflow'] = 'visible';
+
 		elmMenuItem.parentNode.appendChild(objContainer);
 		var elmContainer = document.getElementById('VixenMenu__' + elmMenuItem.level);
-		elmContainer.style['top'] = this.RemovePx(elmMenuItem.style['top']);
-		elmContainer.style['left'] = this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
-		elmContainer.style['position'] = 'absolute';
-		elmContainer.style['overflow'] = 'visible';
+		//elmContainer.style['top'] = this.RemovePx(elmMenuItem.style['top']);
+		//elmContainer.style['left'] = this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
+		//elmContainer.style['position'] = 'absolute';
+		//elmContainer.style['overflow'] = 'visible';
 
 		
 		//Render the menu

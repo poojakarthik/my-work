@@ -94,11 +94,11 @@ function VixenPopupClass()
 		// set the location to relocate to, when the popup is closed.
 		// If null, then a page reload is not performed
 		// currently this only works when strModal == autohide 
+
 		this.strLocationOnClose = strLocationOnClose;
 		
 		// If the title isn't specified then use the application name
 		strTitle = (strTitle == null) ? VIXEN_APPLICATION_NAME : strTitle;
-	
 		// Try to find a previous popup
 		elmExists = document.getElementById('VixenPopup__' + strId);
 		if (elmExists)
@@ -292,11 +292,11 @@ function VixenPopupClass()
 		}
 		
 		// Add the handler for dragging the popup around
-		if (strModal != "modal")
-		{
+		// if (strModal != "modal")
+		// {
     		mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
     		mydragObj.addEventListener('mousedown', OpenHandler, false);
-		}
+		// }
 		
 		// Display the popup
 		elmPopup.style.visibility = 'visible';
