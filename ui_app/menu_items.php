@@ -89,29 +89,6 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
-	// ViewAccount
-	//------------------------------------------------------------------------//
-	/**
-	 * ViewAccount()
-	 *
-	 * Compiles the Href to be executed when the ViewAccount menu item is clicked
-	 *
-	 * Compiles the Href to be executed when the ViewAccount menu item is clicked
-	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
-	 * @param	int		$intId		id of the account to view
-	 *
-	 * @return	string				Href to be executed when the ViewAccount menu item is clicked
-	 *
-	 * @method
-	 */
-	//function ViewAccount($intId)
-	//{
-	//	$this->strLabel	= "Account: $intId";
-	//	return "account_view.php?Id=$intId";
-	//}
-
-	//------------------------------------------------------------------------//
 	// EmployeeConsole
 	//------------------------------------------------------------------------//
 	/**
@@ -131,8 +108,6 @@ class MenuItems
 		$this->strLabel	= "Console";
 		return "console.php";
 	}
-
-	
 
 	//------------------------------------------------------------------------//
 	// EditContact
@@ -185,6 +160,34 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditServicePopupId\", \"medium\", null, \"Service\", \"Edit\", $strJsonCode)";	
 	}	
 
+	//------------------------------------------------------------------------//
+	// AddService
+	//------------------------------------------------------------------------//
+	/**
+	 * AddService()
+	 *
+	 * Compiles the Href to be executed when the AddService menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddService menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
+	 * @param	int		$intId						id of the Account, that the service will be associated with
+	 *
+	 * @return	string								Href to be executed when the AddService menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddService($intId)
+	{
+		// Setup data to send
+		$arrData['Objects']['Account']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", null, \"Service\", \"Add\", $strJsonCode)";	
+	}
+	
 	//------------------------------------------------------------------------//
 	// ChangePlan
 	//------------------------------------------------------------------------//

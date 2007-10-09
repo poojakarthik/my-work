@@ -165,7 +165,8 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 											$strPlanCell, $strStatusCell, $strActionsCell);									
 					
 		}
-		// If the account has not services then output an appropriate message in the table
+		
+		// If the account has no services then output an appropriate message in the table
 		if (Table()->ServiceTable->RowCount() == 0)
 		{
 			// There are no payments to stick in this table
@@ -183,6 +184,9 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		echo "</div></div>\n";
 
 		echo "</div>\n";  //PopupLarge
+		
+		// Initialise the javascript object that facilitates this popup (Vixen.AccountServices)
+		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise('{$this->_objAjax->strId}')</script>";
 	}
 }
 

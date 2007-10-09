@@ -117,7 +117,7 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select name='Service.CostCentre' style='width:158px'>\n";
+			echo "      <select name='Service.CostCentre' >\n";
 			// If a CostCentre has not been selected then DBO()->Service->CostCentre->Value == NULL or 0
 			$strSelected = (!DBO()->Service->CostCentre->Value) ? "selected='selected'" : "";
 			echo "			<option value='0' $strSelected>&nbsp;</option>\n";
@@ -154,24 +154,10 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		echo "</div>\n";
 		
 		// Render the buttons
-		echo "<div class='Right'>\n";
-		// workout where to go if cancel is triggered
-		if (DBO()->Account->Id->IsSet)
-		{
-			$strCancelAction = Href()->InvoicesAndPayments(DBO()->Account->Id->Value);
-		}
-		elseif (DBO()->Service->Id->IsSet)
-		{
-			$strCancelAction = Href()->ViewService(DBO()->Service->Id-Value);
-		}
-		else
-		{
-			$strCancelAction = "javascript: window.history.go(-1)";
-		}
-		
-		$this->Button("Cancel", $strCancelAction);
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(this)");
 		$this->AjaxSubmit("Save");
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
 		$this->FormEnd();
 	}
@@ -188,30 +174,10 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		// Display all the address details required to setup a landline
 		//TODO! Joel You were last working on this on Friday 17th, August.  It was the last thing you were working on before you packed up the springhill office
 		DBO()->ServiceAddress->Residential->RenderInput();
+		// etc
 		echo "</div>\n"; // NarrowForm
 		echo "</div>\n"; // LandlineDetailDiv
 		
-		// Inbound 1300/1800 specific details
-		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
-		{
-			// show extra inbound detail div
-			echo "<div id='InboundDetailDiv'>\n";
-		}
-		else
-		{
-			// hide extra inbound detail div
-			echo "<div id='InboundDetailDiv' style='display:none;'>\n";
-		}
-		// handle extra inbound phone details
-		echo "<h2 class='service'>Inbound Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
-		DBO()->ServiceInboundDetail->Id->RenderHidden();
-		DBO()->ServiceInboundDetail->AnswerPoint->RenderHidden();
-		DBO()->ServiceInboundDetail->Configuration->RenderHidden();
-		
-		DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
-		DBO()->ServiceInboundDetail->Configuration->RenderInput();
-		echo "</div>\n"; // NarrowForm
 	}
 	
 	function _RenderMobileDetails()
@@ -252,7 +218,17 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 	
 	function _RenderInboundDetails()
 	{
-		//TODO! Check out the Service Edit page
+		// Inbound 1300/1800 specific details
+		echo "<div class='SmallSeperator'></div>\n";
+		echo "<h2 class='service'>Inbound Details</h2>\n";
+		echo "<div class='NarrowForm'>\n";
+		DBO()->ServiceInboundDetail->Id->RenderHidden();
+		DBO()->ServiceInboundDetail->AnswerPoint->RenderHidden();
+		DBO()->ServiceInboundDetail->Configuration->RenderHidden();
+		
+		DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
+		DBO()->ServiceInboundDetail->Configuration->RenderInput();
+		echo "</div>\n"; // NarrowForm
 	}
 }
 

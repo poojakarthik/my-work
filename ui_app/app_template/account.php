@@ -129,15 +129,6 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		DBO()->Account->Load();
 		
-		/*if (DBO()->Service->Id->Value == NULL)
-		{
-			//may need to add date time stamp to get most recent record!
-			$strWhere = "Account = \"".DBO()->Account->Id->Value."\"";
-			DBO()->Service->Where->SetString($strWhere);
-			DBO()->Service->Load();
-			Ajax()->AddCommand("Alert", "entered from editdetails-->>>>".DBO()->Service->Id->Value);
-		}*/
-		
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 	}
 
@@ -169,7 +160,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			if (DBO()->Account->IsInvalid())
 			{
-				Ajax()->AddCommand("Alert", "ERROR: the form didnt pass initial validation, invalid fields are highlighted");
+				Ajax()->AddCommand("Alert", "ERROR: Invalid fields are highlighted");
 				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 				return TRUE;			
 			}
@@ -280,8 +271,8 @@ class AppTemplateAccount extends ApplicationTemplate
 	 */
 	function ViewDetails()
 	{	
-		AuthenticatedUser()->CheckAuth();
 		// Check permissions
+		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		// Load the Account
@@ -327,13 +318,13 @@ class AppTemplateAccount extends ApplicationTemplate
 	{	
 		$pagePerms = PERMISSION_ADMIN;
 
-		AuthenticatedUser()->CheckAuth();
 		// Check perms
+		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		if (DBO()->Account->Id->Value)
 		{
-			//Load account and service
+			//Load account
 			DBO()->Account->Load();
 			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");
@@ -341,7 +332,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		else
 		{
 			Ajax()->AddCommand("Alert", "ERROR: could not load the page as no Account Id was specified");
-			return TRUE;			
 		}
 	}
 	
@@ -523,8 +513,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
-
-		
 
 		//Check what sort of record is being deleted
 		switch (DBO()->DeleteRecord->RecordType->Value)

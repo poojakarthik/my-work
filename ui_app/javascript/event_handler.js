@@ -167,6 +167,7 @@ function VixenEventHandlerClass()
 	this.FireEvent = function(strEventType, objEventData)
 	{
 		strEventType = strEventType.toLowerCase();
+		var funcEventListener;
 		
 		// Check that a list of event listeners actually exists
 		if (this._objEventListeners[strEventType] != undefined)
@@ -181,8 +182,19 @@ function VixenEventHandlerClass()
 			{
 				//TODO! I should probably check that the listener function still exists in memory
 				// although javascript has automatic garbage collection, and if this pointer points
-				// to the functoin, then it shouldn't be automatically freed.
-				this._objEventListeners[strEventType][i](objEvent);
+				// to the function, then it shouldn't be automatically freed.
+				
+				// Calling the event listener this way, will make the "this" pointer
+				// point to the window element
+				// I would prefer it to point to the object that the listener is a method
+				// of, but I can't get it to do that
+				funcEventListener = this._objEventListeners[strEventType][i];
+				funcEventListener(objEvent);
+				
+				// When event listeners are called this way, the "this" pointer
+				// points to this function (FireEvent), even from within the 
+				// event listener
+				//this._objEventListeners[strEventType][i](objEvent);
 			}
 		}
 	}

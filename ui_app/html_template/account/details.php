@@ -1,5 +1,31 @@
 <?php
 //----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+// details.php
+//----------------------------------------------------------------------------//
+/**
+ * details
+ *
+ * HTML Template for the details of an Account.  Primarily those stored in the Account table 
+ *
+ * HTML Template for the details of an Account.  Primarily those stored in the Account table 
+ *
+ * @file		details.php
+ * @language	PHP
+ * @package		ui_app
+ * @author		Joel 'MagnumSwordFortress' Dawkins
+ * @version		7.06
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+ 
+//----------------------------------------------------------------------------//
 // HtmlTemplateAccountDetails
 //----------------------------------------------------------------------------//
 /**
@@ -8,11 +34,6 @@
  * A specific HTML Template object
  *
  * An Account Details HTML Template object
- *
- *
- * @prefix	<prefix>
- *
- *
  *
  * @prefix	<prefix>
  *
@@ -49,12 +70,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -82,44 +105,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			case HTML_CONTEXT_EDIT_DETAIL:
 				$this->_RenderEditDetail();
 				break;	
-			case HTML_CONTEXT_OPTIONS_DETAIL:
-				$this->_RenderOptionsDetail();
-				break;
 			default:
 				$this->_RenderFullDetail();
 				break;
 		}
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderFullDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderFullDetail()
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * @method
-	 */
-	private function _RenderOptionsDetail()
-	{	
-		echo "<h2 class='Options'>Account Options</h2>\n";
-		echo "<div class='NarrowForm'>\n";
-		echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
-		echo "<tr><td width='2%'>&nbsp;</td><td>\n";
-		
-		$strEditAccountLink = Href()->ViewAccount(DBO()->Account->Id->Value);
-		echo "<li><a href='$strEditAccountLink'>View Account</a></li>\n";
-
-		$strViewServicesLink = Href()->ViewServices(DBO()->Account->Id->Value);
-		echo "<li><a href='$strViewServicesLink'>View Services</a></li>\n";		
-				
-		echo "</td></tr>\n";
-		echo "</table>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -309,7 +298,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div></div>\n";
 		
 		$this->FormEnd();
-}
+	}
 
 	//------------------------------------------------------------------------//
 	// _RenderLedgerDetail (currently only used in invoice and payments)

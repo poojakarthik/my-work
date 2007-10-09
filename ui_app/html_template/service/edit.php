@@ -261,10 +261,10 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		}
 		
 		
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(this)");
 		$this->AjaxSubmit("Apply Changes");
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
 		$this->FormEnd();
 	}	

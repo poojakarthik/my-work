@@ -6,6 +6,6 @@
 // Set the page title
 $this->Page->SetName('Add Service');
 
-$this->Page->SetLayout('1Column');
+$this->Page->SetLayout('popup_layout');
 $this->Page->AddObject('ServiceAdd', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
 ?>

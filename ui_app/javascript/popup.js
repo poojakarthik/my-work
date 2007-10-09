@@ -34,14 +34,22 @@ function VixenPopupClass()
 		DebugWindow.document.close();
 	}
 
+	// Returns TRUE if the popup exists, else FALSE
 	this.Exists = function(strId)
 	{
-		elmExists = document.getElementById('VixenPopup__' + strId);
+		elmExists = this.GetPopupElement(strId);
 		if (elmExists)
 		{
 			return TRUE;
 		}
 		return FALSE;
+	}
+	
+	// Returns the popup element identified by strId
+	// Returns null if the popup cannot be found
+	this.GetPopupElement = function(strId)
+	{
+		return document.getElementById('VixenPopup__' + strId);
 	}
 	
 	this.SetContent = function(strId, strContent)
