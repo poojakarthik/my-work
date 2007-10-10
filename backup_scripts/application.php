@@ -161,27 +161,27 @@
 		
 		// BACKUP_DIR
 		// 	Full path to backup directory (do NOT include trailing slash)
-		$BACKUP_DIR='/home/backup'
+		$BACKUP_DIR='/home/backup';
 		
 		// MYSQL_DIR
 		// 	Full path to MySQL directory (do NOT include trailing slash)
-		$MYSQL_DIR='/var/lib/mysql'
+		$MYSQL_DIR='/var/lib/mysql';
 		
 		// LOG_DIR
 		// 	Full path to MySQL LOG directory (do NOT include trailing slash)
-		$LOG_DIR='/var/log/mysql'
+		$LOG_DIR='/var/log/mysql';
 		
 		// OLD_LOG_DIR
 		// 	Full path to MySQL OLD LOG directory (do NOT include trailing slash)
-		$OLD_LOG_DIR='/var/log/mysql_old'
+		$OLD_LOG_DIR='/var/log/mysql_old';
 		
 		// INNODB_DIR
 		// 	Full path to InnoDB directory (do NOT include trailing slash)
-		$INNODB_DIR='/var/lib/mysql'
+		$INNODB_DIR='/var/lib/mysql';
 		
 		// DATABASE_NAME
 		// 	Full path to InnoDB directory (do NOT include trailing slash)
-		$DATABASE_NAME='vixen'
+		$DATABASE_NAME='vixen';
 		
 		// -----------------------------------------------------------------------------
 		// SCRIPT
@@ -194,7 +194,7 @@
 		$strReturn = shell_exec("mkdir -pm 700 $OLD_LOG_DIR/$BACKUP_NAME/");
 		
 		// Make Directory for this backup
-		$strReturn = shell_exec("mkdir -pm 700 $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/log/")
+		$strReturn = shell_exec("mkdir -pm 700 $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/log/");
 		
 		$strReturn = '';
 		
@@ -203,7 +203,7 @@
 		
 		if ($strReturn != '')
 		{
-			$this->Error("MySQL failed to shut down - $strReturn", 'MysqlColdBackup')
+			$this->Error("MySQL failed to shut down - $strReturn", 'MysqlColdBackup');
 			return FALSE;
 		}
 		$strReturn = '';
@@ -229,7 +229,7 @@
 		$strReturn = '';
 		
 		// Copy your my.cnf configuration file or files to a safe place.
-		$strReturn = shell_exec("cp -ip /etc/mysql/my.cnf $BACKUP_DIR/$BACKUP_NAME/")
+		$strReturn = shell_exec("cp -ip /etc/mysql/my.cnf $BACKUP_DIR/$BACKUP_NAME/");
 		
 		if ($strReturn != '')
 		{
@@ -587,7 +587,7 @@
 	function Error($strError, $strMethod)
 	{
 		$this->bolError = TRUE;
-		$this->arrErrors[] = "$strMethod - $strError"
+		$this->arrErrors[] = "$strMethod - $strError";
 		$this->arrErrorsByMethod[$strMethod][] = $strError;
 	}
 	
@@ -691,10 +691,10 @@
 		
 		switch ($intErrors)
 			{
-				case: -1
+				case -1:
 					$strMessage = 'Invalid Method Name';
 					break;
-				case: 1
+				case 1:
 					$strMessage = '1 Error Found';
 					break;
 				default:
@@ -737,5 +737,5 @@
 		return true;
 	}
 
-
+ }
 ?>
