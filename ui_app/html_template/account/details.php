@@ -177,15 +177,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		// Define javascript to execute when the "Cancel" button is triggered
 		$strCancelJsCode =	"var objObjects = {};\n".
-							"objObjects.Account = {};\n".
-							"objObjects.Account.Id = ". DBO()->Account->Id->Value .";\n".
-							"Vixen.Ajax.CallAppTemplate(\"Account\", \"View\", objObjects);\n";
-
-							//"objObjects.Service = {};\n".
-							//"objObjects.Service.Id = ". DBO()->Service->Id->Value .";\n".
+							"objObjects.Objects = {};\n".
+							"objObjects.Objects.Account = {};\n".
+							"objObjects.Objects.Account.Id = ". DBO()->Account->Id->Value .";\n".
+							"Vixen.Popup.ShowAjaxPopup(\"ViewAccountPopupId\", \"large\", null, \"Account\", \"ViewDetails\", objObjects);\n";
 
 		//echo "<div id='AccountDetailDiv'>\n";
-		$this->FormStart("EditAccount", "Account", "ValidateDetails");
+		$this->FormStart("EditAccount", "Account", "ValidateAndSaveDetails");
 		echo "<div class='NarrowForm'>\n";
 		
 		DBO()->Account->Id->RenderHidden();

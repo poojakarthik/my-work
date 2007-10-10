@@ -132,65 +132,73 @@ class AppTemplateAccount extends ApplicationTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// ValidateDetails
+	// ValidateAndSaveDetails
 	//------------------------------------------------------------------------//
 	/**
-	 * ValidateDetails()
+	 * ValidateAndSaveDetails()
 	 *
 	 * Validates the submitted form data
 	 * 
-	 * Validates the submitted form data
+	 * Validates the submitted form and saves the data, executed
+	 * when 'Apply Changes' is clicked on the Edit Account, this also builds
+	 * a system note identifying the services that have been affected if any
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function ValidateDetails()
+	function ValidateAndSaveDetails()
 	{
-		if (SubmittedForm('EditAccount', 'Apply Changes'))
+		// Check permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+	
+		// If the validation has failed display the invalid fields			
+		if (DBO()->Account->IsInvalid())
 		{
-			//if (DBL()->Service->RecordCount() == 0)
-			//{
-			
-			// Get Account
-			//$strWhere = "Account = <AccountId> AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
-			//DBO()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
-			//DBO()->Service->Load();
-			//}
-			
-			if (DBO()->Account->IsInvalid())
-			{
-				Ajax()->AddCommand("Alert", "ERROR: Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
-				return TRUE;			
-			}
+			Ajax()->AddCommand("Alert", "ERROR: Invalid fields are highlighted");
+			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
+			return TRUE;			
+		}
 
-			if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
-			{
-				// Define system generated note
-				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-
-				// SaveSystemNote($strNote, $dboService->AccountGroup->Value, $dboService->Account->Value, NULL, $dboService->Id->Value);
-			
-			
-				$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\non $strDateTime by $strUserName Services Affected Are :\n\n";
+		// if Account Archived value does not equal the currect archived status of the account it 
+		// has therefor been changed by the user 
+		if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
+		{
+			// Define one variable to the current data and time
+			$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+			$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 		
-				switch (DBO()->Account->Archived->Value)
-				{
-					case ACCOUNT_ACTIVE:
-						break;
-					case ACCOUNT_CLOSED:
-						$strWhere = "Account = <AccountId>";
-						$strWhere .= " AND Status = <ServiceStatus>";
-						$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
-						//$strWhere .= " AND ClosedOn = $strDateTime ClosedBy = $strUserName";
-						// AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
-						DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value, "ServiceStatus" => SERVICE_ACTIVE));
-						DBL()->Service->Load();
-						
+			// Beginning of the System Note
+			$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\non $strDateTime by $strUserName ";
+	
+			switch (DBO()->Account->Archived->Value)
+			{
+				case ACCOUNT_ACTIVE:
+					// If user has selected Active for the account status no subsequent service is changed
+					break;
+				case ACCOUNT_CLOSED:
+					// If user has selected Closed for the account status only Active services have their Status and 
+					// ClosedOn/CloseBy properties changed
+					$strWhere = "Account = <AccountId>";
+					$strWhere .= " AND Status = <ServiceStatus>";
+					$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
+					// Retrieve all services attached to this Account where the Status is Active ClosedOn property is either set into the future, or is NULL
+					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value, "ServiceStatus" => SERVICE_ACTIVE));
+					DBL()->Service->Load();
+					
+					// If their are no records retrieved append to note stating this, stops confusion on notes
+					if (!DBL()->Service->RecordCount() > 0)
+					{
+						$strNote .= "No Services have been affected\n\n";
+					}
+					else
+					{
+						$strNote .= "Services Affected Are :\n\n";
 						foreach (DBL()->Service as $dboService)
 						{
+							// For each service attached to this account append information onto the note being generated
+							// Set the service ClosedOn, ClosedBy and Status properties and save
 							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 							// set the Service Status to SERVICE_DISCONNECTED
 							$dboService->ClosedOn = $mixTodaysDate;
@@ -198,16 +206,30 @@ class AppTemplateAccount extends ApplicationTemplate
 							$dboService->Status = SERVICE_DISCONNECTED;
 							$dboService->Save();
 						}
-						break;
-					case ACCOUNT_DEBT_COLLECTION:
-						$strWhere = "Account = <AccountId>";
-						$strWhere .= " AND Status = ". SERVICE_ACTIVE;
-						$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";						
-						DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
-						DBL()->Service->Load();
-						
+					}
+					break;
+				case ACCOUNT_DEBT_COLLECTION:
+					// If user has selected Debt Collection for the account status only Active services have their Status and 
+					// ClosedOn/CloseBy properties changed					
+					$strWhere = "Account = <AccountId>";
+					$strWhere .= " AND Status = ". SERVICE_ACTIVE;
+					$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";		
+					// Retrieve all services attached to this Account where the Status is Active ClosedOn property is either set into the future, or is NULL						
+					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
+					DBL()->Service->Load();
+
+					// If their are no records retrieved append to note stating this, stops confusion on notes
+					if (!DBL()->Service->RecordCount() > 0)
+					{
+						$strNote .= "No Services have been affected\n\n";
+					}
+					else
+					{
+						$strNote .= "Services Affected Are :\n\n";
 						foreach (DBL()->Service as $dboService)
 						{
+							// For each service attached to this account append information onto the note being generated
+							// Set the service ClosedOn, ClosedBy and Status properties and save						
 							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 							// set the Service Status to SERVICE_DISCONNECTED
 							$dboService->ClosedOn = $mixTodaysDate;
@@ -215,17 +237,31 @@ class AppTemplateAccount extends ApplicationTemplate
 							$dboService->Status = SERVICE_DISCONNECTED;
 							$dboService->Save();
 						}
-						break;
-					case ACCOUNT_ARCHIVED:
-						$strWhere = "Account = <AccountId>";
-						$strWhere .= " AND (Status = " . SERVICE_ACTIVE;
-						$strWhere .= " OR Status = " . SERVICE_DISCONNECTED . ")";
-						$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";						
-						DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
-						DBL()->Service->Load();
-						
+					}
+					break;
+				case ACCOUNT_ARCHIVED:
+					// If user has selected Archived for the account status only Active and Disconnected services have their Status and 
+					// ClosedOn/CloseBy properties changed						
+					$strWhere = "Account = <AccountId>";
+					$strWhere .= " AND (Status = " . SERVICE_ACTIVE;
+					$strWhere .= " OR Status = " . SERVICE_DISCONNECTED . ")";
+					$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";		
+					// Retrieve all services attached to this Account where the Status is Active/Disconnected ClosedOn property is either set into the future, or is NULL								
+					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
+					DBL()->Service->Load();
+					
+					// If their are no records retrieved append to note stating this, stops confusion on notes
+					if (!DBL()->Service->RecordCount() > 0)
+					{
+						$strNote .= "No Services have been affected\n\n";
+					}
+					else
+					{
+						$strNote .= "Services Affected Are :\n\n";
 						foreach (DBL()->Service as $dboService)
 						{
+							// For each service attached to this account append information onto the note being generated
+							// Set the service ClosedOn, ClosedBy and Status properties and save							
 							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 							// set the Service Status to SERVICE_ARCHIVED
 							$dboService->ClosedOn = $mixTodaysDate;
@@ -233,24 +269,27 @@ class AppTemplateAccount extends ApplicationTemplate
 							$dboService->Status = SERVICE_ARCHIVED;
 							$dboService->Save();
 						}
-						break;
-				}
-				SaveSystemNote($strNote, $dboService->AccountGroup->Value, $dboService->Account->Value, NULL, $dboService->Id->Value);
+					}
+					break;
 			}
-	
-			DBO()->Account->SetColumns("BusinessName,TradingName,ABN,ACN,Address1,Address2,Suburb,Postcode,State,BillingMethod,CustomerGroup,DisableLatePayment,Archived,DisableDDR");
-															
-			if (!DBO()->Account->Save())
-			{
-				Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
-				return TRUE;
-			}
-			else
-			{
-				Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
-				return TRUE;
-			}
-		}		
+			// Save the system note
+			SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, NULL);
+		}
+
+		DBO()->Account->SetColumns("BusinessName,TradingName,ABN,ACN,Address1,Address2,Suburb,Postcode,State,BillingMethod,CustomerGroup,DisableLatePayment,Archived,DisableDDR");
+														
+		if (!DBO()->Account->Save())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
+			return TRUE;
+		}
+		else
+		{
+			// Calculate balance here
+			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);				
+			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
+			return TRUE;
+		}	
 	}
 
 	//------------------------------------------------------------------------//
@@ -296,43 +335,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load page
 		$this->LoadPage('account_view');
 	}	 
-	
-	//------------------------------------------------------------------------//
-	// View
-	//------------------------------------------------------------------------//
-	/**
-	 * View()
-	 *
-	 * Performs the logic for the account/view page
-	 * 
-	 * Performs the logic for the account/view page, loads the account and service
-	 * and renders the AccountDetails
-	 *
-	 * @return		void
-	 * @method
-	 *
-	 */	 
-	function View()
-	{	
-		$pagePerms = PERMISSION_ADMIN;
-
-		// Check perms
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-
-		if (DBO()->Account->Id->Value)
-		{
-			//Load account
-			DBO()->Account->Load();
-			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
-			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");
-		}
-		else
-		{
-			Ajax()->AddCommand("Alert", "ERROR: could not load the page as no Account Id was specified");
-		}
-	}
-	
 	
 	//------------------------------------------------------------------------//
 	// InvoicesAndPayments
@@ -489,8 +491,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	
-
 	//------------------------------------------------------------------------//
 	// DeleteRecord
 	//------------------------------------------------------------------------//
