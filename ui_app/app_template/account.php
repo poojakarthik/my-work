@@ -355,6 +355,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
 		//check if the form was submitted
@@ -398,7 +399,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// If the account is archived, check that the user has permission to view it
-		if (DBO()->Account->Archived->Value == ACCOUNT_ARCHIVED && !AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+		if (DBO()->Account->Archived->Value == ACCOUNT_ARCHIVED && !$bolUserHasAdminPerm)
 		{
 			// The user does not have permission to view this account
 			DBO()->Error->Message = "You do not have permission to view account: ". DBO()->Account->Id->value ." because its status = " . GetConstantDescription(DBO()->Account->Archived->Value, "Account");
@@ -416,7 +417,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Admin_Console();
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 
 

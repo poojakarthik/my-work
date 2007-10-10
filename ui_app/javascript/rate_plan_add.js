@@ -54,12 +54,59 @@ function VixenRatePlanAddClass()
 	 * Event handler for when the Service Type is chosen from the Service Type Combobox
 	 *
 	 * @param	int		intServiceType		Id of the ServiceType selected
+	 * @param	bool	bolSetDefaults		optional, If true then the CarrierFullService Combobox
+	 *										and the CarrierPreselection Combobox will be changed to
+	 *										their default values
 	 *
 	 * @return	void
 	 * @method
 	 */
-	this.ChangeServiceType = function(intServiceType)
+	this.ChangeServiceType = function(intServiceType, bolSetDefaults)
 	{
+		// Check if default values should be set, based on the ServiceType selected
+		if (bolSetDefaults)
+		{
+			// Check if this ServiceType has default values for the CarrierFullService and CarrierPreselection combos
+			var elmServiceTypeCombo 			= document.getElementById("ServiceTypeCombo");
+			var intDefaultCarrierFullService	= elmServiceTypeCombo.options[elmServiceTypeCombo.selectedIndex].getAttribute('CarrierFullService');
+			var intDefaultCarrierPreselection	= elmServiceTypeCombo.options[elmServiceTypeCombo.selectedIndex].getAttribute('CarrierPreselection');
+			
+			// Set the default value for the CarrierFullService combo
+			var elmCarrierFullServiceCombo = document.getElementById("CarrierFullServiceCombo");
+			elmCarrierFullServiceCombo.selectedIndex = 0;
+			if (intDefaultCarrierFullService != null)
+			{
+				// A default CarrierFullService has been specified.  Update the CarrierFullService Combobox
+				for (var i=0; i < elmCarrierFullServiceCombo.length; i++)
+				{
+					if (elmCarrierFullServiceCombo.options[i].value == intDefaultCarrierFullService)
+					{
+						// Found the option
+						elmCarrierFullServiceCombo.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			
+			// Set the default value for the CarrierPreselection combo
+			var elmCarrierPreselectionCombo = document.getElementById("CarrierPreselectionCombo");
+			elmCarrierPreselectionCombo.selectedIndex = 0;
+			if (intDefaultCarrierPreselection != null)
+			{
+				// A default CarrierPreselection has been specified.  Update the CarrierPreselection Combobox
+				for (var i=0; i < elmCarrierPreselectionCombo.length; i++)
+				{
+					if (elmCarrierPreselectionCombo.options[i].value == intDefaultCarrierPreselection)
+					{
+						// Found the option
+						elmCarrierPreselectionCombo.selectedIndex = i;
+						break;
+					}
+				}
+			}
+		}
+		
+		// Load the RateGroup table applicable to this ServiceType
 		var elmRatePlanId = document.getElementById("RatePlan.Id");
 		var elmBaseRatePlanId = document.getElementById("BaseRatePlan.Id");
 		

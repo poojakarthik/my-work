@@ -158,50 +158,49 @@ class HtmlTemplatePlanList extends HtmlTemplate
 	}
 	
 	//------------------------------------------------------------------------//
-	// Render
+	// RenderDefault
 	//------------------------------------------------------------------------//
 	/**
-	 * Render()
+	 * RenderDefault()
 	 *
-	 * Render this HTML Template
+	 * Render this HTML Template in its default format
 	 *
-	 * Render this HTML Template
+	 * Render this HTML Template in its default format
 	 *
 	 * @method
 	 */
 	function RenderDefault()
 	{
-		// RatePlan filtering functionality is not currently implemented
-		// Set up Payment Type combobox
+		// Define what happens when the filter combo is used
+		$strOnFilterChange = "window.location=\"vixen.php/Plan/AvailablePlans/?RatePlan.ServiceType=\" + this.value;";
+		
+		// Include a container div for the filter and the "Add New Plan" button.  Required as I am floating divs left and right
+		echo "<div style='height:30px'>\n";
 		
 		// Add the Filter Combobox
-		$strOnFilterChange = "window.location=\"vixen.php/Plan/AvailablePlans/?RatePlan.ServiceType=\" + this.value;";
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Filter :</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='FilterCombo' onchange='$strOnFilterChange'>\n";
+		echo "<div class='DefaultOutputSpan Left' style='margin-top:4px'>Filter :\n";
+		echo "   <select id='FilterCombo' onchange='$strOnFilterChange'>\n";
 		// Add the blank option to the Filter combobox
 		$strSelected = (!DBO()->RatePlan->ServiceType->Value) ? "selected='selected'" : "";
-		echo "         <option value='0' $strSelected>All Rate Plans</option>";
+		echo "      <option value='0' $strSelected>All Rate Plans</option>";
 		
 		// Add each ServiceType to the Filter combobox
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intServiceType=>$arrServiceType)
 		{
 			$strDescription = $arrServiceType['Description'];
 			$strSelected = (DBO()->RatePlan->ServiceType->Value == $intServiceType) ? "selected='selected'" : "";
-			echo "         <option value='$intServiceType' $strSelected>$strDescription</option>\n";
+			echo "      <option value='$intServiceType' $strSelected>$strDescription</option>\n";
 		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";		
+		echo "   </select>\n";
+		echo "</div>\n";
 
 		// Render the "Add New Plan" button
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		echo "<div class='Right'>\n";
 		$this->Button("Add New Plan", "window.location=\"" . Href()->AddRatePlan(NULL, Href()->AvailablePlans(DBO()->RatePlan->ServiceType->Value)) . "\"");
-		echo "</div></div>\n";
-		echo "<div class='SmallSeperator'></div>";
+		echo "</div>\n";
+		echo "</div>\n";  // Container div
 
-		Table()->PlanTable->SetHeader("Type", "Name", "Description", "Shared", "Min Monthly", "Charge Cap", "Usage Cap", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetHeader("Type", "Name", "Description", "Shared", "Min Monthly Spend", "Cap Charge", "Cap Limit", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
 		Table()->PlanTable->SetWidth("8%", "20%", "8%", "8%", "8%", "8%", "8%", "8%", "8%", "8%", "4%", "4%");
 		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Right", "Right", "Right", "Left", "Left", "Left", "Center", "Center");
 

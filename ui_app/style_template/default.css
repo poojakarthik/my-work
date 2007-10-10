@@ -276,7 +276,10 @@
 
 	}
 	
-	.DefaultInputComboBox,
+	.DefaultInputComboBox
+	{
+		border:				solid 1px #000000;
+	}
 	.DefaultInputText,
 	.DefaultInputTextArea
 	{
@@ -328,7 +331,11 @@
 		background-color:	#FA8072;
 	}
 	
-	.DefaultInvalidInputComboBox,
+	.DefaultInvalidInputComboBox
+	{
+		border:				solid 1px #000000;
+	}
+	
 	.DefaultInvalidInputText,
 	.DefaultInvalidInputTextArea
 	{

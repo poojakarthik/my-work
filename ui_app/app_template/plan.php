@@ -81,7 +81,7 @@ class AppTemplatePlan extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		// context menu
 		ContextMenu()->Employee_Console();
@@ -347,8 +347,8 @@ class AppTemplatePlan extends ApplicationTemplate
 		 * Validation process:
 		 *		V1: Check that a Name and Description have been declared						(implemented via UiAppDocumentation table of database)
 		 *		V1: Check that the MinCharge, ChargeCap and UsageCap are valid monetary values	(implemented via UiAppDocumentation table of database)
-		 *		V2: Check that CarrierFullService and CarrierPreselection have been declared	(implemented)
-		 *		V3: Check that a service type has been declared									(implemented)
+		 *		V2: Check that a service type has been declared									(implemented)
+		 *		V3: If ServiceType == LandLine, Check that CarrierFullService and CarrierPreselection have been declared			(implemented)
 		 *		V4: Check that the Name is unique when compared with all other Rate Plans (including all archived and draft plans)	(implemented)
 		 *		V5: Check that a non-fleet Rate Group has been declared for each RecordType which is Required						(implemented)
 		 */
@@ -360,24 +360,30 @@ class AppTemplatePlan extends ApplicationTemplate
 			return "ERROR: Invalid fields are highlighted";
 		}
 		
-		// V2: CarrierFullService
-		if (!DBO()->RatePlan->CarrierFullService->Value)
-		{
-			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
-			return "ERROR: A Full Service Carrier must be selected";
-		}
-		// V2: CarrierPreselection
-		if (!DBO()->RatePlan->CarrierPreselection->Value)
-		{
-			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
-			return "ERROR: A Carrier Preselection must be selected";
-		}
-		
-		// V3: ServiceType
+		// V2: ServiceType
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: A service type must be selected";
+		}
+		
+		// V3: CarrierFullService and CarrierPreselection are manditory for landlines only
+		if (DBO()->RatePlan->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+		{
+			// CarrierFullService
+			if (!DBO()->RatePlan->CarrierFullService->Value)
+			{
+				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+				$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "ServiceType");
+				return "ERROR: $strServiceType requires Carrier Full Service to be declared";
+			}
+			// CarrierPreselection
+			if (!DBO()->RatePlan->CarrierPreselection->Value)
+			{
+				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+				$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "ServiceType");
+				return "ERROR: $strServiceType requires Carrier Preselection to be declared";
+			}
 		}
 		
 		// V4: Make sure the name of the rate plan isn't currently in use
@@ -623,6 +629,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		Ajax()->RenderHtmlTemplate("PlanAdd", HTML_CONTEXT_RATE_GROUPS, "RateGroupsDiv");
 		
 		// Set the focus to the Rate Group combobox of the first RecordType to display
+		/*  This is not done anymore and can be removed
 		if (DBL()->RecordType->RecordCount() > 0)
 		{
 			DBL()->RecordType->rewind();
@@ -630,6 +637,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			$strElement = "RateGroup" . $dboFirstRecordType->Id->Value . ".RateGroupId";
 			Ajax()->AddCommand("SetFocus", $strElement);
 		}
+		*/
 		return TRUE;
 	}
 	

@@ -172,48 +172,35 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	{
 		echo "<h2 class='Plan'>Plan Details</h2>\n";
 		echo "<div class='WideForm'>\n";
+		
+		// Various properties of the RatePlan table need to be rendered using Context 1
+		$intContextAddRatePlan = 1;
 
 		// Only apply the output mask if the DBO()->RatePlan is not invalid
 		$bolApplyOutputMask = !DBO()->RatePlan->IsInvalid();
 
 		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->Shared->RenderInput(2, TRUE);  //BUG:If this is checked then the conditional contexts make it render using context 1 instead of this one
-		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->RatePlan->Shared->RenderInput(2, TRUE);
+		DBO()->RatePlan->MinMonthly->RenderInput($intContextAddRatePlan, TRUE, $bolApplyOutputMask);
+		DBO()->RatePlan->ChargeCap->RenderInput($intContextAddRatePlan, TRUE, $bolApplyOutputMask);
+		DBO()->RatePlan->UsageCap->RenderInput($intContextAddRatePlan, TRUE, $bolApplyOutputMask);
 		
-		// Retrieve a list of carriers
-		DBL()->Carrier->OrderBy(Name);
-		DBL()->Carrier->Load();
-		
-		// Build the CarrierFullService combo box
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Carrier Full Service :</div>\n";
-		echo "      <select id='CarrierFullServiceCombo' name='RatePlan.CarrierFullService' class='DefaultInputComboBox' style='width:152px;'>\n";
-		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
-		foreach (DBL()->Carrier as $dboCarrier)
+		// Build the list of carriers
+		$arrCarriers = Array();
+		foreach ($GLOBALS['*arrConstant']['Carrier'] as $intCarrier=>$arrConstant)
 		{
-			// Flag the option as being selected if it is the currently selected CarrierFullService
-			$strSelected = (DBO()->RatePlan->CarrierFullService->Value == $dboCarrier->Id->Value) ? "selected='selected'" : "";
-			echo "         <option value='". $dboCarrier->Id->Value ."' $strSelected>". $dboCarrier->Name->Value ."</option>\n";
+			// Add the Carrier, so long as it's not CARRIER_PAYMENT
+			if ($intCarrier != CARRIER_PAYMENT)
+			{
+				$arrCarriers[$intCarrier] = $arrConstant['Description'];
+			}
 		}
-		echo "      </select>\n";
-		echo "</div>\n"; // DefaultElement
 		
-		// Build the CarrierPreselection combo box
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Carrier Preselection :</div>\n";
-		echo "      <select id='CarrierPreselectionCombo' name='RatePlan.CarrierPreselection' class='DefaultInputComboBox' style='width:152px;'>\n";
-		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
-		foreach (DBL()->Carrier as $dboCarrier)
-		{
-			// Flag the option as being selected if it is the currently selected CarrierFullService
-			$strSelected = (DBO()->RatePlan->CarrierPreselection->Value == $dboCarrier->Id->Value) ? "selected='selected'" : "";
-			echo "         <option value='". $dboCarrier->Id->Value ."' $strSelected>". $dboCarrier->Name->Value ."</option>\n";
-		}
-		echo "      </select>\n";
-		echo "</div>\n"; // DefaultElement
+		// Build the list of default Carrier values for each ServiceType that has defaults
+		$arrServiceTypeDefaults = Array();
+		$arrServiceTypeDefaults[SERVICE_TYPE_LAND_LINE]['CarrierFullService']	= CARRIER_UNITEL;
+		$arrServiceTypeDefaults[SERVICE_TYPE_LAND_LINE]['CarrierPreselection']	= CARRIER_OPTUS;
 		
 		// Build the ServiceType Combobox
 		if (DBO()->RatePlan->Id->Value > 0)
@@ -221,19 +208,55 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			// Disable the ServiceType Combobox
 			$strServiceTypeDisabled = "disabled='disabled'";
 		}
-		
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type :</div>\n";
-		echo "      <select id='ServiceTypeCombo' name='RatePlan.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='javascript: Vixen.RatePlanAdd.ChangeServiceType(this.value);' $strServiceTypeDisabled>\n";
+		echo "      <select id='ServiceTypeCombo' name='RatePlan.ServiceType' class='DefaultInputComboBox' style='width:155px;' onchange='javascript: Vixen.RatePlanAdd.ChangeServiceType(this.value, true);' $strServiceTypeDisabled>\n";
 		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
 		{
+			// If the ServiceType has default values for the Carrier fields, then include them in the <option> tag as attributes
+			$strCarrierDefaults = "";
+			if (IsSet($arrServiceTypeDefaults[$intKey]))
+			{
+				$strCarrierDefaults	 = "CarrierFullService='{$arrServiceTypeDefaults[$intKey]['CarrierFullService']}'";
+				$strCarrierDefaults .= " CarrierPreselection='{$arrServiceTypeDefaults[$intKey]['CarrierPreselection']}'";
+			}
+			
 			// Flag the option as being selected if it is the currently selected ServiceType
 			$strSelected = (DBO()->RatePlan->ServiceType->Value == $intKey) ? "selected='selected'" : "";
-			echo "         <option value='". $intKey ."' $strSelected>". $arrValue['Description'] ."</option>\n";
+			echo "         <option value='$intKey' $strSelected $strCarrierDefaults>{$arrValue['Description']}</option>\n";
 		}
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
+
+		// Build the CarrierFullService combo box
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Carrier Full Service :</div>\n";
+		echo "      <select id='CarrierFullServiceCombo' name='RatePlan.CarrierFullService' class='DefaultInputComboBox' style='width:155px;'>\n";
+		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
+		foreach ($arrCarriers as $intCarrier=>$strCarrier)
+		{
+			// Flag the option as being selected if it is the currently selected CarrierFullService
+			$strSelected = (DBO()->RatePlan->CarrierFullService->Value == $intCarrier) ? "selected='selected'" : "";
+			echo "         <option value='$intCarrier' $strSelected>$strCarrier</option>\n";
+		}
+		echo "      </select>\n";
+		echo "</div>\n"; // DefaultElement
+		
+		// Build the CarrierPreselection combo box
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Carrier Preselection :</div>\n";
+		echo "      <select id='CarrierPreselectionCombo' name='RatePlan.CarrierPreselection' class='DefaultInputComboBox' style='width:155px;'>\n";
+		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
+		foreach ($arrCarriers as $intCarrier=>$strCarrier)
+		{
+			// Flag the option as being selected if it is the currently selected CarrierPreselection
+			$strSelected = (DBO()->RatePlan->CarrierPreselection->Value == $intCarrier) ? "selected='selected'" : "";
+			echo "         <option value='$intCarrier' $strSelected>$strCarrier</option>\n";
+		}
+		echo "      </select>\n";
+		echo "</div>\n"; // DefaultElement
+		
 		
 		echo "</div>\n"; // WideForm
 		echo "<div class='SmallSeperator'></div>\n";
