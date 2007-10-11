@@ -265,8 +265,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->DisableLatePayment->RenderInput();
 
 		// Disable the "Never Charge a late payment fee" radio option
-		echo "<script type='text/javascript'>document.getElementById('Account.DisableLatePayment_1').disabled = true;</script>";
-
+		echo "<script type='text/javascript'>document.getElementById('Account.DisableLatePayment_1').disabled = true;
+				document.getElementById('Account.DisableLatePayment_1.Label').style.color='#4C4C4C'</script>";
+		
 		echo "<div class='Seperator'></div>\n";		
 
 		// Render the Account Status Combobox
@@ -351,7 +352,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</table>\n";
 
 		// Disable the "Never Charge a late payment fee" radio option
-		echo "<script type='text/javascript'>document.getElementById('Account.DisableLatePayment_1').disabled = true;</script>";
+		// Styling that removes the ugly spacing which was unnaturally spacing out the labels
+		echo "<script type='text/javascript'>document.getElementById('Account.DisableLatePayment_1').disabled = true;
+				document.getElementById('Account.DisableLatePayment_1.Label').style.color='#4C4C4C';</script>";
 		
 		// Render the submit button
 		echo "<div class='Right'>\n";

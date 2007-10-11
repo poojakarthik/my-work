@@ -169,8 +169,12 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 			$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 		
+			// Define one variable for MYSQL data/time and one of the EmployeeID
+			$mixTodaysDate = GetCurrentDateForMySQL;
+			$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
+		
 			// Beginning of the System Note
-			$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\non $strDateTime by $strUserName ";
+			$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\non $strDateTime by $strUserName\n";
 	
 			switch (DBO()->Account->Archived->Value)
 			{
@@ -182,8 +186,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					// ClosedOn/CloseBy properties changed
 					$strWhere = "Account = <AccountId>";
 					$strWhere .= " AND Status = <ServiceStatus>";
-					$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";
-					// Retrieve all services attached to this Account where the Status is Active ClosedOn property is either set into the future, or is NULL
+					// Retrieve all services attached to this Account where the Status is Active
 					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value, "ServiceStatus" => SERVICE_ACTIVE));
 					DBL()->Service->Load();
 					
@@ -213,8 +216,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					// ClosedOn/CloseBy properties changed					
 					$strWhere = "Account = <AccountId>";
 					$strWhere .= " AND Status = ". SERVICE_ACTIVE;
-					$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";		
-					// Retrieve all services attached to this Account where the Status is Active ClosedOn property is either set into the future, or is NULL						
+					// Retrieve all services attached to this Account where the Status is Active						
 					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
 					DBL()->Service->Load();
 
@@ -245,8 +247,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					$strWhere = "Account = <AccountId>";
 					$strWhere .= " AND (Status = " . SERVICE_ACTIVE;
 					$strWhere .= " OR Status = " . SERVICE_DISCONNECTED . ")";
-					$strWhere .= " AND (ClosedOn > NOW() OR ClosedOn IS NULL)";		
-					// Retrieve all services attached to this Account where the Status is Active/Disconnected ClosedOn property is either set into the future, or is NULL								
+					// Retrieve all services attached to this Account where the Status is Active/Disconnected								
 					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
 					DBL()->Service->Load();
 					
@@ -276,6 +277,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, NULL);
 		}
 
+		// Set the columns to save
 		DBO()->Account->SetColumns("BusinessName,TradingName,ABN,ACN,Address1,Address2,Suburb,Postcode,State,BillingMethod,CustomerGroup,DisableLatePayment,Archived,DisableDDR");
 														
 		if (!DBO()->Account->Save())
@@ -285,7 +287,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		else
 		{
-			// Calculate balance here
+			// If properties have saved successfully display the account details page, and calculate the account balance
 			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);				
 			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
 			return TRUE;

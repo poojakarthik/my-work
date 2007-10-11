@@ -114,6 +114,7 @@
 	
 	label
 	{
+		line-height:		1.2;
 		cursor:              pointer;
 	}
 	
@@ -263,7 +264,6 @@
 	.DefaultInputCheckBox,
 	.DefaultInputComboBox,
 	.DefaultInputText,
-	.DefaultInputTextArea,
 	.DefaultInput
 	{
 		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
@@ -284,8 +284,15 @@
 	.DefaultInputTextArea
 	{
 		border:				solid 1px #000000;
-		padding-left:		3px;
+		padding-left:			3px;
 		padding-right:		0px;
+		font-family: 			"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 			1.2;
+		font-size: 			10pt;
+		position:				relative;
+		left:						200px;
+		top:						0px;
+		overflow:				hidden;		
 	}
 	
 	

@@ -610,9 +610,9 @@ class HTMLElements
 			$strId		= $strName ."_". $arrOption['Value'];
 			
 			// define the button
-			$strHtml .= "   <table border=0 cellspacing=0 cellpadding=0 class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
+			$strHtml .= "   <table border='0' cellspacing='0' cellpadding='0' class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
 			$strHtml .= "      <tr>\n";
-			$strHtml .= "         <td>\n";
+			$strHtml .= "         <td valign='top'>\n";
 			$strHtml .= "            <input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
 			$strHtml .= "         </td>\n";
 			$strHtml .= "         <td>\n";

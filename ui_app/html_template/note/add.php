@@ -164,7 +164,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		}
 		
 		// output the manditory field message
-		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
+		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span>&nbsp;Required Field</div>\n";
 		
 		echo "</div>\n";  // WideForm
 		
