@@ -425,13 +425,14 @@
 		// Check if we have mounted drives
 		if ($intMounted = $this->DrivesMounted())
 		{
-			return $intMounted;
+			$this->Error("$intMounted drives are already mounted");
+			//return $intMounted;
 		}
 		
 		// try to mount drives
 		if (!$this->MountDrives())
 		{
-			//return FALSE;
+			return FALSE;
 		}
 		
 		// Select target
