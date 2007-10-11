@@ -69,8 +69,9 @@
 		$this->arrErrors			= array();
 		$this->arrErrorsByMethod 	= array();
 		
-		$this->arrDrives['sda1']	= TRUE;
-		//$this->arrDrives['hdf1']	= TRUE;
+		$this->arrDrives['sdc1']	= TRUE;
+		$this->arrDrives['sdd1']	= FALSE;
+		$this->arrDrives['sde1']	= FALSE;
 		
 		$this->arrTarget['mon']			= "sdc1";
 		$this->arrTarget['tue']			= "sdc1";
@@ -109,22 +110,20 @@
 			if ($bolMount)
 			{
 				// mount the drive
-				$strResult = shell_exec("mount $strDrive /media/$strDrive 2>&1");
+				$strResult = shell_exec("mount $strDrive /mnt/$strDrive 2>&1");
 				
 				// check if mounting failed
 				$strMtab = shell_exec("grep \"/dev/$strDrive\" /etc/mtab");
-				if (strpos($strMtab, "/media/$strDrive") === FALSE)
+				if (strpos($strMtab, "/mnt/$strDrive") === FALSE)
 				{
 					// drive not mounted
 					$this->Error("$strDrive failed to mount - $strResult", 'Mount');
-					// TESTING ONLY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					$this->arrDrives[$strDrive] = "/media/$strDrive";
 				}
 				else
 				{
 					// drive mounted
 					$intMounted++;
-					$this->arrDrives[$strDrive] = "/media/$strDrive";
+					$this->arrDrives[$strDrive] = "/mnt/$strDrive";
 				}
 			}
 		}
@@ -161,7 +160,7 @@
 				$strResult = shell_exec("umount $strDrive");
 				
 				// check if drive unmounted
-				if (file_exists("/media/$strDrive/vixen.nodisk"))
+				if (file_exists("/mnt/$strDrive/vixen.nodisk"))
 				{
 					// unmounted
 					$this->arrDrives[$strDrive] = TRUE;
