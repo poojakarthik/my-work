@@ -60,267 +60,27 @@
 	 */
  	function __Construct()
 	{
-		$this->strLiveDatbase 	= "vixen";
-		$this->strDow 			= strtolower(date("D"));
-		$this->arrDrives		= array();
-		$this->arrErrors		= array();
-		$this->arrErrorsByMethod = array('MysqlHotCopy'=>array(), 		'MysqlColdBackup'=>array(), 
-										 'MysqlBinlogBackup'=>array(), 	'MountDrives'=>array(), 
-										 'UnmountDrives'=>array(), 		'SelectTarget'=>array(), 
-										 'PrepareTarget'=>array(), 		'CopyToTarget'=>array());
-		$this->bolError			= FALSE;
+		$this->strMysqlUser			= 'vixenbackup';
+		$this->strMysqlPassword		= 'v1x3n';
+		$this->strMysqlDatabase		= 'vixen';
+		$this->strDow 				= strtolower(date("D"));
+		$this->arrDrives			= array();
+		$this->arrTarget			= array();
+		$this->arrErrors			= array();
+		$this->arrErrorsByMethod 	= array();
 		
-	}
-	
-	//------------------------------------------------------------------------//
-	// MysqlHotCopy
-	//------------------------------------------------------------------------//
-	/**
-	 * MysqlHotCopy()
-	 *
-	 * Backs up a database while it is running
-	 *
-	 * Backs up a database while it is running
-	 *
-	 * @param	Array		arrSkipTables	List of tables to skip backing up
-	 * @return	Boolean
-	 *
-	 * @method
-	 */
- 	function MysqlHotCopy($arrSkipTables=NULL)
-	{
-		// check that we are connected to the correct database
-		if (strtolower($GLOBALS["**arrDatabase"]['Database']) == "vixen")
-		{
-			// can't hot copy the live database onto itself
-			return FALSE;
-		}
+		$this->arrDrives['sda1']	= TRUE;
+		//$this->arrDrives['hdf1']	= TRUE;
 		
-		// make sure skip tables is an array
-		if (!is_array($arrSkipTables))
-		{
-			$arrSkipTables = Array();
-		}
-		
-		// set up list tables object
-		$qltCopyTable = new QueryListTables();
-		
-		// get tables from vixen
-		$arrTables = $qltCopyTable->Execute($this->strLiveDatbase);
-		
-		// set up copy table object
-		$qctCopyTable = new QueryCopyTable();
-		
-		// clean tables list
-		foreach($arrTables AS $mixKey=>$strTable)
-		{
-			if (strpos($strTable, '_') !== FALSE)
-			{
-				// tables with an '_' are temporary backups
-				echo "skip table : $strTable\n";
-			}
-			elseif ($arrSkipTables[$strTable])
-			{
-				echo "skip table : $strTable\n";
-			}
-			else
-			{
-				echo "copy table : $strTable\n";
-				
-				// copy a table
-				$qctCopyTable->Execute($strTable, "{$this->strLiveDatbase}.$strTable");
-			}
-		}
-		return TRUE;
-	}
-	
-	//------------------------------------------------------------------------//
-	// MysqlColdBackup
-	//------------------------------------------------------------------------//
-	/**
-	 * MysqlColdBackup()
-	 *
-	 * Shuts down MySQL, backs up all the data, then starts it again
-	 *
-	 * Shuts down MySQL, backs up all the data, then starts it again
-	 *
-	 * @return	Boolean
-	 *
-	 * @method
-	 */
-	function MysqlColdBackup()
-	{
-		$bolReturn = TRUE;
-		// Backup a MySQL InnoDB Database
-		//
-		// built from instructions found at : http://mysql.org/doc/refman/5.0/en/innodb-backup.html
-		
-		// -----------------------------------------------------------------------------
-		// CONFIG
-		// -----------------------------------------------------------------------------
-		
-		// BACKUP_DIR
-		// 	Full path to backup directory (do NOT include trailing slash)
-		$BACKUP_DIR='/home/backup';
-		
-		// MYSQL_DIR
-		// 	Full path to MySQL directory (do NOT include trailing slash)
-		$MYSQL_DIR='/var/lib/mysql';
-		
-		// LOG_DIR
-		// 	Full path to MySQL LOG directory (do NOT include trailing slash)
-		$LOG_DIR='/var/log/mysql';
-		
-		// OLD_LOG_DIR
-		// 	Full path to MySQL OLD LOG directory (do NOT include trailing slash)
-		$OLD_LOG_DIR='/var/log/mysql_old';
-		
-		// INNODB_DIR
-		// 	Full path to InnoDB directory (do NOT include trailing slash)
-		$INNODB_DIR='/var/lib/mysql';
-		
-		// DATABASE_NAME
-		// 	Full path to InnoDB directory (do NOT include trailing slash)
-		$DATABASE_NAME='vixen';
-		
-		// -----------------------------------------------------------------------------
-		// SCRIPT
-		// -----------------------------------------------------------------------------
-		
-		// Set Backup Name
-		$BACKUP_NAME= date("Y-m-d_H:i:s");
-		
-		// Make backup dir for logs
-		$strReturn = shell_exec("mkdir -pm 700 $OLD_LOG_DIR/$BACKUP_NAME/");
-		
-		// Make Directory for this backup
-		$strReturn = shell_exec("mkdir -pm 700 $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/log/");
-		
-		$strReturn = '';
-		
-		// Shut down your MySQL server and make sure that it shuts down without errors.
-		$strReturn = shell_exec("/etc/init.d/mysql stop");
-		
-		if ($strReturn != '')
-		{
-			$this->Error("MySQL failed to shut down - $strReturn", 'MysqlColdBackup');
-			return FALSE;
-		}
-		$strReturn = '';
-		
-		// Copy all your data files (ibdata files and .ibd files) into a safe place.
-		$strReturn = shell_exec("cp -ip $INNODB_DIR/ibdata* $BACKUP_DIR/$BACKUP_NAME/");
-		
-		if ($strReturn != '')
-		{
-			$this->Error("ibdata files failed to copy - $strReturn", 'MysqlColdBackup');
-			$bolReturn = FALSE;
-		} 
-		$strReturn = '';
-		
-		// Copy all your ib_logfile files to a safe place.
-		$strReturn = shell_exec("cp -ip $INNODB_DIR/ib_logfile* $BACKUP_DIR/$BACKUP_NAME/");
-		
-		if ($strReturn != '')
-		{
-			$this->Error("ib_logfiles failed to copy - $strReturn", 'MysqlColdBackup');
-			$bolReturn = FALSE;
-		} 
-		$strReturn = '';
-		
-		// Copy your my.cnf configuration file or files to a safe place.
-		$strReturn = shell_exec("cp -ip /etc/mysql/my.cnf $BACKUP_DIR/$BACKUP_NAME/");
-		
-		if ($strReturn != '')
-		{
-			$this->Error("my.cnf configuration file failed to copy - $strReturn", 'MysqlColdBackup');
-			$bolReturn = FALSE;
-		} 
-		$strReturn = '';
-		
-		// Copy all the .frm & .idb files for your InnoDB tables to a safe place.
-		$strReturn = shell_exec("cp -Rip $MYSQL_DIR/$DATABASE_NAME/* $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/");
-		
-		if ($strReturn != '')
-		{
-			$this->Error(".frm & .idb files faile to copy - $strReturn", 'MysqlColdBackup');
-			$bolReturn = FALSE;
-		} 
-		$strReturn = '';
-		
-		// Copy the MySQL database
-		$strReturn = shell_exec("cp -Rip $MYSQL_DIR/mysql $BACKUP_DIR/$BACKUP_NAME/");
-		
-		if ($strReturn != '')
-		{
-			$this->Error("MySQL database failed to copy - $strReturn", 'MysqlColdBackup');
-			$bolReturn = FALSE;
-		} 
-		$strReturn = '';
-		
-		// Restart the MySQL server
-		$strReturn = shell_exec("/etc/init.d/mysql start");
-		
-		if ($strReturn != '')
-		{
-			$this->Error("MySQL database failed to restart - $strReturn", 'MysqlColdBackup');
-			$bolReturn = FALSE;
-		} 
-		// Send a message
-		//TODO!!!!
-		
-		return $bolReturn;
-	}
-	
-	//------------------------------------------------------------------------//
-	// MysqlBinlogBackup
-	//------------------------------------------------------------------------//
-	/**
-	 * MysqlBinlogBackup()
-	 *
-	 * Backs up the MySQL binary logs
-	 *
-	 * Backs up the MySQL binary logs
-	 *
-	 * @return	Boolean
-	 *
-	 * @method
-	 */
-	function MysqlBinlogBackup()
-	{
-		//Set directories
-		$strLogFileDir = "/var/log/mysql";
-		$strBackupDir = "/home/backup/mysql_bin_logs";
-		
-		//Make Backup Dir
-		mkdir($strBackupDir, 0700, TRUE);
-		
-		//Get file lists
-		$arrLogFiles = scandir($strLogFileDir);
-		$arrBackupFiles = scandir($strBackupDir);
-		
-		//read index file
-		$arrIndexFile = file("$strLogFileDir/mysql-bin.index");
-		$strCurrentLog = trim(end(explode("/", end($arrIndexFile))));
+		$this->arrTarget['mon']			= "sdc1";
+		$this->arrTarget['tue']			= "sdc1";
+		$this->arrTarget['wed']			= "sdc1";
+		$this->arrTarget['thu']			= "sdc1";
+		$this->arrTarget['fri']			= "sdc1";
+		$this->arrTarget['sat']			= "sdc1";
+		$this->arrTarget['sun']			= "sdc1";
 		
 		
-		//remove index and current log file from file list
-		$arrRemove = array($strCurrentLog, "mysql-bin.index");
-		$arrLogFiles = array_diff($arrLogFiles, $arrRemove);
-		
-		//copy each file that doesnt exist in the backup directory
-		foreach ($arrLogFiles AS $strLogFile)
-		{
-			If(!file_exists("$strBackupDir/$strLogFile"))
-			{
-				// echo "Copying $strLogFile\n";
-				if (!copy("$strLogFileDir/$strLogFile", "$strBackupDir/$strLogFile")) 
-				{
-					$this->Error("Failed to copy $strLogFile", 'MysqlBinlogBackup');
-				}
-			}
-		}
-		return TRUE;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -346,16 +106,19 @@
 		foreach ($this->arrDrives as $strDrive=>$bolMount)
 		{
 			// if drive is set to be mounted
-			if (!$bolMount)
+			if ($bolMount)
 			{
 				// mount the drive
-				$strResult = shell_exec("mount $strDrive /media/$strDrive");
+				$strResult = shell_exec("mount $strDrive /media/$strDrive 2>&1");
 				
 				// check if mounting failed
-				if (file_exists("/media/$strDrive/vixen.nodisk"))
+				$strMtab = shell_exec("grep \"/dev/$strDrive\" /etc/mtab");
+				if (strpos($strMtab, "/media/$strDrive") === FALSE)
 				{
 					// drive not mounted
-					$this->Error("$strDrive failed to mount - $strResult", 'MountDrives');	
+					$this->Error("$strDrive failed to mount - $strResult", 'Mount');
+					// TESTING ONLY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					$this->arrDrives[$strDrive] = "/media/$strDrive";
 				}
 				else
 				{
@@ -406,13 +169,30 @@
 				else
 				{
 					// still mounted
-					$this->Error("$strDrive failed to unmount - $strResult", 'UnmountDrives');
+					$this->Error("$strDrive failed to unmount - $strResult", 'Unmount');
 					$bolreturn = FALSE;
 				}
 			}
 		}
 		
 		return $bolreturn;
+	}
+	
+	function DrivesMounted()
+	{
+		$intMounted = 0;
+		
+		// for each drive
+		foreach ($this->arrDrives as $strDrive=>$bolMount)
+		{
+			// if drive is mounted
+			if ($bolMount && $bolMount !== TRUE)
+			{
+				$intMounted++;
+			}
+		}
+		
+		return $intMounted;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -446,7 +226,7 @@
 		}
 		
 		// if we got to here then todays drive is not mounted, so set an error
-		$this->Error("$strDrive is set as the Drive for $strDow, but $strDrive is not mounted", 'SelectTarget');
+		$this->Error("$strDrive is set as the Drive for $strDow, but $strDrive is not mounted", 'Target');
 		
 		// try to find another mounted drive
 		foreach ($this->arrDrives as $strDrive=>$mixMount)
@@ -454,13 +234,13 @@
 			if ($mixMount && $mixMount !== TRUE)
 			{
 				// got one
-				$this->Error("$strDrive is mounted, using $strDrive as substitute", 'SelectTarget');
+				$this->Error("$strDrive is mounted, using $strDrive as substitute", 'Target');
 				return $mixMount;
 			}
 		}
 		
 		// no mounted drives, this is BAD!
-		$this->Error("Can't find a mounted backup drive", 'SelectTarget');
+		$this->Error("Can't find a mounted backup drive", 'Target');
 		return FALSE;
 	}
 	
@@ -482,8 +262,8 @@
 	// prepare (clean) the target
 	function PrepareTarget($strTarget)
 	{
-		$strTarget = trim($strTarget);
-		if (!$strTarget || $strTarget == '/')
+		$strTarget = trim($strTarget, '/ \t\n\r\0\x0B');
+		if (!$strTarget)
 		{
 			// target can not be empty or root
 			return FALSE;
@@ -493,11 +273,11 @@
 		$strDow = $this->strDow;
 		
 		// make sure the directory exists
-		mkdir("$strTarget/viXenBackup");
-		mkdir("$strTarget/viXenBackup/$strDOW");
+		@mkdir("/$strTarget/viXenBackup");
+		@mkdir("/$strTarget/viXenBackup/$strDow");
 		
 		// clean the dirty little bitch
-		shell_exec("rm -Rf $strTarget/viXenBackup/$strDOW/*");
+		shell_exec("rm -Rf /$strTarget/viXenBackup/$strDow/* 2>&1");
 		
 		return TRUE;
 	}
@@ -520,52 +300,155 @@
 	 */
 	function CopyToTarget($strSource, $strTarget)
 	{
-		if (!$strSource || $strSource == '/')
+
+		if (!trim($strSource, '/ \t\n\r\0\x0B') || !trim($strTarget, '/ \t\n\r\0\x0B'))
 		{
 			// source can not be empty or root
+			$this->Error("Copy faied - invalid source or target");
 			return FALSE;
 		}
 		
-		$bolIsFile = is_file($strSource);
-		$strSourcePath = "";
-		if ($bolIsFile)
+		// check for a valid source
+		if (is_file($strSource))
 		{
 			$strSourcePath = dirname($strSource);
 		}
-		else
+		elseif(is_dir($strSource))
 		{
 			$strSourcePath = $strSource;
 		}
-		$strSourePath = trim($strSourePath, '/');
+		else
+		{
+			// source must exist
+			$this->Error("Copy faied - invalid source : $strSource");
+			return FALSE;
+		}
 		
-		$strTarget = trim($strTarget);
-		if (!$strTarget || $strTarget == '/')
+		// remove slashes and spaces from paths
+		$strSoure	 	= trim($strSource, '/ \t\n\r\0\x0B');
+		$strSourePath 	= trim($strSourcePath, '/ \t\n\r\0\x0B');
+		$strTarget 		= trim($strTarget, '/ \t\n\r\0\x0B');
+		
+		// get DOW
+		$strDow = $this->strDow;
+		
+		// make directory path
+		$strTargetPath = "/$strTarget/viXenBackup/$strDow/$strSourcePath/";
+		$strReturn = shell_exec("mkdir -p $strTargetPath 2>&1");
+		
+		// copy
+		$strReturn = shell_exec("cp -Rp /$strSource $strTargetPath 2>&1");
+		
+		// check for copy errors
+		if ($strReturn != '')
+		{
+			$this->Error("Failed to copy /$strSource - $strReturn");
+			return FALSE;
+		}
+		
+		// return
+		return TRUE;
+	}
+	
+	function DumpToTarget($strTarget)
+	{
+		$strTarget = trim($strTarget, '/ \t\n\r\0\x0B');
+		if (!$strTarget)
 		{
 			// target can not be empty or root
+			$this->Error("Failed to dump database : bad target");
 			return FALSE;
 		}
 		
 		// get DOW
 		$strDow = $this->strDow;
 		
+		// setup target 
+		$strTargetPath 	= "/$strTarget/viXenBackup/$strDow/mysqldump/";
+		$strTargetFile 	= $strTargetPath.$this->strMysqlDatabase.".sql";
+		$strErrorFile 	= $strTargetPath.$this->strMysqlDatabase.".err";
+		
 		// make directory path
-		$strTargetPath = "$strTarget/viXenBackup/$strDow/$strSourcePath/";
-		$strReturn = shell_exec("mkdir -p $strTargetPath");
-		// mkdir cannot error, running as root, so no need to check
-		$strReturn = '';
+		$strReturn = shell_exec("mkdir -p $strTargetPath 2>&1");
 		
-		// copy
-		$strReturn = shell_exec("cp -Rp $strSource $strTargetPath");
+		// clean error file
+		shell_exec("echo \"\" > $strErrorFile 2> /dev/null");
 		
-		// check for copy errors
-		if ($strReturn != '')
+		// setup dump command
+		$strCommand = "mysqldump --user={$this->strMysqlUser} --password={$this->strMysqlPassword} --master-data=2 --single-transaction {$this->strMysqlDatabase} > $strTargetFile  2> $strErrorFile";
+		
+		// dump the bitch
+		$strReturn = shell_exec($strCommand);
+		
+		// check for dump errors
+		if ($strReturn = shell_exec("cat $strErrorFile 2>&1"))
 		{
-			$this->Error("Failed to copy $strSource - $strReturn", 'CopyToTarget');
+			$this->Error("Failed to dump database to $strTargetFile : $strReturn");
 			return FALSE;
 		}
 		
-		// return
+		// clean error file
+		shell_exec("echo \"\" > $strErrorFile 2> /dev/null");
+		
+		// setup gzip command
+		$strCommand = "gzip -c $strTargetFile > $strTargetFile.gz 2> $strErrorFile";
+		
+		// gzip the bitch
+		$strReturn = shell_exec($strCommand);
+		
+		// check for gzip errors
+		if ($strReturn = shell_exec("cat $strErrorFile 2>&1"))
+		{
+			$this->Error("Failed to gzip database at $strTargetFile : $strReturn");
+			return FALSE;
+		}
+		
+		// split the backup into tables
+		//$strCommand = "csplit --prefix=charge $strTargetFile /DROP TABLE IF EXISTS/ {*}";
+		
+		// all good
 		return TRUE;
+	}
+	
+	function StopServer($strServer)
+	{
+		shell_exec("/etc/init.d/$strServer stop");
+	}
+	
+	function StartServer($strServer)
+	{
+		shell_exec("/etc/init.d/$strServer start");
+	}
+	
+	// returns $strTarget or FALSE
+	function PrepareBackup()
+	{
+		// Check if we have mounted drives
+		if ($intMounted = $this->DrivesMounted())
+		{
+			return $intMounted;
+		}
+		
+		// try to mount drives
+		if (!$this->MountDrives())
+		{
+			//return FALSE;
+		}
+		
+		// Select target
+		if (!$strTarget = $this->SelectTarget())
+		{
+			return FALSE;
+		}
+		
+		// prepare target
+		if (!$this->PrepareTarget($strTarget))
+		{
+			return FALSE;
+		}
+		
+		// return the target
+		return $strTarget;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -584,11 +467,10 @@
 	 *
 	 * @method
 	 */
-	function Error($strError, $strMethod)
+	function Error($strError, $strMethod=NULL)
 	{
-		$this->bolError = TRUE;
-		$this->arrErrors[] = "$strMethod - $strError";
-		$this->arrErrorsByMethod[$strMethod][] = $strError;
+		$this->arrErrors[] = trim($strError);
+		$this->arrErrorsByMethod[$strMethod][] = trim($strError);
 	}
 	
 	
@@ -611,37 +493,14 @@
 	{
 		if ($strMethod != NULL)
 		{
-			$strErrors = "$strMethod Errors \n";
-			if (!(empty($this->arrErrorsByMethod[$strMethod])))
-			{
-				foreach($this->arrErrorsByMethod[$strMethod] as $strMessage)
-				{
-					$strErrors .= "$strMessage \n";
-				}
-			}
-			elseif ((empty($this->arrErrorsByMethod[$strMethod])) && array_key_exists($strMethod, $this->arrErrorsByMethod))
-			{
-				$strErrors = 'No errors found';
-			}
-			else 
-			{
-				$strErrors = 'Invalid Method Name';
-			}
-			
+			$strErrors = implode("\n", $this->arrErrorsByMethod[$strMethod]);
 		}
 		else
 		{
-			if ($this->bolError)
-			{
-				$strErrors = implode("\n", $this->arrErrors);
-			}
-			else 
-			{
-				$strErrors = 'No errors found';
-			}
+			$strErrors = implode("\n", $this->arrErrors);
 		}
 		
-		return $strErrors;
+		return "$strErrors\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -656,7 +515,7 @@
 	 * checks for errors from that method.
 	 *
 	 * @param	String		$strMethod	Optional method to check for errors
-	 * @return	String
+	 * @return	int			number of errors
 	 *
 	 * @method
 	 */
@@ -664,44 +523,14 @@
 	{
 		if ($strMethod != NULL)
 		{
-			if (!(empty($this->arrErrorsByMethod[$strMethod])))
-			{
-				$intErrors = count($this->arrErrorsByMethod[$strMethod]);
-			}
-			elseif ((empty($this->arrErrorsByMethod[$strMethod])) && array_key_exists($strMethod, $this->arrErrorsByMethod))
-			{
-				$intErrors = 0;
-			}
-			else 
-			{
-				$intErrors = -1;
-			}
+			$intErrors = count($this->arrErrorsByMethod[$strMethod]);
 		}
 		else 
 		{
-			if ($this->bolError)
-			{
-				$intErrors = count($this->arrErrors);
-			}
-			else 
-			{
-				$intErrors = 0;
-			}
+			$intErrors = count($this->arrErrors);
 		}
-		
-		switch ($intErrors)
-			{
-				case -1:
-					$strMessage = 'Invalid Method Name';
-					break;
-				case 1:
-					$strMessage = '1 Error Found';
-					break;
-				default:
-					$strMessage = "$intErrors Errors Found";
-					break;
-			}
-		return $strMessage;
+
+		return $intErrors;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -727,15 +556,11 @@
 		}
 		else 
 		{
-			$this->arrErrors = array();
-			$this->arrErrorsByMethod = array('MysqlHotCopy'=>array(), 		'MysqlColdBackup'=>array(), 
-										 	 'MysqlBinlogBackup'=>array(), 	'MountDrives'=>array(), 
-										 	 'UnmountDrives'=>array(), 		'SelectTarget'=>array(), 
-										 	 'PrepareTarget'=>array(), 		'CopyToTarget'=>array());
-			$this->bolError = TRUE;
+			$this->arrErrors 			= array();
+			$this->arrErrorsByMethod 	= array();
 		}
 		return true;
 	}
+}
 
- }
 ?>

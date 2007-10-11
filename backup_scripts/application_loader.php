@@ -46,7 +46,7 @@
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= "../framework/"; 
+ $strFrameworkDir		= "/usr/share/vixen/framework/"; 
  
 //----------------------------------------------------------------//
 // strApplicationDir
@@ -62,7 +62,7 @@
  * @variable
  * @package	framework
  */
- $strApplicationDir		= ""; 
+ $strApplicationDir		= "/usr/share/vixen/backup_scripts/"; 
  
 //----------------------------------------------------------------//
 // strWebDir
