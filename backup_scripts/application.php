@@ -160,7 +160,8 @@
 				$strResult = shell_exec("umount /dev/$strDrive");
 				
 				// check if drive unmounted
-				if (file_exists("/mnt/$strDrive/vixen.nodisk"))
+				$strMtab = shell_exec("grep \"/dev/$strDrive\" /etc/mtab");
+				if (strpos($strMtab, "/mnt/$strDrive") === FALSE)
 				{
 					// unmounted
 					$this->arrDrives[$strDrive] = TRUE;
