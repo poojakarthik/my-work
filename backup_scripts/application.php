@@ -110,7 +110,7 @@
 			if ($bolMount)
 			{
 				// mount the drive
-				$strResult = shell_exec("mount $strDrive /mnt/$strDrive 2>&1");
+				$strResult = shell_exec("mount /dev/$strDrive /mnt/$strDrive 2>&1");
 				
 				// check if mounting failed
 				$strMtab = shell_exec("grep \"/dev/$strDrive\" /etc/mtab");
@@ -157,7 +157,7 @@
 			if ($bolMount)
 			{
 				// unmount the drive
-				$strResult = shell_exec("umount $strDrive");
+				$strResult = shell_exec("umount /dev/$strDrive");
 				
 				// check if drive unmounted
 				if (file_exists("/mnt/$strDrive/vixen.nodisk"))
