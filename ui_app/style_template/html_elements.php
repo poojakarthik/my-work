@@ -244,7 +244,7 @@ class HTMLElements
 			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
 		}
 		else
-		{
+		{ 
 			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
 		}
 		$strHtml .= "   {$strLabel} : </div>\n";
@@ -514,11 +514,8 @@ class HTMLElements
 	
 
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element' style='height:22px;'>\n";
-		if ($arrParams['Required'])
-		{
-			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
-		}		
-		$strHtml .= "      <input type='checkbox' class='{$arrParams['Definition']['BaseClass']}InputText {$arrParams['Definition']['Class']}' id='$strName' $strChecked $strDisabled \n";
+
+		$strHtml .= "      <input type='checkbox' class='{$arrParams['Definition']['BaseClass']}InputCheckBox2 {$arrParams['Definition']['Class']}' id='$strName' $strChecked $strDisabled \n";
 		
 		// include the onchange javascript to handle the changing of the checkbox
 		// 
