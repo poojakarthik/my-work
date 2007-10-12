@@ -653,6 +653,30 @@ class HTMLElements
 	{
 		$strMask = trim($strMask);
 		
+		// Check if the mask is a function call which can be evaluated as a method of the OutputMasks class
+		if (strtolower(substr($strMask, 0, 7)) == "method:")
+		{
+			// The output mask is a method of the Validation class, complete with parameters and a <value> placeholder
+			// Prepare it for execution using eval()
+			$strMethod = substr($strMask, 7);
+			
+			// Only grab the first line of code (this should protect against malicious code)
+			$arrMethodParts = explode(";", $strMethod, 2);
+			$strMethod = $arrMethodParts[0];
+			$strMethod = trim($strMethod);
+			
+			// Replace the value placeholder with $mixValue
+			$strMethod = str_replace("<value>", $mixValue, $strMethod);
+			
+			$strCodeToEval = "return OutputMask()->$strMethod;";
+			
+			$mixValue = eval($strCodeToEval);
+			
+			return $mixValue;
+		}
+		
+		// remove anything after the first ";"
+		
 		if ($strMask)
 		{
 			switch ($strMask)

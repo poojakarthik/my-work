@@ -1219,6 +1219,17 @@ $GLOBALS['*arrConstant']	['ReportMode']	[802]	['Description']	= 'Nothing';
 define("CONSOLE_DOCKED"		, DONKEY);
 
 
+// RecordType DisplayType Suffix
+// The values of these constants have to reflect the DisplayType constants
+// These should be used instead of the $GLOBALS['RecordDisplayRateSuffix'] array
+$GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[1]	['Constant']	= 'RECORD_DISPLAY_SUFFIX_CALL';
+$GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[1]	['Description']	= 'Second(s)';
+$GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[2]	['Constant']	= 'RECORD_DISPLAY_SUFFIX_S_AND_E';
+$GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[2]	['Description']	= 'Unit(s)';
+$GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[3]	['Constant']	= 'RECORD_DISPLAY_SUFFIX_DATA';
+$GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[3]	['Description']	= 'KB(s)';
+$GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[4]	['Constant']	= 'RECORD_DISPLAY_SUFFIX_SMS';
+$GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[4]	['Description']	= 'Unit(s)';
 
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");

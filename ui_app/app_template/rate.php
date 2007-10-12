@@ -137,14 +137,46 @@ class AppTemplateRate extends ApplicationTemplate
 				// The old rate has been loaded, all we have to do is reset its Id to zero
 				DBO()->Rate->Id = 0;
 			}
+			
+			// Work out if the Rate is untimed
+			if 	((DBO()->Rate->StdRatePerUnit->Value == 0) &&
+				(DBO()->Rate->StdMarkup->Value == 0) &&
+				(DBO()->Rate->StdPercentage->Value == 0) &&
+				(DBO()->Rate->ExsRatePerUnit->Value == 0) &&
+				(DBO()->Rate->ExsMarkup->Value == 0) &&
+				(DBO()->Rate->ExsPercentage->Value == 0))
+			{
+				// The Rate is untimed
+				DBO()->Rate->Untimed = TRUE;
+			}
 		}
 		else
 		{
 			DBO()->Rate->Id = 0;
-			// Check if a ServiceType or RecordType was passed through to this method
+			// Check if a RecordType was passed through to this method
 			if (DBO()->RecordType->Id->Value)
 			{
 				DBO()->Rate->RecordType = DBO()->RecordType->Id->Value;
+			}
+			
+			// Set default values for the time properties
+			DBO()->Rate->StartTime	= "00:00:00";
+			DBO()->Rate->EndTime	= "23:59:59";
+			DBO()->Rate->Monday		= TRUE;
+			DBO()->Rate->Tuesday	= TRUE;
+			DBO()->Rate->Wednesday	= TRUE;
+			DBO()->Rate->Thursday	= TRUE;
+			DBO()->Rate->Friday		= TRUE;
+			DBO()->Rate->Saturday	= TRUE;
+			DBO()->Rate->Sunday		= TRUE;
+			
+			DBO()->Rate->StdUnits	= 1;
+			DBO()->Rate->ExsUnits	= 1;
+			
+			// This should always be set to either TRUE or FALSE, but for some reason, when it is sent as false, via an ajax call, it doesn't get set to FALSE
+			if (DBO()->Rate->Fleet->Value != TRUE)
+			{
+				DBO()->Rate->Fleet = FALSE;
 			}
 		}
 
@@ -262,9 +294,12 @@ class AppTemplateRate extends ApplicationTemplate
 		}
 		
 		$bolFormIsInvalid = FALSE;
-		// if the passthrough checkbox is checked disable the form elements below it, 
+		// If the passthrough checkbox is checked disable the form elements below it, 
 		// but dont perform any validation
-		if (!DBO()->Rate->PassThrough->Value)
+		
+		// Perform validation for the rate charging and rate capping fields
+		// This is not required if the rate is a PassThrough rate, or if the rate is untimed
+		if (!DBO()->Rate->PassThrough->Value  && !DBO()->Rate->Untimed->Value)
 		{
 			// Check that the Standard Units has been specified
 			if (!(Validate('Integer', DBO()->Rate->StdUnits->Value) && DBO()->Rate->StdUnits->Value > 0))
@@ -290,10 +325,22 @@ class AppTemplateRate extends ApplicationTemplate
 						DBO()->Rate->StdMarkup->SetToInvalid();
 						$bolFormIsInvalid = TRUE;
 					}
+					// If "Markup on cost ($)" is selected, it cannot be 0, as it will not be recognised as a "markup on cost" during the Rating process
+					elseif (!(DBO()->Rate->StdMarkup->Value > 0))
+					{
+						DBO()->Rate->StdMarkup->SetToInvalid();
+						$bolFormIsInvalid = TRUE;
+					}
 					break;
 				case RATE_CAP_STANDARD_PERCENTAGE:
 					// validate percentage markup
 					if (!is_numeric(DBO()->Rate->StdPercentage->Value))
+					{
+						DBO()->Rate->StdPercentage->SetToInvalid();
+						$bolFormIsInvalid = TRUE;
+					}
+					// If "Markup on cost (%)" is selected, it cannot be 0, as it will not be recognised as a "markup on cost" during the Rating process
+					elseif (!(DBO()->Rate->StdPercentage->Value > 0))
 					{
 						DBO()->Rate->StdPercentage->SetToInvalid();
 						$bolFormIsInvalid = TRUE;
@@ -316,20 +363,26 @@ class AppTemplateRate extends ApplicationTemplate
 					DBO()->Rate->ExsPercentage	= 0;
 					break;
 				case RATE_CAP_CAP_UNITS:
-					// validate cap units.  CapUnits must be an integer greater than 0
-					if (!(Validate('Integer', DBO()->Rate->CapUnits->Value) && DBO()->Rate->CapUnits->Value > 0))
+					// validate cap units.  CapUnits must be an integer >= 0
+					if (!(Validate('Integer', DBO()->Rate->CapUnits->Value) && DBO()->Rate->CapUnits->Value >= 0))
 					{
 						DBO()->Rate->CapUnits->SetToInvalid();
 						$bolFormIsInvalid = TRUE;
 					}
+					
+					// Set appropriate fields to 0
+					DBO()->Rate->CapCost = 0;
 					break;
 				case RATE_CAP_CAP_COST:
-					// validate cap cost.  CapCost must be an integer greater than 0
-					if (!(Validate('IsMoneyValue', DBO()->Rate->CapCost->Value) && DBO()->Rate->CapCost->Value > 0))
+					// validate cap cost.  CapCost must be an integer >= 0
+					if (!(Validate('IsMoneyValue', DBO()->Rate->CapCost->Value) && DBO()->Rate->CapCost->Value >= 0))
 					{
 						DBO()->Rate->CapCost->SetToInvalid();
 						$bolFormIsInvalid = TRUE;
 					}
+					
+					// Set appropriate fields to 0
+					DBO()->Rate->CapUnits = 0;
 					break;
 			}
 		
@@ -370,7 +423,7 @@ class AppTemplateRate extends ApplicationTemplate
 					case RATE_CAP_CAP_USAGE:
 						// validate cap usage and excess
 						// flag if invalid
-						// bu dont return allow to continue through the following lines
+						// but dont return allow to continue through the following lines
 						if (!(Validate('Integer', DBO()->Rate->CapUsage->Value) && DBO()->Rate->CapUsage->Value > 0))
 						{
 							DBO()->Rate->CapUsage->SetToInvalid();
@@ -398,7 +451,23 @@ class AppTemplateRate extends ApplicationTemplate
 								break;
 							case RATE_CAP_EXS_MARKUP:
 								// validate markup
+								// If an Excess markup has been chosen you cannot also specify a standard markup
+								// (see section 2.2 of the Rating document)
+								if (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_MARKUP || DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_PERCENTAGE)
+								{
+									DBO()->Rate->ExsMarkup->SetToInvalid();
+									
+									Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
+									return "ERROR: Currently, you cannot specify both a Standard Markup on Cost and an Excess Markup on Cost as the original cost will be added to the charge twice.  This behaviour will be changed in the future";
+								}
+								// continue validation
 								if (!Validate('IsMoneyValue', DBO()->Rate->ExsMarkup->Value))
+								{
+									DBO()->Rate->ExsMarkup->SetToInvalid();
+									$bolFormIsInvalid = TRUE;
+								}
+								// If "Excess Markup on cost ($)" is selected, it cannot be 0, as it will not be recognised as a "markup on cost" during the Rating process
+								elseif (!(DBO()->Rate->ExsMarkup->Value > 0))
 								{
 									DBO()->Rate->ExsMarkup->SetToInvalid();
 									$bolFormIsInvalid = TRUE;
@@ -406,7 +475,23 @@ class AppTemplateRate extends ApplicationTemplate
 								break;
 							case RATE_CAP_EXS_PERCENTAGE:
 								// validate percentage
+								// If an Excess markup has been chosen you cannot also specify a standard markup
+								// (see section 2.2 of the Rating document)
+								if (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_MARKUP || DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_PERCENTAGE)
+								{
+									DBO()->Rate->ExsPercentage->SetToInvalid();
+									
+									Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
+									return "ERROR: Currently, you cannot specify both a Standard Markup on Cost and an Excess Markup on Cost as the original cost will be added to the charge twice.  This behaviour will be changed in the future";
+								}
+								// continue validation
 								if (!is_numeric(DBO()->Rate->ExsPercentage->Value))
+								{
+									DBO()->Rate->ExsPercentage->SetToInvalid();
+									$bolFormIsInvalid = TRUE;
+								}
+								// If "Excess Markup on cost (%)" is selected, it cannot be 0, as it will not be recognised as a "markup on cost" during the Rating process
+								elseif (!(DBO()->Rate->ExsPercentage->Value > 0))
 								{
 									DBO()->Rate->ExsPercentage->SetToInvalid();
 									$bolFormIsInvalid = TRUE;
@@ -444,28 +529,45 @@ class AppTemplateRate extends ApplicationTemplate
 			DBO()->Rate->ExsFlagfall 	= 0;
 			DBO()->Rate->ExsUnits 		= 1;  // This defaults to 1.  I don't know why, that's just how it is for every rate in the database
 		}
+		elseif (DBO()->Rate->Untimed->Value)
+		{
+			// set default values for when the Rate is an untimed rate
+			DBO()->Rate->StdUnits 		= 1;
+			DBO()->Rate->StdRatePerUnit = 0;
+			DBO()->Rate->StdMarkup 		= 0;
+			DBO()->Rate->StdPercentage 	= 0;
+			DBO()->Rate->CapUnits 		= 0;
+			DBO()->Rate->CapCost 		= 0;
+			DBO()->Rate->CapLimit 		= 0;
+			DBO()->Rate->CapUsage 		= 0;
+			DBO()->Rate->ExsRatePerUnit = 0;
+			DBO()->Rate->ExsMarkup 		= 0;
+			DBO()->Rate->ExsPercentage 	= 0;
+			DBO()->Rate->ExsFlagfall 	= 0;
+			DBO()->Rate->ExsUnits 		= 1;
+		}
 		else
 		{		
 			//strip all $ signs off values
-			DBO()->Rate->StdRatePerUnit	= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_RATE_PER_UNIT) ? ltrim(DBO()->Rate->StdRatePerUnit->Value, '$') : 0;
-			DBO()->Rate->StdMarkup		= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_MARKUP) ? ltrim(DBO()->Rate->StdMarkup->Value, '$') : 0;
+			DBO()->Rate->StdRatePerUnit	= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_RATE_PER_UNIT) ? DBO()->Rate->StdRatePerUnit->Value : 0;
+			DBO()->Rate->StdMarkup		= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_MARKUP) ? DBO()->Rate->StdMarkup->Value : 0;
 			DBO()->Rate->StdPercentage	= (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_PERCENTAGE) ? DBO()->Rate->StdPercentage->Value : 0;
 			
 			DBO()->Rate->CapUnits		= (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS) ? DBO()->Rate->CapUnits->Value : 0;
-			DBO()->Rate->CapCost		= (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST) ? ltrim(DBO()->Rate->CapCost->Value, '$') : 0;
+			DBO()->Rate->CapCost		= (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST) ? DBO()->Rate->CapCost->Value : 0;
 			
-			DBO()->Rate->CapLimit		= (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? ltrim(DBO()->Rate->CapLimit->Value, '$') : 0;
+			DBO()->Rate->CapLimit		= (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? DBO()->Rate->CapLimit->Value : 0;
 			DBO()->Rate->CapUsage		= (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE) ? DBO()->Rate->CapUsage->Value : 0;
-			DBO()->Rate->ExsFlagfall	= (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE || DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? ltrim(DBO()->Rate->ExsFlagfall->Value, '$') : 0;
+			DBO()->Rate->ExsFlagfall	= (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE || DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? DBO()->Rate->ExsFlagfall->Value : 0;
 			
-			DBO()->Rate->ExsRatePerUnit	= (DBO()->Rate->ExsChargeType->Value == RATE_CAP_EXS_RATE_PER_UNIT) ? ltrim(DBO()->Rate->ExsRatePerUnit->Value, '$') : 0;
-			DBO()->Rate->ExsMarkup		= (DBO()->Rate->ExsChargeType->Value == RATE_CAP_EXS_MARKUP) ? ltrim(DBO()->Rate->ExsMarkup->Value, '$') : 0;
+			DBO()->Rate->ExsRatePerUnit	= (DBO()->Rate->ExsChargeType->Value == RATE_CAP_EXS_RATE_PER_UNIT) ? DBO()->Rate->ExsRatePerUnit->Value : 0;
+			DBO()->Rate->ExsMarkup		= (DBO()->Rate->ExsChargeType->Value == RATE_CAP_EXS_MARKUP) ? DBO()->Rate->ExsMarkup->Value : 0;
 			DBO()->Rate->ExsPercentage	= (DBO()->Rate->ExsChargeType->Value == RATE_CAP_EXS_PERCENTAGE) ? DBO()->Rate->ExsPercentage->Value : 0;
 		}
 		
 		// Minimum Charge and Flagfall must be specified regardless of whether or not the Rate is a PassThrough
-		DBO()->Rate->StdFlagfall = ltrim(DBO()->Rate->StdFlagfall->Value, '$');
-		DBO()->Rate->StdMinCharge = ltrim(DBO()->Rate->StdMinCharge->Value, '$');
+		DBO()->Rate->StdFlagfall	= DBO()->Rate->StdFlagfall->Value;
+		DBO()->Rate->StdMinCharge	= DBO()->Rate->StdMinCharge->Value;
 		
 		if (!DBO()->Rate->Destination->IsSet)
 		{

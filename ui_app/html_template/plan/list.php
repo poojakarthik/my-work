@@ -200,7 +200,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		echo "</div>\n";
 		echo "</div>\n";  // Container div
 
-		Table()->PlanTable->SetHeader("Type", "Name", "Description", "Shared", "Min Monthly Spend", "Cap Charge", "Cap Limit", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetHeader("Type", "Name", "Description", "Shared", "Min Monthly Spend", "Cap Charge", "Cap<br />Limit", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
 		Table()->PlanTable->SetWidth("8%", "20%", "8%", "8%", "8%", "8%", "8%", "8%", "8%", "8%", "4%", "4%");
 		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Right", "Right", "Right", "Left", "Left", "Left", "Center", "Center");
 

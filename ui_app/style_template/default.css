@@ -293,6 +293,7 @@
 	{
 		border:				solid 1px #000000;
 	}
+	
 	.DefaultInputText,
 	.DefaultInputTextArea
 	{
@@ -874,13 +875,14 @@
 	}
 	
 	/* This is used as a wrapper for the buttons if they are being floated
-	 * to the right
-	 */
-	 
+	 * to the right or left
+	 */ 
 	.ButtonContainer
 	{
 		height: 		25px;
+		padding:		3px 0px 3px 0px;
 	}
+	
 	
 /**************************************************************************/
 /* SEPARATORS															  */
@@ -920,12 +922,16 @@
 		
 		font-weight:		bold;
 		
-		margin:				3px;
+		/*margin:				3px;*/
+		margin:				0px;
 		padding-top:		1px;
 		padding-left:		6px;
 		padding-right:		6px;
 		padding-bottom:		1px;
+		
 		font-size:			10pt;
+		
+		
 	}
 	
 	input.InputSubmit

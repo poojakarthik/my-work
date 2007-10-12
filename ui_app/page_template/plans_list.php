@@ -27,7 +27,18 @@
  */
 
 // set the page title
-$this->Page->SetName('Available Plans');
+if (DBO()->RatePlan->ServiceType->Value)
+{
+	// The filter has been used
+	$strPageTitle = "Available " . GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "ServiceType") . " Plans";
+}
+else
+{
+	// The user wants to view plans for all Service Types
+	$strPageTitle = "Available Plans";
+}
+
+$this->Page->SetName($strPageTitle);
 
 // set the layout template for the page.
 $this->Page->SetLayout('1Column');
