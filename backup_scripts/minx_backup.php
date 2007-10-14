@@ -20,7 +20,7 @@ if (!$bolReady)
 }
 
 // dump database
-if (!$appBackup->DumpToTarget($strTarget))
+if (!$appBackup->DumpToTarget($strTarget, TRUE))
 {
 	echo $appBackup->GetErrorMessage();
 	die();

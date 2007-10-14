@@ -350,7 +350,7 @@
 		return TRUE;
 	}
 	
-	function DumpToTarget($strTarget)
+	function DumpToTarget($strTarget, $bolRemove=FALSE)
 	{
 		$strTarget = trim($strTarget, '/ \t\n\r\0\x0B');
 		if (!$strTarget)
@@ -405,6 +405,15 @@
 		
 		// split the backup into tables
 		//$strCommand = "csplit --prefix=charge $strTargetFile /DROP TABLE IF EXISTS/ {*}";
+		
+		if ($bolRemove === TRUE)
+		{
+			// setup remove command
+			$strCommand = "rm -f $strTargetFile";
+			
+			// remove the bitch
+			$strReturn = shell_exec($strCommand);
+		}
 		
 		// all good
 		return TRUE;
