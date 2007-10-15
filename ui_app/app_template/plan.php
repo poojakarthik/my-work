@@ -448,7 +448,7 @@ class AppTemplatePlan extends ApplicationTemplate
 				// The RatePlan requires a RateGroup of this RecordType, but one has not been declared
 				//NOTE! This is only run if the RecordType was not associated with the ServiceType before loading the RateGroupDiv contents
 				$this->GetRateGroupsForm();
-				return "ERROR: strObject = '$strObject' intRecCount=$intRecCount objectsChecked=$strObjectsChecked A new record type has been associated with this service type, since you chose the service type of the plan";
+				return "ERROR: A new record type has been associated with this service type, since you chose the service type of the plan";
 			}
 			else
 			{

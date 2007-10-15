@@ -258,6 +258,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		$strWhere = "Id IN (". implode(",", DBO()->SelectedRates->ArrId->Value) .")";
 		DBL()->Rate->Where->SetString($strWhere);
+		DBL()->Rate->SetColumns("Id");
 		DBL()->Rate->Load();
 		
 		// All Validation is complete, the RateGroup is valid
