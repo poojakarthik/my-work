@@ -121,7 +121,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				// The pdf exists
 				// Build "view invoice pdf" link
 				$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intYear, $intMonth);
-				$strPdfLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf.png' title='View PDF Invoice' /></a></span>";
+				$strPdfLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a></span>";
 				
 				// build "Email invoice pdf" link
 				$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);

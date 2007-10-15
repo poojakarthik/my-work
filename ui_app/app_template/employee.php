@@ -46,9 +46,10 @@ class AppTemplateEmployee extends ApplicationTemplate
 {
 	function View()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		// context menu
 		//TODO! define what goes in the context menu
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
@@ -58,8 +59,11 @@ class AppTemplateEmployee extends ApplicationTemplate
 		//ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
 		//ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);
 		
-		// Console and logout should appear by default, no?
-		ContextMenu()->Console();
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 		
 		// breadcrumb menu

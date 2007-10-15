@@ -61,9 +61,10 @@ class AppTemplateService extends ApplicationTemplate
 	 */
 	function View()
 	{
-		// Should probably check user authorization here
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
 		// Setup all DBO and DBL objects required for the page
 		if (!DBO()->Service->Load())
@@ -108,6 +109,7 @@ class AppTemplateService extends ApplicationTemplate
 
 		// context menu
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Employee_Console();		
 		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
@@ -115,7 +117,11 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Admin_Console();
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
@@ -648,12 +654,14 @@ class AppTemplateService extends ApplicationTemplate
 	{
 		$pagePerms = PERMISSION_OPERATOR;
 		
-		// Should probably check user authorization here
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie($pagePerms);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
 		// context menu
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Employee_Console();		
 		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
@@ -661,7 +669,11 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Admin_Console();
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 
 		// Bread Crumb Menu

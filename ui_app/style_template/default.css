@@ -274,7 +274,13 @@
 		top:						0px;
 		overflow:				hidden;
 	}
-	
+
+	/*.DefaultInputCheckBox
+	{
+		outline-Style:	solid;
+		outline-Width:	1px;
+	}*/
+
 	.DefaultInputCheckBox2
 	{
 		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
@@ -284,7 +290,7 @@
 		left:					197px;
 		top:					1px;
 		overflow:			hidden;
-		/* these 2 properties may only work in firefox */
+		/* these 2 properties 'may' only work in firefox */
 		outline-Style:	solid;
 		outline-Width:	1px;
 	}
@@ -729,7 +735,7 @@
 	
 	h2.Adjustment
 	{
-		background-image:              url('img/template/charge.png');
+		background-image:              url('img/template/charge_small.png');
 	}
 	
 	h2.Address

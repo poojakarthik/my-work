@@ -61,17 +61,10 @@ class AppTemplateContact extends ApplicationTemplate
 	 */
 	function View()
 	{
-		$pagePerms = PERMISSION_ADMIN;
-		
-		// Should probably check user authorization here
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
-
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		// Breadcrumb menu
 				
@@ -91,7 +84,11 @@ class AppTemplateContact extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Notes->Add_Contact_Note(DBO()->Contact->Id->Value);
 		ContextMenu()->Contact_Retrieve->Edit_Contact(DBO()->Contact->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Associated_Account(DBO()->Contact->Account->Value);
-		ContextMenu()->Admin_Console();
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 		
 		// Retrieve all accounts that the contact is allowed to view
@@ -139,16 +136,10 @@ class AppTemplateContact extends ApplicationTemplate
 	 */
 	function Edit()
 	{
-		$pagePerms = PERMISSION_ADMIN;
-		
-		// Check user authorization here
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
 		// handle form submittion if the user is editing an existing contact
 		if (SubmittedForm("EditContact", "Apply Changes"))
@@ -263,8 +254,11 @@ class AppTemplateContact extends ApplicationTemplate
 		// Load context menu items specific to the Edit Contact page
 		//TODO! What would go here anyway?
 	
-		// Context menu
-		ContextMenu()->Admin_Console();
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 		
 		// Bread Crumb Menu
@@ -292,16 +286,10 @@ class AppTemplateContact extends ApplicationTemplate
 	 */
 	function Add()
 	{
-		$pagePerms = PERMISSION_ADMIN;
-		
-		// Should probably check user authorization here
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
 		// handle form submittion if the user is adding a contact
 		if (SubmittedForm("AddContact", "Add Contact"))
@@ -434,8 +422,11 @@ class AppTemplateContact extends ApplicationTemplate
 		// Load context menu items specific to the Edit Contact page
 		//TODO!
 		
-		// Context menu
-		ContextMenu()->Admin_Console();
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 		
 		// Bread Crumb Menu
