@@ -106,7 +106,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			$strWhere = "Archived != <Archived>";
 		}
 		
-		DBL()->RatePlan->Where->Set($strWhere, Array("Archived" => ARCHIVE_STATUS_ARCHIVED, "ServiceType"=>DBO()->RatePlan->ServiceType->Value));
+		DBL()->RatePlan->Where->Set($strWhere, Array("Archived" => RATE_STATUS_ARCHIVED, "ServiceType"=>DBO()->RatePlan->ServiceType->Value));
 		DBL()->RatePlan->OrderBy("ServiceType, Name");
 		DBL()->RatePlan->Load();
 	
@@ -259,7 +259,7 @@ class AppTemplatePlan extends ApplicationTemplate
 					}
 					
 					// Set the message appropriate to the action
-					if (DBO()->Plan->Archived->Value == ARCHIVE_STATUS_ACTIVE)
+					if (DBO()->Plan->Archived->Value == RATE_STATUS_ACTIVE)
 					{
 						$strSuccessMsg = "The plan has been successfully saved";
 					}
@@ -305,7 +305,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 			
 			// Make sure the Rate Plan is a draft
-			if (DBO()->RatePlan->Archived->Value != ARCHIVE_STATUS_DRAFT)
+			if (DBO()->RatePlan->Archived->Value != RATE_STATUS_DRAFT)
 			{
 				// Can't edit the Rate Plan
 				DBO()->Error->Message = "The RatePlan with id: ". DBO()->RatePlan->Id->value ." and Name \"". DBO()->RatePlan->Name->Value ."\" is not a draft and therefore cannot be edited";
@@ -501,12 +501,12 @@ class AppTemplatePlan extends ApplicationTemplate
 		if (SubmittedForm('AddPlan', 'Save as Draft'))
 		{
 			// Flag the plan as being a draft
-			DBO()->RatePlan->Archived = ARCHIVE_STATUS_DRAFT;
+			DBO()->RatePlan->Archived = RATE_STATUS_DRAFT;
 		}
 		else
 		{
 			// The plan is not being saved as a draft
-			DBO()->RatePlan->Archived = ARCHIVE_STATUS_ACTIVE;
+			DBO()->RatePlan->Archived = RATE_STATUS_ACTIVE;
 		}
 		
 		// S2: Save the plan to the database
@@ -539,9 +539,9 @@ class AppTemplatePlan extends ApplicationTemplate
 		if ((SubmittedForm('AddPlan', 'Commit')) && (count($this->_arrRateGroups) > 0))
 		{
 			$strRateGroups 	= implode(',', $this->_arrRateGroups);
-			$arrUpdate		= Array("Archived" => ARCHIVE_STATUS_ACTIVE);
-			$updRateGroups 	= new StatementUpdate("RateGroup", "Archived = ". ARCHIVE_STATUS_DRAFT ." AND Id IN ($strRateGroups)", $arrUpdate);
-			$updRates 		= new StatementUpdate("Rate", "Archived = ". ARCHIVE_STATUS_DRAFT ." AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup IN ($strRateGroups))", $arrUpdate);
+			$arrUpdate		= Array("Archived" => RATE_STATUS_ACTIVE);
+			$updRateGroups 	= new StatementUpdate("RateGroup", "Archived = ". RATE_STATUS_DRAFT ." AND Id IN ($strRateGroups)", $arrUpdate);
+			$updRates 		= new StatementUpdate("Rate", "Archived = ". RATE_STATUS_DRAFT ." AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup IN ($strRateGroups))", $arrUpdate);
 			
 			if ($updRateGroups->Execute($arrUpdate, NULL) === FALSE)
 			{
@@ -590,7 +590,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RecordType->Load();
 		
 		// Find all Rate Groups for this ServiceType that aren't archived (archived can equal, 0 (not archived), 1 (archived) or 2 (not yet committed/draft))
-		$strWhere = "ServiceType = <ServiceType> AND Archived != " + ARCHIVE_STATUS_ARCHIVED;
+		$strWhere = "ServiceType = <ServiceType> AND Archived != " . RATE_STATUS_ARCHIVED;
 		DBL()->RateGroup->Where->Set($strWhere, Array('ServiceType' => DBO()->RatePlan->ServiceType->Value));
 		DBL()->RateGroup->OrderBy("Description");
 		DBL()->RateGroup->Load();

@@ -1834,6 +1834,41 @@ class OutputMasks
 		return $strValue;	
 	}
 
+	function FormatFloat($fltFloat, $intMinDecPlaces = 2, $intMaxDecPlaces = NULL)
+	{
+		// if $intMaxDecPlaces has been specified then format the number to that many places
+		if ($intMaxDecPlaces !== NULL)
+		{
+			$strFloat = number_format($fltFloat, $intMaxDecPlaces, ".", "");
+		}
+		else
+		{
+			$strFloat = $fltFloat;
+		}
+		
+		$mixDecimalPointPos = strpos($strFloat, ".");
+		
+		if ($mixDecimalPointPos === FALSE)
+		{
+			// There is no fraction part to this number.  Pad with zeros to the desired minumum decimal places
+			$strFloat = number_format($strFloat, $intMinDecPlaces, ".", "");
+		}
+		else
+		{
+			// Trim the trailing zeros and pad up to the min decimal places
+			$strFloat = rtrim($strFloat, "0");
+			$strFractionPart = substr($strFloat, $mixDecimalPointPos+1);
+			if (strlen($strFractionPart) < $intMinDecPlaces)
+			{
+				// The fraction part is less than the minimum decimal places, so pad it
+				$strFloat = number_format($strFloat, $intMinDecPlaces, ".", "");
+			}
+		}
+		
+		return $strFloat;
+	}
+
+
 	//------------------------------------------------------------------------//
 	// ShortDate
 	//------------------------------------------------------------------------//

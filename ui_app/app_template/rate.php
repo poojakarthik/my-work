@@ -64,14 +64,9 @@ class AppTemplateRate extends ApplicationTemplate
 	{
 		$pagePerms = PERMISSION_ADMIN;
 		
-		// Should probably check user authorization here
+		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
-		
-		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
-		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
-		{
-			// Add extra functionality for super-users
-		}
+		AuthenticatedUser()->PermissionOrDie($pagePerms);
 
 		// Handle form submittion
 		if (SubmittedForm("AddRate","Commit") || SubmittedForm("AddRate","Save as Draft"))
@@ -160,24 +155,25 @@ class AppTemplateRate extends ApplicationTemplate
 			}
 			
 			// Set default values for the time properties
-			DBO()->Rate->StartTime	= "00:00:00";
-			DBO()->Rate->EndTime	= "23:59:59";
-			DBO()->Rate->Monday		= TRUE;
-			DBO()->Rate->Tuesday	= TRUE;
-			DBO()->Rate->Wednesday	= TRUE;
-			DBO()->Rate->Thursday	= TRUE;
-			DBO()->Rate->Friday		= TRUE;
-			DBO()->Rate->Saturday	= TRUE;
-			DBO()->Rate->Sunday		= TRUE;
+			DBO()->Rate->StartTime		= "00:00:00";
+			DBO()->Rate->EndTime		= "23:59:59";
+			DBO()->Rate->Monday			= TRUE;
+			DBO()->Rate->Tuesday		= TRUE;
+			DBO()->Rate->Wednesday		= TRUE;
+			DBO()->Rate->Thursday		= TRUE;
+			DBO()->Rate->Friday			= TRUE;
+			DBO()->Rate->Saturday		= TRUE;
+			DBO()->Rate->Sunday			= TRUE;
 			
-			DBO()->Rate->StdUnits	= 1;
-			DBO()->Rate->ExsUnits	= 1;
+			DBO()->Rate->StdUnits		= 1;
+			DBO()->Rate->ExsUnits		= 1;
 			
-			// This should always be set to either TRUE or FALSE, but for some reason, when it is sent as false, via an ajax call, it doesn't get set to FALSE
-			if (DBO()->Rate->Fleet->Value != TRUE)
-			{
-				DBO()->Rate->Fleet = FALSE;
-			}
+			DBO()->Rate->StdMinCharge	= 0;
+			DBO()->Rate->StdFlagfall	= 0;
+			DBO()->Rate->ExsFlagfall	= 0;
+			DBO()->Rate->CapUnits		= 0;
+			DBO()->Rate->CapUsage		= 0;
+			
 		}
 
 		$this->LoadPage('rate_add');
@@ -205,7 +201,7 @@ class AppTemplateRate extends ApplicationTemplate
 		$arrRate['Description']	= DBO()->Rate->Description->Value;
 		$arrRate['Name']		= DBO()->Rate->Name->Value;
 		$arrRate['RecordType'] 	= DBO()->Rate->RecordType->Value;
-		$arrRate['Draft']		= (DBO()->Rate->Archived->Value == ARCHIVE_STATUS_DRAFT) ? 1 : 0;
+		$arrRate['Draft']		= (DBO()->Rate->Archived->Value == RATE_STATUS_DRAFT) ? 1 : 0;
 		$arrRate['Fleet']		= (DBO()->Rate->Fleet->Value == TRUE) ? 1 : 0;
 		
 		$objRate = Json()->encode($arrRate);
@@ -574,14 +570,19 @@ class AppTemplateRate extends ApplicationTemplate
 			DBO()->Rate->Destination = 0;
 		}
 		
+		// Build the Description if one hasn't been specified
+		// Currently it overrides the user defined description
+		$this->BuildDescription();
+		
+		
 		if (SubmittedForm("AddRate","Save as Draft"))
 		{
-			DBO()->Rate->Archived = ARCHIVE_STATUS_DRAFT;
+			DBO()->Rate->Archived = RATE_STATUS_DRAFT;
 		}
 		
 		if (SubmittedForm("AddRate","Commit"))
 		{
-			DBO()->Rate->Archived = ARCHIVE_STATUS_ACTIVE;
+			DBO()->Rate->Archived = RATE_STATUS_ACTIVE;
 		}
 	
 		if (!DBO()->Rate->Save())
@@ -590,6 +591,13 @@ class AppTemplateRate extends ApplicationTemplate
 			return "ERROR: Saving the Rate failed, unexpectedly<br>The Rate has not been saved";
 		}
 		return TRUE;
+	}
+	
+	function BuildDescription()
+	{
+		// checkout what kind of units are being used
+		// TODO
+		
 	}
 	
 	//----- DO NOT REMOVE -----//

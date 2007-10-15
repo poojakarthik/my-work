@@ -1231,6 +1231,17 @@ $GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[3]	['Description']	= 'KB(s)';
 $GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[4]	['Constant']	= 'RECORD_DISPLAY_SUFFIX_SMS';
 $GLOBALS['*arrConstant']	['DisplayTypeSuffix']	[4]	['Description']	= 'Unit(s)';
 
+// RateStatus
+// These are used for RatePlans, RateGroups and Rates to define their "Archived" property
+$GLOBALS['*arrConstant']	['RateStatus']	[0]	['Constant']	= 'RATE_STATUS_ACTIVE';
+$GLOBALS['*arrConstant']	['RateStatus']	[0]	['Description']	= 'Active';
+$GLOBALS['*arrConstant']	['RateStatus']	[1]	['Constant']	= 'RATE_STATUS_ARCHIVED';
+$GLOBALS['*arrConstant']	['RateStatus']	[1]	['Description']	= 'Archived';
+$GLOBALS['*arrConstant']	['RateStatus']	[2]	['Constant']	= 'RATE_STATUS_DRAFT';
+$GLOBALS['*arrConstant']	['RateStatus']	[2]	['Description']	= 'Draft';
+
+
+
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
 

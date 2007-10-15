@@ -328,7 +328,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 					// Work out what type of unit this RecordType has
 					$strUnitSuffix = GetConstantDescription(DBO()->RecordType->DisplayType->Value, "DisplayTypeSuffix");
 					
-					echo "<tr><td width='2%'>&nbsp;</td>";
+					echo "<tr height='24px'><td width='2%'>&nbsp;</td>";
 					echo "<td width='56%'>". DBO()->Rate->StdUnits->AsInput(CONTEXT_DEFAULT, TRUE) ."</td>";
 					echo "<td>";
 					echo "<span id='RateAdd_StdUnitSuffix' class='DefaultOutputSpan' UnitSuffix='$strUnitSuffix'>$strUnitSuffix</span>";
@@ -339,21 +339,21 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 					// charges, the line is split for readability for that one line retaining its full line length makes program logic
 					// easier to understand
 					
-					echo "<tr>\n";
+					echo "<tr height='24px'>\n";
 					$strChecked = ($intChargeStatus == RATE_CAP_STANDARD_RATE_PER_UNIT) ? "checked='checked'" : "";
 					echo "<td><input type='radio' id='Radio_StdCharge' name='Rate.ChargeType' value='". RATE_CAP_STANDARD_RATE_PER_UNIT."' $strChecked></td>\n";
 					echo "<td>". DBO()->Rate->StdRatePerUnit->AsInput() ."</td>\n";
 					echo "<td><span id='RateAdd_StdRatePerUnitSuffix' class='DefaultOutputSpan'>Per X $strUnitSuffix</span></td>\n";
 					echo "</tr>\n";
 					
-					echo "<tr>\n";
+					echo "<tr height='24px'>\n";
 					$strChecked = ($intChargeStatus == RATE_CAP_STANDARD_MARKUP) ? "checked='checked'" : "";
 					echo "<td><input type='radio' id='Radio_StdMarkup' name='Rate.ChargeType' value='".RATE_CAP_STANDARD_MARKUP."' $strChecked></td>\n";
 					echo "<td>". DBO()->Rate->StdMarkup->AsInput() ."</td>\n";
 					echo "<td><span id='RateAdd_StdMarkupSuffix' class='DefaultOutputSpan'>Per X $strUnitSuffix</span></td>\n";
 					echo "</tr>\n";
 					
-					echo "<tr>\n";
+					echo "<tr height='24px'>\n";
 					$strChecked = ($intChargeStatus == RATE_CAP_STANDARD_PERCENTAGE) ? "checked='checked'" : "";
 					echo "<td><input type='radio' id='Radio_StdPercentage' name='Rate.ChargeType' value='". RATE_CAP_STANDARD_PERCENTAGE."' $strChecked></td>\n";
 					echo "<td>".DBO()->Rate->StdPercentage->AsInput()."</td><td>&nbsp;</td>\n";
@@ -496,14 +496,14 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 				
 				echo "<div class='Seperator'></div>\n";
 				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
-				echo "<tr><td width='2%'>&nbsp;</td><td width='56%'>".DBO()->Rate->ExsUnits->AsInput(CONTEXT_DEFAULT, true)."</td><td width='41%'><span class='DefaultOutputSpan'>$strUnitSuffix</span></td></tr>\n";
-				echo "<tr><td width='2%'><input type='radio' id='Radio_ExsCharge'     name='Rate.ExsChargeType' value='".RATE_CAP_EXS_RATE_PER_UNIT."'". ($intCapExcessChargeType == RATE_CAP_EXS_RATE_PER_UNIT ? "checked='checked'" : "") ."></td>";
+				echo "<tr height='24px'><td width='2%'>&nbsp;</td><td width='56%'>".DBO()->Rate->ExsUnits->AsInput(CONTEXT_DEFAULT, true)."</td><td width='41%'><span class='DefaultOutputSpan'>$strUnitSuffix</span></td></tr>\n";
+				echo "<tr height='24px'><td width='2%'><input type='radio' id='Radio_ExsCharge'     name='Rate.ExsChargeType' value='".RATE_CAP_EXS_RATE_PER_UNIT."'". ($intCapExcessChargeType == RATE_CAP_EXS_RATE_PER_UNIT ? "checked='checked'" : "") ."></td>";
 				echo "<td>". DBO()->Rate->ExsRatePerUnit->AsInput() ."</td>";
 				echo "<td><span id='RateAdd_ExsRatePerUnitSuffix' class='DefaultOutputSpan'>Per X $strUnitSuffix beyond cap limit</span></td></tr>\n";
-				echo "<tr><td width='2%'><input type='radio' id='Radio_ExsMarkup'     name='Rate.ExsChargeType' value='".RATE_CAP_EXS_MARKUP."'". ($intCapExcessChargeType == RATE_CAP_EXS_MARKUP ? "checked='checked'" : "") ."></td>";
+				echo "<tr height='24px'><td width='2%'><input type='radio' id='Radio_ExsMarkup'     name='Rate.ExsChargeType' value='".RATE_CAP_EXS_MARKUP."'". ($intCapExcessChargeType == RATE_CAP_EXS_MARKUP ? "checked='checked'" : "") ."></td>";
 				echo "<td>". DBO()->Rate->ExsMarkup->AsInput() ."</td>";
 				echo "<td><span id='RateAdd_ExsMarkupSuffix' class='DefaultOutputSpan'>Per X $strUnitSuffix beyond cap limit</span></td></tr>\n";
-				echo "<tr><td width='2%'><input type='radio' id='Radio_ExsPercentage' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_PERCENTAGE."'". ($intCapExcessChargeType == RATE_CAP_EXS_PERCENTAGE ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->ExsPercentage->AsInput()."</td><td>&nbsp;</td></tr>\n";
+				echo "<tr height='24px'><td width='2%'><input type='radio' id='Radio_ExsPercentage' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_PERCENTAGE."'". ($intCapExcessChargeType == RATE_CAP_EXS_PERCENTAGE ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->ExsPercentage->AsInput()."</td><td>&nbsp;</td></tr>\n";
 				echo "</table>\n";
 				echo "</div>\n";  //end of expandingexsdetail DIV
 					

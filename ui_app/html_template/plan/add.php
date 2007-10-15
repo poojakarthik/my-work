@@ -173,18 +173,15 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "<h2 class='Plan'>Plan Details</h2>\n";
 		echo "<div class='WideForm'>\n";
 		
-		// Various properties of the RatePlan table need to be rendered using Context 1
-		$intContextAddRatePlan = 1;
-
 		// Only apply the output mask if the DBO()->RatePlan is not invalid
 		$bolApplyOutputMask = !DBO()->RatePlan->IsInvalid();
 
 		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Shared->RenderInput(2, TRUE);
-		DBO()->RatePlan->MinMonthly->RenderInput($intContextAddRatePlan, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->ChargeCap->RenderInput($intContextAddRatePlan, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->UsageCap->RenderInput($intContextAddRatePlan, TRUE, $bolApplyOutputMask);
+		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		
 		// Build the list of carriers
 		$arrCarriers = Array();
@@ -257,7 +254,11 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
 		
-		
+		// Override the Width of the RatePlan.Name and RatePlan.Description textboxes
+		$strJavascript  = "document.getElementById('RatePlan.Name').style.width='380px';";
+		$strJavascript .= "document.getElementById('RatePlan.Description').style.width='380px';";
+		echo "<script type='text/javascript'>$strJavascript</script>\n";
+
 		echo "</div>\n"; // WideForm
 		echo "<div class='SmallSeperator'></div>\n";
 	}

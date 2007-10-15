@@ -262,6 +262,8 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		
+		// Override the width of these textboxes
+		echo "<script type='text/javascript'>Vixen.RateGroupAdd.OverrideTextboxSize();</script>";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -296,12 +298,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				$strRateName 	= htmlspecialchars($arrRate['Name'], ENT_QUOTES);
 				$strDescription = htmlspecialchars($arrRate['Description'], ENT_QUOTES);
 				$strDraft 		= "";
-				/* This is no longer needed as fleet rates will only be shown if the RateGroup is a Fleet RateGroup
-				if ($arrRate['Fleet'])
-				{
-					$strRateName = "Fleet: " . $strRateName;
-				}
-				*/
+
 				if ($arrRate['Draft'])
 				{
 					$strDraft = "draft='draft'";
@@ -341,11 +338,13 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "</td>\n";
 		
 		// Draw the buttons
-		//TODO! These aren't lining up properly
-		echo "<td align='center'>\n";		
+		echo "<td align='center'>\n";
+		echo "<div class='ButtonContainer'>\n";
 		$this->Button(">>", "Vixen.RateGroupAdd.MoveSelectedOptions(\"AvailableRatesCombo\", \"SelectedRatesCombo\");");
-		echo "<br /><br />\n";
+		echo "</div>";
+		echo "<div class='ButtonContainer'>\n";
 		$this->Button("<<", "Vixen.RateGroupAdd.MoveSelectedOptions(\"SelectedRatesCombo\", \"AvailableRatesCombo\");");
+		echo "</div>";
 		echo "</td>\n";
 		
 		// Draw the Selected Rates multi-select combo box
@@ -363,12 +362,14 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// also used for adding a rate based on an existing
 		echo "<tr>\n";
 		echo "<td align='left'>\n";
+		echo "<div class='ButtonContainer'>\n";
 		echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.RateChooser()\"></input>\n";
 		echo "<input type='button' value='Edit Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.EditRate()\"></input>\n";
-		echo "</td>\n";
+		echo "</div></td>\n";
 		echo "<td colspan='2' align='right'>\n";
+		echo "<div class='ButtonContainer'>\n";
 		echo "<input type='button' value='Preview Rate Summary' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.PreviewRateSummary()\"></input>\n";
-		echo "</td>";
+		echo "</div></td>";
 		echo "</tr>\n";
 
 		// Finish the table

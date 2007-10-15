@@ -200,15 +200,15 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		echo "</div>\n";
 		echo "</div>\n";  // Container div
 
-		Table()->PlanTable->SetHeader("Type", "Name", "Description", "Shared", "Min Monthly Spend", "Cap Charge", "Cap<br />Limit", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
-		Table()->PlanTable->SetWidth("8%", "20%", "8%", "8%", "8%", "8%", "8%", "8%", "8%", "8%", "4%", "4%");
-		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Right", "Right", "Right", "Left", "Left", "Left", "Center", "Center");
+		Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend ($)", "Cap Charge ($)", "Cap Limit ($)", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetWidth("8%", "20%", "8%", "10%", "10%", "10%", "8%", "8%", "8%", "5%", "5%");
+		Table()->PlanTable->SetAlignment("Left", "Left", "Center", "Right", "Right", "Right", "Center", "Center", "Center", "Center", "Center");
 
 		foreach (DBL()->RatePlan as $dboRatePlan)
 		{
 			// Build the Edit Rate Plan link, if the RatePlan is currently a draft
 			$strEditCell = "&nbsp;";
-			if ($dboRatePlan->Archived->Value == ARCHIVE_STATUS_DRAFT)
+			if ($dboRatePlan->Archived->Value == RATE_STATUS_DRAFT)
 			{
 				$strEditPlanLink	= Href()->EditRatePlan($dboRatePlan->Id->Value, Href()->AvailablePlans(DBO()->RatePlan->ServiceType->Value));
 				$strEditCell		= "<a href='$strEditPlanLink' title='Edit'><span class='DefaultOutputSpan'>Edit</span></a>";
@@ -220,26 +220,20 @@ class HtmlTemplatePlanList extends HtmlTemplate
 			
 			// Workout the status of the Rate Plan
 			// Note these constants will eventually be declared in vixen/framework/definitions and you will be able to use the GetConstantDescription() function
-			switch ($dboRatePlan->Archived->Value)
-			{
-				case ARCHIVE_STATUS_ACTIVE:
-					$strStatusCell = "<span class='DefaultOutputSpan'>Active</span>";
-					break;
-				case ARCHIVE_STATUS_DRAFT:
-					$strStatusCell = "<span class='DefaultOutputSpan'>Draft</span>";
-					break;
-				default:
-					$strStatusCell = "Value = " . $dboRatePlan->Archived->Value;
-			}
+			$strStatusCell = "<span class='DefaultOutputSpan'>". GetConstantDescription($dboRatePlan->Archived->Value, "RateStatus") ."</span>";
 			
 			// Format the RatePlan->Shared boolean
-			$strSharedCell = ($dboRatePlan->Shared->Value) ? "Yes" : "No";
+			$strSharedCell = OutputMask()->BooleanYesNo($dboRatePlan->Shared->Value);
 			$strSharedCell = "<span class='DefaultOutputSpan'>$strSharedCell</span>";
+			
+			// Format the Name and Description (The title attribute of the Name will be set to the description)
+			$strDescription = htmlspecialchars($dboRatePlan->Description->Value, ENT_QUOTES);
+			$strName = $dboRatePlan->Name->FormattedValue();
+			$strNameCell = "<span class='DefaultOutputSpan' title='$strDescription'>$strName</span>";
 			
 			// Add the Rate Plan to the VixenTable
 			Table()->PlanTable->AddRow(	$dboRatePlan->ServiceType->AsCallBack("GetConstantDescription", Array('ServiceType')),
-										$dboRatePlan->Name->AsValue(),
-										$dboRatePlan->Description->AsValue(),
+										$strNameCell,
 										$strSharedCell,
 										$dboRatePlan->MinMonthly->AsValue(),
 										$dboRatePlan->ChargeCap->AsValue(),
@@ -257,7 +251,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 			// There are no RatePlans to stick in this table
 			Table()->PlanTable->AddRow("<span class='DefaultOutputSpan Default'>No Rate Plans to display</span>");
 			Table()->PlanTable->SetRowAlignment("left");
-			Table()->PlanTable->SetRowColumnSpan(12);
+			Table()->PlanTable->SetRowColumnSpan(11);
 		}
 		
 		Table()->PlanTable->Render();

@@ -75,11 +75,6 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		// Load all java script specific to the page here
-		$this->LoadJavascript("highlight");
-		$this->LoadJavascript("retractable");
-		$this->LoadJavascript("tooltip");
 	}
 
 	//------------------------------------------------------------------------//
@@ -158,9 +153,9 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		
 		echo "</div>\n";
 		
-		echo "<div class='right'>\n";
-		$this->Button("Close", "Vixen.Popup.Close(\"PreviewRateSummaryPopup\");");
-		echo "</div>\n";
+		echo "<div class='ButtonContainer'><div class='right'>\n";
+		$this->Button("Close", "Vixen.Popup.Close(this);");
+		echo "</div></div>\n";
 		
 	}
 }

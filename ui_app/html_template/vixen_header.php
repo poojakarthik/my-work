@@ -94,10 +94,10 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
+	{	$strEmployeeConsoleLink = Href()->EmployeeConsole();
 		echo "	<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>
     <div class='Logo'>
-      <img src='img/template/vixen_logo.png' border='0'>
+      <a href='$strEmployeeConsoleLink'><img src='img/template/vixen_logo.png' border='0'></a>
     </div>
     <div id='Header' class='sectionContainer'>
       <span class='LogoSpacer'></span>

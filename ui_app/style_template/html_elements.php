@@ -202,8 +202,19 @@ class HTMLElements
 	 */
 	function InputHidden($arrParams)
 	{
-		$strValue = $arrParams['Value'];
-		$strHtml .= "<input type='hidden' id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$strValue'/>\n";
+		// preprocess the value
+		$mixValue = $arrParams['Value'];
+		if ($mixValue === FALSE)
+		{
+			$mixValue = "0";
+		}
+		elseif ($mixValue === NULL)
+		{
+			$mixValue = "";
+		}
+		
+		
+		$strHtml .= "<input type='hidden' id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$mixValue'/>\n";
 		return $strHtml;
 	}
 	
@@ -664,7 +675,21 @@ class HTMLElements
 			$arrMethodParts = explode(";", $strMethod, 2);
 			$strMethod = $arrMethodParts[0];
 			$strMethod = trim($strMethod);
-			
+
+			//Prepare the value for cases where it needs to be converted
+			if ($mixValue === NULL)
+			{
+				$mixValue = "NULL";
+			}
+			elseif ($mixValue === FALSE)
+			{
+				$mixValue = "FALSE";
+			}
+			elseif ($mixValue === TRUE)
+			{
+				$mixValue = "TRUE";
+			}
+
 			// Replace the value placeholder with $mixValue
 			$strMethod = str_replace("<value>", $mixValue, $strMethod);
 			

@@ -456,7 +456,7 @@ function VixenPopupClass()
 			strSize = "medium";
 		}
 	
-		strContent =	"<p><div align='center'>" + strMessage + 
+		strContent =	"<p><div align='center' style='margin: 5px'>" + strMessage + 
 						"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
@@ -556,12 +556,13 @@ function VixenPopupClass()
 	 * @param	string	strMessage			optional, message to display.  Default = "Page Loading"
 	 * @param 	string	strSize				optional, size of the splash popup. Default = "medium"
 	 * @param 	string	strImage			optional, image to display. Default = "img/template/pablo_load.gif"
+	 * @param	string	strElement			optional, If supplied, the splash will appear above the element (not over the element)
 	 *
 	 * @return	void
 	 *
 	 * @method
 	 */
-	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage)
+	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage, strElement)
 	{
 		// set the default message
 		if (strMessage == null)
@@ -578,11 +579,11 @@ function VixenPopupClass()
 		{
 			strImage = "img/template/pablo_load.gif";
 		}
-	
+		
 		strContent =	"<div align='center' style='border: solid 2px #000000;'><p>" + strMessage + "</p>" +
 						"<p><span id='VixenSplashDots'>.</span></p>" + 
 						"<p><img id='Vixen_DancingPablo' src='" + strImage + "' align='center'></img></p>\n";
-		this.CreateSplash(strContent, strSize);
+		this.CreateSplash(strContent, strSize, null, strElement);
 		this.AnimateSplash();
 	}
 	
@@ -610,6 +611,11 @@ function VixenPopupClass()
 		}
 		
 		var elmDots = document.getElementById("VixenSplashDots");
+		if (elmDots == null)
+		{
+			// The splash has been closed
+			return;
+		}
 		
 		var strDots = "..................................";
 		
@@ -619,8 +625,6 @@ function VixenPopupClass()
 		intNumOfDots++;
 		setTimeout(function(){Vixen.Popup.AnimateSplash(intNumOfDots)}, 200);
 	}
-	
-	
 	
 	//------------------------------------------------------------------------//
 	// ClosePageLoadingSplash
@@ -652,17 +656,24 @@ function VixenPopupClass()
 	 * 
 	 * @param	string	strContent		html code to be displayed in the splash
 	 * @param	string	strSize			optional, Defaults to "medium"
-	 * @param	int		intTime			optional. If set, the splash will disapear after intTime miliseconds
+	 * @param	int		intTime			optional, If set, the splash will disapear after intTime miliseconds
+	 * @param	string	strElement		optional, If supplied, the splash will appear above the element (not over the element)
 	 *
 	 * @return	void
 	 * @method
 	 */
-	this.CreateSplash = function(strContent, strSize, intTime)
+	this.CreateSplash = function(strContent, strSize, intTime, strElement)
 	{
 		// set defaults
 		if (strSize == null)
 		{
 			strSize = "medium";
+		}
+		
+		var elmElement = null;
+		if (strElement)
+		{
+			elmElement = document.getElementById(strElement);
 		}
 	
 		// Try to find a previous splash
@@ -743,6 +754,23 @@ function VixenPopupClass()
 		// center the splash
 		elmPopup.style.left	= ((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
 		elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+		
+		// If elmElement has been defined, then position the splash above the element
+		// This has been incorporated into the functionality because sometimes in MSIE elements like comboboxes will
+		// always appear in front of the splash, regardless of their zIndex
+		if (elmElement)
+		{
+			// Find the absolute position of the element
+			var intOffsetTop = elmElement.offsetTop;
+
+			while (elmElement.offsetParent)
+			{
+				elmElement = elmElement.offsetParent;
+				intOffsetTop += elmElement.offsetTop;
+			}
+	
+			elmPopup.style.top = intOffsetTop - elmPopup.offsetHeight - 10;
+		}
 		
 		// Display the splash
 		elmPopup.style.visibility = 'visible';

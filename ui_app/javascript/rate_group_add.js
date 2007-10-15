@@ -83,9 +83,17 @@ function VixenRateGroupAddClass()
 		// Some of the controls can be disabled if they have already been set, and shouldn't change
 		if (bolDisableElements)
 		{
-			document.getElementById("RateGroup.Fleet").disabled		= true;
-			document.getElementById("ServiceTypeCombo").disabled	= true;
-			document.getElementById("RecordTypeCombo").disabled		= true;
+			var elmFleet		= document.getElementById("RateGroup.Fleet");
+			var elmServiceType	= document.getElementById("ServiceTypeCombo");
+			var elmRecordType	= document.getElementById("RecordTypeCombo");
+			
+			elmFleet.disabled		= true;
+			elmServiceType.disabled	= true;
+			elmRecordType.disabled	= true;
+			
+			elmFleet.style.color		= "#000000";
+			elmServiceType.style.color	= "#000000";
+			elmRecordType.style.color	= "#000000";
 		}
 		
 		// Set the focus to the Name text field
@@ -93,6 +101,18 @@ function VixenRateGroupAddClass()
 		// protected against by setting the "autocomplete" attribute of all text input elements to "off"
 		//Exception... "'Permission denied to set property XULElement.selectedIndex' when calling method: [nsIAutoCompletePopup::selectedIndex]"
 		//document.getElementById("RateGroup.Name").focus();
+		
+		// Override the default length of the textboxes
+		this.OverrideTextboxSize();
+		
+	}
+	
+	// Used to override the size of the textboxes and the RecordType combobox
+	this.OverrideTextboxSize = function()
+	{
+		document.getElementById("RateGroup.Name").style.width = "380px";
+		document.getElementById("RateGroup.Description").style.width = "380px";
+		document.getElementById("RecordTypeCombo").style.width = "380px";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -501,7 +521,6 @@ function VixenRateGroupAddClass()
 		elmSourceCombo.removeChild(elmOption);
 		
 		// Stick it in the destination combo so that the alphabetical order of the options is preserved
-		/*
 		for (var i=0; i < elmDestinationCombo.options.length; i++)
 		{
 			if (elmOption.text < elmDestinationCombo.options[i].text)
@@ -510,7 +529,6 @@ function VixenRateGroupAddClass()
 				return;
 			}
 		}
-		*/
 		
 		// If it has gotten this far then add the element to the end of the list of options
 		elmDestinationCombo.appendChild(elmOption);

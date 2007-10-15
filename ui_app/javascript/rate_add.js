@@ -64,6 +64,10 @@ function VixenRateAddClass()
 	this.InitialiseForm = function(strPopupId)
 	{
 		this.strPopupId = strPopupId;
+		
+		// Override the width of the Name and Description fields
+		document.getElementById("Rate.Name").style.width = "380px";
+		document.getElementById("Rate.Description").style.width = "380px";
 	
 		document.getElementById("Rate.StartTime").disabled	= true;
 		document.getElementById("Rate.EndTime").disabled	= true;
@@ -170,6 +174,8 @@ function VixenRateAddClass()
 
 	function StdChargeTypeOnChange()
 	{
+		var bolDisableExsMarkup = false;
+		
 		if (document.getElementById('Radio_StdCharge').checked)
 		{
 			// Disable the Rate.StdMarkup and Rate.StdPercentage textboxes
@@ -184,6 +190,11 @@ function VixenRateAddClass()
 			
 			// Display the RateAdd_StdRatePerUnitSuffix label
 			document.getElementById("RateAdd_StdRatePerUnitSuffix").style.display = "inline";
+			
+			// Enable the ExsMarkup and ExsPercentage radio buttons
+			document.getElementById("Radio_ExsMarkup").disabled = false;
+			document.getElementById("Radio_ExsPercentage").disabled = false;
+			ExsChargeTypeOnChange();
 		}
 		else if (document.getElementById('Radio_StdMarkup').checked)
 		{
@@ -199,6 +210,9 @@ function VixenRateAddClass()
 			
 			// Display the RateAdd_StdMarkupSuffix label
 			document.getElementById("RateAdd_StdMarkupSuffix").style.display = "inline";
+			
+			// Flag that Exs Markup on Cost options must be disabled
+			bolDisableExsMarkup = true;
 		}
 		else if (document.getElementById('Radio_StdPercentage').checked)
 		{
@@ -213,6 +227,31 @@ function VixenRateAddClass()
 
 			// Enable the Rate.StdPercentage textbox
 			document.getElementById('Rate.StdPercentage').disabled	= false;
+			
+			// Flag that Exs Markup on Cost options must be disabled
+			bolDisableExsMarkup = true;
+		}
+		if (bolDisableExsMarkup)
+		{
+			// Disable the ExsMarkup and ExsPercentage radio buttons and textboxes 
+			// as you can't specify both a Standard markup on cost, and an Excess markup on cost
+			var elmExsMarkupRadio		= document.getElementById("Radio_ExsMarkup");
+			var elmExsPercentageRadio	= document.getElementById("Radio_ExsPercentage");
+			var elmNoCapRadio			= document.getElementById("Radio_NoCap");
+			var elmCapUsageLimitRadio	= document.getElementById("Radio_CapUsageLimit");
+			
+			// Check if either ExsMarkup or ExsPercentage had been selected and 
+			// if so, warn the user that they cannot specify both a Standard 
+			// markup on cost, and an Excess markup on cost
+			if ((elmNoCapRadio.checked == false) && (elmCapUsageLimitRadio.checked == true) && (elmExsMarkupRadio.checked == true || elmExsPercentageRadio.checked == true))
+			{
+				Vixen.Popup.Alert("WARNING: You cannot specify both a Standard Markup on Cost and an Excess Markup on Cost as the original cost will be added to the charge twice");
+			}
+			
+			document.getElementById("Radio_ExsCharge").checked = true;
+			elmExsMarkupRadio.disabled = true;
+			elmExsPercentageRadio.disabled = true;
+			ExsChargeTypeOnChange();
 		}
 	}
 	

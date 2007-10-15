@@ -647,6 +647,11 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		}
 		
 		var elmDots = document.getElementById("VixenSplashDots");
+		if (elmDots == null)
+		{
+			// The splash has been closed
+			return;
+		}
 		
 		var strDots = "..................................";
 		
