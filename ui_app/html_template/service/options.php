@@ -93,13 +93,16 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 	
 		$strEditServiceLink = Href()->EditService(DBO()->Service->Id->Value, "VixenOnServiceUpdate");
 		echo "<li><a href='$strEditServiceLink'>Edit Service Details</a></li>\n";
-		
-		echo "<li>[TODO] View Unbilled Charges</li>\n";
+
+		$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges(DBO()->Service->Id->Value);
+		echo "<li><a href='$strViewUnbilledChargesLink'>View Unbilled Charges</a></li>\n";
 		echo "<li>[TODO] View Recurring Adjustments</li>\n";
 		
 		$strChangePlanLink = Href()->ChangePlan(DBO()->Service->Id->Value);
 		echo "<li><a href='$strChangePlanLink'>Change Plan</a></li>\n";
-		echo "<li>[TODO] Change of Lessee</li>\n";
+		
+		$strChangeLesseeLink = Href()->ChangeOfLessee(DBO()->Service->Id->Value);		
+		echo "<li><a href='$strChangeLesseeLink'>Change of Lessee</li>\n";
 		
 		$strAddServiceNoteLink = Href()->AddServiceNote(DBO()->Service->Id->Value);
 		echo "<li><a href='$strAddServiceNoteLink'>Add Service Note</a></li>\n";		

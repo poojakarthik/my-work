@@ -620,6 +620,58 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// ViewUnbilledCharges
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewUnbilledCharges()
+	 *
+	 * Compiles the javascript to be executed when the ViewUnbilledCharges menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the ViewUnbilledCharges menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the service associated with the unbilled charges
+	 *
+	 * @return	string				action to be executed when the ViewUnbilledCharges menu item is clicked
+	 *
+	 * Example URL
+	 * http://localhost/ross/vixen/intranet_app/service_unbilled.php?Id=1
+	 *
+	 * @method
+	 */
+	function ViewUnbilledCharges($intId)
+	{
+		$this->strLabel	= "view unbilled charges";
+		return "service_unbilled.php?Id=$intId";
+	}
+
+	//------------------------------------------------------------------------//
+	// ChangeOfLessee
+	//------------------------------------------------------------------------//
+	/**
+	 * ChangeOfLessee()
+	 *
+	 * Compiles the javascript to be executed when the ChangeOfLessee menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the ChangeOfLessee menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the service associated
+	 *
+	 * @return	string				action to be executed when the ChangeOfLessee menu item is clicked
+	 *
+	 * Example URL
+	 * http://localhost/ross/vixen/intranet_app/service_lessee.php?Service=1
+	 *
+	 * @method
+	 */
+	function ChangeOfLessee($intId)
+	{
+		$this->strLabel	= "change of lessee";
+		return "service_lessee.php?Service=$intId";
+	}
+
+	//------------------------------------------------------------------------//
 	// ViewServiceNotes
 	//------------------------------------------------------------------------//
 	/**

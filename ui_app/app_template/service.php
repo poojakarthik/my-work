@@ -111,12 +111,18 @@ class AppTemplateService extends ApplicationTemplate
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Employee_Console();		
 		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Services->Add_Service(DBO()->Account->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Services->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Contact_Retrieve->Services->Change_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Services->Change_of_Lessee(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Services->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 		if ($bolUserHasAdminPerm)
 		{
 			// User must have admin permissions to view the Administrative Console
@@ -663,12 +669,13 @@ class AppTemplateService extends ApplicationTemplate
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Employee_Console();		
 		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Services->Add_Service(DBO()->Account->Id->Value);		
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 		if ($bolUserHasAdminPerm)
 		{
 			// User must have admin permissions to view the Administrative Console
@@ -684,7 +691,7 @@ class AppTemplateService extends ApplicationTemplate
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Service->Load())
 		{
-			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ."you were attempting to view could not be found";
+			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->Value ."you were attempting to view could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
