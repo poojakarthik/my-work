@@ -137,14 +137,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			echo "<div id='RateGroupsDiv'></div>\n";
 			
 			// Create the buttons
-			echo "<div class='SmallSeperator'></div>\n";
-			echo "<div class='Right'>\n";
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
 			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to abort adding this rate plan?\", Vixen.RatePlanAdd.ReturnToCallingPage, null, null, \"Yes\", \"No\")");
 			//$this->AjaxSubmit("Save as Draft");
 			$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate Plan as a Draft?\", Vixen.RatePlanAdd.SaveAsDraft, null, null, \"Yes\", \"No\")");
 			//$this->AjaxSubmit("Commit");
 			$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate Plan?<br />The Rate Plan cannot be edited once it is committed\", Vixen.RatePlanAdd.Commit, null, null, \"Yes\", \"No\")");
-			echo "</div>\n";
+			echo "</div></div>\n";
+			
 			$this->FormEnd();
 			
 			// Initialise the Rate Groups Assocciated with this form

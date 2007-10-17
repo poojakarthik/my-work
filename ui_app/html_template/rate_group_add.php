@@ -331,7 +331,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Draw the Available Rates multi-select combo box
 		echo "<td>\n";
 		echo "<div class='DefaultElement'>\n";
-		echo "<select size='15' multiple='multiple' id='AvailableRatesCombo' class='DefaultInputComboBox' style='left:0px;width:305px;'>";
+		echo "<select size='15' multiple='multiple' id='AvailableRatesCombo' class='DefaultInputComboBox' style='left:0px;width:305px;' onClick='Vixen.RateGroupAdd.AvailableRatesComboOnClick()' onKeyDown='Vixen.RateGroupAdd.AvailableRatesComboOnClick()'>";
 		echo $strAvailableRates;
 		echo "</select>\n";
 		echo "</div>\n";
@@ -350,7 +350,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Draw the Selected Rates multi-select combo box
 		echo "<td>\n";
 		echo "<div class='DefaultElement'>\n";
-		echo "<select size='15' multiple='multiple' valueIsList='valueIsList' id='SelectedRatesCombo' name='SelectedRates.ArrId' class='DefaultInputComboBox' style='left:0px;width:305px;'>";
+		echo "<select size='15' multiple='multiple' valueIsList='valueIsList' id='SelectedRatesCombo' name='SelectedRates.ArrId' class='DefaultInputComboBox' style='left:0px;width:305px;' onClick='Vixen.RateGroupAdd.SelectedRatesComboOnClick()' onKeyDown='Vixen.RateGroupAdd.SelectedRatesComboOnClick()'>";
 		echo $strSelectedRates;
 		echo "</select>\n";
 		echo "</div>\n";
@@ -363,12 +363,12 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "<tr>\n";
 		echo "<td align='left'>\n";
 		echo "<div class='ButtonContainer'>\n";
-		echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.RateChooser()\"></input>\n";
-		echo "<input type='button' value='Edit Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.EditRate()\"></input>\n";
+		$this->Button("Add New Rate", "Vixen.RateGroupAdd.AddNewRate()");
+		$this->Button("Edit Rate", "Vixen.RateGroupAdd.EditRate()");
 		echo "</div></td>\n";
 		echo "<td colspan='2' align='right'>\n";
 		echo "<div class='ButtonContainer'>\n";
-		echo "<input type='button' value='Preview Rate Summary' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.PreviewRateSummary()\"></input>\n";
+		$this->Button("Preview Rate Summary", "Vixen.RateGroupAdd.PreviewRateSummary()");
 		echo "</div></td>";
 		echo "</tr>\n";
 

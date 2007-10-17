@@ -48,6 +48,26 @@ class AppTemplateRateGroup extends ApplicationTemplate
 {
 	
 	//------------------------------------------------------------------------//
+	// _arrRateAllocationSummaryPerDestination
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrRateAllocationSummaryPerDestination
+	 *
+	 * For each time interval of each destination, this stores a list of Ids of the rates that are being applied
+	 *
+	 * For each time interval of each destination (of the RecordType of the RateGroup)
+	 * this stores a list of Ids of the rates being applied
+	 * Intervals are in 15 minute blocks after midnight.  For example the 3rd time Interval represents the time period
+	 * of 00:30:00 to 00:44:59
+	 *
+	 * @type		array	[intDestinationCode OR 0][strWeekday ("Monday".."Sunday")][intInterval (0..95)][] = Rate Id of a rate that applies to these conditions
+	 *
+	 * @property
+	 */
+	private $_arrRateAllocationSummaryPerDestination = NULL;
+	
+	
+	//------------------------------------------------------------------------//
 	// Add
 	//------------------------------------------------------------------------//
 	/**
@@ -60,6 +80,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *		DBO()->RateGroup->Id		If you want to edit an existing draft Rate Group
 	 *		XOR
 	 *		DBO()->BaseRateGroup->Id	If you want to add a new Rate Group, based on an existing one defined by this value
+	 *		The "Add Rate Group" popup does not make use of the new Custom-Event Model, which is why it is concerned with
+	 *		knowing what the calling page is.  If, in the future, this popup can be opened from numerous pages, then I would
+	 *		recommend modifying it to use the new Custom-Event Model.
 	 *		
 	 *
 	 * @return		void
@@ -361,6 +384,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * Displays the Rate Summary, for a RateGroup, in a popup
 	 * 
 	 * Displays the Rate Summary, for a RateGroup, in a popup
+	 *		DBO()->RecordType->Id			RecordType of the RateGroup
+	 *		DBO()->RateGroup->Fleet			TRUE if the RateGroup is a Fleet RateGroup, else FALSE
+	 *		DBO()->SelectedRates->ArrId		Indexed array of Rate Ids which the RateGroup comprises of
 	 *
 	 * @return		void
 	 *
@@ -369,10 +395,12 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 */
 	function PreviewRateSummary()
 	{
-		//passes list of rate id's, the RecordType of the RateGroup and the calling page id
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		// Build the Problem Report of the rate summary
+		DBO()->RateSummary->ProblemReport = $this->_BuildRateSummaryProblemReport(DBO()->RecordType->Id->Value, DBO()->SelectedRates->ArrId->Value, DBO()->RateGroup->Fleet->Value);
 		
 		// Build the RateSummary
 		$arrRateSummary = $this->_BuildRateSummary(DBO()->RecordType->Id->Value, DBO()->SelectedRates->ArrId->Value);
@@ -382,25 +410,215 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		$this->LoadPage('rate_summary');
 	}
-	
+
 	//------------------------------------------------------------------------//
-	// _BuildRateSummary
+	// _BuildRateSummaryProblemReport
 	//------------------------------------------------------------------------//
 	/**
-	 * _BuildRateSummary()
+	 * _BuildRateSummaryProblemReport()
 	 *
-	 * Builds the Rate Summary as a multi-dimensional array
+	 * Builds a Report outlining the various problems with the RateGroup
 	 * 
-	 * Builds the Rate Summary as a multi-dimensional array
+	 * Builds a Report outlining the various problems with the RateGroup
 	 *
-	 * @return		array		$arrAllocationsPerDestination[DestinationCode][strWeekday][intInterval] = intNumOfRatesAppliedToThisInterval
-	 *							If the RecordType is not associated with any destinations then the first array index will just have 
-	 *							one element accessed by $arrAllocationsPerDestination[0]
+	 * @param		integer		$intRecordType	The RecordType of the RateGroup
+	 * @param		array		$arrRateIds		indexed array of Ids of the Rates that belong to this RateGroup
+	 * @param		bool		$bolIsFleet		TRUE if the RateGroup is a Fleet RateGroup, else FALSE
+	 *
+	 * @return		string		Report outlining the various problems with the RateGroup.
 	 *
 	 * @method
 	 *
 	 */
-	private function _BuildRateSummary($intRecordType, $arrRateIds)
+	private function _BuildRateSummaryProblemReport($intRecordType, $arrRateIds, $bolIsFleet)
+	{
+		// I think for the moment, I should make this summary as brief as possible.  For each Destination that isn't "just-right"
+		// for the entire week, list whether it is over allocated, under, or both, and list which Rates are associated with it, if there
+		// are any
+		
+		// Check if $this->_arrRateAllocationSummaryPerDestination has not already been built
+		if ($this->_arrRateAllocationSummaryPerDestination === NULL)
+		{
+			$this->_BuildRateAllocationSummaryPerDestination($intRecordType, $arrRateIds);
+		}
+		
+		// Build the list of required destinations for the RecordType
+		$arrDestinationSummary = Array();
+		// We need to retrieve the description of each destination, if the rates are subject to destinations
+		$selRecordType = new StatementSelect("RecordType", "Id, Context", "Id = <Id>");
+		$selRecordType->Execute(Array("Id" => $intRecordType));
+		$arrRecordType = $selRecordType->Fetch();
+		
+		if ($arrRecordType['Context'] != 0)
+		{
+			// The RecordType is destination based, retrieve the descriptions of each destination
+			$selDestinations = new StatementSelect("Destination", "Description, Code, Context", "Context = <Context>");
+			$selDestinations->Execute(Array("Context" => $arrRecordType['Context']));
+			$arrDestinations = $selDestinations->FetchAll();
+			
+			foreach ($arrDestinations as $arrDestination)
+			{
+				$arrDestinationSummary[$arrDestination['Code']]['Description'] = $arrDestination['Description'];
+			}
+		}
+		else
+		{
+			// The RecordType does not make use of Destinations
+			$arrDestinationSummary[0]['Description'] = NULL;
+		}
+		
+		// Build a list of names of the various Rates that are being applied to this RateGroup
+		$arrRateNames = Array();
+		$strWhere = "Id IN (". implode(",", $arrRateIds) .")";
+		$selRates = new StatementSelect("Rate", "Id, Name", $strWhere);
+		$selRates->Execute();
+		$arrRates = $selRates->FetchAll();
+		foreach ($arrRates as $arrRate)
+		{
+			$arrRateNames[$arrRate['Id']] = $arrRate['Name'];
+		}
+		
+		// Traverse the RateAllocationSummaryPerDestination and find any occurrences of there being over allocations or under allocations
+		foreach ($this->_arrRateAllocationSummaryPerDestination as $intDestination=>$arrWeekdayRateAllocations)
+		{
+			$arrDestinationSummary[$intDestination]['Rates']				= Array();
+			$arrDestinationSummary[$intDestination]['HasOverAllocation']	= FALSE;
+			$arrDestinationSummary[$intDestination]['HasUnderAllocation']	= FALSE;
+			
+			foreach ($arrWeekdayRateAllocations as $strWeekday=>$arrIntervalRateAllocations)
+			{
+				foreach ($arrIntervalRateAllocations as $intInterval=>$arrRateIds)
+				{
+					$intRateCount = count($arrRateIds);
+					if ($intRateCount > 1)
+					{
+						// The Destination has an over allocation of rates during this time interval
+						// Flag it as having an over allocation
+						$arrDestinationSummary[$intDestination]['HasOverAllocation'] = TRUE;
+						
+						// Add the rates to the list of rates associated with this destination
+						foreach ($arrRateIds as $intRateId)
+						{
+							$arrDestinationSummary[$intDestination]['Rates'][$intRateId] = $arrRateNames[$intRateId];
+						}
+					}
+					elseif ($intRateCount == 1)
+					{
+						// The Destination has the correct number of rates (1 rate) allocated to this time interval
+						// Add the rate to the list of rates associated with this destination
+						$intRateId = $arrRateIds[0];
+						$arrDestinationSummary[$intDestination]['Rates'][$intRateId] = $arrRateNames[$intRateId];
+					}
+					else
+					{
+						// The Destination has an under-allocation of rates during this time interval
+						// Flag it as having an under-allocation
+						$arrDestinationSummary[$intDestination]['HasUnderAllocation'] = TRUE;
+					}
+				}
+			}
+		}
+		
+		// Now we have a list of rates applied to each destination, (along with their names) and we can tell if there
+		// has been an under-allocation or over-allocation (for a destination) during the week
+		$strRateGroupSummary = "";
+		$bolProblemDetected = FALSE;
+		foreach ($arrDestinationSummary as $intDestination=>$arrDestination)
+		{
+			$strDestinationSummary = "";
+			$strOverAllocation = "";
+			$strUnderAllocation = "";
+
+			if ($arrDestination['HasOverAllocation'])
+			{
+				$strOverAllocation = "\t\tOver Allocation at some point during the week\n";
+			}
+
+			if (($arrDestination['HasUnderAllocation']) && (!$bolIsFleet))
+			{
+				$strUnderAllocation = "\t\tUnder Allocation at some point during the week\n";
+			}
+
+			if (($arrDestination['HasOverAllocation']) || (($arrDestination['HasUnderAllocation']) && (!$bolIsFleet)))
+			{
+				// The Destination has either an over-allocation of rates, or (an under-allocation and is not being applied to a fleet RateGroup)
+				// Fleet RateGroups are allowed under-allocations
+				$bolProblemDetected = TRUE;
+				
+				if ($intDestination == 0)
+				{
+					// RecordType does not have destinations 
+					$strDestinationSummary = "\tThe Rate Group has:\n" . $strUnderAllocation . $strOverAllocation;
+				}
+				else
+				{
+					// RecordType has multiple destinations
+					$strDestinationSummary = "\tDestination '{$arrDestination['Description']}' has:\n" . $strOverAllocation . $strUnderAllocation;
+					
+					// List the Rates belonging to the rate group, which apply to this destination
+					if (count($arrDestination['Rates']) > 0)
+					{
+						$strDestinationSummary .= "\t\tRates associated with this destination are:\n";
+						foreach ($arrDestination['Rates'] as $strRateName)
+						{
+							$strDestinationSummary .= "\t\t\t$strRateName\n";
+						}
+					}
+					else
+					{
+						// There are currently no rates associated with this Destination
+						$strDestinationSummary .= "\t\tThere are currently no Rates in the Rate Group associated with this destination\n";
+					}
+				}
+
+			}
+			
+			// Add the Destination Summary to the TotalSummary
+			$strRateGroupSummary .= $strDestinationSummary;
+		}
+		
+		// Check if there were any problems detected
+		if ($bolProblemDetected)
+		{
+			$strRateGroupSummary = "The following problems have been detected:\n" . $strRateGroupSummary;
+		}
+		else
+		{
+			$strRateGroupSummary = "No problems have been detected.\n";
+		}
+		
+		if ($bolIsFleet)
+		{
+			$strRateGroupSummary .= "Since this is a fleet Rate Group, under-allocations are allowed.\n";
+		}
+			
+		return $strRateGroupSummary;
+	}
+
+
+	//------------------------------------------------------------------------//
+	// _BuildRateAllocationSummaryPerDestination
+	//------------------------------------------------------------------------//
+	/**
+	 * _BuildRateAllocationSummaryPerDestination()
+	 *
+	 * Builds a Rate Allocation Summary, for each destination of the RecordType, as a multi-dimensional array
+	 * 
+	 * Builds a Rate Allocation Summary, for each destination of the RecordType, as a multi-dimensional array
+	 * This array is stored in the private member varibale $this->_arrRateAllocationSummaryPerDestination
+	 * And is of the form [Destination][Weekday][Interval][] = Id of Rate applied
+	 * This is being stored as a private member variable as several functions utilise it, and it makes sense to
+	 * cache it as opposed to building it on the fly each time.
+	 *
+	 * @param		integer		$intRecordType	Id of the RecordType of the RateGroup
+	 * @param		array		$arrRateIds		indexed array of Ids of the Rates that belong to this RateGroup
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 *
+	 */
+	private function _BuildRateAllocationSummaryPerDestination($intRecordType, $arrRateIds)
 	{
 		// Build the structure which will store what times of the week are covered
 		$arrWeekdays = Array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
@@ -408,17 +626,22 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$arrAllocations = Array();
 		for ($i=0; $i < 96; $i++)
 		{
-			// This integer will represent how many rates cover the interval
-			$arrIntervals[$i] = 0;
+			// This array will store the id of each Rate that applies to the interval for the given destination
+			$arrIntervals[$i] = Array();
 		}
 		foreach ($arrWeekdays as $strWeekday)
 		{
 			$arrAllocations[$strWeekday] = $arrIntervals;
 		}
-		$arrAllocationsPerDestination = Array();
-		//The key of $arrIntervals represents the 15minute interval after midnight.  The Value of $arrIntervals[interval] represents
-		//how many of the rates cover this particular interval.  For example if $arrIntervals[2] = 4 then this means the third time interval
-		//(00:30:00 to 00:44:59) has 4 rates that cover it.
+		
+		// Initialise the cached Summary
+		$this->_arrRateAllocationSummaryPerDestination = Array();
+		
+		//The key of $arrIntervals represents the 15minute interval after midnight.  $arrIntervals[interval] is an array storing
+		//the Id of each Rate that is applied to that interval, for a given day and destination.
+		//For example if $arrIntervals[2] = {3, 6, 19} then this means the third time interval
+		//(00:30:00 to 00:44:59) has Rates 3, 6 and 19 applied to it, for the given weekday and destination code.  Properly allocated
+		//Rates will result in only 1 rate being applied for each interval for each day for each destination
 		
 		// We need to retrieve a list of all destinations, if the rates are subject to destinations
 		$selRecordType = new StatementSelect("RecordType", "Id, Context", "Id = <Id>");
@@ -436,13 +659,13 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			
 			foreach ($arrDestinations as $arrDestination)
 			{
-				$arrAllocationsPerDestination[$arrDestination['Code']] = $arrAllocations;
+				$this->_arrRateAllocationSummaryPerDestination[$arrDestination['Code']] = $arrAllocations;
 			}
 		}
 		else
 		{
 			// The RecordType does not make use of Destinations
-			$arrAllocationsPerDestination[0] = $arrAllocations;
+			$this->_arrRateAllocationSummaryPerDestination[0] = $arrAllocations;
 		}
 		
 		// Retrieve the rates selected
@@ -478,17 +701,52 @@ class AppTemplateRateGroup extends ApplicationTemplate
 						
 						if ($bolCovered)
 						{
-							// Increment the counter which counts how many rates are applied to this time interval
-							$arrAllocationsPerDestination[$arrRate['Destination']][$strWeekday][$intInterval] += 1;
+							// Append the Rate's Id to the list of Rates that are applied to this interval, for this destination
+							$this->_arrRateAllocationSummaryPerDestination[$arrRate['Destination']][$strWeekday][$intInterval][] = $arrRate['Id'];
 						}
 					}
 				}
 			}
 		}
 		
-		// We now have a structure which stores the total number of rates which are applied to each interval of each day, 
+		// We now have a structure which stores the id of each rate applied to each individual interval of each individual day, 
+		// for each individual destination associated with the RecordType
+		// $this->_arrRateAllocationSummaryPerDestination[Destination][Weekday][Interval][] = Id of Rate applied
+		// This can be used to work out which Destinations, or times of the week are over/under allocated, and if so, which
+		// rates are causing the confliction
+	}
+
+
+	//------------------------------------------------------------------------//
+	// _BuildRateSummary
+	//------------------------------------------------------------------------//
+	/**
+	 * _BuildRateSummary()
+	 *
+	 * Builds the Rate Summary as a multi-dimensional array
+	 * 
+	 * Builds the Rate Summary as a multi-dimensional array
+	 *
+	 * @param	integer		$intRecordType	Id of the RecordType of the RateGroup
+	 * @param	array		$arrRateIds		indexed array of Ids of the Rates that belong to this RateGroup
+	 *
+	 * @return		array		$arrRateSummary[strWeekday][intInterval] = intIntervalStatus
+	 *							WHERE intIntervalStatus = RATE_ALLOCATION_STATUS_ALLOCATED | RATE_ALLOCATION_STATUS_UNDER_ALLOCATED | RATE_ALLOCATION_STATUS_OVER_ALLOCATED
+	 *
+	 * @method
+	 *
+	 */
+	private function _BuildRateSummary($intRecordType, $arrRateIds)
+	{
+		// Check if $this->_arrRateAllocationSummaryPerDestination has not already been built
+		if ($this->_arrRateAllocationSummaryPerDestination === NULL)
+		{
+			$this->_BuildRateAllocationSummaryPerDestination($intRecordType, $arrRateIds);
+		}
+
+		// We now have a structure which stores the Id of each Rate which is applied to each individual interval of each day, 
 		// for each destination associated with the RecordType
-		// $arrRateSummary[Destination][Weekday][Interval] = intNumOfRatesAppliedToThisInterval
+		// $this->_arrRateAllocationSummaryPerDestination[Destination][Weekday][Interval] = Indexed array of IDs of applied rates
 
 		// For each interval, add the number of rates covering it together (across destinations).  
 		// If the number of rates covering any given interval is equal to the number of destinations then it is correctly allocated.
@@ -497,22 +755,21 @@ class AppTemplateRateGroup extends ApplicationTemplate
 
 		// This will store the summary of the week
 		$arrRateSummary = Array();
-		
 
-		foreach ($arrAllocationsPerDestination as $arrAllocations)
+		foreach ($this->_arrRateAllocationSummaryPerDestination as $arrAllocations)
 		{
 			foreach ($arrAllocations as $strWeekday=>$arrIntervals)
 			{
-				foreach ($arrIntervals as $intInterval=>$intRateCount)
+				foreach ($arrIntervals as $intInterval=>$arrRatesApplied)
 				{
-					// Add the number of Rates to the running total number of rates, for the interval
-					$arrRateSummary[$strWeekday][$intInterval] += $intRateCount;
+					// Add the number of Applied Rates to the running total number of rates, for the interval
+					$arrRateSummary[$strWeekday][$intInterval] += count($arrRatesApplied);
 				}
 			}
 		}
 		
 		// Store how many rates should be applied to each interval
-		$intNumOfDestinations = count($arrAllocationsPerDestination);
+		$intNumOfDestinations = count($this->_arrRateAllocationSummaryPerDestination);
 		
 		foreach ($arrRateSummary as $strWeekday=>$arrIntervals)
 		{

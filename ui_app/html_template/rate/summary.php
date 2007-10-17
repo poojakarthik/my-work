@@ -31,10 +31,9 @@
 /**
  * HtmlTemplateSummary
  *
- * HTML Template class for the Summary HTML object
+ * HTML Template class for the Rate Group Summary HTML object
  *
- * HTML Template class for the Summary HTML object
- * Lists all rategrops related to a service
+ * HTML Template class for the Rate Group Summary HTML object
  *
  * @package	ui_app
  * @class	HtmlTemplateRateSummary
@@ -96,8 +95,6 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		// $arrRateSummary[weekday][interval] = ALLOCATED | OVER-ALLOCATED | UNDER-ALLOCATED
 		$arrRateSummary = DBO()->RateSummary->ArrSummary->Value;
 
-		echo "<div class='PopupLarge'>\n";
-		//echo "<h2 class='Plan'>Rate Summary</h2>\n";
 		echo "<table border='0' cellpadding='0' cellspacing='0'>\n";
 		echo "<tr><td>&nbsp;</td>";
 		for ($i = 0; $i<24; $i++)
@@ -143,15 +140,27 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		echo "<tr><td style='border-top-width: thin; border-top-style: solid; border-top-color: #C0C0C0'>&nbsp;</td><td colspan='96' style='border-top-color: #C0C0C0; border-top-width: thin; border-top-style: solid'>&nbsp;</td></tr>\n";
 		echo "</table>\n";
 		
-		echo "<div class='NarrowContent' width='50'>\n";
-			echo "<table border='0' cellpadding='3' cellspacing='3'>";
-			echo "<tr><td bgcolor='#00FF00' width='20%' style='border-style: solid; border-width: thin'>&nbsp;</td><td><span class='DefaultOutputSpan'>Allocated</span></td></tr>";
-			echo "<tr><td bgcolor='#FF0000' width='20%' style='border-style: solid; border-width: thin'>&nbsp;</td><td><span class='DefaultOutputSpan'>Over allocated</span></td></tr>";
-			echo "<tr><td bgcolor='#FFFFFF' width='20%' style='border-style: solid; border-width: thin'>&nbsp;</td><td><span class='DefaultOutputSpan'>Under allocated</span></td></tr>";
-			echo "</table>\n";
+		echo "<div class='NarrowContent'>\n";
+		echo "<table border='0' cellpadding='3' cellspacing='3' width='100%'>";
+		echo "<tr><td bgcolor='#00FF00' width='40px' style='border-style: solid; border-width: thin'>&nbsp;</td><td width='25%'><span class='DefaultOutputSpan'>Allocated</span></td>";
+		echo "<td bgcolor='#FF0000' width='40px' style='border-style: solid; border-width: thin'>&nbsp;</td><td width='25%'><span class='DefaultOutputSpan'>Over allocated</span></td>";
+		echo "<td bgcolor='#FFFFFF' width='40px' style='border-style: solid; border-width: thin'>&nbsp;</td><td width='25%'><span class='DefaultOutputSpan'>Under allocated</span></td></tr>";
+		echo "</table>\n";
 		echo "</div\n";
 		
-		echo "</div>\n";
+		echo "<div class='SmallSeperator'></div>";
+		// Convert new line chars to <br> tags and tab chars to &nbsp;
+		$strProblemReport = nl2br(DBO()->RateSummary->ProblemReport->Value);
+		$strProblemReport = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $strProblemReport);
+		
+		// Display the Textual Rate Summary contained in DBO()->RateSummary->ProblemReport
+		echo "<div id='ContainerDiv_ContainerDiv_RateGroupSummary' class='NarrowContent' style='padding: 5px 5px 5px 5px'>\n";
+		echo "<div id='ContainerDiv_RateGroupSummary' class='PopupLarge' style='overflow:auto; height:100px; width:auto;'>\n";
+		echo "<span class='DefaultOutputSpan' style='line-height: 1.2;'>";
+		echo $strProblemReport;
+		echo "</span>";
+		echo "</div>"; // ContainerDiv_RateGroupSummary
+		echo "</div>"; // ContainerDiv_ContainerDiv_RateGroupSummary
 		
 		echo "<div class='ButtonContainer'><div class='right'>\n";
 		$this->Button("Close", "Vixen.Popup.Close(this);");

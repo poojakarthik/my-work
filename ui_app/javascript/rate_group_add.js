@@ -104,7 +104,6 @@ function VixenRateGroupAddClass()
 		
 		// Override the default length of the textboxes
 		this.OverrideTextboxSize();
-		
 	}
 	
 	// Used to override the size of the textboxes and the RecordType combobox
@@ -113,6 +112,44 @@ function VixenRateGroupAddClass()
 		document.getElementById("RateGroup.Name").style.width = "380px";
 		document.getElementById("RateGroup.Description").style.width = "380px";
 		document.getElementById("RecordTypeCombo").style.width = "380px";
+	}
+	
+	//------------------------------------------------------------------------//
+	// SelectedRatesComboOnClick
+	//------------------------------------------------------------------------//
+	/**
+	 * SelectedRatesComboOnClick
+	 *
+	 * Event handler for when the SelectedRateCombo is clicked on, or a key is pressed within it
+	 *  
+	 * Event handler for when the SelectedRateCombo is clicked on, or a key is pressed within it
+	 * All selected Rates in the AvailableRatesCombo are unselected
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.SelectedRatesComboOnClick = function()
+	{
+		document.getElementById("AvailableRatesCombo").selectedIndex = -1;
+	}
+	
+	//------------------------------------------------------------------------//
+	// AvailableRatesComboOnClick
+	//------------------------------------------------------------------------//
+	/**
+	 * AvailableRatesComboOnClick
+	 *
+	 * Event handler for when the AvailableRateCombo is clicked on, or a key is pressed within it
+	 *  
+	 * Event handler for when the AvailableRateCombo is clicked on, or a key is pressed within it
+	 * All selected Rates in the SelectedRatesCombo are unselected
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.AvailableRatesComboOnClick = function()
+	{
+		document.getElementById("SelectedRatesCombo").selectedIndex = -1;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -232,112 +269,93 @@ function VixenRateGroupAddClass()
 	}
 
 	//------------------------------------------------------------------------//
-	// RateChooser
-	//------------------------------------------------------------------------//
-	/**
-	 * RateChooser
-	 *
-	 * -
-	 *  
-	 * -
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.RateChooser = function()
-	{
-		var elmAvailableRatesCombo = document.getElementById("AvailableRatesCombo");
-		
-		var intSelectedIndex = -1;
-		// Make sure only 1 rate is selected and that it is a draft rate
-		for (var i=0; i < elmAvailableRatesCombo.options.length; i++)
-		{
-			if (elmAvailableRatesCombo.options[i].selected)
-			{
-				// the current option is selected, check if a previous option has been selected
-				if (intSelectedIndex != -1)
-				{
-					// multiple options have been selected
-					this.AddNewRate();
-					return;
-				}
-				else
-				{
-					// this is the first of the selected rates in the AvailableRatesCombo
-					intSelectedIndex = i;
-					this.AddNewRateExisting(elmAvailableRatesCombo.options[i].value);
-					return;
-				}				
-			}
-		}
-		
-		// Either no rates are selected or just one is selected in the AvailableRatesCombo
-		if (intSelectedIndex == -1)
-		{
-			// No rate is selected
-			this.AddNewRate();
-			return;
-		}
-	}
-
-	//------------------------------------------------------------------------//
-	// AddNewRateExisting
-	//------------------------------------------------------------------------//
-	/**
-	 * AddNewRateExisting
-	 *
-	 * Opens the Add New Rate popup window
-	 *  
-	 * Opens the Add New Rate popup window
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.AddNewRateExisting = function(intRateId)
-	{
-		var objObjects = {};
-		objObjects.Objects = {};
-		objObjects.Objects.Rate = {};
-		objObjects.Objects.Rate.Id = intRateId;
-		objObjects.Objects.CallingPage = {};
-		objObjects.Objects.CallingPage.AddRateGroup = true;
-		
-		objObjects.Objects.Action = {};
-		objObjects.Objects.Action.CreateNewBasedOnOld = true;
-		
-		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Add New Rate", "Rate", "Add", objObjects);
-	}
-	
-	//------------------------------------------------------------------------//
 	/**
 	 * AddNewRate
 	 *
 	 * Opens the Add New Rate popup window
 	 *  
 	 * Opens the Add New Rate popup window
+	 * If a single Rate has been selected in either of the Rate comboboxes then
+	 * the new rate will be based on this one
 	 *
 	 * @return	void
 	 * @method
 	 */
 	this.AddNewRate = function()
 	{
-		// Get the currently selected RecordType and ServiceType
-		var intRecordType	= document.getElementById("RecordTypeCombo").value;
-		var intServiceType	= document.getElementById("ServiceTypeCombo").value;
-		var bolIsFleet		= document.getElementById("RateGroup.Fleet").checked;
-
 		var objObjects = {};
 		objObjects.Objects = {};
-		objObjects.Objects.RecordType = {};
-		objObjects.Objects.RecordType.Id = intRecordType;
-		//objObjects.Objects.ServiceType = {};
-		//objObjects.Objects.ServiceType.Id = intServiceType;
+		
+		//Note: There is now a proper Custom-Event model to handle Popups updating other popups
+		// but it has not been implemented in this case, so the old way is being used
 		objObjects.Objects.CallingPage = {};
 		objObjects.Objects.CallingPage.AddRateGroup = true;
-		objObjects.Objects.Rate = {};
-		objObjects.Objects.Rate.Fleet = bolIsFleet;
+	
+		var elmAvailableRatesCombo	= document.getElementById("AvailableRatesCombo");
+		var elmSelectedRatesCombo	= document.getElementById("SelectedRatesCombo");
+		var elmCombo = null;
+		var intSelectedIndex = null;
 		
-		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
+		// Check if there are any highlighted Rates in either of the Combos.  Only one combo can have selected Rates at any one time
+		if (elmAvailableRatesCombo.selectedIndex >= 0)
+		{
+			// At least 1 item is selected in the AvailableRatesCombo
+			elmCombo = elmAvailableRatesCombo;
+		}
+		else if (elmSelectedRatesCombo.selectedIndex >= 0)
+		{
+			// At least 1 item is selected in the SelectedRatesCombo
+			elmCombo = elmSelectedRatesCombo;
+		}
+		
+		if (elmCombo != null)
+		{
+			// At least one Rate is selected in the combo referenced by elmCombo.
+			// If only one rate is selected, then we want to create a new Rate based on this one.
+			// If more than one rate is selected, then create a new rate using a blank "Add Rate" popup
+			for (var i=0; i < elmCombo.options.length; i++)
+			{
+				if (elmCombo.options[i].selected)
+				{
+					// The current option is selected, check if a previous option has been selected
+					if (intSelectedIndex != null)
+					{
+						// Multiple options have been selected.  Create a new Rate using a blank "Add Rate" popup
+						intSelectedIndex = null;
+						break;
+					}
+					else
+					{
+						// This is the first Rate selected in the combo
+						intSelectedIndex = i;
+					}				
+				}
+			}
+		}
+		
+		if (intSelectedIndex != null)
+		{
+			// Only 1 rate has been selected.  Create a new Rate based on this one
+			var intRateId = elmCombo.options[intSelectedIndex].value;
+			objObjects.Objects.Rate = {};
+			objObjects.Objects.Rate.Id = intRateId;
+			objObjects.Objects.Action = {};
+			objObjects.Objects.Action.CreateNewBasedOnOld = true;
+		}
+		else
+		{
+			// Nothing has been selected.  Create a new rate using a blank "Add Rate" popup
+			
+			// Get the currently selected RecordType and Fleet value
+			var intRecordType	= document.getElementById("RecordTypeCombo").value;
+			var bolIsFleet		= document.getElementById("RateGroup.Fleet").checked;
+	
+			objObjects.Objects.RecordType = {};
+			objObjects.Objects.RecordType.Id = intRecordType;
+			objObjects.Objects.Rate = {};
+			objObjects.Objects.Rate.Fleet = bolIsFleet;
+		}
+		
 		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Add New Rate", "Rate", "Add", objObjects);
 	}
 	
@@ -347,56 +365,68 @@ function VixenRateGroupAddClass()
 	/**
 	 * EditRate
 	 *
-	 * Opens the Add New Rate popup window for editting the currently selected rate from the Availble Rates combobox
+	 * Opens the Add New Rate popup window for editting the currently selected rate
 	 *  
-	 * Opens the Add New Rate popup window for editting the currently selected rate from the Availble Rates combobox
-	 * It will only let you edit a Rate if only one is selected in the combobox, and it's a draft
+	 * Opens the Add New Rate popup window for editting the currently selected rate
+	 * It will only let you edit a Rate if only one is selected and it's a draft
 	 *
 	 * @return	void
 	 * @method
 	 */
 	this.EditRate = function()
 	{
-		var elmAvailableRatesCombo = document.getElementById("AvailableRatesCombo");
+		var elmAvailableRatesCombo	= document.getElementById("AvailableRatesCombo");
+		var elmSelectedRatesCombo	= document.getElementById("SelectedRatesCombo");
+		var elmCombo;
 		
-		var intSelectedIndex = -1;
-		// Make sure only 1 rate is selected and that it is a draft rate
-		for (var i=0; i < elmAvailableRatesCombo.options.length; i++)
+		// Work out which combobox has the item in it.  Items cannot be selected in both comboboxes at the same time
+		if (elmAvailableRatesCombo.selectedIndex >= 0)
 		{
-			if (elmAvailableRatesCombo.options[i].selected)
+			// At least 1 item is selected in the AvailableRatesCombo
+			elmCombo = elmAvailableRatesCombo;
+		}
+		else if (elmSelectedRatesCombo.selectedIndex >= 0)
+		{
+			// At least 1 item is selected in the SelectedRatesCombo
+			elmCombo = elmSelectedRatesCombo;
+		}
+		else
+		{
+			// Nothing has been selected
+			Vixen.Popup.Alert("Please select a Draft Rate for editing");
+			return;
+		}
+		
+		// Make sure only 1 rate is selected
+		var intSelectedIndex = -1;
+		for (var i=0; i < elmCombo.options.length; i++)
+		{
+			if (elmCombo.options[i].selected)
 			{
-				// the current options is selected, check if a previous option has been selected
+				// The current option is selected, check if a previous option has been selected
 				if (intSelectedIndex != -1)
 				{
-					// multiple options have been selected
+					// Multiple options have been selected
 					Vixen.Popup.Alert("Only one rate can be selected");
 					return;
 				}
 				else
 				{
-					// this is the first of the selected rates in the AvailableRatesCombo
+					// This is the first of the selected rates in the combo
 					intSelectedIndex = i;
 				}
 			}
 		}
 		
-		// Either no rates are selected or just one is selected in the AvailableRatesCombo
-		if (intSelectedIndex == -1)
-		{
-			// No rate is selected
-			Vixen.Popup.Alert("Please select a draft rate from the list of available rates");
-			return;
-		}
-		
 		// Check if the selected rate is a draft
-		if (!elmAvailableRatesCombo.options[intSelectedIndex].getAttribute('draft'))
+		if (!elmCombo.options[intSelectedIndex].getAttribute('draft'))
 		{
 			// The rate is not a draft
 			Vixen.Popup.Alert("Only draft rates can be editted");
 			return;
 		}
 		
-		var elmRateOption = elmAvailableRatesCombo.options[intSelectedIndex];
+		var elmRateOption = elmCombo.options[intSelectedIndex];
 		
 		var objObjects = {};
 		objObjects.Objects = {};
@@ -444,7 +474,10 @@ function VixenRateGroupAddClass()
 		}
 		
 		// Retrieve the RecordType currently selected
-		intRecordType = document.getElementById("RecordTypeCombo").value;
+		var intRecordType = document.getElementById("RecordTypeCombo").value;
+		
+		// Retrieve the Fleet checkbox value
+		var bolIsFleet = document.getElementById("RateGroup.Fleet").checked;
 		
 		// Stick this array in DBO()->SelectedRates->ArrId
 		var objObjects = {};
@@ -453,8 +486,10 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.SelectedRates.ArrId = arrSelectedRates;
 		objObjects.Objects.RecordType = {};
 		objObjects.Objects.RecordType.Id = intRecordType;
-		objObjects.Objects.CallingPage = {};
-		objObjects.Objects.CallingPage.AddRateGroup = true;
+		objObjects.Objects.RateGroup = {};
+		objObjects.Objects.RateGroup.Fleet = bolIsFleet;
+		//objObjects.Objects.CallingPage = {};
+		//objObjects.Objects.CallingPage.AddRateGroup = true;
 		
 		// Execute that application template that creates the popup
 		Vixen.Popup.ShowAjaxPopup("PreviewRateSummaryPopup", "large", "Rate Summary", "RateGroup", "PreviewRateSummary", objObjects);
@@ -563,9 +598,12 @@ function VixenRateGroupAddClass()
 			return;
 		}
 
-		// Get the AvailableRatesCombo combo box
-		var elmCombo = document.getElementById("AvailableRatesCombo");
-		
+		var elmSelectedRatesCombo	= document.getElementById("SelectedRatesCombo");
+		var elmAvailableRatesCombo	= document.getElementById("AvailableRatesCombo");
+		// Unselect all selected items from these 2 comboboxes
+		elmSelectedRatesCombo.selectedIndex		= -1;
+		elmAvailableRatesCombo.selectedIndex	= -1;
+
 		// create a new option element
 		var elmNewOption		= document.createElement('option');
 		elmNewOption.value		= objRate.Id;
@@ -573,34 +611,52 @@ function VixenRateGroupAddClass()
 		elmNewOption.title		= objRate.Description;
 		elmNewOption.selected	= TRUE;
 		
-		// If the Rate is a fleet rate then mark it as such
-		/* We don't do this anymore
-		if (objRate.Fleet)
-		{
-			elmNewOption.text = "Fleet: " + elmNewOption.text;
-		}
-		*/
-		
 		// If the Rate is a draft then flag it as such
 		if (objRate.Draft)
 		{
-			//FIXIT! currently this will fuck with the alphabetical ordering of the options
+			//FIXIT! currently this will screw with the alphabetical ordering of the options
 			// If we try to maintain the alphabetical order
 			elmNewOption.text = "DRAFT: " + elmNewOption.text;
 			elmNewOption.setAttribute('draft', 'draft');
 		}
 
-		// If it was already in the list of Available Rates then remove the old option element
-		for (var i=0; i < elmCombo.options.length; i++)
+		// If a Draft Rate has been editted then we want to put it back in the Combobox it was currently in.
+		// If it's a new Rate then we want to put it in the AvailableRates combo.
+		// Check if a Rate with the same Id is already present in one of the combo's
+		
+		// elmCombo will be set to the combobox which the Rate will be inserted into
+		var elmCombo = null;
+				
+		// If it was already in the list of Selected Rates then remove the old option 
+		// element and mark this combo as the one to add the new rate to
+		for (var i=0; i < elmSelectedRatesCombo.options.length; i++)
 		{
-			if (elmNewOption.value == elmCombo.options[i].value)
+			if (elmNewOption.value == elmSelectedRatesCombo.options[i].value)
 			{
-				elmCombo.removeChild(elmCombo.options[i]);
+				// The Rate was found in the list of Selected Rates
+				elmSelectedRatesCombo.removeChild(elmSelectedRatesCombo.options[i]);
+				elmCombo = elmSelectedRatesCombo;
 				break;
 			}
 		}
 		
-		/*
+		if (elmCombo == null)
+		{
+			// The rate was not in the list of Selected Rates.  Search for it in the list of Available Rates
+			elmCombo = elmAvailableRatesCombo;
+			for (var i=0; i < elmCombo.options.length; i++)
+			{
+				if (elmNewOption.value == elmCombo.options[i].value)
+				{
+					// The Rate was found in the list of Available Rates
+					elmCombo.removeChild(elmCombo.options[i]);
+					break;
+				}
+			}
+		}
+		
+		// elmCombo is now the correct combobox to add the rate to
+		
 		// Stick it in the combo so that the alphabetical order of the options is preserved
 		for (var i=0; i < elmCombo.options.length; i++)
 		{
@@ -611,13 +667,11 @@ function VixenRateGroupAddClass()
 				return;
 			}
 		}
-		*/
-		// Append it to the end of the AvailableRates Combo
+		
+		// The option should either be the last in the list, or there are no other options in the list.  Append the option to the end of the list
 		elmCombo.appendChild(elmNewOption);
 		elmCombo.selectedIndex = elmNewOption.index;
 		
-		// The option should either be the last in the list, or there are no other options in the list.  Append the option to the end of the list
-		//elmCombo.appendChild(elmNewOption);
 		elmCombo.focus();
 	}
 	
