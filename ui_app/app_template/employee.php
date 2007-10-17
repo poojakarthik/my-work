@@ -50,15 +50,24 @@ class AppTemplateEmployee extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+
 		// context menu
-		//TODO! define what goes in the context menu
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		//ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		//ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
-		//ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
-		//ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
-		//ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);
-		
+		ContextMenu()->Employee_Console();		
+		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+
+		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 		if ($bolUserHasAdminPerm)
 		{
 			// User must have admin permissions to view the Administrative Console

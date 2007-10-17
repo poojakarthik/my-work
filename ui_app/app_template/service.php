@@ -88,6 +88,13 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->Service->ELB = (bool)DBL()->ServiceExtension->RecordCount();
 		}
 		
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
+		{
+			$strWhere = "Service = <Service>";
+			DBO()->ServiceMobileDetail->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
+			DBO()->ServiceMobileDetail->Load();
+		}
+		
 		// Get the details of the current plan for the service
 		DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
 		if (DBO()->RatePlan->Id->Value !== FALSE)
@@ -110,14 +117,15 @@ class AppTemplateService extends ApplicationTemplate
 		// context menu
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Employee_Console();		
-		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Services->Add_Service(DBO()->Account->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Services->Edit_Service(DBO()->Service->Id->Value);		
-		ContextMenu()->Contact_Retrieve->Services->Change_Plan(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Services->Change_of_Lessee(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Services->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
 
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
@@ -137,8 +145,6 @@ class AppTemplateService extends ApplicationTemplate
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('service_view');
-
-
 		return TRUE;
 	}
 
@@ -307,7 +313,6 @@ class AppTemplateService extends ApplicationTemplate
 
 			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "This service was successfully created", "Location" => Href()->InvoicesAndPayments(DBO()->Account->Id->Value)));
 			return TRUE;
-
 		}
 		
 		// Context menu
@@ -668,9 +673,15 @@ class AppTemplateService extends ApplicationTemplate
 		// context menu
 		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Employee_Console();		
-		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Services->Add_Service(DBO()->Account->Id->Value);		
+		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);

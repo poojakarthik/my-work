@@ -560,7 +560,6 @@ class MenuItems
 	{
 		$this->strLabel = "inv: $intInvoice";
 		return "invoice_view.php?Invoice=$intInvoice";
-		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -593,6 +592,30 @@ class MenuItems
 		
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Account Notes\", \"Note\", \"View\", $strJsonCode)";
+	}
+
+	//------------------------------------------------------------------------//
+	// InvoiceAndPayments
+	//------------------------------------------------------------------------//
+	/**
+	 * InvoiceAndPayments()
+	 *
+	 * Compiles the Href to be executed when the InvoiceAndPayments menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the InvoiceAndPayments menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account to view
+	 							
+	 *
+	 * @return	string				Href to be executed when the InvoiceAndPayments menu item is clicked
+	 *
+	 * @method
+	 */
+	function InvoiceAndPayments($intId)
+	{
+		//$this->strLabel	= "acc: $intId";
+		return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1016,23 +1039,23 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
-	// ViewServices
+	// ListServices
 	//------------------------------------------------------------------------//
 	/**
-	 * ViewServices()
+	 * ListServices()
 	 *
-	 * Compiles the javascript to be executed when the Edit/View Service menu item is clicked
+	 * Compiles the javascript to be executed when the List Service menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the Edit/View Service menu item is clicked
+	 * Compiles the javascript to be executed when the List Service menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the payment to delete
+	 * @param	int		$intId		id of the Account to view services of
 	 *
-	 * @return	string	action to be executed when the Edit/View Service menu item is clicked
+	 * @return	string	action to be executed when the List Service menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewServices($intId)
+	function ListServices($intId)
 	{
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;

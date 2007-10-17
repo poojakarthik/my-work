@@ -410,16 +410,16 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 
 		// context menu
-		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Employee_Console();		
-		ContextMenu()->Contact_Retrieve->Services->View_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Services->Add_Service(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Service(DBO()->Account->Id->Value);	
+		ContextMenu()->Account_Menu->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		if ($bolUserHasAdminPerm)
 		{
 			// User must have admin permissions to view the Administrative Console

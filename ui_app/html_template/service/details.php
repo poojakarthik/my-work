@@ -275,7 +275,6 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
-		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		
@@ -285,7 +284,14 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			DBO()->Service->Indial100->RenderOutput();
 			DBO()->Service->ELB->RenderOutput();
 		}
-		
+
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
+		{
+			DBO()->ServiceMobileDetail->SimPUK->RenderOutput();
+			DBO()->ServiceMobileDetail->SimESN->RenderOutput();			
+			DBO()->ServiceMobileDetail->SimState->RenderCallback("GetConstantDescription", Array("ServiceStateType"), RENDER_OUTPUT);	
+		}
+
 		DBO()->Service->CreatedOn->RenderOutput();
 		DBO()->Service->ClosedOn->RenderOutput();
 		DBO()->Service->TotalUnbilledCharges->RenderOutput();

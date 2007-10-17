@@ -82,10 +82,29 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		// context menu
-		ContextMenu()->Employee_Console();
-		ContextMenu()->Admin_Console();
+		ContextMenu()->Employee_Console();		
+		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+
+		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 		
 		// breadcrumb menu
@@ -131,43 +150,8 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RateList->OrderBy("Rate.Description ");
 		DBL()->RateList->SetLimit(30);
 		DBL()->RateList->Load();
-		
-		//DBL()->RateList->ShowInfo();
 
-		// Should probably check user authorization here
-		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
-		// context menu
-		//TODO! define what goes in the context menu
-		/*ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);*/
-		
-		// Console and logout should appear by default, no?
-		ContextMenu()->Console();
-		ContextMenu()->Logout();
-		
-		// breadcrumb menu
-		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
-		
-		
-		// Setup all DBO and DBL objects required for the page
-		//TODO!
-		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
-		/*if (!DBO()->Account->Load())
-		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
-			$this->LoadPage('error');
-			return FALSE;
-		}*/
-		
-		// the DBList storing the invoices should be ordered so that the most recent is first
-		// same with the payments list
-		//DBL()->RatePlan->Load();
 	
 		$this->LoadPage('plan_rates');
 
@@ -198,10 +182,29 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		// context menu
-		ContextMenu()->Employee_Console();
-		ContextMenu()->Admin_Console();
+		ContextMenu()->Employee_Console();		
+		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+
+		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
+		if ($bolUserHasAdminPerm)
+		{
+			// User must have admin permissions to view the Administrative Console
+			ContextMenu()->Admin_Console();
+		}
 		ContextMenu()->Logout();
 		
 		// breadcrumb menu
