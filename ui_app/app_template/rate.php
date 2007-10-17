@@ -54,6 +54,7 @@ class AppTemplateRate extends ApplicationTemplate
 	 *
 	 * Performs all the logic for adding a new rate, determines which of the 3
 	 * buttons has been pressed and process validation dependant upon this
+	 *		The user needs PERMISSION_RATE_MANAGEMENT and PERMISSION_ADMIN permissions to view this page
 	 *
 	 * @param	void
 	 * @return	void
@@ -62,11 +63,9 @@ class AppTemplateRate extends ApplicationTemplate
 	 */
 	function Add()
 	{
-		$pagePerms = PERMISSION_ADMIN;
-		
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie($pagePerms);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 
 		// Handle form submittion
 		if (SubmittedForm("AddRate","Commit") || SubmittedForm("AddRate","Save as Draft"))

@@ -516,6 +516,9 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 		// Stick the "Save as Draft" and "Commit" buttons in the scrollable div, 
 		// forcing the user to traverse the entire length of the div, before saving the rate
 		echo "<div class='ButtonContainer'><div class='right'>\n";
+		// The Cancel button was originally always visible, but it was too easy to make changes to a rate, and then accidently press it, instead of saving
+		$this->Button("Cancel", "Vixen.Popup.Close(this);");
+		
 		$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate as a Draft?\", function(){Vixen.RateAdd.SaveAsDraft();})");
 		$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", function(){Vixen.RateAdd.Commit();})");
 		echo "</div></div>\n";  // Buttons
@@ -523,11 +526,6 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 		echo "</div>\n"; // PopupLarge
 		echo "</div>\n"; // ContainerDiv for the FormContainerDiv
 
-		// Render the "Cancel" button (this is always visible)
-		echo "<div class='ButtonContainer'><div class='right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(this);");
-		
-		echo "</div></div>\n";  // Buttons
 		$this->FormEnd();
 		
 		// Initialise the form's associated javascript object

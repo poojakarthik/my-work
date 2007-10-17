@@ -72,6 +72,8 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * Performs the logic for the AvailablePlans webpage
 	 * Initial DBObjects that can be set through GET or POST variables are:
 	 *		DBO()->RatePlan->ServiceType	If you want to restrict the Plans listed, to those of the specified ServiceType only
+	 * To View the Plans the user must have Operator privileges.  To Add new Plans and Edit existing ones, the user must have 
+	 * Admin Privileges and Rate Management privileges
 	 *
 	 * @return		void
 	 * @method
@@ -81,34 +83,29 @@ class AppTemplatePlan extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		// context menu
-		ContextMenu()->Employee_Console();		
-		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
-		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
-
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
-		if ($bolUserHasAdminPerm)
+		ContextMenu()->Employee_Console();
+		ContextMenu()->Available_Plans();
+		if ($bolHasAdminPerm)
 		{
-			// User must have admin permissions to view the Administrative Console
 			ContextMenu()->Admin_Console();
 		}
 		ContextMenu()->Logout();
 		
 		// breadcrumb menu
-		BreadCrumb()->AdminConsole();
+		if ($bolHasAdminPerm)
+		{
+			BreadCrumb()->AdminConsole();
+		}
+		else
+		{
+			Breadcrumb()->Employee_Console();
+		}
+		
 		BreadCrumb()->SetCurrentPage("Available Plans");
 		
 		// Retrieve all RatePlans that aren't currently archived
@@ -172,6 +169,7 @@ class AppTemplatePlan extends ApplicationTemplate
 	 *		DBO()->RatePlan->Id			If you want to edit an existing draft Rate Plan
 	 *		DBO()->BaseRatePlan->Id		If you want to add a new Rate Plan, based on an existing one defined by this value
 	 *		DBO()->CallingPage->Href	If you want to specify the href of the page that called this one
+	 *		The user needs PERMISSION_RATE_MANAGEMENT and PERMISSION_ADMIN permissions to view this page
 	 *
 	 * @return		void
 	 * @method
@@ -181,30 +179,14 @@ class AppTemplatePlan extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		// The User needs both Rate Management and Admin Permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		// context menu
-		ContextMenu()->Employee_Console();		
-		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
-		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
-
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
-		if ($bolUserHasAdminPerm)
-		{
-			// User must have admin permissions to view the Administrative Console
-			ContextMenu()->Admin_Console();
-		}
+		ContextMenu()->Employee_Console();
+		ContextMenu()->Available_Plans();
+		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
 		
 		// breadcrumb menu
@@ -580,6 +562,8 @@ class AppTemplatePlan extends ApplicationTemplate
 	 */
 	function GetRateGroupsForm()
 	{
+		// We do not need to authorise the user as this only draws a subsection of one of the forms
+	
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{
 			// A service type was not actually chosen 

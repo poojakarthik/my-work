@@ -83,6 +83,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *		The "Add Rate Group" popup does not make use of the new Custom-Event Model, which is why it is concerned with
 	 *		knowing what the calling page is.  If, in the future, this popup can be opened from numerous pages, then I would
 	 *		recommend modifying it to use the new Custom-Event Model.
+	 *		The user needs PERMISSION_RATE_MANAGEMENT and PERMISSION_ADMIN permissions to view this page
 	 *		
 	 *
 	 * @return		void
@@ -93,7 +94,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 		
 		// Handle form submittion
 		if (SubmittedForm('RateGroup', 'Commit') || SubmittedForm('RateGroup', 'Save as Draft'))
@@ -397,7 +398,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 		
 		// Build the Problem Report of the rate summary
 		DBO()->RateSummary->ProblemReport = $this->_BuildRateSummaryProblemReport(DBO()->RecordType->Id->Value, DBO()->SelectedRates->ArrId->Value, DBO()->RateGroup->Fleet->Value);

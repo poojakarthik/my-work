@@ -491,6 +491,28 @@ class MenuItems
 		return "vixen.php/Plan/AvailablePlans/$strFilter";
 	}
 	
+	//------------------------------------------------------------------------//
+	// ViewPlan
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewPlan()
+	 *
+	 * Compiles the Href to be executed when the ViewPlan menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewPlan menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intRatePlanId	id of the Rate Plan that you want to view
+	 * @return	string					Href to be executed when the ViewPlan menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewPlan($intRatePlanId)
+	{
+		$this->strLabel = "Plan Details";
+		
+		return "rates_plan_summary.php?Id=$intRatePlanId";
+	}
 
 	//------------------------------------------------------------------------//
 	// AddAssociatedAccount

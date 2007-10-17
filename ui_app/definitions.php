@@ -162,12 +162,15 @@ define('NEVER_CHARGE_LATE_PAYMENT_FEE', 1);
 define('SYSTEM_EMPLOYEE_ID',	0);
 define('SYSTEM_EMPLOYEE_NAME', 	"Automated System");
 
+// Permissions
+// These are described as Hexedecimal values so they can be logically ORed together, without influencing eachother
 													$arrPermissions = Array ();
-define("PERMISSION_PUBLIC"				, 0x1);		$arrPermissions[PERMISSION_PUBLIC]		= "Public";			// 1
-define("PERMISSION_ADMIN"				, 0x2);		$arrPermissions[PERMISSION_ADMIN]		= "Admin";			// 2	
-define("PERMISSION_OPERATOR"			, 0x4);		$arrPermissions[PERMISSION_OPERATOR]	= "Operator";		// 4
-define("PERMISSION_SALES"				, 0x8);		$arrPermissions[PERMISSION_SALES]		= "Sales";			// 8
-define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "Accounts";		// 16
+define("PERMISSION_PUBLIC"				, 0x01);	$arrPermissions[PERMISSION_PUBLIC]			= "Public";			// 1
+define("PERMISSION_ADMIN"				, 0x02);	$arrPermissions[PERMISSION_ADMIN]			= "Admin";			// 2	
+define("PERMISSION_OPERATOR"			, 0x04);	$arrPermissions[PERMISSION_OPERATOR]		= "Operator";		// 4
+define("PERMISSION_SALES"				, 0x08);	$arrPermissions[PERMISSION_SALES]			= "Sales";			// 8
+define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]		= "Accounts";		// 16
+define("PERMISSION_RATE_MANAGEMENT"		, 0x20);	$arrPermissions[PERMISSION_RATE_MANAGEMENT]	= "Rate Management";// 32
 													$GLOBALS['Permissions']	= $arrPermissions;
 // This is used in the datbase to represent an "end Date" or "Closed on date" that should never be reached
 define('END_OF_TIME', 	'9999-12-31 23:59:59');
