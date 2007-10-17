@@ -412,6 +412,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// context menu
 		ContextMenu()->Employee_Console();		
 		ContextMenu()->Account_Menu->Account->View_Account(DBO()->Account->Id->Value);
+		//ContextMenu()->Account_Menu->Account->Edit_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Service(DBO()->Account->Id->Value);	
 		ContextMenu()->Account_Menu->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);

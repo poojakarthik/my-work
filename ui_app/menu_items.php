@@ -1031,6 +1031,36 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// EditAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * EditAccount()
+	 *
+	 * Compiles the javascript to be executed when the Edit Account menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the Edit Account menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account to edit
+	 *
+	 * @return	string	action to be executed when the Edit Account menu item is clicked
+	 *
+	 * @method
+	 */
+	function EditAccount($intId)
+	{
+		$this->strLabel	= "edit account";
+		
+		// Setup data to send
+		//$arrData['Objects']['Account']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		//$strJsonCode = Json()->encode($arrData);
+		
+		//return "javascript:Vixen.Ajax.CallAppTemplate(\"Account\", \"EditDetails\", ".$strJsonCode.");";
+	}
+
+	//------------------------------------------------------------------------//
 	// ViewAccount
 	//------------------------------------------------------------------------//
 	/**
@@ -1041,7 +1071,7 @@ class MenuItems
 	 * Compiles the javascript to be executed when the View Account menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the payment to delete
+	 * @param	int		$intId		id of the account to view
 	 *
 	 * @return	string	action to be executed when the View Account menu item is clicked
 	 *
