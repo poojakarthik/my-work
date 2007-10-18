@@ -150,7 +150,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 	
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$strAddContactHref = Href()->AddContact(DBO()->Account->Id->Value);
-		$this->Button("Add Contact", "window.location=\"$strAddContactHref\"");
+		$this->Button("Add Contact", "window.location='$strAddContactHref'");
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 

@@ -180,6 +180,8 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		echo "</div>\n";  // Table Container
 	
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
+		$this->Button("Add Services", "window.location='$strBulkAddServiceLink'");
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 

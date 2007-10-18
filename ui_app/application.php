@@ -1032,6 +1032,10 @@ class HtmlTemplate extends BaseTemplate
 		$strName = "VixenButton_". str_replace(" ", "", $strLabel);
 		//$strId = rand();
 		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
+		
+		// Change all the single quotes in $strHref to their html safe versions, so that it doesn't escape
+		// out of the onlick='...' prematurely (this also converts double quotes)
+		$strHref = htmlspecialchars($strHref, ENT_QUOTES);
 		echo "<input type='button' class='$strStyleClass' id='$strName' name='$strName' value='$strLabel' onclick='$strHref'></input>\n";
 	}
 	
