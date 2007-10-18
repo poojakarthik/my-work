@@ -6,7 +6,10 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	$intAccount = $_GET['Id'];
+	header("Location: vixen.php/Account/InvoicesAndPayments/?Account.Id=$intAccount");
 	
+	/* Old Page
 	// call application loader
 	require ('config/application_loader.php');
 	
@@ -80,5 +83,5 @@
 	
 	// Output the Account View
 	$Style->Output ('xsl/content/account/view.xsl');
-	
+	*/
 ?>

@@ -458,10 +458,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		
+		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 
@@ -530,8 +533,6 @@ class AppTemplateAccount extends ApplicationTemplate
 								'Archived'=>'RC.Archived', 'FNN'=>'S.FNN');
 		DBL()->RecurringCharge->SetColumns($arrColumns);
 		DBL()->RecurringCharge->SetTable("RecurringCharge AS RC LEFT OUTER JOIN Service AS S ON RC.Service = S.Id");
-		//DBL()->RecurringCharge->Account = DBO()->Account->Id->Value;
-		//DBL()->RecurringCharge->Archived = 0;
 		$intAccountId = DBO()->Account->Id->Value;
 		DBL()->RecurringCharge->Where->Set("RC.Account = <Account> AND RC.Archived = 0", Array("Account"=>$intAccountId));
 		DBL()->RecurringCharge->OrderBy("CreatedOn DESC, Id DESC");
@@ -573,8 +574,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 */
 	function DeleteRecord()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 

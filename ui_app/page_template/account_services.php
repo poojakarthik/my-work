@@ -4,7 +4,12 @@
 // to put into each column on the page
 
 // Set the page title
-$this->Page->SetName('Account Services');
+$strTitle = "Account Services - ". DBO()->Account->Id->Value;
+if (DBO()->Account->BusinessName->IsSet)
+{
+	$strTitle .= " - ". DBO()->Account->BusinessName->Value;
+}
+$this->Page->SetName($strTitle);
 
 $this->Page->SetLayout('popup_layout');
 

@@ -128,7 +128,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 				// Create a link to the View Plan for Service popup (although this currently isn't a popup)
 				$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($dboService->Id->Value);
 				
-				$strPlanCell = "<a href='$strViewServiceRatePlanLink'>$strPlan</a>";
+				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>$strPlan</a>";
 			}
 			else
 			{
@@ -138,7 +138,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 				// Create a link to the ChangePlan popup
 				$strChangePlanLink = Href()->ChangePlan($dboService->Id->Value);
 				
-				$strPlanCell = "<a href='$strChangePlanLink'>$strPlan</a>";
+				$strPlanCell = "<a href='$strChangePlanLink' title='Select Plan'>$strPlan</a>";
 			}
 			
 			$strViewServiceNotesLink	= Href()->ViewServiceNotes($dboService->Id->Value);
@@ -159,7 +159,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 				$strFnnDescription = $dboService->FNN->AsValue();
 			}
 			
-			$strFnnCell = "<div class='DefaultRegularOutput'><a href='$strViewServiceLink'>$strFnnDescription</a></div>";
+			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
 				
 			Table()->ServiceTable->AddRow($strFnnCell, $dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
 											$strPlanCell, $strStatusCell, $strActionsCell);									

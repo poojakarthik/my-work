@@ -5,7 +5,7 @@
 // The page object already exists
 
 // set the page title
-$this->Page->SetName('Account Details');
+$this->Page->SetName("Account Details");
 
 //$this->Page->SetLayout(CONSTANT_LAYOUT_TYPE|$strLayoutType??);
 $strLayout = 'popup_layout';

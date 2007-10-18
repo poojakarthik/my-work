@@ -159,10 +159,10 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		echo "</div>\n";  // NarrowContent
 		
 		// display the buttons
-		echo "<div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(this);");
 		$this->AjaxSubmit("OK");
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
 		$this->FormEnd();
 	}

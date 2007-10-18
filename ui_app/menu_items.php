@@ -196,7 +196,79 @@ class MenuItems
 		$this->strLabel	= "contact: $intId";
 		return "contact_edit.php?Id=$intId";
 	}
+
+	//------------------------------------------------------------------------//
+	// AddContact
+	//------------------------------------------------------------------------//
+	/**
+	 * AddContact()
+	 *
+	 * Compiles the Href to be executed when the AddContact menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddContact menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		id of the Account to add the contact to
+	 *
+	 * @return	string						Href to be executed when the AddContact menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddContact($intAccountId)
+	{
+		$this->strLabel	= "Add Contact";
+		return "contact_add.php?Account=$intAccountId";
+	}
 	
+	//------------------------------------------------------------------------//
+	// ChangePaymentMethod
+	//------------------------------------------------------------------------//
+	/**
+	 * ChangePaymentMethod()
+	 *
+	 * Compiles the Href to be executed when the ChangePaymentMethod for Account menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ChangePaymentMethod for Account menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		id of the Account associated with this action
+	 *
+	 * @return	string						Href to be executed when the ChangePaymentMethod for Account menu item is clicked
+	 *
+	 * @method
+	 */
+	function ChangePaymentMethod($intAccountId)
+	{
+		$this->strLabel	= "Change Payment Method";
+		return "account_payment.php?Id=$intAccountId";
+	}
+	
+	//------------------------------------------------------------------------//
+	// ViewCostCentres
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewCostCentres()
+	 *
+	 * Compiles the Href to be executed when the ViewCostCentres for Account menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewCostCentres for Account menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		id of the Account associated with this action
+	 *
+	 * @return	string						Href to be executed when the ViewCostCentres for Account menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewCostCentres($intAccountId)
+	{
+		$this->strLabel	= "Cost Centres";
+		return "costcentre_list.php?Account=$intAccountId";
+	}
+	
+	
+
+
 	//------------------------------------------------------------------------//
 	// EditService
 	//------------------------------------------------------------------------//
@@ -619,15 +691,15 @@ class MenuItems
 	 * Compiles the Href to be executed when the AddAssociatedAccount menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intInvoice		account number of the calling account
+	 * @param	int		$intAccountId		account number of the calling account
 	 *
 	 * @return	string					Href to be executed when the AddAssociatedAccount menu item is clicked
 	 *
 	 * @method
 	 */
-	function AddAssociatedAccount($intAccount)
+	function AddAssociatedAccount($intAccountId)
 	{
-		return "account_add.php?Associated=$intAccount";
+		return "account_add.php?Associated=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//

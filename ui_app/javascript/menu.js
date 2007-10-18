@@ -89,6 +89,7 @@ function VixenMenuClass(objMenu)
 			elmNode.onclick = function(event) {Vixen.Menu.HandleClick(this)};
 			elmNode.onmouseover = function(event) {Vixen.Menu.HandleMouseOver(this)};
 			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut(this)};
+			elmNode.style.cursor = "pointer";
 			
 			//Add some more crap
 			elmNode.action = this.objMenu[strKey];
@@ -149,13 +150,13 @@ function VixenMenuClass(objMenu)
 			
 			//Add styles
 			//new_node.style[c_attrib] = value
-			elmNode.style['top'] = top;
-			elmNode.style['left'] =	this.config.Level2.left; 
-			elmNode.style['width'] = this.config.Level2.width;
-			elmNode.style['height'] = this.config.Level2.height;
-			elmNode.style['position'] = 'absolute';
-			elmNode.style['zIndex']	= 2;
-			
+			elmNode.style['top'] 			= top;
+			elmNode.style['left'] 			= this.config.Level2.left; 
+			elmNode.style['width'] 			= this.config.Level2.width;
+			elmNode.style['height'] 		= this.config.Level2.height;
+			elmNode.style['position']		= 'absolute';
+			elmNode.style['zIndex']			= 2;
+
 			top = top + this.config.Level2.height + this.config.Level2.spacing;
 			
 			//Add events
@@ -166,6 +167,7 @@ function VixenMenuClass(objMenu)
 			//Add some more crap
 			elmNode.action = elmMenuItem.action[strKey];
 			elmNode.level = elmMenuItem.level + 1;
+			elmNode.style.cursor = "pointer";
 			
 			// set the class
 			objNode.className 	= 'ContextMenuItem';

@@ -213,7 +213,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Times to Charge</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <input type='text' id='TimesToCharge' value='' class='DefaultInputTextSmall' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged(event)'></input>\n";
+		echo "      <input type='text' id='TimesToCharge' value='' class='DefaultInputTextSmall' style='padding-left:3px' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged(event)'></input>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
 		
@@ -222,9 +222,6 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;End Date:</div>\n";
 		echo "   <div id='EndDate' class='DefaultOutput'>&nbsp;</div>\n";
 		echo "</div>\n";
-		
-		// output the manditory field message
-		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
 		
 		echo "</div>\n"; // WideForm
 		

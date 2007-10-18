@@ -184,9 +184,6 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		DBO()->Payment->Amount->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->Payment->TXNReference->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		
-		// output the manditory field message
-		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
-		
 		echo "</div>\n";  //WideForm
 		
 		// create the buttons

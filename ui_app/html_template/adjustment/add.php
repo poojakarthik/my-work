@@ -208,7 +208,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			// Check if this invoice Id was the last one selected
 			$strSelected = ($strInvoiceId == DBO()->Charge->Invoice->Value) ? "selected='selected'" : "";
 			
-			echo "         <option value='$strInvoiceId' $strSelected>$strInvoiceId $strInvoiceCreatedOn</option>\n";
+			echo "         <option value='$strInvoiceId' $strSelected>$strInvoiceId ($strInvoiceCreatedOn)</option>\n";
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
@@ -216,9 +216,6 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 
 		// Create a textbox for including a note
 		DBO()->Charge->Notes->RenderInput(CONTEXT_DEFAULT);
-		
-		// output the manditory field message
-		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
 		
 		echo "</div>\n"; // WideForm
 
