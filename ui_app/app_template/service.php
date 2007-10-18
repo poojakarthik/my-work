@@ -88,13 +88,6 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->Service->ELB = (bool)DBL()->ServiceExtension->RecordCount();
 		}
 		
-		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
-		{
-			$strWhere = "Service = <Service>";
-			DBO()->ServiceMobileDetail->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
-			DBO()->ServiceMobileDetail->Load();
-		}
-		
 		// Get the details of the current plan for the service
 		DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
 		if (DBO()->RatePlan->Id->Value !== FALSE)
@@ -115,32 +108,34 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->Note->Load();
 
 		// context menu
-		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Employee_Console();		
-		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
-		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
-
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
-		if ($bolUserHasAdminPerm)
+		ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Account_Menu->Service->Change_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+		ContextMenu()->Account_Menu->Service->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+		
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
-			// User must have admin permissions to view the Administrative Console
-			ContextMenu()->Admin_Console();
+			ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
 		}
-		ContextMenu()->Logout();
+
+		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);	
+		ContextMenu()->Account_Menu->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+
+		ContextMenu()->Account_Menu->Notes->Account->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Account->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Service->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Service->Add_Service_Note(DBO()->Service->Id->Value);
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
-		//BreadCrumb()->Invoices_And_Payments(DBO()->Service->Account->Value);
+		BreadCrumb()->InvoicesAndPayments(DBO()->Service->Account->Value);
 		BreadCrumb()->SetCurrentPage("Service");
 
 		// All required data has been retrieved from the database so now load the page template
@@ -670,35 +665,6 @@ class AppTemplateService extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
-		// context menu
-		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Employee_Console();		
-		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
-		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
-
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
-		if ($bolUserHasAdminPerm)
-		{
-			// User must have admin permissions to view the Administrative Console
-			ContextMenu()->Admin_Console();
-		}
-		ContextMenu()->Logout();
-
-		// Bread Crumb Menu
-		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
-		BreadCrumb()->View_Service(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
-		BreadCrumb()->SetCurrentPage("View Service Plan");
-
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Service->Load())
 		{
@@ -751,15 +717,37 @@ class AppTemplateService extends ApplicationTemplate
 			}
 		}
 		
-		// Load context menu items specific to the View Service page
-		// Context menu
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
+				// context menu
+		ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Account_Menu->Service->Change_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+		ContextMenu()->Account_Menu->Service->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 		
-		// breadcrumb menu
-		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
-		
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+		{
+			ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
+		}
+
+		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Service(DBO()->Account->Id->Value);	
+		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);		
+
+		ContextMenu()->Account_Menu->Notes->Account->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Account->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Service->View_Service_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Service->Add_Service_Note(DBO()->Account->Id->Value);
+
+		// Breadcrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->InvoicesAndPayments(DBO()->Account->Id->Value);
+		BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
+		BreadCrumb()->SetCurrentPage("Service");
 		
 		$this->LoadPage('service_plan_view');
 		return TRUE;

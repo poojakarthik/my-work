@@ -277,19 +277,26 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<div class='NarrowForm'>\n";
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
-		
-	
+
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
 			DBO()->Service->Indial100->RenderOutput();
 			DBO()->Service->ELB->RenderOutput();
 		}
 
+		// If the ServiceType is a mobile display the extra information for the service
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
+			$strWhere = "Service = <Service>";
+			DBO()->ServiceMobileDetail->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
+			DBO()->ServiceMobileDetail->Load();
+		
 			DBO()->ServiceMobileDetail->SimPUK->RenderOutput();
 			DBO()->ServiceMobileDetail->SimESN->RenderOutput();			
 			DBO()->ServiceMobileDetail->SimState->RenderCallback("GetConstantDescription", Array("ServiceStateType"), RENDER_OUTPUT);	
+			DBO()->ServiceMobileDetail->DOB->RenderOutput();
+			DBO()->ServiceMobileDetail->Comments->RenderOutput();
+			echo "&nbsp;<br>\n";
 		}
 
 		DBO()->Service->CreatedOn->RenderOutput();

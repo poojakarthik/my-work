@@ -153,6 +153,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
 			
 			DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
+			
+			DBO()->Account->DisableDDR->RenderOutput();
+			DBO()->Account->DisableLatePayment->RenderOutput();
 		echo "</div>\n";
 
 		echo "<div class='ButtonContainer'><div class='Right'>\n";

@@ -331,7 +331,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			// If properties have saved successfully display the account details page, and calculate the account balance
 			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);				
-			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
+			Ajax()->AddCommand("AlertReload", "The details have been successfully saved");
+			//return TRUE;
+			//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
 			return TRUE;
 		}	
 	}
@@ -452,25 +454,16 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 
 		// context menu
-		ContextMenu()->Employee_Console();		
-		ContextMenu()->Account_Menu->Account->View_Account(DBO()->Account->Id->Value);
-		//ContextMenu()->Account_Menu->Account->Edit_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Service(DBO()->Account->Id->Value);	
-		ContextMenu()->Account_Menu->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		
 		ContextMenu()->Account_Menu->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-		if ($bolUserHasAdminPerm)
-		{
-			// User must have admin permissions to view the Administrative Console
-			ContextMenu()->Admin_Console();
-		}
-		ContextMenu()->Logout();
-
 
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list

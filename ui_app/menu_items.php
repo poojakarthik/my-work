@@ -388,8 +388,8 @@ class MenuItems
 	 */
 	function InvoicesAndPayments($intId)
 	{
-		//$this->strLabel	= "account: $intId";
-		$this->strLabel	= "Invoices and Payments";
+		$this->strLabel	= "Account: $intId";
+		//$this->strLabel	= "Invoices and Payments";
 		return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
 	}
 	
@@ -728,11 +728,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function InvoiceAndPayments($intId)
-	{
-		//$this->strLabel	= "acc: $intId";
-		return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
-	}
+	//function InvoiceAndPayments($intId)
+	//{
+	//	//$this->strLabel	= "acc: $intId";
+	//	return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
+	//}
 
 	//------------------------------------------------------------------------//
 	// ViewServiceDetails
@@ -1146,19 +1146,19 @@ class MenuItems
 		$this->strLabel	= "edit account";
 		
 		// Setup data to send
-		//$arrData['Objects']['Account']['Id'] = $intId;
+		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
-		//$strJsonCode = Json()->encode($arrData);
+		$strJsonCode = Json()->encode($arrData);
 		
-		//return "javascript:Vixen.Ajax.CallAppTemplate(\"Account\", \"EditDetails\", ".$strJsonCode.");";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewAccountPopupId\", \"large\", null, \"Account\", \"ViewDetails\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
-	// ViewAccount
+	// ViewAccountDetails
 	//------------------------------------------------------------------------//
 	/**
-	 * ViewAccount()
+	 * ViewAccountDetails()
 	 *
 	 * Compiles the javascript to be executed when the View Account menu item is clicked
 	 *
@@ -1171,7 +1171,7 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewAccount($intId)
+	function ViewAccountDetails($intId)
 	{
 		//$this->strLabel	= "view account";
 		
@@ -1305,6 +1305,27 @@ class MenuItems
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Cancel Recurring Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
+
+	//------------------------------------------------------------------------//
+	// AddProvisioning
+	//------------------------------------------------------------------------//
+	/**
+	 * AddProvisioning()
+	 *
+	 * Compiles the Href to be executed when the AddProvisioning menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddProvisioning menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
+	 * @return	string				Href to be executed when the AddProvisioning menu item is clicked
+	 *
+	 * @method
+	 */
+	function Provisioning($intServiceId)
+	{
+		$this->strLabel = "AddProvisioning";
+		return "service_address.php?Service=$intServiceId";
+	}	
 
 	//------------------------------------------------------------------------//
 	// KnowledgeBase

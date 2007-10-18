@@ -148,9 +148,9 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		
 		// Renders the radio buttons, the notes and the ending form elements in that order	
 		$this->RenderNotes();
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Close", "Vixen.Popup.Close(this);");
-		echo "</div>\n";
+		echo "</div></div>\n";
 		$this->FormEnd();
 	}
 	
