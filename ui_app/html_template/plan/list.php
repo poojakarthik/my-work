@@ -172,7 +172,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 	function RenderDefault()
 	{
 		// If the user has Rate Management permissions then they can add and edit Plans
-		$bolHasRateManagementPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT);
+		$bolHasPlanEditPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 	
 		// Define what happens when the filter combo is used
 		$strOnFilterChange = "window.location=\"vixen.php/Plan/AvailablePlans/?RatePlan.ServiceType=\" + this.value;";
@@ -197,7 +197,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		echo "   </select>\n";
 		echo "</div>\n";
 
-		if ($bolHasRateManagementPerm)
+		if ($bolHasPlanEditPerm)
 		{
 			// Render the "Add New Plan" button
 			echo "<div class='Right'>\n";
@@ -207,7 +207,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		echo "</div>\n";  // Container div
 
 		// Render the header of the Plan Table.  This depends on the privileges of the user
-		if ($bolHasRateManagementPerm)
+		if ($bolHasPlanEditPerm)
 		{
 			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend ($)", "Cap Charge ($)", "Cap Limit ($)", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
 			Table()->PlanTable->SetWidth("8%", "20%", "8%", "10%", "10%", "10%", "8%", "8%", "8%", "5%", "5%");
@@ -237,7 +237,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 			$strNameCell = "<a href='$strViewPlanHref'><span class='DefaultOutputSpan' title='$strDescription'>$strName</span></a>";
 			
 			// Add the Rate Plan to the VixenTable
-			if ($bolHasRateManagementPerm)
+			if ($bolHasPlanEditPerm)
 			{
 				// User can add and edit Rate Plans
 				// Build the Edit Rate Plan link, if the RatePlan is currently a draft
@@ -287,14 +287,14 @@ class HtmlTemplatePlanList extends HtmlTemplate
 			// There are no RatePlans to stick in this table
 			Table()->PlanTable->AddRow("<span class='DefaultOutputSpan Default'>No Rate Plans to display</span>");
 			Table()->PlanTable->SetRowAlignment("left");
-			$intNumofColumns = ($bolHasRateManagementPerm) ? 11 : 9;
+			$intNumofColumns = ($bolHasPlanEditPerm) ? 11 : 9;
 			Table()->PlanTable->SetRowColumnSpan($intNumofColumns);
 		}
 		
 		Table()->PlanTable->Render();
 		
 		// Render another "Add New Plan" button if the user can
-		if ($bolHasRateManagementPerm)
+		if ($bolHasPlanEditPerm)
 		{
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
 			$this->Button("Add New Plan", "window.location=\"" . Href()->AddRatePlan(NULL, Href()->AvailablePlans()) . "\"");

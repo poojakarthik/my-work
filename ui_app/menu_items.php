@@ -108,6 +108,72 @@ class MenuItems
 		$this->strLabel	= "Console";
 		return "console.php";
 	}
+	
+	//------------------------------------------------------------------------//
+	// AddCustomer
+	//------------------------------------------------------------------------//
+	/**
+	 * AddCustomer()
+	 *
+	 * Compiles the Href to be executed when the AddCustomer menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddCustomer menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string				Href to be executed when the AddCustomer menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddCustomer()
+	{
+		$this->strLabel	= "Add Customer";
+		return "account_add.php";
+	}
+	
+	//------------------------------------------------------------------------//
+	// FindCustomer
+	//------------------------------------------------------------------------//
+	/**
+	 * FindCustomer()
+	 *
+	 * Compiles the Href to be executed when the FindCustomer menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the FindCustomer menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string				Href to be executed when the FindCustomer menu item is clicked
+	 *
+	 * @method
+	 */
+	function FindCustomer()
+	{
+		$this->strLabel	= "Find Customer";
+		return "contact_verify.php";
+	}
+	
+	//------------------------------------------------------------------------//
+	// AddServices
+	//------------------------------------------------------------------------//
+	/**
+	 * AddServices()
+	 *
+	 * Compiles the Href to be executed when the AddServices (service add bulk) menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddServices (service add bulk) menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param 	integer		$intAccountId	Id of the account that the services will be added to
+	 *
+	 * @return	string						Href to be executed when the AddServices menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddServices($intAccountId)
+	{
+		$this->strLabel	= "Add Services";
+		return "service_addbulk.php?Account=$intAccountId";
+	}
+	
 
 	//------------------------------------------------------------------------//
 	// EditContact

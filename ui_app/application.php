@@ -247,6 +247,17 @@ class Application
 	
 		// Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
+		
+		// Append default options to the Context Menu
+		ContextMenu()->Employee_Console();
+		ContextMenu()->Add_Customer();
+		ContextMenu()->Find_Customer();
+		ContextMenu()->Available_Plans();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+		{
+			ContextMenu()->Admin_Console();
+		}
+		ContextMenu()->Logout();
 
 		// Render Page
 		$this->objAppTemplate->Page->Render();

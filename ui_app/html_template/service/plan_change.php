@@ -108,7 +108,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Select Plan:</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select id='SelectPlanCombo' name='NewPlan.Id'>\n";
+			echo "      <select id='SelectPlanCombo' name='NewPlan.Id' style='width:100%'>\n";
 	
 			foreach (DBL()->RatePlan as $dboRatePlan)
 			{

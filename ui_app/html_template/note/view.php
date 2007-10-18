@@ -207,7 +207,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			}
 			
 			// Output the note details
-			echo "<span style='font-size: 9pt'>$strDetailsHtml</span>\n";
+			echo "<span class='DefaultOutputSpan' style='font-size: 9pt'>$strDetailsHtml</span>\n";
 			echo "<div class='TinySeperator'></div>\n";
 			
 			// Output the actual note

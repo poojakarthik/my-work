@@ -6,6 +6,9 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	header("Location: vixen.php/Plan/AvailablePlans/");
+
+	/* Old Page
 	// call application loader
 	require ('config/application_loader.php');
 	
@@ -61,5 +64,5 @@
 	$rplRatePlans->Sample ();
 	
 	$Style->Output ('xsl/content/rates/plans/list.xsl');
-	
+	*/
 ?>
