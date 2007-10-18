@@ -87,20 +87,10 @@ class AppTemplatePlan extends ApplicationTemplate
 		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
-		// context menu
-		/*
-		ContextMenu()->Employee_Console();
-		ContextMenu()->Add_Customer();
-		ContextMenu()->Find_Customer();
-		ContextMenu()->Available_Plans();
-		if ($bolHasAdminPerm)
-		{
-			ContextMenu()->Admin_Console();
-		}
-		ContextMenu()->Logout();
-		*/
+		// Context menu
+		// Nothing to add
 		
-		// breadcrumb menu
+		// Breadcrumb menu
 		Breadcrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Available Plans");
 		
@@ -178,17 +168,10 @@ class AppTemplatePlan extends ApplicationTemplate
 		// The User needs both Rate Management and Admin Permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 		
-		// context menu
-		/*
-		ContextMenu()->Employee_Console();
-		ContextMenu()->Add_Customer();
-		ContextMenu()->Find_Customer();
-		ContextMenu()->Available_Plans();
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
-		*/
+		// Context menu
+		// Nothing to add
 		
-		// breadcrumb menu
+		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BReadCrumb()->AvailablePlans();
 		BreadCrumb()->SetCurrentPage("Add Rate Plan");

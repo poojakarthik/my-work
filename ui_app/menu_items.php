@@ -173,7 +173,6 @@ class MenuItems
 		$this->strLabel	= "Add Services";
 		return "service_addbulk.php?Account=$intAccountId";
 	}
-	
 
 	//------------------------------------------------------------------------//
 	// EditContact

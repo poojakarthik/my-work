@@ -50,13 +50,15 @@ class AppTemplateAccount extends ApplicationTemplate
 	/**
 	 * ViewServices()
 	 *
-	 * Performs the logic for viewing a service
+	 * Performs the logic for viewing the Services belonging to this account
 	 * 
-	 * Performs the logic for viewing a service linked to an account
-	 * This will only ever be executed via an Ajax request
+	 * Performs the logic for viewing the Services belonging to this account
+	 * This is a popup which will only ever be executed via an Ajax request
+	 * either	DBO()->Account->Id	must be specified
+	 * or		DBO()->Service->Id	must be specified, in which case, it will work out the Service Id
 	 *
 	 * @return		void
-	 * @method		View
+	 * @method
 	 *
 	 */
 	function ViewServices()
@@ -106,6 +108,71 @@ class AppTemplateAccount extends ApplicationTemplate
 		$this->LoadPage('account_services');
 		return TRUE;
 	}	
+
+	//------------------------------------------------------------------------//
+	// ViewContacts
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewContacts()
+	 *
+	 * Performs the logic for viewing the Services belonging to this account
+	 * 
+	 * Performs the logic for viewing the Services belonging to this account
+	 * This is a popup which will only ever be executed via an Ajax request
+	 * DBO()->Account->Id		Id of the Account to view the contacts of
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function ViewContacts()
+	{
+		// Check user authorization
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolIsAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		
+		// If Account.Id is not set, but Service.Id is, then find the account that the service belongs to
+		if ((!DBO()->Account->Id->Value) && (DBO()->Service->Id->Value))
+		{
+			if (!DBO()->Service->Load())
+			{
+				// The service could not be found
+				Ajax()->AddCommand("AlertReload", "The service with Id: ". DBO()->Service->Id->Value ." could not be found");
+				return TRUE;
+			}
+			
+			// We want to view all services belonging to the account that this service belongs to
+			DBO()->Account->Id = DBO()->Service->Account->Value;
+		}
+		
+		// Attempt to load the account
+		if (!DBO()->Account->Load())
+		{
+			Ajax()->AddCommand("AlertReload", "The account ". DBO()->Account->Id->Value ." could not be found");
+			return TRUE;
+		}
+		
+		if (!$bolIsAdminUser)
+		{
+			// User does not have admin privileges and therefore cannot view archived services
+			$strWhere = "Account = <Account> AND Status != ". SERVICE_ARCHIVED;
+		}
+		else
+		{
+			// User has admin privileges and can view all services regardless of their status
+			$strWhere = "Account = <Account>";
+		}
+		
+		// Load all the services belonging to the account, that the user has permission to view
+		DBL()->Service->Where->Set($strWhere, Array("Account"=>DBO()->Account->Id->Value));
+		DBL()->Service->OrderBy("FNN");
+		DBL()->Service->Load();
+		
+		$this->LoadPage('account_services');
+		return TRUE;
+	}	
+	
 
 	//------------------------------------------------------------------------//
 	// EditDetails
