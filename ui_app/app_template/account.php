@@ -130,21 +130,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		$bolIsAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		
-		// If Account.Id is not set, but Service.Id is, then find the account that the service belongs to
-		if ((!DBO()->Account->Id->Value) && (DBO()->Service->Id->Value))
-		{
-			if (!DBO()->Service->Load())
-			{
-				// The service could not be found
-				Ajax()->AddCommand("AlertReload", "The service with Id: ". DBO()->Service->Id->Value ." could not be found");
-				return TRUE;
-			}
-			
-			// We want to view all services belonging to the account that this service belongs to
-			DBO()->Account->Id = DBO()->Service->Account->Value;
-		}
 		
 		// Attempt to load the account
 		if (!DBO()->Account->Load())
@@ -153,23 +138,13 @@ class AppTemplateAccount extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		if (!$bolIsAdminUser)
-		{
-			// User does not have admin privileges and therefore cannot view archived services
-			$strWhere = "Account = <Account> AND Status != ". SERVICE_ARCHIVED;
-		}
-		else
-		{
-			// User has admin privileges and can view all services regardless of their status
-			$strWhere = "Account = <Account>";
-		}
-		
 		// Load all the services belonging to the account, that the user has permission to view
-		DBL()->Service->Where->Set($strWhere, Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("FNN");
-		DBL()->Service->Load();
 		
-		$this->LoadPage('account_services');
+		DBL()->Contact->Account = DBO()->Account->Id->Value;
+		DBL()->Contact->OrderBy("LastName, FirstName");
+		DBL()->Contact->Load();
+		
+		$this->LoadPage('account_contacts');
 		return TRUE;
 	}	
 	
@@ -483,6 +458,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->Add_Service(DBO()->Account->Id->Value);	
 		ContextMenu()->Account_Menu->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
@@ -532,18 +508,39 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->InvoicePayment->OrderBy("Id DESC");
 		DBL()->InvoicePayment->Load();
 		
+		// Build the list of columns to use for the Charge DBL (as it is pulling this information from 2 tables)
+		$arrColumns = Array(	'Id' => 'C.Id',	'AccountGroup'=>'C.AccountGroup',	'Account'=>'C.Account',	'Service'=>'C.Service',
+								'InvoiceRun'=>'C.InvoiceRun',	'CreatedBy'=>'C.CreatedBy', 'CreatedOn'=>'C.CreatedOn', 'ApprovedBy'=>'C.ApprovedBy',
+								'ChargeType'=>'C.ChargeType', 'Description'=>'C.Description', 'ChargedOn'=>'C.ChargedOn', 'Nature'=>'C.Nature',
+								'Amount'=>'C.Amount', 'Invoice'=>'C.Invoice', 'Notes'=>'C.Notes', 'Status'=>'C.Status', 'FNN'=>'S.FNN');
+		DBL()->Charge->SetColumns($arrColumns);
+		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id");
+		
 		//"WHERE (Account = <accId>) AND (Status conditions)"
-		$strWhere  = "(Account = ". DBO()->Account->Id->Value .")";
-		$strWhere .= " AND ((Status = ". CHARGE_WAITING .")";
-		$strWhere .= " OR (Status = ". CHARGE_APPROVED .")";
-		$strWhere .= " OR (Status = ". CHARGE_TEMP_INVOICE .")";
-		$strWhere .= " OR (Status = ". CHARGE_INVOICED ."))";
+		$strWhere  = "(C.Account = ". DBO()->Account->Id->Value .")";
+		$strWhere .= " AND ((C.Status = ". CHARGE_WAITING .")";
+		$strWhere .= " OR (C.Status = ". CHARGE_APPROVED .")";
+		$strWhere .= " OR (C.Status = ". CHARGE_TEMP_INVOICE .")";
+		$strWhere .= " OR (C.Status = ". CHARGE_INVOICED ."))";
 		DBL()->Charge->Where->SetString($strWhere);
 		DBL()->Charge->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->Charge->Load();
 		
-		DBL()->RecurringCharge->Account = DBO()->Account->Id->Value;
-		DBL()->RecurringCharge->Archived = 0;
+		// Build the list of columns to use for the RecurringCharge DBL (as it is pulling this information from 2 tables)
+		$arrColumns = Array(	'Id' => 'RC.Id',	'AccountGroup'=>'RC.AccountGroup',	'Account'=>'RC.Account',	'Service'=>'RC.Service',
+								'CreatedBy'=>'RC.CreatedBy', 'ApprovedBy'=>'RC.ApprovedBy', 'ChargeType'=>'RC.ChargeType',
+								'Description'=>'RC.Description', 'Nature'=>'RC.Nature', 'CreatedOn'=>'RC.CreatedOn',
+								'StartedOn'=>'RC.StartedOn', 'LastChargedOn'=>'RC.LastChargedOn', 'RecurringFreqType'=>'RC.RecurringFreqType',
+								'RecurringFreq'=>'RC.RecurringFreq', 'MinCharge'=>'RC.MinCharge', 'RecursionCharge'=>'RC.RecursionCharge',
+								'CancellationFee'=>'RC.CancellationFee', 'Continuable'=>'RC.Continuable', 'PlanCharge'=>'RC.PlanCharge',
+								'UniqueCharge'=>'RC.UniqueCharge', 'TotalCharged'=>'RC.TotalCharged', 'TotalRecursions'=>'RC.TotalRecursions',
+								'Archived'=>'RC.Archived', 'FNN'=>'S.FNN');
+		DBL()->RecurringCharge->SetColumns($arrColumns);
+		DBL()->RecurringCharge->SetTable("RecurringCharge AS RC LEFT OUTER JOIN Service AS S ON RC.Service = S.Id");
+		//DBL()->RecurringCharge->Account = DBO()->Account->Id->Value;
+		//DBL()->RecurringCharge->Archived = 0;
+		$intAccountId = DBO()->Account->Id->Value;
+		DBL()->RecurringCharge->Where->Set("RC.Account = <Account> AND RC.Archived = 0", Array("Account"=>$intAccountId));
 		DBL()->RecurringCharge->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->RecurringCharge->Load();
 		

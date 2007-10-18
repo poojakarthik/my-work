@@ -303,15 +303,12 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		
 		Table()->PaymentTable->Render();
 		
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$strHref = Href()->MakePayment(DBO()->Account->Id->Value);
 		$this->Button("Make Payment", $strHref);
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
 		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='SmallSeperator'></div>\n";
-	
 	}
 }
 

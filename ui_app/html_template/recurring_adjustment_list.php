@@ -147,7 +147,17 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			}
 			
 			// add tooltip
-			$strToolTipHtml = $dboRecurringCharge->LastChargedOn->AsOutput();
+			if ($dboRecurringCharge->Service->Value)
+			{
+				// The Recurring Charge is a Service Recurring Charge.  Display the FNN of the Service
+				$strFNN = $dboRecurringCharge->FNN->AsOutput();
+			}
+			else
+			{
+				$strFNN = "";
+			}
+			$strToolTipHtml  = $strFNN;
+			$strToolTipHtml .= $dboRecurringCharge->LastChargedOn->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 			
 			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
@@ -175,12 +185,10 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		Table()->RecurringAdjustmentTable->Render();
 		
 		$strHref = Href()->AddRecurringAdjustment(DBO()->Account->Id->Value);
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Add Recurring Adjustment", $strHref);
+		echo "</div></div>\n";
 		echo "</div>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='SmallSeperator'></div>\n";
 	}
 }
 

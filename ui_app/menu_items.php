@@ -294,17 +294,46 @@ class MenuItems
 	 * Compiles the Href to be executed when the ViewContact menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the contact to view
+	 * @param	int		$intContactId		id of the contact to view
 	 *
-	 * @return	string				Href to be executed when the ViewContact menu item is clicked
+	 * @return	string						Href to be executed when the ViewContact menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewContact($intId)
+	function ViewContact($intContactId)
 	{
-		$this->strLabel	= "contact: $intId";
-		return "vixen.php/Contact/View/?Contact.Id=$intId";
+		$this->strLabel	= "Contact: $intContactId";
+		return "contact_view.php?Id=$intContactId";
 	}
+	
+	//------------------------------------------------------------------------//
+	// ListContacts
+	//------------------------------------------------------------------------//
+	/**
+	 * ListContacts()
+	 *
+	 * Compiles the Href to be executed when the ListContacts menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ListContacts menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		id of the Account to view the Contacts of
+	 *
+	 * @return	string						Href to be executed when the ListContacts menu item is clicked
+	 *
+	 * @method
+	 */
+	function ListContacts($intAccountId)
+	{
+		// Setup data to send
+		$arrData['Objects']['Account']['Id'] = $intAccountId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AccountContactsPopupId\", \"large\", null, \"Account\", \"ViewContacts\", $strJsonCode)";
+	}
+	
 	
 	
 	//------------------------------------------------------------------------//
@@ -1144,7 +1173,7 @@ class MenuItems
 	 */
 	function ViewAccount($intId)
 	{
-		$this->strLabel	= "view account";
+		//$this->strLabel	= "view account";
 		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;

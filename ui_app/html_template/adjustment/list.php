@@ -166,12 +166,24 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			}
 			
 			// add tooltip
-			$strToolTipHtml = $dboCharge->CreatedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+			if ($dboCharge->Service->Value)
+			{
+				// The Charge is a Service Charge. Display the FNN
+				$strFNN = $dboCharge->FNN->AsOutput();
+			}
+			else
+			{
+				$strFNN = "";
+			}
+			$strToolTipHtml  = $strFNN;
+			$strToolTipHtml .= $dboCharge->CreatedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
 			$strToolTipHtml .= $dboCharge->ApprovedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
 			$strStatus = GetConstantDescription($dboCharge->Status->Value, "ChargeStatus");
 			$strToolTipHtml .= $dboCharge->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
 			$strToolTipHtml .= $dboCharge->Description->AsOutput();
 			$strToolTipHtml .= $dboCharge->Notes->AsOutput();
+			
+			
 			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);
 			
 			// add indexes
@@ -203,13 +215,11 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		
 		// button to add an adjustment
 		$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Add Adjustment", $strHref);
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
 		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='SmallSeperator'></div>\n";
 	}
 }
 
