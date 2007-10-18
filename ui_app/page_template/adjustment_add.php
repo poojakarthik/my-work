@@ -33,7 +33,7 @@
 // set the page title
 if (DBO()->Service->Id->Value)
 {
-	$this->Page->SetName('Add Service Adjustment');
+	$this->Page->SetName('Add Service Adjustment - Service: '. DBO()->Service->FNN->Value);
 }
 else
 {

@@ -110,9 +110,11 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		if (DBO()->Service->Id->Value)
 		{
 			DBO()->Service->Id->RenderHidden();
+			
+			// Display the Service's FNN
+			DBO()->Service->FNN->RenderOutput();
 		}
-		
-		
+
 		DBO()->Account->Id->RenderHidden();
 		
 		// Display account details
@@ -130,7 +132,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' style='width:230px' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select id='ChargeTypeCombo' style='width:100%' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
@@ -197,15 +199,16 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Invoice:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='InvoiceComboBox' name='Charge.Invoice'>\n";
+		echo "      <select id='InvoiceComboBox' name='Charge.Invoice' style='width: 100%'>\n";
 		echo "         <option value=''>No Association</option>\n";
 		foreach (DBL()->AccountInvoices as $dboInvoice)
 		{
 			$strInvoiceId = $dboInvoice->Id->Value;
+			$strInvoiceCreatedOn = OutputMask()->ShortDate($dboInvoice->CreatedOn->Value);
 			// Check if this invoice Id was the last one selected
 			$strSelected = ($strInvoiceId == DBO()->Charge->Invoice->Value) ? "selected='selected'" : "";
 			
-			echo "         <option value='$strInvoiceId' $strSelected>$strInvoiceId</option>\n";
+			echo "         <option value='$strInvoiceId' $strSelected>$strInvoiceId $strInvoiceCreatedOn</option>\n";
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";

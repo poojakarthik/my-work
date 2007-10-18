@@ -105,9 +105,13 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		DBO()->Account->Id->RenderHidden();
 		//DBO()->ChargeType->Id->RenderHidden();
 		
+		// Check if the recurring charge is being applied to a service
 		if (DBO()->Service->Id->Value)
 		{
 			DBO()->Service->Id->RenderHidden();
+			
+			// Display the Service's FNN
+			DBO()->Service->FNN->RenderOutput();
 		}
 		
 		echo "<div class='WideForm'>\n";
