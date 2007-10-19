@@ -668,7 +668,8 @@
 			// Cancel the Service on this specific date
 			$arrClose = Array (
 				'ClosedOn'	=>	date ('Y-m-d', strtotime ('-1 day', $intDate)),
-				'ClosedBy'	=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue ()
+				'ClosedBy'	=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'Status'	=>	SERVICE_DISCONNECTED
 			);
 			
 			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrClose);

@@ -935,7 +935,11 @@ class AppTemplateService extends ApplicationTemplate
 			$arrEvent['NewRatePlan']['Id']		= DBO()->NewPlan->Id->Value;
 			$arrEvent['NewRatePlan']['Name']	= DBO()->NewPlan->Name->Value;
 
-			Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServiceUpdate", "EventData"=>$arrEvent));
+			//Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServiceUpdate", "EventData"=>$arrEvent));
+			Ajax()->FireEvent("OnServiceUpdate", $arrEvent);
+			//$strJsonCode = Json()->Encode($arrEvent);
+
+			//Ajax()->AddCommand("ExecuteJavascript", "Vixen.EventHandler.FireEvent(\"OnServiceUpdate\", null);");
 
 			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
 

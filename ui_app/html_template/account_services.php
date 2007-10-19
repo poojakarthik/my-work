@@ -115,7 +115,18 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		{
 			// Record the Status of the service
 			$strStatusCell = $dboService->Status->AsCallBack("GetConstantDescription", Array("Service"));
-		
+
+			// Build the Actions Cell
+			$strViewServiceNotesLink	= Href()->ViewServiceNotes($dboService->Id->Value);
+			$strEditServiceLink			= Href()->EditService($dboService->Id->Value);
+			$strChangePlanLink			= Href()->ChangePlan($dboService->Id->Value);
+			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($dboService->Id->Value);
+			$strActionsCell				= 	"<span class='DefaultOutputSpan'><a href='$strViewServiceNotesLink'>Notes</a>" .
+											"&nbsp;&nbsp;<a href='$strEditServiceLink'>Edit</a>" .
+											"&nbsp;&nbsp;<a href='$strChangePlanLink'>ChangePlan</a>".
+											"&nbsp;&nbsp;<a href='$strViewUnbilledChargesLink'>Unbilled Charges</a></span>";
+
+
 			// Find the current plan for the service
 			$mixCurrentPlanId = GetCurrentPlan($dboService->Id->Value);
 			if ($mixCurrentPlanId !== FALSE)
@@ -133,18 +144,10 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			else
 			{
 				// There is no current plan for the service
-				$strPlan = "<span class='DefaultOutputSpan' id='RatePlan.Name'>No Plan Selected</span>";
-				
-				// Create a link to the ChangePlan popup
-				$strChangePlanLink = Href()->ChangePlan($dboService->Id->Value);
-				
-				$strPlanCell = "<a href='$strChangePlanLink' title='Select Plan'>$strPlan</a>";
+				$strPlanCell = "<span class='DefaultOutputSpan' id='RatePlan.Name'>No Plan Selected</span>";
+				//$strPlanCell = "<a href='$strChangePlanLink' title='Select Plan'>$strPlan</a>";
 			}
 			
-			$strViewServiceNotesLink	= Href()->ViewServiceNotes($dboService->Id->Value);
-			$strEditServiceLink			= Href()->EditService($dboService->Id->Value);
-			$strActionsCell				= 	"<span class='DefaultOutputSpan'><a href='$strViewServiceNotesLink'>Notes</a>" .
-											"&nbsp;&nbsp;<a href='$strEditServiceLink'>Edit</a></span>";
 				
 			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
 			

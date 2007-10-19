@@ -447,7 +447,10 @@
 				"CreatedBy"			=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				"Carrier"			=>	$srvService->Pull ('Carrier')->getValue (),
 				"CarrierPreselect"	=>	$srvService->Pull ('CarrierPreselect')->getValue (),
-				"Status"			=>	$srvService->Pull ('Status')->getValue ()
+				// This line was already here when I went to update this function to handle the new Status property in the Service Table
+				//"Status"			=>	$srvService->Pull ('Status')->getValue ()
+				// I have changed it to this
+				"Status"			=>	SERVICE_ACTIVE
 			);
 			
 			$insService = new StatementInsert ('Service', $arrService);

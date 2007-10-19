@@ -242,7 +242,7 @@ function VixenPopupClass()
 		elmPopup.style.zIndex = ++dragObj.zIndex;
 
 		// Set the size of the popup
-		switch (strSize)
+		switch (strSize.toLowerCase())
 		{
 			case "small":
 				{	//small
@@ -257,6 +257,12 @@ function VixenPopupClass()
 			case "large":
 				{	//large
 					elmPopup.style.width = '700px';
+					break;
+				}
+			case "extralarge":
+				{
+					// Extra Large
+					elmPopup.style.width = '850px';
 					break;
 				}
 			default:

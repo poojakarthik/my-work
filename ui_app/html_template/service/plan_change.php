@@ -125,7 +125,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		echo "</div>\n";  // NarrowForm
 
  		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Close", "Vixen.Popup.Close(this);");
+		$this->Button("Cancel", "Vixen.Popup.Close(this);");
 		$this->AjaxSubmit("Change Plan");
 		echo "</div></div>\n";
 		

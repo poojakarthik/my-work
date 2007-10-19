@@ -327,6 +327,9 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("LineStatus"), RENDER_OUTPUT);
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 
+		// Register a listener to handle when the service has been updated
+		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('OnServiceUpdate', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
+
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}

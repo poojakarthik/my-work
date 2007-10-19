@@ -42,75 +42,6 @@
  */
 function VixenServiceUpdateListenerClass()
 {
-	//------------------------------------------------------------------------//
-	// Initialise
-	//------------------------------------------------------------------------//
-	/**
-	 * Initialise
-	 *
-	 * Initialises the object - registers event listeners
-	 *  
-	 * Initialises the object - registers event listeners
-	 *
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.Initialise = function()
-	{
-		if (Vixen.EventHandler == undefined)
-		{
-			// The EventHandler hasn't been loaded yet
-			// Try again in half a second
-			setTimeout(this.Initialise(), 500);
-			return;
-		}
-		
-		// Register Event Listeners
-		this.AddListeners();
-	}
-
-	//------------------------------------------------------------------------//
-	// AddListeners
-	//------------------------------------------------------------------------//
-	/**
-	 * AddListeners
-	 *
-	 * Registers the listeners contained within this class
-	 *  
-	 * Registers the listeners contained within this class
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.AddListeners = function()
-	{
-		Vixen.EventHandler.AddListener("OnServiceUpdate", this.OnUpdate);
-		Vixen.EventHandler.AddListener("OnNewNote", this.OnUpdate);
-	}
-	
-	//------------------------------------------------------------------------//
-	// RemoveListeners
-	//------------------------------------------------------------------------//
-	/**
-	 * RemoveListeners
-	 *
-	 * Unregisters the listeners contained within this class
-	 *  
-	 * Unregisters the listeners contained within this class
-	 * Currently this isn't being used.  The listener "this.OnUpdate" checks to make 
-	 * sure that the "AccountServices" popup is still present before actually trying
-	 * to do anything with it, so the Event listeners are protected against running
-	 * when the popup isn't displayed
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.RemoveListeners = function()
-	{
-		Vixen.EventHandler.RemoveListener("OnServiceUpdate", this.OnUpdate);
-		Vixen.EventHandler.RemoveListener("OnNewNote", this.OnUpdate);
-	}
 
 	//------------------------------------------------------------------------//
 	// OnUpdate
@@ -191,5 +122,4 @@ function VixenServiceUpdateListenerClass()
 if (Vixen.ServiceUpdateListener == undefined)
 {
 	Vixen.ServiceUpdateListener = new VixenServiceUpdateListenerClass;
-	Vixen.ServiceUpdateListener.Initialise();
 }
