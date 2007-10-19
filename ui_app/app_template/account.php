@@ -455,9 +455,9 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// context menu
 		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);

@@ -428,16 +428,7 @@ class MenuItems
 	 */
 	function ViewService($intId, $strFNN=NULL)
 	{
-		if (!$strFNN || trim($strFNN) == "")
-		{
-			$this->strLabel = "Service";
-		}
-		else
-		{
-			$this->strLabel	= "Service: $strFNN";
-			
-		}
-		
+		$this->strLabel	= "Service";//: $strFNN";
 		return "vixen.php/Service/View/?Service.Id=$intId";
 	}
 	
@@ -460,7 +451,7 @@ class MenuItems
 	 */
 	function InvoicesAndPayments($intId)
 	{
-		$this->strLabel	= "Account: $intId";
+		$this->strLabel	= "Account";
 		//$this->strLabel	= "Invoices and Payments";
 		return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
 	}
@@ -774,6 +765,7 @@ class MenuItems
 		// Setup data to send
 		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
 		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_ACCOUNT_NOTES;
+		$arrData['Objects']['Note']['NoteType'] = "All";
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -908,6 +900,7 @@ class MenuItems
 		$arrData['Objects']['Note']['NoteType'] = $strNoteType;
 		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
 		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_SERVICE_NOTES;
+		$arrData['Objects']['Note']['NoteType'] = "All";
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);

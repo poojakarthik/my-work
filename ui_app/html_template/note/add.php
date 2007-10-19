@@ -119,7 +119,6 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 				DBO()->Note->Service->RenderHidden();
 
 				DBO()->Service->FNN->RenderOutput();
-				DBO()->Service->Id->RenderOutput();
 				break;
 				
 			case HTML_CONTEXT_ACCOUNT_NOTE:
@@ -169,10 +168,10 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		echo "</div>\n";  // WideForm
 		
 		// create the submit button
-		echo "<div class='Right'>\n";
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Note");
-		echo "</div>\n";
+		echo "</div></div>\n";
 		
 		// give the Note text area initial focus
 		echo "<script type='text/javascript'>document.getElementById('Note.Note').focus();</script>\n";

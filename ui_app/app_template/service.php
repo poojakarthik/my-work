@@ -109,6 +109,7 @@ class AppTemplateService extends ApplicationTemplate
 
 		// context menu
 		ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->View_Service_Rate_Plan(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->Change_Plan(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
@@ -120,8 +121,8 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
 		}
 
-		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
@@ -729,25 +730,30 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
 		}
-
+		
+		ContextMenu()->Account_Menu->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Service(DBO()->Account->Id->Value);	
-		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);		
+		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 
 		ContextMenu()->Account_Menu->Notes->Account->View_Account_Notes(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Notes->Account->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Service->View_Service_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Service->Add_Service_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Service->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Service->Add_Service_Note(DBO()->Service->Id->Value);
 
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->InvoicesAndPayments(DBO()->Account->Id->Value);
 		BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
-		BreadCrumb()->SetCurrentPage("Service");
+		BreadCrumb()->SetCurrentPage("Plan");
 		
 		$this->LoadPage('service_plan_view');
 		return TRUE;

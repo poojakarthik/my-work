@@ -315,7 +315,14 @@
 		overflow:				hidden;		
 	}
 	
-	
+	.DefaultCustomLabel
+	{
+		//font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		//font-size: 			10pt;
+		left:						10px;
+		top:						-2px;
+		//outline-offset		-1px;
+	}
 
 	.DefaultInputTextSmall
 	{
