@@ -127,6 +127,12 @@ class AppTemplateNote extends ApplicationTemplate
 	 *		if DBO()->Account->Id is set then it assumes it is an Account Note
 	 *		if DBO()->Service->Id is set then it assumes it is an Service Note
 	 *		if DBO()->Contact->Id is set then it assumes it is an Contact Note
+	 * When a note is successfully added it fires an "OnNewNote" Event
+	 * passing the following Event Object Data:
+	 *		Account.Id		= id of the Account the new note belongs to, if it is an account note
+	 *		Service.Id		= id of the Service the new note belongs to, if it is a service note
+	 *		Contact.Id		= id of the Contact the new note refers to, if it is a contact note
+	 *		Note.Id			= id of the new note
 	 *
 	 * @return		void
 	 * @method
@@ -241,6 +247,26 @@ class AppTemplateNote extends ApplicationTemplate
 					// The note was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("AlertReload", "The note has been successfully added");
+					
+					// Fire the "OnNoteAdded" Event
+					// Build event object
+					// The contents of this object should be declared in the doc block of this method
+					if (DBO()->Service->Id->IsSet)
+					{
+						$arrEvent['Service']['Id']	= DBO()->Service->Id->Value;
+					}
+					if (DBO()->Account->Id->IsSet)
+					{
+						$arrEvent['Account']['Id']	= DBO()->Account->Id->Value;
+					}
+					if (DBO()->Contact->Id->IsSet)
+					{
+						$arrEvent['Contact']['Id']	= DBO()->Contact->Id->Value;
+					}
+					$arrEvent['Note']['Id']			= DBO()->Note->Id->Value;
+		
+					Ajax()->FireEvent("OnNewNote", $arrEvent);
+					
 					return TRUE;
 				}
 			}

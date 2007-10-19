@@ -6,6 +6,10 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	$intService = $_GET['Id'];
+	header("Location: vixen.php/Service/View/?Service.Id=$intService");
+
+	/* Old Page
 	require ('config/application_loader.php');
 	// call application loader
 	
@@ -101,5 +105,5 @@
 			'Account'		=> $actAccount->Pull ('Id')->getValue (),
 		)
 	);
-	
+	*/
 ?>

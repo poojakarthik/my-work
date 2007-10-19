@@ -71,8 +71,6 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		$strViewPlanButtonJavascript = "
 			var intPlanId = getElementById('SelectPlanCombo').value;
 			window.location = 'rates_plan_summary.php?Id=' + intPlanId;
-			//document.refresh();
-			//document.getElementById('32962').innerHTML='yellow';
 		";
 	
 		$this->FormStart("ChangePlan", "Service", "ChangePlan");

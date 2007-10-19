@@ -2510,6 +2510,27 @@ class AjaxFramework
 		$this->_arrCommand[] = $arrCommand;
 	}
 	
+	//------------------------------------------------------------------------//
+	// FireEvent
+	//------------------------------------------------------------------------//
+	/**
+	 * FireEvent()
+	 *
+	 * Adds a FireEvent javascript command to the list of commands that will be returned to Vixen.Ajax.HandleReply
+	 *
+	 * Adds a FireEvent javascript command to the list of commands that will be returned to Vixen.Ajax.HandleReply
+	 * 
+	 * @param	string		$strEventType	Name of the Event
+	 * @param	mixed		$mixData		The Event's specific data
+	 *
+	 * @return	void
+	 * @method
+	 */
+	function FireEvent($strEventType, $mixData=NULL)
+	{
+		$this->AddCommand("FireEvent", Array("Event"=>$strEventType, "EventData"=>$mixData));
+	}
+	
 }
 
 //----------------------------------------------------------------------------//

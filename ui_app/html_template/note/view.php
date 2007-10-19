@@ -81,6 +81,10 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
+		if (DBO()->Service->Id->IsSet)
+		{
+			$this->LoadJavascript("service_update_listener");
+		}
 	}
 
 	//------------------------------------------------------------------------//

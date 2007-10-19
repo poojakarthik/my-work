@@ -108,7 +108,7 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->Note->Load();
 
 		// context menu
-		ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);		
+		ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
 		ContextMenu()->Account_Menu->Service->Change_Plan(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
@@ -121,7 +121,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 
 		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
@@ -608,14 +608,8 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
 			}
-			//$jsonEvent = Json()->encode($arrEvent);
-			
-			// Build the javascript required to execute the event listener
-			//$strJavascript = "Vixen.EventHandler.FireEvent('OnServiceUpdate', $jsonEvent);";
-			
-			// Fire the "OnServiceUpdate" event
-			//Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
-			Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServiceUpdate", "EventData"=>$arrEvent));
+			//Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServiceUpdate", "EventData"=>$arrEvent));
+			Ajax()->FireEvent("OnServiceUpdate", $arrEvent);
 
 			Ajax()->AddCommand("Alert", "The service was successfully updated");
 			
@@ -722,7 +716,8 @@ class AppTemplateService extends ApplicationTemplate
 			}
 		}
 		
-				// context menu
+		// context menu
+		ContextMenu()->Account_Menu->Service->View_Service(DBO()->Service->Id->Value);		
 		ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);		
 		ContextMenu()->Account_Menu->Service->Change_Plan(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
@@ -792,11 +787,11 @@ class AppTemplateService extends ApplicationTemplate
 	 * 
 	 * Performs the logic for "Change Plan" popup
 	 * If the service successfully has its plan changed then it will fire an 
-	 * "OnServicePlanChange" event passing the following object:
-	 *		objObject.Service.Id		= id of the service which has had its plan changed
-	 *		objObject.OldRatePlan.Id	= id of the old RatePlan for the service
-	 *		objObject.NewRatePlan.Id	= id of the new RatePlan for the service
-	 *		objObject.NewRatePlan.Name	= name of the new RatePlan for the service
+	 * "OnServiceUpdate" event passing the following Event object data:
+	 *		Service.Id		= id of the service which has had its plan changed
+	 *		OldRatePlan.Id	= id of the old RatePlan for the service
+	 *		NewRatePlan.Id	= id of the new RatePlan for the service
+	 *		NewRatePlan.Name	= name of the new RatePlan for the service
 	 *
 	 * @return		void
 	 * @method		ChangePlan
@@ -934,7 +929,7 @@ class AppTemplateService extends ApplicationTemplate
 			$arrEvent['NewRatePlan']['Id']		= DBO()->NewPlan->Id->Value;
 			$arrEvent['NewRatePlan']['Name']	= DBO()->NewPlan->Name->Value;
 
-			Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServicePlanChange", "EventData"=>$arrEvent));
+			Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServiceUpdate", "EventData"=>$arrEvent));
 
 			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
 

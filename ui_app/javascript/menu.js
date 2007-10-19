@@ -89,7 +89,7 @@ function VixenMenuClass(objMenu)
 			elmNode.onclick = function(event) {Vixen.Menu.HandleClick(this)};
 			elmNode.onmouseover = function(event) {Vixen.Menu.HandleMouseOver(this)};
 			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut(this)};
-			elmNode.style.cursor = "pointer";
+			elmNode.style.cursor = "default";
 			
 			//Add some more crap
 			elmNode.action = this.objMenu[strKey];
@@ -167,7 +167,7 @@ function VixenMenuClass(objMenu)
 			//Add some more crap
 			elmNode.action = elmMenuItem.action[strKey];
 			elmNode.level = elmMenuItem.level + 1;
-			elmNode.style.cursor = "pointer";
+			elmNode.style.cursor = "default";
 			
 			// set the class
 			objNode.className 	= 'ContextMenuItem';

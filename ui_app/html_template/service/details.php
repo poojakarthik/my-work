@@ -79,6 +79,8 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
+		
+		$this->LoadJavascript("service_update_listener");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -301,6 +303,16 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 
 		DBO()->Service->CreatedOn->RenderOutput();
 		DBO()->Service->ClosedOn->RenderOutput();
+		
+		// Display the Cost Center, if there is one
+		if (DBO()->Service->CostCentre->Value)
+		{
+			DBO()->CostCentre->Id = DBO()->Service->CostCentre->Value;
+			DBO()->CostCentre->Load();
+			$strCostCentre = DBO()->CostCentre->Name->Value;
+			DBO()->Service->CostCentre->RenderArbitrary($strCostCentre, RENDER_OUTPUT);
+		}
+		
 		DBO()->Service->TotalUnbilledCharges->RenderOutput();
 		//Only display the current rate plan if there is one
 		if (DBO()->RatePlan->Id->Value !== FALSE)
