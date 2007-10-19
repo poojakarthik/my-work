@@ -167,12 +167,14 @@ define("FATAL_TEST_EXCEPTION"		, 80085);
 // Account Status
 $GLOBALS['*arrConstant']['Account'][0]['Constant']		= 'ACCOUNT_ACTIVE';
 $GLOBALS['*arrConstant']['Account'][0]['Description']	= 'Active';
+$GLOBALS['*arrConstant']['Account'][1]['Constant']		= 'ACCOUNT_ARCHIVED';
+$GLOBALS['*arrConstant']['Account'][1]['Description']	= 'Archived';
 $GLOBALS['*arrConstant']['Account'][2]['Constant']		= 'ACCOUNT_CLOSED';
 $GLOBALS['*arrConstant']['Account'][2]['Description']	= 'Closed';
 $GLOBALS['*arrConstant']['Account'][3]['Constant']		= 'ACCOUNT_DEBT_COLLECTION';
 $GLOBALS['*arrConstant']['Account'][3]['Description']	= 'Debt Collection';
-$GLOBALS['*arrConstant']['Account'][1]['Constant']		= 'ACCOUNT_ARCHIVED';
-$GLOBALS['*arrConstant']['Account'][1]['Description']	= 'Archived';
+$GLOBALS['*arrConstant']['Account'][4]['Constant']		= 'ACCOUNT_SUSPENDED';
+$GLOBALS['*arrConstant']['Account'][4]['Description']	= 'Suspended';
 
 // CDR status
 // CDR Handling (Range is 100-199)
