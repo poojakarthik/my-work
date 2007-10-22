@@ -154,14 +154,6 @@ function VixenEventHandlerClass()
 		//BUG! this isn't working
 		delete(this._objEventListeners[strEventType]);
 		return;
-		
-alert(Vixen.EventHandler._objEventListeners.length);	
-		if (this._objEventListeners[strEventType] != undefined)
-		{
-alert("hello");
-			// delete the list of listeners of this particular Event Type
-			//this._objEventListeners[strEventType] = new Array();
-		}
 	}
 	
 	

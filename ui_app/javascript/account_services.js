@@ -111,10 +111,6 @@ function VixenAccountServicesClass()
 	 */
 	this.AddListeners = function()
 	{
-		// First Remove all other listeners for the "OnServiceUpdate" Event.
-		// This is a bit of a hack to stop pages that listen for the event from reloading the page
-		Vixen.EventHandler.RemoveAllListeners("OnServiceUpdate");
-	
 		Vixen.EventHandler.AddListener("OnServiceUpdate", this.OnUpdate);
 	}
 	
@@ -160,7 +156,7 @@ function VixenAccountServicesClass()
 		// The "this" pointer does not point to this object, when it is called.
 		// It points to the Window object
 		var strPopupId = Vixen.AccountServices.strPopupId;
-
+		
 		// Check that the AccountServices popup is actually open because this will stay in 
 		// memory after the popup is closed, and if something else then triggers the event, 
 		// who knows what would happen
@@ -169,6 +165,7 @@ function VixenAccountServicesClass()
 			// The page isn't open so don't do anything
 			return;
 		}
+		
 		
 		if (objEvent.Data.NewService != undefined)
 		{

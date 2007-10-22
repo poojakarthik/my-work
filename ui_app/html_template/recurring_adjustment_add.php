@@ -105,6 +105,8 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		DBO()->Account->Id->RenderHidden();
 		//DBO()->ChargeType->Id->RenderHidden();
 		
+		echo "<div class='WideForm'>\n";
+		
 		// Check if the recurring charge is being applied to a service
 		if (DBO()->Service->Id->Value)
 		{
@@ -113,8 +115,6 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 			// Display the Service's FNN
 			DBO()->Service->FNN->RenderOutput();
 		}
-		
-		echo "<div class='WideForm'>\n";
 		
 		// Display account details
 		DBO()->Account->Id->RenderOutput();
@@ -131,7 +131,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateRecurringAdjustment.DeclareChargeType(this.value)'>\n";
+		echo "      <select id='ChargeTypeCombo' style='width:100%' onchange='Vixen.ValidateRecurringAdjustment.DeclareChargeType(this.value)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;

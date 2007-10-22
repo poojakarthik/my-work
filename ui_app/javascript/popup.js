@@ -45,6 +45,24 @@ function VixenPopupClass()
 		return FALSE;
 	}
 	
+	// Returns TRUE if there are popups present on the page
+	this.PopupsExist = function()
+	{
+		var elmPopupContainer = document.getElementById("PopupHolder");
+		
+		if (elmPopupContainer.childNodes.length != 0)
+		{
+			// Popups exist
+			return TRUE;
+		}
+		else
+		{
+			// There are no popups
+			return FALSE;
+		}
+	}
+	
+	
 	// Returns the popup element identified by strId
 	// Returns null if the popup cannot be found
 	this.GetPopupElement = function(strId)
@@ -265,6 +283,12 @@ function VixenPopupClass()
 					elmPopup.style.width = '850px';
 					break;
 				}
+			case "alertsize":
+				{
+					// Unique size for alert popups, so that they stand out from other popups
+					elmPopup.style.width = '470px';
+					break;
+				}
 			default:
 				{   //default
 					elmPopup.style.width = '450px';
@@ -459,7 +483,7 @@ function VixenPopupClass()
 		// set a default value for strSize
 		if (strSize == null)
 		{
-			strSize = "medium";
+			strSize = "AlertSize";
 		}
 	
 		strContent =	"<p><div align='center' style='margin: 5px'>" + strMessage + 
@@ -494,7 +518,7 @@ function VixenPopupClass()
 	this.Confirm = function(strMessage, mixOkOnClick, mixCancelOnClick, strSize, strOkCaption, strCancelCaption)
 	{
 		// set default values
-		strSize = (strSize == null) ? "medium" : strSize;
+		strSize = (strSize == null) ? "AlertSize" : strSize;
 		strOkCaption = (strOkCaption == null) ? "Ok" : strOkCaption;
 		strCancelCaption = (strCancelCaption == null) ? "Cancel" : strCancelCaption;
 		

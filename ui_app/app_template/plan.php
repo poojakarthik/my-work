@@ -90,6 +90,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Context menu
 		// Nothing to add
 		
+		
 		// Breadcrumb menu
 		Breadcrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Available Plans");
@@ -170,6 +171,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		
 		// Context menu
 		// Nothing to add
+		
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();

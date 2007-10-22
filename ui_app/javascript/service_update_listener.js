@@ -62,6 +62,23 @@ function VixenServiceUpdateListenerClass()
 	 */
 	this.OnUpdate = function(objEvent)
 	{
+		// Unregister this function as an EventListener so it can't be called again
+		//Note: This might screw up the iteration in the EventHandler.FireEvent method 
+		//TODO! I want to unregister the listener, so if the event is fired multiple times, multiple versions of this
+		// function aren't looping on account of the "setTimeout" call, which waits until all popups are closed, before
+		// actually carrying out the purpose of this listener.
+		
+	
+	
+		// Since this functoin will preform a page reload, make sure there are no popups open,
+		// as reloading the page will destory them.  If there are popups open, wait 0.5 seconds and check again
+		if (Vixen.Popup.PopupsExist())
+		{	
+			// We cant reload yet
+			setTimeout(function(){Vixen.ServiceUpdateListener.OnUpdate(objEvent)}, 500);
+			return true;
+		}
+	
 		if (objEvent.Data.NewService != undefined)
 		{
 			// Changes made to the service have resulted in a new service record being created.

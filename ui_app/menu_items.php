@@ -1155,7 +1155,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"large\", null, \"Adjustment\", \"AddRecurring\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"medium\", null, \"Adjustment\", \"AddRecurring\", $strJsonCode)";
 	}
 	
 	

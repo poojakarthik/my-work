@@ -248,6 +248,7 @@ class Application
 		// Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
 		
+		
 		// Append default options to the Context Menu
 		ContextMenu()->Employee_Console();
 		ContextMenu()->Add_Customer();
@@ -258,7 +259,8 @@ class Application
 			ContextMenu()->Admin_Console();
 		}
 		ContextMenu()->Logout();
-
+		
+		
 		// Render Page
 		$this->objAppTemplate->Page->Render();
 	}

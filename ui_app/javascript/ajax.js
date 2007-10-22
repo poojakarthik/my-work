@@ -393,13 +393,13 @@ function VixenAjaxClass()
 					strContent = "<div align='center'><p>" + objInput[intKey].Data + "</p>" +
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'></p></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide');
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', 'autohide');
 					break;
 				case "AlertReload":
 					strContent = "<div align='center'><p>" + objInput[intKey].Data + "</p>" +
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = window.location;'></p></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide-reload');
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', 'autohide-reload');
 					break;
 				case "Reload":
 					window.location = window.location;
@@ -411,7 +411,7 @@ function VixenAjaxClass()
 					strContent = "<div align='center'><p>" + objInput[intKey].Data.Alert + "</p>" +
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'></p></div>\n" +
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', null, objInput[intKey].Data.Location);
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', 'autohide', null, objInput[intKey].Data.Location);
 					break;
 				case "ReplaceDivContents":
 					// The html code defined in objInput[intKey].Data will be placed in the declared Container Div

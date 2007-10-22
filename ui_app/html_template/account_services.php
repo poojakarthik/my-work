@@ -83,6 +83,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("account_services");
+		$this->LoadJavascript("highlight");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -107,9 +108,10 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		// Draw the table container
 		echo "<div $strTableContainerStyle>\n";
 
-		Table()->ServiceTable->SetHeader("FNN #", "Service Type", "Plan Name", "Status", "Actions");
-		Table()->ServiceTable->SetWidth("13%", "15%", "35%","15%","22%");
-		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Center");
+		
+		Table()->ServiceTable->SetHeader("FNN #", "Service", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
+		Table()->ServiceTable->SetWidth("11%", "11%", "40%", "11%", "7%", "10%", "10%");
+		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Center");
 		
 		foreach (DBL()->Service as $dboService)
 		{
@@ -118,14 +120,18 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 
 			// Build the Actions Cell
 			$strViewServiceNotesLink	= Href()->ViewServiceNotes($dboService->Id->Value);
+			$strViewServiceNotes 		= "<a href='$strViewServiceNotesLink' title='View Service Notes'><img src='img/template/note.png'></img></a>";
+			
 			$strEditServiceLink			= Href()->EditService($dboService->Id->Value);
+			$strEditService 			= "<a href='$strEditServiceLink' title='Edit Service'><img src='img/template/edit.png'></img></a>";
+			
 			$strChangePlanLink			= Href()->ChangePlan($dboService->Id->Value);
+			$strChangePlan 				= "<a href='$strChangePlanLink' title='Change Plan'><img src='img/template/plan.png'></img></a>";
+			
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($dboService->Id->Value);
-			$strActionsCell				= 	"<span class='DefaultOutputSpan'><a href='$strViewServiceNotesLink'>Notes</a>" .
-											"&nbsp;&nbsp;<a href='$strEditServiceLink'>Edit</a>" .
-											"&nbsp;&nbsp;<a href='$strChangePlanLink'>ChangePlan</a>".
-											"&nbsp;&nbsp;<a href='$strViewUnbilledChargesLink'>Unbilled Charges</a></span>";
-
+			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
+			
+			$strActionsCell				= 	"<span class='DefaultOutputSpan'>$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges</span>";
 
 			// Find the current plan for the service
 			$mixCurrentPlanId = GetCurrentPlan($dboService->Id->Value);
@@ -148,6 +154,48 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 				//$strPlanCell = "<a href='$strChangePlanLink' title='Select Plan'>$strPlan</a>";
 			}
 			
+
+			// Work out the Date to display along with the status
+			$intClosedOn = strtotime($dboService->ClosedOn->Value);
+			$intCurrentDate = strtotime(GetCurrentDateForMySQL());
+			
+			// Check if the ClosedOn date has been set
+			if ($dboService->ClosedOn->Value == NULL)
+			{
+				// The service is not scheduled to close.  It is either active or hasn't been activated yet.
+				// Check if it is currently active
+				$intCreatedOn = strtotime($dboService->CreatedOn->Value);
+				if ($intCurrentDate >= $intCreatedOn)
+				{
+					// The service is currently active
+					$strStatusDesc = "Opened";
+				}
+				else
+				{
+					// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
+					$strStatusDesc = "Opens";
+				}
+				$strStatusDescDate = OutputMask()->ShortDate($dboService->CreatedOn->Value);
+			}
+			else
+			{
+				// The service has a ClosedOn date; check if it is in the future or past
+				if ($intClosedOn >= $intCurrentDate)
+				{
+					// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date) or today
+					$strStatusDesc = "Closes";
+				}
+				else
+				{
+					// The service has been closed
+					$strStatusDesc = "Closed";
+				}
+				$strStatusDescDate = OutputMask()->ShortDate($dboService->ClosedOn->Value);
+			}
+
+			$strStatusDescCell = "<span class='DefaultOutputSpan'>$strStatusDesc</span>";
+			$strStatusDateCell = "<span class='DefaultOutputSpan'>$strStatusDescDate</span>";
+			
 				
 			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
 			
@@ -163,10 +211,9 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			}
 			
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
-				
+			
 			Table()->ServiceTable->AddRow($strFnnCell, $dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
-											$strPlanCell, $strStatusCell, $strActionsCell);									
-					
+											$strPlanCell, $strStatusCell, $strStatusDescCell, $strStatusDateCell, $strActionsCell);
 		}
 		
 		// If the account has no services then output an appropriate message in the table
@@ -175,9 +222,11 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			// There are no services to stick in this table
 			Table()->ServiceTable->AddRow("<span class='DefaultOutputSpan Default'>No services to display</span>");
 			Table()->ServiceTable->SetRowAlignment("left");
-			Table()->ServiceTable->SetRowColumnSpan(5);
+			Table()->ServiceTable->SetRowColumnSpan(7);
 		}
 		
+		// Row highlighting doesn't seem to be working with popups
+		Table()->ServiceTable->RowHighlighting = TRUE;
 		Table()->ServiceTable->Render();
 		
 		echo "</div>\n";  // Table Container

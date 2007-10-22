@@ -116,7 +116,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->Indial100->RenderHidden();
 		DBO()->Service->Status->RenderHidden();
 		
-		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderInput();
 		DBO()->Service->FNNConfirm->RenderInput();
@@ -187,34 +186,34 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			// The service is not scheduled to close.  It is either active or hasn't been activated yet
 			// Check if it is currently active
 			$intCreatedOn = strtotime(DBO()->Service->CreatedOn->Value);
-			if ($intCurrentDate > $intCreatedOn)
+			if ($intCurrentDate >= $intCreatedOn)
 			{
 				// The service is currently active
-				echo "&nbsp;&nbsp;This service opened on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
+				echo "&nbsp;&nbsp;Service opened on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
 			}
 			else
 			{
 				// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
-				echo "&nbsp;&nbsp;This service is scheduled to be acquired by this lessee on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
-				//echo "&nbsp;&nbsp;This service will be activated on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
+				echo "&nbsp;&nbsp;Scheduled to be acquired by this lessee on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
 			}
 		}
 		else
 		{
 			// The service has a closedon date check if it is in the future or past
-			if ($intClosedOn <= $intCurrentDate)
+			if ($intClosedOn < $intCurrentDate)
 			{
 				// The service has been closed
-				echo "&nbsp;&nbsp;This service was closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
-				// We want the checkbox action to be "activate this service"
-				//DBO()->Service->ActivateService->RenderInput();
+				echo "&nbsp;&nbsp;Service was closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+			}
+			elseif ($intClosedOn == $intCurrentDate)
+			{
+				// The service closes today
+				echo "&nbsp;&nbsp;Service closes at the end of today";
 			}
 			else
 			{
 				// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date)
-				// We dont want the user to cancel the scheduled closure of the service
-				echo "&nbsp;&nbsp;This service is scheduled to change to a different lessee on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
-				//echo "&nbsp;&nbsp;This service is scheduled to be closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+				echo "&nbsp;&nbsp;Scheduled to close on: ". DBO()->Service->ClosedOn->FormattedValue() ."<br>";
 			}
 		}
 	
