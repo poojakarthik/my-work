@@ -246,6 +246,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
 			echo "      <select name='ServiceMobileDetail.SimState' >\n";
+			echo "<option value=''><span class='DefaultOutputSpan'>&nbsp;</span></option>\n";
 			foreach ($GLOBALS['*arrConstant']['ServiceStateType'] as $strKey=>$arrState)
 			{
 				$strSelected = (DBO()->ServiceMobileDetail->SimState->Value == $strKey) ? "selected='selected'" : "";

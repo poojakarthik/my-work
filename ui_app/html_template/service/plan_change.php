@@ -104,7 +104,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		if (DBL()->RatePlan->RecordCount() > 0)
 		{
 			echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Select Plan:</div>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Select New Plan :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
 			echo "      <select id='SelectPlanCombo' name='NewPlan.Id' style='width:100%'>\n";
 	

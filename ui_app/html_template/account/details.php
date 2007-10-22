@@ -281,7 +281,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	
 		foreach ($GLOBALS['*arrConstant']['Account'] as $intConstant=>$arrArchivedSelection)
 		{
-			if (($intConstant == ACCOUNT_DEBT_COLLECTION) || ($intConstant == ACCOUNT_ARCHIVED))
+			if (($intConstant == ACCOUNT_DEBT_COLLECTION) || ($intConstant == ACCOUNT_ARCHIVED)|| ($intConstant == ACCOUNT_SUSPENDED))
 			{
 				// Only users with Admin privileges can mark an account as ACCOUNT_DEBT_COLLECTION or ACCOUNT_ARCHIVED
 				if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))

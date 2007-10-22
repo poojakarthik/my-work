@@ -480,20 +480,55 @@ class AppTemplateService extends ApplicationTemplate
 			// handle mobile phone details			
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 			{
-				if (DBO()->ServiceMobileDetail->IsInvalid())
-				{
-					// The form has not passed initial validation
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-					return TRUE;
-				}
+					/*if (DBO()->ServiceMobileDetail->IsInvalid())
+					{
+						// The form has not passed initial validation
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
+						Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+						return TRUE;
+					}*/
+
 				
+				if (DBO()->ServiceMobileDetail->Id)
+				{
+					DBO()->ServiceMobileDetail->SetColumns("SimPUK, SimESN, SimState, DOB, Comments");
+				}
+				else
+				{
+					DBO()->ServiceMobileDetail->SetColumns("Id, AccountGroup, Account, Service, SimPUK, SimESN, SimState, DOB, Comments");
+					DBO()->ServiceMobileDetail->Id = 0;
+					DBO()->ServiceMobileDetail->AccountGroup = DBO()->Service->AccountGroup->Value;
+					DBO()->ServiceMobileDetail->Account = DBO()->Service->Account->Value;
+					DBO()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;					
+				}
+
+				if (DBO()->ServiceMobileDetail->SimPUK->Value == NULL)
+				{
+					DBO()->ServiceMobileDetail->SimPUK->Value  = "";
+				}
+				if (DBO()->ServiceMobileDetail->SimESN->Value == NULL)
+				{
+					DBO()->ServiceMobileDetail->SimESN->Value  = "";
+				}
+				if (DBO()->ServiceMobileDetail->SimState->Value == NULL)
+				{
+					DBO()->ServiceMobileDetail->SimState->Value  = "";
+				}
+				if (DBO()->ServiceMobileDetail->DOB->Value == NULL)
+				{
+					DBO()->ServiceMobileDetail->DOB->Value = "0000-00-00";
+				}
+				if (DBO()->ServiceMobileDetail->Comments->Value == NULL)
+				{
+					DBO()->ServiceMobileDetail->Comments->Value  = "";
+				}
+
 				// set DOB to MySql date format
 				DBO()->ServiceMobileDetail->DOB = ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
 				
 				// set columns to update
-				DBO()->ServiceMobileDetail->SetColumns("SimPUK, SimESN, SimState, DOB, Comments");
+				//DBO()->ServiceMobileDetail->SetColumns("SimPUK, SimESN, SimState, DOB, Comments");
 				if (!DBO()->ServiceMobileDetail->Save())
 				{
 					// The ServiceMobileDetail did not save
@@ -680,12 +715,15 @@ class AppTemplateService extends ApplicationTemplate
 			return FALSE;
 		}
 
+		// Added an amendment where a check is performed for EndDattime != NOW() as it appears the enddatetime is being set to now() 
+		// which is in turn showing these records on a page refresh
+
 		// Retrieve all rate groups currently used by this service
 		// Retrieve the list of RateGroups belonging to the RatePlan that the service is currently using
 		DBL()->RatePlanRateGroup->SetTable("RateGroup, RatePlanRateGroup");
 		$arrRatePlanRateGroupColumns = Array("RateGroupId"=>"RateGroup.Id", "RateGroupName"=>"RateGroup.Name", "RateGroupDescription"=>"RateGroup.Description", "RateGroupRecordType"=>"RateGroup.RecordType");
 		DBL()->RatePlanRateGroup->SetColumns($arrRatePlanRateGroupColumns);
-		$strWhere = "RateGroup.Id=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)";
+		$strWhere = "RateGroup.Id=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime != NOW() AND EndDatetime AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)";
 		DBL()->RatePlanRateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
 		DBL()->RatePlanRateGroup->OrderBy("RateGroup.Id");
 		DBL()->RatePlanRateGroup->Load();
@@ -694,7 +732,7 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->ServiceRateGroup->SetTable("RateGroup, ServiceRateGroup");
 		$arrServiceRateGroupColumns = Array("Id"=>"RateGroup.Id", "Name"=>"RateGroup.Name", "Description"=>"RateGroup.Description", "RecordType"=>"RateGroup.RecordType", "Fleet"=>"RateGroup.Fleet");
 		DBL()->ServiceRateGroup->SetColumns($arrServiceRateGroupColumns);
-		$strWhere = "NOW() BETWEEN StartDatetime AND EndDatetime AND RateGroup.Id = ServiceRateGroup.RateGroup AND ServiceRateGroup.Service=<Service>";
+		$strWhere = "(NOW() BETWEEN StartDatetime AND EndDatetime) AND EndDatetime != NOW() AND RateGroup.Id = ServiceRateGroup.RateGroup AND ServiceRateGroup.Service=<Service>";
 		DBL()->ServiceRateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
 		DBL()->ServiceRateGroup->OrderBy("RateGroup.RecordType");
 		DBL()->ServiceRateGroup->Load();

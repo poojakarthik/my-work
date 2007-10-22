@@ -233,6 +233,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		DBO()->Service->FNN->RenderOutput();
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 		echo "</div>\n";
+		
+		// Register a listener to handle when the service has been updated
+		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('OnServiceUpdate', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
+		
 		echo "<div class='Seperator'></div>\n";	
 	}
 
@@ -254,7 +258,6 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<div class='NarrowForm'>\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
 		echo "</div>\n";
