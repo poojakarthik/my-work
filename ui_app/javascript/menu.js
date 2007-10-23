@@ -38,7 +38,8 @@ function VixenMenuClass(objMenu)
 		'waitOpen': 0,
 		'waitCloseLevel': 500,
 		'waitClose': 3000,
-		'waitCloseWhenSelected': 400
+		'waitCloseWhenSelected': 400,
+		'highlightColor': "#FFFFCC"
 	};
 	
 	this.objMenu = objMenu;
@@ -85,6 +86,7 @@ function VixenMenuClass(objMenu)
 			elmNode.style['backgroundColor']	= this.config.Level1.backgroundColor;
 			elmNode.style['position'] 			= 'absolute';
 			elmNode.style['zIndex']				= 2;
+			elmNode.DefaultBackgroundColor		= this.config.Level1.backgroundColor;
 			
 			top = top + this.config.Level1.height + this.config.Level1.spacing;
 			
@@ -160,6 +162,7 @@ function VixenMenuClass(objMenu)
 			elmNode.style['backgroundColor'] = this.config.Level2.backgroundColor;
 			elmNode.style['position']		= 'absolute';
 			elmNode.style['zIndex']			= 2;
+			elmNode.DefaultBackgroundColor	= this.config.Level2.backgroundColor;
 
 			top = top + this.config.Level2.height + this.config.Level2.spacing;
 			
@@ -198,13 +201,14 @@ function VixenMenuClass(objMenu)
 			if (objMenuItem.action.substr(0, 11) == "javascript:")
 			{
 				// Execute objMenuItem.action as javascript
-				eval(objMenuItem.action.substr(11, objMenuItem.action.length));
+				eval(objMenuItem.action.substr(11));
 			} 
 			else
 			{
 				//Follow the link
 				document.location.href = objMenuItem.action;
 			}
+			this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);			
 		}
 		else if (typeof(objMenuItem.action) == 'object')
 		{
@@ -212,15 +216,17 @@ function VixenMenuClass(objMenu)
 			// no need, it adds unnecessary overhead
 			//this.RenderSubMenu(objMenuItem);			
 		}
-		this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);
+		//this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);
 	}
 	
 	this.HandleMouseOver = function(objMenuItem)
 	{
 		clearTimeout(this.timeoutClose);
 		
-		objMenuItem.setAttribute('className', 'ContextMenuItemHighlight');
-		objMenuItem.setAttribute('class', 'ContextMenuItemHighlight');
+		//objMenuItem.setAttribute('className', 'ContextMenuItemHighlight');
+		//objMenuItem.setAttribute('class', 'ContextMenuItemHighlight');
+		
+		objMenuItem.style['backgroundColor'] = this.config.highlightColor;
 		
 		if (typeof(objMenuItem.action) == 'string')
 		{
@@ -239,8 +245,10 @@ function VixenMenuClass(objMenu)
 	{
 		clearTimeout(this.timeoutOpen);
 		
-		objMenuItem.setAttribute('className', 'ContextMenuItem');
-		objMenuItem.setAttribute('class', 'ContextMenuItem');
+		//objMenuItem.setAttribute('className', 'ContextMenuItem');
+		//objMenuItem.setAttribute('class', 'ContextMenuItem');
+		objMenuItem.style['backgroundColor'] = objMenuItem.DefaultBackgroundColor;
+		
 		this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitClose);
 
 	}

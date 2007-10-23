@@ -171,7 +171,7 @@ function VixenAccountServicesClass()
 			}
 		
 			// The aren't any popups open.  Reload the page
-			window.location.reload();
+			window.location = window.location;
 		}
 		
 		// Check that the AccountServices popup is actually open because this will stay in 

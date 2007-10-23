@@ -42,6 +42,11 @@
  */
 function VixenServiceUpdateListenerClass()
 {
+	// Stores the Id of the setTimeout call to the OnUpdate method.
+	// This is needed to ensure multiple timeouts do not occur when the OnUpdate method
+	// is called multiple times (due to multiple events occuring), and it calls itself from a setTimeout, because
+	// it is waiting for all the popups to close
+	this.timeoutIdOnUpdate = null;
 
 	//------------------------------------------------------------------------//
 	// OnUpdate
@@ -62,20 +67,21 @@ function VixenServiceUpdateListenerClass()
 	 */
 	this.OnUpdate = function(objEvent)
 	{
-		// Unregister this function as an EventListener so it can't be called again
-		//Note: This might screw up the iteration in the EventHandler.FireEvent method 
-		//TODO! I want to unregister the listener, so if the event is fired multiple times, multiple versions of this
-		// function aren't looping on account of the "setTimeout" call, which waits until all popups are closed, before
-		// actually carrying out the purpose of this listener.
-		//Vixen.EventHandler.RemoveListener('OnServiceUpdate', Vixen.ServiceUpdateListener.OnUpdate);
+		// This should stop multiple loops of this method from being called
+		if (Vixen.ServiceUpdateListener.timeoutIdOnUpdate != null)
+		{
+			// There is possiblly a setTimeout process waiting to call this function.  Stop it.
+			clearTimeout(Vixen.ServiceUpdateListener.timeoutIdOnUpdate);
+			Vixen.ServiceUpdateListener.timeoutIdOnUpdate = null;
+			
+		}
 	
-	
-		// Since this functoin will preform a page reload, make sure there are no popups open,
+		// Since this function will preform a page reload, make sure there are no popups open,
 		// as reloading the page will destory them.  If there are popups open, wait 0.5 seconds and check again
 		if (Vixen.Popup.PopupsExist())
 		{	
 			// We cant reload yet
-			setTimeout(function(){Vixen.ServiceUpdateListener.OnUpdate(objEvent)}, 500);
+			Vixen.ServiceUpdateListener.timeoutIdOnUpdate = setTimeout(function(){Vixen.ServiceUpdateListener.OnUpdate(objEvent)}, 500);
 			return true;
 		}
 	
@@ -130,7 +136,7 @@ function VixenServiceUpdateListenerClass()
 		else
 		{
 			// There are no GET varibales.  Just reload the page
-			window.location.reload();
+			window.location = window.location;
 		}
 	}
 }
