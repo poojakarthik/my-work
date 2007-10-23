@@ -157,6 +157,23 @@ function VixenAccountServicesClass()
 		// It points to the Window object
 		var strPopupId = Vixen.AccountServices.strPopupId;
 		
+		// If strPopupId == null then the list of Services is being displayed in a page, not a popup.
+		// Just reload the page
+		if (strPopupId == null)
+		{
+			// Since this functoin will preform a page reload, make sure there are no popups open,
+			// as reloading the page will destory them.  If there are popups open, wait 0.5 seconds and check again
+			if (Vixen.Popup.PopupsExist())
+			{	
+				// We cant reload yet
+				setTimeout(function(){Vixen.AccountServices.OnUpdate(objEvent)}, 500);
+				return true;
+			}
+		
+			// The aren't any popups open.  Reload the page
+			window.location.reload();
+		}
+		
 		// Check that the AccountServices popup is actually open because this will stay in 
 		// memory after the popup is closed, and if something else then triggers the event, 
 		// who knows what would happen

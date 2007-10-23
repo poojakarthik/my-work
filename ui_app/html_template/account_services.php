@@ -100,6 +100,35 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 	 */
 	function Render()
 	{
+		switch ($this->_intContext)
+		{
+			case HTML_CONTEXT_POPUP:
+				$this->RenderPopup();
+				break;
+			default:
+				$this->RenderTable();
+				
+				// Initialise the javascript object that facilitates this popup (Vixen.AccountServices)
+				echo "<script type='text/javascript'>Vixen.AccountServices.Initialise()</script>";
+				break;
+		}
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// RenderPopup
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderPopup()
+	 *
+	 * Render this HTML Template for use in a popup.  Includes a close button
+	 *
+	 * Render this HTML Template for use in a popup.  Includes a close button
+	 *
+	 * @method
+	 */
+	function RenderPopup()
+	{
 		echo "<div class='PopupLarge'>\n";
 		
 		// Work out if a virtical scroll bar will be required
@@ -107,8 +136,39 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		
 		// Draw the table container
 		echo "<div $strTableContainerStyle>\n";
-
 		
+		// Draw the table
+		$this->RenderTable();
+		
+		echo "</div>\n";  // Table Container
+	
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
+		$this->Button("Add Services", "window.location='$strBulkAddServiceLink'");
+		$this->Button("Close", "Vixen.Popup.Close(this);");
+		echo "</div></div>\n";
+
+		echo "</div>\n";  //PopupLarge
+		
+		// Initialise the javascript object that facilitates this popup (Vixen.AccountServices)
+		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise('{$this->_objAjax->strId}')</script>";
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// RenderTable
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderTable()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	function RenderTable()
+	{
 		Table()->ServiceTable->SetHeader("FNN #", "Service", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
 		Table()->ServiceTable->SetWidth("11%", "11%", "40%", "11%", "7%", "10%", "10%");
 		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Center");
@@ -228,19 +288,6 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		// Row highlighting doesn't seem to be working with popups
 		Table()->ServiceTable->RowHighlighting = TRUE;
 		Table()->ServiceTable->Render();
-		
-		echo "</div>\n";  // Table Container
-	
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
-		$this->Button("Add Services", "window.location='$strBulkAddServiceLink'");
-		$this->Button("Close", "Vixen.Popup.Close(this);");
-		echo "</div></div>\n";
-
-		echo "</div>\n";  //PopupLarge
-		
-		// Initialise the javascript object that facilitates this popup (Vixen.AccountServices)
-		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise('{$this->_objAjax->strId}')</script>";
 	}
 }
 

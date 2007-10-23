@@ -1267,7 +1267,8 @@ class MenuItems
 	 * @method
 	 */
 	function ListServices($intId)
-	{
+	{	
+		/*  The Old Way of open up the list of services in a popup.  Retain this as it will be eventually used again
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
@@ -1275,6 +1276,10 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AccountServicesPopupId\", \"ExtraLarge\", null, \"Account\", \"ViewServices\", $strJsonCode)";
+		*/
+		
+		// View the list of Services as a page
+		return "vixen.php/Account/ViewServices/?Account.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//

@@ -74,7 +74,13 @@ class AppTemplateAccount extends ApplicationTemplate
 			if (!DBO()->Service->Load())
 			{
 				// The service could not be found
-				Ajax()->AddCommand("AlertReload", "The service with Id: ". DBO()->Service->Id->Value ." could not be found");
+				
+				// For when it is used as a popup
+				//Ajax()->AddCommand("AlertReload", "The service with Id: ". DBO()->Service->Id->Value ." could not be found");
+				
+				// For when it is used as a page
+				DBO()->Error->Message = "The service with id: ". DBO()->Service->Id->value ." could not be found";
+				$this->LoadPage('error');
 				return TRUE;
 			}
 			
@@ -85,9 +91,31 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Attempt to load the account
 		if (!DBO()->Account->Load())
 		{
-			Ajax()->AddCommand("AlertReload", "The account ". DBO()->Account->Id->Value ." could not be found");
+			// For when it is used as a popup
+			//Ajax()->AddCommand("AlertReload", "The account ". DBO()->Account->Id->Value ." could not be found");
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
+			$this->LoadPage('error');
 			return TRUE;
 		}
+		
+		// breadcrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->InvoicesAndPayments(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Services");
+		
+		// context menu
+		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		
 		if (!$bolIsAdminUser)
 		{

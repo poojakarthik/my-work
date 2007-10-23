@@ -24,14 +24,16 @@ function VixenMenuClass(objMenu)
 			'left': 10,
 			'width': 50,
 			'height': 50,
-			'spacing': 5
+			'spacing': 5,
+			'backgroundColor': "#FFFFFF"
 		},
 		'Level2': 
 		{
 			'left': 0,
 			'width': 200,
 			'height': 20,
-			'spacing': 5
+			'spacing': 5,
+			'backgroundColor': "#D5E0F8"
 		},
 		'waitOpen': 0,
 		'waitCloseLevel': 500,
@@ -80,6 +82,7 @@ function VixenMenuClass(objMenu)
 			elmNode.style['left'] 				= this.config.Level1.left; 
 			elmNode.style['width'] 				= this.config.Level1.width;
 			elmNode.style['height'] 			= this.config.Level1.height;
+			elmNode.style['backgroundColor']	= this.config.Level1.backgroundColor;
 			elmNode.style['position'] 			= 'absolute';
 			elmNode.style['zIndex']				= 2;
 			
@@ -154,6 +157,7 @@ function VixenMenuClass(objMenu)
 			elmNode.style['left'] 			= this.config.Level2.left; 
 			elmNode.style['width'] 			= this.config.Level2.width;
 			elmNode.style['height'] 		= this.config.Level2.height;
+			elmNode.style['backgroundColor'] = this.config.Level2.backgroundColor;
 			elmNode.style['position']		= 'absolute';
 			elmNode.style['zIndex']			= 2;
 

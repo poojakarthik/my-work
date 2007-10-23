@@ -115,7 +115,7 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 		ContextMenu()->Account_Menu->Service->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
-		
+		//Only Landlines can have provisioning
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
 			ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
@@ -128,8 +128,6 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
@@ -654,6 +652,7 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("Alert", "The service was successfully updated");
 
 			// Build event object
 			// The contents of this object should be declared in the doc block of this method
@@ -662,10 +661,8 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
 			}
-			//Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServiceUpdate", "EventData"=>$arrEvent));
 			Ajax()->FireEvent("OnServiceUpdate", $arrEvent);
 
-			Ajax()->AddCommand("Alert", "The service was successfully updated");
 			
 			return TRUE;
 		}
@@ -781,7 +778,7 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 		ContextMenu()->Account_Menu->Service->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
-		
+		// Only LandLines can have Provisioning
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
 			ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
@@ -794,8 +791,6 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
@@ -983,6 +978,7 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
 
 			// Build event object
 			// The contents of this object should be declared in the doc block of this method
@@ -991,13 +987,7 @@ class AppTemplateService extends ApplicationTemplate
 			$arrEvent['NewRatePlan']['Id']		= DBO()->NewPlan->Id->Value;
 			$arrEvent['NewRatePlan']['Name']	= DBO()->NewPlan->Name->Value;
 
-			//Ajax()->AddCommand("FireEvent", Array("Event"=>"OnServiceUpdate", "EventData"=>$arrEvent));
 			Ajax()->FireEvent("OnServiceUpdate", $arrEvent);
-			//$strJsonCode = Json()->Encode($arrEvent);
-
-			//Ajax()->AddCommand("ExecuteJavascript", "Vixen.EventHandler.FireEvent(\"OnServiceUpdate\", null);");
-
-			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
 
 			return TRUE;
 		}		
