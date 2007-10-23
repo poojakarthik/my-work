@@ -510,7 +510,7 @@ class AppTemplateRate extends ApplicationTemplate
 		if (DBO()->Rate->PassThrough->Value)
 		{
 			// set default values for when the Rate is a Pass Through rate
-			DBO()->Rate->StdUnits 		= 0;
+			DBO()->Rate->StdUnits 		= 0; // This defaults to 0 for PassThrough rates
 			DBO()->Rate->StdRatePerUnit = 0;
 			DBO()->Rate->StdMarkup 		= 0;
 			DBO()->Rate->StdPercentage 	= 0;
@@ -523,11 +523,12 @@ class AppTemplateRate extends ApplicationTemplate
 			DBO()->Rate->ExsPercentage 	= 0;
 			DBO()->Rate->ExsFlagfall 	= 0;
 			DBO()->Rate->ExsUnits 		= 1;  // This defaults to 1.  I don't know why, that's just how it is for every rate in the database
+			DBO()->Rate->Prorate		= 0;  // You cannot Prorate a PassThrough Rate
 		}
 		elseif (DBO()->Rate->Untimed->Value)
 		{
 			// set default values for when the Rate is an untimed rate
-			DBO()->Rate->StdUnits 		= 1;
+			DBO()->Rate->StdUnits 		= 1; // This defaults to 1 for untimed rates
 			DBO()->Rate->StdRatePerUnit = 0;
 			DBO()->Rate->StdMarkup 		= 0;
 			DBO()->Rate->StdPercentage 	= 0;
@@ -539,7 +540,7 @@ class AppTemplateRate extends ApplicationTemplate
 			DBO()->Rate->ExsMarkup 		= 0;
 			DBO()->Rate->ExsPercentage 	= 0;
 			DBO()->Rate->ExsFlagfall 	= 0;
-			DBO()->Rate->ExsUnits 		= 1;
+			DBO()->Rate->ExsUnits 		= 1; // This defaults to 1 for untimed rates
 		}
 		else
 		{		
@@ -569,11 +570,6 @@ class AppTemplateRate extends ApplicationTemplate
 			DBO()->Rate->Destination = 0;
 		}
 		
-		// Build the Description if one hasn't been specified
-		// Currently it overrides the user defined description
-		$this->BuildDescription();
-		
-		
 		if (SubmittedForm("AddRate","Save as Draft"))
 		{
 			DBO()->Rate->Archived = RATE_STATUS_DRAFT;
@@ -592,12 +588,6 @@ class AppTemplateRate extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	function BuildDescription()
-	{
-		// checkout what kind of units are being used
-		// TODO
-		
-	}
 	
 	//----- DO NOT REMOVE -----//
 	

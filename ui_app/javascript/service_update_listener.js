@@ -67,7 +67,7 @@ function VixenServiceUpdateListenerClass()
 		//TODO! I want to unregister the listener, so if the event is fired multiple times, multiple versions of this
 		// function aren't looping on account of the "setTimeout" call, which waits until all popups are closed, before
 		// actually carrying out the purpose of this listener.
-		
+		//Vixen.EventHandler.RemoveListener('OnServiceUpdate', Vixen.ServiceUpdateListener.OnUpdate);
 	
 	
 		// Since this functoin will preform a page reload, make sure there are no popups open,

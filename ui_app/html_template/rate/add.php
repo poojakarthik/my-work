@@ -307,12 +307,12 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			// PassThrough div
 			echo "<div class='NarrowContent' style='padding-left:25px'>\n";
 			DBO()->Rate->PassThrough->RenderInput(CONTEXT_DEFAULT, TRUE);
-			DBO()->Rate->Prorate->RenderInput(CONTEXT_DEFAULT, TRUE);
 			DBO()->Rate->Uncapped->RenderInput(CONTEXT_DEFAULT, TRUE);
 			
-			// The Rate.Untimed property requires a container div, as it can be hidden
+			// The Rate.Untimed and Rate.Prorate properties require a container div, as they can be hidden (They are hidden when PassThrough is set)
 			$strDisplay = (DBO()->Rate->PassThrough->Value) ? "style='display:none'" : "";
 			echo "<div id='ContainerDiv_RateUntimed' $strDisplay>";
+			DBO()->Rate->Prorate->RenderInput(CONTEXT_DEFAULT, TRUE);
 			DBO()->Rate->Untimed->RenderInput(CONTEXT_DEFAULT, TRUE);
 			echo "</div>";
 			DBO()->Rate->StdMinCharge->RenderInput(CONTEXT_DEFAULT, TRUE);

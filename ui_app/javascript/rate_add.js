@@ -408,9 +408,8 @@ function VixenRateAddClass()
 			document.getElementById('RateDetailDiv').style.display = 'none';
 			document.getElementById('CapMainDetailDiv').style.display = 'none';
 			
-			// Hide the Rate.Untimed container div, uncheck it
+			// Hide the Rate.Untimed container div
 			elmRateUntimedContainer.style.display = "none";
-			//elmRateUntimed.checked = false;
 		}
 		else
 		{
@@ -419,8 +418,7 @@ function VixenRateAddClass()
 			document.getElementById('RateDetailDiv').style.display = 'inline';
 			document.getElementById('CapMainDetailDiv').style.display = 'inline';
 			
-			// Show the Rate.Untimed checkbox and uncheck it and fire its event listener
-			//elmRateUntimed.checked = false;
+			// Show the Rate.Untimed checkbox and fire its event listener
 			elmRateUntimedContainer.style.display = "inline";
 			UntimedOnChange();
 		}
