@@ -480,22 +480,24 @@ class AppTemplateService extends ApplicationTemplate
 			// handle mobile phone details			
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 			{
-					/*if (DBO()->ServiceMobileDetail->IsInvalid())
-					{
-						// The form has not passed initial validation
-						TransactionRollback();
-						Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
-						Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-						return TRUE;
-					}*/
-
-				
-				if (DBO()->ServiceMobileDetail->Id)
+				// Validate entered Birth Date?
+				if (!Validate("ShortDate", DBO()->ServiceMobileDetail->DOB->Value))
 				{
+					TransactionRollback();	
+					Ajax()->AddCommand("Alert", "ERROR: This is not a valid DOB");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+					return TRUE;						
+				}
+
+				// If Id is passed set the columns to Update
+				if (DBO()->ServiceMobileDetail->Id->Value)
+				{
+					// Update the existing MobileServiceDetail Record
 					DBO()->ServiceMobileDetail->SetColumns("SimPUK, SimESN, SimState, DOB, Comments");
 				}
 				else
 				{
+					// Create a new MobileServiceDetail Record
 					DBO()->ServiceMobileDetail->SetColumns("Id, AccountGroup, Account, Service, SimPUK, SimESN, SimState, DOB, Comments");
 					DBO()->ServiceMobileDetail->Id = 0;
 					DBO()->ServiceMobileDetail->AccountGroup = DBO()->Service->AccountGroup->Value;
@@ -505,23 +507,23 @@ class AppTemplateService extends ApplicationTemplate
 
 				if (DBO()->ServiceMobileDetail->SimPUK->Value == NULL)
 				{
-					DBO()->ServiceMobileDetail->SimPUK->Value  = "";
+					DBO()->ServiceMobileDetail->SimPUK  = "";
 				}
 				if (DBO()->ServiceMobileDetail->SimESN->Value == NULL)
 				{
-					DBO()->ServiceMobileDetail->SimESN->Value  = "";
+					DBO()->ServiceMobileDetail->SimESN  = "";
 				}
 				if (DBO()->ServiceMobileDetail->SimState->Value == NULL)
 				{
-					DBO()->ServiceMobileDetail->SimState->Value  = "";
+					DBO()->ServiceMobileDetail->SimState  = "";
 				}
 				if (DBO()->ServiceMobileDetail->DOB->Value == NULL)
 				{
-					DBO()->ServiceMobileDetail->DOB->Value = "0000-00-00";
+					DBO()->ServiceMobileDetail->DOB = "0000-00-00";
 				}
 				if (DBO()->ServiceMobileDetail->Comments->Value == NULL)
 				{
-					DBO()->ServiceMobileDetail->Comments->Value  = "";
+					DBO()->ServiceMobileDetail->Comments  = "";
 				}
 
 				// set DOB to MySql date format
@@ -542,17 +544,33 @@ class AppTemplateService extends ApplicationTemplate
 			// handle inbound call details
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 			{
-				if (DBO()->ServiceInboundDetail->IsInvalid())
+				// If Id is passed set the columns to Update
+				if (DBO()->ServiceInboundDetail->Id->Value)
 				{
-					// The form has not passed initial validation
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Invalid fields are highlighted");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-					return TRUE;
+					// Update the existing ServiceInboundDetail Record
+					DBO()->ServiceInboundDetail->SetColumns("AnswerPoint, Configuration");
 				}
-				
-				// Set columns to update
-				DBO()->ServiceInboundDetail->SetColumns("AnswerPoint, Configuration");
+				else
+				{
+					// Create a new ServiceInboundDetail Record
+					DBO()->ServiceInboundDetail->SetColumns("Id, Service, AnswerPoint, Complex, Configuration");
+					DBO()->ServiceInboundDetail->Id = 0;
+					DBO()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;					
+				}
+
+				if (DBO()->ServiceInboundDetail->AnswerPoint->Value == NULL)
+				{
+					DBO()->ServiceInboundDetail->AnswerPoint  = "";
+				}
+				if (DBO()->ServiceInboundDetail->Complex->Value == NULL)
+				{
+					DBO()->ServiceInboundDetail->Complex  = "";
+				}
+				if (DBO()->ServiceInboundDetail->Configuration->Value == NULL)
+				{
+					DBO()->ServiceInboundDetail->Configuration  = "";
+				}
+
 				if (!DBO()->ServiceInboundDetail->Save())
 				{
 					// The InboundDetail did not save

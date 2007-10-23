@@ -304,6 +304,18 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			echo "&nbsp;<br>\n";
 		}
 
+		// If the ServiceType is a inbound display the extra information for the service
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
+		{
+			$strWhere = "Service = <Service>";
+			DBO()->ServiceInboundDetail->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
+			DBO()->ServiceInboundDetail->Load();
+		
+			DBO()->ServiceInboundDetail->AnswerPoint->RenderOutput();
+			DBO()->ServiceInboundDetail->Configuration->RenderOutput();			
+			echo "&nbsp;<br>\n";
+		}
+
 		DBO()->Service->CreatedOn->RenderOutput();
 		DBO()->Service->ClosedOn->RenderOutput();
 		
