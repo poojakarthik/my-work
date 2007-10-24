@@ -80,7 +80,8 @@
 		$this->arrTarget['sat']			= "sdd1";
 		$this->arrTarget['sun']			= "sdd1";
 		
-		$this->_arrAddress[]			= "jared@voiptelsystems.com.au";
+		$this->_arrAddress[]			= "mark.s@yellowbilling.com.au";
+		$this->_arrAddress[]			= "rich@voiptelsystems.com.au";
 		$this->_strServer				= $strServer;
 		
 	}
@@ -609,6 +610,12 @@
 		// unmount drives
 		$this->UnmountDrives();
 		
+		// send error message
+		$this->SendErrorMessage();
+	}
+	
+	function SendErrorMessage()
+	{
 		// check for errors
 		if ($this->CheckError() > 0)
 		{
@@ -616,7 +623,12 @@
 			echo $this->GetErrorMessage();
 			
 			// send error message email
-			$this->SendErrorMessage();
+			$strError 	= $this->GetErrorMessage();
+			$strSubject = "Backup FAILED on ".$this->_strServer;
+			foreach ($this->_arrAddress AS $strAddress)
+			{
+				mail($strAddress, $strSubject, $strError);
+			}
 		
 		}
 		else
@@ -626,16 +638,6 @@
 			{
 				mail($strAddress, "Backup OK on ".$this->_strServer, "");
 			}
-		}
-	}
-	
-	function SendErrorMessage()
-	{
-		$strError 	= $this->GetErrorMessage();
-		$strSubject = "Backup FAILED on ".$this->_strServer;
-		foreach ($this->_arrAddress AS $strAddress)
-		{
-			mail($strAddress, $strSubject, $strError);
 		}
 	}
 }

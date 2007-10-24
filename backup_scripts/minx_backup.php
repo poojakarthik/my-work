@@ -4,7 +4,7 @@
 require_once('application_loader.php');
 
 // load backup application
-$appBackup = new ApplicationBackup();
+$appBackup = new ApplicationBackup('Minx');
 
 // set target for backup
 $strTarget = '/home/backup/';
@@ -15,22 +15,19 @@ $bolReady = $appBackup->PrepareTarget($strTarget);
 // error out if we don't have a clean target
 if (!$bolReady)
 {
-	echo $appBackup->GetErrorMessage();
+	$appBackup->SendErrorMessage();
 	die();
 }
 
 // dump database
 if (!$appBackup->DumpToTarget($strTarget, TRUE))
 {
-	echo $appBackup->GetErrorMessage();
+	$appBackup->SendErrorMessage();
 	die();
 }
 
-// check if we had any errors along the way
-if ($appBackup->CheckError() > 0)
-{
-	echo $appBackup->GetErrorMessage();
-}
+// finish backup
+$appBackup->SendErrorMessage();
 
 
 
