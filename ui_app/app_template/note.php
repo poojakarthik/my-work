@@ -246,7 +246,7 @@ class AppTemplateNote extends ApplicationTemplate
 				{
 					// The note was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The note has been successfully added");
+					Ajax()->AddCommand("Alert", "The note has been successfully added");
 					
 					// Fire the "OnNoteAdded" Event
 					// Build event object

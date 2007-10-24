@@ -331,6 +331,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		// Render the Id of the Account as a hidden input
 		DBO()->Account->Id->RenderHidden();
+		DBO()->Account->Archived->RenderHidden();
 
 		// Use a table to stick the account details and the checkbox and radio buttons next to each other
 

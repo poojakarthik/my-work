@@ -147,6 +147,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		
 		// Renders the radio buttons, the notes and the ending form elements in that order	
 		$this->RenderNotes();
+		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
@@ -170,7 +171,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		else		
 		{
 			echo "<div class='PopupLarge'>\n";
-			echo "<div  style='overflow:auto; height:300px; padding-right: 5px'>\n";
+			echo "<div  style='overflow:auto; height:500px; padding-right: 5px'>\n";
 		}
 		
 		DBL()->NoteType->Load();

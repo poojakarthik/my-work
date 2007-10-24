@@ -93,6 +93,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			// For when it is used as a popup
 			//Ajax()->AddCommand("AlertReload", "The account ". DBO()->Account->Id->Value ." could not be found");
+			
+			// For when it is used as a page
 			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return TRUE;
@@ -114,9 +116,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		
+		/*  Currently Operators can view archived services
 		if (!$bolIsAdminUser)
 		{
 			// User does not have admin privileges and therefore cannot view archived services
@@ -127,6 +130,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			// User has admin privileges and can view all services regardless of their status
 			$strWhere = "Account = <Account>";
 		}
+		*/
+		$strWhere = "Account = <Account>";
 		
 		// Load all the services belonging to the account, that the user has permission to view
 		DBL()->Service->Where->Set($strWhere, Array("Account"=>DBO()->Account->Id->Value));
@@ -196,8 +201,25 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
-		DBO()->Account->Load();
+		if (!DBO()->Account->Load())
+		{
+			// The account could not be loaded
+			Ajax()->AddCommand("Alert", "ERROR: The account with id: ". DBO()->Account->Id->Value ." could not be loaded");
+			return TRUE;
+		}
+		
+		// Check that the user has permission to edit the account
+		$intAccountStatus = DBO()->Account->Archived->Value;
+		if (	($intAccountStatus == ACCOUNT_ARCHIVED || $intAccountStatus == ACCOUNT_DEBT_COLLECTION 
+				|| $intAccountStatus == ACCOUNT_SUSPENDED) && (!$bolUserHasAdminPerm))
+		{
+			// The user can't edit the Account
+			Ajax()->AddCommand("Alert", "ERROR: Due to the account's status, and your permissions, you cannot edit this account");
+			return TRUE;
+		}
+		
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 	}
 
@@ -231,20 +253,23 @@ class AppTemplateAccount extends ApplicationTemplate
 			return TRUE;			
 		}
 
+		// Start the transaction
+		TransactionStart();
+
 		// if Account Archived value does not equal the currect archived status of the account it 
-		// has therefor been changed by the user 
+		// has therefore been changed by the user 
 		if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
 		{
-			// Define one variable to the current data and time
+			// Define one variable to the current date and time
 			$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 			$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 		
-			// Define one variable for MYSQL data/time and one of the EmployeeID
-			$mixTodaysDate = GetCurrentDateForMySQL;
+			// Define one variable for MYSQL date/time and one of the EmployeeID
+			$strTodaysDate = GetCurrentDateForMySQL();
 			$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
 		
 			// Beginning of the System Note
-			$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\non $strDateTime by $strUserName\n";
+			$strNote = "Account Status was changed to " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . " on $strDateTime by $strUserName\n";
 	
 			switch (DBO()->Account->Archived->Value)
 			{
@@ -252,97 +277,94 @@ class AppTemplateAccount extends ApplicationTemplate
 					// If user has selected Active for the account status no subsequent service is changed
 					break;
 				case ACCOUNT_CLOSED:
-					// If user has selected Closed for the account status only Active services have their Status and 
+				case ACCOUNT_DEBT_COLLECTION:
+				case ACCOUNT_SUSPENDED:
+					// If user has selected "Closed", "Debt Collection", "Suspended" for the account status, only Active services have their Status and 
 					// ClosedOn/CloseBy properties changed
-					$strWhere = "Account = <AccountId>";
-					$strWhere .= " AND Status = <ServiceStatus>";
+					// Active Services are those that have their Status set to Active or (their status is set to Disconnected and 
+					// their ClosedOn date is in the future (signifying a change of lessee) or today).  We don't have to worry about 
+					// the Services where their status is set to Disconnected and theur ClosedOn Date is set to today, because that 
+					// is how we are going to update the records anyway.
+					
+					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW()))";
+					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
+
 					// Retrieve all services attached to this Account where the Status is Active
-					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value, "ServiceStatus" => SERVICE_ACTIVE));
+					DBL()->Service->Where->Set($strWhere, $arrWhere);
 					DBL()->Service->Load();
 					
 					// If their are no records retrieved append to note stating this, stops confusion on notes
 					if (!DBL()->Service->RecordCount() > 0)
 					{
-						$strNote .= "No Services have been affected\n\n";
+						$strNote .= "No services have been affected";
 					}
 					else
 					{
-						$strNote .= "Services Affected Are :\n\n";
+						$strNote .= "The following services have been set to ". GetConstantDescription(SERVICE_DISCONNECTED, "Service") ." :\n\n";
+						
+						// Update the services
 						foreach (DBL()->Service as $dboService)
 						{
 							// For each service attached to this account append information onto the note being generated
-							// Set the service ClosedOn, ClosedBy and Status properties and save
+							
 							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
-							// set the Service Status to SERVICE_DISCONNECTED
-							$dboService->ClosedOn = $mixTodaysDate;
+							// Set the service ClosedOn, ClosedBy and Status properties and save
+							// Set the Service Status to SERVICE_DISCONNECTED
+							$dboService->ClosedOn = $strTodaysDate;
 							$dboService->ClosedBy = $intEmployeeId; 
 							$dboService->Status = SERVICE_DISCONNECTED;
-							$dboService->Save();
-						}
-					}
-					break;
-				case ACCOUNT_DEBT_COLLECTION:
-					// If user has selected Debt Collection for the account status only Active services have their Status and 
-					// ClosedOn/CloseBy properties changed					
-					$strWhere = "Account = <AccountId>";
-					$strWhere .= " AND Status = ". SERVICE_ACTIVE;
-					// Retrieve all services attached to this Account where the Status is Active						
-					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
-					DBL()->Service->Load();
-
-					// If their are no records retrieved append to note stating this, stops confusion on notes
-					if (!DBL()->Service->RecordCount() > 0)
-					{
-						$strNote .= "No Services have been affected\n\n";
-					}
-					else
-					{
-						$strNote .= "Services Affected Are :\n\n";
-						foreach (DBL()->Service as $dboService)
-						{
-							// For each service attached to this account append information onto the note being generated
-							// Set the service ClosedOn, ClosedBy and Status properties and save						
-							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
-							// set the Service Status to SERVICE_DISCONNECTED
-							$dboService->ClosedOn = $mixTodaysDate;
-							$dboService->ClosedBy = $intEmployeeId;							
-							$dboService->Status = SERVICE_DISCONNECTED;
-							$dboService->Save();
+							
+							if (!$dboService->Save())
+							{
+								// An error occured in updating one of the services
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Updating one of the corresponding Services failed, unexpectedly.  The account has not been updated");
+								return TRUE;
+							}
 						}
 					}
 					break;
 				case ACCOUNT_ARCHIVED:
-					// If user has selected Archived for the account status only Active and Disconnected services have their Status and 
+					// If user has selected "Archived" for the account status only Active and Disconnected services have their Status and 
 					// ClosedOn/CloseBy properties changed						
-					$strWhere = "Account = <AccountId>";
-					$strWhere .= " AND (Status = " . SERVICE_ACTIVE;
-					$strWhere .= " OR Status = " . SERVICE_DISCONNECTED . ")";
+					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR Status = <ServiceDisconnected>)";
+					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
+					
 					// Retrieve all services attached to this Account where the Status is Active/Disconnected								
-					DBL()->Service->Where->Set($strWhere, Array("AccountId" => DBO()->Account->Id->Value));
+					DBL()->Service->Where->Set($strWhere, $arrWhere);
 					DBL()->Service->Load();
 					
 					// If their are no records retrieved append to note stating this, stops confusion on notes
 					if (!DBL()->Service->RecordCount() > 0)
 					{
-						$strNote .= "No Services have been affected\n\n";
+						$strNote .= "No services have been affected\n\n";
 					}
 					else
 					{
-						$strNote .= "Services Affected Are :\n\n";
+						$strNote .= "The following services have been set to ". GetConstantDescription(SERVICE_ARCHIVED, "Service") ." :\n\n";
+						
+						// Update the services
 						foreach (DBL()->Service as $dboService)
 						{
 							// For each service attached to this account append information onto the note being generated
-							// Set the service ClosedOn, ClosedBy and Status properties and save							
 							$strNote .= "Service Id : " . $dboService->Id->Value . ", FNN : " . $dboService->FNN->Value . ", Service Type : " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
-							// set the Service Status to SERVICE_ARCHIVED
-							$dboService->ClosedOn = $mixTodaysDate;
+
+							// Set the service ClosedOn, ClosedBy and Status properties and save							
+							$dboService->ClosedOn = $strTodaysDate;
 							$dboService->ClosedBy = $intEmployeeId;							
 							$dboService->Status = SERVICE_ARCHIVED;
-							$dboService->Save();
+							if (!$dboService->Save())
+							{
+								// An error occured in updating one of the services
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Updating one of the corresponding Services failed, unexpectedly.  The account has not been updated");
+								return TRUE;
+							}
 						}
 					}
 					break;
 			}
+			
 			// Save the system note
 			SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, NULL);
 		}
@@ -352,15 +374,20 @@ class AppTemplateAccount extends ApplicationTemplate
 														
 		if (!DBO()->Account->Save())
 		{
+			// Saving the account record failed
+			TransactionRollback();
 			Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
 			return TRUE;
 		}
 		else
 		{
-			// If properties have saved successfully display the account details page, and calculate the account balance
-			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);				
+			// All Database interactions were successfull
+			TransactionCommit();
+			
+			// Display the account details page, and calculate the account balance
+			DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+			
 			Ajax()->AddCommand("AlertReload", "The details have been successfully saved");
-			//return TRUE;
 			//Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_FULL_DETAIL, "AccountDetailDiv");	
 			return TRUE;
 		}	
@@ -394,6 +421,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			return TRUE;
 		}
 
+		/* Currently Operators can view archived accounts
 		// If the account is archived, make sure the user has permission to view it
 		if (DBO()->Account->Archived->Value == ACCOUNT_ARCHIVED && !AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
@@ -402,7 +430,8 @@ class AppTemplateAccount extends ApplicationTemplate
 										" because its status is set to " . GetConstantDescription(DBO()->Account->Archived->Value, "Account"));
 			return TRUE;
 		}
-
+		*/
+		
 		// Calculate the account balance
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 
@@ -435,6 +464,16 @@ class AppTemplateAccount extends ApplicationTemplate
 		//check if the form was submitted
 		if (SubmittedForm('AccountDetails', 'Apply Changes'))
 		{
+			// Check that the user can edit the account
+			$intAccountStatus = DBO()->Account->Archived->Value;
+			if (	($intAccountStatus == ACCOUNT_ARCHIVED || $intAccountStatus == ACCOUNT_DEBT_COLLECTION 
+					|| $intAccountStatus == ACCOUNT_SUSPENDED) && (!$bolUserHasAdminPerm))
+			{
+				// The user can't edit the Account
+				Ajax()->AddCommand("AlertReload", "ERROR: Due to the account's status, and your permissions, you cannot edit this account");
+				return TRUE;
+			}
+		
 			//Save the AccountDetails
 			if (!DBO()->Account->IsInvalid())
 			{
@@ -472,6 +511,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		/* Currently Operators can view Archived accounts
 		// If the account is archived, check that the user has permission to view it
 		if (DBO()->Account->Archived->Value == ACCOUNT_ARCHIVED && !$bolUserHasAdminPerm)
 		{
@@ -480,7 +520,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
-
+		*/
+		
 		// context menu
 		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
@@ -493,8 +534,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list

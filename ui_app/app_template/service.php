@@ -132,10 +132,10 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 
-		ContextMenu()->Account_Menu->Notes->Account->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Account->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Service->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Service->Add_Service_Note(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Service->Notes->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
@@ -350,7 +350,8 @@ class AppTemplateService extends ApplicationTemplate
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
 		if (SubmittedForm("EditService","Apply Changes"))
 		{
@@ -479,12 +480,24 @@ class AppTemplateService extends ApplicationTemplate
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 			{
 				// Validate entered Birth Date?
-				if (!Validate("ShortDate", DBO()->ServiceMobileDetail->DOB->Value))
+				if (trim(DBO()->ServiceMobileDetail->DOB->Value) != "")
 				{
-					TransactionRollback();	
-					Ajax()->AddCommand("Alert", "ERROR: This is not a valid DOB");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-					return TRUE;						
+					// A date of birth has been specified
+					if (!Validate("ShortDate", DBO()->ServiceMobileDetail->DOB->Value))
+					{
+						TransactionRollback();	
+						Ajax()->AddCommand("Alert", "ERROR: This is not a valid DOB");
+						Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+						return TRUE;						
+					}
+					
+					// set DOB to MySql date format
+					DBO()->ServiceMobileDetail->DOB = ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
+				}
+				else
+				{
+					// A date of Birth has not been specified
+					DBO()->ServiceMobileDetail->DOB = NULL;
 				}
 
 				// If Id is passed set the columns to Update
@@ -524,11 +537,6 @@ class AppTemplateService extends ApplicationTemplate
 					DBO()->ServiceMobileDetail->Comments  = "";
 				}
 
-				// set DOB to MySql date format
-				DBO()->ServiceMobileDetail->DOB = ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
-				
-				// set columns to update
-				//DBO()->ServiceMobileDetail->SetColumns("SimPUK, SimESN, SimState, DOB, Comments");
 				if (!DBO()->ServiceMobileDetail->Save())
 				{
 					// The ServiceMobileDetail did not save
@@ -562,7 +570,7 @@ class AppTemplateService extends ApplicationTemplate
 				}
 				if (DBO()->ServiceInboundDetail->Complex->Value == NULL)
 				{
-					DBO()->ServiceInboundDetail->Complex  = "";
+					DBO()->ServiceInboundDetail->Complex  = 0;
 				}
 				if (DBO()->ServiceInboundDetail->Configuration->Value == NULL)
 				{
@@ -601,7 +609,7 @@ class AppTemplateService extends ApplicationTemplate
 							// Activating the service was successfull. Define system generated note
 							$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 							$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-							$strNote = "Service Activated on $strDateTime by $strUserName";
+							$strNoteDetails = "Activated on $strDateTime by $strUserName";
 						}
 						break;
 					case SERVICE_ARCHIVED:
@@ -613,6 +621,7 @@ class AppTemplateService extends ApplicationTemplate
 							Ajax()->AddCommand("Alert", "ERROR: You do not have permission to archive services");
 							return TRUE;
 						}
+						// Now perform the same logic to disconnect a service
 					case SERVICE_DISCONNECTED:
 						// Set ClosedOn date to today's date
 						DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
@@ -625,7 +634,7 @@ class AppTemplateService extends ApplicationTemplate
 						$strDateTime	= OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 						$strUserName	= GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 						$strAction		= GetConstantDescription(DBO()->Service->Status->Value, "Service");
-						$strNote 		= "Service $strAction on $strDateTime by $strUserName";
+						$strNoteDetails	= "$strAction on $strDateTime by $strUserName";
 						
 						// Declare columns to update
 						DBO()->Service->SetColumns("ClosedOn, ClosedBy, Status");
@@ -642,9 +651,23 @@ class AppTemplateService extends ApplicationTemplate
 			}
 
 			// Add an automatic note if the service has been archived or unarchived
-			if ($strNote)
+			if ($strNoteDetails)
 			{
-				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
+				if (DBO()->NewService->Id->Value)
+				{
+					// The service was activated, which required a new service to be created
+					$intServiceId = DBO()->NewService->Id->Value;
+				}
+				else
+				{
+					$intServiceId = DBO()->Service->Id->Value;
+				}
+			
+				$strNote  = "Service with Id: $intServiceId and FNN: ". DBO()->Service->FNN->Value;
+				$strNote .= " has been ". $strNoteDetails;
+				
+				// Save the note. (this will save it to the new service id, if one was created)
+				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intServiceId);
 			}
 			
 			// Commit the transaction
@@ -662,7 +685,6 @@ class AppTemplateService extends ApplicationTemplate
 				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
 			}
 			Ajax()->FireEvent("OnServiceUpdate", $arrEvent);
-
 			
 			return TRUE;
 		}
@@ -674,6 +696,14 @@ class AppTemplateService extends ApplicationTemplate
 			return FALSE;
 		}
 	
+		// Check that the user has permission to edit this service
+		if ((DBO()->Service->Status->Value == SERVICE_ARCHIVED) && (!$bolUserHasAdminPerm))
+		{
+			// The service is archived and the user doesn't have Admin permissions so they can't edit it
+			Ajax()->AddCommand("Alert", "ERROR: Due to the service's status, and your permissions, you cannot edit this service");
+			return TRUE;
+		}
+		
 		// load mobile detail if the service is a mobile
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
@@ -795,10 +825,10 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 
-		ContextMenu()->Account_Menu->Notes->Account->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Account->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Service->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Account_Menu->Notes->Service->Add_Service_Note(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Service->Notes->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
@@ -856,11 +886,9 @@ class AppTemplateService extends ApplicationTemplate
 	 */
 	function ChangePlan()
 	{		
-		$pagePerms = PERMISSION_ADMIN;
-		
 		// Check user authorization here
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie($pagePerms);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		if (SubmittedForm("ChangePlan","Change Plan"))
 		{
@@ -1023,6 +1051,8 @@ class AppTemplateService extends ApplicationTemplate
 	 * Performs the database modifications required of activating the service
 	 * 
 	 * Performs the database modifications required of activating the service
+	 * If a new Service record has to be created, then DBO()->NewService will store the
+	 * contents of this new service.
 	 *
 	 * @precondition	This function should be encapsulated by a database transaction (TransactionStart),
 	 *					which should be rolled back if the function returns anything other than TRUE
