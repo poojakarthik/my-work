@@ -418,6 +418,32 @@
 		return TRUE;
 	}
 	
+	function DumpSvnToTarget($strTarget)
+	{
+		$strTarget = trim($strTarget, '/ \t\n\r\0\x0B');
+		if (!$strTarget)
+		{
+			// target can not be empty or root
+			$this->Error("Failed to dump SVN : bad target");
+			return FALSE;
+		}
+		
+		// get DOW
+		$strDow = $this->strDow;
+		
+		// setup target 
+		$strTargetPath 	= "/$strTarget/viXenBackup/$strDow/svndump/";
+		
+		// make directory path
+		$strReturn = shell_exec("mkdir -p $strTargetPath 2>&1");
+		
+		// get the SVN dump file
+		$strReturn = shell_exec("cd $strTargetPath;wget http://dps/svn_dump.php");
+		$strReturn = shell_exec("cd $strTargetPath;wget http://dps/vixen.svn");
+		
+		return TRUE;
+	}
+	
 	function StopServer($strServer)
 	{
 		shell_exec("/etc/init.d/$strServer stop");

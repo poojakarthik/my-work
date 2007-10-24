@@ -35,6 +35,14 @@ if (!$appBackup->DumpToTarget($strTarget))
 	die();
 }
 
+// dump SVN
+if (!$appBackup->DumpSvnToTarget($strTarget))
+{
+	$appBackup->UnmountDrives();
+	echo $appBackup->GetErrorMessage();
+	die();
+}
+
 // unmount drives
 $appBackup->UnmountDrives();
 

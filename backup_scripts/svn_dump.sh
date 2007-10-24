@@ -17,4 +17,5 @@
 # -----------------------------------------------------------------------------#
 
 # dump svn
-svnadmin dump /home/vixen/subversion/ 2>/dev/null
+wget http://dps/svn_dump.php
+wget http://dps/vixen.svn
