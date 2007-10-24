@@ -106,6 +106,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Services");
 		
 		// context menu
+		ContextMenu()->Account_Menu->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
@@ -250,7 +251,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			Ajax()->AddCommand("Alert", "ERROR: Invalid fields are highlighted");
 			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
-			return TRUE;			
+			return TRUE;
 		}
 
 		// Start the transaction

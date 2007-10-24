@@ -117,8 +117,25 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->Status->RenderHidden();
 		
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
-		DBO()->Service->FNN->RenderInput();
-		DBO()->Service->FNNConfirm->RenderInput();
+		
+		// The user can only change the FNN if the service was created today
+		// (They should only need to change the FNN if they accidently got it wrong to begin with)
+		if (DBO()->Service->CreatedOn->Value == GetCurrentDateForMySQL())
+		{
+			// The service was created today, so they can change the FNN
+			DBO()->Service->FNN->RenderInput();
+			DBO()->Service->FNNConfirm->RenderInput();
+		}
+		else
+		{
+			// The service wasn't created today, so they can't change the FNN
+			DBO()->Service->FNN->RenderOutput();
+			
+			// This shouldn't really be included at all, but if I just render it as a hidden, then I don't have
+			// to worry about updating the logic
+			DBO()->Service->FNN->RenderHidden();
+			DBO()->Service->FNNConfirm->RenderHidden();
+		}
 		
 		// Intialise the value for the Service Status combobox
 		if (!DBO()->Service->NewStatus->IsSet)
@@ -259,7 +276,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			DBO()->ServiceMobileDetail->Comments->RenderInput();
 			echo "</div>\n";  // NarrowForm - MobileDetails
 		}
-		
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(this)");

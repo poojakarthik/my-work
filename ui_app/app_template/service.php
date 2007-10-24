@@ -459,6 +459,24 @@ class AppTemplateService extends ApplicationTemplate
 					}
 				}
 			}
+			
+			// If the FNN is changing and the service has ELB, then you will have to update the the FNNs in the ServiceExtension table
+			// relating to this service
+			if ((DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value) && (DBO()->Service->ELB->Value !== NULL))
+			{
+				// Update the records in the ServiceExtension table that relate to this Service
+				$strFirstFNN = substr(DBO()->Service->FNN->Value, 0, 8) . "00";
+				$strQuery = "UPDATE ServiceExtension SET Name = LPAD('$strFirstFNN' + RangeStart, 10, '0') WHERE Service = ". DBO()->Service->Id->Value;
+
+				$qryUpdateServiceExtension = new Query();
+				if ($qryUpdateServiceExtension->Execute($strQuery) == FALSE)
+				{
+					// Updating the ServiceExtension table failed, unexpectedly
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Updating the FNNs in the ServiceExtension table failed, unexpectedly.  All modifications to the service have been aborted");
+					return TRUE;
+				}
+			}
 
 			// Save the changes to the Service Table, if any changes were made
 			if (count($arrUpdateProperties) > 0)

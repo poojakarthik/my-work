@@ -448,12 +448,19 @@ class Page
 		// for testing purposes because the most recent js files weren't being used
 		// but, for general operation, you want the user's browser to cache the js,
 		// as it shouldn't be being changed that often
+		
+		/* 
+		 * This was prohibitting the effective use of going back through the browser history. 
+		 * (popups weren't being displayed; the page was always reloading)
+		 * It should probably be updated so that the page expires within an hour of being loaded
+		 *
 		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 		header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
 		header('Cache-Control: no-store, no-cache, must-revalidate');
 		header('Cache-Control: post-check=0, pre-check=0', FALSE);
 		header('Pragma: no-cache');
-	
+		*/
+		
 		echo "<html><head onload='alert(\"head.onload has been triggered\");'><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";

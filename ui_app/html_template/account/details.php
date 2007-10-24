@@ -135,7 +135,18 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->Id->RenderOutput();
 			DBO()->Account->Balance->RenderOutput();
 			DBO()->Account->BusinessName->RenderOutput();
-			DBO()->Account->ABN->RenderOutput();
+			if (DBO()->Account->TradingName->Value != "")
+			{
+				DBO()->Account->TradingName->RenderOutput();
+			}
+			if (DBO()->Account->ABN->Value != "")
+			{
+				DBO()->Account->ABN->RenderOutput();
+			}
+			if (DBO()->Account->ACN->Value != "")
+			{
+				DBO()->Account->ACN->RenderOutput();
+			}
 			DBO()->Account->Address1->RenderOutput();
 			
 			if (DBO()->Account->Address2->Value != "")
@@ -155,6 +166,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 			
 			DBO()->Account->DisableDDR->RenderOutput();
+			
+			// If DBO()->Account->DisableLatePayment is NULL then set it to 0
+			if (DBO()->Account->DisableLatePayment->Value == NULL)
+			{
+				DBO()->Account->DisableLatePayment = 0;
+			}
+			
 			DBO()->Account->DisableLatePayment->RenderOutput();
 		echo "</div>\n";
 
