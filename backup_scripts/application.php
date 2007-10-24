@@ -70,16 +70,15 @@
 		$this->arrErrorsByMethod 	= array();
 		
 		$this->arrDrives['sdc1']	= TRUE;
-		$this->arrDrives['sdd1']	= FALSE;
-		$this->arrDrives['sde1']	= FALSE;
+		$this->arrDrives['sdd1']	= TRUE;
 		
-		$this->arrTarget['mon']			= "sdc1";
+		$this->arrTarget['mon']			= "sdd1";
 		$this->arrTarget['tue']			= "sdc1";
-		$this->arrTarget['wed']			= "sdc1";
+		$this->arrTarget['wed']			= "sdd1";
 		$this->arrTarget['thu']			= "sdc1";
-		$this->arrTarget['fri']			= "sdc1";
-		$this->arrTarget['sat']			= "sdc1";
-		$this->arrTarget['sun']			= "sdc1";
+		$this->arrTarget['fri']			= "sdd1";
+		$this->arrTarget['sat']			= "sdd1";
+		$this->arrTarget['sun']			= "sdd1";
 		
 		
 	}
