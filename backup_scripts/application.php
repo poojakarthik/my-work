@@ -58,7 +58,7 @@
 	 *
 	 * @method
 	 */
- 	function __Construct()
+ 	function __Construct($strServer="")
 	{
 		$this->strMysqlUser			= 'vixenbackup';
 		$this->strMysqlPassword		= 'v1x3n';
@@ -80,6 +80,8 @@
 		$this->arrTarget['sat']			= "sdd1";
 		$this->arrTarget['sun']			= "sdd1";
 		
+		$this->_arrAddress[]			= "jared@voiptelsystems.com.au";
+		$this->_strServer				= $strServer;
 		
 	}
 	
@@ -465,9 +467,14 @@
 		}
 		
 		// try to mount drives
-		if (!$this->MountDrives())
+		if (!$intMounted = $this->MountDrives())
 		{
 			return FALSE;
+		}
+		elseif ($intMounted > 1)
+		{
+			// should only ever be 1 drive mounted
+			$this->Error("$intMounted drives are mounted");
 		}
 		
 		// Select target
@@ -595,6 +602,41 @@
 			$this->arrErrorsByMethod 	= array();
 		}
 		return true;
+	}
+	
+	function Finish()
+	{
+		// unmount drives
+		$this->UnmountDrives();
+		
+		// check for errors
+		if ($this->CheckError() > 0)
+		{
+			// show the errors
+			echo $this->GetErrorMessage();
+			
+			// send error message email
+			$this->SendErrorMessage();
+		
+		}
+		else
+		{
+			// send all clear email
+			foreach ($this->_arrAddress AS $strAddress)
+			{
+				mail($strAddress, "Backup OK on ".$this->_strServer, "");
+			}
+		}
+	}
+	
+	function SendErrorMessage()
+	{
+		$strError 	= $this->GetErrorMessage();
+		$strSubject = "Backup FAILED on ".$this->_strServer;
+		foreach ($this->_arrAddress AS $strAddress)
+		{
+			mail($strAddress, $strSubject, $strError);
+		}
 	}
 }
 

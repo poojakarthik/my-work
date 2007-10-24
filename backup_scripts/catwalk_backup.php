@@ -4,7 +4,7 @@
 require_once('application_loader.php');
 
 // load backup application
-$appBackup = new ApplicationBackup();
+$appBackup = new ApplicationBackup('Catwalk');
 
 // prep for backup
 $strTarget = $appBackup->PrepareBackup();
@@ -21,8 +21,7 @@ if (!$strTarget)
 	// error out if we don't have a clean target
 	if (!$bolReady)
 	{
-		$appBackup->UnmountDrives();
-		echo $appBackup->GetErrorMessage();
+		$appBackup->Finish();
 		die();
 	}
 }
@@ -30,25 +29,18 @@ if (!$strTarget)
 // dump database
 if (!$appBackup->DumpToTarget($strTarget))
 {
-	$appBackup->UnmountDrives();
-	echo $appBackup->GetErrorMessage();
+	$appBackup->Finish();
 	die();
 }
 
 // dump SVN
 if (!$appBackup->DumpSvnToTarget($strTarget))
 {
-	$appBackup->UnmountDrives();
-	echo $appBackup->GetErrorMessage();
+	$appBackup->Finish();
 	die();
 }
 
-// unmount drives
-$appBackup->UnmountDrives();
+// finish backup
+$appBackup->Finish();
 
-// check if we had any errors along the way
-if ($appBackup->CheckError() > 0)
-{
-	echo $appBackup->GetErrorMessage();
-}
 ?>
