@@ -251,6 +251,24 @@ class DBObject extends DBObjectBase
 		// do validation
 		if ($strValidationRule)
 		{
+			// Check if the Property is optional.  If a property is optional, 
+			// then you only perform the validation rule, if the value doesn't equate to an empty string
+			$strValidationRule = trim($strValidationRule);
+			
+			if (strtolower(substr($strValidationRule, 0, 9)) == "optional:")
+			{
+				// The property is optional
+				if ($this->_arrProperties[$strProperty] === "")
+				{
+					// A value for the property has not been suplied therefore it has passed validation
+					$this->_arrValid[$strProperty] = TRUE;
+					return TRUE;
+				}
+				
+				// A value for the property has been suplied so perform the validation
+				$strValidationRule = trim(substr($strValidationRule, 9));
+			}
+		
 			if (!$this->_arrValid[$strProperty] = Validate($strValidationRule, $this->_arrProperties[$strProperty]))
 			{
 				$this->_bolValid = FALSE;

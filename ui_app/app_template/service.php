@@ -921,6 +921,9 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Record the current time
 			$strNowTimeStamp = GetCurrentDateAndTimeForMySQL();
+			
+			// The New Plan starts 1 second after the old plan ends
+			$strStartDatetime = date("Y-m-d H:i:s", strtotime($strNowTimeStamp) + 1);
 
 			// Start the database transaction
 			TransactionStart();
@@ -951,8 +954,8 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
 			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
 			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRatePlan->CreatedOn 		= $strNowTimeStamp;
-			DBO()->ServiceRatePlan->StartDatetime 	= $strNowTimeStamp;
+			DBO()->ServiceRatePlan->CreatedOn 		= $strStartDatetime;
+			DBO()->ServiceRatePlan->StartDatetime 	= $strStartDatetime;
 			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
 			
 			if (!DBO()->ServiceRatePlan->Save())
@@ -971,8 +974,8 @@ class AppTemplateService extends ApplicationTemplate
 			// Define constant properties for these records
 			DBO()->ServiceRateGroup->Service 		= DBO()->Service->Id->Value;
 			DBO()->ServiceRateGroup->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRateGroup->CreatedOn 		= $strNowTimeStamp;
-			DBO()->ServiceRateGroup->StartDatetime 	= $strNowTimeStamp;
+			DBO()->ServiceRateGroup->CreatedOn 		= $strStartDatetime;
+			DBO()->ServiceRateGroup->StartDatetime 	= $strStartDatetime;
 			DBO()->ServiceRateGroup->EndDatetime 	= END_OF_TIME;
 			
 			

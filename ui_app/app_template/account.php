@@ -246,7 +246,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 	
-		// If the validation has failed display the invalid fields			
+		// If the validation has failed display the invalid fields
 		if (DBO()->Account->IsInvalid())
 		{
 			Ajax()->AddCommand("Alert", "ERROR: Invalid fields are highlighted");
