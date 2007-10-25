@@ -154,9 +154,9 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 		
 		//$this->Temporary_Render();
 		
-		Table()->ServiceRateGroupTable->SetHeader("Rate Group", "Description", "Fleet", "Record Type", "Part Of RatePlan");
+		Table()->ServiceRateGroupTable->SetHeader("Rate Group", "Description", "Fleet", "Record Type", "Standard Rate");
 		Table()->ServiceRateGroupTable->SetWidth("25%", "35%", "5%", "20%", "15%");
-		Table()->ServiceRateGroupTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
+		Table()->ServiceRateGroupTable->SetAlignment("Left", "Left", "Left", "Left", "Center");
 		
 		foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
 		{
