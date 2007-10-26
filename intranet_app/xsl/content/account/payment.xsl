@@ -222,7 +222,17 @@
 						</td>
 						<td><xsl:value-of select="./CreditCardTypes/CreditCardType[@selected='selected']/Name" /></td>
 						<td><xsl:value-of select="./Name" /></td>
-						<td><xsl:value-of select="./Masked" /></td>
+						<xsl:choose>
+							<!-- If the user has the PERMISSION_CREDIT_CARD permission then they can see the whole credit card number -->
+							<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Credit Card']) = 1">
+								<!-- The user has the PERMISSION_CREDIT_CARD permission -->
+								<td><xsl:value-of select="./CardNumber" /></td>
+							</xsl:when>
+							<xsl:otherwise>
+								<!-- The user does not have credit card permissions -->
+								<td><xsl:value-of select="./Masked" /></td>
+							</xsl:otherwise>
+						</xsl:choose>
 						<td>
 							<strong>
 								<span>

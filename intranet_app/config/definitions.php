@@ -42,11 +42,13 @@ define("USER_NAME"						, "Intranet_app");
 
 // Permissions - used for page permission
 													$arrPermissions = Array ();
-define("PERMISSION_PUBLIC"				, 0x1);		$arrPermissions[PERMISSION_PUBLIC]		= "Public";			// 1
-define("PERMISSION_ADMIN"				, 0x2);		$arrPermissions[PERMISSION_ADMIN]		= "Admin";			// 2	
-define("PERMISSION_OPERATOR"			, 0x4);		$arrPermissions[PERMISSION_OPERATOR]	= "Operator";		// 4
-define("PERMISSION_SALES"				, 0x8);		$arrPermissions[PERMISSION_SALES]		= "Sales";			// 8
-define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "Accounts";		// 16
+define("PERMISSION_PUBLIC"				, 0x1);		$arrPermissions[PERMISSION_PUBLIC]			= "Public";			// 1
+define("PERMISSION_ADMIN"				, 0x2);		$arrPermissions[PERMISSION_ADMIN]			= "Admin";			// 2	
+define("PERMISSION_OPERATOR"			, 0x4);		$arrPermissions[PERMISSION_OPERATOR]		= "Operator";		// 4
+define("PERMISSION_SALES"				, 0x8);		$arrPermissions[PERMISSION_SALES]			= "Sales";			// 8
+define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]		= "Accounts";		// 16
+define("PERMISSION_RATE_MANAGEMENT"		, 0x20);	$arrPermissions[PERMISSION_RATE_MANAGEMENT]	= "Rate Management";// 32
+define("PERMISSION_CREDIT_CARD"			, 0x40);	$arrPermissions[PERMISSION_CREDIT_CARD]		= "Credit Card";	// 64
 													$GLOBALS['Permissions']	= $arrPermissions;
 
 /*
