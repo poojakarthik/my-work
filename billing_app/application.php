@@ -24,7 +24,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
+
 
 //----------------------------------------------------------------------------//
 // ApplicationBilling
@@ -102,6 +102,8 @@
 		$this->arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
 		$this->arrServiceColumns['Service']			= "Service.Id";
 		$this->arrServiceColumns['RatePlan']		= "RatePlan.Id";
+		$this->arrServiceColumns['CreatedOn']		= "Service.CreatedOn";
+		$this->arrServiceColumns['Indial100']		= "Service.Indial100";
 		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																	"RatePlan",
 																	$this->arrServiceColumns,
@@ -122,7 +124,7 @@
 																"Id = 1000155964 OR " .
 																"Id = 1000160897";	//  limited to 11 specified accounts
 		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.")"); 
-										
+		
 		//$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		
 		// service debits and credits
@@ -140,7 +142,7 @@
 															  		NULL,
 															  		"2",
 															  		"Nature");
-															  		
+		
 		// service silos
 		//$this->selSilos	= new StatementSelect("Silo", "*", "RatePlan = <RatePlan> AND RecordType = <RecordType>");
 
@@ -445,13 +447,48 @@
 			//$this->_rptBillingReport->AddMessage(MSG_OK);
 			
 			// Get a list of shared plans for this account
-			$arrSharedPlans = Array();
+			$selEarliestCDR		= new StatementSelect("CDR", "StartDatetime", "Service = <Service> AND Credit = 0", "StartDatetime ASC", 1);
+			$selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
+			$selLastBillDate	= new StatementSelect("InvoiceRun", "BillingDate", "1", "BillingDate DESC", 1);
+			$selLastBillDate->Execute();
+			$arrLastBillDate	= $selLastBillDate->Fetch();
+			$intLastBillDate	= strtotime($arrLastBillDate['BillingDate']);
+			$arrSharedPlans	= Array();
 			foreach($arrServices as $arrService)
 			{
+				// Prorate Minimum Monthly
+				$selEarliestCDR->Execute($arrService);
+				$selPlanDate->Execute($arrService);
+				$arrEarliestCDR	= $selEarliestCDR->Fetch();
+				$arrPlanDate	= $selPlanDate->Fetch();
+				
+				$intCDRDate		= strtotime($arrEarliestCDR['StartDatetime']);
+				$intServiceDate	= strtotime($arrService['CreatedOn']);
+				$intPlanDate	= strtotime($arrPlanDate['StartDatetime']);
+				
+				// If the first CDR is unbilled
+				if ($intCDRDate < $intLastBillDate)
+				{
+					if (!$intCDRDate)
+					{
+						// No CDRs
+						$arrService['MinMonthly']	= 0;
+					}
+					else
+					{
+						// Prorate the Minimum Monthly
+						$intProratePeriod			= $intCDRDate - $intLastBillDate;
+						$intBillingPeriod			= time() - $intLastBillDate;
+						$intProratedMinMonthly		= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
+						$arrService['MinMonthly']	= $intProratedMinMonthly;
+					}
+				}
+				
+				// Special Shared Plan Handling
 				if ($arrService['Shared'])
 				{
 					$arrSharedPlans[$arrService['RatePlan']]['Count']++;
-					$arrSharedPlans[$arrService['RatePlan']]['MinMonthly']	= $arrService['MinMonthly'];
+					$arrSharedPlans[$arrService['RatePlan']]['MinMonthly']	= max($arrService['MinMonthly'], $arrSharedPlans[$arrService['RatePlan']]['MinMonthly']);
 					$arrSharedPlans[$arrService['RatePlan']]['UsageCap']	= $arrService['UsageCap'];
 					$arrSharedPlans[$arrService['RatePlan']]['ChargeCap']	= $arrService['ChargeCap'];
 				}
@@ -504,8 +541,6 @@
 					$fltUncappedCDRCharge	+= $arrCDRTotal['UncappedCharge'];
 					$fltCappedCDRCharge		+= $arrCDRTotal['CappedCharge'];
 				}
-
-
 				
 				//$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
@@ -768,9 +803,9 @@
 			
 			// Determine Delivery Method
 			switch($arrAccount['BillingMethod'])
-			{				
+			{
 				case BILLING_METHOD_EMAIL:
-					if ($fltTotal+$fltTax != 0 && $fltTotalOwing != 0)
+					if ($fltTotal+$fltTax != 0 || $fltTotalOwing != 0)
 					{
 						$intDeliveryMethod	= $arrAccount['BillingMethod'];
 					}
@@ -1098,7 +1133,7 @@
 		
 		// Generate InvoiceRun table entry
 		$this->_rptBillingReport->AddMessage("Generating Profit Data...", FALSE);
-		$arrResponse = CalculateProfitData($strInvoiceRun, TRUE);
+		$arrResponse = $this->CalculateProfitData($strInvoiceRun, TRUE);
 		if ($arrResponse['Id'])
 		{
 			$this->_rptBillingReport->AddMessage(MSG_OK);
@@ -2175,9 +2210,12 @@
  		$arrPDFPaths = glob($strPath."*.pdf");
  		
 		
- 		$selAccountEmail	= new StatementSelect(	"Account JOIN Contact ON Account.Id = Contact.Account",
+ 		/*$selAccountEmail	= new StatementSelect(	"Account JOIN Contact ON Account.Id = Contact.Account",
  													"Account.Id AS Account, CustomerGroup, Email, FirstName",
- 													"Account = <Account> AND Email != '' AND BillingMethod = ".BILLING_METHOD_EMAIL);
+ 													"Account = <Account> AND Email != '' AND BillingMethod = ".BILLING_METHOD_EMAIL);*/
+ 		$selAccountEmail	= new StatementSelect(	"(Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact USING (Account)",
+ 													"Invoice.Account, CustomerGroup, Email, FirstName",
+ 													"Invoice.Account = <Account> AND Email != '' AND DeliveryMethod = 1");
 		$updDeliveryMethod = new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
 		
  		// Loop through each PDF
@@ -2188,7 +2226,7 @@
  			// Get the account number from the filename, then find the account's email address
  			$arrSplit = explode('_', basename($strPDFPath));
  			
- 			if ($selAccountEmail->Execute(Array('Account' => $arrSplit[0])) === FALSE)
+ 			if ($selAccountEmail->Execute(Array('Account' => $arrSplit[0], 'InvoiceRun' => $arrInvoiceRun['InvoiceRun'])) === FALSE)
  			{
  				Debug($selAccountEmail->Error());
  				return FALSE;
@@ -2274,20 +2312,20 @@
 					$arrWhere['Account']	= $arrDetail['Account'];
 					if ($updDeliveryMethod->Execute($arrUpdateData, $arrWhere))
 					{
-						Debug("Success!");
+						//Debug("Success!");
 					}
 					else
 					{
-						Debug("Failure!");
+						//Debug("Failure!");
 					}
-					Debug($arrWhere);
+					//Debug($arrWhere);
 					//die;
 	 				
 	 				$this->_rptBillingReport->AddMessage("[   OK   ]");
 	 				$intPassed++;
 	 				
 	 				// Uncomment this to Debug
-					//Die();
+					//die;
 	 			}
  			}
  		}
@@ -2664,9 +2702,9 @@
 		}
 		
 		// Outstanding Totals
-		$selThisOutstanding		= new StatementSelect($strTable, "SUM(Balance) AS Balance", "InvoiceRun = <InvoiceRun>");
-		$selLastOutstanding		= new StatementSelect("Invoice", "SUM(Balance) AS Balance", "CreatedOn < <CreatedOn>", "CreatedOn DESC", 1, "InvoiceRun");
-		$selTotalOutstanding	= new StatementSelect("Invoice", "SUM(Balance) AS Balance", "CreatedOn < <CreatedOn>");
+		$selThisOutstanding		= new StatementSelect($strTable, "SUM(Balance) AS Balance", "SettledOn IS NULL AND InvoiceRun = <InvoiceRun>");
+		$selLastOutstanding		= new StatementSelect("Invoice", "SUM(Balance) AS Balance", "SettledOn IS NULL AND CreatedOn < <CreatedOn>", "CreatedOn DESC", 1, "InvoiceRun");
+		$selTotalOutstanding	= new StatementSelect("Invoice", "SUM(Balance) AS Balance", "SettledOn IS NULL AND CreatedOn < <CreatedOn>");
 		$selThisOutstanding->Execute($arrInvoiceRun);
 		$selLastOutstanding->Execute(Array('CreatedOn' => $strCreatedOn));
 		$selTotalOutstanding->Execute(Array('CreatedOn' => $strCreatedOn));
