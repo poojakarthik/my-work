@@ -80,6 +80,15 @@ $GLOBALS['*arrConstant']	['CDRType']	[5]	['Description']	= 'iSeek Usage';
 $GLOBALS['*arrConstant']	['CDRType']	[6]	['Constant']	= 'CDR_ISEEK_BROADBAND';
 $GLOBALS['*arrConstant']	['CDRType']	[6]	['Description']	= 'iSeek Broadband Usage';
 
+// Collection Server Types
+$GLOBALS['*arrConstant']	['CollectionType']	[100]	['Constant']	= 'COLLECTION_TYPE_FTP';
+$GLOBALS['*arrConstant']	['CollectionType']	[100]	['Description']	= 'FTP';
+$GLOBALS['*arrConstant']	['CollectionType']	[101]	['Constant']	= 'COLLECTION_TYPE_AAPT';
+$GLOBALS['*arrConstant']	['CollectionType']	[101]	['Description']	= 'HTTPS/AAPT';
+$GLOBALS['*arrConstant']	['CollectionType']	[102]	['Constant']	= 'COLLECTION_TYPE_OPTUS';
+$GLOBALS['*arrConstant']	['CollectionType']	[102]	['Description']	= 'HTTPS/OPTUS';
+$GLOBALS['*arrConstant']	['CollectionType']	[103]	['Constant']	= 'COLLECTION_TYPE_SSH2';
+$GLOBALS['*arrConstant']	['CollectionType']	[103]	['Description']	= 'SSH2';
 
 // Provisioning Types
 define("PRV_IMPORT_RANGE_MIN"			, 100);
