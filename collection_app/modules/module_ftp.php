@@ -291,7 +291,7 @@
 			if (!ftp_chdir($this->_resConnection, $strDotDotSlash.$strDir))
 			{
 				// Problem changing directory, error out
-				return FALSE;
+				return $this->Download($strDestination);
 			}
 			
 			// Get our new list of files
