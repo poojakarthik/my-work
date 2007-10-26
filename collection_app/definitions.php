@@ -49,12 +49,14 @@ define("DEFAULT_FTP_USERNAME"			, "flame");
 define("DEFAULT_FTP_PWORD"				, "flame");
 
 // Collection Types
-define("COLLECTION_TYPE_FTP"		, 100);
-define("COLLECTION_TYPE_AAPT"		, 101);
-define("COLLECTION_TYPE_OPTUS"		, 102);
+@define("COLLECTION_TYPE_FTP"		, 100);
+@define("COLLECTION_TYPE_AAPT"		, 101);
+@define("COLLECTION_TYPE_OPTUS"		, 102);
+@define("COLLECTION_TYPE_SSH2"		, 103);
 $GLOBALS['CollectionType'][COLLECTION_TYPE_FTP]		= "FTP";
 $GLOBALS['CollectionType'][COLLECTION_TYPE_AAPT]	= "HTTPS/AAPT";
 $GLOBALS['CollectionType'][COLLECTION_TYPE_OPTUS]	= "HTTPS/OPTUS";
+$GLOBALS['CollectionType'][COLLECTION_TYPE_SSH2]	= "SSH2";
 
 // Filename Regex's
 define("REGEX_OPTUS"				, "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_[sl]\.dat$/");
@@ -62,7 +64,7 @@ define("REGEX_AAPT"					, "/^W\d{9}\.[A-La-l][0-3]\d$/");
 define("REGEX_RSLCOM"				, "/^[A-Za-z]\d{7}\.csv$/");
 define("REGEX_COMMANDER"			, "/^[A-Za-z]\d{7}\.csv$/");
 define("REGEX_UNITEL_SE"			, "/^STA(On|Off)netBatch_SE_[A-Z]\d{5}_\d{8}.csv$/");
-define("REGEX_ISEEK"				, "");
+define("REGEX_ISEEK"				, "/^tap_isk\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_s\.dat$/");
 define("REGEX_RSL_ORDER_RPT"		, "/^rsl\d{3}w\d{4}\d{4}[01]\d[0-3]\d.txt$/");
 define("REGEX_RSL_STATUS_RPT"		, "/^rsl\d{3}d\d{4}[01]\d[0-3]\d\_[0-2]\d[0-5]\d[0-5]\d.txt$/");
 define("REGEX_RSL_BASKETS"			, "/^rsl\d{3}a\d{4}\d{4}[01]\d[0-3]\d.txt$/");

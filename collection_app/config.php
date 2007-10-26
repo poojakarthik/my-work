@@ -118,19 +118,17 @@
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
 		
-		/*
-		TODO!rich! Write this definition when you get the details
+
 		// iSeek Definition
 		$arrConfig['Define']["iSeek"]	["Name"]						= "iSeek";
 		$arrConfig['Define']["iSeek"]	["Carrier"]						= CARRIER_ISEEK;
- 		$arrConfig['Define']["iSeek"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["iSeek"]	["Server"]						= DEFAULT_FTP_SERVER;				// FIXME
- 		$arrConfig['Define']["iSeek"]	["Username"]					= DEFAULT_FTP_USERNAME;				// FIXME
- 		$arrConfig['Define']["iSeek"]	["PWord"]						= DEFAULT_FTP_PASSWORD;				// FIXME
- 		$arrConfig['Define']["iSeek"]	["Dir"][]						= 'dir1/';							// FIXME
+ 		$arrConfig['Define']["iSeek"]	["Type"]						= COLLECTION_TYPE_SSH2;
+ 		$arrConfig['Define']["iSeek"]	["Server"]						= "adsl2.iseek.com.au";
+ 		$arrConfig['Define']["iSeek"]	["Username"]					= "telcoblue";
+ 		$arrConfig['Define']["iSeek"]	["PWord"]						= "dh6aekZ8";
+ 		$arrConfig['Define']["iSeek"]	["Dir"][]						= 'speedi/';
  		$arrConfig['Define']["iSeek"]	["FinalDir"]					= DESTINATION_ROOT.'iseek/';
 		$arrConfig['Define']["iSeek"]	["FileType"][REGEX_ISEEK]		= CDR_ISEEK_STANDARD;
-		*/
 		
 		
 		
