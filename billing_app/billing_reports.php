@@ -33,10 +33,10 @@ $arrConfig = LoadApplication();
 $GLOBALS['appBilling'] = new ApplicationBilling($arrConfig);
 
 CliEcho(" + Calculating Profit Data...");
+$arrProfitData['ThisMonth']	= $GLOBALS['appBilling']->CalculateProfitData('46d8e71d284b1');
 $selProfitData = new StatementSelect("InvoiceRun", "*", "BillingDate < <BillingDate>", "BillingDate DESC", 1);
-//$arrProfitData['ThisMonth']	= $GLOBALS['appBilling']->CalculateProfitData('46d8e71d284b1');
-$selProfitData->Execute(Array('BillingDate' => date("Y-m-d")));
-$arrProfitData['ThisMonth']	= $selProfitData->Fetch();
+//$selProfitData->Execute(Array('BillingDate' => date("Y-m-d")));
+//$arrProfitData['ThisMonth']	= $selProfitData->Fetch();
 $selProfitData->Execute($arrProfitData['ThisMonth']);
 $arrProfitData['LastMonth']	= $selProfitData->Fetch();
 $selProfitData->Execute($arrProfitData['LastMonth']);
@@ -74,20 +74,20 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 	$strFilename	= "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/")."Plan_Summary_with_Breakdown_($strServiceType).xls";
 	
 	$arrReports = Array();
-	//Debug("Service Summary...");
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
-	Debug("Plan Summary...");
+	CliEcho("Service Summary...");
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
+	CliEcho("Plan Summary...");
 	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
-	//Debug("Adjustment Summary...");
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
-	//Debug("Recurring Adjustment Summary...");
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('RecurringAdjustmentsSummary'));
-	//Debug("Adjustments By Employee Summary...");
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
-	//Debug("Invoice Summary...");
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
-	//Debug("Customer Summary...");
-	//$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('CustomerSummary'));
+	CliEcho("Adjustment Summary...");
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
+	CliEcho("Recurring Adjustment Summary...");
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('RecurringAdjustmentsSummary'));
+	CliEcho("Adjustments By Employee Summary...");
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
+	CliEcho("Invoice Summary...");
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
+	CliEcho("Customer Summary...");
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('CustomerSummary'));
 	
 	// Email Management Reports	
 	$strContent		= "Please find attached the Management Reports for ".date("Y-m-d H:i:s")."\n\nYellow Billing Services";
