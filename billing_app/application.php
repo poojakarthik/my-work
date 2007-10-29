@@ -456,7 +456,7 @@
 			$arrSharedPlans	= Array();
 			foreach($arrServices as $arrService)
 			{
-				if ($arrService['MinMonthly'])
+				if ($arrService['MinMonthly'] > 0)
 				{
 					// Prorate Minimum Monthly
 					$selEarliestCDR->Execute($arrService);
