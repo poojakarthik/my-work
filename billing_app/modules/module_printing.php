@@ -609,6 +609,7 @@
 						{
 							//Debug("Popping: ");
 							//Debug(array_pop($this->_arrFileData));
+							array_pop($this->_arrFileData);
 						}
 						else
 						{
