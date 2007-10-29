@@ -622,6 +622,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Calculate the Account's total unbilled adjustments
 		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
+		// Load the primary contact
+		if (DBO()->Account->PrimaryContact->Value)
+		{
+			DBO()->Contact->Id = DBO()->Account->PrimaryContact->Value;
+			DBO()->Contact->Load();
+		}
+		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('invoices_and_payments');
 

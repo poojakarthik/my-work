@@ -461,7 +461,7 @@ class Page
 		header('Pragma: no-cache');
 		*/
 		
-		echo "<html><head onload='alert(\"head.onload has been triggered\");'><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
+		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
@@ -501,12 +501,14 @@ class Page
 			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
 
+		/* This was used to guarantee the most recent javascript files were retrieved
+		 * every time a page was requested
 		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
 		header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
 		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
 		header( 'Cache-Control: post-check=0, pre-check=0', false );
 		header( 'Pragma: no-cache' );
-		
+		*/
 	
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>TelcoBlue - $this->_strPageName</title>\n";

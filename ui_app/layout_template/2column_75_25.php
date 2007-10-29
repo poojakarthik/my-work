@@ -43,8 +43,8 @@ $this->RenderContextMenu();
 			<?php $this->RenderColumn(COLUMN_ONE); ?>
 			
 		</td>
-		<td width='2%'></td>
-		<td width='24%' valign='top'>
+		<td width='1%'></td>
+		<td width='25%' valign='top'>
 			
 			<?php $this->RenderColumn(COLUMN_TWO); ?>
 			

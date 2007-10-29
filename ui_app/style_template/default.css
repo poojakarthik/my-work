@@ -115,8 +115,24 @@
 	label
 	{
 		line-height:		1.2;
-		cursor:              pointer;
+		cursor:				pointer;
 	}
+	
+	/* 
+	 * This contains the same styling as the DefaultOutputSpan class
+	 */
+	span
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		left:				0px;
+		top:				0px;
+		overflow:			hidden;
+		line-height: 		1.2;
+	}
+
 	
 /**************************************************************************/
 /* DIVS														  			  */

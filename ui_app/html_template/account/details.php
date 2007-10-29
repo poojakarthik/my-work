@@ -358,7 +358,36 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "      <td width='65%' valign='top'>\n";
 		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
+		if (DBO()->Account->BusinessName != "")
+		{
+			// Display the Business Name, but only if there is one
+			DBO()->Account->BusinessName->RenderOutput();
+		}
+		elseif (DBO()->Account->TradingName->Value != "")
+		{
+			// If there was no Business Name, display the Trading Name, if there is one
+			DBO()->Account->TradingName->RenderOutput();
+		}
+		else
+		{
+			// There is no Business Name or Trading Name
+			DBO()->Account->BusinessName->RenderArbitrary("[Not Specified]");
+		}
+		if (DBO()->Account->ABN->Value != "")
+		{
+			DBO()->Account->ABN->RenderOutput();
+		}
+		elseif (DBO()->Account->ACN->Value != "")
+		{
+			DBO()->Account->ACN->RenderOutput();
+		}
+		else
+		{
+			DBO()->Account->ABN->RenderArbitrary("[Not Specified]");
+		}
+		
+		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
@@ -369,6 +398,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render the properties that can be changed
 		DBO()->Account->DisableDDR->RenderInput();
 		DBO()->Account->DisableLatePayment->RenderInput();
+//		echo "<span>Primary Contact:</span>";
+//		if (DBO()->Contact->)
+//		$strContactTitle = 
+		echo "";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "</table>\n";
@@ -379,13 +412,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				document.getElementById('Account.DisableLatePayment_1.Label').style.color='#4C4C4C';</script>";
 		
 		// Render the submit button
-		echo "<div class='Right'>\n";
-		//echo "   <input type='submit' class='input-submit' value='Apply Changes' />\n";
-		//$this->AjaxSubmit("Apply Changes");
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$strViewFullAccountDetails = Href()->ViewAccountDetails(DBO()->Account->Id->Value);
+		$this->Button("View Full Details", $strViewFullAccountDetails);
 		$this->AjaxSubmit("Apply Changes");
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='SmallSeperator'></div>\n";
+		echo "</div></div>\n";
+		
 		echo "</div>\n";
 		echo "<div class='SmallSeperator'></div>\n";
 		
