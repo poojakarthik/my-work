@@ -258,6 +258,7 @@
 						// If there are multiple lines, Full Service Loss
 						$arrPDR['Type']			= REQUEST_LOSS_FULL;
 						$arrPDR['Description']	= "Service lost to Carrier #{$arrData['LostTo']}";
+						$bolFullServiceChurn	= TRUE;
 					}
 					else
 					{
@@ -348,6 +349,12 @@
 		if ($arrOwner = FindFNNOwner($arrPDR['FNN'], $arrPDR['EffectiveDate']))
 		{
 			$arrPDR = array_merge($arrOwner, $arrPDR);
+			
+			if ($arrPDR['Type'] == REQUEST_LOSS_FULL)
+			{
+				// Add System Note
+				AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], CARRIER_UNITEL);
+			}
 		}
 		else
 		{
