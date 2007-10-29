@@ -68,6 +68,10 @@ class BillingModuleReports
  		}
  		
  		$this->_arrProfitData = $arrProfitData;
+ 		
+ 		
+ 		// Common Statements
+ 		$this->_selIsTempInvoice	= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>");
  	}
  	
  	
@@ -280,6 +284,13 @@ class BillingModuleReports
 		
 		
 		
+		// Overline Bold
+		$fmtOverlineBold	= $wkbWorkbook->addFormat();
+		$fmtOverlineBold->setTop(1);
+		$arrFormat['OverlineBold']		= $fmtOverlineBold;
+		
+		
+		
 		// Blank Underline
 		$fmtBlankUnderline	= $wkbWorkbook->addFormat();
 		$fmtBlankUnderline->setBottom(1);
@@ -333,8 +344,39 @@ class BillingModuleReports
 		$selServicesActive		= new StatementSelect(	"ServiceTotal",
 														"Id",
 														"(ServiceTotal.Debit > 0 OR ServiceTotal.UncappedCharge > 0 OR ServiceTotal.CappedCharge > 0) AND ServiceTotal.Debit IS NOT NULL AND ServiceTotal.InvoiceRun = <InvoiceRun>");
+		
+		$selServicesTolling		= new StatementSelect(	"CDR",
+														"DISTINCT Service",
+														"InvoiceRun = <InvoiceRun> AND <RatePlan> = (SELECT RatePlan FROM ServiceRatePlan WHERE <BillingDate> BETWEEN StartDatetime AND EndDatetime AND Service = CDR.Service ORDER BY CreatedOn DESC LIMIT 1)");
+		
+		$selChurns				= new StatementSelect(	"ProvisioningResponse",
+														"Id",
+														"Status = 402 AND EffectiveDate >= <LastBillingDate> AND EffectiveDate < <BillingDate> AND Type = 910");
+		
+		$selWinbacks			= new StatementSelect(	"ProvisioningResponse",
+														"DISTINCT Service",
+														"Status = 402 AND EffectiveDate >= <LastBillingDate> AND EffectiveDate < <BillingDate> AND Type = 910 AND " .
+														"900 = (SELECT Type FROM ProvisioningResponse PR2 WHERE Service = ProvisioningResponse.Service AND Status = 402 AND EffectiveDate >= <LastBillingDate> AND EffectiveDate < <BillingDate> AND Type IN (900, 910) ORDER BY EffectiveDate DESC LIMIT 1)");
+		
+		$selOldWinbacks			= new StatementSelect(	"Service",
+														"DISTINCT Id",
+														"910 = (SELECT Type FROM ProvisioningResponse WHERE Service.Id = Service AND Status = 402 AND EffectiveDate < <LastBillingDate> AND Type IN (900, 910) ORDER BY EffectiveDate DESC LIMIT 1) AND " .
+														"900 = (SELECT Type FROM ProvisioningResponse WHERE Service.Id = Service AND Status = 402 AND EffectiveDate >= <LastBillingDate> AND EffectiveDate < <BillingDate> AND Type IN (900, 910) ORDER BY EffectiveDate DESC LIMIT 1)");
+		
+		$selNewServices			= new StatementSelect(	"Service",
+														"Id",
+														"CreatedOn >= <LastBillingDate> AND CreatedOn < <BillingDate>");
+		
+		$selNewTollingServices	= new StatementSelect(	"Service JOIN CDR ON Service.Id = CDR.Service",
+														"DISTINCT Service.Id",
+														"CreatedOn >= <LastBillingDate> AND CreatedOn < <BillingDate> AND InvoiceRun = <InvoiceRun> AND Credit = 0");
+		
+		$selFirstTollingServices	= new StatementSelect(	"Service",
+															"DISTINCT Id",
+															"CreatedOn < <LastBillingDate> AND " .
+															"<InvoiceRun> = (SELECT InvoiceRun FROM CDR WHERE Service = Service.Id AND InvoiceRun IS NOT NULL AND Credit = 0 ORDER BY InvoiceRun ASC LIMIT 1)");
 
-		$selServicesByType		= new StatementSelect("Service LEFT JOIN ServiceTotal ON Service.Id = ServiceTotal.Service", "Service.ServiceType AS ServiceType, COUNT(Service.Id) AS ServiceCount", "ServiceTotal.InvoiceRun = <InvoiceRun>", "Service.ServiceType", NULL, "Service.ServiceType");
+		$selServicesByType		= new StatementSelect("Service LEFT JOIN ServiceTotal ON Service.Id = ServiceTotal.Service", "Service.ServiceType AS ServiceType, Service.Status, COUNT(Service.Id) AS ServiceCount", "ServiceTotal.InvoiceRun = <InvoiceRun>", "Service.ServiceType", NULL, "Service.ServiceType, Service.Status");
 		
 		$selServicesLost	= new StatementSelect("ServiceTotal ST", "ST.Id", "ST.InvoiceRun = <LastInvoiceRun> AND ST.Service NOT IN (SELECT ST2.Service FROM ServiceTotal ST2 WHERE ST2.InvoiceRun = <InvoiceRun>)");
 		$selServicesGained	= new StatementSelect("ServiceTotal ST", "ST.Id", "ST.InvoiceRun = <InvoiceRun> AND ST.Service NOT IN (SELECT ST2.Service FROM ServiceTotal ST2 WHERE ST2.InvoiceRun = <LastInvoiceRun>)");
@@ -384,23 +426,51 @@ class BillingModuleReports
 		$wksWorksheet->writeString(7, 4, "% Change"						, $arrFormat['TitleItalic']);
 		
 		$wksWorksheet->writeString(8, 0, "Currently Tolling Services"	, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(9, 0, "Currently Open Services"		, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(10, 0, "Currently Archived Services"	, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(11, 0, "Services Lost"				, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(12, 0, "Services Gained"				, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(9, 0, "Currently Open Services"		, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(10, 0, "Currently Archived Services"	, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(11, 0, "Services Lost"				, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(12, 0, "Services Gained"				, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(9, 0, "Total Churns"					, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(10, 0, "Winbacks (Lost This Month)"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(11, 0, "Winbacks (Lost Previously)"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(12, 0, "Total Lost"					, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(13, 0, "Total New Services"			, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(14, 0, "New Tolling Services"		, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(15, 0, "First Tolling Services"		, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(16, 0, "Total New Tolling Services"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(17, 0, "Net Service Gain"			, $arrFormat['TextBold']);
 		
-		$wksWorksheet->writeString(14, 0, "Service Type Summary"		, $arrFormat['Title']);
-		$wksWorksheet->writeString(14, 2, "This Month"					, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString(14, 3, "Last Month"					, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString(14, 4, "% Change"					, $arrFormat['TitleItalic']);
+		$intRow					= 17;
+		$arrSummaryStructure	= Array();
+		foreach ($GLOBALS['**arrConstant']['ServiceType'] as $intServiceType=>$arrServiceType)
+		{			
+			$intRow++;
+			$wksWorksheet->writeString($intRow, 0, "{$arrServiceType['Description']} Summary"	, $arrFormat['Title']);
+			$wksWorksheet->writeString($intRow, 2, "This Month"									, $arrFormat['TitleItalic']);
+			$wksWorksheet->writeString($intRow, 3, "Last Month"									, $arrFormat['TitleItalic']);
+			$wksWorksheet->writeString($intRow, 4, "% Change"									, $arrFormat['TitleItalic']);
+			
+			foreach ($GLOBALS['**arrConstant']['Service'] as $intStatus=>$arrStatus)
+			{
+				$intRow++;
+				$arrSummaryStructure[$intServiceType][$intStatus]	= $intRow;
+				$wksWorksheet->writeString($intRow, 0, "Current {$arrStatus['Description']} Services"				, $arrFormat['TextBold']);
+			}
+			$intRow++;
+		}
 		
-		$wksWorksheet->writeString(15, 0, "Current Land Line Services"	, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(16, 0, "Current Mobile Services"		, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(17, 0, "Current Inbound Services"	, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(18, 0, "Current ADSL Services"		, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(18, 0, "Service Type Summary"		, $arrFormat['Title']);
+		//$wksWorksheet->writeString(18, 2, "This Month"					, $arrFormat['TitleItalic']);
+		//$wksWorksheet->writeString(18, 3, "Last Month"					, $arrFormat['TitleItalic']);
+		//$wksWorksheet->writeString(18, 4, "% Change"					, $arrFormat['TitleItalic']);
+		
+		//$wksWorksheet->writeString(19, 0, "Current Land Line Services"	, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(20, 0, "Current Mobile Services"		, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(21, 0, "Current Inbound Services"	, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(22, 0, "Current ADSL Services"		, $arrFormat['TextBold']);
 		
 		$intCol = 2;
-		foreach ($this->_arrProfitData as $arrData)
+		foreach ($this->_arrProfitData as $strPeriod=>$arrData)
 		{
 			// Header Data
 			$wksWorksheet->writeString(3, $intCol, date("d/m/Y", strtotime($arrData['BillingDate'])));
@@ -408,37 +478,57 @@ class BillingModuleReports
 			$wksWorksheet->writeString(5, $intCol, $arrData['InvoiceRun']);
 			
 			// Service Status Summary
-			$intServicesLost	= $selServicesLost->Execute($arrData);
-			$intServicesGained	= $selServicesGained->Execute($arrData);
-			$intServicesOpen	= $selServicesOpen->Execute($arrData);
-			$intServicesClosed	= $selServicesClosed->Execute($arrData);
-			$intServicesActive	= $selServicesActive->Execute($arrData);
-			$wksWorksheet->writeNumber(8, $intCol, $intServicesActive	, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(9, $intCol, $intServicesOpen		, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(10, $intCol, $intServicesClosed	, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(11, $intCol, $intServicesLost	, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(12, $intCol, $intServicesGained	, $arrFormat['Integer']);
+			$intServicesLost			= $selServicesLost->Execute($arrData);
+			$intServicesGained			= $selServicesGained->Execute($arrData);
+			$intServicesOpen			= $selServicesOpen->Execute($arrData);
+			$intServicesClosed			= $selServicesClosed->Execute($arrData);
+			$intServicesActive			= $selServicesActive->Execute($arrData);
+			$intServicesTolling			= $selServicesTolling->Execute($arrData);
+			$intChurns					= $selChurns->Execute($arrData);
+			$intWinbacks				= $selWinbacks->Execute($arrData);
+			$intOldWinbacks				= $selOldWinbacks->Execute($arrData);
+			$intNewServices				= $selNewServices->Execute($arrData);
+			$intNewTollingServices		= $selNewTollingServices->Execute($arrData);
+			$intFirstTollingServices	= $selFirstTollingServices->Execute($arrData);
+			$intTotalLost				= $intChurns - ($intWinbacks + $intOldWinbacks);
+			$intTotalNewTolling			= $intNewTollingServices + $intFirstTollingServices;
+			$intNetServicesGained		= $intTotalNewTolling - $intTotalLost;
+			
+			$wksWorksheet->writeNumber(8, $intCol, $intServicesTolling			, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(9, $intCol, $intChurns					, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(10, $intCol, $intWinbacks				, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(11, $intCol, $intOldWinbacks				, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(12, $intCol, $intTotalLost				, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(13, $intCol, $intNewServices				, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(14, $intCol, $intNewTollingServices		, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(15, $intCol, $intFirstTollingServices	, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(16, $intCol, $intTotalNewTolling			, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(17, $intCol, $intNetServicesGained		, $arrFormat['Integer']);
+			
+			$wksWorksheet->writeString(9, 0, "Total Churns"					, $arrFormat['TextBold']);
+			$wksWorksheet->writeString(10, 0, "Winbacks (Lost This Month)"	, $arrFormat['TextBold']);
+			$wksWorksheet->writeString(11, 0, "Winbacks (Lost Previously)"	, $arrFormat['TextBold']);
+			$wksWorksheet->writeString(12, 0, "Total Lost"					, $arrFormat['TextBold']);
+			$wksWorksheet->writeString(13, 0, "Total New Services"			, $arrFormat['TextBold']);
+			$wksWorksheet->writeString(14, 0, "New Tolling Services"		, $arrFormat['TextBold']);
+			$wksWorksheet->writeString(15, 0, "First Tolling Services"		, $arrFormat['TextBold']);
+			$wksWorksheet->writeString(16, 0, "Total New Tolling Services"	, $arrFormat['TextBold']);
+			$wksWorksheet->writeString(17, 0, "Net Service Gain"			, $arrFormat['TextBold']);
 			
 			// Service Type Summary
 			$selServicesByType->Execute($arrData);
 			while ($arrServiceType = $selServicesByType->Fetch())
 			{
-				switch ($arrServiceType['ServiceType'])
+				$intSummaryRow	= $arrSummaryStructure[$arrServiceType['ServiceType']][$arrServiceType['Status']];
+				
+				// Only show value if rendering this month's data
+				if ($strPeriod == "ThisMonth")
 				{
-					case SERVICE_TYPE_LAND_LINE:
-						$wksWorksheet->writeNumber(15, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
-						break;
-						
-					case SERVICE_TYPE_MOBILE:
-						$wksWorksheet->writeNumber(16, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
-						break;
-						
-					case SERVICE_TYPE_INBOUND:
-						$wksWorksheet->writeNumber(17, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
-						break;
-					
-					case SERVICE_TYPE_ADSL:
-						$wksWorksheet->writeNumber(18, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intSummaryRow, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
+				}
+				else
+				{
+					$wksWorksheet->writeString($intSummaryRow, $intCol, "N/A");
 				}
 			}
 			
@@ -486,8 +576,41 @@ class BillingModuleReports
 	 * @method
 	 */
 	protected function _ReportPlanSummary()
-	{
+	{		
 		// Statements
+		$selCustomersToPlan		= new StatementSelect(	"ServiceTotal",
+														"DISTINCT Account",
+														"InvoiceRun = <InvoiceRun> AND RatePlan = <RatePlan> AND " .
+														"(SELECT COUNT(Id) FROM ServiceTotal ST2 WHERE InvoiceRun = <LastInvoiceRun> AND Service = <Service> AND RatePlan != <RatePlan>) = 1");
+		
+		$selCustomersFromPlan	= new StatementSelect(	"ServiceTotal",
+														"DISTINCT Account",
+														"InvoiceRun = <LastInvoiceRun> AND RatePlan = <RatePlan> AND " .
+														"(SELECT COUNT(Id) FROM ServiceTotal ST2 WHERE InvoiceRun = <InvoiceRun> AND Service = <Service> AND RatePlan != <RatePlan>) = 1");
+		
+		$selNewCustomers		= new StatementSelect(	"ServiceTotal",
+														"DISTINCT Account",
+														"InvoiceRun = <InvoiceRun> AND RatePlan = <RatePlan> AND " .
+														"<InvoiceRun> = (SELECT InvoiceRun FROM Invoice WHERE Account = ServiceTotal.Account ORDER BY CreatedOn ASC LIMIT 1)");
+		
+		$selNewCustomersTemp	= new StatementSelect(	"ServiceTotal",
+														"DISTINCT Account",
+														"InvoiceRun = <InvoiceRun> AND RatePlan = <RatePlan> AND " .
+														"<InvoiceRun> = (SELECT InvoiceRun FROM InvoiceTemp WHERE Account = ServiceTotal.Account ORDER BY CreatedOn ASC LIMIT 1)");
+		
+		$selExistingNewLine		= new StatementSelect(	"ServiceTotal",
+														"DISTINCT Account",
+														"InvoiceRun = <InvoiceRun> AND 0 < (SELECT COUNT(Id) FROM Invoice WHERE InvoiceRun != <InvoiceRun> AND Account = ServiceTotal.Account) AND " .
+														"0 = (SELECT COUNT(Id) FROM ServiceTotal WHERE Service = <Service> AND InvoiceRun != <InvoiceRun>)");
+		
+		$selChurned				= new StatementSelect(	"Service",
+														"DISTINCT Account",
+														"910 = (SELECT Account FROM ProvisioningResponse WHERE" .
+														" <RatePlan> = (SELECT RatePlan FROM ServiceRatePlan WHERE Service = ProvisioningResponse.Service AND <BillingDate> BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC LIMIT 1)" .
+														" AND Type IN (900, 910) AND Status = 402 AND Service = Service.Id ORDER BY EffectiveDate DESC LIMIT 1)");
+		
+		$qryMeanCustomerSpend	= new Query();
+		
 		$arrCols = Array();
 		$arrCols['CurrentCustomers']	= "COUNT(DISTINCT ServiceTotal.Account)";
 		$arrCols['CurrentServices']		= "COUNT(ServiceTotal.Id)";
@@ -570,6 +693,7 @@ class BillingModuleReports
 				$wksWorksheet->setColumn(7, 7, 2.24 * $fltExcelWidthRatio);
 				$wksWorksheet->setColumn(8, 8, 2.71 * $fltExcelWidthRatio);
 				$wksWorksheet->setColumn(9, 9, 2.82 * $fltExcelWidthRatio);
+				$wksWorksheet->setColumn(10, 10, 2.82 * $fltExcelWidthRatio);
 				
 				// Write Worksheet Header
 				$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Plan Summary for Telco Blue");
@@ -584,45 +708,50 @@ class BillingModuleReports
 				$wksWorksheet->writeString(2, 0, "Customer"			, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(3, 0, "Service Type"		, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(4, 0, "Plan"				, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(2, 8, "Bill Date"		, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(3, 8, "Billing Period"	, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(4, 8, "Invoice Run"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(2, 9, "Bill Date"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(3, 9, "Billing Period"	, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(4, 9, "Invoice Run"		, $arrFormat['TextBold']);
 				
 				$wksWorksheet->writeString(2, 1, "Telco Blue");										// FIXME: Use Customer Name
 				$wksWorksheet->writeString(3, 1, GetConstantDescription($arrRatePlan['ServiceType'], 'ServiceType'));
 				$wksWorksheet->writeString(4, 1, $arrRatePlan['Description']);
-				$wksWorksheet->writeString(2, 9, date("d/m/Y", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])));
-				$wksWorksheet->writeString(3, 9, date("F Y", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate']))));
-				$wksWorksheet->writeString(4, 9, $this->_arrProfitData['ThisMonth']['InvoiceRun']);
+				$wksWorksheet->writeString(2, 10, date("d/m/Y", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])));
+				$wksWorksheet->writeString(3, 10, date("F Y", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate']))));
+				$wksWorksheet->writeString(4, 10, $this->_arrProfitData['ThisMonth']['InvoiceRun']);
 				
 				$wksWorksheet->writeString(6, 0, "Plan Summary"		, $arrFormat['Title']);
-				$wksWorksheet->writeString(6, 7, "This Month"		, $arrFormat['TitleItalic']);
-				$wksWorksheet->writeString(6, 8, "Last Month"		, $arrFormat['TitleItalic']);
-				$wksWorksheet->writeString(6, 9, "% Change"			, $arrFormat['TitleItalic']);
+				$wksWorksheet->writeString(6, 8, "This Month"		, $arrFormat['TitleItalic']);
+				$wksWorksheet->writeString(6, 9, "Last Month"		, $arrFormat['TitleItalic']);
+				$wksWorksheet->writeString(6, 10, "% Change"			, $arrFormat['TitleItalic']);
 				
-				for ($i = 1; $i <= 6; $i++)
+				for ($i = 1; $i <= 7; $i++)
 				{
 					$wksWorksheet->writeBlank(6, $i, $arrFormat['BlankUnderline']);
 				}
 				
-				$wksWorksheet->writeString(7, 0, "Current Customers"	, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(8, 0, "Current Services"		, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(9, 0, "Services Gained"		, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(10, 0, "Services Lost"		, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(11, 0, "Mean Customer Spend"	, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(12, 0, "Total Cost"			, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(13, 0, "Total Rated"			, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(14, 0, "Total Billed"		, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(15, 0, "Total Profit"		, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(16, 0, "Profit Margin"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(7, 0, "Current Customers"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(8, 0, "Current Services"			, $arrFormat['TextBold']);
+				//$wksWorksheet->writeString(9, 0, "Services Gained"			, $arrFormat['TextBold']);
+				//$wksWorksheet->writeString(10, 0, "Services Lost"			, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(9, 0, "Changed To This Plan"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(10, 0, "Changed From This Plan"	, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(11, 0, "New Customers"			, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(12, 0, "Existing Customer (New Service)"	, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(13, 0, "Customer Churn"			, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(14, 0, "Mean Customer Spend"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(15, 0, "Total Cost"				, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(16, 0, "Total Rated"				, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(17, 0, "Total Billed"			, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(18, 0, "Total Profit"			, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(19, 0, "Profit Margin"			, $arrFormat['TextBold']);
 				
-				for ($i = 0; $i <= 9; $i++)
+				for ($i = 0; $i <= 10; $i++)
 				{
 					$wksWorksheet->writeBlank(17, $i, $arrFormat['Spacer']);
 				}
 				
 				// Write Plan Summary
-				$intCol = 7;
+				$intCol = 8;
 				foreach ($this->_arrProfitData as $strMonth=>$arrData)
 				{
 					// Get Plan Summary Info
@@ -630,44 +759,68 @@ class BillingModuleReports
 					$selPlanSummary->Execute($arrData);
 					$arrPlanSummary = $selPlanSummary->Fetch();
 					
+					$intCustomersToPlan		= $selCustomersToPlan->Execute($arrData);
+					$intCustomersFromPlan	= $selCustomersFromPlan->Execute($arrData);
+					$intExistingNewLine		= $selExistingNewLine->Execute($arrData);
+					$intChurned				= $selChurned->Execute($arrData);
+					
+					if ($this->_selIsTempInvoice->Execute($arrData))
+					{
+						$intNewCustomers	= $selNewCustomersTemp->Execute($arrData);
+					}
+					else
+					{
+						$intNewCustomers	= $selNewCustomers->Execute($arrData);
+					}
+					
 					// Services Gained and Lost
 					$arrPlanSummary['ServicesLost']		= $selServicesLost->Execute($arrData);
 					$arrPlanSummary['ServicesGained']	= $selServicesGained->Execute($arrData);
 					
+					$qryMeanCustomerSpend->Execute(	"SELECT AVG(GrandTotal) AS MeanCustomerSpend " .
+													"FROM (" .
+														"SELECT SUM(TotalCharge) AS GrandTotal " .
+														"FROM ServiceTotal WHERE InvoiceRun = {$arrData['InvoiceRun']})");
+					$arrMeanCustomerSpend	= $qryMeanCustomerSpend->Fetch();
+					
 					// Write to Worksheet
 					$fltProfit	= $arrPlanSummary['TotalBilled'] - $arrPlanSummary['TotalCost'];
-					$wksWorksheet->writeNumber(7	, $intCol, $arrPlanSummary['CurrentCustomers']	, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber(8	, $intCol, $arrPlanSummary['CurrentServices']	, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber(9	, $intCol, $arrPlanSummary['ServicesGained']	, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber(10	, $intCol, $arrPlanSummary['ServicesLost']		, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber(11	, $intCol, $arrPlanSummary['MeanCustomerSpend']	, $arrFormat['CreditDebit']);
-					$wksWorksheet->writeNumber(12	, $intCol, $arrPlanSummary['TotalCost']			, $arrFormat['CreditDebit']);
-					$wksWorksheet->writeNumber(13	, $intCol, $arrPlanSummary['TotalRated']		, $arrFormat['CreditDebit']);
-					$wksWorksheet->writeNumber(14	, $intCol, $arrPlanSummary['TotalBilled']		, $arrFormat['CreditDebit']);
-					$wksWorksheet->writeNumber(15	, $intCol, $fltProfit							, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(7	, $intCol, $arrPlanSummary['CurrentCustomers']			, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(8	, $intCol, $arrPlanSummary['CurrentServices']			, $arrFormat['Integer']);
+					//$wksWorksheet->writeNumber(9	, $intCol, $arrPlanSummary['ServicesGained']			, $arrFormat['Integer']);
+					//$wksWorksheet->writeNumber(10	, $intCol, $arrPlanSummary['ServicesLost']				, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(9	, $intCol, $intCustomersToPlan							, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(10	, $intCol, $intCustomersFromPlan						, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(11	, $intCol, $intNewCustomers								, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(12	, $intCol, $intExistingNewLine							, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(13	, $intCol, $intChurned									, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(14	, $intCol, $arrMeanCustomerSpend['MeanCustomerSpend']	, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(15	, $intCol, $arrPlanSummary['TotalCost']					, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(16	, $intCol, $arrPlanSummary['TotalRated']				, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(17	, $intCol, $arrPlanSummary['TotalBilled']				, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(18	, $intCol, $fltProfit									, $arrFormat['CreditDebit']);
 					
 					if ($intCol == 7)
 					{
-						$wksWorksheet->writeFormula(16	, $intCol, "=IF(AND(H15 <> 0, NOT(H15 = \"N/A\")), (H15 - H13) / ABS(H15), \"N/A\")"			, $arrFormat['Percentage']);
+						$wksWorksheet->writeFormula(19	, $intCol, "=IF(AND(H15 <> 0, NOT(H15 = \"N/A\")), (H15 - H13) / ABS(H15), \"N/A\")"			, $arrFormat['Percentage']);
 					}
 					else
 					{
-						$wksWorksheet->writeFormula(16	, $intCol, "=IF(AND(I15 <> 0, NOT(I15 = \"N/A\")), (I15 - I13) / ABS(I15), \"N/A\")"			, $arrFormat['Percentage']);
-					}
-					
+						$wksWorksheet->writeFormula(19	, $intCol, "=IF(AND(I15 <> 0, NOT(I15 = \"N/A\")), (I15 - I13) / ABS(I15), \"N/A\")"			, $arrFormat['Percentage']);
+					}					
 					$intCol++;
 				}
 				
 				// Write Plan Summary '% Change' Fields
 				for ($i = 8; $i <= 17; $i++)
 				{
-					$wksWorksheet->writeFormula($i-1, 9, "=IF(AND(H$i <> 0, NOT(H$i = \"N/A\")), (H$i - I$i) / ABS(H$i), \"N/A\")", $arrFormat['Percentage']);
+					$wksWorksheet->writeFormula($i-1, 10, "=IF(AND(H$i <> 0, NOT(H$i = \"N/A\")), (H$i - I$i) / ABS(H$i), \"N/A\")", $arrFormat['Percentage']);
 				}
 				
 				// Write Call Type Breakdown
 				$wksWorksheet->writeString(18, 0, "Call Type Summary"		, $arrFormat['Title']);
 				
-				for ($i = 1; $i <= 9; $i++)
+				for ($i = 1; $i <= 10; $i++)
 				{
 					$wksWorksheet->writeBlank(18, $i, $arrFormat['BlankUnderline']);
 				}
@@ -682,7 +835,8 @@ class BillingModuleReports
 				$wksWorksheet->writeString($intRow, 6, "Total Call Count"	, $arrFormat['ColTitle']);
 				$wksWorksheet->writeString($intRow, 7, "Total Cost"			, $arrFormat['ColTitle']);
 				$wksWorksheet->writeString($intRow, 8, "Total Rated"		, $arrFormat['ColTitle']);
-				$wksWorksheet->writeString($intRow, 9, "Profit Margin"		, $arrFormat['ColTitle']);
+				$wksWorksheet->writeString($intRow, 9, "Profit"				, $arrFormat['ColTitle']);
+				$wksWorksheet->writeString($intRow, 10, "Profit Margin"		, $arrFormat['ColTitle']);
 			
 				$selCallTypes->Execute(Array('RatePlan' => $arrRatePlan['Id']));
 				$arrCallTypes	= $selCallTypes->FetchAll();
@@ -719,6 +873,9 @@ class BillingModuleReports
 						$arrCallSummary['TotalCost']		= 0 - $arrCallSummary['TotalCost'];
 						$arrCallSummary['TotalCharged']		= 0 - $arrCallSummary['TotalCharged'];
 					}
+					
+					// Profit
+					$fltProfit	= $arrCallSummary['TotalCharged'] - $arrCallSummary['TotalCost'];
 				
 					$wksWorksheet->writeString($intRow, 0, $arrCallType['Description']);
 					$wksWorksheet->writeNumber($intRow, 2, $arrCallSummary['MeanCallCost']		, $arrFormat['CreditDebit']);
@@ -727,7 +884,8 @@ class BillingModuleReports
 					$wksWorksheet->writeNumber($intRow, 6, $arrCallSummary['TotalCallCount']	, $arrFormat['Integer']);
 					$wksWorksheet->writeNumber($intRow, 7, $arrCallSummary['TotalCost']			, $arrFormat['CreditDebit']);
 					$wksWorksheet->writeNumber($intRow, 8, $arrCallSummary['TotalCharged']		, $arrFormat['CreditDebit']);
-					$wksWorksheet->writeFormula($intRow, 9, "=IF(AND(I$i <> 0, NOT(I$i = \"N/A\")), (I$i - H$i) / ABS(I$i), \"N/A\")", $arrFormat['Percentage']);
+					$wksWorksheet->writeNumber($intRow, 9, $fltProfit							, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeFormula($intRow, 10, "=IF(AND(J$i <> 0, NOT(J$i = \"N/A\")), (J$i - I$i) / ABS(J$i), \"N/A\")", $arrFormat['Percentage']);
 					
 					// Display Types
 					switch ($arrCallType['DisplayType'])
@@ -748,7 +906,7 @@ class BillingModuleReports
 					}
 				}
 				
-				for ($i = 0; $i <= 9; $i++)
+				for ($i = 0; $i <= 10; $i++)
 				{
 					$wksWorksheet->writeBlank($intRow+1, $i, $arrFormat['BlankOverline']);
 				}
@@ -794,7 +952,7 @@ class BillingModuleReports
 		$arrCols['MaxCharge']			= "MAX(Charge.Amount)";
 		$arrCols['TotalCharge']			= "SUM(Charge.Amount)";
 		$selTypeSummaries	= new StatementSelect("Charge LEFT JOIN Employee ON Employee.Id = Charge.CreatedBy", $arrCols, "Charge.InvoiceRun = <InvoiceRun>", "Charge.Description", NULL, "Charge.Description");
-
+		
 		
 		// Create Workbook
 		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Adjustment_Summary.xls";
@@ -817,25 +975,25 @@ class BillingModuleReports
 		$wksWorksheet->writeString(4, 0, "Billing Period"	, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(5, 0, "Invoice Run"		, $arrFormat['TextBold']);
 		
-		$wksWorksheet->writeString(3, 5, "N/A"				, $arrFormat['Percentage']);
-		$wksWorksheet->writeString(4, 5, "N/A"				, $arrFormat['Percentage']);
-		$wksWorksheet->writeString(5, 5, "N/A"				, $arrFormat['Percentage']);
+		$wksWorksheet->writeString(3, 4, "N/A"				, $arrFormat['Percentage']);
+		$wksWorksheet->writeString(4, 4, "N/A"				, $arrFormat['Percentage']);
+		$wksWorksheet->writeString(5, 4, "N/A"				, $arrFormat['Percentage']);
 		
-		for ($i = 0; $i <= 5; $i++)
+		for ($i = 0; $i <= 4; $i++)
 		{
 			$wksWorksheet->writeBlank(2, $i, $arrFormat['BlankUnderline']);
 			$wksWorksheet->writeBlank(7, $i, $arrFormat['BlankUnderline']);
 			$wksWorksheet->writeBlank(6, $i, $arrFormat['Spacer']);
 		}
 		
-		$wksWorksheet->writeString(2, 3, "This Month"		, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString(2, 4, "Last Month"		, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString(2, 5, "% Change"			, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString(2, 2, "This Month"		, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString(2, 3, "Last Month"		, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString(2, 4, "% Change"			, $arrFormat['TitleItalic']);
 		
 		$wksWorksheet->writeString(7, 0, "Adjustment Summary"	, $arrFormat['Title']);
-		$wksWorksheet->writeString(7, 3, "This Month"			, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString(7, 4, "Last Month"			, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString(7, 5, "% Change"				, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString(7, 2, "This Month"			, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString(7, 3, "Last Month"			, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString(7, 4, "% Change"				, $arrFormat['TitleItalic']);
 		
 		// Set Column Widths
 		$fltExcelWidthRatio = 5;
@@ -844,7 +1002,6 @@ class BillingModuleReports
 		$wksWorksheet->setColumn(2, 2, 3 * $fltExcelWidthRatio);
 		$wksWorksheet->setColumn(3, 3, 3 * $fltExcelWidthRatio);
 		$wksWorksheet->setColumn(4, 4, 3 * $fltExcelWidthRatio);
-		$wksWorksheet->setColumn(5, 5, 3 * $fltExcelWidthRatio);
 		
 		// Create Adjustments Summary		
 		$wksWorksheet->writeString(8, 0, "Total Credits"			, $arrFormat['TextBold']);
@@ -852,11 +1009,11 @@ class BillingModuleReports
 		$wksWorksheet->writeString(10, 0, "Credit Total Value"		, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(11, 0, "Debit Total Value"		, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(12, 0, "Adjustment Total Value"	, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(13, 0, "Mean Credit Value"		, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(14, 0, "Mean Debit Value"		, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(15, 0, "Mean Customer Total"		, $arrFormat['TextBold']);
+		$//wksWorksheet->writeString(13, 0, "Mean Credit Value"		, $arrFormat['TextBold']);
+		$//wksWorksheet->writeString(14, 0, "Mean Debit Value"		, $arrFormat['TextBold']);
+		//$wksWorksheet->writeString(15, 0, "Mean Customer Total"		, $arrFormat['TextBold']);
 		
-		$intCol = 3;
+		$intCol = 2;
 		foreach ($this->_arrProfitData as $strPeriod=>$arrData)
 		{
 			$wksWorksheet->writeString(3, $intCol, date("d/m/Y", strtotime($arrData['BillingDate'])));
@@ -885,7 +1042,7 @@ class BillingModuleReports
 		// Write Adjustment Summary '% Change' Fields
 		for ($i = 9; $i <= 16; $i++)
 		{
-			$wksWorksheet->writeFormula($i-1, 5, "=IF(AND(D$i <> 0, NOT(D$i = \"N/A\")), (D$i - E$i) / ABS(D$i), \"N/A\")", $arrFormat['Percentage']);
+			$wksWorksheet->writeFormula($i-1, 4, "=IF(AND(C$i <> 0, NOT(C$i = \"N/A\")), (C$i - D$i) / ABS(C$i), \"N/A\")", $arrFormat['Percentage']);
 		}
 		
 		// Create Credit/Debit Summaries
@@ -919,7 +1076,7 @@ class BillingModuleReports
 		}
 		
 		// Render
-		$intRow = 15;
+		$intRow = 12;
 		foreach ($arrAdjustments as $strNature=>$arrTypes)
 		{
 			switch ($strNature)
@@ -938,7 +1095,7 @@ class BillingModuleReports
 			
 			// Add Header to Workseet
 			$intRow++;
-			for ($i = 0; $i <= 5; $i++)
+			for ($i = 0; $i <= 4; $i++)
 			{
 				$wksWorksheet->writeBlank($intRow, $i, $arrFormat['Spacer']);
 				$wksWorksheet->writeBlank($intRow+1, $i, $arrFormat['BlankUnderline']);
@@ -951,8 +1108,8 @@ class BillingModuleReports
 			$wksWorksheet->writeString($intRow, 1, "Total {$strNoun}s"	, $arrFormat['ColTitle']);
 			$wksWorksheet->writeString($intRow, 2, "Smallest $strNoun"	, $arrFormat['ColTitle']);
 			$wksWorksheet->writeString($intRow, 3, "Largest $strNoun"	, $arrFormat['ColTitle']);
-			$wksWorksheet->writeString($intRow, 4, "Mean $strNoun"		, $arrFormat['ColTitle']);
-			$wksWorksheet->writeString($intRow, 5, "Total {$strNoun}ed"	, $arrFormat['ColTitle']);
+			//$wksWorksheet->writeString($intRow, 4, "Mean $strNoun"		, $arrFormat['ColTitle']);
+			$wksWorksheet->writeString($intRow, 4, "Total {$strNoun}ed"	, $arrFormat['ColTitle']);
 			
 			foreach ($arrTypes as $arrType)
 			{
@@ -962,13 +1119,13 @@ class BillingModuleReports
 				$wksWorksheet->writeNumber($intRow, 1, $arrType['TotalAdjustments']	, $arrFormat['Integer']);
 				$wksWorksheet->writeNumber($intRow, 2, $arrType['MinCharge']		, $arrFormat['Currency']);
 				$wksWorksheet->writeNumber($intRow, 3, $arrType['MaxCharge']		, $arrFormat['Currency']);
-				$wksWorksheet->writeNumber($intRow, 4, $arrType['MeanCharge']		, $arrFormat['Currency']);
-				$wksWorksheet->writeNumber($intRow, 5, $arrType['TotalCharge']		, $arrFormat['Currency']);
+				//$wksWorksheet->writeNumber($intRow, 4, $arrType['MeanCharge']		, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber($intRow, 4, $arrType['TotalCharge']		, $arrFormat['Currency']);
 			}
 		}
 		
 		// Close Workbook
-		for ($i = 0; $i <= 5; $i++)
+		for ($i = 0; $i <= 4; $i++)
 		{
 			$wksWorksheet->writeBlank($intRow+1, $i, $arrFormat['BlankOverline']);
 		}
@@ -995,9 +1152,27 @@ class BillingModuleReports
 	 */
 	protected function _ReportCustomerSummary()
 	{
-		$selServiceCount	= new StatementSelect("ServiceTotal", "Account, COUNT(Id) AS ServiceCount", "InvoiceRun = <InvoiceRun>", "ServiceCount", NULL, "Account");
+		$selServiceCount	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) JOIN Account ON Account.Id = Service.Account",
+													"Service.Account, COUNT(ServiceTotal.Id) AS ServiceCount",
+													"InvoiceRun = <InvoiceRun> AND (Service.Status = ".SERVICE_ACTIVE." OR Service.ClosedOn < <BillingDate>) AND Account.Archived = 0",
+													"ServiceCount",
+													NULL,
+													"Service.Account");
+		
 		$selInvoiceTemp 	= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>");
-		$selCustomersGained	= new StatementSelect("Account", "Id", "CreatedOn BETWEEN <LastBillingDate> AND <BillingDate>");
+		$selCustomersGained	= new StatementSelect("Account", "Id", "CreatedOn BETWEEN <LastBillingDate> AND <BillingDate> AND Archived = 0");
+		
+		$selBarred			= new StatementSelect(	"Request JOIN Service ON Service.Id = Request.Service",
+													"DISTINCT Account",
+													"RequestType IN (902, 908) AND RequestDateTime < <BillingDate> AND RequestDateTime >= <LastBillingDate>");
+		
+		$selTotalBarred		= new StatementSelect(	"Service",
+													"DISTINCT Account",
+													"ClosedOn IS NULL AND (SELECT RequestType FROM Request WHERE Service = Service.Id AND RequestType IN (902, 903, 908, 909)) IN (902, 908)");
+		
+		$selCustomerCountTotal	= new StatementSelect(	"Account",
+														"Id",
+														"Archived = <Archived>");
 		
 		// Create Workbook
 		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Customer_Summary.xls";
@@ -1041,42 +1216,54 @@ class BillingModuleReports
 		$wksWorksheet->writeString(7, 2, "This Month"					, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(7, 3, "Last Month"					, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(7, 4, "% Change"						, $arrFormat['TitleItalic']);
+			
+		$intRow	= $intStartingRow = 8;
+		foreach ($GLOBALS['**arrConstant']['Account'] as $intStatus=>$arrProperties)
+		{
+			$wksWorksheet->writeString($intRow, 0, "Currently {$arrProperties['Description']} Customers", $arrFormat['TextBold']);
+			$wksWorksheet->writeString($intRow+1, 0, "New {$arrProperties['Description']} Customers"	, $arrFormat['TextBold']);
+			$intRow	+= 2;
+		}
 		
-		$wksWorksheet->writeString(8, 0, "Currently Active Accounts"			, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(9, 0, "Currently Archived Accounts"			, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(10, 0, "New Customers"						, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(11, 0, "Customers Archived"					, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(12, 0, "Mean Customer Spend (80 Percentile)"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intRow+1, 0, "New Customers"						, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intRow+2, 0, "Customers Archived"					, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intRow+3, 0, "Customers Unarchived"					, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intRow+4, 0, "New Barred Customers"					, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intRow+5, 0, "Total Barred Customers"				, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intRow+6, 0, "Mean Customer Spend (80 Percentile)"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intRow+7, 0, "Average Services per Customer"		, $arrFormat['TextBold']);
 		
-		$wksWorksheet->writeString(15, 0, "Customers with X Services Summary"	, $arrFormat['Title']);
-		$wksWorksheet->writeString(15, 2, "This Month"							, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString(15, 3, "Last Month"							, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString(15, 4, "% of Total"							, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString($intRow+9, 0, "Customers with X Services Summary"	, $arrFormat['Title']);
+		$wksWorksheet->writeString($intRow+9, 2, "This Month"							, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString($intRow+9, 3, "Last Month"							, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString($intRow+9, 4, "% of Total"							, $arrFormat['TitleItalic']);
 		
 		$intCol = 2;
 		$arrServiceCount = Array();
-		foreach ($this->_arrProfitData as $arrData)
+		foreach ($this->_arrProfitData as $strBillPeriod=>$arrData)
 		{
 			// Is it a Temp Invoice?
 			if ($selInvoiceTemp->Execute($arrData))
 			{
 				// InvoiceTemp
 				$strTable = "InvoiceTemp";
-				$selCustomersLost		= new StatementSelect("Invoice", "Invoice.Id", "Invoice.InvoiceRun = <LastInvoiceRun> AND Invoice.Account NOT IN (SELECT I2.Account FROM InvoiceTemp I2 WHERE I2.InvoiceRun = <InvoiceRun>)");
+				$selCustomersLost		= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Invoice.Id", "Account.Archived = 1 AND Invoice.InvoiceRun = <LastInvoiceRun> AND Invoice.Account NOT IN (SELECT I2.Account FROM InvoiceTemp I2 WHERE I2.InvoiceRun = <InvoiceRun>)");
 				$selCustomersOpened		= new StatementSelect("InvoiceTemp", "InvoiceTemp.Id", "InvoiceTemp.InvoiceRun = <InvoiceRun> AND InvoiceTemp.Account NOT IN (SELECT I2.Account FROM Invoice I2 WHERE I2.InvoiceRun = <LastInvoiceRun>)");
 				$selTopBottom10			= new StatementSelect("InvoiceTemp", "ROUND(COUNT(Id) / 10) AS Bottom10, ROUND((COUNT(Id) / 100) * 90) AS Top10", "Total != 0 AND InvoiceRun = <InvoiceRun>");
 				$selCustomersActive		= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>");
 				$selCustomersArchived	= new StatementSelect("Account", "Id", "Id NOT IN (SELECT Account FROM InvoiceTemp WHERE InvoiceRun = <InvoiceRun>) AND CreatedOn < <BillingDate>");
+				$selUnarchived			= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun> AND Account NOT IN (SELECT I2.Account FROM Invoice I2 WHERE I2.InvoiceRun = <LastInvoiceRun>) AND Account IN (SELECT I3.Account FROM Invoice I3 WHERE I3.InvoiceRun != <InvoiceRun>)");
 			}
 			else
 			{
 				// Invoice
 				$strTable = "Invoice";
-				$selCustomersLost		= new StatementSelect("Invoice", "Invoice.Id", "Invoice.InvoiceRun = <LastInvoiceRun> AND Invoice.Account NOT IN (SELECT I2.Account FROM Invoice I2 WHERE I2.InvoiceRun = <InvoiceRun>)");
+				$selCustomersLost		= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Invoice.Id", "Account.Archived = 1 AND Invoice.InvoiceRun = <LastInvoiceRun> AND Invoice.Account NOT IN (SELECT I2.Account FROM Invoice I2 WHERE I2.InvoiceRun = <InvoiceRun>)");
 				$selCustomersOpened		= new StatementSelect("Invoice", "Invoice.Id", "Invoice.InvoiceRun = <InvoiceRun> AND Invoice.Account NOT IN (SELECT I2.Account FROM Invoice I2 WHERE I2.InvoiceRun = <LastInvoiceRun>)");
 				$selTopBottom10			= new StatementSelect("Invoice", "ROUND(COUNT(Id) / 10) AS Bottom10, ROUND((COUNT(Id) / 100) * 90) AS Top10", "Total != 0 AND InvoiceRun = <InvoiceRun>");
 				$selCustomersActive		= new StatementSelect("Invoice", "Id", "InvoiceRun = <InvoiceRun>");
 				$selCustomersArchived	= new StatementSelect("Account", "Id", "Id NOT IN (SELECT Account FROM Invoice WHERE InvoiceRun = <InvoiceRun>) AND CreatedOn < <BillingDate>");
+				$selUnarchived			= new StatementSelect("Invoice", "Id", "InvoiceRun = <InvoiceRun> AND Account NOT IN (SELECT I2.Account FROM Invoice I2 WHERE I2.InvoiceRun = <LastInvoiceRun>) AND Account IN (SELECT I3.Account FROM Invoice I3 WHERE I3.InvoiceRun != <InvoiceRun>)");
 			}
 			
 			// Header Data
@@ -1090,10 +1277,31 @@ class BillingModuleReports
 			$intCustomersReOpened	= $selCustomersOpened->Execute($arrData) - $intCustomersGained;
 			$intActive				= $selCustomersActive->Execute($arrData);
 			$intArchived			= $selCustomersArchived->Execute($arrData);
-			$wksWorksheet->writeNumber(8, $intCol, $intActive							, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(9, $intCol, $intArchived							, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(10, $intCol, $intCustomersGained					, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(11, $intCol, $intCustomersLost					, $arrFormat['Integer']);
+			$intUnarchived			= $selUnarchived->Execute($arrData);
+			$intTotalBarred			= $selTotalBarred->Execute($arrData);
+			$intBarred				= $selBarred->Execute($arrData);
+			
+			$intRow	= $intStartingRow;
+			foreach ($GLOBALS['**arrConstant']['Account'] as $intStatus=>$arrProperties)
+			{
+				if ($strBillPeriod == 'ThisMonth')
+				{
+					$wksWorksheet->writeNumber($intRow, $intCol, $selCustomerCountTotal->Execute(Array('Archived' => $intStatus)), $arrFormat['Integer']);
+					$wksWorksheet->writeString($intRow+1, $intCol, "N/A");
+				}
+				else
+				{
+					$wksWorksheet->writeString($intRow, $intCol, "N/A");
+					$wksWorksheet->writeString($intRow+1, $intCol, "N/A");
+				}
+				$intRow	+= 2;
+			}
+			
+			$wksWorksheet->writeNumber($intRow+1, $intCol, $intCustomersGained				, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber($intRow+2, $intCol, $intCustomersLost				, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber($intRow+3, $intCol, "N/A"							, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber($intRow+4, $intCol, $intBarred						, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber($intRow+5, $intCol, $intTotalBarred					, $arrFormat['Integer']);
 			
 			// 80 Percentile
 			$selTopBottom10->Execute($arrData);
@@ -1109,7 +1317,7 @@ class BillingModuleReports
 			}
 			$flt80Percentile = $fltGrandGrandTotal / count($arrGrandTotals);
 			
-			$wksWorksheet->writeNumber(12, $intCol, $flt80Percentile					, $arrFormat['Currency']);
+			$wksWorksheet->writeNumber($intRow+6, $intCol, $flt80Percentile					, $arrFormat['Currency']);
 			
 			
 			
@@ -1122,13 +1330,12 @@ class BillingModuleReports
 				$arrServiceCount[$arrCount['ServiceCount']][$intCol]++;
 			}
 			
-			$wksWorksheet->writeString(13, 0, "Average Services per Customer"		, $arrFormat['TextBold']);
-			$wksWorksheet->writeNumber(13, $intCol, $arrServices[$intCol] / $intAccounts);
+			$wksWorksheet->writeNumber($intRow+7, $intCol, round($arrServices[$intCol] / $intAccounts), 2);
 			
 			$intCol++;
 		}
 		
-		$intRow	= 16;
+		$intRow	= $intStartingRow+10;
 		$intS	= '';
 		ksort($arrServiceCount, SORT_NUMERIC);
 		foreach ($arrServiceCount as $intCount=>$arrCols)
@@ -1155,12 +1362,12 @@ class BillingModuleReports
 		}
 		
 		// Write '% Change' Fields
-		for ($i = 9; $i <= 14; $i++)
+		for ($i = 9; $i <= 20; $i++)
 		{
 			$wksWorksheet->writeFormula($i-1, 4, "=IF(AND(C$i <> 0, NOT(C$i = \"N/A\")), (C$i - D$i) / ABS(C$i), \"N/A\")", $arrFormat['Percentage']);
 		}
 		
-		for ($i = 17; $i <= $intRow; $i++)
+		for ($i = 23; $i <= $intRow; $i++)
 		{
 			$wksWorksheet->writeFormula($i-1, 4, "=C$i / SUM(C17:C$intRow)", $arrFormat['Percentage']);
 		}
@@ -1537,11 +1744,13 @@ class BillingModuleReports
 			{		
 				if ($strNature == 'CR')
 				{
-					$strNoun = "Credit";
+					$strNoun	= "Credit";
+					$strAbbr	= 'CR';
 				}
 				else
 				{
-					$strNoun = "Debit";
+					$strNoun	= "Debit";
+					$strAbbr	= 'DR';
 				}
 				
 				// Title Row
@@ -1574,6 +1783,16 @@ class BillingModuleReports
 					
 					$intRow++;
 				}
+				
+				// Add in Grand Totals
+				$wksWorksheet->writeBlank($intRow, 0, $arrFormat['LeftSpacer']);
+				$wksWorksheet->writeBlank($intRow, 1, $arrFormat['BlankOverline']);
+				$wksWorksheet->writeBlank($intRow, 2, $arrFormat['BlankOverline']);
+				$wksWorksheet->writeBlank($intRow, 3, $arrFormat['BlankOverline']);
+				$wksWorksheet->writeBlank($intRow, 4, $arrFormat['BlankOverline']);
+				$wksWorksheet->writeString($intRow, 5, "Grand Total $strAbbr", $arrFormat['OverlineBold']);
+				$wksWorksheet->writeNumber($intRow, 6, $arrFormat['BlankOverline']);
+				$intRow++;
 				
 				// Switch to alternate title
 				$fmtTitleFormat = $arrFormat['AltColTitle'];
