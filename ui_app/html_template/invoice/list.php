@@ -102,7 +102,6 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	{	
 		// Render each of the account invoices
 		echo "<h2 class='Invoice'>Invoices</h2>\n";
-		//echo "<div class='NarrowColumn'>\n";
 		
 		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;");
 		Table()->InvoiceTable->SetWidth("10%", "11%", "18%", "18%", "18%", "10%", "5%", "5%", "5%");
@@ -196,9 +195,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		}
 		
 		Table()->InvoiceTable->Render();
-		//echo "</div>\n";
-		//echo "<div class='Seperator'></div>\n";
-		
+
+		echo "<div class='SmallSeperator'></div>\n";
 	}
 }
 

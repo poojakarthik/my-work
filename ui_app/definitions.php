@@ -88,6 +88,11 @@ define('NOTE_CLASS_ACCOUNT_NOTES', 1);
 define('NOTE_CLASS_CONTACT_NOTES', 2);
 define('NOTE_CLASS_SERVICE_NOTES', 3);
 
+// NoteTypes
+define('NOTE_FILTER_ALL',		1);
+define('NOTE_FILTER_USER',		2);
+define('NOTE_FILTER_SYSTEM',	3);
+
 // Object Status
 define('STATUS_NEW',	 	100);
 define('STATUS_CLEANED', 	101);
@@ -120,6 +125,7 @@ define('HTML_CONTEXT_RATES', 				503);
 define('HTML_CONTEXT_EDIT_DETAIL',			504);
 define('HTML_CONTEXT_TABULAR_DETAIL',		505);
 define('HTML_CONTEXT_POPUP', 				506);
+define('HTML_CONTEXT_PAGE', 				507);
 
 // constants for the cap/excess rates used within the rate add page
 define('RATE_CAP_NO_CAP', 100);

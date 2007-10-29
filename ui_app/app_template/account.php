@@ -625,9 +625,21 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load the primary contact
 		if (DBO()->Account->PrimaryContact->Value)
 		{
-			DBO()->Contact->Id = DBO()->Account->PrimaryContact->Value;
-			DBO()->Contact->Load();
+			DBL()->Contact->Id = DBO()->Account->PrimaryContact->Value;
+			DBL()->Contact->Load();
 		}
+		
+		// Load the last 5 user notes
+		$strWhere = "Account = <AccountId> AND NoteType != <SystemNoteType>";
+		$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "SystemNoteType" => SYSTEM_NOTE);
+		DBL()->Note->Where->Set($strWhere, $arrWhere);
+		DBL()->Note->OrderBy("Datetime DESC");
+		DBL()->Note->SetLimit(5);
+		DBL()->Note->Load();
+		
+		// Set up the details required for the HtmlTemplateNoteList to render the notes properly
+		DBO()->NoteDetails->AccountNotes = TRUE;
+		DBO()->NoteDetails->FilterOption = NOTE_FILTER_USER;
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('invoices_and_payments');

@@ -810,7 +810,7 @@ class MenuItems
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intId		id of the service to view
-	 								$intAcc	id of the account
+	 								
 	 *
 	 * @return	string				Href to be executed when the ViewServiceDetails menu item is clicked
 	 *

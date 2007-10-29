@@ -284,4 +284,70 @@ class AppTemplateNote extends ApplicationTemplate
 
 		return TRUE;
 	}
+	
+	// This should only ever be called via an ajax request
+	// It will render its output to the NoteListDiv
+	/*
+	 * It assumes 	DBO()->NoteDetails->FilterOption is set
+	 * 				DBO()->Account->Id || DBO()->Service->Id || DBO()->Contact->Id
+	 *
+	 * It also assumes that the filtered list of notes is in the "NoteListDiv" container div
+	 */
+	function ListWithFilter()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Build Where clause
+		if (DBO()->Account->Id->Value)
+		{
+			DBO()->NoteDetails->AccountNotes = TRUE;
+			$intId = DBO()->Account->Id->Value;
+			$strWhere = "Account = <intId>";
+		}
+		elseif (DBO()->Service->Id->Value)
+		{
+			DBO()->NoteDetails->ServiceNotes = TRUE;
+			$intId = DBO()->Service->Id->Value;
+			$strWhere = "Service = <intId>";
+		}
+		elseif (DBO()->Contact->Id->Value)
+		{
+			DBO()->NoteDetails->ContactNotes = TRUE;
+			$intId = DBO()->Contact->Id->Value;
+			$strWhere = "Contact = <intId>";
+		}
+		
+		// Work out the filter
+		switch (DBO()->NoteDetails->FilterOption->Value)
+		{
+			case NOTE_FILTER_USER:
+				$strFilterWhereClause = "AND NoteType != ". SYSTEM_NOTE_TYPE;
+				break;
+			case NOTE_FILTER_SYSTEM:
+				$strFilterWhereClause = "AND NoteType = ". SYSTEM_NOTE_TYPE;
+				break;
+			case NOTE_FILTER_ALL:
+			default:
+				$strFilterWhereClause = "";
+		}
+		
+		$strWhere = "$strWhere $strFilterWhereClause";
+		$arrWhere = Array("intId" => $intId);
+		
+		DBL()->Note->Where->Set($strWhere, $arrWhere);
+		DBL()->Note->OrderBy("Datetime DESC");
+		DBL()->Note->SetLimit(5);
+		
+		// Load the notes
+		if (DBL()->Note->Load() === FALSE)
+		{
+			// The list of notes could not be loaded
+			Ajax()->AddCommand("Alert", "ERROR: Could not retrieve the list of notes from the database");
+		}
+		
+		//Load the HtmlTemplate
+		Ajax()->RenderHtmlTemplate("NoteList", HTML_CONTEXT_PAGE, "NoteListDiv");
+	}
 }

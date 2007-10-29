@@ -204,6 +204,9 @@ function VixenAjaxClass()
 	// AJAX Send
 	this.Send = function(objObject)
 	{
+		// Turn the cursor into the "waiting" icon
+		document.body.style.cursor = "wait";
+
 		/*
 		for (strObject in objObject.Objects)
 		{
@@ -286,6 +289,9 @@ function VixenAjaxClass()
 	// AJAX handle_reply
 	this.HandleReply = function(strReply, objObject)
 	{
+		// Reset the cursor to its default
+		document.body.style.cursor = "default";
+		
 		var objData = {};
 		
 		//if the reply starts with "//JSON" then this is a json object storing a list of commands

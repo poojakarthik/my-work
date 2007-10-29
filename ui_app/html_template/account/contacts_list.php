@@ -99,44 +99,87 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div class='PopupLarge'>\n";
-		
-		// Work out if a virtical scroll bar will be required
-		$strTableContainerStyle = (DBL()->Contact->RecordCount() > 14) ? "style='overflow:auto; height:450px'": "";
-		
-		// Draw the table container
-		echo "<div $strTableContainerStyle>\n";
+		switch ($this->_intContext)
+		{
+			case HTML_CONTEXT_POPUP:
+				$this->_RenderAsPopup();
+				break;
+			case HTML_CONTEXT_PAGE:
+				$this->_RenderInPage();
+				break;
+			default:
+				$this->_RenderInPage();
+				break;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderList
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderList()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	private function _RenderList()
+	{
 
-		Table()->ContactTable->SetHeader("Last Name", "First Name", "Title", "User Name", "Status", "Actions");
-		Table()->ContactTable->SetWidth("20%", "20%", "10%","20%","10%", "20%");
-		Table()->ContactTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Center");
+		Table()->ContactTable->SetHeader("Name", "&nbsp;", "Phone#", "Status", "Actions");
+		Table()->ContactTable->SetWidth("40%", "20%", "20%", "10%", "10%");
+		Table()->ContactTable->SetAlignment("Left", "Left", "Left", "Left", "Center");
 		
 		foreach (DBL()->Contact as $dboContact)
 		{
 			// Record the Status of the Contact
 			$strStatus = ($dboContact->Archived->Value) ? "Archived" : "Active";
-			$strStatusCell = "<span class='DefaultOutputSpan'>$strStatus</span>";
+			$strStatusCell = "<span>$strStatus</span>";
 			
 			// Build the Actions Cell
 			$strViewContactLink = Href()->ViewContact($dboContact->Id->Value);
-			$strActionsCell = "<a href='$strViewContactLink'><span class='DefaultOutputSpan'>View</span></a>";
-		
-			Table()->ContactTable->AddRow(	$dboContact->LastName->AsValue(),
-											$dboContact->FirstName->AsValue(),
-											$dboContact->Title->AsValue(),
-											$dboContact->UserName->AsValue(),
-											$strStatusCell,
-											$strActionsCell);
-					
+			$strActionsCell = "<a href='$strViewContactLink'><span>View</span></a>";
+			
+			// Build Name Cell
+			$strNameCell = "<span>{$dboContact->Title->Value} {$dboContact->FirstName->Value} {$dboContact->LastName->Value}</span>";
+			
+			// Build Primary Contact flag
+			if (DBO()->Account->PrimaryContact->Value == $dboContact->Id->Value)
+			{
+				// The current contact is the account's primary contact
+				$strPrimaryCell = "<span>(Primary Contact)</span>";
+			}
+			else
+			{
+				$strPrimaryCell = "<span>&nbsp;</span>";
+			}
+			
+			// Build the phone number cell
+			if (trim($dboContact->Phone->Value) != "")
+			{
+				$strPhoneCell = $dboContact->Phone->AsValue();
+			}
+			elseif (trim($dboContact->Mobile->Value != ""))
+			{
+				$strPhoneCell = $dboContact->Mobile->AsValue();
+			}
+			else
+			{
+				$strPhoneCell = "<span>[Not Specified]</span>";
+			}
+			
+			Table()->ContactTable->AddRow(	$strNameCell, $strPrimaryCell, $strPhoneCell, $strStatusCell, $strActionsCell);
 		}
 		
 		// If the account has no contacts then output an appropriate message in the table
 		if (Table()->ContactTable->RowCount() == 0)
 		{
 			// There are no services to stick in this table
-			Table()->ContactTable->AddRow("<span class='DefaultOutputSpan Default'>No contacts to display</span>");
+			Table()->ContactTable->AddRow("<span>No contacts to display</span>");
 			Table()->ContactTable->SetRowAlignment("left");
-			Table()->ContactTable->SetRowColumnSpan(6);
+			Table()->ContactTable->SetRowColumnSpan(5);
 		}
 		else
 		{
@@ -145,6 +188,56 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		}
 		
 		Table()->ContactTable->Render();
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderInPage
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderInPage()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	private function _RenderInPage()
+	{
+		echo "<h2 class='Contact'>Contact Details</h2>\n";
+		$this->_RenderList();
+		
+		// Draw buttons
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$strViewAccountContactsLink = Href()->ListContacts(DBO()->Account->Id->Value);
+		$this->Button("View All Contacts", $strViewAccountContactsLink);
+		echo "</div></div>\n";
+	
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderAsPopup
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderAsPopup()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	private function _RenderAsPopup()
+	{
+		echo "<div class='PopupLarge'>\n";
+		
+		// Work out if a virtical scroll bar will be required
+		$strTableContainerStyle = (DBL()->Contact->RecordCount() > 14) ? "style='overflow:auto; height:450px'": "";
+		
+		// Draw the table container
+		echo "<div $strTableContainerStyle>\n";
+
+		$this->_RenderList();
 		
 		echo "</div>\n";  // Table Container
 	
@@ -156,6 +249,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 
 		echo "</div>\n";  //PopupLarge
 	}
+	
 }
 
 ?>

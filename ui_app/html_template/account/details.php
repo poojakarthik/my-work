@@ -398,10 +398,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render the properties that can be changed
 		DBO()->Account->DisableDDR->RenderInput();
 		DBO()->Account->DisableLatePayment->RenderInput();
-//		echo "<span>Primary Contact:</span>";
-//		if (DBO()->Contact->)
-//		$strContactTitle = 
-		echo "";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "</table>\n";
