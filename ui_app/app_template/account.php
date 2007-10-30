@@ -310,24 +310,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
 		{
-			$strChangesNote .= "Disable DDR" . ((DBO()->Account->DisableDDR->Value == 1) ? " is set" : " is not set") . "\n";
+			$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "not" : "") ." charged an admin fee\n";
 		}		
 		if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 		{
-			//TODO This should be doable using: $strStatus = DBO()->Account->DisableLatePayment->FormattedValue();
-			switch (DBO()->Account->DisableLatePayment->Value)
-			{
-				case 0:
-					$strStatus = "Don't charge a late payment fee on the next invoice";
-					break;
-				case 1:
-					$strStatus = "Charge a late payment fee";
-					break;
-				case -1:
-					$strStatus = "Never charge a late payment fee";
-					break;
-			}
-			$strChangesNote .= "Disable Late Payment was changed to: " . $strStatus . "\n";	
+			$strChangesNote .= "Disable Late Payment was changed to: " . DBO()->Account->DisableLatePayment->FormattedValue() . "\n";	
 		}
 		// Start the transaction
 		TransactionStart();
@@ -560,23 +547,11 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
 			{
-				$strChangesNote .= "Disable DDR" . ((DBO()->Account->DisableDDR->Value == 1) ? " is set" : " is not set") . "\n";	
+				$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "not" : "") ." charged an admin fee\n";
 			}		
 			if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 			{
-				switch (DBO()->Account->DisableLatePayment->Value)
-				{
-					case 0:
-						$strStatus = "Don't charge a late payment fee on the next invoice";
-						break; 
-					case 1:
-						$strStatus = "Charge a late payment fee";
-						break;
-					case -1:
-						$strStatus = "Never charge a late payment fee";
-						break;
-				}
-				$strChangesNote .= "Disable Late Payment was changed to: " . $strStatus . "\n";	
+				$strChangesNote .= "Disable Late Payment was changed to: ". DBO()->Account->DisableLatePayment->FormattedValue() ."\n";	
 			}
 			// Check that the user can edit the account
 			$intAccountStatus = DBO()->Account->Archived->Value;

@@ -341,11 +341,7 @@ class AppTemplateNote extends ApplicationTemplate
 		DBL()->Note->SetLimit(DEFAULT_NOTES_LIMIT);
 		
 		// Load the notes
-		if (DBL()->Note->Load() === FALSE)
-		{
-			// The list of notes could not be loaded
-			Ajax()->AddCommand("Alert", "ERROR: Could not retrieve the list of notes from the database");
-		}
+		DBL()->Note->Load();
 		
 		//Load the HtmlTemplate
 		Ajax()->RenderHtmlTemplate("NoteList", HTML_CONTEXT_PAGE, "NoteListDiv");
