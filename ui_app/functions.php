@@ -778,7 +778,7 @@ function SaveSystemNote($strNote, $intAccountGroup, $intAccount=NULL, $intContac
 		'Service'		=> $intService,
 		'Employee'		=> AuthenticatedUser()->_arrUser['Id'],
 		'Datetime'		=> new MySQLFunction("NOW()"),
-		'NoteType'		=> SYSTEM_NOTE
+		'NoteType'		=> SYSTEM_NOTE_TYPE
 	);
 
 	$insNote = new StatementInsert("Note", $arrNote);

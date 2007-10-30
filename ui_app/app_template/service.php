@@ -100,12 +100,16 @@ class AppTemplateService extends ApplicationTemplate
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
 		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledAdjustments + $fltUnbilledCDRs);
 		
-		//load the notes associated with this service and account!
-		//DBO()->Service->Account->Value
+		// Load the last DEFAULT_NOTES_LIMIT user notes
 		DBL()->Note->Service = DBO()->Service->Id->Value;
-		DBL()->Note->SetLimit(5);
 		DBL()->Note->OrderBy("Datetime DESC");
+		DBL()->Note->SetLimit(DEFAULT_NOTES_LIMIT);
 		DBL()->Note->Load();
+		
+		// Set up the details required for the HtmlTemplateNoteList to render the notes properly
+		DBO()->NoteDetails->ServiceNotes = TRUE;
+		DBO()->NoteDetails->FilterOption = NOTE_FILTER_ALL;
+
 
 		// context menu
 		ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
@@ -367,10 +371,6 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->Service->FNNConfirm = trim(DBO()->Service->FNNConfirm->Value);
 			
 			// If these have been updated record the details
-			if (DBO()->Service->Status->Value != DBO()->Service->NewStatus->Value)
-			{
-				$strChangesNote .= "Service Status was changed to: " . GetConstantDescription(DBO()->Service->NewStatus->Value, 'Service') . "\n";
-			}
 			if (DBO()->Service->Indial100->Value != DBO()->Service->CurrentIndial100->Value)
 			{
 				$strChangesNote .= "Indial100" . ((DBO()->Service->Indial100->Value == 1) ? " is set" : " is not set") . "\n";
@@ -439,14 +439,33 @@ class AppTemplateService extends ApplicationTemplate
 			// Check if the CostCentre property has been updated
 			if (DBO()->Service->CostCentre->Value !== NULL)
 			{
+				// If CostCentre == 0 then set it to NULL
 				if (DBO()->Service->CostCentre->Value == 0)
 				{
 					DBO()->Service->CostCentre = NULL;
 				}
-				$arrUpdateProperties[] = "CostCentre";
-				$strChangesNote .= "CostCentre was changed to: " . DBO()->Service->CostCentre->Value . "\n";
+				
+				// Check if the value of the Service's cost centre property has been changed
+				if (DBO()->Service->CostCentre->Value != DBO()->Service->CurrentCostCentre->Value)
+				{
+					// Add it to the list of properties to update
+					$arrUpdateProperties[] = "CostCentre";
+					
+					// Work out what to stick in the System Note
+					if (DBO()->Service->CostCentre->Value == NULL)
+					{
+						// Now there is no CostCentre associated with the service
+						$strChangesNote .= "Now there is no CostCentre associated with this service\n";
+					}
+					else
+					{
+						// Retrieve the name of the CostCentre
+						DBO()->CostCentre->Id = DBO()->Service->CostCentre->Value;
+						DBO()->CostCentre->Load();
+						$strChangesNote .= "CostCentre has been set to '". DBO()->CostCentre->Name->Value ."'\n";
+					}
+				}
 			}
-			
 
 			// Declare the transaction
 			TransactionStart();
@@ -457,7 +476,7 @@ class AppTemplateService extends ApplicationTemplate
 				if (DBO()->Service->ELB->Value)
 				{
 					// Enable ELB
-					if (!$this->Framework->EnableELB(DBO()->Service->Id->Value))
+					if (!($this->Framework->EnableELB(DBO()->Service->Id->Value)))
 					{
 						// EnableELB failed
 						TransactionRollback();
@@ -468,7 +487,7 @@ class AppTemplateService extends ApplicationTemplate
 				else
 				{
 					// Disable ELB
-					if (!$this->Framework->DisableELB(DBO()->Service->Id->Value))
+					if (!($this->Framework->DisableELB(DBO()->Service->Id->Value)))
 					{
 						// DisableELB failed
 						TransactionRollback();
@@ -518,23 +537,19 @@ class AppTemplateService extends ApplicationTemplate
 				// Has anything been changed in the ServiceMobileDetails if so append this information onto $strChangesNote
 				if (DBO()->ServiceMobileDetail->SimPUK->Value != DBO()->ServiceMobileDetail->CurrentSimPUK->Value)
 				{
-					$strChangesNote .= "SimPUK was changed to: " . DBO()->ServiceMobileDetail->SimPUK->Value;
+					$strChangesNote .= "SimPUK was changed to: " . DBO()->ServiceMobileDetail->SimPUK->Value ."\n";
 				}
 				if (DBO()->ServiceMobileDetail->SimESN->Value != DBO()->ServiceMobileDetail->CurrentSimESN->Value)
 				{
-					$strChangesNote .= "SimESN was changed to: " . DBO()->ServiceMobileDetail->SimESN->Value;				
+					$strChangesNote .= "SimESN was changed to: " . DBO()->ServiceMobileDetail->SimESN->Value ."\n";				
 				}
 				if (DBO()->ServiceMobileDetail->SimState->Value != DBO()->ServiceMobileDetail->CurrentSimState->Value)
 				{
-					$strChangesNote .= "SimState was changed to: " . GetConstantDescription(DBO()->ServiceMobileDetail->SimState->Value, 'ServiceStateType') . "\n";			
-				}
-				if (DBO()->ServiceMobileDetail->DOB->Value != DBO()->ServiceMobileDetail->CurrentDOB->Value)
-				{
-					$strChangesNote .= "DOB was changed to: " . DBO()->ServiceMobileDetail->DOB->Value;				
+					$strChangesNote .= "SimState was changed to: " . GetConstantDescription(DBO()->ServiceMobileDetail->SimState->Value, 'ServiceStateType') . "\n";
 				}
 				if (DBO()->ServiceMobileDetail->Comments->Value != DBO()->ServiceMobileDetail->CurrentComments->Value)
 				{
-					$strChangesNote .= "Comments were changed to: " . DBO()->ServiceMobileDetail->Comments->Value;				
+					$strChangesNote .= "Comments were changed to: " . DBO()->ServiceMobileDetail->Comments->Value ."\n";
 				}
 			
 				// Validate entered Birth Date?
@@ -544,13 +559,17 @@ class AppTemplateService extends ApplicationTemplate
 					if (!Validate("ShortDate", DBO()->ServiceMobileDetail->DOB->Value))
 					{
 						TransactionRollback();	
-						Ajax()->AddCommand("Alert", "ERROR: This is not a valid DOB");
+						Ajax()->AddCommand("Alert", "ERROR: This is not a valid Date, please use DD/MM/YYYY");
 						Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-						return TRUE;						
+						return TRUE;
 					}
 					
 					// set DOB to MySql date format
 					DBO()->ServiceMobileDetail->DOB = ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
+					if (DBO()->ServiceMobileDetail->DOB->Value != DBO()->ServiceMobileDetail->CurrentDOB->Value)
+					{
+						$strChangesNote .= "DOB was changed to: " . DBO()->ServiceMobileDetail->DOB->FormattedValue() ."\n";			
+					}
 				}
 				else
 				{
@@ -603,20 +622,20 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "ERROR: Updating the mobile details failed, unexpectedly");
 					return TRUE;
 				}
-				// the mobile details saved successfully
+				// The mobile details saved successfully
 			}
 			
-			// handle inbound call details
+			// Handle inbound call details
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 			{
 				// Has anything been changed in the ServiceInboundDetails if so append this information onto $strChangesNote
 				if (DBO()->ServiceInboundDetail->AnswerPoint->Value != DBO()->ServiceInboundDetail->CurrentAnswerPoint->Value)
 				{
-					$strChangesNote = "AnswerPoint was changed to: " . DBO()->ServiceInboundDetail->AnswerPoint->Value;
+					$strChangesNote = "AnswerPoint was changed to: " . DBO()->ServiceInboundDetail->AnswerPoint->Value ."\n";
 				}
 				if (DBO()->ServiceInboundDetail->Configuration->Value != DBO()->ServiceInboundDetail->CurrentConfiguration->Value)
 				{
-					$strChangesNote = "Configuration was changed to: " . DBO()->ServiceInboundDetail->Configuration->Value;					
+					$strChangesNote = "Configuration was changed to: " . DBO()->ServiceInboundDetail->Configuration->Value ."\n";					
 				}
 			
 				// If Id is passed set the columns to Update
@@ -630,7 +649,7 @@ class AppTemplateService extends ApplicationTemplate
 					// Create a new ServiceInboundDetail Record
 					DBO()->ServiceInboundDetail->SetColumns("Id, Service, AnswerPoint, Complex, Configuration");
 					DBO()->ServiceInboundDetail->Id = 0;
-					DBO()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;					
+					DBO()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
 				}
 
 				if (DBO()->ServiceInboundDetail->AnswerPoint->Value == NULL)
@@ -653,10 +672,10 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "ERROR: Updating the inbound details failed, unexpectedly");
 					return TRUE;
 				}
-				// the inbound details saved successfully
+				// The inbound details saved successfully
 			}
 			
-			// all details regarding the service have been successfully updated
+			// All details regarding the service have been successfully updated
 
 			// Handle updating the Service Status
 			// First check that the Service Status has actually changed
@@ -726,28 +745,38 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// The service was activated, which required a new service to be created
 					$intServiceId = DBO()->NewService->Id->Value;
+					$intOldServiceRecordId = DBO()->Service->Id->Value;
+					
+					// Create a note for the old service Id detailing what has happened
+					$strNoteForOldServiceRecord = "This service has been activated which required the creation of a new service record.";
+					$strNoteForOldServiceRecord = "  Please refer to the new service record (id: $intOldServiceRecordId) for future use of this service.";
+					
+					SaveSystemNote($strNoteForOldServiceRecord, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intOldServiceRecordId);
 				}
 				else
 				{
+					// A new service record was new created, so add the note to the current service record
 					$intServiceId = DBO()->Service->Id->Value;
 				}
 			
 				$strNote  = "Service with Id: $intServiceId and FNN: ". DBO()->Service->FNN->Value;
 				$strNote .= " has been ". $strNoteDetails;
 				
+				if ($strChangesNote)
+				{
+					// Append the other changes made to the service, to this note
+					$strNote .= "\nThe following changes we also made:\n$strChangesNote";
+				}
+				
 				// Save the note. (this will save it to the new service id, if one was created)
 				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intServiceId);
 			}
-
-			if ($strChangesNote)
+			else
 			{
-				$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
-				$strLastName = AuthenticatedUser()->_arrUser['LastName'];
-				$strEmployeeFullName = "$strFirstName $strLastName";
+				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 			
-				$strSystemChangesNote = "Service editted by $strEmployeeFullName on " . GetCurrentDateForMySQL() . "\n";
-				$strSystemChangesNote .= "the following changes were made:\n";
-				$strSystemChangesNote .= $strChangesNote;
+				$strSystemChangesNote  = "Service edited by $strUserName on $strDateTime\nThe following changes were made:\n$strChangesNote";
 				SaveSystemNote($strSystemChangesNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 			}
 
@@ -765,7 +794,10 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
 			}
-			Ajax()->FireEvent("OnServiceUpdate", $arrEvent);
+			Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
+			
+			// Fire the OnNewNote Event
+			Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
 			
 			return TRUE;
 		}
@@ -814,6 +846,7 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->Service->CurrentStatus = DBO()->Service->Status->Value;
 		DBO()->Service->CurrentIndial100 = DBO()->Service->Indial100->Value;
 		DBO()->Service->CurrentELB = DBO()->Service->ELB->Value;
+		DBO()->Service->CurrentCostCentre = DBO()->Service->CostCentre->Value;
 		DBO()->ServiceInboundDetail->CurrentAnswerPoint = DBO()->ServiceInboundDetail->AnswerPoint->Value;
 		DBO()->ServiceInboundDetail->CurrentConfiguration = DBO()->ServiceInboundDetail->Configuration->Value;
 		DBO()->ServiceMobileDetail->CurrentSimPUK = DBO()->ServiceMobileDetail->SimPUK->Value;
@@ -1108,8 +1141,10 @@ class AppTemplateService extends ApplicationTemplate
 			$arrEvent['OldRatePlan']['Id']		= (DBO()->RatePlan->Id->Value) ? DBO()->RatePlan->Id->Value : 0;
 			$arrEvent['NewRatePlan']['Id']		= DBO()->NewPlan->Id->Value;
 			$arrEvent['NewRatePlan']['Name']	= DBO()->NewPlan->Name->Value;
-
 			Ajax()->FireEvent("OnServiceUpdate", $arrEvent);
+
+			// Since a system note has been added, fire the OnNewNote event
+			Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
 
 			return TRUE;
 		}		

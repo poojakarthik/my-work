@@ -114,4 +114,12 @@ function VixenNoteListClass()
 	}
 }
 
-// don't instanciate any objects
+// Use this to create the Vixen.NoteList VixenNoteListClass object, if it hasn't
+// already been created
+function VixenCreateNoteListObject()
+{
+	if (Vixen.NoteList == undefined)
+	{
+		Vixen.NoteList = new VixenNoteListClass;
+	}
+}

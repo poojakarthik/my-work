@@ -699,8 +699,6 @@ class HTMLElements
 			return $mixValue;
 		}
 		
-		// remove anything after the first ";"
-		
 		if ($strMask)
 		{
 			switch ($strMask)

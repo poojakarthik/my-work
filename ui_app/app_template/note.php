@@ -338,7 +338,7 @@ class AppTemplateNote extends ApplicationTemplate
 		
 		DBL()->Note->Where->Set($strWhere, $arrWhere);
 		DBL()->Note->OrderBy("Datetime DESC");
-		DBL()->Note->SetLimit(5);
+		DBL()->Note->SetLimit(DEFAULT_NOTES_LIMIT);
 		
 		// Load the notes
 		if (DBL()->Note->Load() === FALSE)

@@ -133,12 +133,30 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		if (DBO()->NoteDetails->AccountNotes->Value)
 		{
 			// We are showing Account Notes
-			echo "<h2 class='Notes'>Account Notes</h2>\n";
+			$strListTitle = "Account Notes";
 			
 			// Store details for the button to view all account notes
-			$strViewAllNotesLink = Href()->ViewAccountNotes(DBO()->Account->Id->Value);
-			$strViewAllNotesLabel = "View All";
+			$strViewAllNotesLink	= Href()->ViewAccountNotes(DBO()->Account->Id->Value);
+			$strViewAllNotesLabel	= "View All";
+			
+			// Store details for the button to add an account note
+			$strAddNoteLink		= Href()->AddAccountNote(DBO()->Account->Id->Value);
+			$strAddNoteLabel	= "Add Note";
 		}
+		elseif (DBO()->NoteDetails->ServiceNotes->Value)
+		{
+			// We are showing Service Notes
+			$strListTitle = "Service Notes";
+			
+			// Store details for the button to view all service notes
+			$strViewAllNotesLink	= Href()->ViewServiceNotes(DBO()->Service->Id->Value);
+			$strViewAllNotesLabel	= "View All";
+			
+			// Store details for the button to add a service note
+			$strAddNoteLink		= Href()->AddServiceNote(DBO()->Service->Id->Value);
+			$strAddNoteLabel	= "Add Note";
+		}
+		echo "<h2 class='Notes'>$strListTitle</h2>\n";
 		
 		// Render filtering controls
 		echo "<div class='NarrowContent'>";
@@ -154,7 +172,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		echo "<div class='Left'>";
 		echo "   <span>Filter</span>\n";
 		echo "   <span>\n";
-		echo "      <select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value' style='width:100%'>\n";
+		echo "      <select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value; Vixen.NoteList.ApplyFilter();' style='width:100%'>\n";
 		foreach ($arrFilterOptions as $intFilterOption=>$strFilterOption)
 		{
 			$strSelected = (DBO()->NoteDetails->FilterOption->Value == $intFilterOption) ? "selected='selected'" : "";
@@ -162,10 +180,15 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		}
 		echo "      </select>\n";
 		echo "   </span>\n";
-		$this->Button("Filter", "Vixen.NoteList.ApplyFilter();");
-		echo "</div>\n"; //Left
-		echo "</div>\n"; //height=40px
 		
+		// currently the filter is applied when the value of the combobox changes
+		//$this->Button("Filter", "Vixen.NoteList.ApplyFilter();");
+		echo "</div>\n"; //Left
+		// Create button for adding a new note
+		echo "<div class='Right'>\n";
+		$this->Button($strAddNoteLabel, $strAddNoteLink);
+		echo "</div>\n"; //Right
+		echo "</div>\n"; //height=40px
 		echo "</div>\n"; // NarrowContent
 		echo "<div class='TinySeperator'></div>\n";
 		
@@ -184,12 +207,20 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		$intServiceId	= (DBO()->NoteDetails->ServiceNotes->Value) ? DBO()->Service->Id->Value : "null";
 		$intContactId	= (DBO()->NoteDetails->ContactNotes->Value) ? DBO()->Contact->Id->Value : "null";
 		$intNoteFilter	= DBO()->NoteDetails->FilterOption->Value;
-		$strJavascript	= "	if (Vixen.NoteList == undefined)
-							{
-								Vixen.NoteList = new VixenNoteListClass;
-							}
-							Vixen.NoteList.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter);";
+		$strJavascript	= "VixenCreateNoteListObject(); Vixen.NoteList.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter);";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
+	}
+
+	private function _RenderFilter()
+	{
+		//TODO remove the filter control code from _RenderInPage and stick it here
+		// So that _RenderInPage and _RenderAsPopup can use it
+	}
+	
+	private function _RenderHeader()
+	{
+		//TODO remove the header code (and the creation/initialisation of the Vixen.NoteList object) and stick it here
+		// So that _RenderInPage and _RenderAsPopup can use it
 	}
 
 	
@@ -264,7 +295,6 @@ class HtmlTemplateNoteList extends HtmlTemplate
 				{
 					$strDetailsHtml .= "<br />FNN: <a href='$strServiceLink'>". DBO()->NoteService->FNN->Value ."</a>";
 				}
-				
 			}
 			
 			// Output the note details
@@ -295,36 +325,14 @@ class HtmlTemplateNoteList extends HtmlTemplate
 	 */
 	private function _RenderAsPopup()
 	{
-		$this->FormStart("NoteTypeForm", "Note", "View");
-		DBO()->Note->NoteGroupId->RenderHidden();
-		DBO()->Note->NoteClass->RenderHidden();
-		
-		switch (DBO()->Note->NoteType->Value)
-		{
-			case "All":
-				$strAll = 'checked';
-				break;
-			case "System":
-				$strSystem = 'checked';	
-				break;
-			case "User":
-				$strUser = 'checked';
-				break;				
-		}
-
-		echo "<input type='radio' name='Note.NoteType' value='All' $strAll onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
-		echo "<input type='radio' name='Note.NoteType' value='System' $strSystem onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
-		echo "<input type='radio' name='Note.NoteType' value='User' $strUser onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
-		
-		// Renders the radio buttons, the notes and the ending form elements in that order	
-		$this->_RenderNotes();
+		//TODO Finish this some time
+		// Currently the View Notes Popup uses an older HtmlTemplate to show the list
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 		$this->FormEnd();
 	}
-	
 }
 
 ?>

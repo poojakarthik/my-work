@@ -37,7 +37,7 @@ function VixenMenuClass(objMenu)
 		},
 		'waitOpen': 0,
 		'waitCloseLevel': 500,
-		'waitClose': 3000,
+		'waitClose': 1500,
 		'waitCloseWhenSelected': 400,
 		'highlightColor': "#FFFFCC"
 	};

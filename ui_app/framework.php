@@ -1849,17 +1849,27 @@ class OutputMasks
 		return $strValue;	
 	}
 
-	function FormatFloat($fltFloat, $intMinDecPlaces = 2, $intMaxDecPlaces = NULL)
+	//------------------------------------------------------------------------//
+	// FormatFloat
+	//------------------------------------------------------------------------//
+	/**
+	 * FormatFloat()
+	 *
+	 * Formats a float with respect to the minimum number of decimal places and the max num of decimal places
+	 *
+	 * Formats a float with respect to the minimum number of decimal places and the max num of decimal places
+	 *
+	 * @param	float	$fltValue					value to format
+	 * @param	int		$intMinDecPlaces			optional; minimum number of decimal places to show (default is 2)
+	 * @param	bool	$intMaxDecPlaces			optional; maximum number of decimaul places to show (default is 8)
+	 *
+	 * @return	string								$fltValue formatted accordingly
+	 *
+	 * @method
+	 */
+	function FormatFloat($fltFloat, $intMinDecPlaces=2, $intMaxDecPlaces=8)
 	{
-		// if $intMaxDecPlaces has been specified then format the number to that many places
-		if ($intMaxDecPlaces !== NULL)
-		{
-			$strFloat = number_format($fltFloat, $intMaxDecPlaces, ".", "");
-		}
-		else
-		{
-			$strFloat = $fltFloat;
-		}
+		$strFloat = number_format($fltFloat, $intMaxDecPlaces, ".", "");
 		
 		$mixDecimalPointPos = strpos($strFloat, ".");
 		
@@ -2544,6 +2554,35 @@ class AjaxFramework
 	function FireEvent($strEventType, $mixData=NULL)
 	{
 		$this->AddCommand("FireEvent", Array("Event"=>$strEventType, "EventData"=>$mixData));
+	}
+	
+	//------------------------------------------------------------------------//
+	// FireOnNewNoteEvent
+	//------------------------------------------------------------------------//
+	/**
+	 * FireOnNewNoteEvent()
+	 *
+	 * Adds a FireEvent javascript command to the list of commands that will be returned to Vixen.Ajax.HandleReply, specifically for the OnNewNote Event
+	 *
+	 * Adds a FireEvent javascript command to the list of commands that will be returned to Vixen.Ajax.HandleReply, specifically for the OnNewNote Event.
+	 * This Event has been wrapped in its own function because of how often it is used
+	 * 
+	 * @param	integer		$intAccountId	The account that the note is associated with.  Specifiy as NULL, if the note is note associated with an account\
+	 *										(Note that this is not optional.  You will have to explicitly declare it as null if the note is note
+	 *										associated with an account)
+	 * @param 	integer		$intServiceId	optional, The Id of the service that the note is associated with (defaults to NULL)
+	 * @param 	integer		$intContactId	optional, The Id of the contact that the note is associated with (defaults to NULL)
+	 *
+	 * @return	void
+	 * @method
+	 */
+	function FireOnNewNoteEvent($intAccountId, $intServiceId=NULL, $intContactId=NULL)
+	{
+		$arrData['Account']['Id'] = $intAccountId;
+		$arrData['Service']['Id'] = $intServiceId;
+		$arrData['Contact']['Id'] = $intContactId;
+		
+		$this->AddCommand("FireEvent", Array("Event"=>EVENT_ON_NEW_NOTE, "EventData"=>$arrData));
 	}
 	
 }

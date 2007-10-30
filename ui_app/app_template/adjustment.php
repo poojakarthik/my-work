@@ -300,23 +300,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$strNote .= "Type: " . DBO()->RecurringCharge->ChargeType->FormattedValue() . "\n";
 				$strNote .= "Description: " . DBO()->RecurringCharge->Description->FormattedValue() . "\n";
 				$strNote .= "Nature: " . DBO()->RecurringCharge->Nature->FormattedValue() . "\n";
-				$strNote .= "Minimum Charge: " . $strMinCharge . "\n";
-				$strNote .= "Recursion Charge: " . $strRecursionCharge . "\n";
-
-				// If Service ID is passed then this is creating a system note for a recurring charge linked to a service
-				if (DBO()->Service->Id->Value)
-				{
-					$strRecurringType = "Service ";
-					$strCompleteNote = $strRecurringType . $strNote;					
-					SaveSystemNote($strCompleteNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, DBO()->Service->Id->Value);
-				}
-				// If no Service ID is passed then this is creating a system note for a recurring charge linked to an account
-				else
-				{
-					$strRecurringType = "Account ";
-					$strCompleteNote = $strRecurringType . $strNote;
-					SaveSystemNote($strCompleteNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);					
-				}
+				$strNote .= "Minimum Charge: $strMinCharge (inc GST)\n";
+				$strNote .= "Recursion Charge: $strRecursionCharge (inc GST)\n";
 
 				// Save the recurring adjustment to the charge table of the vixen database
 				if (!DBO()->RecurringCharge->Save())
@@ -331,6 +316,23 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					// The recurring adjustment was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("AlertReload", "The recurring adjustment has been successfully added");
+					//TODO Have this fire a OnNewRecurringAdjustment Event
+					//TODO Have this fire a OnNewNote Event
+					
+					// Save the system note
+					// If Service ID is passed then this is creating a system note for a recurring charge linked to a service
+					if (DBO()->Service->Id->Value)
+					{
+						$strNote = "Service $strNote";					
+						SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, DBO()->Service->Id->Value);
+					}
+					// If no Service ID is passed then this is creating a system note for a recurring charge linked to an account
+					else
+					{
+						$strNote = "Account $strNote";
+						SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);					
+					}
+					
 					return TRUE;
 				}
 			}
@@ -414,12 +416,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					}
 					
 					// Add a system generated note regarding the deleting of the charge
-					DBO()->Note->Clean();
-					DBO()->Note->NoteType = SYSTEM_NOTE_TYPE;
-					DBO()->Note->AccountGroup = DBO()->Charge->AccountGroup->Value;
-					DBO()->Note->Account = DBO()->Charge->Account->Value;
-					DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
-					DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
 					$strNote  = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']) . " deleted a " . DBO()->Charge->Nature->FormattedValue();
 					$strNote .= " adjustment made on " . DBO()->Charge->CreatedOn->FormattedValue();
 					// add GST to the charge amount
@@ -428,9 +424,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					$strNote .= "\nAdjustment Id: " . DBO()->Charge->Id->FormattedValue();
 					$strNote .= "\nAdjustment Type: " . DBO()->Charge->ChargeType->FormattedValue();
 					$strNote .= "\nDescription: " . DBO()->Charge->Description->FormattedValue();
-					DBO()->Note->Note = $strNote;
 					
-					if (!DBO()->Note->Save())
+					if (!SaveSystemNote($strNote, DBO()->Charge->AccountGroup->Value, DBO()->Charge->Account->Value, NULL, DBO()->Charge->Service->Value))
 					{
 						$strSystemNoteMsg = "\nWarning: The automatic system note could not be saved.";
 					}
@@ -573,13 +568,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				}
 				
 				// Add a system generated note regarding the deleting of the charge
-				DBO()->Note->Clean();
-				DBO()->Note->NoteType = SYSTEM_NOTE_TYPE;
-				DBO()->Note->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
-				DBO()->Note->Account = DBO()->RecurringCharge->Account->Value;
-				DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
-				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
-				
 				$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
 				$strLastName = AuthenticatedUser()->_arrUser['LastName'];
 				$strEmployeeFullName = "$strFirstName $strLastName";
@@ -591,15 +579,22 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$strNote .= "\nDescription: " . DBO()->RecurringCharge->Description->FormattedValue();
 				$strNote .= "\nNature: " . DBO()->RecurringCharge->Nature->FormattedValue();
 				// add GST to the minimum charge
-				$strMinCharge = OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
-				$strNote .= "\nMinimum Charge: " . $strMinCharge . " (inc GST)";
+				$strMinCharge = OutputMask()->MoneyValue(AddGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
+				$strNote .= "\nMinimum Charge: $strMinCharge (inc GST)";
 				// add GST to the recursion charge
-				$strRecursionCharge = OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
-				$strNote .= "\nRecursion Charge: " . $strRecursionCharge . " (inc GST)";
+				$strRecursionCharge = OutputMask()->MoneyValue(AddGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
+				$strNote .= "\nRecursion Charge: $strRecursionCharge (inc GST)";
+				$strAlreadyCharged = OutputMask()->MoneyValue(AddGST(DBO()->RecurringCharge->TotalCharged->Value), 2, TRUE);
+				$strNote .= "\nAlready Charged: $strAlreadyCharged (inc GST)";
 				
-				DBO()->Note->Note = $strNote;
+				if ($fltAmountOwing > 0.0)
+				{
+					// An additional charge was made to account for the remainder of the MinCharge and CancellationFee
+					$strAdditionalCharge = OutputMask()->MoneyValue(AddGST($fltChargeAmount), 2, TRUE);
+					$strNote .= "\nAn additional charge was made for $strAdditionalCharge (inc GST) to account for the outstand portion of the minimum charge and the cancellation fee";
+				}
 				
-				if (!DBO()->Note->Save())
+				if (!SaveSystemNote($strNote, DBO()->RecurringCharge->AccountGroup->Value, DBO()->RecurringCharge->Account->Value, NULL, DBO()->RecurringCharge->Service->Value))
 				{
 					$strSystemNoteMsg = "\nWarning: The automatic system note could not be saved.";
 				}

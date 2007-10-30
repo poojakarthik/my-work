@@ -362,7 +362,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Account->AccountGroup->RenderHidden();
 		DBO()->Account->Id->RenderOutput();
-		if (DBO()->Account->BusinessName != "")
+		if (DBO()->Account->BusinessName->Value != "")
 		{
 			// Display the Business Name, but only if there is one
 			DBO()->Account->BusinessName->RenderOutput();

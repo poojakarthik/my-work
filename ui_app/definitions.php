@@ -189,4 +189,13 @@ define("ARCHIVE_STATUS_ACTIVE"			, 0);
 define("ARCHIVE_STATUS_ARCHIVED"		, 1);
 define("ARCHIVE_STATUS_DRAFT"			, 2);
 
+// This defines how many notes to retrieve.  The most recent ones should be retrieved
+define("DEFAULT_NOTES_LIMIT", 10);
+
+// Custom Events (These are Fired from PHP code and handled by Javascript code)
+define("EVENT_ON_NEW_NOTE"			, "OnNewNote");
+define("EVENT_ON_SERVICE_UPDATE"	, "OnServiceUpdate");
+define("EVENT_ON_ACCOUNT_UPDATE"	, "OnAccountUpdate");
+
+
 ?>

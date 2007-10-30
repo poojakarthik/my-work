@@ -230,7 +230,9 @@ function VixenPopupClass()
 			}
 			case "modeless":
 			{
-				// do nothing?
+				// flag this popup as being modeless (this should really be renamed to "nonmodal")
+				elmPopup.setAttribute("modeless", "modeless");
+				
 				break;
 			}
 			case "autohide":
@@ -239,6 +241,10 @@ function VixenPopupClass()
 				//  what about on the div itself?
 				document.addEventListener('mousedown', CloseHandler, TRUE);
 				document.addEventListener('keyup', CloseHandler, TRUE);
+
+				// flag this popup as being autohide
+				elmPopup.setAttribute("autohide", "autohide");
+
 				break;
 			}
 			case "autohide-reload":
@@ -247,6 +253,10 @@ function VixenPopupClass()
 				//  what about on the div itself?
 				document.addEventListener('mousedown', CloseReloadHandler, TRUE);
 				document.addEventListener('keyup', CloseReloadHandler, TRUE);
+				
+				// flag this popup as being autohide-reload
+				elmPopup.setAttribute("autohide-reload", "autohide-reload");
+				
 				break;
 			}
 			default:
@@ -338,15 +348,19 @@ function VixenPopupClass()
 		
 		function CloseHandler(event)
 		{
-			// for AUTOHIDE only
+			// for AUTOHIDE only (strId is a parameter of the Create method, of which this function is defined within)
 			if (event.target.id.indexOf(strId) >= 0)
 			{
-				// Top bar, looking to drag
+				// Top bar, looking to drag 
 			}			
 			else
 			{
 				// MouseDown on page
 				Vixen.Popup.Close(strId);
+				
+				// Remove the Event listeners required to make it an autohide popup
+				// This is currently handled by the VixenPopupClass->Close method
+				// The following commented out lines can be removed
 				document.removeEventListener('mousedown', CloseHandler, TRUE);
 				document.removeEventListener('keyup', CloseHandler, TRUE);
 				
@@ -380,13 +394,16 @@ function VixenPopupClass()
 	// mixId can be the id of the popup as a string or it can be a pointer to any element on the popup
 	this.Close = function(mixId)
 	{
+		// Work out how we are going to find the popup element
 		if (typeof(mixId) == 'string')
 		{
+			// The id of the popup has been specified, find the popup element by id
 			var strPopupId = 'VixenPopup__' + mixId
 			var elmPopup = document.getElementById(strPopupId);
 		}
 		else if (typeof(mixId) == 'object')
 		{
+			// An element on the popup has been specified, find the popup element through retracing the parents of this element
 			var elmElement = mixId;
 			var bolFoundPopup = false;
 			while (elmElement.tagName != "BODY")
@@ -417,25 +434,24 @@ function VixenPopupClass()
 		
 		if (elmPopup)
 		{
-			//objClose.removeEventListener('mousedown', OpenHandler, false);
 			elmPopup.parentNode.removeChild(elmPopup);
 			document.body.style.overflow = "visible"; // Why is this done?
 			
-		}
-		
-		// If the popup was modal, then move the overlay div to its previous zIndex
-		if (elmPopup.hasAttribute("modal"))
-		{
-			var elmOverlay = document.getElementById("overlay");
-			if (this.arrOverlayZIndexHistory.length != 0)
+			// Do clean up actions, specific to the type of popup
+			if (elmPopup.hasAttribute("modal"))
 			{
-				// Set the zIndex of the overlay to its previous zIndex
-				elmOverlay.style.zIndex = this.arrOverlayZIndexHistory.pop();
-			}
-			else
-			{
-				// remove elmOverlay alltogether
-				elmOverlay.parentNode.removeChild(elmOverlay);
+				// The popup was modal.  Move the overlay div to its previous zIndex
+				var elmOverlay = document.getElementById("overlay");
+				if (this.arrOverlayZIndexHistory.length != 0)
+				{
+					// Set the zIndex of the overlay to its previous zIndex
+					elmOverlay.style.zIndex = this.arrOverlayZIndexHistory.pop();
+				}
+				else
+				{
+					// remove elmOverlay alltogether
+					elmOverlay.parentNode.removeChild(elmOverlay);
+				}
 			}
 		}
 	}
@@ -487,7 +503,8 @@ function VixenPopupClass()
 		}
 	
 		strContent =	"<p><div align='center' style='margin: 5px'>" + strMessage + 
-						"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
+						//"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
+						"<p><input type='button' id='VixenAlertOkButton' value='OK'><br></div>\n" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
 	}

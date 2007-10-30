@@ -314,6 +314,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}		
 		if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 		{
+			//TODO This should be doable using: $strStatus = DBO()->Account->DisableLatePayment->FormattedValue();
 			switch (DBO()->Account->DisableLatePayment->Value)
 			{
 				case 0:
@@ -452,10 +453,10 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strLastName = AuthenticatedUser()->_arrUser['LastName'];
 			$strEmployeeFullName = "$strFirstName $strLastName";
 		
-			$strSystemChangesNote = "Account editted by $strEmployeeFullName on " . GetCurrentDateForMySQL() . "\n";
-			$strSystemChangesNote .= "the following changes were made:\n";
+			$strSystemChangesNote = "Account edited by $strEmployeeFullName on " . GetCurrentDateForMySQL() . "\n";
+			$strSystemChangesNote .= "The following changes were made:\n";
 			$strSystemChangesNote .= $strChangesNote;
-			SaveSystemNote($strSystemChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Account->Value, NULL, NULL);
+			SaveSystemNote($strSystemChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, NULL);
 		}
 
 		// Set the columns to save
@@ -605,14 +606,8 @@ class AppTemplateAccount extends ApplicationTemplate
 					// The account details were successfully updated
 					if ($strChangesNote)
 					{
-						$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
-						$strLastName = AuthenticatedUser()->_arrUser['LastName'];
-						$strEmployeeFullName = "$strFirstName $strLastName";
-					
-						$strSystemChangesNote = "Account Details editted by $strEmployeeFullName on " . GetCurrentDateForMySQL() ."\n";
-						$strSystemChangesNote .= "the following changes were made:\n";
-						$strSystemChangesNote .= $strChangesNote;
-						SaveSystemNote($strSystemChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Account->Value, NULL, NULL);
+						$strSystemChangesNote = "Account details have been edited.  The following changes have been made:\n$strChangesNote";
+						SaveSystemNote($strSystemChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, NULL);
 					}
 					Ajax()->AddCommand("AlertReload", "The Account details have been successfully updated");
 					return TRUE;
@@ -752,12 +747,12 @@ class AppTemplateAccount extends ApplicationTemplate
 			DBL()->Contact->Load();
 		}
 		
-		// Load the last 5 user notes
+		// Load the last DEFAULT_NOTES_LIMIT user notes
 		$strWhere = "Account = <AccountId> AND NoteType != <SystemNoteType>";
 		$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "SystemNoteType" => SYSTEM_NOTE);
 		DBL()->Note->Where->Set($strWhere, $arrWhere);
 		DBL()->Note->OrderBy("Datetime DESC");
-		DBL()->Note->SetLimit(5);
+		DBL()->Note->SetLimit(DEFAULT_NOTES_LIMIT);
 		DBL()->Note->Load();
 		
 		// Set up the details required for the HtmlTemplateNoteList to render the notes properly
