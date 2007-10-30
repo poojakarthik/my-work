@@ -102,7 +102,30 @@ function Table()
 	return Singleton::Instance('VixenTableFramework');
 }
 
-
+//------------------------------------------------------------------------//
+//  AddServiceChurnNote
+//------------------------------------------------------------------------//
+/**
+ * AddServiceChurnNote()
+ *
+ * Adds a service churn note
+ * 
+ * @param	int	$intAccountNumber		Account the churn will affect
+ * @param	int	$intAccountGroup		AccountGroup
+ * @param	str	$strFNN							Service affected
+ * @param	str	$strCarrier					Carrier
+ *
+ * @return	null
+ *
+ * @method
+ */
+Function AddServiceChurnNote($intAccountNumber, $intAccountGroup, $strFNN, $strCarrier)
+{
+	$strSystemChangesNote = "Service churned away on " . GetCurrentDateForMySQL() ."\n";
+	$strSystemChangesNote .= "FNN: $intFNN\n";
+	$strSystemChangesNote .= "Carrier: $strCarrier";
+	SaveSystemNote($strSystemChangesNote, $intAccountGroup, $intAccountNumber, NULL, NULL);		
+}
 
 //------------------------------------------------------------------------//
 // ImplodeTables

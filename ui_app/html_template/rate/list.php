@@ -100,6 +100,115 @@ class HtmlTemplateRateList extends HtmlTemplate
 	 */
 	function Render()
 	{
+		switch ($this->_intContext)
+		{
+			case HTML_CONTEXT_MINIMUM_DETAIL:
+				$this->_RenderMinimumDetail();
+				break;
+			default:
+				$this->_RenderFullDetail();
+				break;
+		}
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderMinimumDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderMinimumDetail()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template with one DBO rate
+	 *
+	 * @method
+	 */
+	function _RenderMinimumDetail()
+	{
+		echo "<div class='PopupLarge'>\n";
+		echo "<div  style='overflow:auto; height:300px'>\n";	
+
+		DBO()->Rate->Name->RenderOutput();
+		DBO()->Rate->Description->RenderOutput();
+		DBO()->Rate->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);
+		
+		DBO()->RecordType->Name->RenderOutput();
+		
+		DBO()->Rate->StartTime->RenderOutput();
+		DBO()->Rate->EndTime->RenderOutput();
+
+		$strAvailability = DBO()->Rate->Monday->AsValue(CONTEXT_DEFAULT,TRUE) . 
+								DBO()->Rate->Tuesday->AsValue(CONTEXT_DEFAULT,TRUE) . 
+								DBO()->Rate->Wednesday->AsValue(CONTEXT_DEFAULT,TRUE) . 
+								DBO()->Rate->Thursday->AsValue(CONTEXT_DEFAULT,TRUE) . 
+								DBO()->Rate->Friday->AsValue(CONTEXT_DEFAULT,TRUE) .
+								DBO()->Rate->Saturday->AsValue(CONTEXT_DEFAULT,TRUE) .
+								DBO()->Rate->Sunday->AsValue(CONTEXT_DEFAULT,TRUE);
+
+		echo "<table width=335 border=0 cellpadding=0 cellspacing=0>\n";
+		echo "<tr><td><div class='DefaultRegularOutput'>&nbsp;&nbsp;Availability : </div></td><td align=right>$strAvailability</td></tr>";
+		echo "</table>";
+
+		if (DBO()->Rate->PassThrough->Value)
+		{
+			DBO()->Rate->PassThrough->RenderOutput();
+			DBO()->Rate->StdMinCharge->RenderOutput();
+			DBO()->Rate->StdFlagfall->RenderOutput();
+		}
+		
+		echo "&nbsp;";
+		//----------------------------------------------------------
+		
+		DBO()->Rate->StdUnits->RenderOutput();
+		
+		echo "Charge ($) : " . DBO()->Rate->StdRatePerUnit->Value . " Per " .DBO()->Rate->StdUnits->Value. " KB(s)";
+		
+		DBO()->Rate->StdMarkup->RenderOutput();
+		DBO()->Rate->StdPercentage->RenderOutput();
+
+		echo "&nbsp;";
+		//----------------------------------------------------------
+
+		DBO()->Rate->CapUnits->RenderOutput();
+		DBO()->Rate->CapCost->RenderOutput();
+
+		echo "&nbsp;";
+		//----------------------------------------------------------
+
+		DBO()->Rate->CapUsage->RenderOutput();
+		DBO()->Rate->CapLimit->RenderOutput();
+		DBO()->Rate->ExsFlagfall->RenderOutput();		
+		
+		echo "&nbsp;";
+		//----------------------------------------------------------
+
+		DBO()->Rate->ExsUnits->RenderOutput();
+		DBO()->Rate->ExsRatePerUnit->RenderOutput();
+		DBO()->Rate->ExsMarkup->RenderOutput();
+		DBO()->Rate->ExsPercentage->RenderOutput();	
+
+		echo "<div class='right'>\n";
+		$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+		echo "</div>\n";		
+
+		echo "</div>\n";
+		echo "</div>\n";
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderFullDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderFullDetail()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template with one or more DBO rates
+	 *
+	 * @method
+	 */
+	function _RenderFullDetail()
+	{
 		echo "<div class='PopupLarge'>\n";
 		echo "<div  style='overflow:auto; height:300px'>\n";
 	

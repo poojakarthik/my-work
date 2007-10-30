@@ -196,13 +196,37 @@
 				'CreatedOn'				=> new MySQLFunction ("NOW()"),
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue ()
 			);
+
+			//When a new service is created a System note is generated
+			$strEmployee = $aemAuthenticatedEmployee->Pull('FirstName')->getValue()  . " " . $aemAuthenticatedEmployee->Pull('LastName')->getValue() ;
+			$strServiceType = GetConstantDescription($arrService['ServiceType'], "ServiceType");
+			$intEmployeeId = $aemAuthenticatedEmployee->Pull('Id')->getValue();
+			$intAccountGroup = $arrService['AccountGroup'];
+			$intAccount = $arrService['Account'];
+			$intServiceFNN = $arrService['FNN'];
 			
+			$strIndialMessage = "";
+
+			if ($arrService['Indial100'])
+			{
+				$strIndialMessage = "Yes";
+			}
+			else
+			{
+				$strIndialMessage = "No";
+			}
+
+			$strNote = "$strEmployee added the Service: $intServiceFNN to Account: $intAccount on " . date('m/d/y') . "\n";
+			$strNote .= "Service Type: $strServiceType\n";
+			$strNote .= "Indial100: $strIndialMessage\n";
+			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId, $intAccountGroup, $intAccount, $intServiceFNN, NULL);
+	
 			$insService = new StatementInsert ('Service', $arrService);
 			$intService = $insService->Execute ($arrService);
 			
 			$srvService = new Service ($intService);
 			$srvService->PlanSelect ($aemAuthenticatedEmployee, $rrpPlan);
-			
+	
 			return $srvService;
 		}
 	}

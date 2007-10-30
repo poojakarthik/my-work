@@ -186,9 +186,11 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				
 				foreach (DBL()->Rate as $dboRate)
 				{
+					$strViewRateLink = Href()->ViewRate($dboRate->Id->Value);
+				
 					$strDetailHtml .= "   <tr>\n";
 					$strDetailHtml .= "      <td width='35%'>\n";
-					$strDetailHtml .= $dboRate->Name->AsValue();
+					$strDetailHtml .= "<a href='$strViewRateLink'>" . $dboRate->Name->AsValue() . "</a>";
 					$strDetailHtml .= "      </td>\n";
 					$strDetailHtml .= "      <td width='35%'>\n";
 					$strDetailHtml .= $dboRate->Monday->AsValue(CONTEXT_DEFAULT,TRUE);

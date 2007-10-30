@@ -253,7 +253,81 @@ class AppTemplateAccount extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT_DETAIL, "AccountDetailDiv");
 			return TRUE;
 		}
+		
+		// If these have been updated record the details
+		//if (DBO()->Service->Status->Value != DBO()->Service->NewStatus->Value)
+		//{
+		//	$strChangesNote .= "Service Status was changed to: " . GetConstantDescription(DBO()->Service->NewStatus->Value, 'Service') . "\n";
+		//}
 
+		DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
+		DBO()->CurrentAccount->SetTable("Account");
+		DBO()->CurrentAccount->Load();
+
+		if (DBO()->Account->BusinessName->Value != DBO()->CurrentAccount->BusinessName->Value)
+		{
+			$strChangesNote .= "Business Name was changed to: " . DBO()->Account->BusinessName->Value . "\n";
+		}
+		if (DBO()->Account->TradingName->Value != DBO()->CurrentAccount->TradingName->Value)
+		{
+			$strChangesNote .= "Trading Name was changed to: " . DBO()->Account->TradingName->Value . "\n";
+		}	
+		if (DBO()->Account->ABN->Value != DBO()->CurrentAccount->ABN->Value)
+		{
+			$strChangesNote .= "ABN was changed to: " . DBO()->Account->ABN->Value . "\n";		
+		}
+		if (DBO()->Account->ACN->Value != DBO()->CurrentAccount->ACN->Value)
+		{
+			$strChangesNote .= "ACN was changed to: " . DBO()->Account->ACN->Value . "\n";
+		}
+		if (DBO()->Account->Address1->Value != DBO()->CurrentAccount->Address1->Value)
+		{
+			$strChangesNote .= "Address Line 1 was changed to: " . DBO()->Account->Address1->Value . "\n";
+		}
+		if (DBO()->Account->Address2->Value != DBO()->CurrentAccount->Address2->Value)
+		{
+			$strChangesNote .= "Address Line 2 was changed to: " . DBO()->Account->Address2->Value . "\n";	
+		}
+		if (DBO()->Account->Suburb->Value != DBO()->CurrentAccount->Suburb->Value)
+		{
+			$strChangesNote .= "Suburb was changed to: " . DBO()->Account->Suburb->Value . "\n";		
+		}
+		if (DBO()->Account->Postcode->Value != DBO()->CurrentAccount->Postcode->Value)
+		{
+			$strChangesNote .= "Postcode was changed to: " . DBO()->Account->Postcode->Value . "\n";
+		}
+		if (DBO()->Account->State->Value != DBO()->CurrentAccount->State->Value)
+		{
+			$strChangesNote .= "State was changed to: " . DBO()->Account->State->Value . "\n";	
+		}
+		if (DBO()->Account->BillingMethod->Value != DBO()->CurrentAccount->BillingMethod->Value)
+		{
+			$strChangesNote .= "Billing Method was changed to: " . GetConstantDescription(DBO()->Account->BillingMethod->Value, 'BillingMethod') . "\n";		
+		}
+		if (DBO()->Account->CustomerGroup->Value != DBO()->CurrentAccount->CustomerGroup->Value)
+		{
+			$strChangesNote .= "Customer Group was changed to: " . GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroup') . "\n";		
+		}
+		if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
+		{
+			$strChangesNote .= "Disable DDR" . ((DBO()->Account->DisableDDR->Value == 1) ? " is set" : " is not set") . "\n";
+		}		
+		if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
+		{
+			switch (DBO()->Account->DisableLatePayment->Value)
+			{
+				case 0:
+					$strStatus = "Don't charge a late payment fee on the next invoice";
+					break;
+				case 1:
+					$strStatus = "Charge a late payment fee";
+					break;
+				case -1:
+					$strStatus = "Never charge a late payment fee";
+					break;
+			}
+			$strChangesNote .= "Disable Late Payment was changed to: " . $strStatus . "\n";	
+		}
 		// Start the transaction
 		TransactionStart();
 
@@ -261,7 +335,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		// has therefore been changed by the user 
 		if (DBO()->Account->Archived->Value != DBO()->Account->CurrentStatus->Value)
 		{
-			// Define one variable to the current date and time
+			$strChangesNote .= "Account Status was changed to: " . GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\n";	
+			// Define one variable to the current data and time
+
 			$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 			$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 		
@@ -369,6 +445,18 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Save the system note
 			SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, NULL);
 		}
+		
+		if ($strChangesNote)
+		{
+			$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
+			$strLastName = AuthenticatedUser()->_arrUser['LastName'];
+			$strEmployeeFullName = "$strFirstName $strLastName";
+		
+			$strSystemChangesNote = "Account editted by $strEmployeeFullName on " . GetCurrentDateForMySQL() . "\n";
+			$strSystemChangesNote .= "the following changes were made:\n";
+			$strSystemChangesNote .= $strChangesNote;
+			SaveSystemNote($strSystemChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Account->Value, NULL, NULL);
+		}
 
 		// Set the columns to save
 		DBO()->Account->SetColumns("BusinessName,TradingName,ABN,ACN,Address1,Address2,Suburb,Postcode,State,BillingMethod,CustomerGroup,DisableLatePayment,Archived,DisableDDR");
@@ -465,6 +553,30 @@ class AppTemplateAccount extends ApplicationTemplate
 		//check if the form was submitted
 		if (SubmittedForm('AccountDetails', 'Apply Changes'))
 		{
+			DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
+			DBO()->CurrentAccount->SetTable("Account");
+			DBO()->CurrentAccount->Load();
+			
+			if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
+			{
+				$strChangesNote .= "Disable DDR" . ((DBO()->Account->DisableDDR->Value == 1) ? " is set" : " is not set") . "\n";	
+			}		
+			if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
+			{
+				switch (DBO()->Account->DisableLatePayment->Value)
+				{
+					case 0:
+						$strStatus = "Don't charge a late payment fee on the next invoice";
+						break; 
+					case 1:
+						$strStatus = "Charge a late payment fee";
+						break;
+					case -1:
+						$strStatus = "Never charge a late payment fee";
+						break;
+				}
+				$strChangesNote .= "Disable Late Payment was changed to: " . $strStatus . "\n";	
+			}
 			// Check that the user can edit the account
 			$intAccountStatus = DBO()->Account->Archived->Value;
 			if (	($intAccountStatus == ACCOUNT_ARCHIVED || $intAccountStatus == ACCOUNT_DEBT_COLLECTION 
@@ -491,6 +603,17 @@ class AppTemplateAccount extends ApplicationTemplate
 				else
 				{
 					// The account details were successfully updated
+					if ($strChangesNote)
+					{
+						$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
+						$strLastName = AuthenticatedUser()->_arrUser['LastName'];
+						$strEmployeeFullName = "$strFirstName $strLastName";
+					
+						$strSystemChangesNote = "Account Details editted by $strEmployeeFullName on " . GetCurrentDateForMySQL() ."\n";
+						$strSystemChangesNote .= "the following changes were made:\n";
+						$strSystemChangesNote .= $strChangesNote;
+						SaveSystemNote($strSystemChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Account->Value, NULL, NULL);
+					}
 					Ajax()->AddCommand("AlertReload", "The Account details have been successfully updated");
 					return TRUE;
 				}

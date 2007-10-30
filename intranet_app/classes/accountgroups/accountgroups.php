@@ -195,6 +195,37 @@
 			
 			$actAccount = new Account ($intAccount);
 			
+			// After a new account is created a System note is generated
+			$strEmployeeFirstName = $aemAuthenticatedEmployee->Pull('FirstName')->getValue();
+			$strEmployeeLastName = $aemAuthenticatedEmployee->Pull('LastName')->getValue();
+			$intEmployeeId = $aemAuthenticatedEmployee->Pull('Id')->getValue();
+			$strEmployeeFullName =  "$strEmployeeFirstName $strEmployeeLastName";
+		
+			$intAccountId = $actAccount->Pull('Id')->getValue();
+			$intAccountGroup = $arrAccount['AccountGroup'];
+			$strBusinessName = $arrAccount['BusinessName'];
+			$strTradingName = $arrAccount['TradingName'];
+			$intABN = $arrAccount['ABN'];
+			$intPostcode = $arrAccount['Postcode'];
+			$strState = $arrAccount['State'];
+			$intCustomerGroup = GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+			$strBillingType= GetConstantDescription($arrAccount['BillingType'], "BillingType");
+			$strBillingMethod = GetConstantDescription($arrAccount['BillingMethod'], "BillingMethod");			
+
+			$strNote = "Account created by $strEmployeeFullName on " . date('m/d/y') . "\n";
+			$strNote .= "The following details were created:\n";
+			$strNote .= "Business Name: $strBusinessName\n";
+			$strNote .= "Trading Name: $strTradingName\n";
+			$strNote .= "ABN: $intABN\n";
+			$strNote .= "Postcode: $intPostcode\n";
+			$strNote .= "State: $strState\n";
+			$strNote .= "Customer Group: $intCustomerGroup\n";
+			$strNote .= "Account Group: $intAccountGroup\n";
+			$strNote .= "Billing Type: $strBillingType\n";
+			$strNote .= "Billing Method: $strBillingMethod\n";
+	
+			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId, $intAccountGroup, $intAccount, NULL, NULL);
+			
 			if ($cntContact == null)
 			{
 				// This is only called when we are creating a new contact

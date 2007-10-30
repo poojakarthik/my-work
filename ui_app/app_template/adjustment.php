@@ -288,7 +288,36 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->RecurringCharge->TotalCharged		= 0;
 				DBO()->RecurringCharge->TotalRecursions		= 0;
 				DBO()->RecurringCharge->Archived			= 0;
-				
+
+				$strMinCharge = OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
+				$strRecursionCharge = OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
+
+				$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
+				$strLastName = AuthenticatedUser()->_arrUser['LastName'];
+				$strEmployeeFullName = "$strFirstName $strLastName";
+
+				$strNote = "recurring charge added by $strEmployeeFullName on " . GetCurrentDateForMySQL() . "\n";
+				$strNote .= "Type: " . DBO()->RecurringCharge->ChargeType->FormattedValue() . "\n";
+				$strNote .= "Description: " . DBO()->RecurringCharge->Description->FormattedValue() . "\n";
+				$strNote .= "Nature: " . DBO()->RecurringCharge->Nature->FormattedValue() . "\n";
+				$strNote .= "Minimum Charge: " . $strMinCharge . "\n";
+				$strNote .= "Recursion Charge: " . $strRecursionCharge . "\n";
+
+				// If Service ID is passed then this is creating a system note for a recurring charge linked to a service
+				if (DBO()->Service->Id->Value)
+				{
+					$strRecurringType = "Service ";
+					$strCompleteNote = $strRecurringType . $strNote;					
+					SaveSystemNote($strCompleteNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, DBO()->Service->Id->Value);
+				}
+				// If no Service ID is passed then this is creating a system note for a recurring charge linked to an account
+				else
+				{
+					$strRecurringType = "Account ";
+					$strCompleteNote = $strRecurringType . $strNote;
+					SaveSystemNote($strCompleteNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);					
+				}
+
 				// Save the recurring adjustment to the charge table of the vixen database
 				if (!DBO()->RecurringCharge->Save())
 				{
@@ -550,7 +579,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Note->Account = DBO()->RecurringCharge->Account->Value;
 				DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
 				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
-				$strNote  = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']) . " cancelled the recurring adjustment created on ";
+				
+				$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
+				$strLastName = AuthenticatedUser()->_arrUser['LastName'];
+				$strEmployeeFullName = "$strFirstName $strLastName";
+				
+				$strNote  = "Recurring charge removed by $strEmployeeFullName on ";
 				$strNote .= DBO()->RecurringCharge->CreatedOn->FormattedValue(); 
 				$strNote .= "\nRecurring Adjustment Id: " . DBO()->RecurringCharge->Id->FormattedValue();
 				$strNote .= "\nType: " . DBO()->RecurringCharge->ChargeType->FormattedValue();

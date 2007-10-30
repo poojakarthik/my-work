@@ -589,6 +589,17 @@ class AppTemplateRate extends ApplicationTemplate
 	}
 	
 	
+	function View()
+	{
+		// Rate Id passed to this function from where it pulls the individual rate out
+		DBO()->Rate->Load();
+		DBO()->RecordType->Id = DBO()->Rate->RecordType->Value;
+		DBO()->RecordType->Load();
+		
+		$this->LoadPage('rate_view');
+		return TRUE;
+	}
+	
 	//----- DO NOT REMOVE -----//
 	
 }

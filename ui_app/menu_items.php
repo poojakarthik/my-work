@@ -266,8 +266,31 @@ class MenuItems
 		return "costcentre_list.php?Account=$intAccountId";
 	}
 	
-	
-
+	//------------------------------------------------------------------------//
+	// ViewRates
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewRates()
+	 *
+	 *
+	 *
+	 *
+	 * @param	int		
+	 *
+	 * @return	string						
+	 *
+	 * @method
+	 */
+	function ViewRate($intId)
+	{
+		// Setup data to send
+		$arrData['Objects']['Rate']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId\", \"large\", null, \"Rate\", \"View\", $strJsonCode)";	
+	}	
 
 	//------------------------------------------------------------------------//
 	// EditService

@@ -110,7 +110,21 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->ServiceType->RenderHidden();
 		DBO()->Service->ClosedOn->RenderHidden();
 		DBO()->Service->CreatedOn->RenderHidden();
+		
+		// Maintaining State
 		DBO()->Service->CurrentFNN->RenderHidden();
+		DBO()->Service->CurrentStatus->RenderHidden();
+		DBO()->Service->CurrentIndial100->RenderHidden();
+		DBO()->Service->CurrentELB->RenderHidden();		
+		DBO()->ServiceInboundDetail->CurrentAnswerPoint->RenderHidden();
+		DBO()->ServiceInboundDetail->CurrentConfiguration->RenderHidden();		
+		DBO()->ServiceMobileDetail->CurrentSimPUK->RenderHidden();
+		DBO()->ServiceMobileDetail->CurrentSimESN->RenderHidden();
+		DBO()->ServiceMobileDetail->CurrentSimState->RenderHidden();
+		DBO()->ServiceMobileDetail->CurrentDOB->RenderHidden();
+		DBO()->ServiceMobileDetail->CurrentComments->RenderHidden();
+		//----
+
 		DBO()->Service->Account->RenderHidden();
 		DBO()->Service->AccountGroup->RenderHidden();
 		DBO()->Service->Indial100->RenderHidden();

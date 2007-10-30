@@ -77,7 +77,26 @@
 			}
 			
 			$actAccount->BillingTypeSelect ($intBillingType, $objBillingVia);
-			
+						
+			// System note is generated when payment method is changed
+			$strEmployeeFirstName = $athAuthentication->AuthenticatedEmployee()->Pull('FirstName')->getValue();
+			$strEmployeeLastName = $athAuthentication->AuthenticatedEmployee()->Pull('LastName')->getValue() ;
+			$intEmployeeId = $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
+			$strEmployeeFullName =  "$strEmployeeFirstName $strEmployeeLastName";
+
+			$intAccountId = $actAccount->Pull ('Id')->getValue ();
+			$intAccountGroup = $acgAccountGroup->Pull ('Id')->getValue ();
+			$intServiceId = $_POST ['Service'];
+			$BusinessName = $actAccount->Pull('BusinessName')->getValue();
+			$BillingType = GetConstantDescription($intBillingType, 'BillingType');
+
+			$strNote = "Payment Method was changed by $strEmployeeFullName on " . date('m/d/y') . "\n";
+			$strNote .= "Account Id: $intAccountId\n";
+			$strNote .= "Business Name: $BusinessName\n";
+			$strNote .= "New Payment Method: $BillingType\n";
+	
+			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId , $intAccountGroup, $intAccountId, NULL, NULL);
+				
 			$Style->Output (
 				'xsl/content/account/payment_selected.xsl',
 				Array (

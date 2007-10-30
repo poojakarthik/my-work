@@ -207,10 +207,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->FormStart("EditAccount", "Account", "ValidateAndSaveDetails");
 		echo "<div class='NarrowForm'>\n";
 		
-		DBO()->Account->Id->RenderHidden();
+    	DBO()->Account->Id->RenderHidden();
 		DBO()->Account->AccountGroup->RenderHidden();
 		DBO()->Account->Country->RenderHidden();
 		DBO()->Account->BillingType->RenderHidden();		
+		
+		
 		DBO()->Account->CurrentStatus = DBO()->Account->Archived->Value;
 		DBO()->Account->CurrentStatus->RenderHidden();
 
@@ -357,6 +359,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   <tr>\n";
 		echo "      <td width='65%' valign='top'>\n";
 		// Render the details of the Account
+		DBO()->Account->Id->RenderHidden();
+		DBO()->Account->AccountGroup->RenderHidden();
 		DBO()->Account->Id->RenderOutput();
 		if (DBO()->Account->BusinessName != "")
 		{

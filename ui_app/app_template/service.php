@@ -366,6 +366,20 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->Service->FNN = trim(DBO()->Service->FNN->Value);
 			DBO()->Service->FNNConfirm = trim(DBO()->Service->FNNConfirm->Value);
 			
+			// If these have been updated record the details
+			if (DBO()->Service->Status->Value != DBO()->Service->NewStatus->Value)
+			{
+				$strChangesNote .= "Service Status was changed to: " . GetConstantDescription(DBO()->Service->NewStatus->Value, 'Service') . "\n";
+			}
+			if (DBO()->Service->Indial100->Value != DBO()->Service->CurrentIndial100->Value)
+			{
+				$strChangesNote .= "Indial100" . ((DBO()->Service->Indial100->Value == 1) ? " is set" : " is not set") . "\n";
+			}
+			if (DBO()->Service->ELB->Value != DBO()->Service->CurrentELB->Value)
+			{
+				$strChangesNote .= "ELB" . ((DBO()->Service->ELB->Value == 1) ? " is set" : " is not set") . "\n";
+			}
+			
 			if (DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value)
 			{		
 				// The user wants to change the FNN
@@ -414,9 +428,12 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
-				
-				// Declare properties to update
-				$arrUpdateProperties[] = "FNN";
+				else
+				{
+					// Declare properties to update
+					$arrUpdateProperties[] = "FNN";
+					$strChangesNote .= "FNN was changed to: " . DBO()->Service->FNN->Value . "\n";
+				}
 			}
 			
 			// Check if the CostCentre property has been updated
@@ -427,6 +444,7 @@ class AppTemplateService extends ApplicationTemplate
 					DBO()->Service->CostCentre = NULL;
 				}
 				$arrUpdateProperties[] = "CostCentre";
+				$strChangesNote .= "CostCentre was changed to: " . DBO()->Service->CostCentre->Value . "\n";
 			}
 			
 
@@ -493,10 +511,32 @@ class AppTemplateService extends ApplicationTemplate
 					return TRUE;
 				}
 			}
-			
+
 			// handle mobile phone details			
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 			{
+				// Has anything been changed in the ServiceMobileDetails if so append this information onto $strChangesNote
+				if (DBO()->ServiceMobileDetail->SimPUK->Value != DBO()->ServiceMobileDetail->CurrentSimPUK->Value)
+				{
+					$strChangesNote .= "SimPUK was changed to: " . DBO()->ServiceMobileDetail->SimPUK->Value;
+				}
+				if (DBO()->ServiceMobileDetail->SimESN->Value != DBO()->ServiceMobileDetail->CurrentSimESN->Value)
+				{
+					$strChangesNote .= "SimESN was changed to: " . DBO()->ServiceMobileDetail->SimESN->Value;				
+				}
+				if (DBO()->ServiceMobileDetail->SimState->Value != DBO()->ServiceMobileDetail->CurrentSimState->Value)
+				{
+					$strChangesNote .= "SimState was changed to: " . GetConstantDescription(DBO()->ServiceMobileDetail->SimState->Value, 'ServiceStateType') . "\n";			
+				}
+				if (DBO()->ServiceMobileDetail->DOB->Value != DBO()->ServiceMobileDetail->CurrentDOB->Value)
+				{
+					$strChangesNote .= "DOB was changed to: " . DBO()->ServiceMobileDetail->DOB->Value;				
+				}
+				if (DBO()->ServiceMobileDetail->Comments->Value != DBO()->ServiceMobileDetail->CurrentComments->Value)
+				{
+					$strChangesNote .= "Comments were changed to: " . DBO()->ServiceMobileDetail->Comments->Value;				
+				}
+			
 				// Validate entered Birth Date?
 				if (trim(DBO()->ServiceMobileDetail->DOB->Value) != "")
 				{
@@ -555,6 +595,7 @@ class AppTemplateService extends ApplicationTemplate
 					DBO()->ServiceMobileDetail->Comments  = "";
 				}
 
+				
 				if (!DBO()->ServiceMobileDetail->Save())
 				{
 					// The ServiceMobileDetail did not save
@@ -568,6 +609,16 @@ class AppTemplateService extends ApplicationTemplate
 			// handle inbound call details
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 			{
+				// Has anything been changed in the ServiceInboundDetails if so append this information onto $strChangesNote
+				if (DBO()->ServiceInboundDetail->AnswerPoint->Value != DBO()->ServiceInboundDetail->CurrentAnswerPoint->Value)
+				{
+					$strChangesNote = "AnswerPoint was changed to: " . DBO()->ServiceInboundDetail->AnswerPoint->Value;
+				}
+				if (DBO()->ServiceInboundDetail->Configuration->Value != DBO()->ServiceInboundDetail->CurrentConfiguration->Value)
+				{
+					$strChangesNote = "Configuration was changed to: " . DBO()->ServiceInboundDetail->Configuration->Value;					
+				}
+			
 				// If Id is passed set the columns to Update
 				if (DBO()->ServiceInboundDetail->Id->Value)
 				{
@@ -687,7 +738,19 @@ class AppTemplateService extends ApplicationTemplate
 				// Save the note. (this will save it to the new service id, if one was created)
 				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intServiceId);
 			}
+
+			if ($strChangesNote)
+			{
+				$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
+				$strLastName = AuthenticatedUser()->_arrUser['LastName'];
+				$strEmployeeFullName = "$strFirstName $strLastName";
 			
+				$strSystemChangesNote = "Service editted by $strEmployeeFullName on " . GetCurrentDateForMySQL() . "\n";
+				$strSystemChangesNote .= "the following changes were made:\n";
+				$strSystemChangesNote .= $strChangesNote;
+				SaveSystemNote($strSystemChangesNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
+			}
+
 			// Commit the transaction
 			TransactionCommit();
 			
@@ -748,6 +811,16 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Store the current FNN to check between states that the FNN textbox has been changed
 		DBO()->Service->CurrentFNN = DBO()->Service->FNN->Value;
+		DBO()->Service->CurrentStatus = DBO()->Service->Status->Value;
+		DBO()->Service->CurrentIndial100 = DBO()->Service->Indial100->Value;
+		DBO()->Service->CurrentELB = DBO()->Service->ELB->Value;
+		DBO()->ServiceInboundDetail->CurrentAnswerPoint = DBO()->ServiceInboundDetail->AnswerPoint->Value;
+		DBO()->ServiceInboundDetail->CurrentConfiguration = DBO()->ServiceInboundDetail->Configuration->Value;
+		DBO()->ServiceMobileDetail->CurrentSimPUK = DBO()->ServiceMobileDetail->SimPUK->Value;
+		DBO()->ServiceMobileDetail->CurrentSimESN = DBO()->ServiceMobileDetail->SimESN->Value;
+		DBO()->ServiceMobileDetail->CurrentSimState = DBO()->ServiceMobileDetail->SimState->Value;
+		DBO()->ServiceMobileDetail->CurrentDOB = DBO()->ServiceMobileDetail->DOB->Value;
+		DBO()->ServiceMobileDetail->CurrentComments = DBO()->ServiceMobileDetail->Comments->Value;
 		
 		// Declare which page to use
 		$this->LoadPage('service_edit');

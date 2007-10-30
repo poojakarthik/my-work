@@ -96,6 +96,38 @@
 							$bolTransferUnbilled
 						);
 						
+						// After the lessee changed is created a System note is generated
+						$strEmployeeFirstName = $athAuthentication->AuthenticatedEmployee()->Pull('FirstName')->getValue();
+						$strEmployeeLastName = $athAuthentication->AuthenticatedEmployee()->Pull('LastName')->getValue() ;
+						$intEmployeeId = $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
+						$strEmployeeFullName =  "$strEmployeeFirstName $strEmployeeLastName";
+											
+						$intAccountId = $actOriginal->Pull ('Id')->getValue();
+						$intAccountGroup = $srvService->Pull ('AccountGroup')->getValue();
+						$strBusinessName = $actOriginal->Pull ('BusinessName')->getValue();
+						$strTradingName = $actOriginal->Pull ('TradingName')->getValue();
+						$intServiceId = $srvService->Pull ('Id')->getValue();
+						$strServiceFNN = $srvService->Pull ('FNN')->getValue();
+						
+						$intReceivingAccountId = $actReceiving->Pull ('Id')->getValue();
+						$intReceivingBusinessName = $actReceiving->Pull ('BusinessName')->getValue();
+						
+						$strNote = "lessee changed by $strEmployeeFullName on " . date('m/d/y') . "\n";
+						$strNote .= "The following changed were made:\n";
+						$strNote .= "Service Id: $intServiceId\n";
+						$strNote .= "Service FNN: $strServiceFNN\n";
+						$strNote .= "Current Account Details\n";
+						$strNote .= "+ Account Id: $intAccountId\n";
+						$strNote .= "+ Business Name: $strBusinessName\n";
+						$strNote .= "+ Trading Name: $strTradingName\n";
+						$strNote .= "Receiving Account Details\n";
+						$strNote .= "+ Account Id: $intReceivingAccountId\n";
+						$strNote .= "+ Business Name: $intReceivingBusinessName\n";
+						$strNote .= "Change Date: " . date("l, M j, Y g:i:s A", $intDate) . "\n";
+						$strNote .= "Transfer Charges: " . (($bolTransferUnbilled)? "Yes" : "No") ;
+				
+						$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId, $intAccountGroup, $intAccountId, $intServiceId, NULL);
+												
 						// Transfer unbilled charges to the new lessee
 						
 						header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $arrReturnStatus[0] . "&Updated=" . $arrReturnStatus[1]);
