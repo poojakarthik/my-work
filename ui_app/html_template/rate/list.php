@@ -159,40 +159,57 @@ class HtmlTemplateRateList extends HtmlTemplate
 		echo "&nbsp;";
 		//----------------------------------------------------------
 		
-		DBO()->Rate->StdUnits->RenderOutput();
-		
-		echo "Charge ($) : " . DBO()->Rate->StdRatePerUnit->Value . " Per " .DBO()->Rate->StdUnits->Value. " KB(s)";
-		
-		DBO()->Rate->StdMarkup->RenderOutput();
-		DBO()->Rate->StdPercentage->RenderOutput();
+		echo "<table border='0' cellpadding='0' cellspacing='0'>";
+		if (DBO()->Rate->StdUnits->Value > 0)
+		{		
+			echo "<tr><td width=2%>&nbsp;</td><td width=190><div class='DefaultRegularOutput'>Standard Billing Units : </div></td><td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdUnits->Value . "</div></td></tr>\n";
+		}
+		if (DBO()->Rate->StdRatePerUnit->Value > 0)
+		{		
+			echo "<tr><td width=2%>&nbsp;</td><td width=190><div class='DefaultRegularOutput'>Charge ($) : </div></td><td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdRatePerUnit->Value . " Per " . DBO()->Rate->StdUnits->Value . " KB(s)</div></td></tr>";
+		}
+		if (DBO()->Rate->StdMarkup->Value > 0)
+		{
+			echo "<tr><td width=2%><div class='DefaultRegularOutput'>Charge ($) : </div></td><td width=190><div class='DefaultRegularOutput'>" . DBO()->Rate->StdMarkup->Value . " Per " .DBO()->Rate->StdUnits->Value. " KB(s)</div></td></tr>";
+		}
+		if (DBO()->Rate->StdPercentage->Value > 0)
+		{
+			echo "<tr><td width=2%><div class='DefaultRegularOutput'>Markup on Cost ($) : </div></td><td width=190><div class='DefaultRegularOutput'>" . DBO()->Rate->StdPercentage->Value . " Per " .DBO()->Rate->StdUnits->Value. " KB(s)</div></td></tr>";
+		}
+		echo "</table>\n";
 
-		echo "&nbsp;";
 		//----------------------------------------------------------
-
-		DBO()->Rate->CapUnits->RenderOutput();
-		DBO()->Rate->CapCost->RenderOutput();
-
-		echo "&nbsp;";
+		if (DBO()->Rate->CapUnits->Value != 0)
+		{
+			DBO()->Rate->CapUnits->RenderOutput();
+		}
+		elseif (DBO()->Rate->CapCost > 0)
+		{
+			DBO()->Rate->CapCost->RenderOutput();
+		}
+		else
+		{
+			echo "<div class='DefaultRegularOutput'>&nbsp;&nbsp;No Capping</div>\n";			
+		}
+		
 		//----------------------------------------------------------
-
 		DBO()->Rate->CapUsage->RenderOutput();
 		DBO()->Rate->CapLimit->RenderOutput();
 		DBO()->Rate->ExsFlagfall->RenderOutput();		
-		
-		echo "&nbsp;";
 		//----------------------------------------------------------
-
 		DBO()->Rate->ExsUnits->RenderOutput();
 		DBO()->Rate->ExsRatePerUnit->RenderOutput();
 		DBO()->Rate->ExsMarkup->RenderOutput();
 		DBO()->Rate->ExsPercentage->RenderOutput();	
 
+		echo "</div>\n";
+		echo "</div>\n";
+
 		echo "<div class='right'>\n";
 		$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		echo "</div>\n";		
 
-		echo "</div>\n";
-		echo "</div>\n";
+
 	}
 
 	//------------------------------------------------------------------------//
