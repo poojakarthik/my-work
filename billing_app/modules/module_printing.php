@@ -618,7 +618,7 @@
 							$this->_arrFileData[] = $arrDefine['SvcSummCCFooter'];
 						}
 					}
-
+					
 					// add cost centre header
 					$strCostCentre		= $arrService['CostCentre'];
 					$fltCostCentreTotal	= 0.0;
