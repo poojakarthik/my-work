@@ -91,7 +91,7 @@
 		$strNote .= "Carrier: " . GetConstantDescription($_POST ['Carrier'], 'Carrier') . "\n";
 		$strNote .= $strBarAction;
 
-		$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $strEmployeeId, $intAccountGroup, $intAccountId, $intServiceId, NULL);
+		$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $strEmployeeId, $intAccountGroup, $intAccountId, $intServiceId, NULL);
 	}
 
 	// Do the Provisioning Request

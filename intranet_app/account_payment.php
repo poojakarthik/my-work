@@ -95,7 +95,7 @@
 			$strNote .= "Business Name: $BusinessName\n";
 			$strNote .= "New Payment Method: $BillingType\n";
 	
-			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId , $intAccountGroup, $intAccountId, NULL, NULL);
+			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId , $intAccountGroup, $intAccountId, NULL, NULL);
 				
 			$Style->Output (
 				'xsl/content/account/payment_selected.xsl',

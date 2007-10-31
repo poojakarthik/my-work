@@ -122,7 +122,7 @@
 			$strNote .= "The following changes were made:\n";
 			$strNote .= $strChangesNote;
 
-			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId, $intAccountGroup, $intAccountId, NULL, NULL);
+			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccountId, $_POST['Service']);
 		}
 		
 		// Save Information

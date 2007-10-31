@@ -219,10 +219,18 @@
 			$strNote = "$strEmployee added the Service: $intServiceFNN to Account: $intAccount on " . date('m/d/y') . "\n";
 			$strNote .= "Service Type: $strServiceType\n";
 			$strNote .= "Indial100: $strIndialMessage\n";
-			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId, $intAccountGroup, $intAccount, $intServiceFNN, NULL);
+			
 	
 			$insService = new StatementInsert ('Service', $arrService);
 			$intService = $insService->Execute ($arrService);
+			
+			
+			// Check if inserting the service note worked
+			if ($intService)
+			{
+				// Add the system note
+				$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccount, $intService);
+			}
 			
 			$srvService = new Service ($intService);
 			$srvService->PlanSelect ($aemAuthenticatedEmployee, $rrpPlan);

@@ -1000,9 +1000,6 @@ $GLOBALS['*arrConstant']	['BillingType']	[2]	['Description']	= 'Credit Card';
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Constant']	= 'BILLING_TYPE_ACCOUNT';
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Description']	= 'Account';
 
-// Define System Note
-define('SYSTEM_NOTE', 7);
-
 // Payment Terms
 define("PAYMENT_TERMS_DEFAULT"			, 14);
 

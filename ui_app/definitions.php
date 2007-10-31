@@ -81,8 +81,6 @@ define('OUTPUT_TYPE_RADIO', 2);
 // CSS classes
 define('CLASS_DEFAULT', 'Default');
 
-define('SYSTEM_NOTE', 7);
-
 // Note Classes
 define('NOTE_CLASS_ACCOUNT_NOTES', 1);
 define('NOTE_CLASS_CONTACT_NOTES', 2);

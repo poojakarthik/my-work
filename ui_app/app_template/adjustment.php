@@ -406,6 +406,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 						DBO()->Note->NoteType = GENERAL_NOTE_TYPE;
 						DBO()->Note->AccountGroup = DBO()->Charge->AccountGroup->Value;
 						DBO()->Note->Account = DBO()->Charge->Account->Value;
+						DBO()->Note->Service = DBO()->Charge->Service->Value;
 						DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
 						DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
 						
@@ -558,6 +559,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Note->NoteType = GENERAL_NOTE_TYPE;
 					DBO()->Note->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
 					DBO()->Note->Account = DBO()->RecurringCharge->Account->Value;
+					DBO()->Note->Service = DBO()->RecurringCharge->Service->Value;
 					DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
 					DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
 					

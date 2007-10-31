@@ -375,7 +375,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		else
 		{
 			// There is no Business Name or Trading Name
-			DBO()->Account->BusinessName->RenderArbitrary("[Not Specified]");
+			DBO()->Account->BusinessName->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
 		}
 		if (DBO()->Account->ABN->Value != "")
 		{
@@ -387,7 +387,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		else
 		{
-			DBO()->Account->ABN->RenderArbitrary("[Not Specified]");
+			DBO()->Account->ABN->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
 		}
 		
 		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);

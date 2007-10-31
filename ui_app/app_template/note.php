@@ -94,10 +94,10 @@ class AppTemplateNote extends ApplicationTemplate
 				case "All":
 					break;
 				case "System":
-					$strWhere .= " AND NoteType = ". SYSTEM_NOTE;
+					$strWhere .= " AND NoteType = ". SYSTEM_NOTE_TYPE;
 					break;
 				case "User":
-					$strWhere .= " AND NoteType != ". SYSTEM_NOTE;
+					$strWhere .= " AND NoteType != ". SYSTEM_NOTE_TYPE;
 					break;
 			}
 		}

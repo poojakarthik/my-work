@@ -310,7 +310,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
 		{
-			$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "not" : "") ." charged an admin fee\n";
+			$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "no longer" : "now") ." charged an admin fee\n";
 		}		
 		if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 		{
@@ -547,7 +547,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
 			{
-				$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "not" : "") ." charged an admin fee\n";
+				$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "no longer" : "now") ." charged an admin fee\n";
 			}		
 			if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 			{
@@ -724,7 +724,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Load the last DEFAULT_NOTES_LIMIT user notes
 		$strWhere = "Account = <AccountId> AND NoteType != <SystemNoteType>";
-		$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "SystemNoteType" => SYSTEM_NOTE);
+		$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "SystemNoteType" => SYSTEM_NOTE_TYPE);
 		DBL()->Note->Where->Set($strWhere, $arrWhere);
 		DBL()->Note->OrderBy("Datetime DESC");
 		DBL()->Note->SetLimit(DEFAULT_NOTES_LIMIT);

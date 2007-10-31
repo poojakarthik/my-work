@@ -224,7 +224,7 @@
 			$strNote .= "Billing Type: $strBillingType\n";
 			$strNote .= "Billing Method: $strBillingMethod\n";
 	
-			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId, $intAccountGroup, $intAccount, NULL, NULL);
+			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccount, NULL, NULL);
 			
 			if ($cntContact == null)
 			{

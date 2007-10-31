@@ -126,7 +126,7 @@
 						$strNote .= "Change Date: " . date("l, M j, Y g:i:s A", $intDate) . "\n";
 						$strNote .= "Transfer Charges: " . (($bolTransferUnbilled)? "Yes" : "No") ;
 				
-						$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE, $intEmployeeId, $intAccountGroup, $intAccountId, $intServiceId, NULL);
+						$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccountId, $intServiceId, NULL);
 												
 						// Transfer unbilled charges to the new lessee
 						
