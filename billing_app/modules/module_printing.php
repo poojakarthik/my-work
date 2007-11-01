@@ -1262,7 +1262,7 @@
 					{
 						// add in breakdown
 						$fltPlanCredit = ((float)$arrServiceTotal[0]['TotalCharge'] - $fltTotal) - $arrRatePlan['MinMonthly'];
-						$arrDefine['SvcSummPlanSumm']		['PlanCharge']		['Value']	= $arrRatePlan['MinMonthly'];
+						$arrDefine['SvcSummPlanSumm']		['PlanCharge']		['Value']	= ((float)$arrServiceTotal[0]['PlanCharge']) ? (float)$arrServiceTotal[0]['PlanCharge'] : $arrRatePlan['MinMonthly'];
 						$arrDefine['SvcSummPlanSumm']		['PlanCredit']		['Value']	= $fltPlanCredit;
 						$this->_arrFileData[] = $arrDefine['SvcSummPlanSumm'];
 					}
@@ -1672,8 +1672,11 @@
 					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
 					(
 						"ServiceTotal",
-						"SUM(TotalCharge + Debit - Credit) AS TotalCharge",
-						"$strWhereService AND InvoiceRun = <InvoiceRun>"
+						"SUM(TotalCharge + Debit - Credit) AS TotalCharge, PlanCharge",
+						"$strWhereService AND InvoiceRun = <InvoiceRun>",
+						NULL,
+						NULL,
+						"Service"
 					);
 	 				break;
 	 				
