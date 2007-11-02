@@ -595,6 +595,8 @@ class AppTemplateRate extends ApplicationTemplate
 		DBO()->Rate->Load();
 		DBO()->RecordType->Id = DBO()->Rate->RecordType->Value;
 		DBO()->RecordType->Load();
+		DBO()->Destination->Where->Code = DBO()->Rate->Destination->Value;
+		DBO()->Destination->Load();
 		
 		$this->LoadPage('rate_view');
 		return TRUE;

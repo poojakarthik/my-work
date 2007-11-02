@@ -4,7 +4,7 @@
 // to put into each column on the page
 
 // Set the page title
-$this->Page->SetName('View Rate Groups');
+$this->Page->SetName('View Individual Rates');
 
 $strLayout = 'popup_layout';
 $this->Page->SetLayout($strLayout);

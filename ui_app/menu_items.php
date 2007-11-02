@@ -272,8 +272,10 @@ class MenuItems
 	/**
 	 * ViewRates()
 	 *
+	 * Compiles the Href to be executed when the ViewRates menu item is clicked
 	 *
-	 *
+	 * Compiles the Href to be executed when the ViewRates menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 *
 	 * @param	int		
 	 *
