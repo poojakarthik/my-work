@@ -128,6 +128,7 @@ class HtmlTemplateRateList extends HtmlTemplate
 		// Variable to hold the string status of the service i.e. if capped, untimed etc
 		// and is output at the end as looks better in one group rather than fragmented
 		$strCallStatus = "";
+		$strRecordDisplayType = GetConstantDescription(DBO()->RecordType->DisplayType->Value, 'DisplayTypeSuffix');
 		
 		echo "<div id='ContainerDiv_FormContainerDiv_RateAdd' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
 		echo "<div id='FormContainerDiv_RateAdd' class='PopupLarge' style='overflow:auto; height:360px; width:auto;'>\n";
@@ -135,7 +136,11 @@ class HtmlTemplateRateList extends HtmlTemplate
 		DBO()->Rate->Name->RenderOutput();
 		DBO()->Rate->Description->RenderOutput();
 		DBO()->Rate->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);
-		DBO()->Destination->Description->RenderOutput();
+		
+		if (DBO()->Rate->Destination->Value)
+		{
+			DBO()->Destination->Description->RenderOutput();
+		}
 		
 		DBO()->RecordType->Name->RenderOutput();
 		
@@ -170,7 +175,9 @@ class HtmlTemplateRateList extends HtmlTemplate
 			DBO()->Rate->StdMinCharge->RenderOutput();
 			DBO()->Rate->StdFlagfall->RenderOutput();			
 		}
-		
+	
+		DBO()->Rate->Uncapped->RenderOutput();
+
 		// If StdRatePerUnit, StdMarkup, StdPercentage, ExsRatePerUnit, ExsMarkup, ExsPercentage equates to Untimed Calls
 		$bolUntimedChecked = FALSE;
 		if 	((DBO()->Rate->StdRatePerUnit->Value == 0) &&
@@ -189,45 +196,31 @@ class HtmlTemplateRateList extends HtmlTemplate
 		{
 			//standard billing units/charge/markup on cost $/markup on cost %
 			echo "<table border='0' cellpadding='0' cellspacing='0'>";
-			//if (DBO()->Rate->StdUnits->Value > 0)
-			//{		
-			//	echo "<tr><td width='2%'>&nbsp;&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Standard Billing Units : </div></td>";
-			//	echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdUnits->Value . "</div></td></tr>\n";
-			//}
-			if (DBO()->Rate->StdRatePerUnit->Value > 0)
-			{		
-				echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Charge ($) : </div></td>";
-				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdRatePerUnit->FormattedValue() . " Per " . DBO()->Rate->StdUnits->Value . " " . GetConstantDescription(DBO()->RecordType->DisplayType->Value, 'DisplayTypeSuffix') . "</div></td></tr>";
-			}
-			if (DBO()->Rate->StdMarkup->Value > 0)
-			{
-				echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Charge ($) : </div></td>";
-				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdMarkup->Value . " Per " .DBO()->Rate->StdUnits->Value . " " . GetConstantDescription(DBO()->RecordType->DisplayType->Value, 'DisplayTypeSuffix') . "</div></td></tr>";
-			}
-			if (DBO()->Rate->StdPercentage->Value > 0)
-			{
-				echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Markup on Cost ($) : </div></td>";
-				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdPercentage->Value . " Per " .DBO()->Rate->StdUnits->Value . " " . GetConstantDescription(DBO()->RecordType->DisplayType->Value, 'DisplayTypeSuffix') . "</div></td></tr>";
-			}
+			echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Standard Charge : </div></td>";
+			echo "<td><div class='DefaultRegularOutput'>$" . DBO()->Rate->StdRatePerUnit->FormattedValue();
+			echo  " Per " . DBO()->Rate->StdUnits->Value . " " . $strRecordDisplayType . "</div></td></tr>";
+			echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Standard Markup : </div></td>";
+			echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdMarkup->Value;
+			echo  " Per " .DBO()->Rate->StdUnits->Value . " $strRecordDisplayType </div></td></tr>";
+			echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Markup on Cost : </div></td>";
+			echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdPercentage->Value . " Per " .DBO()->Rate->StdUnits->Value . " " . $strRecordDisplayType . "</div></td></tr>";
 			echo "</table>\n";
 	
-			//no capping/start capping at units/start capping at $
+			// no capping/start capping at units/start capping at $
+			// if the CapUnits is greater than zero OR CapUnits equals zero AND Either CapLimit OR CapUsage equals zero
 			$bolShowCapDetails = FALSE;
 			echo "<table border='0' cellpadding='0' cellspacing='0'>";
-			if (DBO()->Rate->CapUnits->Value > 0)
+			if (DBO()->Rate->CapUnits->Value > 0 || (DBO()->Rate->CapUnits->Value == 0 && (DBO()->Rate->CapLimit->Value > 0 || DBO()->Rate->CapUsage->Value > 0)))
 			{
-				//dont need to output units just use them to build the output?
-				//DBO()->Rate->CapUnits->RenderOutput();
 				$bolShowCapDetails = TRUE;
-				echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Start Capping at (units) : </div></td>";
-				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->CapUnits->Value . " KB(s)</div></td></tr>";
+				echo "<tr><td width='3%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Start Capping at : </div></td>";
+				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->CapUnits->Value . " $strRecordDisplayType</div></td></tr>";
 			}
-			elseif (DBO()->Rate->CapCost->Value > 0)
+			elseif (DBO()->Rate->CapCost->Value > 0 || (DBO()->Rate->CapCost->Value == 0 && (DBO()->Rate->CapLimit->Value > 0 || DBO()->Rate->CapUsage->Value > 0)))
 			{
-				//DBO()->Rate->CapCost->RenderOutput();
 				$bolShowCapDetails = TRUE;
-				echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Start Capping at ($) : </div></td>";
-				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->CapCost->Value . " Dollars</div></td></tr>";
+				echo "<tr><td width='3%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Start Capping at : </div></td>";
+				echo "<td><div class='DefaultRegularOutput'>$" . DBO()->Rate->CapCost->FormattedValue();
 			}
 			else
 			{
@@ -241,15 +234,15 @@ class HtmlTemplateRateList extends HtmlTemplate
 			if (DBO()->Rate->CapUsage->Value > 0)
 			{
 				$bolShowExcessDetails = TRUE;			
-				echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Stop Capping at (units) : </div></td>";
-				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->CapUsage->Value . " KB(s)</div></td></tr>";				
+				echo "<tr><td width='3%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Stop Capping at : </div></td>";
+				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->CapUsage->Value . " $strRecordDisplayType</div></td></tr>";				
 				//DBO()->Rate->CapUsage->RenderOutput();
 			}
-			elseif (DBO()->Rate->CapLimit->Value > 0)
+			elseif (DBO()->Rate->CapLimit->Value > 0 && !DBO()->Rate->CapUsage->Value > 0)
 			{
 				$bolShowExcessDetails = TRUE;	
-				echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Stop Capping at ($) : </div></td>";
-				echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->CapLimit->Value . " KB(s)</div></td></tr>";					
+				echo "<tr><td width='3%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Stop Capping at : </div></td>";
+				echo "<td><div class='DefaultRegularOutput'>$" . DBO()->Rate->CapLimit->Value;		
 				//DBO()->Rate->CapLimit->RenderOutput();
 			}
 			elseif (DBO()->Rate->ExsFlagfall->Value > 0)
@@ -275,13 +268,13 @@ class HtmlTemplateRateList extends HtmlTemplate
 				//}
 				if (DBO()->Rate->ExsRatePerUnit->Value > 0)
 				{	
-					echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Excess Charge ($) : </div></td>";
-					echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->ExsRatePerUnit->RenderOutput() . " Per " . DBO()->Rate->ExsUnits->Value . " KB(s) beyond cap limit</div></td></tr>";
+					echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Excess Charge : </div></td>";
+					echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->ExsRatePerUnit->RenderOutput() . " Per " . DBO()->Rate->ExsUnits->Value . " $strRecordDisplayType beyond cap limit</div></td></tr>";
 				}
 				elseif (DBO()->Rate->ExsMarkup->Value > 0)
 				{
-					echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Excess Markup on Cost ($) : </div></td>";
-					echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->ExsMarkup->RenderOutput() . " Per " . DBO()->Rate->ExsUnits->Value . " KB(s) beyond cap limit</div></td></tr>";
+					echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Excess Markup on Cost : </div></td>";
+					echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->ExsMarkup->RenderOutput() . " Per " . DBO()->Rate->ExsUnits->Value . " $strRecordDisplayType beyond cap limit</div></td></tr>";
 				}
 				elseif (DBO()->Rate->ExsPercentage->Value > 0)
 				{	
