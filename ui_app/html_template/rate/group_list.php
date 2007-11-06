@@ -217,7 +217,7 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				}
 				
 				// temporary hard coded link for testing purposes
-				$strDetailHtml .= "<tr><td colspan='4'><a href='javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId\", \"large\", null, \"Rate\", \"View\", {\"Objects\":{\"Rate\":{\"Id\":14025}}})'>Temporary Link Click here</a></td></tr>\n";
+				$strDetailHtml .= "<tr><td colspan='4'><a href='javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId\", \"large\", null, \"Rate\", \"View\", {\"Objects\":{\"Rate\":{\"Id\":12}}})'>Temporary Link Click here</a></td></tr>\n";
 				
 				$strDetailHtml .= "</table>\n";
 				$strDetailHtml .= "</div>\n";

@@ -129,9 +129,16 @@ class HtmlTemplateRateList extends HtmlTemplate
 		// and is output at the end as looks better in one group rather than fragmented
 		$strCallStatus = "";
 		$strRecordDisplayType = GetConstantDescription(DBO()->RecordType->DisplayType->Value, 'DisplayTypeSuffix');
-		
+		$strAvailability = DBO()->Rate->Monday->AsValue(CONTEXT_DEFAULT,TRUE) . 
+								DBO()->Rate->Tuesday->AsValue(CONTEXT_DEFAULT,TRUE) . 
+								DBO()->Rate->Wednesday->AsValue(CONTEXT_DEFAULT,TRUE) . 
+								DBO()->Rate->Thursday->AsValue(CONTEXT_DEFAULT,TRUE) . 
+								DBO()->Rate->Friday->AsValue(CONTEXT_DEFAULT,TRUE) .
+								DBO()->Rate->Saturday->AsValue(CONTEXT_DEFAULT,TRUE) .
+								DBO()->Rate->Sunday->AsValue(CONTEXT_DEFAULT,TRUE);
+
 		echo "<div id='ContainerDiv_FormContainerDiv_RateAdd' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
-		echo "<div id='FormContainerDiv_RateAdd' class='PopupLarge' style='overflow:auto; height:360px; width:auto;'>\n";
+		echo "<div id='FormContainerDiv_RateAdd' class='PopupLarge' style='overflow:auto; height:auto; width:auto;'>\n";
 
 		DBO()->Rate->Name->RenderOutput();
 		DBO()->Rate->Description->RenderOutput();
@@ -143,17 +150,8 @@ class HtmlTemplateRateList extends HtmlTemplate
 		}
 		
 		DBO()->RecordType->Name->RenderOutput();
-		
 		DBO()->Rate->StartTime->RenderOutput();
 		DBO()->Rate->EndTime->RenderOutput();
-
-		$strAvailability = DBO()->Rate->Monday->AsValue(CONTEXT_DEFAULT,TRUE) . 
-								DBO()->Rate->Tuesday->AsValue(CONTEXT_DEFAULT,TRUE) . 
-								DBO()->Rate->Wednesday->AsValue(CONTEXT_DEFAULT,TRUE) . 
-								DBO()->Rate->Thursday->AsValue(CONTEXT_DEFAULT,TRUE) . 
-								DBO()->Rate->Friday->AsValue(CONTEXT_DEFAULT,TRUE) .
-								DBO()->Rate->Saturday->AsValue(CONTEXT_DEFAULT,TRUE) .
-								DBO()->Rate->Sunday->AsValue(CONTEXT_DEFAULT,TRUE);
 
 		echo "<table width=335 border=0 cellpadding=0 cellspacing=0>\n";
 		echo "<tr><td><div class='DefaultRegularOutput'>&nbsp;&nbsp;Availability : </div></td><td align=right>$strAvailability</td></tr>";
@@ -196,19 +194,21 @@ class HtmlTemplateRateList extends HtmlTemplate
 		{
 			//standard billing units/charge/markup on cost $/markup on cost %
 			echo "<table border='0' cellpadding='0' cellspacing='0'>";
-			echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Standard Charge : </div></td>";
+			
+			echo "	<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Standard Charge : </div></td>";
 			echo "<td><div class='DefaultRegularOutput'>$" . DBO()->Rate->StdRatePerUnit->FormattedValue();
-			echo  " Per " . DBO()->Rate->StdUnits->Value . " " . $strRecordDisplayType . "</div></td></tr>";
+			echo " Per " . DBO()->Rate->StdUnits->Value . " " . $strRecordDisplayType . "</div></td></tr>";
 			echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Standard Markup : </div></td>";
-			echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdMarkup->Value;
-			echo  " Per " .DBO()->Rate->StdUnits->Value . " $strRecordDisplayType </div></td></tr>";
+			echo "<td><div class='DefaultRegularOutput'>$" . DBO()->Rate->StdMarkup->FormattedValue();
+			echo  " Per " . DBO()->Rate->StdUnits->Value . " $strRecordDisplayType </div></td></tr>";
 			echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Markup on Cost : </div></td>";
-			echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->StdPercentage->Value . " Per " .DBO()->Rate->StdUnits->Value . " " . $strRecordDisplayType . "</div></td></tr>";
+			echo "<td><div class='DefaultRegularOutput'>%" . DBO()->Rate->StdPercentage->FormattedValue() . " Per " .DBO()->Rate->StdUnits->Value . " " . $strRecordDisplayType . "</div></td></tr>";
 			echo "</table>\n";
 	
 			// no capping/start capping at units/start capping at $
 			// if the CapUnits is greater than zero OR CapUnits equals zero AND Either CapLimit OR CapUsage equals zero
 			$bolShowCapDetails = FALSE;
+			
 			echo "<table border='0' cellpadding='0' cellspacing='0'>";
 			if (DBO()->Rate->CapUnits->Value > 0 || (DBO()->Rate->CapUnits->Value == 0 && (DBO()->Rate->CapLimit->Value > 0 || DBO()->Rate->CapUsage->Value > 0)))
 			{
@@ -258,35 +258,35 @@ class HtmlTemplateRateList extends HtmlTemplate
 				}
 			}
 			
-			if ($bolCapDetailsShown)
+			if ($bolShowExcessDetails)
 			{
 				//exs billing units/exs charge/exs markup cost $/exs markup cost %
 				echo "<table border='0' cellpadding='0' cellspacing='0'>";		
-				//if (DBO()->Rate->ExsRatePerUnit->Value > 0 || DBO()->Rate->ExsMarkup->Value > 0 || DBO()->Rate->ExsPercentage->Value > 0)
-				//{
-				//	DBO()->Rate->ExsUnits->RenderOutput();
-				//}
 				if (DBO()->Rate->ExsRatePerUnit->Value > 0)
 				{	
 					echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Excess Charge : </div></td>";
-					echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->ExsRatePerUnit->RenderOutput() . " Per " . DBO()->Rate->ExsUnits->Value . " $strRecordDisplayType beyond cap limit</div></td></tr>";
+					echo "<td><div class='DefaultRegularOutput'>$" . DBO()->Rate->ExsRatePerUnit->FormattedValue() . " Per " . DBO()->Rate->ExsUnits->Value . " $strRecordDisplayType beyond cap limit</div></td></tr>";
 				}
 				elseif (DBO()->Rate->ExsMarkup->Value > 0)
 				{
 					echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Excess Markup on Cost : </div></td>";
-					echo "<td><div class='DefaultRegularOutput'>" . DBO()->Rate->ExsMarkup->RenderOutput() . " Per " . DBO()->Rate->ExsUnits->Value . " $strRecordDisplayType beyond cap limit</div></td></tr>";
+					echo "<td><div class='DefaultRegularOutput'>$" . DBO()->Rate->ExsMarkup->Value . " Per " . DBO()->Rate->ExsUnits->Value . " $strRecordDisplayType beyond cap limit</div></td></tr>";
 				}
 				elseif (DBO()->Rate->ExsPercentage->Value > 0)
 				{	
-					DBO()->Rate->ExsPercentage->RenderOutput();	
+					echo "<tr><td width='2%'>&nbsp;</td><td width='190'><div class='DefaultRegularOutput'>Excess Markup on Cost : </div></td>";				
+					echo "<td><div class='DefaultRegularOutput'>%" . DBO()->Rate->ExsPercentage->Value . "</div></td></tr>";
 				}
 				echo "</table>\n";
 			}
 		}
 
-		echo "<table border='0' cellpadding='0' cellspacing='0'>";	
-		echo "<tr><td>" . $strCallStatus . "</td></tr>\n";
-		echo "</table>";
+		if ($strCallStatus)
+		{
+			echo "<table border='0' cellpadding='0' cellspacing='0'>";	
+			echo "<tr><td>" . $strCallStatus . "</td></tr>\n";
+			echo "</table>";
+		}
 
 		echo "</div>\n";
 		echo "</div>\n";
