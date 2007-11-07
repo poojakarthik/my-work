@@ -790,7 +790,7 @@ function SaveSystemNote($strNote, $intAccountGroup, $intAccount=NULL, $intContac
 // If DBO()->NoteDetails->FilterOption or DBO()->NoteDetails->MaxNotes are not set, it will set them
 // If DBO()->NoteDetails->FilterOption is set, it will update the appropriate cookie
 // It also sets DBO()->NoteDetails->AccountNotes || DBO()->NoteDetails->ServiceNotes || DBO()->NoteDetails->ContactNotes
-function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL)
+function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUpdateCookies=FALSE)
 {
 	if ($intAccountId == NULL && $intServiceId == NULL && $intContactId == NULL)
 	{
@@ -829,7 +829,7 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL)
 	{
 		// The filter has already been set
 		// Update the cookie, if it needs updating
-		if (!isset($_COOKIE["{$strCookiePrefix}NotesFilter"]) || ($_COOKIE["{$strCookiePrefix}NotesFilter"] != DBO()->NoteDetails->FilterOption->Value))
+		if (($bolUpdateCookies) && (!isset($_COOKIE["{$strCookiePrefix}NotesFilter"]) || ($_COOKIE["{$strCookiePrefix}NotesFilter"] != DBO()->NoteDetails->FilterOption->Value)))
 		{
 			// The cookie either isn't set, or needs updating
 			setCookie("{$strCookiePrefix}NotesFilter", DBO()->NoteDetails->FilterOption->Value, 0, "/");

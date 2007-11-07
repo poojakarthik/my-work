@@ -128,6 +128,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='NarrowContent'>\n";
 
 		// Render the details of the Account
+		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		
 		DBO()->Account->Id->RenderOutput();
 		
 		if ((DBO()->Account->BusinessName->Value == "") && (DBO()->Account->TradingName->Value == ""))
@@ -166,7 +168,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->ACN->RenderOutput();
 		}
 		
-		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		
 		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		
 		// Display the first line of the address, but only if there is one
@@ -212,6 +214,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
 		
 		DBO()->Account->DisableDDR->RenderOutput();
+		if (DBO()->Account->DisableLatePayment->Value === NULL)
+		{
+			// If DisableLatePayment is NULL then set it to 0
+			DBO()->Account->DisableLatePayment = 0;
+		}
 		DBO()->Account->DisableLatePayment->RenderOutput();
 
 		// Render the buttons
@@ -256,12 +263,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
 
-		DBO()->Account->BusinessName->RenderInput();
-		DBO()->Account->TradingName->RenderInput();
-
-		DBO()->Account->ABN->RenderInput();
-		DBO()->Account->ACN->RenderInput();
-		
 		// Render the CustomerGroup combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group :</div>\n";
@@ -274,8 +275,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
-		echo "</div>\n";		
+		echo "</div>\n";
+		
+		DBO()->Account->BusinessName->RenderInput();
+		DBO()->Account->TradingName->RenderInput();
 
+		DBO()->Account->ABN->RenderInput();
+		DBO()->Account->ACN->RenderInput();
+		
 		// Render the Account Status Combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status :</div>\n";

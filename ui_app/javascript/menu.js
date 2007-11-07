@@ -100,7 +100,11 @@ function VixenMenuClass(objMenu)
 			
 			//Add some more crap
 			elmNode.action = this.objMenu[strKey];
-			elmNode.setAttribute('href', this.objMenu[strKey]);
+			if (typeof(elmNode.action) == 'string')
+			{
+				// The item is an action, not a menu.  Set the link
+				elmNode.setAttribute('href', this.objMenu[strKey]);
+			}
 			elmNode.level = 1;
 		}
 	}

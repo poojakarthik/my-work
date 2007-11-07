@@ -54,8 +54,9 @@ function VixenNoteListClass()
 	this.intNoteFilter			= null;
 	this.intMaxNotes			= null;
 	this.strNotesContainerDivId	= null;
+	this.bolUpdateCookies		= null;
 	
-	this.Initialise = function(intAccountId, intServiceId, intContactId, intNoteFilter, intMaxNotes, strNotesContainerDivId)
+	this.Initialise = function(intAccountId, intServiceId, intContactId, intNoteFilter, intMaxNotes, strNotesContainerDivId, bolUpdateCookies)
 	{
 		this.intAccountId			= intAccountId;
 		this.intServiceId			= intServiceId;
@@ -63,6 +64,7 @@ function VixenNoteListClass()
 		this.intNoteFilter			= intNoteFilter;
 		this.intMaxNotes			= intMaxNotes;
 		this.strNotesContainerDivId	= strNotesContainerDivId;
+		this.bolUpdateCookies		= bolUpdateCookies;
 	}
 	
 	// If the list is rendered as a popup, it should not have a listener registered for the OnNewNote Event
@@ -119,6 +121,7 @@ function VixenNoteListClass()
 		objObjects.NoteDetails.FilterOption		= this.intNoteFilter;
 		objObjects.NoteDetails.MaxNotes			= this.intMaxNotes;
 		objObjects.NoteDetails.ContainerDivId	= this.strNotesContainerDivId;
+		objObjects.NoteDetails.UpdateCookies	= this.bolUpdateCookies;
 		
 		Vixen.Ajax.CallAppTemplate("Note", "ListWithFilter", objObjects);
 	}

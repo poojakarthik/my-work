@@ -201,7 +201,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		$intContactId	= (DBO()->NoteDetails->ContactNotes->Value) ? DBO()->Contact->Id->Value : "null";
 		$intNoteFilter	= DBO()->NoteDetails->FilterOption->Value;
 
-		$strJavascript	= "VixenCreateNoteListObject(); Vixen.NoteList.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter, $intMaxNotes, '$strNotesContainerDivId'); Vixen.NoteList.RegisterListeners();";
+		$strJavascript	= "VixenCreateNoteListObject(); Vixen.NoteList.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter, $intMaxNotes, '$strNotesContainerDivId', true); Vixen.NoteList.RegisterListeners();";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 	}
 
@@ -314,7 +314,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 							{
 								Vixen.NoteListPopup = new VixenNoteListClass;
 							}
-							Vixen.NoteListPopup.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter, $intMaxNotes, '$strNotesContainerDivId');
+							Vixen.NoteListPopup.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter, $intMaxNotes, '$strNotesContainerDivId', false);
 						";
 							
 		echo "<script type='text/javascript'>$strJavascript</script>\n";

@@ -306,6 +306,7 @@ class AppTemplateNote extends ApplicationTemplate
 	 * It assumes 	DBO()->NoteDetails->FilterOption is set
 	 *				DBO()->NoteDetails->MaxNotes is set
 	 *				DBO()->NoteDetails->ContainerDivId is set
+	 *				DBO()->NoteDetails->UpdateCookies is set to TRUE if you want the Note cookies updated
 	 * 				DBO()->Account->Id || DBO()->Service->Id || DBO()->Contact->Id
 	 *
 	 */
@@ -316,7 +317,8 @@ class AppTemplateNote extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		// Load the notes
-		LoadNotes(DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->Contact->Id->Value);
+		$bolUpdateCookies = (DBO()->NoteDetails->UpdateCookies->Value == TRUE) ? TRUE : FALSE;
+		LoadNotes(DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->Contact->Id->Value, $bolUpdateCookies);
 		
 		//Load the HtmlTemplate
 		Ajax()->RenderHtmlTemplate("NoteList", HTML_CONTEXT_DEFAULT, DBO()->NoteDetails->ContainerDivId->Value);
