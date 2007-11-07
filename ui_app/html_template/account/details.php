@@ -129,6 +129,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 		// Render the details of the Account
 		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		
 		DBO()->Account->Id->RenderOutput();
 		
@@ -167,9 +168,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			// If there is no ABN, display the ACN, if there is one
 			DBO()->Account->ACN->RenderOutput();
 		}
-		
-		
-		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		
 		// Display the first line of the address, but only if there is one
 		if (DBO()->Account->Address1->Value != "")
@@ -277,12 +275,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
-		DBO()->Account->BusinessName->RenderInput();
-		DBO()->Account->TradingName->RenderInput();
-
-		DBO()->Account->ABN->RenderInput();
-		DBO()->Account->ACN->RenderInput();
-		
 		// Render the Account Status Combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status :</div>\n";
@@ -306,6 +298,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
+		
+		DBO()->Account->BusinessName->RenderInput();
+		DBO()->Account->TradingName->RenderInput();
+
+		DBO()->Account->ABN->RenderInput();
+		DBO()->Account->ACN->RenderInput();
 		
 		DBO()->Account->Address1->RenderInput();
 		DBO()->Account->Address2->RenderInput();

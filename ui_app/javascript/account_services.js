@@ -114,14 +114,8 @@ function VixenAccountServicesClass()
 	 */
 	this.AddListeners = function()
 	{
-		if (Vixen.EventHandler == undefined)
-		{
-			// The EventHandler hasn't been loaded yet.  Try again in half a second
-			setTimeout(this.AddListeners(), 500);
-			return;
-		}
-	
 		Vixen.EventHandler.AddListener("OnServiceUpdate", this.OnUpdate);
+		Vixen.EventHandler.AddListener("OnAccountDetailsUpdate", this.OnUpdate);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -144,6 +138,7 @@ function VixenAccountServicesClass()
 	this.RemoveListeners = function()
 	{
 		Vixen.EventHandler.RemoveListener("OnServiceUpdate", this.OnUpdate);
+		Vixen.EventHandler.RemoveListener("OnAccountDetailsUpdate", this.OnUpdate);
 	}
 
 	//------------------------------------------------------------------------//
