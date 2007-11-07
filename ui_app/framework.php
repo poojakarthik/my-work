@@ -2445,7 +2445,7 @@ class AjaxFramework
 	 * 
 	 * @param	string		$strHtmlTemplate	Full name of the HtmlTemplate class, to be rendered (ie HtmlTemplateContactEdit)
 	 * @param	integer		$intContext			Context with which to render the Html Template (ie HTML_CONTEXT_CONTACT_EDIT)
-	 * @param	integer		$intContainerDivId	The id of the Div that the HtmlTemplate will be rendered in.
+	 * @param	string		$strContainerDivId	The id of the Div that the HtmlTemplate will be rendered in.
 	 *											Anything currently in this div will be destroyed.
 	 * @param	obj			$objAjax			optional, Ajax object
 	 * @param	integer		$intMode			optional, The mode number to set
@@ -2454,14 +2454,14 @@ class AjaxFramework
 	 * @return	void
 	 * @method
 	 */
-	function RenderHtmlTemplate($strHtmlTemplate, $intContext, $intContainerDivId, $objAjax=NULL, $intTemplateMode=HTML_MODE)
+	function RenderHtmlTemplate($strHtmlTemplate, $intContext, $strContainerDivId, $objAjax=NULL, $intTemplateMode=HTML_MODE)
 	{
 		// Start output buffering as we want to be able to capture rendered Html code
 		ob_start();
 		
 		// Create the Html Template object
 		$strClassName = "HtmlTemplate$strHtmlTemplate";
-		$objHtmlTemplate = new $strClassName($intContext, $intContainerDivId);
+		$objHtmlTemplate = new $strClassName($intContext, $strContainerDivId);
 		$objHtmlTemplate->SetMode($intTemplateMode, $objAjax);
 
 		// Capture the rendered html code
@@ -2470,7 +2470,7 @@ class AjaxFramework
 		
 		// Set up the command object
 		$arrCommand['Type'] = "ReplaceDivContents";
-		$arrCommand['ContainerDivId'] = $intContainerDivId;
+		$arrCommand['ContainerDivId'] = $strContainerDivId;
 		$arrCommand['Data'] = $strHtmlCode;
 		
 		// Clean the output buffer
@@ -2568,19 +2568,22 @@ class AjaxFramework
 	 * This Event has been wrapped in its own function because of how often it is used
 	 * 
 	 * @param	integer		$intAccountId	The account that the note is associated with.  Specifiy as NULL, if the note is note associated with an account\
-	 *										(Note that this is not optional.  You will have to explicitly declare it as null if the note is note
+	 *										(Note that this is not optional.  You will have to explicitly declare it as null if the note is not
 	 *										associated with an account)
 	 * @param 	integer		$intServiceId	optional, The Id of the service that the note is associated with (defaults to NULL)
 	 * @param 	integer		$intContactId	optional, The Id of the contact that the note is associated with (defaults to NULL)
+	 * @param	integer 	$intNoteType	optional, The NoteType of the note.  This is useful if the new note is a system note, 
+	 *										as some listeners should not do anything if the NoteType is SYSTEM_NOTE_TYPE. Defaults to SYSTEM_NOTE_TYPE
 	 *
 	 * @return	void
 	 * @method
 	 */
-	function FireOnNewNoteEvent($intAccountId, $intServiceId=NULL, $intContactId=NULL)
+	function FireOnNewNoteEvent($intAccountId, $intServiceId=NULL, $intContactId=NULL, $intNoteType=SYSTEM_NOTE_TYPE)
 	{
-		$arrData['Account']['Id'] = $intAccountId;
-		$arrData['Service']['Id'] = $intServiceId;
-		$arrData['Contact']['Id'] = $intContactId;
+		$arrData['Account']['Id']		= $intAccountId;
+		$arrData['Service']['Id']		= $intServiceId;
+		$arrData['Contact']['Id']		= $intContactId;
+		$arrData['Note']['NoteType']	= $intNoteType;
 		
 		$this->AddCommand("FireEvent", Array("Event"=>EVENT_ON_NEW_NOTE, "EventData"=>$arrData));
 	}

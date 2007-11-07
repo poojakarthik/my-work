@@ -177,6 +177,8 @@ function VixenEventHandlerClass()
 	{
 		strEventType = strEventType.toLowerCase();
 		var funcEventListener;
+		var intOldLength;
+		var i = 0;
 		
 		// Check that a list of event listeners actually exists
 		if (this._objEventListeners[strEventType] != undefined)
@@ -187,8 +189,11 @@ function VixenEventHandlerClass()
 			objEvent.Data = objEventData;
 			
 			// Execute each event listener in the list
-			for (var i=0; i < this._objEventListeners[strEventType].length; i++)
+			while (i < this._objEventListeners[strEventType].length)
 			{
+				// Store the length of the list of listeners before this listener is fired
+				intOldLength = this._objEventListeners[strEventType].length;
+				
 				//TODO! I should probably check that the listener function still exists in memory
 				// although javascript has automatic garbage collection, and if this pointer points
 				// to the function, then it shouldn't be automatically freed.
@@ -204,6 +209,14 @@ function VixenEventHandlerClass()
 				// points to this function (FireEvent), even from within the 
 				// event listener
 				//this._objEventListeners[strEventType][i](objEvent);
+				
+				// Only increment the iterator if the length of the list of listeners hasn't changed
+				// If it has changed, then that means that the listener removed itself from the list of listeners
+				if (intOldLength == this._objEventListeners[strEventType].length)
+				{
+					// Move on to the next listener
+					i++;
+				}
 			}
 		}
 	}

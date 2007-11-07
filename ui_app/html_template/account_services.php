@@ -100,20 +100,21 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 	 */
 	function Render()
 	{
+		// Declare the id of the container div for the VixenTable which displays all the services
+		$strTableContainerDivId = "AccountServicesTableDiv";
+		
 		switch ($this->_intContext)
 		{
 			case HTML_CONTEXT_POPUP:
-				$this->RenderPopup();
+				$this->RenderPopup($strTableContainerDivId);
+				break;
+			case HTML_CONTEXT_PAGE:
+				$this->RenderInPage($strTableContainerDivId);
 				break;
 			default:
 				$this->RenderTable();
-				
-				// Initialise the javascript object that facilitates this popup (Vixen.AccountServices)
-				echo "<script type='text/javascript'>Vixen.AccountServices.Initialise()</script>";
-				break;
 		}
 	}
-	
 	
 	//------------------------------------------------------------------------//
 	// RenderPopup
@@ -125,9 +126,11 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 	 *
 	 * Render this HTML Template for use in a popup.  Includes a close button
 	 *
+	 * @param	string	$strTableContainerDivId		The id for the container div for the VixenTable
+	 *
 	 * @method
 	 */
-	function RenderPopup()
+	function RenderPopup($strTableContainerDivId)
 	{
 		echo "<div class='PopupLarge'>\n";
 		
@@ -135,7 +138,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		$strTableContainerStyle = (DBL()->Service->RecordCount() > 14) ? "style='overflow:auto; height:450px'": "";
 		
 		// Draw the table container
-		echo "<div $strTableContainerStyle>\n";
+		echo "<div id='$strTableContainerDivId' $strTableContainerStyle>\n";
 		
 		// Draw the table
 		$this->RenderTable();
@@ -154,6 +157,40 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise('{$this->_objAjax->strId}')</script>";
 	}
 	
+	//------------------------------------------------------------------------//
+	// RenderInPage
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderInPage()
+	 *
+	 * Render this HTML Template for use in a page.  
+	 *
+	 * Render this HTML Template for use in a page.
+	 *
+	 * @param	string	$strTableContainerDivId		The id for the container div for the VixenTable
+	 *
+	 * @method
+	 */
+	function RenderInPage($strTableContainerDivId)
+	{
+		echo "<h2 class='Services'>Services</h2>\n";
+		
+		// Draw the table
+		echo "<div id='$strTableContainerDivId'>\n";
+		$this->RenderTable();
+		echo "</div>\n";
+		
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
+		$this->Button("Add Services", $strBulkAddServiceLink);
+		echo "</div></div>\n";
+		
+		$intAccountId = DBO()->Account->Id->Value;
+		// Initialise the javascript object that facilitates this HtmlTemplate
+		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise($intAccountId, null, '$strTableContainerDivId')</script>\n";
+	}
+
+	
 	
 	//------------------------------------------------------------------------//
 	// RenderTable
@@ -170,8 +207,8 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 	function RenderTable()
 	{
 		Table()->ServiceTable->SetHeader("FNN #", "Service", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
-		Table()->ServiceTable->SetWidth("11%", "11%", "40%", "11%", "7%", "10%", "10%");
-		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Center");
+		Table()->ServiceTable->SetWidth("11%", "10%", "39%", "11%", "7%", "10%", "12%");
+		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left");
 		
 		foreach (DBL()->Service as $dboService)
 		{
@@ -191,7 +228,19 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($dboService->Id->Value);
 			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
 			
-			$strActionsCell				= 	"<span class='DefaultOutputSpan'>$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges</span>";
+			// Include a button for provisioning, if the service is a landline
+			if ($dboService->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+			{
+				$strProvisioningLink	= Href()->Provisioning($dboService->Id->Value);
+				$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
+			}
+			else
+			{
+				// The service is not a landline
+				$strProvisioning = "";
+			}
+			
+			$strActionsCell				= "<span>$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning</span>";
 
 			// Find the current plan for the service
 			$mixCurrentPlanId = GetCurrentPlan($dboService->Id->Value);
@@ -210,8 +259,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			else
 			{
 				// There is no current plan for the service
-				$strPlanCell = "<span class='DefaultOutputSpan' id='RatePlan.Name'>No Plan Selected</span>";
-				//$strPlanCell = "<a href='$strChangePlanLink' title='Select Plan'>$strPlan</a>";
+				$strPlanCell = "<span id='RatePlan.Name'>No Plan Selected</span>";
 			}
 			
 
@@ -253,8 +301,8 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 				$strStatusDescDate = OutputMask()->ShortDate($dboService->ClosedOn->Value);
 			}
 
-			$strStatusDescCell = "<span class='DefaultOutputSpan'>$strStatusDesc</span>";
-			$strStatusDateCell = "<span class='DefaultOutputSpan'>$strStatusDescDate</span>";
+			$strStatusDescCell = "<span>$strStatusDesc</span>";
+			$strStatusDateCell = "<span>$strStatusDescDate</span>";
 			
 				
 			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
@@ -262,7 +310,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			if ($dboService->FNN->Value == NULL)
 			{
 				// The service doesn't have an FNN yet
-				$strFnnDescription = "<span class='DefaultOutputSpan'>not specified</span>";
+				$strFnnDescription = "<span>not specified</span>";
 			}
 			else
 			{
@@ -272,7 +320,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
 			
-			Table()->ServiceTable->AddRow($strFnnCell, $dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
+			Table()->ServiceTable->AddRow($strFnnCell, $dboService->ServiceType->AsCallback('GetConstantDescription', Array('ServiceType')), 
 											$strPlanCell, $strStatusCell, $strStatusDescCell, $strStatusDateCell, $strActionsCell);
 		}
 		

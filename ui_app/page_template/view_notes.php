@@ -31,29 +31,27 @@
  */
 
 // set the page title
-switch (DBO()->Note->NoteClass->Value)
-{	
-	case NOTE_CLASS_ACCOUNT_NOTES:
-		$this->Page->SetName('Account Notes');
-		break;
-	case NOTE_CLASS_CONTACT_NOTES:
-		$this->Page->SetName('Contact Notes');
-		break;
-	case NOTE_CLASS_SERVICE_NOTES:
-		$this->Page->SetName('Service Notes');
-		break;
-	default:
-		$this->Page->SetName('Notes');
-		break;
+if (DBO()->Service->Id->IsSet)
+{
+	$strPageName = "Service Notes - " . GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType") . " - " . DBO()->Service->FNN->Value;
 }
+elseif (DBO()->Contact->Id->IsSet)
+{
+	$strPageName = "Contact Notes";
+}
+else
+{
+	$strPageName = "Account Notes";
+}
+$this->Page->SetName($strPageName);
 
-// set the layout template for the page.
+// Set the layout template for the page
 $this->Page->SetLayout('popup_layout');
 
 // This is just an example of overriding the page style of the popup
-$this->Page->SetStyleOverride("background-color : #F3F3F3");
+//$this->Page->SetStyleOverride("background-color : #F3F3F3");
 
-// add the Html Objects to their respective columns
-$this->Page->AddObject('NoteView', COLUMN_ONE, HTML_CONTEXT_POPUP);
+// Add the Html Objects to their respective columns
+$this->Page->AddObject('NoteList', COLUMN_ONE, HTML_CONTEXT_POPUP, "NoteListDiv");
 
 ?>

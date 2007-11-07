@@ -64,15 +64,17 @@ function VixenMenuClass(objMenu)
 		//Render the initial menu (top-level)
 		for (strKey in this.objMenu)
 		{
-			
 			//Build new element
-			objNode = document.createElement('img');
-			objNode.setAttribute('src', 'img/template/' + strKey.toLowerCase().replace(/ /, '_') + '.png');
-			
+			objNode = document.createElement('a');
 			objNode.setAttribute('className', 'ContextMenuItem');
 			objNode.setAttribute('class', 'ContextMenuItem');
 			objNode.setAttribute('Id', 'VixenMenu_' + strKey);
 			
+			//Build the image for the new element
+			objNodeImage = document.createElement('img');
+			objNodeImage.setAttribute('src', 'img/template/' + strKey.toLowerCase().replace(/ /, '_') + '.png');
+			objNode.appendChild(objNodeImage);
+
 			//Attach to elmMenu
 			elmMenu.appendChild(objNode);
 			elmNode = document.getElementById('VixenMenu_' + strKey);
@@ -98,15 +100,14 @@ function VixenMenuClass(objMenu)
 			
 			//Add some more crap
 			elmNode.action = this.objMenu[strKey];
+			elmNode.setAttribute('href', this.objMenu[strKey]);
 			elmNode.level = 1;
 		}
 	}
 	
 	this.RenderSubMenu = function(elmMenuItem)
 	{
-		
 		var strKey;
-		var objNode;
 		var objTextNode;
 		var elmNode;
 		var top = 0;
@@ -142,16 +143,28 @@ function VixenMenuClass(objMenu)
 		for (strKey in elmMenuItem.action)
 		{
 			//Build new element
-			objNode = document.createElement('div');
-			objNode.setAttribute('Id', elmMenuItem.id + "_" + strKey);
+			elmNode = document.createElement('div');
+			elmNode.setAttribute('Id', elmMenuItem.id + "_" + strKey);
 			
-			//Attach to elmMenu
-			elmContainer.appendChild(objNode);
-			elmNode = document.getElementById(elmMenuItem.id + "_" + strKey);
-			
-			// add text to the node
 			objTextNode = document.createTextNode(strKey);
-			elmNode.appendChild(objTextNode);
+			
+			// Add an anchor element to the menu item div if the action of the menu item is a string and does not envoke any javascript
+			// This is done, so the user has the option of opening the page in a new tab
+			// It is also done in a very hacky fashion as the user has to right click on the text; it can't just be anywhere on the menu item
+			if ((typeof(elmMenuItem.action[strKey]) == 'string') && (elmMenuItem.action[strKey].substr(0, 11) != "javascript:"))
+			{
+				elmLink = document.createElement('a');
+				elmLink.setAttribute('href', elmMenuItem.action[strKey]);
+				//elmLink.appendChild(objTextNode);
+				elmLink.innerHTML = strKey;
+				elmNode.appendChild(elmLink);
+				elmLink.style['color']	= "#000000";
+			}
+			else
+			{
+				// Add text to the node
+				elmNode.appendChild(objTextNode);
+			}
 			
 			//Add styles
 			//new_node.style[c_attrib] = value
@@ -167,18 +180,21 @@ function VixenMenuClass(objMenu)
 			top = top + this.config.Level2.height + this.config.Level2.spacing;
 			
 			//Add events
-			elmNode.onclick = function(event) {Vixen.Menu.HandleClick(this)};
-			elmNode.onmouseover = function(event) {Vixen.Menu.HandleMouseOver(this)};
-			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut(this)};
+			elmNode.onclick			= function(event) {Vixen.Menu.HandleClick(this)};
+			elmNode.onmouseover		= function(event) {Vixen.Menu.HandleMouseOver(this)};
+			elmNode.onmouseout		= function(event) {Vixen.Menu.HandleMouseOut(this)};
 			
 			//Add some more crap
 			elmNode.action = elmMenuItem.action[strKey];
 			elmNode.level = elmMenuItem.level + 1;
 			elmNode.style.cursor = "default";
-			
+
 			// set the class
-			objNode.className 	= 'ContextMenuItem';
-			objNode.class 		= 'ContextMenuItem';
+			elmNode.className 	= 'ContextMenuItem';
+			elmNode.class 		= 'ContextMenuItem';
+			
+			// Add the menu item element to the container
+			elmContainer.appendChild(elmNode);			
 		}
 	}
 	

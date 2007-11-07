@@ -6,20 +6,20 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// 2column.php
+// 3column_65_35.php
 //----------------------------------------------------------------------------//
 /**
- * 2column
+ * 3column_65_35
  *
- * Layout Template defining how to display a page that has two columns of HTML Template objects
+ * Layout Template defining how to display a page that has two columns of HTML Template objects, and a footer column; where the first is 65% wide and the second is 35%
  *
- * Layout Template defining how to display a page that has two columns of HTML Template objects
+ * Layout Template defining how to display a page that has two columns of HTML Template objects, and a footer column; where the first is 65% wide and the second is 35%
  *
- * @file		2column.php
+ * @file		3column_65_35.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
- * @version		7.06
+ * @version		7.10
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -38,19 +38,20 @@ $this->RenderContextMenu();
 <h1> <?php echo $this->_strPageName; ?></h1>
 <table width='100%' border='0'>
 	<tr>
-		<td width='49%' valign='top'>
+		<td width='64%' valign='top'>
 			
 			<?php $this->RenderColumn(COLUMN_ONE); ?>
 			
 		</td>
-		<td width='2%'></td>
-		<td width='49%' valign='top'>
+		<td width='1%'></td>
+		<td width='35%' valign='top'>
 			
 			<?php $this->RenderColumn(COLUMN_TWO); ?>
 			
 		</td>
 	</tr>
 </table>
+<?php $this->RenderColumn(COLUMN_THREE); ?>
 </div>
 
 <?php

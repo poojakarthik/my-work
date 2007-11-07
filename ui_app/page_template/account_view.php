@@ -1,4 +1,5 @@
 <?php
+//DEPRICATED DEPRICATED DEPRICATED DEPRICATED DEPRICATED DEPRICATED DEPRICATED DEPRICATED DEPRICATED
 // page template
 // this file specifies the layout to use and the objects to put into each column on the page
 

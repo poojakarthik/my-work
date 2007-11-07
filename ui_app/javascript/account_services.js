@@ -59,7 +59,11 @@ function VixenAccountServicesClass()
 	 *
 	 * @property
 	 */
-	this.strPopupId = "AccountServicesPopupId";
+	this.strPopupId = null;
+	
+	this.strTableContainerDivId = "AccountServicesTableDiv";
+	
+	this.intAccountId = null;
 	
 	//------------------------------------------------------------------------//
 	// Initialise
@@ -71,26 +75,25 @@ function VixenAccountServicesClass()
 	 *  
 	 * Initialises the object - registers event listeners
 	 *
-	 * @param	string	strPopupId	Id of the Account Services popup, which
-	 *								this object facilitates.
-	 *								Note: This should not include the 
-	 *								"VixenPopup__" prefix
+	 * @param	int		intAccountId			Id of the account
+	 * @param	string	strPopupId				Id of the Account Services popup, which
+	 *											this object facilitates.
+	 *											Note: This should not include the 
+	 *											"VixenPopup__" prefix
+	 * @param 	string	strTableContainerDivId	Id of the div that stores the table which lists all the services
 	 *
 	 * @return	void
 	 * @method
 	 */
-	this.Initialise = function(strPopupId)
+	this.Initialise = function(intAccountId, strPopupId, strTableContainerDivId)
 	{
-		if (Vixen.EventHandler == undefined)
-		{
-			// The EventHandler hasn't been loaded yet
-			// Try again in half a second
-			setTimeout(this.Initialise(strPopupId), 500);
-			return;
-		}
-		
-		// Save the Id of the popup
+		// Save the parameters
 		this.strPopupId = strPopupId;
+		if (strTableContainerDivId != null)
+		{
+			this.strTableContainerDivId = strTableContainerDivId;
+		}
+		this.intAccountId = intAccountId;
 		
 		// Register Event Listeners
 		this.AddListeners();
@@ -111,6 +114,13 @@ function VixenAccountServicesClass()
 	 */
 	this.AddListeners = function()
 	{
+		if (Vixen.EventHandler == undefined)
+		{
+			// The EventHandler hasn't been loaded yet.  Try again in half a second
+			setTimeout(this.AddListeners(), 500);
+			return;
+		}
+	
 		Vixen.EventHandler.AddListener("OnServiceUpdate", this.OnUpdate);
 	}
 	
@@ -147,6 +157,7 @@ function VixenAccountServicesClass()
 	 * Event handler for when something on the Account Services popup has been updated and the entire list of services should be redrawn
 	 *
 	 * @param	object	objEvent		objEvent.Data.Service.Id should be set.  objEvent.Data.NewService.Id is optional
+	 *									(although neither of these are used by this particular listener)
 	 *
 	 * @return	void
 	 * @method
@@ -155,8 +166,11 @@ function VixenAccountServicesClass()
 	{
 		// The "this" pointer does not point to this object, when it is called.
 		// It points to the Window object
-		var strPopupId = Vixen.AccountServices.strPopupId;
+		var strPopupId				= Vixen.AccountServices.strPopupId;
+		var strTableContainerDivId	= Vixen.AccountServices.strTableContainerDivId;
+		var intAccountId			= Vixen.AccountServices.intAccountId;
 		
+		/* The old way of handling when the HtmlTemplate is in a page
 		// If strPopupId == null then the list of Services is being displayed in a page, not a popup.
 		// Just reload the page
 		if (strPopupId == null)
@@ -170,41 +184,32 @@ function VixenAccountServicesClass()
 				return true;
 			}
 		
-			// The aren't any popups open.  Reload the page
+			// There aren't any popups open.  Reload the page
 			window.location = window.location;
 		}
+		*/
 		
+		// If this is loaded in a popup:
 		// Check that the AccountServices popup is actually open because this will stay in 
 		// memory after the popup is closed, and if something else then triggers the event, 
 		// who knows what would happen
-		if (!Vixen.Popup.Exists(strPopupId))
+		if (strPopupId && !Vixen.Popup.Exists(strPopupId))
 		{
-			// The page isn't open so don't do anything
+			// The popup isn't open so don't do anything
 			return;
 		}
-		
-		
-		if (objEvent.Data.NewService != undefined)
-		{
-			// Editing the service required a new service record to be created.
-			// This should only occur when you activate a service, who's fnn was 
-			// used by another service which is not deactivated
-			// see KnowledgeBase article KB00005
-			var intServiceId = objEvent.Data.NewService.Id;
-		}
-		else
-		{
-			var intServiceId = objEvent.Data.Service.Id;
-		}
-		
+
+		// Organise the data to send
 		var objObjects 					= {};
 		objObjects.Objects 				= {};
-		objObjects.Objects.Service 		= {};
-		objObjects.Objects.Service.Id 	= intServiceId;
+		objObjects.Objects.Account 		= {};
+		objObjects.Objects.Account.Id 	= intAccountId;
+		// This will be used so that we know where to rerender the list of services
+		objObjects.Objects.TableContainer 		= {};
+		objObjects.Objects.TableContainer.Id	= strTableContainerDivId;
 
-		Vixen.Popup.ShowAjaxPopup(strPopupId, "ExtraLarge", null, "Account", "ViewServices", objObjects);
-		// I had hoped the following method would work, but it doesn't.  Probably because nothing is specified as the popup's Id
-		//Vixen.Ajax.CallAppTemplate("Account", "ViewServices", objObjects.Objects, "Popup");
+		// Call the AppTemplate method which renders just the AccountServices table
+		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountServicesTable", objObjects.Objects);
 	}
 }
 

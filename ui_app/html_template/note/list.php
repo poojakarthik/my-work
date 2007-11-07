@@ -16,7 +16,7 @@
  * HTML Template for the View Notes HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
  * which displays all notes relating to either an account, contact or service and can be embedded in
- * various Page Templates or popup windows
+ * Pages or popup windows
  *
  * @file		list.php
  * @language	PHP
@@ -110,7 +110,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 				$this->_RenderInPage();
 				break;
 			default:
-				$this->_RenderInPage();	
+				$this->_RenderNotes();	
 				break;
 		}
 	}
@@ -138,10 +138,6 @@ class HtmlTemplateNoteList extends HtmlTemplate
 			// Store details for the button to view all account notes
 			$strViewAllNotesLink	= Href()->ViewAccountNotes(DBO()->Account->Id->Value);
 			$strViewAllNotesLabel	= "View All";
-			
-			// Store details for the button to add an account note
-			$strAddNoteLink		= Href()->AddAccountNote(DBO()->Account->Id->Value);
-			$strAddNoteLabel	= "Add Note";
 		}
 		elseif (DBO()->NoteDetails->ServiceNotes->Value)
 		{
@@ -151,10 +147,6 @@ class HtmlTemplateNoteList extends HtmlTemplate
 			// Store details for the button to view all service notes
 			$strViewAllNotesLink	= Href()->ViewServiceNotes(DBO()->Service->Id->Value);
 			$strViewAllNotesLabel	= "View All";
-			
-			// Store details for the button to add a service note
-			$strAddNoteLink		= Href()->AddServiceNote(DBO()->Service->Id->Value);
-			$strAddNoteLabel	= "Add Note";
 		}
 		echo "<h2 class='Notes'>$strListTitle</h2>\n";
 		
@@ -181,20 +173,21 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		echo "      </select>\n";
 		echo "   </span>\n";
 		
+		$intMaxNotes = DBO()->NoteDetails->MaxNotes->Value;
+		echo "<span>Limit</span><input type='text' class='DefaultInputText' style='left:0px;width:50px;margin-left:5px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter();'></input>\n";
+
 		// currently the filter is applied when the value of the combobox changes
 		//$this->Button("Filter", "Vixen.NoteList.ApplyFilter();");
+
 		echo "</div>\n"; //Left
-		// Create button for adding a new note
-		echo "<div class='Right'>\n";
-		$this->Button($strAddNoteLabel, $strAddNoteLink);
-		echo "</div>\n"; //Right
 		echo "</div>\n"; //height=40px
 		echo "</div>\n"; // NarrowContent
 		echo "<div class='TinySeperator'></div>\n";
 		
 	
 		// Render the notes
-		echo "<div id='NotesContainer'>";
+		$strNotesContainerDivId = "NotesContainer";
+		echo "<div id='$strNotesContainerDivId'>";
 		$this->_RenderNotes();
 		echo "</div>";
 		
@@ -207,7 +200,8 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		$intServiceId	= (DBO()->NoteDetails->ServiceNotes->Value) ? DBO()->Service->Id->Value : "null";
 		$intContactId	= (DBO()->NoteDetails->ContactNotes->Value) ? DBO()->Contact->Id->Value : "null";
 		$intNoteFilter	= DBO()->NoteDetails->FilterOption->Value;
-		$strJavascript	= "VixenCreateNoteListObject(); Vixen.NoteList.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter);";
+
+		$strJavascript	= "VixenCreateNoteListObject(); Vixen.NoteList.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter, $intMaxNotes, '$strNotesContainerDivId'); Vixen.NoteList.RegisterListeners();";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 	}
 
@@ -223,6 +217,110 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		// So that _RenderInPage and _RenderAsPopup can use it
 	}
 
+	//------------------------------------------------------------------------//
+	// _RenderAsPopup()
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderAsPopup()
+	 *
+	 * Render the Form element
+	 *
+	 * Render the Form element on the Note HTML element
+	 * And sets the checkbox status
+	 *
+	 * @method
+	 */
+	private function _RenderAsPopup()
+	{
+		echo "<div class='NarrowContent'>";
+		
+		DBO()->Account->Id->RenderOutput();
+		if (DBO()->Account->BusinessName->Value)
+		{
+			DBO()->Account->BusinessName->RenderOutput();
+		}
+		elseif (DBO()->Account->TradingName->Value)
+		{
+			DBO()->Account->TradingName->RenderOutput();
+		}
+		
+		if (DBO()->NoteDetails->ServiceNotes->Value)
+		{	
+			// The note is a service note
+			DBO()->Service->FNN->RenderOutput();
+		}
+		if (DBO()->NoteDetails->ContactNotes->Value)
+		{
+			// The Note is a contact note
+			$strFullName = DBO()->Contact->Title->Value . " " . DBO()->Contact->FirstName->Value . " " . DBO()->Contact->LastName->Value;
+			DBO()->Contact->FullName->RenderArbitrary($strFullName, RENDER_OUTPUT);
+		}
+		
+		// Render filtering controls
+		// Render the NoteType Filter
+		$arrFilterOptions = Array();
+		$arrFilterOptions[NOTE_FILTER_ALL]		= "All Notes Types";
+		$arrFilterOptions[NOTE_FILTER_USER]		= "User Notes";
+		$arrFilterOptions[NOTE_FILTER_SYSTEM]	= "System Notes";
+		
+		// Create a combobox containing all the filter options
+		echo "<div class='SmallSeperator'></div>\n";
+		echo "<div style='height:25px'>";
+		echo "<div class='Left'>";
+		echo "   <span>&nbsp;&nbsp;Filter</span>\n";
+		echo "   <span>\n";
+		echo "      <select id='NoteFilterCombo' onChange='Vixen.NoteListPopup.intNoteFilter = this.value;' style='width:100%'>\n";
+		foreach ($arrFilterOptions as $intFilterOption=>$strFilterOption)
+		{
+			$strSelected = (DBO()->NoteDetails->FilterOption->Value == $intFilterOption) ? "selected='selected'" : "";
+			echo "         <option $strSelected value='$intFilterOption'><span>$strFilterOption</span></option>\n";
+		}
+		echo "      </select>\n";
+		echo "   </span>\n";
+		
+		$intMaxNotes = DBO()->NoteDetails->MaxNotes->Value;
+		echo "   <span style='margin-left:20px;'>Limit</span><input type='text' class='DefaultInputText' style='left:0px;width:50px;margin-left:5px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteListPopup.intMaxNotes = this.value;'></input>\n";
+
+		echo "</div>\n"; //Left
+		echo "<div class='Right'>\n";
+		$this->Button("Filter", "Vixen.NoteListPopup.ApplyFilter();");
+		echo "</div>\n"; //Right
+		echo "</div>\n"; //height=25px
+		
+		echo "<div class='TinySeperator'></div>\n";
+	
+		// Render the notes
+		$strNotesContainerDivId = "NotesContainerForPopup";
+		echo "<div id='ContainerDiv_ScrollableDiv_Notes' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
+		echo "<div id='ScrollableDiv_Notes' style='overflow:auto; height:500px; width:auto; padding: 0px 3px 0px 3px'>\n";
+		echo "<div id='$strNotesContainerDivId'>\n";
+		$this->_RenderNotes();
+		echo "</div>\n";
+		echo "</div>\n"; //ScrollableDiv_Notes
+		echo "</div>\n"; //ContainerDiv_ScrollableDiv_Notes
+		
+		echo "</div>\n"; // NarrowContent
+		
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$this->Button("Close", "Vixen.Popup.Close(this);");
+		echo "</div></div>\n";
+		
+		// Initialise the javascript object
+		$intAccountId	= (DBO()->NoteDetails->AccountNotes->Value) ? DBO()->Account->Id->Value : "null";
+		$intServiceId	= (DBO()->NoteDetails->ServiceNotes->Value) ? DBO()->Service->Id->Value : "null";
+		$intContactId	= (DBO()->NoteDetails->ContactNotes->Value) ? DBO()->Contact->Id->Value : "null";
+		$intNoteFilter	= DBO()->NoteDetails->FilterOption->Value;
+		$strJavascript	= "	if (Vixen.NoteListPopup == undefined)
+							{
+								Vixen.NoteListPopup = new VixenNoteListClass;
+							}
+							Vixen.NoteListPopup.Initialise($intAccountId, $intServiceId, $intContactId, $intNoteFilter, $intMaxNotes, '$strNotesContainerDivId');
+						";
+							
+		echo "<script type='text/javascript'>$strJavascript</script>\n";
+		
+		$this->FormEnd();
+	}
 	
 	//------------------------------------------------------------------------//
 	// _RenderNotes()
@@ -308,30 +406,6 @@ class HtmlTemplateNoteList extends HtmlTemplate
 			// Include a separator
 			echo "<div class='TinySeperator'></div>\n";
 		}
-	}
-	
-	//------------------------------------------------------------------------//
-	// _RenderAsPopup()
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderAsPopup()
-	 *
-	 * Render the Form element
-	 *
-	 * Render the Form element on the Note HTML element
-	 * And sets the checkbox status
-	 *
-	 * @method
-	 */
-	private function _RenderAsPopup()
-	{
-		//TODO Finish this some time
-		// Currently the View Notes Popup uses an older HtmlTemplate to show the list
-		
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Close", "Vixen.Popup.Close(this);");
-		echo "</div></div>\n";
-		$this->FormEnd();
 	}
 }
 

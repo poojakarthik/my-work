@@ -100,17 +100,9 @@ class AppTemplateService extends ApplicationTemplate
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
 		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledAdjustments + $fltUnbilledCDRs);
 		
-		// Load the last DEFAULT_NOTES_LIMIT user notes
-		DBL()->Note->Service = DBO()->Service->Id->Value;
-		DBL()->Note->OrderBy("Datetime DESC");
-		DBL()->Note->SetLimit(DEFAULT_NOTES_LIMIT);
-		DBL()->Note->Load();
+		// Load the service notes
+		LoadNotes(NULL, DBO()->Service->Id->Value);
 		
-		// Set up the details required for the HtmlTemplateNoteList to render the notes properly
-		DBO()->NoteDetails->ServiceNotes = TRUE;
-		DBO()->NoteDetails->FilterOption = NOTE_FILTER_ALL;
-
-
 		// context menu
 		ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
 		ContextMenu()->Account_Menu->Service->View_Service_Rate_Plan(DBO()->Service->Id->Value);	
@@ -124,9 +116,11 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
 		}
+		ContextMenu()->Account_Menu->Service->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
 
+		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
@@ -135,15 +129,12 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-
-		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Service->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Account_Menu->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->InvoicesAndPayments(DBO()->Service->Account->Value);
+		BreadCrumb()->AccountOverview(DBO()->Service->Account->Value);
 		BreadCrumb()->SetCurrentPage("Service");
 
 		// All required data has been retrieved from the database so now load the page template
@@ -937,9 +928,11 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
 		}
+		ContextMenu()->Account_Menu->Service->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
 		
+		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->View_Account_Details(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
@@ -949,14 +942,12 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 
-		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Service->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Account_Menu->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->InvoicesAndPayments(DBO()->Account->Id->Value);
+		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
 		BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
 		BreadCrumb()->SetCurrentPage("Plan");
 		
@@ -1009,7 +1000,7 @@ class AppTemplateService extends ApplicationTemplate
 	 *
 	 */
 	function ChangePlan()
-	{		
+	{
 		// Check user authorization here
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
@@ -1025,18 +1016,18 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			// Record the current time
+			// Record the current time (the new plan starts at this time)
 			$strNowTimeStamp = GetCurrentDateAndTimeForMySQL();
 			
-			// The New Plan starts 1 second after the old plan ends
-			$strStartDatetime = date("Y-m-d H:i:s", strtotime($strNowTimeStamp) + 1);
-
+			// Record the end time for the old plan (1 second before now)
+			$strOldPlanEndDatetime = date("Y-m-d H:i:s", strtotime($strNowTimeStamp) - 1);
+			
 			// Start the database transaction
 			TransactionStart();
 
-			// All current ServiceRateGroup records must have EndDatetime set to $strNowTimeStamp
-			$arrUpdate = Array('EndDatetime' => $strNowTimeStamp);
-			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime > <NowTimeStamp>", $arrUpdate);
+			// All current ServiceRateGroup records must have EndDatetime set to $strOldPlanEndDatetime
+			$arrUpdate = Array('EndDatetime' => $strOldPlanEndDatetime);
+			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime >= <NowTimeStamp>", $arrUpdate);
 			if ($updServiceRateGroup->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "NowTimeStamp"=>$strNowTimeStamp)) === FALSE)
 			{
 				// Could not update records in ServiceRateGroup table. Exit gracefully
@@ -1046,7 +1037,7 @@ class AppTemplateService extends ApplicationTemplate
 			}
 			
 			// All current ServiceRatePlan records must have EndDatetime set to $strNowTimeStamp
-			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime > <NowTimeStamp>", $arrUpdate);
+			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime >= <NowTimeStamp>", $arrUpdate);
 			if ($updServiceRatePlan->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "NowTimeStamp"=>$strNowTimeStamp)) === FALSE)
 			{
 				// Could not update records in ServiceRatePlan table. Exit gracefully
@@ -1060,8 +1051,8 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
 			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
 			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRatePlan->CreatedOn 		= $strStartDatetime;
-			DBO()->ServiceRatePlan->StartDatetime 	= $strStartDatetime;
+			DBO()->ServiceRatePlan->CreatedOn 		= $strNowTimeStamp;
+			DBO()->ServiceRatePlan->StartDatetime 	= $strNowTimeStamp;
 			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
 			
 			if (!DBO()->ServiceRatePlan->Save())
@@ -1080,8 +1071,8 @@ class AppTemplateService extends ApplicationTemplate
 			// Define constant properties for these records
 			DBO()->ServiceRateGroup->Service 		= DBO()->Service->Id->Value;
 			DBO()->ServiceRateGroup->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRateGroup->CreatedOn 		= $strStartDatetime;
-			DBO()->ServiceRateGroup->StartDatetime 	= $strStartDatetime;
+			DBO()->ServiceRateGroup->CreatedOn 		= $strNowTimeStamp;
+			DBO()->ServiceRateGroup->StartDatetime 	= $strNowTimeStamp;
 			DBO()->ServiceRateGroup->EndDatetime 	= END_OF_TIME;
 			
 			

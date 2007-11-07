@@ -16,5 +16,5 @@ $this->Page->SetLayout('1Column');
 
 // Add each html object to the appropriate column
 //$this->Page->AddObject('AccountServices', COLUMN_ONE, HTML_CONTEXT_POPUP); // If we want to display it in a popup
-$this->Page->AddObject('AccountServices', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('AccountServices', COLUMN_ONE, HTML_CONTEXT_PAGE);
 ?>

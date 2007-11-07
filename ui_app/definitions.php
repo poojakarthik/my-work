@@ -124,6 +124,10 @@ define('HTML_CONTEXT_EDIT_DETAIL',			504);
 define('HTML_CONTEXT_TABULAR_DETAIL',		505);
 define('HTML_CONTEXT_POPUP', 				506);
 define('HTML_CONTEXT_PAGE', 				507);
+define('HTML_CONTEXT_OVERVIEW_PAGE', 		508);
+define('HTML_CONTEXT_VIEW',					509);
+define('HTML_CONTEXT_EDIT',					510);
+
 
 // constants for the cap/excess rates used within the rate add page
 define('RATE_CAP_NO_CAP', 100);
@@ -188,7 +192,7 @@ define("ARCHIVE_STATUS_ARCHIVED"		, 1);
 define("ARCHIVE_STATUS_DRAFT"			, 2);
 
 // This defines how many notes to retrieve.  The most recent ones should be retrieved
-define("DEFAULT_NOTES_LIMIT", 10);
+define("DEFAULT_NOTES_LIMIT", 5);
 
 // Custom Events (These are Fired from PHP code and handled by Javascript code)
 define("EVENT_ON_NEW_NOTE"			, "OnNewNote");

@@ -104,7 +104,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 		
 		// Render the container divs
 		echo "<div id='ContainerDiv_FormContainerDiv_RateAdd' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
-		echo "<div id='FormContainerDiv_RateAdd' class='PopupLarge' style='overflow:auto; height:530px; width:auto;'>\n";
+		echo "<div id='FormContainerDiv_RateAdd' style='overflow:auto; height:530px; width:auto; padding: 0px 3px 0px 3px'>\n";
 			
 			$this->FormStart("AddRate", "Rate", "Add");
 			

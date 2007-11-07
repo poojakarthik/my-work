@@ -476,9 +476,33 @@ class MenuItems
 	 */
 	function InvoicesAndPayments($intId)
 	{
-		$this->strLabel	= "Account";
-		//$this->strLabel	= "Invoices and Payments";
+		$this->strLabel	= "Invoices and Payments";
+
 		return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
+	}
+	
+	//------------------------------------------------------------------------//
+	// AccountOverview
+	//------------------------------------------------------------------------//
+	/**
+	 * AccountOverview()
+	 *
+	 * Compiles the Href to be executed when the AccountOverview menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AccountOverview menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		id of the account to view
+	 *
+	 * @return	string						Href to be executed when the AccountOverview menu item is clicked
+	 *
+	 * @method
+	 */
+	function AccountOverview($intAccountId)
+	{
+		$this->strLabel	= "Account";
+
+		return "vixen.php/Account/Overview/?Account.Id=$intAccountId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -777,26 +801,24 @@ class MenuItems
 	 * Compiles the javascript to be executed when the ViewAccountNotes menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the account associated with the notes to view
+	 * @param	int		$intAccountId	id of the account associated with the notes to view
 	 *
-	 * @return	string				action to be executed when the ViewAccountNotes menu item is clicked
+	 * @return	string					action to be executed when the ViewAccountNotes menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewAccountNotes($intId)
+	function ViewAccountNotes($intAccountId)
 	{
 		$this->strLabel	= "view account notes";
 		
 		// Setup data to send
-		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
-		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_ACCOUNT_NOTES;
-		$arrData['Objects']['Note']['NoteType'] = "All";
+		$arrData['Objects']['Account']['Id'] = $intAccountId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Account Notes\", \"Note\", \"View\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"large\", \"Account Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -910,7 +932,7 @@ class MenuItems
 	 * Compiles the javascript to be executed when the ViewServiceNotes menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the account associated with the notes to view
+	 * @param	int		$intId		id of the service associated with the notes to view
 	 *
 	 * @return	string				action to be executed when the ViewServiceNotes menu item is clicked
 	 *
@@ -921,17 +943,13 @@ class MenuItems
 		$this->strLabel	= "view service notes";
 		
 		// Setup data to send
-		
-		$arrData['Objects']['Note']['NoteType'] = $strNoteType;
-		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
-		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_SERVICE_NOTES;
-		$arrData['Objects']['Note']['NoteType'] = "All";
+		$arrData['Objects']['Service']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Service Notes\", \"Note\", \"View\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"large\", \"Service Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -945,7 +963,7 @@ class MenuItems
 	 * Compiles the javascript to be executed when the ViewContactNotes menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the account associated with the notes to view
+	 * @param	int		$intId		id of the contact associated with the notes to view
 	 *
 	 * @return	string				action to be executed when the ViewContactNotes menu item is clicked
 	 *
@@ -956,14 +974,13 @@ class MenuItems
 		$this->strLabel	= "view contact notes";
 		
 		// Setup data to send
-		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
-		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_CONTACT_NOTES;
+		$arrData['Objects']['Contact']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Contact Notes\", \"Note\", \"View\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"large\", \"Contact Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1234,36 +1251,6 @@ class MenuItems
 	function EditAccount($intId)
 	{
 		$this->strLabel	= "edit account";
-		
-		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intId;
-		
-		// Convert to JSON notation
-		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewAccountPopupId\", \"large\", null, \"Account\", \"ViewDetails\", $strJsonCode)";
-	}
-
-	//------------------------------------------------------------------------//
-	// ViewAccountDetails
-	//------------------------------------------------------------------------//
-	/**
-	 * ViewAccountDetails()
-	 *
-	 * Compiles the javascript to be executed when the View Account menu item is clicked
-	 *
-	 * Compiles the javascript to be executed when the View Account menu item is clicked
-	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
-	 * @param	int		$intId		id of the account to view
-	 *
-	 * @return	string	action to be executed when the View Account menu item is clicked
-	 *
-	 * @method
-	 */
-	function ViewAccountDetails($intId)
-	{
-		//$this->strLabel	= "view account";
 		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;

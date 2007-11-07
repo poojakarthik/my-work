@@ -307,8 +307,8 @@
 		top:					1px;
 		overflow:			hidden;
 		/* these 2 properties 'may' only work in firefox */
-		outline-Style:	solid;
-		outline-Width:	1px;
+		outline-style:	solid;
+		outline-width:	1px;
 	}
 	
 	.DefaultInputComboBox

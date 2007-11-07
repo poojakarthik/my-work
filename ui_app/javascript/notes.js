@@ -25,6 +25,12 @@
  *
  */
 
+// Note related constants
+if (SYSTEM_NOTE_TYPE == undefined)
+{
+	var SYSTEM_NOTE_TYPE = 7;
+}
+
 //----------------------------------------------------------------------------//
 // VixenNoteListClass
 //----------------------------------------------------------------------------//
@@ -42,20 +48,27 @@
  */
 function VixenNoteListClass()
 {
-	this.intAccountId = null;
-	this.intServiceId = null;
-	this.intContactId = null;
-	this.intNoteFilter = null;
+	this.intAccountId			= null;
+	this.intServiceId			= null;
+	this.intContactId			= null;
+	this.intNoteFilter			= null;
+	this.intMaxNotes			= null;
+	this.strNotesContainerDivId	= null;
 	
-	this.Initialise = function(intAccountId, intServiceId, intContactId, intNoteFilter)
+	this.Initialise = function(intAccountId, intServiceId, intContactId, intNoteFilter, intMaxNotes, strNotesContainerDivId)
 	{
-		this.intAccountId		= intAccountId;
-		this.intServiceId		= intServiceId;
-		this.intContactId		= intContactId;
-		this.intNoteFilter		= intNoteFilter;
-		
-		// Register the listener for the OnNoteAdd event
-		Vixen.EventHandler.AddListener("OnNewNote", Vixen.NoteList.OnNewNote);
+		this.intAccountId			= intAccountId;
+		this.intServiceId			= intServiceId;
+		this.intContactId			= intContactId;
+		this.intNoteFilter			= intNoteFilter;
+		this.intMaxNotes			= intMaxNotes;
+		this.strNotesContainerDivId	= strNotesContainerDivId;
+	}
+	
+	// If the list is rendered as a popup, it should not have a listener registered for the OnNewNote Event
+	this.RegisterListeners = function()
+	{
+		Vixen.EventHandler.AddListener("OnNewNote", this.OnNewNote);
 	}
 	
 	
@@ -74,8 +87,22 @@ function VixenNoteListClass()
 	 */
 	this.ApplyFilter = function()
 	{
-		this.ReloadList();
+		this.intMaxNotes = parseInt(this.intMaxNotes, 10);
 		
+		if (isNaN(this.intMaxNotes) || this.intMaxNotes <= 0)
+		{
+			// intMaxNotes is not a number greater than 0.  Have it default to 10
+			this.intMaxNotes = 10;
+			document.getElementById("NoteDetails.MaxNotes").value = this.intMaxNotes;
+		}
+		else if (this.intMaxNotes > 1000)
+		{
+			// Limit the maximum number of notes to retrive
+			this.intMaxNotes = 1000;
+			document.getElementById("NoteDetails.MaxNotes").value = this.intMaxNotes;
+		}
+	
+		this.ReloadList();
 	}
 	
 	this.ReloadList = function()
@@ -89,7 +116,9 @@ function VixenNoteListClass()
 		objObjects.Contact 		= {};
 		objObjects.Contact.Id 	= this.intContactId;
 		objObjects.NoteDetails 	= {};
-		objObjects.NoteDetails.FilterOption = this.intNoteFilter;
+		objObjects.NoteDetails.FilterOption		= this.intNoteFilter;
+		objObjects.NoteDetails.MaxNotes			= this.intMaxNotes;
+		objObjects.NoteDetails.ContainerDivId	= this.strNotesContainerDivId;
 		
 		Vixen.Ajax.CallAppTemplate("Note", "ListWithFilter", objObjects);
 	}
@@ -114,6 +143,75 @@ function VixenNoteListClass()
 	}
 }
 
+//----------------------------------------------------------------------------//
+// VixenNoteAddClass
+//----------------------------------------------------------------------------//
+/**
+ * VixenNoteAddClass
+ *
+ * Encapsulates all event handling required of the "Add Note" Html Template
+ *
+ * Encapsulates all event handling required of the "Add Note" Html Template
+ * 
+ *
+ * @package	ui_app
+ * @class	VixenNoteAddClass
+ * 
+ */
+function VixenNoteAddClass()
+{
+	this.strPopupId = null;
+	
+	// If strPopupId is supplied, then it is assumed that the "Add Note" Html Template is being rendered as a popup
+	this.Initialise = function(strPopupId)
+	{
+		// Check if the "Add Note" Html Template is being rendered as a popup, or in a page
+		if (strPopupId != null)
+		{
+			// The "Add Note" functionality is a popup
+			this.strPopupId = strPopupId;
+		}
+		else
+		{
+			// The "Add Note" functionality is in a page
+			// You don't have to do anything
+		}
+	
+		// Register the listener for the OnNoteAdd event
+		Vixen.EventHandler.AddListener("OnNewNote", Vixen.NoteAdd.OnNewNote);
+	}
+
+	// Listener for when a note is added
+	this.OnNewNote = function(objEvent)
+	{
+		var strPopupId = Vixen.NoteAdd.strPopupId;
+		
+		if (strPopupId == null)
+		{
+			// The "Add Note" Html Template has been rendered in a page
+			// Remove the contents of the note's textarea, but only if the new note was not an automatically generated system note
+			if (objEvent.Data.Note.NoteType != SYSTEM_NOTE_TYPE)
+			{
+				document.getElementById('Note.Note').value = "";
+			}
+		}
+		else
+		{
+			// The "Add Note" Html Template has been rendered as a popup
+			// Remove the listener from the registered list of listeners
+			Vixen.EventHandler.RemoveListener("OnNewNote", Vixen.NoteAdd.OnNewNote);
+			
+			// Close the popup, if it hasn't already been closed
+			if (Vixen.Popup.Exists(strPopupId))
+			{
+				Vixen.Popup.Close(strPopupId);
+			}
+		}
+	}
+}
+
+
+
 // Use this to create the Vixen.NoteList VixenNoteListClass object, if it hasn't
 // already been created
 function VixenCreateNoteListObject()
@@ -121,5 +219,15 @@ function VixenCreateNoteListObject()
 	if (Vixen.NoteList == undefined)
 	{
 		Vixen.NoteList = new VixenNoteListClass;
+	}
+}
+
+// Use this to create the Vixen.NoteAdd VixenNoteAddClass object, if it hasn't
+// already been created
+function VixenCreateNoteAddObject()
+{
+	if (Vixen.NoteAdd == undefined)
+	{
+		Vixen.NoteAdd = new VixenNoteAddClass;
 	}
 }

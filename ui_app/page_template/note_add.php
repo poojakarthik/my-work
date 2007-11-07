@@ -24,7 +24,7 @@
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
- * @version		7.07
+ * @version		7.11
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -33,26 +33,21 @@
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
 
-// Render the NoteAdd HtmlTemplate in its appropriate context
 if (DBO()->Service->Id->IsSet)
 {
-	$strPageName = "Add Service Note";
-	$this->Page->AddObject('NoteAdd', COLUMN_ONE, HTML_CONTEXT_SERVICE_NOTE, "AddNoteDiv");
+	$strPageName = "Add Service Note - " . GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType") . " - " . DBO()->Service->FNN->Value;
 }
 elseif (DBO()->Contact->Id->IsSet)
 {
 	$strPageName = "Add Contact Note";
-	$this->Page->AddObject('NoteAdd', COLUMN_ONE, HTML_CONTEXT_CONTACT_NOTE, "AddNoteDiv");
 }
 else
 {
 	$strPageName = "Add Account Note";
-	$this->Page->AddObject('NoteAdd', COLUMN_ONE, HTML_CONTEXT_ACCOUNT_NOTE, "AddNoteDiv");
 }
 
-// I don't even know why we are doing this because Page Names aren't displayed for popups.
-// It would be nice to display the page name in the title bar
 $this->Page->SetName($strPageName);
 
+$this->Page->AddObject('NoteAdd', COLUMN_ONE, HTML_CONTEXT_POPUP, "AddNoteDiv");
 
 ?>

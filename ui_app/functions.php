@@ -786,4 +786,100 @@ function SaveSystemNote($strNote, $intAccountGroup, $intAccount=NULL, $intContac
 	return (bool)$insNote->Execute($arrNote);
 }
 
+//utilises the note cookies and loads the notes into DBL()->Note
+// If DBO()->NoteDetails->FilterOption or DBO()->NoteDetails->MaxNotes are not set, it will set them
+// If DBO()->NoteDetails->FilterOption is set, it will update the appropriate cookie
+// It also sets DBO()->NoteDetails->AccountNotes || DBO()->NoteDetails->ServiceNotes || DBO()->NoteDetails->ContactNotes
+function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL)
+{
+	if ($intAccountId == NULL && $intServiceId == NULL && $intContactId == NULL)
+	{
+		// One of these three should have been specified
+		return FALSE;
+	}
+
+	// Build Where clause
+	if ($intAccountId)
+	{
+		// Load account notes
+		DBO()->NoteDetails->AccountNotes	= TRUE;
+		$intId								= $intAccountId;
+		$strWhere							= "Account = <intId>";
+		$strCookiePrefix					= "Account";
+	}
+	elseif (DBO()->Service->Id->Value)
+	{
+		// Load service notes
+		DBO()->NoteDetails->ServiceNotes	= TRUE;
+		$intId								= $intServiceId;
+		$strWhere							= "Service = <intId>";
+		$strCookiePrefix					= "Service";
+	}
+	elseif (DBO()->Contact->Id->Value)
+	{
+		// Load contact notes
+		DBO()->NoteDetails->ContactNotes	= TRUE;
+		$intId								= $intContactId;
+		$strWhere							= "Contact = <intId>";
+		$strCookiePrefix					= "Contact";
+	}
+	
+	// Set up the filter
+	if (DBO()->NoteDetails->FilterOption->Value)
+	{
+		// The filter has already been set
+		// Update the cookie, if it needs updating
+		if (!isset($_COOKIE["{$strCookiePrefix}NotesFilter"]) || ($_COOKIE["{$strCookiePrefix}NotesFilter"] != DBO()->NoteDetails->FilterOption->Value))
+		{
+			// The cookie either isn't set, or needs updating
+			setCookie("{$strCookiePrefix}NotesFilter", DBO()->NoteDetails->FilterOption->Value, 0, "/");
+		}
+	}
+	elseif (isset($_COOKIE["{$strCookiePrefix}NotesFilter"]))
+	{
+		// The filter was not specified, but a cookie exists so use it
+		DBO()->NoteDetails->FilterOption = $_COOKIE["{$strCookiePrefix}NotesFilter"];
+	}
+	else
+	{
+		// The filter was not specified and a cookie does not exist
+		// Default to not use a filter
+		DBO()->NoteDetails->FilterOption = NOTE_FILTER_ALL;
+	}
+	
+	// Build the WHERE clause
+	switch (DBO()->NoteDetails->FilterOption->Value)
+	{
+		case NOTE_FILTER_USER:
+			$strFilterWhereClause = "AND NoteType != ". SYSTEM_NOTE_TYPE;
+			break;
+		case NOTE_FILTER_SYSTEM:
+			$strFilterWhereClause = "AND NoteType = ". SYSTEM_NOTE_TYPE;
+			break;
+		case NOTE_FILTER_ALL:
+		default:
+			$strFilterWhereClause = "";
+	}
+	
+	$strWhere = "$strWhere $strFilterWhereClause";
+	$arrWhere = Array("intId" => $intId);
+	
+	// Set the Max number of notes to return, if it already hasn't been specified
+	if (!DBO()->NoteDetails->MaxNotes->Value)
+	{
+		DBO()->NoteDetails->MaxNotes = DEFAULT_NOTES_LIMIT;
+	}
+	$intMaxNotes = DBO()->NoteDetails->MaxNotes->Value;
+	
+	DBL()->Note->Where->Set($strWhere, $arrWhere);
+	DBL()->Note->OrderBy("Datetime DESC");
+	DBL()->Note->SetLimit($intMaxNotes);
+	
+	// Load the notes
+	DBL()->Note->Load();
+	
+	return TRUE;
+}
+
+
 ?>

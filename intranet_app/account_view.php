@@ -7,7 +7,7 @@
 	//----------------------------------------------------------------------------//
 	
 	$intAccount = $_GET['Id'];
-	header("Location: vixen.php/Account/InvoicesAndPayments/?Account.Id=$intAccount");
+	header("Location: vixen.php/Account/Overview/?Account.Id=$intAccount");
 	
 	/* Old Page
 	// call application loader
