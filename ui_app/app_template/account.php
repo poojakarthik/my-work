@@ -578,6 +578,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	
 	// Saves the Account Details and if successfull, fires the OnAccountDetailsUpdate event
 	// and the OnNewNote event
+	// Also fires the OnAccountServicesUpdate event, if any of the account's services are also updated (like when you archive an account)
 	function SaveDetails()
 	{
 		// Check permissions
@@ -660,6 +661,10 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strTodaysDate = GetCurrentDateForMySQL();
 			$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
 		
+			// This is a Flag for checking if any of the account's services had to be updated
+			// because of the Account's status being changed
+			$bolServicesUpdated = FALSE;
+		
 			$strChangesNote .= "Account Status was changed from ". GetConstantDescription(DBO()->CurrentAccount->Archived->Value, 'Account') ." to ". GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\n";
 	
 			switch (DBO()->Account->Archived->Value)
@@ -713,6 +718,9 @@ class AppTemplateAccount extends ApplicationTemplate
 								return TRUE;
 							}
 						}
+						
+						// At least one service has been modified
+						$bolServicesUpdated = TRUE;
 					}
 					break;
 				case ACCOUNT_ARCHIVED:
@@ -752,6 +760,9 @@ class AppTemplateAccount extends ApplicationTemplate
 								return TRUE;
 							}
 						}
+						
+						// At least one service has been modified
+						$bolServicesUpdated = TRUE;
 					}
 					break;
 			}
@@ -783,6 +794,12 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Fire the OnNewNote event
 		Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
+		
+		// Fire the OnAccountServicesUpdate Event
+		if ($bolServicesUpdated)
+		{
+			Ajax()->FireEvent("OnAccountServicesUpdate", $arrEvent);
+		}
 		
 		return TRUE;
 	}

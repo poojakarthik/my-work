@@ -4,10 +4,9 @@
 // to put into each column on the page
 
 // Set the page title
-$this->Page->SetName('View Individual Rates');
+$this->Page->SetName('Rates Search Results');
 
-$strLayout = 'popup_layout';
-$this->Page->SetLayout($strLayout);
+$this->Page->SetLayout('popup_layout');
 
 // Add each html object to the appropriate column
 //EXAMPLE:

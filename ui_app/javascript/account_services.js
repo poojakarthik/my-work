@@ -115,7 +115,7 @@ function VixenAccountServicesClass()
 	this.AddListeners = function()
 	{
 		Vixen.EventHandler.AddListener("OnServiceUpdate", this.OnUpdate);
-		Vixen.EventHandler.AddListener("OnAccountDetailsUpdate", this.OnUpdate);
+		Vixen.EventHandler.AddListener("OnAccountServicesUpdate", this.OnUpdate);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -138,7 +138,7 @@ function VixenAccountServicesClass()
 	this.RemoveListeners = function()
 	{
 		Vixen.EventHandler.RemoveListener("OnServiceUpdate", this.OnUpdate);
-		Vixen.EventHandler.RemoveListener("OnAccountDetailsUpdate", this.OnUpdate);
+		Vixen.EventHandler.RemoveListener("OnAccountServicesUpdate", this.OnUpdate);
 	}
 
 	//------------------------------------------------------------------------//

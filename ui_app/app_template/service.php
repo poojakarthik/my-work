@@ -863,14 +863,14 @@ class AppTemplateService extends ApplicationTemplate
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Service->Load())
 		{
-			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->Value ."you were attempting to view could not be found";
+			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->Value ." you were attempting to view could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . "associated with this service";
+			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service";
 			$this->LoadPage('error');
 			return FALSE;
 		}

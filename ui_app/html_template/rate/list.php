@@ -83,7 +83,7 @@ class HtmlTemplateRateList extends HtmlTemplate
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
-		$this->LoadJavascript("tooltip");
+		//$this->LoadJavascript("tooltip");
 	}
 
 	//------------------------------------------------------------------------//
@@ -311,7 +311,7 @@ class HtmlTemplateRateList extends HtmlTemplate
 	function _RenderFullDetail()
 	{
 		echo "<div id='ContainerDiv_FormContainerDiv_RateAdd' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
-		echo "<div id='FormContainerDiv_RateAdd' class='PopupLarge' style='overflow:auto; height:250px; width:auto;'>\n";
+		echo "<div id='FormContainerDiv_RateAdd' class='PopupLarge' style='overflow:auto; height:300px; width:auto;'>\n";
 	
 		Table()->RateTable->SetHeader("Name", "Days Available", "Start Time", "End Time");
 		Table()->RateTable->SetAlignment("Left", "Left", "Left", "Left");
@@ -328,7 +328,8 @@ class HtmlTemplateRateList extends HtmlTemplate
 								$dboRate->Saturday->AsValue(CONTEXT_DEFAULT,TRUE).
 								$dboRate->Sunday->AsValue(CONTEXT_DEFAULT,TRUE);
 								
-			Table()->RateTable->AddRow("<a href='$strViewRateLink'>" . $dboRate->Name->AsValue() . "</a>",
+			//Table()->RateTable->AddRow("<a href='$strViewRateLink'>" . $dboRate->Name->AsValue() . "</a>",
+			Table()->RateTable->AddRow(	$dboRate->Name->AsValue(),
 										$strDaysAvailable,
 										$dboRate->StartTime->AsValue(), 
 										$dboRate->EndTime->AsValue());
