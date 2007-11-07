@@ -225,6 +225,13 @@
 		// Cost & Charge totals
 		$this->_fltTotalCost	= 0;
 		$this->_fltTotalCharge	= 0;
+		
+		$arrCols = Array();
+		$arrCols['Id']			= NULL;
+		$arrCols['EarliestCDR']	= NULL;
+		$arrCols['LatestCDR']	= NULL;
+		$this->_selService		= new StatementSelect("Service", $arrCols, "Id = <Service>");
+		$this->_ubiService		= new StatementUpdateById("Service", $arrCols);
  	}
  	
 	//------------------------------------------------------------------------//
@@ -394,8 +401,25 @@
 			$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
 			$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
 			
+			// Set Service Earliest/Latest CDR
+			$this->_selService->Execute($arrCDR);
+			$arrService	= $this->_selService->Execute($arrCDR);
 			
-		
+			$intEarliest	= strtotime($arrService['EarliestCDR']);
+			$intLatest		= strtotime($arrService['LatestCDR']);
+			$intCDR			= strtotime($arrCDR['StartDatetime']);
+			
+			if ($intCDR < $intEarliest && $intCDR)
+			{
+				$arrService['EarliestCDR']	= $arrCDR['StartDatetime'];
+			}
+			if ($intCDR > $intLatest && $intCDR)
+			{
+				$arrService['LatestCDR']	= $arrCDR['StartDatetime'];
+			}
+			
+			$this->_ubiService->Execute($arrService);
+			
 			// Report
 			/*
 			$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
