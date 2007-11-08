@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateServiceOptions
+// HtmlTemplateServiceOptions DEPRICATED
 //----------------------------------------------------------------------------//
 /**
  * HtmlTemplateServiceOptions

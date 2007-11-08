@@ -100,7 +100,7 @@ function VixenServiceUpdateListenerClass()
 		else
 		{
 			// The event does not concern a service
-			// This can happen when a "OnNewNote" event is fired, and the note doesn't relate to a service
+			// This can happen when a "OnNewNote" event is fired, and the note doesn't relate to a service (I can't remember why this would ever happen)
 			return;
 		}
 		

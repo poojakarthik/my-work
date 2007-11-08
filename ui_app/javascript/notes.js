@@ -25,10 +25,14 @@
  *
  */
 
-// Note related constants
+// Note related constants (this should be moved to definitions.js (which doesn't exist yet) and only be given scope within the Vixen object)
 if (SYSTEM_NOTE_TYPE == undefined)
 {
 	var SYSTEM_NOTE_TYPE = 7;
+	
+	var NOTE_FILTER_ALL		= 1;
+	var NOTE_FILTER_USER	= 2;
+	var NOTE_FILTER_SYSTEM	= 3;
 }
 
 //----------------------------------------------------------------------------//
@@ -131,6 +135,35 @@ function VixenNoteListClass()
 	{
 		// Since this is a listener, the "this" pointer may not be pointing to the Vixen.NoteList object
 		// So it must always be refered to as Vixen.NoteList, not "this"
+		
+		// Check that the new note would be displayed given the current NoteListFilter
+		var intNoteType = objEvent.Data.Note.NoteType;
+		switch (Vixen.NoteList.intNoteFilter)
+		{
+			case NOTE_FILTER_ALL:
+				// The list should be reloaded regardless of the NoteType
+				break;
+			case NOTE_FILTER_USER:
+				// If the new note is a service note, then you don't have to bother reloading the list because it wouldn't be displayed anyway
+				if (intNoteType == SYSTEM_NOTE_TYPE)
+				{
+					// exit gracefully
+					return;
+				}
+				break;
+			case NOTE_FILTER_SYSTEM:
+				// If the new note is not a service note, then you don't have to bother reloading the list because it wouldn't be displayed anyway
+				if (intNoteType != SYSTEM_NOTE_TYPE)
+				{
+					// exit gracefully
+					return;
+				}
+				break;
+			default:
+				// Reload the list of notes
+				break;
+		}
+		
 		
 		// Only bother reloading the note list if it relates to the current Account/Service/Contact
 		if	(((objEvent.Data.Account.Id != undefined) && (objEvent.Data.Account.Id == Vixen.NoteList.intAccountId))

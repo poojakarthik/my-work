@@ -467,6 +467,125 @@ class AppTemplateContact extends ApplicationTemplate
 		return TRUE;
 	}
 
+
+	//------------------------------------------------------------------------//
+	// SetPrimaryForAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * SetPrimaryForAccount()
+	 *
+	 * Handles the logic for updating the primary contact of an Account
+	 * 
+	 * Handles the logic for updating the primary contact of an Account
+	 * It assumes:
+	 *			DBO()->PrimaryContact->Id	defines the new primary contact for the account
+	 *			DBO()->Account->Id			defines the account of which the Primary Contact is being set
+	 * If the Account's primary contact is successfully updated, a system note is generated
+	 * This method fires the OnAccountPrimaryContactUpdate and OnNewNote events, when appropriate
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function SetPrimaryForAccount()
+	{
+		// Check permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Load and validate the Contact
+		DBO()->PrimaryContact->SetTable("Contact");
+		$strErrorMessage = "";
+		if (!DBO()->PrimaryContact->Load())
+		{
+			$strErrorMessage = "ERROR: The contact could not be found in the database";
+		}
+		elseif (DBO()->PrimaryContact->Archived->Value == 1)
+		{	
+			$strErrorMessage = "ERROR: The contact is currently archived";
+		}
+		elseif (DBO()->PrimaryContact->Account->Value != DBO()->Account->Id->Value)
+		{
+			$strErrorMessage = "ERROR: This contact cannot be set as the primary contact for this account";
+		}
+		if ($strErrorMessage)
+		{
+			// The contact is invalid.  Exit gracefully
+			Ajax()->AddCommand("Alert", $strErrorMessage);
+			return TRUE;
+		}
+		
+		// Load the Account
+		if (!DBO()->Account->Load())
+		{
+			$strErrorMessage = "ERROR: The account could not be found in the database";
+		}
+		elseif (DBO()->Account->PrimaryContact->Value == DBO()->PrimaryContact->Id->Value)
+		{
+			// The contact is already the primary contact
+			$strErrorMessage = "This contact is already the primary contact for this account";
+		}
+		if ($strErrorMessage)
+		{
+			Ajax()->AddCommand("Alert", $strErrorMessage);
+			return TRUE;
+		}
+		
+		// Store a reference to the old primary contact
+		DBO()->OldPrimaryContact->Id = DBO()->Account->PrimaryContact->Value;
+		
+		// Update the PrimaryContact for the account
+		DBO()->Account->SetColumns("PrimaryContact");
+		DBO()->Account->PrimaryContact = DBO()->PrimaryContact->Id->Value;
+		
+		if (!DBO()->Account->Save())
+		{
+			// Updating the account record failed, unexpectedly.  Exit gracefully
+			Ajax()->AddCommand("Alert", "ERROR: Updating the primary contact failed, unexpectedly");
+			return TRUE;
+		}
+		
+		// Load the details of the old primary contact, if there was one
+		$strOldContact = NULL;
+		if (DBO()->OldPrimaryContact->Id->Value)
+		{
+			DBO()->OldPrimaryContact->SetTable("Contact");
+			if (DBO()->OldPrimaryContact->Load())
+			{
+				// The old contact was found
+				$strOldContact = ucwords(strtolower(trim(DBO()->OldPrimaryContact->Title->Value ." ". DBO()->OldPrimaryContact->FirstName->Value ." ". DBO()->OldPrimaryContact->LastName->Value)));
+			}
+		}
+		
+		// Build the contact name for the new primary contact
+		$strNewContact = ucwords(strtolower(trim(DBO()->PrimaryContact->Title->Value ." ". DBO()->PrimaryContact->FirstName->Value ." ". DBO()->PrimaryContact->LastName->Value)));
+		
+		// Build the system note
+		if ($strOldContact)
+		{
+			$strNote = "The primary contact has been changed from $strOldContact to $strNewContact";
+		}
+		else
+		{
+			$strNote = "The primary contact has been changed to $strNewContact";
+		}
+		
+		// Save the system note
+		$bolNoteSaved = SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
+		
+		// The primary contact has been successfully changed
+		Ajax()->AddCommand("Alert", "The primary contact has been successfully changed");
+		
+		// Fire Events
+		$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
+		Ajax()->FireEvent(EVENT_ON_ACCOUNT_PRIMARY_CONTACT_UPDATE, $arrEvent);
+		
+		if ($bolNoteSaved)
+		{
+			Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
+		}
+		return TRUE;
+	}
+
 	//----- DO NOT REMOVE -----//
-	
 }

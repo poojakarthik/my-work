@@ -195,9 +195,11 @@ define("ARCHIVE_STATUS_DRAFT"			, 2);
 define("DEFAULT_NOTES_LIMIT", 5);
 
 // Custom Events (These are Fired from PHP code and handled by Javascript code)
-define("EVENT_ON_NEW_NOTE"			, "OnNewNote");
-define("EVENT_ON_SERVICE_UPDATE"	, "OnServiceUpdate");
-define("EVENT_ON_ACCOUNT_UPDATE"	, "OnAccountUpdate");
-
+define("EVENT_ON_NEW_NOTE"							, "OnNewNote");
+define("EVENT_ON_SERVICE_UPDATE"					, "OnServiceUpdate");
+define("EVENT_ON_ACCOUNT_DETAILS_UPDATE"			, "OnAccountDetailsUpdate");
+define("EVENT_ON_ACCOUNT_SERVICES_UPDATE"			, "OnAccountServicesUpdate");
+define("EVENT_ON_ACCOUNT_PRIMARY_CONTACT_UPDATE"	, "OnAccountPrimaryContactUpdate");
+define("EVENT_ON_EDIT_ACCOUNT_DETAILS_CANCEL"		, "OnEditAccountDetailsCancel");
 
 ?>

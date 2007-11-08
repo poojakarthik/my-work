@@ -786,10 +786,35 @@ function SaveSystemNote($strNote, $intAccountGroup, $intAccount=NULL, $intContac
 	return (bool)$insNote->Execute($arrNote);
 }
 
-//utilises the note cookies and loads the notes into DBL()->Note
-// If DBO()->NoteDetails->FilterOption or DBO()->NoteDetails->MaxNotes are not set, it will set them
-// If DBO()->NoteDetails->FilterOption is set, it will update the appropriate cookie
-// It also sets DBO()->NoteDetails->AccountNotes || DBO()->NoteDetails->ServiceNotes || DBO()->NoteDetails->ContactNotes
+//------------------------------------------------------------------------//
+// LoadNotes
+//------------------------------------------------------------------------//
+/**
+ * LoadNotes()
+ *
+ * Loads Notes into the DBL()->Note DBList
+ *
+ * Loads Notes into the DBL()->Note DBList
+ * This utilises the cookies (AccountNotesFilter, ServiceNotesFilter, ContactNotesFilter)
+ * if $bolUpdateCookies is set to TRUE then the appropriate cookie will be updated with the value stored in DBO()->NoteDetails->FilterOption
+ * Only 1 of $intAccountId, $intServiceId and $intContactId should be set to a proper Id.  The others should be NULL.
+ * If DBO()->NoteDetails->FilterOption is not set then it will try and set it using the appropriate cookie.
+ * If the cookie is also not set, then it will default to NOTE_FILTER_ALL which will retrieve all types of notes.
+ * If DBO()->NoteDetails->MaxNotes is not set then it will default to DEFAULT_NOTES_LIMIT
+ * If you want to update the cookies, this function must be run before anything else has been sent to the client (i think)
+ * This function also sets DBO()->NoteDetails->AccountNotes || DBO()->NoteDetails->ServiceNotes || DBO()->NoteDetails->ContactNotes
+ * depending on what kind of notes are being retrieved
+ *
+ * @param	int			$intAccountId		id of the account (set to NULL if you don't want to retrieve Account notes)
+ * @param 	int			$intServiceId		[optional] id of the service 
+ * @param	int			$intContactId		[optional] id of the contact
+ * @param	boolean		$bolUpdateCookies	[optional] Set to TRUE if you want the cookies updated
+ *
+ * @return	boolean							returns FALSE if it failed, else TRUE
+ *
+ * @function
+ * 
+ */
 function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUpdateCookies=FALSE)
 {
 	if ($intAccountId == NULL && $intServiceId == NULL && $intContactId == NULL)

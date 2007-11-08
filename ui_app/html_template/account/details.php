@@ -275,14 +275,21 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
+		// Reorder the list of Account Status values
+		$arrAccountStatus[ACCOUNT_ACTIVE]			= GetConstantDescription(ACCOUNT_ACTIVE, "Account");
+		$arrAccountStatus[ACCOUNT_CLOSED]			= GetConstantDescription(ACCOUNT_CLOSED, "Account");
+		$arrAccountStatus[ACCOUNT_SUSPENDED]		= GetConstantDescription(ACCOUNT_SUSPENDED, "Account");
+		$arrAccountStatus[ACCOUNT_DEBT_COLLECTION]	= GetConstantDescription(ACCOUNT_DEBT_COLLECTION, "Account");
+		$arrAccountStatus[ACCOUNT_ARCHIVED]			= GetConstantDescription(ACCOUNT_ARCHIVED, "Account");
+		
 		// Render the Account Status Combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Account.Archived' name='Account.Archived'>\n";
-		foreach ($GLOBALS['*arrConstant']['Account'] as $intConstant=>$arrArchivedSelection)
+		foreach ($arrAccountStatus as $intConstant=>$strAccountStatus)
 		{
-			if (($intConstant == ACCOUNT_DEBT_COLLECTION) || ($intConstant == ACCOUNT_ARCHIVED)|| ($intConstant == ACCOUNT_SUSPENDED))
+			if (($intConstant == ACCOUNT_DEBT_COLLECTION) || ($intConstant == ACCOUNT_ARCHIVED) || ($intConstant == ACCOUNT_SUSPENDED))
 			{
 				// Only users with Admin privileges can mark an account as ACCOUNT_DEBT_COLLECTION or ACCOUNT_ARCHIVED
 				if (!$bolUserHasAdminPerm)
@@ -293,7 +300,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			}
 
 			$strSelected = (DBO()->Account->Archived->Value == $intConstant) ? "selected='selected'" : "";
-			echo "         <option value='$intConstant' $strSelected>{$arrArchivedSelection['Description']}</option>\n";
+			echo "         <option value='$intConstant' $strSelected>$strAccountStatus</option>\n";
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";

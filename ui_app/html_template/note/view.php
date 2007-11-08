@@ -165,7 +165,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 				// If the notes are service notes and are not being displayed in a popup, then we must register a listener for
 				// when new notes are added
 				echo "<script type='text/javascript' src='javascript.php?File=service_update_listener.js' ></script>\n";
-				echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('OnNewNote', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
+				echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('". EVENT_ON_NEW_NOTE ."', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
 			}
 		}
 		else		

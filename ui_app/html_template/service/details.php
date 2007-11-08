@@ -118,10 +118,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// _RenderTabularDetail();
+	// _RenderTabularDetail		(i think this is DEPRICATED)
 	//------------------------------------------------------------------------//
 	/**
-	 * _RenderTabularDetail();
+	 * _RenderTabularDetail
 	 *
 	 * Renders all services for a given Account
 	 *
@@ -235,7 +235,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "</div>\n";
 		
 		// Register a listener to handle when the service has been updated
-		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('OnServiceUpdate', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
+		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('". EVENT_ON_SERVICE_UPDATE ."', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
 		
 		echo "<div class='Seperator'></div>\n";	
 	}
@@ -343,7 +343,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 
 		// Register a listener to handle when the service has been updated
-		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('OnServiceUpdate', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
+		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('". EVENT_ON_SERVICE_UPDATE ."', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
 
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";

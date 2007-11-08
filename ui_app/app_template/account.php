@@ -258,7 +258,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				
 				// Fire the OnAccountDetailsUpdate Event
 				$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
-				Ajax()->FireEvent("OnAccountDetailsUpdate", $arrEvent);
+				Ajax()->FireEvent(EVENT_ON_ACCOUNT_DETAILS_UPDATE, $arrEvent);
 				
 				return TRUE;
 			}
@@ -539,7 +539,22 @@ class AppTemplateAccount extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	// Renders the AccountDetails HtmlTemplate in the VIEW context
+	//------------------------------------------------------------------------//
+	// RenderAccountDetailsForViewing
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderAccountDetailsForViewing()
+	 *
+	 * Renders the AccountDetails Html Template for viewing
+	 * 
+	 * Renders the AccountDetails Html Template for viewing
+	 * It expects	DBO()->Account->Id 		account Id 
+	 *				DBO()->Container->Id	id of the container div in which to place the Rendered HtmlTemplate
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function RenderAccountDetailsForViewing()
 	{
 		// Check user authorization and permissions
@@ -560,7 +575,22 @@ class AppTemplateAccount extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	// Renders the AccountDetails HtmlTemplate in the EDIT context
+	//------------------------------------------------------------------------//
+	// RenderAccountDetailsForEditing
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderAccountDetailsForEditing()
+	 *
+	 * Renders the AccountDetails Html Template for editing
+	 * 
+	 * Renders the AccountDetails Html Template for editing
+	 * It expects	DBO()->Account->Id 		account Id 
+	 *				DBO()->Container->Id	id of the container div in which to place the Rendered HtmlTemplate
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function RenderAccountDetailsForEditing()
 	{
 		// Check user authorization and permissions
@@ -576,9 +606,23 @@ class AppTemplateAccount extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	// Saves the Account Details and if successfull, fires the OnAccountDetailsUpdate event
-	// and the OnNewNote event
-	// Also fires the OnAccountServicesUpdate event, if any of the account's services are also updated (like when you archive an account)
+	//------------------------------------------------------------------------//
+	// SaveDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveDetails()
+	 *
+	 * Handles the logic of validating and saving the details of an account
+	 * 
+	 * Handles the logic of validating and saving the details of an account
+	 * This works with the HtmlTemplateAccountDetails object, when rendered in Edit mode (HTML_CONTEXT_EDIT)
+	 * It fires the OnAccountDetailsUpdate, OnAccountServicesUpdate and OnNewNote Events if relevent to the
+	 * changes made to the account
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function SaveDetails()
 	{
 		// Check permissions
@@ -790,15 +834,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Fire the OnAccountDetailsUpdate Event
 		$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
-		Ajax()->FireEvent("OnAccountDetailsUpdate", $arrEvent);
+		Ajax()->FireEvent(EVENT_ON_ACCOUNT_DETAILS_UPDATE, $arrEvent);
 		
 		// Fire the OnNewNote event
-		Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
+		if ($strChangesNote)
+		{
+			Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
+		}
 		
 		// Fire the OnAccountServicesUpdate Event
 		if ($bolServicesUpdated)
 		{
-			Ajax()->FireEvent("OnAccountServicesUpdate", $arrEvent);
+			Ajax()->FireEvent(EVENT_ON_ACCOUNT_SERVICES_UPDATE, $arrEvent);
 		}
 		
 		return TRUE;

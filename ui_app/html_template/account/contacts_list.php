@@ -83,6 +83,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("highlight");
+		$this->LoadJavascript("account_contacts");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -130,7 +131,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 
 		Table()->ContactTable->SetHeader("Name", "&nbsp;", "Phone#", "Status", "Actions");
 		Table()->ContactTable->SetWidth("40%", "20%", "20%", "10%", "10%");
-		Table()->ContactTable->SetAlignment("Left", "Left", "Left", "Left", "Center");
+		Table()->ContactTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
 		
 		foreach (DBL()->Contact as $dboContact)
 		{
@@ -140,10 +141,26 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 			
 			// Build the Actions Cell
 			$strViewContactLink = Href()->ViewContact($dboContact->Id->Value);
-			$strActionsCell = "<a href='$strViewContactLink'><span>View</span></a>";
+			$strViewContact = "<a href='$strViewContactLink'><img src='img/template/article.png' title='View Contact Details'</a>";
+			if (($dboContact->Id->Value != DBO()->Account->PrimaryContact->Value) && ($dboContact->Archived->Value != 1))
+			{
+				// The contact is not the primary contact, and they are not archived
+				// Allow them to be set as the primary contact
+				$strSetAsPrimaryContactLink	= "javascript:Vixen.AccountContactsList.SetPrimary({$dboContact->Id->Value})";
+				$strSetAsPrimaryContact		= "<a href='$strSetAsPrimaryContactLink'><img src='img/template/primary_contact.png' title='Set as Primary Contact'</a>";
+			}
+			else
+			{
+				// The contact cannot be set as the primary, or it currently already is
+				$strSetAsPrimaryContact = "";
+			}
+			
+			
+			$strActionsCell = "{$strViewContact}&nbsp;{$strSetAsPrimaryContact}";
 			
 			// Build Name Cell
-			$strNameCell = "<span>{$dboContact->Title->Value} {$dboContact->FirstName->Value} {$dboContact->LastName->Value}</span>";
+			$strName		= ucwords(strtolower(trim("{$dboContact->Title->Value} {$dboContact->FirstName->Value} {$dboContact->LastName->Value}")));
+			$strNameCell	= "<span>$strName</span>";
 			
 			// Build Primary Contact flag
 			if (DBO()->Account->PrimaryContact->Value == $dboContact->Id->Value)
@@ -170,7 +187,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 				$strPhoneCell = "<span>[Not Specified]</span>";
 			}
 			
-			Table()->ContactTable->AddRow(	$strNameCell, $strPrimaryCell, $strPhoneCell, $strStatusCell, $strActionsCell);
+			Table()->ContactTable->AddRow($strNameCell, $strPrimaryCell, $strPhoneCell, $strStatusCell, $strActionsCell);
 		}
 		
 		// If the account has no contacts then output an appropriate message in the table
@@ -212,7 +229,6 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		$strViewAccountContactsLink = Href()->ListContacts(DBO()->Account->Id->Value);
 		$this->Button("View All Contacts", $strViewAccountContactsLink);
 		echo "</div></div>\n";
-	
 	}
 	
 	//------------------------------------------------------------------------//
@@ -248,8 +264,16 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		echo "</div></div>\n";
 
 		echo "</div>\n";  //PopupLarge
+
+		// Initialise the javascript object which facilitates this HtmlTemplate
+		$intAccountId = DBO()->Account->Id->Value;
+		$strJsCode = "	if (Vixen.AccountContactsList == undefined)
+						{
+							Vixen.AccountContactsList = new VixenAccountContactsListClass;
+						}
+						Vixen.AccountContactsList.Initialise($intAccountId, '{$this->_strContainerDivId}')";
+		echo "<script type='text/javascript'>$strJsCode</script>";
 	}
-	
 }
 
 ?>

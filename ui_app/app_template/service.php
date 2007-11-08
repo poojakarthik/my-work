@@ -331,7 +331,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * Performs the logic for th "Edit Service" popup
 	 * 
 	 * Performs the logic for th "Edit Service" popup
-	 * If the service is successfully updated then it will fire an "OnServiceUpdate" event
+	 * If the service is successfully updated then it will fire an EVENT_ON_SERVICE_UPDATE event
 	 * passing the following object:
 	 *		objObject.Service.Id	= id of the service which has been updated
 	 *		objObject.NewService.Id	= id of the new service, if the service being updated, 
@@ -989,7 +989,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * 
 	 * Performs the logic for "Change Plan" popup
 	 * If the service successfully has its plan changed then it will fire an 
-	 * "OnServiceUpdate" event passing the following Event object data:
+	 * EVENT_ON_SERVICE_UPDATE event passing the following Event object data:
 	 *		Service.Id		= id of the service which has had its plan changed
 	 *		OldRatePlan.Id	= id of the old RatePlan for the service
 	 *		NewRatePlan.Id	= id of the new RatePlan for the service
@@ -1132,7 +1132,7 @@ class AppTemplateService extends ApplicationTemplate
 			$arrEvent['OldRatePlan']['Id']		= (DBO()->RatePlan->Id->Value) ? DBO()->RatePlan->Id->Value : 0;
 			$arrEvent['NewRatePlan']['Id']		= DBO()->NewPlan->Id->Value;
 			$arrEvent['NewRatePlan']['Name']	= DBO()->NewPlan->Name->Value;
-			Ajax()->FireEvent("OnServiceUpdate", $arrEvent);
+			Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 
 			// Since a system note has been added, fire the OnNewNote event
 			Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);

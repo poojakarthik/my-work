@@ -98,7 +98,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 				
 				foreach (DBL()->RatePlanRateGroup as $dboRateGroup)
 				{
-					Table()->RateGroupTable->AddRow($dboRateGroup->RateGroupName->AsValue());	
+					Table()->RateGroupTable->AddRow($dboRateGroup->RateGroupName->AsValue());
 					
 					$strWhere = "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)";
 					DBL()->Rate->Where->Set($strWhere, Array('RateGroupId' => $dboRateGroup->RateGroupId->Value));
@@ -107,7 +107,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 					$strDetailHtml = "<div class='VixenTableDetail'>\n";
 					$strDetailHtml .= "<table width='100%' border='0' cellspacing='0' cellpadding='0'>\n";
 					$strDetailHtml .= "<tr bgcolor='#C0C0C0'><td><font size='2'>Rate Name</font></td><td><font size='2'>Days Available</font></td><td><font size='2'>Start Time</font></td><td><font size='2'>End Time</font></td></tr>\n";
-								
+
 					foreach (DBL()->Rate as $dboRate)
 					{
 						$strDetailHtml .= "   <tr>\n";

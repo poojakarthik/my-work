@@ -35,23 +35,27 @@ $this->RenderContextMenu();
 ?>
 
 <div id='PageBody'>
-<h1> <?php echo $this->_strPageName; ?></h1>
-<table width='100%' border='0'>
-	<tr>
-		<td width='64%' valign='top'>
-			
-			<?php $this->RenderColumn(COLUMN_ONE); ?>
-			
-		</td>
-		<td width='1%'></td>
-		<td width='35%' valign='top'>
-			
-			<?php $this->RenderColumn(COLUMN_TWO); ?>
-			
-		</td>
-	</tr>
-</table>
-<?php $this->RenderColumn(COLUMN_THREE); ?>
+	<h1> <?php echo $this->_strPageName; ?></h1>
+	<table width='100%' border='0'>
+		<tr>
+			<td width='64%' valign='top'>
+				
+				<?php $this->RenderColumn(COLUMN_ONE); ?>
+				
+			</td>
+			<td width='1%'></td>
+			<td width='35%' valign='top'>
+				
+				<?php $this->RenderColumn(COLUMN_TWO); ?>
+				
+			</td>
+		</tr>
+		<tr>
+			<td valign='top' colspan='3'>
+				<?php $this->RenderColumn(COLUMN_THREE); ?>
+			</td>
+		</tr>
+	</table>
 </div>
 
 <?php
