@@ -45,12 +45,7 @@
 	// If we are at a point where we want to save Contact Information
 	if (isset ($_POST ['CustomerContact']))
 	{
-		if (!$ttyTitleTypes->setValue ($_POST ['Title']))
-		{
-			// Check that a Title was passed through
-			$oblstrError->setValue ('Title');
-		}
-		else if (!$_POST ['FirstName'])
+		if (!$_POST ['FirstName'])
 		{
 			// Check that a First Name was passed through
 			$oblstrError->setValue ('FirstName');
