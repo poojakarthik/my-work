@@ -136,34 +136,31 @@ function VixenNoteListClass()
 		// Since this is a listener, the "this" pointer may not be pointing to the Vixen.NoteList object
 		// So it must always be refered to as Vixen.NoteList, not "this"
 		
-		// Check that the new note would be displayed given the current NoteListFilter
+		// Check if the new note should be displayed given the current NoteListFilter
+		// (I tried implementing this as a switch statement but it didn't work)
 		var intNoteType = objEvent.Data.Note.NoteType;
-		switch (Vixen.NoteList.intNoteFilter)
+		if (Vixen.NoteList.intNoteFilter == NOTE_FILTER_ALL)
 		{
-			case NOTE_FILTER_ALL:
-				// The list should be reloaded regardless of the NoteType
-				break;
-			case NOTE_FILTER_USER:
-				// If the new note is a service note, then you don't have to bother reloading the list because it wouldn't be displayed anyway
-				if (intNoteType == SYSTEM_NOTE_TYPE)
-				{
-					// exit gracefully
-					return;
-				}
-				break;
-			case NOTE_FILTER_SYSTEM:
-				// If the new note is not a service note, then you don't have to bother reloading the list because it wouldn't be displayed anyway
-				if (intNoteType != SYSTEM_NOTE_TYPE)
-				{
-					// exit gracefully
-					return;
-				}
-				break;
-			default:
-				// Reload the list of notes
-				break;
+			// Reload the list of note regardless of the new note's NoteType
 		}
-		
+		else if (Vixen.NoteList.intNoteFilter == NOTE_FILTER_USER)
+		{
+			// If the new note is a system note, then you don't have to bother reloading the list because it wouldn't be displayed anyway
+			if (intNoteType == SYSTEM_NOTE_TYPE)
+			{
+				// exit gracefully
+				return;
+			}
+		}
+		else if (Vixen.NoteList.intNoteFilter == NOTE_FILTER_SYSTEM)
+		{
+			// If the new note is not a system note, then you don't have to bother reloading the list because it wouldn't be displayed anyway
+			if (intNoteType != SYSTEM_NOTE_TYPE)
+			{
+				// exit gracefully
+				return;
+			}
+		}
 		
 		// Only bother reloading the note list if it relates to the current Account/Service/Contact
 		if	(((objEvent.Data.Account.Id != undefined) && (objEvent.Data.Account.Id == Vixen.NoteList.intAccountId))
