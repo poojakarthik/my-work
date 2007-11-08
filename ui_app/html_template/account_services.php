@@ -182,7 +182,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
-		$this->Button("Add Services", $strBulkAddServiceLink);
+		$this->Button("Add Services", "window.location = \"$strBulkAddServiceLink\"");
 		echo "</div></div>\n";
 		
 		$intAccountId = DBO()->Account->Id->Value;
