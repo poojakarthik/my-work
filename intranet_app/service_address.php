@@ -55,111 +55,121 @@
 	
 	if ($_POST ['Service'])
 	{
-		if ($sadServiceAddress->Pull('ServiceAddressType')->getValue() != $_POST ['ServiceAddressType'])
+		// Build the system generated note
+		if ($sadServiceAddress)
 		{
-			$strChangesNote .= "Service Address Type: {$_POST ['ServiceAddressType']}\n";
+			// There are already Service Address details in the database
+			// Work out what has been changed
+			if ($sadServiceAddress->Pull('ServiceAddressType')->getValue() != $_POST ['ServiceAddressType'])
+			{
+				$strChangesNote .= "Service Address Type: {$_POST ['ServiceAddressType']}\n";
+			}
+			if ($sadServiceAddress->Pull('ServiceAddressTypeNumber')->getValue() != $_POST ['ServiceAddressTypeNumber'])
+			{
+				$strChangesNote .= "Service Address Type Number: {$_POST ['ServiceAddressTypeNumber']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceAddressTypeSuffix')->getValue() != $_POST ['ServiceAddressTypeSuffix'])
+			{
+				$strChangesNote .= "Service Address Type Suffix: {$_POST ['ServiceAddressTypeSuffix']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceStreetNumberStart')->getValue() != $_POST ['ServiceStreetNumberStart'])
+			{
+				$strChangesNote .= "Service Street Number Start: {$_POST ['ServiceStreetNumberStart']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceStreetNumberEnd')->getValue() != $_POST ['ServiceStreetNumberEnd'])
+			{
+				$strChangesNote .= "Service Street Number End: {$_POST ['ServiceStreetNumberEnd']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceStreetNumberSuffix')->getValue() != $_POST ['ServiceStreetNumberSuffix'])
+			{
+				$strChangesNote .= "Service Street Number Suffix: {$_POST ['ServiceStreetNumberSuffix']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceStreetName')->getValue() != $_POST ['ServiceStreetName'])
+			{
+				$strChangesNote .= "Service Street Name: {$_POST ['ServiceStreetName']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceStreetType')->getValue() != $_POST ['ServiceStreetType'])
+			{
+				$strChangesNote .= "Service Street Type: {$_POST ['ServiceStreetType']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceStreetTypeSuffix')->getValue() != $_POST ['ServiceStreetTypeSuffix'])
+			{
+				$strChangesNote .= "Service Street Type Suffix: {$_POST ['ServiceStreetTypeSuffix']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServicePropertyName')->getValue() != $_POST ['ServicePropertyName'])
+			{
+				$strChangesNote .= "Service Property Name: {$_POST ['ServicePropertyName']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceLocality')->getValue() != $_POST ['ServiceLocality'])
+			{
+				$strChangesNote .= "Service Locality: {$_POST ['ServiceLocality']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServiceState')->getValue() != $_POST ['ServiceState'])
+			{
+				$strChangesNote .= "Service State: {$_POST ['ServiceState']}\n";			
+			}
+			if ($sadServiceAddress->Pull('ServicePostcode')->getValue() != $_POST ['ServicePostcode'])
+			{
+				$strChangesNote .= "Service Postcode: {$_POST ['ServicePostcode']}\n";			
+			}
+			
+			if ($strChangesNote)
+			{	
+				$strChangesNote = "The following modifications have been made to the service's address:\n\n" . $strChangesNote;
+			}
 		}
-		if ($sadServiceAddress->Pull('ServiceAddressTypeNumber')->getValue() != $_POST ['ServiceAddressTypeNumber'])
+		else
 		{
-			$strChangesNote .= "Service Address Type Number: {$_POST ['ServiceAddressTypeNumber']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceAddressTypeSuffix')->getValue() != $_POST ['ServiceAddressTypeSuffix'])
-		{
-			$strChangesNote .= "Service Address Type Suffix: {$_POST ['ServiceAddressTypeSuffix']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceStreetNumberStart')->getValue() != $_POST ['ServiceStreetNumberStart'])
-		{
-			$strChangesNote .= "Service Street Number Start: {$_POST ['ServiceStreetNumberStart']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceStreetNumberEnd')->getValue() != $_POST ['ServiceStreetNumberEnd'])
-		{
-			$strChangesNote .= "Service Street Number End: {$_POST ['ServiceStreetNumberEnd']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceStreetNumberSuffix')->getValue() != $_POST ['ServiceStreetNumberSuffix'])
-		{
-			$strChangesNote .= "Service Street Number Suffix: {$_POST ['ServiceStreetNumberSuffix']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceStreetName')->getValue() != $_POST ['ServiceStreetName'])
-		{
-			$strChangesNote .= "Service Street Name: {$_POST ['ServiceStreetName']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceStreetType')->getValue() != $_POST ['ServiceStreetType'])
-		{
-			$strChangesNote .= "Service Street Type: {$_POST ['ServiceStreetType']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceStreetTypeSuffix')->getValue() != $_POST ['ServiceStreetTypeSuffix'])
-		{
-			$strChangesNote .= "Service Street Type Suffix: {$_POST ['ServiceStreetTypeSuffix']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServicePropertyName')->getValue() != $_POST ['ServicePropertyName'])
-		{
-			$strChangesNote .= "Service Property Name: {$_POST ['ServicePropertyName']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceLocality')->getValue() != $_POST ['ServiceLocality'])
-		{
-			$strChangesNote .= "Service Locality: {$_POST ['ServiceLocality']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServiceState')->getValue() != $_POST ['ServiceState'])
-		{
-			$strChangesNote .= "Service State: {$_POST ['ServiceState']}\n";			
-		}
-		if ($sadServiceAddress->Pull('ServicePostcode')->getValue() != $_POST ['ServicePostcode'])
-		{
-			$strChangesNote .= "Service Postcode: {$_POST ['ServicePostcode']}\n";			
-		}
-		if ($strChangesNote)
-		{
-			// System note is generated when address details are changed
-			$strEmployeeFirstName = $athAuthentication->AuthenticatedEmployee()->Pull('FirstName')->getValue();
-			$strEmployeeLastName = $athAuthentication->AuthenticatedEmployee()->Pull('LastName')->getValue() ;
-			$intEmployeeId = $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
-			$strEmployeeFullName =  "$strEmployeeFirstName $strEmployeeLastName";
-		
-			$intAccountId = $actAccount->Pull('Id')->getValue();
-			$intAccountGroup = $actAccount->Pull('AccountGroup')->getValue();
-		
-			$strNote = "Service Address Details were changed by $strEmployeeFullName on " . date('m/d/y') . "\n";
-			$strNote .= "The following changes were made:\n";
-			$strNote .= $strChangesNote;
-
-			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccountId, $_POST['Service']);
+			// There was not a record in the ServiceAddress table relating to this service.  The address details are being added for the first time
+			$strChangesNote = "The service's address details have been defined";
 		}
 		
 		// Save Information
-		$srvService->ServiceAddressUpdate (
-			Array (
-				'Residential'					=> $_POST ['Residential'],
-				'BillName'						=> $_POST ['BillName'],
-				'BillAddress1'					=> $_POST ['BillAddress1'],
-				'BillAddress2'					=> $_POST ['BillAddress2'],
-				'BillLocality'					=> $_POST ['BillLocality'],
-				'BillPostcode'					=> $_POST ['BillPostcode'],
-				'EndUserTitle'					=> $_POST ['EndUserTitle'],
-				'EndUserGivenName'				=> $_POST ['EndUserGivenName'],
-				'EndUserFamilyName'				=> $_POST ['EndUserFamilyName'],
-				'EndUserCompanyName'			=> $_POST ['EndUserCompanyName'],
-				'DateOfBirth:day'				=> $_POST ['DateOfBirth']['day'],
-				'DateOfBirth:month'				=> $_POST ['DateOfBirth']['month'],
-				'DateOfBirth:year'				=> $_POST ['DateOfBirth']['year'],
-				'Employer'						=> $_POST ['Employer'],
-				'Occupation'					=> $_POST ['Occupation'],
-				'ABN'							=> $_POST ['ABN'],
-				'TradingName'					=> $_POST ['TradingName'],
-				'ServiceAddressType'			=> $_POST ['ServiceAddressType'],
-				'ServiceAddressTypeNumber'		=> $_POST ['ServiceAddressTypeNumber'],
-				'ServiceAddressTypeSuffix'		=> $_POST ['ServiceAddressTypeSuffix'],
-				'ServiceStreetNumberStart'		=> $_POST ['ServiceStreetNumberStart'],
-				'ServiceStreetNumberEnd'		=> $_POST ['ServiceStreetNumberEnd'],
-				'ServiceStreetNumberSuffix'		=> $_POST ['ServiceStreetNumberSuffix'],
-				'ServiceStreetName'				=> $_POST ['ServiceStreetName'],
-				'ServiceStreetType'				=> $_POST ['ServiceStreetType'],
-				'ServiceStreetTypeSuffix'		=> $_POST ['ServiceStreetTypeSuffix'],
-				'ServicePropertyName'			=> $_POST ['ServicePropertyName'],
-				'ServiceLocality'				=> $_POST ['ServiceLocality'],
-				'ServiceState'					=> $_POST ['ServiceState'],
-				'ServicePostcode'				=> $_POST ['ServicePostcode']
-			)
-		);
+		$bolServiceAddressUpdated = $srvService->ServiceAddressUpdate(
+										Array (
+											'Residential'					=> $_POST ['Residential'],
+											'BillName'						=> $_POST ['BillName'],
+											'BillAddress1'					=> $_POST ['BillAddress1'],
+											'BillAddress2'					=> $_POST ['BillAddress2'],
+											'BillLocality'					=> $_POST ['BillLocality'],
+											'BillPostcode'					=> $_POST ['BillPostcode'],
+											'EndUserTitle'					=> $_POST ['EndUserTitle'],
+											'EndUserGivenName'				=> $_POST ['EndUserGivenName'],
+											'EndUserFamilyName'				=> $_POST ['EndUserFamilyName'],
+											'EndUserCompanyName'			=> $_POST ['EndUserCompanyName'],
+											'DateOfBirth:day'				=> $_POST ['DateOfBirth']['day'],
+											'DateOfBirth:month'				=> $_POST ['DateOfBirth']['month'],
+											'DateOfBirth:year'				=> $_POST ['DateOfBirth']['year'],
+											'Employer'						=> $_POST ['Employer'],
+											'Occupation'					=> $_POST ['Occupation'],
+											'ABN'							=> $_POST ['ABN'],
+											'TradingName'					=> $_POST ['TradingName'],
+											'ServiceAddressType'			=> $_POST ['ServiceAddressType'],
+											'ServiceAddressTypeNumber'		=> $_POST ['ServiceAddressTypeNumber'],
+											'ServiceAddressTypeSuffix'		=> $_POST ['ServiceAddressTypeSuffix'],
+											'ServiceStreetNumberStart'		=> $_POST ['ServiceStreetNumberStart'],
+											'ServiceStreetNumberEnd'		=> $_POST ['ServiceStreetNumberEnd'],
+											'ServiceStreetNumberSuffix'		=> $_POST ['ServiceStreetNumberSuffix'],
+											'ServiceStreetName'				=> $_POST ['ServiceStreetName'],
+											'ServiceStreetType'				=> $_POST ['ServiceStreetType'],
+											'ServiceStreetTypeSuffix'		=> $_POST ['ServiceStreetTypeSuffix'],
+											'ServicePropertyName'			=> $_POST ['ServicePropertyName'],
+											'ServiceLocality'				=> $_POST ['ServiceLocality'],
+											'ServiceState'					=> $_POST ['ServiceState'],
+											'ServicePostcode'				=> $_POST ['ServicePostcode']
+										)
+									);
+		
+		if ($bolServiceAddressUpdated && $strChangesNote)
+		{
+			// The address details were successfully updated
+			// Save the system note
+			$intEmployeeId = $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
+			$intAccountId = $actAccount->Pull('Id')->getValue();
+			$intAccountGroup = $actAccount->Pull('AccountGroup')->getValue();
+
+			$GLOBALS['fwkFramework']->AddNote($strChangesNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccountId, $_POST['Service']);
+		}
 		
 		$Style->Output (
 			'xsl/content/service/provisioning/serviceaddress_updated.xsl',

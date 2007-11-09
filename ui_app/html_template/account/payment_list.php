@@ -130,7 +130,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			}
 			else
 			{
-				$strStatus = "&nbsp;";
+				$strStatus = "<span>&nbsp;</span>";
 			}
 			
 			if ($bolHasAdminPerm)
@@ -184,7 +184,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 				else
 				{
 					// Payment can not be reversed
-					$strDeletePaymentLabel = "";
+					$strDeletePaymentLabel = "<span>&nbsp;</span>";
 				}
 				
 				// Add this row to Payment table

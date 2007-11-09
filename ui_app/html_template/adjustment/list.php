@@ -129,7 +129,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			}
 			else
 			{
-				$strNature = '&nbsp;';
+				$strNature = "<span>&nbsp;</span>";
 			}
 		
 			// add the row
@@ -140,11 +140,11 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				{
 					// build the "Delete Adjustment" link
 					$strDeleteAdjustmentHref  = Href()->DeleteAdjustment($dboCharge->Id->Value);
-					$strDeleteAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteAdjustmentHref'><img src='img/template/delete.png' title='Delete Adjustment' /></a></span>";
+					$strDeleteAdjustmentLabel = "<span><a href='$strDeleteAdjustmentHref'><img src='img/template/delete.png' title='Delete Adjustment' /></a></span>";
 				}
 				else
 				{
-					$strDeleteAdjustmentLabel = '&nbsp;';
+					$strDeleteAdjustmentLabel = "<span>&nbsp;</span>";
 				}
 				
 				

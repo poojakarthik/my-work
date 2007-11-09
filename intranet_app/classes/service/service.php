@@ -804,7 +804,7 @@
 				// Update Service Address
 				$updServiceAddress = new StatementUpdate ('ServiceAddress', 'Id = <Id>', $arrData, 1);
 				$updServiceAddress->Execute ($arrData, Array ('Id' => $intId));
-				return true;
+				return TRUE;
 			}
 			catch (Exception $e)
 			{
@@ -815,6 +815,7 @@
 				// Insert Service Address
 				$insServiceAddress = new StatementInsert ('ServiceAddress');
 				$intServiceAddress = $insServiceAddress->Execute ($arrData);
+				return ($intServiceAddress !== FALSE);
 			}
 		}
 		
