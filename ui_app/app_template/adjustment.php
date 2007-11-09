@@ -129,8 +129,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
 				
 				// Date the adjustment was created (the current date)
-				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
-				DBO()->Charge->ChargedOn	= GetCurrentDateForMySQL();
+				$strCurrentDate = GetCurrentDateForMySQL();
+				DBO()->Charge->CreatedOn	= $strCurrentDate;
+				DBO()->Charge->ChargedOn	= $strCurrentDate;
 				
 				// Details regarding the type of charge
 				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
@@ -143,8 +144,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Charge->Invoice = NULL;
 				}
 				
-				// status is dependent on the nature of the charge
-				DBO()->Charge->Status = (DBO()->Charge->Nature->Value == "CR") ? CHARGE_WAITING : CHARGE_APPROVED;
+				// Set the status to CHARGE_WAITING
+				DBO()->Charge->Status = CHARGE_WAITING;
 
 				// Save the adjustment to the charge table of the vixen database
 				if (!DBO()->Charge->Save())
