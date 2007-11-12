@@ -279,7 +279,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='NarrowContent'>\n";
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 
@@ -316,8 +316,6 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			echo "&nbsp;<br>\n";
 		}
 
-		DBO()->Service->CreatedOn->RenderOutput();
-		DBO()->Service->ClosedOn->RenderOutput();
 		
 		// Display the Cost Center, if there is one
 		if (DBO()->Service->CostCentre->Value)
@@ -339,13 +337,17 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			DBO()->RatePlan->Name->RenderArbitrary("No Plan", RENDER_OUTPUT, 1);
 		}
 		
+		// Separate the Service status properties from the rest
+		echo "<div class='SmallSeperator'></div>\n";
+		DBO()->Service->CreatedOn->RenderOutput();
+		DBO()->Service->ClosedOn->RenderOutput();
 		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("LineStatus"), RENDER_OUTPUT);
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 
 		// Register a listener to handle when the service has been updated
 		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('". EVENT_ON_SERVICE_UPDATE ."', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
 
-		echo "</div>\n";
+		echo "</div>\n";  // NarrowContent
 		echo "<div class='Seperator'></div>\n";
 	}
 }

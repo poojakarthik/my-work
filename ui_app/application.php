@@ -248,10 +248,12 @@ class Application
 		// Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
 		
-		
 		// Append default options to the Context Menu
 		ContextMenu()->Employee_Console();
-		ContextMenu()->Add_Customer();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			ContextMenu()->Add_Customer();
+		}
 		ContextMenu()->Find_Customer();
 		ContextMenu()->Available_Plans();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))

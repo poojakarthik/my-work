@@ -100,6 +100,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	 */
 	function Render()
 	{	
+		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+	
 		// Render each of the account invoices
 		echo "<h2 class='Invoice'>Invoices</h2>\n";
 		
@@ -109,37 +111,36 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
-			// build the links 
+			// Build the links 
 			$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
 			$intYear = (int)date("Y", $intDate);
 			$intMonth = (int)date("m", $intDate);
 			
-			// check if a pdf exists for the invoice
+			// Check if a pdf exists for the invoice
+			$strPdfLabel	= "<span>&nbsp;</span>";
+			$strEmailLabel	= "<span>&nbsp;</span>";
 			if (InvoicePdfExists($dboInvoice->Account->Value, $intYear, $intMonth))
 			{
 				// The pdf exists
 				// Build "view invoice pdf" link
 				$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intYear, $intMonth);
-				$strPdfLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a></span>";
+				$strPdfLabel 	= "<span><a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a></span>";
 				
-				// build "Email invoice pdf" link
-				$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
-				$strEmailLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a></span>";
-			}
-			else
-			{
-				// don't allow the user to view the pdf for this invoice (or email it) because it doesn't exist
-				$strPdfLabel	= "&nbsp;";
-				$strEmailLabel	= "&nbsp;";
+				// Build "Email invoice pdf" link, if the user has OPERATOR privileges
+				if ($bolUserHasOperatorPerm)
+				{
+					$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
+					$strEmailLabel 	= "<span><a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a></span>";
+				}
 			}
 			
-			// build the "View Invoice Details" link
+			// Build the "View Invoice Details" link
 			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
 			$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a></span>";
 			
-			// calculate Invoice Amount
+			// Calculate Invoice Amount
 			$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
-			// calculate AppliedAmount
+			// Calculate AppliedAmount
 			$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
 			
 			// Add this row to Invoice table

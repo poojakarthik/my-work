@@ -128,7 +128,8 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 	 */
 	private function _RenderList()
 	{
-
+		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		
 		Table()->ContactTable->SetHeader("Name", "&nbsp;", "Phone#", "Status", "Actions");
 		Table()->ContactTable->SetWidth("40%", "20%", "20%", "10%", "10%");
 		Table()->ContactTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
@@ -142,7 +143,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 			// Build the Actions Cell
 			$strViewContactLink = Href()->ViewContact($dboContact->Id->Value);
 			$strViewContact = "<a href='$strViewContactLink'><img src='img/template/article.png' title='View Contact Details'</a>";
-			if (($dboContact->Id->Value != DBO()->Account->PrimaryContact->Value) && ($dboContact->Archived->Value != 1))
+			if ($bolUserHasOperatorPerm && ($dboContact->Id->Value != DBO()->Account->PrimaryContact->Value) && ($dboContact->Archived->Value != 1))
 			{
 				// The contact is not the primary contact, and they are not archived
 				// Allow them to be set as the primary contact
@@ -258,8 +259,11 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		echo "</div>\n";  // Table Container
 	
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$strAddContactHref = Href()->AddContact(DBO()->Account->Id->Value);
-		$this->Button("Add Contact", "window.location='$strAddContactHref'");
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			$strAddContactHref = Href()->AddContact(DBO()->Account->Id->Value);
+			$this->Button("Add Contact", "window.location='$strAddContactHref'");
+		}
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 

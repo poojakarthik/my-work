@@ -219,11 +219,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		DBO()->Account->DisableLatePayment->RenderOutput();
 
-		// Render the buttons
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Edit Details", "Vixen.AccountDetails.RenderAccountDetailsForEditing();");
-		echo "</div></div>\n";
-		
+		// Render the buttons but only if the user has operator privileges
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
+			$this->Button("Edit Details", "Vixen.AccountDetails.RenderAccountDetailsForEditing();");
+			echo "</div></div>\n";
+		}
 		echo "</div>\n"; // NarrowContent
 		
 		// Initialise the AccountDetails object and register the OnAccountDetailsUpdate Listener
@@ -459,28 +461,48 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
 		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
-		echo "      </td>\n";
-		
-		echo "      <td width='35%' valign='top'>\n";
-		// Render the properties that can be changed
-		DBO()->Account->DisableDDR->RenderInput();
-		DBO()->Account->DisableLatePayment->RenderInput();
-		echo "      </td>\n";
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			// The user can edit the Admin fee and late payment fee properties
+			// Finish off the first column
+			echo "      </td>\n";
+			
+			// Start the second
+			echo "      <td width='35%' valign='top'>\n";
+			// Render the properties that can be changed
+			DBO()->Account->DisableDDR->RenderInput();
+			DBO()->Account->DisableLatePayment->RenderInput();
+			// Render the submit button
+			echo "         <br /><br /><br /><div class='ButtonContainer'><div class='Right'>\n";
+			$this->AjaxSubmit("Apply Changes");
+			echo "         </div></div>\n";
+			echo "      </td>\n";
+		}
+		else
+		{
+			// The user can't edit the Admin fee and late payment fee properties
+			// Render them as labels
+			DBO()->Account->DisableDDR->RenderOutput();
+			if (DBO()->Account->DisableLatePayment->Value === NULL)
+			{
+				// If DisableLatePayment is NULL then set it to 0
+				DBO()->Account->DisableLatePayment = 0;
+			}
+			DBO()->Account->DisableLatePayment->RenderOutput();
+			echo "      </td>\n";
+		}
+		// Finish the table
 		echo "   </tr>\n";
 		echo "</table>\n";
 
 		// If the user doesn't have Admin privileges they cannot select the "Never charge a late payment fee" option
-		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+		// If the user doesn't have Operator privileges then the checkbox and radio buttons aren't even rendered
+		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
 			// Disable the "Never Charge a late payment fee" radio option
 			echo "<script type='text/javascript'>document.getElementById('Account.DisableLatePayment_1').disabled = true;
 					document.getElementById('Account.DisableLatePayment_1.Label').style.color='#4C4C4C';</script>";
 		}
-		
-		// Render the submit button
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->AjaxSubmit("Apply Changes");
-		echo "</div></div>\n";
 		
 		echo "</div>\n";  //NarrowContent
 		echo "<div class='SmallSeperator'></div>\n";

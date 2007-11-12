@@ -83,13 +83,10 @@ class AppTemplatePlan extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 		
 		// Context menu
-		// Nothing to add
-		
+		// (Nothing to add)
 		
 		// Breadcrumb menu
 		Breadcrumb()->Employee_Console();

@@ -63,7 +63,7 @@ class AppTemplateNote extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 
 		// These are used by the LoadNotes function
 		$intAccountId = NULL;
@@ -118,7 +118,7 @@ class AppTemplateNote extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		DBO()->NoteDetails->MaxNotes = 1000;
+		DBO()->NoteDetails->MaxNotes = 50;
 		DBO()->NoteDetails->FilterOption = NOTE_FILTER_ALL;
 		
 		LoadNotes($intAccountId, $intServiceId, $intContactId);
@@ -314,13 +314,13 @@ class AppTemplateNote extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 		
 		// Load the notes
 		$bolUpdateCookies = (DBO()->NoteDetails->UpdateCookies->Value == TRUE) ? TRUE : FALSE;
 		LoadNotes(DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->Contact->Id->Value, $bolUpdateCookies);
 		
-		//Load the HtmlTemplate
+		// Load the HtmlTemplate
 		Ajax()->RenderHtmlTemplate("NoteList", HTML_CONTEXT_DEFAULT, DBO()->NoteDetails->ContainerDivId->Value);
 	}
 }

@@ -100,7 +100,6 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 	function Render()
 	{	
 		echo "<h2 class='Adjustment'>Recurring Adjustments</h2>\n";
-		echo "<div class='NarrowColumn'>\n";
 
 		// Check if the user has admin privileges
 		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
@@ -185,11 +184,21 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 
 		Table()->RecurringAdjustmentTable->Render();
 		
-		$strHref = Href()->AddRecurringAdjustment(DBO()->Account->Id->Value);
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Add Recurring Adjustment", $strHref);
-		echo "</div></div>\n";
-		echo "</div>\n";
+		// Button to add a recurring adjustment
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			// The user can add recurring adjustments
+			$strHref = Href()->AddRecurringAdjustment(DBO()->Account->Id->Value);
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
+			$this->Button("Add Recurring Adjustment", $strHref);
+			echo "</div></div>\n";
+		}
+		else
+		{
+			// The user can not add recurring adjustments
+			// This separator is added for spacing reasons
+			echo "<div class='SmallSeperator'></div>\n";
+		}
 	}
 }
 

@@ -146,8 +146,11 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		echo "</div>\n";  // Table Container
 	
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
-		$this->Button("Add Services", "window.location='$strBulkAddServiceLink'");
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
+			$this->Button("Add Services", "window.location='$strBulkAddServiceLink'");
+		}
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 
@@ -181,8 +184,11 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		echo "</div>\n";
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
-		$this->Button("Add Services", "window.location = \"$strBulkAddServiceLink\"");
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			$strBulkAddServiceLink = Href()->AddServices(DBO()->Account->Id->Value);
+			$this->Button("Add Services", "window.location = \"$strBulkAddServiceLink\"");
+		}
 		echo "</div></div>\n";
 		
 		$intAccountId = DBO()->Account->Id->Value;
@@ -206,6 +212,8 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 	 */
 	function RenderTable()
 	{
+		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+
 		Table()->ServiceTable->SetHeader("FNN #", "Service", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
 		Table()->ServiceTable->SetWidth("11%", "10%", "39%", "11%", "7%", "10%", "12%");
 		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left");
@@ -216,29 +224,31 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			$strStatusCell = $dboService->Status->AsCallBack("GetConstantDescription", Array("Service"));
 
 			// Build the Actions Cell
+			$strEditService		= "";
+			$strChangePlan		= "";
+			$strProvisioning	= "";
+			if ($bolUserHasOperatorPerm)
+			{
+				// The user can edit stuff
+				$strEditServiceLink			= Href()->EditService($dboService->Id->Value);
+				$strEditService 			= "<a href='$strEditServiceLink' title='Edit Service'><img src='img/template/edit.png'></img></a>";
+				
+				$strChangePlanLink			= Href()->ChangePlan($dboService->Id->Value);
+				$strChangePlan 				= "<a href='$strChangePlanLink' title='Change Plan'><img src='img/template/plan.png'></img></a>";
+	
+				// Include a button for provisioning, if the service is a landline
+				if ($dboService->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+				{
+					$strProvisioningLink	= Href()->Provisioning($dboService->Id->Value);
+					$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
+				}
+			}
+			
 			$strViewServiceNotesLink	= Href()->ViewServiceNotes($dboService->Id->Value);
 			$strViewServiceNotes 		= "<a href='$strViewServiceNotesLink' title='View Service Notes'><img src='img/template/note.png'></img></a>";
 			
-			$strEditServiceLink			= Href()->EditService($dboService->Id->Value);
-			$strEditService 			= "<a href='$strEditServiceLink' title='Edit Service'><img src='img/template/edit.png'></img></a>";
-			
-			$strChangePlanLink			= Href()->ChangePlan($dboService->Id->Value);
-			$strChangePlan 				= "<a href='$strChangePlanLink' title='Change Plan'><img src='img/template/plan.png'></img></a>";
-			
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($dboService->Id->Value);
 			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
-			
-			// Include a button for provisioning, if the service is a landline
-			if ($dboService->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
-			{
-				$strProvisioningLink	= Href()->Provisioning($dboService->Id->Value);
-				$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
-			}
-			else
-			{
-				// The service is not a landline
-				$strProvisioning = "";
-			}
 			
 			$strActionsCell				= "<span>$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning</span>";
 

@@ -98,7 +98,6 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 	function Render()
 	{	
 		echo "<h2 class='Adjustment'>Adjustments</h2>\n";
-		echo "<div class='NarrowColumn'>\n";
 
 		// Check if the user has admin privileges
 		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
@@ -213,13 +212,21 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 
 		Table()->AdjustmentTable->Render();
 		
-		// button to add an adjustment
-		$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Add Adjustment", $strHref);
-		echo "</div></div>\n";
-		
-		echo "</div>\n";
+		// Button to add an adjustment
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			// The user can add adjustments
+			$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
+			$this->Button("Add Adjustment", $strHref);
+			echo "</div></div>\n";
+		}
+		else
+		{
+			// The user can not add adjustments
+			// This separator is added for spacing reasons
+			echo "<div class='SmallSeperator'></div>\n";
+		}
 	}
 }
 

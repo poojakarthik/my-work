@@ -81,7 +81,6 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
-		//$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
 	}
 	
@@ -100,8 +99,6 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 	function Render()
 	{	
 		echo "<h2 class='Payment'>Payments</h2>\n";
-		//echo "<div class='NarrowContent'>\n";
-		echo "<div class='NarrowColumn'>\n";
 		
 		// Check if the user has admin privileges
 		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
@@ -124,13 +121,10 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		foreach (DBL()->Payment as $dboPayment)
 		{
 			// Reversed payments have to be obvious when looking at the table
+			$strStatus = "<span>&nbsp;</span>";
 			if ($dboPayment->Status->Value == PAYMENT_REVERSED)
 			{
 				$strStatus = $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"));
-			}
-			else
-			{
-				$strStatus = "<span>&nbsp;</span>";
 			}
 			
 			if ($bolHasAdminPerm)
@@ -172,13 +166,13 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 					if ($bolOldEtechPaymentWithNoInvoices)
 					{
 						// Payment cannot be reversed, but should be marked as being a special case
-						$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><img src='img/template/etech_payment_notice.png' title=\"Etech payment which can't be reversed\" /></span>";
+						$strDeletePaymentLabel = "<span><img src='img/template/etech_payment_notice.png' title=\"Etech payment which can't be reversed\" /></span>";
 					}
 					else
 					{
 						// build the "Reverse Payment" link
 						$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
-						$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Reverse Payment' /></a></span>";
+						$strDeletePaymentLabel = "<span><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Reverse Payment' /></a></span>";
 					}
 				}
 				else
@@ -283,7 +277,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		if (DBL()->Payment->RecordCount() == 0)
 		{
 			// There are no payments to stick in this table
-			Table()->PaymentTable->AddRow("<span class='DefaultOutputSpan Default'>No payments to display</span>");
+			Table()->PaymentTable->AddRow("<span'>No payments to display</span>");
 			Table()->PaymentTable->SetRowAlignment("left");
 			if ($bolHasAdminPerm)
 			{
@@ -303,12 +297,20 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		
 		Table()->PaymentTable->Render();
 		
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$strHref = Href()->MakePayment(DBO()->Account->Id->Value);
-		$this->Button("Make Payment", $strHref);
-		echo "</div></div>\n";
-		
-		echo "</div>\n";
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			// The user can add payments
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
+			$strHref = Href()->MakePayment(DBO()->Account->Id->Value);
+			$this->Button("Make Payment", $strHref);
+			echo "</div></div>\n";
+		}
+		else
+		{
+			// The user can not add payments
+			// This separator is added for spacing reasons
+			echo "<div class='SmallSeperator'></div>\n";
+		}
 	}
 }
 
