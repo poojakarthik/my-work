@@ -11,7 +11,7 @@
 	
 	// set page details
 	$arrPage['PopUp']		= TRUE;
-	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	$arrPage['Permission']	= PERMISSION_OPERATOR_VIEW;
 	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE | MODULE_SERVICE;
 	
 	// call application

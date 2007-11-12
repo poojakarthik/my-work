@@ -209,41 +209,44 @@
 			</xsl:when>
 		</xsl:choose>
 		
-		<div class="LinkEdit">
-			<xsl:choose>
-				<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_SETTLED = show none -->
-				<xsl:when test="/Response/Invoice/Status = 103" />
-				
-				<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_COMMITTED = show dispute -->
-				<xsl:when test="/Response/Invoice/Status = 101">
-					<!-- Dispute Invoice -->
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
-							<xsl:value-of select="/Response/Invoice/Id" />
-						</xsl:attribute>
-						<xsl:text>Dispute Invoice</xsl:text>
-					</a>
-				</xsl:when>
-				
-				<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_DISPUTED = show resolve -->	
-				<xsl:when test="/Response/Invoice/Status = 102">
-					<!-- Resolve Disputed Invoice -->
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
-							<xsl:value-of select="/Response/Invoice/Id" />
-						</xsl:attribute>
-						<xsl:text>Resolve Dispute</xsl:text>
-					</a>
-				</xsl:when>
-				
-				<!--TODO!flame! [NOT DONE]		Urgent - other status show ???? -->
-				<xsl:otherwise>
-					<xsl:text> ???? </xsl:text>
-				</xsl:otherwise>
-			</xsl:choose>
-		</div>
+		<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+			<!-- User needs OPERATOR privileges to edit anything -->
+			<div class="LinkEdit">
+				<xsl:choose>
+					<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_SETTLED = show none -->
+					<xsl:when test="/Response/Invoice/Status = 103" />
+					
+					<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_COMMITTED = show dispute -->
+					<xsl:when test="/Response/Invoice/Status = 101">
+						<!-- Dispute Invoice -->
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
+								<xsl:value-of select="/Response/Invoice/Id" />
+							</xsl:attribute>
+							<xsl:text>Dispute Invoice</xsl:text>
+						</a>
+					</xsl:when>
+					
+					<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_DISPUTED = show resolve -->	
+					<xsl:when test="/Response/Invoice/Status = 102">
+						<!-- Resolve Disputed Invoice -->
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
+								<xsl:value-of select="/Response/Invoice/Id" />
+							</xsl:attribute>
+							<xsl:text>Resolve Dispute</xsl:text>
+						</a>
+					</xsl:when>
+					
+					<!--TODO!flame! [NOT DONE]		Urgent - other status show ???? -->
+					<xsl:otherwise>
+						<xsl:text> ???? </xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</div>
+		</xsl:if>
 		
 		<div class="Seperator"></div>
 

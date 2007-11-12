@@ -23,20 +23,23 @@
 		<!-- Menu -->
 		<table border="0" cellpadding="3" cellspacing="0">
 			<!-- Add Customer -->
-			<tr>
-				<td>
-					<a href="account_add.php">
-						<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
-					</a>
-				</td>
-				<td>
-					<strong>
-						Add Customer
-					</strong>
-					<br />
-					Add a new Customer to the system.
-				</td>
-			</tr>
+			<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+				<!-- User needs OPERATOR privileges to add a customer -->
+				<tr>
+					<td>
+						<a href="account_add.php">
+							<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
+						</a>
+					</td>
+					<td>
+						<strong>
+							Add Customer
+						</strong>
+						<br />
+						Add a new Customer to the system.
+					</td>
+				</tr>
+			</xsl:if>
 			<!-- Find Customer -->
 			<tr>
 				<td>
@@ -136,20 +139,24 @@
 				</td>
 			</tr>
 			<!-- Bugs -->
-			<tr>
-				<td>
-					<a href="bug_list.php">
-						<img src="img/template/lady-debug.png" title="View Bug Reports" class="MenuIcon" />
-					</a>
-				</td>
-				<td>
-					<strong>
-						View Bug Reports
-					</strong>
-					<br />
-					View details of Bug Reports.
-				</td>
-			</tr>
+			<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+				<!-- User needs OPERATOR privileges to view the bug report -->
+			
+				<tr>
+					<td>
+						<a href="bug_list.php">
+							<img src="img/template/lady-debug.png" title="View Bug Reports" class="MenuIcon" />
+						</a>
+					</td>
+					<td>
+						<strong>
+							View Bug Reports
+						</strong>
+						<br />
+						View details of Bug Reports.
+					</td>
+				</tr>
+			</xsl:if>
 			<!-- Logout -->
 			<tr>
 				<td>

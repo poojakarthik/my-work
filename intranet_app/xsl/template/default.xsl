@@ -249,13 +249,16 @@
 													</a>
 												</td>
 											</tr>
-											<tr>
-												<td>
-													<a href="account_add.php">
-														<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
-													</a>
-												</td>
-											</tr>
+											<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+												<!-- User needs OPERATOR privileges to add a customer -->
+												<tr>
+													<td>
+														<a href="account_add.php">
+															<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
+														</a>
+													</td>
+												</tr>
+											</xsl:if>
 											<tr>
 												<td>
 													<a href="contact_verify.php">

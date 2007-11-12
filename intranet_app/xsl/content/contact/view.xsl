@@ -213,13 +213,18 @@
 						</div>
 					</div>
 					<div class="LinkEdit">
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>contact_edit.php?Id=</xsl:text>
-								<xsl:value-of select="/Response/Contact/Id" />
-							</xsl:attribute>
-							<xsl:text>Edit Contact Details</xsl:text>
-						</a>
+						<xsl:choose>
+							<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+								<!-- The user has OPERATOR privileges and can therefore edit the contact details -->
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>contact_edit.php?Id=</xsl:text>
+										<xsl:value-of select="/Response/Contact/Id" />
+									</xsl:attribute>
+									<xsl:text>Edit Contact Details</xsl:text>
+								</a>
+							</xsl:when>
+						</xsl:choose>
 					</div>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
@@ -227,98 +232,104 @@
 				<!-- column 2 -->
 				<td valign="top">
 					<!-- Contact Options -->
-					<h2 class="Options">Contact Options</h2>
-					<ul>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>contact_edit.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Contact/Id" />
-								</xsl:attribute>
-								<xsl:text>Edit Contact Details</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>account_add.php?Associated=</xsl:text>
-									<xsl:value-of select="/Response/Contact/Account" />
-								</xsl:attribute>
-								Add Associated Account
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>payment_add.php?Contact=</xsl:text>
-									<xsl:value-of select="/Response/Contact/Id" />
-								</xsl:attribute>
-								Make Payment
-							</a>
-						</li>
-					</ul>
-					<div class="Seperator"></div>
+					<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+						<!-- The user has OPERATOR privileges and can therefore perform operations that would modify data -->
 					
+						<h2 class="Options">Contact Options</h2>
+						<ul>
+							<li>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>contact_edit.php?Id=</xsl:text>
+										<xsl:value-of select="/Response/Contact/Id" />
+									</xsl:attribute>
+									<xsl:text>Edit Contact Details</xsl:text>
+								</a>
+							</li>
+							<li>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>account_add.php?Associated=</xsl:text>
+										<xsl:value-of select="/Response/Contact/Account" />
+									</xsl:attribute>
+									Add Associated Account
+								</a>
+							</li>
+							<li>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>payment_add.php?Contact=</xsl:text>
+										<xsl:value-of select="/Response/Contact/Id" />
+									</xsl:attribute>
+									Make Payment
+								</a>
+							</li>
+						</ul>
+						<div class="Seperator"></div>
+					</xsl:if>
 					<!-- Contact Notes -->
 					<h2 class="Notes">Contact Notes</h2>
 					
-					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)" name="NoteAdd">
-						<input type="hidden" name="AccountGroup">
-							<xsl:attribute name="value">
-								<xsl:text></xsl:text>
-								<xsl:value-of select="/Response/Contact/AccountGroup" />
-							</xsl:attribute>
-						</input>
-						<input type="hidden" name="Contact">
-							<xsl:attribute name="value">
-								<xsl:text></xsl:text>
-								<xsl:value-of select="/Response/Contact/Id" />
-							</xsl:attribute>
-						</input>
-						Type new note for this Contact in the field below:
-						<textarea name="Note" class="input-summary" rows="6" />
-						
-						<div>
-							<input type="checkbox" name="Account" checked="checked">
+					<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+						<!-- The user has OPERATOR privileges and can therefore perform operations that would modify data -->
+						<form method="post" action="note_add.php" onsubmit="return noteAdd (this)" name="NoteAdd">
+							<input type="hidden" name="AccountGroup">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
-									<xsl:value-of select="/Response/Contact/Account" />
+									<xsl:value-of select="/Response/Contact/AccountGroup" />
 								</xsl:attribute>
 							</input>
-							Show this note in Account Notes.
-						</div>
-						
-						<select name="NoteType" class="Left">
-							<xsl:for-each select="/Response/NoteTypes/NoteType">
-								<option>
-									<xsl:attribute name="style">
-										<xsl:text>background-color: #</xsl:text>
-										<xsl:value-of select="./BackgroundColor" />
-										<xsl:text>;</xsl:text>
-										
-										<xsl:text>border: solid 1px #</xsl:text>
-										<xsl:value-of select="./BorderColor" />
-										<xsl:text>;</xsl:text>
-										
-										<xsl:text>color: #</xsl:text>
-										<xsl:value-of select="./TextColor" />
-										<xsl:text>;</xsl:text>
-									</xsl:attribute>
+							<input type="hidden" name="Contact">
+								<xsl:attribute name="value">
+									<xsl:text></xsl:text>
+									<xsl:value-of select="/Response/Contact/Id" />
+								</xsl:attribute>
+							</input>
+							Type new note for this Contact in the field below:
+							<textarea name="Note" class="input-summary" rows="6" />
+							
+							<div>
+								<input type="checkbox" name="Account" checked="checked">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="./Id" />
+										<xsl:value-of select="/Response/Contact/Account" />
 									</xsl:attribute>
-									<xsl:value-of select="./TypeLabel" />
-								</option>
-							</xsl:for-each>
-						</select>
+								</input>
+								Show this note in Account Notes.
+							</div>
+							
+							<select name="NoteType" class="Left">
+								<xsl:for-each select="/Response/NoteTypes/NoteType">
+									<option>
+										<xsl:attribute name="style">
+											<xsl:text>background-color: #</xsl:text>
+											<xsl:value-of select="./BackgroundColor" />
+											<xsl:text>;</xsl:text>
+											
+											<xsl:text>border: solid 1px #</xsl:text>
+											<xsl:value-of select="./BorderColor" />
+											<xsl:text>;</xsl:text>
+											
+											<xsl:text>color: #</xsl:text>
+											<xsl:value-of select="./TextColor" />
+											<xsl:text>;</xsl:text>
+										</xsl:attribute>
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="./Id" />
+										</xsl:attribute>
+										<xsl:value-of select="./TypeLabel" />
+									</option>
+								</xsl:for-each>
+							</select>
+							
+							<div class="Right">
+								<input type="submit" value="Add Note &#0187;" class="input-submit-disabled" disabled="disabled" />
+							</div>
+						</form>
 						
-						<div class="Right">
-							<input type="submit" value="Add Note &#0187;" class="input-submit-disabled" disabled="disabled" />
-						</div>
-					</form>
-					
-					<div class="Clear"></div>
+						<div class="Clear"></div>
+					</xsl:if>
 					
 					<h3>Recent Notes</h3>
 					<xsl:choose>
@@ -458,28 +469,35 @@
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
 							<xsl:text>View Invoices &amp; Payments</xsl:text>
-						</a>,
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>payment_add.php?Account=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:text>Make Payment</xsl:text>
 						</a>
+						<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+							<!-- The user has OPERATOR privileges and can therefore perform operations that would modify data -->
+							, <!-- this comma has been left here intentionaly to separate the links -->
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>payment_add.php?Account=</xsl:text>
+									<xsl:value-of select="./Id" />
+								</xsl:attribute>
+								<xsl:text>Make Payment</xsl:text>
+							</a>
+						</xsl:if>
 						
 					</td>
 				</tr>
 			</xsl:for-each>
 		</table>
-		<div class="SmallSeperator"> </div> 
-		<div class="Right">
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>account_add.php?Associated=</xsl:text>
-					<xsl:value-of select="/Response/Contact/Account" />
-				</xsl:attribute>
-				Add Associated Account
-			</a>
-		</div>
+		<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+			<!-- The user has OPERATOR privileges and can therefore perform operations that would modify data -->
+			<div class="SmallSeperator"> </div> 
+			<div class="Right">
+				<a>
+					<xsl:attribute name="href">
+						<xsl:text>account_add.php?Associated=</xsl:text>
+						<xsl:value-of select="/Response/Contact/Account" />
+					</xsl:attribute>
+					Add Associated Account
+				</a>
+			</div>
+		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

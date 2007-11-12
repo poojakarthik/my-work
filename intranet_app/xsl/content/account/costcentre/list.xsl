@@ -86,13 +86,16 @@
 						<xsl:value-of select="./Name" />
 					</td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>costcentre_edit.php</xsl:text>
-								<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:text>Edit Cost Centre</xsl:text>
-						</a>
+						<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+							<!-- User needs OPERATOR privileges to edit a cost centre -->
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>costcentre_edit.php</xsl:text>
+									<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
+								</xsl:attribute>
+								<xsl:text>Edit Cost Centre</xsl:text>
+							</a>
+						</xsl:if>
 					</td>
 				</tr>
 			</xsl:for-each>
@@ -231,14 +234,17 @@
 			</p>
 		</xsl:if>
 		
-		<div class="LinkAdd">
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>costcentre_add.php?Account=</xsl:text>
-					<xsl:value-of select="/Response/Account/Id" />
-				</xsl:attribute>
-				<xsl:text>Add Cost Centre</xsl:text>
-			</a>
-		</div>
+		<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
+			<!-- User needs OPERATOR privileges to add a cost centre -->
+			<div class="LinkAdd">
+				<a>
+					<xsl:attribute name="href">
+						<xsl:text>costcentre_add.php?Account=</xsl:text>
+						<xsl:value-of select="/Response/Account/Id" />
+					</xsl:attribute>
+					<xsl:text>Add Cost Centre</xsl:text>
+				</a>
+			</div>
+		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

@@ -857,7 +857,10 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUp
 		if (($bolUpdateCookies) && (!isset($_COOKIE["{$strCookiePrefix}NotesFilter"]) || ($_COOKIE["{$strCookiePrefix}NotesFilter"] != DBO()->NoteDetails->FilterOption->Value)))
 		{
 			// The cookie either isn't set, or needs updating
-			setCookie("{$strCookiePrefix}NotesFilter", DBO()->NoteDetails->FilterOption->Value, 0, "/");
+			
+			// These cookies don't really ever need to expire
+			$intExpiryDate = time()+(60*60*24*365*40);  //40 years from now
+			setcookie("{$strCookiePrefix}NotesFilter", DBO()->NoteDetails->FilterOption->Value, $intExpiryDate, "/");
 		}
 	}
 	elseif (isset($_COOKIE["{$strCookiePrefix}NotesFilter"]))

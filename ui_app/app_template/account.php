@@ -295,7 +295,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		*/
-		
+
 		// context menu
 		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
