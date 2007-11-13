@@ -183,7 +183,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				// The recursion charge is 0, which should never really happen, but I've found cases where it is this value
 				$dboRecurringCharge->TimesToCharge = "Infinity";
 			}
-			$strToolTipHtml .= $dboRecurringCharge->TimesToCharge->AsOutput();
+			//$strToolTipHtml .= $dboRecurringCharge->TimesToCharge->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->Continuable->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->UniqueCharge->AsOutput();
 			
