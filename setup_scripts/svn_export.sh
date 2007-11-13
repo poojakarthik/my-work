@@ -20,7 +20,7 @@
 rm -Rf /usr/share/vixen/*
 
 # get latest version
-svn export --non-interactive --force --no-auth-cache --username export --password export http://10.11.12.13/svn_vixen /usr/share/vixen
+svn export --non-interactive --force --no-auth-cache --username export --password export http://192.168.2.13/svn_vixen /usr/share/vixen
 
 # set file permissions
 chmod 755 /usr/share/vixen/setup_scripts/svn_export.sh
