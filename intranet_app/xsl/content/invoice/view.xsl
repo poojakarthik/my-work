@@ -361,6 +361,11 @@
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
 											
 											<xsl:text>&amp;rangePage=1</xsl:text>
+											
+											<xsl:if test="/Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value">
+												<xsl:text>&amp;RecordType=</xsl:text>
+												<xsl:value-of select="/Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value" />
+											</xsl:if>
 										</xsl:attribute>
 										<xsl:text>&#124;&lt;- First</xsl:text>
 									</a>
@@ -388,6 +393,11 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage - 1" />
+											
+											<xsl:if test="/Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value">
+												<xsl:text>&amp;RecordType=</xsl:text>
+												<xsl:value-of select="/Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value" />
+											</xsl:if>
 										</xsl:attribute>
 										<xsl:text>&lt;- Prev</xsl:text>
 									</a>
@@ -432,6 +442,11 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage + 1" />
+
+											<xsl:if test="/Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value">
+												<xsl:text>&amp;RecordType=</xsl:text>
+												<xsl:value-of select="/Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value" />
+											</xsl:if>
 										</xsl:attribute>
 										<xsl:text>Next -&gt;</xsl:text>
 									</a>
@@ -459,6 +474,11 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePages" />
+											
+											<xsl:if test="/Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value">
+												<xsl:text>&amp;RecordType=</xsl:text>
+												<xsl:value-of select="/Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value" />
+											</xsl:if>
 										</xsl:attribute>
 										<xsl:text>Last -&gt;&#124;</xsl:text>
 									</a>

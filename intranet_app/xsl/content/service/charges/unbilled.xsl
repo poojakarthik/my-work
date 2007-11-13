@@ -327,6 +327,11 @@
 											<xsl:value-of select="/Response/CDRs-Unbilled/Results/rangeLength" />
 											
 											<xsl:text>&amp;rangePage=1</xsl:text>
+
+											<xsl:if test="/Response/CDRs-Unbilled/Constraints/Constraint[./Name='RecordType']/Value">
+												<xsl:text>&amp;RecordType=</xsl:text>
+												<xsl:value-of select="/Response/CDRs-Unbilled/Constraints/Constraint[./Name='RecordType']/Value" />
+											</xsl:if>
 										</xsl:attribute>
 										<xsl:text>&#124;&lt;- First</xsl:text>
 									</a>
@@ -351,6 +356,11 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Unbilled/Results/rangePage - 1" />
+											
+											<xsl:if test="/Response/CDRs-Unbilled/Constraints/Constraint[./Name='RecordType']/Value">
+												<xsl:text>&amp;RecordType=</xsl:text>
+												<xsl:value-of select="/Response/CDRs-Unbilled/Constraints/Constraint[./Name='RecordType']/Value" />
+											</xsl:if>
 										</xsl:attribute>
 										<xsl:text>&lt;- Prev</xsl:text>
 									</a>
@@ -373,7 +383,7 @@
 									<xsl:value-of select="/Response/CDRs-Unbilled/Results/rangeStart + /Response/CDRs-Unbilled/Results/rangeLength" />
 								</xsl:otherwise>
 							</xsl:choose>
-							of <xsl:value-of select="/Response/CDRs-Unbilled/collationLength" />
+							of <xsl:value-of select="/Response/CDRs-Unbilled/Results/collationLength" />
 						</td>
 						<td width="10%" align="right">
 							<xsl:choose>
@@ -390,6 +400,11 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Unbilled/Results/rangePage + 1" />
+											
+											<xsl:if test="/Response/CDRs-Unbilled/Constraints/Constraint[./Name='RecordType']/Value">
+												<xsl:text>&amp;RecordType=</xsl:text>
+												<xsl:value-of select="/Response/CDRs-Unbilled/Constraints/Constraint[./Name='RecordType']/Value" />
+											</xsl:if>
 										</xsl:attribute>
 										<xsl:text>Next -&gt;</xsl:text>
 									</a>
@@ -414,6 +429,11 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Unbilled/Results/rangePages" />
+											
+											<xsl:if test="/Response/CDRs-Unbilled/Constraints/Constraint[./Name='RecordType']/Value">
+												<xsl:text>&amp;RecordType=</xsl:text>
+												<xsl:value-of select="/Response/CDRs-Unbilled/Constraints/Constraint[./Name='RecordType']/Value" />
+											</xsl:if>
 										</xsl:attribute>
 										<xsl:text>Last -&gt;&#124;</xsl:text>
 									</a>

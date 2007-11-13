@@ -192,6 +192,8 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		// Add the Account Checkbox, if this is a Service or Contact note
 		if (DBO()->NoteDetails->ServiceNotes->Value || DBO()->NoteDetails->ContactNotes->Value)
 		{
+			// This checkbox should default to being ticked
+			DBO()->Note->IsAccountNote = TRUE;
 			DBO()->Note->IsAccountNote->RenderInput();
 		}
 	}
