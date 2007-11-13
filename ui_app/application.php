@@ -517,9 +517,9 @@ class Application
 			
 			//TODO!flame! Ban Users/IP Addresses that try to hack the system
 			
-			
-			// Set user Privileges to public + operator
-			$this->_arrUser['Privileges'] = PERMISSION_OPERATOR | PERMISSION_PUBLIC;
+			// Remove all the user's privileges except for PERMISSION_OPERATOR, PERMISSION_PUBLIC and PERMISSION_OPERATOR_VIEW
+			$intAllowableRemotePerms = PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR | PERMISSION_PUBLIC;
+			$this->_arrUser['Privileges'] = $this->_arrUser['Privileges'] & ($intAllowableRemotePerms);
 			
 			// Set user as remote
 			$this->_arrUser['IsLocal'] = FALSE;
