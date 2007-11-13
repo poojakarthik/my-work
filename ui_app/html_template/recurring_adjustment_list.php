@@ -145,20 +145,82 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->CreatedOn->AsValue(), $dboRecurringCharge->Description->AsValue());
 			}
 			
-			// add tooltip
+			// Add tooltip
+			$strFNN = "";
 			if ($dboRecurringCharge->Service->Value)
 			{
 				// The Recurring Charge is a Service Recurring Charge.  Display the FNN of the Service
 				$strFNN = $dboRecurringCharge->FNN->AsOutput();
 			}
-			else
-			{
-				$strFNN = "";
-			}
+			
+			// Add GST to the MinCharge and RecursionCharge
+			$dboRecurringCharge->MinCharge			= AddGST($dboRecurringCharge->MinCharge->Value);
+			$dboRecurringCharge->RecursionCharge	= AddGST($dboRecurringCharge->RecursionCharge->Value);
+			
 			$strToolTipHtml  = $strFNN;
 			$strToolTipHtml .= $dboRecurringCharge->LastChargedOn->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 			$strToolTipHtml .= $dboRecurringCharge->Nature->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->TotalRecursions->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->CancellationFee->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+			DBO()->ChargeTypesAvailable->RecurringFreqType = $dboRecurringCharge->RecurringFreqType->Value;
+			$strRecurringFreq = $dboRecurringCharge->RecurringFreq->Value ." ". DBO()->ChargeTypesAvailable->RecurringFreqType->FormattedValue();
+			$strToolTipHtml .= $dboRecurringCharge->RecurringFreq->AsArbitrary($strRecurringFreq, RENDER_OUTPUT);
+			$strToolTipHtml .= $dboRecurringCharge->MinCharge->AsOutput(CONTEXT_INCLUDES_GST);
+			$strToolTipHtml .= $dboRecurringCharge->RecursionCharge->AsOutput(CONTEXT_INCLUDES_GST);
+			if ((int)($dboRecurringCharge->RecursionCharge->Value) != 0)
+			{
+				// Calculate the minimum number of recursions
+				// BUG if this division works out to be a whole number then 1 is added to it
+				// Maybe I should check if it is an int
+				$fltMinCharge = OutputMask()->FormatFloat($dboRecurringCharge->MinCharge->Value, 2, 2);
+				$fltRecursionCharge = OutputMask()->FormatFloat($dboRecurringCharge->RecursionCharge->Value, 2, 2);
+				
+				$dboRecurringCharge->TimesToCharge = ceil($fltMinCharge / $fltRecursionCharge);
+			}
+			else
+			{	
+				// The recursion charge is 0, which should never really happen, but I've found cases where it is this value
+				$dboRecurringCharge->TimesToCharge = "Infinity";
+			}
+			$strToolTipHtml .= $dboRecurringCharge->TimesToCharge->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->Continuable->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->UniqueCharge->AsOutput();
+			
+			$intTimesToCharge = $dboRecurringCharge->TimesToCharge->Value;
+/* TODO! Get the end date displaying properly  (Currently it doesn't work for BILLING_FREQ_HALF_MONTH)			
+			// Work out the end date
+			switch ($dboRecurringCharge->RecurringFreqType->Value)
+			{
+				case BILLING_FREQ_DAY:
+					$intTotalDays = $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
+					$intEndTime = strtotime("+{$intTotalDays} days", strtotime($dboRecurringCharge->CreatedOn->Value));
+					$strEndTime = date("d/m/Y", $intEndTime);
+					break;
+				case BILLING_FREQ_MONTH:
+					$intTotalMonths = $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
+					$intEndTime = strtotime("+{$intTotalMonths} months", strtotime($dboRecurringCharge->CreatedOn->Value));
+					$strEndTime = date("d/m/Y", $intEndTime);
+					break;
+				case BILLING_FREQ_HALF_MONTH:
+					$intTotalHalfMonths = $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
+					
+					$intTotalMonths	= (int)($intTotalHalfMonths / 2);
+					$bolHalfwayThroughTheMonth = $intTotalHalfMonth % 2;
+					$intEndTime = strtotime("+{$intTotalMonths} months", strtotime($dboRecurringCharge->CreatedOn->Value));
+					
+					if ($bolHalfwayThroughTheMonth)
+					{
+						$intOtherEndOfMonth = strtotime("+1 months", $intEndTime);
+						$intEndTime = $intEndTime + ((int)(($intOtherEndOfMonth - $intEndTime) / 2));
+					}
+					
+					$strEndTime = date("d/m/Y", $intEndTime);
+					break;
+			}
+			
+			$strToolTipHtml .= "<span>end time = $strEndTime</span><br />";
+*/			
 			
 			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
 		}		
@@ -166,7 +228,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		if (DBL()->RecurringCharge->RecordCount() == 0)
 		{
 			// There are no adjustments to stick in this table
-			Table()->RecurringAdjustmentTable->AddRow("<span class='DefaultOutputSpan Default'>No recurring adjustments to display</span>");
+			Table()->RecurringAdjustmentTable->AddRow("<span>No recurring adjustments to display</span>");
 			Table()->RecurringAdjustmentTable->SetRowAlignment("left");
 			if ($bolHasAdminPerm)
 			{
@@ -199,6 +261,9 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			// This separator is added for spacing reasons
 			echo "<div class='SmallSeperator'></div>\n";
 		}
+		
+		// Sometimes the tooltip is rendered off the bottom of the screen.  This prevents that from being a problem.
+		echo "<div style='height:300px'></div>\n";
 	}
 }
 
