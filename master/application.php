@@ -215,7 +215,7 @@
 			else
 			{
 				$intNextRun = (int)$arrScript['NextRun'] - $intTimeNow;
-				$this->Debug("Too soon to run script : $strScriptName , will run in $intNextRun sec.");
+				$this->Debug("Too soon to run script : $strScriptName , will run in $intNextRun sec. ()".date("Y-m-d H:i:s", (int)$arrScript['NextRun']));
 			}
 		}
 	}
@@ -553,30 +553,64 @@
 			// Monthly Script
 			if ($intLastSchedualedRun)
 			{
-				//Debug("LOL");
-				$intNextRun = strtotime("+1 month", $intLastSchedualedRun);
-			}
-			else
-			{
-				// Are we too late to run?
-				$strZeroPaddedDay	= str_pad($arrScript['Config']['RecurringDay'], 2, '0', STR_PAD_LEFT);
-				$strFirstOfMonth	= date("Y-m-$strZeroPaddedDay", $intTimeNow);
-				$strEarliestRun		= date("Y-m-d H:i:s", strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime($strFirstOfMonth)));
-				//$strEarliestRun		= $strFirstOfMonth . date(" H:i:s", (int)$arrScript['Config']['StartTime']);
-				//Debug("\$strEarliestRun: $strEarliestRun");
-				//$strLatestRun		= $strFirstOfMonth . date(" H:i:s", (int)$arrScript['Config']['FinishTime']);
-				$strLatestRun		= date("Y-m-d H:i:s", strtotime("+{$arrScript['Config']['FinishTime']} seconds", strtotime($strFirstOfMonth)));
-				//Debug("\$strLatestRun: $strLatestRun");
-				//Debug("$intTimeNow < ".strtotime($strLatestRun));
-				if ($intTimeNow < strtotime($strLatestRun))
+				// Work out next month's date
+				if ($arrScript['Config']['RecurringDay'] > 0)
 				{
-					// Nope
-					$intNextRun = strtotime($strEarliestRun);
+					// Every month on a given day
+					$intNextRun = strtotime("+1 month", $intLastSchedualedRun);
 				}
 				else
 				{
-					// Yup, set it to next month
-					$intNextRun = strtotime("+1 month", strtotime($strEarliestRun));
+					// Certain number of days before the start of next month
+					$intFirstNextMonth	= strtotime(date("Y-m-d H:i:s", strtotime("+2 months", strtotime(date("Y-m-01 H:i:s", $intLastSchedualedRun)))));
+					$intNextRun			= strtotime("-{$arrScript['Config']['RecurringDay']} days");
+				}
+			}
+			else
+			{
+				// Hasn't run yet, see if we're too late
+				if ($arrScript['Config']['RecurringDay'] > 0)
+				{
+					// Are we too late to run?
+					$strZeroPaddedDay	= str_pad($arrScript['Config']['RecurringDay'], 2, '0', STR_PAD_LEFT);
+					$strRecurringDate	= date("Y-m-$strZeroPaddedDay", $intTimeNow);
+					$strEarliestRun		= date("Y-m-d H:i:s", strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime($strRecurringDate)));
+					$strLatestRun		= date("Y-m-d H:i:s", strtotime("+{$arrScript['Config']['FinishTime']} seconds", strtotime($strRecurringDate)));
+					
+					if ($intTimeNow < strtotime($strLatestRun))
+					{
+						// Nope
+						$intNextRun = strtotime($strEarliestRun);
+					}
+					else
+					{
+						// Yup, set it to next month
+						$intNextRun = strtotime("+1 month", strtotime($strEarliestRun));
+					}
+				}
+				else
+				{
+					// Are we too late to run?
+					$strRecurringDate	= date("Y-m-$strZeroPaddedDay", $intTimeNow);
+					$strEarliestRun		= date("Y-m-d H:i:s", strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime($strRecurringDate)));
+					$strLatestRun		= date("Y-m-d H:i:s", strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime($strRecurringDate)));
+					
+					// Certain number of days before the start of next month
+					$intFirstNextMonth	= strtotime(date("Y-m-d", strtotime("+1 months", $intTimeNow)));
+					$intEarliestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("-{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
+					$intLatestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("-{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
+					
+					if ($intTimeNow < $intLatestRun)
+					{
+						// Nope
+						$intNextRun = $intEarliestRun;
+					}
+					else
+					{
+						// Yup, set it to next month
+						$intFirstNextMonth	= strtotime(date("Y-m-d", strtotime("+2 months", $intTimeNow)));
+						$intEarliestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("-{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
+					}
 				}
 			}
 		}
