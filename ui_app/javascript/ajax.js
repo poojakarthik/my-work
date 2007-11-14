@@ -413,6 +413,8 @@ function VixenAjaxClass()
 					window.location = window.location;
 					break;
 				case "LoadCurrentPage":
+					// I don't even know if this is used.  It should probably do window.location = window.location instead of the reload()
+					// I think this is depricated.  It is not currently used in ui_app
 					window.location.reload();
 					break;
 				case "AlertAndRelocate":

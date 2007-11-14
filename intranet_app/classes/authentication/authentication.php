@@ -107,7 +107,7 @@
 					}
 					else
 					{
-						$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
+						$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'01:00:00')"));
 					}
 					
 					$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
@@ -224,7 +224,7 @@
 			$SessionId = sha1(uniqid(rand(), true));
 			
 			// Updating information
-			$Update = Array("SessionId" => $SessionId, "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
+			$Update = Array("SessionId" => $SessionId, "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'01:00:00')"));
 			
 			// update the table
 			$updUpdateStatement = new StatementUpdate("Employee", "UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", $Update);

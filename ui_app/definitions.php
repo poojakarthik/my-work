@@ -57,7 +57,7 @@ Define ('COLUMN_FOUR'	, 4);
 Define ('AJAX_MODE'		, 1);
 Define ('HTML_MODE'		, 2);
 
-Define ('USER_TIMEOUT'	, 1200);
+Define ('USER_TIMEOUT'	, 3600);
 Define ('GOD_TIMEOUT'	, 60*60*24*7);
 
 Define("PERMISSION_DEBUG"		, 0x80000000);

@@ -96,40 +96,59 @@
 							$bolTransferUnbilled
 						);
 						
-						// After the lessee changed is created a System note is generated
-						$strEmployeeFirstName = $athAuthentication->AuthenticatedEmployee()->Pull('FirstName')->getValue();
-						$strEmployeeLastName = $athAuthentication->AuthenticatedEmployee()->Pull('LastName')->getValue() ;
-						$intEmployeeId = $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
-						$strEmployeeFullName =  "$strEmployeeFirstName $strEmployeeLastName";
-											
-						$intAccountId = $actOriginal->Pull ('Id')->getValue();
-						$intAccountGroup = $srvService->Pull ('AccountGroup')->getValue();
-						$strBusinessName = $actOriginal->Pull ('BusinessName')->getValue();
-						$strTradingName = $actOriginal->Pull ('TradingName')->getValue();
-						$intServiceId = $srvService->Pull ('Id')->getValue();
-						$strServiceFNN = $srvService->Pull ('FNN')->getValue();
-						
-						$intReceivingAccountId = $actReceiving->Pull ('Id')->getValue();
-						$intReceivingBusinessName = $actReceiving->Pull ('BusinessName')->getValue();
-						
-						$strNote = "lessee changed by $strEmployeeFullName on " . date('m/d/y') . "\n";
-						$strNote .= "The following changed were made:\n";
-						$strNote .= "Service Id: $intServiceId\n";
-						$strNote .= "Service FNN: $strServiceFNN\n";
-						$strNote .= "Current Account Details\n";
-						$strNote .= "+ Account Id: $intAccountId\n";
-						$strNote .= "+ Business Name: $strBusinessName\n";
-						$strNote .= "+ Trading Name: $strTradingName\n";
-						$strNote .= "Receiving Account Details\n";
-						$strNote .= "+ Account Id: $intReceivingAccountId\n";
-						$strNote .= "+ Business Name: $intReceivingBusinessName\n";
-						$strNote .= "Change Date: " . date("l, M j, Y g:i:s A", $intDate) . "\n";
-						$strNote .= "Transfer Charges: " . (($bolTransferUnbilled)? "Yes" : "No") ;
-				
-						$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccountId, $intServiceId, NULL);
+						// Build System Note if the change of lessee worked
+						if ($arrReturnStatus[0] !== FALSE)
+						{
+							// The new service was created, signifying that the Change of Lessee worked
+							$intEmployeeId = $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
 												
-						// Transfer unbilled charges to the new lessee
+							$intOriginalAccountId		= $actOriginal->Pull('Id')->getValue();
+							$intOriginalAccountGroup	= $srvService->Pull('AccountGroup')->getValue();
+							$strOriginalAccountName		= trim($actOriginal->Pull('BusinessName')->getValue());
+							if ($strOriginalAccountName == NULL)
+							{
+								$strOriginalAccountName	= trim($actOriginal->Pull('TradingName')->getValue());
+							}
+							
+							$intOriginalServiceId		= $srvService->Pull('Id')->getValue();
+							$strServiceFNN 				= $srvService->Pull('FNN')->getValue();
+							
+							$intReceivingAccountId		= $actReceiving->Pull('Id')->getValue();
+							$intReceivingAccountGroup	= $actReceiving->Pull('AccountGroup')->getValue();
+							$strReceivingAccountName	= trim($actReceiving->Pull('BusinessName')->getValue());
+							if ($strReceivingAccountName == NULL)
+							{
+								$strReceivingAccountName = trim($actReceiving->Pull('TradingName')->getValue());
+							}
+							$intReceivingServiceId		= $arrReturnStatus[0];
+							
+							// The note bit regarding the transfer of unbilled charges
+							$strUnbilledChargesNoteClause = "";
+							if ($bolTransferUnbilled)
+							{
+								// The user wanted to transfer the unbilled charges
+								if ($arrReturnStatus[1] !== FALSE)
+								{
+									// The transfer didn't fail
+									$strUnbilledChargesNoteClause = "All unbilled charges have been transfered.";
+								}
+								else
+								{
+									// The transfer failed
+									$strUnbilledChargesNoteClause = "Transfering the unbilled charges failed, unexpectedly.";
+								}
+							}
+							
+							$strDate = "{$_POST['Date']['day']}/{$_POST['Date']['month']}/{$_POST['Date']['year']}";
+							
+							$strNoteForOriginalAccount  = "A change of lessee was scheduled.  This service is scheduled to move to account $intReceivingAccountId, '$strReceivingAccountName' on $strDate.  $strUnbilledChargesNoteClause";
+							$strNoteForReceivingAccount = "A change of lessee was scheduled.  This account will receive this service from account $intOriginalAccountId, '$strOriginalAccountName' on $strDate.  $strUnbilledChargesNoteClause";
+
+							$GLOBALS['fwkFramework']->AddNote($strNoteForOriginalAccount, SYSTEM_NOTE_TYPE, $intEmployeeId, $intOriginalAccountGroup, $intOriginalAccountId, $intOriginalServiceId, NULL);
+							$GLOBALS['fwkFramework']->AddNote($strNoteForReceivingAccount, SYSTEM_NOTE_TYPE, $intEmployeeId, $intReceivingAccountGroup, $intReceivingAccountId, $intReceivingServiceId, NULL);
+						}
 						
+						// Load the service_lessee_changed page
 						header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $arrReturnStatus[0] . "&Updated=" . $arrReturnStatus[1]);
 						exit;
 					}

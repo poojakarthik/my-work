@@ -157,73 +157,87 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			$dboRecurringCharge->MinCharge			= AddGST($dboRecurringCharge->MinCharge->Value);
 			$dboRecurringCharge->RecursionCharge	= AddGST($dboRecurringCharge->RecursionCharge->Value);
 			
-			$strToolTipHtml  = $strFNN;
-			$strToolTipHtml .= $dboRecurringCharge->LastChargedOn->AsOutput();
-			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
-			$strToolTipHtml .= $dboRecurringCharge->Nature->AsOutput();
-			$strToolTipHtml .= $dboRecurringCharge->TotalRecursions->AsOutput();
-			$strToolTipHtml .= $dboRecurringCharge->CancellationFee->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
-			DBO()->ChargeTypesAvailable->RecurringFreqType = $dboRecurringCharge->RecurringFreqType->Value;
-			$strRecurringFreq = $dboRecurringCharge->RecurringFreq->Value ." ". DBO()->ChargeTypesAvailable->RecurringFreqType->FormattedValue();
-			$strToolTipHtml .= $dboRecurringCharge->RecurringFreq->AsArbitrary($strRecurringFreq, RENDER_OUTPUT);
-			$strToolTipHtml .= $dboRecurringCharge->MinCharge->AsOutput(CONTEXT_INCLUDES_GST);
-			$strToolTipHtml .= $dboRecurringCharge->RecursionCharge->AsOutput(CONTEXT_INCLUDES_GST);
-			if ((int)($dboRecurringCharge->RecursionCharge->Value) != 0)
+			// TimesToCharge requires the Recursion Charge to not equal 0
+			if (($dboRecurringCharge->RecursionCharge->Value) != 0)
 			{
-				// Calculate the minimum number of recursions
-				// BUG if this division works out to be a whole number then 1 is added to it
-				// Maybe I should check if it is an int
+				// Calculate the required number of recursions
 				$fltMinCharge = OutputMask()->FormatFloat($dboRecurringCharge->MinCharge->Value, 2, 2);
 				$fltRecursionCharge = OutputMask()->FormatFloat($dboRecurringCharge->RecursionCharge->Value, 2, 2);
 				
-				$dboRecurringCharge->TimesToCharge = ceil($fltMinCharge / $fltRecursionCharge);
+				$dboRecurringCharge->TimesToCharge = ceil(abs(($fltMinCharge / $fltRecursionCharge) - 0.01));
 			}
 			else
 			{	
 				// The recursion charge is 0, which should never really happen, but I've found cases where it is this value
 				$dboRecurringCharge->TimesToCharge = "Infinity";
 			}
-			//$strToolTipHtml .= $dboRecurringCharge->TimesToCharge->AsOutput();
+			
+			$strToolTipHtml  = $strFNN;
+			$strToolTipHtml .= $dboRecurringCharge->LastChargedOn->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+			$strToolTipHtml .= $dboRecurringCharge->Nature->AsOutput();
+			DBO()->ChargeTypesAvailable->RecurringFreqType = $dboRecurringCharge->RecurringFreqType->Value;
+			$strRecurringFreq = $dboRecurringCharge->RecurringFreq->Value ." ". DBO()->ChargeTypesAvailable->RecurringFreqType->FormattedValue();
+			$strToolTipHtml .= $dboRecurringCharge->RecurringFreq->AsArbitrary($strRecurringFreq, RENDER_OUTPUT);
+			$strToolTipHtml .= $dboRecurringCharge->TimesToCharge->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->TotalRecursions->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->CancellationFee->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+			$strToolTipHtml .= $dboRecurringCharge->MinCharge->AsOutput(CONTEXT_INCLUDES_GST);
+			$strToolTipHtml .= $dboRecurringCharge->RecursionCharge->AsOutput(CONTEXT_INCLUDES_GST);
 			$strToolTipHtml .= $dboRecurringCharge->Continuable->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->UniqueCharge->AsOutput();
 			
+			
 			$intTimesToCharge = $dboRecurringCharge->TimesToCharge->Value;
-/* TODO! Get the end date displaying properly  (Currently it doesn't work for BILLING_FREQ_HALF_MONTH)			
 			// Work out the end date
-			switch ($dboRecurringCharge->RecurringFreqType->Value)
+			if (is_numeric($intTimesToCharge))
 			{
-				case BILLING_FREQ_DAY:
-					$intTotalDays = $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
-					$intEndTime = strtotime("+{$intTotalDays} days", strtotime($dboRecurringCharge->CreatedOn->Value));
-					$strEndTime = date("d/m/Y", $intEndTime);
-					break;
-				case BILLING_FREQ_MONTH:
-					$intTotalMonths = $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
-					$intEndTime = strtotime("+{$intTotalMonths} months", strtotime($dboRecurringCharge->CreatedOn->Value));
-					$strEndTime = date("d/m/Y", $intEndTime);
-					break;
-				case BILLING_FREQ_HALF_MONTH:
-					$intTotalHalfMonths = $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
-					
-					$intTotalMonths	= (int)($intTotalHalfMonths / 2);
-					$bolHalfwayThroughTheMonth = $intTotalHalfMonth % 2;
-					$intEndTime = strtotime("+{$intTotalMonths} months", strtotime($dboRecurringCharge->CreatedOn->Value));
-					
-					if ($bolHalfwayThroughTheMonth)
-					{
-						$intOtherEndOfMonth = strtotime("+1 months", $intEndTime);
-						$intEndTime = $intEndTime + ((int)(($intOtherEndOfMonth - $intEndTime) / 2));
-					}
-					
-					$strEndTime = date("d/m/Y", $intEndTime);
-					break;
+				// The end date depends on the Recurring Frequency type, the recurring frequency and the times to charge
+				switch ($dboRecurringCharge->RecurringFreqType->Value)
+				{
+					case BILLING_FREQ_DAY:
+						$intTotalNumOfDays	= $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
+						$intEndTime			= strtotime("+{$intTotalNumOfDays} days", strtotime($dboRecurringCharge->StartedOn->Value));
+						break;
+						
+					case BILLING_FREQ_MONTH:
+						$intTotalNumOfMonths	= $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
+						$intEndTime				= strtotime("+{$intTotalNumOfMonths} months", strtotime($dboRecurringCharge->StartedOn->Value));
+						break;
+						
+					case BILLING_FREQ_HALF_MONTH:
+						// If there is an even number of half months, then you can just work out how many whole months to add to the CreatedOn date
+						// If there is an odd number of half months, then add the even number of months on to the CreatedOn date; find out
+						// what 1 month beyond this date would be and then find the middle of these 2 dates expressed in seconds
+						$intTotalNumOfHalfMonths	= $intTimesToCharge * $dboRecurringCharge->RecurringFreq->Value;
+						$intTotalNumOfMonths		= (int)($intTotalNumOfHalfMonths / 2);
+						$bolExtraHalfMonth			= $intTotalNumOfHalfMonths % 2;
+						$intEndTime					= strtotime("+{$intTotalNumOfMonths} months", strtotime($dboRecurringCharge->StartedOn->Value));
+						
+						if ($bolExtraHalfMonth)
+						{
+							$intOneMonthBeyondEndTime	= strtotime("+1 months", $intEndTime);
+							$intEndTime					= $intEndTime + ((int)(($intOneMonthBeyondEndTime - $intEndTime) / 2));
+						}
+						break;
+				}
+				$strEndTime = date("d/m/Y", $intEndTime);
+			}
+			else
+			{
+				// TimesToCharge is not a number.  It must equal Infinity
+				$strEndTime = "Infinity";
 			}
 			
-			$strToolTipHtml .= "<span>end time = $strEndTime</span><br />";
-*/			
+			//TODO Use Started on instead of CreatedOn!!!
+			$strToolTipHtml .= $dboRecurringCharge->StartedOn->AsOutput();
+
+			
+			$dboRecurringCharge->EndDate = $strEndTime;
+			$strToolTipHtml .= $dboRecurringCharge->EndDate->AsOutput();
 			
 			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
-		}		
+		}
 		
 		if (DBL()->RecurringCharge->RecordCount() == 0)
 		{
