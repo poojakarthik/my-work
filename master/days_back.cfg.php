@@ -2,7 +2,7 @@
 
 $arrConfig['MaxRuns']			= 100000;
 $arrConfig['Sleep']				= 60;
-$arrConfig['Verbose']			= FALSE;
+$arrConfig['Verbose']			= TRUE;
 $arrConfig['GMTOffset']			= 10;
 $arrConfig['RefreshRate']		= 1;
 

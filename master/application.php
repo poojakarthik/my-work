@@ -613,7 +613,7 @@
 				{
 					// Certain number of days before the start of next month
 					$intFirstNextMonth	= strtotime(date("Y-m-d H:i:s", strtotime("+2 months", strtotime(date("Y-m-01 H:i:s", $intLastSchedualedRun)))));
-					$intNextRun			= strtotime("-{$arrScript['Config']['RecurringDay']} days");
+					$intNextRun			= strtotime("{$arrScript['Config']['RecurringDay']} days");
 				}
 			}
 			else
@@ -647,8 +647,8 @@
 					
 					// Certain number of days before the start of next month
 					$intFirstNextMonth	= strtotime(date("Y-m-d", strtotime("+1 months", $intTimeNow)));
-					$intEarliestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("-{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
-					$intLatestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("-{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
+					$intEarliestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
+					$intLatestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
 					
 					if ($intTimeNow < $intLatestRun)
 					{
@@ -659,7 +659,7 @@
 					{
 						// Yup, set it to next month
 						$intFirstNextMonth	= strtotime(date("Y-m-d", strtotime("+2 months", $intTimeNow)));
-						$intEarliestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("-{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
+						$intEarliestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
 					}
 				}
 			}

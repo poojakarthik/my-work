@@ -1,15 +1,9 @@
 <?php
-$intTime = time();
-$intCount = 0;
-while ($intCount < 5)
+
+for ($i = 1; $i < 10; $i++)
 {
-	if ($intTime + 1 < time())
-	{
-		$intTime = time();
-		$intCount++;
-		echo "$intCount\n";
-	}
+	echo "Sleeping for {$i}s\n";
+	sleep($i);
 }
-//throw new Exception("DIE");
 
 ?>
