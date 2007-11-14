@@ -22,10 +22,10 @@ if (!$argv[1])
 $strFilename	= trim($argv[1]);
 if (!file_exists($strFilename))
 {
-	CliEcho("\nFile '$strFilename does not exist!'\n");
+	CliEcho("\nFile '$strFilename' does not exist!\n");
 	die;
 }
-require_once(strFilename);
+require_once($strFilename);
 
 // Application entry point - create an instance of the application object
 $appMaster = new ApplicationMaster($arrConfig);
