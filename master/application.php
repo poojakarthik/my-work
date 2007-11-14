@@ -93,6 +93,55 @@
 	 */
 	function Run()
 	{
+		// Validate Config
+		CliEcho(" * Validating Configuration...");
+		foreach ($this->_arrConfig['Script'] as $strName=>$arrScript)
+		{
+			$strDescription	= "$strName: ";
+			
+			if ($arrScript['RecurringDay'] > 0)
+			{
+				switch (substr($arrScript['RecurringDay'], -1, 1))
+				{
+					case 1:
+						$strOrd	= "{$arrScript['RecurringDay']}st";
+						break;
+										
+					case 2:
+						$strOrd	= "{$arrScript['RecurringDay']}nd";
+						break;
+					
+					case 3:
+						$strOrd	= "{$arrScript['RecurringDay']}rd";
+						break;
+					
+					default:
+						$strOrd	= "{$arrScript['RecurringDay']}th";
+						break;
+				}
+				$strDescription .= "Runs Monthly on the $strOrd";
+			}
+			elseif ($arrScript['RecurringDay'] < 0)
+			{
+				$strDescription .= "Runs Monthly {$arrScript['RecurringDay']} from End of Month";
+			}
+			else
+			{
+				$strDescription .= "Runs <= Daily";
+			}
+			
+			if ($arrScript['SubScript'])
+			{
+				$strDescription .= "; NORMAL";
+			}
+			else
+			{
+				$strDescription .= "; MULTIPART";
+			}
+			
+			CliEcho("\t + $strDescription");
+		}
+		
 		// not waiting
 		$this->_bolWait = FALSE;
 		
