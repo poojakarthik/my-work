@@ -123,7 +123,8 @@
 			}
 			elseif ($arrScript['RecurringDay'] < 0)
 			{
-				$strDescription .= "Runs Monthly {$arrScript['RecurringDay']} from End of Month";
+				$intDaysBack	= 0 - $arrScript['RecurringDay'];
+				$strDescription .= "Runs Monthly $intDaysBack days from End of Month";
 			}
 			else
 			{
@@ -132,11 +133,11 @@
 			
 			if ($arrScript['SubScript'])
 			{
-				$strDescription .= "; NORMAL";
+				$strDescription .= "; MULTIPART";
 			}
 			else
 			{
-				$strDescription .= "; MULTIPART";
+				$strDescription .= "; NORMAL";
 			}
 			
 			CliEcho("\t + $strDescription");
