@@ -613,7 +613,7 @@
 				{
 					// Certain number of days before the start of next month
 					$intFirstNextMonth	= strtotime(date("Y-m-01 H:i:s", strtotime("+2 months", strtotime(date("Y-m-01 H:i:s", $intLastSchedualedRun)))));
-					$intNextRun			= strtotime("{$arrScript['Config']['RecurringDay']} days");
+					$intNextRun			= strtotime("{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth);
 				}
 			}
 			else

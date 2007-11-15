@@ -12,7 +12,7 @@ $arrScript	= Array();
 	$arrScript['StartTime']                 =       3600*11;	// 1100
 	$arrScript['FinishTime']                =       3600*15;	// 1500
 	$arrScript['Interval']                  =       2419200;	// 28 Days (this is really irrelevant)
-	$arrScript['RecurringDay']				= 		-17;
+	$arrScript['RecurringDay']				= 		-16;
 	$arrScript['DieOnChildDeath']			=		TRUE;
 	
 	$arrScript['SubScript'] = Array();
