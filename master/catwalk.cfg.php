@@ -42,8 +42,8 @@ $arrConfig['Sleep']				= 60;
 // Verbose
 //		Bool	TRUE	Display output as the script runs
 //				FALSE	Quiet mode
-//$arrConfig['Verbose']			= TRUE;
-$arrConfig['Verbose']			= FALSE;
+$arrConfig['Verbose']			= TRUE;
+//$arrConfig['Verbose']			= FALSE;
 
 
 $arrConfig['GMTOffset']			= 10;
