@@ -936,6 +936,12 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
 			}
+			if ($bolUserHasAdminPerm)
+			{
+				// Only admin staff can override rate groups
+				ContextMenu()->Account_Menu->Service->Override_Rate_Group(DBO()->Service->Id->Value);
+			}
+			
 			ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
 		}
 		ContextMenu()->Account_Menu->Service->View_Service_Notes(DBO()->Service->Id->Value);

@@ -275,7 +275,6 @@ class MenuItems
 	 * Compiles the Href to be executed when the ViewRates menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the ViewRates menu item is clicked
-	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 *
 	 * @param	int		
 	 *
@@ -293,6 +292,34 @@ class MenuItems
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId\", \"large\", null, \"Rate\", \"View\", $strJsonCode)";	
 	}	
+
+	//------------------------------------------------------------------------//
+	// OverrideRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * OverrideRateGroup()
+	 *
+	 * Compiles the Href to be executed when the OverrideRateGroup menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the OverrideRateGroup menu item is triggered
+	 *
+	 * @param	int		$intServiceId	Id of the Service of which you want to override one of the rate groups
+	 *
+	 * @return	string						
+	 *
+	 * @method
+	 */
+	function OverrideRateGroup($intServiceId)
+	{
+		// Setup data to send
+		$arrData['Objects']['Service']['Id'] = $intServiceId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"large\", null, \"RateGroup\", \"Override\", $strJsonCode)";	
+	}
+
 
 	//------------------------------------------------------------------------//
 	// EditService

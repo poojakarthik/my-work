@@ -907,4 +907,60 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strJavascript = "Vixen.RatePlanAdd.AddRateGroupPopupOnClose($objRateGroup);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
+	
+	//------------------------------------------------------------------------//
+	// Override
+	//------------------------------------------------------------------------//
+	/**
+	 * Override()
+	 *
+	 * Performs the logic for the "Override Rate Group" popup
+	 * 
+	 * Performs the logic for the "Override Rate Group" popup
+	 *		This assumes the following data is passed:
+	 *			DBO()->Service->Id		Id of the service that the Override will take place on
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Override()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		// Load the service Record
+		
+		// Handle form submittion
+		if (SubmittedForm('RateGroupOverride', 'Ok'))
+		{
+			// Validate the data
+			
+			// Perform the override
+			
+			// Create System note
+			
+			// Fire the OnNewNote Event (Ajax()->FireOnNewNote(accountId, serviceId))
+						
+			// Close the popup
+			
+			// Fire the EVENT_ON_SERVICE_PLAN_UPDATE Event (this constant hasn't been made yet)
+			//TODO! for now you could just get it to reload the current page
+		}
+				
+		// Load other required data
+		//TODO! load the Account record
+		
+		// Load all the RecordType names and ids for the ServiceType of the Service defined by DBO()->Service->Id
+		//TODO!
+		
+		// Load all the RateGroups associated with the service type
+		//TODO!
+		
+		// Declare which PageTemplate to use
+		$this->LoadPage('rate_group_override');
+
+		return TRUE;
+	}
 }
