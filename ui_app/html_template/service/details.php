@@ -108,109 +108,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			case HTML_CONTEXT_BARE_DETAIL:
 				$this->_RenderBareDetail();
 				break;		
-			case HTML_CONTEXT_TABULAR_DETAIL:
-				$this->_RenderTabularDetail();
-				break;				
 			default:
 				$this->_RenderFullDetail();
 				break;
 		}
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderTabularDetail		(i think this is DEPRICATED)
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderTabularDetail
-	 *
-	 * Renders all services for a given Account
-	 *
-	 * Renders all services for a given Account
-	 * This assumes it will be placed in a popup, as it includes a close button
-	 *
-	 * @method
-	 */
-	private function _RenderTabularDetail()
-	{
-		echo "<div class='PopupLarge'>\n";
-		echo "<div  style='overflow:auto; height:300px'>\n";
-		
-		echo "<div class='NarrowForm'>\n";
-
-		Table()->ServiceTable->SetHeader("FNN #", "Service Type", "Plan Name", "Status", "Actions");
-		Table()->ServiceTable->SetWidth("15%", "15%", "20%","20%","20%");
-		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
-		
-		foreach (DBL()->Service as $dboService)
-		{
-			switch ($dboService->Status->Value)
-			{
-				case SERVICE_ACTIVE:
-					$strStatus = "<div class='DefaultRegularOutput'>".Active."</div>";//Opened On: ".$dboService->CreatedOn->Value."</div>";
-					break;
-				case SERVICE_DISCONNECTED:
-					$strStatus = "<div class='DefaultRegularOutput'>".Disconnected."</div>";//Closes On: ".$dboService->ClosedOn->Value."</div>";
-					break;
-				case SERVICE_ARCHIVED:
-					$strStatus = "<div class='DefaultRegularOutput'>".Archived."</div>";//Closes On: ".$dboService->ClosedOn->Value."</div>";
-					break;					
-			}
-		
-			// Returns the plan for each DBL object
-			$strWhere = "NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime AND";
-			$strWhere .= " ServiceRatePlan.Service = ".$dboService->Id->Value;
-			DBO()->RatePlan->Where->SetString($strWhere);
-		
-			$arrColumns = Array("Service"=>"ServiceRatePlan.Service",
-											"RatePlan"=>"ServiceRatePlan.RatePlan",
-											"StartDatetime"=>"ServiceRatePlan.StartDatetime",
-											"EndDatetime"=>"ServiceRatePlan.EndDatetime",
-											"CreatedWhen"=>"ServiceRatePlan.CreatedOn",
-											"Id"=>"RatePlan.Id",
-											"Name"=>"RatePlan.Name");
-	
-			DBO()->RatePlan->SetColumns($arrColumns);
-			DBO()->RatePlan->SetTable("ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan");
-			DBO()->RatePlan->OrderBy("ServiceRatePlan.CreatedOn DESC");
-			DBO()->RatePlan->Load();
-
-			$strChangePlanLink = Href()->ChangePlan($dboService->Id->Value);
-			$strDivItem = $dboService->Id->Value;
-
-			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($dboService->Id->Value, DBO()->Account->Id->Value);
-			$strDivItem = $dboService->Id->Value;
-
-			if (DBO()->RatePlan->Name->Value == NULL)
-			{
-				$strRatePlanName = "<div class='DefaultRegularOutput' id='$strDivItem'><a href='$strChangePlanLink'>No Plan Selected</a></div>";
-			}
-			else
-			{
-				$strRatePlanName = "<div class='DefaultRegularOutput'><a href='$strViewServiceRatePlanLink'> ".DBO()->RatePlan->Name->Value."</a></div>";
-			}			
-					
-			$strViewServiceNotesLink = Href()->ViewServiceNotes($dboService->Id->Value, DBO()->Note->NoteType->Value);
-			$strOutputLink = "<div class='DefaultRegularOutput'><a href='$strViewServiceNotesLink'>View Notes</a></div>\n";
-				
-			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
-			$strFNN = "<div class='DefaultRegularOutput'><a href='$strViewServiceLink'>".$dboService->FNN->Value."</a></div>";	
-				
-			Table()->ServiceTable->AddRow($strFNN, $dboService->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), 
-															$strRatePlanName,
-															$strStatus,
-															$strOutputLink);									
-					
-		}
-		Table()->ServiceTable->Render();
-		
-		echo "</div>\n";
-		echo "</div>\n";
-	
-		echo "<div class='Right'>\n";
-		$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-		echo "</div>\n";
-
-		echo "</div>\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -257,7 +158,15 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
 		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
+		if (DBO()->Account->BusinessName->Value)
+		{
+			DBO()->Account->BusinessName->RenderOutput();
+		}
+		elseif (DBO()->Account->TradingName->RenderOutput())
+		{
+			DBO()->Account->TradingName->RenderOutput();
+		}
+		
 		DBO()->Service->FNN->RenderOutput();
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
 		echo "</div>\n";
@@ -297,10 +206,13 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			DBO()->ServiceMobileDetail->Load();
 		
 			DBO()->ServiceMobileDetail->SimPUK->RenderOutput();
-			DBO()->ServiceMobileDetail->SimESN->RenderOutput();			
-			DBO()->ServiceMobileDetail->SimState->RenderCallback("GetConstantDescription", Array("ServiceStateType"), RENDER_OUTPUT);	
+			DBO()->ServiceMobileDetail->SimESN->RenderOutput();
+			DBO()->ServiceMobileDetail->SimState->RenderCallback("GetConstantDescription", Array("ServiceStateType"), RENDER_OUTPUT);
 			DBO()->ServiceMobileDetail->DOB->RenderOutput();
-			DBO()->ServiceMobileDetail->Comments->RenderOutput();
+			if (DBO()->ServiceMobileDetail->Comments->Value)
+			{
+				DBO()->ServiceMobileDetail->Comments->RenderOutput();
+			}
 			echo "&nbsp;<br>\n";
 		}
 
@@ -327,14 +239,20 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		}
 		
 		DBO()->Service->TotalUnbilledCharges->RenderOutput();
-		//Only display the current rate plan if there is one
-		if (DBO()->RatePlan->Id->Value !== FALSE)
+		// Display the current rate plan, if there is one
+		if (DBO()->CurrentRatePlan->Id->Value)
 		{
-			DBO()->RatePlan->Name->RenderOutput(1);
+			DBO()->CurrentRatePlan->Name->RenderOutput();
 		}
 		else
 		{
-			DBO()->RatePlan->Name->RenderArbitrary("No Plan", RENDER_OUTPUT, 1);
+			DBO()->CurrentRatePlan->Name->RenderArbitrary("No Plan", RENDER_OUTPUT);
+		}
+		
+		// Display the plan scheduled to start for the next billing period, if there is one
+		if (DBO()->FutureRatePlan->Id->Value)
+		{
+			DBO()->FutureRatePlan->Name->RenderOutput();
 		}
 		
 		// Separate the Service status properties from the rest

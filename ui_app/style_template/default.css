@@ -311,6 +311,8 @@
 		outline-width:	1px;
 	}
 	
+	.DefaultInputRadioButtons extends 
+	
 	.DefaultInputComboBox
 	{
 		border:				solid 1px #000000;

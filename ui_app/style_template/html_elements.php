@@ -627,12 +627,6 @@ class HTMLElements
 			$strHtml .= "         </td>\n";
 			$strHtml .= "      </tr>\n";
 			$strHtml .= "   </table>\n";
-			
-			// Old method of rendering the radio buttons, which doesn't handle new line chars
-			//$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
-			//$strHtml .= "      <input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
-			//$strHtml .= "      <label id='$strId.Label' for='$strId'>$strOptionLabel</label>\n";
-			//$strHtml .= "   </div>\n";
 		}
 		
 		$strHtml .= "</div>\n";
@@ -640,6 +634,103 @@ class HTMLElements
 		return $strHtml;
 	}
 
+	//------------------------------------------------------------------------//
+	// RadioButtons2
+	//------------------------------------------------------------------------//
+	/**
+	 * RadioButtons2()
+	 * 
+	 * Creates a set of radio buttons, but arranges the label and options just like the function InputText does
+	 * 
+	 * Creates a set of radio buttons, but arranges the label and options just like the function InputText does
+	 * Returns a formatted HTML div tag, using data from an array to build
+	 * the element's attributes like class, id and value
+	 *
+	 * @param	array	$arrParams			parameters to use when building the
+	 * 										set of radio buttons (see above for format).
+	 * @return	string						html code
+	 *
+	 * @method
+	 */
+	function RadioButtons2($arrParams)
+	{
+		$mixValue = $arrParams['Value'];
+		$strLabel = $arrParams['Definition']['Label'];
+		
+		// if the property is equal to null, then convert this to zero
+		if ($mixValue === NULL)
+		{
+			$mixValue = 0;
+		}
+		
+		if (!is_array($arrParams['Definition']['Options']))
+		{
+			return "HtmlElements->RadioButtons: ERROR: no options are specified for property {$arrParams['Object']}.{$arrParams['Property']}";
+		}
+
+		// determine whether the radio buttons should be disabled
+		$strDisabled = "";
+		if ($arrParams['Type'] != RENDER_INPUT)
+		{
+			$strDisabled = "disabled";
+		}
+
+		$strHtml = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+
+		$strHtml .= "<table border='0' cellspacing='0' cellpadding='0' width='100%'>\n";
+		$strHtml .= "   <tr>\n";
+		$strHtml .= "      <td width='195px'>\n";
+		$strHtml .= "         <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		if ($arrParams['Required'])
+		{
+			$strHtml .= "         <span class='RequiredInput'>*</span>\n";
+		}
+		else
+		{
+			$strHtml .= "         <span class='RequiredInput'>&nbsp;</span>\n";
+		}
+		
+		$strHtml .= "            $strLabel : \n";
+		$strHtml .= "         </div>\n";
+		$strHtml .= "      </td><td>\n";
+
+		foreach ($arrParams['Definition']['Options'] as $arrOption)
+		{
+			// check if this is the option that is currently selected
+			$strChecked = "";
+
+			if ($mixValue == $arrOption['Value'])
+			{
+				$strChecked = "checked='checked'";
+			}
+
+			//convert any \n placesholders in the radio option's label to actual new line chars and then convert these to <br> tags
+			$strOptionLabel = str_replace("\\n", "\n", $arrOption['InputLabel']);
+			$strOptionLabel = nl2br($strOptionLabel);
+
+			// create the name and id for the radio button
+			$strName 	= $arrParams['Object'] .".". $arrParams['Property'];
+			$strId		= $strName ."_". $arrOption['Value'];
+			
+			// define the button
+			$strHtml .= "   <table border='0' cellspacing='0' cellpadding='0' class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
+			$strHtml .= "      <tr>\n";
+			$strHtml .= "         <td valign='top'>\n";
+			$strHtml .= "            <input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
+			$strHtml .= "         </td>\n";
+			$strHtml .= "         <td>\n";
+			$strHtml .= "            <div><label id='$strId.Label' for='$strId'>$strOptionLabel</label></div>\n";
+			$strHtml .= "         </td>\n";
+			$strHtml .= "      </tr>\n";
+			$strHtml .= "   </table>\n";
+		}
+		
+		$strHtml .= "   </td></tr></table>\n";
+		$strHtml .= "</div>\n";
+
+		return $strHtml;
+	}
+	
 	//------------------------------------------------------------------------//
 	// ApplyOutputMask
 	//------------------------------------------------------------------------//

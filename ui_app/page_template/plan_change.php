@@ -30,11 +30,13 @@
  *
  */
 
-// set the page title
-$this->Page->SetName('Change Plan');
+// Set the page title
+$strTitle = "Change Plan - ". GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType") ." - ". DBO()->Service->FNN->Value;
+$this->Page->SetName($strTitle);
 
-$strLayout = 'popup_layout';
-$this->Page->SetLayout($strLayout);
-$this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_MINIMUM_DETAIL);
-$this->Page->AddObject('ServicePlanChange', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+// Set the page layout
+$this->Page->SetLayout('popup_layout');
+
+//$this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_MINIMUM_DETAIL);
+$this->Page->AddObject('ServicePlanChange', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ServicePlanChangeDiv");
 ?>

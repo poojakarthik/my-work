@@ -212,6 +212,10 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 	 */
 	function RenderTable()
 	{
+		// Set up the objects required to find the current plan and future plan of a service
+		DBO()->CurrentRatePlan->SetTable("RatePlan");
+		DBO()->FutureRatePlan->SetTable("RatePlan");
+	
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 
 		Table()->ServiceTable->SetHeader("FNN #", "Service", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
@@ -252,24 +256,34 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			
 			$strActionsCell				= "<span>$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning</span>";
 
-			// Find the current plan for the service
-			$mixCurrentPlanId = GetCurrentPlan($dboService->Id->Value);
-			if ($mixCurrentPlanId !== FALSE)
+			// Create a link to the View Plan for Service page
+			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($dboService->Id->Value);
+
+			// Find the current plan for the service (if there is one)
+			DBO()->CurrentRatePlan->Id = GetCurrentPlan($dboService->Id->Value);
+			if (DBO()->CurrentRatePlan->Id->Value)
 			{
 				// A plan was found
-				DBO()->RatePlan->Id = $mixCurrentPlanId;
-				DBO()->RatePlan->Load();
-				$strPlan = DBO()->RatePlan->Name->AsValue();
+				DBO()->CurrentRatePlan->Load();
+				$strCurrentPlan = DBO()->CurrentRatePlan->Name->Value;
 				
-				// Create a link to the View Plan for Service popup (although this currently isn't a popup)
-				$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($dboService->Id->Value);
-				
-				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>$strPlan</a>";
+				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'><span>$strCurrentPlan</span></a>";
 			}
 			else
 			{
 				// There is no current plan for the service
-				$strPlanCell = "<span id='RatePlan.Name'>No Plan Selected</span>";
+				$strPlanCell = "<span>No Plan Selected</span>";
+			}
+			
+			// Find the future scheduled plan for the service (if there is one)
+			DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod($dboService->Id->Value);
+			if (DBO()->FutureRatePlan->Id->Value)
+			{
+				// A plan has been found, which is scheduled to start for the next billing period
+				DBO()->FutureRatePlan->Load();
+				
+				$strFuturePlan = DBO()->FutureRatePlan->Name->Value;
+				$strPlanCell .= "<br /><span>As of next billing period : </span><a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'><span>$strFuturePlan</span></a>";
 			}
 			
 
@@ -325,7 +339,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 			else
 			{
 				// The service has an FNN
-				$strFnnDescription = $dboService->FNN->AsValue();
+				$strFnnDescription = "<span>{$dboService->FNN->Value}</span>";
 			}
 			
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";

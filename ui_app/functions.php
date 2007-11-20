@@ -682,6 +682,26 @@ function ConvertMySQLDateToUnixTimeStamp($strUserDate)
 }
 
 //------------------------------------------------------------------------//
+// ConvertUnixTimeToMySQLDateTime
+//------------------------------------------------------------------------//
+/**
+ * ConvertUnixTimeToMySQLDateTime()
+ *
+ * Converts a Unix time variable into the MySQL datetime format
+ *
+ * Converts a Unix time variable into the MySQL datetime format
+ *
+ * @return	string				$intTime as a string, properly formatted for MySql
+ *								(YYYY-MM-DD HH:MM:SS)
+ *
+ * @function
+ */
+function ConvertUnixTimeToMySQLDateTime($intTime)
+{
+	return date("Y-m-d H:i:s", $intTime);
+}
+
+//------------------------------------------------------------------------//
 // GetCurrentTimeForMySQL
 //------------------------------------------------------------------------//
 /**
@@ -712,7 +732,7 @@ function GetCurrentTimeForMySQL()
  * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
  * This current time is taken from the database
  *
- * @return	mix					current date and time as a string, properly formatted for MySql
+ * @return	string					current date and time as a string, properly formatted for MySql
  *								(YYYY-MM-DD HH:MM:SS)
  * @function
  */
@@ -909,5 +929,113 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUp
 	return TRUE;
 }
 
+//------------------------------------------------------------------------//
+// GetStartDateTimeForBillingPeriod
+//------------------------------------------------------------------------//
+/**
+ * GetStartDateTimeForBillingPeriod()
+ *
+ * Returns the StartDatetime for the Billing Period which encompasses $mixNow
+ *
+ * Returns the StartDatetime for the Billing Period which encompasses $mixNow
+ * Currently the StartDatetime of any billing period is midnight on the first of the month
+ *
+ * @param	mix			$mixNow		optional, can be expressed as a unix time (integer) or
+ *									a MySQL date or datetime data type (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
+ *									if not declared, then the current time on the MySQL server is used
+ *
+ * @return	int						StartDatetime of the billing period which encompasses $mixNow, expressed as in standard Unix format
+ *
+ * @function
+ * 
+ */
+function GetStartDateTimeForBillingPeriod($mixNow=NULL)
+{
+	if (is_int($mixNow))
+	{
+		// $mixNow is in standard Unix format
+		$intNow = $mixNow;
+	}
+	else
+	{
+		// $mixNow must be in the MySQL date or datetime format
+		$intNow = strtotime($mixNow);
+	}
+	
+	if ($intNow === FALSE)
+	{
+		// Converting $mixNow to the standard unix time format failed.  Use the current time of the MySQL server
+		$intNow = strtotime(GetCurrentDateAndTimeForMySQL());
+	}
+	
+	// Currently, the start of any billing period is midnight on the first of the month
+	$strThisMonthAndYear = date("m Y", $intNow);
+	$arrThisMonthAndYear = explode(" ", $strThisMonthAndYear);
+	
+	$intStartDatetime = mktime(0, 0, 0, $arrThisMonthAndYear[0], 1, $arrThisMonthAndYear[1]);
+	
+	return $intStartDatetime;
+}
+
+//------------------------------------------------------------------------//
+// GetStartDateTimeForNextBillingPeriod
+//------------------------------------------------------------------------//
+/**
+ * GetStartDateTimeForNextBillingPeriod()
+ *
+ * Returns the StartDatetime for the next Billing Period after the Billing Period which encompasses $mixNow
+ *
+ * Returns the StartDatetime for the next Billing Period after the Billing Period which encompasses $mixNow
+ * Currently the StartDatetime of any billing period is midnight on the first of the month
+ *
+ * @param	mix			$mixNow		optional, can be expressed as a unix time (integer) or
+ *									a MySQL date or datetime data type (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
+ *									if not declared, then the current time on the MySQL server is used
+ *
+ * @return	int						StartDatetime of the billing period after the one which encompasses $mixNow, expressed as in standard Unix format
+ *
+ * @function
+ * 
+ */
+function GetStartDateTimeForNextBillingPeriod($mixNow=NULL)
+{
+	$intStartDatetimeForBillingPeriod = GetStartDateTimeForBillingPeriod($mixNow);
+	
+	// Currently, the start of the next billing period is midnight on the first of the next month
+	$intStartDatetimeForNextBillingPeriod = strtotime("+1months ", $intStartDatetimeForBillingPeriod);
+	
+	return $intStartDatetimeForNextBillingPeriod;
+}
+
+//------------------------------------------------------------------------//
+// GetPlanScheduledForNextBillingPeriod
+//------------------------------------------------------------------------//
+/**
+ * GetPlanScheduledForNextBillingPeriod()
+ *
+ * Returns the Id of the RatePlan which is scheduled to start at the begining of the next Billing Period after the Billing Period which encompasses $mixNow
+ *
+ * Returns the Id of the RatePlan which is scheduled to start at the begining of the next Billing Period after the Billing Period which encompasses $mixNow
+ *
+ * @param	int		$intServiceId	Id of the Service
+ * @param	mix		$mixNow			optional, can be expressed as a unix time (integer) or
+ *									a MySQL date or datetime data type (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
+ *									if not declared, then the current time on the MySQL server is used
+ *
+ * @return	mix						Id of the RatePlan or FALSE if one isn't scheduled to start at the begining of the next Billing Period
+ *
+ * @function
+ */
+function GetPlanScheduledForNextBillingPeriod($intServiceId, $mixNow=NULL)
+{
+	$intStartDatetime = GetStartDateTimeForNextBillingPeriod($mixNow);
+	
+	$strStartDatetime = ConvertUnixTimeToMySQLDateTime($intStartDatetime);
+	
+	$selRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan", "Service = <Service> AND StartDatetime = <StartOfNextBillingPeriod> AND StartDatetime < EndDatetime", "CreatedOn DESC", 1);
+	$selRatePlan->Execute(Array('Service' => $intServiceId, "StartOfNextBillingPeriod" => $strStartDatetime));
+	$arrRatePlan = $selRatePlan->Fetch();
+	return ($arrRatePlan) ? $arrRatePlan['RatePlan'] : FALSE;
+}
 
 ?>

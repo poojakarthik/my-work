@@ -73,7 +73,6 @@ function VixenServiceUpdateListenerClass()
 			// There is possiblly a setTimeout process waiting to call this function.  Stop it.
 			clearTimeout(Vixen.ServiceUpdateListener.timeoutIdOnUpdate);
 			Vixen.ServiceUpdateListener.timeoutIdOnUpdate = null;
-			
 		}
 	
 		// Since this function will preform a page reload, make sure there are no popups open,

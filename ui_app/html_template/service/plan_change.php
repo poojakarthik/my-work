@@ -45,12 +45,16 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
+		
+		$this->LoadJavascript("plan_change");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -67,69 +71,120 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 	 */
 	function Render()
 	{
-		// define the javascript which is executed when the "View Plan Details" button is clicked
-		$strViewPlanButtonJavascript = "
-			var intPlanId = getElementById('SelectPlanCombo').value;
-			window.location = 'rates_plan_summary.php?Id=' + intPlanId;
-		";
-	
 		$this->FormStart("ChangePlan", "Service", "ChangePlan");
-		echo "<h2 class='plan'>Plan Details</h2>\n";
+		
 		echo "<div class='NarrowForm'>\n";
 		
-		$mixServicePlan = GetCurrentPlan(DBO()->Service->Id->Value)	;
-		if ($mixServicePlan === FALSE)
+		// Render the Service Details
+		DBO()->Account->Id->RenderOutput();
+		if (DBO()->Account->BusinessName->Value)
 		{
-			echo "<span class='DefaultOutputSpan'>&nbsp;&nbsp;This service does not currently have a plan</span>\n";
+			DBO()->Account->BusinessName->RenderOutput();
+		}
+		elseif (DBO()->Account->TradingName->RenderOutput())
+		{
+			DBO()->Account->TradingName->RenderOutput();
+		}
+		
+		DBO()->Service->FNN->RenderOutput();
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
+		
+		
+		DBO()->CurrentRatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
+		if (DBO()->CurrentRatePlan->Id->Value)
+		{
+			// The service currently has a plan
+			DBO()->CurrentRatePlan->SetTable("RatePlan");
+			DBO()->CurrentRatePlan->Load();
 		}
 		else
 		{
-			// The service currently has a plan
-			DBO()->RatePlan->Id = $mixServicePlan;
-			DBO()->RatePlan->Load();
-			
-			DBO()->RatePlan->Description->RenderOutput();
+			DBO()->CurrentRatePlan->Name = "[No Current Plan]";
+		}
+		DBO()->CurrentRatePlan->Name->RenderOutput();
+		
+		//TODO! You should probably make the name of the current plan a link to the Service Plan Details page,
+		// so the user can view the details of the current plan
+		
+		// Check if there is a plan scheduled to begin in the next billing period and if so, display its name
+		DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod(DBO()->Service->Id->Value);
+		if (DBO()->FutureRatePlan->Id->Value)
+		{
+			// The service has a plan scheduled to start in the next billing period
+			DBO()->FutureRatePlan->SetTable("RatePlan");
+			DBO()->FutureRatePlan->Load();
+			DBO()->FutureRatePlan->Name->RenderOutput();
 		}
 		
-		DBO()->RatePlan->Id->RenderHidden();
-		DBO()->Service->Id->RenderHidden();		
-		DBO()->Page->ViewService = TRUE;
-		DBO()->Page->ViewService->RenderHidden();
+		//DBO()->RatePlan->Id->RenderHidden();  This should always be calculated on the fly
+		DBO()->Service->Id->RenderHidden();
 		
-		// retrieve all available rate plans for this service type
+		// Retrieve all available rate plans for this service type
 		DBL()->RatePlan->ServiceType = DBO()->Service->ServiceType->Value;
-		DBL()->RatePlan->Archived = 0;
+		DBL()->RatePlan->Archived = RATE_STATUS_ACTIVE;
 		DBL()->RatePlan->OrderBy("Name");
-		DBL()->RatePlan->Load();		
+		DBL()->RatePlan->Load();
 		if (DBL()->RatePlan->RecordCount() > 0)
 		{
 			echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Select New Plan :</div>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;New Plan :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
 			echo "      <select id='SelectPlanCombo' name='NewPlan.Id' style='width:100%'>\n";
 	
 			foreach (DBL()->RatePlan as $dboRatePlan)
 			{
 				$strSelected = (DBO()->RatePlan->Id->Value == $dboRatePlan->Id->Value) ? "selected='selected'" : "";
-				echo "<option value='".$dboRatePlan->Id->Value."' $strSelected>". $dboRatePlan->Name->Value ."</option>\n";
+				echo "<option value='". $dboRatePlan->Id->Value ."' $strSelected>". $dboRatePlan->Name->Value ."</option>\n";
 			}
 	
 			echo "      </select>\n";
 			echo "   </div>\n";
-			echo "</div>";
+			echo "</div>\n";
 		}
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		echo "   <input type='button' class='InputSubmit' value='View Plan Details' onClick=\"$strViewPlanButtonJavascript\"></input>\n";
-		echo "</div></div>\n";
+		
+		// Render the Start time options
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Schedule to start :</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select id='StartTimeCombo' name='NewPlan.StartTime' style='width:100%'>\n";
+
+		if (DBO()->NewPlan->StartTime->Value == 0)
+		{
+			$strSelectCurrentBillingPeriod = "selected='selected'";
+			$strSelectNextBillingPeriod = "";
+		}
+		else
+		{
+			$strSelectNextBillingPeriod = "selected='selected'";
+			$strSelectCurrentBillingPeriod = "";
+		}
+
+		echo "<option value='0' $strSelectCurrentBillingPeriod>Begining of current billing period</option>\n";
+		echo "<option value='1' $strSelectNextBillingPeriod>Begining of next billing period</option>\n";
+
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>";
 		
 		echo "</div>\n";  // NarrowForm
 
  		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(this);");
+		$this->Button("View Details of New Plan", "Vixen.PlanChange.ViewPlanDetails();");
+		
+		// Make this utilise a confirm box which details what happens when they change the plan.  If one is scheduled for a future date
+		// And they declare a new plan for the current month, then the scheduled plan will be removed.  Also notify them that all Rate overrides
+		// will be removed.
+		// TODO $this->Button("Change Plan", "Vixen.Popup.ChangePlan();");
+		
 		$this->AjaxSubmit("Change Plan");
 		echo "</div></div>\n";
 		
 		$this->FormEnd();
+		
+		// Initialise the js object which facilitates this popup
+		echo "<script type='text/javascript'>Vixen.PlanChange.Initialise(". DBO()->Service->Id->Value .");</script>\n";
+		
 		
 	}
 }
