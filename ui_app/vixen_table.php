@@ -44,24 +44,24 @@
 class VixenTable
 {
 	//------------------------------------------------------------------------//
-	// _arrRow
+	// _arrRows
 	//------------------------------------------------------------------------//
 	/**
-	 * _arrRow
+	 * _arrRows
 	 *
 	 * Stores row data and information relating to the row (for each row)
 	 *
 	 * Stores row data and information relating to the row (for each row)
-	 * $this->_arrRow[]['Detail'] 			= $strDetail (HTML -> detial div)
-	 *                 ['Columns'] 			= $arrColumns (indexed array of HTML output)
-	 *                 ['ToolTip']			= $strToolTip (HTML -> tooltip div)
-	 *                 ['OnClick']			= $strOnClick (if set, this will be executed when the row is clicked)
-	 *                 ['Index']			= [name][] = value
-	 *                 ['Widths'] 			= $arrWidths (indexed array of widths for each column specific to this row, specified as px or %)
+	 * $this->_arrRows[]['Detail'] 			= $strDetail (HTML -> detial div)
+	 *                  ['Columns'] 		= $arrColumns (indexed array of HTML output)
+	 *                  ['ToolTip']			= $strToolTip (HTML -> tooltip div)
+	 *                  ['OnClick']			= $strOnClick (if set, this will be executed when the row is clicked)
+	 *                  ['Index']			= [name][] = value
+	 *                  ['Widths'] 			= $arrWidths (indexed array of widths for each column specific to this row, specified as px or %)
 	 *										  This can be used to override the column widths defined for the table [currently doesn't work]
-	 *                 ['Alignments'] 		= $arrAlignments (indexed array of alignments for each column specific to this row)
+	 *                  ['Alignments'] 		= $arrAlignments (indexed array of alignments for each column specific to this row)
 	 *										  This can be used to override the column alignments defined for the table
-	 *                 ['ColSpans']			= $arrColSpans (indexed array of integers denoting how many columns, each of the current row's column's span)
+	 *                  ['ColSpans']		= $arrColSpans (indexed array of integers denoting how many columns, each of the current row's column's span)
 	 *
 	 * @type	array
 	 *
@@ -251,6 +251,33 @@ class VixenTable
 		$this->_intCurrentRow = NULL;
 	}
 	
+	//------------------------------------------------------------------------//
+	// Clean
+	//------------------------------------------------------------------------//
+	/**
+	 * Clean()
+	 *
+	 * Deletes all details/info pertaining to the table
+	 *
+	 * Deletes all details/info pertaining to the table
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function Clean()
+	{
+		$this->_arrRows				= Array();
+		$this->_arrHeader			= Array();
+		$this->_arrWidths			= Array();
+		$this->_arrAlignments		= Array();
+		$this->_arrLinkedTables		= Array();
+		$this->_bolRowHighlighting	= FALSE;
+		$this->_bolDetails			= FALSE;
+		$this->_bolToolTips			= FALSE;
+		$this->_bolLinked			= FALSE;
+		$this->_intCurrentRow		= NULL;
+	}
 	
 	//------------------------------------------------------------------------//
 	// SetHeader

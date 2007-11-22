@@ -25,7 +25,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
-$this->Page->SetName('View Individual Rate');
+$this->Page->SetName('Rate Details');
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
 

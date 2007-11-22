@@ -127,17 +127,10 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<h2 class='plan'>Plan Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='NarrowContent'>\n";
 		
-		$mixServicePlan = GetCurrentPlan(DBO()->Service->Id->Value)	;
-		if ($mixServicePlan === FALSE)
+		if (DBO()->RatePlan->Id->Value)
 		{
-			echo "this service does not currently have a plan\n";
-		}
-		else
-		{
-			DBO()->RatePlan->Id = $mixServicePlan;
-			DBO()->RatePlan->Load();
 			DBO()->RatePlan->Name->RenderOutput();
 			DBO()->RatePlan->Description->RenderOutput();
 			DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
@@ -145,6 +138,20 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			DBO()->RatePlan->MinMonthly->RenderOutput();
 			DBO()->RatePlan->ChargeCap->RenderOutput();
 			DBO()->RatePlan->UsageCap->RenderOutput();
+			
+			if (DBO()->RatePlan->StartDatetime->IsSet)
+			{
+				DBO()->RatePlan->StartDatetime->RenderOutput();
+			}
+			
+			if (DBO()->RatePlan->EndDatetime->IsSet)
+			{
+				DBO()->RatePlan->EndDatetime->RenderOutput();
+			}
+		}
+		else
+		{
+			echo "This service does not currently have a plan\n";
 		}
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";

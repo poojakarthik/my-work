@@ -938,20 +938,19 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		DBO()->Account->Load();
 		
-		// Load the RecordType Record and sort Ascending order
-		DBL()->RecordType->OrderBy("Name ASC");
+		// Load the RecordType Record
 		DBO()->RecordType->Load();
 		
-		// Load the current Plan 		
-		$strWhere = "Service=<Service> AND NOW() BETWEEN StartDatetime AND EndDatetime";
-		DBO()->ServiceRatePlan->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));		
-		DBO()->ServiceRatePlan->Load();
-
-		DBO()->RatePlan->Id = DBO()->ServiceRatePlan->RatePlan->Value;
-		DBO()->RatePlan->Load();
+		// Load the current Plan (if there is one)
+		DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
+		if (DBO()->RatePlan->Id->Value)
+		{
+			DBO()->RatePlan->Load();
+		}
 		
 		// Retrieve all RateGroups matching the RecordType
 		DBL()->RateGroup->RecordType = DBO()->RecordType->Id->Value;
+		DBL()->RateGroup->OrderBy("Name");
 		DBL()->RateGroup->Load();
 	
 		// Handle form submittion
@@ -978,17 +977,17 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					if ($intStartDate < $intCurrentDate)
 					{
 						DBO()->ServiceRateGroup->StartDate->SetToInvalid();
-						Ajax()->AddCommand("Alert", "Can not have a date set in the past");
-						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, "RateGroupOverrideDiv");
+						Ajax()->AddCommand("Alert", "ERROR: The override cannot start in the past");
+						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 						return TRUE;							
 					}
 					// If User date equals the current date
 					if ($intStartDate == $intCurrentDate)
 					{
 						DBO()->ServiceRateGroup->StartDate->SetToInvalid();
-						Ajax()->AddCommand("Alert", "Can not have a date that is the current date");
-						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, "RateGroupOverrideDiv");
-						return TRUE;	
+						Ajax()->AddCommand("Alert", "ERROR: The override cannot start in the past.  Please specify an immediate start if you want the override to start today");
+						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+						return TRUE;
 					}
 				}
 				else
@@ -996,102 +995,100 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					// Start time is invalid and the end time maybe as well so don't return TRUE in this conditional block
 					// Else user date entered is invalid
 					DBO()->ServiceRateGroup->StartDate->SetToInvalid();
-					Ajax()->AddCommand("Alert", "not in the correct format of dd/mm/yyyy");
-					Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, "RateGroupOverrideDiv");							
+					Ajax()->AddCommand("Alert", "ERROR: The start date is not in the correct format of dd/mm/yyyy");
+					Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+					return TRUE;
 				}
 			}
 			// If the indefinateEnd checkbox isnt checked
 			if (DBO()->RateGroup->IndefinateEnd->Value != 1)
 			{
-				// If user date entered is valid & convert into seconds
+				// Validate the user supplied End Date (if there is one)
 				if ($intEndDate)
 				{	
-					// If User date is in the past
 					if ($intEndDate < $intCurrentDate)
 					{
+						// The End Date is in the past
 						DBO()->ServiceRateGroup->EndDate->SetToInvalid();
-						Ajax()->AddCommand("Alert", "Can not have a date ending in the past");
-						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, "RateGroupOverrideDiv");
+						Ajax()->AddCommand("Alert", "ERROR: Can not have a date ending in the past");
+						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 						return TRUE;							
 					}
-					// If End date equals the currentdate					
-					if ($intEndDate == $intCurrentDate)
+					elseif (DBO()->RateGroup->ImmediateStart->Value == 1 && $intEndDate < $intStartDate)
 					{
+						// The End Date is earlier than the start date
 						DBO()->ServiceRateGroup->EndDate->SetToInvalid();
-						Ajax()->AddCommand("Alert", "Can not have an end date the same as the start date");
-						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, "RateGroupOverrideDiv");
+						Ajax()->AddCommand("Alert", "ERROR: Can not have a date ending before the start date");
+						Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 						return TRUE;							
-					}	
+					}
 				}
 				else
 				{
 					// Else user date entered is invalid
 					DBO()->ServiceRateGroup->EndDate->SetToInvalid();
-					Ajax()->AddCommand("Alert", "This is not in the correct format of dd/mm/yyyy");
-					Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, "RateGroupOverrideDiv");		
-				}	
-			// return TRUE for either the startdate or endate OR both being invalid, highlights both simultaneously
-			return TRUE;				
+					Ajax()->AddCommand("Alert", "ERROR: The Start date is not in the correct format of dd/mm/yyyy");
+					Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+					return TRUE;
+				}
 			}
 
-			// If ImmediateStart is checked set the StartDate to now;
+			// Work out the StartDatetime
 			if (DBO()->RateGroup->ImmediateStart->Value == 1)
 			{
+				// Use the current Date and Time as the start time
 				$strStartTime = $strCurrentDateAndTime;
-				$strChangesNote .= "Start time: $strStartTime\n";
 			}
-			// else set the StartDate to the Date entered in the textbox
 			else
 			{
+				// Set the StartDatetime to the Date supplied by the user (midnight)
 				$strStartTime = date("Y-m-d", $intStartDate) . " 00:00:00";
-				$strChangesNote .= "Start time: $strStartTime\n";				
 			}
-			// If IndefinateEnd is checked set the EndDate to END_OF_TIME
+			$strChangesNote .= "Start time: $strStartTime\n";				
+			
+			// Work out the EndDatetime
 			if (DBO()->RateGroup->IndefinateEnd->Value == 1)
 			{
+				// Set the EndDatetime to indefinate
 				$strEndTime = END_OF_TIME;
 				$strChangesNote .= "End time: Indefinate\n";				
 			}
-			// else set the EndDate to the Date entered in the textbox
 			else
 			{
+				// Set the EndDatetime to the Date supplied by the user (11:59:59 pm)
 				$strEndTime = date("Y-m-d", $intEndDate) . " 23:59:59";
 				$strChangesNote .= "End time: $strEndTime\n";				
 			}
 		
-			DBO()->ServiceRateGroup->Service = DBO()->Service->Id->Value;
-			DBO()->ServiceRateGroup->RateGroup = DBO()->ServiceRateGroup->Selected->Value;
-			DBO()->ServiceRateGroup->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRateGroup->CreatedOn = $strCurrentDateAndTime;
-			DBO()->ServiceRateGroup->StartDatetime = $strStartTime;
-			DBO()->ServiceRateGroup->EndDatetime = $strEndTime;
-			DBO()->ServiceRateGroup->Active = 1;
+			DBO()->ServiceRateGroup->Service		= DBO()->Service->Id->Value;
+			DBO()->ServiceRateGroup->RateGroup		= DBO()->ServiceRateGroup->Selected->Value;
+			DBO()->ServiceRateGroup->CreatedBy		= AuthenticatedUser()->_arrUser['Id'];
+			DBO()->ServiceRateGroup->CreatedOn		= $strCurrentDateAndTime;
+			DBO()->ServiceRateGroup->StartDatetime	= $strStartTime;
+			DBO()->ServiceRateGroup->EndDatetime	= $strEndTime;
+			DBO()->ServiceRateGroup->Active			= 1;
 
 			DBO()->Service->SetColumns("Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active");
 
 			// Save the ServiceRateGroup record
 			if (!DBO()->ServiceRateGroup->Save())
 			{
-				// inserting records into the database failed unexpectedly
-				Ajax()->AddCommand("Alert", "ERROR: saving this Overridden RateGroup failed unexpectedly");
+				// inserting record into the database failed unexpectedly
+				Ajax()->AddCommand("Alert", "ERROR: Saving the overriding RateGroup failed unexpectedly");
 				return TRUE;
 			}
 			
 			// Create System note
-			$strChangesNote = "RateGroup has been overridden, the following changes were made:\n$strChangesNote";
-			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
+			$strChangesNote = "An overriding RateGroup has been declared.  Its details are as follows:\n$strChangesNote";
+			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, DBO()->Service->Id->Value);
 			
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			Ajax()->AddCommand("Alert", "The Overridden RateGroup was successfully updated");
+			Ajax()->AddCommand("Alert", "The overriding RateGroup was successfully defined");
 
 			// Build event object
 			// The contents of this object should be declared in the doc block of this method
 			$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
-			if (DBO()->NewService->Id->Value)
-			{
-				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
-			}
 			Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 			
 			// Fire the OnNewNote Event

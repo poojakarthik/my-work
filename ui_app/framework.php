@@ -1959,6 +1959,10 @@ class OutputMasks
 	 */
 	function LongDateAndTime($strMySqlDatetime)
 	{
+		if ($strMySqlDatetime == END_OF_TIME)
+		{
+			return "Indefinite";
+		}
 		$arrDateAndTime = explode(" ", $strMySqlDatetime);
 		$arrTime = explode(":", $arrDateAndTime[1]);
 		$arrDate = explode("-", $arrDateAndTime[0]);

@@ -2571,7 +2571,9 @@ function UnbilledAccountCDRTotal($intAccount, $bolDontIncludeCreditCDRs = FALSE)
  */ 
 function GetCurrentPlan($intService)
 {
-	$selRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
+	// This should really be ordered by CreatedOn DESC not StartDatetime DESC
+	//$selRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
+	$selRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
 	$selRatePlan->Execute(Array('Service' => $intService));
 	$arrRatePlan = $selRatePlan->Fetch();
 	return ($arrRatePlan) ? $arrRatePlan['RatePlan'] : FALSE;

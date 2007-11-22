@@ -15,5 +15,5 @@ $this->Page->SetLayout($strLayout);
 //EXAMPLE:
 $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_BARE_DETAIL);
 $this->Page->AddObject('PlanDetails', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
-$this->Page->AddObject('RateGroupList', COLUMN_ONE, HTML_CONTEXT_NORMAL_DETAIL);
+$this->Page->AddObject('ServiceRateGroupList', COLUMN_ONE, HTML_CONTEXT_NORMAL_DETAIL);
 ?>

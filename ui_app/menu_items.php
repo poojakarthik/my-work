@@ -303,17 +303,18 @@ class MenuItems
 	 *
 	 * Compiles the Href to be executed when the OverrideRateGroup menu item is triggered
 	 *
-	 * @param	int		$intServiceId	Id of the Service of which you want to override one of the rate groups
+	 * @param	int		$intServiceId		Id of the Service of which you want to override one of the rate groups
+	 * @param 	int		$intRecordTypeId	Id of the RecordType which will be overridden
 	 *
 	 * @return	string						
 	 *
 	 * @method
 	 */
-	function OverrideRateGroup($intServiceId)
+	function OverrideRateGroup($intServiceId, $intRecordTypeId)
 	{
 		// Setup data to send
-		$arrData['Objects']['Service']['Id'] = $intServiceId;
-		$arrData['Objects']['RecordType']['Id'] = 20;
+		$arrData['Objects']['Service']['Id']	= $intServiceId;
+		$arrData['Objects']['RecordType']['Id']	= $intRecordTypeId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);

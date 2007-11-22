@@ -889,46 +889,6 @@ class AppTemplateService extends ApplicationTemplate
 			return FALSE;
 		}
 
-		// Added an amendment where a check is performed for EndDattime != NOW() as it appears the enddatetime is being set to now() 
-		// which is in turn showing these records on a page refresh
-
-		// Retrieve all rate groups currently used by this service
-		// Retrieve the list of RateGroups belonging to the RatePlan that the service is currently using
-		DBL()->RatePlanRateGroup->SetTable("RateGroup, RatePlanRateGroup");
-		$arrRatePlanRateGroupColumns = Array("RateGroupId"=>"RateGroup.Id", "RateGroupName"=>"RateGroup.Name", "RateGroupDescription"=>"RateGroup.Description", "RateGroupRecordType"=>"RateGroup.RecordType");
-		DBL()->RatePlanRateGroup->SetColumns($arrRatePlanRateGroupColumns);
-		$strWhere = "RateGroup.Id=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime AND EndDatetime != NOW() AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)";
-		DBL()->RatePlanRateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
-		DBL()->RatePlanRateGroup->OrderBy("RateGroup.Id");
-		DBL()->RatePlanRateGroup->Load();
-		
-		// Retrieve the list of RateGroups currently used by the Service
-		DBL()->ServiceRateGroup->SetTable("RateGroup, ServiceRateGroup");
-		$arrServiceRateGroupColumns = Array("Id"=>"RateGroup.Id", "Name"=>"RateGroup.Name", "Description"=>"RateGroup.Description", "RecordType"=>"RateGroup.RecordType", "Fleet"=>"RateGroup.Fleet", "StartDatetime"=>"ServiceRateGroup.StartDatetime", "EndDatetime"=>"ServiceRateGroup.EndDatetime");
-		DBL()->ServiceRateGroup->SetColumns($arrServiceRateGroupColumns);
-		$strWhere = "(NOW() BETWEEN StartDatetime AND EndDatetime) AND EndDatetime != NOW() AND RateGroup.Id = ServiceRateGroup.RateGroup AND ServiceRateGroup.Service=<Service>";
-		DBL()->ServiceRateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
-		DBL()->ServiceRateGroup->OrderBy("RateGroup.RecordType, RateGroup.Fleet, RateGroup.Name ASC");
-		DBL()->ServiceRateGroup->Load();
-		
-		// Loop through each RateGroup belonging to the Service and find out which ones actually belong to the RatePlan and which ones are OverRiders
-		foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
-		{
-			// initialise the "IsPartOfRatePlan" flag to FALSE
-			$dboServiceRateGroup->IsPartOfRatePlan = FALSE;
-			
-			// Try and find the ServiceRateGroup in the list of RateGroups belonging to the RatePlan
-			foreach (DBL()->RatePlanRateGroup as $dboRatePlanRateGroup)
-			{
-				if ($dboServiceRateGroup->Id->Value == $dboRatePlanRateGroup->RateGroupId->Value)
-				{
-					// This RateGroup belongs to the RatePlan; flag it as such
-					$dboServiceRateGroup->IsPartOfRatePlan = TRUE;
-					break;
-				}
-			}
-		}
-		
 		// context menu
 		ContextMenu()->Account_Menu->Service->View_Service(DBO()->Service->Id->Value);		
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
@@ -943,11 +903,6 @@ class AppTemplateService extends ApplicationTemplate
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 			{
 				ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
-			}
-			if ($bolUserHasAdminPerm)
-			{
-				// Only admin staff can override rate groups
-				ContextMenu()->Account_Menu->Service->Override_Rate_Group(DBO()->Service->Id->Value);
 			}
 			
 			ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
@@ -975,6 +930,66 @@ class AppTemplateService extends ApplicationTemplate
 		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
 		BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
 		BreadCrumb()->SetCurrentPage("Plan");
+		
+		// Retrieve all RecordTypes applicable for this service
+		DBL()->RecordType->ServiceType = DBO()->Service->ServiceType->Value;
+		DBL()->RecordType->OrderBy("Id");
+		DBL()->RecordType->Load();
+		
+		// Load the current RatePlan
+		DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
+		if (DBO()->RatePlan->Id->Value)
+		{
+			// The Service has a current RatePlan
+			DBO()->RatePlan->Load();
+
+			// Load all the RateGroups belonging to the current rate plan
+			DBL()->CurrentPlanRateGroup->SetTable("RateGroup");
+			$strWhere = "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = <RatePlan>)";
+			DBL()->CurrentPlanRateGroup->Where->Set($strWhere, Array("RatePlan" => DBO()->RatePlan->Id->Value));
+			DBL()->CurrentPlanRateGroup->OrderBy("RecordType");
+			DBL()->CurrentPlanRateGroup->Load();
+
+			// Load the current ServiceRatePlan record
+			$strWhere = "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC";
+			DBO()->CurrentServiceRatePlan->SetTable("ServiceRatePlan");
+			DBO()->CurrentServiceRatePlan->Where->Set($strWhere, Array("Service" => DBO()->Service->Id->Value));
+			DBO()->CurrentServiceRatePlan->Load();
+			
+			DBO()->RatePlan->StartDatetime	= DBO()->CurrentServiceRatePlan->StartDatetime->Value;
+			DBO()->RatePlan->EndDatetime	= DBO()->CurrentServiceRatePlan->EndDatetime->Value;
+
+			// Load all the current ServiceRateGroup records with accompanying details from the RateGroup table
+			// Current ServiceRateGroup records are those that haven't already ended and start before the current RatePlan Ends.
+			// So you need to know the EndDatetime of the service's current RatePlan
+			/*			
+			SELECT SRG.Id, SRG.RateGroup, SRG.CreatedOn, SRG.StartDatetime, SRG.EndDatetime, RG.Name, RG.Description, RG.Fleet, RG.RecordType
+			FROM ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id
+			WHERE	SRG.Service = 38492 AND SRG.EndDatetime > NOW() AND 
+					SRG.StartDatetime < <CurrentRatePlan.EndDatetime> AND 
+					SRG.StartDatetime < SRG.EndDatetime
+			ORDER BY SRG.CreatedOn DESC
+			*/		
+			$arrColumns	= Array("Id" => "SRG.Id", "RateGroup" => "SRG.RateGroup", "CreatedOn" => "SRG.CreatedOn", "StartDatetime" => "SRG.StartDatetime", 
+								"EndDatetime" => "SRG.EndDatetime", "Name" => "RG.Name", "Description" => "RG.Description", "Fleet" => "RG.Fleet",
+								"RecordType" => "RG.RecordType");
+			$strTable	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
+			// Doesn't include RateGroups that start after the current plan finishes
+			//$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > NOW() AND SRG.StartDatetime < <RatePlanEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
+			//$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "RatePlanEndDatetime" => DBO()->CurrentServiceRatePlan->EndDatetime->Value);
+			
+			// Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
+			$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <RatePlanStartDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
+			$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "RatePlanStartDatetime" => DBO()->CurrentServiceRatePlan->StartDatetime->Value);
+			$strOrderBy = "SRG.CreatedOn DESC";
+			
+			DBL()->CurrentServiceRateGroup->SetColumns($arrColumns);
+			DBL()->CurrentServiceRateGroup->SetTable($strTable);
+			DBL()->CurrentServiceRateGroup->Where->Set($strWhere, $arrWhere);
+			DBL()->CurrentServiceRateGroup->OrderBy($strOrderBy);
+			DBL()->CurrentServiceRateGroup->Load();
+		}
+		
 		
 		$this->LoadPage('service_plan_view');
 		return TRUE;
