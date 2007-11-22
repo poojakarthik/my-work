@@ -77,7 +77,7 @@ $arrScript                                                      = Array();
 	//              Int				The Day on which the script is to run
 	//								eg. value of "1" would run on the first of every month
 	//									value of "-7" would run a week before the end of the month (calculated from the 1st)
-	$arrScript['RecurringDay']				= 		-8;
+	$arrScript['RecurringDay']				= 		-9;
 	
 	// DieOnChildDeath
 	//				Boolean			Whether the failure of a child script should kill the parent
@@ -122,7 +122,7 @@ $arrScript                                                      = Array();
 	//              Int				The Day on which the script is to run
 	//								eg. value of "1" would run on the first of every month
 	//									value of "-7" would run a week before the end of the month (calculated from the 1st)
-	$arrScript['RecurringDay']				= 		-7;
+	$arrScript['RecurringDay']				= 		-8;
 	
 	// DieOnChildDeath
 	//				Boolean			Whether the failure of a child script should kill the parent
