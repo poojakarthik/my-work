@@ -180,8 +180,11 @@ $strZipname = date("F")." $strMode Samples.zip";
 echo shell_exec("zip -qj '$strZipname' *.pdf");
 
 $strCustomerName	= $GLOBALS['**arrCustomerConfig']['Customer'];
-$strDir				= date("/Y/m/", strtotime("-1 day", time()));
-echo shell_exec("cp '$strZipname' /data/www/samples.yellowbilling.com.au/html/$strCustomerName/2007/11/");
+$strDir				= date("Y/m/", strtotime("-1 day", time()));
+echo shell_exec("cp '$strZipname' /data/www/samples.yellowbilling.com.au/html/$strCustomerName/$strDir");
+
+$strURL = "samples.yellowbilling.com.au/$strCustomerName/$strDir/$strZipname";
+SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', trim($strZipname, '.zip'), trim($strZipname, '.zip')." are available at $strURL");
 
 /*
 // Upload Sample Zip to a Web location
