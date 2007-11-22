@@ -70,7 +70,7 @@ fclose($ptrAccountsFile);
 
 // Email Status
 $strDateTime = date("Y-m-d H:i:s");
-SendEmail('turdminator@hotmail.com', "viXen Billing::{$strMode}Samples Started @ $strDateTime", "viXen Billing Started @ $strDateTime");
+SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', "viXen Billing::{$strMode}Samples Started @ $strDateTime", "viXen Billing Started @ $strDateTime");
 
 // reprint
 $bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
@@ -174,13 +174,18 @@ while (($intLastDownload + 60) > time())
 	}
 }
 
-// ZIP samples
+// ZIP samples, copy to public location
 chdir($strDownloadDir);
 $strZipname = date("F")." $strMode Samples.zip"; 
 echo shell_exec("zip -qj '$strZipname' *.pdf");
 
+$strCustomerName	= $GLOBALS['**arrCustomerConfig']['Customer'];
+$strDir				= date("/Y/m/", strtotime("-1 day", time()));
+echo shell_exec("cp '$strZipname' /data/www/samples.yellowbilling.com.au/html/$strCustomerName/2007/11/");
+
+/*
 // Upload Sample Zip to a Web location
-echo "\nCopying '$strFilename' to BillPrint...\n";
+echo "\nCopying '$strZipname' to Public Directory...\n";
 ob_flush();
 $rcpRemoteCopy = new RemoteCopySSH("10.50.50.15", "flame", "zeemu");
 if (is_string($mixResult = $rcpRemoteCopy->Connect()))
@@ -197,14 +202,14 @@ $rcpRemoteCopy->Disconnect();
 // Email link to samples
 $strSubject	= "$strMode Samples for $strMonth";
 //$strEmail	= "paula@staralliance.com.au, jade@wxc.com.au, adele.k@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rich@voiptelsystems.com.au, turdminator@hotmail.com, aphplix@gmail.com";
-$strEmail	= "rich@voiptelsystems.com.au";
-$strContent	= "Below is a link to the $strMode Samples for $strMonth Billing.";
+$strEmail	= "rich@voiptelsystems.com.au, turdminator@hotmail.com, mark.s@yellowbilling.com.au";
+$strContent	= "Below is a link to the $strMode Samples for $strMonth Billing.\n\n";
 SendEmail($strEmail, $strSubject, $strContent);
-
+*/
 
 // Email Status
 $strDateTime = date("Y-m-d H:i:s");
-SendEmail('turdminator@hotmail.com', "viXen Billing::ReprintSamples Ended @ $strDateTime", "viXen Billing Ended @ $strDateTime");
+SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', "viXen Billing::ReprintSamples Ended @ $strDateTime", "viXen Billing Ended @ $strDateTime");
 
 // finished
 echo("\n\n-- End of Billing --\n");

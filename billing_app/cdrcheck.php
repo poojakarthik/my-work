@@ -165,7 +165,7 @@ $emlMail =& Mail::factory('mail');
 
 // Send the email
 $strEmailAddresses = "flame@voiptelsystems.com.au, rich@voiptelsystems.com.au";
-if (!$emlMail->send('rich@voiptelsystems.com.au', $strHeaders, $strBody))
+if (!$emlMail->send('rich@voiptelsystems.com.au, mark.s@yellowbilling.com.au', $strHeaders, $strBody))
 {
 	CLIEchoString("[ FAILED ]\n\n", NULL, FALSE);
 }

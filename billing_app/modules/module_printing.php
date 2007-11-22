@@ -269,6 +269,8 @@
 																"SUM(Amount) AS WeReceived",
 																"(InvoiceRun = <ThisInvoiceRun> OR InvoiceRun = <LastInvoiceRun>) AND Account = <Account>");
 		
+		$this->_selServicePlanCharges	= new StatementSelect("ServiceTotal", "SUM(TotalCharge) AS GrandTotalCharge, SUM(PlanCharge) AS GrandPlanCharge, SUM(CappedCharge + UncappedCharge + Debit - Credit) AS GrandRatedCharge", "Account = <Account>");
+				
 		//----------------------------------------------------------------------------//
 		// Define the file format
 		//----------------------------------------------------------------------------//
@@ -504,7 +506,20 @@
 		}
 		
 		// Plan Charges & Credits
-		$arrData = Array();
+		$this->_selServicePlanCharges->Execute($arrInvoiceDetails);
+		$arrServicePlanCharges = $this->_selServicePlanCharges->Fetch();
+		if (round($arrServicePlanCharges['GrandPlanCharge'], 2) != 0.0)
+		{
+			$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Charges";
+			$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= (float)$arrServicePlanCharges['GrandPlanCharge'];
+			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
+			
+			$fltPlanCredit = ((float)$arrServicePlanCharges['GrandTotalCharge'] - $arrServicePlanCharges['GrandRatedCharge']) - $arrServicePlanCharges['GrandPlanCharge'];
+			$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Credits";
+			$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $fltPlanCredit;
+			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
+		}
+		/*$arrData = Array();
 		$arrData['Account']		= $arrInvoiceDetails['Account'];
 		$arrData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 		if ($this->_selInvoiceServiceTotal->Execute($arrData) === FALSE)
@@ -520,7 +535,8 @@
 			$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Charges & Credits";
 			$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $fltPlanCharges;
 			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
-		}
+		}*/
+		
 		
 		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
 		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];

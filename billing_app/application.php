@@ -109,7 +109,7 @@
 																	$this->arrServiceColumns,
 																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
 																	"Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.") AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
-																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC LIMIT 1)",
+																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1 ORDER BY CreatedOn DESC LIMIT 1)",
 																	"RatePlan.Id");
 		$this->strTestAccounts =		" AND " .
 																"Id = 1000009145 OR " .
@@ -447,12 +447,19 @@
 			//$this->_rptBillingReport->AddMessage(MSG_OK);
 			
 			// Get a list of shared plans for this account
-			$selEarliestCDR		= new StatementSelect("CDR USE INDEX (Service)", "MIN(StartDatetime) AS MinStartDatetime", "Service = <Service>");
-			$selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
-			$selLastBillDate	= new StatementSelect("InvoiceRun", "BillingDate", "1", "BillingDate DESC", 1);
-			$selLastBillDate->Execute();
-			$arrLastBillDate	= $selLastBillDate->Fetch();
-			$intLastBillDate	= strtotime($arrLastBillDate['BillingDate']);
+			//$selEarliestCDR		= new StatementSelect("CDR USE INDEX (Service)", "MIN(StartDatetime) AS MinStartDatetime", "Service = <Service>");
+			$selEarliestCDR		= new StatementSelect("Service", "EarliestCDR", "Service = <Service>");
+			$selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1", "CreatedOn DESC", 1);
+			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
+			if ($selLastBillDate->Execute($arrAccount))
+			{
+				$arrLastBillDate	= $selLastBillDate->Fetch();
+				$intLastBillDate	= strtotime($arrLastBillDate['BillingDate']);
+			}
+			else
+			{
+				$intLastBillDate	= NULL;
+			}
 			$arrSharedPlans	= Array();
 			foreach($arrServices as $arrService)
 			{
@@ -464,12 +471,12 @@
 					$arrEarliestCDR	= $selEarliestCDR->Fetch();
 					$arrPlanDate	= $selPlanDate->Fetch();
 					
-					$intCDRDate		= strtotime($arrEarliestCDR['MinStartDatetime']);
+					$intCDRDate		= strtotime($arrEarliestCDR['EarliestCDR']);
 					$intServiceDate	= strtotime($arrService['CreatedOn']);
 					$intPlanDate	= strtotime($arrPlanDate['StartDatetime']);
 					
 					// If the first CDR is unbilled
-					if ($intCDRDate < $intLastBillDate)
+					if ($intCDRDate > $intLastBillDate || !$intLastBillDate)
 					{
 						if (!$intCDRDate)
 						{
@@ -479,10 +486,10 @@
 						else
 						{
 							// Prorate the Minimum Monthly
-							$intProratePeriod			= $intCDRDate - $intLastBillDate;
+							$intProratePeriod			= time() - $intCDRDate;
 							$intBillingPeriod			= time() - $intLastBillDate;
-							$intProratedMinMonthly		= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
-							$arrService['MinMonthly']	= $intProratedMinMonthly;
+							$fltProratedMinMonthly		= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
+							$arrService['MinMonthly']	= $fltProratedMinMonthly;
 						}
 					}
 				}
@@ -678,6 +685,7 @@
 				$arrServiceTotal['RatePlan']		= $arrService['RatePlan'];
 				$arrServiceTotal['CappedCost']		= $fltCappedCDRCost;
 				$arrServiceTotal['UncappedCost']	= $fltUncappedCDRCost;
+				$arrServiceTotal['PlanCharge']		= $arrService['MinMonthly'];
 				
 				if (!$this->insServiceTotal->Execute($arrServiceTotal) && !$bolReturnData)
 				{
@@ -1132,6 +1140,45 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// Activate all Inactive ServiceRatePlans and ServiceRateGroups for Services that were Invoiced this month
+		$arrCols	= Array();
+		$arrCols['Active']	= 1;
+		$updServiceRatePlan		= new StatementUpdate(	"ServiceRatePlan",
+														"Service IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>) AND Active = 0",
+														$arrCols);
+		
+		$this->_rptBillingReport->AddMessage("Activating Inactive ServiceRatePlans for Invoiced Accounts...", FALSE);
+		if ($updServiceRatePlan->Execute($arrCols, $arrInvoiceRun) !== FALSE)
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		else
+		{
+			Debug($updServiceRatePlan->Error());
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		
+		$updServiceRateGroup	= new StatementUpdate(	"ServiceRateGroup",
+														"Service IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>) AND Active = 0",
+														$arrCols);
+		
+		$this->_rptBillingReport->AddMessage("Activating Inactive ServiceRateGroups for Invoiced Accounts...", FALSE);
+		if ($updServiceRateGroup->Execute($arrCols, $arrInvoiceRun) !== FALSE)
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		else
+		{
+			Debug($updServiceRateGroup->Error());
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
 		}
 		
 		// Generate InvoiceRun table entry
@@ -2218,7 +2265,7 @@
  													"Account = <Account> AND Email != '' AND BillingMethod = ".BILLING_METHOD_EMAIL);*/
  		$selAccountEmail	= new StatementSelect(	"(Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact USING (Account)",
  													"Invoice.Account, CustomerGroup, Email, FirstName",
- 													"Invoice.Account = <Account> AND Email != '' AND DeliveryMethod = 1");
+ 													"Invoice.Account = <Account> AND Email != '' AND DeliveryMethod = 1 AND InvoiceRun = <InvoiceRun>");
 		$updDeliveryMethod = new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
 		
  		// Loop through each PDF
@@ -2322,7 +2369,7 @@
 						//Debug("Failure!");
 					}
 					//Debug($arrWhere);
-					//die;
+					//die;*/
 	 				
 	 				$this->_rptBillingReport->AddMessage("[   OK   ]");
 	 				$intPassed++;

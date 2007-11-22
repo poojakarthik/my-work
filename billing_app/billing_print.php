@@ -18,8 +18,16 @@ $arrConfig = LoadApplication();
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
 
+// Email Status
+$strDateTime = date("Y-m-d H:i:s");
+SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', "viXen Billing::Print Started @ $strDateTime", "viXen Billing Started @ $strDateTime");
+
 // execute bill
 $bolResponse = $appBilling->GenerateInvoiceOutput();
+
+// Email Status
+$strDateTime = date("Y-m-d H:i:s");
+SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', "viXen Billing::Print Ended @ $strDateTime", "viXen Billing Ended @ $strDateTime");
 
 $appBilling->FinaliseReport();
 
