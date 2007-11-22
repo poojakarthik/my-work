@@ -874,7 +874,7 @@ class AppTemplateService extends ApplicationTemplate
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
-		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
+		// The service should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Service->Load())
 		{
 			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->Value ." you were attempting to view could not be found";
@@ -897,18 +897,18 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->RatePlanRateGroup->SetTable("RateGroup, RatePlanRateGroup");
 		$arrRatePlanRateGroupColumns = Array("RateGroupId"=>"RateGroup.Id", "RateGroupName"=>"RateGroup.Name", "RateGroupDescription"=>"RateGroup.Description", "RateGroupRecordType"=>"RateGroup.RecordType");
 		DBL()->RatePlanRateGroup->SetColumns($arrRatePlanRateGroupColumns);
-		$strWhere = "RateGroup.Id=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime != NOW() AND EndDatetime AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)";
+		$strWhere = "RateGroup.Id=RatePlanRateGroup.RateGroup AND RatePlanRateGroup.RatePlan = (SELECT RatePlan FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime AND EndDatetime != NOW() AND Service =<Service> ORDER BY CreatedOn DESC LIMIT 0, 1)";
 		DBL()->RatePlanRateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
 		DBL()->RatePlanRateGroup->OrderBy("RateGroup.Id");
 		DBL()->RatePlanRateGroup->Load();
 		
 		// Retrieve the list of RateGroups currently used by the Service
 		DBL()->ServiceRateGroup->SetTable("RateGroup, ServiceRateGroup");
-		$arrServiceRateGroupColumns = Array("Id"=>"RateGroup.Id", "Name"=>"RateGroup.Name", "Description"=>"RateGroup.Description", "RecordType"=>"RateGroup.RecordType", "Fleet"=>"RateGroup.Fleet");
+		$arrServiceRateGroupColumns = Array("Id"=>"RateGroup.Id", "Name"=>"RateGroup.Name", "Description"=>"RateGroup.Description", "RecordType"=>"RateGroup.RecordType", "Fleet"=>"RateGroup.Fleet", "StartDatetime"=>"ServiceRateGroup.StartDatetime", "EndDatetime"=>"ServiceRateGroup.EndDatetime");
 		DBL()->ServiceRateGroup->SetColumns($arrServiceRateGroupColumns);
 		$strWhere = "(NOW() BETWEEN StartDatetime AND EndDatetime) AND EndDatetime != NOW() AND RateGroup.Id = ServiceRateGroup.RateGroup AND ServiceRateGroup.Service=<Service>";
 		DBL()->ServiceRateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
-		DBL()->ServiceRateGroup->OrderBy("RateGroup.RecordType");
+		DBL()->ServiceRateGroup->OrderBy("RateGroup.RecordType, RateGroup.Fleet, RateGroup.Name ASC");
 		DBL()->ServiceRateGroup->Load();
 		
 		// Loop through each RateGroup belonging to the Service and find out which ones actually belong to the RatePlan and which ones are OverRiders

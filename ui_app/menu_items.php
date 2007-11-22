@@ -290,7 +290,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId\", \"large\", null, \"Rate\", \"View\", $strJsonCode)";	
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId\", \"medium\", null, \"Rate\", \"View\", $strJsonCode)";	
 	}	
 
 	//------------------------------------------------------------------------//
@@ -313,11 +313,12 @@ class MenuItems
 	{
 		// Setup data to send
 		$arrData['Objects']['Service']['Id'] = $intServiceId;
+		$arrData['Objects']['RecordType']['Id'] = 20;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"large\", null, \"RateGroup\", \"Override\", $strJsonCode)";	
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"medium\", null, \"RateGroup\", \"Override\", $strJsonCode)";	
 	}
 
 

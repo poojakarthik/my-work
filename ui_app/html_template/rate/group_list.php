@@ -105,22 +105,34 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 		
 		//$this->Temporary_Render();
 		
-		Table()->ServiceRateGroupTable->SetHeader("Rate Group", "Description", "Fleet", "Record Type", "Standard Rate");
-		Table()->ServiceRateGroupTable->SetWidth("25%", "35%", "5%", "20%", "15%");
-		Table()->ServiceRateGroupTable->SetAlignment("Left", "Left", "Left", "Left", "Center");
+		Table()->ServiceRateGroupTable->SetHeader("Record Type", "Rate Group", "Fleet", "Std Rate", "Start Date", "End Date");
+		Table()->ServiceRateGroupTable->SetWidth("30%", "30%", "10%", "10%", "10%", "10%");
+		Table()->ServiceRateGroupTable->SetAlignment("Left", "Left", "Left", "Center", "Left", "Left");
 		
 		foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
 		{
+		
 			// match the RecordType Id with the Id in the ServiceRateGroup table
 			// and setup to display the actual RecordType not a number
 			DBO()->RecordType->Id = $dboServiceRateGroup->RecordType->Value;
 			DBO()->RecordType->Load();
 			// Add this row to Invoice table
-			Table()->ServiceRateGroupTable->AddRow($dboServiceRateGroup->Name->AsValue(), 
-												$dboServiceRateGroup->Description->AsValue(), 
+
+			if ($dboServiceRateGroup->EndDatetime->Value == END_OF_TIME)
+			{
+				$strEndDatetime = "<span>Indefinate</span>";
+			}
+			else
+			{
+				$strEndDatetime = $dboServiceRateGroup->EndDatetime->AsValue();
+			}
+			
+			Table()->ServiceRateGroupTable->AddRow(DBO()->RecordType->Name->AsValue(),
+												$dboServiceRateGroup->Name->AsValue(), 
 												$dboServiceRateGroup->Fleet->AsValue(),
-												DBO()->RecordType->Name->AsValue(),
-												$dboServiceRateGroup->IsPartOfRatePlan->AsValue());
+												$dboServiceRateGroup->IsPartOfRatePlan->AsValue(),
+												$dboServiceRateGroup->StartDatetime->AsValue(),
+												$strEndDatetime);
 			
 			//Retrieve the Rate information for this RateGroup
 			$strWhere = "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)";
@@ -133,18 +145,22 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				// Set the drop down detail
 				$strDetailHtml = "<div class='VixenTableDetail'>\n";
 				$strDetailHtml .= "<table width='100%' border='0' cellspacing='0' cellpadding='0'>\n";
-				$strDetailHtml .= "<tr bgcolor='#C0C0C0'><td><font size='2'>Rate Name</font></td><td><font size='2'>Days Available</font></td><td><font size='2'>Start Time</font></td><td><font size='2'>End Time</font></td></tr>\n";
+				$strDetailHtml .= "<tr><td colspan='5'><span>Rate Group Description : " . $dboServiceRateGroup->Description->AsValue() . "</span></td></tr>\n";
+				$strDetailHtml .= "<tr bgcolor='#C0C0C0'><td><font size='2'>Rate Name</font></td><td><font size='2'>Description</font></td><td><font size='2'>Days Available</font></td><td><font size='2'>Start Time</font></td><td><font size='2'>End Time</font></td></tr>\n";
 				
 				foreach (DBL()->Rate as $dboRate)
 				{
 					$strViewRateLink = Href()->ViewRate($dboRate->Id->Value);
 				
+					//removed the fixed width of the table rows as without they automatically resize and look cleaner
+				
 					$strDetailHtml .= "   <tr>\n";
-					$strDetailHtml .= "      <td width='35%'>\n";
-					//$strDetailHtml .= "<a href='$strViewRateLink'>" . $dboRate->Name->AsValue() . "</a>";
-					$strDetailHtml .= $dboRate->Name->AsValue();
+					$strDetailHtml .= "      <td width='27%'>\n";
+					$strDetailHtml .= "<a href='$strViewRateLink'>" . $dboRate->Name->AsValue() . "</a>";
+					//$strDetailHtml .= $dboRate->Name->AsValue();
 					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td width='35%'>\n";
+					$strDetailHtml .= "		<td width='37%'>" . $dboServiceRateGroup->Description->AsValue() . "</td>";
+					$strDetailHtml .= "      <td>\n";
 					$strDetailHtml .= $dboRate->Monday->AsValue(CONTEXT_DEFAULT,TRUE);
 					$strDetailHtml .= "&nbsp;";
 					$strDetailHtml .= $dboRate->Tuesday->AsValue(CONTEXT_DEFAULT,TRUE);
@@ -159,16 +175,15 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 					$strDetailHtml .= "&nbsp;";
 					$strDetailHtml .= $dboRate->Sunday->AsValue(CONTEXT_DEFAULT,TRUE);
 					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "      <td width='8%'>\n";
 					$strDetailHtml .= $dboRate->StartTime->AsValue();
 					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "      <td width='8%'>\n";
 					$strDetailHtml .= $dboRate->EndTime->AsValue();
 					$strDetailHtml .= "      </td>\n";
 					$strDetailHtml .= "   </tr>\n";
 				}
 				
-				// temporary hard coded link for testing purposes
 				//$strDetailHtml .= "<tr><td colspan='4'><a href='javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId\", \"large\", null, \"Rate\", \"View\", {\"Objects\":{\"Rate\":{\"Id\":12}}})'>Temporary Link Click here</a></td></tr>\n";
 				
 				$strDetailHtml .= "</table>\n";
@@ -210,7 +225,15 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				Table()->ServiceRateGroupTable->SetDetail($strBasicDetailHtml);
 			}
 		}
-		
+
+		if (DBL()->ServiceRateGroup->RecordCount() == 0)
+		{
+			// There are no invoices to stick in this table
+			Table()->ServiceRateGroupTable->AddRow("<span class='DefaultOutputSpan Default'>No Rate Groups to display</span>");
+			Table()->ServiceRateGroupTable->SetRowAlignment("left");
+			Table()->ServiceRateGroupTable->SetRowColumnSpan(6);
+		}
+
 		Table()->ServiceRateGroupTable->Render();
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
