@@ -146,68 +146,6 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 				}
 			}
 			
-			// List all the Normal Rate Groups for this record type in Descending order of precedence (CreateOn determines precedence)
-			$intPrecedence = 1;
-			$bolFoundCurrentNormalRateGroup = FALSE;
-			foreach (DBL()->CurrentServiceRateGroup as $dboRateGroup)
-			{
-				// Make sure that the RateGroup relates to this RecordType and is not Fleet
-				if ($dboRateGroup->RecordType->Value == $dboRecordType->Id->Value && $dboRateGroup->Fleet->Value == 0)
-				{
-					// The RateGroup is a standard RateGroup and is of the correct RecordType
-					// Initilise variables
-					$bolIsCurrent		= FALSE;
-					
-					// Check if it is the RateGroup that is currently in use
-					if (!$bolFoundCurrentNormalRateGroup && strtotime($dboRateGroup->StartDatetime->Value) <= $intNow)
-					{
-						// This RateGroup is currently being used
-						$bolFoundCurrentNormalRateGroup	= TRUE;
-						$bolIsCurrent					= TRUE;
-						//$strCurrentFlag					= "<span>Currently Used&nbsp;</span>";
-					}
-					
-					// Check if the RateGroup is a standard part of the plan
-					$strPartOfPlanCell = "<span>&nbsp;</span>";  // Default
-					if ($dboRateGroup->RateGroup->Value == $dboStandardRateGroup->Id->Value)
-					{
-						// The RateGroup is a standard part of the plan
-						$strPartOfPlanCell = "<span><img src='img/template/tick.png'></img></span>";
-					}
-					
-					// Prepare the Start Cell
-					$intStart		= strtotime($dboRateGroup->StartDatetime->Value);
-					$strStartTime	= date("g:i:s A", $intStart);
-					$strStartDate	= "<span title='$strStartTime'>". date("M j, Y", $intStart) ."</span>";
-					
-					// Prepare the End Cell
-					if ($dboRateGroup->EndDatetime->Value == END_OF_TIME)
-					{
-						$strEndDate = "<span>Indefinite</span>";
-					}
-					else
-					{
-						$intEnd		= strtotime($dboRateGroup->EndDatetime->Value);
-						$strEndTime	= date("g:i:s A", $intEnd);
-						$strEndDate	= "<span title='$strEndTime'>". date("M j, Y", $intEnd) ."</span>";
-					}
-					
-					// Prepare the RateGroup Cell
-					$strRateGroupCell  = "<span ". (($bolIsCurrent) ? "class='Green' " : "");
-					$strRateGroupCell .= "title='{$dboRateGroup->Description->Value}'>{$dboRateGroup->Name->Value}</span>";
-					
-					// Add the Row
-					Table()->$strTableName->AddRow(	"<span>$intPrecedence</span>", $strRateGroupCell, $strPartOfPlanCell, "<span>&nbsp;</span>", $strStartDate, "<span>-</span>", $strEndDate);
-					
-					// Add Dropdown details (describing the rates of the RateGroup)
-					$strDropDownDetail = $this->_BuildDropDownDetail($dboRateGroup->RateGroup->Value);
-					Table()->$strTableName->SetDetail($strDropDownDetail);
-					
-					// Increment the precedence counter
-					$intPrecedence++;
-				}
-			}
-			
 			// List all the Fleet Rate Groups for this record type in Descending order of precedence (CreateOn determines precedence)
 			$intPrecedence = 1;
 			$bolFoundCurrentFleetRateGroup = FALSE;
@@ -268,6 +206,68 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					$intPrecedence++;
 				}
 			}
+			
+			// List all the Normal Rate Groups for this record type in Descending order of precedence (CreateOn determines precedence)
+			$bolFoundCurrentNormalRateGroup = FALSE;
+			foreach (DBL()->CurrentServiceRateGroup as $dboRateGroup)
+			{
+				// Make sure that the RateGroup relates to this RecordType and is not Fleet
+				if ($dboRateGroup->RecordType->Value == $dboRecordType->Id->Value && $dboRateGroup->Fleet->Value == 0)
+				{
+					// The RateGroup is a standard RateGroup and is of the correct RecordType
+					// Initilise variables
+					$bolIsCurrent		= FALSE;
+					
+					// Check if it is the RateGroup that is currently in use
+					if (!$bolFoundCurrentNormalRateGroup && strtotime($dboRateGroup->StartDatetime->Value) <= $intNow)
+					{
+						// This RateGroup is currently being used
+						$bolFoundCurrentNormalRateGroup	= TRUE;
+						$bolIsCurrent					= TRUE;
+						//$strCurrentFlag					= "<span>Currently Used&nbsp;</span>";
+					}
+					
+					// Check if the RateGroup is a standard part of the plan
+					$strPartOfPlanCell = "<span>&nbsp;</span>";  // Default
+					if ($dboRateGroup->RateGroup->Value == $dboStandardRateGroup->Id->Value)
+					{
+						// The RateGroup is a standard part of the plan
+						$strPartOfPlanCell = "<span><img src='img/template/tick.png'></img></span>";
+					}
+					
+					// Prepare the Start Cell
+					$intStart		= strtotime($dboRateGroup->StartDatetime->Value);
+					$strStartTime	= date("g:i:s A", $intStart);
+					$strStartDate	= "<span title='$strStartTime'>". date("M j, Y", $intStart) ."</span>";
+					
+					// Prepare the End Cell
+					if ($dboRateGroup->EndDatetime->Value == END_OF_TIME)
+					{
+						$strEndDate = "<span>Indefinite</span>";
+					}
+					else
+					{
+						$intEnd		= strtotime($dboRateGroup->EndDatetime->Value);
+						$strEndTime	= date("g:i:s A", $intEnd);
+						$strEndDate	= "<span title='$strEndTime'>". date("M j, Y", $intEnd) ."</span>";
+					}
+					
+					// Prepare the RateGroup Cell
+					$strRateGroupCell  = "<span ". (($bolIsCurrent) ? "class='Green' " : "");
+					$strRateGroupCell .= "title='{$dboRateGroup->Description->Value}'>{$dboRateGroup->Name->Value}</span>";
+					
+					// Add the Row
+					Table()->$strTableName->AddRow(	"<span>$intPrecedence</span>", $strRateGroupCell, $strPartOfPlanCell, "<span>&nbsp;</span>", $strStartDate, "<span>-</span>", $strEndDate);
+					
+					// Add Dropdown details (describing the rates of the RateGroup)
+					$strDropDownDetail = $this->_BuildDropDownDetail($dboRateGroup->RateGroup->Value);
+					Table()->$strTableName->SetDetail($strDropDownDetail);
+					
+					// Increment the precedence counter
+					$intPrecedence++;
+				}
+			}
+			
 			
 			// Check if there were any Normal RateGroups added to the table
 			if (!$bolFoundCurrentNormalRateGroup)
