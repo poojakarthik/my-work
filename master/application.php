@@ -250,7 +250,7 @@
 				{
 					// Standard script
 					$this->_arrState['LastReturn']		= $this->_RunScript($arrScript);
-					$this->Debug("Script Returned  :\n {$this->_arrState['LastReturn']}");
+					//$this->Debug("Script Returned  :\n {$this->_arrState['LastReturn']}");
 				}
 				$this->_arrState['LastScript'] = $strScriptName;
 				$this->_arrState['LastRunTime'] = $intTimeNow;
@@ -314,7 +314,23 @@
 		}
 		
 		// Run
-		return shell_exec($strCommand);
+		$strOutput	= "";
+		$ptrProcess	= popen($strCommand, 'r');
+		$arrBlank	= Array();
+		stream_set_blocking($ptrProcess, 0);
+		while (!feof($ptrProcess))
+		{
+			$arrProcess	= Array($ptrProcess);
+			if (stream_select($arrProcess, $arrBlank, $arrBlank, 0, 500000))
+			{
+				// Check for output every 0.5s
+				$strOutput .= $strNew = stream_get_contents($ptrProcess);
+				$this->Debug($strNew, FALSE);
+			}
+		}
+		pclose($ptrProcess);
+		
+		return $strOutput;
 	}
 	
 	
@@ -531,15 +547,16 @@
 	 * 
 	 *
 	 * @param	str		$strText	Text to be output
+	 * @param	bol		$bolNewLine	TRUE: Add a \n to the output
 	 * @return			VOID
 	 *
 	 * @method
 	 */
-	function Debug($strText)
+	function Debug($strText, $bolNewLine = TRUE)
 	{
 		if ($this->_arrConfig['Verbose'] == TRUE)
 		{
-			CLIEcho($strText);
+			CliEcho($strText, $bolNewLine);
 		}
 	}
 	
