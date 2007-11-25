@@ -754,8 +754,8 @@ class AppTemplateService extends ApplicationTemplate
 					$intOldServiceRecordId = DBO()->Service->Id->Value;
 					
 					// Create a note for the old service Id detailing what has happened
-					$strNoteForOldServiceRecord = "This service has been activated which required the creation of a new service record.";
-					$strNoteForOldServiceRecord = "  Please refer to the new service record (id: $intOldServiceRecordId) for future use of this service.";
+					$strNoteForOldServiceRecord = 	"This service has been activated which required the creation of a new service record.".
+													"  Please refer to the new service record (id: $intServiceId) for future use of this service.";
 					
 					SaveSystemNote($strNoteForOldServiceRecord, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intOldServiceRecordId);
 				}
@@ -765,8 +765,7 @@ class AppTemplateService extends ApplicationTemplate
 					$intServiceId = DBO()->Service->Id->Value;
 				}
 			
-				$strNote  = "Service with Id: $intServiceId and FNN: ". DBO()->Service->FNN->Value;
-				$strNote .= " has been ". $strNoteDetails;
+				$strNote  = "Service with Id: $intServiceId and FNN: ". DBO()->Service->FNN->Value . " has been $strNoteDetails";
 				
 				if ($strChangesNote)
 				{
@@ -791,7 +790,14 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			Ajax()->AddCommand("Alert", "The service was successfully updated");
+			
+			// Alert the user
+			$strMsgNewService = "";
+			if (DBO()->NewService->Id->Value)
+			{
+				$strMsgNewService = ".  A new service record had to be made.  Please refer to it from now on.  A note detailing this, has been created";
+			}
+			Ajax()->AddCommand("Alert", "The service was successfully updated$strMsgNewService");
 
 			// Build event object
 			// The contents of this object should be declared in the doc block of this method
@@ -937,16 +943,18 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->RecordType->Load();
 		
 		// Load the current RatePlan
-		DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
-		if (DBO()->RatePlan->Id->Value)
+		DBO()->CurrentRatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
+		$strEarliestAllowableEndDatetime = NULL;
+		if (DBO()->CurrentRatePlan->Id->Value)
 		{
 			// The Service has a current RatePlan
-			DBO()->RatePlan->Load();
+			DBO()->CurrentRatePlan->SetTable("RatePlan");
+			DBO()->CurrentRatePlan->Load();
 
 			// Load all the RateGroups belonging to the current rate plan
 			DBL()->CurrentPlanRateGroup->SetTable("RateGroup");
 			$strWhere = "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = <RatePlan>)";
-			DBL()->CurrentPlanRateGroup->Where->Set($strWhere, Array("RatePlan" => DBO()->RatePlan->Id->Value));
+			DBL()->CurrentPlanRateGroup->Where->Set($strWhere, Array("RatePlan" => DBO()->CurrentRatePlan->Id->Value));
 			DBL()->CurrentPlanRateGroup->OrderBy("RecordType");
 			DBL()->CurrentPlanRateGroup->Load();
 
@@ -956,9 +964,43 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->CurrentServiceRatePlan->Where->Set($strWhere, Array("Service" => DBO()->Service->Id->Value));
 			DBO()->CurrentServiceRatePlan->Load();
 			
-			DBO()->RatePlan->StartDatetime	= DBO()->CurrentServiceRatePlan->StartDatetime->Value;
-			DBO()->RatePlan->EndDatetime	= DBO()->CurrentServiceRatePlan->EndDatetime->Value;
-
+			DBO()->CurrentRatePlan->StartDatetime	= DBO()->CurrentServiceRatePlan->StartDatetime->Value;
+			DBO()->CurrentRatePlan->EndDatetime		= DBO()->CurrentServiceRatePlan->EndDatetime->Value;
+			
+			// This will be used to retrieve all ServiceRateGroup records that have an EndDatetime greater than this
+			$strEarliestAllowableEndDatetime = DBO()->CurrentServiceRatePlan->StartDatetime->Value;
+		}
+		
+		// Load the future RatePlan if there is one scheduled to begin next billing period
+		DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod(DBO()->Service->Id->Value);
+		if (DBO()->FutureRatePlan->Id->Value)
+		{
+			// The Service has a plan scheduled to begin at the start of the next billing period
+			DBO()->FutureRatePlan->SetTable("RatePlan");
+			DBO()->FutureRatePlan->Load();
+			
+			// Load the Future RatePlan record (this is only really needed to get the StartDatetime and EndDatetime)
+			$strStartOfNextBillingPeriod = ConvertUnixTimeToMySQLDateTime(GetStartDateTimeForNextBillingPeriod());
+			$strWhere = "Service = <Service> AND StartDatetime = <StartOfNextBillingPeriod> AND StartDatetime < EndDatetime ORDER BY CreatedOn DESC";
+			DBO()->FutureServiceRatePlan->SetTable("ServiceRatePlan");
+			DBO()->FutureServiceRatePlan->Where->Set($strWhere, Array("Service" => DBO()->Service->Id->Value, "StartOfNextBillingPeriod" => $strStartOfNextBillingPeriod));
+			DBO()->FutureServiceRatePlan->Load();
+			
+			DBO()->FutureRatePlan->StartDatetime	= DBO()->FutureServiceRatePlan->StartDatetime->Value;
+			DBO()->FutureRatePlan->EndDatetime		= DBO()->FutureServiceRatePlan->EndDatetime->Value;
+			
+			// If $strEarliestAllowableEndDatetime hasn't yet been defined then define it now
+			if (!$strEarliestAllowableEndDatetime)
+			{
+				$strEarliestAllowableEndDatetime = DBO()->FutureServiceRatePlan->StartDatetime->Value;
+			}
+		}
+		
+		if ($strEarliestAllowableEndDatetime)
+		{
+			// Retrieve all ServiceRateGroup records (with accompanying RateGroup details) that have an EndDatetime > $strEarliestAllowableEndDatetime
+			// and StartDatetime < EndDatetime
+	
 			// Load all the current ServiceRateGroup records with accompanying details from the RateGroup table
 			// Current ServiceRateGroup records are those that haven't already ended and start before the current RatePlan Ends.
 			// So you need to know the EndDatetime of the service's current RatePlan
@@ -979,8 +1021,8 @@ class AppTemplateService extends ApplicationTemplate
 			//$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "RatePlanEndDatetime" => DBO()->CurrentServiceRatePlan->EndDatetime->Value);
 			
 			// Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
-			$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <RatePlanStartDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
-			$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "RatePlanStartDatetime" => DBO()->CurrentServiceRatePlan->StartDatetime->Value);
+			$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
+			$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
 			$strOrderBy = "SRG.CreatedOn DESC";
 			
 			DBL()->CurrentServiceRateGroup->SetColumns($arrColumns);
@@ -1223,9 +1265,10 @@ class AppTemplateService extends ApplicationTemplate
 			// Commit the transaction
 			TransactionCommit();
 			
-			// Close the popup
+			// Close the popup, alert the user and close the PageLoading Splash
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
+			Ajax()->AddCommand("ExecuteJavascript", "Vixen.Popup.ClosePageLoadingSplash();");
 
 			// Build event object
 			// The contents of this object should be declared in the doc block of this method
@@ -1392,45 +1435,32 @@ class AppTemplateService extends ApplicationTemplate
 				break;
 		}
 		
-		// Give the new service the same RatePlan as the old service
-		$strWhere = "Service = <OldService> AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service = <OldService> AND NOW() BETWEEN StartDatetime AND EndDatetime)";
-		DBO()->ServiceRatePlan->Where->Set($strWhere, Array('OldService' => $intOldServiceId));
-		if (DBO()->ServiceRatePlan->Load())
+		// Give the new service the same RatePlan as the old service (including future rate plans and overrides)
+		// Copy all ServiceRatePlan records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
+		$intNewServiceId = DBO()->NewService->Id->Value;
+		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ".
+														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active ".
+														"FROM ServiceRatePlan WHERE Service = $intOldServiceId AND EndDatetime > NOW() AND StartDatetime < EndDatetime";
+		$qryInsertServicePlanDetails = new Query();
+		
+		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRatePlanRecordsToNewService) === FALSE)
 		{
-			// Save the record for the new plan
-			$strOldStartDatetime = DBO()->ServiceRatePlan->StartDatetime->Value;
-			$strNow = GetCurrentDateAndTimeForMySQL();
-			DBO()->ServiceRatePlan->Service = DBO()->NewService->Id->Value;
-			
-			DBO()->ServiceRatePlan->CreatedOn = $strNow;
-			DBO()->ServiceRatePlan->StartDatetime = $strNow;
-			DBO()->ServiceRatePlan->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRatePlan->Id = 0;
-			DBO()->ServiceRatePlan->Save();
-
-			// Give the new service all the RateGroups of the old service, where StartDatetime >= DBO()->ServiceRatePlan->StartDatetime->Value
-			// When adding a plan in the old system, records were added to ServiceRateGroup before the record was added to ServiceRatePlan.
-			// The discrepancy in the start times shouldn't be any more than a couple of seconds, but just to be on the safe side, I'm 
-			// retrieving all records added to the ServiceRateGroup table that were added up to a day before the current plan was added 
-			// to the ServiceRatePlan table
-			$strWhere = "Service = <OldService> AND StartDatetime > SUBTIME(<OldPlanStartDatetime>, SEC_TO_TIME(60*60*24))";
-			DBL()->ServiceRateGroup->Where->Set($strWhere, Array('OldService' => $intOldServiceId, 'OldPlanStartDatetime' => $strOldStartDatetime));
-			DBL()->ServiceRateGroup->Load();
-			foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
-			{
-				$dboServiceRateGroup->Service = DBO()->NewService->Id->Value;
-				$dboServiceRateGroup->CreatedOn = $strNow;
-				$dboServiceRateGroup->StartDatetime = $strNow;
-				$dboServiceRateGroup->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
-				$dboServiceRateGroup->Id = 0;
-				$dboServiceRateGroup->Save();
-			}
-		}
-		else
-		{
-			// The archived service does not have a plan that is still considered active
+			// Inserting the records into the ServiceRatePlan table failed
+			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
 		}
 		
+		// Copy all ServiceRateGroup records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
+		$strCopyServiceRateGroupRecordsToNewService =	"INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ".
+														"SELECT NULL, $intNewServiceId, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active ".
+														"FROM ServiceRateGroup WHERE Service = $intOldServiceId AND EndDatetime > NOW() AND StartDatetime < EndDatetime";
+														
+		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRateGroupRecordsToNewService) === FALSE)
+		{
+			// Inserting the records into the ServiceRateGroup table failed
+			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
+		}
+		
+		// Activating the account was successfull
 		return TRUE;
 	}
 	

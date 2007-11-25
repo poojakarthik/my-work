@@ -129,7 +129,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;New Plan :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select id='SelectPlanCombo' name='NewPlan.Id' style='width:100%'>\n";
+			echo "      <select id='Combo_NewPlan.Id' name='NewPlan.Id' style='width:100%'>\n";
 	
 			foreach (DBL()->RatePlan as $dboRatePlan)
 			{
@@ -146,7 +146,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Schedule to start :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='StartTimeCombo' name='NewPlan.StartTime' style='width:100%'>\n";
+		echo "      <select id='Combo_NewPlan.StartTime' name='NewPlan.StartTime' style='width:100%'>\n";
 
 		if (DBO()->NewPlan->StartTime->Value == 0)
 		{
@@ -175,15 +175,15 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		// Make this utilise a confirm box which details what happens when they change the plan.  If one is scheduled for a future date
 		// And they declare a new plan for the current month, then the scheduled plan will be removed.  Also notify them that all Rate overrides
 		// will be removed.
-		// TODO $this->Button("Change Plan", "Vixen.Popup.ChangePlan();");
+		$this->Button("Change Plan", "Vixen.PlanChange.ChangePlan();");
 		
-		$this->AjaxSubmit("Change Plan");
+		//$this->AjaxSubmit("Change Plan");
 		echo "</div></div>\n";
 		
 		$this->FormEnd();
 		
 		// Initialise the js object which facilitates this popup
-		echo "<script type='text/javascript'>Vixen.PlanChange.Initialise(". DBO()->Service->Id->Value .");</script>\n";
+		echo "<script type='text/javascript'>Vixen.PlanChange.Initialise(". DBO()->Service->Id->Value .", '{$this->_objAjax->strId}');</script>\n";
 		
 		
 	}

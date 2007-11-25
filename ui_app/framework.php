@@ -1991,6 +1991,11 @@ class OutputMasks
 	{
 		$arrDate = explode("-", $strMySqlDate);
 		$intUnixTime = mktime(0,0,0,$arrDate[1], $arrDate[2], $arrDate[0]);
+		if (!$intUnixTime)
+		{
+			return "Indefinite";
+		}
+		
 		$strDateAndTime = date("l, M j, Y", $intUnixTime);
 		return $strDateAndTime;
 	}

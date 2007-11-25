@@ -127,6 +127,8 @@ define('HTML_CONTEXT_PAGE', 				507);
 define('HTML_CONTEXT_OVERVIEW_PAGE', 		508);
 define('HTML_CONTEXT_VIEW',					509);
 define('HTML_CONTEXT_EDIT',					510);
+define('HTML_CONTEXT_CURRENT_PLAN',			511);
+define('HTML_CONTEXT_FUTURE_PLAN',			512);
 
 
 // constants for the cap/excess rates used within the rate add page

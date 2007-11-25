@@ -41,7 +41,8 @@
  */
 function VixenPlanChangeClass()
 {
-	this._intServiceId = null;
+	this._intServiceId	= null;
+	this._strPopupId	= null;
 	
 	//------------------------------------------------------------------------//
 	// Initialise
@@ -58,17 +59,40 @@ function VixenPlanChangeClass()
 	 * @return	void
 	 * @method
 	 */
-	this.Initialise = function(intServiceId)
+	this.Initialise = function(intServiceId, strPopupId)
 	{
-		this._intServiceId = intServiceId;
+		this._intServiceId	= intServiceId;
+		this._strPopupId	= strPopupId;
 	}
 	
 	// Event handler for the "Change Plan" button
 	// This prompts the user describing the consequences of the plan change
-	this.ChangePlan = function()
+	this.ChangePlan = function(bolConfirmed)
 	{
-		var intStartNextBill = document.getElementById("StartTimeCombo").value;
-		//TODO! finish this when you implement the confirm box
+		var intStartTimeComboValue = document.getElementById("Combo_NewPlan.StartTime").value;
+		
+		// Check that the Plan Change has been confirmed
+		if (bolConfirmed == null)
+		{
+			if (intStartTimeComboValue == 0)
+			{
+				// They want to retroactivate a plan, which could mean updating CDRs in the CDR table which could take a while
+				var strMsg = "Are you sure you want to change this service's plan, effective from the start of the current billing period?<br />WARNING: This process can take several minutes";
+			}
+			else
+			{
+				// The plan change comes into effect at the begining of the next billing period
+				var strMsg = "Are you sure you want to change this service's plan, effective from the start of the next billing period?";
+			}
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.PlanChange.ChangePlan(true);});
+			return;
+		}
+		
+		// Draw the Pablo splash
+		Vixen.Popup.ShowPageLoadingSplash("Performing Plan Change. Please wait.", null, null, null, 1000);
+
+		// Submit the form data
+		Vixen.Ajax.SendForm("VixenForm_ChangePlan", "Change Plan", "Service", "ChangePlan", "", this._strPopupId);
 	}
 	
 	//------------------------------------------------------------------------//

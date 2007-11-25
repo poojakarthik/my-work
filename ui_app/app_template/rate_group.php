@@ -1027,7 +1027,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				{
 					// Else user date entered is invalid
 					DBO()->ServiceRateGroup->EndDate->SetToInvalid();
-					Ajax()->AddCommand("Alert", "ERROR: The Start date is not in the correct format of dd/mm/yyyy");
+					Ajax()->AddCommand("Alert", "ERROR: The End date is not in the correct format of dd/mm/yyyy");
 					Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}

@@ -15,8 +15,9 @@
  */
 function VixenPopupClass()
 {
-	this.strContentCode = "";
-	this.strLocationOnClose = "";
+	this.strContentCode						= "";
+	this.strLocationOnClose					= "";
+	this.intTimeoutIdForPageLoadingSplash	= null;
 	
 	// This stores a stack of zIndex values of the overlay div for each popup openned modally so 
 	// that we can keep a track of where to place the div overlay, when a modal
@@ -502,9 +503,10 @@ function VixenPopupClass()
 			strSize = "AlertSize";
 		}
 	
-		strContent =	"<p><div align='center' style='margin: 5px'>" + strMessage + 
+		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						//"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
-						"<p><input type='button' id='VixenAlertOkButton' value='OK'><br></div>\n" +
+						"<p></div>\n" +
+						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
 	}
@@ -544,7 +546,7 @@ function VixenPopupClass()
 		strCancelBtnHtml	= "<input type='button' id='VixenConfirmCancelButton' value='" + strCancelCaption + "'>";
 		
 		strContent =	"<table border='0' width='100%'>" + 
-						"<tr><td colspan='2' align='center'><span class='DefaultOutputSpan'>" + strMessage + "</span></td></tr>" +
+						"<tr><td colspan='2' align='left' style='padding: 5px 10px 10px 10px'><span align='justify' style='line-height:1.5'>" + strMessage + "</span></td></tr>" +
 						"<tr><td align='center' width='50%'>" + strOkBtnHtml + "</td>" + 
 						"<td align='center' width='50%'>" + strCancelBtnHtml + "</td></tr>";
 		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
@@ -601,16 +603,27 @@ function VixenPopupClass()
 	 * Used to show that a page is loading
 	 * 
 	 * @param	string	strMessage			optional, message to display.  Default = "Page Loading"
-	 * @param 	string	strSize				optional, size of the splash popup. Default = "medium"
+	 * @param 	string	strSize				optional, size of the splash popup. Default = "small"
 	 * @param 	string	strImage			optional, image to display. Default = "img/template/pablo_load.gif"
 	 * @param	string	strElement			optional, If supplied, the splash will appear above the element (not over the element)
+	 * @param	int		intWait				optional, If supplied, the splash will not appear until intWait miliseconds have transpired
+	 * @param	bool	bolAnimateSplash	optional, If supplied, the splash will animate some dots, so it looks like it's doing something.
+	 *										This does not affect the animated image, however depending on what is happening, the image may not
+	 *										automatically animate.  This happens when a page reload occurrs.
 	 *
 	 * @return	void
 	 *
 	 * @method
 	 */
-	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage, strElement)
+	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage, strElement, intWait, bolAnimateSplash)
 	{
+		if (intWait != null)
+		{
+			// A waiting period has been specified
+			this.intTimeoutIdForPageLoadingSplash = setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash(strMessage, strSize, strImage, strElement, null, bolAnimateSplash);}, intWait);
+			return;
+		}
+		
 		// set the default message
 		if (strMessage == null)
 		{
@@ -628,10 +641,15 @@ function VixenPopupClass()
 		}
 		
 		strContent =	"<div align='center' style='border: solid 2px #000000;'><p>" + strMessage + "</p>" +
-						"<p><span id='VixenSplashDots'>.</span></p>" + 
+						"<p><span id='VixenSplashDots'></span></p>" + 
 						"<p><img id='Vixen_DancingPablo' src='" + strImage + "' align='center'></img></p>\n";
 		this.CreateSplash(strContent, strSize, null, strElement);
-		this.AnimateSplash();
+		
+		// Animate the splash
+		if (bolAnimateSplash)
+		{
+			this.AnimateSplash();
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -688,6 +706,14 @@ function VixenPopupClass()
 	 */
 	this.ClosePageLoadingSplash = function()
 	{
+		// Check if the splash is waiting to be displayed
+		if (this.intTimeoutIdForPageLoadingSplash != null)
+		{
+			// The splash is waiting to be displayed.  Stop it
+			clearTimeout(this.intTimeoutIdForPageLoadingSplash);
+			this.intTimeoutIdForPageLoadingSplash = null;
+		}
+	
 		this.Close("Splash");
 	}
 	

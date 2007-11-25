@@ -149,6 +149,7 @@ class HtmlTemplateRateList extends HtmlTemplate
 		}
 		
 		DBO()->RecordType->Name->RenderOutput();
+		DBO()->Rate->Fleet->RenderOutput();
 		DBO()->Rate->StartTime->RenderOutput();
 		DBO()->Rate->EndTime->RenderOutput();
 

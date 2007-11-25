@@ -105,7 +105,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 	{	
 		$intNow = strtotime(GetCurrentDateAndTimeForMySQL());
 		$strStandardHeaderCell	= "<span title='RateGroup is standard Part Of Plan'>PoP</span>";
-		$strFleetHeaderCell		= "<span title='Fleet Rates take precedence over normal Rates'>Fleet</span>";
+		$strFleetHeaderCell		= "<span title='Fleet Rates always take precedence over normal Rates'>Fleet</span>";
 	
 		echo "<h2 class='Plan'>Rate Groups</h2>\n";
 		
@@ -284,7 +284,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 				}
 				
 				Table()->$strTableName->AddRow("<span>&nbsp;</span>", $strMessage);
-				Table()->$strTableName->SetRowColumnSpan(1, 5);
+				Table()->$strTableName->SetRowColumnSpan(1, 6);
 			}
 			
 			// Draw the table
