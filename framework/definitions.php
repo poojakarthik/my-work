@@ -473,6 +473,8 @@ $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Constant']	= 'REQUEST_STATUS_
 $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Description']	= 'Cancelled';
 $GLOBALS['*arrConstant']	['RequestStatus']	[305]	['Constant']	= 'REQUEST_STATUS_DUPLICATE';
 $GLOBALS['*arrConstant']	['RequestStatus']	[305]	['Description']	= 'Duplicated (Ignored)';
+$GLOBALS['*arrConstant']	['RequestStatus']	[306]	['Constant']	= 'REQUEST_STATUS_EXPORTING';
+$GLOBALS['*arrConstant']	['RequestStatus']	[306]	['Description']	= 'Current Exporting';
 
 $GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Constant']	= 'RESPONSE_STATUS_CANT_NORMALISE';
 $GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Description']	= 'Unable to Normalise';
