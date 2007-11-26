@@ -2931,7 +2931,7 @@ function AddCreditCardSurcharge($intPayment)
 		$arrPayment = $selPayment->Fetch();
 		
 		// Find Credit Card Type and Rate
-		$strType	= GetCCType($arrPayment['OriginId']);
+		$strType	= GetCCType($arrPayment['OriginId'], TRUE);
 		if (!$selCCSRate->Execute(Array('Module' => $strType)))
 		{
 			// Cannot find Surcharge Rate
