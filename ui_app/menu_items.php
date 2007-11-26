@@ -319,7 +319,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"medium\", null, \"RateGroup\", \"Override\", $strJsonCode)";	
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"medium\", \"Override Rate Group\", \"RateGroup\", \"Override\", $strJsonCode)";	
 	}
 
 

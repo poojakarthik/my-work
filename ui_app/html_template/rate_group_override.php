@@ -148,7 +148,7 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		}
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderOutput();
-		DBO()->RecordType->Name->RenderOutput();
+		DBO()->RecordType->Description->RenderOutput();
 		
 		echo "<table width='100%' border='0' cellpadding='1' cellspacing='0'>\n";
 		echo "<tr><td width='1' rowspan='7'>&nbsp;</td><td width='190'><span>Current Plan :</span></td><td>" . DBO()->RatePlan->Name->AsValue() . "</td></tr>\n";

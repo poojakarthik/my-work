@@ -971,6 +971,12 @@ class AppTemplateService extends ApplicationTemplate
 			$strEarliestAllowableEndDatetime = DBO()->CurrentServiceRatePlan->StartDatetime->Value;
 		}
 		
+		// If $strEarliestAllowableEndDatetime hasn't yet been defined then define it now
+		if (!$strEarliestAllowableEndDatetime)
+		{
+			$strEarliestAllowableEndDatetime = GetCurrentDateAndTimeForMySQL();
+		}
+		
 		// Load the future RatePlan if there is one scheduled to begin next billing period
 		DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod(DBO()->Service->Id->Value);
 		if (DBO()->FutureRatePlan->Id->Value)
@@ -988,50 +994,40 @@ class AppTemplateService extends ApplicationTemplate
 			
 			DBO()->FutureRatePlan->StartDatetime	= DBO()->FutureServiceRatePlan->StartDatetime->Value;
 			DBO()->FutureRatePlan->EndDatetime		= DBO()->FutureServiceRatePlan->EndDatetime->Value;
-			
-			// If $strEarliestAllowableEndDatetime hasn't yet been defined then define it now
-			if (!$strEarliestAllowableEndDatetime)
-			{
-				$strEarliestAllowableEndDatetime = DBO()->FutureServiceRatePlan->StartDatetime->Value;
-			}
 		}
 		
-		if ($strEarliestAllowableEndDatetime)
-		{
-			// Retrieve all ServiceRateGroup records (with accompanying RateGroup details) that have an EndDatetime > $strEarliestAllowableEndDatetime
-			// and StartDatetime < EndDatetime
-	
-			// Load all the current ServiceRateGroup records with accompanying details from the RateGroup table
-			// Current ServiceRateGroup records are those that haven't already ended and start before the current RatePlan Ends.
-			// So you need to know the EndDatetime of the service's current RatePlan
-			/*			
-			SELECT SRG.Id, SRG.RateGroup, SRG.CreatedOn, SRG.StartDatetime, SRG.EndDatetime, RG.Name, RG.Description, RG.Fleet, RG.RecordType
-			FROM ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id
-			WHERE	SRG.Service = 38492 AND SRG.EndDatetime > NOW() AND 
-					SRG.StartDatetime < <CurrentRatePlan.EndDatetime> AND 
-					SRG.StartDatetime < SRG.EndDatetime
-			ORDER BY SRG.CreatedOn DESC
-			*/		
-			$arrColumns	= Array("Id" => "SRG.Id", "RateGroup" => "SRG.RateGroup", "CreatedOn" => "SRG.CreatedOn", "StartDatetime" => "SRG.StartDatetime", 
-								"EndDatetime" => "SRG.EndDatetime", "Name" => "RG.Name", "Description" => "RG.Description", "Fleet" => "RG.Fleet",
-								"RecordType" => "RG.RecordType");
-			$strTable	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
-			// Doesn't include RateGroups that start after the current plan finishes
-			//$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > NOW() AND SRG.StartDatetime < <RatePlanEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
-			//$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "RatePlanEndDatetime" => DBO()->CurrentServiceRatePlan->EndDatetime->Value);
-			
-			// Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
-			$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
-			$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
-			$strOrderBy = "SRG.CreatedOn DESC";
-			
-			DBL()->CurrentServiceRateGroup->SetColumns($arrColumns);
-			DBL()->CurrentServiceRateGroup->SetTable($strTable);
-			DBL()->CurrentServiceRateGroup->Where->Set($strWhere, $arrWhere);
-			DBL()->CurrentServiceRateGroup->OrderBy($strOrderBy);
-			DBL()->CurrentServiceRateGroup->Load();
-		}
+		// Retrieve all ServiceRateGroup records (with accompanying RateGroup details) that have an EndDatetime > $strEarliestAllowableEndDatetime
+		// and StartDatetime < EndDatetime
+
+		// Load all the current ServiceRateGroup records with accompanying details from the RateGroup table
+		// Current ServiceRateGroup records are those that haven't already ended and start before the current RatePlan Ends.
+		// So you need to know the EndDatetime of the service's current RatePlan
+		/*			
+		SELECT SRG.Id, SRG.RateGroup, SRG.CreatedOn, SRG.StartDatetime, SRG.EndDatetime, RG.Name, RG.Description, RG.Fleet, RG.RecordType
+		FROM ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id
+		WHERE	SRG.Service = 38492 AND SRG.EndDatetime > NOW() AND 
+				SRG.StartDatetime < <CurrentRatePlan.EndDatetime> AND 
+				SRG.StartDatetime < SRG.EndDatetime
+		ORDER BY SRG.CreatedOn DESC
+		*/		
+		$arrColumns	= Array("Id" => "SRG.Id", "RateGroup" => "SRG.RateGroup", "CreatedOn" => "SRG.CreatedOn", "StartDatetime" => "SRG.StartDatetime", 
+							"EndDatetime" => "SRG.EndDatetime", "Name" => "RG.Name", "Description" => "RG.Description", "Fleet" => "RG.Fleet",
+							"RecordType" => "RG.RecordType");
+		$strTable	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
+		// Doesn't include RateGroups that start after the current plan finishes
+		//$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > NOW() AND SRG.StartDatetime < <RatePlanEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
+		//$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "RatePlanEndDatetime" => DBO()->CurrentServiceRatePlan->EndDatetime->Value);
 		
+		// Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
+		$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
+		$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
+		$strOrderBy = "SRG.CreatedOn DESC";
+		
+		DBL()->CurrentServiceRateGroup->SetColumns($arrColumns);
+		DBL()->CurrentServiceRateGroup->SetTable($strTable);
+		DBL()->CurrentServiceRateGroup->Where->Set($strWhere, $arrWhere);
+		DBL()->CurrentServiceRateGroup->OrderBy($strOrderBy);
+		DBL()->CurrentServiceRateGroup->Load();
 		
 		$this->LoadPage('service_plan_view');
 		return TRUE;

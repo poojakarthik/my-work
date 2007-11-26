@@ -103,6 +103,12 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 	 */
 	function Render()
 	{	
+		// This will list the Start and End times for all shown RateGroups for a given RecordType.  If a RateGroup's Start and End times
+		// are completely overridden by one of higher precedence, then it will not be shown.
+		$arrShownRateGroups = Array();
+	
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+	
 		$intNow = strtotime(GetCurrentDateAndTimeForMySQL());
 		$strStandardHeaderCell	= "<span title='RateGroup is standard Part Of Plan'>PoP</span>";
 		$strFleetHeaderCell		= "<span title='Fleet Rates always take precedence over normal Rates'>Fleet</span>";
@@ -111,16 +117,17 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 		
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
-			$bolHasFleetRateGroups = FALSE;
-			
 			// Build the name of the table
 			$strTableName = "RecordType_{$dboRecordType->Id->Value}";
 			
-			// Build the link to the RateGroup Override popup
-			$strOverrideRateGroupHref	= Href()->OverrideRateGroup(DBO()->Service->Id->Value, $dboRecordType->Id->Value);
-			$strRecordTypeCell			= "<a href='$strOverrideRateGroupHref' title='Declare Override RateGroup'><span>{$dboRecordType->Description->Value}</span></a>";
-			
-			
+			$strOverrideRateGroup = "&nbsp;";
+			if ($bolUserHasAdminPerm)
+			{	
+				// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
+				$strOverrideRateGroupHref	= Href()->OverrideRateGroup(DBO()->Service->Id->Value, $dboRecordType->Id->Value);
+				$strOverrideRateGroup		= "<a style='padding-left:10px' href='$strOverrideRateGroupHref'><img src='img/template/edit.png' title='Declare an Overriding RateGroup'></img></a>";
+			}
+			$strRecordTypeCell = $dboRecordType->Description->Value . $strOverrideRateGroup;
 			
 			Table()->$strTableName->SetHeader("&nbsp;", $strRecordTypeCell, $strStandardHeaderCell, $strFleetHeaderCell, "&nbsp;", "&nbsp", "&nbsp;");
 			Table()->$strTableName->SetWidth("3%", "65%", "5%", "5%", "10%", "2%", "10%");
@@ -149,6 +156,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 			// List all the Fleet Rate Groups for this record type in Descending order of precedence (CreateOn determines precedence)
 			$intPrecedence = 1;
 			$bolFoundCurrentFleetRateGroup = FALSE;
+			$arrShownRateGroups = Array();
 			foreach (DBL()->CurrentServiceRateGroup as $dboRateGroup)
 			{
 				// Make sure that the RateGroup relates to this RecordType and IS Fleet
@@ -157,6 +165,29 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					// The RateGroup is a fleet RateGroup and is of the correct RecordType
 					// Initilise variables
 					$bolIsCurrent		= FALSE;
+					$arrRateGroupTimeRange['Start']	= strtotime($dboRateGroup->StartDatetime->Value);
+					$arrRateGroupTimeRange['End']	= strtotime($dboRateGroup->EndDatetime->Value);
+					$arrRateGroupTimeRange['IsIndefinite'] = (bool)($dboRateGroup->EndDatetime->Value == END_OF_TIME);
+					
+					// Check if the RateGroup should be displayed
+					foreach ($arrShownRateGroups as $arrHigherRateGroup)
+					{
+						if ($arrHigherRateGroup['Start'] <= $arrRateGroupTimeRange['Start'])
+						{
+							if 	(	($arrHigherRateGroup['IsIndefinite']) 
+									||
+									(!$arrRateGroupTimeRange['IsIndefinite'] && $arrHigherRateGroup['End'] >= $arrRateGroupTimeRange['End'])
+								)
+							{
+								// A higher precedence RateGroup completely overrides $dboRateGroup
+								// Move on to the next $dboRateGroup
+								continue 2;
+							}
+						}
+					}
+					
+					// Add the RateGroup TimeRange details to the array of shown RateGroups
+					$arrShownRateGroups[] = $arrRateGroupTimeRange;
 					
 					// Check if it is the RateGroup that is currently in use
 					if (!$bolFoundCurrentFleetRateGroup && strtotime($dboRateGroup->StartDatetime->Value) <= $intNow)
@@ -209,6 +240,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 			
 			// List all the Normal Rate Groups for this record type in Descending order of precedence (CreateOn determines precedence)
 			$bolFoundCurrentNormalRateGroup = FALSE;
+			$arrShownRateGroups = Array();
 			foreach (DBL()->CurrentServiceRateGroup as $dboRateGroup)
 			{
 				// Make sure that the RateGroup relates to this RecordType and is not Fleet
@@ -217,6 +249,29 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					// The RateGroup is a standard RateGroup and is of the correct RecordType
 					// Initilise variables
 					$bolIsCurrent		= FALSE;
+					$arrRateGroupTimeRange['Start']	= strtotime($dboRateGroup->StartDatetime->Value);
+					$arrRateGroupTimeRange['End']	= strtotime($dboRateGroup->EndDatetime->Value);
+					$arrRateGroupTimeRange['IsIndefinite'] = (bool)($dboRateGroup->EndDatetime->Value == END_OF_TIME);
+					
+					// Check if the RateGroup should be displayed
+					foreach ($arrShownRateGroups as $arrHigherRateGroup)
+					{
+						if ($arrHigherRateGroup['Start'] <= $arrRateGroupTimeRange['Start'])
+						{
+							if 	(	($arrHigherRateGroup['IsIndefinite']) 
+									||
+									(!$arrRateGroupTimeRange['IsIndefinite'] && $arrHigherRateGroup['End'] >= $arrRateGroupTimeRange['End'])
+								)
+							{
+								// A higher precedence RateGroup completely overrides $dboRateGroup
+								// Move on to the next $dboRateGroup
+								continue 2;
+							}
+						}
+					}
+					
+					// Add the RateGroup TimeRange details to the array of shown RateGroups
+					$arrShownRateGroups[] = $arrRateGroupTimeRange;
 					
 					// Check if it is the RateGroup that is currently in use
 					if (!$bolFoundCurrentNormalRateGroup && strtotime($dboRateGroup->StartDatetime->Value) <= $intNow)
