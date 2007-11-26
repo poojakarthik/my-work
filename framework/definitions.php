@@ -50,6 +50,7 @@ define("APPLICATION_NORMALISATION"	, 1);
 define("APPLICATION_RATING"			, 2);
 define("APPLICATION_BILLING"		, 3);
 define("APPLICATION_PROVISIONING"	, 4);
+define("APPLICATION_PAYMENTS"		, 5);
 
 // friendly error msg
 //TODO!!!! - make this a little more friendly
@@ -411,6 +412,7 @@ $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Description']	= 'Imagine';
 // Credit Card Constants
 define("CREDIT_CARD_VISA"			, 1);
 define("CREDIT_CARD_MASTERCARD"		, 2);
+define("CREDIT_CARD_BANKCARD"		, 3);
 define("CREDIT_CARD_AMEX"			, 4);
 define("CREDIT_CARD_DINERS"			, 5);
 

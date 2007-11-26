@@ -1311,7 +1311,7 @@ function CheckCC($mixNumber, $intCreditCardType)
 			break;
 			
 		case CREDIT_CARD_BANKCARD:
-			$arrPrefixes	= Array ();
+			$arrPrefixes	= Array (56);
 			$arrLengths = Array (16);
 			
 			break;
@@ -2818,5 +2818,152 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voipt
 	
 	// Send the email
 	return (bool)$emlMail->send($strAddresses, $strHeaders, $strBody);
+}
+
+
+//------------------------------------------------------------------------//
+// GetCCType
+//------------------------------------------------------------------------//
+/**
+ * GetCCType()
+ * 
+ * Takes a Credit Card number and finds what bank it comes from
+ * 
+ * Takes a Credit Card number and finds what bank it comes from
+ *
+ * @param	mix		$mixNumber			The CC number to check
+ * @param	boolean	$bolAsString		TRUE	: Returns an integer (constant value)
+ * 										FALSE	: Returns a string (bank name)
+ *
+ * @return	mix							Bank name, Constant Value depending on $bolAsString, or FALSE on failure
+ * 
+ * @function
+ * 
+ */
+function GetCCType($mixNumber, $bolAsString = FALSE)
+{
+	$intNumber = (int)str_replace (" ", "", $mixNumber);
+	
+	// Find Card Type
+	switch ((int)substr($intNumber, 0, 2))
+	{
+		// VISA
+		case 4:
+			$strType	= "VISA";
+			$intType	= CREDIT_CARD_VISA;
+			break;
+		
+		// Mastercard
+		case 51:
+		case 52:
+		case 53:
+		case 54:
+		case 55:
+			$strType	= "MasterCard";
+			$intType	= CREDIT_CARD_MASTERCARD;
+			break;
+		
+		// Bankcard
+		case 56:
+			$strType	= "Bankcard";
+			$intType	= CREDIT_CARD_BANKCARD;
+			break;
+		
+		// AMEX
+		case 34:
+		case 37:
+			$strType	= "American Express";
+			$intType	= CREDIT_CARD_AMEX;
+			break;
+		
+		// Diners
+		case 30:
+		case 36:
+		case 38:
+			$strType	= "Diners Club";
+			$intType	= CREDIT_CARD_DINERS;
+			break;
+		
+		default:
+			return FALSE;
+	}
+	
+	// Return requested value
+	if ($bolAsString)
+	{
+		return $strType;
+	}
+	else
+	{
+		return $intType;
+	}
+}
+
+
+//------------------------------------------------------------------------//
+// AddCreditCardSurcharge
+//------------------------------------------------------------------------//
+/**
+ * AddCreditCardSurcharge()
+ *
+ * Adds a surcharge to the given Account for the specified transaction
+ *
+ * Adds a surcharge to the given Account for the specified transaction
+ * 
+ * @param	integer		$intPayment				Comma-separated list of addresses to send to
+ *
+ * @return	boolean								Pass/Fail
+ *
+ * @method
+ */
+function AddCreditCardSurcharge($intPayment)
+{
+	// Statements
+	$selPayment	= new StatementSelect("Payment", "*", "Id = <Payment>");
+	$insCharge	= new StatementInsert("Charge");
+	$selCCSRate	= new StatementSelect(	"Config",
+										"Value",
+										"Application = ".APPLICATION_PAYMENTS." AND Module = <Module> AND Name = 'Surcharge'");
+	
+	// Get Payment details
+	if ($selPayment->Execute(Array('Payment' => $intPayment)))
+	{
+		$arrPayment = $selPayment->Fetch();
+		
+		// Find Credit Card Type and Rate
+		$strType	= GetCCType($arrPayment['OriginId']);
+		if (!$selCCSRate->Execute(Array('Module' => $strType)))
+		{
+			// Cannot find Surcharge Rate
+			return FALSE;
+		}
+		$arrCSSRate			= $selCCSRate->Fetch();
+		$fltPC				= (float)$arrCSSRate['Value'];
+		$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
+		$fltPaymentAmount	= $arrPayment['Amount'];
+		$fltAmount			= (float)$arrPayment['Amount'] / $fltPC;
+		$strPC				= round($fltPC * 100, 2);
+		
+		// Insert Charge
+		$arrCharge	= Array();
+		$arrCharge['AccountGroup']	= $arrPayment['AccountGroup'];
+		$arrCharge['Account']		= $arrPayment['Account'];
+		$arrCharge['CreatedBy']		= $arrPayment['EnteredBy'];
+		$arrCharge['CreatedOn']		= date("Y-m-d");
+		$arrCharge['ChargeType']	= "CCS";
+		$arrCharge['Description']	= "$strType Surcharge for Payment on {$strDate} (\${$fltPaymentAmount}) @ $strPC%";
+		$arrCharge['ChargedOn']		= $arrPayment['PaidOn'];
+		$arrCharge['Nature']		= 'DR';
+		$arrCharge['Amount']		= $fltAmount;
+		$arrCharge['Notes']			= '';
+		$arrCharge['Status']		= CHARGE_APPROVED;
+		$insCharge->Execute($arrCharge);
+		//Debug($arrCharge);
+	}
+	else
+	{
+		// Can't find Payment
+		return FALSE;
+	}
 }
 ?>
