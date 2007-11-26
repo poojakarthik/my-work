@@ -410,11 +410,16 @@ $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Constant']	= 'CUSTOMER_GRO
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Description']	= 'Imagine';
 
 // Credit Card Constants
-define("CREDIT_CARD_VISA"			, 1);
-define("CREDIT_CARD_MASTERCARD"		, 2);
-define("CREDIT_CARD_BANKCARD"		, 3);
-define("CREDIT_CARD_AMEX"			, 4);
-define("CREDIT_CARD_DINERS"			, 5);
+$GLOBALS['*arrConstant']	['CreditCard']	[1]	['Constant']	= 'CREDIT_CARD_VISA';
+$GLOBALS['*arrConstant']	['CreditCard']	[1]	['Description']	= 'VISA';
+$GLOBALS['*arrConstant']	['CreditCard']	[2]	['Constant']	= 'CREDIT_CARD_MASTERCARD';
+$GLOBALS['*arrConstant']	['CreditCard']	[2]	['Description']	= 'MasterCard';
+$GLOBALS['*arrConstant']	['CreditCard']	[3]	['Constant']	= 'CREDIT_CARD_BANKCARD';
+$GLOBALS['*arrConstant']	['CreditCard']	[3]	['Description']	= 'Bankcard';
+$GLOBALS['*arrConstant']	['CreditCard']	[4]	['Constant']	= 'CREDIT_CARD_AMEX';
+$GLOBALS['*arrConstant']	['CreditCard']	[4]	['Description']	= 'American Express';
+$GLOBALS['*arrConstant']	['CreditCard']	[5]	['Constant']	= 'CREDIT_CARD_DINERS';
+$GLOBALS['*arrConstant']	['CreditCard']	[5]	['Description']	= 'Diners Club';
 
 define("INVOICE_EMAIL_CONTENT", "Please find attached your invoice from <custgrp>.\r\n\r\n" .
 								"Regards\r\n\r\n" .
