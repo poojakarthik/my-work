@@ -1108,6 +1108,35 @@
 			$insNote->Execute($arrNote);
 		}
 		
+		// Remove or Credit any associated Surcharges
+		$arrCols = Array();
+		$arrCols['Status']	= CHARGE_DELETED;
+		$ubiSurcharge	= new StatementUpdateById("Charge");
+		$insCredit		= new StatementInsert("Charge", $arrCols);
+		$selSurcharges	= new StatementSelect("Charge", "*", "Nature = 'DR' AND LinkId = <Payment> AND LinkType = ".CHARGE_LINK_PAYMENT);
+		$selSurcharges->Execute($selSurcharges);
+		while ($arrSurcharge = $selSurcharges->Fetch())
+		{
+			// Is it Invoiced?
+			switch ($arrSurcharge['Status'])
+			{
+				case CHARGE_INVOICED:
+					// Add a credit to negate the charge
+					$arrCredit					= $arrSurcharge;
+					$arrCredit['Nature']		= 'CR';
+					$arrCredit['Description']	= "Payment Reversal: ".$arrCredit['Description'];
+					unset($arrCredit['Id']);
+					$insCredit->Execute($arrSurcharge);
+					break;
+				
+				case CHARGE_APPROVED:
+					// Set the charge status to Deleted
+					$arrSurcharge['Status']	= CHARGE_DELETED;
+					$ubiSurcharge->Execute($arrSurcharge);
+					break;
+			}
+		}
+		
 		return TRUE;
 	 }
 	 

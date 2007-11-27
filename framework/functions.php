@@ -2940,9 +2940,9 @@ function AddCreditCardSurcharge($intPayment)
 		$arrCSSRate			= $selCCSRate->Fetch();
 		$fltPC				= (float)$arrCSSRate['Value'];
 		$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
-		$fltPaymentAmount	= $arrPayment['Amount'];
-		$fltAmount			= (float)$arrPayment['Amount'] / $fltPC;
 		$strPC				= round($fltPC * 100, 2);
+		$fltPaymentAmount	= $arrPayment['Amount'];
+		$fltAmount			= (float)$arrPayment['Amount'] / (1 + $fltPC);
 		
 		// Insert Charge
 		$arrCharge	= Array();

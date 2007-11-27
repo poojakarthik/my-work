@@ -391,6 +391,13 @@ $GLOBALS['*arrConstant']	['ChargeStatus']	[105]	['Constant']	= 'CHARGE_DELETED';
 $GLOBALS['*arrConstant']	['ChargeStatus']	[105]	['Description']	= 'Deleted';
 
 
+// Charge Link Types
+$GLOBALS['*arrConstant']	['ChargeLink']		[500]	['Constant']	= 'CHARGE_LINK_PAYMENT';
+$GLOBALS['*arrConstant']	['ChargeLink']		[500]	['Description']	= 'Payment Surcharge';
+$GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Constant']	= 'CHARGE_LINK_RECURRING';
+$GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Description']	= 'Recurring Adjustment';
+
+
 // Customer Group Constants
 /*define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
 define("CUSTOMER_GROUP_VOICETALK"	, 2);
