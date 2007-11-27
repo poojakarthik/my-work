@@ -2942,7 +2942,7 @@ function AddCreditCardSurcharge($intPayment)
 		$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
 		$strPC				= round($fltPC * 100, 2);
 		$fltPaymentAmount	= $arrPayment['Amount'];
-		$fltAmount			= (float)$arrPayment['Amount'] / (1 + $fltPC);
+		$fltAmount			= RemoveGST((float)$arrPayment['Amount'] / (1 + $fltPC));
 		
 		// Insert Charge
 		$arrCharge	= Array();
