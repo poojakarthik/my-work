@@ -54,6 +54,8 @@ class AppTemplatePayment extends ApplicationTemplate
 	 * Performs the logic for the Make Payment popup window
 	 * 
 	 * Performs the logic for the Make Payment popup window
+	 * This method assumes:
+	 *			DBO()->Account->Id is set
 	 *
 	 * @return		void
 	 * @method
@@ -69,7 +71,7 @@ class AppTemplatePayment extends ApplicationTemplate
 		if (!DBO()->Account->Load())
 		{
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			Ajax()->AddCommand("Alert", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
 			return TRUE;
 		}
 
@@ -101,55 +103,123 @@ class AppTemplatePayment extends ApplicationTemplate
 			}
 			
 			// Only add the payment if it is not invalid
-			if (!DBO()->Payment->IsInvalid())
+			if (DBO()->Payment->IsInvalid())
 			{
-				// DBO()->Payment->PaymentType is already set
-				// DBO()->Payment->Amount is already set
-				// DBO()->Payment->TXNReference is already set
-				
-				// if the payment amount has a leading dollar sign then strip it off
-				DBO()->Payment->Amount = ltrim(trim(DBO()->Payment->Amount->Value), '$');
-				
-				DBO()->Payment->PaidOn = GetCurrentDateForMySQL();
-				
-				// User's details
-				$dboUser = GetAuthenticatedUserDBObject();
-				DBO()->Payment->EnteredBy = $dboUser->Id->Value;
-				
-				// Payment (don't worry about this property)
-				DBO()->Payment->Payment = "";
-				
-				// DBO()->Payment->File does not need to be set
-				// DBO()->Payment->SequenceNumber does not need to be set
-				
-				DBO()->Payment->Balance = DBO()->Payment->Amount->Value;
-				
-				DBO()->Payment->Status = PAYMENT_WAITING;
-				
-				// Save the payment to the payment table of the vixen database
-				if (!DBO()->Payment->Save())
-				{
-					// The payment could not be saved
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "ERROR: The payment did not save.");
-					return TRUE;
-				}
-				else
-				{
-					// The payment was successfully saved
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The payment has been successfully added.");
-					return TRUE;
-				}
-			}
-			else
-			{
-				// Something was invalid 
+				// Something was invalid
 				Ajax()->RenderHtmlTemplate("AccountPaymentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				Ajax()->AddCommand("Alert", "ERROR: The Payment could not be saved. Invalid fields are highlighted");
 				return TRUE;
 			}
+			
+			// If the Payment Type was credit card, make sure you check that they have entered a valid credit card number
+			if (DBO()->Payment->PaymentType->Value == PAYMENT_TYPE_CREDIT_CARD)
+			{
+				DBO()->Payment->CreditCardNum->Trim();
+				
+				if (!Validate("IsNotEmptyString", DBO()->Payment->CreditCardNum->Value))
+				{
+					// A Credit Card number has not been specified
+					$strErrorMsg = "ERROR: A valid credit card number must be specified";
+				}
+				elseif (!CheckCC(DBO()->Payment->CreditCardNum->Value, DBO()->Payment->CreditCardType->Value))
+				{
+					// The credit card number is not a valid credit card number for the declared CreditCardType
+					$strErrorMsg = "ERROR: The Credit Card Number is invalid";
+				}
+				if ($strErrorMsg)
+				{
+					DBO()->Payment->CreditCardNum->SetToInvalid();
+					Ajax()->RenderHtmlTemplate("AccountPaymentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+					Ajax()->AddCommand("Alert", $strErrorMsg);
+					return TRUE;
+				}
+				
+				// The Credit Card number is valid
+				DBO()->Payment->OriginId	= DBO()->Payment->CreditCardNum->Value;
+			}
+			else
+			{
+				// The PaymentType does not require us to define OriginId
+				DBO()->Payment->OriginId	= NULL;
+			}
+			
+			// The Payment details are valid.  Add a record to the Payment table
+			// DBO()->Payment->PaymentType is already set
+			// DBO()->Payment->Amount is already set
+			// DBO()->Payment->TXNReference is already set
+			
+			// OriginType is always equal to PaymentType when a payment is manually entered
+			DBO()->Payment->OriginType	= DBO()->Payment->PaymentType->Value;
+			
+			// If the payment amount has a leading dollar sign then strip it off
+			DBO()->Payment->Amount->Trim();
+			DBO()->Payment->Amount->Trim("ltrim", "$");
+			//DBO()->Payment->Amount = ltrim(trim(DBO()->Payment->Amount->Value), '$');
+			
+			DBO()->Payment->PaidOn = GetCurrentDateForMySQL();
+			
+			// User's details
+			$dboUser = GetAuthenticatedUserDBObject();
+			DBO()->Payment->EnteredBy = $dboUser->Id->Value;
+			
+			// Payment (don't worry about this property)
+			DBO()->Payment->Payment = "";
+			
+			// DBO()->Payment->File does not need to be set
+			// DBO()->Payment->SequenceNumber does not need to be set
+			
+			DBO()->Payment->Balance = DBO()->Payment->Amount->Value;
+			
+			DBO()->Payment->Status = PAYMENT_WAITING;
+			
+			// Start the transaction
+//			TransactionStart();
+			
+			// Save the payment to the payment table of the vixen database
+			if (!DBO()->Payment->Save())
+			{
+				// The payment could not be saved
+				Ajax()->AddCommand("Alert", "ERROR: Saving the payment failed, unexpectedly.");
+				return TRUE;
+			}
+			
+			// The payment was successfully saved
+			
+			// If it was a credit card payment, then add an adjustment for the credit card surcharge
+			if (DBO()->Payment->PaymentType->Value == PAYMENT_TYPE_CREDIT_CARD)
+			{
+				// Add the Credit Card Surcharge
+				$bolResult = AddCreditCardSurcharge(DBO()->Payment->Id->Value);
+				
+				if ($bolResult === "HELLO")
+				{
+$intPaymentId = DBO()->Payment->Id->Value;
+					// Adding the Credit Card Surcharge failed.  Rollback the transaction
+//					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Saving the payment failed, unexpectedly.  Failed during creation of the Credit Card Surcharge adjustment. Payment Id = $intPaymentId");
+					return TRUE;
+				}
+				
+				$strCreditCardMsg = "  The Credit Card surcharge has been added as an adjustment.";
+			}
+			
+			// The payment has been successfully added.  Commit the Transaction
+//			TransactionCommit();
+			
+			//TODO! Add an appropriate System Note
+			// Note: A payment can be added to an entire AccountGroup, in which case you should add the note to each Account within the group, and 
+			// specify in the note that it has been applied to the entire group.
+			// You should also detail the Credit Card Surcharge adjustment, if one was created, and discuss how this has affected the payment amount
+			// You can retrieve the new payment amount by reloading the DBO()->Payment object as it will now have an ID
+			
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("AlertReload", "The payment has been successfully added.$strCreditCardMsg");
+			return TRUE;
 		}
+		
+		// Initialise the popup
+		DBO()->AccountToApplyTo->Id			= DBO()->Account->Id->Value;
+		DBO()->AccountToApplyTo->IsGroup	= 0;
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('payment_add');
@@ -187,7 +257,7 @@ class AppTemplatePayment extends ApplicationTemplate
 			if (!DBO()->Payment->Load())
 			{
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", "The payment with id: ". DBO()->Payment->Id->Value ." could not be found");
+				Ajax()->AddCommand("Alert", "The payment with id: ". DBO()->Payment->Id->Value ." could not be found");
 				return TRUE;
 			}
 			
@@ -207,11 +277,20 @@ class AppTemplatePayment extends ApplicationTemplate
 				$strErrorMsg .= "</div>\n";
 				
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", $strErrorMsg);
+				Ajax()->AddCommand("Alert", $strErrorMsg);
 				return TRUE;
 			}
 			
-			//reverse the payment
+			// Check that the Invoicing process is not currently underway, as payments cannot be reversed when this is happening
+			if (IsInvoicing())
+			{
+				// Invoicing is currently underway
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("Alert", "ERROR: The Invoicing process is currently running.  Payments cannot be reversed at this time.  Please try again later.");
+				return TRUE;
+			}
+			
+			// Reverse the payment
 			$bolPaymentReversed = Framework()->ReversePayment(DBO()->Payment->Id->Value, AuthenticatedUser()->_arrUser['Id']);
 			
 			if ($bolPaymentReversed)
@@ -238,7 +317,7 @@ class AppTemplatePayment extends ApplicationTemplate
 			else
 			{
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", "Reversing the payment failed");
+				Ajax()->AddCommand("Alert", "Reversing the payment failed");
 				return TRUE;
 			}
 		}

@@ -381,7 +381,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			if (!DBO()->Charge->Load())
 			{
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", "The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
+				Ajax()->AddCommand("Reload", "The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
 				return TRUE;
 			}
 			
@@ -396,7 +396,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				{
 					// The charge could not be updated
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", nl2br("The adjustment could not be deleted.\nThere was a problem with updating the record in the database."));
+					Ajax()->AddCommand("Alert", nl2br("The adjustment could not be deleted.\nThere was a problem with updating the record in the database."));
 					return TRUE;
 				}
 				else
@@ -451,7 +451,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$strErrorMsg .= "</div>\n";
 				
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", $strErrorMsg);
+				Ajax()->AddCommand("Alert", $strErrorMsg);
 				return TRUE;
 			}
 		}
@@ -487,13 +487,21 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			if (!DBO()->RecurringCharge->Load())
 			{
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", "The recurring adjustment with id: ". DBO()->RecurringCharge->Id->Value ." could not be found");
+				Ajax()->AddCommand("Alert", "The recurring adjustment with id: ". DBO()->RecurringCharge->Id->Value ." could not be found");
 				return TRUE;
 			}
 			
 			// The recurring charge can only be deleted if it is not currently archived
 			if (DBO()->RecurringCharge->Archived->Value == 0)
 			{
+				// Recurring charges cannot be deleted during the Invoicing Process
+				if (IsInvoicing())
+				{
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("Alert", "ERROR: The Invoicing process is currently running.  Recurring adjustments cannot be cancelled at this time.  Please try again later.");
+					return TRUE;
+				}
+			
 				// Declare the transaction
 				TransactionStart();
 				
@@ -510,7 +518,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					
 					// Close the popup gracefully
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be cancelled.\nThere was a problem with updating the RecurringCharge record in the database."));
+					Ajax()->AddCommand("Alert", "ERROR: The recurring adjustment could not be cancelled.  There was a problem with updating the RecurringCharge record in the database.");
 					return TRUE;
 				}
 				// The recurring charge was successfully updated.
@@ -546,7 +554,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 						
 						// Close the popup gracefully
 						Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-						Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be cancelled.\nThere was a problem with generating the cancellation charge."));
+						Ajax()->AddCommand("Alert", nl2br("ERROR: The recurring adjustment could not be cancelled.\nThere was a problem with generating the cancellation charge."));
 						return TRUE;
 					}
 				}
@@ -622,7 +630,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$strErrorMsg .= "</div>\n";
 				
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", $strErrorMsg);
+				Ajax()->AddCommand("Alert", $strErrorMsg);
 				return TRUE;
 			}
 		}

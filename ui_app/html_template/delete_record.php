@@ -106,6 +106,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 			case "Payment":
 				// Display the description for the reverse payment operation
 				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to reverse the payment with the following details?");
+				echo "<div class='ContentSeparator'></div>";
 				DBO()->Payment->PaidOn->RenderOutput();
 				DBO()->Payment->Amount->RenderOutput();
 				DBO()->Payment->Balance->RenderOutput();
@@ -115,6 +116,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 			case "Adjustment":
 				// Display the description for the delete operation
 				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to delete the adjustment with the following details?");
+				echo "<div class='ContentSeparator'></div>";
 				DBO()->Charge->CreatedOn->RenderOutput();
 				DBO()->Charge->ChargeType->RenderOutput();
 				DBO()->Charge->Description->RenderOutput();
@@ -125,6 +127,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 			case "RecurringAdjustment":
 				// Display the description for the delete operation
 				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to cancel the recurring adjustment with the following details?");
+				echo "<div class='ContentSeparator'></div>";
 				DBO()->RecurringCharge->CreatedOn->RenderOutput();
 				DBO()->RecurringCharge->Description->RenderOutput();
 				DBO()->RecurringCharge->MinCharge->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
@@ -137,8 +140,10 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 					echo "<div class='SmallSeperator'></div>\n";
 					
 					// The recurring charge is a debit.  A charge will be made to cover the remaining minimum cost, and cancellation fee
+					echo "<div class='ContentSeparator'></div>";
 					DBO()->DeleteRecord->Description->RenderArbitrary("WARNING: Cancelling this adjustment will incur a cost to the customer");
-					
+					echo "<div class='ContentSeparator'></div>";
+
 					DBO()->RecurringCharge->MinCharge->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 					DBO()->RecurringCharge->TotalCharged->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 					DBO()->RecurringCharge->CancellationFee->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);

@@ -177,6 +177,50 @@ class PropertyToken
 	}
 	
 	//------------------------------------------------------------------------//
+	// Trim
+	//------------------------------------------------------------------------//
+	/**
+	 * Trim()
+	 *
+	 * Performs a Trim operation on the property
+	 *
+	 * Performs a Trim operation on the property
+	 *
+	 * @param	string	$strTrimType	optional, the type of trim to perform (trim, ltrim, rtrim)
+	 *									Defaults to trim
+	 * @param	string	$strCharList	optional, list of chars to strip.  Defaults 
+	 *									to the default of the trim method (usually 
+	 *									all whitespace chars)
+	 * 
+	 * @method
+	 */
+	function Trim($strTrimType=NULL, $strCharList=NULL)
+	{
+		switch (strtolower($strTrimType))
+		{
+			case "ltrim":
+				$strFunc = "ltrim";
+				break;
+			case "rtrim":
+				$strFunc = "rtrim";
+				break;
+			default:
+				$strFunc = "trim";
+				break;
+		}
+		
+		$arrArgs = Array();
+		$arrArgs[] = $this->_dboOwner->_arrProperties[$this->_strProperty];
+		
+		if ($strCharList !== NULL)
+		{
+			$arrArgs[] = $strCharList;
+		}
+		
+		$this->_dboOwner->_arrProperties[$this->_strProperty] = call_user_func_array($strFunc, $arrArgs);
+	}
+	
+	//------------------------------------------------------------------------//
 	// __call
 	//------------------------------------------------------------------------//
 	/**

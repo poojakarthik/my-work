@@ -884,29 +884,52 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
-		//Check what sort of record is being deleted
+		// Non of these records can be deleted/cancelled/reversed while the invoicing process is running
+		$bolIsInvoicing = IsInvoicing();
+
+		// Check what sort of record is being deleted
 		switch (DBO()->DeleteRecord->RecordType->Value)
 		{
 			case "Payment":
+				if ($bolIsInvoicing)
+				{
+					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Payments cannot be reversed at this time.  Please try again later";
+					break;
+				}
 				DBO()->DeleteRecord->Application = "Payment";
 				DBO()->DeleteRecord->Method = "Delete";
 				DBO()->Payment->Load();
 				break;
 			case "Adjustment":
+				if ($bolIsInvoicing)
+				{
+					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Adjustments cannot be deleted at this time.  Please try again later";
+					break;
+				}
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteAdjustment";
 				DBO()->Charge->Load();
 				break;
 			case "RecurringAdjustment":
+				if ($bolIsInvoicing)
+				{
+					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Recurring Adjustments cannot be cancelled at this time.  Please try again later";
+					break;
+				}
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteRecurringAdjustment";
 				DBO()->RecurringCharge->Load();
 				break;
 			default:
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", "ERROR: No record type has been declared to be deleted");
+				Ajax()->AddCommand("Alert", "ERROR: No record type has been declared to be deleted");
 				return FALSE;
-				break;
+		}
+		
+		if ($bolIsInvoicing)
+		{
+			// Records cannot be deleted while the Invoicing process is running
+			Ajax()->AddCommand("Alert", $strErrorMsg);
+			return FALSE;
 		}
 		
 		// All required data has been retrieved from the database so now load the page template

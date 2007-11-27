@@ -1257,7 +1257,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"large\", \"Make Payment\", \"Payment\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"mediumlarge\", \"Make Payment\", \"Payment\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//

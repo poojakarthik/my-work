@@ -106,14 +106,14 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		if ($bolHasAdminPerm)
 		{
 			// User has admin permisions and can therefore delete a payment
-			Table()->PaymentTable->SetHeader("Date", "&nbsp;", "Amount", "&nbsp;");
+			Table()->PaymentTable->SetHeader("Date", "&nbsp;", "Amount ($)", "&nbsp;");
 			Table()->PaymentTable->SetWidth("30%", "10%", "50%", "10%");
 			Table()->PaymentTable->SetAlignment("Left", "Left", "Right", "Center");
 		}
 		else
 		{
 			// User cannot delete payments
-			Table()->PaymentTable->SetHeader("Date", "&nbsp;", "Amount");
+			Table()->PaymentTable->SetHeader("Date", "&nbsp;", "Amount ($)");
 			Table()->PaymentTable->SetWidth("30%", "10%", "60%");
 			Table()->PaymentTable->SetAlignment("Left", "Left", "Right");
 		}

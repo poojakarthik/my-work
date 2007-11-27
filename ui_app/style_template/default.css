@@ -330,7 +330,7 @@
 		position:				relative;
 		left:						200px;
 		top:						0px;
-		overflow:				hidden;		
+		overflow:				hidden;	
 	}
 	
 	/*.DefaultCustomLabel
@@ -509,6 +509,15 @@
 		/*background-color:    #F3F3F3;*/
 		background-color:	#EFEBE7;
 		/*width:				 425px;*/
+	}
+	
+	.ContentSeparator
+	{
+		margin-top:			5px;
+		margin-bottom:		5px;
+		border-bottom:		solid 1px #D1D1D1;
+		background-color:	#EFEBE7;
+		width:				100%
 	}
 	
 	.NarrowTable

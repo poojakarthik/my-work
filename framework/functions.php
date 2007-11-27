@@ -1365,7 +1365,7 @@ function CheckCC($mixNumber, $intCreditCardType)
 		}
 	}
 	
-	return true;
+	return TRUE;
 }
 
 //------------------------------------------------------------------------//
@@ -2942,7 +2942,7 @@ function AddCreditCardSurcharge($intPayment)
 		$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
 		$strPC				= round($fltPC * 100, 2);
 		$fltPaymentAmount	= $arrPayment['Amount'];
-		$fltAmount			= RemoveGST((float)$arrPayment['Amount'] / (1 + $fltPC));
+		$fltAmount			= RemoveGST(((float)$arrPayment['Amount'] / (1 + $fltPC)) * $fltPC);
 		
 		// Insert Charge
 		$arrCharge	= Array();
@@ -2957,8 +2957,10 @@ function AddCreditCardSurcharge($intPayment)
 		$arrCharge['Amount']		= $fltAmount;
 		$arrCharge['Notes']			= '';
 		$arrCharge['Status']		= CHARGE_APPROVED;
-		$insCharge->Execute($arrCharge);
+		$mixResult = $insCharge->Execute($arrCharge);
 		//Debug($arrCharge);
+		//return (bool)($mixResult !== FALSE);
+		return TRUE;
 	}
 	else
 	{
@@ -2966,4 +2968,33 @@ function AddCreditCardSurcharge($intPayment)
 		return FALSE;
 	}
 }
+	
+//------------------------------------------------------------------------//
+// IsInvoicing
+//------------------------------------------------------------------------//
+/**
+ * IsInvoicing()
+ *
+ * Checks if the Invoicing process is currently running
+ *
+ * Checks if the Invoicing process is currently running
+ * 
+ * @return	boolean			Returns TRUE if the Invoicing process is currently underway, else returns FALSE
+ *
+ * @function
+ */
+function IsInvoicing()
+{
+	$selInvoiceTemp = new StatementSelect("InvoiceTemp", "Id", "", "", "1");
+	$intRows = $selInvoiceTemp->Execute();
+	
+	// If there are records in the InvoiceTemp Table, then the invoicing process is occurring
+	if ($intRows)
+	{
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
 ?>

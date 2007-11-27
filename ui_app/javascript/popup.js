@@ -283,6 +283,11 @@ function VixenPopupClass()
 					elmPopup.style.width = '450px';
 					break;
 				}
+			case "mediumlarge":
+				{	//medium
+					elmPopup.style.width = '575px';
+					break;
+				}
 			case "large":
 				{	//large
 					elmPopup.style.width = '700px';

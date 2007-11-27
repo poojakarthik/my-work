@@ -175,7 +175,7 @@ class HTMLElements
 		{
 			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
 		}
-		$strHtml .= "   {$strLabel} : </div>\n";
+		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
 		$strHtml .= "</div>\n";
 		
 		return $strHtml;
@@ -249,7 +249,7 @@ class HTMLElements
 		// create the text area
 		//TODO! Find out if the number of rows and columns in the textarea should be hard coded here
 		$strHtml .= "   <textarea id='$strId' name='$strName' class='$strClass' rows='6' cols='29' style='overflow:auto;'>$strValue</textarea>\n";
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
 		if ($arrParams['Required'])
 		{
 			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
@@ -258,7 +258,7 @@ class HTMLElements
 		{ 
 			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
 		}
-		$strHtml .= "   {$strLabel} : </div>\n";
+		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
 		$strHtml .= "</div>\n";
 		
 		return $strHtml;
@@ -286,16 +286,18 @@ class HTMLElements
 	 */
 	function Label($arrParams)
 	{
-		$strLabel = $arrParams['Definition']['Label'];
-		$strValue = $this->BuildOutputValue($arrParams);
-		$strValue = nl2br($strValue);
+		$strLabel	= $arrParams['Definition']['Label'];
+		$strValue	= $this->BuildOutputValue($arrParams);
+		$strValue	= nl2br($strValue);
+		
+		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Output' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']} '>{$strValue}</div>\n";
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		$strHtml .= "   <div id='$strId.Output' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']} '>{$strValue}</div>\n";
+		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
 		$strHtml .= "      <span> &nbsp;</span>\n";
-		$strHtml .= "      {$strLabel} : \n";
+		$strHtml .= "      <span id='$strId.Label.Text'>{$strLabel} : </span>\n";
 		$strHtml .= "   </div>\n";
 		$strHtml .= "</div>\n";
 
@@ -519,9 +521,9 @@ class HTMLElements
 			$strDisabled	= "disabled='disabled'";
 		}
 
-		// create the name and id for the radio button
-		$strName 	= $arrParams['Object'] .".". $arrParams['Property'];
-	
+		// create the name and id for the Checkbox
+		$strName 	= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strId		= $strName;
 
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element' style='height:22px;'>\n";
 
@@ -539,7 +541,7 @@ class HTMLElements
 		$strHtml .= "               document.getElementById(\"{$strName}_hidden\").value = 0;\n";
 		$strHtml .= "            }'\n";
 		$strHtml .= "      ></input>\n";
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
 		if ($arrParams['Required'])
 		{
 			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
@@ -548,7 +550,7 @@ class HTMLElements
 		{
 			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
 		}
-		$strHtml .= "   {$strLabel} : </div>\n";
+		$strHtml .= "      <span id='$strId.Label.Text>'{$strLabel} : </span></div>\n";
 		$strHtml .= "      <input type='hidden' id='{$strName}_hidden' name='$strName' value='$intValue'></input>\n";
 		$strHtml .= "</div>\n";
 		
@@ -674,13 +676,15 @@ class HTMLElements
 		{
 			$strDisabled = "disabled";
 		}
+		
+		$strId = $arrParams['Object'] .".". $arrParams['Property'];
 
 		$strHtml = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 
 		$strHtml .= "<table border='0' cellspacing='0' cellpadding='0' width='100%'>\n";
 		$strHtml .= "   <tr>\n";
 		$strHtml .= "      <td width='195px'>\n";
-		$strHtml .= "         <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		$strHtml .= "         <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
 		if ($arrParams['Required'])
 		{
 			$strHtml .= "         <span class='RequiredInput'>*</span>\n";
@@ -690,7 +694,7 @@ class HTMLElements
 			$strHtml .= "         <span class='RequiredInput'>&nbsp;</span>\n";
 		}
 		
-		$strHtml .= "            $strLabel : \n";
+		$strHtml .= "            <span id='$strId.Label.Text'>$strLabel : </span>\n";
 		$strHtml .= "         </div>\n";
 		$strHtml .= "      </td><td>\n";
 

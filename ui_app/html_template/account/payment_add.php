@@ -109,13 +109,6 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		DBO()->Account->Id->RenderHidden();
 		
-		// check if the popup is being opened or being redrawn 
-		if (!DBO()->AccountToApplyTo->Id->Value)
-		{
-			// The popup has just been opened and nothing has been sent yet, so set 
-			DBO()->AccountToApplyTo->Id			= DBO()->Account->Id->Value;
-			DBO()->AccountToApplyTo->IsGroup	= 0;
-		}
 		DBO()->AccountToApplyTo->Id->RenderHidden();
 		DBO()->AccountToApplyTo->IsGroup->RenderHidden();
 		
@@ -124,39 +117,38 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='AccountCombo' onchange='Vixen.PaymentPopup.DeclareAccount(this)'>\n";
+		echo "      <select id='AccountCombo' onchange='Vixen.PaymentPopup.DeclareAccount(this)' style='width:100%'>\n";
 		
 		// only give the option to apply the payment against all the accounts in the group, if there is more than 1 account in the group
 		if (DBL()->AvailableAccounts->RecordCount() > 1)
 		{
-			// check if this is the record that is currently selected row
-			if (DBO()->AccountToApplyTo->IsGroup->Value)
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
+			// check if this is the record that is the currently selected row
+			$strSelected = (DBO()->AccountToApplyTo->IsGroup->Value) ? "selected='selected'" : "";
 			
-			echo "         <option id='Account.Group' value='AccountGroup:$intAccountGroup' $strSelected>Account Group: $intAccountGroup</option>\n";
+			echo "         <option id='Account.Group' value='$intAccountGroup' IsAccountGroup='IsAccountGroup' $strSelected style='width:100%'>Account Group: $intAccountGroup</option>\n";
 		}
 		
 		// add each account that belongs to the account group
 		foreach (DBL()->AvailableAccounts as $dboAccount)
 		{
 			// check if the row that you are adding is the currently selected row
-			if (($dboAccount->Id->Value == DBO()->AccountToApplyTo->Id->Value) && (!DBO()->AccountToApplyTo->IsGroup->Value))
+			$strSelected = (($dboAccount->Id->Value == DBO()->AccountToApplyTo->Id->Value) && (!DBO()->AccountToApplyTo->IsGroup->Value)) ? "selected='selected'" : "";
+
+			if ($dboAccount->BusinessName->Value)
 			{
-				$strSelected = "selected='selected'";
+				$strAccountName = ": " . $dboAccount->BusinessName->Value;
+			}
+			elseif ($dboAccount->TradingName->Value)
+			{
+				$strAccountName = ": " . $dboAccount->TradingName->Value;
 			}
 			else
 			{
-				$strSelected = "";
+				$strAccountName = "";
 			}
-
+			
 			$intAccountId = $dboAccount->Id->Value;
-			$strDescription = $dboAccount->Id->Value .": ". $dboAccount->BusinessName->Value;
+			$strDescription = $dboAccount->Id->Value . $strAccountName;
 			echo "         <option id='Account.$intAccountId' value='$intAccountId' $strSelected>$strDescription</option>\n";
 		}
 		echo "      </select>\n";
@@ -165,9 +157,9 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		
 		// Payment Type combobox
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Payment Type:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Payment Type :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Payment.PaymentType' name='Payment.PaymentType'>\n";
+		echo "      <select id='Payment.PaymentType' style='width:100%' name='Payment.PaymentType' onchange='Vixen.PaymentPopup.DeclarePaymentType(this.value)'>\n";
 		foreach ($GLOBALS['*arrConstant']['PaymentType'] as $intPaymentType=>$arrPaymentType)
 		{
 			$strDescription = $arrPaymentType['Description'];
@@ -184,16 +176,72 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		DBO()->Payment->Amount->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->Payment->TXNReference->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		
-		echo "</div>\n";  //WideForm
+		// Draw the Extra Detail Divs
+		// If any other Payment methods require extra Input controls then add them here, in exactly the same way that the credit card
+		// details have been added
+		//TODO! when required
 		
-		// create the buttons
+		// Credit Card Details
+		$strShowCreditCardDetail = (DBO()->Payment->PaymentType->Value == PAYMENT_TYPE_CREDIT_CARD) ? "display:inline;" : "display:none;";
+		$strCreditCardDetailId = "MakePayment_CreditCardDetails";
+		
+		// Initialise the credit card type, if it has not been set yet (it will default to VISA)
+		DBO()->Payment->CreditCardType->Value = (DBO()->Payment->CreditCardType->Value) ? DBO()->Payment->CreditCardType->Value : CREDIT_CARD_VISA;
+		
+		echo "<div id='$strCreditCardDetailId' style='$strShowCreditCardDetail'>\n";
+		DBO()->Payment->CreditCardNum->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		
+		// Load the surcharges for the various Credit Card Types
+		DBL()->Config->Application = APPLICATION_PAYMENTS;
+		DBL()->Config->Load();
+		foreach (DBL()->Config as $dboConfig)
+		{
+			// This will build an array specifying the the surcharge for each Credit Card type, with the Description of the Credit Card as the key
+			$arrCCSurcharges[$dboConfig->Module->Value] = round($dboConfig->Value->Value * 100, 2);
+		}
+		
+		// CreditCardType combobox
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Credit Card Type :</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select id='Payment.CreditCardType' style='width:250px' name='Payment.CreditCardType' onchange='Vixen.PaymentPopup.DeclareCreditCardType(this.options[this.selectedIndex])'>\n";
+		foreach ($GLOBALS['*arrConstant']['CreditCard'] as $intCreditCard=>$arrCreditCard)
+		{
+			// Check if this Credit Card Type was the last one selected
+			$strSelected = (DBO()->Payment->CreditCardType->Value == $intCreditCard) ? "selected='selected'" : "";
+			
+			$fltSurcharge = $arrCCSurcharges[$arrCreditCard['Description']];
+			
+			echo "         <option value='$intCreditCard' surcharge='$fltSurcharge' $strSelected>{$arrCreditCard['Description']}</option>\n";
+		}
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";
+		
+		// Output message describing Credit Card Surcharge
+		$strCreditCardType = GetConstantDescription(DBO()->Payment->CreditCardType->Value, "CreditCard");
+		$strSurchargeMsg = "$strCreditCardType payments incur a ". $arrCCSurcharges[$strCreditCardType] ."% surcharge.  This will be automatically added as an adjustment";
+		echo "<div class='ContentSeparator'></div>\n";
+		echo "<span id='MakePayment_CreditCardSurchargeMsg' class='Red' style='line-height: 1.2'>$strSurchargeMsg</span>\n";
+		
+		echo "</div>\n"; //Payment_CreditCardDetails
+		
+		
+		echo "</div>\n"; //WideForm
+		
+		// Create the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+		$this->Button("Cancel", "Vixen.Popup.Close(this);");
 		$this->AjaxSubmit("Make Payment");
 		echo "</div></div>\n";	
 		
-		// give the AccountCombo initial focus
-		echo "<script type='text/javascript'>document.getElementById('AccountCombo').focus();</script>\n";
+		// Build data for the DOM object
+		$intPaymentType = (DBO()->Payment->PaymentType->Value) ? DBO()->Payment->PaymentType->Value : 0;
+		$arrExtraDetail[PAYMENT_TYPE_CREDIT_CARD]['ExtraDetailDivId']	= $strCreditCardDetailId;
+		$jsonExtraDetail = Json()->encode($arrExtraDetail);
+		
+		// Initilise the popup
+		echo "<script type='text/javascript'>Vixen.PaymentPopup.Initialise($jsonExtraDetail, $intPaymentType)</script>\n";
 
 		$this->FormEnd();
 	}
