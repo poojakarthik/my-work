@@ -448,7 +448,7 @@
 			
 			// Get a list of shared plans for this account
 			//$selEarliestCDR		= new StatementSelect("CDR USE INDEX (Service)", "MIN(StartDatetime) AS MinStartDatetime", "Service = <Service>");
-			$selEarliestCDR		= new StatementSelect("Service", "EarliestCDR", "Service = <Service>");
+			$selEarliestCDR		= new StatementSelect("Service", "EarliestCDR", "Id = <Service>");
 			$selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1", "CreatedOn DESC", 1);
 			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
 			if ($selLastBillDate->Execute($arrAccount))
