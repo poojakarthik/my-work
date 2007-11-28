@@ -2928,6 +2928,7 @@ function GetCCType($mixNumber, $bolAsString = FALSE)
 function AddCreditCardSurcharge($intPayment)
 {
 	// Statements
+	$selAccount	= new StatementSelect("Account", "MAX(Id) AS Account", "AccountGroup = <AccountGroup>", "(Archived != 1) DESC, Archived ASC");
 	$selPayment	= new StatementSelect("Payment", "*", "Id = <Payment>");
 	$insCharge	= new StatementInsert("Charge");
 	$selCCSRate	= new StatementSelect(	"Config",
@@ -2955,8 +2956,19 @@ function AddCreditCardSurcharge($intPayment)
 		
 		// Insert Charge
 		$arrCharge	= Array();
+		if (!$arrPayment['Account'])
+		{
+			// AccountGroup Payment
+			$selAccount->Execute($arrPayment);
+			$arrAccount				= $selAccount->Fetch();
+			$arrCharge['Account']	= $arrAccount['Account'];
+		}
+		else
+		{
+			// Account Payment
+			$arrCharge['Account']	= $arrPayment['Account'];
+		}
 		$arrCharge['AccountGroup']	= $arrPayment['AccountGroup'];
-		$arrCharge['Account']		= $arrPayment['Account'];
 		$arrCharge['CreatedBy']		= $arrPayment['EnteredBy'];
 		$arrCharge['CreatedOn']		= date("Y-m-d");
 		$arrCharge['ChargeType']	= "CCS";

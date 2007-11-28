@@ -1123,9 +1123,13 @@
 				case CHARGE_INVOICED:
 					// Add a credit to negate the charge
 					$arrCredit					= $arrSurcharge;
+					$arrCredit['CreatedOn']		= 'CR';
+					$arrCredit['CreatedBy']		= $intReversedBy;
+					$arrCredit['ApprovedBy']	= NULL;
 					$arrCredit['Nature']		= 'CR';
 					$arrCredit['Description']	= "Payment Reversal: ".$arrCredit['Description'];
-					unset($arrCredit['Id']);
+					$arrCredit['Status']		= CHARGE_APPROVED;
+					unset($arrCredit['Id']);					
 					$insCredit->Execute($arrCredit);
 					break;
 				
@@ -1141,7 +1145,7 @@
 	 }
 	 
 	 
-		 
+	
 	//------------------------------------------------------------------------//
 	// AddNote
 	//------------------------------------------------------------------------//
