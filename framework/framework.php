@@ -1114,7 +1114,7 @@
 		$ubiSurcharge	= new StatementUpdateById("Charge", $arrCols);
 		$insCredit		= new StatementInsert("Charge");
 		$selSurcharges	= new StatementSelect("Charge", "*", "Nature = 'DR' AND LinkId = <Payment> AND LinkType = ".CHARGE_LINK_PAYMENT);
-		$selSurcharges->Execute($selSurcharges);
+		$selSurcharges->Execute(Array('Payment' => $intPayment));
 		while ($arrSurcharge = $selSurcharges->Fetch())
 		{
 			// Is it Invoiced?
