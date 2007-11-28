@@ -479,7 +479,10 @@ function VixenPopupClass()
 		
 		objParams.Class = strClass;
 		objParams.Method = strMethod;
-		
+
+		// Draw the Page Loading splash (this will show after 1 second)
+		Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
+
 		Vixen.Ajax.Send(objParams);
 	}
 	

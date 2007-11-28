@@ -127,6 +127,12 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 				$strStatus = $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"));
 			}
 			
+			// Build the Payment Amount cell
+			$strAmountCell = "<span class='Currency'>{$dboPayment->Amount->FormattedValue()}</span>";
+			
+			// Build the Payment PaidOn cell
+			$strPaidOnCell = "<span>{$dboPayment->PaidOn->FormattedValue()}</span>";
+			
 			if ($bolHasAdminPerm)
 			{
 				// Check if the payment can be reversed
@@ -182,12 +188,12 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 				}
 				
 				// Add this row to Payment table
-				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $strStatus, $dboPayment->Amount->AsValue(), $strDeletePaymentLabel);
+				Table()->PaymentTable->AddRow($strPaidOnCell, $strStatus, $strAmountCell, $strDeletePaymentLabel);
 			}
 			else
 			{
 				// Add this row to Payment table
-				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $strStatus, $dboPayment->Amount->AsValue());
+				Table()->PaymentTable->AddRow($strPaidOnCell, $strStatus, $strAmountCell);
 			}
 			
 			// initialise variables
@@ -277,7 +283,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		if (DBL()->Payment->RecordCount() == 0)
 		{
 			// There are no payments to stick in this table
-			Table()->PaymentTable->AddRow("<span'>No payments to display</span>");
+			Table()->PaymentTable->AddRow("<span>No payments to display</span>");
 			Table()->PaymentTable->SetRowAlignment("left");
 			if ($bolHasAdminPerm)
 			{

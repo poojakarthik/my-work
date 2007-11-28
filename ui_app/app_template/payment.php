@@ -124,7 +124,7 @@ class AppTemplatePayment extends ApplicationTemplate
 				elseif (!CheckCC(DBO()->Payment->CreditCardNum->Value, DBO()->Payment->CreditCardType->Value))
 				{
 					// The credit card number is not a valid credit card number for the declared CreditCardType
-					$strErrorMsg = "ERROR: The Credit Card Number is invalid";
+					$strErrorMsg = "ERROR: The Credit Card is not a valid ". GetConstantDescription(DBO()->Payment->CreditCardType->Value, "CreditCard") . " number";
 				}
 				if ($strErrorMsg)
 				{
@@ -194,11 +194,11 @@ class AppTemplatePayment extends ApplicationTemplate
 				{
 					// Adding the Credit Card Surcharge failed.  Rollback the transaction
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Saving the payment failed, unexpectedly.  Failed during creation of the Credit Card Surcharge adjustment. Payment Id = $intPaymentId");
+					Ajax()->AddCommand("Alert", "ERROR: Saving the payment failed, unexpectedly.  Failed during creation of the Credit Card Surcharge adjustment.");
 					return TRUE;
 				}
 				
-				$strCreditCardMsg = "  The Credit Card surcharge has been added as an adjustment.";
+				$strCreditCardMsg = "<br />The Credit Card surcharge has been added as an adjustment.";
 			}
 			
 			// The payment has been successfully added.  Commit the Transaction

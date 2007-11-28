@@ -189,7 +189,6 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		DBO()->Payment->CreditCardType->Value = (DBO()->Payment->CreditCardType->Value) ? DBO()->Payment->CreditCardType->Value : CREDIT_CARD_VISA;
 		
 		echo "<div id='$strCreditCardDetailId' style='$strShowCreditCardDetail'>\n";
-		DBO()->Payment->CreditCardNum->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		
 		// Load the surcharges for the various Credit Card Types
 		DBL()->Config->Application = APPLICATION_PAYMENTS;
@@ -218,9 +217,12 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
+		// Render the Textbox for the credit card number
+		DBO()->Payment->CreditCardNum->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+
 		// Output message describing Credit Card Surcharge
 		$strCreditCardType = GetConstantDescription(DBO()->Payment->CreditCardType->Value, "CreditCard");
-		$strSurchargeMsg = "$strCreditCardType payments incur a ". $arrCCSurcharges[$strCreditCardType] ."% surcharge.  This will be automatically added as an adjustment";
+		$strSurchargeMsg = "$strCreditCardType payments incur a ". $arrCCSurcharges[$strCreditCardType] ."% surcharge, which is assumed to be included in the amount specified.  This will be automatically added as an adjustment.";
 		echo "<div class='ContentSeparator'></div>\n";
 		echo "<span id='MakePayment_CreditCardSurchargeMsg' class='Red' style='line-height: 1.2'>$strSurchargeMsg</span>\n";
 		

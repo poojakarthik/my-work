@@ -1139,11 +1139,12 @@ class Config
 				{
 					case "dbo":
 						// Retrieve the documentation so that it can be cached
-						$selDocumentation = new StatementSelect("UIAppDocumentation",
-															"*", 
-															"Object = <Object>");
+						$selDocumentation = new StatementSelect("UIAppDocumentation", "*", "Object = <Object>");
 	 					$selDocumentation->Execute(Array('Object' => $strName));	
 						$arrDocumentation = $selDocumentation->FetchAll();
+					
+						// Set up the object used to retrieve records from the UIAppDocumentationOptions table
+						$selOptions = new StatementSelect("UIAppDocumentationOptions", "*", "Object = <Object>");
 					
 						if (is_array($arrDocumentation))
 						{
@@ -1159,7 +1160,6 @@ class Config
 							}
 							
 							// Retrieve further documentation options such as radio button values and labels
-							$selOptions = new StatementSelect("UIAppDocumentationOptions", "*", "Object = <Object>");
 							$selOptions->Execute(Array('Object' => $strName));
 							$arrOptions = $selOptions->FetchAll();
 	

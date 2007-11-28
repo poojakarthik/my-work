@@ -195,7 +195,10 @@ function VixenAjaxClass()
 				alert("objSend.Objects."+ strObject +"."+ strProperty +" = "+ objSend.Objects[strObject][strProperty]);
 			}
 		}*/
-		
+
+		// Draw the Page Loading splash (this will show after 1 second)
+		Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
+
 		// send object
 		this.Send(objSend);
 	}
@@ -290,6 +293,9 @@ function VixenAjaxClass()
 	{
 		// Reset the cursor to its default
 		document.body.style.cursor = null;
+		
+		// Remove the page loading splash
+		Vixen.Popup.ClosePageLoadingSplash();
 		
 		var objData = {};
 		

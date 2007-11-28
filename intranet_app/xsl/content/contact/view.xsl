@@ -258,8 +258,8 @@
 							<li>
 								<a>
 									<xsl:attribute name="href">
-										<xsl:text>payment_add.php?Contact=</xsl:text>
-										<xsl:value-of select="/Response/Contact/Id" />
+										<xsl:text>payment_add.php?Account=</xsl:text>
+										<xsl:value-of select="/Response/Contact/Account" />
 									</xsl:attribute>
 									Make Payment
 								</a>

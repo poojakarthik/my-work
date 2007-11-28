@@ -1090,7 +1090,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Check user authorization here
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		
+
 		// Check if the billing/invoice process is being run
 		$selBillRunning = new StatementSelect("InvoiceTemp", "Id", "", "", "1");
 		$mixResult = $selBillRunning->Execute();

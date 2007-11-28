@@ -188,7 +188,7 @@ function VixenPaymentPopupClass()
 		// Update the Surcharge message
 		var strCreditCard = elmOption.innerHTML
 		var strSurchargePercentage = elmOption.getAttribute("surcharge");
-		var strSurchargeMsg = strCreditCard + " payments incur a " + strSurchargePercentage + "% surcharge.  This will be automatically added as an adjustment";
+		var strSurchargeMsg = strCreditCard + " payments incur a " + strSurchargePercentage + "% surcharge, which is assumed to be included in the amount specified.  This will be automatically added as an adjustment.";
 		
 		document.getElementById("MakePayment_CreditCardSurchargeMsg").innerHTML = strSurchargeMsg;
 	}

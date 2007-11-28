@@ -2968,6 +2968,7 @@ function AddCreditCardSurcharge($intPayment)
 			// Account Payment
 			$arrCharge['Account']	= $arrPayment['Account'];
 		}
+		
 		$arrCharge['AccountGroup']	= $arrPayment['AccountGroup'];
 		$arrCharge['CreatedBy']		= $arrPayment['EnteredBy'];
 		$arrCharge['CreatedOn']		= date("Y-m-d");
@@ -3018,5 +3019,72 @@ function IsInvoicing()
 	
 	return FALSE;
 }
+
+//------------------------------------------------------------------------//
+// GetCurrentDateAndTimeForMySQL
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentDateAndTimeForMySQL()
+ *
+ * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
+ *
+ * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
+ * This current time is taken from the database
+ *
+ * @return	string			current date and time as a string, properly formatted for MySql
+ *							(YYYY-MM-DD HH:MM:SS)
+ * @function
+ */
+function GetCurrentDateAndTimeForMySQL()
+{
+	// HACK HACK HACK!!!
+	// StatementSelect doesn't work unless you specify a table name
+	$selDatetime = new StatementSelect("Account", Array("CurrentTime" => "NOW()"));
+	$selDatetime->Execute();
+	$arrDatetime = $selDatetime->Fetch();
+
+	return $arrDatetime['CurrentTime'];
+}
+
+//------------------------------------------------------------------------//
+// GetCurrentDateForMySQL
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentDateForMySQL()
+ *
+ * Retrieves the current date in the format that MySql expects Date attributes to be in
+ *
+ * Retrieves the current date in the format that MySql expects Date attributes to be in
+ *
+ * @return	mix			current date as a string, properly formatted for MySql
+ *						(YYYY-MM-DD)
+ *
+ * @function
+ */
+function GetCurrentDateForMySQL()
+{
+	return date("Y-m-d", strtotime(GetCurrentDateAndTimeForMySQL()));
+}
+
+//------------------------------------------------------------------------//
+// GetCurrentTimeForMySQL
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentTimeForMySQL()
+ *
+ * Retrieves the current time in the format that MySql expects time attributes to be in
+ *
+ * Retrieves the current time in the format that MySql expects time attributes to be in
+ *
+ * @return	mix			current time as a string, properly formatted for MySql
+ *						(HH:MM:SS)
+ *
+ * @function
+ */
+function GetCurrentTimeForMySQL()
+{
+	return date("H:i:s", strtotime(GetCurrentDateAndTimeForMySQL()));
+}
+
 
 ?>

@@ -1095,7 +1095,7 @@
 				$strEmployee = "Administrators";
 			}
 			
-			$strDate = date("d/M/Y", strtotime($arrPayment['PaidOn']));
+			$strDate = date("d/m/Y", strtotime($arrPayment['PaidOn']));
 			
 			// Add the note
 			$arrNote = Array();
@@ -1128,7 +1128,7 @@
 					$arrCredit['CreatedBy']		= $intReversedBy;
 					$arrCredit['ApprovedBy']	= NULL;
 					$arrCredit['Nature']		= 'CR';
-					$arrCredit['Description']	= "Payment Reversal: ".$arrCredit['Description'];
+					$arrCredit['Description']	= "Payment Reversal: ". $arrCredit['Description'];
 					$arrCredit['Status']		= CHARGE_APPROVED;
 					unset($arrCredit['Id']);
 					$insCredit->Execute($arrCredit);

@@ -6,6 +6,10 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	$intAccount = $_GET['Account'];
+	header("Location: vixen.php/Account/InvoicesAndPayments/?Account.Id=$intAccount");
+	
+	/*
 	// call application loader
 	require ('config/application_loader.php');
 	
@@ -140,5 +144,5 @@
 			'Account'	=> ($actAccount)	? $actAccount->Pull ('Id')->getValue () : null
 		)
 	);
-	
+	*/
 ?>

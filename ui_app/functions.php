@@ -620,25 +620,6 @@ function SubmittedForm($strFormId, $strButtonId=NULL)
 }
 
 
-//------------------------------------------------------------------------//
-// GetCurrentDateForMySQL
-//------------------------------------------------------------------------//
-/**
- * GetCurrentDateForMySQL()
- *
- * Retrieves the current date in the format that MySql expects Date attributes to be in
- *
- * Retrieves the current date in the format that MySql expects Date attributes to be in
- *
- * @return	mix					current date as a string, properly formatted for MySql
- *								(YYYY-MM-DD)
- *
- * @function
- */
-function GetCurrentDateForMySQL()
-{
-	return date("Y-m-d", strtotime(GetCurrentDateAndTimeForMySQL()));
-}
 
 //------------------------------------------------------------------------//
 // ConvertUserDateToMySqlDate
@@ -701,51 +682,7 @@ function ConvertUnixTimeToMySQLDateTime($intTime)
 	return date("Y-m-d H:i:s", $intTime);
 }
 
-//------------------------------------------------------------------------//
-// GetCurrentTimeForMySQL
-//------------------------------------------------------------------------//
-/**
- * GetCurrentTimeForMySQL()
- *
- * Retrieves the current time in the format that MySql expects time attributes to be in
- *
- * Retrieves the current time in the format that MySql expects time attributes to be in
- *
- * @return	mix					current time as a string, properly formatted for MySql
- *								(HH:MM:SS)
- *
- * @function
- */
-function GetCurrentTimeForMySQL()
-{
-	return date("H:i:s", strtotime(GetCurrentDateAndTimeForMySQL()));
-}
 
-//------------------------------------------------------------------------//
-// GetCurrentDateAndTimeForMySQL
-//------------------------------------------------------------------------//
-/**
- * GetCurrentDateAndTimeForMySQL()
- *
- * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
- *
- * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
- * This current time is taken from the database
- *
- * @return	string					current date and time as a string, properly formatted for MySql
- *								(YYYY-MM-DD HH:MM:SS)
- * @function
- */
-function GetCurrentDateAndTimeForMySQL()
-{
-	// HACK HACK HACK!!!
-	// StatementSelect doesn't work unless you specify a table name
-	$selDatetime = new StatementSelect("Account", Array("CurrentTime" => "NOW()"));
-	$selDatetime->Execute();
-	$arrDatetime = $selDatetime->Fetch();
-
-	return $arrDatetime['CurrentTime'];
-}
 
 //------------------------------------------------------------------------//
 // OutputMask
@@ -846,26 +783,34 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUp
 	// Build Where clause
 	if ($intAccountId)
 	{
-		// Load account notes
+		// Load account notes (including all AccountGroup notes for the account group that the Account belongs to)
+		// Note:	There shouldn't ever be notes associated with an AccountGroup, but if you delete a payment which has been applied
+		// 			to an AccountGroup, then the system generated note can not specify a single Account
+		
+		// Find the AccountGroup for this account
+		$selAccountGroup = new StatementSelect("Account", "AccountGroup", "Id = <AccountId>");
+		$selAccountGroup->Execute(Array("AccountId" => $intAccountId));
+		$arrAccountGroup = $selAccountGroup->Fetch();
+		
 		DBO()->NoteDetails->AccountNotes	= TRUE;
-		$intId								= $intAccountId;
-		$strWhere							= "Account = <intId>";
+		$arrWhere							= Array("AccountId" => $intAccountId, "AccountGroupId" => $arrAccountGroup['AccountGroup']);
+		$strWhere							= "(Account = <AccountId> OR (AccountGroup = <AccountGroupId> AND Account IS NULL AND Service IS NULL AND Contact IS NULL))";
 		$strCookiePrefix					= "Account";
 	}
 	elseif (DBO()->Service->Id->Value)
 	{
 		// Load service notes
 		DBO()->NoteDetails->ServiceNotes	= TRUE;
-		$intId								= $intServiceId;
-		$strWhere							= "Service = <intId>";
+		$arrWhere							= Array("ServiceId" => $intServiceId);
+		$strWhere							= "Service = <ServiceId>";
 		$strCookiePrefix					= "Service";
 	}
 	elseif (DBO()->Contact->Id->Value)
 	{
 		// Load contact notes
 		DBO()->NoteDetails->ContactNotes	= TRUE;
-		$intId								= $intContactId;
-		$strWhere							= "Contact = <intId>";
+		$arrWhere							= Array("ContactId" => $intContactId);
+		$strWhere							= "Contact = <ContactId>";
 		$strCookiePrefix					= "Contact";
 	}
 	
@@ -909,8 +854,7 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUp
 			$strFilterWhereClause = "";
 	}
 	
-	$strWhere = "$strWhere $strFilterWhereClause";
-	$arrWhere = Array("intId" => $intId);
+	$strWhere = $strWhere ." ". $strFilterWhereClause;
 	
 	// Set the Max number of notes to return, if it already hasn't been specified
 	if (!DBO()->NoteDetails->MaxNotes->Value)
