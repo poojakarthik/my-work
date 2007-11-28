@@ -188,7 +188,7 @@
 										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND \n" .
 										"ServiceRateGroup.Service = <Service> AND \n";
 										
-		$strStandardWhere			= 	"<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime\n";
+		$strStandardWhere			= 	"ServiceRateGroup.Active = 1 AND <DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime\n";
 		$strOldCDRWhere				=	"<DateTime> < ServiceRateGroup.StartDatetime\n";
 										
 		//FAKE : for testing only
@@ -403,7 +403,7 @@
 			
 			// Set Service Earliest/Latest CDR
 			$this->_selService->Execute($arrCDR);
-			$arrService	= $this->_selService->Execute($arrCDR);
+			$arrService	= $this->_selService->Fetch($arrCDR);
 			
 			$intEarliest	= strtotime($arrService['EarliestCDR']);
 			$intLatest		= strtotime($arrService['LatestCDR']);
