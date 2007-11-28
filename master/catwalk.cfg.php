@@ -90,7 +90,7 @@ $arrScript                                                      = Array();
 		
 		// Copy DB
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputBackup';
+		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputArchive';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
 		$arrScript['SubScript']['CopyDB']				= $arrSubscript;
 		
@@ -252,7 +252,7 @@ $arrScript                                                      = Array();
 		
 		// Copy DB
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputBackup';
+		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputArchive';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
 		$arrScript['SubScript']['CopyDB']				= $arrSubscript;
 		
