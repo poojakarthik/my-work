@@ -58,7 +58,7 @@ foreach($arrTables AS $mixKey=>$strTable)
 		// copy a table
 		$qctCopyTable->Execute($strTable, "vixen.$strTable");
 		
-		sleep(1);
+		//sleep(1);
 		$intTime = (int)$GLOBALS['fwkFramework']->LapWatch();
 		CliEcho(str_pad("{$intTime}s     [   OK   ]", 25, ' ', STR_PAD_LEFT));
 	}
