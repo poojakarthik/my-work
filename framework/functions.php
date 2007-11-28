@@ -2832,8 +2832,8 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voipt
  * Takes a Credit Card number and finds what bank it comes from
  *
  * @param	mix		$mixNumber			The CC number to check
- * @param	boolean	$bolAsString		TRUE	: Returns an integer (constant value)
- * 										FALSE	: Returns a string (bank name)
+ * @param	boolean	$bolAsString		TRUE	: Returns a string (bank name)
+ * 										FALSE	: Returns an integer (constant value)
  *
  * @return	mix							Bank name, Constant Value depending on $bolAsString, or FALSE on failure
  * 
@@ -2848,7 +2848,16 @@ function GetCCType($mixNumber, $bolAsString = FALSE)
 	switch ((int)substr($intNumber, 0, 2))
 	{
 		// VISA
-		case 4:
+		case 40:
+		case 41:
+		case 42:
+		case 43:
+		case 44:
+		case 45:
+		case 46:
+		case 47:
+		case 48:
+		case 49:
 			$strType	= "VISA";
 			$intType	= CREDIT_CARD_VISA;
 			break;
@@ -2957,10 +2966,11 @@ function AddCreditCardSurcharge($intPayment)
 		$arrCharge['Amount']		= $fltAmount;
 		$arrCharge['Notes']			= '';
 		$arrCharge['Status']		= CHARGE_APPROVED;
+		$arrCharge['LinkType']		= CHARGE_LINK_PAYMENT;
+		$arrCharge['LinkId']		= $intPayment;
 		$mixResult = $insCharge->Execute($arrCharge);
 		//Debug($arrCharge);
-		//return (bool)($mixResult !== FALSE);
-		return TRUE;
+		return (bool)($mixResult !== FALSE);
 	}
 	else
 	{

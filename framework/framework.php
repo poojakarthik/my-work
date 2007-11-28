@@ -1111,8 +1111,8 @@
 		// Remove or Credit any associated Surcharges
 		$arrCols = Array();
 		$arrCols['Status']	= CHARGE_DELETED;
-		$ubiSurcharge	= new StatementUpdateById("Charge");
-		$insCredit		= new StatementInsert("Charge", $arrCols);
+		$ubiSurcharge	= new StatementUpdateById("Charge", $arrCols);
+		$insCredit		= new StatementInsert("Charge");
 		$selSurcharges	= new StatementSelect("Charge", "*", "Nature = 'DR' AND LinkId = <Payment> AND LinkType = ".CHARGE_LINK_PAYMENT);
 		$selSurcharges->Execute($selSurcharges);
 		while ($arrSurcharge = $selSurcharges->Fetch())
@@ -1126,7 +1126,7 @@
 					$arrCredit['Nature']		= 'CR';
 					$arrCredit['Description']	= "Payment Reversal: ".$arrCredit['Description'];
 					unset($arrCredit['Id']);
-					$insCredit->Execute($arrSurcharge);
+					$insCredit->Execute($arrCredit);
 					break;
 				
 				case CHARGE_APPROVED:

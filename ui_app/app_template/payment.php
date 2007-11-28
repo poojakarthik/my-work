@@ -173,7 +173,7 @@ class AppTemplatePayment extends ApplicationTemplate
 			DBO()->Payment->Status = PAYMENT_WAITING;
 			
 			// Start the transaction
-//			TransactionStart();
+			TransactionStart();
 			
 			// Save the payment to the payment table of the vixen database
 			if (!DBO()->Payment->Save())
@@ -184,18 +184,16 @@ class AppTemplatePayment extends ApplicationTemplate
 			}
 			
 			// The payment was successfully saved
-			
 			// If it was a credit card payment, then add an adjustment for the credit card surcharge
 			if (DBO()->Payment->PaymentType->Value == PAYMENT_TYPE_CREDIT_CARD)
 			{
 				// Add the Credit Card Surcharge
 				$bolResult = AddCreditCardSurcharge(DBO()->Payment->Id->Value);
 				
-				if ($bolResult === "HELLO")
+				if ($bolResult === FALSE)
 				{
-$intPaymentId = DBO()->Payment->Id->Value;
 					// Adding the Credit Card Surcharge failed.  Rollback the transaction
-//					TransactionRollback();
+					TransactionRollback();
 					Ajax()->AddCommand("Alert", "ERROR: Saving the payment failed, unexpectedly.  Failed during creation of the Credit Card Surcharge adjustment. Payment Id = $intPaymentId");
 					return TRUE;
 				}
@@ -204,7 +202,7 @@ $intPaymentId = DBO()->Payment->Id->Value;
 			}
 			
 			// The payment has been successfully added.  Commit the Transaction
-//			TransactionCommit();
+			TransactionCommit();
 			
 			//TODO! Add an appropriate System Note
 			// Note: A payment can be added to an entire AccountGroup, in which case you should add the note to each Account within the group, and 
@@ -281,10 +279,10 @@ $intPaymentId = DBO()->Payment->Id->Value;
 				return TRUE;
 			}
 			
-			// Check that the Invoicing process is not currently underway, as payments cannot be reversed when this is happening
+			// Check that the Invoicing process is not currently running, as payments cannot be reversed when this is happening
 			if (IsInvoicing())
 			{
-				// Invoicing is currently underway
+				// Invoicing is currently running
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 				Ajax()->AddCommand("Alert", "ERROR: The Invoicing process is currently running.  Payments cannot be reversed at this time.  Please try again later.");
 				return TRUE;
