@@ -88,11 +88,17 @@ $arrScript                                                      = Array();
 	//								Each each script requires the preceeding script to finish
 	$arrScript['SubScript'] = Array();
 		
-		// Billing Samples
+		// Copy DB
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php';
+		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputBackup';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
 		$arrScript['SubScript']['CopyDB']				= $arrSubscript;
+		
+		// Copy CDR
+		$arrSubscript = Array();
+		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/cdr_unbilled.php';
+		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
+		$arrScript['SubScript']['CopyCDR']				= $arrSubscript;
 	
 	$arrConfig['Script']['FullDBCopy']	= $arrScript;
 //----------------------------------------------------------------------------//
@@ -244,17 +250,17 @@ $arrScript                                                      = Array();
 	//								Each each script requires the preceeding script to finish
 	$arrScript['SubScript'] = Array();
 		
-		// Partial DB Copy
+		// Copy DB
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR';
+		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputBackup';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
-		$arrScript['SubScript']['DBCopy']				= $arrSubscript;
+		$arrScript['SubScript']['CopyDB']				= $arrSubscript;
 		
-		// CDR Sync
+		// Copy CDR
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/cdr_sync.php';
+		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/cdr_unbilled.php';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
-		$arrScript['SubScript']['CDRSync']				= $arrSubscript;
+		$arrScript['SubScript']['CopyCDR']				= $arrSubscript;
 	
 	$arrConfig['Script']['PartialDBCopy']	= $arrScript;
 //----------------------------------------------------------------------------//
