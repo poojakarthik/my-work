@@ -123,7 +123,7 @@
 	 */
  	function __construct()
  	{
- 		$this->_selFileExists = new StatementSelect("FileImport", "Id", "FileName = <filename>");
+ 		$this->_selFileExists = new StatementSelect("FileImport", "Id", "FileName = <FileName>");
  		
  		// Init CURL session
  		$this->_ptrSession = curl_init();
