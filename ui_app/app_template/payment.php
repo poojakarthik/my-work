@@ -135,7 +135,7 @@ class AppTemplatePayment extends ApplicationTemplate
 				}
 				
 				// The Credit Card number is valid
-				DBO()->Payment->OriginId	= DBO()->Payment->CreditCardNum->Value;
+				DBO()->Payment->OriginId	= str_replace(' ', '', DBO()->Payment->CreditCardNum->Value);
 			}
 			else
 			{
