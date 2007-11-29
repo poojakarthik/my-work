@@ -214,6 +214,8 @@
 				$arrData['ChargedOn']		= $strDate;
 				$arrData['Nature']			= $arrCharge['Nature'];
 				$arrData['Amount']			= $arrCharge['RecursionCharge'];
+				$arrData['OriginType']		= CHARGE_LINK_RECURRING;
+				$arrData['OriginId']		= $arrCharge['Id'];
 				$arrData['Notes']			= "";
 				if ($arrData['ApprovedBy'])
 				{
