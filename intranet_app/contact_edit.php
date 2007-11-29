@@ -97,12 +97,7 @@
 			$bolUserNameTaken = ($selUserNames->Count () == 1);
 		}
 		
-		if (!$_POST ['Title'])
-		{
-			// Ensure that the Contact has a Title
-			$oblstrError->setValue ('Title');
-		}
-		else if (!$_POST ['FirstName'])
+		if (!$_POST ['FirstName'])
 		{
 			// Ensure that the Contact has a First Name
 			$oblstrError->setValue ('FirstName');
