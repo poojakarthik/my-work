@@ -1076,39 +1076,9 @@
 		$ubiPayment = new StatementUpdateById("Payment", $arrData);
 		$ubiPayment->Execute($arrData);
 		
-		// Add a note if we have an Account
-		$selPayment = new StatementSelect("Payment", "AccountGroup, Account, Amount, PaidOn", "Id = <Id> AND Account IS NOT NULL");
-		if ($selPayment->Execute($arrData))
-		{
-			$arrPayment = $selPayment->Fetch();
-			
-			// Do we have an employee?
-			if ($intReversedBy)
-			{
-				$selEmployee = new StatementSelect("Employee", "CONCAT(FirstName, ' ', LastName) AS FullName", "Id = $intReversedBy");
-				$selEmployee->Execute();
-				$arrEmployee = $selEmployee->Fetch();
-				$strEmployee = $arrEmployee['FullName'];
-			}
-			else
-			{
-				$strEmployee = "Administrators";
-			}
-			
-			$strDate = date("d/m/Y", strtotime($arrPayment['PaidOn']));
-			
-			// Add the note
-			$arrNote = Array();
-			$arrNote['Note']			= "$strEmployee Reversed a Payment made on $strDate for \${$arrPayment['Amount']}";
-			$arrNote['AccountGroup']	= $arrPayment['AccountGroup'];
-			$arrNote['Account']			= $arrPayment['Account'];
-			$arrNote['Datetime']		= new MySQLFunction("NOW()");
-			$arrNote['NoteType']		= 7;
-			$insNote = new StatementInsert("Note", $arrNote);
-			$insNote->Execute($arrNote);
-		}
-		
 		// Remove or Credit any associated Surcharges
+		$arrReversedCharges = Array();
+		$bolChargesReversed = FALSE;
 		$arrCols = Array();
 		$arrCols['Status']	= CHARGE_DELETED;
 		$ubiSurcharge	= new StatementUpdateById("Charge", $arrCols);
@@ -1132,14 +1102,74 @@
 					$arrCredit['Status']		= CHARGE_APPROVED;
 					unset($arrCredit['Id']);
 					$insCredit->Execute($arrCredit);
+					
+					// Append appriate message to the list of messages for the system note
+					$arrReversedCharges[] = "A new adjustment has been created to credit the Account: {$arrCredit['Account']} for the invoiced payment surcharge of \$". number_format(AddGST($arrCredit['Amount']), 2, ".", "");
+					$bolChargesReversed = TRUE;
+					
 					break;
 				
 				case CHARGE_APPROVED:
 					// Set the charge status to Deleted
 					$arrSurcharge['Status']	= CHARGE_DELETED;
 					$ubiSurcharge->Execute($arrSurcharge);
+					
+					// Append appriate message to the list of messages for the system note
+					$arrReversedCharges[] = "The yet-to-be-invoiced surcharge adjustment of \$". number_format(AddGST($arrSurcharge['Amount']), 2, ".", "") ." has been deleted from Account: {$arrSurcharge['Account']}";
+					$bolChargesReversed = TRUE;
 					break;
 			}
+		}
+		
+		// Add a note if we have an Account
+		$selPayment = new StatementSelect("Payment", "AccountGroup, Account, Amount, PaidOn", "Id = <Id>");
+		if ($selPayment->Execute($arrData))
+		{
+			$arrPayment = $selPayment->Fetch();
+			
+			// Do we have an employee?
+			if ($intReversedBy)
+			{
+				$selEmployee = new StatementSelect("Employee", "CONCAT(FirstName, ' ', LastName) AS FullName", "Id = $intReversedBy");
+				$selEmployee->Execute();
+				$arrEmployee = $selEmployee->Fetch();
+				$strEmployee = $arrEmployee['FullName'];
+			}
+			else
+			{
+				$strEmployee = "Administrators";
+			}
+			
+			$strDate = date("d/m/Y", strtotime($arrPayment['PaidOn']));
+			
+			// Work out if the payment was applied to an AccountGroup, or a specific Account
+			if ($arrPayment['Account'] != NULL)
+			{
+				// The payment has been made to a specific account
+				$strAccountClause = "a Payment";
+			}
+			else
+			{
+				// The payment has been applied to an AccountGroup
+				$strAccountClause = "an AccountGroup Payment";
+			}
+			
+			// Build the Reversed Charges clause
+			if ($bolChargesReversed)
+			{
+				$strReversedChargesClause = "\nThe following associated actions have also taken place:\n" . implode("\n", $arrReversedCharges);
+			}
+			
+			
+			// Add the note
+			$arrNote = Array();
+			$arrNote['Note']			= "$strEmployee Reversed $strAccountClause made on $strDate for \$". number_format($arrPayment['Amount'], 2, ".", "") . $strReversedChargesClause;
+			$arrNote['AccountGroup']	= $arrPayment['AccountGroup'];
+			$arrNote['Account']			= $arrPayment['Account'];
+			$arrNote['Datetime']		= new MySQLFunction("NOW()");
+			$arrNote['NoteType']		= 7;
+			$insNote = new StatementInsert("Note", $arrNote);
+			$insNote->Execute($arrNote);
 		}
 		
 		return TRUE;

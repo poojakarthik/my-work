@@ -198,7 +198,27 @@ class AppTemplatePayment extends ApplicationTemplate
 					return TRUE;
 				}
 				
-				$strCreditCardMsg = "<br />The Credit Card surcharge has been added as an adjustment.";
+				// Build Credit Card Surcharge clause for the Success Alert
+				if (DBO()->AccountToApplyTo->IsGroup->Value)
+				{
+					// The Payment has been applied to an entire Account Group.  Find out which Account belonging to the group has recieved the surcharge
+					$selAccount	= new StatementSelect("Account", "Id, BusinessName, TradingName", "AccountGroup = <AccountGroup>", "(Archived != 1) DESC, Archived ASC, Id DESC", "1");
+					$selAccount->Execute(Array("AccountGroup" => DBO()->AccountToApplyTo->Id->Value));
+					$arrAccount = $selAccount->Fetch();
+					
+					$strAccountName = trim($arrAccount['BusinessName']);
+					if ($strAccountName == "")
+					{
+						$strAccountName = trim($arrAccount['TradingName']);
+					}
+					
+					$strCreditCardMsg = "<br />The Credit Card surcharge has been added as an adjustment to Account: {$arrAccount[Id]} $strAccountName";
+				}
+				else
+				{
+					// The payment was applied to a single account
+					$strCreditCardMsg = "<br />The Credit Card surcharge has been added as an adjustment";
+				}
 			}
 			
 			// The payment has been successfully added.  Commit the Transaction

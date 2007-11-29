@@ -2928,7 +2928,7 @@ function GetCCType($mixNumber, $bolAsString = FALSE)
 function AddCreditCardSurcharge($intPayment)
 {
 	// Statements
-	$selAccount	= new StatementSelect("Account", "MAX(Id) AS Account", "AccountGroup = <AccountGroup>", "(Archived != 1) DESC, Archived ASC");
+	$selAccount	= new StatementSelect("Account", "Id AS Account", "AccountGroup = <AccountGroup>", "(Archived != 1) DESC, Archived ASC, Account DESC", "1");
 	$selPayment	= new StatementSelect("Payment", "*", "Id = <Payment>");
 	$insCharge	= new StatementInsert("Charge");
 	$selCCSRate	= new StatementSelect(	"Config",
@@ -2951,7 +2951,7 @@ function AddCreditCardSurcharge($intPayment)
 		$fltPC				= (float)$arrCSSRate['Value'];
 		$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
 		$strPC				= round($fltPC * 100, 2);
-		$fltPaymentAmount	= $arrPayment['Amount'];
+		$fltPaymentAmount	= number_format($arrPayment['Amount'], 2, ".", "");
 		$fltAmount			= RemoveGST(((float)$arrPayment['Amount'] / (1 + $fltPC)) * $fltPC);
 		
 		// Insert Charge

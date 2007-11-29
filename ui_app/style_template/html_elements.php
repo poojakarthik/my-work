@@ -550,7 +550,7 @@ class HTMLElements
 		{
 			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
 		}
-		$strHtml .= "      <span id='$strId.Label.Text>'{$strLabel} : </span></div>\n";
+		$strHtml .= "      <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
 		$strHtml .= "      <input type='hidden' id='{$strName}_hidden' name='$strName' value='$intValue'></input>\n";
 		$strHtml .= "</div>\n";
 		
