@@ -625,12 +625,28 @@ function VixenPopupClass()
 	 */
 	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage, strElement, intWait, bolAnimateSplash)
 	{
+		// Make sure this splash isn't already displayed
+		if (this.Exists("Splash"))
+		{
+			// It's already open, so don't show it again
+			return;
+		}
+	
+		// Make sure this splash isn't also waiting to be displayed
+		if (this.intTimeoutIdForPageLoadingSplash != null)
+		{
+			// The splash is waiting to be displayed.  Cancel it
+			clearTimeout(this.intTimeoutIdForPageLoadingSplash);
+			this.intTimeoutIdForPageLoadingSplash = null;
+		}
+		
 		if (intWait != null)
 		{
 			// A waiting period has been specified
 			this.intTimeoutIdForPageLoadingSplash = setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash(strMessage, strSize, strImage, strElement, null, bolAnimateSplash);}, intWait);
 			return;
 		}
+		
 		
 		// set the default message
 		if (strMessage == null)

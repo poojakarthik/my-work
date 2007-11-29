@@ -15,6 +15,9 @@
  */
 function VixenAjaxClass()
 {
+	// This is used to check that a form doesn't get submitted twice, before the first submittion has recieved a reply
+	this.strFormCurrentlyProcessing	= null;
+
 	// execute an app template through an ajax call, which doesn't involve form submission
 	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType)
 	{
@@ -42,7 +45,6 @@ function VixenAjaxClass()
 		var objSend = {};
 		objSend.Class = strClass;
 		objSend.Method = strMethod;
-		//objSend.FormId = strFormId;
 		objSend.ButtonId = strButton;
 		objSend.TargetType = strTargetType;
 		objSend.strId = strId;
@@ -196,6 +198,18 @@ function VixenAjaxClass()
 			}
 		}*/
 
+		// If a form is currently being processed, then don't submit this one
+		if (this.strFormCurrentlyProcessing != null)
+		{
+			// A form is currently being processed.  Do not submit this one
+			return;
+		}
+		else
+		{
+			// It is safe to submit this form
+			this.strFormCurrentlyProcessing = objSend.FormId;
+		}
+		
 		// Draw the Page Loading splash (this will show after 1 second)
 		Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
 
@@ -296,6 +310,17 @@ function VixenAjaxClass()
 		
 		// Remove the page loading splash
 		Vixen.Popup.ClosePageLoadingSplash();
+		
+		// Reset the FormProcessing flag  but only if this is the reply which relates to the currently processing form
+		if (Vixen.Ajax.strFormCurrentlyProcessing != null)
+		{
+			// A form is currently being processed.  If this is the reply, then reset the FormCurrentlyProcessing variable
+			if (objObject.FormId != undefined && objObject.FormId == Vixen.Ajax.strFormCurrentlyProcessing)
+			{
+				Vixen.Ajax.strFormCurrentlyProcessing = null;
+			}
+		}
+		
 		
 		var objData = {};
 		
