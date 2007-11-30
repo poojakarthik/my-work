@@ -118,7 +118,11 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 		
 		if ($dboRatePlan->Id->Value)
 		{
-			$dboRatePlan->Name->RenderOutput();
+			// Build a link to the Rate Plan summary (not the one specific to this service)
+			$strPlanSummaryHref = Href()->ViewPlan($dboRatePlan->Id->Value);
+			$strPlanSummaryLink = "<a href='$strPlanSummaryHref' title='View Plan Details'>{$dboRatePlan->Name->Value}</a>";
+		
+			$dboRatePlan->Name->RenderArbitrary($strPlanSummaryLink, RENDER_OUTPUT);
 			$dboRatePlan->Description->RenderOutput();
 			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 			$dboRatePlan->Shared->RenderOutput();

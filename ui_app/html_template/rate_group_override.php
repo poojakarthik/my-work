@@ -84,6 +84,7 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("rate_group_override");
+		$this->LoadJavascript("date_time_picker");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -228,8 +229,14 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 
 		// StartSection DIV defaults to hidden
 		echo "<div id='StartSection' style='visibility: $strStartSection'>\n";
+		
 		DBO()->ServiceRateGroup->StartDate->RenderInput();
-		echo "</div>\n";
+		
+		// This code defines the Date Picker
+		echo "<a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.StartDate\"), \"ServiceRateGroup.StartDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'>Picker</a>\n";
+		echo "<div id='StartDateCalender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
+		
+		echo "</div>\n"; //StartSection container
 		
 		// EndSection DIV defaults to hidden
 		echo "<div id='EndSection' style='visibility: $strEndSection'>\n";		

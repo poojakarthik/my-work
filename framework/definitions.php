@@ -396,6 +396,8 @@ $GLOBALS['*arrConstant']	['ChargeLink']		[500]	['Constant']	= 'CHARGE_LINK_PAYME
 $GLOBALS['*arrConstant']	['ChargeLink']		[500]	['Description']	= 'Payment Surcharge';
 $GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Constant']	= 'CHARGE_LINK_RECURRING';
 $GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Description']	= 'Recurring Adjustment';
+$GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Constant']	= 'CHARGE_LINK_RECURRING_CANCEL';
+$GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Description']	= 'Recurring Adjustment Cancellation';
 
 
 // Customer Group Constants
