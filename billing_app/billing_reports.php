@@ -70,7 +70,8 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 			}
 		}
 	}
-	@mkdir("/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time())), 0777);
+	$strPath		= "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()));
+	@mkdir($strPath, 0777);
 	$strFilename	= "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/")."Plan_Summary_with_Breakdown_($strServiceType).xls";
 	
 	$arrReports = Array();
@@ -89,41 +90,21 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 	CliEcho("Plan Summary...");
 	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
 	
-	// Email Management Reports	
-	$strContent		= "Please find attached the Management Reports for ".date("Y-m-d H:i:s")."\n\nYellow Billing Services";
-	$arrHeaders = Array	(
-							'From'		=> "billing@telcoblue.com.au",
-							'Subject'	=> "Management Reports for ".date("Y-m-d H:i:s")
-						);
-	$mimMime = new Mail_mime("\n");
-	$mimMime->setTXTBody($strContent);
+	// Email Management Reports
+	$strCustomerName	= $GLOBALS['**arrCustomerConfig']['Customer'];
+	$strDir				= date("Y/m/", strtotime("-1 day", time()));
+	$strMonth			= date("F", strtotime("-1 day", time()));
 	
-	foreach ($arrReports as $strPath)
+	$rcpRemoteCopyReports = new RemoteCopyFTP("192.168.2.224", "flame", "zeemu");
+	if (is_string($mixResult = $rcpRemoteCopyReports->Connect()))
 	{
-		//Debug($strPath);
-		Debug($mimMime->addAttachment($strPath, 'application/x-msexcel'));
+		echo "$mixResult \n";
 	}
+	$rcpRemoteCopyReports->Copy($strPath, "/data/www/reports.yellowbilling.com.au/html/$strCustomerName/management/$strDir", RCOPY_BACKUP);
+	$rcpRemoteCopyReports->Disconnect();
 	
-	$strBody = $mimMime->get();
-	$strHeaders = $mimMime->headers($arrHeaders);
-	$emlMail =& Mail::factory('mail');
-	
-	// Send the email
-	$strEmail = 'rich@voiptelsystems.com.au, ' .
-				'jared@telcoblue.com.au, ' .
-				'turdminator@hotmail.com, ' .
-				'aphplix@gmail.com, ' .
-				'dan@fhcc.com.au, ' .
-				'paula@telcoblue.com.au, ' .
-				'kaywan@telcoblue.com.au, ' .
-				'julie@telcoblue.com.au, ' .
-				'mark@yellowbilling.com.au';
-	//$strEmail	= 'rich@voiptelsystems.com.au, turdminator@hotmail.com';
-
-	/*if (!$emlMail->send($strEmail, $strHeaders, $strBody))
-	{
-		CliEcho("Email Failed!");
-	}*/
+	$strURL = "reports.yellowbilling.com.au/$strCustomerName/$strDir/$strZipname";
+	SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', "$strMonth Management Reports", "$strMonth Management Reports are available at $strURL");
 }
 
 ?>
