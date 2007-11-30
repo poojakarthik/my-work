@@ -115,6 +115,11 @@ $arrAccounts[]	= 1000162139;
 $arrAccounts[]	= 1000158996;
 $arrAccounts[]	= 1000164686;
 
+
+// Email Status
+$strDateTime = date("Y-m-d H:i:s");
+SendEmail('turdminator@hotmail.com', "viXen Billing::ReprintSample Started @ $strDateTime", "viXen Billing Started @ $strDateTime");
+
 // reprint
 $bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
 
@@ -242,8 +247,10 @@ $strEmail = "jade@wxc.com.au, adele.k@telcoblue.com.au, andrew.p@telcoblue.com.a
 $emlMail->send($strEmail, $strHeaders, $strBody);
 
 
-// Send to Paula home
-// TODO
+
+// Email Status
+$strDateTime = date("Y-m-d H:i:s");
+SendEmail('turdminator@hotmail.com', "viXen Billing::ReprintSamples Ended @ $strDateTime", "viXen Billing Ended @ $strDateTime");
 
 // finished
 echo("\n\n-- End of Billing --\n");

@@ -1146,7 +1146,7 @@
 		$arrCols	= Array();
 		$arrCols['Active']	= 1;
 		$updServiceRatePlan		= new StatementUpdate(	"ServiceRatePlan",
-														"Service IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>) AND Active = 0",
+														"Service IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>) AND Active = 0 AND StartDatetime < NOW()",
 														$arrCols);
 		
 		$this->_rptBillingReport->AddMessage("Activating Inactive ServiceRatePlans for Invoiced Accounts...", FALSE);
@@ -1157,14 +1157,14 @@
 		}
 		else
 		{
-			Debug($updServiceRatePlan->Error());
 			// Report and fail out
+			Debug($updServiceRatePlan->Error());
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
 		}
 		
 		$updServiceRateGroup	= new StatementUpdate(	"ServiceRateGroup",
-														"Service IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>) AND Active = 0",
+														"Service IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>) AND Active = 0 AND StartDatetime < NOW()",
 														$arrCols);
 		
 		$this->_rptBillingReport->AddMessage("Activating Inactive ServiceRateGroups for Invoiced Accounts...", FALSE);
@@ -1175,8 +1175,8 @@
 		}
 		else
 		{
-			Debug($updServiceRateGroup->Error());
 			// Report and fail out
+			Debug($updServiceRateGroup->Error());
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
 		}

@@ -93,7 +93,7 @@ $rcpRemoteCopy->Disconnect();
 
 // Sleep for a bit, allowing the server to pick up the vbf file
 Debug("Sleeping...");
-sleep(60);
+usleep(60*1000000);
 
 // Monitor FTP until all PDFs have appeared
 echo "Downloading PDFs from BillPrint...\n\n";
@@ -142,32 +142,35 @@ while (($intLastDownload + 60) > time())
 		if (@ftp_chdir($ptrConnection, $strDirectory.$strDir))
 		{
 			$arrFiles = ftp_nlist($ptrConnection, "*");
-			foreach ($arrFiles as $strFile)
+			if ($arrFiles)
 			{
-				if (!in_array($strFile, $arrDownloaded))
+				foreach ($arrFiles as $strFile)
 				{
-					$intLastSize	= ftp_size($ptrConnection, $strFile);
-					$fltTime		= 0;
-					while ($fltTime < microtime(TRUE))
+					if (!in_array($strFile, $arrDownloaded))
 					{
-						if ($intLastSize && $intLastSize === ftp_size($ptrConnection, $strFile))
+						$intLastSize	= ftp_size($ptrConnection, $strFile);
+						$fltTime		= 0;
+						while ($fltTime < microtime(TRUE))
 						{
-							break;
+							if ($intLastSize && $intLastSize === ftp_size($ptrConnection, $strFile))
+							{
+								break;
+							}
+							$fltTime = microtime(TRUE) + 0.25;
 						}
-						$fltTime = microtime(TRUE) + 0.25;
+						echo "\t+ Downloading '$strFile'\t(".ceil($intLastSize/1024)."KB)...\t\t";
+						if (ftp_get($ptrConnection, $strDownloadDir.$strFile, $strDirectory.$strDir.$strFile, FTP_BINARY))
+						{
+							echo "[   OK   ]\n";
+						}
+						else
+						{
+							echo "[ FAILED ]\n";
+						}
+						$intLastDownload = time();
+						ob_flush();
+						$arrDownloaded[] = $strFile;
 					}
-					echo "\t+ Downloading '$strFile'\t(".ceil($intLastSize/1024)."KB)...\t\t";
-					if (ftp_get($ptrConnection, $strDownloadDir.$strFile, $strDirectory.$strDir.$strFile, FTP_BINARY))
-					{
-						echo "[   OK   ]\n";
-					}
-					else
-					{
-						echo "[ FAILED ]\n";
-					}
-					$intLastDownload = time();
-					ob_flush();
-					$arrDownloaded[] = $strFile;
 				}
 			}
 		}
@@ -181,7 +184,15 @@ echo shell_exec("zip -qj '$strZipname' *.pdf");
 
 $strCustomerName	= $GLOBALS['**arrCustomerConfig']['Customer'];
 $strDir				= date("Y/m/", strtotime("-1 day", time()));
-echo shell_exec("cp '$strZipname' /data/www/samples.yellowbilling.com.au/html/$strCustomerName/$strDir");
+//echo shell_exec("cp '$strZipname' /data/www/samples.yellowbilling.com.au/html/$strCustomerName/$strDir");
+
+$rcpRemoteCopySamples = new RemoteCopyFTP("192.168.2.224", "flame", "zeemu");
+if (is_string($mixResult = $rcpRemoteCopySamples->Connect()))
+{
+	echo "$mixResult \n";
+}
+$rcpRemoteCopySamples->Copy($strDownloadDir.$strZipname, "/data/www/samples.yellowbilling.com.au/html/$strCustomerName/$strDir", RCOPY_BACKUP);
+$rcpRemoteCopySamples->Disconnect();
 
 $strURL = "samples.yellowbilling.com.au/$strCustomerName/$strDir/$strZipname";
 SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', trim($strZipname, '.zip'), trim($strZipname, '.zip')." are available at $strURL");

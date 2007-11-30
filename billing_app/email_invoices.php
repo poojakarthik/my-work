@@ -20,7 +20,7 @@ $appBilling = new ApplicationBilling($arrConfig);
 
 // execute bill
 //$strPath = "/home/vixen_invoices/".date("Y/n/", strtotime("-1 month", time()));
-$strPath = "/home/richdavis/Desktop/Invoices/Aug 07/";
+$strPath = "/home/richdavis/Desktop/Invoices/Oct 07/";
 $bolResponse = $appBilling->EmailInvoicePDFs($strPath);
 
 $appBilling->FinaliseReport();
@@ -28,8 +28,5 @@ $appBilling->FinaliseReport();
 // finished
 echo("\n\n-- End of Billing --\n");
 echo "</pre>";
-die();
-
-
-
+die;
 ?>
