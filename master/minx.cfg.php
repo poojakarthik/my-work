@@ -533,6 +533,12 @@ $arrScript                                                      = Array();
 		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/billing_reprint_sample.php';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
 		$arrScript['SubScript']['BillSamples']				= $arrSubscript;
+		
+		// Management Reports
+		$arrSubscript = Array();
+		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/billing_reports.php';
+		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrScript['SubScript']['ManagementReports']		= $arrSubscript;
 	
 	$arrConfig['Script']['BillingRun']	= $arrScript;
 //----------------------------------------------------------------------------//
