@@ -24,9 +24,9 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
- 
- 
+
+
+
 //----------------------------------------------------------------------------//
 // PaymentModuleSecurePay
 //----------------------------------------------------------------------------//
@@ -107,6 +107,13 @@
  		// Transaction Reference Number
  		$mixValue	= $this->_FetchRaw('ReferenceNo');
  		$this->_Append('TXNReference', $mixValue);
+ 		
+ 		// Credit Card Number
+ 		if ($mixValue	= $this->_FetchRaw('CCNo'))
+ 		{
+	 		$this->_Append('OriginType', PAYMENT_TYPE_CREDIT_CARD);
+	 		$this->_Append('OriginId', $mixValue);
+ 		}
  		
  		// PaidOn
  		$mixValue	= $this->_ConvertDate($this->_FetchRaw('DatePaid'));
