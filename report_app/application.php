@@ -707,8 +707,30 @@
 					$arrVariableData = $selVariable->Fetch();
 					$strVariable = $arrVariableData[$arrVariable[1]];
 				}
+				elseif (stripos($arrVariable[0], "()"))
+				{
+					// Special Function
+					switch (strtoupper($arrVariable[0]))
+					{
+						case 'DATE()':
+							$strVariable	= "d/m/Y";
+							break;
+						
+						case 'DATETIME()':
+							$strVariable	= "d/m/Y H:i:s";
+							break;
+						
+						case 'TIME()':
+							$strVariable	= "H:i:s";
+							break;
+						
+						default:
+							$strVariable	= $arrMatch[0];
+					}
+				}
 				else
 				{
+					// Standard Variable
 					$strVariable = trim($arrReportParameters['SQLWhere'][$arrVariable[0]], '%');
 				}
 				
