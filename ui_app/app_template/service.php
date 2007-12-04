@@ -1092,9 +1092,7 @@ class AppTemplateService extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// Check if the billing/invoice process is being run
-		$selBillRunning = new StatementSelect("InvoiceTemp", "Id", "", "", "1");
-		$mixResult = $selBillRunning->Execute();
-		if ($mixResult == 1)
+		if (IsInvoicing())
 		{
 			// There are currently records in the InvoiceTemp table, which means a bill run is taking place.
 			// Plan Changes cannot be made when a bill run is taking place
@@ -1170,7 +1168,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				// Could not update records in ServiceRateGroup table. Exit gracefully
 				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating records in the ServiceRateGroup table)");
+				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating records in the ServiceRateGroup table)");
 				return TRUE;
 			}
 			
@@ -1180,7 +1178,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				// Could not update records in ServiceRatePlan table. Exit gracefully
 				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating records in the ServiceRatePlan table)");
+				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating records in the ServiceRatePlan table)");
 				return TRUE;
 			}
 			
@@ -1198,7 +1196,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				// Could not save the record. Exit gracefully
 				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding record to ServiceRatePlan table)");
+				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error adding record to ServiceRatePlan table)");
 				return TRUE;
 			}
 			
@@ -1213,7 +1211,7 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				// Inserting the records into the ServiceRateGroup table failed.  Exit gracefully
 				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding records to ServiceRateGroup table)");
+				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error adding records to ServiceRateGroup table)");
 				return TRUE;
 			}
 			
@@ -1229,7 +1227,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// Could not update records in CDR table. Exit gracefully
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating records in the CDR table)");
+					Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating records in the CDR table)");
 					return TRUE;
 				}
 			}
@@ -1261,10 +1259,9 @@ class AppTemplateService extends ApplicationTemplate
 			// Commit the transaction
 			TransactionCommit();
 			
-			// Close the popup, alert the user and close the PageLoading Splash
+			// Close the popup, alert the user
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
-			Ajax()->AddCommand("ExecuteJavascript", "Vixen.Popup.ClosePageLoadingSplash();");
 
 			// Build event object
 			// The contents of this object should be declared in the doc block of this method

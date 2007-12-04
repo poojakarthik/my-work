@@ -88,10 +88,6 @@ function VixenPlanChangeClass()
 			return;
 		}
 		
-		// Draw the Pablo splash
-		// This splash is now always shown if an Ajax Request is made
-		//Vixen.Popup.ShowPageLoadingSplash("Performing Plan Change. Please wait.", null, null, null, 1000);
-
 		// Submit the form data
 		Vixen.Ajax.SendForm("VixenForm_ChangePlan", "Change Plan", "Service", "ChangePlan", "", this._strPopupId);
 	}
