@@ -157,7 +157,7 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		echo "<tr><td width='1' rowspan='8'>&nbsp;</td><td width='190'><span>Current Plan :</span></td><td colspan='2'>" . DBO()->RatePlan->Name->AsValue() . "</td></tr>\n";
 		echo "<tr><td><span>Rate Group :</span></td><td colspan='2'>\n";
 
-		echo "<span><select name='ServiceRateGroup.Selected' style=\"width: 100%;\" onchange='$strOnRateGroupChange'>\n";
+		echo "<span><select name='ServiceRateGroup.Selected' style='width: 100%;' onchange='$strOnRateGroupChange'>\n";
 		
 		$bolFirstValueFlagged = FALSE;
 		$strFirstValueShown = "";
@@ -175,12 +175,12 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 			// i.e. do not default back to the first selected value in the list
 			if (DBO()->ServiceRateGroup->Selected->Value == $dboRateGroup->Id->Value)
 			{
-				echo "<option value='" . $dboRateGroup->Id->Value . "' selected>" . $dboRateGroup->Name->Value;
-				$strFirstValueShown = $dboRateGroup->Description->Value;					
+				echo "<option value='{$dboRateGroup->Id->Value}' selected='selected'>{$dboRateGroup->Name->Value}";
+				$strFirstValueShown = $dboRateGroup->Description->Value;
 			}
 			else
 			{
-				echo "<option value='" . $dboRateGroup->Id->Value . "'>" . $dboRateGroup->Name->Value;
+				echo "<option value='{$dboRateGroup->Id->Value}'>{$dboRateGroup->Name->Value}";
 				// If $bolFirstValueFlagged is not set
 				if (!$bolFirstValueFlagged)
 				{

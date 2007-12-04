@@ -115,7 +115,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		// create a combobox containing all Accounts or groups that the payment can be applied to
 		$intAccountGroup = DBO()->Account->AccountGroup->Value;
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='AccountCombo' onchange='Vixen.PaymentPopup.DeclareAccount(this)' style='width:100%'>\n";
 		
