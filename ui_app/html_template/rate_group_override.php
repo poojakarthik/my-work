@@ -151,9 +151,11 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		DBO()->Service->FNN->RenderOutput();
 		DBO()->RecordType->Description->RenderOutput();
 		
+		echo "<div id='StartDateCalender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
+		
 		echo "<table width='100%' border='0' cellpadding='1' cellspacing='0'>\n";
-		echo "<tr><td width='1' rowspan='7'>&nbsp;</td><td width='190'><span>Current Plan :</span></td><td>" . DBO()->RatePlan->Name->AsValue() . "</td></tr>\n";
-		echo "<tr><td><span>Rate Group :</span></td><td>\n";
+		echo "<tr><td width='1' rowspan='8'>&nbsp;</td><td width='190'><span>Current Plan :</span></td><td colspan='2'>" . DBO()->RatePlan->Name->AsValue() . "</td></tr>\n";
+		echo "<tr><td><span>Rate Group :</span></td><td colspan='2'>\n";
 
 		echo "<span><select name='ServiceRateGroup.Selected' style=\"width: 100%;\" onchange='$strOnRateGroupChange'>\n";
 		
@@ -219,29 +221,28 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 			$strIndefinateEnd = "";
 		}
 
+		$strStartDateInput = "class='DefaultInputText' style='left: 0px' value='" . DBO()->ServiceRateGroup->StartDate->Value . "'>";
+		$strEndDateInput = "class='DefaultInputText' style='left: 0px' value='" . DBO()->ServiceRateGroup->EndDate->Value . "'>";
+
+		if (DBO()->RateGroup->ImmediateStart->Value == 0 && !DBO()->ServiceRateGroup->StartDate->Valid && DBO()->ServiceRateGroup->IsInvalid())
+		{
+			$strStartDateInput = "class='DefaultInvalidInputText' style='left: 0px' value='" . DBO()->ServiceRateGroup->StartDate->Value . "'>";
+		}
+		if (DBO()->RateGroup->IndefinateEnd->Value == 0 && !DBO()->ServiceRateGroup->EndDate->Valid && DBO()->ServiceRateGroup->IsInvalid())
+		{
+			$strEndDateInput = "class='DefaultInvalidInputText' style='left: 0px'  value='" . DBO()->ServiceRateGroup->EndDate->Value . "'>";
+		}
+		
 		echo "</td></tr>\n";
-		echo "<tr><td>&nbsp;</td><td><div class='DefaultRegularOutput' id='RateGroupDescription' style='line-height: 1;'>$strFirstValueShown</div></td></tr>\n";
-		echo "<tr><td><span>Immediate Start :</span></td><td><input type='checkbox' name='RateGroup.ImmediateStart' $strImmediateStart onClick='$strImmediateStartClick' style='margin-left: 1px; margin-top: 2px; outline-style:	solid; outline-width: 1px;'></td></tr>\n";
-		echo "<tr><td><span>Indefinate End :</span></td><td><input type='checkbox' name='RateGroup.IndefinateEnd' $strIndefinateEnd onClick='$strIndefinateEndClick'  style='margin-left: 1px; margin-top: 2px; outline-style:	solid; outline-width: 1px;'></td></tr>\n";
+		echo "<tr><td>&nbsp;</td><td colspan='2'><div class='DefaultRegularOutput' id='RateGroupDescription' style='line-height: 1;'>$strFirstValueShown</div></td></tr>\n";
+		echo "<tr><td><span>Immediate Start :</span></td><td colspan='2'><input type='checkbox' name='RateGroup.ImmediateStart' $strImmediateStart onClick='$strImmediateStartClick' style='margin-left: 1px; margin-top: 2px; outline-style:	solid; outline-width: 1px;'></td></tr>\n";
+		echo "<tr><td><span>Indefinate End :</span></td><td colspan='2'><input type='checkbox' name='RateGroup.IndefinateEnd' $strIndefinateEnd onClick='$strIndefinateEndClick'  style='margin-left: 1px; margin-top: 2px; outline-style:	solid; outline-width: 1px;'>";
+		
+		echo "<tr><td colspan='4'>&nbsp;</td></tr>\n";
+		echo "<tr id='StartSection' style='visibility: $strStartSection'><td><span>Start Date (dd/mm/yyyy) :</span></td><td><span><input type='text' id='ServiceRateGroup.StartDate' name='ServiceRateGroup.StartDate' size='22' " . $strStartDateInput . "</span></td><td align='center'><a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.StartDate\"), \"ServiceRateGroup.StartDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'><img src='img/template/calendar_small.png' width='16' height='16' alt='Calendar date picker'></a></td></tr>\n";
+		echo "<tr id='EndSection' style='visibility: $strEndSection'><td><span>End Date (dd/mm/yyyy) :</span></td><td><span><input type='text' id='ServiceRateGroup.EndDate' name='ServiceRateGroup.EndDate' size='22' " . $strEndDateInput . "</span></td><td align='center'><a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.EndDate\"), \"ServiceRateGroup.EndDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'><img src='img/template/calendar_small.png' width='16' height='16' alt='Calendar date picker'></a></td></tr>\n";		
+
 		echo "</table>\n";
-
-		echo "&nbsp;\n";
-
-		// StartSection DIV defaults to hidden
-		echo "<div id='StartSection' style='visibility: $strStartSection'>\n";
-		
-		DBO()->ServiceRateGroup->StartDate->RenderInput();
-		
-		// This code defines the Date Picker
-		//echo "<a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.StartDate\"), \"ServiceRateGroup.StartDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'>Picker</a>\n";
-		//echo "<div id='StartDateCalender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
-		
-		echo "</div>\n"; //StartSection container
-		
-		// EndSection DIV defaults to hidden
-		echo "<div id='EndSection' style='visibility: $strEndSection'>\n";		
-		DBO()->ServiceRateGroup->EndDate->RenderInput();
-		echo "</div>\n";
 
 		$this->FormEnd();
 		echo "</div>\n"; // Narrow form DIV

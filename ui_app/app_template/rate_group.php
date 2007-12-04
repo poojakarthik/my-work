@@ -1074,6 +1074,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Handle form submittion
 		if (SubmittedForm('RateGroupOverride', 'Apply Changes'))
 		{
+			//DBO()->RateGroup->Id = DBO()->ServiceRateGroup->Selected->Value;
+			//DBO()->RateGroup->Load();
+		
 			$strCurrentDate = GetCurrentDateForMySQL();
 			$strCurrentDateAndTime = GetCurrentDateAndTimeForMySQL();
 			$strChangesNote = "";
@@ -1084,6 +1087,18 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$intCurrentDate = strtotime($strCurrentDate);
 			$intStartDate = strtotime(ConvertUserDateToMySqlDate(DBO()->ServiceRateGroup->StartDate->Value));
 			$intEndDate  = strtotime(ConvertUserDateToMySqlDate(DBO()->ServiceRateGroup->EndDate->Value));	
+
+			if (DBO()->RateGroup->ImmediateStart->Value != 1 && DBO()->RateGroup->IndefinateEnd->Value != 1)
+			{
+				if ($intEndDate < $intStartDate)
+				{
+					// The End Date is in the past
+					DBO()->ServiceRateGroup->EndDate->SetToInvalid();
+					Ajax()->AddCommand("Alert", "ERROR: Can not have a date ending in the past");
+					Ajax()->RenderHtmlTemplate("RateGroupOverride", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+					return TRUE;								
+				}
+			}
 
 			// If the immediateStart checkbox isnt checked
 			if (DBO()->RateGroup->ImmediateStart->Value != 1)
@@ -1124,6 +1139,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				// Validate the user supplied End Date (if there is one)
 				if ($intEndDate)
 				{	
+
+				
 					if ($intEndDate < $intCurrentDate)
 					{
 						// The End Date is in the past
@@ -1200,6 +1217,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$strChangesNote = "An overriding RateGroup has been declared.  Its details are as follows:\n$strChangesNote";
 			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, DBO()->Service->Id->Value);
 			
+			// Fire the OnNewNote Event (Ajax()->FireOnNewNote(accountId, serviceId))
+						
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 			Ajax()->AddCommand("Alert", "The overriding RateGroup was successfully defined");
@@ -1209,13 +1228,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
 			Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 			
-			// Fire the OnNewNote Event
-			Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
-			
+			// Fire the EVENT_ON_SERVICE_PLAN_UPDATE Event (this constant hasn't been made yet)
+			//TODO! for now you could just get it to reload the current page
 			return TRUE;
 		}
-
-		// Declare which PageTemplate to use
 		$this->LoadPage('rate_group_override');
 		return TRUE;
 	}

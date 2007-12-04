@@ -411,19 +411,26 @@ Date.patterns = {
     YearMonthPattern: "F, Y"};
 
 // Shows or hides the date chooser on the page
-function showChooser(obj, inputId, divId, start, end, format, isTimeChooser, isDateChooser, useCalendar) {
-    if (document.getElementById) {
+function showChooser(obj, inputId, divId, start, end, format, isTimeChooser, isDateChooser, useCalendar)
+{
+    if (document.getElementById)
+	{
         var input = document.getElementById(inputId);
         var div = document.getElementById(divId);
-        if (input !== undefined && div !== undefined) {
-            if (input.DateChooser === undefined) {
+        if (input !== undefined && div !== undefined)
+		{
+            if (input.DateChooser === undefined)
+			{
                 input.DateChooser = new DateChooser(input, div, start, end, format, isTimeChooser, isDateChooser, useCalendar);
             }
             input.DateChooser.setDate(Date.parseDate(input.value, format));
-            if (input.DateChooser.isVisible()) {
+            if (input.DateChooser.isVisible())
+			{
                 input.DateChooser.hide();
             }
-            else {
+            else
+			{
+				//alert(input);
                 input.DateChooser.show();
             }
         }
@@ -449,8 +456,8 @@ function dateChooserSetDate(inputId, value) {
                     theForm.elements[prefix + 'min'].selectedIndex].value));
         }
         input.value = input.DateChooser.getValue();
-        input.focus();
-        input.blur();
+        //input.focus();
+        //input.blur();
         input.DateChooser.hide();
     }
 }
@@ -557,13 +564,18 @@ DateChooser.prototype.show = function() {
     this._div.style.display = "block";
     this._div.style.visibility = "visible";
     this._div.style.position = "absolute";
+	this._div.style.zIndex = 1;
+	this._div.style.left = "450px";
+	this._div.style.top = "248px";
     this._isVisible = true;
-    Position.clone(this._input.id + '_button', this._div, {
+	
+	//alert(this._input.id + '_button');
+    /*Position.clone(this._input.id + '_button', this._div, {
     	setWidth: false,
     	setHeight: false,
     	offsetLeft: 16,
     	offsetTop: 0
-    });
+    });*/
 }
 
 // Sets the date to what is in the input box
@@ -614,7 +626,7 @@ DateChooser.prototype.createChooserHtml = function() {
     	var js = 'dateChooserSetDate(\''
 	      	+ this._input.getAttribute('id') + "', "
 	     		+ null + ');' 	    
-    	formHtml += "\r\n <img src=\"i/table_row_insert.png\" onclick=\"" + js + "\" style=\"position: relative; top: 3px;\" /></div>";
+    	formHtml += "\r\n <img src=\"img/template/table_row_insert.png\" onclick=\"" + js + "\" style=\"position: relative; top: 3px;\" /></div>";
 	    if (this._useCalendar) {
 		    formHtml += this.createCalendarHtml();
 		   }
