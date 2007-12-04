@@ -233,8 +233,8 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		DBO()->ServiceRateGroup->StartDate->RenderInput();
 		
 		// This code defines the Date Picker
-		echo "<a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.StartDate\"), \"ServiceRateGroup.StartDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'>Picker</a>\n";
-		echo "<div id='StartDateCalender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
+		//echo "<a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.StartDate\"), \"ServiceRateGroup.StartDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'>Picker</a>\n";
+		//echo "<div id='StartDateCalender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
 		
 		echo "</div>\n"; //StartSection container
 		
