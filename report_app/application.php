@@ -707,7 +707,7 @@
 					$arrVariableData = $selVariable->Fetch();
 					$strVariable = $arrVariableData[$arrVariable[1]];
 				}
-				elseif (stripos($arrVariable[0], "()"))
+				elseif (stripos($arrVariable[0], "()") !== FALSE)
 				{
 					// Special Function
 					switch (strtoupper($arrVariable[0]))
