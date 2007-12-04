@@ -1146,7 +1146,7 @@
 		$arrCols	= Array();
 		$arrCols['Active']	= 1;
 		$updServiceRatePlan		= new StatementUpdate(	"ServiceRatePlan",
-														"Service IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>) AND Active = 0 AND StartDatetime < NOW()",
+														"Active = 0 AND StartDatetime < NOW()",
 														$arrCols);
 		
 		$this->_rptBillingReport->AddMessage("Activating Inactive ServiceRatePlans for Invoiced Accounts...", FALSE);
@@ -1164,7 +1164,7 @@
 		}
 		
 		$updServiceRateGroup	= new StatementUpdate(	"ServiceRateGroup",
-														"Service IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>) AND Active = 0 AND StartDatetime < NOW()",
+														"Active = 0 AND StartDatetime < NOW()",
 														$arrCols);
 		
 		$this->_rptBillingReport->AddMessage("Activating Inactive ServiceRateGroups for Invoiced Accounts...", FALSE);
