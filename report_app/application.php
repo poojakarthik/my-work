@@ -691,7 +691,7 @@
  			$arrTemplate = Array();
  			$strFileName = $arrReport['FileName'];
  			
- 			preg_match_all("/<([\d\w\s\:]+)>/misU", $strFileName, $arrTemplate, PREG_SET_ORDER);
+ 			preg_match_all("/<([\d\w\s\:\(\)]+)>/misU", $strFileName, $arrTemplate, PREG_SET_ORDER);
  			
  			foreach ($arrTemplate as $arrMatch)
  			{
