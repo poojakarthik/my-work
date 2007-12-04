@@ -374,6 +374,12 @@
 			}
 			$intPassed++;
 			
+			// Add Credit Card Surcharge
+			if ($arrNormalised['OriginType'] == PAYMENT_TYPE_CREDIT_CARD && (int)$arrNormalised['OriginId'])
+			{
+				AddCreditCardSurcharge($arrNormalised['Id']);
+			}
+			
 			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE.MSG_OK, Array('<Id>' => $arrPayment['Id']), TRUE, FALSE);
 		}
 		
