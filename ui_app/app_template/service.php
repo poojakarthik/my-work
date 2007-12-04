@@ -1372,6 +1372,9 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->NewService->ClosedOn		= NULL;
 		DBO()->NewService->ClosedBy		= NULL;
 		DBO()->NewService->Status		= SERVICE_ACTIVE;
+		DBO()->NewService->EarliestCDR	= NULL;
+		DBO()->NewService->LatestCDR	= NULL;
+		DBO()->NewService->LineStatus	= NULL;
 		if (!DBO()->NewService->Save())
 		{
 			return "ERROR: Activating the service failed, unexpectedly";

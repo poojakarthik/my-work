@@ -428,7 +428,7 @@
 		 * @method
 		 */
 		
-		public function LesseeReceive (Service $srvService, AuthenticatedEmployee $aemAuthenticatedEmployee, $arrDetailsDate)
+		public function LesseeReceive(Service $srvService, AuthenticatedEmployee $aemAuthenticatedEmployee, $arrDetailsDate)
 		{
 			$intDate = mktime (0, 0, 0, $arrDetailsDate ['month'], $arrDetailsDate ['day'], $arrDetailsDate ['year']);
 			

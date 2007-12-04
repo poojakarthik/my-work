@@ -104,26 +104,29 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		echo "</tr>\n";
 		foreach ($arrRateSummary as $strWeekday=>$arrIntervals)
 		{
-			echo "<tr><td style='font-size: xx-small; border-top-width: thin; border-top-style: solid; border-top-color: #C0C0C0'>". $strWeekday ."</td>";
-			for ($i=0; $i < count($arrIntervals); $i++)
+			echo "<tr><td style='font-size: xx-small; border-top-width: thin; border-top-style: solid; border-top-color: #C0C0C0'>". $strWeekday ."</td>\n";
+			for ($i=1; $i <= count($arrIntervals); $i++)
 			{
 				switch ($arrIntervals[$i])
 				{
+					case RATE_ALLOCATION_STATUS_BOTH_OVER_AND_UNDER_ALLOCATED:
+						$strCellColor = "0000CC";
+						break;
 					case RATE_ALLOCATION_STATUS_UNDER_ALLOCATED:
 						$strCellColor = "#FFFFFF";
 						break;
 					case RATE_ALLOCATION_STATUS_OVER_ALLOCATED:
 						$strCellColor = "#FF0000";
 						break;
-					case RATE_ALLOCATION_STATUS_ALLOCATED:
+					case RATE_ALLOCATION_STATUS_CORRECTLY_ALLOCATED:
 						$strCellColor = "#00FF00";
 						break;
 					default:
-						$strCellColor = "#FFFFFF";
+						$strCellColor = "#000000";
 						break;
 				}
 				
-				if ($i % 4 == 0)
+				if (($i-1) % 4 == 0)
 				{
 					$strBorderLeft = "border-left-width: thin; border-left-style: solid; border-left-color: #C4C4C4;";
 				}
@@ -142,9 +145,10 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		
 		echo "<div class='NarrowContent'>\n";
 		echo "<table border='0' cellpadding='3' cellspacing='3' width='100%'>";
-		echo "<tr><td bgcolor='#00FF00' width='40px' style='border-style: solid; border-width: thin'>&nbsp;</td><td width='25%'><span class='DefaultOutputSpan'>Allocated</span></td>";
-		echo "<td bgcolor='#FF0000' width='40px' style='border-style: solid; border-width: thin'>&nbsp;</td><td width='25%'><span class='DefaultOutputSpan'>Over allocated</span></td>";
-		echo "<td bgcolor='#FFFFFF' width='40px' style='border-style: solid; border-width: thin'>&nbsp;</td><td width='25%'><span class='DefaultOutputSpan'>Under allocated</span></td></tr>";
+		echo "<tr><td bgcolor='#00FF00' width='10%' style='border: solid 1px'>&nbsp;</td><td width='15%'><span class='DefaultOutputSpan'>Allocated</span></td>";
+		echo "<td bgcolor='#FF0000' width='10%' style='border: solid 1px'>&nbsp;</td><td width='15%'><span class='DefaultOutputSpan'>Over Allocated</span></td>";
+		echo "<td bgcolor='#0000CC' width='10%' style='border: solid 1px'>&nbsp;</td><td width='15%'><span class='DefaultOutputSpan'>Both Over And Under Allocated</span></td>";
+		echo "<td bgcolor='#FFFFFF' width='10%' style='border: solid 1px'>&nbsp;</td><td width='15%'><span class='DefaultOutputSpan'>Under Allocated</span></td></tr>";
 		echo "</table>\n";
 		echo "</div\n";
 		

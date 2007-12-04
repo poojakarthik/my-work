@@ -530,21 +530,23 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				if ((DBO()->RecurringCharge->Nature->Value == NATURE_DR) && ($fltAmountOwing > 0.0))
 				{
 					// The additional charge is equal to the money left owing plus the cancellation fee (excluding GST)
-					$fltChargeAmount = $fltAmountOwing + DBO()->RecurringCharge->CancellationFee->Value;
-					DBO()->Charge->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
-					DBO()->Charge->Account = DBO()->RecurringCharge->Account->Value;
-					DBO()->Charge->Service = DBO()->RecurringCharge->Service->Value;
-					DBO()->Charge->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
-					DBO()->Charge->CreatedOn = GetCurrentDateForMySQL();
-					DBO()->Charge->ApprovedBy = NULL;
-					DBO()->Charge->ChargeType = DBO()->RecurringCharge->ChargeType->Value;
-					DBO()->Charge->Description = "CANCELLATION: ". DBO()->RecurringCharge->Description->Value;
-					DBO()->Charge->ChargedOn = NULL;
-					DBO()->Charge->Nature = NATURE_DR;
-					DBO()->Charge->Amount = $fltChargeAmount;
-					DBO()->Charge->Invoice = NULL;
-					DBO()->Charge->Notes = DBO()->Note->Note->Value;
-					DBO()->Charge->Status = CHARGE_APPROVED;
+					$fltChargeAmount			= $fltAmountOwing + DBO()->RecurringCharge->CancellationFee->Value;
+					DBO()->Charge->AccountGroup	= DBO()->RecurringCharge->AccountGroup->Value;
+					DBO()->Charge->Account		= DBO()->RecurringCharge->Account->Value;
+					DBO()->Charge->Service		= DBO()->RecurringCharge->Service->Value;
+					DBO()->Charge->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
+					DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
+					DBO()->Charge->ApprovedBy	= NULL;
+					DBO()->Charge->ChargeType	= DBO()->RecurringCharge->ChargeType->Value;
+					DBO()->Charge->Description	= "CANCELLATION: ". DBO()->RecurringCharge->Description->Value;
+					DBO()->Charge->ChargedOn	= NULL;
+					DBO()->Charge->Nature		= NATURE_DR;
+					DBO()->Charge->Amount		= $fltChargeAmount;
+					DBO()->Charge->Invoice		= NULL;
+					DBO()->Charge->Notes		= DBO()->Note->Note->Value;
+					DBO()->Charge->LinkType		= CHARGE_LINK_RECURRING_CANCEL;
+					DBO()->Charge->LinkId		= DBO()->RecurringCharge->Id->Value;
+					DBO()->Charge->Status		= CHARGE_APPROVED;
 					
 					// Save the charge
 					if (!DBO()->Charge->Save())
