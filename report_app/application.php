@@ -118,8 +118,8 @@
 			// Instanciate & Run Data Report
 			$selReport = new StatementSelect($arrDataReport['SQLTable'], $arrColumns, $arrDataReport['SQLWhere'], NULL, NULL, $arrDataReport['SQLGroupBy']);
 			
-			Debug($arrWhere);
-			die;
+			//Debug($arrWhere);
+			//die;
 			
 			if (($intResultCount = $selReport->Execute($arrWhere)) === FALSE)
 			{
@@ -691,12 +691,17 @@
  			$arrTemplate = Array();
  			$strFileName = $arrReport['FileName'];
  			
+ 			//Debug($strFileName);
+ 			
+ 			//Debug($arrTemplate);
+ 			
  			preg_match_all("/<([\d\w\s\:\(\)]+)>/misU", $strFileName, $arrTemplate, PREG_SET_ORDER);
  			
  			foreach ($arrTemplate as $arrMatch)
  			{
  				// Get the value we want
- 				$arrVariable = explode('::', $arrMatch[1]);
+ 				$arrVariable = explode('::', $arrMatch[1]); 				
+ 				//Debug($arrMatch[0]);
  				
 				if (count($arrVariable) == 2)
 				{
@@ -713,15 +718,15 @@
 					switch (strtoupper($arrVariable[0]))
 					{
 						case 'DATE()':
-							$strVariable	= "d/m/Y";
+							$strVariable	= date("d/m/Y");
 							break;
 						
 						case 'DATETIME()':
-							$strVariable	= "d/m/Y H:i:s";
+							$strVariable	= date("d/m/Y H:i:s");
 							break;
 						
 						case 'TIME()':
-							$strVariable	= "H:i:s";
+							$strVariable	= date("H:i:s");
 							break;
 						
 						default:
@@ -761,6 +766,8 @@
 	 				break;
 	 		}
  		}
+ 		
+ 		//Debug($strFileName);
  		
  		return $strFileName;
  	}
