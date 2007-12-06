@@ -982,4 +982,89 @@ function GetPlanScheduledForNextBillingPeriod($intServiceId, $mixNow=NULL)
 	return ($arrRatePlan) ? $arrRatePlan['RatePlan'] : FALSE;
 }
 
+//------------------------------------------------------------------------//
+// MakeCSVLine
+//------------------------------------------------------------------------//
+/**
+ * MakeCSVLine()
+ *
+ * Returns a string which defines the passed array as a csv record
+ *
+ * Returns a string which defines the passed array as a csv record
+ *
+ * @param	array	$arrFields		The fields that you want to format as a CSV record (can be associative)
+ * @param	array	$arrFieldOrder	optional, Array defining the order that the elements of $arrFields should be added to the CSV record
+ *									Set it to NULL to use the default order of $arrFields (defaults to NULL)
+ * @param	string	$strDelimiter	optional, character used to delimit fields (deaults to a comma) This must be 1 char long
+ * @param	string	$strEnclosure	optional, character used to enclose string fields (defaults to a double-quote char) This must be 1 char long
+ *									$strDelimiter != $strEnclosure
+ *
+ * @return	string					$arrField formatted as a CSV record complete with new line character at the end of it
+ *
+ * @function
+ */
+function MakeCSVLine($arrFields, $arrFieldOrder=NULL, $strDelimiter=',', $strEnclosure='"')
+{
+	if (($strDelimiter == $strEnclosure) || (strlen($strDelimiter) != 1) || (strlen($strEnclosure) != 1))
+	{
+		// The parameters have not been defined properly
+		// I should probably remove this check, and include it in the docblock as a percondition
+		return FALSE;
+	}
+
+	if ($arrFieldOrder == NULL)
+	{
+		$arrFieldOrder = array_keys($arrFields);
+	}
+	
+	$strEscapedEnclosure = $strEnclosure . $strEnclosure;
+	
+	$strCSVLine = "";
+	foreach ($arrFieldOrder as $mixKey)
+	{
+		$mixField = $arrFields[$mixKey];
+		
+		if ($mixField === TRUE)
+		{
+			$strCSVLine .= 'TRUE';
+		}
+		elseif ($mixField === FALSE)
+		{
+			$strCSVLine .= 'FALSE';
+		}
+		elseif ($mixField !== NULL)
+		{
+			if (is_string($mixField))
+			{
+				// Escape all characters within the string, which match the enclosure character
+				$mixField = str_replace($strEnclosure, $strEscapedEnclosure, $mixField);
+			
+				// Strings have to be properly enclosed
+				$strCSVLine .= $strEnclosure . $mixField . $strEnclosure;
+			}
+			else
+			{
+				// numbers don't have to be enclosed (I'm assuming this is the case, even for numbers expressed in Scientific Notation)
+				$strCSVLine .= $mixField;
+			}
+		}
+		else
+		{
+			// The value === NULL.  Don't do anything
+		}
+		
+		// Add the field delimiter
+		$strCSVLine .= $strDelimiter;
+	}
+	
+	// Remove the very last delimiter
+	$strCSVLine = rtrim($strCSVLine, $strDelimiter);
+	
+	// Add the new line character to the end of the line
+	$strCSVLine .= "\n";
+	
+	return $strCSVLine;
+}
+
+
 ?>

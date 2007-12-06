@@ -1294,37 +1294,44 @@ div.Appointment div.Resize
 
 /***************************************Date Time Picker***********************/
 /* Date Time Calendar Styles */
-.date-time td {
+.date-time td
+{
 	cursor: default;
 	text-align: center !important;
 	border-bottom: 1px dotted #c0c0c0;
 }
 
-.date-time .bar {
+.date-time .bar
+{
 	text-align: center;
 	background: #F2F5FF;
 	padding: 2px 0 2px;
 }
 
-.date-time .date-time-active:hover {
+.date-time .date-time-active:hover
+{
 	color: #fff;
 	background: #4b699f;
 }
 
-.date-time td.date-time-active-today {
+.date-time td.date-time-active-today
+{
 	border: 1px solid #4b699f;
 }
 
-.date-time button {
+.date-time button
+{
 	border: none;
 	padding: 0;
 }
 
-.date-time .title {
+.date-time title
+{
 	font-weight: bold;
 }
 
-.date-time th {
+.date-time th
+{
 	background: #fff;
 	color: #000;
 	width: 18px;
@@ -1333,11 +1340,13 @@ div.Appointment div.Resize
 	margin-top: 2px;
 }
 
-.date-time option, .date-time select {
+.date-time option, .date-time select 
+{
 	font-size: 10px;
 }
 
-.date-time {
+.date-time 
+{
 	border: 2px solid #4b699f;
 	background: #F2F5FF;
 	padding: 1px;

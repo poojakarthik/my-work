@@ -237,7 +237,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		 *		Check that a Name and Description have been declared	(implemented)
 		 *		Check that a service type has been declared				(implemented)
 		 *		Check that a record type has been declared				(implemented)
-		 *		Check that the Name is unique when compared with all other Rate Groups										(implemented)
+		 *		Check that the Name is unique when compared with all other Rate Groups of the declared RecordType			(implemented)
 		 *		For every distination associated with the context of the RecordType of the RateGroup:	
 		 *			Check that every minute of every day of the week is accounted for by a Rate and there are no overlaps	(implemented)
 		 */
@@ -263,20 +263,20 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		if (DBO()->RateGroup->Id->Value == 0)
 		{
 			// The Rate Group name should not be in the database
-			$strWhere = "Name=<Name>";
+			$strWhere = "Name=<Name> AND RecordType=<RecordType>";
 		}
 		else
 		{
 			// We are working with an already saved draft.  Check that the New name is not used by any other RateGroup
-			$strWhere = "Name=<Name> AND Id != ". DBO()->RateGroup->Id->Value;
+			$strWhere = "Name=<Name> AND RecordType=<RecordType> AND Id != ". DBO()->RateGroup->Id->Value;
 		}
 		$selRateGroupName = new StatementSelect("RateGroup", "Id", $strWhere);
-		if ($selRateGroupName->Execute(Array("Name" => DBO()->RateGroup->Name->Value)) > 0)
+		if ($selRateGroupName->Execute(Array("Name" => DBO()->RateGroup->Name->Value, "RecordType" => DBO()->RateGroup->RecordType->Value)) > 0)
 		{
-			// The Name is already being used by another rate group
+			// The Name is already being used by another rate group of this RecordType
 			DBO()->RateGroup->Name->SetToInvalid();
 			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
-			return "ERROR: This name is already used by another RateGroup<br />Please choose a unique name";
+			return "ERROR: This name is already used by another RateGroup of this Record Type<br />Please choose a unique name";
 		}
 		
 		
@@ -730,11 +730,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					// Check that the rate applies for this day
 					if ($arrRate[$strDay])
 					{
-				
-/*if ($strDay == 'Tuesday')
-{
-	Debug($arrRate);
-}*/
 						if ($arrRate['FirstInterval'] > $intNextIntervalToAccountFor)
 						{
 							// There is a gap in the Rate applying to this day.  This means there is an underallocation for the day
@@ -742,11 +737,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 							$bolUnderAllocated = TRUE;
 							$arrDestinationSummary[$intDestination][$strDay]['UnderAllocations'][] = Array(	"Start" => $intNextIntervalToAccountFor, 
 																											"End" => $arrRate['FirstInterval'] - 1);
-/*if ($strDay == 'Tuesday')
-{
-	echo "And Under allocation has been found.  The under allocation is for intervals $intNextIntervalToAccountFor - ". ($arrRate['FirstInterval']-1) ."<br />";
-}*/
-																											
 						}
 						elseif ($arrRate['FirstInterval'] < $intNextIntervalToAccountFor)
 						{
@@ -776,19 +766,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 							$intNextIntervalToAccountFor = $arrRate['LastInterval'] + 1;
 							$intLatestLastInterval = $arrRate['LastInterval'];
 						}
-/*if ($strDay == 'Tuesday')
-{
-	echo "<br /> NextIntervalToAccountFor = $intNextIntervalToAccountFor, LatestLastInterval = $intLatestLastInterval";
-}*/
-						
-						
 					}
 				}
-/*if ($strDay == 'Tuesday')
-{
-	Debug($arrDestinationSummary[$intDestination][$strDay]);
-	die;
-}*/
 				
 				// Check that the latest LastInterval is the last interval of the day 
 				if ($intLatestLastInterval < $intLastIntervalForDay)
@@ -1235,4 +1214,87 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$this->LoadPage('rate_group_override');
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// ExportRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * ExportRateGroup()
+	 *
+	 * Exports a RateGroup as a csv file
+	 * 
+	 * Exports a RateGroup as a csv file
+	 * This method expects the following values to be defined:
+	 *	Either:
+	 *	(
+	 *			When exporting a skeleton csv file for a rate group
+	 *			DBO()->RecordType->Id			RecordType of the RateGroup
+	 *	)
+	 *	OR
+	 *	(
+	 *			When exporting a csv file based on a rate group
+	 *			DBO()->RateGroup->Id			Id of the RateGroup to export
+	 *	)
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 */
+	function ExportRateGroup()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+		
+		// Initialise variables
+		$strRateGroupCSV = "";
+		$strFilename = "";
+		
+		if (DBO()->RateGroup->Id->Value)
+		{
+			// Export the RateGroup defined in DBO()->RateGroup
+			
+			// Use the funciton MakeCSVLine function to build the csv file and store it in $strRateGroupCSV
+			DBO()->RateGroup->Load();
+			DBO()->RecordType->Id = DBO()->RateGroup->RecordType->Value;
+			DBO()->RecordType->Load();
+			
+			$strFilename = DBO()->RecordType->Name->Value ." - ". DBO()->RateGroup->Name->Value;
+			
+		}
+		elseif (DBO()->RecordType->Id->Value)
+		{
+			// Export a skeleton csv for the given RecordType defined in RecordType
+			DBO()->RecordType->Load();
+			
+			$strFilename = DBO()->RecordType->Name->Value ." - Skeleton";
+			
+			// For each Destination associated with the RecordType add a line to the CSV file
+			// Use default values for everything.  StartTime = "00:00:00", EndTime = "23:59:59", and Mon - Sun = 1
+			
+		}
+		else
+		{
+			// The Input parameters have not been set up properly for this function
+			//TODO! The user should probably be warned, however this function is not being triggered via an ajax call, 
+			// so we can't use popups.  For now it is acceptable to just have the process die
+			die;
+		}
+		
+		// Convert the filename to lower case and use underscores instead of spaces
+		$strFilename = strtolower($strFilename);
+		$strFilename = str_replace(" ", "_", $strFilename);
+		
+		// Send the csv file to the user
+		
+		header("Content-Type: text/plain");
+		header("Content-Disposition: attachment; filename=\"$strFilename\"");
+		echo $strRateGroupCSV;
+		exit;
+
+		
+		
+	}
+	
+	
 }

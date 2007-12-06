@@ -139,13 +139,9 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		{
 			DBO()->Account->BusinessName->RenderOutput();			
 		}
-		
-		else
+		elseif (DBO()->Account->TradingName->Value != NULL)
 		{
-			if (DBO()->Account->TradingName->Value != NULL)
-			{
-				DBO()->Account->TradingName->RenderOutput();
-			}
+			DBO()->Account->TradingName->RenderOutput();
 		}
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderOutput();
@@ -239,8 +235,8 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		echo "<tr><td><span>Indefinate End :</span></td><td colspan='2'><input type='checkbox' name='RateGroup.IndefinateEnd' $strIndefinateEnd onClick='$strIndefinateEndClick'  style='margin-left: 1px; margin-top: 2px; outline-style:	solid; outline-width: 1px;'>";
 		
 		echo "<tr><td colspan='4'>&nbsp;</td></tr>\n";
-		echo "<tr id='StartSection' style='visibility: $strStartSection'><td><span>Start Date (dd/mm/yyyy) :</span></td><td><span><input type='text' id='ServiceRateGroup.StartDate' name='ServiceRateGroup.StartDate' size='22' " . $strStartDateInput . "</span></td><td align='center'><a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.StartDate\"), \"ServiceRateGroup.StartDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'><img src='img/template/calendar_small.png' width='16' height='16' alt='Calendar date picker'></a></td></tr>\n";
-		echo "<tr id='EndSection' style='visibility: $strEndSection'><td><span>End Date (dd/mm/yyyy) :</span></td><td><span><input type='text' id='ServiceRateGroup.EndDate' name='ServiceRateGroup.EndDate' size='22' " . $strEndDateInput . "</span></td><td align='center'><a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.EndDate\"), \"ServiceRateGroup.EndDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'><img src='img/template/calendar_small.png' width='16' height='16' alt='Calendar date picker'></a></td></tr>\n";		
+		echo "<tr id='StartSection' style='visibility: $strStartSection'><td><span>Start Date (dd/mm/yyyy) :</span></td><td><span><input type='text' id='ServiceRateGroup.StartDate' name='ServiceRateGroup.StartDate' size='22' $strStartDateInput</span></td><td align='center'><a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.StartDate\"), \"ServiceRateGroup.StartDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'><img src='img/template/calendar_small.png' width='16' height='16' title='Calendar date picker' /></a></td></tr>\n";
+		echo "<tr id='EndSection' style='visibility: $strEndSection'><td><span>End Date (dd/mm/yyyy) :</span></td><td><span><input type='text' id='ServiceRateGroup.EndDate' name='ServiceRateGroup.EndDate' size='22' $strEndDateInput</span></td><td align='center'><a href='javascript:showChooser(document.getElementById(\"ServiceRateGroup.EndDate\"), \"ServiceRateGroup.EndDate\", \"StartDateCalender\", 2007, 2037, \"d/m/Y\", false, true, true);'><img src='img/template/calendar_small.png' width='16' height='16' title='Calendar date picker' /></a></td></tr>\n";
 
 		echo "</table>\n";
 

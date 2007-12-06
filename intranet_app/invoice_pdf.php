@@ -35,7 +35,7 @@
 		
 		$strInvoiceFilename = GetPdfFilename($_GET['Account'], $_GET['Year'], $_GET['Month']);
 		
-		header ("Content-Type: application/pdf");
+		header("Content-Type: application/pdf");
 		header("Content-Disposition: attachment; filename=\"$strInvoiceFilename\"");
 		echo $strInvoice;
 		exit;
