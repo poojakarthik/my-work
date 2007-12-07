@@ -453,12 +453,17 @@
 			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
 			if ($selLastBillDate->Execute($arrAccount))
 			{
+				// Previous Invoice
 				$arrLastBillDate	= $selLastBillDate->Fetch();
 				$intLastBillDate	= strtotime($arrLastBillDate['BillingDate']);
 			}
 			else
 			{
-				$intLastBillDate	= NULL;
+				// No Previous Invoice: Calculate what it should have been
+				//$strBillingDate		= str_pad($arrAccount['BillingDate'], 2, '0', STR_PAD_LEFT);
+				$strBillingDate		= '01';
+				$intDate			= strtotime(date("Y-m-01", time()));
+				$intLastBillDate	= strtotime("-{$arrAccount['BillingFreq']} month", strtotime(date("Y-m-$strBillingDate", $intDate)));
 			}
 			$arrSharedPlans	= Array();
 			foreach($arrServices as $arrService)
@@ -476,21 +481,18 @@
 					$intPlanDate	= strtotime($arrPlanDate['StartDatetime']);
 					
 					// If the first CDR is unbilled
-					if ($intCDRDate > $intLastBillDate || !$intLastBillDate)
+					if (!$intCDRDate)
 					{
-						if (!$intCDRDate)
-						{
-							// No CDRs
-							$arrService['MinMonthly']	= 0;
-						}
-						else
-						{
-							// Prorate the Minimum Monthly
-							$intProratePeriod			= time() - $intCDRDate;
-							$intBillingPeriod			= time() - $intLastBillDate;
-							$fltProratedMinMonthly		= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
-							$arrService['MinMonthly']	= $fltProratedMinMonthly;
-						}
+						// No CDRs
+						$arrService['MinMonthly']	= 0;
+					}
+					elseif ($intCDRDate > $intLastBillDate)
+					{
+						// Prorate the Minimum Monthly
+						$intProratePeriod			= time() - $intCDRDate;
+						$intBillingPeriod			= time() - $intLastBillDate;
+						$fltProratedMinMonthly		= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
+						$arrService['MinMonthly']	= $fltProratedMinMonthly;
 					}
 				}
 				
