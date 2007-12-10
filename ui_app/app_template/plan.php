@@ -115,8 +115,12 @@ class AppTemplatePlan extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	//TODO! Stick on a docblock for this, as soon as you work out what it is for
+	// I think it is for the Rate Search functionality which is linked to the "Service RatePlan Details" page
 	function RateList()
 	{
+		AuthenticatedUser()->CheckAuth();
+		
 		$intRatePlan = DBO()->RatePlan->Id->Value;		
 		//$arrColumns = Array('Rate.Id', 'Rate.Description', 'RateGroup.Name', 'RecordType.Description as rategroup');
 		$arrColumns = Array('Id' => 'Rate.Id', 'Description' => 'Rate.Description', 'Name' => 'RateGroup.Name', 'RateGroup' => 'RecordType.Description');
@@ -131,13 +135,10 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RateList->OrderBy("Rate.Description ");
 		DBL()->RateList->SetLimit(30);
 		DBL()->RateList->Load();
-
-		AuthenticatedUser()->CheckAuth();
 	
 		$this->LoadPage('plan_rates');
 
 		return TRUE;
-	
 	}
 	
 	//------------------------------------------------------------------------//
@@ -168,7 +169,6 @@ class AppTemplatePlan extends ApplicationTemplate
 		
 		// Context menu
 		// Nothing to add
-		
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();

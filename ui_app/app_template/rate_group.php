@@ -1208,18 +1208,19 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 			
 			// Fire the EVENT_ON_SERVICE_PLAN_UPDATE Event (this constant hasn't been made yet)
-			//TODO! for now you could just get it to reload the current page
+			//TODO! for now the EVENT_ON_SERVICE_UPDATE will suffice
 			return TRUE;
 		}
+		
 		$this->LoadPage('rate_group_override');
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
-	// ExportRateGroup
+	// Export
 	//------------------------------------------------------------------------//
 	/**
-	 * ExportRateGroup()
+	 * Export()
 	 *
 	 * Exports a RateGroup as a csv file
 	 * 
@@ -1240,7 +1241,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *
 	 * @method
 	 */
-	function ExportRateGroup()
+	function Export()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -1261,6 +1262,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$strFilename = DBO()->RecordType->Name->Value ." - ". DBO()->RateGroup->Name->Value;
 			
 			// Use the funciton MakeCSVLine function (found in ui_app/functions.php) to build the csv file and store it in $strRateGroupCSV
+			$strRateGroupCSV = "This CSV defines a specific RateGroup";
 		}
 		elseif (DBO()->RecordType->Id->Value)
 		{
@@ -1271,7 +1273,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			
 			// For each Destination associated with the RecordType add a line to the CSV file
 			// Use default values for everything.  StartTime = "00:00:00", EndTime = "23:59:59", and Mon - Sun = 1
-			
+			$strRateGroupCSV = "This CSV defines a skelton csv file for defining RateGroups of the ". DBO()->RecordType->Name->Value ." RecordType";
 		}
 		else
 		{
@@ -1282,7 +1284,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// Convert the filename to lower case and use underscores instead of spaces
-		$strFilename = strtolower($strFilename);
+		$strFilename = strtolower($strFilename) . ".csv";
 		$strFilename = str_replace(" ", "_", $strFilename);
 		
 		// Send the csv file to the user

@@ -139,15 +139,15 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			// Create the buttons
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
 			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to abort adding this rate plan?\", Vixen.RatePlanAdd.ReturnToCallingPage, null, null, \"Yes\", \"No\")");
-			//$this->AjaxSubmit("Save as Draft");
 			$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate Plan as a Draft?\", Vixen.RatePlanAdd.SaveAsDraft, null, null, \"Yes\", \"No\")");
-			//$this->AjaxSubmit("Commit");
 			$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate Plan?<br />The Rate Plan cannot be edited once it is committed\", Vixen.RatePlanAdd.Commit, null, null, \"Yes\", \"No\")");
+			//$this->AjaxSubmit("Save as Draft");
+			//$this->AjaxSubmit("Commit");
 			echo "</div></div>\n";
 			
 			$this->FormEnd();
 			
-			// Initialise the Rate Groups Assocciated with this form
+			// Initialise the Rate Groups assocciated with this form
 			$intServiceType = DBO()->RatePlan->ServiceType->Value;
 			echo "<script type='text/javascript'>Vixen.RatePlanAdd.ChangeServiceType($intServiceType);</script>\n";
 			
@@ -280,7 +280,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		// Render a table for the user to specify a Rate Group for each Record Type required of the Service Type
 		echo "<h2 class='Plan'>Rate Groups</h2>\n";
 		Table()->RateGroups->SetHeader("&nbsp;", "Record Type", "Rate Group", "&nbsp;", "Fleet Rate Group", "&nbsp;");
-		Table()->RateGroups->SetWidth("1%", "25%", "29%", "8%", "29%", "8%");
+		Table()->RateGroups->SetWidth("1%", "25%", "32%", "5%", "32%", "5%");
 		Table()->RateGroups->SetAlignment("Center", "Left", "Left", "Center", "Left", "Center");
 		
 		foreach (DBL()->RecordType as $dboRecordType)
@@ -323,20 +323,12 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					
 					// Flag this option as being selected if it is the currently selected RateGroup for this RecordType
 					$strSelected = (!DBO()->{$strObject}->{$strProperty}->IsSet && $dboRateGroup->Selected->IsSet) ? "selected='selected'" : "";
-					$strRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strName ."</option>";
+					$strRateGroupCell .= "<option value='{$dboRateGroup->Id->Value}' $strSelected $strDraft>$strName</option>";
 				}
 			}
 			$strRateGroupCell .= "      </select>\n";
 			$strRateGroupCell .= "   </div>\n";
 			$strRateGroupCell .= "</div>\n";
-			
-			// Build the Edit Rate Group Button
-			$strEditRateGroupHref		= "javascript: Vixen.RatePlanAdd.EditRateGroup(". $dboRecordType->Id->Value .", false)";
-			$strRateGroupActionsCell	= "<span class='DefaultOutputSpan'><a href='$strEditRateGroupHref' style='color:blue; text-decoration: none;'>Edit</a></span>";
-			
-			// Build the Add Rate Group Button
-			$strAddRateGroupHref		= "javascript: Vixen.RatePlanAdd.AddRateGroup(". $dboRecordType->Id->Value .", false)";
-			$strRateGroupActionsCell	.= "&nbsp;<span class='DefaultOutputSpan'><a href='$strAddRateGroupHref' style='color:blue; text-decoration: none;'>New</a></span>";
 			
 			// Build the FleetRateGroup Combobox
 			$strProperty	= "FleetRateGroupId";
@@ -373,12 +365,41 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			$strFleetRateGroupCell .= "   </div>\n";
 			$strFleetRateGroupCell .= "</div>\n";
 
-			// Build the Edit Fleet Rate Group Button
-			$strEditRateGroupHref			= "javascript: Vixen.RatePlanAdd.EditRateGroup(". $dboRecordType->Id->Value .", true)";
-			$strFleetRateGroupActionsCell	= "<span class='DefaultOutputSpan'><a href='$strEditRateGroupHref' style='color:blue; text-decoration: none;'>Edit</a></span>";
-			// Build the Add Fleet Rate Group Button
-			$strAddRateGroupHref			= "javascript: Vixen.RatePlanAdd.AddRateGroup(". $dboRecordType->Id->Value .", true)";
-			$strFleetRateGroupActionsCell	.= "&nbsp;<span class='DefaultOutputSpan'><a href='$strAddRateGroupHref' style='color:blue; text-decoration: none;'>New</a></span>";
+			// Build the buttons
+			if ($dboRecordType->Context->Value == 0)
+			{
+				// The RecordType does not make use of multiple destinations.  Don't allow exporting or importing
+				
+				// Build the Edit Rate Group Button
+				$strEditRateGroupHref		= "javascript: Vixen.RatePlanAdd.EditRateGroup({$dboRecordType->Id->Value}, false)";
+				$strRateGroupActionsCell	= "<span><a href='$strEditRateGroupHref' title='Edit'><img src='img/template/edit.png'></img></a></span>";
+				
+				// Build the Add Rate Group Button
+				$strAddRateGroupHref		= "javascript: Vixen.RatePlanAdd.AddRateGroup({$dboRecordType->Id->Value}, false)";
+				$strRateGroupActionsCell	.= "&nbsp;<span><a href='$strAddRateGroupHref' title='New'><img src='img/template/new.png'></img></a></span>";
+				
+				// Build the Edit Fleet Rate Group Button
+				$strEditRateGroupHref			= "javascript: Vixen.RatePlanAdd.EditRateGroup({$dboRecordType->Id->Value}, true)";
+				$strFleetRateGroupActionsCell	= "<span><a href='$strEditRateGroupHref' title='Edit'><img src='img/template/edit.png'></img></a></span>";
+				// Build the Add Fleet Rate Group Button
+				$strAddRateGroupHref			= "javascript: Vixen.RatePlanAdd.AddRateGroup({$dboRecordType->Id->Value}, true)";
+				$strFleetRateGroupActionsCell	.= "&nbsp;<span><a href='$strAddRateGroupHref' title='New'><img src='img/template/new.png'></img></a></span>";
+			}
+			else
+			{
+				// The RecordType uses multiple destinations.  Use RateGroup Import/Export functionality instead of the standard Edit/New RateGroup functionality
+				
+				// Build the Import Rate Group Button (This is used for both Fleet and Normal RateGroups)
+				$strImportRateGroupHref		= Href()->ImportRateGroup($dboRecordType->Id->Value);
+				$strRateGroupActionsCell	= $strFleetRateGroupActionsCell = "<span><a href='$strImportRateGroupHref' title='Import'><img src='img/template/import.png'></img></a></span>";
+				
+				// Build the Export Rate Group Buttons
+				$strExportRateGroup			= "javascript: Vixen.RatePlanAdd.ExportRateGroup({$dboRecordType->Id->Value}, false)";
+				$strExportFleetRateGroup	= "javascript: Vixen.RatePlanAdd.ExportRateGroup({$dboRecordType->Id->Value}, true)";
+				
+				$strRateGroupActionsCell		.= "&nbsp<span><a href='$strExportRateGroup' title='Export'><img src='img/template/export.png'></img></a></span>";
+				$strFleetRateGroupActionsCell	.= "&nbsp;<span><a href='$strExportFleetRateGroup' title='Export'><img src='img/template/export.png'></img></a></span>";
+			}
 
 			// Add this row to the table
 			Table()->RateGroups->AddRow($strRequiredCell, $strRecordTypeCell, $strRateGroupCell, $strRateGroupActionsCell, $strFleetRateGroupCell, $strFleetRateGroupActionsCell);

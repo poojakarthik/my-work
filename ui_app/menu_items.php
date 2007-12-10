@@ -380,6 +380,34 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// ImportRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * ImportRateGroup()
+	 *
+	 * Compiles the Href to be executed when the ImportRateGroup menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ImportRateGroup menu item is clicked
+	 *
+	 * @param	int		$intRecordTypeId			id of the RecordType, of which you want to import a RateGroup of
+	 *
+	 * @return	string								Href to be executed when the ImportRateGroup menu item is clicked
+	 *
+	 * @method
+	 */
+	function ImportRateGroup($intRecordTypeId)
+	{
+		// Setup data to send
+		$arrData['Objects']['RecordType']['Id'] = $intRecordTypeId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		//return "javascript:Vixen.Popup.ShowAjaxPopup(\"ImportRateGroupPopupId\", \"medium\", null, \"RateGroup\", \"Import\", $strJsonCode)";	
+		return "javascript:Vixen.Popup.Alert(\"RateGroup import functionality has not been implemented yet\")";
+	}
+	
+	//------------------------------------------------------------------------//
 	// ChangePlan
 	//------------------------------------------------------------------------//
 	/**

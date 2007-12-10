@@ -341,7 +341,58 @@ function VixenRatePlanAddClass()
 		Vixen.Popup.ShowAjaxPopup("AddRateGroupPopup", "large", "Add New Rate Group", "RateGroup", "Add", objObjects);
 	}
 	
-	
+	//------------------------------------------------------------------------//
+	// ExportRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * ExportRateGroup
+	 *
+	 * This is executed when the user wants to export a Rate Group
+	 *  
+	 * This is executed when the user wants to export a Rate Group
+	 *
+	 * @param	int		intRecordType		RecordType Id of the Rate Group to export
+	 * @param	bool	bolIsFleet			TRUE if the Rate Group to export is a fleet Rate Group. FALSE for normal RateGroups
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.ExportRateGroup = function(intRecordType, bolIsFleet)
+	{
+		var elmRateGroupCombo	= null;;
+		var strRateGroupCombo	= "";
+		var strGetVariables		= "";
+		
+		// If a RateGroup is currently selected, then the user will export this RateGroup
+		// If a RateGroup isn't selected, then the user will export a skeleton RateGroup CSV file specific to the RecordType declared
+
+		// Find if a Rate Group has been selected
+		if (bolIsFleet)
+		{
+			strRateGroupCombo = "RateGroup" + intRecordType + ".FleetRateGroupId";
+		}
+		else
+		{
+			strRateGroupCombo = "RateGroup" + intRecordType + ".RateGroupId";
+		}
+
+		elmRateGroupCombo = document.getElementById(strRateGroupCombo);
+		
+		if (elmRateGroupCombo.value != 0)
+		{
+			// A RateGroup has been selected, so set up the objects to send to the AppTemplate
+			strGetVariables = "RateGroup.Id=" + elmRateGroupCombo.value;
+		}
+		else
+		{
+			// A RateGroup has not been selected.  A skeleton csv file for the given RecordType will be exported
+			strGetVariables = "RecordType.Id=" + intRecordType;
+		}
+		
+		// Call the Export RateGroup functionality
+		window.location = "vixen.php/RateGroup/Export/?" + strGetVariables;
+	}
+
 	//------------------------------------------------------------------------//
 	// ReturnToCallingPage
 	//------------------------------------------------------------------------//
