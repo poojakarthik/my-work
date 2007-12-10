@@ -10,8 +10,6 @@
 // rate_group
 //----------------------------------------------------------------------------//
 /**
- * rate_group-------------------------------------------------//
-/**
  * rate_group
  *
  * contains all ApplicationTemplate extended classes relating to Rate Group functionality
@@ -1251,13 +1249,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strRateGroupCSV = "";
 		$strFilename = "";
 		
-		$arrRateGroupColumns = Array("RateGroup Id",
-															"Name",
-															"Description",
-															"Service Type",
-															"Record Type");		
+		$arrRateGroupColumns = Array("RateGroup Id", "Name", "Description", "Service Type",	"Record Type");		
 
-			$arrRateColumnNames = Array("Rate Id", 
+		$arrRateColumnNames = Array("Rate Id", 
 												"Destination Code",
 												"Destination",												
 												"Name", 
@@ -1299,12 +1293,13 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			
 			$strFilename = DBO()->RecordType->Name->Value ." - ". DBO()->RateGroup->Name->Value;
 			
-			$arrRateGroup = Array(
-												DBO()->RateGroup->Id->Value,
-												DBO()->RateGroup->Name->Value,
-												DBO()->RateGroup->Description->Value,
-												DBO()->RateGroup->ServiceType->Value,
-												DBO()->RateGroup->RecordType->Value);
+			$arrRateGroup = Array	(
+										DBO()->RateGroup->Id->Value,
+										DBO()->RateGroup->Name->Value,
+										DBO()->RateGroup->Description->Value,
+										DBO()->RateGroup->ServiceType->Value,
+										DBO()->RateGroup->RecordType->Value
+									);
 			
 			
 			
@@ -1318,41 +1313,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			
 			$selRates = new StatementSelect("Rate AS R LEFT OUTER JOIN Destination AS D ON R.Destination = D.Code", $arrColumnNames, "R.Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)","D.Description, R.Name");
 			
-			/*
-			$selRates = new StatementSelect("Rate AS R LEFT OUTER JOIN Destination AS D ON R.Destination = D.Code", "R.Id, 
-																																										R.Description,
-																																										R.Destination,
-																																										D.Description, 
-																																										R.Name,
-																																										R.StartTime, 
-																																										R.EndTime, 
-																																										R.Monday, 
-																																										R.Tuesday, 
-																																										R.Wednesday, 
-																																										R.Thursday, 
-																																										R.Friday, 
-																																										R.Saturday, 
-																																										R.Sunday,
-																																										R.PassThrough,
-																																										R.Uncapped,
-																																										R.Prorate,
-																																										R.StdMinCharge,
-																																										R.StdFlagfall,
-																																										R.StdUnits,
-																																										R.StdRatePerUnit,
-																																										R.StdMarkup,
-																																										R.StdPercentage,
-																																										R.CapUnits,
-																																										R.CapCost,
-																																										R.CapUsage,
-																																										R.CapLimit,
-																																										R.ExsFlagfall,
-																																										R.ExsUnits,
-																																										R.ExsRatePerUnit,
-																																										R.ExsMarkup,
-																																										R.ExsPercentage",
-																																										"R.Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)","D.Description, R.Name");
-			*/								
 			$mixNumRecords = $selRates->Execute(Array("RateGroupId" => DBO()->RateGroup->Id->Value));
 			$arrRates = $selRates->FetchAll();
 
@@ -1370,23 +1330,17 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			// Export a skeleton csv for the given RecordType defined in RecordType
 			DBO()->RecordType->Load();
 			
-						$arrBlankRateGroup = Array(
-												NULL,
-												NULL,
-												NULL,
-												DBO()->RecordType->ServiceType->Value,
-												DBO()->RecordType->Id->Value);
+			$arrBlankRateGroup = Array(NULL,NULL,NULL,DBO()->RecordType->ServiceType->Value,DBO()->RecordType->Id->Value);
 			
 			$arrRate = Array(NULL, "DestinationCode"=>NULL, "DestinationDescription"=>NULL, "RateName"=>"<RateGroupName> - <Destination>", "RateDescription"=>"<RateGroupName> - <Destination>",
-											"00:00:00",	"23:59:59", 1,1,1,	1,	1,
+								"00:00:00",	"23:59:59", 1, 1, 1, 1, 1, 1,
 											1,
+											0,
+											0,
+											0,
+											0,
+											0,
 											1,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
 											0,
 											0,
 											0,
@@ -1406,10 +1360,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$strRateGroupCSV .= "\n";
 			$strRateGroupCSV .= MakeCSVLine($arrRateColumnNames);	
 			
-			If (DBO()->RecordType->Context->Value > 0)
+			if (DBO()->RecordType->Context->Value > 0)
 			{
 				// load the destinations
-				DBL()->Destination->Where->Context = DBO()->RecordType->Context->Value;
+				DBL()->Destination->Context = DBO()->RecordType->Context->Value;
 				DBL()->Destination->Load();
 				
 				foreach(DBL()->Destination as $dboDestination)
@@ -1418,8 +1372,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					$arrRate['DestinationDescription'] = $dboDestination->Description->Value;
 					
 					$strRateGroupCSV .= MakeCSVLine($arrRate);
-				}				
-				
+				}
 			}
 			else
 			{
@@ -1432,7 +1385,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 
 
 			$strFilename = DBO()->RecordType->Name->Value ." - Skeleton";
-			$strRateGroupCSV = "This CSV defines a skelton csv file for defining RateGroups of the ". DBO()->RecordType->Name->Value ." RecordType";
 		}
 		else
 		{
@@ -1452,10 +1404,36 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		header("Content-Disposition: attachment; filename=\"$strFilename\"");
 		echo $strRateGroupCSV;
 		exit;
-
-		
-		
 	}
 	
+	//------------------------------------------------------------------------//
+	// Import
+	//------------------------------------------------------------------------//
+	/**
+	 * Import()
+	 *
+	 * Logic for the Import RateGroup popup
+	 * 
+	 * Logic for the Import RateGroup popup
+	 * This method expects the following values to be defined:
+	 *		DBO()->RecordType->Id			RecordType of the RateGroup
+	 *		DBO()->RateGroupt->Fleet		TRUE if you want to import the RateGroup as a Fleet RateGroup; 
+	 *										FALSE for importing normal Rate Groups
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 */
+	function Import()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+		
+		DBO()->RecordType->Load();
+		
+		$this->LoadPage('rate_group_import');
+		return TRUE;
+	}
 	
 }

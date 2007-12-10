@@ -178,7 +178,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 
 		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->Shared->RenderInput(2, TRUE);
+		DBO()->RatePlan->Shared->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
@@ -390,8 +390,10 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				// The RecordType uses multiple destinations.  Use RateGroup Import/Export functionality instead of the standard Edit/New RateGroup functionality
 				
 				// Build the Import Rate Group Button (This is used for both Fleet and Normal RateGroups)
-				$strImportRateGroupHref		= Href()->ImportRateGroup($dboRecordType->Id->Value);
-				$strRateGroupActionsCell	= $strFleetRateGroupActionsCell = "<span><a href='$strImportRateGroupHref' title='Import'><img src='img/template/import.png'></img></a></span>";
+				$strImportRateGroupHref			= Href()->ImportRateGroup($dboRecordType->Id->Value, FALSE);
+				$strImportFleetRateGroupHref	= Href()->ImportRateGroup($dboRecordType->Id->Value, TRUE);
+				$strRateGroupActionsCell		= "<span><a href='$strImportRateGroupHref' title='Import'><img src='img/template/import.png'></img></a></span>";
+				$strFleetRateGroupActionsCell	= "<span><a href='$strImportFleetRateGroupHref' title='Import'><img src='img/template/import.png'></img></a></span>";
 				
 				// Build the Export Rate Group Buttons
 				$strExportRateGroup			= "javascript: Vixen.RatePlanAdd.ExportRateGroup({$dboRecordType->Id->Value}, false)";

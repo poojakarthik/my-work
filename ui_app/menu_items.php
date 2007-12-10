@@ -389,21 +389,23 @@ class MenuItems
 	 *
 	 * Compiles the Href to be executed when the ImportRateGroup menu item is clicked
 	 *
-	 * @param	int		$intRecordTypeId			id of the RecordType, of which you want to import a RateGroup of
+	 * @param	int		$intRecordTypeId	id of the RecordType, of which you want to import a RateGroup of
+	 * @param	boolean	$bolIsFleet			TRUE if you want to import the RateGroup as a fleet RateGroup, else FALSE for normal RateGroup importing		
 	 *
-	 * @return	string								Href to be executed when the ImportRateGroup menu item is clicked
+	 * @return	string						Href to be executed when the ImportRateGroup menu item is clicked
 	 *
 	 * @method
 	 */
-	function ImportRateGroup($intRecordTypeId)
+	function ImportRateGroup($intRecordTypeId, $bolIsFleet)
 	{
 		// Setup data to send
-		$arrData['Objects']['RecordType']['Id'] = $intRecordTypeId;
+		$arrData['Objects']['RecordType']['Id']		= $intRecordTypeId;
+		$arrData['Objects']['RateGroup']['Fleet']	= $bolIsFleet;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		//return "javascript:Vixen.Popup.ShowAjaxPopup(\"ImportRateGroupPopupId\", \"medium\", null, \"RateGroup\", \"Import\", $strJsonCode)";	
+		//return "javascript:Vixen.Popup.ShowAjaxPopup(\"ImportRateGroupPopupId\", \"large\", null, \"RateGroup\", \"Import\", $strJsonCode)";	
 		return "javascript:Vixen.Popup.Alert(\"RateGroup import functionality has not been implemented yet\")";
 	}
 	
