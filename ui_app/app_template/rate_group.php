@@ -1251,8 +1251,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		$arrRateGroupColumns = Array("RateGroup Id", "Name", "Description", "Service Type",	"Record Type");		
 
-		$arrRateColumnNames = Array("Rate Id", 
-												"Destination Code",
+		$arrRateColumnNames = Array("Rate Id", 	"Destination Code",
 												"Destination",												
 												"Name", 
 												"Description",
@@ -1283,7 +1282,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 												"Charge Per Single Excess Unit ($)",
 												"Excess Markup on Cost ($)",
 												"Excess Markup on Cost (%) (1.5 = 1.5%)");
-
 		if (DBO()->RateGroup->Id->Value)
 		{
 			// Export the RateGroup defined in DBO()->RateGroup
@@ -1395,6 +1393,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// Convert the filename to lower case and use underscores instead of spaces
+		$strFilename = str_replace('"', "'", $strFilename);
 		$strFilename = strtolower($strFilename) . ".csv";
 		$strFilename = str_replace(" ", "_", $strFilename);
 		
