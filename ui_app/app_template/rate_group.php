@@ -1251,28 +1251,187 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strRateGroupCSV = "";
 		$strFilename = "";
 		
+		$arrRateGroupColumns = Array("RateGroup Id",
+															"Name",
+															"Description",
+															"Service Type",
+															"Record Type");		
+
+			$arrRateColumnNames = Array("Rate Id", 
+												"Destination Code",
+												"Destination",												
+												"Name", 
+												"Description",
+												"Start Time", 
+												"End Time", 
+												"Monday", 
+												"Tuesday", 
+												"Wednesday" , 
+												"Thursday", 
+												"Friday", 
+												"Saturday", 
+												"Sunday",
+												"Pass through at cost",
+												"Excluded from Cap Plan",
+												"Prorate",
+												"Minimum Charge ($)",
+												"Standard Flagfall ($)",
+												"Standard Billing Units",
+												"Charge Per Single Unit ($)",
+												"Markup on Cost ($)",
+												"Markup on Cost (%) (1.5 = 1.5%)",
+												"Start Capping at (Units)",
+												"Start Capping at ($)",
+												"Stop Capping at (Units)",
+												"Stop Capping at ($)",
+												"Excess Flagfall ($)",
+												"Excess Billing Units",
+												"Charge Per Single Excess Unit ($)",
+												"Excess Markup on Cost ($)",
+												"Excess Markup on Cost (%) (1.5 = 1.5%)");
+
 		if (DBO()->RateGroup->Id->Value)
 		{
 			// Export the RateGroup defined in DBO()->RateGroup
-			
 			DBO()->RateGroup->Load();
 			DBO()->RecordType->Id = DBO()->RateGroup->RecordType->Value;
 			DBO()->RecordType->Load();
 			
 			$strFilename = DBO()->RecordType->Name->Value ." - ". DBO()->RateGroup->Name->Value;
 			
-			// Use the funciton MakeCSVLine function (found in ui_app/functions.php) to build the csv file and store it in $strRateGroupCSV
-			$strRateGroupCSV = "This CSV defines a specific RateGroup";
+			$arrRateGroup = Array(
+												DBO()->RateGroup->Id->Value,
+												DBO()->RateGroup->Name->Value,
+												DBO()->RateGroup->Description->Value,
+												DBO()->RateGroup->ServiceType->Value,
+												DBO()->RateGroup->RecordType->Value);
+			
+			
+			
+			$arrColumnNames = Array("RateId"=>"R.Id", "DestinationCode"=>"D.Code", "DestinationDescription"=>"D.Description", "RateName"=>"R.Name", "RateDescription"=>"R.Description",
+														"StartTime"=>"R.StartTime", "EndTime"=>"R.EndTime", "Monday"=>"R.Monday", "Tuesday"=>"R.Tuesday", "Wednesday"=>"R.Wednesday",
+														"Thursday"=>"R.Thursday", "Friday"=>"R.Friday", "Saturday"=>"R.Saturday", "Sunday"=>"R.Sunday", "PassThrough"=>"R.PassThrough",
+														"Uncapped"=>"R.Uncapped", "Prorate"=>"R.Prorate", "StdMinCharge"=>"R.StdMinCharge", "StdFlagfall"=>"R.StdFlagfall", "StdUnits"=>"R.StdUnits",
+														"StdRatePerUnit"=>"R.StdRatePerUnit", "StdMarkup"=>"R.StdMarkup", "StdPercentage"=>"R.StdPercentage", "CapUnits"=>"R.CapUnits",
+														"CapCost"=>"R.CapCost", "CapUsage"=>"R.CapUsage", "CapLimit"=>"R.CapLimit", "ExsFlagfall"=>"R.ExsFlagfall", "ExsUnits"=>"R.ExsUnits",
+														"ExsRatePerUnit"=>"R.ExsRatePerUnit", "ExsMarkup"=>"R.ExsMarkup","ExsPercentage"=>"R.ExsPercentage");
+			
+			$selRates = new StatementSelect("Rate AS R LEFT OUTER JOIN Destination AS D ON R.Destination = D.Code", $arrColumnNames, "R.Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)","D.Description, R.Name");
+			
+			/*
+			$selRates = new StatementSelect("Rate AS R LEFT OUTER JOIN Destination AS D ON R.Destination = D.Code", "R.Id, 
+																																										R.Description,
+																																										R.Destination,
+																																										D.Description, 
+																																										R.Name,
+																																										R.StartTime, 
+																																										R.EndTime, 
+																																										R.Monday, 
+																																										R.Tuesday, 
+																																										R.Wednesday, 
+																																										R.Thursday, 
+																																										R.Friday, 
+																																										R.Saturday, 
+																																										R.Sunday,
+																																										R.PassThrough,
+																																										R.Uncapped,
+																																										R.Prorate,
+																																										R.StdMinCharge,
+																																										R.StdFlagfall,
+																																										R.StdUnits,
+																																										R.StdRatePerUnit,
+																																										R.StdMarkup,
+																																										R.StdPercentage,
+																																										R.CapUnits,
+																																										R.CapCost,
+																																										R.CapUsage,
+																																										R.CapLimit,
+																																										R.ExsFlagfall,
+																																										R.ExsUnits,
+																																										R.ExsRatePerUnit,
+																																										R.ExsMarkup,
+																																										R.ExsPercentage",
+																																										"R.Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)","D.Description, R.Name");
+			*/								
+			$mixNumRecords = $selRates->Execute(Array("RateGroupId" => DBO()->RateGroup->Id->Value));
+			$arrRates = $selRates->FetchAll();
+
+			$strRateGroupCSV .= MakeCSVLine($arrRateGroupColumns);
+			$strRateGroupCSV .= MakeCSVLine($arrRateGroup);
+			$strRateGroupCSV .= "\n";
+			$strRateGroupCSV .= MakeCSVLine($arrRateColumnNames);
+			foreach ($arrRates as $arrRate)
+			{
+				$strRateGroupCSV .= MakeCSVLine($arrRate);
+			}
 		}
 		elseif (DBO()->RecordType->Id->Value)
 		{
 			// Export a skeleton csv for the given RecordType defined in RecordType
 			DBO()->RecordType->Load();
 			
-			$strFilename = DBO()->RecordType->Name->Value ." - Skeleton";
+						$arrBlankRateGroup = Array(
+												NULL,
+												NULL,
+												NULL,
+												DBO()->RecordType->ServiceType->Value,
+												DBO()->RecordType->Id->Value);
 			
-			// For each Destination associated with the RecordType add a line to the CSV file
-			// Use default values for everything.  StartTime = "00:00:00", EndTime = "23:59:59", and Mon - Sun = 1
+			$arrRate = Array(NULL, "DestinationCode"=>NULL, "DestinationDescription"=>NULL, "RateName"=>"<RateGroupName> - <Destination>", "RateDescription"=>"<RateGroupName> - <Destination>",
+											"00:00:00",	"23:59:59", 1,1,1,	1,	1,
+											1,
+											1,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0,
+											0
+										);
+										
+			$strRateGroupCSV .= MakeCSVLine($arrRateGroupColumns);
+			$strRateGroupCSV .= MakeCSVLine($arrBlankRateGroup);
+			$strRateGroupCSV .= "\n";
+			$strRateGroupCSV .= MakeCSVLine($arrRateColumnNames);	
+			
+			If (DBO()->RecordType->Context->Value > 0)
+			{
+				// load the destinations
+				DBL()->Destination->Where->Context = DBO()->RecordType->Context->Value;
+				DBL()->Destination->Load();
+				
+				foreach(DBL()->Destination as $dboDestination)
+				{
+					$arrRate['DestinationCode'] = $dboDestination->Code->Value;
+					$arrRate['DestinationDescription'] = $dboDestination->Description->Value;
+					
+					$strRateGroupCSV .= MakeCSVLine($arrRate);
+				}				
+				
+			}
+			else
+			{
+				// not destination based so set destination code and destination description to null when output into CSV rate Id is always set to null as no rates
+				$arrRate['RateName'] = "<RateGroupName>";
+				$arrRate["RateDescription"] = "<RateGroupName>";
+				
+				$strRateGroupCSV .= MakeCSVLine($arrRate);
+			}
+
+
+			$strFilename = DBO()->RecordType->Name->Value ." - Skeleton";
 			$strRateGroupCSV = "This CSV defines a skelton csv file for defining RateGroups of the ". DBO()->RecordType->Name->Value ." RecordType";
 		}
 		else
