@@ -143,7 +143,7 @@ function VixenHighlightClass()
 		Vixen.Highlight.LightsDown(this);
 	}
 	
-	this.UpdateLink =function(arrTables, arrIndexes, arrSkipTables)
+	this.UpdateLink = function(arrTables, arrIndexes, arrSkipTables)
 	{
 		// Propagate selection from one table to next
 
@@ -184,7 +184,7 @@ function VixenHighlightClass()
 			{
 				continue;
 			}
-		
+			
 			// Unselect all on target (& collapse?)
 			Vixen.Highlight.Unselect(strTable);
 			Vixen.Slide.CollapseAll(strTable);

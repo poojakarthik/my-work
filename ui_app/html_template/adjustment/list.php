@@ -185,8 +185,18 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			
 			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);
 			
-			// add indexes
+			// Add indexes
 			Table()->AdjustmentTable->AddIndex("InvoiceRun", $dboCharge->InvoiceRun->Value);
+			if ($dboCharge->LinkType->Value == CHARGE_LINK_PAYMENT)
+			{
+				// This charge relates directly to a payment
+				Table()->AdjustmentTable->AddIndex("PaymentId", $dboCharge->LinkId->Value);
+			} 
+			elseif ($dboCharge->LinkType->Value == CHARGE_LINK_RECURRING)
+			{
+				// This charge relates directly to a recurring adjustment
+				Table()->AdjustmentTable->AddIndex("RecurringAdjustmentId", $dboCharge->LinkId->Value);
+			}
 		}
 
 		if (DBL()->Charge->RecordCount() == 0)
@@ -207,6 +217,11 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		{
 			// Link other tables to this one
 			Table()->AdjustmentTable->LinkTable("InvoiceTable", "InvoiceRun");
+			Table()->AdjustmentTable->LinkTable("RecurringAdjustmentTable", "RecurringAdjustmentId");
+			
+			// The current implementation of the highlighting of associated records cannot handle this link
+			//Table()->AdjustmentTable->LinkTable("PaymentTable", "PaymentId");
+			
 			Table()->AdjustmentTable->RowHighlighting = TRUE;
 		}
 

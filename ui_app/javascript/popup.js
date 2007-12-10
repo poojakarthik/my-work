@@ -241,7 +241,7 @@ function VixenPopupClass()
 				// clicking ANYWHERE will close the div
 				//  what about on the div itself?
 				document.addEventListener('mousedown', CloseHandler, TRUE);
-				document.addEventListener('keyup', CloseHandler, TRUE);
+				document.addEventListener('keydown', CloseHandler, TRUE);
 
 				// flag this popup as being autohide
 				elmPopup.setAttribute("autohide", "autohide");
@@ -253,7 +253,7 @@ function VixenPopupClass()
 				// clicking ANYWHERE will close the div
 				//  what about on the div itself?
 				document.addEventListener('mousedown', CloseReloadHandler, TRUE);
-				document.addEventListener('keyup', CloseReloadHandler, TRUE);
+				document.addEventListener('keydown', CloseReloadHandler, TRUE);
 				
 				// flag this popup as being autohide-reload
 				elmPopup.setAttribute("autohide-reload", "autohide-reload");

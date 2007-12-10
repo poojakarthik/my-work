@@ -44,9 +44,23 @@
  */
 function VixenPaymentPopupClass()
 {
+	// This constant is required.  It should match the PAYMENT_TYPE_CREDIT_CARD constant defined in framework/definitions.php
+	var PAYMENT_TYPE_CREDIT_CARD = 5;
+
 	// This is an associative array where the key is the PaymentType Constant.
 	// It is used to show the extra details required of the various Payment Types
-	this.arrExtraDetail = {};
+	this._arrExtraDetail = {};
+	
+	// References to the various elements on the popup, which are delt with regularly
+	this._elmAmount							= null;
+	this._elmChargeSurcharge				= null;
+	this._elmCreditCardType					= null;
+	this._elmCreditCardMsg					= null;
+	this._elmPaymentType					= null;
+	this._elmCreditCardSurchargePercentage	= null;
+	
+	this._strPopupId = null;
+	this._strContainerDivId = null;
 	
 	//------------------------------------------------------------------------//
 	// Initialise
@@ -65,23 +79,39 @@ function VixenPaymentPopupClass()
 	 * @return	void
 	 * @method
 	 */
-	this.Initialise = function(arrExtraDetail, intInitialPaymentType)
+	this.Initialise = function(arrExtraDetail, intInitialPaymentType, strPopupId, strContainerDivId)
 	{
 		// Store the Extra Detail information
-		this.arrExtraDetail = arrExtraDetail;
+		this._arrExtraDetail = arrExtraDetail;
+		
+		// Store the popup Id
+		this._strPopupId = strPopupId;
+		this._strContainerDivId = strContainerDivId;
 		
 		// Set the focus to the first input element
 		document.getElementById('AccountCombo').focus();
 		
+		// Retrieve references to the controls that are accessed often
+		this._elmAmount				= document.getElementById('Payment.Amount');
+		this._elmChargeSurcharge	= document.getElementById('Payment.ChargeSurcharge');
+		this._elmCreditCardMsg		= document.getElementById('MakePayment_CreditCardSurchargeMsg');
+		this._elmCreditCardType		= document.getElementById('Payment.CreditCardType');
+		this._elmPaymentType		= document.getElementById('Payment.PaymentType');
+		this._elmCreditCardSurchargePercentage = document.getElementById('Payment.CreditCardSurchargePercentage');
+		
 		// Initialise the width of all the input elements, so that they are uniform
 		var intWidth = 250;
-		document.getElementById("Payment.PaymentType").style.width = intWidth;
-		document.getElementById("Payment.Amount").style.width = intWidth;
-		document.getElementById("Payment.TXNReference").style.width = intWidth;
-		document.getElementById("Payment.CreditCardNum").style.width = intWidth;
+		this._elmPaymentType.style.width	= intWidth;
+		this._elmAmount.style.width			= intWidth;
+		document.getElementById("Payment.TXNReference").style.width		= intWidth;
+		document.getElementById("Payment.CreditCardNum").style.width	= intWidth;
 		
 		// Initialise the Payment Type extra detail container
 		this.DeclarePaymentType(intInitialPaymentType);
+		
+		// Register event listeners
+		this._elmAmount.addEventListener("change", function(){Vixen.PaymentPopup.UpdateCreditMsg();}, true);
+		this._elmChargeSurcharge.addEventListener("change", function(){Vixen.PaymentPopup.UpdateCreditMsg();}, true);
 	}
 	
 	
@@ -146,17 +176,17 @@ function VixenPaymentPopupClass()
 	{
 		// Hide all the Extra Detail divs except the one relating to the new PaymentType, if it is visible
 		var elmExtraDetailContainer = null;
-		for (intKey in this.arrExtraDetail)
+		for (intKey in this._arrExtraDetail)
 		{
 			if (intKey != intPaymentType)
 			{
 				// Hide the div
-				document.getElementById(this.arrExtraDetail[intKey]['ExtraDetailDivId']).style.display = "none";
+				document.getElementById(this._arrExtraDetail[intKey]['ExtraDetailDivId']).style.display = "none";
 			}
 			else
 			{
 				// Retrieve the container div element
-				elmExtraDetailContainer = document.getElementById(this.arrExtraDetail[intKey]['ExtraDetailDivId']);
+				elmExtraDetailContainer = document.getElementById(this._arrExtraDetail[intKey]['ExtraDetailDivId']);
 			}
 		}
 		
@@ -165,6 +195,9 @@ function VixenPaymentPopupClass()
 		{
 			elmExtraDetailContainer.style.display = "inline";
 		}
+		
+		// Update the CreditCard msg
+		this.UpdateCreditMsg();
 	}
 
 	//------------------------------------------------------------------------//
@@ -183,15 +216,145 @@ function VixenPaymentPopupClass()
 	 * @return	void
 	 * @method
 	 */
-	this.DeclareCreditCardType = function(elmOption)
+	this.DeclareCreditCardType = function()
 	{
+		// Update the Surcharge hidden element
+		this._elmCreditCardSurchargePercentage.value = this._elmCreditCardType.options[this._elmCreditCardType.selectedIndex].getAttribute("surcharge");
+	
 		// Update the Surcharge message
-		var strCreditCard = elmOption.innerHTML
-		var strSurchargePercentage = elmOption.getAttribute("surcharge");
-		var strSurchargeMsg = strCreditCard + " payments incur a " + strSurchargePercentage + "% surcharge, which is assumed to be included in the amount specified.  This will be automatically added as an adjustment.";
-		
-		document.getElementById("MakePayment_CreditCardSurchargeMsg").innerHTML = strSurchargeMsg;
+		this.UpdateCreditMsg();
 	}
+	
+	this.UpdateCreditMsg = function()
+	{
+		var strCreditCard			= this._elmCreditCardType.options[this._elmCreditCardType.selectedIndex].innerHTML;
+		var fltSurchargePercentage	= parseFloat(this._elmCreditCardSurchargePercentage.value);
+		var strSurchargePercentage 	= Number(fltSurchargePercentage * 100);
+		var fltAmount				= this.GetAmount();
+		var fltSurcharge			= fltAmount * fltSurchargePercentage;
+		var strSurcharge			= fltSurcharge.toFixed(2);
+		
+		var strMsg = "";
+	
+		if (isNaN(fltAmount))
+		{
+			// The value entered into the Amount textbox is not a number
+			return;
+		}
+	
+		if (this._elmChargeSurcharge.checked == true)
+		{
+			// The user wants to charge a surcharge
+			var fltTotalCharge	= fltAmount + fltSurcharge;
+			
+			var strTotalCharge	= fltTotalCharge.toFixed(2);
+			/*
+			strMsg = 	strCreditCard + " payments incur a " + strSurchargePercentage + "% surcharge." +
+						"<br />A payment of $" + fltAmount.toFixed(2) + " will incur a surcharge of $" + strSurcharge + "." +
+						"<br /><span class='Green'>The amount to be entered into the EFTPOS machine is $"+ strTotalCharge +"</span>";
+			*/
+			strMsg = 	"<table align='center' width='300px' border='0' cellspacing='0' cellpadding='0'>" +
+						"<tr><td align='left'>Payment Amount:</td><td align='right'><span class='Currency'>"+ fltAmount.toFixed(2) +"</span></td><td>&nbsp;</td></tr>" +
+						"<tr><td>" + strSurchargePercentage + "% "+ strCreditCard +" Surcharge:</td><td align='right'><span class='Currency'>"+ strSurcharge +"</span></td><td>&nbsp;+</td></tr>" +
+						"<tr><td></td><td align='right'>-----------------</td><td></td></tr>" +
+						"<tr><td>Total Payment Amount:</td><td align='right'><span class='Currency'>"+ strTotalCharge +"</span></td><td></td></tr></table>" +
+						"<br /><span align='center'>The amount to be entered into the EFTPOS machine is $"+ strTotalCharge +"</span>";
+		}
+		else
+		{
+			// The user does not want to charge a surcharge
+			/*
+			strMsg = 	strCreditCard + " payments incur a " + strSurchargePercentage + "% surcharge." +
+						"<br />You have chosen to waive this surcharge." +
+						"<br /><span class='Green'>The amount to be entered into the EFTPOS machine is $" + fltAmount.toFixed(2) + "</span>";
+			*/
+			strMsg = 	"<table align='center' width='300px' border='0' cellspacing='0' cellpadding='0'>" +
+						"<tr><td align='left'>Payment Amount:</td><td align='right'><span class='Currency'>"+ fltAmount.toFixed(2) +"</span></td><td>&nbsp;</td></tr>" +
+						"<tr><td>" + strSurchargePercentage + "% "+ strCreditCard +" Surcharge:</td><td align='right'><span class='Currency'>"+ strSurcharge +"</span></td><td>&nbsp;+</td></tr>" +
+						"<tr><td>Surcharge Waived:</td><td align='right'><span class='Currency'>"+ strSurcharge +"</span></td><td>&nbsp;-</td></tr>" +
+						"<tr><td></td><td align='right'>-----------------</td><td></td></tr>" +
+						"<tr><td>Total Payment Amount:</td><td align='right'><span class='Currency'>"+ fltAmount.toFixed(2) +"</span></td><td></td></tr></table>" +
+						"<br /><span style='align:center'>The amount to be entered into the EFTPOS machine is $"+ fltAmount.toFixed(2) + "</span>";
+		}
+	
+		this._elmCreditCardMsg.innerHTML = strMsg;
+	}
+	
+	// returns the payment amount as a float or NaN
+	this.GetAmount = function()
+	{
+		var strAmount = this._elmAmount.value;
+		if (strAmount[0] == "$")
+		{
+			// Strip the dollar sign from the amount
+			strAmount =  strAmount.substr(1);
+		}
+		
+		return parseFloat(strAmount);
+	}
+	
+	// Event handler for the "Make Payment" button
+	// This prompts the user to make sure that they want to make the payment
+	this.MakePayment = function(bolConfirmed)
+	{
+		
+		// Check that the Plan Change has been confirmed
+		if (bolConfirmed == null)
+		{
+			var strMsg = "";
+			// First check that an amount has been specified
+			var fltAmount = this.GetAmount();
+			
+			if (isNaN(fltAmount))
+			{
+				// The amount is not a number
+				Vixen.Popup.Alert("Please specify a payment amount");
+				return;
+			}
+		
+			// The payment amount is valid
+			if (this._elmPaymentType.value == PAYMENT_TYPE_CREDIT_CARD)
+			{
+				var strCreditCard			= this._elmCreditCardType.options[this._elmCreditCardType.selectedIndex].innerHTML;
+				var fltSurchargePercentage	= parseFloat(this._elmCreditCardSurchargePercentage.value);
+				var strSurchargePercentage 	= Number(fltSurchargePercentage * 100);
+				var fltSurcharge			= fltAmount * fltSurchargePercentage;
+
+				// We are dealing with a Credit Card Payment
+				if (this._elmChargeSurcharge.checked == true)
+				{
+					// The user wants to charge the surcharge amount
+					var fltTotal = fltAmount + fltSurcharge;
+					strMsg = 	strCreditCard + " payments incur a " + strSurchargePercentage +"% surcharge." +
+								"<br />The payment of $" + fltAmount.toFixed(2) +" will incur a surcharge of $"+ fltSurcharge.toFixed(2) + "."+
+								"<br /><span class='Green'>The amount to be entered into the EFTPOS machine is $" + fltTotal.toFixed(2) + "</span>"+
+								"<br />The surcharge will be automatically added as a debit adjustment." +
+								"<br /><br />Are you sure you want to commit this payment of $"+ fltTotal.toFixed(2) +"?";
+				}
+				else
+				{
+					// The user does not want to charge a surcharge amount
+					strMsg = 	strCreditCard + " payments incur a " + strSurchargePercentage +"% surcharge."+
+								"<br />You have chosen not to charge this." +
+								"<br /><span class='Green'>The amount to be entered into the EFTPOS machine is $" + fltAmount.toFixed(2) + "</span>" +
+								"<br /><br />Are you sure you want to commit this payment of $"+ fltAmount.toFixed(2) +"?";
+				}
+			}
+			else
+			{
+				// We are not dealing with a Credit Card Payment
+				var strMsg = 	"Are you sure you want to commit this payment of $" + fltAmount.toFixed(2) +"?";
+			}
+			
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.PaymentPopup.MakePayment(true);});
+			return;
+		}
+		
+		// Submit the form data
+		Vixen.Ajax.SendForm("VixenForm_MakePayment", "Make Payment", "Payment", "Add", "", this._strPopupId, null, this._strContainerDivId);
+	}
+
+
 }
 
 // Instanciate the object, if it doesn't already exist

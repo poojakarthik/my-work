@@ -246,23 +246,23 @@ class AppTemplateRate extends ApplicationTemplate
 			return "ERROR: Could not save the rate.  Invalid fields are highlighted";
 		}
 		
-		// Check if a rate with the same name exists
+		// Check that a Rate of the same RecordType, is not already using the name of this rate
 		if (DBO()->Rate->Id->Value == 0)
 		{
 			// The Rate name should not be in the database
-			$strWhere = "Name=<Name>";
+			$strWhere = "Name = <Name> AND RecordType = <RecordType>";
 		}
 		else
 		{
 			// We are working with an already saved draft.  Check that the New name is not used by any other Rate
-			$strWhere = "Name=<Name> AND Id != ". DBO()->Rate->Id->Value;
+			$strWhere = "Name = <Name> And RecordType = <RecordType> AND Id != ". DBO()->Rate->Id->Value;
 		}
 		$selRateName = new StatementSelect("Rate", "Id", $strWhere);
-		if ($selRateName->Execute(Array("Name" => DBO()->Rate->Name->Value)) > 0)
+		if ($selRateName->Execute(Array("Name" => DBO()->Rate->Name->Value, "RecordType" => DBO()->Rate->RecordType->Value)) > 0)
 		{
 			DBO()->Rate->Name->SetToInvalid();
 			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
-			return "ERROR: This rate name already exists in the Database";
+			return "ERROR: This name is already used by another Rate of this Record Type<br />Please choose a unique name";
 		}
 	
 		$intDaySelected = FALSE;

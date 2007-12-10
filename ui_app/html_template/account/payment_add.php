@@ -186,9 +186,11 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		$strCreditCardDetailId = "MakePayment_CreditCardDetails";
 		
 		// Initialise the credit card type, if it has not been set yet (it will default to VISA)
-		DBO()->Payment->CreditCardType->Value = (DBO()->Payment->CreditCardType->Value) ? DBO()->Payment->CreditCardType->Value : CREDIT_CARD_VISA;
+		DBO()->Payment->CreditCardType = (DBO()->Payment->CreditCardType->Value) ? DBO()->Payment->CreditCardType->Value : CREDIT_CARD_VISA;
 		
 		echo "<div id='$strCreditCardDetailId' style='$strShowCreditCardDetail'>\n";
+		
+		DBO()->Payment->ChargeSurcharge->RenderInput();
 		
 		// Load the surcharges for the various Credit Card Types
 		DBL()->Config->Application = APPLICATION_PAYMENTS;
@@ -196,18 +198,23 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		foreach (DBL()->Config as $dboConfig)
 		{
 			// This will build an array specifying the the surcharge for each Credit Card type, with the Description of the Credit Card as the key
-			$arrCCSurcharges[$dboConfig->Module->Value] = round($dboConfig->Value->Value * 100, 2);
+			$arrCCSurcharges[$dboConfig->Module->Value] = $dboConfig->Value->Value;
 		}
 		
 		// CreditCardType combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Credit Card Type :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Payment.CreditCardType' style='width:250px' name='Payment.CreditCardType' onchange='Vixen.PaymentPopup.DeclareCreditCardType(this.options[this.selectedIndex])'>\n";
+		echo "      <select id='Payment.CreditCardType' style='width:250px' name='Payment.CreditCardType' onchange='Vixen.PaymentPopup.DeclareCreditCardType()'>\n";
 		foreach ($GLOBALS['*arrConstant']['CreditCard'] as $intCreditCard=>$arrCreditCard)
 		{
 			// Check if this Credit Card Type was the last one selected
-			$strSelected = (DBO()->Payment->CreditCardType->Value == $intCreditCard) ? "selected='selected'" : "";
+			$strSelected = "";
+			if (DBO()->Payment->CreditCardType->Value == $intCreditCard)
+			{
+				$strSelected = "selected='selected'";
+				$fltCurrentSurcharge = $arrCCSurcharges[$arrCreditCard['Description']];
+			}
 			
 			$fltSurcharge = $arrCCSurcharges[$arrCreditCard['Description']];
 			
@@ -216,15 +223,18 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
-		
+
+		// Render the hidden input to store the CreditCardSurchargePercentage
+		DBO()->Payment->CreditCardSurchargePercentage = $fltCurrentSurcharge;
+		DBO()->Payment->CreditCardSurchargePercentage->RenderHidden();
+
 		// Render the Textbox for the credit card number
 		DBO()->Payment->CreditCardNum->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 
 		// Output message describing Credit Card Surcharge
 		$strCreditCardType = GetConstantDescription(DBO()->Payment->CreditCardType->Value, "CreditCard");
-		$strSurchargeMsg = "$strCreditCardType payments incur a ". $arrCCSurcharges[$strCreditCardType] ."% surcharge, which is assumed to be included in the amount specified.  This will be automatically added as an adjustment.";
 		echo "<div class='ContentSeparator'></div>\n";
-		echo "<span id='MakePayment_CreditCardSurchargeMsg' class='Red' style='line-height: 1.2'>$strSurchargeMsg</span>\n";
+		echo "<span id='MakePayment_CreditCardSurchargeMsg' style='line-height: 1.2'>$strSurchargeMsg</span>\n";
 		
 		echo "</div>\n"; //Payment_CreditCardDetails
 		
@@ -234,7 +244,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		// Create the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(this);");
-		$this->AjaxSubmit("Make Payment");
+		$this->Button("Make Payment", "Vixen.PaymentPopup.MakePayment();");
 		echo "</div></div>\n";	
 		
 		// Build data for the DOM object
@@ -243,7 +253,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		$jsonExtraDetail = Json()->encode($arrExtraDetail);
 		
 		// Initilise the popup
-		echo "<script type='text/javascript'>Vixen.PaymentPopup.Initialise($jsonExtraDetail, $intPaymentType)</script>\n";
+		echo "<script type='text/javascript'>Vixen.PaymentPopup.Initialise($jsonExtraDetail, $intPaymentType, '{$this->_objAjax->strId}', '{$this->_strContainerDivId}')</script>\n";
 
 		$this->FormEnd();
 	}

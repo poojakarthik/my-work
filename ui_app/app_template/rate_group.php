@@ -1254,13 +1254,13 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		{
 			// Export the RateGroup defined in DBO()->RateGroup
 			
-			// Use the funciton MakeCSVLine function to build the csv file and store it in $strRateGroupCSV
 			DBO()->RateGroup->Load();
 			DBO()->RecordType->Id = DBO()->RateGroup->RecordType->Value;
 			DBO()->RecordType->Load();
 			
 			$strFilename = DBO()->RecordType->Name->Value ." - ". DBO()->RateGroup->Name->Value;
 			
+			// Use the funciton MakeCSVLine function (found in ui_app/functions.php) to build the csv file and store it in $strRateGroupCSV
 		}
 		elseif (DBO()->RecordType->Id->Value)
 		{

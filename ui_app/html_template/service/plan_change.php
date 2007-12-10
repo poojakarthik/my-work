@@ -81,7 +81,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		{
 			DBO()->Account->BusinessName->RenderOutput();
 		}
-		elseif (DBO()->Account->TradingName->RenderOutput())
+		elseif (DBO()->Account->TradingName->Value)
 		{
 			DBO()->Account->TradingName->RenderOutput();
 		}

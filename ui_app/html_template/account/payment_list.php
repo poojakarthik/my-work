@@ -206,7 +206,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
                 if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
                 {
                     // The current InvoicePayment record relates to the payment so add it as an index
-                    Table()->PaymentTable->AddIndex("InvoiceRun", $dboInvoicePayment->InvoiceRun->Value);
+					Table()->PaymentTable->AddIndex("InvoiceRun", $dboInvoicePayment->InvoiceRun->Value);
 					
 					// find the invoice that relates to this InvoiceRun
 					$strInvoiceRun = $dboInvoicePayment->InvoiceRun->Value;
@@ -222,6 +222,9 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 					}
                 }
             }
+			
+			// This is used to link credit card surcharge adjustments to the payments they correspond to
+			Table()->PaymentTable->AddIndex("PaymentId", $dboPayment->Id->Value);
 
 			// Set the drop down detail, if there is anything to put in it
 			if (count($arrInvoiceId))
@@ -296,8 +299,11 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		}
 		else
 		{
-			// Link this table to the invoice table
+			// Link this table to the invoice table, and the adjustments table
 			Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
+			
+			// The current implementation of the highlight functionality cannot handle the recursive table links
+			//Table()->PaymentTable->LinkTable("AdjustmentTable", "PaymentId");
 			Table()->PaymentTable->RowHighlighting = TRUE;
 		}
 		

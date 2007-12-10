@@ -213,8 +213,9 @@ class HTMLElements
 			$mixValue = "";
 		}
 		
+		$strId = $strName = $arrParams['Object'] .".". $arrParams['Property'];
 		
-		$strHtml .= "<input type='hidden' id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$mixValue'/>\n";
+		$strHtml = "<input type='hidden' id='$strId' name='$strName' value='$mixValue'/>\n";
 		return $strHtml;
 	}
 	

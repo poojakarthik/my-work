@@ -121,6 +121,7 @@
 	/* 
 	 * This contains the same styling as the DefaultOutputSpan class
 	 */
+	td,
 	span
 	{
 		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
@@ -132,6 +133,8 @@
 		overflow:			hidden;
 		line-height: 		1.2;
 	}
+	
+	
 
 	
 /**************************************************************************/

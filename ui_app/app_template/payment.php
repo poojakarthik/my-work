@@ -154,7 +154,6 @@ class AppTemplatePayment extends ApplicationTemplate
 			// If the payment amount has a leading dollar sign then strip it off
 			DBO()->Payment->Amount->Trim();
 			DBO()->Payment->Amount->Trim("ltrim", "$");
-			//DBO()->Payment->Amount = ltrim(trim(DBO()->Payment->Amount->Value), '$');
 			
 			DBO()->Payment->PaidOn = GetCurrentDateForMySQL();
 			
@@ -167,6 +166,13 @@ class AppTemplatePayment extends ApplicationTemplate
 			
 			// DBO()->Payment->File does not need to be set
 			// DBO()->Payment->SequenceNumber does not need to be set
+			
+			// Check if a credit card surcharge has to be added to the payment amount
+			if (DBO()->Payment->PaymentType->Value == PAYMENT_TYPE_CREDIT_CARD && DBO()->Payment->ChargeSurcharge->Value)
+			{
+				// Add the surcharge to the payment
+				DBO()->Payment->Amount = DBO()->Payment->Amount->Value * (1 + DBO()->Payment->CreditCardSurchargePercentage->Value);
+			}
 			
 			DBO()->Payment->Balance = DBO()->Payment->Amount->Value;
 			
@@ -185,7 +191,7 @@ class AppTemplatePayment extends ApplicationTemplate
 			
 			// The payment was successfully saved
 			// If it was a credit card payment, then add an adjustment for the credit card surcharge
-			if (DBO()->Payment->PaymentType->Value == PAYMENT_TYPE_CREDIT_CARD)
+			if (DBO()->Payment->PaymentType->Value == PAYMENT_TYPE_CREDIT_CARD && DBO()->Payment->ChargeSurcharge->Value)
 			{
 				// Add the Credit Card Surcharge
 				$bolResult = AddCreditCardSurcharge(DBO()->Payment->Id->Value);
@@ -238,6 +244,7 @@ class AppTemplatePayment extends ApplicationTemplate
 		// Initialise the popup
 		DBO()->AccountToApplyTo->Id			= DBO()->Account->Id->Value;
 		DBO()->AccountToApplyTo->IsGroup	= 0;
+		DBO()->Payment->ChargeSurcharge		= 1;
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('payment_add');

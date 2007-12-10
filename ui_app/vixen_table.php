@@ -927,24 +927,24 @@ class VixenTable
 					
 					foreach ($objRow['Index'] as $strIndexName=>$arrValues)
 					{
-						echo "objIndex." .$strIndexName. " = Array();";
+						echo "objIndex.{$strIndexName} = Array();";
 						foreach ($arrValues as $strValue)
 						{
-							echo "objIndex." .$strIndexName. ".push('" .$strValue. "');";
+							echo "objIndex.{$strIndexName}.push('$strValue');";
 						}
 					}
 					echo "objRow.index = objIndex;";
 				}
 			}
 			
-			echo $strVixenTable . ".row.push(objRow);\n";
+			echo "{$strVixenTable}.row.push(objRow);\n";
 			echo "</script>\n";
 			echo "</tr>\n";
 		}
 		
 		echo "</table>\n";
 		
-		echo "<script>" . $strVixenTable . ".totalRows = " . $intRowCount . ";</script>\n";	
+		echo "<script>{$strVixenTable}.totalRows = $intRowCount;</script>\n";	
 		
 		if ($this->_bolRowHighlighting)
 		{
@@ -964,19 +964,19 @@ class VixenTable
 		if ($this->_bolLinked)
 		{
 			echo "<script type='text/javascript'>";
-			echo $strVixenTable . ".linked = TRUE;";
+			echo "{$strVixenTable}.linked = TRUE;";
 			
 			echo "objLink = Object();\n";
 			
 			foreach ($this->_arrLinkedTables AS $strTableName=>$arrIndexes)
 			{
-				echo "objLink." . $strTableName . " = Array();\n";
+				echo "objLink.{$strTableName} = Array();\n";
 				foreach ($arrIndexes AS $strIndex)
 				{
-					echo "objLink." . $strTableName . ".push('" . $strIndex . "');\n";
+					echo "objLink.{$strTableName}.push('$strIndex');\n";
 				}
 			}
-			echo $strVixenTable . ".link = objLink;\n";
+			echo "{$strVixenTable}.link = objLink;\n";
 			
 			echo "</script>\n";
 				/*'link':

@@ -237,6 +237,9 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			$strToolTipHtml .= $dboRecurringCharge->EndDate->AsOutput();
 			
 			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
+			
+			// Add Indexes
+			Table()->RecurringAdjustmentTable->AddIndex("RecurringAdjustmentId", $dboRecurringCharge->Id->Value);
 		}
 		
 		if (DBL()->RecurringCharge->RecordCount() == 0)
@@ -255,6 +258,8 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		}
 		else
 		{
+			// Link other tables to this one
+			Table()->RecurringAdjustmentTable->LinkTable("AdjustmentTable", "RecurringAdjustmentId");
 			Table()->RecurringAdjustmentTable->RowHighlighting = TRUE;
 		}
 
