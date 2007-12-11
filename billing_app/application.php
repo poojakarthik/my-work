@@ -1183,6 +1183,12 @@
 			return;
 		}
 		
+		// Update Account.Sample field
+		$arrCols	= Array();
+		$arrCols['Sample']	= new MySQLFunction("Sample + 1");
+		$updSampleAccounts	= new StatementUpdate("Account", "Sample < 0", $arrCols);
+		$updSampleAccounts->Execute(Array(), $arrCols);
+		
 		// Generate InvoiceRun table entry
 		$this->_rptBillingReport->AddMessage("Generating Profit Data...", FALSE);
 		$arrResponse = $this->CalculateProfitData($strInvoiceRun, TRUE);
