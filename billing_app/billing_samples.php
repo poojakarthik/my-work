@@ -42,7 +42,7 @@ switch (strtoupper(trim($argv[1])))
 }
 
 Debug("[ GENERATING ".strtoupper($strMode)." SAMPLES ]");
-
+/*
 // Add in list of accounts
 //---------------------------
 $arrAccounts		= Array();
@@ -66,7 +66,16 @@ while (!feof($ptrAccountsFile))
 }
 fclose($ptrAccountsFile);
 //---------------------------
+*/
 
+// Get list of Accounts
+$arrAccounts		= Array();
+$selSampleAccounts	= new StatementSelect("Account", "Id", "Sample != 0");
+$selSampleAccounts->Execute();
+while ($arrAccount = $selSampleAccounts->Fetch())
+{
+	$arrAccounts[]	= $arrAccount['Id'];
+}
 
 // Email Status
 $strDateTime = date("Y-m-d H:i:s");
