@@ -1029,6 +1029,32 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		
+		// Move Invoiced CDRS to CDRInvoiced table
+		$this->_rptBillingReport->AddMessage("Moving Invoiced CDRs to CDRInvoiced...\t", FALSE);
+		$qryCopyInvoicedCDRs	= new Query();
+		if($qryCopyInvoicedCDRs->Execute("INSERT INTO CDRInvoiced (SELECT * FROM CDR WHERE Status = 199)") === FALSE)
+		{			
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		
+		$qryDeleteInvoicedCDRs	= new Query();
+		if($qryDeleteInvoicedCDRs->Execute("DELETE FROM CDR WHERE Status = 199") === FALSE)
+		{			
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		
+		
 		// update Account LastBilled date
 		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED."\t", FALSE);
 		$strQuery  = "UPDATE Account INNER JOIN Invoice on (Account.Id = Invoice.Account)";
