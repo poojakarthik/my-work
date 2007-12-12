@@ -59,16 +59,26 @@
 		function __construct ($intId)
 		{
 			// Pull all the CDR information and Store it ...
-			$selCDR = new StatementSelect ('CDR', '*', 'Id = <Id>', null, 1);
-			$selCDR->useObLib (TRUE);
-			$selCDR->Execute (Array ('Id' => $intId));
+			$arrWhere = Array('Id' => $intId);
+			$selCDR = new StatementSelect('CDR', '*', 'Id = <Id>', null, 1);
+			$selCDR->useObLib(TRUE);
+			$selCDR->Execute($arrWhere);
 			
-			if ($selCDR->Count () <> 1)
+			if ($selCDR->Count() <> 1)
 			{
-				throw new Exception ('CDR not found');
+				// The CDR was not present in the CDR table.  Try looking for it in the CDRInvoiced table
+				$selCDR = new StatementSelect('CDRInvoiced', '*', 'Id = <Id>', null, 1);
+				$selCDR->useObLib(TRUE);
+				$selCDR->Execute($arrWhere);
+				
+				if ($selCDR->Count() <> 1)
+				{
+					// The CDR was not found in either of the CDR and CDRInvoiced tables
+					throw new Exception ('CDR not found');
+				}
 			}
 			
-			$selCDR->Fetch ($this);
+			$selCDR->Fetch($this);
 			
 			// Construct the object
 			parent::__construct ('CDR', $this->Pull ('Id')->getValue ());

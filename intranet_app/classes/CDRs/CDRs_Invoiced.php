@@ -73,12 +73,12 @@
 		 * @method
 		 */
 		
-		function __construct (Invoice &$invInvoice)
+		function __construct(Invoice &$invInvoice)
 		{
 			$this->_invInvoice =& $invInvoice;
 			$this->_srvService =& $srvService;
 			
-			parent::__construct ('CDRs-Invoiced', 'CDR', 'CDR');
+			parent::__construct ('CDRs-Invoiced', 'CDRInvoiced', 'CDR');
 			
 			$this->Constrain	('InvoiceRun',		'=',	$invInvoice->Pull ('InvoiceRun')->getValue ());
 			$this->Constrain	('Account',			'=',	$invInvoice->Pull ('Account')->getValue ());
