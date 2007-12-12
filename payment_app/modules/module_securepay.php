@@ -88,14 +88,14 @@
 	 */
  	function Normalise($strPaymentRecord)
  	{ 		
- 		// PaymentType
- 		$this->_Append('PaymentType', PAYMENT_TYPE_SECUREPAY);
- 		
  		// Check if this is a footer record...
  		if (!is_numeric(substr($strPaymentRecord, 0, 1)) || !trim($strPaymentRecord))
  		{
  			return PAYMENT_CANT_NORMALISE_FOOTER;
  		}
+ 		
+ 		// PaymentType
+ 		$this->_Append('PaymentType', PAYMENT_TYPE_SECUREPAY);
  		
  		// Split the parsed record
  		$this->_SplitRaw($strPaymentRecord);
