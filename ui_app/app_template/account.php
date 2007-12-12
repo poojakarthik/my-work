@@ -708,6 +708,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$strChangesNote .= "Disable Late Payment was changed to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	
 		}
+		if (DBO()->Account->Sample->Value != DBO()->CurrentAccount->Sample->Value)
+		{
+			$strChangesNote .= "Sample was changed to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
+		}
 		
 		// Start the transaction
 		TransactionStart();
@@ -833,7 +837,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 
 		// Set the columns to save
-		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR");
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample");
 														
 		if (!DBO()->Account->Save())
 		{

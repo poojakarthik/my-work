@@ -974,15 +974,16 @@ class HTMLElements
 	
 
 	//------------------------------------------------------------------------//
-	// ComboBox TODO
+	// ComboBox
 	//------------------------------------------------------------------------//
 	/**
 	 * ComboBox()
 	 * 
-	 * Creates a combo box
+	 * Creates a ComboBox, using values in the exact same way that the RadioButtons works
 	 * 
-	 * Echoes out a block of formatted HTML select/option tags, using data from
-	 * an array to build the element's attributes like class, name, id and value
+	 * Creates a ComboBox, using values in the exact same way that the RadioButtons works
+	 * Returns a formatted HTML div tag, using data from an array to build
+	 * the element's attributes like class, id and value
 	 *
 	 * @param	Array	$arrParams		The parameters to use when building the
 	 * 									combo box (see above for format).
@@ -991,33 +992,62 @@ class HTMLElements
 	 */
 	function ComboBox($arrParams)
 	{
-		// $arrParams has an array of keys=>values for the options
+		$mixValue = $arrParams['Value'];
+		$strLabel = $arrParams['Definition']['Label'];
+		
+		// If the property is equal to null, then convert this to zero
+		if ($mixValue === NULL)
+		{
+			$mixValue = 0;
+		}
+		
+		if (!is_array($arrParams['Definition']['Options']))
+		{
+			return "HtmlElements->ComboBox: ERROR: no options are specified for property {$arrParams['Object']}.{$arrParams['Property']}";
+		}
+		
+		$strId		= $arrParams['Object'] .".". $arrParams['Property'];
+		$strName	= $strId;
+		$strClass	=  "{$arrParams['Definition']['BaseClass']}InputComboBox {$arrParams['Definition']['Class']}";
 
-		// get documentation for label
-		$strDocumentation = explode(".",$arrParams['Name']);
+		// Determine whether the ComboBox should be disabled
+		$strDisabled = "";
+		if ($arrParams['Type'] != RENDER_INPUT)
+		{
+			$strDisabled = "disabled='disabled'";
+		}
+
+		$strHtml = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+
+
+		$strHtml .= "   <div class='$strClass'>\n";
+		$strHtml .= "      <select id='$strId' name='$strName' style='width:155px;' $strDisabled>\n";
 		
-		// work out the class to use
-		if (!$arrParams['Definition']['Class'])
+		// Add each option to the combo box, in the order that they have been defined in the UIAppDocumentationOptions table
+		foreach ($arrParams['Definition']['Options'] as $arrOption)
 		{
-			$arrParams['Definition']['Class'] = CLASS_DEFAULT; // Default
+			$strSelected = ($mixValue == $arrOption['Value'])? "selected='selected'" : "";
+			
+			$strHtml .= "<option value='{$arrOption['Value']}' $strSelected>{$arrOption['InputLabel']}</option>\n";
 		}
-		$strClass = $arrParams['Definition']['Class']."InputComboBox"; // DefaultInputComboBox
-		if ($arrParams['Valid'] === FALSE)
-		{
-			$strClass .= "Invalid"; // DefaultInputComboBoxInvalid
-		}
+		$strHtml .= "      </select>\n";
+		$strHtml .= "   </div>\n"; // $strClass
 		
-		echo "<td>";
-		echo "$strDocumentation[1]:";
-		echo "</td>";
-		echo "<td>";
-		echo "<select name='{$arrParams['Property']}' class='$strClass'>";
-		foreach ($arrParams['OutputOptions'] as $key=>$value)
+		$strHtml .= "   <div class='DefaultLabel'>\n";
+		if ($arrParams['Required'])
 		{
-			echo "<option value='$key'>$value</option>";
+			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
 		}
-		echo "</select>";
-		echo "</td>";
+		else
+		{
+			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
+		}
+		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span>\n";
+		$strHtml .= "   </div>\n"; // DefaultLabel
+		
+		$strHtml .= "</div>\n"; // DefaultElement
+
+		return $strHtml;
 	}
 
 	//------------------------------------------------------------------------//

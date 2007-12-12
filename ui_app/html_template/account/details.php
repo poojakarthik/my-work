@@ -211,6 +211,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
 		
+		if (DBO()->Account->Sample->Value === NULL)
+		{
+			// If Account->Sample is NULL, then set it to 0
+			DBO()->Account->Sample = 0;
+		}
+		DBO()->Account->Sample->RenderOutput();
+		
 		DBO()->Account->DisableDDR->RenderOutput();
 		if (DBO()->Account->DisableLatePayment->Value === NULL)
 		{
@@ -347,6 +354,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
+		DBO()->Account->Sample->RenderInput();
 		DBO()->Account->DisableDDR->RenderInput();
 		DBO()->Account->DisableLatePayment->RenderInput();
 
@@ -387,7 +395,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 						"document.getElementById('Account.Suburb').style.width='$strWidth';\n".
 						"document.getElementById('Account.Postcode').style.width='$strWidth';\n".
 						"document.getElementById('Account.State').style.width='$strWidth';\n".
-						"document.getElementById('Account.BillingMethod').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
+						"document.getElementById('Account.BillingMethod').style.width='$strWidth';\n".
+						"document.getElementById('Account.Sample').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
 						
 		echo "<script type='text/javascript'>$strJsCode</script>";
 		
