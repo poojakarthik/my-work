@@ -94,11 +94,11 @@
  			return PAYMENT_CANT_NORMALISE_FOOTER;
  		}
  		
- 		// PaymentType
- 		$this->_Append('PaymentType', PAYMENT_TYPE_SECUREPAY);
- 		
  		// Split the parsed record
  		$this->_SplitRaw($strPaymentRecord);
+ 		
+ 		// PaymentType
+ 		$this->_Append('PaymentType', PAYMENT_TYPE_SECUREPAY);
  		
  		// Amount
  		$mixValue	= ((float)$this->_FetchRaw('AmountCents')) / 100;

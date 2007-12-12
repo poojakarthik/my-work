@@ -137,18 +137,18 @@
  		{
  			return PAYMENT_CANT_NORMALISE_INVALID;
  		}
-		
- 		// PaymentType
- 		$this->_Append('PaymentType', PAYMENT_TYPE_BPAY);
 	 	
  		// BPay are idiots, so parse the file first, changing it from comma-delimited to pipe-delimited
 	 	$strRawRecord = str_replace("\",", "\"|", $strPaymentRecord);
 	 	$strRawRecord = str_replace(",\"", "|\"", $strRawRecord);
  		
- 		Debug($strRawRecord);
+ 		//Debug($strRawRecord);
  		
  		// Split the parsed record
  		$this->_SplitRaw($strRawRecord);
+		
+ 		// PaymentType
+ 		$this->_Append('PaymentType', PAYMENT_TYPE_BPAY);
  		
  		// Amount
  		$mixValue	= str_replace(',', '', $this->_FetchRaw('Amount'));
