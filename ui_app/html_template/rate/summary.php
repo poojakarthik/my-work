@@ -159,7 +159,7 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		
 		// Display the Textual Rate Summary contained in DBO()->RateSummary->ProblemReport
 		echo "<div id='ContainerDiv_ContainerDiv_RateGroupSummary' class='NarrowContent' style='padding: 5px 5px 5px 5px'>\n";
-		echo "<div id='ContainerDiv_RateGroupSummary' class='PopupLarge' style='overflow:auto; height:220px; width:auto;'>\n";
+		echo "<div id='ContainerDiv_RateGroupSummary' class='PopupLarge' style='overflow:auto; height:230px; width:auto;'>\n";
 		echo "<span class='DefaultOutputSpan' style='line-height: 1.2;'>";
 		echo $strProblemReport;
 		echo "</span>";

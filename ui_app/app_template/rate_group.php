@@ -458,6 +458,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// for the entire week, list whether it is over allocated, under, or both, and list which Rates are associated with it, if there
 		// are any
 		
+		$intProblemCount = 0;
+		$intMaxProblems = 20;
+		
 		// Check if $this->_arrDestinationRateSummary has not already been built
 		if ($this->_arrDestinationRateSummary === NULL)
 		{
@@ -506,11 +509,17 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			if ($arrDestination['OverAllocated'])
 			{
 				$strOverAllocation = "\t\tOver Allocation at some point during the week\n";
+
+				// Increment the number of errors encountered so far
+				$intProblemCount += 1;
 			}
 
 			if (($arrDestination['UnderAllocated']) && (!$bolIsFleet))
 			{
 				$strUnderAllocation = "\t\tUnder Allocation at some point during the week\n";
+
+				// Increment the number of errors encountered so far
+				$intProblemCount += 1;
 			}
 
 			if (($arrDestination['OverAllocated']) || (($arrDestination['UnderAllocated']) && (!$bolIsFleet)))
@@ -544,17 +553,20 @@ class AppTemplateRateGroup extends ApplicationTemplate
 						$strDestinationSummary .= "\t\tThere are currently no Rates in the Rate Group associated with this destination\n";
 					}
 				}
-
 			}
 			
-			// Add the Destination Summary to the TotalSummary
-			$strRateGroupSummary .= $strDestinationSummary;
+			if ($intProblemCount <= $intMaxProblems)
+			{
+				// Add the Destination Summary to the TotalSummary
+				$strRateGroupSummary .= $strDestinationSummary;
+			}
 		}
 		
 		// Check if there were any problems detected
 		if ($bolProblemDetected)
 		{
-			$strRateGroupSummary = "The following problems have been detected:\n" . $strRateGroupSummary;
+			$intProblemsDisplayed = ($intProblemCount < $intMaxProblems) ? $intProblemCount : $intMaxProblems;
+			$strRateGroupSummary = "The following problems have been detected:\n" . $strRateGroupSummary . "\nShowing $intProblemsDisplayed of $intProblemCount problems";
 		}
 		else
 		{
