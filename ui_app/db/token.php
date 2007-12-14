@@ -576,24 +576,32 @@ class PropertyToken
 	 * Returns the property's value, formatted but not marked-up
 	 *
 	 * @param	int		$intContext		[optional] context in which the property will be formatted
+	 * @param	mixed	$mixArbitrary	[optional] arbitrary value to use as the property's value 
+	 *									when creating the formatted value
 	 * @return	mixed					property's formatted value
 	 *									If the context could not be found
 	 *									then NULL is returned
 	 *
 	 * @method
 	 */
-	function FormattedValue($intContext=CONTEXT_DEFAULT)
+	function FormattedValue($intContext=CONTEXT_DEFAULT, $mixArbitrary=NULL)
 	{
 		$intContext = $this->_CalculateContext($intContext);
 
-		// require a definition
+		// Require a definition
 		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
 		{
 			return NULL;
 		}
 
-		// build up parameters for HtmlElements
+		// Build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext);
+		
+		if ($mixArbitrary !== NULL)
+		{
+			// An arbitrary value has been specified, use it instead
+			$arrParams['Value'] = $mixArbitrary;
+		}
 		
 		$strFormattedValue = HTMLElements()->BuildOutputValue($arrParams);
 		return $strFormattedValue;

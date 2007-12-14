@@ -566,7 +566,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		if ($bolProblemDetected)
 		{
 			$intProblemsDisplayed = ($intProblemCount < $intMaxProblems) ? $intProblemCount : $intMaxProblems;
-			$strRateGroupSummary = "The following problems have been detected:\n" . $strRateGroupSummary . "\nShowing $intProblemsDisplayed of $intProblemCount problems";
+			$strRateGroupSummary = "The following problems have been detected:\n" . $strRateGroupSummary . "\nShowing $intProblemsDisplayed of $intProblemCount problems\n";
 		}
 		else
 		{

@@ -405,8 +405,8 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ImportRateGroupPopupId\", \"large\", null, \"RateGroup\", \"Import\", $strJsonCode)";	
-		//return "javascript:Vixen.Popup.Alert(\"RateGroup import functionality has not been implemented yet\")";
+		//return "javascript:Vixen.Popup.ShowAjaxPopup(\"ImportRateGroupPopupId\", \"large\", null, \"RateGroup\", \"Import\", $strJsonCode)";	
+		return "javascript:Vixen.Popup.Alert(\"RateGroup import functionality has not been implemented yet\")";
 	}
 	
 	//------------------------------------------------------------------------//

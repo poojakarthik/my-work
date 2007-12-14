@@ -236,11 +236,17 @@ class AppTemplateAccount extends ApplicationTemplate
 				}		
 				if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 				{
-					$strChangesNote .= "Charging of Late Payment Fee was changed to '". DBO()->Account->DisableLatePayment->FormattedValue() ."'\n";	
+					$intCurrentValue = DBO()->CurrentAccount->DisableLatePayment->Value;
+					$strChangesNote .=	"Charging of Late Payment Fee was changed from '".
+										DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue).
+										"' to '". DBO()->Account->DisableLatePayment->FormattedValue() ."'\n";	
 				}
 				if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
 				{
-					$strChangesNote .= "Sending of Late Notices was changed to '". DBO()->Account->DisableLateNotices->FormattedValue() ."'\n";	
+					$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
+					$strChangesNote .=	"Sending of Late Notices was changed from '".
+										DBO()->Account->DisableLateNotices->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue).
+										"' to '". DBO()->Account->DisableLateNotices->FormattedValue() ."'\n";	
 				}
 				
 				// Update the record in the Account table
@@ -710,15 +716,24 @@ class AppTemplateAccount extends ApplicationTemplate
 		}		
 		if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 		{
-			$strChangesNote .= "Charging of Late Payment Fee was changed to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	
+			$intCurrentValue = DBO()->CurrentAccount->DisableLatePayment->Value;
+			$strChangesNote .= "Charging of Late Payment Fee was changed from '". 
+								DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
+								"' to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	
 		}
 		if (DBO()->Account->Sample->Value != DBO()->CurrentAccount->Sample->Value)
 		{
-			$strChangesNote .= "Sample was changed to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
+			$intCurrentValue = DBO()->CurrentAccount->Sample->Value;
+			$strChangesNote .= "Sample was changed from '". 
+								DBO()->Account->Sample->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
+								"' to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
 		}
 		if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
 		{
-			$strChangesNote .= "Sending of Late Notices was changed to '" . DBO()->Account->DisableLateNotices->FormattedValue() . "'\n";
+			$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
+			$strChangesNote .=	"Sending of Late Notices was changed from '". 
+								DBO()->Account->DisableLateNotices->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
+								"' to '" . DBO()->Account->DisableLateNotices->FormattedValue() . "'\n";
 		}
 		
 		// Start the transaction
