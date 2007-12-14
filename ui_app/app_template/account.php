@@ -236,11 +236,15 @@ class AppTemplateAccount extends ApplicationTemplate
 				}		
 				if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 				{
-					$strChangesNote .= "Disable Late Payment was changed to: ". DBO()->Account->DisableLatePayment->FormattedValue() ."\n";	
+					$strChangesNote .= "Charging of Late Payment Fee was changed to '". DBO()->Account->DisableLatePayment->FormattedValue() ."'\n";	
+				}
+				if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
+				{
+					$strChangesNote .= "Sending of Late Notices was changed to '". DBO()->Account->DisableLateNotices->FormattedValue() ."'\n";	
 				}
 				
-				// update the record in the Account table
-				DBO()->Account->SetColumns("DisableDDR, DisableLatePayment");
+				// Update the record in the Account table
+				DBO()->Account->SetColumns("DisableDDR, DisableLatePayment, DisableLateNotices");
 				
 				// Save the payment to the payment table of the vixen database
 				if (!DBO()->Account->Save())
@@ -706,11 +710,15 @@ class AppTemplateAccount extends ApplicationTemplate
 		}		
 		if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 		{
-			$strChangesNote .= "Disable Late Payment was changed to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	
+			$strChangesNote .= "Charging of Late Payment Fee was changed to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	
 		}
 		if (DBO()->Account->Sample->Value != DBO()->CurrentAccount->Sample->Value)
 		{
 			$strChangesNote .= "Sample was changed to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
+		}
+		if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
+		{
+			$strChangesNote .= "Sending of Late Notices was changed to '" . DBO()->Account->DisableLateNotices->FormattedValue() . "'\n";
 		}
 		
 		// Start the transaction
@@ -837,7 +845,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 
 		// Set the columns to save
-		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample");
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, DisableLateNotices");
 														
 		if (!DBO()->Account->Save())
 		{

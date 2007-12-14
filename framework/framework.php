@@ -494,12 +494,11 @@
 			else
 			{
 				$fltUnbilledCredits		= (float)$arrCharge['Amount'];
-				$fltUnbilledCredits		= AddGST($fltUnbilledCredits);
 			}
 		}
 		
 		// remove unbilled credits from overdue balance
-		$fltOverdueBalance 				-= max(0, ($fltUnbilledCredits + ($fltUnbilledCredits / 10)));
+		$fltOverdueBalance -= max(0, AddGST($fltUnbilledCredits));
 		
 		// return the balance
 		return max(0, $fltOverdueBalance);
@@ -552,7 +551,7 @@
 	// GetDistputedBalance()
 	//------------------------------------------------------------------------//
 	/**
-	 * GetDistputedBalance()
+	 * GetDistputedBalance() (THIS FUNCTION IS SPELT WRONG AND IT DOESN'T LOOK LIKE IT IS USED ANYWHERE)
 	 *
 	 * Determines the current Disputed Balance for a specified account
 	 *

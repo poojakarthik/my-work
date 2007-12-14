@@ -167,14 +167,7 @@ class HTMLElements
 		// create the input box
 		$strHtml .= "	<input type='text' id='$strId' name='$strName' value='$strValue' class='$strClass'/>\n";
 		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
-		if ($arrParams['Required'])
-		{
-			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
-		}
-		else
-		{
-			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
-		}
+		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
 		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
 		$strHtml .= "</div>\n";
 		
@@ -251,14 +244,7 @@ class HTMLElements
 		//TODO! Find out if the number of rows and columns in the textarea should be hard coded here
 		$strHtml .= "   <textarea id='$strId' name='$strName' class='$strClass' rows='6' cols='29' style='overflow:auto;'>$strValue</textarea>\n";
 		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
-		if ($arrParams['Required'])
-		{
-			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
-		}
-		else
-		{ 
-			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
-		}
+		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
 		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
 		$strHtml .= "</div>\n";
 		
@@ -543,14 +529,7 @@ class HTMLElements
 		$strHtml .= "            }'\n";
 		$strHtml .= "      ></input>\n";
 		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
-		if ($arrParams['Required'])
-		{
-			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
-		}
-		else
-		{
-			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
-		}
+		$strHtml .= "      <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
 		$strHtml .= "      <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
 		$strHtml .= "      <input type='hidden' id='{$strName}_hidden' name='$strName' value='$intValue'></input>\n";
 		$strHtml .= "</div>\n";
@@ -686,14 +665,8 @@ class HTMLElements
 		$strHtml .= "   <tr>\n";
 		$strHtml .= "      <td width='195px'>\n";
 		$strHtml .= "         <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
-		if ($arrParams['Required'])
-		{
-			$strHtml .= "         <span class='RequiredInput'>*</span>\n";
-		}
-		else
-		{
-			$strHtml .= "         <span class='RequiredInput'>&nbsp;</span>\n";
-		}
+		
+		$strHtml .= "         <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
 		
 		$strHtml .= "            <span id='$strId.Label.Text'>$strLabel : </span>\n";
 		$strHtml .= "         </div>\n";
@@ -994,6 +967,7 @@ class HTMLElements
 	{
 		$mixValue = $arrParams['Value'];
 		$strLabel = $arrParams['Definition']['Label'];
+		$bolValueFound = FALSE;
 		
 		// If the property is equal to null, then convert this to zero
 		if ($mixValue === NULL)
@@ -1018,33 +992,34 @@ class HTMLElements
 		}
 
 		$strHtml = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
-
-
-		$strHtml .= "   <div class='$strClass'>\n";
-		$strHtml .= "      <select id='$strId' name='$strName' style='width:155px;' $strDisabled>\n";
+		$strHtml .= "   <div class='DefaultLabel'>\n";
+		$strHtml .= "      <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp;") ."</span>\n";
+		$strHtml .= "      <span id='$strId.Label.Text'>{$strLabel} : </span>\n";
+		$strHtml .= "   </div>\n"; // DefaultLabel
+		
+		$strHtml .= "   <select id='$strId' name='$strName' class='$strClass' style='width:155px;' $strDisabled>\n";
 		
 		// Add each option to the combo box, in the order that they have been defined in the UIAppDocumentationOptions table
 		foreach ($arrParams['Definition']['Options'] as $arrOption)
 		{
-			$strSelected = ($mixValue == $arrOption['Value'])? "selected='selected'" : "";
+			$strOptionId = $strId ."_". $arrOption['Value'];
 			
-			$strHtml .= "<option value='{$arrOption['Value']}' $strSelected>{$arrOption['InputLabel']}</option>\n";
+			$strSelected = "";
+			if ($mixValue == $arrOption['Value'])
+			{
+				$strSelected = "selected='selected'";
+				$bolValueFound = TRUE;
+			}
+			
+			$strHtml .= "<option id='$strOptionId' value='{$arrOption['Value']}' $strSelected>{$arrOption['InputLabel']}</option>\n";
 		}
-		$strHtml .= "      </select>\n";
-		$strHtml .= "   </div>\n"; // $strClass
-		
-		$strHtml .= "   <div class='DefaultLabel'>\n";
-		if ($arrParams['Required'])
+		if (!$bolValueFound)
 		{
-			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
+			// The value of the property has not been found yet.  Add it as an option
+			$strHtml .= "<option id='{$strId}_{$mixValue}' value='$mixValue' selected='selected'>$mixValue</option>\n";
 		}
-		else
-		{
-			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
-		}
-		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span>\n";
-		$strHtml .= "   </div>\n"; // DefaultLabel
 		
+		$strHtml .= "   </select>\n";
 		$strHtml .= "</div>\n"; // DefaultElement
 
 		return $strHtml;

@@ -217,14 +217,15 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->Sample = 0;
 		}
 		DBO()->Account->Sample->RenderOutput();
+		DBO()->Account->DisableLateNotices->RenderOutput();
 		
-		DBO()->Account->DisableDDR->RenderOutput();
 		if (DBO()->Account->DisableLatePayment->Value === NULL)
 		{
 			// If DisableLatePayment is NULL then set it to 0
 			DBO()->Account->DisableLatePayment = 0;
 		}
 		DBO()->Account->DisableLatePayment->RenderOutput();
+		DBO()->Account->DisableDDR->RenderOutput();
 
 		// Render the buttons but only if the user has operator privileges
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
@@ -355,8 +356,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 		
 		DBO()->Account->Sample->RenderInput();
-		DBO()->Account->DisableDDR->RenderInput();
-		DBO()->Account->DisableLatePayment->RenderInput();
+		DBO()->Account->DisableLateNotices->RenderInput();
+		DBO()->Account->DisableLatePayment->RenderInput(1);
+		DBO()->Account->DisableDDR->RenderInput(1);
 
 		// Render the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
@@ -379,11 +381,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			// The user doesn't have admin privileges
 			$strDisableThirdLatePaymentOption = "document.getElementById('Account.DisableLatePayment_1').disabled = true;\n".
-												"document.getElementById('Account.DisableLatePayment_1.Label').style.color='#4C4C4C';\n";
+												"document.getElementById('Account.DisableLatePayment_1.Label').style.color = '#4C4C4C';\n";
 		}
 		
 		//Resize the textboxes and the comboboxes and disable the "Never charge a late payment fee" radio
-		$strWidth = "300px";
+		$strWidth = "330px";
 		$strJsCode =	"document.getElementById('Account.BusinessName').style.width='$strWidth';\n".
 						"document.getElementById('Account.TradingName').style.width='$strWidth';\n".
 						"document.getElementById('Account.ABN').style.width='$strWidth';\n".
@@ -396,7 +398,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 						"document.getElementById('Account.Postcode').style.width='$strWidth';\n".
 						"document.getElementById('Account.State').style.width='$strWidth';\n".
 						"document.getElementById('Account.BillingMethod').style.width='$strWidth';\n".
-						"document.getElementById('Account.Sample').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
+						"document.getElementById('Account.Sample').style.width='$strWidth';\n".
+						"document.getElementById('Account.DisableLateNotices').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
 						
 		echo "<script type='text/javascript'>$strJsCode</script>";
 		
@@ -480,9 +483,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			echo "      <td width='35%' valign='top'>\n";
 			// Render the properties that can be changed
 			DBO()->Account->DisableDDR->RenderInput();
+			echo "<div class='ContentSeparator'></div>\n";
 			DBO()->Account->DisableLatePayment->RenderInput();
+			echo "<div class='ContentSeparator'></div>\n";
+			DBO()->Account->DisableLateNotices->RenderInput(1);
 			// Render the submit button
-			echo "         <br /><br /><br /><div class='ButtonContainer'><div class='Right'>\n";
+			echo "         <br /><div class='ButtonContainer'><div class='Right'>\n";
 			$this->AjaxSubmit("Apply Changes");
 			echo "         </div></div>\n";
 			echo "      </td>\n";
@@ -492,6 +498,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			// The user can't edit the Admin fee and late payment fee properties
 			// Render them as labels
 			DBO()->Account->DisableDDR->RenderOutput();
+			DBO()->Account->DisableLateNotices->RenderOutput();
 			if (DBO()->Account->DisableLatePayment->Value === NULL)
 			{
 				// If DisableLatePayment is NULL then set it to 0
