@@ -1270,6 +1270,15 @@ $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Constant']	= 'RATE_STATUS_DRAFT';
 $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Description']	= 'Draft';
 
 
+// Late Payment Notice Types
+$GLOBALS['*arrConstant']	['LatePaymentNotice']	[1]	['Constant']	= 'LATE_PAYMENT_NOTICE_OVERDUE';
+$GLOBALS['*arrConstant']	['LatePaymentNotice']	[1]	['Description']	= 'Overdue Notice';
+$GLOBALS['*arrConstant']	['LatePaymentNotice']	[2]	['Constant']	= 'LATE_PAYMENT_NOTICE_SUSPENSION';
+$GLOBALS['*arrConstant']	['LatePaymentNotice']	[2]	['Description']	= 'Suspension Notice';
+$GLOBALS['*arrConstant']	['LatePaymentNotice']	[3]	['Constant']	= 'LATE_PAYMENT_NOTICE_FINAL_DEMAND';
+$GLOBALS['*arrConstant']	['LatePaymentNotice']	[3]	['Description']	= 'Final Demand Notice';
+
+
 
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");

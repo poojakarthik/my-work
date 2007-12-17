@@ -1066,5 +1066,157 @@ function MakeCSVLine($arrFields, $arrFieldOrder=NULL, $strDelimiter=',', $strEnc
 	return $strCSVLine;
 }
 
+//returns FALSE if something failed, else returns the number of Notices generated
+function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMode=FALSE)
+{
+	/*
+	 * The specified notice is generated for all accounts that satisfy ALL of the following conditions:
+	 * 		Account status is Active or Closed
+	 * 		AND 
+	 *		The total amount that is 1 to 29 days overdue is greater than $23 
+	 *		AND
+	 *		The total amount that is 30+ days overdue is equal to 0
+	 *		AND
+	 *		The Account can have Late Notices generated for it (Account.DisableLateNotices == 0)
+	 *
+	 * Disputed amounts and unbilled credit adjustments are not taken into consideration when calculating 
+	 * the total amounts invoiced within the 2 date ranges
+	 *
+	 */
+
+	// Append a backslash to the path, if it doesn't already end in one
+	if (substr($strFilePath, -1) != "/")
+	{
+		$strFilePath .= "/";
+	}
+
+	// Notices shouldn't be generated for Archived Accounts, or those in debt collection, and probably even suspended ones.  Take this into account.
+	$arrApplicableAccountStatuses = Array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
+	
+	// Accounts are allowed to have an outstanding balance of at most $23 without recieving any late notices
+	//TODO!  This value should be in the definitions.php file, or some sort of config file
+	$fltAcceptableOverdueBalance = 23.00;
+	
+	// Build the query
+	$strColumns = 	"Invoice.Account AS 'AccountNo',
+					Account.BusinessName AS 'BusinessName',
+					Account.CustomerGroup AS 'CustomerGroup',
+					Contact.FirstName AS 'FirstName', 
+					Contact.LastName AS 'LastName',
+					Account.Address1 AS 'AddressLine1',
+					Account.Address2 AS 'AddressLine2',
+					Account.Suburb AS 'Suburb',
+					Account.Postcode AS 'Postcode',
+					Account.State AS 'State',
+					Contact.Phone AS 'Phone',
+					Contact.Mobile AS 'Mobile',
+					Contact.Email AS 'Email',
+					SUM(CASE WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN 
+						Invoice.Balance END) AS '1To29DaysOverdue',
+					SUM(CASE WHEN CURDATE() >= ADDDATE(Invoice.DueOn, INTERVAL 30 DAY) THEN
+						Invoice.Balance END) AS '30PlusDaysOverdue'";
+					
+	$strTables	= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
+	$strWhere	= "Account.DisableLateNotices = 0 AND Account.Archived IN (". implode(", ", $arrApplicableAccountStatuses) .")";
+	$strOrderBy	= "Invoice.Account ASC";
+	$strGroupBy	= "Invoice.Account HAVING 1To29DaysOverdue > $fltAcceptableOverdueBalance AND 30PlusDaysOverdue IN (NULL, 0)";
+	
+	$selOverdue = new StatementSelect($strTables, $strColumns, $strWhere, $strOrderBy, "", $strGroupBy);
+	$intNumOfNotices = $selOverdue->Execute();
+
+	if ($intNumOfNotices === FALSE)
+	{
+		// Failed to retrieve the data from the database
+		return FALSE;
+	}
+	if ($intNumOfNotices == 0)
+	{
+		// There are no notices to generate
+		return $intNumOfNotices;
+	}
+	
+	// Build the notice pdf
+	//TODO! Modify this so that it builds actual pdfs, instead of just text files representing the pdfs
+	$arrAccounts = $selOverdue->FetchAll();
+	$strFilenamePrefix = $strFilePath . date("Ymd");
+	$strFilenameSuffix = str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LatePaymentNotice")));
+	if (!$bolDebugMode)
+	{
+		// Build each notice
+		foreach ($arrAccounts as $arrAccount)
+		{
+			// Build the filename
+			$strFilename = "{$strFilenamePrefix}_{$arrAccount['AccountNo']}_{$strFilenameSuffix}.txt";
+			
+			$ptrNoticeFile = fopen($strFilename, 'wt');
+			if ($ptrNoticeFile === FALSE)
+			{
+				// The file could not be opened
+				return FALSE;
+			}
+			
+			$arrAccount['CustomerGroup'] = GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+			if ($arrAccount['1To29DaysOverdue'] === NULL)
+			{
+				$arrAccount['1To29DaysOverdue'] = 0;
+			}
+			if ($arrAccount['30PlusDaysOverdue'] === NULL)
+			{
+				$arrAccount['30PlusDaysOverdue'] = 0;
+			}
+			
+			// For now, just output the contents of $arrAccount
+			foreach ($arrAccount as $strProperty=>$mixValue)
+			{
+				fwrite($ptrNoticeFile, "$strProperty: $mixValue\n");
+			}
+			
+			fclose($ptrNoticeFile);
+		}
+	}
+	else
+	{
+		// Debug mode
+		// Create a CSV file where each row describes a Late Notice to generate
+		
+		// Build the filename
+		$strFilename = "{$strFilenamePrefix}_{$strFilenameSuffix}.csv";
+		
+		// Open the file
+		$ptrNoticeFile = fopen($strFilename, 'wt');
+		if ($ptrNoticeFile === FALSE)
+		{
+			// The file could not be opened
+			return FALSE;
+		}
+		
+		// Build the header row
+		fputcsv($ptrNoticeFile, Array("Account No", "Business Name", "Customer Group", "First Name", "Last Name", 
+			"Address Line 1", "Address Line 2", "Suburb", "Postcode", "State", "Phone",
+			"Mobile", "Email", "1-29 Days Overdue", "30+ Days Overdue"));
+		
+		// Add the details for each notice, as a row
+		foreach ($arrAccounts as $arrAccount)
+		{
+			$arrAccount['CustomerGroup'] = GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+			if ($arrAccount['1To29DaysOverdue'] === NULL)
+			{
+				$arrAccount['1To29DaysOverdue'] = 0;
+			}
+			if ($arrAccount['30PlusDaysOverdue'] === NULL)
+			{
+				$arrAccount['30PlusDaysOverdue'] = 0;
+			}
+			
+			fputcsv($ptrNoticeFile, $arrAccount);
+		}
+		
+		fclose($ptrNoticeFile);
+	}
+	
+	return $intNumOfNotices;
+}
+
+
 
 ?>
