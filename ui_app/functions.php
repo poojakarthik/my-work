@@ -1066,24 +1066,114 @@ function MakeCSVLine($arrFields, $arrFieldOrder=NULL, $strDelimiter=',', $strEnc
 	return $strCSVLine;
 }
 
-//returns FALSE if something failed, else returns the number of Notices generated
-function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMode=FALSE)
-{
-	/*
-	 * The specified notice is generated for all accounts that satisfy ALL of the following conditions:
-	 * 		Account status is Active or Closed
-	 * 		AND 
-	 *		The total amount that is 1 to 29 days overdue is greater than $23 
-	 *		AND
-	 *		The total amount that is 30+ days overdue is equal to 0
-	 *		AND
-	 *		The Account can have Late Notices generated for it (Account.DisableLateNotices == 0)
-	 *
-	 * Disputed amounts and unbilled credit adjustments are not taken into consideration when calculating 
-	 * the total amounts invoiced within the 2 date ranges
-	 *
-	 */
 
+//------------------------------------------------------------------------//
+// GenerateTodaysLatePaymentNotices
+//------------------------------------------------------------------------//
+/**
+ * GenerateTodaysLatePaymentNotices()
+ *
+ * Generates the appropriate Late Payment Notices, if any are scheduled for today
+ *
+ * Generates the appropriate Late Payment Notices, if any are scheduled for today
+ *
+ * @param	string	$strFilePath	optional, path where the generated notices will be placed
+ * @param	bool	$bolDebugMode	optional, if set to TRUE, the data for the generated notices is all placed in a csv file
+ *									
+ * @return	mix						returns FALSE if it failed before could work out if any notices should be generated today
+ *									returns	Array['NoticeType'] = Type of notice to be generated today, or NULL if no notices are scheduled to be generated today
+ *											Array['NumGenerated'] = number of notices generated, or FALSE if generation of the notices failed
+ * @function
+ */
+function GenerateTodaysLatePaymentNotices($strFilePath="./", $bolDebugMode=FALSE)
+{
+	//TODO! This uses hardcoded dates for scheduling the notices relative to the last invoice due date
+	// These variables should probably be turned into constants, or stored in a config file
+	$intDaysBeforeOverdueNotice		= 7;
+	$intDaysBeforeSuspensionNotice	= 14;
+	$intDaysBeforeFinalDemandNotice	= 21;
+	
+	//TODO! This function should check the FileExport table to make sure all the required notices have been generated
+	
+	// Find the most recent Invoice due date, not including those set in the future
+	// Also retrieve the current date from the database server, and the dates on which 
+	// each of the notices get generated
+	$arrColumns	= Array("LastDueDate"			=> "MAX(DueOn)",
+						"CurrentDate"			=> "CURDATE()",
+						"OverdueNoticeDay"		=> "ADDDATE(MAX(DueOn), INTERVAL 7 DAY)",
+						"SuspensionNoticeDay"	=> "ADDDATE(MAX(DueOn), INTERVAL 14 DAY)",
+						"FinalDemandNoticeDay"	=> "ADDDATE(MAX(DueOn), INTERVAL 21 DAY)");
+	$selDates	= new StatementSelect("Invoice", $arrColumns, "DueOn < CURDATE()");
+	
+	if ($selDates->Execute() === FALSE)
+	{
+		// The query failed
+		return FALSE;
+	}
+	
+	$arrDates = $selDates->Fetch();
+	
+	switch ($arrDates[CurrentDate])
+	{
+		case $arrDates['OverdueNoticeDay']:
+			// Build the Overdue Notices
+			$mixResult = BuildLatePaymentNotices(LATE_PAYMENT_NOTICE_OVERDUE, $strPathFile, $bolDebugMode);
+			$arrResult = Array("NoticeType" => LATE_PAYMENT_NOTICE_OVERDUE, "NumGenerated" => $mixResult);
+			break;
+		case $arrDates['SuspensionNoticeDay']:
+			// Build the Suspension Notices
+			$mixResult = BuildLatePaymentNotices(LATE_PAYMENT_NOTICE_SUSPENSION, $strPathFile, $bolDebugMode);
+			$arrResult = Array("NoticeType" => LATE_PAYMENT_NOTICE_SUSPENSION, "NumGenerated" => $mixResult);
+			break;
+		case $arrDates['FinalDemandNoticeDay']:
+			// Build the Final Demand Notices
+			$mixResult = BuildLatePaymentNotices(LATE_PAYMENT_NOTICE_FINAL_DEMAND, $strPathFile, $bolDebugMode);
+			$arrResult = Array("NoticeType" => LATE_PAYMENT_NOTICE_FINAL_DEMAND, "NumGenerated" => $mixResult);
+			break;
+		default:
+			// No notices need to be generated today
+			$arrResult = Array("NoticeType" => NULL, "NumGenerated" => 0);
+			break;
+	}
+	
+	return $arrResult;
+}
+
+//------------------------------------------------------------------------//
+// BuildLatePaymentNotices
+//------------------------------------------------------------------------//
+/**
+ * BuildLatePaymentNotices()
+ *
+ * Generates the chosen Late Payment Notices, for all accounts that satisfy the conditions
+ *
+ * Generates the chosen Late Payment Notices, for all accounts that satisfy the conditions
+ * The specified notice is generated for all accounts that satisfy ALL of the following conditions:
+ * 		Account status is Active or Closed
+ * 		AND 
+ *		The total amount that is 1 to 29 days overdue is greater than $23
+ *		AND
+ *		The total amount that is 30+ days overdue is equal to 0
+ *		AND
+ *		The Account can have Late Notices generated for it (Account.DisableLateNotices == 0)
+ * Disputed amounts and unbilled credit adjustments are not taken into consideration when calculating 
+ * the total amounts invoiced within the 2 date ranges
+ *
+ * @param	integer	$intNoticeType			The type of notice to generate (one of the LatePaymentNotice constants)
+ * @param	string	$strFilePath			optional, path where the generated notices will be placed
+ * @param	string	$strLatePaymentsAtDate	optional, defaults to NULL, date used to work out how many days overdue each
+ *											of the outstanding balances are.  If null then it will use the current date
+ *											format (YYYY-MM-DD).  If an invoice's due date is 2006-08-14, and $strLatePaymentsAtDate is 2006-08-19
+ *											then the invoice's outstanding balance is considered to be within the "1-29 days overdue" range
+ * @param	bool	$bolDebugMode			optional, if set to TRUE, the data for the generated notices is all placed in a single csv file,
+ *											instead of having each notice generated as a separate pdf
+ *									
+ * @return	mix								returns FALSE on failure, else returns the number of Notices generated
+ *
+ * @function
+ */
+function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $strLatePaymentsAtDate=NULL, $bolDebugMode=FALSE)
+{
 	// Append a backslash to the path, if it doesn't already end in one
 	if (substr($strFilePath, -1) != "/")
 	{
@@ -1097,10 +1187,23 @@ function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMod
 	//TODO!  This value should be in the definitions.php file, or some sort of config file
 	$fltAcceptableOverdueBalance = 23.00;
 	
+	if ($strLatePaymentsAtDate === NULL)
+	{
+		// Use today's date to work out how many days overdue each of the outstanding balance's are
+		$strLatePaymentsAtDate = "CURDATE()";
+	}
+	else
+	{
+		// Use the date supplied, to work out how many days overdue each of the outstanding balances are, relative to it
+		$strLatePaymentsAtDate = "'$strLatePaymentsAtDate'";
+	}
+	
 	// Build the query
 	$strColumns = 	"Invoice.Account AS 'AccountNo',
 					Account.BusinessName AS 'BusinessName',
+					Account.TradingName AS 'TradingName',
 					Account.CustomerGroup AS 'CustomerGroup',
+					Account.Archived As 'AccountStatus',
 					Contact.FirstName AS 'FirstName', 
 					Contact.LastName AS 'LastName',
 					Account.Address1 AS 'AddressLine1',
@@ -1111,9 +1214,9 @@ function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMod
 					Contact.Phone AS 'Phone',
 					Contact.Mobile AS 'Mobile',
 					Contact.Email AS 'Email',
-					SUM(CASE WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN 
+					SUM(CASE WHEN $strLatePaymentsAtDate BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN 
 						Invoice.Balance END) AS '1To29DaysOverdue',
-					SUM(CASE WHEN CURDATE() >= ADDDATE(Invoice.DueOn, INTERVAL 30 DAY) THEN
+					SUM(CASE WHEN $strLatePaymentsAtDate >= ADDDATE(Invoice.DueOn, INTERVAL 30 DAY) THEN
 						Invoice.Balance END) AS '30PlusDaysOverdue'";
 					
 	$strTables	= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
@@ -1132,21 +1235,23 @@ function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMod
 	if ($intNumOfNotices == 0)
 	{
 		// There are no notices to generate
-		return $intNumOfNotices;
+		return 0;
 	}
 	
 	// Build the notice pdf
 	//TODO! Modify this so that it builds actual pdfs, instead of just text files representing the pdfs
 	$arrAccounts = $selOverdue->FetchAll();
-	$strFilenamePrefix = $strFilePath . date("Ymd");
-	$strFilenameSuffix = str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LatePaymentNotice")));
+	$strFilenamePrefix = $strFilePath . date("Ymd") ."_". str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LatePaymentNotice")));
+	$strDateIssued = date("d-m-Y");
+	$strDueDateForAction = date("d-F-Y", strtotime("+7 days", $strDateIssued));
+	
 	if (!$bolDebugMode)
 	{
 		// Build each notice
 		foreach ($arrAccounts as $arrAccount)
 		{
 			// Build the filename
-			$strFilename = "{$strFilenamePrefix}_{$arrAccount['AccountNo']}_{$strFilenameSuffix}.txt";
+			$strFilename = "{$strFilenamePrefix}_{$arrAccount['AccountNo']}.txt";
 			
 			$ptrNoticeFile = fopen($strFilename, 'wt');
 			if ($ptrNoticeFile === FALSE)
@@ -1156,6 +1261,7 @@ function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMod
 			}
 			
 			$arrAccount['CustomerGroup'] = GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+			$arrAccount['AccountStatus'] = GetConstantDescription($arrAccount['AccountStatus'], "Account");
 			if ($arrAccount['1To29DaysOverdue'] === NULL)
 			{
 				$arrAccount['1To29DaysOverdue'] = 0;
@@ -1165,12 +1271,37 @@ function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMod
 				$arrAccount['30PlusDaysOverdue'] = 0;
 			}
 			
-			// For now, just output the contents of $arrAccount
-			foreach ($arrAccount as $strProperty=>$mixValue)
+			// Include NoticeType specific stuff here
+			switch ($intNoticeType)
 			{
-				fwrite($ptrNoticeFile, "$strProperty: $mixValue\n");
+				case LATE_PAYMENT_NOTICE_OVERDUE:
+					$strMessage =	"Our records indicate that your account for the amount of \${$arrAccount['1To29DaysOverdue']} remains unpaid.\n".
+									"Please ensure payment is made by $strDueDateForAction to avoid any further recovery action and possible disruption to your services\n";
+					break;
+				case LATE_PAYMENT_NOTICE_SUSPENSION:
+					$strMessage =	"Further to our recent reminder letter, our records indicate that your account remains unpaid.\n".
+									"\tPrevious Amount Overdue: \${$arrAccount['1To29DaysOverdue']}\n".
+									"\tCurrent Invoice: (Wouldn't this always be equal to the 'Previous Amount Overdue'?)\n".
+									"\tTotal Amount Owing: (Again, wouldn't this always be equal to the 'Previous Amount Overdue'?)\n\n".
+									"Please be advised that if we do not recieve payment by $strDueDateForAction your services will be suspended without further notice and we will commence appropriate collection action immediately.\n";
+					break;
+				case LATE_PAYMENT_NOTICE_FINAL_DEMAND:
+					$strMessage =	"We note that dispite numerous reminders to pay this outstanding amount, the account still remains in arrears in the amount of \${$arrAccount['1To29DaysOverdue']}\n".
+									"Your service is due to be temporarily disconnected because of your failure to pay your accounts.\n".
+									"\tAmount Overdue: (how would this ever be different to the '1-29 days overdue' amount?)\n\n".
+									"If you would like to avoid the impending actions, we request that you contact this office within 7 days with a view to payment of the outstanding account.\n";
+					break;
 			}
 			
+			$strMessage .= "Date Issued: $strDateIssued\n";
+			
+			// Output the contents of $arrAccount
+			foreach ($arrAccount as $strProperty=>$mixValue)
+			{
+				$strMessage .= "$strProperty: $mixValue\n";
+			}
+			
+			fwrite($ptrNoticeFile, $strMessage);
 			fclose($ptrNoticeFile);
 		}
 	}
@@ -1191,7 +1322,7 @@ function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMod
 		}
 		
 		// Build the header row
-		fputcsv($ptrNoticeFile, Array("Account No", "Business Name", "Customer Group", "First Name", "Last Name", 
+		fputcsv($ptrNoticeFile, Array("Account No", "Business Name", "Trading Name", "Customer Group", "Account Status", "First Name", "Last Name", 
 			"Address Line 1", "Address Line 2", "Suburb", "Postcode", "State", "Phone",
 			"Mobile", "Email", "1-29 Days Overdue", "30+ Days Overdue"));
 		
@@ -1199,6 +1330,7 @@ function BuildLatePaymentNotices($intNoticeType, $strFilePath="./", $bolDebugMod
 		foreach ($arrAccounts as $arrAccount)
 		{
 			$arrAccount['CustomerGroup'] = GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+			$arrAccount['AccountStatus'] = GetConstantDescription($arrAccount['AccountStatus'], "Account");
 			if ($arrAccount['1To29DaysOverdue'] === NULL)
 			{
 				$arrAccount['1To29DaysOverdue'] = 0;
