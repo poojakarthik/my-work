@@ -129,7 +129,7 @@ define('HTML_CONTEXT_VIEW',					509);
 define('HTML_CONTEXT_EDIT',					510);
 define('HTML_CONTEXT_CURRENT_PLAN',			511);
 define('HTML_CONTEXT_FUTURE_PLAN',			512);
-
+define('HTML_CONTEXT_IFRAME',						513);
 
 // constants for the cap/excess rates used within the rate add page
 define('RATE_CAP_NO_CAP', 100);
@@ -208,4 +208,7 @@ define("EVENT_ON_ACCOUNT_SERVICES_UPDATE"			, "OnAccountServicesUpdate");
 define("EVENT_ON_ACCOUNT_PRIMARY_CONTACT_UPDATE"	, "OnAccountPrimaryContactUpdate");
 define("EVENT_ON_EDIT_ACCOUNT_DETAILS_CANCEL"		, "OnEditAccountDetailsCancel");
 
+// Maximum file upload size is 1 megabyte
+define("RATEGROUP_IMPORT_MAXSIZE", 1048576);
+define("RATEGROUP_NOTHING_UPLOADED", 99);
 ?>

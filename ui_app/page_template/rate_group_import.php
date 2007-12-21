@@ -34,6 +34,6 @@ $this->Page->SetName($strPopupTitle);
 $this->Page->SetLayout('popup_layout');
 
 // Add the Html Objects to their respective columns
-$this->Page->AddObject('RateGroupImport', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "RateGroupImportDiv");
+$this->Page->AddObject('RateGroupImport', COLUMN_ONE, HTML_CONTEXT_IFRAME, "RateGroupImportDiv");
 
 ?>

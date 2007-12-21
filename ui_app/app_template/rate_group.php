@@ -1311,8 +1311,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 										DBO()->RateGroup->RecordType->Value
 									);
 			
-			
-			
 			$arrColumnNames = Array("RateId"=>"R.Id", "Editable"=>"IF(R.Archived = ". RATE_STATUS_DRAFT .", \"Yes\", \"No\")",
 														"DestinationCode"=>"D.Code", "DestinationDescription"=>"D.Description", "RateName"=>"R.Name", "RateDescription"=>"R.Description",
 														"StartTime"=>"R.StartTime", "EndTime"=>"R.EndTime", "Monday"=>"R.Monday", "Tuesday"=>"R.Tuesday", "Wednesday"=>"R.Wednesday",
@@ -1438,15 +1436,25 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	function Import()
 	{
 		// Check user authorization and permissions
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+		//AuthenticatedUser()->CheckAuth();
+		//AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 		
 		// The import algorithm
-		if (SubmittedForm("ImportRateGroup", "Import As Draft") || SubmittedForm("ImportRateGroup", "Import And Commit") )
-		{
-			/* The following commented out block of code is a loose algorithm as to how to import and validate a RateGroup
-			$arrRateGroupKeys	= Array("Id", "Name", "Description", "ServiceType", "RecordType");
-			$arrRateKeys		= Array("Id", "DestinationCode", "DestinationDescription", "Name", "Description", "PassThrough", etc);
+		// no need to check for submitted form as wont be submitted via AJAX request
+		//if (SubmittedForm("ImportRateGroup", "Import As Draft") || SubmittedForm("ImportRateGroup", "Import And Commit") )
+		//{
+		
+			/* The following commented out block of code is a loose algorithm as to how to import and validate a RateGroup*/
+			//---->>
+
+			// The $arrRateGroup and $arrRate are dynamically assigned values at run-time
+
+			$arrRateGroupKeys	= Array();
+			$arrRateKeys		= Array();
+			
+			$arrRateGroup = Array();
+			$arrRate = Array();
+			
 			$bolIsFleet			= DBO()->RateGroup->Fleet->Value;
 			
 			DBO()->RecordType->Load();
@@ -1465,218 +1473,534 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 			//Do whatever you have to do to get a file pointer to the file so that you can use the fgetcsv() function
 			//TODO
-		
-			//Read the second line of the file (RateGroup details)
-			$arrRateGroup = fgetcsv($objFilePointer);
-			$arrRateGroup = array_combine($arrRateGroupKeys, $arrRateGroup);
 			
-			if ($arrRateGroup['Id'] != NULL)
-			{
-				// The RateGroup must already be in the database
-				Retrieve the RateGroup from the database
-				DBO()->RateGroup->Id = $arrRateGroup['Id'];
-				DBO()->RateGroup->Load();
-				if (the RateGroup could not be retrieved from the database)
-				{
-					exit alerting the user that they are referencing a RateGroup that could not be found in the database
-				}
-				// The RateGroup was successfully retrieved from the database
-				if (the RateGroup is a committed RateGroup (Archived == 0) or an archived RateGroup (Archived == 1))
-				{
-					// you cannot modify a committed or archived RateGroup
-					exit alerting the user that they cannot modify a (committed|archived) RateGroup
-				}
-				
-				// The RateGroup must be a Draft RateGroup, save a reference to it, to compare against the one being imported
-				// It will basically just compare the ServiceType and RecordType to make sure they match
-				$dboExistingRateGroup = DBO()->RateGroup;
-			}
-			else
-			{
-				// The RateGroup is not already in the database
-				$dboExistingRateGroup = NULL;
-			}
-				
-			// Do preliminary Validation of the RateGroup (this should be wrapped in its own function)
-			$mixErrorMsg = this->_ValidateImportedRateGroupDetails(arrRateGroupDetails, DBO()->RecordType, $dboExistingRateGroup)
-			if ($mixErrorMsg != NULL)
-			{
-				// The imported RateGroup failed validation
-				$strImportReport .= $mixErrorMsg;
-				$intTotalErrors += 1;
-			}
+			// When a file is uploaded it is temporarily stored and you're able to read from it an error code number 
+			// indicating a number of successful uploads or failures
 			
-			TransactionStart();
-			if ($intTotalErrors == 0)
+			$intErrorCode = $_FILES['userfile']['error'];
+			switch($intErrorCode)
 			{
-				// The preliminary RateGroup details are valid.  save the RateGroup
-				//TODO! Save Record to the RateGroup table, or update the existing one, if it already exists as a draft
-			}
-			
-			// Read in and validate each Rate
-			while (($arrRate = fgetcsv($objFilePointer)) !== FALSE)
-			{
-				$mixResult = NULL;
-				
-				$arrRate = array_combine($arrRateKeys, $arrRate);
-				if ($arrRate['Id'] != NULL)
+				// If the file has been uploaded ok
+				case UPLOAD_ERR_OK:
+				// If a pointer is able to be obtained to the uploaded file open it but as readonly
+				if ($objFilePointer = fopen($_FILES['userfile']['tmp_name'], "r"))
 				{
-					// The user has specified a rate that already exists in the database. Retrieve this Rate
-					DBO()->Rate->Id = $arrRate['Id'];
-					DBO()->Rate->Load();
-					if (the rate can not be retrieved from the database)
+					$intRowCounter = 1;
+					while (($arrData = fgetcsv($objFilePointer)) !== FALSE)
 					{
-						$intTotalErrors += 1;
-						if ($intTotalErrors < $intMaxErrors)
+						// header and values of RateGroups
+						// read the first line save the header in the array and then continue
+						if ($intRowCounter == 1)
 						{
-							$strImportReport .= "Rate X could not be found in the database.  If it is a new rate, then please remove the Rate Id from the line";
+							foreach ($arrData as $intKeys => $value)
+							{
+								$arrRateGroupKeys[$value] = $value;
+							}
+						}
+						elseif ($intRowCounter == 2)
+						{	
+							// Read the second line of the file (RateGroup details)
+							$arrRateGroup = array_combine($arrRateGroupKeys, $arrData);
+							 
+							if ($arrRateGroup['Id'] != NULL)
+							{
+								// The RateGroup must already be in the database
+								//Retrieve the RateGroup from the database
+								DBO()->RateGroup->Id = $arrRateGroup['Id'];
+								DBO()->RateGroup->Load();
+								if (!DBO()->RateGroup->Id->Value)
+								{
+									//exit alerting the user that they are referencing a RateGroup that could not be found in the database
+									DBO()->RateGroup->StatusCode = RATEGROUP_NOTHING_UPLOADED;
+									DBO()->RateGroup->StatusMessage = "referencing a RateGroup that could not be found in the database";
+									$this->LoadPage('rate_group_upload');
+									return TRUE;				
+									break;
+								}
+								// The RateGroup was successfully retrieved from the database
+								if ((DBO()->RateGroup->Archived->Value == 0) || (DBO()->RateGroup->Archived->Value == 1))
+								//if (the RateGroup is a committed RateGroup (Archived == 0) or an archived RateGroup (Archived == 1))
+								{
+									// you cannot modify a committed or archived RateGroup
+									//exit alerting the user that they cannot modify a (committed|archived) RateGroup
+									//pass a status code and description back
+									DBO()->RateGroup->StatusCode = RATEGROUP_NOTHING_UPLOADED;
+									DBO()->RateGroup->StatusMessage = "cannot modify a (committed|archived) RateGroup";
+									$this->LoadPage('rate_group_upload');
+									return TRUE;				
+									break;
+								}
+								
+								// The RateGroup must be a Draft RateGroup, save a reference to it, to compare against the one being imported
+								// It will basically just compare the ServiceType and RecordType to make sure they match
+								$dboExistingRateGroup = DBO()->RateGroup;
+							}
+							else
+							{
+								// The RateGroup is not already in the database
+								$dboExistingRateGroup = NULL;
+							}
+							
+							
+							// Do preliminary Validation of the RateGroup (this should be wrapped in its own function)
+							$mixErrorMsg = this->_ValidateImportedRateGroupDetails($arrRateGroup, DBO()->RecordType, $dboExistingRateGroup);
+							if ($mixErrorMsg != NULL)
+							{
+								// The imported RateGroup failed validation
+								$strImportReport .= $mixErrorMsg;
+								$intTotalErrors += 1;
+							}
+							
+							TransactionStart();
+							if ($intTotalErrors == 0)
+							{
+								// The preliminary RateGroup details are valid.  save the RateGroup
+								//TODO! Save Record to the RateGroup table, or update the existing one, if it already exists as a draft
+								$strWhere = "Name=<Name> AND RecordType=<RecordType> AND Archived=" . ARCHIVE_STATUS_DRAFT; //use constant!
+								$selRateGroupName = new StatementSelect("RateGroup", "Id", "Archived", $strWhere);
+								if ($selRateGroupName->Execute(Array("Name" => $arrRateGroupKeys['Name'], "RecordType" => $arrRateGroupKeys['RecordType'])) > 0)
+								{
+									DBO()->RateGroup->Id = $arrGroupKeys['Id'];
+								}
+								
+								DBO()->RateGroup->Where->Name = $arrRateGroupKeys['Name'];
+								DBO()->RateGroup->Name = $arrRateGroupKeys['Name'];
+								DBO()->RateGroup->Description = $arrRateGroupKeys['Description'];
+								DBO()->RateGroup->RecordType = $arrRateGroupKeys['Record Type'];
+								DBO()->RateGroup->Service = $arrRateGroupKeys['Service Type'];
+								
+								if (!DBO()->RateGroup->Save())
+								{
+									//can not save alert user
+									DBO()->RateGroup->StatusCode = RATEGROUP_NOTHING_UPLOADED;
+									DBO()->RateGroup->StatusMessage = "Can not save";
+									$this->LoadPage('rate_group_upload');
+									return true;
+									break;-
+								}
+								
+							}
+						}
+						$mixResult = NULL;
+							
+						if ($intRowCounter == 4)
+						{
+							foreach ($arrData as $intKeys => $value)
+							{
+								$arrRateKeys[$value] = $value;
+							}
+						}
+						elseif ($intRowCounter > 4)
+						{
+							$arrRate = array_combine($arrRateKeys, $arrData);
+						}	
+						
+						if ($arrRate['Id'] != NULL)
+						{
+							// The user has specified a rate that already exists in the database. Retrieve this Rate
+							DBO()->Rate->Id = $arrRate['Id'];
+							DBO()->Rate->Load();
+							if (DBO()->Rate->Id->Value == 0)
+							{
+								$intTotalErrors += 1;
+								if ($intTotalErrors < $intMaxErrors)
+								{
+									$strImportReport .= "Rate {$arrRate['Name']} could not be found in the database.  If it is a new rate, then please remove the Rate Id from the line";
+									// Move on to the next Rate
+									continue;
+								}
+								else
+								{
+									// Max number of errors has been reached
+									TransactionRollback();
+									// Stop processing the csv file, and return the "Import Report" to the user
+									//TODO!
+								}
+							}
+							
+							// The Rate was successfully retrieved
+							if (DBO()->Rate->Archived->Value == RATE_STATUS_ACTIVE)
+							{
+								// Make sure the Rate's recordType is correct
+								if (DBO()->Rate->RecordType->Value != DBO()->RecordType->Id->Value)
+								{
+									// This Rate cannot be associated with this RateGroup
+									//TODO! add this as an error
+									$strImportReport .= "This rate cannot be associated with this RateGroup";
+									$intTotalErrors += 1;
+								}
+							
+								// Don't bother updating the rate, but you will still have to create a record in the RateGroupRate table to link this Rate
+								// to the RateGroup
+								$arrRateIds[] = DBO()->Rate->Id->Value;
+								continue;
+							}
+							elseif (DBO()->Rate->Archived->Value == RATE_STATUS_ARCHIVED)
+							{
+								// You cannot include archived rates in a new rate group
+								$intTotalErrors += 1;
+								if ($intTotalErrors < $intMaxErrors)
+								{
+									$strImportReport .= "Rate " . DBO()->Rate->Name->Value . " is currently archived.  It cannot be used for new RateGroups";
+									continue;
+								}
+								else
+								{
+									// Max number of errors has been reached
+									TransactionRollback();
+									// Stop processing the csv file, and return the "Import Report" to the user
+									//TODO!
+								}
+							}
+							
+							// The Rate must be an existing Draft Rate
+							$dboExistingRate = DBO()->Rate;
+						}
+						else
+						{
+							// The Rate is not already in the database
+							$dboExistingRate = NULL;
+						}
+						
+						// Validate the Rate (this will be wrapped in its own function (if $arrRate['Id'] is set, then it references an existing draft rate in the database)) 
+						$mixResult = this->_ValidateImportedRate($arrRate, DBO()->RecordType, $dboExistingRate);
+						
+						if (is_string($mixResult))
+						{
+							// The rate failed validation
+							$intTotalErrors += 1;
+							if ($intTotalErrors < $intMaxErrors)
+							{
+								$strImportReport .= $mixErrorMsg;
+							}
+							else
+							{
+								// Max number of errors has been reached
+								TransactionRollback();
+								// Stop processing the csv file, and return the "Import Report" to the user
+								// TODO!
+							}
+							
 							// Move on to the next Rate
 							continue;
 						}
-						else
+						
+						// The Rate is valid. Save/update it in the database
+						//TODO! If $arrRate['Id'] != NULL then the Rate already exists in the database as a draft rate.  Use a prebuilt StatementUpdate
+						//		object to update the record.
+						//		If $arrRate['Id'] == NULL then the Rate is a new one.  Use a prebuilt StatementInsert object to insert the record.
+						//		The StatementInsert->Execute method will return the new Id assigned to the Rate
+						// Don't forget to replace the place holders from the Name And Description values
+						//		replace <RateGroupName> for the actual RateGroupName and <Destination> for the actual Destination
+						$intRateId = $insRate->Execute($arrRate);
+						
+						// Add the Rate's assigned Id to the list of Rates to link to the RateGroup
+						$arrRateIds[] = $arrRate['Id'] or $intRateId;
+										
+						if ($intTotalErrors != 0)
 						{
-							// Max number of errors has been reached
+							// Don't continue processing if there are any errors.  Return the Import Report to the user
 							TransactionRollback();
-							// Stop processing the csv file, and return the "Import Report" to the user
-							//TODO!
+							//TODO
 						}
-					}
-					
-					// The Rate was successfully retrieved
-					if (DBO()->Rate->Archived->Value == RATE_STATUS_ACTIVE)
-					{
-						// Make sure the Rate's recordType is correct
-						if (DBO()->Rate->RecordType->Value != DBO()->RecordType->Id->Value)
+						
+						// Each Rate belonging to the RateGroup is now stored in the Rate table, and no errors have been encountered so far
+						// Perform the RateGroup validation which works out if each Rate Group is over allocated, under allocated or correctly allocated
+						
+						
+						// Validate the Rate allocations for the RateGroup
+						$this->_BuildRateSummary(DBO()->RecordType->Id->Value, $arrRateIds);
+						if ($this->_arrDestinationRateSummary['OverAllocated'] OR ($this->_arrDestinationRateSummary['UnderAllocated'] AND $bolIsFleet != TRUE))
 						{
-							// This Rate cannot be associated with this RateGroup
-							//TODO! add this as an error
+							// The RateGroup either has over allocations or (under allocations and isn't a fleet RateGroup).  Fleet RateGroups can have under
+							// allocations
+							
+							// Build the Rate summary report and return it to the user (this is the report that is generated on the PreviewRateSummary popup)
+							$strReport = _BuildRateSummaryProblemReport(DBO()->RecordType->Id->Value, $arrRateIds, $bolIsFleet)
+							TransactionRollback();  // This has to be done after the report to built, not before it
+							exit
 						}
-					
-						// Don't bother updating the rate, but you will still have to create a record in the RateGroupRate table to link this Rate
-						// to the RateGroup
-						$arrRateIds[] = DBO()->Rate->Id->Value;
-						continue;
-					}
-					elseif (DBO()->Rate->Archived->Value == RATE_STATUS_ARCHIVED)
-					{
-						// You cannot include archived rates in a new rate group
-						$intTotalErrors += 1;
-						if ($intTotalErrors < $intMaxErrors)
+						
+						// Remove all the links between this rate group, and the rates belonging to it (there may not be any)
+						$qryDeleteRateGroupRate = new Query();
+						$qryDeleteRateGroupRate->Execute("DELETE FROM RateGroupRate WHERE RateGroup = " . (id of the RateGroup));
+						
+						// Add a record to the RateGroupRate table, linking the RateGroup to each of its Rates
+						$arrRateGroupRateValues = Array("RateGroup" => DBO()->RateGroup->Id->Value, "Rate"=>NULL);
+						$insRateGroupRate = new StatementInsert("RateGroupRate", $arrRateGroupRateValues);
+						foreach ($arrRateIds as $intRateId)
 						{
-							$strImportReport .= "Rate X is currently archived.  It cannot be used for new RateGroups";
-							continue;
+							$arrRateGroupRateValues['Rate'] = $intRateId;
+							$insRateGroupRate->Execute($arrRateGroupRateValues);
 						}
-						else
-						{
-							// Max number of errors has been reached
-							TransactionRollback();
-							// Stop processing the csv file, and return the "Import Report" to the user
-							//TODO!
 						}
+						// The RateGroup was successfully imported
+						//TODO! Notify the user
+						//TODO! Update the appropriate combobox on the AddRatePlan Page  (much like how the AddRateGroup popup updates this page)
+						
+						
+						// This page template will have to use a new layout_template, which doesn't load any of the standard page stuff
+						// like css, js, the menu, etc
+						// or failing that we could just echo the summary html here and not bother with the page template, layout template and html template
+						$this->LoadPage('rate_group_import_summary');
+						return TRUE;
 					}
-					
-					// The Rate must be an existing Draft Rate
-					$dboExistingRate = DBO()->Rate;
-				}
-				else
-				{
-					// The Rate is not already in the database
-					$dboExistingRate = NULL;
-				}
-				
-				// Validate the Rate (this will be wrapped in its own function (if $arrRate['Id'] is set, then it references an existing draft rate in the database)) 
-				$mixResult = this->_ValidateImportedRate($arrRate, DBO()->RecordType, $dboExistingRate);
-				
-				if (is_string($mixResult))
-				{
-					// The rate failed validation
-					$intTotalErrors += 1;
-					if ($intTotalErrors < $intMaxErrors)
-					{
-						$strImportReport .= $mixErrorMsg;
-					}
-					else
-					{
-						// Max number of errors has been reached
-						TransactionRollback();
-						// Stop processing the csv file, and return the "Import Report" to the user
-						//TODO!
-					}
-					
-					// Move on to the next Rate
-					continue;
-				}
-				
-				// The Rate is valid. Save/update it in the database
-				//TODO! If $arrRate['Id'] != NULL then the Rate already exists in the database as a draft rate.  Use a prebuilt StatementUpdate
-				//		object to update the record.
-				//		If $arrRate['Id'] == NULL then the Rate is a new one.  Use a prebuilt StatementInsert object to insert the record.
-				//		The StatementInsert->Execute method will return the new Id assigned to the Rate
-				// Don't forget to replace the place holders from the Name And Description values
-				//		replace <RateGroupName> for the actual RateGroupName and <Destination> for the actual Destination
-				$intRateId = $insRate->Execute($arrRate);
-				
-				// Add the Rate's assigned Id to the list of Rates to link to the RateGroup
-				$arrRateIds[] = $arrRate['Id'] or $intRateId;
+					break;
+			case UPLOAD_ERR_INI_SIZE:
+				// unsuccessful upload exceeds upload size in php.ini
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_INI_SIZE;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;				
+				break;
+			case UPLOAD_ERR_FORM_SIZE:
+				// unsuccessful upload exceeds upload size in HTML form
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_FORM_SIZE;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			case UPLOAD_ERR_PARTIAL:
+				// unsuccessful upload only partial upload
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_PARTIAL;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			case UPLOAD_ERR_NO_TMP_DIR:
+				// unsuccessful upload no temporary folder
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_NO_TMP_DIR;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			case UPLOAD_ERR_CANT_WRITE:
+				// unsuccessful upload failed to write to disc
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_CANT_WRITE;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			case UPLOAD_ERR_EXTENSION:
+				// unsuccessful upload stopped by extension ... wtf?
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_EXTENSION;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			default:
+				DBO()->RateGroup->StatusCode = RATEGROUP_NOTHING_UPLOAD;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;				
+				break;
 			}
-			
-			if ($intTotalErrors != 0)
-			{
-				// Don't continue processing if there are any errors.  Return the Import Report to the user
-				TransactionRollback();
-				//TODO
-			}
-			
-			// Each Rate belonging to the RateGroup is now stored in the Rate table, and no errors have been encountered so far
-			// Perform the RateGroup validation which works out if each Rate Group is over allocated, under allocated or correctly allocated
-			
-			
-			// Validate the Rate allocations for the RateGroup
-			$this->_BuildRateSummary(DBO()->RecordType->Id->Value, $arrRateIds);
-			if ($this->_arrDestinationRateSummary['OverAllocated'] OR ($this->_arrDestinationRateSummary['UnderAllocated'] AND $bolIsFleet != TRUE))
-			{
-				// The RateGroup either has over allocations or (under allocations and isn't a fleet RateGroup).  Fleet RateGroups can have under
-				// allocations
-				
-				// Build the Rate summary report and return it to the user (this is the report that is generated on the PreviewRateSummary popup)
-				$strReport = _BuildRateSummaryProblemReport(DBO()->RecordType->Id->Value, $arrRateIds, $bolIsFleet)
-				TransactionRollback();  // This has to be done after the report to built, not before it
-				exit
-			}
-			
-			// Remove all the links between this rate group, and the rates belonging to it (there may not be any)
-			$qryDeleteRateGroupRate = new Query();
-			$qryDeleteRateGroupRate->Execute("DELETE FROM RateGroupRate WHERE RateGroup = " . (id of the RateGroup));
-			
-			// Add a record to the RateGroupRate table, linking the RateGroup to each of its Rates
-			$arrRateGroupRateValues = Array("RateGroup" => DBO()->RateGroup->Id->Value, "Rate"=>NULL);
-			$insRateGroupRate = new StatementInsert("RateGroupRate", $arrRateGroupRateValues);
-			foreach ($arrRateIds as $intRateId)
-			{
-				$arrRateGroupRateValues['Rate'] = $intRateId;
-				$insRateGroupRate->Execute($arrRateGroupRateValues);
-			}
-			
-			// The RateGroup was successfully imported
-			//TODO! Notify the user
-			//TODO! Update the appropriate combobox on the AddRatePlan Page  (much like how the AddRateGroup popup updates this page)
-			
-			
-			// This page template will have to use a new layout_template, which doesn't load any of the standard page stuff
-			// like css, js, the menu, etc
-			// or failing that we could just echo the summary html here and not bother with the page template, layout template and html template
-			$this->LoadPage('rate_group_import_summary');
-			return TRUE;
-			*/
 		}
 		
 		
-		DBO()->RecordType->Load();
+		//DBO()->RecordType->Load();
 		
-		$this->LoadPage('rate_group_import');
-		return TRUE;
+		//$this->LoadPage('rate_group_import');
+		//return TRUE;
 	}
 
+	/*function ValidateCSV()
+	{
+		/*$fileFile = $_FILES['userfile'];
+		$fileTemporary = $fileFile['tmp_name'];
+		if (is_uploaded_file($fileTemporary))
+		{
+			$this->LoadPage('rate_group_validupload');
+			return TRUE;
+		}
+		else
+		{
+			DBO()->RateGroup->Name = $_FILES['userfile']['error'];
+			$this->LoadPage('rate_group_upload');
+			return TRUE;
+		}*/
+		/*
+		$intErrorCode = $_FILES['userfile']['error'];
+		switch($intErrorCode)
+		{
+			case UPLOAD_ERR_OK:
+				// successful upload
+				
+				$arrRateGroupHeader = array();
+				$arrRateHeader = array();
+				//$arrRateGroupKeys	= Array("Id", "Name", "Description", "ServiceType", "RecordType");
+				//$arrRateKeys		= Array("Id", "DestinationCode", "DestinationDescription", "Name", "Description", "PassThrough", etc);
+				
+
+				$strTemp = "";
+				if ($filFileHandle = fopen($_FILES['userfile']['tmp_name'], "r"))
+				{
+					$arrRateGroupKeys = Array();
+					$intRowCounter = 1;
+					while (($arrData = fgetcsv($filFileHandle)) !== FALSE)
+					{
+						$intColumns = count($arrData);
+						
+						// header and values of RateGroups
+						if ($intRowCounter == 1)
+						{
+							foreach ($arrData as $intKeys => $value)
+							{
+								$arrRateGroupHeader[$value] = $value;
+							}
+						}elseif ($intRowCounter == 2)
+						{
+							// rudimentary validation
+							$arrRateGroupKeys = array_combine($arrRateGroupHeader, $arrData);
+							// if array_combine has returned FALSE it cannot combine the arrays
+							if (!$arrRateGroupKeys)
+							{
+								// first count elements in both arrays
+								$intNumElementsHeader = count($arrRateGroupHeader);
+								$intNumElementsValue = count($arrData);
+																
+								// if the header elements are less than the number of values																
+								if ($intNumElementsHeader < $intNumElementsValue)
+								{								
+									// work out the size to pad the 'at fault' array to
+									$intArrayPadSize = $intNumElementsValue - $intNumElementsHeader;
+									array_pad($intNumElementsHeader, $intArrayPadSize, "automatically generated header")
+								}
+								// if the header elements are greater than the number of values
+								if ($intNumElementsHeader > $intNumElementsValue)
+								{									
+									// work out the size to pad the 'at fault' array to
+									$intArrayPadSize = $intNumElementsHeader - $intNumElementsValue;
+									array_pad($intNumElementsValue, $intArrayPadSize, "automatically generated values")
+								}
+							}
+						}	
+							
+						// header and values of Rate(s)
+						if ($intRowCounter == 4)
+						{
+							foreach ($arrData as $intKeys => $value)
+							{
+								$arrRateHeader[$value] = $value;
+							}
+						}elseif ($intRowCounter > 4)
+						{
+							$arrRateKeys= array_combine($arrRateHeader, $arrData);
+						}								
+							
+						//$strTemp .= "{$arrRateKeys['Destination']}\n";	
+							
+							//$intCounter = 0;
+							//foreach ($arrRateGroupKeys as $intKeys => $value)
+							//{
+								
+								//$arrRateGroupKeys[$value] = $arrData[$intCounter];
+							//	$strTemp .= "{$arrRateGroupKeys[$value]}<------>{$arrData[$intCounter]}\n";
+								//$strTemp .= "{$arrRateGroupKeys[$value]}\n";
+							//	$intCounter += 1;
+							//}							
+						
+						/*
+						if ($intRowCounter == 2)
+						{
+							foreach ($arrData as $intKeys => $value)
+							{
+								$intCounter = 0;
+								$arrRateGroupKeys[$intCounter] = $value;
+								$intCounter += 1;
+								
+								
+							}							
+						}
+						*/
+						
+						
+						/*if ($intRowCounter == 2)
+						{
+							$intcounter = 0;
+							foreach ($arrData as $key => $value)
+							{
+								$arrRateGroupKeyes[$intcounter] = $arrData[$intcounter];
+								$intcounter += 1;
+								
+								$strTemp .= $arrRateGroupKeyes[$intcounter];
+							}
+						}*/
+						
+						//$intRowCounter += 1;
+						
+							//foreach ($arrRateGroupKeys as $intKey=>$intValue)
+							//{
+							//	$intValue = $arrData[$intColumnCounter];						
+							//	$strTemp .= "{$arrData[$intColumnCounter]}\n";
+							//	$intColumnCounter += 1;
+							//}
+						
+						// if $intRowCounter is 4 then this is a header of a rate
+						/*if ($intRowCounter == 4)
+						{
+							$intColumnCounter = 0;
+							foreach ($arrRateKeys as $intKey=>$intValue)
+							{
+								$intValue = $arrData[$intColumnCounter];									
+								$intColumnCounter += 1;
+							}
+						}*/
+						
+						//$strTemp .= $arrRateGroupKeys['Id'];
+						//$strTemp .= "{$arrRateGroupKeyes}<---\n";
+/*
+						$intRowCounter += 1;
+					}
+				}
+				
+				DBO()->RateGroup->Description = $strTemp;
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_OK;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;				
+				break;
+			case UPLOAD_ERR_INI_SIZE:
+				// unsuccessful upload exceeds upload size in php.ini
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_INI_SIZE;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;				
+				break;
+			case UPLOAD_ERR_FORM_SIZE:
+				// unsuccessful upload exceeds upload size in HTML form
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_FORM_SIZE;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			case UPLOAD_ERR_PARTIAL:
+				// unsuccessful upload only partial upload
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_PARTIAL;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			case UPLOAD_ERR_NO_TMP_DIR:
+				// unsuccessful upload no temporary folder
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_NO_TMP_DIR;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			case UPLOAD_ERR_CANT_WRITE:
+				// unsuccessful upload failed to write to disc
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_CANT_WRITE;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			case UPLOAD_ERR_EXTENSION:
+				// unsuccessful upload stopped by extension ... wtf?
+				DBO()->RateGroup->StatusCode = UPLOAD_ERR_EXTENSION;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;
+				break;
+			default:
+				DBO()->RateGroup->StatusCode = RATEGROUP_NOTHING_UPLOAD;
+				$this->LoadPage('rate_group_upload');
+				return TRUE;				
+				break;
+		}
+	}*/
+
+	function DisplayFormElements()
+	{
+		$this->LoadPage('rate_group_upload');
+		return TRUE;
+	}
 
 	//------------------------------------------------------------------------//
 	// _ValidateImportedRateGroupDetails
@@ -1707,6 +2031,13 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		{
 			// The RateGroup is not currently in the database
 			// Check that a RateGroup doesn't already exist in the database with the same name and same RecordType
+			//$arrRateGroup['Name']
+			//$strWhere = "Name=<RateGroupName> AND RecordType=<RateGroupRecordType>";
+			//DBO()->RateGroup->Where->Set($strWhere, Array("RateGroupName" => $arrRateGroup['Name'], "RateGroupRecordType" => $dboRecordType));
+			//DBO()->RateGroup->Load();
+			
+			
+			
 			// If all these tests are passed, then return NULL, else return an appropriate error message
 		}
 		else

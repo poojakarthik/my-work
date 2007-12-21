@@ -82,8 +82,6 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
-		
-		//$this->LoadJavascript("rate_group_import");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -103,19 +101,75 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 	{
 		switch ($this->_intContext)
 		{
-			case HTML_CONTEXT_IMPORT_SUMMARY:
-				// Just draw the "Rate Selector control" part of the form
-				$this->_RenderRateSelectorControl();
+			case HTML_CONTEXT_IFRAME:
+				echo "<iframe src ='vixen.php/RateGroup/DisplayFormElements' width='100%' height='250px' frameborder='0' name='iframeID1'></iframe>";
 				break;
-			case HTML_CONTEXT_DEFAULT:
-			default:
-				// This should only be called when the popup window is initially drawn
+			case HTML_CONTEXT_DEFAULT:	
+				echo "<form enctype='multipart/form-data' action='ValidateCSV/' method='POST'>";
+				echo "<input type='hidden' name='MAX_FILE_SIZE' value='" . RATEGROUP_IMPORT_MAXSIZE . "'>";
+				echo "Send this file: <input name='userfile' type='file'>\n";
+				echo "<input type='submit' value='Send File'>\n";
+				echo "</form>\n";
 			
-				// Set Up the form for adding a rate group
-				$this->FormStart("RateGroup", "RateGroup", "Add");
-			
+				if (DBO()->RateGroup->StatusCode->Value !== NULL)
+				{
+					switch(DBO()->RateGroup->StatusCode->Value)
+					{
+						case UPLOAD_ERR_OK:
+							// successful upload
+							echo "RateGroup CSV file successfully uploaded";	
+							echo DBO()->RateGroup->StatusMessage->AsValue();								
+							break;
+						case UPLOAD_ERR_INI_SIZE:
+							// unsuccessful upload exceeds upload size in php.ini
+							echo "RateGroup CSV file unsuccessfully uploaded due to its size";			
+							echo DBO()->RateGroup->StatusMessage->AsValue();								
+							break;
+						case UPLOAD_ERR_FORM_SIZE:
+							// unsuccessful upload exceeds upload size in HTML form
+							echo "RateGroup CSV file unsuccessfully uploaded due to its size";	
+							echo DBO()->RateGroup->StatusMessage->AsValue();	
+							break;
+						case UPLOAD_ERR_PARTIAL:
+							// unsuccessful upload only partial upload
+							echo "RateGroup CSV file only partially uploaded";	
+							echo DBO()->RateGroup->StatusMessage->AsValue();	
+							break;
+						case UPLOAD_ERR_NO_TMP_DIR:
+							// unsuccessful upload no temporary folder
+							echo "RateGroup CSV file unsuccessfully uploaded as there is no temporary direcrtory";	
+							echo DBO()->RateGroup->StatusMessage->AsValue();	
+							break;
+						case UPLOAD_ERR_CANT_WRITE:
+							// unsuccessful upload failed to write to disc
+							echo "RateGroup CSV file unsuccessfully uploaded as it hasnt been able to write to the disc";	
+							echo DBO()->RateGroup->StatusMessage->AsValue();								
+							break;
+						case UPLOAD_ERR_EXTENSION:
+							// unsuccessful upload stopped by extension ... wtf?
+							echo "RateGroup CSV file unsuccessfully uploaded";	
+							echo DBO()->RateGroup->StatusMessage->AsValue();	
+							break;
+						default:
+							echo "RateGroup CSV file failed to upload";
+							echo DBO()->RateGroup->StatusMessage->AsValue();	
+							break;
+					}
+				}
+				break;
+		}
+			/*case HTML_CONTEXT_DEFAULT:
+				// entered once file is uploaded successfully
+				echo "upload appears successful";
+				//break;
+				
+				//$this->AjaxSubmit("Commit");
+				//echo "</form>\n";
+				
+
+						
 				// Include the flag which specifies whether this Rate Group will be added to a RatePlan
-				DBO()->CallingPage->AddRatePlan->RenderHidden();
+				/*DBO()->CallingPage->AddRatePlan->RenderHidden();
 				
 				// Include RateGroup.Id as a hidden, and BaseRateGroup.Id if it is set
 				DBO()->RateGroup->Id->RenderHidden();
@@ -229,11 +283,11 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 				// Javascript methods Vixen.RateGroupAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
 				echo "<input type='hidden' id='AddRateGroupPopupId' value='{$this->_objAjax->strId}'></input>\n";
 				echo "</div></div>\n"; // Buttons
+				*/
+				//$this->FormEnd();
 				
-				$this->FormEnd();
-				
-				break;
-		}
+				/*break;*/
+		//}
 	}
 	
 	
