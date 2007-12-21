@@ -1485,7 +1485,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				// If a pointer is able to be obtained to the uploaded file open it but as readonly
 				if ($objFilePointer = fopen($_FILES['userfile']['tmp_name'], "r"))
 				{
+					// count the rows
 					$intRowCounter = 1;
+					// while there are more lines in the CSV file to read...
 					while (($arrData = fgetcsv($objFilePointer)) !== FALSE)
 					{
 						// header and values of RateGroups
@@ -1524,6 +1526,12 @@ class AppTemplateRateGroup extends ApplicationTemplate
 									// you cannot modify a committed or archived RateGroup
 									//exit alerting the user that they cannot modify a (committed|archived) RateGroup
 									//pass a status code and description back
+									// --------------------------------------------------------------------------------------------------------
+									// There are two extra properties in the UI app documentation for Rategroup, these being StatusCode
+									// and StatusMessage, as the doesnt use AJAX this was the next most logical way to retain a 'state' and/or
+									// pass messages back to the HTML page. StatusCode uses the pre-existing constants of error segment in the 
+									// file array that is created during the file upload
+									// --------------------------------------------------------------------------------------------------------
 									DBO()->RateGroup->StatusCode = RATEGROUP_NOTHING_UPLOADED;
 									DBO()->RateGroup->StatusMessage = "cannot modify a (committed|archived) RateGroup";
 									$this->LoadPage('rate_group_upload');
