@@ -161,7 +161,7 @@
 		curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
 		
-		if (!$strCatalogFile = curl_exec($this->_ptrSession) || stripos($strCatalogFile, '<html>'))
+		if (!($strCatalogFile = curl_exec($this->_ptrSession)) || stripos($strCatalogFile, '<html>'))
 		{
 			// Can't connect (probably no internet)
 			return FALSE;
