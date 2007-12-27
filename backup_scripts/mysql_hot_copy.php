@@ -1,8 +1,8 @@
 <?php
 
 // Make sure we are the root database user
-$GLOBALS['**arrDatabase']['User']		= 'root';
-$GLOBALS['**arrDatabase']['Password']	= 'fuckthisshit';
+//$GLOBALS['**arrDatabase']['User']		= 'root';
+//$GLOBALS['**arrDatabase']['Password']	= 'fuckthisshit';
 
 // we use the actual tables not the db def in case it is out of date
 require_once('../framework/require.php');
