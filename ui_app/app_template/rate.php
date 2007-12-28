@@ -250,12 +250,12 @@ class AppTemplateRate extends ApplicationTemplate
 		if (DBO()->Rate->Id->Value == 0)
 		{
 			// The Rate name should not be in the database
-			$strWhere = "Name = <Name> AND RecordType = <RecordType>";
+			$strWhere = "Name LIKE <Name> AND RecordType = <RecordType>";
 		}
 		else
 		{
 			// We are working with an already saved draft.  Check that the New name is not used by any other Rate
-			$strWhere = "Name = <Name> And RecordType = <RecordType> AND Id != ". DBO()->Rate->Id->Value;
+			$strWhere = "Name LIKE <Name> And RecordType = <RecordType> AND Id != ". DBO()->Rate->Id->Value;
 		}
 		$selRateName = new StatementSelect("Rate", "Id", $strWhere);
 		if ($selRateName->Execute(Array("Name" => DBO()->Rate->Name->Value, "RecordType" => DBO()->Rate->RecordType->Value)) > 0)

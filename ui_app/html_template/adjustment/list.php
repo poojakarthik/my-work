@@ -148,8 +148,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				
 				
 				
-				Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
-												//$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
+				Table()->AdjustmentTable->AddRow($dboCharge->ChargedOn->AsValue(),
 												$dboCharge->ChargeType->AsValue(),
 												$strNature,
 												$dboCharge->Amount->AsCallback("AddGST"),
@@ -157,8 +156,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			}
 			else
 			{
-				Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
-												//$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
+				Table()->AdjustmentTable->AddRow($dboCharge->ChargedOn->AsValue(),
 												$dboCharge->ChargeType->AsValue(),
 												$strNature,
 												$dboCharge->Amount->AsCallback("AddGST"));
@@ -181,7 +179,6 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			$strToolTipHtml .= $dboCharge->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
 			$strToolTipHtml .= $dboCharge->Description->AsOutput();
 			$strToolTipHtml .= $dboCharge->Notes->AsOutput();
-			
 			
 			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);
 			

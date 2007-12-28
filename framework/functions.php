@@ -3086,5 +3086,331 @@ function GetCurrentTimeForMySQL()
 	return date("H:i:s", strtotime(GetCurrentDateAndTimeForMySQL()));
 }
 
+//------------------------------------------------------------------------//
+// GenerateLatePaymentNotices
+//------------------------------------------------------------------------//
+/**
+ * GenerateLatePaymentNotices()
+ *
+ * Generates the appropriate Late Payment Notices
+ *
+ * Generates the appropriate Late Payment Notices
+ *
+ * @param	int		$intNoticeType	type of notice to be made. ie LATE_PAYMENT_NOTICE_SUSPENSION
+ * @param	string	$strBasePath	optional, path where the generated notices will be placed
+ *									
+ * @return	mixed					returns FALSE on failure 
+ *									returns	Array['Successful']	= number of successfully generated notices of the NoticeType
+ *											Array['Failed'] 	= number of notices that failed to generate, of the NoticeType
+ * @function
+ */
+function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
+{
+	$selPriorNotices = new StatementSelect("LateNoticesGenerated", "Count(Id)", "Invoice = <InvoiceId> AND NoticeType = <NoticeType>");
+	
+	// Accounts are allowed to have an outstanding balance of at most $23 without recieving any late notices
+	//TODO! This value should be in the definitions.php file, or some sort of config file
+	$fltAcceptableOverdueBalance = 23.00;
+
+	// Append a backslash to the path, if it doesn't already end in one
+	if (substr($strBasePath, -1) != "/")
+	{
+		$strBasePath .= "/";
+	}
+
+	// Set up NoticeType specific stuff here
+	switch ($intNoticeType)
+	{
+		case LATE_PAYMENT_NOTICE_OVERDUE:
+		case LATE_PAYMENT_NOTICE_SUSPENSION:
+			$arrApplicableAccountStatuses = Array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
+			break;
+		case LATE_PAYMENT_NOTICE_FINAL_DEMAND:
+			$arrApplicableAccountStatuses = Array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED);
+			break;
+	}
+	
+	// Find all Accounts that fit the requirements for Late Notice generation
+	$strColumns = 	"Invoice.Account AS 'AccountId',
+					Account.BusinessName AS 'BusinessName',
+					Account.TradingName AS 'TradingName',
+					Account.CustomerGroup AS 'CustomerGroup',
+					Account.Archived AS 'AccountStatus',
+					Account.LatePaymentAmnesty AS 'LatePaymentAmnesty', 
+					Contact.FirstName AS 'FirstName',
+					Contact.LastName AS 'LastName',
+					Account.Address1 AS 'AddressLine1',
+					Account.Address2 AS 'AddressLine2',
+					Account.Suburb AS 'Suburb',
+					Account.Postcode AS 'Postcode',
+					Account.State AS 'State',
+					MAX(CASE WHEN CURDATE() > Invoice.DueOn THEN
+						Invoice.Id END) AS 'InvoiceId',
+					SUM(CASE WHEN CURDATE() <= Invoice.DueOn THEN 
+						Invoice.Balance END) AS 'OutstandingNotOverdue',
+					SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN
+						Invoice.Balance END) AS 'Overdue',
+					SUM(Invoice.Balance) AS 'TotalOutstanding'";
+					
+	$strTables	= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
+	$strWhere	= "Account.DisableLateNotices = 0 AND Account.Archived IN (". implode(", ", $arrApplicableAccountStatuses) .")";
+	$strOrderBy	= "Invoice.Account ASC";
+	$strGroupBy	= "Invoice.Account HAVING Overdue > $fltAcceptableOverdueBalance";
+	
+	$selOverdue = new StatementSelect($strTables, $strColumns, $strWhere, $strOrderBy, "", $strGroupBy);
+	$mixResult = $selOverdue->Execute();
+
+	if ($mixResult === FALSE)
+	{
+		// Failed to retrieve the data from the database
+		return FALSE;
+	}
+	
+	// Store a running total of how many were successfully generated, and how many failed, for each notice type
+	$arrGeneratedNotices = Array("Successful" => 0, "Failed" => 0);
+	
+	// For each account retrieved, work out if a late payment notice really has to be made for it
+	$arrAccounts	= $selOverdue->FetchAll();
+	$strToday		= date("Y-m-d");
+	$intToday		= strtotime($strToday);
+	foreach ($arrAccounts as $arrAccount)
+	{
+		$bolSuccess = NULL;
+		
+		switch ($intNoticeType)
+		{
+			case LATE_PAYMENT_NOTICE_OVERDUE:
+				// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
+				// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
+				$bolSuccess = BuildLatePaymentNotice(LATE_PAYMENT_NOTICE_OVERDUE, $arrAccount, $strBasePath);
+				break;
+			
+			case LATE_PAYMENT_NOTICE_SUSPENSION:
+				// Check if the Overdue Notice was built this month, and if so build the suspension notice
+				$mixSuccess = $selPriorNotices->Execute(Array("Invoice" => $arrAccount['InvoiceId'], "NoticeType" => LATE_PAYMENT_NOTICE_OVERDUE));
+				if ($mixSuccess !== FALSE)
+				{
+					// An "Overdue" notice has been sent for this invoice.  Build the Suspension notice
+					$bolSuccess = BuildLatePaymentNotice(LATE_PAYMENT_NOTICE_SUSPENSION, $arrAccount, $strBasePath);
+				}
+				break;
+			
+			case LATE_PAYMENT_NOTICE_FINAL_DEMAND:
+				// Check if this invoice falls into the amnesty period
+				if (($arrAccount['LatePaymentAmnesty'] === NULL) || ($intToday > strtotime($arrAccount['LatePaymentAmnesty'])))
+				{
+					// Check if the Suspension Notice was built this month, and if so build the final demand notice
+					$mixSuccess = $selPriorNotices->Execute(Array("Invoice" => $arrAccount['InvoiceId'], "NoticeType" => LATE_PAYMENT_NOTICE_SUSPENSION));
+					if ($mixSuccess !== FALSE)
+					{
+						// A "Suspension" notice has been sent for this invoice.  Build the Final Demand notice
+						$bolSuccess = BuildLatePaymentNotice(LATE_PAYMENT_NOTICE_FINAL_DEMAND, $arrAccount, $strBasePath);
+					}
+				}
+				break;
+		}
+		
+		if ($bolSuccess !== NULL)
+		{
+			if ($bolSuccess == TRUE)
+			{
+				$arrGeneratedNotices['Successful'] += 1;
+			}
+			else 
+			{
+				$arrGeneratedNotices['Failed'] += 1;
+			}
+		}
+	}
+	
+	return $arrGeneratedNotices;
+}
+
+//------------------------------------------------------------------------//
+// UpdateDisableLateNoticesSetting
+//------------------------------------------------------------------------//
+/**
+ * UpdateDisableLateNoticesSetting()
+ *
+ * Updates the Account.DisableLateNotices property
+ *
+ * For each account that has DisableLateNotices set to "Don't send late 
+ * notices until next invoice", this will reset it to "Send Late Notices"
+ * This function should be performed after a bill run is committed
+ *
+ * @return	mixed					int		:	number of accounts affected
+ * 									FALSE	:	Update failed
+ * @function
+ */
+function UpdateDisableLateNoticesSetting()
+{
+	// Having Late Notices disabled for more than 1 month but less than indefinite, is not currently handled
+	$arrColumns = Array("DisableLateNotices" => "DisableLateNotices + 1");
+	$updDisableLateNoticeSetting = new StatementUpdate("Account", "DisableLateNotices < 0", $arrColumns);
+	
+	return $updDisableLateNoticeSetting->Execute($arrColumns);
+}
+
+//------------------------------------------------------------------------//
+// RecursiveMkdir
+//------------------------------------------------------------------------//
+/**
+ * RecursiveMkdir()
+ *
+ * Performs the mkdir function recursively to allow construction of an entire directory path in one go
+ *
+ * Performs the mkdir function recursively to allow construction of an entire directory path in one go
+ *
+ * @param	string	$strPath		path to make ie "./This/is/a/path"
+ * @param	integer	$intMode		permissions for the directories
+ *									
+ * @return	bool					TRUE on success, else FALSE
+ *
+ * @function
+ */
+function RecursiveMkdir($strPath, $intMode = 0777)
+{
+    $arrDirs = explode('/' , $strPath);
+    $strCumulativePath = "";
+    foreach ($arrDirs as $strDir)
+	{
+        $strCumulativePath .= $strDir;
+        if (!is_dir($strCumulativePath) && !mkdir($strCumulativePath, $intMode))
+		{
+            return FALSE;
+        }
+		
+		$strCumulativePath .= '/';
+    }
+    return TRUE;
+}
+
+//------------------------------------------------------------------------//
+// BuildLatePaymentNotice
+//------------------------------------------------------------------------//
+/**
+ * BuildLatePaymentNotice()
+ *
+ * Generates the chosen Late Payment Notice for an Account
+ *
+ * Generates the chosen Late Payment Notice for an Account
+ *
+ * @param	integer	$intNoticeType	Type of notice to generate (one of the LatePaymentNotice constants)
+ * @param	array	$arrAccount		All Account, Contact and Invoice data required for the notice
+ * @param	string	$strBasePath	optional, base path where the generated notices will be placed. Must end with a '/'
+ *									
+ * @return	bool					TRUE if the notice was successfully generated, else FALSE
+ *
+ * @function
+ */
+function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
+{
+	//TODO! Modify this so that it builds actual pdfs, instead of just text files representing the pdfs
+	
+	if ($arrAccount['CustomerGroup'] == CUSTOMER_GROUP_IMAGINE)
+	{
+		// Imagine customers are considered TelcoBlue costomers and will be using TelcoBlue Letterhead
+		$arrAccount['CustomerGroup'] = CUSTOMER_GROUP_TELCOBLUE;
+	}
+	
+	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
+	$strFullPath = 	$strBasePath . strtolower(str_replace(" ", "_", GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup"))) ."/". 
+					str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LatePaymentNotice"))) ."/". date("Y/m/d");
+	
+	// Make the directory structure if it hasn't already been made
+	if (!is_dir($strFullPath))
+	{
+		RecursiveMkdir($strFullPath);
+	}
+	
+	// Create the filename
+	$strFilename = $arrAccount['AccountId'] . ".txt";
+	
+	// Set up all values required of the notice, which have not been defined yet
+	$strDateIssued					= date("d-m-Y");
+	$strDueDateForAction			= date("d-F-Y", strtotime("+7 days"));
+	$arrAccount['CustomerGroup']	= GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+	$arrAccount['AccountStatus']	= GetConstantDescription($arrAccount['AccountStatus'], "Account");
+	
+	// Open the file in text mode
+	$ptrNoticeFile = fopen($strFullPath ."/". $strFilename, 'wt');
+	if ($ptrNoticeFile === FALSE)
+	{
+		// The file could not be opened
+		return FALSE;
+	}
+	
+	// Include NoticeType specific stuff here
+	switch ($intNoticeType)
+	{
+		case LATE_PAYMENT_NOTICE_OVERDUE:
+			$strMessage =	"Our records indicate that your account for the amount of \${$arrAccount['Overdue']} remains unpaid.\n".
+							"Please ensure payment is made by $strDueDateForAction to avoid any further recovery action and possible disruption to your services\n";
+			break;
+		case LATE_PAYMENT_NOTICE_SUSPENSION:
+			$strMessage =	"Further to our recent reminder letter, our records indicate that your account remains unpaid.\n".
+							"\tTotal Amount Owing: \${$arrAccount['Overdue']}\n\n".
+							"Please be advised that if we do not recieve payment by $strDueDateForAction your services will be suspended without further notice and we will commence appropriate collection action immediately.\n";
+			break;
+		case LATE_PAYMENT_NOTICE_FINAL_DEMAND:
+			$strMessage =	"We note that dispite numerous reminders to pay this outstanding amount, the account still remains in arrears in the amount of \${$arrAccount['Overdue']}\n".
+							"Your service is due to be temporarily disconnected because of your failure to pay your accounts.\n".
+							"Your current balance not outstanding is \${$arrAccount['OutstandingNotOverdue']}\n".
+							"Total Amount Due: \${$arrAccount['TotalOutstanding']}\n\n".
+							"If you would like to avoid the impending actions, we request that you contact this office within 7 days with a view to payment of the outstanding account.\n";
+			break;
+	}
+	
+	$strMessage .= "Date Issued: $strDateIssued\n";
+	
+	// The account's Suburb and State must be in all uppercase
+	$arrAccount['Suburb'] = strtoupper($arrAccount['Suburb']);
+	$arrAccount['State'] = strtoupper($arrAccount['State']);
+	
+	// Output the contents of $arrAccount
+	foreach ($arrAccount as $strProperty=>$mixValue)
+	{
+		$strMessage .= "$strProperty: $mixValue\n";
+	}
+	
+	fwrite($ptrNoticeFile, $strMessage);
+	fclose($ptrNoticeFile);
+	
+	// Log the Notice in the LateNoticeGenerated Table
+	$arrNoticeLog = Array(	'Account'		=> $arrAccount['AccountId'],
+							'Invoice'		=> $arrAccount['InvoiceId'],
+							'NoticeType'	=> $intNoticeType,
+							'CreatedOn'		=> date("Y-m-d H:i:s"));
+	
+	// Only define the StatementInsert object if it hasn't already been defined				
+	if (!isset($insNotice))
+	{
+		static $insNotice;
+		$insNotice = new StatementInsert("LateNoticesGenerated", $arrNoticeLog);
+	}
+	$insNotice->Execute($arrNoticeLog);
+	
+	// Record the File in the FileExport table
+	//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
+	$arrFileLog = Array(	'FileName'		=>	$strFilename,
+							'Location'		=>	ltrim($strFullPath, ".") . "/",
+							'Carrier'		=>	0,
+							'ExportedOn'	=>	date("Y-m-d H:i:s"),
+							'Status'		=>	0,
+							'FileType'		=>	0,
+							'SHA1'			=>	sha1($strFilename));
+
+	// Only define the StatementInsert object if it hasn't already been defined				
+	if (!isset($insFileExport))
+	{
+		static $insFileExport;
+		$insFileExport = new StatementInsert("FileExport", $arrFileLog);
+	}
+	$insFileExport->Execute($arrFileLog);
+	
+	return TRUE;
+}
+
+
 
 ?>

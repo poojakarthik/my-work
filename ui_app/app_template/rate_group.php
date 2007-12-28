@@ -227,7 +227,23 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	// Validates the Rate Group
+	//------------------------------------------------------------------------//
+	// _ValidateRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * _ValidateRateGroup()
+	 *
+	 * Validates a RateGroup which has been defined in the (Add/Edit)RateGroup Popup
+	 * 
+	 * Validates a RateGroup which has been defined in the (Add/Edit)RateGroup Popup
+	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
+	 *
+	 * @return		mix				returns TRUE if the new RateGroup is valid
+	 *								returns an appropriate error message (string) if something was found to be invalid
+	 *								
+	 * @method
+	 *
+	 */
 	private function _ValidateRateGroup()
 	{
 		/* 
@@ -261,12 +277,12 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		if (DBO()->RateGroup->Id->Value == 0)
 		{
 			// The Rate Group name should not be in the database
-			$strWhere = "Name=<Name> AND RecordType=<RecordType>";
+			$strWhere = "Name LIKE <Name> AND RecordType=<RecordType>";
 		}
 		else
 		{
 			// We are working with an already saved draft.  Check that the New name is not used by any other RateGroup
-			$strWhere = "Name=<Name> AND RecordType=<RecordType> AND Id != ". DBO()->RateGroup->Id->Value;
+			$strWhere = "Name LIKE <Name> AND RecordType=<RecordType> AND Id != ". DBO()->RateGroup->Id->Value;
 		}
 		$selRateGroupName = new StatementSelect("RateGroup", "Id", $strWhere);
 		if ($selRateGroupName->Execute(Array("Name" => DBO()->RateGroup->Name->Value, "RecordType" => DBO()->RateGroup->RecordType->Value)) > 0)

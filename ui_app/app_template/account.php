@@ -237,6 +237,10 @@ class AppTemplateAccount extends ApplicationTemplate
 				if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 				{
 					$intCurrentValue = DBO()->CurrentAccount->DisableLatePayment->Value;
+					if ($intCurrentValue === NULL)
+					{
+						$intCurrentValue = 0;
+					}
 					$strChangesNote .=	"Charging of Late Payment Fee was changed from '".
 										DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue).
 										"' to '". DBO()->Account->DisableLatePayment->FormattedValue() ."'\n";	
@@ -246,11 +250,33 @@ class AppTemplateAccount extends ApplicationTemplate
 					$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
 					$strChangesNote .=	"Sending of Late Notices was changed from '".
 										DBO()->Account->DisableLateNotices->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue).
-										"' to '". DBO()->Account->DisableLateNotices->FormattedValue() ."'\n";	
+										"' to '". DBO()->Account->DisableLateNotices->FormattedValue() ."'\n";
+										
+					// When this property is changed you have to update the LateNoticeAmnesty property
+					switch (DBO()->Account->DisableLateNotices->Value)
+					{
+						case 0:
+						case 1:
+							// This account is eligible to receive late notices
+							DBO()->Account->LateNoticeAmnesty = NULL;
+							break;
+							
+						case (-1):
+							// This account is ineligible to receive late notices, until after the due date of the current bill
+							$intPaymentTerms					= DBO()->CurrentAccount->PaymentTerms->Value;
+							DBO()->Account->LateNoticeAmnesty	= date("Y-m-d", strtotime("+{$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
+							break;
+					}
+				}
+				else
+				{
+					// Retain the current value of Account.LateNoticeAmnesty
+					DBO()->Account->LateNoticeAmnesty = DBO()->CurrentAccount->LateNoticeAmnesty->Value;
 				}
 				
+				
 				// Update the record in the Account table
-				DBO()->Account->SetColumns("DisableDDR, DisableLatePayment, DisableLateNotices");
+				DBO()->Account->SetColumns("DisableDDR, DisableLatePayment, DisableLateNotices, LateNoticeAmnesty");
 				
 				// Save the payment to the payment table of the vixen database
 				if (!DBO()->Account->Save())
@@ -376,7 +402,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$strWhere .= " OR (C.Status = ". CHARGE_TEMP_INVOICE .")";
 		$strWhere .= " OR (C.Status = ". CHARGE_INVOICED ."))";
 		DBL()->Charge->Where->SetString($strWhere);
-		DBL()->Charge->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->Charge->OrderBy("ChargedOn DESC, Id DESC");
 		DBL()->Charge->Load();
 		
 		// Build the list of columns to use for the RecurringCharge DBL (as it is pulling this information from 2 tables)
@@ -717,6 +743,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
 		{
 			$intCurrentValue = DBO()->CurrentAccount->DisableLatePayment->Value;
+			if ($intCurrentValue === NULL)
+			{
+				$intCurrentValue = 0;
+			}
 			$strChangesNote .= "Charging of Late Payment Fee was changed from '". 
 								DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	
@@ -734,7 +764,29 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strChangesNote .=	"Sending of Late Notices was changed from '". 
 								DBO()->Account->DisableLateNotices->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->DisableLateNotices->FormattedValue() . "'\n";
+
+			// When this property is changed you have to update the LateNoticeAmnesty property
+			switch (DBO()->Account->DisableLateNotices->Value)
+			{
+				case 0:
+				case 1:
+					// This account is eligible to receive late notices
+					DBO()->Account->LateNoticeAmnesty = NULL;
+					break;
+					
+				case (-1):
+					// This account is ineligible to receive late notices until after the due date of the current bill
+					$intPaymentTerms					= DBO()->CurrentAccount->PaymentTerms->Value;
+					DBO()->Account->LateNoticeAmnesty	= date("Y-m-d", strtotime("+{$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
+					break;
+			}
 		}
+		else
+		{
+			// Retain the current value of Account.LateNoticeAmnesty
+			DBO()->Account->LateNoticeAmnesty = DBO()->CurrentAccount->LateNoticeAmnesty->Value;
+		}
+
 		
 		// Start the transaction
 		TransactionStart();
@@ -860,7 +912,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 
 		// Set the columns to save
-		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, DisableLateNotices");
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, DisableLateNotices, LateNoticeAmnesty");
 														
 		if (!DBO()->Account->Save())
 		{
