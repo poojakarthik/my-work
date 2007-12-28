@@ -121,7 +121,7 @@
 	
 	$_DATABASE = "vixen";
 	
-	$MySQL_Link = mysql_connect ("192.168.2.16", "vixen", "V1x3n");
+	$MySQL_Link = mysql_connect ("10.50.50.16", "vixen", "V1x3n");
 	
 	$_TABLES = mysql_list_tables ($_DATABASE);
 	
