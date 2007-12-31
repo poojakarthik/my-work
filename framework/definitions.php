@@ -1271,14 +1271,16 @@ $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Description']	= 'Draft';
 
 
 // Late Payment Notice Types
-$GLOBALS['*arrConstant']	['LatePaymentNotice']	[1]	['Constant']	= 'LATE_PAYMENT_NOTICE_OVERDUE';
-$GLOBALS['*arrConstant']	['LatePaymentNotice']	[1]	['Description']	= 'Overdue Notice';
-$GLOBALS['*arrConstant']	['LatePaymentNotice']	[2]	['Constant']	= 'LATE_PAYMENT_NOTICE_SUSPENSION';
-$GLOBALS['*arrConstant']	['LatePaymentNotice']	[2]	['Description']	= 'Suspension Notice';
-$GLOBALS['*arrConstant']	['LatePaymentNotice']	[3]	['Constant']	= 'LATE_PAYMENT_NOTICE_FINAL_DEMAND';
-$GLOBALS['*arrConstant']	['LatePaymentNotice']	[3]	['Description']	= 'Final Demand Notice';
+$GLOBALS['*arrConstant']	['AccountNotice']	[1]	['Constant']	= 'ACCOUNT_NOTICE_OVERDUE';
+$GLOBALS['*arrConstant']	['AccountNotice']	[1]	['Description']	= 'Overdue Notice';
+$GLOBALS['*arrConstant']	['AccountNotice']	[2]	['Constant']	= 'ACCOUNT_NOTICE_SUSPENSION';
+$GLOBALS['*arrConstant']	['AccountNotice']	[2]	['Description']	= 'Suspension Notice';
+$GLOBALS['*arrConstant']	['AccountNotice']	[3]	['Constant']	= 'ACCOUNT_NOTICE_FINAL_DEMAND';
+$GLOBALS['*arrConstant']	['AccountNotice']	[3]	['Description']	= 'Final Demand Notice';
 
-
+// Acceptable overdue balance
+// If an account is overdue by $23 or less, then late notices will not be generated for it
+define ("ACCEPTABLE_OVERDUE_BALANCE", 23.00);
 
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
