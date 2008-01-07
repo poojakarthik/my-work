@@ -3131,33 +3131,32 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	}
 	
 	// Find all Accounts that fit the requirements for Late Notice generation
-	$strColumns = 	"Invoice.Account AS 'AccountId',
-					Account.BusinessName AS 'BusinessName',
-					Account.TradingName AS 'TradingName',
-					Account.CustomerGroup AS 'CustomerGroup',
-					Account.Archived AS 'AccountStatus',
-					Account.LatePaymentAmnesty AS 'LatePaymentAmnesty', 
-					Contact.FirstName AS 'FirstName',
-					Contact.LastName AS 'LastName',
-					Account.Address1 AS 'AddressLine1',
-					Account.Address2 AS 'AddressLine2',
-					Account.Suburb AS 'Suburb',
-					Account.Postcode AS 'Postcode',
-					Account.State AS 'State',
-					MAX(CASE WHEN CURDATE() > Invoice.DueOn THEN
-						Invoice.Id END) AS 'InvoiceId',
-					SUM(CASE WHEN CURDATE() <= Invoice.DueOn THEN 
-						Invoice.Balance END) AS 'OutstandingNotOverdue',
-					SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN
-						Invoice.Balance END) AS 'Overdue',
-					SUM(Invoice.Balance) AS 'TotalOutstanding'";
-					
+	$arrColumns = Array(	'AccountId'				=> "Invoice.Account",
+							'AccountGroup'			=> "Account.AccountGroup",
+							'BusinessName'			=> "Account.BusinessName",
+							'TradingName'			=> "Account.TradingName",
+							'CustomerGroup'			=> "Account.CustomerGroup",
+							'AccountStatus'			=> "Account.Archived",
+							'LatePaymentAmnesty'	=> "Account.LatePaymentAmnesty", 
+							'FirstName'				=> "Contact.FirstName",
+							'LastName'				=> "Contact.LastName",
+							'AddressLine1'			=> "Account.Address1",
+							'AddressLine2'			=> "Account.Address2",
+							'Suburb'				=> "Account.Suburb",
+							'Postcode'				=> "Account.Postcode",
+							'State'					=> "Account.State",
+							'InvoiceId'				=> "MAX(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Id END)",
+							'OutstandingNotOverdue'	=> "SUM(CASE WHEN CURDATE() <= Invoice.DueOn THEN Invoice.Balance END)",
+							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
+							'TotalOutstanding'		=> "SUM(Invoice.Balance)");
+	
+	
 	$strTables	= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
 	$strWhere	= "Account.DisableLateNotices = 0 AND Account.Archived IN (". implode(", ", $arrApplicableAccountStatuses) .")";
 	$strOrderBy	= "Invoice.Account ASC";
 	$strGroupBy	= "Invoice.Account HAVING Overdue > ". ACCEPTABLE_OVERDUE_BALANCE;
 	
-	$selOverdue = new StatementSelect($strTables, $strColumns, $strWhere, $strOrderBy, "", $strGroupBy);
+	$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
 	$mixResult = $selOverdue->Execute();
 
 	if ($mixResult === FALSE)
@@ -3255,6 +3254,7 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	}
 	
 	// Record the summary file in the FileExport table
+	//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
 	$arrFileLog = Array(	'FileName'		=>	$strFilename,
 							'Location'		=>	ltrim($strBasePath, "."),
 							'Carrier'		=>	0,
@@ -3456,6 +3456,13 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 		$insFileExport = new StatementInsert("FileExport", $arrFileLog);
 	}
 	$insFileExport->Execute($arrFileLog);
+	
+	// Create a system note for the account
+	$strNote = 	"A ". GetConstantDescription($intNoticeType, "AccountNotice") . " has been generated for this account.\n".
+				"Outstanding Overdue: \${$arrAccount['Overdue']}\n".
+				"Outstanding Not Overdue: \${$arrAccount['OutstandingNotOverdue']}";
+				
+	$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, NULL, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
 	
 	return TRUE;
 }
