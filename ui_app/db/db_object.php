@@ -1007,6 +1007,23 @@ class DBObject extends DBObjectBase
 		return $this->_intContext;
 	}
 
+	//------------------------------------------------------------------------//
+	// AsArray
+	//------------------------------------------------------------------------//
+	/**
+	 * AsArray()
+	 *
+	 * Returns the record that the DBObject represents, as an associative array of properties and their values
+	 *
+	 * Returns the record that the DBObject represents, as an associative array of properties and their values
+	 * 
+	 * @return	array				Associative array of properties and their values
+	 * @method
+	 */
+	function AsArray()
+	{
+		return $this->_arrProperties;
+	}
 
 }
 

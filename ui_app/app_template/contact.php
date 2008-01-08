@@ -589,3 +589,4 @@ class AppTemplateContact extends ApplicationTemplate
 
 	//----- DO NOT REMOVE -----//
 }
+?>

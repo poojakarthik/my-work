@@ -1556,3 +1556,4 @@ class AppTemplateService extends ApplicationTemplate
 	//----- DO NOT REMOVE -----//
 	
 }
+?>

@@ -351,3 +351,4 @@ class AppTemplatePayment extends ApplicationTemplate
 	}
 	
 }
+?>

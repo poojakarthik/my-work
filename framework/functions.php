@@ -3350,6 +3350,12 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 {
 	//TODO! Modify this so that it builds actual pdfs, instead of just text files representing the pdfs
 	
+	// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
+	// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
+	// made in a run
+	static $insNotice;
+	static $insFileExport;
+	
 	if ($arrAccount['CustomerGroup'] == CUSTOMER_GROUP_IMAGINE)
 	{
 		// Imagine customers are considered TelcoBlue costomers and will be using TelcoBlue Letterhead
@@ -3434,7 +3440,6 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	// Only define the StatementInsert object if it hasn't already been defined				
 	if (!isset($insNotice))
 	{
-		static $insNotice;
 		$insNotice = new StatementInsert("AccountNotices", $arrNoticeLog);
 	}
 	$insNotice->Execute($arrNoticeLog);
@@ -3452,7 +3457,6 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	// Only define the StatementInsert object if it hasn't already been defined				
 	if (!isset($insFileExport))
 	{
-		static $insFileExport;
 		$insFileExport = new StatementInsert("FileExport", $arrFileLog);
 	}
 	$insFileExport->Execute($arrFileLog);

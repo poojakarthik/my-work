@@ -640,3 +640,4 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	}
 
 }
+?>

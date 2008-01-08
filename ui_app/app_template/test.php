@@ -231,3 +231,4 @@ class AppTemplateTest extends ApplicationTemplate
 		die;
 	}
 }
+?>

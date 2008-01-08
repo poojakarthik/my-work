@@ -181,3 +181,4 @@ class AppTemplateInvoice extends ApplicationTemplate
     //----- DO NOT REMOVE -----//
 	
 }
+?>

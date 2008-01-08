@@ -324,3 +324,4 @@ class AppTemplateNote extends ApplicationTemplate
 		Ajax()->RenderHtmlTemplate("NoteList", HTML_CONTEXT_DEFAULT, DBO()->NoteDetails->ContainerDivId->Value);
 	}
 }
+?>

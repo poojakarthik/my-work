@@ -562,6 +562,7 @@ class AppTemplateRate extends ApplicationTemplate
 		}
 		
 		// Minimum Charge and Flagfall must be specified regardless of whether or not the Rate is a PassThrough
+		// WTF? The following 2 lines don't do anything
 		DBO()->Rate->StdFlagfall	= DBO()->Rate->StdFlagfall->Value;
 		DBO()->Rate->StdMinCharge	= DBO()->Rate->StdMinCharge->Value;
 		
@@ -605,3 +606,4 @@ class AppTemplateRate extends ApplicationTemplate
 	//----- DO NOT REMOVE -----//
 	
 }
+?>

@@ -82,6 +82,8 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
+		
+		$this->LoadJavascript("rate_group_import");		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -99,336 +101,41 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch ($this->_intContext)
-		{
-			case HTML_CONTEXT_IFRAME:
-				echo "<iframe src ='vixen.php/RateGroup/DisplayFormElements' width='100%' height='250px' frameborder='0' name='iframeID1'></iframe>";
-				break;
-			case HTML_CONTEXT_DEFAULT:	
-				echo "<form enctype='multipart/form-data' action='ValidateCSV/' method='POST'>";
-				echo "<input type='hidden' name='MAX_FILE_SIZE' value='" . RATEGROUP_IMPORT_MAXSIZE . "'>";
-				echo "Send this file: <input name='userfile' type='file'>\n";
-				echo "<input type='submit' value='Send File'>\n";
-				echo "</form>\n";
-			
-				if (DBO()->RateGroup->StatusCode->Value !== NULL)
-				{
-					switch(DBO()->RateGroup->StatusCode->Value)
-					{
-						case UPLOAD_ERR_OK:
-							// successful upload
-							echo "RateGroup CSV file successfully uploaded";	
-							echo DBO()->RateGroup->StatusMessage->AsValue();								
-							break;
-						case UPLOAD_ERR_INI_SIZE:
-							// unsuccessful upload exceeds upload size in php.ini
-							echo "RateGroup CSV file unsuccessfully uploaded due to its size";			
-							echo DBO()->RateGroup->StatusMessage->AsValue();								
-							break;
-						case UPLOAD_ERR_FORM_SIZE:
-							// unsuccessful upload exceeds upload size in HTML form
-							echo "RateGroup CSV file unsuccessfully uploaded due to its size";	
-							echo DBO()->RateGroup->StatusMessage->AsValue();	
-							break;
-						case UPLOAD_ERR_PARTIAL:
-							// unsuccessful upload only partial upload
-							echo "RateGroup CSV file only partially uploaded";	
-							echo DBO()->RateGroup->StatusMessage->AsValue();	
-							break;
-						case UPLOAD_ERR_NO_TMP_DIR:
-							// unsuccessful upload no temporary folder
-							echo "RateGroup CSV file unsuccessfully uploaded as there is no temporary direcrtory";	
-							echo DBO()->RateGroup->StatusMessage->AsValue();	
-							break;
-						case UPLOAD_ERR_CANT_WRITE:
-							// unsuccessful upload failed to write to disc
-							echo "RateGroup CSV file unsuccessfully uploaded as it hasnt been able to write to the disc";	
-							echo DBO()->RateGroup->StatusMessage->AsValue();								
-							break;
-						case UPLOAD_ERR_EXTENSION:
-							// unsuccessful upload stopped by extension ... wtf?
-							echo "RateGroup CSV file unsuccessfully uploaded";	
-							echo DBO()->RateGroup->StatusMessage->AsValue();	
-							break;
-						default:
-							echo "RateGroup CSV file failed to upload";
-							echo DBO()->RateGroup->StatusMessage->AsValue();	
-							break;
-					}
-				}
-				break;
-		}
-			/*case HTML_CONTEXT_DEFAULT:
-				// entered once file is uploaded successfully
-				echo "upload appears successful";
-				//break;
-				
-				//$this->AjaxSubmit("Commit");
-				//echo "</form>\n";
-				
+		// Build the url used for the iframe which is used to upload the RateGroup csv file
+		$strRateGroupFleet = (DBO()->RateGroup->Fleet->Value)? "1" : "0";
+		$intRecordTypeId = DBO()->RecordType->Id->Value;
+		$strIframeSource = "vixen.php/RateGroup/ImportCSV/?RateGroup.Fleet={$strRateGroupFleet}&RecordType.Id={$intRecordTypeId}";
 
-						
-				// Include the flag which specifies whether this Rate Group will be added to a RatePlan
-				/*DBO()->CallingPage->AddRatePlan->RenderHidden();
-				
-				// Include RateGroup.Id as a hidden, and BaseRateGroup.Id if it is set
-				DBO()->RateGroup->Id->RenderHidden();
-				if (DBO()->BaseRateGroup->Id->IsSet)
-				{
-					DBO()->BaseRateGroup->Id->RenderHidden();
-				}
-				
-				// Render the RateGroupDetails
-				echo "<h2 class='Plan'>Rate Group Details</h2>\n";
-				echo "<div class='WideForm'>\n";
-
-				echo "<div id='RateGroupDetailsId'>\n";
-				$this->_RenderRateGroupDetails();
-				echo "</div>\n";
+		// Display known details of the RateGroup
+		echo "<div class='GroupedContent'>";
+		DBO()->RateGroup->ServiceType = DBO()->RecordType->ServiceType->Value;
+		DBO()->RateGroup->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT); 
+		DBO()->RecordType->Description->RenderOutput();
+		DBO()->RateGroup->Fleet->RenderOutput();
 		
-				DBO()->RateGroup->Fleet->RenderInput(CONTEXT_DEFAULT, TRUE);
-
-				// Set the record type and service type, if they have already been defined
-				$intServiceType	= 0;
-				$intRecordType	= 0;
-				if (DBO()->RecordType->Id->Value)
-				{
-					DBO()->RecordType->Load();
-					$intRecordType	= DBO()->RecordType->Id->Value;
-					$intServiceType	= DBO()->RecordType->ServiceType->Value;
-				}
-				if (DBO()->RateGroup->RecordType->Value)
-				{
-					$intRecordType = DBO()->RateGroup->RecordType->Value;
-				}
-				if (DBO()->RateGroup->ServiceType->Value)
-				{
-					$intServiceType = DBO()->RateGroup->ServiceType->Value;
-				}
-				
-				// Build the ServiceType Combobox
-				echo "<div class='DefaultElement'>\n";
-				echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type:</div>\n";
-				echo "      <select id='ServiceTypeCombo' name='RateGroup.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='Vixen.RateGroupAdd.ChangeServiceType(this.value)'>\n";
-				echo "         <option value='0' selected='selected'>&nbsp;</option>";
-				foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
-				{
-					// Check if this is the currently selected ServiceType
-					$strSelected = ($intServiceType == $intKey) ? "selected='selected'" : "";
-					echo "         <option value='". $intKey ."' $strSelected>". $arrValue['Description'] ."</option>\n";
-				}
-				echo "      </select>\n";
-				echo "</div>\n"; // DefaultElement
-				
-				// Build the RecordType Combobox
-				echo "<div class='DefaultElement'>\n";
-				echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Record Type:</div>\n";
-				echo "      <select id='RecordTypeCombo' name='RateGroup.RecordType' class='DefaultInputComboBox' style='width:250px;' onchange='Vixen.RateGroupAdd.ChangeRecordType(this.value)'>\n";
-				echo "         <option value='0' selected='selected'>&nbsp;</option>";
-				echo "      </select>\n";
-				echo "</div>\n"; // DefaultElement
-				
-				
-				// Retrieve a list of all Record Types
-				DBL()->RecordType->OrderBy("Name");
-				DBL()->RecordType->Load();
-				
-				// Load all the record types into an array.  This will be used by javascript to populate the RecordTypeCombo when a Service Type has been selected
-				$arrRecordTypes = Array();
-				$arrRecordType = Array();
-				foreach (DBL()->RecordType as $dboRecordType)
-				{
-					$arrRecordType['Id'] = $dboRecordType->Id->Value;
-					$arrRecordType['ServiceType'] = $dboRecordType->ServiceType->Value;
-					$arrRecordType['Description'] = $dboRecordType->Description->Value;
-					
-					$arrRecordTypes[] = $arrRecordType;
-				}
-				
-				// Define the data required of the javascript that handles events and validation of this form
-				$strJsonCode = Json()->encode($arrRecordTypes);
+		// File uploads can only be done using conventional form submittion (not via ajax), so it must be wrapped in a frame
+		$strFrameId = "FrameRateGroupImport";
+		echo "<iframe src='$strIframeSource' width='100%' height='125px' frameborder='0' id='$strFrameId' name='$strFrameId'></iframe>\n";
 		
-				// Initialise the javascript object
-				echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseForm($strJsonCode, true);</script>\n";
-				if ($intServiceType != 0)
-				{
-					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeServiceType($intServiceType);</script>\n";
-				}
-				if ($intRecordType != 0)
-				{
-					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeRecordType($intRecordType);</script>\n";
-				}
-				
-				echo "</div>\n"; // WideForm (RateGroup Details)
-				echo "<div class='SmallSeperator'></div>\n";
+		echo "</div>"; // GroupedContent
+		echo "<div class='SmallSeperator'></div>\n";
 
-				// Stick in the div container for the RateSelectorControl section of the form
-				echo "<div id='RateSelectorControlDiv'>\n";
-				$this->_RenderRateSelectorControl();
-				echo "</div>\n";
-				
-				// create the buttons
-				echo "<div class='ButtonContainer'><div class='Right'>\n";
-				
-				// The old method, before confirmation boxes were implemented
-				$this->Button("Cancel", "Vixen.Popup.Close(this);");
-				//$this->AjaxSubmit("Save as Draft");  
-				//$this->AjaxSubmit("Commit");
-	
-				// The new method
-				//$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to Cancel?\", Vixen.RateGroupAdd.Close, null, null, \"Yes\", \"No\")");
-				$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate Group as a Draft?\", Vixen.RateGroupAdd.SaveAsDraft)");
-				$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate Group?<br />The Rate Group cannot be edited once it is committed\", Vixen.RateGroupAdd.Commit)");
-				
-				// Javascript methods Vixen.RateGroupAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
-				echo "<input type='hidden' id='AddRateGroupPopupId' value='{$this->_objAjax->strId}'></input>\n";
-				echo "</div></div>\n"; // Buttons
-				*/
-				//$this->FormEnd();
-				
-				/*break;*/
-		//}
+		// Display the Import Report
+		$strImportReportId = "ImportReport";
+		echo "<h2 class='Plan'>Import Report</h2>\n";
+		echo "<div id='ContainerDiv_$strImportReportId' style='border: solid 1px #D1D1D1; padding: 5px 5px 5px 5px'>\n";
+		echo "<div id='$strImportReportId' style='overflow:auto; line-height: 1.15; height:300px; width:auto; padding: 0px 3px 0px 3px'>\n";
+		echo "</div></div>";
+
+		// Create the buttons
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(this);");
+		$this->Button("Import As Draft", "Vixen.RateGroupImport.ImportAsDraft();");
+		$this->Button("Import And Commit", "Vixen.RateGroupImport.ImportAndCommit();");
+		echo "</div></div>\n"; // Buttons
+		
+		echo "<script type='text/javascript'>Vixen.RateGroupImport.Initialise('$strFrameId', '$strImportReportId');</script>\n";
 	}
-	
-	
-	//------------------------------------------------------------------------//
-	// _RenderRateGroupDetails
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderRateGroupDetails()
-	 *
-	 * Render the part of the RateGroup Details that may require rerendering, when invalid
-	 *
-	 * Render the part of the RateGroup Details that may require rerendering, when invalid
-	 *
-	 * @method
-	 */
-	private function _RenderRateGroupDetails()
-	{
-
-		// Only apply the output mask if the DBO()->RateGroup is not invalid
-		$bolApplyOutputMask = !DBO()->RateGroup->IsInvalid();
-
-		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		
-		// Override the width of these textboxes
-		echo "<script type='text/javascript'>Vixen.RateGroupAdd.OverrideTextboxSize();</script>";
-	}
-	
-	//------------------------------------------------------------------------//
-	// _RenderRateSelectorControl
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderRateSelectorControl()
-	 *
-	 * Renders the control used to select which rates belong to this Rate Group
-	 *
-	 * Renders the control used to select which rates belong to this Rate Group
-	 *
-	 * @method
-	 */
-	private function _RenderRateSelectorControl()
-	{
-		// Render a table for the user to specify a Rate Group for each Record Type required of the Service Type
-		echo "<div class='WideForm'>\n";
-
-		$strAvailableRates = "";
-		$strSelectedRates = "";
-
-		// Work out which column each of the rates should go
-		//NOTE: The value of DBO()->Rates->ArrRates->Value is an array.  
-		//This list of rates should be done as a DBList, but this method drastically cuts down the amount of memory required
-		if (DBO()->Rates->ArrRates->Value)
-		{
-			foreach (DBO()->Rates->ArrRates->Value as $arrRate)
-			{
-				$intRateId 		= $arrRate['Id'];
-				// All special chars have to be converted to their html safe versions
-				$strRateName 	= htmlspecialchars($arrRate['Name'], ENT_QUOTES);
-				$strDescription = htmlspecialchars($arrRate['Description'], ENT_QUOTES);
-				$strDraft 		= "";
-
-				if ($arrRate['Draft'])
-				{
-					$strDraft = "draft='draft'";
-					$strRateName  = "DRAFT: " . $strRateName;
-				}
-				
-				if ($arrRate['Selected'])
-				{
-					// The rate is currently selected
-					$strSelectedRates .= "<option value='$intRateId' title='$strDescription' $strDraft>$strRateName</option>";
-				}
-				else
-				{
-					// The rate is not selected
-					$strAvailableRates .= "<option value='$intRateId' title='$strDescription' $strDraft>$strRateName</option>";
-				}
-			}
-		}
-		
-		// Draw the controls in a table to space them
-		echo "<table border='0' cellspacing='0' cellpadding='0' width='100%'>\n";
-		
-		// Draw the Titles 
-		echo "<tr>\n";
-		echo "   <th align='left' width='45%'>Available Rates</th><th align='center' width='10%'>&nbsp;</th><th align='left' width='45%'>Selected Rates</th>";
-		echo "</tr>\n";
-		
-		echo "<tr>\n";
-
-		// Draw the Available Rates multi-select combo box
-		echo "<td>\n";
-		echo "<div class='DefaultElement'>\n";
-		echo "<select size='15' multiple='multiple' id='AvailableRatesCombo' class='DefaultInputComboBox' style='left:0px;width:305px;' onClick='Vixen.RateGroupAdd.AvailableRatesComboOnClick()' onKeyDown='Vixen.RateGroupAdd.AvailableRatesComboOnClick()'>";
-		echo $strAvailableRates;
-		echo "</select>\n";
-		echo "</div>\n";
-		echo "</td>\n";
-		
-		// Draw the buttons
-		echo "<td align='center'>\n";
-		echo "<div class='ButtonContainer'>\n";
-		$this->Button(">>", "Vixen.RateGroupAdd.MoveSelectedOptions(\"AvailableRatesCombo\", \"SelectedRatesCombo\");");
-		echo "</div>";
-		echo "<div class='ButtonContainer'>\n";
-		$this->Button("<<", "Vixen.RateGroupAdd.MoveSelectedOptions(\"SelectedRatesCombo\", \"AvailableRatesCombo\");");
-		echo "</div>";
-		echo "</td>\n";
-		
-		// Draw the Selected Rates multi-select combo box
-		echo "<td>\n";
-		echo "<div class='DefaultElement'>\n";
-		echo "<select size='15' multiple='multiple' valueIsList='valueIsList' id='SelectedRatesCombo' name='SelectedRates.ArrId' class='DefaultInputComboBox' style='left:0px;width:305px;' onClick='Vixen.RateGroupAdd.SelectedRatesComboOnClick()' onKeyDown='Vixen.RateGroupAdd.SelectedRatesComboOnClick()'>";
-		echo $strSelectedRates;
-		echo "</select>\n";
-		echo "</div>\n";
-		echo "</td>\n";
-		
-		echo "</tr>\n";
-		
-		// Draw the buttons ("Add New Rate", "Edit Rate" and "View Rate Summary")
-		// also used for adding a rate based on an existing
-		echo "<tr>\n";
-		echo "<td align='left'>\n";
-		echo "<div class='ButtonContainer'>\n";
-		$this->Button("Add New Rate", "Vixen.RateGroupAdd.AddNewRate()");
-		$this->Button("Edit Rate", "Vixen.RateGroupAdd.EditRate()");
-		echo "</div></td>\n";
-		echo "<td colspan='2' align='right'>\n";
-		echo "<div class='ButtonContainer'>\n";
-		$this->Button("Preview Rate Summary", "Vixen.RateGroupAdd.PreviewRateSummary()");
-		echo "</div></td>";
-		echo "</tr>\n";
-
-		// Finish the table
-		echo "</table>\n";
-		
-		echo "</div>"; // WideForm
-	}
-	
-	
 }
 
 ?>

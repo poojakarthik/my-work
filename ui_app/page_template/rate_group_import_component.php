@@ -7,16 +7,16 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// rate_group_import.php
+// rate_group_import_component.php
 //----------------------------------------------------------------------------//
 /**
- * rate_group_import.php
+ * rate_group_import_component.php
  *
- * Page Template for the Import RateGroup popup window
+ * Page Template for the Embedded component of the Import RateGroup popup window
  *
- * Page Template for the Import RateGroup popup window
+ * Page Template for the Embedded component of the Import RateGroup popup window
  *
- * @file		rate_group_import.php
+ * @file		rate_group_import_component.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel 'MagnumSwordFortress' Dawkins
@@ -26,14 +26,10 @@
  *
  */
 
-// Set the title of the popup
-//$strPopupTitle = (DBO()->RateGroup->Fleet->Value) ? "Import Fleet Rate Group" : "Import Rate Group";
-//$this->Page->SetName($strPopupTitle);
-
 // Set the layout template for the page
 $this->Page->SetLayout('embedded_layout');
 
 // Add the Html Objects to their respective columns
-$this->Page->AddObject('RateGroupImport', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "RateGroupImportDiv");
+$this->Page->AddObject('RateGroupImportComponent', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "RateGroupImportComponentDiv");
 
 ?>
