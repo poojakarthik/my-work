@@ -398,7 +398,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				// Build the Export Rate Group Buttons
 				$strExportRateGroup			= "javascript: Vixen.RatePlanAdd.ExportRateGroup({$dboRecordType->Id->Value}, false)";
 				$strExportFleetRateGroup	= "javascript: Vixen.RatePlanAdd.ExportRateGroup({$dboRecordType->Id->Value}, true)";
-				
+
 				$strRateGroupActionsCell		.= "&nbsp<span><a href='$strExportRateGroup' title='Export'><img src='img/template/export.png'></img></a></span>";
 				$strFleetRateGroupActionsCell	.= "&nbsp;<span><a href='$strExportFleetRateGroup' title='Export'><img src='img/template/export.png'></img></a></span>";
 			}

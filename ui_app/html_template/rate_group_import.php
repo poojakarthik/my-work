@@ -115,7 +115,7 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 		
 		// File uploads can only be done using conventional form submittion (not via ajax), so it must be wrapped in a frame
 		$strFrameId = "FrameRateGroupImport";
-		echo "<iframe src='$strIframeSource' width='100%' height='125px' frameborder='0' id='$strFrameId' name='$strFrameId'></iframe>\n";
+		echo "<iframe src='$strIframeSource' width='100%' height='25px' frameborder='0' id='$strFrameId' name='$strFrameId'></iframe>\n";
 		
 		echo "</div>"; // GroupedContent
 		echo "<div class='SmallSeperator'></div>\n";
@@ -129,7 +129,7 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 
 		// Create the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(this);");
+		$this->Button("Close", "Vixen.Popup.Close(this);");
 		$this->Button("Import As Draft", "Vixen.RateGroupImport.ImportAsDraft();");
 		$this->Button("Import And Commit", "Vixen.RateGroupImport.ImportAndCommit();");
 		echo "</div></div>\n"; // Buttons

@@ -209,13 +209,13 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		// Render the header of the Plan Table.  This depends on the privileges of the user
 		if ($bolHasPlanEditPerm)
 		{
-			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend ($)", "Cap Charge ($)", "Cap Limit ($)", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
-			Table()->PlanTable->SetWidth("8%", "20%", "8%", "10%", "10%", "10%", "8%", "8%", "8%", "5%", "5%");
+			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend (\$)", "Cap Charge (\$)", "Cap Limit (\$)", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
+			Table()->PlanTable->SetWidth("8%", "20%", "8%", "12%", "12%", "12%", "8%", "8%", "8%", "2%", "2%");
 			Table()->PlanTable->SetAlignment("Left", "Left", "Center", "Right", "Right", "Right", "Center", "Center", "Center", "Center", "Center");
 		}
 		else
 		{
-			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend ($)", "Cap Charge ($)", "Cap Limit ($)", "Carrier Full Service", "Carrier Pre selection", "Status");
+			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend (\$)", "Cap Charge (\$)", "Cap Limit (\$)", "Carrier Full Service", "Carrier Pre selection", "Status");
 			Table()->PlanTable->SetWidth("10%", "20%", "10%", "12%", "12%", "12%", "8%", "8%", "8%");
 			Table()->PlanTable->SetAlignment("Left", "Left", "Center", "Right", "Right", "Right", "Center", "Center", "Center");
 		}
@@ -245,12 +245,12 @@ class HtmlTemplatePlanList extends HtmlTemplate
 				if ($dboRatePlan->Archived->Value == RATE_STATUS_DRAFT)
 				{
 					$strEditPlanLink	= Href()->EditRatePlan($dboRatePlan->Id->Value, Href()->AvailablePlans(DBO()->RatePlan->ServiceType->Value));
-					$strEditCell		= "<a href='$strEditPlanLink' title='Edit'><span class='DefaultOutputSpan'>Edit</span></a>";
+					$strEditCell		= "<a href='$strEditPlanLink' title='Edit'><img src='img/template/edit.png'></img></a>";
 				}
 				
 				// Build the "Add Rate Plan Based On Existing" link
 				$strAddPlanLink	= Href()->AddRatePlan($dboRatePlan->Id->Value, Href()->AvailablePlans(DBO()->RatePlan->ServiceType->Value));
-				$strAddCell = "<a href='$strAddPlanLink' title='Create a new plan based on this one'><span class='DefaultOutputSpan'>New</span></a>";
+				$strAddCell = "<a href='$strAddPlanLink' title='Create a new plan based on this one'><img src='img/template/new.png'></img></a>";
 				
 				// Add the row
 				Table()->PlanTable->AddRow(	$dboRatePlan->ServiceType->AsCallBack("GetConstantDescription", Array('ServiceType')),
@@ -262,13 +262,13 @@ class HtmlTemplatePlanList extends HtmlTemplate
 											$dboRatePlan->CarrierFullService->AsCallBack("GetConstantDescription", Array('Carrier')),
 											$dboRatePlan->CarrierPreselection->AsCallBack("GetConstantDescription", Array('Carrier')),
 											$strStatusCell,
-											$strAddCell,
-											$strEditCell);
+											$strEditCell,
+											$strAddCell);
 			}
 			else
 			{
 				// User can not Add or Edit Rate Plans
-				//Add the Row
+				// Add the Row
 				Table()->PlanTable->AddRow(	$dboRatePlan->ServiceType->AsCallBack("GetConstantDescription", Array('ServiceType')),
 											$strNameCell,
 											$strSharedCell,

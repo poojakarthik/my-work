@@ -69,6 +69,9 @@ function VixenRateGroupImportClass()
 	 *
 	 * Initialises the popup
 	 *
+	 * @param	string	strFrameId					The id of the iframe used to store the file upload control
+	 * @param	string	strImportReportContainer	The id of the container for the Import Report
+	 *
 	 * @return	void
 	 * @method
 	 */
@@ -81,51 +84,205 @@ function VixenRateGroupImportClass()
 		this._elmImportReport = document.getElementById(strImportReportContainer);
 	}
 	
-	// Handles form submittion when importing the RateGroup as a draft
-	this.ImportAsDraft = function()
+	//------------------------------------------------------------------------//
+	// ImportAsDraft
+	//------------------------------------------------------------------------//
+	/**
+	 * ImportAsDraft
+	 *
+	 * Event handler for when the "Import As Draft" button is pressed
+	 *
+	 * Event handler for when the "Import As Draft" button is pressed
+	 *
+	 * @param	bool	bolConfirmed		true if the user has confirmed they 
+	 *										want to carry out this button's action
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.ImportAsDraft = function(bolConfirmed)
 	{
+		if (bolConfirmed == null)
+		{
+			var elmFileInput = this._elmUploadFrame.contentDocument.getElementById("RateGroupCSVFile");
+			if (elmFileInput.value == "")
+			{
+				Vixen.Popup.Alert("Please declare a file to import");
+				return;
+			}
+		
+			var strMsg = "Are you sure you want to import this Rate Group and save it as a draft?";
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.RateGroupImport.ImportAsDraft(true);});
+			return;
+		}
+	
 		// Specify which button was triggered
 		var elmSubmitButtonValue = this._elmUploadFrame.contentDocument.getElementById("SubmitButtonValue");
 		elmSubmitButtonValue.value = "Import as Draft";
 		
-		//TODO! Display the Pablo Splash
+		// Display the Pablo Splash
+		Vixen.Popup.ShowPageLoadingSplash("Importing RateGroup", null, null, null, 1000);
 		
 		// Submit the form
 		this._elmUploadFrame.contentDocument.forms[0].submit();
 	}
 	
-	// Handles form submittion when importing the RateGroup and commiting it
-	this.ImportAndCommit = function()
+	//------------------------------------------------------------------------//
+	// ImportAndCommit
+	//------------------------------------------------------------------------//
+	/**
+	 * ImportAndCommit
+	 *
+	 * Event handler for when the "Import And Commit" button is pressed
+	 *
+	 * Event handler for when the "Import And Commit" button is pressed
+	 *
+	 * @param	bool	bolConfirmed		true if the user has confirmed they 
+	 *										want to carry out this button's action
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.ImportAndCommit = function(bolConfirmed)
 	{
+		if (bolConfirmed == null)
+		{
+			var elmFileInput = this._elmUploadFrame.contentDocument.getElementById("RateGroupCSVFile");
+			if (elmFileInput.value == "")
+			{
+				Vixen.Popup.Alert("Please declare a file to import");
+				return;
+			}
+		
+			var strMsg = "Are you sure you want to import and commit this Rate Group?<br />Committed RateGroups cannot be modified or deleted";
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.RateGroupImport.ImportAndCommit(true);});
+			return;
+		}
+		
 		// Specify which button was triggered
 		var elmSubmitButtonValue = this._elmUploadFrame.contentDocument.getElementById("SubmitButtonValue");
 		elmSubmitButtonValue.value = "Import and Commit";
 		
-		//TODO! Display the Pablo Splash
+		// Display the Pablo Splash
+		Vixen.Popup.ShowPageLoadingSplash("Importing RateGroup", null, null, null, 1000);
 		
 		// Submit the form
 		this._elmUploadFrame.contentDocument.forms[0].submit();
 	}
 	
-	// Updates the contents of the import report container
-	this.UpdateImportReport = function(strReport)
+	//------------------------------------------------------------------------//
+	// OnImportFailure
+	//------------------------------------------------------------------------//
+	/**
+	 * OnImportFailure
+	 *
+	 * Event handler for when the Importing of a RateGroup fails
+	 *
+	 * Event handler for when the Importing of a RateGroup fails
+	 *
+	 * @param	string	strReport	Import Report
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.OnImportFailure = function(strReport)
 	{
-		//TODO! Close the Pablo Splash
+		// Update the Import Report
 		this._elmImportReport.scrollTop = 0;
 		this._elmImportReport.innerHTML = strReport;
-		//Vixen.Popup.Alert(strReport);
-	}
-
-	// This will update the appropriate combobox of the Add/Edit RatePlan page.
-	// This should be the only page that this popup can be opened from
-	this.UpdateRatePlanPage = function(arrNewRateGroupDetails)
-	{
-		//TODO! Check that the Vixen.RatePlanAdd object exists, and only update it if it does
-		// I don't know if I should have this method here, or if I should just check if Vixen.RatePlanAdd
-		// exists, and if so, run, Vixen.RatePlanAdd.UpdateRateGroupCombo(arrNewRateGroupDetails)
-		// I'm thinking the later.
 		
-		// I would also have to close the popup
+		// Close the Pablo Splash
+		Vixen.Popup.ClosePageLoadingSplash();
+		
+		Vixen.Popup.Alert("The RateGroup could not be imported<br />Please review the Import Report");
+	}
+	
+	//------------------------------------------------------------------------//
+	// OnImportSuccess
+	//------------------------------------------------------------------------//
+	/**
+	 * OnImportSuccess
+	 *
+	 * Event handler for when the Importing of a RateGroup succeeds
+	 *
+	 * Event handler for when the Importing of a RateGroup succeeds
+	 * This closes the popup and updates the AddRatePlan page, if it is open
+	 *
+	 * @param	object	objRateGroup	stores properties of the new RateGroup
+	 *									must contain: Id, Name, Description, Fleet, Draft, RecordType
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.OnImportSuccess = function(strReport, objRateGroup)
+	{
+		// Update the appropriate combobox on the AddRatePlan page
+		if (Vixen.RatePlanAdd)
+		{
+			Vixen.RatePlanAdd.UpdateRateGroupCombo(objRateGroup);
+		}
+		
+		// Update the Import Report
+		this._elmImportReport.scrollTop = 0;
+		this._elmImportReport.innerHTML = strReport;
+		
+		// Close the Pablo Splash
+		Vixen.Popup.ClosePageLoadingSplash();
+		
+		// Notify the user
+		if (objRateGroup.Draft)
+		{
+			// Ask the user if they want to download an updated version of the CSV file used to create this draft RateGroup
+			// (for future editing of the RateGroup)
+			this.ExportRateGroup(objRateGroup);
+		}
+		else
+		{
+			// The RateGroup has been committed
+			Vixen.Popup.Alert("The RateGroup has been successfully imported and committed<br />RateGroup name: "+ objRateGroup.Name);
+		}
+
+	}
+	
+	//------------------------------------------------------------------------//
+	// ExportRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * ExportRateGroup
+	 *
+	 * Prompts the user to Export an updated version of the RateGroup CSV file which was just used to import a draft RateGroup
+	 *
+	 * Prompts the user to Export an updated version of the RateGroup CSV file which was just used to import a draft RateGroup
+	 *
+	 * @param	object	objRateGroup	stores properties of the new RateGroup
+	 *									must contain: Id, Name, Description, Fleet, Draft, RecordType
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.ExportRateGroup = function(objRateGroup, bolConfirmed)
+	{
+		var strMsg = "";
+		if (bolConfirmed == null)
+		{
+			if (objRateGroup.DraftUpdate)
+			{
+				// The importing updated a draft RateGroup which was already in the database
+				strMsg =	"The RateGroup has been successfully updated and saved as a draft.<br />";
+			}
+			else
+			{
+				strMsg =	"The RateGroup has been successfully imported as a draft.<br />";
+			}
+			
+			strMsg += 		"The CSV file is now out of date.<br />" +
+							"Download an updated version of the RateGroup as a CSV file?";
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.RateGroupImport.ExportRateGroup(objRateGroup, true);});
+			return;
+		}
+		
+		// Export the RateGroup
+		window.location = "vixen.php/RateGroup/Export/?RateGroup.Id=" + objRateGroup.Id;
 	}
 }
 

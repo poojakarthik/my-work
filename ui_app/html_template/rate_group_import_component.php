@@ -115,19 +115,20 @@ class HtmlTemplateRateGroupImportComponent extends HtmlTemplate
 		echo "</div>\n"; // DefaultElement
 		
 		echo "</form>\n";
-
-		if (DBO()->RateGroupImport->Report->IsSet)
+		
+		if (DBO()->RateGroupImport->Success->Value)
 		{
-			// Display the import report
-			$strReport = Json()->encode(DBO()->RateGroupImport->Report->Value);
-			echo "<script type='text/javascript'>top.Vixen.RateGroupImport.UpdateImportReport($strReport)</script>";
-			//echo "<script type='text/javascript'>top.Vixen.Popup.Alert('What up cracker');</script>";
+			// The import was successful
+			$objRateGroup = Json()->encode(DBO()->RateGroupImport->ArrRateGroup->Value);
+			$objReport = Json()->encode(DBO()->RateGroupImport->Report->Value);
+			echo "<script type='text/javascript'>top.Vixen.RateGroupImport.OnImportSuccess($objReport, $objRateGroup)</script>\n";
 		}
-		
-		
-		
-		
-		//TODO!  There may be some actions that need to be done, like updating the AddRatePlan page, and closing the popup
+		elseif (DBO()->RateGroupImport->Success->Value === FALSE)
+		{
+			// The import failed. Display the import report
+			$objReport = Json()->encode(DBO()->RateGroupImport->Report->Value);
+			echo "<script type='text/javascript'>top.Vixen.RateGroupImport.OnImportFailure($objReport)</script>\n";
+		}
 	}
 }
 

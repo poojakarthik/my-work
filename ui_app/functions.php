@@ -1026,26 +1026,28 @@ function MakeCSVLine($arrFields, $arrFieldOrder=NULL, $strDelimiter=',', $strEnc
 		
 		if ($mixField === TRUE)
 		{
+			// I think this should probably be stored as a 1
 			$strCSVLine .= 'TRUE';
 		}
 		elseif ($mixField === FALSE)
 		{
+			// I think this should probably be stored as a 0
 			$strCSVLine .= 'FALSE';
 		}
 		elseif ($mixField !== NULL)
 		{
-			if (is_string($mixField))
+			if (is_numeric($mixField))
+			{
+				// numbers don't have to be enclosed (I'm assuming this is the case, even for numbers expressed in Scientific Notation)
+				$strCSVLine .= $mixField;
+			}
+			else
 			{
 				// Escape all characters within the string, which match the enclosure character
 				$mixField = str_replace($strEnclosure, $strEscapedEnclosure, $mixField);
 			
 				// Strings have to be properly enclosed
 				$strCSVLine .= $strEnclosure . $mixField . $strEnclosure;
-			}
-			else
-			{
-				// numbers don't have to be enclosed (I'm assuming this is the case, even for numbers expressed in Scientific Notation)
-				$strCSVLine .= $mixField;
 			}
 		}
 		else

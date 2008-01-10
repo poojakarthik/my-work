@@ -1027,7 +1027,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 
 		$objRateGroup = Json()->encode($arrRateGroup);
 		
-		$strJavascript = "Vixen.RatePlanAdd.AddRateGroupPopupOnClose($objRateGroup);";
+		$strJavascript = "if (Vixen.RatePlanAdd) {Vixen.RatePlanAdd.UpdateRateGroupCombo($objRateGroup);}";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	
@@ -1256,6 +1256,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *	(
 	 *			When exporting a skeleton csv file for a rate group
 	 *			DBO()->RecordType->Id			RecordType of the RateGroup
+	 *			DBO()->RateGroup->Fleet			The Fleet Property of the RateGroup
 	 *	)
 	 *	OR
 	 *	(
@@ -1277,7 +1278,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strRateGroupCSV = "";
 		$strFilename = "";
 		
-		$arrRateGroupColumns = Array("RateGroup Id", "Name", "Description", "Service Type",	"Record Type");		
+		$arrRateGroupColumns = Array("RateGroup Id", "Name", "Description", "Service Type",	"Record Type", "Fleet");		
 
 		$arrRateColumnNames = Array("Rate Id", 	"Editable", "Destination Code",
 												"Destination",												
@@ -1324,7 +1325,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 										DBO()->RateGroup->Name->Value,
 										DBO()->RateGroup->Description->Value,
 										DBO()->RateGroup->ServiceType->Value,
-										DBO()->RateGroup->RecordType->Value
+										DBO()->RateGroup->RecordType->Value,
+										DBO()->RateGroup->Fleet->Value
 									);
 			
 			$arrColumnNames = Array("RateId"=>"R.Id", "Editable"=>"IF(R.Archived = ". RATE_STATUS_DRAFT .", \"Yes\", \"No\")",
@@ -1355,29 +1357,30 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			// Export a skeleton csv for the given RecordType defined in RecordType
 			DBO()->RecordType->Load();
 			
-			$arrBlankRateGroup = Array(NULL,NULL,NULL,DBO()->RecordType->ServiceType->Value,DBO()->RecordType->Id->Value);
+			$arrBlankRateGroup = Array(NULL,NULL,NULL, DBO()->RecordType->ServiceType->Value, DBO()->RecordType->Id->Value, DBO()->RateGroup->Fleet->Value);
 			
+			// Default Values (including precision)
 			$arrRate = Array(NULL, "Editable"=>"Yes", "DestinationCode"=>NULL, "DestinationDescription"=>NULL, "RateName"=>"<RateGroupName> - <Destination>", "RateDescription"=>"<RateGroupName> - <Destination>",
 								"00:00:00",	"23:59:59", 1, 1, 1, 1, 1, 1,
 											1,
 											0,
 											0,
 											0,
-											0,
-											0,
+											"0.0000",
+											"0.0000",
 											1,
+											"0.00000000",
+											"0.00000000",
+											"0.0000",
 											0,
+											"0.0000",
 											0,
+											"0.0000",
+											"0.0000",
 											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0
+											"0.00000000",
+											"0.00000000",
+											"0.0000"
 										);
 										
 			$strRateGroupCSV .= MakeCSVLine($arrRateGroupColumns);
@@ -1389,6 +1392,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			{
 				// load the destinations
 				DBL()->Destination->Context = DBO()->RecordType->Context->Value;
+				DBL()->Destination->OrderBy("Description ASC");
 				DBL()->Destination->Load();
 				
 				foreach(DBL()->Destination as $dboDestination)
@@ -1425,7 +1429,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strFilename = str_replace(" ", "_", $strFilename);
 		
 		// Send the csv file to the user
-		header("Content-Type: text/plain");
+		header("Content-Type: text/csv");
 		header("Content-Disposition: attachment; filename=\"$strFilename\"");
 		echo $strRateGroupCSV;
 		exit;
@@ -1499,22 +1503,23 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$arrReport = Array();
 			$arrRateGroup = $this->_ImportCSV($arrRecordType, DBO()->RateGroup->Fleet->Value, $bolCommit, $arrReport);
 			
+			// Convert $arrReport into a string and store it
+			$strReport = implode("<br />", $arrReport);
+			$strReport = str_replace("\n", "<br />", $strReport);
+			DBO()->RateGroupImport->Report = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $strReport);
+
 			if ($arrRateGroup === FALSE)
 			{
 				// The import failed
-				$strReport = implode("<br />", $arrReport);
-				$strReport = str_replace("\n", "<br />", $strReport);
-				
-				DBO()->RateGroupImport->Report = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $strReport);
 				DBO()->RateGroupImport->Success = FALSE;
 			}
 			else
 			{
 				// The import was successful
 				DBO()->RateGroupImport->Success = TRUE;
+				$arrRateGroup['Draft'] = ($arrRateGroup['Archived'] == RATE_STATUS_DRAFT)? 1 : 0;
+				$arrRateGroup['Fleet'] = ($arrRateGroup['Fleet'])? 1 : 0; 
 				DBO()->RateGroupImport->ArrRateGroup = $arrRateGroup;
-				
-				// Don't bother to store the generated report
 			}
 		}
 		
@@ -1550,7 +1555,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	private function _ImportCSV($arrRecordType, $bolIsFleet, $bolCommit, &$arrReport)
 	{
 		// Declare the keys for the records stored in the csv file
-		$arrRateGroupKeys	= Array("Id", "Name", "Description", "ServiceType", "RecordType");
+		$arrRateGroupKeys	= Array("Id", "Name", "Description", "ServiceType", "RecordType", "Fleet");
 		$arrRateKeys		= Array("Id", "Editable", "Destination", "DestinationDescription", "Name", "Description", 
 									"StartTime", "EndTime", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
 									"Sunday", "PassThrough", "Uncapped", "Prorate", "StdMinCharge", "StdFlagfall", "StdUnits",
@@ -1588,37 +1593,32 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Read the RateGroup details
 		$arrReport[] = "\nReading RateGroup details from file (2nd line)...";
 		// Skip the first line of the csv file
-		if (fgetcsv($ptrFile) === FALSE)
-		{
-			// End of file has been met
-			$arrReport[] = "\nFATAL ERROR: Could not read the first line of the file.\nImport Aborted";
-			return FALSE;
-		}
-		
+		fgetcsv($ptrFile);
 		$arrRateGroup = fgetcsv($ptrFile);
-		// We only want the first 5 values of the csv record
-		$arrRateGroup = array_combine($arrRateGroupKeys, array_slice($arrRateGroup, 0, 5));
-		
-		if ($arrRateGroup === FALSE)
+		if ($arrRateGroup === FALSE || count($arrRateGroup) < count($arrRateGroupKeys))
 		{
+			// The RateGroup line could not be read from the file
 			$arrReport[] = "\nFATAL ERROR: Could not read the RateGroup details from line 2 of the file.\nImport Aborted";
 			return FALSE;
 		}
+	
+		// We only want the first 6 values of the csv record
+		$arrRateGroup = array_combine($arrRateGroupKeys, array_slice($arrRateGroup, 0, count($arrRateGroupKeys)));
 		$arrReport[] = "\tOk";
-		
+	
 		// Do preliminary Validation of the RateGroup
 		$bolSuccess = $this->_ValidateImportedRateGroupDetails($arrRateGroup, $arrRecordType, $bolIsFleet, $arrReport);
 		if (!$bolSuccess)
 		{
 			// The imported RateGroup failed validation
-			$arrReport[] = "Problems were encountered.\nImport Aborted";
+			$arrReport[] = "\nProblems were encountered.\nImport Aborted";
 			return FALSE;
 		}
 		
 		// Read and validate each Rate from the CSV file
-		$arrReport[] = "Reading Rates from file (line 4 onwards)...";
-		// Skip the third and forth lines of the csv file
+		$arrReport[] = "\nReading Rates from file (line 5 onwards)...";
 		
+		// Skip the third and forth lines of the csv file
 		fgetcsv($ptrFile);
 		if (fgetcsv($ptrFile) === FALSE)
 		{
@@ -1632,26 +1632,34 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		{
 			$intLine++;
 			
-			// Combine the Rate with appropriate keys
-			$arrRate = array_combine($arrRateKeys, $arrRate);
-			
-			if ($arrRate === FALSE)
+			if (count($arrRate) != count($arrRateKeys))
 			{
 				$arrReport[] = "\nFATAL ERROR: Could not read the Rate details from line $intLine of the file.\nImport Aborted";
 				return FALSE;
 			}
 			
-			// Update the placeholders in the Rate's Name and Description
+			// Combine the Rate with appropriate keys
+			$arrRate = array_combine($arrRateKeys, $arrRate);
+			
+			// Update the placeholders in the Rate's Name and Description and trim whitespace
 			$arrRate['Name'] = str_replace("<RateGroupName>", $arrRateGroup['Name'], $arrRate['Name']);
 			$arrRate['Name'] = str_replace("<Destination>", $arrRate['DestinationDescription'], $arrRate['Name']);
+			$arrRate['Name'] = trim($arrRate['Name']);
 			
 			$arrRate['Description'] = str_replace("<RateGroupName>", $arrRateGroup['Name'], $arrRate['Description']);
 			$arrRate['Description'] = str_replace("<Destination>", $arrRate['DestinationDescription'], $arrRate['Description']);
+			$arrRate['Description'] = trim($arrRate['Description']);
+			
+			// Set the RecordType, ServiceType and Fleet
+			$arrRate['Fleet'] = $bolIsFleet;
+			$arrRate['RecordType'] = $arrRecordType['Id'];
+			$arrRate['ServiceType'] = $arrRecordType['ServiceType'];
+			
 			
 			$arrReport[] = "\nValidating Rate: '". $arrRate['Name'] ."' ...";
 			
 			// Do preliminary validation of the Rate
-			$bolSuccess = $this->_ValidateImportedRate($arrRate, $arrRecordType, $bolIsFleet, $arrReport);
+			$bolSuccess = $this->_ValidateImportedRate($arrRate, $arrRecordType, $arrReport);
 			if (!$bolSuccess)
 			{
 				// The imported Rate failed validation
@@ -1666,14 +1674,12 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				if (strtolower($arrRate['Name']) == strtolower($arrRateFromCSVFile['Name']))
 				{
 					// A Rate Name conflict has been found
-					$arrReport[] = "\tERROR: This Rate's name is being used by another rate declared in this CSV file.\nImport Aborted";
+					$arrReport[] = "\tERROR: This Rate's name is being used by another rate declared in this CSV file.\n\nProblems were encountered.\nImport Aborted";
 					return FALSE;
 				}
 			}
 
 			// The Rate passed the initial validation
-			$arrReport[] = "\tOk";
-			
 			// Add the rate to the list of Rates belonging to the RateGroup
 			$arrRates[] = $arrRate;
 		}
@@ -1681,24 +1687,24 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// The Rates all passed their initial validation
 		if ($bolIsFleet)
 		{
-			$arrReport[] = "\nNow testing for over-allocations... (fleet RateGroups are permitted under-allocations)";
+			$arrReport[] = "\nChecking for over-allocations... (fleet RateGroups are permitted under-allocations)";
 		}
 		else
 		{
-			$arrReport[] = "\nNow testing for Over and Under allocations...";
+			$arrReport[] = "\nChecking for Over and Under allocations...";
 		}
 		
 		// Start the transaction
 		TransactionStart();
 		
 		// Save the RateGroup
-		$arrRateGroup['Archived']	= ($bolCommit)? RATE_STATUS_ACTIVE : RATE_STATUS_DRAFT;
-		$arrRateGroup['Fleet']	= $bolIsFleet;
+		$arrRateGroup['Archived'] = ($bolCommit)? RATE_STATUS_ACTIVE : RATE_STATUS_DRAFT;
 		if ($arrRateGroup['Id'] != NULL)
 		{
 			// The RateGroup is currently stored in the database as a draft
-			$updRateGroup = new StatementUpdateById("RateGroup", "Id = <Id>");
-			if (!$updRateGroup->Execute($arrRateGroup))
+			$updRateGroup = new StatementUpdateById("RateGroup");
+			
+			if ($updRateGroup->Execute($arrRateGroup) === FALSE)
 			{
 				// Updating the RateGroup record failed
 				TransactionRollback();
@@ -1731,10 +1737,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Save the Rates
 		foreach ($arrRates as &$arrRate)
 		{
-			$arrRate['Fleet'] = $bolIsFleet;
-			$arrRate['RecordType'] = $arrRecordType['Id'];
-			$arrRate['ServiceType'] = $arrRecordType['ServiceType'];
-			
 			// Check if the Rate is already in the database
 			if ($arrRate['Id'] != NULL)
 			{
@@ -1749,7 +1751,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					// The Rate is stored in the database as a DRAFT rate.  Update it
 					$arrRate['Archived'] = ($bolCommit)? RATE_STATUS_ACTIVE : RATE_STATUS_DRAFT;
 					
-					if (!$updRate->Execute($arrRate))
+					if ($updRate->Execute($arrRate) === FALSE)
 					{
 						// Updating the Rate record failed
 						TransactionRollback();
@@ -1818,7 +1820,19 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		TransactionCommit();
 		
 		// The RateGroup was successfully imported
-		$arrReport[] = "\tOk\n\nThe RateGroup has been successfully imported";
+		$strFinalComment = "\tOk\n\nThe RateGroup, '{$arrRateGroup['Name']}', ";
+		if ($arrRateGroup['Archived'] == RATE_STATUS_ACTIVE)
+		{
+			// The RateGroup has been committed
+			$strFinalComment .= ($arrRateGroup['DraftUpdate']) ? "has been updated and committed to the database." : "has been committed to the database."; 
+		}
+		else
+		{
+			// The RateGroup has been saved as a draft
+			$strFinalComment .= ($arrRateGroup['DraftUpdate']) ? "has been updated in the database." : "has been saved to the database as a draft.";
+		}
+		
+		$arrReport[] = $strFinalComment;
 		
 		return $arrRateGroup;
 	}
@@ -1835,6 +1849,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * Validates the RateGroup Details for an imported RateGroup
 	 *
 	 * @param		array	$arrRateGroup			The Rate Group record, pulled from the csv file
+	 * 												(this will be passed by reference, and updated appropriately.
+	 * 												It will set $arrRateGroup['DraftUpdate'] to TRUE, if the RateGroup
+	 * 												was found in the database as a draft)
 	 * @param		array	$arrRecordType			RecordType record of the importing RateGroup
 	 * @param		bool	$bolIsFleet				TRUE if the RateGroup is supposed to be Fleet, else FALSE
 	 * @param		array	&$arrReport				The import report (this will be passed by reference, and 
@@ -1845,9 +1862,19 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *
 	 * @method
 	 */
-	private function _ValidateImportedRateGroupDetails($arrRateGroup, $arrRecordType, $bolIsFleet, &$arrReport)	
+	private function _ValidateImportedRateGroupDetails(&$arrRateGroup, $arrRecordType, $bolIsFleet, &$arrReport)	
 	{
 		$bolFailed = FALSE;
+		
+		// Type cast the values of $arrRateGroup to their appropriate types
+		$arrRateGroup['Id']				= (int)$arrRateGroup['Id'];
+		$arrRateGroup['RecordType']		= (int)$arrRateGroup['RecordType'];
+		$arrRateGroup['ServiceType']	= (int)$arrRateGroup['ServiceType'];
+		$arrRateGroup['Fleet']			= (int)$arrRateGroup['Fleet'];
+		
+		// Trim whitespace from the Name and Description
+		$arrRateGroup['Name'] = trim($arrRateGroup['Name']);
+		$arrRateGroup['Description'] = trim($arrRateGroup['Description']);
 		
 		$arrRecordType['RecordType'] = $arrRecordType['Id'];
 		$arrRecordType['Fleet'] = $bolIsFleet;
@@ -1879,7 +1906,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			}
 			
 			// The RateGroup must be a Draft RateGroup
-			$arrReport[] = "\tOk";
+			$arrReport[] = "\tFound as ". $arrExistingRateGroup['Name'];
+			$arrRateGroup['DraftUpdate'] = TRUE;
 
 			// Check that the existing RateGroup details match that of the RecordType
 			$arrReport[] = "Checking RateGroup from database against RecordType details...";
@@ -1897,7 +1925,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		// Check that the RateGroup defined by $arrRateGroup has the same ServiceType and RecordType as that defined in $arrRecordType
 		$arrReport[] = "Checking RateGroup details against RecordType details...";
-		$arrDiscrepancies = CompareArrays($arrRateGroup, $arrRecordType, Array("RecordType", "ServiceType"), "\tERROR: <Key> does not match");
+		$arrDiscrepancies = CompareArrays($arrRateGroup, $arrRecordType, Array("RecordType", "ServiceType", "Fleet"), "\tERROR: <Key> does not match");
 		if (count($arrDiscrepancies) > 0)
 		{
 			$bolFailed = TRUE;
@@ -1931,7 +1959,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		if ($intNumRecords)
 		{
 			$bolFailed = TRUE;
-			$arrReport[] = "\tThe name is currently used by an existing RateGroup";
+			$arrReport[] = "FATAL ERROR: The name is currently used by an existing RateGroup";
 		}
 		else
 		{
@@ -1958,7 +1986,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * 										makes reference to an active Rate in the database, else
 	 * 										this property will not be set
 	 * @param		array	$arrRecordType	RecordType record of the importing RateGroup
-	 * @param		bool	$bolIsFleet		TRUE if the RateGroup is supposed to be Fleet, else FALSE
 	 * @param		array	&$arrReport		The import report (this will be passed by reference, and 
 	 * 										updated appropriately)
 	 *
@@ -1967,26 +1994,37 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *
 	 * @method
 	 */
-	private function _ValidateImportedRate(&$arrRate, $arrRecordType, $bolIsFleet, &$arrReport)
+	private function _ValidateImportedRate(&$arrRate, $arrRecordType, &$arrReport)
 	{
 		$bolFailed = FALSE;
 		
 		// This static variable is used to cache the Destination records between calls to this method
 		static $arrDestinations;
 		
-		$arrRecordType['RecordType'] = $arrRecordType['Id'];
-		$arrRecordType['Fleet'] = $bolIsFleet;
+		// This static variable is used to cache the object used to retrieve existing Rates from the database
+		static $selExistingRate;
+		
+		// These StatementSelect objects are used to check if the Rate's name is currently in use
+		static $selRateName;
+		static $selRateNameOmittingId;
+		if (!isset($selRateName))
+		{
+			$selRateName = new StatementSelect("Rate", "Id", "RecordType = <RecordType> AND Name LIKE <Name>", "", "1");
+		}
+		if (!isset($selRateNameOmittingId))
+		{
+			$selRateNameOmittingId = new StatementSelect("Rate", "Id", "RecordType = <RecordType> AND Name LIKE <Name> AND Id != <RateId>", "", "1");
+		}
 		
 		// Check if $arrRate references a Rate that is already in the database
 		if ($arrRate['Id'])
 		{
-			$arrReport[] = "An Id has been specified for the Rate (Id = {$arrRate['Id']}).  Checking if the rate exists in the database...";
+			$arrReport[] = "Rate has Id = {$arrRate['Id']}.  Checking if the rate exists in the database...";
 			
 			// Retrieve the Rate
 			if (!isset($selExistingRate))
 			{
-				static $selExistingRate;
-				$selExistingRate = new StatementSelect("Rate", "Id, RecordType, ServiceType, Fleet", "Id = <Id>");
+				$selExistingRate = new StatementSelect("Rate", "Id, RecordType, ServiceType, Fleet, Archived", "Id = <Id>");
 			}
 			$bolFound = $selExistingRate->Execute(Array("Id" => $arrRate['Id']));
 			
@@ -2004,14 +2042,21 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				$arrReport[] = "\tFATAL ERROR: The Rate is currently archived.";
 				return FALSE;
 			}
+			elseif ($arrExistingRate['Archived'] == RATE_STATUS_ACTIVE)
+			{
+				$arrRate['IsCurrentlyActive'] = TRUE;
+				
+				$arrReport[] = "\tFound (This Rate is already active and cannot be modified)";
+			}
 			else
 			{
-				$arrReport[] = "\tOk";
+				// Must be stored in the database as a Draft Rate
+				$arrReport[] = "\tFound Draft Rate";
 			}
 			
-			// Compare the RecordType and Fleet properties of the existing Rate against those defined by the popup
-			$arrReport[] = "Checking Rate from database against RecordType details...";
-			$arrDiscrepancies = CompareArrays($arrExistingRate, $arrRecordType, Array("RecordType", "ServiceType", "Fleet"), "\tERROR: <Key> does not match");
+			// Compare the RecordType and Fleet properties of the existing Rate against those defined by the popup (which are stored in $arrRate)
+			$arrReport[] = "Comparing Rate from database against RecordType details...";
+			$arrDiscrepancies = CompareArrays($arrExistingRate, $arrRate, Array("RecordType", "ServiceType", "Fleet"), "\tERROR: <Key> does not match");
 			if (count($arrDiscrepancies) > 0)
 			{
 				$arrReport = array_merge($arrReport, $arrDiscrepancies);
@@ -2023,11 +2068,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			}
 			
 			// Check if the Rate is already Active (and thus can't be modified)
-			if ($arrExistingRate['Archived'] == RATE_STATUS_ACTIVE)
+			if ($arrRate['IsCurrentlyActive'])
 			{
 				// The rate is considered valid
-				$arrRate['IsCurrentlyActive'] = TRUE;
-				$arrReport[] = "\tOk (This Rate is already active and cannot be modified)";
 				return TRUE;
 			}
 			
@@ -2076,18 +2119,19 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				$arrRate[$strKey] = 0;
 			}
 			
-			if (($arrRate[$strKey] != 0) && ($arrRate[$strKey] != 1))
+			if ((!is_numeric($arrRate[$strKey])) || (($arrRate[$strKey] != 0) && ($arrRate[$strKey] != 1)))
 			{
 				$bolFailed = TRUE;
-				$arrReport[] = "\tERROR: $strKey must be either 0 or 1";
+				$arrReport[] = "\tERROR: $strKey must be either 0 or 1. it equals {$arrRate[$strKey]}";
 			}
+			
+			// Type cast it to an int
+			$arrRate[$strKey] = (int)$arrRate[$strKey];
 		}
 
-		// Validate all properties that must be numbers
-		$arrNumberProperties = Array(	"StdMinCharge", "StdFlagfall", "StdUnits",
-										"StdRatePerUnit", "StdMarkup", "StdPercentage", "CapUnits", "CapCost", "CapUsage", "CapLimit",
-										"ExsFlagfall", "ExsUnits", "ExsRatePerUnit", "ExsMarkup", "ExsPercentage");
-		foreach ($arrNumberProperties as $strKey)
+		// Validate all properties that must be integers
+		$arrIntProperties = Array("Destination", "StdUnits", "CapUnits", "CapUsage", "ExsUnits");
+		foreach ($arrIntProperties as $strKey)
 		{
 			// Convert any NULL value to zero
 			if ($arrRate[$strKey] == NULL)
@@ -2098,8 +2142,32 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			if (!is_numeric($arrRate[$strKey]))
 			{
 				$bolFailed = TRUE;
+				$arrReport[] = "\tERROR: $strKey must be an integer";
+			}
+			
+			// The value may still be considered a string.  Type cast it to an integer
+			$arrRate[$strKey] = (int)$arrRate[$strKey];
+		}
+		
+		// Validate all properties that must be floats
+		$arrFloatProperties = Array(	"StdMinCharge", "StdFlagfall", "StdRatePerUnit", "StdMarkup", "StdPercentage", 
+										"CapCost", "CapLimit", "ExsFlagfall", "ExsRatePerUnit", "ExsMarkup", "ExsPercentage");
+		foreach ($arrFloatProperties as $strKey)
+		{
+			// Convert any NULL value to zero
+			if ($arrRate[$strKey] == NULL)
+			{
+				$arrRate[$strKey] = 0.0;
+			}
+			
+			if (!is_numeric($arrRate[$strKey]))
+			{
+				$bolFailed = TRUE;
 				$arrReport[] = "\tERROR: $strKey must be numerical";
 			}
+			
+			// The value may still be considered a string.  Type cast it to a float
+			$arrRate[$strKey] = (float)$arrRate[$strKey];
 		}
 		
 		// If validation has already failed, do not continue
@@ -2111,20 +2179,31 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Check that the name is not currently being used by another Rate
 		if ($arrRate['Id'] == NULL)
 		{
+			
 			// The Rate is not currently in the database
 			// Check that a Rate doesn't already exist in the database with the same name and same RecordType
-			$strWhere = "RecordType = <RecordType> AND Name LIKE <Name>";
 			$arrWhere = Array("RecordType" => $arrRate['RecordType'], "Name" => $arrRate['Name']);
+			$intNumRecords = $selRateName->Execute($arrWhere);
 		}
 		else
 		{
-			// The RateGroup is currently in the database as a draft
+			// Type cast the id to an int (as it might be considered a string)
+			if (is_numeric($arrRate['Id']))
+			{
+				$arrRate['Id'] = (int)$arrRate['Id'];
+			}
+			else
+			{
+				// The Id is not an integer
+				$arrReport[] = "\tERROR: Id must be an integer";
+				return FALSE;
+			}
+
+			// The Rate is currently in the database as a draft
 			// Check that a RateGroup doesn't already exist in the database with the same name and same RecordType unless its Id == $arrRate['Id']
-			$strWhere = "RecordType = <RecordType> AND Name LIKE <Name> AND Id != <RateId>";
 			$arrWhere = Array("RecordType" => $arrRate['RecordType'], "Name" => $arrRate['Name'], "RateId" => $arrRate['Id']);
+			$intNumRecords = $selRateNameOmittingId->Execute($arrWhere);
 		}
-		$selRateName = new StatementSelect("Rate", "Id", $strWhere, "", "1");
-		$intNumRecords = $selRateName->Execute($arrWhere);
 		
 		if ($intNumRecords)
 		{
@@ -2176,7 +2255,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		//  You cannot specify both a standard markup on cost, and an excess markup on cost
 		$intCount  = ($arrRate['StdMarkup'] || $arrRate['StdPercentage'])? 1 : 0;
-		$intCount += ($arrRate['StdMarkup'] || $arrRate['StdPercentage'])? 1 : 0;
+		$intCount += ($arrRate['ExsMarkup'] || $arrRate['ExsPercentage'])? 1 : 0;
 		if ($intCount > 1)
 		{
 			$bolFailed = TRUE;
@@ -2253,10 +2332,39 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 
 		// Everything has been tested now
-		return (!$bolFailed);
+		if ($bolFailed)
+		{
+			return FALSE;
+		}
+		else
+		{
+			$arrReport[] = "\tOk";
+			return TRUE;
+		}
 	}
 }
 
+
+//------------------------------------------------------------------------//
+// CompareArrays
+//------------------------------------------------------------------------//
+/**
+ * CompareArrays()
+ *
+ * Makes a soft comparison against the corresponding elements of the two arrays, and reports on any discrepancies
+ * 
+ * Makes a soft comparison against the corresponding elements of the two arrays, and reports on any discrepancies
+ * This is used by the _ValidateImportedRateGroupDetails() and _ValidateImportedRate() functions
+ *
+ * @param		array	$arr1					First of the two arrays to compare
+ * @param		array	$arr2					Second of the two arrays to compare
+ * @param		array	$arrKeys				List of keys of the elements to compare in the two arrays
+ * @param		string	$strErrorMsgTemplate	Template for the error msg for when the elements do not match
+ * 												This can contain the placeholders <Key>, <Arr1Value> and <Arr2Value>
+ *
+ * @return		array							A list of Error messages generated
+ * @function
+ */
 function CompareArrays($arr1, $arr2, $arrKeys, $strErrorMsgTemplate)
 {
 	$arrErrorMsgs = Array();

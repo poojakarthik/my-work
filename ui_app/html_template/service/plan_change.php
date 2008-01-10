@@ -184,8 +184,6 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		
 		// Initialise the js object which facilitates this popup
 		echo "<script type='text/javascript'>Vixen.PlanChange.Initialise(". DBO()->Service->Id->Value .", '{$this->_objAjax->strId}');</script>\n";
-		
-		
 	}
 }
 

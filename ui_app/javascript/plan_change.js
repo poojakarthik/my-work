@@ -108,7 +108,7 @@ function VixenPlanChangeClass()
 	 */
 	this.ViewPlanDetails = function()
 	{
-		var intPlanId = document.getElementById('SelectPlanCombo').value;
+		var intPlanId = document.getElementById('Combo_NewPlan.Id').value;
 		window.location = 'rates_plan_summary.php?Id=' + intPlanId;
 	}
 }

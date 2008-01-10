@@ -130,91 +130,6 @@ function VixenRatePlanAddClass()
 	}
 	
 	//------------------------------------------------------------------------//
-	// AddRateGroupPopupOnClose
-	//------------------------------------------------------------------------//
-	/**
-	 * AddRateGroupPopupOnClose
-	 *
-	 * This is executed when the "Add Rate Group" popup is closed and it needs to update the "Add Rate Plan" page
-	 *  
-	 * This is executed when the "Add Rate Group" popup is closed and it needs to update the "Add Rate Plan" page
-	 * This is called by the "Add Rate Group" popup when a rate group has been added and the popup closes
-	 *
-	 * @param	object	objRateGroup	Defines a new Rate Group.  It contains the properties:
-	 *									Id, Name, RecordType, Fleet, Draft
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.AddRateGroupPopupOnClose = function(objRateGroup)
-	{
-		var strComboId;
-		
-		//alert("RateGroupId = " + objRateGroup.Id + " Name = " + objRateGroup.Name + " RecordType = " + objRateGroup.RecordType + " Fleet = " + objRateGroup.Fleet);
-		
-		if (objRateGroup.Fleet)
-		{
-			// The rate group is a fleet rate group
-			strComboId = "RateGroup" + objRateGroup.RecordType + ".FleetRateGroupId";
-		}
-		else
-		{
-			// The rate group is not a fleet rate group
-			strComboId = "RateGroup" + objRateGroup.RecordType + ".RateGroupId";
-		}
-		
-		// Get the combo box associated with this particular record type
-		var elmRateGroupCombo = document.getElementById(strComboId);
-		if (elmRateGroupCombo == undefined)
-		{
-			// The new rate group does not belong to any record types associated with this service type
-			return;
-		}
-		
-		// create a new option element
-		var elmNewRateGroupOption		= document.createElement('option');
-		elmNewRateGroupOption.value		= objRateGroup.Id;
-		elmNewRateGroupOption.text		= objRateGroup.Name;
-		elmNewRateGroupOption.selected	= TRUE;
-		
-		if (objRateGroup.Draft)
-		{
-			elmNewRateGroupOption.text = "DRAFT: " + elmNewRateGroupOption.text;
-			elmNewRateGroupOption.setAttribute('draft', 'draft');
-		}
-
-		// Remove the old option from the combo box, if it exists
-		for (var i=0; i < elmRateGroupCombo.options.length; i++)
-		{
-			if (elmRateGroupCombo.options[i].value == elmNewRateGroupOption.value)
-			{
-				// Destroy the old one
-				elmRateGroupCombo.removeChild(elmRateGroupCombo.options[i]);
-				break;
-			}
-		}
-		
-		// Stick it in the combo so that the alphabetical order of the options is preserved
-		// i starts at 1 because we don't want to do a comparision between the new option, and the blank option
-		for (var i=1; i < elmRateGroupCombo.options.length; i++)
-		{
-			if (elmNewRateGroupOption.text < elmRateGroupCombo.options[i].text)
-			{
-				// insert the new option just before the current one
-				elmRateGroupCombo.insertBefore(elmNewRateGroupOption, elmRateGroupCombo.options[i]);
-				elmRateGroupCombo.selectedIndex = elmNewRateGroupOption.index;
-				elmRateGroupCombo.focus();
-				return;
-			}
-		}
-		
-		// The option should either be the last in the list, or there are no other options in the list.  Append the option to the end of the list
-		elmRateGroupCombo.appendChild(elmNewRateGroupOption);
-		elmRateGroupCombo.selectedIndex = elmNewRateGroupOption.index;
-		elmRateGroupCombo.focus();
-	}
-	
-	//------------------------------------------------------------------------//
 	// EditRateGroup
 	//------------------------------------------------------------------------//
 	/**
@@ -386,12 +301,97 @@ function VixenRatePlanAddClass()
 		else
 		{
 			// A RateGroup has not been selected.  A skeleton csv file for the given RecordType will be exported
-			strGetVariables = "RecordType.Id=" + intRecordType;
+			strGetVariables = "RecordType.Id=" + intRecordType + "&RateGroup.Fleet=" + ((bolIsFleet)? "1": "0");
 		}
 		
 		// Call the Export RateGroup functionality
 		window.location = "vixen.php/RateGroup/Export/?" + strGetVariables;
 	}
+
+	//------------------------------------------------------------------------//
+	// UpdateRateGroupCombo
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateRateGroupCombo
+	 *
+	 * Updates the appropriate RateGroup combobox with the supplied RateGroup and selects it
+	 *  
+	 * Updates the appropriate RateGroup combobox with the supplied RateGroup and selects it
+	 *
+	 * @param	object	objRateGroup	Must contain the following RateGroup properties
+	 *									Id, Name, Description, RecordType, Fleet, Archived
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.UpdateRateGroupCombo = function(objRateGroup)
+	{
+		var strComboId;
+		
+		//alert("RateGroupId = " + objRateGroup.Id + " Name = " + objRateGroup.Name + " RecordType = " + objRateGroup.RecordType + " Fleet = " + objRateGroup.Fleet.toString());
+		
+		if (objRateGroup.Fleet)
+		{
+			// The rate group is a fleet rate group
+			strComboId = "RateGroup" + objRateGroup.RecordType + ".FleetRateGroupId";
+		}
+		else
+		{
+			// The rate group is not a fleet rate group
+			strComboId = "RateGroup" + objRateGroup.RecordType + ".RateGroupId";
+		}
+		
+		// Get the combo box associated with this particular record type
+		var elmRateGroupCombo = document.getElementById(strComboId);
+		if (elmRateGroupCombo == undefined)
+		{
+			// The new rate group does not belong to any record types associated with this service type
+			return;
+		}
+		
+		// create a new option element
+		var elmNewRateGroupOption		= document.createElement('option');
+		elmNewRateGroupOption.value		= objRateGroup.Id;
+		elmNewRateGroupOption.text		= objRateGroup.Name;
+		elmNewRateGroupOption.selected	= TRUE;
+		
+		if (objRateGroup.Draft)
+		{
+			elmNewRateGroupOption.text = "DRAFT: " + elmNewRateGroupOption.text;
+			elmNewRateGroupOption.setAttribute('draft', 'draft');
+		}
+
+		// Remove the old option from the combo box, if it exists
+		for (var i=0; i < elmRateGroupCombo.options.length; i++)
+		{
+			if (elmRateGroupCombo.options[i].value == elmNewRateGroupOption.value)
+			{
+				// Destroy the old one
+				elmRateGroupCombo.removeChild(elmRateGroupCombo.options[i]);
+				break;
+			}
+		}
+		
+		// Stick it in the combo so that the alphabetical order of the options is preserved
+		// i starts at 1 because we don't want to do a comparision between the new option, and the blank option
+		for (var i=1; i < elmRateGroupCombo.options.length; i++)
+		{
+			if (elmNewRateGroupOption.text < elmRateGroupCombo.options[i].text)
+			{
+				// insert the new option just before the current one
+				elmRateGroupCombo.insertBefore(elmNewRateGroupOption, elmRateGroupCombo.options[i]);
+				elmRateGroupCombo.selectedIndex = elmNewRateGroupOption.index;
+				elmRateGroupCombo.focus();
+				return;
+			}
+		}
+		
+		// The option should either be the last in the list, or there are no other options in the list.  Append the option to the end of the list
+		elmRateGroupCombo.appendChild(elmNewRateGroupOption);
+		elmRateGroupCombo.selectedIndex = elmNewRateGroupOption.index;
+		elmRateGroupCombo.focus();
+	}
+
 
 	//------------------------------------------------------------------------//
 	// ReturnToCallingPage
