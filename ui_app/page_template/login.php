@@ -23,8 +23,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <base href='<?php echo $strBaseDir ?>'/>
 </head>
-<script type="text/javascript" src="javascript/sha1.js"></script>
-
 
 <style type="text/css" media="screen">
 				

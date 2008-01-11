@@ -1,8 +1,9 @@
 <?php
+// This file is DEPRICATED
 	require_once('../framework/functions.php');
 	LoadFramework();
 	//------------------------------------------------------------------------//
-	// Login
+	// Login (DEPRICATED)
 	//------------------------------------------------------------------------//
 	/**
 	 * Login()

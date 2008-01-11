@@ -78,7 +78,7 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		
-		// Load all java script specific to the page here
+		$this->LoadJavascript("debug");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -115,11 +115,16 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 			// Add debug button, which doesnt do much yet, just set debug to true;
 			//  eventually move this somewhere more appropriate
 		if (AuthenticatedUser()->_arrUser['Privileges'] >= PERMISSION_DEBUG)
-		{
+		{	
+			/*
 			echo "            	<a href='#' onclick='Vixen.debug^=TRUE;alert(\"Vixen.debug now is: \" + Vixen.debug );'>
             		<img src='img/template/debug.png' alt='Debug' title='Debug' border='0' >            	</a>			
             	<script type='text/javascript'>Vixen.debug = TRUE;</script>
             	<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/debug.js'></script>\n";
+			*/
+			echo "            	<a href='#' onclick='Vixen.debug^=TRUE;alert(\"Vixen.debug now is: \" + Vixen.debug );'>
+            		<img src='img/template/debug.png' alt='Debug' title='Debug' border='0' >            	</a>			
+            	<script type='text/javascript'>Vixen.debug = TRUE;</script>\n";
 		}
 		echo "            </div>\n
         </div>

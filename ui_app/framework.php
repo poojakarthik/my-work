@@ -286,30 +286,34 @@ class Page
 		//echo "<script type='text/javascript'>VixenSetJavascriptBaseDir('". JAVASCRIPT_BASE_DIR ."')</script>\n";
 		
 		/*
-		echo "<script type='text/javascript'>VixenIncludeJSOnce('vixen')</script>\n";
-		echo "<script type='text/javascript'>VixenIncludeJSOnce('menu')</script>\n";
-		echo "<script type='text/javascript'>VixenIncludeJSOnce('popup')</script>\n";
-		echo "<script type='text/javascript'>VixenIncludeJSOnce('dhtml')</script>\n";
-		echo "<script type='text/javascript'>VixenIncludeJSOnce('ajax')</script>\n";
-		*/
-		
-//echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript.php?File=../../dir1/dir2/generic_javascript'></script>\n";
-		/*This is the old way of explicitly loading js files, before we had to worry about customer overridden files and application overridden files
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/vixen.js' ></script>\n";
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/menu.js' ></script>\n";
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/popup.js' ></script>\n";
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/dhtml.js' ></script>\n";
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/ajax.js' ></script>\n";
-		*/
-		
 		echo "<script type='text/javascript' src='javascript.php?File=vixen.js' ></script>\n";
 		echo "<script type='text/javascript' src='javascript.php?File=menu.js' ></script>\n";
 		echo "<script type='text/javascript' src='javascript.php?File=popup.js' ></script>\n";
 		echo "<script type='text/javascript' src='javascript.php?File=dhtml.js' ></script>\n";
 		echo "<script type='text/javascript' src='javascript.php?File=ajax.js' ></script>\n";
 		echo "<script type='text/javascript' src='javascript.php?File=event_handler.js' ></script>\n";
+		*/
 		
+		// Prepend the js files that all pages require, to the list of js files to include
+		array_unshift($GLOBALS['*arrJavaScript'], "vixen", "menu", "popup", "dhtml", "ajax", "event_handler");
+		
+		// Remove any duplicates from the list
+		$arrJsFiles = array_unique($GLOBALS['*arrJavaScript']);
+		
+		// Build the get variables for the javascript.php script
+		$strFiles = "";
+		foreach ($arrJsFiles as $strFileName)
+		{
+			$strFiles .= "File[]=$strFileName.js&";
+		}
+		
+		// Remove the last '&'
+		$strFiles = substr($strFiles, 0, -1);
+		
+		// Echo the reference to the javascript.php script which retrieves all the javascript
+		echo "<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
+		/*
 		// I should really make sure that none of the above loaded javascript 
 		// files are included within the following list of files to include, but
 		// It shouldn't matter so long as the javascript files are made to not 
@@ -329,6 +333,7 @@ class Page
 				//echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
 			}
 		}
+		*/
 	}
 	
 	
@@ -359,6 +364,7 @@ class Page
 		header('Pragma: no-cache');
 		*/
 		
+		/*
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
@@ -372,6 +378,30 @@ class Page
 				//echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
 			}
 		}
+		*/
+		
+		if (!is_array($GLOBALS['*arrJavaScript']))
+		{
+			// There is no javascript to include
+			return;
+		}
+		
+		// Remove any duplicates from the list
+		$arrJsFiles = array_unique($GLOBALS['*arrJavaScript']);
+		
+		// Build the get variables for the javascript.php script
+		$strFiles = "";
+		foreach ($arrJsFiles as $strFileName)
+		{
+			$strFiles .= "File[]=$strFileName.js&";
+		}
+		
+		// Remove the last '&'
+		$strFiles = substr($strFiles, 0, -1);
+		
+		// Echo the reference to the javascript.php script which retrieves all the javascript
+		echo "<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
+		
 	}
 	
 	//------------------------------------------------------------------------//

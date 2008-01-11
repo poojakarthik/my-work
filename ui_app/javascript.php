@@ -68,7 +68,7 @@ function HasJavascriptFile($strJSFile, $strPath)
 
 
 //------------------------------------------------------------------------//
-// VixenIncludeJavascriptFile
+// VixenIncludeJavascriptFile (DEPRICATED)
 //------------------------------------------------------------------------//
 /**
  * VixenIncludeJavascriptFile()
@@ -114,6 +114,79 @@ function VixenIncludeJavascriptFile()
 
 	// Include the file
 	include($strAbsoluteFilename);
+	return TRUE;
+}
+
+//------------------------------------------------------------------------//
+// VixenIncludeJsFiles
+//------------------------------------------------------------------------//
+/**
+ * VixenIncludeJsFiles()
+ *
+ * Includes each javascript file referenced in $arrFilenames
+ *
+ * Includes each javascript file referenced in $arrFilenames
+ * It is a precondtion that LOCAL_BASE_DIR and FRAMEWORK_BASE_DIR have been set
+ * The combined contents of all the javascript files, is echoed to standard output
+ * 
+ * @param	array	$arrFilename		names of the javascript files to retrieve (must include the .js extension)
+ * @param	bool	$bolStripComments	optional, if set to TRUE then all comments will be stripped out of the javascript
+ * 										files, before they are sent to standard output
+ * 
+ * @return	bool	TRUE if the javascript files were found and loaded
+ *					FALSE if any of the files couldn't be found
+ * @function
+ */
+function VixenIncludeJsFiles($arrFilenames, $bolStripComments = FALSE)
+{
+	$arrJsFilesToInclude = Array();
+	// Find each file and append its location to the array of locations
+	foreach ($arrFilenames as $strFilename)
+	{
+		// If nothing has been requested, return FALSE;
+		if (trim($strFilename) == "")
+		{
+			return FALSE;
+		}
+		
+		// Try and find the javascript file
+		if (HasJavascriptFile($strFilename, LOCAL_BASE_DIR . "/javascript"))
+		{
+			// A local js file has been found.  Include it
+			$arrJsFilesToInclude[] = LOCAL_BASE_DIR. "/javascript/$strFilename";
+		}
+		elseif (HasJavascriptFile($strFilename, FRAMEWORK_BASE_DIR . "/javascript"))
+		{
+			// The file has been found in the framework.  Include it
+			$arrJsFilesToInclude[] = FRAMEWORK_BASE_DIR. "/javascript/$strFilename";
+		}
+		else
+		{
+			// The file could not be found
+			return FALSE;
+		}
+	}
+	
+	$strJavascriptToSend = "";
+	foreach ($arrJsFilesToInclude as $strAbsoluteFilename)
+	{
+		// Retrieve the file
+		$strContents = file_get_contents($strAbsoluteFilename);
+
+		if ($bolStripComments)
+		{
+			// This regex strips all the multi line and single line comments out of the js file
+			$strJavascriptToSend .= preg_replace('((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\n\s*\/\/.*))', '', $strContents);
+		}
+		else
+		{
+			// Comments are not stripped from the js file
+			$strJavascriptToSend .= $strContents;
+		}
+		
+	}
+	echo $strJavascriptToSend;
+	
 	return TRUE;
 }
 
