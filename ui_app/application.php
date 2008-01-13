@@ -262,7 +262,9 @@ class Application
 		
 		
 		// Render Page
+		//ob_start();		
 		$this->objAppTemplate->Page->Render();
+		//ob_end_flush();
 	}
 	
 	//------------------------------------------------------------------------//

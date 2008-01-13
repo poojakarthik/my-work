@@ -177,6 +177,16 @@ class AppTemplateInvoice extends ApplicationTemplate
 	
 	}
 	
+	// DBO()->Invoice->Id is the invoice that the csv should be based on
+	function GetCallDetailsCSV()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		//TODO!
+		
+	}
 
     //----- DO NOT REMOVE -----//
 	
