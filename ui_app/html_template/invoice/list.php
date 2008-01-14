@@ -105,9 +105,9 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		// Render each of the account invoices
 		echo "<h2 class='Invoice'>Invoices</h2>\n";
 		
-		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;");
-		Table()->InvoiceTable->SetWidth("10%", "11%", "18%", "18%", "18%", "10%", "5%", "5%", "5%");
-		Table()->InvoiceTable->SetAlignment("Left", "Left", "Right", "Right", "Right", "Left", "Center", "Center", "Center");
+		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->InvoiceTable->SetWidth("10%", "12%", "17%", "17%", "17%", "11%", "4%", "4%", "4%", "4%");
+		Table()->InvoiceTable->SetAlignment("Left", "Left", "Right", "Right", "Right", "Left", "Center", "Center", "Center", "Center");
 		
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
@@ -136,7 +136,11 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			
 			// Build the "View Invoice Details" link
 			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
-			$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a></span>";
+			$strViewInvoiceLabel = "<span><a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a></span>";
+			
+			// Build the "Export Invoice as CSV" link
+			$strExportCSV = Href()->ExportInvoiceAsCSV($dboInvoice->Id->Value);
+			$strExportCSV = "<span><a href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a><span>";
 			
 			// Calculate Invoice Amount
 			$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
@@ -150,9 +154,10 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 											$dboInvoice->AppliedAmount->AsValue(), 
 											$dboInvoice->Balance->AsValue(), 
 											$dboInvoice->Status->AsCallback("GetConstantDescription", Array("InvoiceStatus")), 
-											$strPdfLabel,
+											$strPdfLabel, 
+											$strEmailLabel,
 											$strViewInvoiceLabel,
-											$strEmailLabel);
+											$strExportCSV);
 											
 			// Set the drop down detail
 			$strDetailHtml = "<div class='VixenTableDetail'>\n";
@@ -183,9 +188,9 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		if (DBL()->Invoice->RecordCount() == 0)
 		{
 			// There are no invoices to stick in this table
-			Table()->InvoiceTable->AddRow("<span class='DefaultOutputSpan Default'>No invoices to display</span>");
+			Table()->InvoiceTable->AddRow("<span>No invoices to display</span>");
 			Table()->InvoiceTable->SetRowAlignment("left");
-			Table()->InvoiceTable->SetRowColumnSpan(9);
+			Table()->InvoiceTable->SetRowColumnSpan(10);
 		}
 		else
 		{

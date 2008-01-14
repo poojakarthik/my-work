@@ -198,6 +198,28 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// ExportInvoiceAsCSV
+	//------------------------------------------------------------------------//
+	/**
+	 * ExportInvoiceAsCSV()
+	 *
+	 * Compiles the Href to be executed when the ExportInvoiceAsCSV menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ExportInvoiceAsCSV menu item is triggered
+	 * 
+	 * @param	int		$intInvoiceId		id of the Invoice to download as a CSV file
+	 *
+	 * @return	string						Href to be executed when the ExportInvoiceAsCSV menu item is triggered
+	 *
+	 * @method
+	 */
+	function ExportInvoiceAsCSV($intInvoiceId)
+	{
+		$this->strLabel	= "";
+		return "vixen.php/Invoice/ExportAsCSV/?Invoice.Id=$intInvoiceId";
+	}
+	
+	//------------------------------------------------------------------------//
 	// AddContact
 	//------------------------------------------------------------------------//
 	/**

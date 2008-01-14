@@ -177,15 +177,102 @@ class AppTemplateInvoice extends ApplicationTemplate
 	
 	}
 	
-	// DBO()->Invoice->Id is the invoice that the csv should be based on
-	function GetCallDetailsCSV()
+	//------------------------------------------------------------------------//
+	// ExportAsCSV
+	//------------------------------------------------------------------------//
+	/**
+	 * ExportAsCSV()
+	 *
+	 * Performs the logic for exporting an invoice in CSV format, to the user
+	 * 
+	 * Performs the logic for exporting an invoice in CSV format, to the user
+	 * This function expects DBO()->Invoice->Id to be set
+	 * 
+	 * @return		void
+	 * @method
+	 */
+	function ExportAsCSV()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
-		//TODO!
+		if (!DBO()->Invoice->Load())
+		{
+			// The invoice could not be retrieved.  Show the error page
+			DBO()->Error->Message = "The invoice with id: ". DBO()->Invoice->Id->value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
 		
+		// Retrieve the CDRs relating to the invoice
+		$arrColumns = Array(	"ServiceType"			=>	"CDRI.ServiceType", 
+								"FNN"					=>	"CDRI.FNN",
+								"RecordType"			=>	"CDRI.RecordType",
+								"RecordTypeDescription"	=>	"RT.Description",
+								"Destination"			=>	"CDRI.Destination",
+								"StartDatetime"			=>	"CDRI.StartDatetime",
+								"Units"					=>	"CDRI.Units",
+								"Charge"				=>	"CDRI.Charge");
+		$strWhere = "CDRI.Account = <Account> AND CDRI.InvoiceRun = <InvoiceRun>";
+		$strTables = "CDRInvoiced AS CDRI INNER JOIN RecordType AS RT ON CDRI.RecordType = RT.Id";
+		
+		$selCDR = new StatementSelect($strTables, $arrColumns, $strWhere, "ServiceType, FNN, RecordTypeDescription, StartDatetime");
+		$intNumRecords = $selCDR->Execute(Array("Account"=> DBO()->Invoice->Account->Value, "InvoiceRun"=> DBO()->Invoice->InvoiceRun->Value));
+		
+		if ($intNumRecords === FALSE)
+		{
+			// An error occurred and the cdrs could not be retrieved
+			DBO()->Error->Message = "Retrieving CDR records from the database failed, unexpectedly";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+				
+		$strCallDetailsCSV = "";
+		$arrColumnNames = Array("ServiceType", "FNN", "RecordType", "Date", "Time", "Called Party", "Duration", "Charge (\$)");
+		$arrColumnOrder = Array("ServiceType", "FNN", "RecordTypeDescription", "Date", "Time", "Destination", "Duration", "Charge");
+		$arrBlankRecord = Array(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
+		
+		// Add the head record to the CSV file
+		$strCallDetailsCSV = MakeCSVLine($arrColumnNames);
+		
+		// These variables are used to work out where blank records should be made in the csv file
+		$intLastRecordType	= NULL;
+		$intLastFNN			= NULL;
+		
+		// Add each call (CDR) to the CSV file
+		while (($arrCDR = $selCDR->Fetch()) !== FALSE)
+		{
+			if (($intLastFNN !== NULL) && (($intLastRecordType != $arrCDR['RecordType']) || ($intLastFNN != $arrCDR['FNN']))) 
+			{
+				// Either the FNN has changed or the RecordType has changed from 
+				// that of the last record added to the CSV file.  Stick in a blank record
+				$strCallDetailsCSV .= MakeCSVLine($arrBlankRecord);
+			}
+			
+			// Set up the values for the record
+			$intStartTime			= strtotime($arrCDR['StartDatetime']);
+			$arrCDR['ServiceType']	= GetConstantDescription($arrCDR['ServiceType'], "ServiceType");
+			$arrCDR['Date']			= date("d/m/Y", $intStartTime);
+			$arrCDR['Time']			= date("H:i:s", $intStartTime);
+			$arrCDR['Duration']		= date("H:i:s", mktime(0, 0, $arrCDR['Units'], 0, 0, 0));
+			
+			$strCallDetailsCSV .= MakeCSVLine($arrCDR, $arrColumnOrder);
+			
+			// Update the details used for spacing 
+			$intLastFNN = $arrCDR['FNN'];
+			$intLastRecordType = $arrCDR['RecordType'];
+		}
+		
+		// Build the Filename (<InvoiceDate>_<AccountId>_<InvoiceId>.csv)
+		$strFilename = date("Ymd", strtotime(DBO()->Invoice->CreatedOn->Value)) . "_" . DBO()->Invoice->Account->Value .
+							"_". DBO()->Invoice->Id->Value .".csv";
+							
+		// Send the csv file to the user
+		header("Content-Type: text/csv");
+		header("Content-Disposition: attachment; filename=\"$strFilename\"");
+		echo $strCallDetailsCSV;
+		exit;
 	}
 
     //----- DO NOT REMOVE -----//
