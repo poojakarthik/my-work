@@ -230,9 +230,15 @@
 		// Download the next file
 		if ($arrCurrent = next($this->_arrFiles))
 		{
+			$strTestName	= $arrCurrent['FileName'];
+			if (stripos($strTestName, '.zip'))
+			{
+				$strTestName	= substr($arrCurrent['FileName'], 0, -4);
+			}
+			
 			// Do we already have this file?
 			//if ($this->_selFileExists->Execute(Array('FileName' => substr($arrCurrent['FileName'], -4))))
-			if ($this->_selFileExists->Execute(Array('FileName' => $arrCurrent['FileName'])))
+			if ($this->_selFileExists->Execute(Array('FileName' => $strTestName)))
 			{
 				// Yes, recursively call until we find a new file (or FALSE)
 				return $this->Download($strDestination);
