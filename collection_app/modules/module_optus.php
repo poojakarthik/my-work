@@ -173,7 +173,12 @@
 		foreach ($arrLines as $intIndex=>$strLine)
 		{
 			$arrLine = explode("\t", $strLine);
-			$this->_arrFiles[] = Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]);
+			
+			// Make sure there are no double-ups
+			if (!in_array(Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]), $arrLines))
+			{
+				$this->_arrFiles[] = Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]);
+			}
 		}
 		reset($this->_arrFiles);
 		return (bool)$this->_arrFiles;
@@ -226,7 +231,8 @@
 		if ($arrCurrent = next($this->_arrFiles))
 		{
 			// Do we already have this file?
-			if ($this->_selFileExists->Execute(Array('FileName' => substr($arrCurrent['FileName'], -4))))
+			//if ($this->_selFileExists->Execute(Array('FileName' => substr($arrCurrent['FileName'], -4))))
+			if ($this->_selFileExists->Execute(Array('FileName' => $arrCurrent['FileName'])))
 			{
 				// Yes, recursively call until we find a new file (or FALSE)
 				return $this->Download($strDestination);
