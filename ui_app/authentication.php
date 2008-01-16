@@ -1,4 +1,6 @@
 <?php
+/*************************** DEPRICATED ************************************/
+/* Authentication functionality is now defined within the Application class */
 	
 	/*$authAuthentication = new Authentication();
 	

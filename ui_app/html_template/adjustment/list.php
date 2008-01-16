@@ -130,7 +130,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			{
 				$strNature = "<span>&nbsp;</span>";
 			}
-		
+			
 			// add the row
 			if ($bolHasAdminPerm)
 			{

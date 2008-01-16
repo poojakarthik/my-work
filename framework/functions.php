@@ -863,7 +863,7 @@ function ListPDF($intAccount)
 	$arrReturn = Array();
 	
 	// GLOB for year directories
-	$arrYears = glob("/home/vixen_invoices/*", GLOB_ONLYDIR);
+	$arrYears = glob(PATH_INVOICE_PDFS ."*", GLOB_ONLYDIR);
 	
 	foreach($arrYears as $strYear)
 	{
@@ -908,7 +908,7 @@ function GetPDF($intAccount, $intYear, $intMonth)
 	$arrReturn = Array();
 	
 	// GLOB for account filename
-	$arrInvoices = glob("/home/vixen_invoices/".$intYear."/".$intMonth."/".$intAccount."_*.pdf");
+	$arrInvoices = glob(PATH_INVOICE_PDFS . $intYear ."/". $intMonth ."/". $intAccount ."_*.pdf");
 	
 	if (count($arrInvoices) == 0 || $arrInvoices === FALSE)
 	{
@@ -2599,7 +2599,7 @@ function GetCurrentPlan($intService)
  */ 
 function InvoicePDFExists($intAccountId, $intYear, $intMonth)
 {
-	$strGlob = "/home/vixen_invoices/$intYear/$intMonth/{$intAccountId}_*.pdf";
+	$strGlob = PATH_INVOICE_PDFS ."$intYear/$intMonth/{$intAccountId}_*.pdf";
 	$arrPDFs = glob($strGlob);
 	
 	if (count($arrPDFs))
@@ -2633,7 +2633,7 @@ function GetPdfFilename($intAccount, $intYear, $intMonth)
 	$arrReturn = Array();
 	
 	// GLOB for account filename
-	$arrInvoices = glob("/home/vixen_invoices/".$intYear."/".$intMonth."/".$intAccount."_*.pdf");
+	$arrInvoices = glob(PATH_INVOICE_PDFS . $intYear."/".$intMonth."/".$intAccount."_*.pdf");
 	
 	if (count($arrInvoices) == 0 || $arrInvoices === FALSE)
 	{
@@ -3154,7 +3154,7 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	$strTables	= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
 	$strWhere	= "Account.DisableLateNotices = 0 AND Account.Archived IN (". implode(", ", $arrApplicableAccountStatuses) .")";
 	$strOrderBy	= "Invoice.Account ASC";
-	$strGroupBy	= "Invoice.Account HAVING Overdue > ". ACCEPTABLE_OVERDUE_BALANCE;
+	$strGroupBy	= "Invoice.Account HAVING Overdue > ". $GLOBALS['**arrCustomerConfig']['AccountNotice']['LateNoticeModule']['AcceptableOverdueBalance'];
 	
 	$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
 	$mixResult = $selOverdue->Execute();

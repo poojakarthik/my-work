@@ -78,11 +78,6 @@ class HtmlTemplateInvoiceEmail extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		// Load all java script specific to the page here
-		// validate_adjustment is currently being explicitly included in the Render method as there was a 
-		// problem with it being accessed before it was included, when using $this->LoadJavascript(...)
-		//$this->LoadJavascript("validate_adjustment");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -99,12 +94,10 @@ class HtmlTemplateInvoiceEmail extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		//$this->LoadAjaxJavascript("validate_adjustment");
 		echo "<div class='PopupMedium'>\n";
 		echo "<h2 class='Email'>Email PDF Invoice</h2>\n";
 		echo "<div class='SmallSeperator'></div>\n";
 		
-		//var_dump(DBL()->Contact;
 		$this->FormStart("EmailPDFInvoice", "Invoice", "EmailPDFInvoice");
 		
 		// We need the Account Id, Invoice Year and Invoice Month 

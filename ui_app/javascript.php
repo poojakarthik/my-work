@@ -66,57 +66,6 @@ function HasJavascriptFile($strJSFile, $strPath)
 	return FALSE;
 }
 
-
-//------------------------------------------------------------------------//
-// VixenIncludeJavascriptFile (DEPRICATED)
-//------------------------------------------------------------------------//
-/**
- * VixenIncludeJavascriptFile()
- *
- * Includes the javascript file declared in $_GET['File']
- *
- * Includes the javascript file declared in $_GET['File']
- * It is a precondtion that LOCAL_BASE_DIR and FRAMEWORK_BASE_DIR have been set
- * and that $_GET['File'] is the name of a javascript file including the ".js" extension
- * 
- * @return	bool	TRUE if the javascript file was found and loaded
- *					FALSE if the file could not be found
- * @function
- */
-function VixenIncludeJavascriptFile()
-{
-	// Clean the javascript filename
-	$arrRequestedFile = explode('/', $_GET['File']);
-	$strRequestedFile = $arrRequestedFile[count($arrRequestedFile)-1];
-	
-	// If nothing has been requested, return FALSE;
-	if (trim($strRequestedFile) == "")
-	{
-		return FALSE;
-	}
-	
-	// Try and find the javascript file
-	if (HasJavascriptFile($strRequestedFile, LOCAL_BASE_DIR . "/javascript"))
-	{
-		// A local js file has been found.  Include it.
-		$strAbsoluteFilename = LOCAL_BASE_DIR. "/javascript/$strRequestedFile";
-	}
-	elseif (HasJavascriptFile($strRequestedFile, FRAMEWORK_BASE_DIR . "/javascript"))
-	{
-		// The file has been found in the framework.  Include it.
-		$strAbsoluteFilename = FRAMEWORK_BASE_DIR. "/javascript/$strRequestedFile";
-	}
-	else
-	{
-		// The file could not be found
-		return FALSE;
-	}
-
-	// Include the file
-	include($strAbsoluteFilename);
-	return TRUE;
-}
-
 //------------------------------------------------------------------------//
 // VixenIncludeJsFiles
 //------------------------------------------------------------------------//
@@ -137,7 +86,7 @@ function VixenIncludeJavascriptFile()
  *					FALSE if any of the files couldn't be found
  * @function
  */
-function VixenIncludeJsFiles($arrFilenames, $bolStripComments = FALSE)
+function VixenIncludeJsFiles($arrFilenames, $bolStripComments=FALSE)
 {
 	$arrJsFilesToInclude = Array();
 	// Find each file and append its location to the array of locations
@@ -185,6 +134,8 @@ function VixenIncludeJsFiles($arrFilenames, $bolStripComments = FALSE)
 		}
 		
 	}
+	
+	header( 'Content-type: text/javascript');
 	echo $strJavascriptToSend;
 	
 	return TRUE;

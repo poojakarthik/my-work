@@ -1,7 +1,7 @@
-var FALSE = false;
-var TRUE = true;
-var DEBUG_MODE = FALSE;
-var VIXEN_APPLICATION_NAME = "TelcoBlue Internal System";
+var FALSE		= false;
+var TRUE		= true;
+var DEBUG_MODE	= FALSE;
+var VIXEN_APPLICATION_NAME = "Vixen Internal System";
 
 //----------------------------------------------------------------------------//
 // VixenRootClass
@@ -218,6 +218,6 @@ function debug(mixMsg, bolFullShow)
 }
 
 // prevent Enter key from being pressed
-document.onkeydown = function(event) {Vixen.EnterKiller(event)};
-document.onkeypress = function(event) {Vixen.EnterKiller(event)};
-document.onkeyup = function(event) {Vixen.EnterKiller(event)};
+document.onkeydown	= function(event) {Vixen.EnterKiller(event)};
+document.onkeypress	= function(event) {Vixen.EnterKiller(event)};
+document.onkeyup	= function(event) {Vixen.EnterKiller(event)};

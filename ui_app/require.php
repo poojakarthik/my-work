@@ -55,6 +55,6 @@ require_once($strApplicationDir.'vixen_table.php');
 
 require_once($strApplicationDir.'json.php');
 
-require_once(TEMPLATE_STYLE_DIR.'html_elements.php');
- 
- ?>
+require_once(STYLE_TEMPLATE_DIR.'html_elements.php');
+
+?>

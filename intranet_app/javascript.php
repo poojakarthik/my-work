@@ -29,8 +29,15 @@
  *
  */
 
-// From the config information, work out where the local application code is and where the framework code is
-//TODO! I don't think the appropriate config object has been implemented yet
+/* 
+ * Javascript files can be defined in the application's local javascript directory
+ * and in the ui_app directory.  Any js files in the application's local directory
+ * will override those in the ui_app directory if they have the same name
+ * NOTE: I could have loaded the application's require.php to get these 2 constants
+ * but that would be fairly inefficient because we don't really need to load the whole
+ * application framework.  We just want to retrieve the requested js files
+ */
+ 
 Define ('LOCAL_BASE_DIR', "../intranet_app");
 Define ('FRAMEWORK_BASE_DIR', "../ui_app");
 

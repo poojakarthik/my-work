@@ -472,7 +472,7 @@ class Page
 		{
 			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
-
+		
 		// The following code is supposed to make the browser retrieve new js 
 		// files every time, although I don't think it works.  I think it was more so
 		// for testing purposes because the most recent js files weren't being used
@@ -496,11 +496,9 @@ class Page
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
 		$this->RenderCSS();
-//echo "<script type='text/javascript'>window.onload=function(){alert(\"window.onload has been triggered\");};</script>";
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init();'>\n";
-// Now load the javascript files, which were declared in the header		
-//echo "<script type='text/javascript'>VixenLoadJSFiles()</script>\n";
+		
 		// the following div holds any popup windows that are instantiated within the page
 		echo "<div id='PopupHolder'></div>\n";
 	}
@@ -547,8 +545,7 @@ class Page
 		$this->RenderCSS();
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init()'>\n";
-// Now load the javascript files, which were declared in the header		
-//echo "<script type='text/javascript'>VixenLoadJSFiles();</script>\n";		
+		
 		// the following div holds any popup windows that are instantiated within the page
 		echo "<div id='PopupHolder'></div>\n";
 	}
@@ -1199,9 +1196,9 @@ class Config
 								{
 									// Add each record to an array called 'Options' inside its associated property array
 									// This data can be accessed by: $this->_arrConfig['dbo'][object][property][context]['Options'][][field] = value
-									$arrOption['Value'] = $arrRecord['Value'];
-									$arrOption['OutputLabel'] = $arrRecord['OutputLabel'];
-									$arrOption['InputLabel'] = $arrRecord['InputLabel'];
+									$arrOption['Value']			= $arrRecord['Value'];
+									$arrOption['OutputLabel']	= $arrRecord['OutputLabel'];
+									$arrOption['InputLabel']	= $arrRecord['InputLabel'];
 									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Options'][] = $arrOption;
 								}
 							}
@@ -1217,9 +1214,9 @@ class Config
 								{
 									// Add each record to an array called 'ConditionalContexts' inside its associated property array
 									// This data can be accessed by: $this->_arrConfig['dbo'][object][property]['ConditionalContexts'][][field] = value
-									$arrCondition['Operator'] = $arrRecord['Operator'];
-									$arrCondition['Value'] = $arrRecord['Value'];
-									$arrCondition['Context'] = $arrRecord['Context'];
+									$arrCondition['Operator']	= $arrRecord['Operator'];
+									$arrCondition['Value']		= $arrRecord['Value'];
+									$arrCondition['Context']	= $arrRecord['Context'];
 									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']]['ConditionalContexts'][] = $arrCondition;
 								}
 							}

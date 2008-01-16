@@ -1,5 +1,6 @@
 <?php
-	
+// I think this might be DEPRICATED. Unless it is used for remotely loging out
+
 	//----------------------------------------------------------------------------//
 	// (c) copyright 2006 VOIPTEL Pty Ltd
 	//

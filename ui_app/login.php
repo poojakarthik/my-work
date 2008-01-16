@@ -1,4 +1,5 @@
 <?php
+// I think this might be DEPRICATED. Unless it is used for remotely loging in
 	require_once('../framework/functions.php');
 	LoadFramework();
 	//------------------------------------------------------------------------//

@@ -39,9 +39,6 @@
  *
  * Dynamically loads a php file.  If it cannot be loaded then an exception
  * is thrown.
- * 
- *
- *
  *
  * @param	string	$strClassName	Class to load
  *									Note that there is a very specific format for this class name to be in.
@@ -55,7 +52,7 @@
  *									The function explodes $strClassName on "template" to retrieve 
  *									the desired class name and its associated directory
  *									relative to TEMPLATE_BASE_DIR.  If the file cannot be found
- *									in this directory it then trys finding it in a subdirectory
+ *									in this directory it then tries finding it in a subdirectory
  *									matching the first word in $strClassName after the "Template" token.
  * @return	void
  *
@@ -70,7 +67,7 @@ function __autoload($strClassName)
 	 *			nothing for now
 	 */		
 
-	// retrieve the class name and its associated directory
+	// Retrieve the class name and its associated directory
 	if (substr($strClassName, 0, 6) == "Module")
 	{
 		$strClassPath = MODULE_BASE_DIR . "module";
@@ -83,7 +80,7 @@ function __autoload($strClassName)
 		$strClassName = $arrClassName[1];
 	}		
 
-	// if $strClassName couldn't be exploded on "template" or "module" then die
+	// If $strClassName couldn't be exploded on "template" or "module" then die
 	if (!$strClassName)
 	{
 		// The class trying to be loaded is not a template class
@@ -94,12 +91,12 @@ function __autoload($strClassName)
 	// Load a directory listing for $strClassPath
 	_LoadDirectoryListing($strClassPath);
 
-	// find the file that should contain the class which needs to be loaded
+	// Find the file that should contain the class which needs to be loaded
 	$mixClassPointer = array_search(strtolower($strClassName) . ".php", $GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename']);
 	
 	if ($mixClassPointer === FALSE)
 	{
-		// the file could not be found so check for a subdirectory of $strClassPath matching the first word in $strClassName
+		// The file could not be found so check for a subdirectory of $strClassPath matching the first word in $strClassName
 		$strRegex = "^[A-Z][a-z]+[A-Z]";
 		$mixLength = ereg($strRegex, $strClassName, $regs);
 		if ($mixLength === FALSE)
@@ -109,14 +106,14 @@ function __autoload($strClassName)
 			return FALSE;
 		}
 		
-		// subtract 1 from $mixLength as it will have included the first letter of the second word
+		// Subtract 1 from $mixLength as it will have included the first letter of the second word
 		$mixLength--;
 		
-		// grab the first word (the sub directory)
+		// Grab the first word (the sub directory)
 		$strSubDir = substr($strClassName, 0, $mixLength);
 		$strClassPath .= strtolower("/$strSubDir");
 		
-		// grab the filename
+		// Grab the filename
 		$strClassName = substr($strClassName, $mixLength);
 		
 		// Load a directory listing for $strClassPath
@@ -159,7 +156,7 @@ function _LoadDirectoryListing($strPath)
 		// $strClassPath has not had its directory listing loaded before, so do it now
 		foreach (glob($strPath . "/*.php") as $strAbsoluteFilename)
 		{
-			//grab the filename part
+			// Grab the filename part
 			$arrFilename = explode("/", $strAbsoluteFilename);
 			$strFilename = $arrFilename[count($arrFilename)-1];
 			
@@ -523,7 +520,6 @@ class Application
 			
 			// Set user as remote
 			$this->_arrUser['IsLocal'] = FALSE;
-			
 		}
 	}
 	
@@ -568,7 +564,6 @@ class Application
 			}	
 		exit;
 		}
-
 	}
 	
 	//------------------------------------------------------------------------//
@@ -992,11 +987,6 @@ class HtmlTemplate extends BaseTemplate
 	{
 		// add $strFilename to global javascript function array
 		$GLOBALS['*arrJavaScript'][$strFilename] = $strFilename;
-	}
-	
-	function LoadAjaxJavascript($strFilename)
-	{
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strFilename.js'></script>\n";
 	}
 	
 	function FormStart($strId, $strTemplate, $strMethod, $arrParams=NULL)

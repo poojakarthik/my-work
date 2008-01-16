@@ -56,6 +56,7 @@ $arrBillingConfig = Array();
 		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['MinimumTotal']	= 2.75;
 		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Code']			= "AP275";
 		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Description']		= "Account Processing Fee";
+		
 	
 	// Printing
 	$arrBillingConfig['PrintingModule']	['Class']				= "BillingModulePrint";
@@ -80,7 +81,21 @@ $arrBillingConfig = Array();
 	
 	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_VOICETALK]		= "As a valued customer, please feel free to contact customer service for a bill analysis or plan upgrade. Visit our website to view full disclosure of our Terms and Conditions at www.voicetalk.com.au.";
 	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_VOICETALK]		= "One change as of 1st November will be a 1.5% surcharge on some credit card payments. Any enquiries can be made with our friendly customer service Team on 1300 882 172";
-	
+
 $GLOBALS['**arrCustomerConfig']	['Billing']	= 	$arrBillingConfig;
+
+
+
+
+
+// Account Notice Generation Config
+$arrAccountNoticeConfig = Array();
+
+	// Late Payment Notice: Acceptable Overdue Balance
+	// If an account is overdue by this amount or less, then late notices will not be generated for it
+	$arrAccountNoticeConfig['LateNoticeModule']['AcceptableOverdueBalance']	= 23.00;
+
+$GLOBALS['**arrCustomerConfig']['AccountNotice'] = $arrAccountNoticeConfig;
+
 
 ?>

@@ -411,11 +411,11 @@ $GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Description']	= 'VoiceTalk';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Constant']	= 'CUSTOMER_GROUP_IMAGINE';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Description']	= 'Imagine';
 
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Constant']	= 'CUSTOMER_GROUP_TELCOBLUE_EMAIL';
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_TELCOBLUE';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Description']	= 'billing@telcoblue.com.au';
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Constant']	= 'CUSTOMER_GROUP_VOICETALK_EMAIL';
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_VOICETALK';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Description']	= 'billing@voicetalk.com.au';
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Constant']	= 'CUSTOMER_GROUP_IMAGINE_EMAIL';
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_IMAGINE';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Description']	= 'Imagine';
 
 // Credit Card Constants
@@ -1278,12 +1278,12 @@ $GLOBALS['*arrConstant']	['AccountNotice']	[2]	['Description']	= 'Suspension Not
 $GLOBALS['*arrConstant']	['AccountNotice']	[3]	['Constant']	= 'ACCOUNT_NOTICE_FINAL_DEMAND';
 $GLOBALS['*arrConstant']	['AccountNotice']	[3]	['Description']	= 'Final Demand Notice';
 
-// Acceptable overdue balance
-// If an account is overdue by $23 or less, then late notices will not be generated for it
-define ("ACCEPTABLE_OVERDUE_BALANCE", 23.00);
-
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
+define("PATH_INVOICE_PDFS"				, "/home/vixen_invoices/");
+// The function GetBasePath() does not yet exist
+//define("PATH_INVOICE_PDFS"			, GetBasePath() . "vixen_invoices/");
+//define("PATH_PAYMENT_UPLOADS"			, GetBasePath() . "vixen_payments/");
 
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)

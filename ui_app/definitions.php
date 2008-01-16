@@ -33,7 +33,7 @@
 
 Define ('VIXEN_BASE_DIR', "../");
 Define ('TEMPLATE_BASE_DIR', "../ui_app/");
-Define ('TEMPLATE_STYLE_DIR', "../ui_app/style_template/");
+Define ('STYLE_TEMPLATE_DIR', "../ui_app/style_template/");
 Define ('MODULE_BASE_DIR', "../ui_app/");
 Define ('JAVASCRIPT_BASE_DIR', "../ui_app/");
 
@@ -63,10 +63,12 @@ Define ('GOD_TIMEOUT'	, 60*60*24*7);
 Define("PERMISSION_DEBUG"		, 0x80000000);
 Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
 
+/*
 define('DATABASE_URL', '10.11.12.13');
 define('DATABASE_NAME', vixen);
 define('DATABASE_USER', vixen);
 define('DATABASE_PWORD', V1x3n);
+*/
 
 // database documentation contexts
 define('CONTEXT_DEFAULT', 0);
@@ -129,25 +131,23 @@ define('HTML_CONTEXT_VIEW',					509);
 define('HTML_CONTEXT_EDIT',					510);
 define('HTML_CONTEXT_CURRENT_PLAN',			511);
 define('HTML_CONTEXT_FUTURE_PLAN',			512);
-define('HTML_CONTEXT_IFRAME',						513);
+define('HTML_CONTEXT_IFRAME',				513);
 
 // constants for the cap/excess rates used within the rate add page
-define('RATE_CAP_NO_CAP', 100);
-define('RATE_CAP_CAP_UNITS', 101);
-define('RATE_CAP_CAP_COST', 102);
-define('RATE_CAP_NO_CAP_LIMITS', 103);
-define('RATE_CAP_CAP_LIMIT', 104);
-define('RATE_CAP_CAP_USAGE', 105);
-define('RATE_CAP_EXS_RATE_PER_UNIT', 106);
-define('RATE_CAP_EXS_MARKUP', 107);
-define('RATE_CAP_EXS_PERCENTAGE', 108);
-
-define('RATE_CAP_STANDARD_RATE_PER_UNIT', 109);
-define('RATE_CAP_STANDARD_MARKUP', 110);
-define('RATE_CAP_STANDARD_PERCENTAGE', 111);
-
-define('RATE_CHARGES_SHOW', 112);
-define('RATE_CHARGES_HIDE', 113);
+define('RATE_CAP_NO_CAP',					100);
+define('RATE_CAP_CAP_UNITS',				101);
+define('RATE_CAP_CAP_COST',					102);
+define('RATE_CAP_NO_CAP_LIMITS',			103);
+define('RATE_CAP_CAP_LIMIT',				104);
+define('RATE_CAP_CAP_USAGE',				105);
+define('RATE_CAP_EXS_RATE_PER_UNIT',		106);
+define('RATE_CAP_EXS_MARKUP',				107);
+define('RATE_CAP_EXS_PERCENTAGE',			108);
+define('RATE_CAP_STANDARD_RATE_PER_UNIT',	109);
+define('RATE_CAP_STANDARD_MARKUP',			110);
+define('RATE_CAP_STANDARD_PERCENTAGE',		111);
+define('RATE_CHARGES_SHOW',					112);
+define('RATE_CHARGES_HIDE',					113);
 
 // Target Types - used to determine how to handle an ajax call
 define("TARGET_TYPE_DIV", 	"Div");
@@ -160,15 +160,10 @@ define('RENDER_OUTPUT',	"Output");
 define('RENDER_INPUT',	"Input");
 
 // Properties for the summary popup table (Rate Allocation Status)
-define('RATE_ALLOCATION_STATUS_UNDER_ALLOCATED', 0);
-define('RATE_ALLOCATION_STATUS_CORRECTLY_ALLOCATED', 1);
-define('RATE_ALLOCATION_STATUS_OVER_ALLOCATED', 2);
-define('RATE_ALLOCATION_STATUS_BOTH_OVER_AND_UNDER_ALLOCATED', 3);
-
-
-define('CHARGE_LATE_PAYMENT_FEE', 0);
-define('DONT_CHARGE_LATE_PAYMENT_FEE', -1);
-define('NEVER_CHARGE_LATE_PAYMENT_FEE', 1);
+define('RATE_ALLOCATION_STATUS_UNDER_ALLOCATED',				0);
+define('RATE_ALLOCATION_STATUS_CORRECTLY_ALLOCATED',			1);
+define('RATE_ALLOCATION_STATUS_OVER_ALLOCATED',					2);
+define('RATE_ALLOCATION_STATUS_BOTH_OVER_AND_UNDER_ALLOCATED',	3);
 
 // constant Employee Ids
 define('SYSTEM_EMPLOYEE_ID',	0);
@@ -201,6 +196,7 @@ define("ARCHIVE_STATUS_DRAFT"			, 2);
 define("DEFAULT_NOTES_LIMIT", 5);
 
 // Custom Events (These are Fired from PHP code and handled by Javascript code)
+// They are also defined locally within the javscript classes that use them, which means that they are defined twice
 define("EVENT_ON_NEW_NOTE"							, "OnNewNote");
 define("EVENT_ON_SERVICE_UPDATE"					, "OnServiceUpdate");
 define("EVENT_ON_ACCOUNT_DETAILS_UPDATE"			, "OnAccountDetailsUpdate");
@@ -210,5 +206,4 @@ define("EVENT_ON_EDIT_ACCOUNT_DETAILS_CANCEL"		, "OnEditAccountDetailsCancel");
 
 // Maximum file upload size is 1 megabyte
 define("RATEGROUP_IMPORT_MAXSIZE", 1048576);
-define("RATEGROUP_NOTHING_UPLOADED", 99);
 ?>

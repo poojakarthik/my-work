@@ -110,7 +110,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 			}
 			
 			// Get PDF filenames
-			$strGlob = "/home/vixen_invoices/". DBO()->Invoice->Year->Value . "/" . DBO()->Invoice->Month->Value . "/" . DBO()->Account->Id->Value . "_*.pdf";
+			$strGlob = PATH_INVOICE_PDFS . DBO()->Invoice->Year->Value . "/" . DBO()->Invoice->Month->Value . "/" . DBO()->Account->Id->Value . "_*.pdf";
 			$arrPDFtoSend = glob($strGlob);
 			$strPDFtoSend = $arrPDFtoSend[0];
 			
