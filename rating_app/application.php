@@ -409,11 +409,11 @@
 			$intLatest		= strtotime($arrService['LatestCDR']);
 			$intCDR			= strtotime($arrCDR['StartDatetime']);
 			
-			if ($intCDR < $intEarliest && $intCDR)
+			if (($intCDR < $intEarliest && $intCDR) || !$arrService['EarliestCDR'])
 			{
 				$arrService['EarliestCDR']	= $arrCDR['StartDatetime'];
 			}
-			if ($intCDR > $intLatest && $intCDR)
+			if (($intCDR > $intLatest && $intCDR) || !$arrService['LatestCDR'])
 			{
 				$arrService['LatestCDR']	= $arrCDR['StartDatetime'];
 			}
