@@ -27,17 +27,13 @@
  *
  */
 
-// Set Application name
-$strApplicationName = "ui";
-
-// Set Framework Dir
-$strFrameworkDir	= "../framework/";
+// Framework Requirements
+require_once("../framework/require.php");
 
 // Set Application Dir
-$strApplicationDir	= "../{$strApplicationName}_app/";
-
-// Framework Requirements
-require_once($strFrameworkDir."require.php");
+$strApplicationDir = GetVixenBase() . "ui_app/";
+// If absolute paths don't work then use: 
+// $strApplicationDir = "../ui_app/";
 
 // Application Requirements
 require_once($strApplicationDir.'definitions.php');
@@ -55,6 +51,6 @@ require_once($strApplicationDir.'vixen_table.php');
 
 require_once($strApplicationDir.'json.php');
 
-require_once(STYLE_TEMPLATE_DIR.'html_elements.php');
+require_once($strApplicationDir . 'style_template/html_elements.php');
 
 ?>

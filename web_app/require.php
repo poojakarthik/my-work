@@ -27,21 +27,21 @@
  *
  */
 
-// Set Application name
-//$strApplicationName = "ui";
-$strApplicationName = "web";
+// Framework Requirements
+require_once("../framework/require.php");
 
-// Set Framework Dir
-$strFrameworkDir = "../framework/";
+// Get an absolute path to the Vixen Base directory
+$strVixenBaseDir = GetVixenBase();
 
 // Set Application Framework Dir
-$strApplicationFrameworkDir	= "../ui_app/";
+$strApplicationFrameworkDir	= $strVixenBaseDir . "ui_app/";
 
 // Set Application Dir
-$strApplicationDir = "";
+$strApplicationDir = $strVixenBaseDir . "web_app/";
 
-// Framework Requirements
-require_once($strFrameworkDir."require.php");
+// If absolute paths don't work then use: 
+// $strApplicationDir			= "../web_app/";
+// $strApplicationFrameworkDir	= "../ui_app/";
 
 // Application Requirements
 require_once($strApplicationDir.'definitions.php');
@@ -59,6 +59,6 @@ require_once($strApplicationFrameworkDir.'vixen_table.php');
 
 require_once($strApplicationFrameworkDir.'json.php');
 
-require_once(STYLE_TEMPLATE_DIR.'html_elements.php');
+require_once($strApplicationFrameworkDir . 'style_template/html_elements.php');
  
  ?>

@@ -30,12 +30,9 @@
 //----------------------------------------------------------------------------//
 // CONSTANTS
 //----------------------------------------------------------------------------//
-
-Define ('VIXEN_BASE_DIR', "../");
-Define ('TEMPLATE_BASE_DIR', "../ui_app/");
-Define ('STYLE_TEMPLATE_DIR', "../ui_app/style_template/");
-Define ('MODULE_BASE_DIR', "../ui_app/");
-Define ('JAVASCRIPT_BASE_DIR', "../ui_app/");
+$strVixenBaseDir = GetVixenBase();
+Define ('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "ui_app/");
+Define ('MODULE_BASE_DIR', 		$strVixenBaseDir . "ui_app/");
 
 // Define which flavour of browsers are supported by this application
 Define ('BROWSER_IE',	0x1);
@@ -43,10 +40,10 @@ Define ('BROWSER_NS',	0x2);
 Define ('SUPPORTED_BROWSERS', BROWSER_NS);
 Define ('SUPPORTED_BROWSERS_DESCRIPTION', "Firefox");
 // If the app were to support both IE and NS then SUPPORTED_BROWSERS = BROWSER_IE | BROWSER_NS
-Define ("APPLICATION_VIXEN", 101);
-Define ("APPLICAITON_CLIENT", 102);
-Define ("APPLICATION", APPLICATION_VIXEN);
-Define ("APP_NAME", 	"Vixen Internal System");
+Define ("APPLICATION_VIXEN",	101);
+Define ("APPLICAITON_CLIENT",	102);
+Define ("APPLICATION",			APPLICATION_VIXEN);
+Define ("APP_NAME",				"Vixen Internal System");
 
 
 Define ('COLUMN_ONE'	, 1);

@@ -26,9 +26,7 @@
  *
  */
 
-Define ('TEMPLATE_STYLE_DIR', "");
-
 header('Content-type: text/css');
-require_once(TEMPLATE_STYLE_DIR.'default.css');
+require_once('default.css');
 
 ?>
