@@ -75,7 +75,7 @@ function __autoload($strClassName)
 	}
 	else
 	{
-		$arrClassName = explode("Template", $strClassName);
+		$arrClassName = explode("Template", $strClassName, 2);
 		$strClassPath = TEMPLATE_BASE_DIR . strtolower($arrClassName[0]) . "_template";
 		$strClassName = $arrClassName[1];
 	}		
@@ -219,12 +219,6 @@ class Application
 		$strClass 		= 'AppTemplate'.$arrTemplate[0];
 		$strMethod 		= $arrTemplate[1];
 		
-		// Get user details (inc Permissions)
-		//$this->Dbo->Session->AuthenticatedEmployee->GetDetails();
-		/*???can't this be done in the framework at the same time you build the Dbo object of 	variables
-		--at this stage we ahavent defined this anywhere, needs to be somewhere\
-		-- could be here or lower level*/
-		
 		// get submitted data
 		$objSubmit = new SubmittedData();
 		$objSubmit->Get();
@@ -288,14 +282,6 @@ class Application
 		$strClass 		= 'AppTemplate' . $objAjax->Class;
 		$strMethod 		= $objAjax->Method;
 		
-		//Get user details (inc Permissions)
-		//$this->Dbo->Session->AuthenticatedEmployee->GetDetails();
-		/*???can't this be done in the framework at the same time you build the Dbo object of 	variables
-		--at this stage we ahavent defined this anywhere, needs to be somewhere\
-		-- could be here or lower level*/
-		
-		
-	
 		// validate all submitted objects
 		// Note that while $objSubmit->Get() and ->POST set up the submitted objects, they have not actually 
 		// been loaded from the database, so validating them at this stage should always return TRUE

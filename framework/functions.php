@@ -3096,7 +3096,7 @@ function GetCurrentTimeForMySQL()
  *
  * Generates the appropriate Late Payment Notices
  *
- * @param	int		$intNoticeType	type of notice to be made. ie ACCOUNT_NOTICE_SUSPENSION
+ * @param	int		$intNoticeType	type of notice to be made. ie LETTER_TYPE_SUSPENSION
  * @param	string	$strBasePath	optional, path where the generated notices will be placed
  *									
  * @return	mixed					returns FALSE on failure 
@@ -3106,7 +3106,7 @@ function GetCurrentTimeForMySQL()
  */
 function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 {
-	$selPriorNotices = new StatementSelect("AccountNotices", "Id", "Invoice = <InvoiceId> AND NoticeType = <NoticeType>", "", 1);
+	$selPriorNotices = new StatementSelect("AccountLetterLog", "Id", "Invoice = <InvoiceId> AND LetterType = <NoticeType>", "", 1);
 
 	// Append a backslash to the path, if it doesn't already end in one
 	if (substr($strBasePath, -1) != "/")
@@ -3117,11 +3117,11 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	// Set up NoticeType specific stuff here
 	switch ($intNoticeType)
 	{
-		case ACCOUNT_NOTICE_OVERDUE:
-		case ACCOUNT_NOTICE_SUSPENSION:
+		case LETTER_TYPE_OVERDUE:
+		case LETTER_TYPE_SUSPENSION:
 			$arrApplicableAccountStatuses = Array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
 			break;
-		case ACCOUNT_NOTICE_FINAL_DEMAND:
+		case LETTER_TYPE_FINAL_DEMAND:
 			$arrApplicableAccountStatuses = Array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED);
 			break;
 		default:
@@ -3189,29 +3189,29 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 		
 		switch ($intNoticeType)
 		{
-			case ACCOUNT_NOTICE_OVERDUE:
+			case LETTER_TYPE_OVERDUE:
 				// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
 				// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
-				$bolSuccess = BuildLatePaymentNotice(ACCOUNT_NOTICE_OVERDUE, $arrAccount, $strBasePath);
+				$bolSuccess = BuildLatePaymentNotice(LETTER_TYPE_OVERDUE, $arrAccount, $strBasePath);
 				break;
 			
-			case ACCOUNT_NOTICE_SUSPENSION:
+			case LETTER_TYPE_SUSPENSION:
 				// Check if the Overdue Notice was built this month, and if so build the suspension notice
-				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => ACCOUNT_NOTICE_OVERDUE));
+				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => LETTER_TYPE_OVERDUE));
 				if ($intNumRows == 1)
 				{
 					// An "Overdue" notice has been sent for this invoice.  Build the Suspension notice
-					$bolSuccess = BuildLatePaymentNotice(ACCOUNT_NOTICE_SUSPENSION, $arrAccount, $strBasePath);
+					$bolSuccess = BuildLatePaymentNotice(LETTER_TYPE_SUSPENSION, $arrAccount, $strBasePath);
 				}
 				break;
 			
-			case ACCOUNT_NOTICE_FINAL_DEMAND:
+			case LETTER_TYPE_FINAL_DEMAND:
 				// Check if the Suspension Notice was built this month, and if so build the final demand notice
-				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => ACCOUNT_NOTICE_SUSPENSION));
+				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => LETTER_TYPE_SUSPENSION));
 				if ($intNumRows == 1)
 				{
 					// A "Suspension" notice has been sent for this invoice.  Build the Final Demand notice
-					$bolSuccess = BuildLatePaymentNotice(ACCOUNT_NOTICE_FINAL_DEMAND, $arrAccount, $strBasePath);
+					$bolSuccess = BuildLatePaymentNotice(LETTER_TYPE_FINAL_DEMAND, $arrAccount, $strBasePath);
 				}
 				break;
 		}
@@ -3239,7 +3239,7 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	}
 	
 	// Build the summary file
-	$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "AccountNotice"))). 
+	$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))). 
 					"_summary_". date("Y_m_d") .".csv";
 	$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
 	if ($ptrSummaryFile !== FALSE)
@@ -3338,7 +3338,7 @@ function RecursiveMkdir($strPath, $intMode = 0777)
  *
  * Generates the chosen Late Payment Notice for an Account
  *
- * @param	integer	$intNoticeType	Type of notice to generate (one of the LatePaymentNotice constants)
+ * @param	integer	$intNoticeType	Type of notice to generate (LETTER_TYPE_OVERDUE | _SUSPENSION | _FINAL_DEMAND)
  * @param	array	$arrAccount		All Account, Contact and Invoice data required for the notice
  * @param	string	$strBasePath	optional, base path where the generated notices will be placed. Must end with a '/'
  *									
@@ -3364,7 +3364,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	
 	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
 	$strFullPath = 	$strBasePath . strtolower(str_replace(" ", "_", GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup"))) ."/". 
-					str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "AccountNotice"))) ."/". date("Y/m/d");
+					str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))) ."/". date("Y/m/d");
 	
 	// Make the directory structure if it hasn't already been made
 	if (!is_dir($strFullPath))
@@ -3397,16 +3397,16 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	// Include NoticeType specific stuff here
 	switch ($intNoticeType)
 	{
-		case ACCOUNT_NOTICE_OVERDUE:
+		case LETTER_TYPE_OVERDUE:
 			$strMessage =	"Our records indicate that your account for the amount of \${$arrAccount['Overdue']} remains unpaid.\n".
 							"Please ensure payment is made by $strDueDateForAction to avoid any further recovery action and possible disruption to your services\n";
 			break;
-		case ACCOUNT_NOTICE_SUSPENSION:
+		case LETTER_TYPE_SUSPENSION:
 			$strMessage =	"Further to our recent reminder letter, our records indicate that your account remains unpaid.\n".
 							"\tTotal Amount Owing: \${$arrAccount['Overdue']}\n\n".
 							"Please be advised that if we do not recieve payment by $strDueDateForAction your services will be suspended without further notice and we will commence appropriate collection action immediately.\n";
 			break;
-		case ACCOUNT_NOTICE_FINAL_DEMAND:
+		case LETTER_TYPE_FINAL_DEMAND:
 			$strMessage =	"We note that dispite numerous reminders to pay this outstanding amount, the account still remains in arrears in the amount of \${$arrAccount['Overdue']}\n".
 							"Your service is due to be temporarily disconnected because of your failure to pay your accounts.\n".
 							"Your current balance not outstanding is \${$arrAccount['OutstandingNotOverdue']}\n".
@@ -3431,18 +3431,18 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	fclose($ptrNoticeFile);
 	
 	$strNow = date("Y-m-d H:i:s");
-	// Log the Notice in the LateNoticeGenerated Table
-	$arrNoticeLog = Array(	'Account'		=> $arrAccount['AccountId'],
+	// Log the Notice in the AccountLetterLog Table
+	$arrLetterLog = Array(	'Account'		=> $arrAccount['AccountId'],
 							'Invoice'		=> $arrAccount['InvoiceId'],
-							'NoticeType'	=> $intNoticeType,
+							'LetterType'	=> $intNoticeType,
 							'CreatedOn'		=> $strNow);
 	
 	// Only define the StatementInsert object if it hasn't already been defined				
 	if (!isset($insNotice))
 	{
-		$insNotice = new StatementInsert("AccountNotices", $arrNoticeLog);
+		$insNotice = new StatementInsert("AccountLetterLog", $arrLetterLog);
 	}
-	$insNotice->Execute($arrNoticeLog);
+	$insNotice->Execute($arrLetterLog);
 	
 	// Record the File in the FileExport table
 	//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
@@ -3462,7 +3462,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	$insFileExport->Execute($arrFileLog);
 	
 	// Create a system note for the account
-	$strNote = 	"A ". GetConstantDescription($intNoticeType, "AccountNotice") . " has been generated for this account.\n".
+	$strNote = 	"A ". GetConstantDescription($intNoticeType, "LetterType") . " has been generated for this account.\n".
 				"Outstanding Overdue: \${$arrAccount['Overdue']}\n".
 				"Outstanding Not Overdue: \${$arrAccount['OutstandingNotOverdue']}";
 				

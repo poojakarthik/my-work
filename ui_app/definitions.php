@@ -200,6 +200,7 @@ define("EVENT_ON_ACCOUNT_DETAILS_UPDATE"			, "OnAccountDetailsUpdate");
 define("EVENT_ON_ACCOUNT_SERVICES_UPDATE"			, "OnAccountServicesUpdate");
 define("EVENT_ON_ACCOUNT_PRIMARY_CONTACT_UPDATE"	, "OnAccountPrimaryContactUpdate");
 define("EVENT_ON_EDIT_ACCOUNT_DETAILS_CANCEL"		, "OnEditAccountDetailsCancel");
+define("EVENT_ON_CUSTOMER_GROUP_DETAILS_UPDATE"		, "OnCustomerGroupDetailsUpdate");
 
 // Maximum file upload size is 1 megabyte
 define("RATEGROUP_IMPORT_MAXSIZE", 1048576);

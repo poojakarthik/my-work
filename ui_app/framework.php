@@ -295,6 +295,10 @@ class Page
 		*/
 		
 		// Prepend the js files that all pages require, to the list of js files to include
+		if (!is_array($GLOBALS['*arrJavaScript']))
+		{
+			$GLOBALS['*arrJavaScript'] = Array();
+		}
 		array_unshift($GLOBALS['*arrJavaScript'], "vixen", "menu", "popup", "dhtml", "ajax", "event_handler");
 		
 		// Remove any duplicates from the list

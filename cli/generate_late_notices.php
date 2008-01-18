@@ -53,15 +53,15 @@ if (($intArgs != 2) && ($intArgs != 3))
 switch (strtolower($arrArgs[1]))
 {
 	case "overdue":
-		$intNoticeType = ACCOUNT_NOTICE_OVERDUE;
+		$intNoticeType = LETTER_TYPE_OVERDUE;
 		break;
 	
 	case "suspended":
-		$intNoticeType = ACCOUNT_NOTICE_SUSPENSION;
+		$intNoticeType = LETTER_TYPE_SUSPENSION;
 		break;
 	
 	case "final":
-		$intNoticeType = ACCOUNT_NOTICE_FINAL_DEMAND;
+		$intNoticeType = LETTER_TYPE_FINAL_DEMAND;
 		break;
 	
 	default:
@@ -70,6 +70,7 @@ switch (strtolower($arrArgs[1]))
 		break;
 }
 
+// If a destination path has not been specified then use the default one (DEFAULT_BASE_PATH)
 $strBasePath = ($intArgs == 3)? $arrArgs[2] : DEFAULT_BASE_PATH;
 
 if (!is_dir($strBasePath))
@@ -78,7 +79,7 @@ if (!is_dir($strBasePath))
 	exit(1);
 }
 
-echo "Generating ". GetConstantDescription($intNoticeType, "AccountNotice"). "s...";
+echo "Generating ". GetConstantDescription($intNoticeType, "LetterType"). "s...";
 
 // If I don't flush and end the current buffer, then none of the above text is
 // outputted until the GenerateLatePaymentNotices function returns, although

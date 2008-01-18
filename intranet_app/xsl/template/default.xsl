@@ -31,7 +31,7 @@
 						<span class="LogoSpacer"></span>
 							<div class="sectionContent">
 								<div class="Left">
-									TelcoBlue Internal Management System
+									Internal Management System
 								</div>
 								<div class="Right">
 									Version 7.03

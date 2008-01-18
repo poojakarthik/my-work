@@ -771,7 +771,8 @@
 	h2.Email,
 	h2.Permissions,
 	h2.Bug,
-	h2.Article
+	h2.Article,
+	h2.CustomerGroup
 	{
 		background-repeat:		no-repeat;
 		background-position:	center left;
@@ -916,6 +917,11 @@
 	}
 	
 	h2.Article
+	{
+		background-image:				url('img/template/article.png');
+	}
+	
+	h2.CustomerGroup
 	{
 		background-image:				url('img/template/article.png');
 	}

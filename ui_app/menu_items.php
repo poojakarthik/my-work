@@ -89,6 +89,69 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// ViewCustomerGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewCustomerGroup()
+	 *
+	 * Compiles the Href to be executed when the ViewCustomerGroup menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewCustomerGroup menu item is clicked
+	 * 
+	 * @param	int		$intId		id of the CustomerGroup
+	 *
+	 * @return	string				Href to be executed when the ViewCustomerGroup menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewCustomerGroup($intId)
+	{
+		$this->strLabel	= "Customer Group";
+		return "vixen.php/CustomerGroup/View/?CustomerGroup.Id=$intId";
+	}
+	
+	//------------------------------------------------------------------------//
+	// ViewAllCustomerGroups
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewAllCustomerGroups()
+	 *
+	 * Compiles the Href to be executed when the ViewAllCustomerGroups menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewAllCustomerGroups menu item is clicked
+	 * 
+	 * @return	string				Href to be executed when the ViewAllCustomerGroups menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewAllCustomerGroups()
+	{
+		$this->strLabel	= "Customer Groups";
+		return "vixen.php/CustomerGroup/ViewAll/";
+	}
+
+	//------------------------------------------------------------------------//
+	// AddCustomerGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * AddCustomerGroup()
+	 *
+	 * Compiles the Href to be executed when the AddCustomerGroup menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddCustomerGroup menu item is clicked
+	 * 
+	 * @return	string				Href to be executed when the AddCustomerGroup menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddCustomerGroup()
+	{
+		$this->strLabel	= "Add Customer Group";
+		return "vixen.php/CustomerGroup/Add/";
+	}
+
+	
+	//------------------------------------------------------------------------//
 	// EmployeeConsole
 	//------------------------------------------------------------------------//
 	/**

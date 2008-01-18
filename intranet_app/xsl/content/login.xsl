@@ -4,7 +4,7 @@
 	<xsl:template match="/">
 		<html xmlns="http://www.w3.org/1999/xhtml">
 			<head>
-			  <title>TelcoBlue.com.au Internal Systems Login</title>
+			  <title>Vixen Internal Systems Login</title>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			</head>
 			<style type="text/css" media="screen">
@@ -56,7 +56,7 @@
 							<img src="img/login/TCB_Logo.png" width="300" height="91" />
 						</div>
 						<div id="loginForm">
-							<h1>TelcoBlue Internal System</h1>
+							<h1>Vixen Internal System</h1>
 							
 							<div class="Seperator"></div>
 							

@@ -1270,13 +1270,16 @@ $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Constant']	= 'RATE_STATUS_DRAFT';
 $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Description']	= 'Draft';
 
 
-// Late Payment Notice Types
-$GLOBALS['*arrConstant']	['AccountNotice']	[1]	['Constant']	= 'ACCOUNT_NOTICE_OVERDUE';
-$GLOBALS['*arrConstant']	['AccountNotice']	[1]	['Description']	= 'Overdue Notice';
-$GLOBALS['*arrConstant']	['AccountNotice']	[2]	['Constant']	= 'ACCOUNT_NOTICE_SUSPENSION';
-$GLOBALS['*arrConstant']	['AccountNotice']	[2]	['Description']	= 'Suspension Notice';
-$GLOBALS['*arrConstant']	['AccountNotice']	[3]	['Constant']	= 'ACCOUNT_NOTICE_FINAL_DEMAND';
-$GLOBALS['*arrConstant']	['AccountNotice']	[3]	['Description']	= 'Final Demand Notice';
+// Account Letter Types
+$GLOBALS['*arrConstant']	['LetterType']	[1]	['Constant']	= 'LETTER_TYPE_OVERDUE';
+$GLOBALS['*arrConstant']	['LetterType']	[1]	['Description']	= 'Overdue Notice';
+$GLOBALS['*arrConstant']	['LetterType']	[2]	['Constant']	= 'LETTER_TYPE_SUSPENSION';
+$GLOBALS['*arrConstant']	['LetterType']	[2]	['Description']	= 'Suspension Notice';
+$GLOBALS['*arrConstant']	['LetterType']	[3]	['Constant']	= 'LETTER_TYPE_FINAL_DEMAND';
+$GLOBALS['*arrConstant']	['LetterType']	[3]	['Description']	= 'Final Demand Notice';
+$GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_INVOICE';
+$GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Invoice';
+
 
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
