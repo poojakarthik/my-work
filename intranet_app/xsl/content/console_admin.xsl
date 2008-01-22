@@ -131,6 +131,17 @@
 					View and Add Employees.
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<a href="vixen.php/CustomerGroup/ViewAll/">
+						<img src="img/template/customer_group.png" title="Customer Groups" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong> Manage Customer Groups</strong><br />
+					Edit and Add Customer Groups.
+				</td>
+			</tr>
 		</table>
 	</xsl:template>
 </xsl:stylesheet>
