@@ -125,10 +125,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	private function _RenderForViewing()
 	{
 		echo "<h2 class='Account'>Account Details</h2>\n";
-		echo "<div class='NarrowContent'>\n";
+		echo "<div class='GroupedContent'>\n";
 
 		// Render the details of the Account
-		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
+		DBO()->CustomerGroup->Load();
+		$strCustomerGroup = DBO()->CustomerGroup->InternalName->Value;
+		DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroup, RENDER_OUTPUT);
 		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
 		
 		DBO()->Account->Id->RenderOutput();
@@ -226,7 +229,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		DBO()->Account->DisableLatePayment->RenderOutput();
 		DBO()->Account->DisableDDR->RenderOutput();
-
+		echo "</div>\n"; // GroupedContent
+		
 		// Render the buttons but only if the user has operator privileges
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
@@ -234,14 +238,15 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			$this->Button("Edit Details", "Vixen.AccountDetails.RenderAccountDetailsForEditing();");
 			echo "</div></div>\n";
 		}
-		echo "</div>\n"; // NarrowContent
+		else
+		{
+			echo "<div class='SmallSeperator'></div>\n";
+		}
 		
 		// Initialise the AccountDetails object and register the OnAccountDetailsUpdate Listener
 		$intAccountId = DBO()->Account->Id->Value;
 		$strJavascript = "Vixen.AccountDetails.InitialiseView($intAccountId, '{$this->_strContainerDivId}');";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
-		
-		echo "<div class='SmallSeperator'></div>\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -262,7 +267,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	
 		$this->FormStart("EditAccount", "Account", "SaveDetails");
 		echo "<h2 class='Account'>Account Details</h2>\n";
-		echo "<div class='NarrowContent'>\n";
+		echo "<div class='GroupedContent'>\n";
 
 		// Render hidden values
 		DBO()->Account->Id->RenderHidden();
@@ -272,14 +277,18 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->Id->RenderOutput();
 
 		// Render the CustomerGroup combobox
+		DBL()->CustomerGroup->OrderBy("InternalName");
+		DBL()->CustomerGroup->Load();
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Account.CustomerGroup' name='Account.CustomerGroup'>\n";
-		foreach ($GLOBALS['*arrConstant']['CustomerGroup'] as $intConstant=>$arrCustomerGroupSelection)
+		foreach (DBL()->CustomerGroup as $dboCustomerGroup)
 		{
-			$strSelected = (DBO()->Account->CustomerGroup->Value == $intConstant) ? "selected='selected'" : "";
-			echo "		<option value='$intConstant' $strSelected>{$arrCustomerGroupSelection['Description']}</option>\n";
+			$intCustomerGroupId		= $dboCustomerGroup->Id->Value;
+			$strCustomerGroupName	= $dboCustomerGroup->InternalName->Value;
+			$strSelected = (DBO()->Account->CustomerGroup->Value == $intCustomerGroupId) ? "selected='selected'" : "";
+			echo "		<option value='$intCustomerGroupId' $strSelected>$strCustomerGroupName</option>\n";
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
@@ -359,14 +368,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->DisableLateNotices->RenderInput();
 		DBO()->Account->DisableLatePayment->RenderInput(1);
 		DBO()->Account->DisableDDR->RenderInput(1);
-
+		
+		echo "</div>\n"; // GroupedContent
+		
 		// Render the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.AccountDetails.CancelEdit();");
 		$this->AjaxSubmit("Commit Changes");
 		echo "</div></div>\n";
-		
-		echo "</div>\n"; // NarrowContent
 		
 		// Initialise the AccountDetails object
 		$intAccountId = DBO()->Account->Id->Value;
@@ -402,8 +411,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 						"document.getElementById('Account.DisableLateNotices').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
 						
 		echo "<script type='text/javascript'>$strJsCode</script>";
-		
-		echo "<div class='SmallSeperator'></div>\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -421,7 +428,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	private function _RenderLedgerDetail()
 	{
 		echo "<h2 class='Account'>Account Details</h2>\n";
-		echo "<div class='NarrowContent'>\n";
+		echo "<div class='GroupedContent'>\n";
 
 		// Declare the start of the form
 		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
@@ -467,7 +474,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->ABN->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
 		}
 		
-		DBO()->Account->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		// Retrieve the CustomerGroup
+		DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
+		DBO()->CustomerGroup->Load();
+		$strCustomerGroup = DBO()->CustomerGroup->InternalName->Value;
+		
+		DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroup, RENDER_OUTPUT);
 		
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
@@ -487,10 +499,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->DisableLatePayment->RenderInput();
 			echo "<div class='ContentSeparator'></div>\n";
 			DBO()->Account->DisableLateNotices->RenderInput(1);
-			// Render the submit button
-			echo "         <br /><div class='ButtonContainer'><div class='Right'>\n";
-			$this->AjaxSubmit("Apply Changes");
-			echo "         </div></div>\n";
 			echo "      </td>\n";
 		}
 		else
@@ -520,8 +528,19 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 					document.getElementById('Account.DisableLatePayment_1.Label').style.color='#4C4C4C';</script>";
 		}
 		
-		echo "</div>\n";  //NarrowContent
-		echo "<div class='SmallSeperator'></div>\n";
+		echo "</div>\n";  //GroupedContent
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			// Render the submit button
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
+			$this->AjaxSubmit("Apply Changes");
+			echo "</div></div>\n";
+		}
+		else
+		{
+			echo "<div class='SmallSeperator'></div>\n";
+		}
 		
 		// Declare the end of the form
 		$this->FormEnd();

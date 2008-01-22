@@ -59,10 +59,16 @@
 		{
 			parent::__construct ('CustomerGroups');
 			
-			// Instantiate the Variable Values for possible selection
-			$this->_TELCOBLUE	= $this->Push (new CustomerGroup (CUSTOMER_GROUP_TELCOBLUE));
-			$this->_VOICETALK	= $this->Push (new CustomerGroup (CUSTOMER_GROUP_VOICETALK));
-			$this->_IMAGINE		= $this->Push (new CustomerGroup (CUSTOMER_GROUP_IMAGINE));
+			// Retrieve all CustomerGroups from the database
+			$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, InternalName", "TRUE", "InternalName");
+			$selCustomerGroups->Execute();
+			$arrCustomerGroups = $selCustomerGroups->FetchAll();
+			
+			foreach ($arrCustomerGroups as $arrCustomerGroup)
+			{
+				$strVarName = "_{$arrCustomerGroup['Id']}";
+				$this->$strVarName = $this->Push(new CustomerGroup($arrCustomerGroup['Id'], $arrCustomerGroup['InternalName']));
+			}
 			
 			$this->setValue ($intCustomerGroup);
 		}
@@ -82,16 +88,19 @@
 		 *
 		 * @method
 		 */
-		
 		public function setValue ($intCustomerGroup)
 		{
-			// Select the value
-			switch ($intCustomerGroup)
+			$strVarName = "_{$intCustomerGroup}";
+			
+			if (isset($this->$strVarName))
 			{
-				case CUSTOMER_GROUP_TELCOBLUE:	$this->Select ($this->_TELCOBLUE);	return true;
-				case CUSTOMER_GROUP_VOICETALK:	$this->Select ($this->_VOICETALK);	return true;
-				case CUSTOMER_GROUP_IMAGINE:	$this->Select ($this->_IMAGINE);	return true;
-				default:						return false;
+				$this->Select($this->$strVarName);
+				return TRUE;
+			}
+			else
+			{
+				// The CustomerGroup could not be found
+				return FALSE;
 			}
 		}
 	}

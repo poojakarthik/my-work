@@ -70,7 +70,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Customer Groups");
 		
 		// Retrieve the list of customer groups
-		DBL()->CustomerGroup->OrderBy("Name");
+		DBL()->CustomerGroup->OrderBy("InternalName");
 		DBL()->CustomerGroup->Load();
 		
 		// All required data has been retrieved from the database so now load the page template
@@ -110,13 +110,13 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			// Check that the CustomerGroup's Name is not being used by another CustomerGroup
-			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id", "Name LIKE <Name>", "", "1");
-			$intRecordFound = $selCustomerGroup->Execute(Array("Name"=> DBO()->CustomerGroup->Name->Value));
+			// Check that the CustomerGroup's InternalName is not being used by another CustomerGroup
+			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id", "InternalName LIKE <Name>", "", "1");
+			$intRecordFound = $selCustomerGroup->Execute(Array("Name"=> DBO()->CustomerGroup->InternalName->Value));
 			if ($intRecordFound)
 			{
-				// The CustomerGroup's Name is already in use by another CustomerGroup
-				DBO()->CustomerGroup->Name->SetToInvalid();
+				// The CustomerGroup's InternalName is already in use by another CustomerGroup
+				DBO()->CustomerGroup->InternalName->SetToInvalid();
 				Ajax()->AddCommand("Alert", "ERROR: This name is already in use by another Customer Group");
 				Ajax()->RenderHtmlTemplate("CustomerGroupNew", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				return TRUE;
@@ -218,7 +218,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
-		
+
 		// Load the CustomerGroup
 		DBO()->CustomerGroup->Load();
 		
@@ -270,14 +270,14 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// Check that the CustomerGroup's Name is not being used by another CustomerGroup
-		$selCustomerGroup	= new StatementSelect("CustomerGroup", "Id", "Name LIKE <Name> AND Id != <Id>", "", "1");
-		$intRecordFound		= $selCustomerGroup->Execute(Array(	"Name"=> DBO()->CustomerGroup->Name->Value, 
+		// Check that the CustomerGroup's InternalName is not being used by another CustomerGroup
+		$selCustomerGroup	= new StatementSelect("CustomerGroup", "Id", "InternalName LIKE <Name> AND Id != <Id>", "", "1");
+		$intRecordFound		= $selCustomerGroup->Execute(Array(	"Name"=> DBO()->CustomerGroup->InternalName->Value, 
 																"Id"=> DBO()->CustomerGroup->Id->Value));
 		if ($intRecordFound)
 		{
-			// The CustomerGroup's new name is already in use by another CustomerGroup
-			DBO()->CustomerGroup->Name->SetToInvalid();
+			// The CustomerGroup's new InternalName is already in use by another CustomerGroup
+			DBO()->CustomerGroup->InternalName->SetToInvalid();
 			Ajax()->AddCommand("Alert", "ERROR: This name is already in use by another Customer Group");
 			Ajax()->RenderHtmlTemplate("CustomerGroupDetails", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 			return TRUE;

@@ -505,7 +505,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
 
-		// the DBList storing the invoices should be ordered so that the most recent is first
+		// The DBList storing the invoices should be ordered so that the most recent is first
 		DBL()->Invoice->Account = DBO()->Account->Id->Value;
 		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->Invoice->SetLimit(3);
@@ -546,7 +546,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// Load the List of services
-		// Load all the services belonging to the account, that the user has permission to view (which is currentl all of them)
+		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)
 		DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
 		DBL()->Service->OrderBy("FNN");
 		DBL()->Service->Load();
@@ -683,7 +683,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-	
+
 		// If the validation has failed display the invalid fields
 		if (DBO()->Account->IsInvalid())
 		{
@@ -739,7 +739,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		if (DBO()->Account->CustomerGroup->Value != DBO()->CurrentAccount->CustomerGroup->Value)
 		{
-			$strChangesNote .= "Customer Group was changed from ". GetConstantDescription(DBO()->CurrentAccount->CustomerGroup->Value, 'CustomerGroup') ." to " . GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroup') . "\n";
+			$selCustomerGroup= new StatementSelect("CustomerGroup", "Id, InternalName", "Id = <Id>");
+			$selCustomerGroup->Execute(Array("Id" => DBO()->CurrentAccount->CustomerGroup->Value));
+			$arrCurrentCustomerGroup = $selCustomerGroup->Fetch();
+			$selCustomerGroup->Execute(Array("Id" => DBO()->Account->CustomerGroup->Value));
+			$arrNewCustomerGroup = $selCustomerGroup->Fetch();
+			
+			$strChangesNote .= "Customer Group was changed from {$arrCurrentCustomerGroup['InternalName']} to {$arrNewCustomerGroup['InternalName']}\n";
 		}
 		if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
 		{
@@ -796,7 +802,6 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Retain the current value of Account.LateNoticeAmnesty
 			DBO()->Account->LatePaymentAmnesty = DBO()->CurrentAccount->LatePaymentAmnesty->Value;
 		}
-
 		
 		// Start the transaction
 		TransactionStart();

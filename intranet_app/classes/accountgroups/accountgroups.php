@@ -195,31 +195,31 @@
 			
 			$actAccount = new Account ($intAccount);
 			
-			// After a new account is created a System note is generated
-			$strEmployeeFirstName = $aemAuthenticatedEmployee->Pull('FirstName')->getValue();
-			$strEmployeeLastName = $aemAuthenticatedEmployee->Pull('LastName')->getValue();
-			$intEmployeeId = $aemAuthenticatedEmployee->Pull('Id')->getValue();
-			$strEmployeeFullName =  "$strEmployeeFirstName $strEmployeeLastName";
+			// Generate a system note declaring the creation of the Account
+			$intEmployeeId		= $aemAuthenticatedEmployee->Pull('Id')->getValue();
+			$intAccountId		= $actAccount->Pull('Id')->getValue();
+			$intAccountGroup	= $arrAccount['AccountGroup'];
+			
+			// Retrieve the CustomerGroup from the database
+			$selCustomerGroup	= new StatementSelect("CustomerGroup", "InternalName", "Id = <Id>");
+			$selCustomerGroup->Execute(Array("Id" => $arrAccount['CustomerGroup']));
+			$arrCustomerGroup	= $selCustomerGroup->Fetch();
+			$strCustomerGroup	= $arrCustomerGroup['InternalName'];
 		
-			$intAccountId = $actAccount->Pull('Id')->getValue();
-			$intAccountGroup = $arrAccount['AccountGroup'];
-			$strBusinessName = $arrAccount['BusinessName'];
-			$strTradingName = $arrAccount['TradingName'];
-			$intABN = $arrAccount['ABN'];
-			$intPostcode = $arrAccount['Postcode'];
-			$strState = $arrAccount['State'];
-			$intCustomerGroup = GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
-			$strBillingType= GetConstantDescription($arrAccount['BillingType'], "BillingType");
-			$strBillingMethod = GetConstantDescription($arrAccount['BillingMethod'], "BillingMethod");			
+			$strBillingType		= GetConstantDescription($arrAccount['BillingType'], "BillingType");
+			$strBillingMethod	= GetConstantDescription($arrAccount['BillingMethod'], "BillingMethod");			
 
-			$strNote = "Account created by $strEmployeeFullName on " . date('m/d/y') . "\n";
-			$strNote .= "The following details were created:\n";
-			$strNote .= "Business Name: $strBusinessName\n";
-			$strNote .= "Trading Name: $strTradingName\n";
-			$strNote .= "ABN: $intABN\n";
-			$strNote .= "Postcode: $intPostcode\n";
-			$strNote .= "State: $strState\n";
-			$strNote .= "Customer Group: $intCustomerGroup\n";
+			$strNote  = "Account created with the following details:\n";
+			$strNote .= "Business Name: {$arrAccount['BusinessName']}\n";
+			$strNote .= "Trading Name: {$arrAccount['TradingName']}\n";
+			$strNote .= "ABN: {$arrAccount['ABN']}\n";
+			$strNote .= "ACN: {$arrAccount['ACN']}\n";
+			$strNote .= "Address line 1: {$arrAccount['Address1']}\n";
+			$strNote .= "Address line 2: {$arrAccount['Address2']}\n";
+			$strNote .= "Suburb: {$arrAccount['Suburb']}\n";
+			$strNote .= "Postcode: {$arrAccount['Postcode']}\n";
+			$strNote .= "State: {$arrAccount['State']}\n";
+			$strNote .= "Customer Group: $strCustomerGroup\n";
 			$strNote .= "Account Group: $intAccountGroup\n";
 			$strNote .= "Billing Type: $strBillingType\n";
 			$strNote .= "Billing Method: $strBillingMethod\n";

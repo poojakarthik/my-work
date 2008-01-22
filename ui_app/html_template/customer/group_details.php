@@ -125,7 +125,8 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		echo "<div class='GroupedContent'>\n";
 
 		// Render the details of the CustomerGroup
-		DBO()->CustomerGroup->Name->RenderOutput();
+		DBO()->CustomerGroup->InternalName->RenderOutput();
+		DBO()->CustomerGroup->ExternalName->RenderOutput();
 		DBO()->CustomerGroup->OutboundEmail->RenderOutput();
 		
 		echo "</div>\n"; // GroupedContent
@@ -164,7 +165,8 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->Id->RenderHidden();
 		
 		// Render the details of the CustomerGroup
-		DBO()->CustomerGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->CustomerGroup->InternalName->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->CustomerGroup->ExternalName->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->CustomerGroup->OutboundEmail->RenderInput(CONTEXT_DEFAULT, TRUE);
 		
 		echo "</div>\n"; // GroupedContent

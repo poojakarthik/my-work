@@ -72,16 +72,18 @@ class HtmlTemplateCustomerGroupList extends HtmlTemplate
 	function Render()
 	{
 		// Set up the header information for the table of CustomerGroups
-		Table()->CustomerGroups->SetHeader("Name", "&nbsp;");
-		Table()->CustomerGroups->SetWidth("90%", "10%");
-		Table()->CustomerGroups->SetAlignment("Left", "Right");
+		Table()->CustomerGroups->SetHeader("Internal Name", "External Name", "&nbsp;");
+		Table()->CustomerGroups->SetWidth("45%", "45%", "10%");
+		Table()->CustomerGroups->SetAlignment("Left", "Left", "Right");
 
 		foreach (DBL()->CustomerGroup as $dboCustomerGroup)
 		{
 			$strViewCustomerGroupHref = Href()->ViewCustomerGroup($dboCustomerGroup->Id->Value);
 			$strViewCustomerGroupLink = "<a href='$strViewCustomerGroupHref' title='View'><img src='img/template/view.png'></img></a>";
 
-			Table()->CustomerGroups->AddRow($dboCustomerGroup->Name->AsValue(), $strViewCustomerGroupLink);
+			Table()->CustomerGroups->AddRow($dboCustomerGroup->InternalName->AsValue(),
+											$dboCustomerGroup->ExternalName->AsValue(),
+											$strViewCustomerGroupLink);
 		}
 		
 		// Check if the table is empty
@@ -90,7 +92,7 @@ class HtmlTemplateCustomerGroupList extends HtmlTemplate
 			// There are no CustomerGroups to stick in this table
 			Table()->CustomerGroups->AddRow("<span>No Customer Groups to display</span>");
 			Table()->CustomerGroups->SetRowAlignment("left");
-			Table()->CustomerGroups->SetRowColumnSpan(2);
+			Table()->CustomerGroups->SetRowColumnSpan(3);
 		}
 		else
 		{

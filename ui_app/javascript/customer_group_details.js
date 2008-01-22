@@ -82,33 +82,31 @@ function VixenCustomerGroupDetailsClass()
 	this.RenderDetailsForEditing = function()
 	{
 		// Organise the data to send
-		var objObjects 						= {};
-		objObjects.Objects 					= {};
-		objObjects.Objects.CustomerGroup 	= {};
-		objObjects.Objects.CustomerGroup.Id = this.intCustomerGroupId;
-		objObjects.Objects.Container 		= {};
-		objObjects.Objects.Container.Id		= this.strContainerDivId;
-		objObjects.Objects.Context			= {};
-		objObjects.Objects.Context.Edit		= true;
+		var objObjects 				= {};
+		objObjects.CustomerGroup 	= {};
+		objObjects.CustomerGroup.Id = this.intCustomerGroupId;
+		objObjects.Container 		= {};
+		objObjects.Container.Id		= this.strContainerDivId;
+		objObjects.Context			= {};
+		objObjects.Context.Edit		= true;
 
 		// Call the AppTemplate method which renders just the CustomerGroupDetails HtmlTemplate
-		Vixen.Ajax.CallAppTemplate("CustomerGroup", "RenderHtmlTemplateCustomerGroupDetails", objObjects.Objects);
+		Vixen.Ajax.CallAppTemplate("CustomerGroup", "RenderHtmlTemplateCustomerGroupDetails", objObjects, null, true);
 	}
 	
 	this.CancelEdit = function()
 	{
 		// Organise the data to send
-		var objObjects 						= {};
-		objObjects.Objects 					= {};
-		objObjects.Objects.CustomerGroup 	= {};
-		objObjects.Objects.CustomerGroup.Id = this.intCustomerGroupId;
-		objObjects.Objects.Container 		= {};
-		objObjects.Objects.Container.Id		= this.strContainerDivId;
-		objObjects.Objects.Context			= {};
-		objObjects.Objects.Context.View		= true;
+		var objObjects 				= {};
+		objObjects.CustomerGroup 	= {};
+		objObjects.CustomerGroup.Id = this.intCustomerGroupId;
+		objObjects.Container 		= {};
+		objObjects.Container.Id		= this.strContainerDivId;
+		objObjects.Context			= {};
+		objObjects.Context.View		= true;
 
 		// Call the AppTemplate method which renders just the CustomerGroupDetails HtmlTemplate
-		Vixen.Ajax.CallAppTemplate("CustomerGroup", "RenderHtmlTemplateCustomerGroupDetails", objObjects.Objects);
+		Vixen.Ajax.CallAppTemplate("CustomerGroup", "RenderHtmlTemplateCustomerGroupDetails", objObjects, null, true);
 	}
 
 	//------------------------------------------------------------------------//
@@ -140,17 +138,16 @@ function VixenCustomerGroupDetailsClass()
 		}
 		
 		// Organise the data to send
-		var objObjects 						= {};
-		objObjects.Objects 					= {};
-		objObjects.Objects.CustomerGroup 	= {};
-		objObjects.Objects.CustomerGroup.Id = intCustomerGroupId;
-		objObjects.Objects.Container 		= {};
-		objObjects.Objects.Container.Id		= strContainerDivId;
-		objObjects.Objects.Context			= {};
-		objObjects.Objects.Context.View		= true;
+		var objObjects 				= {};
+		objObjects.CustomerGroup 	= {};
+		objObjects.CustomerGroup.Id = intCustomerGroupId;
+		objObjects.Container 		= {};
+		objObjects.Container.Id		= strContainerDivId;
+		objObjects.Context			= {};
+		objObjects.Context.View		= true;
 
 		// Call the AppTemplate method which renders just the CustomerGroupDetails HtmlTemplate
-		Vixen.Ajax.CallAppTemplate("CustomerGroup", "RenderHtmlTemplateCustomerGroupDetails", objObjects.Objects);
+		Vixen.Ajax.CallAppTemplate("CustomerGroup", "RenderHtmlTemplateCustomerGroupDetails", objObjects, null, true);
 	}
 	
 	//TODO! Sometime

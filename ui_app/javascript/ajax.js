@@ -19,13 +19,19 @@ function VixenAjaxClass()
 	this.strFormCurrentlyProcessing	= null;
 
 	// execute an app template through an ajax call, which doesn't involve form submission
-	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType)
+	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType, bolShowLoadingSplash)
 	{
 		var objSend = {};
 		objSend.Class = strClass;
 		objSend.Method = strMethod;
 		objSend.Objects = objObjects;
 		objSend.TargetType = strTargetType;
+	
+		if (bolShowLoadingSplash == true)
+		{
+			// Draw the Page Loading splash (this will show after 1 second)
+			Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
+		}
 	
 		// send object
 		this.Send(objSend);

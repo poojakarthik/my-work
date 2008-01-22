@@ -90,25 +90,17 @@
 		 * @method
 		 */
 		
-		function __construct ($intType)
+		function __construct ($intType, $strName=NULL)
 		{
 			parent::__construct ('CustomerGroup');
 			
-			$strName = 'Unknown';
-			
-			switch ($intType)
+			if ($strName === NULL)
 			{
-				case CUSTOMER_GROUP_TELCOBLUE:
-					$strName = 'Telco Blue';
-					break;
-					
-				case CUSTOMER_GROUP_VOICETALK:
-					$strName = 'Voice Talk';
-					break;
-					
-				case CUSTOMER_GROUP_IMAGINE:
-					$strName = 'Imagine';
-					break;
+				// The CustomerGroup's name was not supplied, retrieve it from the database
+				$selCustomerGroup	= new StatementSelect("CustomerGroup", "InternalName", "Id = <Id>");
+				$selCustomerGroup->Execute(Array("Id" => $intType));
+				$arrCustomerGroup	= $selCustomerGroup->Fetch();
+				$strName			= $arrCustomerGroup['InternalName'];
 			}
 			
 			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));

@@ -3130,6 +3130,15 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 			break;
 	}
 	
+	// Retrieve the list of CustomerGroups
+	$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, InternalName, ExternalName");
+	$selCustomerGroups->Execute();
+	$arrCustomerGroups = Array();
+	while (($arrCustomerGroup = $selCustomerGroups->Fetch()) !== FALSE)
+	{
+		$arrCustomerGroups[$arrCustomerGroup['Id']] = $arrCustomerGroup;
+	}
+	
 	// Find all Accounts that fit the requirements for Late Notice generation
 	$arrColumns = Array(	'AccountId'				=> "Invoice.Account",
 							'AccountGroup'			=> "Account.AccountGroup",
@@ -3227,14 +3236,15 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 				$arrGeneratedNotices['Failed'] += 1;
 			}
 			
-			$arrSummary[] = Array(	"AccountId"				=> $arrAccount['AccountId'], 
-									"Outcome"				=> (($bolSuccess)? "Successful":"Failed"),
-									"BusinessName"			=> $arrAccount['BusinessName'],
-									"TradingName"			=> $arrAccount['TradingName'],
-									"CustomerGroup"			=> GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup"),
-									"OutstandingNotOverdue"	=> $arrAccount['OutstandingNotOverdue'],
-									"Overdue"				=> $arrAccount['Overdue'],
-									"TotalOutstanding"		=> $arrAccount['TotalOutstanding']);
+			$arrSummary[] = Array(	"AccountId"					=> $arrAccount['AccountId'], 
+									"Outcome"					=> (($bolSuccess)? "Successful":"Failed"),
+									"BusinessName"				=> $arrAccount['BusinessName'],
+									"TradingName"				=> $arrAccount['TradingName'],
+									"CustomerGroupInternalName"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['InternalName'],
+									"CustomerGroupExternalName"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['ExternalName'],
+									"OutstandingNotOverdue"		=> $arrAccount['OutstandingNotOverdue'],
+									"Overdue"					=> $arrAccount['Overdue'],
+									"TotalOutstanding"			=> $arrAccount['TotalOutstanding']);
 		}
 	}
 	
@@ -3244,7 +3254,7 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
 	if ($ptrSummaryFile !== FALSE)
 	{
-		fputcsv($ptrSummaryFile, Array("Account Id", "Outcome", "Business Name", "Trading Name", "Customer Group", "Outstanding Not Overdue", "Overdue", "Total Outstanding"), ";");
+		fputcsv($ptrSummaryFile, Array("Account Id", "Outcome", "Business Name", "Trading Name", "Customer Group (internal)", "Customer Group (external)", "Outstanding Not Overdue", "Overdue", "Total Outstanding"), ";");
 		foreach ($arrSummary as $arrAccount)
 		{
 			fputcsv($ptrSummaryFile, $arrAccount, ";");
@@ -3356,14 +3366,37 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	static $insNotice;
 	static $insFileExport;
 	
-	if ($arrAccount['CustomerGroup'] == CUSTOMER_GROUP_IMAGINE)
+	// The key of this array is the CustomerGroup Id of the template
+	static $arrLetterTemplates = Array();
+	
+	if (!isset($arrLetterTemplates[$intNoticeType]))
 	{
-		// Imagine customers are considered TelcoBlue costomers and will be using TelcoBlue Letterhead
-		$arrAccount['CustomerGroup'] = CUSTOMER_GROUP_TELCOBLUE;
+		$arrLetterTemplates[$intNoticeType] = Array();
+		// Cache the letter template details
+		//TODO! you will also have to retrieve details from the LetterTemplateVar table, as soon as we work out
+		// how the letter templates will work
+		$strTables	= "CustomerGroup AS CG INNER JOIN LetterTemplate AS LT ON CG.Id = LT.CustomerGroup";
+		$arrColumns	= Array("CustomerGroupId" => "CG.Id", "CustomerGroupInternalName" => "CG.InternalName", "CustomerGroupExternalName" => "CG.ExternalName", "Template" => "LT.Template", "TemplateId" => "LT.Id");
+		$strWhere	= "LT.LetterType = <LetterType> AND LT.Id = (SELECT MAX(Id) FROM LetterTemplate WHERE LetterType = <LetterType> AND CustomerGroup = CG.Id)";
+		$selLetterTemplates = new StatementSelect($strTables, $arrColumns, $strWhere);
+		$selLetterTemplates->Execute(Array('LetterType' => $intNoticeType));
+		
+		// Load each CustomerGroup's Letter Template details into the $arrLetterTemplates array
+		while (($arrLetterTemplate = $selLetterTemplates->Fetch()) !== FALSE)
+		{
+			$arrLetterTemplates[$intNoticeType][$arrLetterTemplate['CustomerGroupId']] = $arrLetterTemplate;
+		}
+	}
+	
+	// Check that LetterTemplate details were retrieved for the CustomerGroup, that this Account belongs to
+	if (!isset($arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]))
+	{
+		// LetterTemplate details have not been defined for this LetterType and CustomerGroup
+		return FALSE;
 	}
 	
 	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
-	$strFullPath = 	$strBasePath . strtolower(str_replace(" ", "_", GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup"))) ."/". 
+	$strFullPath = 	$strBasePath . strtolower(str_replace(" ", "_", $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['CustomerGroupInternalName'])) ."/". 
 					str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))) ."/". date("Y/m/d");
 	
 	// Make the directory structure if it hasn't already been made
@@ -3376,11 +3409,13 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	$strFilename = $arrAccount['AccountId'] . ".txt";
 	
 	// Set up all values required of the notice, which have not been defined yet
-	$strDateIssued					= date("d-m-Y");
-	$strDueDateForAction			= date("d-F-Y", strtotime("+7 days"));
-	$arrAccount['CustomerGroup']	= GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
-	$arrAccount['AccountStatus']	= GetConstantDescription($arrAccount['AccountStatus'], "Account");
-	
+	$strDateIssued								= date("d-m-Y");
+	$strDueDateForAction						= date("d-F-Y", strtotime("+7 days"));
+	$arrAccount['CustomerGroupInternalName']	= $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['CustomerGroupInternalName'];
+	$arrAccount['CustomerGroupExternalName']	= $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['CustomerGroupExternalName'];
+	$arrAccount['AccountStatus']				= GetConstantDescription($arrAccount['AccountStatus'], "Account");
+	$arrAccount['NoticeTemplate']				= $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['Template'];
+
 	// Format the monetary values
 	$arrAccount['OutstandingNotOverdue'] = number_format($arrAccount['OutstandingNotOverdue'], 2, ".", "");
 	$arrAccount['Overdue'] = number_format($arrAccount['Overdue'], 2, ".", "");

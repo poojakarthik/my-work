@@ -2155,7 +2155,17 @@
 		 
 				 
 	// Define Columns 
-	$strName = "Name"; 
+	$strName = "InternalName"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "ExternalName"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 

@@ -450,12 +450,6 @@
 		
 		// The following errors are related to New Contact Creation. These
 		// errors will only be run when a New Contact has been requested (or forced)
-		
-		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$ttyTitleTypes->setValue ($_POST ['Contact']['Title']))
-		{
-			// This throws an error if the Contact's Title is Blank
-			$oblstrError->setValue ('Contact Title');
-		}
 		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['FirstName'])
 		{
 			// This throws an error if the Contact's First Name is Blank
