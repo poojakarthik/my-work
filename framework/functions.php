@@ -3507,5 +3507,195 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 }
 
 
+//------------------------------------------------------------------------//
+// SaveConstantGroup
+//------------------------------------------------------------------------//
+/**
+ * SaveConstantGroup()
+ *
+ * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
+ *
+ * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
+ *
+ * @param	array	$arrConstGroup	constant group array.  This must be in the format of ConstantGroups
+ * 									defined within $GLOBALS['*arrConstant'] array
+ * @param	string	$strName		name of the constant group
+ * @param	integer	$intDataType	the DatatType of the constants within the constant group.  This must be a constant
+ * 									from the DATA_TYPE_ constant group
+ * @param	string	$strDescription optional, description of the constant group.  Defaults to NULL
+ *									
+ * @return	mix						int  : Id of the ConstantGroup on success
+ * 									bool : FALSE on failure
+ *
+ * @function
+ */
+function SaveConstantGroup($arrConstGroup, $strName, $intDataType, $strDescription=NULL)
+{
+	static $insConstGroup;
+	
+	// If the StatementInsert objects have not yet been created, create them now
+	if (!isset($insConstGroup))
+	{
+		$insConstGroup	= new StatementInsert("ConfigConstantGroup");
+	}
+	
+	// Set up the data for the ConfigConstantGroup record
+	$arrConstGroupData = Array("Name" => $strName, "Description" => $strDescription, "Type" => $intDataType);
+	
+	TransactionStart();
+	
+	// Insert the ConfigConstantGroup record
+	$mixConstGroupId = $insConstGroup->Execute($arrConstGroupData);
+	if ($mixConstGroupId === FALSE)
+	{
+		TransactionRollback();
+		return FALSE;
+	}
+	
+	// Insert each constant of the ConstantGroup, into the ConfigConstant table
+	foreach ($arrConstGroup as $mixValue=>$arrValue)
+	{
+		$mixResult = SaveConstant($arrValue['Constant'], $mixValue, $intDataType, $arrValue['Description'], $mixConstGroupId);
+		if ($mixResult === FALSE)
+		{
+			TransactionRollback();
+			return FALSE;
+		}
+	}
+	
+	TransactionCommit();
+	return $mixConstGroupId;
+}
+
+//------------------------------------------------------------------------//
+// SaveConstant
+//------------------------------------------------------------------------//
+/**
+ * SaveConstant()
+ *
+ * Inserts a Constant into the ConfigConstant table of the database
+ *
+ * Inserts a Constant into the ConfigConstant table of the database
+ *
+ * @param	string	$strName			name of the constant (ie CONST_NAME)
+ * @param	mix		$mixValue			value of the constant (either a string, int, float or bool)
+ * @param	integer	$intDataType		optional, the DatatType of the constants within the constant group.  
+ * 										This must be a constant from the DATA_TYPE_ constant group.  If
+ * 										$intConstantGroupId is declared, then $intDataType is considered NULL.
+ * 										Defaults to NULL
+ * @param	string	$strDescription 	optional, description of the constant.  Defaults to NULL
+ * @param	integer	$intConstantGroupId	optional, Id of the ConstantGroup that this constant belongs to.
+ * 										Defaults to NULL
+ *									
+ * @return	mix							int  : Id of the Constant on success
+ * 										bool : FALSE on failure
+ *
+ * @function
+ */
+function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NULL, $intConstantGroupId=NULL)
+{
+	static $insConst;
+	
+	if (!isset($insConst))
+	{
+		$insConst = new StatementInsert("ConfigConstant");
+	}
+		
+	if ($intConstantGroupId !== NULL)
+	{
+		// A constant group has been specified
+		$intDataType = NULL; 
+	}
+	if ($intConstantGroupId === NULL && $intDataType === NULL)
+	{
+		// We cannot work out the data type for the constant.  Assume it is a string
+		$intDataType = DATA_TYPE_STRING;
+	}
+	
+	if ($intDataType == DATA_TYPE_BOOLEAN)
+	{
+		$mixValue = ($mixValue)? "1" : "0";
+	}
+	
+	$arrConst = Array(	"ConstantGroup" => $intConstantGroupId, "Name" => $strName,
+						"Description" => $strDescription, "Value" => "$mixValue",
+						"Type" => $intDataType);
+	
+	$mixResult = $insConst->Execute($arrConst);
+	return $mixResult;
+}
+
+// This also declares the constants retrieved from the database, and places any ConstantGroups
+// into the $GLOBALS['*arrConstant'] array
+// returns false, if it failed to create any of the constants
+function BuildConstantsFromDB()
+{
+	$strTables	= "ConfigConstant AS CC LEFT JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
+	$arrColumns	= Array("Id"=>"CC.Id", 
+						"Name" => "CC.Name", 
+						"Value" => "CC.Value", 
+						"ConstDesc" => "CC.Description",
+						"Type" => "CASE WHEN CC.ConstantGroup IS NULL THEN CC.Type ELSE CCG.Type END",
+						"ConstGroupName" => "CCG.Name");
+	$strOrderBy	= "CC.ConstantGroup, CC.Id";
+	$strWhere	= "TRUE"; 
+	$selConstants = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+	
+	$selConstants->Execute();
+	$arrConstants = $selConstants->FetchAll();
+	
+	foreach ($arrConstants as $arrConstant)
+	{
+		// Check that the constant has not already been defined
+		if (defined($arrConstant['Name']))
+		{
+			return FALSE;
+		}
+
+		// Type cast the constant's value to its data type
+		switch ($arrConstant['Type'])
+		{
+			case DATA_TYPE_STRING:
+				$mixValue = "{$arrConstant['Value']}"; 
+				break;
+			case DATA_TYPE_INTEGER:
+				$mixValue = (integer)$arrConstant['Value'];
+				break;
+			case DATA_TYPE_FLOAT:
+				$mixValue = (float)$arrConstant['Value'];
+				break;
+			case DATA_TYPE_BOOLEAN:
+				$mixValue = (bool)$arrConstant['Value'];
+				break;
+			default:
+				// Unknown data type
+				return FALSE;
+				break;
+		}
+
+		// Declare the constant
+		define($arrConstant['Name'], $mixValue);
+		
+		// If the constant is part of a ConstantGroup, add it to the $GLOBALS['*arrConstant'] array
+		if ($arrConstant['ConstGroupName'] !== NULL)
+		{
+			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant']		= $arrConstant['Name'];
+			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Description']	= $arrConstant['ConstDesc'];
+		}
+
+		//Debug stuff
+		/*
+		if ($arrConstant['ConstGroupName'] !== NULL)
+		{
+			echo "\$GLOBALS['*arrConstant']['{$arrConstant['ConstGroupName']}'][{$mixValue}]['Constant'] &nbsp;&nbsp;&nbsp;&nbsp;= {$arrConstant['Name']}<br />\n";
+			echo "\$GLOBALS['*arrConstant']['{$arrConstant['ConstGroupName']}'][{$mixValue}]['Description'] = {$arrConstant['Name']}<br />\n";
+		}
+		else
+		{
+			echo "define('{$arrConstant['Name']}', $mixValue)<br />";
+		}
+		*/
+	}
+}
 
 ?>

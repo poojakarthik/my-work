@@ -404,6 +404,7 @@ $GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Description']	= 'Recurring Adju
 /*define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
 define("CUSTOMER_GROUP_VOICETALK"	, 2);
 define("CUSTOMER_GROUP_IMAGINE"		, 3);*/
+/*  Deprecated now that CustomerGroups are defined in the CustomerGroup table of the database
 $GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Constant']	= 'CUSTOMER_GROUP_TELCOBLUE';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Description']	= 'Telco Blue';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Constant']	= 'CUSTOMER_GROUP_VOICETALK';
@@ -417,7 +418,7 @@ $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Constant']	= 'CUSTOMER_GRO
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Description']	= 'billing@voicetalk.com.au';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_IMAGINE';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Description']	= 'Imagine';
-
+*/
 // Credit Card Constants
 $GLOBALS['*arrConstant']	['CreditCard']	[1]	['Constant']	= 'CREDIT_CARD_VISA';
 $GLOBALS['*arrConstant']	['CreditCard']	[1]	['Description']	= 'VISA';
@@ -1172,10 +1173,6 @@ $GLOBALS['*arrConstant']	['DistputeResolve']	[2]	['Description']	= 'Partial Paym
 $GLOBALS['*arrConstant']	['DistputeResolve']	[3]	['Constant']	= 'DISPUTE_RESOLVE_NO_PAYMENT';
 $GLOBALS['*arrConstant']	['DistputeResolve']	[3]	['Description']	= 'No Payment';
 
-// Commonly used Email Addresses
-$GLOBALS['*arrConstant']	['EmailAddress']	['david.g@telcoblue.com.au']	['Constant']	= 'EMAIL_CREDIT_MANAGER';
-$GLOBALS['*arrConstant']	['EmailAddress']	['david.g@telcoblue.com.au']	['Description']	= 'Credit Manager';
-
 // Remote Copy Protocols
 $GLOBALS['*arrConstant']	['CopyProtocol']	[600]	['Constant']	= 'PROTOCOL_SSH2';
 $GLOBALS['*arrConstant']	['CopyProtocol']	[600]	['Description']	= 'Secure Shell 2 (SSH2)';
@@ -1280,6 +1277,16 @@ $GLOBALS['*arrConstant']	['LetterType']	[3]	['Description']	= 'Final Demand Noti
 $GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_INVOICE';
 $GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Invoice';
 
+// DataTypes for Constants
+$GLOBALS['*arrConstant']	['DataType']	[1]	['Constant']	= 'DATA_TYPE_STRING';
+$GLOBALS['*arrConstant']	['DataType']	[1]	['Description']	= 'String';
+$GLOBALS['*arrConstant']	['DataType']	[2]	['Constant']	= 'DATA_TYPE_INTEGER';
+$GLOBALS['*arrConstant']	['DataType']	[2]	['Description']	= 'Integer';
+$GLOBALS['*arrConstant']	['DataType']	[3]	['Constant']	= 'DATA_TYPE_FLOAT';
+$GLOBALS['*arrConstant']	['DataType']	[3]	['Description']	= 'Float';
+$GLOBALS['*arrConstant']	['DataType']	[4]	['Constant']	= 'DATA_TYPE_BOOLEAN';
+$GLOBALS['*arrConstant']	['DataType']	[4]	['Description']	= 'Boolean';
+
 
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
@@ -1296,8 +1303,6 @@ foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 		define($arrConstant['Constant'], $intConstant);
 	}
 }
-
-
 
 
 //TODO!bash! make this (and whatever uses it) work with GetConstantDescription
