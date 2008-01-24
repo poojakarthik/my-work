@@ -31,6 +31,9 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
+// viXen File Storage Base Directory
+define("FILE_BASE_DIR"				, "/home/vixen/");
+
 // db access
 define("DB_WITH_ID"					, TRUE);
 
@@ -151,6 +154,79 @@ $GLOBALS['*arrConstant']	['ProvisioningType']	[157]	['Constant']	= 'PRV_OPTUS_PR
 $GLOBALS['*arrConstant']	['ProvisioningType']	[157]	['Description']	= 'Optus Preselection Reversal Order File';
 
 
+// File Status
+$GLOBALS['*arrConstant']	['FileStatus']	[200]	['Constant']	= 'FILE_COLLECTED';
+$GLOBALS['*arrConstant']	['FileStatus']	[200]	['Description']	= 'Collected';
+$GLOBALS['*arrConstant']	['FileStatus']	[201]	['Constant']	= 'FILE_IMPORTING';
+$GLOBALS['*arrConstant']	['FileStatus']	[201]	['Description']	= 'Importing';
+$GLOBALS['*arrConstant']	['FileStatus']	[202]	['Constant']	= 'FILE_IMPORTED';
+$GLOBALS['*arrConstant']	['FileStatus']	[202]	['Description']	= 'Imported';
+$GLOBALS['*arrConstant']	['FileStatus']	[203]	['Constant']	= 'FILE_REIMPORT';
+$GLOBALS['*arrConstant']	['FileStatus']	[203]	['Description']	= 'Re-attempt import in the next cycle';
+$GLOBALS['*arrConstant']	['FileStatus']	[204]	['Constant']	= 'FILE_IGNORE';
+$GLOBALS['*arrConstant']	['FileStatus']	[204]	['Description']	= 'Ignored';
+$GLOBALS['*arrConstant']	['FileStatus']	[205]	['Constant']	= 'FILE_IMPORT_FAILED';
+$GLOBALS['*arrConstant']	['FileStatus']	[205]	['Description']	= 'Importing Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[206]	['Constant']	= 'FILE_NORMALISE_FAILED';
+$GLOBALS['*arrConstant']	['FileStatus']	[206]	['Description']	= 'Normalisation Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[207]	['Constant']	= 'FILE_NORMALISED';
+$GLOBALS['*arrConstant']	['FileStatus']	[207]	['Description']	= 'Normalised';
+
+$GLOBALS['*arrConstant']	['FileStatus']	[300]	['Constant']	= 'FILE_RENDERED';
+$GLOBALS['*arrConstant']	['FileStatus']	[300]	['Description']	= 'Rendered';
+$GLOBALS['*arrConstant']	['FileStatus']	[301]	['Constant']	= 'FILE_RENDER_FAILED';
+$GLOBALS['*arrConstant']	['FileStatus']	[301]	['Description']	= 'Rendering Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[302]	['Constant']	= 'FILE_DELIVERED';
+$GLOBALS['*arrConstant']	['FileStatus']	[302]	['Description']	= 'Delivered';
+$GLOBALS['*arrConstant']	['FileStatus']	[303]	['Constant']	= 'FILE_DELIVERY_FAILED';
+$GLOBALS['*arrConstant']	['FileStatus']	[303]	['Description']	= 'Delivery Failed';
+
+
+// EXPORT File Types
+// PROVISIONING
+$GLOBALS['*arrConstant']	['FileExport']	[1000]	['Constant']	= 'FILE_EXPORT_UNITEL_PRESELECTION';
+$GLOBALS['*arrConstant']	['FileExport']	[1000]	['Description']	= 'Unitel Preselection';
+$GLOBALS['*arrConstant']	['FileExport']	[1001]	['Constant']	= 'FILE_EXPORT_UNITEL_DAILY_ORDER';
+$GLOBALS['*arrConstant']	['FileExport']	[1001]	['Description']	= 'Unitel Daily Order';
+
+$GLOBALS['*arrConstant']	['FileExport']	[1100]	['Constant']	= 'FILE_EXPORT_AAPT_EOE';
+$GLOBALS['*arrConstant']	['FileExport']	[1100]	['Description']	= 'AAPT EOE';
+
+$GLOBALS['*arrConstant']	['FileExport']	[1200]	['Constant']	= 'FILE_EXPORT_OPTUS_PRESELECTION';
+$GLOBALS['*arrConstant']	['FileExport']	[1200]	['Description']	= 'Optus Preselection';
+$GLOBALS['*arrConstant']	['FileExport']	[1201]	['Constant']	= 'FILE_EXPORT_OPTUS_BAR';
+$GLOBALS['*arrConstant']	['FileExport']	[1201]	['Description']	= 'Optus Barring';
+$GLOBALS['*arrConstant']	['FileExport']	[1202]	['Constant']	= 'FILE_EXPORT_OPTUS_SUSPEND';
+$GLOBALS['*arrConstant']	['FileExport']	[1202]	['Description']	= 'Optus Suspension';
+$GLOBALS['*arrConstant']	['FileExport']	[1203]	['Constant']	= 'FILE_EXPORT_OPTUS_RESTORE';
+$GLOBALS['*arrConstant']	['FileExport']	[1203]	['Description']	= 'Optus Restoration';
+$GLOBALS['*arrConstant']	['FileExport']	[1204]	['Constant']	= 'FILE_EXPORT_OPTUS_PRESELECTION_REVERSAL';
+$GLOBALS['*arrConstant']	['FileExport']	[1204]	['Description']	= 'Optus Preselection Reversal';
+
+// IMPORT File Types
+// PROVISIONING
+$GLOBALS['*arrConstant']	['FileImport']	[5000]	['Constant']	= 'FILE_IMPORT_UNITEL_DAILY_ORDER';
+$GLOBALS['*arrConstant']	['FileImport']	[5000]	['Description']	= 'Unitel Daily Order Report';
+$GLOBALS['*arrConstant']	['FileImport']	[5001]	['Constant']	= 'FILE_IMPORT_UNITEL_DAILY_STATUS';
+$GLOBALS['*arrConstant']	['FileImport']	[5001]	['Description']	= 'Unitel Daily Status Report';
+$GLOBALS['*arrConstant']	['FileImport']	[5002]	['Constant']	= 'FILE_IMPORT_UNITEL_BASKETS';
+$GLOBALS['*arrConstant']	['FileImport']	[5002]	['Description']	= 'Unitel Agreed Baskets Report';
+$GLOBALS['*arrConstant']	['FileImport']	[5003]	['Constant']	= 'FILE_IMPORT_UNITEL_PRESELECTION_RPT';
+$GLOBALS['*arrConstant']	['FileImport']	[5003]	['Description']	= 'Unitel Preselection Report';
+
+$GLOBALS['*arrConstant']	['FileImport']	[5100]	['Constant']	= 'FILE_IMPORT_OPTUS_LINE_STATUS';
+$GLOBALS['*arrConstant']	['FileImport']	[5100]	['Description']	= 'Optus Line Status Report';
+
+$GLOBALS['*arrConstant']	['FileImport']	[5200]	['Constant']	= 'FILE_IMPORT_AAPT_EOE_RETURN';
+$GLOBALS['*arrConstant']	['FileImport']	[5200]	['Description']	= 'AAPT EOE Return File';
+$GLOBALS['*arrConstant']	['FileImport']	[5201]	['Constant']	= 'FILE_IMPORT_AAPT_LSD';
+$GLOBALS['*arrConstant']	['FileImport']	[5201]	['Description']	= 'AAPT Line Status Report';
+$GLOBALS['*arrConstant']	['FileImport']	[5202]	['Constant']	= 'FILE_IMPORT_AAPT_REJECT';
+$GLOBALS['*arrConstant']	['FileImport']	[5202]	['Description']	= 'AAPT Rejections Report';
+$GLOBALS['*arrConstant']	['FileImport']	[5203]	['Constant']	= 'FILE_IMPORT_AAPT_LOSS';
+$GLOBALS['*arrConstant']	['FileImport']	[5203]	['Description']	= 'AAPT Loss Report';
+
+
 
 // Carriers
 /*define("CARRIER_UNITEL"			, 1);
@@ -254,9 +330,9 @@ $GLOBALS['*arrConstant']['CDR'][184]['Constant']	= 'CDR_ETECH_RATED';
 $GLOBALS['*arrConstant']['CDR'][184]['Description'] = 'Not Invoiced by Etech';
 
 $GLOBALS['*arrConstant']['CDR'][170]['Constant']	= 'CDR_TEMP_CREDIT';
-//$GLOBALS['*arrConstant']['CDR'][170]['Description'] = 'Temporarily Credited';
+$GLOBALS['*arrConstant']['CDR'][170]['Description'] = 'Temporarily Credited';
 $GLOBALS['*arrConstant']['CDR'][171]['Constant'] 	= 'CDR_CREDITED';
-//$GLOBALS['*arrConstant']['CDR'][171]['Description'] = 'Credited';
+$GLOBALS['*arrConstant']['CDR'][171]['Description'] = 'Credited';
 
 $GLOBALS['*arrConstant']['CDR'][179]['Constant'] 	= 'CDR_CREDIT_MATCH_NOT_FOUND';
 $GLOBALS['*arrConstant']['CDR'][179]['Description'] = 'Unmatched Credit';
@@ -300,6 +376,10 @@ $GLOBALS['*arrConstant']	['CDRFileStatus']	[207]	['Constant']	= 'CDRFILE_NORMALI
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[207]	['Description']	= 'Normalised';
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[210]	['Constant']	= 'CDRFILE_ETECH_INVOICED';
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[210]	['Description']	= 'Invoiced by Etech';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[215]	['Constant']	= 'CDRFILE_NAME_NOT_UNIQUE';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[215]	['Description']	= 'File Name Exists, but Hash is Unique';
+
+
 
 // Provisioning File Handling
 /*define("PROVFILE_WAITING"			, 250);
@@ -398,13 +478,15 @@ $GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Constant']	= 'CHARGE_LINK_RECUR
 $GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Description']	= 'Recurring Adjustment';
 $GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Constant']	= 'CHARGE_LINK_RECURRING_CANCEL';
 $GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Description']	= 'Recurring Adjustment Cancellation';
+$GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Constant']	= 'CHARGE_LINK_OVERCHARGE_CREDIT';
+$GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Description']	= 'Invoice Overcharge Credit';
 
 
 // Customer Group Constants
 /*define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
 define("CUSTOMER_GROUP_VOICETALK"	, 2);
 define("CUSTOMER_GROUP_IMAGINE"		, 3);*/
-/*  Deprecated now that CustomerGroups are defined in the CustomerGroup table of the database
+// Deprecated now that CustomerGroups are defined in the CustomerGroup table of the database
 $GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Constant']	= 'CUSTOMER_GROUP_TELCOBLUE';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Description']	= 'Telco Blue';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Constant']	= 'CUSTOMER_GROUP_VOICETALK';
@@ -418,7 +500,7 @@ $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Constant']	= 'CUSTOMER_GRO
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Description']	= 'billing@voicetalk.com.au';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_IMAGINE';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Description']	= 'Imagine';
-*/
+
 // Credit Card Constants
 $GLOBALS['*arrConstant']	['CreditCard']	[1]	['Constant']	= 'CREDIT_CARD_VISA';
 $GLOBALS['*arrConstant']	['CreditCard']	[1]	['Description']	= 'VISA';
@@ -491,7 +573,11 @@ $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Description']	= 'Cancelled';
 $GLOBALS['*arrConstant']	['RequestStatus']	[305]	['Constant']	= 'REQUEST_STATUS_DUPLICATE';
 $GLOBALS['*arrConstant']	['RequestStatus']	[305]	['Description']	= 'Duplicated (Ignored)';
 $GLOBALS['*arrConstant']	['RequestStatus']	[306]	['Constant']	= 'REQUEST_STATUS_EXPORTING';
-$GLOBALS['*arrConstant']	['RequestStatus']	[306]	['Description']	= 'Current Exporting';
+$GLOBALS['*arrConstant']	['RequestStatus']	[306]	['Description']	= 'Currently Exporting';
+$GLOBALS['*arrConstant']	['RequestStatus']	[307]	['Constant']	= 'REQUEST_STATUS_DELIVERED';
+$GLOBALS['*arrConstant']	['RequestStatus']	[307]	['Description']	= 'Waiting on Carrier Response';
+$GLOBALS['*arrConstant']	['RequestStatus']	[308]	['Constant']	= 'REQUEST_STATUS_NO_MODULE';
+$GLOBALS['*arrConstant']	['RequestStatus']	[308]	['Description']	= 'Request Not Supported by viXen';
 
 $GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Constant']	= 'RESPONSE_STATUS_CANT_NORMALISE';
 $GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Description']	= 'Unable to Normalise';
