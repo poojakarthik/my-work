@@ -90,14 +90,14 @@ $arrScript                                                      = Array();
 		
 		// Copy DB
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputArchive';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputArchive';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'backup_scripts/';
 		$arrScript['SubScript']['CopyDB']				= $arrSubscript;
 		
 		// Copy CDR
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/cdr_unbilled.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'backup_scripts/cdr_unbilled.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'backup_scripts/';
 		$arrScript['SubScript']['CopyCDR']				= $arrSubscript;
 	
 	$arrConfig['Script']['FullDBCopy']	= $arrScript;
@@ -141,74 +141,74 @@ $arrScript                                                      = Array();
 		
 		// Normalisation
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/normalisation_app/normalisation.php -i';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/normalisation_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'normalisation/normalisation.php -i';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'normalisation/';
 		$arrScript['SubScript']['Normalise']		= $arrSubscript;
 		
 		// Rating
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/rating_app/rating.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/rating_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'rating/rating.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'rating/';
 		$arrScript['SubScript']['Rate']		= $arrSubscript;
 		
 		// Rate LL S&E Credits
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/rating_app/rate_ll_se_credits.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/rating_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'rating/rate_ll_se_credits.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'rating/';
 		$arrScript['SubScript']['RateLLSECredits']		= $arrSubscript;
 		
 		// Backup Invoice Output
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/backup_invoice_output.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/backup_invoice_output.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['BackupInvoiceOutput']	= $arrSubscript;
 		
 		// Check Un-Invoiced Special Charges
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/charges_app/charges_check_special.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/charges_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/charges_check_special.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
 		$arrScript['SubScript']['CheckSpecialCharges']	= $arrSubscript;
 		
 		// Special Charges
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/charges_app/special_charges.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/charges_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/special_charges.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
 		$arrScript['SubScript']['SpecialCharges']		= $arrSubscript;
 		
 		// Recurring Charges
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/charges_app/recurring_charges.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/charges_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/recurring_charges.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
 		$arrScript['SubScript']['RecurringCharges']		= $arrSubscript;
 		
 		// Payments
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/payment_app/payments.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/payment_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'payment/payments.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'payment/';
 		$arrScript['SubScript']['Payments']				= $arrSubscript;
 		
 		// Check CDR Files
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/cdrcheck.php -v';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/cdrcheck.php -v';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['CDRFileCheck']				= $arrSubscript;		
 		
 		// Billing Execute
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/billing_execute.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_execute.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['BillExecute']				= $arrSubscript;
 		
 		// Billing Print
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/billing_print.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_print.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['BillPrint']				= $arrSubscript;
 		
 		// Billing Samples
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/billing_samples.php bronze';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_samples.php bronze';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['BillSamples']				= $arrSubscript;
 	
 	$arrConfig['Script']['BronzeSamples']	= $arrScript;
@@ -252,14 +252,14 @@ $arrScript                                                      = Array();
 		
 		// Copy DB
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputArchive';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'backup_scripts/mysql_hot_copy.php CDR CDREtech InvoiceOutput InvoiceOutputArchive';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'backup_scripts/';
 		$arrScript['SubScript']['CopyDB']				= $arrSubscript;
 		
 		// Copy CDR
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/backup_scripts/cdr_unbilled.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/backup_scripts/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'backup_scripts/cdr_unbilled.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'backup_scripts/';
 		$arrScript['SubScript']['CopyCDR']				= $arrSubscript;
 	
 	$arrConfig['Script']['PartialDBCopy']	= $arrScript;
@@ -303,74 +303,74 @@ $arrScript                                                      = Array();
 		
 		// Normalisation
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/normalisation_app/normalisation.php -i';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/normalisation_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'normalisation/normalisation.php -i';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'normalisation/';
 		$arrScript['SubScript']['Normalise']		= $arrSubscript;
 		
 		// Rating
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/rating_app/rating.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/rating_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'rating/rating.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'rating/';
 		$arrScript['SubScript']['Rate']		= $arrSubscript;
 		
 		// Rate LL S&E Credits
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/rating_app/rate_ll_se_credits.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/rating_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'rating/rate_ll_se_credits.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'rating/';
 		$arrScript['SubScript']['RateLLSECredits']		= $arrSubscript;
 		
 		// Backup Invoice Output
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/backup_invoice_output.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/backup_invoice_output.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['BackupInvoiceOutput']	= $arrSubscript;
 		
 		// Check Un-Invoiced Special Charges
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/charges_app/charges_check_special.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/charges_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/charges_check_special.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
 		$arrScript['SubScript']['CheckSpecialCharges']	= $arrSubscript;
 		
 		// Special Charges
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/charges_app/special_charges.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/charges_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/special_charges.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
 		$arrScript['SubScript']['SpecialCharges']		= $arrSubscript;
 		
 		// Recurring Charges
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/charges_app/recurring_charges.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/charges_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/recurring_charges.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
 		$arrScript['SubScript']['RecurringCharges']		= $arrSubscript;
 		
 		// Payments
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/payment_app/payments.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/payment_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'payment/payments.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'payment/';
 		$arrScript['SubScript']['Payments']				= $arrSubscript;
 		
 		// Check CDR Files
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/cdrcheck.php -v';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/cdrcheck.php -v';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['CDRFileCheck']				= $arrSubscript;		
 		
 		// Billing Execute
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/billing_execute.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_execute.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['BillExecute']				= $arrSubscript;
 		
 		// Billing Print
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/billing_print.php';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_print.php';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['BillPrint']				= $arrSubscript;
 		
 		// Billing Samples
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/billing_samples.php silver';
-		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_samples.php silver';
+		$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 		$arrScript['SubScript']['BillSamples']				= $arrSubscript;
 	
 	$arrConfig['Script']['SilverSamples']	= $arrScript;

@@ -28,7 +28,7 @@
  */
  
 // load modules
-$strApplicationDir = "payment_app/modules/";
+$strApplicationDir = "payment/modules/";
 VixenRequire($strApplicationDir."base_module.php");
 VixenRequire($strApplicationDir."module_billexpress.php");
 VixenRequire($strApplicationDir."module_bpay.php");

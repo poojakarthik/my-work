@@ -35,7 +35,7 @@
 define("USER_NAME"						, "Billing_app");
 
 // Log path (with trailing /)
-define("LOG_PATH"						, FILES_BASE_PATH."log/billing_app/");
+define("LOG_PATH"						, FILES_BASE_PATH."log/billing/");
 
 // Billy Printing Variations
 define("BILL_PRINT"						, 900);

@@ -14,7 +14,7 @@ function NewPage($strApp, $strMethod)
 	// $strApp 		= Account
 	// $strMethod 	= View
 	
-	//ui_app/app_template/account.php:View()
+	//ui/app_template/account.php:View()
 	
 	/* Create Application Template $strApp with method $strMethod
 	 *
@@ -88,7 +88,7 @@ function NewPage($strApp, $strMethod)
 	//
 	//------------------------------------------------------------------//
 	
-	//ui_app/page_template/account_view.php
+	//ui/page_template/account_view.php
 	
 	/* Create Page Template $strApp _ $strMethod
 	 *
@@ -163,7 +163,7 @@ function NewHtmlObject($strClass, $strObject)
 	//
 	//------------------------------------------------------------------//
 	
-	//ui_app/html_template/account/details.php
+	//ui/html_template/account/details.php
 
 	// $strClass	= Account
 	// $strObject	= Details

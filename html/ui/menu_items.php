@@ -1029,7 +1029,7 @@ class MenuItems
 	 * @return	string				action to be executed when the ViewUnbilledCharges menu item is clicked
 	 *
 	 * Example URL
-	 * http://localhost/ross/vixen/intranet_app/service_unbilled.php?Id=1
+	 * http://localhost/ross/vixen/intranet/service_unbilled.php?Id=1
 	 *
 	 * @method
 	 */
@@ -1055,7 +1055,7 @@ class MenuItems
 	 * @return	string				action to be executed when the ChangeOfLessee menu item is clicked
 	 *
 	 * Example URL
-	 * http://localhost/ross/vixen/intranet_app/service_lessee.php?Service=1
+	 * http://localhost/ross/vixen/intranet/service_lessee.php?Service=1
 	 *
 	 * @method
 	 */

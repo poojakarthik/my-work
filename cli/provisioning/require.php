@@ -28,7 +28,7 @@
  */
 
 // Application modules
-$strModuleDir = "provisioning_app/modules/";
+$strModuleDir = "provisioning/modules/";
 /*VixenRequire($strModuleDir."base_import_module.php");
 VixenRequire($strModuleDir."base_export_module.php");
 

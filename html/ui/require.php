@@ -31,9 +31,9 @@
 require_once("../framework/require.php");
 
 // Set Application Dir
-$strApplicationDir = "ui_app/";
+$strApplicationDir = "ui/";
 // If absolute paths don't work then use: 
-// $strApplicationDir = "../ui_app/"; and use require_once instead of VixenRequire
+// $strApplicationDir = "../ui/"; and use require_once instead of VixenRequire
 
 // Application Requirements
 VixenRequire($strApplicationDir.'definitions.php');

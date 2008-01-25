@@ -28,8 +28,8 @@
  */
  
  // Collection modules
-VixenRequire("collection_app/modules/module_ftp.php");
-VixenRequire("collection_app/modules/module_aapt.php");
-VixenRequire("collection_app/modules/module_optus.php");
-
- ?>
+VixenRequire("collection/modules/module_ftp.php");
+VixenRequire("collection/modules/module_aapt.php");
+VixenRequire("collection/modules/module_optus.php");
+VixenRequire("collection/modules/module_ssh.php");
+?>
