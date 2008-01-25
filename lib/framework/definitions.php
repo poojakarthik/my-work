@@ -1375,8 +1375,8 @@ $GLOBALS['*arrConstant']	['DataType']	[4]	['Description']	= 'Boolean';
 
 
 // Special paths
-define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
-define("PATH_INVOICE_PDFS"				, "/home/vixen_invoices/");
+define("PATH_PAYMENT_UPLOADS"			, FILES_BASE_PATH."payments/");
+define("PATH_INVOICE_PDFS"				, FILES_BASE_PATH."invoices/");
 // The function GetBasePath() does not yet exist
 //define("PATH_INVOICE_PDFS"			, GetBasePath() . "vixen_invoices/");
 //define("PATH_PAYMENT_UPLOADS"			, GetBasePath() . "vixen_payments/");

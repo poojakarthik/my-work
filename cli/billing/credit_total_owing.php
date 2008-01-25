@@ -90,13 +90,13 @@ foreach ($arrPDFs as $strMonth=>$arrInvoices)
 	switch ($strMonth)
 	{
 		case 'Jan':
-			$strPath = "/home/vixen_invoices/2007/1/";
+			$strPath = FILES_BASE_PATH."invoices/2007/1/";
 			break;
 		case 'Feb':
-			$strPath = "/home/vixen_invoices/2007/2/";
+			$strPath = FILES_BASE_PATH."/invoices/2007/2/";
 			break;
 		case 'Mar':
-			$strPath = "/home/vixen_invoices/2007/3/";
+			$strPath = FILES_BASE_PATH."invoices/2007/3/";
 			break;
 		default:
 			Debug("ERROR");
