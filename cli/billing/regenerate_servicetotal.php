@@ -4,7 +4,7 @@
 $strInvoiceRun	= '465f4b2218916';	// June
 
 // Get Framework
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 // Statements
 $selAccounts	= new StatementSelect("Invoice", "*", "InvoiceRun = <InvoiceRun>");

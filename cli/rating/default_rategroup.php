@@ -1,5 +1,5 @@
 <?php
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 
 // Services to revert RateGroups to default on
 $arrServices = Array(23443, 23444, 23445, 23446, 23447, 23448, 23449, 23450, 23451);

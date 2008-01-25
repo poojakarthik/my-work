@@ -12,7 +12,7 @@
 echo "<pre>";
 
 // load application
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 $arrConfig = LoadApplication();
 
 // load remote copy

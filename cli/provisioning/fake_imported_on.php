@@ -1,6 +1,6 @@
 <?php
 
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 
 $selResponses = new StatementSelect("ProvisioningResponse PR JOIN FileImport FI ON PR.FileImport = FI.Id",

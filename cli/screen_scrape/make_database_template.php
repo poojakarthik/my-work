@@ -3,7 +3,7 @@
 $GLOBALS['**arrDatabase']['User']		= "root";
 $GLOBALS['**arrDatabase']['Password']	= "zeemu";
 
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 // Makes a template database from Minx's "vixen" database
 Debug("[ CREATE TEMPLATE DATABASE ]\n");

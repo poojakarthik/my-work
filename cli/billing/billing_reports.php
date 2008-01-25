@@ -27,7 +27,7 @@
  */
 
 // Load framework
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
 $GLOBALS['appBilling'] = new ApplicationBilling($arrConfig);

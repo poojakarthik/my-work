@@ -25,7 +25,7 @@ $arrFullCopy['UIAppDocumentation']			= TRUE;
 $arrFullCopy['UIAppDocumentationOptions']	= TRUE;
 
 // we use the actual tables not the db def in case it is out of date
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 LoadApplication();
 
 /*$selTest	= new StatementSelect("flexdemodata.CDR", "MAX(StartDatetime)");

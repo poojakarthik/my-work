@@ -1,5 +1,5 @@
 <?php
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 // Check parameters
 if (!($intPayment = (int)$argv[1]))

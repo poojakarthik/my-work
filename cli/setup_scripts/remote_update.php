@@ -25,7 +25,7 @@
  *
  */
  
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 require_once("../framework/remote_copy.php");
  
 // Definitions

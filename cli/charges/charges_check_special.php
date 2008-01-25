@@ -8,7 +8,7 @@
 //----------------------------------------------------------------------------//
 // check for uninvoiced Special/Billing-Time charges
 //----------------------------------------------------------------------------//
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 $arrFees = Array();
 // Late Payment Fee

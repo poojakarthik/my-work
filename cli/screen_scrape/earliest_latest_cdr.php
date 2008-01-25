@@ -4,7 +4,7 @@
 // Finds the earliest and latest CDR for a given Service
 //----------------------------------------------------------------------------//
 
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 $arrCols = Array();
 $arrCols['EarliestCDR']	= NULL;

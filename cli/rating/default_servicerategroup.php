@@ -68,7 +68,7 @@ $arrOldRateGroups[]	= 126;
 $arrOldRateGroups[]	= 127;
 $arrOldRateGroups[]	= 166;
 
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 
 $strPlans = implode(', ', $arrPlans);
 

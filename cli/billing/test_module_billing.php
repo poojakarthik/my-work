@@ -10,7 +10,7 @@
 //----------------------------------------------------------------------------//
  
 // load application
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 LoadApplication();
 
 // load remote copy

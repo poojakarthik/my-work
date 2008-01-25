@@ -8,7 +8,7 @@
 //----------------------------------------------------------------------------//
 // normalisation application
 //----------------------------------------------------------------------------//
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
 echo "<pre>\n";

@@ -29,7 +29,7 @@
 $GLOBALS['**arrDatabase']['User']		= "root";
 $GLOBALS['**arrDatabase']['Password']	= "zeemu";
 
-require("../framework/require.php");
+require("../../flex.require.php");
 
 // Check for customer parameter
 if (!($strCustomer = trim($argv[1])) || !preg_match("/^([A-Za-z0-9])*(_([A-Za-z0-9])+)*$/", $strCustomer))

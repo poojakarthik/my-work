@@ -8,7 +8,7 @@
 //----------------------------------------------------------------------------//
 // rating a single CDR
 //----------------------------------------------------------------------------//
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
 // load rating class

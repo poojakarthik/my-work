@@ -10,7 +10,7 @@
 //----------------------------------------------------------------------------//
 
 // load application
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 
 //----------------------------------------------------------------------------//
 // TODO: Specify the DataReport here!  See report_skeleton.php for tut

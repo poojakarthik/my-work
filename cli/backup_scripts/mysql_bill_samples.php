@@ -1,6 +1,6 @@
 <?php
 
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 // we use the actual tables not the db def in case it is out of date
 

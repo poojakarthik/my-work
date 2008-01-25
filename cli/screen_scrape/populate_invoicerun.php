@@ -1,6 +1,6 @@
 <?php
 // call application
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 // Get InvoiceRuns
 $selInvoiceRuns		= new StatementSelect("Invoice", "InvoiceRun, CreatedOn AS BillingDate, SUM(Total) AS BillInvoiced, SUM(Tax) AS BillTax, COUNT(Id) AS InvoiceCount", "1", "CreatedOn", NULL, "InvoiceRun");

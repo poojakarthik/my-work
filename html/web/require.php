@@ -28,7 +28,7 @@
  */
 
 // Framework Requirements
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 // Set Application Framework Dir
 $strApplicationFrameworkDir	= "ui_app/";

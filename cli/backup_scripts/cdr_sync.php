@@ -1,6 +1,6 @@
 <?php
 
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 
 //----------------------------------------------------------------------------//
 // Attempts a partial update of the CDR table on Catwalk

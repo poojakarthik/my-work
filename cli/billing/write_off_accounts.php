@@ -11,7 +11,7 @@ $strPath	= "/home/richdavis/Desktop/writeoff_20070921.csv";
 //----------------------------------------------------------------------------//
 
 // Load Framework
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 
 // Open and parse file
 $ptrFile		= fopen($strPath, 'r');

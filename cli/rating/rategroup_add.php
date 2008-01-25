@@ -16,7 +16,7 @@ $arrRates[]	= 124;		// Rebilled @ Cost
 $arrPlans = Array();
 $arrPlans[30]	= 167;
 
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 
 $arrRateGroup	= $GLOBALS['dbaDatabase']->FetchClean("RateGroup");
 

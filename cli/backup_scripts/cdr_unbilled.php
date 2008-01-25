@@ -1,6 +1,6 @@
 <?php
 
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 
 //----------------------------------------------------------------------------//
 // Truncates vixenworking.CDR then copies unbilled CDRs from vixen.CDR

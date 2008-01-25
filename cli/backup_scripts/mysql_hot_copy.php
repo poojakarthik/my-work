@@ -5,7 +5,7 @@
 //$GLOBALS['**arrDatabase']['Password']	= 'fuckthisshit';
 
 // we use the actual tables not the db def in case it is out of date
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 LoadApplication();
 
 CliEcho("\n[ VIXENWORKING HOT COPY ]\n");

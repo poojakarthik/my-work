@@ -1,7 +1,7 @@
 <?php
 
 // require stuff
-require_once('../framework/require.php');
+require_once('../../flex.require.php');
 require_once('require.php');
 
 echo "<pre>";

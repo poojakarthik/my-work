@@ -7,7 +7,7 @@
 //----------------------------------------------------------------------------//
 
 // call application
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 // Get STT Entries
 $selServiceTypeTotal	= new StatementSelect("ServiceTypeTotal", "*", "Id > <MaxId> AND RateGroup = 0", NULL, 1000);

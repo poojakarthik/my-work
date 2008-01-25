@@ -27,7 +27,7 @@
  */
 
 // It is assumed that this script is in one of the sub-directories of vixen
-require_once("../framework/require.php");
+require_once("../../flex.require.php");
 
 // Declare constants
 Define(DEFAULT_BASE_PATH, "./late_notices");
