@@ -659,7 +659,7 @@
 				{
 					// Are we too late to run?
 					// Certain number of days before the start of next month
-					$intFirstNextMonth	= strtotime(date("Y-m-01", strtotime("+1 month", $intTimeNow)));
+					$intFirstNextMonth	= strtotime("+1 month", strtotime(date("Y-m-01", $intTimeNow)));
 					$intEarliestRun		= strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime("{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
 					$intLatestRun		= strtotime("+{$arrScript['Config']['FinishTime']} seconds", strtotime("{$arrScript['Config']['RecurringDay']} days", $intFirstNextMonth));
 					
