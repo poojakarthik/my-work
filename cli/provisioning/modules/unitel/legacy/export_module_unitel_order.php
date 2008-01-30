@@ -546,6 +546,12 @@
 		
 		// add optional fields
 		$arrClean['BillAddress2']		= $arrAddress['BillAddress2'];
+		
+		// Trim all fields
+		foreach ($arrClean as $strField=>$strValue)
+		{
+			$arrClean[$strField]	= trim($strValue);
+		}
 
 		return $arrClean;
 	}
