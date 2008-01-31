@@ -2365,7 +2365,7 @@
 		 			$this->_rptBillingReport->AddMessage(str_pad("\t\tAddress: '$strEmail'...", 70, " ", STR_PAD_RIGHT), FALSE);
 		 			
 		 			// Validate email address
-		 			if (!preg_match('/^([[:alnum:]]([-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $strEmail))
+		 			if (!preg_match('/^([[:alnum:]]([+-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $strEmail))
 		 			{
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Email address is invalid");
 		 				continue;
