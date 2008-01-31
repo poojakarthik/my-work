@@ -1782,11 +1782,6 @@ $strFrameworkDir .= 'lib/framework/';
 	require_once($strFrameworkDir."report.php");
 	require_once($strFrameworkDir."error.php");
 	require_once($strFrameworkDir."exception_vixen.php");
-
-	// Retrieve all constants stored in the database
-	// Note that this will not override constants that have already been defined
-	BuildConstantsFromDB();
-
 	
 	// PEAR Packages
 	require_once("Console/Getopt.php");
@@ -3650,17 +3645,20 @@ function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NU
  * then it will not be changed.  All ConstantGroups defined in the database are also loaded into the 
  * $GLOBALS['*arrConstant'][ConstantGroupName] structure
  *
- * @param	boolean		$bolExceptionOnError	optional, if TRUE then an exception is thrown if 
- * 												it cannot resolve the data type of the constant
- * 												or if it is declaring a constant in a ConstantGroup
- * 												with a value that is already used by another constant
- * 												within the constant group. Defaults to FALSE
+ * @param	boolean		$bolExceptionOnError			optional, if TRUE then an exception is thrown if 
+ * 														it cannot resolve the data type of the constant
+ * 														or if it is declaring a constant in a ConstantGroup
+ * 														with a value that is already used by another constant
+ * 														within the constant group. Defaults to FALSE
+ * @param	booleab		$bolExceptionOnRedefinition		optional, if TRUE then an exception is thrown if
+ * 														a constant in the database has already been defined
+ * 														in the php global namespace. Defaults to FALSE
  *
  * @return	boolean								TRUE on success, else FALSE
  *
  * @function
  */
-function BuildConstantsFromDB($bolExceptionOnError=FALSE)
+function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefinition=FALSE)
 {
 	$strTables	= "ConfigConstant AS CC LEFT JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
 	$arrColumns	= Array("Id"=>"CC.Id", 
@@ -3681,7 +3679,15 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE)
 		// Check if the constant has already been defined
 		if (defined($arrConstant['Name']))
 		{
-			// The constant has already been defined.  Don't change it at all
+			// The constant has already been defined.  
+			if ($bolExceptionOnRedefinition)
+			{
+				// Throw an exception
+				$strMsg = "Error: Attempting to declare constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, but this has already been declared within the php global namespace with value: ". constant($arrConstant['Name']);
+				throw new Exception($strMsg);
+			}
+			
+			// Move on to the next constant
 			continue;
 		}
 
@@ -3712,7 +3718,7 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE)
 					if ($bolExceptionOnError)
 					{
 						// Throw an exception
-						$strMsg = 	"Error: Constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, has unknown datatype {$arrConstant['Type']}";
+						$strMsg = "Error: Constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, has unknown datatype {$arrConstant['Type']}";
 						throw new Exception($strMsg);
 					}
 					

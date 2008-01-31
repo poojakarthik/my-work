@@ -89,8 +89,8 @@ class AppTemplatePlan extends ApplicationTemplate
 		// (Nothing to add)
 		
 		// Breadcrumb menu
-		/*Breadcrumb()->Employee_Console();
-		BreadCrumb()->SetCurrentPage("Available Plans");*/
+		Breadcrumb()->Employee_Console();
+		BreadCrumb()->SetCurrentPage("Available Plans");
 		
 		// Retrieve all RatePlans that aren't currently archived
 		

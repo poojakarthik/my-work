@@ -273,11 +273,15 @@ class HTMLElements
 	 */
 	function Label($arrParams)
 	{
-		$strLabel	= $arrParams['Definition']['Label'];
-		$strValue	= $this->BuildOutputValue($arrParams);
-		$strValue	= nl2br($strValue);
+		$strLabel = $arrParams['Definition']['Label'];
+		$strValue = $this->BuildOutputValue($arrParams);
 		
-		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
+		// Convert any html special chars to safe chars
+		$strValue = htmlspecialchars($strValue, ENT_QUOTES);
+		
+		$strValue = nl2br($strValue);
+		
+		$strId = "{$arrParams['Object']}.{$arrParams['Property']}";
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
@@ -310,6 +314,10 @@ class HTMLElements
 	function RenderValue($arrParams)
 	{
 		$strValue = $this->BuildOutputValue($arrParams);
+		
+		// Convert any html special chars to safe chars
+		$strValue = htmlspecialchars($strValue, ENT_QUOTES);
+		
 		$strValue = nl2br($strValue);
 		
 		// output the formatted value in <span> tags

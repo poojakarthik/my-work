@@ -63,7 +63,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
@@ -98,7 +98,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		// Check if the form was submitted
 		if (SubmittedForm('NewCustomerGroup', 'Ok'))
@@ -166,7 +166,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		// Load the CustomerGroupDetails
 		if (!DBO()->CustomerGroup->Load())
@@ -220,7 +220,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 
 		// Load the CustomerGroup
 		DBO()->CustomerGroup->Load();
@@ -262,7 +262,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 
 		// Validate the CustomerGroup
 		if (DBO()->CustomerGroup->IsInvalid())

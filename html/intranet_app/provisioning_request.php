@@ -54,19 +54,19 @@
 	{
 		case REQUEST_BAR_SOFT:
 			// a soft bar
-			$strBarAction = "Provisioning Request: Soft Bar\n";
+			$strBarAction = "Provisioning Request: Soft Bar";
 			break;
 		case REQUEST_UNBAR_SOFT:
 			// a soft bar reversal
-			$strBarAction = "Provisioning Request: Soft Bar Reversal\n";
+			$strBarAction = "Provisioning Request: Soft Bar Reversal";
 			break;
 		case REQUEST_BAR_HARD:
 			// a hard bar
-			$strBarAction = "Provisioning Request: Hard Bar\n";			
+			$strBarAction = "Provisioning Request: Hard Bar";			
 			break;
 		case REQUEST_UNBAR_HARD:
 			// a hard bar reversal
-			$strBarAction = "Provisioning Request: Hard Bar Reversal\n";
+			$strBarAction = "Provisioning Request: Hard Bar Reversal";
 			break;
 		default:
 			// default do nothing
@@ -76,20 +76,14 @@
 	if ($strBarAction)
 	{
 		// System note is generated when address details are changed
-		$strEmployeeFirstName = $athAuthentication->AuthenticatedEmployee()->Pull('FirstName')->getValue();
-		$strEmployeeLastName = $athAuthentication->AuthenticatedEmployee()->Pull('LastName')->getValue() ;
-		$strEmployeeId = $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
-		$strEmployeeFullName =  "$strEmployeeFirstName $strEmployeeLastName";
-	
-		$intAccountId = $srvService->Pull ('Account')->getValue ();
-		$intAccountGroup = $srvService->Pull ('AccountGroup')->getValue ();
-		$intServiceId = $_POST ['Service'];
-	
-		$strNote = "Service Provision was changed by $strEmployeeFullName on " . date('m/d/y') . "\n";
-		$strNote .= "The following changes were made:\n";
-		$strNote .= "Service: $intServiceId\n";
+		$strEmployeeId		= $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
+		$intAccountId		= $srvService->Pull('Account')->getValue();
+		$intAccountGroup	= $srvService->Pull('AccountGroup')->getValue();
+		$intServiceId 		= $_POST ['Service'];
+
+		$strNote  = "$strBarAction\n";
+		$strNote .= "Service: ". $srvService->Pull('FNN')->getValue() ."\n";
 		$strNote .= "Carrier: " . GetConstantDescription($_POST ['Carrier'], 'Carrier') . "\n";
-		$strNote .= $strBarAction;
 
 		$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $strEmployeeId, $intAccountGroup, $intAccountId, $intServiceId, NULL);
 	}

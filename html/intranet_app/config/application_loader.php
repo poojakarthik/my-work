@@ -108,7 +108,8 @@ if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE)
 // LOGIC
 //----------------------------------------------------------------------------//
 
-// load framework
+// load framework OLD
+/*
 require_once($strFrameworkDir."framework.php");
 require_once($strFrameworkDir."functions.php");
 require_once($strFrameworkDir."definitions.php");
@@ -119,9 +120,17 @@ require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 
+
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
+*/
+
+// New Method for loading the framework
+require_once($strFrameworkDir."functions.php");
+LoadFramework();
+
+
 
 // load application 
 require_once($strApplicationDir."definitions.php");
