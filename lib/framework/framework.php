@@ -167,7 +167,7 @@
 		
 		$this->_selAccountPayments = new StatementSelect(	"Payment",
 															"SUM(Balance) AS TotalBalance",
-															"Account = <Account>");
+															"Account = <Account> AND Status IN (". PAYMENT_WAITING .", ". PAYMENT_PAYING .", ". PAYMENT_FINISHED .")");
 		
 		$this->_selAccountOverdueBalance = new StatementSelect(	"Invoice",
 	 														"SUM(Balance) - SUM(Disputed) AS OverdueBalance",

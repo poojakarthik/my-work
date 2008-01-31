@@ -31,7 +31,7 @@
 require_once("../../flex.require.php");
 
 // Set Application Dir
-$strApplicationDir = "ui/";
+$strApplicationDir = "html/ui/";
 // If absolute paths don't work then use: 
 // $strApplicationDir = "../ui/"; and use require_once instead of VixenRequire
 

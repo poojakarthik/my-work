@@ -17,10 +17,10 @@ define("FLEX_LOCAL_TIMEZONE"			, "Australia/Brisbane");
 //----------------------------------------------------------------------------//
 // DATABASE CONFIG
 //----------------------------------------------------------------------------//
-$GLOBALS['**arrDatabase']['URL']		= "192.168.2.224";
-$GLOBALS['**arrDatabase']['User']		= "rich";
-$GLOBALS['**arrDatabase']['Password']	= "richEEE";
-$GLOBALS['**arrDatabase']['Database']	= "flexdemodata";
+$GLOBALS['**arrDatabase']['URL']		= "10.11.12.13";
+$GLOBALS['**arrDatabase']['User']		= "vixen";
+$GLOBALS['**arrDatabase']['Password']	= "V1x3n";
+$GLOBALS['**arrDatabase']['Database']	= "vixenworking";
 $GLOBALS['**arrDatabase']['Timezone']	= "Australia/Brisbane";
 //$GLOBALS['**arrDatabase']['Port']		= "";
 

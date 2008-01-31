@@ -31,8 +31,8 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 $strVixenBaseDir = GetVixenBase();
-Define ('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "ui/");
-Define ('MODULE_BASE_DIR', 		$strVixenBaseDir . "ui/");
+Define ('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "html/ui/");
+Define ('MODULE_BASE_DIR', 		$strVixenBaseDir . "html/ui/");
 
 // Define which flavour of browsers are supported by this application
 Define ('BROWSER_IE',	0x1);
@@ -129,6 +129,12 @@ define('HTML_CONTEXT_EDIT',					510);
 define('HTML_CONTEXT_CURRENT_PLAN',			511);
 define('HTML_CONTEXT_FUTURE_PLAN',			512);
 define('HTML_CONTEXT_IFRAME',				513);
+define('HTML_CONTEXT_ALL',					514);
+define('HTML_CONTEXT_SINGLE',				515);
+define('HTML_CONTEXT_NEW',					516);
+
+
+
 
 // constants for the cap/excess rates used within the rate add page
 define('RATE_CAP_NO_CAP',					100);
@@ -177,6 +183,7 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]		= 
 define("PERMISSION_RATE_MANAGEMENT"		, 0x20);	$arrPermissions[PERMISSION_RATE_MANAGEMENT]	= "Rate Management";// 32
 define("PERMISSION_CREDIT_CARD"			, 0x40);	$arrPermissions[PERMISSION_CREDIT_CARD]		= "Credit Card";	// 64
 define("PERMISSION_OPERATOR_VIEW"		, 0x80);	$arrPermissions[PERMISSION_OPERATOR_VIEW]	= "Operator View";	// 128
+define("PERMISSION_SUPER_ADMIN"			, 0x100);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 256
 
 													$GLOBALS['Permissions']	= $arrPermissions;
 // This is used in the datbase to represent an "end Date" or "Closed on date" that should never be reached
@@ -201,6 +208,7 @@ define("EVENT_ON_ACCOUNT_SERVICES_UPDATE"			, "OnAccountServicesUpdate");
 define("EVENT_ON_ACCOUNT_PRIMARY_CONTACT_UPDATE"	, "OnAccountPrimaryContactUpdate");
 define("EVENT_ON_EDIT_ACCOUNT_DETAILS_CANCEL"		, "OnEditAccountDetailsCancel");
 define("EVENT_ON_CUSTOMER_GROUP_DETAILS_UPDATE"		, "OnCustomerGroupDetailsUpdate");
+define("EVENT_ON_CONFIG_CONSTANT_UPDATE"			, "OnConfigConstantUpdate");
 
 // Maximum file upload size is 1 megabyte
 define("RATEGROUP_IMPORT_MAXSIZE", 1048576);

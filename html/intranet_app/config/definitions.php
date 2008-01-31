@@ -50,6 +50,7 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]		= 
 define("PERMISSION_RATE_MANAGEMENT"		, 0x20);	$arrPermissions[PERMISSION_RATE_MANAGEMENT]	= "Rate Management";// 32
 define("PERMISSION_CREDIT_CARD"			, 0x40);	$arrPermissions[PERMISSION_CREDIT_CARD]		= "Credit Card";	// 64
 define("PERMISSION_OPERATOR_VIEW"		, 0x80);	$arrPermissions[PERMISSION_OPERATOR_VIEW]	= "Operator View";	// 128
+define("PERMISSION_SUPER_ADMIN"			, 0x100);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 256
 
 													$GLOBALS['Permissions']	= $arrPermissions;
 

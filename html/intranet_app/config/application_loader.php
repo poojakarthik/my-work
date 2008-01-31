@@ -53,7 +53,7 @@ if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE)
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= "../framework/"; 
+ $strFrameworkDir		= "../../lib/framework/"; 
  
 //----------------------------------------------------------------//
 // strApplicationDir

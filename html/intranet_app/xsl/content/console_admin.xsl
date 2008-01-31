@@ -131,17 +131,23 @@
 					View and Add Employees.
 				</td>
 			</tr>
-			<tr>
-				<td>
-					<a href="vixen.php/CustomerGroup/ViewAll/">
-						<img src="img/template/customer_group.png" title="Customer Groups" class="MenuIcon" />
-					</a>
-				</td>
-				<td>
-					<strong> Manage Customer Groups</strong><br />
-					Edit and Add Customer Groups.
-				</td>
-			</tr>
+			<!-- If Admin... -->
+			<xsl:choose>
+				<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Super Admin']) = 1">
+					<!-- System Settings Menu -->
+					<tr>
+						<td>
+							<a href="vixen.php/Config/SystemSettingsMenu/">
+								<img src="img/template/system_settings_menu_item.png" title="System Settings Menu" class="MenuIcon" />
+							</a>
+						</td>
+						<td>
+							<strong> System Settings Menu</strong><br />
+							Manage system settings.
+						</td>
+					</tr>
+				</xsl:when>
+			</xsl:choose>
 		</table>
 	</xsl:template>
 </xsl:stylesheet>

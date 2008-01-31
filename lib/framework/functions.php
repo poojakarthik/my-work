@@ -1768,7 +1768,8 @@ function LoadFramework($strFrameworkDir=NULL)
 	if (!$strFrameworkDir)
 	{
 		$strFrameworkDir = GetVixenBase();
-		$strFrameworkDir .= 'framework/';
+		//$strFrameworkDir .= 'framework/';
+$strFrameworkDir .= 'lib/framework/';
 	}
 	
 	// load framework
@@ -1781,6 +1782,10 @@ function LoadFramework($strFrameworkDir=NULL)
 	require_once($strFrameworkDir."report.php");
 	require_once($strFrameworkDir."error.php");
 	require_once($strFrameworkDir."exception_vixen.php");
+
+	// Retrieve all constants stored in the database
+	// Note that this will not override constants that have already been defined
+	BuildConstantsFromDB();
 
 	
 	// PEAR Packages
@@ -3632,10 +3637,30 @@ function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NU
 	return $mixResult;
 }
 
-// This also declares the constants retrieved from the database, and places any ConstantGroups
-// into the $GLOBALS['*arrConstant'] array
-// returns false, if it failed to create any of the constants
-function BuildConstantsFromDB()
+//------------------------------------------------------------------------//
+// BuildConstantsFromDB
+//------------------------------------------------------------------------//
+/**
+ * BuildConstantsFromDB()
+ *
+ * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
+ *
+ * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
+ * If a constant declared in the database, has aleady been declared in the php process, 
+ * then it will not be changed.  All ConstantGroups defined in the database are also loaded into the 
+ * $GLOBALS['*arrConstant'][ConstantGroupName] structure
+ *
+ * @param	boolean		$bolExceptionOnError	optional, if TRUE then an exception is thrown if 
+ * 												it cannot resolve the data type of the constant
+ * 												or if it is declaring a constant in a ConstantGroup
+ * 												with a value that is already used by another constant
+ * 												within the constant group. Defaults to FALSE
+ *
+ * @return	boolean								TRUE on success, else FALSE
+ *
+ * @function
+ */
+function BuildConstantsFromDB($bolExceptionOnError=FALSE)
 {
 	$strTables	= "ConfigConstant AS CC LEFT JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
 	$arrColumns	= Array("Id"=>"CC.Id", 
@@ -3653,42 +3678,74 @@ function BuildConstantsFromDB()
 	
 	foreach ($arrConstants as $arrConstant)
 	{
-		// Check that the constant has not already been defined
+		// Check if the constant has already been defined
 		if (defined($arrConstant['Name']))
 		{
-			return FALSE;
+			// The constant has already been defined.  Don't change it at all
+			continue;
 		}
 
 		// Type cast the constant's value to its data type
-		switch ($arrConstant['Type'])
+		if ($arrConstant['Value'] === NULL)
 		{
-			case DATA_TYPE_STRING:
-				$mixValue = "{$arrConstant['Value']}"; 
-				break;
-			case DATA_TYPE_INTEGER:
-				$mixValue = (integer)$arrConstant['Value'];
-				break;
-			case DATA_TYPE_FLOAT:
-				$mixValue = (float)$arrConstant['Value'];
-				break;
-			case DATA_TYPE_BOOLEAN:
-				$mixValue = (bool)$arrConstant['Value'];
-				break;
-			default:
-				// Unknown data type
+			// Don't bother type casting it if it is equal to NULL
+			$mixValue = NULL;
+		}
+		else
+		{
+			switch ($arrConstant['Type'])
+			{
+				case DATA_TYPE_STRING:
+					$mixValue = (string)$arrConstant['Value']; 
+					break;
+				case DATA_TYPE_INTEGER:
+					$mixValue = (integer)$arrConstant['Value'];
+					break;
+				case DATA_TYPE_FLOAT:
+					$mixValue = (float)$arrConstant['Value'];
+					break;
+				case DATA_TYPE_BOOLEAN:
+					$mixValue = (bool)$arrConstant['Value'];
+					break;
+				default:
+					// Unknown data type
+					if ($bolExceptionOnError)
+					{
+						// Throw an exception
+						$strMsg = 	"Error: Constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, has unknown datatype {$arrConstant['Type']}";
+						throw new Exception($strMsg);
+					}
+					
+					return FALSE;
+					break;
+			}
+		}
+
+		// If the constant is part of a ConstantGroup, add it to the $GLOBALS['*arrConstant'] array
+		if ($arrConstant['ConstGroupName'] !== NULL)
+		{
+			// Check that the value is not already in use by another constant within the ConstantGroup
+			if (isset($GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]))
+			{
+				// This value is already being used
+				if ($bolExceptionOnError)
+				{
+					// Throw an exception
+					$strMsg = 	"Error: ConstantGroup: {$arrConstant['ConstGroupName']} already has constant ". 
+								$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant'] .
+								" set to $mixValue so it cannot also contain the constant {$arrConstant['Name']} which ".
+								"is also set to $mixValue";
+					throw new Exception($strMsg);
+				}
 				return FALSE;
-				break;
+			}
+			
+			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant']		= $arrConstant['Name'];
+			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Description']	= $arrConstant['ConstDesc'];
 		}
 
 		// Declare the constant
 		define($arrConstant['Name'], $mixValue);
-		
-		// If the constant is part of a ConstantGroup, add it to the $GLOBALS['*arrConstant'] array
-		if ($arrConstant['ConstGroupName'] !== NULL)
-		{
-			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant']		= $arrConstant['Name'];
-			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Description']	= $arrConstant['ConstDesc'];
-		}
 
 		//Debug stuff
 		/*
@@ -3726,8 +3783,6 @@ function GetCustomerName()
 {
 	return $GLOBALS['**arrCustomerConfig']['Customer'];
 }
-
-
 
 
 

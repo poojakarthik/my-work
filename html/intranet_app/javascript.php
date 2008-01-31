@@ -39,7 +39,7 @@
  */
  
 Define ('LOCAL_BASE_DIR', "../intranet_app");
-Define ('FRAMEWORK_BASE_DIR', "../ui_app");
+Define ('FRAMEWORK_BASE_DIR', "../ui");
 
 // include the framework javascript.php file
 require_once(FRAMEWORK_BASE_DIR . "/javascript.php");

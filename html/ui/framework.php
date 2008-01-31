@@ -1502,17 +1502,8 @@ class Validation
 		{
 			return FALSE;
 		}
-		else
-		{
-			if ($this->Integer($intValue))
-			{
-				return TRUE;
-			}
-			else
-			{
-				return FALSE;
-			}
-		}
+		
+		return $this->Integer($intValue);
 	}
 
 	

@@ -67,6 +67,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
+		BreadCrumb()->System_Settings_Menu();
 		BreadCrumb()->SetCurrentPage("Customer Groups");
 		
 		// Retrieve the list of customer groups
@@ -88,7 +89,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * Handles the logic for adding a new customer group
 	 * 
 	 * Handles the logic for adding a new customer group
-	 * It does assume anything to be passed to it via GET variables, intially
+	 * It does not assume anything to be passed to it via GET variables, intially
 	 *
 	 * @return		void
 	 * @method
@@ -137,6 +138,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
+		BreadCrumb()->System_Settings_Menu();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("New Customer Group");
 		
@@ -186,6 +188,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
+		BreadCrumb()->System_Settings_Menu();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("Customer Group");
 		

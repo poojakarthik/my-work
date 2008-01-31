@@ -283,6 +283,47 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// ViewAllConstants
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewAllConstants()
+	 *
+	 * Compiles the Href to be executed when the ViewAllConstants menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewAllConstants menu item is triggered
+	 * 
+	 * @return	string			Href to be executed when the ViewAllConstants menu item is triggered
+	 *
+	 * @method
+	 */
+	function ViewAllConstants()
+	{
+		$this->strLabel	= "Constants Management";
+		return "vixen.php/Config/ManageConstants/";
+	}
+	
+	//------------------------------------------------------------------------//
+	// SystemSettingsMenu
+	//------------------------------------------------------------------------//
+	/**
+	 * SystemSettingsMenu()
+	 *
+	 * Compiles the Href to be executed when the SystemSettingsMenu menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the SystemSettingsMenu menu item is triggered
+	 * 
+	 * @return	string						Href to be executed when the ExportInvoiceAsCSV menu item is triggered
+	 *
+	 * @method
+	 */
+	function SystemSettingsMenu()
+	{
+		$this->strLabel	= "System Settings";
+		return "vixen.php/Config/SystemSettingsMenu/";
+	}
+
+
+	//------------------------------------------------------------------------//
 	// AddContact
 	//------------------------------------------------------------------------//
 	/**
@@ -405,6 +446,63 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"medium\", \"Override Rate Group\", \"RateGroup\", \"Override\", $strJsonCode)";	
+	}
+
+
+	//------------------------------------------------------------------------//
+	// AddConfigConstant
+	//------------------------------------------------------------------------//
+	/**
+	 * AddConfigConstant()
+	 *
+	 * Compiles the Href to be executed when the AddConfigConstant menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the AddConfigConstant menu item is triggered
+	 *
+	 * @param	int		$intConstantGroupId		optional, id of the ConstantGroup that the 
+	 *											new constant will belong to.  If set to NULL
+	 *											then the new constant will not belong to a 
+	 *											ConstantGroup.  Defaults to NULL
+	 * @return	string						
+	 *
+	 * @method
+	 */
+	function AddConfigConstant($intConstantGroupId=NULL)
+	{
+		// Setup data to send
+		$arrData['Objects']['ConfigConstantGroup']['Id'] = $intConstantGroupId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddConfigConstantPopupId\", \"medium\", \"Add Constant\", \"Config\", \"EditConstant\", $strJsonCode)";	
+	}
+
+	//------------------------------------------------------------------------//
+	// EditConfigConstant
+	//------------------------------------------------------------------------//
+	/**
+	 * EditConfigConstant()
+	 *
+	 * Compiles the Href to be executed when the EditConfigConstant menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the EditConfigConstant menu item is triggered
+	 *
+	 * @param	int		$intConstantId		id of the constant to edit
+	 *
+	 * @return	string						
+	 *
+	 * @method
+	 */
+	function EditConfigConstant($intConstantId)
+	{
+		// Setup data to send
+		$arrData['Objects']['ConfigConstant']['Id'] = $intConstantId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditConfigConstantPopupId\", \"medium\", \"Edit Constant\", \"Config\", \"EditConstant\", $strJsonCode)";	
 	}
 
 
@@ -1029,7 +1127,7 @@ class MenuItems
 	 * @return	string				action to be executed when the ViewUnbilledCharges menu item is clicked
 	 *
 	 * Example URL
-	 * http://localhost/ross/vixen/intranet/service_unbilled.php?Id=1
+	 * http://localhost/ross/vixen/intranet_app/service_unbilled.php?Id=1
 	 *
 	 * @method
 	 */
@@ -1055,7 +1153,7 @@ class MenuItems
 	 * @return	string				action to be executed when the ChangeOfLessee menu item is clicked
 	 *
 	 * Example URL
-	 * http://localhost/ross/vixen/intranet/service_lessee.php?Service=1
+	 * http://localhost/ross/vixen/intranet_app/service_lessee.php?Service=1
 	 *
 	 * @method
 	 */
