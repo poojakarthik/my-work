@@ -400,6 +400,9 @@ class HtmlTemplateNoteList extends HtmlTemplate
 			echo "<span style='font-size: 9pt'>$strDetailsHtml</span>\n";
 			echo "<div class='TinySeperator'></div>\n";
 			
+			// Escape any special html chars
+			$dboNote->Note = htmlspecialchars($dboNote->Note->Value, ENT_QUOTES);
+			
 			// Output the actual note
 			$dboNote->Note->RenderValue();
 			echo "</div>\n";

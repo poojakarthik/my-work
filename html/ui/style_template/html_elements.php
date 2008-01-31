@@ -147,7 +147,7 @@ class HTMLElements
 		
 		if ($arrParams['Valid'] === FALSE)
 		{
-			$strValue = $arrParams['Value'	];
+			$strValue = $arrParams['Value'];
 		}
 		else
 		{
@@ -195,7 +195,7 @@ class HTMLElements
 	 */
 	function InputHidden($arrParams)
 	{
-		// preprocess the value
+		// Preprocess the value
 		$mixValue = $arrParams['Value'];
 		if ($mixValue === FALSE)
 		{
@@ -205,6 +205,9 @@ class HTMLElements
 		{
 			$mixValue = "";
 		}
+		
+		// Convert any apostrophe's into &#39;
+		$mixValue = str_replace("'", "&#39;", $mixValue);
 		
 		$strId = $strName = $arrParams['Object'] .".". $arrParams['Property'];
 		
@@ -276,9 +279,6 @@ class HTMLElements
 		$strLabel = $arrParams['Definition']['Label'];
 		$strValue = $this->BuildOutputValue($arrParams);
 		
-		// Convert any html special chars to safe chars
-		$strValue = htmlspecialchars($strValue, ENT_QUOTES);
-		
 		$strValue = nl2br($strValue);
 		
 		$strId = "{$arrParams['Object']}.{$arrParams['Property']}";
@@ -314,9 +314,6 @@ class HTMLElements
 	function RenderValue($arrParams)
 	{
 		$strValue = $this->BuildOutputValue($arrParams);
-		
-		// Convert any html special chars to safe chars
-		$strValue = htmlspecialchars($strValue, ENT_QUOTES);
 		
 		$strValue = nl2br($strValue);
 		
@@ -920,18 +917,18 @@ class HTMLElements
 		}
 		elseif (is_array($arrParams['Definition']['Options']))
 		{			
-			// find the correct output label to use instead of the value
+			// Find the correct output label to use instead of the value
 			foreach ($arrParams['Definition']['Options'] as $arrOption)
 			{
 				if ($arrParams['Value'] == $arrOption['Value'])
 				{
-					// set the new value to output
+					// Set the new value to output
 					$strValue = $this->_OutputValue($arrParams['Value'], $arrOption['OutputLabel'], $arrParams['Definition']['OutputMask']);
 					break;
 				}
 			}
 			
-			// if the value has not been found in the list of values in 'Options' then use 
+			// If the value has not been found in the list of values in 'Options' then use 
 			// the default OutputLabel for this context
 			if (!$strValue)
 			{
