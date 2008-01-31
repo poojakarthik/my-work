@@ -269,7 +269,7 @@
 																"SUM(Amount) AS WeReceived",
 																"(InvoiceRun = <ThisInvoiceRun> OR InvoiceRun = <LastInvoiceRun>) AND Account = <Account>");
 		
-		$this->_selServicePlanCharges	= new StatementSelect("ServiceTotal", "SUM(TotalCharge) AS GrandTotalCharge, SUM(PlanCharge) AS GrandPlanCharge, SUM(CappedCharge + UncappedCharge + Debit - Credit) AS GrandRatedCharge", "Account = <Account> AND InvoiceRun = <InvoiceRun>");
+		$this->_selServicePlanCharges	= new StatementSelect("ServiceTotal", "SUM(TotalCharge) AS GrandTotalCharge, SUM(PlanCharge) AS GrandPlanCharge, SUM(CappedCharge + UncappedCharge) AS GrandRatedCharge", "Account = <Account> AND InvoiceRun = <InvoiceRun>");
 		
 		//----------------------------------------------------------------------------//
 		// Define the file format
