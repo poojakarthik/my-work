@@ -101,7 +101,9 @@ class HtmlTemplateConfigConstantEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$bolIsPartOfGroup = (DBO()->ConfigConstantGroup->Id->Value)? TRUE : FALSE;
+		// ConstantGroups that get loaded into the $GLOBAL['*arrConstant'] array, are considered special,
+		// and have several restrictions imposed on them 
+		$bolIsSpecialGroup = (DBO()->ConfigConstantGroup->Special->Value)? TRUE : FALSE;
 		
 		// Start the form
 		$this->FormStart("Constant", "Config", "EditConstant");
@@ -109,41 +111,69 @@ class HtmlTemplateConfigConstantEdit extends HtmlTemplate
 		
 		// Render Hidden variables
 		DBO()->ConfigConstant->Id->RenderHidden();
+		DBO()->ConfigConstantGroup->Id->RenderHidden();
 		
-		if ($bolIsPartOfGroup)
+		// Display the name of the group that the constant belongs to
+		$strConstantGroupName = DBO()->ConfigConstantGroup->Name->Value; 
+		DBO()->ConfigConstant->ConstantGroup->RenderArbitrary($strConstantGroupName, RENDER_OUTPUT);
+		
+		// If the user isn't a GOD user, and the Constant can be edited, but not deleted, then don't allow them
+		// to edit the name, description or type
+		if ((!AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD)) 
+			&& DBO()->ConfigConstant->Id->Value 
+			&& (DBO()->ConfigConstant->Editable->Value)
+			&& (!DBO()->ConfigConstant->Deletable->Value))
 		{
-			// The constant belongs to a constant group
-			DBO()->ConfigConstantGroup->Id->RenderHidden();
-			$strConstantGroupName = DBO()->ConfigConstantGroup->Name->Value; 
-			DBO()->ConfigConstant->ConstantGroup->RenderArbitrary($strConstantGroupName, RENDER_OUTPUT);
-		}
-		
-		DBO()->ConfigConstant->Name->RenderInput(CONTEXT_DEFAULT, TRUE);
-		
-		// It is only manditory for a constant to have a description if it belongs to a group
-		DBO()->ConfigConstant->Description->RenderInput(CONTEXT_DEFAULT, $bolIsPartOfGroup);
-		
-		// If the constant belongs to a group, then its DataType cannot be changed, 
-		// and its value cannot be set to NULL
-		if ($bolIsPartOfGroup)
-		{
-			DBO()->ConfigConstantGroup->Type->RenderCallback("GetConstantDescription", Array("DataType"), RENDER_OUTPUT);
+			// The only property that the user can edit is the value
+			DBO()->ConfigConstant->Name->RenderOutput();
+			DBO()->ConfigConstant->Description->RenderOutput();
+			
+			if ($bolIsSpecialGroup)
+			{
+				DBO()->ConfigConstantGroup->Type->RenderCallback("GetConstantDescription", Array("DataType"), RENDER_OUTPUT);
+			}
+			else
+			{
+				DBO()->ConfigConstant->Type->RenderCallback("GetConstantDescription", Array("DataType"), RENDER_OUTPUT);
+			}
+			
 		}
 		else
 		{
-			// Render a combo box for the data types
-			echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel' style='padding-left:8px'>Data Type :</div>\n";
-			echo "      <select id='DataTypeCombo' name='ConfigConstant.Type' class='DefaultInputComboBox' style='width:100px;'>\n";
-			foreach ($GLOBALS['*arrConstant']['DataType'] as $intKey=>$arrValue)
-			{
-				// Check if this is the currently selected DataType
-				$strSelected = (DBO()->ConfigConstant->Type->Value == $intKey) ? "selected='selected'" : "";
-				echo "         <option value='$intKey' $strSelected>{$arrValue['Description']}</option>\n";
-			}
-			echo "      </select>\n";
-			echo "</div>\n"; // DefaultElement
+			// The user can edit the name, description, datatype and value
 			
+			// Constant Name
+			DBO()->ConfigConstant->Name->RenderInput(CONTEXT_DEFAULT, TRUE);
+			
+			// It is only manditory for a constant to have a description if it belongs to a special group
+			DBO()->ConfigConstant->Description->RenderInput(CONTEXT_DEFAULT, $bolIsSpecialGroup);
+			
+			// If the constant belongs to a special group, then its DataType cannot be changed, 
+			// and its value cannot be set to NULL
+			if ($bolIsSpecialGroup)
+			{
+				DBO()->ConfigConstantGroup->Type->RenderCallback("GetConstantDescription", Array("DataType"), RENDER_OUTPUT);
+			}
+			else
+			{
+				// Render a combo box for the data types
+				echo "<div class='DefaultElement'>\n";
+				echo "   <div class='DefaultLabel' style='padding-left:8px'>Data Type :</div>\n";
+				echo "      <select id='DataTypeCombo' name='ConfigConstant.Type' class='DefaultInputComboBox' style='width:100px;'>\n";
+				foreach ($GLOBALS['*arrConstant']['DataType'] as $intKey=>$arrValue)
+				{
+					// Check if this is the currently selected DataType
+					$strSelected = (DBO()->ConfigConstant->Type->Value == $intKey) ? "selected='selected'" : "";
+					echo "         <option value='$intKey' $strSelected>{$arrValue['Description']}</option>\n";
+				}
+				echo "      </select>\n";
+				echo "</div>\n"; // DefaultElement
+				
+			}
+		}
+
+		if (!$bolIsSpecialGroup)
+		{
 			// Render a check box for setting the value of the constant to NULL
 			DBO()->ConfigConstant->ValueIsNull->RenderInput();
 		}
@@ -162,6 +192,13 @@ class HtmlTemplateConfigConstantEdit extends HtmlTemplate
 		
 		DBO()->ConfigConstant->Value->RenderInput();
 		
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			// Render the "Editable" and "Deletable" flags
+			DBO()->ConfigConstant->Editable->RenderInput();
+			DBO()->ConfigConstant->Deletable->RenderInput();
+		}
+		
 		echo "</div>\n";  // GroupedContent
 		
 		// Create the buttons
@@ -173,11 +210,21 @@ class HtmlTemplateConfigConstantEdit extends HtmlTemplate
 		$this->FormEnd();
 		
 		// Javascript
-		$strJsCode = 	"document.getElementById('ConfigConstant.Name').style.width = 234;
+		$strJsCode = 	"var elmConstName = document.getElementById('ConfigConstant.Name');
+						if (elmConstName != null)
+						{
+							elmConstName.style.width = 234;
+						}
 						var elmCheckbox = document.getElementById('ConfigConstant.ValueIsNull');
-						function DisableValue(bolDisable){document.getElementById('ConfigConstant.Value').disabled = bolDisable;};
-						elmCheckbox.addEventListener('change', function(objEvent){DisableValue(objEvent.target.checked)}, true);
-						DisableValue(elmCheckbox.checked);";
+						function DisableValue(bolDisable)
+						{
+							document.getElementById('ConfigConstant.Value').disabled = bolDisable;
+						}
+						if (elmCheckbox != null)
+						{
+							elmCheckbox.addEventListener('change', function(objEvent){DisableValue(objEvent.target.checked)}, true);
+							DisableValue(elmCheckbox.checked);
+						}";
 						
 		echo "<script type='text/javascript'>$strJsCode</script>";
 	}

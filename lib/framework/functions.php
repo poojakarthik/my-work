@@ -1768,20 +1768,36 @@ function LoadFramework($strFrameworkDir=NULL)
 	if (!$strFrameworkDir)
 	{
 		$strFrameworkDir = GetVixenBase();
-		//$strFrameworkDir .= 'framework/';
-$strFrameworkDir .= 'lib/framework/';
+		$strFrameworkDir .= 'lib/framework/';
 	}
 	
-	// load framework
+	// Load the viXen/Flex Global Config File (defining database and path constants)
+	require_once($strFrameworkDir."config.php");
+	
+	// Load framework
 	require_once($strFrameworkDir."framework.php");
 	require_once($strFrameworkDir."functions.php");
 	require_once($strFrameworkDir."definitions.php");
-	require_once($strFrameworkDir."config.php");
+	
 	require_once($strFrameworkDir."database_define.php");
 	require_once($strFrameworkDir."db_access.php");
+	
+	// Retrieve all constants stored in the database
+	// Note that this will not override constants that have already been defined
+	BuildConstantsFromDB();
+	
+	// Load viXen/Flex customer config file
+	$strPath = dirname(dirname(dirname(__FILE__))) . "/customer.cfg.php";
+	if (!@include_once($strPath))
+	{
+		echo "\nFATAL ERROR: Unable to find Flex customer configuration file at location '$strPath'\n\n";
+		die;
+	}
+	
 	require_once($strFrameworkDir."report.php");
 	require_once($strFrameworkDir."error.php");
 	require_once($strFrameworkDir."exception_vixen.php");
+
 	
 	// PEAR Packages
 	require_once("Console/Getopt.php");
@@ -1789,7 +1805,7 @@ $strFrameworkDir .= 'lib/framework/';
 	require_once("Mail.php");
 	require_once("Mail/mime.php");
 	
-	// create framework instance
+	// Create framework instance
 	$GLOBALS['fwkFramework'] = new Framework();
 	return $GLOBALS['fwkFramework'];
 }
@@ -3660,13 +3676,14 @@ function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NU
  */
 function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefinition=FALSE)
 {
-	$strTables	= "ConfigConstant AS CC LEFT JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
-	$arrColumns	= Array("Id"=>"CC.Id", 
-						"Name" => "CC.Name", 
-						"Value" => "CC.Value", 
-						"ConstDesc" => "CC.Description",
-						"Type" => "CASE WHEN CC.ConstantGroup IS NULL THEN CC.Type ELSE CCG.Type END",
-						"ConstGroupName" => "CCG.Name");
+	$strTables	= "ConfigConstant AS CC INNER JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
+	$arrColumns	= Array("Id"				=> "CC.Id", 
+						"Name"				=> "CC.Name", 
+						"Value"				=> "CC.Value", 
+						"ConstDesc"			=> "CC.Description",
+						"Type"				=> "CASE WHEN CCG.Special THEN CCG.Type ELSE CC.Type END",
+						"ConstGroupName"	=> "CCG.Name",
+						"Special" 			=> "CCG.Special");
 	$strOrderBy	= "CC.ConstantGroup, CC.Id";
 	$strWhere	= "TRUE"; 
 	$selConstants = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
@@ -3727,14 +3744,14 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 			}
 		}
 
-		// If the constant is part of a ConstantGroup, add it to the $GLOBALS['*arrConstant'] array
-		if ($arrConstant['ConstGroupName'] !== NULL)
+		// If the constant is part of a special ConstantGroup then add it to the $GLOBALS['*arrConstant'] array
+		if ($arrConstant['Special'])
 		{
 			// Check that the value is not already in use by another constant within the ConstantGroup
 			if (isset($GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]))
 			{
 				// This value is already being used
-				if ($bolExceptionOnError)
+				if ($bolExceptionOnRedefinition)
 				{
 					// Throw an exception
 					$strMsg = 	"Error: ConstantGroup: {$arrConstant['ConstGroupName']} already has constant ". 
@@ -3743,7 +3760,7 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 								"is also set to $mixValue";
 					throw new Exception($strMsg);
 				}
-				return FALSE;
+				continue;
 			}
 			
 			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant']		= $arrConstant['Name'];
@@ -3766,6 +3783,28 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 		}
 		*/
 	}
+	
+	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
+	// Load in the CustomerGroup constants from the CustomerGroup table.
+	// These constants are now only used by the backend.  The frontend always refers to the database
+	// when dealing with customer groups
+	// This block of code can be removed, when the backend no longer relies on them
+	$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "TRUE", "Id");
+	$selCustomerGroup->Execute();
+	$arrCustomerGroups = $selCustomerGroup->FetchAll();
+	foreach ($arrCustomerGroups as $arrCustomerGroup)
+	{
+		// Build the constant name
+		$strConstant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $arrCustomerGroup['InternalName']));
+		$strDescription		= $arrCustomerGroup['InternalName'];
+		$intCustomerGroup	= $arrCustomerGroup['Id'];
+		
+		define($strConstant, $intCustomerGroup);
+		$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Constant']	= $strConstant;
+		$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Description']	= $strDescription;
+	}
+	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
+	
 }
 
 

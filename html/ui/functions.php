@@ -946,7 +946,7 @@ function GetStartDateTimeForNextBillingPeriod($mixNow=NULL)
 	$intStartDatetimeForBillingPeriod = GetStartDateTimeForBillingPeriod($mixNow);
 	
 	// Currently, the start of the next billing period is midnight on the first of the next month
-	$intStartDatetimeForNextBillingPeriod = strtotime("+1months ", $intStartDatetimeForBillingPeriod);
+	$intStartDatetimeForNextBillingPeriod = strtotime("+1 months ", $intStartDatetimeForBillingPeriod);
 	
 	return $intStartDatetimeForNextBillingPeriod;
 }

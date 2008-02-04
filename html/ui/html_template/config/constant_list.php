@@ -78,15 +78,17 @@ class HtmlTemplateConfigConstantList extends HtmlTemplate
 				$this->RenderAllGroups();
 				break;
 			case HTML_CONTEXT_SINGLE:
-				// It is a precondition that DBO()->ConstantGroup points to the ConstantGroup that you want to 
-				// render. Else it will render the miscellaneous ConstantGroup
-				if (DBO()->ConfigConstantGroup->Id->Value)
+				// It is a precondition that DBO()->ConstantGroup points to the ConstantGroup that you want to render 
+				if (DBO()->ConfigConstantGroup->Special->Value)
 				{
-					$this->RenderConstantGroup(DBO()->ConfigConstantGroup);
+					// The ConstantGroup is part of the $GLOBALS array.
+					// It's values must be unique within the group, and all the same datatype
+					$this->RenderGlobalArrayGroup(DBO()->ConfigConstantGroup);
 				}
 				else
 				{
-					$this->RenderMiscGroup();
+					// The ConstantGroup is just a normal group of constants
+					$this->RenderGroup(DBO()->ConfigConstantGroup);
 				}
 				echo "<div class='SmallSeperator'></div>\n";
 				break;
@@ -97,10 +99,10 @@ class HtmlTemplateConfigConstantList extends HtmlTemplate
 	}	
 
 	//------------------------------------------------------------------------//
-	// RenderConstantGroup
+	// RenderGlobalArrayGroup
 	//------------------------------------------------------------------------//
 	/**
-	 * RenderConstantGroup()
+	 * RenderGlobalArrayGroup()
 	 *
 	 * Render this HTML Template
 	 *
@@ -108,33 +110,39 @@ class HtmlTemplateConfigConstantList extends HtmlTemplate
 	 *
 	 * @method
 	 */
-	function RenderConstantGroup($dboConstantGroup)
+	function RenderGlobalArrayGroup($dboConstantGroup)
 	{
 		$strDataType	= GetConstantDescription($dboConstantGroup->Type->Value, "DataType");
 		$strConstGroup	= $dboConstantGroup->Name->Value;
-		echo "<h2 class='ConstantGroup'>{$strConstGroup}s ($strDataType)</h2>\n"; 
+		$strTableName	= str_replace(" ", "", $strConstGroup);
+		$strDescription = htmlspecialchars($dboConstantGroup->Description->Value, ENT_QUOTES);
+		echo "<h2 class='ConstantGroup' title='$strDescription'>{$strConstGroup}s ($strDataType)</h2>\n"; 
 		
 		// Build the link to the "Add Constant" popup
-		$strAddConstant		= Href()->AddConfigConstant($dboConstantGroup->Id->Value);
-		$strAddConstantLink	= "<a href='$strAddConstant' title='Add New Constant'><img src='img/template/new.png'></img></a>\n";
+		$strAddConstantLink = "&nbsp;";
+		if ($dboConstantGroup->Extendable->Value || AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			$strAddConstant		= Href()->AddConfigConstant($dboConstantGroup->Id->Value);
+			$strAddConstantLink	= "<a href='$strAddConstant' title='Add New Constant'><img src='img/template/new.png'></img></a>\n";
+		}
 		
 		// Set up the header information for the table
-		Table()->$strConstGroup->SetHeader("Name", "Description", "Value", $strAddConstantLink);
-		Table()->$strConstGroup->SetWidth("30%", "50%", "10%", "10%");
-		Table()->$strConstGroup->SetAlignment("Left", "Left", "Right", "Right");
+		Table()->$strTableName->SetHeader("Name", "Description", "Value", "&nbsp", $strAddConstantLink);
+		Table()->$strTableName->SetWidth("30%", "54%", "10%", "3%", "3%");
+		Table()->$strTableName->SetAlignment("Left", "Left", "Right", "Right", "Right");
 		
 		// Retrieve the constants  (They should be ordered by value)
 		if ($dboConstantGroup->Type->Value == DATA_TYPE_INTEGER)
 		{
 			// The ConstantGroup is a collection of integers.  These values are stored in the database as strings.
 			// Therefore they have to be type-cast to integers so that they can be sorted properly
-			$arrColumns = Array("Id"=>"Id", "Name"=>"Name", "Description"=>"Description", "Value"=> "CONVERT(Value, SIGNED)");
+			$arrColumns = Array("Id"=>"Id", "Name"=>"Name", "Description"=>"Description", "Editable"=>"Editable", "Deletable"=>"Deletable", "Value"=> "CONVERT(Value, SIGNED)");
 		}
 		else
 		{
 			// It is assumed the ConstantGroup is a collection of strings.  Having a constant group of floats can't be done
 			// and having a constant group of booleans is just silly
-			$arrColumns = Array("Id", "Name", "Description", "Value");
+			$arrColumns = Array("Id", "Name", "Description", "Editable"=>"Editable", "Deletable"=>"Deletable", "Value");
 		}
 		
 		$selConstants = new StatementSelect("ConfigConstant", $arrColumns, "ConstantGroup = <ConstantGroup>", "Value ASC");
@@ -143,43 +151,53 @@ class HtmlTemplateConfigConstantList extends HtmlTemplate
 		
 		foreach ($arrConstants as $arrConstant)
 		{
-			$arrConstant['ConstantGroupName'] = $arrConstantGroup->Name->Value;
-			
 			// Convert html special chars
-			$strValue = htmlspecialchars($arrConstant['Value'], ENT_QUOTES);
+			$strDescription	= htmlspecialchars($arrConstant['Description'], ENT_QUOTES);
+			$strValue		= htmlspecialchars($arrConstant['Value'], ENT_QUOTES);
 			
 			// Build the edit button
-			$strEditConstantHref = Href()->EditConfigConstant($arrConstant['Id']);
-			$strEditConstantLink = "<a href='$strEditConstantHref' title='Edit'<img src='img/template/edit.png'></img></a>";
+			$strEditConstantLink = "&nbsp;";
+			if ($arrConstant['Editable'] || AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+			{
+				$strEditConstantHref = Href()->EditConfigConstant($arrConstant['Id']);
+				$strEditConstantLink = "<a href='$strEditConstantHref' title='Edit'<img src='img/template/edit.png'></img></a>";
+			}
 			
 			// Build the delete button
-			$objConstant = Json()->encode($arrConstant);
-			$strDeleteConstantJs = "javascript: Vixen.ConfigConstantsManagement.DeleteConstant($objConstant)";
-			$strDeleteConstantLink = "<a href='$strDeleteConstantJs' title='Delete'<img src='img/template/delete.png'></img></a>";
+			// If the Constant isn't editable, then it can't be deleted either
+			$strDeleteConstantLink = "&nbsp;";
+			if (($arrConstant['Editable'] && $arrConstant['Deletable']) || AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+			{
+				$strDeleteConstantJs	= "javascript: Vixen.ConfigConstantsManagement.DeleteConstant({$arrConstant['Id']}, \"{$arrConstant['Name']}\")";
+				$strDeleteConstantLink	= "<a href='$strDeleteConstantJs' title='Delete'<img src='img/template/delete.png'></img></a>";
+			}
 
-			Table()->$strConstGroup->AddRow($arrConstant['Name'], 
-											$arrConstant['Description'],
+			// Remove the underscores from the name, so that it can be split over more than 1 line
+			$strName = str_replace("_", " ", $arrConstant['Name']);
+			
+			Table()->$strTableName->AddRow($strName, 
+											$strDescription,
 											$strValue,
-											$strEditConstantLink ."&nbsp;".	$strDeleteConstantLink);
+											$strEditConstantLink, $strDeleteConstantLink);
 		}
 			
 		// Check if the table is empty
-		if (Table()->$strConstGroup->RowCount() == 0)
+		if (Table()->$strTableName->RowCount() == 0)
 		{
 			// There are no Constants to stick in this table
-			Table()->$strConstGroup->AddRow("<span>No constants to display</span>");
-			Table()->$strConstGroup->SetRowAlignment("left");
-			Table()->$strConstGroup->SetRowColumnSpan(4);
+			Table()->$strTableName->AddRow("<span>No constants to display</span>");
+			Table()->$strTableName->SetRowAlignment("left");
+			Table()->$strTableName->SetRowColumnSpan(5);
 		}
 				
-		Table()->$strConstGroup->Render();
+		Table()->$strTableName->Render();
 	}
 	
 	//------------------------------------------------------------------------//
-	// RenderMiscGroup
+	// RenderGroup
 	//------------------------------------------------------------------------//
 	/**
-	 * RenderMiscGroup()
+	 * RenderGroup()
 	 *
 	 * Render this HTML Template
 	 *
@@ -187,35 +205,51 @@ class HtmlTemplateConfigConstantList extends HtmlTemplate
 	 *
 	 * @method
 	 */
-	function RenderMiscGroup()
+	function RenderGroup($dboConstantGroup)
 	{
-		echo "<h2 class='ConstantGroup'>Miscellaneous Constants</h2>\n"; 
+		// Render a specific ConstantGroup
+		$strConstGroup	= $dboConstantGroup->Name->Value;
+		$strTableName	= str_replace(" ", "", $strConstGroup);
+		$strDescription = htmlspecialchars($dboConstantGroup->Description->Value, ENT_QUOTES);
+		echo "<h2 class='ConstantGroup' title='$strDescription'>$strConstGroup<h2>\n";
 		
 		// Build the link to the "Add Constant" popup
-		$strAddConstant		= Href()->AddConfigConstant();
-		$strAddConstantLink	= "<a href='$strAddConstant' title='Add New Constant'><img src='img/template/new.png'></img></a>\n";
+		$strAddConstantLink = "&nbsp;";
+		if ($dboConstantGroup->Extendable->Value || AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			$strAddConstant		= Href()->AddConfigConstant($dboConstantGroup->Id->Value);
+			$strAddConstantLink	= "<a href='$strAddConstant' title='Add New Constant'><img src='img/template/new.png'></img></a>\n";
+		}
 		
 		// Set up the header information for the table
-		Table()->MiscConstants->SetHeader("Name", "Description", "Type", "Value", $strAddConstantLink);
-		Table()->MiscConstants->SetWidth("30%", "30%", "7%", "27%", "6%");
-		Table()->MiscConstants->SetAlignment("Left", "Left", "Left", "Left", "Right");
+		Table()->$strTableName->SetHeader("Name", "Description", "Type", "Value", "&nbsp;", $strAddConstantLink);
+		Table()->$strTableName->SetWidth("30%", "30%", "7%", "27%", "3%", "3%");
+		Table()->$strTableName->SetAlignment("Left", "Left", "Left", "Left", "Right", "Right");
 		
 		// Retrieve the constants (They should be ordered by Name)
-		$selConstants = new StatementSelect("ConfigConstant", "*", "ConstantGroup IS NULL", "Name ASC");
-		$selConstants->Execute();
+		$selConstants = new StatementSelect("ConfigConstant", "*", "ConstantGroup = <ConstantGroup>", "Name ASC");
+		$selConstants->Execute(Array("ConstantGroup"=>$dboConstantGroup->Id->Value));
 		$arrConstants = $selConstants->FetchAll();
 		
 		foreach ($arrConstants as $arrConstant)
 		{
 			// Build the edit button
-			$strEditConstantHref = Href()->EditConfigConstant($arrConstant['Id']);
-			$strEditConstantLink = "<a href='$strEditConstantHref' title='Edit'<img src='img/template/edit.png'></img></a>";
+			$strEditConstantLink = "&nbsp;";
+			if ($arrConstant['Editable'] || AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+			{
+				$strEditConstantHref = Href()->EditConfigConstant($arrConstant['Id']);
+				$strEditConstantLink = "<a href='$strEditConstantHref' title='Edit'<img src='img/template/edit.png'></img></a>";
+			}
 			
 			// Build the delete button
-			$objConstant			= Json()->encode($arrConstant);
-			$strDeleteConstantJs	= "javascript: Vixen.ConfigConstantsManagement.DeleteConstant($objConstant)";
-			$strDeleteConstantLink	= "<a href='$strDeleteConstantJs' title='Delete'<img src='img/template/delete.png'></img></a>";
-
+			// If the Constant isn't editable, then it can't be deleted either
+			$strDeleteConstantLink = "&nbsp;";
+			if (($arrConstant['Editable'] && $arrConstant['Deletable']) || AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+			{
+				$strDeleteConstantJs	= "javascript: Vixen.ConfigConstantsManagement.DeleteConstant({$arrConstant['Id']}, \"{$arrConstant['Name']}\")";
+				$strDeleteConstantLink	= "<a href='$strDeleteConstantJs' title='Delete'<img src='img/template/delete.png'></img></a>";
+			}
+			
 			// Process the value
 			if ($arrConstant['Value'] === NULL)
 			{
@@ -234,24 +268,27 @@ class HtmlTemplateConfigConstantList extends HtmlTemplate
 				}
 			}
 
-			Table()->MiscConstants->AddRow(	$arrConstant['Name'], 
-											$arrConstant['Description'],
+			// Remove the underscores from the name, so that it can be split over more than 1 line
+			$strName = str_replace("_", " ", $arrConstant['Name']);
+			
+			Table()->$strTableName->AddRow($strName, 
+											htmlspecialchars($arrConstant['Description'], ENT_QUOTES),
 											GetConstantDescription($arrConstant['Type'], "DataType"),
 											$strValue,
-											$strEditConstantLink ."&nbsp;".	$strDeleteConstantLink);
+											$strEditConstantLink, $strDeleteConstantLink);
 		}
 		
 		
 		// Check if the table is empty
-		if (Table()->MiscConstants->RowCount() == 0)
+		if (Table()->$strTableName->RowCount() == 0)
 		{
 			// There are no Constants to stick in this table
-			Table()->MiscConstants->AddRow("<span>No constants to display</span>");
-			Table()->MiscConstants->SetRowAlignment("left");
-			Table()->MiscConstants->SetRowColumnSpan(5);
+			Table()->$strTableName->AddRow("<span>No constants to display</span>");
+			Table()->$strTableName->SetRowAlignment("left");
+			Table()->$strTableName->SetRowColumnSpan(6);
 		}
 
-		Table()->MiscConstants->Render();
+		Table()->$strTableName->Render();
 	}
 
 
@@ -270,23 +307,29 @@ class HtmlTemplateConfigConstantList extends HtmlTemplate
 	function RenderAllGroups()
 	{
 		$strContainerDivPrefix = "ContainerDiv_ConstantGroup_";
+		
 		// Render each ConstantGroup
 		foreach (DBL()->ConfigConstantGroup as $dboConstantGroup)
 		{
 			// Build the container div
 			echo "<div id='{$strContainerDivPrefix}{$dboConstantGroup->Id->Value}'>\n";
 			
-			$this->RenderConstantGroup($dboConstantGroup);
+			if ($dboConstantGroup->Special->Value)
+			{
+				// The ConstantGroup is part of the $GLOBALS array.
+				// It's values must be unique within the group, and all the same datatype
+				$this->RenderGlobalArrayGroup($dboConstantGroup);
+			}
+			else
+			{
+				// The ConstantGroup is just a normal group of constants
+				$this->RenderGroup($dboConstantGroup);
+			}
+			
 			echo "<div class='SmallSeperator'></div>\n";
 			
 			echo "</div>\n";  //ContainerDiv_ConstantGroup_
 		}
-		
-		// Render the miscellaneous group
-		echo "<div id='{$strContainerDivPrefix}Misc'>\n";
-		$this->RenderMiscGroup(NULL);
-		echo "<div class='SmallSeperator'></div>\n";
-		echo "</div>\n";
 		
 		// Initialise the javascript object
 		echo "<script type='text/javascript'>Vixen.ConfigConstantsManagement.Initialise('$strContainerDivPrefix')</script>";

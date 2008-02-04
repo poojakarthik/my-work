@@ -69,6 +69,10 @@ define("CDR_ISEEK_STANDARD"			, 5);
 define("CDR_UNITEL_SE"				, CDR_UNITEL_RSLCOM);
 define("CDR_UNTIEL_RSLCOM"			, CDR_UNITEL_RSLCOM);		// Backwards Compatability
 define("CDR_UNTIEL_COMMANDER"		, CDR_UNITEL_COMMANDER);	// Backwards Compatability*/
+//----------------------------------------------------------------------------//
+// These are now stored in the database and loaded from the LoadFramework()
+//----------------------------------------------------------------------------//
+/*
 $GLOBALS['*arrConstant']	['CDRType']	[0]	['Constant']	= 'CDR_UNKNOWN';
 $GLOBALS['*arrConstant']	['CDRType']	[0]	['Description']	= 'Unknown Type';
 $GLOBALS['*arrConstant']	['CDRType']	[1]	['Constant']	= 'CDR_UNITEL_RSLCOM';
@@ -83,8 +87,13 @@ $GLOBALS['*arrConstant']	['CDRType']	[5]	['Constant']	= 'CDR_ISEEK_STANDARD';
 $GLOBALS['*arrConstant']	['CDRType']	[5]	['Description']	= 'iSeek Usage';
 $GLOBALS['*arrConstant']	['CDRType']	[6]	['Constant']	= 'CDR_ISEEK_BROADBAND';
 $GLOBALS['*arrConstant']	['CDRType']	[6]	['Description']	= 'iSeek Broadband Usage';
+*/
 
 // Collection Server Types
+//----------------------------------------------------------------------------//
+// These are now stored in the database and loaded from the LoadFramework()
+//----------------------------------------------------------------------------//
+/*
 $GLOBALS['*arrConstant']	['CollectionType']	[100]	['Constant']	= 'COLLECTION_TYPE_FTP';
 $GLOBALS['*arrConstant']	['CollectionType']	[100]	['Description']	= 'FTP';
 $GLOBALS['*arrConstant']	['CollectionType']	[101]	['Constant']	= 'COLLECTION_TYPE_AAPT';
@@ -93,6 +102,7 @@ $GLOBALS['*arrConstant']	['CollectionType']	[102]	['Constant']	= 'COLLECTION_TYP
 $GLOBALS['*arrConstant']	['CollectionType']	[102]	['Description']	= 'HTTPS/OPTUS';
 $GLOBALS['*arrConstant']	['CollectionType']	[103]	['Constant']	= 'COLLECTION_TYPE_SSH2';
 $GLOBALS['*arrConstant']	['CollectionType']	[103]	['Description']	= 'SSH2';
+*/
 
 // Provisioning Types
 define("PRV_IMPORT_RANGE_MIN"			, 100);
@@ -113,6 +123,10 @@ define("PRV_UNITEL_PRESELECTION_EXP"	, 150);
 define("PRV_UNITEL_DAILY_ORDER_EXP"		, 151);
 define("PRV_AAPT_EOE"					, 152);
 */
+//----------------------------------------------------------------------------//
+// These are now stored in the database and loaded from the LoadFramework()
+//----------------------------------------------------------------------------//
+/*
 $GLOBALS['*arrConstant']	['ProvisioningType']	[100]	['Constant']	= 'PRV_UNITEL_DAILY_ORDER_RPT';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[100]	['Description']	= 'Unitel Daily Order Report';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[101]	['Constant']	= 'PRV_UNITEL_DAILY_STATUS_RPT';
@@ -152,7 +166,7 @@ $GLOBALS['*arrConstant']	['ProvisioningType']	[156]	['Constant']	= 'PRV_OPTUS_RE
 $GLOBALS['*arrConstant']	['ProvisioningType']	[156]	['Description']	= 'Optus Restoration Order File';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[157]	['Constant']	= 'PRV_OPTUS_PRESELECTION_REV_EXP';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[157]	['Description']	= 'Optus Preselection Reversal Order File';
-
+//*/
 
 // File Status
 $GLOBALS['*arrConstant']	['FileStatus']	[200]	['Constant']	= 'FILE_COLLECTED';
@@ -233,6 +247,10 @@ $GLOBALS['*arrConstant']	['FileImport']	[5203]	['Description']	= 'AAPT Loss Repo
 define("CARRIER_OPTUS"			, 2);
 define("CARRIER_AAPT"			, 3);
 define("CARRIER_ISEEK"			, 4);*/
+//----------------------------------------------------------------------------//
+// These are now stored in the database and loaded from the LoadFramework()
+//----------------------------------------------------------------------------//
+/*
 $GLOBALS['*arrConstant']	['Carrier']	[1]	['Constant']	= 'CARRIER_UNITEL';
 $GLOBALS['*arrConstant']	['Carrier']	[1]	['Description']	= 'Unitel';
 $GLOBALS['*arrConstant']	['Carrier']	[2]	['Constant']	= 'CARRIER_OPTUS';
@@ -243,6 +261,7 @@ $GLOBALS['*arrConstant']	['Carrier']	[4]	['Constant']	= 'CARRIER_ISEEK';
 $GLOBALS['*arrConstant']	['Carrier']	[4]	['Description']	= 'iSeek';
 $GLOBALS['*arrConstant']	['Carrier']	[10]['Constant']	= 'CARRIER_PAYMENT';
 $GLOBALS['*arrConstant']	['Carrier']	[10]['Description']	= 'Payment';
+*/
 
 // ERROR TABLE
 define("FATAL_ERROR_LEVEL"			, 10000);
@@ -487,19 +506,23 @@ $GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Description']	= 'Invoice Overch
 define("CUSTOMER_GROUP_VOICETALK"	, 2);
 define("CUSTOMER_GROUP_IMAGINE"		, 3);*/
 // Deprecated now that CustomerGroups are defined in the CustomerGroup table of the database
+/* These CustomerGroup constants are currently created when the Database constants are loaded
 $GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Constant']	= 'CUSTOMER_GROUP_TELCOBLUE';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Description']	= 'Telco Blue';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Constant']	= 'CUSTOMER_GROUP_VOICETALK';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Description']	= 'VoiceTalk';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Constant']	= 'CUSTOMER_GROUP_IMAGINE';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Description']	= 'Imagine';
+*/
 
+/* Deprecated now that CustomerGroups are defined in the CustomerGroup table of the database
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_TELCOBLUE';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Description']	= 'billing@telcoblue.com.au';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_VOICETALK';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Description']	= 'billing@voicetalk.com.au';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_IMAGINE';
 $GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Description']	= 'Imagine';
+*/
 
 // Credit Card Constants
 $GLOBALS['*arrConstant']	['CreditCard']	[1]	['Constant']	= 'CREDIT_CARD_VISA';
@@ -1114,10 +1137,11 @@ define("BILLING_FREQ_MONTH"				, 2);
 define("BILLING_FREQ_HALF_MONTH"		, 3);
 
 // Billing Minimum Total
-define("BILLING_MINIMUM_TOTAL"			, 5.0);
+// Now defined in database
+//define("BILLING_MINIMUM_TOTAL"			, 5.0);
 
 // Set the defaults for Billing (Once every Month on the First)
-define("BILLING_DEFAULT_DATE"			, 1);
+//define("BILLING_DEFAULT_DATE"			, 1); Now defined in database
 define("BILLING_DEFAULT_FREQ"			, 1);
 define("BILLING_DEFAULT_FREQ_TYPE"		, BILLING_FREQ_MONTH);
 
@@ -1191,6 +1215,7 @@ define("PAYMENT_TYPE_BPAY"			, 2);
 define("PAYMENT_TYPE_CHEQUE"		, 3);
 define("PAYMENT_TYPE_SECUREPAY"		, 4);
 define("PAYMENT_TYPE_CREDIT_CARD"	, 5);*/
+
 $GLOBALS['*arrConstant']	['PaymentType']	[1]	['Constant']	= 'PAYMENT_TYPE_BILLEXPRESS';
 $GLOBALS['*arrConstant']	['PaymentType']	[1]	['Description']	= 'BillExpress';
 $GLOBALS['*arrConstant']	['PaymentType']	[2]	['Constant']	= 'PAYMENT_TYPE_BPAY';
@@ -1210,6 +1235,7 @@ $GLOBALS['*arrConstant']	['PaymentType']	[8]	['Description']	= 'Austral';
 $GLOBALS['*arrConstant']	['PaymentType']	[9]	['Constant']	= 'PAYMENT_TYPE_CONTRA';
 $GLOBALS['*arrConstant']	['PaymentType']	[9]	['Description']	= 'Contra';
 
+
 // Charge Types/Codes
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
 
@@ -1228,8 +1254,12 @@ $GLOBALS['*arrConstant']	['BugStatus']	[103]	['Constant']	= 'BUG_RESOLVED';
 $GLOBALS['*arrConstant']	['BugStatus']	[103]	['Description']	= 'Resolved';
 
 // Note parsing
+/*
+ * These are now stored in the ConfigConstant table of the database
+ *
 define("SYSTEM_NOTE_TYPE",	7);
 define("GENERAL_NOTE_TYPE",	1);
+*/
 
 //Report Result Types
 define("REPORT_RESULT_TYPE_CSV"		, "CSV");

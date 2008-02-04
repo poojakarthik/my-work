@@ -268,8 +268,10 @@ class AppTemplateAccount extends ApplicationTemplate
 							
 						case (-1):
 							// This account is ineligible to receive late notices, until after the due date of the current bill
-							$intPaymentTerms					= DBO()->CurrentAccount->PaymentTerms->Value;
-							DBO()->Account->LatePaymentAmnesty	= date("Y-m-d", strtotime("+{$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
+							DBO()->Account->LatePaymentAmnesty = $this->GetLatePaymentAmnestyDate(DBO()->CurrentAccount->PaymentTerms->Value);
+							//$intPaymentTerms					= DBO()->CurrentAccount->PaymentTerms->Value;
+							//DBO()->Account->LatePaymentAmnesty	= date("Y-m-d", strtotime("+{$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
+							$strChangesNote .= "Late Notices will not be generated until after ". date("d/m/Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
 							break;
 					}
 				}
@@ -791,9 +793,10 @@ class AppTemplateAccount extends ApplicationTemplate
 					break;
 					
 				case (-1):
-					// This account is ineligible to receive late notices until after the due date of the current bill
-					$intPaymentTerms					= DBO()->CurrentAccount->PaymentTerms->Value;
-					DBO()->Account->LatePaymentAmnesty	= date("Y-m-d", strtotime("+{$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
+					// This account is ineligible to receive late notices until after the due date of the next bill
+					DBO()->Account->LatePaymentAmnesty = $this->GetLatePaymentAmnestyDate(DBO()->CurrentAccount->PaymentTerms->Value);
+					//DBO()->Account->LatePaymentAmnesty = date("Y-m-d", strtotime("+1 month {$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
+					$strChangesNote .= "Late Notices will not be generated until after ". date("d/m/Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
 					break;
 			}
 		}
@@ -1032,8 +1035,43 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		return TRUE;
 	}
+	
+	// $intPaymentTerms is the number of days the customer has to pay their bill
+	// Returns the LatePaymentAmnesty Date as a string "dd/mm/yyyy"
+	function GetLatePaymentAmnestyDate($intPaymentTerms)
+	{
+		// This date should be 1 month after the due date of the most recently committed bill
+		// If the bill was committed today, then you would probably be refering to last month's bill
+		// however the DisableLateNotices property only gets revereted from -1 to 0 when the bill is committed
+		
+		// Retrieve the date that the most recent bill was committed
+		$selBillDate = new StatementSelect("InvoiceRun", Array("BillingDate"=>"MAX(BillingDate)"), "TRUE");
+		$selBillDate->Execute();
+		$arrBillDate = $selBillDate->Fetch();
+		$intBillDate = strtotime($arrBillDate['BillingDate']);
+		
+		/*
+		if (date("d/m/Y", $intBillDate) == date("d/m/Y"))
+		{
+			// The most recent bill was committed today
+			$strDaysToAdd = "+ $intPaymentTerms days";
+		}
+		else
+		{
+			// The most recent bill was committed earlier than today
+			$strDaysToAdd = "+ 1 month $intPaymentTerms days";
+		}
+		*/
+		
+		$strDaysToAdd = "+ 1 month $intPaymentTerms days";
+		
+		$strAmnestyDate = date("Y-m-d", strtotime($strDaysToAdd, $intBillDate));
+		
+		return $strAmnestyDate;
+	}
 
     //----- DO NOT REMOVE -----//
+	
 	
 }
 ?>

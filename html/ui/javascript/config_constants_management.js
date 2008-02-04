@@ -87,20 +87,20 @@ function VixenConfigConstantsManagementClass()
 	 * @return	void
 	 * @method
 	 */
-	this.DeleteConstant = function(objConstant, bolConfirmed)
+	this.DeleteConstant = function(intId, strName, bolConfirmed)
 	{
 		if (bolConfirmed == null)
 		{
 		
-			var strMsg = "Are you sure you want to delete the constant "+ objConstant.Name +"?";
-			Vixen.Popup.Confirm(strMsg, function(){Vixen.ConfigConstantsManagement.DeleteConstant(objConstant, true);});
+			var strMsg = "Are you sure you want to delete the constant "+ strName +"?";
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.ConfigConstantsManagement.DeleteConstant(intId, strName, true);});
 			return;
 		}
 	
 		// Organise the data to send
 		var objObjects 					= {};
 		objObjects.ConfigConstant		= {};
-		objObjects.ConfigConstant.Id	= objConstant.Id;
+		objObjects.ConfigConstant.Id	= intId;
 
 		// Display the Pablo Splash
 		Vixen.Popup.ShowPageLoadingSplash("Deleting Constant", null, null, null, 1000);
@@ -132,16 +132,7 @@ function VixenConfigConstantsManagementClass()
 		var strContainerDivPrefix	= Vixen.ConfigConstantsManagement.strContainerDivPrefix;
 		var strContainerDivId		= null;
 		
-		if (objEvent.Data.ConfigConstantGroup.Id == null)
-		{
-			// The updated constant belongs to the miscellaneous group
-			strContainerDivId = strContainerDivPrefix + "Misc";
-		}
-		else
-		{
-			// The updated constant belongs to a ConstantGroup
-			strContainerDivId = strContainerDivPrefix + objEvent.Data.ConfigConstantGroup.Id;
-		}
+		strContainerDivId = strContainerDivPrefix + objEvent.Data.ConfigConstantGroup.Id;
 		
 		// Organise the data to send
 		var objObjects 						= {};

@@ -132,11 +132,6 @@
 			$this->_ptrLog = NULL;
 		}
 		
-		// Retrieve all constants stored in the database
-		// Note that this will not override constants that have already been defined
-		BuildConstantsFromDB();
-		
-		
 		// init statements
 		$arrServiceColumns = Array();
 		$arrServiceColumns['Shared']			= "RatePlan.Shared";

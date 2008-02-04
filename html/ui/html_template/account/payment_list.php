@@ -208,7 +208,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
                     // The current InvoicePayment record relates to the payment so add it as an index
 					Table()->PaymentTable->AddIndex("InvoiceRun", $dboInvoicePayment->InvoiceRun->Value);
 					
-					// find the invoice that relates to this InvoiceRun
+					// Find the invoice that relates to this InvoiceRun
 					$strInvoiceRun = $dboInvoicePayment->InvoiceRun->Value;
 					foreach (DBL()->Invoice as $dboInvoice)
 					{
@@ -216,8 +216,8 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 						{
 							// the current invoice relates to the current payment
 							// define data for the row's drop down details
-							$arrInvoiceAmount[$dboInvoice->Id->AsValue()] = $dboInvoicePayment->Amount->AsValue();
-							$arrInvoiceId[] = $dboInvoice->Id->AsValue();
+							$arrInvoiceAmount[$dboInvoice->Id->Value] = number_format($dboInvoicePayment->Amount->Value, 2, ".", "");
+							$arrInvoiceId[] = $dboInvoice->Id->Value;
 						}
 					}
                 }
@@ -230,18 +230,18 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			if (count($arrInvoiceId))
 			{
 				$strDetailHtml = "<div class='VixenTableDetail'>\n";
-				$strDetailHtml .= "<table border='0' cellpadding='0' cellspacing='0' width='100%'>\n";
-				$strDetailHtml .= "<tr><td><b>Invoice#</b></td><td><b>Amount</b></td></tr>\n";
+				$strDetailHtml .= "<table border='0' cellpadding='0' cellspacing='0' width='90%'>\n";
+				$strDetailHtml .= "<tr><td><b>Invoice</b></td><td align='right'><b>Amount</b></td></tr>\n";
 				
-				// sort the list of invoices
-				sort($arrInvoiceId);
+				// sort the list of invoices with the most recent being first
+				rsort($arrInvoiceId);
 
 				// render the details of each invoice payment
 				foreach ($arrInvoiceId as $intInvoiceId)
 				{
 					$strDetailHtml .= "<tr>\n";
 					$strDetailHtml .= "	<td>$intInvoiceId</td>\n";
-					$strDetailHtml .= "	<td>{$arrInvoiceAmount[$intInvoiceId]}</td>\n";
+					$strDetailHtml .= "	<td align='right'>{$arrInvoiceAmount[$intInvoiceId]}</td>\n";
 					$strDetailHtml .= "</tr>\n";
 				}
 				$strDetailHtml .= "</table>\n";

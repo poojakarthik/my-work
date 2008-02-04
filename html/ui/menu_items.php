@@ -459,15 +459,13 @@ class MenuItems
 	 *
 	 * Compiles the Href to be executed when the AddConfigConstant menu item is triggered
 	 *
-	 * @param	int		$intConstantGroupId		optional, id of the ConstantGroup that the 
-	 *											new constant will belong to.  If set to NULL
-	 *											then the new constant will not belong to a 
-	 *											ConstantGroup.  Defaults to NULL
+	 * @param	int		$intConstantGroupId		id of the ConstantGroup that the 
+	 *											new constant will belong to.
 	 * @return	string						
 	 *
 	 * @method
 	 */
-	function AddConfigConstant($intConstantGroupId=NULL)
+	function AddConfigConstant($intConstantGroupId)
 	{
 		// Setup data to send
 		$arrData['Objects']['ConfigConstantGroup']['Id'] = $intConstantGroupId;

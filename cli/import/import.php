@@ -249,7 +249,7 @@
 	}
 	else
 	{
-		$strFileLocation = "../framework/database_define.php";
+		$strFileLocation = "../../lib/framework/database_define.php";
 	}
 	
 	if (file_exists($strFileLocation))

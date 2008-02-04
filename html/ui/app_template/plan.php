@@ -171,9 +171,9 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Nothing to add
 		
 		// Breadcrumb menu
-		/*BreadCrumb()->Employee_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AvailablePlans();
-		BreadCrumb()->SetCurrentPage("Add Rate Plan");*/
+		BreadCrumb()->SetCurrentPage("Add Rate Plan");
 		
 		// Handle form submittion
 		if (SubmittedForm('AddPlan', 'Commit') || SubmittedForm('AddPlan', 'Save as Draft'))

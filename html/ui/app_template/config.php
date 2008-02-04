@@ -124,9 +124,9 @@ class AppTemplateConfig extends ApplicationTemplate
 	 * 
 	 * Handles the logic for adding a new Constant, or editing an existing one
 	 * If DBO()->ConfigConstant->Id is set, then the popup will be set up for editing this Constant
-	 * If it is not set then the popup will be set up for adding a new constant
-	 * If DBO()->ConfigConstantGroup->Id is set, then the new constant will be added to the
-	 * specified ConstantGroup 
+	 * If it is not set then the popup will be set up for adding a new constant.
+	 * If adding a new constant DBO()->ConfigConstantGroup->Id must be set to the constant group to
+	 * add the constant to 
 	 *
 	 * @return		void
 	 * @method
@@ -140,11 +140,8 @@ class AppTemplateConfig extends ApplicationTemplate
 		// Check if the form was submitted
 		if (SubmittedForm('Constant', 'Ok'))
 		{
-			if (DBO()->ConfigConstantGroup->Id->Value)
-			{
-				// A ConstantGroup has been specified.  Load it
-				DBO()->ConfigConstantGroup->Load();
-			}
+			// Load the constantGroup
+			DBO()->ConfigConstantGroup->Load();
 			
 			// Validate the Constant
 			$mixResult = $this->_ValidateConstant(DBO()->ConfigConstant, DBO()->ConfigConstantGroup);
@@ -170,7 +167,7 @@ class AppTemplateConfig extends ApplicationTemplate
 			
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			Ajax()->AddCommand("Alert", "The constant was successfully saved");
+			Ajax()->AddCommand("Alert", "The constant ". DBO()->ConfigConstant->Name->Value ." was successfully saved");
 			
 			// Fire the OnConfigConstantUpdate Event
 			$arrEvent['ConfigConstantGroup']['Id']	= DBO()->ConfigConstantGroup->Id->Value;
@@ -184,21 +181,14 @@ class AppTemplateConfig extends ApplicationTemplate
 		{
 			// The user wants to edit an existing constant.  Load its details
 			DBO()->ConfigConstant->Load();
-			if (DBO()->ConfigConstant->ConstantGroup->Value != NULL)
-			{
-				// The constant belongs to a group
-				DBO()->ConfigConstantGroup->Id = DBO()->ConfigConstant->ConstantGroup->Value;
-			}
+			DBO()->ConfigConstantGroup->Id = DBO()->ConfigConstant->ConstantGroup->Value;
 			
 			// Flag whether the constant is set to NULL
 			DBO()->ConfigConstant->ValueIsNull = (bool)(DBO()->ConfigConstant->Value->Value === NULL);
 		}
 		
-		if (DBO()->ConfigConstantGroup->Id->Value)
-		{
-			// A ConstantGroup has been specified.  Load it
-			DBO()->ConfigConstantGroup->Load();
-		}
+		// Load the ConstantGroup
+		DBO()->ConfigConstantGroup->Load();
 		
 		// Declare which Page Template to use
 		$this->LoadPage('constant_edit');
@@ -233,6 +223,13 @@ class AppTemplateConfig extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: The constant could not be found in the database");
 			return TRUE;
 		}
+
+		if (!(DBO()->ConfigConstant->Deletable->Value || AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD)))
+		{
+			// The user cannot delete this constant
+			Ajax()->AddCommand("Alert", "ERROR: You do not have permission to delete this constant");
+			return TRUE;
+		}
 		
 		$strDeleteQuery = "DELETE FROM ConfigConstant WHERE Id = ". DBO()->ConfigConstant->Id->Value;
 		
@@ -261,6 +258,18 @@ class AppTemplateConfig extends ApplicationTemplate
 	// It is assumed that if $dboConfigConstantGroup is not NULL then it is a loaded ConfigConstantGroup record
 	private function _ValidateConstant(&$dboConstant, $dboConstantGroup)
 	{
+		// If the constant is currently stored in the database, then load its current details
+		if ($dboConstant->Id->Value)
+		{
+			// The constant is already defined in the database. Retrieve its details in a separate object
+			$dboConstantCurrentDetails = new DBObject("ConfigConstant");
+			$dboConstantCurrentDetails->Id = $dboConstant->Id->Value;
+			$dboConstantCurrentDetails->Load();
+			
+			// Merge the data from the database, with the editted details
+			$dboConstant->LoadMerge();
+		}
+		
 		// Remove whitespace
 		$dboConstant->Value = trim($dboConstant->Value->Value);
 		
@@ -270,8 +279,9 @@ class AppTemplateConfig extends ApplicationTemplate
 			$dboConstant->Value = NULL;
 		}
 		
-		// Convert the name to upper case
+		// Convert the name to upper case and convert spaces into underscores
 		$dboConstant->Name = strtoupper($dboConstant->Name->Value);
+		$dboConstant->Name = str_replace(" ", "_", $dboConstant->Name->Value);
 		
 		// Check that a name has been specified
 		if (!Validate("REGEX:/^[A-Z]([A-Z0-9_]*)[A-Z0-9]$/", $dboConstant->Name->Value))
@@ -280,18 +290,10 @@ class AppTemplateConfig extends ApplicationTemplate
 			return "ERROR: Name must be of the form: CONST_NAME";
 		}
 
-		// If the constant is currently stored in the database, then load its current details
-		if ($dboConstant->Id->Value)
-		{
-			// The constant is already defined in the database. Retrieve its details
-			$dboConstantCurrentDetails = new DBObject("ConfigConstant");
-			$dboConstantCurrentDetails->Id = $dboConstant->Id->Value;
-			$dboConstantCurrentDetails->Load();
-		}
 		
 		// Check that the name is not currently in use
 		if	(	// (The constant is already in the database AND its name has been changed AND the new name is currently a defined constant)
-				((isset($dboConstantCurrentDetails)) && ($dboConstantCurrentDetails->Name->Value != $dboConstant->Name->Value) && (defined($dboConfigConstant->Name->Value)))
+				((isset($dboConstantCurrentDetails)) && ($dboConstantCurrentDetails->Name->Value != $dboConstant->Name->Value) && (defined($dboConstant->Name->Value)))
 				|| // OR
 				// (The constant is not in the database AND its name is currently a defined constant)
 				((!isset($dboConstantCurrentDetails)) && (defined($dboConstant->Name->Value)))
@@ -301,9 +303,9 @@ class AppTemplateConfig extends ApplicationTemplate
 			return "ERROR: This name is already in use by another constant.  Please choose a unique name";
 		}
 
-		if ($dboConstantGroup->Id->Value)
+		if ($dboConstantGroup->Special->Value)
 		{
-			// The constant belongs to a constant group
+			// The constant belongs to a special constant group
 			// A description must be specified
 			if (!Validate("IsNotEmptyString", $dboConstant->Description->Value))
 			{
@@ -353,7 +355,7 @@ class AppTemplateConfig extends ApplicationTemplate
 		}
 		else
 		{
-			// The constant is not part of a constant group and can be a string, integer, float or bool
+			// The constant is not part of a special constant group and can be a string, integer, float or bool
 			if ($dboConstant->Value->Value !== NULL)
 			{
 				$strErrorMessage = NULL; 
@@ -416,6 +418,29 @@ class AppTemplateConfig extends ApplicationTemplate
 					$dboConstant->Value->SetToInvalid();
 					return $strErrorMessage;
 				}
+			}
+		}
+		
+		if ($dboConstant->Id->Value)
+		{
+			// The user is editing an existing Constant
+			if (!$dboConstant->Editable->IsSet)
+			{
+				// The user does not have permision to modify the 'Editable' and 'Deletable' properties
+				// Set them to the old properties
+				$dboConstant->Editable = $dboConstantCurrentDetails->Editable->Value;
+				$dboConstant->Deletable = $dboConstantCurrentDetails->Deletable->Value;
+			}
+		}
+		else
+		{
+			// The user is adding a new constant
+			if (!$dboConstant->Editable->IsSet)
+			{
+				// The user does not have permision to modify the 'Editable' and 'Deletable' properties
+				// Set them to both be true
+				$dboConstant->Editable = TRUE;
+				$dboConstant->Deletable = TRUE;
 			}
 		}
 		
