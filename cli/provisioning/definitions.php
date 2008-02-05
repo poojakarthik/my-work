@@ -82,9 +82,11 @@ define("PROVSIONING_FILE_ACCEPTED"		, 703);
 define("SEQUENCE_START_UNITEL"			, 1);
 
 // File Directories (incl trailing "/")
-define("UNITEL_LOCAL_DAILY_ORDER_DIR"	, FILES_BASE_PATH."upload/unitel/dailyorder/");
-define("UNITEL_LOCAL_PRESELECTION_DIR"	, FILES_BASE_PATH."upload/unitel/preselection/");
-define("OPTUS_LOCAL_PRESELECTION_DIR"	, FILES_BASE_PATH."upload/optus/preselection/");
+define("UNITEL_LOCAL_DAILY_ORDER_DIR"				, FILES_BASE_PATH."upload/unitel/dailyorder/");
+define("UNITEL_LOCAL_PRESELECTION_DIR"				, FILES_BASE_PATH."upload/unitel/preselection/");
+define("UNITEL_VOICETALK_LOCAL_DAILY_ORDER_DIR"		, FILES_BASE_PATH."upload/unitel_voicetalk/dailyorder/");
+define("UNITEL_VOICETALK_LOCAL_PRESELECTION_DIR"	, FILES_BASE_PATH."upload/unitel_voicetalk/preselection/");
+define("OPTUS_LOCAL_PRESELECTION_DIR"				, FILES_BASE_PATH."upload/optus/preselection/");
 
 // Additional Preselection Constants
 define("CUSTOMER_NUMBER_OPTUS"			,"23139716000139");
@@ -117,5 +119,11 @@ define("UNITEL_PROVISIONING_SERVER"			, "rslcom.com.au");
 define("UNITEL_PROVISIONING_USERNAME"		, "sp058");
 define("UNITEL_PROVISIONING_PASSWORD"		, "BuzzaBee06*#");
 define("UNITEL_REMOTE_DAILY_ORDER_DIR"		, "ebill_dailyorderfiles");
-define("UNITEL_REMOTE_PRESELECTION_DIR"		, "dailychurn")
+define("UNITEL_REMOTE_PRESELECTION_DIR"		, "dailychurn");
+
+define("UNITEL_VOICETALK_PROVISIONING_SERVER"		, "rslcom.com.au");
+define("UNITEL_VOICETALK_PROVISIONING_USERNAME"		, "sp321");
+define("UNITEL_VOICETALK_PROVISIONING_PASSWORD"		, "KfYRSBOgm4Ci");
+define("UNITEL_VOICETALK_REMOTE_DAILY_ORDER_DIR"	, "ebill_dailyorderfiles");
+define("UNITEL_VOICETALK_REMOTE_PRESELECTION_DIR"	, "dailychurn");
 ?>
