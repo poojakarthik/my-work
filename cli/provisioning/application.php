@@ -76,6 +76,8 @@
  		// Init Provisioning Export Modules
 		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]		= new ProvisioningModuleExportUnitelPreselection(&$this->db);
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]		= new ProvisioningModuleExportUnitelOrder(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_VT_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelVoiceTalkPreselection(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_VT_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelVoiceTalkOrder(&$this->db);
  		//$this->_arrProvisioningModules[PRV_AAPT_EOE]					= new ProvisioningModuleExportAAPTEOE(&$this->db);
  		$this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP]		= new ProvisioningModuleExportOptusPreselection(&$this->db);
  		$this->_arrProvisioningModules[PRV_OPTUS_RESTORE_EXP]			= new ProvisioningModuleExportOptusRestore(&$this->db);
@@ -351,6 +353,32 @@
 						case REQUEST_BAR_HARD:
 						case REQUEST_UNBAR_HARD:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP];
+							break;
+						
+						default:
+							$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
+							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
+							continue 3;
+					}
+					break;
+				
+				case CARRIER_UNITEL_VOICETALK:
+					switch ($arrRequest['RequestType'])
+					{
+						case REQUEST_FULL_SERVICE:
+						case REQUEST_FULL_SERVICE_REVERSE:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_VT_DAILY_ORDER_EXP];
+							break;
+							
+						case REQUEST_PRESELECTION:
+						case REQUEST_BAR_SOFT:
+						case REQUEST_UNBAR_SOFT:
+						case REQUEST_ACTIVATION:
+						case REQUEST_DEACTIVATION:
+						case REQUEST_PRESELECTION_REVERSE:
+						case REQUEST_BAR_HARD:
+						case REQUEST_UNBAR_HARD:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_VT_PRESELECTION_EXP];
 							break;
 						
 						default:
