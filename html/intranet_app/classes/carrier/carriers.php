@@ -128,10 +128,11 @@
 			parent::__construct ('Carriers');
 			
 			// Instantiate the Variable Values for possible selection
-			$this->_UNITEL		= $this->Push (new Carrier (CARRIER_UNITEL));
-			$this->_OPTUS		= $this->Push (new Carrier (CARRIER_OPTUS));
-			$this->_AAPT		= $this->Push (new Carrier (CARRIER_AAPT));
-			$this->_ISEEK		= $this->Push (new Carrier (CARRIER_ISEEK));
+			$this->_UNITEL				= $this->Push (new Carrier (CARRIER_UNITEL));
+			$this->_UNITEL_VOICETALK	= $this->Push (new Carrier (CARRIER_UNITEL_VOICETALK));
+			$this->_OPTUS				= $this->Push (new Carrier (CARRIER_OPTUS));
+			$this->_AAPT				= $this->Push (new Carrier (CARRIER_AAPT));
+			$this->_ISEEK				= $this->Push (new Carrier (CARRIER_ISEEK));
 			
 			$this->setValue ($intCarrier);
 		}
@@ -157,11 +158,12 @@
 			// Select the value
 			switch ($intCarrier)
 			{
-				case CARRIER_UNITEL:	$this->Select ($this->_UNITEL);	return true;
-				case CARRIER_OPTUS:		$this->Select ($this->_OPTUS);	return true;
-				case CARRIER_AAPT:		$this->Select ($this->_AAPT);	return true;
-				case CARRIER_ISEEK:		$this->Select ($this->_ISEEK);	return true;
-				default:												return false;
+				case CARRIER_UNITEL:			$this->Select ($this->_UNITEL);				return true;
+				case CARRIER_UNITEL_VOICETALK:	$this->Select ($this->_UNITEL_VOICETALK);	return true;
+				case CARRIER_OPTUS:				$this->Select ($this->_OPTUS);				return true;
+				case CARRIER_AAPT:				$this->Select ($this->_AAPT);				return true;
+				case CARRIER_ISEEK:				$this->Select ($this->_ISEEK);				return true;
+				default:																	return false;
 			}
 		}
 	}

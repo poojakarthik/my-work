@@ -102,6 +102,10 @@
 					$strName = 'Unitel';
 					break;
 					
+				case CARRIER_UNITEL_VOICETALK:
+					$strName = 'Unitel (VoiceTalk)';
+					break;
+					
 				case CARRIER_OPTUS:
 					$strName = 'Optus';
 					break;
