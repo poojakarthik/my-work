@@ -922,7 +922,7 @@
  	{
 		// Report Title
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TITLE."\n");
-		
+		/*
 		// FAIL if there are temporary invoices in the invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CHECK_TEMP_INVOICES, FALSE);
 		$selCheckTempInvoices = new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP);
@@ -994,7 +994,7 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}*/
-		
+		/*
 		// empty temporary invoice table
 		$this->_rptBillingReport->AddMessage("Truncating Temp Invoice table...", FALSE);
 		$qryTruncate = new Query();
@@ -1028,7 +1028,7 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-		
+		*/
 		
 		// Move Invoiced CDRS to CDRInvoiced table
 		$this->_rptBillingReport->AddMessage("Moving Invoiced CDRs to CDRInvoiced...\t", FALSE);
@@ -1176,9 +1176,10 @@
 		$updServiceRatePlan		= new StatementUpdate(	"ServiceRatePlan",
 														"Active = 0 AND StartDatetime < NOW()",
 														$arrCols);
+		$qryServiceRatePlan		= new Query();
 		
 		$this->_rptBillingReport->AddMessage("Activating Inactive ServiceRatePlans for Invoiced Accounts...", FALSE);
-		if ($updServiceRatePlan->Execute($arrCols, $arrInvoiceRun) !== FALSE)
+		if ($qryServiceRatePlan->Execute("UPDATE ServiceRatePlan SET Active = 1 WHERE Active = 0 AND StartDatetime < NOW()") !== FALSE)
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
@@ -1186,7 +1187,7 @@
 		else
 		{
 			// Report and fail out
-			Debug($updServiceRatePlan->Error());
+			Debug($qryServiceRatePlan->Error());
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
 		}
@@ -1194,9 +1195,10 @@
 		$updServiceRateGroup	= new StatementUpdate(	"ServiceRateGroup",
 														"Active = 0 AND StartDatetime < NOW()",
 														$arrCols);
+		$qryServiceRateGroup	= new Query();
 		
 		$this->_rptBillingReport->AddMessage("Activating Inactive ServiceRateGroups for Invoiced Accounts...", FALSE);
-		if ($updServiceRateGroup->Execute($arrCols, $arrInvoiceRun) !== FALSE)
+		if ($qryServiceRateGroup->Execute("UPDATE ServiceRateGroup SET Active = 1 WHERE Active = 0 AND StartDatetime < NOW()") !== FALSE)
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
@@ -1204,7 +1206,7 @@
 		else
 		{
 			// Report and fail out
-			Debug($updServiceRateGroup->Error());
+			Debug($qryServiceRateGroup->Error());
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
 		}
@@ -2436,8 +2438,8 @@
  		
  		$arrInvoiceColumns = Array();
  		$arrInvoiceColumns['Balance'] = NULL;
- 		$selNegativeInvoices	= new StatementSelect("Invoice", "Id, Account, AccountGroup, Balance", "Balance < 0 AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
- 		$selPositiveInvoices	= new StatementSelect("Invoice", "Id, Balance, Status, InvoiceRun", "Balance > 0 AND Account = <Account> AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
+ 		$selNegativeInvoices	= new StatementSelect("Invoice", "Id, Account, AccountGroup, Balance", "Status IN (101, 103) AND Balance < 0 AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
+ 		$selPositiveInvoices	= new StatementSelect("Invoice", "Id, Balance, Status, InvoiceRun", "Status IN (101) AND Balance > 0 AND Account = <Account> AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
  		$ubiInvoice				= new StatementUpdateById("Invoice", $arrInvoiceColumns);
  		$insInvoicePayment		= new StatementInsert("InvoicePayment");
  		
