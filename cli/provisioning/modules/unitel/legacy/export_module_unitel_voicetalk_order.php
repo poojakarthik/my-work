@@ -299,7 +299,7 @@
 		$intFullServiceFileSequence		= ((int)$arrResult['Value']) + 1;
 		
 		// Build Header Rows
-		$this->_strFile		= "058rslw".str_pad($intFullServiceFileSequence, 4, "0", STR_PAD_LEFT).date("Ymd").".txt";
+		$this->_strFile		= "321rslw".str_pad($intFullServiceFileSequence, 4, "0", STR_PAD_LEFT).date("Ymd").".txt";
 		$strFullServiceHeaderRow 	= "01".$this->_strFile;
 		
 		// Get list of requests to generate
