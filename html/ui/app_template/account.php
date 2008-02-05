@@ -777,6 +777,71 @@ class AppTemplateAccount extends ApplicationTemplate
 								DBO()->Account->Sample->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
 		}
+		if (DBO()->Account->LatePaymentAmnesty->Value != DBO()->CurrentAccount->LatePaymentAmnesty->Value)
+		{
+			// When refering to END_OF_TIME, we just want the date part, not the time part
+			$strEndOfTime = substr(END_OF_TIME, 0, 10);
+			$strChangeMsg = "Sending of late notices was changed from '<OldSetting>' to '<NewSetting>'";
+			
+			if (DBO()->Account->LatePaymentAmnesty->Value == NULL)
+			{
+				// Explicity set it to NULL, if it loosely equals NULL
+				DBO()->Account->LatePaymentAmnesty = NULL;
+			}
+			
+			if (DBO()->CurrentAccount->LatePaymentAmnesty->Value != $strEndOfTime)
+			{
+				if (DBO()->CurrentAccount->LatePaymentAmnesty->Value < date("Y-m-d"))
+				{
+					// The account is currently eligable for late notices
+					$bolAmnestyExpired = TRUE;
+					$strOldSetting = "Send late notices";
+				}
+				else
+				{
+					// The account currently has an explicit late notice amnesty
+					$bolAmnestyExpired = FALSE;
+					$strOldSetting = "Not eligible for late notices until after ". date("jS F, Y", strtotime(DBO()->CurrentAccount->LatePaymentAmnesty->Value));
+				}
+			}
+			else
+			{
+				// The account is currently set to "Never send late notices"
+				$bolAmnestyExpired = FALSE;
+				$strOldSetting = "Never send late notices";
+			}
+			
+			// Interpret the new LatePaymentAmnesty value
+			if (DBO()->Account->LatePaymentAmnesty->Value == NULL)
+			{
+				// The account has been set to "Send late notices"
+				$strNewSetting = "Send late Notices";
+			}
+			elseif (DBO()->Account->LatePaymentAmnesty->Value == $strEndOfTime)
+			{
+				// The account has been set to "Never send late notices"
+				$strNewSetting = "Never send late notices"; 
+			}
+			else
+			{
+				// An explicit date has been set for the LatePaymentAmnesty
+				$strNewSetting = "Not eligible for late notices until after ". date("jS F, Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
+			}
+			
+			if (DBO()->Account->LatePaymentAmnesty->Value == NULL && $bolAmnestyExpired)
+			{
+				// The user has set the property to "Send late notices", however the existing amnesty has expired which means it is logically
+				// already set to "Send late notices", so don't bother logging this change in the system note
+			}
+			else
+			{
+				// Update the content of the system note
+				$strChangeMsg = str_replace("<OldSetting>", $strOldSetting, $strChangeMsg);
+				$strChangeMsg = str_replace("<NewSetting>", $strNewSetting, $strChangeMsg);
+				$strChangesNote .= $strChangeMsg;
+			}
+		}
+/* OLD way of handling LateNotice exemptions
 		if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
 		{
 			$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
@@ -805,7 +870,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Retain the current value of Account.LateNoticeAmnesty
 			DBO()->Account->LatePaymentAmnesty = DBO()->CurrentAccount->LatePaymentAmnesty->Value;
 		}
-		
+*/
 		// Start the transaction
 		TransactionStart();
 

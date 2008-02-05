@@ -3177,7 +3177,8 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	
 	
 	$strTables	= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
-	$strWhere	= "Account.DisableLateNotices = 0 AND Account.Archived IN (". implode(", ", $arrApplicableAccountStatuses) .")";
+	//$strWhere	= "Account.DisableLateNotices = 0 AND Account.Archived IN (". implode(", ", $arrApplicableAccountStatuses) .")";
+	$strWhere	= "(Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW()) AND Account.Archived IN (". implode(", ", $arrApplicableAccountStatuses) .")";
 	$strOrderBy	= "Invoice.Account ASC";
 	$strGroupBy	= "Invoice.Account HAVING Overdue > ". $GLOBALS['**arrCustomerConfig']['AccountNotice']['LateNoticeModule']['AcceptableOverdueBalance'];
 	
@@ -3201,6 +3202,7 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	foreach ($arrAccounts as $arrAccount)
 	{
 		// Check if the account has a LatePayment amnesty period
+		/* This is no longer needed as any Accounts with a valid LatePaymentAmnesty will not be retrieved by the query 
 		if (($arrAccount['LatePaymentAmnesty'] !== NULL) && ($intToday < strtotime($arrAccount['LatePaymentAmnesty'])))
 		{
 			// The account is within its LatePayment amnesty.  Don't produce Late Notices
@@ -3209,7 +3211,7 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 			// where DisableLateNotices < 0)
 			continue; 
 		}
-		
+		*/
 		$bolSuccess = NULL;
 		
 		switch ($intNoticeType)
@@ -3295,30 +3297,6 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	return $arrGeneratedNotices;
 }
 
-//------------------------------------------------------------------------//
-// UpdateDisableLateNoticesSetting
-//------------------------------------------------------------------------//
-/**
- * UpdateDisableLateNoticesSetting()
- *
- * Updates the Account.DisableLateNotices property
- *
- * For each account that has DisableLateNotices set to "Don't send late 
- * notices until next invoice", this will reset it to "Send Late Notices"
- * This function should be performed after a bill run is committed
- *
- * @return	mixed					int		:	number of accounts affected
- * 									FALSE	:	Update failed
- * @function
- */
-function UpdateDisableLateNoticesSetting()
-{
-	// Having Late Notices disabled for more than 1 month but less than indefinite, is not currently handled
-	$arrColumns = Array("DisableLateNotices" => "DisableLateNotices + 1");
-	$updDisableLateNoticeSetting = new StatementUpdate("Account", "DisableLateNotices < 0", $arrColumns);
-	
-	return $updDisableLateNoticeSetting->Execute($arrColumns);
-}
 
 //------------------------------------------------------------------------//
 // RecursiveMkdir
@@ -3438,6 +3416,8 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	$arrAccount['CustomerGroupExternalName']	= $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['CustomerGroupExternalName'];
 	$arrAccount['AccountStatus']				= GetConstantDescription($arrAccount['AccountStatus'], "Account");
 	$arrAccount['NoticeTemplate']				= $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['Template'];
+	$arrAccount['BPay Biller Code']				= BPAY_BILLER_CODE;
+	$arrAccount['Customer Reference Number']	= $arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']); 
 
 	// Format the monetary values
 	$arrAccount['OutstandingNotOverdue'] = number_format($arrAccount['OutstandingNotOverdue'], 2, ".", "");

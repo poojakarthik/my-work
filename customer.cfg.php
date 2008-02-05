@@ -13,6 +13,8 @@ $GLOBALS['**arrCustomerConfig'] = Array();
 $GLOBALS['**arrCustomerConfig']	['Customer']			= CUSTOMER_URL_NAME;
 //$GLOBALS['**arrCustomerConfig']	['EmailNotifications']	= "billing-notifications@yellowbilling.com.au";
 $GLOBALS['**arrCustomerConfig']	['EmailNotifications']	= EMAIL_NOTIFICATIONS;
+$GLOBALS['**arrCustomerConfig']	['BPayBillerCode']		= BPAY_BILLER_CODE;
+
 
 //----------------------------------------------------------------------------//
 // Billing

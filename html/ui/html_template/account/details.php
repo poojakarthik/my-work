@@ -220,7 +220,20 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->Sample = 0;
 		}
 		DBO()->Account->Sample->RenderOutput();
-		DBO()->Account->DisableLateNotices->RenderOutput();
+		//DBO()->Account->DisableLateNotices->RenderOutput();
+		if (DBO()->Account->LatePaymentAmnesty->Value == substr(END_OF_TIME, 0, 10))
+		{
+			DBO()->Account->LatePaymentAmnesty = "Never send late notices";
+		}
+		elseif (DBO()->Account->LatePaymentAmnesty->Value < date("Y-m-d"))
+		{
+			DBO()->Account->LatePaymentAmnesty = "Send Late Notices";
+		}
+		else
+		{
+			DBO()->Account->LatePaymentAmnesty = "Exempt until after ". date("jS F, Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
+		}
+		DBO()->Account->LatePaymentAmnesty->RenderOutput();
 		
 		if (DBO()->Account->DisableLatePayment->Value === NULL)
 		{
@@ -228,6 +241,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->DisableLatePayment = 0;
 		}
 		DBO()->Account->DisableLatePayment->RenderOutput();
+		
 		DBO()->Account->DisableDDR->RenderOutput();
 		echo "</div>\n"; // GroupedContent
 		
@@ -365,7 +379,54 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 		
 		DBO()->Account->Sample->RenderInput();
-		DBO()->Account->DisableLateNotices->RenderInput();
+		//DBO()->Account->DisableLateNotices->RenderInput();
+		
+		// Build the Array of options for the Late Notices combobox
+		// The key to this array will be the amnesty date as a string, so that it can be sorted, and any previous
+		// value for LatePaymentAmnesty can safely override any new ones set up
+		$strEndOfTime				= substr(END_OF_TIME, 0, 10);
+		$arrOptions					= Array();
+		$arrOptions[NULL]			= "Send late notices";
+		
+		$intPaymentTerms			= DBO()->Account->PaymentTerms->Value;
+		$intLastMonthsBillAmnesty	= strtotime("+ $intPaymentTerms days", GetStartDateTimeForBillingPeriod());
+		if ($intLastMonthsBillAmnesty > time())
+		{
+			$strLastMonthsBillAmnesty = date("Y-m-d", $intLastMonthsBillAmnesty);
+			
+			// The user can still flag the account to not receive late notices regarding last months bill
+			$arrOptions[$strLastMonthsBillAmnesty]	= "Exempt until ". date("jS F", $intLastMonthsBillAmnesty);
+		}
+		$intThisMonthsBillAmnesty					= strtotime("+ $intPaymentTerms days", GetStartDateTimeForNextBillingPeriod());
+		$strThisMonthsBillAmnesty					= date("Y-m-d", $intThisMonthsBillAmnesty);
+		$arrOptions[$strThisMonthsBillAmnesty]		= "Exempt until ". date("jS F", $intThisMonthsBillAmnesty);
+		$arrOptions[$strEndOfTime]					= "Never send late notices";
+		
+		// Add the Account's current LatePaymentAmnesty if it is in the future (or today) and is not set to END_OF_TIME
+		$strLatePaymentAmnesty = DBO()->Account->LatePaymentAmnesty->Value;
+		if (($strLatePaymentAmnesty != $strEndOfTime) && ($strLatePaymentAmnesty >= date("Y-m-d")))
+		{
+			// If this date is already in the array of options, then it will just override it
+			$arrOptions[$strLatePaymentAmnesty] = "Exempt until ". date("jS F", strtotime($strLatePaymentAmnesty));
+		}
+		
+		// Sort the list 
+		ksort($arrOptions);
+		
+		// Render the combobox
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Late Notices :</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select id='Account.LatePaymentAmnesty' name='Account.LatePaymentAmnesty'>\n";
+		foreach ($arrOptions as $strDate=>$strLabel)
+		{
+			$strSelected = (DBO()->Account->LatePaymentAmnesty->Value == $strDate) ? "selected='selected'" : "";
+			echo "		<option value='$strDate' $strSelected>$strLabel</option>\n";
+		}
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";
+		
 		DBO()->Account->DisableLatePayment->RenderInput(1);
 		DBO()->Account->DisableDDR->RenderInput(1);
 		
@@ -408,7 +469,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 						"document.getElementById('Account.State').style.width='$strWidth';\n".
 						"document.getElementById('Account.BillingMethod').style.width='$strWidth';\n".
 						"document.getElementById('Account.Sample').style.width='$strWidth';\n".
-						"document.getElementById('Account.DisableLateNotices').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
+						"document.getElementById('Account.LatePaymentAmnesty').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
 						
 		echo "<script type='text/javascript'>$strJsCode</script>";
 	}
