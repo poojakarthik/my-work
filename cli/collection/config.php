@@ -55,38 +55,59 @@
 /**/
 		
 		// Unitel Landline Definition
-		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel Landline/S&E";
-		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
- 		$arrConfig['Define']["Unitel"]	["Type"]							= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Unitel"]	["Server"]							= "rslcom.com.au";
- 		$arrConfig['Define']["Unitel"]	["Username"]						= "sp058";
- 		$arrConfig['Define']["Unitel"]	["PWord"]							= "BuzzaBee06*#";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatchesoffnet/";
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/archive";
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "dailychurn/";
- 		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
+		$arrConfig['Define']["TBUnitel"]	["Name"]							= "TelcoBlue: Unitel Landline/S&E";
+		$arrConfig['Define']["TBUnitel"]	["Carrier"]							= CARRIER_UNITEL;
+ 		$arrConfig['Define']["TBUnitel"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["TBUnitel"]	["Server"]							= "rslcom.com.au";
+ 		$arrConfig['Define']["TBUnitel"]	["Username"]						= "sp058";
+ 		$arrConfig['Define']["TBUnitel"]	["PWord"]							= "BuzzaBee06*#";
+ 		$arrConfig['Define']["TBUnitel"]	["Dir"][]							= "cdrbatches/";
+ 		$arrConfig['Define']["TBUnitel"]	["Dir"][]							= "cdrbatchesoffnet/";
+ 		//$arrConfig['Define']["TBUnitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
+ 		//$arrConfig['Define']["TBUnitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/archive";
+ 		//$arrConfig['Define']["TBUnitel"]	["Dir"][]							= "dailychurn/";
+ 		$arrConfig['Define']["TBUnitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["TBUnitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
+		$arrConfig['Define']["TBUnitel"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;
+		//$arrConfig['Define']["TBUnitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
+		//$arrConfig['Define']["TBUnitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
+		//$arrConfig['Define']["TBUnitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
+		//$arrConfig['Define']["TBUnitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 		
+		$arrConfig['Define']["VTUnitel"]	["Name"]							= "VoiceTalk: Unitel Landline/S&E";
+		$arrConfig['Define']["VTUnitel"]	["Carrier"]							= CARRIER_UNITEL_VOICETALK;
+ 		$arrConfig['Define']["VTUnitel"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["VTUnitel"]	["Server"]							= "rslcom.com.au";
+ 		$arrConfig['Define']["VTUnitel"]	["Username"]						= "sp321";
+ 		$arrConfig['Define']["VTUnitel"]	["PWord"]							= "KfYRSBOgm4Ci";
+ 		$arrConfig['Define']["VTUnitel"]	["Dir"][]							= "cdrbatches/";
+ 		$arrConfig['Define']["VTUnitel"]	["Dir"][]							= "cdrbatchesoffnet/";
+ 		$arrConfig['Define']["VTUnitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["VTUnitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
+		$arrConfig['Define']["VTUnitel"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;		
 		
 		
 		// Unitel Mobile Definition
 		// (needs a separate definition because the regex's for Commander and LL are the same, but different file format)
-		$arrConfig['Define']["UnitelMobile"]	["Name"]							= "Unitel Commander Mobile";
-		$arrConfig['Define']["UnitelMobile"]	["Carrier"]							= CARRIER_UNITEL;
- 		$arrConfig['Define']["UnitelMobile"]	["Type"]							= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["UnitelMobile"]	["Server"]							= "rslcom.com.au";
- 		$arrConfig['Define']["UnitelMobile"]	["Username"]						= "sp058";
- 		$arrConfig['Define']["UnitelMobile"]	["PWord"]							= "BuzzaBee06*#";
- 		$arrConfig['Define']["UnitelMobile"]	["Dir"][]							= "mobilecdrbatches/";
- 		$arrConfig['Define']["UnitelMobile"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
-		$arrConfig['Define']["UnitelMobile"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
+		$arrConfig['Define']["TBUnitelMobile"]	["Name"]							= "TelcoBlue: Unitel Commander Mobile";
+		$arrConfig['Define']["TBUnitelMobile"]	["Carrier"]							= CARRIER_UNITEL;
+ 		$arrConfig['Define']["TBUnitelMobile"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["TBUnitelMobile"]	["Server"]							= "rslcom.com.au";
+ 		$arrConfig['Define']["TBUnitelMobile"]	["Username"]						= "sp058";
+ 		$arrConfig['Define']["TBUnitelMobile"]	["PWord"]							= "BuzzaBee06*#";
+ 		$arrConfig['Define']["TBUnitelMobile"]	["Dir"][]							= "mobilecdrbatches/";
+ 		$arrConfig['Define']["TBUnitelMobile"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["TBUnitelMobile"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
+		
+		$arrConfig['Define']["VTUnitelMobile"]	["Name"]							= "VoiceTalk: Unitel Commander Mobile";
+		$arrConfig['Define']["VTUnitelMobile"]	["Carrier"]							= CARRIER_UNITEL_VOICETALK;
+ 		$arrConfig['Define']["VTUnitelMobile"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["VTUnitelMobile"]	["Server"]							= "rslcom.com.au";
+ 		$arrConfig['Define']["VTUnitelMobile"]	["Username"]						= "sp321";
+ 		$arrConfig['Define']["VTUnitelMobile"]	["PWord"]							= "KfYRSBOgm4Ci";
+ 		$arrConfig['Define']["VTUnitelMobile"]	["Dir"][]							= "mobilecdrbatches/";
+ 		$arrConfig['Define']["VTUnitelMobile"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["VTUnitelMobile"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
 		
 		
 		// Optus Definition	
@@ -235,6 +256,7 @@
  		$arrConfig['Define']["Payments"]	["FinalDir"]														= DESTINATION_ROOT.'payment/';
 		$arrConfig['Define']["Payments"]	["FileType"]['/^TELCOBLUE \d{6}\.txt$/i']							= PAYMENT_TYPE_BILLEXPRESS;
 		$arrConfig['Define']["Payments"]	["FileType"]['/^bpay \d{6}\.csv$/i']								= PAYMENT_TYPE_BPAY;
+		$arrConfig['Define']["Payments"]	["FileType"]['/^ERP_\d{1,2}-\d{1.2}-\d{4}_\d{1, 10}\.csv$/i']		= PAYMENT_TYPE_BPAY;
 		$arrConfig['Define']["Payments"]	["FileType"]['/^SAE\d{2}_\d{4}-\d{2}-\d{2}_\d{2}_\d{1,4}\.txt$/i']	= PAYMENT_TYPE_SECUREPAY;
 
 		
