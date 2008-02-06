@@ -50,57 +50,18 @@
  		parent::__construct();
  		
  		// Define file format
- 		$this->_strDelimiter	= "|";
+ 		$this->_strDelimiter	= ",";
  		$this->_strEnclosedBy	= '"';
  		
- 		$arrDefine['Bank']					['Index']	= 0;
- 		$arrDefine['ABN']					['Index']	= 1;
- 		$arrDefine['Receivables']			['Index']	= 2;
- 		$arrDefine['RemittanceDateTitle']	['Index']	= 3;
- 		$arrDefine['RemittanceDate']		['Index']	= 4;
- 		$arrDefine['FileDateTitle']			['Index']	= 5;
- 		$arrDefine['FileDate']				['Index']	= 6;
- 		$arrDefine['TotalValueTitle']		['Index']	= 7;
- 		$arrDefine['TotalValue']			['Index']	= 8;
- 		$arrDefine['TotalItemsTitle']		['Index']	= 9;
- 		$arrDefine['TotalItems']			['Index']	= 10;
- 		$arrDefine['ReportedValueTitle']	['Index']	= 11;
- 		$arrDefine['ReportedValue']			['Index']	= 12;
-		$arrDefine['ReportedItemsTitle']	['Index']	= 13;
-		$arrDefine['ReportedItems']			['Index']	= 14;
-		$arrDefine['ServiceIdTitle']		['Index']	= 15;
-		$arrDefine['ServiceId']				['Index']	= 16;
-		$arrDefine['ServiceNameTitle']		['Index']	= 17;
-		$arrDefine['ServiceName']			['Index']	= 18;
-		$arrDefine['AccountNumberTitle']	['Index']	= 19;
-		$arrDefine['AccountNumber']			['Index']	= 20;
-		$arrDefine['AccountBSBTitle']		['Index']	= 21;
-		$arrDefine['AccountBSB']			['Index']	= 22;
-		$arrDefine['ClientTitle']			['Index']	= 23;
-		$arrDefine['ItemTitle']				['Index']	= 24;
-		$arrDefine['TransactionTitle']		['Index']	= 25;
-		$arrDefine['OriginatingTitle']		['Index']	= 26;
-		$arrDefine['TiddReceiptTitle']		['Index']	= 27;
-		$arrDefine['VoucherTitle']			['Index']	= 28;
-		$arrDefine['BPayReceiptTitle']		['Index']	= 29;
-		$arrDefine['Transaction2Title']		['Index']	= 30;
-		$arrDefine['NameTitle']				['Index']	= 31;
-		$arrDefine['AmountTitle']			['Index']	= 32;
-		$arrDefine['TypeTitle']				['Index']	= 33;
-		$arrDefine['SystemTitle']			['Index']	= 34;
-		$arrDefine['NumberTitle']			['Index']	= 35;
-		$arrDefine['TraceNumberTitle']		['Index']	= 36;
-		$arrDefine['Number2Title']			['Index']	= 37;
-		$arrDefine['TypeCodeTitle']			['Index']	= 38;
-		$arrDefine['CustomerReference']		['Index']	= 39;
-		$arrDefine['Amount']				['Index']	= 40;
-		$arrDefine['Type']					['Index']	= 41;
-		$arrDefine['System']				['Index']	= 42;
-		$arrDefine['Number']				['Index']	= 43;
-		$arrDefine['Blank']					['Index']	= 44;
-		$arrDefine['TraceNumber']			['Index']	= 45;
-		$arrDefine['Number2']				['Index']	= 46;
-		$arrDefine['Number3']				['Index']	= 47;
+ 		$arrDefine['Amount']					['Index']	= 0;
+ 		$arrDefine['CustomerReference']			['Index']	= 1;
+ 		$arrDefine['Date']						['Index']	= 2;
+ 		$arrDefine['FileId']					['Index']	= 3;
+ 		$arrDefine['OriginatingSystem']			['Index']	= 4;
+ 		$arrDefine['ReceiptNumber']				['Index']	= 5;
+ 		$arrDefine['ServiceID']					['Index']	= 6;
+ 		$arrDefine['ServiceName']				['Index']	= 7;
+ 		$arrDefine['TransactionCode']			['Index']	= 8;
 
 		$arrDefine['Amount']			['Validate'] = "/^\$\d+\.\d{2}$/";
 		$arrDefine['CustomerReference']	['Validate'] = "/^\d+$/";			// FIXME: Find out how customer ref #s are generated
@@ -132,35 +93,29 @@
  			return PAYMENT_CANT_NORMALISE_FOOTER;
  		}
  		
- 		// Check to see if there are quotes enclosing
- 		if (stripos($strPaymentRecord, '"') !== 0)
+ 		if (stripos($strPaymentRecord, 'Amount,Client'))
  		{
- 			return PAYMENT_CANT_NORMALISE_INVALID;
+ 			return PAYMENT_CANT_NORMALISE_HEADER;
  		}
-	 	
- 		// BPay are idiots, so parse the file first, changing it from comma-delimited to pipe-delimited
-	 	$strRawRecord = str_replace("\",", "\"|", $strPaymentRecord);
-	 	$strRawRecord = str_replace(",\"", "|\"", $strRawRecord);
  		
  		//Debug($strRawRecord);
  		
  		// Split the parsed record
- 		$this->_SplitRaw($strRawRecord);
+ 		$this->_SplitRaw($strPaymentRecord);
 		
  		// PaymentType
  		$this->_Append('PaymentType', PAYMENT_TYPE_BPAY);
  		
  		// Amount
- 		$mixValue	= str_replace(',', '', $this->_FetchRaw('Amount'));
- 		$mixValue	= (float)ltrim($mixValue, "$");
+ 		$mixValue	= (float)$this->_FetchRaw('Amount');
  		$this->_Append('Amount', $mixValue);
  		
  		// Transaction Reference Number
- 		$mixValue	= $this->_FetchRaw('TraceNumber');
+ 		$mixValue	= $this->_FetchRaw('ReceiptNumber');
  		$this->_Append('TXNReference', $mixValue);
  		
  		// PaidOn
- 		$mixValue	= $this->_ConvertDate($this->_FetchRaw('RemittanceDate'));
+ 		$mixValue	= $this->_ConvertDate($this->_FetchRaw('Date'));
  		$this->_Append('PaidOn', $mixValue);
  		
  		// Call the base module's Normalise() to do general tasks
@@ -209,7 +164,7 @@
 	 *
 	 * Converts from BPay date format to our own 
 	 *
-	 * Converts from "D/M/YY" date format to "YYYY-MM-DD".  Assumes that dates are in the 21st Century
+	 * Converts from "DDMMYYYY" date format to "YYYY-MM-DD".  Assumes that dates are in the 21st Century
 	 *
 	 * @param		string	$strPaymentRecord	String containing raw record
 	 * 
@@ -219,11 +174,8 @@
 	 */
  	function _ConvertDate($strDate)
  	{
-		$arrElements	= explode("/", $strDate);
-		$strYear		= $arrElements[2];
-		$strMonth		= str_pad($arrElements[1], 2, "0", STR_PAD_LEFT);
-		$strDay			= str_pad($arrElements[0], 2, "0", STR_PAD_LEFT);
-		$strValidDate	= $strYear."-".$strMonth."-".$strDay; 
+		$strDate		= trim($strDate);
+		$strValidDate	= substr($strDate, -4)."-".substr($strDate, 2, 2)."-".substr($strDate, 0, 2);
 		return $strValidDate;
  	}
  }
