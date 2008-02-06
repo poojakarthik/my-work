@@ -62,10 +62,10 @@
  		$arrDefine['ServiceID']					['Index']	= 6;
  		$arrDefine['ServiceName']				['Index']	= 7;
  		$arrDefine['TransactionCode']			['Index']	= 8;
-
-		$arrDefine['Amount']			['Validate'] = "/^\$\d+\.\d{2}$/";
-		$arrDefine['CustomerReference']	['Validate'] = "/^\d+$/";			// FIXME: Find out how customer ref #s are generated
-		$arrDefine['RemittanceDate']	['Validate'] = "/^\d{1,2}\/\d{1,2}\/\d{2}$/";
+		
+		//$arrDefine['Amount']			['Validate'] = "/^\$\d+\.\d{2}$/";
+		//$arrDefine['CustomerReference']	['Validate'] = "/^\d+$/";			// FIXME: Find out how customer ref #s are generated
+		//$arrDefine['RemittanceDate']	['Validate'] = "/^\d{1,2}\/\d{1,2}\/\d{2}$/";
 		
 		$this->_arrDefine = $arrDefine;
  	}
