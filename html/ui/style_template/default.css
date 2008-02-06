@@ -63,6 +63,11 @@
 		text-decoration:	none;
 	}
 
+	div#BreadCrumbMenu a:hover
+	{
+		text-decoration:	underline;
+	}
+
 	h1
 	{
 		color:                #006599;
@@ -143,7 +148,7 @@
 	div#PageBody
 	{
 		margin-left:		75px;
-		margin-top:			20px;
+		/*margin-top:			20px;*/
 		/*width:				950px;*/
 		width:				875px;
 	}
@@ -172,13 +177,14 @@
 	
 	div#Header
 	{
-		background-color:     #000000;
-		color:                #FFFFFF;
+		background-color:		#000000;
+		color:					#FFFFFF;
 		
-		padding:              10px;
+		padding:				0px 10px 0px 0px;
+		height:					46px;
 		
-		background-image:     url('img/template/background.png');
-		background-repeat:    repeat-x;
+		background-image:		url('img/template/background.png');
+		background-repeat:		repeat-x;
 	}
 	
 	div#Header a
@@ -206,17 +212,23 @@
 /**************************************************************************/	
 	.Logo
 	{
+		/*
 		position:	absolute;
 		left:		1px;
 		top:		1px;
+		*/
 		z-index:	1000000;
+		float:		left;
+		padding:	1px;
+		width:		99px;
+		height:		44px;
 	}
 	
 	.LogoSpacer
 	{
 		float:		left;
 		height:		1px;
-		width:		70px;
+		width:		170px;
 	}	
 	
 /**************************************************************************/
@@ -709,7 +721,7 @@
 	{
 		float:				left;
 		position: 			fixed;
-		top:				80px;
+		top:				75px;
 		left:				1px;
 	}
 	
@@ -727,12 +739,9 @@
 		background-color:    #FFFFCC;
 	}
 	
-	.BreadCrumbMenu
+	div#BreadCrumbMenu
 	{
-		float:				left;
-		position: 			absolute;
-		top:				55px;
-		left:				5px;
+		padding:			5px 0px 5px 10px;
 	}
 	
 	.MenuIcon
@@ -743,7 +752,7 @@
 	
 	/*
 	 * Page Menu Items (menus that take up a whole page)
-	 * Currently on the System Menu uses these classes
+	 * Currently only the System Menu uses these classes
 	 * 
 	 */
 	

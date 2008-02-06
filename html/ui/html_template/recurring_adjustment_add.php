@@ -213,7 +213,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Times to Charge</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <input type='text' id='TimesToCharge' value='' class='DefaultInputTextSmall' style='padding-left:3px' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged(event)'></input>\n";
+		echo "      <input type='text' id='TimesToCharge' value='' style='padding-left:3px;width:165px' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged(event)'></input>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
 		

@@ -19,7 +19,7 @@
 
 ?>
 
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>TelcoBlue.com.au Internal Systems Login</title>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Flex Login</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <base href='<?php echo $strBaseDir ?>'/>
 </head>
@@ -70,10 +70,10 @@
 			<div id="topContainer">
 				<div id="loginContainer">
 				<div id="logoImage">
-				<img src="img/login/TCB_Logo.png" width="300" height="91"/>
+				<img src="img/login/yellow_billing_logo.png" width="300" height="91"/>
 				</div>
 				<div id="loginForm">
-				<h1>TelcoBlue Internal System</h1>
+				<h1>Flex Internal Management System</h1>
 				<div class="Seperator"/>
 				<?php 
 				echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";

@@ -220,14 +220,17 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->Sample = 0;
 		}
 		DBO()->Account->Sample->RenderOutput();
+		
+		// This property is DEPRICATED
 		//DBO()->Account->DisableLateNotices->RenderOutput();
+		
 		if (DBO()->Account->LatePaymentAmnesty->Value == substr(END_OF_TIME, 0, 10))
 		{
 			DBO()->Account->LatePaymentAmnesty = "Never send late notices";
 		}
 		elseif (DBO()->Account->LatePaymentAmnesty->Value < date("Y-m-d"))
 		{
-			DBO()->Account->LatePaymentAmnesty = "Send Late Notices";
+			DBO()->Account->LatePaymentAmnesty = "Send late notices";
 		}
 		else
 		{
@@ -379,6 +382,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 		
 		DBO()->Account->Sample->RenderInput();
+		
+		// This property is DEPRICATED
 		//DBO()->Account->DisableLateNotices->RenderInput();
 		
 		// Build the Array of options for the Late Notices combobox

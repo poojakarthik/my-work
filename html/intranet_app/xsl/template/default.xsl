@@ -14,7 +14,7 @@
 	<xsl:template match="/">
 		<html>
 			<head>
-					<title>viXen : Employee Intranet System</title>
+					<title>Flex Internal Management System</title>
 					<link rel="stylesheet" type="text/css" href="css/default.css" />
 					<script language="javascript" src="js/init.js"></script>
 					
@@ -24,138 +24,133 @@
 					<script language="javascript" src="js/lightbox/jquery-modalContent.js"></script>
 			</head>
 			<body>
-				<div class="Logo">
-					<img src="img/template/vixen_logo.png" border="0" />
-				</div>
-				<div id="Header" class="sectionContainer">
-						<span class="LogoSpacer"></span>
-							<div class="sectionContent">
-								<div class="Left">
-									Internal Management System
-								</div>
-								<div class="Right">
-									Version 7.03
-									
-									<!-- Report Bug Button & PopUp -->
-									<div class="Menu_Button">
-										<a href="#" onclick="return ModalDisplay ('#modalContent-ReportBug')">
-											<img src="img/template/bug.png" border="0" alt="Report Bug" title="Report Bug" />
-										</a>
-									</div>
-									
-									<div id="modalContent-ReportBug">
-										<div class="modalContainer">
-											<div class="modalContent">
-												<form method="post" name="bugreport" id="bugreport" action="bug_report.php" onsubmit="return BugSubmit(this)">
-													<input type="hidden" name="SerialisedGET">
-														<xsl:attribute name="value">
-															<xsl:text></xsl:text>
-															<xsl:value-of select="/Response/DataSerialised/GET" />
-														</xsl:attribute>
-													</input>
-													<input type="hidden" name="SerialisedPOST">
-														<xsl:attribute name="value">
-															<xsl:text></xsl:text>
-															<xsl:value-of select="/Response/DataSerialised/POST" />
-														</xsl:attribute>
-													</input>
-													<table border="0" cellpadding="0" cellspacing="0">
-														<tr>
-															<td valign="top" width="100%">
-																<h1>Bug Report</h1>
-																Please describe the problem that occurred :
-																
-																<textarea name="Comment" style="width: 725px; height: 225px;" class="input-summary-note" />
-																
-																<div class="Right">
-																	<input type="button" value="Report Bug &#0187;" onclick="javascript:document.forms['bugreport'].submit()" class="input-submit" />
-																</div>
-															</td>
-														</tr>
-													</table>
-												</form>
-											</div>
-											<div class="modalTitle">
-											<div class="modalIcon Left">
-												<img src="img/template/lady-debug.png" />
-											</div>
-											<div class="modalLabel Left">
-												<strong>Report a System Bug</strong><br />
-												Let us know when something isn't working the way you expect
-											</div>
-											<div class="modalClose Right">
-												<img src="img/template/closelabel.gif" class="close" />
-											</div>
-											<div class="Clear"></div>
-										</div>
-									</div>
-								</div>
-								
-								<!-- System Debug Button & PopUp -->
-								<xsl:if test="/Response/SystemDebug">
-									<span class="Debug_Button">
-										<a href="#" onclick="return ModalDisplay ('#modalContent-systemDebug')">
-											<img src="img/template/debug.png" border="0" />
-										</a>
-									</span>
-									<div id="modalContent-systemDebug">
-										<div class="modalContainer">
-											<div class="modalContent">
-												<pre><xsl:value-of select="/Response/SystemDebug" /></pre>
-											</div>
-											<div class="modalTitle">
-												<div class="modalIcon Left">
-													<img src="img/template/lady-debug.png" />
-												</div>
-												<div class="modalLabel Left">
-													<strong>System Debug</strong><br />
-													System Debug Information
-												</div>
-												<div class="modalClose Right">
-													<img src="img/template/closelabel.gif" class="close" />
-												</div>
-												<div class="Clear"></div>
-											</div>
-										</div>
-									</div>
-								</xsl:if>
-								<!-- System Debug Button & PopUp -->
-								<xsl:if test="/Response/DOMDebug">
-									<span class="Debug_Button">
-										<a href="#" onclick="return ModalDisplay ('#modalContent-domDebug')">
-											<img src="img/template/debug_dom.png" border="0" />
-										</a>
-									</span>
-									<div id="modalContent-domDebug">
-										<div class="modalContainer">
-											<div class="modalContent">
-												<pre><xsl:value-of select="/Response/DOMDebug" /></pre>
-											</div>
-											<div class="modalTitle">
-												<div class="modalIcon Left">
-													<img src="img/template/lady-debug.png" />
-												</div>
-												<div class="modalLabel Left">
-													<strong>DOM Debug</strong><br />
-													DOM Debug Information
-												</div>
-												<div class="modalClose Right">
-													<img src="img/template/closelabel.gif" class="close" />
-												</div>
-												<div class="Clear"></div>
-											</div>
-										</div>
-									</div>
-								</xsl:if>
-							</div>
-							
-							<div class="Clear"></div>
-						</div>
-						<div class="Clear"></div>
+				<div id="Header">
+					<div class="Logo">
+						<a href='console.php'><img src='img/template/yellow_billing_logo_small.png' border='0'></img></a>
 					</div>
+					<div class='Left' style='padding:12px 0px 0px 5px'>
+						Flex Internal Management System
+					</div>
+					<div class="Right"  style='padding-top:12px'>
+						<!-- Report Bug Button & PopUp -->
+						<div class="Menu_Button">
+							<a href="#" onclick="return ModalDisplay ('#modalContent-ReportBug')">
+								<img src="img/template/bug.png" border="0" alt="Report Bug" title="Report Bug" />
+							</a>
+						</div>
+						<div id="modalContent-ReportBug">
+							<div class="modalContainer">
+								<div class="modalContent">
+									<form method="post" name="bugreport" id="bugreport" action="bug_report.php" onsubmit="return BugSubmit(this)">
+										<input type="hidden" name="SerialisedGET">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/DataSerialised/GET" />
+											</xsl:attribute>
+										</input>
+										<input type="hidden" name="SerialisedPOST">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/DataSerialised/POST" />
+											</xsl:attribute>
+										</input>
+										<table border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td valign="top" width="100%">
+													<h1>Bug Report</h1>
+													Please describe the problem that occurred :
+													
+													<textarea name="Comment" style="width: 725px; height: 225px;" class="input-summary-note" />
+													
+													<div class="Right">
+														<input type="button" value="Report Bug &#0187;" onclick="javascript:document.forms['bugreport'].submit()" class="input-submit" />
+													</div>
+												</td>
+											</tr>
+										</table>
+									</form>
+								</div>
+								<div class="modalTitle">
+									<div class="modalIcon Left">
+										<img src="img/template/lady-debug.png" />
+									</div>
+									<div class="modalLabel Left">
+										<strong>Report a System Bug</strong><br />
+										Let us know when something isn't working the way you expect
+									</div>
+									<div class="modalClose Right">
+										<img src="img/template/closelabel.gif" class="close" />
+									</div>
+									<div class="Clear"></div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- System Debug Button & PopUp -->
+						<xsl:if test="/Response/SystemDebug">
+							<span class="Debug_Button">
+								<a href="#" onclick="return ModalDisplay ('#modalContent-systemDebug')">
+									<img src="img/template/debug.png" border="0" />
+								</a>
+							</span>
+							<div id="modalContent-systemDebug">
+								<div class="modalContainer">
+									<div class="modalContent">
+										<pre><xsl:value-of select="/Response/SystemDebug" /></pre>
+									</div>
+									<div class="modalTitle">
+										<div class="modalIcon Left">
+											<img src="img/template/lady-debug.png" />
+										</div>
+										<div class="modalLabel Left">
+											<strong>System Debug</strong><br />
+											System Debug Information
+										</div>
+										<div class="modalClose Right">
+											<img src="img/template/closelabel.gif" class="close" />
+										</div>
+										<div class="Clear"></div>
+									</div>
+								</div>
+							</div>
+						</xsl:if>
+						
+						<!-- System Debug Button & PopUp -->
+						<xsl:if test="/Response/DOMDebug">
+							<span class="Debug_Button">
+								<a href="#" onclick="return ModalDisplay ('#modalContent-domDebug')">
+									<img src="img/template/debug_dom.png" border="0" />
+								</a>
+							</span>
+							<div id="modalContent-domDebug">
+								<div class="modalContainer">
+									<div class="modalContent">
+										<pre><xsl:value-of select="/Response/DOMDebug" /></pre>
+									</div>
+									<div class="modalTitle">
+										<div class="modalIcon Left">
+											<img src="img/template/lady-debug.png" />
+										</div>
+										<div class="modalLabel Left">
+											<strong>DOM Debug</strong><br />
+											DOM Debug Information
+										</div>
+										<div class="modalClose Right">
+											<img src="img/template/closelabel.gif" class="close" />
+										</div>
+										<div class="Clear"></div>
+									</div>
+								</div>
+							</div>
+						</xsl:if>
+					</div>
+							
 					<div class="Clear"></div>
-					<div class="Seperator"></div>
-					
+				</div>
+				<div class="Clear"></div>
+				<div class="Seperator"></div>
+				
+					<!-- PageBody content -->
 					<div id="Content">
 						<table border="0" width="100%" cellpadding="0" cellspacing="0">
 							<tr>

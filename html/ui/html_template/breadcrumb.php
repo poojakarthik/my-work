@@ -101,15 +101,18 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 	 */
 	function Render()
 	{
-		// The 6 spaces at the end of the below string are there intentionally and should not be removed
-		$strHtmlCode = "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n      ";
+		$strHtmlCode .= "<div id='BreadCrumbMenu'>\n";
 		foreach (DBO()->BreadCrumb AS $objProperty)
 		{
-			$strHtmlCode .= "<a href ='".$objProperty->Value."' style='color:blue; text-decoration: none;'>".$objProperty->Label."</a> &gt; ";
+			//$strHtmlCode .= "<a href ='".$objProperty->Value."' style='color:blue; text-decoration: none;'>".$objProperty->Label."</a> &gt; ";
+			$strHtmlCode .= "<a href='".$objProperty->Value."'>".$objProperty->Label."</a> &gt; ";
 		}
 		
-		// Remove the last 6 chars from html code
-		$strHtmlCode = substr($strHtmlCode, 0, -6);
+		// Remove the last 6 chars from html code, if it is equal to " &gt; "
+		if (substr($strHtmlCode, -6) == " &gt; ")
+		{
+			$strHtmlCode = substr($strHtmlCode, 0, -6);
+		}
 		
 		// Add the current page as a breadcrumb
 		$mixCurrentPage = BreadCrumb()->GetCurrentPage();

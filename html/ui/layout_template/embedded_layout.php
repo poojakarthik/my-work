@@ -38,7 +38,7 @@ else
 }
 
 echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
-echo "<title>viXen : Embedded page</title>\n";
+echo "<title>Flex : Embedded page</title>\n";
 echo "<base href='$strBaseDir'/>\n";
 $this->RenderCSS();
 echo "</head>\n";
