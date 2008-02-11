@@ -45,6 +45,7 @@ function VixenAccountDetailsClass()
 	this.strContainerDivId = null;
 	
 	this.intAccountId = null;
+	this.bolInvoicesAndPaymentsPage = null;
 	
 	//------------------------------------------------------------------------//
 	// InitialiseView
@@ -62,46 +63,51 @@ function VixenAccountDetailsClass()
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseView = function(intAccountId, strContainerDivId)
+	this.InitialiseView = function(intAccountId, strContainerDivId, bolInvoicesAndPaymentsPage)
 	{
 		// Save the parameters
-		this.intAccountId		= intAccountId;
-		this.strContainerDivId	= strContainerDivId;
+		this.intAccountId				= intAccountId;
+		this.strContainerDivId			= strContainerDivId;
+		this.bolInvoicesAndPaymentsPage = bolInvoicesAndPaymentsPage;
 		
 		// Register Event Listeners
 		Vixen.EventHandler.AddListener("OnAccountDetailsUpdate", this.OnUpdate);
-		Vixen.EventHandler.AddListener("OnEditAccountDetailsCancel", this.OnUpdate);
 	}
 	
-	this.InitialiseEdit = function(intAccountId, strContainerDivId)
+	this.InitialiseEdit = function(intAccountId, strContainerDivId, bolInvoicesAndPaymentsPage)
 	{
 		// Save the parameters
-		this.intAccountId		= intAccountId;
-		this.strContainerDivId	= strContainerDivId;
+		this.intAccountId				= intAccountId;
+		this.strContainerDivId			= strContainerDivId;
+		this.bolInvoicesAndPaymentsPage = bolInvoicesAndPaymentsPage;
 	}
 
 	this.RenderAccountDetailsForEditing = function()
 	{
 		// Organise the data to send
-		var objObjects 					= {};
-		objObjects.Objects 				= {};
-		objObjects.Objects.Account 		= {};
-		objObjects.Objects.Account.Id 	= this.intAccountId;
-		objObjects.Objects.Container 	= {};
-		objObjects.Objects.Container.Id	= this.strContainerDivId;
+		var objObjects 								= {};
+		objObjects.Account 							= {};
+		objObjects.Account.Id						= this.intAccountId;
+		objObjects.Account.InvoicesAndPaymentsPage	= this.bolInvoicesAndPaymentsPage;
+		objObjects.Container						= {};
+		objObjects.Container.Id						= this.strContainerDivId;
 
-		// Call the AppTemplate method which renders just the AccountServices table
-		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountDetailsForEditing", objObjects.Objects);
+		// Call the AppTemplate method which renders the AccountDetails HtmlTemplate for editing
+		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountDetailsForEditing", objObjects, null, true);
 	}
 	
 	this.CancelEdit = function()
 	{
-		// Fire the "OnEditAccountDetailsCancel" event
-		var objEventData		= {};
-		objEventData.Account	= {};
-		objEventData.Account.Id	= this.intAccountId;
-		
-		Vixen.EventHandler.FireEvent("OnEditAccountDetailsCancel", objEventData);
+		// Organise the data to send
+		var objObjects 								= {};
+		objObjects.Account 							= {};
+		objObjects.Account.Id						= this.intAccountId;
+		objObjects.Account.InvoicesAndPaymentsPage	= this.bolInvoicesAndPaymentsPage;
+		objObjects.Container						= {};
+		objObjects.Container.Id						= this.strContainerDivId;
+
+		// Call the AppTemplate method which renders the AccountDetails HtmlTemplate for editing
+		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountDetailsForViewing", objObjects, null, true);
 	}
 
 	//------------------------------------------------------------------------//
@@ -123,8 +129,9 @@ function VixenAccountDetailsClass()
 	{
 		// The "this" pointer does not point to this object, when it is called.
 		// It points to the Window object
-		var strContainerDivId	= Vixen.AccountDetails.strContainerDivId;
-		var intAccountId		= Vixen.AccountDetails.intAccountId;
+		var strContainerDivId			= Vixen.AccountDetails.strContainerDivId;
+		var intAccountId				= Vixen.AccountDetails.intAccountId;
+		var bolInvoicesAndPaymentsPage	= Vixen.AccountDetails.bolInvoicesAndPaymentsPage;
 		
 		if (intAccountId != objEvent.Data.Account.Id)
 		{
@@ -133,15 +140,15 @@ function VixenAccountDetailsClass()
 		}
 		
 		// Organise the data to send
-		var objObjects 					= {};
-		objObjects.Objects 				= {};
-		objObjects.Objects.Account 		= {};
-		objObjects.Objects.Account.Id 	= intAccountId;
-		objObjects.Objects.Container 	= {};
-		objObjects.Objects.Container.Id	= strContainerDivId;
+		var objObjects								= {};
+		objObjects.Account							= {};
+		objObjects.Account.Id						= intAccountId;
+		objObjects.Account.InvoicesAndPaymentsPage 	= bolInvoicesAndPaymentsPage;
+		objObjects.Container						= {};
+		objObjects.Container.Id						= strContainerDivId;
 
 		// Call the AppTemplate method which renders just the AccountServices table
-		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountDetailsForViewing", objObjects.Objects);
+		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountDetailsForViewing", objObjects);
 	}
 	
 	// This will be used to initialise the View/Edit Account functionality, when it is displayed in a popup

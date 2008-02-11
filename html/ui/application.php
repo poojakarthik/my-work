@@ -235,7 +235,9 @@ class Application
 		$this->objAppTemplate->SetMode(HTML_MODE);
 	
 		// Run AppTemplate
+		$fltStart = microtime(TRUE);		
 		$this->objAppTemplate->{$strMethod}();
+		$fltAppTemplateTime = microtime(TRUE) - $fltStart;		
 		
 		// Append default options to the Context Menu
 		ContextMenu()->Employee_Console();
@@ -253,9 +255,21 @@ class Application
 		
 		
 		// Render Page
-		//ob_start();		
+		//ob_start();
+		$fltStart = microtime(TRUE);				
 		$this->objAppTemplate->Page->Render();
+		$fltRenderTime = microtime(TRUE) - $fltStart;		
+		
 		//ob_end_flush();
+		
+		// Check if this is being rendered in Debug mode
+		if ($_GET['Debug'] == 1 && AuthenticatedUser()->UserHasPerm(PERMISSION_DEBUG))
+		{
+			echo "Time taken to run the AppTemplate method: ". number_format($fltAppTemplateTime, 4, ".", "") ." seconds<br />";
+			echo "Time taken to do the page render: ". number_format($fltRenderTime, 4, ".", "") ." seconds<br />";
+		}
+		
+		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -991,8 +1005,7 @@ class HtmlTemplate extends BaseTemplate
 			$strParams = "?".implode('&', $arrParams);
 		}
 		
-		echo "<form id='{$this->_strForm}' method='post' action='vixen.php/$strTemplate/$strMethod/$strParams'>\n";
-		//echo "<form id='{$this->_strForm}' method='get' action='vixen.php/$strTemplate/$strMethod'>\n";
+		echo "<form id='{$this->_strForm}' method='post' action='flex.php/$strTemplate/$strMethod/$strParams'>\n";
 		echo "<input type='hidden' value='$strId' name='VixenFormId' />\n";
 	}
 	

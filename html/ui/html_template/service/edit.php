@@ -162,7 +162,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Status :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Service.NewStatus' style='width:158px'>\n";
+		echo "      <select name='Service.NewStatus' style='width:155px'>\n";
 		foreach ($GLOBALS['*arrConstant']['Service'] as $intConstant=>$arrServiceStatus)
 		{
 			// Only users with admin privileges can archive an account

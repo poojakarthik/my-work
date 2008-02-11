@@ -224,13 +224,12 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		// Render the form
 		$this->_RenderForm();
 		
+		echo "</div>\n";  // NarrowContent
+		
 		// Render the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->AjaxSubmit("Add Note");
 		echo "</div></div>\n";
-		
-		echo "</div>\n";  // NarrowContent
-		echo "<div class='SmallSeperator'></div>\n";
 		
 		$this->FormEnd();
 		

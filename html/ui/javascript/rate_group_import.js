@@ -282,7 +282,7 @@ function VixenRateGroupImportClass()
 		}
 		
 		// Export the RateGroup
-		window.location = "vixen.php/RateGroup/Export/?RateGroup.Id=" + objRateGroup.Id;
+		window.location = "flex.php/RateGroup/Export/?RateGroup.Id=" + objRateGroup.Id;
 	}
 }
 

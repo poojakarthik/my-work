@@ -352,7 +352,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 		if (Table()->ServiceTable->RowCount() == 0)
 		{
 			// There are no services to stick in this table
-			Table()->ServiceTable->AddRow("<span class='DefaultOutputSpan Default'>No services to display</span>");
+			Table()->ServiceTable->AddRow("<span>No services to display</span>");
 			Table()->ServiceTable->SetRowAlignment("left");
 			Table()->ServiceTable->SetRowColumnSpan(7);
 		}

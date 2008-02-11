@@ -87,11 +87,14 @@ function VixenNoteListClass()
 	 * Retrieves the notes based on the current filter
 	 *  
 	 * Retrieves the notes based on the current filter
+	 * 
+	 * @param	bolShowSplash		optional, set to true if you want to show the 
+	 *								page loading splash
 	 *
 	 * @return	void
 	 * @method
 	 */
-	this.ApplyFilter = function()
+	this.ApplyFilter = function(bolShowSplash)
 	{
 		this.intMaxNotes = parseInt(this.intMaxNotes, 10);
 		
@@ -108,10 +111,10 @@ function VixenNoteListClass()
 			document.getElementById("NoteDetails.MaxNotes").value = this.intMaxNotes;
 		}
 	
-		this.ReloadList();
+		this.ReloadList(bolShowSplash);
 	}
 	
-	this.ReloadList = function()
+	this.ReloadList = function(bolShowSplash)
 	{
 		// Set up Properties to be sent to AppTemplateNote->ListWithFilter
 		var objObjects 			= {};
@@ -127,7 +130,7 @@ function VixenNoteListClass()
 		objObjects.NoteDetails.ContainerDivId	= this.strNotesContainerDivId;
 		objObjects.NoteDetails.UpdateCookies	= this.bolUpdateCookies;
 		
-		Vixen.Ajax.CallAppTemplate("Note", "ListWithFilter", objObjects);
+		Vixen.Ajax.CallAppTemplate("Note", "ListWithFilter", objObjects, null, bolShowSplash);
 	}
 
 	// Listener for when a note is added

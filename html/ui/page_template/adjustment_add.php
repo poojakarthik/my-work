@@ -33,11 +33,11 @@
 // set the page title
 if (DBO()->Service->Id->Value)
 {
-	$this->Page->SetName('Add Service Adjustment - Service: '. DBO()->Service->FNN->Value);
+	$this->Page->SetName('Service Adjustment - Service: '. DBO()->Service->FNN->Value);
 }
 else
 {
-	$this->Page->SetName('Add Adjustment');
+	$this->Page->SetName('Adjustment');
 }
 
 // set the layout template for the page.

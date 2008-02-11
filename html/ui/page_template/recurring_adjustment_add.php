@@ -33,11 +33,11 @@
 // set the page title
 if (DBO()->Service->Id->Value)
 {
-	$this->Page->SetName("Add Recurring Service Adjustment - Service: ". DBO()->Service->FNN->Value);
+	$this->Page->SetName("Recurring Service Adjustment - Service: ". DBO()->Service->FNN->Value);
 }
 else
 {
-	$this->Page->SetName('Add Recurring Adjustment');
+	$this->Page->SetName('Recurring Adjustment');
 }
 
 // set the layout template for the page.

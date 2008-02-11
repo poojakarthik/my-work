@@ -26,10 +26,11 @@
  *
  */
 $this->Page->SetName('Rate Details');
+
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
 
 // Add each html object to the appropriate column
-$id = $this->Page->AddObject('RateList', COLUMN_ONE, HTML_CONTEXT_MINIMUM_DETAIL, 'RateAddDiv');
+$id = $this->Page->AddObject('RateView', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
 ?>

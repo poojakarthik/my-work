@@ -8,7 +8,7 @@
 
 	// call application loader
 	require ('config/application_loader.php');
-	require ('../framework/json.php');
+	require ('../../lib/framework/json.php');
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;

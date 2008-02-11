@@ -251,7 +251,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					$bolIsCurrent		= FALSE;
 					$arrRateGroupTimeRange['Start']	= strtotime($dboRateGroup->StartDatetime->Value);
 					$arrRateGroupTimeRange['End']	= strtotime($dboRateGroup->EndDatetime->Value);
-					$arrRateGroupTimeRange['IsIndefinite'] = (bool)($dboRateGroup->EndDatetime->Value == END_OF_TIME);
+					$arrRateGroupTimeRange['IsIndefinite'] = ($dboRateGroup->EndDatetime->Value == END_OF_TIME)? TRUE : FALSE;
 					
 					// Check if the RateGroup should be displayed
 					foreach ($arrShownRateGroups as $arrHigherRateGroup)
@@ -361,7 +361,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 							objObject.Objects.Rate = {};
 							objObject.Objects.Rate.SearchString = document.getElementById(strSearchStringTextboxId).value;
 							objObject.Objects.RateGroup.Id = intRateGroupId;
-							Vixen.Popup.ShowAjaxPopup('RateGroupSearchId', 'large', null, 'Service', 'ViewRates', objObject);
+							Vixen.Popup.ShowAjaxPopup('RateGroupSearchId', 'large', null, 'Rate', 'Search', objObject);
 						}
 						";
 		echo "<script type='text/javascript'>$strJsCode</script>\n";

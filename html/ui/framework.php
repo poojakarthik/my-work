@@ -426,10 +426,20 @@ class Page
 		{
 			if ($arrObject['Column'] == $intColumn)
 			{
+				$fltStartTime = microtime(TRUE);
 				echo "<div id='{$arrObject['Id']}'>\n";
 				$arrObject['Object']->SetMode($this->_intTemplateMode, $this->_objAjax);
 				$arrObject['Object']->Render();
 				echo "</div>\n";
+				
+				// Check for Debug mode
+				if ($_GET['Debug'] == 1 && AuthenticatedUser()->UserHasPerm(PERMISSION_DEBUG))
+				{
+					// Display how long it took to render the HtmlTemplate
+					$fltTimeTaken = number_format(microtime(TRUE) - $fltStartTime, 4, ".", "");
+					echo "<div>Time taken to render {$arrObject['Name']}: $fltTimeTaken sec</div>";
+				}
+				
 			}
 		}
 	}
@@ -543,7 +553,7 @@ class Page
 		*/
 	
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
-		echo "<title>TelcoBlue - $this->_strPageName</title>\n";
+		echo "<title>Flex - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
 		$this->RenderCSS();

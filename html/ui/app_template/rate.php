@@ -590,18 +590,91 @@ class AppTemplateRate extends ApplicationTemplate
 	}
 	
 	
+	//------------------------------------------------------------------------//
+	// View
+	//------------------------------------------------------------------------//
+	/**
+	 * View()
+	 *
+	 * Performs the logic for the View Rate popup
+	 * 
+	 * Performs the logic for the View Rate popup
+	 * It assumes:
+	 * 		DBO()->Rate->Id		is set to the Rate that you want to view
+	 *
+	 * @return		void
+	 * @method		View
+	 */
 	function View()
 	{
+		// Check user authorization
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
 		// Rate Id passed to this function from where it pulls the individual rate out
 		DBO()->Rate->Load();
+		
 		DBO()->RecordType->Id = DBO()->Rate->RecordType->Value;
 		DBO()->RecordType->Load();
-		DBO()->Destination->Where->Code = DBO()->Rate->Destination->Value;
-		DBO()->Destination->Load();
+		
+		// If the Rate is Destination based, then load the corressponding Destination record
+		if (DBO()->Rate->Destination->Value != 0)
+		{
+			DBO()->Destination->Where->Code = DBO()->Rate->Destination->Value;
+			DBO()->Destination->Load();
+		}
 		
 		$this->LoadPage('rate_view');
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// Search
+	//------------------------------------------------------------------------//
+	/**
+	 * Search()
+	 *
+	 * Performs the logic for the searching for rates popup
+	 * 
+	 * Performs the logic for the searching for rates popup
+	 * It assumes:
+	 * 		DBO()->Rate->SearchString		This search string is used on the Rate.Name and Rate.Description properties
+	 * 		DBO()->RateGroup->Id			if this is specified then it will only check the 
+	 * 										Rates belonging to this RateGroup
+	 * @return		void
+	 * @method		Search
+	 */
+	function Search()
+	{
+		// Check user authorization
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
+		$strSearchString = trim(DBO()->Rate->SearchString->Value);
+		if ($strSearchString == "")
+		{
+			// The Search string is empty and considered invalud  
+			Ajax()->AddCommand("Alert", "ERROR: Please specify a name or partial name to search");
+			return TRUE;
+		}
+		
+		// Escape any special characters
+		$strSearchString = str_replace("'", "\'", $strSearchString);
+		
+		if (DBO()->RateGroup->Id->Value)
+		{
+			$strLimitToRateGroup = "AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = ". DBO()->RateGroup->Id->Value .")";
+		}
+		
+		$strWhere = "(Name LIKE '%$strSearchString%' OR Description LIKE '%$strSearchString%') $strLimitToRateGroup";
+		DBL()->Rate->Where->SetString($strWhere);
+		DBL()->Rate->SetLimit(1500);
+		DBL()->Rate->Load();
+		
+		$this->LoadPage('rate_search_results');
+		return TRUE;
+	}
+	
 	
 	//----- DO NOT REMOVE -----//
 	

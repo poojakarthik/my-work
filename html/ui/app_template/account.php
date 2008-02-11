@@ -206,10 +206,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
 		//check if the form was submitted
+		/* DEPRICATED
 		if (SubmittedForm('AccountDetails', 'Apply Changes') && $bolUserHasOperatorPerm)
 		{
 			DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
@@ -311,13 +312,12 @@ class AppTemplateAccount extends ApplicationTemplate
 				return TRUE;
 			}
 		}
-		
+		*/
 		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
 		BreadCrumb()->SetCurrentPage("Invoices and Payments");
-		
 		
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
@@ -364,26 +364,23 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->Load();
 		
 		// Retrieve the Payments
-		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId>) AND Account IS NULL) AND (Status conditions)"
+		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId> AND Account IS NULL)) AND (Status conditions)"
 		$strWhere  = "((Payment.Account = ". DBO()->Account->Id->Value .")";
-		$strWhere .= " OR (Payment.AccountGroup = ". DBO()->Account->AccountGroup->Value .") AND (Payment.Account IS NULL))";
-		$strWhere .= " AND ((Payment.Status = ". PAYMENT_WAITING .")";
-		$strWhere .= " OR (Payment.Status = ". PAYMENT_PAYING .")";
-		$strWhere .= " OR (Payment.Status = ". PAYMENT_FINISHED .")";
-		$strWhere .= " OR (Payment.Status = ". PAYMENT_REVERSED ."))";
+		$strWhere .= " OR (Payment.AccountGroup = ". DBO()->Account->AccountGroup->Value ." AND Payment.Account IS NULL))";
+		$strWhere .= " AND Payment.Status IN (". PAYMENT_WAITING .", ". PAYMENT_PAYING .", ". PAYMENT_FINISHED .", ". PAYMENT_REVERSED .")";
 		DBL()->Payment->Where->SetString($strWhere);
 		
-		$arrColumns = Array(	"Id"=>"Payment.Id",
-									"AccountGroup"=>"Payment.AccountGroup",
-									"Account"=>"Payment.Account",
-									"Status"=>"Payment.Status",
-									"Balance"=>"Payment.Balance",
-									"PaidOn"=>"Payment.PaidOn",
-									"Amount"=>"Payment.Amount",
-									"PaymentType"=>"Payment.PaymentType",
-									"EnteredBy"=>"Payment.EnteredBy",
-									"ImportedOn"=>"FileImport.ImportedOn"
-								);
+		$arrColumns = Array(	"Id"			=> "Payment.Id",
+								"AccountGroup"	=> "Payment.AccountGroup",
+								"Account"		=> "Payment.Account",
+								"Status"		=> "Payment.Status",
+								"Balance"		=> "Payment.Balance",
+								"PaidOn"		=> "Payment.PaidOn",
+								"Amount"		=> "Payment.Amount",
+								"PaymentType"	=> "Payment.PaymentType",
+								"EnteredBy"		=> "Payment.EnteredBy",
+								"ImportedOn"	=> "FileImport.ImportedOn"
+							);
 		DBL()->Payment->SetColumns($arrColumns);
 		DBL()->Payment->SetTable("Payment LEFT OUTER JOIN FileImport ON Payment.File = FileImport.Id");
 		DBL()->Payment->OrderBy("Payment.PaidOn DESC, Payment.Id DESC");
@@ -403,11 +400,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id");
 		
 		//"WHERE (Account = <accId>) AND (Status conditions)"
-		$strWhere  = "(C.Account = ". DBO()->Account->Id->Value .")";
-		$strWhere .= " AND ((C.Status = ". CHARGE_WAITING .")";
-		$strWhere .= " OR (C.Status = ". CHARGE_APPROVED .")";
-		$strWhere .= " OR (C.Status = ". CHARGE_TEMP_INVOICE .")";
-		$strWhere .= " OR (C.Status = ". CHARGE_INVOICED ."))";
+		$strWhere  = "C.Account = ". DBO()->Account->Id->Value;
+		$strWhere .= " AND C.Status IN (". CHARGE_WAITING .", ". CHARGE_APPROVED .", ". CHARGE_TEMP_INVOICE .", ". CHARGE_INVOICED .")";
 		DBL()->Charge->Where->SetString($strWhere);
 		DBL()->Charge->OrderBy("ChargedOn DESC, Id DESC");
 		DBL()->Charge->Load();
@@ -423,6 +417,9 @@ class AppTemplateAccount extends ApplicationTemplate
 								'Archived'=>'RC.Archived', 'FNN'=>'S.FNN');
 		DBL()->RecurringCharge->SetColumns($arrColumns);
 		DBL()->RecurringCharge->SetTable("RecurringCharge AS RC LEFT OUTER JOIN Service AS S ON RC.Service = S.Id");
+		
+		// I can't directly use a DBObject property or method as a parameter of another DBObject or DBList method
+		// On account of how the Property token works 
 		$intAccountId = DBO()->Account->Id->Value;
 		DBL()->RecurringCharge->Where->Set("RC.Account = <Account> AND RC.Archived = 0", Array("Account"=>$intAccountId));
 		DBL()->RecurringCharge->OrderBy("CreatedOn DESC, Id DESC");
@@ -445,6 +442,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		LoadNotes(DBO()->Account->Id->Value);
+
+		// Flag the Account as being shown in the InvoicesAndPayments Page
+		DBO()->Account->InvoicesAndPaymentsPage = 1;
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('invoices_and_payments');
@@ -605,8 +605,11 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * Renders the AccountDetails Html Template for viewing
 	 * 
 	 * Renders the AccountDetails Html Template for viewing
-	 * It expects	DBO()->Account->Id 		account Id 
-	 *				DBO()->Container->Id	id of the container div in which to place the Rendered HtmlTemplate
+	 * It expects	DBO()->Account->Id 							account Id 
+	 *				DBO()->Account->InvoicesAndPaymentsPage		set to TRUE if the HtmlTemplate is to be rendered
+	 *															on the InvoicesAndPayments page 
+	 *				DBO()->Container->Id						id of the container div in which to place the 
+	 *															Rendered HtmlTemplate
 	 *
 	 * @return		void
 	 * @method
@@ -619,7 +622,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		// Load the account
-		DBO()->Account->Load();
+		DBO()->Account->LoadMerge();
 		
 		// Calculate the Balance, Amount Overdue, and the Total Un-billed adjustments
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
@@ -641,9 +644,11 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * Renders the AccountDetails Html Template for editing
 	 * 
 	 * Renders the AccountDetails Html Template for editing
-	 * It expects	DBO()->Account->Id 		account Id 
-	 *				DBO()->Container->Id	id of the container div in which to place the Rendered HtmlTemplate
-	 *
+	 * It expects	DBO()->Account->Id 							account Id 
+	 *				DBO()->Account->InvoicesAndPaymentsPage		set to TRUE if the HtmlTemplate is to be rendered
+	 *															on the InvoicesAndPayments page 
+	 *				DBO()->Container->Id						id of the container div in which to place the 
+	 *															Rendered HtmlTemplate
 	 * @return		void
 	 * @method
 	 *
@@ -653,9 +658,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		
+
 		// Load the account
-		DBO()->Account->Load();
+		DBO()->Account->LoadMerge();
 		
 		// Render the AccountDetails HtmlTemplate for Viewing
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, DBO()->Container->Id->Value);
@@ -693,6 +698,9 @@ class AppTemplateAccount extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 			return TRUE;
 		}
+		
+		// Merge the Account data from the database with the newly defined details
+		DBO()->Account->LoadMerge();
 		
 		// Load the current account details, so you can work out what has been changed, and include these details in the system note
 		DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
@@ -741,7 +749,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		if (DBO()->Account->CustomerGroup->Value != DBO()->CurrentAccount->CustomerGroup->Value)
 		{
-			$selCustomerGroup= new StatementSelect("CustomerGroup", "Id, InternalName", "Id = <Id>");
+			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "Id = <Id>");
 			$selCustomerGroup->Execute(Array("Id" => DBO()->CurrentAccount->CustomerGroup->Value));
 			$arrCurrentCustomerGroup = $selCustomerGroup->Fetch();
 			$selCustomerGroup->Execute(Array("Id" => DBO()->Account->CustomerGroup->Value));
@@ -781,7 +789,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			// When refering to END_OF_TIME, we just want the date part, not the time part
 			$strEndOfTime = substr(END_OF_TIME, 0, 10);
-			$strChangeMsg = "Sending of late notices was changed from '<OldSetting>' to '<NewSetting>'";
 			
 			if (DBO()->Account->LatePaymentAmnesty->Value == NULL)
 			{
@@ -836,9 +843,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			else
 			{
 				// Update the content of the system note
-				$strChangeMsg = str_replace("<OldSetting>", $strOldSetting, $strChangeMsg);
-				$strChangeMsg = str_replace("<NewSetting>", $strNewSetting, $strChangeMsg);
-				$strChangesNote .= $strChangeMsg;
+				$strChangesNote .= "Sending of late notices was changed from '$strOldSetting' to '$strNewSetting'\n";
 			}
 		}
 /* OLD way of handling LateNotice exemptions

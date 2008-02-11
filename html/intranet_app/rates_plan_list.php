@@ -6,7 +6,7 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	header("Location: vixen.php/Plan/AvailablePlans/");
+	header("Location: flex.php/Plan/AvailablePlans/");
 
 	/* Old Page
 	// call application loader

@@ -305,7 +305,7 @@ function VixenRatePlanAddClass()
 		}
 		
 		// Call the Export RateGroup functionality
-		window.location = "vixen.php/RateGroup/Export/?" + strGetVariables;
+		window.location = "flex.php/RateGroup/Export/?" + strGetVariables;
 	}
 
 	//------------------------------------------------------------------------//

@@ -31,7 +31,7 @@
  */
 
 // set the page title (This should already be set)
-$this->Page->SetName('Make Payment');
+$this->Page->SetName('Payment');
 
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');

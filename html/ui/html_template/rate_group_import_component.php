@@ -100,7 +100,7 @@ class HtmlTemplateRateGroupImportComponent extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<form enctype='multipart/form-data' action='vixen.php/RateGroup/ImportCSV/' method='POST'>";
+		echo "<form enctype='multipart/form-data' action='flex.php/RateGroup/ImportCSV/' method='POST'>";
 		echo "<input type='hidden' name='VixenFormId' value='ImportRateGroup'></input>";
 		echo "<input type='hidden' id='SubmitButtonValue' name='VixenButtonId' value=''></input>";
 		echo "<input type='hidden' name='MAX_FILE_SIZE' value='" . RATEGROUP_IMPORT_MAXSIZE . "'>";

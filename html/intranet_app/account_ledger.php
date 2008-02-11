@@ -8,7 +8,7 @@
 	
 	
 	$intAccount = $_GET['Id'];
-	header("Location: vixen.php/Account/InvoicesAndPayments/?Account.Id=$intAccount");
+	header("Location: flex.php/Account/InvoicesAndPayments/?Account.Id=$intAccount");
 
 	/*Old page
 	// call application loader

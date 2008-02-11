@@ -283,7 +283,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 
 		echo "</div>\n"; //Left
 		echo "<div class='Right'>\n";
-		$this->Button("Filter", "Vixen.NoteListPopup.ApplyFilter();");
+		$this->Button("Filter", "Vixen.NoteListPopup.ApplyFilter(true);");
 		echo "</div>\n"; //Right
 		echo "</div>\n"; //height=25px
 		

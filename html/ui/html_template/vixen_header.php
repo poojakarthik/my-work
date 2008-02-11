@@ -113,7 +113,7 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 		//  eventually move this somewhere more appropriate
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_DEBUG))
 		{	
-			echo "            	<a href='#' onclick='Vixen.debug^=TRUE;alert(\"Vixen.debug now is: \" + Vixen.debug );'>
+			echo "            	<a href='javascript: Vixen.debug^=TRUE;alert(\"Vixen.debug now is: \" + Vixen.debug );window.location = window.location + \"&Debug=1\"'>
             		<img src='img/template/debug.png' alt='Debug' title='Debug' border='0' >            	</a>			
             	<script type='text/javascript'>Vixen.debug = TRUE;</script>\n";
 		}

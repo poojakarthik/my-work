@@ -872,6 +872,21 @@ class AppTemplateService extends ApplicationTemplate
 		return TRUE;
 	}	
 	
+	//------------------------------------------------------------------------//
+	// ViewPlan
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewPlan()
+	 *
+	 * Performs the logic for the View Service RatePlan page
+	 * 
+	 * Performs the logic for the View Service RatePlan page
+	 * It assumes:
+	 * 		DBO()->Service->Id		is set to the Id of the service
+	 *
+	 * @return		void
+	 * @method		ViewPlan
+	 */
 	function ViewPlan()
 	{
 		// Check user authorization and permissions
@@ -997,32 +1012,26 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Retrieve all ServiceRateGroup records (with accompanying RateGroup details) that have an EndDatetime > $strEarliestAllowableEndDatetime
-		// and StartDatetime < EndDatetime
-
-		// Load all the current ServiceRateGroup records with accompanying details from the RateGroup table
-		// Current ServiceRateGroup records are those that haven't already ended and start before the current RatePlan Ends.
-		// So you need to know the EndDatetime of the service's current RatePlan
-		/*			
-		SELECT SRG.Id, SRG.RateGroup, SRG.CreatedOn, SRG.StartDatetime, SRG.EndDatetime, RG.Name, RG.Description, RG.Fleet, RG.RecordType
-		FROM ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id
-		WHERE	SRG.Service = 38492 AND SRG.EndDatetime > NOW() AND 
-				SRG.StartDatetime < <CurrentRatePlan.EndDatetime> AND 
-				SRG.StartDatetime < SRG.EndDatetime
-		ORDER BY SRG.CreatedOn DESC
-		*/		
+		// and StartDatetime < EndDatetime AND (were created after the current plan was created or are fleet RateGroups)
 		$arrColumns	= Array("Id" => "SRG.Id", "RateGroup" => "SRG.RateGroup", "CreatedOn" => "SRG.CreatedOn", "StartDatetime" => "SRG.StartDatetime", 
 							"EndDatetime" => "SRG.EndDatetime", "Name" => "RG.Name", "Description" => "RG.Description", "Fleet" => "RG.Fleet",
 							"RecordType" => "RG.RecordType");
 		$strTable	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
-		// Doesn't include RateGroups that start after the current plan finishes
-		//$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > NOW() AND SRG.StartDatetime < <RatePlanEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
-		//$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "RatePlanEndDatetime" => DBO()->CurrentServiceRatePlan->EndDatetime->Value);
 		
-		// Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
-		$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
+		// OLD WHERE CLAUSE Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
+		//$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
+		//$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
+
+		// Retrieve all ServiceRateGroup records that have EndDatetime > CurrentRatePlan.StartDatetime (<EarliestAllowableEndDatetime>)
+		// AND StartDatetime < EndDatetime AND (RG.Fleet = 1 OR (CreatedOn + 5 seconds) > CurrentRatePlan.CreatedOn)
+		// Which means retrieve all RateGroups that have an EndDatetime greater than the StartDatetime of the Current RatePlan, and (are fleet
+		// RateGroups OR were created at or after the CurrentRatePlan was created
+		$strWhere	 = "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime".
+						" AND (RG.Fleet = 1 OR ADDTIME(SRG.CreatedOn, SEC_TO_TIME(5)) > (SELECT MAX(SRP.CreatedOn) FROM ServiceRatePlan AS SRP WHERE SRP.Service = SRG.Service AND NOW() BETWEEN SRP.StartDatetime AND SRP.EndDatetime))";
 		$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
-		$strOrderBy = "SRG.CreatedOn DESC";
 		
+		$strOrderBy = "SRG.CreatedOn DESC";
+
 		DBL()->CurrentServiceRateGroup->SetColumns($arrColumns);
 		DBL()->CurrentServiceRateGroup->SetTable($strTable);
 		DBL()->CurrentServiceRateGroup->Where->Set($strWhere, $arrWhere);
@@ -1033,30 +1042,6 @@ class AppTemplateService extends ApplicationTemplate
 		return TRUE;
 	}	
 	
-	// Why is this here?  I think this belongs in AppTemplateRate or AppTemplateRatePlan
-	function ViewRates()
-	{
-		// logic for loading the view groups on the drop down div
-		// last line should be a loadpage that loads the logic into a html page
-		// have to trap if the user has specified to search for nothing i.e. a blank search
-		// as this will attempt to retrieve every record and cripples the page
-		$strSearchString = DBO()->Rate->SearchString->Value;
-		if (trim($strSearchString) != "")
-		{
-			$strWhere = "Name like '%$strSearchString%' AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup=<RateGroupId>)";
-			DBL()->Rate->Where->Set($strWhere, Array('RateGroupId' => DBO()->RateGroup->Id->Value));
-			DBL()->Rate->Load();
-		}
-		else
-		{
-			// An invalid search string was used (an empty string)
-			Ajax()->AddCommand("Alert", "ERROR: Please specify a name or partial name to search");
-			return TRUE;
-		}
-		
-		$this->LoadPage('rate_search_results');
-		return TRUE;		
-	}
 	
 	//------------------------------------------------------------------------//
 	// ChangePlan

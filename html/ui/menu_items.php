@@ -85,7 +85,7 @@ class MenuItems
 	 */
 	function ViewServiceRatePlan($intId)
 	{
-		return "vixen.php/Service/ViewPlan/?Service.Id=$intId";
+		return "flex.php/Service/ViewPlan/?Service.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -107,7 +107,7 @@ class MenuItems
 	function ViewCustomerGroup($intId)
 	{
 		$this->strLabel	= "Customer Group";
-		return "vixen.php/CustomerGroup/View/?CustomerGroup.Id=$intId";
+		return "flex.php/CustomerGroup/View/?CustomerGroup.Id=$intId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -127,7 +127,7 @@ class MenuItems
 	function ViewAllCustomerGroups()
 	{
 		$this->strLabel	= "Customer Groups";
-		return "vixen.php/CustomerGroup/ViewAll/";
+		return "flex.php/CustomerGroup/ViewAll/";
 	}
 
 	//------------------------------------------------------------------------//
@@ -147,7 +147,7 @@ class MenuItems
 	function AddCustomerGroup()
 	{
 		$this->strLabel	= "Add Customer Group";
-		return "vixen.php/CustomerGroup/Add/";
+		return "flex.php/CustomerGroup/Add/";
 	}
 
 	
@@ -279,7 +279,7 @@ class MenuItems
 	function ExportInvoiceAsCSV($intInvoiceId)
 	{
 		$this->strLabel	= "";
-		return "vixen.php/Invoice/ExportAsCSV/?Invoice.Id=$intInvoiceId";
+		return "flex.php/Invoice/ExportAsCSV/?Invoice.Id=$intInvoiceId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -299,7 +299,7 @@ class MenuItems
 	function ViewAllConstants()
 	{
 		$this->strLabel	= "Constants Management";
-		return "vixen.php/Config/ManageConstants/";
+		return "flex.php/Config/ManageConstants/";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -319,7 +319,7 @@ class MenuItems
 	function SystemSettingsMenu()
 	{
 		$this->strLabel	= "System Settings";
-		return "vixen.php/Config/SystemSettingsMenu/";
+		return "flex.php/Config/SystemSettingsMenu/";
 	}
 
 
@@ -694,7 +694,7 @@ class MenuItems
 	function ViewService($intId, $strFNN=NULL)
 	{
 		$this->strLabel	= "Service";//: $strFNN";
-		return "vixen.php/Service/View/?Service.Id=$intId";
+		return "flex.php/Service/View/?Service.Id=$intId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -718,7 +718,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Invoices and Payments";
 
-		return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
+		return "flex.php/Account/InvoicesAndPayments/?Account.Id=$intId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -742,7 +742,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Account";
 
-		return "vixen.php/Account/Overview/?Account.Id=$intAccountId";
+		return "flex.php/Account/Overview/?Account.Id=$intAccountId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -876,7 +876,7 @@ class MenuItems
 			$strGetVariables = "";
 		}
 
-		return "vixen.php/Plan/Add/$strGetVariables";
+		return "flex.php/Plan/Add/$strGetVariables";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -908,7 +908,7 @@ class MenuItems
 			$strGetVariables .= "&CallingPage.Href=$strCallingPageHref";
 		}
 
-		return "vixen.php/Plan/Add/?$strGetVariables";
+		return "flex.php/Plan/Add/?$strGetVariables";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -934,7 +934,7 @@ class MenuItems
 		// Set up the filter if intServiceType was passed
 		$strFilter = ($intServiceType) ? "?RatePlan.ServiceType=$intServiceType" : "";
 		
-		return "vixen.php/Plan/AvailablePlans/$strFilter";
+		return "flex.php/Plan/AvailablePlans/$strFilter";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1082,7 +1082,7 @@ class MenuItems
 	//function InvoiceAndPayments($intId)
 	//{
 	//	//$this->strLabel	= "acc: $intId";
-	//	return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
+	//	return "flex.php/Account/InvoicesAndPayments/?Account.Id=$intId";
 	//}
 
 	//------------------------------------------------------------------------//
@@ -1106,7 +1106,7 @@ class MenuItems
 	function ViewServiceDetails($intId)
 	{
 		$this->strLabel	= "acc: $intId";
-		return "vixen.php/Service/View/?Service.Id=$intId";
+		return "flex.php/Service/View/?Service.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1405,7 +1405,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", null, \"Adjustment\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Adjustment\", \"Adjustment\", \"Add\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1437,7 +1437,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"medium\", null, \"Adjustment\", \"AddRecurring\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"medium\", \"Recurring Adjustment\", \"Adjustment\", \"AddRecurring\", $strJsonCode)";
 	}
 	
 	
@@ -1468,7 +1468,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"mediumlarge\", \"Make Payment\", \"Payment\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"mediumlarge\", \"Payment\", \"Payment\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1531,7 +1531,7 @@ class MenuItems
 		*/
 		
 		// View the list of Services as a page
-		return "vixen.php/Account/ViewServices/?Account.Id=$intId";
+		return "flex.php/Account/ViewServices/?Account.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1667,7 +1667,7 @@ class MenuItems
 	function KnowledgeBase()
 	{
 		$this->strLabel = "Knowledge Base";
-		return "vixen.php/KnowledgeBase/ListArticles/";
+		return "flex.php/KnowledgeBase/ListArticles/";
 	}	
 
 	//------------------------------------------------------------------------//
@@ -1690,7 +1690,7 @@ class MenuItems
 	function ViewKnowledgeBaseArticle($intId)
 	{
 		$this->strLabel = "Article";
-		return "vixen.php/KnowledgeBase/ViewArticle/?KnowledgeBase.Id=$intId";
+		return "flex.php/KnowledgeBase/ViewArticle/?KnowledgeBase.Id=$intId";
 	}
 
 

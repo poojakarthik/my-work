@@ -104,7 +104,7 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 		// Build the url used for the iframe which is used to upload the RateGroup csv file
 		$strRateGroupFleet = (DBO()->RateGroup->Fleet->Value)? "1" : "0";
 		$intRecordTypeId = DBO()->RecordType->Id->Value;
-		$strIframeSource = "vixen.php/RateGroup/ImportCSV/?RateGroup.Fleet={$strRateGroupFleet}&RecordType.Id={$intRecordTypeId}";
+		$strIframeSource = "flex.php/RateGroup/ImportCSV/?RateGroup.Fleet={$strRateGroupFleet}&RecordType.Id={$intRecordTypeId}";
 
 		// Display known details of the RateGroup
 		echo "<div class='GroupedContent'>";

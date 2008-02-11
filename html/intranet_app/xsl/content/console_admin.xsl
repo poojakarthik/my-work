@@ -137,7 +137,7 @@
 					<!-- System Settings Menu -->
 					<tr>
 						<td>
-							<a href="vixen.php/Config/SystemSettingsMenu/">
+							<a href="flex.php/Config/SystemSettingsMenu/">
 								<img src="img/template/system_settings_menu_item.png" title="System Settings Menu" class="MenuIcon" />
 							</a>
 						</td>

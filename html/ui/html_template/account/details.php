@@ -172,43 +172,48 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->ACN->RenderOutput();
 		}
 		
-		// Display the first line of the address, but only if there is one
-		if (DBO()->Account->Address1->Value != "")
+		// Don't include address and BillingType/BillingMethod details if this
+		// HtmlTemplate is being rendered on the InvoicesAndPayments page 
+		if (!DBO()->Account->InvoicesAndPaymentsPage->Value)
 		{
-			DBO()->Account->Address1->RenderOutput();
+			// Display the first line of the address, but only if there is one
+			if (DBO()->Account->Address1->Value != "")
+			{
+				DBO()->Account->Address1->RenderOutput();
+			}
+			else
+			{
+				DBO()->Account->Address1->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
+			}
+			
+			if (DBO()->Account->Address2->Value != "")
+			{
+				DBO()->Account->Address2->RenderOutput();
+			}
+			
+			if (DBO()->Account->Suburb->Value != "")
+			{
+				DBO()->Account->Suburb->RenderOutput();
+			}
+			
+			if (DBO()->Account->Postcode->Value != "")
+			{
+				DBO()->Account->Postcode->RenderOutput();
+			}
+			
+			if (DBO()->Account->State->Value != "")
+			{
+				DBO()->Account->State->RenderOutput();
+			}
+			
+			if (DBO()->Account->Country->Value != "")
+			{
+				DBO()->Account->Country->RenderOutput();
+			}
+			
+			DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_OUTPUT);
+			DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("BillingMethod"), RENDER_OUTPUT);
 		}
-		else
-		{
-			DBO()->Account->Address1->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
-		}
-		
-		if (DBO()->Account->Address2->Value != "")
-		{
-			DBO()->Account->Address2->RenderOutput();
-		}
-		
-		if (DBO()->Account->Suburb->Value != "")
-		{
-			DBO()->Account->Suburb->RenderOutput();
-		}
-		
-		if (DBO()->Account->Postcode->Value != "")
-		{
-			DBO()->Account->Postcode->RenderOutput();
-		}
-		
-		if (DBO()->Account->State->Value != "")
-		{
-			DBO()->Account->State->RenderOutput();
-		}
-		
-		if (DBO()->Account->Country->Value != "")
-		{
-			DBO()->Account->Country->RenderOutput();
-		}
-		
-		DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_OUTPUT);
-		DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("BillingMethod"), RENDER_OUTPUT);
 		
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
@@ -261,8 +266,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		
 		// Initialise the AccountDetails object and register the OnAccountDetailsUpdate Listener
-		$intAccountId = DBO()->Account->Id->Value;
-		$strJavascript = "Vixen.AccountDetails.InitialiseView($intAccountId, '{$this->_strContainerDivId}');";
+		$strInvoicesAndPaymentsPage	= (DBO()->Account->InvoicesAndPaymentsPage->Value) ? "true" : "false";
+		$intAccountId				= DBO()->Account->Id->Value;
+		$strJavascript = "Vixen.AccountDetails.InitialiseView($intAccountId, '{$this->_strContainerDivId}', $strInvoicesAndPaymentsPage);";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 	}
 	
@@ -289,6 +295,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render hidden values
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Account->AccountGroup->RenderHidden();
+		DBO()->Account->InvoicesAndPaymentsPage->RenderHidden();
 		
 		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
@@ -348,38 +355,43 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->ABN->RenderInput();
 		DBO()->Account->ACN->RenderInput();
 		
-		DBO()->Account->Address1->RenderInput();
-		DBO()->Account->Address2->RenderInput();
-		DBO()->Account->Suburb->RenderInput();
-		DBO()->Account->Postcode->RenderInput();
-		
-		// Render the State combobox
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State :</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Account.State' name='Account.State'>\n";
-		foreach ($GLOBALS['*arrConstant']['ServiceStateType'] as $strKey=>$arrState)
+		// Don't include address and BillingMethod details if this
+		// HtmlTemplate is being rendered on the InvoicesAndPayments page 
+		if (!DBO()->Account->InvoicesAndPaymentsPage->Value)
 		{
-			$strSelected = (DBO()->Account->State->Value == $strKey) ? "selected='selected'" : "";
-			echo "		<option value='$strKey' $strSelected>{$arrState['Description']}</option>\n";
+			DBO()->Account->Address1->RenderInput();
+			DBO()->Account->Address2->RenderInput();
+			DBO()->Account->Suburb->RenderInput();
+			DBO()->Account->Postcode->RenderInput();
+			
+			// Render the State combobox
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State :</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select id='Account.State' name='Account.State'>\n";
+			foreach ($GLOBALS['*arrConstant']['ServiceStateType'] as $strKey=>$arrState)
+			{
+				$strSelected = (DBO()->Account->State->Value == $strKey) ? "selected='selected'" : "";
+				echo "		<option value='$strKey' $strSelected>{$arrState['Description']}</option>\n";
+			}
+			echo "      </select>\n";
+			echo "   </div>\n";
+			echo "</div>\n";
+			
+			// Render the BillingMethod combobox
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method :</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select id='Account.BillingMethod' name='Account.BillingMethod'>\n";
+			foreach ($GLOBALS['*arrConstant']['BillingMethod'] as $intConstant=>$arrBillingMethodSelection)
+			{
+				$strSelected = (DBO()->Account->BillingMethod->Value == $intConstant) ? "selected='selected'" : "";
+				echo "		<option value='$intConstant' $strSelected>{$arrBillingMethodSelection['Description']}</option>\n";
+			}
+			echo "      </select>\n";
+			echo "   </div>\n";
+			echo "</div>\n";
 		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";
-		
-		// Render the BillingMethod combobox
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method :</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Account.BillingMethod' name='Account.BillingMethod'>\n";
-		foreach ($GLOBALS['*arrConstant']['BillingMethod'] as $intConstant=>$arrBillingMethodSelection)
-		{
-			$strSelected = (DBO()->Account->BillingMethod->Value == $intConstant) ? "selected='selected'" : "";
-			echo "		<option value='$intConstant' $strSelected>{$arrBillingMethodSelection['Description']}</option>\n";
-		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";
 		
 		DBO()->Account->Sample->RenderInput();
 		
@@ -444,8 +456,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div></div>\n";
 		
 		// Initialise the AccountDetails object
-		$intAccountId = DBO()->Account->Id->Value;
-		$strJavascript = "Vixen.AccountDetails.InitialiseEdit($intAccountId, '{$this->_strContainerDivId}');";
+		$strInvoicesAndPaymentsPage = (DBO()->Account->InvoicesAndPaymentsPage->Value) ? "true" : "false";		
+		$intAccountId				= DBO()->Account->Id->Value;
+		$strJavascript = "Vixen.AccountDetails.InitialiseEdit($intAccountId, '{$this->_strContainerDivId}', $strInvoicesAndPaymentsPage);";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 		
 		$this->FormEnd();
@@ -461,18 +474,26 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		//Resize the textboxes and the comboboxes and disable the "Never charge a late payment fee" radio
 		$strWidth = "330px";
+		if (!DBO()->Account->InvoicesAndPaymentsPage->Value)
+		{
+			// The Details are not being editted on the InvoicesAndPayments page, which
+			// means the Address and billing method properties are being shown
+			$strResizeAddress =  
+						"document.getElementById('Account.Address1').style.width='$strWidth';\n".
+						"document.getElementById('Account.Address2').style.width='$strWidth';\n".
+						"document.getElementById('Account.Suburb').style.width='$strWidth';\n".
+						"document.getElementById('Account.Postcode').style.width='$strWidth';\n".
+						"document.getElementById('Account.State').style.width='$strWidth';\n".
+						"document.getElementById('Account.BillingMethod').style.width='$strWidth';\n";
+		}
+		
 		$strJsCode =	"document.getElementById('Account.BusinessName').style.width='$strWidth';\n".
 						"document.getElementById('Account.TradingName').style.width='$strWidth';\n".
 						"document.getElementById('Account.ABN').style.width='$strWidth';\n".
 						"document.getElementById('Account.ACN').style.width='$strWidth';\n".
 						"document.getElementById('Account.CustomerGroup').style.width='$strWidth';\n".
 						"document.getElementById('Account.Archived').style.width='$strWidth';\n".
-						"document.getElementById('Account.Address1').style.width='$strWidth';\n".
-						"document.getElementById('Account.Address2').style.width='$strWidth';\n".
-						"document.getElementById('Account.Suburb').style.width='$strWidth';\n".
-						"document.getElementById('Account.Postcode').style.width='$strWidth';\n".
-						"document.getElementById('Account.State').style.width='$strWidth';\n".
-						"document.getElementById('Account.BillingMethod').style.width='$strWidth';\n".
+						$strResizeAddress . 
 						"document.getElementById('Account.Sample').style.width='$strWidth';\n".
 						"document.getElementById('Account.LatePaymentAmnesty').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
 						
@@ -480,7 +501,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// _RenderLedgerDetail (currently only used in invoice and payments)
+	// _RenderLedgerDetail DEPRICATED
 	//------------------------------------------------------------------------//
 	/**
 	 * _RenderLedgerDetail()

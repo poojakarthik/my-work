@@ -3768,7 +3768,7 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 	// Load in the CustomerGroup constants from the CustomerGroup table.
 	// These constants are now only used by the backend.  The frontend always refers to the database
 	// when dealing with customer groups
-	// This block of code can be removed, when the backend no longer relies on them
+	// This block of code can be removed when the backend no longer relies on them
 	$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "TRUE", "Id");
 	$selCustomerGroup->Execute();
 	$arrCustomerGroups = $selCustomerGroup->FetchAll();

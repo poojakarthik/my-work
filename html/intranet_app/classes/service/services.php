@@ -193,42 +193,26 @@
 				'CappedCharge'			=> 0,
 				'UncappedCharge'		=> 0,
 				
+				'Carrier'				=> $rrpPlan->Pull('CarrierFullService')->getValue(),
+				'CarrierPreselect'		=> $rrpPlan->Pull('CarrierPreselection')->getValue(),
+				
 				'CreatedOn'				=> new MySQLFunction ("NOW()"),
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue ()
 			);
 
-			//When a new service is created a System note is generated
-			$strEmployee = $aemAuthenticatedEmployee->Pull('FirstName')->getValue()  . " " . $aemAuthenticatedEmployee->Pull('LastName')->getValue() ;
-			$strServiceType = GetConstantDescription($arrService['ServiceType'], "ServiceType");
-			$intEmployeeId = $aemAuthenticatedEmployee->Pull('Id')->getValue();
-			$intAccountGroup = $arrService['AccountGroup'];
-			$intAccount = $arrService['Account'];
-			$intServiceFNN = $arrService['FNN'];
-			
-			$strIndialMessage = "";
-
-			if ($arrService['Indial100'])
-			{
-				$strIndialMessage = "Yes";
-			}
-			else
-			{
-				$strIndialMessage = "No";
-			}
-
-			$strNote = "$strEmployee added the Service: $intServiceFNN to Account: $intAccount on " . date('m/d/y') . "\n";
-			$strNote .= "Service Type: $strServiceType\n";
-			$strNote .= "Indial100: $strIndialMessage\n";
-			
-	
-			$insService = new StatementInsert ('Service', $arrService);
-			$intService = $insService->Execute ($arrService);
-			
+			$insService = new StatementInsert('Service', $arrService);
+			$intService = $insService->Execute($arrService);
 			
 			// Check if inserting the service note worked
 			if ($intService)
 			{
 				// Add the system note
+				$intEmployeeId		= $aemAuthenticatedEmployee->Pull('Id')->getValue();
+				$strServiceType		= GetConstantDescription($arrService['ServiceType'], "ServiceType");
+				$intAccountGroup	= $arrService['AccountGroup'];
+				$intAccount			= $arrService['Account'];
+				$strServiceFNN		= $arrService['FNN'];
+				$strNote			= "New $strServiceType service has been added\nFNN: $strServiceFNN";
 				$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccount, $intService);
 			}
 			

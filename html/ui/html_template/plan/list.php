@@ -175,7 +175,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		$bolHasPlanEditPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 	
 		// Define what happens when the filter combo is used
-		$strOnFilterChange = "window.location=\"vixen.php/Plan/AvailablePlans/?RatePlan.ServiceType=\" + this.value;";
+		$strOnFilterChange = "window.location=\"flex.php/Plan/AvailablePlans/?RatePlan.ServiceType=\" + this.value;";
 		
 		// Include a container div for the filter and the "Add New Plan" button.  Required as I am floating divs left and right
 		echo "<div style='height:30px'>\n";
