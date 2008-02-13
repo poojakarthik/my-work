@@ -267,7 +267,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 				DBO()->CurrentRatePlan->Load();
 				$strCurrentPlan = DBO()->CurrentRatePlan->Name->Value;
 				
-				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'><span>$strCurrentPlan</span></a>";
+				$strPlanCell = "<span><a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>$strCurrentPlan</a></span>";
 			}
 			else
 			{
@@ -283,7 +283,7 @@ class HtmlTemplateAccountServices extends HtmlTemplate
 				DBO()->FutureRatePlan->Load();
 				
 				$strFuturePlan = DBO()->FutureRatePlan->Name->Value;
-				$strPlanCell .= "<br /><span>As of next billing period : </span><a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'><span>$strFuturePlan</span></a>";
+				$strPlanCell .= "<br /><span>As of next billing period : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>$strFuturePlan</a></span>";
 			}
 			
 

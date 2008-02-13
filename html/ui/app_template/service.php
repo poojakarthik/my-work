@@ -954,7 +954,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Retrieve all RecordTypes applicable for this service
 		DBL()->RecordType->ServiceType = DBO()->Service->ServiceType->Value;
-		DBL()->RecordType->OrderBy("Id");
+		DBL()->RecordType->OrderBy("Name, Id");
 		DBL()->RecordType->Load();
 		
 		// Load the current RatePlan
@@ -968,6 +968,7 @@ class AppTemplateService extends ApplicationTemplate
 
 			// Load all the RateGroups belonging to the current rate plan
 			DBL()->CurrentPlanRateGroup->SetTable("RateGroup");
+			DBL()->CurrentPlanRateGroup->SetColumns("Id");
 			$strWhere = "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = <RatePlan>)";
 			DBL()->CurrentPlanRateGroup->Where->Set($strWhere, Array("RatePlan" => DBO()->CurrentRatePlan->Id->Value));
 			DBL()->CurrentPlanRateGroup->OrderBy("RecordType");
@@ -1015,7 +1016,7 @@ class AppTemplateService extends ApplicationTemplate
 		// and StartDatetime < EndDatetime AND (were created after the current plan was created or are fleet RateGroups)
 		$arrColumns	= Array("Id" => "SRG.Id", "RateGroup" => "SRG.RateGroup", "CreatedOn" => "SRG.CreatedOn", "StartDatetime" => "SRG.StartDatetime", 
 							"EndDatetime" => "SRG.EndDatetime", "Name" => "RG.Name", "Description" => "RG.Description", "Fleet" => "RG.Fleet",
-							"RecordType" => "RG.RecordType");
+							"RecordType" => "RG.RecordType", "RateGroupId" => "RG.Id");
 		$strTable	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
 		
 		// OLD WHERE CLAUSE Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
@@ -1042,6 +1043,275 @@ class AppTemplateService extends ApplicationTemplate
 		return TRUE;
 	}	
 	
+	//------------------------------------------------------------------------//
+	// RenderServiceRateGroupList
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderServiceRateGroupList()
+	 *
+	 * Renders the ServiceRateGroupList Html Template
+	 * 
+	 * Renders the ServiceRateGroupList Html Template for viewing
+	 * It expects	DBO()->Service->Id 		service Id 
+	 *				DBO()->Container->Id	id of the container div in which to place the 
+	 *										Rendered HtmlTemplate
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function RenderServiceRateGroupList()
+	{
+		//TODO! The guts of this function is exactly the same as a large portion of the ViewPlan function
+		// This should be placed in its own function and called on by the 2 functions that use it
+		
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+
+		DBO()->Service->Load();
+		
+		// Retrieve all RecordTypes applicable for this service
+		DBL()->RecordType->ServiceType = DBO()->Service->ServiceType->Value;
+		DBL()->RecordType->OrderBy("Name, Id");
+		DBL()->RecordType->Load();
+		
+		// Load the current RatePlan
+		DBO()->CurrentRatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
+		$strEarliestAllowableEndDatetime = NULL;
+		if (DBO()->CurrentRatePlan->Id->Value)
+		{
+			// The Service has a current RatePlan
+			DBO()->CurrentRatePlan->SetTable("RatePlan");
+			DBO()->CurrentRatePlan->Load();
+
+			// Load all the RateGroups belonging to the current rate plan
+			DBL()->CurrentPlanRateGroup->SetTable("RateGroup");
+			DBL()->CurrentPlanRateGroup->SetColumns("Id");
+			$strWhere = "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = <RatePlan>)";
+			DBL()->CurrentPlanRateGroup->Where->Set($strWhere, Array("RatePlan" => DBO()->CurrentRatePlan->Id->Value));
+			DBL()->CurrentPlanRateGroup->OrderBy("RecordType");
+			DBL()->CurrentPlanRateGroup->Load();
+
+			// Load the current ServiceRatePlan record
+			$strWhere = "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC";
+			DBO()->CurrentServiceRatePlan->SetTable("ServiceRatePlan");
+			DBO()->CurrentServiceRatePlan->Where->Set($strWhere, Array("Service" => DBO()->Service->Id->Value));
+			DBO()->CurrentServiceRatePlan->Load();
+			
+			DBO()->CurrentRatePlan->StartDatetime	= DBO()->CurrentServiceRatePlan->StartDatetime->Value;
+			DBO()->CurrentRatePlan->EndDatetime		= DBO()->CurrentServiceRatePlan->EndDatetime->Value;
+			
+			// This will be used to retrieve all ServiceRateGroup records that have an EndDatetime greater than this
+			$strEarliestAllowableEndDatetime = DBO()->CurrentServiceRatePlan->StartDatetime->Value;
+		}
+		
+		// If $strEarliestAllowableEndDatetime hasn't yet been defined then define it now
+		if (!$strEarliestAllowableEndDatetime)
+		{
+			$strEarliestAllowableEndDatetime = GetCurrentDateAndTimeForMySQL();
+		}
+		
+		// Load the future RatePlan if there is one scheduled to begin next billing period
+		DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod(DBO()->Service->Id->Value);
+		if (DBO()->FutureRatePlan->Id->Value)
+		{
+			// The Service has a plan scheduled to begin at the start of the next billing period
+			DBO()->FutureRatePlan->SetTable("RatePlan");
+			DBO()->FutureRatePlan->Load();
+			
+			// Load the Future RatePlan record (this is only really needed to get the StartDatetime and EndDatetime)
+			$strStartOfNextBillingPeriod = ConvertUnixTimeToMySQLDateTime(GetStartDateTimeForNextBillingPeriod());
+			$strWhere = "Service = <Service> AND StartDatetime = <StartOfNextBillingPeriod> AND StartDatetime < EndDatetime ORDER BY CreatedOn DESC";
+			DBO()->FutureServiceRatePlan->SetTable("ServiceRatePlan");
+			DBO()->FutureServiceRatePlan->Where->Set($strWhere, Array("Service" => DBO()->Service->Id->Value, "StartOfNextBillingPeriod" => $strStartOfNextBillingPeriod));
+			DBO()->FutureServiceRatePlan->Load();
+			
+			DBO()->FutureRatePlan->StartDatetime	= DBO()->FutureServiceRatePlan->StartDatetime->Value;
+			DBO()->FutureRatePlan->EndDatetime		= DBO()->FutureServiceRatePlan->EndDatetime->Value;
+		}
+		
+		// Retrieve all ServiceRateGroup records (with accompanying RateGroup details) that have an EndDatetime > $strEarliestAllowableEndDatetime
+		// and StartDatetime < EndDatetime AND (were created after the current plan was created or are fleet RateGroups)
+		$arrColumns	= Array("Id" => "SRG.Id", "RateGroup" => "SRG.RateGroup", "CreatedOn" => "SRG.CreatedOn", "StartDatetime" => "SRG.StartDatetime", 
+							"EndDatetime" => "SRG.EndDatetime", "Name" => "RG.Name", "Description" => "RG.Description", "Fleet" => "RG.Fleet",
+							"RecordType" => "RG.RecordType", "RateGroupId" => "RG.Id");
+		$strTable	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
+		
+		// OLD WHERE CLAUSE Includes RateGroups that Start after the current plan finishes as well as all of those that finished after the CurrentPlan Started but before now
+		//$strWhere	= "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime";
+		//$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
+
+		// Retrieve all ServiceRateGroup records that have EndDatetime > CurrentRatePlan.StartDatetime (<EarliestAllowableEndDatetime>)
+		// AND StartDatetime < EndDatetime AND (RG.Fleet = 1 OR (CreatedOn + 5 seconds) > CurrentRatePlan.CreatedOn)
+		// Which means retrieve all RateGroups that have an EndDatetime greater than the StartDatetime of the Current RatePlan, and (are fleet
+		// RateGroups OR were created at or after the CurrentRatePlan was created
+		$strWhere	 = "SRG.Service = <Service> AND SRG.EndDatetime > <EarliestAllowableEndDatetime> AND SRG.StartDatetime < SRG.EndDatetime".
+						" AND (RG.Fleet = 1 OR ADDTIME(SRG.CreatedOn, SEC_TO_TIME(5)) > (SELECT MAX(SRP.CreatedOn) FROM ServiceRatePlan AS SRP WHERE SRP.Service = SRG.Service AND NOW() BETWEEN SRP.StartDatetime AND SRP.EndDatetime))";
+		$arrWhere	= Array("Service" => DBO()->Service->Id->Value, "EarliestAllowableEndDatetime" => $strEarliestAllowableEndDatetime);
+		
+		$strOrderBy = "SRG.CreatedOn DESC";
+
+		DBL()->CurrentServiceRateGroup->SetColumns($arrColumns);
+		DBL()->CurrentServiceRateGroup->SetTable($strTable);
+		DBL()->CurrentServiceRateGroup->Where->Set($strWhere, $arrWhere);
+		DBL()->CurrentServiceRateGroup->OrderBy($strOrderBy);
+		DBL()->CurrentServiceRateGroup->Load();
+		
+		// Render the ServiceRateGroupList HtmlTemplate
+		Ajax()->RenderHtmlTemplate("ServiceRateGroupList", HTML_CONTEXT_DEFAULT, DBO()->Container->Id->Value);
+
+		return TRUE;
+	}	
+
+	//------------------------------------------------------------------------//
+	// RemoveServiceRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * RemoveServiceRateGroup()
+	 *
+	 * Removes a ServiceRateGroup record, if it can be safely removed
+	 * 
+	 * Removes a ServiceRateGroup record, if it can be safely removed
+	 * It expects	DBO()->ServiceRateGroup->Id 		Record to be removed 
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function RemoveServiceRateGroup()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+
+/* A RateGroup can only be removed if:
+ * 		It is a fleet RateGroup
+ * OR
+ * 		The entire length of time that the RateGroup is applicable to, is covered by other rategroups of the same RecordType
+ * I don't think you should be able to remove the RateGroup if it was added when the current plan was added, or when the future
+ * Plan was added
+ */
+ 
+ 		$bolCanRemoveRateGroup = FALSE;
+ 		
+		// Load the ServiceRateGroup record to remove, and its RateGroup details 
+		DBO()->ServiceRateGroup->Load();
+		DBO()->RateGroup->Id = DBO()->ServiceRateGroup->RateGroup->Value;
+		DBO()->RateGroup->Load();
+		
+		if (DBO()->RateGroup->Fleet->Value == TRUE)
+		{
+			// Fleet RateGroups can always be removed
+			$bolCanRemoveRateGroup = TRUE;
+		}
+		else
+		{
+			// Retrieve the current RatePlan Record if there is one
+			$selCurrentRatePlan	= new StatementSelect("ServiceRatePlan", "*", "Service = <Service> AND StartDatetime < EndDatetime AND NOW() BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", "1");
+			$intRecordCount		= $selCurrentRatePlan->Execute(Array("Service"=>DBO()->ServiceRateGroup->Service->Value));
+			if ($intRecordCount != 1)
+			{
+				// The Service Does not have a current RatePlan
+				// Check if it has a future plan
+				$selFutureRatePlan	= new StatementSelect("ServiceRatePlan", "*", "Service = <Service> AND StartDatetime < EndDatetime AND StartDatetime > NOW()", "CreatedOn DESC", "1");
+				$intRecordCount		= $selFutureRatePlan->Execute(Array("Service"=>DBO()->ServiceRateGroup->Service->Value));
+				if ($intRecordCount != 1)
+				{
+					// There is no current or future Plan for the service
+					// Removing the RateGroup should be safe
+					$bolCanRemoveRateGroup = TRUE;
+				}
+				else
+				{
+					// Found a future plan
+					$arrServiceRatePlan = $selFutureRatePlan->Fetch();
+				}
+			}
+			else
+			{
+				// Found a current plan
+				$arrServiceRatePlan = $selCurrentRatePlan->Fetch();
+			}
+			
+			if (isset($arrServiceRatePlan))
+			{
+				$strEarliestCreatedOnDate = $arrServiceRatePlan['CreatedOn'];
+				
+				// Find all ServiceRateGroup records that were created after $strEarliestCreatedOnDate
+				$arrColumns	= Array("Id" => "SRG.Id",
+									"CreatedOn" => "SRG.CreatedOn",
+									"StartDatetime" => "SRG.StartDatetime",
+									"EndDatetime" => "SRG.EndDatetime",
+									"RateGroupId" => "RG.Id",
+									"RecordType" => "RG.RecordType",
+									"Fleet" => "RG.Fleet",
+									"Archived" => "RG.Archived"	
+									);
+				$strWhere	= "SRG.Service=<Service> AND RG.RecordType=<RecordType> AND ADDTIME(SRG.CreatedOn, SEC_TO_TIME(5)) > <EarliestCreatedOn> AND SRG.StartDatetime < SRG.EndDatetime AND SRG.Id != <RateGroupToRemove> AND RG.Fleet = 0 AND RG.Archived = 0";
+				$strTables	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
+				$strOrderBy	= "SRG.StartDatetime ASC";
+				$selServiceRateGroups = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+				$intRecCount = $selServiceRateGroups->Execute(Array(	"Service"			=> DBO()->ServiceRateGroup->Service->Value,
+																		"RecordType"		=> DBO()->RateGroup->RecordType->Value,
+																		"EarliestCreatedOn"	=> $strEarliestCreatedOnDate,
+																		"RateGroupToRemove"	=> DBO()->ServiceRateGroup->Id->Value));
+				if ($intRecCount)
+				{
+					// Check that the ServiceRateGroup records retrieved cover the time range of the one being removed
+					$arrServiceRateGroups = $selServiceRateGroups->FetchAll();
+					
+					//TODO!
+					
+					// One of them has to start before the one to remove, and then there has to be no gaps
+					// until after the one to remove ends
+					
+				}
+			}
+			
+		}
+		
+		
+		if (!$bolCanRemoveRateGroup)
+		{
+			// The RateGroup cannot be removed
+			Ajax()->AddCommand("Alert", "ERROR: The RateGroup cannot be removed, as it would leave a whole in the Service's Plan");
+			return TRUE;
+		}
+		
+		// Remove the ServiceRateGroup record by setting its EndDatetime to 1 second before its StartDatetime
+		$strNewEndDatetime = date("Y-m-d H:i:s", (strtotime(DBO()->ServiceRateGroup->StartDatetime->Value)-1));
+		$strOldEndDatetime = DBO()->ServiceRateGroup->EndDatetime->Value; 
+		DBO()->ServiceRateGroup->EndDatetime = $strNewEndDatetime;
+		if (!DBO()->ServiceRateGroup->Save())
+		{
+			// Updating the record failed
+			Ajax()->AddCommand("Alert", "ERROR: Removing the RateGroup failed, unexpectedly.  Removal aborted.");
+			return TRUE;
+		}
+		
+		// Add a system note
+		$strNote = 	"RateGroup removed from service\n".
+					"Name: ". DBO()->RateGroup->Name->Value ."\n".
+					"Desc: ". DBO()->RateGroup->Description->Value ."\n".
+					"Created: ". date("H:i:s d/m/Y", strtotime(DBO()->ServiceRateGroup->CreatedOn->Value)) ."\n".
+					"Start: ". date("H:i:s d/m/Y", strtotime(DBO()->ServiceRateGroup->StartDatetime->Value)) ."\n".
+					"Finish: ". (($strOldEndDatetime == END_OF_TIME)? "Indefinite" : date("H:i:s d/m/Y", strtotime($strOldEndDatetime))) ."\n".
+					"Fleet: ". DBO()->RateGroup->Fleet->FormattedValue() ."\n".
+					"ServiceRateGroupId: ". DBO()->ServiceRateGroup->Id->Value;
+		DBO()->Service->Id = DBO()->ServiceRateGroup->Service->Value;
+		DBO()->Service->Load();
+		SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
+		
+		//Fire the EVENT_ON_NEW_NOTE Event
+		//TODO! some time
+		
+		// Fire the EVENT_ON_SERVICE_RATE_GROUPS_UPDATE Event
+		$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
+		$arrEvent['RecordType']['Id'] = DBO()->RateGroup->RecordType->Value;
+		Ajax()->FireEvent(EVENT_ON_SERVICE_RATE_GROUPS_UPDATE, $arrEvent);
+
+		Ajax()->AddCommand("Alert", "The RateGroup has been successfully removed");
+		return TRUE;
+	}
 	
 	//------------------------------------------------------------------------//
 	// ChangePlan

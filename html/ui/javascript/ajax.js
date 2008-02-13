@@ -427,17 +427,11 @@ function VixenAjaxClass()
 				case "ClosePopup":
 					Vixen.Popup.Close(objInput[intKey].Data);
 					break;
-				case "UpdateServicePopup":
+				case "UpdateServicePopup": // I think this should be removed
 					alert(objInput[intKey].Service);
 					document.getElementById(objInput[intKey].Service).innerHTML=objInput[intKey].Plan;			
 					break;
 				case "Alert":
-					/* Old way
-					strContent = "<div align='center'><p>" + objInput[intKey].Data + "</p>" +
-									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'></p></div>\n" +
-									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', 'autohide');
-					*/
 					Vixen.Popup.Alert(objInput[intKey].Data);
 					break;
 				case "AlertReload":

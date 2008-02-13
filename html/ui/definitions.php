@@ -189,13 +189,6 @@ define("PERMISSION_SUPER_ADMIN"			, 0x100);	$arrPermissions[PERMISSION_SUPER_ADM
 // This is used in the datbase to represent an "end Date" or "Closed on date" that should never be reached
 define('END_OF_TIME', 	'9999-12-31 23:59:59');
 
-// RatePlan, RateGroup and Rate archive status's
-// This should be changed to RATE_STATUS_BLAH and put in vixen/framework/definitions.php
-// The change has been made and these declarations are now deprecated
-define("ARCHIVE_STATUS_ACTIVE"			, 0);
-define("ARCHIVE_STATUS_ARCHIVED"		, 1);
-define("ARCHIVE_STATUS_DRAFT"			, 2);
-
 // This defines how many notes to retrieve.  The most recent ones should be retrieved
 define("DEFAULT_NOTES_LIMIT", 5);
 
@@ -209,6 +202,7 @@ define("EVENT_ON_ACCOUNT_PRIMARY_CONTACT_UPDATE"	, "OnAccountPrimaryContactUpdat
 define("EVENT_ON_EDIT_ACCOUNT_DETAILS_CANCEL"		, "OnEditAccountDetailsCancel");
 define("EVENT_ON_CUSTOMER_GROUP_DETAILS_UPDATE"		, "OnCustomerGroupDetailsUpdate");
 define("EVENT_ON_CONFIG_CONSTANT_UPDATE"			, "OnConfigConstantUpdate");
+define("EVENT_ON_SERVICE_RATE_GROUPS_UPDATE"		, "OnServiceRateGroupsUpdate");
 
 // Maximum file upload size is 1 megabyte
 define("RATEGROUP_IMPORT_MAXSIZE", 1048576);

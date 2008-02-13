@@ -430,16 +430,16 @@ class Page
 				echo "<div id='{$arrObject['Id']}'>\n";
 				$arrObject['Object']->SetMode($this->_intTemplateMode, $this->_objAjax);
 				$arrObject['Object']->Render();
-				echo "</div>\n";
 				
 				// Check for Debug mode
-				if ($_GET['Debug'] == 1 && AuthenticatedUser()->UserHasPerm(PERMISSION_DEBUG))
+				if ($GLOBALS['bolDebugMode'])
 				{
 					// Display how long it took to render the HtmlTemplate
 					$fltTimeTaken = number_format(microtime(TRUE) - $fltStartTime, 4, ".", "");
 					echo "<div>Time taken to render {$arrObject['Name']}: $fltTimeTaken sec</div>";
 				}
 				
+				echo "</div>\n";
 			}
 		}
 	}

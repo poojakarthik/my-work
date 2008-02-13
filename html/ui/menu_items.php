@@ -393,30 +393,34 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
-	// ViewRates
+	// ViewRate
 	//------------------------------------------------------------------------//
 	/**
-	 * ViewRates()
+	 * ViewRate()
 	 *
 	 * Compiles the Href to be executed when the ViewRates menu item is clicked
 	 *
 	 * Compiles the Href to be executed when the ViewRates menu item is clicked
 	 *
-	 * @param	int		
+	 * @param	int		$intRateId		Id of the Rate
+	 * @param	bool	$bolModal		optional, Set to FALSE for non-modal window
+	 *									Defaults to TRUE (modal)
 	 *
 	 * @return	string						
 	 *
 	 * @method
 	 */
-	function ViewRate($intId)
+	function ViewRate($intRateId, $bolModal=TRUE)
 	{
 		// Setup data to send
-		$arrData['Objects']['Rate']['Id'] = $intId;
+		$arrData['Objects']['Rate']['Id'] = $intRateId;
+		
+		$strWindowType = ($bolModal)? "modal" : "nonmodal";
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId\", \"medium\", null, \"Rate\", \"View\", $strJsonCode)";	
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId_$intRateId\", \"medium\", null, \"Rate\", \"View\", $strJsonCode, \"$strWindowType\")";	
 	}	
 
 	//------------------------------------------------------------------------//
@@ -448,6 +452,36 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"medium\", \"Override Rate Group\", \"RateGroup\", \"Override\", $strJsonCode)";	
 	}
 
+	//------------------------------------------------------------------------//
+	// ViewRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewRateGroup()
+	 *
+	 * Compiles the Href to be executed when the ViewRateGroup menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewRateGroup menu item is triggered
+	 *
+	 * @param	int		$intRateGroupId		Id of the RateGroup
+	 * @param	bool	$bolModal		optional, Set to FALSE for non-modal window
+	 *									Defaults to TRUE (modal)
+	 *
+	 * @return	string						
+	 *
+	 * @method
+	 */
+	function ViewRateGroup($intRateGroupId, $bolModal=TRUE)
+	{
+		// Setup data to send
+		$arrData['Objects']['RateGroup']['Id'] = $intRateGroupId;
+		
+		$strWindowType = ($bolModal)? "modal" : "nonmodal";
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupViewPopupId_$intRateGroupId\", \"mediumlarge\", \"Rate Group\", \"RateGroup\", \"View\", $strJsonCode, \"$strWindowType\")";
+	}
 
 	//------------------------------------------------------------------------//
 	// AddConfigConstant
@@ -781,59 +815,6 @@ class MenuItems
 
 	}
 	
-	//------------------------------------------------------------------------//
-	// AddRateGroupToRatePlan - DEPRECIATED (currently this functionality is explicitly called from javascript)
-	//------------------------------------------------------------------------//
-	/**
-	 * AddRateGroupToRatePlan()
-	 *
-	 * Compiles the Href to be executed when the AddRateGroupToRatePlan menu item is clicked
-	 *
-	 * Compiles the Href to be executed when the AddRateGroupToRatePlan menu item is clicked
-	 * This will not compile a bread crumb label because the AddRateGroup functionality is in a popup
-	 * 
-	 * @param	int		$intRecordType		record type that the Rate Group will belong to
-	 * @param	bool	$bolFleet			[optional] TRUE if the new Rate Group will be a fleet rate group
-	 *
-	 * @return	string						Href to be executed when the AddRateGroupToRatePlan menu item is clicked
-	 *
-	 * @method
-	 */
-	function AddRateGroupToRatePlan($intRecordType, $bolFleet=FALSE)
-	{
-		// Setup data to send
-		$arrData['Objects']['RecordType']['Id']		= $intRecordType;
-		$arrData['Objects']['RateGroup']['Fleet']	= $bolFleet;
-
-		// This is used to flag that the Rate Group will be added to a Rate Plan
-		$arrData['Objects']['CallingPage']['AddRatePlan'] = TRUE;
-		
-		// Convert to JSON notation
-		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"Add New Rate Group\", \"RateGroup\", \"Add\", $strJsonCode)";
-	}
-	
-	//------------------------------------------------------------------------//
-	// AddRateGroup
-	//------------------------------------------------------------------------//
-	/**
-	 * AddRateGroup()
-	 *
-	 * Compiles the Href to be executed when the AddRateGroup menu item is clicked
-	 *
-	 * Compiles the Href to be executed when the AddRateGroup menu item is clicked
-	 * This will not compile a bread crumb label because the AddRateGroup functionality is in a popup
-	 * 
-	 * @return	string				Href to be executed when the AddRateGroup menu item is clicked
-	 *
-	 * @method
-	 */
-	function AddRateGroup()
-	{
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"Add New Rate Group\", \"RateGroup\", \"Add\", \"\", \"modeless\")";
-	}
-
 	//------------------------------------------------------------------------//
 	// AddRatePlan
 	//------------------------------------------------------------------------//

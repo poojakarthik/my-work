@@ -150,8 +150,7 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		echo "<div id='StartDateCalender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
 		
 		echo "<table width='100%' border='0' cellpadding='1' cellspacing='0'>\n";
-		echo "<tr><td width='1' rowspan='8'>&nbsp;</td><td width='190'><span>Current Plan :</span></td><td colspan='2'>" . DBO()->RatePlan->Name->AsValue() . "</td></tr>\n";
-		echo "<tr><td><span>Rate Group :</span></td><td colspan='2'>\n";
+		echo "<tr><td width='1' rowspan='8'>&nbsp;</td><td width='190'><span>Rate Group :</span></td><td colspan='2'>\n";
 
 		echo "<span><select name='ServiceRateGroup.Selected' style='width: 100%;' onchange='$strOnRateGroupChange'>\n";
 		
@@ -245,7 +244,7 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 
 		echo "<div class='ButtonContainer'><div class='right'>\n";
 			$this->Button("Cancel", "Vixen.Popup.Close(this);");
-			$this->AjaxSubmit("Apply Changes");
+			$this->AjaxSubmit("Apply Override");
 		echo "</div>\n";	
 	}
 }

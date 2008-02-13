@@ -611,8 +611,13 @@ class AppTemplateRate extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
-		// Rate Id passed to this function from where it pulls the individual rate out
-		DBO()->Rate->Load();
+		// Load the Rate
+		if (!DBO()->Rate->Load())
+		{
+			// The Rate could not be retrieved
+			Ajax()->AddCommand("Alert", "ERROR: Rate could not be found in database");
+			return TRUE;
+		}
 		
 		DBO()->RecordType->Id = DBO()->Rate->RecordType->Value;
 		DBO()->RecordType->Load();
@@ -653,7 +658,7 @@ class AppTemplateRate extends ApplicationTemplate
 		$strSearchString = trim(DBO()->Rate->SearchString->Value);
 		if ($strSearchString == "")
 		{
-			// The Search string is empty and considered invalud  
+			// The Search string is empty and considered invalid  
 			Ajax()->AddCommand("Alert", "ERROR: Please specify a name or partial name to search");
 			return TRUE;
 		}

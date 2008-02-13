@@ -79,14 +79,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
 		
-		// Load all java script specific to the page here
-		$this->LoadJavascript("highlight");
-		$this->LoadJavascript("retractable");
-		
-		// Setup the object used to retrieve Rates for a given RateGroup
-		DBL()->Rate->Where->SetString("Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroup>)");
-		DBL()->Rate->OrderBy("Name");
-		DBL()->Rate->SetLimit(11);
+		$this->LoadJavascript("service_rate_groups");
 	}
 
 	//------------------------------------------------------------------------//
@@ -103,6 +96,13 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 	 */
 	function Render()
 	{	
+		// Build an array storing the ids of all the RateGroups belonging to the current plan
+		$arrCurrentPlanRateGroups = Array();
+		foreach (DBL()->CurrentPlanRateGroup as $dboRateGroup)
+		{
+			$arrCurrentPlanRateGroups[] = $dboRateGroup->Id->Value;
+		}
+		
 		// This will list the Start and End times for all shown RateGroups for a given RecordType.  If a RateGroup's Start and End times
 		// are completely overridden by one of higher precedence, then it will not be shown.
 		$arrShownRateGroups = Array();
@@ -125,33 +125,13 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 			{	
 				// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
 				$strOverrideRateGroupHref	= Href()->OverrideRateGroup(DBO()->Service->Id->Value, $dboRecordType->Id->Value);
-				$strOverrideRateGroup		= "<a style='margin-left:10px' href='$strOverrideRateGroupHref'><img src='img/template/edit.png' title='Declare an Overriding RateGroup'></img></a>";
+				$strOverrideRateGroup		= "<a href='$strOverrideRateGroupHref'><img src='img/template/edit.png' title='Declare an Overriding RateGroup'></img></a>";
 			}
-			$strRecordTypeCell = $dboRecordType->Description->Value . $strOverrideRateGroup;
+			$strRecordTypeCell = $dboRecordType->Description->Value;
 			
-			Table()->$strTableName->SetHeader("&nbsp;", $strRecordTypeCell, $strStandardHeaderCell, $strFleetHeaderCell, "&nbsp;", "&nbsp", "&nbsp;");
-			Table()->$strTableName->SetWidth("3%", "65%", "5%", "5%", "10%", "2%", "10%");
-			Table()->$strTableName->SetAlignment("Left", "Left", "Center", "Center", "Left", "Left", "Left");
-			
-			// Find the RatePlan's Standard RateGroup and Standard Fleet RateGroup for this RecordType
-			$dboStandardRateGroup		= NULL;
-			$dboStandardFleetRateGroup	= NULL;
-			foreach (DBL()->CurrentPlanRateGroup as $dboRateGroup)
-			{
-				if ($dboRecordType->Id->Value == $dboRateGroup->RecordType->Value)
-				{	
-					if ($dboRateGroup->Fleet->Value)
-					{
-						// We have found the Plan's Fleet Rate Group for this RecordType
-						$dboStandardFleetRateGroup	= $dboRateGroup;
-					}
-					else
-					{
-						// We have found the Plan's standard Rate Group for this RecordType
-						$dboStandardRateGroup		= $dboRateGroup;
-					}
-				}
-			}
+			Table()->$strTableName->SetHeader("&nbsp;", $strRecordTypeCell, $strStandardHeaderCell, "&nbsp;", "&nbsp", "&nbsp;", $strOverrideRateGroup);
+			Table()->$strTableName->SetWidth("3%", "65%", "5%", "10%", "2%", "10%", "5%");
+			Table()->$strTableName->SetAlignment("Left", "Left", "Center", "Left", "Left", "Left", "Right");
 			
 			// List all the Fleet Rate Groups for this record type in Descending order of precedence (CreateOn determines precedence)
 			$intPrecedence = 1;
@@ -199,7 +179,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					
 					// Check if the RateGroup is a standard part of the plan
 					$strPartOfPlanCell = "<span>&nbsp;</span>";  // Default
-					if ($dboRateGroup->RateGroup->Value == $dboStandardFleetRateGroup->Id->Value)
+					if (in_array($dboRateGroup->RateGroup->Value, $arrCurrentPlanRateGroups))
 					{
 						// The RateGroup is a standard part of the plan
 						$strPartOfPlanCell = "<span><img src='img/template/tick.png' title='This is the standard Fleet RateGroup for this Plan'></img></span>";
@@ -221,17 +201,28 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 						$strEndTime	= date("g:i:s A", $intEnd);
 						$strEndDate	= "<span title='$strEndTime'>". date("M j, Y", $intEnd) ."</span>";
 					}
+
+					$strViewRateGroupLink	= Href()->ViewRateGroup($dboRateGroup->RateGroupId->Value, FALSE);
+
+					// Escape all special chars from the name and description
+					$dboRateGroup->Name = htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
+					$dboRateGroup->Description = htmlspecialchars($dboRateGroup->Description->Value, ENT_QUOTES);
 					
 					// Prepare the RateGroup Cell
-					$strRateGroupCell  = "<span ". (($bolIsCurrent) ? "class='Green' " : "");
-					$strRateGroupCell .= "title='{$dboRateGroup->Description->Value}'>{$dboRateGroup->Name->Value}</span>";
+					$strRateGroupCell  = "<span>Fleet: &nbsp;</span>";
+					$strRateGroupCell .= "<a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}'><span ". (($bolIsCurrent) ? "class='Green'>" : "class='Black'>") ."{$dboRateGroup->Name->Value}</span></a></span>";
+					
+					// Prepare the RemoveRateGroup Cell
+					$strRemoveRateGroup = "<span>&nbsp;</span>";
+					if ($bolUserHasAdminPerm)
+					{	
+						// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
+						$strRemoveRateGroupJsCode	= "javascript: Vixen.ServiceRateGroups.RemoveRateGroup({$dboRateGroup->Id->Value}, \"{$dboRateGroup->Name->Value}\")";
+						$strRemoveRateGroup			= "<span><a href='$strRemoveRateGroupJsCode'><img src='img/template/delete.png' title='Remove RateGroup'></img></a></span>";
+					}
 					
 					// Add the Row
-					Table()->$strTableName->AddRow(	"<span>$intPrecedence</span>", $strRateGroupCell, $strPartOfPlanCell, "<span><img src='img/template/tick.png'></img></span>", $strStartDate, "<span>-</span>", $strEndDate);
-					
-					// Add Dropdown details (describing the rates of the RateGroup)
-					$strDropDownDetail = $this->_BuildDropDownDetail($dboRateGroup->RateGroup->Value);
-					Table()->$strTableName->SetDetail($strDropDownDetail);
+					Table()->$strTableName->AddRow("<span>$intPrecedence</span>", $strRateGroupCell, $strPartOfPlanCell, $strStartDate, "<span>-</span>", $strEndDate, $strRemoveRateGroup);
 					
 					// Increment the precedence counter
 					$intPrecedence++;
@@ -279,12 +270,11 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 						// This RateGroup is currently being used
 						$bolFoundCurrentNormalRateGroup	= TRUE;
 						$bolIsCurrent					= TRUE;
-						//$strCurrentFlag					= "<span>Currently Used&nbsp;</span>";
 					}
 					
 					// Check if the RateGroup is a standard part of the plan
 					$strPartOfPlanCell = "<span>&nbsp;</span>";  // Default
-					if ($dboRateGroup->RateGroup->Value == $dboStandardRateGroup->Id->Value)
+					if (in_array($dboRateGroup->RateGroup->Value, $arrCurrentPlanRateGroups))
 					{
 						// The RateGroup is a standard part of the plan
 						$strPartOfPlanCell = "<span><img src='img/template/tick.png'></img></span>";
@@ -307,16 +297,26 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 						$strEndDate	= "<span title='$strEndTime'>". date("M j, Y", $intEnd) ."</span>";
 					}
 					
+					$strViewRateGroupLink	= Href()->ViewRateGroup($dboRateGroup->RateGroupId->Value, FALSE);
+
+					// Escape all special chars from the name and description
+					$dboRateGroup->Name = htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
+					$dboRateGroup->Description = htmlspecialchars($dboRateGroup->Description->Value, ENT_QUOTES);
+
 					// Prepare the RateGroup Cell
-					$strRateGroupCell  = "<span ". (($bolIsCurrent) ? "class='Green' " : "");
-					$strRateGroupCell .= "title='{$dboRateGroup->Description->Value}'>{$dboRateGroup->Name->Value}</span>";
+					$strRateGroupCell = "<span><a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}'><span ". (($bolIsCurrent) ? "class='Green'>" : "class='Black'>") ."{$dboRateGroup->Name->Value}</span></a></span>";
+					
+					// Prepare the RemoveRateGroup Cell
+					$strRemoveRateGroup = "<span>&nbsp;</span>";
+					if ($bolUserHasAdminPerm)
+					{	
+						// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
+						$strRemoveRateGroupJsCode	= "javascript: Vixen.ServiceRateGroups.RemoveRateGroup({$dboRateGroup->Id->Value}, \"{$dboRateGroup->Name->Value}\")";
+						$strRemoveRateGroup			= "<span><a href='$strRemoveRateGroupJsCode'><img src='img/template/delete.png' title='Remove RateGroup'></img></a></span>";
+					}
 					
 					// Add the Row
-					Table()->$strTableName->AddRow(	"<span>$intPrecedence</span>", $strRateGroupCell, $strPartOfPlanCell, "<span>&nbsp;</span>", $strStartDate, "<span>-</span>", $strEndDate);
-					
-					// Add Dropdown details (describing the rates of the RateGroup)
-					$strDropDownDetail = $this->_BuildDropDownDetail($dboRateGroup->RateGroup->Value);
-					Table()->$strTableName->SetDetail($strDropDownDetail);
+					Table()->$strTableName->AddRow("<span>$intPrecedence</span>", $strRateGroupCell, $strPartOfPlanCell, $strStartDate, "<span>-</span>", $strEndDate, $strRemoveRateGroup);
 					
 					// Increment the precedence counter
 					$intPrecedence++;
@@ -346,92 +346,12 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 			Table()->$strTableName->Render();
 			echo "<div class='TinySeperator'></div>\n";
 		}
-		
-		
-		
 		echo "<div class='Seperator'></div>\n";
 		
-		
-		// Render the js function used by the Rate Search controls
-		$strJsCode = "	function VixenOpenRatesSearchResultsPopup(intRateGroupId, strSearchStringTextboxId)
-						{
-							var objObject = {};
-							objObject.Objects = {};
-							objObject.Objects.RateGroup = {};
-							objObject.Objects.Rate = {};
-							objObject.Objects.Rate.SearchString = document.getElementById(strSearchStringTextboxId).value;
-							objObject.Objects.RateGroup.Id = intRateGroupId;
-							Vixen.Popup.ShowAjaxPopup('RateGroupSearchId', 'large', null, 'Rate', 'Search', objObject);
-						}
-						";
-		echo "<script type='text/javascript'>$strJsCode</script>\n";
-	}
-	
-	
-	// Returns the html code that should go in the drop down detail of a row of the table defining a RateGroup
-	private function _BuildDropDownDetail($intRateGroupId)
-	{
-		// Retrieve all the Rates belonging to the RateGroup
-		DBL()->Rate->Where->RateGroup = $intRateGroupId;
-		DBL()->Rate->Load();
-		
-		// Check how many rates were returned
-		if (DBL()->Rate->RecordCount() > 10)
-		{
-			// Don't display the Rates.  Display search controls
-			// there is more than 10 rate plans shown
-			
-			$strSearchStringTextboxId = "RateSearch_". uniqid(rand());
-			$strDetailHtml =  "<div class='VixenTableDetail'>\n";
-			$strDetailHtml .= "<table width='100%' border='0' cellspacing='0' cellpadding='0'>\n";
-			$strDetailHtml .= "	<tr>\n";
-			$strDetailHtml .= "		<td width='15%' alignment='left'>\n";
-			$strDetailHtml .= "			<span>Search through rates:</span>";
-			$strDetailHtml .= "		</td>\n";
-			$strDetailHtml .= "		<td width='25%' alignment='left'>\n";			
-			$strDetailHtml .= "			<input type=text  id='$strSearchStringTextboxId' class='DefaultInputText' style='left:0px'>\n";
-			$strDetailHtml .= "		</td>\n";
-			$strDetailHtml .= "		<td width='60%' alignment='left'>\n";
-			$strDetailHtml .= "			<input type='button' value='View Rates' class='InputSubmit' onclick='VixenOpenRatesSearchResultsPopup($intRateGroupId, \"$strSearchStringTextboxId\")'></input>\n";
-			$strDetailHtml .= "		</td>\n";
-			$strDetailHtml .= "	</tr>\n";					
-			$strDetailHtml .= "</table>\n";
-			$strDetailHtml .= "</div>\n";
-		}
-		else
-		{
-			// Display the Rates
-			$strDetailHtml = "<div class='VixenTableDetail'>\n";
-			$strDetailHtml .= "<table width='100%' border='0' cellspacing='0' cellpadding='0'>\n";
-			$strDetailHtml .= "<tr bgcolor='#C0C0C0'><td width='64%'><span>Rate Name</span></td><td width='20%'><span>Days Available</span></td><td width='16%'><span>Time Range</span></td></tr>\n";
-			
-			foreach (DBL()->Rate as $dboRate)
-			{
-				$strViewRateLink = Href()->ViewRate($dboRate->Id->Value);
-			
-				$strDetailHtml .= "   <tr>\n";
-				$strDetailHtml .= "      <td>\n";
-				$strDetailHtml .= "<a href='$strViewRateLink' title='{$dboRate->Description->Value}'>{$dboRate->Name->AsValue()}</a>";
-				//$strDetailHtml .= $dboRate->Name->AsValue();
-				$strDetailHtml .= "      </td>\n";
-				$strDetailHtml .= "      <td>\n";
-				$strDetailHtml .= $dboRate->Monday->AsValue(CONTEXT_DEFAULT,TRUE) . "&nbsp;";
-				$strDetailHtml .= $dboRate->Tuesday->AsValue(CONTEXT_DEFAULT,TRUE) . "&nbsp;";
-				$strDetailHtml .= $dboRate->Wednesday->AsValue(CONTEXT_DEFAULT,TRUE) . "&nbsp;";
-				$strDetailHtml .= $dboRate->Thursday->AsValue(CONTEXT_DEFAULT,TRUE) . "&nbsp;";
-				$strDetailHtml .= $dboRate->Friday->AsValue(CONTEXT_DEFAULT,TRUE) . "&nbsp;";
-				$strDetailHtml .= $dboRate->Saturday->AsValue(CONTEXT_DEFAULT,TRUE) . "&nbsp;";
-				$strDetailHtml .= $dboRate->Sunday->AsValue(CONTEXT_DEFAULT,TRUE);
-				$strDetailHtml .= "      </td>\n";
-				$strDetailHtml .= "      <td><span>{$dboRate->StartTime->Value} - {$dboRate->EndTime->Value}</span></td>";
-				$strDetailHtml .= "   </tr>\n";
-			}
-			$strDetailHtml .= "</table>\n";
-			$strDetailHtml .= "</div>\n";
-
-		}
-		
-		return $strDetailHtml;
+		// Initialise the ServiceRateGroups object and register the OnServiceRateGroupsUpdate Listener
+		$intServiceId = DBO()->Service->Id->Value;
+		$strJavascript = "Vixen.ServiceRateGroups.Initialise($intServiceId, '{$this->_strContainerDivId}');";
+		echo "<script type='text/javascript'>$strJavascript</script>\n";
 	}
 }
 

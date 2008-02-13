@@ -263,7 +263,7 @@ class Application
 		//ob_end_flush();
 		
 		// Check if this is being rendered in Debug mode
-		if ($_GET['Debug'] == 1 && AuthenticatedUser()->UserHasPerm(PERMISSION_DEBUG))
+		if ($GLOBALS['bolDebugMode'])
 		{
 			echo "Time taken to run the AppTemplate method: ". number_format($fltAppTemplateTime, 4, ".", "") ." seconds<br />";
 			echo "Time taken to do the page render: ". number_format($fltRenderTime, 4, ".", "") ." seconds<br />";
@@ -359,6 +359,7 @@ class Application
 	 * Checks user authentication
 	 * 
 	 * Checks user authentication
+	 * This function is also responsible for setting $GLOBALS['bolDebugMode']
 	 *
 	 * @return		void
 	 * @method
@@ -521,6 +522,17 @@ class Application
 			// Set user as remote
 			$this->_arrUser['IsLocal'] = FALSE;
 		}
+		
+		// Work out if we are in Debug Mode or not
+		$bolDebugMode = (isset($_COOKIE['DebugMode']))? $_COOKIE['DebugMode'] : 0; 
+		if (isset($_GET['Debug']))
+		{
+			// Change the value of the DebugMode cookie
+			$bolDebugMode = ($bolDebugMode) ? 0 : 1;
+			setcookie("DebugMode", $bolDebugMode, 0, "/");
+		}
+		$GLOBALS['bolDebugMode'] = ($bolDebugMode && $this->UserHasPerm(PERMISSION_DEBUG)) ? TRUE : FALSE;
+		
 	}
 	
 	

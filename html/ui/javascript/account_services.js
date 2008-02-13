@@ -196,15 +196,14 @@ function VixenAccountServicesClass()
 
 		// Organise the data to send
 		var objObjects 					= {};
-		objObjects.Objects 				= {};
-		objObjects.Objects.Account 		= {};
-		objObjects.Objects.Account.Id 	= intAccountId;
+		objObjects.Account 				= {};
+		objObjects.Account.Id 			= intAccountId;
 		// This will be used so that we know where to rerender the list of services
-		objObjects.Objects.TableContainer 		= {};
-		objObjects.Objects.TableContainer.Id	= strTableContainerDivId;
+		objObjects.TableContainer 		= {};
+		objObjects.TableContainer.Id	= strTableContainerDivId;
 
 		// Call the AppTemplate method which renders just the AccountServices table
-		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountServicesTable", objObjects.Objects);
+		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountServicesTable", objObjects);
 	}
 }
 

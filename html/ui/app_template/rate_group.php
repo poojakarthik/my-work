@@ -228,6 +228,76 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
+	// View
+	//------------------------------------------------------------------------//
+	/**
+	 * View()
+	 *
+	 * Performs the logic for the View Rate Group popup
+	 * 
+	 * Performs the logic for the View Rate Group popup
+	 * 		DBO()->RateGroup->Id		Id of the RateGroup to view
+	 * 		DBO()->Rate->SearchString	This search string is used on the Rate.Name and Rate.Description properties
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function View()
+	{
+		// Check user authorization
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Load the RateGroup
+		DBO()->RateGroup->Load();
+		$intRateGroupId = DBO()->RateGroup->Id->Value;
+		
+		// Load the RecordType record associated with the RateGroup
+		DBO()->RecordType->Id = DBO()->RateGroup->RecordType->Value;
+		DBO()->RecordType->Load();
+		
+		$arrColumns = Array("Id", "Name", "Description");
+		DBL()->Rate->SetColumns($arrColumns);
+		if (DBO()->Rate->SearchString->IsSet)
+		{
+			// Retrieve only those Rates that satisfy the search criterea
+			$strSearchString = trim(DBO()->Rate->SearchString->Value);
+			if ($strSearchString == "")
+			{
+				// The Search string is empty and considered invalid  
+				Ajax()->AddCommand("Alert", "ERROR: Please specify a name or partial name to search");
+				return TRUE;
+			}
+			
+			// Escape any special characters
+			$strSearchString = str_replace("'", "\'", $strSearchString);
+			
+			$strLimitToRateGroup = "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId)";
+			$strWhere = "(Name LIKE '%$strSearchString%' OR Description LIKE '%$strSearchString%') AND $strLimitToRateGroup";
+			DBL()->Rate->Where->SetString($strWhere);
+		}
+		else
+		{
+			// A search string has not been specified
+			// Load the Rates belonging to the RateGroup (Limit to 11)
+			DBL()->Rate->Where->SetString("Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId)");
+			DBL()->Rate->OrderBy("Name");
+			DBL()->Rate->SetLimit(10);
+		}
+		DBL()->Rate->Load();
+		
+		// Retrieve the number of Rates belonging to the RateGroup
+		$selRateCount = new StatementSelect("Rate", Array("RateCount"=>"Count(Id)"), "Id IN (SELECT RATE FROM RateGroupRate WHERE RateGroup = $intRateGroupId)");
+		$selRateCount->Execute();
+		$arrRateCount = $selRateCount->Fetch();
+		DBO()->RateGroup->TotalRateCount = $arrRateCount['RateCount']; 
+		
+		$this->LoadPage('rate_group_view');
+		return TRUE;
+	}
+	
+	
+	//------------------------------------------------------------------------//
 	// _ValidateRateGroup
 	//------------------------------------------------------------------------//
 	/**
@@ -1041,8 +1111,11 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 * 
 	 * Performs the logic for the "Override Rate Group" popup
 	 *		This assumes the following data is passed:
-	 *			DBO()->Service->Id				Id of the service that the Override will take place on
+	 *			DBO()->Service->Id			Id of the service that the Override will take place on
 	 *			DBO()->RecordType->Id		Id of the RecordType which is being overridden
+	 *
+	 *		If the RateGroup override is successful then it will fire the EVENT_ON_SERVICE_RATE_GROUPS_UPDATE
+	 *		Event passing Service.Id and RecordType.Id
 	 *
 	 * @return		void
 	 * @method
@@ -1064,20 +1137,13 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Load the RecordType Record
 		DBO()->RecordType->Load();
 		
-		// Load the current Plan (if there is one)
-		DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
-		if (DBO()->RatePlan->Id->Value)
-		{
-			DBO()->RatePlan->Load();
-		}
-		
 		// Retrieve all RateGroups matching the RecordType
 		DBL()->RateGroup->RecordType = DBO()->RecordType->Id->Value;
 		DBL()->RateGroup->OrderBy("Name");
 		DBL()->RateGroup->Load();
 	
 		// Handle form submittion
-		if (SubmittedForm('RateGroupOverride', 'Apply Changes'))
+		if (SubmittedForm('RateGroupOverride', 'Apply Override'))
 		{
 			//DBO()->RateGroup->Id = DBO()->ServiceRateGroup->Selected->Value;
 			//DBO()->RateGroup->Load();
@@ -1184,20 +1250,20 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				// Set the StartDatetime to the Date supplied by the user (midnight)
 				$strStartTime = date("Y-m-d", $intStartDate) . " 00:00:00";
 			}
-			$strChangesNote .= "Start time: $strStartTime\n";				
+			$strChangesNote .= "Start time: ". date("H:i:s d/m/Y", strtotime($strStartTime)) ."\n";
 			
 			// Work out the EndDatetime
 			if (DBO()->RateGroup->IndefinateEnd->Value == 1)
 			{
 				// Set the EndDatetime to indefinate
 				$strEndTime = END_OF_TIME;
-				$strChangesNote .= "End time: Indefinate\n";				
+				$strChangesNote .= "End time: Indefinate\n";
 			}
 			else
 			{
 				// Set the EndDatetime to the Date supplied by the user (11:59:59 pm)
 				$strEndTime = date("Y-m-d", $intEndDate) . " 23:59:59";
-				$strChangesNote .= "End time: $strEndTime\n";				
+				$strChangesNote .= "End time: 23:59:59 ". date("d/m/Y", $intEndDate) . "\n";
 			}
 		
 			DBO()->ServiceRateGroup->Service		= DBO()->Service->Id->Value;
@@ -1222,19 +1288,18 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$strChangesNote = "An overriding RateGroup has been declared.  Its details are as follows:\n$strChangesNote";
 			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, DBO()->Service->Id->Value);
 			
-			// Fire the OnNewNote Event (Ajax()->FireOnNewNote(accountId, serviceId))
-						
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 			Ajax()->AddCommand("Alert", "The overriding RateGroup was successfully defined");
 
-			// Build event object
-			// The contents of this object should be declared in the doc block of this method
+			// Although we should fire an EVENT_ON_NEW_NOTE event, the page where you access this
+			// functionality does not list any notes, so it is not required at this stage
+
+			// Fire the EVENT_ON_SERVICE_RATE_GROUPS_UPDATE event
 			$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
-			Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
+			$arrEvent['RecordType']['Id'] = DBO()->RecordType->Id->Value;
+			Ajax()->FireEvent(EVENT_ON_SERVICE_RATE_GROUPS_UPDATE, $arrEvent);
 			
-			// Fire the EVENT_ON_SERVICE_PLAN_UPDATE Event (this constant hasn't been made yet)
-			//TODO! for now the EVENT_ON_SERVICE_UPDATE will suffice
 			return TRUE;
 		}
 		
@@ -2342,6 +2407,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			return TRUE;
 		}
 	}
+	
 }
 
 

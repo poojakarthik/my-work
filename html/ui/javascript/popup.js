@@ -169,7 +169,7 @@ function VixenPopupClass()
 		// on a single page, especially of different types
 		//  -think this is fixed, havent comprehensively tested though
 		
-		// Set the behaviour (modal/modeless/autohide)
+		// Set the behaviour (modal/non-modal/autohide)
 		switch (strModal)
 		{
 			case "modal":
@@ -229,10 +229,10 @@ function VixenPopupClass()
 				
                 break;
 			}
-			case "modeless":
+			case "nonmodal":
 			{
-				// flag this popup as being modeless (this should really be renamed to "nonmodal")
-				elmPopup.setAttribute("modeless", "modeless");
+				// flag this popup as being non-modal
+				elmPopup.setAttribute("nonmodal", "nonmodal");
 				
 				break;
 			}

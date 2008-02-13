@@ -18,7 +18,7 @@ if (DBO()->CurrentRatePlan->Id->Value && DBO()->FutureRatePlan->Id->Value)
 	$this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_BARE_DETAIL);
 	$this->Page->AddObject('ServicePlanDetails', COLUMN_TWO, HTML_CONTEXT_CURRENT_PLAN);
 	$this->Page->AddObject('ServicePlanDetails', COLUMN_THREE, HTML_CONTEXT_FUTURE_PLAN);
-	$this->Page->AddObject('ServiceRateGroupList', COLUMN_FOUR, HTML_CONTEXT_NORMAL_DETAIL);
+	$this->Page->AddObject('ServiceRateGroupList', COLUMN_FOUR, HTML_CONTEXT_NORMAL_DETAIL, "ServiceRateGroupListDiv");
 }
 elseif (DBO()->FutureRatePlan->Id->Value)
 {
@@ -28,7 +28,7 @@ elseif (DBO()->FutureRatePlan->Id->Value)
 	// Add each html object to the appropriate column
 	$this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_BARE_DETAIL);
 	$this->Page->AddObject('ServicePlanDetails', COLUMN_ONE, HTML_CONTEXT_FUTURE_PLAN);
-	$this->Page->AddObject('ServiceRateGroupList', COLUMN_ONE, HTML_CONTEXT_NORMAL_DETAIL);
+	$this->Page->AddObject('ServiceRateGroupList', COLUMN_ONE, HTML_CONTEXT_NORMAL_DETAIL, "ServiceRateGroupListDiv");
 }
 else
 {
@@ -38,7 +38,7 @@ else
 	// Add each html object to the appropriate column
 	$this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_BARE_DETAIL);
 	$this->Page->AddObject('ServicePlanDetails', COLUMN_ONE, HTML_CONTEXT_CURRENT_PLAN);
-	$this->Page->AddObject('ServiceRateGroupList', COLUMN_ONE, HTML_CONTEXT_NORMAL_DETAIL);
+	$this->Page->AddObject('ServiceRateGroupList', COLUMN_ONE, HTML_CONTEXT_NORMAL_DETAIL, "ServiceRateGroupListDiv");
 }
 
 
