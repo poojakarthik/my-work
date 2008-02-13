@@ -1,5 +1,7 @@
 <?php
 
+require_once("../../flex.require.php");
+
 $arrProcessType		= Array();
 $arrDependencies	= Array();
 //----------------------------------------------------------------------------//
