@@ -2,7 +2,7 @@
 
 ob_start();
 $strPath	= rtrim(trim($argv[1]), '/');
-echo "\nExporting to '$strPath'...\t\t\t";
+echo "\nExporting Flex to '$strPath'...\t\t\t";
 ob_flush();
 
 if(!file_exists($strPath))
