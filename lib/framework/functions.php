@@ -1715,7 +1715,7 @@ function GetVixenBase()
 	// Determin base dir
 	if (!$GLOBALS['**strVixenBasePath'])
 	{
-		if (defined(FLEX_BASE_PATH))
+		if (defined('FLEX_BASE_PATH'))
 		{
 			$GLOBALS['**strVixenBasePath'] = FLEX_BASE_PATH;
 		}
