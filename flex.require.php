@@ -26,9 +26,12 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+ 
+// Load flex.cfg.php for path constants
+$strPath	= dirname(__FILE__);
+require_once("$strPath/flex.cfg.php");
 
 // Load functions.php and call LoadFramework()
-$strPath	= dirname(__FILE__);
 require_once("$strPath/lib/framework/functions.php");
 LoadFramework();
 ?>
