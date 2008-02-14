@@ -9,7 +9,7 @@ $arrDependencies	= Array();
 //----------------------------------------------------------------------------//
 
 // Friendly Name (no spaces)
-$arrProcessType['Name']				= "Test1";
+$arrProcessType['Name']				= "Test2";
 
 // Command to execute
 $arrProcessType['Command']			= "php test_loop";
@@ -26,8 +26,8 @@ $arrProcessType['Debug']			= TRUE;
 // WaitMode		: 0 - Do not wait; -1 - Wait indefinitely; 1+ Wait for X seconds
 // AlertEmail	: (NULL) Email address to alert if this process fails
 
-//$arrDependencies['Test']			['WaitMode']
-//$arrDependencies['Test']			['AlertEmail']
+$arrDependencies['Test1']			['WaitMode']	= -1;
+$arrDependencies['Test1']			['AlertEmail']	= 'rich@voiptelsystems.com.au';
 
 
 //----------------------------------------------------------------------------//
@@ -39,7 +39,7 @@ $insPriority	= new StatementInsert("ProcessPriority");
 
 // Add ProcessType
 CliEcho("Adding ProcessType '{$arrProcessType['Name']}'...\t\t\t", FALSE);
-if ($selProcessType->Execute(Array('Name' => $strDependency)))
+if ($selProcessType->Execute(Array('Name' => $arrProcessType['Name'])))
 {
 	// Name already exists
 	CliEcho("[ FAILED ]");
@@ -62,7 +62,21 @@ if (count($arrDependencies))
 	foreach ($arrDependencies as $strDependency=>$arrDependency)
 	{
 		CliEcho("\t Linking to '$strDependency'...\t", FALSE);
-		if (!$selDependency->Execute(Array('Name' => $strDependency)))
+		if (!$selProcessType->Execute(Array('Name' => $strDependency)))
+		{
+			CliEcho("[ FAILED ]");
+			CliEcho("\t\t- Could not find ProcessType '$strDependency'");
+			continue;
+		}
+		
+		$arrRunning	= $selProcessType->Fetch();
+		
+		$arrPriority = Array();
+		$arrPriority['ProcessWaiting']	= $intProcessType;
+		$arrPriority['ProcessRunning']	= $arrRunning['Id'];
+		$arrPriority['WaitMode']		= $arrDependency['WaitMode'];
+		$arrPriority['AlertEmail']		= $arrDependency['AlertEmail'];
+		if ($insPriority->Execute($arrPriority) === FALSE)
 		{
 			CliEcho("[ FAILED ]");
 			CliEcho("\t\t- Could not link to ProcessType '$strDependency'");
