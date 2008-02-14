@@ -21,7 +21,8 @@
 
 // Load Framework and Application
 require_once("../../flex.require.php");
-$appProcess		= LoadApplication();
+$arrConfig	= LoadApplication();
+$appProcess	= new ApplicationProcess($arrConfig);
 
 // Run the Process
 $appProcess->CleanProcesses();
