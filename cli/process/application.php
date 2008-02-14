@@ -86,6 +86,7 @@
 		$arrColumns = Array();
 		$arrColumns['ProcessType']	= NULL;
 		$arrColumns['WaitDatetime']	= new MySQLFunction('NOW()');
+		$arrColumns['PID']			= NULL;
 		$insInstance	= new StatementInsert("Process", $arrColumns);
 		
 		$selProcess		= new StatementSelect("ProcessType", "*", "Name = <Name>");
@@ -96,6 +97,8 @@
 		$strSubject			= "Process $strProcessName failed to start for $strCustomer";
 		$strSubjectWaiting	= "Process $strProcessName is waiting to start for $strCustomer";
 		$strSubjectStarted	= "Process $strProcessName finished waiting for $strCustomer";
+		
+		$this->_intPID		= getmypid();
 		
 		// Select the Process
 		$selProcess->Execute(Array('Name' => $strProcessName));
@@ -123,6 +126,7 @@
 		$arrInstance = Array();
 		$arrInstance['ProcessType']		= $arrProcess['Id'];
 		$arrInstance['WaitDatetime']	= new MySQLFunction('NOW()');
+		$arrInstance['PID']				= $this->_intPID;
 		$arrInstance['Id']	= $insInstance->Execute($arrInstance);
 		
 		// Check Priorities
@@ -269,7 +273,7 @@
 		CliEcho("Searching for unfinished processes... ", FALSE);
 		
 		// Look for processes that might have failed
-		$selProcesses	= new StatementSelect("Process JOIN ProcessType ON Process.ProcessType = ProcessType.Id", "*", "EndDatetime IS NULL");
+		$selProcesses	= new StatementSelect("Process JOIN ProcessType ON Process.ProcessType = ProcessType.Id", "*, Process.Id AS Id", "EndDatetime IS NULL");
 		$intCount		= $selProcesses->Execute();
 		CliEcho("found $intCount");
 		while ($arrProcess = $selProcesses->Fetch())
