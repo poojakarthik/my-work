@@ -92,19 +92,19 @@
 		$selPriorities	= new StatementSelect("ProcessPriority JOIN ProcessType ON ProcessType.Id = ProcessPriority.ProcessRunning", "*", "ProcessWaiting = <Id>");
 		$selWaiting		= new StatementSelect("Process", "*", "ProcessType = <ProcessType> AND EndDatetime IS NULL");
 		
-		$strCustomer		= CUSTOMER_URL_NAME;
+		$strCustomer		= strtoupper(CUSTOMER_URL_NAME);
 		$strSubject			= "Process $strProcessName failed to start for $strCustomer";
 		$strSubjectWaiting	= "Process $strProcessName is waiting to start for $strCustomer";
 		$strSubjectStarted	= "Process $strProcessName finished waiting for $strCustomer";
 		
 		// Select the Process
-		$selProcess->Execute(Array('Name' => $selProcess));
+		$selProcess->Execute(Array('Name' => $strProcessName));
 		if (!$arrProcess = $selProcess->Fetch())
 		{
 			// Email, debug, and fail out
 			$strContent = "Cannot retrieve ProcessType data";
 			SendEmail(PROCESS_ALERT_EMAIL, $strSubject, $strContent, PROCESS_ALERT_FROM);
-			CliEcho("*** ERROR: There was an error initialising the process ***");
+			CliEcho("*** ERROR: $strContent ***");
 			return FALSE;
 		}
 		
@@ -114,7 +114,7 @@
 			// Email, debug, and fail out
 			$strContent = "Process is already running";
 			SendEmail(PROCESS_ALERT_EMAIL, $strSubject, $strContent, PROCESS_ALERT_FROM);
-			CliEcho("*** ERROR: The process is already running ***");
+			CliEcho("*** ERROR: $strContent ***");
 			return FALSE;
 		}
 		
