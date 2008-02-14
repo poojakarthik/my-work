@@ -245,7 +245,7 @@
 		@proc_close($ptrProcess);
 		
 		// End Process
-		$this->_EndProcess($arrInstance);
+		$this->_EndProcess($arrInstance, FALSE);
 		return TRUE;
 	}
 	
