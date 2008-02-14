@@ -180,9 +180,8 @@
 						$intCurrentTime	= time() - $intStartTime;
 						CliEcho("\033[{$intLength}D{$intCurrentTime}s", FALSE);
 					}
-					$strContent = "Prioritised Process '{$arrPriority['Name']}' has finished (Waited $intCurrentTime seconds)";
 					
-					if (!$intCount)
+					if ($intCount)
 					{
 						// Out of time - email and fail out
 						$strContent = "Prioritised Process '{$arrPriority['Name']}' is currently running (Waited {$arrPriority['WaitMode']} seconds)";
@@ -190,6 +189,10 @@
 						$arrProcess['Output']	= "*** ERROR: $strContent ***";
 						$this->_EndProcess($arrInstance);
 						return FALSE;
+					}
+					else
+					{
+						CliEcho("\nLock on '{$arrPriority['Name']}' resolved!");
 					}
 				}
 			}
