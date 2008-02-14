@@ -259,6 +259,8 @@ $GLOBALS['*arrConstant']	['Carrier']	[3]	['Constant']	= 'CARRIER_AAPT';
 $GLOBALS['*arrConstant']	['Carrier']	[3]	['Description']	= 'AAPT';
 $GLOBALS['*arrConstant']	['Carrier']	[4]	['Constant']	= 'CARRIER_ISEEK';
 $GLOBALS['*arrConstant']	['Carrier']	[4]	['Description']	= 'iSeek';
+$GLOBALS['*arrConstant']	['Carrier']	[5]	['Constant']	= 'CARRIER_UNITEL_VOICETALK';
+$GLOBALS['*arrConstant']	['Carrier']	[5]	['Description']	= 'Unitel (VoiceTalk)';
 $GLOBALS['*arrConstant']	['Carrier']	[10]['Constant']	= 'CARRIER_PAYMENT';
 $GLOBALS['*arrConstant']	['Carrier']	[10]['Description']	= 'Payment';
 */

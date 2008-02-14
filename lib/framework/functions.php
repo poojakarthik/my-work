@@ -479,6 +479,8 @@ function GetCarrierName($intCarrier)
 	{
 		case CARRIER_UNITEL:
 			return "Unitel";
+		case CARRIER_UNITEL_VOICETALK:
+			return "Unitel (VoiceTalk)";
 		case CARRIER_OPTUS:
 			return "Optus";
 		case CARRIER_AAPT:
@@ -1713,12 +1715,16 @@ function GetVixenBase()
 	// Determin base dir
 	if (!$GLOBALS['**strVixenBasePath'])
 	{
-		if (defined(VIXEN_BASE_PATH))
+		if (defined(FLEX_BASE_PATH))
 		{
-			$GLOBALS['**strVixenBasePath'] = VIXEN_BASE_PATH;
+			$GLOBALS['**strVixenBasePath'] = FLEX_BASE_PATH;
 		}
 		else
 		{
+			// DIE
+			echo "FLEX_BASE_PATH is not defined!\n";
+			die;
+			
 			// Interpret current dir
 			$arrPath = explode('/', getcwd());
 			$strVixenRoot	= "/";
