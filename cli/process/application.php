@@ -223,7 +223,7 @@
 		$arrBlank				= Array();
 		$arrInstance['Output']	= "";
 		stream_set_blocking($arrPipes[1], 0);
-		while (!feof($arrPipes[1]))
+		do
 		{
 			$arrProcess	= Array($arrPipes[1]);
 			if (stream_select($arrProcess, $arrBlank, $arrBlank, 0, 500000))
@@ -233,7 +233,9 @@
 				CliEcho($strOutput, FALSE);
 				$arrInstance['Output']	.= $strOutput;
 			}
+			$arrStatus	= proc_get_status($ptrProcess);
 		}
+		while ($arrStatus['running']);
 		pclose($arrPipes[0]);
 		pclose($arrPipes[1]);
 		pclose($arrPipes[2]);
