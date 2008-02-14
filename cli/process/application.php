@@ -109,6 +109,7 @@
 		}
 		
 		// Check to see if this is already running
+		$arrProcess['ProcessType']	= $arrProcess['Id'];
 		if ($selWaiting->Execute($arrProcess))
 		{
 			// Email, debug, and fail out
