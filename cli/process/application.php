@@ -212,14 +212,13 @@
 			return FALSE;
 		}
 		$arrProcessStatus = proc_get_status($ptrProcess);
-		Debug($arrProcessStatus);
 		
 		// Update DB
 		$arrCols = Array();
 		$arrCols['StartDatetime']		= new MySQLFunction("NOW()");
 		$arrCols['PID']					= NULL;
 		$arrInstance['StartDatetime']	= new MySQLFunction("NOW()");
-		$arrInstance['PID']				= $arrProcessStatus['pid']+1;
+		$arrInstance['PID']				= $arrProcessStatus['pid'];
 		$ubiStartDatetime	= new StatementUpdateById("Process", $arrCols);
 		$ubiStartDatetime->Execute($arrInstance);
 		
@@ -240,7 +239,6 @@
 			$arrStatus	= proc_get_status($ptrProcess);
 		}
 		while ($arrStatus['running']);
-		Debug(proc_get_status($ptrProcess));
 		pclose($arrPipes[0]);
 		pclose($arrPipes[1]);
 		pclose($arrPipes[2]);
