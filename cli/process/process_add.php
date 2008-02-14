@@ -15,7 +15,7 @@ $arrProcessType['Name']				= "Test2";
 $arrProcessType['Command']			= "php test_loop";
 
 // Command's Working Directory
-$arrProcessType['WorkingDirectory']	= "/data/www/rich.yellowbilling.com.au/cli/process/";
+$arrProcessType['WorkingDirectory']	= FLEX_BASE_PATH."cli/process/";
 
 // Whether to save the process's Output
 $arrProcessType['Debug']			= TRUE;
