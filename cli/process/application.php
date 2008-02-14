@@ -141,22 +141,25 @@
 				}
 				elseif ($arrPriority['WaitMode'] < 0)
 				{
-					// Wait indefinitely - email alert
-					$intStartTime	= time();
-					$intCurrentTime	= 0;
-					$strContent		= "Prioritised Process '{$arrPriority['Name']}' is currently running";
-					SendEmail(PROCESS_ALERT_EMAIL, $strSubjectWaiting, $strContent, PROCESS_ALERT_FROM);
-					CliEcho("Waiting for '{$arrPriority['Name']}' to finish... ", FALSE);
-					while ($selWaiting->Execute(Array('ProcessType' => $arrPriority['ProcessRunning'])))
+					if ($selWaiting->Execute(Array('ProcessType' => $arrPriority['ProcessRunning'])))
 					{
-						sleep(5);
-						$intLength		= strlen($intCurrentTime)+1;
-						$intCurrentTime	= time() - $intStartTime;
-						CliEcho("\033[{$intLength}D{$intCurrentTime}s", FALSE);
+						// Wait indefinitely - email alert
+						$intStartTime	= time();
+						$intCurrentTime	= 0;
+						$strContent		= "Prioritised Process '{$arrPriority['Name']}' is currently running";
+						SendEmail(PROCESS_ALERT_EMAIL, $strSubjectWaiting, $strContent, PROCESS_ALERT_FROM);
+						CliEcho("Waiting for '{$arrPriority['Name']}' to finish... ", FALSE);
+						while ($selWaiting->Execute(Array('ProcessType' => $arrPriority['ProcessRunning'])))
+						{
+							sleep(5);
+							$intLength		= strlen($intCurrentTime)+1;
+							$intCurrentTime	= time() - $intStartTime;
+							CliEcho("\033[{$intLength}D{$intCurrentTime}s", FALSE);
+						}
+						$strContent = "Prioritised Process '{$arrPriority['Name']}' has finished (Waited $intCurrentTime seconds)";
+						SendEmail(PROCESS_ALERT_EMAIL, $strSubjectStarted, $strContent, PROCESS_ALERT_FROM);
+						CliEcho("\nLock on '{$arrPriority['Name']}' resolved!");
 					}
-					$strContent = "Prioritised Process '{$arrPriority['Name']}' has finished (Waited $intCurrentTime seconds)";
-					SendEmail(PROCESS_ALERT_EMAIL, $strSubjectStarted, $strContent, PROCESS_ALERT_FROM);
-					CliEcho("\nLock on '{$arrPriority['Name']}' resolved!");
 				}
 				else
 				{
@@ -209,6 +212,7 @@
 			return FALSE;
 		}
 		$arrProcessStatus = proc_get_status($ptrProcess);
+		Debug($arrProcessStatus);
 		
 		// Update DB
 		$arrCols = Array();
@@ -236,6 +240,7 @@
 			$arrStatus	= proc_get_status($ptrProcess);
 		}
 		while ($arrStatus['running']);
+		Debug(proc_get_status($ptrProcess));
 		pclose($arrPipes[0]);
 		pclose($arrPipes[1]);
 		pclose($arrPipes[2]);
