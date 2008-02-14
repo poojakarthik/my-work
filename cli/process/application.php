@@ -140,7 +140,7 @@
 					// Do not wait - fail out
 					$strContent = "Prioritised Process '{$arrPriority['Name']}' is currently running";
 					SendEmail(PROCESS_ALERT_EMAIL, $strSubject, $strContent, PROCESS_ALERT_FROM);
-					$arrProcess['Output']	= "*** ERROR: $strContent ***";
+					$arrInstance['Output']	= "*** ERROR: $strContent ***";
 					$this->_EndProcess($arrInstance);
 					return FALSE;
 				}
@@ -186,7 +186,7 @@
 						// Out of time - email and fail out
 						$strContent = "Prioritised Process '{$arrPriority['Name']}' is currently running (Waited {$arrPriority['WaitMode']} seconds)";
 						SendEmail(PROCESS_ALERT_EMAIL, $strSubject, $strContent, PROCESS_ALERT_FROM);
-						$arrProcess['Output']	= "*** ERROR: $strContent ***";
+						$arrInstance['Output']	= "*** ERROR: $strContent ***";
 						$this->_EndProcess($arrInstance);
 						return FALSE;
 					}
@@ -207,7 +207,7 @@
 			// Could not change to Working Directory
 			$strContent = "Could not change to working directory '{$arrProcess['WorkingDirectory']}'";
 			SendEmail(PROCESS_ALERT_EMAIL, $strSubject, $strContent, PROCESS_ALERT_FROM);
-			$arrProcess['Output']	= "*** ERROR: $strContent ***";
+			$arrInstance['Output']	= "*** ERROR: $strContent ***";
 			$this->_EndProcess($arrInstance);
 			return FALSE;
 		}
@@ -222,7 +222,7 @@
 			// Could not start process
 			$strContent = "Could not execute command '{$arrProcess['Command']}'";
 			SendEmail(PROCESS_ALERT_EMAIL, $strSubject, $strContent, PROCESS_ALERT_FROM);
-			$arrProcess['Output']	= "*** ERROR: $strContent ***";
+			$arrInstance['Output']	= "*** ERROR: $strContent ***";
 			$this->_EndProcess($arrInstance);
 			return FALSE;
 		}
