@@ -12,7 +12,10 @@ if(!file_exists($strPath))
 }
 
 // Remove existing Flex files
-shell_exec("rm -Rf $strPath/*");
+shell_exec("rm -Rf $strPath/lib");
+shell_exec("rm -Rf $strPath/cli");
+shell_exec("rm -Rf $strPath/html");
+shell_exec("rm -Rf $strPath/flex.require.php");
 
 // get latest version
 shell_exec("svn export --non-interactive --force --no-auth-cache --username export --password export http://192.168.2.13/svn_vixen $strPath");
