@@ -295,7 +295,7 @@
 			// The script appears to have finished, so set the EndDatetime
 			CliEcho("[ FINALISED ]");
 			$arrProcess['Output']	= "*** CLEANUP: Process was lost and finalised by Process::CleanProcesses() ***";
-			$this->_EndProcess($arrProcess);
+			$this->_EndProcess($arrProcess, FALSE);
 		}
 	}
 	
