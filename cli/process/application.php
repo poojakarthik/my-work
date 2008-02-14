@@ -170,10 +170,17 @@
 				{
 					// Wait for specified time
 					$intMaxTime = time() + (int)$arrPriority['WaitMode'];
-					while (time() < $intMaxTime && $intCount = $selWaiting->Execute(Array('ProcessType' => $arrPriority['ProcessRunning'])))
+					CliEcho("Waiting for '{$arrPriority['Name']}' to finish... ", FALSE);
+					$intStartTime	= time();
+					$intCurrentTime	= 0;
+					while ((time() < $intMaxTime) && ($intCount = $selWaiting->Execute(Array('ProcessType' => $arrPriority['ProcessRunning']))))
 					{
 						sleep(5);
+						$intLength		= strlen($intCurrentTime)+1;
+						$intCurrentTime	= time() - $intStartTime;
+						CliEcho("\033[{$intLength}D{$intCurrentTime}s", FALSE);
 					}
+					$strContent = "Prioritised Process '{$arrPriority['Name']}' has finished (Waited $intCurrentTime seconds)";
 					
 					if (!$intCount)
 					{
