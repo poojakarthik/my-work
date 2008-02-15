@@ -59,6 +59,7 @@ CliEcho("[ DIRECTORY SETUP ]\n");
 CliEcho(" * Creating viXen directories for '$strCustomer'...");
 chdir(FILES_BASE_PATH);
 CreateDir($arrDirectory);
+chdir(dirname(__FILE__));
 CliEcho(" # Directory Setup complete!");
 
 die;
