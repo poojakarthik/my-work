@@ -276,6 +276,16 @@ class AppTemplatePayment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
 		{
+			// Reversing Payments can not be done while billing is in progress
+			if (IsInvoicing())
+			{
+				$strErrorMsg =  "Billing is in progress.  Payments cannot be reversed while this is happening.  ".
+								"Please try again in a couple of hours.  If this problem persists, please ".
+								"notify your system administrator";
+				Ajax()->AddCommand("Alert", $strErrorMsg);
+				return TRUE;
+			}
+			
 			$strNoteMsg = "";
 			
 			// Make sure the payment can be retrieved from the database

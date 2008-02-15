@@ -1,7 +1,7 @@
 var FALSE = false;
 var TRUE = true;
 var DEBUG_MODE = FALSE;
-var VIXEN_APPLICATION_NAME = "TelcoBlue Customer System";
+var VIXEN_APPLICATION_NAME = "Yellow Billing Customer System";
 
 //----------------------------------------------------------------------------//
 // VixenRootClass

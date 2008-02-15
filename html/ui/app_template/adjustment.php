@@ -375,6 +375,16 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
 		{
+			// Deleting Adjustments can not be done while billing is in progress
+			if (IsInvoicing())
+			{
+				$strErrorMsg =  "Billing is in progress.  Adjustments cannot be deleted while this is happening.  ".
+								"Please try again in a couple of hours.  If this problem persists, please ".
+								"notify your system administrator";
+				Ajax()->AddCommand("Alert", $strErrorMsg);
+				return TRUE;
+			}
+			
 			$strNoteMsg = "";
 			$strSystemNoteMsg = "";
 		
@@ -481,6 +491,16 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
 		{
+			// Deleting Recurring Adjustments can not be done while billing is in progress
+			if (IsInvoicing())
+			{
+				$strErrorMsg =  "Billing is in progress.  Adjustments cannot be deleted while this is happening.  ".
+								"Please try again in a couple of hours.  If this problem persists, please ".
+								"notify your system administrator";
+				Ajax()->AddCommand("Alert", $strErrorMsg);
+				return TRUE;
+			}
+			
 			$strNoteMsg = "";
 			$strSystemNoteMsg = "";
 			

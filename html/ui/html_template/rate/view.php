@@ -107,12 +107,39 @@ class HtmlTemplateRateView extends HtmlTemplate
 	{
 		// Work out what days the rate applies to
 		$arrWeekdays = Array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+		
+		$bolAvailableEveryDay = TRUE;
 		foreach ($arrWeekdays as $strDay)
 		{
 			if (DBO()->Rate->{$strDay}->Value)
 			{
 				$strAvailability .= DBO()->Rate->{$strDay}->FormattedValue() . "&nbsp;&nbsp;";
 			}
+			else
+			{
+				$bolAvailableEveryDay = FALSE;
+			}
+		}
+		
+		if ($bolAvailableEveryDay)
+		{
+			$strAvailability = "Every Day";
+		}
+		
+		if (DBO()->Rate->StartTime->Value == "00:00:00" && DBO()->Rate->EndTime->Value == "23:59:59")
+		{
+			if ($bolAvailableEveryDay)
+			{
+				$strAvailability = "All Day, Every Day";
+			}
+			else
+			{
+				DBO()->Rate->Times = "All Day";
+			}
+		}
+		else
+		{
+			DBO()->Rate->Times = DBO()->Rate->StartTime->Value ." - ". DBO()->Rate->EndTime->Value;
 		}
 		
 		DBO()->Rate->Name->RenderOutput();
@@ -128,8 +155,10 @@ class HtmlTemplateRateView extends HtmlTemplate
 		DBO()->Rate->Fleet->RenderOutput();
 		DBO()->Rate->AvailableDays = $strAvailability;
 		DBO()->Rate->AvailableDays->RenderOutput();
-		DBO()->Rate->Times = DBO()->Rate->StartTime->Value ." - ". DBO()->Rate->EndTime->Value;
-		DBO()->Rate->Times->RenderOutput(); 
+		if (DBO()->Rate->Times->IsSet)
+		{
+			DBO()->Rate->Times->RenderOutput();
+		} 
 		
 
 		$bolPassThrough = (DBO()->Rate->PassThrough->Value) ? TRUE : FALSE;

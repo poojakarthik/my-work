@@ -185,16 +185,18 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		}
 		
 		// load cost centre details
-		DBL()->CostCentre->Account = DBO()->Service->Account->Value;
+		$strWhere = "Account IN (0, ". DBO()->Service->Account->Value .")";
+		DBL()->CostCentre->Where->SetString($strWhere);
+		DBL()->CostCentre->OrderBy("Name");
 		DBL()->CostCentre->Load();
 	
 		// Draw a CostCentre combo box, but only if there have been cost centers defined for this Account
 		if (DBL()->CostCentre->RecordCount() > 0)
 		{
 			echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre:</div>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select name='Service.CostCentre' >\n";
+			echo "      <select name='Service.CostCentre' style='width:155px'>\n";
 			$strSelected = (DBO()->Service->CostCentre->Value == NULL) ? "selected='selected'" : "";
 			echo "<option value='0' $strSelected>&nbsp;</option>";
 			

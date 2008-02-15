@@ -98,7 +98,6 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='WideContent'>\n";
-		echo "<h2 class='Invoice'>Invoices and Payments</h2>\n";
 		
 		// The list of invoices and payments will have to be ordered by the date they were created
 		// Make a single array of the data that you want to display and then sort it
@@ -154,7 +153,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			if ($dboPayment->Account->Value === NULL)
 			{
 				// Payment has been applied to the account group that this account belongs to
-				$arrRecord['Credit'] = "<span class='DefaultOutputSpan Default' style='float:left;'>(Group Payment)</span><span style='float:right;'>" . $dboPayment->Amount->AsValue() . "</span>";
+				$arrRecord['Credit'] = "<span style='float:left;'>(Group Payment)</span><span style='float:right;'>" . $dboPayment->Amount->AsValue() . "</span>";
 			}
 			else
 			{
@@ -201,7 +200,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 					// The pdf exists
 					// Build "download invoice pdf" link
 					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth);
-					$strInvoicePdfLabel	= "<span class='DefaultOutputSpan Default'><a href='$strInvoicePdfHref'><img src='img/template/pdf.gif' title='Download PDF Invoice' /></a></span>";
+					$strInvoicePdfLabel	= "<span><a href='$strInvoicePdfHref'><img src='img/template/pdf.gif' title='Download PDF Invoice' /></a></span>";
 				}
 				else
 				{

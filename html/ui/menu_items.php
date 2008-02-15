@@ -66,6 +66,22 @@ class MenuItems
 	 * @property
 	 */
 	public $strLabel;
+	
+	//------------------------------------------------------------------------//
+	// strContextMenuLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * strContextMenuLabel
+	 *
+	 * Stores the accompanying label for use with the ContextMenu
+	 *
+	 * Stores the accompanying label for use with the ContextMenu
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 */
+	public $strContextMenuLabel;
 
 	//------------------------------------------------------------------------//
 	// ViewServiceRatePlan
@@ -85,6 +101,7 @@ class MenuItems
 	 */
 	function ViewServiceRatePlan($intId)
 	{
+		$this->strContextMenuLabel = "View Plan";
 		return "flex.php/Service/ViewPlan/?Service.Id=$intId";
 	}
 
@@ -107,6 +124,7 @@ class MenuItems
 	function ViewCustomerGroup($intId)
 	{
 		$this->strLabel	= "Customer Group";
+		$this->strContextMenuLabel = "";
 		return "flex.php/CustomerGroup/View/?CustomerGroup.Id=$intId";
 	}
 	
@@ -127,6 +145,7 @@ class MenuItems
 	function ViewAllCustomerGroups()
 	{
 		$this->strLabel	= "Customer Groups";
+		$this->strContextMenuLabel = "";
 		return "flex.php/CustomerGroup/ViewAll/";
 	}
 
@@ -147,6 +166,7 @@ class MenuItems
 	function AddCustomerGroup()
 	{
 		$this->strLabel	= "Add Customer Group";
+		$this->strContextMenuLabel = "";
 		return "flex.php/CustomerGroup/Add/";
 	}
 
@@ -169,6 +189,7 @@ class MenuItems
 	function EmployeeConsole()
 	{
 		$this->strLabel	= "Console";
+		$this->strContextMenuLabel = "";
 		return "console.php";
 	}
 	
@@ -190,6 +211,7 @@ class MenuItems
 	function AddCustomer()
 	{
 		$this->strLabel	= "Add Customer";
+		$this->strContextMenuLabel = "";
 		return "account_add.php";
 	}
 	
@@ -211,6 +233,7 @@ class MenuItems
 	function FindCustomer()
 	{
 		$this->strLabel	= "Find Customer";
+		$this->strContextMenuLabel = "";
 		return "contact_verify.php";
 	}
 	
@@ -234,6 +257,7 @@ class MenuItems
 	function AddServices($intAccountId)
 	{
 		$this->strLabel	= "Add Services";
+		$this->strContextMenuLabel = "";
 		return "service_addbulk.php?Account=$intAccountId";
 	}
 
@@ -257,6 +281,7 @@ class MenuItems
 	function EditContact($intId)
 	{
 		$this->strLabel	= "contact: $intId";
+		$this->strContextMenuLabel = "";
 		return "contact_edit.php?Id=$intId";
 	}
 
@@ -279,6 +304,7 @@ class MenuItems
 	function ExportInvoiceAsCSV($intInvoiceId)
 	{
 		$this->strLabel	= "";
+		$this->strContextMenuLabel = "";
 		return "flex.php/Invoice/ExportAsCSV/?Invoice.Id=$intInvoiceId";
 	}
 	
@@ -299,6 +325,7 @@ class MenuItems
 	function ViewAllConstants()
 	{
 		$this->strLabel	= "Constants Management";
+		$this->strContextMenuLabel = "";
 		return "flex.php/Config/ManageConstants/";
 	}
 	
@@ -319,6 +346,7 @@ class MenuItems
 	function SystemSettingsMenu()
 	{
 		$this->strLabel	= "System Settings";
+		$this->strContextMenuLabel = "";
 		return "flex.php/Config/SystemSettingsMenu/";
 	}
 
@@ -343,6 +371,7 @@ class MenuItems
 	function AddContact($intAccountId)
 	{
 		$this->strLabel	= "Add Contact";
+		$this->strContextMenuLabel = "";
 		return "contact_add.php?Account=$intAccountId";
 	}
 	
@@ -366,6 +395,7 @@ class MenuItems
 	function ChangePaymentMethod($intAccountId)
 	{
 		$this->strLabel	= "Change Payment Method";
+		$this->strContextMenuLabel = "";
 		return "account_payment.php?Id=$intAccountId";
 	}
 	
@@ -389,6 +419,7 @@ class MenuItems
 	function ViewCostCentres($intAccountId)
 	{
 		$this->strLabel	= "Cost Centres";
+		$this->strContextMenuLabel = "";
 		return "costcentre_list.php?Account=$intAccountId";
 	}
 	
@@ -412,6 +443,8 @@ class MenuItems
 	 */
 	function ViewRate($intRateId, $bolModal=TRUE)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['Rate']['Id'] = $intRateId;
 		
@@ -442,6 +475,8 @@ class MenuItems
 	 */
 	function OverrideRateGroup($intServiceId, $intRecordTypeId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['Service']['Id']	= $intServiceId;
 		$arrData['Objects']['RecordType']['Id']	= $intRecordTypeId;
@@ -472,6 +507,8 @@ class MenuItems
 	 */
 	function ViewRateGroup($intRateGroupId, $bolModal=TRUE)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['RateGroup']['Id'] = $intRateGroupId;
 		
@@ -501,6 +538,8 @@ class MenuItems
 	 */
 	function AddConfigConstant($intConstantGroupId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['ConfigConstantGroup']['Id'] = $intConstantGroupId;
 		
@@ -528,6 +567,8 @@ class MenuItems
 	 */
 	function EditConfigConstant($intConstantId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['ConfigConstant']['Id'] = $intConstantId;
 		
@@ -557,6 +598,8 @@ class MenuItems
 	 */
 	function EditService($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['Service']['Id'] = $intId;
 		
@@ -585,6 +628,8 @@ class MenuItems
 	 */
 	function AddService($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
@@ -613,6 +658,8 @@ class MenuItems
 	 */
 	function ImportRateGroup($intRecordTypeId, $bolIsFleet)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['RecordType']['Id']		= $intRecordTypeId;
 		$arrData['Objects']['RateGroup']['Fleet']	= $bolIsFleet;
@@ -643,7 +690,8 @@ class MenuItems
 	 */
 	function ChangePlan($intId)
 	{
-		//$this->strLabel	= "rates list";
+		$this->strContextMenuLabel = "";
+		
 		
 		// Setup data to send
 		$arrData['Objects']['Service']['Id'] = $intId;
@@ -673,6 +721,8 @@ class MenuItems
 	 */
 	function ViewContact($intContactId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "Contact: $intContactId";
 		return "contact_view.php?Id=$intContactId";
 	}
@@ -696,6 +746,8 @@ class MenuItems
 	 */
 	function ListContacts($intAccountId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intAccountId;
 		
@@ -727,6 +779,8 @@ class MenuItems
 	 */
 	function ViewService($intId, $strFNN=NULL)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "Service";//: $strFNN";
 		return "flex.php/Service/View/?Service.Id=$intId";
 	}
@@ -750,6 +804,8 @@ class MenuItems
 	 */
 	function InvoicesAndPayments($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "Invoices and Payments";
 
 		return "flex.php/Account/InvoicesAndPayments/?Account.Id=$intId";
@@ -774,6 +830,8 @@ class MenuItems
 	 */
 	function AccountOverview($intAccountId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "Account";
 
 		return "flex.php/Account/Overview/?Account.Id=$intAccountId";
@@ -798,6 +856,7 @@ class MenuItems
 	 */
 	function EditEmployee($intId)
 	{
+		$this->strContextMenuLabel = "";
 		
 		$this->strLabel	= "edit emp: $intId";
 		
@@ -835,6 +894,8 @@ class MenuItems
 	 */
 	function AddRatePlan($intBasePlanId = NULL, $strCallingPageHref = NULL)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "Add Plan";
 	
 		// Setup data to send as GET variables
@@ -880,6 +941,8 @@ class MenuItems
 	 */
 	function EditRatePlan($intPlanId, $strCallingPageHref = NULL)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "Edit Plan";
 	
 		// Setup data to send as GET variables
@@ -910,6 +973,8 @@ class MenuItems
 	 */
 	function AvailablePlans($intServiceType = 0)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "Available Plans";
 		
 		// Set up the filter if intServiceType was passed
@@ -936,6 +1001,8 @@ class MenuItems
 	 */
 	function ViewPlan($intRatePlanId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "Plan Details";
 		
 		return "rates_plan_summary.php?Id=$intRatePlanId";
@@ -960,6 +1027,8 @@ class MenuItems
 	 */
 	function AddAssociatedAccount($intAccountId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		return "account_add.php?Associated=$intAccountId";
 	}
 
@@ -984,6 +1053,8 @@ class MenuItems
 	 */
 	function ViewInvoicePDF($intAccount, $intYear, $intMonth)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "pdf acct: $intAccount, $intMonth/$intYear";
 		return "invoice_pdf.php?Account=$intAccount&Year=$intYear&Month=$intMonth";
 	}
@@ -1007,6 +1078,8 @@ class MenuItems
 	 */
 	function ViewInvoice($intInvoice)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "inv: $intInvoice";
 		return "invoice_view.php?Invoice=$intInvoice";
 	}
@@ -1030,6 +1103,8 @@ class MenuItems
 	 */
 	function ViewAccountNotes($intAccountId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "view account notes";
 		
 		// Setup data to send
@@ -1042,29 +1117,6 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"large\", \"Account Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
 
-	//------------------------------------------------------------------------//
-	// InvoiceAndPayments
-	//------------------------------------------------------------------------//
-	/**
-	 * InvoiceAndPayments()
-	 *
-	 * Compiles the Href to be executed when the InvoiceAndPayments menu item is clicked
-	 *
-	 * Compiles the Href to be executed when the InvoiceAndPayments menu item is clicked
-	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
-	 * @param	int		$intId		id of the account to view
-	 							
-	 *
-	 * @return	string				Href to be executed when the InvoiceAndPayments menu item is clicked
-	 *
-	 * @method
-	 */
-	//function InvoiceAndPayments($intId)
-	//{
-	//	//$this->strLabel	= "acc: $intId";
-	//	return "flex.php/Account/InvoicesAndPayments/?Account.Id=$intId";
-	//}
 
 	//------------------------------------------------------------------------//
 	// ViewServiceDetails
@@ -1086,6 +1138,8 @@ class MenuItems
 	 */
 	function ViewServiceDetails($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "acc: $intId";
 		return "flex.php/Service/View/?Service.Id=$intId";
 	}
@@ -1105,13 +1159,12 @@ class MenuItems
 	 *
 	 * @return	string				action to be executed when the ViewUnbilledCharges menu item is clicked
 	 *
-	 * Example URL
-	 * http://localhost/ross/vixen/intranet_app/service_unbilled.php?Id=1
-	 *
 	 * @method
 	 */
 	function ViewUnbilledCharges($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "view unbilled charges";
 		return "service_unbilled.php?Id=$intId";
 	}
@@ -1131,13 +1184,12 @@ class MenuItems
 	 *
 	 * @return	string				action to be executed when the ChangeOfLessee menu item is clicked
 	 *
-	 * Example URL
-	 * http://localhost/ross/vixen/intranet_app/service_lessee.php?Service=1
-	 *
 	 * @method
 	 */
 	function ChangeOfLessee($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "change of lessee";
 		return "service_lessee.php?Service=$intId";
 	}
@@ -1161,6 +1213,8 @@ class MenuItems
 	 */
 	function ViewServiceNotes($intId, $strNoteType = NULL)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "view service notes";
 		
 		// Setup data to send
@@ -1192,6 +1246,8 @@ class MenuItems
 	 */
 	function ViewContactNotes($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "view contact notes";
 		
 		// Setup data to send
@@ -1223,6 +1279,8 @@ class MenuItems
 	 */
 	function AddContactNote($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "Add Contact Note";
 		
 		// Setup data to send
@@ -1253,6 +1311,8 @@ class MenuItems
 	 */
 	function AddAccountNote($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "Add Account Note";
 		
 		// Setup data to send
@@ -1283,6 +1343,8 @@ class MenuItems
 	 */
 	function AddServiceNote($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "Add Service Note";
 		
 		// Setup data to send
@@ -1314,6 +1376,8 @@ class MenuItems
 	 */
 	function EmailPDFInvoice($intId, $intYear, $intMonth)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "email pdf invoice";
 		
 		// Setup data to send
@@ -1324,39 +1388,9 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmailPDFInvoicePopupId\", \"medium\", \"Email PDF Invoice\", \"Invoice\", \"EmailPDFInvoice\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmailPDFInvoicePopupId\", \"medium\", \"Email Invoice PDF\", \"Invoice\", \"EmailPDFInvoice\", $strJsonCode)";
 	}
 	
-	//------------------------------------------------------------------------//
-	// RatesList
-	//------------------------------------------------------------------------//
-	/**
-	 * RatesList()
-	 *
-	 * Compiles the javascript to be executed when the RatesList menu item is clicked
-	 *
-	 * Compiles the javascript to be executed when the RatesList menu item is clicked
-	 * 
-	 * @param	int		$intId		id of the RatePlan
-	 *
-	 * @return	string				action to be executed when the RatesList menu item is clicked
-	 *
-	 * @method
-	 */
-	function RatesList($intId)
-	{
-		$this->strLabel	= "rates list";
-		
-		// Setup data to send
-		$arrData['Objects']['RatePlan']['Id'] = $intId;
-		
-		// Convert to JSON notation
-		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RatesListPopupId\", \"large\", null, \"Plan\", \"RateList\", $strJsonCode)";
-	}
-	
-
 	//------------------------------------------------------------------------//
 	// AddAdjustment
 	//------------------------------------------------------------------------//
@@ -1377,6 +1411,8 @@ class MenuItems
 	 */
 	function AddAdjustment($intAccountId, $intServiceId=NULL)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "add adjustment";
 		
 		// Setup data to send
@@ -1409,6 +1445,8 @@ class MenuItems
 	 */
 	function AddRecurringAdjustment($intAccountId, $intServiceId=NULL)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "add recurring adjustment";
 		
 		// Setup data to send
@@ -1441,6 +1479,8 @@ class MenuItems
 	 */
 	function MakePayment($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "make payment";
 		
 		// Setup data to send
@@ -1471,6 +1511,8 @@ class MenuItems
 	 */
 	function EditAccount($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel	= "edit account";
 		
 		// Setup data to send
@@ -1501,6 +1543,8 @@ class MenuItems
 	 */
 	function ListServices($intId)
 	{	
+		$this->strContextMenuLabel = "";
+		
 		/*  The Old Way of open up the list of services in a popup.  Retain this as it will be eventually used again
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
@@ -1610,10 +1654,10 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
-	// AddProvisioning
+	// Provisioning
 	//------------------------------------------------------------------------//
 	/**
-	 * AddProvisioning()
+	 * Provisioning()
 	 *
 	 * Compiles the Href to be executed when the AddProvisioning menu item is clicked
 	 *
@@ -1626,6 +1670,8 @@ class MenuItems
 	 */
 	function Provisioning($intServiceId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "AddProvisioning";
 		return "service_address.php?Service=$intServiceId";
 	}	
@@ -1647,6 +1693,8 @@ class MenuItems
 	 */
 	function KnowledgeBase()
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "Knowledge Base";
 		return "flex.php/KnowledgeBase/ListArticles/";
 	}	
@@ -1670,6 +1718,8 @@ class MenuItems
 	 */
 	function ViewKnowledgeBaseArticle($intId)
 	{
+		$this->strContextMenuLabel = "";
+		
 		$this->strLabel = "Article";
 		return "flex.php/KnowledgeBase/ViewArticle/?KnowledgeBase.Id=$intId";
 	}

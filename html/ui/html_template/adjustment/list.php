@@ -106,7 +106,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		if ($bolHasAdminPerm)
 		{
 			// User has admin permisions and can therefore delete an adjustment
-			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;","Amount", "&nbsp;");
+			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;","Amount ($)", "&nbsp;");
 			Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "38%", "10%");
 			Table()->AdjustmentTable->SetAlignment("left", "left", "left", "right", "center");
 		}

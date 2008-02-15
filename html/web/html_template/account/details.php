@@ -51,9 +51,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		// Load all java script specific to the page here
-		$this->LoadJavascript("highlight");
 	}
 	
 	//------------------------------------------------------------------------//

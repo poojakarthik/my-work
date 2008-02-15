@@ -104,14 +104,7 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 		$strHtmlCode .= "<div id='BreadCrumbMenu'>\n";
 		foreach (DBO()->BreadCrumb AS $objProperty)
 		{
-			//$strHtmlCode .= "<a href ='".$objProperty->Value."' style='color:blue; text-decoration: none;'>".$objProperty->Label."</a> &gt; ";
 			$strHtmlCode .= "<a href='".$objProperty->Value."'>".$objProperty->Label."</a> &gt; ";
-		}
-		
-		// Remove the last 6 chars from html code, if it is equal to " &gt; "
-		if (substr($strHtmlCode, -6) == " &gt; ")
-		{
-			$strHtmlCode = substr($strHtmlCode, 0, -6);
 		}
 		
 		// Add the current page as a breadcrumb
@@ -119,7 +112,13 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 		if ($mixCurrentPage !== FALSE)
 		{
 			// the current page has been defined.  Attach it to the bread crumb trail
-			$strHtmlCode .= " &gt; $mixCurrentPage";
+			$strHtmlCode .= $mixCurrentPage;
+		}
+		
+		// Remove the last 6 chars from html code, if it is equal to " &gt; "
+		if (substr($strHtmlCode, -6) == " &gt; ")
+		{
+			$strHtmlCode = substr($strHtmlCode, 0, -6);
 		}
 		
 		$strHtmlCode .= "\n</div>\n";

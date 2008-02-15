@@ -19,7 +19,7 @@
 
 ?>
 
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>TelcoBlue.com.au Systems Login</title>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Flex Systems Login</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <base href='<?php echo $strBaseDir ?>'/>
 <link rel='stylesheet' type='text/css' href='css.php' />
@@ -35,8 +35,8 @@
 	<div class="pageContainer">
 	
 		<div id="Header" class="sectionContainer">
-			<div id="Logo" class="Left sectionContent">
-				<img src="img/header.jpg" width="597" height="95" />
+			<div id="Banner"></div>
+			<div class="MenuContainer">
 			</div>
 		</div>
 		<div class="clear"></div>
@@ -44,7 +44,7 @@
 			<div id="topContainer">
 				<div id="loginContainer">
 					<div id="loginForm">
-						<h1>TelcoBlue Client System</h1>
+						<h1>Yellow Billing Customer System</h1>
 						<div class="Seperator"></div>
 						<?php 
 						echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";

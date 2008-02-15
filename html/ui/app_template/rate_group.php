@@ -1127,6 +1127,16 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
+		// Overriding RateGroups can not be done while billing is in progress
+		if (IsInvoicing())
+		{
+			$strErrorMsg =  "Billing is in progress.  Plan details cannot be changed while this is happening.  ".
+							"Please try again in a couple of hours.  If this problem persists, please ".
+							"notify your system administrator";
+			Ajax()->AddCommand("Alert", $strErrorMsg);
+			return TRUE;
+		}
+		
 		// Load the Service Record
 		DBO()->Service->Load();
 		

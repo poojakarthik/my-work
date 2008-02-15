@@ -31,8 +31,8 @@
 
 // From the config information, work out where the local application code is and where the framework code is
 //TODO! I don't think the appropriate config object has been implemented yet
-Define ('LOCAL_BASE_DIR', "../web_app");
-Define ('FRAMEWORK_BASE_DIR', "../ui_app");
+Define ('LOCAL_BASE_DIR', "../web");
+Define ('FRAMEWORK_BASE_DIR', "../ui");
 
 // include the framework javascript.php file
 require_once(FRAMEWORK_BASE_DIR . "/javascript.php");

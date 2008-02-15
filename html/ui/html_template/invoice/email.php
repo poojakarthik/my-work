@@ -94,38 +94,40 @@ class HtmlTemplateInvoiceEmail extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<div class='PopupMedium'>\n";
-		echo "<h2 class='Email'>Email PDF Invoice</h2>\n";
-		echo "<div class='SmallSeperator'></div>\n";
 		
 		$this->FormStart("EmailPDFInvoice", "Invoice", "EmailPDFInvoice");
 		
-		// We need the Account Id, Invoice Year and Invoice Month 
-		// to get the right PDF to send, render as hidden
+		echo "<div class='GroupedContent'>\n";
+		
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Invoice->Year->RenderHidden();
 		DBO()->Invoice->Month->RenderHidden();
 		
 		foreach (DBL()->Contact as $dboContact)
 		{
-			// Checkboxes are the format 'FirstName LastName - Email', have id of ID, and name of "Email." + Id
-			echo "<input type='checkbox' id='{$dboContact->Id->Value}' name='Email.{$dboContact->Id->Value}'>{$dboContact->FirstName->Value} {$dboContact->LastName->Value} - {$dboContact->Email->Value}</input>";
-			echo "<br>";
+			$strName = "Email" . $dboContact->Id->Value;
+			$strLabel = "{$dboContact->FirstName->Value} {$dboContact->LastName->Value} - {$dboContact->Email->Value}";
+			$strLabel = substr($strLabel, 0, 60);
+			// Checkboxes are the format 'FirstName LastName - Email', have id and name of "Email." + Id
+			echo "<input type='checkbox' id='$strName' name='$strName'></input>";
+			echo "<label for='$strName' title='{$dboContact->Email->Value}'>$strLabel</label>";
+			echo "<div class='SmallSeperator'></div>\n";
 		}
-		echo "<div class='SmallSeperator'></div>\n";
+		
 		
 		// Insert Other Email Address box
-		echo "Other Email Address: <input type='text' id='ExtraEmail' name='Email.Extra' class='DefaultInputTextSmall'></input>";
-		echo "<div class='SmallSeperator'></div>\n";
+		echo "Other Email Address : <input type='text' id='ExtraEmail' name='Email.Extra' class='DefaultInputText' style='left:20px;width:270px'></input>";
 		
-		echo "<div align='right'>\n";
+		echo "</div>\n"; // GroupedContent
 		
-		// Submit-over-Ajax button
+		// Create the buttons
+		echo "<div class='ButtonContainer'><div class='Right'>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(this);");
 		$this->AjaxSubmit("Email Invoice");
-		echo "</div>";
-		echo "<div class='SmallSeperator'></div>\n";
+		echo "</div></div>\n";
+		
 		$this->FormEnd();
-		echo "</div>\n";
+		
 	}
 }
 

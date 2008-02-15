@@ -661,12 +661,13 @@ function VixenPopupClass()
 		
 		if (strImage == null)
 		{
-			strImage = "img/template/pablo_load.gif";
+			strImage = "img/template/loading.gif";
 		}
 		
-		strContent =	"<div align='center' style='border: solid 2px #000000;'><p>" + strMessage + "</p>" +
+		strContent =	"<div align='center' style='height:200px'><img id='SplashImage' src='" + strImage + "'></img>" +
 						"<p><span id='VixenSplashDots'></span></p>" + 
-						"<p><img id='Vixen_DancingPablo' src='" + strImage + "' align='center'></img></p>\n";
+						"<br /><p><h2>" + strMessage + "</h2></p></div>\n";
+		
 		this.CreateSplash(strContent, strSize, null, strElement);
 		
 		// Animate the splash
@@ -850,7 +851,9 @@ function VixenPopupClass()
 	
 		// center the splash
 		elmPopup.style.left	= ((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
-		elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+		elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2));
+		// Declaring it as being fixed position, must be done after left and top are set, not before it
+		elmPopup.style.position = "fixed";
 		
 		// If elmElement has been defined, then position the splash above the element
 		// This has been incorporated into the functionality because sometimes in MSIE elements like comboboxes will

@@ -31,7 +31,7 @@
  */
 
 // set the page title
-$this->Page->SetName('Email PDF Invoice');
+$this->Page->SetName('Email Invoice PDF');
 
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');

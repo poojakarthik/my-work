@@ -38,6 +38,35 @@
 		border:               0;
 	}
 	
+	a:link
+	{
+		color: 				#0000FF;
+		text-decoration:	none;		
+	}
+
+	a:active
+	{
+		color: 				#0000FF;
+		text-decoration:	none;		
+	}
+
+	a:visited
+	{
+		color: 				#0000FF;
+		text-decoration:	none;		
+	}
+	
+	a:hover
+	{
+		color:				#0000FF;
+		text-decoration:	none;
+	}
+	
+	div#BreadCrumbMenu a:hover
+	{
+		text-decoration:	underline;
+	}
+	
 	h1
 	{
 		float:					left;
@@ -76,7 +105,9 @@
 		font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
 		line-height:		18pt;
 		font-size:			10pt;
-		background-color:              #006599;
+		/*background-color:              #006599;*/
+		background-color:              #000000;
+		height:				100%;
 	}
 	
 	form
@@ -87,6 +118,18 @@
 	label
 	{
 		cursor:              pointer;
+	}
+	
+	span
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		left:				0px;
+		top:				0px;
+		overflow:			hidden;
+		line-height: 		1.2;
 	}
 	
 /**************************************************************************/
@@ -108,34 +151,25 @@
 	
 	div#Header
 	{
-		height:				95px;
+		height:				auto;
 	}
 	
-	/*
-	div#Header a
-	{
-		color:                #FFFFFF;
-	}
-	*/
 	
 
 /******************************************************************************/
 /* This stuff was taken from client_app/css/default.css                       */
 /******************************************************************************/
 
-	div.documentContainer
+	div#Document
 	{
+		background-color:              #FFFFFF;
+		
 		margin:							0 auto;
 		padding:						0;
 		position:						absolute;
 		left:							50%;
 		margin-left:					-450px;
 		width:							900px;
-	}
-	
-	div#Document
-	{
-		background-color:              #FFFFFF;
 	}
 	
 	div.documentCurve
@@ -183,15 +217,12 @@
 		margin-right:                  25px;
 	}
 	
-	.sectionContainer
-	{
-	}
 	
-	div#Logo
+	div#Banner
 	{
-		margin-right:                  25px;
-		margin-bottom:                 25px;
-		height:                        95px;
+		height:				95px;
+		width:				850px;
+		background-image:	url(img/yellow_billing_banner.jpg);
 	}
 	
 /**************************************************************************/
@@ -455,8 +486,8 @@
 	{
 		margin:              0;
 		padding-top:         5px;
-		padding-left:        0px;
-		padding-right:       0px;
+		padding-left:        5px;
+		padding-right:       5px;
 		padding-bottom:      5px;
 		
 		/*border:              solid 1px #D1D1D1;
@@ -605,13 +636,10 @@
 		background-color:    #FFFFCC;
 	}
 	
-	.BreadCrumbMenu
+	div#BreadCrumbMenu
 	{
 		float:				left;
-		position: 			absolute;
-		/*height:				20px;*/
 		font-size:			10pt;
-		
 	}
 	
 	.MenuContainer
@@ -624,19 +652,17 @@
 
 		margin-top:			5px;
 		margin-bottom:		5px;
-		/* HACK HACK HACK *****************************************************
-		 * I shouldn't have to specify the height of this div, but when I don't
-		 * to collapses to have no height and any divs that are placed in it,
-		 * are rendered underneath it
-		 */
 		height:				25px;
-		/* HACK HACK HACK *****************************************************/
 	}
 	
 	.LogoutContainer
 	{
 		float:				right;
-		/*margin-right:		0px;*/
+	}
+	
+	.LogoutContainer a:hover
+	{
+		text-decoration:	underline;
 	}
 	
 	.MenuIcon

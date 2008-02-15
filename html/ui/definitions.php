@@ -60,7 +60,7 @@ Define ('GOD_TIMEOUT'	, 60*60*24*7);
 Define("PERMISSION_DEBUG"		, 0x80000000);
 Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
 
-/*
+/* Depricated
 define('DATABASE_URL', '10.11.12.13');
 define('DATABASE_NAME', vixen);
 define('DATABASE_USER', vixen);

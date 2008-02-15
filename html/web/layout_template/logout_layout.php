@@ -38,11 +38,7 @@ $this->RenderClientHeader();
 	<div class="pageContainer">
 	
 	<div id="Header" class="sectionContainer">
-		<div id="Logo" class="Left sectionContent">
-			<img src="img/header.jpg" width="597" height="95" />
-		</div>
-	</div>
-	<div class="sectionContent">
+		<div id="Banner"></div>
 		<div class="MenuContainer">
 		</div>
 	</div>

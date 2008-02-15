@@ -79,7 +79,7 @@
 							<xsl:with-param name="year"		select="/Response/Invoice/CreatedOn/year" />
 							<xsl:with-param name="month"	select="/Response/Invoice/CreatedOn/month" />
 							<xsl:with-param name="day"		select="/Response/Invoice/CreatedOn/day" />
-							<xsl:with-param name="format"	select="'%m/%Y'"/>
+							<xsl:with-param name="format"	select="'%d/%m/%Y'"/>
 						</xsl:call-template>
 					</td>
 				</tr>

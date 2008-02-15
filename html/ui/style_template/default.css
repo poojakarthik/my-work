@@ -139,8 +139,17 @@
 		line-height: 		1.2;
 	}
 	
+	input[type='submit']:hover,
+	input[type='button']:hover
+	{
+		cursor:	pointer;
+	}
 	
-
+	img#SplashImage
+	{
+		margin-top:	70px;
+	}
+	
 	
 /**************************************************************************/
 /* DIVS														  			  */

@@ -71,33 +71,46 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div class='WideContent'>\n";
 		echo "<h2 class='Services'>Services</h2>\n";
 		
-		
-		Table()->Services->SetHeader("FNN", "Service Type", "Current Plan", "Current Unbilled Charges (inc GST)", "&nbsp;", "&nbsp;");
-		Table()->Services->SetWidth("10%", "15%", "35%", "15%", "3%", "22%");
-		Table()->Services->SetAlignment("left", "left", "left", "right", "center", "center");
+		Table()->Services->SetHeader("FNN", "Service Type", "Current Plan", "Unbilled Charges (inc GST)", "&nbsp;", "&nbsp;");
+		Table()->Services->SetWidth("10%", "15%", "40%", "25%", "5%", "5%");
+		Table()->Services->SetAlignment("left", "left", "left", "right", "left", "right");
 		
 		// Declare variable to store the Total Charges
 		$fltTotalCharges = 0;
 		
+		DBO()->CurrentRatePlan->SetTable("RatePlan");
+		DBO()->FutureRatePlan->SetTable("RatePlan");
+		$strNextBillingPeriodStartDate = date("jS M, Y", GetStartDateTimeForNextBillingPeriod());
+		
 		// add the rows
 		foreach (DBL()->Service as $dboService)
 		{
-			// Find the current plan for the service
-			$mixCurrentPlan = GetCurrentPlan($dboService->Id->Value);
-			if ($mixCurrentPlan === FALSE)
+			// Find the current plan for the service (if there is one)
+			DBO()->CurrentRatePlan->Id = GetCurrentPlan($dboService->Id->Value);
+			if (DBO()->CurrentRatePlan->Id->Value)
 			{
-				// There is no current plan for this service
-				DBO()->RatePlan->Name = "No Current Plan";
+				// A plan was found
+				DBO()->CurrentRatePlan->Load();
+				$strPlanCell = "<span>". DBO()->CurrentRatePlan->Name->Value ."</span>";
 			}
 			else
 			{
-				// a plan was found
-				DBO()->RatePlan->Id = $mixCurrentPlan;
-				DBO()->RatePlan->Load();
+				// There is no current plan for the service
+				$strPlanCell = "<span>(No Plan Selected)</span>";
 			}
+			
+			// Find the future scheduled plan for the service (if there is one)
+			DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod($dboService->Id->Value);
+			if (DBO()->FutureRatePlan->Id->Value)
+			{
+				// A plan has been found, which is scheduled to start for the next billing period
+				DBO()->FutureRatePlan->Load();
+				$strPlanCell .= "<br /><span>As of $strNextBillingPeriodStartDate: ". DBO()->FutureRatePlan->Name->Value ."</span>";
+			}
+			
+			
 			
 			// Calculate the total unbilled charges for this service (inc GST)
 			// Note that we are not including service adjustments in this calculation, just unbilled CDRs relating to the service, that aren't credit CDRs
@@ -105,13 +118,13 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 
 			// build the "View Unbilled Charges for Service" link
 			$strViewUnbilledCharges = Href()->ViewUnbilledChargesForService($dboService->Id->Value);
-			$strViewUnbilledChargesLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewUnbilledCharges' style='color:blue; text-decoration: none;'>View Unbilled Charges</a></span>";
+			$strViewUnbilledChargesLabel = "<span><a href='$strViewUnbilledCharges' title='View'><img src='img/template/cdr.gif'></img></a></span>";
 
 			if ($dboService->TotalUnbilled->Value < 0)
 			{
 				// Total Unbilled Charges is a CR.  Change it to a positive value and flag it as a CR in the table
 				$dboService->TotalUnbilled = $dboService->TotalUnbilled->Value * (-1);
-				$strNature = "<span class='DefaultOutputSpan Default'>". NATURE_CR ."</span>";
+				$strNature = "<span>&nbsp;". NATURE_CR ."</span>";
 				
 				// subtract the total charges for this service from the total for all services of the account. (this already includes GST)
 				$fltTotalCharges -= $dboService->TotalUnbilled->Value;
@@ -127,7 +140,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 			
 			Table()->Services->AddRow($dboService->FNN->AsValue(),
 									$dboService->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType")),
-									DBO()->RatePlan->Name->AsValue(),
+									$strPlanCell,
 									$dboService->TotalUnbilled->AsValue(),
 									$strNature,
 									$strViewUnbilledChargesLabel);
@@ -136,7 +149,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 		if (Table()->Services->RowCount() == 0)
 		{
 			// There are no services to stick in this table
-			Table()->Services->AddRow("<span class='DefaultOutputSpan Default'>No services to display</span>");
+			Table()->Services->AddRow("<span>No services to display</span>");
 			Table()->Services->SetRowAlignment("left");
 			Table()->Services->SetRowColumnSpan(6);
 		}
@@ -146,7 +159,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 			{
 				// The total Charges is negative.  Change it to a positive and flag it as a CR
 				$fltTotalCharges = $fltTotalCharges * (-1);
-				$strNature = "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>". NATURE_CR ."</span>";
+				$strNature = "<span style='font-weight:bold;'>&nbsp;". NATURE_CR ."</span>";
 			}
 			else
 			{
@@ -155,19 +168,18 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 			}
 		
 			// Append the total to the table
-			$strTotal			= "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>Total Charges:</span>\n";
-			$strTotalCharges	= "<span class='DefaultOutputSpan Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltTotalCharges, 2, TRUE) ."</span>\n";
+			$strTotal			= "<span style='font-weight:bold;'>Total Charges ($):</span>\n";
+			$strTotalCharges	= "<span class='Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltTotalCharges, 2) ."</span>\n";
 			
 			Table()->Services->AddRow($strTotal, $strTotalCharges, $strNature, "&nbsp;");
-			Table()->Services->SetRowAlignment("left", "right", "center", "center");
+			Table()->Services->SetRowAlignment("left", "right", "left", "center");
 			Table()->Services->SetRowColumnSpan(3, 1, 1, 1);
 		}
 		
+		Table()->Services->RowHighlighting = TRUE;
 		Table()->Services->Render();
 		
 		echo "<div class='Seperator'></div>\n";
-		
-		echo "</div>\n";
 	}
 }
 

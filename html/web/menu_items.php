@@ -109,7 +109,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Console";
 		
-		return "vixen.php/Console/Console/";
+		return "flex.php/Console/Console/";
 	}
 
 	//------------------------------------------------------------------------//
@@ -133,7 +133,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Console";
 		
-		return "vixen.php/Console/Console/?Account.Id=$intAccountId";
+		return "flex.php/Console/Console/?Account.Id=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -162,7 +162,7 @@ class MenuItems
 		//return "javascript:Vixen.Ajax.CallAppTemplate(\"Console\", \"Logout\")";
 		
 		// Page style logout
-		return "vixen.php/Console/Logout/";
+		return "flex.php/Console/Logout/";
 	}
 
 
@@ -178,7 +178,6 @@ class MenuItems
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intServiceId				service id to load
-	 * @param	bool	$bolDontIncludeSplash		optional, If set to TRUE then the "Dancing Pablo - page loading" Splash is not displayed
 	 * @param	int		$intPage					optional, page number of the paginated CDR table to load
 	 * @param 	int		$intFilterId				optional, id of the record type to use as a filter for the CDR table
 	 *
@@ -186,19 +185,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewUnbilledChargesForService($intServiceId, $bolDontIncludeSplash=FALSE, $intPage=1, $intFilterId=0)
+	function ViewUnbilledChargesForService($intServiceId, $intPage=1, $intFilterId=0)
 	{
 		$this->strLabel	= "Service: $intServiceId";
 		
-		$strAction = "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage&Filter.Id=$intFilterId";
-		
-		if ($bolDontIncludeSplash)
-		{
-			return $strAction;
-		}
-		
-		// Include the "loading" splash
-		return "javascript: setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
+		return "flex.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage&Filter.Id=$intFilterId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -212,25 +203,17 @@ class MenuItems
 	 * Compiles the url to be executed when the ViewUnbilledChargesForAccount menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intAccountId				Account id to load
-	 * @param	bool	$bolDontIncludeSplash		optional, If set to TRUE then the "Dancing Pablo - page loading" splash is not displayed
+	 * @param	int		$intAccountId		Account id to load
 	 *
 	 * @return	string						action to be executed when the ViewUnbilledChargesForAccount menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewUnbilledChargesForAccount($intAccountId, $bolDontIncludeSplash=FALSE)
+	function ViewUnbilledChargesForAccount($intAccountId)
 	{
 		$this->strLabel	= "Account Charges";
 		
-		$strAction = "vixen.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
-		
-		if ($bolDontIncludeSplash)
-		{
-			return $strAction;
-		}
-		
-		return "javascript: setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
+		return "flex.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -244,8 +227,7 @@ class MenuItems
 	 * Compiles the url to be executed when the ViewInvoicesAndPayments menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intAccountId				Account id to load
-	 * @param	bool	$bolDontIncludeSplash		optional, If set to TRUE then the "Dancing Pablo - page loading" splash is not displayed
+	 * @param	int		$intAccountId		Account id to load
 	 *
 	 * @return	string						action to be executed when the ViewInvoicesAndPayments menu item is clicked
 	 *
@@ -255,14 +237,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Invoices and Payments";
 		
-		$strAction = "vixen.php/Account/ListInvoicesAndPayments/?Account.Id=$intAccountId";
-		
-		if ($bolDontIncludeSplash)
-		{
-			return $strAction;
-		}
-		
-		return "javascript: setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash()}, ". SPLASH_WAITING_TIME ."); Vixen.SetLocation(\"$strAction\");";
+		return "flex.php/Account/ListInvoicesAndPayments/?Account.Id=$intAccountId";
 	}
 
 
@@ -289,7 +264,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Download Invoice Pdf";
 		
-		return "vixen.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth";
+		return "flex.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth";
 	}
 	
 	//------------------------------------------------------------------------//

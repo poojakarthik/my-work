@@ -109,6 +109,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Charge->Load();
 		
 		// Retrieve all Services for the account
+		//TODO! Should we only retrieve the Active, Closed and Suspended services?
 		DBL()->Service->Account = DBO()->Account->Id->Value;
 		DBL()->Service->OrderBy("ServiceType, FNN");
 		DBL()->Service->Load();
@@ -120,12 +121,16 @@ class AppTemplateAccount extends ApplicationTemplate
 			// Display the business name in the bread crumb menu
 			BreadCrumb()->SetCurrentPage("Account Charges - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
 		}
+		elseif (DBO()->Account->TradingName->Value)
+		{
+			// Display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Account Charges - " . substr(DBO()->Account->TradingName->Value, 0, 60));
+		}
 		else
 		{
 			// Don't display the business name in the bread crumb menu
 			BreadCrumb()->SetCurrentPage("Account Charges");
 		}
-		
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_view_unbilled_charges');
@@ -210,6 +215,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			// Display the business name in the bread crumb menu
 			BreadCrumb()->SetCurrentPage("Invoices and Payments - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
+		}
+		elseif (DBO()->Account->TradingName->Value)
+		{
+			// Display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Invoices and Payments - " . substr(DBO()->Account->TradingName->Value, 0, 60));
 		}
 		else
 		{

@@ -31,31 +31,31 @@
 require_once("../../flex.require.php");
 
 // Set Application Framework Dir
-$strApplicationFrameworkDir	= "ui_app/";
+$strApplicationFrameworkDir	= "html/ui/";
 
 // Set Application Dir
-$strApplicationDir			= "web_app/";
+$strApplicationDir			= "html/web/";
 
 // If absolute paths don't work then use: 
-// $strApplicationDir			= "../web_app/";
-// $strApplicationFrameworkDir	= "../ui_app/";
+// $strApplicationDir			= "../web/";
+// $strApplicationFrameworkDir	= "../ui/";
 
 // Application Requirements
-VixenRequire($strApplicationDir.'definitions.php');
-VixenRequire($strApplicationFrameworkDir.'functions.php');
-VixenRequire($strApplicationFrameworkDir.'framework.php');
-VixenRequire($strApplicationDir.'menu_items.php');
-VixenRequire($strApplicationFrameworkDir.'application.php');
+VixenRequire($strApplicationDir				.'definitions.php');
+VixenRequire($strApplicationFrameworkDir	.'functions.php');
+VixenRequire($strApplicationFrameworkDir	.'framework.php');
+VixenRequire($strApplicationDir				.'menu_items.php');
+VixenRequire($strApplicationFrameworkDir	.'application.php');
 
-VixenRequire($strApplicationFrameworkDir.'db/db_access_ui.php');
-VixenRequire($strApplicationFrameworkDir.'db/db_object_base.php');
-VixenRequire($strApplicationFrameworkDir.'db/db_object.php');
-VixenRequire($strApplicationFrameworkDir.'db/db_list.php');
-VixenRequire($strApplicationFrameworkDir.'db/token.php');
-VixenRequire($strApplicationFrameworkDir.'vixen_table.php');
+VixenRequire($strApplicationFrameworkDir	.'db/db_access_ui.php');
+VixenRequire($strApplicationFrameworkDir	.'db/db_object_base.php');
+VixenRequire($strApplicationFrameworkDir	.'db/db_object.php');
+VixenRequire($strApplicationFrameworkDir	.'db/db_list.php');
+VixenRequire($strApplicationFrameworkDir	.'db/token.php');
+VixenRequire($strApplicationFrameworkDir	.'vixen_table.php');
 
-VixenRequire($strApplicationFrameworkDir.'json.php');
+VixenRequire($strApplicationFrameworkDir	.'json.php');
 
-VixenRequire($strApplicationFrameworkDir . 'style_template/html_elements.php');
+VixenRequire($strApplicationFrameworkDir 	.'style_template/html_elements.php');
  
  ?>

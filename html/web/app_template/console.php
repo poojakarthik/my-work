@@ -62,7 +62,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();
 		
-		// retrieve the client's details
+		// Retrieve the client's details
 		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
 		if (!DBO()->Contact->Load())
 		{
@@ -79,7 +79,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		}
 		else
 		{
-			// no specific account has been specified, so load the contact's primary account
+			// No specific account has been specified, so load the contact's primary account
 			DBO()->Account->Id = DBO()->Contact->Account->Value;
 		}
 		
@@ -138,7 +138,6 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
 		// Setup BreadCrumb Menu
-		//BreadCrumb()->Console();
 		$strWelcome = "Welcome " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
 		BreadCrumb()->SetCurrentPage($strWelcome);
 		

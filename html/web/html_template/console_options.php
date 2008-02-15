@@ -75,11 +75,11 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		
 		// build the "View Unbilled Charges for Account" link
 		$strViewUnbilledCharges = Href()->ViewUnbilledChargesForAccount(DBO()->Account->Id->Value);
-		$strViewUnbilledChargesLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewUnbilledCharges' style='color:blue; text-decoration: none;'>&nbsp;&nbsp;View Unbilled Charges</a></span>";
+		$strViewUnbilledChargesLabel = "<span><a href='$strViewUnbilledCharges' >&nbsp;&nbsp;View Unbilled Charges</a></span>";
 
 		// build the "View Invoices and Payments" link
 		$strViewInvoicesAndPayments = Href()->ViewInvoicesAndPayments(DBO()->Account->Id->Value);
-		$strViewInvoicesAndPaymentsLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoicesAndPayments' style='color:blue; text-decoration: none;'>&nbsp;&nbsp;View Invoices and Payments</a></span>";
+		$strViewInvoicesAndPaymentsLabel = "<span><a href='$strViewInvoicesAndPayments' >&nbsp;&nbsp;View Invoices and Payments</a></span>";
 		
 		echo "<table width='100%' border='0'>\n";
 		echo "   <tr>\n";

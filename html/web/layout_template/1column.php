@@ -32,7 +32,7 @@ $this->RenderClientHeader();
 //$this->RenderContextMenu();
 ?>
 
-<div id="Document" class="documentContainer">
+<div id="Document">
 
 	<div class="documentCurve Left documentCurveTopLeft"></div>
 	<div class="documentCurve Right documentCurveTopRight"></div>
@@ -40,11 +40,7 @@ $this->RenderClientHeader();
 	<div class="pageContainer">
 	
 	<div id="Header" class="sectionContainer">
-		<div id="Logo" class="Left sectionContent">
-			<img src="img/header.jpg" width="597" height="95" />
-		</div>
-	</div>
-	<div class="sectionContent">
+		<div id="Banner"></div>
 		<div class="MenuContainer">
 			<?php $this->RenderBreadCrumbMenu();?>
 			<div class='LogoutContainer'>
@@ -52,8 +48,7 @@ $this->RenderClientHeader();
 					//display the logout link
 					$strUserName	= AuthenticatedUser()->_arrUser['UserName'];
 					$strLogoutHref	= Href()->LogoutUser();
-					$strLogoutLink	= "<a href='$strLogoutHref' style='color:blue; text-decoration: none;'>logout</a>";
-					echo "<span>$strUserName ($strLogoutLink)</span>\n";
+					echo "$strUserName (<a href='$strLogoutHref'>logout</a>)\n";
 				?>
 			</div>
 		</div>

@@ -54,9 +54,6 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 		
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
-		//$this->LoadJavascript("tooltip");
-		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -73,7 +70,6 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div class='WideContent'>\n";
 		echo "<h2 class='Adjustment'>Unbilled Adjustments</h2>\n";
 				
 		Table()->Adjustments->SetHeader("Date", "Code", "Description", "Amount (inc GST)", "&nbsp;");
@@ -103,7 +99,7 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 											$dboCharge->ChargeType->AsValue(),
 											$dboCharge->Description->AsValue(),
 											$dboCharge->Amount->AsCallback("AddGST"),
-											"<span class='DefaultOutputSpan Default'>". NATURE_CR ."</span>");
+											"<span>". NATURE_CR ."</span>");
 				// Subtract the charge from the total adjustments
 				$fltTotalAdjustments -= $dboCharge->Amount->Value;
 			}
@@ -115,7 +111,7 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 		if (Table()->Adjustments->RowCount() == 0)
 		{
 			// There are no adjustments to stick in this table
-			Table()->Adjustments->AddRow("<span class='DefaultOutputSpan Default'>No adjustments to display</span>");
+			Table()->Adjustments->AddRow("<span>No adjustments to display</span>");
 			Table()->Adjustments->SetRowAlignment("left");
 			Table()->Adjustments->SetRowColumnSpan(5);
 		}
@@ -125,7 +121,7 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 			{
 				// Make the value positive and mark it as a credit
 				$fltTotalAdjustments = $fltTotalAdjustments * (-1);
-				$strNature = "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>". NATURE_CR ."</span>";
+				$strNature = "<span style='font-weight:bold;'>". NATURE_CR ."</span>";
 			}
 			else
 			{
@@ -133,8 +129,8 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 			}
 		
 			// Append the total to the table
-			$strTotal				= "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>Total Adjustments:</span>\n";
-			$strTotalAdjustments	= "<span class='DefaultOutputSpan Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltTotalAdjustments, 2, TRUE) ."</span>\n";
+			$strTotal				= "<span style='font-weight:bold;'>Total Adjustments ($):</span>\n";
+			$strTotalAdjustments	= "<span class='Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltTotalAdjustments, 2) ."</span>\n";
 			
 			Table()->Adjustments->AddRow($strTotal, $strTotalAdjustments, $strNature);
 			Table()->Adjustments->SetRowAlignment("left", "right", "center");
@@ -144,8 +140,6 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 		Table()->Adjustments->Render();
 		
 		echo "<div class='Seperator'></div>\n";
-		
-		echo "</div>\n";
 	}
 }
 

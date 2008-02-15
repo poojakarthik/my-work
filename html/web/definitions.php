@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2006 VOIPTEL Pty Ltd
+// (c) copyright 2007 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
@@ -31,8 +31,8 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 $strVixenBaseDir = GetVixenBase();
-Define ('TEMPLATE_BASE_DIR',	$strVixenBaseDir . "web_app/");
-Define ('MODULE_BASE_DIR',		$strVixenBaseDir . "web_app/");
+Define ('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "html/web/");
+Define ('MODULE_BASE_DIR', 		$strVixenBaseDir . "html/web/");
 
 // Define which flavour of browsers are supported by this application
 Define ('BROWSER_IE',	0x1);
@@ -43,7 +43,7 @@ Define ('SUPPORTED_BROWSERS_DESCRIPTION', "Firefox, Microsoft Internet Explorer"
 Define ("APPLICATION_VIXEN",	101);
 Define ("APPLICAITON_CLIENT",	102);
 Define ("APPLICATION",			APPLICATION_VIXEN);
-Define ("APP_NAME",				"TelcoBlue Customer System");
+Define ("APP_NAME",				"Yellow Billing Customer System");
 
 
 Define ('COLUMN_ONE'	, 1);
@@ -60,10 +60,12 @@ Define ('GOD_TIMEOUT'	, 60*60*24*7);
 Define("PERMISSION_DEBUG"		, 0x80000000);
 Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
 
+/* Depricated
 define('DATABASE_URL', '10.11.12.13');
 define('DATABASE_NAME', vixen);
 define('DATABASE_USER', vixen);
 define('DATABASE_PWORD', V1x3n);
+*/
 
 // database documentation contexts
 define('CONTEXT_DEFAULT', 0);

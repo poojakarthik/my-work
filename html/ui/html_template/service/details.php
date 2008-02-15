@@ -162,7 +162,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		{
 			DBO()->Account->BusinessName->RenderOutput();
 		}
-		elseif (DBO()->Account->TradingName->RenderOutput())
+		elseif (DBO()->Account->TradingName->Value)
 		{
 			DBO()->Account->TradingName->RenderOutput();
 		}
@@ -191,11 +191,16 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<div class='NarrowContent'>\n";
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
-
+		echo "<div class='ContentSeparator'></div>\n";
+		
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
 			DBO()->Service->Indial100->RenderOutput();
-			DBO()->Service->ELB->RenderOutput();
+			if (DBO()->Service->Indial100->Value)
+			{
+				// Only show the ELB setting if the Landline is an Indial100
+				DBO()->Service->ELB->RenderOutput();
+			}
 		}
 
 		// If the ServiceType is a mobile display the extra information for the service
@@ -213,7 +218,6 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			{
 				DBO()->ServiceMobileDetail->Comments->RenderOutput();
 			}
-			echo "&nbsp;<br>\n";
 		}
 
 		// If the ServiceType is a inbound display the extra information for the service
@@ -225,10 +229,9 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		
 			DBO()->ServiceInboundDetail->AnswerPoint->RenderOutput();
 			DBO()->ServiceInboundDetail->Configuration->RenderOutput();			
-			echo "&nbsp;<br>\n";
 		}
 
-		
+		echo "<div class='ContentSeparator'></div>\n";
 		// Display the Cost Center, if there is one
 		if (DBO()->Service->CostCentre->Value)
 		{
@@ -256,7 +259,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		}
 		
 		// Separate the Service status properties from the rest
-		echo "<div class='SmallSeperator'></div>\n";
+		echo "<div class='ContentSeparator'></div>\n";
 		DBO()->Service->CreatedOn->RenderOutput();
 		DBO()->Service->ClosedOn->RenderOutput();
 		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("LineStatus"), RENDER_OUTPUT);

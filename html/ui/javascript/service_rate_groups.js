@@ -99,6 +99,7 @@ function VixenServiceRateGroupsClass()
 		{
 			// We are not dealing with a Credit Card Payment
 			var strMsg = "Are you sure you want to remove this RateGroup?<br />Name: " + strRateGroupName;
+			strMsg += "<br /><br />WARNING: This will cause all un-invoiced CDRs to be rerated";
 			Vixen.Popup.Confirm(strMsg, function(){Vixen.ServiceRateGroups.RemoveRateGroup(intServiceRateGroupId, strRateGroupName, true);});
 			return;
 		}
@@ -108,8 +109,8 @@ function VixenServiceRateGroupsClass()
 		objObjects.ServiceRateGroup		= {};
 		objObjects.ServiceRateGroup.Id	= intServiceRateGroupId;
 
-		// Call the AppTemplate method which renders just the ServiceRateGroupList HtmlTemplate
-		Vixen.Ajax.CallAppTemplate("Service", "RemoveServiceRateGroup", objObjects);
+		// Call the AppTemplate method which removes the ServiceRateGroup record
+		Vixen.Ajax.CallAppTemplate("Service", "RemoveServiceRateGroup", objObjects, null, true);
 	}
 	
 

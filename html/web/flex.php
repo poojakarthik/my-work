@@ -7,17 +7,17 @@
 
 
 //----------------------------------------------------------------------------//
-// vixen
+// flex
 //----------------------------------------------------------------------------//
 /**
- * vixen
+ * flex
  *
  * The main page loading script
  *
  * The main page loading script
  * Executes a method of an ApplicationTemplate
  *
- * @file		vixen.php
+ * @file		flex.php
  * @language	PHP
  * @package		web_app
  * @author		Jared
@@ -44,6 +44,4 @@ $Application = Singleton::Instance('Application');
 // load application
 $TemplateName = $strTemplate .".". $strMethod;
 $Application->Load($TemplateName);
-
-
 ?>

@@ -76,6 +76,7 @@ class HtmlTemplateLoggedOut extends HtmlTemplate
 		
 		echo "<div class='WideContent' style='height:300px;'>\n";
 		
+		
 		if (AuthenticatedUser()->_arrUser != NULL)
 		{
 			// The user was logged in when they tried to log out.  The logging out has been successful.
@@ -91,9 +92,9 @@ class HtmlTemplateLoggedOut extends HtmlTemplate
 		
 		echo "<span class='DefaultOutputSpan Default'>$strLogoutMsg</span>\n";
 		echo "<br /><br />\n";
-		echo "<a href='$strLoginHref' style='color:blue; text-decoration: none;'><span class='DefaultOutputSpan Default'>". APP_NAME ." Login</span></a>\n";
+		echo "<a href='$strLoginHref' ><span>". APP_NAME ." Login</span></a>\n";
 		echo "<br />\n";
-		echo "<a href='$strMainPageHref' style='color:blue; text-decoration: none;'><span class='DefaultOutputSpan Default'>Back to homepage</span></a>\n";
+		echo "<a href='$strMainPageHref' ><span>Back to homepage</span></a>\n";
 		
 		echo "</div>\n"; // WideContent
 	}
