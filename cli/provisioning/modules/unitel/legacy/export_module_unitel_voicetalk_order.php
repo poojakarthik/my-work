@@ -315,7 +315,7 @@
 		if($intNumFullServiceRecords > 0)
 		{
 			// Only do this if there are records to write
-			$resDailyOrderFile = fopen(UNITEL_LOCAL_DAILY_ORDER_DIR.$this->_strFile, "w");
+			$resDailyOrderFile = fopen(UNITEL_VOICETALK_LOCAL_DAILY_ORDER_DIR.$this->_strFile, "w");
 			fwrite($resDailyOrderFile, $strFullServiceHeaderRow."\n");
 			
 			foreach($this->_arrFullServiceRecords as $arrBuiltRequest)

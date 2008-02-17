@@ -17,7 +17,7 @@ require_once('../../flex.require.php');
 //----------------------------------------------------------------------------//
 
 $arrDataReport	= Array();
-$arrDocReqs		= Array();
+$arrDocReq		= Array();
 $arrSQLSelect	= Array();
 $arrSQLFields	= Array();
 

@@ -227,7 +227,7 @@
 		// Try to match a request
 		$arrData['Service']		= $this->_arrRequest['Service'];
 		$arrData['RequestType']	= $this->_arrRequest['RequestType'];
-		$arrData['Carrier']		= CARRIER_UNITEL;
+		$arrData['Carrier']		= CARRIER_OPTUS;
 		$this->_selMatchRequest->Execute();
 		
 		// Is there a request match?

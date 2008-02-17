@@ -93,7 +93,7 @@
  			return PAYMENT_CANT_NORMALISE_FOOTER;
  		}
  		
- 		if (stripos($strPaymentRecord, 'Amount,Client'))
+ 		if (is_int(stripos($strPaymentRecord, 'Amount,Client')))
  		{
  			return PAYMENT_CANT_NORMALISE_HEADER;
  		}
@@ -174,7 +174,7 @@
 	 */
  	function _ConvertDate($strDate)
  	{
-		$strDate		= trim($strDate);
+		$strDate		= str_pad(trim($strDate), 8, '0', STR_PAD_LEFT);
 		$strValidDate	= substr($strDate, -4)."-".substr($strDate, 2, 2)."-".substr($strDate, 0, 2);
 		return $strValidDate;
  	}

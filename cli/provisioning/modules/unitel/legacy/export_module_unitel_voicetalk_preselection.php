@@ -193,8 +193,8 @@
 		$intPreselectionFileSequence	= ((int)$arrResult['Value']) + 1;
 		
 		// Build Header Row
-		$strPreselectionFilename	= "sarsw".str_pad($intPreselectionFileSequence, 4, "0", STR_PAD_LEFT).".txt";
-		$strPreselectionHeaderRow	= "01".date("Ymd").str_pad($intPreselectionFileSequence, 4, "0", STR_PAD_LEFT)."sarsw";
+		$strPreselectionFilename	= "vorsw".str_pad($intPreselectionFileSequence, 4, "0", STR_PAD_LEFT).".txt";
+		$strPreselectionHeaderRow	= "01".date("Ymd").str_pad($intPreselectionFileSequence, 4, "0", STR_PAD_LEFT)."vorsw";
 		
 		// Get list of requests to generate
 		$arrResults = $this->_selGetPreselectRequests->FetchAll();
