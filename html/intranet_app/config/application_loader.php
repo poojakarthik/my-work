@@ -127,10 +127,9 @@ $framework = $GLOBALS['fwkFramework'];
 */
 
 // New Method for loading the framework
-require_once($strFrameworkDir."functions.php");
-LoadFramework();
-
-
+//require_once($strFrameworkDir."functions.php");
+//LoadFramework();
+require_once("../../flex.require.php");
 
 // load application 
 require_once($strApplicationDir."definitions.php");

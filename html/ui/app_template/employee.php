@@ -44,6 +44,59 @@
  */
 class AppTemplateEmployee extends ApplicationTemplate
 {
+	
+	//------------------------------------------------------------------------//
+	// ViewRecentCustomers
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewRecentCustomers()
+	 *
+	 * Performs the logic for the View Recent Customers popup window
+	 * 
+	 * Performs the logic for the View Recent Customers popup window
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function ViewRecentCustomers()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Retrieve that last 20 customers that were verified by the user
+		$arrColumns	= Array(	"RequestedOn"	=> "EAA.RequestedOn",
+								"AccountId"		=> "A.Id",
+								"BusinessName"	=> "A.BusinessName",
+								"TradingName"	=> "A.TradingName",
+								"ContactId"		=> "C.Id",
+								"Title"			=> "C.Title",
+								"FirstName"		=> "C.FirstName",
+								"LastName"		=> "C.LastName"
+							);
+		$strTables	= "Contact AS C INNER JOIN EmployeeAccountAudit AS EAA ON EAA.Contact = C.Id INNER JOIN Account AS A ON EAA.Account = A.Id";
+		$strWhere	= "EAA.Employee = <UserId>";
+		$arrWhere	= array("UserId" => AuthenticatedUser()->_arrUser['Id']);
+		$strOrderBy	= "EAA.RequestedOn DESC";
+		$strLimit	= "20";
+		
+		DBL()->RecentCustomers->SetColumns($arrColumns);
+		DBL()->RecentCustomers->SetTable($strTables);
+		DBL()->RecentCustomers->Where->Set($strWhere, $arrWhere);
+		DBL()->RecentCustomers->OrderBy($strOrderBy);
+		DBL()->RecentCustomers->SetLimit($strLimit);
+
+		DBL()->RecentCustomers->Load();
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('recent_customers_view');
+
+		return TRUE;
+	}
+	
+	
+	// This is not currently used and was probably coded in June of 2007
 	function View()
 	{
 		// Check user authorization and permissions
@@ -105,6 +158,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 	
 	}
 
+	// This is not currently used and was probably coded in June of 2007
 	function Edit()
 	{
 		AuthenticatedUser()->CheckAuth();

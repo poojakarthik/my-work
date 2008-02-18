@@ -102,6 +102,7 @@ class MenuItems
 	function ViewServiceRatePlan($intId)
 	{
 		$this->strContextMenuLabel = "View Plan";
+		$this->strLabel = "Plan";
 		return "flex.php/Service/ViewPlan/?Service.Id=$intId";
 	}
 
@@ -424,6 +425,27 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// ViewRecentCustomers
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewRecentCustomers()
+	 *
+	 * Compiles the Href to be executed when the ViewRecentCustomers menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewRecentCustomers menu item is clicked
+	 *
+	 * @return	string						
+	 *
+	 * @method
+	 */
+	function ViewRecentCustomers()
+	{
+		$this->strContextMenuLabel = "View Recent Customers";
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRecentCustomersId\", \"large\", \"Recent Customers\", \"Employee\", \"ViewRecentCustomers\")";
+	}
+	
+	//------------------------------------------------------------------------//
 	// ViewRate
 	//------------------------------------------------------------------------//
 	/**
@@ -453,7 +475,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId_$intRateId\", \"medium\", null, \"Rate\", \"View\", $strJsonCode, \"$strWindowType\")";	
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId_$intRateId\", \"medium\", \"Rate\", \"Rate\", \"View\", $strJsonCode, \"$strWindowType\")";	
 	}	
 
 	//------------------------------------------------------------------------//
@@ -598,7 +620,7 @@ class MenuItems
 	 */
 	function EditService($intId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Edit Service";
 		
 		// Setup data to send
 		$arrData['Objects']['Service']['Id'] = $intId;
@@ -830,7 +852,7 @@ class MenuItems
 	 */
 	function AccountOverview($intAccountId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Overview";
 		
 		$this->strLabel	= "Account";
 
@@ -1103,7 +1125,7 @@ class MenuItems
 	 */
 	function ViewAccountNotes($intAccountId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "View Notes";
 		
 		$this->strLabel	= "view account notes";
 		
@@ -1188,7 +1210,7 @@ class MenuItems
 	 */
 	function ChangeOfLessee($intId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Change Lessee";
 		
 		$this->strLabel	= "change of lessee";
 		return "service_lessee.php?Service=$intId";
@@ -1213,7 +1235,7 @@ class MenuItems
 	 */
 	function ViewServiceNotes($intId, $strNoteType = NULL)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "View Notes";
 		
 		$this->strLabel	= "view service notes";
 		
@@ -1246,7 +1268,7 @@ class MenuItems
 	 */
 	function ViewContactNotes($intId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "View Notes";
 		
 		$this->strLabel	= "view contact notes";
 		
@@ -1279,7 +1301,7 @@ class MenuItems
 	 */
 	function AddContactNote($intId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Add Note";
 		
 		$this->strLabel	= "Add Contact Note";
 		
@@ -1311,7 +1333,7 @@ class MenuItems
 	 */
 	function AddAccountNote($intId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Add Note";
 		
 		$this->strLabel	= "Add Account Note";
 		
@@ -1343,7 +1365,7 @@ class MenuItems
 	 */
 	function AddServiceNote($intId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Add Note";
 		
 		$this->strLabel	= "Add Service Note";
 		
@@ -1511,7 +1533,7 @@ class MenuItems
 	 */
 	function EditAccount($intId)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Edit";
 		
 		$this->strLabel	= "edit account";
 		
@@ -1765,6 +1787,41 @@ class MenuItems
 		
 		return $arrReturn;
 	}
+	
+	//------------------------------------------------------------------------//
+	// ContextMenuItemLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * ContextMenuItemLabel()
+	 *
+	 * Retrieves the Label to use for the Menu Item, when used in the context menu
+	 *
+	 * Retrieves the Label to use for the Menu Item, when used in the context menu
+	 *
+	 * @param	string	$strName	Name of the menu item
+	 *								ie "ViewAccount" or "View_Account"
+	 * @param	array	$arrParams	Parameters to be passed to the MenuItem method associated
+	 *								with $strName
+	 *
+	 * @return	string				the Context Menu Item Label
+	 * @method
+	 */
+	function ContextMenuItemLabel($strName, $arrParams)
+	{
+		$this->strContextMenuLabel = "";
+
+		// call the menu item method specific to $strName
+		call_user_func_array(array($this, $strName), $arrParams);
+		
+		if ($this->strContextMenuLabel == "")
+		{
+			// The Menu Item function did not specify a Context Menu Label
+			return NULL;
+		}
+		
+		return $this->strContextMenuLabel;
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// __call

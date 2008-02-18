@@ -2214,7 +2214,13 @@ class ContextMenuFramework
 			{
 				$strMethod = str_replace(" ", "", $strMenu);
 				// add menu link
-				$arrReturn[$strMenu] = call_user_func_array(Array($this->_objMenuItems, $strMethod), $arrSubMenu);
+				$strAction = call_user_func_array(Array($this->_objMenuItems, $strMethod), $arrSubMenu);
+				$strMenuLabel = $this->_objMenuItems->ContextMenuItemLabel($strMethod, $arrSubMenu);
+				if ($strMenuLabel == NULL)
+				{
+					$strMenuLabel = $strMenu;
+				}
+				$arrReturn[$strMenuLabel] = $strAction;
 			}
 			else
 			{

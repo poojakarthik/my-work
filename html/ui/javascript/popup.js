@@ -464,6 +464,10 @@ function VixenPopupClass()
 	
 	this.ShowAjaxPopup = function(strId, strSize, strTitle, strClass, strMethod, objParams, strWindowType)
 	{
+		if (objParams == undefined)
+		{
+			var objParams = {};
+		}
 		objParams.strId 		= strId;
 		objParams.strSize 		= strSize;
 		objParams.strTitle		= strTitle;

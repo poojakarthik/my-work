@@ -255,13 +255,16 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			$strToolTipHtml = $dboPayment->PaymentType->AsCallBack("GetConstantDescription", Array("PaymentType"), RENDER_OUTPUT);
 			
 			// If there is a file import date associated with the payment, then include this too
-			if ($dboPayment->ImportedOn->Value != NULL)
+			if ($dboPayment->ImportedOn->Value)
 			{
 				$strToolTipHtml .= $dboPayment->ImportedOn->AsOutput();
 			}
 			
 			// EnteredBy
-			$strToolTipHtml .= $dboPayment->EnteredBy->AsCallBack("GetEmployeeName", NULL, RENDER_OUTPUT);
+			if ($dboPayment->EnteredBy->Value != NULL && $dboPayment->EnteredBy->Value != USER_ID)
+			{
+				$strToolTipHtml .= $dboPayment->EnteredBy->AsCallBack("GetEmployeeName", NULL, RENDER_OUTPUT);
+			}
 			
 			// Status
 			$strToolTipHtml .= $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"), RENDER_OUTPUT);

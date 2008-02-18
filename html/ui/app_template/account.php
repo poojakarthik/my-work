@@ -591,7 +591,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Service->Load();
 		
 		//Render the AccountServices table
-		Ajax()->RenderHtmlTemplate("AccountServices", HTML_CONTEXT_DEFAULT, DBO()->TableContainer->Id->Value);
+		Ajax()->RenderHtmlTemplate("AccountServicesList", HTML_CONTEXT_DEFAULT, DBO()->TableContainer->Id->Value);
 
 		return TRUE;
 	}

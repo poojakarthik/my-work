@@ -246,6 +246,7 @@ class Application
 			ContextMenu()->Add_Customer();
 		}
 		ContextMenu()->Find_Customer();
+		ContextMenu()->View_Recent_Customers();
 		ContextMenu()->Available_Plans();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{

@@ -69,10 +69,11 @@ function VixenMenuClass(objMenu)
 			objNode.setAttribute('className', 'ContextMenuItem');
 			objNode.setAttribute('class', 'ContextMenuItem');
 			objNode.setAttribute('Id', 'VixenMenu_' + strKey);
-			
+
 			//Build the image for the new element
 			objNodeImage = document.createElement('img');
-			objNodeImage.setAttribute('src', 'img/template/' + strKey.toLowerCase().replace(/ /, '_') + '.png');
+			objNodeImage.setAttribute('src', 'img/template/' + strKey.toLowerCase().replace(/ /g, '_') + '.png');
+
 			objNode.appendChild(objNodeImage);
 
 			//Attach to elmMenu

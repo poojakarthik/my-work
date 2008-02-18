@@ -6,18 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// account_services.php
+// services_list.php
 //----------------------------------------------------------------------------//
 /**
- * account_services
+ * services_list
  *
- * HTML Template for the Account Services popup
+ * HTML Template for the Account Services table
  *
- * HTML Template for the Account Services popup
+ * HTML Template for the Account Services table
  * This file defines the class responsible for defining and rendering the layout
  * of the HTML Template used by the Account Services popup
  *
- * @file		account_services.php
+ * @file		services_list.php
  * @language	PHP
  * @package		ui_app
  * @author		Ross, Joel
@@ -28,23 +28,23 @@
  */
  
 //----------------------------------------------------------------------------//
-// HtmlTemplateAccountServices
+// HtmlTemplateAccountServicesList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAccountServices
+ * HtmlTemplateAccountServicesList
  *
- * HTML Template object defining the presentation of the Account Services popup
+ * HTML Template object defining the presentation of the Account Services table
  *
- * HTML Template object defining the presentation of the Account Services popup
+ * HTML Template object defining the presentation of the Account Services table
  *
  *
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateAccountServices
+ * @class	HtmlTemplateAccountServicesList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountServices extends HtmlTemplate
+class HtmlTemplateAccountServicesList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
