@@ -152,10 +152,18 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 			$strAccountLink = Href()->AccountOverview($dboCustomer->AccountId->Value);
 			$strAccountCell = "<a href='$strAccountLink' title='View Account Details'>{$dboCustomer->AccountId->Value}</a>";
 			
-			$strContactLink = Href()->ViewContact($dboCustomer->ContactId->Value);
-			$strContactName = ucwords(strtolower(trim("{$dboCustomer->Title->Value} {$dboCustomer->FirstName->Value} {$dboCustomer->LastName->Value}")));
-			$strContactCell = "<a href='$strContactLink' title='View Contact Details'>$strContactName</a>";
-			
+			if ($dboCustomer->ContactId->Value)
+			{
+				// A contact is associated with this customer
+				$strContactLink = Href()->ViewContact($dboCustomer->ContactId->Value);
+				$strContactName = ucwords(strtolower(trim("{$dboCustomer->Title->Value} {$dboCustomer->FirstName->Value} {$dboCustomer->LastName->Value}")));
+				$strContactCell = "<a href='$strContactLink' title='View Contact Details'>$strContactName</a>";
+			}
+			else
+			{
+				// A constact is not associated with this customer
+				$strContactCell = "[no contact specified]";
+			}
 			Table()->RecentCustomers->AddRow($strDate, $strAccountCell, $strAccountName, $strContactCell);
 		}
 		

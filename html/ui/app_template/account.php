@@ -757,6 +757,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			$strChangesNote .= "Customer Group was changed from {$arrCurrentCustomerGroup['InternalName']} to {$arrNewCustomerGroup['InternalName']}\n";
 		}
+		DBO()->Account->DisableDDR = !(DBO()->Account->ChargeAdminFee->Value);
 		if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
 		{
 			$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "no longer" : "now") ." charged an admin fee\n";
@@ -846,7 +847,8 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strChangesNote .= "Sending of late notices was changed from '$strOldSetting' to '$strNewSetting'\n";
 			}
 		}
-/* OLD way of handling LateNotice exemptions
+		
+		/* OLD way of handling LateNotice exemptions
 		if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
 		{
 			$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
@@ -995,7 +997,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		if ($strChangesNote)
 		{
-			$strChangesNote = "Account has been edited.  The following changes were made:\n$strChangesNote";
+			$strChangesNote = "Account details have been modified.  The following changes were made:\n$strChangesNote";
 			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
 		}
 

@@ -103,8 +103,15 @@ function VixenMenuClass(objMenu)
 			elmNode.action = this.objMenu[strKey];
 			if (typeof(elmNode.action) == 'string')
 			{
-				// The item is an action, not a menu.  Set the link
-				elmNode.setAttribute('href', this.objMenu[strKey]);
+				// Don't set the link if the action opens a popup
+				if (elmNode.action.substr(0, 11) == "javascript:")
+				{
+				}
+				else
+				{
+					// The item is an action, not a menu.  Set the link
+					elmNode.setAttribute('href', this.objMenu[strKey]);
+				}
 			}
 			elmNode.level = 1;
 		}

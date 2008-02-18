@@ -16,11 +16,11 @@
  *
  * contains all ApplicationTemplate extended classes relating to Available Employee functionality
  *
- * @file		plans.php
+ * @file		employee.php
  * @language	PHP
  * @package		framework
  * @author		Ross
- * @version		
+ * @version		7.06
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -75,7 +75,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 								"FirstName"		=> "C.FirstName",
 								"LastName"		=> "C.LastName"
 							);
-		$strTables	= "Contact AS C INNER JOIN EmployeeAccountAudit AS EAA ON EAA.Contact = C.Id INNER JOIN Account AS A ON EAA.Account = A.Id";
+		$strTables	= "Contact AS C RIGHT JOIN EmployeeAccountAudit AS EAA ON EAA.Contact = C.Id INNER JOIN Account AS A ON EAA.Account = A.Id";
 		$strWhere	= "EAA.Employee = <UserId>";
 		$arrWhere	= array("UserId" => AuthenticatedUser()->_arrUser['Id']);
 		$strOrderBy	= "EAA.RequestedOn DESC";

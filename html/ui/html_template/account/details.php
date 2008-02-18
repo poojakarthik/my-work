@@ -250,7 +250,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		DBO()->Account->DisableLatePayment->RenderOutput();
 		
-		DBO()->Account->DisableDDR->RenderOutput();
+		// To avoid a double negative display ChargeAdminFee instead of DisableDDR
+		DBO()->Account->ChargeAdminFee = !(DBO()->Account->DisableDDR->Value);
+		DBO()->Account->ChargeAdminFee->RenderOutput();
+		
 		echo "</div>\n"; // GroupedContent
 		
 		// Render the buttons but only if the user has operator privileges
@@ -445,7 +448,15 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 		
 		DBO()->Account->DisableLatePayment->RenderInput(1);
-		DBO()->Account->DisableDDR->RenderInput(1);
+		
+		// To avoid a double negative, display ChargeAdminFee instead of DisableDDR
+		//DBO()->Account->DisableDDR->RenderInput(1);
+		// If ChargeAdminFee has not been set, then set it to the opposite of what DisableDDR is set to
+		if (!DBO()->Account->ChargeAdminFee->IsSet)
+		{
+			DBO()->Account->ChargeAdminFee = !(DBO()->Account->DisableDDR->Value);
+		}
+		DBO()->Account->ChargeAdminFee->RenderInput();
 		
 		echo "</div>\n"; // GroupedContent
 		
