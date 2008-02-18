@@ -8,6 +8,10 @@ echo "<pre>";
 
 // show cdr
 $intCDR = (int)$_REQUEST['id'];
+if ($argc > 1)
+{
+	$intCDR	= (int)$argv[1];
+}
 if ($intCDR)
 {
 	// Create an instance of each Normalisation module
