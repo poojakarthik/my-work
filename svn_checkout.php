@@ -18,7 +18,7 @@ shell_exec("rm -Rf $strPath/html");
 shell_exec("rm -Rf $strPath/flex.require.php");
 
 // get latest version
-shell_exec("svn export --non-interactive --force --no-auth-cache --username export --password export http://192.168.2.13/svn_vixen $strPath");
+shell_exec("svn export --non-interactive --force --no-auth-cache --username export --password export http://dps.internal.yellowbilling.com.au/svn_vixen $strPath");
 
 // set file permissions
 shell_exec("chmod -R 0777 $strPath/*");
