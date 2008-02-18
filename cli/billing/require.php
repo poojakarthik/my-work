@@ -27,7 +27,7 @@
  *
  */
 
-$strModuleDir = "billing/modules/";
+$strModuleDir = "cli/billing/modules/";
 
 // load printing modules
 VixenRequire($strModuleDir."module_printing.php");

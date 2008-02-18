@@ -29,7 +29,7 @@
 
 
 // load application modules
-$strApplicationDir = "normalisation/modules/";
+$strApplicationDir = "cli/normalisation/modules/";
 VixenRequire($strApplicationDir."base_module.php");
 VixenRequire($strApplicationDir."module_aapt.php");
 VixenRequire($strApplicationDir."module_commander.php");

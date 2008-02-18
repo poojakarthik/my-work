@@ -45,7 +45,7 @@
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= "../framework/"; 
+ $strFrameworkDir		= SHARED_BASE_PATH."framework/"; 
  
 //----------------------------------------------------------------//
 // strApplicationDir
@@ -127,13 +127,13 @@ $framework = $GLOBALS['fwkFramework'];
 require_once($strModuleDir."base_import_module.php");
 require_once($strModuleDir."base_export_module.php");
 
-require_once($strModuleDir."unitel/export_module_unitel_order.php");
-require_once($strModuleDir."unitel/export_module_unitel_preselection.php");
-require_once($strModuleDir."unitel/export_module_unitel_voicetalk_order.php");
-require_once($strModuleDir."unitel/export_module_unitel_voicetalk_preselection.php");
-require_once($strModuleDir."unitel/import_module_unitel_order.php");
-require_once($strModuleDir."unitel/import_module_unitel_preselection.php");
-require_once($strModuleDir."unitel/import_module_unitel_status.php");
+require_once($strModuleDir."unitel/legacy/export_module_unitel_order.php");
+require_once($strModuleDir."unitel/legacy/export_module_unitel_preselection.php");
+require_once($strModuleDir."unitel/legacy/export_module_unitel_voicetalk_order.php");
+require_once($strModuleDir."unitel/legacy/export_module_unitel_voicetalk_preselection.php");
+require_once($strModuleDir."unitel/legacy/import_module_unitel_order.php");
+require_once($strModuleDir."unitel/legacy/import_module_unitel_preselection.php");
+require_once($strModuleDir."unitel/legacy/import_module_unitel_status.php");
 
 require_once($strModuleDir."optus/export_module_optus_preselection.php");
 require_once($strModuleDir."optus/export_module_optus_preselect_reverse.php");
