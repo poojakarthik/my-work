@@ -922,7 +922,7 @@
  	{
 		// Report Title
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TITLE."\n");
-		/*
+		
 		// FAIL if there are temporary invoices in the invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CHECK_TEMP_INVOICES, FALSE);
 		$selCheckTempInvoices = new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP);
@@ -977,24 +977,7 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-		/*
-		// change status of invoices in the temp invoice table
-		$this->_rptBillingReport->AddMessage(MSG_UPDATE_TEMP_INVOICE_STATUS, FALSE);
-		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = INVOICE_COMMITTED;
-		$updTempInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_TEMP, $arrUpdateData);
-		if($updTempInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
-		{			
-			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return;
-		}
-		else
-		{
-			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}*/
-		/*
+		
 		// empty temporary invoice table
 		$this->_rptBillingReport->AddMessage("Truncating Temp Invoice table...", FALSE);
 		$qryTruncate = new Query();
@@ -1009,8 +992,6 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-		
-		
 		
 		// change status of temp invoice CDRs
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS."\t", FALSE);
@@ -1027,33 +1008,7 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		*/
-		
-		// Move Invoiced CDRS to CDRInvoiced table
-		$this->_rptBillingReport->AddMessage("Moving Invoiced CDRs to CDRInvoiced...\t", FALSE);
-		$qryCopyInvoicedCDRs	= new Query();
-		if($qryCopyInvoicedCDRs->Execute("INSERT INTO CDRInvoiced (SELECT * FROM CDR WHERE Status = 199)") === FALSE)
-		{			
-			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return;
-		}
-		
-		$qryDeleteInvoicedCDRs	= new Query();
-		if($qryDeleteInvoicedCDRs->Execute("DELETE FROM CDR WHERE Status = 199") === FALSE)
-		{			
-			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return;
-		}
-		else
-		{
-			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
-		
+		}		
 		
 		// update Account LastBilled date
 		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED."\t", FALSE);
@@ -1151,6 +1106,9 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		// Alert YBS that file is ready for upload
+		SendEmail('rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au, turdminator@hotmail.com', 'Invoice Run Ready for Upload', 'The Invoice Run VBF file is ready for upload');
+		
 		
 		// update Invoice Status to COMMITTED, or SETTLED if the invoice balance is zero
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
@@ -1227,6 +1185,30 @@
 		else
 		{
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		
+		
+		// Move Invoiced CDRS to CDRInvoiced table
+		$this->_rptBillingReport->AddMessage("Moving Invoiced CDRs to CDRInvoiced...\t", FALSE);
+		$qryCopyInvoicedCDRs	= new Query();
+		if($qryCopyInvoicedCDRs->Execute("INSERT INTO CDRInvoiced (SELECT * FROM CDR WHERE Status = 199)") === FALSE)
+		{			
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		
+		$qryDeleteInvoicedCDRs	= new Query();
+		if($qryDeleteInvoicedCDRs->Execute("DELETE FROM CDR WHERE Status = 199") === FALSE)
+		{			
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 	}
 	
