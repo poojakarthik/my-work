@@ -1,9 +1,9 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateserviceaccount
+// HtmlTemplateServiceAccount
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateserviceaccount
+ * HtmlTemplateServiceAccount
  *
  * A specific HTML Template object
  *
@@ -16,7 +16,7 @@
  * @class	HtmlTemplateserviceaccount
  * @extends	HtmlTemplate
  */
-class HtmlTemplateserviceaccount extends HtmlTemplate
+class HtmlTemplateServiceAccount extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -51,10 +51,6 @@ class HtmlTemplateserviceaccount extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -72,7 +68,7 @@ class HtmlTemplateserviceaccount extends HtmlTemplate
 	function Render()
 	{
 		echo "<h2 class='account'>Account Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 		DBO()->Account->Id->RenderOutput();
 		if (DBO()->Account->BusinessName->Value)
 		{

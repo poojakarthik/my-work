@@ -158,7 +158,7 @@ class AppTemplateService extends ApplicationTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// Add
+	// Add  This functionality is not actually used yet
 	//------------------------------------------------------------------------//
 	/**
 	 * Add()
@@ -379,6 +379,7 @@ class AppTemplateService extends ApplicationTemplate
 			// If these have been updated record the details
 			if (DBO()->Service->Indial100->Value != DBO()->Service->CurrentIndial100->Value)
 			{
+				// You can't actually change this property.  It can only be declared when the service is created
 				$strChangesNote .= "Indial100" . ((DBO()->Service->Indial100->Value == 1) ? " is set" : " is not set") . "\n";
 			}
 			if (DBO()->Service->ELB->Value != DBO()->Service->CurrentELB->Value)
@@ -438,7 +439,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// Declare properties to update
 					$arrUpdateProperties[] = "FNN";
-					$strChangesNote .= "FNN was changed to: " . DBO()->Service->FNN->Value . "\n";
+					$strChangesNote .= "FNN was changed from ". DBO()->Service->CurrentFNN->Value ." to " . DBO()->Service->FNN->Value . "\n";
 				}
 			}
 			
@@ -468,7 +469,19 @@ class AppTemplateService extends ApplicationTemplate
 						// Retrieve the name of the CostCentre
 						DBO()->CostCentre->Id = DBO()->Service->CostCentre->Value;
 						DBO()->CostCentre->Load();
-						$strChangesNote .= "CostCentre has been set to '". DBO()->CostCentre->Name->Value ."'\n";
+						
+						// Retrieve the name of the last CostCentre
+						if (DBO()->Service->CurrentCostCentre->Value == NULL)
+						{
+							$strChangesNote .= "CostCentre has been set to '". DBO()->CostCentre->Name->Value ."'\n";
+						}
+						else
+						{
+							DBO()->CurrentCostCentre->SetTable("CostCentre");
+							DBO()->CurrentCostCentre->Id = DBO()->Service->CurrentCostCentre->Value;
+							DBO()->CurrentCostCentre->Load();
+							$strChangesNote .= "CostCentre has changed from '". DBO()->CurrentCostCentre->Name->Value ."' to '". DBO()->CostCentre->Name->Value ."'\n";
+						}
 					}
 				}
 			}
@@ -532,7 +545,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// The service did not save
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly");
+					Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly.  All modifications to the service have been aborted");
 					return TRUE;
 				}
 			}
@@ -625,7 +638,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// The ServiceMobileDetail did not save
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Updating the mobile details failed, unexpectedly");
+					Ajax()->AddCommand("Alert", "ERROR: Updating the mobile details failed, unexpectedly.  All modifications to the service have been aborted");
 					return TRUE;
 				}
 				// The mobile details saved successfully
@@ -675,7 +688,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// The InboundDetail did not save
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Updating the inbound details failed, unexpectedly");
+					Ajax()->AddCommand("Alert", "ERROR: Updating the inbound details failed, unexpectedly.  All modifications to the service have been aborted");
 					return TRUE;
 				}
 				// The inbound details saved successfully
@@ -737,7 +750,7 @@ class AppTemplateService extends ApplicationTemplate
 						{
 							// The service did not save
 							TransactionRollback();
-							Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly");
+							Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly.  All modifications to the service have been aborted");
 							return TRUE;
 						}
 						break;
@@ -770,18 +783,15 @@ class AppTemplateService extends ApplicationTemplate
 				if ($strChangesNote)
 				{
 					// Append the other changes made to the service, to this note
-					$strNote .= "\nThe following changes we also made:\n$strChangesNote";
+					$strNote .= "\nThe following changes were also made:\n$strChangesNote";
 				}
 				
 				// Save the note. (this will save it to the new service id, if one was created)
 				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intServiceId);
 			}
-			else
+			elseif ($strChangesNote != "")
 			{
-				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-			
-				$strSystemChangesNote  = "Service edited by $strUserName on $strDateTime\nThe following changes were made:\n$strChangesNote";
+				$strSystemChangesNote  = "Service modified.\n$strChangesNote";
 				SaveSystemNote($strSystemChangesNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 			}
 
@@ -797,20 +807,24 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				$strMsgNewService = ".  A new service record had to be made.  Please refer to it from now on.  A note detailing this, has been created";
 			}
-			Ajax()->AddCommand("Alert", "The service was successfully updated$strMsgNewService");
-
-			// Build event object
-			// The contents of this object should be declared in the doc block of this method
-			$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
-			if (DBO()->NewService->Id->Value)
+			
+			// Check that something was actually changed
+			if ($strNoteDetails != "" || $strChangesNote != "")
 			{
-				$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
+				Ajax()->AddCommand("Alert", "The service was successfully updated$strMsgNewService");
+
+				// Build event object
+				// The contents of this object should be declared in the doc block of this method
+				$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
+				if (DBO()->NewService->Id->Value)
+				{
+					$arrEvent['NewService']['Id'] = DBO()->NewService->Id->Value;
+				}
+				Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
+				
+				// Fire the OnNewNote Event
+				Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
 			}
-			Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
-			
-			// Fire the OnNewNote Event
-			Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
-			
 			return TRUE;
 		}
 		

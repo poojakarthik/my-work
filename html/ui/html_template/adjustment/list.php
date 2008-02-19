@@ -124,11 +124,11 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		{
 			if ($dboCharge->Nature->Value == NATURE_CR)
 			{
-				$strNature = $dboCharge->Nature->AsValue();
+				$strNature = $dboCharge->Nature->FormattedValue();
 			}
 			else
 			{
-				$strNature = "<span>&nbsp;</span>";
+				$strNature = "&nbsp;";
 			}
 			
 			// add the row
@@ -143,21 +143,21 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				}
 				else
 				{
-					$strDeleteAdjustmentLabel = "<span>&nbsp;</span>";
+					$strDeleteAdjustmentLabel = "&nbsp;";
 				}
 				
 				
 				
-				Table()->AdjustmentTable->AddRow($dboCharge->ChargedOn->AsValue(),
-												$dboCharge->ChargeType->AsValue(),
+				Table()->AdjustmentTable->AddRow($dboCharge->ChargedOn->FormattedValue(),
+												$dboCharge->ChargeType->Value,
 												$strNature,
 												$dboCharge->Amount->AsCallback("AddGST"),
 												$strDeleteAdjustmentLabel);
 			}
 			else
 			{
-				Table()->AdjustmentTable->AddRow($dboCharge->ChargedOn->AsValue(),
-												$dboCharge->ChargeType->AsValue(),
+				Table()->AdjustmentTable->AddRow($dboCharge->ChargedOn->FormattedValue(),
+												$dboCharge->ChargeType->Value,
 												$strNature,
 												$dboCharge->Amount->AsCallback("AddGST"));
 			}
@@ -173,12 +173,25 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				$strFNN = "";
 			}
 			$strToolTipHtml  = $strFNN;
-			$strToolTipHtml .= $dboCharge->CreatedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
-			$strToolTipHtml .= $dboCharge->ApprovedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+			
+			if ($dboCharge->CreatedBy->Value && $dboCharge->CreatedBy->Value != USER_ID)
+			{
+				$strToolTipHtml .= $dboCharge->CreatedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+			}
+			
+			if ($dboCharge->ApprovedBy->Value && $dboCharge->ApprovedBy->Value != USER_ID)
+			{
+				$strToolTipHtml .= $dboCharge->ApprovedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+			}
+			
 			$strStatus = GetConstantDescription($dboCharge->Status->Value, "ChargeStatus");
 			$strToolTipHtml .= $dboCharge->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
 			$strToolTipHtml .= $dboCharge->Description->AsOutput();
-			$strToolTipHtml .= $dboCharge->Notes->AsOutput();
+			
+			if ($dboCharge->Notes->Value != "")
+			{
+				$strToolTipHtml .= $dboCharge->Notes->AsOutput();
+			}
 			
 			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);
 			

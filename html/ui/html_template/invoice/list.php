@@ -148,12 +148,12 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
 			
 			// Add this row to Invoice table
-			Table()->InvoiceTable->AddRow(  $dboInvoice->CreatedOn->AsValue(),
-											$dboInvoice->Id->AsValue(), 
-											$dboInvoice->Amount->AsValue(), 
-											$dboInvoice->AppliedAmount->AsValue(), 
-											$dboInvoice->Balance->AsValue(), 
-											$dboInvoice->Status->AsCallback("GetConstantDescription", Array("InvoiceStatus")), 
+			Table()->InvoiceTable->AddRow(  $dboInvoice->CreatedOn->FormattedValue(),
+											$dboInvoice->Id->Value, 
+											"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>", 
+											"<span class='Currency'>". $dboInvoice->AppliedAmount->FormattedValue() ."</span>",
+											"<span class='Currency'>". $dboInvoice->Balance->FormattedValue() ."</span>",
+											GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus"), 
 											$strPdfLabel, 
 											$strEmailLabel,
 											$strViewInvoiceLabel,

@@ -225,7 +225,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		foreach (DBL()->Service as $dboService)
 		{
 			// Record the Status of the service
-			$strStatusCell = $dboService->Status->AsCallBack("GetConstantDescription", Array("Service"));
+			$strStatusCell = GetConstantDescription($dboService->Status->Value, "Service");
 
 			// Build the Actions Cell
 			$strEditService		= "";
@@ -325,8 +325,8 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$strStatusDescDate = OutputMask()->ShortDate($dboService->ClosedOn->Value);
 			}
 
-			$strStatusDescCell = "<span>$strStatusDesc</span>";
-			$strStatusDateCell = "<span>$strStatusDescDate</span>";
+			$strStatusDescCell = $strStatusDesc;
+			$strStatusDateCell = $strStatusDescDate;
 			
 				
 			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
@@ -334,17 +334,19 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			if ($dboService->FNN->Value == NULL)
 			{
 				// The service doesn't have an FNN yet
-				$strFnnDescription = "<span>not specified</span>";
+				$strFnnDescription = "[not specified]";
 			}
 			else
 			{
 				// The service has an FNN
-				$strFnnDescription = "<span>{$dboService->FNN->Value}</span>";
+				$strFnnDescription = $dboService->FNN->Value;
 			}
-			
+
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
 			
-			Table()->ServiceTable->AddRow($strFnnCell, $dboService->ServiceType->AsCallback('GetConstantDescription', Array('ServiceType')), 
+			$strServiceType = GetConstantDescription($dboService->ServiceType->Value, "ServiceType");
+			
+			Table()->ServiceTable->AddRow($strFnnCell, $strServiceType, 
 											$strPlanCell, $strStatusCell, $strStatusDescCell, $strStatusDateCell, $strActionsCell);
 		}
 		

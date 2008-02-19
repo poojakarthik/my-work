@@ -203,7 +203,7 @@
 			$insService = new StatementInsert('Service', $arrService);
 			$intService = $insService->Execute($arrService);
 			
-			// Check if inserting the service note worked
+			// Check if creating the service worked
 			if ($intService)
 			{
 				// Add the system note
@@ -212,7 +212,7 @@
 				$intAccountGroup	= $arrService['AccountGroup'];
 				$intAccount			= $arrService['Account'];
 				$strServiceFNN		= $arrService['FNN'];
-				$strNote			= "New $strServiceType service has been added\nFNN: $strServiceFNN";
+				$strNote			= "New $strServiceType service has been created created\nFNN: $strServiceFNN";
 				$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccount, $intService);
 			}
 			

@@ -68,8 +68,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
-			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			Ajax()->AddCommand("Alert", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
 			return TRUE;
 		}
 		
@@ -79,8 +78,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			// A service has been specified.  Load it, to check that it actually exists
 			if (!DBO()->Service->Load())
 			{
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", "The service with service id: '". DBO()->Service->Id->value ."' could not be found");
+				Ajax()->AddCommand("Alert", "The service with service id: '". DBO()->Service->Id->value ."' could not be found");
 				return TRUE;
 			}
 		}
@@ -151,15 +149,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				if (!DBO()->Charge->Save())
 				{
 					// The adjustment did not save
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "ERROR: The Adjustment did not save.");
+					Ajax()->AddCommand("Alert", "ERROR: Saving the adjustment failed, unexpectedly");
 					return TRUE;
 				}
 				else
 				{
 					// The adjustment was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The Adjustment has been successfully added.");
+					Ajax()->AddCommand("AlertReload", "The Adjustment has been successfully added");
 					return TRUE;
 				}
 			}

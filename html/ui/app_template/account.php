@@ -168,17 +168,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
-		
+
 		// Attempt to load the account
 		if (!DBO()->Account->Load())
 		{
-			Ajax()->AddCommand("AlertReload", "The account ". DBO()->Account->Id->Value ." could not be found");
+			Ajax()->AddCommand("Alert", "The account ". DBO()->Account->Id->Value ." could not be found");
 			return TRUE;
 		}
 		
-		// Load all the services belonging to the account, that the user has permission to view
-		
-		DBL()->Contact->Account = DBO()->Account->Id->Value;
+		// Load all the contacts who belong to the AccountGroup and can view the Account
+		$strWhere = "(AccountGroup = <AccountGroup> AND CustomerContact = 1) OR Account = <Account>";
+		$arrWhere = array("AccountGroup"=>DBO()->AccountGroup->Id->Value, "Account"=>DBO()->Account->Id->Value);
+		DBL()->Contact->Where->Set($strWhere, $arrWhere);
 		DBL()->Contact->OrderBy("LastName, FirstName");
 		DBL()->Contact->Load();
 		

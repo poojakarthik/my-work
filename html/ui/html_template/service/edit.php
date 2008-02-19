@@ -103,7 +103,49 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$this->FormStart("EditService", "Service", "Edit");
 
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='GroupedContent'>\n";
+		
+		$intClosedOn = strtotime(DBO()->Service->ClosedOn->Value);
+		$intCurrentDate = strtotime(GetCurrentDateForMySQL());
+		
+		// Check if the ClosedOn date has been set
+		if (DBO()->Service->ClosedOn->Value == NULL)
+		{
+			// The service is not scheduled to close.  It is either active or hasn't been activated yet
+			// Check if it is currently active
+			$intCreatedOn = strtotime(DBO()->Service->CreatedOn->Value);
+			if ($intCurrentDate >= $intCreatedOn)
+			{
+				// The service is currently active
+				echo "&nbsp;&nbsp;Service opened on ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
+			}
+			else
+			{
+				// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
+				echo "&nbsp;&nbsp;Scheduled to be acquired by this lessee on ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
+			}
+		}
+		else
+		{
+			// The service has a closedon date check if it is in the future or past
+			if ($intClosedOn < $intCurrentDate)
+			{
+				// The service has been closed
+				echo "&nbsp;&nbsp;Service was closed on ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+			}
+			elseif ($intClosedOn == $intCurrentDate)
+			{
+				// The service closes today
+				echo "&nbsp;&nbsp;Service closes at the end of today";
+			}
+			else
+			{
+				// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date)
+				echo "&nbsp;&nbsp;Scheduled to close on ". DBO()->Service->ClosedOn->FormattedValue() ."<br>";
+			}
+		}
+		
+		echo "<div class='ContentSeparator'></div>\n";
 		
 		// Render hidden properties
 		DBO()->Service->Id->RenderHidden();
@@ -111,7 +153,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->ClosedOn->RenderHidden();
 		DBO()->Service->CreatedOn->RenderHidden();
 		
-		// Maintaining State
+		// Maintaining State (This shouldn't be done here)
 		DBO()->Service->CurrentFNN->RenderHidden();
 		DBO()->Service->CurrentStatus->RenderHidden();
 		DBO()->Service->CurrentIndial100->RenderHidden();
@@ -124,7 +166,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->ServiceMobileDetail->CurrentSimState->RenderHidden();
 		DBO()->ServiceMobileDetail->CurrentDOB->RenderHidden();
 		DBO()->ServiceMobileDetail->CurrentComments->RenderHidden();
-		//----
 
 		DBO()->Service->Account->RenderHidden();
 		DBO()->Service->AccountGroup->RenderHidden();
@@ -211,54 +252,15 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "</div>\n";
 		}
 
-		$intClosedOn = strtotime(DBO()->Service->ClosedOn->Value);
-		$intCurrentDate = strtotime(GetCurrentDateForMySQL());
-		
-		// Check if the ClosedOn date has been set
-		if (DBO()->Service->ClosedOn->Value == NULL)
-		{
-			// The service is not scheduled to close.  It is either active or hasn't been activated yet
-			// Check if it is currently active
-			$intCreatedOn = strtotime(DBO()->Service->CreatedOn->Value);
-			if ($intCurrentDate >= $intCreatedOn)
-			{
-				// The service is currently active
-				echo "&nbsp;&nbsp;Service opened on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
-			}
-			else
-			{
-				// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
-				echo "&nbsp;&nbsp;Scheduled to be acquired by this lessee on: ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
-			}
-		}
-		else
-		{
-			// The service has a closedon date check if it is in the future or past
-			if ($intClosedOn < $intCurrentDate)
-			{
-				// The service has been closed
-				echo "&nbsp;&nbsp;Service was closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
-			}
-			elseif ($intClosedOn == $intCurrentDate)
-			{
-				// The service closes today
-				echo "&nbsp;&nbsp;Service closes at the end of today";
-			}
-			else
-			{
-				// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date)
-				echo "&nbsp;&nbsp;Scheduled to close on: ". DBO()->Service->ClosedOn->FormattedValue() ."<br>";
-			}
-		}
 	
-		echo "</div>\n";  // NarrowForm - Generic ServiceDetails
+		echo "</div>\n";  // GroupedContent - Generic ServiceDetails
 		
 		// handle extra inbound phone details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 		{
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<h2 class='service'>Inbound Specific Details</h2>\n";
-			echo "<div class='NarrowForm'>\n";
+			echo "<div class='GroupedContent'>\n";
 			DBO()->ServiceInboundDetail->Id->RenderHidden();
 			DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
 			DBO()->ServiceInboundDetail->Configuration->RenderInput();
@@ -270,7 +272,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		{
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<h2 class='service'>Mobile Specific Details</h2>\n";
-			echo "<div class='NarrowForm'>\n";
+			echo "<div class='GroupedContent'>\n";
 			DBO()->ServiceMobileDetail->Id->RenderHidden();
 			DBO()->ServiceMobileDetail->SimPUK->RenderInput();
 			DBO()->ServiceMobileDetail->SimESN->RenderInput();

@@ -121,17 +121,18 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		foreach (DBL()->Payment as $dboPayment)
 		{
 			// Reversed payments have to be obvious when looking at the table
-			$strStatus = "<span>&nbsp;</span>";
+			$strStatus = "&nbsp;";
 			if ($dboPayment->Status->Value == PAYMENT_REVERSED)
 			{
-				$strStatus = $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"));
+				//$strStatus = $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"));
+				$strStatus = GetConstantDescription($dboPayment->Status->Value, "PaymentStatus");
 			}
 			
 			// Build the Payment Amount cell
 			$strAmountCell = "<span class='Currency'>{$dboPayment->Amount->FormattedValue()}</span>";
 			
 			// Build the Payment PaidOn cell
-			$strPaidOnCell = "<span>{$dboPayment->PaidOn->FormattedValue()}</span>";
+			$strPaidOnCell = $dboPayment->PaidOn->FormattedValue();
 			
 			if ($bolHasAdminPerm)
 			{
@@ -176,7 +177,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 					}
 					else
 					{
-						// build the "Reverse Payment" link
+						// Build the "Reverse Payment" link
 						$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
 						$strDeletePaymentLabel = "<span><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Reverse Payment' /></a></span>";
 					}
@@ -184,7 +185,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 				else
 				{
 					// Payment can not be reversed
-					$strDeletePaymentLabel = "<span>&nbsp;</span>";
+					$strDeletePaymentLabel = "&nbsp;";
 				}
 				
 				// Add this row to Payment table

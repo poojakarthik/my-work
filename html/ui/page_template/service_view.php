@@ -10,8 +10,6 @@ $this->Page->SetName("Service Details: $strServiceType - $strFnn");
 
 $this->Page->SetLayout('2Column');
 
-// Add each html object to the appropriate column
-//EXAMPLE:
 $id = $this->Page->AddObject('ServiceAccount', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))

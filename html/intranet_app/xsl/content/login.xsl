@@ -11,7 +11,7 @@
 				
 				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; }
 			    #topContainer { padding-top: 6em; background: #FFF; }
-			    #logoImage {width:300px; height:91px; float: left; }
+			    #logoImage {width:250px; height:91px; float: left; }
 			    #loginContainer{padding: 0px 0px 18em 210px;}
 			    #loginForm {float:left;height: 150px;width:500px; border-left: 1px solid #CCCCCC; padding:0px 8px 8px 30px;text-align:left;}
 			    h3 { margin: 0; }
@@ -53,7 +53,7 @@
 				<div id="topContainer">
 					<div id="loginContainer">
 						<div id="logoImage">
-							<img src="img/login/yellow_billing_logo.png" width="300" height="91" />
+							<img src="img/login/yellow_billing_logo.png"/>
 						</div>
 						<div id="loginForm">
 							<h1>Flex Internal Management System</h1>
