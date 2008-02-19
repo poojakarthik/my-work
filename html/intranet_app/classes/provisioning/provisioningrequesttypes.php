@@ -139,6 +139,7 @@
 			$this->_FULL_SERVICE_REVERSE	= $this->Push (new ProvisioningRequestType (REQUEST_FULL_SERVICE_REVERSE));
 			$this->_BAR_HARD				= $this->Push (new ProvisioningRequestType (REQUEST_BAR_HARD));
 			$this->_UNBAR_HARD				= $this->Push (new ProvisioningRequestType (REQUEST_UNBAR_HARD));
+			$this->_VIRTUAL_PRESELECTION	= $this->Push (new ProvisioningRequestType (REQUEST_VIRTUAL_PRESELECTION));
 			
 			$this->setValue ($intProvisioningRequestType);
 		}
@@ -174,6 +175,7 @@
 				case REQUEST_FULL_SERVICE_REVERSE:			$this->Select ($this->_FULL_SERVICE_REVERSE);	return true;
 				case REQUEST_BAR_HARD:						$this->Select ($this->_BAR_HARD);				return true;
 				case REQUEST_UNBAR_HARD:					$this->Select ($this->_UNBAR_HARD);				return true;
+				case REQUEST_VIRTUAL_PRESELECTION:			$this->Select ($this->_VIRTUAL_PRESELECTION);	return true;
 				default:																					return false;
 			}
 		}
