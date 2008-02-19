@@ -244,6 +244,12 @@
 				$arrBuiltRequest['ServiceNumber']				= str_pad($arrAddress['FNN'], 17, " ", STR_PAD_RIGHT);
 				$arrBuiltRequest['BasketNumber']				= "000";
 				break;
+			
+			case REQUEST_VIRTUAL_PRESELECTION:
+				$arrBuiltRequest['RecordType']					= "13";
+				$arrBuiltRequest['RecordSequence']				= "000000000";
+				$arrBuiltRequest['ServiceNumber']				= str_pad($arrAddress['FNN'], 17, " ", STR_PAD_RIGHT);
+				$arrBuiltRequest['CASignedDate']				= date("Ymd");
 		}
 		
 		foreach ($this->_arrFullServiceRecords as $arrRecord)
