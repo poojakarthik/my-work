@@ -137,23 +137,31 @@
 		 *
 		 * Get all the contacts associated with this account group
 		 *
+		 * @param	$bolOnlyFullAccessContacts	optional, Set to TRUE if you only want to retrieve the 
+		 * 										contacts who can view all accounts belonging to the AccountGroup
+		 * 										Defaults to FALSE
 		 * @return	dataArray
 		 *
 		 * @method
 		 */
-		
-		public function getContacts ()
+
+		public function getContacts($bolOnlyFullAccessContacts = FALSE)
 		{
 			// Start the array
-			$oblarrContacts = new dataArray ('Contacts', 'Contact');
+			$oblarrContacts = new dataArray('Contacts', 'Contact');
+			
+			if ($bolOnlyFullAccessContacts)
+			{
+				$strOnlyFullAccess = "AND CustomerContact = 1";
+			}
 			
 			// Pull all the active contacts ...
-			$selContacts = new StatementSelect ('Contact', 'Id', 'AccountGroup = <AccountGroup> AND Archived = 0');
-			$selContacts->Execute (Array ('AccountGroup' => $this->Pull ('Id')->getValue ()));
+			$selContacts = new StatementSelect('Contact', 'Id', "AccountGroup = <AccountGroup> AND Archived = 0 $strOnlyFullAccess");
+			$selContacts->Execute (Array ('AccountGroup' => $this->Pull('Id')->getValue ()));
 			
-			foreach ($selContacts->FetchAll () as $arrContact)
+			foreach ($selContacts->FetchAll() as $arrContact)
 			{
-				$oblarrContacts->Push (new Contact ($arrContact ['Id']));
+				$oblarrContacts->Push(new Contact($arrContact ['Id']));
 			}
 			
 			return $oblarrContacts;

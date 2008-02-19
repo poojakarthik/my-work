@@ -172,7 +172,7 @@
 				'State'					=> $arrDetails ['Account']['State'],
 				'Country'				=> 'AU',
 				'BillingType'			=> $arrDetails ['Account']['BillingType'],			// (CONSTANT) Account, Credit Card or Direct Debit.
-				'PrimaryContact'		=> ($cntContact !== null) ? $cntContact : null,
+				'PrimaryContact'		=> ($cntContact !== null) ? $cntContact->Pull('Id')->getValue() : null,
 				'CustomerGroup'			=> $arrDetails ['Account']['CustomerGroup'],
 				'CreditCard'			=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD) ? $intCreditCard : null,
 				'DirectDebit'			=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT) ? $intDirectDebit : null, 

@@ -109,6 +109,9 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		Table()->InvoiceTable->SetWidth("10%", "12%", "17%", "17%", "17%", "11%", "4%", "4%", "4%", "4%");
 		Table()->InvoiceTable->SetAlignment("Left", "Left", "Right", "Right", "Right", "Left", "Center", "Center", "Center", "Center");
 		
+		// Invoices that are older than 1 year will not have CDR records stored in the database
+		$strCDRCutoffDate = date("Y-m-01", strtotime("-1 year"));
+		
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
 			// Build the links 
@@ -117,33 +120,39 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			$intMonth = (int)date("m", $intDate);
 			
 			// Check if a pdf exists for the invoice
-			$strPdfLabel	= "<span>&nbsp;</span>";
-			$strEmailLabel	= "<span>&nbsp;</span>";
+			$strPdfLabel	= "&nbsp;";
+			$strEmailLabel	= "&nbsp;";
 			if (InvoicePdfExists($dboInvoice->Account->Value, $intYear, $intMonth))
 			{
 				// The pdf exists
 				// Build "view invoice pdf" link
 				$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intYear, $intMonth);
-				$strPdfLabel 	= "<span><a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a></span>";
+				$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a>";
 				
 				// Build "Email invoice pdf" link, if the user has OPERATOR privileges
 				if ($bolUserHasOperatorPerm)
 				{
 					$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
-					$strEmailLabel 	= "<span><a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a></span>";
+					$strEmailLabel 	= "<a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a>";
 				}
 			}
 			
-			// Build the "View Invoice Details" link
-			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
-			$strViewInvoiceLabel = "<span><a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a></span>";
-			
-			// Build the "Export Invoice as CSV" link
-			$strExportCSV = Href()->ExportInvoiceAsCSV($dboInvoice->Id->Value);
-			$strExportCSV = "<span><a href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a><span>";
+			$strViewInvoiceLabel	= "&nbsp;";
+			$strExportCSV			= "&nbsp;";
+			if ($dboInvoice->CreatedOn->Value > $strCDRCutoffDate)
+			{
+				// Build the "View Invoice Details" link
+				$strViewInvoiceHref		= Href()->ViewInvoice($dboInvoice->Id->Value);
+				$strViewInvoiceLabel	= "<a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a>";
+				
+				// Build the "Export Invoice as CSV" link
+				$strExportCSV = Href()->ExportInvoiceAsCSV($dboInvoice->Id->Value);
+				$strExportCSV = "<a href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a>";
+			}
 			
 			// Calculate Invoice Amount
 			$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
+			
 			// Calculate AppliedAmount
 			$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
 			

@@ -116,7 +116,7 @@
 			$acgAccountGroup	= $Style->attachObject ($actAssociated->AccountGroup ());
 			
 			// AccountGroup can be reference in XPath using: /Response/Contacts
-			$ctsContacts		= $Style->attachObject ($acgAccountGroup->getContacts ());
+			$ctsContacts		= $Style->attachObject ($acgAccountGroup->getContacts(TRUE));
 		}
 		catch (Exception $e)
 		{
@@ -516,8 +516,7 @@
 			// If we reach this point in the Script, then we're probably going to make the Account
 			// All we have to do is make sure the Contact being requested to add exists in the Account
 			// that is being requested - if an account is being made in an Account Group
-			
-			if ($_POST ['Contact']['USE']) {
+			if ($_POST['Contact']['USE']) {
 				$cntContact = new Contact ($_POST ['Contact']['Id']);
 			}
 			
