@@ -9,10 +9,10 @@ $arrDependencies	= Array();
 //----------------------------------------------------------------------------//
 
 // Friendly Name (no spaces)
-$arrProcessType['Name']				= "Test2";
+$arrProcessType['Name']				= "Billing";
 
 // Command to execute
-$arrProcessType['Command']			= "php test_loop";
+$arrProcessType['Command']			= "php process_billing.php";
 
 // Command's Working Directory
 $arrProcessType['WorkingDirectory']	= FLEX_BASE_PATH."cli/process/";
@@ -26,8 +26,39 @@ $arrProcessType['Debug']			= TRUE;
 // WaitMode		: 0 - Do not wait; -1 - Wait indefinitely; 1+ Wait for X seconds
 // AlertEmail	: (NULL) Email address to alert if this process fails
 
-$arrDependencies['Test1']			['WaitMode']	= -1;
-$arrDependencies['Test1']			['AlertEmail']	= 'rich@voiptelsystems.com.au';
+$arrDependencies['Payments']			['WaitMode']	= -1;
+$arrDependencies['Payments']			['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['Collection']			['WaitMode']	= -1;
+$arrDependencies['Collection']			['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['ProvisioningExport']	['WaitMode']	= -1;
+$arrDependencies['ProvisioningExport']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['ProvisioningImport']	['WaitMode']	= -1;
+$arrDependencies['ProvisioningImport']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['Normalise10000']		['WaitMode']	= -1;
+$arrDependencies['Normalise10000']		['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['ImportSingle']		['WaitMode']	= -1;
+$arrDependencies['ImportSingle']		['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['FullNormalisation']	['WaitMode']	= -1;
+$arrDependencies['FullNormalisation']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['RateNew']				['WaitMode']	= -1;
+$arrDependencies['RateNew']				['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['RateAll']				['WaitMode']	= -1;
+$arrDependencies['RateAll']				['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['RecurringCharges']	['WaitMode']	= -1;
+$arrDependencies['RecurringCharges']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
+$arrDependencies['PayNegativeBalances']	['WaitMode']	= -1;
+$arrDependencies['PayNegativeBalances']	['AlertEmail']	= 'rich@voiptelsystems.com.au';
+
 
 
 //----------------------------------------------------------------------------//
