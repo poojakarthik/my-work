@@ -137,6 +137,11 @@
 				case REQUEST_UNBAR_HARD:
 					$strName = 'Hard Bar Reversal';
 					break;
+				
+				case REQUEST_VIRTUAL_PRESELECTION:
+					$strName = 'Virtual Preselection';
+					break;
+					
 			}
 			
 			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));
