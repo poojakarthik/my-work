@@ -100,9 +100,9 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 		$arrAlreadyIncludedContacts = array();
 		
 	
-		Table()->RecentCustomers->SetHeader("Verified", "Account", "&nbsp;", "Contact");
+		Table()->RecentCustomers->SetHeader("Account", "&nbsp;", "Contact", "Verified");
 		Table()->RecentCustomers->SetAlignment("Left", "Left", "Left", "Left");
-		Table()->RecentCustomers->SetWidth("15%", "12%", "40%", "33%");
+		Table()->RecentCustomers->SetWidth("12%", "40%", "33%", "15%");
 	
 		$strToday = date("jS M Y");
 	
@@ -164,7 +164,7 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 				// A constact is not associated with this customer
 				$strContactCell = "[no contact specified]";
 			}
-			Table()->RecentCustomers->AddRow($strDate, $strAccountCell, $strAccountName, $strContactCell);
+			Table()->RecentCustomers->AddRow($strAccountCell, $strAccountName, $strContactCell, $strDate);
 		}
 		
 		if (Table()->RecentCustomers->RowCount() == 0)

@@ -301,11 +301,11 @@ class VixenTable
 	{
 		if (!func_num_args())
 		{
-			// no parameters were passed
+			// No parameters were passed
 			return NULL;
 		}
 		
-		// retrieve the header values
+		// Store the header values
 		$this->_arrHeader = func_get_args();
 
 		return $this->_arrHeader;
@@ -334,11 +334,11 @@ class VixenTable
 	{
 		if (!func_num_args())
 		{
-			// no parameters were passed
+			// No parameters were passed
 			return NULL;
 		}
 		
-		// retrieve the width values
+		// Store the width values
 		$this->_arrWidths = func_get_args();
 
 		return $this->_arrWidths;
@@ -367,11 +367,11 @@ class VixenTable
 	{
 		if (!func_num_args())
 		{
-			// no parameters were passed
+			// No parameters were passed
 			return NULL;
 		}
 		
-		// retrieve the alignment values
+		// Store the alignment values
 		$this->_arrAlignments = func_get_args();
 
 		return $this->_arrAlignments;
@@ -847,7 +847,7 @@ class VixenTable
 				// Work out which width to use
 				//TODO! After setting the widths once in the header, you shouldn't have to set them again, but we are anyway.
 				//This could cut down the size of the html file generated
-				if (isset($objRow['Widths']))
+				/*if (isset($objRow['Widths']))
 				{
 					// Use the width specific to this row and column
 					$strWidth = "width='". $objRow['Widths'][$intColCount] ."'";
@@ -857,13 +857,13 @@ class VixenTable
 					// Use the general width of this column
 					$strWidth = "width='". $this->_arrWidths[$intColCount] ."'";
 				}
-				
+				*/
+
 				// Work out which alignment to use
 				if (isset($objRow['Alignments']))
 				{
 					// Use the alignment specific to this row and column
 					$strAlignment = "align='". $objRow['Alignments'][$intColCount] ."'";
-					
 				}
 				else
 				{

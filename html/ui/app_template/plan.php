@@ -433,7 +433,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		 *						update the Archived property of the Rate in the Rate table so that it is now a committed Rate, not a draft
 		 */
 	
-		// S1: Setup the remaing fields required of a RatePlan record
+		// S1: Set up the remaing fields required of a RatePlan record
 		DBO()->RatePlan->MinMonthly	= ltrim(DBO()->RatePlan->MinMonthly->Value, "$");
 		DBO()->RatePlan->ChargeCap	= ltrim(DBO()->RatePlan->ChargeCap->Value, "$");
 		DBO()->RatePlan->UsageCap	= ltrim(DBO()->RatePlan->UsageCap->Value, "$");

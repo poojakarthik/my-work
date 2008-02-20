@@ -110,6 +110,35 @@ function VixenAccountDetailsClass()
 		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountDetailsForViewing", objObjects, null, true);
 	}
 
+	// Resizes the Edit Controls when the Account Details are rendered in edit mode
+	this.ResizeEditControls = function(intWidth, bolIncludeAddressDetails)
+	{
+		elmCustomerGroup = document.getElementById('Account.CustomerGroup');
+		if (elmCustomerGroup != null)
+		{
+			elmCustomerGroup.style.width = intWidth;
+		}
+		
+		document.getElementById('Account.Archived').style.width				= intWidth;
+		document.getElementById('Account.BusinessName').style.width			= intWidth;
+		document.getElementById('Account.TradingName').style.width			= intWidth;
+		document.getElementById('Account.ABN').style.width					= intWidth;
+		document.getElementById('Account.ACN').style.width					= intWidth;
+		
+		if (bolIncludeAddressDetails)
+		{
+			document.getElementById('Account.Address1').style.width			= intWidth;
+			document.getElementById('Account.Address2').style.width			= intWidth;
+			document.getElementById('Account.Suburb').style.width			= intWidth;
+			document.getElementById('Account.Postcode').style.width			= intWidth;
+			document.getElementById('Account.State').style.width			= intWidth;
+			document.getElementById('Account.BillingMethod').style.width	= intWidth;
+		}
+		
+		document.getElementById('Account.Sample').style.width				= intWidth;
+		document.getElementById('Account.LatePaymentAmnesty').style.width	= intWidth;
+	}
+
 	//------------------------------------------------------------------------//
 	// OnUpdate
 	//------------------------------------------------------------------------//

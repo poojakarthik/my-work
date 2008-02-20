@@ -171,7 +171,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	private function _RenderPlanDetails()
 	{
 		echo "<h2 class='Plan'>Plan Details</h2>\n";
-		echo "<div class='WideForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 		
 		// Only apply the output mask if the DBO()->RatePlan is not invalid
 		$bolApplyOutputMask = !DBO()->RatePlan->IsInvalid();
@@ -179,6 +179,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Shared->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->RatePlan->InAdvance->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
@@ -259,7 +260,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		$strJavascript .= "document.getElementById('RatePlan.Description').style.width='380px';";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 
-		echo "</div>\n"; // WideForm
+		echo "</div>\n"; // GroupedContent
 		echo "<div class='SmallSeperator'></div>\n";
 	}
 	

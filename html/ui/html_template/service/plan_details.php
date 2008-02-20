@@ -106,7 +106,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 	 */
 	private function _RenderDetails($strRatePlan)
 	{
-		echo "<div class='NarrowContent'>\n";
+		echo "<div class='GroupedContent'>\n";
 		
 		// Load the details of the $strRatePlan object into the DBO()->RatePlan object
 		// Trust me, this is easier than defining a bunch of stuff in the UIAppDocumentation, and then refering to contexts that don't mean anything
@@ -126,6 +126,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->Description->RenderOutput();
 			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 			$dboRatePlan->Shared->RenderOutput();
+			$dboRatePlan->InAdvance->RenderOutput();
 			$dboRatePlan->MinMonthly->RenderOutput();
 			$dboRatePlan->ChargeCap->RenderOutput();
 			$dboRatePlan->UsageCap->RenderOutput();
@@ -148,9 +149,9 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			}
 		}
 		
-		echo "</div>\n";  // NarrowContent
+		echo "</div>\n";  // GroupedContent
 		
-		echo "<div class='Seperator'></div>\n";
+		echo "<div class='SmallSeperator'></div>\n";
 	}	
 }
 

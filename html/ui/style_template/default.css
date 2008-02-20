@@ -741,26 +741,30 @@
 	
 	.ContextMenuItem
 	{
-		border:              solid 1px #999999;
-		background-color:    #FFFFFF;
-		background-repeat:   no-repeat;
-		background-position: top left;
+		border:					solid 1px #999999;
+		background-color:		#FFFFFF;
+		background-repeat:		no-repeat;
+		background-position:	top left;
+		padding:				1px 1px 1px 1px;
 	}
 	
+	/*
+	 * I don't think this is actually used
+	 */
 	.ContextMenuItemHighlight
 	{
-		border:              solid 1px #999999;
-		background-color:    #FFFFCC;
+		border:					solid 1px #999999;
+		background-color:		#FFFFCC;
 	}
 	
 	div#BreadCrumbMenu
 	{
-		padding:			5px 0px 5px 10px;
+		padding:				5px 0px 5px 10px;
 	}
 	
 	.MenuIcon
 	{
-		border:              solid 1px #999999;
+		border:					solid 1px #999999;
 	}
 	
 	

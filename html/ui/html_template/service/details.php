@@ -138,7 +138,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		// Register a listener to handle when the service has been updated
 		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('". EVENT_ON_SERVICE_UPDATE ."', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
 		
-		echo "<div class='Seperator'></div>\n";
+		echo "<div class='SmallSeperator'></div>\n";
 	}
 
 	//------------------------------------------------------------------------//

@@ -51,10 +51,6 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -83,7 +79,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// _RenderRateDetail
+	// _RenderRateDetail 
 	//------------------------------------------------------------------------//
 	/**
 	 * _RenderRateDetail()
@@ -97,7 +93,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 	private function _RenderRateDetail()
 	{
 		echo "<h2 class='plan'>Plan Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 		
 		DBO()->RatePlan->Name->RenderOutput();
 		DBO()->RatePlan->Description->RenderOutput();
@@ -107,6 +103,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		DBO()->RatePlan->UsageCap->RenderOutput();
 		DBO()->RatePlan->MinMonthly->RenderOutput();
 		DBO()->RatePlan->Shared->RenderOutput();
+		DBO()->RatePlan->InAdvance->RenderOutput();
 
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
@@ -135,6 +132,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			DBO()->RatePlan->Description->RenderOutput();
 			DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 			DBO()->RatePlan->Shared->RenderOutput();
+			DBO()->RatePlan->InAdvance->RenderOutput();
 			DBO()->RatePlan->MinMonthly->RenderOutput();
 			DBO()->RatePlan->ChargeCap->RenderOutput();
 			DBO()->RatePlan->UsageCap->RenderOutput();

@@ -303,23 +303,34 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
 
-		// Render the CustomerGroup combobox
-		DBL()->CustomerGroup->OrderBy("InternalName");
-		DBL()->CustomerGroup->Load();
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group :</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Account.CustomerGroup' name='Account.CustomerGroup'>\n";
-		foreach (DBL()->CustomerGroup as $dboCustomerGroup)
+		if ($bolUserHasAdminPerm)
 		{
-			$intCustomerGroupId		= $dboCustomerGroup->Id->Value;
-			$strCustomerGroupName	= $dboCustomerGroup->InternalName->Value;
-			$strSelected = (DBO()->Account->CustomerGroup->Value == $intCustomerGroupId) ? "selected='selected'" : "";
-			echo "		<option value='$intCustomerGroupId' $strSelected>$strCustomerGroupName</option>\n";
+			// Render the CustomerGroup combobox
+			DBL()->CustomerGroup->OrderBy("InternalName");
+			DBL()->CustomerGroup->Load();
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group :</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select id='Account.CustomerGroup' name='Account.CustomerGroup'>\n";
+			foreach (DBL()->CustomerGroup as $dboCustomerGroup)
+			{
+				$intCustomerGroupId		= $dboCustomerGroup->Id->Value;
+				$strCustomerGroupName	= $dboCustomerGroup->InternalName->Value;
+				$strSelected = (DBO()->Account->CustomerGroup->Value == $intCustomerGroupId) ? "selected='selected'" : "";
+				echo "		<option value='$intCustomerGroupId' $strSelected>$strCustomerGroupName</option>\n";
+			}
+			echo "      </select>\n";
+			echo "   </div>\n";
+			echo "</div>\n";
 		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";
+		else
+		{
+			// The user does not have permission to edit this property
+			DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
+			DBO()->CustomerGroup->Load();
+			$strCustomerGroupName = DBO()->CustomerGroup->InternalName->Value;
+			DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroupName, RENDER_OUTPUT);
+		}
 		
 		// Reorder the list of Account Status values
 		$arrAccountStatus[ACCOUNT_ACTIVE]			= GetConstantDescription(ACCOUNT_ACTIVE, "Account");
@@ -474,40 +485,17 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		$this->FormEnd();
 		
+		//Resize the textboxes and the comboboxes and disable the "Never charge a late payment fee" radio
+		$strJsCode  = "Vixen.AccountDetails.ResizeEditControls(330, ". ((!DBO()->Account->InvoicesAndPaymentsPage->Value) ? "true" : "false") .");";
+		
 		// If the user doesn't have Admin privileges they cannot select the "Never charge a late payment fee" option
-		$strDisableThirdLatePaymentOption = "";
 		if (!$bolUserHasAdminPerm)
 		{
 			// The user doesn't have admin privileges
-			$strDisableThirdLatePaymentOption = "document.getElementById('Account.DisableLatePayment_1').disabled = true;\n".
-												"document.getElementById('Account.DisableLatePayment_1.Label').style.color = '#4C4C4C';\n";
+			$strJsCode .=	"document.getElementById('Account.DisableLatePayment_1').disabled = true;\n".
+							"document.getElementById('Account.DisableLatePayment_1.Label').style.color = '#4C4C4C';\n";
 		}
 		
-		//Resize the textboxes and the comboboxes and disable the "Never charge a late payment fee" radio
-		$strWidth = "330px";
-		if (!DBO()->Account->InvoicesAndPaymentsPage->Value)
-		{
-			// The Details are not being editted on the InvoicesAndPayments page, which
-			// means the Address and billing method properties are being shown
-			$strResizeAddress =  
-						"document.getElementById('Account.Address1').style.width='$strWidth';\n".
-						"document.getElementById('Account.Address2').style.width='$strWidth';\n".
-						"document.getElementById('Account.Suburb').style.width='$strWidth';\n".
-						"document.getElementById('Account.Postcode').style.width='$strWidth';\n".
-						"document.getElementById('Account.State').style.width='$strWidth';\n".
-						"document.getElementById('Account.BillingMethod').style.width='$strWidth';\n";
-		}
-		
-		$strJsCode =	"document.getElementById('Account.BusinessName').style.width='$strWidth';\n".
-						"document.getElementById('Account.TradingName').style.width='$strWidth';\n".
-						"document.getElementById('Account.ABN').style.width='$strWidth';\n".
-						"document.getElementById('Account.ACN').style.width='$strWidth';\n".
-						"document.getElementById('Account.CustomerGroup').style.width='$strWidth';\n".
-						"document.getElementById('Account.Archived').style.width='$strWidth';\n".
-						$strResizeAddress . 
-						"document.getElementById('Account.Sample').style.width='$strWidth';\n".
-						"document.getElementById('Account.LatePaymentAmnesty').style.width='$strWidth';\n". $strDisableThirdLatePaymentOption;
-						
 		echo "<script type='text/javascript'>$strJsCode</script>";
 	}
 

@@ -493,21 +493,36 @@ class AppTemplateContact extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
+		DBO()->Account->Load();
+
 		// Load and validate the Contact
 		DBO()->PrimaryContact->SetTable("Contact");
 		$strErrorMessage = "";
 		if (!DBO()->PrimaryContact->Load())
 		{
-			$strErrorMessage = "ERROR: The contact could not be found in the database";
+			$strErrorMessage = "ERROR: This contact could not be found in the database";
 		}
 		elseif (DBO()->PrimaryContact->Archived->Value == 1)
 		{	
-			$strErrorMessage = "ERROR: The contact is currently archived";
+			$strErrorMessage = "ERROR: This contact is currently archived";
 		}
-		elseif (DBO()->PrimaryContact->Account->Value != DBO()->Account->Id->Value)
+		elseif (DBO()->PrimaryContact->CustomerContact->Value)
 		{
-			$strErrorMessage = "ERROR: This contact cannot be set as the primary contact for this account";
+			// The contact can view any accounts associated with the AccountGroup that the contact is associated with
+			if (DBO()->PrimaryContact->AccountGroup->Value != DBO()->Account->AccountGroup->Value)
+			{
+				$strErrorMessage = "ERROR: This contact is not associated with this Account Group";
+			}
 		}
+		else
+		{
+			// The contact can only view the 1 account
+			if (DBO()->PrimaryContact->Account->Value != DBO()->Account->Id->Value)
+			{
+				$strErrorMessage = "ERROR: This contact can only view Account ". DBO()->PrimaryContact->Account->Value ." and therefore cannot be made the primary contact of this account";
+			}
+		}
+		
 		if ($strErrorMessage)
 		{
 			// The contact is invalid.  Exit gracefully
@@ -515,12 +530,7 @@ class AppTemplateContact extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// Load the Account
-		if (!DBO()->Account->Load())
-		{
-			$strErrorMessage = "ERROR: The account could not be found in the database";
-		}
-		elseif (DBO()->Account->PrimaryContact->Value == DBO()->PrimaryContact->Id->Value)
+		if (DBO()->Account->PrimaryContact->Value == DBO()->PrimaryContact->Id->Value)
 		{
 			// The contact is already the primary contact
 			$strErrorMessage = "This contact is already the primary contact for this account";

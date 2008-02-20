@@ -998,7 +998,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		if ($strChangesNote)
 		{
-			$strChangesNote = "Account details have been modified.  The following changes were made:\n$strChangesNote";
+			$strChangesNote = "Account details have been modified.\n$strChangesNote";
 			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
 		}
 

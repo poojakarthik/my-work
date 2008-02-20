@@ -30,7 +30,7 @@ function VixenMenuClass(objMenu)
 		'Level2': 
 		{
 			'left': 0,
-			'width': 200,
+			'width': 160,
 			'height': 20,
 			'spacing': 5,
 			'backgroundColor': "#D5E0F8"
@@ -83,7 +83,7 @@ function VixenMenuClass(objMenu)
 			//Add styles
 			//new_node.style[c_attrib] = value
 			elmNode.style['top'] 				= top;
-			elmNode.style['left'] 				= this.config.Level1.left; 
+			elmNode.style['left'] 				= this.config.Level1.left;
 			elmNode.style['width'] 				= this.config.Level1.width;
 			elmNode.style['height'] 			= this.config.Level1.height;
 			elmNode.style['backgroundColor']	= this.config.Level1.backgroundColor;
@@ -123,12 +123,12 @@ function VixenMenuClass(objMenu)
 		var objTextNode;
 		var elmNode;
 		var top = 0;
-		
+
 		if (typeof(elmMenuItem) == 'string')
 		{
 			elmMenuItem = document.getElementById(elmMenuItem);	
 		}
-		
+
 		var object = document.getElementById('VixenMenu__' + elmMenuItem.level);
 		if (object)
 		{
@@ -138,10 +138,13 @@ function VixenMenuClass(objMenu)
 		//Create and attach the container div for the rest of the submenu to sit in
 		var objContainer = document.createElement('div');
 		objContainer.setAttribute('Id', 'VixenMenu__' + elmMenuItem.level);
-		objContainer.style['top'] = this.RemovePx(elmMenuItem.style['top']);
-		objContainer.style['left'] = this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
-		objContainer.style['position'] = 'absolute';
-		objContainer.style['overflow'] = 'visible';
+		objContainer.style.top				= this.RemovePx(elmMenuItem.style['top']);
+		objContainer.style.left				= this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
+		objContainer.style.position			= 'absolute';
+		objContainer.style.overflow			= 'visible';
+		objContainer.style.backgroundColor	= "#FFFFFF";
+		objContainer.style.width			= this.config.Level2.width + this.config.Level2.spacing;
+		objContainer.style.zIndex			= 2;
 
 		elmMenuItem.parentNode.appendChild(objContainer);
 		var elmContainer = document.getElementById('VixenMenu__' + elmMenuItem.level);
@@ -150,6 +153,7 @@ function VixenMenuClass(objMenu)
 		//elmContainer.style['position'] = 'absolute';
 		//elmContainer.style['overflow'] = 'visible';
 
+		var intContainerHeight = 0;
 		
 		//Render the menu
 		for (strKey in elmMenuItem.action)
@@ -186,7 +190,7 @@ function VixenMenuClass(objMenu)
 			elmNode.style['height'] 		= this.config.Level2.height;
 			elmNode.style['backgroundColor'] = this.config.Level2.backgroundColor;
 			elmNode.style['position']		= 'absolute';
-			elmNode.style['zIndex']			= 2;
+			elmNode.style['zIndex']			= 3;
 			elmNode.DefaultBackgroundColor	= this.config.Level2.backgroundColor;
 
 			top = top + this.config.Level2.height + this.config.Level2.spacing;
@@ -206,7 +210,7 @@ function VixenMenuClass(objMenu)
 			elmNode.class 		= 'ContextMenuItem';
 			
 			// Add the menu item element to the container
-			elmContainer.appendChild(elmNode);			
+			elmContainer.appendChild(elmNode);
 		}
 	}
 	
@@ -233,7 +237,7 @@ function VixenMenuClass(objMenu)
 			} 
 			else
 			{
-				//Follow the link
+				// Follow the link
 				document.location.href = objMenuItem.action;
 			}
 			this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);			
@@ -244,7 +248,6 @@ function VixenMenuClass(objMenu)
 			// no need, it adds unnecessary overhead
 			//this.RenderSubMenu(objMenuItem);			
 		}
-		//this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);
 	}
 	
 	this.HandleMouseOver = function(objMenuItem)
@@ -258,7 +261,7 @@ function VixenMenuClass(objMenu)
 		
 		if (typeof(objMenuItem.action) == 'string')
 		{
-			this.timeoutOpen = setTimeout("Vixen.Menu.Close('" + objMenuItem.level + "');", this.config.waitCloseLevel);		
+			this.timeoutOpen = setTimeout("Vixen.Menu.Close('" + objMenuItem.level + "');", this.config.waitCloseLevel);
 		}
 		if (typeof(objMenuItem.action) == 'object')
 		{

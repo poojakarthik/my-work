@@ -130,7 +130,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 	{
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		
-		Table()->ContactTable->SetHeader("Name", "&nbsp;", "Phone#", "Status", "Actions");
+		Table()->ContactTable->SetHeader("Name", "&nbsp;", "Phone#", "Status", "&nbsp;");
 		Table()->ContactTable->SetWidth("40%", "20%", "20%", "10%", "10%");
 		Table()->ContactTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
 		
