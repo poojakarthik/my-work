@@ -105,6 +105,7 @@
 		$this->arrServiceColumns['RatePlan']		= "RatePlan.Id";
 		$this->arrServiceColumns['CreatedOn']		= "Service.CreatedOn";
 		$this->arrServiceColumns['Indial100']		= "Service.Indial100";
+		$this->arrServiceColumns['LastBilledOn']	= "ServiceRatePlan.LastBilledOn";
 		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																	"RatePlan",
 																	$this->arrServiceColumns,
@@ -452,6 +453,7 @@
 			$selEarliestCDR		= new StatementSelect("Service", "EarliestCDR", "Id = <Service>");
 			$selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1", "CreatedOn DESC", 1);
 			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
+			$selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
 			if ($selLastBillDate->Execute($arrAccount))
 			{
 				// Previous Invoice
@@ -496,7 +498,13 @@
 						$intBillingPeriod			= time() - $intLastBillDate;
 						$fltProratedMinMonthly		= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
 						$arrService['MinMonthly']	= round($fltProratedMinMonthly, 2);
-						
+					}
+					
+					// If this is the first invoice for this plan
+					$selLastTotal->Execute($arrService);
+					$arrLastTotal = $selLastTotal->Fetch();
+					if ($arrLastTotal['RatePlan'] != $arrService['RatePlan'])
+					{
 						// Add in "Charge in Advance" Adjustment
 						if ($arrService['InAdvance'])
 						{
@@ -1145,6 +1153,18 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
+		
+		// Update ServiceRatePlan.LastChargedOn field
+		$this->_rptBillingReport->AddMessage("Updating ServiceRatePlan.LastChargedOn...", FALSE);
+		$selServices		= new StatementSelect("ServiceTotal", "DISTINCT Service", "InvoiceRun = <InvoiceRun>");
+		$selServices->Execute($arrInvoiceRun);
+		while ($arrService = $selServices)
+		{
+			$qryLastChargedOn	= new Query("UPDATE ServiceRatePlan SET LastChargedOn = NOW() WHERE Service = {$arrService['Service']} AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1 ORDER BY CreatedOn DESC LIMIT 1");
+			$qryLastChargedOn->Execute();
+		}
+		$this->_rptBillingReport->AddMessage(MSG_OK);
+		
 		
 		// Activate all Inactive ServiceRatePlans and ServiceRateGroups for Services that were Invoiced this month
 		$arrCols	= Array();
