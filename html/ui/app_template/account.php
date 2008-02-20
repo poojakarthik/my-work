@@ -180,7 +180,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$strWhere = "(AccountGroup = <AccountGroup> AND CustomerContact = 1) OR Account = <Account>";
 		$arrWhere = array("AccountGroup"=>DBO()->Account->AccountGroup->Value, "Account"=>DBO()->Account->Id->Value);
 		DBL()->Contact->Where->Set($strWhere, $arrWhere);
-		DBL()->Contact->OrderBy("LastName, FirstName");
+		DBL()->Contact->OrderBy("FirstName, LastName");
 		DBL()->Contact->Load();
 		
 		$this->LoadPage('account_contacts');
