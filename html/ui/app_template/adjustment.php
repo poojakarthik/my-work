@@ -88,6 +88,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
 		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
 		DBL()->ChargeTypesAvailable->Load();
+		
+		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
+		{
+			Ajax()->AddCommand("Alert", "There are currently no adjustment types defined");
+			return TRUE;
+		}
 
 		// load the last 6 invoices with the most recent being first
 		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
@@ -220,6 +226,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		DBL()->ChargeTypesAvailable->SetTable("RecurringChargeType");
 		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
 		DBL()->ChargeTypesAvailable->Load();
+
+		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
+		{
+			Ajax()->AddCommand("Alert", "There are currently no recurring adjustment types defined");
+			return TRUE;
+		}
+
 
 		// load the last 6 invoices with the most recent being first
 		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;

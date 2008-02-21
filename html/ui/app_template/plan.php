@@ -373,7 +373,7 @@ class AppTemplatePlan extends ApplicationTemplate
 				}
 				elseif ($intRateGroup > 0)
 				{
-					// add the rategroup to the list of rate groups
+					// Add the rategroup to the list of rate groups
 					$this->_arrRateGroups[] = $intRateGroup;
 				}
 				
@@ -394,6 +394,23 @@ class AppTemplatePlan extends ApplicationTemplate
 			{
 				// A RateGroup associated with the RecordType, was not specified and not required
 				continue;
+			}
+		}
+		
+		// Make sure all the RateGroups are valid (pretty much just checking that there are no over or under allocations)
+		$strRateGroups = implode(", ", $this->_arrRateGroups);
+		$selRateGroups = new StatementSelect("RateGroup", "*", "Id IN ($strRateGroups)");
+		$selRateGroups->Execute();
+		$arrRateGroups = $selRateGroups->FetchAll();
+		
+		// Validate each RateGroup that is currently saved as a draft
+		$appRateGroup = new AppTemplateRateGroup();
+		foreach ($arrRateGroups as $arrRateGroup)
+		{
+			if ($arrRateGroup['Archived'] == RATE_STATUS_DRAFT && !$appRateGroup->IsValidRateGroup($arrRateGroup['Id']))
+			{
+				// The RateGroup is invalid
+				return "ERROR: The Draft RateGroup, '{$arrRateGroup['Name']}', is currently invalid.  Saving of the Plan has been aborted.";
 			}
 		}
 		

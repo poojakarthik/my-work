@@ -62,7 +62,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 *										[FirstInterval]	= The interval of the day which this rate is first applied 
 	 *															(00:00:00 - 00:14:59 = interval 1, 00:15:00 - 00:29:59 = interval 2)
 	 *															There are 96 intervals in a day
-	 *										[LastInterval]	= The interval of the dat which this rate is last applied
+	 *										[LastInterval]	= The interval of the day which this rate is last applied
 	 *										[Monday] - [Sunday]	= Booleans. TRUE if the Rate is applied on this day
 	 *
 	 * @property
@@ -2416,6 +2416,61 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$arrReport[] = "\tOk";
 			return TRUE;
 		}
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// IsValidRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidRateGroup()
+	 *
+	 * Validates a RateGroup that is already stored in the database 
+	 * 
+	 * Validates a RateGroup that is already stored in the database
+	 * This only checks for over or under-allocations
+	 * If a RateGroup is in the database then it should already be valid, however
+	 * draft RateGroups can be stored in the database, and then have their draft 
+	 * rates change, which would turn the RateGroup invalid
+	 *
+	 * @param		int		$intRateGroupId		Id of the RateGroup to validate
+	 *
+	 * @return		bool	TRUE if the RateGroup is valid, else FALSE
+	 *
+	 * @method
+	 */
+	function IsValidRateGroup($intRateGroupId)
+	{
+		// Load the RateGroup
+		DBO()->RateGroup->Id = $intRateGroupId;
+		DBO()->RateGroup->Load();
+		
+		// Load the Rates belonging to the RateGroup
+		$selRateGroupRates = new StatementSelect("RateGroupRate", "Rate", "RateGroup = $intRateGroupId");
+		$intNumRates = $selRateGroupRates->Execute();
+		if (!$intNumRates)
+		{
+			// Either there are no Rates in the RateGroup, or something screwed up
+			return FALSE;
+		}
+		
+		// Convert this to a list of Rate Ids
+		$arrRateGroupRates = $selRateGroupRates->FetchAll();
+		$arrRates = array();
+		foreach ($arrRateGroupRates as $arrRate)
+		{
+			$arrRates[] = $arrRate['Rate']; 
+		}
+		
+		// Check that the selected Rates cover all hours of the week and don't overlap unless they are destination based
+		$this->_arrDestinationRates = NULL;
+		$this->_BuildRateSummary(DBO()->RateGroup->RecordType->Value, $arrRates);
+		if (($this->_arrDestinationRateSummary['OverAllocated']) || ($this->_arrDestinationRateSummary['UnderAllocated'] && !DBO()->RateGroup->Fleet->Value)) 
+		{
+			return FALSE;
+		}
+		
+		return TRUE;		
 	}
 	
 }

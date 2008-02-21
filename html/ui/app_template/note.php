@@ -315,7 +315,7 @@ class AppTemplateNote extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
-		
+
 		// Load the notes
 		$bolUpdateCookies = (DBO()->NoteDetails->UpdateCookies->Value == TRUE) ? TRUE : FALSE;
 		LoadNotes(DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->Contact->Id->Value, $bolUpdateCookies);
