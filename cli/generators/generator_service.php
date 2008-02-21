@@ -5,7 +5,7 @@ $selRandomCustomer	= new StatementSelect("Account", "*", "Archived = 0", "RAND()
 $insService			= new StatementInsert("Service");
 
 $intServices = rand(1, 20);
-while (($intCustomerServices = rand(1, $intServices)) > 0)
+while (($intCustomerServices = rand(1, ceil($intServices / 4))) > 0)
 {
 	$selRandomCustomer->Execute();
 	$arrCustomer = $selRandomCustomer->Fetch();
