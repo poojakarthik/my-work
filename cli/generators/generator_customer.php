@@ -26,12 +26,6 @@
  *
  */
 
-// CUSTOM DB CONNECTION
-$GLOBALS['**arrDatabase']['URL']		= "192.168.2.224";
-$GLOBALS['**arrDatabase']['User']		= "flex";
-$GLOBALS['**arrDatabase']['Password']	= "Fl3x!BiLl";
-$GLOBALS['**arrDatabase']['Database']	= "flexdemodata";
-
 require_once("../../lib/framework/require.php");
 
 // Statements
