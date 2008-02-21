@@ -143,7 +143,7 @@
 				// Save the Session Information to the Object
 				$this->_oblarrSession = $this->Push ($oblobjSession);
 				
-				foreach ($this->_oblarrSession as &$mixSessionItem)
+				foreach ($this->_oblarrSession as $mixSessionItem)
 				{
 					if ($mixSessionItem instanceOf AuthenticatedEmployeeAudit)
 					{
