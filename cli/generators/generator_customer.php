@@ -26,7 +26,7 @@
  *
  */
 
-require_once("../../lib/framework/require.php");
+require_once("../../flex.require.php");
 
 // Statements
 $selAccountGroups	= new StatementSelect("AccountGroup", "Id", "Archived = 0");
@@ -35,8 +35,13 @@ $insAccount			= new StatementInsert("Account");
 $insContact			= new StatementInsert("Contact");
 
 $arrColumns = Array();
-$arrColumns['AccountGroup']	= NULL;
+$arrColumns['AccountGroup']		= NULL;
+$arrColumns['PrimaryContact']	= NULL;
 $ubiAccount			= new StatementUpdateById("Account", $arrColumns);
+
+$arrColumns = Array();
+$arrColumns['Account']			= NULL;
+$ubiContact			= new StatementUpdateById("Contact", $arrColumns);
 
 
 
@@ -217,10 +222,12 @@ for ($i = 0; $i < $intCustomers; $i++)
 	$arrContact['PassWord']			= sha1(strtolower($arrContact['FirstName'])); // AccountGroup # or Account #?
 	$arrContact['Email']			= strtolower($arrContact['FirstName'] . '@' . str_replace(' ', '', $arrAccount['BusinessName']) . '.com.au');
 	$arrContact['Archived']			= 0;
-	$arrAccount['PrimaryContact']	= $insContact->Execute($arrContact);
+	$arrContact['Id']				= $arrAccount['PrimaryContact'] = $insContact->Execute($arrContact);
 	
 	// Update Account with Primary Contact
-	$ubiAccount->Execute($arrAccount);
+	$arrContact['Account']			= $ubiAccount->Execute($arrAccount);
+	
+	$ubiContact->Execute($arrContact);
 	
 	//Debug(Array('AccountGroup' => $arrAccountGroup, 'Account' => $arrAccount, 'Contact' => $arrContact));
 	CliEcho("Added Customer: {$arrAccount['BusinessName']}");

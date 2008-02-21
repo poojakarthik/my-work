@@ -13,9 +13,12 @@ while (($intCustomerServices = rand(1, $intServices)) > 0)
 	$arrService['AccountGroup']		= $arrCustomer['AccountGroup'];
 	$arrService['Account']			= $arrCustomer['Id'];
 	$arrService['CreatedOn']		= date('Y-m-d');
+	$arrService['CreatedBy']		= 22;
 	$arrService['Carrier']			= CARRIER_UNITEL;
 	$arrService['CarrierPreselect']	= CARRIER_OPTUS;
 	$arrService['Status']			= SERVICE_ACTIVE;
+	$arrService['CappedCharge']		= 0.0;
+	$arrService['UncappedCharge']	= 0.0;
 	
 	for ($i = 1; $i < $intServices; $i++)
 	{
@@ -100,8 +103,7 @@ while (($intCustomerServices = rand(1, $intServices)) > 0)
 		}
 		
 		Debug("\tAdding Service #{$arrService['FNN']}...");
-		// !!!UNCOMMENT ME!!!
-		//$insService->Execute($arrService);
+		$insService->Execute($arrService);
 	}
 	
 	$intServices -= $intCustomerServices;

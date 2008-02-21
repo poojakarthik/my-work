@@ -56,7 +56,7 @@ while ($arrCDR = $resResult->fetch_assoc())
 	
 	// Insert modified CDR
 	Debug("Inserting a CDR for {$arrService['FNN']}...");
-	//$insCDR->Execute($arrCDR);
+	$insCDR->Execute($arrCDR);
 }
 
 // Close MySQL connection to MINX
