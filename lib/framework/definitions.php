@@ -681,6 +681,9 @@ $GLOBALS['*arrConstant']	['Request']	[911]	['Constant']	= 'REQUEST_LOSS_PRESELEC
 $GLOBALS['*arrConstant']	['Request']	[911]	['Description']	= 'Preselection Lost';
 $GLOBALS['*arrConstant']	['Request']	[912]	['Constant']	= 'REQUEST_CHANGE_ADDRESS';
 $GLOBALS['*arrConstant']	['Request']	[912]	['Description']	= 'Address Changed';
+$GLOBALS['*arrConstant']	['Request']	[913]	['Constant']	= 'REQUEST_VIRTUAL_PRESELECTION';
+$GLOBALS['*arrConstant']	['Request']	[913]	['Description']	= 'Virtual Preselection';
+
 
 // Provisioning Line Actions (Log)
 /*define("LINE_ACTION_OTHER"				, 600);

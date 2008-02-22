@@ -1,11 +1,27 @@
 <?php
 require_once("../../flex.require.php");
 
-$selRandomCustomer	= new StatementSelect("Account", "*", "Archived = 0", "RAND()", 1);
-$insService			= new StatementInsert("Service");
+$selRandomCustomer		= new StatementSelect("Account", "*", "Archived = 0", "RAND()", 1);
+$insService				= new StatementInsert("Service");
+$selPlan				= new StatementSelect("RatePlan", "Id", "ServiceType = <ServiceType>", "RAND()", 1);
+$qryServiceRateGroup	= new Query();
+$strServiceRateGroup	= "INSERT INTO ServiceRateGroup (Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active)" .
+							" SELECT <Service>, RateGroup, 22, CURDATE(), NOW(), '9999-12-31 23:59:59', 1" .
+							" FROM RatePlanRateGroup" .
+							" WHERE RatePlan = <RatePlan>";
+$arrCols = Array();
+$arrCols['Service']			= NULL;
+$arrCols['RatePlan']		= NULL;
+$arrCols['CreatedBy']		= NULL;
+$arrCols['CreatedOn']		= new MySQLFunction("CURDATE()");
+$arrCols['StartDatetime']	= new MySQLFunction("NOW()");
+$arrCols['EndDatetime']		= NULL;
+$arrCols['Active']			= NULL;
+$insServiceRatePlan		= new StatementInsert("ServiceRatePlan", $arrCols);
 
 $intServices = rand(1, 20);
-while (($intCustomerServices = rand(1, ceil($intServices / 4))) > 0)
+//while (($intCustomerServices = rand(1, ceil($intServices / 4))) > 0)
+for ($i = 0; $i < $intServices; $i++)
 {
 	$selRandomCustomer->Execute();
 	$arrCustomer = $selRandomCustomer->Fetch();
@@ -19,6 +35,7 @@ while (($intCustomerServices = rand(1, ceil($intServices / 4))) > 0)
 	$arrService['Status']			= SERVICE_ACTIVE;
 	$arrService['CappedCharge']		= 0.0;
 	$arrService['UncappedCharge']	= 0.0;
+	$arrService['Indial100']	= 0;
 	
 	for ($i = 1; $i < $intServices; $i++)
 	{
@@ -96,16 +113,36 @@ while (($intCustomerServices = rand(1, ceil($intServices / 4))) > 0)
 				{
 					$arrService['Indial100']	= 1;
 				}
-				else
-				{
-					$arrService['Indial100']	= 0;
-				}
 		}
 		
 		Debug("\tAdding Service #{$arrService['FNN']}...");
-		$insService->Execute($arrService);
+		$intService = $insService->Execute($arrService);
+		
+		if (!$intService)
+		{
+			Debug($insService->Error());
+			die;
+		}
+		
+		// Add ServiceRatePlan and ServiceRateGroup
+		$selPlan->Execute($arrService);
+		$arrPlan	= $selPlan->Fetch();
+		
+		$arrCols = Array();
+		$arrCols['Service']			= $intService;
+		$arrCols['RatePlan']		= $arrPlan['Id'];
+		$arrCols['CreatedBy']		= 22;
+		$arrCols['CreatedOn']		= new MySQLFunction("CURDATE()");;
+		$arrCols['StartDatetime']	= new MySQLFunction("NOW()");
+		$arrCols['EndDatetime']		= '9999-12-31 23:59:59';
+		$arrCols['Active']			= 1;
+		$insServiceRatePlan->Execute($arrCols);
+		
+		$strQuery = str_replace('<Service>', $intService, $strServiceRateGroup);
+		$strQuery = str_replace('<RatePlan>', $arrPlan['Id'], $strQuery);
+		$qryServiceRateGroup->Execute($strQuery);
 	}
 	
-	$intServices -= $intCustomerServices;
+	//$intServices -= $intCustomerServices;
 }
 ?>

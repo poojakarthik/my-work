@@ -179,7 +179,7 @@ for ($i = 0; $i < $intCustomers; $i++)
 	}
 	
 	// Add account
-	$arrAccount['CustomerGroup']		= rand(0, 3);
+	$arrAccount['CustomerGroup']		= rand(1, 3);
 	$arrAccount['DisableDDR']			= rand(0, 1);
 	$arrAccount['DisableLatePayment']	= rand(-5, 1);
 	$arrAccount['PaymentTerms']			= 14;
@@ -191,7 +191,7 @@ for ($i = 0; $i < $intCustomers; $i++)
 	$arrAccount['BillingType']			= 3;
 	$arrAccount['CreatedOn']			= date("Y-m-d");
 	$arrAccount['Archived']				= 0;
-	$arrAccount['Id'] = $insAccount->Execute($arrAccount);
+	$arrContact['Account']				= $arrAccount['Id'] = $insAccount->Execute($arrAccount);
 	
 	// Add contact
 	$arrContact['CustomerContact']	= 1;
@@ -225,9 +225,7 @@ for ($i = 0; $i < $intCustomers; $i++)
 	$arrContact['Id']				= $arrAccount['PrimaryContact'] = $insContact->Execute($arrContact);
 	
 	// Update Account with Primary Contact
-	$arrContact['Account']			= $ubiAccount->Execute($arrAccount);
-	
-	$ubiContact->Execute($arrContact);
+	$ubiAccount->Execute($arrAccount);
 	
 	//Debug(Array('AccountGroup' => $arrAccountGroup, 'Account' => $arrAccount, 'Contact' => $arrContact));
 	CliEcho("Added Customer: {$arrAccount['BusinessName']}");
