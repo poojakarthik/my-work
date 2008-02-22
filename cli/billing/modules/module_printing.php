@@ -127,7 +127,7 @@
 		$this->_selServices				= new StatementSelect(	"((Service LEFT JOIN ServiceExtension ON Service.Id = ServiceExtension.Service) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id) LEFT JOIN CostCentre ON Service.CostCentre = CostCentre.Id",
 																"Service.FNN AS FNN, COUNT(Service.Id) AS ServiceCount, (CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END) AS CostCentre, Service.Indial100 as Indial100, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
 																"Service.Account = <Account>",
-																"CostCentre, Service.ServiceType, Service.FNN, ServiceExtension.Name",
+																"CostCentre, Service.ServiceType, Service.FNN, ServiceExtension.Name, ForceInvoiceRender",
 																NULL,
 																"Service.FNN, ServiceExtension.RangeStart");
 																
@@ -1221,7 +1221,7 @@
  		//$arrCols['Service']		= $intService;
  		//$arrCols['InvoiceRun']	= $this->_strInvoiceRun;
  		//if ($this->_selDisplayServiceSummary->Execute($arrCols))
- 		if ($arrServiceSummaries)
+ 		if ($arrServiceSummaries || $arrService['ForceInvoiceRender'])
  		{
 			// Get Plan Details
 			$this->_selRatePlan->Execute(Array('Id' => end($arrService['Id']), 'InvoiceRun' => $this->_strInvoiceRun));

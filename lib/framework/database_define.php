@@ -518,66 +518,6 @@
 	 
  	
 	//----------------------------------------------------------------------------// 
-	// Table: AccountNotices
-	//----------------------------------------------------------------------------// 
-	 
- 
- 		
- 		
-	unset($arrDefine);
-	 
-	$arrDefine['Name']		= "AccountNotices"; 
-	$arrDefine['Type']		= "InnoDB"; 
-	$arrDefine['Id']		= "Id"; 
-	$arrDefine['Index'][] 		= ""; 
-	$arrDefine['Unique'][] 		= ""; 
-		 
-		 
-				 
-	// Define Columns 
-	$strName = "Account"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
-		 
-				 
-				 
-	// Define Columns 
-	$strName = "Invoice"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
-		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
-		$arrDefine['Column'][$strName]['Default'] 		= null; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
-		 
-				 
-				 
-	// Define Columns 
-	$strName = "NoticeType"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
-		 
-				 
-				 
-	// Define Columns 
-	$strName = "CreatedOn"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime"; 
-		 
-					 
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
-	 
- 	
-	//----------------------------------------------------------------------------// 
 	// Table: BugReport
 	//----------------------------------------------------------------------------// 
 	 
@@ -6915,6 +6855,16 @@
 				 
 				 
 	// Define Columns 
+	$strName = "ForceInvoiceRender"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(3) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= "0"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
 	$strName = "Status"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
@@ -7660,6 +7610,16 @@
 		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "LastChargedOn"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime"; 
 		 
 				 
