@@ -212,7 +212,7 @@
 				$intAccountGroup	= $arrService['AccountGroup'];
 				$intAccount			= $arrService['Account'];
 				$strServiceFNN		= $arrService['FNN'];
-				$strNote			= "New $strServiceType service has been created created\nFNN: $strServiceFNN";
+				$strNote			= "New $strServiceType service has been created\nFNN: $strServiceFNN";
 				$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId, $intAccountGroup, $intAccount, $intService);
 			}
 			

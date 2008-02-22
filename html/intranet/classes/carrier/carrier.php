@@ -96,28 +96,7 @@
 			
 			$strName = 'Unknown';
 			
-			switch ($intType)
-			{
-				case CARRIER_UNITEL:
-					$strName = 'Unitel';
-					break;
-					
-				case CARRIER_UNITEL_VOICETALK:
-					$strName = 'Unitel (VoiceTalk)';
-					break;
-					
-				case CARRIER_OPTUS:
-					$strName = 'Optus';
-					break;
-					
-				case CARRIER_AAPT:
-					$strName = 'AAPT';
-					break;
-					
-				case CARRIER_ISEEK:
-					$strName = 'iSeek';
-					break;
-			}
+			$strName = GetConstantDescription($intType, "Carrier");
 			
 			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));
 			$this->oblstrName		= $this->Push (new dataString	('Name',	$strName));

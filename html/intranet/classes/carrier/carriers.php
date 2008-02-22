@@ -55,7 +55,8 @@
 		 * @property
 		 */
 		
-		private $_UNITEL;
+		// These are now declared on the fly from the $GLOBALS['*arrConstant']['Carrier'] array
+		//private $_UNITEL;
 		
 		//------------------------------------------------------------------------//
 		// _OPTUS
@@ -72,7 +73,7 @@
 		 * @property
 		 */
 		
-		private $_OPTUS;
+		//private $_OPTUS;
 		
 		//------------------------------------------------------------------------//
 		// _AAPT
@@ -89,7 +90,7 @@
 		 * @property
 		 */
 		
-		private $_AAPT;
+		//private $_AAPT;
 		
 		//------------------------------------------------------------------------//
 		// _ISEEK
@@ -106,7 +107,7 @@
 		 * @property
 		 */
 		
-		private $_ISEEK;
+		//private $_ISEEK;
 		
 		//------------------------------------------------------------------------//
 		// __construct
@@ -127,13 +128,29 @@
 		{
 			parent::__construct ('Carriers');
 			
-			// Instantiate the Variable Values for possible selection
+			foreach ($GLOBALS['*arrConstant']['Carrier'] as $intCarrierCode=>$arrCarrier)
+			{
+				if ($intCarrierCode == CARRIER_PAYMENT)
+				{
+					// Don't include this special case
+					continue;
+				}
+				
+				$strDataMember = substr($arrCarrier['Constant'], 7);
+				
+				// ie $this->_OPTUS = etc
+				$this->{$strDataMember} = $this->Push(new Carrier($intCarrierCode));
+			}
+			
+			
+			/*// Instantiate the Variable Values for possible selection
 			$this->_UNITEL				= $this->Push (new Carrier (CARRIER_UNITEL));
 			$this->_UNITEL_VOICETALK	= $this->Push (new Carrier (CARRIER_UNITEL_VOICETALK));
 			$this->_OPTUS				= $this->Push (new Carrier (CARRIER_OPTUS));
 			$this->_AAPT				= $this->Push (new Carrier (CARRIER_AAPT));
 			$this->_ISEEK				= $this->Push (new Carrier (CARRIER_ISEEK));
-			
+			*/
+	
 			$this->setValue ($intCarrier);
 		}
 		
@@ -155,7 +172,22 @@
 		
 		public function setValue ($intCarrier)
 		{
-			// Select the value
+			if (isset($GLOBALS['*arrConstant']['Carrier'][$intCarrier]) && $intCarrier != CARRIER_PAYMENT)
+			{
+				// The carrier is valid.  Select the value
+				$strDataMember = substr($GLOBALS['*arrConstant']['Carrier'][$intCarrier]['Constant'], 7);
+				
+				// ie $this->Select($this->_UNITEL);
+				$this->Select($this->{$strDataMember});
+				return TRUE;
+			}
+			else
+			{
+				// The carrier was not found
+				return FALSE;
+			}
+			
+			/*// Select the value
 			switch ($intCarrier)
 			{
 				case CARRIER_UNITEL:			$this->Select ($this->_UNITEL);				return true;
@@ -165,6 +197,7 @@
 				case CARRIER_ISEEK:				$this->Select ($this->_ISEEK);				return true;
 				default:																	return false;
 			}
+			*/
 		}
 	}
 	
