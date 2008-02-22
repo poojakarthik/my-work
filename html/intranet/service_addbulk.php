@@ -200,9 +200,14 @@
 						// full service - unitel
 						// preselection - optus
 						
+						// Get Rate Plan info
+						$selRatePlan	= new StatementSelect("RatePlan", "*", "Id = <Id>");
+						$selRatePlan->Execute(Array('Id' => $objResults->{"service$i"}->Plan));
+						$arrRatePlan	=$selRatePlan->Fetch();
+						
 						// Check the requested Carrier Exists
 						$carCarrier = new Carriers ();
-						if (!$carCarrier->setValue ($rrpPlan->getValue('CarrierPreselection')) || !$carCarrier->setValue ($rrpPlan->getValue('CarrierFullService')))
+						if (!$carCarrier->setValue ($arrRatePlan['CarrierPreselection']) || !$carCarrier->setValue ($arrRatePlan['CarrierFullService']))
 						{	
 							// Reply: !error! Provisioning request failed
 							$arrReply[errorCount]++;
