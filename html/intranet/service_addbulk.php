@@ -202,7 +202,7 @@
 						
 						// Check the requested Carrier Exists
 						$carCarrier = new Carriers ();
-						if (!$carCarrier->setValue (2) || !$carCarrier->setValue (1))
+						if (!$carCarrier->setValue ($rrpPlan->getValue('CarrierPreselection')) || !$carCarrier->setValue ($rrpPlan->getValue('CarrierFullService')))
 						{	
 							// Reply: !error! Provisioning request failed
 							$arrReply[errorCount]++;
