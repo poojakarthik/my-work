@@ -133,7 +133,7 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 			if ($strToday == $strDate)
 			{
 				// The customer was requested today
-				$strDate = date("g:i:s a");
+				$strDate = date("g:i:s a", $intRequestedOn);
 			}
 			
 			if ($dboCustomer->BusinessName->Value)

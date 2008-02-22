@@ -124,6 +124,7 @@
 			</xsl:when> 
 			</xsl:choose>
 			<!-- User Manual -->
+			<!--
 			<tr>
 				<td>
 					<a href="user_manual">
@@ -138,6 +139,7 @@
 					Need Help? Check the Manual.
 				</td>
 			</tr>
+			-->
 			<!-- Bugs -->
 			<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
 				<!-- User needs OPERATOR privileges to view the bug report -->
