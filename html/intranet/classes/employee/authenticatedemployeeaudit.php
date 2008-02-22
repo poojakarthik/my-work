@@ -138,6 +138,8 @@
 		
 		public function RecordAccount (Account $actAccount)
 		{
+			//TODO!  This function doesn't seem to be working
+			
 			// Insert the Audit
 			$arrAudit = Array (
 				'Employee'		=> $this->_oblintEmployee->getValue (),
@@ -148,14 +150,21 @@
 			$insAudit = new StatementInsert ('EmployeeAccountAudit', $arrAudit);
 			$insAudit->Execute ($arrAudit);
 			
-			foreach ($this->_oblarrAccounts as &$oblstrAccount)
+			/* Declaring $oblstrAccount as a reference:	foreach ($this->_oblarrAccounts as &$oblstrAccount)
+			 * does not seem to work in php 5.2.3
+			 * which is what is being used on the flexdemo fe server.  I think it assumes it to be a reference
+			 * if the object you are iterating through implements the iterator interface.
+			 * At any rate, this functionality doesn't work anyway.  It does not add the Account to the session information
+			 * and therefore the account is not shown in the "Recent Customers" popup of the old system
+			 */
+			foreach ($this->_oblarrAccounts as $oblstrAccount)
 			{
 				if ($oblstrAccount->getValue () == $actAccount->Pull ('Id')->getValue ())
 				{
 					$this->_oblarrAccounts->Pop ($oblstrAccount);
 				}
 			}
-			
+
 			$this->_oblarrAccounts->Push (new dataString ('Account', $actAccount->Pull ('Id')->getValue ()));
 		}
 		

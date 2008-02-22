@@ -300,14 +300,10 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->RecurringCharge->TotalRecursions		= 0;
 				DBO()->RecurringCharge->Archived			= 0;
 
-				$strMinCharge = OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
-				$strRecursionCharge = OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
+				$strMinCharge		= OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
+				$strRecursionCharge	= OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
 
-				$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
-				$strLastName = AuthenticatedUser()->_arrUser['LastName'];
-				$strEmployeeFullName = "$strFirstName $strLastName";
-
-				$strNote = "recurring charge added by $strEmployeeFullName on " . GetCurrentDateForMySQL() . "\n";
+				$strNote  = "recurring charge created\n";
 				$strNote .= "Type: " . DBO()->RecurringCharge->ChargeType->FormattedValue() . "\n";
 				$strNote .= "Description: " . DBO()->RecurringCharge->Description->FormattedValue() . "\n";
 				$strNote .= "Nature: " . DBO()->RecurringCharge->Nature->FormattedValue() . "\n";
