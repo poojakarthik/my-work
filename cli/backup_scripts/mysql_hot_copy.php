@@ -5,8 +5,8 @@ $strSourceDB							= "vixen";
 // Make sure we are the root database user
 $GLOBALS['**arrDatabase']['User']		= 'root';
 $GLOBALS['**arrDatabase']['Password']	= 'fuckthisshit';
-$GLOBALS['**arrDatabase']['Database']	= 'vixen';
-$GLOBALS['**arrDatabase']['URL']		= '192.168.2.15';
+$GLOBALS['**arrDatabase']['Database']	= 'vixenworking';
+$GLOBALS['**arrDatabase']['URL']		= '10.50.50.132';
 
 // we use the actual tables not the db def in case it is out of date
 require_once('../../flex.require.php');
@@ -103,7 +103,7 @@ foreach($arrTables AS $mixKey=>$strTable)
 		$GLOBALS['fwkFramework']->StartWatch();
 		
 		// copy a table
-		//$qctCopyTable->Execute($strTable, "$strSourceDB.$strTable");
+		$qctCopyTable->Execute($strTable, "$strSourceDB.$strTable");
 		
 		$intTime = (int)$GLOBALS['fwkFramework']->LapWatch();
 		CliEcho(str_pad("{$intTime}s     [   OK   ]", 25, ' ', STR_PAD_LEFT));
