@@ -61,7 +61,7 @@
 		if ($arrResult = $selResult->FetchAll())
 		{
 			// Load Report Application
-			$arrConfig = LoadApplication("report_app");
+			$arrConfig = LoadApplication("lib/report");
 			$appReport = new ApplicationReport(Array('Display' => FALSE));
 			
 			// Prepare Columns

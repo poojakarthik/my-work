@@ -1171,7 +1171,7 @@
 			}
             $this->_domDocument->load ($this->strApplicationDir . $strXSLFilename);
 			$domOutput = $this->xslContent->Output ();
-			
+
 			//Adds top node of the inserted data (from InsertDOM() above)
 			$domRoot = $domOutput->documentElement;
 		
@@ -1239,9 +1239,9 @@
 			
 			
 			//Creation of XSLT processor and final output to XSL file
-	 		$xslProcessor = new XSLTProcessor;
-            $xslProcessor->importStyleSheet ($this->_domDocument);    
-            echo $xslProcessor->transformToXML ($domOutput);
+			$xslProcessor = new XSLTProcessor;
+			$xslProcessor->importStyleSheet ($this->_domDocument);    
+			echo $xslProcessor->transformToXML ($domOutput);
  		}
 		
 		public function charEscape($strIllegal)

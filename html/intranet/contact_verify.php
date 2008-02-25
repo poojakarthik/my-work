@@ -311,7 +311,7 @@
 				$ttyTitles = $oblarrAnswers->Push (new TitleTypes);
 				
 				// This is displayed when we have to select from a list of possible contacts
-				foreach ($oblsamContacts as &$objContact)
+				foreach ($oblsamContacts as $objContact)
 				{
 					$objContact->PrimaryAccount ();
 				}
