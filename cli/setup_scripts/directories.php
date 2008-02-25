@@ -9,7 +9,6 @@ require_once("../../flex.require.php");
 $strDefaultOwner	= "www-data";
 $strDefaultGroup	= "www-data";
 $strDefaultPerms	= "755";
-$strHomeBase		= FILES_BASE_PATH;
 
 $arrDirectory = Array();
 $arrDirectory['**Perms']						= "755";
@@ -57,9 +56,7 @@ $arrDirectory['log']							= Array();
 CliEcho("[ DIRECTORY SETUP ]\n");
 
 CliEcho(" * Creating viXen directories for '$strCustomer'...");
-chdir(FILES_BASE_PATH);
 CreateDir($arrDirectory);
-chdir(dirname(__FILE__));
 CliEcho(" # Directory Setup complete!");
 
 die;
@@ -86,10 +83,9 @@ function CreateDir($arrDirectories, $strPerms='777', $strOwner='root', $strGroup
 		
 		// Create this directory
 		CliEcho("\t + Creating ");
-		@mkdir($strDirectory, $strPerms);
-		@chown($strDirectory, $strOwner);
-		@chgrp($strDirectory, $strGroup);
-		chdir($strDirectory);
+		@mkdir(FILES_BASE_PATH.$strDirectory, $strPerms);
+		@chown(FILES_BASE_PATH.$strDirectory, $strOwner);
+		@chgrp(FILES_BASE_PATH.$strDirectory, $strGroup);
 		
 		// Create Subdirectories
 		CreateDir($arrSubDirectories, $strPerms, $strOwner, $strGroup);
