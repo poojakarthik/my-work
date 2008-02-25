@@ -105,7 +105,7 @@
 		$this->arrServiceColumns['RatePlan']		= "RatePlan.Id";
 		$this->arrServiceColumns['CreatedOn']		= "Service.CreatedOn";
 		$this->arrServiceColumns['Indial100']		= "Service.Indial100";
-		$this->arrServiceColumns['LastBilledOn']	= "ServiceRatePlan.LastBilledOn";
+		$this->arrServiceColumns['LastBilledOn']	= "ServiceRatePlan.LastChargedOn";
 		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																	"RatePlan",
 																	$this->arrServiceColumns,
