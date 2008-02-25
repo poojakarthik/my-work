@@ -194,6 +194,10 @@
 																1,
 																"Account");
 																
+		$this->_selHasServiceTotal		= new StatementSelect(	"ServiceTotal",
+																"Id",
+																"TotalCharge != 0.0 AND FNN = <FNN> AND Service = <Service> AND InvoiceRun = <InvoiceRun>");
+																
 
 		$arrColumns = Array();
 		$arrColumns['Charge']				= "Amount";
@@ -1215,13 +1219,18 @@
 	 			$arrServiceSummaries[] = $arrChargeSummary;
 	 		}
 		}
+		
+		$arrWhere = Array();
+		$arrWhere['FNN']		= $arrService['FNN'];
+		$arrWhere['Service']	= $arrService['Id'];
+		$arrWhere['InvoiceRun']	= $this->_strInvoiceRun;
  		
  		// if we have anything to add to the invoice...
  		//$arrCols = Array();
  		//$arrCols['Service']		= $intService;
  		//$arrCols['InvoiceRun']	= $this->_strInvoiceRun;
  		//if ($this->_selDisplayServiceSummary->Execute($arrCols))
- 		if ($arrServiceSummaries || $arrService['ForceInvoiceRender'])
+ 		if ($arrServiceSummaries || $arrService['ForceInvoiceRender'] || $this->_selHasServiceTotal->Execute($arrWhere))
  		{
 			// Get Plan Details
 			$this->_selRatePlan->Execute(Array('Id' => end($arrService['Id']), 'InvoiceRun' => $this->_strInvoiceRun));
