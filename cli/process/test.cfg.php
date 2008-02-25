@@ -16,6 +16,6 @@ $arrConfig = Array();
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'test_loop.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'process/';
-$arrScript['Test']		= $arrSubscript;
+$arrConfig['Test']		= $arrSubscript;
 
 ?>

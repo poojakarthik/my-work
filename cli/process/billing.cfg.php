@@ -16,84 +16,84 @@ $arrConfig = Array();
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'collection/collection.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'collection/';
-$arrScript['Collect']		= $arrSubscript;
+$arrConfig['Collect']		= $arrSubscript;
 
 // Normalisation
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'normalisation/normalisation.php -i';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'normalisation/';
-$arrScript['Normalise']		= $arrSubscript;
+$arrConfig['Normalise']		= $arrSubscript;
 
 // Rating
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'rating/rating.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'rating/';
-$arrScript['Rate']		= $arrSubscript;
+$arrConfig['Rate']		= $arrSubscript;
 
 // Rate LL S&E Credits
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'rating/rate_ll_se_credits.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'rating/';
-$arrScript['RateLLSECredits']		= $arrSubscript;
+$arrConfig['RateLLSECredits']		= $arrSubscript;
 
 // Backup Invoice Output
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/backup_invoice_output.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
-$arrScript['BackupInvoiceOutput']	= $arrSubscript;
+$arrConfig['BackupInvoiceOutput']	= $arrSubscript;
 
 // Check Un-Invoiced Special Charges
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/charges_check_special.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
-$arrScript['CheckSpecialCharges']	= $arrSubscript;
+$arrConfig['CheckSpecialCharges']	= $arrSubscript;
 
 // Special Charges
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/special_charges.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
-$arrScript['SpecialCharges']		= $arrSubscript;
+$arrConfig['SpecialCharges']		= $arrSubscript;
 
 // Recurring Charges
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'charges/recurring_charges.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'charges/';
-$arrScript['RecurringCharges']		= $arrSubscript;
+$arrConfig['RecurringCharges']		= $arrSubscript;
 
 // Payments
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'payment/payments.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'payment/';
-$arrScript['Payments']				= $arrSubscript;
+$arrConfig['Payments']				= $arrSubscript;
 
 // Check CDR Files
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/cdrcheck.php -v';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
-$arrScript['CDRFileCheck']				= $arrSubscript;		
+$arrConfig['CDRFileCheck']				= $arrSubscript;		
 
 // Billing Execute
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_execute.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
-$arrScript['BillExecute']				= $arrSubscript;
+$arrConfig['BillExecute']				= $arrSubscript;
 
 // Billing Print
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_print.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
-$arrScript['BillPrint']				= $arrSubscript;
+$arrConfig['BillPrint']				= $arrSubscript;
 
 // Billing Samples
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_samples.php gold';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
-$arrScript['BillSamples']				= $arrSubscript;
+$arrConfig['BillSamples']				= $arrSubscript;
 
 // Management Reports
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php '.BACKEND_BASE_PATH.'billing/billing_reports.php';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
-$arrScript['ManagementReports']		= $arrSubscript;
+$arrConfig['ManagementReports']		= $arrSubscript;
 
 ?>

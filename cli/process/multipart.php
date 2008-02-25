@@ -17,7 +17,7 @@ if (!include_once($argv[1]))
 
 $intStartTime	= time();
 CliEcho("Starting Multipart Script '{$argv[1]}' @ ".date("Y-m-d H:i:s", $intStartTime));
-CliEcho();
+CliEcho('');
 // Run Scripts
 foreach ($arrConfig as $strName=>$arrProperties)
 {
