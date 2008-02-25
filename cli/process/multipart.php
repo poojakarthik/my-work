@@ -24,7 +24,7 @@ foreach ($arrConfig as $strName=>$arrProperties)
 	CliEcho("Starting SubScript: $strName @ ".date("Y-m-d H:i:s"));
 	
 	$strWorkingDirectory	= getcwd();
-	chdir($arrProperties['WorkingDirectory']);
+	chdir($arrProperties['Directory']);
 	$ptrProcess	= popen($arrProperties['Command'], 'r');
 	$arrBlank	= Array();
 	stream_set_blocking($ptrProcess, 0);

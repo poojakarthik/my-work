@@ -12,12 +12,6 @@ if (!defined('BACKEND_BASE_PATH'))
 //----------------------------------------------------------------------------//
 $arrConfig = Array();
 
-// Collection
-$arrSubscript = Array();
-$arrSubscript['Command']	=       'php collection.php';
-$arrSubscript['Directory']	=       BACKEND_BASE_PATH.'collection/';
-$arrConfig['Collect']		= $arrSubscript;
-
 // Normalisation
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php normalisation.php -i';
@@ -86,7 +80,7 @@ $arrConfig['BillPrint']				= $arrSubscript;
 
 // Billing Samples
 $arrSubscript = Array();
-$arrSubscript['Command']	=       'php billing_samples.php gold';
+$arrSubscript['Command']	=       'php billing_samples.php bronze';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 $arrConfig['BillSamples']				= $arrSubscript;
 
