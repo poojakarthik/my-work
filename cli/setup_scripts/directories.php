@@ -56,7 +56,7 @@ $arrDirectory['log']							= Array();
 CliEcho("[ DIRECTORY SETUP ]\n");
 
 CliEcho(" * Creating viXen directories for '$strCustomer'...");
-CreateDir($arrDirectory);
+CreateDir($arrDirectory, FILES_BASE_PATH);
 CliEcho(" # Directory Setup complete!");
 
 die;
@@ -66,7 +66,7 @@ die;
 //----------------------------------------------------------------------------//
 // CreateDir
 //----------------------------------------------------------------------------//
-function CreateDir($arrDirectories, $strPerms='777', $strOwner='root', $strGroup='root')
+function CreateDir($arrDirectories, $strParentDirectory, $strPerms='777', $strOwner='root', $strGroup='root')
 {
 	// Permissions and Ownership
 	$strPerms	= ($arrDirectories['**Perms']) ? $arrDirectories['**Perms'] : $strPerms;
@@ -76,19 +76,21 @@ function CreateDir($arrDirectories, $strPerms='777', $strOwner='root', $strGroup
 	foreach ($arrDirectories as $strDirectory=>$arrSubDirectories)
 	{
 		// Ignore Properties
-		if (stripos($strDirectory, '**'))
+		if (is_int(stripos($strDirectory, '**')))
 		{
 			continue;
 		}
 		
+		$strFullPath	= $strParentDirectory.$strDirectory.'/';
+		
 		// Create this directory
-		CliEcho("\t + Creating ");
-		@mkdir(FILES_BASE_PATH.$strDirectory, $strPerms);
-		@chown(FILES_BASE_PATH.$strDirectory, $strOwner);
-		@chgrp(FILES_BASE_PATH.$strDirectory, $strGroup);
+		CliEcho("\t + Creating '$strFullPath'...");
+		@mkdir($strFullPath, $strPerms);
+		@chown($strFullPath, $strOwner);
+		@chgrp($strFullPath, $strGroup);
 		
 		// Create Subdirectories
-		CreateDir($arrSubDirectories, $strPerms, $strOwner, $strGroup);
+		CreateDir($arrSubDirectories, $strFullPath, $strPerms, $strOwner, $strGroup);
 	}
 }
 
