@@ -912,7 +912,7 @@ abstract class NormalisationModule
 	 */
 	 protected function FindDestination($mixCarrierCode, $bolDontError=FALSE)
 	 {
-	 	$arrData = Array("Carrier" => $this->_arrNormalisedData["Carrier"], "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
+	 	$arrData = Array("Carrier" => $this->_intCarrier, "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
 		$intResult = $this->_selFindDestination->Execute($arrData);
 		
 		if ($intResult === FALSE)
