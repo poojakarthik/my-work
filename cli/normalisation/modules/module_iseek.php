@@ -63,6 +63,9 @@ class NormalisationModuleIseek extends NormalisationModule
 		// call parent constructor
 		parent::__construct();
 		
+		// Module Carrier (does not overwrite CDR field)
+		$this->_intCarrier	= CARRIER_ISEEK;
+		
 		// define the column delimiter
 		$this->_strDelimiter = "\t";
 		

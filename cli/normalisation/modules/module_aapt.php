@@ -101,6 +101,9 @@ class NormalisationModuleAAPT extends NormalisationModule
 		// Define File Format
 		//##----------------------------------------------------------------##//
 		
+		// Module Carrier (does not overwrite CDR field)
+		$this->_intCarrier	= CARRIER_AAPT;
+		
 		// define row start (account for header rows)
 		$this->_intStartRow = 1;
 		

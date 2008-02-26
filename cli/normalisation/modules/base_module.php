@@ -230,6 +230,8 @@ abstract class NormalisationModule
 	
 	public $strFNN;
 	
+	protected $_intCarrier;
+	
 	function __construct($errErrorHandler=NULL, $rptNormalisationReport=NULL)
 	{
 		// The purpose of this is to have a generic constructor for all Normalisation
@@ -835,7 +837,7 @@ abstract class NormalisationModule
 	 protected function FindRecordCode($mixCarrierCode)
 	 {
 
-	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->_arrNormalisedData["Carrier"], "CarrierCode" => $mixCarrierCode));
+	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->_intCarrier, "CarrierCode" => $mixCarrierCode));
 		
 		if($intResult === FALSE)
 		{
