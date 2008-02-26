@@ -63,7 +63,7 @@ $appBilling->FinaliseReport();
 ob_end_clean();
 
 // Remote Copy
-$strFilename	= "samples".date("Y-m-d").".vbf";
+$strFilename	= "reprint".date("Y-m-d").".vbf";
 $strLocalPath	= FILES_BASE_PATH."bill_output/";
 echo "\nCopying '$strFilename' to BillPrint...\n";
 ob_flush();
