@@ -42,31 +42,6 @@ switch (strtoupper(trim($argv[1])))
 }
 
 Debug("[ GENERATING ".strtoupper($strMode)." SAMPLES ]");
-/*
-// Add in list of accounts
-//---------------------------
-$arrAccounts		= Array();
-$ptrAccountsFile	= fopen("sample_accounts.csv", 'r');
-while (!feof($ptrAccountsFile))
-{
-	// Parse line
-	$strLine	= trim(fgets($ptrAccountsFile));
-	//CliEcho("Original: $strLine", FALSE);
-	if (is_int($intPos = stripos($strLine, '//')))
-	{
-		$strLine	= substr($strLine, 0, $intPos);
-		//CliEcho("(Partial Comment): $strLine;", FALSE);
-	}
-	
-	// Add to list
-	if ((int)$strLine)
-	{
-		$arrAccounts[]	= (int)$strLine;
-	}
-}
-fclose($ptrAccountsFile);
-//---------------------------
-*/
 
 // Get list of Accounts
 $arrAccounts		= Array();
@@ -88,7 +63,7 @@ $appBilling->FinaliseReport();
 ob_end_clean();
 
 // Remote Copy
-$strFilename	= "reprint".date("Y-m-d").".vbf";
+$strFilename	= "samples".date("Y-m-d").".vbf";
 $strLocalPath	= FILES_BASE_PATH."bill_output/";
 echo "\nCopying '$strFilename' to BillPrint...\n";
 ob_flush();
@@ -142,7 +117,7 @@ if (!file_exists($strDownloadDir))
 	mkdir($strDownloadDir, 0777);
 }
 chdir($strDownloadDir);
-exec("rm *.*");
+exec("rm *.pdf");
 while (($intLastDownload + 60) > time())
 {
 	$intPDFCount = 0;
@@ -188,14 +163,20 @@ while (($intLastDownload + 60) > time())
 
 // ZIP samples, copy to public location
 chdir($strDownloadDir);
-$strZipname = date("F")." $strMode Samples.zip"; 
+$strBaseZipname = date("F")." $strMode Samples";
+$strZipname		= $strBaseZipname.'.zip';
+$intVersion		= 1;
+while (file_exists($strZipname))
+{
+	$intVersion++;
+	$arrZipname	= $strBaseZipname." MK$intVersion.zip";
+}
 echo shell_exec("zip -qj '$strZipname' *.pdf");
 
 $strCustomerName	= $GLOBALS['**arrCustomerConfig']['Customer'];
 $strDir				= date("Y/m/", strtotime("-1 day", time()));
-//echo shell_exec("cp '$strZipname' /data/www/samples.yellowbilling.com.au/html/$strCustomerName/$strDir");
 
-$rcpRemoteCopySamples = new RemoteCopyFTP("192.168.2.224", "flame", "zeemu");
+$rcpRemoteCopySamples = new RemoteCopySSH("192.168.2.224", "flame", "zeemu");
 if (is_string($mixResult = $rcpRemoteCopySamples->Connect()))
 {
 	echo "$mixResult \n";
@@ -203,7 +184,7 @@ if (is_string($mixResult = $rcpRemoteCopySamples->Connect()))
 $rcpRemoteCopySamples->Copy($strDownloadDir.$strZipname, "/data/www/samples.yellowbilling.com.au/html/$strCustomerName/$strDir", RCOPY_BACKUP);
 $rcpRemoteCopySamples->Disconnect();
 
-$strURL = "samples.yellowbilling.com.au/$strCustomerName/$strDir/$strZipname";
+$strURL = "http://samples.yellowbilling.com.au/$strCustomerName/$strDir/$strZipname";
 SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', trim($strZipname, '.zip'), trim($strZipname, '.zip')." are available at $strURL");
 
 /*
