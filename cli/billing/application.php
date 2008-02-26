@@ -454,6 +454,7 @@
 			$selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1", "CreatedOn DESC", 1);
 			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
 			$selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
+			$selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <RatePlan> AND LastChargedOn IS NOT NULL");
 			if ($selLastBillDate->Execute($arrAccount))
 			{
 				// Previous Invoice
@@ -469,7 +470,7 @@
 				$intLastBillDate	= strtotime("-{$arrAccount['BillingFreq']} month", strtotime(date("Y-m-$strBillingDate", $intDate)));
 			}
 			$arrSharedPlans	= Array();
-			foreach($arrServices as $arrService)
+			foreach($arrServices as $mixIndex=>$arrService)
 			{
 				if ($arrService['MinMonthly'] > 0)
 				{
@@ -487,23 +488,23 @@
 					if (!$intCDRDate)
 					{
 						// No CDRs
-						$arrService['MinMonthly']	= 0;
+						$arrService['MinMonthly']				= 0;
+						$arrServices[$mixIndex]['MinMonthly']	= 0;
 					}
 					elseif ($intCDRDate > $intLastBillDate)
 					{
 						$fltMinMonthly	= $arrService['MinMonthly'];
 						
 						// Prorate the Minimum Monthly
-						$intProratePeriod			= time() - $intCDRDate;
-						$intBillingPeriod			= time() - $intLastBillDate;
-						$fltProratedMinMonthly		= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
-						$arrService['MinMonthly']	= round($fltProratedMinMonthly, 2);
+						$intProratePeriod						= time() - $intCDRDate;
+						$intBillingPeriod						= time() - $intLastBillDate;
+						$fltProratedMinMonthly					= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
+						$arrService['MinMonthly']				= round($fltProratedMinMonthly, 2);
+						$arrServices[$mixIndex]['MinMonthly']	= $arrService['MinMonthly'];
 					}
 					
 					// If this is the first invoice for this plan
-					$selLastTotal->Execute($arrService);
-					$arrLastTotal = $selLastTotal->Fetch();
-					if ($arrLastTotal['RatePlan'] != $arrService['RatePlan'])
+					if ($selPlanLastBilled->Execute($arrService['RatePlan']))
 					{
 						// Add in "Charge in Advance" Adjustment
 						if ($arrService['InAdvance'])
