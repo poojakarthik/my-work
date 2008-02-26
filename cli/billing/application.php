@@ -106,6 +106,7 @@
 		$this->arrServiceColumns['CreatedOn']		= "Service.CreatedOn";
 		$this->arrServiceColumns['Indial100']		= "Service.Indial100";
 		$this->arrServiceColumns['LastBilledOn']	= "ServiceRatePlan.LastChargedOn";
+		$this->arrServiceColumns['ServiceRatePlan']	= "ServiceRatePlan.Id";
 		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																	"RatePlan",
 																	$this->arrServiceColumns,
@@ -454,7 +455,7 @@
 			$selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1", "CreatedOn DESC", 1);
 			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
 			$selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
-			$selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <RatePlan> AND LastChargedOn IS NOT NULL");
+			$selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <ServiceRatePlan> AND LastChargedOn IS NOT NULL");
 			if ($selLastBillDate->Execute($arrAccount))
 			{
 				// Previous Invoice
@@ -503,23 +504,19 @@
 						$arrServices[$mixIndex]['MinMonthly']	= $arrService['MinMonthly'];
 					}
 					
-					// If this is the first invoice for this plan
-					if ($selPlanLastBilled->Execute($arrService['RatePlan']))
+					// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
+					if ($arrService['LastBilledOn'] && $arrService['InAdvance'])
 					{
-						// Add in "Charge in Advance" Adjustment
-						if ($arrService['InAdvance'])
-						{
-							$arrAdvanceCharge = Array();
-							$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
-							$arrAdvanceCharge['Account']		= $arrAccount['Account'];
-							$arrAdvanceCharge['Service']		= $arrService['Service'];
-							$arrAdvanceCharge['ChargeType']		= 'PC'.round($fltMinMonthly, 2);
-							$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime("Y-m-01")));
-							$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
-							$arrAdvanceCharge['Nature']			= 'DR';
-							$arrAdvanceCharge['Amount']			= $fltMinMonthly;
-							$this->Framework->AddCharge($arrAdvanceCharge);
-						}
+						$arrAdvanceCharge = Array();
+						$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
+						$arrAdvanceCharge['Account']		= $arrAccount['Account'];
+						$arrAdvanceCharge['Service']		= $arrService['Service'];
+						$arrAdvanceCharge['ChargeType']		= 'PC'.round($fltMinMonthly, 2);
+						$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime("Y-m-01")));
+						$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
+						$arrAdvanceCharge['Nature']			= 'DR';
+						$arrAdvanceCharge['Amount']			= $fltMinMonthly;
+						$this->Framework->AddCharge($arrAdvanceCharge);
 					}
 				}
 				
