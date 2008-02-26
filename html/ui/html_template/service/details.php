@@ -235,11 +235,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		// Display the Cost Center, if there is one
 		if (DBO()->Service->CostCentre->Value)
 		{
-			DBO()->CostCentre->Id = DBO()->Service->CostCentre->Value;
-			DBO()->CostCentre->Load();
-			$strCostCentre = DBO()->CostCentre->Name->Value;
-			DBO()->Service->CostCentre->RenderArbitrary($strCostCentre, RENDER_OUTPUT);
+			DBO()->Service->CostCentre->RenderOutput();
 		}
+		
+		DBO()->Service->ForceInvoiceRender->RenderOutput();
 		
 		DBO()->Service->TotalUnbilledCharges->RenderOutput();
 		// Display the current rate plan, if there is one
@@ -262,7 +261,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<div class='ContentSeparator'></div>\n";
 		DBO()->Service->CreatedOn->RenderOutput();
 		DBO()->Service->ClosedOn->RenderOutput();
-		DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("LineStatus"), RENDER_OUTPUT);
+		if (DBO()->Service->LineStatus->Value !== NULL)
+		{
+			DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("LineStatus"), RENDER_OUTPUT);
+		}
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 
 		// Register a listener to handle when the service has been updated

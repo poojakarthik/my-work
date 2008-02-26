@@ -42,6 +42,22 @@
 		exit;
 	}
 	
+	//HACK! HACK! HACK!
+	// If the employee to be editted is a GOD user, then redirect back to the Employee Listing page
+	if ($empEmployee->Pull('Privileges')->getValue() == USER_PERMISSION_GOD)
+	{
+		header("Location: employee_list.php");
+	}
+	//HACK! HACK! HACK! 
+	
+	//HACK! HACK! HACK!
+	// Currently there is no way to define what privileges are required to grant particular privileges to others.
+	// So long as you have admin privileges, you can give yourself SuperAdmin privileges, so for now, just remove it
+	// from the list
+	// Remove the SuperAdmin permission from the list of permissions
+	unset($GLOBALS['Permissions'][PERMISSION_SUPER_ADMIN]);
+	//HACK! HACK! HACK!
+	
 	// We're checking here for Confirm because the SelectedPermissions selection
 	// list may not exist. This would be caused by wishing to set No permissions
 	// for a particular employee

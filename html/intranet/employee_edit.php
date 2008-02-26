@@ -34,6 +34,15 @@
 		exit;
 	}
 	
+	//HACK! HACK! HACK!
+	// If the employee to be editted is a GOD user, and the current user isn't then redirect back to the Employee Listing page
+	if ($empEmployee->Pull('Privileges')->getValue() == USER_PERMISSION_GOD && 
+		$athAuthentication->AuthenticatedEmployee()->Pull('Privileges')->getValue() != USER_PERMISSION_GOD)
+	{
+		header("Location: employee_list.php");
+	}
+	//HACK! HACK! HACK! 
+	
 	// Start the Error String
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	

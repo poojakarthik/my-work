@@ -149,9 +149,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		
 		// Render hidden properties
 		DBO()->Service->Id->RenderHidden();
-		DBO()->Service->ServiceType->RenderHidden();
-		DBO()->Service->ClosedOn->RenderHidden();
-		DBO()->Service->CreatedOn->RenderHidden();
 		
 		// Maintaining State (This shouldn't be done here)
 		DBO()->Service->CurrentFNN->RenderHidden();
@@ -159,6 +156,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->CurrentIndial100->RenderHidden();
 		DBO()->Service->CurrentELB->RenderHidden();
 		DBO()->Service->CurrentCostCentre->RenderHidden();
+		DBO()->Service->CurrentForceInvoiceRender->RenderHidden();
 		DBO()->ServiceInboundDetail->CurrentAnswerPoint->RenderHidden();
 		DBO()->ServiceInboundDetail->CurrentConfiguration->RenderHidden();		
 		DBO()->ServiceMobileDetail->CurrentSimPUK->RenderHidden();
@@ -220,11 +218,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
-		if (DBO()->Service->Indial100->Value)
-		{
-			DBO()->Service->ELB->RenderInput();
-		}
-		
 		// load cost centre details
 		$strWhere = "Account IN (0, ". DBO()->Service->Account->Value .")";
 		DBL()->CostCentre->Where->SetString($strWhere);
@@ -252,6 +245,12 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "</div>\n";
 		}
 
+		DBO()->Service->ForceInvoiceRender->RenderInput();
+		
+		if (DBO()->Service->Indial100->Value)
+		{
+			DBO()->Service->ELB->RenderInput();
+		}
 	
 		echo "</div>\n";  // GroupedContent - Generic ServiceDetails
 		
@@ -273,7 +272,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<h2 class='service'>Mobile Specific Details</h2>\n";
 			echo "<div class='GroupedContent'>\n";
-			DBO()->ServiceMobileDetail->Id->RenderHidden();
+
 			DBO()->ServiceMobileDetail->SimPUK->RenderInput();
 			DBO()->ServiceMobileDetail->SimESN->RenderInput();
 			
@@ -281,11 +280,11 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
 			echo "      <select name='ServiceMobileDetail.SimState' >\n";
-			echo "<option value=''><span class='DefaultOutputSpan'>&nbsp;</span></option>\n";
+			echo "<option value=''><span>&nbsp;</span></option>\n";
 			foreach ($GLOBALS['*arrConstant']['ServiceStateType'] as $strKey=>$arrState)
 			{
 				$strSelected = (DBO()->ServiceMobileDetail->SimState->Value == $strKey) ? "selected='selected'" : "";
-				echo "         <option value='$strKey' $strSelected><span class='DefaultOutputSpan'>". $arrState['Description'] ."</span></option>\n";
+				echo "         <option value='$strKey' $strSelected><span>". $arrState['Description'] ."</span></option>\n";
 			}
 			echo "      </select>\n";
 			echo "   </div>\n";
@@ -293,7 +292,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			
 			DBO()->ServiceMobileDetail->DOB->RenderInput();				
 			DBO()->ServiceMobileDetail->Comments->RenderInput();
-			echo "</div>\n";  // NarrowForm - MobileDetails
+			echo "</div>\n";  // GroupedContent - MobileDetails
 		}
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";

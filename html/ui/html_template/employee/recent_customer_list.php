@@ -149,8 +149,13 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 				$strAccountName = "&nbsp;";
 			}
 			
+			$strAccountName = htmlspecialchars($strAccountName, ENT_QUOTES);
+			
 			$strAccountLink = Href()->AccountOverview($dboCustomer->AccountId->Value);
 			$strAccountCell = "<a href='$strAccountLink' title='View Account Details'>{$dboCustomer->AccountId->Value}</a>";
+			
+			$strAccountNameCell = "<a href='$strAccountLink' title='View Account Details' style='color:black'>$strAccountName</a>";
+			
 			
 			if ($dboCustomer->ContactId->Value)
 			{
@@ -164,7 +169,7 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 				// A constact is not associated with this customer
 				$strContactCell = "[no contact specified]";
 			}
-			Table()->RecentCustomers->AddRow($strAccountCell, $strAccountName, $strContactCell, $strDate);
+			Table()->RecentCustomers->AddRow($strAccountCell, $strAccountNameCell, $strContactCell, $strDate);
 		}
 		
 		if (Table()->RecentCustomers->RowCount() == 0)
