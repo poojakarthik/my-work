@@ -171,10 +171,11 @@ function VixenMenuClass(objMenu)
 			{
 				elmLink = document.createElement('a');
 				elmLink.setAttribute('href', elmMenuItem.action[strKey]);
+				elmLink.setAttribute('id', "ContextMenuItemLink");
 				//elmLink.appendChild(objTextNode);
 				elmLink.innerHTML = strKey;
 				elmNode.appendChild(elmLink);
-				elmLink.style['color']	= "#000000";
+				//elmLink.style['color']	= "#000000";
 			}
 			else
 			{

@@ -60,12 +60,23 @@
 	a:hover
 	{
 		color:				#0000FF;
-		text-decoration:	none;
+		text-decoration:	underline;
 	}
 
 	div#BreadCrumbMenu a:hover
 	{
 		text-decoration:	underline;
+	}
+	
+	
+	a#ContextMenuItemLink
+	{
+		color:				#000000;
+	}
+	
+	a#ContextMenuItemLink:hover
+	{
+		text-decoration:	none;
 	}
 
 	h1

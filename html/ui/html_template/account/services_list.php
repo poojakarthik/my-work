@@ -360,7 +360,8 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		}
 		
 		// Row highlighting doesn't seem to be working with popups
-		Table()->ServiceTable->RowHighlighting = TRUE;
+		// Row highlighting has been turned off, because it stops working if the Service table is ever redrawn
+		//Table()->ServiceTable->RowHighlighting = TRUE;
 		Table()->ServiceTable->Render();
 	}
 }

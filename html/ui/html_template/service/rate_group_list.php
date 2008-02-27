@@ -115,6 +115,11 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 	
 		echo "<h2 class='Plan'>Rate Groups</h2>\n";
 		
+		echo "<div class='GroupedContent'>\n";
+		echo "<span><center>Rate Groups coloured green, are those currently being used</center><span>\n";
+		echo "</div>\n";
+		echo "<div class='SmallSeperator'></div>\n";
+		
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
 			// Build the name of the table

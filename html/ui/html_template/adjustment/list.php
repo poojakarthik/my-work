@@ -113,7 +113,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		else
 		{
 			// User cannot delete adjustments
-			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;", "Amount");
+			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;", "Amount ($)");
 			Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "48%");
 			Table()->AdjustmentTable->SetAlignment("left", "left", "left", "right");
 		

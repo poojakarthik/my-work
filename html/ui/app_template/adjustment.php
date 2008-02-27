@@ -607,12 +607,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				}
 				
 				// Add a system generated note regarding the deleting of the charge
-				$strFirstName = AuthenticatedUser()->_arrUser['FirstName'];
-				$strLastName = AuthenticatedUser()->_arrUser['LastName'];
-				$strEmployeeFullName = "$strFirstName $strLastName";
-				
-				$strNote  = "Recurring charge removed by $strEmployeeFullName on ";
-				$strNote .= DBO()->RecurringCharge->CreatedOn->FormattedValue(); 
+				$strNote  = "Recurring charge removed"; 
 				$strNote .= "\nRecurring Adjustment Id: " . DBO()->RecurringCharge->Id->FormattedValue();
 				$strNote .= "\nType: " . DBO()->RecurringCharge->ChargeType->FormattedValue();
 				$strNote .= "\nDescription: " . DBO()->RecurringCharge->Description->FormattedValue();
@@ -626,7 +621,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$strAlreadyCharged = OutputMask()->MoneyValue(AddGST(DBO()->RecurringCharge->TotalCharged->Value), 2, TRUE);
 				$strNote .= "\nAlready Charged: $strAlreadyCharged (inc GST)";
 				
-				if ($fltAmountOwing > 0.0)
+				if (DBO()->RecurringCharge->Nature->Value == NATURE_DR && $fltAmountOwing > 0.0)
 				{
 					// An additional charge was made to account for the remainder of the MinCharge and CancellationFee
 					$strAdditionalCharge = OutputMask()->MoneyValue(AddGST($fltChargeAmount), 2, TRUE);

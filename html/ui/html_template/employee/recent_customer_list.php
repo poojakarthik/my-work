@@ -162,7 +162,7 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 				// A contact is associated with this customer
 				$strContactLink = Href()->ViewContact($dboCustomer->ContactId->Value);
 				$strContactName = ucwords(strtolower(trim("{$dboCustomer->Title->Value} {$dboCustomer->FirstName->Value} {$dboCustomer->LastName->Value}")));
-				$strContactCell = "<a href='$strContactLink' title='View Contact Details'>$strContactName</a>";
+				$strContactCell = "<a href='$strContactLink' title='View Contact Details' style='color:black;'>$strContactName</a>";
 			}
 			else
 			{
