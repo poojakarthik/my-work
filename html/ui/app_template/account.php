@@ -776,6 +776,10 @@ class AppTemplateAccount extends ApplicationTemplate
 			{
 				$intCurrentValue = 0;
 			}
+			elseif ($intCurrentValue < -1)
+			{
+				$intCurrentValue = abs($intCurrentValue);
+			}
 			$strChangesNote .= "Charging of Late Payment Fee was changed from '". 
 								DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	

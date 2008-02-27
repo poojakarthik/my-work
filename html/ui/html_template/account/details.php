@@ -248,6 +248,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			// If DisableLatePayment is NULL then set it to 0
 			DBO()->Account->DisableLatePayment = 0;
 		}
+		if (DBO()->Account->DisableLatePayment->Value < -1)
+		{	
+			DBO()->Account->DisableLatePayment->Value = abs(DBO()->Account->DisableLatePayment->Value);
+		}
 		DBO()->Account->DisableLatePayment->RenderOutput();
 		
 		// To avoid a double negative display ChargeAdminFee instead of DisableDDR
