@@ -505,7 +505,7 @@
 					}
 					
 					// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
-					if ($arrService['LastBilledOn'] && $arrService['InAdvance'])
+					if (!$arrService['LastBilledOn'] && $arrService['InAdvance'])
 					{
 						$arrAdvanceCharge = Array();
 						$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
