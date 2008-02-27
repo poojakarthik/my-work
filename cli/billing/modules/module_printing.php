@@ -1269,13 +1269,22 @@
 		 		$arrData = Array();
 		 		$arrData['Service']		= $arrService['Id'];
 		 		$arrData['InvoiceRun']	= $this->_strInvoiceRun;
-		 		if (($arrServiceTotal = $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrData)) === FALSE)
+		 		if (($arrServiceTotals = $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrData)) === FALSE)
 		 		{
 		 			// ERROR
 		 			return FALSE;
 		 		}
 		 		
-				$arrDefine['SvcSummSvcTotal']		['TotalCapped']		['Value']	= (float)$arrServiceTotal[0]['TotalCharge'];
+		 		// Sum up the Grand Total Capped Charge and Total Plan Charge
+		 		$fltGrandTotalCapped		= 0;
+		 		$fltGrandTotalPlanCharge	= 0;
+		 		foreach ($arrServiceTotals as $arrServiceTotal)
+		 		{
+		 			$fltGrandTotalCapped		+= (float)$arrServiceTotal['TotalCharge'];
+		 			$fltGrandTotalPlanCharge	+= (float)$arrServiceTotal['PlanCharge'];
+		 		}
+		 		
+				$arrDefine['SvcSummSvcTotal']		['TotalCapped']		['Value']	= $fltGrandTotalCapped;
 				
 				// add in plan charge breakdown
 				if ((float)$arrRatePlan['MinMonthly'])
@@ -1286,8 +1295,8 @@
 					if (!$arrRatePlan['Shared'])
 					{
 						// add in breakdown
-						$fltPlanCredit = ((float)$arrServiceTotal[0]['TotalCharge'] - $fltTotal) - $arrRatePlan['MinMonthly'];
-						$arrDefine['SvcSummPlanSumm']		['PlanCharge']		['Value']	= ((float)$arrServiceTotal[0]['PlanCharge']) ? (float)$arrServiceTotal[0]['PlanCharge'] : $arrRatePlan['MinMonthly'];
+						$fltPlanCredit = ($fltGrandTotalCapped - $fltTotal) - $arrRatePlan['MinMonthly'];
+						$arrDefine['SvcSummPlanSumm']		['PlanCharge']		['Value']	= $fltGrandTotalPlanCharge;
 						$arrDefine['SvcSummPlanSumm']		['PlanCredit']		['Value']	= $fltPlanCredit;
 						$this->_arrFileData[] = $arrDefine['SvcSummPlanSumm'];
 					}
