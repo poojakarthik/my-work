@@ -1,4 +1,5 @@
 <?php
+//DEPRICATED
 // Page Template
 // Specifies the layout to use for the page and the html objects
 // to put into each column on the page

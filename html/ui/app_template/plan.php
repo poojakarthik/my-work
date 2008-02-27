@@ -266,6 +266,57 @@ class AppTemplatePlan extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
+	// View
+	//------------------------------------------------------------------------//
+	/**
+	 * View()
+	 *
+	 * Performs the logic for the View Rate Plan webpage
+	 * 
+	 * Performs the logic for the View Rate Plan webpage
+	 * Initial DBObjects that can be set through GET or POST variables are:
+	 *		DBO()->RatePlan->Id			Id of the RatePlan you want to view
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function View()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		
+		// Context menu
+		// Nothing to add
+		
+		// Breadcrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->AvailablePlans();
+		BreadCrumb()->SetCurrentPage("Rate Plan");
+		
+		if (!DBO()->RatePlan->Load())
+		{
+			// Could not load the RatePlan
+			DBO()->Error->Message = "The RatePlan with id: ". DBO()->RatePlan->Id->value ." could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		// Load all the RateGroups belonging to the RatePlan
+		$strWhere = "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = ". DBO()->RatePlan->Id->Value .")";
+		DBL()->RateGroup->Where->SetString($strWhere);
+		DBL()->RateGroup->OrderBy("Name");
+		DBL()->RateGroup->Load();
+		
+		
+		$this->LoadPage('rate_plan_view');
+
+		return TRUE;
+	
+	}
+
+
+	//------------------------------------------------------------------------//
 	// _ValidatePlan
 	//------------------------------------------------------------------------//
 	/**

@@ -95,6 +95,23 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 	{
 		// Render the RateGroup Details
 		echo "<div class='GroupedContent'>\n";
+		
+		// Handle the Archived property
+		if (DBO()->RateGroup->Archived->Value)
+		{
+			if (DBO()->RateGroup->Archived->Value == RATE_STATUS_DRAFT)
+			{
+				// The RateGroup is currently saved as a draft
+				echo "<span class='Red'><center>This rate group is currently saved as a draft</center></span>\n";
+			}
+			else
+			{
+				// The RateGroup must be archived
+				echo "<span class='Red'><center>This rate group has been archived</center></span>\n";
+			}
+			echo "<div class='ContentSeparator'></div>\n";
+		}
+		
 		DBO()->RateGroup->Name->RenderOutput();
 		DBO()->RateGroup->Description->RenderOutput();
 		DBO()->RateGroup->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);
@@ -141,7 +158,20 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 			$strViewRateLink = Href()->ViewRate($dboRate->Id->Value, FALSE);
 			$strRateName = htmlspecialchars($dboRate->Name->Value, ENT_QUOTES);
 			$strRateDescription = htmlspecialchars($dboRate->Description->Value, ENT_QUOTES);
-			Table()->RateTable->AddRow("<span><a href='$strViewRateLink' title='$strRateDescription'>$strRateName</a></span>");
+			
+			switch ($dboRate->Archived->Value)
+			{
+				case RATE_STATUS_DRAFT:
+					$strNamePrefix = "DRAFT - ";
+					break;
+				case RATE_STATUS_ARCHIVED:
+					$strNamePrefix = "ARCHIVED -";
+					break;
+				default:
+					$strNamePrefix = "";
+			}
+			
+			Table()->RateTable->AddRow("$strNamePrefix<a href='$strViewRateLink' title='$strRateDescription'>$strRateName</a>");
 		}
 		
 		Table()->RateTable->Render();

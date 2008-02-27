@@ -256,7 +256,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		DBO()->RecordType->Id = DBO()->RateGroup->RecordType->Value;
 		DBO()->RecordType->Load();
 		
-		$arrColumns = Array("Id", "Name", "Description");
+		$arrColumns = Array("Id", "Name", "Description", "Archived");
 		DBL()->Rate->SetColumns($arrColumns);
 		if (DBO()->Rate->SearchString->IsSet)
 		{

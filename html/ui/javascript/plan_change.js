@@ -98,9 +98,9 @@ function VixenPlanChangeClass()
 	/**
 	 * ViewPlanDetails
 	 *
-	 * Event handler for when the View Plan Details button is triggered
+	 * Event handler for when the View Plan Details action is triggered
 	 *  
-	 * Event handler for when the View Plan Details button is triggered
+	 * Event handler for when the View Plan Details action is triggered
 	 * Relocates the user to the "Rate Plan Details" page
 	 *
 	 * @return	void
@@ -109,7 +109,7 @@ function VixenPlanChangeClass()
 	this.ViewPlanDetails = function()
 	{
 		var intPlanId = document.getElementById('Combo_NewPlan.Id').value;
-		window.location = 'rates_plan_summary.php?Id=' + intPlanId;
+		window.location = 'flex.php/Plan/View/?RatePlan.Id=' + intPlanId;
 	}
 }
 

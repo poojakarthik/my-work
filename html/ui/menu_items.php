@@ -1027,7 +1027,7 @@ class MenuItems
 		
 		$this->strLabel = "Plan Details";
 		
-		return "rates_plan_summary.php?Id=$intRatePlanId";
+		return "flex.php/Plan/View/?RatePlan.Id=$intRatePlanId";
 	}
 
 	//------------------------------------------------------------------------//

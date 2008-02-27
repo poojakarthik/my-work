@@ -95,6 +95,23 @@ class HtmlTemplateRateView extends HtmlTemplate
 	{
 
 		echo "<div class='GroupedContent'>\n";
+		
+		// Handle the Archived property
+		if (DBO()->Rate->Archived->Value)
+		{
+			if (DBO()->Rate->Archived->Value == RATE_STATUS_DRAFT)
+			{
+				// The Rate is currently saved as a draft
+				echo "<span class='Red'><center>This rate is currently saved as a draft</center></span>\n";
+			}
+			else
+			{
+				// The RateGroup must be archived
+				echo "<span class='Red'><center>This rate has been archived</center></span>\n";
+			}
+			echo "<div class='ContentSeparator'></div>\n";
+		}
+		
 		$this->_RenderDetails();
 		echo "</div>\n"; // GroupedContent
 

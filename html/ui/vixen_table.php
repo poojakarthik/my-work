@@ -828,17 +828,19 @@ class VixenTable
 		{
 			$intRowCount++;
 			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd';
+			$strStyle = "";
 			
 			if (isset($objRow['OnClick']))
 			{
-				$strOnClick = "onclick=\"{$objRow['OnClick']}\"";
+				$strOnClick = "onclick='{$objRow['OnClick']}'";
+				$strStyle .= "cursor:pointer;";
 			}
 			else
 			{
 				$strOnClick = "";
 			}
 			
-			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass' $strOnClick>\n";
+			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass' $strOnClick style='$strStyle'>\n";
 			
 			$intColCount = 0;
 			// Build fields
