@@ -169,7 +169,7 @@ $intVersion		= 1;
 while (file_exists($strZipname))
 {
 	$intVersion++;
-	$arrZipname	= $strBaseZipname." MK$intVersion.zip";
+	$strZipname	= $strBaseZipname." MK$intVersion.zip";
 }
 echo shell_exec("zip -qj '$strZipname' *.pdf");
 
