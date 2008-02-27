@@ -512,7 +512,7 @@
 						$arrAdvanceCharge['Account']		= $arrAccount['Id'];
 						$arrAdvanceCharge['Service']		= $arrService['Service'];
 						$arrAdvanceCharge['ChargeType']		= 'PC'.round($fltMinMonthly, 2);
-						$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime("Y-m-01")));
+						$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-01"))));
 						$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
 						$arrAdvanceCharge['Nature']			= 'DR';
 						$arrAdvanceCharge['Amount']			= $fltMinMonthly;
