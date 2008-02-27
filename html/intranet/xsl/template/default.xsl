@@ -14,7 +14,7 @@
 	<xsl:template match="/">
 		<html>
 			<head>
-					<title>Flex Internal Management System</title>
+					<title>Flex Customer Management System</title>
 					<link rel="stylesheet" type="text/css" href="css/default.css" />
 					<script language="javascript" src="js/init.js"></script>
 					
@@ -29,7 +29,7 @@
 						<a href='console.php'><img src='img/template/yellow_billing_logo_small.png' border='0'></img></a>
 					</div>
 					<div class='Left' style='padding:12px 0px 0px 5px'>
-						Flex Internal Management System
+						Flex Customer Management System
 					</div>
 					<div class="Right"  style='padding-top:12px'>
 						<!-- Report Bug Button & PopUp -->

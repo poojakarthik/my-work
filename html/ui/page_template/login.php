@@ -19,7 +19,7 @@
 
 ?>
 
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Flex Login</title>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Flex Customer Management System</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <base href='<?php echo $strBaseDir ?>'/>
 </head>
@@ -73,7 +73,7 @@
 				<img src="img/login/yellow_billing_logo.png"/>
 				</div>
 				<div id="loginForm">
-				<h1>Flex Internal Management System</h1>
+				<h1>Flex Customer Management System</h1>
 				<div class="Seperator"/>
 				<?php 
 				echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";

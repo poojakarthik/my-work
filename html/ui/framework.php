@@ -506,7 +506,7 @@ class Page
 		*/
 		
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
-		echo "<title>Flex Internal Management System - $this->_strPageName</title>\n";
+		echo "<title>Flex - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
 		$this->RenderCSS();
