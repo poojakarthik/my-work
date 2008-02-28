@@ -93,7 +93,7 @@ foreach($arrServices as $mixIndex=>$arrService)
 		$intPlanDate	= strtotime($arrPlanDate['StartDatetime']);
 		
 		$strCDRDate		= ($intCDRDate) ? date("Y-m-d", $intCDRDate) : 'No CDRs';
-		CliEcho("Earliest CDR\t\t: $strCDRDate");
+		CliEcho("Earliest CDR\t\t\t: $strCDRDate");
 		
 		// If the first CDR is unbilled
 		if (!$intCDRDate)
@@ -114,11 +114,11 @@ foreach($arrServices as $mixIndex=>$arrService)
 			$arrService['MinMonthly']				= round($fltProratedMinMonthly, 2);
 			$arrServices[$mixIndex]['MinMonthly']	= $arrService['MinMonthly'];
 			
-			$strProRataPeriod	= SecondsToDays($intProratePeriod);
-			$strBillingPeriod	= SecondsToDays($intBillingPeriod);
-			CliEcho("ProRata Period\t: $strProRataPeriod");
-			CliEcho("Billing Period\t: $strBillingPeriod");
-			CliEcho("Final Min Monthly\t: {$arrService['MinMonthly']}");
+			$arrProRataPeriod	= SecondsToDays($intProratePeriod);
+			$arrBillingPeriod	= SecondsToDays($intBillingPeriod);
+			CliEcho("ProRata Period\t\t\t: {$arrProRataPeriod['d']}");
+			CliEcho("Billing Period\t\t\t: {$arrBillingPeriod['d']}");
+			CliEcho("Final Min Monthly\t\t: {$arrService['MinMonthly']}");
 		}
 		else
 		{
