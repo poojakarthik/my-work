@@ -460,7 +460,7 @@
 			{
 				// Previous Invoice
 				$arrLastBillDate	= $selLastBillDate->Fetch();
-				$intLastBillDate	= strtotime($arrLastBillDate['BillingDate']);
+				$intLastBillDate	= strtotime($arrLastBillDate['CreatedOn']);
 			}
 			else
 			{
