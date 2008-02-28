@@ -218,7 +218,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 
-		Table()->ServiceTable->SetHeader("FNN #", "Service", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
+		Table()->ServiceTable->SetHeader("FNN #", "Type", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
 		Table()->ServiceTable->SetWidth("11%", "10%", "39%", "11%", "7%", "10%", "12%");
 		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left");
 		

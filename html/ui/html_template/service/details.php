@@ -191,10 +191,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<div class='NarrowContent'>\n";
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
-		echo "<div class='ContentSeparator'></div>\n";
 		
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
+			echo "<div class='ContentSeparator'></div>\n";
 			DBO()->Service->Indial100->RenderOutput();
 			if (DBO()->Service->Indial100->Value)
 			{
@@ -206,6 +206,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		// If the ServiceType is a mobile display the extra information for the service
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
+			echo "<div class='ContentSeparator'></div>\n";
 			$strWhere = "Service = <Service>";
 			DBO()->ServiceMobileDetail->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
 			DBO()->ServiceMobileDetail->Load();
@@ -223,6 +224,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		// If the ServiceType is a inbound display the extra information for the service
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 		{
+			echo "<div class='ContentSeparator'></div>\n";
 			$strWhere = "Service = <Service>";
 			DBO()->ServiceInboundDetail->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
 			DBO()->ServiceInboundDetail->Load();
