@@ -1095,13 +1095,13 @@ $arrConfig['CDRCheck']['AAPTCDR']	= $arrCDRCheck;
 
 // iSeek CDR
 $arrCDRCheck = Array();
-$arrCDRCheck['Label']				= "AAPT CDR";
+$arrCDRCheck['Label']				= "iSeek CDR";
 $arrCDRCheck['Carrier']				= CARRIER_ISEEK;
 $arrCDRCheck['FileType']			= CDR_ISEEK_STANDARD;
 $arrCDRCheck['FileNameRegex']		= "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_s\.dat$/";
 $arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_DAY;
 $arrCDRCheck['MinCountPerFreq']		= 1;
 $arrCDRCheck['PrefCountPerFreq']	= 1;
-$arrConfig['CDRCheck']['AAPTCDR']	= $arrCDRCheck;
+$arrConfig['CDRCheck']['iSeekCDR']	= $arrCDRCheck;
 
 ?>
