@@ -1295,7 +1295,7 @@
 					if (!$arrRatePlan['Shared'])
 					{
 						// add in breakdown
-						$fltPlanCredit = ($fltGrandTotalCapped - $fltTotal) - $arrRatePlan['MinMonthly'];
+						$fltPlanCredit = ($fltGrandTotalCapped - $fltTotal) - $fltGrandTotalPlanCharge;
 						$arrDefine['SvcSummPlanSumm']		['PlanCharge']		['Value']	= $fltGrandTotalPlanCharge;
 						$arrDefine['SvcSummPlanSumm']		['PlanCredit']		['Value']	= $fltPlanCredit;
 						$this->_arrFileData[] = $arrDefine['SvcSummPlanSumm'];
