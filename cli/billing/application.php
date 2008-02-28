@@ -475,6 +475,21 @@
 			{
 				if ($arrService['MinMonthly'] > 0)
 				{
+					// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
+					if (!$arrService['LastBilledOn'] && $arrService['InAdvance'])
+					{
+						$arrAdvanceCharge = Array();
+						$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
+						$arrAdvanceCharge['Account']		= $arrAccount['Id'];
+						$arrAdvanceCharge['Service']		= $arrService['Service'];
+						$arrAdvanceCharge['ChargeType']		= 'PC'.round($arrService['MinMonthly'], 2);
+						$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-01"))));
+						$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
+						$arrAdvanceCharge['Nature']			= 'DR';
+						$arrAdvanceCharge['Amount']			= $arrService['MinMonthly'];
+						$this->Framework->AddCharge($arrAdvanceCharge);
+					}
+					
 					// Prorate Minimum Monthly
 					$selEarliestCDR->Execute($arrService);
 					$selPlanDate->Execute($arrService);
@@ -502,21 +517,6 @@
 						$fltProratedMinMonthly					= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
 						$arrService['MinMonthly']				= round($fltProratedMinMonthly, 2);
 						$arrServices[$mixIndex]['MinMonthly']	= $arrService['MinMonthly'];
-					}
-					
-					// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
-					if (!$arrService['LastBilledOn'] && $arrService['InAdvance'])
-					{
-						$arrAdvanceCharge = Array();
-						$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
-						$arrAdvanceCharge['Account']		= $arrAccount['Id'];
-						$arrAdvanceCharge['Service']		= $arrService['Service'];
-						$arrAdvanceCharge['ChargeType']		= 'PC'.round($fltMinMonthly, 2);
-						$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-01"))));
-						$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
-						$arrAdvanceCharge['Nature']			= 'DR';
-						$arrAdvanceCharge['Amount']			= $fltMinMonthly;
-						$this->Framework->AddCharge($arrAdvanceCharge);
 					}
 				}
 				
