@@ -80,7 +80,7 @@ foreach($arrServices as $mixIndex=>$arrService)
 	
 	if ($arrService['MinMonthly'] > 0)
 	{
-		CliEcho("Initial Min Monthly\t: {$arrService['MinMonthly']}");
+		CliEcho("Initial Min Monthly\t\t: {$arrService['MinMonthly']}");
 		
 		// Prorate Minimum Monthly
 		$selEarliestCDR->Execute($arrService);
