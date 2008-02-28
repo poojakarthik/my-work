@@ -475,20 +475,6 @@
 			{
 				if ($arrService['MinMonthly'] > 0)
 				{
-					// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
-					if (!$arrService['LastBilledOn'] && $arrService['InAdvance'])
-					{
-						$arrAdvanceCharge = Array();
-						$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
-						$arrAdvanceCharge['Account']		= $arrAccount['Id'];
-						$arrAdvanceCharge['Service']		= $arrService['Service'];
-						$arrAdvanceCharge['ChargeType']		= 'PC'.round($arrService['MinMonthly'], 2);
-						$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-01"))));
-						$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
-						$arrAdvanceCharge['Nature']			= 'DR';
-						$arrAdvanceCharge['Amount']			= $arrService['MinMonthly'];
-						$this->Framework->AddCharge($arrAdvanceCharge);
-					}
 					
 					// Prorate Minimum Monthly
 					$selEarliestCDR->Execute($arrService);
@@ -500,23 +486,42 @@
 					$intServiceDate	= strtotime($arrService['CreatedOn']);
 					$intPlanDate	= strtotime($arrPlanDate['StartDatetime']);
 					
-					// If the first CDR is unbilled
-					if (!$intCDRDate)
+					// If the Service is tolling (has an EarliestCDR)
+					if ($intCDRDate)
+					{
+						// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
+						if (!$arrService['LastBilledOn'] && $arrService['InAdvance'])
+						{
+							$arrAdvanceCharge = Array();
+							$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
+							$arrAdvanceCharge['Account']		= $arrAccount['Id'];
+							$arrAdvanceCharge['Service']		= $arrService['Service'];
+							$arrAdvanceCharge['ChargeType']		= 'PC'.round($arrService['MinMonthly'], 2);
+							$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-01"))));
+							$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
+							$arrAdvanceCharge['Nature']			= 'DR';
+							$arrAdvanceCharge['Amount']			= $arrService['MinMonthly'];
+							$this->Framework->AddCharge($arrAdvanceCharge);
+						}
+						
+						// If the first CDR is unbilled, Pro Rata
+						if ($intCDRDate > $intLastBillDate)
+						{
+							$fltMinMonthly	= $arrService['MinMonthly'];
+							
+							// Prorate the Minimum Monthly
+							$intProratePeriod						= time() - $intCDRDate;
+							$intBillingPeriod						= time() - $intLastBillDate;
+							$fltProratedMinMonthly					= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
+							$arrService['MinMonthly']				= round($fltProratedMinMonthly, 2);
+							$arrServices[$mixIndex]['MinMonthly']	= $arrService['MinMonthly'];
+						}
+					}
+					else
 					{
 						// No CDRs
 						$arrService['MinMonthly']				= 0;
 						$arrServices[$mixIndex]['MinMonthly']	= 0;
-					}
-					elseif ($intCDRDate > $intLastBillDate)
-					{
-						$fltMinMonthly	= $arrService['MinMonthly'];
-						
-						// Prorate the Minimum Monthly
-						$intProratePeriod						= time() - $intCDRDate;
-						$intBillingPeriod						= time() - $intLastBillDate;
-						$fltProratedMinMonthly					= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
-						$arrService['MinMonthly']				= round($fltProratedMinMonthly, 2);
-						$arrServices[$mixIndex]['MinMonthly']	= $arrService['MinMonthly'];
 					}
 				}
 				
