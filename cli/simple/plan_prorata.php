@@ -57,6 +57,7 @@ $selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service
 $selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
 $selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
 $selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <ServiceRatePlan> AND LastChargedOn IS NOT NULL");
+$intTime			= strtotime('2008-03-01 04:00:00');
 if ($selLastBillDate->Execute($arrAccount))
 {
 	// Previous Invoice
@@ -69,10 +70,11 @@ else
 	// No Previous Invoice: Calculate what it should have been
 	//$strBillingDate		= str_pad($arrAccount['BillingDate'], 2, '0', STR_PAD_LEFT);
 	$strBillingDate		= '01';
-	$intDate			= strtotime(date("Y-m-01", time()));
+	$intDate			= strtotime(date("Y-m-01", $intTime));
 	$intLastBillDate	= strtotime("-{$arrAccount['BillingFreq']} month", strtotime(date("Y-m-$strBillingDate", $intDate)));
 	CliEcho("Faked Invoiced Date\t: ".date("Y-m-d", $intLastBillDate));
 }
+//$intLastBilledDate	= strtotime('2008-02-01');
 $arrSharedPlans	= Array();
 foreach($arrServices as $mixIndex=>$arrService)
 {
@@ -108,16 +110,16 @@ foreach($arrServices as $mixIndex=>$arrService)
 			$fltMinMonthly	= $arrService['MinMonthly'];
 			
 			// Prorate the Minimum Monthly
-			$intProratePeriod						= time() - $intCDRDate;
-			$intBillingPeriod						= time() - $intLastBillDate;
+			$intProratePeriod						= $intTime - $intCDRDate;
+			$intBillingPeriod						= $intTime - $intLastBillDate;
 			$fltProratedMinMonthly					= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
 			$arrService['MinMonthly']				= round($fltProratedMinMonthly, 2);
 			$arrServices[$mixIndex]['MinMonthly']	= $arrService['MinMonthly'];
 			
 			$arrProRataPeriod	= SecondsToDays($intProratePeriod);
 			$arrBillingPeriod	= SecondsToDays($intBillingPeriod);
-			CliEcho("ProRata Period\t\t\t: {$arrProRataPeriod['d']}");
-			CliEcho("Billing Period\t\t\t: {$arrBillingPeriod['d']}");
+			CliEcho("ProRata Period\t\t\t: {$arrProRataPeriod['d']} days");
+			CliEcho("Billing Period\t\t\t: {$arrBillingPeriod['d']} days");
 			CliEcho("Final Min Monthly\t\t: {$arrService['MinMonthly']}");
 		}
 		else
