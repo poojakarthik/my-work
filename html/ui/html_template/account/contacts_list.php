@@ -222,7 +222,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 	 */
 	private function _RenderInPage()
 	{
-		echo "<h2 class='Contact'>Contact Details</h2>\n";
+		echo "<h2 class='Contact'>Contacts</h2>\n";
 		$this->_RenderList();
 		
 		// Draw buttons

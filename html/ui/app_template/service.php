@@ -760,9 +760,7 @@ class AppTemplateService extends ApplicationTemplate
 						else
 						{
 							// Activating the service was successfull. Define system generated note
-							$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-							$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-							$strNoteDetails = "Activated on $strDateTime by $strUserName";
+							$strNoteDetails = "activated";
 						}
 						break;
 					case SERVICE_ARCHIVED:
@@ -784,10 +782,7 @@ class AppTemplateService extends ApplicationTemplate
 						DBO()->Service->Status = DBO()->Service->NewStatus->Value;
 						
 						// Define system generated note
-						$strDateTime	= OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-						$strUserName	= GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-						$strAction		= GetConstantDescription(DBO()->Service->Status->Value, "Service");
-						$strNoteDetails	= "$strAction on $strDateTime by $strUserName";
+						$strNoteDetails = strtolower(GetConstantDescription(DBO()->Service->Status->Value, "Service"));
 						
 						// Declare columns to update
 						DBO()->Service->SetColumns("ClosedOn, ClosedBy, Status");
@@ -824,7 +819,7 @@ class AppTemplateService extends ApplicationTemplate
 					$intServiceId = DBO()->Service->Id->Value;
 				}
 			
-				$strNote  = "Service with Id: $intServiceId and FNN: ". DBO()->Service->FNN->Value . " has been $strNoteDetails";
+				$strNote  = "Service has been $strNoteDetails";
 				
 				if ($strChangesNote)
 				{
@@ -1525,6 +1520,7 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ServiceRatePlan->CreatedOn 		= $strCurrentDateAndTime;
 			DBO()->ServiceRatePlan->StartDatetime 	= $strStartDatetime;
 			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
+			DBO()->ServiceRatePlan->LastChargedOn	= NULL;
 			DBO()->ServiceRatePlan->Active			= $intActive;
 			
 			if (!DBO()->ServiceRatePlan->Save())
@@ -1761,8 +1757,8 @@ class AppTemplateService extends ApplicationTemplate
 		// Give the new service the same RatePlan as the old service (including future rate plans and overrides)
 		// Copy all ServiceRatePlan records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
 		$intNewServiceId = DBO()->NewService->Id->Value;
-		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ".
-														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active ".
+		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active) ".
+														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active ".
 														"FROM ServiceRatePlan WHERE Service = $intOldServiceId AND EndDatetime > NOW() AND StartDatetime < EndDatetime";
 		$qryInsertServicePlanDetails = new Query();
 		

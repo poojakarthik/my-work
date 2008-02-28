@@ -102,7 +102,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		// Start the form
 		$this->FormStart("EditService", "Service", "Edit");
 
-		echo "<h2 class='service'>Service Details</h2>\n";
+		//echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		
 		$intClosedOn = strtotime(DBO()->Service->ClosedOn->Value);
@@ -158,12 +158,14 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->CurrentCostCentre->RenderHidden();
 		DBO()->Service->CurrentForceInvoiceRender->RenderHidden();
 		DBO()->ServiceInboundDetail->CurrentAnswerPoint->RenderHidden();
-		DBO()->ServiceInboundDetail->CurrentConfiguration->RenderHidden();		
-		DBO()->ServiceMobileDetail->CurrentSimPUK->RenderHidden();
-		DBO()->ServiceMobileDetail->CurrentSimESN->RenderHidden();
-		DBO()->ServiceMobileDetail->CurrentSimState->RenderHidden();
-		DBO()->ServiceMobileDetail->CurrentDOB->RenderHidden();
-		DBO()->ServiceMobileDetail->CurrentComments->RenderHidden();
+		DBO()->ServiceInboundDetail->CurrentConfiguration->RenderHidden();
+		
+		// I'm pretty sure these are no longer required		
+		//DBO()->ServiceMobileDetail->CurrentSimPUK->RenderHidden();
+		//DBO()->ServiceMobileDetail->CurrentSimESN->RenderHidden();
+		//DBO()->ServiceMobileDetail->CurrentSimState->RenderHidden();
+		//DBO()->ServiceMobileDetail->CurrentDOB->RenderHidden();
+		//DBO()->ServiceMobileDetail->CurrentComments->RenderHidden();
 
 		DBO()->Service->Account->RenderHidden();
 		DBO()->Service->AccountGroup->RenderHidden();
@@ -251,28 +253,20 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		{
 			DBO()->Service->ELB->RenderInput();
 		}
-	
-		echo "</div>\n";  // GroupedContent - Generic ServiceDetails
 		
 		// handle extra inbound phone details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 		{
-			echo "<div class='SmallSeperator'></div>\n";
-			echo "<h2 class='service'>Inbound Specific Details</h2>\n";
-			echo "<div class='GroupedContent'>\n";
+			echo "<div class='ContentSeparator'></div>\n";
 			DBO()->ServiceInboundDetail->Id->RenderHidden();
 			DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
 			DBO()->ServiceInboundDetail->Configuration->RenderInput();
-			echo "</div>\n";
 		}
 		
 		// handle extra mobile phone details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
-			echo "<div class='SmallSeperator'></div>\n";
-			echo "<h2 class='service'>Mobile Specific Details</h2>\n";
-			echo "<div class='GroupedContent'>\n";
-
+			echo "<div class='ContentSeparator'></div>\n";
 			DBO()->ServiceMobileDetail->SimPUK->RenderInput();
 			DBO()->ServiceMobileDetail->SimESN->RenderInput();
 			
@@ -292,8 +286,9 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			
 			DBO()->ServiceMobileDetail->DOB->RenderInput();				
 			DBO()->ServiceMobileDetail->Comments->RenderInput();
-			echo "</div>\n";  // GroupedContent - MobileDetails
 		}
+		
+		echo "</div>\n";  // GroupedContent
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(this)");

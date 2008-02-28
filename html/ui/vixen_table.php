@@ -832,7 +832,8 @@ class VixenTable
 			
 			if (isset($objRow['OnClick']))
 			{
-				$strOnClick = "onclick='{$objRow['OnClick']}'";
+				// Escape special chars
+				$strOnClick = "onclick='". htmlspecialchars($objRow['OnClick'], ENT_QUOTES) ."'";
 				$strStyle .= "cursor:pointer;";
 			}
 			else

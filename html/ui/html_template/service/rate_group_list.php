@@ -183,11 +183,11 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					}
 					
 					// Check if the RateGroup is a standard part of the plan
-					$strPartOfPlanCell = "<span>&nbsp;</span>";  // Default
+					$strPartOfPlanCell = "&nbsp;";  // Default
 					if (in_array($dboRateGroup->RateGroup->Value, $arrCurrentPlanRateGroups))
 					{
 						// The RateGroup is a standard part of the plan
-						$strPartOfPlanCell = "<span><img src='img/template/tick.png' title='This is the standard Fleet RateGroup for this Plan'></img></span>";
+						$strPartOfPlanCell = "<img src='img/template/tick.png' title='This is the standard Fleet RateGroup for this Plan'></img>";
 					}
 					
 					// Prepare the Start Cell
@@ -198,7 +198,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					// Prepare the End Cell
 					if ($dboRateGroup->EndDatetime->Value == END_OF_TIME)
 					{
-						$strEndDate = "<span>Indefinite</span>";
+						$strEndDate = "Indefinite";
 					}
 					else
 					{
@@ -214,20 +214,21 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					$dboRateGroup->Description = htmlspecialchars($dboRateGroup->Description->Value, ENT_QUOTES);
 					
 					// Prepare the RateGroup Cell
-					$strRateGroupCell  = "<span>Fleet: &nbsp;</span>";
+					$strRateGroupCell  = "Fleet: &nbsp;";
 					$strRateGroupCell .= "<a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}'><span ". (($bolIsCurrent) ? "class='Green'>" : "class='Black'>") ."{$dboRateGroup->Name->Value}</span></a></span>";
 					
 					// Prepare the RemoveRateGroup Cell
-					$strRemoveRateGroup = "<span>&nbsp;</span>";
+					$strRemoveRateGroup = "&nbsp;";
 					if ($bolUserHasAdminPerm)
 					{	
 						// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
-						$strRemoveRateGroupJsCode	= "javascript: Vixen.ServiceRateGroups.RemoveRateGroup({$dboRateGroup->Id->Value}, \"{$dboRateGroup->Name->Value}\")";
-						$strRemoveRateGroup			= "<span><a href='$strRemoveRateGroupJsCode'><img src='img/template/delete.png' title='Remove RateGroup'></img></a></span>";
+						$strRemoveRateGroupJsCode	= "javascript: Vixen.ServiceRateGroups.RemoveRateGroup({$dboRateGroup->Id->Value}, '{$dboRateGroup->Name->Value}')";
+						$strRemoveRateGroupJsCode	= htmlspecialchars($strRemoveRateGroupJsCode, ENT_QUOTES);
+						$strRemoveRateGroup			= "<a href='$strRemoveRateGroupJsCode'><img src='img/template/delete.png' title='Remove RateGroup'></img></a>";
 					}
 					
 					// Add the Row
-					Table()->$strTableName->AddRow("<span>$intPrecedence</span>", $strRateGroupCell, $strPartOfPlanCell, $strStartDate, "<span>-</span>", $strEndDate, $strRemoveRateGroup);
+					Table()->$strTableName->AddRow($intPrecedence, $strRateGroupCell, $strPartOfPlanCell, $strStartDate, "-", $strEndDate, $strRemoveRateGroup);
 					
 					// Increment the precedence counter
 					$intPrecedence++;
@@ -278,11 +279,11 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					}
 					
 					// Check if the RateGroup is a standard part of the plan
-					$strPartOfPlanCell = "<span>&nbsp;</span>";  // Default
+					$strPartOfPlanCell = "&nbsp;";  // Default
 					if (in_array($dboRateGroup->RateGroup->Value, $arrCurrentPlanRateGroups))
 					{
 						// The RateGroup is a standard part of the plan
-						$strPartOfPlanCell = "<span><img src='img/template/tick.png'></img></span>";
+						$strPartOfPlanCell = "<img src='img/template/tick.png'></img>";
 					}
 					
 					// Prepare the Start Cell
@@ -293,7 +294,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					// Prepare the End Cell
 					if ($dboRateGroup->EndDatetime->Value == END_OF_TIME)
 					{
-						$strEndDate = "<span>Indefinite</span>";
+						$strEndDate = "Indefinite";
 					}
 					else
 					{
@@ -309,19 +310,20 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					$dboRateGroup->Description = htmlspecialchars($dboRateGroup->Description->Value, ENT_QUOTES);
 
 					// Prepare the RateGroup Cell
-					$strRateGroupCell = "<span><a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}'><span ". (($bolIsCurrent) ? "class='Green'>" : "class='Black'>") ."{$dboRateGroup->Name->Value}</span></a></span>";
+					$strRateGroupCell = "<a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}'><span ". (($bolIsCurrent) ? "class='Green'>" : "class='Black'>") ."{$dboRateGroup->Name->Value}</span></a>";
 					
 					// Prepare the RemoveRateGroup Cell
-					$strRemoveRateGroup = "<span>&nbsp;</span>";
+					$strRemoveRateGroup = "&nbsp;";
 					if ($bolUserHasAdminPerm)
 					{	
 						// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
-						$strRemoveRateGroupJsCode	= "javascript: Vixen.ServiceRateGroups.RemoveRateGroup({$dboRateGroup->Id->Value}, \"{$dboRateGroup->Name->Value}\")";
-						$strRemoveRateGroup			= "<span><a href='$strRemoveRateGroupJsCode'><img src='img/template/delete.png' title='Remove RateGroup'></img></a></span>";
+						$strRemoveRateGroupJsCode	= "javascript: Vixen.ServiceRateGroups.RemoveRateGroup({$dboRateGroup->Id->Value}, '{$dboRateGroup->Name->Value}')";
+						$strRemoveRateGroupJsCode	= htmlspecialchars($strRemoveRateGroupJsCode, ENT_QUOTES);
+						$strRemoveRateGroup			= "<a href='$strRemoveRateGroupJsCode'><img src='img/template/delete.png' title='Remove RateGroup'></img></a>";
 					}
 					
 					// Add the Row
-					Table()->$strTableName->AddRow("<span>$intPrecedence</span>", $strRateGroupCell, $strPartOfPlanCell, $strStartDate, "<span>-</span>", $strEndDate, $strRemoveRateGroup);
+					Table()->$strTableName->AddRow($intPrecedence, $strRateGroupCell, $strPartOfPlanCell, $strStartDate, "-", $strEndDate, $strRemoveRateGroup);
 					
 					// Increment the precedence counter
 					$intPrecedence++;
