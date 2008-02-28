@@ -61,7 +61,7 @@ if ($selLastBillDate->Execute($arrAccount))
 {
 	// Previous Invoice
 	$arrLastBillDate	= $selLastBillDate->Fetch();
-	$intLastBillDate	= strtotime($arrLastBillDate['BillingDate']);
+	$intLastBillDate	= strtotime($arrLastBillDate['CreatedOn']);
 	CliEcho("Last Invoiced Date\t: ".date("Y-m-d", $intLastBillDate));
 }
 else
@@ -76,6 +76,8 @@ else
 $arrSharedPlans	= Array();
 foreach($arrServices as $mixIndex=>$arrService)
 {
+	CliEcho("\n[ {$arrService['FNN']} ({$arrService['Service']}) ]");
+	
 	if ($arrService['MinMonthly'] > 0)
 	{
 		CliEcho("Initial Min Monthly\t: {$arrService['MinMonthly']}");
@@ -91,7 +93,7 @@ foreach($arrServices as $mixIndex=>$arrService)
 		$intPlanDate	= strtotime($arrPlanDate['StartDatetime']);
 		
 		$strCDRDate		= ($intCDRDate) ? date("Y-m-d", $intCDRDate) : 'No CDRs';
-		CliEcho("Earliest CDR\t: $strCDRDate");
+		CliEcho("Earliest CDR\t\t: $strCDRDate");
 		
 		// If the first CDR is unbilled
 		if (!$intCDRDate)
@@ -117,6 +119,10 @@ foreach($arrServices as $mixIndex=>$arrService)
 			CliEcho("ProRata Period\t: $strProRataPeriod");
 			CliEcho("Billing Period\t: $strBillingPeriod");
 			CliEcho("Final Min Monthly\t: {$arrService['MinMonthly']}");
+		}
+		else
+		{
+			CliEcho("Keeping Min Monthly\t: {$arrService['MinMonthly']}");
 		}
 		
 		// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
