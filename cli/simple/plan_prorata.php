@@ -1,7 +1,8 @@
 <?php
 
+$intAccount	= (int)$argv[1];
 $arrAccount	= Array();
-$arrAccount['Id']			= 1000007758;
+$arrAccount['Id']			= $intAccount;
 
 
 // Get Framework
@@ -32,7 +33,11 @@ $selServices							= new StatementSelect(	"Service JOIN ServiceRatePlan ON Servi
 																"RatePlan.Id");
 
 $selAccount	= new StatementSelect("Account", "*", "Id = <Id>");
-$selAccount->Execute($arrAccount);
+if (!$selAccount->Execute($arrAccount))
+{
+	CliEcho("$intAccount is not a valid Account Number!\n");
+	die;
+}
 $arrAccount	= $selAccount->Fetch();
 
 // Retrieve list of services for this account
@@ -57,7 +62,7 @@ if ($selLastBillDate->Execute($arrAccount))
 	// Previous Invoice
 	$arrLastBillDate	= $selLastBillDate->Fetch();
 	$intLastBillDate	= strtotime($arrLastBillDate['BillingDate']);
-	CliEcho("Last Invoiced Date\t: ".date("Y-m-d"), $intLastBillDate);
+	CliEcho("Last Invoiced Date\t: ".date("Y-m-d", $intLastBillDate));
 }
 else
 {
@@ -66,7 +71,7 @@ else
 	$strBillingDate		= '01';
 	$intDate			= strtotime(date("Y-m-01", time()));
 	$intLastBillDate	= strtotime("-{$arrAccount['BillingFreq']} month", strtotime(date("Y-m-$strBillingDate", $intDate)));
-	CliEcho("Faked Invoiced Date\t: ".date("Y-m-d"), $intLastBillDate);
+	CliEcho("Faked Invoiced Date\t: ".date("Y-m-d", $intLastBillDate));
 }
 $arrSharedPlans	= Array();
 foreach($arrServices as $mixIndex=>$arrService)
@@ -151,7 +156,7 @@ die;
 
 function SecondsToDays($intSeconds)
 {
-	CliEcho(date('Y-m-d H:i:s', $intSeconds));
+	//CliEcho(date('Y-m-d H:i:s', $intSeconds));
 	$intDays	= floor($intSeconds / (60*60*24));
 	$intSeconds	= $intSeconds % (60*60*24);
 	
@@ -165,7 +170,7 @@ function SecondsToDays($intSeconds)
 	$arrDays['h']	= $intHours;
 	$arrDays['m']	= $intMinutes;
 	$arrDays['s']	= $intSeconds;
-	Debug($arrDays);
+	//Debug($arrDays);
 	return $arrDays;
 }
 
