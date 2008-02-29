@@ -96,11 +96,11 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		// Build an array storing the ids of all the RateGroups belonging to the current plan
-		$arrCurrentPlanRateGroups = Array();
-		foreach (DBL()->CurrentPlanRateGroup as $dboRateGroup)
+		// Build an array storing the ids of all the RateGroups belonging to the plans associated with this account
+		$arrPlanRateGroups = Array();
+		foreach (DBL()->PlanRateGroup as $dboRateGroup)
 		{
-			$arrCurrentPlanRateGroups[] = $dboRateGroup->Id->Value;
+			$arrPlanRateGroups[] = $dboRateGroup->Id->Value;
 		}
 		
 		// This will list the Start and End times for all shown RateGroups for a given RecordType.  If a RateGroup's Start and End times
@@ -110,8 +110,6 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 	
 		$intNow = strtotime(GetCurrentDateAndTimeForMySQL());
-		$strStandardHeaderCell	= "<span title='RateGroup is standard Part Of Plan'>PoP</span>";
-		$strFleetHeaderCell		= "<span title='Fleet Rates always take precedence over normal Rates'>Fleet</span>";
 	
 		echo "<h2 class='Plan'>Rate Groups</h2>\n";
 		
@@ -134,7 +132,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 			}
 			$strRecordTypeCell = $dboRecordType->Description->Value;
 			
-			Table()->$strTableName->SetHeader("&nbsp;", $strRecordTypeCell, $strStandardHeaderCell, "&nbsp;", "&nbsp", "&nbsp;", $strOverrideRateGroup);
+			Table()->$strTableName->SetHeader("&nbsp;", $strRecordTypeCell, "&nbsp;", "&nbsp;", "&nbsp", "&nbsp;", $strOverrideRateGroup);
 			Table()->$strTableName->SetWidth("3%", "65%", "5%", "10%", "2%", "10%", "5%");
 			Table()->$strTableName->SetAlignment("Left", "Left", "Center", "Left", "Left", "Left", "Right");
 			
@@ -182,12 +180,12 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 						$bolIsCurrent					= TRUE;
 					}
 					
-					// Check if the RateGroup is a standard part of the plan
-					$strPartOfPlanCell = "&nbsp;";  // Default
-					if (in_array($dboRateGroup->RateGroup->Value, $arrCurrentPlanRateGroups))
+					// Check if the RateGroup is not part of the plans
+					$strNotPartOfPlan = "&nbsp;";  // Default
+					if (!in_array($dboRateGroup->RateGroup->Value, $arrPlanRateGroups))
 					{
-						// The RateGroup is a standard part of the plan
-						$strPartOfPlanCell = "<img src='img/template/tick.png' title='This is the standard Fleet RateGroup for this Plan'></img>";
+						// The RateGroup is not in any of the plans associated with this service
+						$strNotPartOfPlan = "<img src='img/template/flag_yellow.png' title='RateGroup is not standard part of the plan'></img>";
 					}
 					
 					// Prepare the Start Cell
@@ -228,7 +226,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					}
 					
 					// Add the Row
-					Table()->$strTableName->AddRow($intPrecedence, $strRateGroupCell, $strPartOfPlanCell, $strStartDate, "-", $strEndDate, $strRemoveRateGroup);
+					Table()->$strTableName->AddRow($intPrecedence, $strRateGroupCell, $strNotPartOfPlan, $strStartDate, "-", $strEndDate, $strRemoveRateGroup);
 					
 					// Increment the precedence counter
 					$intPrecedence++;
@@ -278,12 +276,12 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 						$bolIsCurrent					= TRUE;
 					}
 					
-					// Check if the RateGroup is a standard part of the plan
-					$strPartOfPlanCell = "&nbsp;";  // Default
-					if (in_array($dboRateGroup->RateGroup->Value, $arrCurrentPlanRateGroups))
+					// Check if the RateGroup is not part of the plan
+					$strNotPartOfPlan = "&nbsp;";  // Default
+					if (!in_array($dboRateGroup->RateGroup->Value, $arrPlanRateGroups))
 					{
-						// The RateGroup is a standard part of the plan
-						$strPartOfPlanCell = "<img src='img/template/tick.png'></img>";
+						// The RateGroup is not in any of the plans associated with this service
+						$strNotPartOfPlan = "<img src='img/template/flag_yellow.png' title='RateGroup is not standard part of the plan'></img>";
 					}
 					
 					// Prepare the Start Cell
@@ -323,7 +321,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					}
 					
 					// Add the Row
-					Table()->$strTableName->AddRow($intPrecedence, $strRateGroupCell, $strPartOfPlanCell, $strStartDate, "-", $strEndDate, $strRemoveRateGroup);
+					Table()->$strTableName->AddRow($intPrecedence, $strRateGroupCell, $strNotPartOfPlan, $strStartDate, "-", $strEndDate, $strRemoveRateGroup);
 					
 					// Increment the precedence counter
 					$intPrecedence++;

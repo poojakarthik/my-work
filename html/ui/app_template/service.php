@@ -1076,6 +1076,8 @@ class AppTemplateService extends ApplicationTemplate
 	 */
 	private function _LoadPlanDetails()
 	{
+		$arrPlans = Array();
+		
 		// Load the current RatePlan
 		DBO()->CurrentRatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
 		$strEarliestAllowableEndDatetime = NULL;
@@ -1085,13 +1087,7 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->CurrentRatePlan->SetTable("RatePlan");
 			DBO()->CurrentRatePlan->Load();
 
-			// Load all the RateGroups belonging to the current rate plan
-			DBL()->CurrentPlanRateGroup->SetTable("RateGroup");
-			DBL()->CurrentPlanRateGroup->SetColumns("Id");
-			$strWhere = "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = <RatePlan>)";
-			DBL()->CurrentPlanRateGroup->Where->Set($strWhere, Array("RatePlan" => DBO()->CurrentRatePlan->Id->Value));
-			DBL()->CurrentPlanRateGroup->OrderBy("RecordType");
-			DBL()->CurrentPlanRateGroup->Load();
+			$arrPlanIds[] = DBO()->CurrentRatePlan->Id->Value;
 
 			// Load the current ServiceRatePlan record
 			$strWhere = "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC";
@@ -1119,6 +1115,8 @@ class AppTemplateService extends ApplicationTemplate
 			// The Service has a plan scheduled to begin at the start of the next billing period
 			DBO()->FutureRatePlan->SetTable("RatePlan");
 			DBO()->FutureRatePlan->Load();
+			
+			$arrPlanIds[] = DBO()->FutureRatePlan->Id->Value;
 			
 			// Load the Future RatePlan record (this is only really needed to get the StartDatetime and EndDatetime)
 			$strStartOfNextBillingPeriod = ConvertUnixTimeToMySQLDateTime(GetStartDateTimeForNextBillingPeriod());
@@ -1173,6 +1171,19 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->CurrentServiceRateGroup->Where->Set($strWhere, $arrWhere);
 		DBL()->CurrentServiceRateGroup->OrderBy($strOrderBy);
 		DBL()->CurrentServiceRateGroup->Load();
+		
+		// Load all the RateGroups belonging to either plans defined for the service (current and/or future)
+		// Assuming there are plans associated with this service
+		if (count($arrPlanIds) > 0)
+		{
+			DBL()->PlanRateGroup->SetTable("RateGroup");
+			DBL()->PlanRateGroup->SetColumns("Id");
+			$strWhere = "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan IN (". implode(", ", $arrPlanIds) ."))";
+			DBL()->PlanRateGroup->Where->SetString($strWhere);
+			DBL()->PlanRateGroup->OrderBy("RecordType");
+			DBL()->PlanRateGroup->Load();
+		}
+		
 	}
 
 

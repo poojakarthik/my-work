@@ -1149,6 +1149,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		// Retrieve all RateGroups matching the RecordType
 		DBL()->RateGroup->RecordType = DBO()->RecordType->Id->Value;
+		DBL()->RateGroup->Archived = 0;
 		DBL()->RateGroup->OrderBy("Name");
 		DBL()->RateGroup->Load();
 	
