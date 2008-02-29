@@ -53,14 +53,14 @@ $arrBillingConfig = Array();
 	
 	//$arrBillingConfig['PrintingModule']	['SpecialOffer1']			= "Dear Customer, There is a minor adjustment to some of our service charges of up to 68c. However, while this has been unavoidable, you can rest assured that our call rates and customer service still remain as exceptional as ever!  ";
 	//$arrBillingConfig['PrintingModule']	['SpecialOffer2']			= "For your convenience we have included a direct debit application form should you wish to pay by this method, simply fill in your EFT or credit card details and fax to the Customer Service Team on 1300 733 393";
-	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_TELCOBLUE]		= "Check for changes that may affect you. We may have a better plan so request a discount analysis. Check for new products that maybe suitable for you. Check for changes to services Visit our Terms & Conditions for updates.";
-	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_TELCOBLUE]		= "Check your responsibilities for canceling your services. Questions or help required? Go to our website at www.telcoblue.com.au or phone customer service on 1300 835 262.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_TELCO_BLUE]		= "Buzz is our monthly newsletter delivered to thousands of business customers accross Australia, containing valuable telco updates and business news.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_TELCO_BLUE]		= "If you would like to advertise your business absoluely free of charge simply go to www.telcoblue.com.au and follow the prompts.  Conditions Apply.";
 	
-	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_IMAGINE]		= "Check for changes that may affect you. We may have a better plan so request a discount analysis. Check for new products that maybe suitable for you. Check for changes to services Visit our Terms & Conditions for updates.";
-	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_IMAGINE]		= "Check your responsibilities for canceling your services. Questions or help required? Go to our website at www.telcoblue.com.au or phone customer service on 1300 835 262.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_IMAGINE]		= "Buzz is our monthly newsletter delivered to thousands of business customers accross Australia, containing valuable telco updates and business news.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_IMAGINE]		= "If you would like to advertise your business absoluely free of charge simply go to www.telcoblue.com.au and follow the prompts.  Conditions Apply.";
 	
-	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_VOICETALK]		= "Check for changes that may affect you. We may have a better plan so request a discount analysis. Check for new products that maybe suitable for you. Check for changes to services Visit our Terms & Conditions for updates.";
-	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_VOICETALK]		= "Check your responsibilities for canceling your services. Questions or help required? Go to our website at www.voicetalk.com.au or phone customer service on 1300 882 172.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer1']	[CUSTOMER_GROUP_VOICETALK]		= "The Voice is our monthly newsletter delivered to thousands of  business customers accross Australia, containing valuable telco updates and business news.";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer2']	[CUSTOMER_GROUP_VOICETALK]		= "If you would like to advertise your business absoluely free of charge simply go to www.voicetalk.com.au and follow the prompts.  Conditions Apply.";
 	
 	// Bill Printer FTP Server
 	/*
