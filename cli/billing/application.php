@@ -496,7 +496,7 @@
 							$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
 							$arrAdvanceCharge['Account']		= $arrAccount['Id'];
 							$arrAdvanceCharge['Service']		= $arrService['Service'];
-							$arrAdvanceCharge['ChargeType']		= 'PC'.round($arrService['MinMonthly'], 2);
+							$arrAdvanceCharge['ChargeType']		= 'PCA'.round($arrService['MinMonthly'], 2);
 							$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-01"))));
 							$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
 							$arrAdvanceCharge['Nature']			= 'DR';
@@ -514,7 +514,19 @@
 							$intBillingPeriod						= time() - $intLastBillDate;
 							$fltProratedMinMonthly					= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
 							$arrService['MinMonthly']				= round($fltProratedMinMonthly, 2);
-							$arrServices[$mixIndex]['MinMonthly']	= $arrService['MinMonthly'];
+							$arrServices[$mixIndex]['MinMonthly']	= 0.0;
+							
+							// For now, add an adjustment instead of actually changing the min monthly
+							$arrProrataCharge = Array();
+							$arrProrataCharge['AccountGroup']	= $arrAccount['AccountGroup'];
+							$arrProrataCharge['Account']		= $arrAccount['Id'];
+							$arrProrataCharge['Service']		= $arrService['Service'];
+							$arrProrataCharge['ChargeType']		= 'PCP'.round($arrService['MinMonthly'], 2);
+							$arrProrataCharge['Description']	= "Plan Charge in arrear from ".date("d/m/Y", $intCDRDate)." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-d"))));
+							$arrProrataCharge['ChargedOn']		= date("Y-m-d");
+							$arrProrataCharge['Nature']			= 'DR';
+							$arrProrataCharge['Amount']			= $arrService['MinMonthly'];
+							$this->Framework->AddCharge($arrProrataCharge);
 						}
 					}
 					else
