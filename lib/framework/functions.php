@@ -3816,5 +3816,70 @@ function GetCustomerName()
 }
 
 
+//------------------------------------------------------------------------//
+// TruncateTime()
+//------------------------------------------------------------------------//
+/**
+ * TruncateTime()
+ *
+ * Truncates a Unix Timestamp to a specified degree of accuracy
+ *
+ * Truncates a Unix Timestamp to a specified degree of accuracy.
+ * 
+ * @param	integer	$intTime					The timestamp to truncate
+ * @param	string	$strAccuracy				Where to truncate the timestamp.  Accepts 'y', 'm', 'd', 'h', 'i', or 's'.
+ * @param	string	$strRound					'floor': Rounded Down; 'ceil': Rounded Up
+ *
+ * @return	integer								Truncated Timestamp
+ *
+ * @function
+ */
+function TruncateTime($intTime, $strAccuracy, $strRound)
+{
+	// Set up default values
+	$arrParts		= Array();
+	if ($strRound == 'ceil')
+	{
+		$arrParts['Y']	= 2037;
+		$arrParts['m']	= 12;
+		$arrParts['d']	= 31;
+		$arrParts['H']	= 23;
+		$arrParts['i']	= 59;
+		$arrParts['s']	= 59;
+	}
+	else
+	{
+		$arrParts['Y']	= 1970;
+		$arrParts['m']	= 1;
+		$arrParts['d']	= 1;
+		$arrParts['H']	= 0;
+		$arrParts['i']	= 0;
+		$arrParts['s']	= 0;
+	}
+	
+	// Truncate time
+	$bolTruncated	= FALSE;
+	foreach ($arrParts as $strPart=>$intValue)
+	{
+		// If we're already truncated
+		if ($bolTruncated)
+		{
+			// Use default
+			continue;
+		}
+		elseif (strtolower($strPart) === strtolower($strAccuracy))
+		{
+			// Truncate from here onwards
+			$bolTruncated	= TRUE;
+		}
+		
+		// Set passed value
+		$arrParts[$strPart]	= (int)date($strPart, $intTime);
+	}
+	
+	return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y']);
+}
+
+
 
 ?>
