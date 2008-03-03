@@ -497,7 +497,7 @@
 							$arrAdvanceCharge['Account']		= $arrAccount['Id'];
 							$arrAdvanceCharge['Service']		= $arrService['Service'];
 							$arrAdvanceCharge['ChargeType']		= 'PCA'.round($arrService['MinMonthly'], 2);
-							$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-01"))));
+							$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("-1 day", strtotime("+1 month", strtotime(date("Y-m-01")))));
 							$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
 							$arrAdvanceCharge['Nature']			= 'DR';
 							$arrAdvanceCharge['Amount']			= $arrService['MinMonthly'];
@@ -510,8 +510,8 @@
 							$fltMinMonthly	= $arrService['MinMonthly'];
 							
 							// Prorate the Minimum Monthly
-							$intProratePeriod						= time() - $intCDRDate;
-							$intBillingPeriod						= time() - $intLastBillDate;
+							$intProratePeriod						= TruncateTime(time(), 'd', 'floor') - TruncateTime($intCDRDate, 'd', 'floor');
+							$intBillingPeriod						= TruncateTime(time(), 'd', 'floor') - TruncateTime($intLastBillDate, 'd', 'floor');
 							$fltProratedMinMonthly					= ($arrService['MinMonthly'] / $intBillingPeriod) * $intProratePeriod;
 							$arrService['MinMonthly']				= round($fltProratedMinMonthly, 2);
 							$arrServices[$mixIndex]['MinMonthly']	= 0.0;
@@ -522,7 +522,7 @@
 							$arrProrataCharge['Account']		= $arrAccount['Id'];
 							$arrProrataCharge['Service']		= $arrService['Service'];
 							$arrProrataCharge['ChargeType']		= 'PCP'.round($arrService['MinMonthly'], 2);
-							$arrProrataCharge['Description']	= "Plan Charge in arrear from ".date("d/m/Y", $intCDRDate)." to ".date("d/m/Y", strtotime("+1 month", strtotime(date("Y-m-d"))));
+							$arrProrataCharge['Description']	= "Plan Charge in Arrears from ".date("d/m/Y", $intCDRDate)." to ".date("d/m/Y", strtotime("-1 day", time()));
 							$arrProrataCharge['ChargedOn']		= date("Y-m-d");
 							$arrProrataCharge['Nature']			= 'DR';
 							$arrProrataCharge['Amount']			= $arrService['MinMonthly'];
