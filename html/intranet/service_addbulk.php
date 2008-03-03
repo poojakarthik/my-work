@@ -224,8 +224,8 @@
 						}
 						
 						// Do the Provisioning Request
-						$srvService->CreateNewProvisioningRequest ($athAuthentication->AuthenticatedEmployee (), 1, 900);
-						$srvService->CreateNewProvisioningRequest ($athAuthentication->AuthenticatedEmployee (), 2, 901);
+						$srvService->CreateNewProvisioningRequest ($athAuthentication->AuthenticatedEmployee (), $arrRatePlan['CarrierFullService'], 900);
+						$srvService->CreateNewProvisioningRequest ($athAuthentication->AuthenticatedEmployee (), $arrRatePlan['CarrierPreselection'], 901);
 					}
 					catch (Exception $e)
 					{
