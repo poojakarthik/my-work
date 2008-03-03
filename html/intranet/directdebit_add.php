@@ -77,8 +77,6 @@
 				)
 			);
 			
-			$actAccount->BillingTypeSelect (BILLING_TYPE_DIRECT_DEBIT, $ddrDirectDebit);
-            
             // TODO!bash! [  DONE  ]		what if we came from account payment.php ?
             header ('Location: account_payment.php?Id=' . $actAccount->Pull ('Id')->getValue ());
             exit;

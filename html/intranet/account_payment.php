@@ -47,6 +47,37 @@
 	// going to be updating the information
 	if ($_POST ['BillingType'])
 	{
+		// Retrieve the details of the Current Billing method (Account.BillingType) (used for note generation)
+		$intCurrentBillingType = $actAccount->Pull('BillingType')->getValue();
+		switch ($intCurrentBillingType)
+		{
+			case BILLING_TYPE_ACCOUNT:
+				$strOldBillingMethod = "Invoice";
+				break;
+				
+			case BILLING_TYPE_DIRECT_DEBIT:
+				// Retrieve the old 'Direct Debit from Bank Account' details
+				$objBankAccount			= $acgAccountGroup->getDirectDebit($actAccount->Pull('DirectDebit')->getValue());
+				$strBankAccountNumber	= $objBankAccount->Pull('AccountNumber')->getValue();
+				$strBankAccountNumber	= "XXXX". substr($strBankAccountNumber, -3);
+				
+				$strOldBillingMethod  = "\nDirect Debit from bank account\n";
+				$strOldBillingMethod .= "Account Name: ". $objBankAccount->Pull('AccountName')->getValue() ."\n";
+				$strOldBillingMethod .= "Account Number: $strBankAccountNumber\n";
+				break;
+				
+			case BILLING_TYPE_CREDIT_CARD:
+				// Retrieve the old 'Direct Debit from Credit Card' details
+				$objCreditCard	= $acgAccountGroup->getCreditCard($actAccount->Pull('CreditCard')->getValue());
+				$strCardNumber	= $objCreditCard->Pull('CardNumber')->getValue();
+				$strCardNumber	= "XXXXXXXXXXXX". substr($strCardNumber, -4);
+				
+				$strOldBillingMethod  = "\nDirect Debit from credit card\n";
+				$strOldBillingMethod .= "Card Name: ". $objCreditCard->Pull('Name')->getValue() ."\n";
+				$strOldBillingMethod .= "Card Number: $strCardNumber\n";
+				break;
+		}
+		
 		$strBillingType	= substr ($_POST ['BillingType'], 0, 2);
 		$strBillingVia	= substr ($_POST ['BillingType'], 2);
 		
@@ -59,43 +90,51 @@
 			switch ($strBillingType)
 			{
 				case 'DD':
-					$intBillingType = BILLING_TYPE_DIRECT_DEBIT;
-					$objBillingVia = $acgAccountGroup->getDirectDebit ($strBillingVia);
+					$intBillingType	= BILLING_TYPE_DIRECT_DEBIT;
+					$objBillingVia	= $acgAccountGroup->getDirectDebit ($strBillingVia);
+					
+					// System note stuff
+					$strBankAccountNumber	= $objBillingVia->Pull('AccountNumber')->getValue();
+					$strBankAccountNumber	= "XXXX". substr($strBankAccountNumber, -3);
+					
+					$strNewBillingMethod  = "Direct Debit from bank account\n";
+					$strNewBillingMethod .= "Account Name: ". $objBillingVia->Pull('AccountName')->getValue() ."\n";
+					$strNewBillingMethod .= "Account Number: $strBankAccountNumber";
 					break;
 					
 				case 'CC':
-					$intBillingType = BILLING_TYPE_CREDIT_CARD;
-					$objBillingVia = $acgAccountGroup->getCreditCard ($strBillingVia);
+					$intBillingType	= BILLING_TYPE_CREDIT_CARD;
+					$objBillingVia	= $acgAccountGroup->getCreditCard ($strBillingVia);
+					
+					// System note stuff
+					$strCardNumber	= $objBillingVia->Pull('CardNumber')->getValue();
+					$strCardNumber	= "XXXXXXXXXXXX". substr($strCardNumber, -4);
+					
+					$strNewBillingMethod  = "Direct Debit from credit card\n";
+					$strNewBillingMethod .= "Card Name: ". $objBillingVia->Pull('Name')->getValue() ."\n";
+					$strNewBillingMethod .= "Card Number: $strCardNumber";
 					break;
 					
 				case 'AC':
 					$intBillingType = BILLING_TYPE_ACCOUNT;
+					
+					$strNewBillingMethod = "Invoice";
 					break;
 					
 				default:
 					exit;
 			}
 			
-			$actAccount->BillingTypeSelect ($intBillingType, $objBillingVia);
+			$actAccount->BillingTypeSelect($intBillingType, $objBillingVia);
 						
 			// System note is generated when payment method is changed
-			$strEmployeeFirstName = $athAuthentication->AuthenticatedEmployee()->Pull('FirstName')->getValue();
-			$strEmployeeLastName = $athAuthentication->AuthenticatedEmployee()->Pull('LastName')->getValue() ;
-			$intEmployeeId = $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
-			$strEmployeeFullName =  "$strEmployeeFirstName $strEmployeeLastName";
+			$intEmployeeId		= $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
+			$intAccountId		= $actAccount->Pull('Id')->getValue();
+			$intAccountGroup	= $acgAccountGroup->Pull('Id')->getValue();
 
-			$intAccountId = $actAccount->Pull ('Id')->getValue ();
-			$intAccountGroup = $acgAccountGroup->Pull ('Id')->getValue ();
-			$intServiceId = $_POST ['Service'];
-			$BusinessName = $actAccount->Pull('BusinessName')->getValue();
-			$BillingType = GetConstantDescription($intBillingType, 'BillingType');
-
-			$strNote = "Payment Method was changed by $strEmployeeFullName on " . date('m/d/y') . "\n";
-			$strNote .= "Account Id: $intAccountId\n";
-			$strNote .= "Business Name: $BusinessName\n";
-			$strNote .= "New Payment Method: $BillingType\n";
+			$strNote = "Payment method changed from $strOldBillingMethod to $strNewBillingMethod";
 	
-			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId , $intAccountGroup, $intAccountId, NULL, NULL);
+			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId , $intAccountGroup, $intAccountId);
 				
 			$Style->Output (
 				'xsl/content/account/payment_selected.xsl',

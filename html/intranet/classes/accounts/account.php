@@ -593,7 +593,7 @@
 		public function BillingTypeSelect ($intBillingType, $objBillingVia)
 		{
 			// Check the Billing Type is Valid
-			$btyBillingType = new BillingTypes ();
+			$btyBillingType = new BillingTypes();
 			
 			if (!$btyBillingType->setValue ($intBillingType))
 			{
@@ -619,7 +619,6 @@
 					
 					// Update the Direct Debit
 					$arrAccountBilling ['DirectDebit'] = $objBillingVia->Pull ('Id')->getValue ();
-					
 					break;
 					
 				case BILLING_TYPE_CREDIT_CARD:
@@ -630,12 +629,11 @@
 					
 					// Update the Credit Card
 					$arrAccountBilling ['CreditCard'] = $objBillingVia->Pull ('Id')->getValue ();
-					
 					break;
 			}
 			
-			$updAccountBilling = new StatementUpdate ('Account', 'Id = <Id>', $arrAccountBilling, 1);
-			$updAccountBilling->Execute ($arrAccountBilling, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			$updAccountBilling = new StatementUpdate('Account', 'Id = <Id>', $arrAccountBilling, 1);
+			$updAccountBilling->Execute($arrAccountBilling, Array ('Id' => $this->Pull ('Id')->getValue ()));
 		}
 		
 		//------------------------------------------------------------------------//

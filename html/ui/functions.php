@@ -474,11 +474,9 @@ function BreadCrumb()
  *
  * Returns the authenticated user object
  *
- * Returns the singleton PropertyToken object
- * Note that this will return a new PropertyToken object if one has not yet been
- * created.  If one has been created, it will return a reference to it.
+ * Returns the singleton Application object
  *
- * @return	PropertyToken object
+ * @return	Application object (the user's Employee record is located in obj->_arrUser)
  *
  * @function
  * 

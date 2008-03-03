@@ -271,33 +271,31 @@ function dragStart(event, id) {
   
   // If an element id was given, find it. Otherwise use the element being
   // clicked on.
+  
   if (id)
-  {
-    //BUG! BUG! BUG!
-	// For some reason the following line of code is not retrieving the popup div when executed within MSIE.
-	// It works fine in FireFox.  It might have something to do with not being able to retrieve the element
-	// before it is properly added to the DOM.
-    //BUG! BUG! BUG!
     dragObj.elNode = document.getElementById(id);
-  }
-  else
-  {
+	
+  else {
     if (browser.isIE)
       dragObj.elNode = window.event.srcElement;
     if (browser.isNS)
       dragObj.elNode = event.target;
 
     // If this is a text node, use its parent element.
+
     if (dragObj.elNode.nodeType == 3)
       dragObj.elNode = dragObj.elNode.parentNode;
   }
+  // popup width/height  + hardcoded border width * 2
+  var popup_width = dragObj.elNode.style.width.substr(0, dragObj.elNode.style.width.length - 2) * 1 + 2;
+  var popup_height = dragObj.elNode.clientHeight + 2;
   
-  var popup_width = dragObj.elNode.style.width.substr(0, dragObj.elNode.style.width.length - 2) * 1;
+  // not used
   // HACK HACK HACK This is hardcoded to be the height of the top bar of the popup (18px currently) + a little bit
   var header_height = 25; 
- 
+  
+  
   // Get cursor position with respect to the page.
-
   if (browser.isIE) {
     x = window.event.clientX + document.documentElement.scrollLeft
       + document.body.scrollLeft;
@@ -319,14 +317,21 @@ function dragStart(event, id) {
   if (isNaN(dragObj.elStartLeft)) dragObj.elStartLeft = 0;
   if (isNaN(dragObj.elStartTop))  dragObj.elStartTop  = 0;
 
+  // Finding page width...
+  var divPageBody = document.getElementById("PageBody");
+  var intPageWidth = divPageBody.offsetWidth + divPageBody.offsetLeft;
+  intPageWidth = Math.max(document.body.offsetWidth, intPageWidth);
+  
   // Set limits of movement
   dragObj.elNode.limits = Object();
   dragObj.elNode.limits.drag_horizontal = TRUE;
   dragObj.elNode.limits.drag_vertical = TRUE;
   dragObj.elNode.limits.drag_left = 1;
   dragObj.elNode.limits.drag_top = document.body.scrollTop + 1;
-  dragObj.elNode.limits.drag_right = document.body.offsetWidth - popup_width;
-  dragObj.elNode.limits.drag_bottom = document.body.scrollTop + window.innerHeight - header_height; 
+  // dragObj.elNode.limits.drag_right = document.body.offsetWidth - popup_width;
+  dragObj.elNode.limits.drag_right = intPageWidth - popup_width;
+  // dragObj.elNode.limits.drag_bottom = document.body.scrollTop + window.innerHeight - header_height; 
+  dragObj.elNode.limits.drag_bottom = Math.max(document.body.offsetHeight, window.innerHeight) - popup_height;
   
   // Update element's z-index.
   dragObj.elNode.style.zIndex = ++dragObj.zIndex;

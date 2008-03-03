@@ -15,8 +15,9 @@
  */
 function VixenPopupClass()
 {
-	this.strContentCode = "";
-	this.strLocationOnClose = "";
+	this.strContentCode						= "";
+	this.strLocationOnClose					= "";
+	this.intTimeoutIdForPageLoadingSplash	= null;
 	
 	// This stores a stack of zIndex values of the overlay div for each popup openned modally so 
 	// that we can keep a track of where to place the div overlay, when a modal
@@ -34,14 +35,40 @@ function VixenPopupClass()
 		DebugWindow.document.close();
 	}
 
+	// Returns TRUE if the popup exists, else FALSE
 	this.Exists = function(strId)
 	{
-		elmExists = document.getElementById('VixenPopup__' + strId);
+		elmExists = this.GetPopupElement(strId);
 		if (elmExists)
 		{
 			return TRUE;
 		}
 		return FALSE;
+	}
+	
+	// Returns TRUE if there are popups present on the page
+	this.PopupsExist = function()
+	{
+		var elmPopupContainer = document.getElementById("PopupHolder");
+		
+		if (elmPopupContainer.childNodes.length != 0)
+		{
+			// Popups exist
+			return TRUE;
+		}
+		else
+		{
+			// There are no popups
+			return FALSE;
+		}
+	}
+	
+	
+	// Returns the popup element identified by strId
+	// Returns null if the popup cannot be found
+	this.GetPopupElement = function(strId)
+	{
+		return document.getElementById('VixenPopup__' + strId);
 	}
 	
 	this.SetContent = function(strId, strContent)
@@ -86,13 +113,13 @@ function VixenPopupClass()
 		// set the location to relocate to, when the popup is closed.
 		// If null, then a page reload is not performed
 		// currently this only works when strModal == autohide 
+
 		this.strLocationOnClose = strLocationOnClose;
 		
 		// If the title isn't specified then use the application name
 		strTitle = (strTitle == null) ? VIXEN_APPLICATION_NAME : strTitle;
-	
 		// Try to find a previous popup
-		var elmExists = document.getElementById('VixenPopup__' + strId);
+		elmExists = document.getElementById('VixenPopup__' + strId);
 		if (elmExists)
 		{
 			// destroy it . . .
@@ -100,7 +127,7 @@ function VixenPopupClass()
 		}
 		
 		// . . . and create it
-		var elmPopup = document.createElement('div');
+		elmPopup = document.createElement('div');
 		elmPopup.setAttribute('className', 'PopupBox');
 		elmPopup.setAttribute('class', 'PopupBox');
 		elmPopup.setAttribute('Id', 'VixenPopup__' + strId);
@@ -114,12 +141,12 @@ function VixenPopupClass()
 		this.strContentCode = strContent;
 		
 		strContent = 	"<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
-						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(\"" + strId + "\")' />";
+						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(\"" + strId + "\")'>";
 		
 		// only display the debug button if we are operating in debug mode
 		if (DEBUG_MODE)
 		{
-			strContent += "<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()' />";
+			strContent += "<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()'>";
 		}
 		
 		strContent += 	"<div id='VixenPopupTopBarTitle__" + strId + "'>" + strTitle + "</div></div>\n" +
@@ -138,12 +165,11 @@ function VixenPopupClass()
 		elmRoot = document.getElementById('PopupHolder');
 		elmRoot.appendChild(elmPopup);
 
-
 		//Going to run into some problems when having multiple popups
 		// on a single page, especially of different types
 		//  -think this is fixed, havent comprehensively tested though
 		
-		// Set the behaviour (modal/modeless/autohide)
+		// Set the behaviour (modal/non-modal/autohide)
 		switch (strModal)
 		{
 			case "modal":
@@ -170,13 +196,26 @@ function VixenPopupClass()
 				//intScrollLeft = document.body.scrollLeft;
                 //document.body.style.overflow = "hidden";
                	//document.body.scrollTop = intScroll;
-				//alert(window.innerHeight);
+				
+
+				
                 elmOverlay.style.height	= Math.max(document.body.offsetHeight, window.innerHeight);
 				
-				// BUG! FIXIT! FIX IT! TODO! This line currently isn't working because document.body.offsetWidth does not return the width of the document.  
-				// (Not like how document.body.offsetHeight does, anyway)
-				// The Vixen title bar always resizes horizontally to fit the window, maybe you should check out how it does it
-				elmOverlay.style.width	= Math.max(document.body.offsetWidth, window.innerWidth);
+				// all of these return width of browser, with or without scrollbars
+				// document.body.offsetWidth does not return the width of the document (like it does with the height)
+				//alert(window.innerWidth);
+				//alert(document.body.offsetWidth);
+				//alert(document.body.clientWidth);
+				
+				// Find the width of the actual page by using the PageBody div, and adding its own width
+				// to the offset from the left side of the page (needs to include margins?)
+				var divPageBody = document.getElementById("PageBody");
+				var intPageWidth = divPageBody.offsetWidth + divPageBody.offsetLeft;
+				
+				//var intPageWidth = parseInt(divPageBody.style.marginLeft) + parseInt(divPageBody.offsetWidth) + parseInt(divPageBody.offsetLeft);
+				// alert(intPageWidth);
+				
+				elmOverlay.style.width	= Math.max(document.body.offsetWidth, intPageWidth);
 				
 				if (this.arrOverlayZIndexHistory.length == 0)
 				{
@@ -190,41 +229,35 @@ function VixenPopupClass()
 				
                 break;
 			}
-			case "modeless":
+			case "nonmodal":
 			{
-				// do nothing?
+				// flag this popup as being non-modal
+				elmPopup.setAttribute("nonmodal", "nonmodal");
+				
 				break;
 			}
 			case "autohide":
 			{
 				// clicking ANYWHERE will close the div
 				//  what about on the div itself?
-				if (document.addEventListener)
-				{
-					document.addEventListener('mousedown', CloseHandler, TRUE);
-					document.addEventListener('keyup', CloseHandler, TRUE);
-				}
-				else if (document.attachEvent)
-				{
-					document.attachEvent('mousedown', CloseHandler);
-					document.attachEvent('keyup', CloseHandler);
-				}
+				document.addEventListener('mousedown', CloseHandler, TRUE);
+				document.addEventListener('keydown', CloseHandler, TRUE);
+
+				// flag this popup as being autohide
+				elmPopup.setAttribute("autohide", "autohide");
+
 				break;
 			}
 			case "autohide-reload":
 			{
 				// clicking ANYWHERE will close the div
 				//  what about on the div itself?
-				if (document.addEventListener)
-				{
-					document.addEventListener('mousedown', CloseReloadHandler, TRUE);
-					document.addEventListener('keyup', CloseReloadHandler, TRUE);
-				}
-				else if (document.attachEvent)
-				{
-					document.attachEvent('mousedown', CloseReloadHandler);
-					document.attachEvent('keyup', CloseReloadHandler);
-				}
+				document.addEventListener('mousedown', CloseReloadHandler, TRUE);
+				document.addEventListener('keydown', CloseReloadHandler, TRUE);
+				
+				// flag this popup as being autohide-reload
+				elmPopup.setAttribute("autohide-reload", "autohide-reload");
+				
 				break;
 			}
 			default:
@@ -238,7 +271,7 @@ function VixenPopupClass()
 		elmPopup.style.zIndex = ++dragObj.zIndex;
 
 		// Set the size of the popup
-		switch (strSize)
+		switch (strSize.toLowerCase())
 		{
 			case "small":
 				{	//small
@@ -250,9 +283,26 @@ function VixenPopupClass()
 					elmPopup.style.width = '450px';
 					break;
 				}
+			case "mediumlarge":
+				{	//medium
+					elmPopup.style.width = '575px';
+					break;
+				}
 			case "large":
 				{	//large
 					elmPopup.style.width = '700px';
+					break;
+				}
+			case "extralarge":
+				{
+					// Extra Large
+					elmPopup.style.width = '850px';
+					break;
+				}
+			case "alertsize":
+				{
+					// Unique size for alert popups, so that they stand out from other popups
+					elmPopup.style.width = '470px';
 					break;
 				}
 			default:
@@ -261,37 +311,13 @@ function VixenPopupClass()
 					break;
 				}
 		}
-
+		
 		// Set the position (centre/pointer/target)
 		if (mixPosition == "centre")
 		{
-/*		
-alert("window.innerWidth = " + window.innerWidth);		
-alert("elmPopup.offsetWidth = " + elmPopup.offsetWidth);
-alert("document.body.scrollLeft = " + document.body.scrollLeft);
-alert("window.innerHeight = " + window.innerHeight);		
-alert("elmPopup.offsetHeight = " + elmPopup.offsetHeight);
-alert("document.body.scrollTop = " + document.body.scrollTop);
-alert("document.body.offsetWidth = " + document.body.offsetWidth);
-alert("document.body.offsetHeight = " + document.body.offsetHeight);
-*/
-			// MSIE and Firefox use different properties to find out the width and height of the window
-			//I have refered to the pages : http://www.javascripter.net/faq/browserw.htm and http://www.howtocreate.co.uk/tutorials/javascript/browserwindow
-			//for guidence as to how to cross-browser these properties
-			if (window.innerWidth)
-			{
-				var intWindowInnerWidth = window.innerWidth;
-				var intWindowInnerHeight = window.innerHeight;
-			}
-			else if (document.body.offsetWidth)
-			{
-				var intWindowInnerWidth = document.body.offsetWidth;
-				var intWindowInnerHeight = document.body.offsetHeight;
-			}
-		
 			// center the popup
-			elmPopup.style.left	= ((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
-			elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+			elmPopup.style.left	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
+			elmPopup.style.top	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
 		}
 		else if (mixPosition == "[object MouseEvent]")
 		{
@@ -312,46 +338,35 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		}
 		
 		// Add the handler for dragging the popup around
-		if (strModal != "modal")
-		{
-    		var elmDragObj = document.getElementById('VixenPopupTopBar__' + strId);
-			
-			elmDragObj.onmousedown = OpenHandler;
-			/*
-    		if (elmDragObj.addEventListener)
-			{
-				elmDragObj.addEventListener('mousedown', OpenHandler, false);
-			}
-			else if (elmDragObj.attachEvent)
-			{
-				elmDragObj.attachEvent('mousedown', OpenHandler);
-			}
-			*/
-		}
-
+		// if (strModal != "modal")
+		// {
+    		mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
+    		mydragObj.addEventListener('mousedown', OpenHandler, false);
+		// }
+		
 		// Display the popup
 		elmPopup.style.visibility = 'visible';
-
+		
 		function OpenHandler(event)
 		{
-			//BUG! BUG! BUG!
-			//TODO! Draging does not currently work in MSIE.  It is crashing in the dhtml.js function, dragStart(event, id)
-			//I have detailed the problem within that function.  This is where I (Joel) am up to in getting the js to work in MSIE
-			//BUG! BUG! BUG!
 			Vixen.Dhtml.Drag(event, 'VixenPopup__' + strId);	
 		}
 		
 		function CloseHandler(event)
 		{
-			// for AUTOHIDE only
+			// for AUTOHIDE only (strId is a parameter of the Create method, of which this function is defined within)
 			if (event.target.id.indexOf(strId) >= 0)
 			{
-				// Top bar, looking to drag
+				// Top bar, looking to drag 
 			}			
 			else
 			{
 				// MouseDown on page
 				Vixen.Popup.Close(strId);
+				
+				// Remove the Event listeners required to make it an autohide popup
+				// This is currently handled by the VixenPopupClass->Close method
+				// The following commented out lines can be removed
 				document.removeEventListener('mousedown', CloseHandler, TRUE);
 				document.removeEventListener('keyup', CloseHandler, TRUE);
 				
@@ -385,13 +400,16 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 	// mixId can be the id of the popup as a string or it can be a pointer to any element on the popup
 	this.Close = function(mixId)
 	{
+		// Work out how we are going to find the popup element
 		if (typeof(mixId) == 'string')
 		{
+			// The id of the popup has been specified, find the popup element by id
 			var strPopupId = 'VixenPopup__' + mixId
 			var elmPopup = document.getElementById(strPopupId);
 		}
 		else if (typeof(mixId) == 'object')
 		{
+			// An element on the popup has been specified, find the popup element through retracing the parents of this element
 			var elmElement = mixId;
 			var bolFoundPopup = false;
 			while (elmElement.tagName != "BODY")
@@ -422,32 +440,34 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		
 		if (elmPopup)
 		{
-			//objClose.removeEventListener('mousedown', OpenHandler, false);
 			elmPopup.parentNode.removeChild(elmPopup);
 			document.body.style.overflow = "visible"; // Why is this done?
 			
-		}
-		
-		// If the popup was modal, then move the overlay div to its previous zIndex
-		if (elmPopup.hasAttribute("modal"))
-		{
-			var elmOverlay = document.getElementById("overlay");
-			if (this.arrOverlayZIndexHistory.length != 0)
+			// Do clean up actions, specific to the type of popup
+			if (elmPopup.hasAttribute("modal"))
 			{
-				// Set the zIndex of the overlay to its previous zIndex
-				elmOverlay.style.zIndex = this.arrOverlayZIndexHistory.pop();
-			}
-			else
-			{
-				// remove elmOverlay alltogether
-				elmOverlay.parentNode.removeChild(elmOverlay);
+				// The popup was modal.  Move the overlay div to its previous zIndex
+				var elmOverlay = document.getElementById("overlay");
+				if (this.arrOverlayZIndexHistory.length != 0)
+				{
+					// Set the zIndex of the overlay to its previous zIndex
+					elmOverlay.style.zIndex = this.arrOverlayZIndexHistory.pop();
+				}
+				else
+				{
+					// remove elmOverlay alltogether
+					elmOverlay.parentNode.removeChild(elmOverlay);
+				}
 			}
 		}
 	}
 	
-	
 	this.ShowAjaxPopup = function(strId, strSize, strTitle, strClass, strMethod, objParams, strWindowType)
 	{
+		if (objParams == undefined)
+		{
+			var objParams = {};
+		}
 		objParams.strId 		= strId;
 		objParams.strSize 		= strSize;
 		objParams.strTitle		= strTitle;
@@ -463,7 +483,10 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		
 		objParams.Class = strClass;
 		objParams.Method = strMethod;
-		
+
+		// Draw the Page Loading splash (this will show after 1 second)
+		Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
+
 		Vixen.Ajax.Send(objParams);
 	}
 	
@@ -489,13 +512,15 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		// set a default value for strSize
 		if (strSize == null)
 		{
-			strSize = "medium";
+			strSize = "AlertSize";
 		}
 	
-		strContent =	"<div align='center'><p>" + strMessage + "</p>" +
-						"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'></p></div>\n" +
+		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
+						//"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
+						"<p></div>\n" +
+						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-		this.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
+		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
 	}
 	
 	//------------------------------------------------------------------------//
@@ -524,7 +549,7 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 	this.Confirm = function(strMessage, mixOkOnClick, mixCancelOnClick, strSize, strOkCaption, strCancelCaption)
 	{
 		// set default values
-		strSize = (strSize == null) ? "medium" : strSize;
+		strSize = (strSize == null) ? "AlertSize" : strSize;
 		strOkCaption = (strOkCaption == null) ? "Ok" : strOkCaption;
 		strCancelCaption = (strCancelCaption == null) ? "Cancel" : strCancelCaption;
 		
@@ -533,10 +558,10 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		strCancelBtnHtml	= "<input type='button' id='VixenConfirmCancelButton' value='" + strCancelCaption + "'>";
 		
 		strContent =	"<table border='0' width='100%'>" + 
-						"<tr><td colspan='2' align='center'><span class='DefaultOutputSpan'>" + strMessage + "</span></td></tr>" +
-						"<tr><td align='center'>" + strOkBtnHtml + "</td>" + 
-						"<td align='center'>" + strCancelBtnHtml + "</td></tr>";
-		this.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
+						"<tr><td colspan='2' align='left' style='padding: 5px 10px 10px 10px'><span align='justify' style='line-height:1.5'>" + strMessage + "</span></td></tr>" +
+						"<tr><td align='center' width='50%'>" + strOkBtnHtml + "</td>" + 
+						"<td align='center' width='50%'>" + strCancelBtnHtml + "</td></tr>";
+		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
 		
 		// get references to the Ok and Cancel buttons and attach the event listeners
 		var elmOkButton = document.getElementById("VixenConfirmOkButton");
@@ -577,7 +602,7 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		// set focus to the Ok button
 		elmOkButton.focus();
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ShowPageLoadingSplash
 	//------------------------------------------------------------------------//
@@ -590,16 +615,43 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 	 * Used to show that a page is loading
 	 * 
 	 * @param	string	strMessage			optional, message to display.  Default = "Page Loading"
-	 * @param 	string	strSize				optional, size of the splash popup. Default = "medium"
+	 * @param 	string	strSize				optional, size of the splash popup. Default = "small"
 	 * @param 	string	strImage			optional, image to display. Default = "img/template/pablo_load.gif"
 	 * @param	string	strElement			optional, If supplied, the splash will appear above the element (not over the element)
+	 * @param	int		intWait				optional, If supplied, the splash will not appear until intWait miliseconds have transpired
+	 * @param	bool	bolAnimateSplash	optional, If supplied, the splash will animate some dots, so it looks like it's doing something.
+	 *										This does not affect the animated image, however depending on what is happening, the image may not
+	 *										automatically animate.  This happens when a page reload occurrs.
 	 *
 	 * @return	void
 	 *
 	 * @method
 	 */
-	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage, strElement)
+	this.ShowPageLoadingSplash = function(strMessage, strSize, strImage, strElement, intWait, bolAnimateSplash)
 	{
+		// Make sure this splash isn't already displayed
+		if (this.Exists("Splash"))
+		{
+			// It's already open, so don't show it again
+			return;
+		}
+	
+		// Make sure this splash isn't also waiting to be displayed
+		if (this.intTimeoutIdForPageLoadingSplash != null)
+		{
+			// The splash is waiting to be displayed.  Cancel it
+			clearTimeout(this.intTimeoutIdForPageLoadingSplash);
+			this.intTimeoutIdForPageLoadingSplash = null;
+		}
+		
+		if (intWait != null)
+		{
+			// A waiting period has been specified
+			this.intTimeoutIdForPageLoadingSplash = setTimeout(function(){Vixen.Popup.ShowPageLoadingSplash(strMessage, strSize, strImage, strElement, null, bolAnimateSplash);}, intWait);
+			return;
+		}
+		
+		
 		// set the default message
 		if (strMessage == null)
 		{
@@ -613,14 +665,20 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		
 		if (strImage == null)
 		{
-			strImage = "img/template/pablo_load.gif";
+			strImage = "img/template/loading.gif";
 		}
 		
-		strContent =	"<div align='center' style='border: solid 2px #000000;'><p>" + strMessage + "</p>" +
-						"<p><span id='VixenSplashDots'>.</span></p>" + 
-						"<p><img id='Vixen_DancingPablo' src='" + strImage + "' align='center'></img></p>\n";
+		strContent =	"<div align='center' style='height:200px'><img id='SplashImage' src='" + strImage + "'></img>" +
+						"<p><span id='VixenSplashDots'></span></p>" + 
+						"<br /><p><h2>" + strMessage + "</h2></p></div>\n";
+		
 		this.CreateSplash(strContent, strSize, null, strElement);
-		this.AnimateSplash();
+		
+		// Animate the splash
+		if (bolAnimateSplash)
+		{
+			this.AnimateSplash();
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -662,8 +720,6 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 		setTimeout(function(){Vixen.Popup.AnimateSplash(intNumOfDots)}, 200);
 	}
 	
-	
-	
 	//------------------------------------------------------------------------//
 	// ClosePageLoadingSplash
 	//------------------------------------------------------------------------//
@@ -679,6 +735,14 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 	 */
 	this.ClosePageLoadingSplash = function()
 	{
+		// Check if the splash is waiting to be displayed
+		if (this.intTimeoutIdForPageLoadingSplash != null)
+		{
+			// The splash is waiting to be displayed.  Stop it
+			clearTimeout(this.intTimeoutIdForPageLoadingSplash);
+			this.intTimeoutIdForPageLoadingSplash = null;
+		}
+	
 		this.Close("Splash");
 	}
 	
@@ -791,7 +855,9 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 	
 		// center the splash
 		elmPopup.style.left	= ((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
-		elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+		elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2));
+		// Declaring it as being fixed position, must be done after left and top are set, not before it
+		elmPopup.style.position = "fixed";
 		
 		// If elmElement has been defined, then position the splash above the element
 		// This has been incorporated into the functionality because sometimes in MSIE elements like comboboxes will
@@ -819,7 +885,7 @@ alert("document.body.offsetHeight = " + document.body.offsetHeight);
 			setTimeout(function(){Vixen.Popup.Close("Splash")}, intTime);
 		}
 	}
-	
+
 }
 
 // Create an instance of the Vixen popup class if it has not already been created

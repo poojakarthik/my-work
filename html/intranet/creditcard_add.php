@@ -103,8 +103,6 @@
                 )
             );
             
-			$actAccount->BillingTypeSelect (BILLING_TYPE_CREDIT_CARD, $crcCreditCard);
-            
             // TODO!bash! [  DONE  ]		what if we came from account payment.php ?
             header ('Location: account_payment.php?Id=' . $actAccount->Pull ('Id')->getValue ());
             exit;

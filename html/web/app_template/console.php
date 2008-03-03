@@ -44,20 +44,20 @@
 class AppTemplateConsole extends ApplicationTemplate
 {
 	//------------------------------------------------------------------------//
-	// Console
+	// Home
 	//------------------------------------------------------------------------//
 	/**
-	 * Console()
+	 * Home()
 	 *
-	 * Performs the logic for the console webpage
+	 * Performs the logic for the Homepage of the website
 	 * 
-	 * Performs the logic for the console webpage
+	 * Performs the logic for the Homepage of the website
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function Console()
+	function Home()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();

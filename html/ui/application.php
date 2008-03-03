@@ -188,7 +188,7 @@ class Application
 {
 	public $_intMode;
 	//------------------------------------------------------------------------//
-	// Load INCOMPLETE
+	// Load
 	//------------------------------------------------------------------------//
 	/**
 	 * Load()
@@ -214,19 +214,19 @@ class Application
 		// Check that the user's browser is supported.  This will die if the user's browser is not supported
 		$this->_CheckBrowser();
 	
-		// split template name
+		// Split template name
 		$arrTemplate 	= explode ('.', $strTemplateName);
 		$strClass 		= 'AppTemplate'.$arrTemplate[0];
 		$strMethod 		= $arrTemplate[1];
 		
-		// get submitted data
+		// Get submitted data
 		$objSubmit = new SubmittedData();
 		$objSubmit->Get();
 		$objSubmit->Post();
 	
-		// validate all submitted objects
-		// Note that while $objSubmit->Get() and ->POST set up the submitted objects, they have not actually 
-		// been loaded from the database
+		// Validate all submitted objects
+		// Note that while $objSubmit->Get() and ->POST set up the submitted objects,  
+		// they have not actually been loaded from the database
 		DBO()->Validate();
 
 		// Create AppTemplate Object
@@ -269,8 +269,6 @@ class Application
 			echo "Time taken to run the AppTemplate method: ". number_format($fltAppTemplateTime, 4, ".", "") ." seconds<br />";
 			echo "Time taken to do the page render: ". number_format($fltRenderTime, 4, ".", "") ." seconds<br />";
 		}
-		
-		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -290,25 +288,25 @@ class Application
 	function AjaxLoad()
 	{
 		$this->_intMode = AJAX_MODE;
-		// get submitted data
+		
+		// Get submitted data
 		$objSubmit = new SubmittedData();
 		$objAjax = $objSubmit->Ajax();
 
 		$strClass 		= 'AppTemplate' . $objAjax->Class;
 		$strMethod 		= $objAjax->Method;
 		
-		// validate all submitted objects
+		// Validate all submitted objects
 		// Note that while $objSubmit->Get() and ->POST set up the submitted objects, they have not actually 
 		// been loaded from the database, so validating them at this stage should always return TRUE
 		DBO()->Validate();
 
-		//Create AppTemplate Object
-		//echo $strClass;
+		// Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
 		
 		$this->objAppTemplate->SetMode($objSubmit->Mode, $objAjax);
 
-		//Run AppTemplate
+		// Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
 		
 		// Render Page
@@ -323,6 +321,77 @@ class Application
 			// if you are just rendering a single div, then a Page wont have been declared
 			$this->objAppTemplate->Page->SetMode($objSubmit->Mode, $objAjax);
 			$this->objAppTemplate->Page->Render();
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// WebLoad
+	//------------------------------------------------------------------------//
+	/**
+	 * WebLoad()
+	 *
+	 * Loads an extended ApplicationTemplate object which represents all the logic and layout of a single webpage of the application
+	 *
+	 * Loads an extended ApplicationTemplate object which represents all the logic and layout of a single webpage of the application
+	 * Specifically for the Web Application (which telco clients use)
+	 * These "web" functions should be put in their own class and extend the Application class
+	 *
+	 * @param		string	$strTemplateName	Name of the application template to load.
+	 *											This template must be located in the "app_template"
+	 *											directory and be named FileName.Method
+	 *											For example: $strTemplateName = "Account.View"
+	 *											This will instantiate an object of type AppTemplateAccount
+	 *											which will be located in app_template/account.php
+	 *											and run the View method of AppTemplateAccount
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function WebLoad($strTemplateName)
+	{
+		//TODO! Work out what CustomerGroup is being referenced, from  $_SERVER['SERVER_NAME'];
+
+		// Check that the user's browser is supported.  This will die if the user's browser is not supported
+		// TODO! I don't know if we should bother doing this, because eventually we will want this to be compatable with
+		// as many browsers as possible
+		$this->_CheckBrowser();
+		
+		//TODO! Authenticate the user and redirect them to the appropriate login screen if they aren't currently logged in
+		// Currently Authentication is done from within the requested AppTemplate method, but it should be done here
+	
+		// Split template name
+		$arrTemplate 	= explode ('.', $strTemplateName);
+		$strClass 		= 'AppTemplate'.$arrTemplate[0];
+		$strMethod 		= $arrTemplate[1];
+		
+		// Get submitted data
+		$objSubmit = new SubmittedData();
+		$objSubmit->Get();
+		$objSubmit->Post();
+	
+		// Validate all submitted objects
+		DBO()->Validate();
+
+		// Create AppTemplate Object
+		$this->objAppTemplate = new $strClass;
+		
+		$this->objAppTemplate->SetMode(HTML_MODE);
+	
+		// Run AppTemplate
+		$fltStart = microtime(TRUE);		
+		$this->objAppTemplate->{$strMethod}();
+		$fltAppTemplateTime = microtime(TRUE) - $fltStart;		
+		
+		// Render Page
+		$fltStart = microtime(TRUE);				
+		$this->objAppTemplate->Page->Render();
+		$fltRenderTime = microtime(TRUE) - $fltStart;		
+		
+		// Check if this is being rendered in Debug mode
+		if ($GLOBALS['bolDebugMode'])
+		{
+			echo "Time taken to run the AppTemplate method: ". number_format($fltAppTemplateTime, 4, ".", "") ." seconds<br />";
+			echo "Time taken to do the page render: ". number_format($fltRenderTime, 4, ".", "") ." seconds<br />";
 		}
 	}
 	
@@ -746,6 +815,72 @@ class Application
 			}	
 		}
 	}
+
+	//------------------------------------------------------------------------//
+	// Logout
+	//------------------------------------------------------------------------//
+	/**
+	 * Logout()
+	 *
+	 * Logs out the current flex intranet user
+	 * 
+	 * Logs out the current flex intranet user
+	 *
+	 * @return		bool		TRUE if the logging out process was successful, else FALSE
+	 * @method
+	 */
+	function Logout()
+	{
+		// Only log the user out, if they are currently logged in	
+		if (isset($_COOKIE['Id']) && isset($_COOKIE['SessionId']))
+		{
+			// Find the contact information for the user declared in the cookie
+			// I'm doing this as a safety measure so as to only logout the user if they are the proper user
+			$selAuthenticated	= new StatementSelect("Employee",	"*", "Id = <Id> AND SessionId = <SessionId>", NULL, 1);
+			$intRowsReturned	= $selAuthenticated->Execute(Array("Id" => $_COOKIE['Id'], "SessionId" => $_COOKIE['SessionId']));
+			$arrAuthentication	= $selAuthenticated->Fetch();
+
+			// Check if the user could be found
+			if ($intRowsReturned)
+			{
+				// User was found.
+				$bolLoggedIn = TRUE;
+				
+				// Load user object from db
+				$this->_arrUser = $arrAuthentication;
+			}
+			else
+			{
+				// The user could not be found
+				$this->_arrUser = NULL;
+				$bolLoggedIn = FALSE;
+			}
+		}
+		else
+		{
+			// There was no cookie found
+			$this->_arrUser = NULL;
+			$bolLoggedIn = FALSE;
+		}
+		
+		if ($bolLoggedIn)
+		{
+			// Update the user's session details in the employee table of the database, so that the SessionExpire time is in the past
+			$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction("SUBTIME(NOW(), SEC_TO_TIME(1))"));
+			
+			// Update the table
+			$updUpdateStatement	= new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
+			$bolSuccess			= ($updUpdateStatement->Execute($arrUpdate, Array("Id"=>$this->_arrUser['Id'])) !== FALSE); 
+		}
+		else
+		{
+			// If they are not currently logged in, then they are logically logged out
+			$bolSuccess = TRUE;
+		}
+
+		return $bolSuccess;
+	}
+
 
 	//------------------------------------------------------------------------//
 	// LogoutClient

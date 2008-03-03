@@ -1,7 +1,7 @@
-var FALSE = false;
-var TRUE = true;
-var DEBUG_MODE = FALSE;
-var VIXEN_APPLICATION_NAME = "Yellow Billing Customer System";
+var FALSE		= false;
+var TRUE		= true;
+var DEBUG_MODE	= FALSE;
+var VIXEN_APPLICATION_NAME = "Flex Internal System";
 
 //----------------------------------------------------------------------------//
 // VixenRootClass
@@ -101,23 +101,11 @@ function VixenRootClass()
 			var evt = window.event;
 		}
 		
-		// get the target element
-		if (evt.target)
+		if (evt.target.type == "textarea")
 		{
-			var elmTarget = evt.target;
-		}
-		else if (evt.srcElement)
-		{
-			var elmTarget = evt.srcElement;
-		}
-
-		// If the target element is a text area, then perform the default action
-		if (elmTarget.type == "textarea")
-		{
-			return TRUE;
+			return TRUE;	
 		}
 		
-		// Find out what key was pressed
 		if (evt.KeyCode)
 		{
 			var keycode = evt.KeyCode;
@@ -128,7 +116,7 @@ function VixenRootClass()
 		}
 
 		// prevent enter key being pressed, unless it is on a button or submit button
-		if ((keycode == 13) && (elmTarget.type != "button") && (elmTarget.type != "submit"))
+		if ((keycode == 13) && (evt.target.type != "button") && (evt.target.type != "submit"))
 		{
 			// stupid browsers
 			if (evt.srcElement && !evt.srcElement.aphplix_id)
@@ -143,27 +131,6 @@ function VixenRootClass()
 		}
 	}
 	
-	// This has been made to handle calls to window.location on account of the 
-	// fact that IE and Firefox do different things when dealing with relative
-	// urls.  This will only work for urls that use the "vixen.php/AppTemplateClass/Method/" syntax
-	this.SetLocation = function(strLocation)
-	{
-		if (window.location.href.indexOf("vixen.php") < 0)
-		{
-			// The current url does not contain vixen.php, just relocate the user to the desired location and hope for the best
-			window.location = strLocation;
-			return true;
-		}
-		
-		// split the current url on "vixen.php" can append strLocation to the first part
-		var arrHrefParts = window.location.href.split("vixen.php");
-		var strNewHref = arrHrefParts[0] + strLocation;
-		
-		window.location = strNewHref;
-		return true;
-	}
-	
-
 	/*this.FixFocus = function(div) 
 	{
 		var objInputs = div.getElementsByTagName("form");
@@ -251,6 +218,6 @@ function debug(mixMsg, bolFullShow)
 }
 
 // prevent Enter key from being pressed
-document.onkeydown = function(event) {Vixen.EnterKiller(event)};
-document.onkeypress = function(event) {Vixen.EnterKiller(event)};
-document.onkeyup = function(event) {Vixen.EnterKiller(event)};
+document.onkeydown	= function(event) {Vixen.EnterKiller(event)};
+document.onkeypress	= function(event) {Vixen.EnterKiller(event)};
+document.onkeyup	= function(event) {Vixen.EnterKiller(event)};

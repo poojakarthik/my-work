@@ -91,7 +91,7 @@ class MenuItems
 
 
 	//------------------------------------------------------------------------//
-	// Console
+	// Console DEPRICATED
 	//------------------------------------------------------------------------//
 	/**
 	 * Console()
@@ -113,7 +113,7 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
-	// LoadAccountInConsole
+	// LoadAccountInConsole DEPRICATED
 	//------------------------------------------------------------------------//
 	/**
 	 * LoadAccountInConsole()
@@ -134,6 +134,52 @@ class MenuItems
 		$this->strLabel	= "Console";
 		
 		return "flex.php/Console/Console/?Account.Id=$intAccountId";
+	}
+
+	//------------------------------------------------------------------------//
+	// Home
+	//------------------------------------------------------------------------//
+	/**
+	 * Home()
+	 *
+	 * Compiles the url to be executed when the Home menu item is clicked
+	 *
+	 * Compiles the url to be executed when the Home menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string						action to be executed when the Home menu item is clicked
+	 *
+	 * @method
+	 */
+	function Home()
+	{
+		$this->strLabel	= "Home";
+		
+		return "flex.php/Console/Home/";
+	}
+
+	//------------------------------------------------------------------------//
+	// LoadAccountInHomePage 
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadAccountInHomePage()
+	 *
+	 * Compiles the url to be executed when the LoadAccountInHomePage menu item is clicked
+	 *
+	 * Compiles the url to be executed when the LoadAccountInHomePage menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		account id to load
+	 *
+	 * @return	string						action to be executed when the LoadAccountInHomePage menu item is clicked
+	 *
+	 * @method
+	 */
+	function LoadAccountInHomePage($intAccountId)
+	{
+		$this->strLabel	= "Home";
+		
+		return "flex.php/Console/Home/?Account.Id=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//

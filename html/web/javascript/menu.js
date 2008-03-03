@@ -24,19 +24,22 @@ function VixenMenuClass(objMenu)
 			'left': 10,
 			'width': 50,
 			'height': 50,
-			'spacing': 5
+			'spacing': 5,
+			'backgroundColor': "#FFFFFF"
 		},
 		'Level2': 
 		{
 			'left': 0,
-			'width': 200,
+			'width': 160,
 			'height': 20,
-			'spacing': 5
+			'spacing': 5,
+			'backgroundColor': "#D5E0F8"
 		},
 		'waitOpen': 0,
 		'waitCloseLevel': 500,
-		'waitClose': 3000,
-		'waitCloseWhenSelected': 400
+		'waitClose': 1500,
+		'waitCloseWhenSelected': 400,
+		'highlightColor': "#FFFFCC"
 	};
 	
 	this.objMenu = objMenu;
@@ -61,15 +64,18 @@ function VixenMenuClass(objMenu)
 		//Render the initial menu (top-level)
 		for (strKey in this.objMenu)
 		{
-			
 			//Build new element
-			objNode = document.createElement('img');
-			objNode.setAttribute('src', 'img/template/' + strKey.toLowerCase().replace(/ /, '_') + '.png');
-			
+			objNode = document.createElement('a');
 			objNode.setAttribute('className', 'ContextMenuItem');
 			objNode.setAttribute('class', 'ContextMenuItem');
 			objNode.setAttribute('Id', 'VixenMenu_' + strKey);
-			
+
+			//Build the image for the new element
+			objNodeImage = document.createElement('img');
+			objNodeImage.setAttribute('src', 'img/template/' + strKey.toLowerCase().replace(/ /g, '_') + '.png');
+
+			objNode.appendChild(objNodeImage);
+
 			//Attach to elmMenu
 			elmMenu.appendChild(objNode);
 			elmNode = document.getElementById('VixenMenu_' + strKey);
@@ -77,11 +83,13 @@ function VixenMenuClass(objMenu)
 			//Add styles
 			//new_node.style[c_attrib] = value
 			elmNode.style['top'] 				= top;
-			elmNode.style['left'] 				= this.config.Level1.left; 
+			elmNode.style['left'] 				= this.config.Level1.left;
 			elmNode.style['width'] 				= this.config.Level1.width;
 			elmNode.style['height'] 			= this.config.Level1.height;
+			elmNode.style['backgroundColor']	= this.config.Level1.backgroundColor;
 			elmNode.style['position'] 			= 'absolute';
 			elmNode.style['zIndex']				= 2;
+			elmNode.DefaultBackgroundColor		= this.config.Level1.backgroundColor;
 			
 			top = top + this.config.Level1.height + this.config.Level1.spacing;
 			
@@ -89,9 +97,22 @@ function VixenMenuClass(objMenu)
 			elmNode.onclick = function(event) {Vixen.Menu.HandleClick(this)};
 			elmNode.onmouseover = function(event) {Vixen.Menu.HandleMouseOver(this)};
 			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut(this)};
+			elmNode.style.cursor = "default";
 			
 			//Add some more crap
 			elmNode.action = this.objMenu[strKey];
+			if (typeof(elmNode.action) == 'string')
+			{
+				// Don't set the link if the action opens a popup
+				if (elmNode.action.substr(0, 11) == "javascript:")
+				{
+				}
+				else
+				{
+					// The item is an action, not a menu.  Set the link
+					elmNode.setAttribute('href', this.objMenu[strKey]);
+				}
+			}
 			elmNode.level = 1;
 		}
 	}
@@ -99,16 +120,15 @@ function VixenMenuClass(objMenu)
 	this.RenderSubMenu = function(elmMenuItem)
 	{
 		var strKey;
-		var objNode;
 		var objTextNode;
 		var elmNode;
 		var top = 0;
-		
+
 		if (typeof(elmMenuItem) == 'string')
 		{
 			elmMenuItem = document.getElementById(elmMenuItem);	
 		}
-		
+
 		var object = document.getElementById('VixenMenu__' + elmMenuItem.level);
 		if (object)
 		{
@@ -118,62 +138,80 @@ function VixenMenuClass(objMenu)
 		//Create and attach the container div for the rest of the submenu to sit in
 		var objContainer = document.createElement('div');
 		objContainer.setAttribute('Id', 'VixenMenu__' + elmMenuItem.level);
+		objContainer.style.top				= this.RemovePx(elmMenuItem.style['top']);
+		objContainer.style.left				= this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
+		objContainer.style.position			= 'absolute';
+		objContainer.style.overflow			= 'visible';
+		objContainer.style.backgroundColor	= "#FFFFFF";
+		objContainer.style.width			= this.config.Level2.width + this.config.Level2.spacing;
+		objContainer.style.zIndex			= 2;
+
 		elmMenuItem.parentNode.appendChild(objContainer);
 		var elmContainer = document.getElementById('VixenMenu__' + elmMenuItem.level);
-		elmContainer.style['top'] = this.RemovePx(elmMenuItem.style['top']);
-		elmContainer.style['left'] = this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
-		elmContainer.style['position'] = 'absolute';
-		elmContainer.style['overflow'] = 'visible';
+		//elmContainer.style['top'] = this.RemovePx(elmMenuItem.style['top']);
+		//elmContainer.style['left'] = this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
+		//elmContainer.style['position'] = 'absolute';
+		//elmContainer.style['overflow'] = 'visible';
 
+		var intContainerHeight = 0;
 		
 		//Render the menu
 		for (strKey in elmMenuItem.action)
 		{
 			//Build new element
-			objNode = document.createElement('div');
-			objNode.setAttribute('Id', elmMenuItem.id + "_" + strKey);
+			elmNode = document.createElement('div');
+			elmNode.setAttribute('Id', elmMenuItem.id + "_" + strKey);
 			
-			//Attach to elmMenu
-			elmContainer.appendChild(objNode);
-			elmNode = document.getElementById(elmMenuItem.id + "_" + strKey);
-			
-			// add text to the node
 			objTextNode = document.createTextNode(strKey);
-			elmNode.appendChild(objTextNode);
+			
+			// Add an anchor element to the menu item div if the action of the menu item is a string and does not envoke any javascript
+			// This is done, so the user has the option of opening the page in a new tab
+			// It is also done in a very hacky fashion as the user has to right click on the text; it can't just be anywhere on the menu item
+			if ((typeof(elmMenuItem.action[strKey]) == 'string') && (elmMenuItem.action[strKey].substr(0, 11) != "javascript:"))
+			{
+				elmLink = document.createElement('a');
+				elmLink.setAttribute('href', elmMenuItem.action[strKey]);
+				elmLink.setAttribute('id', "ContextMenuItemLink");
+				//elmLink.appendChild(objTextNode);
+				elmLink.innerHTML = strKey;
+				elmNode.appendChild(elmLink);
+				//elmLink.style['color']	= "#000000";
+			}
+			else
+			{
+				// Add text to the node
+				elmNode.appendChild(objTextNode);
+			}
 			
 			//Add styles
 			//new_node.style[c_attrib] = value
-			elmNode.style['top'] = top;
-			elmNode.style['left'] =	this.config.Level2.left; 
-			elmNode.style['width'] = this.config.Level2.width;
-			elmNode.style['height'] = this.config.Level2.height;
-			elmNode.style['position'] = 'absolute';
-			elmNode.style['zIndex']	= 2;
-			
+			elmNode.style['top'] 			= top;
+			elmNode.style['left'] 			= this.config.Level2.left; 
+			elmNode.style['width'] 			= this.config.Level2.width;
+			elmNode.style['height'] 		= this.config.Level2.height;
+			elmNode.style['backgroundColor'] = this.config.Level2.backgroundColor;
+			elmNode.style['position']		= 'absolute';
+			elmNode.style['zIndex']			= 3;
+			elmNode.DefaultBackgroundColor	= this.config.Level2.backgroundColor;
+
 			top = top + this.config.Level2.height + this.config.Level2.spacing;
 			
 			//Add events
-			elmNode.onclick = function(event) {Vixen.Menu.HandleClick(this)};
-			elmNode.onmouseover = function(event) {Vixen.Menu.HandleMouseOver(this)};
-			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut(this)};
+			elmNode.onclick			= function(event) {Vixen.Menu.HandleClick(this)};
+			elmNode.onmouseover		= function(event) {Vixen.Menu.HandleMouseOver(this)};
+			elmNode.onmouseout		= function(event) {Vixen.Menu.HandleMouseOut(this)};
 			
 			//Add some more crap
 			elmNode.action = elmMenuItem.action[strKey];
 			elmNode.level = elmMenuItem.level + 1;
-			
-			
-			//HACK! HACK! HACK!
-			// The following line has been commented out because it causes an error when run in MSIE.
-			// I have a feeling the .class property doesn't exist in MSIE.  It uses className
-			//HACK! HACK! HACK!
+			elmNode.style.cursor = "default";
+
 			// set the class
-			//objNode.className 	= 'ContextMenuItem';
-			//objNode.class 		= 'ContextMenuItem';
+			elmNode.className 	= 'ContextMenuItem';
+			elmNode.class 		= 'ContextMenuItem';
 			
-			// set the class
-			objNode.setAttribute('className', 'ContextMenuItem');
-			objNode.setAttribute('class', 'ContextMenuItem');
-			
+			// Add the menu item element to the container
+			elmContainer.appendChild(elmNode);
 		}
 	}
 	
@@ -196,13 +234,14 @@ function VixenMenuClass(objMenu)
 			if (objMenuItem.action.substr(0, 11) == "javascript:")
 			{
 				// Execute objMenuItem.action as javascript
-				eval(objMenuItem.action.substr(11, objMenuItem.action.length));
+				eval(objMenuItem.action.substr(11));
 			} 
 			else
 			{
-				//Follow the link
+				// Follow the link
 				document.location.href = objMenuItem.action;
 			}
+			this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);			
 		}
 		else if (typeof(objMenuItem.action) == 'object')
 		{
@@ -210,19 +249,20 @@ function VixenMenuClass(objMenu)
 			// no need, it adds unnecessary overhead
 			//this.RenderSubMenu(objMenuItem);			
 		}
-		this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);
 	}
 	
 	this.HandleMouseOver = function(objMenuItem)
 	{
 		clearTimeout(this.timeoutClose);
 		
-		objMenuItem.setAttribute('className', 'ContextMenuItemHighlight');
-		objMenuItem.setAttribute('class', 'ContextMenuItemHighlight');
+		//objMenuItem.setAttribute('className', 'ContextMenuItemHighlight');
+		//objMenuItem.setAttribute('class', 'ContextMenuItemHighlight');
+		
+		objMenuItem.style['backgroundColor'] = this.config.highlightColor;
 		
 		if (typeof(objMenuItem.action) == 'string')
 		{
-			this.timeoutOpen = setTimeout("Vixen.Menu.Close('" + objMenuItem.level + "');", this.config.waitCloseLevel);		
+			this.timeoutOpen = setTimeout("Vixen.Menu.Close('" + objMenuItem.level + "');", this.config.waitCloseLevel);
 		}
 		if (typeof(objMenuItem.action) == 'object')
 		{
@@ -237,8 +277,10 @@ function VixenMenuClass(objMenu)
 	{
 		clearTimeout(this.timeoutOpen);
 		
-		objMenuItem.setAttribute('className', 'ContextMenuItem');
-		objMenuItem.setAttribute('class', 'ContextMenuItem');
+		//objMenuItem.setAttribute('className', 'ContextMenuItem');
+		//objMenuItem.setAttribute('class', 'ContextMenuItem');
+		objMenuItem.style['backgroundColor'] = objMenuItem.DefaultBackgroundColor;
+		
 		this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitClose);
 
 	}

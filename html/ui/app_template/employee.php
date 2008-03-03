@@ -94,7 +94,38 @@ class AppTemplateEmployee extends ApplicationTemplate
 
 		return TRUE;
 	}
-	
+
+
+	//------------------------------------------------------------------------//
+	// Logout
+	//------------------------------------------------------------------------//
+	/**
+	 * Logout()
+	 *
+	 * Performs the logout procedure for the employee
+	 * 
+	 * Performs the logout procedure for the employee
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Logout()
+	{
+		// Logout the employee
+		AuthenticatedUser()->Logout();
+		
+		// Redirect the user to the login page
+		//header ("Location: index.php");
+		
+		// HACK! HACK! HACK!
+		// Trying to relocate to "index.php" doesn't work from within the new framework
+		// The entire url has to be specified
+		header ("Location: http://{$_SERVER['SERVER_NAME']}");
+		// HACK! HACK! HACK!
+		
+		die;
+	}
 	
 	// This is not currently used and was probably coded in June of 2007
 	function View()

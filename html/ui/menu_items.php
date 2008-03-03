@@ -1845,7 +1845,7 @@ class MenuItems
 		switch ($strName)
 		{
 			case "Logout":
-				return "logout.php";
+				return "flex.php/Employee/Logout/";
 				break;
 			case "AdminConsole":
 				$this->strLabel = "Admin Console";

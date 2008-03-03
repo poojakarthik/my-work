@@ -43,5 +43,5 @@ $Application = Singleton::Instance('Application');
 
 // load application
 $TemplateName = $strTemplate .".". $strMethod;
-$Application->Load($TemplateName);
+$Application->WebLoad($TemplateName);
 ?>
