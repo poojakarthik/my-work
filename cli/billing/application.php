@@ -1228,6 +1228,21 @@
 		$updSampleAccounts	= new StatementUpdate("Account", "Sample < 0", $arrCols);
 		$updSampleAccounts->Execute(Array(), $arrCols);
 		
+		// Update ServiceRatePlan.LastChargedOn field
+		$qryUpdateLastChargedOn	= new Query();
+		$selBillServices		= new StatementSelect("ServiceTotal", "Service", "InvoiceRun = <InvoiceRun>");
+		$selBillServices->Execute($arrInvoiceRun);
+		while ($arrService = $selBillServices->Fetch())
+		{
+			// Update ServiceRatePlan
+			$strQuery	= "UPDATE ServiceRatePlan SET LastChargedOn = CURDATE() WHERE Service = {$arrService['Service']} AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER By CreatedOn DESC LIMIT 1";
+			if ($qryUpdateLastChargedOn->Execute($strQuery) === FALSE)
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+				Debug($qryUpdateLastChargedOn->Error());
+			}
+		}
+		
 		// Generate InvoiceRun table entry
 		$this->_rptBillingReport->AddMessage("Generating Profit Data...", FALSE);
 		$arrResponse = $this->CalculateProfitData($strInvoiceRun, TRUE);
