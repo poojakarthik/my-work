@@ -91,12 +91,41 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		
 		DBO()->RatePlan->Name->RenderOutput();
 		DBO()->RatePlan->Description->RenderOutput();
+		
+		echo "<div class='ContentSeparator' ></div>\n";
+		echo "<table border='0' cellspacing='0' cellpadding='0' width='100%'><tr>\n";
+		echo "<td width='50%'>\n";
 		DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->RatePlan->Shared->RenderOutput();
+		
+		$intFullService = DBO()->RatePlan->CarrierFullService->Value;
+		if (!isset($GLOBALS['*arrConstant'][Carrier][$intFullService]))
+		{
+			$strFullService = "[Not Specified]";
+		}
+		else
+		{
+			$strFullService = $GLOBALS['*arrConstant'][Carrier][$intFullService]['Description'];
+		}
+		DBO()->RatePlan->CarrierFullService->RenderArbitrary($strFullService, RENDER_OUTPUT);
+		
+		$intPreselection = DBO()->RatePlan->CarrierPreselection->Value;
+		if (!isset($GLOBALS['*arrConstant'][Carrier][$intPreselection]))
+		{
+			$strPreselection = "[Not Specified]";
+		}
+		else
+		{
+			$strPreselection = $GLOBALS['*arrConstant'][Carrier][$intPreselection]['Description'];
+		}
+		DBO()->RatePlan->CarrierPreselection->RenderArbitrary($strPreselection, RENDER_OUTPUT);
+		echo "</td><td width='50%'>\n";
+				
 		DBO()->RatePlan->InAdvance->RenderOutput();
 		DBO()->RatePlan->MinMonthly->RenderOutput();
 		DBO()->RatePlan->ChargeCap->RenderOutput();
 		DBO()->RatePlan->UsageCap->RenderOutput();
+		echo "</td></tr></table>\n";
 		
 		echo "</div>\n";  // GroupedContent
 		

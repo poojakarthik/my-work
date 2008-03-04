@@ -212,8 +212,9 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					$dboRateGroup->Description = htmlspecialchars($dboRateGroup->Description->Value, ENT_QUOTES);
 					
 					// Prepare the RateGroup Cell
+					$strRateGroupName = ($bolIsCurrent) ? "<span class='Green'>{$dboRateGroup->Name->Value}</span>" : $dboRateGroup->Name->Value;
 					$strRateGroupCell  = "Fleet: &nbsp;";
-					$strRateGroupCell .= "<a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}'><span ". (($bolIsCurrent) ? "class='Green'>" : "class='Black'>") ."{$dboRateGroup->Name->Value}</span></a></span>";
+					$strRateGroupCell .= "<a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}' style='color:black;'>$strRateGroupName</a>";
 					
 					// Prepare the RemoveRateGroup Cell
 					$strRemoveRateGroup = "&nbsp;";
@@ -308,7 +309,8 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					$dboRateGroup->Description = htmlspecialchars($dboRateGroup->Description->Value, ENT_QUOTES);
 
 					// Prepare the RateGroup Cell
-					$strRateGroupCell = "<a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}'><span ". (($bolIsCurrent) ? "class='Green'>" : "class='Black'>") ."{$dboRateGroup->Name->Value}</span></a>";
+					$strRateGroupName = ($bolIsCurrent) ? "<span class='Green'>{$dboRateGroup->Name->Value}</span>" : $dboRateGroup->Name->Value;
+					$strRateGroupCell = "<a href='$strViewRateGroupLink' title='{$dboRateGroup->Description->Value}' style='color:black;'>$strRateGroupName</a>";
 					
 					// Prepare the RemoveRateGroup Cell
 					$strRemoveRateGroup = "&nbsp;";

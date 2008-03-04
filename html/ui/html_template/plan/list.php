@@ -111,13 +111,13 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		// Render the header of the Plan Table.  This depends on the privileges of the user
 		if ($bolHasPlanEditPerm)
 		{
-			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend (\$)", "Cap Charge (\$)", "Cap Limit (\$)", "Carrier Full Service", "Carrier Pre selection", "Status", "&nbsp;", "&nbsp;");
+			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend (\$)", "Cap Charge (\$)", "Cap Limit (\$)", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;");
 			Table()->PlanTable->SetWidth("8%", "20%", "8%", "12%", "12%", "12%", "8%", "8%", "8%", "2%", "2%");
 			Table()->PlanTable->SetAlignment("Left", "Left", "Center", "Right", "Right", "Right", "Center", "Center", "Center", "Center", "Center");
 		}
 		else
 		{
-			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend (\$)", "Cap Charge (\$)", "Cap Limit (\$)", "Carrier Full Service", "Carrier Pre selection", "Status");
+			Table()->PlanTable->SetHeader("Type", "Name", "Shared", "Min Monthly Spend (\$)", "Cap Charge (\$)", "Cap Limit (\$)", "Carrier Full Service", "Carrier Pre Selection", "Status");
 			Table()->PlanTable->SetWidth("10%", "20%", "10%", "12%", "12%", "12%", "8%", "8%", "8%");
 			Table()->PlanTable->SetAlignment("Left", "Left", "Center", "Right", "Right", "Right", "Center", "Center", "Center");
 		}

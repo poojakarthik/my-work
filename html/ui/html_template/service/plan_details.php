@@ -73,7 +73,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 		{
 			case HTML_CONTEXT_CURRENT_PLAN:
 				// Render the plan details as the current plan
-				if (DBO()->{FutureRatePlan}->Id->Value)
+				if (DBO()->FutureRatePlan->Id->Value)
 				{
 					echo "<h2 class='plan'>Current Plan</h2>\n";
 				}
@@ -126,6 +126,29 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->Description->RenderOutput();
 			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 			$dboRatePlan->Shared->RenderOutput();
+			
+			$intFullService = $dboRatePlan->CarrierFullService->Value;
+			if (!isset($GLOBALS['*arrConstant'][Carrier][$intFullService]))
+			{
+				$strFullService = "[Not Specified]";
+			}
+			else
+			{
+				$strFullService = $GLOBALS['*arrConstant'][Carrier][$intFullService]['Description'];
+			}
+			$dboRatePlan->CarrierFullService->RenderArbitrary($strFullService, RENDER_OUTPUT);
+			
+			$intPreselection = $dboRatePlan->CarrierPreselection->Value;
+			if (!isset($GLOBALS['*arrConstant'][Carrier][$intPreselection]))
+			{
+				$strPreselection = "[Not Specified]";
+			}
+			else
+			{
+				$strPreselection = $GLOBALS['*arrConstant'][Carrier][$intPreselection]['Description'];
+			}
+			$dboRatePlan->CarrierPreselection->RenderArbitrary($strPreselection, RENDER_OUTPUT);
+			
 			$dboRatePlan->InAdvance->RenderOutput();
 			$dboRatePlan->MinMonthly->RenderOutput();
 			$dboRatePlan->ChargeCap->RenderOutput();
