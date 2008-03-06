@@ -3506,7 +3506,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 	$insFileExport->Execute($arrFileLog);
 	
 	// Create a system note for the account
-	$strNote = 	"A ". GetConstantDescription($intNoticeType, "LetterType") . " has been generated for this account.\n".
+	$strNote = 	GetConstantDescription($intNoticeType, "LetterType") . " has been generated\n".
 				"Outstanding Overdue: \${$arrAccount['Overdue']}\n".
 				"Outstanding Not Overdue: \${$arrAccount['OutstandingNotOverdue']}";
 				

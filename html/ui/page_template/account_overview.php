@@ -49,7 +49,7 @@ $this->Page->SetLayout('3Column_65_35');
 // add the Html Objects to their respective columns
 $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "AccountDetailsDiv");
 $this->Page->AddObject('AccountContactsList', COLUMN_ONE, HTML_CONTEXT_PAGE);
-$this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
+$this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
 if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 {

@@ -287,6 +287,30 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// BulkProvisioningRequest
+	//------------------------------------------------------------------------//
+	/**
+	 * BulkProvisioningRequest()
+	 *
+	 * Compiles the Href to be executed when the BulkProvisioningRequest action is triggered
+	 *
+	 * Compiles the Href to be executed when the BulkProvisioningRequest action is triggered
+	 * 
+	 * @param	int		$intAccountId	Account Id
+	 *
+	 * @return	string					Href to be executed
+	 *
+	 * @method
+	 */
+	function BulkProvisioningRequest($intAccountId)
+	{
+	
+		$this->strLabel	= "Provisioning";
+		$this->strContextMenuLabel = "Provisioning";
+		return "flex.php/Service/BulkProvisioningRequest/?Account.Id=$intAccountId";
+	}
+
+	//------------------------------------------------------------------------//
 	// ExportInvoiceAsCSV
 	//------------------------------------------------------------------------//
 	/**
@@ -468,7 +492,7 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		
 		// Setup data to send
-		$arrData['Objects']['Rate']['Id'] = $intRateId;
+		$arrData['Rate']['Id'] = $intRateId;
 		
 		$strWindowType = ($bolModal)? "modal" : "nonmodal";
 		
@@ -500,8 +524,8 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		
 		// Setup data to send
-		$arrData['Objects']['Service']['Id']	= $intServiceId;
-		$arrData['Objects']['RecordType']['Id']	= $intRecordTypeId;
+		$arrData['Service']['Id']	= $intServiceId;
+		$arrData['RecordType']['Id']	= $intRecordTypeId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -532,7 +556,7 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		
 		// Setup data to send
-		$arrData['Objects']['RateGroup']['Id'] = $intRateGroupId;
+		$arrData['RateGroup']['Id'] = $intRateGroupId;
 		
 		$strWindowType = ($bolModal)? "modal" : "nonmodal";
 		
@@ -563,7 +587,7 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		
 		// Setup data to send
-		$arrData['Objects']['ConfigConstantGroup']['Id'] = $intConstantGroupId;
+		$arrData['ConfigConstantGroup']['Id'] = $intConstantGroupId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -592,7 +616,7 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		
 		// Setup data to send
-		$arrData['Objects']['ConfigConstant']['Id'] = $intConstantId;
+		$arrData['ConfigConstant']['Id'] = $intConstantId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -623,7 +647,7 @@ class MenuItems
 		$this->strContextMenuLabel = "Edit Service";
 		
 		// Setup data to send
-		$arrData['Objects']['Service']['Id'] = $intId;
+		$arrData['Service']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -653,7 +677,7 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intId;
+		$arrData['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -683,8 +707,8 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		
 		// Setup data to send
-		$arrData['Objects']['RecordType']['Id']		= $intRecordTypeId;
-		$arrData['Objects']['RateGroup']['Fleet']	= $bolIsFleet;
+		$arrData['RecordType']['Id']		= $intRecordTypeId;
+		$arrData['RateGroup']['Fleet']	= $bolIsFleet;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -716,7 +740,7 @@ class MenuItems
 		
 		
 		// Setup data to send
-		$arrData['Objects']['Service']['Id'] = $intId;
+		$arrData['Service']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -771,7 +795,7 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intAccountId;
+		$arrData['Account']['Id'] = $intAccountId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -801,10 +825,40 @@ class MenuItems
 	 */
 	function ViewService($intId, $strFNN=NULL)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Service Details";
 		
 		$this->strLabel	= "Service";//: $strFNN";
 		return "flex.php/Service/View/?Service.Id=$intId";
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// ViewServiceAddress
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewServiceAddress()
+	 *
+	 * Compiles the Href to be executed when the ViewServiceAddress popup is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewServiceAddress popup is triggered
+	 *
+	 * @param	int		$intServiceId		id of the service to view
+	 *
+	 * @return	string						Href to be executed
+	 *
+	 * @method
+	 */
+	function ViewServiceAddress($intServiceId)
+	{
+		$this->strContextMenuLabel = "View Address Details";
+		
+		// Setup data to send
+		$arrData['Service']['Id'] = $intServiceId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewServiceAddressPopupId\", \"large\", \"Address Details\", \"Service\", \"ViewAddress\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -886,7 +940,7 @@ class MenuItems
 
 		//$arrData['HtmlMode'] = TRUE;
 		//$arrData['Application'] = "Employee.Edit";
-		$arrData['Objects']['Employee']['Id'] = $intId;
+		$arrData['Employee']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1130,7 +1184,7 @@ class MenuItems
 		$this->strLabel	= "view account notes";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intAccountId;
+		$arrData['Account']['Id'] = $intAccountId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1240,7 +1294,7 @@ class MenuItems
 		$this->strLabel	= "view service notes";
 		
 		// Setup data to send
-		$arrData['Objects']['Service']['Id'] = $intId;
+		$arrData['Service']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1273,7 +1327,7 @@ class MenuItems
 		$this->strLabel	= "view contact notes";
 		
 		// Setup data to send
-		$arrData['Objects']['Contact']['Id'] = $intId;
+		$arrData['Contact']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1306,7 +1360,7 @@ class MenuItems
 		$this->strLabel	= "Add Contact Note";
 		
 		// Setup data to send
-		$arrData['Objects']['Contact']['Id'] = $intId;
+		$arrData['Contact']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1338,7 +1392,7 @@ class MenuItems
 		$this->strLabel	= "Add Account Note";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intId;
+		$arrData['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1370,7 +1424,7 @@ class MenuItems
 		$this->strLabel	= "Add Service Note";
 		
 		// Setup data to send
-		$arrData['Objects']['Service']['Id'] = $intId;
+		$arrData['Service']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1403,9 +1457,9 @@ class MenuItems
 		$this->strLabel	= "email pdf invoice";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intId;
-		$arrData['Objects']['Invoice']['Year'] = $intYear;
-		$arrData['Objects']['Invoice']['Month'] = $intMonth;
+		$arrData['Account']['Id'] = $intId;
+		$arrData['Invoice']['Year'] = $intYear;
+		$arrData['Invoice']['Month'] = $intMonth;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1438,8 +1492,8 @@ class MenuItems
 		$this->strLabel	= "add adjustment";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intAccountId;
-		$arrData['Objects']['Service']['Id'] = $intServiceId;
+		$arrData['Account']['Id'] = $intAccountId;
+		$arrData['Service']['Id'] = $intServiceId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1472,8 +1526,8 @@ class MenuItems
 		$this->strLabel	= "add recurring adjustment";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intAccountId;
-		$arrData['Objects']['Service']['Id'] = $intServiceId;
+		$arrData['Account']['Id'] = $intAccountId;
+		$arrData['Service']['Id'] = $intServiceId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1506,7 +1560,7 @@ class MenuItems
 		$this->strLabel	= "make payment";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intId;
+		$arrData['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1538,7 +1592,7 @@ class MenuItems
 		$this->strLabel	= "edit account";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intId;
+		$arrData['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1569,7 +1623,7 @@ class MenuItems
 		
 		/*  The Old Way of open up the list of services in a popup.  Retain this as it will be eventually used again
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intId;
+		$arrData['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1603,8 +1657,8 @@ class MenuItems
 		$this->strLabel	= "delete payment: $intPaymentId";
 		
 		// Setup data to send
-		$arrData['Objects']['DeleteRecord']['RecordType'] = "Payment";
-		$arrData['Objects']['Payment']['Id'] = $intPaymentId;
+		$arrData['DeleteRecord']['RecordType'] = "Payment";
+		$arrData['Payment']['Id'] = $intPaymentId;
 		
 				
 		// Convert to JSON notation
@@ -1635,8 +1689,8 @@ class MenuItems
 		$this->strLabel	= "delete adjustment: $intAdjustmentId";
 				
 		// Setup data to send
-		$arrData['Objects']['DeleteRecord']['RecordType'] = "Adjustment";
-		$arrData['Objects']['Charge']['Id'] = $intAdjustmentId;
+		$arrData['DeleteRecord']['RecordType'] = "Adjustment";
+		$arrData['Charge']['Id'] = $intAdjustmentId;
 				
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -1666,8 +1720,8 @@ class MenuItems
 		$this->strLabel	= "delete recurring adjustment: $intRecurringAdjustmentId";
 		
 		// Setup data to send
-		$arrData['Objects']['DeleteRecord']['RecordType'] = "RecurringAdjustment";
-		$arrData['Objects']['RecurringCharge']['Id'] = $intRecurringAdjustmentId;
+		$arrData['DeleteRecord']['RecordType'] = "RecurringAdjustment";
+		$arrData['RecurringCharge']['Id'] = $intRecurringAdjustmentId;
 				
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);

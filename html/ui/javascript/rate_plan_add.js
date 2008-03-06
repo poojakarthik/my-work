@@ -176,12 +176,11 @@ function VixenRatePlanAddClass()
 		if (elmRateGroupOption.getAttribute('draft'))
 		{
 			// The Rate Group is a draft. Open the Edit Rate Group popup
-			var objObjects = {};
-			objObjects.Objects = {};
-			objObjects.Objects.RateGroup = {};
-			objObjects.Objects.RateGroup.Id = elmRateGroupOption.value;
-			objObjects.Objects.CallingPage = {};
-			objObjects.Objects.CallingPage.AddRatePlan = true;
+			var objObjects						= {};
+			objObjects.RateGroup				= {};
+			objObjects.RateGroup.Id				= elmRateGroupOption.value;
+			objObjects.CallingPage				= {};
+			objObjects.CallingPage.AddRatePlan	= true;
 			
 			Vixen.Popup.ShowAjaxPopup("AddRateGroupPopup", "large", "Edit Rate Group", "RateGroup", "Add", objObjects);
 		}
@@ -211,7 +210,6 @@ function VixenRatePlanAddClass()
 	this.AddRateGroup = function(intRecordType, bolFleet)
 	{
 		var objObjects = {};
-		objObjects.Objects = {};
 		var elmRateGroupCombo;
 		var strRateGroupCombo;
 		
@@ -236,21 +234,21 @@ function VixenRatePlanAddClass()
 		if (elmRateGroupCombo.value != 0)
 		{
 			// A RateGroup has been selected, so set up the objects to send to the AppTemplate
-			objObjects.Objects.BaseRateGroup = {};
-			objObjects.Objects.BaseRateGroup.Id = elmRateGroupCombo.value;
+			objObjects.BaseRateGroup = {};
+			objObjects.BaseRateGroup.Id = elmRateGroupCombo.value;
 		}
 		else
 		{
 			// A RateGroup has not been selected.  The "Add Rate Group" page will require the RecordType and Fleet flag of the new RateGroup
-			objObjects.Objects.RecordType = {};
-			objObjects.Objects.RecordType.Id = intRecordType;
-			objObjects.Objects.RateGroup = {};
-			objObjects.Objects.RateGroup.Fleet = bolFleet;
+			objObjects.RecordType = {};
+			objObjects.RecordType.Id = intRecordType;
+			objObjects.RateGroup = {};
+			objObjects.RateGroup.Fleet = bolFleet;
 		}
 		
 		// Set up remaining data that needs to be sent to the "Add Rate Group" page
-		objObjects.Objects.CallingPage = {};
-		objObjects.Objects.CallingPage.AddRatePlan = true;
+		objObjects.CallingPage = {};
+		objObjects.CallingPage.AddRatePlan = true;
 		
 		// Call the "Add Rate Group" page
 		Vixen.Popup.ShowAjaxPopup("AddRateGroupPopup", "large", "Add New Rate Group", "RateGroup", "Add", objObjects);

@@ -1611,18 +1611,16 @@ class AppTemplateService extends ApplicationTemplate
 		// Retrieve the service details
 		if (!DBO()->Service->Load())
 		{
-			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found";
-			$this->LoadPage('error');
-			return FALSE;
+			Ajax()->AccCommand("Alert", "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found");
+			return TRUE;
 		}
 		
 		// Retrieve the Account Details
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service";
-			$this->LoadPage('error');
-			return FALSE;
+			Ajax()->AccCommand("Alert", "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service");
+			return TRUE;
 		}
 		
 		// Set the default for the scheduled start time of the new plan
@@ -1630,7 +1628,6 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->NewPlan->StartTime = 1;
 		
 		$this->LoadPage('plan_change');
-
 		return TRUE;
 	}
 	
@@ -1791,6 +1788,117 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Activating the account was successfull
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// BulkProvisioningRequest
+	//------------------------------------------------------------------------//
+	/**
+	 * BulkProvisioningRequest()
+	 *
+	 * Manages the construction of the Bulk Provisioning Request page
+	 * 
+	 * Manages the construction of the Bulk Provisioning Request page
+	 * It expects the following objects to be defined:
+	 * 		DBO()->Service->Id		Id of the service to provision
+	 * 		OR
+	 * 		DBO()->Account->Id		Id of the account to provision services of 
+	 * 
+	 *
+	 * @return		void
+	 * @method		BulkProvisioningRequest
+	 */
+	function BulkProvisioningRequest()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Setup all DBO and DBL objects required for the page
+		if (DBO()->Service->Id->IsSet)
+		{
+			// Load this service to retrieve the Account it belongs to
+			if (!DBO()->Service->Load())
+			{
+				DBO()->Error->Message = "The Service with id: ". DBO()->Service->Id->value .", you were attempting to provision could not be found";
+				$this->LoadPage('error');
+				return TRUE;
+			}
+			DBO()->Account->Id = DBO()->Service->Account->Value;
+		}
+		
+		// Try loading the account
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "Account: ". DBO()->Account->Id->Value .", cannot be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// Retrieve all the services belonging to the account and whether or not they have address details defined
+		$strTables	= "	Service AS S LEFT JOIN ServiceAddress AS SA ON S.Id = SA.Service 
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
+								FROM ServiceRatePlan AS SRP2 
+								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
+								ORDER BY SRP2.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
+								FROM ServiceRatePlan AS SRP4 
+								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
+								ORDER BY SRP4.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
+		$arrColumns	= Array("Id" 						=> "S.Id",
+							"FNN"						=> "S.FNN", 
+							"Status"		 			=> "S.Status",
+							"CreatedOn"					=> "S.CreatedOn", 
+							"ClosedOn"					=> "S.ClosedOn",
+							"AddressId"					=> "SA.Id",
+							"CurrentPlanId" 			=> "RP1.Id",
+							"CurrentPlanName"			=> "RP1.Name",
+							"FuturePlanId"				=> "RP2.Id",
+							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
+		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
+		$arrWhere	= Array("AccountId" => DBO()->Account->Id->Value);
+		DBL()->Service->SetTable($strTables);
+		DBL()->Service->SetColumns($arrColumns);
+		DBL()->Service->Where->Set($strWhere, $arrWhere);
+		DBL()->Service->OrderBy("S.FNN");
+		DBL()->Service->Load();
+		
+		
+		
+		
+		// Set up the BreadCrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
+		if (DBO()->Service->Id->IsSet)
+		{
+			BreadCrumb()->ViewService(DBO()->Service->Id->Value);
+		}
+		BreadCrumb()->SetCurrentPage("Provisioning");
+		
+		// Set up the Context menu
+		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
+		
+		// Define the page template to use
+		$this->LoadPage('provisioning_request');
 		return TRUE;
 	}
 	

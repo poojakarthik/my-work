@@ -120,6 +120,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Bulk_Provisioning_Request(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 		}
 		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
@@ -354,6 +355,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Bulk_Provisioning_Request(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 		}
 		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
@@ -504,6 +506,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Bulk_Provisioning_Request(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 		}
 		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);

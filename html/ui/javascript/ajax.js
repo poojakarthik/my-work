@@ -18,7 +18,29 @@ function VixenAjaxClass()
 	// This is used to check that a form doesn't get submitted twice, before the first submittion has recieved a reply
 	this.strFormCurrentlyProcessing	= null;
 
-	// execute an app template through an ajax call, which doesn't involve form submission
+	//------------------------------------------------------------------------//
+	// CallAppTemplate
+	//------------------------------------------------------------------------//
+	/**
+	 * CallAppTemplate()
+	 *
+	 * Executes an AppTemplate method via ajax
+	 *
+	 * Executes an AppTemplate method via ajax
+	 *
+	 * @param	string	strClass				Name of the AppTemplate class to use, minus the AppTemplate prefix
+	 *											(ie for AppTemplateAccount, use "Account")
+	 * @param	string	strMethod				Name of the AppTemplate method to use
+	 * @param	object	objObjects				parameters to be passed to the server.  These will be available in the
+	 *											DBO() object structure
+	 *											(ie objObjects.Account.Id will be available in php as DBO()->Account->Id)
+	 * @param	string	strTargetType			The type of target for the resultant output of the AppTemplate method
+	 *											valid options are (Div, Popup, Page)
+	 * @param	boolean	bolShowLoadingSplash	optional.  Set to true to have the "Please Wait" splash display if the 
+	 *											ajax request takes more than 1 second
+	 * @return	void
+	 * @method
+	 */
 	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType, bolShowLoadingSplash)
 	{
 		var objSend			= {};
@@ -37,8 +59,31 @@ function VixenAjaxClass()
 		this.Send(objSend);
 	}
 	
-
-	// Send form
+	//------------------------------------------------------------------------//
+	// SendForm
+	//------------------------------------------------------------------------//
+	/**
+	 * SendForm()
+	 *
+	 * Executes an AppTemplate method via ajax, passing all input values included in the form specified
+	 *
+	 * Executes an AppTemplate method via ajax, passing all input values included in the form specified
+	 *
+	 * @param	string	strFormId				Id of the form which will be submitted to the AppTemplate Method for processing
+	 * @param	string	strButton				Value of the Button used to trigger the form submittion (I think this has to be
+	 *											the label displayed on the button)
+	 * @param	string	strClass				Name of the AppTemplate class to use, minus the AppTemplate prefix
+	 *											(ie for AppTemplateAccount, use "Account")
+	 * @param	string	strMethod				Name of the AppTemplate method to use
+	 * @param	string	strTargetType			optional, The type of target for the resultant output of the AppTemplate method
+	 *											valid options are (Div, Popup, Page)
+	 * @param	string	strId					optional, PopupId, if the form is rendered on a popup
+	 * @param	string	strSize					optional, size of the popup, if the form is rendered on a popup
+	 * @param	string	strContainerDivId		optional, the id of the container div that the HtmlElement sits in, which contains the form
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.SendForm = function(strFormId, strButton, strClass, strMethod, strTargetType, strId, strSize, strContainerDivId)
 	{
 		var intKey;
@@ -46,27 +91,33 @@ function VixenAjaxClass()
 		var objFormElement;
 		var strElementName;
 		var mixValue;
-		
+
+		// If a form is currently being processed, then don't submit this one
+		if (this.strFormCurrentlyProcessing != null)
+		{
+			// A form is currently being processed.  Do not submit this one
+			return;
+		}
+		else
+		{
+			// It is safe to submit this form
+			this.strFormCurrentlyProcessing = objSend.FormId;
+		}
+
+
+
 		// create object to send
-		var objSend = {};
-		objSend.Class = strClass;
-		objSend.Method = strMethod;
-		objSend.ButtonId = strButton;
-		objSend.TargetType = strTargetType;
-		objSend.strId = strId;
-		objSend.strSize = strSize;
-		objSend.strContainerDivId = strContainerDivId;
-		
-		// HACK HACK HACK!!! ******************************************************************************************************************
-		// I'm setting this to FALSE because it is not defined anywhere
-		// If objSend.TargetType == 'Popup' or 'div' then Ajax.send will set HtmlMode = TRUE
-		//objSend.HtmlMode = TRUE;
-		//objSend.TargetType = "Div";
-		// HACK HACK HACK *********************************************************************************************************************
-		
+		var objSend					= {};
+		objSend.Class				= strClass;
+		objSend.Method				= strMethod;
+		objSend.ButtonId			= strButton;
+		objSend.TargetType			= strTargetType;
+		objSend.strId				= strId;
+		objSend.strSize				= strSize;
+		objSend.strContainerDivId	= strContainerDivId;
+		objSend.Objects				= {};
 		// Add values from form to object
-		// Instantiate the Objects structure
-		objSend.Objects = {};
+		
 		// Retrieve the form which is being submitted (the form as an element)
 		objFormElement = document.getElementById(strFormId);
 
@@ -204,18 +255,6 @@ function VixenAjaxClass()
 			}
 		}*/
 
-		// If a form is currently being processed, then don't submit this one
-		if (this.strFormCurrentlyProcessing != null)
-		{
-			// A form is currently being processed.  Do not submit this one
-			return;
-		}
-		else
-		{
-			// It is safe to submit this form
-			this.strFormCurrentlyProcessing = objSend.FormId;
-		}
-		
 		// Draw the Page Loading splash (this will show after 1 second)
 		Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
 
@@ -330,15 +369,15 @@ function VixenAjaxClass()
 		
 		var objData = {};
 		
-		//if the reply starts with "//JSON" then this is a json object storing a list of commands
+		// If the reply starts with "//JSON" then this is a json object storing a list of commands
 		if (strReply.substr(0, 6) == "//JSON")
 		{	
-			// we are working with a JSON object so convert it to a javascript object
+			// We are working with a JSON object so convert it to a javascript object
 			var strJsonCommands = strReply.substr(6);
 			
 			try
 			{
-				// convert reply into data object
+				// Convert reply into data object
 				eval("objData = " + strJsonCommands);
 
 				if (!objData)
@@ -356,7 +395,7 @@ function VixenAjaxClass()
 		}
 		else
 		{
-			// the reply must be HTML code
+			// The reply must be HTML code
 			HandleHtmlModeReply(strReply, objObject);
 		}
 		

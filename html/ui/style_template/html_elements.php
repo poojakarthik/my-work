@@ -426,7 +426,7 @@ class HTMLElements
 		$strChecked = "";
 		if ($arrParams['Value'])
 		{
-			$strChecked	= "checked";
+			$strChecked	= "checked='checked'";
 			$intValue	= 1;
 		}
 		else

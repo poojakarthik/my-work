@@ -1098,6 +1098,22 @@ class HtmlTemplate extends BaseTemplate
 	protected $_intTemplateMode;
 
 	//------------------------------------------------------------------------//
+	// _intContext
+	//------------------------------------------------------------------------//
+	/**
+	 * _intContext
+	 *
+	 * the context in which the html object will be rendered
+	 *
+	 * the context in which the html object will be rendered
+	 *
+	 * @type		integer
+	 *
+	 * @property
+	 */
+	protected $_intContext;
+
+	//------------------------------------------------------------------------//
 	// _strContainerDivId
 	//------------------------------------------------------------------------//
 	/**
@@ -1137,6 +1153,25 @@ class HtmlTemplate extends BaseTemplate
 		$GLOBALS['*arrJavaScript'][$strFilename] = $strFilename;
 	}
 	
+	//------------------------------------------------------------------------//
+	// FormStart
+	//------------------------------------------------------------------------//
+	/**
+	 * FormStart()
+	 *
+	 * Echos the starting tag of an html form element, which will be handled by an AppTemplate method 
+	 * 
+	 * Echos the starting tag of an html form element, which will be handled by an AppTemplate method
+	 *
+	 * @param		string	$strId			Uniquely identifies the form
+	 * @param		string	$strTemplate	AppTemplate class which will be called to process the form, on submittion
+	 * 										(do not include the AppTemaplte prefix to the class name)
+	 * @param		string	$strMethod		Method of the AppTemplate class, which will be executed when the form is submitted
+	 * @param		string	$arrParams		Any parameters to pass to the AppTemplate Method as GET variables
+	 * 										(ie $arrParams['Account.Id'] = 1000123456)
+	 * @return		void
+	 * @method
+	 */
 	function FormStart($strId, $strTemplate, $strMethod, $arrParams=NULL)
 	{
 		$this->_strMethod = $strMethod;
@@ -1157,22 +1192,65 @@ class HtmlTemplate extends BaseTemplate
 		echo "<input type='hidden' value='$strId' name='VixenFormId' />\n";
 	}
 	
+	//------------------------------------------------------------------------//
+	// FormEnd
+	//------------------------------------------------------------------------//
+	/**
+	 * FormEnd()
+	 *
+	 * Echos the closing tag of an html form element 
+	 * 
+	 * Echos the closing tag of an html form element
+	 *
+	 * @return		void
+	 * @method
+	 */
 	function FormEnd()
 	{
 		echo "</form>\n";
 	}
 	
+	//------------------------------------------------------------------------//
+	// Submit
+	//------------------------------------------------------------------------//
+	/**
+	 * Submit()
+	 *
+	 * Echos html code to create an input submit button element 
+	 * 
+	 * Echos html code to create an input submit button element
+	 * 
+	 * @param	string	$strLabel		The value/label for the submit button
+	 * @param	string	$strStyleClass	optional, CSS class for the "input submit" element
+	 *
+	 * @return		void
+	 * @method
+	 */
 	function Submit($strLabel, $strStyleClass="InputSubmit")
 	{
-		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
 		echo "<input type='submit' class='$strStyleClass' name='VixenButtonId' value='$strLabel'></input>\n";
 	}
 	
+	//------------------------------------------------------------------------//
+	// Button
+	//------------------------------------------------------------------------//
+	/**
+	 * Button()
+	 *
+	 * Echos html code to create an input button element 
+	 * 
+	 * Echos html code to create an input button element
+	 * 
+	 * @param	string	$strLabel		The value/label for the input button element
+	 * @param	string	$strHref		value for the onclick property of the input button element
+	 * @param	string	$strStyleClass	optional, CSS class for the input button element
+	 *
+	 * @return		void
+	 * @method
+	 */
 	function Button($strLabel, $strHref, $strStyleClass="InputSubmit")
 	{
 		$strName = "VixenButton_". str_replace(" ", "", $strLabel);
-		//$strId = rand();
-		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
 		
 		// Change all the single quotes in $strHref to their html safe versions, so that it doesn't escape
 		// out of the onlick='...' prematurely (this also converts double quotes)
@@ -1180,8 +1258,29 @@ class HtmlTemplate extends BaseTemplate
 		echo "<input type='button' class='$strStyleClass' id='$strName' name='$strName' value='$strLabel' onclick='$strHref'></input>\n";
 	}
 	
-	// You may wish to include $strTarget as a parameter as it is what is used to determine
-	// whether you are working in HtmlMode or AjaxMode
+	//------------------------------------------------------------------------//
+	// AjaxSubmit
+	//------------------------------------------------------------------------//
+	/**
+	 * AjaxSubmit()
+	 *
+	 * Echos html code to create an input button element which submits, via ajax, the most recently declared form
+	 * 
+	 * Echos html code to create an input button element which submits, via ajax, the most recently declared form
+	 * 
+	 * @param	string	$strLabel		The value/label for the input button element
+	 * @param	string	$strTemplate	optional, Name of the AppTemplate which will contain the method which will be used
+	 * 									to handle the submittion.  This defaults to whatever AppTemplate was specified
+	 * 									in the most recent call to FormStart
+	 * @param	string	$strMethod		optional, Method of the AppTemplate which will be executed by the ajax call
+	 * 									This defaults to whatever Method was specified
+	 * 									in the most recent call to FormStart
+	 * @param	string	$strTargetType	?
+	 * @param	string	$strStyleClass	optional, CSS class for the input button element
+	 *
+	 * @return		void
+	 * @method
+	 */
 	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strTargetType=NULL, $strStyleClass="InputSubmit")
 	{
 		if (!$strTemplate)
@@ -1207,8 +1306,6 @@ class HtmlTemplate extends BaseTemplate
 		
 		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}')\"></input>\n";
 	}
-	
-	
 
 	//------------------------------------------------------------------------//
 	// SetMode

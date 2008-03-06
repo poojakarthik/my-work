@@ -46,7 +46,7 @@ function VixenPopupClass()
 		return FALSE;
 	}
 	
-	// Returns TRUE if there are popups present on the page
+	// Returns TRUE if there are any popups present on the page
 	this.PopupsExist = function()
 	{
 		var elmPopupContainer = document.getElementById("PopupHolder");
@@ -71,6 +71,7 @@ function VixenPopupClass()
 		return document.getElementById('VixenPopup__' + strId);
 	}
 	
+	// Sets the inner content of the popup identified by strId
 	this.SetContent = function(strId, strContent)
 	{
 		//check that the popup exists; if it doesn't then return false
@@ -193,27 +194,13 @@ function VixenPopupClass()
 				elmOverlay.style.zIndex = ++dragObj.zIndex;
 				
 				intScroll = document.body.scrollTop;
-				//intScrollLeft = document.body.scrollLeft;
-                //document.body.style.overflow = "hidden";
-               	//document.body.scrollTop = intScroll;
-				
-
 				
                 elmOverlay.style.height	= Math.max(document.body.offsetHeight, window.innerHeight);
-				
-				// all of these return width of browser, with or without scrollbars
-				// document.body.offsetWidth does not return the width of the document (like it does with the height)
-				//alert(window.innerWidth);
-				//alert(document.body.offsetWidth);
-				//alert(document.body.clientWidth);
 				
 				// Find the width of the actual page by using the PageBody div, and adding its own width
 				// to the offset from the left side of the page (needs to include margins?)
 				var divPageBody = document.getElementById("PageBody");
 				var intPageWidth = divPageBody.offsetWidth + divPageBody.offsetLeft;
-				
-				//var intPageWidth = parseInt(divPageBody.style.marginLeft) + parseInt(divPageBody.offsetWidth) + parseInt(divPageBody.offsetLeft);
-				// alert(intPageWidth);
 				
 				elmOverlay.style.width	= Math.max(document.body.offsetWidth, intPageWidth);
 				
@@ -397,15 +384,30 @@ function VixenPopupClass()
 		}
 	}
 	
-	// mixId can be the id of the popup as a string or it can be a pointer to any element on the popup
+	//------------------------------------------------------------------------//
+	// Close
+	//------------------------------------------------------------------------//
+	/**
+	 * Close()
+	 *
+	 * Closes the popup referenced buy the parameter passed
+	 *
+	 * Closes the popup referenced buy the parameter passed
+	 *
+	 * @param	mixed	mixId			id of the popup window to be closed (as a string)
+	 *									OR
+	 *									pointer/reference to an element contained
+	 *									within the popup to be closed
+	 * @return	void
+	 * @method
+	 */
 	this.Close = function(mixId)
 	{
 		// Work out how we are going to find the popup element
 		if (typeof(mixId) == 'string')
 		{
 			// The id of the popup has been specified, find the popup element by id
-			var strPopupId = 'VixenPopup__' + mixId
-			var elmPopup = document.getElementById(strPopupId);
+			var elmPopup = this.GetPopupElement(mixId);
 		}
 		else if (typeof(mixId) == 'object')
 		{
@@ -462,32 +464,51 @@ function VixenPopupClass()
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// ShowAjaxPopup
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowAjaxPopup()
+	 *
+	 * Executes the method of an AppTemplate object, and renders the product in a popup window
+	 *
+	 * Executes the method of an AppTemplate object, and renders the product in a popup window
+	 *
+	 * @param	int		intId			id of the popup window which the contents of the resultant 
+	 *									page will be displayed in.  This will uniquely identify the popup window
+	 * @param	string	strSize			size of the popup window (small, medium, mediumlarge, large, extralarge)
+	 * @param	string	strTitle		title for the popup which will be displayed in the title bar
+	 * @param	string	strClass		Name of the AppTemplate class to use, minus the AppTemplate prefix
+	 *									(ie for AppTemplateAccount, use "Account")
+	 * @param	string	strMethod		Name of the AppTemplate method to use
+	 * @param	object	objParams		parameters to be passed to the server.  These will be available in the
+	 *									DBO() object structure
+	 *									(ie objParams.Account.Id will be available in php as DBO()->Account->Id)
+	 * @param	string	strWindowType	type of popup window (modal, nonmodal, autohide, autohide-reload)
+	 *									defaults to modal
+	 *
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
 	this.ShowAjaxPopup = function(strId, strSize, strTitle, strClass, strMethod, objParams, strWindowType)
 	{
-		if (objParams == undefined)
-		{
-			var objParams = {};
-		}
-		objParams.strId 		= strId;
-		objParams.strSize 		= strSize;
-		objParams.strTitle		= strTitle;
-		objParams.TargetType 	= "Popup";
-		if (strWindowType == undefined)
-		{
-			objParams.WindowType = "modal";
-		}
-		else
-		{
-			objParams.WindowType = strWindowType;
-		}
+		var objSend = {};
+	
+		objSend.strId 		= strId;
+		objSend.strSize 	= strSize;
+		objSend.strTitle	= strTitle;
+		objSend.Class		= strClass;
+		objSend.Method		= strMethod;
+		objSend.Objects		= objParams;
+		objSend.WindowType	= (strWindowType == undefined) ? "modal" : strWindowType;
+		objSend.TargetType 	= "Popup";
 		
-		objParams.Class = strClass;
-		objParams.Method = strMethod;
-
 		// Draw the Page Loading splash (this will show after 1 second)
 		Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
 
-		Vixen.Ajax.Send(objParams);
+		Vixen.Ajax.Send(objSend);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -502,7 +523,7 @@ function VixenPopupClass()
 	 * 
 	 * @param	string	strMessage			message to display
 	 * @param	string	strSize				optional, size of the popup box ("small|medium|large")
-	 *										Defaults to "medium"
+	 *										Defaults to "alertsize"
 	 * @return	void
 	 *
 	 * @method
@@ -516,7 +537,6 @@ function VixenPopupClass()
 		}
 	
 		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
-						//"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
 						"<p></div>\n" +
 						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";

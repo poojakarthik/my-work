@@ -284,12 +284,11 @@ function VixenRateGroupAddClass()
 	this.AddNewRate = function()
 	{
 		var objObjects = {};
-		objObjects.Objects = {};
 		
 		//Note: There is now a proper Custom-Event model to handle Popups updating other popups
 		// but it has not been implemented in this case, so the old way is being used
-		objObjects.Objects.CallingPage = {};
-		objObjects.Objects.CallingPage.AddRateGroup = true;
+		objObjects.CallingPage = {};
+		objObjects.CallingPage.AddRateGroup = true;
 	
 		var elmAvailableRatesCombo	= document.getElementById("AvailableRatesCombo");
 		var elmSelectedRatesCombo	= document.getElementById("SelectedRatesCombo");
@@ -337,10 +336,10 @@ function VixenRateGroupAddClass()
 		{
 			// Only 1 rate has been selected.  Create a new Rate based on this one
 			var intRateId = elmCombo.options[intSelectedIndex].value;
-			objObjects.Objects.Rate = {};
-			objObjects.Objects.Rate.Id = intRateId;
-			objObjects.Objects.Action = {};
-			objObjects.Objects.Action.CreateNewBasedOnOld = true;
+			objObjects.Rate = {};
+			objObjects.Rate.Id = intRateId;
+			objObjects.Action = {};
+			objObjects.Action.CreateNewBasedOnOld = true;
 		}
 		else
 		{
@@ -350,10 +349,10 @@ function VixenRateGroupAddClass()
 			var intRecordType	= document.getElementById("RecordTypeCombo").value;
 			var bolIsFleet		= document.getElementById("RateGroup.Fleet").checked;
 	
-			objObjects.Objects.RecordType = {};
-			objObjects.Objects.RecordType.Id = intRecordType;
-			objObjects.Objects.Rate = {};
-			objObjects.Objects.Rate.Fleet = bolIsFleet;
+			objObjects.RecordType = {};
+			objObjects.RecordType.Id = intRecordType;
+			objObjects.Rate = {};
+			objObjects.Rate.Fleet = bolIsFleet;
 		}
 		
 		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Add New Rate", "Rate", "Add", objObjects);
@@ -428,12 +427,11 @@ function VixenRateGroupAddClass()
 		
 		var elmRateOption = elmCombo.options[intSelectedIndex];
 		
-		var objObjects = {};
-		objObjects.Objects = {};
-		objObjects.Objects.Rate = {};
-		objObjects.Objects.Rate.Id = elmRateOption.value;
-		objObjects.Objects.CallingPage = {};
-		objObjects.Objects.CallingPage.AddRateGroup = true;
+		var objObjects						= {};
+		objObjects.Rate						= {};
+		objObjects.Rate.Id					= elmRateOption.value;
+		objObjects.CallingPage				= {};
+		objObjects.CallingPage.AddRateGroup	= true;
 		
 		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Edit Rate", "Rate", "Add", objObjects);
 	}
@@ -481,15 +479,12 @@ function VixenRateGroupAddClass()
 		
 		// Stick this array in DBO()->SelectedRates->ArrId
 		var objObjects = {};
-		objObjects.Objects = {};
-		objObjects.Objects.SelectedRates = {};
-		objObjects.Objects.SelectedRates.ArrId = arrSelectedRates;
-		objObjects.Objects.RecordType = {};
-		objObjects.Objects.RecordType.Id = intRecordType;
-		objObjects.Objects.RateGroup = {};
-		objObjects.Objects.RateGroup.Fleet = bolIsFleet;
-		//objObjects.Objects.CallingPage = {};
-		//objObjects.Objects.CallingPage.AddRateGroup = true;
+		objObjects.SelectedRates = {};
+		objObjects.SelectedRates.ArrId = arrSelectedRates;
+		objObjects.RecordType = {};
+		objObjects.RecordType.Id = intRecordType;
+		objObjects.RateGroup = {};
+		objObjects.RateGroup.Fleet = bolIsFleet;
 		
 		// Execute that application template that creates the popup
 		Vixen.Popup.ShowAjaxPopup("PreviewRateSummaryPopup", "large", "Rate Summary", "RateGroup", "PreviewRateSummary", objObjects);
