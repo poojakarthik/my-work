@@ -92,20 +92,6 @@ function VixenAjaxClass()
 		var strElementName;
 		var mixValue;
 
-		// If a form is currently being processed, then don't submit this one
-		if (this.strFormCurrentlyProcessing != null)
-		{
-			// A form is currently being processed.  Do not submit this one
-			return;
-		}
-		else
-		{
-			// It is safe to submit this form
-			this.strFormCurrentlyProcessing = objSend.FormId;
-		}
-
-
-
 		// create object to send
 		var objSend					= {};
 		objSend.Class				= strClass;
@@ -255,6 +241,18 @@ function VixenAjaxClass()
 			}
 		}*/
 
+		// If a form is currently being processed, then don't submit this one
+		if (this.strFormCurrentlyProcessing != null)
+		{
+			// A form is currently being processed.  Do not submit this one
+			return;
+		}
+		else
+		{
+			// It is safe to submit this form
+			this.strFormCurrentlyProcessing = objSend.FormId;
+		}
+		
 		// Draw the Page Loading splash (this will show after 1 second)
 		Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
 
