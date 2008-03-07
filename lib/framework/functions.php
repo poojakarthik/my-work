@@ -2692,26 +2692,8 @@ function GetPdfFilename($intAccount, $intYear, $intMonth)
  */
  function FindFNNOwner($strFNN, $strDate)
  {
-	$selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id AS Service", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
-	$selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id AS Service", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
-	
- 	$intResult = $selFindOwner->Execute(Array("fnn" => $strFNN, "date" => $strDate));
- 	if ($arrResult = $selFindOwner->Fetch())
- 	{
- 		return $arrResult;
- 	}
- 	else
- 	{
- 		$arrParams['fnn']	= substr($strFNN, 0, -2) . "__";
- 		$arrParams['date']	= $strDate;
- 		$intResult = $selFindOwnerIndial100->Execute($arrParams);
- 		if(($arrResult = $selFindOwnerIndial100->Fetch()))
- 		{
- 			return $arrResult;
- 		}
- 	}
- 	
- 	return FALSE;
+	// Passthrough to Framework::FindFNNOwner()
+ 	return $GLOBALS['fwkFramework']->FindFNNOwner($strFNN, $strDate);
  }
  
 

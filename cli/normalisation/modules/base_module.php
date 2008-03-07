@@ -687,41 +687,41 @@ abstract class NormalisationModule
 	 *
 	 * Applies ownership based on the FNN
 	 * 
+	 * @param	bool	$bolOwnerNow		[optional]	Get current owner of the FNN (default: FALSE)
 	 *
 	 * @return	bool					
 	 *
 	 * @method
 	 */
-	 protected function ApplyOwnership()
+	 protected function ApplyOwnership($bolOwnerNow = FALSE)
 	 {
-
-	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN'], "date" => (string)$this->_arrNormalisedData['StartDatetime']));
-	 	if ($arrResult = $this->_selFindOwner->Fetch())
-	 	{
-	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
-	 		$this->_arrNormalisedData['Account']		= $arrResult['Account'];
-	 		$this->_arrNormalisedData['Service']		= $arrResult['Id'];
-	 		return true;
-	 	}
-	 	else
-	 	{
-	 		$arrParams['fnn']	= substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
-	 		$arrParams['date']	= (string)$this->_arrNormalisedData['StartDatetime'];
-	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
-	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
-	 		{
-	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
-	 			$this->_arrNormalisedData['Account']		= $arrResult['Account'];
-	 			$this->_arrNormalisedData['Service']		= $arrResult['Id'];
-	 			return true;
-	 		}
-	 	}
+		// Determine Timestamp to Use
+		if ($bolOwnerNow)
+		{
+			// Use the current timestamp
+			$strDate	= date("Y-m-d");
+		}
+		else
+		{
+			// Use the CDR's StartDatetime
+			$strDate	= $this->_arrNormalisedData['StartDatetime'];
+		}
+		
+		// Find the Owner
+		if (is_array($mixResult = $this->Framework->FindFNNOwner($this->_arrNormalisedData['FNN'], $strDate)))
+		{
+			// Found an Owner
+	 		$this->_arrNormalisedData['AccountGroup']	= $mixResult['AccountGroup'];
+	 		$this->_arrNormalisedData['Account']		= $mixResult['Account'];
+	 		$this->_arrNormalisedData['Service']		= $mixResult['Service'];
+	 		return TRUE;
+		}
 	 	
 		// Return false if there was no match, or more than one match
 		$this->_UpdateStatus(CDR_BAD_OWNER);
 		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
-	 	return false;
+	 	return FALSE;
 	 }
 	 
 
@@ -742,7 +742,8 @@ abstract class NormalisationModule
 	 */
 	 protected function ApplyOwnershipNow()
 	 {
-
+		return ApplyOwnership(TRUE);
+		/*
 	 	$intResult = $this->_selFindOwnerNow->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
 	 	if ($arrResult = $this->_selFindOwnerNow->Fetch())
 	 	{
@@ -768,7 +769,7 @@ abstract class NormalisationModule
 		$this->_UpdateStatus(CDR_BAD_OWNER);
 		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
-	 	return false;
+	 	return false;*/
 	 }
 	
 	

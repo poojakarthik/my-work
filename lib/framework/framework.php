@@ -215,15 +215,19 @@
 	 	$arrData['Employee']		= NULL;
 	 	$arrData['Datetime']		= new MySQLFunction("NOW()");
 	 	$arrData['NoteType']		= NULL;			
-		$this->_insAddNote	= new StatementInsert("Note", $arrData);
+		$this->_insAddNote			= new StatementInsert("Note", $arrData);
 		
-		$this->_selCheckELB = new StatementSelect("ServiceExtension", "*", "Service = <Service>");
+		$this->_selCheckELB			= new StatementSelect("ServiceExtension", "*", "Service = <Service>");
 		
-		$this->_insAddExtension = new StatementInsert("ServiceExtension");
+		$this->_insAddExtension		= new StatementInsert("ServiceExtension");
 		
-		$this->_updServiceExtension = new StatementUpdate("ServiceExtension", "Service = <Service>", Array("Archived" => NULL));
+		$this->_updServiceExtension	= new StatementUpdate("ServiceExtension", "Service = <Service>", Array("Archived" => NULL));
 		
-		$this->_selFNN = new StatementSelect("Service", "FNN", "Id = <Service>");
+		$this->_selFNN				= new StatementSelect("Service", "FNN", "Id = <Service>");
+		
+		$this->_selFindOwner		= new StatementSelect(	"Service JOIN Account ON Account.Id = Service.Account",
+															"Account.Id AS Account, Service.AccountGroup AS AccountGroup, Service.Id AS Service",
+															"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (CAST(<DateTime> AS DATE) BETWEEN CreatedOn AND ClosedOn OR (ClosedOn IS NULL AND CreatedOn <= CAST(<DateTime> AS DATE)))");
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -1290,6 +1294,58 @@
 	 	$arrWhere = Array();
 	 	$arrWhere['Service']	= $intService;
 	 	return ($this->_updServiceExtension->Execute(Array('Archived' => 1), $arrWhere) === FALSE) ? FALSE : TRUE;
+	 }
+	 
+	 	 
+		 
+	//------------------------------------------------------------------------//
+	// FindFNNOwner
+	//------------------------------------------------------------------------//
+	/**
+	 * FindFNNOwner()
+	 *
+	 * Finds the Owner of a given FNN
+	 *
+	 * Finds the Owner of a given FNN
+	 *
+	 * @param	string	$strFNN					The FNN to own
+	 * @param	integer	$strDate				The date to own on (datetimes also accepted)
+	 *
+	 * @return	mixed							Array of Owner Details or String Error				
+	 */
+	 function FindFNNOwner($strFNN, $strDate)
+	 {
+	 	// Check Data
+	 	if (!IsValidFNN($strFNN))
+	 	{
+	 		// Invalid FNN
+	 		return "'$strFNN' is not a valid FNN!";
+	 	}
+	 	if (!strtotime($strDate))
+	 	{
+	 		// Invalid Date
+	 		return "'$strDate' is not a valid Date String!";
+	 	}
+	 	
+	 	// Find the Owner
+	 	$arrWhere = Array();
+	 	$arrWhere['FNN']			= $strFNN;
+	 	$arrWhere['Date']			= $strDate;
+	 	$arrWhere['IndialRange']	= substr($strFNN, 0, -2).'__';
+	 	$mixResult	= $this->_selFindOwner->Execute();
+	 	if ($mixResult === FALSE)
+	 	{
+	 		// Error
+	 		return $this->_selFindOwner->Error();
+	 	}
+	 	elseif (!$mixResult)
+	 	{
+	 		// No Result
+	 		return "FNN '$strFNN' not found in Flex!";
+	 	}
+	 	
+	 	// Return Owner Details	 	
+	 	return $this->_selFindOwner->Fetch();
 	 }
  }
 
