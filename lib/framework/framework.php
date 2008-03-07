@@ -1330,9 +1330,9 @@
 	 	// Find the Owner
 	 	$arrWhere = Array();
 	 	$arrWhere['FNN']			= $strFNN;
-	 	$arrWhere['Date']			= $strDate;
+	 	$arrWhere['DateTime']		= $strDate;
 	 	$arrWhere['IndialRange']	= substr($strFNN, 0, -2).'__';
-	 	$mixResult	= $this->_selFindOwner->Execute();
+	 	$mixResult	= $this->_selFindOwner->Execute($arrWhere);
 	 	if ($mixResult === FALSE)
 	 	{
 	 		// Error
