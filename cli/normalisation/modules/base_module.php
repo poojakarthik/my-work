@@ -742,7 +742,7 @@ abstract class NormalisationModule
 	 */
 	 protected function ApplyOwnershipNow()
 	 {
-		return ApplyOwnership(TRUE);
+		return $this->ApplyOwnership(TRUE);
 		/*
 	 	$intResult = $this->_selFindOwnerNow->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
 	 	if ($arrResult = $this->_selFindOwnerNow->Fetch())
