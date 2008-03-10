@@ -191,7 +191,7 @@
 	 *
 	 * @method
 	 */
- 	function Normalise($strLine)
+ 	function Normalise($strLine, $intLineNumber)
  	{
  		// Split the line on \n
  		$arrLines = explode("\n", trim($strLine));
@@ -278,7 +278,7 @@
 					// This can span over multiple lines in the file
 					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
-					
+				
 				case "N":	// Change - number
 				case "M":	// Change - address
 				case "B":	// Change - number & address
@@ -353,7 +353,7 @@
 			if ($arrPDR['Type'] == REQUEST_LOSS_FULL)
 			{
 				// Add System Note
-				AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], CARRIER_UNITEL);
+				//AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], CARRIER_UNITEL);
 			}
 		}
 		else

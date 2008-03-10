@@ -42,6 +42,8 @@
  */
  class ImportBase
  {
+ 	public $intLineNumber;
+ 	
  	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -67,6 +69,7 @@
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "Id", "CarrierRef = <CarrierRef>");
  		$this->_selRequestByFNN			= new StatementSelect("ProvisioningRequest", "Id", 
 												"FNN = <FNN> AND Type = <Type> AND Status = ".REQUEST_STATUS_PENDING);
+		$this->_selTranslateCarrierCode	= new StatementSelect("ProvisioningTranslation", "Description", "Context = <Context> AND CarrierCode = <CarrierCode>");
  	}
  	
  	//------------------------------------------------------------------------//
@@ -108,7 +111,7 @@
 	 *
 	 * @method
 	 */
- 	function Normalise($arrNormalised)
+ 	function Normalise($arrNormalised, $intLineNumber)
  	{
  		DebugBacktrace();
  		throw new Exception("ImportBase::Normalised() is a virtual function!");
@@ -213,6 +216,39 @@
 	 	
 	 	// Run the default matcher
 	 	return NULL;
+	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// TranslateCarrierCode
+	//------------------------------------------------------------------------//
+	/**
+	 * TranslateCarrierCode()
+	 *
+	 * Translates a Carrier Code using the ProvisioningTranslation table
+	 *
+	 * Translates a Carrier Code using the ProvisioningTranslation table
+	 * 
+	 * @param	integer	$intContext		Context Group for the Constant (eg. PROVISIONING_CONTEXT_EPID)
+	 * @param	mixed	$mixValue		The Code to Translate
+	 * 
+	 * @return	mixed					string	: Description
+	 * 									FALSE	: Failed					
+	 *
+	 * @method
+	 */
+	 function TranslateCarrierCode($intContext, $mixValue)
+	 {
+	 	$arrWhere	= Array();
+	 	$arrWhere['Context']		= (int)$intContext;
+	 	$arrWhere['CarrierCode']	= (string)$mixValue;
+	 	if (!$this->_selTranslateCarrierCode->Execute($arrWhere))
+	 	{
+	 		return FALSE;
+	 	}
+	 	
+	 	$arrValue	= $this->_selTranslateCarrierCode->Fetch();
+	 	return $arrValue['Description'];
 	 }
  }
 ?>
