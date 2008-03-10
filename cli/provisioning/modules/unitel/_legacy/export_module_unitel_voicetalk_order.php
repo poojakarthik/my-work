@@ -248,7 +248,7 @@
 			case REQUEST_VIRTUAL_PRESELECTION:
 				$arrBuiltRequest['RecordType']					= "13";
 				$arrBuiltRequest['RecordSequence']				= "000000000";
-				$arrBuiltRequest['ServiceNumber']				= str_pad($arrAddress['FNN'], 17, " ", STR_PAD_RIGHT);
+				$arrBuiltRequest['ServiceNumber']				= str_pad($arrAddress['FNN'], 10, " ", STR_PAD_RIGHT);
 				$arrBuiltRequest['CASignedDate']				= date("Ymd");
 		}
 		
