@@ -30,11 +30,11 @@
 $this->Page->SetName("Provisioning");
 
 // Set the layout template for the page
-$this->Page->SetLayout('3Column_65_35');
+$this->Page->SetLayout('1Column');
 
 // Add the Html Objects to their respective columns
+$this->Page->AddObject('ProvisioningRequest',		COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('ProvisioningServiceList',	COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ProvisioningServiceListDiv");
-$this->Page->AddObject('ProvisioningRequest',		COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 
 
 ?>

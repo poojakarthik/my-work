@@ -82,7 +82,7 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		echo "<h2 class='Provisioning'>Provision Request</h2>\n";
 		
 		// Build the checkbox used to select/unselect all the carriers
-		$strSelectAll = "<input type='checkbox' class='DefaultInputCheckBox' onchange='Vixen.ProvisioningPage.SelectAllCarriers(this.checked);' />";
+		$strSelectAll = "<input type='checkbox' id='SelectAllCarriersCheckbox' class='DefaultInputCheckBox' onchange='Vixen.ProvisioningPage.SelectAllCarriers();' />";
 		
 		Table()->Carriers->SetHeader($strSelectAll, "Carrier");
 		Table()->Carriers->SetWidth("10%", "90%");
@@ -96,7 +96,7 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 				continue;
 			}
 			
-			$strSelectCell = "<input type='checkbox' class='DefaultInputCheckBox' name='Carrier_{$intCarrier}'/>";
+			$strSelectCell = "<input type='checkbox' class='DefaultInputCheckBox' name='CarrierCheckbox' Carrier='$intCarrier' onchange='Vixen.ProvisioningPage.UpdateCarrierToggle();'/>";
 
 			$strCarrierCell = $arrCarrier['Description'];
 				
@@ -114,10 +114,6 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		
 		Table()->Carriers->Render();
 		
-		//TODO! Probably should initialise the javascript object that manages this list, or this page
-		// If it hasn't already been initialised
-		//echo "<script type='text/javascript'>Vixen.ProvisioningPage.Initialise($intAccountId, null, '$strTableContainerDivId')</script>\n";
-		
 		echo "<div class='SmallSeperator'></div>";
 		echo "<div class='GroupedContent'>";
 
@@ -126,7 +122,7 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		echo "   <div class='Left'>\n";
 		echo "      <span>&nbsp;&nbsp;Request</span>\n";
 		echo "      <span>\n";
-		echo "         <select id='RequestCombo' name='Request.RequestType' style='width:100%'>\n";
+		echo "         <select id='RequestCombo' name='Request.RequestType' style='width:220px'>\n";
 		echo "            <option id='RequestType.0' value='0'>&nbsp;</option>";
 		// Add each Request Type
 		foreach ($GLOBALS['*arrConstant']['Request'] as $intRequest=>$arrRequest)
@@ -142,13 +138,14 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		
 		// Render the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Submit Request", "Vixen.ProvisioningPage.InitialiseRequestForm();");
+		$this->Button("Submit Request", "Vixen.ProvisioningPage.SubmitRequest();");
 		echo "</div></div>\n";
 		
 		$this->FormEnd();
 		
-		//TODO! Initialise javascript objects here
-		//echo "<script type='text/javascript'>VixenCreateNoteAddObject(); Vixen.NoteAdd.Initialise();</script>\n";
+		//Initialise the javascript object that manages this list
+		$intAccount = DBO()->Account->Id->Value;
+		echo "<script type='text/javascript'>Vixen.ProvisioningPage.InitialiseRequestForm($intAccount)</script>\n";
 	}
 }
 

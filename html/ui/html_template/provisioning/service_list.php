@@ -63,7 +63,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
 		
-		//$this->LoadJavascript("provisioning_page");
+		$this->LoadJavascript("provisioning_page");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -83,7 +83,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		echo "<h2 class='Services'>Services</h2>\n";
 		
 		// Build the checkbox used to select/unselect all the services
-		$strSelectAll = "<input type='checkbox' id='SelectAllServicesCheckbox' class='DefaultInputCheckBox' onchange='Vixen.ProvisioningPage.SelectAllServices(this.checked);' />";
+		$strSelectAll = "<input type='checkbox' id='SelectAllServicesCheckbox' class='DefaultInputCheckBox' onchange='Vixen.ProvisioningPage.SelectAllServices();' />";
 		
 		Table()->Services->SetHeader($strSelectAll, "FNN #", "Plan", "Status", "&nbsp;");
 		Table()->Services->SetWidth("5%", "18%", "52%", "15%", "10%");
@@ -103,7 +103,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			if ($dboService->AddressId->Value != NULL)
 			{
 				// The service already has address details defined for it
-				$strSelectCell = "<input type='checkbox' class='DefaultInputCheckBox' id='Service_{$intServiceId}' name='ServiceCheckbox'/>";
+				$strSelectCell = "<input type='checkbox' class='DefaultInputCheckBox' name='ServiceCheckbox' Service='$intServiceId' onchange='Vixen.ProvisioningPage.UpdateServiceToggle();'/>";
 			}
 			else
 			{
@@ -125,9 +125,6 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			}
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnn</a>"; 
 
-			
-			
-			
 			// Work out the Date to display along with the status
 			$intCurrentDate = strtotime(GetCurrentDateForMySQL());
 			
@@ -206,9 +203,10 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		
 		Table()->Services->Render();
 		
-		//TODO! Probably should initialise the javascript object that manages this list, or this page
-		// If it hasn't already been initialised
-		//echo "<script type='text/javascript'>Vixen.ProvisioningPage.Initialise($intAccountId, null, '$strTableContainerDivId')</script>\n";
+		//Initialise the javascript object that manages this list
+		$intAccount			= DBO()->Account->Id->Value;
+		$intServiceCount	= DBL()->Service->RecordCount();
+		echo "<script type='text/javascript'>Vixen.ProvisioningPage.InitialiseServiceList('{$this->_strContainerDivId}', $intAccount, $intServiceCount)</script>\n";
 	}
 }
 

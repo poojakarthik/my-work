@@ -57,8 +57,6 @@ Define ('HTML_MODE'		, 2);
 Define ('USER_TIMEOUT'	, 3600);
 Define ('GOD_TIMEOUT'	, 60*60*24*7);
 
-Define("PERMISSION_DEBUG"		, 0x80000000);
-Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
 
 /* Depricated
 define('DATABASE_URL', '10.11.12.13');
@@ -184,6 +182,8 @@ define("PERMISSION_RATE_MANAGEMENT"		, 0x20);	$arrPermissions[PERMISSION_RATE_MA
 define("PERMISSION_CREDIT_CARD"			, 0x40);	$arrPermissions[PERMISSION_CREDIT_CARD]		= "Credit Card";	// 64
 define("PERMISSION_OPERATOR_VIEW"		, 0x80);	$arrPermissions[PERMISSION_OPERATOR_VIEW]	= "Operator View";	// 128
 define("PERMISSION_SUPER_ADMIN"			, 0x100);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 256
+Define("PERMISSION_DEBUG"		, 0x80000000);
+Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
 
 													$GLOBALS['Permissions']	= $arrPermissions;
 // This is used in the datbase to represent an "end Date" or "Closed on date" that should never be reached
@@ -203,6 +203,7 @@ define("EVENT_ON_EDIT_ACCOUNT_DETAILS_CANCEL"		, "OnEditAccountDetailsCancel");
 define("EVENT_ON_CUSTOMER_GROUP_DETAILS_UPDATE"		, "OnCustomerGroupDetailsUpdate");
 define("EVENT_ON_CONFIG_CONSTANT_UPDATE"			, "OnConfigConstantUpdate");
 define("EVENT_ON_SERVICE_RATE_GROUPS_UPDATE"		, "OnServiceRateGroupsUpdate");
+define("EVENT_ON_PROVISIONING_REQUEST_SUBMISSION"	, "OnProvisioningRequestSubmission");
 
 // Maximum file upload size is 1 megabyte
 define("RATEGROUP_IMPORT_MAXSIZE", 1048576);

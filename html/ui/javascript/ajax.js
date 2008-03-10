@@ -17,7 +17,7 @@ function VixenAjaxClass()
 {
 	// This is used to check that a form doesn't get submitted twice, before the first submittion has recieved a reply
 	this.strFormCurrentlyProcessing	= null;
-
+	
 	//------------------------------------------------------------------------//
 	// CallAppTemplate
 	//------------------------------------------------------------------------//
@@ -38,24 +38,45 @@ function VixenAjaxClass()
 	 *											valid options are (Div, Popup, Page)
 	 * @param	boolean	bolShowLoadingSplash	optional.  Set to true to have the "Please Wait" splash display if the 
 	 *											ajax request takes more than 1 second
+	 * @param	boolean	bolIsForm				optional.  Set to true to guarantee that this particular ajax call
+	 *											is the only "form" being submitted.  This is to error trap against 
+	 *											the same form being submitted multiple times
+	 *
 	 * @return	void
 	 * @method
 	 */
-	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType, bolShowLoadingSplash)
+	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType, bolShowLoadingSplash, bolIsForm)
 	{
 		var objSend			= {};
 		objSend.Class		= strClass;
 		objSend.Method		= strMethod;
 		objSend.Objects		= objObjects;
 		objSend.TargetType	= strTargetType;
-	
+
+		// Check if this AppTemplate call is a form submission
+		// (a form submission will lock all other form submittions until it has recieved its reply from the server)
+		if (bolIsForm)
+		{
+			if (this.strFormCurrentlyProcessing != null)
+			{
+				// A "form" is currently being processed, so this one cannot be executed
+				return;
+			}
+			else
+			{
+				// Declare this AppTemplate call as the current form being submitted
+				this.strFormCurrentlyProcessing = strClass + strMethod;
+				objSend.FormId = this.strFormCurrentlyProcessing;
+			}
+		}
+
 		if (bolShowLoadingSplash == true)
 		{
 			// Draw the Page Loading splash (this will show after 1 second)
 			Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
 		}
 	
-		// send object
+		// Send object
 		this.Send(objSend);
 	}
 	
@@ -241,7 +262,6 @@ function VixenAjaxClass()
 			}
 		}*/
 
-		// If a form is currently being processed, then don't submit this one
 		if (this.strFormCurrentlyProcessing != null)
 		{
 			// A form is currently being processed.  Do not submit this one
@@ -354,7 +374,7 @@ function VixenAjaxClass()
 		// Remove the page loading splash
 		Vixen.Popup.ClosePageLoadingSplash();
 		
-		// Reset the FormProcessing flag  but only if this is the reply which relates to the currently processing form
+		// Reset the FormProcessing flag but only if this is the reply which relates to the currently processing form
 		if (Vixen.Ajax.strFormCurrentlyProcessing != null)
 		{
 			// A form is currently being processed.  If this is the reply, then reset the FormCurrentlyProcessing variable
@@ -363,7 +383,6 @@ function VixenAjaxClass()
 				Vixen.Ajax.strFormCurrentlyProcessing = null;
 			}
 		}
-		
 		
 		var objData = {};
 		

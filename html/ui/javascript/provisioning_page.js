@@ -44,7 +44,12 @@ function VixenProvisioningPageClass()
 {
 	this.strServicesContainerDivId	= null;
 	this.elmMasterServiceCheckbox	= null;
-	this.arrServiceCheckboxElements = null;
+	this.arrServiceCheckboxElements	= null;
+	this.intServiceCount			= null;
+	
+	this.elmRequestCombo			= null;
+	this.elmMasterCarrierCheckbox	= null;
+	this.arrCarrierCheckboxElements	= null;
 	
 	this.intAccountId = null;
 	
@@ -64,11 +69,12 @@ function VixenProvisioningPageClass()
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseServiceList = function(strServicesContainerDivId, intAccountId)
+	this.InitialiseServiceList = function(strServicesContainerDivId, intAccountId, intServiceCount)
 	{
 		// Save the parameters
 		this.strServicesContainerDivId	= strServicesContainerDivId;
 		this.intAccountId				= intAccountId;
+		this.intServiceCount			= intServiceCount;
 		
 		// Save a reference to the "SelectAllServices" checkbox
 		this.elmMasterServiceCheckbox = document.getElementById("SelectAllServicesCheckbox");
@@ -80,12 +86,225 @@ function VixenProvisioningPageClass()
 		Vixen.EventHandler.AddListener("OnServiceDetailsUpdate", this.OnServiceDetailsUpdate);
 	}
 	
-	this.SelectAllServices(bolChecked)
+	//------------------------------------------------------------------------//
+	// SelectAllServices
+	//------------------------------------------------------------------------//
+	/**
+	 * SelectAllServices
+	 *
+	 * Checks/Unchecks all the services in the list of services
+	 *  
+	 * Checks/Unchecks all the services in the list of services
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.SelectAllServices = function()
 	{
 		// Go through the list and check/uncheck them
-		for 
+		for (i=0; i < this.arrServiceCheckboxElements.length; i++)
+		{
+			this.arrServiceCheckboxElements[i].checked = this.elmMasterServiceCheckbox.checked;
+		}
+		
+		if (this.elmMasterServiceCheckbox.checked && (this.arrServiceCheckboxElements.length != this.intServiceCount))
+		{
+			// Not all of the services could be selected as some of them do not have address details defined
+			Vixen.Popup.Alert("WARNING: Some services could not be selected as they do not have address details defined");
+		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// UpdateServiceToggle
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateServiceToggle
+	 *
+	 * Checks/Unchecks all the Select All Services checkbox based on whether or not all the services are currently selected
+	 *  
+	 * Checks/Unchecks all the Select All Services checkbox based on whether or not all the services are currently selected
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.UpdateServiceToggle = function()
+	{
+		var bolAllSelected = true;
+		
+		for (i=0; i < this.arrServiceCheckboxElements.length; i++)
+		{
+			bolAllSelected = (bolAllSelected && this.arrServiceCheckboxElements[i].checked);
+		}
+	
+		this.elmMasterServiceCheckbox.checked = bolAllSelected;
+	}
+
+	//------------------------------------------------------------------------//
+	// InitialiseRequestForm
+	//------------------------------------------------------------------------//
+	/**
+	 * InitialiseRequestForm
+	 *
+	 * Sets up the object for dealing with the provisioning request form
+	 *  
+	 * Sets up the object for dealing with the provisioning request form
+	 *
+	 * @param	int		intAccountId				Id of the Account
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.InitialiseRequestForm = function(intAccountId)
+	{
+		// Save the parameters
+		if (this.intAccountId == null)
+		{
+			// Only set this if it hasn't already been set
+			this.intAccountId = intAccountId;
+		}
+		
+		this.elmRequestCombo = document.getElementById("RequestCombo");
+		
+		// Save a reference to the "SelectAllCarriers" checkbox
+		this.elmMasterCarrierCheckbox = document.getElementById("SelectAllCarriersCheckbox");
+		
+		// Save a reference to each Carrier checkbox element
+		this.arrCarrierCheckboxElements = document.getElementsByName('CarrierCheckbox');
+	}
+	
+	//------------------------------------------------------------------------//
+	// SelectAllCarriers
+	//------------------------------------------------------------------------//
+	/**
+	 * SelectAllCarriers
+	 *
+	 * Checks/Unchecks all the carriers in the list of carriers
+	 *  
+	 * Checks/Unchecks all the carriers in the list of carriers
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.SelectAllCarriers = function()
+	{
+		// Go through the list and check/uncheck them
+		for (i=0; i < this.arrCarrierCheckboxElements.length; i++)
+		{
+			this.arrCarrierCheckboxElements[i].checked = this.elmMasterCarrierCheckbox.checked;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// UpdateCarrierToggle
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateCarrierToggle
+	 *
+	 * Checks/Unchecks all the Select All Carriers checkbox based on whether or not all the carriers are currently selected
+	 *  
+	 * Checks/Unchecks all the Select All Carriers checkbox based on whether or not all the carriers are currently selected
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.UpdateCarrierToggle = function()
+	{
+		var bolAllSelected = true;
+		
+		for (i=0; i < this.arrCarrierCheckboxElements.length; i++)
+		{
+			bolAllSelected = (bolAllSelected && this.arrCarrierCheckboxElements[i].checked);
+		}
+	
+		this.elmMasterCarrierCheckbox.checked = bolAllSelected;
+	}
+
+	//------------------------------------------------------------------------//
+	// SubmitRequest
+	//------------------------------------------------------------------------//
+	/**
+	 * SubmitRequest
+	 *
+	 * Submits the provisioning request.  It prompts the user first
+	 *  
+	 * Submits the provisioning request.  It prompts the user first
+	 *
+	 * @param	bool	bolConfirmed	optional, true when the user has confirmed the action
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.SubmitRequest = function(bolConfirmed)
+	{
+		// Retrieve the services that the provisioning request will be applied to
+		var arrServices = new Array();
+		for (i=0; i < this.arrServiceCheckboxElements.length; i++)
+		{
+			if (this.arrServiceCheckboxElements[i].checked)
+			{
+				arrServices.push(parseInt(this.arrServiceCheckboxElements[i].getAttribute('Service')));
+			}
+		}
+		
+		// Retrieve the carriers that the provisioning request will be applied to
+		var arrCarriers = new Array();
+		for (i=0; i < this.arrCarrierCheckboxElements.length; i++)
+		{
+			if (this.arrCarrierCheckboxElements[i].checked)
+			{
+				arrCarriers.push(parseInt(this.arrCarrierCheckboxElements[i].getAttribute('Carrier')));
+			}
+		}
+		
+		// Check that the form has not already been submitted and is waiting for a reply
+		if (Vixen.Ajax.strFormCurrentlyProcessing != null)
+		{
+			Vixen.Popup.Alert("WARNING: A form is currently processing.  Please wait until it has finished before making subsequent requests", null, "ProvisioningWarningId");
+			return;
+		}
+		
+		// Check if the Request has not been confirmed yet
+		if (bolConfirmed == null)
+		{
+			var strErrorMsg;
+			// Check that a request has actually been selected
+			if (this.elmRequestCombo.value == 0)
+			{
+				strErrorMsg = "Please select a request from the drop down list";
+			}
+			else if (arrServices.length == 0)
+			{
+				strErrorMsg = "Please select at least one service";
+			}
+			else if (arrCarriers.length == 0)
+			{
+				strErrorMsg = "Plese select at least one carrier";
+			}
+
+			if (strErrorMsg != undefined)
+			{
+				Vixen.Popup.Alert(strErrorMsg);
+				return;
+			}
+		
+			var strMsg = "Are you sure you want to submit this provisioning request?";
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.ProvisioningPage.SubmitRequest(true);});
+			return;
+		}
+		
+		// Organise the data to send
+		var objObjects					= {};
+		objObjects.Account				= {};
+		objObjects.Account.Id			= this.intAccountId;
+		objObjects.Request				= {};
+		objObjects.Request.ServiceIds	= arrServices;
+		objObjects.Request.CarrierIds	= arrCarriers;
+		objObjects.Request.Type			= this.elmRequestCombo.value;	
+
+		// Call the AppTemplate method which handles a provisioning request
+		Vixen.Ajax.CallAppTemplate("Service", "SubmitProvisioningRequest", objObjects, null, true, true);		
+	}
+
 	this.InitialiseEdit = function(intAccountId, strContainerDivId, bolInvoicesAndPaymentsPage)
 	{
 		// Save the parameters

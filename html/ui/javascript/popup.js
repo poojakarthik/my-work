@@ -524,23 +524,28 @@ function VixenPopupClass()
 	 * @param	string	strMessage			message to display
 	 * @param	string	strSize				optional, size of the popup box ("small|medium|large")
 	 *										Defaults to "alertsize"
+	 * @param	string	strPopupId			optional, Id for the popup.  Defaults to "VixenAlertBox"
 	 * @return	void
 	 *
 	 * @method
 	 */
-	this.Alert = function(strMessage, strSize)
+	this.Alert = function(strMessage, strSize, strPopupId)
 	{
 		// set a default value for strSize
 		if (strSize == null)
 		{
 			strSize = "AlertSize";
 		}
+		if (strPopupId == null)
+		{
+			strPopupId = "VixenAlertBox";
+		}
 	
 		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						"<p></div>\n" +
 						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
+		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', 'autohide');
 	}
 	
 	//------------------------------------------------------------------------//

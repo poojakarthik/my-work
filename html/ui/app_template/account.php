@@ -687,7 +687,6 @@ class AppTemplateAccount extends ApplicationTemplate
 	 *
 	 * @return		void
 	 * @method
-	 *
 	 */
 	function SaveDetails()
 	{

@@ -1903,6 +1903,149 @@ class AppTemplateService extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
+	// SubmitProvisioningRequest
+	//------------------------------------------------------------------------//
+	/**
+	 * SubmitProvisioningRequest()
+	 *
+	 * Processes a Provisioning Request
+	 * 
+	 * Processes a Provisioning Request
+	 * It expects the following objects to be defined:
+	 * 		DBO()->Account->Id			Id of the account to provision services of
+	 * 		DBO()->Request->Type		type of provisioning request.  Must belong to the 
+	 * 									"Request" constant group defined in definitions.php
+	 * 		DBO()->Request->ServiceIds	Array of Service Ids which the provisioning request
+	 * 									will be applied to.  It is assumed that these all belong
+	 * 									to the account specified by DBO()->Account->Id
+	 * 		DBO()->Request->CarrierIds	Arrary of Carrier Ids which the provisioning request
+	 * 									will be applied to
+	 * On success it will fire the following Events
+	 * TODO! define the OnProvisioningRequestSubmitted event
+	 * Should probably also fire the OnNewNote event if system note is generated, which it will if the 
+	 * Request is "barring" related
+	 *  
+	 * @return		void
+	 * @method		SubmitProvisioningRequest
+	 */
+	function SubmitProvisioningRequest()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		$arrServiceIds	= DBO()->Request->ServiceIds->Value;
+		$arrCarriers	= DBO()->Request->CarrierIds->Value;
+		$intRequestType	= DBO()->Request->Type->Value;
+
+		DBO()->Account->Load();
+
+		// Retrieve the Service records
+		$strColumns = "Id, AccountGroup, Account, FNN";
+		$strWhere	= "Account = <AccountId> AND Id IN (". implode(", ", $arrServiceIds) .")";
+		$selService = new StatementSelect("Service", $strColumns, $strWhere, "FNN");
+		$intServicesFound = $selService->Execute(Array("AccountId" => DBO()->Account->Id->Value));
+		if ($intServicesFound === FALSE || ($intServicesFound != count($arrServiceIds)))
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Could not find all the services requested.  Provisioning request aborted");
+			return TRUE;
+		}
+		
+		// Set a time for the request to be made on
+		$strRequestedOn = GetCurrentDateAndTimeForMySQL();
+		
+		// Set up objects for record insertion
+		$arrInsertValues = Array(	"AccountGroup"	=> DBO()->Account->AccountGroup->Value,
+									"Account"		=> DBO()->Account->Id->Value,
+									"Service"		=> NULL,
+									"FNN"			=> NULL,
+									"Employee"		=> AuthenticatedUser()->_arrUser['Id'],
+									"Carrier"		=> NULL,
+									"Type"			=> $intRequestType,
+									"RequestedOn"	=> $strRequestedOn,
+									"Status"		=> REQUEST_STATUS_WAITING
+								);
+		$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
+		
+		$arrServices = $selService->FetchAll();
+		
+		// Start the database transaction
+		TransactionStart();
+		
+		// Loop through each carrier that the request is being made with
+		foreach ($arrCarriers as $intCarrier)
+		{
+			$arrInsertValues['Carrier'] = $intCarrier;
+			
+			// Loop through each service that the request is being made with
+			foreach ($arrServices as $arrService)
+			{
+				$arrInsertValues['Service'] = $arrService['Id'];
+				$arrInsertValues['FNN']		= $arrService['FNN'];
+				
+				// Make the request
+				if ($insRequest->Execute($arrInsertValues) === FALSE)
+				{
+					// Insertion failed
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Submitting the request failed, unexpectedly.  Provisioning request aborted<br />(Insertion of record into ProvisioningRequest table failed)");
+					return TRUE;
+				}
+			}
+		}
+		TransactionCommit();
+		
+		// If the request is barring related then create a system note
+		// (if more than 1 service, then make the one note but don't specify a service)
+		switch ($intRequestType)
+		{
+			case REQUEST_BAR_SOFT:
+				$strBarAction = "Soft Bar";
+				break;
+			case REQUEST_UNBAR_SOFT:
+				$strBarAction = "Soft Bar Reversal";
+				break;
+			case REQUEST_BAR_HARD:
+				$strBarAction = "Hard Bar";			
+				break;
+			case REQUEST_UNBAR_HARD:
+				$strBarAction = "Hard Bar Reversal";
+				break;
+			default:
+				break;
+		}
+		
+		if (isset($strBarAction))
+		{
+			if (count($arrServiceIds) > 1)
+			{
+				// A request has been made on multiple services.  Don't associate a service with the System Note
+				$strSystemNote	= "Provisioning Request: $strBarAction, has been made on multiple services";
+				$intServiceId	= NULL;
+			}
+			else
+			{
+				// A request has been made on a single service
+				$strSystemNote	= "Provisioning Request: $strBarAction";
+				$intServiceId	= $arrServiceIds[0];
+			}
+			SaveSystemNote($strSystemNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, $intServiceId);
+			Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value, $intServiceId);
+		}
+		
+		// Fire the OnProvisioningRequestSubmission Event
+		$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
+		$arrEvent['Service']['Id'] = $intServiceId;
+		Ajax()->FireEvent(EVENT_ON_PROVISIONING_REQUEST_SUBMISSION, $arrEvent);
+		
+		// Notify the user of the outcome
+		Ajax()->AddCommand("Alert", "Provisioning Request has been successfully submitted");
+		
+		return TRUE;
+	}
+	
+	
+	//------------------------------------------------------------------------//
 	// BulkSetPlanForUnplanned  This is not currently in use
 	//------------------------------------------------------------------------//
 	/**
