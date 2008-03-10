@@ -20,7 +20,7 @@
  * @language	PHP 
  * @package		framework 
  * @author		Jared 'flame' Herbohn 
- * @version		8.2 
+ * @version		8.3 
  * @copyright	2006 VOIPTEL Pty Ltd 
  * @license		NOT FOR EXTERNAL DISTRIBUTION 
  * 
@@ -5288,6 +5288,66 @@
 	 
  	
 	//----------------------------------------------------------------------------// 
+	// Table: ProvisioningTranslation
+	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
+	$arrDefine['Name']		= "ProvisioningTranslation"; 
+	$arrDefine['Type']		= "InnoDB"; 
+	$arrDefine['Id']		= "Id"; 
+	$arrDefine['Index'][] 		= ""; 
+	$arrDefine['Unique'][] 		= ""; 
+		 
+		 
+				 
+	// Define Columns 
+	$strName = "Context"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "CarrierCode"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(1024)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Description"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(1024)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "InternalConstant"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(1024)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+					 
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
+	 
+ 	
+	//----------------------------------------------------------------------------// 
 	// Table: Rate
 	//----------------------------------------------------------------------------// 
 	 
@@ -8220,6 +8280,186 @@
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
 		$arrDefine['Column'][$strName]['Default'] 		= null; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+					 
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
+	 
+ 	
+	//----------------------------------------------------------------------------// 
+	// Table: _InvoiceTemp
+	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
+	$arrDefine['Name']		= "_InvoiceTemp"; 
+	$arrDefine['Type']		= "InnoDB"; 
+	$arrDefine['Id']		= "Id"; 
+	$arrDefine['Index'][] 		= ""; 
+	$arrDefine['Unique'][] 		= ""; 
+		 
+		 
+				 
+	// Define Columns 
+	$strName = "AccountGroup"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Account"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "CreatedOn"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "DueOn"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "SettledOn"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date"; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Credits"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Debits"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Total"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Tax"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "TotalOwing"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Balance"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Disputed"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "AccountBalance"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "DeliveryMethod"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Status"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "InvoiceRun"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(13)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 					 
