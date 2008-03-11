@@ -603,6 +603,7 @@
 		$arrCharge ['ChargedOn']	= date("Y-m-d");
 		$arrCharge ['ChargeType']	= "SEC";
 		$arrCharge ['Status']		= CHARGE_APPROVED;
+		$arrCharge ['LinkType']		= CHARGE_LINK_CDR_CREDIT;
 		
 	 	// for each LL S&E Credit CDR
 		$intCount = 0;
@@ -611,18 +612,16 @@
 											"Id, Service, Account, AccountGroup, Description, Charge",
 											"Credit = 1 AND " .
 											"RecordType = 21 AND " .
-											"Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.", ".CDR_CREDIT_MATCH_NOT_FOUND.")");
+											"Status IN (".CDR_RATED.", ".CDR_CREDIT_MATCH_NOT_FOUND.")");
 		$arrCols = Array();
 		$arrCols['Status']	= NULL;
 		$ubiSECCDR = new StatementUpdateById("CDR", $arrCols);
 		
 		$selSECCDRs->Execute();
-		echo("CDR Id : Credited\n\n");
 		while ($arrCredit = $selSECCDRs->Fetch())
 		{
 			// add to report
 			//TODO!rich! replace this echo with report output
-			echo("{$arrCredit['Id']} : {$arrCredit['Charge']}\n");
 			
 			// add to the count
 			$intCount++;
@@ -633,11 +632,19 @@
 			$arrCharge['AccountGroup'] 	= $arrCredit['AccountGroup'];
 			$arrCharge['Description']	= $arrCredit['Description'];
 			$arrCharge['Amount']		= $arrCredit['Charge'];
-			$this->Framework->AddCharge($arrCharge);
-			
-			// Update the CDR
-			$arrCredit['Status']		= CDR_CREDIT_ADDED;
-			$ubiSECCDR->Execute($arrCredit);
+			$arrCharge['LinkId']		= $arrCredit['Id'];
+			if (!$this->Framework->AddCharge($arrCharge))
+			{
+				// Don't set this CDR to CDR_CREDIT_ADDED
+				CliEcho("\t + Couldn't Credit CDR #{$arrCredit['Id']}! (\${$arrCredit['Charge']})");
+			}
+			else
+			{
+				// Update the CDR
+				CliEcho("\t + Credited CDR #{$arrCredit['Id']} for \${$arrCredit['Charge']}\n");
+				$arrCredit['Status']		= CDR_CREDIT_ADDED;
+				$ubiSECCDR->Execute($arrCredit);
+			}
 		}
 		
 		// return count
