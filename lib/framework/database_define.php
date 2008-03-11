@@ -4278,6 +4278,26 @@
 	 
  	
 	//----------------------------------------------------------------------------// 
+	// Table: ModulesProvisioning
+	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
+	$arrDefine['Name']		= "ModulesProvisioning"; 
+	$arrDefine['Type']		= "InnoDB"; 
+	$arrDefine['Id']		= "Id"; 
+	$arrDefine['Index'][] 		= ""; 
+	$arrDefine['Unique'][] 		= ""; 
+		 
+			 
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
+	 
+ 	
+	//----------------------------------------------------------------------------// 
 	// Table: Note
 	//----------------------------------------------------------------------------// 
 	 
@@ -5095,6 +5115,16 @@
 				 
 				 
 	// Define Columns 
+	$strName = "AuthorisationDate"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date"; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate"; 
+		 
+				 
+				 
+	// Define Columns 
 	$strName = "SentOn"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
@@ -5330,16 +5360,6 @@
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(1024)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
-		 
-				 
-				 
-	// Define Columns 
-	$strName = "InternalConstant"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(1024)"; 
-		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
-		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 					 
