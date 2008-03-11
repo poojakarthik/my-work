@@ -501,6 +501,8 @@ $GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Constant']	= 'CHARGE_LINK_RECUR
 $GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Description']	= 'Recurring Adjustment Cancellation';
 $GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Constant']	= 'CHARGE_LINK_OVERCHARGE_CREDIT';
 $GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Description']	= 'Invoice Overcharge Credit';
+$GLOBALS['*arrConstant']	['ChargeLink']		[504]	['Constant']	= 'CHARGE_LINK_CDR_CREDIT';
+$GLOBALS['*arrConstant']	['ChargeLink']		[504]	['Description']	= 'CDR Credit';
 
 
 // Customer Group Constants
@@ -683,6 +685,8 @@ $GLOBALS['*arrConstant']	['Request']	[912]	['Constant']	= 'REQUEST_CHANGE_ADDRES
 $GLOBALS['*arrConstant']	['Request']	[912]	['Description']	= 'Address Changed';
 $GLOBALS['*arrConstant']	['Request']	[913]	['Constant']	= 'REQUEST_VIRTUAL_PRESELECTION';
 $GLOBALS['*arrConstant']	['Request']	[913]	['Description']	= 'Virtual Preselection';
+$GLOBALS['*arrConstant']	['Request']	[914]	['Constant']	= 'REQUEST_REJECTED';
+$GLOBALS['*arrConstant']	['Request']	[914]	['Description']	= 'Request Rejected';
 
 
 // Provisioning Line Actions (Log)
