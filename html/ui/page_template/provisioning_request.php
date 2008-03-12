@@ -35,6 +35,6 @@ $this->Page->SetLayout('1Column');
 // Add the Html Objects to their respective columns
 $this->Page->AddObject('ProvisioningRequest',		COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('ProvisioningServiceList',	COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ProvisioningServiceListDiv");
-
+$this->Page->AddObject('ProvisioningHistoryList',	COLUMN_ONE, HTML_CONTEXT_PAGE);
 
 ?>

@@ -164,7 +164,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		echo "<div class='Left'>";
 		echo "   <span>Filter</span>\n";
 		echo "   <span>\n";
-		echo "      <select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value; Vixen.NoteList.ApplyFilter();' style='width:100%'>\n";
+		echo "      <select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value; Vixen.NoteList.ApplyFilter(true);' style='width:100%'>\n";
 		foreach ($arrFilterOptions as $intFilterOption=>$strFilterOption)
 		{
 			$strSelected = (DBO()->NoteDetails->FilterOption->Value == $intFilterOption) ? "selected='selected'" : "";
@@ -174,7 +174,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		echo "   </span>\n";
 		
 		$intMaxNotes = DBO()->NoteDetails->MaxNotes->Value;
-		echo "<span>Limit</span><input type='text' class='DefaultInputText' style='left:0px;width:50px;margin-left:5px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter();'></input>\n";
+		echo "<span>Limit</span><input type='text' class='DefaultInputText' style='left:0px;width:50px;margin-left:5px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter(true);'></input>\n";
 
 		// currently the filter is applied when the value of the combobox changes
 		//$this->Button("Filter", "Vixen.NoteList.ApplyFilter();");
@@ -292,7 +292,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		// Render the notes
 		$strNotesContainerDivId = "NotesContainerForPopup";
 		echo "<div id='ContainerDiv_ScrollableDiv_Notes' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
-		echo "<div id='ScrollableDiv_Notes' style='overflow:auto; height:500px; width:auto; padding: 0px 3px 0px 3px'>\n";
+		echo "<div id='ScrollableDiv_Notes' style='overflow:auto; height:400px; width:auto; padding: 0px 3px 0px 3px'>\n";
 		echo "<div id='$strNotesContainerDivId'>\n";
 		$this->_RenderNotes();
 		echo "</div>\n";
@@ -318,8 +318,6 @@ class HtmlTemplateNoteList extends HtmlTemplate
 						";
 							
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
-		
-		$this->FormEnd();
 	}
 	
 	//------------------------------------------------------------------------//

@@ -85,9 +85,9 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		// Build the checkbox used to select/unselect all the services
 		$strSelectAll = "<input type='checkbox' id='SelectAllServicesCheckbox' class='DefaultInputCheckBox' onchange='Vixen.ProvisioningPage.SelectAllServices();' />";
 		
-		Table()->Services->SetHeader($strSelectAll, "FNN #", "Plan", "Status", "&nbsp;");
-		Table()->Services->SetWidth("5%", "18%", "52%", "15%", "10%");
-		Table()->Services->SetAlignment("Left", "Left", "Left", "Left", "Right");
+		Table()->Services->SetHeader($strSelectAll, "FNN #", "Plan", "Status", "Line Status", "&nbsp;");
+		Table()->Services->SetWidth("4%", "11%", "55%", "11%", "11%", "8%");
+		Table()->Services->SetAlignment("Left", "Left", "Left", "Left", "Left", "Right");
 		
 		foreach (DBL()->Service as $dboService)
 		{
@@ -95,7 +95,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			
 			// Build the Actions Cell
 			$strViewAddressLink			= Href()->ViewServiceAddress($intServiceId);
-			$strProvisioningHistoryLink	= Href()->ViewServiceProvisioningHistory($intServiceId);
+			$strProvisioningHistoryLink	= "javascript:Vixen.ProvisioningPage.ShowHistory($intServiceId)";
 			$strActionsCell  = "<a href='$strViewAddressLink'><img src='img/template/address.png' title='Address Details' /></a>";
 			$strActionsCell .= "&nbsp;&nbsp;<a href='$strProvisioningHistoryLink'><img src='img/template/provisioning.png' title='Provisioning History' /></a>";
 
@@ -173,7 +173,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			else
 			{
 				// There is no current plan for the service
-				$strPlanCell = "No Plan Selected";
+				$strPlanCell = "<span class='Red'>No Plan Selected</span>";
 			}
 			
 			// Find the future scheduled plan for the service (if there is one)
@@ -185,11 +185,18 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			}
 			
 			
-			// Record the Status of the service
+			// Build the Status cell
 			$strStatus = GetConstantDescription($dboService->Status->Value, "Service");
-			$strStatusCell = "<span title='$strStatusDesc $strStatusDescDate'>$strStatus<span>"; 
+			$strStatusCell = "<span title='$strStatusDesc $strStatusDescDate'>$strStatus<span>";
+			
+			// Build the Line Status cell
+			$strLineStatusCell = GetConstantDescription($dboService->LineStatus->Value, "LineStatus");
+			if ($strLineStatusCell === FALSE)
+			{
+				$strLineStatusCell = "Unknown";
+			}
 				
-			Table()->Services->AddRow($strSelectCell, $strFnnCell, $strPlanCell, $strStatusCell, $strActionsCell);
+			Table()->Services->AddRow($strSelectCell, $strFnnCell, $strPlanCell, $strStatusCell, $strLineStatusCell, $strActionsCell);
 		}
 		
 		// If the account has no services then output an appropriate message in the table
@@ -198,7 +205,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			// There are no services to stick in this table
 			Table()->Services->AddRow("No services to display");
 			Table()->Services->SetRowAlignment("left");
-			Table()->Services->SetRowColumnSpan(5);
+			Table()->Services->SetRowColumnSpan(6);
 		}
 		
 		Table()->Services->Render();
@@ -207,6 +214,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		$intAccount			= DBO()->Account->Id->Value;
 		$intServiceCount	= DBL()->Service->RecordCount();
 		echo "<script type='text/javascript'>Vixen.ProvisioningPage.InitialiseServiceList('{$this->_strContainerDivId}', $intAccount, $intServiceCount)</script>\n";
+		echo "<div class='SmallSeperator'></div>";
 	}
 }
 

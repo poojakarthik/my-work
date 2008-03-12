@@ -604,7 +604,7 @@ $GLOBALS['*arrConstant']	['RequestStatus']	[306]	['Description']	= 'Currently Ex
 $GLOBALS['*arrConstant']	['RequestStatus']	[307]	['Constant']	= 'REQUEST_STATUS_DELIVERED';
 $GLOBALS['*arrConstant']	['RequestStatus']	[307]	['Description']	= 'Waiting on Carrier Response';
 $GLOBALS['*arrConstant']	['RequestStatus']	[308]	['Constant']	= 'REQUEST_STATUS_NO_MODULE';
-$GLOBALS['*arrConstant']	['RequestStatus']	[308]	['Description']	= 'Request Not Supported by viXen';
+$GLOBALS['*arrConstant']	['RequestStatus']	[308]	['Description']	= 'Request Not Supported by Flex';
 
 $GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Constant']	= 'RESPONSE_STATUS_CANT_NORMALISE';
 $GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Description']	= 'Unable to Normalise';

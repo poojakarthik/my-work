@@ -79,15 +79,11 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<h2 class='Provisioning'>Provision Request</h2>\n";
-		
-		// Build the checkbox used to select/unselect all the carriers
-		$strSelectAll = "<input type='checkbox' id='SelectAllCarriersCheckbox' class='DefaultInputCheckBox' onchange='Vixen.ProvisioningPage.SelectAllCarriers();' />";
-		
-		Table()->Carriers->SetHeader($strSelectAll, "Carrier");
-		Table()->Carriers->SetWidth("10%", "90%");
-		Table()->Carriers->SetAlignment("Left", "Left");
-		
+		// Build the list of values that can go into the Carrier combobox
+		$arrCarrierOptions = Array();
+		//TODO! use this "Plan Select" option, when plan Carrier select functionality has been implemented
+		//$arrCarrierOptions[] = Array("Name" => "(Plan Select)", "Value" => "0");
+		$arrCarrierOptions[] = Array("Name" => "&nbsp;", "Value" => "0");
 		foreach ($GLOBALS['*arrConstant']['Carrier'] as $intCarrier=>$arrCarrier)
 		{
 			if ($intCarrier == CARRIER_PAYMENT)
@@ -95,51 +91,64 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 				// Skip this special case
 				continue;
 			}
-			
-			$strSelectCell = "<input type='checkbox' class='DefaultInputCheckBox' name='CarrierCheckbox' Carrier='$intCarrier' onchange='Vixen.ProvisioningPage.UpdateCarrierToggle();'/>";
-
-			$strCarrierCell = $arrCarrier['Description'];
-				
-			Table()->Carriers->AddRow($strSelectCell, $strCarrierCell);
+			$arrCarrierOptions[] = Array("Name" => $arrCarrier['Description'], "Value" => $intCarrier);
 		}
 		
-		// If the account has no carriers then output an appropriate message in the table
-		if (Table()->Carriers->RowCount() == 0)
-		{
-			// There are no services to stick in this table
-			Table()->Carriers->AddRow("No carriers to display");
-			Table()->Carriers->SetRowAlignment("left");
-			Table()->Carriers->SetRowColumnSpan(2);
-		}
+		// Build the list of values that can go into the Request combobox
+		$arrRequestOptions = Array();
+		$arrRequestOptions[] = Array("Name" => "&nbsp;", 				"Value" => "0");
+		$arrRequestOptions[] = Array("Name" => "Full Service", 			"Value"	=> REQUEST_FULL_SERVICE);
+		$arrRequestOptions[] = Array("Name" => "Preselection", 			"Value"	=> REQUEST_PRESELECTION);
+		$arrRequestOptions[] = Array("Name" => "Soft Bar", 				"Value"	=> REQUEST_BAR_SOFT);
+		$arrRequestOptions[] = Array("Name" => "Soft Bar Reversal", 	"Value"	=> REQUEST_UNBAR_SOFT);
+		$arrRequestOptions[] = Array("Name" => "Activation", 			"Value"	=> REQUEST_ACTIVATION);
+		$arrRequestOptions[] = Array("Name" => "Deactivation", 			"Value"	=> REQUEST_DEACTIVATION);
+		$arrRequestOptions[] = Array("Name" => "Preselection Reversal", "Value"	=> REQUEST_PRESELECTION_REVERSE);
+		$arrRequestOptions[] = Array("Name" => "Full Service Reversal", "Value"	=> REQUEST_FULL_SERVICE_REVERSE);
+		$arrRequestOptions[] = Array("Name" => "Hard Bar", 				"Value"	=> REQUEST_BAR_HARD);
+		$arrRequestOptions[] = Array("Name" => "Hard Bar Reversal", 	"Value"	=> REQUEST_UNBAR_HARD);
+		$arrRequestOptions[] = Array("Name" => "Virtual Preselection", 	"Value"	=> REQUEST_VIRTUAL_PRESELECTION);
 		
-		Table()->Carriers->Render();
-		
-		echo "<div class='SmallSeperator'></div>";
 		echo "<div class='GroupedContent'>";
-
-		// Draw Provisioning Combobox
-		echo "<div style='height:25px'>\n";
+		echo "<div style='height:22px'>\n";
 		echo "   <div class='Left'>\n";
-		echo "      <span>&nbsp;&nbsp;Request</span>\n";
-		echo "      <span>\n";
-		echo "         <select id='RequestCombo' name='Request.RequestType' style='width:220px'>\n";
-		echo "            <option id='RequestType.0' value='0'>&nbsp;</option>";
-		// Add each Request Type
-		foreach ($GLOBALS['*arrConstant']['Request'] as $intRequest=>$arrRequest)
+		
+		// Draw the Carrier combobox
+		echo "   <span>Carrier</span>\n";
+		echo "   <span>\n";
+		echo "      <select id='CarrierCombo' style='width:200px'>\n";
+		foreach ($arrCarrierOptions as $arrCarrier)
 		{
-			echo "<option id='RequestType.{$intRequest}' value='$intRequest'>{$arrRequest['Description']}</option>";
+			echo "<option value='{$arrCarrier['Value']}'>{$arrCarrier['Name']}</option>";
+		}
+		echo "      </select>\n";
+		echo "   </span>\n";
+		
+		// Draw Provisioning Combobox
+		echo "      <span style='margin-left:100px;'>Request</span>\n";
+		echo "      <span>\n";
+		echo "         <select id='RequestCombo' style='width:200px'>\n";
+		// Add each Request Type
+		foreach ($arrRequestOptions as $arrRequest)
+		{
+			echo "<option value='{$arrRequest['Value']}'>{$arrRequest['Name']}</option>";
 		}
 		echo "         </select>\n";
 		echo "      </span>\n";
-		echo "   </div>\n";
+		
+		echo "   </div>\n"; // Left
+		
+		// Render the buttons
+		echo "<div class='Right'>\n";
+		$this->Button("Submit Request", "Vixen.ProvisioningPage.SubmitRequest();");
 		echo "</div>\n";
+
+
+		echo "</div>\n"; // height=22px
 		
 		echo "</div>\n";  // GroupedContent
 		
-		// Render the buttons
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Submit Request", "Vixen.ProvisioningPage.SubmitRequest();");
-		echo "</div></div>\n";
+		echo "<div class='SmallSeperator'></div>\n";
 		
 		$this->FormEnd();
 		

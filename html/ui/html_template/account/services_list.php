@@ -272,7 +272,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			else
 			{
 				// There is no current plan for the service
-				$strPlanCell = "<span>No Plan Selected</span>";
+				$strPlanCell = "<span class='Red'>No Plan Selected</span>";
 			}
 			
 			// Find the future scheduled plan for the service (if there is one)

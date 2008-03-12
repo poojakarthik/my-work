@@ -88,6 +88,16 @@ define('NOTE_FILTER_ALL',		1);
 define('NOTE_FILTER_USER',		2);
 define('NOTE_FILTER_SYSTEM',	3);
 
+// ProvisioningHistoryCategories
+define('PROVISIONING_HISTORY_CATEGORY_REQUESTS',	1);
+define('PROVISIONING_HISTORY_CATEGORY_RESPONSES',	2);
+define('PROVISIONING_HISTORY_CATEGORY_BOTH',		3);
+
+// Provisioning History Filters (beyond using the Provisioning Request constants which can also be used as filters)
+define('PROVISIONING_HISTORY_FILTER_ALL',			0);
+define('PROVISIONING_HISTORY_FILTER_BARRINGS_ONLY',	1);
+
+
 // Object Status
 define('STATUS_NEW',	 	100);
 define('STATUS_CLEANED', 	101);

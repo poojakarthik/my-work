@@ -75,13 +75,19 @@ function VixenEventHandlerClass()
 	 * @param	function	funcListener	Function pointer to the listener
 	 *										When the listener function is executed, it will be passed an object
 	 *										storing data specific to the Event being fired
+	 * @param	object		objParent		optional, parent object of the funcListener function.  This will
+	 *										be passed to funcListener as the second parameter if it is specified,
+	 *										so that the function will have a pointer to its parent object
 	 *
 	 * @return	function	funcListener	If funcListener is an anonymous function, then you might want to
 	 *										store a pointer for it, so it can be removed at a later stage
 	 * @method
 	 */
-	this.AddListener = function(strEventType, funcListener)
+	this.AddListener = function(strEventType, funcListener, objParent)
 	{
+		// Set default values
+		objParent = (objParent == undefined) ? null : objParent;
+		
 		strEventType = strEventType.toLowerCase();
 		
 		if (this._objEventListeners[strEventType] == undefined)
@@ -94,7 +100,7 @@ function VixenEventHandlerClass()
 		var intLength = this._objEventListeners[strEventType].length;
 		for (var i=0; i < intLength; i++)
 		{
-			if (this._objEventListeners[strEventType][i] == funcListener)
+			if (this._objEventListeners[strEventType][i].funcListener == funcListener)
 			{
 				// funcListener is already in the list of listeners, so don't add it again
 				return funcListener;
@@ -102,7 +108,10 @@ function VixenEventHandlerClass()
 		}
 		
 		// Append the event listener to the end of the list of listeners for this EventType
-		this._objEventListeners[strEventType].push(funcListener);
+		var objListener				= {};
+		objListener.funcListener	= funcListener;
+		objListener.objParent		= objParent;
+		this._objEventListeners[strEventType].push(objListener);
 		
 		return funcListener;
 	}
@@ -136,7 +145,7 @@ function VixenEventHandlerClass()
 			// Find the Event Listener in the list
 			for (var i=0; i < intLength; i++)
 			{
-				if (this._objEventListeners[strEventType][i] == funcListener)
+				if (this._objEventListeners[strEventType][i].funcListener == funcListener)
 				{
 					// Remove the Event Listener from the list
 					this._objEventListeners[strEventType].splice(i, 1);
@@ -177,6 +186,7 @@ function VixenEventHandlerClass()
 	{
 		strEventType = strEventType.toLowerCase();
 		var funcEventListener;
+		var objParent;
 		var intOldLength;
 		var i = 0;
 		
@@ -202,8 +212,16 @@ function VixenEventHandlerClass()
 				// point to the window element
 				// I would prefer it to point to the object that the listener is a method
 				// of, but I can't get it to do that
-				funcEventListener = this._objEventListeners[strEventType][i];
-				funcEventListener(objEvent);
+				funcEventListener	= this._objEventListeners[strEventType][i].funcListener;
+				objParent			= this._objEventListeners[strEventType][i].objParent;
+				if (objParent == null)
+				{
+					funcEventListener(objEvent);
+				}
+				else
+				{
+					funcEventListener(objEvent, objParent);
+				}
 				
 				// When event listeners are called this way, the "this" pointer
 				// points to this function (FireEvent), even from within the 

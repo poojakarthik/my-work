@@ -48,8 +48,7 @@ function VixenProvisioningPageClass()
 	this.intServiceCount			= null;
 	
 	this.elmRequestCombo			= null;
-	this.elmMasterCarrierCheckbox	= null;
-	this.arrCarrierCheckboxElements	= null;
+	this.elmCarrierCombo			= null;
 	
 	this.intAccountId = null;
 	
@@ -115,6 +114,30 @@ function VixenProvisioningPageClass()
 	}
 	
 	//------------------------------------------------------------------------//
+	// ShowHistory
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowHistory
+	 *
+	 * Loads the ProvisioningHistory popup for the service
+	 *  
+	 * Loads the ProvisioningHistory popup for the service
+	 *
+	 * @param	integer	intService		id of the service
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.ShowHistory = function(intService)
+	{
+		objObjects				= {};
+		objObjects.Service		= {};
+		objObjects.Service.Id	= intService;
+		
+		Vixen.Popup.ShowAjaxPopup("ProvisioningHistoryPopupId", "ExtraLarge", "Provisioning", "Provisioning", "ViewHistory", objObjects);
+	}
+	
+	//------------------------------------------------------------------------//
 	// UpdateServiceToggle
 	//------------------------------------------------------------------------//
 	/**
@@ -164,59 +187,7 @@ function VixenProvisioningPageClass()
 		}
 		
 		this.elmRequestCombo = document.getElementById("RequestCombo");
-		
-		// Save a reference to the "SelectAllCarriers" checkbox
-		this.elmMasterCarrierCheckbox = document.getElementById("SelectAllCarriersCheckbox");
-		
-		// Save a reference to each Carrier checkbox element
-		this.arrCarrierCheckboxElements = document.getElementsByName('CarrierCheckbox');
-	}
-	
-	//------------------------------------------------------------------------//
-	// SelectAllCarriers
-	//------------------------------------------------------------------------//
-	/**
-	 * SelectAllCarriers
-	 *
-	 * Checks/Unchecks all the carriers in the list of carriers
-	 *  
-	 * Checks/Unchecks all the carriers in the list of carriers
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.SelectAllCarriers = function()
-	{
-		// Go through the list and check/uncheck them
-		for (i=0; i < this.arrCarrierCheckboxElements.length; i++)
-		{
-			this.arrCarrierCheckboxElements[i].checked = this.elmMasterCarrierCheckbox.checked;
-		}
-	}
-	
-	//------------------------------------------------------------------------//
-	// UpdateCarrierToggle
-	//------------------------------------------------------------------------//
-	/**
-	 * UpdateCarrierToggle
-	 *
-	 * Checks/Unchecks all the Select All Carriers checkbox based on whether or not all the carriers are currently selected
-	 *  
-	 * Checks/Unchecks all the Select All Carriers checkbox based on whether or not all the carriers are currently selected
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.UpdateCarrierToggle = function()
-	{
-		var bolAllSelected = true;
-		
-		for (i=0; i < this.arrCarrierCheckboxElements.length; i++)
-		{
-			bolAllSelected = (bolAllSelected && this.arrCarrierCheckboxElements[i].checked);
-		}
-	
-		this.elmMasterCarrierCheckbox.checked = bolAllSelected;
+		this.elmCarrierCombo = document.getElementById("CarrierCombo");
 	}
 
 	//------------------------------------------------------------------------//
@@ -246,16 +217,6 @@ function VixenProvisioningPageClass()
 			}
 		}
 		
-		// Retrieve the carriers that the provisioning request will be applied to
-		var arrCarriers = new Array();
-		for (i=0; i < this.arrCarrierCheckboxElements.length; i++)
-		{
-			if (this.arrCarrierCheckboxElements[i].checked)
-			{
-				arrCarriers.push(parseInt(this.arrCarrierCheckboxElements[i].getAttribute('Carrier')));
-			}
-		}
-		
 		// Check that the form has not already been submitted and is waiting for a reply
 		if (Vixen.Ajax.strFormCurrentlyProcessing != null)
 		{
@@ -268,17 +229,17 @@ function VixenProvisioningPageClass()
 		{
 			var strErrorMsg;
 			// Check that a request has actually been selected
-			if (this.elmRequestCombo.value == 0)
+			if (this.elmCarrierCombo.value == 0)
+			{
+				strErrorMsg = "Please select a carrier from the drop down list";
+			}
+			else if (this.elmRequestCombo.value == 0)
 			{
 				strErrorMsg = "Please select a request from the drop down list";
 			}
 			else if (arrServices.length == 0)
 			{
 				strErrorMsg = "Please select at least one service";
-			}
-			else if (arrCarriers.length == 0)
-			{
-				strErrorMsg = "Plese select at least one carrier";
 			}
 
 			if (strErrorMsg != undefined)
@@ -298,11 +259,11 @@ function VixenProvisioningPageClass()
 		objObjects.Account.Id			= this.intAccountId;
 		objObjects.Request				= {};
 		objObjects.Request.ServiceIds	= arrServices;
-		objObjects.Request.CarrierIds	= arrCarriers;
+		objObjects.Request.Carrier		= this.elmCarrierCombo.value;
 		objObjects.Request.Type			= this.elmRequestCombo.value;	
 
 		// Call the AppTemplate method which handles a provisioning request
-		Vixen.Ajax.CallAppTemplate("Service", "SubmitProvisioningRequest", objObjects, null, true, true);		
+		Vixen.Ajax.CallAppTemplate("Provisioning", "SubmitRequest", objObjects, null, true, true);		
 	}
 
 	this.InitialiseEdit = function(intAccountId, strContainerDivId, bolInvoicesAndPaymentsPage)

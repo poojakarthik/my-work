@@ -307,8 +307,10 @@ class MenuItems
 	
 		$this->strLabel	= "Provisioning";
 		$this->strContextMenuLabel = "Provisioning";
-		return "flex.php/Service/BulkProvisioningRequest/?Account.Id=$intAccountId";
+		return "flex.php/Provisioning/BulkProvisioningRequest/?Account.Id=$intAccountId";
 	}
+	
+	
 
 	//------------------------------------------------------------------------//
 	// ExportInvoiceAsCSV
@@ -501,6 +503,45 @@ class MenuItems
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId_$intRateId\", \"medium\", \"Rate\", \"Rate\", \"View\", $strJsonCode, \"$strWindowType\")";	
 	}	
+
+	//------------------------------------------------------------------------//
+	// ViewProvisioningHistory
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewProvisioningHistory()
+	 *
+	 * Compiles the Href to be executed when the ViewProvisioningHistory functionality is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewProvisioningHistory functionality is triggered
+	 * Only one of $intAccountId and $intServiceId should be set.  The other should be NULL
+	 *
+	 * @param	int		$intServiceId	optional, Id of the Service
+	 * @param	int		$intAccountId	optional, Id of the Account
+	 *
+	 * @return	string						
+	 *
+	 * @method
+	 */
+	function ViewProvisioningHistory($intServiceId=NULL, $intAccountId=NULL)
+	{
+		$this->strContextMenuLabel = "";
+		
+		if ($intServiceId == NULL && $intAccountId == NULL)
+		{
+			throw new Exception("Must specify an AccountId or ServiceId");
+		}
+		
+		// Setup data to send
+		$arrData['Service']['Id'] = $intServiceId;
+		$arrData['Account']['Id'] = $intAccountId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ProvisioningHistoryPopupId\", \"ExtraLarge\", \"History\", \"Provisioning\", \"ViewHistory\", $strJsonCode)";
+	}
+
+
 
 	//------------------------------------------------------------------------//
 	// OverrideRateGroup

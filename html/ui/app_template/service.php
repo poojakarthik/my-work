@@ -1496,6 +1496,10 @@ class AppTemplateService extends ApplicationTemplate
 				DBO()->FutureRatePlan->Load();
 			}
 			
+			// Retrieve the new plan
+			DBO()->NewPlan->SetTable("RatePlan");
+			DBO()->NewPlan->Load();
+			
 			// Start the transaction
 			TransactionStart();
 			
@@ -1572,6 +1576,20 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating records in the CDR table)");
 					return TRUE;
 				}
+				
+				// Only update the Carrier and CarrierPreselect fields of the Service record, 
+				// if the new plan comes into affect at the beging of the current billing period
+				$arrUpdate = Array(	"Carrier"			=> DBO()->NewPlan->CarrierFullService->Value,
+									"CarrierPreselect"	=> DBO()->NewPlan->CarrierPreselection->Value);
+				
+				$updService = new StatementUpdate("Service", "Id = <Service>", $arrUpdate);
+				if ($updService->Execute($arrUpdate, Array("Service" => DBO()->Service->Id->Value)) === FALSE)
+				{
+					// Could not update the service record. Exit gracefully
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating carrier details in the service record)");
+					return TRUE;
+				}
 			}
 			
 			//TODO! Do automatic provisioning here
@@ -1583,8 +1601,6 @@ class AppTemplateService extends ApplicationTemplate
 				// The Service has not previously had a RatePlan
 				DBO()->CurrentRatePlan->Name = "undefined";
 			}
-			DBO()->NewPlan->SetTable("RatePlan");
-			DBO()->NewPlan->Load();
 			$strNote  = "This service has had its plan changed from '". DBO()->CurrentRatePlan->Name->Value ."' to '". DBO()->NewPlan->Name->Value ."'.  $strNotePlanStart";
 			
 			SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
@@ -1791,258 +1807,6 @@ class AppTemplateService extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	//------------------------------------------------------------------------//
-	// BulkProvisioningRequest
-	//------------------------------------------------------------------------//
-	/**
-	 * BulkProvisioningRequest()
-	 *
-	 * Manages the construction of the Bulk Provisioning Request page
-	 * 
-	 * Manages the construction of the Bulk Provisioning Request page
-	 * It expects the following objects to be defined:
-	 * 		DBO()->Service->Id		Id of the service to provision
-	 * 		OR
-	 * 		DBO()->Account->Id		Id of the account to provision services of 
-	 * 
-	 *
-	 * @return		void
-	 * @method		BulkProvisioningRequest
-	 */
-	function BulkProvisioningRequest()
-	{
-		// Check user authorization and permissions
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-
-		// Setup all DBO and DBL objects required for the page
-		if (DBO()->Service->Id->IsSet)
-		{
-			// Load this service to retrieve the Account it belongs to
-			if (!DBO()->Service->Load())
-			{
-				DBO()->Error->Message = "The Service with id: ". DBO()->Service->Id->value .", you were attempting to provision could not be found";
-				$this->LoadPage('error');
-				return TRUE;
-			}
-			DBO()->Account->Id = DBO()->Service->Account->Value;
-		}
-		
-		// Try loading the account
-		if (!DBO()->Account->Load())
-		{
-			DBO()->Error->Message = "Account: ". DBO()->Account->Id->Value .", cannot be found";
-			$this->LoadPage('error');
-			return TRUE;
-		}
-		
-		// Retrieve all the services belonging to the account and whether or not they have address details defined
-		$strTables	= "	Service AS S LEFT JOIN ServiceAddress AS SA ON S.Id = SA.Service 
-						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
-								FROM ServiceRatePlan AS SRP2 
-								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
-								ORDER BY SRP2.CreatedOn DESC
-								LIMIT 1
-								)
-						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
-						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
-								FROM ServiceRatePlan AS SRP4 
-								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
-								ORDER BY SRP4.CreatedOn DESC
-								LIMIT 1
-								)
-						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
-		$arrColumns	= Array("Id" 						=> "S.Id",
-							"FNN"						=> "S.FNN", 
-							"Status"		 			=> "S.Status",
-							"CreatedOn"					=> "S.CreatedOn", 
-							"ClosedOn"					=> "S.ClosedOn",
-							"AddressId"					=> "SA.Id",
-							"CurrentPlanId" 			=> "RP1.Id",
-							"CurrentPlanName"			=> "RP1.Name",
-							"FuturePlanId"				=> "RP2.Id",
-							"FuturePlanName"			=> "RP2.Name",
-							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
-		$arrWhere	= Array("AccountId" => DBO()->Account->Id->Value);
-		DBL()->Service->SetTable($strTables);
-		DBL()->Service->SetColumns($arrColumns);
-		DBL()->Service->Where->Set($strWhere, $arrWhere);
-		DBL()->Service->OrderBy("S.FNN");
-		DBL()->Service->Load();
-		
-		
-		
-		
-		// Set up the BreadCrumb menu
-		BreadCrumb()->Employee_Console();
-		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
-		if (DBO()->Service->Id->IsSet)
-		{
-			BreadCrumb()->ViewService(DBO()->Service->Id->Value);
-		}
-		BreadCrumb()->SetCurrentPage("Provisioning");
-		
-		// Set up the Context menu
-		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
-		
-		// Define the page template to use
-		$this->LoadPage('provisioning_request');
-		return TRUE;
-	}
-	
-	//------------------------------------------------------------------------//
-	// SubmitProvisioningRequest
-	//------------------------------------------------------------------------//
-	/**
-	 * SubmitProvisioningRequest()
-	 *
-	 * Processes a Provisioning Request
-	 * 
-	 * Processes a Provisioning Request
-	 * It expects the following objects to be defined:
-	 * 		DBO()->Account->Id			Id of the account to provision services of
-	 * 		DBO()->Request->Type		type of provisioning request.  Must belong to the 
-	 * 									"Request" constant group defined in definitions.php
-	 * 		DBO()->Request->ServiceIds	Array of Service Ids which the provisioning request
-	 * 									will be applied to.  It is assumed that these all belong
-	 * 									to the account specified by DBO()->Account->Id
-	 * 		DBO()->Request->CarrierIds	Arrary of Carrier Ids which the provisioning request
-	 * 									will be applied to
-	 * On success it will fire the following Events
-	 * TODO! define the OnProvisioningRequestSubmitted event
-	 * Should probably also fire the OnNewNote event if system note is generated, which it will if the 
-	 * Request is "barring" related
-	 *  
-	 * @return		void
-	 * @method		SubmitProvisioningRequest
-	 */
-	function SubmitProvisioningRequest()
-	{
-		// Check user authorization and permissions
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-
-		$arrServiceIds	= DBO()->Request->ServiceIds->Value;
-		$arrCarriers	= DBO()->Request->CarrierIds->Value;
-		$intRequestType	= DBO()->Request->Type->Value;
-
-		DBO()->Account->Load();
-
-		// Retrieve the Service records
-		$strColumns = "Id, AccountGroup, Account, FNN";
-		$strWhere	= "Account = <AccountId> AND Id IN (". implode(", ", $arrServiceIds) .")";
-		$selService = new StatementSelect("Service", $strColumns, $strWhere, "FNN");
-		$intServicesFound = $selService->Execute(Array("AccountId" => DBO()->Account->Id->Value));
-		if ($intServicesFound === FALSE || ($intServicesFound != count($arrServiceIds)))
-		{
-			Ajax()->AddCommand("Alert", "ERROR: Could not find all the services requested.  Provisioning request aborted");
-			return TRUE;
-		}
-		
-		// Set a time for the request to be made on
-		$strRequestedOn = GetCurrentDateAndTimeForMySQL();
-		
-		// Set up objects for record insertion
-		$arrInsertValues = Array(	"AccountGroup"	=> DBO()->Account->AccountGroup->Value,
-									"Account"		=> DBO()->Account->Id->Value,
-									"Service"		=> NULL,
-									"FNN"			=> NULL,
-									"Employee"		=> AuthenticatedUser()->_arrUser['Id'],
-									"Carrier"		=> NULL,
-									"Type"			=> $intRequestType,
-									"RequestedOn"	=> $strRequestedOn,
-									"Status"		=> REQUEST_STATUS_WAITING
-								);
-		$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
-		
-		$arrServices = $selService->FetchAll();
-		
-		// Start the database transaction
-		TransactionStart();
-		
-		// Loop through each carrier that the request is being made with
-		foreach ($arrCarriers as $intCarrier)
-		{
-			$arrInsertValues['Carrier'] = $intCarrier;
-			
-			// Loop through each service that the request is being made with
-			foreach ($arrServices as $arrService)
-			{
-				$arrInsertValues['Service'] = $arrService['Id'];
-				$arrInsertValues['FNN']		= $arrService['FNN'];
-				
-				// Make the request
-				if ($insRequest->Execute($arrInsertValues) === FALSE)
-				{
-					// Insertion failed
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Submitting the request failed, unexpectedly.  Provisioning request aborted<br />(Insertion of record into ProvisioningRequest table failed)");
-					return TRUE;
-				}
-			}
-		}
-		TransactionCommit();
-		
-		// If the request is barring related then create a system note
-		// (if more than 1 service, then make the one note but don't specify a service)
-		switch ($intRequestType)
-		{
-			case REQUEST_BAR_SOFT:
-				$strBarAction = "Soft Bar";
-				break;
-			case REQUEST_UNBAR_SOFT:
-				$strBarAction = "Soft Bar Reversal";
-				break;
-			case REQUEST_BAR_HARD:
-				$strBarAction = "Hard Bar";			
-				break;
-			case REQUEST_UNBAR_HARD:
-				$strBarAction = "Hard Bar Reversal";
-				break;
-			default:
-				break;
-		}
-		
-		if (isset($strBarAction))
-		{
-			if (count($arrServiceIds) > 1)
-			{
-				// A request has been made on multiple services.  Don't associate a service with the System Note
-				$strSystemNote	= "Provisioning Request: $strBarAction, has been made on multiple services";
-				$intServiceId	= NULL;
-			}
-			else
-			{
-				// A request has been made on a single service
-				$strSystemNote	= "Provisioning Request: $strBarAction";
-				$intServiceId	= $arrServiceIds[0];
-			}
-			SaveSystemNote($strSystemNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, $intServiceId);
-			Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value, $intServiceId);
-		}
-		
-		// Fire the OnProvisioningRequestSubmission Event
-		$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
-		$arrEvent['Service']['Id'] = $intServiceId;
-		Ajax()->FireEvent(EVENT_ON_PROVISIONING_REQUEST_SUBMISSION, $arrEvent);
-		
-		// Notify the user of the outcome
-		Ajax()->AddCommand("Alert", "Provisioning Request has been successfully submitted");
-		
-		return TRUE;
-	}
 	
 	
 	//------------------------------------------------------------------------//
