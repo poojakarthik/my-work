@@ -214,15 +214,8 @@ function VixenEventHandlerClass()
 				// of, but I can't get it to do that
 				funcEventListener	= this._objEventListeners[strEventType][i].funcListener;
 				objParent			= this._objEventListeners[strEventType][i].objParent;
-				if (objParent == null)
-				{
-					funcEventListener(objEvent);
-				}
-				else
-				{
-					funcEventListener(objEvent, objParent);
-				}
-				
+				funcEventListener(objEvent, objParent);
+			
 				// When event listeners are called this way, the "this" pointer
 				// points to this function (FireEvent), even from within the 
 				// event listener

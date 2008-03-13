@@ -80,6 +80,34 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 	 */
 	function Render()
 	{
+		$arrSelectedServices = DBO()->Request->ServiceIds->Value;
+		
+		// Flag records that can/can't be provisioned and find out if there are any
+		// service address details missing
+		$bolMissingAddressDetails = FALSE;
+		$strLastFNN = NULL;
+		foreach (DBL()->Service as $dboService)
+		{
+			if ($dboService->FNN->Value != $strLastFNN )
+			{
+				// This Service record can be provisioned
+				$dboService->CanProvision = TRUE;
+				
+				if (!$dboService->AddressId->Value)
+				{
+					// At least one service that qualifies for provisioning, doesn't have address details defined
+					$bolMissingAddressDetails = TRUE;
+				}
+			}
+			else
+			{
+				// This Service Record can't be provisioned because it is not the most
+				// recent one associated with this FNN
+				$dboService->CanProvision = FALSE;
+			}
+			$strLastFNN = $dboService->FNN->Value;
+		}
+		
 		echo "<h2 class='Services'>Services</h2>\n";
 		
 		// Build the checkbox used to select/unselect all the services
@@ -100,17 +128,25 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			$strActionsCell .= "&nbsp;&nbsp;<a href='$strProvisioningHistoryLink'><img src='img/template/provisioning.png' title='Provisioning History' /></a>";
 
 			// Build the checkbox
-			if ($dboService->AddressId->Value != NULL)
+			if ($dboService->CanProvision->Value)
 			{
-				// The service already has address details defined for it
-				$strSelectCell = "<input type='checkbox' class='DefaultInputCheckBox' name='ServiceCheckbox' Service='$intServiceId' onchange='Vixen.ProvisioningPage.UpdateServiceToggle();'/>";
+				if ($dboService->AddressId->Value != NULL)
+				{
+					// The service already has address details defined for it
+					$strChecked = (in_array($dboService->Id->Value, $arrSelectedServices))? "checked='checked'" : "";
+					$strSelectCell = "<input type='checkbox' class='DefaultInputCheckBox' name='ServiceCheckbox' Service='$intServiceId' $strChecked onchange='Vixen.ProvisioningPage.UpdateServiceToggle();'/>";
+				}
+				else
+				{
+					// The service does not have Address details specified.  Flag it
+					$strSelectCell = "<a href='$strViewAddressLink' title='No Address Details defined'><img src='img/template/flag_red.png'/></a>";
+				}
 			}
 			else
 			{
-				// The service does not have Address details specified.  Flag it
-				$strSelectCell = "<a href='$strViewAddressLink' title='No Address Details defined'><img src='img/template/flag_red.png'/></a>";
+				// This record can't be provisioned
+				$strSelectCell = "";
 			}
-
 			// Build the FNN cell
 			$strViewServiceLink = Href()->ViewService($intServiceId);
 			if ($dboService->FNN->Value == NULL)
@@ -203,7 +239,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		if (Table()->Services->RowCount() == 0)
 		{
 			// There are no services to stick in this table
-			Table()->Services->AddRow("No services to display");
+			Table()->Services->AddRow("No provisionable services to display");
 			Table()->Services->SetRowAlignment("left");
 			Table()->Services->SetRowColumnSpan(6);
 		}
@@ -211,9 +247,10 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		Table()->Services->Render();
 		
 		//Initialise the javascript object that manages this list
-		$intAccount			= DBO()->Account->Id->Value;
-		$intServiceCount	= DBL()->Service->RecordCount();
-		echo "<script type='text/javascript'>Vixen.ProvisioningPage.InitialiseServiceList('{$this->_strContainerDivId}', $intAccount, $intServiceCount)</script>\n";
+		$intAccount					= DBO()->Account->Id->Value;
+		$intServiceCount			= DBL()->Service->RecordCount();
+		$strMissingAddressDetails	= ($bolMissingAddressDetails)? "true" : "false";
+		echo "<script type='text/javascript'>Vixen.ProvisioningPage.InitialiseServiceList('{$this->_strContainerDivId}', $intAccount, $strMissingAddressDetails)</script>\n";
 		echo "<div class='SmallSeperator'></div>";
 	}
 }

@@ -287,32 +287,6 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
-	// BulkProvisioningRequest
-	//------------------------------------------------------------------------//
-	/**
-	 * BulkProvisioningRequest()
-	 *
-	 * Compiles the Href to be executed when the BulkProvisioningRequest action is triggered
-	 *
-	 * Compiles the Href to be executed when the BulkProvisioningRequest action is triggered
-	 * 
-	 * @param	int		$intAccountId	Account Id
-	 *
-	 * @return	string					Href to be executed
-	 *
-	 * @method
-	 */
-	function BulkProvisioningRequest($intAccountId)
-	{
-	
-		$this->strLabel	= "Provisioning";
-		$this->strContextMenuLabel = "Provisioning";
-		return "flex.php/Provisioning/BulkProvisioningRequest/?Account.Id=$intAccountId";
-	}
-	
-	
-
-	//------------------------------------------------------------------------//
 	// ExportInvoiceAsCSV
 	//------------------------------------------------------------------------//
 	/**
@@ -524,7 +498,7 @@ class MenuItems
 	 */
 	function ViewProvisioningHistory($intServiceId=NULL, $intAccountId=NULL)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "View History";
 		
 		if ($intServiceId == NULL && $intAccountId == NULL)
 		{
@@ -1776,21 +1750,37 @@ class MenuItems
 	/**
 	 * Provisioning()
 	 *
-	 * Compiles the Href to be executed when the AddProvisioning menu item is clicked
+	 * Compiles the Href to be executed when the Provisioning action is triggered
 	 *
-	 * Compiles the Href to be executed when the AddProvisioning menu item is clicked
-	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * Compiles the Href to be executed when the Provisioning action is triggered
 	 *
-	 * @return	string				Href to be executed when the AddProvisioning menu item is clicked
+	 * @param	int		$intServiceId	optional, Id of the service which will be provisioned
+	 * @param	int		$intAccountId	optional, Id of the account to bulk provision.  If $intServiceId
+	 *									is set then it will override this
 	 *
+	 * @return	string				Href to be executed
 	 * @method
 	 */
-	function Provisioning($intServiceId)
+	function Provisioning($intServiceId=NULL, $intAccountId=NULL)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Make Request";
 		
-		$this->strLabel = "AddProvisioning";
-		return "service_address.php?Service=$intServiceId";
+		if ($intServiceId == NULL && $intAccountId == NULL)
+		{
+			throw new Exception("Must specify an AccountId or ServiceId");
+		}
+		
+		if ($intServiceId)
+		{
+			$strParameter = "Service.Id=$intServiceId";
+		}
+		else
+		{
+			$strParameter = "Account.Id=$intAccountId";
+		}
+
+		$this->strLabel = "Provisioning";
+		return "flex.php/Provisioning/BulkProvisioningRequest/?$strParameter";
 	}	
 
 	//------------------------------------------------------------------------//

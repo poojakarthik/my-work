@@ -68,6 +68,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
+		$arrSelectedServices = Array();
 		// Setup all DBO and DBL objects required for the page
 		if (DBO()->Service->Id->IsSet)
 		{
@@ -79,6 +80,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 				return TRUE;
 			}
 			DBO()->Account->Id = DBO()->Service->Account->Value;
+			$arrSelectedServices[] = DBO()->Service->Id->Value;
 		}
 		
 		// Try loading the account
@@ -122,7 +124,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		DBL()->Service->SetTable($strTables);
 		DBL()->Service->SetColumns($arrColumns);
 		DBL()->Service->Where->Set($strWhere, $arrWhere);
-		DBL()->Service->OrderBy("S.FNN");
+		DBL()->Service->OrderBy("S.FNN ASC, S.Id DESC");
 		DBL()->Service->Load();
 		
 		// Set up the BreadCrumb menu
@@ -133,6 +135,20 @@ class AppTemplateProvisioning extends ApplicationTemplate
 			BreadCrumb()->ViewService(DBO()->Service->Id->Value);
 		}
 		BreadCrumb()->SetCurrentPage("Provisioning");
+		
+		if (DBO()->Service->Id->Value)
+		{
+			ContextMenu()->Account_Menu->Service->View_Service(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->View_Service_Rate_Plan(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Change_Plan(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->View_Service_Notes(DBO()->Service->Id->Value);
+		}
 		
 		// Set up the Context menu
 		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
@@ -157,8 +173,82 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		$mixResult = $this->GetHistory(DBO()->History->CategoryFilter->Value, DBO()->History->TypeFilter->Value, DBO()->Account->Id->Value, NULL, DBO()->History->MaxItems->Value);
 		DBO()->History->Records	= $mixResult;
 		
+		// The service record is no longer needed
+		DBO()->Service->Clean();
+		
+		// Store the list of currently selected services
+		DBO()->Request->ServiceIds = $arrSelectedServices;
+		
 		// Define the page template to use
 		$this->LoadPage('provisioning_request');
+		return TRUE;
+	}
+
+	//------------------------------------------------------------------------//
+	// RenderServiceList
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderServiceList()
+	 *
+	 * Renders the Service List for the provisioning page using the HtmlTemplateProvisioningServiceList class
+	 * 
+	 * Renders the Service List for the provisioning page using the HtmlTemplateProvisioningServiceList class
+	 * It expects the following objects to be defined:
+	 * 		DBO()->Account->Id				Id of the account to provision services of
+	 * 		DBO()->List->SelectedServices	Array of Service Ids for all the selected services
+	 * 		DBO()->List->ContainerDivId		The Service List's container div id  
+	 *
+	 * @return		void
+	 * @method		RenderServiceList
+	 */
+	function RenderServiceList()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Retrieve all the services belonging to the account and whether or not they have address details defined
+		$strTables	= "	Service AS S LEFT JOIN ServiceAddress AS SA ON S.Id = SA.Service 
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
+								FROM ServiceRatePlan AS SRP2 
+								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
+								ORDER BY SRP2.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
+								FROM ServiceRatePlan AS SRP4 
+								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
+								ORDER BY SRP4.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
+		$arrColumns	= Array("Id" 						=> "S.Id",
+							"FNN"						=> "S.FNN", 
+							"Status"		 			=> "S.Status",
+							"LineStatus"				=> "S.LineStatus",
+							"CreatedOn"					=> "S.CreatedOn", 
+							"ClosedOn"					=> "S.ClosedOn",
+							"AddressId"					=> "SA.Id",
+							"CurrentPlanId" 			=> "RP1.Id",
+							"CurrentPlanName"			=> "RP1.Name",
+							"FuturePlanId"				=> "RP2.Id",
+							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
+		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
+		$arrWhere	= Array("AccountId" => DBO()->Account->Id->Value);
+		DBL()->Service->SetTable($strTables);
+		DBL()->Service->SetColumns($arrColumns);
+		DBL()->Service->Where->Set($strWhere, $arrWhere);
+		DBL()->Service->OrderBy("S.FNN ASC, S.Id DESC");
+		DBL()->Service->Load();
+		
+		// Store the list of currently selected services
+		DBO()->Request->ServiceIds = DBO()->List->SelectedServices->Value;
+		
+		// Render the HtmlTemplate
+		Ajax()->RenderHtmlTemplate("ProvisioningServiceList", HTML_CONTEXT_DEFAULT, DBO()->List->ContainerDivId->Value);
+
 		return TRUE;
 	}
 	
@@ -180,10 +270,13 @@ class AppTemplateProvisioning extends ApplicationTemplate
 	 * 									to the account specified by DBO()->Account->Id
 	 * 		DBO()->Request->CarrierIds	Arrary of Carrier Ids which the provisioning request
 	 * 									will be applied to
-	 * On success it will fire the following Events
-	 * TODO! define the OnProvisioningRequestSubmitted event
-	 * Should probably also fire the OnNewNote event if system note is generated, which it will if the 
-	 * Request is "barring" related
+	 * 
+	 * If the submittion is successful it will fire an EVENT_ON_PROVISIONING_REQUEST_SUBMITTED 
+	 * event passing the following Event object data:
+	 *		Account.Id	= id of the Account relating to the request
+	 *		Service.Id	= id of the service that the request belongs to, if only 1 service was specified
+	 *
+	 * It will also fire the OnNewNote event if the provisioning request was "barring" related
 	 *  
 	 * @return		void
 	 * @method		SubmitRequest
@@ -198,8 +291,27 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		$intCarrier		= DBO()->Request->Carrier->Value;
 		$intRequestType	= DBO()->Request->Type->Value;
 
-		DBO()->Account->Load();
+		// Validate the AuthorisationDate if it has been specified
+		if (DBO()->Request->AuthorisationDate->Value != "")
+		{
+			// A value has been supplied
+			if (Validate("ShortDate", DBO()->Request->AuthorisationDate->Value) == FALSE)
+			{
+				// The date is invalid
+				Ajax()->AddCommand("Alert", "ERROR: Authorisation Date is invalid. Please use the format DD/MM/YYYY or leave blank to use today's date.");
+				return TRUE;
+			}
+			
+			$strAuthDate = ConvertUserDateToMySqlDate(DBO()->Request->AuthorisationDate->Value);
+		}
+		else
+		{
+			// Use today's date
+			$strAuthDate = date("Y-m-d");
+		}
 
+		DBO()->Account->Load();
+		
 		// Retrieve the Service records
 		$strColumns = "Id, AccountGroup, Account, FNN";
 		$strWhere	= "Account = <AccountId> AND Id IN (". implode(", ", $arrServiceIds) .")";
@@ -215,15 +327,16 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		$strRequestedOn = GetCurrentDateAndTimeForMySQL();
 		
 		// Set up objects for record insertion
-		$arrInsertValues = Array(	"AccountGroup"	=> DBO()->Account->AccountGroup->Value,
-									"Account"		=> DBO()->Account->Id->Value,
-									"Service"		=> NULL,
-									"FNN"			=> NULL,
-									"Employee"		=> AuthenticatedUser()->_arrUser['Id'],
-									"Carrier"		=> NULL,
-									"Type"			=> $intRequestType,
-									"RequestedOn"	=> $strRequestedOn,
-									"Status"		=> REQUEST_STATUS_WAITING
+		$arrInsertValues = Array(	"AccountGroup"		=> DBO()->Account->AccountGroup->Value,
+									"Account"			=> DBO()->Account->Id->Value,
+									"Service"			=> NULL,
+									"FNN"				=> NULL,
+									"Employee"			=> AuthenticatedUser()->_arrUser['Id'],
+									"Carrier"			=> NULL,
+									"Type"				=> $intRequestType,
+									"RequestedOn"		=> $strRequestedOn,
+									"AuthorisationDate"	=> $strAuthDate,
+									"Status"			=> REQUEST_STATUS_WAITING
 								);
 		$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
 		
@@ -315,6 +428,67 @@ class AppTemplateProvisioning extends ApplicationTemplate
 	}
 
 	//------------------------------------------------------------------------//
+	// CancelRequest
+	//------------------------------------------------------------------------//
+	/**
+	 * CancelRequest()
+	 *
+	 * Cancels a Provisioning Request, but only if it has not already been sent
+	 * 
+	 * Cancels a Provisioning Request, but only if it has not already been sent
+	 * It expects the following objects to be defined:
+	 * 		DBO()->ProvisioningRequest->Id	Id of the request to cancel
+	 * 
+	 * If the cancellation is successful it will fire an EVENT_ON_PROVISIONING_REQUEST_CANCELLATION 
+	 * event passing the following Event object data:
+	 *		Service.Id				= id of the service that the request belongs to
+	 *		ProvisioningRequest.Id	= id of the request which was cancelled
+	 *  
+	 * @return		void
+	 * @method		SubmitRequest
+	 */
+	function CancelRequest()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		if (!DBO()->ProvisioningRequest->Load())
+		{
+			// The record could not be retrieved
+			Ajax()->AddCommand("Alert", "ERROR: The Request with Id ". DBO()->ProvisioningRequest->Id->Value ." could not be found");
+			return TRUE;
+		}
+		
+		// Only requests with Status == REQUEST_STATUS_WAITING can be cancelled
+		if (DBO()->ProvisioningRequest->Status->Value != REQUEST_STATUS_WAITING)
+		{
+			Ajax()->AddCommand("Alert", "ERROR: The request cannot be cancelled as it has already been sent");
+			return TRUE;
+		}
+		
+		// Update the status of the request
+		DBO()->ProvisioningRequest->Status = REQUEST_STATUS_CANCELLED;
+		
+		if (!DBO()->ProvisioningRequest->Save())
+		{
+			// Saving the changes failed
+			Ajax()->AddCommand("Alert", "ERROR: Cancelling the request failed, unexpectedly");
+			return TRUE;
+		}
+		
+		// Fire the EVENT_ON_PROVISIONING_REQUEST_CANCELLATION event
+		$arrEvent['ProvisioningRequest']['Id']	= DBO()->ProvisioningRequest->Id->Value;
+		$arrEvent['Service']['Id']				= DBO()->ProvisioningRequest->Service->Value;
+		
+		Ajax()->FireEvent(EVENT_ON_PROVISIONING_REQUEST_CANCELLATION, $arrEvent);
+		
+		// Notify the user of the outcome
+		Ajax()->AddCommand("Alert", "Provisioning Request has been successfully cancelled");
+		
+		return TRUE;
+	}
+	//------------------------------------------------------------------------//
 	// ViewHistory
 	//------------------------------------------------------------------------//
 	/**
@@ -342,7 +516,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		$intServiceId					= DBO()->Service->Id->Value;
 		DBO()->History->CategoryFilter	= PROVISIONING_HISTORY_CATEGORY_BOTH;
 		DBO()->History->TypeFilter		= PROVISIONING_HISTORY_FILTER_ALL;
-		DBO()->History->MaxItems		= 0;
+		DBO()->History->MaxItems		= 50;
 
 
 		if (DBO()->Service->Id->IsSet)
@@ -392,6 +566,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 	 * 		DBO()->History->MaxItems		is set
 	 * 		DBO()->History->ContainerDivId	is set
 	 * 		DBO()->History->UpdateCookies	is set
+	 * 		DBO()->History->JsObjectName	is set
 	 *
 	 * @return		void
 	 * @method
@@ -514,8 +689,8 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		//$strRecCountRequestFromClause	= "SELECT RequestedOn AS 'TimeStamp', Employee, COUNT(Id) AS RecCount FROM ProvisioningRequest WHERE $strWhereIdObject ". (($strTypeFilter != NULL)? "AND $strTypeFilter" : "") ." GROUP BY TimeStamp, Employee";
 		//$strRecCountResponseFromClause	= "SELECT EffectiveDate AS 'TimeStamp', NULL as Employee, COUNT(Id) AS RecCount FROM ProvisioningResponse WHERE $strWhereIdObject ". (($strTypeFilter != NULL)? "AND $strTypeFilter" : "") ." GROUP BY TimeStamp, Employee";
 		
-		$strRequestSelect	= "SELECT Id, RequestedOn AS 'TimeStamp', 1 AS 'Outbound', Service, FNN, Carrier, Type, Response AS 'LinkedRecord', Status, Employee FROM ProvisioningRequest WHERE $strWhereIdObject ". (($strTypeFilter != NULL)? "AND $strTypeFilter" : "");
-		$strResponseSelect	= "SELECT Id, EffectiveDate AS 'TimeStamp', 0 AS 'Outbound', Service, FNN, Carrier, Type, Request AS 'LinkedRecord', Status, NULL AS Employee FROM ProvisioningResponse WHERE $strWhereIdObject ". (($strTypeFilter != NULL)? "AND $strTypeFilter" : "");
+		$strRequestSelect	= "SELECT Id, RequestedOn AS 'TimeStamp', 1 AS 'Outbound', Service, FNN, Carrier, Type, Response AS 'LinkedRecord', Status, Description, Employee FROM ProvisioningRequest WHERE $strWhereIdObject ". (($strTypeFilter != NULL)? "AND $strTypeFilter" : "");
+		$strResponseSelect	= "SELECT Id, EffectiveDate AS 'TimeStamp', 0 AS 'Outbound', Service, FNN, Carrier, Type, Request AS 'LinkedRecord', Status, Description, NULL AS Employee FROM ProvisioningResponse WHERE $strWhereIdObject AND Status = ". RESPONSE_STATUS_IMPORTED ." ". (($strTypeFilter != NULL)? "AND $strTypeFilter" : "");
 		
 		switch ($intCategoryFilter)
 		{

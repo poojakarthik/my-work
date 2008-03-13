@@ -120,7 +120,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Bulk_Provisioning_Request(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 		}
 		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
@@ -141,7 +142,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Load all the services belonging to the account, that the user has permission to view
 		DBL()->Service->Where->Set($strWhere, Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("FNN");
+		DBL()->Service->OrderBy("FNN ASC, Id DESC");
 		DBL()->Service->Load();
 		
 		$this->LoadPage('account_services');
@@ -355,7 +356,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Bulk_Provisioning_Request(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 		}
 		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
@@ -506,7 +508,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Bulk_Provisioning_Request(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 		}
 		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
@@ -554,7 +557,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load the List of services
 		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)
 		DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("FNN");
+		DBL()->Service->OrderBy("FNN ASC, Id DESC");
 		DBL()->Service->Load();
 		
 		// Load the user notes

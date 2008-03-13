@@ -93,7 +93,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 				$this->_RenderInPage();
 				break;
 			default:
-				$this->_RenderHistory();	
+				$this->_RenderHistory(DBO()->History->JsObjectName->Value);	
 				break;
 		}
 	}
@@ -112,77 +112,17 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 	 */
 	private function _RenderInPage()
 	{
-		$arrCatFilterOptions = Array(	PROVISIONING_HISTORY_CATEGORY_BOTH		=> "Both",
-										PROVISIONING_HISTORY_CATEGORY_REQUESTS	=> "Requests",
-										PROVISIONING_HISTORY_CATEGORY_RESPONSES	=> "Responses");
-
-		$arrTypeFilterOptions = Array(	PROVISIONING_HISTORY_FILTER_ALL				=> "Show All",
-										PROVISIONING_HISTORY_FILTER_BARRINGS_ONLY	=> "Barrings Only"); 
-		
-		$arrMaxItems = Array(10 => "10", 50 => "50", 100 => "100", 200 => "200", 500 => "500", 0 => "Show All");
+		$strObjectName = "ProvisioningHistoryList";
 		
 		echo "<h2 class='Provisioning'>History</h2>\n";
-
-		// Render filtering controls
-		echo "<div class='GroupedContent'>";
-		echo "<div style='height:25px'>";
-		echo "<div class='Left'>";
-		
-		// Create a combobox containing all the Category filter options
-		echo "<span>Category</span>\n";
-		echo "<span>\n";
-		echo "   <select id='ProvHistoryCategoryCombo' onChange='Vixen.ProvisioningHistoryList.intCategoryFilter = this.value;' style='width:150px'>\n";
-		foreach ($arrCatFilterOptions as $intOption=>$strDescription)
-		{
-			$strSelected = (DBO()->History->CategoryFilter->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
-		}
-		echo "   </select>\n";
-		echo "</span>\n";
-		
-		// Create a combobox containing all the Request Type filter options
-		echo "<span style='margin-left:20px'>Request Type</span>\n";
-		echo "<span>\n";
-		echo "   <select id='ProvHistoryTypeCombo' onChange='Vixen.ProvisioningHistoryList.intTypeFilter = this.value;' style='width:180px'>\n";
-		foreach ($arrTypeFilterOptions as $intOption=>$strDescription)
-		{
-			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
-		}
-		foreach ($GLOBALS['*arrConstant']['Request'] as $intOption => $arrConstant)
-		{
-			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>{$arrConstant['Description']}</option>\n";
-		}
-		echo "   </select>\n";
-		echo "</span>\n";
-		
-		// Create a combobox containing all the MaxItems options
-		echo "<span style='margin-left:20px'>Max Items</span>\n";
-		echo "<span>\n";
-		echo "   <select id='ProvHistoryMaxItemsCombo' onChange='Vixen.ProvisioningHistoryList.intMaxItems = this.value;' style='width:100px'>\n";
-		foreach ($arrMaxItems as $intOption=>$strDescription)
-		{
-			$strSelected = (DBO()->History->MaxItems->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
-		}
-		echo "   </select>\n";
-		echo "</span>\n";
-
-		echo "</div>\n"; //Left
-		echo "<div class='Right'>\n";
-		$this->Button("Filter", "Vixen.ProvisioningHistoryList.ApplyFilter(true);");
-		echo "</div>\n"; //Right
-		echo "</div>\n"; //height=25px
-		echo "</div>\n"; // GroupedContent
-		
-		echo "<div class='TinySeperator'></div>\n";
+		$this->_RenderFilterControls($strObjectName);
 		
 		// Render the history
 		$strHistoryContainerDivId = "HistoryContainerForPage";
 		echo "<div id='$strHistoryContainerDivId'>";
-		$this->_RenderHistory();
+		$this->_RenderHistory($strObjectName);
 		echo "</div>";
+		echo "<div class='Seperator'></div>\n";
 		
 		// Initialise the javascript object
 		$intAccountId		= DBO()->Account->Id->Value;
@@ -190,22 +130,16 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		$intCategoryFilter	= DBO()->History->CategoryFilter->Value;
 		$intTypeFilter		= (DBO()->History->TypeFilter->Value) ? DBO()->History->TypeFilter->Value : "null";
 		$intMaxItems		= DBO()->History->MaxItems->Value;
-		$strJavascript	= "	if (Vixen.ProvisioningHistoryList == undefined)
+		$strJavascript	= "	if (Vixen.$strObjectName == undefined)
 							{
-								Vixen.ProvisioningHistoryList = new VixenProvisioningHistoryListClass;
+								Vixen.$strObjectName = new VixenProvisioningHistoryClass;
 							}
-							Vixen.ProvisioningHistoryList.Initialise($intAccountId, $intServiceId, $intCategoryFilter, $intTypeFilter, $intMaxItems, '$strHistoryContainerDivId', true);
+							Vixen.$strObjectName.Initialise($intAccountId, $intServiceId, $intCategoryFilter, $intTypeFilter, $intMaxItems, '$strHistoryContainerDivId', true);
 						";
 							
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 	}
 
-	private function _RenderFilter()
-	{
-		//TODO remove the filter control code from _RenderInPage and stick it here
-		// So that _RenderInPage and _RenderAsPopup can use it
-	}
-	
 	//------------------------------------------------------------------------//
 	// _RenderAsPopup()
 	//------------------------------------------------------------------------//
@@ -220,76 +154,16 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 	 */
 	private function _RenderAsPopup()
 	{
-		echo "<div class='GroupedContent'>";
+		$strObjectName = "ProvisioningHistoryPopup";
 		
-		$arrCatFilterOptions = Array(	PROVISIONING_HISTORY_CATEGORY_BOTH		=> "Both",
-										PROVISIONING_HISTORY_CATEGORY_REQUESTS	=> "Requests",
-										PROVISIONING_HISTORY_CATEGORY_RESPONSES	=> "Responses");
-
-		$arrTypeFilterOptions = Array(	PROVISIONING_HISTORY_FILTER_ALL				=> "Show All",
-										PROVISIONING_HISTORY_FILTER_BARRINGS_ONLY	=> "Barrings Only"); 
-		
-		$arrMaxItems = Array(10 => "10", 50 => "50", 100 => "100", 200 => "200", 500 => "500", 0 => "Show All");
-		
-		// Render filtering controls
-		echo "<div style='height:25px'>";
-		echo "<div class='Left'>";
-		
-		// Create a combobox containing all the Category filter options
-		echo "<span>Category</span>\n";
-		echo "<span>\n";
-		echo "   <select id='ProvHistoryCategoryCombo' onChange='Vixen.ProvisioningHistoryPopup.intCategoryFilter = this.value;' style='width:150px'>\n";
-		foreach ($arrCatFilterOptions as $intOption=>$strDescription)
-		{
-			$strSelected = (DBO()->History->CategoryFilter->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
-		}
-		echo "   </select>\n";
-		echo "</span>\n";
-		
-		// Create a combobox containing all the Request Type filter options
-		echo "<span style='margin-left:20px'>Request Type</span>\n";
-		echo "<span>\n";
-		echo "   <select id='ProvHistoryTypeCombo' onChange='Vixen.ProvisioningHistoryPopup.intTypeFilter = this.value;' style='width:180px'>\n";
-		foreach ($arrTypeFilterOptions as $intOption=>$strDescription)
-		{
-			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
-		}
-		foreach ($GLOBALS['*arrConstant']['Request'] as $intOption => $arrConstant)
-		{
-			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>{$arrConstant['Description']}</option>\n";
-		}
-		echo "   </select>\n";
-		echo "</span>\n";
-		
-		// Create a combobox containing all the MaxItems options
-		echo "<span style='margin-left:20px'>Max Items</span>\n";
-		echo "<span>\n";
-		echo "   <select id='ProvHistoryMaxItemsCombo' onChange='Vixen.ProvisioningHistoryPopup.intMaxItems = this.value;' style='width:100px'>\n";
-		foreach ($arrMaxItems as $intOption=>$strDescription)
-		{
-			$strSelected = (DBO()->History->MaxItems->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
-		}
-		echo "   </select>\n";
-		echo "</span>\n";
-
-		echo "</div>\n"; //Left
-		echo "<div class='Right'>\n";
-		$this->Button("Filter", "Vixen.ProvisioningHistoryPopup.ApplyFilter(true);");
-		echo "</div>\n"; //Right
-		echo "</div>\n"; //height=25px
-		
-		echo "<div class='TinySeperator'></div>\n";
+		$this->_RenderFilterControls($strObjectName);
 	
 		// Render the History
 		$strHistoryContainerDivId = "HistoryContainerForPopup";
 		echo "<div id='ContainerDiv_ScrollableDiv_History' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
 		echo "<div id='ScrollableDiv_History' style='overflow:auto; height:410px; width:auto; padding: 0px 3px 0px 3px'>\n";
 		echo "<div id='$strHistoryContainerDivId'>\n";
-		$this->_RenderHistory();
+		$this->_RenderHistory($strObjectName);
 		echo "</div>\n";
 		echo "</div>\n"; //ScrollableDiv_History
 		echo "</div>\n"; //ContainerDiv_ScrollableDiv_History
@@ -307,15 +181,100 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		$intTypeFilter		= (DBO()->History->TypeFilter->Value) ? DBO()->History->TypeFilter->Value : "null";
 		$intMaxItems		= DBO()->History->MaxItems->Value;
 		$strPopupId			= $this->_objAjax->strId;
-		$strJavascript	= "	if (Vixen.ProvisioningHistoryPopup == undefined)
+		$strJavascript	= "	if (Vixen.$strObjectName == undefined)
 							{
-								Vixen.ProvisioningHistoryPopup = new VixenProvisioningHistoryListClass;
+								Vixen.$strObjectName = new VixenProvisioningHistoryClass;
 							}
-							Vixen.ProvisioningHistoryPopup.Initialise($intAccountId, $intServiceId, $intCategoryFilter, $intTypeFilter, $intMaxItems, '$strHistoryContainerDivId', false, '$strPopupId');
+							Vixen.$strObjectName.Initialise($intAccountId, $intServiceId, $intCategoryFilter, $intTypeFilter, $intMaxItems, '$strHistoryContainerDivId', false, '$strPopupId');
 						";
 							
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 	}
+
+
+	//------------------------------------------------------------------------//
+	// _RenderFilterControls
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderFilterControls
+	 *
+	 * Renders the filter controls
+	 *
+	 * Renders the filter controls
+	 *
+	 * @param	string	$strObjectName	name of the javascript VixenProvisioningHistoryClass object
+	 * 									which facilitates the provisioning history  
+	 *
+	 * @return	void
+	 * @method
+	 */
+	private function _RenderFilterControls($strObjectName)
+	{
+		$arrCatFilterOptions = Array(	PROVISIONING_HISTORY_CATEGORY_BOTH		=> "Show All",
+										PROVISIONING_HISTORY_CATEGORY_REQUESTS	=> "Requests",
+										PROVISIONING_HISTORY_CATEGORY_RESPONSES	=> "Responses");
+
+		$arrTypeFilterOptions = Array(	PROVISIONING_HISTORY_FILTER_ALL				=> "Show All",
+										PROVISIONING_HISTORY_FILTER_BARRINGS_ONLY	=> "Barrings Only"); 
+		
+		$arrMaxItems = Array(10 => "10", 50 => "50", 100 => "100", 200 => "200", 500 => "500", 0 => "Show All");
+
+		// Render filtering controls
+		echo "<div class='GroupedContent'>";
+		echo "<div style='height:25px'>";
+		echo "<div class='Left'>";
+		
+		// Create a combobox containing all the Category filter options
+		echo "<span>Category</span>\n";
+		echo "<span>\n";
+		echo "   <select id='ProvHistoryCategoryCombo' onChange='Vixen.$strObjectName.intCategoryFilter = this.value;' style='width:150px'>\n";
+		foreach ($arrCatFilterOptions as $intOption=>$strDescription)
+		{
+			$strSelected = (DBO()->History->CategoryFilter->Value == $intOption) ? "selected='selected'" : "";
+			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
+		}
+		echo "   </select>\n";
+		echo "</span>\n";
+		
+		// Create a combobox containing all the Request Type filter options
+		echo "<span style='margin-left:20px'>Request Type</span>\n";
+		echo "<span>\n";
+		echo "   <select id='ProvHistoryTypeCombo' onChange='Vixen.$strObjectName.intTypeFilter = this.value;' style='width:180px'>\n";
+		foreach ($arrTypeFilterOptions as $intOption=>$strDescription)
+		{
+			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
+			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
+		}
+		foreach ($GLOBALS['*arrConstant']['Request'] as $intOption => $arrConstant)
+		{
+			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
+			echo "      <option $strSelected value='$intOption'>{$arrConstant['Description']}</option>\n";
+		}
+		echo "   </select>\n";
+		echo "</span>\n";
+		
+		// Create a combobox containing all the MaxItems options
+		echo "<span style='margin-left:20px'>Max Items</span>\n";
+		echo "<span>\n";
+		echo "   <select id='ProvHistoryMaxItemsCombo' onChange='Vixen.$strObjectName.intMaxItems = this.value;' style='width:100px'>\n";
+		foreach ($arrMaxItems as $intOption=>$strDescription)
+		{
+			$strSelected = (DBO()->History->MaxItems->Value == $intOption) ? "selected='selected'" : "";
+			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
+		}
+		echo "   </select>\n";
+		echo "</span>\n";
+
+		echo "</div>\n"; //Left
+		echo "<div class='Right'>\n";
+		$this->Button("Filter", "Vixen.$strObjectName.ApplyFilter(true);");
+		echo "</div>\n"; //Right
+		echo "</div>\n"; //height=25px
+		echo "</div>\n"; // GroupedContent
+		
+		echo "<div class='TinySeperator'></div>\n";
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// _RenderHistory()
@@ -329,7 +288,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 	 *
 	 * @method
 	 */
-	private function _RenderHistory()
+	private function _RenderHistory($strObjectName)
 	{
 		$arrHistory = DBO()->History->Records->Value;
 		
@@ -337,15 +296,15 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		
 		if ($bolForServiceOnly)
 		{
-			Table()->History->SetHeader("&nbsp;", "Date", "Type", "Carrier", "Status", "Description");
-			Table()->History->SetWidth("3%", "8%", "20%", "10%", "15%", "44%");
-			Table()->History->SetAlignment("Left", "Left", "Left", "Left","Left", "Left");
+			Table()->History->SetHeader("&nbsp;", "Date", "Carrier", "Type", "Status");
+			Table()->History->SetWidth("3%", "10%", "10%", "20%", "57%");
+			Table()->History->SetAlignment("Left", "Left", "Left", "Left", "Left");
 		}
 		else
 		{
-			Table()->History->SetHeader("&nbsp;", "Date", "Service", "Type", "Carrier", "Status", "Description");
-			Table()->History->SetWidth("3%", "8%", "10", "20%", "10%", "15%", "34%");
-			Table()->History->SetAlignment("Left", "Left", "Left", "Left","Left", "Left", "Left");
+			Table()->History->SetHeader("&nbsp;", "Date", "Service", "Carrier", "Type", "Status");
+			Table()->History->SetWidth("3%", "10%", "10", "10%", "20%", "47%");
+			Table()->History->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left");
 		}
 
 		foreach ($arrHistory as $arrRecord)
@@ -358,18 +317,24 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 				if ($arrRecord['Status'] == REQUEST_STATUS_WAITING)
 				{
 					// The request has not been sent yet.  It can be cancelled
-					$strCancel = Href()->CancelProvisioningRequest($arrRecord['Id']);
+					$strCancel = "javascript:Vixen.$strObjectName.CancelProvisioningRequest({$arrRecord['Id']});";
 					$strStatusCell .= "&nbsp;<a href='$strCancel'>(Cancel)</a>";
+				}
+				
+				// Include the description if there is one
+				if ($arrRecord['Description'] != "")
+				{
+					$strStatusCell .= " - ". $arrRecord['Description'];
 				}
 			}
 			else
 			{
-				$strOutboundCell = "<img src='img/template/inbound.png' />";
-				$strStatusCell = GetConstantDescription($arrRecord['Status'], "ResponseStatus");
+				$strOutboundCell	= "<img src='img/template/inbound.png' />";
+				$strStatusCell		= $arrRecord['Description'];
 			}
 			
 			// Build the TimeStamp field
-			$strTimeStampCell	= date("d/m/y H:i:s", strtotime($arrRecord['TimeStamp']));
+			$strTimeStampCell	= date("j M y H:i:s", strtotime($arrRecord['TimeStamp']));
 			
 			$strRequestType	= GetConstantDescription($arrRecord['Type'], "Request");
 			$strCarrier		= GetConstantDescription($arrRecord['Carrier'], "Carrier");
@@ -378,11 +343,11 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			
 			if ($bolForServiceOnly)
 			{
-				Table()->History->AddRow($strOutboundCell, $strTimeStampCell, $strRequestType, $strCarrier, $strStatusCell, $strDescription);
+				Table()->History->AddRow($strOutboundCell, $strTimeStampCell, $strCarrier, $strRequestType, $strStatusCell);
 			}
 			else
 			{
-				Table()->History->AddRow($strOutboundCell, $strTimeStampCell, $arrRecord['FNN'], $strRequestType, $strCarrier, $strStatusCell, $strDescription);
+				Table()->History->AddRow($strOutboundCell, $strTimeStampCell, $arrRecord['FNN'], $strCarrier, $strRequestType, $strStatusCell);
 			}
 		}
 		
@@ -391,95 +356,11 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			// There are no invoices to stick in this table
 			Table()->History->AddRow("No records to display");
 			Table()->History->SetRowAlignment("left");
-			$intColumns = ($bolForServiceOnly)? 6 : 7;
+			$intColumns = ($bolForServiceOnly)? 5 : 6;
 			Table()->History->SetRowColumnSpan($intColumns);
 		}
 		
 		Table()->History->Render();
-	}
-	
-	//DEPRICATED
-	private function _RenderRequestGroup($arrRecordGroup, $arrHistory, $bolForServiceOnly)
-	{	
-		$strBorderColor 	= "89b100";
-		$strBackgroundColor = "f1f7e1";
-		$strTextColor 		= "000000";
-		
-		// Setup the group div
-		echo "<div style='border: solid 1px #{$strBorderColor}; background-color: #{$strBackgroundColor}; color: #{$strTextColor}; padding: 3px'>\n";
-		
-		// Group Details
-		$strDetailsHtml = "Request: ";
-		$strDetailsHtml .= date("l, M j, Y g:i:s A", strtotime($arrHistory[$arrRecordGroup[0]]['TimeStamp']));
-		if ($arrHistory[$arrRecordGroup[0]]['Employee'] != NULL && $arrHistory[$arrRecordGroup[0]]['Employee'] != USER_ID)
-		{
-			$strDetailsHtml .= " Created by ". GetEmployeeName($arrHistory[$arrRecordGroup[0]]['Employee']) . ".";
-		}
-		else
-		{
-			$strDetailsHtml .= " Created by Automated System.";
-		}
-		
-		// Output the Grouping details
-		echo "<span style='font-size: 9pt'>$strDetailsHtml</span>\n";
-		echo "<div class='TinySeperator'></div>\n";
-		
-		// Output each record of the group
-		echo "<table border='0' cellpadding='0' cellspacing='0' width='100%'>";
-		
-		for ($i=0; $i < count($arrRecordGroup); $i++)
-		{
-			$arrRequest = $arrHistory[$arrRecordGroup[$i]];
-			
-			$strRequest = GetConstantDescription($arrRequest['Type'], "Request");
-			$strStatus	= GetConstantDescription($arrRequest['Status'], "RequestStatus");
-			$strCarrier = GetConstantDescription($arrRequest['Carrier'], "Carrier");
-			
-			if ($arrRequest['Status'] == REQUEST_STATUS_WAITING)
-			{
-				// The request has not been sent yet.  It can be cancelled
-				$strCancel = Href()->CancelProvisioningRequest($arrRequest['Id']);
-				$strStatus .= "<a href='$strCancel' style='margin-left:30px'>(Cancel)</a>";
-			}
-			
-			echo "<tr>";
-			
-			if ($bolForServiceOnly)
-			{
-				// The history is relating to a single service so don't worry about declaring which service it is
-				if ($i == 0)
-				{
-					// First Record so include widths
-					echo "<td width='30%'>$strRequest</td><td width='20%'>$strCarrier</td><td width='50%'>$strStatus</td>";
-				}
-				else
-				{
-					echo "<td>$strRequest</td><td>$strCarrier</td><td>$strStatus</td>";
-				}
-			}
-			else
-			{
-				// This history is relating to an entire account
-				if ($i == 0)
-				{
-					// First Record so include widths
-					echo "<td width='15%'>{$arrRequest['FNN']}</td><td width='30%'>$strRequest</td><td width='20%'>$strCarrier</td><td width='35%'>$strStatus</td>";
-				}
-				else
-				{
-					echo "<td>{$arrRequest['FNN']}</td><td>$strRequest</td><td>$strCarrier</td><td>$strStatus</td>";
-				}
-			}
-			echo "</tr>\n";
-		}
-		
-		echo "</table>\n";
-		
-		echo "</div>\n";
-		
-		// Include a separator
-		echo "<div class='TinySeperator'></div>\n";
-		
 	}
 }
 

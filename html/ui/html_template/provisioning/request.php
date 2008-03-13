@@ -116,7 +116,7 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		// Draw the Carrier combobox
 		echo "   <span>Carrier</span>\n";
 		echo "   <span>\n";
-		echo "      <select id='CarrierCombo' style='width:200px'>\n";
+		echo "      <select id='CarrierCombo'>\n";
 		foreach ($arrCarrierOptions as $arrCarrier)
 		{
 			echo "<option value='{$arrCarrier['Value']}'>{$arrCarrier['Name']}</option>";
@@ -125,15 +125,22 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		echo "   </span>\n";
 		
 		// Draw Provisioning Combobox
-		echo "      <span style='margin-left:100px;'>Request</span>\n";
+		echo "      <span style='margin-left:20px;'>Request</span>\n";
 		echo "      <span>\n";
-		echo "         <select id='RequestCombo' style='width:200px'>\n";
+		echo "         <select id='RequestCombo'>\n";
 		// Add each Request Type
 		foreach ($arrRequestOptions as $arrRequest)
 		{
 			echo "<option value='{$arrRequest['Value']}'>{$arrRequest['Name']}</option>";
 		}
 		echo "         </select>\n";
+		echo "      </span>\n";
+		
+		// Draw AuthorisationDate textbox
+		$strAuthorisationDate = date("d/m/Y");
+		echo "      <span style='margin-left:20px;'>Authorisation Date</span>\n";
+		echo "      <span>\n";
+		echo "         <input type='text' id='AuthorisationDateTextBox' name='ProvisioningRequest->AuthorisationDate' value='$strAuthorisationDate' style='width:100px'/>\n";
 		echo "      </span>\n";
 		
 		echo "   </div>\n"; // Left

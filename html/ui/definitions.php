@@ -214,6 +214,8 @@ define("EVENT_ON_CUSTOMER_GROUP_DETAILS_UPDATE"		, "OnCustomerGroupDetailsUpdate
 define("EVENT_ON_CONFIG_CONSTANT_UPDATE"			, "OnConfigConstantUpdate");
 define("EVENT_ON_SERVICE_RATE_GROUPS_UPDATE"		, "OnServiceRateGroupsUpdate");
 define("EVENT_ON_PROVISIONING_REQUEST_SUBMISSION"	, "OnProvisioningRequestSubmission");
+define("EVENT_ON_PROVISIONING_REQUEST_CANCELLATION"	, "OnProvisioningRequestCancellation");
+
 
 // Maximum file upload size is 1 megabyte
 define("RATEGROUP_IMPORT_MAXSIZE", 1048576);

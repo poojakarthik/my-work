@@ -134,7 +134,8 @@ class AppTemplateService extends ApplicationTemplate
 			// Only Landlines can have provisioning
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 			{
-				ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
+				ContextMenu()->Account_Menu->Service->Provisioning->Provisioning(DBO()->Service->Id->Value);
+				ContextMenu()->Account_Menu->Service->Provisioning->ViewProvisioningHistory(DBO()->Service->Id->Value);
 			}
 			ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
 		}
@@ -150,6 +151,11 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
+			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+			{
+				ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+				ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
+			}
 			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
@@ -974,7 +980,8 @@ class AppTemplateService extends ApplicationTemplate
 			// Only LandLines can have Provisioning
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 			{
-				ContextMenu()->Account_Menu->Service->Provisioning(DBO()->Service->Id->Value);
+				ContextMenu()->Account_Menu->Service->Provisioning->Provisioning(DBO()->Service->Id->Value);
+				ContextMenu()->Account_Menu->Service->Provisioning->ViewProvisioningHistory(DBO()->Service->Id->Value);
 			}
 			
 			ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
@@ -993,6 +1000,8 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
 		}
 		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
