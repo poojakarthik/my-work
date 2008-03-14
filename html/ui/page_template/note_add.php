@@ -35,15 +35,15 @@ $this->Page->SetLayout('popup_layout');
 
 if (DBO()->Service->Id->IsSet)
 {
-	$strPageName = "Add Service Note - " . GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType") . " - " . DBO()->Service->FNN->Value;
+	$strPageName = "Service Note - " . GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType") . " - " . DBO()->Service->FNN->Value;
 }
 elseif (DBO()->Contact->Id->IsSet)
 {
-	$strPageName = "Add Contact Note";
+	$strPageName = "Contact Note";
 }
 else
 {
-	$strPageName = "Add Account Note";
+	$strPageName = "Account Note";
 }
 
 $this->Page->SetName($strPageName);

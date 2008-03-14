@@ -121,46 +121,46 @@ class AppTemplateService extends ApplicationTemplate
 		// Load the service notes
 		LoadNotes(NULL, DBO()->Service->Id->Value);
 		
-		// context menu
+		// Context menu
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
-		ContextMenu()->Account_Menu->Service->View_Service_Rate_Plan(DBO()->Service->Id->Value);	
+		ContextMenu()->Account_Menu->Service->Plan->View_Service_Rate_Plan(DBO()->Service->Id->Value);	
 		if ($bolUserHasOperatorPerm)
 		{
 			ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
-			ContextMenu()->Account_Menu->Service->Change_Plan(DBO()->Service->Id->Value);	
+			ContextMenu()->Account_Menu->Service->Plan->Change_Plan(DBO()->Service->Id->Value);	
 			ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
-			ContextMenu()->Account_Menu->Service->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
-			ContextMenu()->Account_Menu->Service->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Adjustments->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 			// Only Landlines can have provisioning
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 			{
 				ContextMenu()->Account_Menu->Service->Provisioning->Provisioning(DBO()->Service->Id->Value);
 				ContextMenu()->Account_Menu->Service->Provisioning->ViewProvisioningHistory(DBO()->Service->Id->Value);
 			}
-			ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 		}
-		ContextMenu()->Account_Menu->Service->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->Notes->View_Service_Notes(DBO()->Service->Id->Value);
 		
 		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Services->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 			{
 				ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
 				ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
 			}
-			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		}
-		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
@@ -972,39 +972,41 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);		
-			ContextMenu()->Account_Menu->Service->Change_Plan(DBO()->Service->Id->Value);	
+			ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Plan->Change_Plan(DBO()->Service->Id->Value);	
 			ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
-			ContextMenu()->Account_Menu->Service->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
-			ContextMenu()->Account_Menu->Service->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
-			// Only LandLines can have Provisioning
+			ContextMenu()->Account_Menu->Service->Adjustments->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+			// Only Landlines can have provisioning
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 			{
 				ContextMenu()->Account_Menu->Service->Provisioning->Provisioning(DBO()->Service->Id->Value);
 				ContextMenu()->Account_Menu->Service->Provisioning->ViewProvisioningHistory(DBO()->Service->Id->Value);
 			}
-			
-			ContextMenu()->Account_Menu->Service->Add_Service_Note(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 		}
-		ContextMenu()->Account_Menu->Service->View_Service_Notes(DBO()->Service->Id->Value);
+		ContextMenu()->Account_Menu->Service->Notes->View_Service_Notes(DBO()->Service->Id->Value);
 		
 		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Services->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account_Menu->Account->Add_Services(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Add_Contact(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Make_Payment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Change_Payment_Method(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
+			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+			{
+				ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+				ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
+			}
+			ContextMenu()->Account_Menu->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Add_Account_Note(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		}
-		ContextMenu()->Account_Menu->Account->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
