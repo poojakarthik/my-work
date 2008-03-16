@@ -1474,11 +1474,11 @@ function PostcodeValid ($strPostcode)
 /**
  * PhoneNumberValid()
  * 
- * Check the format of a postcode
+ * Check the format of a phone number
  * 
- * Check the format of a postcode
+ * Check the format of a phone number
  *
- * @param	str	$strPostcode	The postcode to check
+ * @param	str	$strPhoneNumber	The phone number to check
  *
  * @return	bool
  * 
@@ -1530,6 +1530,36 @@ function BankAccountValid ($strNumber)
 {
 	return preg_match ("/^\d{4,11}$/", $strNumber);
 }
+
+
+//------------------------------------------------------------------------//
+// UnmaskShortDate
+//------------------------------------------------------------------------//
+/**
+ * MaskShortDate()
+ * 
+ * Convert short date in user friendly format (dd/mm/yyyy) to standard format (yyyy-mm-dd)
+ * 
+ * Convert short date in user friendly format (dd/mm/yyyy) to standard format (yyyy-mm-dd)
+ *
+ * @param	str	$strShortDate	The short date to unmask
+ *
+ * @return	str The unmasked short date or the original string if invalid
+ * 
+ * @function
+ */
+function UnmaskShortDate ($strShortDate)
+{
+	$arrDateParts = array();
+	if (preg_match ("/^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[0-2])\/(\d\d\d\d)$/", $strShortDate, $arrDateParts))
+	{
+		$day = str_pad($arrDateParts[1], 2, "0", STR_PAD_LEFT);
+		$month = str_pad($arrDateParts[2], 2, "0", STR_PAD_LEFT);
+		$strShortDate = $arrDateParts[3] . "-" . $month . "-" . $day;
+	}
+	return $strShortDate;
+}
+
 
 //------------------------------------------------------------------------//
 // CliEcho
