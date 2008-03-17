@@ -166,9 +166,10 @@ define("TARGET_TYPE_POPUP",	"Popup");
 define("TARGET_TYPE_PAGE",	"Page");
 
 // PropertyToken Render method constants
-define('RENDER_VALUE',	"Value");
-define('RENDER_OUTPUT',	"Output");
-define('RENDER_INPUT',	"Input");
+define('RENDER_VALUE',		"Value");
+define('RENDER_OUTPUT',		"Output");
+define('RENDER_INPUT',		"Input");
+define('RENDER_PASSWORD',	"Password");
 
 // Properties for the summary popup table (Rate Allocation Status)
 define('RATE_ALLOCATION_STATUS_UNDER_ALLOCATED',				0);
