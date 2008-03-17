@@ -114,101 +114,346 @@ class AppTemplateEmployee extends ApplicationTemplate
 	{
 		// Logout the employee
 		AuthenticatedUser()->Logout();
-		
 		// Redirect the user to the login page
-		//header ("Location: index.php");
-		
-		// HACK! HACK! HACK!
-		// Trying to relocate to "index.php" doesn't work from within the new framework
-		// The entire url has to be specified
-		header ("Location: http://{$_SERVER['SERVER_NAME']}");
-		// HACK! HACK! HACK!
-		
+		header("Location: " . preg_replace("/flex.php\/.*$/", "index.php", $_SERVER['REQUEST_URI']));
 		die;
 	}
-	
-	// This is not currently used and was probably coded in June of 2007
-	function View()
+
+
+	//------------------------------------------------------------------------//
+	// EmployeeList
+	//------------------------------------------------------------------------//	
+	/**
+	 * EmployeeList()
+	 * 
+	 * Loads all employees into a list
+	 *
+	 * @param void
+	 * 
+	 * @return boolean	TRUE
+	 * 
+	 * @method
+	 */
+	function EmployeeList()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-
-		// context menu
-		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Employee_Console();		
-		ContextMenu()->Contact_Retrieve->Service->Add_Service(DBO()->Account->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Edit_Service(DBO()->Service->Id->Value);		
-		ContextMenu()->Contact_Retrieve->Service->Change_Plan(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
-		ContextMenu()->Contact_Retrieve->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
-
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
-		if ($bolUserHasAdminPerm)
-		{
-			// User must have admin permissions to view the Administrative Console
-			ContextMenu()->Admin_Console();
-		}
-		ContextMenu()->Logout();
 		
-		// breadcrumb menu
-		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
+		// Context menu
+		// (Nothing to add)
 		
+		// Breadcrumb menu
+		Breadcrumb()->Employee_Console();
+		BreadCrumb()->SetCurrentPage("Employee List");
 		
-		// Setup all DBO and DBL objects required for the page
-		//TODO!
-		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
+		// Retrieve all Employees
 		
-		
-		// the DBList storing the invoices should be ordered so that the most recent is first
-		// same with the payments list
-		/*DBL()->Invoice->Account = DBO()->Account->Id->Value;
-		DBL()->Invoice->OrderBy("CreatedOn DESC");
-		DBL()->Invoice->Load();
-		*/
 		if ($_POST['Archived'] != 1)
 		{
 			DBL()->Employee->Archived = 0;
 		}
-		
+
+		DBL()->Employee->OrderBy("LastName, FirstName, UserName");
+
 		DBL()->Employee->Load();
 		
-	
-		$this->LoadPage('view_employees');
+		$this->LoadPage('employee_list');
 
 		return TRUE;
-	
 	}
+	
+	function EmployeeDetils()
+	{
+		
+	}
+	
 
-	// This is not currently used and was probably coded in June of 2007
+	//------------------------------------------------------------------------//
+	// Edit
+	//------------------------------------------------------------------------//	
+	/**
+	 * Edit()
+	 * 
+	 * Edits or Creates a user
+	 *
+	 * @param void
+	 * 
+	 * @return boolean	TRUE
+	 * 
+	 * @method
+	 */
 	function Edit()
 	{
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		//check if the form was submitted
 		if (SubmittedForm('Employee', 'Save'))
 		{
+			// Determine if this is to be a new employee
+			$bolCreateNew = DBO()->Employee->Id->Value < 0;
+			
+			$arrValidationErrors = array();
+
+			if ($bolCreateNew)
+			{
+				DBO()->Employee->UserName = trim(DBO()->Employee->UserName->Value);
+				DBO()->Employee->UserName->ValidateProperty($arrValidationErrors, true);
+				if (!DBO()->Employee->UserName->IsInvalid())
+				{
+					$strWhere	= "Employee.UserName = <UserName>";
+					$arrWhere	= array("UserName" => DBO()->Employee->UserName->Value);
+					DBL()->RecentCustomers->SetColumns(array("UserName"));
+					DBL()->RecentCustomers->SetTable("Employee");
+					DBL()->RecentCustomers->Where->Set($strWhere, $arrWhere);
+					DBL()->RecentCustomers->SetLimit(1);
+					DBL()->RecentCustomers->Load();
+					if (DBL()->RecentCustomers->RecordCount() > 0)
+					{
+						DBO()->Employee->UserName->SetToInvalid();
+						$strLabel = DBO()->Employee->UserName->strGetLabel();
+						$arrValidationErrors[] = "$strLabel \"" . DBO()->Employee->UserName->Value . "\" is already in use.";
+					}
+				}
+			}
+			
+			DBO()->Employee->FirstName = trim(DBO()->Employee->FirstName->Value);
+			DBO()->Employee->FirstName->ValidateProperty($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
+			DBO()->Employee->LastName = trim(DBO()->Employee->LastName->Value);
+			DBO()->Employee->LastName->ValidateProperty	($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
+			
+			DBO()->Employee->DOB = trim(DBO()->Employee->DOB->Value);
+			DBO()->Employee->DOB = UnmaskShortDate(DBO()->Employee->DOB->Value);
+			DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDate");
+			DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDateInPast", "<label> must be in the past.");
+			
+			DBO()->Employee->Email = trim(DBO()->Employee->Email->Value);
+			DBO()->Employee->Email->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidEmail");
+			DBO()->Employee->Extension = trim(DBO()->Employee->Extension->Value);
+			DBO()->Employee->Extension->ValidateProperty($arrValidationErrors, false, CONTEXT_DEFAULT);
+
+			DBO()->Employee->Phone = trim(DBO()->Employee->Phone->Value);
+			DBO()->Employee->Phone->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidPhoneNumber");
+
+			DBO()->Employee->Mobile = trim(DBO()->Employee->Mobile->Value);
+			DBO()->Employee->Mobile->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidPhoneNumber");
+
+			// Check that the password has been entered and confirmed, as appropriate
+			$this->_ValidatePassword($arrValidationErrors, $bolCreateNew);
+			
+			// Sanitize the permissions that have been set
+			$this->_SetPrivileges();
+			
+			if (!$bolCreateNew)
+			{
+				// Restrict the fields that can be updated
+				$updatedColumns = array();
+				$updatedColumns[] = "FirstName";
+				$updatedColumns[] = "LastName";
+				$updatedColumns[] = "DOB";
+				$updatedColumns[] = "Email";
+				$updatedColumns[] = "Extension";
+				$updatedColumns[] = "Phone";
+				$updatedColumns[] = "Mobile";
+				$updatedColumns[] = "Archived";
+				$updatedColumns[] = "Privileges";
+
+				// If changing the password, allow  it to be updated
+				if (!DBO()->Employee->Password->IsInvalid() && strlen(DBO()->Employee->Password->Value) > 0)
+				{
+					$updatedColumns[] = "PassWord";
+				}
+
+				// Fill in any blanks from the original
+				DBO()->Employee->LoadMerge();
+				
+				// Need to specifiy the columns to be updated to ensure no other values are changed
+				DBO()->Employee->SetColumns($updatedColumns);
+			}
+			else
+			{
+				DBO()->Employee->DOB = GetCurrentDateForMySQL();
+				
+				// Apply default values for non-nullable fields
+				DBO()->Employee->SessionId = "";
+				DBO()->Employee->SessionExpire = GetCurrentDateAndTimeForMySQL();
+				DBO()->Employee->Session = "";
+				DBO()->Employee->Karma = 0;
+				DBO()->Employee->PabloSays = PABLO_TIP_POLITE;
+				DBO()->Employee->Archived = 0;
+			}
+			
 			//Save the employee
 			if (!DBO()->Employee->IsInvalid())
 			{
 				//echo "Employee is NOT invalid Employee would be saved";
-				DBO()->Employee->Save();
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("Alert", "The information was successfully saved.");
+				if (DBO()->Employee->Save())
+				{
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					//Ajax()->AddCommand("ExecuteJavascript", "document.getElementById('VixenForm_Employee').submit();");
+					Ajax()->RenderHtmlTemplate("EmployeeView", CONTEXT_DEFAULT, "EmployeeViewDiv");
+					Ajax()->AddCommand("AlertReload", "The information was successfully saved.");
+					return TRUE;
+				}
 			}
+			
+			Ajax()->AddCommand("Alert", "The information could not be saved.<br />Please correct the following: -<br />" . implode("<br />\n", $arrValidationErrors));
+			return TRUE;			
 		}
 		DBO()->Employee->Load();
-		$this->LoadPage('edit_employee');
+		
+		//if (!$this->IsModal())
+		//{
+			$this->LoadPage('edit_employee');			
+		//}
+		/*else
+		{
+			$this->LoadPage('flex_modal_window');
+			
+			// set the page title
+			$this->Page->SetName('Employee Detail');
+
+			$this->Page->AddObject('EmployeeEdit', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
+			
+		}*/
 		
 		return TRUE;
+	}
+
+
+	//------------------------------------------------------------------------//
+	// Create
+	//------------------------------------------------------------------------//	
+	/**
+	 * Create()
+	 * 
+	 * Creates a new user
+	 *
+	 * @param void
+	 * 
+	 * @return boolean	TRUE
+	 * 
+	 * @method
+	 */
+	function Create()
+	{
+		 return $this->Edit();
+	}
+	
+	//------------------------------------------------------------------------//
+	// _SetPrivileges
+	//------------------------------------------------------------------------//	
+	/**
+	 * _SetPrivileges()
+	 * 
+	 * Set the privileges on the user
+	 * 
+	 * Set the privileges on the user, converting from an array to a single value
+	 * and preserving any privileges that should not be changed by the current user
+	 *
+	 * @param void
+	 * 
+	 * @return void
+	 * 
+	 * @method
+	 */
+	private function _SetPrivileges()
+	{
+		$proposedPrivileges = array_sum(DBO()->Employee->Privileges->Value);
+		$originalPrivileges = 0;
+		if (DBO()->Employee->Id->Value >= 0)
+		{
+			// Need to get the current privileges of the user
+			DBO()->CurrentEmployee->SetTable("Employee");
+			DBO()->CurrentEmployee->Id = DBO()->Employee->Id->Value;
+			DBO()->CurrentEmployee->Load();
+			$originalPrivileges = DBO()->CurrentEmployee->Privileges->Value;
+		}
+		
+		// Don't allow super admin, god or debug privileges to be changed
+		$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_SUPER_ADMIN | PERMISSION_DEBUG);
+		
+		// If user is not an admin, don't allow them to change the rate admin, credit card or admin privileges
+		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+		{
+			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_CREDIT_CARD | PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+		}
+		
+		DBO()->Employee->Privileges = $proposed;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _PreservePrivileges
+	//------------------------------------------------------------------------//	
+	/**
+	 * _PreservePrivileges()
+	 * 
+	 * Preserve privileges that exist in an original set and prevent addition in a proposed set
+	 * 
+	 * @param int $original		Original set of privileges containing those to be preserved
+	 * @param int $proposed		Proposed set of privileges
+	 * @param int $privileges	Privileges to be preserved
+	 * 
+	 * @return int privileges containing only those $privileges that existed in $original privileges
+	 * 
+	 * @method
+	 */
+	private function _PreservePrivileges($original, $proposed, $privileges)
+	{
+		// Prevent the privilege being added by proposition
+		$proposed = $proposed - ($proposed & $privileges);
+		// Add the privileges if originally present
+		$proposed = $proposed | ($original & $privileges);
+		// Return the proposed privileges with the preserved values
+		return $proposed;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// _ValidatePassword
+	//------------------------------------------------------------------------//	
+	/**
+	 * _ValidatePassword()
+	 * 
+	 * Validates the passwords array stored in the DBO()->Employee->Password property 
+	 * 
+	 * @param array		&$arrValidationErrors	Array to which and error messages will be added
+	 * @param boolean	$bolCreateNew			Whether the validation is for a new user or not
+	 * 
+	 * @return void
+	 * 
+	 * @method
+	 */	
+	private function _ValidatePassword(&$arrValidationErrors, $bolCreateNew)
+	{
+		// Validate that the password has been submitted as a 2 value array
+		if (!is_array(DBO()->Employee->Password->Value) || count(DBO()->Employee->Password->Value) != 2)
+		{
+			DBO()->Employee->Password = "";
+			DBO()->Employee->Password->SetToInvalid();
+			$arrValidationErrors[] = "Password must be entered twice.";
+		}
+		// Check that neither value is empty
+		else if (strlen(DBO()->Employee->Password->Value[0]) == 0 || strlen(DBO()->Employee->Password->Value[1]) == 0)
+		{
+			DBO()->Employee->Password = "";
+			if ($bolCreateNew)
+			{
+				DBO()->Employee->Password->SetToInvalid();
+				$arrValidationErrors[] = "Both Password and Password Confirmation are required.";
+			}
+		}
+		// Check that the values are the same
+		else if (DBO()->Employee->Password->Value[0] != DBO()->Employee->Password->Value[1])
+		{
+			DBO()->Employee->Password = "";
+			DBO()->Employee->Password->SetToInvalid();
+			$arrValidationErrors[] = "Password does not match Password Confirmation.";
+		}
+		// Set the validated password value into the password property
+		DBO()->Employee->PassWord = sha1(DBO()->Employee->Password->Value[0]);
+		DBO()->Employee->Password = DBO()->Employee->Password->Value[0];
 	}
 
 }
