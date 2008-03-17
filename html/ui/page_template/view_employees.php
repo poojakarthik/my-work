@@ -14,6 +14,10 @@
 
  */
 
+/*
+ * NOT USED - REPLACED BY employee_list.php
+ */
+
 // set the page title
 $this->Page->SetName('Viewing all Employees');
 
