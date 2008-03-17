@@ -1394,7 +1394,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function RegexValidate($strValidationRule, $mixValue)
+	static function RegexValidate($strValidationRule, $mixValue)
 	{
 		//echo "entered";
 		// return false if not a valid regex
@@ -1429,7 +1429,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsValidABN($strValue)
+	static function IsValidABN($strValue)
 	{
 		// 1. If the length is 0, it is invalid
 		if (strlen($strValue) == 0)
@@ -1503,16 +1503,63 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsValidPostcode($intValue)
+	static function IsValidPostcode($intValue)
 	{
 		if (strlen($intValue) != 4)
 		{
 			return FALSE;
 		}
 		
-		return $this->Integer($intValue);
+		return self::IsValidInteger($intValue);
 	}
 
+	//------------------------------------------------------------------------//
+	// IsValidPhoneNumber
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidPhoneNumber()
+	 * 
+	 * Check the format of a phone number
+	 * 
+	 * Check the format of a phone number
+	 *
+	 * @param	str	$strNumber	The phone number to check
+	 *
+	 * @return	bool
+	 * 
+	 * @function
+	 */
+	static function IsValidPhoneNumber ($strNumber)
+	{
+		return preg_match ("/^\+?[\d\s]{10,}$/", $strNumber);
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// IsValidInteger
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidInteger()
+	 *
+	 * Checks if a value is a valid integer
+	 *
+	 * Checks if a value is a valid integer
+	 *
+	 * @param	mix			$mixValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	static function IsValidInteger($mixValue)
+	{
+		if ((string)(int)$mixValue == (string)$mixValue)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
+	}
 	
 	//------------------------------------------------------------------------//
 	// Integer
@@ -1529,15 +1576,12 @@ class Validation
 	 * @return	bool
 	 *
 	 * @method
+	 * 
+	 * @deprecated - use Validation::IsValidInteger - hadrian - 12/03/2008
 	 */
-	function Integer($mixValue)
+	static function Integer($mixValue)
 	{
-		if ((string)(int)$mixValue == (string)$mixValue)
-		{
-			return TRUE;
-		}
-		
-		return FALSE;
+		return self::IsValidInteger($mixValue);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1556,7 +1600,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function UnsignedInteger($mixValue)
+	static function UnsignedInteger($mixValue)
 	{
 		if ((int)$mixValue > -1 && (string)(int)$mixValue == (string)$mixValue)
 		{
@@ -1582,7 +1626,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function NonZeroInteger($mixValue)
+	static function NonZeroInteger($mixValue)
 	{
 		if ((int)$mixValue != 0 && (string)(int)$mixValue == (string)$mixValue)
 		{
@@ -1608,7 +1652,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function UnsignedNonZeroInteger($mixValue)
+	static function UnsignedNonZeroInteger($mixValue)
 	{
 		if ((int)$mixValue > 0 && (string)(int)$mixValue == (string)$mixValue)
 		{
@@ -1634,7 +1678,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function ShortDate($mixDateAndTime)
+	static function ShortDate($mixDateAndTime)
 	{
 		if ($mixDateAndTime == "00/00/0000")
 		{
@@ -1642,9 +1686,80 @@ class Validation
 		}
 		else
 		{		
-			return $this->RegexValidate('^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}$^' , $mixDateAndTime);
+			return self::RegexValidate('^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}$^' , $mixDateAndTime);
 		}
 	}	
+	
+	//------------------------------------------------------------------------//
+	// IsValidDate
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidDate()
+	 * 
+	 * Check the validity of a short date
+	 * 
+	 * Check the validity of a short date, which should be in the format yyyy-mm-dd
+	 *
+	 * @param	str	$strShortDate	The date to check
+	 *
+	 * @return	bool
+	 * 
+	 * @function
+	 */
+	static function IsValidDate ($strShortDate)
+	{
+		$dateParts = array();
+		$ok = preg_match ("/^(?:(\d\d\d\d)\-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/", $strShortDate, $dateParts);
+		if (!$ok)
+		{
+			return FALSE;
+		}
+		return checkdate((int)$dateParts[2], (int)$dateParts[3], (int)$dateParts[1]);
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsValidDateInPast
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidDateInPast()
+	 *
+	 * Checks if a value is in valid date in the past
+	 *
+	 * Checks if a value is in valid date in the past
+	 *
+	 * @param	str	$strShortDate	the date to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	static function IsValidDateInPast ($strShortDate)
+	{
+		$dateParts = array();
+		$ok = preg_match ("/^(?:(\d\d\d\d)\-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/", $strShortDate, $dateParts);
+		if (!$ok)
+		{
+			return FALSE;
+		}
+		$year = (int)$dateParts[1];
+		$month = (int)$dateParts[2];
+		$day = (int)$dateParts[3];
+		$ok = checkdate($month, $day, $year);
+		if (!$ok)
+		{
+			return FALSE;
+		}
+		
+		$yearNow = (int)date("Y");
+		$monthNow = (int)date("m");
+		$dayNow = (int)date("d");
+		
+		if ($year > $yearNow || ($year == $yearNow && ($month > $monthNow || ($month == $monthNow && $day > $dayNow))))
+		{
+			return FALSE;
+		}
+		return TRUE;
+	}
 	
 	//------------------------------------------------------------------------//
 	// DateAndTime
@@ -1662,7 +1777,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function DateAndTime($mixDateAndTime)
+	static function DateAndTime($mixDateAndTime)
 	{
 		// TODO! Joel  Test against all variations of the MySql datetime data type
 		return TRUE;
@@ -1685,7 +1800,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsMoneyValue($mixValue)
+	static function IsMoneyValue($mixValue)
 	{
 		// remove whitespace and the $ if they are present
 		$mixValue = trim($mixValue);
@@ -1721,7 +1836,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsNotNull($mixValue)
+	static function IsNotNull($mixValue)
 	{
 		// take care of the special case where $mixValue == 0
 		if (is_numeric($mixValue))
@@ -1750,10 +1865,9 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsNotEmptyString($mixValue)
+	static function IsNotEmptyString($mixValue)
 	{
 		$mixValue = trim($mixValue);
-		
 		return (bool)(strlen($mixValue) > 0);
 	}
 	
@@ -1778,9 +1892,9 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsValidEmail($mixValue)
+	static function IsValidEmail($mixValue)
 	{
-		return $this->RegexValidate('^([[:alnum:]]([-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$^', $mixValue);
+		return self::RegexValidate('^([[:alnum:]]([-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$^', $mixValue);
 	}
 
 	//------------------------------------------------------------------------//
@@ -1800,7 +1914,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsValidFNN($mixValue)
+	static function IsValidFNN($mixValue)
 	{
 		return IsValidFNN($mixValue);
 	}	
