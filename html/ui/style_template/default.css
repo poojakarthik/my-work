@@ -709,6 +709,24 @@
 		background-color:    #D5E0F8;
 		vertical-align:			top;		
 	}
+	
+	table.Listing tr.First th.VixenTableSortColumn div.VixenTableSortColumnWrapper 
+	{
+		display: 				inline;
+		background-repeat:   	no-repeat;
+		background-position: 	100% 50%;
+		padding-right: 			10px;
+	}
+
+	table.Listing tr.First th.VixenTableSortColumnAsc div.VixenTableSortColumnWrapper
+	{
+		background-image:    url('img/template/asc_order.png');
+	}
+
+	table.Listing tr.First th.VixenTableSortColumnDesc div.VixenTableSortColumnWrapper
+	{
+		background-image:    url('img/template/desc_order.png');
+	}
 
 	table.Listing tr.Archived td
 	{
