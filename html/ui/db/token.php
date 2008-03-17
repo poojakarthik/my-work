@@ -260,9 +260,9 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
+	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE, $arrAdditionalArgs=NULL)
 	{
-		echo $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask);
+		echo $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask, $arrAdditionalArgs);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
@@ -309,7 +309,7 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
+	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE, $arrAdditionalArgs=NULL)
 	{
 		$intContext = $this->_CalculateContext($intContext);
 		
@@ -325,7 +325,7 @@ class PropertyToken
 		// build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext, $strType, $bolRequired, $bolApplyOutputMask);
 
-		return HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);
+		return HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams, $arrAdditionalArgs);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -417,6 +417,28 @@ class PropertyToken
 		}
 		
 		return $arrParams;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// strGetLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * strGetLabel()
+	 *
+	 * Returns the label for the field in a given context
+	 *
+	 * Returns the label for the field in a given context
+	 *
+	 * @param	int		$intContext	[optional] context for which the label is required
+	 * 
+	 * @return	string	label for the field in a given context
+	 *
+	 * @method
+	 */
+	function strGetLabel($intContext=CONTEXT_DEFAULT)
+	{
+		return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext]['Label'];
 	}
 	
 	//------------------------------------------------------------------------//
@@ -995,6 +1017,74 @@ class PropertyToken
 	function SetToInvalid()
 	{
 		$this->_dboOwner->_arrValid[$this->_strProperty] = FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsInvalid
+	//------------------------------------------------------------------------//
+	/**
+	 * IsInvalid()
+	 *
+	 * If the property had been explicitly sets to invalid
+	 *
+	 * If the property had been explicitly sets to invalid
+	 *
+	 * @return	bool If the property has been explicitly set to invalid
+	 *
+	 * @method
+	 */
+	function IsInvalid()
+	{
+		return $this->_dboOwner->_arrValid[$this->_strProperty] === FALSE;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// ValidateProperty
+	//------------------------------------------------------------------------//
+	/**
+	 * ValidateProperty()
+	 *
+	 * Validates property and explicitly sets the property to invalid if invalid 
+	 *
+	 * Validates property using logic supplied by parameters
+	 *
+	 * @param	array	&$arrValidationErrors	Array to which any error message will be added	
+	 * @param	boolean	$bolRequired			Whether or not the value is required (cannot be empty)
+	 * @param	string	$strValidationFunction	Name of validation function to be invoked if required, 
+	 * 											returning TRUE if valid or FALSE if invalid
+	 * @param	string	$strValidationMessage	Message to be used if $strValidationFunction returns false.
+	 * 											Message can contain '<label>' which will be replaced with the
+	 * 											appropriate field label.
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function ValidateProperty(&$arrValidationErrors, $bolRequired, $intContext=CONTEXT_DEFAULT, $strValidationFunction=NULL, $strValidationMessage="<label> is invalid.")
+	{
+		if (strlen($this->Value) == 0)
+		{
+			if ($bolRequired)
+			{
+				$this->SetToInvalid();
+				$strLabel = $this->strGetLabel($intContext);
+				$arrValidationErrors[] = "$strLabel is required.";
+				return FALSE;
+			}
+			return TRUE;
+		}
+		if ($strValidationFunction !== NULL)
+		{
+			if (!Validation::$strValidationFunction($this->Value))
+			{
+				$this->SetToInvalid();
+				$strLabel = $this->strGetLabel($intContext);
+				$arrValidationErrors[] = str_ireplace("<label>", $strLabel, $strValidationMessage);
+				return FALSE;
+			}
+		}
+		return TRUE;
 	}
 }
 
