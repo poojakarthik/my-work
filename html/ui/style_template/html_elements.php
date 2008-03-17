@@ -172,7 +172,141 @@ class HTMLElements
 		$strHtml .= "</div>\n";
 		
 		return $strHtml;
+	}	
+	
+	
+	//------------------------------------------------------------------------//
+	// InputShortDate
+	//------------------------------------------------------------------------//
+	/**
+	 * InputShortDate()
+	 * 
+	 * Creates an input with type='text' and an adjacent calendar for setting value
+	 * 
+	 * Returns a formatted HTML input tag, using data from an array to build
+	 * the element's attributes like class, name, id and value
+	 *
+	 * @param	array	$arrParams			parameters to use when building the
+	 * 										input box (see above for format).
+	 * @return	string						html code
+	 *
+	 * @method
+	 */
+	function InputShortDate($arrParams, $arrAdditionalArgs=NULL)
+	{
+		$strLabel = $arrParams['Definition']['Label'];
+		
+		if ($arrParams['Valid'] === FALSE)
+		{
+			$strValue = $arrParams['Value'];
+		}
+		else
+		{
+			$strValue = $this->BuildInputValue($arrParams);
+		}
+		$strValue = nl2br($strValue);
+		
+		$fromYear = "1900";
+		$toYear = "2037";
+		$defaultYear = "";
+		if (is_array($arrAdditionalArgs))
+		{
+			if (array_key_exists("FROM_YEAR", $arrAdditionalArgs))
+			{
+				$fromYear = $arrAdditionalArgs["FROM_YEAR"];
+			}
+			if (array_key_exists("TO_YEAR", $arrAdditionalArgs))
+			{
+				$toYear = $arrAdditionalArgs["TO_YEAR"];
+			}
+			if (array_key_exists("DEFAULT_YEAR", $arrAdditionalArgs))
+			{
+				$defaultYear = $arrAdditionalArgs["DEFAULT_YEAR"];
+			}
+		}
+		if (!$defaultYear)
+		{
+			$defaultYear = date("Y");
+		}
+		
+		// convert any apostrophe's into &#39;
+		$strValue = str_replace("'", "&#39;", $strValue);
+
+		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strClass	=  "{$arrParams['Definition']['BaseClass']}InputText {$arrParams['Definition']['Class']}";
+		
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		$strHtml .= "	<input type='text' id='$strId' name='$strName' value='$strValue' class='$strClass' $defaultYear />\n";
+		$strHtml .= "   <a style='position: relative; left: 198px;' href='javascript:showChooser(document.getElementById(\"$strId\"), \"$strId\", \"{$strName}Calender\", $fromYear, $toYear, \"d/m/Y\", false, true, true, $defaultYear);'><img src='img/template/calendar_small.png' width='16' height='16' title='Calendar date picker' /></a>";
+		$strHtml .= "   <div id='{$strName}Calender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
+		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
+		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} (dd/mm/yyyy) : </span></div>\n";
+		$strHtml .= "</div>\n";
+		
+		return $strHtml;
 	}
+	
+	//------------------------------------------------------------------------//
+	// InputPassword
+	//------------------------------------------------------------------------//
+	/**
+	 * InputText()
+	 * 
+	 * Creates an input with type='text'
+	 * 
+	 * Returns a formatted HTML input tag, using data from an array to build
+	 * the element's attributes like class, name, id and value
+	 *
+	 * @param	array	$arrParams			parameters to use when building the
+	 * 										input box (see above for format).
+	 * @return	string						html code
+	 *
+	 * @method
+	 */
+	function InputPassword($arrParams)
+	{
+		$strLabel = $arrParams['Definition']['Label'];
+		
+		if ($arrParams['Valid'] === FALSE)
+		{
+			$strValue = $arrParams['Value'];
+		}
+		else
+		{
+			$strValue = $this->BuildInputValue($arrParams);
+		}
+		$strValue = nl2br($strValue);
+		
+		// convert any apostrophe's into &#39;
+		$strValue = str_replace("'", "&#39;", $strValue);
+
+		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strClass	=  "{$arrParams['Definition']['BaseClass']}InputText {$arrParams['Definition']['Class']}";
+		
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		// The potentially taller of the two divs must go first
+		// create the input box
+		$strHtml .= "	<input type='password' id='$strId' name='{$strName}[]' value='$strValue' class='$strClass'/>\n";
+		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
+		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
+		$strHtml .= "</div>\n";
+		
+		$strHtml  .= "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		// The potentially taller of the two divs must go first
+		// create the input box
+		$strHtml .= "	<input type='password' id='$strId' name='{$strName}[]' value='$strValue' class='$strClass'/>\n";
+		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
+		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} Confirmation: </span></div>\n";
+		$strHtml .= "</div>\n";
+		
+		return $strHtml;
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// InputHidden
@@ -761,6 +895,12 @@ class HTMLElements
 			elseif ($mixValue === TRUE)
 			{
 				$mixValue = "TRUE";
+			}
+			
+			// Restrict the chars allowed to protect against malicious code
+			if (!preg_match("/^[a-z0-9]+ *\(?[a-z0-9,\<\>\" ]*\)?$/i", $strMethod))
+			{
+				die("Invalid OutputMask: $strMethod");
 			}
 
 			// Replace the value placeholder with $mixValue
