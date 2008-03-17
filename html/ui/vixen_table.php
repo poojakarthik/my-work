@@ -230,6 +230,22 @@ class VixenTable
 	private $_intCurrentRow;
 	
 	//------------------------------------------------------------------------//
+	// _bolSortable
+	//------------------------------------------------------------------------//
+	/**
+	 * _bolSortable
+	 *
+	 * Flag for enabling/disabling the sortability of the table
+	 *
+	 * Flag for enabling/disabling the sortability of the table
+	 *
+	 * @type	bool
+	 *
+	 * @property
+	 */
+	private $_bolSortable			= FALSE;
+	
+	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -375,6 +391,28 @@ class VixenTable
 		$this->_arrAlignments = func_get_args();
 
 		return $this->_arrAlignments;
+	}
+
+	//------------------------------------------------------------------------//
+	// SetSortable
+	//------------------------------------------------------------------------//
+	/**
+	 * SetSortable()
+	 *
+	 * Sets the sortability of the table
+	 *
+	 * Sets the sortability of the table
+	 * 
+	 *
+	 * @param	boolean		$bolSortable	Specify if the table should be sortable
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function SetSortable($bolSortable)
+	{
+		$this->_bolSortable = $bolSortable;
 	}
 
 
@@ -989,6 +1027,11 @@ class VixenTable
 					'Invoice'
 				]
 			},*/
+		}
+		
+		if ($this->_bolSortable)
+		{
+			echo "<script type='text/javascript'>Vixen.TableSort.prepare('$strTableName');</script>\n";
 		}
 		
 		//echo "<div class='seperator'></div>";
