@@ -55,6 +55,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
 		$this->LoadJavascript("permissions");
+		$this->LoadJavascript("date_time_picker_xy");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -103,47 +104,97 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	 */
 	private function _RenderFullDetail()
 	{
-		/*echo "<h2 class='Employees'>Employees</h2>";
-		
-		if ($_GET['Archived'])
+		echo "<!-- START HtmlTemplateEmployeeEdit -->\n";
+		$bolCanEdit = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolAdding = FALSE;
+		$strEditDisplay = " style='display: none;'";
+		$strViewDisplay = "";
+
+		if (DBO()->Employee->Id->Value == -1)
 		{
-			$strArchivedValue = 'checked';
+			$bolAdding = TRUE;
+			$strViewDisplay = $strEditDisplay;
+			$strEditDisplay = "";
 		}
-		echo "<form name='theform' action='view_employees.php' method='get'><input type='checkbox' name='Archived' value=1 $strArchivedValue onClick='document.theform.submit();'>Show Archived Employees</input></form>";
-		echo "<div class='NarrowTable'>\n";
-		Table()->EmployeeTable->SetHeader("FirstName", "LastName", "UserName","Status","View Employee");
-		foreach (DBL()->Employee as $dboEmployee)
+		
+		$this->FormStart('Employee', 'Employee', $bolAdding ? 'Create' : 'Edit');
+		
+		echo "<div class='NarrowForm'>";
+		
+		if ($bolCanEdit)
 		{
-			$strEditHref = Href()->EditEmployee($dboEmployee->Id->Value);
-			$strEditLabel = "<span class='DefaultOutputSpan Default'><a href='$strEditHref'>Edit Employee</a></span>";	
-			Table()->EmployeeTable->AddRow(  $dboEmployee->FirstName->AsValue(),
-												$dboEmployee->LastName->AsValue(), 
-												$dboEmployee->UserName->AsValue(),
-												$dboEmployee->Archived->AsValue(),
-												$strEditLabel);
+			echo "<div id='Employee.Edit'$strEditDisplay>";
+			
+			DBO()->Employee->Id->RenderHidden();
+			if ($bolAdding)
+			{
+				DBO()->Employee->DOB->Value = "";
+				DBO()->Employee->UserName->RenderInput(CONTEXT_DEFAULT, TRUE);
+			}
+			else
+			{
+				DBO()->Employee->UserName->RenderOutput(CONTEXT_DEFAULT, TRUE);
+			}
+			DBO()->Employee->FirstName->RenderInput(CONTEXT_DEFAULT, TRUE);
+			DBO()->Employee->LastName->RenderInput(CONTEXT_DEFAULT, TRUE);
+			
+			$arrAdditionalArgs = array();
+			$arrAdditionalArgs["FROM_YEAR"] = 1900;
+			$arrAdditionalArgs["TO_YEAR"] = ((int)date("Y"));
+			$arrAdditionalArgs["DEFAULT_YEAR"] = ((int)date("Y")) - 18;
+			DBO()->Employee->DOB->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, $arrAdditionalArgs);
+			
+			DBO()->Employee->Email->RenderInput();
+			DBO()->Employee->Extension->RenderInput();
+			DBO()->Employee->Phone->RenderInput();
+			DBO()->Employee->Mobile->RenderInput();
+			DBO()->Employee->Password->RenderInput(CONTEXT_DEFAULT, $bolAdding);
+			if (!$bolAdding)
+			{
+				DBO()->Employee->Archived->RenderInput();
+			}
+			echo "</div>";
 		}
-		Table()->EmployeeTable->Render();
-		echo "</div>\n";*/
+		echo "<div id='Employee.View'$strViewDisplay>";
 		
-		echo "<h2 class='Employee'> Edit Employee</h2>";
-		$this->FormStart('Employee', 'Employee', 'Edit');
+		DBO()->Employee->UserName->RenderOutput();
+		DBO()->Employee->FirstName->RenderOutput();
+		DBO()->Employee->LastName->RenderOutput();
+		DBO()->Employee->DOB->RenderOutput();
+		DBO()->Employee->Email->RenderOutput();
+		DBO()->Employee->Extension->RenderOutput();
+		DBO()->Employee->Phone->RenderOutput();
+		DBO()->Employee->Mobile->RenderOutput();
+		DBO()->Employee->Password = "[Hidden]";
+		DBO()->Employee->Password->RenderOutput();
+		DBO()->Employee->Archived->RenderOutput();
 		
-		DBO()->Employee->Id->RenderHidden();
-		DBO()->Employee->FirstName->RenderInput();
-		DBO()->Employee->LastName->RenderInput();
-		DBO()->Employee->Email->RenderInput();
-		DBO()->Employee->Extension->RenderInput();
-		DBO()->Employee->Phone->RenderInput();
-		DBO()->Employee->Mobile->RenderInput();
-		DBO()->Employee->Password->RenderInput();
-		DBO()->Employee->Archived->RenderInput();
+		echo "</div>";
+		echo "</div>";
+		
 		
 		// Control the display of the permissions lists
+		$arrCurrentPerms = "";
+		$intPermIndex = 1;
 		foreach ($GLOBALS['Permissions'] as $intKey => $strValue)
 		{
+			// Don't allow super admin permissions to be set
+			if (PermCheck(PERMISSION_SUPER_ADMIN, $intKey))
+			{
+				continue;
+			}
+			// Only allow admins to set credit card and rate management permissions
+			if (PermCheck(PERMISSION_CREDIT_CARD | PERMISSION_RATE_MANAGEMENT, $intKey))
+			{
+				if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+				{
+					continue;
+				}
+			}
 			if (PermCheck(DBO()->Employee->Privileges->Value, $intKey))
 			{
 				$strSelectedPerms .= "<option value='$intKey'>$strValue</option>";
+				$arrCurrentPerms[] = $strValue;
 			}
 			else
 			{
@@ -151,14 +202,18 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			}
 		}
 		
-		echo "<p><h2 class='Permissions'> Permissions</h2>
+		$strCurrentPerms = is_array($arrCurrentPerms) ? implode($arrCurrentPerms, "<br/>") : "[No permissions]";
+		
+		echo "<p>
               
-			  <div class='NarrowForm'>
-			  
-			  	<input type='hidden' name='Id' value='27' />
-				Select multiple Permissions by holding the CTRL key while you click options from
-				either of the lists.
-					<div class='SmallSeperator'></div>
+			  <div class='NarrowContent'>
+				  <div class='SmallSeperator'></div>";
+		
+		if ($bolCanEdit)
+		{
+			echo "
+					<div id='Permissions.Edit'$strEditDisplay>
+			  			<input type='hidden' name='Id' value='27' />
 						<table border='0' cellpadding='3' cellspacing='0'>
 							<tr>
 								<th>Available Permissions :</th>
@@ -167,7 +222,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 							</tr>
 							<tr>
 								<td>
-									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection'  multiple='multiple'>$strAvailPerms</select> 
+									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection' style='width: 180px;' multiple='multiple'>$strAvailPerms</select> 
 								</td>
 								<td>
 									<div>
@@ -179,24 +234,126 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 									</div>
 								</td>
 								<td>
-									<select id='SelectedPermissions' name='Employee.Privileges' size='8' class='SmallSelection' multiple='multiple' valueIsList>$strSelectedPerms
+									<select id='SelectedPermissions' name='Employee.Privileges' size='8' class='SmallSelection' style='width: 180px;' multiple='multiple' valueIsList>$strSelectedPerms
 									</select>
 								</td>
 							</tr>
 						</table>
-					</div>
+					</div>";
+		}
+				
+		echo "
+					<div id='Permissions.View'$strViewDisplay>
+						<table border='0' cellpadding='3' cellspacing='0'>
+							<tr>
+								<th>Permissions :</th>
+							</tr>
+							<tr>
+								<td>
+									 $strCurrentPerms
+								</td>
+							</tr>
+						</table>
+					</div>";
+			
+		echo "
 				</div>
-              <div class='Seperator'></div>";
-			  
-			  //echo "<a href='Javascript:alert(document.getElementById(\"anid\").elements[1]);'>links</a>";
-			  //echo "<a href='Javascript:if(document.anid.elements[0].toString().indexOf(\"Select\")==-1){alert(\"is a select box\");}'>link</a>";
-			  //echo "<a href='Javascript:alert(document.getElementById(\"anid"\).elements[0])'>link1</a>";
-			  //alert(document.getElementById(\"anid\").elements[0])'>LINK</a>";
-			  //echo "<script type='text/javascript'>document.innerHTML;</script>";
-			  //echo "<a href='Javascript:this.document.forms[0].elements[0].name;' target='_blank'>asdf</a>";
-			  //echo "<a href='Javascript:this.document.innerHTML;' target='_new'>adsg</a>";
-			  $this->AjaxSubmit('Save');
-			  $this->FormEnd();
+			</div>
+			<div class='Seperator'></div>";
+			
+		echo "<script type='text/javascript'>
+				var Employee = {
+			
+					bolEditing: false,
+					selAvailablePerms: null,
+					selSelectedPerms: null,
+			
+					toggle: function()
+					{
+						if (Employee.selAvailablePerms == null)
+						{
+							Employee.selAvailablePerms = Employee.get('AvailablePermissions').cloneNode(true);
+							Employee.selSelectedPerms = Employee.get('SelectedPermissions').cloneNode(true);
+						}
+
+						Employee.bolEditing = !Employee.bolEditing;			
+						Employee.toggleDivs('Employee');
+						Employee.toggleDivs('Permissions');
+						Employee.toggleDivs('EmployeeButtons');
+			
+						if (!Employee.bolEditing)
+						{
+							Employee.reset();
+						}
+					},
+			
+					reset: function(strDivIdPrefix)
+					{
+						Employee.get('VixenForm_Employee').reset();
+
+						var select = Employee.get('AvailablePermissions');
+						var newSelect = Employee.selAvailablePerms.cloneNode(true);
+						select.parentNode.replaceChild(newSelect, select);
+	
+						select = Employee.get('SelectedPermissions');
+						newSelect = Employee.selSelectedPerms.cloneNode(true);
+						select.parentNode.replaceChild(newSelect, select);
+					},
+			
+					toggleDivs: function(strDivIdPrefix)
+					{
+						var divEdit = Employee.get(strDivIdPrefix + '.Edit');
+						var divView = Employee.get(strDivIdPrefix + '.View');
+						
+						divEdit.style.visibility = 'hidden';
+						divView.style.visibility = 'hidden';
+						
+						divEdit.style.display = 'none';
+						divView.style.display = 'none';
+			
+						var divDisplay = Employee.bolEditing ? divEdit : divView;
+			
+						divDisplay.style.display = 'block';
+						divDisplay.style.visibility = 'visible';
+					},
+			
+					get: function(id)
+					{
+						return document.getElementById(id);
+					}
+			
+				};
+				</script>";
+
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			echo "<div class='ButtonContainer' id='EmployeeButtons.Edit'$strEditDisplay><div class='right'>\n";
+			$this->AjaxSubmit('Save', NULL, $bolAdding ? 'Create' : 'Edit');
+			if (!$bolAdding)
+			{
+				$this->Button("Cancel", "Employee.toggle();");
+			}
+			else
+			{
+				$this->Button("Cancel", "Vixen.Popup.Close(this);");
+			}
+			echo "</div></div>";
+	
+			if (!$bolAdding)
+			{
+				echo "<div class='ButtonContainer' id='EmployeeButtons.View'$strViewDisplay><div class='right'>\n";
+				$this->Button("Edit", "Employee.toggle();");
+				$this->Button("Close", "Vixen.Popup.Close(this);");
+				//$this->Button("Close", "Vixen.Popup.Close(" . ($this->IsModal() ? "'CloseFlexModalWindow'" : "this") . ");");
+				echo "</div></div>";
+			}
+		}
+
+		echo "</div>\n";
+
+		$this->FormEnd();
+		
+		echo "<!-- END HtmlTemplateEmployeeEdit -->\n";
 	}
 }
 
