@@ -15,7 +15,7 @@
  */
 
 // set the page title
-$this->Page->SetName('Edit Employee');
+$this->Page->SetName('Employee');
 
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
