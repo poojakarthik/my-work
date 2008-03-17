@@ -313,16 +313,7 @@ class PropertyToken
 	{
 		$intContext = $this->_CalculateContext($intContext);
 		
-		// require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			//var_dump($this->_dboOwner->_arrDefine);
-			//echo "<br />" . $intContext . "=" . CONTEXT_DEFAULT;
-			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
-			return NULL;
-		}
-		
-		// build up parameters for HtmlElements
+		// Build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext, $strType, $bolRequired, $bolApplyOutputMask);
 
 		return HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams, $arrAdditionalArgs);
@@ -399,13 +390,25 @@ class PropertyToken
 	private function _BuildParams($intContext, $strType=RENDER_OUTPUT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
 		$arrParams = Array();
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			// A UIAppDocumentation record could not be found for this particular context.  Use defaults
+			$strLabel = $this->_TokenizeStudlyString($this->_strProperty);
+			$arrParams['Definition']	= Array("OutputType"=>"Label", "InputType"=>"InputText", "Label"=>$strLabel,
+												"OutputLabel"=>NULL, "OutputMask"=>NULL, "Class"=>"Default");
+		}
+		else
+		{
+			// A UIAppDocumentation record was found
+			$arrParams['Definition']	= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
+		}
+		
 		$arrParams['Object'] 			= $this->_dboOwner->_strName;
 		$arrParams['Property'] 			= $this->_strProperty;
 		$arrParams['Context'] 			= $intContext;
 		$arrParams['Value'] 			= $this->_dboOwner->_arrProperties[$this->_strProperty];
 		$arrParams['Valid'] 			= $this->_dboOwner->_arrValid[$this->_strProperty];
 		$arrParams['Required'] 			= $bolRequired;
-		$arrParams['Definition'] 		= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
 		$arrParams['Type']				= $strType;
 		$arrParams['ApplyOutputMask']	= $bolApplyOutputMask;
 
@@ -487,13 +490,6 @@ class PropertyToken
 		if ($bolUseConditionalContext)
 		{
 			$intContext = $this->_CalculateContext($intContext);
-		}
-
-		// require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
-			return NULL;
 		}
 
 		// build up parameters
@@ -610,12 +606,6 @@ class PropertyToken
 	{
 		$intContext = $this->_CalculateContext($intContext);
 
-		// Require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			return NULL;
-		}
-
 		// Build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext);
 		
@@ -648,13 +638,6 @@ class PropertyToken
 	private function _Link($strHref, $intContext = CONTEXT_DEFAULT)
 	{
 		$intContext = $this->_CalculateContext($intContext);
-
-		// require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
-			return NULL;
-		}
 
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext);
@@ -726,13 +709,6 @@ class PropertyToken
 	private function _Arbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
 		$intContext = $this->_CalculateContext($intContext, $mixValue);
-
-		// require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
-			return NULL;
-		}
 
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext, $strRenderType, $bolRequired, $bolApplyOutputMask);
@@ -827,13 +803,6 @@ class PropertyToken
 	private function _Callback($mixCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
 		$intContext = $this->_CalculateContext($intContext);
-
-		// require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
-			return NULL;
-		}
 
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext, $strRenderType, $bolRequired, $bolApplyOutputMask);
@@ -1017,6 +986,59 @@ class PropertyToken
 	function SetToInvalid()
 	{
 		$this->_dboOwner->_arrValid[$this->_strProperty] = FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _TokenizeStudlyString
+	//------------------------------------------------------------------------//
+	/**
+	 * _TokenizeStudlyString()
+	 *
+	 * Splits a Studly Caps string into token seperated with spaces
+	 *
+	 * Splits a Studly Caps string into token seperated with spaces
+	 * "ThisIsA_STUDLY_CapString" would become "This Is A STUDLY Cap String"
+	 * (Although I don't think this is true study cap convention)
+	 * 
+	 * @param	string		The Studly cap string to tokenize.  Underscores can 
+	 * 						be used to explicitly specify spaces
+	 *
+	 * @return	string		the tokenized string
+	 * @method
+	 */
+	private function _TokenizeStudlyString($strSource)
+	{
+		$intSourceLength = strlen($strSource);
+		$intLittleA = ord("a");
+		$intLittleZ = ord("z");
+		
+		$strDestination	= $strSource[0];
+		for ($i=1; $i < $intSourceLength; $i++)
+		{
+			if ($strSource[$i] == "_")
+			{
+				// Convert underscores to spaces
+				$strDestination .= " ";
+				continue;
+			}
+			
+			$intChar = ord($strSource[$i]);
+	
+			if ($intChar < $intLittleA || $intChar > $intLittleZ)
+			{
+				// The character is not a lower case letter
+				$intPreviousChar = ord($strSource[($i-1)]);
+				if ($intPreviousChar >= $intLittleA && $intPreviousChar <= $intLittleZ)
+				{
+					// The previous character is a lowercase letter, so place a space here
+					$strDestination .= " ";
+				}
+			}
+			
+			$strDestination .= $strSource[$i];
+		}
+	
+		return $strDestination;
 	}
 	
 	//------------------------------------------------------------------------//

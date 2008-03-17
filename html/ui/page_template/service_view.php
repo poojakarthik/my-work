@@ -8,7 +8,7 @@ $strServiceType	= GetConstantDescription(DBO()->Service->ServiceType->Value, "Se
 $strFnn			= DBO()->Service->FNN->FormattedValue();
 $this->Page->SetName("Service Details: $strServiceType - $strFnn");
 
-$this->Page->SetLayout('2Column');
+$this->Page->SetLayout('3Column');
 
 $id = $this->Page->AddObject('ServiceAccount', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
@@ -17,5 +17,10 @@ if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 	$this->Page->AddObject('NoteAdd', COLUMN_TWO, HTML_CONTEXT_PAGE, "NoteAddDiv");
 }
 $this->Page->AddObject('NoteList', COLUMN_TWO, HTML_CONTEXT_PAGE, "NoteListDiv");
+
+if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+{
+	$this->Page->AddObject('ProvisioningHistoryList', COLUMN_THREE, HTML_CONTEXT_PAGE, "ProvHistoryListDiv");
+}
 
 ?>

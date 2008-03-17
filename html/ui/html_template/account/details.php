@@ -132,7 +132,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->CustomerGroup->Load();
 		$strCustomerGroup = DBO()->CustomerGroup->InternalName->Value;
 		DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroup, RENDER_OUTPUT);
+		
 		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
+		//$strAccountStatus = "<strong>". GetConstantDescription(DBO()->Account->Archived->Value, "Account") ."</strong>";
+		//DBO()->Account->Archived->RenderArbitrary($strAccountStatus, RENDER_OUTPUT);
 		
 		DBO()->Account->Id->RenderOutput();
 		

@@ -895,7 +895,36 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewServiceAddressPopupId\", \"large\", \"Address Details\", \"Service\", \"ViewAddress\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"medium\", \"Address Details\", \"Service\", \"ViewAddress\", $strJsonCode)";
+	}
+	
+	//------------------------------------------------------------------------//
+	// EditServiceAddress
+	//------------------------------------------------------------------------//
+	/**
+	 * EditServiceAddress()
+	 *
+	 * Compiles the Href to be executed when the EditServiceAddress popup is triggered
+	 *
+	 * Compiles the Href to be executed when the EditServiceAddress popup is triggered
+	 *
+	 * @param	int		$intServiceId		id of the service
+	 *
+	 * @return	string						Href to be executed
+	 *
+	 * @method
+	 */
+	function EditServiceAddress($intServiceId)
+	{
+		$this->strContextMenuLabel = "Edit Address Details";
+		
+		// Setup data to send
+		$arrData['Service']['Id'] = $intServiceId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"large\", \"Address Details\", \"Service\", \"EditAddress\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//

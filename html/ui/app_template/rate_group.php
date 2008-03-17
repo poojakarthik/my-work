@@ -246,7 +246,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 
 		// Load the RateGroup
 		DBO()->RateGroup->Load();

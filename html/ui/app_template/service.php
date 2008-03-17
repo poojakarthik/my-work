@@ -121,6 +121,16 @@ class AppTemplateService extends ApplicationTemplate
 		// Load the service notes
 		LoadNotes(NULL, DBO()->Service->Id->Value);
 		
+		// Retrieve the Provisioning History for the Service if it is a Land Line
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+		{
+			DBO()->History->CategoryFilter	= PROVISIONING_HISTORY_CATEGORY_BOTH;
+			DBO()->History->TypeFilter		= PROVISIONING_HISTORY_FILTER_ALL;
+			DBO()->History->MaxItems		= 10;
+			$appProvisioning = new AppTemplateProvisioning();
+			DBO()->History->Records = $appProvisioning->GetHistory(DBO()->History->CategoryFilter->Value, DBO()->History->TypeFilter->Value, DBO()->Account->Id->Value, DBO()->Service->Id->Value, DBO()->History->MaxItems->Value);
+		}
+		
 		// Context menu
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
 		ContextMenu()->Account_Menu->Service->Plan->View_Service_Rate_Plan(DBO()->Service->Id->Value);	
@@ -172,6 +182,47 @@ class AppTemplateService extends ApplicationTemplate
 		return TRUE;
 	}
 
+	//------------------------------------------------------------------------//
+	// ViewAddress
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewAddress()
+	 *
+	 * Performs the logic for viewing the service's address details
+	 * 
+	 * Performs the logic for viewing the service's address details
+	 * It assumes the following data has been declared
+	 * 	DBO()->Service->Id		Id of the service to view the details of
+	 *
+	 * @return		void
+	 * @method		ViewAddress
+	 */
+	function ViewAddress()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+
+		if (!DBO()->Service->Load())
+		{
+			// Could not load the service reocord
+			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
+			return TRUE;
+		}
+		
+		DBO()->ServiceAddress->Where->Service = DBO()->Service->Id->Value;
+		
+		if (!DBO()->ServiceAddress->Load())
+		{
+			// The service doesn't have address details, load up the Add Service popup
+			$this->EditAddress();
+			return TRUE;
+		}
+
+		$this->LoadPage('service_address_view');
+		return TRUE;
+	}
+	
 	//------------------------------------------------------------------------//
 	// Add  This functionality is not actually used yet
 	//------------------------------------------------------------------------//
@@ -1194,7 +1245,6 @@ class AppTemplateService extends ApplicationTemplate
 			DBL()->PlanRateGroup->OrderBy("RecordType");
 			DBL()->PlanRateGroup->Load();
 		}
-		
 	}
 
 

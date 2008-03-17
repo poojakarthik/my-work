@@ -114,7 +114,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 	{
 		$strObjectName = "ProvisioningHistoryList";
 		
-		echo "<h2 class='Provisioning'>History</h2>\n";
+		echo "<h2 class='ProvisioningHistory'>History</h2>\n";
 		$this->_RenderFilterControls($strObjectName);
 		
 		// Render the history
@@ -227,7 +227,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		// Create a combobox containing all the Category filter options
 		echo "<span>Category</span>\n";
 		echo "<span>\n";
-		echo "   <select id='ProvHistoryCategoryCombo' onChange='Vixen.$strObjectName.intCategoryFilter = this.value;' style='width:150px'>\n";
+		echo "   <select id='ProvHistoryCategoryCombo' onChange='Vixen.$strObjectName.intCategoryFilter = this.value;'>\n";
 		foreach ($arrCatFilterOptions as $intOption=>$strDescription)
 		{
 			$strSelected = (DBO()->History->CategoryFilter->Value == $intOption) ? "selected='selected'" : "";
@@ -239,7 +239,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		// Create a combobox containing all the Request Type filter options
 		echo "<span style='margin-left:20px'>Request Type</span>\n";
 		echo "<span>\n";
-		echo "   <select id='ProvHistoryTypeCombo' onChange='Vixen.$strObjectName.intTypeFilter = this.value;' style='width:180px'>\n";
+		echo "   <select id='ProvHistoryTypeCombo' onChange='Vixen.$strObjectName.intTypeFilter = this.value;'>\n";
 		foreach ($arrTypeFilterOptions as $intOption=>$strDescription)
 		{
 			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
@@ -256,7 +256,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		// Create a combobox containing all the MaxItems options
 		echo "<span style='margin-left:20px'>Max Items</span>\n";
 		echo "<span>\n";
-		echo "   <select id='ProvHistoryMaxItemsCombo' onChange='Vixen.$strObjectName.intMaxItems = this.value;' style='width:100px'>\n";
+		echo "   <select id='ProvHistoryMaxItemsCombo' onChange='Vixen.$strObjectName.intMaxItems = this.value;'>\n";
 		foreach ($arrMaxItems as $intOption=>$strDescription)
 		{
 			$strSelected = (DBO()->History->MaxItems->Value == $intOption) ? "selected='selected'" : "";
@@ -290,6 +290,8 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 	 */
 	private function _RenderHistory($strObjectName)
 	{
+		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		
 		$arrHistory = DBO()->History->Records->Value;
 		
 		$bolForServiceOnly = (DBO()->Service->Id->Value)? TRUE : FALSE;
@@ -298,23 +300,24 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		{
 			Table()->History->SetHeader("&nbsp;", "Date", "Carrier", "Type", "Status");
 			Table()->History->SetWidth("3%", "10%", "10%", "20%", "57%");
-			Table()->History->SetAlignment("Left", "Left", "Left", "Left", "Left");
+			Table()->History->SetAlignment("Center", "Left", "Left", "Left", "Left");
 		}
 		else
 		{
 			Table()->History->SetHeader("&nbsp;", "Date", "Service", "Carrier", "Type", "Status");
 			Table()->History->SetWidth("3%", "10%", "10", "10%", "20%", "47%");
-			Table()->History->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left");
+			Table()->History->SetAlignment("Center", "Left", "Left", "Left", "Left", "Left");
 		}
 
 		foreach ($arrHistory as $arrRecord)
 		{
 			if ($arrRecord['Outbound'])
 			{
-				$strOutboundCell = "<img src='img/template/outbound.png' />";
-				$strStatusCell = GetConstantDescription($arrRecord['Status'], "RequestStatus");
+				//$strOutboundCell = "<img src='img/template/outbound.png' />";
+				$strOutboundCell	= "O";
+				$strStatusCell		= GetConstantDescription($arrRecord['Status'], "RequestStatus");
 				
-				if ($arrRecord['Status'] == REQUEST_STATUS_WAITING)
+				if ($arrRecord['Status'] == REQUEST_STATUS_WAITING && $bolUserHasOperatorPerm)
 				{
 					// The request has not been sent yet.  It can be cancelled
 					$strCancel = "javascript:Vixen.$strObjectName.CancelProvisioningRequest({$arrRecord['Id']});";
@@ -329,7 +332,8 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			}
 			else
 			{
-				$strOutboundCell	= "<img src='img/template/inbound.png' />";
+				//$strOutboundCell	= "<img src='img/template/inbound.png' />";
+				$strOutboundCell	= "I";
 				$strStatusCell		= $arrRecord['Description'];
 			}
 			

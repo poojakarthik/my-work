@@ -125,7 +125,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			$strViewAddressLink			= Href()->ViewServiceAddress($intServiceId);
 			$strProvisioningHistoryLink	= "javascript:Vixen.ProvisioningPage.ShowHistory($intServiceId)";
 			$strActionsCell  = "<a href='$strViewAddressLink'><img src='img/template/address.png' title='Address Details' /></a>";
-			$strActionsCell .= "&nbsp;&nbsp;<a href='$strProvisioningHistoryLink'><img src='img/template/provisioning.png' title='Provisioning History' /></a>";
+			$strActionsCell .= "&nbsp;&nbsp;<a href='$strProvisioningHistoryLink'><img src='img/template/provisioning_history.png' title='Provisioning History' /></a>";
 
 			// Build the checkbox
 			if ($dboService->CanProvision->Value)

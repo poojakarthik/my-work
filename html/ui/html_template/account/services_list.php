@@ -195,8 +195,6 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		// Initialise the javascript object that facilitates this HtmlTemplate
 		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise($intAccountId, null, '$strTableContainerDivId')</script>\n";
 	}
-
-	
 	
 	//------------------------------------------------------------------------//
 	// RenderTable
@@ -219,7 +217,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 
 		Table()->ServiceTable->SetHeader("FNN #", "Type", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
-		Table()->ServiceTable->SetWidth("11%", "10%", "39%", "11%", "7%", "10%", "12%");
+		Table()->ServiceTable->SetWidth("11%", "10%", "39%", "11%", "7%", "14%", "8%");
 		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left");
 		
 		foreach (DBL()->Service as $dboService)
@@ -228,9 +226,10 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strStatusCell = GetConstantDescription($dboService->Status->Value, "Service");
 
 			// Build the Actions Cell
-			$strEditService		= "";
-			$strChangePlan		= "";
-			$strProvisioning	= "";
+			$strEditService				= "";
+			$strChangePlan				= "";
+			$strProvisioning			= "";
+			$strViewProvisioningHistory	= "";
 			if ($bolUserHasOperatorPerm)
 			{
 				// The user can edit stuff
@@ -245,6 +244,9 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				{
 					$strProvisioningLink	= Href()->Provisioning($dboService->Id->Value);
 					$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
+					
+					$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($dboService->Id->Value);
+					$strViewProvisioningHistory		= "<a href='$strViewProvisioningHistoryLink' title='View Provisioning History'><img src='img/template/provisioning_history.png'></img></a>";
 				}
 			}
 			
@@ -254,7 +256,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($dboService->Id->Value);
 			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
 			
-			$strActionsCell				= "<span>$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning</span>";
+			$strActionsCell				= "$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning $strViewProvisioningHistory";
 
 			// Create a link to the View Plan for Service page
 			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($dboService->Id->Value);
@@ -361,7 +363,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		
 		// Row highlighting doesn't seem to be working with popups
 		// Row highlighting has been turned off, because it stops working if the Service table is ever redrawn
-		//Table()->ServiceTable->RowHighlighting = TRUE;
+		Table()->ServiceTable->RowHighlighting = TRUE;
 		Table()->ServiceTable->Render();
 	}
 }

@@ -854,6 +854,7 @@
 	h2.Adjustment,
 	h2.PDF,
 	h2.Provisioning,
+	h2.ProvisioningHistory,
 	h2.Archive,
 	h2.Accounts,
 	h2.Account,
@@ -928,6 +929,11 @@
 	h2.Provisioning
 	{
 		background-image:              url('img/template/provisioning.png');
+	}
+	
+	h2.ProvisioningHistory
+	{
+		background-image:              url('img/template/provisioning_history.png');
 	}
 	
 	h2.Permissions
