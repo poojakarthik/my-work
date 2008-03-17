@@ -112,6 +112,7 @@ function VixenAjaxClass()
 		var objFormElement;
 		var strElementName;
 		var mixValue;
+		var bolAsArray;
 
 		// create object to send
 		var objSend					= {};
@@ -149,6 +150,12 @@ function VixenAjaxClass()
 			intDotIndex = strElementName.indexOf(".", 0);
 			strObjectName = strElementName.substr(0, intDotIndex);
 			strPropertyName = strElementName.substr(intDotIndex + 1, strElementName.length);
+			
+			bolAsArray = (strPropertyName.indexOf("[]") == (strPropertyName.length - 2));
+			if (bolAsArray)
+			{
+				strPropertyName = strPropertyName.substring(0, strPropertyName.length - 2);
+			}
 			
 			// if the element's name is not in the form Object.Property then do not process it further
 			if ((strObjectName.length == 0) || (strPropertyName.length == 0))
@@ -249,7 +256,19 @@ function VixenAjaxClass()
 					break;
 			}
 			
-			objSend.Objects[strObjectName][strPropertyName] = mixValue;
+			if (bolAsArray && objSend.Objects[strObjectName][strPropertyName] == undefined)
+			{
+				objSend.Objects[strObjectName][strPropertyName] = new Array();
+			}
+			
+			if (bolAsArray)
+			{
+				objSend.Objects[strObjectName][strPropertyName].push(mixValue);
+			}
+			else
+			{
+				objSend.Objects[strObjectName][strPropertyName] = mixValue;
+			}
 		}			
 
 		
