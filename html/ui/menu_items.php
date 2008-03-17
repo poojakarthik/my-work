@@ -195,6 +195,28 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// EmployeeList
+	//------------------------------------------------------------------------//
+	/**
+	 * EmployeeConsole()
+	 *
+	 * Compiles the Href to be executed when the EmployeeList menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the EmployeeList menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string				Href to be executed when the EmployeeList menu item is clicked
+	 *
+	 * @method
+	 */
+	function EmployeeList()
+	{
+		$this->strLabel	= "List Employees";
+		$this->strContextMenuLabel = "";
+		return "flex.php/Employee/EmployeeList/";
+	}
+	
+	//------------------------------------------------------------------------//
 	// AddCustomer
 	//------------------------------------------------------------------------//
 	/**
@@ -939,31 +961,59 @@ class MenuItems
 	 * Compiles the Href to be executed when the EditEmployee menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		id of the Employee to view
+	 * @param	int		$intId		id of the Employee to edit
 	 *
 	 * @return	string				Href to be executed when the EditEmployee menu item is clicked
 	 *
 	 * @method
 	 */
-	function EditEmployee($intId)
+	function EditEmployee($intId, $strUserName)
 	{
 		$this->strContextMenuLabel = "";
 		
-		$this->strLabel	= "edit emp: $intId";
+		$this->strLabel	= "emp: $strUserName";
 		
 		// Setup data to send
 
-		//$arrData['HtmlMode'] = TRUE;
-		//$arrData['Application'] = "Employee.Edit";
 		$arrData['Employee']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}EditPopup\", \"medium\", \"Edit Employee\", \"Employee\", \"Edit\", $strJsonCode)";
-
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}EditPopup\", \"medium\", \"Employee\", \"Employee\", \"Edit\", $strJsonCode)";
 	}
+		
+	//------------------------------------------------------------------------//
+	// AddEmployee
+	//------------------------------------------------------------------------//
+	/**
+	 * AddEmployee()
+	 *
+	 * Compiles the Href to be executed when the AddEmployee menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddEmployee menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string				Href to be executed when the AddEmployee menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddEmployee()
+	{
+		$this->strContextMenuLabel = "";
+		
+		$this->strLabel	= "emp: new";
+		
+		// Setup data to send
+
+		$arrData['Employee']['Id'] = -1;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}AddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $strJsonCode)";
+	}
+
 	
 	//------------------------------------------------------------------------//
 	// AddRatePlan
