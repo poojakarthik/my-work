@@ -1,9 +1,9 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateEmployeeDetails
+// HtmlTemplateEmployeeView
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateEmployeeDetails
+ * HtmlTemplateEmployeeView
  *
  * A specific HTML Template object
  *
@@ -13,7 +13,7 @@
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateEmployeeDetails
+ * @class	HtmlTemplateEmployeeView
  * @extends	HtmlTemplate
  */
 class HtmlTemplateEmployeeView extends HtmlTemplate
@@ -52,6 +52,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->LoadJavascript("table_sort");
+		$this->LoadJavascript("employee_view");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -95,10 +96,33 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$strArchivedValue = 'checked';
 		}
 
+		echo "<!-- START HtmlTemplateEmployeeView -->\n";
+		echo "<div id='EmployeeViewDiv'>\n";
+		echo "<h2 class='Employees'>Employees</h2>";
+		echo "<div style='margin: 0px; width: 500px;'>\n";
+		
+		$this->_RenderButtonBar($strArchivedValue);
+
+		echo "<div id='EmployeeTableDiv'>";
+		$this->_RenderTable();
+		echo "</div>";
+		
+		$this->_RenderButtonBar($strArchivedValue);
+		
+		// End narrow table
+		echo "</div>\n";
+		echo "</div>\n";
+		echo "<!-- END HtmlTemplateEmployeeView -->\n";
+	}
+	
+	
+	function _RenderTable()
+	{
 		Table()->EmployeeTable->SetHeader("Given Name", "Surname", "Username", "Status", "Actions");
 		Table()->EmployeeTable->SetWidth("25%", "25%", "25%", "15%", "10%");
 		Table()->EmployeeTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
 		Table()->EmployeeTable->SetSortable(TRUE);
+		Table()->EmployeeTable->SetSortFields("FirstName", "LastName", "UserName", null, null);
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
@@ -119,24 +143,10 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 												$strArchivedLabel,
 												$strView);
 		}
-		
-
-		echo "<!-- START HtmlTemplateEmployeeView -->\n";
-		echo "<div id='EmployeeViewDiv'>\n";
-		echo "<h2 class='Employees'>Employees</h2>";
-		echo "<div style='margin: 0px; width: 500px;'>\n";
-		
-		$this->_RenderButtonBar($strArchivedValue);
 
 		Table()->EmployeeTable->Render();
-		
-		$this->_RenderButtonBar($strArchivedValue);
-		
-		// End narrow table
-		echo "</div>\n";
-		echo "</div>\n";
-		echo "<!-- END HtmlTemplateEmployeeView -->\n";
 	}
+	
 	
 	//------------------------------------------------------------------------//
 	// _RenderButtonBar
@@ -161,20 +171,22 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$strAddEmployee = Href()->AddEmployee();
 		}
 
-		$strUpdateTopCheckBox = "";
+		$strUpdateOtherCheckBox = "";
 		$strCheckBoxID = "";
 		if (!$formRendered)
 		{
 			$this->FormStart('Employee', 'Employee', 'EmployeeList');
 			$strCheckBoxID = "id='chbArchived'";
+			$strUpdateOtherCheckBox = "try { var cb = document.getElementById(\"chbArchivedFooter\"); if (cb.checked != this.checked) cb.checked = this.checked; } catch(e){}";
 		}
 		else
 		{
-			$strUpdateTopCheckBox = "document.getElementById(\"chbArchived\").checked = this.checked;";
+			$strCheckBoxID = "id='chbArchivedFooter'";
+			$strUpdateOtherCheckBox = "document.getElementById(\"chbArchived\").checked = this.checked;";
 		}
 
 		echo "<div class='ButtonContainer' style='width: 100%; position: relative;'>\n";
-		echo "<input type='checkbox' $strCheckBoxID name='Archived' value=1 $strArchivedValue onClick='$strUpdateTopCheckBox document.getElementById(\"VixenForm_Employee\").submit();'>Show Archived Employees</input>";
+		echo "<input type='checkbox' $strCheckBoxID name='Archived' value=1 $strArchivedValue onClick='$strUpdateOtherCheckBox EmployeeView.Update();'>Show Archived Employees</input>";
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
