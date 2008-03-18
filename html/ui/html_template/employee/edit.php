@@ -111,7 +111,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<!-- START HtmlTemplateEmployeeEdit -->\n";
-		$bolCanEditAny = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		$bolAdding = FALSE;
 		$strEditDisplay = " style='display: none;'";
 		$strViewDisplay = "";
@@ -137,48 +137,48 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		
 		echo "<div class='NarrowForm'$strMinWidth>";
 		
-		if ($bolCanEditAny)
+		echo "<div id='Employee.Edit'$strEditDisplay>";
+		
+		DBO()->Employee->Id->RenderHidden();
+		if ($bolAdding && !$bolEditSelf && $bolAdminUser)
 		{
-			echo "<div id='Employee.Edit'$strEditDisplay>";
-			
-			DBO()->Employee->Id->RenderHidden();
-			if ($bolAdding && !$bolEditSelf)
-			{
-				DBO()->Employee->DOB->Value = "";
-				DBO()->Employee->UserName->RenderInput(CONTEXT_DEFAULT, TRUE);
-			}
-			else
-			{
-				DBO()->Employee->UserName->RenderOutput(CONTEXT_DEFAULT, TRUE);
-			}
-			if (!$bolEditSelf)
-			{
-				DBO()->Employee->FirstName->RenderInput(CONTEXT_DEFAULT, TRUE);
-				DBO()->Employee->LastName->RenderInput(CONTEXT_DEFAULT, TRUE);
-				$arrAdditionalArgs = array();
-				$arrAdditionalArgs["FROM_YEAR"] = 1900;
-				$arrAdditionalArgs["TO_YEAR"] = ((int)date("Y"));
-				$arrAdditionalArgs["DEFAULT_YEAR"] = ((int)date("Y")) - 18;
-				DBO()->Employee->DOB->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, $arrAdditionalArgs);
-			}
-			else
-			{
-				DBO()->Employee->FirstName->RenderOutput();
-				DBO()->Employee->LastName->RenderOutput();
-				DBO()->Employee->DOB->RenderOutput();
-			}
-			
-			DBO()->Employee->Email->RenderInput();
-			DBO()->Employee->Extension->RenderInput();
-			DBO()->Employee->Phone->RenderInput();
-			DBO()->Employee->Mobile->RenderInput();
-			DBO()->Employee->Password->RenderInput(CONTEXT_DEFAULT, $bolAdding);
-			if (!$bolAdding && !$bolEditSelf)
-			{
-				DBO()->Employee->Archived->RenderInput();
-			}
-			echo "</div>";
+			DBO()->Employee->DOB->Value = "";
+			DBO()->Employee->UserName->RenderInput(CONTEXT_DEFAULT, TRUE);
 		}
+		else
+		{
+			DBO()->Employee->UserName->RenderOutput(CONTEXT_DEFAULT, TRUE);
+		}
+		
+		if (!$bolEditSelf && $bolAdminUser)
+		{
+			DBO()->Employee->FirstName->RenderInput(CONTEXT_DEFAULT, TRUE);
+			DBO()->Employee->LastName->RenderInput(CONTEXT_DEFAULT, TRUE);
+			$arrAdditionalArgs = array();
+			$arrAdditionalArgs["FROM_YEAR"] = 1900;
+			$arrAdditionalArgs["TO_YEAR"] = ((int)date("Y"));
+			$arrAdditionalArgs["DEFAULT_YEAR"] = ((int)date("Y")) - 18;
+			DBO()->Employee->DOB->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, $arrAdditionalArgs);
+		}
+		else
+		{
+			DBO()->Employee->FirstName->RenderOutput();
+			DBO()->Employee->LastName->RenderOutput();
+			DBO()->Employee->DOB->RenderOutput();
+		}
+
+		DBO()->Employee->Email->RenderInput();
+		DBO()->Employee->Extension->RenderInput();
+		DBO()->Employee->Phone->RenderInput();
+		DBO()->Employee->Mobile->RenderInput();
+		DBO()->Employee->Password->RenderInput(CONTEXT_DEFAULT, $bolAdding);
+		
+		if (!$bolAdding && !$bolEditSelf)
+		{
+			DBO()->Employee->Archived->RenderInput();
+		}
+		echo "</div>";
+
 		echo "<div id='Employee.View'$strViewDisplay>";
 		
 		DBO()->Employee->UserName->RenderOutput();
@@ -236,7 +236,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			  <div class='NarrowContent'>
 				  <div class='SmallSeperator'></div>";
 		
-		if ($bolCanEditAny && !$bolEditSelf)
+		if ($bolAdminUser && !$bolEditSelf)
 		{
 			echo "
 					<div id='Permissions.Edit'$strEditDisplay>

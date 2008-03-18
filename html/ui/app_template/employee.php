@@ -245,7 +245,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
-		if (DBO()->Employee->Id != AuthenticatedUser()->GetUserId())
+		if (DBO()->Employee->Id->Value != AuthenticatedUser()->GetUserId())
 		{
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		}
@@ -282,7 +282,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 				}
 			}
 			
-			if (!$bolEditSelf)
+			if (!$bolEditSelf && $bolAdminUser)
 			{
 				DBO()->Employee->FirstName = trim(DBO()->Employee->FirstName->Value);
 				DBO()->Employee->FirstName->ValidateProperty($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
@@ -309,7 +309,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 			// Check that the password has been entered and confirmed, as appropriate
 			$this->_ValidatePassword($arrValidationErrors, $bolCreateNew);
 			
-			if (!$bolEditSelf)
+			if (!$bolEditSelf && $bolAdminUser)
 			{
 				// Sanitize the permissions that have been set
 				$this->_SetPrivileges();
@@ -325,7 +325,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 				$updatedColumns[] = "Mobile";
 				
 				// Only change the following through the admin console, not when editing self
-				if (!$bolEditSelf)
+				if (!$bolEditSelf && $bolAdminUser)
 				{
 					$updatedColumns[] = "FirstName";
 					$updatedColumns[] = "LastName";
@@ -394,6 +394,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		}
 		DBO()->Employee->Load();
 		DBO()->Employee->EditSelf = $bolEditSelf;
+		error_log("\$bolEditSelf = " . $bolEditSelf);
 		
 		if (!$this->IsModal())
 		{
