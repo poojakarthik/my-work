@@ -35,7 +35,7 @@ function VixenAjaxClass()
 	 *											DBO() object structure
 	 *											(ie objObjects.Account.Id will be available in php as DBO()->Account->Id)
 	 * @param	string	strTargetType			The type of target for the resultant output of the AppTemplate method
-	 *											valid options are (Div, Popup, Page)
+	 *											valid options are (Div, Popup, Page, JavaScript)
 	 * @param	boolean	bolShowLoadingSplash	optional.  Set to true to have the "Please Wait" splash display if the 
 	 *											ajax request takes more than 1 second
 	 * @param	boolean	bolIsForm				optional.  Set to true to guarantee that this particular ajax call
@@ -45,13 +45,24 @@ function VixenAjaxClass()
 	 * @return	void
 	 * @method
 	 */
-	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType, bolShowLoadingSplash, bolIsForm)
+	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType, bolShowLoadingSplash, bolIsForm, mixDivIdOrJSFunction)
 	{
 		var objSend			= {};
 		objSend.Class		= strClass;
 		objSend.Method		= strMethod;
 		objSend.Objects		= objObjects;
 		objSend.TargetType	= strTargetType;
+		if (mixDivIdOrJSFunction != undefined)
+		{
+			if (typeof mixDivIdOrJSFunction == 'string')
+			{
+				objSend.strContainerDivId = mixDivIdOrJSFunction;
+			}
+			if (typeof mixDivIdOrJSFunction == 'function')
+			{
+				objSend.fncResponseHandle = mixDivIdOrJSFunction;
+			}
+		}
 
 		// Check if this AppTemplate call is a form submission
 		// (a form submission will lock all other form submittions until it has recieved its reply from the server)
@@ -348,7 +359,7 @@ function VixenAjaxClass()
 			{
 				if (req.status == 200)
 				{
-					TEST:local_handle_reply(req.responseText, objObject);
+					TEST:local_handle_reply(req.responseText, objObject, req);
 					//handle_reply();
 				}
 				else
@@ -385,7 +396,7 @@ function VixenAjaxClass()
 	}
 	
 	// AJAX handle_reply
-	this.HandleReply = function(strReply, objObject)
+	this.HandleReply = function(strReply, objObject, req)
 	{
 		// Reset the cursor to its default
 		document.body.style.cursor = null;
@@ -429,6 +440,10 @@ function VixenAjaxClass()
 				ajaxError(er, strReply);
 			}
 		}
+		else if (objObject.fncResponseHandle != undefined && typeof objObject.fncResponseHandle == "function")
+		{
+			objObject.fncResponseHandle(req, objObject);
+		}
 		else
 		{
 			// The reply must be HTML code
@@ -458,24 +473,21 @@ function VixenAjaxClass()
 						break;
 					case "Div":
 						// retrieve the current container div element
-						var elmOldContainer = document.getElementById(objObject.strContainerDivId);
+						var id = objObject.strContainerDivId;
+						var elmOldContainer = document.getElementById(id);
 						if (!elmOldContainer)
 						{
-							alert("Error: The container div does not exist.\nContainer Div Id = '" + objObject.strContainerDivId +"'");
+							alert("Error: The container div does not exist.\nContainer Div Id = '" + id +"'");
 							return FALSE;
 						}
 						
 						// Create a new container div
-						var elmNewContainer = document.createElement('div');
-						elmNewContainer.setAttribute('Id', objObject.strContainerDivId);
+						var elmNewContainer = elmOldContainer.cloneNode(false);
+						elmNewContainer.setAttribute('Id', id);
 						elmNewContainer.innerHTML = strReply;
 						
-						// Retrieve the parent element of the current container div element
-						var elmParent = elmOldContainer.parentNode;
-						
-						// Remove the old content div and add the new one
-						elmParent.removeChild(elmOldContainer);
-						elmParent.appendChild(elmNewContainer);
+						// Replace the old div with the new one
+						elmOldContainer.parentNode.replaceChild(elmNewContainer, elmOldContainer);
 						break;
 					case "Page":
 						//FIX ME! This looks like it's working properly, but if you reload the page, none of the styling is loaded
@@ -515,6 +527,25 @@ function VixenAjaxClass()
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', 'autohide-reload');
 					break;
+				case "AlertAndExecuteJavascript":
+					// Execute any init script immediately
+					if (objInput[intKey].Data.ScriptInit) 
+					{
+						eval(objInput[intKey].Data.ScriptInit);
+					}
+					// Prepare any onClose script to be executed when the 'ok' button is clicked
+					var onClose = "";
+					if (objInput[intKey].Data.ScriptOnClose)
+					{
+						onClose += objInput[intKey].Data.ScriptOnClose;
+					}
+					Vixen.OnClosePopupFunction = new Function(onClose);
+					// Render an alert popup with no default 'on close' behaviour other than hiding the popup
+					strContent = "<div align='center'><p>" + objInput[intKey].Data.Message + "</p>" +
+									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");Vixen.OnClosePopupFunction();'></p></div>\n" +
+									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', false);
+					break;
 				case "Reload":
 					window.location = window.location;
 					break;
@@ -532,7 +563,6 @@ function VixenAjaxClass()
 				case "ReplaceDivContents":
 					// The html code defined in objInput[intKey].Data will be placed in the declared Container Div
 					// The current contents of the Container Div will be destroyed
-//alert("objInput[intKey].ContainerDivId = " + objInput[intKey].ContainerDivId);				
 					// retrieve the current container div element
 					var elmOldContainer = document.getElementById(objInput[intKey].ContainerDivId);
 					if (!elmOldContainer)
