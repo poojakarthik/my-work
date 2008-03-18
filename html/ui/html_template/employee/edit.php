@@ -205,6 +205,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		// Control the display of the permissions lists
 		$arrCurrentPerms = "";
 		$intPermIndex = 1;
+		asort($GLOBALS['Permissions']);
 		foreach ($GLOBALS['Permissions'] as $intKey => $strValue)
 		{
 			// Don't allow super admin permissions to be set
@@ -213,6 +214,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 				continue;
 			}
 			// Only allow admins to set credit card and rate management permissions
+			// This is a redundant check as, at present, only admins can change any permissions!
 			if (PermCheck(PERMISSION_CREDIT_CARD | PERMISSION_RATE_MANAGEMENT, $intKey))
 			{
 				if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
