@@ -61,6 +61,13 @@ if (Vixen.TableSort == undefined)
 			return cell.getAttribute("TABLE_SORT");
 		},
 
+		getSortedAscending: function(tableId)
+		{
+			var table = $get(tableId);
+			if (table.sortedColumnIndex == -1) return false;
+			return table.sortDirection == Vixen.TableSort.SORT_ASC;;
+		},
+
 		sortTable: function(tableId, columnIndex)
 		{
 			var table = $get(tableId);

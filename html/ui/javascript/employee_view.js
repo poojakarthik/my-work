@@ -11,12 +11,16 @@ var EmployeeView = {
 		if (strSortedField != null)
 		{
 			obj.Search.OrderBy = strSortedField;
+			if (!Vixen.TableSort.getSortedAscending(EmployeeView.TABLE_ID))
+			{
+				obj.Search.OrderDesc = true;
+			}
 		}
 
 		// Need to load up the employee list and replace with the 'EmployeeTableDiv'
 		Vixen.Ajax.CallAppTemplate("Employee", "EmployeeListAjax", obj, "Div", true, false, EmployeeView.HandleAjaxResponse);
 	},
-	
+
 	HandleAjaxResponse: function(req)
 	{
 		var responseText = req.responseText;
