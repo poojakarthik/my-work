@@ -22,6 +22,8 @@
  *    4) Created a function for reaize and bound and unbound that so it doesnt clobber other resize functions on unbind
  *    5) Created a function for binding the .close class and bound/unbound click using it.  Close now will work on any clickable element including a map area.
  *    6) Renamed animation commands to match jQuery's.
+ *   2008-03-14 Hadrian
+ *    1) Added check for FlexModalContent, allowing removal of such content if displayed.
  *
  * Call modalContent() on a DOM object and it will make a centered modal box over a div overlay preventing access to the page.
  * Create an element (anchor/img/etc) with the class "close" in your content to close the modal box on click.
@@ -39,6 +41,7 @@ jQuery.modalContent = function(content, css, animation, speed) {
   // if we already ahve a modalContent, remove it
   if ( $('#modalBackdrop') ) $('#modalBackdrop').remove();
   if ( $('#modalContent') ) $('#modalContent').remove();
+  if (FlexModalContent != undefined) FlexModalContent.remove();
   
   // position code lifted from http://www.quirksmode.org/viewport/compatibility.html
   if (self.pageYOffset) { // all except Explorer
