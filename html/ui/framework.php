@@ -44,6 +44,7 @@ class Page
 {
 	private $_objAjax;
 	private $_intTemplateMode;
+	private $_bolModal = FALSE;
 
 	//------------------------------------------------------------------------//
 	// _strPageName
@@ -218,6 +219,10 @@ class Page
 		$arrObject['Id']		= $strId;
 		$arrObject['Column']	= $intColumn;
 		$arrObject['Object']	= new $strClassName($intContext, $strId);
+		if ($this->IsModal())
+		{
+			$arrObject['Object']->SetModal(TRUE);
+		}
 		$this->_arrObjects[$strId] = $arrObject;
 		
 		// return the object id
@@ -516,6 +521,41 @@ class Page
 		// the following div holds any popup windows that are instantiated within the page
 		echo "<div id='PopupHolder'></div>\n";
 	}
+		
+	//------------------------------------------------------------------------//
+	// RenderHeaderFlexModal
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderHeaderFlexModal()
+	 *
+	 * Renders the header of a 'flex modal page''
+	 *
+	 * Renders the header of a 'flex modal page''
+	 * 
+	 * @method
+	 */
+	function RenderHeaderFlexModal()
+	{	
+		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
+		$intLastSlash = strrpos($arrScript[0], "/");
+		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
+		if ($_SERVER['HTTPS'])
+		{
+			$strBaseDir = "https://{$_SERVER['SERVER_NAME']}$strBaseDir";
+		}
+		else
+		{
+			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
+		}
+		
+		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
+		echo "<title>Flex - $this->_strPageName</title>\n";
+		echo "<base href='$strBaseDir'/>\n";
+		$this->RenderHeaderJS();
+		$this->RenderCSS();
+		echo "</head>\n";
+		echo "<body onload='Vixen.Init();' class='flexModalWindow'>\n";
+	}
 	
 	//------------------------------------------------------------------------//
 	// RenderClientHeader
@@ -668,6 +708,48 @@ class Page
 		$this->_objAjax = $objAjax;
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetModal
+	//------------------------------------------------------------------------//
+	/**
+	 * SetModal()
+	 *
+	 * Sets the modality of the template
+	 * 
+	 * Sets the modality of the template
+	 *
+	 * @param		int	$bolModal	Whether the page is to be rendered as a modal (complete) page
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function SetModal($bolModal)
+	{
+		$this->_bolModal = $bolModal;
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsModal
+	//------------------------------------------------------------------------//
+	/**
+	 * IsModal()
+	 *
+	 * Sets the modality of the template
+	 * 
+	 * Sets the modality of the template
+	 *
+	 * @param		void
+	 *
+	 * @return		boolean	whether the page is to be rendered as modal (complete) or not
+	 * @method
+	 *
+	 */
+	function IsModal()
+	{
+		return $this->_bolModal;
+	}
+
 	//------------------------------------------------------------------------//
 	// SetStyleOverride
 	//------------------------------------------------------------------------//
