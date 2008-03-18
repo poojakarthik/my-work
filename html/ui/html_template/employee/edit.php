@@ -55,7 +55,13 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
 		$this->LoadJavascript("permissions");
+		$this->LoadJavascript("employee_edit");
 		$this->LoadJavascript("date_time_picker_xy");
+
+		if (DBO()->Employee->EditSelf->Value)
+		{
+			$this->LoadJavascript("vixen_modal");
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -105,10 +111,12 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<!-- START HtmlTemplateEmployeeEdit -->\n";
-		$bolCanEdit = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolCanEditAny = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		$bolAdding = FALSE;
 		$strEditDisplay = " style='display: none;'";
 		$strViewDisplay = "";
+
+		$bolEditSelf = FALSE;
 
 		if (DBO()->Employee->Id->Value == -1)
 		{
@@ -116,17 +124,25 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			$strViewDisplay = $strEditDisplay;
 			$strEditDisplay = "";
 		}
-		
+
 		$this->FormStart('Employee', 'Employee', $bolAdding ? 'Create' : 'Edit');
 		
-		echo "<div class='NarrowForm'>";
+		if (DBO()->Employee->EditSelf->Value)
+		{
+			echo "<input type='hidden' name='Employee.EditSelf' value='1'/>\n";
+			$bolEditSelf = TRUE;
+		}
 		
-		if ($bolCanEdit)
+		$strMinWidth = $bolEditSelf ? " style='width: 400px;'" : "";
+		
+		echo "<div class='NarrowForm'$strMinWidth>";
+		
+		if ($bolCanEditAny)
 		{
 			echo "<div id='Employee.Edit'$strEditDisplay>";
 			
 			DBO()->Employee->Id->RenderHidden();
-			if ($bolAdding)
+			if ($bolAdding && !$bolEditSelf)
 			{
 				DBO()->Employee->DOB->Value = "";
 				DBO()->Employee->UserName->RenderInput(CONTEXT_DEFAULT, TRUE);
@@ -135,21 +151,29 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			{
 				DBO()->Employee->UserName->RenderOutput(CONTEXT_DEFAULT, TRUE);
 			}
-			DBO()->Employee->FirstName->RenderInput(CONTEXT_DEFAULT, TRUE);
-			DBO()->Employee->LastName->RenderInput(CONTEXT_DEFAULT, TRUE);
-			
-			$arrAdditionalArgs = array();
-			$arrAdditionalArgs["FROM_YEAR"] = 1900;
-			$arrAdditionalArgs["TO_YEAR"] = ((int)date("Y"));
-			$arrAdditionalArgs["DEFAULT_YEAR"] = ((int)date("Y")) - 18;
-			DBO()->Employee->DOB->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, $arrAdditionalArgs);
+			if (!$bolEditSelf)
+			{
+				DBO()->Employee->FirstName->RenderInput(CONTEXT_DEFAULT, TRUE);
+				DBO()->Employee->LastName->RenderInput(CONTEXT_DEFAULT, TRUE);
+				$arrAdditionalArgs = array();
+				$arrAdditionalArgs["FROM_YEAR"] = 1900;
+				$arrAdditionalArgs["TO_YEAR"] = ((int)date("Y"));
+				$arrAdditionalArgs["DEFAULT_YEAR"] = ((int)date("Y")) - 18;
+				DBO()->Employee->DOB->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, $arrAdditionalArgs);
+			}
+			else
+			{
+				DBO()->Employee->FirstName->RenderOutput();
+				DBO()->Employee->LastName->RenderOutput();
+				DBO()->Employee->DOB->RenderOutput();
+			}
 			
 			DBO()->Employee->Email->RenderInput();
 			DBO()->Employee->Extension->RenderInput();
 			DBO()->Employee->Phone->RenderInput();
 			DBO()->Employee->Mobile->RenderInput();
 			DBO()->Employee->Password->RenderInput(CONTEXT_DEFAULT, $bolAdding);
-			if (!$bolAdding)
+			if (!$bolAdding && !$bolEditSelf)
 			{
 				DBO()->Employee->Archived->RenderInput();
 			}
@@ -167,7 +191,10 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		DBO()->Employee->Mobile->RenderOutput();
 		DBO()->Employee->Password = "[Hidden]";
 		DBO()->Employee->Password->RenderOutput();
-		DBO()->Employee->Archived->RenderOutput();
+		if (!$bolEditSelf)
+		{
+			DBO()->Employee->Archived->RenderOutput();
+		}
 		
 		echo "</div>";
 		echo "</div>";
@@ -205,11 +232,11 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		$strCurrentPerms = is_array($arrCurrentPerms) ? implode($arrCurrentPerms, "<br/>") : "[No permissions]";
 		
 		echo "<p>
-              
+
 			  <div class='NarrowContent'>
 				  <div class='SmallSeperator'></div>";
 		
-		if ($bolCanEdit)
+		if ($bolCanEditAny && !$bolEditSelf)
 		{
 			echo "
 					<div id='Permissions.Edit'$strEditDisplay>
@@ -241,7 +268,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 						</table>
 					</div>";
 		}
-				
+
 		echo "
 					<div id='Permissions.View'$strViewDisplay>
 						<table border='0' cellpadding='3' cellspacing='0'>
@@ -260,70 +287,8 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 				</div>
 			</div>
 			<div class='Seperator'></div>";
-			
-		echo "<script type='text/javascript'>
-				var Employee = {
-			
-					bolEditing: false,
-					selAvailablePerms: null,
-					selSelectedPerms: null,
-			
-					toggle: function()
-					{
-						if (Employee.selAvailablePerms == null)
-						{
-							Employee.selAvailablePerms = Employee.get('AvailablePermissions').cloneNode(true);
-							Employee.selSelectedPerms = Employee.get('SelectedPermissions').cloneNode(true);
-						}
 
-						Employee.bolEditing = !Employee.bolEditing;			
-						Employee.toggleDivs('Employee');
-						Employee.toggleDivs('Permissions');
-						Employee.toggleDivs('EmployeeButtons');
-			
-						if (!Employee.bolEditing)
-						{
-							Employee.reset();
-						}
-					},
-			
-					reset: function(strDivIdPrefix)
-					{
-						Employee.get('VixenForm_Employee').reset();
-
-						var select = Employee.get('AvailablePermissions');
-						var newSelect = Employee.selAvailablePerms.cloneNode(true);
-						select.parentNode.replaceChild(newSelect, select);
-	
-						select = Employee.get('SelectedPermissions');
-						newSelect = Employee.selSelectedPerms.cloneNode(true);
-						select.parentNode.replaceChild(newSelect, select);
-					},
-			
-					toggleDivs: function(strDivIdPrefix)
-					{
-						var divEdit = Employee.get(strDivIdPrefix + '.Edit');
-						var divView = Employee.get(strDivIdPrefix + '.View');
-						
-						divEdit.style.visibility = 'hidden';
-						divView.style.visibility = 'hidden';
-						
-						divEdit.style.display = 'none';
-						divView.style.display = 'none';
-			
-						var divDisplay = Employee.bolEditing ? divEdit : divView;
-			
-						divDisplay.style.display = 'block';
-						divDisplay.style.visibility = 'visible';
-					},
-			
-					get: function(id)
-					{
-						return document.getElementById(id);
-					}
-			
-				};
-				</script>";
+		echo "<script type='text/javascript'>EmployeeEdit.bolPerms = " . ($bolEditSelf ? "false" : "true") . ";</script>";
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
@@ -331,7 +296,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			$this->AjaxSubmit('Save', NULL, $bolAdding ? 'Create' : 'Edit');
 			if (!$bolAdding)
 			{
-				$this->Button("Cancel", "Employee.toggle();");
+				$this->Button("Cancel", "EmployeeEdit.toggle();");
 			}
 			else
 			{
@@ -342,9 +307,8 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			if (!$bolAdding)
 			{
 				echo "<div class='ButtonContainer' id='EmployeeButtons.View'$strViewDisplay><div class='right'>\n";
-				$this->Button("Edit", "Employee.toggle();");
-				$this->Button("Close", "Vixen.Popup.Close(this);");
-				//$this->Button("Close", "Vixen.Popup.Close(" . ($this->IsModal() ? "'CloseFlexModalWindow'" : "this") . ");");
+				$this->Button("Edit", "EmployeeEdit.toggle();");
+				$this->Button("Close", "Vixen.Popup.Close(" . ($this->IsModal() ? "'CloseFlexModalWindow'" : "this") . ");");
 				echo "</div></div>";
 			}
 		}
