@@ -116,6 +116,8 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		$strEditDisplay = " style='display: none;'";
 		$strViewDisplay = "";
 
+		$bolUserIsSelf = DBO()->Employee->Id->Value == AuthenticatedUser()->GetUserId();
+
 		$bolEditSelf = FALSE;
 
 		if (DBO()->Employee->Id->Value == -1)
@@ -220,7 +222,8 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			}
 			if (PermCheck(DBO()->Employee->Privileges->Value, $intKey))
 			{
-				$strSelectedPerms .= "<option value='$intKey'>$strValue</option>";
+				$strDisableAdmin = ($bolUserIsSelf && PermCheck(PERMISSION_ADMIN, $intKey)) ? " disabled" : "";
+				$strSelectedPerms .= "<option value='$intKey'$strDisableAdmin>$strValue</option>";
 				$arrCurrentPerms[] = $strValue;
 			}
 			else
@@ -253,11 +256,11 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 								</td>
 								<td>
 									<div>
-										<input type='button' value='&#xBB;' onclick='addIt()' />
+										<input type='button' value='&#xBB;' onclick='EmployeePermissions.addSelections()' />
 									</div>
 									<div class='Seperator'></div>
 									<div>
-										<input type='button' value='&#xAB;' onclick='delIt ()' />
+										<input type='button' value='&#xAB;' onclick='EmployeePermissions.removeSelections()' />
 									</div>
 								</td>
 								<td>
@@ -288,7 +291,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			</div>
 			<div class='Seperator'></div>";
 
-		echo "<script type='text/javascript'>EmployeeEdit.bolPerms = " . ($bolEditSelf ? "false" : "true") . ";</script>";
+		echo "<script type='text/javascript'>EmployeeEdit.bolPerms = " . ($bolEditSelf ? "false" : "true") . "; EmployeePermissions.init();</script>";
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
