@@ -39,6 +39,7 @@ if (Vixen.TableSort == undefined)
 		_makeColumnSortable: function(table, columnIndex)
 		{
 			var cell = table.rows[0].cells[columnIndex];
+			if (cell.getAttribute('NO_TABLE_SORT') == "1") return;
 			cell.className += " VixenTableSortColumn ";
 			var div = document.createElement('DIV');
 			div.className = 'VixenTableSortColumnWrapper';
@@ -51,18 +52,23 @@ if (Vixen.TableSort == undefined)
 			cell.appendChild(div);
 			cell.setAttribute("onclick", 'Vixen.TableSort.sortTable("'+table.id+'", '+columnIndex+')');
 		},
+		
+		getSortedField: function(tableId)
+		{
+			var table = $get(tableId);
+			if (table.sortedColumnIndex == -1) return null;
+			var cell = table.rows[0].cells[table.sortedColumnIndex];
+			return cell.getAttribute("TABLE_SORT");
+		},
 
 		sortTable: function(tableId, columnIndex)
 		{
 			var table = $get(tableId);
 			var cell = table.rows[0].cells[columnIndex];
-
+			
 			var sortAscending = table.sortDirection != Vixen.TableSort.SORT_ASC || table.sortedColumnIndex != columnIndex;
 
-			var values = Vixen.TableSort._getColumnValues(table, columnIndex);
-			var compFunc = Vixen.TableSort._getComparisonFunction(values);
-			var anyChanges = Vixen.TableSort._sortValues(values, compFunc, sortAscending);
-			if (anyChanges) Vixen.TableSort._reArrangeRows(table, values);
+			Vixen.TableSort._applySort(table, columnIndex, sortAscending);
 
 			if (table.sortedColumnIndex >= 0)
 			{
@@ -75,6 +81,63 @@ if (Vixen.TableSort == undefined)
 
 			var newSortedCell = table.rows[0].cells[columnIndex];
 			newSortedCell.className += " " + table.sortDirection;
+		},
+
+		resortTable: function(tableId)
+		{
+			var table = $get(tableId);
+			var sortAscending = table.sortDirection == Vixen.TableSort.SORT_ASC;
+			Vixen.TableSort._applySort(table, table.sortedColumnIndex, sortAscending);
+		},
+
+		setTableRows: function(tableId, rows)
+		{
+			Vixen.TableSort.emptyTable(tableId);
+			Vixen.TableSort.appendTableRows(tableId, rows);
+		},
+
+		setRows: function(tableId, rows)
+		{
+			Vixen.TableSort.emptyTable(tableId);
+			Vixen.TableSort.appendRows(tableId, rows);
+		},
+
+		emptyTable: function(tableId)
+		{
+			var table = $get(tableId);
+			for (var i = table.rows.length - 1; i > 0; i--)
+			{
+				table.deleteRow(i);
+			}
+		},
+
+		appendTableRows: function(tableId, tableRows)
+		{
+			var table = $get(tableId);
+			for (var i = 0, l = tableRows.length; i < l; i++)
+			{
+				table.tBodies[0].appendChild(tableRows[0]);
+			}
+			Vixen.TableSort.resortTable(tableId);
+		},
+
+		appendRows: function(tableId, rows)
+		{
+			var table = $get(tableId);
+			for (var i = 0, l = rows.length; i < l; i++)
+			{
+				table.tBodies[0].appendChild(rows[i]);
+			}
+			Vixen.TableSort.resortTable(tableId);
+		},
+
+		_applySort: function(table, columnIndex, sortAscending)
+		{
+			if (columnIndex == -1) return;
+			var values = Vixen.TableSort._getColumnValues(table, columnIndex);
+			var compFunc = Vixen.TableSort._getComparisonFunction(values);
+			var anyChanges = Vixen.TableSort._sortValues(values, compFunc, sortAscending);
+			if (anyChanges) Vixen.TableSort._reArrangeRows(table, values);
 		},
 
 		_reArrangeRows: function(table, sortedValues)
@@ -125,7 +188,7 @@ if (Vixen.TableSort == undefined)
 
 		_getComparisonFunction: function(values)
 		{
-			return Vixen.TableSort._compareAlpha;
+			return Vixen.TableSort._compareAlphaCaseInsensitive;
 		},
 
 		_guessType: function(table, column) 
@@ -184,6 +247,15 @@ if (Vixen.TableSort == undefined)
 		{
 			if (a[0]==b[0]) return 0;
 			if (a[0]<b[0]) return -1;
+			return 1;
+		},
+
+		_compareAlphaCaseInsensitive: function(a,b) 
+		{
+			aUpper = a[0].toUpperCase();
+			bUpper = b[0].toUpperCase();
+			if (aUpper==bUpper) return 0;
+			if (aUpper<bUpper) return -1;
 			return 1;
 		},
 
