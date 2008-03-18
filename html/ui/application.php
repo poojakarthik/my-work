@@ -187,6 +187,7 @@ function _LoadDirectoryListing($strPath)
 class Application
 {
 	public $_intMode;
+
 	//------------------------------------------------------------------------//
 	// Load
 	//------------------------------------------------------------------------//
@@ -209,7 +210,7 @@ class Application
 	 * @method
 	 *
 	 */
-	function Load($strTemplateName)
+	function Load($strTemplateName, $bolModal=FALSE)
 	{
 		// Check that the user's browser is supported.  This will die if the user's browser is not supported
 		$this->_CheckBrowser();
@@ -233,6 +234,7 @@ class Application
 		$this->objAppTemplate = new $strClass;
 		
 		$this->objAppTemplate->SetMode(HTML_MODE);
+		$this->objAppTemplate->SetModal($bolModal);
 	
 		// Run AppTemplate
 		$fltStart = microtime(TRUE);		
@@ -269,6 +271,11 @@ class Application
 			echo "Time taken to run the AppTemplate method: ". number_format($fltAppTemplateTime, 4, ".", "") ." seconds<br />";
 			echo "Time taken to do the page render: ". number_format($fltRenderTime, 4, ".", "") ." seconds<br />";
 		}
+	}
+	
+	function LoadModal($strTemplateName)
+	{
+		return $this->Load($strTemplateName, TRUE);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -953,6 +960,22 @@ class Application
 
 		// If ($bolLoggedIn === TRUE) then loggin out the user has failed.  I don't know what to do in this situation.  It probably wont ever occur.
 	}
+	
+	
+	//----------------------------------------------------------------------------//
+	// GetUserId
+	//----------------------------------------------------------------------------//
+	/**
+	 * GetUserId()
+	 * 
+	 * @param	void
+	 * 
+	 * @return	int	Id of current user (from COOKIE[])
+	 */
+	function GetUserId()
+	{
+		return (int)$_COOKIE['Id'];
+	}
 
 
 }
@@ -976,6 +999,7 @@ class ApplicationTemplate extends ApplicationBaseClass
 {
 	public $Module;
 	protected $_objAjax;
+	protected $_bolModal = FALSE;
 	protected $_intTemplateMode;
 	
 	//------------------------------------------------------------------------//
@@ -1024,6 +1048,12 @@ class ApplicationTemplate extends ApplicationBaseClass
 			// create new page object
 			$this->Page = new Page;
 			
+			// Pass on modality
+			if ($this->IsModal())
+			{
+				$this->Page->SetModal(TRUE);
+			}
+			
 			// load required page
 			require_once(TEMPLATE_BASE_DIR."page_template/" . strtolower($strPageName) . ".php");
 		}
@@ -1051,6 +1081,48 @@ class ApplicationTemplate extends ApplicationBaseClass
 	{
 		$this->_intTemplateMode = $intMode;
 		$this->_objAjax = $objAjax;
+	}
+	
+	//------------------------------------------------------------------------//
+	// SetModal
+	//------------------------------------------------------------------------//
+	/**
+	 * SetModal()
+	 *
+	 * Sets the modality of the template
+	 * 
+	 * Sets the modality of the template
+	 *
+	 * @param		int	$bolModal	Whether the page is to be rendered as a modal (complete) page
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function SetModal($bolModal)
+	{
+		$this->_bolModal = $bolModal;
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsModal
+	//------------------------------------------------------------------------//
+	/**
+	 * IsModal()
+	 *
+	 * Sets the modality of the template
+	 * 
+	 * Sets the modality of the template
+	 *
+	 * @param		void
+	 *
+	 * @return		boolean	whether the page is to be rendered as modal (complete) or not
+	 * @method
+	 *
+	 */
+	function IsModal()
+	{
+		return $this->_bolModal;
 	}
 }
 
@@ -1096,6 +1168,7 @@ class HtmlTemplate extends BaseTemplate
 	protected $_strTemplate;
 	protected $_objAjax;
 	protected $_intTemplateMode;
+	protected $_bolModal = FALSE;
 
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -1331,6 +1404,48 @@ class HtmlTemplate extends BaseTemplate
 		$this->_objAjax = $objAjax;
 	}
 	
+	
+	//------------------------------------------------------------------------//
+	// SetModal
+	//------------------------------------------------------------------------//
+	/**
+	 * SetModal()
+	 *
+	 * Sets the modality of the template
+	 * 
+	 * Sets the modality of the template
+	 *
+	 * @param		int	$bolModal	Whether the page is to be rendered as a modal (complete) page
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function SetModal($bolModal)
+	{
+		$this->_bolModal = $bolModal;
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsModal
+	//------------------------------------------------------------------------//
+	/**
+	 * IsModal()
+	 *
+	 * Sets the modality of the template
+	 * 
+	 * Sets the modality of the template
+	 *
+	 * @param		void
+	 *
+	 * @return		boolean	whether the page is to be rendered as modal (complete) or not
+	 * @method
+	 *
+	 */
+	function IsModal()
+	{
+		return $this->_bolModal;
+	}
 }
 
 //----------------------------------------------------------------------------//
