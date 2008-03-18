@@ -98,7 +98,6 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 
 		echo "<!-- START HtmlTemplateEmployeeView -->\n";
 		echo "<div id='EmployeeViewDiv'>\n";
-		echo "<h2 class='Employees'>Employees</h2>";
 		echo "<div style='margin: 0px; width: 500px;'>\n";
 		
 		$this->_RenderButtonBar($strArchivedValue);
@@ -122,7 +121,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		Table()->EmployeeTable->SetWidth("25%", "25%", "25%", "15%", "10%");
 		Table()->EmployeeTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
 		Table()->EmployeeTable->SetSortable(TRUE);
-		Table()->EmployeeTable->SetSortFields("FirstName", "LastName", "UserName", null, null);
+		Table()->EmployeeTable->SetSortFields("FirstName", "LastName", "UserName", "Archived", null);
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
