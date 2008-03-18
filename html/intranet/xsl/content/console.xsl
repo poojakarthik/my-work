@@ -85,6 +85,21 @@
 					View details of available Plans.
 				</td>
 			</tr>
+			<!-- View Personal Details -->
+			<tr>
+				<td>
+					<a href="#" onclick="return FlexModalContent.display('./flex_modal_link.php/Employee/EmployeeDetils/', '400px', '500px')">
+						<img src="img/template/contact.png" title="View Personal Details" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						View Personal Details
+					</strong>
+					<br />
+					View and edit personal details.
+				</td>
+			</tr>
 			<!-- If Admin... -->
 			 <xsl:choose>
 			<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">

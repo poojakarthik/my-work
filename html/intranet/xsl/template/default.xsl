@@ -22,6 +22,7 @@
 					<script language="javascript" src="js/lightbox/jquery-latest.js"></script>
 					<script language="javascript" src="js/lightbox/dimensions.js"></script>
 					<script language="javascript" src="js/lightbox/jquery-modalContent.js"></script>
+					<script language="javascript" src="js/lightbox/flexModalContent.js"></script>
 			</head>
 			<body>
 				<div id="Header">
