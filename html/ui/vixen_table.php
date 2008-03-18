@@ -246,6 +246,22 @@ class VixenTable
 	private $_bolSortable			= FALSE;
 	
 	//------------------------------------------------------------------------//
+	// _arrSortFields
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrSortFields
+	 *
+	 * Names of fields to be used for sorting (null name if not to be sorted)
+	 *
+	 * Names of fields to be used for sorting (null name if not to be sorted)
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 */
+	private $_arrSortFields			= null;
+	
+	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -325,6 +341,11 @@ class VixenTable
 		$this->_arrHeader = func_get_args();
 
 		return $this->_arrHeader;
+	}
+	
+	function SetSortFields()
+	{
+		$this->_arrSortFields = func_get_args();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -414,6 +435,7 @@ class VixenTable
 	{
 		$this->_bolSortable = $bolSortable;
 	}
+	
 
 
 	//------------------------------------------------------------------------//
@@ -852,10 +874,23 @@ class VixenTable
 		// Build headers
 		echo "<tr class='First'>\n";
 		$intHeaderCount = 0;
+		$intSortLimit = ($this->_bolSortable && is_array($this->_arrSortFields)) ? count ($this->_arrSortFields) : -1;
 		foreach ($this->_arrHeader AS $objField)
 		{
 			$strAlign = $this->_arrAlignments[$intHeaderCount];
-			echo " <th width='{$this->_arrWidths[$intHeaderCount]}' align='$strAlign'>". $objField ."</th>\n";
+			$strSortLabel = "";
+			if ($intHeaderCount <= $intSortLimit)
+			{
+				if ($this->_arrSortFields[$intHeaderCount] !== NULL)
+				{
+					$strSortLabel = " TABLE_SORT='" . $this->_arrSortFields[$intHeaderCount] . "' ";
+				}
+				else
+				{
+					$strSortLabel = " NO_TABLE_SORT='1' ";
+				}
+			}
+			echo " <th width='{$this->_arrWidths[$intHeaderCount]}' align='$strAlign'$strSortLabel>". $objField ."</th>\n";
 			$intHeaderCount++;
 		}
 		echo "</tr>\n";
