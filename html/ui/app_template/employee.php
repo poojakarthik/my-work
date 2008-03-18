@@ -529,8 +529,9 @@ class AppTemplateEmployee extends ApplicationTemplate
 		// Check that neither value is empty
 		else if (strlen(DBO()->Employee->Password->Value[0]) == 0 || strlen(DBO()->Employee->Password->Value[1]) == 0)
 		{
+			$bolPasswordEntered = (strlen(DBO()->Employee->Password->Value[0]) + strlen(DBO()->Employee->Password->Value[1])) > 0;
 			DBO()->Employee->Password = "";
-			if ($bolCreateNew)
+			if ($bolCreateNew || $bolPasswordEntered)
 			{
 				DBO()->Employee->Password->SetToInvalid();
 				$arrValidationErrors[] = "Both Password and Password Confirmation are required.";
