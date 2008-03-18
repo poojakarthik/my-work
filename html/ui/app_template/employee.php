@@ -163,10 +163,62 @@ class AppTemplateEmployee extends ApplicationTemplate
 
 		return TRUE;
 	}
+
+	//------------------------------------------------------------------------//
+	// EmployeeListAjax
+	//------------------------------------------------------------------------//	
+	/**
+	 * EmployeeList()
+	 * 
+	 * Loads all employees into a table (rest of page not wanted for ajax response)
+	 *
+	 * @param void
+	 * 
+	 * @return boolean	TRUE
+	 * 
+	 * @method
+	 */
+	function EmployeeListAjax()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		
+		// Context menu
+		// (Nothing to add)
+		
+		// Breadcrumb menu
+		Breadcrumb()->Employee_Console();
+		BreadCrumb()->SetCurrentPage("Employee List");
+		
+		// Retrieve all Employees
+		error_log(DBO()->Search->Archived->Value);
+		if (DBO()->Search->Archived->Value == "0")
+		{
+			DBL()->Employee->Archived = 0;//DBO()->Search->Archived->Value;
+		}
+
+		$orderBy = "LastName, FirstName, UserName";
+		if (DBO()->Search->OrderBy->Value != "")
+		{
+			$orderBy = DBO()->Search->OrderBy->Value;
+		}
+		DBL()->Employee->OrderBy($orderBy);
+
+		DBL()->Employee->Load();
+		
+		$this->LoadPage('employee_view_list');
+
+		return TRUE;
+	}
 	
 	function EmployeeDetils()
 	{
-		
+		AuthenticatedUser()->CheckAuth();
+		DBO()->Employee->Id = AuthenticatedUser()->GetUserId();
+		DBO()->Employee->Load();
+		return $this->Edit(TRUE);
 	}
 	
 
@@ -184,10 +236,18 @@ class AppTemplateEmployee extends ApplicationTemplate
 	 * 
 	 * @method
 	 */
-	function Edit()
+	function Edit($bolEditSelf = FALSE)
 	{
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		
+		if (DBO()->Employee->Id != AuthenticatedUser()->GetUserId())
+		{
+			AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		}
+
+		$bolEditSelf = $bolEditSelf || DBO()->Employee->EditSelf->Value;
+
 		//check if the form was submitted
 		if (SubmittedForm('Employee', 'Save'))
 		{
@@ -218,15 +278,18 @@ class AppTemplateEmployee extends ApplicationTemplate
 				}
 			}
 			
-			DBO()->Employee->FirstName = trim(DBO()->Employee->FirstName->Value);
-			DBO()->Employee->FirstName->ValidateProperty($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
-			DBO()->Employee->LastName = trim(DBO()->Employee->LastName->Value);
-			DBO()->Employee->LastName->ValidateProperty	($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
-			
-			DBO()->Employee->DOB = trim(DBO()->Employee->DOB->Value);
-			DBO()->Employee->DOB = UnmaskShortDate(DBO()->Employee->DOB->Value);
-			DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDate");
-			DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDateInPast", "<label> must be in the past.");
+			if (!$bolEditSelf)
+			{
+				DBO()->Employee->FirstName = trim(DBO()->Employee->FirstName->Value);
+				DBO()->Employee->FirstName->ValidateProperty($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
+				DBO()->Employee->LastName = trim(DBO()->Employee->LastName->Value);
+				DBO()->Employee->LastName->ValidateProperty	($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
+				
+				DBO()->Employee->DOB = trim(DBO()->Employee->DOB->Value);
+				DBO()->Employee->DOB = UnmaskShortDate(DBO()->Employee->DOB->Value);
+				DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDate");
+				DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDateInPast", "<label> must be in the past.");
+			}
 			
 			DBO()->Employee->Email = trim(DBO()->Employee->Email->Value);
 			DBO()->Employee->Email->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidEmail");
@@ -242,22 +305,30 @@ class AppTemplateEmployee extends ApplicationTemplate
 			// Check that the password has been entered and confirmed, as appropriate
 			$this->_ValidatePassword($arrValidationErrors, $bolCreateNew);
 			
-			// Sanitize the permissions that have been set
-			$this->_SetPrivileges();
+			if (!$bolEditSelf)
+			{
+				// Sanitize the permissions that have been set
+				$this->_SetPrivileges();
+			}
 			
 			if (!$bolCreateNew)
 			{
 				// Restrict the fields that can be updated
 				$updatedColumns = array();
-				$updatedColumns[] = "FirstName";
-				$updatedColumns[] = "LastName";
-				$updatedColumns[] = "DOB";
 				$updatedColumns[] = "Email";
 				$updatedColumns[] = "Extension";
 				$updatedColumns[] = "Phone";
 				$updatedColumns[] = "Mobile";
-				$updatedColumns[] = "Archived";
-				$updatedColumns[] = "Privileges";
+				
+				// Only change the following through the admin console, not when editing self
+				if (!$bolEditSelf)
+				{
+					$updatedColumns[] = "FirstName";
+					$updatedColumns[] = "LastName";
+					$updatedColumns[] = "DOB";
+					$updatedColumns[] = "Archived";
+					$updatedColumns[] = "Privileges";
+				}
 
 				// If changing the password, allow  it to be updated
 				if (!DBO()->Employee->Password->IsInvalid() && strlen(DBO()->Employee->Password->Value) > 0)
@@ -290,10 +361,26 @@ class AppTemplateEmployee extends ApplicationTemplate
 				//echo "Employee is NOT invalid Employee would be saved";
 				if (DBO()->Employee->Save())
 				{
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					//Ajax()->AddCommand("ExecuteJavascript", "document.getElementById('VixenForm_Employee').submit();");
-					Ajax()->RenderHtmlTemplate("EmployeeView", CONTEXT_DEFAULT, "EmployeeViewDiv");
-					Ajax()->AddCommand("AlertReload", "The information was successfully saved.");
+					$scriptInit = "";
+					$scriptOnClose = "";
+					if ($bolEditSelf)
+					{
+						$scriptInit = "document.getElementsByTagName('TABLE')[0].style.display = 'none';";
+						$scriptOnClose .= "Vixen.Popup.Close('CloseFlexModalWindow');";
+					}
+					else
+					{
+						$scriptInit .= "Vixen.Popup.Close('" . $this->_objAjax->strId . "');";
+						//$scriptInit .= "EmployeeView.Update();";
+						$scriptOnClose .= "EmployeeView.Update();";
+					}
+
+					$arrParams = array();
+					$arrParams["Message"] = "The information was successfully saved.";
+					$arrParams["ScriptInit"] = $scriptInit;
+					$arrParams["ScriptOnClose"] = $scriptOnClose;
+
+					Ajax()->AddCommand("AlertAndExecuteJavascript", $arrParams);
 					return TRUE;
 				}
 			}
@@ -302,12 +389,13 @@ class AppTemplateEmployee extends ApplicationTemplate
 			return TRUE;			
 		}
 		DBO()->Employee->Load();
+		DBO()->Employee->EditSelf = $bolEditSelf;
 		
-		//if (!$this->IsModal())
-		//{
-			$this->LoadPage('edit_employee');			
-		//}
-		/*else
+		if (!$this->IsModal())
+		{
+			$this->LoadPage('employee_edit');			
+		}
+		else
 		{
 			$this->LoadPage('flex_modal_window');
 			
@@ -316,7 +404,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 
 			$this->Page->AddObject('EmployeeEdit', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
 			
-		}*/
+		}
 		
 		return TRUE;
 	}
