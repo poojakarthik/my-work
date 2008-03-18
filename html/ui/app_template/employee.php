@@ -193,17 +193,21 @@ class AppTemplateEmployee extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Employee List");
 		
 		// Retrieve all Employees
-		error_log(DBO()->Search->Archived->Value);
 		if (DBO()->Search->Archived->Value == "0")
 		{
-			DBL()->Employee->Archived = 0;//DBO()->Search->Archived->Value;
+			DBL()->Employee->Archived = 0;
 		}
 
 		$orderBy = "LastName, FirstName, UserName";
 		if (DBO()->Search->OrderBy->Value != "")
 		{
 			$orderBy = DBO()->Search->OrderBy->Value;
+			if (DBO()->Search->OrderDesc->Value)
+			{
+				$orderBy .= " desc";
+			}
 		}
+
 		DBL()->Employee->OrderBy($orderBy);
 
 		DBL()->Employee->Load();
