@@ -238,7 +238,7 @@ class HTMLElements
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		$strHtml .= "	<input type='text' id='$strId' name='$strName' value='$strValue' class='$strClass' $defaultYear />\n";
-		$strHtml .= "   <a style='position: relative; left: 198px;' href='javascript:showChooser(document.getElementById(\"$strId\"), \"$strId\", \"{$strName}Calender\", $fromYear, $toYear, \"d/m/Y\", false, true, true, $defaultYear);'><img src='img/template/calendar_small.png' width='16' height='16' title='Calendar date picker' /></a>";
+		$strHtml .= "   <a style='position: relative; left: 198px;' href='javascript:DateChooser.showChooser(document.getElementById(\"$strId\"), document.getElementById(\"{$strName}Calender\"), $fromYear, $toYear, \"d/m/Y\", false, true, true, $defaultYear);'><img src='img/template/calendar_small.png' width='16' height='16' title='Calendar date picker' /></a>";
 		$strHtml .= "   <div id='{$strName}Calender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
 		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
 		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
