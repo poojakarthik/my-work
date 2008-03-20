@@ -63,13 +63,18 @@
  		// Defaults
  		$this->intCarrier		= NULL;
  		$this->_strDelimiter	= ",";
+ 		$this->_strEndOfLine	= "\n";
+ 		$this->_strEnclosed		= '';
  		$this->_arrDefine		= Array();
+ 		$this->_arrModuleConfig	= Array();
  		
  		// Statements
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "Id", "CarrierRef = <CarrierRef>");
  		$this->_selRequestByFNN			= new StatementSelect("ProvisioningRequest", "Id", 
 												"FNN = <FNN> AND Type = <Type> AND Status = ".REQUEST_STATUS_PENDING);
 		$this->_selTranslateCarrierCode	= new StatementSelect("ProvisioningTranslation", "Description", "Context = <Context> AND CarrierCode = <CarrierCode>");
+		
+		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_INPUT);
  	}
  	
  	//------------------------------------------------------------------------//
@@ -166,6 +171,8 @@
 			$arrRawData = explode($this->_strDelimiter, rtrim($strLine, "\n"));
 			foreach($this->_arrDefine as $strKey=>$strValue)
 			{
+				
+				
 				$_arrData[$strKey] = $arrRawData[$strValue['Index']];
 				// delimited fields may have fixed width contents
 				if (isset($strValue['Start']) && $strValue['Length'])
@@ -249,6 +256,74 @@
 	 	
 	 	$arrValue	= $this->_selTranslateCarrierCode->Fetch();
 	 	return $arrValue['Description'];
+	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// CreateModuleConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * CreateModuleConfig()
+	 *
+	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
+	 * 
+	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
+	 * 
+	 * @param	integer	$intCarrier		The Carrier to create this module for
+	 * 
+	 * @return	mixed					TRUE	: Config Created
+	 * 									string	: Failure Reason
+	 *
+	 * @method
+	 */
+	 function CreateModuleConfig($intCarrier)
+	 {
+	 	$insCarrierModule		= new StatementInsert("CarrierModule");
+		$insCarrierModuleConfig	= new StatementInsert("CarrierModuleConfig");
+		
+	 	if (!GetConstantName($intCarrier, 'Carrier'))
+	 	{
+	 		// Invalid Carrier Specified
+	 		return "Invalid Carrier '$intCarrier' Specified";
+	 	}
+	 	
+	 	$arrWhere = Array();
+	 	$arrWhere['Carrier']	= $intCarrier;
+	 	$arrWhere['Module']		= get_class($this);
+	 	if ($this->_selCarrierModule->Execute($arrWhere))
+	 	{
+			// Insert the CarrierModule data
+			$arrCarrierModule	= Array();
+	 		$arrCarrierModule['Carrier']	= $intCarrier;
+	 		$arrCarrierModule['Type']		= MODULE_TYPE_PROVISIONING_INPUT;
+	 		$arrCarrierModule['Module']		= get_class($this);
+	 		if (!$intCarrierModule = $insCarrierModule->Execute($arrCarrierModule))
+	 		{
+	 			return "MySQL Error: ".$insCarrierModule->Error();
+	 		}
+			
+			// Insert the CarrierModuleConfig data
+			$strError	= "";
+			foreach ($this->_arrModuleConfig as $strField=>$arrProperties)
+			{
+				$arrModuleConfig	= Array();
+				$arrModuleConfig['CarrierModule']	= $intCarrierModule;
+				$arrModuleConfig['Name']			= $strField;
+				$arrModuleConfig['Type']			= $arrProperties['Type'];
+				$arrModuleConfig['Value']			= $arrProperties['Default'];
+				if (!$insCarrierModuleConfig->Execute($arrModuleConfig))
+				{
+					$strError .= $insCarrierModuleConfig->Error()."\n";
+				}
+			}
+			
+			return ($strError) ? trim($strError) : TRUE;
+			
+	 	}
+	 	else
+	 	{
+	 		return "The Module '".get_class($this)."' already exists for Carrier '$intCarrier'";
+	 	}
 	 }
  }
 ?>

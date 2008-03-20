@@ -52,17 +52,19 @@
 	 *
 	 * Constructor
 	 * 
+	 * @param	integer	$intCarrier				The Carrier using this Module
+	 * 
 	 * @return	ImportBase
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
  		// Parent Constructor
- 		parent::__construct();
+ 		parent::__construct($intCarrier);
  		
  		// Carrier
- 		$this->intCarrier = 1;
+ 		$this->intModuleCarrier = CARRIER_UNITEL;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
@@ -76,6 +78,7 @@
  		
  		// Delimiter
  		$this->_strDelimiter	= "";
+ 		$this->_strEndOfLine	= "\r\n";
  		
 		$arrDefine['RecordType']	['Start']		= 0;
 		$arrDefine['RecordType']	['Length']		= 1;
@@ -220,13 +223,13 @@
 					$arrPDR['Type']	= REQUEST_FULL_SERVICE;
 					break;
 				case "13":	// Virtual PreSelection
-					$arrPDR['Type']	= REQUEST_PRESELECTION;
+					$arrPDR['Type']	= REQUEST_VIRTUAL_PRESELECTION;
 					break;
 				case "52":
 					$arrPDR['Type']	= REQUEST_FULL_SERVICE_REVERSE;
 					break;
 				case "53":
-					$arrPDR['Type']	= REQUEST_PRESELECTION_REVERSE;
+					$arrPDR['Type']	= REQUEST_VIRTUAL_PRESELECTION_REVERSE;
 					break;
 				default:
 					// Either unhandled or not required
@@ -263,7 +266,7 @@
 					else
 					{
 						// If there is only Basket 6, then Preslection Loss
-						$arrPDR['Type']			= REQUEST_LOSS_PRESELECT;
+						$arrPDR['Type']			= REQUEST_LOSS_VIRTUAL_PRESELECTION;
 						$arrPDR['Description']	= "Preselection lost to Carrier #{$arrData['LostTo']}";
 					}
 					
@@ -330,6 +333,11 @@
  			// Description
  			// Handled Elsewhere
  			//----------------------------------------------------------------//
+		
+			//----------------------------------------------------------------//
+			// Request Status
+			// Handled Elsewhere
+			//----------------------------------------------------------------//
  			
  			//----------------------------------------------------------------//
  			// EffectiveDate

@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2007 VOIPTEL Pty Ltd
+// (c) copyright 2008 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
@@ -19,8 +19,8 @@
  * @language	PHP
  * @package		provisioning
  * @author		Rich "Waste" Davis
- * @version		7.12
- * @copyright	2007 VOIPTEL Pty Ltd
+ * @version		8.03
+ * @copyright	2008 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -63,17 +63,19 @@
 	 *
 	 * Constructor
 	 * 
-	 * @return	ImportBase
+	 * @param	integer	$intCarrier				The Carrier using this Module
+	 * 
+	 * @return	ExportBase
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
  		// Parent Constructor
- 		parent::__construct();
+ 		parent::__construct($intCarrier);
  		
  		// Carrier
- 		$this->intCarrier			= CARRIER_UNITEL;
+ 		$this->intModuleCarrier			= CARRIER_UNITEL;
  		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 1;
@@ -83,6 +85,36 @@
  		
  		// File Type
  		$this->intFileType			= FILE_EXPORT_UNITEL_DAILY_ORDER;
+ 		
+		//##----------------------------------------------------------------##//
+		// Define Module Configuration and Defaults
+		//##----------------------------------------------------------------##//
+		
+		// Mandatory
+ 		$this->_arrModuleConfig['Server']			['Default']	= 'ftp.rslcom.com.au';
+ 		$this->_arrModuleConfig['Server']			['Type']	= DATA_TYPE_STRING;
+ 		
+ 		$this->_arrModuleConfig['User']				['Default']	= '';
+ 		$this->_arrModuleConfig['User']				['Type']	= DATA_TYPE_STRING;
+ 		
+ 		$this->_arrModuleConfig['Password']			['Default']	= '';
+ 		$this->_arrModuleConfig['Password']			['Type']	= DATA_TYPE_STRING;
+ 		
+ 		$this->_arrModuleConfig['Path']				['Default']	= '/ebill_dailyorderfiles/';
+ 		$this->_arrModuleConfig['Path']				['Type']	= DATA_TYPE_STRING;
+ 		
+ 		// Additional
+ 		$this->_arrModuleConfig['FileSequence']		['Default']	= 0;
+ 		$this->_arrModuleConfig['FileSequence']		['Type']	= DATA_TYPE_INTEGER;
+ 		
+ 		$this->_arrModuleConfig['RecordSequence']	['Default']	= 0;
+ 		$this->_arrModuleConfig['RecordSequence']	['Type']	= DATA_TYPE_INTEGER;
+ 		
+ 		$this->_arrModuleConfig['EarliestDelivery']	['Default']	= 3600 * 15;
+ 		$this->_arrModuleConfig['EarliestDelivery']	['Type']	= DATA_TYPE_INTEGER;
+ 		
+ 		$this->_arrModuleConfig['LastSent']			['Default']	= '0000-00-00';
+ 		$this->_arrModuleConfig['LastSent']			['Type']	= DATA_TYPE_STRING;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
@@ -313,6 +345,60 @@
 		$arrDefine['Basket']		['PadType']		= STR_PAD_LEFT;
 		
 		$this->_arrDefine[REQUEST_FULL_SERVICE_REVERSE] = $arrDefine;
+		
+ 		//--------------------------------------------------------------------//
+ 		// Virtual Preselection
+ 		//--------------------------------------------------------------------//
+ 		
+ 		$arrDefine = Array();
+ 		$arrDefine['RecordType']	['Start']		= 0;
+		$arrDefine['RecordType']	['Length']		= 2;
+		$arrDefine['RecordType']	['Type']		= 'Integer';
+		$arrDefine['RecordType']	['PadChar']		= '0';
+		$arrDefine['RecordType']	['PadType']		= STR_PAD_LEFT;
+		$arrDefine['RecordType']	['Value']		= '13';
+		
+		$arrDefine['Sequence']		['Start']		= 2;
+		$arrDefine['Sequence']		['Length']		= 9;
+		$arrDefine['Sequence']		['Type']		= 'Integer';
+		$arrDefine['Sequence']		['PadChar']		= '0';
+		$arrDefine['Sequence']		['PadType']		= STR_PAD_LEFT;
+		
+		$arrDefine['FNN']			['Start']		= 11;
+		$arrDefine['FNN']			['Length']		= 10;
+		$arrDefine['FNN']			['Type']		= 'FNN';
+		
+		$arrDefine['Date']			['Start']		= 21;
+		$arrDefine['Date']			['Length']		= 3;
+		$arrDefine['Date']			['Type']		= 'Date::YYYYMMDD';
+		$arrDefine['Date']			['PadChar']		= '0';
+		$arrDefine['Date']			['PadType']		= STR_PAD_LEFT;
+		
+		$this->_arrDefine[REQUEST_VIRTUAL_PRESELECTION] = $arrDefine;
+		
+ 		//--------------------------------------------------------------------//
+ 		// Virtual Preselection Reversal
+ 		//--------------------------------------------------------------------//
+ 		
+ 		$arrDefine = Array();
+ 		$arrDefine['RecordType']	['Start']		= 0;
+		$arrDefine['RecordType']	['Length']		= 2;
+		$arrDefine['RecordType']	['Type']		= 'Integer';
+		$arrDefine['RecordType']	['PadChar']		= '0';
+		$arrDefine['RecordType']	['PadType']		= STR_PAD_LEFT;
+		$arrDefine['RecordType']	['Value']		= '13';
+		
+		$arrDefine['Sequence']		['Start']		= 2;
+		$arrDefine['Sequence']		['Length']		= 9;
+		$arrDefine['Sequence']		['Type']		= 'Integer';
+		$arrDefine['Sequence']		['PadChar']		= '0';
+		$arrDefine['Sequence']		['PadType']		= STR_PAD_LEFT;
+		
+		$arrDefine['FNN']			['Start']		= 11;
+		$arrDefine['FNN']			['Length']		= 10;
+		$arrDefine['FNN']			['Type']		= 'FNN';
+		
+		$this->_arrDefine[REQUEST_VIRTUAL_PRESELECTION_REVERSE] = $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//
@@ -332,47 +418,93 @@
 	 * @method
 	 */
  	function Output($arrRequest)
- 	{
- 		$this->intCarrierReference++;
- 		
+ 	{ 		
  		//--------------------------------------------------------------------//
  		// RENDER
  		//--------------------------------------------------------------------//
- 		$arrRendered	= Array();
+ 		$arrRendered				= Array();
+		$arrRendered['FNN']			= $arrRequest['FNN'];
  		switch ($arrRequest['Type'])
  		{
- 			case REQUEST_PRESELECTION:
- 				$arrRendered['FNN']				= $arrRequest['FNN'];
- 				$arrRendered['AgreementDate']	= date("Ymd", strtotime($arrRequest['RequestedOn']));
+ 			case REQUEST_FULL_SERVICE:
+ 				$arrServiceAddress	= $this->_CleanServiceAddress($arrRequest['Service']);
+ 				
+ 				// Common
+ 				$arrRendered['AgreementDate']			= $arrRequest['AuthorisationDate'];
+				$arrRendered['BillName']				= $arrServiceAddress['BillName'];
+				$arrRendered['BillAddress1']			= $arrServiceAddress['BillAddress1'];
+				$arrRendered['BillAddress2']			= $arrServiceAddress['BillAddress2'];
+				$arrRendered['BillLocality']			= $arrServiceAddress['BillLocality'];
+				$arrRendered['BillPostcode']			= $arrServiceAddress['BillPostcode'];
+				
+				// Residential
+				$arrRendered['EndUserTitle']		= $arrServiceAddress['EndUserTitle'];
+				$arrRendered['FirstName']			= $arrServiceAddress['EndUserGivenName'];
+				$arrRendered['LastName']			= $arrServiceAddress['EndUserFamilyName'];
+				$arrRendered['DateOfBirth']			= $arrServiceAddress['DateOfBirth'];
+				$arrRendered['Employer']			= $arrServiceAddress['Employer'];
+				$arrRendered['Occupation']			= $arrServiceAddress['Occupation'];
+				
+				// Business
+				$arrRendered['CompanyName']			= $arrServiceAddress['EndUserCompanyName'];
+				$arrRendered['ABN']					= $arrServiceAddress['ABN'];
+				$arrRendered['TradingName']			= $arrServiceAddress['TradingName'];
+				
+				// Service Location Details
+				$arrRendered['AddressType']				= $arrServiceAddress['ServiceAddressType'];
+				$arrRendered['AdTypeNumber']			= $arrServiceAddress['ServiceAddressTypeNumber'];
+				$arrRendered['AdTypeSuffix']			= $arrServiceAddress['ServiceAddressTypeSuffix'];
+				$arrRendered['StNumberStart']			= $arrServiceAddress['ServiceStreetNumberStart'];
+				$arrRendered['StNumberEnd']				= $arrServiceAddress['ServiceStreetNumberEnd'];
+				$arrRendered['StNumSuffix']				= $arrServiceAddress['ServiceStreetNumberSuffix'];
+				$arrRendered['StreetName']				= $arrServiceAddress['ServiceStreetName'];
+				$arrRendered['StreetType']				= $arrServiceAddress['ServiceStreetType'];
+				$arrRendered['StTypeSuffix']			= $arrServiceAddress['ServiceStreetTypeSuffix'];
+				$arrRendered['PropertyName']			= $arrServiceAddress['ServicePropertyName'];
+				$arrRendered['Locality']				= $arrServiceAddress['ServiceLocality'];
+				$arrRendered['State']					= $arrServiceAddress['ServiceState'];
+				$arrRendered['Postcode']				= $arrServiceAddress['ServicePostcode'];
+ 				
+ 				for ($intBasket = 1; $intBasket <= 5; $intBasket++)
+ 				{
+ 					$this->intCarrierReference++;
+					$arrRendered['Sequence']	= $this->intCarrierReference;
+ 					$arrRendered['Basket']		= $intBasket;
+			 		$arrRendered['**Type']		= $arrRequest['Type'];
+			 		$arrRendered['**Request']	= $arrRequest['Id'];
+			 		$this->_arrFileContent[]	= $arrRendered;
+ 				}
  				break;
  				
- 			case REQUEST_BAR_SOFT:
- 			case REQUEST_BAR_HARD:
- 				$arrRendered['FNN']				= $arrRequest['FNN'];
+ 			case REQUEST_FULL_SERVICE_REVERSE:
+ 				for ($intBasket = 1; $intBasket <= 5; $intBasket++)
+ 				{
+ 					$this->intCarrierReference++;
+					$arrRendered['Sequence']	= $this->intCarrierReference;
+ 					$arrRendered['Basket']		= $intBasket;
+			 		$arrRendered['**Type']		= $arrRequest['Type'];
+			 		$arrRendered['**Request']	= $arrRequest['Id'];
+			 		$this->_arrFileContent[]	= $arrRendered;
+ 				}
  				break;
  				
- 			case REQUEST_UNBAR_SOFT:
- 			case REQUEST_UNBAR_HARD:
- 				$arrRendered['FNN']				= $arrRequest['FNN'];
+ 			case REQUEST_VIRTUAL_PRESELECTION:
+ 				$this->intCarrierReference++;
+ 				$arrRendered['Sequence']		= $this->intCarrierReference;
+ 				$arrRendered['Date']			= $arrRequest['FNN'];
+		 		$arrRendered['**Type']		= $arrRequest['Type'];
+		 		$arrRendered['**Request']	= $arrRequest['Id'];
+		 		$this->_arrFileContent[]	= $arrRendered;
  				break;
  				
- 			case REQUEST_ACTIVATION:
- 				$arrRendered['FNN']				= $arrRequest['FNN'];
- 				$arrRendered['AgreementDate']	= date("Ymd", strtotime($arrRequest['RequestedOn']));
- 				break;
- 				
- 			case REQUEST_DEACTIVATION:
- 				$arrRendered['FNN']				= $arrRequest['FNN'];
- 				break;
- 				
- 			case REQUEST_PRESELECTION_REVERSE:
- 				$arrRendered['FNN']				= $arrRequest['FNN'];
+ 			case REQUEST_VIRTUAL_PRESELECTION_REVERSE:
+ 				$this->intCarrierReference++;
+ 				$arrRendered['Sequence']		= $this->intCarrierReference;
+		 		$arrRendered['**Type']		= $arrRequest['Type'];
+		 		$arrRendered['**Request']	= $arrRequest['Id'];
+		 		$this->_arrFileContent[]	= $arrRendered;
  				break;
  		}
- 		
- 		$arrRendered['**Type']		= $arrRequest['Type'];
- 		$arrRendered['**Request']	= $arrRequest['Id'];
- 		$this->_arrFileContent[]	= $arrRendered;
  		
  		//--------------------------------------------------------------------//
  		// MODIFICATIONS TO REQUEST RECORD

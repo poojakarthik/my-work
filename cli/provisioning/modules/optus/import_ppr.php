@@ -52,18 +52,19 @@
 	 *
 	 * Constructor
 	 * 
+	 * @param	integer	$intCarrier				The Carrier using this Module
+	 * 
 	 * @return	ImportBase
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
  		// Parent Constructor
- 		parent::__construct();
+ 		parent::__construct($intCarrier);
  		
  		// Carrier
- 		// TODO: Move this out of here?
- 		$this->intCarrier = 2;
+ 		$this->intModuleCarrier = CARRIER_OPTUS;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
@@ -198,8 +199,6 @@
  		// Split the Line using the file definition
  		$arrData = $this->_SplitLine($strLine);
  			
- 			//Debug($arrData);
- 			
 		//----------------------------------------------------------------//
 		// FNN
 		$arrPDR['FNN']	= trim($arrData['AreaCode']).trim($arrData['ServiceLine']);
@@ -297,6 +296,11 @@
 		
 		//----------------------------------------------------------------//
 		// EffectiveDate
+		// Handled Elsewhere
+		//----------------------------------------------------------------//
+		
+		//----------------------------------------------------------------//
+		// Request Status
 		// Handled Elsewhere
 		//----------------------------------------------------------------//
  		

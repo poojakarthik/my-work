@@ -63,31 +63,45 @@
 	 *
 	 * Constructor
 	 * 
+	 * @param	integer	$intCarrier				The Carrier using this Module
+	 * 
 	 * @return	ExportBase
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
  		// Defaults
- 		$this->intCarrier		= NULL;
+ 		$this->intCarrier		= $intCarrier;
+ 		$this->intModuleCarrier	= NULL;
  		$this->_strDelimiter	= ",";
  		$this->_arrDefine		= Array();
  		$this->_arrFileContent	= Array();
  		$this->bolExported		= FALSE;
  		$this->_intMinRequests	= 1;
+ 		$this->_arrModuleConfig	= Array();
  		
  		// Statements
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "Id", "CarrierRef = <CarrierRef>");
+ 		
  		$this->_selRequestByFNN			= new StatementSelect("ProvisioningRequest", "Id", 
 												"FNN = <FNN> AND Type = <Type> AND Status = ".REQUEST_STATUS_PENDING);
+ 		
  		$this->_selSequenceNumber		= new StatementSelect(	"Config",
 																"Value",
 																"Application = ".APPLICATION_PROVISIONING .
 																	" AND Module = '" . get_class($this) . "'" .
 																	" AND Name = <Name>");
 		
-		//Debug($this->_selSequenceNumber->_strQuery);
+ 		$this->_selServiceAddress		= new StatementSelect("ServiceAddress", "*", "Service = <Service>");
+ 		
+ 		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_OUTPUT);
+ 		
+ 		// Load Module Config
+ 		if ($this->_selCarrierModule->Execute())
+ 		{
+ 			
+ 		}
  	}
  	
  	//------------------------------------------------------------------------//
@@ -143,7 +157,7 @@
 	 */
  	protected function _Render($bolRenderToFile = TRUE)
  	{
- 		$strDirectory		= FILE_BASE_DIR.GetCustomerName()."/export/provisioning/".strtolower(GetConstantDescription($this->intCarrier, 'Carrier'))."/{$this->strDescription}/";
+ 		$strDirectory		= FILE_BASE_DIR.GetCustomerName()."/export/provisioning/".strtolower(GetConstantDescription($this->intModuleCarrier, 'Carrier'))."/{$this->strDescription}/";
  		$arrResult			= $this->_RenderLineTXT($this->_arrFilename, FALSE);
  		$this->_strFilePath	= $strDirectory . $arrResult['Line'];
  		
@@ -847,5 +861,290 @@
  		
  		return Array('Pass' => TRUE);
  	}
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// _CleanServiceAddress
+	//------------------------------------------------------------------------//
+	/**
+	 * _CleanServiceAddress()
+	 *
+	 * Finds the Service Address Details for a Service, and cleans them as necessary
+	 *
+	 * Finds the Service Address Details for a Service, and cleans them as necessary
+	 * 
+	 * @param	integer	$intService		The Service to grab Address Details for
+	 * 
+	 * @return	mixed					array	: Cleaned array of ServiceAddress info
+	 * 									string	: Error message
+	 *
+	 * @method
+	 */
+ 	protected function _CleanServiceAddress($intService)
+ 	{
+ 		// Retrieve Service Address details
+ 		if (!$this->_selServiceAddress->Execute(Array('Service' => $intService)))
+ 		{
+ 			// Error
+ 			return "There is no Service Address information for this Service";
+ 		}
+ 		$arrAddress	= $this->_selServiceAddress->Fetch();
+ 		
+		$arrClean = Array( 'Residential' => $arrAddress['Residential'] );
+		
+		// Check our mandatory fields
+		$arrClean['BillName']			= (!$arrAddress['BillName'])		? FALSE : $arrAddress['BillName'];
+		$arrClean['BillAddress1']		= (!$arrAddress['BillAddress1'])	? FALSE : $arrAddress['BillAddress1'];
+		$arrClean['BillLocality']		= (!$arrAddress['BillLocality'])	? FALSE : $arrAddress['BillLocality'];
+		$arrClean['BillPostcode']		= (!$arrAddress['BillPostcode'])	? FALSE : $arrAddress['BillPostcode'];
+		$arrClean['ServiceLocality']	= (!$arrAddress['ServiceLocality'])	? FALSE : $arrAddress['ServiceLocality'];
+		$arrClean['ServiceState']		= (!$arrAddress['ServiceState'])	? FALSE : $arrAddress['ServiceState'];
+		$arrClean['ServicePostcode']	= (!$arrAddress['ServicePostcode'])	? FALSE : $arrAddress['ServicePostcode'];
+		
+
+		if ($arrAddress['Residential'])
+		{
+			// Residential-Specific
+			// Mandatory
+			$arrClean['EndUserTitle']		= (!$arrAddress['EndUserTitle'])			? FALSE : $arrAddress['EndUserTitle'];
+			$arrClean['EndUserGivenName']	= (!$arrAddress['EndUserGivenName'])		? FALSE : $arrAddress['EndUserGivenName'];
+			$arrClean['EndUserFamilyName']	= (!$arrAddress['EndUserFamilyName'])		? FALSE : $arrAddress['EndUserFamilyName'];
+			$arrClean['DateOfBirth']		= ($arrAddress['DateOfBirth'] == "000000")	? FALSE : $arrAddress['DateOfBirth'];
+			
+			// Empty
+			$arrClean['EndUserCompanyName']	= "";
+			$arrClean['ABN']				= "";
+			$arrClean['TradingName']		= "";
+			
+			// Optional
+			$arrClean['Employer']			= $arrAddress['Employer'];
+			$arrClean['Occupation']			= $arrAddress['Occupation'];
+		}
+		else
+		{
+			// Business-Specific
+			// Mandatory
+			$arrClean['EndUserCompanyName']	= (!$arrAddress['EndUserCompanyName'])	? FALSE : $arrAddress['EndUserCompanyName'];
+			$arrClean['ABN']				= (!$arrAddress['ABN'])					? FALSE : $arrAddress['ABN'];
+			
+			// Empty
+			$arrClean['EndUserTitle']		= "";
+			$arrClean['EndUserGivenName']	= "";
+			$arrClean['EndUserFamilyName']	= "";
+			$arrClean['DateOfBirth']		= "";
+			$arrClean['Employer']			= "";
+			$arrClean['Occupation']			= "";
+			
+			// Optional
+			$arrClean['TradingName']		= $arrAddress['TradingName'];
+		}
+		
+		// ServiceAddress
+		switch ($arrAddress['ServiceAddressType'])
+		{
+			// LOTs
+			case "LOT":
+				// Mandatory
+				$arrClean['ServiceAddressTypeNumber']		= (!$arrAddress['ServiceAddressTypeNumber'])	? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
+				
+				// Dependent
+				if ($arrAddress['ServiceStreetName'])
+				{
+					$arrClean['ServiceStreetName']			= $arrAddress['ServiceStreetName'];
+					$arrClean['ServiceStreetTypeSuffix']	= $arrAddress['ServiceStreetTypeSuffix'];
+					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
+					$arrClean['ServiceStreetType']			= (!$arrAddress['ServiceStreetType'])			? FALSE : $arrAddress['ServiceStreetType'];
+				}
+				elseif ($arrAddress['ServicePropertyName'])
+				{
+					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
+				}
+				else
+				{
+					$arrClean['ServiceStreetName']			= FALSE;
+					$arrClean['ServicePropertyName']		= FALSE;
+				}
+				
+				// Empty
+				$arrClean['ServiceStreetNumberStart']		= "";
+				$arrClean['ServiceStreetNumberEnd']			= "";
+				$arrClean['ServiceStreetNumberSuffix']		= "";
+				
+				// Optional
+				$arrClean['ServiceAddressTypeSuffix']		= $arrAddress['ServiceAddressTypeSuffix'];
+				break;
+			
+			// Postal addresses
+			case "POB":
+			case "PO":
+			case "BAG":
+			case "CMA":
+			case "CMB":
+			case "PB":
+			case "GPO":
+			case "MS":
+			case "RMD":
+			case "RMB":
+			case "LB":
+			case "RMS":
+			case "RSD":
+				// Mandatory
+				$arrClean['ServiceAddressTypeNumber']		=	(!$arrAddress['ServiceAddressTypeNumber'])	? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
+				
+				// Empty
+				$arrClean['ServiceStreetNumberStart']		= "";
+				$arrClean['ServiceStreetNumberEnd']			= "";
+				$arrClean['ServiceStreetNumberSuffix']		= "";
+				$arrClean['ServiceStreetName']				= "";
+				$arrClean['ServiceStreetType']				= "";
+				$arrClean['ServiceStreetTypeSuffix']		= "";
+				$arrClean['ServicePropertyName']			= "";
+				
+				// Optional	
+				$arrClean['ServiceAddressTypeSuffix']		= $arrAddress['ServiceAddressTypeSuffix'];
+				break;
+			
+			// Standard addresses
+			default:
+				// Mandatory
+				
+				
+				// Dependent
+				if ($arrAddress['ServiceAddressType'])
+				{
+					$arrClean['ServiceAddressTypeNumber']	= (!$arrAddress['ServiceAddressTypeNumber'])	? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
+					$arrClean['ServiceAddressTypeSuffix']	= $arrAddress['ServiceAddressTypeSuffix'];
+				}
+				else
+				{
+					$arrClean['ServiceAddressTypeNumber']	= "";
+					$arrClean['ServiceAddressTypeSuffix']	= "";
+				}
+				
+				if ($arrAddress['ServiceStreetName'])
+				{
+					$arrClean['ServiceStreetName']			= $arrAddress['ServiceStreetName'];
+					$arrClean['ServiceStreetTypeSuffix']	= $arrAddress['ServiceStreetTypeSuffix'];
+					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
+					$arrClean['ServiceStreetType']			= (!$arrAddress['ServiceStreetType'])			? FALSE : $arrAddress['ServiceStreetType'];
+					
+					if ($arrAddress['ServiceStreetNumberStart'])
+					{
+						$arrClean['ServiceStreetNumberStart']	= trim($arrAddress['ServiceStreetNumberStart']);
+						$arrClean['ServiceStreetNumberEnd']		= (!$arrAddress['ServiceStreetNumberEnd'])	? "     " : trim($arrAddress['ServiceStreetNumberEnd']);
+						$arrClean['ServiceStreetNumberSuffix']	= $arrAddress['ServiceStreetNumberSuffix'];
+					}
+					else
+					{
+						$arrClean['ServiceStreetNumberStart']	= FALSE;
+					}
+				}
+				elseif ($arrAddress['ServicePropertyName'])
+				{
+					$arrClean['ServicePropertyName']			= $arrAddress['ServicePropertyName'];
+				}
+				else
+				{
+					$arrClean['ServiceStreetName']				= FALSE;
+					$arrClean['ServicePropertyName']			= FALSE;
+				}
+				break;
+		}
+		
+		// add optional fields
+		$arrClean['BillAddress2']	= $arrAddress['BillAddress2'];
+		
+		// Trim all fields
+		$strError	= "";
+		foreach ($arrClean as $strField=>$mixValue)
+		{
+			if ($mixValue === FALSE)
+			{
+				$strError .= "Mandatory Service Address Field '$strField' is Empty\n";
+			}
+			else
+			{
+				$arrClean[$strField]	= trim($mixValue);
+			}
+		}
+		
+		// Return Cleaned Array or Error Messages
+		if ($strError)
+		{
+			return trim($strError);
+		}
+		else
+		{
+			return $arrClean;
+		}
+ 	}
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// CreateModuleConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * CreateModuleConfig()
+	 *
+	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
+	 * 
+	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
+	 * 
+	 * @param	integer	$intCarrier		The Carrier to create this module for
+	 * 
+	 * @return	mixed					TRUE	: Config Created
+	 * 									string	: Failure Reason
+	 *
+	 * @method
+	 */
+	 function CreateModuleConfig($intCarrier)
+	 {
+		$insCarrierModule		= new StatementInsert("CarrierModule");
+		$insCarrierModuleConfig	= new StatementInsert("CarrierModuleConfig");
+		
+	 	if (!GetConstantName($intCarrier, 'Carrier'))
+	 	{
+	 		// Invalid Carrier Specified
+	 		return "Invalid Carrier '$intCarrier' Specified";
+	 	}
+	 	
+	 	$arrWhere = Array();
+	 	$arrWhere['Carrier']	= $intCarrier;
+	 	$arrWhere['Module']		= get_class($this);
+	 	if ($this->_selCarrierModule->Execute($arrWhere))
+	 	{
+			// Insert the CarrierModule data
+			$arrCarrierModule	= Array();
+	 		$arrCarrierModule['Carrier']	= $intCarrier;
+	 		$arrCarrierModule['Type']		= MODULE_TYPE_PROVISIONING_INPUT;
+	 		$arrCarrierModule['Module']		= get_class($this);
+	 		if (!$intCarrierModule = $insCarrierModule->Execute($arrCarrierModule))
+	 		{
+	 			return "MySQL Error: ".$insCarrierModule->Error();
+	 		}
+			
+			// Insert the CarrierModuleConfig data
+			$strError	= "";
+			foreach ($this->_arrModuleConfig as $strField=>$arrProperties)
+			{
+				$arrModuleConfig	= Array();
+				$arrModuleConfig['CarrierModule']	= $intCarrierModule;
+				$arrModuleConfig['Name']			= $strField;
+				$arrModuleConfig['Type']			= $arrProperties['Type'];
+				$arrModuleConfig['Value']			= $arrProperties['Default'];
+				if (!$insCarrierModuleConfig->Execute($arrModuleConfig))
+				{
+					$strError .= $insCarrierModuleConfig->Error()."\n";
+				}
+			}
+			
+			return ($strError) ? trim($strError) : TRUE;
+			
+	 	}
+	 	else
+	 	{
+	 		return "The Module '".get_class($this)."' already exists for Carrier '$intCarrier'";
+	 	}
+	 }
 }
 ?>

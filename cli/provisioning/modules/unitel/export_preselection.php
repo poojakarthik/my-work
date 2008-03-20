@@ -63,17 +63,19 @@
 	 *
 	 * Constructor
 	 * 
-	 * @return	ImportBase
+	 * @param	integer	$intCarrier				The Carrier using this Module
+	 * 
+	 * @return	ExportBase
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
  		// Parent Constructor
- 		parent::__construct();
+ 		parent::__construct($intCarrier);
  		
  		// Carrier
- 		$this->intCarrier			= CARRIER_UNITEL;
+ 		$this->intModuleCarrier			= CARRIER_UNITEL;
  		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 1;
@@ -83,6 +85,27 @@
  		
  		// File Type
  		$this->intFileType			= FILE_EXPORT_UNITEL_PRESELECTION;
+ 		
+		//##----------------------------------------------------------------##//
+		// Define Module Configuration and Defaults
+		//##----------------------------------------------------------------##//
+		
+		// Mandatory
+ 		$this->_arrModuleConfig['Server']			['Default']	= 'ftp.rslcom.com.au';
+ 		$this->_arrModuleConfig['Server']			['Type']	= DATA_TYPE_STRING;
+ 		
+ 		$this->_arrModuleConfig['User']				['Default']	= '';
+ 		$this->_arrModuleConfig['User']				['Type']	= DATA_TYPE_STRING;
+ 		
+ 		$this->_arrModuleConfig['Password']			['Default']	= '';
+ 		$this->_arrModuleConfig['Password']			['Type']	= DATA_TYPE_STRING;
+ 		
+ 		$this->_arrModuleConfig['Path']				['Default']	= '/dailychurn/';
+ 		$this->_arrModuleConfig['Path']				['Type']	= DATA_TYPE_STRING;
+ 		
+ 		// Additional
+ 		$this->_arrModuleConfig['FileSequence']		['Default']	= 0;
+ 		$this->_arrModuleConfig['FileSequence']		['Type']	= DATA_TYPE_INTEGER;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
