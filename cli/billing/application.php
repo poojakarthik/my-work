@@ -993,13 +993,13 @@
 			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "There was a database error"));
 			return;
 		}
-		elseif ($mixResult == 0)
+		$arrInvoiceRun	= $selGetInvoiceRun->Fetch();
+		if (!$arrInvoiceRun['InvoiceRun'])
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "There was no temporary invoice run"));
 			return;
 		}
-		$arrInvoiceRun	= $selGetInvoiceRun->Fetch();
 		$strInvoiceRun	= $arrInvoiceRun['InvoiceRun'];
 		$this->_rptBillingReport->AddMessage(MSG_OK);
 		
@@ -1019,10 +1019,10 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		// empty temporary invoice table
+		/*// empty temporary invoice table
 		$this->_rptBillingReport->AddMessage("Truncating Temp Invoice table...", FALSE);
 		$qryTruncate = new Query();
-		if (!$qryTruncate->Execute("TRUNCATE TABLE InvoiceTemp"))
+		if (!$qryTruncate->Execute("DELETE FROM InvoiceTemp "))
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
@@ -1032,7 +1032,7 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
+		}*/
 		
 		// change status of temp invoice CDRs
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS."\t", FALSE);
@@ -1049,7 +1049,7 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}		
+		}
 		
 		// update Account LastBilled date
 		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED."\t", FALSE);
@@ -1173,7 +1173,7 @@
 		$this->_rptBillingReport->AddMessage("Updating ServiceRatePlan.LastChargedOn...", FALSE);
 		$selServices		= new StatementSelect("ServiceTotal", "DISTINCT Service", "InvoiceRun = <InvoiceRun>");
 		$selServices->Execute($arrInvoiceRun);
-		while ($arrService = $selServices)
+		while ($arrService = $selServices->Fetch())
 		{
 			$qryLastChargedOn	= new Query("UPDATE ServiceRatePlan SET LastChargedOn = NOW() WHERE Service = {$arrService['Service']} AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1 ORDER BY CreatedOn DESC LIMIT 1");
 			$qryLastChargedOn->Execute();
@@ -1255,7 +1255,7 @@
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 		}
 		
-		
+		/*
 		// Move Invoiced CDRS to CDRInvoiced table
 		$this->_rptBillingReport->AddMessage("Moving Invoiced CDRs to CDRInvoiced...\t", FALSE);
 		$qryCopyInvoicedCDRs	= new Query();
@@ -1277,7 +1277,7 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
+		}*/
 	}
 	
 	//------------------------------------------------------------------------//
