@@ -394,7 +394,6 @@ class AppTemplateEmployee extends ApplicationTemplate
 		}
 		DBO()->Employee->Load();
 		DBO()->Employee->EditSelf = $bolEditSelf;
-		error_log("\$bolEditSelf = " . $bolEditSelf);
 		
 		if (!$this->IsModal())
 		{
