@@ -192,7 +192,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		Breadcrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Employee List");
 		
-		// Retrieve all Employees
+		// If only want non-archived Employees...
 		if (DBO()->Search->Archived->Value == "0")
 		{
 			DBL()->Employee->Archived = 0;
