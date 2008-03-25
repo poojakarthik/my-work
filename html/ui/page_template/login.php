@@ -26,7 +26,7 @@
 
 <style type="text/css" media="screen">
 				
-				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; }
+				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; background-color: #fff; }
 			    #topContainer { padding-top: 6em; background: #FFF; }
 			    #logoImage {width:250px; height:91px; float: left; }
 			    #loginContainer{padding: 0px 0px 18em 210px;}
