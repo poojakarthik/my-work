@@ -2,8 +2,7 @@
 
 
 // Set up the databases correctly
-$strSourceDB							= $GLOBALS['**arrDatabase']['Database'];
-$GLOBALS['**arrDatabase']['Database']	.= '_working';
+$strDestinationDB	= $GLOBALS['**arrDatabase']['Database'] . '_working';
 
 // we use the actual tables not the db def in case it is out of date
 require_once('../../flex.require.php');
@@ -14,7 +13,7 @@ define("MODE_EXCLUDE"	, 2);
 
 CliEcho("\n[ MYSQL HOT COPY ]\n");
 
-CliEcho("Copying to database '{$GLOBALS['**arrDatabase']['Database']}' from '$strSourceDB'");
+CliEcho("Copying to database '$strDestinationDB' from '{$GLOBALS['**arrDatabase']['Database']}'");
 
 $arrSpecifiedTables = Array();
 if ($argc > 2)
@@ -60,7 +59,7 @@ CliEcho("\n * Copying Tables...");
 $qltListTable = new QueryListTables();
 
 // get tables from Source DB
-$arrTables = $qltListTable->Execute($strSourceDB);
+$arrTables = $qltListTable->Execute();
 
 // set up copy table object
 $qctCopyTable = new QueryCopyTable();
@@ -87,7 +86,7 @@ foreach($arrTables AS $mixKey=>$strTable)
 			$GLOBALS['fwkFramework']->StartWatch();
 			
 			// copy a table
-			//$qctCopyTable->Execute($strTable, "$strSourceDB.$strTable");
+			//$qctCopyTable->Execute("$strDestinationDB.".$strTable, $strTable);
 			
 			$intTime = (int)$GLOBALS['fwkFramework']->LapWatch();
 			CliEcho(str_pad("{$intTime}s     [   OK   ]", 25, ' ', STR_PAD_LEFT));
@@ -100,7 +99,7 @@ foreach($arrTables AS $mixKey=>$strTable)
 		$GLOBALS['fwkFramework']->StartWatch();
 		
 		// copy a table
-		//$qctCopyTable->Execute($strTable, "$strSourceDB.$strTable");
+		//$qctCopyTable->Execute($strTable, "$strDestinationDB.$strTable");
 		
 		$intTime = (int)$GLOBALS['fwkFramework']->LapWatch();
 		CliEcho(str_pad("{$intTime}s     [   OK   ]", 25, ' ', STR_PAD_LEFT));
