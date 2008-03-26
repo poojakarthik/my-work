@@ -1,12 +1,9 @@
 <?php
 
-$strSourceDB							= "vixen";
 
-// Make sure we are the root database user
-$GLOBALS['**arrDatabase']['User']		= 'root';
-$GLOBALS['**arrDatabase']['Password']	= 'fuckthisshit';
-$GLOBALS['**arrDatabase']['Database']	= 'vixenworking';
-$GLOBALS['**arrDatabase']['URL']		= '10.50.50.132';
+// Set up the databases correctly
+$strSourceDB							= $GLOBALS['**arrDatabase']['Database'];
+$GLOBALS['**arrDatabase']['Database']	.= '_working';
 
 // we use the actual tables not the db def in case it is out of date
 require_once('../../flex.require.php');
