@@ -64,7 +64,8 @@
  		parent::__construct($intCarrier);
  		
  		// Carrier
- 		$this->intModuleCarrier = CARRIER_OPTUS;
+ 		$this->intBaseCarrier	= CARRIER_OPTUS;
+ 		$this->intBaseFileType	= FILE_IMPORT_OPTUS_PPR;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format

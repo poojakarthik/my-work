@@ -64,7 +64,8 @@
  		parent::__construct($intCarrier);
  		
  		// Carrier
- 		$this->intModuleCarrier = CARRIER_UNITEL;
+ 		$this->intBaseCarrier	= CARRIER_UNITEL;
+ 		$this->intBaseFileType	= FILE_IMPORT_UNITEL_PRESELECTION;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format

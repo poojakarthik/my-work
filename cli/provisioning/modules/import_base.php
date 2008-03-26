@@ -40,7 +40,7 @@
  * @package		provisioning
  * @class		ImportBase
  */
- class ImportBase
+ class ImportBase extends CarrierModule
  {
  	public $intLineNumber;
  	
@@ -54,12 +54,16 @@
 	 *
 	 * Constructor
 	 * 
+	 * @param	integer	$intCarrier				The Carrier using this Module
+	 * 
 	 * @return	ImportBase
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
+ 		parent::__contstruct($intCarrier, MODULE_TYPE_PROVISIONING_INPUT);
+ 		
  		// Defaults
  		$this->intCarrier		= NULL;
  		$this->_strDelimiter	= ",";
@@ -256,74 +260,6 @@
 	 	
 	 	$arrValue	= $this->_selTranslateCarrierCode->Fetch();
 	 	return $arrValue['Description'];
-	 }
- 	
- 	
- 	//------------------------------------------------------------------------//
-	// CreateModuleConfig
-	//------------------------------------------------------------------------//
-	/**
-	 * CreateModuleConfig()
-	 *
-	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
-	 * 
-	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
-	 * 
-	 * @param	integer	$intCarrier		The Carrier to create this module for
-	 * 
-	 * @return	mixed					TRUE	: Config Created
-	 * 									string	: Failure Reason
-	 *
-	 * @method
-	 */
-	 function CreateModuleConfig($intCarrier)
-	 {
-	 	$insCarrierModule		= new StatementInsert("CarrierModule");
-		$insCarrierModuleConfig	= new StatementInsert("CarrierModuleConfig");
-		
-	 	if (!GetConstantName($intCarrier, 'Carrier'))
-	 	{
-	 		// Invalid Carrier Specified
-	 		return "Invalid Carrier '$intCarrier' Specified";
-	 	}
-	 	
-	 	$arrWhere = Array();
-	 	$arrWhere['Carrier']	= $intCarrier;
-	 	$arrWhere['Module']		= get_class($this);
-	 	if ($this->_selCarrierModule->Execute($arrWhere))
-	 	{
-			// Insert the CarrierModule data
-			$arrCarrierModule	= Array();
-	 		$arrCarrierModule['Carrier']	= $intCarrier;
-	 		$arrCarrierModule['Type']		= MODULE_TYPE_PROVISIONING_INPUT;
-	 		$arrCarrierModule['Module']		= get_class($this);
-	 		if (!$intCarrierModule = $insCarrierModule->Execute($arrCarrierModule))
-	 		{
-	 			return "MySQL Error: ".$insCarrierModule->Error();
-	 		}
-			
-			// Insert the CarrierModuleConfig data
-			$strError	= "";
-			foreach ($this->_arrModuleConfig as $strField=>$arrProperties)
-			{
-				$arrModuleConfig	= Array();
-				$arrModuleConfig['CarrierModule']	= $intCarrierModule;
-				$arrModuleConfig['Name']			= $strField;
-				$arrModuleConfig['Type']			= $arrProperties['Type'];
-				$arrModuleConfig['Value']			= $arrProperties['Default'];
-				if (!$insCarrierModuleConfig->Execute($arrModuleConfig))
-				{
-					$strError .= $insCarrierModuleConfig->Error()."\n";
-				}
-			}
-			
-			return ($strError) ? trim($strError) : TRUE;
-			
-	 	}
-	 	else
-	 	{
-	 		return "The Module '".get_class($this)."' already exists for Carrier '$intCarrier'";
-	 	}
 	 }
  }
 ?>

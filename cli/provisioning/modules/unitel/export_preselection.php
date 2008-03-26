@@ -75,7 +75,8 @@
  		parent::__construct($intCarrier);
  		
  		// Carrier
- 		$this->intModuleCarrier			= CARRIER_UNITEL;
+ 		$this->intBaseCarrier	= CARRIER_UNITEL;
+ 		$this->intBaseFileType	= FILE_EXPORT_UNITEL_PRESELECTION;
  		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 1;

@@ -75,16 +75,14 @@
  		parent::__construct($intCarrier);
  		
  		// Carrier
- 		$this->intModuleCarrier			= CARRIER_UNITEL;
+ 		$this->intBaseCarrier	= CARRIER_UNITEL;
+ 		$this->intBaseFileType	= FILE_EXPORT_UNITEL_DAILY_ORDER;
  		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 1;
  		
  		// Module Description
  		$this->strDescription		= "Daily Order";
- 		
- 		// File Type
- 		$this->intFileType			= FILE_EXPORT_UNITEL_DAILY_ORDER;
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults

@@ -40,7 +40,7 @@
  * @package		provisioning
  * @class		ExportBase
  */
- class ExportBase
+ class ExportBase extends CarrierModule
  {
  	//------------------------------------------------------------------------//
 	// Properties
@@ -71,9 +71,10 @@
 	 */
  	function __construct($intCarrier)
  	{
+ 		parent::__contstruct($intCarrier, MODULE_TYPE_PROVISIONING_OUTPUT);
+ 		
  		// Defaults
  		$this->intCarrier		= $intCarrier;
- 		$this->intModuleCarrier	= NULL;
  		$this->_strDelimiter	= ",";
  		$this->_arrDefine		= Array();
  		$this->_arrFileContent	= Array();
@@ -98,9 +99,18 @@
  		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_OUTPUT);
  		
  		// Load Module Config
- 		if ($this->_selCarrierModule->Execute())
+ 		if ($this->_selCarrierModule->Execute(Array('Carrier' => $intCarrier, 'Module' => get_class($this))))
  		{
+ 			$arrCarrierModule	= $this->_selCarrierModule->Fetch();
  			
+ 			$selModuleConfig	= new StatementSelect("CarrierModuleConfig", "*", "CarrierModule = <Id>");
+ 			$selModuleConfig->Execute($arrCarrierModule);
+ 			
+ 			// Load each value
+ 			while ($arrModuleConfig = $selModuleConfig->Fetch())
+ 			{
+ 				$this->_arrModuleConfig[$arrModuleConfig['Name']]['Value']	= $arrModuleConfig['Value'];
+ 			}
  		}
  	}
  	
@@ -1078,73 +1088,5 @@
 			return $arrClean;
 		}
  	}
- 	
- 	
- 	//------------------------------------------------------------------------//
-	// CreateModuleConfig
-	//------------------------------------------------------------------------//
-	/**
-	 * CreateModuleConfig()
-	 *
-	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
-	 * 
-	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
-	 * 
-	 * @param	integer	$intCarrier		The Carrier to create this module for
-	 * 
-	 * @return	mixed					TRUE	: Config Created
-	 * 									string	: Failure Reason
-	 *
-	 * @method
-	 */
-	 function CreateModuleConfig($intCarrier)
-	 {
-		$insCarrierModule		= new StatementInsert("CarrierModule");
-		$insCarrierModuleConfig	= new StatementInsert("CarrierModuleConfig");
-		
-	 	if (!GetConstantName($intCarrier, 'Carrier'))
-	 	{
-	 		// Invalid Carrier Specified
-	 		return "Invalid Carrier '$intCarrier' Specified";
-	 	}
-	 	
-	 	$arrWhere = Array();
-	 	$arrWhere['Carrier']	= $intCarrier;
-	 	$arrWhere['Module']		= get_class($this);
-	 	if ($this->_selCarrierModule->Execute($arrWhere))
-	 	{
-			// Insert the CarrierModule data
-			$arrCarrierModule	= Array();
-	 		$arrCarrierModule['Carrier']	= $intCarrier;
-	 		$arrCarrierModule['Type']		= MODULE_TYPE_PROVISIONING_INPUT;
-	 		$arrCarrierModule['Module']		= get_class($this);
-	 		if (!$intCarrierModule = $insCarrierModule->Execute($arrCarrierModule))
-	 		{
-	 			return "MySQL Error: ".$insCarrierModule->Error();
-	 		}
-			
-			// Insert the CarrierModuleConfig data
-			$strError	= "";
-			foreach ($this->_arrModuleConfig as $strField=>$arrProperties)
-			{
-				$arrModuleConfig	= Array();
-				$arrModuleConfig['CarrierModule']	= $intCarrierModule;
-				$arrModuleConfig['Name']			= $strField;
-				$arrModuleConfig['Type']			= $arrProperties['Type'];
-				$arrModuleConfig['Value']			= $arrProperties['Default'];
-				if (!$insCarrierModuleConfig->Execute($arrModuleConfig))
-				{
-					$strError .= $insCarrierModuleConfig->Error()."\n";
-				}
-			}
-			
-			return ($strError) ? trim($strError) : TRUE;
-			
-	 	}
-	 	else
-	 	{
-	 		return "The Module '".get_class($this)."' already exists for Carrier '$intCarrier'";
-	 	}
-	 }
 }
 ?>
