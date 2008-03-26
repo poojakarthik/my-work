@@ -311,6 +311,11 @@
  		echo str_repeat("\t", $intDepth)." + Copying '$strLocalPath' to '$strRemotePath'...\n";
  		//ob_flush();
  		
+ 		if (!file_exists($strLocalPath))
+ 		{
+ 			return "Cannot Copy: Path '$strLocalPath' doesn't exist!";
+ 		}
+ 		
  		// Is $strLocalPath a file or directory?
  		if (is_file($strLocalPath))
  		{ 			
@@ -650,6 +655,11 @@
  		
  		echo str_repeat("\t", $intDepth)." + Copying '$strLocalPath' to '$strRemotePath'...\n";
  		//ob_flush();
+ 		
+ 		if (!file_exists($strLocalPath))
+ 		{
+ 			return "Cannot Copy: Path '$strLocalPath' doesn't exist!";
+ 		}
  		
  		// Is $strLocalPath a file or directory?
  		if (is_file($strLocalPath))
