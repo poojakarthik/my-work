@@ -101,17 +101,6 @@ function VixenRateGroupAddClass()
 		// protected against by setting the "autocomplete" attribute of all text input elements to "off"
 		//Exception... "'Permission denied to set property XULElement.selectedIndex' when calling method: [nsIAutoCompletePopup::selectedIndex]"
 		//document.getElementById("RateGroup.Name").focus();
-		
-		// Override the default length of the textboxes
-		this.OverrideTextboxSize();
-	}
-	
-	// Used to override the size of the textboxes and the RecordType combobox
-	this.OverrideTextboxSize = function()
-	{
-		document.getElementById("RateGroup.Name").style.width = "380px";
-		document.getElementById("RateGroup.Description").style.width = "380px";
-		document.getElementById("RecordTypeCombo").style.width = "380px";
 	}
 	
 	//------------------------------------------------------------------------//

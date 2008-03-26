@@ -372,11 +372,16 @@ class HtmlTemplateNoteList extends HtmlTemplate
 			$strDetailsHtml .= "<br />by ";
 			if ($dboNote->Employee->Value)
 			{
-				$strDetailsHtml .= GetEmployeeName($dboNote->Employee->Value) . ".";
+				$strUserName	= GetEmployeeUserName($dboNote->Employee->Value);
+				if ($strUserName !== NULL)
+				{
+					$strUserName = " ($strUserName)";
+				}
+				$strDetailsHtml .= GetEmployeeName($dboNote->Employee->Value) . $strUserName;
 			}
 			else
 			{
-				$strDetailsHtml .= "Automated System.";
+				$strDetailsHtml .= "Automated System";
 			}
 			
 			if ($dboNote->Service->Value && DBO()->NoteDetails->AccountNotes->Value)

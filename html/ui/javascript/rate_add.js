@@ -66,9 +66,6 @@ function VixenRateAddClass()
 		this.strPopupId = strPopupId;
 		
 		// Override the width of the Name and Description fields
-		document.getElementById("Rate.Name").style.width = "380px";
-		document.getElementById("Rate.Description").style.width = "380px";
-	
 		document.getElementById("Rate.StartTime").disabled	= true;
 		document.getElementById("Rate.EndTime").disabled	= true;
 		document.getElementById("Rate.Duration").disabled	= true;

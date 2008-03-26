@@ -100,8 +100,6 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<h2 class='Plan'>Rate Details</h2>\n";
-		
 		// Render the container divs
 		echo "<div id='ContainerDiv_FormContainerDiv_RateAdd' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
 		echo "<div id='FormContainerDiv_RateAdd' style='overflow:auto; height:530px; width:auto; padding: 0px 3px 0px 3px'>\n";
@@ -124,8 +122,8 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			DBO()->Rate->Id->RenderHidden();
 			echo "<div class='NarrowContent'>\n"; //beginning of the DIV for the rate name and duration
 				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
-				echo "<tr><td width='2%' rowspan=10>&nbsp;</td><td width='98%'>".DBO()->Rate->Name->AsInput(CONTEXT_DEFAULT, TRUE)."</td></tr>\n";
-				echo "<tr><td>".DBO()->Rate->Description->AsInput()."</td></tr>\n";
+				echo "<tr><td width='2%' rowspan=10>&nbsp;</td><td width='98%'>".DBO()->Rate->Name->AsInput(CONTEXT_DEFAULT, TRUE, FALSE, Array("style:width"=>"380px"))."</td></tr>\n";
+				echo "<tr><td>".DBO()->Rate->Description->AsInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"380px"))."</td></tr>\n";
 				echo "<tr><td>".DBO()->Rate->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT, CONTEXT_DEFAULT)."</td></tr>\n";
 				echo "<tr><td>".DBO()->RecordType->Description->AsOutput(CONTEXT_DEFAULT,TRUE)."</td></tr>\n";
 				DBO()->Rate->Fleet->RenderOutput();

@@ -123,8 +123,16 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			
 			// Build the Actions Cell
 			$strViewAddressLink			= Href()->ViewServiceAddress($intServiceId);
+			$strEditAddressLink			= Href()->EditServiceAddress($intServiceId);
 			$strProvisioningHistoryLink	= "javascript:Vixen.ProvisioningPage.ShowHistory($intServiceId)";
-			$strActionsCell  = "<a href='$strViewAddressLink'><img src='img/template/address.png' title='Address Details' /></a>";
+			if ($dboService->AddressId->Value != NULL)
+			{
+				$strActionsCell  = "<a href='$strViewAddressLink'><img src='img/template/address.png' title='Address Details' /></a>";
+			}
+			else
+			{
+				$strActionsCell  = "<a href='$strEditAddressLink'><img src='img/template/address.png' title='Address Details' /></a>";
+			}
 			$strActionsCell .= "&nbsp;&nbsp;<a href='$strProvisioningHistoryLink'><img src='img/template/provisioning_history.png' title='Provisioning History' /></a>";
 
 			// Build the checkbox
@@ -139,7 +147,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 				else
 				{
 					// The service does not have Address details specified.  Flag it
-					$strSelectCell = "<a href='$strViewAddressLink' title='No Address Details defined'><img src='img/template/flag_red.png'/></a>";
+					$strSelectCell = "<a href='$strEditAddressLink' title='No Address Details defined'><img src='img/template/flag_red.png'/></a>";
 				}
 			}
 			else

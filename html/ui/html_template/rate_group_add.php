@@ -129,7 +129,6 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				}
 				
 				// Render the RateGroupDetails
-				echo "<h2 class='Plan'>Rate Group Details</h2>\n";
 				echo "<div class='WideForm'>\n";
 
 				echo "<div id='RateGroupDetailsId'>\n";
@@ -173,7 +172,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				// Build the RecordType Combobox
 				echo "<div class='DefaultElement'>\n";
 				echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Record Type:</div>\n";
-				echo "      <select id='RecordTypeCombo' name='RateGroup.RecordType' class='DefaultInputComboBox' style='width:250px;' onchange='Vixen.RateGroupAdd.ChangeRecordType(this.value)'>\n";
+				echo "      <select id='RecordTypeCombo' name='RateGroup.RecordType' class='DefaultInputComboBox' style='width:380px;' onchange='Vixen.RateGroupAdd.ChangeRecordType(this.value)'>\n";
 				echo "         <option value='0' selected='selected'>&nbsp;</option>";
 				echo "      </select>\n";
 				echo "</div>\n"; // DefaultElement
@@ -255,15 +254,11 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	 */
 	private function _RenderRateGroupDetails()
 	{
-
 		// Only apply the output mask if the DBO()->RateGroup is not invalid
 		$bolApplyOutputMask = !DBO()->RateGroup->IsInvalid();
 
-		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		
-		// Override the width of these textboxes
-		echo "<script type='text/javascript'>Vixen.RateGroupAdd.OverrideTextboxSize();</script>";
+		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"380px"));
+		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"380px"));
 	}
 	
 	//------------------------------------------------------------------------//

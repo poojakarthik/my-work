@@ -708,6 +708,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Merge the Account data from the database with the newly defined details
 		DBO()->Account->LoadMerge();
 		
+		// This will store the properties that have been changed and have to cascade 
+		// to tables other than the Account table, which I believe is only the 
+		// ServiceAddress table at the moment
+		$arrCascadingFields = Array();
+		
 		// Load the current account details, so you can work out what has been changed, and include these details in the system note
 		DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
 		DBO()->CurrentAccount->SetTable("Account");
@@ -716,14 +721,17 @@ class AppTemplateAccount extends ApplicationTemplate
 		if (DBO()->Account->BusinessName->Value != DBO()->CurrentAccount->BusinessName->Value)
 		{
 			$strChangesNote .= "Business Name was changed from '". DBO()->CurrentAccount->BusinessName->Value ."' to '" . DBO()->Account->BusinessName->Value . "'\n";
+			$arrCascadingFields[] = "Business Name";
 		}
 		if (DBO()->Account->TradingName->Value != DBO()->CurrentAccount->TradingName->Value)
 		{
 			$strChangesNote .= "Trading Name was changed from '". DBO()->CurrentAccount->TradingName->Value ."' to '" . DBO()->Account->TradingName->Value . "'\n";
+			$arrCascadingFields[] = "Trading Name";
 		}	
 		if (DBO()->Account->ABN->Value != DBO()->CurrentAccount->ABN->Value)
 		{
 			$strChangesNote .= "ABN was changed from ". DBO()->CurrentAccount->ABN->Value ." to " . DBO()->Account->ABN->Value . "\n";
+			$arrCascadingFields[] = "ABN";
 		}
 		if (DBO()->Account->ACN->Value != DBO()->CurrentAccount->ACN->Value)
 		{
@@ -732,18 +740,22 @@ class AppTemplateAccount extends ApplicationTemplate
 		if (DBO()->Account->Address1->Value != DBO()->CurrentAccount->Address1->Value)
 		{
 			$strChangesNote .= "Address Line 1 was changed from '". DBO()->CurrentAccount->Address1->Value ."' to '" . DBO()->Account->Address1->Value . "'\n";
+			$arrCascadingFields[] = "Address Line 1";
 		}
 		if (DBO()->Account->Address2->Value != DBO()->CurrentAccount->Address2->Value)
 		{
 			$strChangesNote .= "Address Line 2 was changed from '". DBO()->CurrentAccount->Address2->Value ."' to '" . DBO()->Account->Address2->Value . "'\n";
+			$arrCascadingFields[] = "Address Line 2";
 		}
 		if (DBO()->Account->Suburb->Value != DBO()->CurrentAccount->Suburb->Value)
 		{
 			$strChangesNote .= "Suburb was changed from '". DBO()->CurrentAccount->Suburb->Value ."' to '" . DBO()->Account->Suburb->Value . "'\n";
+			$arrCascadingFields[] = "Suburb";
 		}
 		if (DBO()->Account->Postcode->Value != DBO()->CurrentAccount->Postcode->Value)
 		{
 			$strChangesNote .= "Postcode was changed from ". DBO()->CurrentAccount->Postcode->Value ." to " . DBO()->Account->Postcode->Value . "\n";
+			$arrCascadingFields[] = "Postcode";
 		}
 		if (DBO()->Account->State->Value != DBO()->CurrentAccount->State->Value)
 		{
@@ -1024,6 +1036,14 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// All Database interactions were successfull
 		TransactionCommit();
+
+		// Handle cascading for values that can cascade
+		if (count($arrCascadingFields) > 0)
+		{
+			$strAlertMsg = "The account details were successfully updated.<br />The following modified fields could compromise the integrety of the Address details defined for the services belonging to this account.<br />Please update these address details accordingly.";
+			$strAlertMsg .= "<br />Fields: ". implode(", ", $arrCascadingFields);
+			Ajax()->AddCommand("Alert", $strAlertMsg);
+		}
 		
 		// Fire the OnAccountDetailsUpdate Event
 		$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;

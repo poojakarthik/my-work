@@ -318,7 +318,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select id='Account.CustomerGroup' name='Account.CustomerGroup'>\n";
+			echo "      <select id='Account.CustomerGroup' name='Account.CustomerGroup' style='width:330px'>\n";
 			foreach (DBL()->CustomerGroup as $dboCustomerGroup)
 			{
 				$intCustomerGroupId		= $dboCustomerGroup->Id->Value;
@@ -350,7 +350,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Account.Archived' name='Account.Archived'>\n";
+		echo "      <select id='Account.Archived' name='Account.Archived' style='width:330px'>\n";
 		foreach ($arrAccountStatus as $intConstant=>$strAccountStatus)
 		{
 			if (($intConstant == ACCOUNT_DEBT_COLLECTION) || ($intConstant == ACCOUNT_ARCHIVED) || ($intConstant == ACCOUNT_SUSPENDED))
@@ -370,26 +370,26 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
-		DBO()->Account->BusinessName->RenderInput();
-		DBO()->Account->TradingName->RenderInput();
+		DBO()->Account->BusinessName->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
+		DBO()->Account->TradingName->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
 
-		DBO()->Account->ABN->RenderInput();
-		DBO()->Account->ACN->RenderInput();
+		DBO()->Account->ABN->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
+		DBO()->Account->ACN->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
 		
 		// Don't include address and BillingMethod details if this
 		// HtmlTemplate is being rendered on the InvoicesAndPayments page 
 		if (!DBO()->Account->InvoicesAndPaymentsPage->Value)
 		{
-			DBO()->Account->Address1->RenderInput();
-			DBO()->Account->Address2->RenderInput();
-			DBO()->Account->Suburb->RenderInput();
-			DBO()->Account->Postcode->RenderInput();
+			DBO()->Account->Address1->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
+			DBO()->Account->Address2->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
+			DBO()->Account->Suburb->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
+			DBO()->Account->Postcode->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
 			
 			// Render the State combobox
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select id='Account.State' name='Account.State'>\n";
+			echo "      <select id='Account.State' name='Account.State' style='width:330px'>\n";
 			foreach ($GLOBALS['*arrConstant']['ServiceStateType'] as $strKey=>$arrState)
 			{
 				$strSelected = (DBO()->Account->State->Value == $strKey) ? "selected='selected'" : "";
@@ -403,7 +403,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select id='Account.BillingMethod' name='Account.BillingMethod'>\n";
+			echo "      <select id='Account.BillingMethod' name='Account.BillingMethod' style='width:330px'>\n";
 			foreach ($GLOBALS['*arrConstant']['BillingMethod'] as $intConstant=>$arrBillingMethodSelection)
 			{
 				if ($intConstant == BILLING_METHOD_EMAIL_SENT)
@@ -419,7 +419,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			echo "</div>\n";
 		}
 		
-		DBO()->Account->Sample->RenderInput();
+		DBO()->Account->Sample->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
 		
 		// This property is DEPRICATED
 		//DBO()->Account->DisableLateNotices->RenderInput();
@@ -460,7 +460,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Late Notices :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Account.LatePaymentAmnesty' name='Account.LatePaymentAmnesty'>\n";
+		echo "      <select id='Account.LatePaymentAmnesty' name='Account.LatePaymentAmnesty' style='width:330px'>\n";
 		foreach ($arrOptions as $strDate=>$strLabel)
 		{
 			$strSelected = (DBO()->Account->LatePaymentAmnesty->Value == $strDate) ? "selected='selected'" : "";
@@ -496,9 +496,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 		
 		$this->FormEnd();
-		
-		//Resize the textboxes and the comboboxes and disable the "Never charge a late payment fee" radio
-		$strJsCode  = "Vixen.AccountDetails.ResizeEditControls(330, ". ((!DBO()->Account->InvoicesAndPaymentsPage->Value) ? "true" : "false") .");";
 		
 		// If the user doesn't have Admin privileges they cannot select the "Never charge a late payment fee" option
 		if (!$bolUserHasAdminPerm)

@@ -110,10 +110,12 @@ function Table()
  *
  * Adds a service churn note
  * 
+ * Adds a service churn note
+ * 
  * @param	int	$intAccountNumber		Account the churn will affect
  * @param	int	$intAccountGroup		AccountGroup
- * @param	str	$strFNN							Service affected
- * @param	str	$strCarrier					Carrier
+ * @param	str	$strFNN					Service affected
+ * @param	str	$strCarrier				Carrier
  *
  * @return	null
  *
@@ -559,7 +561,7 @@ function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue = NULL)
  *
  * @param	int		$intEmployeeId	The Id of the employee
  * @return	mix						returns "FirstName LastName" of the employee.
- *									If the employee could not be found then it returns NULL
+ *									If the employee could not be found then it returns an empty string
  *
  * @function
  */
@@ -569,14 +571,15 @@ function GetEmployeeName($intEmployeeId)
 	if (!isset($GLOBALS['*arrEmployee']))
 	{
 		// retrieve all employees from the Employee table of the database and cache it in the global array
-		$selFindEmployee = new StatementSelect("Employee", "FirstName, LastName, Id");
+		$selFindEmployee = new StatementSelect("Employee", "FirstName, LastName, Id, UserName");
 		$selFindEmployee->Execute(NULL);
 		$arrEmployees = $selFindEmployee->FetchAll();
 
 		foreach ($arrEmployees as $arrEmployee)
 		{
-			$arrName['FirstName'] = $arrEmployee['FirstName'];
-			$arrName['LastName'] = $arrEmployee['LastName'];
+			$arrName['FirstName']	= $arrEmployee['FirstName'];
+			$arrName['LastName']	= $arrEmployee['LastName'];
+			$arrName['UserName']	= $arrEmployee['UserName'];
 			
 			// add the employee to the global employee array
 			$GLOBALS['*arrEmployee'][$arrEmployee['Id']] = $arrName;
@@ -589,7 +592,7 @@ function GetEmployeeName($intEmployeeId)
 		// build the employee's name
 		$strName = $GLOBALS['*arrEmployee'][$intEmployeeId]['FirstName'] ." ". $GLOBALS['*arrEmployee'][$intEmployeeId]['LastName'];
 	}
-	elseif ($intEmployeeId === SYSTEM_EMPLOYEE_ID)
+	elseif ($intEmployeeId === SYSTEM_EMPLOYEE_ID || $intEmployeeId === USER_ID)
 	{
 		$strName = SYSTEM_EMPLOYEE_NAME;
 	}
@@ -601,6 +604,51 @@ function GetEmployeeName($intEmployeeId)
 	return $strName;
 }
 
+//------------------------------------------------------------------------//
+// GetEmployeeUserName
+//------------------------------------------------------------------------//
+/**
+ * GetEmployeeUserName()
+ *
+ * Retrieves the username of an employee
+ *
+ * Retrieves the username of an employee
+ *
+ * @param	int		$intEmployeeId	The Id of the employee
+ * @return	mix						returns the username of the employee.
+ *									If the employee could not be found then it returns NULL
+ *
+ * @function
+ */
+function GetEmployeeUserName($intEmployeeId)
+{
+	// Load all the employee details if they have not already been loaded
+	GetEmployeeName(0);
+	
+	if (isset($GLOBALS['*arrEmployee'][$intEmployeeId]))
+	{
+		return $GLOBALS['*arrEmployee'][$intEmployeeId]['UserName'];
+	}
+	return NULL;
+}
+
+//------------------------------------------------------------------------//
+// SubmittedForm
+//------------------------------------------------------------------------//
+/**
+ * SubmittedForm()
+ *
+ * Returns TRUE if a form submission was made
+ *
+ * Returns TRUE if a form submission was made
+ *
+ * @param	string	$strFormId		Id of the form to test
+ * @param	string	$strButtonId	optional, Id of the button used to submit the form
+ * @return	bool					TRUE if the form identified by strFormId has been submitted
+ * 									and the button identified by $strButtonId was used to submit the form,
+ * 									else FALSE
+ * @function
+ */
 function SubmittedForm($strFormId, $strButtonId=NULL)
 {
 	if ($strFormId == $GLOBALS['*SubmittedForm'])

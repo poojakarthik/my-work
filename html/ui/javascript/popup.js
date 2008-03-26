@@ -18,6 +18,7 @@ function VixenPopupClass()
 	this.strContentCode						= "";
 	this.strLocationOnClose					= "";
 	this.intTimeoutIdForPageLoadingSplash	= null;
+	this.objSizes = {"small":200, "medium":450, "mediumlarge":575, "large":700, "extralarge":850, "alertsize":470, "defaultsize":450};
 	
 	// This stores a stack of zIndex values of the overlay div for each popup openned modally so 
 	// that we can keep a track of where to place the div overlay, when a modal
@@ -72,7 +73,7 @@ function VixenPopupClass()
 	}
 	
 	// Sets the inner content of the popup identified by strId
-	this.SetContent = function(strId, strContent)
+	this.SetContent = function(strId, strContent, strSize, strTitle)
 	{
 		//check that the popup exists; if it doesn't then return false
 		if (!(this.Exists(strId)))
@@ -83,7 +84,7 @@ function VixenPopupClass()
 		// Retrieve the current popup content element
 		var elmOldPopupContent = document.getElementById("VixenPopupContent__" + strId);
 
-		// create a new one which will replace the old one
+		// Create a new one which will replace the old one
 		var elmNewPopupContent = document.createElement('div');
 		elmNewPopupContent.setAttribute('Id', 'VixenPopupContent__' + strId);
 		
@@ -93,16 +94,19 @@ function VixenPopupClass()
 			strContent = "No data<br />Id: " + strId;
 		}
 				
-		// Add the popup to the holder
-		//elmPopup.style.visibility = 'visible';
 		elmNewPopupContent.innerHTML = strContent;
 
 		// Retrieve the container div of the VixenPopupContent__ div
-		var elmPopupContainer = elmOldPopupContent.parentNode;
+		var elmPopup		= elmOldPopupContent.parentNode;
 		
-		// Remove the old content div and add the new one
-		elmPopupContainer.removeChild(elmOldPopupContent);
-		elmPopupContainer.appendChild(elmNewPopupContent);
+		// Remove the old content div
+		elmPopup.removeChild(elmOldPopupContent);
+		
+		// Add the new one
+		elmPopup.appendChild(elmNewPopupContent);
+
+		// Set the new Title
+		//TODO!
 		
 		// Save the new content
 		this.strContentCode = strContent;
@@ -124,7 +128,7 @@ function VixenPopupClass()
 		if (elmExists)
 		{
 			// destroy it . . .
-			elmExists.parentNode.removeChild(elmExists);
+			this.Close(elmExists);
 		}
 		
 		// . . . and create it
@@ -258,46 +262,12 @@ function VixenPopupClass()
 		elmPopup.style.zIndex = ++dragObj.zIndex;
 
 		// Set the size of the popup
-		switch (strSize.toLowerCase())
+		var strWidth = this.objSizes[strSize.toLowerCase()];
+		if (strWidth == null)
 		{
-			case "small":
-				{	//small
-					elmPopup.style.width = '200px';
-					break;
-				}
-			case "medium":
-				{	//medium
-					elmPopup.style.width = '450px';
-					break;
-				}
-			case "mediumlarge":
-				{	//medium
-					elmPopup.style.width = '575px';
-					break;
-				}
-			case "large":
-				{	//large
-					elmPopup.style.width = '700px';
-					break;
-				}
-			case "extralarge":
-				{
-					// Extra Large
-					elmPopup.style.width = '850px';
-					break;
-				}
-			case "alertsize":
-				{
-					// Unique size for alert popups, so that they stand out from other popups
-					elmPopup.style.width = '470px';
-					break;
-				}
-			default:
-				{   //default
-					elmPopup.style.width = '450px';
-					break;
-				}
+			strWidth = this.objSizes.defaultsize;
 		}
+		elmPopup.style.width = strWidth;
 		
 		// Set the position (centre/pointer/target)
 		if (mixPosition == "centre")
@@ -841,30 +811,13 @@ function VixenPopupClass()
 		elmPopup.style.zIndex = ++dragObj.zIndex;
 
 		// Set the size of the splash
-		switch (strSize)
+		var strWidth = this.objSizes[strSize.toLowerCase()];
+		if (strWidth == null)
 		{
-			case "small":
-				{	//small
-					elmPopup.style.width = '200px';
-					break;
-				}
-			case "medium":
-				{	//medium
-					elmPopup.style.width = '450px';
-					break;
-				}
-			case "large":
-				{	//large
-					elmPopup.style.width = '700px';
-					break;
-				}
-			default:
-				{   //default
-					elmPopup.style.width = '450px';
-					break;
-				}
+			strWidth = this.objSizes.defaultsize;
 		}
-
+		elmPopup.style.width = strWidth;
+		
 		// Set the position
 		// MSIE and Firefox use different properties to find out the width and height of the window
 		if (window.innerWidth)

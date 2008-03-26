@@ -114,7 +114,14 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 	{
 		$strObjectName = "ProvisioningHistoryList";
 		
-		echo "<h2 class='ProvisioningHistory'>History</h2>\n";
+		if (!DBO()->Service->Id->Value)
+		{
+			echo "<h2 class='ProvisioningHistory'>Account Provisioning History</h2>\n";
+		}
+		else
+		{
+			echo "<h2 class='ProvisioningHistory'>Provisioning History</h2>\n";
+		}
 		$this->_RenderFilterControls($strObjectName);
 		
 		// Render the history

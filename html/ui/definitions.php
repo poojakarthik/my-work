@@ -140,9 +140,7 @@ define('HTML_CONTEXT_IFRAME',				513);
 define('HTML_CONTEXT_ALL',					514);
 define('HTML_CONTEXT_SINGLE',				515);
 define('HTML_CONTEXT_NEW',					516);
-
-
-
+define('HTML_CONTEXT_SERVICE_BULK_ADD',		517);
 
 // constants for the cap/excess rates used within the rate add page
 define('RATE_CAP_NO_CAP',					100);

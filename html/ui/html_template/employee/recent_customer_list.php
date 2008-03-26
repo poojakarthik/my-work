@@ -138,18 +138,16 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 			
 			if ($dboCustomer->BusinessName->Value)
 			{
-				$strAccountName = $dboCustomer->BusinessName->Value;
+				$strAccountName = $dboCustomer->BusinessName->HtmlSafeValue;
 			}
 			elseif ($dboCustomer->TradingName->Value)
 			{
-				$strAccountName = $dboCustomer->TradingName->Value;
+				$strAccountName = $dboCustomer->TradingName->HtmlSafeValue;
 			}
 			else
 			{
-				$strAccountName = "&nbsp;";
+				$strAccountName = "";
 			}
-			
-			$strAccountName = htmlspecialchars($strAccountName, ENT_QUOTES);
 			
 			$strAccountLink = Href()->AccountOverview($dboCustomer->AccountId->Value);
 			$strAccountCell = "<a href='$strAccountLink' title='View Account Details'>{$dboCustomer->AccountId->Value}</a>";

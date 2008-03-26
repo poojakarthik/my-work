@@ -141,7 +141,7 @@ class HTMLElements
 	 *
 	 * @method
 	 */
-	function InputText($arrParams)
+	function InputText($arrParams, $arrAdditionalArgs=NULL)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
 		
@@ -155,6 +155,41 @@ class HTMLElements
 		}
 		$strValue = nl2br($strValue);
 		
+		$arrElementAttributes = Array();
+		
+		$arrStyles = Array();
+		// Handle additional arguments
+		if (is_array($arrAdditionalArgs))
+		{
+			foreach ($arrAdditionalArgs as $strArgName=>$mixArgValue)
+			{
+				$strCommand = strtolower($strArgName);
+				if (substr($strCommand, 0, 10) == "attribute:")
+				{
+					$arrElementAttributes[] = substr($strArgName, 10) . "='$mixArgValue'"; 
+				}
+				elseif (substr($strCommand, 0, 13) == "setrequiredid")
+				{
+					// The "Required" span denoting that the field is manditory, requires an id so that it can be manipulated
+					$strRequiredIdClause = "id='<id>.Required'";
+				}
+				elseif (substr($strCommand, 0, 6) == "style:")
+				{
+					$arrStyles[] = substr($strArgName, 6) . ":$mixArgValue";
+				}
+			}
+			if (count($arrStyles))
+			{
+				// Some inline styling was defined
+				$strStyle = "style='". implode(";", $arrStyles) ."'";
+			}
+			
+			if (count($arrElementAttributes))
+			{
+				$strElementAttributes = implode(" ", $arrElementAttributes);
+			}
+		}
+		
 		// convert any apostrophe's into &#39;
 		$strValue = str_replace("'", "&#39;", $strValue);
 
@@ -162,12 +197,17 @@ class HTMLElements
 		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
 		$strClass	=  "{$arrParams['Definition']['BaseClass']}InputText {$arrParams['Definition']['Class']}";
 		
+		if (isset($strRequiredIdClause))
+		{
+			$strRequiredIdClause = str_replace("<id>", $strId, $strRequiredIdClause);
+		}
+		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
 		// create the input box
-		$strHtml .= "	<input type='text' id='$strId' name='$strName' value='$strValue' class='$strClass'/>\n";
+		$strHtml .= "	<input type='text' id='$strId' name='$strName' value='$strValue' class='$strClass' $strStyle $strElementAttributes/>\n";
 		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
-		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
+		$strHtml .= "   <span class='RequiredInput' $strRequiredIdClause>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
 		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
 		$strHtml .= "</div>\n";
 		
@@ -204,8 +244,7 @@ class HTMLElements
 		{
 			$strValue = $this->BuildInputValue($arrParams);
 		}
-		$strValue = nl2br($strValue);
-		
+				
 		$fromYear = "1900";
 		$toYear = "2037";
 		$defaultYear = "";
@@ -242,7 +281,7 @@ class HTMLElements
 		$strHtml .= "   <div id='{$strName}Calender' class='date-time select-free' style='display: none; visibility: hidden;'></div>";
 		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
 		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
-		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} (dd/mm/yyyy) : </span></div>\n";
+		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";
 		$strHtml .= "</div>\n";
 		
 		return $strHtml;
@@ -1108,7 +1147,7 @@ class HTMLElements
 	 *
 	 * @method
 	 */
-	function ComboBox($arrParams)
+	function ComboBox($arrParams, $arrAdditionalArgs)
 	{
 		$mixValue = $arrParams['Value'];
 		$strLabel = $arrParams['Definition']['Label'];
@@ -1125,9 +1164,41 @@ class HTMLElements
 			return "HtmlElements->ComboBox: ERROR: no options are specified for property {$arrParams['Object']}.{$arrParams['Property']}";
 		}
 		
+		// Handle additional arguments
+		$arrElementAttributes = Array();
+		$arrStyles = Array();
+		if (is_array($arrAdditionalArgs))
+		{
+			foreach ($arrAdditionalArgs as $strArgName=>$mixArgValue)
+			{
+				$strCommand = strtolower($strArgName);
+				if (substr($strCommand, 0, 10) == "attribute:")
+				{
+					$arrElementAttributes[] = substr($strArgName, 10) . "='$mixArgValue'"; 
+				}
+				elseif (substr($strCommand, 0, 6) == "style:")
+				{
+					$arrStyles[] = substr($strArgName, 6) . ":$mixArgValue";
+				}
+			}
+			if (count($arrStyles))
+			{
+				// Some inline styling was defined
+				$strStyle = "style='". implode(";", $arrStyles) ."'";
+			}
+			
+			if (count($arrElementAttributes))
+			{
+				$strElementAttributes = implode(" ", $arrElementAttributes);
+			}
+		}
+		
+		// Convert any apostrophe's into &#39;
+		$strValue = str_replace("'", "&#39;", $strValue);
+		
 		$strId		= $arrParams['Object'] .".". $arrParams['Property'];
 		$strName	= $strId;
-		$strClass	=  "{$arrParams['Definition']['BaseClass']}InputComboBox {$arrParams['Definition']['Class']}";
+		$strClass	= "{$arrParams['Definition']['BaseClass']}InputComboBox {$arrParams['Definition']['Class']}";
 
 		// Determine whether the ComboBox should be disabled
 		$strDisabled = "";
@@ -1142,7 +1213,7 @@ class HTMLElements
 		$strHtml .= "      <span id='$strId.Label.Text'>{$strLabel} : </span>\n";
 		$strHtml .= "   </div>\n"; // DefaultLabel
 		
-		$strHtml .= "   <select id='$strId' name='$strName' class='$strClass' style='width:155px;' $strDisabled>\n";
+		$strHtml .= "   <select id='$strId' name='$strName' class='$strClass' $strElementAttributes $strStyle $strDisabled>\n";
 		
 		// Add each option to the combo box, in the order that they have been defined in the UIAppDocumentationOptions table
 		foreach ($arrParams['Definition']['Options'] as $arrOption)

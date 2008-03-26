@@ -895,7 +895,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"medium\", \"Address Details\", \"Service\", \"ViewAddress\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"MediumLarge\", \"Address Details\", \"Service\", \"ViewAddress\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -924,7 +924,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"large\", \"Address Details\", \"Service\", \"EditAddress\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"ExtraLarge\", \"Address Details\", \"Service\", \"EditAddress\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//

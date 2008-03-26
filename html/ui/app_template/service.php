@@ -219,9 +219,502 @@ class AppTemplateService extends ApplicationTemplate
 			return TRUE;
 		}
 
+		// Store the Physical Address Description
+		DBO()->ServiceAddress->PhysicalAddressDescription = $this->BuildPhysicalAddressDescription(DBO()->ServiceAddress->_arrProperties, "<br />");
+		
 		$this->LoadPage('service_address_view');
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// EditAddress
+	//------------------------------------------------------------------------//
+	/**
+	 * EditAddress()
+	 *
+	 * Performs the logic for editting the service's address details
+	 * 
+	 * Performs the logic for editting the service's address details
+	 * It assumes the following data has been declared
+	 * 	DBO()->Service->Id		Id of the service to view the details of
+	 *
+	 * @return		void
+	 * @method		EditAddress
+	 */
+	function EditAddress()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		if (!DBO()->Service->Load())
+		{
+			// Could not load the service record
+			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
+			return TRUE;
+		}
+		
+		DBO()->Account->Id = DBO()->Service->Account->Value;
+		DBO()->Account->Load();
+		
+		// Retrieve the address details of this service
+		DBO()->ServiceAddress->Where->Service = DBO()->Service->Id->Value;
+		DBO()->ServiceAddress->Load();
+		
+		if (!DBO()->ServiceAddress->Id->Value)
+		{
+			// The Service does not currently have a ServiceAddress record
+			// Define default values, from the Account and Service records
+			DBO()->ServiceAddress->Service = DBO()->Service->Id->Value;
+			
+			$this->_SetDefaultValuesForServiceAddress(DBO()->ServiceAddress, DBO()->Account);
+		}
+		
+		// Retrieve the address details of each service belonging to this account
+		DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
+
+		$this->LoadPage('service_address_edit');
+		return TRUE;
+	}
+
+	//------------------------------------------------------------------------//
+	// SaveAddress
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveAddress()
+	 *
+	 * Saves a ServiceAddress record
+	 * 
+	 * Saves a ServiceAddress record
+	 * It assumes the following data has been declared
+	 * 	DBO()->Service->Id		Id of the service to view the details of
+	 * 	etc
+	 * 
+	 * On success it will fire the "OnServiceUpdate" event and the "OnNewNote" event
+	 *
+	 * @return		void
+	 * @method		SaveAddress
+	 */
+	function SaveAddress()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		if (!DBO()->Service->Load())
+		{
+			// Could not load the service reocord
+			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
+			return TRUE;
+		}
+		
+		DBO()->Account->Id = DBO()->Service->Account->Value;
+		DBO()->Account->Load();
+		
+		// Retrieve the current address details of this service
+		DBO()->CurrentServiceAddress->SetTable("ServiceAddress");
+		DBO()->CurrentServiceAddress->Where->Service = DBO()->Service->Id->Value;
+		DBO()->CurrentServiceAddress->Load();
+		
+		$dboServiceAddress	= DBO()->ServiceAddress;
+		$arrProblems 		= Array();
+		$bolIsValid			= $this->ValidateAndCleanServiceAddress($dboServiceAddress, $arrProblems);
+		
+		if (!$bolIsValid)
+		{
+			// The Service Address record is invalid
+			$strProblems = implode("<br />", $arrProblems);
+			Ajax()->AddCommand("Alert", "ERROR: The following problems were found with the submitted data:<br />$strProblems");
+			return TRUE;
+		}
+		
+		// The Service Address is valid, save it
+		DBO()->ServiceAddress->Id = (DBO()->CurrentServiceAddress->Id->Value)? DBO()->CurrentServiceAddress->Id->Value : 0;
+		
+		DBO()->ServiceAddress->AccountGroup	= DBO()->Service->AccountGroup->Value;
+		DBO()->ServiceAddress->Account		= DBO()->Service->Account->Value;
+		DBO()->ServiceAddress->Service		= DBO()->Service->Id->Value;
+
+		if (!DBO()->ServiceAddress->Save())
+		{
+			// Saving the record failed
+			Ajax()->AddCommand("Alert", "ERROR: Saving the address details failed, unexpectedly");
+			return TRUE;
+		}
+		
+		// Create a system note
+		if (DBO()->CurrentServiceAddress->Id->Value)
+		{
+			$strSystemNote = "Address details have been modified";
+		}
+		else
+		{
+			$strSystemNote = "Address details have been defined";
+		}
+		
+		SaveSystemNote($strSystemNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
+		Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+		
+		// Fire the OnServiceUpdate event
+		$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
+		Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
+		
+		// View the Address
+		Ajax()->AddCommand("ClosePopup", DBO()->Popup->Id->Value);
+		Ajax()->AddCommand("Alert", "Address successfully saved");
+		return TRUE;
+	}
+
+	// Returns TRUE if valid, else false
+	// Any problems encountered will be recorded in the $arrProblems array
+	// The $dboServiceAddress will also be cleaned of values that shouldn't be set
+	function ValidateAndCleanServiceAddress(&$dboServiceAddress, &$arrProblems)
+	{
+		// Trim whitespace from all properties
+		foreach ($dboServiceAddress as $strName=>$objProperty)
+		{
+			$objProperty->Trim();
+			
+			// Nullify any properties that equate to empty strings
+			if ($objProperty->Value === "")
+			{
+				// Setting $objProperty = NULL doesn't work, so directly reference $dboServiceAddress
+				$dboServiceAddress->{$strName} = NULL;
+			}
+		}
+
+		// Convert to upper case, those values that should be in upper case
+		$dboServiceAddress->ServiceAddressTypeSuffix	= ($dboServiceAddress->ServiceAddressTypeSuffix->Value) ? strtoupper($dboServiceAddress->ServiceAddressTypeSuffix->Value) : NULL;
+		$dboServiceAddress->ServiceStreetNumberSuffix	= ($dboServiceAddress->ServiceStreetNumberSuffix->Value) ? strtoupper($dboServiceAddress->ServiceStreetNumberSuffix->Value) : NULL;
+		
+		// Run the UiAppDocumentation defined validation rules on the record
+		$dboServiceAddress->Validate();
+		
+		// Handle the user details
+		if ($dboServiceAddress->Residential->Value)
+		{
+			// It's a residential service
+			if (!$dboServiceAddress->EndUserTitle->Valid)
+			{
+				$arrProblems[] = "Title must be declared";
+			}
+			if (!$dboServiceAddress->EndUserGivenName->Valid)
+			{
+				$arrProblems[] = "Given Name must be declared";
+			}
+			if (!$dboServiceAddress->EndUserFamilyName->Valid)
+			{
+				$arrProblems[] = "Family Name must be declared";
+			}
+			if (!$dboServiceAddress->DateOfBirth->Valid)
+			{
+				$arrProblems[] = "Date of birth must be in the format of DD/MM/YYYY and in the past";
+			}
+			else
+			{
+				// The date is in a valid format, now convert it so it can be stored as YYYYMMDD
+				$arrDate = explode("/", $dboServiceAddress->DateOfBirth->Value);
+				$dboServiceAddress->DateOfBirth = "{$arrDate[2]}{$arrDate[1]}{$arrDate[0]}";
+			}
+			
+			// Clear the "business" specific fields
+			$dboServiceAddress->ABN					= NULL;
+			$dboServiceAddress->EndUserCompanyName	= NULL;
+			$dboServiceAddress->TradingName			= NULL;
+		}
+		else
+		{
+			// It's a business service
+			// Remove all spaces from the ABN
+			$dboServiceAddress->ABN = str_replace(" ", "", $dboServiceAddress->ABN->Value);  
+			$dboServiceAddress->ABN->Validate();
+			
+			if (!$dboServiceAddress->ABN->Valid)
+			{
+				$arrProblems[] = "A valid ABN must be declared";
+			}
+			if (!$dboServiceAddress->EndUserCompanyName->Valid)
+			{
+				$arrProblems[] = "Company Name must be declared";
+			}
+			
+			// Clear the "residential" specific fields
+			$dboServiceAddress->EndUserTitle		= NULL;
+			$dboServiceAddress->EndUserGivenName	= NULL;
+			$dboServiceAddress->EndUserFamilyName	= NULL;
+			$dboServiceAddress->DateOfBirth			= NULL;
+			$dboServiceAddress->Employer			= NULL;
+			$dboServiceAddress->Occupation			= NULL;
+		}
+		
+		// Check the Billing Address fields
+		if (!$dboServiceAddress->BillName->Valid)
+		{
+			$arrProblems[] = "Bill Name must be declared";
+		}
+		if (!$dboServiceAddress->BillAddress1->Valid)
+		{
+			$arrProblems[] = "Billing Address must be declared";
+		}
+		if (!$dboServiceAddress->BillLocality->Valid)
+		{
+			$arrProblems[] = "Billing Address Locality must be declared";
+		}
+		if (!$dboServiceAddress->BillPostcode->Valid)
+		{
+			$arrProblems[] = "Billing Address Postcode must be declared";
+		}
+		
+		// Validate the service's physical address
+		$strAddressType = $dboServiceAddress->ServiceAddressType->Value;
+		if (array_key_exists($strAddressType, $GLOBALS['*arrConstant']['ServiceAddrType']))
+		{
+			// An Address Type has been specified
+			if (!$dboServiceAddress->ServiceAddressTypeNumber->Valid)
+			{
+				$arrProblems[] = "Address Type Number must be declared";
+			}
+			if (!$dboServiceAddress->ServiceAddressTypeSuffix->Valid)
+			{
+				$arrProblems[] = "Address Type Suffix must consist only of letters";
+			}
+		}
+		else
+		{
+			// No address type has been specified
+			$dboServiceAddress->ServiceAddressType			= NULL;
+			$dboServiceAddress->ServiceAddressTypeNumber	= NULL;
+			$dboServiceAddress->ServiceAddressTypeSuffix	= NULL;
+		}
+
+		if (array_key_exists($strAddressType, $GLOBALS['*arrConstant']['PostalAddrType']))
+		{
+			// ServiceAddressType is a postal address
+			// NULL the fields that aren't used for postal addresses
+			$dboServiceAddress->ServiceStreetNumberStart	= NULL;
+			$dboServiceAddress->ServiceStreetNumberEnd		= NULL;
+			$dboServiceAddress->ServiceStreetNumberSuffix	= NULL;
+			$dboServiceAddress->ServiceStreetName			= NULL;
+			$dboServiceAddress->ServiceStreetType			= NULL;
+			$dboServiceAddress->ServiceStreetTypeSuffix		= NULL;
+			$dboServiceAddress->ServiceStreetPropertyName	= NULL;
+		}
+		else
+		{
+			// ServiceAddressType is not a postal address type, and can therefore have street details
+			if ($strAddressType == SERVICE_ADDR_TYPE_LOT)
+			{
+				// LOTs do not have Street numbers
+				$dboServiceAddress->ServiceStreetNumberStart	= NULL;
+				$dboServiceAddress->ServiceStreetNumberEnd		= NULL;
+				$dboServiceAddress->ServiceStreetNumberSuffix	= NULL;
+			}
+			else
+			{
+				// Validate the Street Number
+				$this->ValidateStreetNumber($dboServiceAddress, $arrProblems);				
+			}
+			
+			if ($dboServiceAddress->ServiceStreetName->Value != NULL)
+			{
+				// A street name has been declared
+				// You don't need to test the ServiceStreetType as it is always valid
+				if ($dboServiceAddress->ServiceStreetType->Value == SERVICE_STREET_TYPE_NOT_REQUIRED)
+				{
+					// Suffix is not required
+					$dboServiceAddress->ServiceStreetTypeSuffix = NULL;
+				}
+			}
+			else
+			{
+				// A street name has not been declared
+				$dboServiceAddress->ServiceStreetType		= NULL;
+				$dboServiceAddress->ServiceStreetTypeSuffix	= NULL;
+				
+				$dboServiceAddress->ServiceStreetNumberStart	= NULL;
+				$dboServiceAddress->ServiceStreetNumberEnd		= NULL;
+				$dboServiceAddress->ServiceStreetNumberSuffix	= NULL;
+				
+				// Check that a Property Name has been declared
+				if ($dboServiceAddress->ServicePropertyName->Value == NULL)
+				{
+					$arrProblems[] = "At least one of the fields 'Street Name' or 'Property Name' must be specified";
+				}
+			}
+		}
+		
+		if (!$dboServiceAddress->ServiceLocality->Valid)
+		{
+			$arrProblems[] = "Physical Address Locality must be declared";
+		}
+		if (!$dboServiceAddress->ServiceState->Valid)
+		{
+			$arrProblems[] = "Physical Address State must be declared";
+		}
+		if (!$dboServiceAddress->ServicePostcode->Valid)
+		{
+			$arrProblems[] = "Physical Address Postcode must be declared";
+		}
+		
+		return (count($arrProblems)) ? FALSE : TRUE;
+	}
+	
+	function ValidateStreetNumber(&$dboServiceAddress, &$arrProblems)
+	{
+		if ($dboServiceAddress->ServiceStreetNumberStart->Value == NULL)
+		{
+			// Street Number Start has not been specified
+			// Reset the Number End and Suffix
+			$dboServiceAddress->ServiceStreetNumberEnd		= NULL;
+			$dboServiceAddress->ServiceStreetNumberSuffix	= NULL;
+			
+			if ($dboServiceAddress->ServiceStreetName->Value !== NULL)
+			{
+				$arrProblems[] = "Street Number Start must be declared";
+			}
+			return;
+		}
+		
+		if (!$dboServiceAddress->ServiceStreetNumberStart->Valid)
+		{
+			$arrProblems[] = "Street Number Start must be declared";
+		}
+		
+		if ($dboServiceAddress->ServiceStreetNumberEnd->Value !== NULL)
+		{
+			// An end number has been declared
+			if (!$dboServiceAddress->ServiceStreetNumberEnd->Valid)
+			{
+				$arrProblems[] = "Street Number End is invalid";
+			}
+			elseif ($dboServiceAddress->ServiceStreetNumberEnd->Value <= $dboServiceAddress->ServiceStreetNumberStart->Value)
+			{
+				// The end number is less than or equal to the start number
+				$arrProblems[] = "Street Number End must be greater than Street Number Start";
+			}
+		}
+		
+		if ($dboServiceAddress->ServiceStreetNumberSuffix->Value !== NULL && (!$dboServiceAddress->ServiceStreetNumberSuffix->Valid))
+		{
+			// A suffix has been specified but is invalid
+			$arrProblems[] = "Street Number Suffix must consist only of letters";
+		}
+	}
+	
+	// Converts a physical service address into its descriptive format, as you would see on an envelope
+	function BuildPhysicalAddressDescription($arrAddress, $strLineSeperator="\n")
+	{
+		$strPropertyName	= trim($arrAddress['ServicePropertyName']);
+		$strLocality		= trim($arrAddress['ServiceLocality']);
+		$strState			= trim($arrAddress['ServiceState']);
+		$strPostCode		= $arrAddress['ServicePostcode'];
+		$strAddressTypeLine = "";
+		$strStreetLine		= "";
+		
+		if ($arrAddress['ServiceAddressType'] == SERVICE_ADDR_TYPE_LOT)
+		{
+			// The service address is a "LOT"
+			$strAddressTypeLine		= trim("Allotment {$arrAddress['ServiceAddressTypeNumber']} {$arrAddress['ServiceAddressTypeSuffix']}");
+			$strStreetType			= ($arrAddress['ServiceStreetType'] == SERVICE_STREET_TYPE_NOT_REQUIRED)? "" : GetConstantDescription($arrAddress['ServiceStreetType'], "ServiceStreetType");
+			$strStreetLine			= trim($arrAddress['ServiceStreetName'] ." $strStreetType ". GetConstantDescription($arrAddress['ServiceStreetTypeSuffix'], "ServiceStreetSuffixType"));
+		}
+		else if (isset($GLOBALS['*arrConstant']['PostalAddrType'][$arrAddress['ServiceAddressType']]))
+		{
+			// The service address is a postal service address
+			$strAddressTypeLine = trim(GetConstantDescription($arrAddress['ServiceAddressType'], "ServiceAddrType") ." {$arrAddress['ServiceAddressTypeNumber']} {$arrAddress['ServiceAddressTypeSuffix']}");
+		}
+		else
+		{
+			// The service address is a standard address, and may or may not have an Address Type
+			$strAddressTypeLine = trim(GetConstantDescription($arrAddress['ServiceAddressType'], "ServiceAddrType") ." {$arrAddress['ServiceAddressTypeNumber']} {$arrAddress['ServiceAddressTypeSuffix']}");
+			
+			$strStreetNumber = "";
+			if ($arrAddress['ServiceStreetNumberStart'] != "")
+			{
+				$strStreetNumber = $arrAddress['ServiceStreetNumberStart'];
+			}
+			if ($arrAddress['ServiceStreetNumberEnd'] != "")
+			{
+				$strStreetNumber .= " - ". $arrAddress['ServiceStreetNumberEnd'];
+			}
+			$strStreetNumber = trim($strStreetNumber ." ". $arrAddress['ServiceStreetNumberSuffix']);
+			
+			$strStreetType = ($arrAddress['ServiceStreetType'] == SERVICE_STREET_TYPE_NOT_REQUIRED)? "" : GetConstantDescription($arrAddress['ServiceStreetType'], "ServiceStreetType");
+			$strStreetTypeSuffix = GetConstantDescription($arrAddress['ServiceStreetTypeSuffix'], "StreetTypeSuffix");
+			$strStreetLine = trim("$strStreetNumber {$arrAddress['ServiceStreetName']} $strStreetType ". GetConstantDescription($arrAddress['ServiceStreetTypeSuffix'], "ServiceStreetSuffixType"));
+		}
+		
+		$strAddress = "";
+		if ($strPropertyName != "")
+		{
+			$strAddress .= $strPropertyName . $strLineSeperator;
+		}
+		if ($strAddressTypeLine != "")
+		{
+			$strAddress .= $strAddressTypeLine . $strLineSeperator;
+		}
+		if ($strStreetLine != "")
+		{
+			$strAddress .= $strStreetLine . $strLineSeperator;
+		}
+		$strAddress .= "$strLocality{$strLineSeperator}$strState $strPostCode";
+		
+		return ucwords($strAddress);
+	}
+	
+	//------------------------------------------------------------------------//
+	// BulkAdd
+	//------------------------------------------------------------------------//
+	/**
+	 * BulkAdd()
+	 *
+	 * Performs the logic for building the "bulk add service" page
+	 * 
+	 * Performs the logic for building the "bulk add service" page
+	 * It assumes DBO()->Account->Id has been set
+	 *
+	 * @return		void
+	 * @method		BulkAdd
+	 */
+	function BulkAdd()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "Can not find Account with Id: ". DBO()->Account->Id->Value;
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		// Load default values for the ServiceAddress details
+		$this->_SetDefaultValuesForServiceAddress(DBO()->ServiceAddress, DBO()->Account);
+		
+		// Load the ServiceAddress details for all Services currently belonging to the account
+		DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
+		
+		// Context menu
+		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Services->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		
+		// Breadcrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Add Services");
+
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('service_bulk_add');
+		return TRUE;
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// Add  This functionality is not actually used yet
@@ -1962,6 +2455,129 @@ class AppTemplateService extends ApplicationTemplate
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// _GetAllServiceAddresses
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetAllServiceAddresses()
+	 *
+	 * Retrieves the address details of each service belonging to the account 
+	 * 
+	 * Retrieves the address details of each service belonging to the account
+	 * 
+	 * @param	int		$intAccount		Id of the Account
+	 *
+	 * @return		array				All ServiceAddress Records associated with the account
+	 * @method		_GetAllServiceAddresses
+	 */
+	private function _GetAllServiceAddresses($intAccount)
+	{
+		$arrColumns = Array("Id"						=> "SA.Id",
+							"Service"					=> "SA.Service",
+							"Residential"				=> "SA.Residential",
+							"BillName"					=> "SA.BillName",
+							"BillAddress1"				=> "SA.BillAddress1",
+							"BillAddress2"				=> "SA.BillAddress2",
+							"BillLocality"				=> "SA.BillLocality",
+							"BillPostcode"				=> "SA.BillPostcode",
+							"EndUserTitle"				=> "SA.EndUserTitle",
+							"EndUserGivenName"			=> "SA.EndUserGivenName",
+							"EndUserFamilyName"			=> "SA.EndUserFamilyName",
+							"EndUserCompanyName"		=> "SA.EndUserCompanyName",
+							"DateOfBirth"				=> "SA.DateOfBirth",
+							"Employer"					=> "SA.Employer",
+							"Occupation"				=> "SA.Occupation",
+							"ABN"						=> "SA.ABN",
+							"TradingName"				=> "SA.TradingName",
+							"ServiceAddressType"		=> "SA.ServiceAddressType",
+							"ServiceAddressTypeNumber"	=> "SA.ServiceAddressTypeNumber",
+							"ServiceAddressTypeSuffix"	=> "SA.ServiceAddressTypeSuffix",
+							"ServiceStreetNumberStart"	=> "SA.ServiceStreetNumberStart",
+							"ServiceStreetNumberEnd"	=> "SA.ServiceStreetNumberEnd",
+							"ServiceStreetNumberSuffix"	=> "SA.ServiceStreetNumberSuffix",
+							"ServiceStreetName"			=> "SA.ServiceStreetName",
+							"ServiceStreetType"			=> "SA.ServiceStreetType",
+							"ServiceStreetTypeSuffix"	=> "SA.ServiceStreetTypeSuffix",
+							"ServicePropertyName"		=> "SA.ServicePropertyName",
+							"ServiceLocality"			=> "SA.ServiceLocality",
+							"ServiceState"				=> "SA.ServiceState",
+							"ServicePostcode"			=> "SA.ServicePostcode",
+							"FNN"						=> "S.FNN");
+		$strTables	= "Service AS S INNER JOIN ServiceAddress AS SA ON S.Id = SA.Service";
+		$strWhere	= "S.Account = <AccountId>";
+		$selAddresses = new StatementSelect($strTables, $arrColumns, $strWhere, "S.FNN ASC, S.Status ASC");
+		$mixResult = $selAddresses->Execute(Array("AccountId" => $intAccount));
+		
+		$arrAddresses = Array();
+		if ($mixResult)
+		{
+			// The account has addresses associated with it
+			$arrRecordSet = $selAddresses->FetchAll();
+			
+			foreach ($arrRecordSet as $arrRecord)
+			{
+				// Format the DateOfBirth property if it is not NULL
+				if ($arrRecord['DateOfBirth'] != "")
+				{
+					$arrRecord['DateOfBirth'] = substr($arrRecord['DateOfBirth'], 6, 2) ."/". substr($arrRecord['DateOfBirth'], 4, 2) ."/". substr($arrRecord['DateOfBirth'], 0, 4);
+				}
+				
+				$arrAddresses[$arrRecord["Service"]] = $arrRecord;
+				
+				// Build the Physical address description
+				$arrAddresses[$arrRecord["Service"]]['PhysicalAddressDescription'] = $this->BuildPhysicalAddressDescription($arrRecord, ", ");
+			}
+		}
+		
+		return $arrAddresses;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _SetDefaultValuesForServiceAddress
+	//------------------------------------------------------------------------//
+	/**
+	 * _SetDefaultValuesForServiceAddress()
+	 *
+	 * Sets default values for a ServiceAddress DBObject based on an Account DBObject 
+	 * 
+	 * Sets default values for a ServiceAddress DBObject based on an Account DBObject
+	 * Sets the following parameters with values taken from the Account DBObject:
+	 * 	ABN, EndUserCompanyName, TradingName, BillName, BillAddress1, BillAddress2,
+	 * 	BillLocality, BillPostcode, ServiceState
+	 * 
+	 * Also sets ServiceAddress->Residential to 0 representing a business landline service
+	 * 
+	 * @param	DBObject	$dboServiceAddress	The ServiceAddress DBObject to initialise with default
+	 * 											values
+	 * @param	DBObject	$dboAccount			The Account DBObject from which the initial values come
+	 *
+	 * @return	void
+	 * @method	_SetDefaultValuesForServiceAddress
+	 */
+	private function _SetDefaultValuesForServiceAddress(&$dboServiceAddress, $dboAccount)
+	{
+		// Default to a business service
+		$dboServiceAddress->Residential = 0;
+		$dboServiceAddress->ABN = str_replace(" ", "", $dboAccount->ABN->Value);
+		if ($dboAccount->BusinessName->Value != "")
+		{
+			$strCompanyName = $dboAccount->BusinessName->Value; 
+		}
+		else
+		{
+			$strCompanyName = $dboAccount->TradingName->Value;
+		}
+		$dboServiceAddress->EndUserCompanyName = substr($strCompanyName, 0, 50);
+		$dboServiceAddress->TradingName = substr($dboAccount->TradingName->Value, 0, 50);
+		
+		// Bill Address should default to the billing address for the account
+		$dboServiceAddress->BillName = substr($strCompanyName, 0, 30);
+		$dboServiceAddress->BillAddress1 = substr($dboAccount->Address1->Value, 0, 30);
+		$dboServiceAddress->BillAddress2 = substr($dboAccount->Address2->Value, 0, 30);
+		$dboServiceAddress->BillLocality = substr($dboAccount->Suburb->Value, 0, 23);
+		$dboServiceAddress->BillPostcode = $dboAccount->Postcode->Value;
+		$dboServiceAddress->ServiceState = $dboAccount->State->Value;
+	}
 	
 	//----- DO NOT REMOVE -----//
 	

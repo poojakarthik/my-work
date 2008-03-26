@@ -1088,6 +1088,33 @@
 /**************************************************************************/
 /* SEPARATORS															  */
 /**************************************************************************/
+
+	.Separator
+	{
+		height:               20px;
+	}
+	
+	.SmallSeparator
+	{
+		height:               10px;
+	}
+
+	.TinySeparator
+	{
+		height:               5px;
+	}
+	
+	.MicroSeparator
+	{
+		height:               0px;
+	}
+
+	.ColumnSpacer
+	{
+		width:					30px;
+	}
+
+/* And for the idiots who can't spell */
 	.Seperator
 	{
 		height:               20px;
@@ -1108,10 +1135,6 @@
 		height:               0px;
 	}
 		
-	.ColumnSpacer
-	{
-		width:					30px;
-	}
 	
 /**************************************************************************/
 /* INPUTS																  */

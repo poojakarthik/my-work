@@ -303,6 +303,17 @@ class AppTemplateProvisioning extends ApplicationTemplate
 			}
 			
 			$strAuthDate = ConvertUserDateToMySqlDate(DBO()->Request->AuthorisationDate->Value);
+			
+			// Check that the date is within the last month
+			$strEarliestDate	= date("Y-m-d", strtotime("-30 days"));
+			$strLatestDate		= date("Y-m-d");
+			
+			if ($strAuthDate <= $strEarliestDate || $strAuthDate > $strLatestDate)
+			{
+				// The date is out of bounds
+				Ajax()->AddCommand("Alert", "ERROR: Authorisation Date must be within the last 30 days.  Leave blank to use today's date.");
+				return TRUE;
+			}
 		}
 		else
 		{

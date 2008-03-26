@@ -126,8 +126,12 @@ class PropertyToken
 			// The property's validity
 			case "valid":
 				return $this->_dboOwner->_arrValid[$this->_strProperty];
+			// TRUE if the property has been set at all
 			case "isset":
 				return isset($this->_dboOwner->_arrProperties[$this->_strProperty]);
+			// The property's value with html special chars escaped
+			case "htmlsafevalue":
+				return htmlspecialchars($this->_dboOwner->_arrProperties[$this->_strProperty], ENT_QUOTES);
 		}
 		
 		// Do we have a Define property by this name?
@@ -253,8 +257,13 @@ class PropertyToken
 	 *
 	 * Renders the property in its HTML input form
 	 *
-	 * @param	int		$intContext		[optional] The context in which the property will be displayed
-	 * @param	bool	$bolRequired	[optional] Whether the field should be mandatory
+	 * @param	int		$intContext			[optional] The context in which the property will be displayed
+	 * @param	bool	$bolRequired		[optional] Whether the field should be mandatory
+	 * @param	bool	$bolApplyOutputMask [optional] Set to FALSE to not apply the Output Mask
+	 * @param	array	$arrAdditionalArgs	[optional] This can be used to pass Element attributes to the 
+	 * 										element (ie $arrAdditionalArgs["attribute:maxlength"]= 30, will
+	 * 										set the max length attribute of an input text element to 30)
+	 * 										This is also used to set the date range for InputShortDates input elements
 	 * 
 	 * @return	mixed	PropertyValue	returns the value of the property
 	 *
@@ -557,9 +566,9 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function AsInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL, $bolApplyOutputMask=TRUE)
+	function AsInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL, $bolApplyOutputMask=TRUE, $arrAdditionalArgs=NULL)
 	{
-		return $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask);
+		return $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask, $arrAdditionalArgs);
 	}
 
 	//------------------------------------------------------------------------//
@@ -960,13 +969,15 @@ class PropertyToken
 	 *
 	 * Validate the property
 	 * 
+	 * @param	int		$intContext		optional, defaults to CONTEXT_DEFAULT
+	 * 
 	 * @return	bool
 	 *
 	 * @method
 	 */
-	function Valid()
+	function Validate($intContext=CONTEXT_DEFAULT)
 	{
-		return $this->_dboOwner->ValidateProperty($this->_strProperty);
+		return $this->_dboOwner->ValidateProperty($this->_strProperty, $intContext);
 	}
 	
 	//------------------------------------------------------------------------//

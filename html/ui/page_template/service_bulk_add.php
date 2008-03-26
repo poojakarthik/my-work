@@ -7,16 +7,16 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// provisioning_request.php
+// service_bulk_add.php
 //----------------------------------------------------------------------------//
 /**
- * provisioning_request
+ * service_bulk_add
  *
- * Page Template for the Bulk Provisioning Request webpage
+ * Page Template for the Bulk Add Service webpage
  *
- * Page Template for the Bulk Provisioning Request webpage
+ * Page Template for the Bulk Add Service webpage
  *
- * @file		provisioning_request.php
+ * @file		service_bulk_add.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel 'MagnumSwordFortress' Dawkins
@@ -27,14 +27,13 @@
  */
 
 // Set the page title
-$this->Page->SetName("Provisioning");
+$this->Page->SetName("Add Services");
 
 // Set the layout template for the page
 $this->Page->SetLayout('1Column');
 
 // Add the Html Objects to their respective columns
-$this->Page->AddObject('ProvisioningRequest',		COLUMN_ONE, HTML_CONTEXT_DEFAULT);
-$this->Page->AddObject('ProvisioningServiceList',	COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ProvisioningServiceListDiv");
-$this->Page->AddObject('ProvisioningHistoryList',	COLUMN_ONE, HTML_CONTEXT_PAGE);
+$this->Page->AddObject('ServiceBulkAdd',			COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('ProvisioningServiceList',	COLUMN_ONE, HTML_CONTEXT_SERVICE_BULK_ADD);
 
 ?>

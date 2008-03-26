@@ -41,6 +41,10 @@ function VixenAjaxClass()
 	 * @param	boolean	bolIsForm				optional.  Set to true to guarantee that this particular ajax call
 	 *											is the only "form" being submitted.  This is to error trap against 
 	 *											the same form being submitted multiple times
+	 * @param	mixed	mixDivIdOrJSFunction	optional
+	 *											string	:	id of a container div that the response will be loaded into,
+	 *														if the response is raw html
+	 *											function pointer	:	response handler
 	 *
 	 * @return	void
 	 * @method
@@ -462,9 +466,11 @@ function VixenAjaxClass()
 				switch (objObject.TargetType)
 				{
 					case "Popup":
-						if (Vixen.Popup.Exists(objObject.strId))
+						elmPopup = Vixen.Popup.GetPopupElement(objObject.strId);
+						if (elmPopup != null && (elmPopup.style.width == Vixen.Popup.objSizes[objObject.strSize.toLowerCase()]))
 						{
-							Vixen.Popup.SetContent(objObject.strId, strReply);
+							// The popup exists, and its size has not changed.  Just update the contents of the popup
+							Vixen.Popup.SetContent(objObject.strId, strReply, objObject.strTitle);
 						}
 						else
 						{

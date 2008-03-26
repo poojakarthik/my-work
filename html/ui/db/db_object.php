@@ -250,7 +250,7 @@ class DBObject extends DBObjectBase
 		
 		// do validation
 		if ($strValidationRule)
-		{
+		{			
 			// Check if the Property is optional.  If a property is optional, 
 			// then you only perform the validation rule, if the value doesn't equate to an empty string
 			$strValidationRule = trim($strValidationRule);
@@ -258,7 +258,7 @@ class DBObject extends DBObjectBase
 			if (strtolower(substr($strValidationRule, 0, 9)) == "optional:")
 			{
 				// The property is optional
-				if ($this->_arrProperties[$strProperty] === "")
+				if ($this->_arrProperties[$strProperty] === "" || $this->_arrProperties[$strProperty] === NULL)
 				{
 					// A value for the property has not been suplied therefore it has passed validation
 					$this->_arrValid[$strProperty] = TRUE;
@@ -307,10 +307,10 @@ class DBObject extends DBObjectBase
 		$this->_arrValid = Array();
 		foreach ($this->_arrProperties AS $strProperty=>$mixValue)
 		{
-			// validate property
-			if (!$this->_arrValid[$strProperty] = $this->ValidateProperty($strProperty, $mixValue, $intContext))
+			// Validate Property
+			if (!$this->_arrValid[$strProperty] = $this->ValidateProperty($strProperty, $intContext))
 			{
-				// invalid
+				// Invalid
 				$this->_bolValid = FALSE;
 			}
 		}
@@ -335,7 +335,7 @@ class DBObject extends DBObjectBase
 	 */
 	function IsValid()
 	{
-		foreach($this->_arrValid AS $bolValid)
+		foreach($this->_arrValid as $bolValid)
 		{
 			if ($bolValid === FALSE)
 			{

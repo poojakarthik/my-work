@@ -862,7 +862,7 @@ class DBOFramework
 	{
 		$bolReturn = TRUE;
 		
-		foreach($this->_arrProperty AS $dboObject)
+		foreach($this->_arrProperty as $dboObject)
 		{
 			if (!$dboObject->SetValid())
 			{
@@ -889,7 +889,7 @@ class DBOFramework
 	 */
 	function Info()
 	{
-		foreach ($this->_arrProperty AS $strObject=>$objObject)
+		foreach ($this->_arrProperty as $strObject=>$objObject)
 		{
 			$arrReturn[$strObject] = $objObject->Info();
 		}
@@ -916,7 +916,7 @@ class DBOFramework
 	 */
 	function ShowInfo($strTabs='')
 	{
-		foreach ($this->_arrProperty AS $strObject=>$objObject)
+		foreach ($this->_arrProperty as $strObject=>$objObject)
 		{
 			$strOutput .= $strTabs."$strObject\n";
 			$strOutput .= $objObject->ShowInfo($strTabs."\t");
@@ -1788,7 +1788,7 @@ class Validation
 	 * 
 	 * @function
 	 */
-	static function IsValidDate ($strShortDate)
+	static function IsValidDate($strShortDate)
 	{
 		$dateParts = array();
 		$ok = preg_match ("/^(?:(\d\d\d\d)\-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/", $strShortDate, $dateParts);
@@ -1815,7 +1815,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	static function IsValidDateInPast ($strShortDate)
+	static function IsValidDateInPast($strShortDate)
 	{
 		$dateParts = array();
 		$ok = preg_match ("/^(?:(\d\d\d\d)\-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/", $strShortDate, $dateParts);
@@ -1950,7 +1950,28 @@ class Validation
 	static function IsNotEmptyString($mixValue)
 	{
 		$mixValue = trim($mixValue);
-		return (bool)(strlen($mixValue) > 0);
+		return (strlen($mixValue) > 0)? TRUE : FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsAlphaString
+	//------------------------------------------------------------------------//
+	/**
+	 * IsAlphaString()
+	 *
+	 * Returns TRUE if the value is comprises of only alpha characters (A-Z and a-z)
+	 *
+	 * Returns TRUE if the value is comprises of only alpha characters (A-Z and a-z)
+	 * 
+	 * @param	mix			$mixValue		value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	static function IsAlphaString($mixValue)
+	{
+		return self::RegexValidate('/^[A-Za-z]+$/', $mixValue);
 	}
 	
 	//------------------------------------------------------------------------//
