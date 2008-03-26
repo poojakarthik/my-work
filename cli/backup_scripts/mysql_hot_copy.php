@@ -1,11 +1,11 @@
 <?php
 
+// we use the actual tables not the db def in case it is out of date
+require_once('../../flex.require.php');
 
 // Set up the databases correctly
 $strDestinationDB	= $GLOBALS['**arrDatabase']['Database'] . '_working';
 
-// we use the actual tables not the db def in case it is out of date
-require_once('../../flex.require.php');
 LoadApplication();
 
 define("MODE_INCLUDE"	, 1);
