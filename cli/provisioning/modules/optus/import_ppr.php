@@ -42,6 +42,9 @@
  */
  class ImportOptusPPR extends ImportBase
  {
+	public static $intBaseCarrier	= CARRIER_OPTUS;
+	public static $intBaseFileType	= FILE_IMPORT_OPTUS_PPR;
+	
  	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -62,10 +65,6 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
- 		
- 		// Carrier
- 		$this->intBaseCarrier	= CARRIER_OPTUS;
- 		$this->intBaseFileType	= FILE_IMPORT_OPTUS_PPR;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format

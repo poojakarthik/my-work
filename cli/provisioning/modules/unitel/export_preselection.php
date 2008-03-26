@@ -52,6 +52,9 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
+	public static $intBaseCarrier	= CARRIER_UNITEL;
+	public static $intBaseFileType	= FILE_EXPORT_UNITEL_PRESELECTION;
+	
 	
  	//------------------------------------------------------------------------//
 	// __construct

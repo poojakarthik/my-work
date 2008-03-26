@@ -52,6 +52,8 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
+	public static $intBaseCarrier	= CARRIER_UNITEL;
+	public static $intBaseFileType	= FILE_EXPORT_UNITEL_DAILY_ORDER;
 	
  	//------------------------------------------------------------------------//
 	// __construct
@@ -73,10 +75,6 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
- 		
- 		// Carrier
- 		$this->intBaseCarrier	= CARRIER_UNITEL;
- 		$this->intBaseFileType	= FILE_EXPORT_UNITEL_DAILY_ORDER;
  		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 1;

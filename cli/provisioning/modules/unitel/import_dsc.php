@@ -42,6 +42,10 @@
  */
  class ImportUnitelDSC extends ImportBase
  {
+	
+	public static $intBaseCarrier	= CARRIER_UNITEL;
+	public static $intBaseFileType	= FILE_IMPORT_UNITEL_DAILY_STATUS;
+	
  	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -62,10 +66,6 @@
  	{
  		// Parent Constructor
  		parent::__construct($intCarrier);
- 		
- 		// Carrier
- 		$this->intBaseCarrier	= CARRIER_UNITEL;
- 		$this->intBaseFileType	= FILE_IMPORT_UNITEL_DAILY_STATUS;
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
