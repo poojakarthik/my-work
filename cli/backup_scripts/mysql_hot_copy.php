@@ -68,6 +68,7 @@ $qctCopyTable = new QueryCopyTable();
 foreach($arrTables AS $mixKey=>$strTable)
 {
 	CliEcho(str_pad("\t + $strTable...", 35, ' ', STR_PAD_RIGHT), FALSE);
+	$strStatus	= '[   OK   ]';
 	
 	if (strpos($strTable, '_') !== FALSE)
 	{
@@ -86,10 +87,13 @@ foreach($arrTables AS $mixKey=>$strTable)
 			$GLOBALS['fwkFramework']->StartWatch();
 			
 			// copy a table
-			//$qctCopyTable->Execute("$strDestinationDB.".$strTable, $strTable);
+			if (!$qctCopyTable->Execute("$strDestinationDB.$strTable", $strTable))
+			{
+				$strStatus	= '[ FAILED ]';
+			}
 			
 			$intTime = (int)$GLOBALS['fwkFramework']->LapWatch();
-			CliEcho(str_pad("{$intTime}s     [   OK   ]", 25, ' ', STR_PAD_LEFT));
+			CliEcho(str_pad("{$intTime}s     $strStatus", 25, ' ', STR_PAD_LEFT));
 		}
 	}
 	elseif (!$intMode || ($intMode == MODE_EXCLUDE))
@@ -99,10 +103,13 @@ foreach($arrTables AS $mixKey=>$strTable)
 		$GLOBALS['fwkFramework']->StartWatch();
 		
 		// copy a table
-		//$qctCopyTable->Execute("$strDestinationDB.".$strTable, $strTable);
+		if (!$qctCopyTable->Execute("$strDestinationDB.$strTable", $strTable))
+		{
+			$strStatus	= '[ FAILED ]';
+		}
 		
 		$intTime = (int)$GLOBALS['fwkFramework']->LapWatch();
-		CliEcho(str_pad("{$intTime}s     [   OK   ]", 25, ' ', STR_PAD_LEFT));
+		CliEcho(str_pad("{$intTime}s     $strStatus", 25, ' ', STR_PAD_LEFT));
 	}
 	else
 	{
