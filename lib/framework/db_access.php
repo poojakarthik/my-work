@@ -1635,7 +1635,7 @@ class QueryCopyTable extends Query
 		$this->Trace("Input: $strTableDestination, $strTableSource, $strWhere, $strLimit");
 
 		// build query 0
-		$strQuery = "DROP TABLE $strTableDestination ";
+		$strQuery = "DROP TABLE IF EXISTS $strTableDestination";
 		
 		// Trace
 		$this->Trace("Query: ".$strQuery);
@@ -1644,7 +1644,7 @@ class QueryCopyTable extends Query
 		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
 		
 		// check result
-		if ($mixReturn !== TRUE)
+		if ($mixReturn === FALSE)
 		{
 			// query failed
 			// Trace
@@ -1662,7 +1662,7 @@ class QueryCopyTable extends Query
 		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
 		
 		// check result
-		if ($mixReturn !== TRUE)
+		if ($mixReturn === FALSE)
 		{
 			// query failed
 			// Trace
