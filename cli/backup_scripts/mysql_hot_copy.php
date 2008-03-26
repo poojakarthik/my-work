@@ -100,7 +100,7 @@ foreach($arrTables AS $mixKey=>$strTable)
 		$GLOBALS['fwkFramework']->StartWatch();
 		
 		// copy a table
-		$qctCopyTable->Execute($strTable, "$strSourceDB.$strTable");
+		//$qctCopyTable->Execute($strTable, "$strSourceDB.$strTable");
 		
 		$intTime = (int)$GLOBALS['fwkFramework']->LapWatch();
 		CliEcho(str_pad("{$intTime}s     [   OK   ]", 25, ' ', STR_PAD_LEFT));
