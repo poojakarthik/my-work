@@ -456,7 +456,7 @@
 			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
 			$selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
 			$selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <ServiceRatePlan> AND LastChargedOn IS NOT NULL");
-			$selHasInvoicedCDRs	= new StatementSelect("CDRInvoiced", "Id", "Service = <Service> AND Status = 199", NULL, "1");
+			$selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)", NULL, "1");
 			if ($selLastBillDate->Execute($arrAccount))
 			{
 				// Previous Invoice
@@ -490,8 +490,10 @@
 					// If the Service is tolling (has an EarliestCDR)
 					if ($intCDRDate)
 					{
+						$bolHasInvoicedCDRs	= !$selHasInvoicedCDRs->Execute($arrService);
+						
 						// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
-						if (!$arrService['LastBilledOn'] && $arrService['InAdvance'])
+						if ((!$arrService['LastBilledOn'] || !$bolHasInvoicedCDRs) && $arrService['InAdvance'])
 						{
 							$arrAdvanceCharge = Array();
 							$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
@@ -507,7 +509,7 @@
 						
 						// If the first CDR is unbilled, Pro Rata
 						//if ($intCDRDate > $intLastBillDate)
-						if (!$selHasInvoicedCDRs->Execute($arrService))
+						if (!$bolHasInvoicedCDRs)
 						{
 							$fltMinMonthly	= $arrService['MinMonthly'];
 							
