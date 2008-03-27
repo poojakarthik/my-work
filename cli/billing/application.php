@@ -456,6 +456,7 @@
 			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
 			$selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
 			$selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <ServiceRatePlan> AND LastChargedOn IS NOT NULL");
+			$selHasInvoicedCDRs	= new StatementSelect("CDRInvoiced", "Id", "Service = <Service> AND Status = 199", NULL, "1");
 			if ($selLastBillDate->Execute($arrAccount))
 			{
 				// Previous Invoice
@@ -505,7 +506,8 @@
 						}
 						
 						// If the first CDR is unbilled, Pro Rata
-						if ($intCDRDate > $intLastBillDate)
+						//if ($intCDRDate > $intLastBillDate)
+						if (!$selHasInvoicedCDRs->Execute($arrService))
 						{
 							$fltMinMonthly	= $arrService['MinMonthly'];
 							
