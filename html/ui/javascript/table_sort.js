@@ -1,34 +1,45 @@
-if ($get == undefined)
-{
-	var $get = function(id)
-	{
-		if (typeof id != 'string') return id;
-		return document.getElementById(id);
-	}
-}
 
 if (Vixen.TableSort == undefined)
 {
 	Vixen.TableSort = {
 
+		// Regular expression for HTML tags
 		HTML_TAGS_REG: /<\/?[^>]+>/gi,
 
+		// Regular expression for dates
 		DATE_REG: /^(\d\d?)[\/\.-](\d\d?)[\/\.-]((\d\d)?\d\d)$/,
 
+		// Constants used for sorting and as style class names
 		SORT_ASC: " VixenTableSortColumnAsc ",
 		SORT_DESC: " VixenTableSortColumnDesc ",
+
+		// Regular expression for matching the above constants
 		SORT_DIRECTION_REG: / *VixenTableSortColumn(Asc|Desc) */,
 
+		// Constants used as style class names for table rows
 		ROW_ODD: "Odd",
 		ROW_EVEN: "Even",
+
+		// Regular expression for matching the above constants
 		ODD_EVEN_REG: /(Odd|Even)/,
 
+		// prepare()
+		/**
+		 * Prepare a table for sorting.
+		 *
+		 * @param tableId String value of ID attribute of the table to be sorted
+		 *
+		 * @public
+		 */
 		prepare: function(tableId)
 		{
-			var table = $get(tableId);
+			// Get the table and initialise some attributes 
+			var table = document.getElementById(tableId);
 			table.sortedColumnIndex = -1;
 			table.sortDirection = "None";
 			table.style.layout = "fixed";
+			
+			// Prepare the columns for sorting
 			var nrColumns = table.rows[0].cells.length;
 			for (var columnIndex = 0; columnIndex < nrColumns; columnIndex++)
 			{
@@ -36,91 +47,193 @@ if (Vixen.TableSort == undefined)
 			}
 		},
 
+		// _makeColumnSortable()
+		/**
+		 * Make a column sortable.
+		 *
+		 * @param table DOMTable The table containing the column
+		 * @param columnIndex int The index of the column to be manipulated
+		 *
+		 * @private
+		 */
 		_makeColumnSortable: function(table, columnIndex)
 		{
+			// Get the header cell of the column
 			var cell = table.rows[0].cells[columnIndex];
+			
+			// If the cell is not to be sorted then quit
 			if (cell.getAttribute('NO_TABLE_SORT') == "1") return;
+			
+			// Add the style class for all sortable columns
 			cell.className += " VixenTableSortColumn ";
+			// Put the cell contents in a div (allowing us to display sorting images as background images)
 			var div = document.createElement('DIV');
 			div.className = 'VixenTableSortColumnWrapper';
 			for (var i = 0, l = cell.childNodes.length; i < l; i++)
 			{
 				div.appendChild(cell.childNodes[0]);
 			}
+			// Append a &nbsp; for padding (... not sure if this is needed)
 			div.appendChild(document.createTextNode('\u00A0'));
+			// Resize the column to make space for the sorting images
 			cell.style.width = (cell.clientWidth + 20) + "px";
+			// Put the new div in the table cell
 			cell.appendChild(div);
+			// Add an onclick event handler to the cell
+			// NOTE:: This will over-write any existing onclick event!
+			// TODO:: This should be changed to use addEevntHandler W3C standard event handling
 			cell.setAttribute("onclick", 'Vixen.TableSort.sortTable("'+table.id+'", '+columnIndex+')');
 		},
 		
+		// getSortedField()
+		/**
+		 * Get the sorted field name (database column name).
+		 *
+		 * @param tableId String value of ID attribute of the table to get the sorted field of
+		 *
+		 * @return String TABLE_SORT attribute of the sorted column which, by default, 
+		 * 				  maps to the database column name of the data in the column
+		 *
+		 * @public
+		 */
 		getSortedField: function(tableId)
 		{
-			var table = $get(tableId);
+			var table = document.getElementById(tableId);
 			if (table.sortedColumnIndex == -1) return null;
 			var cell = table.rows[0].cells[table.sortedColumnIndex];
 			return cell.getAttribute("TABLE_SORT");
 		},
 
+		// getSortedAscending()
+		/**
+		 * Get the sorted field name (database column name).
+		 *
+		 * @param tableId String value of ID attribute of the table to get the sorted direction of
+		 *
+		 * @return Boolean TRUE if table is sorted ascending
+		 *
+		 * @public
+		 */
 		getSortedAscending: function(tableId)
 		{
-			var table = $get(tableId);
+			var table = document.getElementById(tableId);
 			if (table.sortedColumnIndex == -1) return false;
 			return table.sortDirection == Vixen.TableSort.SORT_ASC;;
 		},
 
+		// sortTable()
+		/**
+		 * Sort the contents of a table on the given column index.
+		 *
+		 * @param tableId String value of ID attribute of the table to sort
+		 * @param columnIndex Integer column index of column to be sorted
+		 *
+		 * @public
+		 */
 		sortTable: function(tableId, columnIndex)
 		{
-			var table = $get(tableId);
+			// Get the table and header cell of the column to be sorted
+			var table = document.getElementById(tableId);
 			var cell = table.rows[0].cells[columnIndex];
 			
+			// Get the inverse sort direction of the column - default to ascending if not already sorted 
 			var sortAscending = table.sortDirection != Vixen.TableSort.SORT_ASC || table.sortedColumnIndex != columnIndex;
 
+			// Apply the sorting...
 			Vixen.TableSort._applySort(table, columnIndex, sortAscending);
 
+			// If the table had been sorted already...
 			if (table.sortedColumnIndex >= 0)
 			{
+				// Get the previously sorted header cell and remove the sort style class name
 				var oldSortedCell = table.rows[0].cells[table.sortedColumnIndex];
 				oldSortedCell.className = oldSortedCell.className.replace(Vixen.TableSort.SORT_DIRECTION_REG, "");
 			}
 
+			// Update the table with the latest sort attributes
 			table.sortDirection = sortAscending ? Vixen.TableSort.SORT_ASC : Vixen.TableSort.SORT_DESC;
 			table.sortedColumnIndex = columnIndex;
 
+			// Add the sort style class name to the sorted column
 			var newSortedCell = table.rows[0].cells[columnIndex];
 			newSortedCell.className += " " + table.sortDirection;
 		},
 
+		// resortTable()
+		/**
+		 * Re-sort the contents of a table using the already applied sort criteria.
+		 * This is useful if you have just appended new items or reloaded the table contents.
+		 *
+		 * @param tableId String value of ID attribute of the table to re-sort
+		 *
+		 * @public
+		 */
 		resortTable: function(tableId)
 		{
-			var table = $get(tableId);
+			var table = document.getElementById(tableId);
 			var sortAscending = table.sortDirection == Vixen.TableSort.SORT_ASC;
 			Vixen.TableSort._applySort(table, table.sortedColumnIndex, sortAscending);
 		},
 
+		// setTableRows()
+		/**
+		 * Change the table contents.
+		 *
+		 * @param tableId String value of ID attribute of the table to change contents of
+		 * @param rows DOMRows of another table to be placed in this one (eg: table.rows) 
+		 *
+		 * @public
+		 */
 		setTableRows: function(tableId, rows)
 		{
 			Vixen.TableSort.emptyTable(tableId);
 			Vixen.TableSort.appendTableRows(tableId, rows);
 		},
 
+		// setRows()
+		/**
+		 * Change the table contents.
+		 *
+		 * @param tableId String value of ID attribute of the table to change contents of
+		 * @param rows array[DOMRow] rows to be placed in this one 
+		 *
+		 * @public
+		 */
 		setRows: function(tableId, rows)
 		{
 			Vixen.TableSort.emptyTable(tableId);
 			Vixen.TableSort.appendRows(tableId, rows);
 		},
 
+		// emptyTable()
+		/**
+		 * Remove the item rows from a table.
+		 *
+		 * @param tableId String value of ID attribute of the table to be emptied
+		 *
+		 * @public
+		 */
 		emptyTable: function(tableId)
 		{
-			var table = $get(tableId);
+			var table = document.getElementById(tableId);
 			for (var i = table.rows.length - 1; i > 0; i--)
 			{
 				table.deleteRow(i);
 			}
 		},
 
+		// appendTableRows()
+		/**
+		 * Append rows to a table.
+		 *
+		 * @param tableId String value of ID attribute of the table to append rows to
+		 * @param rows DOMRows of another table to be appended to this one (eg: table.rows) 
+		 *
+		 * @public
+		 */
 		appendTableRows: function(tableId, tableRows)
 		{
-			var table = $get(tableId);
+			var table = document.getElementById(tableId);
 			for (var i = 0, l = tableRows.length; i < l; i++)
 			{
 				table.tBodies[0].appendChild(tableRows[0]);
@@ -128,9 +241,18 @@ if (Vixen.TableSort == undefined)
 			Vixen.TableSort.resortTable(tableId);
 		},
 
+		// appendTableRows()
+		/**
+		 * Append rows to a table.
+		 *
+		 * @param tableId String value of ID attribute of the table to append rows to
+		 * @param rows array[DOMRow] rows to be appended to this one
+		 *
+		 * @public
+		 */
 		appendRows: function(tableId, rows)
 		{
-			var table = $get(tableId);
+			var table = document.getElementById(tableId);
 			for (var i = 0, l = rows.length; i < l; i++)
 			{
 				table.tBodies[0].appendChild(rows[i]);
@@ -138,29 +260,64 @@ if (Vixen.TableSort == undefined)
 			Vixen.TableSort.resortTable(tableId);
 		},
 
+		// _applySort()
+		/**
+		 * Apply sorting to a table.
+		 *
+		 * @param table DOMTable table element to be sorted
+		 * @param columnIndex Integer column index of column to be sorted
+		 * @param sortAscending Boolean whether to sort ascending (TRUE) or descending (FALSE)
+		 *
+		 * @private
+		 */
 		_applySort: function(table, columnIndex, sortAscending)
 		{
 			if (columnIndex == -1) return;
 			var values = Vixen.TableSort._getColumnValues(table, columnIndex);
-			var compFunc = Vixen.TableSort._getComparisonFunction(values);
+			var compFunc = Vixen.TableSort._getComparisonFunction(values, table, columnIndex);
 			var anyChanges = Vixen.TableSort._sortValues(values, compFunc, sortAscending);
 			if (anyChanges) Vixen.TableSort._reArrangeRows(table, values);
 		},
 
+		// _reArrangeRows()
+		/**
+		 * Re-arrange rows of a table.
+		 *
+		 * @param table DOMTable table element to be sorted
+		 * @param sortedValues array[String => array[ 0=>Value, 1=>DOMRow ] ] Return value of _getColumnValues()
+		 * @param sortAscending Boolean whether to sort ascending (TRUE) or descending (FALSE)
+		 *
+		 * @private
+		 */
 		_reArrangeRows: function(table, sortedValues)
 		{
-			var l = sortedValues.length;
-			for (var i = 0; i < l; i++)
+			for (var i = 0, l = sortedValues.length; i < l; i++)
 			{
+				// Apply the appropriate style class to the row (odd/even) 
 				var strClass = (i % 2) ? Vixen.TableSort.ROW_EVEN : Vixen.TableSort.ROW_ODD;
 				sortedValues[i][1].className = sortedValues[i][1].className.replace(Vixen.TableSort.ODD_EVEN_REG, strClass);
+				// Append this row to the end of the table 
 				table.tBodies[0].appendChild(sortedValues[i][1]);
 			}
 		},
 
+		// _sortValues()
+		/**
+		 * Sort a list values.
+		 *
+		 * @param sortedValues array[String => array[ 0=>Value, 1=>DOMRow ] ] Return value of _getColumnValues()
+		 * @param compFunc Function to be used for comparing the values
+		 * @param sortAscending Boolean whether to sort ascending (TRUE) or descending (FALSE)
+		 *
+		 * @return Boolean TRUE if any sort-order changes were required
+		 *
+		 * @see http://en.wikipedia.org/wiki/Cocktail_sort
+		 *
+		 * @private
+		 */
 		_sortValues: function(values, compFunc, sortAscending)
 		{
-			// see: http://en.wikipedia.org/wiki/Cocktail_sort
+			// 
 			var b = 0;
 			var t = values.length - 1;
 			var swap = true;
@@ -170,7 +327,7 @@ if (Vixen.TableSort == undefined)
 			while(swap) {
 				swap = false;
 				for(var i = b; i < t; ++i) {
-					if ( (compFunc(values[i], values[i+1]) * sortSwitch) > 0 ) {
+					if ( (compFunc(values[i][0], values[i+1][0]) * sortSwitch) > 0 ) {
 						var q = values[i]; values[i] = values[i+1]; values[i+1] = q;
 						swap = true;
 						anySwaps = true;
@@ -181,7 +338,7 @@ if (Vixen.TableSort == undefined)
 				if (!swap) break;
 
 				for(var i = t; i > b; --i) {
-					if ( (compFunc(values[i], values[i-1]) * sortSwitch) < 0 ) {
+					if ( (compFunc(values[i][0], values[i-1][0]) * sortSwitch) < 0 ) {
 						var q = values[i]; values[i] = values[i-1]; values[i-1] = q;
 						swap = true;
 						anySwaps = true;
@@ -193,25 +350,93 @@ if (Vixen.TableSort == undefined)
 			return anySwaps;
 		},
 
-		_getComparisonFunction: function(values)
+		// _innerText()
+		/**
+		 * Get the textual content of a DOMNode 
+		 *
+		 * @param node DOMNode to get the textual contents of
+		 *
+		 * @return String contents of passed DOMNode 
+		 *
+		 * @private
+		 */
+		_innerText: function(node)
 		{
-			return Vixen.TableSort._compareAlphaCaseInsensitive;
+			// Return the innerHTML of the node with HTML tags stripped out
+			return node.innerHTML.replace(Vixen.TableSort.HTML_TAGS_REG, "");
 		},
 
-		_guessType: function(table, column) 
+		// _getColumnValues()
+		/**
+		 * Get the values from a column in a table.
+		 *
+		 * @param table DOMTable table element to get values from
+		 * @param columnIndex Integer column index of column to get values from
+		 *
+		 * @return array[integer => array[ 0=>strValue, 1=>DOMRow ] ] Textual values and rows for column
+		 *
+		 * @private
+		 */
+		_getColumnValues: function(table, columnIndex)
 		{
-			// guess the type of a column based on its first non-blank row
-			var sortfn = Vixen.TableSort._compareAlpha;
-			for (var i=0; i<table.rows.length; i++) 
+			// Itterate through the cells of the column, skipping the first (hearer) cell 
+			var values = new Array();
+			var maxRowIndex = table.rows.length - 1;
+			for (var rowIndex = 1; rowIndex <= maxRowIndex; rowIndex++)
 			{
-				var text = Vixen.TableSort._innerText(table.rows[i].cells[column]);
+				// Add the row to the values array in the form of [ 0 => value, 1 => DOMRow ]
+				values[rowIndex - 1] = [ Vixen.TableSort._innerText(table.rows[rowIndex].cells[columnIndex]), table.rows[rowIndex] ];
+			}
+			return values;
+		},
+
+		// _getComparisonFunction()
+		/**
+		 * Determine and return an appropriate comparison function to be used for a list of values, based on a guess of the value type.
+		 *
+		 * @param values array[String => array[ 0=>Value, 1=>DOMRow ] ] Return value of _getColumnValues()
+		 * @param table DOMTable table element to get function for
+		 * @param columnIndex Integer column index of column to function for
+		 *
+		 * @return Function to be used for comparing values of the guessed type in the passed array 
+		 *
+		 * @private
+		 */
+		_getComparisonFunction: function(values, table, columnIndex) 
+		{
+			// If the column head has a SORT_TYPE attribute, we can use it to determine the 
+			// most appropriate sort function to use.
+			if (table.rows[0].cells[columnIndex].hasAttribute("SORT_TYPE"))
+			{
+				switch(table.rows[0].cells[columnIndex].getAttribute("SORT_TYPE").toUpperCase())
+				{
+					case "DDMM":
+						return Vixen.TableSort._compareDDMM;
+					case "MMDD":
+						return Vixen.TableSort._compareMMDD;
+					case "NUMERIC":
+						return Vixen.TableSort._compareNumeric;
+					case "ALPHA":
+						return Vixen.TableSort._compareAlphaCaseInsensitive;
+				}
+			}
+		
+			// Apply a default sort function for case-insensitive alphabetical sorting
+			var sortfn = Vixen.TableSort._compareAlphaCaseInsensitive;
+			var softfnName = "ALPHA";
+			for (var i=0; i<values.length; i++) 
+			{
+				var text = values[i][0];
 				if (text != '') 
 				{
+					// Check to see if it is numeric
 					if (text.match(/^-?[£$¤]?[\d,.]+%?$/)) 
 					{
+						// Set the SORT_TYPE attribute on the header cell so we don't have to do this check next time
+						table.rows[0].cells[columnIndex].setAttribute("SORT_TYPE", "NUMERIC");
 						return Vixen.TableSort._compareNumeric;
 					}
-					// check for a date: dd/mm/yyyy or dd/mm/yy 
+					// Check for a date: dd/mm/yyyy or dd/mm/yy 
 					// can have / or . or - as separator
 					// can be mm/dd as well
 					var possdate = text.match(Vixen.TableSort.DATE_REG)
@@ -223,57 +448,124 @@ if (Vixen.TableSort == undefined)
 						if (first > 12) 
 						{
 							// definitely dd/mm
+							// Set the SORT_TYPE attribute on the header cell so we don't have to do this check next time
+							table.rows[0].cells[columnIndex].setAttribute("SORT_TYPE", "DDMM");
 							return Vixen.TableSort._compareDDMM;
 						} 
 						else if (second > 12) 
 						{
+							// definitely mm/dd
+							// Set the SORT_TYPE attribute on the header cell so we don't have to do this check next time
+							table.rows[0].cells[columnIndex].setAttribute("SORT_TYPE", "MMDD");
 							return Vixen.TableSort._compareMMDD;
 						} 
 						else 
 						{
 							// looks like a date, but we can't tell which, so assume
 							// that it's dd/mm (English imperialism!) and keep looking
+							softfnName = "DDMM";
 							sortfn = Vixen.TableSort._compareDDMM;
+							continue;
 						}
 					}
+					// OK, so it's not numeric or a date.
+					// Must be an alphanumeric
+					// Set the SORT_TYPE attribute on the header cell so we don't have to do this check next time
+					table.rows[0].cells[columnIndex].setAttribute("SORT_TYPE", "ALPHA");
+					return Vixen.TableSort._compareAlphaCaseInsensitive;
 				}
 			}
+			// We've looked at them all. They are either all dates with days <= 12 or they are all empty
+			// Set the SORT_TYPE attribute on the header cell so we don't have to do this check next time
+			table.rows[0].cells[columnIndex].setAttribute("SORT_TYPE", softfnName);
 			return sortfn;
 		},
 
-		_compareNumeric: function(a,b) 
+		// _compareAlphaCaseInsensitive()
+		/**
+		 * Compare two values as case-insensitive alphanumerics
+		 *
+		 * @param a String first value
+		 * @param b String second value
+		 *
+		 * @return Integer 	> 0 if a > b
+		 *					< 0 if a < b
+		 *					  0 if a == b  
+		 *
+		 * @private
+		 */
+		_compareAlphaCaseInsensitive: function(a, b) 
 		{
-			aa = parseFloat(a[0].replace(/[^0-9.-]/g,''));
+			aUpper = a.toUpperCase();
+			bUpper = b.toUpperCase();
+			if (aUpper == bUpper) return 0;
+			if (aUpper < bUpper) return -1;
+			return 1;
+		},
+
+		// _compareAlpha()
+		/**
+		 * Compare two values as alphanumerics
+		 *
+		 * @param a String first value
+		 * @param b String second value
+		 *
+		 * @return Integer 	> 0 if a > b
+		 *					< 0 if a < b
+		 *					  0 if a == b  
+		 *
+		 * @private
+		 */
+		_compareAlpha: function(a, b) 
+		{
+			if (a == b) return 0;
+			if (a < b) return -1;
+			return 1;
+		},
+
+		// _compareNumeric()
+		/**
+		 * Compare two values as numeric values
+		 *
+		 * @param a String first value
+		 * @param b String second value
+		 *
+		 * @return Integer 	> 0 if a > b
+		 *					< 0 if a < b
+		 *					  0 if a == b  
+		 *
+		 * @private
+		 */
+		_compareNumeric: function(a, b) 
+		{
+			aa = parseFloat(a.replace(/[^0-9.-]/g,''));
 			if (isNaN(aa)) aa = 0;
-			bb = parseFloat(b[0].replace(/[^0-9.-]/g,'')); 
+			bb = parseFloat(b.replace(/[^0-9.-]/g,'')); 
 			if (isNaN(bb)) bb = 0;
-			return aa-bb;
+			return aa - bb;
 		},
 
-		_compareAlpha: function(a,b) 
+		// _compareDDDMM()
+		/**
+		 * Compare two values as dates in the format DDMM[YY]YY
+		 *
+		 * @param a String first value
+		 * @param b String second value
+		 *
+		 * @return Integer 	> 0 if a > b
+		 *					< 0 if a < b
+		 *					  0 if a == b  
+		 *
+		 * @private
+		 */
+		_compareDDDMM: function(a, b) 
 		{
-			if (a[0]==b[0]) return 0;
-			if (a[0]<b[0]) return -1;
-			return 1;
-		},
-
-		_compareAlphaCaseInsensitive: function(a,b) 
-		{
-			aUpper = a[0].toUpperCase();
-			bUpper = b[0].toUpperCase();
-			if (aUpper==bUpper) return 0;
-			if (aUpper<bUpper) return -1;
-			return 1;
-		},
-
-		_compareDDDMM: function(a,b) 
-		{
-			mtch = a[0].match(Vixen.TableSort.DATE_REG);
+			mtch = a.match(Vixen.TableSort.DATE_REG);
 			y = mtch[3]; m = mtch[2]; d = mtch[1];
 			if (m.length == 1) m = '0'+m;
 			if (d.length == 1) d = '0'+d;
 			dt1 = y+m+d;
-			mtch = b[0].match(Vixen.TableSort.DATE_REG);
+			mtch = b.match(Vixen.TableSort.DATE_REG);
 			y = mtch[3]; m = mtch[2]; d = mtch[1];
 			if (m.length == 1) m = '0'+m;
 			if (d.length == 1) d = '0'+d;
@@ -283,14 +575,27 @@ if (Vixen.TableSort == undefined)
 			return 1;
 		},
 
-		_compareMMDD: function(a,b) 
+		// _compareMMDD()
+		/**
+		 * Compare two values as dates in the format MMDD[YY]YY
+		 *
+		 * @param a String first value
+		 * @param b String second value
+		 *
+		 * @return Integer 	> 0 if a > b
+		 *					< 0 if a < b
+		 *					  0 if a == b  
+		 *
+		 * @private
+		 */
+		_compareMMDD: function(a, b) 
 		{
-			mtch = a[0].match(Vixen.TableSort.DATE_REG);
+			mtch = a.match(Vixen.TableSort.DATE_REG);
 			y = mtch[3]; d = mtch[2]; m = mtch[1];
 			if (m.length == 1) m = '0'+m;
 			if (d.length == 1) d = '0'+d;
 			dt1 = y+m+d;
-			mtch = b[0].match(Vixen.TableSort.DATE_REG);
+			mtch = b.match(Vixen.TableSort.DATE_REG);
 			y = mtch[3]; d = mtch[2]; m = mtch[1];
 			if (m.length == 1) m = '0'+m;
 			if (d.length == 1) d = '0'+d;
@@ -298,22 +603,6 @@ if (Vixen.TableSort == undefined)
 			if (dt1==dt2) return 0;
 			if (dt1<dt2) return -1;
 			return 1;
-		},
-
-		_innerText: function(node)
-		{
-			return node.innerHTML.replace(Vixen.TableSort.HTML_TAGS_REG, "");
-		},
-
-		_getColumnValues: function(table, columnIndex)
-		{
-			var values = new Array();
-			var maxRowIndex = table.rows.length - 1;
-			for (var rowIndex = 1; rowIndex <= maxRowIndex; rowIndex++)
-			{
-				values[rowIndex - 1] = [ Vixen.TableSort._innerText(table.rows[rowIndex].cells[columnIndex]), table.rows[rowIndex] ];
-			}
-			return values;
 		}
 
 	}
