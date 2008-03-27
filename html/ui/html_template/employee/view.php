@@ -136,11 +136,11 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 				$strArchivedLabel = "Archived";
 			}
 			
-			Table()->EmployeeTable->AddRow(  $dboEmployee->FirstName->AsValue(),
-												$dboEmployee->LastName->AsValue(), 
-												$dboEmployee->UserName->AsValue(),
-												$strArchivedLabel,
-												$strView);
+			Table()->EmployeeTable->AddRow(	$dboEmployee->FirstName->AsValue(),
+											$dboEmployee->LastName->AsValue(), 
+											$dboEmployee->UserName->AsValue(),
+											$strArchivedLabel,
+											$strView);
 		}
 
 		Table()->EmployeeTable->Render();
