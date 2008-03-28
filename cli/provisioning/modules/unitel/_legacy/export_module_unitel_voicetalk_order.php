@@ -261,14 +261,23 @@
 			}
 		}
 		
-		// Make a record for each of the baskets (001-005)
-		for ($i = 1; $i < 6; $i++)
+		if ($arrBuiltRequest['BasketNumber'])
 		{
-			$intFullServiceRecordSequence++;
-			$arrBuiltRequest['BasketNumber']	= "00".$i;
-			$arrBuiltRequest['RecordSequence']	= str_pad($intFullServiceRecordSequence, 9, "0", STR_PAD_LEFT);
-			
-			$this->_arrFullServiceRecords[] = $arrBuiltRequest;
+			// Make a record for each of the baskets (001-005)
+			for ($i = 1; $i < 6; $i++)
+			{
+				$intFullServiceRecordSequence++;
+				$arrBuiltRequest['BasketNumber']	= "00".$i;
+				$arrBuiltRequest['RecordSequence']	= str_pad($intFullServiceRecordSequence, 9, "0", STR_PAD_LEFT);
+				
+				$this->_arrFullServiceRecords[] = $arrBuiltRequest;
+			}
+		}
+		else
+		{
+				$intFullServiceRecordSequence++;
+				$arrBuiltRequest['RecordSequence']	= str_pad($intFullServiceRecordSequence, 9, "0", STR_PAD_LEFT);
+				$this->_arrFullServiceRecords[] = $arrBuiltRequest;
 		}
 		
 		// Update the database
