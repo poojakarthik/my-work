@@ -2,6 +2,14 @@
 if (Vixen.TableSort == undefined)
 {
 	Vixen.TableSort = {
+	
+		// Number of rows per table page before bottom navigation controls are displayed
+		BOTTOM_NAV_CONTROL_ROW_LIMIT: 20, 
+		
+		// Maximum number of navigation controls to displayed, including the current page number
+		// (An odd number works best)
+		NUMBER_OF_NAV_LINKS_TO_DISPLAY: 11,
+
 
 		// Regular expression for HTML tags
 		HTML_TAGS_REG: /<\/?[^>]+>/gi,
@@ -29,6 +37,8 @@ if (Vixen.TableSort == undefined)
 		 *
 		 * @param tableId String value of ID attribute of the table to be sorted
 		 *
+		 * @return void
+		 *
 		 * @public
 		 */
 		prepare: function(tableId)
@@ -45,6 +55,8 @@ if (Vixen.TableSort == undefined)
 			{
 				Vixen.TableSort._makeColumnSortable(table, columnIndex);
 			}
+			
+			Vixen.TableSort.showTablePage(tableId);
 		},
 
 		// _makeColumnSortable()
@@ -53,6 +65,8 @@ if (Vixen.TableSort == undefined)
 		 *
 		 * @param table DOMTable The table containing the column
 		 * @param columnIndex int The index of the column to be manipulated
+		 *
+		 * @return void
 		 *
 		 * @private
 		 */
@@ -128,6 +142,8 @@ if (Vixen.TableSort == undefined)
 		 * @param tableId String value of ID attribute of the table to sort
 		 * @param columnIndex Integer column index of column to be sorted
 		 *
+		 * @return void
+		 *
 		 * @public
 		 */
 		sortTable: function(tableId, columnIndex)
@@ -166,6 +182,8 @@ if (Vixen.TableSort == undefined)
 		 *
 		 * @param tableId String value of ID attribute of the table to re-sort
 		 *
+		 * @return void
+		 *
 		 * @public
 		 */
 		resortTable: function(tableId)
@@ -182,6 +200,8 @@ if (Vixen.TableSort == undefined)
 		 * @param tableId String value of ID attribute of the table to change contents of
 		 * @param rows DOMRows of another table to be placed in this one (eg: table.rows) 
 		 *
+		 * @return void
+		 *
 		 * @public
 		 */
 		setTableRows: function(tableId, rows)
@@ -197,6 +217,8 @@ if (Vixen.TableSort == undefined)
 		 * @param tableId String value of ID attribute of the table to change contents of
 		 * @param rows array[DOMRow] rows to be placed in this one 
 		 *
+		 * @return void
+		 *
 		 * @public
 		 */
 		setRows: function(tableId, rows)
@@ -210,6 +232,8 @@ if (Vixen.TableSort == undefined)
 		 * Remove the item rows from a table.
 		 *
 		 * @param tableId String value of ID attribute of the table to be emptied
+		 *
+		 * @return void
 		 *
 		 * @public
 		 */
@@ -229,13 +253,18 @@ if (Vixen.TableSort == undefined)
 		 * @param tableId String value of ID attribute of the table to append rows to
 		 * @param rows DOMRows of another table to be appended to this one (eg: table.rows) 
 		 *
+		 * @return void
+		 *
 		 * @public
 		 */
 		appendTableRows: function(tableId, tableRows)
 		{
 			var table = document.getElementById(tableId);
-			for (var i = 0, l = tableRows.length; i < l; i++)
+			var pageRange = Vixen.TableSort._getPageRange(table);
+			var newRowIndex = table.rows.length;
+			for (var i = 0, l = tableRows.length; i < l; i++, newRowIndex++)
 			{
+				tableRows[0].style.display = (newRowIndex >= pageRange.from && pageRange <= pageRange.to) ? "table-row" : "none";
 				table.tBodies[0].appendChild(tableRows[0]);
 			}
 			Vixen.TableSort.resortTable(tableId);
@@ -248,13 +277,17 @@ if (Vixen.TableSort == undefined)
 		 * @param tableId String value of ID attribute of the table to append rows to
 		 * @param rows array[DOMRow] rows to be appended to this one
 		 *
+		 * @return void
+		 *
 		 * @public
 		 */
 		appendRows: function(tableId, rows)
 		{
 			var table = document.getElementById(tableId);
-			for (var i = 0, l = rows.length; i < l; i++)
+			var pageRange = Vixen.TableSort._getPageRange(table);
+			for (var i = 0, l = rows.length; i < l; i++, newRowIndex++)
 			{
+				rows[i].style.display = (newRowIndex >= pageRange.from && pageRange <= pageRange.to) ? "table-row" : "none";
 				table.tBodies[0].appendChild(rows[i]);
 			}
 			Vixen.TableSort.resortTable(tableId);
@@ -268,15 +301,25 @@ if (Vixen.TableSort == undefined)
 		 * @param columnIndex Integer column index of column to be sorted
 		 * @param sortAscending Boolean whether to sort ascending (TRUE) or descending (FALSE)
 		 *
+		 * @return void
+		 *
 		 * @private
 		 */
 		_applySort: function(table, columnIndex, sortAscending)
 		{
-			if (columnIndex == -1) return;
+			if (columnIndex == -1) 
+			{
+				Vixen.TableSort.showTablePage(table.id);
+				return;
+			}
 			var values = Vixen.TableSort._getColumnValues(table, columnIndex);
 			var compFunc = Vixen.TableSort._getComparisonFunction(values, table, columnIndex);
 			var anyChanges = Vixen.TableSort._sortValues(values, compFunc, sortAscending);
-			if (anyChanges) Vixen.TableSort._reArrangeRows(table, values);
+			if (anyChanges) 
+			{
+				Vixen.TableSort._reArrangeRows(table, values);
+			}
+			Vixen.TableSort.showTablePage(table.id);
 		},
 
 		// _reArrangeRows()
@@ -286,6 +329,8 @@ if (Vixen.TableSort == undefined)
 		 * @param table DOMTable table element to be sorted
 		 * @param sortedValues array[String => array[ 0=>Value, 1=>DOMRow ] ] Return value of _getColumnValues()
 		 * @param sortAscending Boolean whether to sort ascending (TRUE) or descending (FALSE)
+		 *
+		 * @return void
 		 *
 		 * @private
 		 */
@@ -603,6 +648,289 @@ if (Vixen.TableSort == undefined)
 			if (dt1==dt2) return 0;
 			if (dt1<dt2) return -1;
 			return 1;
+		},
+		
+		// showTablePage()
+		/**
+		 * Shows a page of a table, making it paginated if not already
+		 *
+		 * @param tableId String value of ID attribute of the paginated table
+		 * @param page Integer of page to be displayed
+		 *
+		 * @return void
+		 *
+		 * @public
+		 */
+		showTablePage: function(tableId, page)
+		{
+			var table = document.getElementById(tableId);
+			if (!table.hasAttribute("page_size"))
+			{
+				// Table does not want paginating!!
+				return;
+			}
+			// Check to see if pagination has not been applied to this table
+			if (!table.paginationInitialized)
+			{
+				table.pageSize = parseInt(table.getAttribute("page_size"));
+
+				// Apply pagination even if there are not enough rows to warrant it.
+				// The number of rows in the table could increase later!!
+				
+				// Create a wrapper to hold the table & navigation controls
+				var wrapper = document.createElement("div");
+				wrapper.className = "paginated-table-wrapper";
+				wrapper.style.width = table.clientWidth + "px";
+				
+				// Create a container for the navigation controls
+				var nav = document.createElement("div");
+				wrapper.appendChild(nav);
+				nav.className = "paginated-table-navigation";
+				nav.id = tableId + "_page_nav_top";
+				
+				// Place the wrapper in the tables location in the DOM					
+				table.parentNode.replaceChild(wrapper, table);
+				// And slap the table into the wrapper
+				wrapper.appendChild(table);
+				
+				// Clone nav and append it here to give controls below the table too.
+				nav = nav.cloneNode(true);
+				nav.id = tableId + "_page_nav_bottom";
+				wrapper.appendChild(nav);
+				
+				// Set the table as paginated
+				table.rows[0].style.display = "table-row";
+				table.className += " paginated ";
+				table.pageDisplay = 1;
+
+				// Record the fact that the pagination has been set up
+				table.paginationInitialized = true;
+			}
+			if (page == undefined)
+			{
+				page = table.pageDisplay;
+			}
+			var nrPages = Math.ceil((table.rows.length - 1) / table.pageSize);
+			if (page > nrPages)
+			{
+				page = nrPages;
+			}
+			if (page < 1)
+			{
+				page = 1;
+			}
+			
+			// Find the last row index before the displayed page range
+			var hideTo = ((page - 1) * table.pageSize);
+			// Find the first row index after the displayed page range
+			var hideFrom = (page * table.pageSize) + 1;
+			// Itterate through all table rows except the first (header) row
+			for (var i = 1, nrRows = table.rows.length; i < nrRows; i++)
+			{
+				// If a row is out of range then hide it, else show it
+				table.rows[i].style.display = (i <= hideTo || i >= hideFrom) ? "none" : "table-row";
+			}
+			// Update the pageDisplay property of the table
+			table.pageDisplay = page;
+					
+			// Prepare some appropriate nav controls
+			Vixen.TableSort._doNavControls(table);
+		},
+		
+		// _doNavControls()
+		/**
+		 * Prepares appropriate navigation controls for a paginated table.
+		 * Assumes that the navigation control divs already exist in the document.
+		 *
+		 * @param table DOMTable to prepare navigation controls for
+		 *
+		 * @return void
+		 *
+		 * @private
+		 */
+		_doNavControls: function(table)
+		{
+			// Get the nav control bar
+			var navTopId = table.id + "_page_nav_top";
+			var nav = document.getElementById(navTopId);
+			
+			// Attempt to retrieve the bottom nav controls
+			var navBottomId = table.id + "_page_nav_bottom";
+			var navBottom = document.getElementById(navBottomId);
+
+			// If pagination isn't needed (there is only one page!)
+			if ((table.rows.length - 1) <= table.pageSize)
+			{
+				// Hide the navigation control divs
+				nav.style.display = "none";
+				if (navBottom != undefined && navBottom != null)
+				{
+					navBottom.style.display = "none";
+				}
+				return;
+			}
+			
+			// Navigation is required so ensure controls are visible
+			nav.style.display = "block";
+			
+			// Remove the old controls
+			for (var i = nav.childNodes.length - 1; i >= 0; i--)
+			{
+				nav.removeChild(nav.childNodes[i]);
+			}
+			
+			// Define the number of links to be displayed including the current page
+			// (done like this to allow making this configurable easier)
+			var nrLinks = Vixen.TableSort.NUMBER_OF_NAV_LINKS_TO_DISPLAY;
+
+			// Figure out what pagination controls are wanted
+			var nrPages = Math.ceil((table.rows.length - 1) / table.pageSize);
+			var pagesBefore = table.pageDisplay - 1;
+			var pagesAfter = nrPages - table.pageDisplay;
+			
+			// If there are more pages than desired number of links, add quick nav links for first/previous page
+			if (nrLinks < nrPages)
+			{
+				// Determine if the current page is the first page.
+				// If it is then we should make the controls invisible to act as 'space savers'
+				var firstPage = table.pageDisplay <= 1; 
+				// \u00AB is HTML entity &laqou; and \u2039 is HTML entity &lsaquo;
+				nav.appendChild(Vixen.TableSort._navSpan(table.id, "\u00AB", 1, 					firstPage, !firstPage));
+				nav.appendChild(Vixen.TableSort._navSpan(table.id, "\u2039", table.pageDisplay - 1, firstPage, !firstPage));
+			}
+			
+			// Default all pages to be displayed
+			var from = 1;
+			var to = nrPages;
+
+			// Work out the desired minimum number of links allowed before or after the current page
+			var halfLinksBefore = Math.ceil((nrLinks - 1) / 2);
+			var halfLinksAfter = Math.floor((nrLinks - 1) / 2);
+			
+			// If links can't be displayed for all pages
+			if (nrPages > nrLinks)
+			{
+				// If there are more pages both before and after the current page than can be linked to
+				if (pagesAfter >= halfLinksAfter && pagesBefore >= halfLinksBefore)
+				{
+					// Spread the link range evenly around the current page
+					from = table.pageDisplay - halfLinksBefore;
+					to = table.pageDisplay + halfLinksAfter;
+				}
+				// If there are only more pages after than can be linked to 
+				else if (pagesAfter >= halfLinksAfter)
+				{
+					// Allow links up to the maximum number of links allowed
+					to = nrLinks;
+				}
+				// There are only more links before the current page than can be linked to
+				else
+				{
+					// Allow as many links from the last page as we can
+					from = nrPages - nrLinks + 1;
+				}
+			}
+			
+			// Add links to each page in the calculated range
+			for (var i = from; i <= to; i++)
+			{
+				nav.appendChild(Vixen.TableSort._navSpan(table.id, i, i, table.pageDisplay == i));
+			}
+
+			// If there are more pages than links, add quick nav links for next/last page
+			if (nrLinks < nrPages)
+			{
+				// Determine if the current page is the last page
+				// If it is then we should make the controls invisible to act as 'space savers'
+				var lastPage = table.pageDisplay >= nrPages; 
+				// \u203A is HTML entity &rsaquo; and \u00BB is HTML entity &raquo;
+				nav.appendChild(Vixen.TableSort._navSpan(table.id, "\u203A", table.pageDisplay + 1, lastPage, !lastPage));
+				nav.appendChild(Vixen.TableSort._navSpan(table.id, "\u00BB", nrPages, 				lastPage, !lastPage));
+			}
+			
+			// Duplicate controls at bottom if they exist there already
+			if (navBottom != undefined && navBottom != null)
+			{
+				// If there are more than 20 items per page, show navigation controls at the bottom too
+				if (table.pageSize >= Vixen.TableSort.BOTTOM_NAV_CONTROL_ROW_LIMIT)
+				{
+					nav = nav.cloneNode(true);
+					nav.id = navBottomId;
+					navBottom.parentNode.replaceChild(nav, navBottom);
+				}
+				// Otherwise, these are a bit excessive, so hide them
+				else
+				{
+					navBottom.style.display = "none";
+				}
+			}
+		},
+		
+		// _navSpan()
+		/**
+		 * Returns a span element to be used as a navigation control
+		 *
+		 * @param tableId String value of ID attribute of the paginated table
+		 * @param label String to be displayed as the navigation control
+		 * @param page Integer of page to be displayed when the control is clicked
+		 * @param selected Boolen TRUE if the target page is the currently displayed page, else false
+		 * @param visible Boolean FALSE if the element should be a space-holder only i.e. invisible (default=TRUE) 
+		 *
+		 * @return DOMSpan node to be used as a navigation control
+		 *
+		 * @private
+		 */
+		_navSpan: function(tableId, label, page, selected, visible)
+		{
+			// Create the DOM node
+			var span = document.createElement("span");
+			
+			// Append the label as a text node 
+			span.appendChild(document.createTextNode(label));
+			
+			// If selected then add a suitable class name for styling
+			if (selected)
+			{
+				span.className = "paginated-table-navigation-control-current";
+			}
+			// If not active, add a click event listener to pagingate to the desired page
+			else
+			{
+				span.setAttribute("onclick", "Vixen.TableSort.showTablePage('" + tableId + "', " + page + ");");
+			}
+
+			// Unless specified, assume it should be visible
+			if (visible == undefined) visible = true;
+			if (!visible) span.style.visibility = "hidden";
+
+			return span;
+		},
+		
+		// _getPageRange()
+		/**
+		 * Returns an inclusive range of rows that should be displayed for the current page
+		 *
+		 * @param table DOMTable to get the displayed range of
+		 *
+		 * @return Object with integer properties 'from' and 'to' defining the index of rows in the range
+		 *
+		 * @private
+		 */
+		_getPageRange: function(table)
+		{
+			// Set a default range that includes everything after the header.
+			// If there are more rows in your than I am allowing here, you deserve it to go wrong!!
+			var range = { from: 1, to: 9999999999 };
+			
+			// If the table has pagination initialized on it, take the actual values from the table
+			if (table.paginationInitialized)
+			{
+				range.from = (table.pageSize * (table.pageDisplay - 1)) + 1;
+				range.to   = (table.pageSize * table.pageDisplay);
+			}
+			
+			// Return the range
+			return range;
 		}
 
 	}

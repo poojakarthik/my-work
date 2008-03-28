@@ -262,6 +262,22 @@ class VixenTable
 	private $_arrSortFields			= null;
 	
 	//------------------------------------------------------------------------//
+	// _intPageSize
+	//------------------------------------------------------------------------//
+	/**
+	 * _intPageSize
+	 *
+	 * Number of items to be displayed per page in a paginated table
+	 *
+	 * Number of items to be displayed per page in a paginated table (0 if not to be paginated)
+	 *
+	 * @type	Integer
+	 *
+	 * @property
+	 */
+	private $_intPageSize			= 0;
+	
+	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -434,6 +450,31 @@ class VixenTable
 	function SetSortable($bolSortable)
 	{
 		$this->_bolSortable = $bolSortable;
+	}
+	
+
+
+	//------------------------------------------------------------------------//
+	// SetPageSize
+	//------------------------------------------------------------------------//
+	/**
+	 * SetPageSize()
+	 *
+	 * Sets the page size to use when paginating the table
+	 *
+	 * Sets the page size to use when paginating the table
+	 * 
+	 *
+	 * @param	integer		$intPageSize	page size of table or 0 if not 
+	 * 										paginated (default = 0 (zero))
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function SetPageSize($intPageSize=0)
+	{
+		$this->_intPageSize = $intPageSize;
 	}
 	
 
@@ -868,8 +909,10 @@ class VixenTable
 			echo $strVixenTable . ".row = Array(); \n";
 			echo "</script>\n";
 		//}
+		
+		$strPageSize = $this->_intPageSize > 0 ?  " page_size='$this->_intPageSize' " : "";
 
-		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
+		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'$strPageSize>\n";
 		
 		// Build headers
 		echo "<tr class='First'>\n";
@@ -991,8 +1034,8 @@ class VixenTable
 			echo "\n<script type='text/javascript'>";
 			echo "objRow = Object();\n";
 			
-			echo "objRow.selected = FALSE;\n";
-			echo "objRow.up = TRUE;\n";			
+			echo "objRow.selected = false;\n";
+			echo "objRow.up = true;\n";
 
 			if ($this->_bolLinked)
 			{

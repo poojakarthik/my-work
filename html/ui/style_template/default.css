@@ -225,7 +225,34 @@
 		line-height: 		1.0;
 	}
 
+	div.paginated-table-wrapper
+	{
 
+	}
+
+	div.paginated-table-navigation
+	{
+		/*background-color:	cyan;*/
+		font-size:			12px;
+		text-align:			right;
+		margin:				-2px 0px -1px 0px;
+	}
+
+	div.paginated-table-navigation span
+	{
+		margin: 			0px 4px;
+		cursor:				pointer;
+		text-align:			center;
+		text-decoration:	none;
+	}
+
+	div.paginated-table-navigation span.paginated-table-navigation-control-current
+	{
+		font-weight:		bold;
+		color:				blue;
+		cursor:				default;
+		text-decoration:	none;
+	}
 	
 /**************************************************************************/
 /* IMAGES														  		  */
@@ -716,17 +743,18 @@
 		background-repeat:   	no-repeat;
 		background-position: 	100% 50%;
 		padding-right: 			10px;
-		background-image:    url('img/template/order_none.png');
+		background-image:		url('img/template/order_none.png');
+		cursor:					pointer;
 	}
 
 	table.Listing tr.First th.VixenTableSortColumnAsc div.VixenTableSortColumnWrapper
 	{
-		background-image:    url('img/template/order_asc.png');
+		background-image:		url('img/template/order_asc.png');
 	}
 
 	table.Listing tr.First th.VixenTableSortColumnDesc div.VixenTableSortColumnWrapper
 	{
-		background-image:    url('img/template/order_desc.png');
+		background-image:		url('img/template/order_desc.png');
 	}
 
 	table.Listing tr.Archived td
