@@ -122,6 +122,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		Table()->EmployeeTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
 		Table()->EmployeeTable->SetSortable(TRUE);
 		Table()->EmployeeTable->SetSortFields("FirstName", "LastName", "UserName", "Archived", null);
+		Table()->EmployeeTable->SetPageSize(25);
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
