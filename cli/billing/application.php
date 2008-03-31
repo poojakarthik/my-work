@@ -456,7 +456,7 @@
 			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
 			$selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
 			$selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <ServiceRatePlan> AND LastChargedOn IS NOT NULL");
-			$selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)", NULL, "1");
+			$selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)");
 			if ($selLastBillDate->Execute($arrAccount))
 			{
 				// Previous Invoice
@@ -476,7 +476,6 @@
 			{
 				if ($arrService['MinMonthly'] > 0)
 				{
-					
 					// Prorate Minimum Monthly
 					$selEarliestCDR->Execute($arrService);
 					$selPlanDate->Execute($arrService);
