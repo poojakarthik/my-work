@@ -95,21 +95,38 @@
 		//##----------------------------------------------------------------##//
 		
 		// Mandatory
- 		$this->_arrModuleConfig['Server']			['Default']	= 'ftp.rslcom.com.au';
- 		$this->_arrModuleConfig['Server']			['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Server']			['Default']		= 'ftp.rslcom.com.au';
+ 		$this->_arrModuleConfig['Server']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Server']			['Description']	= "FTP Server to connect to";
  		
- 		$this->_arrModuleConfig['User']				['Default']	= '';
- 		$this->_arrModuleConfig['User']				['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['User']				['Default']		= '';
+ 		$this->_arrModuleConfig['User']				['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['User']				['Description']	= "FTP Username";
  		
- 		$this->_arrModuleConfig['Password']			['Default']	= '';
- 		$this->_arrModuleConfig['Password']			['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Password']			['Default']		= '';
+ 		$this->_arrModuleConfig['Password']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Password']			['Description']	= "FTP Password";
  		
- 		$this->_arrModuleConfig['Path']				['Default']	= '/dailychurn/';
- 		$this->_arrModuleConfig['Path']				['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Path']				['Default']		= '/dailychurn/';
+ 		$this->_arrModuleConfig['Path']				['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Path']				['Description']	= "Directory to drop the file in";
  		
  		// Additional
- 		$this->_arrModuleConfig['FileSequence']		['Default']	= 0;
- 		$this->_arrModuleConfig['FileSequence']		['Type']	= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['FileSequence']		['Default']		= 0;
+ 		$this->_arrModuleConfig['FileSequence']		['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['FileSequence']		['Description']	= "File Sequence Number";
+ 		
+ 		$this->_arrModuleConfig['CarrierCode']		['Default']		= 'rs';
+ 		$this->_arrModuleConfig['CarrierCode']		['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['CarrierCode']		['Description']	= "Receiving Carrier Code";
+ 		
+ 		$this->_arrModuleConfig['System']			['Default']		= 'w';
+ 		$this->_arrModuleConfig['System']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['System']			['Description']	= "Receiving Processing System";
+ 		
+ 		$this->_arrModuleConfig['CSPCode']			['Default']		= '';
+ 		$this->_arrModuleConfig['CSPCode']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['CSPCode']			['Description']	= "YBS Customer's CSP Code";
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format

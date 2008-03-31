@@ -323,9 +323,10 @@
  			
  			//CliEcho("{$arrField['PadType']}; {$arrField['PadChar']}\t", FALSE);
  			// Put in default values
- 			$arrField['Value']		= ($arrLine[$strField] !== NULL)	? $arrLine[$strField]	: $arrField['Value'];
- 			$arrField['PadChar']	= ($arrField['PadChar'] !== NULL)	? $arrField['PadChar']	: ' ';
- 			$arrField['PadType']	= ($arrField['PadType'] !== NULL)	? $arrField['PadType']	: STR_PAD_RIGHT;
+ 			$arrField['Value']		= ($arrLine[$strField] !== NULL)	? $arrLine[$strField]							: $arrField['Value'];
+ 			$arrField['PadChar']	= ($arrField['PadChar'] !== NULL)	? $arrField['PadChar']							: ' ';
+ 			$arrField['PadType']	= ($arrField['PadType'] !== NULL)	? $arrField['PadType']							: STR_PAD_RIGHT;
+ 			$arrField['Value']		= ($arrField['Config'])				? $this->GetConfigField($arrField['Config'])	: $arrField['Value'];
  			
  			//Debug($arrField['Value']);
  			
@@ -433,9 +434,10 @@
  		foreach ($this->_arrDefine[$arrLine['**Type']] as $strField=>$arrField)
  		{
  			// Put in default values
- 			$arrField['Value']		= ($arrLine[$strField])		? $arrLine[$strField]	: $arrField['Value'];
- 			$arrField['PadChar']	= ($arrField['PadChar'])	? $arrField['PadChar']	: ' ';
- 			$arrField['PadType']	= ($arrField['PadType'])	? $arrField['PadType']	: STR_PAD_RIGHT;
+ 			$arrField['Value']		= ($arrLine[$strField] !== NULL)	? $arrLine[$strField]							: $arrField['Value'];
+ 			$arrField['PadChar']	= ($arrField['PadChar'] !== NULL)	? $arrField['PadChar']							: ' ';
+ 			$arrField['PadType']	= ($arrField['PadType'] !== NULL)	? $arrField['PadType']							: STR_PAD_RIGHT;
+ 			$arrField['Value']		= ($arrField['Config'])				? $this->GetConfigField($arrField['Config'])	: $arrField['Value'];
  			
  			// Prepare field
  			$arrType = explode('::', $arrField['Type']);
@@ -1087,6 +1089,35 @@
 		{
 			return $arrClean;
 		}
+ 	}
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// GetTypes
+	//------------------------------------------------------------------------//
+	/**
+	 * GetTypes()
+	 *
+	 * Gets a list of the Provisioning Types this Output Module supports
+	 *
+	 * Gets a list of the Provisioning Types this Output Module supports
+	 * 
+	 * @return	array						Indexed array of Provisioning Types
+	 * @method
+	 */
+ 	function GetTypes()
+ 	{
+ 		$arrTypes	= Array();
+ 		
+ 		foreach ($this->_arrDefine as $mixType=>$arrProperties)
+ 		{
+ 			if (is_int($mixType))
+ 			{
+ 				$arrTypes[]	= $mixType;
+ 			}
+ 		}
+ 		
+ 		return $arrTypes;
  	}
 }
 ?>

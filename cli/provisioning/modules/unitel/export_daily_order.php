@@ -76,8 +76,8 @@
  		// Parent Constructor
  		parent::__construct($intCarrier);
  		
- 		// Carrier Reference / Line Number Init
- 		$this->intCarrierReference	= 1;
+ 		// Carrier Reference
+ 		//$this->intCarrierReference	= $this->GetConfigField('RecordSequence');
  		
  		// Module Description
  		$this->strDescription		= "Daily Order";
@@ -87,30 +87,50 @@
 		//##----------------------------------------------------------------##//
 		
 		// Mandatory
- 		$this->_arrModuleConfig['Server']			['Default']	= 'ftp.rslcom.com.au';
- 		$this->_arrModuleConfig['Server']			['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Server']			['Default']		= 'ftp.rslcom.com.au';
+ 		$this->_arrModuleConfig['Server']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Server']			['Description']	= "FTP Server to connect to";
  		
- 		$this->_arrModuleConfig['User']				['Default']	= '';
- 		$this->_arrModuleConfig['User']				['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['User']				['Default']		= '';
+ 		$this->_arrModuleConfig['User']				['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['User']				['Description']	= "FTP Username";
  		
- 		$this->_arrModuleConfig['Password']			['Default']	= '';
- 		$this->_arrModuleConfig['Password']			['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Password']			['Default']		= '';
+ 		$this->_arrModuleConfig['Password']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Password']			['Description']	= "FTP Password";
  		
- 		$this->_arrModuleConfig['Path']				['Default']	= '/ebill_dailyorderfiles/';
- 		$this->_arrModuleConfig['Path']				['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Path']				['Default']		= '/ebill_dailyorderfiles/';
+ 		$this->_arrModuleConfig['Path']				['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Path']				['Description']	= "Directory to drop the file in";
  		
  		// Additional
- 		$this->_arrModuleConfig['FileSequence']		['Default']	= 0;
- 		$this->_arrModuleConfig['FileSequence']		['Type']	= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['FileSequence']		['Default']		= 0;
+ 		$this->_arrModuleConfig['FileSequence']		['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['FileSequence']		['Description']	= "File Sequence Number";
  		
- 		$this->_arrModuleConfig['RecordSequence']	['Default']	= 0;
- 		$this->_arrModuleConfig['RecordSequence']	['Type']	= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['RecordSequence']	['Default']		= 0;
+ 		$this->_arrModuleConfig['RecordSequence']	['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['RecordSequence']	['Description']	= "Record Sequence Number";
  		
- 		$this->_arrModuleConfig['EarliestDelivery']	['Default']	= 3600 * 15;
- 		$this->_arrModuleConfig['EarliestDelivery']	['Type']	= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['EarliestDelivery']	['Default']		= 3600 * 15;
+ 		$this->_arrModuleConfig['EarliestDelivery']	['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['EarliestDelivery']	['Description']	= "Earliest time the file can be sent daily (in seconds)";
  		
- 		$this->_arrModuleConfig['LastSent']			['Default']	= '0000-00-00';
- 		$this->_arrModuleConfig['LastSent']			['Type']	= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['LastSent']			['Default']		= '0000-00-00';
+ 		$this->_arrModuleConfig['LastSent']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['LastSent']			['Description']	= "Date the last file was sent";
+ 		
+ 		$this->_arrModuleConfig['CarrierCode']		['Default']		= 'rsl';
+ 		$this->_arrModuleConfig['CarrierCode']		['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['CarrierCode']		['Description']	= "Receiving Carrier Code";
+ 		
+ 		$this->_arrModuleConfig['System']			['Default']		= 'w';
+ 		$this->_arrModuleConfig['System']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['System']			['Description']	= "Receiving Processing System";
+ 		
+ 		$this->_arrModuleConfig['CSPCode']			['Default']		= '';
+ 		$this->_arrModuleConfig['CSPCode']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['CSPCode']			['Description']	= "YBS Customer's CSP Code";
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
@@ -130,14 +150,15 @@
  		$arrDefine = Array();
 		$arrDefine['CSP']			['Start']		= 0;
 		$arrDefine['CSP']			['Length']		= 3;
+		$arrDefine['CSP']			['Config']		= 'CSPCode';
 		
 		$arrDefine['RSL']			['Start']		= 3;
 		$arrDefine['RSL']			['Length']		= 3;
-		$arrDefine['RSL']			['Value']		= "rsl";
+		$arrDefine['RSL']			['Config']		= 'CarrierCode';
 		
 		$arrDefine['System']		['Start']		= 6;
 		$arrDefine['System']		['Length']		= 1;
-		$arrDefine['System']		['Value']		= "w";
+		$arrDefine['System']		['Config']		= 'System';
 		
 		$arrDefine['Sequence']		['Start']		= 7;
 		$arrDefine['Sequence']		['Length']		= 4;
@@ -417,7 +438,7 @@
  	{ 		
  		//--------------------------------------------------------------------//
  		// RENDER
- 		//--------------------------------------------------------------------//
+ 		//--------------------------------------------------------------------// 		
  		$arrRendered				= Array();
 		$arrRendered['FNN']			= $arrRequest['FNN'];
  		switch ($arrRequest['Type'])
@@ -534,7 +555,7 @@
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
  		$this->_arrFilename['Sequence']		= $this->_GetCarrierProperty('File');
- 		$this->_arrFilename['Sender']		= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][CARRIER_UNITEL]['CSPCode'];
+ 		$this->_arrFilename['Sender']		= $this->GetConfigField('CSPCode');
  		$this->_arrFilename['Date']			= date("Ymd");
  		
  		// Generate Header
