@@ -490,7 +490,7 @@
 					// If the Service is tolling (has an EarliestCDR)
 					if ($intCDRDate)
 					{
-						$bolHasInvoicedCDRs	= !$selHasInvoicedCDRs->Execute($arrService);
+						$bolHasInvoicedCDRs	= $selHasInvoicedCDRs->Execute($arrService);
 						
 						// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
 						if ((!$arrService['LastBilledOn'] || !$bolHasInvoicedCDRs) && $arrService['InAdvance'])
