@@ -520,7 +520,7 @@
 			
 			$fltPlanCredit = ((float)$arrServicePlanCharges['GrandTotalCharge'] - $arrServicePlanCharges['GrandRatedCharge']) - $arrServicePlanCharges['GrandPlanCharge'];
 			$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Credits";
-			$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= 0 - $fltPlanCredit;
+			$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $fltPlanCredit;
 			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		}
 		/*$arrData = Array();
