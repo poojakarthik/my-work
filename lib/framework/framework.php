@@ -1053,7 +1053,7 @@
 	 	$arrCols['Balance']	= 'Invoice.Balance';
 	 	$arrCols['Invoice']	= 'Invoice.Id';
 	 	$arrCols['Id']		= 'InvoicePayment.Id';
-	 	$selInvoicePayments = new StatementSelect("InvoicePayment JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment = $intPayment");
+	 	$selInvoicePayments = new StatementSelect("(Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment) JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment = $intPayment AND Payment.Account = InvoicePayment.Account");
 	 	$selInvoicePayments->Execute();
 	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
 	 	$qryDelete = new Query();
@@ -1515,5 +1515,239 @@ class Singleton
 		trigger_error('Clone is not allowed.', E_USER_ERROR);
 	}
 
+}
+
+
+
+
+//----------------------------------------------------------------------------//
+// CarrierModule
+//----------------------------------------------------------------------------//
+/**
+ * CarrierModule
+ *
+ * Carrier Module Base Class
+ *
+ * Carrier Module Base Class
+ *
+ * @package	framework
+ * @class	CarrierModule
+ */
+class CarrierModule
+{
+ 	protected $_intModuleType;
+ 	protected $intCarrier;
+ 	
+ 	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor
+	 *
+	 * Constructor
+	 * 
+	 * @param	integer		$intModuleType			CarrierModule type
+	 * 
+	 * @return	ImportBase
+	 *
+	 * @method
+	 */
+ 	function __construct($intCarrier, $intModuleType)
+ 	{
+ 		// Defaults
+ 		$this->_arrModuleConfig	= Array();
+ 		$this->_intModuleType	= $intModuleType;
+ 		
+ 		// Statements
+		$this->_selCarrierModule	= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = <Type>");
+		$this->_selModuleConfig		= new StatementSelect("CarrierModuleConfig", "*", "CarrierModule = <Id>");
+		
+	 	$arrCols			= Array();
+	 	$arrCols['Value']	= NULL;
+	 	$this->_ubiModuleConfig	= new StatementUpdateById("CarrierModuleConfig", $arrCols);
+ 		
+ 		// Load Config
+ 		$this->LoadModuleConfig();
+ 	}
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// GetConfigField
+	//------------------------------------------------------------------------//
+	/**
+	 * GetConfigField()
+	 *
+	 * Retrieves a reference to a Config field
+	 * 
+	 * Retrieves a reference to a Config field
+	 * 
+	 * @param	string	$strName					Field to return
+	 * 
+	 * @return	&mixed								Pass/Fail
+	 *
+	 * @method
+	 */
+	 function &GetConfigField($strName)
+	 {
+	 	// Return a reference to the value, so it can be modified
+	 	return $this->_arrModuleConfig[$strName]['Value'];
+	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// LoadModuleConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadModuleConfig()
+	 *
+	 * Loads the Module's Config from the DB
+	 * 
+	 * Loads the Module's Config from the DB
+	 * 
+	 * @return	bool							Pass/Fail
+	 *
+	 * @method
+	 */
+	 function LoadModuleConfig()
+	 {
+	 	$arrWhere = Array();
+	 	$arrWhere['Carrier']	= $this->intCarrier;
+	 	$arrWhere['Module']		= get_class($this);
+	 	$arrWhere['Type']		= $this->_intModuleType;
+	 	if ($this->_selCarrierModule->Execute($arrWhere))
+	 	{
+	 		$arrModule	= $this->_selCarrierModule->Fetch();
+	 		
+	 		// Get the Config
+	 		$this->_selModuleConfig->Execute($arrModule);
+	 		while ($arrConfig = $this->_selModuleConfig->Fetch())
+	 		{
+	 			$this->_arrModuleConfig[$arrConfig['Name']]['Value']	= FlexCast($arrConfig['Value'], $arrConfig['Type']);
+	 			$this->_arrModuleConfig[$arrConfig['Name']]['Id']		= $arrConfig['Id'];
+	 		}
+	 		
+	 		return TRUE;
+	 	}
+	 	else
+	 	{
+	 	 	// There was no config
+	 	 	return FALSE;
+	 	}
+	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// SaveModuleConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveModuleConfig()
+	 *
+	 * Saves the Module's Config back to the DB
+	 * 
+	 * Saves the Module's Config back to the DB
+	 * 
+	 * @return	mixed					TRUE	: Config Saved
+	 * 									string	: Failure Reason(s)
+	 *
+	 * @method
+	 */
+	 function SaveModuleConfig()
+	 {
+	 	$strError	= "";
+	 	$bolFailed	= FALSE;
+	 	foreach ($this->_arrModuleConfig as $strName=>$arrProperties)
+	 	{
+	 		$arrModuleConfig			= Array();
+	 		$arrModuleConfig['Id']		= $arrProperties['Id'];
+	 		$arrModuleConfig['Value']	= $arrProperties['Value'];
+	 		if ($this->_ubiModuleConfig->Execute($arrModuleConfig) === FALSE)
+	 		{
+	 			// Append Error to full message
+	 			$strError	.= "Could not save field '$strName' as value '{$arrProperties['Value']}'\n";
+	 			$bolFailed	= TRUE;
+	 		}
+	 		else
+	 		{
+	 			$strError	.= "Successfully saved field '$strName' as value '{$arrProperties['Value']}'\n";
+	 		}
+	 	}
+	 	$strError	= trim($strError);
+	 	
+	 	// If there is an error, then return the message, else TRUE
+	 	return ($bolFailed) ? $strError : TRUE;
+	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// CreateModuleConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * CreateModuleConfig()
+	 *
+	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
+	 * 
+	 * Creates Module Config information in the CarrierModule and CarrierModuleConfig tables
+	 * 
+	 * @param	integer	$intCarrier		The Carrier to create this module for
+	 * 
+	 * @return	mixed					TRUE	: Config Created
+	 * 									string	: Failure Reason
+	 *
+	 * @method
+	 */
+	 function CreateModuleConfig($intCarrier)
+	 {
+	 	$insCarrierModule		= new StatementInsert("CarrierModule");
+		$insCarrierModuleConfig	= new StatementInsert("CarrierModuleConfig");
+		
+	 	if (!GetConstantName($intCarrier, 'Carrier'))
+	 	{
+	 		// Invalid Carrier Specified
+	 		return "Invalid Carrier '$intCarrier' Specified";
+	 	}
+	 	
+	 	$arrWhere = Array();
+	 	$arrWhere['Carrier']	= $intCarrier;
+	 	$arrWhere['Module']		= get_class($this);
+	 	$arrWhere['Type']		= $this->_intModuleType;
+	 	if ($this->_selCarrierModule->Execute($arrWhere))
+	 	{
+			// Insert the CarrierModule data
+			$arrCarrierModule	= Array();
+	 		$arrCarrierModule['Carrier']	= $intCarrier;
+	 		$arrCarrierModule['Type']		= $this->_intModuleType;
+	 		$arrCarrierModule['Module']		= get_class($this);
+	 		$arrCarrierModule['FileType']	= $this->intBaseFileType;
+	 		if (!$intCarrierModule = $insCarrierModule->Execute($arrCarrierModule))
+	 		{
+	 			return "MySQL Error: ".$insCarrierModule->Error();
+	 		}
+			
+			// Insert the CarrierModuleConfig data
+			$strError	= "";
+			foreach ($this->_arrModuleConfig as $strField=>$arrProperties)
+			{
+				$arrModuleConfig	= Array();
+				$arrModuleConfig['CarrierModule']	= $intCarrierModule;
+				$arrModuleConfig['Name']			= $strField;
+				$arrModuleConfig['Type']			= $arrProperties['Type'];
+				$arrModuleConfig['Value']			= $arrProperties['Default'];
+				$arrModuleConfig['Description']		= $arrProperties['Description'];
+				if (!$insCarrierModuleConfig->Execute($arrModuleConfig))
+				{
+					$strError .= $insCarrierModuleConfig->Error()."\n";
+				}
+			}
+			
+			return ($strError) ? trim($strError) : TRUE;
+			
+	 	}
+	 	else
+	 	{
+	 		return "The Module '".get_class($this)."' already exists for Carrier '$intCarrier'";
+	 	}
+	 }
 }
 ?>
