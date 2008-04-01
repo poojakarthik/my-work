@@ -1022,21 +1022,6 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		/*// empty temporary invoice table
-		$this->_rptBillingReport->AddMessage("Truncating Temp Invoice table...", FALSE);
-		$qryTruncate = new Query();
-		if (!$qryTruncate->Execute("DELETE FROM InvoiceTemp "))
-		{
-			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return;
-		}
-		else
-		{
-			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}*/
-		
 		// change status of temp invoice CDRs
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS."\t", FALSE);
 		$arrUpdateData = Array();
@@ -1258,10 +1243,46 @@
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 		}
 		
-		/*
+		// empty temporary invoice table
+		$this->_rptBillingReport->AddMessage("Truncating Temp Invoice table...", FALSE);
+		$qryTruncate = new Query();
+		if (!$qryTruncate->Execute("DELETE FROM InvoiceTemp "))
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// MoveCDRs
+	//------------------------------------------------------------------------//
+	/**
+	 * MoveCDRs()
+	 *
+	 * Moves Invoiced and >190 day old CDRs from the CDR Table to CDRInvoiced 
+	 *
+	 * Moves Invoiced and >190 day old CDRs from the CDR Table to CDRInvoiced 
+	 * 
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+ 	function MoveCDRs()
+ 	{
+		// Get today's date
+		$strDate	= date("Y-m-d");
+		
 		// Move Invoiced CDRS to CDRInvoiced table
 		$this->_rptBillingReport->AddMessage("Moving Invoiced CDRs to CDRInvoiced...\t", FALSE);
 		$qryCopyInvoicedCDRs	= new Query();
+		//if($qryCopyInvoicedCDRs->Execute("INSERT INTO CDRInvoiced (SELECT * FROM CDR WHERE (Status = 199 OR StartDatetime < SUBDATE('$strDate', INTERVAL 190 DAY)))") === FALSE)
 		if($qryCopyInvoicedCDRs->Execute("INSERT INTO CDRInvoiced (SELECT * FROM CDR WHERE Status = 199)") === FALSE)
 		{			
 			// Report and fail out
@@ -1271,6 +1292,7 @@
 		
 		$qryDeleteInvoicedCDRs	= new Query();
 		if($qryDeleteInvoicedCDRs->Execute("DELETE FROM CDR WHERE Status = 199") === FALSE)
+		//if($qryDeleteInvoicedCDRs->Execute("DELETE FROM CDR WHERE (Status = 199 OR StartDatetime < SUBDATE('$strDate', INTERVAL 190 DAY)") === FALSE)
 		{			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
@@ -1280,8 +1302,8 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}*/
-	}
+		}
+ 	}
 	
 	//------------------------------------------------------------------------//
 	// Revoke
