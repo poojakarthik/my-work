@@ -966,7 +966,7 @@
  	{
 		// Report Title
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TITLE."\n");
-		
+		/*
 		// FAIL if there are temporary invoices in the invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CHECK_TEMP_INVOICES, FALSE);
 		$selCheckTempInvoices = new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP);
@@ -985,7 +985,7 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-		
+		*/
 		// Get InvoiceRun of the current Temporary Invoice Run
 		$this->_rptBillingReport->AddMessage("Retrieving InvoiceRun Id to commit...\t", FALSE);
 		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
@@ -1006,7 +1006,7 @@
 		$strInvoiceRun	= $arrInvoiceRun['InvoiceRun'];
 		$this->_rptBillingReport->AddMessage(MSG_OK);
 		
-		
+		/*
 		// copy temporary invoices to invoice table
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
 		$siqInvoice = new QuerySelectInto();
@@ -1112,11 +1112,11 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-		
+		*/
 		// BILLING OUTPUT
-		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
+		foreach ($this->_arrBillOutput AS $strKey=>$objValue)
 		{
-			$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_SEND_OUTPUT, Array('<Run>' => $strValue), FALSE);
+			$this->_rptBillingReport->AddMessage(MSG_BUILD_SEND_OUTPUT, FALSE);
 			// build billing output
 			if (!$this->_arrBillOutput[$strKey]->BuildOutput())
 			{
@@ -1155,19 +1155,7 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
-		// Update ServiceRatePlan.LastChargedOn field
-		$this->_rptBillingReport->AddMessage("Updating ServiceRatePlan.LastChargedOn...", FALSE);
-		$selServices		= new StatementSelect("ServiceTotal", "DISTINCT Service", "InvoiceRun = <InvoiceRun>");
-		$selServices->Execute($arrInvoiceRun);
-		while ($arrService = $selServices->Fetch())
-		{
-			$qryLastChargedOn	= new Query("UPDATE ServiceRatePlan SET LastChargedOn = NOW() WHERE Service = {$arrService['Service']} AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1 ORDER BY CreatedOn DESC LIMIT 1");
-			$qryLastChargedOn->Execute();
-		}
-		$this->_rptBillingReport->AddMessage(MSG_OK);
-		
+		}		
 		
 		// Activate all Inactive ServiceRatePlans and ServiceRateGroups for Services that were Invoiced this month
 		$arrCols	= Array();
@@ -1214,7 +1202,7 @@
 		$arrCols	= Array();
 		$arrCols['Sample']	= new MySQLFunction("Sample + 1");
 		$updSampleAccounts	= new StatementUpdate("Account", "Sample < 0", $arrCols);
-		$updSampleAccounts->Execute(Array(), $arrCols);
+		$updSampleAccounts->Execute($arrCols, Array());
 		
 		// Update ServiceRatePlan.LastChargedOn field
 		$qryUpdateLastChargedOn	= new Query();
