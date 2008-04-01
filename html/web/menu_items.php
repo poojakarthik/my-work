@@ -88,6 +88,27 @@ class MenuItems
 		
 		return "index.html";
 	}
+	
+	//------------------------------------------------------------------------//
+	// GetBaseURL()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetBaseURL()
+	 *
+	 * Returns the base URL for the application 
+	 * (everything before the flex.php in the request URI)
+	 *
+	 * Returns the base URL for the application 
+	 * (everything before the flex.php in the request URI)
+	 * 
+	 * @return	string		The base URL for links in the application
+	 *
+	 * @method
+	 */
+	function GetBaseURL()
+	{
+		return preg_replace("/flex.php\/.*$/", "", $_SERVER['REQUEST_URI']);
+	}
 
 
 	//------------------------------------------------------------------------//
@@ -107,9 +128,32 @@ class MenuItems
 	 */
 	function Console()
 	{
-		$this->strLabel	= "Console";
+		$this->strLabel	= "Home";
 		
-		return "flex.php/Console/Console/";
+		return $this->GetBaseURL()."flex.php/Console/Home/";
+	}
+
+
+	//------------------------------------------------------------------------//
+	// ManagementConsole()
+	//------------------------------------------------------------------------//
+	/**
+	 * ManagementConsole()
+	 *
+	 * Compiles the url to be executed when linking to the Management Console
+	 *
+	 * Compiles the url to be executed when linking to the Management Console
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string	action to be executed when linking to the Management Console
+	 *
+	 * @method
+	 */
+	function ManagementConsole()
+	{
+		$this->strLabel	= "Management Console";
+		error_log("Just set my strLabel to " . $this->strLabel);
+		return $this->GetBaseURL()."../intranet/index.php";
 	}
 
 	//------------------------------------------------------------------------//
@@ -131,9 +175,9 @@ class MenuItems
 	 */
 	function LoadAccountInConsole($intAccountId)
 	{
-		$this->strLabel	= "Console";
+		$this->strLabel	= "Home";
 		
-		return "flex.php/Console/Console/?Account.Id=$intAccountId";
+		return $this->GetBaseURL()."flex.php/Console/Home/?Account.Id=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -155,7 +199,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Home";
 		
-		return "flex.php/Console/Home/";
+		return $this->GetBaseURL()."flex.php/Console/Home/";
 	}
 
 	//------------------------------------------------------------------------//
@@ -179,7 +223,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Home";
 		
-		return "flex.php/Console/Home/?Account.Id=$intAccountId";
+		return $this->GetBaseURL()."flex.php/Console/Home/?Account.Id=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -207,8 +251,9 @@ class MenuItems
 		// Popup style logout
 		//return "javascript:Vixen.Ajax.CallAppTemplate(\"Console\", \"Logout\")";
 		
+		
 		// Page style logout
-		return "flex.php/Console/Logout/";
+		return $this->GetBaseURL()."flex.php/Console/Logout/";
 	}
 
 
@@ -235,7 +280,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Service: $intServiceId";
 		
-		return "flex.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage&Filter.Id=$intFilterId";
+		return $this->GetBaseURL()."flex.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage&Filter.Id=$intFilterId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -259,7 +304,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Account Charges";
 		
-		return "flex.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
+		return $this->GetBaseURL()."flex.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -283,7 +328,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Invoices and Payments";
 		
-		return "flex.php/Account/ListInvoicesAndPayments/?Account.Id=$intAccountId";
+		return $this->GetBaseURL()."flex.php/Account/ListInvoicesAndPayments/?Account.Id=$intAccountId";
 	}
 
 
@@ -310,7 +355,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Download Invoice Pdf";
 		
-		return "flex.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth";
+		return $this->GetBaseURL()."flex.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth";
 	}
 	
 	//------------------------------------------------------------------------//

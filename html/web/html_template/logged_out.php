@@ -93,10 +93,27 @@ class HtmlTemplateLoggedOut extends HtmlTemplate
 		echo "<span class='DefaultOutputSpan Default'>$strLogoutMsg</span>\n";
 		echo "<br /><br />\n";
 		echo "<a href='$strLoginHref' ><span>". APP_NAME ." Login</span></a>\n";
+		
+		/* There is no home page, so for now we will omit this link...
 		echo "<br />\n";
 		echo "<a href='$strMainPageHref' ><span>Back to homepage</span></a>\n";
+		*/
 		
 		echo "</div>\n"; // WideContent
+
+		
+		// As there is nothing much for the user to do on this page (with the above link removed),
+		// automatically redirect the user to the login page.
+		?>
+		<script>
+			function goToLogin()
+			{
+				document.location = "<?php echo $strLoginHref; ?>";
+			}
+			window.setTimeout(goToLogin, 5 *1000);
+		</script>
+		<?php
+
 	}
 }
 

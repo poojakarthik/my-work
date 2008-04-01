@@ -27,67 +27,36 @@
  *
  */
 
+require_once dirname(__FILE__)."/common_layout.php";
 
 $this->RenderClientHeader();
-//$this->RenderClientAppHeader();
-//$this->RenderContextMenu();
+
+CommonLayout::OpenPageBody($this, TRUE, TRUE);
+
+$this->RenderColumn(COLUMN_ONE);
+
 ?>
+<table width='100%' border='0'>
+	<tr>
+		<td width='49%' valign='top'>
+			
+			<?php $this->RenderColumn(COLUMN_TWO); ?>
+			
+		</td>
+		<td width='2%'></td>
+		<td width='49%' valign='top'>
+			
+			<?php $this->RenderColumn(COLUMN_THREE); ?>
+			
+		</td>
+	</tr>
+</table>
 
-<div id="Document" class="documentContainer">
+<?php 
+$this->RenderColumn(COLUMN_FOUR);
 
-	<div class="documentCurve Left documentCurveTopLeft"></div>
-	<div class="documentCurve Right documentCurveTopRight"></div>
-	<div class="clear"></div>
-	<div class="pageContainer">
-	
-	<div id="Header" class="sectionContainer">
-		<div id="Banner"></div>
-		<div class="MenuContainer">
-			<?php $this->RenderBreadCrumbMenu();?>
-			<div class='LogoutContainer'>
-				<?php
-					//display the logout link
-					$strUserName	= AuthenticatedUser()->_arrUser['UserName'];
-					$strLogoutHref	= Href()->LogoutUser();
-					echo "$strUserName (<a href='$strLogoutHref'>logout</a>)\n";
-				?>
-			</div>
-		</div>
-	</div>
-	<h1> <?php echo $this->_strPageName; ?></h1>
-	<div class="clear"></div>
-		<div id='PageBody'>
-			<?php 
-				$this->RenderColumn(COLUMN_ONE);
-			?>
-			<table width='100%' border='0'>
-				<tr>
-					<td width='49%' valign='top'>
-						
-						<?php $this->RenderColumn(COLUMN_TWO); ?>
-						
-					</td>
-					<td width='2%'></td>
-					<td width='49%' valign='top'>
-						
-						<?php $this->RenderColumn(COLUMN_THREE); ?>
-						
-					</td>
-				</tr>
-			</table>
-			<?php 
-				$this->RenderColumn(COLUMN_FOUR);
-			?>
-		</div>
+CommonLayout::ClosePageBody($this);
 
-	</div>
-	<div class="clear"></div>
-	<div class="documentCurve Left documentCurveBottomLeft"></div>
-	<div class="documentCurve Right documentCurveBottomRight"></div>
-	<div class="clear"></div>
-</div>
-
-<?php
 $this->RenderFooter();
 
 

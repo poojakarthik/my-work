@@ -15,6 +15,7 @@
  *
  * Layout Template defining how to display a page that has only a single column of HTML Template objects
  * Specificly for the Client Web Application
+ * This will display a single column
  *
  * @file		1column.php
  * @language	PHP
@@ -26,50 +27,16 @@
  *
  */
 
+require_once dirname(__FILE__)."/common_layout.php";
 
 $this->RenderClientHeader();
-//$this->RenderClientAppHeader();
-//$this->RenderContextMenu();
-?>
 
-<div id="Document">
+CommonLayout::OpenPageBody($this, TRUE, TRUE);
 
-	<div class="documentCurve Left documentCurveTopLeft"></div>
-	<div class="documentCurve Right documentCurveTopRight"></div>
-	<div class="clear"></div>
-	<div class="pageContainer">
-	
-	<div id="Header" class="sectionContainer">
-		<div id="Banner"></div>
-		<div class="MenuContainer">
-			<?php $this->RenderBreadCrumbMenu();?>
-			<div class='LogoutContainer'>
-				<?php
-					//display the logout link
-					$strUserName	= AuthenticatedUser()->_arrUser['UserName'];
-					$strLogoutHref	= Href()->LogoutUser();
-					echo "$strUserName (<a href='$strLogoutHref'>logout</a>)\n";
-				?>
-			</div>
-		</div>
-	</div>
-	<h1> <?php echo $this->_strPageName; ?></h1>
-	
-	<div class="clear"></div>
-		<div id='PageBody'>
-			<?php 
-				$this->RenderColumn(COLUMN_ONE);
-			?>
-		</div>
+$this->RenderColumn(COLUMN_ONE);
 
-	</div>
-	<div class="clear"></div>
-	<div class="documentCurve Left documentCurveBottomLeft"></div>
-	<div class="documentCurve Right documentCurveBottomRight"></div>
-	<div class="clear"></div>
-</div>
+CommonLayout::ClosePageBody($this);
 
-<?php
 $this->RenderFooter();
 
 

@@ -8,7 +8,7 @@
 
 // Forward to the Login Page ...
 // If they are already logged in, this page will take care of further redirection
-header ("Location: flex.php/Console/Console/");
+header ("Location: flex.php/Console/Home/");
 exit;
 
 ?>

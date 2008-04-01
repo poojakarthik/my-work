@@ -153,6 +153,26 @@ class Page
 		$this->_strPageName = $strName;
 	}
 
+	
+	//------------------------------------------------------------------------//
+	// GetName
+	//------------------------------------------------------------------------//
+	/**
+	 * GetName()
+	 *
+	 * Gets the name of the page (the title of the webpage)
+	 *
+	 * Gets the name of the page (the title of the webpage)
+	 * 
+	 * @return	string	$strName		the value the page name is set to
+	 *
+	 * @method
+	 */
+	function GetName()
+	{
+		return $this->_strPageName;
+	}
+
 	//------------------------------------------------------------------------//
 	// SetLayout
 	//------------------------------------------------------------------------//
@@ -2868,6 +2888,9 @@ class AjaxFramework
  */
 class HrefFramework
 {
+	// Local objMenuItems object
+	public $objMenuItems;
+	
 	//------------------------------------------------------------------------//
 	// __call
 	//------------------------------------------------------------------------//
@@ -2886,9 +2909,9 @@ class HrefFramework
 	 */
 	function __call($strMethod, $arrArguments)
 	{
-		$objMenuItems = new MenuItems();
+		$this->objMenuItems = new MenuItems();
 		
-		$strHref = call_user_func_array(Array($objMenuItems, $strMethod), $arrArguments);
+		$strHref = call_user_func_array(Array($this->objMenuItems, $strMethod), $arrArguments);
 
 		return $strHref;
 	}

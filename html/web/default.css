@@ -38,86 +38,82 @@
 		border:               0;
 	}
 	
-	a:link
-	{
-		color: 				#0000FF;
-		text-decoration:	none;		
-	}
-
-	a:active
-	{
-		color: 				#0000FF;
-		text-decoration:	none;		
-	}
-
-	a:visited
-	{
-		color: 				#0000FF;
-		text-decoration:	none;		
-	}
-	
+	a:link,
+	a:active,
+	a:visited,
 	a:hover
 	{
-		color:				#0000FF;
+		color:				#303030 !important;
 		text-decoration:	none;
+		font-weight:		bolder;
 	}
-	
+
+	div#BreadCrumbMenu a:link,
+	div#BreadCrumbMenu a:active,
+	div#BreadCrumbMenu a:visited,
 	div#BreadCrumbMenu a:hover
 	{
-		text-decoration:	underline;
+		color:				#f0e000 !important; //#ffd800; //#ffbf00;
+		text-decoration:	none;
+		font-weight:		bolder;
 	}
-	
+
+	div#BreadCrumbMenu a:hover
+	{
+		text-decoration:	underline !important;
+	}
+
 	h1
 	{
 		float:					left;
-		/*color:					#006599;*/
 		color:					#000000;
-		width:					850px;
+		width:					950px;
 		
 		font-size:				18pt;
 		
-		margin-top:				5px;
+		margin-top:				10px;
 		
 		margin-bottom:			10px;
 		padding-bottom:			5px;
-		
-		/*border-bottom:			solid 1px #006599;*/
 	}
+	
 	
 	h2
 	{
-		margin:              0;
-		font-size:           12pt;
+		margin:					0;
+		font-size:				12pt;
 	}
 	
 	h3
 	{
-		margin-top:          20px;
-		margin-left:         0;
-		margin-right:        0;
-		margin-bottom:       0;
-		font-size:           12pt;
+		margin-top:				20px;
+		margin-left:			0;
+		margin-right:			0;
+		margin-bottom:			0;
+		font-size:				12pt;
 	}
 	
 	body
 	{
-		margin:				20px;
-		font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
-		line-height:		18pt;
-		font-size:			10pt;
-		/*background-color:              #006599;*/
-		background-color:              #000000;
-		height:				100%;
+		margin:					0px;
+		font-family:			"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height:			18pt;
+		font-size:				10pt;
+		background-image:		url('./img/template/bodybg.png');
+		background-repeat:		repeat-x;
+		background-position:	top;
+		background-color:		#999999;
+		text-align:				center;
 	}
 	
 	form
 	{
-		margin:               0;
+		margin:					0;
 	}
 	
 	label
 	{
-		cursor:              pointer;
+		cursor:					pointer;
 	}
 	
 	span
@@ -131,7 +127,25 @@
 		overflow:			hidden;
 		line-height: 		1.2;
 	}
-	
+
+
+/**************************************************************************/
+/* LOGIN PAGE SPECIFIC														  			  */
+/**************************************************************************/
+
+span.IncorrectLogin
+{
+	color: #880000;
+	width: 100%;
+	display: block;
+	text-align:	center;
+}
+
+#LoginTable
+{
+	margin: 0px auto 0px auto;
+}
+
 /**************************************************************************/
 /* DIVS														  			  */
 /**************************************************************************/
@@ -139,19 +153,55 @@
 	{
 		margin-left:		0px;
 		margin-top:			0px;
-		width:				850px;
+		width:				100%;
+		position:			relative;
+		padding-bottom:		25px;
+		background-color:	#ffffff;
+	}
+
+	div#PageBody .pageContainerLeft
+	{
+		left:				-10px;
+	}
+	
+	div#PageBody .pageContainerRight
+	{
+		right:				-10px;
+	}
+	
+	div#PageBody .pageContainerRight .pageContainerShadow,
+	div#PageBody .pageContainerLeft .pageContainerShadow
+	{
+		position: 			absolute;
+		height:				100%;
+		width:				5px;
+		top: 				0px;
+		background-color:	#ffffff;
+		background-image:	none;
+	}
+
+	div#PageBody .pageContainerLeft .pageContainerShadow
+	{
+		left: 5px;
+	}
+
+	div#PageBody .pageContainerRight .pageContainerShadow
+	{
+		right: 5px;
 	}
 
 	div#PopupPageBody
 	{
 		margin-left:		5px;
 		margin-top:			10px;
-		/*width:				450px;*/
 	}
 	
 	div#Header
 	{
-		height:				auto;
+		height:				150px;
+		background-image:	url('./img/template/headerbg.png');
+		background-repeat:	repeat-x;
+		background-color:	#ffffff;
 	}
 	
 	
@@ -160,69 +210,105 @@
 /* This stuff was taken from client_app/css/default.css                       */
 /******************************************************************************/
 
-	div#Document
+	.documentContainer
 	{
-		background-color:              #FFFFFF;
-		
-		margin:							0 auto;
-		padding:						0;
-		position:						absolute;
-		left:							50%;
-		margin-left:					-450px;
-		width:							900px;
-	}
-	
-	div.documentCurve
-	{
-		margin:                        0;
-		padding:                       0;
-		
-		width:                         25px;
-		height:                        25px;
-	}
-	
-	div.Left
-	{
-		float:                         left;
-	}
-	
-	div.Right
-	{
-		float:                         right;
-	}
-	
-	.documentCurveTopLeft
-	{
-		background-image:              url('./img/template/curve_top_left.png');
-	}
-	
-	.documentCurveTopRight
-	{
-		background-image:              url('./img/template/curve_top_right.png');
-	}
-	
-	.documentCurveBottomLeft
-	{
-		background-image:              url('./img/template/curve_bottom_left.png');
-	}
-	
-	.documentCurveBottomRight
-	{
-		background-image:              url('./img/template/curve_bottom_right.png');
+		width: 950px;
+		margin: 0px auto;
+		padding: 0px;
+		height: 100%;
 	}
 	
 	.pageContainer
 	{
-		margin-left:                   25px;
-		margin-right:                  25px;
+		margin-left:		0px;
+		margin-right:		0px;
+		background-color:	#ffffff;
+		height: 			100%;
+		position:			relative;
+	}
+	
+	.pageContainerLeft,
+	.pageContainerRight
+	{
+		position:			absolute;
+		top:				0px;
+		width: 				5px;
+		height:				100%;
+		background-repeat:	repeat-y;
+	}
+	
+	.pageContainerLeft
+	{
+		left:				-5px;
+		background-image:	url('./img/template/wrapleft.png');
+	}
+	
+	.pageContainerRight
+	{
+		right:				-5px;
+		background-image:	url('./img/template/wrapright.png');
+	}
+	
+	.pageContainerRight .pageContainerShadow,
+	.pageContainerLeft .pageContainerShadow
+	{
+		width: 				5px;
+		height: 			100%;
+		background-repeat:	no-repeat;
+	}
+	
+	.pageContainerLeft .pageContainerShadow
+	{
+		background-image:	url('./img/template/tl.png');
+	}
+	.pageContainerRight .pageContainerShadow
+	{
+		background-image:	url('./img/template/tr.png');
+	}
+	
+	.MenuItemsContainer
+	{
+		width: 				100%;
+		height: 			60px;
+		background-repeat:	repeat-x;
+		background-position-top:	100%;
+		background-image:	url('./img/template/menubg2.png');
+		background-color:	#ffbf00;
+		position:			relative;
+	}
+	
+	.MenuOptionsContainer
+	{
+		position: 		absolute;
+		top: 			0px;
+		left: 			0px;
+		color: 			#000000;
+		padding: 		0px;
+		line-height:	33px;
+	}
+	
+	.MenuBreadCrumbContainer
+	{
+		position: 		absolute;
+		bottom: 		0px;
+		left: 			0px;
+		color: 			#ffd800;
+		padding: 		2px;
+	}
+	
+	.pageBodyWrapper
+	{
+		padding:			0px 5px;
 	}
 	
 	
 	div#Banner
 	{
-		height:				95px;
-		width:				850px;
-		background-image:	url(img/yellow_billing_banner.jpg);
+		height:					90px;
+		width:					100%;
+		background-image:		url(./img/template/logo.png);
+		background-repeat:		no-repeat;
+		background-position: 	15px 17px;
 	}
 	
 /**************************************************************************/
@@ -591,7 +677,7 @@
 	table.Listing tr.Even th,
 	table.Listing tr.Even td
 	{
-		background-color:    #D5E0F8;
+		background-color:    #FfF8b5;
 	}
 
 	table.Listing tr.Archived td
@@ -608,7 +694,7 @@
 	table.Listing tr.Hover th,
 	table.Listing tr.Hover td
 	{
-		background-color:    #FFFFAA;
+		background-color:    #D5E0F8;
 	}
 	
 /**************************************************************************/
@@ -644,20 +730,28 @@
 	
 	.MenuContainer
 	{
-		border:				solid 1px #090999;
+		border:				solid 0px #090999;
 		background-color:	#D5E0F8;
 		
-		padding-left:		5px;
-		padding-right:		5px;
+		padding: 0px;
 
-		margin-top:			5px;
+		margin-top:			0px;
 		margin-bottom:		5px;
 		height:				25px;
 	}
 	
 	.LogoutContainer
 	{
-		float:				right;
+		position:			absolute;
+		top:				0px;
+		right:				7px;
+		height:				45px;
+		background-repeat:  repeat-x;
+		background-image:   url('img/template/navicons_bottom.png');
+		border-collapse: 	collapse;
+		padding:			0;
+		border:				0;
+		margin:				0;
 	}
 	
 	.LogoutContainer a:hover
@@ -665,10 +759,98 @@
 		text-decoration:	underline;
 	}
 	
+	.LogoutContainer td
+	{
+		height:				45px;
+		vertical-align:		middle;
+	}
+	
+	.LogoutContainer td.LogoutLeft
+	{
+		background-repeat:  	no-repeat;
+		width: 					20px;
+		background-image:   	url('img/template/navicons_left.png');
+		background-position:	0 50%;
+	}
+	
+	.LogoutContainer td.LogoutRight
+	{
+		background-repeat:  	no-repeat;
+		width: 					20px;
+		background-image:   	url('img/template/navicons_right.png');
+		background-position:	100% 50%;
+		
+	}
+	
+	td.LogoutMiddle button.logout,
+	td.LogoutMiddle button.logoutHover
+	{
+		background-repeat:  	no-repeat;
+		width: 					20px;
+		height: 				20px;
+		background-image:   	url('img/template/logout.png');
+		border:					0px;
+		background-color:		#413f3f;
+		cursor:					pointer;
+		margin-left:			5px;
+	}
+	
+	td.LogoutMiddle > button.logout,
+	td.LogoutMiddle > button.logoutHover
+	{
+		margin-bottom:			5px;
+	}
+	
+	td.LogoutMiddle button.logoutHover
+	{
+		background-color:		#ffbf00;
+	}
+	
+	td.LogoutMiddle span.LoginUserLabel
+	{
+		font-weight:	bolder;
+	}
+
+	td.LogoutMiddle span.LoginUserName
+	{
+	}
+
 	.MenuIcon
 	{
 		border:              solid 1px #999999;
 	}
+	
+	ul.CommonHeaderMenu 
+	{
+		float: 				left;
+		margin: 			0px;
+		padding: 			0px 0px 0px 12px;
+		background-image:	url('img/template/menubar.png');
+		background-repeat:	repeat-y;
+		background-position: 100% 50%;
+	}
+	
+	ul.CommonHeaderMenu li
+	{
+		float: 				left;
+		margin:				0;
+		padding:			0px 12px;
+		display:			block;
+		background-color:	transparent;
+		background-image:	url('img/template/menubar.png');
+		background-repeat:	repeat-y;
+		background-attachment:	scroll;
+		border-right:		none;
+		font-weight:		bolder;
+		cursor:				pointer;
+	}
+	
+	ul.CommonHeaderMenu li.CommonHeaderMenuItemHover
+	{
+		background-color: black;
+		color: white;
+	}
+	
 	
 /**************************************************************************/
 /* TITLES															  	  */
