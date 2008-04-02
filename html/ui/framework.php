@@ -2889,7 +2889,7 @@ class AjaxFramework
 class HrefFramework
 {
 	// Local objMenuItems object
-	public $objMenuItems;
+	public $objMenuItems = NULL;
 	
 	//------------------------------------------------------------------------//
 	// __call
@@ -2914,6 +2914,29 @@ class HrefFramework
 		$strHref = call_user_func_array(Array($this->objMenuItems, $strMethod), $arrArguments);
 
 		return $strHref;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetLastMenuItemLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * GetLastMenuItemLabel()
+	 *
+	 * Returns the label associated with the last menu item
+	 *
+	 * Returns the label associated with the last menu item
+	 *
+	 * @return	string	the label associated with the last menu item
+	 *
+	 * @method
+	 */
+	function GetLastMenuItemLabel()
+	{
+		if ($this->objMenuItems === NULL)
+		{
+			return NULL;
+		}
+		return $this->objMenuItems->GetLabel();
 	}
 }
 

@@ -83,6 +83,30 @@ class MenuItems
 	 */
 	public $strContextMenuLabel;
 
+	
+	//------------------------------------------------------------------------//
+	// GetLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * GetLabel()
+	 *
+	 * Returns the label for this menu item or NULL if not set
+	 *
+	 * Returns the label for this menu item or NULL if not set
+	 * 
+	 * @return	string	the label for this menu item or NULL if not set
+	 *
+	 * @method
+	 */
+	function GetLabel()
+	{
+		if (isset($this->strLabel))
+		{
+			return $this->strLabel;
+		}
+		return NULL;
+	}
+	
 	//------------------------------------------------------------------------//
 	// ViewServiceRatePlan
 	//------------------------------------------------------------------------//

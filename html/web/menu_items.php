@@ -89,6 +89,30 @@ class MenuItems
 		return "index.html";
 	}
 	
+	
+	//------------------------------------------------------------------------//
+	// GetLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * GetLabel()
+	 *
+	 * Returns the label for this menu item or NULL if not set
+	 *
+	 * Returns the label for this menu item or NULL if not set
+	 * 
+	 * @return	string	the label for this menu item or NULL if not set
+	 *
+	 * @method
+	 */
+	function GetLabel()
+	{
+		if (isset($this->strLabel))
+		{
+			return $this->strLabel;
+		}
+		return NULL;
+	}
+	
 	//------------------------------------------------------------------------//
 	// GetBaseURL()
 	//------------------------------------------------------------------------//
@@ -152,7 +176,7 @@ class MenuItems
 	function ManagementConsole()
 	{
 		$this->strLabel	= "Management Console";
-		error_log("Just set my strLabel to " . $this->strLabel);
+
 		return $this->GetBaseURL()."../intranet/index.php";
 	}
 
