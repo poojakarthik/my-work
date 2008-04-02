@@ -47,6 +47,19 @@
 					margin-bottom:       10px;
 			    }
 			    
+			    td.clientInterfaceLink
+			    {
+			    	font-size: smaller;
+			    	vertical-align: bottom;
+			    }
+			    
+			    a.clientInterfaceLink
+			    {
+			    	font-size: smaller;
+			    	text-decoration: underline;
+			    	color:	#000;
+			    	vertical-align: bottom;
+			    }
 			    
 			</style>
 			<body>
@@ -79,6 +92,9 @@
 									<tr>
 										<td></td>
 										<td><input type="submit" value="Continue &#0187;" class="Right" /></td>
+									</tr>
+									<tr>
+										<td colspan="2" class="clientInterfaceLink"><a class="clientInterfaceLink" href="../web/">Customer interface</a></td>
 									</tr>
 								</table>
 							</form>
