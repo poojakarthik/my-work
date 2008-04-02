@@ -92,44 +92,44 @@
 
 <style type="text/css" media="screen">
 				
-				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; }
-			    #topContainer { padding-top: 6em; background: #FFF; }
-			    #logoImage {width:300px; height:91px; float: left; }
-			    #loginContainer{padding: 0px 0px 18em 210px;}
-			    #loginForm {float:left;height: 150px;width:500px; border-left: 1px solid #CCCCCC; padding:0px 8px 8px 30px;text-align:left;}
-			    h3 { margin: 0; }
-			    
-			    div.Seperator { height: 5px; }
-			    .Right { float: right; }
-			    
-			    .LoginBox { width: 200px; border: solid 1px #666666; padding: 3px; font-family: "Nimbus Sans L", "Tahoma"; height: 25px; }
-			    
-			    h1 { font-size: 14pt; color: #006599; font-family: "Nimbus Sans L", "Tahoma"; }
-			    
-			    label { font-size: 10pt; }
-			    
-			    .MsgError {
-					border:              solid 1px #CC0000;
-					background-color:    #f2dbdb;
+				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; background-color: #fff; }
+				#topContainer { padding-top: 6em; background: #FFF; }
+				#logoImage {width:300px; height:91px; float: left; }
+				#loginContainer{padding: 0px 0px 18em 210px;}
+				#loginForm {float:left;height: 150px;width:500px; border-left: 1px solid #CCCCCC; padding:0px 8px 8px 30px;text-align:left;}
+				h3 { margin: 0; }
+				
+				div.Seperator { height: 5px; }
+				.Right { float: right; }
+				
+				.LoginBox { width: 200px; border: solid 1px #666666; padding: 3px; font-family: "Nimbus Sans L", "Tahoma"; height: 25px; }
+				
+				h1 { font-size: 14pt; color: #006599; font-family: "Nimbus Sans L", "Tahoma"; }
+				
+				label { font-size: 10pt; }
+				
+				.MsgError {
+					border:			  solid 1px #CC0000;
+					background-color:	#f2dbdb;
 					
-					background-image:    url('img/template/MsgError.png');
+					background-image:	url('img/template/MsgError.png');
 					background-repeat:   no-repeat;
 					background-position: left;
 					
-					padding-top:         5px;
-					padding-left:        40px;
-					padding-right:       5px;
-					padding-bottom:      5px;
+					padding-top:		 5px;
+					padding-left:		40px;
+					padding-right:	   5px;
+					padding-bottom:	  5px;
 					
-					height:              25px;
+					height:			  25px;
 					
 					font-size: 10pt;
 					
-					line-height:         25px;
+					line-height:		 25px;
 					
-					margin-bottom:       10px;
-			    }
-			     
+					margin-bottom:	   10px;
+				}
+				 
 			</style>
 			
 			<body>
