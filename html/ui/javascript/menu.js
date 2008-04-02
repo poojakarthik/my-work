@@ -208,7 +208,7 @@ function VixenMenuClass(objMenu)
 
 			// set the class
 			elmNode.className 	= 'ContextMenuItem';
-			elmNode.class 		= 'ContextMenuItem';
+			elmNode.Class 		= 'ContextMenuItem';
 			
 			// Add the menu item element to the container
 			elmContainer.appendChild(elmNode);

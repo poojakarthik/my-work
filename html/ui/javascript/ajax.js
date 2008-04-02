@@ -530,7 +530,7 @@ function VixenAjaxClass()
 				case "AlertReload":
 					strContent = "<div align='center'><p>" + objInput[intKey].Data + "</p>" +
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = window.location;'></p></div>\n" +
-									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
+									"<" + "script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', 'autohide-reload');
 					break;
 				case "AlertAndExecuteJavascript":
@@ -549,7 +549,7 @@ function VixenAjaxClass()
 					// Render an alert popup with no default 'on close' behaviour other than hiding the popup
 					strContent = "<div align='center'><p>" + objInput[intKey].Data.Message + "</p>" +
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");Vixen.OnClosePopupFunction();'></p></div>\n" +
-									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
+									"<" + "script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', false);
 					break;
 				case "Reload":
@@ -563,7 +563,7 @@ function VixenAjaxClass()
 				case "AlertAndRelocate":
 					strContent = "<div align='center'><p>" + objInput[intKey].Data.Alert + "</p>" +
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'></p></div>\n" +
-									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
+									"<" + "script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'AlertSize', 'centre', 'autohide', null, objInput[intKey].Data.Location);
 					break;
 				case "ReplaceDivContents":

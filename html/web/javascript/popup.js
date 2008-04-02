@@ -519,7 +519,7 @@ function VixenPopupClass()
 						//"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
 						"<p></div>\n" +
 						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
-						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
+						"<" + "script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
 		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
 	}
 	
