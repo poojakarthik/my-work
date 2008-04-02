@@ -80,7 +80,19 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$this->RenderAsPopup();
+		switch ($this->_intContext)
+		{
+			case HTML_CONTEXT_POPUP:
+				$this->RenderAsPopup();
+				break;
+				
+			case HTML_CONTEXT_SERVICE_BULK_ADD:
+				$this->RenderForServiceBulkAddPage();
+				break;
+				
+			default:
+				echo "ERROR: ServiceAddressEdit Html Template rendered in known context: {$this->_intContext}";
+		}
 	}
 
 	//------------------------------------------------------------------------//
@@ -99,6 +111,85 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 	{
 		$arrAccountAddresses = DBO()->Account->AllAddresses->Value;
 		
+		$this->RenderForm($arrAccountAddresses);
+		
+		echo "<div class='ButtonContainer'><div class='right'>\n";
+		if (DBO()->ServiceAddress->Id->Value)
+		{
+			// Address details must already exist.  Have the Cancel button revert to the View Address popup
+			$strCancelLink = Href()->ViewServiceAddress(DBO()->Service->Id->Value);
+		}
+		else
+		{
+			$strCancelLink = "Vixen.Popup.Close(this);";
+		}
+		
+		$this->Button("Cancel", $strCancelLink);
+		$this->Button("Save", "Vixen.ServiceAddress.SaveAddress()");
+		echo "</div></div>\n";  //Button Container
+		
+		// Initialise the Javascript object which facilitates this form
+		$arrPostalAddressTypes = Array();
+		foreach ($GLOBALS['*arrConstant']['PostalAddrType'] as $strConstant=>$arrConstant)
+		{
+			$arrPostalAddressTypes[$strConstant] = $arrConstant['Description'];
+		}
+		
+		$jsonPostalAddressTypes	= Json()->encode($arrPostalAddressTypes);
+		$jsonAccountAddresses	= Json()->encode($arrAccountAddresses);
+		$intServiceId			= DBO()->Service->Id->Value;
+		$intAccountId			= DBO()->Account->Id->Value;
+		$strContainerDivId		= $this->_strContainerDivId;
+		$strPopupId				= $this->_objAjax->strId;
+		
+		$strJsScript = "Vixen.ServiceAddress.InitialiseEdit($intAccountId, $intServiceId, '$strContainerDivId', $jsonPostalAddressTypes, $jsonAccountAddresses, '$strPopupId');";
+		echo "<script type='text/javascript'>$strJsScript</script>\n";
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderForServiceBulkAddPage
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderForServiceBulkAddPage()
+	 *
+	 * Render this HTML Template for use with the ServiceBulkAdd Page
+	 *
+	 * Render this HTML Template for use with the ServiceBulkAdd Page
+	 *
+	 * @method
+	 */
+	function RenderForServiceBulkAddPage()
+	{
+		$strContainerDiv = "ServiceAddressDetailsContainerDiv";
+		echo "<div id='$strContainerDiv' style='display:none'>";
+		//echo "<div id='$strContainerDiv' >";
+		
+		// Render the form
+		$this->RenderForm(DBO()->Account->AllAddresses->Value);
+		
+		echo "</div>";
+		
+		// Initialise javascript object
+		//TODO!
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderForm
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderForm
+	 *
+	 * Renders the ServiceAddress form
+	 *
+	 * Renders the ServiceAddress form
+	 * 
+	 * @param	array	$arrAccountAddresses	array of all ServiceAddress records associated with the account
+	 * 											as created by the AppTemplateService->_GetAllServiceAddresses() method
+	 *
+	 * @method
+	 */
+	function RenderForm($arrAccountAddresses)
+	{
 		echo "<form id='VixenForm_ServiceAddress' >\n";
 		
 		// Render the Details
@@ -113,7 +204,7 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 		echo "<option value='0'>&nbsp;</option>";
 		foreach ($arrAccountAddresses as $intService=>$arrService)
 		{
-			$strSelected = ($intService == DBO()->Service->Id->Value)? "selected='selected'": "";
+			$strSelected = ($intService == DBO()->ServiceAddress->Service->Value)? "selected='selected'": "";
 			
 			$strCategory = ($arrService['Residential']) ? "Residential" : "Business";
 			
@@ -278,41 +369,7 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 		
 		echo "</div>"; //AddressEdit_Column2
 		
-		
 		echo "</div>"; // GroupedContent
-		
-		echo "<div class='ButtonContainer'><div class='right'>\n";
-		$this->Button("Save", "Vixen.ServiceAddress.SaveAddress()");
-		
-		if (DBO()->ServiceAddress->Id->Value)
-		{
-			// Address details must already exist.  Have the Cancel button revert to the View Address popup
-			$strCancelLink = Href()->ViewServiceAddress(DBO()->Service->Id->Value);
-		}
-		else
-		{
-			$strCancelLink = "Vixen.Popup.Close(this);";
-		}
-		
-		$this->Button("Cancel", $strCancelLink);
-		echo "</div></div>\n";  //Button Container
-		
-		// Initialise the Javascript object which facilitates this form
-		$arrPostalAddressTypes = Array();
-		foreach ($GLOBALS['*arrConstant']['PostalAddrType'] as $strConstant=>$arrConstant)
-		{
-			$arrPostalAddressTypes[$strConstant] = $arrConstant['Description'];
-		}
-		
-		$jsonPostalAddressTypes	= Json()->encode($arrPostalAddressTypes);
-		$jsonAccountAddresses	= Json()->encode($arrAccountAddresses);
-		$intServiceId			= DBO()->Service->Id->Value;
-		$intAccountId			= DBO()->Account->Id->Value;
-		$strContainerDivId		= $this->_strContainerDivId;
-		$strPopupId				= $this->_objAjax->strId;
-		
-		$strJsScript = "Vixen.ServiceAddress.InitialiseEdit($intAccountId, $intServiceId, '$strContainerDivId', $jsonPostalAddressTypes, $jsonAccountAddresses, '$strPopupId');";
-		echo "<script type='text/javascript'>$strJsScript</script>\n";
 		
 		echo "</form>\n";
 	}

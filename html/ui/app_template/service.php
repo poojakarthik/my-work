@@ -695,6 +695,35 @@ class AppTemplateService extends ApplicationTemplate
 		// Load the ServiceAddress details for all Services currently belonging to the account
 		DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
 		
+		// Retrieve all usable Cost Centers
+		$strWhere		= "Account IN (0, ". DBO()->Account->Id->Value .")";
+		$selCostCenters	= new StatementSelect("CostCentre", "Id, Name", $strWhere, "Account DESC, Name ASC");
+		$mixResult		= $selCostCenters->Execute();
+		$arrCostCenters	= Array();
+		if ($mixResult)
+		{
+			$arrRecordSet = $selCostCenters->FetchAll();
+			foreach ($arrRecordSet as $arrRecord)
+			{
+				$arrCostCenters[$arrRecord['Id']] = $arrRecord['Name'];
+			}
+		}
+		DBO()->Account->AllCostCenters = $arrCostCenters;
+		
+		// Retrieve all usable RatePlans
+		$selRatePlans	= new StatementSelect("RatePlan", "Id, ServiceType, Name", "Archived = 0", "Name ASC");
+		$mixResult		= $selRatePlans->Execute();
+		$arrRatePlans	= Array();
+		if ($mixResult)
+		{
+			$arrRecordSet = $selRatePlans->FetchAll();
+			foreach ($arrRecordSet as $arrRecord)
+			{
+				$arrRatePlans[$arrRecord['ServiceType']][$arrRecord['Id']] = $arrRecord['Name'];
+			}
+		}
+		DBO()->Account->AllRatePlans = $arrRatePlans;
+		
 		// Context menu
 		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
@@ -712,6 +741,163 @@ class AppTemplateService extends ApplicationTemplate
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('service_bulk_add');
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// BulkValidateFNNs
+	//------------------------------------------------------------------------//
+	/**
+	 * BulkValidateFNNs()
+	 *
+	 * Performs preliminary Validation of services defined using the "Bulk Add Services" webpage
+	 * 
+	 * Performs preliminary Validation of services defined using the "Bulk Add Services" webpage
+	 * 
+	 *
+	 * @return		void
+	 * @method		BulkValidateFNNs
+	 */
+	function BulkValidateFNNs()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		if (!DBO()->Account->Load())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Could not find account with Id: ". DBO()->Account->Id->Value);
+			return TRUE;
+		}
+		
+		// Retrieve the array of new services
+		// Note that this is an array of objects (structs), not an array of associative arrays
+		$arrServices = DBO()->Services->Data->Value;
+		
+		
+		// Check that there are not duplicate numbers in the list
+		// This has already been done in javascript, but I want to check again
+		$arrInvalidServiceIndexes = Array();
+		for ($i = 0; $i < count($arrServices); $i++)
+		{
+			for ($j = $i + 1; $j < count($arrServices); $j++)
+			{
+				if ($arrServices[$i]->strFNN == $arrServices[$j]->strFNN)
+				{
+					// Add these services to the list of invalid ones
+					$arrInvalidServiceIndexes[] = $arrServices[$i]->intArrayIndex; 
+					$arrInvalidServiceIndexes[] = $arrServices[$j]->intArrayIndex; 
+				}
+			}
+		}
+		// Remove any duplicates from the array
+		$arrInvalidServiceIndexes = array_unique($arrInvalidServiceIndexes);
+		
+		if (count($arrInvalidServiceIndexes) > 0)
+		{
+			// At least 2 of the new services have the same FNN
+			$jsonInvalidServiceIndexes = Json()->encode($arrInvalidServiceIndexes);
+			$strJs = "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: Duplicate services are highlighted');";
+			Ajax()->AddCommand("ExecuteJavascript", $strJs);
+			return TRUE;
+		}
+		
+		// Check that none of these new numbers are already in the database
+		$arrFNNs = Array();
+		foreach ($arrServices as $objService)
+		{
+			$arrFNNs[] = "\"{$objService->strFNN}\"";
+		}
+		
+		$strWhere = "FNN IN (". implode(", ", $arrFNNs) .") AND (ClosedOn IS NULL OR ClosedOn >= NOW())";
+		$selFNNs = new StatementSelect("Service", "Id, FNN", $strWhere);
+		$mixResult = $selFNNs->Execute();
+		if ($mixResult > 0)
+		{
+			// At least one of the new FNNs is currently being used in the database
+			$arrRecordSet = $selFNNs->FetchAll();
+			foreach ($arrRecordSet as $arrRecord)
+			{
+				foreach ($arrServices as $objService)
+				{
+					if ($objService->strFNN == $arrRecord['FNN'])
+					{
+						$arrInvalidServiceIndexes[] = $objService->intArrayIndex;
+					}
+				}
+			}
+			
+			$jsonInvalidServiceIndexes = Json()->encode($arrInvalidServiceIndexes);
+			$strJs = "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: highlighted FNNs are currently active in the database and can not be used for new services');";
+			Ajax()->AddCommand("ExecuteJavascript", $strJs);
+			return TRUE;
+		}
+		
+		// To have gotten this far, the FNNs must all be valid
+		Ajax()->AddCommand("ExecuteJavascript", "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(true);");
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// LoadExtraDetailsPopup
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadExtraDetailsPopup()
+	 *
+	 * Loads the ExtraDetailsPopup specific to the ServiceType of the Service passed to this function
+	 * 
+	 * Loads the ExtraDetailsPopup specific to the ServiceType of the Service passed to this function
+	 * This is used by the BulkAddServices functionality to declare all the properties that are specific
+	 * to the ServiceType of the service
+	 * 
+	 *
+	 * @return		void
+	 * @method		LoadExtraDetailsPopup
+	 */
+	function LoadExtraDetailsPopup()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Retrieve the array of new services
+		// Note that this is an array of objects (structs), not an array of associative arrays
+		//$objService = DBO()->Service->Data->Value;
+
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+		{
+			//TODO! Accomodate the extra LaneLine details 
+			DBO()->Account->Load();
+			
+			// Set Default values for things
+			// Don't forget this form has to include controls for the Indial100 checkbox and enabling ELB
+			 
+			$this->_SetDefaultValuesForServiceAddress(DBO()->ServiceAddress, DBO()->Account);
+			
+			// Retrieve the address details of each service belonging to this account
+			DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
+		}
+		elseif (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
+		{
+			DBO()->ServiceMobileDetail->SimPUK		= DBO()->Service->SimPUK->Value;
+			DBO()->ServiceMobileDetail->SimESN		= DBO()->Service->SimESN->Value;
+			DBO()->ServiceMobileDetail->SimState	= DBO()->Service->SimState->Value;
+			DBO()->ServiceMobileDetail->DOB			= DBO()->Service->DOB->Value;
+			DBO()->ServiceMobileDetail->Comments	= DBO()->Service->Comments->Value;
+		}
+		elseif (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
+		{
+			DBO()->ServiceInboundDetail->AnswerPoint	= DBO()->Service->AnswerPoint->Value;
+			DBO()->ServiceInboundDetail->Configuration	= DBO()->Service->Configuration->Value;
+		}
+		else
+		{
+			// This shouldn't ever get called
+			Ajax()->AddCommand("Alert", "ERROR: AppTemplateService->LoadExtraDetailsPopup: ServiceType '". $objService->intServiceType ."' does not require any extra details defined");
+			return TRUE;
+		}
+		
+		$this->LoadPage('service_bulk_add_extra_details');
 		return TRUE;
 	}
 	

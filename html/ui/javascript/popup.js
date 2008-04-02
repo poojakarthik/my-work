@@ -72,6 +72,18 @@ function VixenPopupClass()
 		return document.getElementById('VixenPopup__' + strId);
 	}
 	
+	// Set the title of a popup
+	this.SetTitle = function(strId, strTitle)
+	{
+		var elmTitle = document.getElementById("VixenPopupTopBarTitle__" + strId);
+		if (elmTitle == null)
+		{
+			return false;
+		}
+		elmTitle.innerHTML = strTitle;
+		return true;
+	}
+	
 	// Sets the inner content of the popup identified by strId
 	this.SetContent = function(strId, strContent, strSize, strTitle)
 	{
@@ -112,7 +124,7 @@ function VixenPopupClass()
 		this.strContentCode = strContent;
 		return TRUE;
 	}
-	
+
 	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strTitle, strLocationOnClose)
 	{
 		// set the location to relocate to, when the popup is closed.
@@ -173,7 +185,7 @@ function VixenPopupClass()
 		//Going to run into some problems when having multiple popups
 		// on a single page, especially of different types
 		//  -think this is fixed, havent comprehensively tested though
-		
+
 		// Set the behaviour (modal/non-modal/autohide)
 		switch (strModal)
 		{
@@ -322,10 +334,8 @@ function VixenPopupClass()
 				Vixen.Popup.Close(strId);
 				
 				// Remove the Event listeners required to make it an autohide popup
-				// This is currently handled by the VixenPopupClass->Close method
-				// The following commented out lines can be removed
 				document.removeEventListener('mousedown', CloseHandler, TRUE);
-				document.removeEventListener('keyup', CloseHandler, TRUE);
+				document.removeEventListener('keydown', CloseHandler, TRUE);
 				
 				// load the new location if one was specified
 				if (Vixen.Popup.strLocationOnClose)

@@ -30,7 +30,7 @@ $strChangePopupTitleJsCode = "document.getElementById('VixenPopupTopBarTitle__{$
 
 $this->RenderJS();
 ?>
-<div id='PopupPageBody' <?php echo (IsSet($this->_strStyleOverride)) ? "style='". $this->_strStyleOverride ."'" : ""; ?>>
+<div id='PopupPageBody' <?php echo (isset($this->_strStyleOverride)) ? "style='". $this->_strStyleOverride ."'" : ""; ?> >
 <?php 
 	$this->RenderColumn(COLUMN_ONE); 
 	

@@ -27,13 +27,26 @@
  */
 
 // Set the page title
-$this->Page->SetName("Add Services");
+if (DBO()->Account->BusinessName->Value)
+{
+	$strPageNameSuffix = " - ". DBO()->Account->BusinessName->Value;
+}
+elseif (DBO()->Account->TradingName->Value)
+{
+	$strPageNameSuffix = " - ". DBO()->Account->TradingName->Value;
+}
+else
+{
+	$strPageNameSuffix = " - ". DBO()->Account->Id->Value;
+}
+
+$this->Page->SetName("Add Services". $strPageNameSuffix);
 
 // Set the layout template for the page
 $this->Page->SetLayout('1Column');
 
 // Add the Html Objects to their respective columns
-$this->Page->AddObject('ServiceBulkAdd',			COLUMN_ONE, HTML_CONTEXT_DEFAULT);
-$this->Page->AddObject('ProvisioningServiceList',	COLUMN_ONE, HTML_CONTEXT_SERVICE_BULK_ADD);
+$this->Page->AddObject('ServiceBulkAdd',		COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+//$this->Page->AddObject('ServiceAddressEdit',	COLUMN_ONE, HTML_CONTEXT_SERVICE_BULK_ADD);
 
 ?>

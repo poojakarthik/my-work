@@ -304,9 +304,34 @@ class MenuItems
 	function AddServices($intAccountId)
 	{
 		$this->strLabel	= "Add Services";
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Add Services";
 		return "service_addbulk.php?Account=$intAccountId";
 	}
+
+	//------------------------------------------------------------------------//
+	// AddServices2
+	//------------------------------------------------------------------------//
+	/**
+	 * AddServices2()
+	 *
+	 * Compiles the Href to be executed when the AddServices (service add bulk) menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddServices (service add bulk) menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param 	integer		$intAccountId	Id of the account that the services will be added to
+	 *
+	 * @return	string						Href to be executed when the AddServices menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddServices2($intAccountId)
+	{
+		$this->strLabel	= "Bulk Add Services";
+		$this->strContextMenuLabel = "Bulk Add Services";
+		return "flex.php/Service/BulkAdd/?Account.Id=$intAccountId";
+	}
+	
 
 	//------------------------------------------------------------------------//
 	// EditContact

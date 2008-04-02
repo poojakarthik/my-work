@@ -1225,7 +1225,7 @@ class HtmlTemplate extends BaseTemplate
 		// add $strFilename to global javascript function array
 		$GLOBALS['*arrJavaScript'][$strFilename] = $strFilename;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// FormStart
 	//------------------------------------------------------------------------//

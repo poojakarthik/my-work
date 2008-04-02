@@ -101,7 +101,8 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		echo "<h2 class='Payment'>Payments</h2>\n";
 		
 		// Check if the user has admin privileges
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolUserIsGod		= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
 		
 		if ($bolHasAdminPerm)
 		{
@@ -252,8 +253,15 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			}
 			
 			// Set the tooltip
+			$strToolTipHtml = "";
+			
+			if ($bolUserIsGod)
+			{
+				$strToolTipHtml .= $dboPayment->Id->AsOutput();
+			}
+			
 			// Payment Type
-			$strToolTipHtml = $dboPayment->PaymentType->AsCallBack("GetConstantDescription", Array("PaymentType"), RENDER_OUTPUT);
+			$strToolTipHtml .= $dboPayment->PaymentType->AsCallBack("GetConstantDescription", Array("PaymentType"), RENDER_OUTPUT);
 			
 			// If there is a file import date associated with the payment, then include this too
 			if ($dboPayment->ImportedOn->Value)

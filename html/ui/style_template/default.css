@@ -1415,6 +1415,46 @@
 		/*border:			1px solid #000000;*/
 	}
 
+/**************************************************************************/
+/* PHONE ICONS
+/**************************************************************************/
+	div.ServiceTypeIconBlank,
+	div.ServiceTypeIconLandLine,
+	div.ServiceTypeIconMobile,
+	div.ServiceTypeIconInbound,
+	div.ServiceTypeIconADSL
+	{
+		background-repeat:		no-repeat;
+		background-position:	center center;
+		width:					20px;
+		height:					20px;
+	}
+	
+	div.ServiceTypeIconBlank
+	{
+		background-image:    url('img/template/phonetypes/blank.png');
+	}
+	
+	div.ServiceTypeIconLandLine
+	{
+		background-image:    url('img/template/phonetypes/landline.png');
+	}
+
+	div.ServiceTypeIconMobile
+	{
+		background-image:    url('img/template/phonetypes/mobile.png');
+	}
+
+	div.ServiceTypeIconInbound
+	{
+		background-image:    url('img/template/phonetypes/inbound.png');
+	}
+
+	div.ServiceTypeIconADSL
+	{
+		background-image:    url('img/template/phonetypes/adsl.png');
+	}
+
 /*------------------*/
 
 
@@ -1620,6 +1660,4 @@ table.flexModalContainer td.flexModalContainer
 	padding: 0px;
 	margin: 0px;
 	border: 0px;
-}	
-
-
+}
