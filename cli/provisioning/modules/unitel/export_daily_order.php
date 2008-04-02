@@ -54,6 +54,7 @@
 	
 	public static $intBaseCarrier	= CARRIER_UNITEL;
 	public static $intBaseFileType	= FILE_EXPORT_UNITEL_DAILY_ORDER;
+	public static $_strDeliveryType	= 'FTP';
 	
  	//------------------------------------------------------------------------//
 	// __construct
@@ -485,11 +486,12 @@
  				for ($intBasket = 1; $intBasket <= 5; $intBasket++)
  				{
  					$this->intCarrierReference++;
-					$arrRendered['Sequence']	= $this->intCarrierReference;
- 					$arrRendered['Basket']		= $intBasket;
-			 		$arrRendered['**Type']		= $arrRequest['Type'];
-			 		$arrRendered['**Request']	= $arrRequest['Id'];
-			 		$this->_arrFileContent[]	= $arrRendered;
+					$arrRendered['Sequence']		= $this->intCarrierReference;
+ 					$arrRendered['Basket']			= $intBasket;
+			 		$arrRendered['**Type']			= $arrRequest['Type'];
+			 		$arrRendered['**Request']		= $arrRequest['Id'];
+			 		$arrRendered['**CarrierRef']	= $this->intCarrierReference;
+			 		$this->_arrFileContent[]		= $arrRendered;
  				}
  				break;
  				
@@ -497,11 +499,12 @@
  				for ($intBasket = 1; $intBasket <= 5; $intBasket++)
  				{
  					$this->intCarrierReference++;
-					$arrRendered['Sequence']	= $this->intCarrierReference;
- 					$arrRendered['Basket']		= $intBasket;
-			 		$arrRendered['**Type']		= $arrRequest['Type'];
-			 		$arrRendered['**Request']	= $arrRequest['Id'];
-			 		$this->_arrFileContent[]	= $arrRendered;
+					$arrRendered['Sequence']		= $this->intCarrierReference;
+ 					$arrRendered['Basket']			= $intBasket;
+			 		$arrRendered['**Type']			= $arrRequest['Type'];
+			 		$arrRendered['**Request']		= $arrRequest['Id'];
+			 		$arrRendered['**CarrierRef']	= $this->intCarrierReference;
+			 		$this->_arrFileContent[]		= $arrRendered;
  				}
  				break;
  				
@@ -509,17 +512,19 @@
  				$this->intCarrierReference++;
  				$arrRendered['Sequence']		= $this->intCarrierReference;
  				$arrRendered['Date']			= $arrRequest['FNN'];
-		 		$arrRendered['**Type']		= $arrRequest['Type'];
-		 		$arrRendered['**Request']	= $arrRequest['Id'];
-		 		$this->_arrFileContent[]	= $arrRendered;
+		 		$arrRendered['**Type']			= $arrRequest['Type'];
+		 		$arrRendered['**Request']		= $arrRequest['Id'];
+			 	$arrRendered['**CarrierRef']	= $this->intCarrierReference;
+		 		$this->_arrFileContent[]		= $arrRendered;
  				break;
  				
  			case REQUEST_VIRTUAL_PRESELECTION_REVERSE:
  				$this->intCarrierReference++;
  				$arrRendered['Sequence']		= $this->intCarrierReference;
-		 		$arrRendered['**Type']		= $arrRequest['Type'];
-		 		$arrRendered['**Request']	= $arrRequest['Id'];
-		 		$this->_arrFileContent[]	= $arrRendered;
+		 		$arrRendered['**Type']			= $arrRequest['Type'];
+		 		$arrRendered['**Request']		= $arrRequest['Id'];
+			 	$arrRendered['**CarrierRef']	= $this->intCarrierReference;
+		 		$this->_arrFileContent[]		= $arrRendered;
  				break;
  		}
  		

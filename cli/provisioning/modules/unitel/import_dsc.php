@@ -157,11 +157,12 @@
  		foreach ($arrRawData as $strLine)
  		{
  			// Check the FNN
- 			$strFNN = trim(substr($strLine, 25, 29));
+ 			$strFNN		= trim(substr($strLine, 25, 29));
+ 			$strBasket	= trim(substr($strLine, 54, 3));
  			//Debug($strFNN);
  			
- 			// If this line has the same FNN as the last line, merge
- 			if ($strFNN === $strLastFNN)
+ 			// If this line has the same FNN as the last line, and is not Basket 6 (Virtual Preselection), merge
+ 			if ($strFNN === $strLastFNN && $strBasket !== '006')
  			{
  				$strNewLine			.= $strLine;
  			}
@@ -236,6 +237,7 @@
 					// Either unhandled or not required
 					break;
 			}
+			
  			switch ($arrData['RecordType'])
  			{
 				case "S":	// Gain - new service
@@ -346,10 +348,6 @@
  			{
  				$arrPDR['EffectiveDate']	= "{$arrData['EffectiveYear']}-{$arrData['EffectiveMonth']}-{$arrData['EffectiveDay']}";
  			}
- 			if ($arrData['OrderYear'])
- 			{
- 				$arrPDR['OrderDate']		= "{$arrData['OrderYear']}-{$arrData['OrderMonth']}-{$arrData['OrderDay']}";
- 			}
  			//----------------------------------------------------------------//
  		}
  		
@@ -363,6 +361,7 @@
 			{
 				// Add System Note
 				//AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], CARRIER_UNITEL);
+				CliEcho(" (LOSS)", FALSE);
 			}
 		}
 		else

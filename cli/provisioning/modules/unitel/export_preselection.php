@@ -54,6 +54,7 @@
 	
 	public static $intBaseCarrier	= CARRIER_UNITEL;
 	public static $intBaseFileType	= FILE_EXPORT_UNITEL_PRESELECTION;
+	public static $_strDeliveryType	= 'FTP';
 	
 	
  	//------------------------------------------------------------------------//
@@ -77,18 +78,11 @@
  		// Parent Constructor
  		parent::__construct($intCarrier);
  		
- 		// Carrier
- 		$this->intBaseCarrier	= CARRIER_UNITEL;
- 		$this->intBaseFileType	= FILE_EXPORT_UNITEL_PRESELECTION;
- 		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 1;
  		
  		// Module Description
  		$this->strDescription		= "Preselection";
- 		
- 		// File Type
- 		$this->intFileType			= FILE_EXPORT_UNITEL_PRESELECTION;
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
@@ -267,8 +261,7 @@
 		$arrDefine['Action']		['Type']		= 'Integer';
 		$arrDefine['Action']		['Value']		= '1';
 		
-		$this->_arrDefine[REQUEST_BAR_SOFT] = $arrDefine;
-		$this->_arrDefine[REQUEST_BAR_HARD] = $arrDefine;
+		$this->_arrDefine[REQUEST_BAR] = $arrDefine;
 		
  		//--------------------------------------------------------------------//
  		// UnBar
@@ -291,8 +284,7 @@
 		$arrDefine['Action']		['Type']		= 'Integer';
 		$arrDefine['Action']		['Value']		= '0';
 		
-		$this->_arrDefine[REQUEST_UNBAR_SOFT] = $arrDefine;
-		$this->_arrDefine[REQUEST_UNBAR_HARD] = $arrDefine;
+		$this->_arrDefine[REQUEST_UNBAR] = $arrDefine;
  		
  		//--------------------------------------------------------------------//
  		// Activation
