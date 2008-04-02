@@ -94,7 +94,7 @@
 										<td><input type="submit" value="Continue &#0187;" class="Right" /></td>
 									</tr>
 									<tr>
-										<td colspan="2" class="clientInterfaceLink"><a class="clientInterfaceLink" href="../web/">Customer interface</a></td>
+										<td colspan="2" class="clientInterfaceLink"><a class="clientInterfaceLink" href="../web/">Customer System</a></td>
 									</tr>
 								</table>
 							</form>
