@@ -167,6 +167,221 @@ if (Vixen == undefined)
 }
 
 //----------------------------------------------------------------------------//
+// Library functions
+//----------------------------------------------------------------------------//
+/**
+ * $A
+ *
+ * Returns an array of items for an iterable object
+ *
+ * Returns an array of items for an iterable object
+ *
+ * @param itterable Object iterable object to return an array of elements for
+ *
+ * @return Array Items of the iterable object
+ *
+ * @package	library
+ */
+function $A(iterable)
+{
+	if (!iterable) return [];
+	if (iterable.toArray) return iterable.toArray();
+	var length = iterable.length, results = new Array(length);
+	while (length--)
+	{
+		results[length] = iterable[length];
+	}
+	return results;
+}
+
+/**
+ * $ID
+ *
+ * Returns an element or array of elements for (a) given ID(s)
+ *
+ * Returns an element or array of elements for (a) given ID(s).
+ * For each non-string object passed the same object will also be returned.
+ * For each string passed the corresponding element is returned as found by
+ * document.getElementById(ID);
+ * 
+ * Allows interchangeable use of IDs and HTMLElement objects in that $ID(id) 
+ * and $ID(element_with_id) equate to the same thing.
+ *
+ * @param id(s) mixed One or more String IDs or objects
+ *
+ * @return	mixed Either the element (if found) or array of elements for the passed ID(s)
+ *
+ * @package	library
+ */
+function $ID(element) 
+{
+	if (arguments.length > 1) 
+	{
+		for (var i = 0, elements = [], length = arguments.length; i < length; i++)
+		{
+      		elements.push($(arguments[i]));
+      	}
+		return elements;
+	}
+	if (Object.isString(element))
+	{
+		element = document.getElementById(element);
+		return Element.extend(element);
+	}
+}
+
+/**
+ * Function.prototype.bind
+ *
+ * Binds the function to a passed object
+ *
+ * Returns a function that, when called, invokes this function on that object
+ * (as though this function were a member function of the passed object) with
+ * the arguments passed to the bind function in addition to those passed to 
+ * the return function. 
+ *
+ * Example:
+ *
+ * 		function sayILikeSomething(strength, feeling)
+ * 		{
+ * 			if (feeling == undefined)
+ * 			{
+ * 				feeling = strength;
+ * 				strength = "";
+ * 			}
+ * 			else
+ * 			{
+ * 				strength += " ";
+ * 			}
+ * 
+ * 			alert("I " + strength + feeling + " " + this);
+ * 		}
+ * 
+ * 		var func = sayILikeSomething.bind("cats", "like");
+ * 		func(); 		// Alerts "I like cats"
+ * 		func("really"); // Alerts "I really like cats"
+ *
+ *
+ * @param object	Object	Object to invoke this function on
+ * @param arg1	 	mixed	Supplemental arguments to pass to this function
+ *							appended to the arguments passed to the returned
+ *							function (optional)
+ *
+ * @package	library
+ */
+Function.prototype.bind = function()
+{
+	var args = $A(arguments);
+	var obj = args.shift();
+	var func = this;
+	return function() { return func.apply(obj, $A(arguments).concat(args)); }
+}
+
+/**
+ * Function.prototype.bindAsEventListener
+ *
+ * Binds the function to a passed object
+ *
+ * Returns a function that, when called, invokes this function on that object
+ * (as though this function were a member function of the passed object) with
+ * the Event object of the handled event in addition to those passed to 
+ * the return function.
+ *
+ * Example:
+ *
+ * 		function nameThatEvent(event)
+ * 		{
+ * 			alert(event.type);
+ * 		}
+ * 
+ *		// The following would cause "load" to be alerted when the document loads
+ * 		Event.startObserving(window, 'load', alertEventType.bindAsEventListener(document), true);
+ *
+ *
+ * @param object	Object	Object to invoke this function on. This can be null,
+ *							which is useful if coding for IE where you would otherwise
+ *							have to check for 'window.event'.
+ * @param arg1	 	mixed	Supplemental arguments to pass to this function
+ *							appended to the Event object for the handled event.
+ *							(optional)
+ *
+ * @package	library
+ */
+Function.prototype.bindAsEventListener = function()
+{
+	var __method = this, args = $A(arguments), object = args.shift();
+	return function(event) 
+	{
+		return __method.apply(object, [event || window.event].concat(args));
+    }
+}
+
+
+//----------------------------------------------------------------------------//
+// Event
+//----------------------------------------------------------------------------//
+var Event = {};
+
+/**
+ * startObserving
+ *
+ * Cross-browser function for doing an 'addEventLister'
+ *
+ * Cross-browser function for doing an 'addEventLister'
+ *
+ * @param element		DOMElement	to listen to handle events for
+ * @param strName		String		name of the event (without 'on' prefix)
+ * @param func			Function	event handler function
+ * @param useCapture	Boolean		whether or not to use event capturing
+ *
+ * @return void
+ *
+ * @package	library
+ */
+Event.startObserving = function (element, strName, func, useCapture) 
+{
+	if (element.addEventListener != undefined)
+	{
+		element.addEventListener(strName, func, useCapture);
+	}
+	else
+	{
+		element.attachEvent("on" + strName, func);
+	}
+} // end of addEventListener
+
+
+/**
+ * startObserving
+ *
+ * Cross-browser function for doing an 'addEventLister'
+ *
+ * Cross-browser function for doing an 'addEventLister'
+ *
+ * @param element		DOMElement	to listen to handle events for
+ * @param strName		String		name of the event (without 'on' prefix)
+ * @param func			Function	event handler function
+ * @param useCapture	Boolean		whether or not to use event capturing
+ *
+ * @return void
+ *
+ * @package	library
+ */
+Event.stopObserving = function(element, strName, func, useCapture) 
+{
+	if (element.removeEventListener != undefined)
+	{
+		element.removeEventListener(strName, func, useCapture);
+	}
+	else
+	{
+		element.detachEvent("on" + strName, func);
+	}
+} // end of removeEventListener
+
+
+
+//----------------------------------------------------------------------------//
 // Debug
 //----------------------------------------------------------------------------//
 /**
