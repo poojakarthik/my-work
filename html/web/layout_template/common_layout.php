@@ -15,7 +15,32 @@
 
 class CommonLayout
 {
-	static function OpenPageBody($layoutTemplate, $bolIncludeBreadCrumbMenu=TRUE, $bolIncludeLogout=TRUE, $menuOptions=NULL, $pageName=NULL)
+	//------------------------------------------------------------------------//
+	// OpenPageBody()
+	//------------------------------------------------------------------------//
+	/**
+	 * OpenPageBody
+	 * 
+	 * Opens the common page template elements, excluding <html> and <body> 
+	 * 
+	 * @param Page		$objLayoutTemplate 			Page object being rendered (NULL allowed)
+	 * @param boolean	$bolIncludeBreadCrumbMenu 	Whether or not to include a 
+	 * 												breadcrumb menu (default=TRUE)
+	 * @param boolean	$bolIncludeLogout			Whether or not to include a 
+	 * 												logout option (default=TRUE)
+	 * @param array		$arrMenuOptions				Menu options to display in menu
+	 * 												(array of Menu_Item functions)
+	 * 												(default=NULL)
+	 * @param String	$strPageName				The page name to be rendered 
+	 * 												(optional, but should be provided 
+	 * 												if $objLayoutTemplate is null)
+	 * 												(default=NULL)
+	 * 
+	 * @return void
+	 * 
+	 * @method
+	 */
+	static function OpenPageBody($objLayoutTemplate, $bolIncludeBreadCrumbMenu=TRUE, $bolIncludeLogout=TRUE, $arrMenuOptions=NULL, $strPageName=NULL)
 	{
 ?>		
 <div id="Document" class="documentContainer">
@@ -52,34 +77,40 @@ class CommonLayout
 				<div class='MenuItemsContainer'>
 					<div class='MenuOptionsContainer'>
 					<?php
-					
-					if ($menuOptions !== NULL)
+
+					if ($arrMenuOptions !== NULL && count($arrMenuOptions))
 					{
 						echo "<ul class='CommonHeaderMenu'>";
 						
-						for ($i = 0, $l = count($menuOptions); $i < $l; $i++)
+						for ($i = 0, $l = count($arrMenuOptions); $i < $l; $i++)
 						{
 							$href = Href();
 
-							$url = call_user_func_array(Array($href, $menuOptions[$i]), array());
+							$url = call_user_func_array(Array($href, $arrMenuOptions[$i]), array());
+							
+							$label = $href->GetLastMenuItemLabel();
+							if ($label === NULL)
+							{
+								$label = "&nbsp;";
+							}
 							
 							$normalClass = "CommonHeaderMenuItem";
 							$hoverClass = "CommonHeaderMenuItemHover";
 							
-							echo "<li className='$normalClass' onmouseover='this.className=\"$hoverClass\";' onmouseout='this.className=\"$normalClass\";' onclick='document.location=\"$url\";'>" . $href->objMenuItems->strLabel . "</li>";
+							echo "<li className='$normalClass' onmouseover='this.className=\"$hoverClass\";' onmouseout='this.className=\"$normalClass\";' onclick='document.location=\"$url\";'>$label</li>";
 							
 						}
 
 						echo "</ul>";
 					}
-					
+
 					?>
 					</div>
 					<div class='MenuBreadCrumbContainer'>
 				<?php 
 					if ($bolIncludeBreadCrumbMenu)
 					{
-						$layoutTemplate->RenderBreadCrumbMenu();
+						$objLayoutTemplate->RenderBreadCrumbMenu();
 					}
 				?>
 					</div>
@@ -88,7 +119,13 @@ class CommonLayout
 			</div>
 		</div>
 		<div class="pageBodyWrapper">
-			<h1> <?php echo $pageName == NULL ? $layoutTemplate->GetName() : $pageName; ?></h1>
+			<?php
+				$pagePane = $strPageName == NULL ? ($objLayoutTemplate == NULL ? "" : $objLayoutTemplate->GetName()) : $strPageName;
+				if ($pagePane)
+				{
+					echo "<h1>$pagePane</h1>\n";
+				}
+			?>
 			<div class="clear"></div>
 
 			<div id='PageBody'>
@@ -97,7 +134,22 @@ class CommonLayout
 <?php
 	}
 	
-	static function ClosePageBody($layoutTemplate)
+	
+	//------------------------------------------------------------------------//
+	// ClosePageBody()
+	//------------------------------------------------------------------------//
+	/**
+	 * ClosePageBody
+	 * 
+	 * Closes the common page template elements, excluding <body> and <html> 
+	 * 
+	 * @param $objLayoutTemplate Page object being rendered (null allowed)
+	 * 
+	 * @return void
+	 * 
+	 * @method
+	 */
+	static function ClosePageBody($objLayoutTemplate)
 	{
 ?>
 				<div class="pageContainerRight" style="border-color: yellow;"><div class="pageContainerShadow"></div></div>
