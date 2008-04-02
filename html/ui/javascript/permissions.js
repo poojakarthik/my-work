@@ -20,6 +20,8 @@ var EmployeePermissions = {
 	{
 		EmployeePermissions._findElements();
 
+		if (EmployeePermissions.availableList == null) return;
+		
 		if (EmployeePermissions.availableList.options.length > 0)
 		{
 			EmployeePermissions.availableList.options[0].selected = true;
