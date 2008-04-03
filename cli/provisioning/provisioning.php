@@ -1,4 +1,8 @@
 <?php
+
+// Provisioning Debug Mode (don't deliver files)
+define("PROVISIONING_DEBUG_MODE",	TRUE);
+
 //----------------------------------------------------------------------------//
 // (c) copyright 2007 VOIPTEL Pty Ltd
 //
@@ -62,21 +66,28 @@
  	{
  		parent::__construct();
  		
- 		// Init  Export Modules
- 		$this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION]	= new ExportUnitelPreselection();
- 		
- 		//$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_FULL_SERVICE]			= new ExportUnitelDailyOrder();
- 		$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_PRESELECTION]			= $this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION];
- 		$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_BAR_SOFT]				= $this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION];
- 		$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_UNBAR_SOFT]			= $this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION];
- 		$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_ACTIVATION]			= $this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION];
- 		$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_DEACTIVATION]			= $this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION];
- 		$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_PRESELECTION_REVERSE]	= $this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION];
- 		$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_BAR_HARD]				= $this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION];
- 		$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_UNBAR_HARD]			= $this->_arrExportFiles[FILE_EXPORT_UNITEL_PRESELECTION];
+ 		// Get list of Carrier Modules
+ 		$this->_selCarrierModules	= new StatementSelect("CarrierModule", "*", "Type = <Type> AND Active = 1");
  		
  		// Init Import Modules
- 		$this->_arrImportModules[FILE_IMPORT_UNITEL_DAILY_STATUS]	= new ImportUnitelDSC();
+ 		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_PROVISIONING_INPUT));
+ 		while ($arrModule = $this->_selCarrierModules->Fetch())
+ 		{
+ 			$this->_arrImportFiles[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
+ 		}
+ 		
+ 		// Init Export Modules
+ 		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_PROVISIONING_OUTPUT));
+ 		while ($arrModule = $this->_selCarrierModules->Fetch())
+ 		{
+ 			$this->_arrExportFiles[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
+ 			
+ 			// Link Provisioning Types to the file
+ 			foreach ($this->_arrExportFiles[$arrModule['Carrier']][$arrModule['FileType']]->GetTypes() as $intType)
+ 			{
+ 				$this->_arrExportModules[$arrModule['Carrier']][$intType]	= $this->_arrExportFiles[$arrModule['Carrier']][$arrModule['FileType']];
+ 			}
+ 		}
  	}
  	
  	//------------------------------------------------------------------------//
@@ -126,7 +137,7 @@
  			CliEcho("\nOpening {$arrFile['FileName']}...");
  			
  			// Is there a module?
- 			if (!$this->_arrImportModules[$arrFile['FileType']])
+ 			if (!$this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']])
  			{
  				// TODO: Error
  				CliEcho("\t* No module found");
@@ -149,14 +160,18 @@
 	 		}
 	 		
 	 		// Run File PreProcessor
-	 		$arrFileContent = $this->_arrImportModules[$arrFile['FileType']]->PreProcess($arrRawContent);
+	 		$arrFileContent = $this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']]->PreProcess($arrRawContent);
 	 		//Debug($arrFileContent);
 	 		
 	 		// Process Lines
+	 		$intLineNumber	= 0;
 	 		foreach ($arrFileContent as $strLine)
 	 		{
+	 			// Incremember Line Number
+	 			$intLineNumber++;
+	 			
 	 			// Normalise line
-	 			$arrNormalised = $this->_arrImportModules[$arrFile['FileType']]->Normalise($strLine);
+	 			$arrNormalised = $this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']]->Normalise($strLine, $intLineNumber);
 	 			
 	 			// Add generic fields
 	 			$arrNormalised['Carrier']		= $this->_arrImportModules[$arrFile['FileType']]->intCarrier;
@@ -180,7 +195,7 @@
 	 			}
 	 			
 		 		// Attempt to link to a Request
-		 		if ($arrNormalised['Request'] = $this->_arrImportModules[$arrFile['FileType']]->LinkToRequest($arrNormalised))
+		 		if ($arrNormalised['Request'] = $this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised))
 		 		{
 		 			// Update Request Table if needed
 		 			$arrRequest = Array();

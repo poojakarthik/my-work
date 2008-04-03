@@ -537,7 +537,7 @@
 	 protected function _Deliver()
 	 {	 	
 	 	// Debug
-	 	return Array('Pass' => TRUE, 'Message' => "Delivery Bypassed");
+	 	//return Array('Pass' => TRUE, 'Message' => "Delivery Bypassed");
 	 	
 	 	switch ($this->_strDeliveryType)
 	 	{
@@ -572,12 +572,17 @@
 	* @method
 	*/
 	protected function _DeliverFTP()
-	{	 	
+	{
+		if (PROVISIONING_DEBUG_MODE === TRUE)
+		{
+	 		return Array('Pass' => TRUE, 'Message' => "FTP Delivery Bypassed");
+		}
+		
 		// Get Configuration
-		$strServer	= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][$this->_intCarrier]['Server'];
-		$strUser	= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][$this->_intCarrier]['User'];
-		$strPass	= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][$this->_intCarrier]['Password'];
-		$strPath	= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][$this->_intCarrier]['Path'][$this->_intProvisioningType];
+		$strServer	= $this->GetConfigField('Server');
+		$strUser	= $this->GetConfigField('User');
+		$strPass	= $this->GetConfigField('Password');
+		$strPath	= $this->GetConfigField('Path');
 		
 		// Copy File
 		$rcpRemoteCopy	= new RemoteCopyFTP();
@@ -612,14 +617,25 @@
 	* @method
 	*/
 	protected function _DeliverEmail()
-	{	 	
+	{	
 		// Get Configuration
-		$strEmailAddress	= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][$this->_intCarrier]['Modules'][$this->_intProvisioningType]['EmailAddress'];
-		$strEmailAddress	.= ", {$GLOBALS['**arrCustomerConfig']['EmailNotifications']}";
-		$strSubject			= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][$this->_intCarrier]['Modules'][$this->_intProvisioningType]['Subject'];
+		$strEmailAddress	= $this->GetConfigField('Destination');
+		$strSubject			= $this->GetConfigField('Subject');
+		$strReplyTo			= $this->GetConfigField('ReplyTo');
+		$arrCC				= $this->GetConfigField('CarbonCopy');
+		
+		if ($arrCC)
+		{
+			$strEmailAddress .= ', ' . implode(', ', $arrCC);
+		}
+		
+		if (PROVISIONING_DEBUG_MODE === TRUE)
+		{
+	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
+		}
 		
 		// Send Email
-		$mixResult			= SendEmail($strEmailAddress, $strSubject, $this->_strFileContents, $GLOBALS['**arrCustomerConfig']['EmailNotifications']);
+		$mixResult			= SendEmail($strEmailAddress, $strSubject, $this->_strFileContents, $strReplyTo);
 		
 		// Return extended error messaging
 		if ($mixResult === TRUE)
@@ -651,13 +667,25 @@
 	protected function _DeliverEmailAttachment()
 	{
 		// Get Configuration
-		$strEmailAddress	= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][$this->_intCarrier]['Modules'][$this->_intProvisioningType]['EmailAddress'];
-		$strEmailAddress	.= ", {$GLOBALS['**arrCustomerConfig']['EmailNotifications']}";
-		$strSubject			= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][$this->_intCarrier]['Modules'][$this->_intProvisioningType]['Subject'];
+		$strEmailAddress	= $this->GetConfigField('Destination');
+		$strSubject			= $this->GetConfigField('Subject');
+		$strReplyTo			= $this->GetConfigField('ReplyTo');
+		$arrCC				= $this->GetConfigField('CarbonCopy');
+		
+		if ($arrCC)
+		{
+			$strEmailAddress .= ', ' . implode(', ', $arrCC);
+		}
+		
+		if (PROVISIONING_DEBUG_MODE === TRUE)
+		{
+	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
+		}
 		
 		// Send Email
 		$arrHeaders = Array	(
-								'From'		=> $GLOBALS['**arrCustomerConfig']['Provisioning']['ProvisioningEmail'],
+								'From'		=> $strReplyTo,
+								'Reply-To'	=> $strReplyTo,
 								'Subject'	=> $strSubject
 							);
 		$mimMime = new Mail_mime("\n");
