@@ -774,7 +774,545 @@ class AppTemplateService extends ApplicationTemplate
 		// Note that this is an array of objects (structs), not an array of associative arrays
 		$arrServices = DBO()->Services->Data->Value;
 		
+		$JsCode = $this->_BulkValidateFNNs($arrServices);
+		if ($JsCode !== NULL)
+		{
+			// At least one of the FNNs was invalid
+			Ajax()->AddCommand("ExecuteJavascript", $JsCode);
+			return TRUE;
+		}
 		
+		// To have gotten this far, the FNNs must all be valid
+		Ajax()->AddCommand("ExecuteJavascript", "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(true);");
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// BulkSave
+	//------------------------------------------------------------------------//
+	/**
+	 * BulkSave()
+	 *
+	 * Performs final Validation of services defined using the "Bulk Add Services" webpage, and Saves the services
+	 * 
+	 * Performs final Validation of services defined using the "Bulk Add Services" webpage, and Saves the services
+	 * 
+	 *
+	 * @return		void
+	 * @method		BulkSave
+	 */
+	function BulkSave()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		if (!DBO()->Account->Load())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Could not find account with Id: ". DBO()->Account->Id->Value .". Action aborted.");
+			return TRUE;
+		}
+		
+		// Retrieve the array of new services
+		// Note that this is an array of objects (structs), not an array of associative arrays
+		$arrServices = DBO()->Services->Data->Value;
+		
+		$JsCode = $this->_BulkValidateFNNs($arrServices);
+		if ($JsCode !== NULL)
+		{
+			// At least one of the FNNs was invalid
+			Ajax()->AddCommand("ExecuteJavascript", $JsCode);
+			return TRUE;
+		}
+		
+		// Retrieve a list of all RatePlans required, and their Carrier details
+		$arrRatePlanIds = Array();
+		foreach ($arrServices as $objService)
+		{
+			$arrRatePlanIds[] = $objService->intPlanId;
+		}
+		$arrRatePlanIds = array_unique($arrRatePlanIds);
+		
+		$strWhere = "Id IN (". implode(", ", $arrRatePlanIds) .")";
+		$selRatePlans = new StatementSelect("RatePlan", "Id, ServiceType, CarrierFullService, CarrierPreselection, Archived", $strWhere, "Id");
+		$mixResult = $selRatePlans->Execute();
+		if ($mixResult === FALSE || count($arrRatePlanIds) != $mixResult)
+		{
+			// At least one of the Plans declared for the Services could  not be retrieved
+			Ajax()->AddCommand("Alert", "ERROR: Could not retrieve all the Plans required.  Bulk service creation aborted.  Please report this to the system administrators");
+			return TRUE;
+		}
+		
+		// Convert the retrieved RatePlan records into an Array where the Id of the RatePlan is the key
+		$arrRecordSet = $selRatePlans->FetchAll();
+		$arrRatePlans = Array();
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			$arrRatePlans[$arrRecord['Id']] = $arrRecord;
+		}
+		
+		// Declare variables that are common amoungst the services being added
+		$strNowDateTime		= date("Y-m-d H:i:s");
+		$strNowDate			= date("Y-m-d");
+		$intEmployeeId		= AuthenticatedUser()->_arrUser['Id'];
+		$intAccountGroup	= DBO()->Account->AccountGroup->Value;
+		$intAccount			= DBO()->Account->Id->Value;
+		
+		// Validate And Prepare the details of each service
+		$arrServicesDetails = Array();
+		foreach ($arrServices as $intIndex=>$objService)
+		{
+			$arrServiceRec = Array("FNN"				=> $objService->strFNN,
+									"ServiceType"		=> $objService->intServiceType,
+									"Indial100"			=> 0,
+									"AccountGroup"		=> $intAccountGroup,
+									"Account"			=> $intAccount,
+									"CostCentre"		=> ($objService->intCostCentre)? $objService->intCostCentre : NULL,
+									"CreatedOn"			=> $strNowDate,
+									"CreatedBy"			=> $intEmployeeId,
+									"Carrier"			=> $arrRatePlans[$objService->intPlanId]['CarrierFullService'],
+									"CarrierPreselect"	=> $arrRatePlans[$objService->intPlanId]['CarrierPreselection'] 
+								);
+								
+			switch ($objService->intServiceType)
+			{
+				case SERVICE_TYPE_MOBILE:
+					// Validate Mobile Details
+					if ($objService->strDOB != "")
+					{
+						if (!Validate("ShortDate", $objService->strDOB))
+						{
+							// DOB has been supplied but is not a valid date in the past
+							Ajax()->AddCommand("Alert", "ERROR: Service: {$objService->strFnn}, has DOB incorrectly specified.  Bulk service creation aborted.");
+							return TRUE;
+						}
+						// Convert the user's date into the MySql date format
+						$strDOB = substr($objService->strDOB, 6, 4) ."-". substr($objService->strDOB, 3, 2) ."-". substr($objService->strDOB, 0, 2);
+					}
+					else
+					{
+						$strDOB = "";
+					}
+					
+					// Prepare Mobile Details
+					$arrExtraDetailsRec = Array("Account" => $intAccount,
+												"AccountGroup" => $intAccountGroup,
+												"SimPUK" => $objService->strSimPUK,
+												"SimESN" => $objService->strSimESN,
+												"SimState" => $objService->strSimState,
+												"DOB" => $strDOB,
+												"Comments" => $objService->strComments
+											);
+					break;
+					
+				case SERVICE_TYPE_INBOUND:
+					// No validation required
+					$arrExtraDetailsRec = Array("AnswerPoint" => $objService->strAnswerPoint,
+												"Configuration" => $objService->strConfiguration
+											);
+					break;
+					
+				case SERVICE_TYPE_ADSL:
+					// No validation required
+					$arrExtraDetailsRec = NULL;
+					break;
+				
+				case SERVICE_TYPE_LAND_LINE:
+					//TODO!
+					$arrServiceRec['Indial100']	= $objService->intIndial100;
+					$arrServiceRec['ELB']		= $objService->intELB;
+					break;
+				
+				default:
+					// This should never happen
+					Ajax()->AddCommand("Alert", "ERROR: Could not handle service {$objService->strFNN} as it is of unknown ServiceType: {$objService->intServiceType}.  Bulk service creation aborted");
+					return TRUE;
+					break;
+			}
+			
+			// Add all the details of this service to the array
+			$arrServicesDetails[] = Array("ServiceRec" => $arrServiceRec,
+											"ExtraDetailsRec" => $arrExtraDetailsRec,
+											"PlanId" => $objService->intPlanId
+											);
+		}
+		
+		
+		// Now add each Service to the database
+		TransactionStart();
+		
+		$arrColumns = Array("FNN"				=> NULL,
+							"ServiceType"		=> NULL,
+							"Indial100"			=> NULL,
+							"AccountGroup"		=> NULL,
+							"Account"			=> NULL,
+							"CostCentre"		=> NULL,
+							"CreatedOn"			=> NULL,
+							"CreatedBy"			=> NULL,
+							"Carrier"			=> NULL,
+							"CarrierPreselect"	=> NULL, 
+							);
+		
+		$insService = new StatementInsert("Service", $arrColumns);
+		
+		$arrServicesToProvision = Array();
+		$strNote = "New services created:";
+		foreach ($arrServicesDetails as $arrServiceDetails)
+		{
+			$arrServiceRec		= $arrServiceDetails['ServiceRec'];
+			$arrExtraDetails	= $arrServiceDetails['ExtraDetailsRec'];
+			$intPlanId			= $arrServiceDetails['PlanId'];
+			
+			$strNote .= "\n". GetConstantDescription($arrServiceRec['ServiceType'], "ServiceType") ." - {$arrServiceRec['FNN']}";
+			
+			$mixResult = $insService->Execute($arrServiceRec);
+			if ($mixResult === FALSE)
+			{
+				// Inserting the Service Record failed
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "ERROR: Adding Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted. (Error adding record to the Service table)");
+				return TRUE;
+			}
+			$intServiceId = $mixResult;
+			$arrExtraDetails['Service'] = $intServiceId;
+			
+			$bolOk = TRUE;
+			switch ($arrServiceRec['ServiceType'])
+			{
+				case SERVICE_TYPE_MOBILE:
+					if (!isset($insMobile))
+					{
+						// Declare the StatementInsert object, as it has not been declared yet
+						$insMobile = new StatementInsert("ServiceMobileDetail", $arrExtraDetails);
+					}
+					$bolOk = $insMobile->Execute($arrExtraDetails);
+					if ($bolOk === FALSE)
+					{
+						$strErrorMsg = "ERROR: Adding the Mobile specific details for Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted. (Error adding record to the ServiceMobileDetail table)";
+					}
+					break;
+					
+				case SERVICE_TYPE_INBOUND:
+					if (!isset($insInbound))
+					{
+						// Declare the StatementInsert object, as it has not been declared yet
+						$insInbound = new StatementInsert("ServiceInboundDetail", $arrExtraDetails);
+					}
+					$bolOk = $insInbound->Execute($arrExtraDetails);
+					if ($bolOk === FALSE)
+					{
+						$strErrorMsg = "ERROR: Adding the Inbound specific details for Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted. (Error adding record to the ServiceInboundDetail table)";
+					}
+					break;
+					
+				case SERVICE_TYPE_LANDLINE:
+					// Add this service to the list of those to provision
+					$arrServicesToProvision[] = Array(	"Id"				=> $intServiceId,
+														"FNN"				=> $arrServiceRec['FNN'],
+														"Carrier"			=> $arrServiceRec['Carrier'],
+														"CarrierPreselect"	=> $arrServiceRec['CarrierPreselect']
+													);
+					
+					if (!isset($insLandLine))
+					{
+						// Declare the StatementInsert object, as it has not been declared yet
+						$insLandLine = new StatementInsert("ServiceAddress", $arrExtraDetails);
+					}
+					$bolOk = $insLandLine->Execute($arrExtraDetails);
+					if ($bolOk === FALSE)
+					{
+						$strErrorMsg = "ERROR: Adding the Land Line specific details for Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted. (Error adding record to the ServiceAddress table)";
+						break;
+					}
+					
+					if ($arrServiceRec['Indial100'] && $arrServiceRec['ELB'])
+					{
+						// Enable ELB
+						if (!($this->Framework->EnableELB($intServiceId)))
+						{
+							// EnableELB failed
+							$bolOk = FALSE;
+							$strErrorMsg = "ERROR: Adding the Land Line specific details for Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted. (Error enabling ELB)";
+						}
+					}
+					break;
+					
+				case SERVICE_TYPE_ADSL:
+					// Don't have to do anything
+					break;
+			}
+			
+			if ($bolOk === FALSE)
+			{
+				// An error has occurred
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", $strErrorMsg);
+				return TRUE;
+			}
+			
+			// Add the plan details
+			$bolOk = $this->_SetPlan($intPlanId, $intServiceId, $strNowDateTime, $strNowDateTime);
+			if ($bolOk === FALSE)
+			{
+				// The plan could not be added
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "ERROR: Declaring plan for Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted.");
+				return TRUE;
+			}
+		}
+		
+		// Commit the transaction
+		TransactionCommit();
+		
+		// Perform all Automatic provisioning
+		if (count($arrServicesToProvision) > 0)
+		{
+			// Prepare the object to add the provisioning requests
+			$arrInsertValues = Array(	"AccountGroup"		=> DBO()->Account->AccountGroup->Value,
+										"Account"			=> DBO()->Account->Id->Value,
+										"Service"			=> NULL,
+										"FNN"				=> NULL,
+										"Employee"			=> AuthenticatedUser()->_arrUser['Id'],
+										"Carrier"			=> NULL,
+										"Type"				=> NULL,
+										"RequestedOn"		=> $strNowDateTime,
+										"AuthorisationDate"	=> $strNowDate, //TODO! Change this to a value specified by the user 
+										"Status"			=> REQUEST_STATUS_WAITING
+									);
+			$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
+			
+			TransactionStart();
+			$bolSuccess = TRUE;
+			foreach ($arrServicesToProvision as $arrService)
+			{
+				$arrInsertValues['Service'] = $arrService['Id'];
+				$arrInsertValues['FNN'] = $arrService['FNN'];
+				
+				// Full Service Request
+				$arrInsertValues['Carrier']	= $arrService['Carrier'];
+				$arrInsertValues['Type']	= REQUEST_FULL_SERVICE;
+				
+				if ($insRequest->Execute($arrInsertValues) === FALSE)
+				{
+					$bolSuccess = FALSE;
+					break;
+				}
+				
+				// Preselection Request				
+				$arrInsertValues['Carrier'] = $arrService['CarrierPreselect'];
+				$arrInsertValues['Type']	= REQUEST_PRESELECTION;
+				
+				if ($insRequest->Execute($arrInsertValues) === FALSE)
+				{
+					$bolSuccess = FALSE;
+					break;
+				}
+			}
+			
+			if (!$bolSuccess)
+			{
+				// An Error Occured
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "Service creation was successful, however automatic provisioning failed.  None of the services have had provisioning requests made.  Please notify your system administrator.");
+				return TRUE;
+			}
+			TransactionCommit();
+		}
+		
+		// If any of this fails, notify the user
+		// TODO! We should also fire off an Email to our Tech Support email account
+		
+		// Add a system note
+		SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
+		
+		// Success
+		Ajax()->AddCommand("Alert", "Service creation was successful");
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _SetPlan
+	//------------------------------------------------------------------------//
+	/**
+	 * _SetPlan()
+	 *
+	 * Declares a new plan for a service (handles all database interactions)
+	 * 
+	 * Declares a new plan for a service (handles all database interactions)
+	 * Note the this MUST ALWAYS be used within a Database Transaction, and if this function
+	 * returns FALSE (signifying failure) the transaction should be rolled back.
+	 * This function does not currently handle automatic note generation or automatic provisioning
+	 * 
+	 * @param	int		$intPlan			Id of the plan to assign to the service
+	 * @param	int		$intService			Id of the Service
+	 * @param	string	$strCreatedOn		optional, DateTime string representing when the plan
+	 * 										was assigned to the service.  If set to NULL (default)
+	 * 										It will use the current time of the Database Server
+	 * @param	string	$strStartDatetime	optional, DateTime string representing when the plan
+	 * 										comes into effect.  If set to NULL (default)
+	 * 										It will use $strCreatedOn
+	 * 
+	 * @param	bool	$bolUpdateServiceCarrierDetails		optional, if set to TRUE then the Carriers details stored in the Service
+	 * 														record will be updated with those of the RatePlan record
+	 * @param	bool	$bolRerateCDRs		optional, if set to TRUE then all CDRs belonging to the Service that have
+	 * 										Status = CDR_RATED will be updated to CDR_NORMALISED so that they will get
+	 * 										rerated.  If the StartDatetime is in the past, then it is recommended that
+	 * 										this variable be set to TRUE
+	 * @param	bool	$bolActive			optional, defaults to TRUE.  This value will be used for the "Active" property
+	 * 										of the ServiceRateGroup and ServiceRatePlan tables.  It is recommended that it 
+	 * 										only be set to FALSE if the Plan is supposed to come into effect at a future date
+	 *
+	 * @return	bool						Returns FALSE if any of the database interactions fail
+	 * 										Returns TRUE on success
+	 * @method		_SetPlan
+	 */
+	private function _SetPlan($intPlan, $intService, $strCreatedOn=NULL, $strStartDatetime=NULL, $bolUpdateServiceCarrierDetails=NULL, $bolRerateCDRs=NULL, $bolActive=TRUE)
+	{
+		static $insServiceRatePlan;
+		static $insServiceRateGroup;
+		static $updCDR;
+		static $updService;
+		static $updServiceRatePlan;
+		static $updServiceRateGroup;
+		static $selRateGroup;
+		static $selRatePlan;
+
+		$strCreatedOn		= ($strCreatedOn === NULL)? GetCurrentDateAndTimeForMySQL() : $strCreatedOn;
+		$strStartDatetime	= ($strStartDatetime === NULL)? $strCreatedOn : $strStartDatetime;
+		$strEndDatetime		= END_OF_TIME;
+		$intEmployeeId		= AuthenticatedUser()->_arrUser['Id'];
+
+		// Retrieve the Ids of all the RateGroups belonging to the RatePlan
+		if (!isset($selRateGroup))
+		{
+			$selRateGroup = new StatementSelect("RatePlanRateGroup", "RateGroup", "RatePlan = <RatePlan>", "RateGroup");
+		}
+
+		if ($selRateGroup->Execute(Array("RatePlan" => $intPlan)) === FALSE)
+		{
+			return FALSE;
+		}
+		$arrRateGroups = $selRateGroup->FetchAll(); 
+		
+		// Retrieve the RatePlan record
+		if (!isset($selRatePlan))
+		{
+			$selRatePlan = new StatementSelect("RatePlan", "*", "Id = <RatePlan>");
+		}
+
+		if ($selRatePlan->Execute(Array("RatePlan" => $intPlan)) != 1)
+		{
+			return FALSE;
+		}
+		$arrRatePlan = $selRatePlan->Fetch();
+
+
+		// Update all the records currently in the ServiceRateGroup table so that any that end after the new one begins, now end 1 second before the new one begins
+		$arrColumns	= Array("EndDatetime"=> new MySQLFunction("SUBTIME('$strStartDatetime', SEC_TO_TIME(1))"));
+		$strWhere	= "Service = <ServiceId> AND EndDatetime >= <StartDatetime>";
+		$arrWhere	= Array("ServiceId" => $intService, "StartDatetime" => $strStartDatetime);
+		if (!isset($updServiceRateGroup))
+		{
+			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", $strWhere, $arrColumns);
+		}
+		
+		if ($updServiceRateGroup->Execute($arrColumns, $arrWhere) === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Update all the records currently in the ServiceRatePlan table so that any that end after the new one begins, now end 1 second before the new one begins
+		if (!isset($updServiceRatePlan))
+		{
+			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", $strWhere, $arrColumns);
+		}
+
+		if ($updServiceRatePlan->Execute($arrColumns, $arrWhere) === FALSE)
+		{
+			return FALSE;
+		}
+
+		// Insert the new record into the ServiceRatePlan table
+		$arrColumns = Array(	"Service" => $intService,
+								"RatePlan" => $intPlan,
+								"CreatedBy" => $intEmployeeId,
+								"CreatedOn" => $strCreatedOn,
+								"StartDatetime" => $strStartDatetime,
+								"EndDatetime" => $strEndDatetime,
+								"Active" => (bolActive)? 1 : 0
+							);
+		if (!isset($insServiceRatePlan))
+		{
+			$insServiceRatePlan = new StatementInsert("ServiceRatePlan", $arrColumns);
+		}
+		
+		if ($insServiceRatePlan->Execute($arrColumns) === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Insert the new records into the ServiceRateGroup table
+		unset($arrColumns['RatePlan']);
+		$arrColumns['RateGroup'] = NULL;
+		if (!isset($insServiceRateGroup))
+		{
+			$insServiceRateGroup = new StatementInsert("ServiceRateGroup", $arrColumns);
+		}
+		foreach ($arrRateGroups as $arrRateGroup)
+		{
+			$arrColumns['RateGroup'] = $arrRateGroup['RateGroup'];
+
+			if ($insServiceRateGroup->Execute($arrColumns) === FALSE)
+			{
+				return FALSE;
+			}
+		}
+		
+		// Update the Carrier details in the Service table (if specified to do so)
+		if ($bolUpdateServiceCarrierDetails)
+		{
+			$arrColumns = Array(	"Id" => $intService, 
+									"Carrier" => $arrRatePlan['CarrierFullService'], 
+									"CarrierPreselect" => $arrRatePlan['CarrierPreselection']
+								);
+			if (!isset($updService))
+			{
+				$updService = new StatementUpdateById("Service", $arrColumns);
+			}
+			
+			if ($updService->Execute($arrColumns) === FALSE)
+			{
+				return FALSE;
+			}
+		}
+		
+		// Update the CDRs in the CDR table (if specified to do so)
+		if ($bolRerateCDRs)
+		{
+			$arrColumns	= Array("Status" => CDR_NORMALISED);
+			$strWhere	= "Service = <ServiceId> AND Status = ". CDR_RATED;
+			$arrWhere	= Array("ServiceId" => $intService);
+			if (!isset($updCDR))
+			{
+				$updCDR = new StatementUpdate("CDR", $strWhere, $arrColumns);
+			}
+			
+			if ($updCDR->Execute($arrColumns, $arrWhere) === FALSE)
+			{
+				return FALSE;
+			}
+		}
+
+		// I think that's it
+		return TRUE;
+	}
+	
+	
+	// Checks the array of objects, $arrServices, for duplicates within the array, and then in the database
+	// returns javascript to execute if there are duplicates, else returns NULL if they are all valid
+	// It is assumed that all the FNNs are already valid Australian FNNs
+	function _BulkValidateFNNs($arrServices)
+	{
 		// Check that there are not duplicate numbers in the list
 		// This has already been done in javascript, but I want to check again
 		$arrInvalidServiceIndexes = Array();
@@ -798,8 +1336,7 @@ class AppTemplateService extends ApplicationTemplate
 			// At least 2 of the new services have the same FNN
 			$jsonInvalidServiceIndexes = Json()->encode($arrInvalidServiceIndexes);
 			$strJs = "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: Duplicate services are highlighted');";
-			Ajax()->AddCommand("ExecuteJavascript", $strJs);
-			return TRUE;
+			return $strJs;
 		}
 		
 		// Check that none of these new numbers are already in the database
@@ -829,13 +1366,11 @@ class AppTemplateService extends ApplicationTemplate
 			
 			$jsonInvalidServiceIndexes = Json()->encode($arrInvalidServiceIndexes);
 			$strJs = "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: highlighted FNNs are currently active in the database and can not be used for new services');";
-			Ajax()->AddCommand("ExecuteJavascript", $strJs);
-			return TRUE;
+			return $strJs;
 		}
 		
-		// To have gotten this far, the FNNs must all be valid
-		Ajax()->AddCommand("ExecuteJavascript", "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(true);");
-		return TRUE;
+		// All FNNs are valid
+		return NULL;
 	}
 	
 	//------------------------------------------------------------------------//

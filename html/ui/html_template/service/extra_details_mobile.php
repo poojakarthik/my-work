@@ -102,7 +102,7 @@ class HtmlTemplateServiceExtraDetailsMobile extends HtmlTemplate
 		echo "</div>\n";
 		
 		DBO()->ServiceMobileDetail->DOB->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("attribute:maxlength"=>10, "style:width"=>"85px"));
-		DBO()->ServiceMobileDetail->Comments->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("attribute:maxlength"=>15, "style:width"=>"232px"));
+		DBO()->ServiceMobileDetail->Comments->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"232px"));
 		echo "</div>\n";  // GroupedContent
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";

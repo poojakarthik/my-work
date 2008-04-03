@@ -273,8 +273,8 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 		objService =	{
 							intServiceType	: this.intServiceType,
 							strFNN			: this.elmFnn.value,
-							intPlanId		: this.elmPlan.value,
-							intCostCentre	: this.elmCostCentre.value,
+							intPlanId		: parseInt(this.elmPlan.value),
+							intCostCentre	: parseInt(this.elmCostCentre.value),
 							intArrayIndex	: this.intArrayIndex
 						};
 						
@@ -594,8 +594,8 @@ function VixenServiceBulkAddClass()
 		if (arrServiceOrder.length == 0)
 		{
 			// There aren't any services that require extra details defined
-			alert("none of the services require extra details defined, so we can save everything now");
 			this._SaveServices();
+			return;
 		}
 
 		// Work out which Service details to display
@@ -646,8 +646,10 @@ function VixenServiceBulkAddClass()
 		// If all services have had their details defined, then make the final request to the server
 		if (bolAllServicesProperlyDefined)
 		{
+			// Close any ExtraDetails popup that might be open
+			this.CloseAllPopups();
+			
 			// Submit all the data
-			alert("Everything now has all its extra details defined, so we can save everything now");
 			this._SaveServices();
 		}
 		else
@@ -682,8 +684,25 @@ function VixenServiceBulkAddClass()
 	// Submits all the data to the server, to save all the services
 	this._SaveServices = function()
 	{
-		//TODO!
-		alert("Insert code to submit all services here");
+		// Compile all the data
+		var objService;
+		var arrDeclaredServices = new Array();
+		for (i in this.arrServices)
+		{
+			if (this.arrServices[i].intServiceType != null)
+			{
+				arrDeclaredServices.push(this.arrServices[i].GetProperties());
+			}
+		}
+		
+		// Make the AJAX call to the server for preliminary validation of the services
+		var objObjects		= {};
+		objObjects.Services	= {};
+		objObjects.Services.Data	= arrDeclaredServices;
+		objObjects.Account 			= {Id : this.intAccountId};
+		
+		Vixen.Popup.ShowPageLoadingSplash("Creating new services");
+		Vixen.Ajax.CallAppTemplate("Service", "BulkSave", objObjects, null, false, true);
 	}
 }
 

@@ -501,8 +501,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Services->Add_Services2(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);

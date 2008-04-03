@@ -305,7 +305,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Add Services";
 		$this->strContextMenuLabel = "Add Services";
-		return "service_addbulk.php?Account=$intAccountId";
+		return "flex.php/Service/BulkAdd/?Account.Id=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -327,9 +327,9 @@ class MenuItems
 	 */
 	function AddServices2($intAccountId)
 	{
-		$this->strLabel	= "Bulk Add Services";
-		$this->strContextMenuLabel = "Bulk Add Services";
-		return "flex.php/Service/BulkAdd/?Account.Id=$intAccountId";
+		$this->strLabel	= "Old Add Services";
+		$this->strContextMenuLabel = "Old Add Services";
+		return "service_addbulk.php?Account=$intAccountId";
 	}
 	
 
