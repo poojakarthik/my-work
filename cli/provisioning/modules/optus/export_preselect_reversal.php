@@ -128,6 +128,33 @@
  		$this->_arrDefine		= Array();
  		
  		//--------------------------------------------------------------------//
+ 		// FILENAME
+ 		//--------------------------------------------------------------------//
+ 		
+ 		$arrDefine = Array();
+		$arrDefine['FileType']		['Start']		= 0;
+		$arrDefine['FileType']		['Length']		= 12;
+		$arrDefine['FileType']		['Value']		= "ld_reversal_";
+		
+		$arrDefine['HoursMinutes']	['Start']		= 12;
+		$arrDefine['HoursMinutes']	['Length']		= 2;
+		$arrDefine['HoursMinutes']	['Type']		= 'Time::HHII';
+		
+		$arrDefine['Underscore']	['Start']		= 14;
+		$arrDefine['Underscore']	['Length']		= 1;
+		$arrDefine['Underscore']	['Value']		= "_";
+		
+		$arrDefine['Date']			['Start']		= 15;
+		$arrDefine['Date']			['Length']		= 4;
+		$arrDefine['Date']			['Type']		= 'Date::YYYYMMDD';
+		
+		$arrDefine['Extension']		['Start']		= 19;
+		$arrDefine['Extension']		['Length']		= 4;
+		$arrDefine['Extension']		['Value']		= ".txt";
+		
+		$this->_arrDefine['Filename'] = $arrDefine;
+ 		
+ 		//--------------------------------------------------------------------//
  		// HEADER
  		//--------------------------------------------------------------------//
  		
@@ -219,7 +246,14 @@
 	 * @method
 	 */
  	function Export()
- 	{ 		
+ 	{
+ 		// Generate File Name
+ 		$this->_arrFilename	= Array();
+ 		$this->_arrFilename['**Type']		= 'Filename';
+ 		$this->_arrFilename['**Request']	= 'Filename';
+ 		$this->_arrFilename['HoursMinutes']	= date("Hi");
+ 		$this->_arrFilename['Date']			= date("Ymd");
+ 		
  		// Parent Export
  		parent::Export();
  	}

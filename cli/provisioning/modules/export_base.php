@@ -167,7 +167,7 @@
 	 */
  	protected function _Render($bolRenderToFile = TRUE)
  	{
- 		$strDirectory		= FILE_BASE_DIR.GetCustomerName()."/export/provisioning/".strtolower(GetConstantDescription($this->intModuleCarrier, 'Carrier'))."/{$this->strDescription}/";
+ 		$strDirectory		= FILES_BASE_PATH."/export/provisioning/".strtolower(GetConstantDescription($this->intModuleCarrier, 'Carrier'))."/".get_class($this)."/";
  		$arrResult			= $this->_RenderLineTXT($this->_arrFilename, FALSE);
  		$this->_strFilePath	= $strDirectory . $arrResult['Line'];
  		
@@ -448,6 +448,7 @@
  					break;
  				
  				case 'Date':
+ 				case 'Time':
  					$strDate	= $arrField['Value'];
  					switch ($arrType[1])
  					{
@@ -460,9 +461,18 @@
  							break;
  						
  						case 'DD-MM-YYYY':
+ 						case 'DD/MM/YYYY':
  							$strParse	= substr($strDate, -4, 4);
  							$strParse	.= substr($strDate, 4, 2);
  							$strParse	.= substr($strDate, 0, 2);
+ 							break; 							
+ 						
+ 						case 'HHII':
+ 							$strParse	= date("Y-m-d");
+ 							$strParse	.= substr($strDate, 0, 2) . ":";
+ 							$strParse	.= substr($strDate, 2, 4) . ":";
+ 							$strParse	.= "00";
+ 							break;
  					}
  					
  					// Is it a valid date?
