@@ -78,7 +78,7 @@ function VixenServiceExtraDetailsMobileClass()
 			}
 		}
 		// Close all the other "ExtraDetail"  popups except for this one
-		Vixen.ServiceBulkAdd.CloseAllPopups(Vixen.Constants.SERVICE_TYPE_MOBILE);
+		Vixen.ServiceBulkAdd.CloseAllPopups($Const("SERVICE_TYPE_MOBILE"));
 		this.objInputElements.SimPUK.elmControl.focus();
 	}
 	
@@ -86,9 +86,9 @@ function VixenServiceExtraDetailsMobileClass()
 	// objService is of class ServiceInputComponent
 	this.LoadService = function(objService)
 	{
-		this.objService = objService;
-		var strPopupId = Vixen.ServiceBulkAdd.objServiceTypeDetails[Vixen.Constants.SERVICE_TYPE_MOBILE].strPopupId;
-		var strTitle = "Extra Details - Mobile - " + objService.elmFnn.value;
+		this.objService	= objService;
+		var strPopupId	= Vixen.ServiceBulkAdd.objServiceTypeDetails[$Const("SERVICE_TYPE_MOBILE")].strPopupId;
+		var strTitle	= "Extra Details - Mobile - " + objService.elmFnn.value;
 	
 		// Check if the mobile popup is already on the screen
 		if (Vixen.Popup.Exists(strPopupId))
@@ -117,7 +117,7 @@ function VixenServiceExtraDetailsMobileClass()
 			// Unhighlight any of the fields that are currently highlighted
 			for (strField in this.objInputElements)
 			{
-				Vixen.ToggleFieldHighlighting(this.objInputElements[strField].elmControl);
+				this.objInputElements[strField].elmControl.SetHighlight(false);
 			}
 			
 			// Update the title bar of the popup
@@ -178,21 +178,13 @@ function VixenServiceExtraDetailsMobileClass()
 	// Include highlighting of invalid fields, and reporting to the user
 	this.ValidateForm = function()
 	{
-		// Check that the Date of Birth is valid
-		
-		//TODO! I should probably trim the date of birth
-		var strDOB = this.objInputElements.DOB.elmControl.value;
-		if (strDOB.length != 0)
+		// Validate the Date of birth
+		if (!this.objInputElements.DOB.elmControl.Validate("ShortDate", false))
 		{
-			// A Date of birth has been declared
-			regexDOB = /^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
-			if (!regexDOB.test(strDOB))
-			{
-				// The DOB is invalid
-				Vixen.ToggleFieldHighlighting(this.objInputElements.DOB.elmControl, true);
-				Vixen.Popup.Alert("ERROR: Date of Birth must be in the format dd/mm/yyyy");
-				return false;
-			}
+			// The Date Of Birth is invalid
+			this.objInputElements.DOB.elmControl.SetHighlight(true);
+			$Alert("ERROR: DOB must be in the format dd/mm/yyyy");
+			return false;
 		}
 		return true;
 	}

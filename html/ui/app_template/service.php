@@ -1401,16 +1401,32 @@ class AppTemplateService extends ApplicationTemplate
 
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
-			//TODO! Accomodate the extra LaneLine details 
+			// Accomodate the extra LaneLine details 
 			DBO()->Account->Load();
-			
-			// Set Default values for things
-			// Don't forget this form has to include controls for the Indial100 checkbox and enabling ELB
-			 
-			$this->_SetDefaultValuesForServiceAddress(DBO()->ServiceAddress, DBO()->Account);
 			
 			// Retrieve the address details of each service belonging to this account
 			DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
+			
+			if (DBO()->Service->AddressDetails->IsSet)
+			{
+				// The service has already had details defined, load them
+				$arrAddressDetails = DBO()->Service->AddressDetails->Value;
+				
+				foreach ($arrAddressDetails as $strProperty=>$mixValue)
+				{
+					DBO()->ServiceAddress->{$strProperty} = $mixValue;
+				}
+				
+			}
+			else
+			{
+				// Set Default values for things
+				// Don't forget this form has to include controls for the Indial100 checkbox and enabling ELB
+				$this->_SetDefaultValuesForServiceAddress(DBO()->ServiceAddress, DBO()->Account);
+				DBO()->Service->Indial100 = FALSE;
+				DBO()->Service->ELB = FALSE;
+				DBO()->Service->AuthorisationDate = date("d/m/Y");
+			}
 		}
 		elseif (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
@@ -1419,9 +1435,12 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ServiceMobileDetail->SimState	= DBO()->Service->SimState->Value;
 			DBO()->ServiceMobileDetail->DOB			= DBO()->Service->DOB->Value;
 			DBO()->ServiceMobileDetail->Comments	= DBO()->Service->Comments->Value;
+			
+			// Set values that have been passed through
 		}
 		elseif (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 		{
+			// Set values that have been passed through
 			DBO()->ServiceInboundDetail->AnswerPoint	= DBO()->Service->AnswerPoint->Value;
 			DBO()->ServiceInboundDetail->Configuration	= DBO()->Service->Configuration->Value;
 		}
@@ -3288,14 +3307,25 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$strCompanyName = $dboAccount->TradingName->Value;
 		}
-		$dboServiceAddress->EndUserCompanyName = substr($strCompanyName, 0, 50);
-		$dboServiceAddress->TradingName = substr($dboAccount->TradingName->Value, 0, 50);
+		$strCompanyName = substr($strCompanyName, 0, 50);
+		$dboServiceAddress->EndUserCompanyName = ($strCompanyName !== FALSE) ? $strCompanyName : "";
+		
+		$strTradingName = substr($dboAccount->TradingName->Value, 0, 50);
+		$dboServiceAddress->TradingName = ($strTradingName !== FALSE) ? $strTradingName : "";
 		
 		// Bill Address should default to the billing address for the account
-		$dboServiceAddress->BillName = substr($strCompanyName, 0, 30);
-		$dboServiceAddress->BillAddress1 = substr($dboAccount->Address1->Value, 0, 30);
-		$dboServiceAddress->BillAddress2 = substr($dboAccount->Address2->Value, 0, 30);
-		$dboServiceAddress->BillLocality = substr($dboAccount->Suburb->Value, 0, 23);
+		$strCompanyName = substr($strCompanyName, 0, 30);
+		$dboServiceAddress->BillName = ($strCompanyName !== FALSE) ? $strCompanyName : "";
+		
+		$strAddress1 = substr($dboAccount->Address1->Value, 0, 30);
+		$dboServiceAddress->BillAddress1 = ($strAddress1 !== FALSE) ? $strAddress1 : "";
+
+		$strAddress2 = substr($dboAccount->Address2->Value, 0, 30);
+		$dboServiceAddress->BillAddress2 = ($strAddress2 !== FALSE) ? $strAddress2 : "";
+
+		$strLocality = substr($dboAccount->Suburb->Value, 0, 23);
+		$dboServiceAddress->BillLocality = ($strLocality !== FALSE) ? $strLocality : "";
+
 		$dboServiceAddress->BillPostcode = $dboAccount->Postcode->Value;
 		$dboServiceAddress->ServiceState = $dboAccount->State->Value;
 	}

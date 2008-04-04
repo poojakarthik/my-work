@@ -65,7 +65,8 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 		$this->LoadJavascript("service_bulk_add");
 		$this->LoadJavascript("service_extra_details_inbound");
 		$this->LoadJavascript("service_extra_details_mobile");
-		//$this->LoadJavascript("service_extra_details_land_line");
+		$this->LoadJavascript("service_extra_details_land_line");
+		$this->LoadJavascript("validation");
 		
 		
 	}

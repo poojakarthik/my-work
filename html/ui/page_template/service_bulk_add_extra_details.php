@@ -33,18 +33,20 @@ $this->Page->SetLayout('popup_layout');
 switch (DBO()->Service->ServiceType->Value)
 {
 	case SERVICE_TYPE_LAND_LINE:
-		$strHtmlTemplate = "ServiceExtraDetailsLandLine";
+		$strHtmlTemplate = "";
+		$this->Page->AddObject("ServiceExtraDetailsLandLine", COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+		$this->Page->AddObject("ServiceAddressEdit", COLUMN_ONE, HTML_CONTEXT_SERVICE_BULK_ADD);
 		break;
 	case SERVICE_TYPE_MOBILE:
-		$strHtmlTemplate = "ServiceExtraDetailsMobile";
+		$this->Page->AddObject("ServiceExtraDetailsMobile", COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 		break;
 	case SERVICE_TYPE_INBOUND:
-		$strHtmlTemplate = "ServiceExtraDetailsInbound";
+		$this->Page->AddObject("ServiceExtraDetailsInbound", COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 		break;
 	default:
 		throw new Exception("ERROR: No Extra Details for ServiceType: ". DBO()->Service->ServiceType->Value);
 }
 
-$this->Page->AddObject($strHtmlTemplate, COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+
 
 ?>

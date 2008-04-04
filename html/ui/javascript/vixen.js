@@ -223,11 +223,25 @@ function $ID(element)
       	}
 		return elements;
 	}
-	if (Object.isString(element))
+	if (typeof element == "string")
 	{
 		element = document.getElementById(element);
-		return Element.extend(element);
+		return element;
 	}
+}
+
+
+// Wrapper for the Vixen.Popup.Alert function
+function $Alert(strMessage, strSize, strPopupId)
+{
+	Vixen.Popup.Alert(strMessage, strSize, strPopupId);
+}
+
+// Trims whitespace from both ends of a string
+String.prototype.trim = function()
+{
+	var strTrimmed = this.replace(/^\s+/, '');
+	return strTrimmed.replace(/\s+$/, '');
 }
 
 /**

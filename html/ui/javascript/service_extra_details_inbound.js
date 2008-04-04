@@ -114,7 +114,7 @@ function VixenServiceExtraDetailsInboundClass()
 			// Unhighlight any of the fields that are currently highlighted
 			for (strField in this.objInputElements)
 			{
-				Vixen.ToggleFieldHighlighting(this.objInputElements[strField].elmControl);
+				this.objInputElements[strField].elmControl.SetHighlight(false);
 			}
 			
 			// Update the title bar of the popup

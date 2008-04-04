@@ -43,15 +43,23 @@ for (i in Vixen.Constants.ServiceType)
 	Vixen.Constants[Vixen.Constants.ServiceType[i].Constant] = parseInt(i);
 }
 
-// This should probably be declared somewhere else.  Possibly the vixen.js file
-if (Vixen.ToggleFieldHighlighting == undefined)
+// This could better be defined as
+Element.prototype.SetHighlight = function(bolHighlight)
 {
-	Vixen.ToggleFieldHighlighting = function(elmField, bolHighlight)
-	{
-		elmField.style.backgroundColor = (bolHighlight)? "#FA8072" : null;
-	}
+	this.style.backgroundColor = (bolHighlight)? "#FA8072" : null;
 }
 
+// This should be moved to the vixen.js file
+function $Const(strConstant)
+{
+	if (Vixen.Constants[strConstant] == undefined)
+	{
+		throw("ERROR: constant: '"+ strConstant +"' is undefined");
+		return;
+	}
+	
+	return Vixen.Constants[strConstant];
+}
 
 // class encapsulates the data stored in a single row of the Services table of the Service Bulk Add page
 function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre)
@@ -67,42 +75,33 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	
 	this.objExtraDetails = null;
 
-	// if I create the listener function (funcb) within the function that registers the listener (funcA), then
-	// I should be able to refence local variables defined in the funcA.  So then all I have to do is 
-	// declare a local variable (objThis) which references the this pointer (i think).  Then, within the listener
-	// I can reference this ServiceInputComponent object through the objThis object
-	
-	//I can then have the listener call objThis.PrepareRow() which will select the correct ServiceType image, and 
-	//properly fill in the Plan combobox
-	var objThis = this;
-	
-	this.elmFnn.addEventListener('keyup', FnnUpdateListener, TRUE);
-	this.elmFnn.addEventListener('change', FnnUpdateListener, TRUE);
-	this.elmFnnConfirm.addEventListener('keyup', FnnUpdateListener, TRUE);
-	this.elmFnnConfirm.addEventListener('change', FnnUpdateListener, TRUE);
-	
-	this.elmPlan.addEventListener('change', PlanChangeListener, TRUE);
-	this.elmCostCentre.addEventListener('change', CostCentreChangeListener, TRUE);
-	
-	// This object can only be referenced through the objThis variable
-	function FnnUpdateListener(objEvent)
+	this.FnnUpdateListener = function(objEvent)
 	{
-		objThis._CheckFnn();
+		this._CheckFnn();
 	}
 	
-	function PlanChangeListener(objEvent)
+	this.PlanChangeListener = function(objEvent)
 	{
-		if (objThis.intServiceType != null)
+		if (this.intServiceType != null)
 		{
-			Vixen.ServiceBulkAdd.objServiceTypeDetails[objThis.intServiceType].intLastPlanChosen = objThis.elmPlan.value;
+			Vixen.ServiceBulkAdd.objServiceTypeDetails[this.intServiceType].intLastPlanChosen = this.elmPlan.value;
 		}
 	}
 	
-	function CostCentreChangeListener(objEvent)
+	this.CostCentreChangeListener = function(objEvent)
 	{
-		Vixen.ServiceBulkAdd.intLastCostCentreChosen = objThis.elmCostCentre.value;
+		Vixen.ServiceBulkAdd.intLastCostCentreChosen = this.elmCostCentre.value;
 	}
-	
+
+	// Register event listeners
+	this.elmFnn.addEventListener('keyup', this.FnnUpdateListener.bind(this), true);
+	this.elmFnn.addEventListener('change', this.FnnUpdateListener.bind(this), true);
+	this.elmFnnConfirm.addEventListener('keyup', this.FnnUpdateListener.bind(this), true);
+	this.elmFnnConfirm.addEventListener('change', this.FnnUpdateListener.bind(this), true);
+	this.elmPlan.addEventListener('change', this.PlanChangeListener.bind(this), true);
+	this.elmCostCentre.addEventListener('change', this.CostCentreChangeListener.bind(this), true);
+
+
 	// Checks if the Fnn textboxes match and prepares the row accordingly
 	this._CheckFnn = function()
 	{
@@ -262,8 +261,8 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	
 	this.FlagFnnTextboxes = function(bolIsInvalid)
 	{
-		Vixen.ToggleFieldHighlighting(this.elmFnn, bolIsInvalid);
-		Vixen.ToggleFieldHighlighting(this.elmFnnConfirm, bolIsInvalid);
+		this.elmFnn.SetHighlight(bolIsInvalid);
+		this.elmFnnConfirm.SetHighlight(bolIsInvalid);
 	}
 	
 	// returns the details of the Service, as an object
@@ -352,16 +351,16 @@ function VixenServiceBulkAddClass()
 
 	this.objServiceTypeDetails = {};
 	this.objServiceTypeDetails[Vixen.Constants.SERVICE_TYPE_ADSL]		= 	{	intLastPlanChosen : null,
-																				strPopupId : null
+																				strPopupId : null,
 																			};
 	this.objServiceTypeDetails[Vixen.Constants.SERVICE_TYPE_MOBILE]		= 	{	intLastPlanChosen : null,
-																				strPopupId : "ExtraDetailMobile"
+																				strPopupId : "ExtraDetailMobile",
 																			};
 	this.objServiceTypeDetails[Vixen.Constants.SERVICE_TYPE_LAND_LINE]	=	{	intLastPlanChosen : null,
-																				strPopupId : "ExtraDetailLandLine"
+																				strPopupId : "ExtraDetailLandLine",
 																			};
 	this.objServiceTypeDetails[Vixen.Constants.SERVICE_TYPE_INBOUND]	= 	{	intLastPlanChosen : null,
-																				strPopupId : "ExtraDetailInbound"
+																				strPopupId : "ExtraDetailInbound",
 																			};
 	
 	this.intLastCostCentreChosen = 0;
@@ -404,6 +403,8 @@ function VixenServiceBulkAddClass()
 		var elmRow1 = this.elmGenericTableRow.cloneNode(true);
 		this.AddToServiceArray(elmRow1);
 		this.tableServices.tBodies[0].replaceChild(elmRow1, this.tableServices.rows[1]);
+		
+		this.arrServices[0].elmFnn.focus();
 		
 		//this.AddMoreServices(4);
 	}

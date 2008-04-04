@@ -160,17 +160,31 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 	 */
 	function RenderForServiceBulkAddPage()
 	{
-		$strContainerDiv = "ServiceAddressDetailsContainerDiv";
-		echo "<div id='$strContainerDiv' style='display:none'>";
-		//echo "<div id='$strContainerDiv' >";
+		$arrAccountAddresses = DBO()->Account->AllAddresses->Value;
 		
 		// Render the form
-		$this->RenderForm(DBO()->Account->AllAddresses->Value);
+		$this->RenderForm($arrAccountAddresses);
 		
-		echo "</div>";
+		echo "<div class='ButtonContainer' Id='ButtonContainer_LandLine'><div class='Right'>\n";
+		$this->Button("Cancel",	"Vixen.Popup.Close(this)");
+		$this->Button("Back", "Vixen.ServiceBulkAdd.LandLine.Previous()");
+		$this->Button("Save", "Vixen.ServiceBulkAdd.LandLine.Next()");
+		echo "</div></div>\n";
 		
-		// Initialise javascript object
-		//TODO!
+		// Initialise the Javascript object which facilitates this form
+		$arrPostalAddressTypes = Array();
+		foreach ($GLOBALS['*arrConstant']['PostalAddrType'] as $strConstant=>$arrConstant)
+		{
+			$arrPostalAddressTypes[$strConstant] = $arrConstant['Description'];
+		}
+		
+		$jsonPostalAddressTypes	= Json()->encode($arrPostalAddressTypes);
+		$jsonAccountAddresses	= Json()->encode($arrAccountAddresses);
+		$jsonAddressDetails		= Json()->encode(DBO()->ServiceAddress->_arrProperties);
+		$intAccountId			= DBO()->Account->Id->Value;
+		
+		$strJsScript = "Vixen.ServiceAddress.InitialiseServiceBulkAdd($intAccountId, $jsonPostalAddressTypes, $jsonAccountAddresses, $jsonAddressDetails);";
+		echo "<script type='text/javascript'>$strJsScript</script>\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -255,13 +269,13 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 		
 		$strMaxYear = date("Y") - 17;
 		$arrDOBArgs = Array("TO_YEAR" => $strMaxYear);
-		DBO()->ServiceAddress->DateOfBirth->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, $arrDOBArgs);
+		DBO()->ServiceAddress->DateOfBirth->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, $arrDOBArgs, Array("attribute:maxlength"=>10));
 		DBO()->ServiceAddress->Employer->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("attribute:maxlength"=>30));
 		DBO()->ServiceAddress->Occupation->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("attribute:maxlength"=>30));
 		echo "</div>\n"; //Container.ResidentialUserDetails
 		
 		echo "<div id='Container.BusinessUserDetails' style='display:none;'>\n";
-		DBO()->ServiceAddress->ABN->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->ServiceAddress->ABN->RenderInput(CONTEXT_DEFAULT, TRUE, FALSE, Array("attribute:maxlength"=>11));
 		DBO()->ServiceAddress->EndUserCompanyName->RenderInput(CONTEXT_DEFAULT, TRUE, FALSE, Array("attribute:maxlength"=>50));
 		DBO()->ServiceAddress->TradingName->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("attribute:maxlength"=>50));
 		
@@ -305,7 +319,7 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 		
 		DBO()->ServiceAddress->ServiceAddressTypeNumber->RenderInput(CONTEXT_DEFAULT, TRUE, FALSE, Array("attribute:maxlength"=>5, "SetRequiredId"=>TRUE));
 		DBO()->ServiceAddress->ServiceAddressTypeSuffix->RenderInput(CONTEXT_DEFAULT, TRUE, FALSE, Array("attribute:maxlength"=>2, "SetRequiredId"=>TRUE));
-		echo "<div class='SmallSeperator'></div>\n";
+		echo "<div class='SmallSeparator'></div>\n";
 		DBO()->ServiceAddress->ServiceStreetNumberStart->RenderInput(CONTEXT_DEFAULT, TRUE, FALSE, Array("attribute:maxlength"=>5, "SetRequiredId"=>TRUE, "attribute:onKeyUp"=>"Vixen.ServiceAddress.UpdateStreetNumberStartControl()"));
 
 		DBO()->ServiceAddress->ServiceStreetNumberEnd->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("attribute:maxlength"=>5, "SetRequiredId"=>TRUE));

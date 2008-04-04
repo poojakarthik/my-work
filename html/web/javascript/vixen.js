@@ -223,10 +223,10 @@ function $ID(element)
       	}
 		return elements;
 	}
-	if (Object.isString(element))
+	if (typeof element == "string")
 	{
 		element = document.getElementById(element);
-		return Element.extend(element);
+		return element;
 	}
 }
 
