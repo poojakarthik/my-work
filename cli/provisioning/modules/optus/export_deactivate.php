@@ -52,9 +52,9 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
-	public static $intBaseCarrier	= CARRIER_OPTUS;
-	public static $intBaseFileType	= FILE_EXPORT_OPTUS_DEACTIVATION;
-	public static $_strDeliveryType	= 'EmailAttach';
+	public $intBaseCarrier		= CARRIER_OPTUS;
+	public $intBaseFileType		= FILE_EXPORT_OPTUS_DEACTIVATION;
+	public $_strDeliveryType	= 'EmailAttach';
 	
 	
  	//------------------------------------------------------------------------//

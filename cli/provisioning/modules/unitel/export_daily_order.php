@@ -52,9 +52,9 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
-	public static $intBaseCarrier	= CARRIER_UNITEL;
-	public static $intBaseFileType	= FILE_EXPORT_UNITEL_DAILY_ORDER;
-	public static $_strDeliveryType	= 'FTP';
+	public $intBaseCarrier		= CARRIER_UNITEL;
+	public $intBaseFileType		= FILE_EXPORT_UNITEL_DAILY_ORDER;
+	public $_strDeliveryType	= 'FTP';
 	
  	//------------------------------------------------------------------------//
 	// __construct

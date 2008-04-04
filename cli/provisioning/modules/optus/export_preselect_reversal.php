@@ -52,9 +52,9 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
-	public static $intBaseCarrier	= CARRIER_OPTUS;
-	public static $intBaseFileType	= FILE_EXPORT_OPTUS_PRESELECTION_REVERSAL;
-	public static $_strDeliveryType	= 'Email';
+	public $intBaseCarrier		= CARRIER_OPTUS;
+	public $intBaseFileType		= FILE_EXPORT_OPTUS_PRESELECTION_REVERSAL;
+	public $_strDeliveryType	= 'Email';
 	
 	
  	//------------------------------------------------------------------------//

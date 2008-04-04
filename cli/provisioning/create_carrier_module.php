@@ -24,18 +24,18 @@ if (!GetConstantName($intCarrier, 'Carrier'))
 	CliEcho("ERROR: '$intCarrier' is not a valid Carrier Id!\n");
 	die;
 }
-elseif (!class_exists($strClassName))
+elseif (!class_exists($strClassName) || !is_subclass_of($strClassName, 'CarrierModule') || !is_subclass_of($strClassName, 'ExportBase'))
 {
-	CliEcho("ERROR: '$strClassName' is not a valid Class!\n");
+	CliEcho("ERROR: '$strClassName' is not a valid CarrierModule Class!\n");
 	die;
 }
 
 CliEcho("Creating new Module...\t\t\t", FALSE);
 $objModule	= new $strClassName($intCarrier);
 
-if (!$objModule || !is_subclass_of('CarrierModule') || !is_subclass_of('ExportBase'))
+if (!$objModule)
 {
-	CliEcho("[ FAILED ]\n\tERROR: '$strClassName' is not a CarrierModule class!\n");
+	CliEcho("[ FAILED ]\n\tERROR: There was an error instanciating the CarrierModule Class '$strClassName'\n");
 	die;
 }
 
