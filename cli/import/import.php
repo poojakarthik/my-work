@@ -119,9 +119,9 @@
 */ 
 	";
 	
-	$_DATABASE = "vixen";
+	$_DATABASE = "flex_telcoblue";
 	
-	$MySQL_Link = mysql_connect ("10.50.50.16", "vixen", "V1x3n");
+	$MySQL_Link = mysql_connect ("10.50.50.132", "flex_telcoblue", 'fl3Xyb$_telcoblue');
 	
 	$_TABLES = mysql_list_tables ($_DATABASE);
 	
