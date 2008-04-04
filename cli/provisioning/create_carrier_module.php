@@ -31,7 +31,7 @@ elseif (!class_exists($strClassName))
 }
 
 CliEcho("Creating new Module...\t\t\t", FALSE);
-@$objModule	= new $strClassName($intCarrier);
+$objModule	= new $strClassName($intCarrier);
 
 if (!$objModule || !is_subclass_of('CarrierModule') || !is_subclass_of('ExportBase'))
 {

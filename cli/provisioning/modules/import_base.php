@@ -62,7 +62,7 @@
 	 */
  	function __construct($intCarrier)
  	{
- 		parent::__contstruct($intCarrier, MODULE_TYPE_PROVISIONING_INPUT);
+ 		parent::__construct($intCarrier, MODULE_TYPE_PROVISIONING_INPUT);
  		
  		// Defaults
  		$this->intCarrier		= NULL;
