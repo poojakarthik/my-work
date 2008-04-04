@@ -216,6 +216,8 @@ $GLOBALS['*arrConstant']	['FileExport']	[1203]	['Constant']	= 'FILE_EXPORT_OPTUS
 $GLOBALS['*arrConstant']	['FileExport']	[1203]	['Description']	= 'Optus Restoration';
 $GLOBALS['*arrConstant']	['FileExport']	[1204]	['Constant']	= 'FILE_EXPORT_OPTUS_PRESELECTION_REVERSAL';
 $GLOBALS['*arrConstant']	['FileExport']	[1204]	['Description']	= 'Optus Preselection Reversal';
+$GLOBALS['*arrConstant']	['FileExport']	[1205]	['Constant']	= 'FILE_EXPORT_OPTUS_DEACTIVATION';
+$GLOBALS['*arrConstant']	['FileExport']	[1205]	['Description']	= 'Optus Deactivation';
 
 // IMPORT File Types
 // PROVISIONING
@@ -225,10 +227,12 @@ $GLOBALS['*arrConstant']	['FileImport']	[5001]	['Constant']	= 'FILE_IMPORT_UNITE
 $GLOBALS['*arrConstant']	['FileImport']	[5001]	['Description']	= 'Unitel Daily Status Report';
 $GLOBALS['*arrConstant']	['FileImport']	[5002]	['Constant']	= 'FILE_IMPORT_UNITEL_BASKETS';
 $GLOBALS['*arrConstant']	['FileImport']	[5002]	['Description']	= 'Unitel Agreed Baskets Report';
-$GLOBALS['*arrConstant']	['FileImport']	[5003]	['Constant']	= 'FILE_IMPORT_UNITEL_PRESELECTION_RPT';
+$GLOBALS['*arrConstant']	['FileImport']	[5003]	['Constant']	= 'FILE_IMPORT_UNITEL_PRESELECTION';
 $GLOBALS['*arrConstant']	['FileImport']	[5003]	['Description']	= 'Unitel Preselection Report';
+$GLOBALS['*arrConstant']	['FileImport']	[5004]	['Constant']	= 'FILE_IMPORT_UNITEL_LINE_STATUS';
+$GLOBALS['*arrConstant']	['FileImport']	[5004]	['Description']	= 'Unitel Line Status Report';
 
-$GLOBALS['*arrConstant']	['FileImport']	[5100]	['Constant']	= 'FILE_IMPORT_OPTUS_LINE_STATUS';
+$GLOBALS['*arrConstant']	['FileImport']	[5100]	['Constant']	= 'FILE_IMPORT_OPTUS_PPR';
 $GLOBALS['*arrConstant']	['FileImport']	[5100]	['Description']	= 'Optus Line Status Report';
 
 $GLOBALS['*arrConstant']	['FileImport']	[5200]	['Constant']	= 'FILE_IMPORT_AAPT_EOE_RETURN';
@@ -503,6 +507,8 @@ $GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Constant']	= 'CHARGE_LINK_OVERC
 $GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Description']	= 'Invoice Overcharge Credit';
 $GLOBALS['*arrConstant']	['ChargeLink']		[504]	['Constant']	= 'CHARGE_LINK_CDR_CREDIT';
 $GLOBALS['*arrConstant']	['ChargeLink']		[504]	['Description']	= 'CDR Credit';
+$GLOBALS['*arrConstant']	['ChargeLink']		[505]	['Constant']	= 'CHARGE_LINK_CHARGE';
+$GLOBALS['*arrConstant']	['ChargeLink']		[505]	['Description']	= 'Adjustment Negation';
 
 
 // Customer Group Constants
@@ -661,10 +667,10 @@ $GLOBALS['*arrConstant']	['Request']	[900]	['Constant']	= 'REQUEST_FULL_SERVICE'
 $GLOBALS['*arrConstant']	['Request']	[900]	['Description']	= 'Full Service';
 $GLOBALS['*arrConstant']	['Request']	[901]	['Constant']	= 'REQUEST_PRESELECTION';
 $GLOBALS['*arrConstant']	['Request']	[901]	['Description']	= 'Preselection';
-$GLOBALS['*arrConstant']	['Request']	[902]	['Constant']	= 'REQUEST_BAR_SOFT';
-$GLOBALS['*arrConstant']	['Request']	[902]	['Description']	= 'Activate Soft Bar';
-$GLOBALS['*arrConstant']	['Request']	[903]	['Constant']	= 'REQUEST_UNBAR_SOFT';
-$GLOBALS['*arrConstant']	['Request']	[903]	['Description']	= 'Remove Soft Bar';
+$GLOBALS['*arrConstant']	['Request']	[902]	['Constant']	= 'REQUEST_BAR';
+$GLOBALS['*arrConstant']	['Request']	[902]	['Description']	= 'Bar';
+$GLOBALS['*arrConstant']	['Request']	[903]	['Constant']	= 'REQUEST_UNBAR';
+$GLOBALS['*arrConstant']	['Request']	[903]	['Description']	= 'UnBar';
 $GLOBALS['*arrConstant']	['Request']	[904]	['Constant']	= 'REQUEST_ACTIVATION';
 $GLOBALS['*arrConstant']	['Request']	[904]	['Description']	= 'Activation';
 $GLOBALS['*arrConstant']	['Request']	[905]	['Constant']	= 'REQUEST_DEACTIVATION';
@@ -673,10 +679,10 @@ $GLOBALS['*arrConstant']	['Request']	[906]	['Constant']	= 'REQUEST_PRESELECTION_
 $GLOBALS['*arrConstant']	['Request']	[906]	['Description']	= 'Preselection Reversal';
 $GLOBALS['*arrConstant']	['Request']	[907]	['Constant']	= 'REQUEST_FULL_SERVICE_REVERSE';
 $GLOBALS['*arrConstant']	['Request']	[907]	['Description']	= 'Full Service Reversal';
-$GLOBALS['*arrConstant']	['Request']	[908]	['Constant']	= 'REQUEST_BAR_HARD';
-$GLOBALS['*arrConstant']	['Request']	[908]	['Description']	= 'Activate Hard Bar';
-$GLOBALS['*arrConstant']	['Request']	[909]	['Constant']	= 'REQUEST_UNBAR_HARD';
-$GLOBALS['*arrConstant']	['Request']	[909]	['Description']	= 'Remove Hard Bar';
+$GLOBALS['*arrConstant']	['Request']	[908]	['Constant']	= 'REQUEST_DISCONNECT_TEMPORARY';
+$GLOBALS['*arrConstant']	['Request']	[908]	['Description']	= 'Temporary Disconnection';
+$GLOBALS['*arrConstant']	['Request']	[909]	['Constant']	= 'REQUEST_RECONNECT_TEMPORARY';
+$GLOBALS['*arrConstant']	['Request']	[909]	['Description']	= 'Temporary Disconnection Reversal';
 $GLOBALS['*arrConstant']	['Request']	[910]	['Constant']	= 'REQUEST_LOSS_FULL';
 $GLOBALS['*arrConstant']	['Request']	[910]	['Description']	= 'Full Service Lost';
 $GLOBALS['*arrConstant']	['Request']	[911]	['Constant']	= 'REQUEST_LOSS_PRESELECT';
@@ -685,8 +691,10 @@ $GLOBALS['*arrConstant']	['Request']	[912]	['Constant']	= 'REQUEST_CHANGE_ADDRES
 $GLOBALS['*arrConstant']	['Request']	[912]	['Description']	= 'Address Changed';
 $GLOBALS['*arrConstant']	['Request']	[913]	['Constant']	= 'REQUEST_VIRTUAL_PRESELECTION';
 $GLOBALS['*arrConstant']	['Request']	[913]	['Description']	= 'Virtual Preselection';
-$GLOBALS['*arrConstant']	['Request']	[914]	['Constant']	= 'REQUEST_REJECTED';
-$GLOBALS['*arrConstant']	['Request']	[914]	['Description']	= 'Request Rejected';
+$GLOBALS['*arrConstant']	['Request']	[914]	['Constant']	= 'REQUEST_VIRTUAL_PRESELECTION_REVERSE';
+$GLOBALS['*arrConstant']	['Request']	[914]	['Description']	= 'Virtual Preselection Reversal';
+$GLOBALS['*arrConstant']	['Request']	[915]	['Constant']	= 'REQUEST_LOSS_VIRTUAL_PRESELECTION';
+$GLOBALS['*arrConstant']	['Request']	[915]	['Description']	= 'Virtual Preselection Lost';
 
 
 // Provisioning Line Actions (Log)

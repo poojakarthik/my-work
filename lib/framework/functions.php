@@ -2841,6 +2841,7 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voipt
 {
 	$arrHeaders = Array	(
 							'From'		=> $strFrom,
+							'Reply-To'	=> $strFrom,
 							'Subject'	=> $strSubject
 						);
 	$mimMime = new Mail_mime("\n");
@@ -3892,6 +3893,49 @@ function TruncateTime($intTime, $strAccuracy, $strRound)
 	return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y']);
 }
 
+
+
+//------------------------------------------------------------------------//
+// FlexCast()
+//------------------------------------------------------------------------//
+/**
+ * FlexCast()
+ *
+ * Casts a variable to a type defined by Flex DataType constants
+ *
+ * Casts a variable to a type defined by Flex DataType constants
+ * 
+ * @param	mixed	$mixVariable				The variable to cast
+ * @param	integer	$intDataType				The Flex DataType constant to cast to
+ *
+ * @return	mixed								Cast variable
+ *
+ * @function
+ */
+function FlexCast($mixVariable, $intDataType)
+{
+	switch ($intDataType)
+	{
+		case DATA_TYPE_INTEGER:
+			return (int)$mixVariable;
+			
+		case DATA_TYPE_FLOAT:
+			return (float)$mixVariable;
+			
+		case DATA_TYPE_BOOLEAN:
+			return (bool)$mixVariable;
+			
+		case DATA_TYPE_STRING:
+			return (string)$mixVariable;
+			
+		case DATA_TYPE_SERIALISED:
+			return unserialize($mixVariable);
+		
+		default:
+			// If we don't recognise the type, return in its original value
+			return $mixVariable;
+	}
+}
 
 
 ?>

@@ -1053,7 +1053,7 @@
 	 	$arrCols['Balance']	= 'Invoice.Balance';
 	 	$arrCols['Invoice']	= 'Invoice.Id';
 	 	$arrCols['Id']		= 'InvoicePayment.Id';
-	 	$selInvoicePayments = new StatementSelect("(Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment) JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment = $intPayment AND Payment.Account = InvoicePayment.Account");
+	 	$selInvoicePayments = new StatementSelect("(Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment) JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment.Id = $intPayment AND Payment.Account = InvoicePayment.Account AND Payment.Account = Invoice.Account");
 	 	$selInvoicePayments->Execute();
 	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
 	 	$qryDelete = new Query();
@@ -1557,16 +1557,17 @@ class CarrierModule
  	function __construct($intCarrier, $intModuleType)
  	{
  		// Defaults
- 		$this->_arrModuleConfig	= Array();
- 		$this->_intModuleType	= $intModuleType;
+ 		$this->_arrModuleConfig		= Array();
+ 		$this->_intModuleType		= $intModuleType;
+ 		$this->_intModuleCarrier	= $intCarrier;
  		
  		// Statements
 		$this->_selCarrierModule	= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = <Type>");
 		$this->_selModuleConfig		= new StatementSelect("CarrierModuleConfig", "*", "CarrierModule = <Id>");
 		
-	 	$arrCols			= Array();
-	 	$arrCols['Value']	= NULL;
-	 	$this->_ubiModuleConfig	= new StatementUpdateById("CarrierModuleConfig", $arrCols);
+	 	$arrCols					= Array();
+	 	$arrCols['Value']			= NULL;
+	 	$this->_ubiModuleConfig		= new StatementUpdateById("CarrierModuleConfig", $arrCols);
  		
  		// Load Config
  		$this->LoadModuleConfig();
@@ -1584,13 +1585,65 @@ class CarrierModule
 	 * Retrieves a reference to a Config field
 	 * 
 	 * @param	string	$strName					Field to return
+	 * @param	string	$strParent		[optional]	Parent field that's reffering to this field
 	 * 
 	 * @return	&mixed								Pass/Fail
 	 *
 	 * @method
 	 */
-	 function &GetConfigField($strName)
-	 {
+	 function &GetConfigField($strName, $strParent = NULL)
+	 {	 	
+	 	$mixValue	= $this->_arrModuleConfig[$strName]['Value'];
+	 	
+	 	// Parse the value and fill in any recognised placeholders (this should only happen once)
+	 	$arrResults	= Array();
+	 	preg_match_all("/<(Config|Function)::([A-Za-z]+)>/i", $mixValue, $arrResults, PREG_SET_ORDER);
+	 	
+	 	foreach ($arrResults as $arrSet)
+	 	{
+	 		$strFullMatch	= $arrSet[0];
+	 		$strContext		= $arrSet[1];
+	 		$strAction		= $arrSet[2];
+	 		
+	 		switch (strtolower($strContext))
+	 		{
+	 			case 'config':
+	 				// Check if this is an endless reference loop
+	 				if ($strAction != $strParent)
+	 				{
+	 					// Get the referred config field
+	 					$strReplace	= $this->GetConfigField($strAction, $strName);
+	 				}
+	 				else
+	 				{
+	 					// Endless loop
+	 					$strReplace	= "<Error::Endless Reference Loop>";
+	 				}
+	 				break;
+	 			
+	 			case 'function':
+	 				switch (strotolower($strAction))
+	 				{
+	 					case 'datetime':
+	 						$strReplace	= date("Y-m-d H:i:s");
+	 						break;
+	 					
+	 					default:
+	 						// Unrecognised Function - ignore
+	 						$strReplace	= "<Error::Unrecognised Function '$strAction'>";
+	 						continue 3;
+	 				}
+	 				break;
+	 				
+	 			default:
+	 				// Unrecognised - ignore
+	 				continue 2;
+	 		}
+	 		
+	 		// Fill the Placeholders
+	 		$mixValue	= str_replace($strFullMatch, $strReplace, $mixValue);
+	 	}
+	 	
 	 	// Return a reference to the value, so it can be modified
 	 	return $this->_arrModuleConfig[$strName]['Value'];
 	 }
@@ -1697,8 +1750,10 @@ class CarrierModule
 	 *
 	 * @method
 	 */
-	 function CreateModuleConfig($intCarrier)
+	 function CreateModuleConfig()
 	 {
+ 		$intCarrier				= $this->_intModuleCarrier;
+ 		
 	 	$insCarrierModule		= new StatementInsert("CarrierModule");
 		$insCarrierModuleConfig	= new StatementInsert("CarrierModuleConfig");
 		
