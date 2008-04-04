@@ -1537,6 +1537,10 @@ class CarrierModule
 {
  	protected $_intModuleType;
  	protected $intCarrier;
+	
+	public $intBaseCarrier;
+	public $intBaseFileType;
+	public $_strDeliveryType;
  	
  	//------------------------------------------------------------------------//
 	// __construct
