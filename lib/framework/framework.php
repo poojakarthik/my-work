@@ -1767,7 +1767,7 @@ class CarrierModule
 	 	$arrWhere['Carrier']	= $intCarrier;
 	 	$arrWhere['Module']		= get_class($this);
 	 	$arrWhere['Type']		= $this->_intModuleType;
-	 	if ($this->_selCarrierModule->Execute($arrWhere))
+	 	if (!$this->_selCarrierModule->Execute($arrWhere))
 	 	{
 			// Insert the CarrierModule data
 			$arrCarrierModule	= Array();
