@@ -1775,6 +1775,7 @@ class CarrierModule
 	 		$arrCarrierModule['Type']		= $this->_intModuleType;
 	 		$arrCarrierModule['Module']		= get_class($this);
 	 		$arrCarrierModule['FileType']	= $this->intBaseFileType;
+	 		$arrCarrierModule['Active']		= 0;
 	 		if (!$intCarrierModule = $insCarrierModule->Execute($arrCarrierModule))
 	 		{
 	 			return "MySQL Error: ".$insCarrierModule->Error();

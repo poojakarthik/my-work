@@ -1385,6 +1385,16 @@
 				 
 				 
 	// Define Columns 
+	$strName = "FileType"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(11)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
 	$strName = "Active"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(4)"; 
