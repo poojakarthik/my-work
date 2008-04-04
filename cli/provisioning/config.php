@@ -35,7 +35,7 @@ VixenRequire('cli/provisioning/modules/import_base.php');
 
 VixenRequire('cli/provisioning/modules/optus/export_bar.php');
 VixenRequire('cli/provisioning/modules/optus/export_deactivate.php');
-VixenRequire('cli/provisioning/modules/optus/export_preselect_reverse.php');
+VixenRequire('cli/provisioning/modules/optus/export_preselect_reversal.php');
 VixenRequire('cli/provisioning/modules/optus/export_preselect.php');
 VixenRequire('cli/provisioning/modules/optus/export_unbar.php');
 VixenRequire('cli/provisioning/modules/optus/import_ppr.php');
