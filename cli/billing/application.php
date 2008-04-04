@@ -105,7 +105,7 @@
 		$this->arrServiceColumns['RatePlan']		= "RatePlan.Id";
 		$this->arrServiceColumns['CreatedOn']		= "Service.CreatedOn";
 		$this->arrServiceColumns['Indial100']		= "Service.Indial100";
-		$this->arrServiceColumns['LastBilledOn']	= "ServiceRatePlan.LastChargedOn";
+		$this->arrServiceColumns['LastChargedOn']	= "ServiceRatePlan.LastChargedOn";
 		$this->arrServiceColumns['ServiceRatePlan']	= "ServiceRatePlan.Id";
 		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																	"RatePlan",
@@ -492,7 +492,7 @@
 						$bolHasInvoicedCDRs	= $selHasInvoicedCDRs->Execute($arrService);
 						
 						// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
-						if ((!$arrService['LastBilledOn'] || !$bolHasInvoicedCDRs) && $arrService['InAdvance'])
+						if ((!$arrService['LastChargedOn'] || !$bolHasInvoicedCDRs) && $arrService['InAdvance'])
 						{
 							$arrAdvanceCharge = Array();
 							$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
