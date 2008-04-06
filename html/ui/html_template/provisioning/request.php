@@ -105,6 +105,8 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 				case REQUEST_LOSS_VIRTUAL_PRESELECTION:
 				case REQUEST_LOSS_PRESELECT:
 				case REQUEST_LOSS_FULL:
+				case REQUEST_DISCONNECT_TEMPORARY:
+				case REQUEST_RECONNECT_TEMPORARY:
 					continue;
 					break;
 					
