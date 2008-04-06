@@ -393,17 +393,11 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		// (if more than 1 service, then make the one note but don't specify a service)
 		switch ($intRequestType)
 		{
-			case REQUEST_BAR_SOFT:
-				$strBarAction = "Soft Bar";
+			case REQUEST_BAR:
+				$strBarAction = "Bar";
 				break;
-			case REQUEST_UNBAR_SOFT:
-				$strBarAction = "Soft Bar Reversal";
-				break;
-			case REQUEST_BAR_HARD:
-				$strBarAction = "Hard Bar";			
-				break;
-			case REQUEST_UNBAR_HARD:
-				$strBarAction = "Hard Bar Reversal";
+			case REQUEST_UNBAR:
+				$strBarAction = "Bar Reversal";
 				break;
 			default:
 				break;
@@ -679,7 +673,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		{
 			case PROVISIONING_HISTORY_FILTER_BARRINGS_ONLY:
 				// Only include records relating to barrings and barring reversals
-				$arrBarringTypes = Array(REQUEST_BAR_SOFT, REQUEST_UNBAR_SOFT, REQUEST_BAR_HARD, REQUEST_UNBAR_HARD);
+				$arrBarringTypes = Array(REQUEST_BAR, REQUEST_UNBAR);
 				$strTypeFilter = "Type IN (". implode(", ", $arrBarringTypes) .")";
 				break;
 			case 0;
@@ -741,7 +735,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		$strRecRetrievalQuery = "$strRecRetrievalQuery ORDER BY TimeStamp DESC LIMIT $intRecCount";
 		*/
 		$strRecRetrievalQuery = "$strRecRetrievalQuery ORDER BY TimeStamp DESC, Service, Id DESC $strLimitClause";
-
+		
 		// Because we are using a UNION to retrieve a record set built from 2 seperate 
 		// queries, we must use a Query object instead of a StatementSelect object
 		$qryHistory = new Query();

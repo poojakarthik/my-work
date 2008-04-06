@@ -216,8 +216,8 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 
-		Table()->ServiceTable->SetHeader("FNN #", "Type", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
-		Table()->ServiceTable->SetWidth("11%", "10%", "39%", "11%", "7%", "14%", "8%");
+		Table()->ServiceTable->SetHeader("&nbsp;", "FNN #", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
+		Table()->ServiceTable->SetWidth("4%", "12%", "44%", "11%", "7%", "14%", "8%");
 		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left");
 		
 		foreach (DBL()->Service as $dboService)
@@ -346,10 +346,30 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
 			
-			$strServiceType = GetConstantDescription($dboService->ServiceType->Value, "ServiceType");
+			//$strServiceType = GetConstantDescription($dboService->ServiceType->Value, "ServiceType");
 			
-			Table()->ServiceTable->AddRow($strFnnCell, $strServiceType, 
-											$strPlanCell, $strStatusCell, $strStatusDescCell, $strStatusDateCell, $strActionsCell);
+			switch ($dboService->ServiceType->Value)
+			{
+				case SERVICE_TYPE_MOBILE:
+					$strServiceTypeClass = "ServiceTypeIconMobile";
+					break;
+				case SERVICE_TYPE_LAND_LINE:
+					$strServiceTypeClass = "ServiceTypeIconLandLine";
+					break;
+				case SERVICE_TYPE_ADSL:
+					$strServiceTypeClass = "ServiceTypeIconADSL";
+					break;
+				case SERVICE_TYPE_INBOUND:
+					$strServiceTypeClass = "ServiceTypeIconInbound";
+					break;
+				default:
+					$strServiceTypeClass = "ServiceTypeIconBlank";
+					break;
+			}
+			
+			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
+			
+			Table()->ServiceTable->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusCell, $strStatusDescCell, $strStatusDateCell, $strActionsCell);
 		}
 		
 		// If the account has no services then output an appropriate message in the table

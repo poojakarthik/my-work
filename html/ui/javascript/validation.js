@@ -26,152 +26,82 @@
  */
 
 
-// If bolRequired is omitted or set to null, then it will assume that it is required
-// If it is set to false, then the function will return true, if mixValue is logically undefined (such as an empty string, or null)
-function $Validate(strRule, mixValue, bolRequired)
+// bolNotRequired defaults to null (signifying that it is required)
+function $Validate(strRule, mixValue, bolNotRequired)
 {
-	return Vixen.Validation.Validate(strRule, mixValue, bolRequired);
+	return Vixen.Validation.Validate(strRule, mixValue, bolNotRequired);
 }
 
-Element.prototype.Validate = function(strRule, bolRequired)
+Element.prototype.Validate = function(strRule, bolNotRequired)
 {
-	return Vixen.Validation.Validate(strRule, this.value, bolRequired);
+	var strValue = this.value.toString();
+	return Vixen.Validation.Validate(strRule, strValue, bolNotRequired);
 }
 
-String.prototype.Validate = function(strRule, bolRequired)
+String.prototype.Validate = function(strRule, bolNotRequired)
 {
-	return Vixen.Validation.Validate(strRule, this, bolRequired);
+	var strValue = this.toString();
+	return Vixen.Validation.Validate(strRule, strValue, bolNotRequired);
 }
 
 
 // This Class encapsulates all the Validation Rules
 function VixenValidationClass()
 {
-	this.regexShortDate = /^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
-	this.regexABN = /^\d{11}$/;
-	this.regexPostCode = /^[1-9]\d{3}$/;
-	this.regexPositiveInteger = /^\d+$/;
-	this.regexPositiveIntegerNonZero = /^[1-9]\d*$/;
-	this.regexLettersOnly = /^[A-Za-z]+$/;
+	this.regexShortDate					= /^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
+	this.regexABN						= /^\d{11}$/;
+	this.regexPostCode					= /^[1-9]\d{3}$/;
+	this.regexPositiveInteger			= /^\d+$/;
+	this.regexPositiveIntegerNonZero	= /^[1-9]\d*$/;
+	this.regexLettersOnly				= /^[A-Za-z]+$/;
 
 	// Wrapper for the individual validation functions.  This is used
 	// to manage bolRequired functionality.  If a value isn't required, and 
 	// isn't specified, then the validation rule is not applied
-	this.Validate = function(strRule, mixValue, bolRequired)
+	this.Validate = function(strRule, mixValue, bolNotRequired)
 	{
-		if (bolRequired == null)
+		if (bolNotRequired == true)
 		{
-			// if it is not specified then have it default to being required
-			bolRequired = true;
-		}
-		
-		if (bolRequired == true)
-		{
-			// It is required
+			// It is not required so only run the validation rule, if a value is specified
+			if (mixValue == null || mixValue.toString() == "")
+			{
+				// The value has not been specified
+				return true;
+			}
+			
+			// The value has been specified.  Run the Validation rule
 			return this[strRule](mixValue);
 		}
 		else
 		{
-/* This doesn't work as I have added stuff to String.prototype, so now strings are not considered strings 
-			// It is not required so only run the validation rule, if a value is specified
-			switch (typeof(mixValue))
-			{
-				case "string":
-					if (mixValue.length > 0)
-					{
-						// The value has been specified.  Validate it
-						return this[strRule](mixValue);
-					}
-					// The value has not been specified, so it passes validation by default
-					return true;
-					break;
-				default:
-					if (mixValue != null)
-					{
-						// A value has been specified
-						return this[strRule](mixValue);
-					}
-					return true;
-					break;
-			}
-*/
-			if (mixValue.toString() != "")
-			{
-				return this[strRule](mixValue);
-			}
-			return true;
-			
+			// It is required
+			return this[strRule](mixValue);
 		}
 	}
 	
 	// Returns true if strDate is in the date format of dd/mm/yyyy
-	// bolRequired defaults to true meaning the value is required
 	this.ShortDate = function(mixValue)
 	{
-		if (mixValue == null)
-		{
-			return false;
-		}
 		return this.regexShortDate.test(mixValue);
 	}
 	
 	this.PositiveInteger = function(mixValue)
 	{
-		/*
-		var intValue = parseInt(mixValue);
-		if (isNaN(intValue))
-		{
-			return false;
-		}
-		
-		if (intValue < 0)
-		{
-			return false;
-		}
-		
-		var strValue = intValue.toString();
-		
-		if (strValue != mixValue)
-		{
-			return false;
-		}
-		return true;
-		*/
-		if (mixValue == null)
-		{
-			return false;
-		}
-		
 		return this.regexPositiveInteger.test(mixValue.toString());
 	}
 	
 	this.PositiveIntegerNonZero = function(mixValue)
 	{
-		if (mixValue == null)
-		{
-			return false;
-		}
-	
 		return this.regexPositiveIntegerNonZero.test(mixValue.toString());
 	}
 	
 	this.LettersOnly = function(mixValue)
 	{
-		if (mixValue == null)
-		{
-			return false;
-		}
-	
 		return this.regexLettersOnly.test(mixValue.toString());
 	}
 	
 	this.ABN = function(mixValue)
 	{
-		if (mixValue == null)
-		{
-			return false;
-		}
-	
 		var strValue = mixValue.toString();
 		var strValue = strValue.replace(/[^\d]/g, '');
 		
@@ -219,24 +149,14 @@ function VixenValidationClass()
 		return true;
 	}
 	
-	this.NotEmptyString = function(mixValue)
+	this.NotEmptyString = function(strValue)
 	{
-		if (mixValue == null)
-		{
-			return false;
-		}
-	
-		return (mixValue.length > 0);
+		return (strValue.length > 0);
 	}
 	
-	this.PostCode = function(mixValue)
+	this.PostCode = function(strValue)
 	{
-		if (mixValue == null)
-		{
-			return false;
-		}
-	
-		return this.regexPostCode.test(mixValue);
+		return this.regexPostCode.test(strValue);
 	}
 	
 }

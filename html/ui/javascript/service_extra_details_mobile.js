@@ -179,7 +179,7 @@ function VixenServiceExtraDetailsMobileClass()
 	this.ValidateForm = function()
 	{
 		// Validate the Date of birth
-		if (!this.objInputElements.DOB.elmControl.Validate("ShortDate", false))
+		if (!this.objInputElements.DOB.elmControl.Validate("ShortDate", true))
 		{
 			// The Date Of Birth is invalid
 			this.objInputElements.DOB.elmControl.SetHighlight(true);

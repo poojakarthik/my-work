@@ -97,17 +97,22 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		// Build the list of values that can go into the Request combobox
 		$arrRequestOptions = Array();
 		$arrRequestOptions[] = Array("Name" => "&nbsp;", 				"Value" => "0");
-		$arrRequestOptions[] = Array("Name" => "Full Service", 			"Value"	=> REQUEST_FULL_SERVICE);
-		$arrRequestOptions[] = Array("Name" => "Preselection", 			"Value"	=> REQUEST_PRESELECTION);
-		$arrRequestOptions[] = Array("Name" => "Soft Bar", 				"Value"	=> REQUEST_BAR_SOFT);
-		$arrRequestOptions[] = Array("Name" => "Soft Bar Reversal", 	"Value"	=> REQUEST_UNBAR_SOFT);
-		$arrRequestOptions[] = Array("Name" => "Activation", 			"Value"	=> REQUEST_ACTIVATION);
-		$arrRequestOptions[] = Array("Name" => "Deactivation", 			"Value"	=> REQUEST_DEACTIVATION);
-		$arrRequestOptions[] = Array("Name" => "Preselection Reversal", "Value"	=> REQUEST_PRESELECTION_REVERSE);
-		$arrRequestOptions[] = Array("Name" => "Full Service Reversal", "Value"	=> REQUEST_FULL_SERVICE_REVERSE);
-		$arrRequestOptions[] = Array("Name" => "Hard Bar", 				"Value"	=> REQUEST_BAR_HARD);
-		$arrRequestOptions[] = Array("Name" => "Hard Bar Reversal", 	"Value"	=> REQUEST_UNBAR_HARD);
-		$arrRequestOptions[] = Array("Name" => "Virtual Preselection", 	"Value"	=> REQUEST_VIRTUAL_PRESELECTION);
+		foreach ($GLOBALS['*arrConstant']['Request'] as $intConstant=>$arrConstant)
+		{
+			switch ($intConstant)
+			{
+				case REQUEST_CHANGE_ADDRESS:
+				case REQUEST_LOSS_VIRTUAL_PRESELECTION:
+				case REQUEST_LOSS_PRESELECT:
+				case REQUEST_LOSS_FULL:
+					continue;
+					break;
+					
+				default:
+					$arrRequestOptions[] = Array("Name" => $arrConstant['Description'], "Value"	=> $intConstant);
+					break;
+			}
+		}
 		
 		echo "<div class='GroupedContent'>";
 		echo "<div style='height:22px'>\n";
@@ -125,7 +130,7 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		echo "   </span>\n";
 		
 		// Draw Provisioning Combobox
-		echo "      <span style='margin-left:20px;'>Request</span>\n";
+		echo "      <span style='margin-left:10px;'>Request</span>\n";
 		echo "      <span>\n";
 		echo "         <select id='RequestCombo'>\n";
 		// Add each Request Type
@@ -138,9 +143,9 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		
 		// Draw AuthorisationDate textbox
 		$strAuthorisationDate = date("d/m/Y");
-		echo "      <span style='margin-left:20px;'>Authorisation Date</span>\n";
+		echo "      <span style='margin-left:10px;'>Authorisation Date</span>\n";
 		echo "      <span>\n";
-		echo "         <input type='text' id='AuthorisationDateTextBox' name='ProvisioningRequest->AuthorisationDate' value='$strAuthorisationDate' style='width:100px'/>\n";
+		echo "         <input type='text' id='AuthorisationDateTextBox' name='ProvisioningRequest->AuthorisationDate' value='$strAuthorisationDate' style='width:85px'/>\n";
 		echo "      </span>\n";
 		
 		echo "   </div>\n"; // Left

@@ -408,7 +408,7 @@ class AppTemplateService extends ApplicationTemplate
 			}
 			if (!$dboServiceAddress->DateOfBirth->Valid)
 			{
-				$arrProblems[] = "Date of birth must be in the format of DD/MM/YYYY and in the past";
+				$arrProblems[] = "Date of birth must be in the format of DD/MM/YYYY";
 			}
 			else
 			{
@@ -497,7 +497,7 @@ class AppTemplateService extends ApplicationTemplate
 			$dboServiceAddress->ServiceStreetName			= NULL;
 			$dboServiceAddress->ServiceStreetType			= NULL;
 			$dboServiceAddress->ServiceStreetTypeSuffix		= NULL;
-			$dboServiceAddress->ServiceStreetPropertyName	= NULL;
+			$dboServiceAddress->ServicePropertyName			= NULL;
 		}
 		else
 		{
@@ -833,9 +833,9 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		$arrRatePlanIds = array_unique($arrRatePlanIds);
 		
-		$strWhere = "Id IN (". implode(", ", $arrRatePlanIds) .")";
-		$selRatePlans = new StatementSelect("RatePlan", "Id, ServiceType, CarrierFullService, CarrierPreselection, Archived", $strWhere, "Id");
-		$mixResult = $selRatePlans->Execute();
+		$strWhere		= "Id IN (". implode(", ", $arrRatePlanIds) .")";
+		$selRatePlans	= new StatementSelect("RatePlan", "Id, ServiceType, CarrierFullService, CarrierPreselection, Archived", $strWhere, "Id");
+		$mixResult		= $selRatePlans->Execute();
 		if ($mixResult === FALSE || count($arrRatePlanIds) != $mixResult)
 		{
 			// At least one of the Plans declared for the Services could  not be retrieved
@@ -883,7 +883,7 @@ class AppTemplateService extends ApplicationTemplate
 						if (!Validate("ShortDate", $objService->strDOB))
 						{
 							// DOB has been supplied but is not a valid date in the past
-							Ajax()->AddCommand("Alert", "ERROR: Service: {$objService->strFnn}, has DOB incorrectly specified.  Bulk service creation aborted.");
+							Ajax()->AddCommand("Alert", "ERROR: Service: {$objService->strFNN}, has DOB incorrectly specified.  Bulk service creation aborted.");
 							return TRUE;
 						}
 						// Convert the user's date into the MySql date format
@@ -895,20 +895,20 @@ class AppTemplateService extends ApplicationTemplate
 					}
 					
 					// Prepare Mobile Details
-					$arrExtraDetailsRec = Array("Account" => $intAccount,
-												"AccountGroup" => $intAccountGroup,
-												"SimPUK" => $objService->strSimPUK,
-												"SimESN" => $objService->strSimESN,
-												"SimState" => $objService->strSimState,
-												"DOB" => $strDOB,
-												"Comments" => $objService->strComments
+					$arrExtraDetailsRec = Array("Account"		=> $intAccount,
+												"AccountGroup"	=> $intAccountGroup,
+												"SimPUK"		=> $objService->strSimPUK,
+												"SimESN"		=> $objService->strSimESN,
+												"SimState"		=> $objService->strSimState,
+												"DOB"			=> $strDOB,
+												"Comments"		=> $objService->strComments
 											);
 					break;
 					
 				case SERVICE_TYPE_INBOUND:
 					// No validation required
-					$arrExtraDetailsRec = Array("AnswerPoint" => $objService->strAnswerPoint,
-												"Configuration" => $objService->strConfiguration
+					$arrExtraDetailsRec = Array("AnswerPoint"	=> $objService->strAnswerPoint,
+												"Configuration"	=> $objService->strConfiguration
 											);
 					break;
 					
@@ -918,9 +918,46 @@ class AppTemplateService extends ApplicationTemplate
 					break;
 				
 				case SERVICE_TYPE_LAND_LINE:
-					//TODO!
-					$arrServiceRec['Indial100']	= $objService->intIndial100;
-					$arrServiceRec['ELB']		= $objService->intELB;
+					$arrServiceRec['Indial100']	= ($objService->bolIndial100) ? 1 : 0;
+					$arrServiceRec['ELB']		= ($objService->bolIndial100 && $objService->bolELB)? TRUE : FALSE;
+					
+					
+					// Check that the AuthorisationDate date is not in the future, and is no more than 30 days in the past
+					$intNowDate		= strtotime(date("d/m/Y"));
+					$intAuthDate	= strtotime($objService->strAuthorisationDate);
+					if ((!Validate("ShortDate", $objService->strAuthorisationDate)) || ($intAuthDate > $intNowDate || $intAuthDate <= strtotime("-30 days", $intNowDate))) 
+					{
+						// Authorisation Date is incorrect
+						Ajax()->AddCommand("Alert", "ERROR: Service: {$objService->strFNN}, has invalid Authorisation Date.  Authorisation Date must be in the format dd/mm/yyyy and must be within the last 30 days.  Bulk service creation aborted.");
+						return TRUE;
+					}
+					
+					$arrServiceRec['AuthorisationDate'] = ConvertUserDateToMySqlDate($objService->strAuthorisationDate);
+					
+					// Validate the AddressDetails
+					// Build a DBObject for the ServiceAddress record so that we can use
+					$dboServiceAddress = new DBObject("ServiceAddress");
+					$objService->objAddressDetails->Residential = (int)$objService->objAddressDetails->Residential;
+					foreach ($objService->objAddressDetails as $strProperty=>$mixValue)
+					{
+						$dboServiceAddress->{$strProperty} = $mixValue;
+					}
+					$arrProblems = Array();
+					$bolAddressValid = $this->ValidateAndCleanServiceAddress($dboServiceAddress, $arrProblems);
+					
+					if (!$bolAddressValid)
+					{
+						// The Service Address record is invalid
+						$strProblems = implode("<br />", $arrProblems);
+						Ajax()->AddCommand("Alert", "ERROR: Bulk service creation aborted.  The following problems were found with the address details for service: {$objService->strFNN}<br />$strProblems");
+						return TRUE;
+					}
+					
+					$arrExtraDetailsRec = Array("Account" => $intAccount, "AccountGroup" => $intAccountGroup);
+					foreach ($dboServiceAddress as $strProperty=>$objProperty)
+					{
+						$arrExtraDetailsRec[$strProperty] = $objProperty->Value;
+					}
 					break;
 				
 				default:
@@ -936,7 +973,6 @@ class AppTemplateService extends ApplicationTemplate
 											"PlanId" => $objService->intPlanId
 											);
 		}
-		
 		
 		// Now add each Service to the database
 		TransactionStart();
@@ -974,6 +1010,8 @@ class AppTemplateService extends ApplicationTemplate
 				return TRUE;
 			}
 			$intServiceId = $mixResult;
+			
+			// The ExtraDetails record will require the Service Id
 			$arrExtraDetails['Service'] = $intServiceId;
 			
 			$bolOk = TRUE;
@@ -1005,12 +1043,13 @@ class AppTemplateService extends ApplicationTemplate
 					}
 					break;
 					
-				case SERVICE_TYPE_LANDLINE:
+				case SERVICE_TYPE_LAND_LINE:
 					// Add this service to the list of those to provision
 					$arrServicesToProvision[] = Array(	"Id"				=> $intServiceId,
 														"FNN"				=> $arrServiceRec['FNN'],
 														"Carrier"			=> $arrServiceRec['Carrier'],
-														"CarrierPreselect"	=> $arrServiceRec['CarrierPreselect']
+														"CarrierPreselect"	=> $arrServiceRec['CarrierPreselect'],
+														"AuthorisationDate"	=> $arrServiceRec['AuthorisationDate']
 													);
 					
 					if (!isset($insLandLine))
@@ -1024,7 +1063,6 @@ class AppTemplateService extends ApplicationTemplate
 						$strErrorMsg = "ERROR: Adding the Land Line specific details for Service: {$arrServiceRec['FNN']}, failed unexpectedly.  Process Aborted. (Error adding record to the ServiceAddress table)";
 						break;
 					}
-					
 					if ($arrServiceRec['Indial100'] && $arrServiceRec['ELB'])
 					{
 						// Enable ELB
@@ -1067,6 +1105,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Perform all Automatic provisioning
 		if (count($arrServicesToProvision) > 0)
 		{
+			
 			// Prepare the object to add the provisioning requests
 			$arrInsertValues = Array(	"AccountGroup"		=> DBO()->Account->AccountGroup->Value,
 										"Account"			=> DBO()->Account->Id->Value,
@@ -1076,7 +1115,7 @@ class AppTemplateService extends ApplicationTemplate
 										"Carrier"			=> NULL,
 										"Type"				=> NULL,
 										"RequestedOn"		=> $strNowDateTime,
-										"AuthorisationDate"	=> $strNowDate, //TODO! Change this to a value specified by the user 
+										"AuthorisationDate"	=> NULL, 
 										"Status"			=> REQUEST_STATUS_WAITING
 									);
 			$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
@@ -1085,8 +1124,9 @@ class AppTemplateService extends ApplicationTemplate
 			$bolSuccess = TRUE;
 			foreach ($arrServicesToProvision as $arrService)
 			{
-				$arrInsertValues['Service'] = $arrService['Id'];
-				$arrInsertValues['FNN'] = $arrService['FNN'];
+				$arrInsertValues['Service']				= $arrService['Id'];
+				$arrInsertValues['FNN']					= $arrService['FNN'];
+				$arrInsertValues['AuthorisationDate']	= $arrService['AuthorisationDate'];
 				
 				// Full Service Request
 				$arrInsertValues['Carrier']	= $arrService['Carrier'];

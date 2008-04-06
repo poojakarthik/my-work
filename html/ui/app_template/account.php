@@ -142,7 +142,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Load all the services belonging to the account, that the user has permission to view
 		DBL()->Service->Where->Set($strWhere, Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("FNN ASC, Id DESC");
+		DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
 		DBL()->Service->Load();
 		
 		$this->LoadPage('account_services');
@@ -501,7 +501,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account_Menu->Account->Services->Add_Services2(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
@@ -558,7 +557,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load the List of services
 		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)
 		DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("FNN ASC, Id DESC");
+		DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
 		DBL()->Service->Load();
 		
 		// Load the user notes

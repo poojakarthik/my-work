@@ -347,7 +347,8 @@ function VixenServiceAddressClass()
 		
 		for (strProperty in this.objInputElements)
 		{
-			objAddressDetails[strProperty] = this.objInputElements[strProperty].elmControl.value;
+			// If any of the properties are empty strings then convert them to nulls
+			objAddressDetails[strProperty] = (this.objInputElements[strProperty].elmControl.value != "")? this.objInputElements[strProperty].elmControl.value : null;
 		}
 		
 		return objAddressDetails;
@@ -461,22 +462,14 @@ function VixenServiceAddressClass()
 	this.ValidateAndCleanServiceAddress = function()
 	{
 		var bolAllValid = true;
-		
+
 		// Load all the values into an object, for easy reference
 		var objValues = {};
 		for (strProperty in this.objInputElements)
 		{
-			objValues[strProperty] = this.objInputElements[strProperty].elmControl.value.trim();
-			
-			/*
-			// Nullify any properties that equate to empty strings
-			if (objValues[strProperty].length == 0)
-			{
-				objValues[strProperty] = null;
-			}
-			*/
+			objValues[strProperty] = this.objInputElements[strProperty].elmControl.value.Trim();
 		}
-
+		
 		// Convert to upper case, those values that should be in upper case
 		objValues.ServiceAddressTypeSuffix	= (objValues.ServiceAddressTypeSuffix != null) ? objValues.ServiceAddressTypeSuffix.toUpperCase() : null;
 		objValues.ServiceStreetNumberSuffix	= (objValues.ServiceStreetNumberSuffix != null) ? objValues.ServiceStreetNumberSuffix.toUpperCase() : null;
@@ -557,8 +550,8 @@ function VixenServiceAddressClass()
 		}
 		
 		// Validate the service's physical address
-		var strAddressType = objValues.ServiceAddressType;
-		if (strAddressType.length > 0)
+		var bolHasAddressType = objValues.ServiceAddressType.Validate("NotEmptyString");
+		if (bolHasAddressType)
 		{
 			// An Address Type has been specified
 			if (!objValues.ServiceAddressTypeNumber.Validate("PositiveIntegerNonZero"))
@@ -566,7 +559,7 @@ function VixenServiceAddressClass()
 				this.objInputElements.ServiceAddressTypeNumber.elmControl.SetHighlight(true);
 				bolAllValid = false;
 			}
-			if (!objValues.ServiceAddressTypeSuffix.Validate("LettersOnly", false))
+			if (!objValues.ServiceAddressTypeSuffix.Validate("LettersOnly", true))
 			{
 				this.objInputElements.ServiceAddressTypeSuffix.elmControl.SetHighlight(true);
 				bolAllValid = false;
@@ -581,7 +574,7 @@ function VixenServiceAddressClass()
 		}
 
 
-		if (strAddressType.length > 0 && this.objPostalAddressTypes[strAddressType] != undefined)
+		if (bolHasAddressType && this.objPostalAddressTypes[objValues.ServiceAddressType] != undefined)
 		{
 			// ServiceAddressType is a postal address
 			// null the fields that aren't used for postal addresses
@@ -589,14 +582,14 @@ function VixenServiceAddressClass()
 			objValues.ServiceStreetNumberEnd	= null;
 			objValues.ServiceStreetNumberSuffix	= null;
 			objValues.ServiceStreetName			= null;
-			objValues.ServiceStreetType			= null;
+			objValues.ServiceStreetType			= "NR";
 			objValues.ServiceStreetTypeSuffix	= null;
-			objValues.ServiceStreetPropertyName	= null;
+			objValues.ServicePropertyName		= null;
 		}
 		else
 		{
 			// ServiceAddressType is not a postal address type, and can therefore have street details
-			if (strAddressType == "LOT")
+			if (objValues.ServiceAddressType == "LOT")
 			{
 				// LOTs do not have Street numbers
 				objValues.ServiceStreetNumberStart	= null;
@@ -605,50 +598,55 @@ function VixenServiceAddressClass()
 			}
 			else
 			{
-				// Validate the Street Number
-				if (objValues.ServiceStreetNumberStart == "")
+				// Validate the StreetNumber details, but only if a StreetName has been specified
+				if (objValues.ServiceStreetName == "")
 				{
-					// Street Number Start has not been specified
-					// Reset the Number End and Suffix
+					// StreetName has not been declared
+					objValues.ServiceStreetNumberStart	= null;
 					objValues.ServiceStreetNumberEnd	= null;
 					objValues.ServiceStreetNumberSuffix	= null;
-					
-					if (objValues.ServiceStreetName != "")
-					{
-						this.objInputElements.ServiceStreetNumberStart.elmControl.SetHighlight(true);
-						bolAllValid = false;
-					}
 				}
 				else
 				{
-					// StreetNumberStart has been declared
-					if (!objValues.ServiceStreetNumberStart.Validate("PositiveIntegerNonZero"))
+					// StreetName has been specified
+					// Validate the Street Number
+					if (objValues.ServiceStreetNumberStart == "")
 					{
+						// Street Number Start has not been specified, but should be
 						this.objInputElements.ServiceStreetNumberStart.elmControl.SetHighlight(true);
 						bolAllValid = false;
 					}
-					
-					if (objValues.ServiceStreetNumberEnd != "")
+					else
 					{
-						// An end number has been declared
-						if (!objValues.ServiceStreetNumberEnd.Validate("PositiveIntegerNonZero"))
+						// StreetNumberStart has been declared
+						if (!objValues.ServiceStreetNumberStart.Validate("PositiveIntegerNonZero"))
 						{
-							this.objInputElements.ServiceStreetNumberEnd.elmControl.SetHighlight(true);
+							this.objInputElements.ServiceStreetNumberStart.elmControl.SetHighlight(true);
 							bolAllValid = false;
 						}
-						else if (parseInt(objValues.ServiceStreetNumberEnd) <= parseInt(objValues.ServiceStreetNumberStart))
+						
+						if (objValues.ServiceStreetNumberEnd != "")
 						{
-							// The end number is less than or equal to the start number
-							this.objInputElements.ServiceStreetNumberEnd.elmControl.SetHighlight(true);
+							// An end number has been declared
+							if (!objValues.ServiceStreetNumberEnd.Validate("PositiveIntegerNonZero"))
+							{
+								this.objInputElements.ServiceStreetNumberEnd.elmControl.SetHighlight(true);
+								bolAllValid = false;
+							}
+							else if (parseInt(objValues.ServiceStreetNumberEnd) <= parseInt(objValues.ServiceStreetNumberStart))
+							{
+								// The end number is less than or equal to the start number
+								this.objInputElements.ServiceStreetNumberEnd.elmControl.SetHighlight(true);
+								bolAllValid = false;
+							}
+						}
+	
+						if (!objValues.ServiceStreetNumberSuffix.Validate("LettersOnly", true))
+						{
+							// A suffix has been specified but is invalid
+							this.objInputElements.ServiceStreetNumberSuffix.elmControl.SetHighlight(true);
 							bolAllValid = false;
 						}
-					}
-
-					if (!objValues.ServiceStreetNumberSuffix.Validate("LettersOnly", false))
-					{
-						// A suffix has been specified but is invalid
-						this.objInputElements.ServiceStreetNumberSuffix.elmControl.SetHighlight(true);
-						bolAllValid = false;
 					}
 				}
 			}
@@ -666,12 +664,8 @@ function VixenServiceAddressClass()
 			else
 			{
 				// A street name has not been declared
-				objValues.ServiceStreetType			= null;
+				objValues.ServiceStreetType			= "NR";
 				objValues.ServiceStreetTypeSuffix	= null;
-				
-				objValues.ServiceStreetNumberStart	= null;
-				objValues.ServiceStreetNumberEnd	= null;
-				objValues.ServiceStreetNumberSuffix	= null;
 				
 				// Check that a Property Name has been declared
 				if (objValues.ServicePropertyName == "")
@@ -699,7 +693,7 @@ function VixenServiceAddressClass()
 			bolAllValid = false;
 		}
 		
-		// Save the cleaned fields bck into the form, but only if everything was valid
+		// Save the cleaned fields back into the form, but only if everything was valid
 		if (bolAllValid)
 		{
 			for (strProperty in objValues)

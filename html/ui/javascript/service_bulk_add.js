@@ -43,13 +43,7 @@ for (i in Vixen.Constants.ServiceType)
 	Vixen.Constants[Vixen.Constants.ServiceType[i].Constant] = parseInt(i);
 }
 
-// This could better be defined as
-Element.prototype.SetHighlight = function(bolHighlight)
-{
-	this.style.backgroundColor = (bolHighlight)? "#FA8072" : null;
-}
-
-// This should be moved to the vixen.js file
+// This should be moved to the constants.js file (although this file doesn't exist yet)
 function $Const(strConstant)
 {
 	if (Vixen.Constants[strConstant] == undefined)
@@ -683,7 +677,7 @@ function VixenServiceBulkAddClass()
 	
 	
 	// Submits all the data to the server, to save all the services
-	this._SaveServices = function()
+	this._SaveServices = function(bolConfirmed)
 	{
 		// Compile all the data
 		var objService;
@@ -694,6 +688,15 @@ function VixenServiceBulkAddClass()
 			{
 				arrDeclaredServices.push(this.arrServices[i].GetProperties());
 			}
+		}
+		
+		if (!bolConfirmed)
+		{
+			var intNumOfServices = arrDeclaredServices.length;
+			var strServices = (intNumOfServices == 1)? "this service?" : "these "+ intNumOfServices +" services?";
+			var strMessage = "All details have now been declared.  Are you sure you want to add " + strServices;
+			Vixen.Popup.Confirm(strMessage, function(){Vixen.ServiceBulkAdd._SaveServices(true);});
+			return;
 		}
 		
 		// Make the AJAX call to the server for preliminary validation of the services

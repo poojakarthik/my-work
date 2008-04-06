@@ -172,7 +172,6 @@ function VixenServiceExtraDetailsLandLineClass()
 		
 		if (bolSuccess)
 		{
-alert("Holy cow crap. the form is valid");		
 			this.SaveDetails();
 			Vixen.ServiceBulkAdd.GetExtraDetailsForNextService(this.objService.intArrayIndex);
 		}
@@ -201,6 +200,7 @@ alert("Holy cow crap. the form is valid");
 	this.ValidateForm = function()
 	{
 		// Check that AuthorisationDate is valid
+		this.objInputElements.AuthorisationDate.elmControl.SetHighlight(false);
 		if (!this.objInputElements.AuthorisationDate.elmControl.Validate("ShortDate"))
 		{
 			// The AuthorisationDate is invalid

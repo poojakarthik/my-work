@@ -1780,15 +1780,25 @@ class Validation
 	 *
 	 * @method
 	 */
-	static function ShortDate($mixDateAndTime)
+	static function ShortDate($mixDate)
 	{
-		if ($mixDateAndTime == "00/00/0000")
+		if ($mixDate == "00/00/0000")
 		{
 			return TRUE;
 		}
 		else
-		{		
-			return self::RegexValidate('^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}$^' , $mixDateAndTime);
+		{
+			$bolValidDateFormat = self::RegexValidate('^(0[1-9]|[12][0-9]|3[01])[/](0[1-9]|1[012])[/](19|20)[0-9]{2}$^' , $mixDate); 
+			
+			if (!$bolValidDateFormat)
+			{
+				return FALSE;
+			}
+			
+			// The Date is in the correct format, but now check that it is a proper date
+			// IE check that it isn't the 31st of February
+			$arrParts = explode("/", $mixDate);
+			return checkdate((int)$arrParts[1], (int)$arrParts[0], (int)$arrParts[2]);
 		}
 	}	
 	

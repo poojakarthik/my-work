@@ -238,11 +238,18 @@ function $Alert(strMessage, strSize, strPopupId)
 }
 
 // Trims whitespace from both ends of a string
-String.prototype.trim = function()
+String.prototype.Trim = function()
 {
 	var strTrimmed = this.replace(/^\s+/, '');
 	return strTrimmed.replace(/\s+$/, '');
 }
+
+// Highlights an element, usually to show that it is invalid
+Element.prototype.SetHighlight = function(bolHighlight)
+{
+	this.style.backgroundColor = (bolHighlight)? "#FA8072" : null;
+}
+
 
 /**
  * Function.prototype.bind
