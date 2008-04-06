@@ -24,7 +24,7 @@ if (!GetConstantName($intCarrier, 'Carrier'))
 	CliEcho("ERROR: '$intCarrier' is not a valid Carrier Id!\n");
 	die;
 }
-elseif (!class_exists($strClassName) || !is_subclass_of($strClassName, 'CarrierModule') || !is_subclass_of($strClassName, 'ExportBase'))
+elseif (!class_exists($strClassName) || !is_subclass_of($strClassName, 'CarrierModule'))
 {
 	CliEcho("ERROR: '$strClassName' is not a valid CarrierModule Class!\n");
 	die;
