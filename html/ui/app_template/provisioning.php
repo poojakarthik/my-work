@@ -92,40 +92,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		}
 		
 		// Retrieve all the services belonging to the account and whether or not they have address details defined
-		$strTables	= "	Service AS S LEFT JOIN ServiceAddress AS SA ON S.Id = SA.Service 
-						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
-								FROM ServiceRatePlan AS SRP2 
-								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
-								ORDER BY SRP2.CreatedOn DESC
-								LIMIT 1
-								)
-						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
-						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
-								FROM ServiceRatePlan AS SRP4 
-								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
-								ORDER BY SRP4.CreatedOn DESC
-								LIMIT 1
-								)
-						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
-		$arrColumns	= Array("Id" 						=> "S.Id",
-							"FNN"						=> "S.FNN", 
-							"Status"		 			=> "S.Status",
-							"LineStatus"				=> "S.LineStatus",
-							"CreatedOn"					=> "S.CreatedOn", 
-							"ClosedOn"					=> "S.ClosedOn",
-							"AddressId"					=> "SA.Id",
-							"CurrentPlanId" 			=> "RP1.Id",
-							"CurrentPlanName"			=> "RP1.Name",
-							"FuturePlanId"				=> "RP2.Id",
-							"FuturePlanName"			=> "RP2.Name",
-							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
-		$arrWhere	= Array("AccountId" => DBO()->Account->Id->Value);
-		DBL()->Service->SetTable($strTables);
-		DBL()->Service->SetColumns($arrColumns);
-		DBL()->Service->Where->Set($strWhere, $arrWhere);
-		DBL()->Service->OrderBy("S.FNN ASC, S.Id DESC");
-		DBL()->Service->Load();
+		$this->_LoadServiceDetails(DBO()->Account->Id->Value);
 		
 		// Set up the BreadCrumb menu
 		BreadCrumb()->Employee_Console();
@@ -208,40 +175,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// Retrieve all the services belonging to the account and whether or not they have address details defined
-		$strTables	= "	Service AS S LEFT JOIN ServiceAddress AS SA ON S.Id = SA.Service 
-						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
-								FROM ServiceRatePlan AS SRP2 
-								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
-								ORDER BY SRP2.CreatedOn DESC
-								LIMIT 1
-								)
-						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
-						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
-								FROM ServiceRatePlan AS SRP4 
-								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
-								ORDER BY SRP4.CreatedOn DESC
-								LIMIT 1
-								)
-						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
-		$arrColumns	= Array("Id" 						=> "S.Id",
-							"FNN"						=> "S.FNN", 
-							"Status"		 			=> "S.Status",
-							"LineStatus"				=> "S.LineStatus",
-							"CreatedOn"					=> "S.CreatedOn", 
-							"ClosedOn"					=> "S.ClosedOn",
-							"AddressId"					=> "SA.Id",
-							"CurrentPlanId" 			=> "RP1.Id",
-							"CurrentPlanName"			=> "RP1.Name",
-							"FuturePlanId"				=> "RP2.Id",
-							"FuturePlanName"			=> "RP2.Name",
-							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
-		$arrWhere	= Array("AccountId" => DBO()->Account->Id->Value);
-		DBL()->Service->SetTable($strTables);
-		DBL()->Service->SetColumns($arrColumns);
-		DBL()->Service->Where->Set($strWhere, $arrWhere);
-		DBL()->Service->OrderBy("S.FNN ASC, S.Id DESC");
-		DBL()->Service->Load();
+		$this->_LoadServiceDetails(DBO()->Account->Id->Value);
 		
 		// Store the list of currently selected services
 		DBO()->Request->ServiceIds = DBO()->List->SelectedServices->Value;
@@ -251,6 +185,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 
 		return TRUE;
 	}
+	
 	
 	//------------------------------------------------------------------------//
 	// SubmitRequest
@@ -718,22 +653,6 @@ class AppTemplateProvisioning extends ApplicationTemplate
 				return FALSE;
 		}
 		
-		/* We are no longer grouping records on their TimeStamp
-		$strRecCountFromClause = "($strRecCountFromClause ORDER BY TimeStamp DESC $strLimitClause) AS RecordCountTable";
-		
-		// Work out how many records must be retrieved to encompase the last $intMaxItems TimeStamps where something happened
-		$selRecCount = new StatementSelect($strRecCountFromClause, Array("RecordCount"=>"SUM(RecCount)"), "");
-		$selRecCount->Execute();
-		$arrRecCount = $selRecCount->Fetch();
-		$intRecCount = $arrRecCount['RecordCount'];
-		
-		// Note that $intRecCount can equal NULL if there are no records relating to the Service/Account
-		if ($intRecCount === NULL)
-		{
-			return Array();
-		}
-		$strRecRetrievalQuery = "$strRecRetrievalQuery ORDER BY TimeStamp DESC LIMIT $intRecCount";
-		*/
 		$strRecRetrievalQuery = "$strRecRetrievalQuery ORDER BY TimeStamp DESC, Service, Id DESC $strLimitClause";
 		
 		// Because we are using a UNION to retrieve a record set built from 2 seperate 
@@ -755,6 +674,61 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		}
 		
 		return $arrHistory;
+	}
+
+	//------------------------------------------------------------------------//
+	// _LoadServiceDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * _LoadServiceDetails()
+	 *
+	 * Sets up the DBL()->Service object, and loads the data from the database
+	 * 
+	 * Sets up the DBL()->Service object, and loads the data from the database
+	 * 
+	 * @param		int		$intAccountId	Id of the Account
+	 *
+	 * @return		boolean					TRUE on success; FALSE on failure
+	 * @method		_LoadServiceDetails
+	 */
+	private function _LoadServiceDetails($intAccountId)
+	{
+		// Retrieve all the services belonging to the account and whether or not they have address details defined
+		$strTables	= "	Service AS S LEFT JOIN ServiceAddress AS SA ON S.Id = SA.Service 
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
+								FROM ServiceRatePlan AS SRP2 
+								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
+								ORDER BY SRP2.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
+								FROM ServiceRatePlan AS SRP4 
+								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
+								ORDER BY SRP4.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
+		$arrColumns	= Array("Id" 						=> "S.Id",
+							"FNN"						=> "S.FNN", 
+							"Status"		 			=> "S.Status",
+							"LineStatus"				=> "S.LineStatus",
+							"LineStatusDate"			=> "S.LineStatusDate",
+							"CreatedOn"					=> "S.CreatedOn", 
+							"ClosedOn"					=> "S.ClosedOn",
+							"AddressId"					=> "SA.Id",
+							"CurrentPlanId" 			=> "RP1.Id",
+							"CurrentPlanName"			=> "RP1.Name",
+							"FuturePlanId"				=> "RP2.Id",
+							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
+		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
+		$arrWhere	= Array("AccountId" => $intAccountId);
+		DBL()->Service->SetTable($strTables);
+		DBL()->Service->SetColumns($arrColumns);
+		DBL()->Service->Where->Set($strWhere, $arrWhere);
+		DBL()->Service->OrderBy("S.FNN ASC, S.Id DESC");
+		return DBL()->Service->Load();
 	}
 
 

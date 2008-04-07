@@ -2239,10 +2239,7 @@ class OutputMasks
 		{
 			return "Indefinite";
 		}
-		$arrDateAndTime = explode(" ", $strMySqlDatetime);
-		$arrTime = explode(":", $arrDateAndTime[1]);
-		$arrDate = explode("-", $arrDateAndTime[0]);
-		$intUnixTime = mktime($arrTime[0], $arrTime[1], $arrTime[2], $arrDate[1], $arrDate[2], $arrDate[0]);
+		$intUnixTime = strtotime($strMySqlDatetime);
 		$strDateAndTime = date("l, M j, Y g:i:s A", $intUnixTime);
 	
 		return $strDateAndTime;

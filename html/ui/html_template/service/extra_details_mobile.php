@@ -81,6 +81,7 @@ class HtmlTemplateServiceExtraDetailsMobile extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<center><h2>Mobile - <div id='ExtraDetailTitleFnn' style='display:inline'>". DBO()->Service->FNN->Value ."</div></h2></center>";
 		echo "<form id='VixenForm_Mobile'>\n";
 		echo "<div class='GroupedContent'>\n";
 

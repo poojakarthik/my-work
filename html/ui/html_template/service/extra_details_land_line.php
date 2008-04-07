@@ -78,6 +78,7 @@ class HtmlTemplateServiceExtraDetailsLandLine extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<center><h2>Land Line - <div id='ExtraDetailTitleFnn' style='display:inline'>". DBO()->Service->FNN->Value ."</div></h2></center>";
 		echo "<form id='VixenForm_LandLine' >\n";
 		echo "<div class='GroupedContent'>\n";
 		

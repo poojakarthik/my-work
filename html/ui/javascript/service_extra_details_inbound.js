@@ -47,6 +47,7 @@ function VixenServiceExtraDetailsInboundClass()
 	this.objService			= null;
 	this.elmPrevious		= null;
 	this.elmNext			= null;
+	this.elmTitleFnn		= null;
 	
 	this.Initialise = function()
 	{
@@ -77,6 +78,10 @@ function VixenServiceExtraDetailsInboundClass()
 				this.elmNext = elmForm.elements[intKey];
 			}
 		}
+
+		// Store a reference to the place holder in the title, for the FNN
+		this.elmTitleFnn = $ID("ExtraDetailTitleFnn");
+		
 		// Close all the other "ExtraDetail"  popups except for this one
 		Vixen.ServiceBulkAdd.CloseAllPopups(Vixen.Constants.SERVICE_TYPE_INBOUND);
 		this.objInputElements.AnswerPoint.elmControl.focus();
@@ -119,6 +124,9 @@ function VixenServiceExtraDetailsInboundClass()
 			
 			// Update the title bar of the popup
 			Vixen.Popup.SetTitle(strPopupId, strTitle);
+			
+			// Update the title
+			this.elmTitleFnn.innerHTML = objService.elmFnn.value;
 		}
 		else
 		{

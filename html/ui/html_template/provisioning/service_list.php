@@ -239,6 +239,17 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			{
 				$strLineStatusCell = "Unknown";
 			}
+			else
+			{
+				$strLineStatusDate = $dboService->LineStatusDate->Value;
+				if (!($strLineStatusDate == "0000-00-00 00:00:00" || $strLineStatusDate == NULL))
+				{
+					// LineStatusDate has been specified
+					$strLineStatusDate	= substr($strLineStatusDate, 11, 2) .":". substr($strLineStatusDate, 14, 2) .":". substr($strLineStatusDate, 17, 2) ." ". substr($strLineStatusDate, 8, 2) ."/". substr($strLineStatusDate, 5, 2) ."/". substr($strLineStatusDate, 0, 4);
+					$strLineStatusDesc	= "Line Status was last updated: $strLineStatusDate";
+					$strLineStatusCell	= "<span title='$strLineStatusDesc'>$strLineStatusCell</span>";
+				}
+			}
 				
 			Table()->Services->AddRow($strSelectCell, $strFnnCell, $strPlanCell, $strStatusCell, $strLineStatusCell, $strActionsCell);
 		}

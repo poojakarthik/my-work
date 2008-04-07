@@ -114,17 +114,7 @@ class HtmlTemplateServiceAddressEdit extends HtmlTemplate
 		$this->RenderForm($arrAccountAddresses);
 		
 		echo "<div class='ButtonContainer'><div class='right'>\n";
-		if (DBO()->ServiceAddress->Id->Value)
-		{
-			// Address details must already exist.  Have the Cancel button revert to the View Address popup
-			$strCancelLink = Href()->ViewServiceAddress(DBO()->Service->Id->Value);
-		}
-		else
-		{
-			$strCancelLink = "Vixen.Popup.Close(this);";
-		}
-		
-		$this->Button("Cancel", $strCancelLink);
+		$this->Button("Cancel",	"Vixen.Popup.Close(this)");
 		$this->Button("Save", "Vixen.ServiceAddress.SaveAddress()");
 		echo "</div></div>\n";  //Button Container
 		

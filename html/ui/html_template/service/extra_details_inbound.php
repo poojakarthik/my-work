@@ -79,6 +79,7 @@ class HtmlTemplateServiceExtraDetailsInbound extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<center><h2>Inbound - <div id='ExtraDetailTitleFnn' style='display:inline'>". DBO()->Service->FNN->Value ."</div></h2></center>";
 		echo "<form id='VixenForm_Inbound'>\n";
 		echo "<div class='GroupedContent'>\n";
 

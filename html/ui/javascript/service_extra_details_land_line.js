@@ -46,6 +46,7 @@ function VixenServiceExtraDetailsLandLineClass()
 	this.objInputElements		= {};
 	this.objService				= null;
 	this.elmELBContainer		= null;
+	this.elmTitleFnn			= null;
 	
 	// This is a reference to the Vixen.ServiceAddress object
 	this.objServiceAddress		= null;
@@ -74,6 +75,9 @@ function VixenServiceExtraDetailsLandLineClass()
 		
 		// Store a reference to the ELB container div
 		this.elmELBContainer = $ID("Container_ELB");
+		
+		// Store a reference to the place holder in the title, for the FNN
+		this.elmTitleFnn = $ID("ExtraDetailTitleFnn");
 		
 		// Store a reference to the js object that manages the Service Address HtmlTemplate
 		this.objServiceAddress = Vixen.ServiceAddress;
@@ -143,6 +147,9 @@ function VixenServiceExtraDetailsLandLineClass()
 			
 			// Update the title bar of the popup
 			Vixen.Popup.SetTitle(strPopupId, strTitle);
+			
+			// Update the title
+			this.elmTitleFnn.innerHTML = objService.elmFnn.value;
 		}
 		else
 		{

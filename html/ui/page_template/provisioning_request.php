@@ -27,7 +27,20 @@
  */
 
 // Set the page title
-$this->Page->SetName("Provisioning");
+if (DBO()->Account->BusinessName->Value)
+{
+	$strPageNameSuffix = " - ". DBO()->Account->BusinessName->Value;
+}
+elseif (DBO()->Account->TradingName->Value)
+{
+	$strPageNameSuffix = " - ". DBO()->Account->TradingName->Value;
+}
+else
+{
+	$strPageNameSuffix = " - ". DBO()->Account->Id->Value;
+}
+
+$this->Page->SetName("Provisioning". $strPageNameSuffix);
 
 // Set the layout template for the page
 $this->Page->SetLayout('1Column');

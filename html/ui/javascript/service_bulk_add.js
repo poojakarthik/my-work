@@ -95,6 +95,41 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	this.elmPlan.addEventListener('change', this.PlanChangeListener.bind(this), true);
 	this.elmCostCentre.addEventListener('change', this.CostCentreChangeListener.bind(this), true);
 
+	// These event listeners prohibit the user from copying/pasting the FNNs
+	this.elmFnn.addEventListener('keydown', FnnTextboxKeyHandler, true);
+	this.elmFnn.addEventListener('select', FnnTextHighlightingHandler, true);
+	this.elmFnnConfirm.addEventListener('keydown', FnnTextboxKeyHandler, true);
+	this.elmFnnConfirm.addEventListener('select', FnnTextHighlightingHandler, true);
+	
+	// Prevents the user from highlighting the text in the Fnn Textboxes
+	// This is done so that they have to physically type the fnn in twice.  They can't copy/paste it
+	function FnnTextHighlightingHandler(objEvent)
+	{
+		objEvent.target.selectionStart = objEvent.target.selectionEnd;
+		objEvent.preventDefault();
+	}
+	
+	// Prevents the user from copying or pasting the text in the Fnn Textboxes
+	// This is done so that they have to physically type the fnn in twice.  They can't copy/paste it
+	function FnnTextboxKeyHandler(objEvent)
+	{
+		// keyCode 37 is the left key
+		if (objEvent.shiftKey && objEvent.keyCode == 37)
+		{
+			// The user is trying to select text by pressing shift-left
+			// Jog the cursor left one character
+			objEvent.target.selectionEnd = objEvent.target.selectionStart = objEvent.target.selectionStart -1;
+			objEvent.preventDefault();
+		}
+		else if (objEvent.ctrlKey || objEvent.keyCode == 45)
+		{
+			objEvent.preventDefault();
+		}
+		else
+		{
+			return true;
+		}
+	}
 
 	// Checks if the Fnn textboxes match and prepares the row accordingly
 	this._CheckFnn = function()

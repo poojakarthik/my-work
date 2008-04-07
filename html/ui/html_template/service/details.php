@@ -188,7 +188,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='NarrowContent'>\n";
+		echo "<div class='GroupedContent'>\n";
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		
@@ -263,16 +263,26 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<div class='ContentSeparator'></div>\n";
 		DBO()->Service->CreatedOn->RenderOutput();
 		DBO()->Service->ClosedOn->RenderOutput();
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
+
 		if (DBO()->Service->LineStatus->Value !== NULL)
 		{
 			DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("LineStatus"), RENDER_OUTPUT);
+		
+			if (DBO()->Service->LineStatusDate->Value !== NULL && DBO()->Service->LineStatusDate->Value != "0000-00-00 00:00:00")
+			{
+				$intLineStatusDate = strtotime(DBO()->Service->LineStatusDate->Value);
+				$strLineStatusDate = date("M j, Y g:i:s A", $intLineStatusDate);
+				
+				DBO()->Service->LineStatusLastUpdated = $strLineStatusDate;
+				DBO()->Service->LineStatusLastUpdated->RenderOutput();
+			}
 		}
-		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
-
+		
 		// Register a listener to handle when the service has been updated
 		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('". EVENT_ON_SERVICE_UPDATE ."', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
 
-		echo "</div>\n";  // NarrowContent
+		echo "</div>\n";  // GroupedContent
 		echo "<div class='Seperator'></div>\n";
 	}
 }

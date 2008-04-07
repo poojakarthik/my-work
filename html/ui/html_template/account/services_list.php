@@ -216,15 +216,14 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 
-		Table()->ServiceTable->SetHeader("&nbsp;", "FNN #", "Plan", "Status", "&nbsp;", "&nbsp;", "Actions");
-		Table()->ServiceTable->SetWidth("4%", "12%", "44%", "11%", "7%", "14%", "8%");
-		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left");
+		Table()->ServiceTable->SetHeader("&nbsp;", "FNN #", "Plan", "&nbsp;", "&nbsp;", "&nbsp;", "Actions");
+		Table()->ServiceTable->SetWidth("3%", "10%", "46%", "7%", "11%", "15%", "8%");
+		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left", "Left");
+		
+		$strStatusTitles = "Status :<br />Line :";
 		
 		foreach (DBL()->Service as $dboService)
 		{
-			// Record the Status of the service
-			$strStatusCell = GetConstantDescription($dboService->Status->Value, "Service");
-
 			// Build the Actions Cell
 			$strEditService				= "";
 			$strChangePlan				= "";
@@ -294,6 +293,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$intCurrentDate = strtotime(GetCurrentDateForMySQL());
 			
 			// Check if the ClosedOn date has been set
+			$bolFlagStatus = FALSE;
 			if ($dboService->ClosedOn->Value == NULL)
 			{
 				// The service is not scheduled to close.  It is either active or hasn't been activated yet.
@@ -308,6 +308,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				{
 					// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
 					$strStatusDesc = "Opens";
+					$bolFlagStatus = TRUE;
 				}
 				$strStatusDescDate = OutputMask()->ShortDate($dboService->CreatedOn->Value);
 			}
@@ -318,6 +319,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				{
 					// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date) or today
 					$strStatusDesc = "Closes";
+					$bolFlagStatus = TRUE;
 				}
 				else
 				{
@@ -327,10 +329,36 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$strStatusDescDate = OutputMask()->ShortDate($dboService->ClosedOn->Value);
 			}
 
-			$strStatusDescCell = $strStatusDesc;
-			$strStatusDateCell = $strStatusDescDate;
+			// Prepare the Status' of the service
+			$strStatus			= GetConstantDescription($dboService->Status->Value, "Service");
+			$strLineStatus		= GetConstantDescription($dboService->LineStatus->Value, "LineStatus");
+			$strLineStatusDate	= $dboService->LineStatusDate->Value;
+
+			$strLineStatusDesc = NULL;
+			if ($strLineStatus === FALSE)
+			{
+				// The line status is unknown
+				$strLineStatus = "Unknown";
+			}
+			else if (!($strLineStatusDate == "0000-00-00 00:00:00" || $strLineStatusDate == NULL))
+			{
+				// LineStatus Date has been supplied
+				$strLineStatusDate = substr($strLineStatusDate, 11, 2) .":". substr($strLineStatusDate, 14, 2) .":". substr($strLineStatusDate, 17, 2) ." ". substr($strLineStatusDate, 8, 2) ."/". substr($strLineStatusDate, 5, 2) ."/". substr($strLineStatusDate, 0, 4);
+				$strLineStatusDesc = "Line Status was last updated: $strLineStatusDate";
+			}
+
+			$strStatusCell = "$strStatus<br />$strLineStatus";
+			if ($strLineStatusDesc)
+			{
+				$strStatusCell = "<span title='$strLineStatusDesc'>$strStatusCell</span>";
+			}
 			
-				
+			$strStatusDescCell = "$strStatusDesc $strStatusDescDate";
+			if ($bolFlagStatus)
+			{
+				$strStatusDescCell = "<span class='Red'>$strStatusDescCell</span>";
+			}
+			
 			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
 			
 			if ($dboService->FNN->Value == NULL)
@@ -369,14 +397,14 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			
 			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
 			
-			Table()->ServiceTable->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusCell, $strStatusDescCell, $strStatusDateCell, $strActionsCell);
+			Table()->ServiceTable->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);
 		}
 		
 		// If the account has no services then output an appropriate message in the table
 		if (Table()->ServiceTable->RowCount() == 0)
 		{
 			// There are no services to stick in this table
-			Table()->ServiceTable->AddRow("<span>No services to display</span>");
+			Table()->ServiceTable->AddRow("No services to display");
 			Table()->ServiceTable->SetRowAlignment("left");
 			Table()->ServiceTable->SetRowColumnSpan(7);
 		}
