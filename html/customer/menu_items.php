@@ -177,7 +177,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Management Console";
 
-		return $this->GetBaseURL()."../intranet/index.php";
+		return $this->GetBaseURL()."../management/index.php";
 	}
 
 	//------------------------------------------------------------------------//
