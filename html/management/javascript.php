@@ -38,7 +38,7 @@
  * application framework.  We just want to retrieve the requested js files
  */
  
-Define ('LOCAL_BASE_DIR', "../intranet_app");
+Define ('LOCAL_BASE_DIR', "../management");
 Define ('FRAMEWORK_BASE_DIR', "../ui");
 
 // include the framework javascript.php file

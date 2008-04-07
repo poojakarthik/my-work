@@ -31,8 +31,8 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 $strVixenBaseDir = GetVixenBase();
-Define ('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "html/web/");
-Define ('MODULE_BASE_DIR', 		$strVixenBaseDir . "html/web/");
+Define ('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "html/customer/");
+Define ('MODULE_BASE_DIR', 		$strVixenBaseDir . "html/customer/");
 
 // Define which flavour of browsers are supported by this application
 Define ('BROWSER_IE',	0x1);

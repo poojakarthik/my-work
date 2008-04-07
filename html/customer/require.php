@@ -34,7 +34,7 @@ require_once("../../flex.require.php");
 $strApplicationFrameworkDir	= "html/ui/";
 
 // Set Application Dir
-$strApplicationDir			= "html/web/";
+$strApplicationDir			= "html/customer/";
 
 // If absolute paths don't work then use: 
 // $strApplicationDir			= "../web/";

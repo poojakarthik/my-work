@@ -31,7 +31,7 @@
 
 // From the config information, work out where the local application code is and where the framework code is
 //TODO! I don't think the appropriate config object has been implemented yet
-Define ('LOCAL_BASE_DIR', "../web");
+Define ('LOCAL_BASE_DIR', "../customer");
 Define ('FRAMEWORK_BASE_DIR', "../ui");
 
 // include the framework javascript.php file
