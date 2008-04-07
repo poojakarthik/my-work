@@ -176,7 +176,7 @@
  		{
 	 		if (!file_exists($strDirectory))
 	 		{
-	 			mkdir($strDirectory, '0777', TRUE);
+	 			mkdir($strDirectory, 0777, TRUE);
 	 		}
 	 		
 	 		switch ($this->_strFileFormat)
