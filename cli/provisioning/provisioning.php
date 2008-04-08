@@ -45,7 +45,7 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
  * @class		ApplicationProvisioning
  */
  class ApplicationProvisioning extends ApplicationBaseClass
- {
+ { 	
  	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -69,14 +69,23 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
  		// Get list of Carrier Modules
  		$this->_selCarrierModules	= new StatementSelect("CarrierModule", "*", "Type = <Type> AND Active = 1");
  		
+	 	$this->_arrImportFiles		= Array();
+	 	$this->_arrExportFiles		= Array();
+	 	$this->_arrExportModules	= Array();
+	 	
+	 	CliEcho("\n[ INIT PROVISIONING MODULES ]\n");
+ 		
  		// Init Import Modules
+ 		CliEcho(" * IMPORT MODULES");
  		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_PROVISIONING_INPUT));
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$this->_arrImportFiles[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
+ 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrImportFiles[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
  		
  		// Init Export Modules
+ 		CliEcho("\n * EXPORT MODULES");
  		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_PROVISIONING_OUTPUT));
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
@@ -87,7 +96,10 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
  			{
  				$this->_arrExportModules[$arrModule['Carrier']][$intType]	= $this->_arrExportFiles[$arrModule['Carrier']][$arrModule['FileType']];
  			}
+ 			
+ 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrExportFiles[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
+ 		CliEcho('');
  	}
  	
  	//------------------------------------------------------------------------//
@@ -304,16 +316,20 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
  		
  		// Finalise files
  		CliEcho("\n * Finalising and Delivering Files...");
- 		foreach ($this->_arrExportFiles as $intType=>$prvModule)
+ 		foreach ($this->_arrExportFiles as $intCarrier=>$arrModules)
  		{
-			if (!$prvModule->bolExported)
+			foreach ($arrModules as $intType=>$prvModule)
 			{
-				$strCarrier	= GetConstantDescription($prvModule->intCarrier, 'Carrier');
-				$strType	= $prvModule->strDescription;
- 				CliEcho("\t + $strCarrier: $strType...");
- 				$prvModule->Export();
+				if (!$arrModules[$intType]->bolExported)
+				{
+					$strCarrier	= GetConstantDescription($intCarrier, 'Carrier');
+					$strType	= $arrModules[$intType]->strDescription;
+	 				CliEcho("\t + $strCarrier: $strType...");
+	 				$arrModules[$intType]->Export();
+				}
 			}
  		}
+ 		CliEcho('');
 	}
 	
 	//------------------------------------------------------------------------//

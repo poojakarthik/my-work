@@ -1537,6 +1537,7 @@ class CarrierModule
 {
  	protected $_intModuleType;
  	protected $intCarrier;
+ 	protected $_intModuleCarrier;
 	
 	public $intBaseCarrier;
 	public $intBaseFileType;

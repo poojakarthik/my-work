@@ -448,7 +448,7 @@
  				$arrServiceAddress	= $this->_CleanServiceAddress($arrRequest['Service']);
  				
  				// Common
- 				$arrRendered['AgreementDate']		= $arrRequest['AuthorisationDate'];
+ 				$arrRendered['AgreementDate']		= date("Ymd", strtotime($arrRequest['AuthorisationDate']));
 				$arrRendered['BillName']			= $arrServiceAddress['BillName'];
 				$arrRendered['BillAddress1']		= $arrServiceAddress['BillAddress1'];
 				$arrRendered['BillAddress2']		= $arrServiceAddress['BillAddress2'];
