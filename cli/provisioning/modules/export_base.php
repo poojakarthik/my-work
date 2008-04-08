@@ -331,45 +331,53 @@
  			//Debug($arrField['Value']);
  			
  			// Prepare field
- 			$arrType = explode('::', $arrField['Type']);
- 			switch ($arrType[0])
+ 			if (!trim($arrField['Value']) && isset($arrField['Optional']))
  			{
- 				case 'Integer':
- 					$mixValue	= (int)$arrField['Value'];
- 					//Debug($mixValue);
- 					break;
- 				
- 				case 'Date':
- 					$strDate	= $arrField['Value'];
- 					switch ($arrType[1])
- 					{
- 						case 'YYYYMMDD':
- 							$strParse	= $strDate;
- 							break;
- 							
- 						case 'YYYY-MM-DD':
- 							$strParse	= $strDate;
- 							break;
- 						
- 						case 'DD-MM-YYYY':
- 							$strParse	= substr($strDate, -4, 4);
- 							$strParse	.= substr($strDate, 4, 2);
- 							$strParse	.= substr($strDate, 0, 2);
- 					}
- 					
- 					// Is it a valid date?
- 					if (!strtotime($strParse))
- 					{
-						$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' with value '$strDate' is not a valid {$arrType[1]} date";
-						return Array('Pass' => FALSE, 'Line' => $strMessage);
- 					}
- 					$mixValue	= $strDate; 					
- 					break;
- 				
- 				default:
- 					// String
- 					$mixValue	= $arrField['Value'];
- 					break;
+				// Optional field is empty
+				$mixValue	= $arrField['Optional'];
+ 			}
+ 			else
+ 			{
+	 			$arrType = explode('::', $arrField['Type']);
+	 			switch ($arrType[0])
+	 			{
+	 				case 'Integer':
+	 					$mixValue	= (int)$arrField['Value'];
+	 					//Debug($mixValue);
+	 					break;
+	 				
+	 				case 'Date':
+	 					$strDate	= $arrField['Value'];
+	 					switch ($arrType[1])
+	 					{
+	 						case 'YYYYMMDD':
+	 							$strParse	= $strDate;
+	 							break;
+	 							
+	 						case 'YYYY-MM-DD':
+	 							$strParse	= $strDate;
+	 							break;
+	 						
+	 						case 'DD-MM-YYYY':
+	 							$strParse	= substr($strDate, -4, 4);
+	 							$strParse	.= substr($strDate, 4, 2);
+	 							$strParse	.= substr($strDate, 0, 2);
+	 					}
+	 					
+	 					// Is it a valid date?
+	 					if (!strtotime($strParse))
+	 					{
+							$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' with value '$strDate' is not a valid {$arrType[1]} date";
+							return Array('Pass' => FALSE, 'Line' => $strMessage);
+	 					}
+	 					$mixValue	= $strDate; 					
+	 					break;
+	 				
+	 				default:
+	 					// String
+	 					$mixValue	= $arrField['Value'];
+	 					break;
+	 			}
  			}
  			
 			// Is this fixed-width?

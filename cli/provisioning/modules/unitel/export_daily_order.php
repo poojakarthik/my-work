@@ -1,4 +1,4 @@
-<?php
+HIl<?php
 //----------------------------------------------------------------------------//
 // (c) copyright 2008 VOIPTEL Pty Ltd
 //
@@ -280,6 +280,7 @@
 		$arrDefine['DateOfBirth']	['Start']		= 290;
 		$arrDefine['DateOfBirth']	['Length']		= 8;
 		$arrDefine['DateOfBirth']	['Type']		= 'Date::YYYYMMDD';
+		$arrDefine['DateOfBirth']	['Optional']	= '        ';
 		
 		$arrDefine['Employer']		['Start']		= 298;
 		$arrDefine['Employer']		['Length']		= 30;
