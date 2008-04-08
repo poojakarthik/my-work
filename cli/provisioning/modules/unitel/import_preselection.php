@@ -142,7 +142,7 @@
  		
  		// Split the Line using the file definition
  		$arrData = $this->_SplitLine($strLine);
- 			
+ 		
 		//----------------------------------------------------------------//
 		// FNN
 		$arrPDR['FNN']	= $arrData['FNN'];
@@ -205,7 +205,8 @@
 		if ((int)$arrData['Result'])
 		{
 			// Unsuccessful
-			$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
+			$arrPDR['RequestStatus']		= REQUEST_STATUS_REJECTED;
+			$arrPDR['PreselectionStatus']	= SERVICE_LINE_REJECTED;
 		}
 		elseif ($arrPDR['Description'] == 'Pending')
 		{

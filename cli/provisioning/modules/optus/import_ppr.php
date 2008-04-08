@@ -215,24 +215,29 @@
 			switch ($arrData['LossCode'])
 			{
 				case '01':
-					$strLostTo				= $this->TranslateCarrierCode(PROVISIONING_CONTEXT_EPID, $arrPDR['LossPSD']);
-					$arrPDR['Description']	= "Churned to ".(($strLostTo) ? $strLostTo : 'Unknown Carrier');
+					$strLostTo						= $this->TranslateCarrierCode(PROVISIONING_CONTEXT_EPID, $arrPDR['LossPSD']);
+					$arrPDR['Description']			= "Churned to ".(($strLostTo) ? $strLostTo : 'Unknown Carrier');
+					$arrPDR['PreselectionStatus']	= SERVICE_LINE_CHURNED;
 					break;
 					
 				case '02':
-					$arrPDR['Description']	= "Service Disconnected";
+					$arrPDR['Description']			= "Service Disconnected";
+					$arrPDR['PreselectionStatus']	= SERVICE_LINE_DISCONNECTED;
 					break;
 					
 				case '03':
-					$arrPDR['Description']	= "No PSD Point of Presence in Area";
+					$arrPDR['Description']			= "No PSD Point of Presence in Area";
+					$arrPDR['PreselectionStatus']	= SERVICE_LINE_REJECTED;
 					break;
 					
 				case '04':
-					$arrPDR['Description']	= "Churn Reversed";
+					$arrPDR['Description']			= "Churn Reversed";
+					$arrPDR['PreselectionStatus']	= SERVICE_LINE_REVERSED;
 					break;
 					
 				default:
-					$arrPDR['Description']	= "Service Lost";
+					$arrPDR['Description']			= "Service Lost";
+					$arrPDR['PreselectionStatus']	= SERVICE_LINE_DISCONNECTED;
 					break;
 			}
 		}
@@ -245,19 +250,22 @@
 			switch ($arrData['Status'])
 			{
 				case 'SUCCESSFUL':
-					$arrPDR['Description']		= "Churn Completed Successfully";
-					$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
+					$arrPDR['Description']			= "Churn Completed Successfully";
+					$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
+					$arrPDR['PreselectionStatus']	= SERVICE_LINE_ACTIVE;
 					break;
 					
 				case 'SUCCESSFUL*':
-					$arrPDR['Description']		= "Churn Completed Successfully (Already on Account)";
-					$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
+					$arrPDR['Description']			= "Churn Completed Successfully (Already on Account)";
+					$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
+					$arrPDR['PreselectionStatus']	= SERVICE_LINE_ACTIVE;
 					break;
 					
 				case 'UNSUCCESSFUL':
-					$strRejected				= $this->TranslateCarrierCode(PROVISIONING_CONTEXT_REJECT, $arrPDR['LossCode']);
-					$arrPDR['Description']		= "Churn Rejected ($strRejected)";
-					$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
+					$strRejected					= $this->TranslateCarrierCode(PROVISIONING_CONTEXT_REJECT, $arrPDR['LossCode']);
+					$arrPDR['Description']			= "Churn Rejected ($strRejected)";
+					$arrPDR['RequestStatus']		= REQUEST_STATUS_REJECTED;
+					$arrPDR['PreselectionStatus']	= SERVICE_LINE_REJECTED;
 					break;
 					
 				default:

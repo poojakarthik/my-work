@@ -448,12 +448,12 @@
  				$arrServiceAddress	= $this->_CleanServiceAddress($arrRequest['Service']);
  				
  				// Common
- 				$arrRendered['AgreementDate']			= $arrRequest['AuthorisationDate'];
-				$arrRendered['BillName']				= $arrServiceAddress['BillName'];
-				$arrRendered['BillAddress1']			= $arrServiceAddress['BillAddress1'];
-				$arrRendered['BillAddress2']			= $arrServiceAddress['BillAddress2'];
-				$arrRendered['BillLocality']			= $arrServiceAddress['BillLocality'];
-				$arrRendered['BillPostcode']			= $arrServiceAddress['BillPostcode'];
+ 				$arrRendered['AgreementDate']		= $arrRequest['AuthorisationDate'];
+				$arrRendered['BillName']			= $arrServiceAddress['BillName'];
+				$arrRendered['BillAddress1']		= $arrServiceAddress['BillAddress1'];
+				$arrRendered['BillAddress2']		= $arrServiceAddress['BillAddress2'];
+				$arrRendered['BillLocality']		= $arrServiceAddress['BillLocality'];
+				$arrRendered['BillPostcode']		= $arrServiceAddress['BillPostcode'];
 				
 				// Residential
 				$arrRendered['EndUserTitle']		= $arrServiceAddress['EndUserTitle'];
@@ -469,19 +469,19 @@
 				$arrRendered['TradingName']			= $arrServiceAddress['TradingName'];
 				
 				// Service Location Details
-				$arrRendered['AddressType']				= $arrServiceAddress['ServiceAddressType'];
-				$arrRendered['AdTypeNumber']			= $arrServiceAddress['ServiceAddressTypeNumber'];
-				$arrRendered['AdTypeSuffix']			= $arrServiceAddress['ServiceAddressTypeSuffix'];
-				$arrRendered['StNumberStart']			= $arrServiceAddress['ServiceStreetNumberStart'];
-				$arrRendered['StNumberEnd']				= $arrServiceAddress['ServiceStreetNumberEnd'];
-				$arrRendered['StNumSuffix']				= $arrServiceAddress['ServiceStreetNumberSuffix'];
-				$arrRendered['StreetName']				= $arrServiceAddress['ServiceStreetName'];
-				$arrRendered['StreetType']				= $arrServiceAddress['ServiceStreetType'];
-				$arrRendered['StTypeSuffix']			= $arrServiceAddress['ServiceStreetTypeSuffix'];
-				$arrRendered['PropertyName']			= $arrServiceAddress['ServicePropertyName'];
-				$arrRendered['Locality']				= $arrServiceAddress['ServiceLocality'];
-				$arrRendered['State']					= $arrServiceAddress['ServiceState'];
-				$arrRendered['Postcode']				= $arrServiceAddress['ServicePostcode'];
+				$arrRendered['AddressType']			= $arrServiceAddress['ServiceAddressType'];
+				$arrRendered['AdTypeNumber']		= $arrServiceAddress['ServiceAddressTypeNumber'];
+				$arrRendered['AdTypeSuffix']		= $arrServiceAddress['ServiceAddressTypeSuffix'];
+				$arrRendered['StNumberStart']		= $arrServiceAddress['ServiceStreetNumberStart'];
+				$arrRendered['StNumberEnd']			= $arrServiceAddress['ServiceStreetNumberEnd'];
+				$arrRendered['StNumSuffix']			= $arrServiceAddress['ServiceStreetNumberSuffix'];
+				$arrRendered['StreetName']			= $arrServiceAddress['ServiceStreetName'];
+				$arrRendered['StreetType']			= $arrServiceAddress['ServiceStreetType'];
+				$arrRendered['StTypeSuffix']		= $arrServiceAddress['ServiceStreetTypeSuffix'];
+				$arrRendered['PropertyName']		= $arrServiceAddress['ServicePropertyName'];
+				$arrRendered['Locality']			= $arrServiceAddress['ServiceLocality'];
+				$arrRendered['State']				= $arrServiceAddress['ServiceState'];
+				$arrRendered['Postcode']			= $arrServiceAddress['ServicePostcode'];
  				
  				for ($intBasket = 1; $intBasket <= 5; $intBasket++)
  				{

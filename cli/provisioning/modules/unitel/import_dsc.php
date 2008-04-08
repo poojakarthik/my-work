@@ -243,7 +243,7 @@
 				case "S":	// Gain - new service
 					$arrPDR['Type']			= REQUEST_FULL_SERVICE;
 					$arrPDR['Description']	= "Service Gained";
-					$arrPDR['LineStatus']	= LINE_STATUS_ACTIVE;
+					$arrPDR['LineStatus']	= SERVICE_LINE_ACTIVE;
 					
 					// This can span over multiple lines in the file
 					$arrBaskets[]	= (int)$arrData['Basket'];
@@ -252,7 +252,7 @@
 				case "G":	// Gain - reversal
 					$arrPDR['Type']			= REQUEST_FULL_SERVICE;
 					$arrPDR['Description']	= "Service Gained by Reversal";
-					$arrPDR['LineStatus']	= LINE_STATUS_ACTIVE;
+					$arrPDR['LineStatus']	= SERVICE_LINE_ACTIVE;
 					
 					// This can span over multiple lines in the file
 					$arrBaskets[]	= (int)$arrData['Basket'];
@@ -266,7 +266,7 @@
 						// If there are multiple lines, Full Service Loss
 						$arrPDR['Type']			= REQUEST_LOSS_FULL;
 						$arrPDR['Description']	= "Service lost to Carrier #{$arrData['LostTo']}";
-						$arrPDR['LineStatus']	= LINE_STATUS_CHURNED;
+						$arrPDR['LineStatus']	= SERVICE_LINE_CHURNED;
 						$bolFullServiceChurn	= TRUE;
 					}
 					else
@@ -283,7 +283,7 @@
 				case "X":	// Loss - cancellation
 					$arrPDR['Type']			= REQUEST_LOSS_FULL;
 					$arrPDR['Description']	= "Service Cancelled";
-					$arrPDR['LineStatus']	= LINE_STATUS_CANCELLED;
+					$arrPDR['LineStatus']	= SERVICE_LINE_CANCELLED;
 					
 					// This can span over multiple lines in the file
 					$arrBaskets[]	= (int)$arrData['Basket'];
@@ -305,31 +305,31 @@
 				case "W":	// Order waiting to be processed
 					$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;
 					$arrPDR['Description']		= "Order Pending with Unitel";
-					$arrPDR['LineStatus']		= LINE_STATUS_PENDING;
+					$arrPDR['LineStatus']		= SERVICE_LINE_PENDING;
 					break;
 					
 				case "A":	// Order actioned by WeBill
 					$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;
 					$arrPDR['Description']		= "Order accepted by Unitel";
-					$arrPDR['LineStatus']		= LINE_STATUS_PENDING;
+					$arrPDR['LineStatus']		= SERVICE_LINE_PENDING;
 					break;
 					
 				case "D":	// Order disqualified by WeBill
 					$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
 					$arrPDR['Description']		= "Order Rejected by Unitel - <Reason>";
-					$arrPDR['LineStatus']		= LINE_STATUS_REJECTED;
+					$arrPDR['LineStatus']		= SERVICE_LINE_REJECTED;
 					break;
 					
 				case "R":	// Order rejected by Telstra
 					$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
 					$arrPDR['Description']		= "Order Rejected by Telstra - <Reason>";
-					$arrPDR['LineStatus']		= LINE_STATUS_REJECTED;
+					$arrPDR['LineStatus']		= SERVICE_LINE_REJECTED;
 					break;
 					
 				case "C":	// Order completed by Telstra
 					$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
 					$arrPDR['Description']		= "Order completed by Telstra";
-					$arrPDR['LineStatus']		= LINE_STATUS_ACTIVE;
+					$arrPDR['LineStatus']		= SERVICE_LINE_ACTIVE;
 					break;
 					
 				default:	// Unknown Record Type
