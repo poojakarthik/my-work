@@ -81,6 +81,9 @@
  		// Module Description
  		$this->strDescription		= "Preselection";
  		
+ 		// Carrier Reference / Line Number Init
+ 		$this->intCarrierReference	= 1;
+ 		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
 		//##----------------------------------------------------------------##//
@@ -341,11 +344,6 @@
 		$arrDefine['FNN']			['Type']		= 'FNN';
 		
 		$this->_arrDefine[REQUEST_PRESELECTION_REVERSE] = $arrDefine;
-		
-		// INIT VALUES
- 		
- 		// Carrier Reference / Line Number Init
- 		$this->intCarrierReference	= $this->GetConfigField('FileSequence');
  	}
  	
  	//------------------------------------------------------------------------//

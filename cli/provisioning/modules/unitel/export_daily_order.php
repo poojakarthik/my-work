@@ -77,11 +77,11 @@ HIl<?php
  		// Parent Constructor
  		parent::__construct($intCarrier);
  		
- 		// Carrier Reference
- 		//$this->intCarrierReference	= $this->GetConfigField('RecordSequence');
- 		
  		// Module Description
  		$this->strDescription		= "Daily Order";
+		
+ 		// Carrier Reference / Line Number Init
+ 		$this->intCarrierReference	= $this->GetConfigField('RecordSequence');
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
