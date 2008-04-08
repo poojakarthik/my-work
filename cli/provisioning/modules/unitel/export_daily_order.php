@@ -189,8 +189,31 @@ HIl<?php
 		$arrDefine['RecordType']	['PadType']		= STR_PAD_LEFT;
 		$arrDefine['RecordType']	['Value']		= '01';
 		
-		$arrDefine['Filename']		['Start']		= 2;
-		$arrDefine['Filename']		['Length']		= 21;
+		$arrDefine['CSP']			['Start']		= 2;
+		$arrDefine['CSP']			['Length']		= 3;
+		$arrDefine['CSP']			['Config']		= 'CSPCode';
+		
+		$arrDefine['RSL']			['Start']		= 5;
+		$arrDefine['RSL']			['Length']		= 3;
+		$arrDefine['RSL']			['Config']		= 'CarrierCode';
+		
+		$arrDefine['System']		['Start']		= 8;
+		$arrDefine['System']		['Length']		= 1;
+		$arrDefine['System']		['Config']		= 'System';
+		
+		$arrDefine['Sequence']		['Start']		= 9;
+		$arrDefine['Sequence']		['Length']		= 4;
+		$arrDefine['Sequence']		['Type']		= 'Integer';
+		$arrDefine['Sequence']		['PadChar']		= '0';
+		$arrDefine['Sequence']		['PadType']		= STR_PAD_LEFT;
+		
+		$arrDefine['Date']			['Start']		= 13;
+		$arrDefine['Date']			['Length']		= 8;
+		$arrDefine['Date']			['Type']		= 'Date::YYYYMMDD';
+		
+		$arrDefine['Extension']		['Start']		= 21;
+		$arrDefine['Extension']		['Length']		= 4;
+		$arrDefine['Extension']		['Value']		= ".txt";
 		
 		$this->_arrDefine['Header'] = $arrDefine;
  		
@@ -570,8 +593,8 @@ HIl<?php
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['FileSequence']	= $intFileSequence;
- 		$this->_arrHeader['AgreementDate']	= date("Ymd");
+ 		$this->_arrHeader['Sequence']		= $intFileSequence;
+ 		$this->_arrHeader['Date']			= date("Ymd");
  		
  		// Generate Footer
  		$this->_arrFooter	= Array();
