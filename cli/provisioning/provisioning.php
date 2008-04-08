@@ -345,4 +345,45 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
  		
  		// Return message & Status
 	}
+	
+	//------------------------------------------------------------------------//
+	// _UpdateService
+	//------------------------------------------------------------------------//
+	/**
+	 * _UpdateService()
+	 *
+	 * Updates a Service using a given Provisioning Response
+	 *
+	 * Updates a Service using a given Provisioning Response
+	 * 
+	 * @param	array	$arrResponse	The Provisioning Response to use
+	 * 
+	 *
+	 * @return	array					['Message'] : Error Message
+	 * 									['Pass']	: TRUE: Passed; FALSE: Failed
+	 *
+	 * @method
+	 */
+	function _UpdateService($arrResponse)
+	{
+		// Get Service
+		$this->_selService	= new StatementSelect("Service", "*", "Id = <Service>");
+		if ($this->_selService->Execute() === FALSE)
+		{
+			return Array('Pass' => FALSE, 'Message' => "SELECT Query Failed: ".$this->_selService->Error());
+		}
+		
+		if ($arrService = $this->_selService->Fetch())
+		{
+			// Determine if we need to update
+			if ($arrResponse['LineStatus'])
+			{
+				
+			}
+		}
+		else
+		{
+			return Array('Pass' => FALSE, 'Message' => "Service '{$arrResponse['Service']}' ({$arrResponse['FNN']}) not found!");
+		}
+	}
  }

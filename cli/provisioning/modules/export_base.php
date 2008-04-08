@@ -863,6 +863,9 @@
 	 		$bolReturn	= TRUE;
  		}
  		
+ 		// Update the Configuration
+ 		$this->SaveModuleConfig();
+ 		
  		// Make sure this file doesn't get exported again
  		$this->bolExported	= TRUE;
  		return $bolReturn;
