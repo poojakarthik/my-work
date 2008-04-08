@@ -556,19 +556,21 @@ HIl<?php
 	 */
  	function Export()
  	{
+ 		$intFileSequence					= $this->GetConfigField('FileSequence');
+ 		$intFileSequence++;
+ 		
  		// Generate File Name
  		$this->_arrFilename	= Array();
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
- 		$this->_arrFilename['Sequence']		= $this->_GetCarrierProperty('File');
- 		$this->_arrFilename['Sender']		= $this->GetConfigField('CSPCode');
+ 		$this->_arrFilename['Sequence']		= $intFileSequence;
  		$this->_arrFilename['Date']			= date("Ymd");
  		
  		// Generate Header
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['FileSequence']	= $this->_GetCarrierProperty('File');
+ 		$this->_arrHeader['FileSequence']	= $intFileSequence;
  		$this->_arrHeader['AgreementDate']	= date("Ymd");
  		
  		// Generate Footer

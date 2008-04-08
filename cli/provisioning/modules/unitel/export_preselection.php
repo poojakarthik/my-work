@@ -78,9 +78,6 @@
  		// Parent Constructor
  		parent::__construct($intCarrier);
  		
- 		// Carrier Reference / Line Number Init
- 		$this->intCarrierReference	= 1;
- 		
  		// Module Description
  		$this->strDescription		= "Preselection";
  		
@@ -140,14 +137,15 @@
  		$arrDefine = Array();
 		$arrDefine['Sender']		['Start']		= 0;
 		$arrDefine['Sender']		['Length']		= 2;
+		$arrDefine['Sender']		['Config']		= 'CSPCode';
 		
 		$arrDefine['Recipient']		['Start']		= 2;
 		$arrDefine['Recipient']		['Length']		= 2;
-		$arrDefine['Recipient']		['Value']		= "rs";
+		$arrDefine['Recipient']		['Config']		= 'CarrierCode';
 		
 		$arrDefine['System']		['Start']		= 4;
 		$arrDefine['System']		['Length']		= 1;
-		$arrDefine['System']		['Value']		= "w";
+		$arrDefine['System']		['Config']		= 'System';
 		
 		$arrDefine['Sequence']		['Start']		= 5;
 		$arrDefine['Sequence']		['Length']		= 4;
@@ -185,15 +183,15 @@
 		
 		$arrDefine['Sender']		['Start']		= 14;
 		$arrDefine['Sender']		['Length']		= 2;
-		$arrDefine['Sender']		['Value']		= "sa";						// Put this in Customer Config!!
+		$arrDefine['Sender']		['Config']		= 'CSPCode';
 		
 		$arrDefine['Recipient']		['Start']		= 16;
 		$arrDefine['Recipient']		['Length']		= 2;
-		$arrDefine['Recipient']		['Value']		= "rs";
+		$arrDefine['Recipient']		['Config']		= 'CarrierCode';
 		
 		$arrDefine['System']		['Start']		= 18;
 		$arrDefine['System']		['Length']		= 1;
-		$arrDefine['System']		['Value']		= "w";
+		$arrDefine['System']		['Config']		= 'System';
 		
 		$this->_arrDefine['Header'] = $arrDefine;
  		
@@ -343,6 +341,11 @@
 		$arrDefine['FNN']			['Type']		= 'FNN';
 		
 		$this->_arrDefine[REQUEST_PRESELECTION_REVERSE] = $arrDefine;
+		
+		// INIT VALUES
+ 		
+ 		// Carrier Reference / Line Number Init
+ 		$this->intCarrierReference	= $this->GetConfigField('FileSequence');
  	}
  	
  	//------------------------------------------------------------------------//
@@ -431,18 +434,20 @@
 	 */
  	function Export()
  	{
+ 		$intFileSequence					= $this->GetConfigField('FileSequence');
+ 		$intFileSequence++;
+ 		
  		// Generate File Name
  		$this->_arrFilename	= Array();
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
- 		$this->_arrFilename['Sequence']		= $this->_GetCarrierProperty('File');
- 		$this->_arrFilename['Sender']		= $GLOBALS['**arrCustomerConfig']['Provisioning']['Carrier'][CARRIER_UNITEL]['SenderCode'];
+ 		$this->_arrFilename['Sequence']		= $intFileSequence;
  		
  		// Generate Header
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['FileSequence']	= $this->_GetCarrierProperty('File');
+ 		$this->_arrHeader['FileSequence']	= $intFileSequence;
  		$this->_arrHeader['AgreementDate']	= date("Ymd");
  		
  		// Generate Footer
