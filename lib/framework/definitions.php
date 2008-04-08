@@ -644,12 +644,22 @@ $GLOBALS['*arrConstant']	['Service']	[403]	['Description']	= 'Archived';
 
 
 // Service Line Status
-$GLOBALS['*arrConstant']	['LineStatus']	[500]	['Constant']	= 'SERVICE_LINE_ACTIVE';
-$GLOBALS['*arrConstant']	['LineStatus']	[500]	['Description']	= 'Active';
-$GLOBALS['*arrConstant']	['LineStatus']	[501]	['Constant']	= 'SERVICE_LINE_DISCONNECTED';
-$GLOBALS['*arrConstant']	['LineStatus']	[501]	['Description']	= 'Disconnected';
-$GLOBALS['*arrConstant']	['LineStatus']	[502]	['Constant']	= 'SERVICE_LINE_ARCHIVED';
-$GLOBALS['*arrConstant']	['LineStatus']	[502]	['Description']	= 'Archived';
+$GLOBALS['*arrConstant']	['LineStatus']	[500]	['Constant']	= 'SERVICE_LINE_PENDING';
+$GLOBALS['*arrConstant']	['LineStatus']	[500]	['Description']	= 'Pending Connection';
+$GLOBALS['*arrConstant']	['LineStatus']	[501]	['Constant']	= 'SERVICE_LINE_ACTIVE';
+$GLOBALS['*arrConstant']	['LineStatus']	[501]	['Description']	= 'Active';
+$GLOBALS['*arrConstant']	['LineStatus']	[502]	['Constant']	= 'SERVICE_LINE_DISCONNECTED';
+$GLOBALS['*arrConstant']	['LineStatus']	[502]	['Description']	= 'Disconnected';
+$GLOBALS['*arrConstant']	['LineStatus']	[503]	['Constant']	= 'SERVICE_LINE_BARRED';
+$GLOBALS['*arrConstant']	['LineStatus']	[503]	['Description']	= 'Barred';
+$GLOBALS['*arrConstant']	['LineStatus']	[504]	['Constant']	= 'SERVICE_LINE_TEMPORARY_DISCONNECT';
+$GLOBALS['*arrConstant']	['LineStatus']	[504]	['Description']	= 'Temporarily Disconnected';
+$GLOBALS['*arrConstant']	['LineStatus']	[505]	['Constant']	= 'SERVICE_LINE_REJECTED';
+$GLOBALS['*arrConstant']	['LineStatus']	[505]	['Description']	= 'Connection Request Rejected';
+$GLOBALS['*arrConstant']	['LineStatus']	[506]	['Constant']	= 'SERVICE_LINE_CHURNED';
+$GLOBALS['*arrConstant']	['LineStatus']	[506]	['Description']	= 'Churned Away';
+$GLOBALS['*arrConstant']	['LineStatus']	[507]	['Constant']	= 'SERVICE_LINE_REVERSED';
+$GLOBALS['*arrConstant']	['LineStatus']	[507]	['Description']	= 'Churn Reversed';
 
 
 // Provisioning Request Types
