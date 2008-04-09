@@ -885,6 +885,7 @@
  		// Update ProvisioningRequest records
  		$arrCols	= Array();
  		$arrCols['Status']		= REQUEST_STATUS_DELIVERED;
+ 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
  		$arrCols['FileExport']	= $intFileExport;
  		$ubiRequest	= new StatementUpdateById("ProvisioningRequest", $arrCols);
  		foreach ($this->_arrFileContent as $arrRequest)

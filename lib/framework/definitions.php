@@ -598,7 +598,7 @@ $GLOBALS['*arrConstant']	['RequestStatus']	[300]	['Description']	= 'Awaiting Dis
 $GLOBALS['*arrConstant']	['RequestStatus']	[301]	['Constant']	= 'REQUEST_STATUS_PENDING';
 $GLOBALS['*arrConstant']	['RequestStatus']	[301]	['Description']	= 'Pending';
 $GLOBALS['*arrConstant']	['RequestStatus']	[302]	['Constant']	= 'REQUEST_STATUS_REJECTED';
-$GLOBALS['*arrConstant']	['RequestStatus']	[302]	['Description']	= 'Rejected';
+$GLOBALS['*arrConstant']	['RequestStatus']	[302]	['Description']	= 'Rejected by Carrier';
 $GLOBALS['*arrConstant']	['RequestStatus']	[303]	['Constant']	= 'REQUEST_STATUS_COMPLETED';
 $GLOBALS['*arrConstant']	['RequestStatus']	[303]	['Description']	= 'Completed';
 $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Constant']	= 'REQUEST_STATUS_CANCELLED';
@@ -611,6 +611,8 @@ $GLOBALS['*arrConstant']	['RequestStatus']	[307]	['Constant']	= 'REQUEST_STATUS_
 $GLOBALS['*arrConstant']	['RequestStatus']	[307]	['Description']	= 'Waiting on Carrier Response';
 $GLOBALS['*arrConstant']	['RequestStatus']	[308]	['Constant']	= 'REQUEST_STATUS_NO_MODULE';
 $GLOBALS['*arrConstant']	['RequestStatus']	[308]	['Description']	= 'Request Not Supported by Flex';
+$GLOBALS['*arrConstant']	['RequestStatus']	[309]	['Constant']	= 'REQUEST_STATUS_REJECTED_FLEX';
+$GLOBALS['*arrConstant']	['RequestStatus']	[309]	['Description']	= 'Rejected by Flex';
 
 $GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Constant']	= 'RESPONSE_STATUS_CANT_NORMALISE';
 $GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Description']	= 'Unable to Normalise';

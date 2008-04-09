@@ -482,6 +482,14 @@ HIl<?php
  			case REQUEST_FULL_SERVICE:
  				$arrServiceAddress	= $this->_CleanServiceAddress($arrRequest['Service']);
  				
+ 				if (is_string($arrServiceAddress))
+ 				{
+ 					// Service Address Problems
+			 		$arrRequest['Status']		= REQUEST_STATUS_REJECTED_FLEX;
+			 		$arrRequest['Description']	= $arrServiceAddress;
+ 					return $arrRequest;
+ 				}
+ 				
  				// Common
  				$arrRendered['AgreementDate']		= date("Ymd", strtotime($arrRequest['AuthorisationDate']));
 				$arrRendered['BillName']			= $arrServiceAddress['BillName'];

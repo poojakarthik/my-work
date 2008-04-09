@@ -292,9 +292,9 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 				// Prepare output for this request
 				$arrRequest = $this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]->Output($arrRequest);
 				
-				if ($arrRequest['**Failed'])
+				if ($arrRequest['Status'] !== REQUEST_STATUS_EXPORTING)
 				{
-					CliEcho("[ FAILED ]\n\t\t- {$arrRequest['**Failed']}");
+					CliEcho("[ FAILED ]\n\t\t- {$arrRequest['Description']}");
 				}
 				else
 				{
