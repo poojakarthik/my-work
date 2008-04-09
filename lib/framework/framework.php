@@ -1671,7 +1671,7 @@ class CarrierModule
 	 function LoadModuleConfig()
 	 {
 	 	$arrWhere = Array();
-	 	$arrWhere['Carrier']	= $this->intCarrier;
+	 	$arrWhere['Carrier']	= $this->_intModuleCarrier;
 	 	$arrWhere['Module']		= get_class($this);
 	 	$arrWhere['Type']		= $this->_intModuleType;
 	 	if ($this->_selCarrierModule->Execute($arrWhere))
