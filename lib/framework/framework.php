@@ -1706,8 +1706,8 @@ class CarrierModule
 	 * 
 	 * Saves the Module's Config back to the DB
 	 * 
-	 * @return	mixed					TRUE	: Config Saved
-	 * 									string	: Failure Reason(s)
+	 * @return	array					'Pass'			: TRUE/FALSE
+	 * 									'Description'	: Error message
 	 *
 	 * @method
 	 */
@@ -1734,7 +1734,8 @@ class CarrierModule
 	 	$strError	= trim($strError);
 	 	
 	 	// If there is an error, then return the message, else TRUE
-	 	return ($bolFailed) ? $strError : TRUE;
+	 	return Array('Pass' => !$bolFailed, 'Description' => $strError); 
+	 	//return ($bolFailed) ? $strError : TRUE;
 	 }
  	
  	
