@@ -322,15 +322,24 @@ HIl<?php
 		
 		$arrDefine['AdTypeNumber']	['Start']		= 422;
 		$arrDefine['AdTypeNumber']	['Length']		= 5;
+		$arrDefine['AdTypeNumber']	['Type']		= 'Integer';
+		$arrDefine['AdTypeNumber']	['PadChar']		= '0';
+		$arrDefine['AdTypeNumber']	['PadType']		= STR_PAD_LEFT;
 		
 		$arrDefine['AdTypeSuffix']	['Start']		= 427;
 		$arrDefine['AdTypeSuffix']	['Length']		= 2;
 		
 		$arrDefine['StNumberStart']	['Start']		= 429;
 		$arrDefine['StNumberStart']	['Length']		= 5;
+		$arrDefine['StNumberStart']	['Type']		= 'Integer';
+		$arrDefine['StNumberStart']	['PadChar']		= '0';
+		$arrDefine['StNumberStart']	['PadType']		= STR_PAD_LEFT;
 		
 		$arrDefine['StNumberEnd']	['Start']		= 434;
 		$arrDefine['StNumberEnd']	['Length']		= 5;
+		$arrDefine['StNumberEnd']	['Type']		= 'Integer';
+		$arrDefine['StNumberEnd']	['PadChar']		= '0';
+		$arrDefine['StNumberEnd']	['PadType']		= STR_PAD_LEFT;
 		
 		$arrDefine['StNumSuffix']	['Start']		= 439;
 		$arrDefine['StNumSuffix']	['Length']		= 1;
