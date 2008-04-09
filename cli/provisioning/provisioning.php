@@ -324,8 +324,20 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 				{
 					$strCarrier	= GetConstantDescription($intCarrier, 'Carrier');
 					$strType	= $arrModules[$intType]->strDescription;
-	 				CliEcho("\t + $strCarrier: $strType...");
-	 				$arrModules[$intType]->Export();
+	 				CliEcho("\t + $strCarrier: $strType...\t\t\t");
+	 				$mixResult	= $arrModules[$intType]->Export();
+	 				if (!$mixResult['Pass'])
+	 				{
+	 					CliEcho("[ FAILED ]\n\t\tReason: {$mixResult['Description']}");
+	 				}
+	 				else
+	 				{
+	 					CliEcho("[   OK   ]");
+	 					if (PROVISIONING_DEBUG_MODE)
+	 					{
+	 						CliEcho($mixResult['Description']);
+	 					}
+	 				}
 				}
 			}
  		}
