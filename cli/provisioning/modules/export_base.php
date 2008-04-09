@@ -807,6 +807,7 @@
  	function Export()
  	{
  		// Check to see if we have enough requests
+	 	$bolReturn	= TRUE;
  		$mixResult	= NULL;
  		if (count($this->_arrFileContent) >= $this->_intMinRequests)
  		{
@@ -827,8 +828,6 @@
 			 		}
 		 		}
 	 		}
-	 		
-	 		$bolReturn	= TRUE;
  		}
  		else
  		{
