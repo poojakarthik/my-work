@@ -420,7 +420,7 @@ HIl<?php
 		$arrDefine['FNN']			['Type']		= 'FNN';
 		
 		$arrDefine['Date']			['Start']		= 21;
-		$arrDefine['Date']			['Length']		= 3;
+		$arrDefine['Date']			['Length']		= 8;
 		$arrDefine['Date']			['Type']		= 'Date::YYYYMMDD';
 		$arrDefine['Date']			['PadChar']		= '0';
 		$arrDefine['Date']			['PadType']		= STR_PAD_LEFT;
