@@ -326,9 +326,17 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 					$strType	= $arrModules[$intType]->strDescription;
 	 				CliEcho("\t + $strCarrier: $strType...\t\t\t", FALSE);
 	 				$mixResult	= $arrModules[$intType]->Export();
-	 				if (!$mixResult['Pass'])
+	 				if ($mixResult['Pass'] === FALSE)
 	 				{
 	 					CliEcho("[ FAILED ]\n\t\tReason: {$mixResult['Description']}");
+	 				}
+	 				elseif ($mixResult['Pass'] === NULL)
+	 				{
+	 					CliEcho("[  SKIP  ]");
+	 					if (PROVISIONING_DEBUG_MODE)
+	 					{
+	 						CliEcho($mixResult['Description']);
+	 					}
 	 				}
 	 				else
 	 				{
