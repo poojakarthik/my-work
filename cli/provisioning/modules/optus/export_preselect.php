@@ -85,7 +85,7 @@
  		$this->strDescription		= "Preselection";
 		
  		// Get Fields which are going to be modified
- 		$this->intFileSequence		&= $this->GetConfigField('FileSequence');
+ 		$this->intFileSequence		= &$this->GetConfigField('FileSequence');
  		$this->intFileSequence++;
  		
 		//##----------------------------------------------------------------##//

@@ -81,9 +81,9 @@ HIl<?php
  		$this->strDescription		= "Daily Order";
 		
  		// Get Fields which are going to be modified
- 		$this->intCarrierReference	&= $this->GetConfigField('RecordSequence');
- 		$this->intFileSequence		&= $this->GetConfigField('FileSequence');
- 		$this->strLastSent			&= $this->GetConfigField('LastSent');
+ 		$this->intCarrierReference	= &$this->GetConfigField('RecordSequence');
+ 		$this->intFileSequence		= &$this->GetConfigField('FileSequence');
+ 		$this->strLastSent			= &$this->GetConfigField('LastSent');
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults

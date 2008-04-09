@@ -85,7 +85,7 @@
  		$this->intCarrierReference	= 1;
 		
  		// Get Fields which are going to be modified
- 		$this->intFileSequence		&= $this->GetConfigField('FileSequence');
+ 		$this->intFileSequence		= &$this->GetConfigField('FileSequence');
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults

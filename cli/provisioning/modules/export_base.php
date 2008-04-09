@@ -899,7 +899,7 @@
  		$arrFileExport['FileType']		= $this->intBaseFileType;
  		$arrFileExport['SHA1']			= sha1_file($this->_strFilePath);
  		$insFileExport	= new StatementInsert("FileExport", $arrFileExport);
- 		if ($intFileExport	= $insFileExport->Execute($arrFileExport) === FALSE)
+ 		if (($intFileExport	= $insFileExport->Execute($arrFileExport)) === FALSE)
  		{
  			return Array('Pass' => FALSE, 'Description' => "Unable to create FileExport DB entry!");
  		}
