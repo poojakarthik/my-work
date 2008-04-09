@@ -272,6 +272,7 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
  		$arrCols = Array();
  		$arrCols['Status']		= NULL;
  		$arrCols['Description']	= NULL;
+ 		$arrCols['CarrierRef']	= NULL;
  		$ubiRequest		= new StatementUpdateById("ProvisioningRequest", $arrCols);
  		$selRequests	= new StatementSelect("ProvisioningRequest", "*", "Status = ".REQUEST_STATUS_WAITING);
  		

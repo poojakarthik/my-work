@@ -807,39 +807,33 @@
  	function Export()
  	{
  		// Check to see if we have enough requests
- 		$bolReturn	= NULL;
  		$mixResult	= NULL;
  		if (count($this->_arrFileContent) >= $this->_intMinRequests)
  		{
 	 		// Render File
 	 		$mixResult	= $this->_Render();
-	 		if ($mixResult['Pass'] === FALSE)
+	 		if ($mixResult['Pass'])
 	 		{
-	 			break;
-	 		}
-	 		
-	 		// Update Requests & FileExport 
-	 		$mixResult	= $this->_UpdateDB();
-	 		if ($mixResult['Pass'] === FALSE)
-	 		{
-	 			break;
-	 		}
-	 		
-	 		// Deliver to FTP Server
-	 		$mixResult	= $this->_Deliver();
-	 		if ($mixResult['Pass'] === FALSE)
-	 		{
-	 			break;
-	 		}
-	 		
-	 		// Update the Configuration
-	 		$mixResult	= $this->SaveModuleConfig();
-	 		if ($mixResult['Pass'] === FALSE)
-	 		{
-	 			break;
+		 		// Update Requests & FileExport 
+		 		$mixResult	= $this->_UpdateDB();
+		 		if ($mixResult['Pass'])
+		 		{
+		 			// Deliver to FTP Server
+			 		$mixResult	= $this->_Deliver();
+			 		if ($mixResult['Pass'])
+			 		{
+			 			// Update the Configuration
+				 		$mixResult	= $this->SaveModuleConfig();
+			 		}
+		 		}
 	 		}
 	 		
 	 		$bolReturn	= TRUE;
+ 		}
+ 		else
+ 		{
+ 			// Not enough Requests, SKIP
+ 			$bolReturn	= NULL;
  		}
  		
  		// Make sure this file doesn't get exported again
