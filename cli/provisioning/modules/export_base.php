@@ -80,7 +80,6 @@
  		$this->_arrFileContent	= Array();
  		$this->bolExported		= FALSE;
  		$this->_intMinRequests	= 1;
- 		$this->_arrModuleConfig	= Array();
  		
  		// Statements
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "Id", "CarrierRef = <CarrierRef>");
@@ -97,21 +96,6 @@
  		$this->_selServiceAddress		= new StatementSelect("ServiceAddress", "*", "Service = <Service>");
  		
  		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_OUTPUT);
- 		
- 		// Load Module Config
- 		if ($this->_selCarrierModule->Execute(Array('Carrier' => $intCarrier, 'Module' => get_class($this))))
- 		{
- 			$arrCarrierModule	= $this->_selCarrierModule->Fetch();
- 			
- 			$selModuleConfig	= new StatementSelect("CarrierModuleConfig", "*", "CarrierModule = <Id>");
- 			$selModuleConfig->Execute($arrCarrierModule);
- 			
- 			// Load each value
- 			while ($arrModuleConfig = $selModuleConfig->Fetch())
- 			{
- 				$this->_arrModuleConfig[$arrModuleConfig['Name']]['Value']	= $arrModuleConfig['Value'];
- 			}
- 		}
  	} 	
  	
  	
