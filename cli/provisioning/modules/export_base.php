@@ -112,40 +112,7 @@
  				$this->_arrModuleConfig[$arrModuleConfig['Name']]['Value']	= $arrModuleConfig['Value'];
  			}
  		}
- 	}
- 	
- 	//------------------------------------------------------------------------//
-	// _GetCarrierProperty
-	//------------------------------------------------------------------------//
-	/**
-	 * _GetCarrierProperty()
-	 *
-	 * Fetch and return a config property for the Carrier
-	 *
-	 * Fetch and return a config property for the Carrier
-	 * 
-	 * @param	string	$strType		'File', 'Line', or 'LastSent'
-	 * 
-	 * @return	integer					Sequence Number or NULL
-	 *
-	 * @method
-	 */
- 	protected function _GetCarrierProperty($strType)
- 	{
- 		// Fetch Sequence Number
-		if ($this->_selSequenceNumber->Execute(Array('Name' => ucfirst($strType))))
-		{
-			// Property exists
-			$arrFetch	= $this->_selSequenceNumber->Fetch();
-			return $arrFetch['Value'];
-		}
-		else
-		{
-			// Property doesn't exist
-			return NULL;
-		}
- 	}
- 	
+ 	} 	
  	
  	
  	//------------------------------------------------------------------------//
@@ -857,26 +824,51 @@
  	{
  		// Check to see if we have enough requests
  		$bolReturn	= NULL;
+ 		$mixResult	= NULL;
  		if (count($this->_arrFileContent) >= $this->_intMinRequests)
  		{
 	 		// Render File
-	 		$this->_Render();
+	 		$mixResult	= $this->_Render();
+	 		if ($mixResult['Pass'] === FALSE)
+	 		{
+	 			break;
+	 		}
 	 		
 	 		// Update Requests & FileExport 
-	 		$this->_UpdateDB();
+	 		$mixResult	= $this->_UpdateDB();
+	 		if ($mixResult['Pass'] === FALSE)
+	 		{
+	 			break;
+	 		}
 	 		
 	 		// Deliver to FTP Server
-	 		$this->_Deliver();
+	 		$mixResult	= $this->_Deliver();
+	 		if ($mixResult['Pass'] === FALSE)
+	 		{
+	 			break;
+	 		}
+	 		
+	 		// Update the Configuration
+	 		$mixResult	= $this->SaveModuleConfig();
+	 		if ($mixResult['Pass'] === FALSE)
+	 		{
+	 			break;
+	 		}
 	 		
 	 		$bolReturn	= TRUE;
  		}
  		
- 		// Update the Configuration
- 		$this->SaveModuleConfig();
- 		
  		// Make sure this file doesn't get exported again
  		$this->bolExported	= TRUE;
- 		return $bolReturn;
+ 		
+ 		if ($mixResult['Pass'] === FALSE)
+ 		{
+ 			return $mixResult;
+ 		}
+ 		else
+ 		{
+ 			return Array('Pass' => $bolReturn, 'Description' => '');
+ 		}
  	}
  	
  	
@@ -901,13 +893,16 @@
  		$arrFileExport	= Array();
  		$arrFileExport['FileName']		= basename($this->_strFilePath);
  		$arrFileExport['Location']		= $this->_strFilePath;
- 		$arrFileExport['Carrier']		= $this->intCarrier;
+ 		$arrFileExport['Carrier']		= $this->_intModuleCarrier;
  		$arrFileExport['ExportedOn']	= new MySQLFunction("NOW()");
  		$arrFileExport['Status']		= FILE_RENDERED;
- 		$arrFileExport['FileType']		= $this->intFileType;
+ 		$arrFileExport['FileType']		= $this->intBaseFileType;
  		$arrFileExport['SHA1']			= sha1_file($this->_strFilePath);
  		$insFileExport	= new StatementInsert("FileExport", $arrFileExport);
- 		$intFileExport	= $insFileExport->Execute($arrFileExport);
+ 		if ($intFileExport	= $insFileExport->Execute($arrFileExport) === FALSE)
+ 		{
+ 			return Array('Pass' => FALSE, 'Description' => "Unable to create FileExport DB entry!");
+ 		}
  		
  		// Update ProvisioningRequest records
  		$arrCols	= Array();
