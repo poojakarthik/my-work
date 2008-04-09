@@ -1724,19 +1724,19 @@ class CarrierModule
 	 		if ($mixResult === FALSE)
 	 		{
 	 			// Append Error to full message
-	 			CliEcho("Could not save field '$strName' as value '{$arrProperties['Value']}'");
-	 			$strError	.= "Could not save field '$strName' as value '{$arrProperties['Value']}'\n";
+	 			CliEcho("Could not save field '$strName' (Id: {$arrProperties['Id']}) as value '{$arrProperties['Value']}' ({$arrModuleConfig['Value']})");
+	 			$strError	.= "Could not save field '$strName' (Id: {$arrProperties['Id']}) as value '{$arrProperties['Value']}' ({$arrModuleConfig['Value']})\n";
 	 			$bolFailed	= TRUE;
 	 		}
 	 		elseif (!$mixResult)
 	 		{
-	 			CliEcho("Field '$strName' was not updated with value '{$arrProperties['Value']}'");
-	 			$strError	.= "Field '$strName' was not updated with value '{$arrProperties['Value']}'\n";
+	 			CliEcho("Field '$strName' (Id: {$arrProperties['Id']}) was not updated with value '{$arrProperties['Value']}' ({$arrModuleConfig['Value']})");
+	 			$strError	.= "Field '$strName' (Id: {$arrProperties['Id']}) was not updated with value '{$arrProperties['Value']}' ({$arrModuleConfig['Value']})\n";
 	 		}
 	 		else
 	 		{
-	 			CliEcho("Successfully saved field '$strName' as value '{$arrProperties['Value']}'");
-	 			$strError	.= "Successfully saved field '$strName' as value '{$arrProperties['Value']}'\n";
+	 			CliEcho("Successfully saved field '$strName' (Id: {$arrProperties['Id']}) as value '{$arrProperties['Value']}'");
+	 			$strError	.= "Successfully saved field '$strName' (Id: {$arrProperties['Id']}) as value '{$arrProperties['Value']}' ({$arrModuleConfig['Value']})\n";
 	 		}
 	 	}
 	 	$strError	= trim($strError);
