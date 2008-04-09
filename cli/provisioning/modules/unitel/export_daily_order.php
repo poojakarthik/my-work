@@ -544,7 +544,7 @@ HIl<?php
  			case REQUEST_VIRTUAL_PRESELECTION:
  				$this->intCarrierReference++;
  				$arrRendered['Sequence']		= $this->intCarrierReference;
- 				$arrRendered['Date']			= $arrRequest['FNN'];
+ 				$arrRendered['Date']			= date("Ymd", strtotime($arrRequest['AgreementDate']));
 		 		$arrRendered['**Type']			= $arrRequest['Type'];
 		 		$arrRendered['**Request']		= $arrRequest['Id'];
 			 	$arrRendered['**CarrierRef']	= $this->intCarrierReference;
