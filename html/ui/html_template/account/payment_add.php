@@ -159,7 +159,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Payment Type :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Payment.PaymentType' style='width:100%' name='Payment.PaymentType' onchange='Vixen.PaymentPopup.DeclarePaymentType(this.value)'>\n";
+		echo "      <select id='Payment.PaymentType' style='width: 250px' name='Payment.PaymentType' onchange='Vixen.PaymentPopup.DeclarePaymentType(this.value)'>\n";
 		foreach ($GLOBALS['*arrConstant']['PaymentType'] as $intPaymentType=>$arrPaymentType)
 		{
 			$strDescription = $arrPaymentType['Description'];
@@ -173,8 +173,8 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 
-		DBO()->Payment->Amount->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->Payment->TXNReference->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Payment->Amount->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"250px"));
+		DBO()->Payment->TXNReference->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"250px", "attribute:maxlength"=>100));
 		
 		// Draw the Extra Detail Divs
 		// If any other Payment methods require extra Input controls then add them here, in exactly the same way that the credit card
@@ -229,7 +229,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		DBO()->Payment->CreditCardSurchargePercentage->RenderHidden();
 
 		// Render the Textbox for the credit card number
-		DBO()->Payment->CreditCardNum->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Payment->CreditCardNum->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"250px"));
 
 		// Output message describing Credit Card Surcharge
 		$strCreditCardType = GetConstantDescription(DBO()->Payment->CreditCardType->Value, "CreditCard");

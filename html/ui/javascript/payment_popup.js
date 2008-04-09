@@ -89,22 +89,15 @@ function VixenPaymentPopupClass()
 		this._strContainerDivId = strContainerDivId;
 		
 		// Set the focus to the first input element
-		document.getElementById('AccountCombo').focus();
+		$ID('AccountCombo').focus();
 		
 		// Retrieve references to the controls that are accessed often
-		this._elmAmount				= document.getElementById('Payment.Amount');
-		this._elmChargeSurcharge	= document.getElementById('Payment.ChargeSurcharge');
-		this._elmCreditCardMsg		= document.getElementById('MakePayment_CreditCardSurchargeMsg');
-		this._elmCreditCardType		= document.getElementById('Payment.CreditCardType');
-		this._elmPaymentType		= document.getElementById('Payment.PaymentType');
-		this._elmCreditCardSurchargePercentage = document.getElementById('Payment.CreditCardSurchargePercentage');
-		
-		// Initialise the width of all the input elements, so that they are uniform
-		var intWidth = 250;
-		this._elmPaymentType.style.width	= intWidth;
-		this._elmAmount.style.width			= intWidth;
-		document.getElementById("Payment.TXNReference").style.width		= intWidth;
-		document.getElementById("Payment.CreditCardNum").style.width	= intWidth;
+		this._elmAmount				= $ID('Payment.Amount');
+		this._elmChargeSurcharge	= $ID('Payment.ChargeSurcharge');
+		this._elmCreditCardMsg		= $ID('MakePayment_CreditCardSurchargeMsg');
+		this._elmCreditCardType		= $ID('Payment.CreditCardType');
+		this._elmPaymentType		= $ID('Payment.PaymentType');
+		this._elmCreditCardSurchargePercentage = $ID('Payment.CreditCardSurchargePercentage');
 		
 		// Initialise the Payment Type extra detail container
 		this.DeclarePaymentType(intInitialPaymentType);

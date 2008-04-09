@@ -37,7 +37,7 @@ $strApplicationFrameworkDir	= "html/ui/";
 $strApplicationDir			= "html/customer/";
 
 // If absolute paths don't work then use: 
-// $strApplicationDir			= "../web/";
+// $strApplicationDir			= "../customer/";
 // $strApplicationFrameworkDir	= "../ui/";
 
 // Application Requirements

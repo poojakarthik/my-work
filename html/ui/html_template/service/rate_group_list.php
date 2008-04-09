@@ -103,6 +103,8 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 			$arrPlanRateGroups[] = $dboRateGroup->Id->Value;
 		}
 		
+		$intCurrentBillPeriodStartDatetime = GetStartDateTimeForBillingPeriod();
+		
 		// This will list the Start and End times for all shown RateGroups for a given RecordType.  If a RateGroup's Start and End times
 		// are completely overridden by one of higher precedence, then it will not be shown.
 		$arrShownRateGroups = Array();
@@ -218,13 +220,28 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					
 					// Prepare the RemoveRateGroup Cell
 					$strRemoveRateGroup = "&nbsp;";
-					if ($bolUserHasAdminPerm)
+					/* The following commented out code supplies a link to remove 
+					 * a RateGroup Override.  We can't currently allow this because
+					 * CDRs might have already been invoiced using this RateGroup and if
+					 * it is removed then we have not retained an accurate history of the 
+					 * Rates that apply to the Service at any given time throughout the
+					 * life of the service.
+					 * 
+					 * As soon as we can tell when the last time an overriding RateGroup was 
+					 * used to charge a CDR, then we can allow the user to delete 
+					 * an overriding RateGroup backdated to this time.  We can then
+					 * Allow them to specify a new RateGroup to use and back date it
+					 * to this time. 
+					 */
+					/*
+					if ($bolUserHasAdminPerm && $intStart >= $intCurrentBillPeriodStartDatetime)
 					{	
-						// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
+						// The RateGroup can be removed, so long as it doesn't cause a gap in the Plan history of the service
 						$strRemoveRateGroupJsCode	= "javascript: Vixen.ServiceRateGroups.RemoveRateGroup({$dboRateGroup->Id->Value}, '{$dboRateGroup->Name->Value}')";
 						$strRemoveRateGroupJsCode	= htmlspecialchars($strRemoveRateGroupJsCode, ENT_QUOTES);
 						$strRemoveRateGroup			= "<a href='$strRemoveRateGroupJsCode'><img src='img/template/delete.png' title='Remove RateGroup'></img></a>";
 					}
+					*/
 					
 					// Add the Row
 					Table()->$strTableName->AddRow($intPrecedence, $strRateGroupCell, $strNotPartOfPlan, $strStartDate, "-", $strEndDate, $strRemoveRateGroup);
@@ -314,13 +331,28 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					
 					// Prepare the RemoveRateGroup Cell
 					$strRemoveRateGroup = "&nbsp;";
-					if ($bolUserHasAdminPerm)
+					/* The following commented out code supplies a link to remove 
+					 * a RateGroup Override.  We can't currently allow this because
+					 * CDRs might have already been invoiced using this RateGroup and if
+					 * it is removed then we have not retained an accurate history of the 
+					 * Rates that apply to the Service at any given time throughout the
+					 * life of the service.
+					 * 
+					 * As soon as we can tell when the last time an overriding RateGroup was 
+					 * used to charge a CDR, then we can allow the user to delete 
+					 * an overriding RateGroup backdated to this time.  We can then
+					 * Allow them to specify a new RateGroup to use and back date it
+					 * to this time. 
+					 */
+					/*
+					if ($bolUserHasAdminPerm && $intStart >= $intCurrentBillPeriodStartDatetime)
 					{	
-						// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
+						// The RateGroup can be removed, so long as it doesn't cause a gap in the Plan history of the service
 						$strRemoveRateGroupJsCode	= "javascript: Vixen.ServiceRateGroups.RemoveRateGroup({$dboRateGroup->Id->Value}, '{$dboRateGroup->Name->Value}')";
 						$strRemoveRateGroupJsCode	= htmlspecialchars($strRemoveRateGroupJsCode, ENT_QUOTES);
 						$strRemoveRateGroup			= "<a href='$strRemoveRateGroupJsCode'><img src='img/template/delete.png' title='Remove RateGroup'></img></a>";
 					}
+					*/
 					
 					// Add the Row
 					Table()->$strTableName->AddRow($intPrecedence, $strRateGroupCell, $strNotPartOfPlan, $strStartDate, "-", $strEndDate, $strRemoveRateGroup);

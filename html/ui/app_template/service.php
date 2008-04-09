@@ -2530,6 +2530,13 @@ class AppTemplateService extends ApplicationTemplate
 	 * Removes a ServiceRateGroup record, if it can be safely removed
 	 * 
 	 * Removes a ServiceRateGroup record, if it can be safely removed
+	 * (This function is not currently used as we cannot allow them to remove
+	 * a RateGroup that was used to rate a CDR which has already been invoiced.
+	 * Eventually this functionality should set the EndDatetime of the RateGroup
+	 * to 1 second after the StartDatetime of the most recent CDR it was applied
+	 * to, which has been invoiced, or if there are none, then set the EndDatetime
+	 * to 1 second before the StartDatetime)
+	 * 
 	 * A ServiceRateGroup record can only be removed if:
 	 * 		It is a fleet RateGroup
 	 * OR
@@ -2545,6 +2552,10 @@ class AppTemplateService extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+
+		// Currently don't allow the user to use this functionality
+		Ajax()->AddCommand("Alert", "ERROR: This functionality has been prohibited, as it currently compromises the integrity and accuracy of the history of the Service's plan details");
+		return TRUE;
 
 		// Removing RateGroups can not be done while billing is in progress
 		if (IsInvoicing())
