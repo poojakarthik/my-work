@@ -324,7 +324,7 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 				{
 					$strCarrier	= GetConstantDescription($intCarrier, 'Carrier');
 					$strType	= $arrModules[$intType]->strDescription;
-	 				CliEcho("\t + $strCarrier: $strType...\t\t\t");
+	 				CliEcho("\t + $strCarrier: $strType...\t\t\t", FALSE);
 	 				$mixResult	= $arrModules[$intType]->Export();
 	 				if (!$mixResult['Pass'])
 	 				{

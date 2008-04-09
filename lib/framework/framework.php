@@ -1723,11 +1723,13 @@ class CarrierModule
 	 		if ($this->_ubiModuleConfig->Execute($arrModuleConfig) === FALSE)
 	 		{
 	 			// Append Error to full message
+	 			CliEcho("Could not save field '$strName' as value '{$arrProperties['Value']}'");
 	 			$strError	.= "Could not save field '$strName' as value '{$arrProperties['Value']}'\n";
 	 			$bolFailed	= TRUE;
 	 		}
 	 		else
 	 		{
+	 			CliEcho("Successfully saved field '$strName' as value '{$arrProperties['Value']}'");
 	 			$strError	.= "Successfully saved field '$strName' as value '{$arrProperties['Value']}'\n";
 	 		}
 	 	}
