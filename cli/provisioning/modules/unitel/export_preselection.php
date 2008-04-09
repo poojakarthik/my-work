@@ -83,6 +83,9 @@
  		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 1;
+		
+ 		// Get Fields which are going to be modified
+ 		$this->intFileSequence		&= $this->GetConfigField('FileSequence');
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
@@ -432,20 +435,19 @@
 	 */
  	function Export()
  	{
- 		$intFileSequence					= $this->GetConfigField('FileSequence');
- 		$intFileSequence++;
+ 		$this->intFileSequence++;
  		
  		// Generate File Name
  		$this->_arrFilename	= Array();
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
- 		$this->_arrFilename['Sequence']		= $intFileSequence;
+ 		$this->_arrFilename['Sequence']		= $this->intFileSequence;
  		
  		// Generate Header
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['FileSequence']	= $intFileSequence;
+ 		$this->_arrHeader['FileSequence']	= $this->intFileSequence;
  		$this->_arrHeader['AgreementDate']	= date("Ymd");
  		
  		// Generate Footer

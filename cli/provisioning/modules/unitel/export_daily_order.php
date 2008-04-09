@@ -80,8 +80,10 @@ HIl<?php
  		// Module Description
  		$this->strDescription		= "Daily Order";
 		
- 		// Carrier Reference / Line Number Init
- 		$this->intCarrierReference	= $this->GetConfigField('RecordSequence');
+ 		// Get Fields which are going to be modified
+ 		$this->intCarrierReference	&= $this->GetConfigField('RecordSequence');
+ 		$this->intFileSequence		&= $this->GetConfigField('FileSequence');
+ 		$this->strLastSent			&= $this->GetConfigField('LastSent');
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
@@ -588,21 +590,20 @@ HIl<?php
 	 */
  	function Export()
  	{
- 		$intFileSequence					= $this->GetConfigField('FileSequence');
- 		$intFileSequence++;
+ 		$this->intFileSequence++;
  		
  		// Generate File Name
  		$this->_arrFilename	= Array();
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
- 		$this->_arrFilename['Sequence']		= $intFileSequence;
+ 		$this->_arrFilename['Sequence']		= $this->intFileSequence;
  		$this->_arrFilename['Date']			= date("Ymd");
  		
  		// Generate Header
  		$this->_arrHeader	= Array();
  		$this->_arrHeader['**Type']			= 'Header';
  		$this->_arrHeader['**Request']		= 'Header';
- 		$this->_arrHeader['Sequence']		= $intFileSequence;
+ 		$this->_arrHeader['Sequence']		= $this->intFileSequence;
  		$this->_arrHeader['Date']			= date("Ymd");
  		
  		// Generate Footer

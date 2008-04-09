@@ -83,6 +83,10 @@
  		
  		// Module Description
  		$this->strDescription		= "Preselection";
+		
+ 		// Get Fields which are going to be modified
+ 		$this->intFileSequence		&= $this->GetConfigField('FileSequence');
+ 		$this->intFileSequence++;
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
@@ -149,7 +153,7 @@
 		
 		$arrDefine['BatchNo']		['Start']		= 9;
 		$arrDefine['BatchNo']		['Length']		= 1;
-		$arrDefine['BatchNo']		['Config']		= 'FileSequence';
+		$arrDefine['BatchNo']		['Value']		= $this->intFileSequence;
 		
 		$arrDefine['Extension']		['Start']		= 11;
 		$arrDefine['Extension']		['Length']		= 4;
@@ -203,7 +207,7 @@
  		$arrDefine = Array();
  		$arrDefine['BatchNo']		['Index']		= 0;
 		$arrDefine['BatchNo']		['Type']		= 'Integer';
-		$arrDefine['BatchNo']		['Config']		= 'FileSequence';
+		$arrDefine['BatchNo']		['Value']		= $this->intFileSequence;
 		
 		$arrDefine['IDNo']			['Index']		= 1;
 		$arrDefine['IDNo']			['Type']		= 'Integer';
