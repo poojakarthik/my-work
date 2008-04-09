@@ -1720,23 +1720,29 @@ class CarrierModule
 	 		$arrModuleConfig			= Array();
 	 		$arrModuleConfig['Id']		= $arrProperties['Id'];
 	 		$arrModuleConfig['Value']	= $arrProperties['Value'];
-	 		if ($this->_ubiModuleConfig->Execute($arrModuleConfig) === FALSE)
+	 		$mixResult					= $this->_ubiModuleConfig->Execute($arrModuleConfig);
+	 		if ($mixResult === FALSE)
 	 		{
 	 			// Append Error to full message
-	 			//CliEcho("Could not save field '$strName' as value '{$arrProperties['Value']}'");
+	 			CliEcho("Could not save field '$strName' as value '{$arrProperties['Value']}'");
 	 			$strError	.= "Could not save field '$strName' as value '{$arrProperties['Value']}'\n";
 	 			$bolFailed	= TRUE;
 	 		}
+	 		elseif (!$mixResult)
+	 		{
+	 			CliEcho("Field '$strName' was not updated with value '{$arrProperties['Value']}'");
+	 			$strError	.= "Field '$strName' was not updated with value '{$arrProperties['Value']}'\n";
+	 		}
 	 		else
 	 		{
-	 			//CliEcho("Successfully saved field '$strName' as value '{$arrProperties['Value']}'");
+	 			CliEcho("Successfully saved field '$strName' as value '{$arrProperties['Value']}'");
 	 			$strError	.= "Successfully saved field '$strName' as value '{$arrProperties['Value']}'\n";
 	 		}
 	 	}
 	 	$strError	= trim($strError);
 	 	
 	 	// If there is an error, then return the message, else TRUE
-	 	return Array('Pass' => !$bolFailed, 'Description' => $strError); 
+	 	return Array('Pass' => (!$bolFailed), 'Description' => $strError); 
 	 	//return ($bolFailed) ? $strError : TRUE;
 	 }
  	

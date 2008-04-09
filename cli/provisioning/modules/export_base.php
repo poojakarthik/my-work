@@ -560,7 +560,7 @@
 	{
 		if (PROVISIONING_DEBUG_MODE === TRUE)
 		{
-	 		return Array('Pass' => TRUE, 'Message' => "FTP Delivery Bypassed");
+	 		return Array('Pass' => TRUE, 'Description' => "FTP Delivery Bypassed");
 		}
 		
 		// Get Configuration
@@ -577,11 +577,11 @@
 		// Return extended error messaging
 		if ($mixResult === TRUE)
 		{
-			return Array('Pass' => TRUE);
+			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
 		}
 		else
 		{
-			return Array('Pass' => FALSE,	'Message' => "Remote Copy to FTP Server Failed ($mixResult)");
+			return Array('Pass' => FALSE,	'Description' => "Remote Copy to FTP Server Failed ($mixResult)");
 		}
 	}
 	
@@ -625,11 +625,11 @@
 		// Return extended error messaging
 		if ($mixResult === TRUE)
 		{
-			return Array('Pass' => TRUE);
+			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
 		}
 		else
 		{
-			return Array('Pass' => FALSE,	'Message' => "Email could not be sent");
+			return Array('Pass' => FALSE,	'Description' => "Email could not be sent");
 		}
 	}
 	
@@ -684,11 +684,11 @@
 		// Return extended error messaging
 		if ($mixResult === TRUE)
 		{
-			return Array('Pass' => TRUE);
+			return Array('Pass' => TRUE,	'Description' => "Deliver() Successful");
 		}
 		else
 		{
-			return Array('Pass' => FALSE,	'Message' => "Email could not be sent");
+			return Array('Pass' => FALSE,	'Description' => "Email could not be sent");
 		}
 	}
 	
@@ -915,7 +915,7 @@
  			$ubiRequest->Execute($arrCols);
  		}
  		
- 		return Array('Pass' => TRUE);
+ 		return Array('Pass' => TRUE, 'Description' => "UpdateDB() Successful");
  	}
  	
  	
