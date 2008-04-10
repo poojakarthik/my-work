@@ -133,18 +133,18 @@
 		$arrDefine['FileType']		['Value']		= "bar_";
 		
 		$arrDefine['HoursMinutes']	['Start']		= 4;
-		$arrDefine['HoursMinutes']	['Length']		= 2;
+		$arrDefine['HoursMinutes']	['Length']		= 4;
 		$arrDefine['HoursMinutes']	['Type']		= 'Time::HHII';
 		
-		$arrDefine['Underscore']	['Start']		= 6;
+		$arrDefine['Underscore']	['Start']		= 8;
 		$arrDefine['Underscore']	['Length']		= 1;
 		$arrDefine['Underscore']	['Value']		= "_";
 		
-		$arrDefine['Date']			['Start']		= 5;
+		$arrDefine['Date']			['Start']		= 9;
 		$arrDefine['Date']			['Length']		= 4;
 		$arrDefine['Date']			['Type']		= 'Date::YYYYMMDD';
 		
-		$arrDefine['Extension']		['Start']		= 9;
+		$arrDefine['Extension']		['Start']		= 13;
 		$arrDefine['Extension']		['Length']		= 4;
 		$arrDefine['Extension']		['Value']		= ".xls";
 		

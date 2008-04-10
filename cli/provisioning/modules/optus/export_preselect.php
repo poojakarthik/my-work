@@ -136,26 +136,26 @@
  		//--------------------------------------------------------------------//
 		
 		$arrDefine['HoursMinutes']	['Start']		= 0;
-		$arrDefine['HoursMinutes']	['Length']		= 2;
+		$arrDefine['HoursMinutes']	['Length']		= 4;
 		$arrDefine['HoursMinutes']	['Type']		= 'Time::HHII';
 		
-		$arrDefine['Underscore']	['Start']		= 2;
+		$arrDefine['Underscore']	['Start']		= 4;
 		$arrDefine['Underscore']	['Length']		= 1;
 		$arrDefine['Underscore']	['Value']		= "_";
 		
-		$arrDefine['Date']			['Start']		= 3;
+		$arrDefine['Date']			['Start']		= 5;
 		$arrDefine['Date']			['Length']		= 8;
 		$arrDefine['Date']			['Type']		= 'Date::YYYY-MM-DD';
 		
-		$arrDefine['Underscore2']	['Start']		= 8;
+		$arrDefine['Underscore2']	['Start']		= 13;
 		$arrDefine['Underscore2']	['Length']		= 1;
 		$arrDefine['Underscore2']	['Value']		= "_";
 		
-		$arrDefine['BatchNo']		['Start']		= 9;
+		$arrDefine['BatchNo']		['Start']		= 14;
 		$arrDefine['BatchNo']		['Length']		= 1;
 		$arrDefine['BatchNo']		['Value']		= $this->intFileSequence;
 		
-		$arrDefine['Extension']		['Start']		= 11;
+		$arrDefine['Extension']		['Start']		= 15;
 		$arrDefine['Extension']		['Length']		= 4;
 		$arrDefine['Extension']		['Value']		= ".xls";
 		

@@ -137,18 +137,18 @@
 		$arrDefine['FileType']		['Value']		= "ld_reversal_";
 		
 		$arrDefine['HoursMinutes']	['Start']		= 12;
-		$arrDefine['HoursMinutes']	['Length']		= 2;
+		$arrDefine['HoursMinutes']	['Length']		= 4;
 		$arrDefine['HoursMinutes']	['Type']		= 'Time::HHII';
 		
-		$arrDefine['Underscore']	['Start']		= 14;
+		$arrDefine['Underscore']	['Start']		= 16;
 		$arrDefine['Underscore']	['Length']		= 1;
 		$arrDefine['Underscore']	['Value']		= "_";
 		
-		$arrDefine['Date']			['Start']		= 15;
+		$arrDefine['Date']			['Start']		= 17;
 		$arrDefine['Date']			['Length']		= 4;
 		$arrDefine['Date']			['Type']		= 'Date::YYYYMMDD';
 		
-		$arrDefine['Extension']		['Start']		= 19;
+		$arrDefine['Extension']		['Start']		= 21;
 		$arrDefine['Extension']		['Length']		= 4;
 		$arrDefine['Extension']		['Value']		= ".txt";
 		
