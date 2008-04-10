@@ -824,7 +824,7 @@
 			 		if ($mixResult['Pass'])
 			 		{
 			 			// Update the Configuration
-				 		$mixResult	= $this->SaveModuleConfig();
+				 		$mixResult	= $this->SaveModule();
 			 		}
 		 		}
 	 		}
