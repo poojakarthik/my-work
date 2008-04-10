@@ -380,13 +380,11 @@
  				$arrRendered['AgreementDate']	= date("Ymd", strtotime($arrRequest['RequestedOn']));
  				break;
  				
- 			case REQUEST_BAR_SOFT:
- 			case REQUEST_BAR_HARD:
+ 			case REQUEST_BAR:
  				$arrRendered['FNN']				= $arrRequest['FNN'];
  				break;
  				
- 			case REQUEST_UNBAR_SOFT:
- 			case REQUEST_UNBAR_HARD:
+ 			case REQUEST_UNBAR:
  				$arrRendered['FNN']				= $arrRequest['FNN'];
  				break;
  				
