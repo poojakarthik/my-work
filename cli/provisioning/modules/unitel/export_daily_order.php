@@ -52,9 +52,13 @@ HIl<?php
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
-	public $intBaseCarrier		= CARRIER_UNITEL;
-	public $intBaseFileType		= FILE_EXPORT_UNITEL_DAILY_ORDER;
-	public $_strDeliveryType	= 'FTP';
+	public $intBaseCarrier			= CARRIER_UNITEL;
+	public $intBaseFileType			= FILE_EXPORT_UNITEL_DAILY_ORDER;
+	public $_strDeliveryType		= 'FTP';
+	
+	public $_intFrequencyType		= FREQUENCY_DAY;
+	public $_intFrequency			= 1;
+	public $_intEarliestDelivery	= 54000;
 	
  	//------------------------------------------------------------------------//
 	// __construct
@@ -114,14 +118,6 @@ HIl<?php
  		$this->_arrModuleConfig['RecordSequence']	['Default']		= 0;
  		$this->_arrModuleConfig['RecordSequence']	['Type']		= DATA_TYPE_INTEGER;
  		$this->_arrModuleConfig['RecordSequence']	['Description']	= "Record Sequence Number";
- 		
- 		$this->_arrModuleConfig['EarliestDelivery']	['Default']		= 3600 * 15;
- 		$this->_arrModuleConfig['EarliestDelivery']	['Type']		= DATA_TYPE_INTEGER;
- 		$this->_arrModuleConfig['EarliestDelivery']	['Description']	= "Earliest time the file can be sent daily (in seconds)";
- 		
- 		$this->_arrModuleConfig['LastSent']			['Default']		= '0000-00-00';
- 		$this->_arrModuleConfig['LastSent']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['LastSent']			['Description']	= "Date the last file was sent";
  		
  		$this->_arrModuleConfig['CarrierCode']		['Default']		= 'rsl';
  		$this->_arrModuleConfig['CarrierCode']		['Type']		= DATA_TYPE_STRING;

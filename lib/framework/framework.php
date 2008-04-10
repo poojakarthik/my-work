@@ -1538,6 +1538,12 @@ class CarrierModule
  	protected $_intModuleType;
  	protected $intCarrier;
  	protected $_intModuleCarrier;
+ 	
+ 	protected $_arrCarrierModule;
+	
+	public $_intFrequencyType		= FREQUENCY_SECOND;
+	public $_intFrequency			= 3600;
+	public $_intEarliestDelivery	= 0;
 	
 	public $intBaseCarrier;
 	public $intBaseFileType;
@@ -1573,6 +1579,11 @@ class CarrierModule
 	 	$arrCols					= Array();
 	 	$arrCols['Value']			= NULL;
 	 	$this->_ubiModuleConfig		= new StatementUpdateById("CarrierModuleConfig", $arrCols);
+	 	
+ 		$arrCols	= Array();
+ 		$arrCols['LastSentOn']		= new MySQLFunction("NOW()");
+ 		$this->_ubiCarrierModule	= new StatementUpdateById("CarrierModule", $arrCols);
+ 		
  		
  		// Load Config
  		$this->LoadModuleConfig();
@@ -1678,6 +1689,9 @@ class CarrierModule
 	 	{
 	 		$arrModule	= $this->_selCarrierModule->Fetch();
 	 		
+	 		// Keep a copy of the record
+	 		$this->_arrCarrierModule	= $arrModule;
+	 		
 	 		// Get the Config
 	 		$this->_selModuleConfig->Execute($arrModule);
 	 		while ($arrConfig = $this->_selModuleConfig->Fetch())
@@ -1697,10 +1711,10 @@ class CarrierModule
  	
  	
  	//------------------------------------------------------------------------//
-	// SaveModuleConfig
+	// _SaveModuleConfig
 	//------------------------------------------------------------------------//
 	/**
-	 * SaveModuleConfig()
+	 * _SaveModuleConfig()
 	 *
 	 * Saves the Module's Config back to the DB
 	 * 
@@ -1711,7 +1725,7 @@ class CarrierModule
 	 *
 	 * @method
 	 */
-	 function SaveModuleConfig()
+	 private function _SaveModuleConfig()
 	 {
 	 	$strError	= "";
 	 	$bolFailed	= FALSE;
@@ -1748,6 +1762,40 @@ class CarrierModule
  	
  	
  	//------------------------------------------------------------------------//
+	// SaveModuleConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveModuleConfig()
+	 *
+	 * Saves the Module's Config back to the DB
+	 * 
+	 * Saves the Module's Config back to the DB
+	 * 
+	 * @return	array					'Pass'			: TRUE/FALSE
+	 * 									'Description'	: Error message
+	 *
+	 * @method
+	 */
+	 function SaveModule()
+	 {
+ 		// Update CarrierModule
+ 		$arrCols	= Array();
+ 		$arrCols['Id']				= $this->_arrCarrierModule['Id'];
+ 		$arrCols['LastSentOn']		= new MySQLFunction("NOW()");
+ 		if ($this->_ubiCarrierModule->Execute($arrCols) === FALSE)
+ 		{
+ 			return Array('Pass' => FALSE, 'Description' => "Unable to update CarrierModule entry!");
+ 		}
+ 		
+ 		// Update Module Config
+ 		$arrResult	= $this->_SaveModuleConfig();
+	 	
+	 	// If there is an error, then return the message, else TRUE
+	 	return $arrResult; 
+	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
 	// CreateModuleConfig
 	//------------------------------------------------------------------------//
 	/**
@@ -1778,9 +1826,13 @@ class CarrierModule
 	 	}
 	 	
 	 	$arrWhere = Array();
-	 	$arrWhere['Carrier']	= $intCarrier;
-	 	$arrWhere['Module']		= get_class($this);
-	 	$arrWhere['Type']		= $this->_intModuleType;
+	 	$arrWhere['Carrier']			= $intCarrier;
+	 	$arrWhere['Module']				= get_class($this);
+	 	$arrWhere['Type']				= $this->_intModuleType;
+	 	$arrWhere['FrequencyType']		= $this->_intFrequencyType;
+	 	$arrWhere['Frequency']			= $this->_intFrequency;
+	 	$arrWhere['LastSentOn']			= '0000-00-00 00:00:00';
+	 	$arrWhere['EarliestDelivery']	= $this->_intEarliestDelivery;
 	 	if (!$this->_selCarrierModule->Execute($arrWhere))
 	 	{
 			// Insert the CarrierModule data

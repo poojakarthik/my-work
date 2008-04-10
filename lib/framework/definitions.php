@@ -2208,6 +2208,12 @@ $GLOBALS['*arrConstant']	['DataType']	[3]	['Description']	= 'Float';
 $GLOBALS['*arrConstant']	['DataType']	[4]	['Constant']	= 'DATA_TYPE_BOOLEAN';
 $GLOBALS['*arrConstant']	['DataType']	[4]	['Description']	= 'Boolean';
 
+// Frequency Types
+$GLOBALS['*arrConstant']	['FrequencyType']	[1]	['Constant']	= 'FREQUENCY_SECOND';
+$GLOBALS['*arrConstant']	['FrequencyType']	[1]	['Description']	= 'Second';
+$GLOBALS['*arrConstant']	['FrequencyType']	[2]	['Constant']	= 'FREQUENCY_DAY';
+$GLOBALS['*arrConstant']	['FrequencyType']	[2]	['Description']	= 'Day';
+
 
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, FILES_BASE_PATH."payments/");
