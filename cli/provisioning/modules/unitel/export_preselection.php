@@ -457,7 +457,7 @@
  		$this->_arrFooter['RecordCount']	= count($this->_arrFileContent);
  		
  		// Parent Export
- 		parent::Export();
+ 		return parent::Export();
  	}
  }
 ?>

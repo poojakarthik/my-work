@@ -266,7 +266,7 @@
  		$this->_arrHeader['**Request']		= 'Header';
  		
  		// Parent Export
- 		parent::Export();
+ 		return parent::Export();
  	}
  }
 ?>

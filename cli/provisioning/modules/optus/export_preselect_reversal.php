@@ -255,7 +255,7 @@
  		$this->_arrFilename['Date']			= date("Ymd");
  		
  		// Parent Export
- 		parent::Export();
+ 		return parent::Export();
  	}
  }
 ?>

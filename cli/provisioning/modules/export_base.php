@@ -832,20 +832,13 @@
  		else
  		{
  			// Not enough Requests, SKIP
- 			$bolReturn	= NULL;
+ 			$mixResult	= Array('Pass' => NULL, 'Description' => "No Requests to Export");
  		}
  		
  		// Make sure this file doesn't get exported again
  		$this->bolExported	= TRUE;
  		
- 		if ($mixResult['Pass'] === FALSE)
- 		{
- 			return $mixResult;
- 		}
- 		else
- 		{
- 			return Array('Pass' => $bolReturn, 'Description' => '');
- 		}
+ 		return $mixResult;
  	}
  	
  	
