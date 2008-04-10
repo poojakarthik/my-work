@@ -145,10 +145,10 @@
 		$arrDefine['Underscore']	['Value']		= "_";
 		
 		$arrDefine['Date']			['Start']		= 17;
-		$arrDefine['Date']			['Length']		= 4;
+		$arrDefine['Date']			['Length']		= 8;
 		$arrDefine['Date']			['Type']		= 'Date::YYYYMMDD';
 		
-		$arrDefine['Extension']		['Start']		= 21;
+		$arrDefine['Extension']		['Start']		= 25;
 		$arrDefine['Extension']		['Length']		= 4;
 		$arrDefine['Extension']		['Value']		= ".txt";
 		

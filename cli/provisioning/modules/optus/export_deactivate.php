@@ -141,10 +141,10 @@
 		$arrDefine['Underscore']	['Value']		= "_";
 		
 		$arrDefine['Date']			['Start']		= 9;
-		$arrDefine['Date']			['Length']		= 4;
+		$arrDefine['Date']			['Length']		= 8;
 		$arrDefine['Date']			['Type']		= 'Date::YYYYMMDD';
 		
-		$arrDefine['Extension']		['Start']		= 13;
+		$arrDefine['Extension']		['Start']		= 17;
 		$arrDefine['Extension']		['Length']		= 4;
 		$arrDefine['Extension']		['Value']		= ".xls";
 		

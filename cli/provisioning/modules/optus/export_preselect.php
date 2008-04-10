@@ -144,18 +144,18 @@
 		$arrDefine['Underscore']	['Value']		= "_";
 		
 		$arrDefine['Date']			['Start']		= 5;
-		$arrDefine['Date']			['Length']		= 8;
+		$arrDefine['Date']			['Length']		= 10;
 		$arrDefine['Date']			['Type']		= 'Date::YYYY-MM-DD';
 		
-		$arrDefine['Underscore2']	['Start']		= 13;
+		$arrDefine['Underscore2']	['Start']		= 15;
 		$arrDefine['Underscore2']	['Length']		= 1;
 		$arrDefine['Underscore2']	['Value']		= "_";
 		
-		$arrDefine['BatchNo']		['Start']		= 14;
-		$arrDefine['BatchNo']		['Length']		= 1;
+		$arrDefine['BatchNo']		['Start']		= 16;
+		$arrDefine['BatchNo']		['Length']		= strlen($this->intFileSequence);
 		$arrDefine['BatchNo']		['Value']		= $this->intFileSequence;
 		
-		$arrDefine['Extension']		['Start']		= 15;
+		$arrDefine['Extension']		['Start']		= 16 + strlen($this->intFileSequence);
 		$arrDefine['Extension']		['Length']		= 4;
 		$arrDefine['Extension']		['Value']		= ".xls";
 		
