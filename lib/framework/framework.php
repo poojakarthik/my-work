@@ -1686,9 +1686,9 @@ class CarrierModule
 	 */
 	 private function _CanRunModule()
 	 {
-	 	if ($this->_arrCarrierModule['LastChargedOn'] === '0000-00-00 00:00:00')
+	 	if ($this->_arrCarrierModule['LastSentOn'] === '0000-00-00 00:00:00')
 	 	{
-	 		$this->_arrCarrierModule['LastChargedOn']	= '1985-10-20 10:54:00';
+	 		$this->_arrCarrierModule['LastSentOn']	= '1985-10-20 10:54:00';
 	 	}
 	 	
 	 	switch ($this->_arrCarrierModule['FrequencyType'])
@@ -1714,9 +1714,11 @@ class CarrierModule
 	 			break;
 	 	}
 	 	
-	 	$intEarliestRun	= strtotime($this->_arrCarrierModule['LastChargedOn']);
+	 	$intEarliestRun	= strtotime($this->_arrCarrierModule['LastSentOn']);
 	 	$intEarliestRun	= TruncateTime($intEarliestRun, $strTruncate, 'floor');
 	 	$intEarliestRun	= strtotime("+{$this->_arrCarrierModule['Frequency']} $strAddTime", $intEarliestRun);
+	 	
+	 	$intEarliestRun	= max($intEarliestRun, TruncateTime(time(), 'd', 'floor') + $this->_arrCarrierModule['EarliestDelivery']);
 	 	
 	 	return ($intEarliestRun > time()) ? FALSE : TRUE;
 	 }
