@@ -1548,6 +1548,8 @@ class CarrierModule
 	public $intBaseCarrier;
 	public $intBaseFileType;
 	public $_strDeliveryType;
+	
+	public $_bolCanRunModule;
  	
  	//------------------------------------------------------------------------//
 	// __construct
@@ -1587,6 +1589,9 @@ class CarrierModule
  		
  		// Load Config
  		$this->LoadModuleConfig();
+ 		
+ 		// Set CanRunModule variable
+ 		$this->bolCanRunModule		= $this->_CanRunModule(); 
  	}
  	
  	
@@ -1666,6 +1671,53 @@ class CarrierModule
  	
  	
  	//------------------------------------------------------------------------//
+	// _CanRunModule
+	//------------------------------------------------------------------------//
+	/**
+	 * _CanRunModule()
+	 *
+	 * Checks to see if this module can be used at the moment
+	 * 
+	 * Checks to see if this module can be used at the moment
+	 * 
+	 * @return	bool							Pass/Fail
+	 *
+	 * @method
+	 */
+	 private function _CanRunModule()
+	 {
+	 	switch ($this->_arrCarrierModule['FrequencyType'])
+	 	{
+	 		case FREQUENCY_SECOND:
+	 			$strAddTime		= 'seconds';
+	 			$strTruncate	= 's';
+	 			break;
+	 			
+	 		case FREQUENCY_MINUTE:
+	 			$strAddTime		= 'minutes';
+	 			$strTruncate	= 'i';
+	 			break;
+	 			
+	 		case FREQUENCY_HOUR:
+	 			$strAddTime		= 'hours';
+	 			$strTruncate	= 'h';
+	 			break;
+	 			
+	 		case FREQUENCY_DAY:
+	 			$strAddTime		= 'days';
+	 			$strTruncate	= 'd';
+	 			break;
+	 	}
+	 	
+	 	$intEarliestRun	= strtotime($this->_arrCarrierModule['LastChargedOn']);
+	 	$intEarliestRun	= TruncateTime($intEarliestRun, $strTruncate, 'floor');
+	 	$intEarliestRun	= strtotime("+{$this->_arrCarrierModule['Frequency']} $strAddTime", $intEarliestRun);
+	 	
+	 	return ($intEarliestRun > time()) ? FALSE : TRUE;
+	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
 	// LoadModuleConfig
 	//------------------------------------------------------------------------//
 	/**
@@ -1690,7 +1742,7 @@ class CarrierModule
 	 		$arrModule	= $this->_selCarrierModule->Fetch();
 	 		
 	 		// Keep a copy of the record
-	 		$this->_arrCarrierModule	= $arrModule;
+	 		$this->_arrCarrierModule	= $arrModule;			
 	 		
 	 		// Get the Config
 	 		$this->_selModuleConfig->Execute($arrModule);

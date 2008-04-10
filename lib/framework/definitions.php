@@ -2211,8 +2211,12 @@ $GLOBALS['*arrConstant']	['DataType']	[4]	['Description']	= 'Boolean';
 // Frequency Types
 $GLOBALS['*arrConstant']	['FrequencyType']	[1]	['Constant']	= 'FREQUENCY_SECOND';
 $GLOBALS['*arrConstant']	['FrequencyType']	[1]	['Description']	= 'Second';
-$GLOBALS['*arrConstant']	['FrequencyType']	[2]	['Constant']	= 'FREQUENCY_DAY';
-$GLOBALS['*arrConstant']	['FrequencyType']	[2]	['Description']	= 'Day';
+$GLOBALS['*arrConstant']	['FrequencyType']	[2]	['Constant']	= 'FREQUENCY_MINUTE';
+$GLOBALS['*arrConstant']	['FrequencyType']	[2]	['Description']	= 'Minute';
+$GLOBALS['*arrConstant']	['FrequencyType']	[3]	['Constant']	= 'FREQUENCY_HOUR';
+$GLOBALS['*arrConstant']	['FrequencyType']	[3]	['Description']	= 'Hour';
+$GLOBALS['*arrConstant']	['FrequencyType']	[4]	['Constant']	= 'FREQUENCY_DAY';
+$GLOBALS['*arrConstant']	['FrequencyType']	[4]	['Description']	= 'Day';
 
 
 // Special paths
