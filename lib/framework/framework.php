@@ -1686,6 +1686,11 @@ class CarrierModule
 	 */
 	 private function _CanRunModule()
 	 {
+	 	if ($this->_arrCarrierModule['LastChargedOn'] === '0000-00-00 00:00:00')
+	 	{
+	 		$this->_arrCarrierModule['LastChargedOn']	= '1985-10-20 10:54:00';
+	 	}
+	 	
 	 	switch ($this->_arrCarrierModule['FrequencyType'])
 	 	{
 	 		case FREQUENCY_SECOND:
@@ -1814,14 +1819,14 @@ class CarrierModule
  	
  	
  	//------------------------------------------------------------------------//
-	// SaveModuleConfig
+	// SaveModule
 	//------------------------------------------------------------------------//
 	/**
-	 * SaveModuleConfig()
+	 * SaveModule()
 	 *
-	 * Saves the Module's Config back to the DB
+	 * Saves the Module back to the DB
 	 * 
-	 * Saves the Module's Config back to the DB
+	 * Saves the Module back to the DB
 	 * 
 	 * @return	array					'Pass'			: TRUE/FALSE
 	 * 									'Description'	: Error message
