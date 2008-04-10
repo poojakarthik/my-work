@@ -1643,7 +1643,7 @@ class CarrierModule
 	 				break;
 	 			
 	 			case 'function':
-	 				switch (strotolower($strAction))
+	 				switch (strtolower($strAction))
 	 				{
 	 					case 'datetime':
 	 						$strReplace	= date("Y-m-d H:i:s");
