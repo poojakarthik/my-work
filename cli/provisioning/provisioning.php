@@ -182,11 +182,10 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 	 			// Incremember Line Number
 	 			$intLineNumber++;
 	 			
-	 			CliEcho("'$strLine'");
-	 			
 	 			// Normalise line
 	 			$arrNormalised = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->Normalise($strLine, $intLineNumber);
 	 			
+	 			CliEcho("'$strLine'");
 	 			CliEcho("NORMALISES TO...");
 	 			
 	 			// Add generic fields

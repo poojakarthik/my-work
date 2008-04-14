@@ -362,6 +362,10 @@
  			{
  				$arrPDR['EffectiveDate']	= "{$arrData['EffectiveYear']}-{$arrData['EffectiveMonth']}-{$arrData['EffectiveDay']}";
  			}
+ 			elseif ($arrData['OrderYear'])
+ 			{
+ 				$arrPDR['EffectiveDate']	= "{$arrData['OrderYear']}-{$arrData['OrderMonth']}-{$arrData['OrderDay']}";
+ 			}
  			//----------------------------------------------------------------//
  		}
  		
@@ -386,7 +390,7 @@
  		
  		if (!$arrPDR['Type'])
  		{
- 			Debug($arrData);
+ 			//Debug($arrData);
  		}
  		
  		return $arrPDR;
