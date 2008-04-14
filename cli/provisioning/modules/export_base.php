@@ -119,7 +119,7 @@
  	protected function _Render($bolRenderToFile = TRUE)
  	{
  		$strDirectory		= FILES_BASE_PATH."export/provisioning/".strtolower(GetConstantDescription($this->_intModuleCarrier, 'Carrier'))."/".get_class($this)."/";
- 		$arrResult			= $this->_RenderLineTXT($this->_arrFilename, FALSE);
+ 		$arrResult			= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
  		$this->_strFilePath	= $strDirectory . $arrResult['Line'];
  		
  		// Init file
@@ -264,7 +264,7 @@
 	 *
 	 * @method
 	 */
- 	private function _RenderLineTXT($arrLine, $bolRenderToFile = TRUE)
+ 	private function _RenderLineTXT($arrLine, $bolRenderToFile = TRUE, $strDelimiterOverride = NULL)
  	{
  		//Debug($arrLine);
  		
@@ -351,7 +351,8 @@
  		}
  		
  		// Implode Plaintext line
- 		$strLine = implode($this->_strDelimiter, $arrOutput);
+ 		$strDelimiter	= ($strDelimiterOverride !== NULL) ? $strDelimiterOverride : $this->_strDelimiter;
+ 		$strLine		= implode($strDelimiter, $arrOutput);
  		
  		//DebugBackTrace();
  		

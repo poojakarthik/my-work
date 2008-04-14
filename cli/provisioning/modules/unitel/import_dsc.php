@@ -333,7 +333,7 @@
 					break;
 					
 				default:	// Unknown Record Type
-					return RESPONSE_STATUS_CANT_NORMALISE;
+					$arrPDR['Status']			= RESPONSE_STATUS_CANT_NORMALISE;
  			}
  			//----------------------------------------------------------------//
  			
