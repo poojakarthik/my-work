@@ -390,7 +390,8 @@
  		
  		if (!$arrPDR['Type'])
  		{
- 			//Debug($arrData);
+ 			Debug($arrData);
+ 			Debug($arrPDR);
  		}
  		
  		return $arrPDR;
