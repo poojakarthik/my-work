@@ -194,7 +194,7 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 	 			$arrNormalised['ImportedOn']	= new MySQLFunction("NOW()");
 	 			$arrNormalised['FileImport']	= $arrFile['Id'];
 	 			
-	 			print_r($arrNormalised);
+	 			Debug($arrNormalised);
 	 			CliEcho('');
 	 			
 	 			// Is this a valid record?
