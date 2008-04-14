@@ -149,10 +149,10 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
  			CliEcho("\nOpening {$arrFile['FileName']}...");
  			
  			// Is there a module?
- 			if (!$this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']])
+ 			if (!$this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']])
  			{
  				// TODO: Error
- 				CliEcho("\t* No module found");
+ 				//CliEcho("\t* No module found");
  				continue;
  			}
 	 			
@@ -172,7 +172,7 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 	 		}
 	 		
 	 		// Run File PreProcessor
-	 		$arrFileContent = $this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']]->PreProcess($arrRawContent);
+	 		$arrFileContent = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->PreProcess($arrRawContent);
 	 		//Debug($arrFileContent);
 	 		
 	 		// Process Lines
@@ -185,7 +185,7 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 	 			CliEcho("'$strLine'");
 	 			
 	 			// Normalise line
-	 			$arrNormalised = $this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']]->Normalise($strLine, $intLineNumber);
+	 			$arrNormalised = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->Normalise($strLine, $intLineNumber);
 	 			
 	 			CliEcho("NORMALISES TO...");
 	 			
@@ -214,7 +214,7 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 	 			}
 	 			
 		 		// Attempt to link to a Request
-		 		if ($arrNormalised['Request'] = $this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised))
+		 		if ($arrNormalised['Request'] = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised))
 		 		{
 		 			// Update Request Table if needed
 		 			$arrRequest = Array();
