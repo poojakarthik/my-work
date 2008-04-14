@@ -182,14 +182,21 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 	 			// Incremember Line Number
 	 			$intLineNumber++;
 	 			
+	 			CliEcho("'$strLine'");
+	 			
 	 			// Normalise line
 	 			$arrNormalised = $this->_arrImportModules[$arrFile['Carrier']][$arrFile['FileType']]->Normalise($strLine, $intLineNumber);
 	 			
+	 			CliEcho("NORMALISES TO...");
+	 			
 	 			// Add generic fields
-	 			$arrNormalised['Carrier']		= $this->_arrImportModules[$arrFile['FileType']]->intCarrier;
+	 			$arrNormalised['Carrier']		= $arrFile['Carrier'];
 	 			$arrNormalised['Raw']			= $strLine;
 	 			$arrNormalised['ImportedOn']	= new MySQLFunction("NOW()");
 	 			$arrNormalised['FileImport']	= $arrFile['Id'];
+	 			
+	 			print_r($arrNormalised);
+	 			CliEcho('');
 	 			
 	 			// Is this a valid record?
 	 			switch ($arrNormalised['Status'])
@@ -217,6 +224,8 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 		 			$ubiRequest->Execute($arrRequest);
 		 		}
 		 		
+	 			/*
+	 			// If the File Carrier doesn't match up with Service Carrier, then mark as redundant
 	 			$selServiceCarrier->Execute($arrNormalised);
 				$arrServiceCarrier = $selServiceCarrier->Fetch();
 				switch ($arrNormalised['Type'])
@@ -234,14 +243,16 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 							$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
 						}
 						break;
-				}
+				}*/
 		 		
 		 		// Update the Service (if needed)
 		 		//$this->_UpdateService($arrNormalised);
 		 		
 		 		// Insert into ProvisioningResponse Table
-		 		$insResponse->Execute($arrNormalised);
-		 		//Debug($insResponse->Error());
+		 		if ($insResponse->Execute($arrNormalised) === FALSE)
+		 		{
+		 			Debug($insResponse->Error());
+		 		}
 	 		}
 	 		
 	 		// Update FileImport
