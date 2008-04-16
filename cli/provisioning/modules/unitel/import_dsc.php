@@ -378,7 +378,7 @@
 			{
 				// Add System Note
 				//AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], CARRIER_UNITEL);
-				CliEcho("{$arrPDR['FNN']} ($arrOwner['Account']) has been lost");
+				CliEcho("{$arrPDR['FNN']} ({$arrOwner['Account']}) has been lost");
 			}
 		}
 		//----------------------------------------------------------------//
