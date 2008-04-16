@@ -261,5 +261,37 @@
 	 	$arrValue	= $this->_selTranslateCarrierCode->Fetch();
 	 	return $arrValue['Description'];
 	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// FindFNNOwner
+	//------------------------------------------------------------------------//
+	/**
+	 * FindFNNOwner()
+	 *
+	 * Finds the owner of the FNN for this Response
+	 *
+	 * Finds the owner of the FNN for this Response
+	 * 
+	 * @param	array	$arrPDR			Provisioning Data Record to find an owner for
+	 * 
+	 * @return	array					Modified $arrPDR with Ownership details or Status set to RESPONSE_STATUS_BAD_OWNER				
+	 *
+	 * @method
+	 */
+	 function FindFNNOwner($arrPDR)
+	 {
+		// Find Owner
+		if (is_array($arrOwner = FindFNNOwner($arrPDR['FNN'], $arrPDR['EffectiveDate'])))
+		{
+			$arrPDR = array_merge($arrOwner, $arrPDR);
+		}
+		else
+		{
+			$arrPDR['Status']	= RESPONSE_STATUS_BAD_OWNER;
+		}
+	 	
+	 	return $arrPDR;
+	 }
  }
 ?>

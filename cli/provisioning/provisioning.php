@@ -185,17 +185,11 @@ define("PROVISIONING_DEBUG_MODE",	TRUE);
 	 			// Normalise line
 	 			$arrNormalised = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->Normalise($strLine, $intLineNumber);
 	 			
-	 			CliEcho("'$strLine'");
-	 			CliEcho("NORMALISES TO...");
-	 			
 	 			// Add generic fields
 	 			$arrNormalised['Carrier']		= $arrFile['Carrier'];
 	 			$arrNormalised['Raw']			= $strLine;
 	 			$arrNormalised['ImportedOn']	= new MySQLFunction("NOW()");
 	 			$arrNormalised['FileImport']	= $arrFile['Id'];
-	 			
-	 			Debug($arrNormalised);
-	 			CliEcho('');
 	 			
 	 			// Is this a valid record?
 	 			switch ($arrNormalised['Status'])

@@ -222,14 +222,7 @@
  		
 		//----------------------------------------------------------------//
 		// Find Owner
-		if ($arrOwner = FindFNNOwner($arrPDR['FNN'], $arrPDR['EffectiveDate']))
-		{
-			$arrPDR = array_merge($arrOwner, $arrPDR);
-		}
-		else
-		{
-			$arrPDR['Status']	= RESPONSE_STATUS_BAD_OWNER;
-		}
+		$arrPDR	= $this->FindFNNOwner($arrPDR);
 		//----------------------------------------------------------------//
  		
  		if (!$arrPDR['Type'])

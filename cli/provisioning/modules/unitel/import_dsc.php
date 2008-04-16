@@ -371,20 +371,15 @@
  		
 		//----------------------------------------------------------------//
 		// Find Owner
-		if ($arrOwner = FindFNNOwner($arrPDR['FNN'], $arrPDR['EffectiveDate']))
+		$arrPDR	= $this->FindFNNOwner($arrPDR);
+		if ($arrPDR['Account'])
 		{
-			$arrPDR = array_merge($arrOwner, $arrPDR);
-			
 			if ($arrPDR['Type'] == REQUEST_LOSS_FULL)
 			{
 				// Add System Note
 				//AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], CARRIER_UNITEL);
-				CliEcho(" (LOSS)", FALSE);
+				CliEcho("{$arrPDR['FNN']} ($arrOwner['Account']) has been lost");
 			}
-		}
-		else
-		{
-			$arrPDR['Status']	= RESPONSE_STATUS_BAD_OWNER;
 		}
 		//----------------------------------------------------------------//
  		
