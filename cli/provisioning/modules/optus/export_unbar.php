@@ -119,7 +119,7 @@
 		//##----------------------------------------------------------------##//
  		
  		// Delimiter & New Line
- 		$this->_strOutput		= 'XLS';
+ 		$this->_strFileFormat	= 'XLS';
  		
  		$this->_arrDefine		= Array();
  		

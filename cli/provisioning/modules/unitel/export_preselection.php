@@ -130,7 +130,7 @@
 		//##----------------------------------------------------------------##//
  		
  		// Delimiter & New Line
- 		$this->_strOutput		= 'CSV';
+ 		$this->_strFileFormat	= 'CSV';
  		$this->_strDelimiter	= "";
  		$this->_strNewLine		= "\r\n";
  		
