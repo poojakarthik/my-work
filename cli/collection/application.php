@@ -490,7 +490,8 @@ class ApplicationCollection extends ApplicationBaseClass
 				{
 					$this->_arrCurrentImportFile['Status'] = CDRFILE_WAITING;
 				}
-				elseif (array_key_exists($intFileType, $GLOBALS['*arrConstant']['ProvisioningType']))
+				//elseif (array_key_exists($intFileType, $GLOBALS['*arrConstant']['ProvisioningType']))
+				elseif ($intFileType >= 5000 && $intFileType < 6000)
 				{
 					$this->_arrCurrentImportFile['Status'] = PROVFILE_WAITING;
 				}
