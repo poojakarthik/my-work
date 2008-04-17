@@ -1615,7 +1615,7 @@ class CarrierModule
 	 */
 	 function &GetConfigField($strName, $strParent = NULL)
 	 {	 	
-	 	CliEcho("Fetching Config Field '$strName' (Parent: '$strParent')");
+	 	//CliEcho("Fetching Config Field '$strName' (Parent: '$strParent')");
 	 	
 	 	$mixValue	= &$this->_arrModuleConfig[$strName]['Value'];
 	 	
