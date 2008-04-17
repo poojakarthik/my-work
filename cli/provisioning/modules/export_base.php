@@ -80,6 +80,7 @@
  		$this->_arrFileContent	= Array();
  		$this->bolExported		= FALSE;
  		$this->_intMinRequests	= 1;
+ 		$this->_strFileContents	= '';
  		
  		// Statements
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "Id", "CarrierRef = <CarrierRef>");
@@ -158,6 +159,10 @@
 			{
 				CliEcho($arrResult['Line']);
 			}
+			else
+			{
+				$this->_strFileContents	.= $arrResult['Line'];
+			}
  		}
  		
  		// Render each line
@@ -169,6 +174,10 @@
  			{
  				CliEcho($arrResult['Line']);
  			}
+			else
+			{
+				$this->_strFileContents	.= $arrResult['Line'];
+			}
  		}
  		
  		// Render Footer
@@ -178,6 +187,10 @@
 			if (!$arrResult['Pass'] && PROVISIONING_DEBUG)
 			{
 				CliEcho($arrResult['Line']);
+			}
+			else
+			{
+				$this->_strFileContents	.= $arrResult['Line'];
 			}
  		}
  		
@@ -334,7 +347,7 @@
  			}
  			
 			// Is this fixed-width?
-			if ($arrField['Length'])
+			if ($arrField['Length'] > 0)
 			{
 				if (($intLength = strlen($mixValue)) > $arrField['Length'])
 				{

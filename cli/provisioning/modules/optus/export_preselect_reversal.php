@@ -160,7 +160,7 @@
  		
  		$arrDefine = Array();
  		$arrDefine['HeaderContent']	['Start']		= 0;
-		$arrDefine['HeaderContent']	['Length']		= 2;
+		$arrDefine['HeaderContent']	['Length']		= -1;
 		$arrDefine['HeaderContent']	['Type']		= 'String';
 		$arrDefine['HeaderContent']	['Config']		= 'ContentGreeting';
 		
@@ -172,7 +172,7 @@
  		
  		$arrDefine = Array();
  		$arrDefine['FooterContent']	['Start']		= 0;
-		$arrDefine['FooterContent']	['Length']		= 2;
+		$arrDefine['FooterContent']	['Length']		= -1;
 		$arrDefine['FooterContent']	['Type']		= 'String';
 		$arrDefine['FooterContent']	['Config']		= 'ContentSignature';
 		
