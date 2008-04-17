@@ -137,6 +137,7 @@
 					$this->_ptrFile			= new Spreadsheet_Excel_Writer($this->_strFilePath);
 					$this->_wksWorksheet	=& $this->_ptrFile->addWorksheet();
 					$this->_arrFormat		= $this->_InitExcelFormats($this->_ptrFile);
+					$this->_intRow			= 0;
 	 				break;
 	 				
 	 			default:
@@ -483,7 +484,9 @@
 						break;
 				}
 			}
+			$intCol++;
  		}
+ 		$this->_intRow++;
  		
  		// Implode Plaintext line
  		$strLine		= implode(';', $arrOutput);
