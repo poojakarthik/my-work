@@ -5708,8 +5708,8 @@
 	$strName = "FNN"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "char(25)"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 				 
@@ -5738,8 +5738,8 @@
 	$strName = "CarrierRef"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 				 
@@ -5778,8 +5778,8 @@
 	$strName = "EffectiveDate"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime"; 
 		 
 				 
@@ -6291,6 +6291,16 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= "0"; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "CapLimit"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "decimal(13,4)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
 		 
 				 
 				 
