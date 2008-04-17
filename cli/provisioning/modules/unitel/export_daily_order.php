@@ -114,10 +114,12 @@ HIl<?php
  		$this->_arrModuleConfig['FileSequence']		['Default']		= 0;
  		$this->_arrModuleConfig['FileSequence']		['Type']		= DATA_TYPE_INTEGER;
  		$this->_arrModuleConfig['FileSequence']		['Description']	= "File Sequence Number";
+ 		$this->_arrModuleConfig['FileSequence']		['AutoUpdate']	= TRUE;
  		
  		$this->_arrModuleConfig['RecordSequence']	['Default']		= 0;
  		$this->_arrModuleConfig['RecordSequence']	['Type']		= DATA_TYPE_INTEGER;
  		$this->_arrModuleConfig['RecordSequence']	['Description']	= "Record Sequence Number";
+ 		$this->_arrModuleConfig['RecordSequence']	['AutoUpdate']	= TRUE;
  		
  		$this->_arrModuleConfig['CarrierCode']		['Default']		= 'rsl';
  		$this->_arrModuleConfig['CarrierCode']		['Type']		= DATA_TYPE_STRING;

@@ -112,6 +112,7 @@
  		$this->_arrModuleConfig['FileSequence']		['Default']		= 0;
  		$this->_arrModuleConfig['FileSequence']		['Type']		= DATA_TYPE_INTEGER;
  		$this->_arrModuleConfig['FileSequence']		['Description']	= "File Sequence Number";
+ 		$this->_arrModuleConfig['FileSequence']		['AutoUpdate']	= TRUE;
  		
  		$this->_arrModuleConfig['CarrierCode']		['Default']		= 'rs';
  		$this->_arrModuleConfig['CarrierCode']		['Type']		= DATA_TYPE_STRING;

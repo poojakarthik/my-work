@@ -113,6 +113,7 @@
  		$this->_arrModuleConfig['FileSequence']		['Default']		= 0;
  		$this->_arrModuleConfig['FileSequence']		['Type']		= DATA_TYPE_INTEGER;
  		$this->_arrModuleConfig['FileSequence']		['Description']	= "File Sequence/Batch Number";
+ 		$this->_arrModuleConfig['FileSequence']		['AutoUpdate']	= TRUE;
  		
  		$this->_arrModuleConfig['CarbonCopy']		['Default']		= '';
  		$this->_arrModuleConfig['CarbonCopy']		['Type']		= DATA_TYPE_STRING;

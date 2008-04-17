@@ -1616,13 +1616,13 @@ class CarrierModule
 	 {	 	
 	 	CliEcho("Fetching Config Field '$strName' (Parent: '$strParent')");
 	 	
-	 	$mixValue	= $this->_arrModuleConfig[$strName]['Value'];
+	 	$mixValue	= &$this->_arrModuleConfig[$strName]['Value'];
 	 	
 	 	// Parse the value and fill in any recognised placeholders (this should only happen once)
 	 	$arrResults	= Array();
 	 	$intCount	= preg_match_all("/<(Config|Function)::([A-Za-z]+)>/i", $mixValue, $arrResults, PREG_SET_ORDER);
 	 	
-	 	CliEcho("$intCount Placeholders found in '$mixValue'");
+	 	//CliEcho("$intCount Placeholders found in '$mixValue'");
 	 	
 	 	foreach ($arrResults as $arrSet)
 	 	{
@@ -1630,12 +1630,12 @@ class CarrierModule
 	 		$strContext		= $arrSet[1];
 	 		$strAction		= $arrSet[2];
 	 		
-	 		CliEcho("Working with Placeholder '$strFullMatch'");
+	 		//CliEcho("Working with Placeholder '$strFullMatch'");
 	 		
 	 		switch (strtolower($strContext))
 	 		{
 	 			case 'config':
-	 				CliEcho("Found CONFIG Placeholder : '$strAction'");
+	 				//CliEcho("Found CONFIG Placeholder : '$strAction'");
 	 				
 	 				// Check if this is an endless reference loop
 	 				if ($strAction != $strParent)
@@ -1648,12 +1648,12 @@ class CarrierModule
 	 					// Endless loop
 	 					$strReplace	= "<Error::Endless Reference Loop>";
 	 					
-	 					CliEcho("Endless loop");
+	 					//CliEcho("Endless loop");
 	 				}
 	 				break;
 	 			
 	 			case 'function':
-	 				CliEcho("Found FUNCTION Placeholder : '$strAction'");
+	 				//CliEcho("Found FUNCTION Placeholder : '$strAction'");
 	 				switch (strtolower($strAction))
 	 				{
 	 					case 'datetime':
@@ -1664,7 +1664,7 @@ class CarrierModule
 	 						// Unrecognised Function - ignore
 	 						$strReplace	= "<Error::Unrecognised Function '$strAction'>";
 	 						
-	 						CliEcho("Unrecognised Function '$strAction'");
+	 						//CliEcho("Unrecognised Function '$strAction'");
 	 						continue 3;
 	 				}
 	 				break;
@@ -1678,7 +1678,7 @@ class CarrierModule
 	 		$strOld		= $mixValue;
 	 		$mixValue	= str_replace($strFullMatch, $strReplace, $mixValue);
 	 		
-	 		CliEcho("OLD: '$strOld'; NEW: '$mixValue'");
+	 		//CliEcho("OLD: '$strOld'; NEW: '$mixValue'");
 	 	}
 	 	
 	 	// Return a reference to the value, so it can be modified
@@ -1806,6 +1806,12 @@ class CarrierModule
 	 	$bolFailed	= FALSE;
 	 	foreach ($this->_arrModuleConfig as $strName=>$arrProperties)
 	 	{
+	 		if (!$arrProperties['AutoUpdate'])
+	 		{
+	 			// This field does not get updated
+	 			continue;
+	 		}
+	 		
 	 		$arrModuleConfig			= Array();
 	 		$arrModuleConfig['Id']		= $arrProperties['Id'];
 	 		$arrModuleConfig['Value']	= $arrProperties['Value'];
