@@ -134,9 +134,9 @@
 	 		{
 	 			case 'XLS':
 	 				// Create new XLS file
-					$this->_ptrFile		= new Spreadsheet_Excel_Writer($this->_strFilePath);
-					$wksWorksheet		=& $this->_ptrFile->addWorksheet();
-					$this->_arrFormat	= $this->_InitExcelFormats($this->_ptrFile);
+					$this->_ptrFile			= new Spreadsheet_Excel_Writer($this->_strFilePath);
+					$this->_wksWorksheet	=& $this->_ptrFile->addWorksheet();
+					$this->_arrFormat		= $this->_InitExcelFormats($this->_ptrFile);
 	 				break;
 	 				
 	 			default:
@@ -472,11 +472,14 @@
 				switch ($arrType[0])
 				{
 					case 'Integer':
-						$this->_ptrFile->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['Integer']);
+						$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['Integer']);
 						break;
+						
+					case 'FNN':
+						$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['FNN']);
 					
 					default:
-						$this->_ptrFile->writeString($this->_intRow, $intCol, $mixValue);
+						$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue);
 						break;
 				}
 			}
