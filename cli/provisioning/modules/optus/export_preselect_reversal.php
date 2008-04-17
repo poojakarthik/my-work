@@ -254,6 +254,16 @@
  		$this->_arrFilename['HoursMinutes']	= date("Hi");
  		$this->_arrFilename['Date']			= date("Ymd");
  		
+ 		// Generate Header
+ 		$this->_arrHeader	= Array();
+ 		$this->_arrHeader['**Type']			= 'Header';
+ 		$this->_arrHeader['**Request']		= 'Header';
+ 		
+ 		// Generate Footer
+ 		$this->_arrFooter	= Array();
+ 		$this->_arrFooter['**Type']			= 'Footer';
+ 		$this->_arrFooter['**Request']		= 'Footer';
+ 		
  		// Parent Export
  		return parent::Export();
  	}
