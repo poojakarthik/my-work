@@ -670,6 +670,16 @@
 		// Set content
 		$strEmailContent	= $this->GetConfigField('EmailContent');
 		
+		// Determine MIME Type
+		switch ($this->_strFileFormat)
+		{
+			case 'CSV':
+				$strMIME	= "text/csv";
+				
+			case 'XLS':
+				$strMIME	= "application/excel";
+		}
+		
 		// Send Email
 		$arrHeaders = Array	(
 								'From'		=> $strReplyTo,
@@ -678,7 +688,7 @@
 							);
 		$mimMime = new Mail_mime("\n");
 		$mimMime->setTXTBody($strEmailContent);
-		$mimMime->addAttachment($this->_strFilePath, $this->_strMIME);
+		$mimMime->addAttachment($this->_strFilePath, $strMIME);
 		$strBody = $mimMime->get();
 		$strHeaders = $mimMime->headers($arrHeaders);
 		$emlMail =& Mail::factory('mail');
