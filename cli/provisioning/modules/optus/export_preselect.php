@@ -122,6 +122,10 @@
  		$this->_arrModuleConfig['OptusAccount']		['Default']		= '';
  		$this->_arrModuleConfig['OptusAccount']		['Type']		= DATA_TYPE_INTEGER;
  		$this->_arrModuleConfig['OptusAccount']		['Description']	= "The CSP's Optus Billing Account Number";
+ 		
+ 		$this->_arrModuleConfig['SPName']			['Default']		= '';
+ 		$this->_arrModuleConfig['SPName']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['SPName']			['Description']	= "The CSP's Company Name";
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
@@ -216,6 +220,7 @@
 		
 		$arrDefine['SPName']		['Index']		= 2;
 		$arrDefine['SPName']		['Type']		= 'String';
+		$arrDefine['SPName']		['Config']		= 'SPName';
 		
 		$arrDefine['OptusAccount']	['Index']		= 3;
 		$arrDefine['OptusAccount']	['Type']		= 'Integer';
