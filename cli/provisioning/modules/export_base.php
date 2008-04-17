@@ -153,7 +153,7 @@
  		// Render Header
  		if ($this->_arrDefine['Header'])
  		{
-			$arrResult	= $this->_RenderLine($this->_arrHeader, $bolRenderToFile);
+			$arrResult	= $this->_RenderLine($this->_arrHeader, 'Title', $bolRenderToFile);
 			if (!$arrResult['Pass'] && PROVISIONING_DEBUG)
 			{
 				CliEcho($arrResult['Line']);
@@ -163,7 +163,7 @@
  		// Render each line
  		foreach ($this->_arrFileContent as $arrLine)
  		{
- 			$arrResult	= $this->_RenderLine($arrLine, $bolRenderToFile);
+ 			$arrResult	= $this->_RenderLine($arrLine, NULL, $bolRenderToFile);
  			
  			if (!$arrResult['Pass'] && PROVISIONING_DEBUG)
  			{
@@ -174,7 +174,7 @@
  		// Render Footer
  		if ($this->_arrDefine['Footer'])
  		{
-			$arrResult	= $this->_RenderLine($this->_arrFooter, $bolRenderToFile);
+			$arrResult	= $this->_RenderLine($this->_arrFooter, NULL, $bolRenderToFile);
 			if (!$arrResult['Pass'] && PROVISIONING_DEBUG)
 			{
 				CliEcho($arrResult['Line']);
@@ -221,6 +221,7 @@
 	 * Renders a line into final output format
 	 * 
 	 * @param	array	$arrLine						Line to Render
+	 * @param	string	$strStyle			optional	Styling to apply to the line (XLS only)
 	 * @param	boolean	$bolRenderToFile	optional	Whether to write to the output file (default: TRUE)
 	 * 
 	 * @return	mixed									['Pass'] : boolean
@@ -228,12 +229,12 @@
 	 *
 	 * @method
 	 */
- 	protected function _RenderLine($arrLine, $bolRenderToFile = TRUE)
+ 	protected function _RenderLine($arrLine, $strStyle = NULL, $bolRenderToFile = TRUE)
  	{
  		switch ($this->_strFileFormat)
  		{
  			case 'XLS':
- 				$arrResult	= $this->_RenderLineXLS($arrLine, $bolRenderToFile);
+ 				$arrResult	= $this->_RenderLineXLS($arrLine, $strStyle, $bolRenderToFile);
  				//CliEcho($arrResult['Line']);
  				break;
  				
@@ -379,6 +380,7 @@
 	 * Renders a line into final output format (Excel 5)
 	 * 
 	 * @param	array	$arrLine						Line to Render
+	 * @param	string	$strStyle			optional	Styling to apply to the line
 	 * @param	boolean	$bolRenderToFile	optional	Whether to write to the output file (default: TRUE)
 	 * 
 	 * @return	mixed									['Pass'] : boolean
@@ -386,7 +388,7 @@
 	 *
 	 * @method
 	 */
- 	private function _RenderLineXLS($arrLine, $bolRenderToFile = TRUE)
+ 	private function _RenderLineXLS($arrLine, $strStyle = NULL, $bolRenderToFile = TRUE)
  	{
  		// Set first column
  		$intCol	= ($this->_intColOffset) ? $this->_intColOffset : 0;
@@ -470,18 +472,25 @@
 			// Render XLS line
 			if ($bolRenderToFile)
 			{
-				switch ($arrType[0])
+				if ($strStyle)
 				{
-					case 'Integer':
-						$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['Integer']);
-						break;
+					$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue, $this->_arrFormat[$strStyle]);
+				}
+				else
+				{
+					switch ($arrType[0])
+					{
+						case 'Integer':
+							$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['Integer']);
+							break;
+							
+						case 'FNN':
+							$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['FNN']);
 						
-					case 'FNN':
-						$this->_wksWorksheet->writeNumber($this->_intRow, $intCol, $mixValue, $this->_arrFormat['FNN']);
-					
-					default:
-						$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue);
-						break;
+						default:
+							$this->_wksWorksheet->writeString($this->_intRow, $intCol, $mixValue);
+							break;
+					}
 				}
 			}
 			$intCol++;
