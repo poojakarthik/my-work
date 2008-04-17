@@ -102,11 +102,11 @@
  		$this->_arrModuleConfig['ReplyTo']			['Description']	= "Reply-To Email Address";
  		
  		$this->_arrModuleConfig['ContentGreeting']	['Default']		= '';
- 		$this->_arrModuleConfig['ContentGreeting']	['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['ContentGreeting']	['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['ContentGreeting']	['Description']	= "Text to preceed the Request content";
  		
  		$this->_arrModuleConfig['ContentSignature']	['Default']		= '';
- 		$this->_arrModuleConfig['ContentSignature']	['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['ContentSignature']	['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['ContentSignature']	['Description']	= "Signature for the Email";
  		
  		// Additional

@@ -534,6 +534,7 @@
 	 			return $this->_DeliverEmailAttachment();
 	 			break;
 	 		
+	 		case 'Email':
 	 		case 'EmailText':
 	 			return $this->_DeliverEmail();
 	 			break;
