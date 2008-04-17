@@ -194,6 +194,8 @@
 			}
  		}
  		
+ 		// Replace \\n with \n
+ 		$this->_strFileContents	= str_replace('\n', "\n", $this->_strFileContents);
  		
  		// Close file
  		if ($bolRenderToFile)
