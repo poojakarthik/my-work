@@ -667,6 +667,9 @@
 	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
 		}
 		
+		// Set content
+		$strEmailContent	= $this->GetConfigField('EmailContent');
+		
 		// Send Email
 		$arrHeaders = Array	(
 								'From'		=> $strReplyTo,
@@ -674,7 +677,7 @@
 								'Subject'	=> $strSubject
 							);
 		$mimMime = new Mail_mime("\n");
-		$mimMime->setTXTBody($this->_strEmailContent);
+		$mimMime->setTXTBody($strEmailContent);
 		$mimMime->addAttachment($this->_strFilePath, $this->_strMIME);
 		$strBody = $mimMime->get();
 		$strHeaders = $mimMime->headers($arrHeaders);
