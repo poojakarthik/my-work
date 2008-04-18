@@ -12,9 +12,6 @@
 		
 		<div class="TinySeperator"></div>
 		
-		<h2>Menu</h2>
-		<div class="SmallSeperator"></div>
-		
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
 				<td>
@@ -105,6 +102,19 @@
 						Payment Download
 					</strong><br />
 					Download a list of Payments made on a particular date.
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="flex.php/Misc/MoveDelinquentCDRs/">
+						<img src="img/template/charge.png" title="Move Delinquent CDRs" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Move Delinquent CDRs
+					</strong><br />
+					Allocate delinquent CDRs to the appropriate services
 				</td>
 			</tr>
 			<tr>

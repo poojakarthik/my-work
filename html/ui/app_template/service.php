@@ -1385,9 +1385,9 @@ class AppTemplateService extends ApplicationTemplate
 			$arrFNNs[] = "\"{$objService->strFNN}\"";
 		}
 		
-		$strWhere = "FNN IN (". implode(", ", $arrFNNs) .") AND (ClosedOn IS NULL OR ClosedOn >= NOW())";
-		$selFNNs = new StatementSelect("Service", "Id, FNN", $strWhere);
-		$mixResult = $selFNNs->Execute();
+		$strWhere	= "FNN IN (". implode(", ", $arrFNNs) .") AND (ClosedOn IS NULL OR ClosedOn >= NOW())";
+		$selFNNs	= new StatementSelect("Service", "Id, FNN", $strWhere);
+		$mixResult	= $selFNNs->Execute();
 		if ($mixResult > 0)
 		{
 			// At least one of the new FNNs is currently being used in the database

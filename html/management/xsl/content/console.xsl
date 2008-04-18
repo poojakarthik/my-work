@@ -16,10 +16,6 @@
 		</p>
 		<div class="TinySeperator"></div>
 		
-		<!-- Heading 2 -->
-		<h2>Menu</h2>
-		<div class="SmallSeperator"></div>
-		
 		<!-- Menu -->
 		<table border="0" cellpadding="3" cellspacing="0">
 			<!-- Add Customer -->

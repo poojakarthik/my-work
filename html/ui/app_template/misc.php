@@ -153,7 +153,7 @@ class AppTemplateMisc extends ApplicationTemplate
 		}
 		
 		// Return this Array to the client
-		echo Json()->encode($arrFNNs);
+		AjaxReply($arrFNNs);
 		return TRUE;
 	}
 
@@ -303,7 +303,7 @@ class AppTemplateMisc extends ApplicationTemplate
 		$arrReturnData['CDRs']					= $arrCDRs;
 		$arrReturnData['ServiceSelectorHtml']	= $strServiceSelectorHtml;
 		
-		echo Json()->encode($arrReturnData);
+		AjaxReply($arrReturnData);
 		return TRUE;
 	}
 
@@ -319,9 +319,11 @@ class AppTemplateMisc extends ApplicationTemplate
 	 * It assumes the following data is passed:
 	 * 		DBO()->Delinquents->FNN			The FNN of the Delinquent CDRs
 	 * 		DBO()->Delinquents->Carrier		The Carrier of the Delinquent CDRs
+	 * 		DBO()->Delinquents->ServiceType	The ServiceType of the Delinquent CDRs
 	 * 		DBO()->Delinquents->CDRs		array of objects of the form:
 	 * 											arrCDRs[i]->Id		: CDR's Id
 	 * 											arrCDRs[i]->Service	: Id of the Service to assign the CDR to
+	 * 											arrCDRs[i]->Record	: The record number that the CDR is assigned in the table on the Delinquent CDRs webpage
 	 *
 	 * @return		void
 	 * @method		AssignCDRsToServices
@@ -356,7 +358,7 @@ class AppTemplateMisc extends ApplicationTemplate
 		{
 			$arrReturnObject["Success"]		= FALSE;
 			$arrReturnObject["ErrorMsg"]	= "ERROR: Retrieving the services from the database failed, unexpectedly. Operation aborted.  Please notify your system administrator";
-			echo Json()->encode($arrReturnObject);
+			AjaxReply($arrReturnObject);
 			return TRUE;
 		}
 		$arrRecordSet	= $selServices->FetchAll();
@@ -454,7 +456,7 @@ class AppTemplateMisc extends ApplicationTemplate
 			$arrReturnObject["SuccessfulCDRs"]	= $arrSuccessfulCDRs;			
 		}
 		
-		echo Json()->Encode($arrReturnObject);
+		AjaxReply($arrReturnObject);
 		return TRUE;
 	}
 
@@ -464,17 +466,14 @@ class AppTemplateMisc extends ApplicationTemplate
 	/**
 	 * _RenderDelinquentCDRServiceSelector()
 	 *
-	 * Retrieves all data required to assign Delinquent CDRs to Services for a given FNN/Carrier combination 
+	 * Compiles the HTML code required of the Service Selector Popup, to assign CDRs to a Service 
 	 * 
-	 * Retrieves all data required to assign Delinquent CDRs to Services for a given FNN/Carrier combination
-	 * It assumes the following data is passed:
-	 * 		DBO()->Delinquents->StartDate	Date Range for the StartDatetime of the Delinquent CDRs
-	 * 		DBO()->Delinquents->EndDate
-	 * 		DBO()->Delinquents->FNN			The FNN of the Delinquent CDRs
-	 * 		DBO()->Delinquents->Carrier		The Carrier of the Delinquent CDRs	
+	 * Compiles the HTML code required of the Service Selector Popup, to assign CDRs to a Service
 	 *
-	 * @return		string		html code to be used as the contents of the Service Selector Popup
-	 * @method		_RenderDelinquentCDRServiceSelector
+	 * @param	array	$arrServices	Contains all required data to describe a service
+	 *
+	 * @return	string					html code to be used as the contents of the Service Selector Popup
+	 * @method	_RenderDelinquentCDRServiceSelector
 	 */
 	private function _RenderDelinquentCDRServiceSelector($arrServices)
 	{
@@ -493,7 +492,6 @@ class AppTemplateMisc extends ApplicationTemplate
 		
 		$strHtml = "<div id='PopupPageBody'>
 						<div class='GroupedContent'>
-								
 							<span style='white-space:pre;font-family:Courier New, monospace;padding-left:4px'>Account    Name                                   Status        Created      Closed         ServiceId</span>
 							<select id='ServiceSelectorControl' size='6' style='width:100%; border-color:#D1D1D1; font-family:Courier New, monospace' onDblClick='Vixen.DelinquentCDRs.SetService(this.value)'>$strOptions</select>
 						</div>

@@ -230,6 +230,10 @@
 															"Account.Id AS Account, Service.AccountGroup AS AccountGroup, Service.Id AS Service",
 															"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (CAST(<DateTime> AS DATE) BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= CAST(<DateTime> AS DATE)))",
 															"Service.CreatedOn DESC");
+
+		$this->_selFNNInUse			= new StatementSelect(	"Service", "Id, Account, AccountGroup",
+															"(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (CAST(<DateTime> AS DATE) BETWEEN CreatedOn AND ClosedOn OR (ClosedOn IS NULL AND CreatedOn <= CAST(<DateTime> AS DATE)))");
+		
 	 }
 	 
 	//------------------------------------------------------------------------//
