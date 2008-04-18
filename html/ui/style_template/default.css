@@ -156,6 +156,25 @@
 		cursor:	pointer;
 	}
 	
+	input[type='button']
+	{
+		background-image:	url('img/template/button_background.png');
+		background-repeat:	repeat-x;
+		background-color:	#07548e;
+		
+		color:				#FFFFFF;
+		font-size:			10pt;
+		font-weight:		bold;
+		
+		margin:				0px;
+		padding-top:		1px;
+		padding-left:		6px;
+		padding-right:		6px;
+		padding-bottom:		1px;
+		
+		border:				solid 1px #07548e;
+	}
+	
 	img#SplashImage
 	{
 		margin-top:	70px;
@@ -1182,8 +1201,6 @@
 		padding-bottom:		1px;
 		
 		font-size:			10pt;
-		
-		
 	}
 	
 	input.InputSubmit
@@ -1194,8 +1211,6 @@
 		
 		color:               #FFFFFF;
 		background-color:    #07548e;
-		
-		font-size:			10pt;
 	}
 	
 	input.InputSubmitDisabled
@@ -1206,7 +1221,6 @@
 		
 		color:               #FFFFFF;
 		background-color:    #434343;
-		font-size:			10pt;
 	}
 	
 	input.InputSubmitLocked,

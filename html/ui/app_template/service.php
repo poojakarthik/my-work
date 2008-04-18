@@ -44,7 +44,6 @@
  */
 class AppTemplateService extends ApplicationTemplate
 {
-
 	//------------------------------------------------------------------------//
 	// View
 	//------------------------------------------------------------------------//
@@ -852,8 +851,8 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Declare variables that are common amoungst the services being added
-		$strNowDateTime		= date("Y-m-d H:i:s");
-		$strNowDate			= date("Y-m-d");
+		$strNowDateTime		= GetCurrentDateAndTimeForMySQL();
+		$strNowDate			= substr($strNowDateTime, 0, 10);
 		$intEmployeeId		= AuthenticatedUser()->_arrUser['Id'];
 		$intAccountGroup	= DBO()->Account->AccountGroup->Value;
 		$intAccount			= DBO()->Account->Id->Value;
@@ -923,8 +922,8 @@ class AppTemplateService extends ApplicationTemplate
 					
 					
 					// Check that the AuthorisationDate date is not in the future, and is no more than 30 days in the past
-					$intNowDate		= strtotime(date("d/m/Y"));
-					$intAuthDate	= strtotime($objService->strAuthorisationDate);
+					$intNowDate		= strtotime($strNowDate);
+					$intAuthDate	= strtotime(ConvertUserDateToMySqlDate($objService->strAuthorisationDate));
 					if ((!Validate("ShortDate", $objService->strAuthorisationDate)) || ($intAuthDate > $intNowDate || $intAuthDate <= strtotime("-30 days", $intNowDate))) 
 					{
 						// Authorisation Date is incorrect

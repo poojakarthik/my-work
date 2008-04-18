@@ -342,6 +342,19 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
 			return "ERROR: A Record Type must be selected";
 		}
+		if (DBO()->RateGroup->HasCapLimit->Value)
+		{
+			// A cap limit has been specified
+			if (!Validate("IsMoneyValue", DBO()->RateGroup->CapLimit->Value))
+			{
+				return "ERROR: Cap Limit is invalid";
+			}
+		}
+		else
+		{
+			// No Cap Limit has been specified
+			DBO()->RateGroup->CapLimit = NULL;
+		}
 		
 		// Check that the name is unique
 		if (DBO()->RateGroup->Id->Value == 0)
@@ -436,7 +449,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// Declare which fields you want to set
-		DBO()->RateGroup->SetColumns("Name, Description, RecordType, ServiceType, Fleet, Archived");
+		DBO()->RateGroup->SetColumns("Name, Description, RecordType, ServiceType, Fleet, CapLimit, Archived");
 		
 		// Add the RateGroup Record
 		if (!DBO()->RateGroup->Save())

@@ -594,7 +594,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Load all the services belonging to the account, that the user has permission to view
 		DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("FNN");
+		DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
 		DBL()->Service->Load();
 		
 		//Render the AccountServices table

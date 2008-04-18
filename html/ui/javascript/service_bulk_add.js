@@ -394,6 +394,7 @@ function VixenServiceBulkAddClass()
 	
 	this.intLastCostCentreChosen = 0;
 	
+	// I think this isn't needed anymore
 	this.intServiceTypeOfCurrentlyLoadedPopup = null;
 	
 	this.Initialise = function(intAccountId, arrRatePlans)

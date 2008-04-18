@@ -62,7 +62,7 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
 		
-		//$this->LoadJavascript("provisioning_page");
+		$this->LoadJavascript("provisioning_page");
 	}
 
 	//------------------------------------------------------------------------//

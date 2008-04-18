@@ -3072,7 +3072,6 @@ function IsInvoicing()
  */
 function GetCurrentDateAndTimeForMySQL()
 {
-	// HACK HACK HACK!!!
 	// StatementSelect doesn't work unless you specify a table name
 	$selDatetime = new StatementSelect("Account", Array("CurrentTime" => "NOW()"));
 	$selDatetime->Execute();

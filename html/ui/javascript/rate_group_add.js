@@ -58,11 +58,16 @@ function VixenRateGroupAddClass()
 	 */
 	this._arrRecordTypes = {};
 
+	// Stores references to all the controls on the form
+	this.objInputControls = {};
+	
+	this.strPopupId	= null;
+
 	//------------------------------------------------------------------------//
-	// InitialiseForm
+	// Initialise
 	//------------------------------------------------------------------------//
 	/**
-	 * InitialiseForm
+	 * Initialise
 	 *
 	 * Sets the member variable storing data relating to all RecordTypes
 	 *
@@ -76,24 +81,35 @@ function VixenRateGroupAddClass()
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseForm = function(arrRecordTypes, bolDisableElements)
+	this.Initialise = function(arrRecordTypes, bolDisableElements, strPopupId)
 	{
 		this._arrRecordTypes = arrRecordTypes;
+		this.strPopupId = strPopupId;
+		
+		this.objInputControls.Name			= $ID("RateGroup.Name");
+		this.objInputControls.Description	= $ID("RateGroup.Description");
+		this.objInputControls.HasCapLimit	= $ID("CapLimitCheckbox");
+		this.objInputControls.CapLimit		= $ID("RateGroup.CapLimit");
+		
+		this.objInputControls.Fleet			= $ID("RateGroup.Fleet");
+		this.objInputControls.ServiceType	= $ID("ServiceTypeCombo");
+		this.objInputControls.RecordType	= $ID("RecordTypeCombo");
+		
+		
+		
+		this.objInputControls.HasCapLimit.addEventListener("change", this.CapLimitCheckboxOnChange.bind(this), true);
+		this.CapLimitCheckboxOnChange();
 		
 		// Some of the controls can be disabled if they have already been set, and shouldn't change
 		if (bolDisableElements)
 		{
-			var elmFleet		= document.getElementById("RateGroup.Fleet");
-			var elmServiceType	= document.getElementById("ServiceTypeCombo");
-			var elmRecordType	= document.getElementById("RecordTypeCombo");
+			this.objInputControls.Fleet.disabled			= true;
+			this.objInputControls.ServiceType.disabled		= true;
+			this.objInputControls.RecordType.disabled		= true;
 			
-			elmFleet.disabled		= true;
-			elmServiceType.disabled	= true;
-			elmRecordType.disabled	= true;
-			
-			elmFleet.style.color		= "#000000";
-			elmServiceType.style.color	= "#000000";
-			elmRecordType.style.color	= "#000000";
+			this.objInputControls.Fleet.style.color			= "#000000";
+			this.objInputControls.ServiceType.style.color	= "#000000";
+			this.objInputControls.RecordType.style.color	= "#000000";
 		}
 		
 		// Set the focus to the Name text field
@@ -101,6 +117,19 @@ function VixenRateGroupAddClass()
 		// protected against by setting the "autocomplete" attribute of all text input elements to "off"
 		//Exception... "'Permission denied to set property XULElement.selectedIndex' when calling method: [nsIAutoCompletePopup::selectedIndex]"
 		//document.getElementById("RateGroup.Name").focus();
+	}
+	
+	// This is run when the RateSelector section of the popup is drawn
+	this.InitialiseRateSelector = function()
+	{
+		this.objInputControls.AvailableRates	= $ID("AvailableRatesCombo");
+		this.objInputControls.SelectedRates		= $ID("SelectedRatesCombo");
+	}
+	
+	// Event Handler for when the CapLimit checkbox is changed
+	this.CapLimitCheckboxOnChange = function(objEvent)
+	{
+		this.objInputControls.CapLimit.style.visibility = (this.objInputControls.HasCapLimit.checked) ? "visible" : "hidden";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -673,10 +702,17 @@ function VixenRateGroupAddClass()
 	 * @return	void
 	 * @method
 	 */
-	this.SaveAsDraft = function()
+	this.SaveAsDraft = function(bolConfirmed)
 	{
+		if (!bolConfirmed)
+		{
+			var strMsg = "Are you sure you want to save this Rate Group as a Draft?";
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.RateGroupAdd.SaveAsDraft(true)});
+			return;
+		}
+		
 		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
-		Vixen.Ajax.SendForm("VixenForm_RateGroup", "Save as Draft", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
+		Vixen.Ajax.SendForm("VixenForm_RateGroup", "Save as Draft", "RateGroup", "Add", "", this.strPopupId);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -693,12 +729,22 @@ function VixenRateGroupAddClass()
 	 * @return	void
 	 * @method
 	 */
-	this.Commit = function()
+	this.Commit = function(bolConfirmed)
 	{
+		if (!bolConfirmed)
+		{
+			var strMsg = "Are you sure you want to commit this Rate Group?<br />The Rate Group cannot be edited once it is committed";
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.RateGroupAdd.Commit(true)});
+			return;
+		}
+		
 		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
 		//TODO! I shouldn't have to hardcode the id of the form.  This isn't very elegant because the form's id and the 
 		//AppTemplate and method are defined in more than one place
-		Vixen.Ajax.SendForm("VixenForm_RateGroup", "Commit", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
+		Vixen.Ajax.SendForm("VixenForm_RateGroup", "Commit", "RateGroup", "Add", "", this.strPopupId);
+		
+		//TODO! Rewrite this so that it uses Vixen.Ajax.CallAppTemplate instead of Vixen.Ajax.SendForm so
+		//that you have more control over the structure of the data that you send to the server
 	}
 	
 	//------------------------------------------------------------------------//
@@ -717,9 +763,8 @@ function VixenRateGroupAddClass()
 	this.Close = function()
 	{
 		// The PopupId, containing this form, has been rendered as a hidden
-		Vixen.Popup.Close(document.getElementById("AddRateGroupPopupId").value);
+		Vixen.Popup.Close(this.strPopupId);
 	}
-	
 }
 
 // instanciate the objects

@@ -225,6 +225,7 @@
 		
 		$this->_selFNN				= new StatementSelect("Service", "FNN", "Id = <Service>");
 		
+		// Why is this declared twice (as 2 different queries) in the one function?
 		$this->_selFindOwner		= new StatementSelect(	"Service JOIN Account ON Account.Id = Service.Account",
 															"Account.Id AS Account, Service.AccountGroup AS AccountGroup, Service.Id AS Service",
 															"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (CAST(<DateTime> AS DATE) BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= CAST(<DateTime> AS DATE)))",
@@ -1333,7 +1334,9 @@
 	 	$arrWhere['FNN']			= $strFNN;
 	 	$arrWhere['DateTime']		= $strDate;
 	 	$arrWhere['IndialRange']	= substr($strFNN, 0, -2).'__';
+	 	
 	 	$mixResult	= $this->_selFindOwner->Execute($arrWhere);
+
 	 	if ($mixResult === FALSE)
 	 	{
 	 		// Error

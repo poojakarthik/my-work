@@ -176,13 +176,21 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		// Only apply the output mask if the DBO()->RatePlan is not invalid
 		$bolApplyOutputMask = !DBO()->RatePlan->IsInvalid();
 
-		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"480px", "attribute:maxlength"=>255));
+		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"480px", "attribute:maxlength"=>255));
+		echo "<div class='SmallSeparator'></div>";
 		DBO()->RatePlan->Shared->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->RatePlan->InAdvance->RenderInput(CONTEXT_DEFAULT, TRUE);
+
+		echo "<div id='Container_PlanDetails' style='width:100%;height:90px'>";
+		echo "<div id='PlanDetailsColumn1' style='width:50%;float:left'>";		
 		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->RatePlan->RecurringCharge->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
+		echo "</div>";  // PlanDetailsColumn1
+		echo "<div id='PlanDetailsColumn2' style='width:50%;float:left'>";
+		DBO()->RatePlan->ContractTerm->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		
 		// Build the list of carriers
 		$arrCarriers = Array();
@@ -254,12 +262,10 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		}
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
-		
-		// Override the Width of the RatePlan.Name and RatePlan.Description textboxes
-		$strJavascript  = "document.getElementById('RatePlan.Name').style.width='380px';";
-		$strJavascript .= "document.getElementById('RatePlan.Description').style.width='380px';";
-		echo "<script type='text/javascript'>$strJavascript</script>\n";
 
+		echo "</div>";  // PlanDetailsColumn2
+		echo "</div>";  // Container_PlanDetails
+		
 		echo "</div>\n"; // GroupedContent
 		echo "<div class='SmallSeperator'></div>\n";
 	}

@@ -129,11 +129,26 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				}
 				
 				// Render the RateGroupDetails
-				echo "<div class='WideForm'>\n";
+				echo "<div class='GroupedContent'>\n";
 
 				echo "<div id='RateGroupDetailsId'>\n";
 				$this->_RenderRateGroupDetails();
 				echo "</div>\n";
+
+				$strCapLimit	= "";
+				$strChecked		= "";
+				if (DBO()->RateGroup->CapLimit->Value !== NULL)
+				{
+					$strCapLimit	= OutputMask()->MoneyValue(DBO()->RateGroup->CapLimit->Value);
+					$strChecked		= "checked='checked'";
+				}
+
+				echo "	<div class='DefaultElement'>
+							<input type='checkbox' id='CapLimitCheckbox' name='RateGroup.HasCapLimit' $strChecked class='DefaultInputCheckBox2 Default' />
+							<input type='text' id='RateGroup.CapLimit' name='RateGroup.CapLimit' class='DefaultInputText Default' value='$strCapLimit' style='visibility:hidden'/>
+							<div class='DefaultLabel'>&nbsp;&nbsp;Cap Limit (\$):</div>
+						</div>";
+
 		
 				DBO()->RateGroup->Fleet->RenderInput(CONTEXT_DEFAULT, TRUE);
 
@@ -198,7 +213,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				$strJsonCode = Json()->encode($arrRecordTypes);
 		
 				// Initialise the javascript object
-				echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseForm($strJsonCode, true);</script>\n";
+				echo "<script type='text/javascript'>Vixen.RateGroupAdd.Initialise($strJsonCode, true, '{$this->_objAjax->strId}');</script>\n";
 				if ($intServiceType != 0)
 				{
 					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeServiceType($intServiceType);</script>\n";
@@ -208,8 +223,8 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 					echo "<script type='text/javascript'>Vixen.RateGroupAdd.ChangeRecordType($intRecordType);</script>\n";
 				}
 				
-				echo "</div>\n"; // WideForm (RateGroup Details)
-				echo "<div class='SmallSeperator'></div>\n";
+				echo "</div>\n"; // GroupedContent (RateGroup Details)
+				echo "<div class='SmallSeparator'></div>\n";
 
 				// Stick in the div container for the RateSelectorControl section of the form
 				echo "<div id='RateSelectorControlDiv'>\n";
@@ -218,23 +233,12 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				
 				// create the buttons
 				echo "<div class='ButtonContainer'><div class='Right'>\n";
-				
-				// The old method, before confirmation boxes were implemented
 				$this->Button("Cancel", "Vixen.Popup.Close(this);");
-				//$this->AjaxSubmit("Save as Draft");  
-				//$this->AjaxSubmit("Commit");
-	
-				// The new method
-				//$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to Cancel?\", Vixen.RateGroupAdd.Close, null, null, \"Yes\", \"No\")");
-				$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate Group as a Draft?\", Vixen.RateGroupAdd.SaveAsDraft)");
-				$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate Group?<br />The Rate Group cannot be edited once it is committed\", Vixen.RateGroupAdd.Commit)");
-				
-				// Javascript methods Vixen.RateGroupAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
-				echo "<input type='hidden' id='AddRateGroupPopupId' value='{$this->_objAjax->strId}'></input>\n";
+				$this->Button("Save as Draft", "Vixen.RateGroupAdd.SaveAsDraft()");
+				$this->Button("Commit", "Vixen.RateGroupAdd.Commit()");
 				echo "</div></div>\n"; // Buttons
 				
 				$this->FormEnd();
-				
 				break;
 		}
 	}
@@ -257,8 +261,8 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Only apply the output mask if the DBO()->RateGroup is not invalid
 		$bolApplyOutputMask = !DBO()->RateGroup->IsInvalid();
 
-		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"380px"));
-		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"380px"));
+		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"380px", "attribute:maxlength"=>255));
+		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"380px", "attribute:maxlength"=>255));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -276,7 +280,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	private function _RenderRateSelectorControl()
 	{
 		// Render a table for the user to specify a Rate Group for each Record Type required of the Service Type
-		echo "<div class='WideForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 
 		$strAvailableRates = "";
 		$strSelectedRates = "";
@@ -370,7 +374,9 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Finish the table
 		echo "</table>\n";
 		
-		echo "</div>"; // WideForm
+		echo "</div>"; // GroupedContent
+		
+		echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseRateSelector();</script>";
 	}
 	
 	

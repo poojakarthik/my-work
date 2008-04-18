@@ -36,7 +36,7 @@ function VixenRootClass()
 	// Vixen Logout
 	this.Logout = function()
 	{
-		var x = window.confirm ("Are you sure you would like to Logout?");
+		var x = window.confirm("Are you sure you would like to Logout?");
 		if (x)
 		{
 			return TRUE;
@@ -373,7 +373,7 @@ Event.startObserving = function (element, strName, func, useCapture)
 
 
 /**
- * startObserving
+ * stopObserving
  *
  * Cross-browser function for doing an 'addEventLister'
  *
