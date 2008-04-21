@@ -1352,19 +1352,34 @@ class AppTemplateService extends ApplicationTemplate
 	// It is assumed that all the FNNs are already valid Australian FNNs
 	function _BulkValidateFNNs($arrServices)
 	{
-		// Check that there are not duplicate numbers in the list
+		// Check that there are not duplicate numbers in the list, or FNNs in the 
+		// Indial100 range of any newly specified Indial100 landlines
 		// This has already been done in javascript, but I want to check again
 		$arrInvalidServiceIndexes = Array();
 		for ($i = 0; $i < count($arrServices); $i++)
 		{
-			for ($j = $i + 1; $j < count($arrServices); $j++)
+			$bolIndial100 = FALSE;
+			if (isset($arrServices[$i]->bolIndial100) && $arrServices[$i]->bolIndial100 == TRUE)
 			{
-				if ($arrServices[$i]->strFNN == $arrServices[$j]->strFNN)
+				// The service is an Indial100
+				$bolIndial100 = TRUE;
+				$strFNNIndial = substr($arrServices[$i]->strFNN, 0, -2);
+			}
+			
+			for ($j = 0; $j < count($arrServices); $j++)
+			{
+				if ($j == $i)
+				{
+					continue;
+				}
+				
+				if (($arrServices[$i]->strFNN == $arrServices[$j]->strFNN) || ($bolIndial100 && $strFNNIndial == substr($arrServices[$j]->strFNN, 0, -2)))
 				{
 					// Add these services to the list of invalid ones
 					$arrInvalidServiceIndexes[] = $arrServices[$i]->intArrayIndex; 
 					$arrInvalidServiceIndexes[] = $arrServices[$j]->intArrayIndex; 
 				}
+				
 			}
 		}
 		// Remove any duplicates from the array
@@ -1379,30 +1394,18 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Check that none of these new numbers are already in the database
-		$arrFNNs = Array();
+		$strNow		= GetCurrentDateForMySQL();
+		$arrFNNs	= Array();
 		foreach ($arrServices as $objService)
 		{
-			$arrFNNs[] = "\"{$objService->strFNN}\"";
-		}
-		
-		$strWhere	= "FNN IN (". implode(", ", $arrFNNs) .") AND (ClosedOn IS NULL OR ClosedOn >= NOW())";
-		$selFNNs	= new StatementSelect("Service", "Id, FNN", $strWhere);
-		$mixResult	= $selFNNs->Execute();
-		if ($mixResult > 0)
-		{
-			// At least one of the new FNNs is currently being used in the database
-			$arrRecordSet = $selFNNs->FetchAll();
-			foreach ($arrRecordSet as $arrRecord)
+			if (IsFNNInUse($objService->strFNN, (isset($objService->bolIndial100) && $objService->bolIndial100 == TRUE), $strNow))
 			{
-				foreach ($arrServices as $objService)
-				{
-					if ($objService->strFNN == $arrRecord['FNN'])
-					{
-						$arrInvalidServiceIndexes[] = $objService->intArrayIndex;
-					}
-				}
+				// The FNN is currently being used
+				$arrInvalidServiceIndexes[] = $objService->intArrayIndex;
 			}
-			
+		}
+		if (count($arrInvalidServiceIndexes) > 0)
+		{
 			$jsonInvalidServiceIndexes = Json()->encode($arrInvalidServiceIndexes);
 			$strJs = "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: highlighted FNNs are currently active in the database and can not be used for new services');";
 			return $strJs;
@@ -1733,7 +1736,7 @@ class AppTemplateService extends ApplicationTemplate
 			}
 			
 			if (DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value)
-			{		
+			{
 				// The user wants to change the FNN
 				if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
 				{
@@ -1767,16 +1770,25 @@ class AppTemplateService extends ApplicationTemplate
 				}
 				
 				// Check that the FNN is not currently being used
-				// Retrieve all service records that are currently using the FNN
-				$strWhere = "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())";
-				$arrWhere = Array("FNN" => DBO()->Service->FNN->Value);
-				DBL()->Service->Where->Set($strWhere, $arrWhere);
-				DBL()->Service->Load();
-				if (DBL()->Service->RecordCount() > 0)
-				{	
-					// The FNN is currently being used
+				$bolIsIndial = (DBO()->Service->Indial100->Value == TRUE);
+				if ($bolIsIndial && (substr(DBO()->Service->FNN->Value, 0, -2) == substr(DBO()->Service->CurrentFNN->Value, 0, -2)))
+				{
+					// While the FNN has changed, it is still within the original Indial100 range and is therefore considered safe
+					$strChangesNote .= "FNN was changed from ". DBO()->Service->CurrentFNN->Value ." to " . DBO()->Service->FNN->Value . "\n";
+				}
+				elseif (IsFNNInUse(DBO()->Service->FNN->Value, $bolIsIndial, GetCurrentDateForMySQL()))
+				{
+					// The FNN is in use
 					DBO()->Service->FNN->SetToInvalid();
-					Ajax()->AddCommand("Alert", "ERROR: This FNN is currently being used by another service");
+					if ($bolIsIndial)
+					{
+						$strErrorMsg = "ERROR: At Least 1 of the numbers in this Indial100 range is being used by another service";
+					}
+					else
+					{
+						$strErrorMsg = "ERROR: This FNN is currently being used by another service";
+					}
+					Ajax()->AddCommand("Alert", $strErrorMsg);
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 					return TRUE;
 				}
@@ -2078,7 +2090,7 @@ class AppTemplateService extends ApplicationTemplate
 				switch (DBO()->Service->NewStatus->Value)
 				{
 					case SERVICE_ACTIVE:
-						$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->ClosedOn->Value);
+						$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->Indial100->Value, DBO()->Service->ClosedOn->Value);
 						if ($mixResult !== TRUE)
 						{
 							// Activating the service failed, and an error message has been returned
@@ -3015,20 +3027,29 @@ class AppTemplateService extends ApplicationTemplate
 	 * @method
 	 */
 	// 
-	private function _ActivateService($intService, $strFNN, $strClosedOn)
+	private function _ActivateService($intService, $strFNN, $bolIsIndial, $strClosedOn)
 	{
 		// Check if the FNN is currently in use
-		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW()) AND Id != <Service>");
-		if ($selFNN->Execute(Array('FNN' => $strFNN, "Service" => $intService)))
+		$arrWhere					= Array();
+		$arrWhere['FNN']			= ($bolIsIndial) ? substr($strFNN, 0, -2) . "__" : $strFNN; 
+		$arrWhere['IndialRange']	= substr($strFNN, 0, -2) . "__";
+		$arrWhere['Service']		= $intService;
+		$arrWhere['ClosedOn']		= $strClosedOn;
+		
+		$selFNNInUse = new StatementSelect("Service", "Id", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn Is NULL OR (ClosedOn >= CreatedOn AND NOW() <= ClosedOn)) AND Id != <Service>");
+		if ($selFNNInUse->Execute($arrWhere))
 		{
 			// At least one record was returned, which means the FNN is currently in use by an active service
-			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.  ". 
-					"The other service must be disconnected or archived before this service can be activated";
+			if ($bolIsIndial)
+			{
+				return "ERROR: Cannot activate this service as at least one of the FNNs in the Indial Range is currently being used by another service.  The other service must be disconnected or archived before this service can be activated.";
+			}
+			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.  The other service must be disconnected or archived before this service can be activated";
 		}
 		
 		// Check if the FNN has been used by another de-activated service since $intService was de-activated
-		$selFNN = new StatementSelect("Service", "Id", "FNN = <FNN> AND Id != <Service> AND ClosedOn > <ClosedOn>");
-		if ($selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService, 'ClosedOn' => $strClosedOn)) == 0)
+		$selFNNInUse = new StatementSelect("Service", "Id", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn Is NULL OR (ClosedOn >= CreatedOn AND ClosedOn > <ClosedOn>)) AND Id != <Service>");
+		if ($selFNNInUse->Execute($arrWhere) == 0)
 		{
 			// The FNN has not been used since this service was de-activated.  Activate the service
 			DBO()->ArchivedService->SetTable("Service");
@@ -3054,15 +3075,19 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->NewService->Load();
 		
 		// By setting the Id to zero, a new record will be inserted when the Save method is executed
-		DBO()->NewService->Id			= 0;
-		DBO()->NewService->CreatedOn	= GetCurrentDateForMySQL();
-		DBO()->NewService->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
-		DBO()->NewService->ClosedOn		= NULL;
-		DBO()->NewService->ClosedBy		= NULL;
-		DBO()->NewService->Status		= SERVICE_ACTIVE;
-		DBO()->NewService->EarliestCDR	= NULL;
-		DBO()->NewService->LatestCDR	= NULL;
-		DBO()->NewService->LineStatus	= NULL;
+		DBO()->NewService->Id						= 0;
+		DBO()->NewService->CreatedOn				= GetCurrentDateForMySQL();
+		DBO()->NewService->CreatedBy				= AuthenticatedUser()->_arrUser['Id'];
+		DBO()->NewService->ClosedOn					= NULL;
+		DBO()->NewService->ClosedBy					= NULL;
+		DBO()->NewService->Status					= SERVICE_ACTIVE;
+		DBO()->NewService->EarliestCDR				= NULL;
+		DBO()->NewService->LatestCDR				= NULL;
+		DBO()->NewService->LineStatus				= NULL;
+		DBO()->NewService->LineStatusDate			= NULL;
+		DBO()->NewService->PreselectionStatus		= NULL;
+		DBO()->NewService->PreselectionStatusDate	= NULL;
+		
 		if (!DBO()->NewService->Save())
 		{
 			return "ERROR: Activating the service failed, unexpectedly";
@@ -3076,8 +3101,8 @@ class AppTemplateService extends ApplicationTemplate
 				DBO()->NewServiceMobileDetail->SetTable("ServiceMobileDetail");
 				if (DBO()->NewServiceMobileDetail->Load())
 				{
-					DBO()->NewServiceMobileDetail->Service = DBO()->NewService->Id->Value;
-					DBO()->NewServiceMobileDetail->Id = 0;
+					DBO()->NewServiceMobileDetail->Service	= DBO()->NewService->Id->Value;
+					DBO()->NewServiceMobileDetail->Id		= 0;
 					DBO()->NewServiceMobileDetail->Save();
 				}
 				break;
@@ -3086,8 +3111,8 @@ class AppTemplateService extends ApplicationTemplate
 				DBO()->NewServiceInboundDetail->SetTable("ServiceInboundDetail");
 				if (DBO()->NewServiceInboundDetail->Load())
 				{
-					DBO()->NewServiceInboundDetail->Service = DBO()->NewService->Id->Value;
-					DBO()->NewServiceInboundDetail->Id = 0;
+					DBO()->NewServiceInboundDetail->Service	= DBO()->NewService->Id->Value;
+					DBO()->NewServiceInboundDetail->Id		= 0;
 					DBO()->NewServiceInboundDetail->Save();
 				}
 				break;
@@ -3096,8 +3121,8 @@ class AppTemplateService extends ApplicationTemplate
 				DBO()->NewServiceAddress->SetTable("ServiceAddress");
 				if (DBO()->NewServiceAddress->Load())
 				{
-					DBO()->NewServiceAddress->Service = DBO()->NewService->Id->Value;
-					DBO()->NewServiceAddress->Id = 0;
+					DBO()->NewServiceAddress->Service	= DBO()->NewService->Id->Value;
+					DBO()->NewServiceAddress->Id		= 0;
 					DBO()->NewServiceAddress->Save();
 				}
 				
@@ -3112,8 +3137,8 @@ class AppTemplateService extends ApplicationTemplate
 					DBL()->NewServiceExtension->Load();
 					foreach (DBL()->NewServiceExtension as $dboServiceExtension)
 					{
-						$dboServiceExtension->Service = DBO()->NewService->Id->Value;
-						$dboServiceExtension->Id = 0;
+						$dboServiceExtension->Service	= DBO()->NewService->Id->Value;
+						$dboServiceExtension->Id		= 0;
 						$dboServiceExtension->Save();
 					}
 				}

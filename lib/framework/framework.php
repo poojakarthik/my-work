@@ -173,7 +173,7 @@
 	 														"SUM(Balance) - SUM(Disputed) AS OverdueBalance",
 	 														"DueOn < NOW() AND Account = <Account> AND (Balance < 0 OR Status NOT IN (".INVOICE_SETTLED.", ".INVOICE_WRITTEN_OFF.")) AND Status != ".INVOICE_TEMP);
 	 														
-		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		//$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE) AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
@@ -231,9 +231,8 @@
 															"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (CAST(<DateTime> AS DATE) BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= CAST(<DateTime> AS DATE)))",
 															"Service.CreatedOn DESC");
 
-		$this->_selFNNInUse			= new StatementSelect(	"Service", "Id, Account, AccountGroup",
-															"(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (CAST(<DateTime> AS DATE) BETWEEN CreatedOn AND ClosedOn OR (ClosedOn IS NULL AND CreatedOn <= CAST(<DateTime> AS DATE)))");
-		
+		// This is used to check if an FNN is/has-been in use, or is scheduled to be used in the future
+		$this->_selFNNInUse			= new StatementSelect("Service", "Id, Account, AccountGroup", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn IS NULL OR (ClosedOn >= CreatedOn AND CAST(<DateTime> AS DATE) <= ClosedOn))");
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -1355,6 +1354,66 @@
 	 	// Return Owner Details	 	
 	 	return $this->_selFindOwner->Fetch();
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// IsFNNInUse
+	//------------------------------------------------------------------------//
+	/**
+	 * IsFNNInUse()
+	 *
+	 * Checks if an FNN is/has-been in use, or is scheduled to be used in the future, since the given date
+	 *
+	 * Checks if an FNN is/has-been in use, or is scheduled to be used in the future, since the given date
+	 *
+	 * @param	string	$strFNN					The FNN to check
+	 * @param	bool	$bolIsIndial			TRUE If the FNN to check is an Indial100
+	 * @param	string	$strDate				The date to check from
+	 *
+	 * @return	mixed							TRUE if the FNN is/has been in use since $strDate, or is scheduled to be used
+	 * 											beyond this date
+	 * 											FALSE if the FNN isn't in use and is not scheduled to be used
+	 * 											String if there is an error				
+	 */
+	 function IsFNNInUse($strFNN, $bolIsIndial, $strDate)
+	 {
+	 	// Check Data
+	 	if (!IsValidFNN($strFNN))
+	 	{
+	 		// Invalid FNN
+	 		return "'$strFNN' is not a valid FNN!";
+	 	}
+	 	if (!strtotime($strDate))
+	 	{
+	 		// Invalid Date
+	 		return "'$strDate' is not a valid Date String!";
+	 	}
+	 	
+	 	// Prepare the FNN
+	 	$arrWhere = Array();
+	 	if ($bolIsIndial)
+	 	{
+	 		// Make sure none of the numbers in the FNN's Indial100 range are being used
+	 		$arrWhere['FNN']		= substr($strFNN, 0, -2) . '__';
+	 	}
+	 	else
+	 	{
+	 		$arrWhere['FNN']		= $strFNN;
+	 	}
+	 	$arrWhere['DateTime']		= $strDate;
+	 	$arrWhere['IndialRange']	= substr($strFNN, 0, -2) . '__';
+	 
+	 	
+	 	$mixResult	= $this->_selFNNInUse->Execute($arrWhere);
+
+	 	if ($mixResult === FALSE)
+	 	{
+	 		// Error
+	 		return $this->_selFNNInUse->Error();
+	 	}
+	 	
+	 	return (bool)($mixResult > 0);
+	 }
+	 
  }
 
 //----------------------------------------------------------------------------//

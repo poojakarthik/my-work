@@ -2720,12 +2720,36 @@ function GetPdfFilename($intAccount, $intYear, $intMonth)
  *
  * @method
  */
- function FindFNNOwner($strFNN, $strDate)
- {
+function FindFNNOwner($strFNN, $strDate)
+{
 	// Passthrough to Framework::FindFNNOwner()
- 	return $GLOBALS['fwkFramework']->FindFNNOwner($strFNN, $strDate);
- }
- 
+	return $GLOBALS['fwkFramework']->FindFNNOwner($strFNN, $strDate);
+}
+
+//------------------------------------------------------------------------//
+// IsFNNInUse
+//------------------------------------------------------------------------//
+/**
+ * IsFNNInUse()
+ *
+ * Checks if an FNN is/has-been in use, or is scheduled to be used in the future, since the given date
+ *
+ * Checks if an FNN is/has-been in use, or is scheduled to be used in the future, since the given date
+ *
+ * @param	string	$strFNN					The FNN to check
+ * @param	bool	$bolIsIndial			TRUE If the FNN to check is an Indial100
+ * @param	string	$strDate				The date to check from
+ *
+ * @return	mixed							TRUE if the FNN is/has been in use since $strDate, or is scheduled to be used
+ * 											beyond this date
+ * 											FALSE if the FNN isn't in use and is not scheduled to be used
+ * 											String if there is an error				
+ */
+function IsFNNInUse($strFNN, $bolIsIndial, $strDate)
+{
+	// Passthrough to Framework::IsFNNInUse()
+	return $GLOBALS['fwkFramework']->IsFNNInUse($strFNN, $bolIsIndial, $strDate);
+}
 
 
 
