@@ -316,22 +316,15 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
     private function registerPageCount($wrapperStyle=NULL)
     {
     	$this->pageCountStyles[] = $wrapperStyle;
-    	echo "<hr>Registered page count<hr>";
     }
     
     public function applyPageCounts($nrPages)
     {
-    	echo "<hr>applyPageCounts ...";
  		$pageCountMatches = array();
 		preg_match_all("/\nBT\n([0-9\.]+) +([0-9\.]+) +Td\n *\(([^\n]*\<\<pc\>\>[^\n]*)\) +Tj\nET\n/", $this->_contents, $pageCountMatches, PREG_SET_ORDER);
 
-   		echo "<hr>Applying page counts...<hr>";
-   		
-   		//echo "<hr><pre>" . var_dump($pageCountMatches, TRUE) . "</pre><hr>";
-		
     	for ($i = 0, $l = count($this->pageCountStyles); $i < $l; $i++)
     	{
-     	echo "<hr>applyPageCounts " . ($i+1) . " of $l ...";
     		$pageCountMatch = $pageCountMatches[$i];
     		$x = $pageCountMatch[1];
     		
@@ -341,20 +334,15 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
     		
     		$style = $this->pageCountStyles[$i];
     		
-echo "<br>text align = " . ($style->isTextAlignLeft() ? "left" : ($style->isTextAlignRight() ? "right" : "centre"));
-
     		// If style is text-align left...
     		if (!$style->isTextAlignLeft() || $style->getRight() !== NULL)
     		{
-echo "<br>It has right position!!";
  	    		$x = floatval($x);
  
     		 	// Get the width of the string "<<pc>>"
     		 	$pcWidth = Flex_Pdf_Text::widthForStringUsingFontSize("<<pc>>", $style->getFont(), $style->getFontSize());
-echo "<br>pcWidth = $pcWidth";
     			// Get the width of the new page number string
     		 	$pnWidth = Flex_Pdf_Text::widthForStringUsingFontSize("$nrPages", $style->getFont(), $style->getFontSize());
-echo "<br>pnWidth = $pnWidth";
     			
     			$shift = $pcWidth - $pnWidth;
     			
@@ -378,9 +366,8 @@ echo "<br>pnWidth = $pnWidth";
     		
     		$pos = strpos( $this->_contents, $pageCountMatch[0]);
     		$len = strlen($pageCountMatch[0]);
-    		 $this->_contents = substr( $this->_contents, 0, $pos) . $textElement . substr( $this->_contents, $pos + $len);
+			$this->_contents = substr( $this->_contents, 0, $pos) . $textElement . substr( $this->_contents, $pos + $len);
     	}
-echo "<hr>";
     }
     
    	public function drawText($top, $left, $text, $width=0, $wrapperStyle=NULL)

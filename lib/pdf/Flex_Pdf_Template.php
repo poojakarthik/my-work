@@ -14,20 +14,26 @@ class Flex_Pdf_Template
 	private $style = null;
 	private $pageOrder = null;
 	private $pageWrapContents = null;
+	
+	private $targetMedia = Flex_Pdf_Style::MEDIA_ALL;
 
-	public function __construct($templateName, $xmlData, $bolTransformXML=TRUE)
+	public function __construct($templateName, $xmlData, $bolTransformXML=TRUE, $targetMedia=Flex_Pdf_Style::MEDIA_ALL)
 	{
 		$this->templateName = $templateName;
+		
+		$this->targetMedia = $targetMedia;
 
 		if ($xmlData != NULL)
 		{
 			// Load the data
-			$this->loadData($xmlData, $bolTransformXML);
+			$this->loadData($xmlData, $bolTransformXML, $targetMedia);
 		}
 	}
 
-	public function loadData($xmlData, $bolTransformXML)
+	public function loadData($xmlData, $bolTransformXML, $targetMedia=Flex_Pdf_Style::MEDIA_ALL)
 	{
+		$this->targetMedia = $targetMedia;
+
 		if ($bolTransformXML)
 		{
 			// Load the xsl file for the template
@@ -126,6 +132,11 @@ class Flex_Pdf_Template
 		{
 			$this->templatePages[$page->getAttribute("type")] = new Flex_Pdf_Template_Page($page, $this);
 		}
+	}
+	
+	public function getTargetMedia()
+	{
+		return $this->targetMedia;
 	}
 	
 	private $pageWrapContentNodes = array();
@@ -315,7 +326,7 @@ class Flex_Pdf_Template
 				$pageTemplate = $this->getTemplatePage($pageTemplateIdentifier->getType());
 				$page = $pdfDocument->newPage($pageTemplate->getPageSize());
 				$pages[] = $page;
-				echo "<hr><b><span style='color:blue; font-size:24pt;'>Page " . $this->intCurrentPageNumber . "</span></b><hr>";
+				//echo "<hr><b><span style='color:blue; font-size:24pt;'>Page " . $this->intCurrentPageNumber . "</span></b><hr>";
 				$pdfDocument->pages[] = $page;
 				$pageTemplate->renderOnPage($page);
 			}

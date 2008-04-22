@@ -24,6 +24,10 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	const FONT_WEIGHT = 1;
 	const FONT_STYLE = 2;
 
+	const MEDIA_PRINT = 1;
+	const MEDIA_EMAIL = 2;
+	const MEDIA_ALL = 3;
+
 	// Inherited properties
 	private $intTextDecoration = self::TEXT_DECORATION_NONE;
 	private $lineHeight = 0;
@@ -53,6 +57,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	private $intOverflow = self::OVERFLOW_VISIBLE;
 	private $intCornerRadius = 0;
 	private $strPageSize = Zend_Pdf_Page::SIZE_A4;
+	private $intMedia = self::MEDIA_ALL;
 	
 	private $bolInheritedFromStyle = FALSE;
 
@@ -68,6 +73,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 			$this->intTextAlign		= $anotherStyle->intTextAlign;
 			$this->intOverflow		= $anotherStyle->intOverflow;
 			$this->objColour		= $anotherStyle->objColour;
+			$this->intMedia			= $anotherStyle->intMedia;
 			
 			$this->bolInheritedFromStyle = TRUE;
 		}
@@ -87,6 +93,10 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 			$styleParts = explode(":", $stylePart);
 			switch (strtoupper(trim($styleParts[0])))
 			{
+				case "MEDIA":
+					$this->setMedia($styleParts[1]);
+					break;
+				
 				case "FONT-FAMILY":
 					$this->fontParts[self::FONT_FAMILY] = strtoupper(trim($styleParts[1]));
 					break;
@@ -227,7 +237,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 			catch (Exception $e)
 			{
 				// Ignore this for now. Should probably throw a wobbler though!
-				echo "Unhandled exception: " . $e->getMessage() . " in " . __CLASS__ . "::" . __FUNCTION__ . " @line " . __LINE__;
+				//echo "Unhandled exception: " . $e->getMessage() . " in " . __CLASS__ . "::" . __FUNCTION__ . " @line " . __LINE__;
 			}
 		}
 		if ($font != null)
@@ -639,19 +649,50 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	{
 		return $this->strPageSize;
 	}
-	
+
 	function getPageWidth()
 	{
 		$dims = explode(":", $this->strPageSize);
 		return $dims[0];
 	}
-	
+
 	function getPageHeight()
 	{
 		$dims = explode(":", $this->strPageSize);
 		return $dims[1];
 	}
-	
+
+	function setMedia($intMedia)
+	{
+		switch(strtoupper($intMedia))
+		{
+			case "PRINT":
+				$this->intMedia = self::MEDIA_PRINT;
+				break;
+				
+			case "EMAIL":
+				$this->intMedia = self::MEDIA_EMAIL;
+				break;
+				
+			case "BOTH":
+			case "ANY":
+			case "ALL":
+				$this->intMedia = self::MEDIA_ALL;
+				break;
+		}
+	}
+
+	function getMedia()
+	{
+		return $this->intMedia;
+	}
+
+	function suitableForMedia($media)
+	{
+		// We only include printable media when the media is print.
+		return $this->intMedia & $media;
+	}
+
 	static function getPointSize($strSize)
 	{
 		$strSize = trim($strSize);
@@ -660,7 +701,6 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		if ($mm) $fltSize = $fltSize * 2.83464567;
 		return $fltSize;
 	}
-
 
 	function getHTMLStyleAttributeValue()
 	{
@@ -752,6 +792,23 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		
 		// Line height
 		if ($this->getLineHeight()) $style[] = "line-height: " . $this->getLineHeight() . "pt";
+		
+		// Media
+		switch ($this->getMedia())
+		{
+			case self::MEDIA_PRINT:
+				$style[] = "media: print";
+				break;
+
+			case self::MEDIA_EMAIL:
+				$style[] = "media: email";
+				break;
+
+			case self::MEDIA_ALL:
+			default:
+				$style[] = "media: all";
+				break;
+		}
 		
 		
 		// Overflow
