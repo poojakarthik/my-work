@@ -40,6 +40,8 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 				// Stick the text into a span to be handled properly
 				$node = $this->wrapNode($node, "span");
 			}
+			
+			$child = NULL;
 
 			switch (strtoupper($node->tagName))
 			{
@@ -56,19 +58,19 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 					$node = $this->wrapNode($node, "div");
 					// This is now ok, so let's handle it properly as a div...
 				case "DIV":
-					$this->childElements[] = new Flex_Pdf_Template_Div($node, $this);
+					$child = new Flex_Pdf_Template_Div($node, $this);
 					break;
 
 				case "IMG":
-					$this->childElements[] = new Flex_Pdf_Template_Image($node, $this);
+					$child = new Flex_Pdf_Template_Image($node, $this);
 					break;
 
 				case "BARCODE":
-					$this->childElements[] = new Flex_Pdf_Template_Barcode($node, $this);
+					$child = new Flex_Pdf_Template_Barcode($node, $this);
 					break;
 
 				//case "TABLE":
-				//	$this->childElements[] = new Flex_Pdf_Template_Table($node, $this);
+				//	$child = new Flex_Pdf_Template_Table($node, $this);
 				//	break;
 				
 				default:
@@ -76,6 +78,14 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 					// Shove it in a DIV and let the DIV handler deal with it???
 					// Just ignore it for now...
 					break;
+			}
+			
+			if ($child !== NULL)
+			{
+				if ($child->includeForCurrentMedia())
+				{
+					$this->childElements[] = $child;
+				}
 			}
 		}
 		
@@ -103,11 +113,10 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 	}
 	
 	public function hasIncompletePageWrapIncludes()
-	{//echo "<hr>hasIncompletePageWrapIncludes...<hr>";
+	{
 		for ($i = 0, $l = count($this->pageWrapIncludeIds); $i < $l; $i++)
 		{
 			$pageWrapContent = $this->getTemplate()->getPageWrapContent($this->pageWrapIncludeIds[$i]);
-			//echo "<hr>Page of type $this->type page wrap include " . $this->pageWrapIncludeIds[$i] . " is complete? " . ($pageWrapContent->isComplete() ? " yup." : " nope.") . "<hr>";
 			if (!$pageWrapContent->isComplete())
 			{
 				return TRUE;
@@ -128,7 +137,6 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 	 */
 	public function getStationery()
 	{
-		echo "<hr>getting stationery...<hr>";
 		if ($this->stationeries !== NULL)
 		{
 			return $this->stationeries;
@@ -142,7 +150,6 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 		$this->stationeries = array();
 		
 		$templateBase = $this->getTemplate()->getTemplateBase();
-		echo "<hr>getting stationery...<hr>";
 
 		for ($i = 0, $l = count($paths); $i < $l; $i++)
 		{

@@ -19,6 +19,8 @@ class Flex_Pdf_Template_Div extends Flex_Pdf_Template_Element
 				// Stick the text into a span to be handled properly
 				$node = $this->wrapNode($node, "span");
 			}
+			
+			$child = NULL;
 
 			switch (strtoupper($node->tagName))
 			{
@@ -31,19 +33,19 @@ class Flex_Pdf_Template_Div extends Flex_Pdf_Template_Element
 					$node = $this->wrapNode($node, "p");
 					// This still isn't right, so let's go to the next case to sort it out...
 				case "P":
-					$this->childElements[] = new Flex_Pdf_Template_Paragraph($node, $this);
+					$child = new Flex_Pdf_Template_Paragraph($node, $this);
 					break;
 
 				case "DIV":
-					$this->childElements[] = new Flex_Pdf_Template_Div($node, $this);
+					$child = new Flex_Pdf_Template_Div($node, $this);
 					break;
 
 				case "IMG":
-					$this->childElements[] = new Flex_Pdf_Template_Image($node, $this);
+					$child = new Flex_Pdf_Template_Image($node, $this);
 					break;
 
 				case "BARCODE":
-					$this->childElements[] = new Flex_Pdf_Template_Barcode($node, $this);
+					$child = new Flex_Pdf_Template_Barcode($node, $this);
 					break;
 
 				//case "TABLE":
@@ -51,13 +53,21 @@ class Flex_Pdf_Template_Div extends Flex_Pdf_Template_Element
 				//	break;
 
 				case "PAGE-WRAP-INCLUDE":
-					$this->childElements[] = new Flex_Pdf_Template_Page_Wrap_Include($node, $this);
+					$child = new Flex_Pdf_Template_Page_Wrap_Include($node, $this);
 					break;
 					
 				default:
 					// It's not in the right place! 
 					// Just ignore it for now...
 					break;
+			}
+			
+			if ($child !== NULL)
+			{
+				if ($child->includeForCurrentMedia())
+				{
+					$this->childElements[] = $child;
+				}
 			}
 		}
 	}

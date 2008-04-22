@@ -146,6 +146,11 @@ class Flex_Pdf_Template_Page_Wrap_Include extends Flex_Pdf_Template_Element
 	{
 		return $this->getPageWrapContent()->requiresPageBreak();
 	}	
+
+	public function includeForCurrentMedia()
+	{
+		return TRUE;
+	}	
 }
 
 ?>

@@ -6,7 +6,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . ZEND_PATH);
 
 require_once "pdf/Flex_Pdf.php";
 
-echo "<hr>Creating PDF from invoiceData.xml and example/template.xsl...<br>";
+echo "Creating PDF from invoiceData.xml and example/template.xsl...<br>";
 unlink("pdf_dev.pdf");
 $xmlData = file_get_contents(ZEND_PATH . "/pdf/pdf_templates/example/invoiceData.xml");
 $pdfTemplate = new Flex_Pdf_Template("example", $xmlData, TRUE);

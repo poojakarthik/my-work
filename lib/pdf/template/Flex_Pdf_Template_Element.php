@@ -2,14 +2,16 @@
 
 abstract class Flex_Pdf_Template_Element
 {
-	var $dom = null;
-	var $style = null;
-	var $parent = null;
+	var $dom = NULL;
+	var $style = NULL;
+	var $parent = NULL;
 	var $childElements = array();
 
 	var $_depth = 0;
 
 	private $_bolInGetWidth = FALSE; 
+	
+	private $_bolSuitableForTargetMedia = NULL;
 
 	public function __construct($domNode, $parentElement)
 	{
@@ -17,6 +19,11 @@ abstract class Flex_Pdf_Template_Element
 		$this->parent = $parentElement;
 		
 		$this->prepareStyle($this->parent->getStyle());
+
+		if (!$this->includeForCurrentMedia())
+		{
+			return;
+		}
 
 		$this->initialize();
 	}
@@ -354,6 +361,15 @@ abstract class Flex_Pdf_Template_Element
 	{
 		return FALSE;
 	}
+	
+	protected function includeForCurrentMedia()
+	{
+		if ($this->_bolSuitableForTargetMedia === NULL)
+		{
+			$this->_bolSuitableForTargetMedia = $this->getStyle()->suitableForMedia($this->getTemplate()->getTargetMedia());
+		}
+		return $this->_bolSuitableForTargetMedia;
+	} 
 
 }
 

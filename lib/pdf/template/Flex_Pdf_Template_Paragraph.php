@@ -19,6 +19,8 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 				// Stick the text into a span to be handled properly
 				$node = $this->wrapNode($node, "span");
 			}
+			
+			$child = NULL;
 
 			switch (strtoupper($node->tagName))
 			{
@@ -28,13 +30,21 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 					// This still isn't right, so let's go to the next case to sort it out...
 				case "SPAN":
 					// Span elements shouldn't be at this level, they should only be in text elements.
-					$this->childElements[] = new Flex_Pdf_Template_Span($node, $this);
+					$child = new Flex_Pdf_Template_Span($node, $this);
 					break;
 
 				default:
 					// It's not in the right place! 
 					// Just ignore it for now...
 					break;
+			}
+			
+			if ($child !== NULL)
+			{
+				if ($child->includeForCurrentMedia())
+				{
+					$this->childElements[] = $child;
+				}
 			}
 		}
 	}
@@ -169,11 +179,7 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 						$drawX = $left + (($width - $lineWidth)/2) + $usedWidth;
 					}
 				}
-		if (strpos($strings[$i], "<<pc>>") !== FALSE)
-		{
-echo "<hr>text align = " . ($this->getStyle()->isTextAlignLeft() ? "left" : ($this->getStyle()->isTextAlignRight() ? "right" : "centre"));
-echo "<hr>text align = " . ($this->getStyle()->isTextAlignLeft() ? "left" : ($this->getStyle()->isTextAlignRight() ? "right" : "centre"));
-		}
+
 				$page->drawText($drawY, $drawX, $strings[$i], $widths[$i], $this->getStyle());
 				
 				$usedWidth += $strW;

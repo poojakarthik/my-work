@@ -41,7 +41,6 @@ class Flex_Pdf_Template_Raw extends Flex_Pdf_Template_Element
 	
 	function renderOnPage($page, $parent=NULL)
 	{
-		echo "<hr><hr><hr>Writing raw data to pdf: <pre>\n" . $this->rawData . "\n</pre><hr><hr><hr>";
 		$page->appendToRawContents($this->rawData);
 	}
 
@@ -54,6 +53,13 @@ class Flex_Pdf_Template_Raw extends Flex_Pdf_Template_Element
 	{
 		
 	}
+
+	// If RAW elements are supported elsewhere in the document 
+	// (as opposed to just in the stationery), this will need changing
+	protected function includeForCurrentMedia()
+	{
+		return $this->getTemplate()->getTargetMedia() !== Flex_Pdf_Style::MEDIA_PRINT;
+	} 
 }
 
 

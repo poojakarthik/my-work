@@ -105,8 +105,6 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 		$this->preparedContents = NULL;
 		
 		$this->setContent(str_replace("<<pn>>", $this->getCurrentPageNumber(), $this->originalContent));
-		
-		echo "Clear span...";
 	}
 
 

@@ -43,12 +43,17 @@ class Flex_Pdf_Template_Stationery extends Flex_Pdf_Template_Image
 	{
 	}
 	
-	function renderOnPage($page, $parent=NULL)
+	public function renderOnPage($page, $parent=NULL)
 	{
 		$this->prepareSize();
 		$this->preparePosition();
 		parent::renderOnPage($page, $parent);
 	}
+
+	protected function includeForCurrentMedia()
+	{
+		return $this->getTemplate()->getTargetMedia() !== Flex_Pdf_Style::MEDIA_PRINT;
+	} 
 }
 
 

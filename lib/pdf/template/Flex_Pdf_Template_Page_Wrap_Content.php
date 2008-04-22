@@ -63,7 +63,7 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 		// Find if there is a break required after the sequence and, if so, what kind
 		$breakAfter = $this->dom->hasAttribute("break-after") ? strtolower($this->dom->getAttribute("break-after")) : "none";
 		$this->breakApplied = FALSE;
-		echo "<br>$breakAfter";
+
 		switch ($breakAfter)
 		{
 			case "page":
@@ -75,7 +75,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 			default:
 				$this->breakApplied = TRUE;
 		}
-		echo " = $this->requiredBreak<br>";
 		
 		
 		for($i = 0, $l = $this->dom->childNodes->length; $i < $l; $i++)
@@ -123,6 +122,8 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 				$node = $this->wrapNode($node, "SPAN");
 			}
 			
+			$child = NULL;
+			
 			switch (strtoupper($node->tagName))
 			{
 				case "SPAN":
@@ -130,24 +131,24 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 					$node = $this->wrapNode($node, "P");
 					// This still isn't right, so let's go to the next case to sort it out...
 				case "P":
-					$this->contentElements[] = new Flex_Pdf_Template_Paragraph($node, $this);
+					$child = new Flex_Pdf_Template_Paragraph($node, $this);
 					break;
 
 				case "DIV":
-					$this->contentElements[] = new Flex_Pdf_Template_Div($node, $this);
+					$child = new Flex_Pdf_Template_Div($node, $this);
 					break;
 
 				case "IMG":
-					$this->contentElements[] = new Flex_Pdf_Template_Image($node, $this);
+					$child = new Flex_Pdf_Template_Image($node, $this);
 					break;
 
 				case "BARCODE":
-					$this->contentElements[] = new Flex_Pdf_Template_Barcode($node, $this);
+					$child = new Flex_Pdf_Template_Barcode($node, $this);
 					break;
 
 				case "PAGE-WRAP-INCLUDE":
 					$this->getTemplate()->registerPageWrapContentNode($node->getAttribute("content"), $this);
-					$this->contentElements[] = new Flex_Pdf_Template_Page_Wrap_Include($node, $this);
+					$child = new Flex_Pdf_Template_Page_Wrap_Include($node, $this);
 					break;
 					
 				default:
@@ -155,25 +156,40 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 					// Just ignore it for now...
 					break;
 			}
+			
+			if ($child !== NULL)
+			{
+				if ($child->includeForCurrentMedia())
+				{
+					$this->contentElements[] = $child;
+				}
+			}
 		}
 	}
 	
 	function initializeHeader($node)
 	{
-		$this->headerElements[] = new Flex_Pdf_Template_Wrapped_Header($node, $this);
+		$header = new Flex_Pdf_Template_Wrapped_Header($node, $this);
+		if ($header->includeForCurrentMedia())
+		{
+			$this->headerElements[] = $header;
+		}
 	}
 	
 	function initializeFooter($node)
 	{
-		$this->footerElements[] = new Flex_Pdf_Template_Wrapped_Footer($node, $this);
-		$this->footersPrinted = FALSE;
+		$footer = new Flex_Pdf_Template_Wrapped_Footer($node, $this);
+		if ($footer->includeForCurrentMedia())
+		{
+			$this->footerElements[] = $footer;
+			$this->footersPrinted = FALSE;
+		}
 	}
 	
 	public function registerParent($parent)
 	{
 		$parentId = count($this->parents);
 		$this->parents[$parentId] = $parent;
-		echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . "... " . $this->dom->getAttribute("id") . " ... $parentId ... " . get_class($this->parents[$parentId]) . "<br>";
 		
 		$page = $parent->getPage();
 		if ($page instanceof Flex_Pdf_Template_Page)
@@ -224,56 +240,44 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 	{
 		$this->currentParentId = $parentId;
 		$this->parent = $this->parents[$this->currentParentId];
-		//echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . "... " . $this->dom->getAttribute("id") . "  ... $parentId ... " . get_class($this->parents[$this->currentParentId]) . "<br>";
 		$this->currentPageColumn = $this->getIndexOfWrapperOnPage();
 	}
 
 	public function isComplete()
 	{
-		echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . " ... " . $this->dom->getAttribute("id") . "... Is complete? [$this->footersPrinted, " .($this->nextChildIndex >= count($this->contentElements)). "]" . ($this->headersPrinted && $this->footersPrinted && $this->nextChildIndex >= count($this->contentElements)) . "<hr>";
 		return $this->footersPrinted && $this->nextChildIndex >= count($this->contentElements);
 	}
 	
 	public function requiresBreak()
 	{
-		echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . " ... " . $this->dom->getAttribute("id") . "... [!{$this->breakApplied} && (($this->breakColumnId !== NULL && $this->requiredBreak == 2) || ($this->currentPageColumn == $this->breakColumnId))] ";
-		echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . " ... " . $this->dom->getAttribute("id") . "... Requires break? ";
 		if ($this->reqPageBreak)
 		{
 			return TRUE;
 		}
 		if (!$this->breakApplied && (($this->breakColumnId !== NULL && $this->requiredBreak == self::PAGE_BREAK_AFTER) || ($this->currentPageColumn == $this->breakColumnId)))
 		{
-			echo "Yes! <hr>";
 			return TRUE;
 		}
 		if (array_key_exists($this->currentPageColumn, $this->lastChildRendered) && $this->lastChildRendered[$this->currentPageColumn] >= 0 && $this->contentElements[$this->lastChildRendered[$this->currentPageColumn]]->requiresBreak())
 		{
-			echo "Yes, because child does! <hr>";
 			return TRUE;
 		}
-		echo "No. <hr>";
 		return FALSE;
 	}
 
 	public function requiresPageBreak()
 	{
-		echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . " ... " . $this->dom->getAttribute("id") . "... Requires break? ";
 		if ($this->reqPageBreak)
 		{
-			echo "Yes! (because the last rendered child did)<hr>";
 			return TRUE;
 		}
 		if (!$this->breakApplied && ($this->breakColumnId !== NULL && $this->requiredBreak == self::PAGE_BREAK_AFTER))
 		{
-			echo "Yes! (because I do)<hr>";
 			return TRUE;
 		}
 		
-		echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . " ... " . $this->dom->getAttribute("id") . "... $this->currentPageColumn :: " . ($this->lastChildRendered[$this->currentPageColumn]) . " :: " . get_class($this->contentElements[$this->lastChildRendered[$this->currentPageColumn]]);
 		if (array_key_exists($this->currentPageColumn, $this->lastChildRendered) && $this->lastChildRendered[$this->currentPageColumn] >= 0 && $this->contentElements[$this->lastChildRendered[$this->currentPageColumn]]->requiresPageBreak())
 		{
-			echo "Yes! (because one of my kids does)<hr>";
 			return TRUE;
 		}
 		return FALSE;
@@ -281,8 +285,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 
 	public function prepareSize($offsetTop=0)
 	{
-		//echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . "... " . $this->dom->getAttribute("id") . " ...<br>";
-
 		/*
 		 * We need to find the size that the contents of this element **which will fit** into the
 		 * parent container will actually use up in the container.
@@ -301,7 +303,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 		 * 
 		 */
 		 
-		echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: START currentPageColumn = " . $this->currentPageColumn . "... " . $this->dom->getAttribute("id") . " ...<br>";
 		$this->sectionElements[$this->currentPageColumn] = array();
 		$this->sectionElements[$this->currentPageColumn]["headers_and_footers"] = array();
 		$this->sectionElements[$this->currentPageColumn]["all"] = array();
@@ -314,7 +315,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 		
 		if ($this->isComplete() || $this->reqPageBreak)
 		{
-		echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: END (complete) currentPageColumn = " . $this->currentPageColumn . "... " . $this->dom->getAttribute("id") . " ...<br>";
 			return;
 		}
 		
@@ -323,11 +323,9 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 		$lastSection = $this->isLastWrapperOnPage();
 		
 		$availableHeight = $this->parent->getAvailablePreparedHeightForChildElement($this);
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... availableHeight = $availableHeight... " . $this->dom->getAttribute("id") . " ...<br>";
 		
 		for ($i = 0, $l = count($this->headerElements); $i < $l; $i++)
 		{
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: checking header " . ($i+1) . " $firstSection $firstPage...<br>";
 			if ($this->headerElements[$i]->displayForSection($firstSection, $firstPage))
 			{
 				$this->headerElements[$i]->prepareSize();
@@ -337,14 +335,12 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 				if (!$this->headerElements[$i]->hasAbsoluteVertical())
 				{
 					$availableHeight -= $this->headerElements[$i]->getPreparedHeight();
-			//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... availableHeight = $availableHeight... " . $this->dom->getAttribute("id") . " (after header $i) ...<br>";
 					$this->requiredHeaderHeight[$this->currentPageColumn] += $this->headerElements[$i]->getPreparedHeight();
 					$this->preparedHeights[$this->currentPageColumn] += $this->headerElements[$i]->getPreparedHeight();
 				}
 				
 				$this->preparedWidths[$this->currentPageColumn] = max($this->preparedWidths[$this->currentPageColumn], $this->headerElements[$i]->getPreparedWidth());
 			}
-		//else echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: header " . ($i+1) . " not to be rendered<br>";
 		}
 		
 		$this->requiredNonEndFooterHeight[$this->currentPageColumn] = 0;
@@ -371,10 +367,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 			}
 		}
 		
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... end footers require " . $this->requiredEndFooterHeight[$this->currentPageColumn] . "... " . $this->dom->getAttribute("id") . " <br>";
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... non-end footers require " . $this->requiredNonEndFooterHeight[$this->currentPageColumn] . "... " . $this->dom->getAttribute("id") . " <br>";
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... available height = " . $availableHeight . "... " . $this->dom->getAttribute("id") . " <br>";
-		
 		$requiredHeight = 0;
 		
 		$i = $this->nextChildIndex;
@@ -383,27 +375,21 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 		$lastChildRequiresBreak = FALSE;
 		for (; $lastChildFinished && !$lastChildRequiresBreak && $i < $l && $requiredHeight <= $availableHeight; $i++)
 		{
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... preparing child height " . $i . " ...  " . $this->dom->getAttribute("id") . " ...<br>";
 			$this->contentElements[$i]->prepareSize($this);
 			$requiredHeight += $this->contentElements[$i]->getPreparedHeight();
 			$lastChildFinished = $this->contentElements[$i]->isComplete();
-			echo "<br>Class $i = " . get_class($this->contentElements[$i]) . ",";
 			$lastChildRequiresBreak = $this->contentElements[$i]->requiresBreak();
 		}
 		
 		if ($lastChildRequiresBreak)
 		{
-			echo "<br>Las Break Child Class $i = " . get_class($this->contentElements[$i - 1]) . "!";
 			$this->reqPageBreak = $this->contentElements[$i - 1]->requiresPageBreak();
 		}
 
 		$canFinish = ($lastChildFinished && $i == $l && (($availableHeight - $requiredHeight) > $this->requiredEndFooterHeight[$this->currentPageColumn]));
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: height required for contents to complete = " . $requiredHeight . "<br>";
 		
 		if ($canFinish)
 		{
-			
-			echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... <span style='color:green'>Can finish!!!... " . $this->dom->getAttribute("id") . " </span><br>";
 			for ($i = $this->nextChildIndex, $l = count($this->contentElements); $i < $l; $i++)
 			{
 				$this->sectionElements[$this->currentPageColumn]["all"][] = $this->contentElements[$i];
@@ -411,7 +397,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 				$this->preparedHeights[$this->currentPageColumn] += $this->contentElements[$i]->getPreparedHeight();
 				$this->lastChildRendered[$this->currentPageColumn] = $this->nextChildIndex;
 				$this->nextChildIndex++;
-				//echo " incrementing next child index to $this->nextChildIndex ... ";
 			}
 			for ($i = 0, $l = count($this->footerElements); $i < $l; $i++)
 			{
@@ -429,21 +414,15 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 			$this->footersPrinted = TRUE;
 			
 			$this->breakColumnId = $this->currentPageColumn;
-			echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . " ... " . $this->dom->getAttribute("id") . "... set breakColumnId to $this->breakColumnId<hr>";
-			echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . " ... " . $this->dom->getAttribute("id") . "... $this->currentPageColumn :: " . $this->lastChildRendered[$this->currentPageColumn] . " :: " . get_class($this->contentElements[$this->lastChildRendered[$this->currentPageColumn]]);
-			
 		}
 		else 
 		{
-			
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... <span style='color:red'>Can NOT finish!!!</span><br>";
 			$childHeight = 0;
 			$lastChildCompleted = FALSE;
 
 			for ($i = $this->nextChildIndex, $l = count($this->contentElements); $i < $l; $i++)
 			{
 				$availableHeight -= $this->contentElements[$i]->getPreparedHeight();
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . "... availableHeight = $availableHeight... " . $this->dom->getAttribute("id") . " (before adding child $i) ...<br>";
 				if ($availableHeight <= $this->requiredNonEndFooterHeight[$this->currentPageColumn]) break;
 				$this->sectionElements[$this->currentPageColumn]["all"][] = $this->contentElements[$i];
 				$this->preparedWidths[$this->currentPageColumn] = max($this->preparedWidths[$this->currentPageColumn], $this->contentElements[$i]->getPreparedWidth());
@@ -458,11 +437,9 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 					{
 						break;
 					}
-					//echo " incrementing next child index to $this->nextChildIndex ... ";
 				}
 				else
 				{
-					//echo " breaking because last child did not complete. ";
 					$lastChildCompleted = FALSE;
 					break;
 				}
@@ -471,7 +448,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 			// If nothing has been output and there is something to output, don't display the headers and footers
 			if ($childHeight === 0 && !$lastChildCompleted)
 			{
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . " ... " . $this->dom->getAttribute("id") . " nothing to wrap! ...<br>";
 				$this->sectionElements[$this->currentPageColumn]["headers_and_footers"] = array();
 				$this->sectionElements[$this->currentPageColumn]["all"] = array();
 				$this->preparedHeights[$this->currentPageColumn] = 0;
@@ -479,10 +455,8 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 				$this->requiredEndFooterHeight[$this->currentPageColumn] = 0;
 				$this->requiredNonEndFooterHeight[$this->currentPageColumn] = 0;
 				$this->requiredHeaderHeight[$this->currentPageColumn] = 0;
-		echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: END (early) currentPageColumn = " . $this->currentPageColumn . "... " . $this->dom->getAttribute("id") . " ...<br>";
 				return;
 			}
-		//else echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: currentPageColumn = " . $this->currentPageColumn . " ... " . $this->dom->getAttribute("id") . " wrapping " . $childHeight . " " . ($lastChildCompleted ? "complete" : "unfinished") . " ...<br>";
 			
 			for ($i = 0, $l = count($this->footerElements); $i < $l; $i++)
 			{
@@ -498,9 +472,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 				}
 			}
 		}
-		
-		echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: END currentPageColumn = " . $this->currentPageColumn . "... " . $this->dom->getAttribute("id") . " ...<br>";
-		//echo "<br>" . __CLASS__ . "::" . __FUNCTION__ . ":: " . $this->dom->getAttribute("id") . " :: currentPageColumn = " . $this->currentPageColumn . " ... prepared height = " . $this->preparedHeights[$this->currentPageColumn] . "<br>";
 	}
 	
 	public function getPreparedWidth()
@@ -545,17 +516,12 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 
 	public function preparePosition($parentWidth=0, $parentHeight=0, $offsetTop=0, $offsetLeft=0)
 	{
-		//echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . " has not been implemented.<hr>";
-
-		//echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . ":: " . $this->dom->getAttribute("id") . " :: currentPageColumn = " . $this->currentPageColumn . " ... <hr>";
-		
 		$this->preparedAbsTops[$this->currentPageColumn] = $offsetTop;
 		$this->preparedAbsLefts[$this->currentPageColumn] = $offsetLeft;
 	}
 
 	public function prepareChildPositions()
 	{
-		//echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . ":: " . $this->dom->getAttribute("id") . " :: currentPageColumn = " . $this->currentPageColumn . " ... <hr>";
 		$offsetTop = $this->getPreparedAbsTop();
 		$offsetLeft = $this->getPreparedAbsLeft();
 		$childElements = $this->getChildElements();
@@ -565,12 +531,7 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 			if (!$childElements[$i]->hasAbsoluteVertical())
 			{
 				$offsetTop += $childElements[$i]->getPreparedHeight();
-				//echo "<hr>Child of " . $this->currentPageColumn . " class " . get_class($childElements[$i]) . " does not have absolute vertical!<br>";
 			}
-			//else
-			//{
-			//	echo "<hr>Child of " . $this->currentPageColumn . " class " . get_class($childElements[$i]) . " has absolute vertical!<br>";
-			//}
 		}
 	}
 
@@ -593,7 +554,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 	{
 		
 		// Increment the rendering counter for the current page
-		//echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . ":: " . $this->dom->getAttribute("id") . " :: currentPageColumn = " . $this->currentPageColumn . " ... <hr>";
 
 		// Prepare the widths and heights of the headers and footers to be rendered, 
 		// as these could have been reset for other wrappers
@@ -602,14 +562,12 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 			$this->sectionElements[$this->currentPageColumn]["headers_and_footers"][$i]->prepareSize($this);
 		}
 		$this->headersPrinted = TRUE;
-		echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . ":: " . $this->dom->getAttribute("id") . " :: currentPageColumn = " . $this->currentPageColumn . " ... set headers to printed ($this->headersPrinted) ... <hr>";
 		
 		// Prepare the child positions as this has not yet been done
 		$this->prepareChildPositions();
 		
 		// Render the child elements
 		$childElements = $this->getChildElements();
-		//echo "<hr>Rendering wrapped contents (" . count($childElements) . ")... <hr>";
 		for ($i = 0, $l = count($childElements); $i < $l; $i++)
 		{
 			$childElements[$i]->renderOnPage($page, $this);
@@ -670,7 +628,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 		$this->requiredEndFooterHeight = array();
 		$this->lastChildRendered = array();
 		
-		echo "<hr>" . __CLASS__ . "::" . __FUNCTION__ . ":: " . $this->dom->getAttribute("id") . " :: clear temp details... <hr>";
 		if ($this->breakColumnId !== NULL)
 		{
 			$this->breakApplied = TRUE;
@@ -688,11 +645,9 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 	public function getAvailablePreparedHeightForChildElement($childElement)
 	{
 		$availableHeight = $this->parent->getAvailablePreparedHeightForChildElement($this);
-		//echo "<hr> " . $this->dom->getAttribute("id") . " ...Available height is $availableHeight<hr>";
 		
 		// We need to deduct from this the height required for headers
 		$availableHeight -= $this->requiredHeaderHeight[$this->currentPageColumn];
-		//echo "<hr> " . $this->dom->getAttribute("id") . " ...Available height after headers is $availableHeight<hr>";
 
 		// We also need to allow for footers, which depends on whether or not this is the last page!
 	//	$this->requiredNonEndFooterHeight[$this->currentPageColumn] = 0;
@@ -712,7 +667,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 				$availableHeight -= $this->contentElements[$i]->getPreparedHeight();
 			}
 		}
-		//echo "<hr> " . $this->dom->getAttribute("id") . " ...Available height after earlier child elements is $availableHeight<hr>";
 		
 		// HACK! HACK! HACK!
 		// This should really determine whether or not the remaining child elements (including and after childElement)
@@ -721,7 +675,6 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 		// Checking that is a bit fiddly and could easily end up with a recursive loop.
 		
 		$availableHeight -= $this->requiredNonEndFooterHeight[$this->currentPageColumn];
-		//echo "<hr> " . $this->dom->getAttribute("id") . " ...Available height after allowing for footers (" . $this->requiredNonEndFooterHeight[$this->currentPageColumn] . ") is $availableHeight<hr>";
 		
 		// Whatever is left over is the height available for child elements
 		return $availableHeight;
