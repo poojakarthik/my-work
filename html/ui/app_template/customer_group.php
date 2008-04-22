@@ -176,15 +176,24 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		// Load the most recent LetterTemplates used by this customer group, for each LetterType
-		$arrColumns = Array("Id"=>"LT.Id", "LetterType"=>"LT.LetterType", "Template"=>"LT.Template", "CreatedOn"=>"LT.CreatedOn");
-		$strTable = "LetterTemplate AS LT";
-		$strWhere = "LT.CustomerGroup = <CustomerGroup> AND LT.Id = (SELECT MAX(Id) FROM LetterTemplate WHERE CustomerGroup = <CustomerGroup> AND LetterType = LT.LetterType)";
-		$strOrderBy = "LT.LetterType";
-		DBL()->LetterTemplate->SetTable($strTable);
-		DBL()->LetterTemplate->SetColumns($arrColumns);
-		DBL()->LetterTemplate->Where->Set($strWhere, Array("CustomerGroup"=>DBO()->CustomerGroup->Id->Value));
-		DBL()->LetterTemplate->Load();
+		$intCustomerGroupId = DBO()->CustomerGroup->Id->Value;
+		// Load the currently used DocumentTemplates
+		$arrColumns = Array("TypeId"		=> "DTT.Id",
+							"TypeName"		=> "DTT.Name",
+							"TemplateId"	=> "DT.Id",
+							"Version"		=> "DT.Version",
+							"EffectiveOn"	=> "DT.EffectiveOn");
+							
+		$strTables	= "DocumentTemplateType AS DTT LEFT JOIN DocumentTemplate AS DT 
+						ON DTT.Id = DT.TemplateType AND DT.CustomerGroup = $intCustomerGroupId AND DT.EffectiveOn <= NOW()
+						AND DT.CreatedOn =	(	SELECT Max(CreatedOn)
+												FROM DocumentTemplate AS DT2
+												WHERE DT2.CustomerGroup = DT.CustomerGroup AND DT2.TemplateType = DTT.Id AND DT2.EffectiveOn <= NOW()
+											)";
+		DBL()->DocumentTemplate->SetTable($strTables);
+		DBL()->DocumentTemplate->SetColumns($arrColumns);
+		DBL()->DocumentTemplate->OrderBy("TypeId ASC");
+		DBL()->DocumentTemplate->Load();
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
@@ -297,6 +306,57 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Fire the OnCustomerGroupDetailsUpdate Event
 		$arrEvent['CustomerGroup']['Id'] = DBO()->CustomerGroup->Id->Value;
 		Ajax()->FireEvent(EVENT_ON_CUSTOMER_GROUP_DETAILS_UPDATE, $arrEvent);
+		return TRUE;
+	}
+
+	//------------------------------------------------------------------------//
+	// ViewDocumentTemplateHistory
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewDocumentTemplateHistory()
+	 *
+	 * Builds the "View Document Template History" webpage 
+	 * 
+	 * Builds the "View Document Template History" webpage
+	 *
+	 * @return		void
+	 * @method		ViewDocumentTemplateHistory
+	 */
+	function ViewDocumentTemplateHistory()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		if (!DBO()->CustomerGroup->Load())
+		{
+			DBO()->Error->Message = "The CustomerGroup with id: ". DBO()->CustomerGroup->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		if (!DBO()->DocumentTemplateType->Load())
+		{
+			DBO()->Error->Message = "The DocumentTemplateType with id: ". DBO()->DocumentTemplateType->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// Retrieve the Template history
+		//TODO!
+		
+		
+		// Build Context Menu
+		//TODO! When we have stuff to put in it
+		
+		// Breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SystemSettingsMenu();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value);
+		BreadCrumb()->SetCurrentPage("Template History");
+		
+		$this->LoadPage('document_template_history');
 		return TRUE;
 	}
 

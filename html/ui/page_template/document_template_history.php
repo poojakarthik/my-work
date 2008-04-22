@@ -6,33 +6,32 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// customer_group_view.php
+// document_template_history.php
 //----------------------------------------------------------------------------//
 /**
- * customer_group_view
+ * document_template_history
  *
- * Page Template for the "View Customer Group" webpage
+ * Page Template for the "View Document Template History" webpage
  *
- * Page Template for the "View Customer Group" webpage
+ * Page Template for the "View Document Template History" webpage
  *
- * @file		customer_group_view.php
+ * @file		document_template_history.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel 'MagnumSwordFortress' Dawkins
- * @version		8.01
+ * @version		8.04
  * @copyright	2008 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
 
 // Set the page title
-$this->Page->SetName("Customer Group");
+$this->Page->SetName("Template History - ". DBO()->DocumentTemplateType->Name->Value);
 
 //Sset the layout template for the page.
 $this->Page->SetLayout('1Column');
 
 // Add the Html Objects to their respective columns
-$this->Page->AddObject('CustomerGroupDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "CustomerGroupDetailsContainerDiv");
-$this->Page->AddObject('CustomerGroupDocumentTemplates', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('DocumentTemplateHistory', COLUMN_ONE);
 
 ?>

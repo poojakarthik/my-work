@@ -131,6 +131,30 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// ViewDocumentTemplateHistory
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewDocumentTemplateHistory()
+	 *
+	 * Compiles the Href for the Document Template History webpage
+	 *
+	 * Compiles the Href for the Document Template History webpage
+	 * 
+	 * @param	int		$intCustomerGroup	id of the CustomerGroup
+	 * @param	int		$intTemplateType	DocumentTemplateType Id
+	 *
+	 * @return	string						Href
+	 *
+	 * @method
+	 */
+	function ViewDocumentTemplateHistory($intCustomerGroup, $intTemplateType)
+	{
+		$this->strLabel	= "Template History";
+		$this->strContextMenuLabel = "Template History";
+		return "flex.php/CustomerGroup/ViewDocumentTemplateHistory/?CustomerGroup.Id=$intCustomerGroup&DocumentTemplateType.Id=$intTemplateType";
+	}
+	
+	//------------------------------------------------------------------------//
 	// ViewCustomerGroup
 	//------------------------------------------------------------------------//
 	/**

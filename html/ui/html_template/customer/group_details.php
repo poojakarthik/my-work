@@ -165,9 +165,9 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->Id->RenderHidden();
 		
 		// Render the details of the CustomerGroup
-		DBO()->CustomerGroup->InternalName->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->ExternalName->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->OutboundEmail->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->CustomerGroup->InternalName->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->ExternalName->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->OutboundEmail->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		
 		echo "</div>\n"; // GroupedContent
 
