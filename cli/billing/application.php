@@ -426,7 +426,7 @@
 			$strExtensionsQuery .= " AND ServiceRateGroup.Id = (SELECT SRG.Id FROM ServiceRateGroup SRG WHERE NOW() BETWEEN SRG.StartDatetime AND SRG.EndDatetime AND SRG.Service = CDR.Service ORDER BY CreatedOn DESC LIMIT 1) ";
 			$strExtensionsQuery .= " GROUP BY Service, FNN, RecordType";
 			
-			/* TODO in MAY: ServiceTypeTotal Generation moved to RATING */
+			/* TODO in MAY: ServiceTypeTotal Generation moved to RATING? */
 			// run query
 			$qryServiceTypeTotal = new Query();
 			$qryServiceTypeTotal->Execute($strExtensionsQuery);
@@ -475,7 +475,7 @@
 			$arrSharedPlans	= Array();
 			foreach($arrServices as $mixIndex=>$arrService)
 			{
-				if ($arrService['MinMonthly'] > 0)
+				if ((float)$arrService['MinMonthly'] > 0)
 				{
 					// Prorate Minimum Monthly
 					$selEarliestCDR->Execute($arrService);

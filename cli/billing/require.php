@@ -29,12 +29,17 @@
 
 $strModuleDir = "cli/billing/modules/";
 
-// load printing modules
-VixenRequire($strModuleDir."module_printing.php");
-VixenRequire($strModuleDir."module_etech.php");
+// Invoice Modules
+//VixenRequire($strModuleDir."module_printing.php");
+//VixenRequire($strModuleDir."module_etech.php");
+VixenRequire($strModuleDir."invoice_base.php");
+VixenRequire($strModuleDir."invoice_xml.php");
+VixenRequire($strModuleDir."invoice_billprint.php");
+
+// Management Report Modules
 VixenRequire($strModuleDir."module_reports.php");
 
-// load charge modules
+// Charge Modules
 VixenRequire($strModuleDir."charge_base.php");
 VixenRequire($strModuleDir."charge_latepayment.php");
 VixenRequire($strModuleDir."charge_nonddr.php");
