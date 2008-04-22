@@ -1371,6 +1371,27 @@
 
 	 	return $fltMargin;
 	 }
+
+
+	//------------------------------------------------------------------------//
+	// UpdateServiceTypeTotal
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateServiceTypeTotal()
+	 *
+	 * Creates or Updates the ServiceTypeTotal for this CDR
+	 *
+	 * Creates or Updates the ServiceTypeTotal for this CDR
+	 *
+	 * @param	array	$arrCDR				CDR to use
+	 *
+	 * @return	array						Updated CDR Record
+	 * @method
+	 */
+	 function UpdateServiceTypeTotal($arrCDR)
+	 {
+	 	// TODO
+	 }
  }
 
 
