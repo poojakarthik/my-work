@@ -550,12 +550,22 @@ HIl<?php
  				break;
  				
  			case REQUEST_VIRTUAL_PRESELECTION:
+ 				// Add Virtual Preselection Request
  				$this->intCarrierReference++;
  				$arrRendered['Sequence']		= $this->intCarrierReference;
  				$arrRendered['Date']			= date("Ymd", strtotime($arrRequest['AuthorisationDate']));
-		 		$arrRendered['**Type']			= $arrRequest['Type'];
+		 		$arrRendered['**Type']			= REQUEST_FULL_SERVICE_REVERSE;
 		 		$arrRendered['**Request']		= $arrRequest['Id'];
 			 	$arrRendered['**CarrierRef']	= $this->intCarrierReference;
+		 		$this->_arrFileContent[]		= $arrRendered;
+		 		
+		 		// Add Basket 2 Re-Request
+				$this->intCarrierReference++;
+				$arrRendered['Sequence']		= $this->intCarrierReference;
+				$arrRendered['Basket']			= 2;
+		 		$arrRendered['**Type']			= $arrRequest['Type'];
+		 		$arrRendered['**Request']		= $arrRequest['Id'];
+		 		$arrRendered['**CarrierRef']	= $this->intCarrierReference;
 		 		$this->_arrFileContent[]		= $arrRendered;
  				break;
  				
