@@ -263,8 +263,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * This works with the HtmlTemplateCustomerGroupDetails object, when rendered in Edit mode (HTML_CONTEXT_EDIT)
 	 * It fires the OnCustomerGroupDetailsUpdate Event if the CustomerGroup is successfully modified
 	 *
-	 * @return		void
-	 * @method
+	 * @return	void
+	 * @method	SaveDetails
 	 *
 	 */
 	function SaveDetails()
@@ -326,7 +326,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		if (!DBO()->CustomerGroup->Load())
 		{
@@ -343,8 +343,32 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		// Retrieve the Template history
-		//TODO!
-		
+		$arrColumns = Array(	"Id"				=> "DT.Id",
+								"Version"			=> "DT.Version",
+								"Description"		=> "DT.Description",
+								"EffectiveOn"		=> "DT.EffectiveOn",
+								"CreatedOn"			=> "DT.CreatedOn",
+								"LastModifiedOn"	=> "LastModifiedOn",
+								"LastUsedOn"		=> "LastUsedOn",
+								"SchemaVersion"		=> "DS.Version",
+								"Overridden"		=> "CASE WHEN (	SELECT Count(DT2.Id)
+																	FROM DocumentTemplate AS DT2
+																	WHERE DT2.CustomerGroup = DT.CustomerGroup 
+																	AND DT2.TemplateType = DT.TemplateType 
+																	AND DT2.CreatedOn > DT.CreatedOn 
+																	AND DT2.EffectiveOn <= DT.EffectiveOn
+														) > 0 THEN 1 ELSE 0 END"
+							);
+		$strTable	= "DocumentTemplate AS DT INNER JOIN DocumentSchema AS DS ON DT.Schema = DS.Id";
+		$strWhere	= "DT.CustomerGroup = <CustomerGroup> AND DT.TemplateType = <TemplateType>";
+		$arrWhere	= Array("CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
+							"TemplateType"	=> DBO()->DocumentTemplateType->Id->Value
+							);
+		DBL()->Templates->SetTable($strTable);
+		DBL()->Templates->SetColumns($arrColumns);
+		DBL()->Templates->Where->Set($strWhere, $arrWhere);
+		DBL()->Templates->OrderBy("DT.Version DESC");
+		DBL()->Templates->Load();
 		
 		// Build Context Menu
 		//TODO! When we have stuff to put in it
@@ -353,13 +377,160 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->SystemSettingsMenu();
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value);
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
 		BreadCrumb()->SetCurrentPage("Template History");
 		
 		$this->LoadPage('document_template_history');
 		return TRUE;
 	}
 
+	//------------------------------------------------------------------------//
+	// BuildNewTemplate
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildNewTemplate()
+	 *
+	 * Builds the "Edit Template page" webpage, but configures it for building a brand new Template, which could possibly be based on an existing one 
+	 * 
+	 * Builds the "Edit Template page" webpage, but configures it for building a brand new Template, which could possibly be based on an existing one
+	 * It expects the following values to be defined:
+	 * 	DBO()->CustomerGroup->Id			Id of the customer group
+	 * 	DBO()->DocumentTemplateType->Id		Template type. Only required if the new template is not based on an existing one
+	 * 	DBO()->BaseTemplate->Id				The Template to base the new one on.  Only required if the new template is based on an existing one
+	 *
+	 * @return		void
+	 * @method		BuildNewTemplate
+	 */
+	function BuildNewTemplate()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		if (!DBO()->CustomerGroup->Load())
+		{
+			DBO()->Error->Message = "The CustomerGroup with id: ". DBO()->CustomerGroup->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		if (DBO()->BaseTemplate->Id->IsSet)
+		{
+			// The new template will be based on an existing one
+			DBO()->BaseTemplate->SetTable("DocumentTemplate");
+			if (!DBO()->BaseTemplate->Load())
+			{
+				// Could not load the template to base the new one on
+				DBO()->Error->Message = "The DocumentTemplate with id: ". DBO()->BaseTemplate->Id->Value ." could not be found";
+				$this->LoadPage('error');
+				return TRUE;
+			}
+			
+			if (DBO()->BaseTemplate->CustomerGroup->Value != DBO()->CustomerGroup->Id->Value)
+			{
+				// The base template does not belong to the CustomerGroup
+				DBO()->Error->Message = "The DocumentTemplate of which to base the new template on, is not owned by the ". DBO()->CustomerGroup->InternalName->Value ." customer group";
+				$this->LoadPage('error');
+				return TRUE;
+			}
+			
+			DBO()->DocumentTemplateType->Id = DBO()->BaseTemplate->TemplateType->Value;
+		}
+		
+		if (!DBO()->DocumentTemplateType->Load())
+		{
+			DBO()->Error->Message = "The DocumentTemplateType with id: ". DBO()->DocumentTemplateType->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// Load the most recent schema for this DocumentTemplateType
+		$strWhere = "TemplateType = <TemplateType> AND Id = (SELECT Max(Id) FROM DocumentSchema WHERE TemplateType = <TemplateType>)";
+		$arrWhere = Array("TemplateType" => DBO()->DocumentTemplateType->Id->Value);
+		DBO()->DocumentSchema->Where->Set($strWhere, $arrWhere);
+		if (!DBO()->DocumentSchema->Load())
+		{
+			DBO()->Error->Message = "Could not find the document schema to use for this document template type (". DBO()->DocumentTemplateType->Id->Value .").  Please notify your system administrator";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// If there is a base template, then load it, and copy the contents of the BaseTemplate into it
+		$arrDraft = $this->_GetDraftTemplate(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
+		DBO()->DocumentTemplate->CustomerGroup	= DBO()->CustomerGroup->Id->Value;
+		DBO()->DocumentTemplate->TemplateType	= DBO()->DocumentTemplateType->Id->Value;
+		DBO()->DocumentTemplate->Version		= $this->_GetNextVersionForTemplate(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
+		if (is_array($arrDraft))
+		{
+			// There is a draft
+			DBO()->DocumentTemplate->Id				= $arrDraft['Id'];
+			DBO()->DocumentTemplate->Source			= $arrDraft['Source'];
+			DBO()->DocumentTemplate->CreatedOn		= $arrDraft['CreatedOn'];
+			DBO()->DocumentTemplate->LastModifiedOn	= $arrDraft['LastModifiedOn']; 
+		}
+
+		// Set a default description
+		DBO()->DocumentTemplate->Description = "Version ". DBO()->DocumentTemplate->Version->Value ." for ". DBO()->CustomerGroup->InternalName->Value ." ". DBO()->DocumentTemplateType->Name->Value ." Template";		
+
+		if (DBO()->BaseTemplate->Id->Value)
+		{
+			// Load the Template Source code from the BaseTemplate, into the new one
+			DBO()->DocumentTemplate->Source	= DBO()->DocumentTemplate->Source->Value;
+		}
+		
+		// Context Menu
+		//TODO!
+		
+		//BreadCrumb Menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SystemSettingsMenu();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
+		BreadCrumb()->SetCurrentPage("Template");
+		
+		$this->LoadPage('document_template');
+		return TRUE;
+	}
+
+	// Returns the record (associative array) of the draft template or returns NULL if there is no draft template
+	private function _GetDraftTemplate($intCustomerGroup, $intTemplateType)
+	{
+		$selTemplate	= new StatementSelect("DocumentTemplate", "*", "CustomerGroup = <CustomerGroup> AND TemplateType = <TemplateType> AND EffectiveOn IS NULL", "CreatedOn DESC", "1");
+		$mixResult		= $selTemplate->Execute(Array("CustomerGroup" => $intCustomerGroup, "TemplateType" => $intTemplateType));
+		
+		if ($mixResult === FALSE)
+		{
+			return FALSE;
+		}
+		elseif ($mixResult == 1)
+		{
+			return $selTemplate->Fetch();
+		}
+		return NULL;
+	}
+	
+	// Returns the next version number to use.
+	// If there is a draft DocumentTemplate for this particular CustomerGroup/TemplateType, then it will
+	// return the draft's assigned version
+	private function _GetNextVersionForTemplate($intCustomerGroup, $intTemplateType)
+	{
+		$arrColumns	= Array("NextVersion" => "	CASE
+													WHEN	(	SELECT MAX(Version)
+																FROM DocumentTemplate
+																WHERE CustomerGroup = $intCustomerGroup AND TemplateType = $intTemplateType
+															) IS NULL THEN 1
+													WHEN 	(	SELECT MAX(Version)
+																FROM DocumentTemplate
+																WHERE CustomerGroup = $intCustomerGroup AND TemplateType = $intTemplateType AND EffectiveOn IS NULL
+															) IS NULL THEN MAX(Version) + 1
+													ELSE MAX(Version) END");
+		$strWhere	= "CustomerGroup = $intCustomerGroup AND TemplateType = $intTemplateType";
+		$selVersion	= new StatementSelect("DocumentTemplate", $arrColumns, $strWhere);
+		$selVersion->Execute();
+		$arrRecord = $selVersion->Fetch();
+		return $arrRecord['NextVersion'];
+	}
 
     //----- DO NOT REMOVE -----//
 	

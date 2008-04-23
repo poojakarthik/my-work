@@ -29,13 +29,17 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
+		
 		$this->LoadJavascript("table_sort");
+		$this->LoadJavascript("document_template");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -52,172 +56,68 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<!-- START HtmlTemplateEmployeeView -->\n";
-		echo "<div id='EmployeeViewDiv'>\n";
-		echo "<div style='margin: 0px; width: 500px;'>\n";
+		echo "<!-- START HtmlTemplateDocumentTemplateHistory -->\n";
 		
-		echo "<div id='EmployeeTableDiv'>";
-		Table()->EmployeeTable->SetHeader("Given Name", "Surname", "Username", "Status", "Actions");
-		Table()->EmployeeTable->SetWidth("25%", "25%", "25%", "15%", "10%");
-		Table()->EmployeeTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
-		Table()->EmployeeTable->SetSortable(TRUE);
-		Table()->EmployeeTable->SetSortFields("FirstName", "LastName", "UserName", "Archived", null);
-		Table()->EmployeeTable->SetPageSize(25);
-		foreach (DBL()->Employee as $dboEmployee)
+		Table()->TemplateHistory->SetHeader("Version", "Description", "Effective", "Created", "Modified", "Last Used", "&nbsp");
+		Table()->TemplateHistory->SetWidth("5%", "45%", "10%", "10%", "10%", "10%", "10%");
+		Table()->TemplateHistory->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Right");
+		
+		// Sorting functionality cannot currently handle sorting dates in the format "dd/mm/yyyy" 
+		// as you can't just do a string comparison. Currently the pagination funcationality only works
+		// if sorting is turned on
+		Table()->TemplateHistory->SetSortable(TRUE);
+		Table()->TemplateHistory->SetSortFields(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+		
+		Table()->TemplateHistory->SetPageSize(20);
+		$intDraftVersion = NULL;
+		$strNow = GetCurrentDateAndTimeForMySQL();
+		foreach (DBL()->Templates as $dboTemplate)
 		{
-			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
+			$strVersion			= $dboTemplate->Version->Value;
+			$strDescription		= $dboTemplate->Description->Value;
+			$strEffectiveOn		= ($dboTemplate->EffectiveOn->Value != NULL)? OutputMask()->ShortDate($dboTemplate->EffectiveOn->Value) : "Draft";
+			$strCreatedOn		= OutputMask()->ShortDate($dboTemplate->CreatedOn->Value);
+			$strLastModifiedOn	= OutputMask()->ShortDate($dboTemplate->LastModifiedOn->Value);
+			$strLastUsedOn		= ($dboTemplate->LastUsedOn->Value != NULL)? OutputMask()->ShortDate($dboTemplate->LastUsedOn->Value) : "";
 			
-			$strView = "<a href='$strViewHref' title='View Employee'><img src='img/template/view.png'></img></a>";
-
-			//$strEditLabel = "<span class='DefaultOutputSpan Default'><a href='$strEditHref'>Edit Employee</a></span>";	
-			
-			$strArchivedLabel = "Active";
-			if ($dboEmployee->Archived->Value == 1)
+			// Flag the versions that have been completely overridden and therefore never used
+			if ($dboTemplate->Overridden->Value)
 			{
-				$strArchivedLabel = "Archived";
+				$strEffectiveOn = "<span style='text-decoration:line-through' title='This template was never used'>$strEffectiveOn</span>";
 			}
 			
-			Table()->EmployeeTable->AddRow(	$dboEmployee->FirstName->AsValue(),
-											$dboEmployee->LastName->AsValue(), 
-											$dboEmployee->UserName->AsValue(),
-											$strArchivedLabel,
-											$strView);
-		}
-
-		Table()->EmployeeTable->Render();
-		echo "</div>";
-		
-		// End narrow table
-		echo "</div>\n";
-		echo "</div>\n";
-		echo "<!-- END HtmlTemplateEmployeeView -->\n";
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderFullDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderFullDetail()
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * @method
-	 */
-	private function _RenderFullDetail()
-	{
-		if ($_POST['Archived'])
-		{
-			$strArchivedValue = 'checked';
-		}
-
-		echo "<!-- START HtmlTemplateEmployeeView -->\n";
-		echo "<div id='EmployeeViewDiv'>\n";
-		echo "<div style='margin: 0px; width: 500px;'>\n";
-		
-		$this->_RenderButtonBar($strArchivedValue);
-
-		echo "<div id='EmployeeTableDiv'>";
-		$this->_RenderTable();
-		echo "</div>";
-		
-		$this->_RenderButtonBar($strArchivedValue);
-		
-		// End narrow table
-		echo "</div>\n";
-		echo "</div>\n";
-		echo "<!-- END HtmlTemplateEmployeeView -->\n";
-	}
-	
-	
-	function _RenderTable()
-	{
-		Table()->EmployeeTable->SetHeader("Given Name", "Surname", "Username", "Status", "Actions");
-		Table()->EmployeeTable->SetWidth("25%", "25%", "25%", "15%", "10%");
-		Table()->EmployeeTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
-		Table()->EmployeeTable->SetSortable(TRUE);
-		Table()->EmployeeTable->SetSortFields("FirstName", "LastName", "UserName", "Archived", null);
-		Table()->EmployeeTable->SetPageSize(25);
-		foreach (DBL()->Employee as $dboEmployee)
-		{
-			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
-			
-			$strView = "<a href='$strViewHref' title='View Employee'><img src='img/template/view.png'></img></a>";
-
-			//$strEditLabel = "<span class='DefaultOutputSpan Default'><a href='$strEditHref'>Edit Employee</a></span>";	
-			
-			$strArchivedLabel = "Active";
-			if ($dboEmployee->Archived->Value == 1)
+			$strActionsCell = "";
+			if ($dboTemplate->EffectiveOn->Value == NULL)
 			{
-				$strArchivedLabel = "Archived";
+				// The template is the draft template
+				$intDraftVersion	= $dboTemplate->Version->Value;
+				$strActionsCell		= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplate.EditTemplate({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+			}
+			else
+			{
+				// The template has been committed (it has an effective on date set)
+				$strEdit = "";
+				if ($dboTemplate->EffectiveOn->Value > $strNow)
+				{
+					// The Template can still be editted as its effective date has not been reached yet
+					$strEdit	= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplate.Edit({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+				}
+				
+				$strNew			= "<img src='img/template/new.png' title='Build new template based on this one' onclick='Vixen.DocumentTemplate.BuildNew({$dboTemplate->Id->Value}, {$dboTemplate->Version->Value})' style='cursor:pointer'/>";
+				$strView		= "<img src='img/template/view.png' title='View the template' onclick='Vixen.DocumentTemplate.View({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+				$strActionsCell	= $strView  . $strNew . $strEdit;
 			}
 			
-			Table()->EmployeeTable->AddRow(	$dboEmployee->FirstName->AsValue(),
-											$dboEmployee->LastName->AsValue(), 
-											$dboEmployee->UserName->AsValue(),
-											$strArchivedLabel,
-											$strView);
+			Table()->TemplateHistory->AddRow($strVersion, $strDescription, $strEffectiveOn, $strCreatedOn, $strLastModifiedOn, $strLastUsedOn, $strActionsCell);
 		}
 
-		Table()->EmployeeTable->Render();
-	}
-	
-	
-	//------------------------------------------------------------------------//
-	// _RenderButtonBar
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderButtonBar()
-	 * 
-	 * Render the button bar
-	 * 
-	 * Only renders one form per page. Other checkboxes invoke submit on the one form
-	 * 
-	 * @param	str	$strArchivedValue "1" if list includes archived employees, "0" otherwise  
-	 * 
-	 * @method
-	 */
-	private function _RenderButtonBar($strArchivedValue)
-	{
-		static $formRendered, $strAddEmployee;
-		if (!isset($formRendered))
-		{
-			$formRendered = FALSE;
-			$strAddEmployee = Href()->AddEmployee();
-		}
-
-		$strUpdateOtherCheckBox = "";
-		$strCheckBoxID = "";
-		if (!$formRendered)
-		{
-			$this->FormStart('Employee', 'Employee', 'EmployeeList');
-			$strCheckBoxID = "id='chbArchived'";
-			$strUpdateOtherCheckBox = "try { var cb = document.getElementById(\"chbArchivedFooter\"); if (cb.checked != this.checked) cb.checked = this.checked; } catch(e){}";
-		}
-		else
-		{
-			$strCheckBoxID = "id='chbArchivedFooter'";
-			$strUpdateOtherCheckBox = "document.getElementById(\"chbArchived\").checked = this.checked;";
-		}
-
-		echo "<div class='ButtonContainer' style='width: 100%; position: relative;'>\n";
-		echo "<input type='checkbox' $strCheckBoxID name='Archived' value=1 $strArchivedValue onClick='$strUpdateOtherCheckBox EmployeeView.Update();'>Show Archived Employees</input>";
-
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
-		{
-			echo "<div style='position: absolute; right: 0px; top: 3px;'>";
-			$this->Button("Add Employee", "window.location='$strAddEmployee'");
-			echo "</div>\n";
-		}
+		Table()->TemplateHistory->Render();
 		
-		echo "</div>\n";
+		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
+		$strDraftVersion	= ($intDraftVersion != NULL)? $intDraftVersion : "null";
+		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseHistoryPage($intCustomerGroup, $strDraftVersion)</script>\n";
 		
-		if (!$formRendered)
-		{
-			$this->FormEnd();
-			$formRendered = TRUE;
-		}
+		echo "<!-- END HtmlTemplateDocumentTemplateHistory -->\n";	
 	}
 }
 

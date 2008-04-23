@@ -47,22 +47,6 @@
 class HtmlTemplateAccountServicesList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -340,10 +324,10 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				// The line status is unknown
 				$strLineStatus = "Unknown";
 			}
-			else if (!($strLineStatusDate == "0000-00-00 00:00:00" || $strLineStatusDate == NULL))
+			elseif ($strLineStatusDate != NULL)
 			{
 				// LineStatus Date has been supplied
-				$strLineStatusDate = substr($strLineStatusDate, 11, 2) .":". substr($strLineStatusDate, 14, 2) .":". substr($strLineStatusDate, 17, 2) ." ". substr($strLineStatusDate, 8, 2) ."/". substr($strLineStatusDate, 5, 2) ."/". substr($strLineStatusDate, 0, 4);
+				$strLineStatusDate = substr($strLineStatusDate, 11, 8) ." ". substr($strLineStatusDate, 8, 2) ."/". substr($strLineStatusDate, 5, 2) ."/". substr($strLineStatusDate, 0, 4);
 				$strLineStatusDesc = "Line Status was last updated: $strLineStatusDate";
 			}
 

@@ -164,15 +164,25 @@ class MenuItems
 	 *
 	 * Compiles the Href to be executed when the ViewCustomerGroup menu item is clicked
 	 * 
-	 * @param	int		$intId		id of the CustomerGroup
+	 * @param	int		$intId					id of the CustomerGroup
+	 * @param	string	$strBreadCrumbLabel		optional, breadcrumb label, preferably the name of the customer group
 	 *
 	 * @return	string				Href to be executed when the ViewCustomerGroup menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewCustomerGroup($intId)
+	function ViewCustomerGroup($intId, $strBreadCrumbLabel=NULL)
 	{
 		$this->strLabel	= "Customer Group";
+		if ($strBreadCrumbLabel !== NULL)
+		{
+			$this->strLabel = $strBreadCrumbLabel;
+			if (strlen($strBreadCrumbLabel) > 15)
+			{
+				$this->strLabel = "<span title='$strBreadCrumbLabel'>". substr($strBreadCrumbLabel, 0, 12) . "...</span>";
+			}
+		}
+		
 		$this->strContextMenuLabel = "";
 		return "flex.php/CustomerGroup/View/?CustomerGroup.Id=$intId";
 	}
