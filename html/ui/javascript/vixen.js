@@ -346,9 +346,9 @@ var Event = {};
 /**
  * startObserving
  *
- * Cross-browser function for doing an 'addEventLister'
+ * Cross-browser function for doing an 'addEventListener'
  *
- * Cross-browser function for doing an 'addEventLister'
+ * Cross-browser function for doing an 'addEventListener'
  *
  * @param element		DOMElement	to listen to handle events for
  * @param strName		String		name of the event (without 'on' prefix)

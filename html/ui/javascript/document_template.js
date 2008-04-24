@@ -42,46 +42,70 @@
  */
 function VixenDocumentTemplateClass()
 {
-	this.intDraftVersion	= null;
-	this.intCustomerGroup	= null;
+	this.objTemplate		= null;
+	this.objSchema			= null;
+	this.elmSourceCode		= null;
+	this.elmDescription		= null;
 
-	// This is called when the DocumentTemplateHistory page is loaded
-	this.InitialiseHistoryPage = function(intCustomerGroup, intDraftVersion)
+	this.InitialiseAddPage = function(objTemplate, objSchema)
 	{
-		this.intCustomerGroup	= intCustomerGroup;
-		this.intDraftVersion	= (intDraftVersion)? intDraftVersion : null;
+		this.objTemplate	= objTemplate;
+		this.objSchema		= objSchema;
+		this.elmSourceCode	= $ID("DocumentTemplate.Source");
+		this.elmDescription = $ID("DocumentTemplate.Description");
+		
+		// Null the things that should be null when the template is new
+		this.objTemplate.Id				= null;
+		this.objTemplate.Schema			= objSchema.Id;
+		this.objTemplate.EffectiveOn	= null;
+		this.objTemplate.CreatedOn		= null;
+		this.objTemplate.Version		= null;
+		
+		// Register tab handler for the textarea
+		Event.startObserving(this.elmSourceCode, "keydown", TextAreaTabListener, true);
 	}
 
-	// Edits the template
-	this.Edit = function(intTemplateId)
+
+	// Saves the template
+	this.Save = function(bolConfirmed)
 	{
-	}
+		// Check that changes have been made
+		if ((!bolConfirmed) && (this.objTemplate.Source == this.elmSourceCode.value) && (this.objTemplate.Description == this.elmDescription.value))
+		{
+			$Alert("No changes have actually been made");
+			return;
+		}
 	
-	// Builds a new template based on the one with id == intTemplateId
-	// If intTemplateId is not supplied then it doesn't base the new template on anything
-	this.BuildNew = function(intTemplateId, intVersion, bolConfirmed)
-	{
 		if (!bolConfirmed)
 		{
-			if (this.intDraftVersion)
-			{
-				var strPrompt = "There is currently a draft template (Version "+ this.intDraftVersion +") which will be overwritten if you choose to build a new template based on version "+ intVersion +".  Are you sure you want to overwrite the current draft template?<br />Note that the current draft template is not actually overridden until you save the changes you make.";
-			}
-			else
-			{
-				var strPrompt = "Are you sure you want to create a new template based on version " + intVersion;
-			}
-			Vixen.Popup.Confirm(strPrompt, function(){Vixen.DocumentTemplate.BuildNew(intTemplateId, intVersion, true)});
-			//Vixen.Popup.Confirm(strPrompt, function(){alert('hello')});
+			Vixen.Popup.Confirm("Are you sure you want to save this Template?", function(){Vixen.DocumentTemplate.Save(true)});
 			return;
 		}
 		
-		window.location = "flex.php/CustomerGroup/BuildNewTemplate/?BaseTemplate.Id=" + intTemplateId +"&CustomerGroup.Id=" + this.intCustomerGroup;
+		// Compile data to be sent to the server
+		var objData			= {}
+		objData.Template	= {};
+		for (i in this.objTemplate)
+		{
+			objData.Template[i] = this.objTemplate[i];
+		}
+		
+		objData.Template.Description	= this.elmDescription.value;
+		objData.Template.Source			= this.elmSourceCode.value;
+		
+		Vixen.Ajax.CallAppTemplate("CustomerGroup", "SaveTemplate", objData, null, true, true, this.SaveReturnHandler.bind(this));
 	}
 	
-	// View a template
-	this.View = function(intTemplateId)
+	this.SaveReturnHandler = function(objXMLHttpRequest)
 	{
+		var objResponse = JSON.parse(objXMLHttpRequest.responseText);
+		
+		if (objResponse.Success == true)
+		{
+			// Load the details of the Template back into this.objTemplate.  The Id should now be set
+			this.objTemplate = objResponse.Template;
+			$Alert("The Template has been successfully saved");
+		}
 	}
 
 }

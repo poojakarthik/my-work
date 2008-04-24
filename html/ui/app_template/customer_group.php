@@ -359,7 +359,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 																	AND DT2.EffectiveOn <= DT.EffectiveOn
 														) > 0 THEN 1 ELSE 0 END"
 							);
-		$strTable	= "DocumentTemplate AS DT INNER JOIN DocumentSchema AS DS ON DT.Schema = DS.Id";
+		$strTable	= "DocumentTemplate AS DT INNER JOIN DocumentSchema AS DS ON DT.TemplateSchema = DS.Id";
 		$strWhere	= "DT.CustomerGroup = <CustomerGroup> AND DT.TemplateType = <TemplateType>";
 		$arrWhere	= Array("CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
 							"TemplateType"	=> DBO()->DocumentTemplateType->Id->Value
@@ -369,6 +369,13 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		DBL()->Templates->Where->Set($strWhere, $arrWhere);
 		DBL()->Templates->OrderBy("DT.Version DESC");
 		DBL()->Templates->Load();
+		
+		if (DBL()->Templates->RecordCount() == 0)
+		{
+			// There aren't any templates for this CustomerGroup/TemplateType combination
+			// Redirect the user to the AddNewTemplate page
+			return $this->BuildNewTemplate();
+		}
 		
 		// Build Context Menu
 		//TODO! When we have stuff to put in it
@@ -445,7 +452,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		// Load the most recent schema for this DocumentTemplateType
-		$strWhere = "TemplateType = <TemplateType> AND Id = (SELECT Max(Id) FROM DocumentSchema WHERE TemplateType = <TemplateType>)";
+		$strWhere = "Id = (SELECT Max(Id) FROM DocumentSchema WHERE TemplateType = <TemplateType>)";
 		$arrWhere = Array("TemplateType" => DBO()->DocumentTemplateType->Id->Value);
 		DBO()->DocumentSchema->Where->Set($strWhere, $arrWhere);
 		if (!DBO()->DocumentSchema->Load())
@@ -455,19 +462,21 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// If there is a base template, then load it, and copy the contents of the BaseTemplate into it
+		// If there is a draft template, then load it, and copy the contents of the BaseTemplate into it
 		$arrDraft = $this->_GetDraftTemplate(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
 		DBO()->DocumentTemplate->CustomerGroup	= DBO()->CustomerGroup->Id->Value;
 		DBO()->DocumentTemplate->TemplateType	= DBO()->DocumentTemplateType->Id->Value;
 		DBO()->DocumentTemplate->Version		= $this->_GetNextVersionForTemplate(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
+		DBO()->DocumentTemplate->TemplateSchema	= DBO()->DocumentSchema->Id->Value;
 		if (is_array($arrDraft))
 		{
 			// There is a draft
 			DBO()->DocumentTemplate->Id				= $arrDraft['Id'];
 			DBO()->DocumentTemplate->Source			= $arrDraft['Source'];
 			DBO()->DocumentTemplate->CreatedOn		= $arrDraft['CreatedOn'];
-			DBO()->DocumentTemplate->LastModifiedOn	= $arrDraft['LastModifiedOn']; 
+			DBO()->DocumentTemplate->LastModifiedOn	= $arrDraft['LastModifiedOn'];
 		}
+		
 
 		// Set a default description
 		DBO()->DocumentTemplate->Description = "Version ". DBO()->DocumentTemplate->Version->Value ." for ". DBO()->CustomerGroup->InternalName->Value ." ". DBO()->DocumentTemplateType->Name->Value ." Template";		
@@ -489,9 +498,93 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
 		BreadCrumb()->SetCurrentPage("Template");
 		
+		DBO()->Render->Context = HTML_CONTEXT_NEW;
+		
 		$this->LoadPage('document_template');
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// SaveTemplate
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveTemplate()
+	 *
+	 * Handles the ajax request to save a template 
+	 * 
+	 * Handles the ajax request to save a template
+	 * It expects the following values to be defined:
+	 *
+	 * @return		void
+	 * @method		SaveTemplate
+	 */
+	function SaveTemplate()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		$strNow = GetCurrentDateAndTimeForMySQL();
+		
+		if (DBO()->Template->Id->Value != NULL)
+		{
+			// The user is saving changes made to an existing template
+			$selCurrentTemplate = new StatementSelect("DocumentTemplate", "*", "Id = <Id>");
+			if (!$selCurrentTemplate->Execute(Array("Id" => DBO()->Template->Id->Value)))
+			{
+				Ajax()->AddCommand("Alert", "ERROR: Could not retrieve the DocumentTemplate with id: ". DBO()->Template->Id->Value ." and Version: ". DBO()->Template->Version->Value .". Please notify your system administrator.");
+				return TRUE;
+			}
+			$arrCurrentTemplate = $selCurrentTemplate->Fetch();
+			
+			// If the Template's EffectiveOn date is set and in the past then they cannot update it
+			if ($arrCurrentTemplate['EffectiveOn'] != NULL && $arrCurrentTemplate['EffectiveOn'] <= $strNow)
+			{
+				Ajax()->AddCommand("Alert", "ERROR: This template has already come into effect, and can therefore not be modified");
+				return TRUE;
+			}
+			 
+			// Copy over values that should not have changed
+			DBO()->Template->CreatedOn = $arrCurrentTemplate["CreatedOn"];
+		}
+		else
+		{
+			// The template is completely new
+			// If there is a draft template, then copy over this one
+			$arrDraft = $this->_GetDraftTemplate(DBO()->Template->CustomerGroup->Value, DBO()->Template->TemplateType->Id->Value);
+			if (is_array($arrDraft))
+			{
+				DBO()->Template->Id = $arrDraft['Id'];
+			}
+			
+			// Set the Version to the next available version
+			DBO()->Template->Version = $this->_GetNextVersionForTemplate(DBO()->Template->CustomerGroup->Value, DBO()->Template->TemplateType->Value);
+			
+			DBO()->Template->CreatedOn = $strNow;
+		}
+		
+		DBO()->Template->EffectiveOn	= NULL;
+		DBO()->Template->LastModifiedOn = $strNow;
+		DBO()->Template->LastUsedOn		= NULL; 
+		
+		// Save the record
+		DBO()->Template->SetTable("DocumentTemplate");
+		if (!DBO()->Template->Save())
+		{
+			// Saving the template failed
+			Ajax()->AddCommand("Alert", "ERROR: Saving the template failed, unexpectedly.  Please notify your system administrator");
+			return TRUE;
+		}
+		
+		// The Template was successfully saved
+		$arrReply["Template"]	= DBO()->Template->_arrProperties;
+		$arrReply["Success"]	= TRUE;
+		
+		AjaxReply($arrReply);
+		
+		return TRUE;
+	}
+	
 
 	// Returns the record (associative array) of the draft template or returns NULL if there is no draft template
 	private function _GetDraftTemplate($intCustomerGroup, $intTemplateType)

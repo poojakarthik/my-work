@@ -39,7 +39,7 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("table_sort");
-		$this->LoadJavascript("document_template");
+		$this->LoadJavascript("document_template_history");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -91,7 +91,7 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 			{
 				// The template is the draft template
 				$intDraftVersion	= $dboTemplate->Version->Value;
-				$strActionsCell		= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplate.EditTemplate({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+				$strActionsCell		= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplateHistory.EditTemplate({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
 			}
 			else
 			{
@@ -100,11 +100,11 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 				if ($dboTemplate->EffectiveOn->Value > $strNow)
 				{
 					// The Template can still be editted as its effective date has not been reached yet
-					$strEdit	= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplate.Edit({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+					$strEdit	= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplateHistory.Edit({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
 				}
 				
-				$strNew			= "<img src='img/template/new.png' title='Build new template based on this one' onclick='Vixen.DocumentTemplate.BuildNew({$dboTemplate->Id->Value}, {$dboTemplate->Version->Value})' style='cursor:pointer'/>";
-				$strView		= "<img src='img/template/view.png' title='View the template' onclick='Vixen.DocumentTemplate.View({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+				$strNew			= "<img src='img/template/new.png' title='Build new template based on this one' onclick='Vixen.DocumentTemplateHistory.BuildNew({$dboTemplate->Id->Value}, {$dboTemplate->Version->Value})' style='cursor:pointer'/>";
+				$strView		= "<img src='img/template/view.png' title='View the template' onclick='Vixen.DocumentTemplateHistory.View({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
 				$strActionsCell	= $strView  . $strNew . $strEdit;
 			}
 			
@@ -115,7 +115,7 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 		
 		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
 		$strDraftVersion	= ($intDraftVersion != NULL)? $intDraftVersion : "null";
-		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseHistoryPage($intCustomerGroup, $strDraftVersion)</script>\n";
+		echo "<script type='text/javascript'>Vixen.DocumentTemplateHistory.Initialise($intCustomerGroup, $strDraftVersion)</script>\n";
 		
 		echo "<!-- END HtmlTemplateDocumentTemplateHistory -->\n";	
 	}

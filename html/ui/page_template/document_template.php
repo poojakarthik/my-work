@@ -32,6 +32,6 @@ $this->Page->SetName("Template - ". DBO()->DocumentTemplateType->Name->Value ." 
 $this->Page->SetLayout('1Column');
 
 // add the Html Objects to their respective columns
-$this->Page->AddObject('DelinquentCDRs', COLUMN_ONE);
+$this->Page->AddObject('DocumentTemplate', COLUMN_ONE, DBO()->Render->Context->Value);
 
 ?>

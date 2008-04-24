@@ -3035,7 +3035,7 @@
 				 
 				 
 	// Define Columns 
-	$strName = "Schema"; 
+	$strName = "TemplateSchema"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
