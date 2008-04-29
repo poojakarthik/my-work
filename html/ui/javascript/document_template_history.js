@@ -55,7 +55,7 @@ function VixenDocumentTemplateHistoryClass()
 	// Loads the Edit Template page
 	this.Edit = function(intTemplateId)
 	{
-		$Alert("TODO");
+		window.location = "flex.php/CustomerGroup/EditTemplate/?DocumentTemplate.Id=" + intTemplateId;
 	}
 	
 	// Builds a new template based on the one with id == intTemplateId
@@ -66,7 +66,7 @@ function VixenDocumentTemplateHistoryClass()
 		{
 			if (this.intDraftVersion)
 			{
-				var strPrompt = "There is currently a draft template (Version "+ this.intDraftVersion +") which will be overwritten if you choose to build a new template based on version "+ intVersion +".  Are you sure you want to overwrite the current draft template?<br />Note that the current draft template is not actually overridden until you save the changes you make.";
+				var strPrompt = "There is currently a draft template (Version "+ this.intDraftVersion +") which will be overwritten if you choose to build a new template based on version "+ intVersion +".  Are you sure you want to overwrite the current draft template?<br /><br />Note that the current draft template is not actually overridden until you save the changes you make.";
 			}
 			else
 			{
@@ -82,7 +82,7 @@ function VixenDocumentTemplateHistoryClass()
 	// Loads the View template page
 	this.View = function(intTemplateId)
 	{
-		$Alert("TODO");
+		window.location = "flex.php/CustomerGroup/ViewTemplate/?DocumentTemplate.Id=" + intTemplateId;
 	}
 
 }

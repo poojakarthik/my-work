@@ -343,23 +343,23 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		// Retrieve the Template history
-		$arrColumns = Array(	"Id"				=> "DT.Id",
-								"Version"			=> "DT.Version",
-								"Description"		=> "DT.Description",
-								"EffectiveOn"		=> "DT.EffectiveOn",
-								"CreatedOn"			=> "DT.CreatedOn",
-								"LastModifiedOn"	=> "LastModifiedOn",
-								"LastUsedOn"		=> "LastUsedOn",
-								"SchemaVersion"		=> "DS.Version",
-								"Overridden"		=> "CASE WHEN (	SELECT Count(DT2.Id)
-																	FROM DocumentTemplate AS DT2
-																	WHERE DT2.CustomerGroup = DT.CustomerGroup 
-																	AND DT2.TemplateType = DT.TemplateType 
-																	AND DT2.CreatedOn > DT.CreatedOn 
-																	AND DT2.EffectiveOn <= DT.EffectiveOn
-														) > 0 THEN 1 ELSE 0 END"
+		$arrColumns = Array(	"Id"			=> "DT.Id",
+								"Version"		=> "DT.Version",
+								"Description"	=> "DT.Description",
+								"EffectiveOn"	=> "DT.EffectiveOn",
+								"CreatedOn"		=> "DT.CreatedOn",
+								"ModifiedOn"	=> "ModifiedOn",
+								"LastUsedOn"	=> "LastUsedOn",
+								"SchemaVersion"	=> "DS.Version",
+								"Overridden"	=> "CASE WHEN (	SELECT Count(DT2.Id)
+																FROM DocumentTemplate AS DT2
+																WHERE DT2.CustomerGroup = DT.CustomerGroup 
+																AND DT2.TemplateType = DT.TemplateType 
+																AND DT2.CreatedOn > DT.CreatedOn 
+																AND DT2.EffectiveOn <= DT.EffectiveOn
+													) > 0 THEN 1 ELSE 0 END"
 							);
-		$strTable	= "DocumentTemplate AS DT INNER JOIN DocumentSchema AS DS ON DT.TemplateSchema = DS.Id";
+		$strTable	= "DocumentTemplate AS DT INNER JOIN DocumentTemplateSchema AS DS ON DT.TemplateSchema = DS.Id";
 		$strWhere	= "DT.CustomerGroup = <CustomerGroup> AND DT.TemplateType = <TemplateType>";
 		$arrWhere	= Array("CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
 							"TemplateType"	=> DBO()->DocumentTemplateType->Id->Value
@@ -452,29 +452,23 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		// Load the most recent schema for this DocumentTemplateType
-		$strWhere = "Id = (SELECT Max(Id) FROM DocumentSchema WHERE TemplateType = <TemplateType>)";
-		$arrWhere = Array("TemplateType" => DBO()->DocumentTemplateType->Id->Value);
-		DBO()->DocumentSchema->Where->Set($strWhere, $arrWhere);
-		if (!DBO()->DocumentSchema->Load())
-		{
-			DBO()->Error->Message = "Could not find the document schema to use for this document template type (". DBO()->DocumentTemplateType->Id->Value .").  Please notify your system administrator";
-			$this->LoadPage('error');
-			return TRUE;
-		}
+		$arrSchema = $this->_GetCurrentSchema(DBO()->DocumentTemplateType->Id->Value);
+		DBO()->DocumentTemplateSchema->_arrProperties = $arrSchema;
 		
 		// If there is a draft template, then load it, and copy the contents of the BaseTemplate into it
 		$arrDraft = $this->_GetDraftTemplate(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
 		DBO()->DocumentTemplate->CustomerGroup	= DBO()->CustomerGroup->Id->Value;
 		DBO()->DocumentTemplate->TemplateType	= DBO()->DocumentTemplateType->Id->Value;
 		DBO()->DocumentTemplate->Version		= $this->_GetNextVersionForTemplate(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
-		DBO()->DocumentTemplate->TemplateSchema	= DBO()->DocumentSchema->Id->Value;
+		DBO()->DocumentTemplate->TemplateSchema	= DBO()->DocumentTemplateSchema->Id->Value;
+		DBO()->DocumentTemplate->EffectiveOn	= NULL;
 		if (is_array($arrDraft))
 		{
 			// There is a draft
-			DBO()->DocumentTemplate->Id				= $arrDraft['Id'];
-			DBO()->DocumentTemplate->Source			= $arrDraft['Source'];
-			DBO()->DocumentTemplate->CreatedOn		= $arrDraft['CreatedOn'];
-			DBO()->DocumentTemplate->LastModifiedOn	= $arrDraft['LastModifiedOn'];
+			DBO()->DocumentTemplate->Id			= $arrDraft['Id'];
+			DBO()->DocumentTemplate->Source		= $arrDraft['Source'];
+			DBO()->DocumentTemplate->CreatedOn	= $arrDraft['CreatedOn'];
+			DBO()->DocumentTemplate->ModifiedOn	= $arrDraft['ModifiedOn'];
 		}
 		
 
@@ -484,7 +478,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		if (DBO()->BaseTemplate->Id->Value)
 		{
 			// Load the Template Source code from the BaseTemplate, into the new one
-			DBO()->DocumentTemplate->Source	= DBO()->DocumentTemplate->Source->Value;
+			DBO()->DocumentTemplate->Source	= DBO()->BaseTemplate->Source->Value;
 		}
 		
 		// Context Menu
@@ -499,6 +493,98 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Template");
 		
 		DBO()->Render->Context = HTML_CONTEXT_NEW;
+		
+		$this->LoadPage('document_template');
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// EditTemplate
+	//------------------------------------------------------------------------//
+	/**
+	 * EditTemplate()
+	 *
+	 * Builds the "Edit Template page" webpage 
+	 * 
+	 * Builds the "Edit Template page" webpage
+	 * It expects the following values to be defined:
+	 * 	DBO()->DocumentTemplate->Id			The Template to edit
+	 *
+	 * @return	void
+	 * @method	EditTemplate
+	 */
+	function EditTemplate()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		if (!$this->_LoadTemplate(DBO()->DocumentTemplate->Id->Value, TRUE))
+		{
+			// The template could not be loaded
+			DBO()->Error->Message = "The DocumentTemplate with id: ". DBO()->DocumentTemplate->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// Context Menu
+		//TODO!
+		
+		//BreadCrumb Menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SystemSettingsMenu();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
+		BreadCrumb()->SetCurrentPage("Template");
+		
+		DBO()->Render->Context = HTML_CONTEXT_EDIT;
+		
+		$this->LoadPage('document_template');
+		return TRUE;
+	}
+
+	//------------------------------------------------------------------------//
+	// ViewTemplate
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewTemplate()
+	 *
+	 * Builds the "View Template page" webpage 
+	 * 
+	 * Builds the "View Template page" webpage
+	 * It expects the following values to be defined:
+	 * 	DBO()->DocumentTemplate->Id			The Template to view
+	 *
+	 * @return	void
+	 * @method	ViewTemplate
+	 */
+	function ViewTemplate()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		if (!$this->_LoadTemplate(DBO()->DocumentTemplate->Id->Value, FALSE))
+		{
+			// The template could not be loaded
+			DBO()->Error->Message = "The DocumentTemplate with id: ". DBO()->DocumentTemplate->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// Context Menu
+		//TODO!
+		
+		//BreadCrumb Menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SystemSettingsMenu();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
+		BreadCrumb()->SetCurrentPage("Template");
+		
+		DBO()->Render->Context = HTML_CONTEXT_VIEW;
 		
 		$this->LoadPage('document_template');
 		return TRUE;
@@ -523,7 +609,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
+
 		$strNow = GetCurrentDateAndTimeForMySQL();
 		
 		if (DBO()->Template->Id->Value != NULL)
@@ -551,7 +637,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		{
 			// The template is completely new
 			// If there is a draft template, then copy over this one
-			$arrDraft = $this->_GetDraftTemplate(DBO()->Template->CustomerGroup->Value, DBO()->Template->TemplateType->Id->Value);
+			$arrDraft = $this->_GetDraftTemplate(DBO()->Template->CustomerGroup->Value, DBO()->Template->TemplateType->Value);
 			if (is_array($arrDraft))
 			{
 				DBO()->Template->Id = $arrDraft['Id'];
@@ -563,9 +649,56 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			DBO()->Template->CreatedOn = $strNow;
 		}
 		
-		DBO()->Template->EffectiveOn	= NULL;
-		DBO()->Template->LastModifiedOn = $strNow;
-		DBO()->Template->LastUsedOn		= NULL; 
+		// Build a default description if one has not been supplied
+		if (!Validate("IsNotEmptyString", DBO()->Template->Description->Value))
+		{
+			DBO()->CustomerGroup->Id = DBO()->Template->CustomerGroup->Value;
+			DBO()->CustomerGroup->Load();
+			DBO()->DocumentTemplateType->Id = DBO()->Template->TemplateType->Value;
+			DBO()->DocumentTemplateType->Load();
+			DBO()->Template->Description = "Version ". DBO()->Template->Version->Value ." for ". DBO()->CustomerGroup->InternalName->Value ." ". DBO()->DocumentTemplateType->Name->Value;
+		}
+		
+		switch (DBO()->Template->EffectiveOnType->Value)
+		{
+			case "immediately":
+				DBO()->Template->EffectiveOn = $strNow;
+				break;
+			
+			case "date":
+				// Validate the date and check that it is in the future
+				if (!Validate("ShortDate", DBO()->Template->EffectiveOn->Value))
+				{
+					// The EffectiveOn date is invalid
+					Ajax()->AddCommand("Alert", "ERROR: Invalid 'Effective On' date.<br />It must be in the format dd/mm/yyyy and in the future");
+					return TRUE;
+				}
+				
+				// Convert the date into the YYYY-MM-DD format
+				DBO()->Template->EffectiveOn = ConvertUserDateToMySqlDate(DBO()->Template->EffectiveOn->Value);
+				
+				// Check that the Date is in the future
+				if ($strNow > DBO()->Template->EffectiveOn->Value)
+				{
+					// The EffectiveOn date is in the past (or today, which is considered in the past)
+					Ajax()->AddCommand("Alert", "ERROR: Invalid 'Effective On' date.  It must be in the future");
+					return TRUE;
+				}
+				break;
+				
+			case "undeclared":
+			default:
+				// Check that there isn't a current value for EffectiveOn
+				if (isset($arrCurrentTemplate) && $arrCurrentTemplate['EffectiveOn'] != NULL)
+				{
+					Ajax()->AddCommand("Alert", "ERROR: 'Effective On' date has already been set and can not be set back to 'undeclared'");
+					return TRUE;
+				}
+				
+				DBO()->Template->EffectiveOn = NULL;
+		}
+		
+		DBO()->Template->ModifiedOn = $strNow;
 		
 		// Save the record
 		DBO()->Template->SetTable("DocumentTemplate");
@@ -577,16 +710,60 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		// The Template was successfully saved
+		
+		// If the EffectiveOn Date is set.  Check if the Template will be totally overridden by a newer one
+		if (DBO()->Template->EffectiveOn->Value != NULL) 
+		{
+			$strWhere = "CustomerGroup = <CustomerGroup> AND TemplateType = <TemplateType> AND Id != <TemplateId> AND CreatedOn > <CreatedOn> AND EffectiveOn IS NOT NULL AND EffectiveOn <= <EffectiveOn>";
+			$arrWhere = Array(	"CustomerGroup"	=> DBO()->Template->CustomerGroup->Value,
+								"TemplateType"	=> DBO()->Template->TemplateType->Value,
+								"TemplateId"	=> DBO()->Template->Id->Value,
+								"CreatedOn"		=> DBO()->Template->CreatedOn->Value,
+								"EffectiveOn"	=> DBO()->Template->EffectiveOn->Value);
+			$selOverridingTemplates = new StatementSelect("DocumentTemplate", "Id", $strWhere);
+			$intRecCount = $selOverridingTemplates->Execute($arrWhere);
+			if ($intRecCount > 0)
+			{
+				// The template is completely overridden and will never be used unless the EffectiveOn date is changed
+				$strHref = Href()->ViewDocumentTemplateHistory(DBO()->Template->CustomerGroup->Value, DBO()->Template->TemplateType->Value);
+				$arrData = Array(	"Alert"		=> "The Template has been successfully saved however, with its current EffectiveOn date, it will never be used as it is currently overridden by another template which was created more recently, and has an ealier EffectiveOn date",
+									"Location"	=> $strHref);
+				Ajax()->AddCommand("AlertAndRelocate", $arrData);
+				return TRUE;
+			}
+		}
+		if (DBO()->Template->EffectiveOn->Value == $strNow)
+		{
+			// The template can no longer be editted.  Relocate the user to the history page
+			$strHref = Href()->ViewDocumentTemplateHistory(DBO()->Template->CustomerGroup->Value, DBO()->Template->TemplateType->Value);
+			$arrData = Array(	"Alert"		=> "The Template has been successfully saved and comes into effect immediately",
+								"Location"	=> $strHref);
+			Ajax()->AddCommand("AlertAndRelocate", $arrData);
+			return TRUE;
+		}
+		
 		$arrReply["Template"]	= DBO()->Template->_arrProperties;
 		$arrReply["Success"]	= TRUE;
 		
 		AjaxReply($arrReply);
-		
 		return TRUE;
 	}
-	
+
+	// Returns the record (associative array) of the current document template schema for the specified TemplateType
+	// Returns FALSE on error
+	private function _GetCurrentSchema($intTemplateType)
+	{
+		$selSchema = new StatementSelect("DocumentTemplateSchema", "*", "Id = (SELECT MAX(Id) FROM DocumentTemplateSchema WHERE TemplateType = <TemplateType>)");
+		if (!$selSchema->Execute(Array("TemplateType" => $intTemplateType)))
+		{
+			return FALSE;
+		}
+		
+		return $selSchema->Fetch();
+	}
 
 	// Returns the record (associative array) of the draft template or returns NULL if there is no draft template
+	// Returns FALSE on error
 	private function _GetDraftTemplate($intCustomerGroup, $intTemplateType)
 	{
 		$selTemplate	= new StatementSelect("DocumentTemplate", "*", "CustomerGroup = <CustomerGroup> AND TemplateType = <TemplateType> AND EffectiveOn IS NULL", "CreatedOn DESC", "1");
@@ -624,6 +801,60 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		$arrRecord = $selVersion->Fetch();
 		return $arrRecord['NextVersion'];
 	}
+
+	//------------------------------------------------------------------------//
+	// LoadTemplate
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadTemplate()
+	 *
+	 * Loads the template and associated objects into the DBO() collection for use by the "Edit Template" and "View Template" pages 
+	 * 
+	 * Loads the template and associated objects into the DBO() collection for use by the "Edit Template" and "View Template" pages
+	 * It expects the following values to be defined:
+	 *
+	 * @param	int		$intId					id of template to load
+	 * @param	bool	$bolUseCurrentSchema	optional, defaults to FALSE.  If set to TRUE then the most recent
+	 * 											TemplateSchema (for this TemplateType) will be used, instead of the
+	 * 											one specified by the DocumentTemplate
+	 *
+	 * @return	bool							TRUE on success. FALSE on failure
+	 * @method	LoadTemplate
+	 */
+	private function _LoadTemplate($intId, $bolUseCurrentSchema=FALSE)
+	{
+		DBO()->DocumentTemplate->Id = $intId;
+		if (!DBO()->DocumentTemplate->Load())
+		{
+			// The template could not be loaded
+			return FALSE;
+		}
+		
+		// Load the CustomerGroup record as it is needed for the breadcrumb menu
+		DBO()->CustomerGroup->Id = DBO()->DocumentTemplate->CustomerGroup->Value;
+		DBO()->CustomerGroup->Load();
+		
+		// Load the details of the DocumentTemplateType as this is also needed
+		DBO()->DocumentTemplateType->Id = DBO()->DocumentTemplate->TemplateType->Value;
+		DBO()->DocumentTemplateType->Load();
+		
+		// Load the schema
+		if ($bolUseCurrentSchema)
+		{
+			// Load the most recent schema for this DocumentTemplateType
+			$arrSchema = $this->_GetCurrentSchema(DBO()->DocumentTemplate->TemplateType->Value);
+			DBO()->DocumentTemplateSchema->_arrProperties = $arrSchema;
+		}
+		else
+		{
+			// Load the schema that is actually used by this Template regardless of whether or not it is the most recent
+			DBO()->DocumentTemplateSchema->Id = DBO()->DocumentTemplate->TemplateSchema->Value;
+			DBO()->DocumentTemplateSchema->Load();
+		}
+		
+		return TRUE;
+	}
+
 
     //----- DO NOT REMOVE -----//
 	

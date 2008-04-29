@@ -40,6 +40,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		
 		$this->LoadJavascript("document_template");
 		$this->LoadJavascript("textarea");
+		$this->LoadJavascript("validation");
 	}
 
 	//------------------------------------------------------------------------//
@@ -63,11 +64,11 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 				break;
 				
 			case HTML_CONTEXT_EDIT:
-				echo "Render Edit for DocumentTemplate Html Template object";
+				$this->RenderEdit();
 				break;
 				
 			case HTML_CONTEXT_VIEW:
-				echo "Render View for DocumentTemplate Html Template object";
+				$this->RenderView();
 				break;
 			
 			default:
@@ -92,45 +93,167 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	function RenderNew()
 	{
 		// Prepare data
-		$strSource			= DBO()->DocumentTemplate->Source->Value;
-		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
-		$intTemplateId		= (DBO()->DocumentTemplate->Id->IsSet)? DBO()->DocumentTemplate->Id->Value : "null";
-		$strDescription		= DBO()->DocumentTemplate->Description->Value;
-		$strSchemaVersion	= DBO()->DocumentSchema->Version->Value;
-		$intTextBoxLeft		= "110px";
-		$strTextAreaHeight	= "4in";
+		$jsonObjTemplate	= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
+		$jsonObjSchema		= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+
+		echo "<!-- START HtmlTemplateDocumentTemplate (rendered in 'NEW' context) -->\n";
+		$this->RenderForm();
+		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseAddPage($jsonObjTemplate, $jsonObjSchema)</script>\n";
+		echo "<!-- END HtmlTemplateDocumentTemplate -->\n";	
+	}
+
+	//------------------------------------------------------------------------//
+	// RenderEdit
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderEdit()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	function RenderEdit()
+	{
+		// Prepare data
+		$jsonObjTemplate	= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
+		$jsonObjSchema		= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+
+		echo "<!-- START HtmlTemplateDocumentTemplate (rendered in 'EDIT' context) -->\n";
+		$this->RenderForm();
+		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseEditPage($jsonObjTemplate, $jsonObjSchema)</script>\n";
+		echo "<!-- END HtmlTemplateDocumentTemplate -->\n";	
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderView
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderView()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	function RenderView()
+	{
+		// Prepare data
+		$strSource				= DBO()->DocumentTemplate->Source->Value;
+		$intCustomerGroup		= DBO()->CustomerGroup->Id->Value;
+		$intTemplateId			= (DBO()->DocumentTemplate->Id->IsSet)? DBO()->DocumentTemplate->Id->Value : "null";
+		$strDescription			= DBO()->DocumentTemplate->Description->Value;
+		$strSchemaVersion		= DBO()->DocumentTemplateSchema->Version->Value;
+		$intPropertyValueLeft	= "120";
+		$strTextAreaHeight		= "4in";
+		$strEffectiveOn			= (DBO()->DocumentTemplate->EffectiveOn->Value != NULL)? OutputMask()->LongDateAndTime(DBO()->DocumentTemplate->EffectiveOn->Value) : "Undeclared";
 		
 		$jsonObjTemplate	= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
-		$jsonObjSchema		= Json()->encode(DBO()->DocumentSchema->_arrProperties);
+		$jsonObjSchema		= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+
+		echo "
+<!-- START HtmlTemplateDocumentTemplate (rendered in 'VIEW' context) -->
+<div class='GroupedContent'>
+	<div class='GroupedContent' style='height:70px;margin-bottom:5px'>
+		<div style='position:relative;margin-bottom:8px'>
+			<span style='top:2px'>Schema Version</span>
+			<span style='top:2px;position:absolute;left:$intPropertyValueLeft;'>$strSchemaVersion</span>
+		</div>
+		<div style='position:relative;margin-bottom:8px'>
+			<span style='top:2px'>Description</span>
+			<span id='DocumentTemplate.Description' style='position:absolute;top:2px;left:{$intPropertyValueLeft}px;overflow:hidden;' >$strDescription</span>
+		</div>
+		<div style='position:relative;margin-bottom:8px'>
+			<span style='top:2px'>Effective On</span>
+			<span id='DocumentTemplate.EffectiveOn' style='position:absolute;top:2px;left:{$intPropertyValueLeft}px;' >$strEffectiveOn</span>
+		</div>
+	</div>
+
+	<textarea id='DocumentTemplate.Source' name='DocumentTemplate.Source' wrap='off' readonly='true' style='overflow:auto;width:100%;height:$strTextAreaHeight;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'>$strSource</textarea>
+
+	<div class='ButtonContainer'>
+		<div class='Left'>
+			<input type='button' id='ButtonBuildPDF' class='InputSubmit' value='Build PDF' onclick='Vixen.DocumentTemplate.BuildSamplePDF()'></input>
+		</div>
+	</div>
+</div>
+<div class='Separator'></div>
+<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseViewPage($jsonObjTemplate, $jsonObjSchema)</script>
+<!-- END HtmlTemplateDocumentTemplate -->\n";
+	}
+
+	//------------------------------------------------------------------------//
+	// RenderForm
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderForm()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	function RenderForm()
+	{
+		// Prepare data
+		$strSource				= DBO()->DocumentTemplate->Source->Value;
+		$strEffectiveOn			= DBO()->DocumentTemplate->EffectiveOn->Value;
+		$intCustomerGroup		= DBO()->CustomerGroup->Id->Value;
+		$intTemplateId			= (DBO()->DocumentTemplate->Id->IsSet)? DBO()->DocumentTemplate->Id->Value : "null";
+		$strDescription			= DBO()->DocumentTemplate->Description->Value;
+		$strSchemaVersion		= DBO()->DocumentTemplateSchema->Version->Value;
+		$intPropertyValueLeft	= "120";
+		$strTextAreaHeight		= "4in";
+
+		if ($strEffectiveOn != NULL)
+		{
+			$strEffectiveOn = OutputMask()->ShortDate($strEffectiveOn);
+		}
 
 		echo 	"
-<!-- START HtmlTemplateDocumentTemplate (rendered in 'NEW' context) -->
 <div class='GroupedContent'>
 	<div class='GroupedContent' style='height:70px;margin-bottom:5px'>
 		
 		<div style='float:left;position:relative;width:750px;height:70px'>
 			<div style='margin-bottom:8px'>
 				<span style='top:2px'>Schema Version</span>
-				<span style='top:2px;position:absolute;left:$intTextBoxLeft;'>$strSchemaVersion</span>
+				<span style='top:2px;position:absolute;left:$intPropertyValueLeft;'>$strSchemaVersion</span>
 			</div>
 			<div style='margin-bottom:8px'>
 				<span style='top:2px'>Description</span>
-				<input type='text' id='DocumentTemplate.Description' value='$strDescription' maxlength='255' style='padding:1px;position:absolute;left:$intTextBoxLeft;width:600px;border: solid 1px #D1D1D1' />
+				<input type='text' id='DocumentTemplate.Description' value='$strDescription' maxlength='255' style='padding:1px 2px;position:absolute;left:{$intPropertyValueLeft}px;width:600px;border: solid 1px #D1D1D1' />
 			</div>
-		</div>
-
-		<div style='float:left;position:relative;width:101px;height:70px'>
-				<input type='button' class='InputSubmit' value='Save' style='position:absolute;bottom:0px;right:0px' onclick='Vixen.DocumentTemplate.Save()'></input>
+			<div style='margin-bottom:8px'>
+				<span style='top:2px'>Effective On</span>
+				<select id='EffectiveOnCombo' style='position:absolute;left:{$intPropertyValueLeft}px;width:110px;border: solid 1px #D1D1D1'>
+					". (($strEffectiveOn == NULL)? "<option value='undeclared'>Undeclared</option>" : "") ."
+					<option value='immediately'>Immediately</option>
+					<option value='date'>Date</option>
+				</select>
+				<input type='text' id='DocumentTemplate.EffectiveOn' value='$strEffectiveOn' maxlength='10' style='visibility:hidden;display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
+			</div>
 		</div>
 	</div>
 
 	<textarea id='DocumentTemplate.Source' name='DocumentTemplate.Source' wrap='off' style='overflow:auto;width:100%;height:$strTextAreaHeight;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'>$strSource</textarea>
 
+	<div class='ButtonContainer'>
+		<div class='Left'>
+			<input type='button' id='ButtonInsertImage' class='InputSubmit' value='Insert Image' onclick='Vixen.DocumentTemplate.InsertImage()'></input>
+			<input type='button' id='ButtonBuildPDF' class='InputSubmit' value='Build PDF' onclick='Vixen.DocumentTemplate.BuildSamplePDF()'></input>
+		</div>
+		<div class='Right'>
+			<input type='button' id='ButtonSave' class='InputSubmit' value='Save' onclick='Vixen.DocumentTemplate.Save()'></input>
+		</div>
+	</div>
+
 </div>
-<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseAddPage($jsonObjTemplate, $jsonObjSchema)</script>
-<!-- END HtmlTemplateDocumentTemplate -->
-				";	
+<div class='Separator'></div>\n";
 	}
+	
 }
 
 ?>

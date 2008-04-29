@@ -73,42 +73,53 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 		$strNow = GetCurrentDateAndTimeForMySQL();
 		foreach (DBL()->Templates as $dboTemplate)
 		{
-			$strVersion			= $dboTemplate->Version->Value;
-			$strDescription		= $dboTemplate->Description->Value;
-			$strEffectiveOn		= ($dboTemplate->EffectiveOn->Value != NULL)? OutputMask()->ShortDate($dboTemplate->EffectiveOn->Value) : "Draft";
-			$strCreatedOn		= OutputMask()->ShortDate($dboTemplate->CreatedOn->Value);
-			$strLastModifiedOn	= OutputMask()->ShortDate($dboTemplate->LastModifiedOn->Value);
-			$strLastUsedOn		= ($dboTemplate->LastUsedOn->Value != NULL)? OutputMask()->ShortDate($dboTemplate->LastUsedOn->Value) : "";
+			$strVersion				= $dboTemplate->Version->Value;
+			$strDescription			= $dboTemplate->Description->Value;
+			$strEffectiveOn			= ($dboTemplate->EffectiveOn->Value != NULL)? OutputMask()->ShortDate($dboTemplate->EffectiveOn->Value) : "Draft";
+			$strEffectiveOnTitle	= ($dboTemplate->EffectiveOn->Value != NULL)? "title='". OutputMask()->LongDateAndTime($dboTemplate->EffectiveOn->Value) ."'": "";
 			
 			// Flag the versions that have been completely overridden and therefore never used
 			if ($dboTemplate->Overridden->Value)
 			{
-				$strEffectiveOn = "<span style='text-decoration:line-through' title='This template was never used'>$strEffectiveOn</span>";
+				$strEffectiveOnCell = "<span style='text-decoration:line-through' title='This template was never used'>$strEffectiveOn</span>";
+			}
+			else
+			{
+				$strEffectiveOnCell = "<span $strEffectiveOnTitle'>$strEffectiveOn</span>";
+			}
+			
+			$strCreatedOnCell	= "<span title='". OutputMask()->LongDateAndTime($dboTemplate->CreatedOn->Value) ."'>". OutputMask()->ShortDate($dboTemplate->CreatedOn->Value) ."</span>";
+			$strModifiedOnCell	= "<span title='". OutputMask()->LongDateAndTime($dboTemplate->ModifiedOn->Value) ."'>". OutputMask()->ShortDate($dboTemplate->ModifiedOn->Value) ."</span>";
+			
+			$strLastUsedOnCell	= "";
+			if ($dboTemplate->LastUsedOn->Value != NULL)
+			{
+				$strLastUsedOnCell = "<span title='". OutputMask()->LongDateAndTime($dboTemplate->LastUsedOn->Value) ."'>". OutputMask()->ShortDate($dboTemplate->LastUsedOn->Value) ."</span>";
 			}
 			
 			$strActionsCell = "";
+			$strNew			= "<img src='img/template/new.png' title='Build new template based on this one' onclick='Vixen.DocumentTemplateHistory.BuildNew({$dboTemplate->Id->Value}, {$dboTemplate->Version->Value})' style='cursor:pointer'/>";
+			$strView		= "<img src='img/template/view.png' title='View the template' onclick='Vixen.DocumentTemplateHistory.View({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+			$strEdit		= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplateHistory.Edit({$dboTemplate->Id->Value})' style='cursor:pointer'/>"; 
 			if ($dboTemplate->EffectiveOn->Value == NULL)
 			{
 				// The template is the draft template
 				$intDraftVersion	= $dboTemplate->Version->Value;
-				$strActionsCell		= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplateHistory.EditTemplate({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+				$strActionsCell		= $strEdit . $strView;
 			}
 			else
 			{
 				// The template has been committed (it has an effective on date set)
-				$strEdit = "";
 				if ($dboTemplate->EffectiveOn->Value > $strNow)
 				{
 					// The Template can still be editted as its effective date has not been reached yet
-					$strEdit	= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplateHistory.Edit({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+					$strActionsCell = $strEdit;
 				}
 				
-				$strNew			= "<img src='img/template/new.png' title='Build new template based on this one' onclick='Vixen.DocumentTemplateHistory.BuildNew({$dboTemplate->Id->Value}, {$dboTemplate->Version->Value})' style='cursor:pointer'/>";
-				$strView		= "<img src='img/template/view.png' title='View the template' onclick='Vixen.DocumentTemplateHistory.View({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
-				$strActionsCell	= $strView  . $strNew . $strEdit;
+				$strActionsCell	.= $strNew . $strView;
 			}
 			
-			Table()->TemplateHistory->AddRow($strVersion, $strDescription, $strEffectiveOn, $strCreatedOn, $strLastModifiedOn, $strLastUsedOn, $strActionsCell);
+			Table()->TemplateHistory->AddRow($strVersion, $strDescription, $strEffectiveOnCell, $strCreatedOnCell, $strModifiedOnCell, $strLastUsedOnCell, $strActionsCell);
 		}
 
 		Table()->TemplateHistory->Render();

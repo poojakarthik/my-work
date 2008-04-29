@@ -85,6 +85,22 @@ function VixenValidationClass()
 		return this.regexShortDate.test(mixValue);
 	}
 	
+	this.ShortDateInFuture = function(mixValue)
+	{
+		if (!this.ShortDate(mixValue))
+		{
+			return false;
+		}
+		
+		// Convert the date into MM/DD/YYYY so it can be easily converted to a Date object
+		var strDate		= mixValue.substr(3, 2) + "/" + mixValue.substr(0, 2) + "/" + mixValue.substr(6, 4);
+		var objDate		= new Date(strDate);
+		var objToday	= new Date();
+		
+		return (objDate > objToday);
+	}
+	
+	
 	this.PositiveInteger = function(mixValue)
 	{
 		return this.regexPositiveInteger.test(mixValue.toString());
