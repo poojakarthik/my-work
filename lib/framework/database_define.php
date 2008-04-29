@@ -2965,7 +2965,7 @@
 				 
 				 
 	// Define Columns 
-	$strName = "PlaceHolder"; 
+	$strName = "Type"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
@@ -2975,7 +2975,7 @@
 				 
 				 
 	// Define Columns 
-	$strName = "Type"; 
+	$strName = "FileType"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
@@ -3018,7 +3018,7 @@
 	 
  	
 	//----------------------------------------------------------------------------// 
-	// Table: DocumentResourcePlaceHolder
+	// Table: DocumentResourceType
 	//----------------------------------------------------------------------------// 
 	 
  
@@ -3026,7 +3026,7 @@
  		
 	unset($arrDefine);
 	 
-	$arrDefine['Name']		= "DocumentResourcePlaceHolder"; 
+	$arrDefine['Name']		= "DocumentResourceType"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
 	$arrDefine['Index'][] 		= ""; 
@@ -3035,7 +3035,17 @@
 		 
 				 
 	// Define Columns 
-	$strName = "Name"; 
+	$strName = "PlaceHolder"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Description"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
@@ -3058,7 +3068,7 @@
 	 
  	
 	//----------------------------------------------------------------------------// 
-	// Table: DocumentResourcePlaceHolderDocumentResourceType
+	// Table: DocumentResourceTypeFileType
 	//----------------------------------------------------------------------------// 
 	 
  
@@ -3066,7 +3076,7 @@
  		
 	unset($arrDefine);
 	 
-	$arrDefine['Name']		= "DocumentResourcePlaceHolderDocumentResourceType"; 
+	$arrDefine['Name']		= "DocumentResourceTypeFileType"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
 	$arrDefine['Index'][] 		= ""; 
@@ -3075,7 +3085,7 @@
 		 
 				 
 	// Define Columns 
-	$strName = "PlaceHolder"; 
+	$strName = "ResourceType"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
@@ -3085,52 +3095,12 @@
 				 
 				 
 	// Define Columns 
-	$strName = "Type"; 
+	$strName = "FileType"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
-		 
-					 
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
-	 
- 	
-	//----------------------------------------------------------------------------// 
-	// Table: DocumentResourceType
-	//----------------------------------------------------------------------------// 
-	 
- 
- 		
- 		
-	unset($arrDefine);
-	 
-	$arrDefine['Name']		= "DocumentResourceType"; 
-	$arrDefine['Type']		= "InnoDB"; 
-	$arrDefine['Id']		= "Id"; 
-	$arrDefine['Index'][] 		= ""; 
-	$arrDefine['Unique'][] 		= ""; 
-		 
-		 
-				 
-	// Define Columns 
-	$strName = "Extension"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
-		 
-				 
-				 
-	// Define Columns 
-	$strName = "Description"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 					 
 	// Save Table Define
@@ -4018,6 +3988,46 @@
 	$strName = "SHA1"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(40)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+					 
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
+	 
+ 	
+	//----------------------------------------------------------------------------// 
+	// Table: FileType
+	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
+	$arrDefine['Name']		= "FileType"; 
+	$arrDefine['Type']		= "InnoDB"; 
+	$arrDefine['Id']		= "Id"; 
+	$arrDefine['Index'][] 		= ""; 
+	$arrDefine['Unique'][] 		= ""; 
+		 
+		 
+				 
+	// Define Columns 
+	$strName = "Extension"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Description"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
