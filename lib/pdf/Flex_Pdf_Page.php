@@ -3,7 +3,7 @@
 require_once "pdf/Flex_Pdf_Text.php";
 
 
-class Flex_Pdf_Page extends Zend_Pdf_Page 
+class Flex_Pdf_Page extends Zend_Pdf_Page
 {
 	const LINE_HEIGHT_DEFAULT = 0;
 	const TEXT_BLOCK_OVERFLOW_VISIBLE = 0;
@@ -12,59 +12,49 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	const TEXT_ALIGN_LEFT = 0;
 	const TEXT_ALIGN_RIGHT = 1;
 	const TEXT_ALIGN_CENTRE = 2;
-	
+
 	private $fltTextLineHeight = self::LINE_HEIGHT_DEFAULT;
-	
+
 	private $fltLineWidth = 0;
-	
+
 	private $objFillColour = NULL;
 	private $objLineColour = NULL;
-	
+
 	private $saveFillColours = array();
 	private $saveLineColours = array();
-	
-	public function applyStationery($stationery)
-	{
-		if ($stationery !== NULL)
-		{
-			$this->drawImage($stationery, 0, 0, $this->getHeight(), $this->getWidth());
-		}
-	}
-	
+
 	public function drawImage($zendPdfImageResource, $top, $left, $height, $width)
 	{
 		parent::drawImage($zendPdfImageResource, $left, $this->getHeight() - ($top + $height), $left + $width, $this->getHeight() - $top);
 	}
-	
+
 	public function drawBackground($templateElement)
 	{
-		$this->setStyle($templateElement->getStyle());
-		
-		$t = $this->getStyle()->getBorderWidthTop();
-		$r = $this->getStyle()->getBorderWidthRight();
-		$b = $this->getStyle()->getBorderWidthBottom();
-		$l = $this->getStyle()->getBorderWidthLeft();
-		
-		$fillColor = $this->getStyle()->getBackgroundColor();
-		$lineColor = $this->getStyle()->getBorderColor();
-		
+		$t = $templateElement->getStyle()->getBorderWidthTop();
+		$r = $templateElement->getStyle()->getBorderWidthRight();
+		$b = $templateElement->getStyle()->getBorderWidthBottom();
+		$l = $templateElement->getStyle()->getBorderWidthLeft();
+
+		$fillColor = $templateElement->getStyle()->getBackgroundColor();
+		$lineColor = $templateElement->getStyle()->getBorderColor();
+
 		if ($fillColor == NULL && ($lineColor == NULL || (!$t && !$b && !$l && !$r)))
 		{
 			// Nothing to render!
 			return;
 		}
-		
-		$pt = $this->getStyle()->getPaddingTop();
-		$pr = $this->getStyle()->getPaddingRight();
-		$pb = $this->getStyle()->getPaddingBottom();
-		$pl = $this->getStyle()->getPaddingLeft();
+
+		$pt = $templateElement->getStyle()->getPaddingTop();
+		$pr = $templateElement->getStyle()->getPaddingRight();
+		$pb = $templateElement->getStyle()->getPaddingBottom();
+		$pl = $templateElement->getStyle()->getPaddingLeft();
 
 		$top = $templateElement->getPreparedAbsTop() - $pt;
 		$left = $templateElement->getPreparedAbsLeft() - $pl;
 		$height = $templateElement->getPreparedHeight() + $pt + $pb;
 		$width = $templateElement->getPreparedWidth() + $pl + $pr;
 
-		$cornerRadius = $this->getStyle()->getCornerRadius();
+		$cornerRadius = $templateElement->getStyle()->getCornerRadius();
 		$cornerRadius = (2 * $cornerRadius) > $width  ? ($width  / 2) : $cornerRadius;
 		$cornerRadius = (2 * $cornerRadius) > $height ? ($height / 2) : $cornerRadius;
 
@@ -73,24 +63,26 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 		$x2 = $left + $width;
 		$y1 = $this->getHeight() - $top;
 		$y2 = $y1 - $height;
-		
+
 		$this->saveGS();
-		
+
+		$this->setStyle($templateElement->getStyle());
+
 		// Draw a box with uneven borders
 		if ($t != $r || $r != $b || $b != $l)
 		{
-			$this->setLineWidth(0);
-		
 			$bx1 = $x1 - $l;
 			$bx2 = $x2 + $r;
 			$by1 = $y1 + $t;
 			$by2 = $y2 - $b;
 
-			$rawInnerBoxData = $this->getBoxBoundsData($x1, $y1, $x2, $y2, $cornerRadius);
-			
 			if ($lineColor != NULL)
 			{
+				$rawInnerBoxData = $this->getBoxBoundsData($x1, $y1, $x2, $y2, $cornerRadius);
+
+				$this->saveGS();
 				$this->setFillColor($lineColor);
+
 				if ($cornerRadius)
 				{
 					$crtl = $cornerRadius + min($t, $l);
@@ -99,45 +91,29 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 					$crbl = $cornerRadius + min($b, $l);
 
 					$rawDataOuterBox = $this->getBoxBoundsDataFourRadii($bx1, $by1, $bx2, $by2, $crtl, $crtr, $crbr, $crbl);
-/*					
-					// Save the current graphics state
-					$this->appendToRawContents(' q');
 
-					// Set the clip area
-					$this->appendToRawContents($rawDataOuterBox);
-					$this->appendToRawContents(' W');
-					$this->appendToRawContents(' n');
-					
-					// Set the nested clip area
-					$this->appendToRawContents($rawInnerBoxData);
-					$this->appendToRawContents(' W');
-					$this->appendToRawContents(' n');
-
-					// Set the nested clip area
-					$this->appendToRawContents($rawDataOuterBox);
-					$this->appendToRawContents(' W');
-					$this->appendToRawContents(' n');
-*/
-					
 					// Draw the box filled
 					$this->appendToRawContents($rawDataOuterBox);
 					$this->appendToRawContents($rawInnerBoxData);
 					$this->appendToRawContents(' f*');
-
-					// Restore the graphics state to remove the clipping area
-					//$this->appendToRawContents(' Q');
 				}
 				else
 				{
-					parent::drawRectangle($bx1, $by1, $bx2, $by2, Flex_Pdf_Page::SHAPE_DRAW_FILL);
+					$this->appendToRawContents($this->getBoxBorderBounds($x1, $y1, $x2, $y2, $t, $r, $b, $l));
+					$this->appendToRawContents(' f*');
 				}
+
+				$this->restoreGS();
 			}
-			
+
 			// Draw the fill area for a box with uneven sides
 			if ($fillColor != NULL)
 			{
+				$rawInnerBoxData = $this->getBoxBoundsData($x1, $y1, $x2, $y2, $cornerRadius);
+
+				$this->saveGS();
 				$this->setFillColor($fillColor);
-				
+
 				if ($cornerRadius)
 				{
 					$this->appendToRawContents($rawInnerBoxData);
@@ -148,13 +124,16 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 				{
 					parent::drawRectangle($x1, $y1, $x2, $y2, Flex_Pdf_Page::SHAPE_DRAW_FILL);
 				}
+
+				$this->restoreGS();
 			}
 		}
-		
-		
+
+
 		// Draw a box with even borders (even if they are 'none')
 		if ($t == $r && $r == $b && $b == $l)
 		{
+			$this->saveGS();
 			$borderWidth = floatval($t);
 			$halfBorder = $borderWidth / 2;
 			$x1 -= $halfBorder;
@@ -172,7 +151,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 				// Get the box bounds data...
 				$rawData = $this->getBoxBoundsData($x1, $y1, $x2, $y2, $cornerRadius);
 				$this->appendToRawContents($rawData);
-	
+
 				// Set the fill style
 				$this->appendToRawContents($fillColor == NULL ? ' S' : (($lineColor != NULL && $t) ? ' B*' : ' f*'));
 			}
@@ -180,12 +159,13 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 			{
 				parent::drawRectangle($x1, $y1, $x2, $y2, $fillColor == NULL ? Flex_Pdf_Page::SHAPE_DRAW_STROKE : (($lineColor != NULL && $t) ? Flex_Pdf_Page::SHAPE_DRAW_FILL_AND_STROKE : Flex_Pdf_Page::SHAPE_DRAW_FILL));
 			}
+			$this->restoreGS();
 		}
-		
+
 		$this->restoreGS();
 	}
-	
-	
+
+
 	private function getBoxBoundsDataFourRadii($x1, $y1, $x2, $y2, $cornerRadiusTopLeft, $cornerRadiusTopRight, $cornerRadiusBottomRight, $cornerRadiusBottomLeft)
 	{
         $deltaTL  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusTopLeft)/3.;
@@ -197,7 +177,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
         $xRight = new Zend_Pdf_Element_Numeric($x2);
         $yUp    = new Zend_Pdf_Element_Numeric($y1);
         $yDown  = new Zend_Pdf_Element_Numeric($y2);
-        
+
         $xlt	= new Zend_Pdf_Element_Numeric($x1 + $cornerRadiusTopLeft);
         $xrt	= new Zend_Pdf_Element_Numeric($x2 - $cornerRadiusTopRight);
         $yul	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopLeft);
@@ -207,7 +187,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
         $xrb	= new Zend_Pdf_Element_Numeric($x2 - $cornerRadiusBottomRight);
         $yur	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopRight);
         $ydr	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomRight);
-        
+
         $xdlt	= new Zend_Pdf_Element_Numeric($x1 + $deltaTL);
         $xdrt	= new Zend_Pdf_Element_Numeric($x2 - $deltaTR);
         $ydul	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopLeft + $deltaTL);
@@ -220,7 +200,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 		// Create the set of rules to draw the area, starting at the top left and going clockwise
 		$raw = "";
-		
+
 		// Starting after the top left corner
 		$raw .= $xlt->toString() . ' ' . $yUp->toString() . " m\n";
 
@@ -228,32 +208,32 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 		$raw .= $xrt->toString() . ' ' . $yUp->toString() . " l\n";
 
 		// Curve to just after the top right corner
-		$raw .= $xdrt->toString() . ' ' . $yUp->toString() .  ' ' 
-				. $xRight->toString() . ' ' . $ydur->toString() .  ' ' 
+		$raw .= $xdrt->toString() . ' ' . $yUp->toString() .  ' '
+				. $xRight->toString() . ' ' . $ydur->toString() .  ' '
 				. $xRight->toString() . ' ' . $yur->toString() .  ' ' . " c\n";
-		
+
 		// Draw a line to just before the bottom right corner
 		$raw .= $xRight->toString() . ' ' . $ydr->toString() . " l\n";
-		
+
 		// Curve to just after the bottom right corner
-		$raw .= $xRight->toString() . ' ' . $yddr->toString() .  ' ' 
-				. $xdrb->toString() . ' ' . $yDown->toString() .  ' ' 
+		$raw .= $xRight->toString() . ' ' . $yddr->toString() .  ' '
+				. $xdrb->toString() . ' ' . $yDown->toString() .  ' '
 				. $xrb->toString() . ' ' . $yDown->toString() .  ' ' . " c\n";
 
 		// Draw a line to just before the bottom left corner
 		$raw .= $xlb->toString() . ' ' . $yDown->toString() . " l\n";
 
 		// Curve to just after the bottom left corner
-		$raw .= $xdlb->toString() . ' ' . $yDown->toString() .  ' ' 
-				. $xLeft->toString() . ' ' . $yddl->toString() .  ' ' 
+		$raw .= $xdlb->toString() . ' ' . $yDown->toString() .  ' '
+				. $xLeft->toString() . ' ' . $yddl->toString() .  ' '
 				. $xLeft->toString() . ' ' . $ydl->toString() .  ' ' . " c\n";
-		
+
 		// Draw a line to just before the top left corner
 		$raw .= $xLeft->toString() . ' ' . $yul->toString() . " l\n";
-		
+
 		// Curve to just after the top left corner
-		$raw .= $xLeft->toString() . ' ' . $ydul->toString() .  ' ' 
-				. $xdlt->toString() . ' ' . $yUp->toString() .  ' ' 
+		$raw .= $xLeft->toString() . ' ' . $ydul->toString() .  ' '
+				. $xdlt->toString() . ' ' . $yUp->toString() .  ' '
 				. $xlt->toString() . ' ' . $yUp->toString() .  ' ' . " c";
 
 		return $raw;
@@ -263,113 +243,156 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	{
         return $this->getBoxBoundsDataFourRadii($x1, $y1, $x2, $y2, $cornerRadiusTopLeft, $cornerRadiusTopLeft, $cornerRadiusTopLeft, $cornerRadiusTopLeft);
 	}
-	
+
+	private function getBoxBorderBounds($x1, $y1, $x2, $y2, $t, $r, $b, $l)
+	{
+        $xLeft  = new Zend_Pdf_Element_Numeric($x1);
+        $xBLeft  = new Zend_Pdf_Element_Numeric($x1 - $l);
+        $xRight = new Zend_Pdf_Element_Numeric($x2);
+        $xBRight = new Zend_Pdf_Element_Numeric($x2 + $r);
+        $yUp    = new Zend_Pdf_Element_Numeric($y1);
+        $yBUp    = new Zend_Pdf_Element_Numeric($y1 + $t);
+        $yDown  = new Zend_Pdf_Element_Numeric($y2);
+        $yBDown  = new Zend_Pdf_Element_Numeric($y2 - $b);
+
+        $raw = '';
+
+        if ($t)
+        {
+			$raw .= $xBLeft->toString() . ' ' . $yUp->toString() . " m\n";
+			$raw .= $xBRight->toString() . ' ' . $yUp->toString() . " l\n";
+			$raw .= $xBRight->toString() . ' ' . $yBUp->toString() . " l\n";
+			$raw .= $xBLeft->toString() . ' ' . $yBUp->toString() . " l\n";
+			$raw .= " h\n";
+        }
+
+        if ($b)
+        {
+			$raw .= $xBLeft->toString() . ' ' . $yDown->toString() . " m\n";
+			$raw .= $xBRight->toString() . ' ' . $yDown->toString() . " l\n";
+			$raw .= $xBRight->toString() . ' ' . $yBDown->toString() . " l\n";
+			$raw .= $xBLeft->toString() . ' ' . $yBDown->toString() . " l\n";
+			$raw .= " h\n";
+        }
+
+        if ($l)
+        {
+			$raw .= $xBLeft->toString() . ' ' . $yUp->toString() . " m\n";
+			$raw .= $xLeft->toString() . ' ' . $yUp->toString() . " l\n";
+			$raw .= $xLeft->toString() . ' ' . $yDown->toString() . " l\n";
+			$raw .= $xBLeft->toString() . ' ' . $yDown->toString() . " l\n";
+			$raw .= " h\n";
+        }
+
+        if ($r)
+        {
+			$raw .= $xBRight->toString() . ' ' . $yUp->toString() . " m\n";
+			$raw .= $xRight->toString() . ' ' . $yUp->toString() . " l\n";
+			$raw .= $xRight->toString() . ' ' . $yDown->toString() . " l\n";
+			$raw .= $xBRight->toString() . ' ' . $yDown->toString() . " l\n";
+			$raw .= " h\n";
+        }
+
+        return rtrim($raw);
+	}
+
     /**
      * Append raw data to the PDF document content stream
      *
      * @param String $raw data to date to content stream, without trailing new line char
-     * 
+     *
      * @note Expected to work like parent rawWrite() method which has not been implemented
      * @note Relies on _contents variable being 'protected'. It is 'private' in the original
-     * 		 Zend source code. 
+     * 		 Zend source code.
      */
     public function appendToRawContents($raw)
     {
-    	$this->_contents .= $raw . "\n";
+    	$this->_contents .= rtrim($raw) . "\n";
     }
-    
+
     public function saveGS()
     {
-    	$this->savedFillColours[] = $this->getFillColor();
-    	$this->savedLineColours[] = $this->getLineColor();
+    	$this->saveFillColours[] = $this->getFillColor();
+    	$this->saveLineColours[] = $this->getLineColor();
     	parent::saveGS();
     }
-   	
+
     public function restoreGS()
     {
     	parent::restoreGS();
-    	$fillColor = array_pop($this->savedFillColours);
-    	$lineColor = array_pop($this->savedLineColours);
-		if ($fillColor != NULL)
-		{
-			$this->setFillColor($fillColor);
-		}
-		if ($lineColor != NULL)
-		{
-			$this->setLineColor($lineColor);
-		}
+    	$fill = array_pop($this->saveFillColours);
+    	$line = array_pop($this->saveLineColours);
+    	$this->setFillColor($fill);
+    	$this->setLineColor($line);
     }
-   	
 
-    /**
-     * Set the style to use for future drawing operations on this page
-     *
-     * @param Flex_Pdf_Style $style
-     */
-    public function setStyle(Flex_Pdf_Style $style)
-    {
-        parent::setStyle($style);
-    }
-    
     private $pageCountStyles = array();
-    
+
     private function registerPageCount($wrapperStyle=NULL)
     {
     	$this->pageCountStyles[] = $wrapperStyle;
     }
-    
+
     public function applyPageCounts($nrPages)
     {
  		$pageCountMatches = array();
-		preg_match_all("/\nBT\n([0-9\.]+) +([0-9\.]+) +Td\n *\(([^\n]*\<\<pc\>\>[^\n]*)\) +Tj\nET\n/", $this->_contents, $pageCountMatches, PREG_SET_ORDER);
+		preg_match_all("/\nBT\n([0-9\.]+) +([0-9\.]+) +Td\n *\(([^\n]*\<\\0?\<\\0?p\\0?c\\0?\>\\0?\>[^\n]*)\) +Tj\nET\n/", $this->_contents, $pageCountMatches, PREG_SET_ORDER);
 
     	for ($i = 0, $l = count($this->pageCountStyles); $i < $l; $i++)
     	{
     		$pageCountMatch = $pageCountMatches[$i];
     		$x = $pageCountMatch[1];
-    		
+
     		$string = $pageCountMatch[3];
+
+    		$nrPageCounts = preg_match_all("/\<\\0?\<\\0?p\\0?c\\0?\>\\0?\>/", $string, $array=array());
     		
-    		$nrPageCounts = preg_match_all("/<<pc>>/", $string, $array=array());
-    		
+    		$isNullSplit = strpos($string, "\0") !== FALSE;
+
     		$style = $this->pageCountStyles[$i];
-    		
+
     		// If style is text-align left...
     		if (!$style->isTextAlignLeft() || $style->getRight() !== NULL)
     		{
  	    		$x = floatval($x);
- 
+
     		 	// Get the width of the string "<<pc>>"
     		 	$pcWidth = Flex_Pdf_Text::widthForStringUsingFontSize("<<pc>>", $style->getFont(), $style->getFontSize());
     			// Get the width of the new page number string
     		 	$pnWidth = Flex_Pdf_Text::widthForStringUsingFontSize("$nrPages", $style->getFont(), $style->getFontSize());
-    			
+
     			$shift = $pcWidth - $pnWidth;
-    			
+
     			if ($style->isTextAlignCentre())
     			{
     				$shift = $shift/2;
     			}
 
     			$x += ($shift * $nrPageCounts);
-    			
+
     			$val = new Zend_Pdf_Element_Numeric($x);
     			$x = $val->toString();
     		}
-    		
-    		
+
+
     		$textElement = $pageCountMatch[0];
+    		
+    		if ($isNullSplit)
+    		{
+    			$nrPages = implode("\0", str_split($nrPages, 1));
+    		}
+    		
     		$textElement = str_replace("BT\n".$pageCountMatch[1], "BT\n".$x, $textElement);
 
-    		$textElement = str_replace("<<pc>>", $nrPages, $textElement);
+    		$textElement = str_replace(($isNullSplit ? "<\0<\0p\0c\0>\0>" : "<<pc>>"), $nrPages, $textElement);
 
-    		
+
     		$pos = strpos( $this->_contents, $pageCountMatch[0]);
     		$len = strlen($pageCountMatch[0]);
 			$this->_contents = substr( $this->_contents, 0, $pos) . $textElement . substr( $this->_contents, $pos + $len);
     	}
     }
-    
+
    	public function drawText($top, $left, $text, $width=0, $wrapperStyle=NULL)
 	{
 		if (strpos($text, "<<pc>>") !== FALSE)
@@ -380,14 +403,15 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 		$x = $left;
 		$y = $this->getHeight() - $top - $this->getCurrentTextLineHeight();
 		parent::drawText($text, $x, $y);
-		
+
 		if ($this->getStyle()->hasTextDecoration())
 		{
+			$this->saveGS();
 			// Calculate a line width for the font
 			$font = $this->getFont();
-			
+
 			$this->setLineColor($this->getStyle()->getColor());
-			
+
 			// If underlined...
 			if ($this->getStyle()->hasUnderline())
 			{
@@ -395,7 +419,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 				$lineWidth = $this->getFontSize() * ($font->getUnderlineThickness() / $font->getUnitsPerEm());
 				$lineWidth = $lineWidth * ($font->isBold() ? 2 : 1);
 				$this->setLineWidth($lineWidth);
-				
+
 				// Get the vertical position of the line
 				//$v = $y + ($font->getDescent() / $font->getUnitsPerEm()) - $lw;
 				$v = $y + ($this->getFontSize() * ($font->getUnderlinePosition() / $font->getUnitsPerEm())) - ($lineWidth / 2);
@@ -411,7 +435,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 				$lineWidth = $this->getFontSize() * ($font->getUnderlineThickness() / $font->getUnitsPerEm());
 				$lineWidth = $lineWidth * ($font->isBold() ? 2 : 1);
 				$this->setLineWidth($lineWidth);
-				
+
 				// Get the vertical position of the line
 				//$v = $y + $this->getFontSize() - $lw;
 				$v = $y + ($this->getFontSize() * ($font->getAscent() / $font->getUnitsPerEm())) + $lineWidth;
@@ -426,13 +450,14 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 				// Set the line width (normal width for all fonts)
 				$lineWidth = $this->getFontSize() * ($font->getStrikeThickness() / $font->getUnitsPerEm());
 				$this->setLineWidth($lineWidth);
-				
+
 				// Get the vertical position of the line
 				$v = $y + ($this->getFontSize() * ($font->getStrikePosition() / $font->getUnitsPerEm())) + ($lineWidth/2);
 
 				// Draw the line
 				parent::drawLine($x, $v, $x + $width, $v);
 			}
+			$this->restoreGS();
 		}
 	}
 
@@ -447,7 +472,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	 * @param boolean $overflow Whether or not to show text that overflows the box
 	 * 							(TEXT_BLOCK_OVERFLOW_VISIBLE or TEXT_BLOCK_OVERFLOW_HIDDEN),
 	 * 							or render anything if it doesn't all fit (TEXT_BLOCK_OVERFLOW_ALL_OR_NOTHING)
-	 * 
+	 *
 	 * @param String Any part of the string that was not rendered due to overflow being hidden, or NULL
 	 */
 	private function drawTextBlock($string, $x1, $y1, $x2, $y2, $align=self::TEXT_ALIGN_LEFT, $overflow=self::TEXT_BLOCK_OVERFLOW_VISIBLE)
@@ -490,7 +515,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 			if ($overflow === self::TEXT_BLOCK_OVERFLOW_HIDDEN)
 			{
-				$remainingString = ltrim(substr($remainingString, strlen($strings[$i]))); 
+				$remainingString = ltrim(substr($remainingString, strlen($strings[$i])));
 			}
 			$t -= $lineHeight;
 			if ($overflow === self::TEXT_BLOCK_OVERFLOW_HIDDEN && $t < $y)
@@ -564,7 +589,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
      * @param Zend_Pdf_Resource_Font $font
      * @param float $fontSize
      */
-    public function setFont(Zend_Pdf_Resource_Font $font, $fontSize)
+    /*public function setFont(Zend_Pdf_Resource_Font $font, $fontSize)
     {
 		if ($this->getFont() == $font && $this->getFontSize() == $fontSize)
 		{
@@ -572,7 +597,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 		}
 
 		parent::setFont($font, $fontSize);
-   }
+   }*/
 
 
 	public function setFillColor($colour)
@@ -583,20 +608,12 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 	public function getFillColor()
 	{
-		if ($this->objFillColour == NULL)
-		{
-			$this->objFillColour = new Flex_Pdf_Colour("#000");
-		}
 		return $this->objFillColour;
 	}
 
 	public function setLineColor($colour)
 	{
 		$this->objLineColour = $colour;
-		if ($this->objLineColour == NULL)
-		{
-			$this->objLineColour = new Flex_Pdf_Colour("#fff");
-		}
 		if ($colour != NULL) parent::setLineColor($colour);
 	}
 

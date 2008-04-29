@@ -5,19 +5,20 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 {
 	private $content = "";
 	private $originalContent = "";
-	
+
 	public $preparedContents;
-	
+
 	function initialize()
 	{
+
 		$textContent = "";
-		
+
 		// Need to parse the text for permitted elements textNodes and <br>'s
 		for($i = 0, $l = $this->dom->childNodes->length; $i < $l; $i++)
 		{
 			$node = $this->dom->childNodes->item($i);
 			// Text is fine just as it is here, so continue...
-			if ($node instanceof DOMText) 
+			if ($node instanceof DOMText)
 			{
 				$textContent .= $node->wholeText;
 				continue;
@@ -27,9 +28,18 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 			{
 				case "BR":
 					// BR elements should be replaced by new line text nodes at this level
-					// (Note: The additional space char forces the \n to be rendered. 
+					// (Note: The additional space char forces the \n to be rendered.
 					// A space at the start of a line is always ignored)
 					$textContent .= "<<br>>";
+					break;
+
+				case "SP":
+				case "NBSP":
+				case "SPACE":
+					// BR elements should be replaced by new line text nodes at this level
+					// (Note: The additional space char forces the \n to be rendered.
+					// A space at the start of a line is always ignored)
+					$textContent .= "<<sp>>";
 					break;
 
 				case "PAGE-NR":
@@ -49,15 +59,15 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 					break;
 
 				default:
-					// It's not in the right place! 
+					// It's not in the right place!
 					// Just ignore it for now...
 					break;
 			}
 		}
-		
+
 		$cleanContent = str_replace("\n", " ", str_replace("\r", "", str_replace("\t", " ", $textContent)));
-		$cleanContent = preg_replace(array("/ *\<\<br *\/?\>\> */", "/ +/", "/&amp;/"), array("\n ", " ", " "), preg_replace("/[ ]{2,*}/", " ", $cleanContent));
-		
+		$cleanContent = preg_replace(array("/ *\<\<br *\/?\>\> */", "/ +/", "/\<\<sp *\/?\>\>/"), array("\n ", " ", " "), $cleanContent);
+
 		$this->originalContent = $cleanContent;
 		$this->setContent($cleanContent);
 	}
@@ -69,7 +79,7 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 
 		// Apply the style to this node
 		$node->setAttribute("style", $this->getStyle()->getHTMLStyleAttributeValue());
-		
+
 		// Should also apply the current page number
 		$pageNrs = $node->getElementsByTagName("page-nr");
 		for ($i = 0, $l = $pageNrs->length; $i < $l; $i++)
@@ -82,28 +92,28 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 		// Append this node to the parentNode
 		$parentNode->appendChild($node);
 	}
-	
+
 	function prepare($availableWidth, $firstRowWidth)
 	{
 		$this->preparedContents = Flex_Pdf_Text::splitStringToLengths($this->content, $this->getStyle()->getFont(), $this->getStyle()->getFontSize(), $availableWidth, $firstRowWidth);
 		return $this->preparedContents;
 	}
-	
+
 	function setContent($content)
 	{
 		$this->content = $content;
 	}
-	
+
 	function renderOnPage($page, $parent=NULL)
 	{
 		// Span rendering is currently handled by the paragraph object.
 		// Bit messy - could do with improving this a sit makes rendring border/background a bit tricky.
 	}
-	
+
 	public function clearTemporaryDetails()
 	{
 		$this->preparedContents = NULL;
-		
+
 		$this->setContent(str_replace("<<pn>>", $this->getCurrentPageNumber(), $this->originalContent));
 	}
 
@@ -112,7 +122,7 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 	{
 		return false;
 	}
-	
+
 }
 
 ?>

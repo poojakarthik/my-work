@@ -14,12 +14,12 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	const OVERFLOW_VISIBLE = 0;
 	const OVERFLOW_HIDDEN = 1;
 	const OVERFLOW_ALL_OR_NOTHING = 2;
-	
+
 	const TEXT_DECORATION_NONE 			= 0;
 	const TEXT_DECORATION_OVERLINE 		= 1;
 	const TEXT_DECORATION_UNDERLINE 	= 2;
 	const TEXT_DECORATION_LINE_THROUGH 	= 4;
-	
+
 	const FONT_FAMILY = 0;
 	const FONT_WEIGHT = 1;
 	const FONT_STYLE = 2;
@@ -33,7 +33,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	private $lineHeight = 0;
 	private $fontResources = array();
 	private $fontParts = array(self::FONT_FAMILY => "helvetica", self::FONT_WEIGHT => "", self::FONT_STYLE => "");
-	
+
 	// Non-inherited properties
 	private $intTop 	= NULL;
 	private $intLeft 	= NULL;
@@ -58,7 +58,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	private $intCornerRadius = 0;
 	private $strPageSize = Zend_Pdf_Page::SIZE_A4;
 	private $intMedia = self::MEDIA_ALL;
-	
+
 	private $bolInheritedFromStyle = FALSE;
 
 	function __construct($anotherStyle=NULL)
@@ -72,9 +72,9 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 			$this->fontParts		= $anotherStyle->fontParts;
 			$this->intTextAlign		= $anotherStyle->intTextAlign;
 			$this->intOverflow		= $anotherStyle->intOverflow;
-			$this->objColour		= $anotherStyle->objColour;
+			$this->objColor			= $anotherStyle->objColor;
 			$this->intMedia			= $anotherStyle->intMedia;
-			
+
 			$this->bolInheritedFromStyle = TRUE;
 		}
 		else
@@ -82,7 +82,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 			$this->setColor(new Flex_Pdf_Colour("black"));
 		}
 	}
-	
+
 	function applyStyleAttribute($styleAttribute)
 	{
 		$style = explode(";", $styleAttribute);
@@ -96,121 +96,121 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 				case "MEDIA":
 					$this->setMedia($styleParts[1]);
 					break;
-				
+
 				case "FONT-FAMILY":
 					$this->fontParts[self::FONT_FAMILY] = strtoupper(trim($styleParts[1]));
 					break;
-				
+
 				case "FONT-WEIGHT":
 					$value = strtoupper(trim($styleParts[1]));
 					$this->fontParts[self::FONT_WEIGHT] = $value == "NORMAL" ? "" : (" " . $value);
 					break;
-				
+
 				case "FONT-STYLE":
 					$value = strtoupper(trim($styleParts[1]));
 					$this->fontParts[self::FONT_STYLE] = $value == "NORMAL" ? "" : (" " . $value);
 					break;
-				
+
 				case "FONT-SIZE":
 					$this->setFontSize($this->getPointSize($styleParts[1]));
 					break;
-				
+
 				case "COLOR":
 				case "COLOUR":
 					$this->setColor(new Flex_Pdf_Colour($styleParts[1]));
 					break;
-				
+
 				case "BORDER-WIDTH":
 					$this->setBorderWidth($styleParts[1]);
 					break;
-				
+
 				case "CORNER-RADIUS":
 					$this->setCornerRadius($styleParts[1]);
 					break;
-				
+
 				case "BORDER-WIDTH-TOP":
 					$this->setBorderWidthTop($styleParts[1]);
 					break;
-				
+
 				case "BORDER-WIDTH-RIGHT":
 					$this->setBorderWidthRight($styleParts[1]);
 					break;
-				
+
 				case "BORDER-WIDTH-BOTTOM":
 					$this->setBorderWidthBottom($styleParts[1]);
 					break;
-				
+
 				case "BORDER-WIDTH-LEFT":
 					$this->setBorderWidthLeft($styleParts[1]);
 					break;
-				
+
 				case "PADDING":
 					$this->setPadding($styleParts[1]);
 					break;
-				
+
 				case "PADDING-TOP":
 					$this->setPaddingTop($styleParts[1]);
 					break;
-				
+
 				case "PADDING-RIGHT":
 					$this->setPaddingRight($styleParts[1]);
 					break;
-				
+
 				case "PADDING-BOTTOM":
 					$this->setPaddingBottom($styleParts[1]);
 					break;
-				
+
 				case "PADDING-LEFT":
 					$this->setPaddingLeft($styleParts[1]);
 					break;
-				
+
 				case "BORDER-COLOR":
 				case "BORDER-COLOUR":
 					$this->setBorderColor(new Flex_Pdf_Colour($styleParts[1]));
 					break;
-				
+
 				case "BACKGROUND-COLOR":
 				case "BACKGROUND-COLOUR":
 					$this->setBackgroundColor(new Flex_Pdf_Colour($styleParts[1]));
 					break;
-				
+
 				case "TEXT-DECORATION":
 					$this->setTextDecoration($styleParts[1]);
 					break;
-				
+
 				case "TEXT-ALIGN":
 					$this->setTextAlign($styleParts[1]);
 					break;
-				
+
 				case "OVERFLOW":
 					$this->setOverflow($styleParts[1]);
 					break;
-				
+
 				case "LINE-HEIGHT":
 					$this->setLineHeight($styleParts[1]);
 					break;
-					
+
 				case "TOP":
-					
+
 					$this->setTop($styleParts[1]);
 					break;
-				
+
 				case "LEFT":
 					$this->setLeft($styleParts[1]);
 					break;
-				
+
 				case "BOTTOM":
 					$this->setBottom($styleParts[1]);
 					break;
-				
+
 				case "RIGHT":
 					$this->setRight($styleParts[1]);
 					break;
-				
+
 				case "WIDTH":
 					$this->setWidth($styleParts[1]);
 					break;
-				
+
 				case "HEIGHT":
 					$this->setHeight($styleParts[1]);
 					break;
@@ -218,7 +218,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 				case "PAGE-SIZE":
 					$this->setPageSize($styleParts[1]);
 					break;
-				
+
 					// Ignore - not supported!
 
 			}
@@ -230,7 +230,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		}
 		if ($fontName)
 		{
-			try 
+			try
 			{
 				$font = Flex_Pdf_Font_Factory::get($fontName);
 			}
@@ -245,17 +245,17 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 			$this->setFont($font, $this->getFontSize());
 		}
 	}
-	
+
 	function setTextDecoration($textDecoration)
 	{
 		$textDecoration = preg_replace("/ +/", " ", strtolower(trim($textDecoration)));
-		
+
 		if (!$textDecoration) return;
-		
+
 		$newTextDecoration = self::TEXT_DECORATION_NONE;
-		
+
 		$textDecorations = explode(" ", $textDecoration);
-		
+
 		for ($i = 0, $l = count($textDecorations); $i < $l; $i++)
 		{
 			$textDecoration = $textDecorations[$i];
@@ -264,151 +264,151 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 				case "overline":
 					$newTextDecoration = $newTextDecoration | self::TEXT_DECORATION_OVERLINE;
 					break;
-	
+
 				case "underline":
 					$newTextDecoration = $newTextDecoration | self::TEXT_DECORATION_UNDERLINE;
 					break;
-	
+
 				case "line-through":
 					$newTextDecoration = $newTextDecoration | self::TEXT_DECORATION_LINE_THROUGH;
 					break;
-	
+
 				case "none":
 					$newTextDecoration = self::TEXT_DECORATION_NONE;
 					break;
-	
+
 				default:
 					if (!trim($textDecoration)) continue;
 					// Ignore - Invalid value!
 					return;
 			}
 		}
-		
+
 		$this->intTextDecoration = $newTextDecoration;
 	}
-	
+
 	function getTextDecoration()
 	{
 		return $this->intTextDecoration;
 	}
-	
+
 	function hasOverline()
 	{
 		return ($this->intTextDecoration & self::TEXT_DECORATION_OVERLINE);
 	}
-	
+
 	function hasUnderline()
 	{
 		return ($this->intTextDecoration & self::TEXT_DECORATION_UNDERLINE);
 	}
-	
+
 	function hasLineThrough()
 	{
 		return ($this->intTextDecoration & self::TEXT_DECORATION_LINE_THROUGH);
 	}
-	
+
 	function hasTextDecoration()
 	{
 		return ($this->intTextDecoration & (self::TEXT_DECORATION_LINE_THROUGH | self::TEXT_DECORATION_OVERLINE | self::TEXT_DECORATION_UNDERLINE));
 	}
-	
+
 	function setLineHeight($lineHeight)
 	{
 		$this->lineHeight = $this->getPointSize($lineHeight);
 	}
-	
+
 	function getLineHeight()
 	{
 		if ($this->lineHeight) return $this->lineHeight;
 		$font = $this->getFont();
 		return ($font->getLineHeight() / $font->getUnitsPerEm()) * $this->getFontSize();
 	}
-	
+
 	function setFontResources($fontResources)
 	{
 		$this->fontResources = $fontResources;
 	}
-	
+
 	function setTop($int)
 	{
 		$this->intTop = $this->getPointSize($int);
 	}
-	
+
 	function getTop()
 	{
 		return $this->intTop;
 	}
-	
+
 	function setLeft($int)
 	{
 		$this->intLeft = $this->getPointSize($int);
 	}
-	
+
 	function getLeft()
 	{
 		return $this->intLeft;
 	}
-	
+
 	function setBottom($int)
 	{
 		$this->intBottom = $this->getPointSize($int);
 	}
-	
+
 	function getBottom()
 	{
 		return $this->intBottom;
 	}
-	
+
 	function setRight($int)
 	{
 		$this->intRight = $this->getPointSize($int);
 	}
-	
+
 	function getRight()
 	{
 		return $this->intRight;
 	}
-	
+
 	function setWidth($int)
 	{
 		$this->intWidth = $this->getPointSize($int);
 	}
-	
+
 	function getWidth()
 	{
 		return $this->intWidth;
 	}
-	
+
 	function hasFixedWidth()
 	{
 		return $this->intWidth !== NULL;
 	}
-	
+
 	function setHeight($int)
 	{
 		$this->intHeight = $this->getPointSize($int);
 	}
-	
+
 	function getHeight()
 	{
 		return $this->intHeight;
 	}
-	
+
 	function hasFixedHeight()
 	{
 		return $this->intHeight !== NULL;
 	}
-	
+
 	function setCornerRadius($int)
 	{
 		$this->intCornerRadius = $this->getPointSize($int);
 	}
-	
+
 	function getCornerRadius()
 	{
 		return $this->intCornerRadius;
 	}
-	
+
 	function setBorderWidth($int)
 	{
 		$this->setBorderWidthTop($int);
@@ -416,77 +416,77 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		$this->setBorderWidthBottom($int);
 		$this->setBorderWidthLeft($int);
 	}
-	
+
 	function setBorderWidthTop($int)
 	{
 		$this->intBorderWidthTop = $this->getPointSize($int);
 	}
-	
+
 	function setBorderWidthRight($int)
 	{
 		$this->intBorderWidthRight = $this->getPointSize($int);
 	}
-	
+
 	function setBorderWidthBottom($int)
 	{
 		$this->intBorderWidthBottom = $this->getPointSize($int);
 	}
-	
+
 	function setBorderWidthLeft($int)
 	{
 		$this->intBorderWidthLeft = $this->getPointSize($int);
 	}
-	
+
 	function getBorderWidthTop()
 	{
 		return $this->intBorderWidthTop;
 	}
-	
+
 	function getBorderWidthRight()
 	{
 		return $this->intBorderWidthRight;
 	}
-	
+
 	function getBorderWidthBottom()
 	{
 		return $this->intBorderWidthBottom;
 	}
-	
+
 	function getBorderWidthLeft()
 	{
 		return $this->intBorderWidthLeft;
 	}
-	
+
 	function setColor($objColor)
 	{
 		$this->objColor = $objColor;
 	}
-	
+
 	function getColor()
 	{
 		return $this->objColor;
 	}
-	
+
 	function setBorderColor($objColor)
 	{
 		$this->objBorderColor = $objColor;
 	}
-	
+
 	function getBorderColor()
 	{
 		return $this->objBorderColor;
 	}
-	
+
 	function setBackgroundColor($objColor)
 	{
 		$this->objBackgroundColor = $objColor;
 	}
-	
+
 	function getBackgroundColor()
 	{
 		return $this->objBackgroundColor;
 	}
-	
+
 	function setTextAlign($mixTextAlign)
 	{
 		$intTextAlign = self::TEXT_ALIGN_LEFT;
@@ -514,27 +514,27 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		}
 		$this->intTextAlign = $intTextAlign;
 	}
-	
+
 	function getTextAlign()
 	{
 		return $this->intTextAlign;
 	}
-	
+
 	function isTextAlignLeft()
 	{
 		return $this->intTextAlign == self::TEXT_ALIGN_LEFT;
 	}
-	
+
 	function isTextAlignRight()
 	{
 		return $this->intTextAlign == self::TEXT_ALIGN_RIGHT;
 	}
-	
+
 	function isTextAlignCentre()
 	{
 		return $this->intTextAlign == self::TEXT_ALIGN_CENTRE;
 	}
-	
+
 	function setOverflow($mixOverflow)
 	{
 		$intTextAlign = self::OVERFLOW_VISIBLE;
@@ -561,7 +561,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		}
 		$this->intOverflow = $intOverflow;
 	}
-	
+
 	function getOverflow()
 	{
 		return $this->intOverflow;
@@ -574,47 +574,47 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		$this->setPaddingBottom($int);
 		$this->setPaddingLeft($int);
 	}
-	
+
 	function setPaddingTop($int)
 	{
 		$this->intPaddingTop = $this->getPointSize($int);
 	}
-	
+
 	function setPaddingRight($int)
 	{
 		$this->intPaddingRight = $this->getPointSize($int);
 	}
-	
+
 	function setPaddingBottom($int)
 	{
 		$this->intPaddingBottom = $this->getPointSize($int);
 	}
-	
+
 	function setPaddingLeft($int)
 	{
 		$this->intPaddingLeft = $this->getPointSize($int);
 	}
-	
+
 	function getPaddingTop()
 	{
 		return $this->intPaddingTop;
 	}
-	
+
 	function getPaddingRight()
 	{
 		return $this->intPaddingRight;
 	}
-	
+
 	function getPaddingBottom()
 	{
 		return $this->intPaddingBottom;
 	}
-	
+
 	function getPaddingLeft()
 	{
 		return $this->intPaddingLeft;
 	}
-	
+
 	function setPageSize($strSize)
 	{
 		$tmpStrSize = preg_replace("/[^A-Z0-9]+/", " ", trim(strtoupper($strSize)));
@@ -623,19 +623,19 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 			case "A4 LANDSCAPE":
 				$this->strPageSize = Flex_Pdf_Page::SIZE_A4_LANDSCAPE;
 				break;
-			
+
 			case "LETTER":
 				$this->strPageSize = Flex_Pdf_Page::SIZE_LETTER;
 				break;
-			
+
 			case "LETTER LANDSCAPE":
 				$this->strPageSize = Flex_Pdf_Page::SIZE_LETTER_LANDSCAPE;
 				break;
-			
+
 			case "A4":
 				$this->strPageSize = Flex_Pdf_Page::SIZE_A4;
 				break;
-				
+
 			default:
 				$strSize = trim(preg_replace(array("/[^0-9]/", "/ +/", "/^ +/", "/ +$/", "/ /"), array(" ", " ", "", "", ":"), $strSize)).":";
 				if (preg_match("/^[0-9]+:[0-9]+:$/", $strSize))
@@ -644,7 +644,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 				}
 		}
 	}
-	
+
 	function getPageSize()
 	{
 		return $this->strPageSize;
@@ -662,18 +662,18 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		return $dims[1];
 	}
 
-	function setMedia($intMedia)
+	function setMedia($strMedia)
 	{
-		switch(strtoupper($intMedia))
+		switch(strtoupper(trim($strMedia)))
 		{
 			case "PRINT":
 				$this->intMedia = self::MEDIA_PRINT;
 				break;
-				
+
 			case "EMAIL":
 				$this->intMedia = self::MEDIA_EMAIL;
 				break;
-				
+
 			case "BOTH":
 			case "ANY":
 			case "ALL":
@@ -724,8 +724,8 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		{
 			$style[] = "right: " . $this->getRight() . "pt";
 		}
-		
-		
+
+
 		// Size
 		if ($this->getWidth() !== NULL)
 		{
@@ -744,7 +744,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		{
 			$style[] = "page-size: " . str_replace(":", "pt ", substr($this->getPageSize(), -1)) . "pt";
 		}
-		
+
 		// Font
 		if ($this->fontParts[self::FONT_FAMILY])
 		{
@@ -762,7 +762,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		}
 
 		$style[] = "font-size: " . $this->getFontSize() . "pt";
-		
+
 		// Text decoration
 		$textDec = "";
 		$textDec .= $this->hasOverline() ? "overline " : "";
@@ -771,7 +771,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		if (!$textDec) $textDec = "none";
 		$style[] = "text-decoration: " . trim($textDec);
 
-		
+
 		// Text alignment
 		switch ($this->getTextAlign())
 		{
@@ -789,10 +789,10 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 				break;
 		}
 
-		
+
 		// Line height
 		if ($this->getLineHeight()) $style[] = "line-height: " . $this->getLineHeight() . "pt";
-		
+
 		// Media
 		switch ($this->getMedia())
 		{
@@ -809,8 +809,8 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 				$style[] = "media: all";
 				break;
 		}
-		
-		
+
+
 		// Overflow
 		switch ($this->getOverflow())
 		{
@@ -858,7 +858,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		$style[] = "border-width-right: " . $this->getBorderWidthRight() . "pt";
 		$style[] = "border-width-bottom: " . $this->getBorderWidthBottom() . "pt";
 		$style[] = "border-width-left: " . $this->getBorderWidthLeft() . "pt";
-		
+
 		return implode("; ", $style);
 	}
 

@@ -218,26 +218,21 @@ class Flex_Pdf_Text
 		return $characters;
 	} 
 	
+	private static $breakRules = array();
+	private static $strBreakBefore = "({[<";
+	private static $strBreakAfter   = ")}]>.,?!:;- ";
+	private static $strBreakAlways  = "\n";
+	
 	static function getCharacterBreakRules($char)
 	{
-		static $breakRules, $strBreakBefore, $strBreakAfter, $strBreakAlways;
-
-		if (!isset($breakRules))
+		if (!array_key_exists($char, self::$breakRules))
 		{
-			$breakRules = array();
-			$strBreakBefore  = "({[<";
-			$strBreakAfter   = ")}]>.,?!:;- ";
-			$strBreakAlways  = "\n";
+			self::$breakRules[$char] = 0;
+			if (strpos(self::$strBreakBefore, $char) !== FALSE) self::$breakRules[$char] += Flex_Pdf_Text::CHAR_BREAK_BEFORE;
+			if (strpos(self::$strBreakAfter,  $char) !== FALSE) self::$breakRules[$char] += Flex_Pdf_Text::CHAR_BREAK_AFTER;
+			if (strpos(self::$strBreakAlways, $char) !== FALSE) self::$breakRules[$char] += Flex_Pdf_Text::CHAR_BREAK_ALWAYS;
 		}
-
-		if (!array_key_exists($char, $breakRules))
-		{
-			$breakRules[$char] = 0;
-			if (strpos($strBreakBefore, $char) !== FALSE) $breakRules[$char] += Flex_Pdf_Text::CHAR_BREAK_BEFORE;
-			if (strpos($strBreakAfter,  $char) !== FALSE) $breakRules[$char] += Flex_Pdf_Text::CHAR_BREAK_AFTER;
-			if (strpos($strBreakAlways, $char) !== FALSE) $breakRules[$char] += Flex_Pdf_Text::CHAR_BREAK_ALWAYS;
-		}
-		return $breakRules[$char];
+		return self::$breakRules[$char];
 	}
 
 }

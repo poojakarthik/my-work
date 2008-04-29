@@ -5,24 +5,17 @@
 class Flex_Pdf_Template_Image extends Flex_Pdf_Template_Element
 {
 	protected $objImage = NULL;
-	private $strSource = "";
+	protected $strSource = "";
 	protected $fltWidth = 0;
 	protected $fltHeight = 0;
-	
+
 	protected static $imageResourceCache = array();
-	
+
 	function initialize()
 	{
 		// Need to get the src for the image.
-		$this->strSource = $this->dom->getAttribute("src");
-		
-		// If path is relative... 
-		if ($this->strSource[0] == "." || file_exists($this->getTemplate()->getTemplateBase() . "/" . $this->strSource))
-		{
-			// make absolute to template...
-			$this->strSource = $this->getTemplate()->getTemplateBase() . "/" . $this->strSource;
-		}
-		
+		$this->strSource = $this->getResourcePath($this->dom->getAttribute("src"));
+
 		$this->prepare();
 	}
 
@@ -36,14 +29,14 @@ class Flex_Pdf_Template_Image extends Flex_Pdf_Template_Element
 				$this->objImage = self::$imageResourceCache[$this->strSource];
 				return;
 			}
-			try 
+			try
 			{
 				if (strtolower(substr($this->strSource, strlen($this->strSource) - 4)) == ".svg")
 				{
 					// TODO:: Add support for SVG images. Current implementation is VERY broken
 					$this->objImage = FALSE;
-					return; 
-					
+					return;
+
 					$this->objImage = new Flex_Pdf_Image_Resource_SVG($this->strSource);
 					$this->fltWidth = $this->objImage->getWidth();
 					$this->fltHeight = $this->objImage->getHeight();
@@ -62,12 +55,12 @@ class Flex_Pdf_Template_Image extends Flex_Pdf_Template_Element
 			self::$imageResourceCache[$this->strSource] = $this->objImage;
 		}
 	}
-	
+
 	public function prepareSize($offsetTop=0)
 	{
 		$this->preparedWidth = $this->getStyle()->hasFixedWidth() ? $this->getStyle()->getWidth() : $this->fltWidth;
 		$this->preparedHeight = $this->getStyle()->hasFixedHeight() ? $this->getStyle()->getHeight() : $this->fltHeight;
-		
+
 		$this->requiredWidth = $this->preparedWidth + ($this->getOffsetLeft() ? $this->getOffsetLeft(): $this->getOffsetRight());
 		$this->requiredHeight = $this->preparedHeight + ($this->getOffsetTop() ? $this->getOffsetTop() : $this->getOffsetBottom());
 	}
@@ -78,9 +71,11 @@ class Flex_Pdf_Template_Image extends Flex_Pdf_Template_Element
 
 	public function appendToDom($doc, $parentNode, $parent=NULL)
 	{
+		if ($this->dom == NULL) return;
+
 		// Create a node for this element
-		$node = $doc->createElement("img");
-		
+		$node = $doc->createElement($this->dom->tagName);
+
 		// Apply the style to this node
 		$node->setAttribute("style", $this->getStyle()->getHTMLStyleAttributeValue());
 

@@ -9,15 +9,15 @@ abstract class Flex_Pdf_Template_Element
 
 	var $_depth = 0;
 
-	private $_bolInGetWidth = FALSE; 
-	
+	private $_bolInGetWidth = FALSE;
+
 	private $_bolSuitableForTargetMedia = NULL;
 
 	public function __construct($domNode, $parentElement)
 	{
 		$this->dom = $domNode;
 		$this->parent = $parentElement;
-		
+
 		$this->prepareStyle($this->parent->getStyle());
 
 		if (!$this->includeForCurrentMedia())
@@ -27,7 +27,7 @@ abstract class Flex_Pdf_Template_Element
 
 		$this->initialize();
 	}
-	
+
 	public function getDepth()
 	{
 		return ($this->parent == NULL ? 0 : $this->parent->getDepth()) + 1;
@@ -36,7 +36,7 @@ abstract class Flex_Pdf_Template_Element
 	protected function prepareStyle($inheritedStyle)
 	{
 		$this->style = new Flex_Pdf_Style($inheritedStyle);
-		
+
 		if ($this->dom->hasAttribute("style"))
 		{
 			$this->style->applyStyleAttribute($this->dom->getAttribute("style"));
@@ -52,12 +52,17 @@ abstract class Flex_Pdf_Template_Element
 	{
 		return $this->parent->getTemplate();
 	}
-	
+
+	public function getResourcePath($relativePath)
+	{
+		return $this->getTemplate()->getResourcePath($relativePath);
+	} 
+
 	function getCurrentPageNumber()
 	{
 		return $this->getTemplate()->getCurrentPageNumber();
 	}
-	
+
 	function getPage()
 	{
 		if ($this->parent instanceof Flex_Pdf_Template_Element)
@@ -81,7 +86,7 @@ abstract class Flex_Pdf_Template_Element
 	{
 		// Create a node for this element
 		$node = $doc->createElement($this->dom->nodeName);
-		
+
 		$childElements = $this->getChildElements();
 		for ($i = 0, $l = count($childElements); $i < $l; $i++)
 		{
@@ -110,7 +115,7 @@ abstract class Flex_Pdf_Template_Element
 				$wrap->setAttribute("forced-to-top", "true");
 			}
 		}
-		
+
 		return $wrap;
 	}
 
@@ -164,7 +169,7 @@ abstract class Flex_Pdf_Template_Element
 				$requiredHeights[0] += $childElements[$i]->getRequiredHeight();
 			}
 		}
-		
+
 		if (!$this->getStyle()->hasFixedWidth())
 		{
 			$this->preparedWidth = max($requiredWidths);
@@ -174,8 +179,8 @@ abstract class Flex_Pdf_Template_Element
 			$this->preparedWidth = $this->getStyle()->getWidth();
 		}
 		$this->requiredWidth = $this->preparedWidth + ($this->getOffsetLeft() ? $this->getOffsetLeft(): $this->getOffsetRight());
-		
-		
+
+
 		if (!$this->getStyle()->hasFixedHeight())
 		{
 			$this->preparedHeight = max($requiredHeights);
@@ -186,51 +191,51 @@ abstract class Flex_Pdf_Template_Element
 		}
 		$this->requiredHeight = $this->preparedHeight + ($this->getOffsetTop() ? $this->getOffsetTop() : $this->getOffsetBottom());
 	}
-	
+
 	public function getOffsetLeft()
 	{
 		if ($this->getStyle()->getLeft() === NULL) return 0;
 		return $this->getStyle()->getLeft();
 	}
-	
+
 	public function getOffsetRight()
 	{
 		if ($this->getStyle()->getRight() === NULL) return 0;
 		return $this->getStyle()->getRight();
 	}
-	
+
 	public function getOffsetTop()
 	{
 		if ($this->getStyle()->getTop() === NULL) return 0;
 		return $this->getStyle()->getTop();
 	}
-	
+
 	public function getOffsetBottom()
 	{
 		if ($this->getStyle()->getBottom() === NULL) return 0;
 		return $this->getStyle()->getBottom();
 	}
-	
+
 	public function getRequiredWidth()
 	{
 		return $this->requiredWidth;
 	}
-	
+
 	public function getRequiredHeight()
 	{
 		return $this->requiredHeight;
 	}
-	
+
 	public function getPreparedWidth()
 	{
 		return $this->preparedWidth;
 	}
-	
+
 	public function getPreparedHeight()
 	{
 		return $this->preparedHeight;
 	}
-	
+
 	var $requiredWidth = 0;
 	var $requiredHeight = 0;
 	var $preparedWidth = 0;
@@ -242,7 +247,7 @@ abstract class Flex_Pdf_Template_Element
 	{
 		$this->preparedAbsTop = $offsetTop;
 		$this->preparedAbsLeft = $offsetLeft;
-		
+
 		if ($this->getStyle()->getLeft() !== NULL)
 		{
 			$this->preparedAbsLeft += $this->getStyle()->getLeft();
@@ -262,7 +267,7 @@ abstract class Flex_Pdf_Template_Element
 				$this->preparedAbsLeft += ($parentWidth - $this->getPreparedWidth()) / 2;
 			}
 		}
-		
+
 		if ($this->getStyle()->getTop() !== NULL)
 		{
 			$this->preparedAbsTop = (($this->parent == NULL) ? 0 : $this->parent->getPreparedAbsTop()) + $this->getStyle()->getTop();
@@ -271,7 +276,7 @@ abstract class Flex_Pdf_Template_Element
 		{
 			$this->preparedAbsTop = (($this->parent == NULL) ? 0 : $this->parent->getPreparedAbsTop()) + $parentHeight - $this->getStyle()->getBottom() - $this->getPreparedHeight();
 		}
-		
+
 		$this->prepareChildPositions();
 	}
 
@@ -287,19 +292,19 @@ abstract class Flex_Pdf_Template_Element
 			{
 				$offsetTop += $childElements[$i]->getPreparedHeight();
 			}
-		}		
+		}
 	}
-	
+
 	public function getPreparedAbsTop()
 	{
 		return $this->preparedAbsTop;
 	}
-	
+
 	public function getPreparedAbsLeft()
 	{
 		return $this->preparedAbsLeft;
 	}
-	
+
 	var $preparedAbsTop = 0;
 	var $preparedAbsLeft = 0;
 
@@ -308,7 +313,7 @@ abstract class Flex_Pdf_Template_Element
 	{
 		$availableHeight = $this->getAvailableHeight();
 		$childElements = $this->getChildElements();
-		//echo "<hr>" . get_class($this) . " :: getAvailablePreparedHeightForChildElement :: \$availableHeight = $availableHeight<br>"; 
+		//echo "<hr>" . get_class($this) . " :: getAvailablePreparedHeightForChildElement :: \$availableHeight = $availableHeight<br>";
 		for ($i = 0, $l = count($childElements); $i < $l; $i++)
 		{
 			// If we've reached the child element concerned then we don't need to look further
@@ -319,19 +324,30 @@ abstract class Flex_Pdf_Template_Element
 			// Ignore child elements that do not flow vertically in the layout
 			if (!$childElements[$i]->hasAbsoluteVertical())
 			{
-		//echo "" . get_class($childElements[$i]) . " :: \$childElements[\$i]->getPreparedHeight() = " . $childElements[$i]->getPreparedHeight() . "<hr>"; 
+		//echo "" . get_class($childElements[$i]) . " :: \$childElements[\$i]->getPreparedHeight() = " . $childElements[$i]->getPreparedHeight() . "<hr>";
 				$availableHeight -= $childElements[$i]->getPreparedHeight();
 			}
 		}
 		return $availableHeight;
 	}
-	
-	
-	
-	
+
+
+	public function destroy()
+	{
+		$childElements = $this->getChildElements();
+		for ($i = count($childElements) - 1; $i >= 0; $i--)
+		{
+			$childElements[$i]->destroy();
+			unset($childElements[$i]);
+		}
+		unset($this->dom, $this->style, $this->parent, $this->childElements, $this->_depth, $this->_bolInGetWidth, $this->_bolSuitableForTargetMedia);
+	}
+
+
+
 	// The folloing functions are for included wrapped content elements,
 	// so that they may inspect the lineage above and below them in the dom.
-	
+
 	public function isComplete()
 	{
 		$childElements = $this->getChildElements();
@@ -341,12 +357,17 @@ abstract class Flex_Pdf_Template_Element
 		}
 		return TRUE;
 	}
-	
+
+	public function isStarted()
+	{
+		return FALSE;
+	}
+
 	public function getNumberOfWrappersOnPage()
 	{
 		return $this->parent->getNumberOfWrappersOnPage();
 	}
-	
+
 	public function getIndexOfWrapperOnPage()
 	{
 		return $this->parent->getIndexOfWrapperOnPage();
@@ -361,15 +382,22 @@ abstract class Flex_Pdf_Template_Element
 	{
 		return FALSE;
 	}
-	
+
 	protected function includeForCurrentMedia()
 	{
 		if ($this->_bolSuitableForTargetMedia === NULL)
 		{
-			$this->_bolSuitableForTargetMedia = $this->getStyle()->suitableForMedia($this->getTemplate()->getTargetMedia());
+			if ($this->getStyle() === NULL)
+			{
+				$this->_bolSuitableForTargetMedia = TRUE;
+			}
+			else
+			{
+				$this->_bolSuitableForTargetMedia = $this->getStyle()->suitableForMedia($this->getTemplate()->getTargetMedia());
+			}
 		}
 		return $this->_bolSuitableForTargetMedia;
-	} 
+	}
 
 }
 

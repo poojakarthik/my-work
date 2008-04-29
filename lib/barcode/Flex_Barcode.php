@@ -7,7 +7,7 @@ abstract class Flex_Barcode
 {
 	protected function __construct()
 	{
-		
+
 	}
 
     public function &create($type = 'CODE128')
@@ -16,18 +16,19 @@ abstract class Flex_Barcode
         $type = strtoupper($type);
         $className = 'Flex_Barcode_' . $type;
         $classFile = dirname(__FILE__) . '/types/' . $className . '.php';
-        
+
         if (!preg_match('/^[A-Z0-9_-]+$/', $type) || !file_exists($classFile))
         {
             throw new Exception("Unsupported barcode type: $type");
         }
 
 		require_once $classFile;
-        return new $className();
+		$barcode = new $className();
+        return $barcode;
     }
 
 	public abstract function draw($strValue, $strImgType='png');
-	
+
 	public abstract function setBarcodeHeight($pxHeight);
 }
 

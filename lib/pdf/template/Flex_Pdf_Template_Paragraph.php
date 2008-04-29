@@ -6,7 +6,7 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 	private $_height_ = 0;
 	private $rowWidths = array();
 	private $rowHeights = array();
-	
+
 	function initialize()
 	{
 		// Need to parse the text for permitted elements (span's)
@@ -14,12 +14,12 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 		{
 			$node = $this->dom->childNodes->item($i);
 			// Text shouldn't be out here on its own, but we don't want to ignore it...
-			if ($node instanceof DOMText) 
+			if ($node instanceof DOMText)
 			{
 				// Stick the text into a span to be handled properly
 				$node = $this->wrapNode($node, "span");
 			}
-			
+
 			$child = NULL;
 
 			switch (strtoupper($node->tagName))
@@ -34,11 +34,11 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 					break;
 
 				default:
-					// It's not in the right place! 
+					// It's not in the right place!
 					// Just ignore it for now...
 					break;
 			}
-			
+
 			if ($child !== NULL)
 			{
 				if ($child->includeForCurrentMedia())
@@ -49,20 +49,20 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 		}
 	}
 
-	
+
 	function prepare()
 	{
 		// In order to render the contents, we first need to prepare them.
 		// This means telling each of them the available width for the first row.
-		// The available width will be 0 for the first span and the available width 
+		// The available width will be 0 for the first span and the available width
 		// minus the width of the last row subsequently.
 		// Whilst doing this we also need to keep track of the max line heights for
 		// each row to be rendered, as this can vary between rows.
-		// We also need to keep track of the widths of the rows so that we know the 
+		// We also need to keep track of the widths of the rows so that we know the
 		// width of this element.
 		// (Oh, is that all)
 		$availableWidth = $this->getAvailableWidth();
-		
+
 		$this->rowHeights = array();
 		$this->rowHeights[] = 0;
 		$this->rowWidths = array();
@@ -74,15 +74,15 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 		{
 			// Get the prepared content for the span (the span will store this for using later)
 			$pc = $childElements[$i]->prepare($availableWidth, ($availableWidth - $this->rowWidths[count($this->rowWidths) - 1]));
-			
+
 			$nrRows = count($pc["WIDTHS"]);
-			
+
 			// If there are no rows for this span, ignore it
 			if (!$nrRows) continue;
-			
+
 			// Get the row height for this span
 			$rowHeight = $childElements[$i]->getStyle()->getLineHeight();
-			
+
 			// Combine widths of this spans first row and the previous row
 			$this->rowWidths[count($this->rowWidths) - 1] += $pc["WIDTHS"][0];
 			// If there is more than one row, add their lengths to the list of row lengths
@@ -90,11 +90,11 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 			{
 				$this->rowWidths = array_merge($this->rowWidths, array_slice($pc["WIDTHS"], 1));
 			}
-			
+
 			// The first row is on the same row as the previous spans last row.
 			// The height of that row will be the max of the two row heights
 			$this->rowHeights[count($this->rowHeights) - 1] = max($rowHeight, $this->rowHeights[count($this->rowHeights) - 1]);
-			
+
 			// Fill in the row heights for the other rows
 			for ($r = 1; $r < $nrRows; $r++)
 			{
@@ -111,26 +111,29 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 		// To render the text we need to know the top and left position of this paragraph
 		$top = $this->getPreparedAbsTop();
 		$left = $this->getPreparedAbsLeft();
-		
+
 		// We also need to know the height and width of this paragraph
 		$height = $this->getPreparedHeight();
 		$width = $this->getPreparedWidth();
-		
+
 		// Get available height
 		$availableHeight = $this->getAvailableHeight();
-		
+
 		// Get the alignment for this paragraph
 		$align = $this->getStyle()->getTextAlign();
-		
+
+		$overflow = $this->getStyle()->getOverflow();
+
 		$lastRowWidth = 0;
 		$row = 0;
-		
+
 		$y = $top;
-		
+
 		$usedHeight = 0;
-		
+		$usedWidth = 0;
+
 		$drawX = $left;
-		
+
 		$childElements = $this->getChildElements();
 		// We now need to render the content of each span
 		for ($c = 0, $cl = count($childElements); $c < $cl; $c++)
@@ -139,25 +142,25 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 			$pc = $childElements[$c]->preparedContents;
 			$strings = $pc["STRINGS"];
 			$widths = $pc["WIDTHS"];
-			
+
 			// Itterate through the rows for this span
 			for ($i = 0, $l = count($strings); $i < $l; $i++)
 			{
 				// If this is truly a new row (and not just a continuation of the previous span) increment the row counter
-				if ($i) 
+				if ($i)
 				{
 					$row++;
 					$usedWidth = 0;
 				}
-				
+
 
 				$lineHeight = $this->rowHeights[$row];
-				
+
 				$drawY = $top + $usedHeight;
 
 				// Set the style
 				if ($i == 0) $page->setStyle($childElements[$c]->getStyle());
-				
+
 				// Set the text line height for the page
 				$page->setTextLineHeight($this->rowHeights[$row]);
 
@@ -181,9 +184,9 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 				}
 
 				$page->drawText($drawY, $drawX, $strings[$i], $widths[$i], $this->getStyle());
-				
+
 				$usedWidth += $strW;
-	
+
 				// If we might not be rendering everything...
 				if ($overflow === Flex_Pdf_Style::OVERFLOW_HIDDEN)
 				{
@@ -191,12 +194,12 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 					$remainingString = ltrim(substr($remainingString, strlen($strings[$i])), " ");
 					//$childElements[$c]->setContent($remainingString);
 				}
-				
+
 				// If there is another line after this, this row is full, so increase the 'usedHeight'
 				if ($i + 1 < $l)
 				{
 					$usedHeight += $lineHeight;
-					
+
 					// Check that the next line will fit if overflow is hidden
 					if ($overflow === Flex_Pdf_Style::OVERFLOW_HIDDEN)
 					{
@@ -215,10 +218,10 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 				}
 			}
 		}
-		
+
 		return TRUE;
 	}
-	
+
 	public function clearTemporaryDetails()
 	{
 		$this->rowWidths = array();
@@ -242,7 +245,7 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 	{
 		$this->preparedAbsTop = $offsetTop;
 		$this->preparedAbsLeft = $offsetLeft;
-		
+
 		if ($this->getStyle()->getLeft() !== NULL)
 		{
 			$this->preparedAbsLeft += $this->getStyle()->getLeft();
@@ -262,7 +265,7 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 				$this->preparedAbsLeft += ($parentWidth - $this->getPreparedWidth()) / 2;
 			}
 		}
-		
+
 		if ($this->getStyle()->getTop() !== NULL)
 		{
 			$this->preparedAbsTop = (($this->parent == NULL) ? 0 : $this->parent->getPreparedAbsTop()) + $this->getStyle()->getTop();

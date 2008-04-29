@@ -21,16 +21,16 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 	public function initialize()
 	{
 		$this->type = $this->dom->getAttribute("type");
-		
+
 		// Find the pageWrapIncludes used by this page
 		$this->listPageWrapIncludes();
-		
+
 		// Need to parse the page for top level elements (div or table)
 		for($i = 0, $l = $this->dom->childNodes->length; $i < $l; $i++)
 		{
 			$node = $this->dom->childNodes->item($i);
 			// Text shouldn't be out there on its own, but we don't want to ignore it...
-			if ($node instanceof DOMText) 
+			if ($node instanceof DOMText)
 			{
 				// If it is only whitespace, ignore it
 				if ($node->isWhitespaceInElementContent())
@@ -40,7 +40,7 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 				// Stick the text into a span to be handled properly
 				$node = $this->wrapNode($node, "span");
 			}
-			
+
 			$child = NULL;
 
 			switch (strtoupper($node->tagName))
@@ -65,6 +65,10 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 					$child = new Flex_Pdf_Template_Image($node, $this);
 					break;
 
+				case "RAW":
+					$child = new Flex_Pdf_Template_Raw($node, $this);
+					break;
+
 				case "BARCODE":
 					$child = new Flex_Pdf_Template_Barcode($node, $this);
 					break;
@@ -72,14 +76,14 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 				//case "TABLE":
 				//	$child = new Flex_Pdf_Template_Table($node, $this);
 				//	break;
-				
+
 				default:
-					// It's not in the right place! 
+					// It's not in the right place!
 					// Shove it in a DIV and let the DIV handler deal with it???
 					// Just ignore it for now...
 					break;
 			}
-			
+
 			if ($child !== NULL)
 			{
 				if ($child->includeForCurrentMedia())
@@ -88,30 +92,30 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 				}
 			}
 		}
-		
+
 		$this->getStationery();
 	}
-	
+
 	public function getType()
 	{
 		return $this->type;
 	}
-	
+
 	private function listPageWrapIncludes()
 	{
 		$pageWrapIncludes = $this->dom->getElementsByTagName("page-wrap-include");
 		$this->pageWrapIncludeIds = array();
-		
+
 		for ($i = 0, $l = $pageWrapIncludes->length; $i < $l; $i++)
 		{
 			$node = $pageWrapIncludes->item($i);
 			$this->pageWrapIncludeIds[$node->getAttribute("content")] = $node->getAttribute("content");
 		}
-		
+
 		// We only want to record each one once, even if there is more than one include for the wrapped content!
 		$this->pageWrapIncludeIds = array_keys($this->pageWrapIncludeIds);
 	}
-	
+
 	public function hasIncompletePageWrapIncludes()
 	{
 		for ($i = 0, $l = count($this->pageWrapIncludeIds); $i < $l; $i++)
@@ -124,15 +128,15 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 		}
 		return FALSE;
 	}
-	
+
 	public function getPage()
 	{
 		return $this;
 	}
-	
+
 	/**
 	 * Get the stationery to be used for the page
-	 * 
+	 *
 	 * @return string The path[s] to the image &/or raw PDF command file[s] used as stationery
 	 */
 	public function getStationery()
@@ -141,15 +145,19 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 		{
 			return $this->stationeries;
 		}
-		
+
+		// Don't print stationery for the printers (they have pre-printed paper)
+		if ($this->getTemplate()->getTargetMedia() == Flex_Pdf_Style::MEDIA_PRINT)
+		{
+			return;
+		}
+
 		$stationery = $this->dom->getAttribute("stationery");
 		if (!$stationery) return NULL;
 
 		$paths = explode("|", $stationery);
-		
+
 		$this->stationeries = array();
-		
-		$templateBase = $this->getTemplate()->getTemplateBase();
 
 		for ($i = 0, $l = count($paths); $i < $l; $i++)
 		{
@@ -157,37 +165,36 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 
 			if ($fileExt != "raw")
 			{
-				$stationery = $templateBase . $paths[$i];
-				$this->stationeries[] = new Flex_Pdf_Template_Stationery($stationery);
+				$this->stationeries[] = new Flex_Pdf_Template_Stationery($this->getResourcePath($paths[$i]));
 			}
 			else
 			{
-				$this->stationeries[] = new Flex_Pdf_Template_Raw(file_get_contents($templateBase . $paths[$i]));
+				$this->stationeries[] = new Flex_Pdf_Template_Raw(file_get_contents($this->getResourcePath($paths[$i])));
 			}
 		}
-		
+
 		return $this->stationeries;
 	}
 
 	/**
 	 * Get the stationery to be used for the page
-	 * 
+	 *
 	 * @return string The path to the image used as stationery
 	 */
 	public function getPageSize()
 	{
 		return $this->getStyle()->getPageSize();
 	}
-	
+
 	public function renderOnPage($page, $parent=NULL)
 	{
 		$this->resetForNextPage();
-		
+
 		$this->page = $page;
 
 		$this->prepareSize();
 		$this->preparePosition();
-		
+
 		if ($this->stationeries != NULL)
 		{
 			for ($i = 0, $l = count($this->stationeries); $i < $l; $i++)
@@ -195,7 +202,7 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 				$this->stationeries[$i]->renderOnPage($page, $this);
 			}
 		}
-		
+
 		$childElements = $this->getChildElements();
 		for ($i = 0, $l = count($childElements); $i < $l; $i++)
 		{
@@ -206,13 +213,13 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 	public function appendToDom($doc, $parentNode, $parent=NULL)
 	{
 		$this->resetForNextPage();
-		
+
 		$this->prepareSize();
 		$this->preparePosition();
-		
+
 		// Create a node for this element
 		$node = $doc->createElement("page");
-		
+
 
 		$childElements = $this->getChildElements();
 		for ($i = 0, $l = count($childElements); $i < $l; $i++)
@@ -225,7 +232,7 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 
 		// Apply any stationery for the page
 		$stationery = $this->dom->getAttribute("stationery");
-		if (!$stationery) 
+		if (!$stationery)
 		{
 			$node->setAttribute("stationery", $stationery);
 		}
@@ -245,19 +252,19 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 		// Height is the height of the page
 		return $this->getStyle()->getPageHeight();
 	}
-	
+
 	public function getAvailableWidth()
 	{
 		// The whole width of the page is always available
 		return $this->getStyle()->getPageWidth();
 	}
-	
+
 	public function getAvailableHeight()
 	{
 		// The whole height of the page is always available
 		return $this->getStyle()->getPageHeight();
 	}
-	
+
 	public function clearTemporaryDetails()
 	{
 	}
@@ -265,7 +272,7 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 	public function prepareSize($offsetTop=0)
 	{
 		parent::prepareSize($offsetTop=0);
-		
+
 		$this->preparedWidth = $this->requiredWidth = $this->getPageWidth();
 		$this->preparedHeight = $this->requiredHeight = $this->getPageHeight();
 	}
@@ -274,7 +281,7 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 	{
 		$this->preparedAbsTop = 0;
 		$this->preparedAbsLeft = 0;
-		
+
 		$this->prepareChildPositions();
 	}
 

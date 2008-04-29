@@ -1,32 +1,45 @@
 <?php
 
 
-class Flex_Pdf_Template_Raw extends Flex_Pdf_Template_Element
+class Flex_Pdf_Template_Raw extends Flex_Pdf_Template_Image
 {
-	private $rawData = "";
+	private $rawData = NULL;
 
-	public function __construct($rawData)
+	public function __construct($arg1, $arg2=NULL)
 	{
-		$this->rawData = $rawData;
+		if (is_string($arg1))
+		{
+			$this->rawData = rtrim(str_replace("\r", "", $arg1));
+		}
+		else
+		{
+			parent::__construct($arg1, $arg2);
+		}
 	}
 
-	public function prepare()
+	function prepare()
 	{
-		parent::prepare();
+		// Need to load up the raw pdf commands
+		if ($this->rawData === NULL)
+		{
+			try
+			{
+				$this->rawData = file_get_contents($this->strSource);
+			}
+			catch (Exception $e)
+			{
+				$this->rawData = "";
+			}
+		}
 	}
 
 	public function prepareSize($offsetTop=0)
 	{
 		$this->preparedWidth = 0;
 		$this->preparedHeight = 0;
-		
+
 		$this->requiredWidth = 0;
 		$this->requiredHeight = 0;
-	}
-
-	public function appendToDom($doc, $parentNode, $parent=NULL)
-	{
-		return;
 	}
 
 	public function preparePosition($parentWidth=0, $parentHeight=0, $offsetTop=0, $offsetLeft=0)
@@ -35,31 +48,13 @@ class Flex_Pdf_Template_Raw extends Flex_Pdf_Template_Element
 		$this->preparedAbsLeft = 0;
 	}
 
-	public function prepareChildPositions()
-	{
-	}
-	
 	function renderOnPage($page, $parent=NULL)
 	{
-		$page->appendToRawContents($this->rawData);
+		if ($this->rawData !== "")
+		{
+			$page->appendToRawContents($this->rawData);
+		}
 	}
-
-	function initialize()
-	{
-		return;
-	}
-
-	function clearTemporaryDetails()
-	{
-		
-	}
-
-	// If RAW elements are supported elsewhere in the document 
-	// (as opposed to just in the stationery), this will need changing
-	protected function includeForCurrentMedia()
-	{
-		return $this->getTemplate()->getTargetMedia() !== Flex_Pdf_Style::MEDIA_PRINT;
-	} 
 }
 
 

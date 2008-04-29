@@ -5,7 +5,7 @@ class Flex_Pdf_Template_Page_Wrap_Include extends Flex_Pdf_Template_Element
 	var $id = null;
 	var $wrapperId = 0;
 	var $pageWrapContent = NULL;
-	
+
 	function initialize()
 	{
 		// Need to parse the page-wrap-include for content to be included
@@ -14,21 +14,21 @@ class Flex_Pdf_Template_Page_Wrap_Include extends Flex_Pdf_Template_Element
 		// Get a unique identifier for the wrapper to identify this instances parent by
 		$this->wrapperId = $this->pageWrapContent->registerParent($this->parent);
 	}
-	
-	protected function prepareStyle($inheritedStyle)
-	{
-		$this->style = new Flex_Pdf_Style($inheritedStyle);
-	}
 
 	function getPageWrapContent()
 	{
 		$this->pageWrapContent->setCurrentParent($this->wrapperId);
 		return $this->pageWrapContent;
 	}
-	
+
 	function isComplete()
 	{
 		return $this->getPageWrapContent()->isComplete();
+	}
+
+	public function isStarted()
+	{
+		return $this->getPageWrapContent()->isStarted();
 	}
 
 	public function getDepth()
@@ -61,12 +61,12 @@ class Flex_Pdf_Template_Page_Wrap_Include extends Flex_Pdf_Template_Element
 		// Need to get the page wrap content for this include and render that
 		return $this->getPageWrapContent()->renderOnPage($page, $parent);
 	}
-	
+
 	public function clearTemporaryDetails()
 	{
 		return $this->getPageWrapContent()->clearTemporaryDetails();
 	}
-	
+
 	public function prepareSize($offsetTop=0)
 	{
 		return $this->getPageWrapContent()->prepareSize($offsetTop=0);
@@ -76,37 +76,37 @@ class Flex_Pdf_Template_Page_Wrap_Include extends Flex_Pdf_Template_Element
 	{
 		return $this->getPageWrapContent()->getOffsetLeft();
 	}
-	
+
 	public function getOffsetRight()
 	{
 		return $this->getPageWrapContent()->getOffsetRight();
 	}
-	
+
 	public function getOffsetTop()
 	{
 		return $this->getPageWrapContent()->getOffsetTop();
 	}
-	
+
 	public function getOffsetBottom()
 	{
 		return $this->getPageWrapContent()->getOffsetBottom();
 	}
-	
+
 	public function getRequiredWidth()
 	{
 		return $this->getPageWrapContent()->getRequiredWidth();
 	}
-	
+
 	public function getRequiredHeight()
 	{
 		return $this->getPageWrapContent()->getRequiredHeight();
 	}
-	
+
 	public function getPreparedWidth()
 	{
 		return $this->getPageWrapContent()->getPreparedWidth();
 	}
-	
+
 	public function getPreparedHeight()
 	{
 		return $this->getPageWrapContent()->getPreparedHeight();
@@ -121,17 +121,17 @@ class Flex_Pdf_Template_Page_Wrap_Include extends Flex_Pdf_Template_Element
 	{
 		return $this->getPageWrapContent()->prepareChildPositions();
 	}
-	
+
 	public function getPreparedAbsTop()
 	{
 		return $this->getPageWrapContent()->getPreparedAbsTop();
 	}
-	
+
 	public function getPreparedAbsLeft()
 	{
 		return $this->getPageWrapContent()->getPreparedAbsLeft();
 	}
-	
+
 	public function getAvailablePreparedHeightForChildElement($childElement)
 	{
 		return $this->getPageWrapContent()->getAvailablePreparedHeightForChildElement($childElement);
@@ -140,17 +140,12 @@ class Flex_Pdf_Template_Page_Wrap_Include extends Flex_Pdf_Template_Element
 	public function requiresBreak()
 	{
 		return $this->getPageWrapContent()->requiresBreak();
-	}	
+	}
 
 	public function requiresPageBreak()
 	{
 		return $this->getPageWrapContent()->requiresPageBreak();
-	}	
-
-	public function includeForCurrentMedia()
-	{
-		return TRUE;
-	}	
+	}
 }
 
 ?>

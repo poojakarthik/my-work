@@ -9,12 +9,8 @@ class Flex_Pdf_Template_Stationery extends Flex_Pdf_Template_Image
 		// Need to get the src for the image.
 		$this->strSource = $imgSrc;
 		
-		// If path is relative... 
-		if ($this->strSource[0] == "." || file_exists($this->getTemplate()->getTemplateBase() . "/" . $this->strSource))
-		{
-			// make absolute to template...
-			$this->strSource = $this->getTemplate()->getTemplateBase() . "/" . $this->strSource;
-		}
+		// Get path to resource... 
+		$this->strSource = $this->getResourcePath($this->strSource);
 		
 		$this->prepare();
 	}
