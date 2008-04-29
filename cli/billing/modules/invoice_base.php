@@ -41,8 +41,8 @@
  * @package		billing
  * @class		BillingModulePrint
  */
- class BillingModulePrint
- {
+class BillingModulePrint
+{
 	//------------------------------------------------------------------------//
 	// __construct()
 	//------------------------------------------------------------------------//
@@ -293,6 +293,132 @@
  			return $this->_arrFactoryQueries[$intType][$intCount]->FetchAll();
  		}
  	}
- }
+ 	
+  	//------------------------------------------------------------------------//
+	// _GetCustomerData()
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetCustomerData()
+	 *
+	 * Returns the Account's Customer Data
+	 *
+	 * Returns the Account's Customer Data
+	 * 
+	 * @param	array	$arrInvoice					Invoice Details
+	 *
+	 * @return	array								Customer Data Array
+	 *
+	 * @method
+	 */
+	protected function _GetCustomerData($arrInvoice)
+	{
+		$this->_selCustomerData	= new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
+														"");
+		
+		return $arrCustomer;
+	}
+ 	
+  	//------------------------------------------------------------------------//
+	// _GetAccountSummary()
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetAccountSummary()
+	 *
+	 * Returns the Account Summary as an associative array for a given Invoice
+	 *
+	 * Returns the Account Summary as an associative array for a given Invoice
+	 * 
+	 * @param	array	$arrInvoice						Invoice Details
+	 * @param	boolean	$bolAdjustments		[optional]	TRUE	: Include 'Other Charges & Credits'
+	 * 													FALSE	: Do not add Adjustments
+	 * @param	boolean	$bolPlanAdjustments	[optional]	TRUE	: Include 'Plan Charges' and 'Plan Credits'
+	 * 													FALSE	: Do not add Plan Adjustments
+	 * @param	boolean	$bolGST				[optional]	TRUE	: Add GST Total as the final element (default)
+	 * 													FALSE	: Do not add GST Total
+	 *
+	 * @return	array								Account Summary Array
+	 *
+	 * @method
+	 */
+	protected function _GetAccountSummary($arrInvoice, $bolAdjustments = TRUE, $bolPlanAdjustments = TRUE, $bolGST = TRUE)
+	{
+		$arrAccountSummary	= Array();
+		
+		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
+																	"RG.Description AS Description, SUM(ServiceTypeTotal.Charge) AS Total",
+																	"Account = <Id> AND InvoiceRun = <InvoiceRun>",
+																	"RG.Description",
+																	NULL,
+																	"RG.Id");
+		
+		$this->_selAccountSummaryCharges	= new StatementSelect(	"Charge",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Charge) AS Total",
+																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+		
+		$this->_selPlanCharges				= new StatementSelect(	"Charge",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0) AS PlanDebit",
+																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+		
+		// Get Account Summary
+		if ($this->_selAccountSummary->Execute($arrInvoice) === FALSE)
+		{
+			Debug($this->_selAccountSummary->Error());
+		}
+		else
+		{
+			while ($arrSummary = $this->_selAccountSummary->Fetch())
+			{
+				$arrAccountSummary[$arrSummary['Description']]	= round($arrSummary['Total'], 2);
+			}
+		}
+		
+		// Add Other Charges and Credits
+		if ($bolAdjustments)
+		{
+			if ($this->_selAccountSummaryCharges->Execute($arrInvoice) === FALSE)
+			{
+				Debug($this->_selAccountSummaryCharges->Error());
+			}
+			else
+			{
+				$arrAccountSummary['Other Charges & Credits']	= round($arrSummary['Total'], 2);
+			}
+		}
+		
+		// Add Plan Charges and Credits
+		if ($bolPlanAdjustments)
+		{
+			if ($this->_selPlanCharges->Execute($arrInvoice) === FALSE)
+			{
+				Debug($this->_selPlanCharges->Error());
+			}
+			else
+			{
+				$arrPlanCharges	= $this->_selPlanCharges->Fetch();
+				
+				// Add Plan Charges
+				if ((float)$arrPlanCharges['PlanDebit'])
+				{
+					$arrAccountSummary['Plan Charges']	= round($arrPlanCharges['PlanDebit'], 2);
+				}
+				
+				// Add Plan Credits
+				if ((float)$arrPlanCharges['PlanCredit'])
+				{
+					$arrAccountSummary['Plan Credits']	= round($arrPlanCharges['PlanCredit'], 2);
+				}
+			}
+		}
+		
+		// Add GST Element
+		if ($bolGST)
+		{
+			$arrAccountSummary['GST Total']	= round($arrInvoice['Tax'], 2);
+		}
+		
+		// Return Array
+		return $arrAccountSummary;
+	}
+}
 
 ?>
