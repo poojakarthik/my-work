@@ -43,11 +43,11 @@ function VixenServiceEditClass()
 {
 	// These constants should only be visible from within this class
 	// They should reflect the ServiceType constants defined in framework/definitions.php
-	const SERVICE_TYPE_ADSL			= 100;
-	const SERVICE_TYPE_MOBILE		= 101;
-	const SERVICE_TYPE_LAND_LINE	= 102;
-	const SERVICE_TYPE_INBOUND		= 103;
-	const SERVICE_TYPE_DIALUP		= 104;
+	var SERVICE_TYPE_ADSL		= 100;
+	var SERVICE_TYPE_MOBILE		= 101;
+	var SERVICE_TYPE_LAND_LINE	= 102;
+	var SERVICE_TYPE_INBOUND	= 103;
+	var SERVICE_TYPE_DIALUP		= 104;
 
 	//------------------------------------------------------------------------//
 	// InitialisePage

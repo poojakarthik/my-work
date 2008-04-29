@@ -321,7 +321,7 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	// Note: ADSL services do not have any extra details
 	this.HasExtraDetailsDefined = function()
 	{
-		return (boolean)(this.objExtraDetails != null);
+		return (Boolean)(this.objExtraDetails != null);
 	}
 	
 	this.NeedsExtraDetailsDefined = function()
