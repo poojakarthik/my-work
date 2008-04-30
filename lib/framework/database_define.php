@@ -2985,7 +2985,17 @@
 				 
 				 
 	// Define Columns 
-	$strName = "EffectiveOn"; 
+	$strName = "StartDatetime"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "EndDatetime"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
