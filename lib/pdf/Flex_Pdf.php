@@ -1,5 +1,12 @@
 <?php
 
+// If the SHARED_BASE_PATH has not been defined (i.e. If this is being used outside of Flex)...
+if (!defined('SHARED_BASE_PATH'))
+{
+	define("SHARED_BASE_PATH", dirname(__FILE__) . "/../");
+	set_include_path(get_include_path() . PATH_SEPARATOR . SHARED_BASE_PATH);
+}
+
 require_once "Zend/Pdf.php";
 require_once "pdf/Flex_Pdf_Template.php";
 require_once "pdf/Flex_Pdf_Page.php";
