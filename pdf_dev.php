@@ -1,19 +1,44 @@
 <?php
 
-define("ZEND_PATH", dirname(__FILE__) . "/lib");
-define("SHARED_BASE_PATH", dirname(__FILE__) . "/lib/");
-
-set_include_path(get_include_path() . PATH_SEPARATOR . ZEND_PATH);
-
-require_once "pdf/Flex_Pdf.php";
+require_once "./lib/pdf/Flex_Pdf.php";
 
 //ob_start();
 
-echo "Creating PDF from invoiceData.xml and example/template.xsl...<br>";
-if (file_exists("pdf_dev.pdf")) unlink("pdf_dev.pdf");
-$xmlData = file_get_contents(ZEND_PATH . "/pdf/pdf_templates/example/invoiceData.xml");
+//echo "Creating PDF from invoiceData.xml and example/template.xsl...<br>";
+$xmlData = file_get_contents("./invoiceData.xml");
+$documentTypeIdOrXsltString =  file_get_contents("./template.xsl");
 
-$documentTypeIdOrXsltString =  file_get_contents(ZEND_PATH . "/pdf/pdf_templates/example/template.xsl");
+$customerGroupId = null;
+$effectiveDate = null;
+
+//tsplit("", true);
+for ($i = 0; $i < 1; $i++)
+{
+	// Extend the time limit as this is in a loop...
+	set_time_limit(120);
+	
+	$pdfTemplate = new Flex_Pdf_Template($customerGroupId, $effectiveDate, $documentTypeIdOrXsltString, $xmlData, TRUE, Flex_Pdf_Style::MEDIA_PRINT);
+	//tsplit("created template, creating document...");
+	$pdf = $pdfTemplate->createDocument();
+
+	//tsplit("created document, saving pdf...");
+
+	//ob_end_clean();
+	//exit;
+	header("Content-type: application/pdf;");
+	echo $pdf->render();
+	//ob_flush();
+
+	//$pdf->save("./_junk_/pdf_dev.$i.pdf");
+	//tsplit("releasing resources...");
+	
+	//unset($pdf);
+	$pdfTemplate->destroy();
+	unset($pdfTemplate);
+	//tsplit("", true);
+}
+
+ob_end_clean();
 
 function tsplit($comment="", $newDocument=FALSE)
 {
@@ -42,63 +67,5 @@ function tsplit($comment="", $newDocument=FALSE)
 	$lastMem = $mem;
 	flush();
 }
-
-$start = microtime(true);
-
-$customerGroupId = null;
-$effectiveDate = null;
-
-tsplit("", true);
-for ($i = 0; $i < 1; $i++)
-{
-	set_time_limit(120);
-	$pdfTemplate = new Flex_Pdf_Template($customerGroupId, $effectiveDate, $documentTypeIdOrXsltString, $xmlData, TRUE, Flex_Pdf_Style::MEDIA_PRINT);
-	tsplit("created template, creating document...");
-	$pdf = $pdfTemplate->createDocument();
-
-//ob_clean();
-//exit;
-//header("Content-type: application/pdf;");
-//echo $pdf->render();
-	tsplit("created document, saving pdf...");
-	$pdf->save("./_junk_/pdf_dev.$i.pdf");
-	tsplit("releasing resources...");
-	unset($pdf);
-	$pdfTemplate->destroy();
-	unset($pdfTemplate);
-	tsplit("", true);
-}
-
-/*
-echo "<hr>Creating PDF from invoice.xml...<br>";
-$xmlData = file_get_contents(ZEND_PATH . "/pdf/pdf_templates/example/invoice.xml");
-$pdfTemplate = new Flex_Pdf_Template("example", $xmlData, FALSE);
-$pdf = $pdfTemplate->createDocument();
-$pdf->save("from_invoice_xml.pdf");
-*/
-
-
-
-/*
-echo "<hr>Outputting XML to file...<br>";
-//$xmlData = file_get_contents(ZEND_PATH . "/pdf/pdf_templates/example/invoice.xml");
-//$pdfTemplate = new Flex_Pdf_Template("example", $xmlData, FALSE);
-$xml = $pdfTemplate->createDocumentXML();
-$f = fopen("from_invoice_xml.xml", "w+b");
-fwrite($f, $xml);
-fclose($f);
-
-
-// Create new PDF document.
-
-echo "<hr>Creating PDF from output XML file...<br>";
-$xmlData = file_get_contents(dirname(__FILE__)."/from_invoice_xml.xml");
-$pdfTemplate = new Flex_Pdf_Template("example", $xmlData, FALSE);
-$pdf = $pdfTemplate->createDocument();
-$pdf->save("from_invoice_xml_xml.pdf");
-
-*/
-
-//echo "OK";
 
 ?>
