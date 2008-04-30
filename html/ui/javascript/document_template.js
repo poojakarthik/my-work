@@ -200,7 +200,7 @@ function VixenDocumentTemplateClass()
 
 }
 
-if (Vixen.VixenDocumentTemplateClass == undefined)
+if (Vixen.DocumentTemplate == undefined)
 {
 	Vixen.DocumentTemplate = new VixenDocumentTemplateClass;
 }

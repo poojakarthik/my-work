@@ -87,7 +87,7 @@ function VixenDocumentTemplateHistoryClass()
 
 }
 
-if (Vixen.VixenDocumentTemplateHistoryClass == undefined)
+if (Vixen.DocumentTemplateHistory == undefined)
 {
 	Vixen.DocumentTemplateHistory = new VixenDocumentTemplateHistoryClass;
 }

@@ -749,6 +749,129 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		return TRUE;
 	}
 
+	//------------------------------------------------------------------------//
+	// ViewDocumentResources
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewDocumentResources()
+	 *
+	 * Displays the page which allows the user to view DocumentResources and upload new ones
+	 * 
+	 * Displays the page which allows the user to view DocumentResources and upload new ones
+	 * It assumes the following data objects have been set:
+	 * 	DBO()->CustomerGroup->Id		Id of the customer group to view the DocumentResources of
+	 *
+	 * @return		void
+	 * @method	ViewDocumentResources
+	 */
+	function ViewDocumentResources()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		if (!DBO()->CustomerGroup->Load())
+		{
+			DBO()->Error->Message = "The CustomerGroup with id: ". DBO()->CustomerGroup->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// Define all the objects required to retrieve the DocumentResourceType information from the database
+		$selResourceType			= new StatementSelect("DocumentResourceType", "*", "", "PlaceHolder");
+		$selResourceTypeFileType	= new StatementSelect("DocumentResourceTypeFileType", "*", "");
+		$selFileType				= new StatementSelect("FileType", "*", "");
+		
+		if ($selResourceType->Execute() === FALSE || $selResourceTypeFileType->Execute() === FALSE || $selFileType->Execute() === FALSE)
+		{
+			DBO()->Error->Message = "Could not load all data required to describe the Document Resource Types.  Please notify your system administrator";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		$arrFileTypes = Array();
+		$arrRecordSet = $selFileType->FetchAll();
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			$arrFileTypes[$arrRecord['Id']] = $arrRecord;
+		}
+		
+		$arrResourceTypes	= Array();
+		$arrRecordSet		= $selResourceType->FetchAll();
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			$arrResourceTypes[$arrRecord['Id']]							= $arrRecord;
+			$arrResourceTypes[$arrRecord['Id']]['AllowableFileTypes']	= Array();
+		}
+		
+		$arrRecordSet = $selResourceTypeFileType->FetchAll();
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			if (isset($arrResourceTypes[$arrRecord['ResourceType']]))
+			{
+				$arrResourceTypes[$arrRecord['ResourceType']]['AllowableFileTypes'][] = $arrRecord['FileType']; 
+			}
+		}
+		
+		// These arrays have to be wrapped in the DBO() so that they are accessable within the HtmlTemplates
+		DBO()->DocumentResourceTypes->AsArray	= $arrResourceTypes;
+		DBO()->FileTypes->AsArray				= $arrFileTypes;
+		
+		// Breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SystemSettingsMenu();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->SetCurrentPage("Document Resources");
+
+		// Load the page template
+		$this->LoadPage('document_resource_management');
+		return TRUE;
+	}
+
+	//------------------------------------------------------------------------//
+	// GetDocumentResourceHistory
+	//------------------------------------------------------------------------//
+	/**
+	 * GetDocumentResourceHistory()
+	 *
+	 * Draws a table representing the history of resources associated with a DocumentResourceType and Customer Group
+	 * 
+	 * Draws a table representing the history of resources associated with a DocumentResourceType and Customer Group
+	 * It assumes the following data objects have been set:
+	 * 	DBO()->History->ResourceType		Id of the DocumentResourceType, to view the history of resources, of.
+	 *  DBO()->History->CustomerGroup		Id of the CustomerGroup, to view the history of resources, of.
+	 *
+	 * @return		void
+	 * @method	ViewDocumentResourceHistory
+	 */
+	function GetDocumentResourceHistory()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		$intResourceType	= DBO()->History->ResourceType->Value;
+		$intCustomerGroup	= DBO()->History->CustomerGroup->Value;
+		
+		DBO()->DocumentResourceType->Id = $intResourceType;
+		DBO()->DocumentResourceType->Load();
+		
+		// Retrieve the DocumentResources
+		$selResources = new StatementSelect("DocumentResource", "*", "CustomerGroup = <CustomerGroup> AND Type = <ResourceType>", "CreatedOn DESC, StartDatetime DESC");
+		if ($selResources->Execute(Array("CustomerGroup" => $intCustomerGroup, "ResourceType" => $intResourceType)) === FALSE)
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Retrieving the Document Resource History failed, unexpectedly.  Please notify your system administrator");
+			return TRUE;
+		}
+		$arrHistory = $selResources->FetchAll();
+
+		$objHistoryTableGenerator = new HtmlTemplateDocumentResourceManagement(NULL, NULL);
+		echo $objHistoryTableGenerator->GetHistory(DBO()->DocumentResourceType->PlaceHolder->Value, $arrHistory);
+		return TRUE;
+	}
+
+
 	// Returns the record (associative array) of the current document template schema for the specified TemplateType
 	// Returns FALSE on error
 	private function _GetCurrentSchema($intTemplateType)
