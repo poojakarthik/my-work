@@ -1657,7 +1657,7 @@ class BillingModuleReports
 			$wksWorksheet->writeBlank(16, $i, $arrFormat['BlankUnderline']);
 			$wksWorksheet->writeBlank(24, $i, $arrFormat['Spacer']);
 			$wksWorksheet->writeBlank(25, $i, $arrFormat['BlankUnderline']);
-			$wksWorksheet->writeBlank(29, $i, $arrFormat['BlankOverline']);
+			$wksWorksheet->writeBlank(30, $i, $arrFormat['BlankOverline']);
 		}
 		
 		$wksWorksheet->writeString(2, 2, "This Month"		, $arrFormat['TitleItalic']);
@@ -1698,6 +1698,7 @@ class BillingModuleReports
 		$wksWorksheet->writeString(26, 0, "Total Outstanding"					, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(27, 0, "Total Outstanding (ex This Invoice)"	, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(28, 0, "% Received of Previous Invoice"		, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(29, 0, "Total Payments Received"				, $arrFormat['TextBold']);
 		
 		$intCol = 2;
 		foreach ($this->_arrProfitData as $arrData)
@@ -1777,6 +1778,21 @@ class BillingModuleReports
 			$wksWorksheet->write(26, $intCol, $fltTotalOutstanding			, $arrFormat['Currency']);
 			$wksWorksheet->write(27, $intCol, $fltTotalOutstandingExInvoice	, $arrFormat['Currency']);
 			$wksWorksheet->write(28, $intCol, $fltReceived					, $arrFormat['Percentage']);
+			
+			$intBillingDate			= strtotime($arrData['BillingDate']);
+			$strPaymentPeriodStart	= date("Y-m-d", strtotime("-1 day", date("Y-m-01", $intBillingDate)));
+			$strPaymentPeriodEnd	= date("Y-m-d", strtotime("-1 month", date("Y-m-01", $intBillingDate)));
+			$selPaymentsReceived	= new StatementSelect("Payments", "SUM(Amount) AS Total", "Status IN (101, 103, 150) AND PaidOn BETWEEN '$strPaymentPeriodStart' AND '$strPaymentPeriodEnd'");
+			if ($selPaymentsReceived->Execute() === FALSE)
+			{
+				Debug($selPaymentsReceived->Error());
+			}
+			else
+			{
+				$arrPaymentsReceived	= $selPaymentsReceived->Fetch();
+			}
+			
+			$wksWorksheet->write(29, $intCol, (float)$arrPaymentsReceived['Total']	, $arrFormat['Currency']);
 			
 			$intCol++;
 		}
