@@ -92,7 +92,7 @@ class Flex_Pdf_Resource_Manager
 
 			$strTables = "DocumentResource DR
 				INNER JOIN FileType FT on DR.FileType = FT.Id
-				INNER JOIN DocumentResourceType RT on DR.Type = RT.Id"
+				INNER JOIN DocumentResourceType RT on DR.Type = RT.Id";
 
 			$arrColumns = Array( "PlaceHolder" 	=> "RT.PlaceHolder",
 			 					 "Id" 			=> "DR.Id",
@@ -103,7 +103,7 @@ class Flex_Pdf_Resource_Manager
 					WHERE <GenerationDate> between StartDatetime and EndDatetime
 					AND DR2.CustomerGroup = <CustomerGroup>
 					AND DR2.Type = DR.Type
-					group by Type)"
+					group by Type)";
 
 			$arrWhere = Array(	"CustomerGroup"		=> $this->customerGroup, 
 								"GenerationDate"	=> $this->effectiveDate);
