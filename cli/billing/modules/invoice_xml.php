@@ -185,7 +185,7 @@
 					// Item Fields
 					foreach ($arrFields as $strField)
 					{
-						$this->_AddElement($xmlItem, 'Field', $arrCDR[$strField]);
+						$this->_AddElement($xmlItem, $strField, $arrCDR[$strField]);
 					}
 				}
 			}

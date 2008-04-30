@@ -312,10 +312,26 @@ class BillingModulePrint
 	 */
 	protected function _GetCustomerData($arrInvoice)
 	{
-		$this->_selCustomerData	= new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
-														"");
+		$this->_selCustomerData	= new StatementSelect(	"Account",
+														"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup",
+														"Account = <Account>");
 		
-		return $arrCustomer;
+		// Retrieve the Customer Data
+		if ($this->_selCustomerData->Execute === FALSE)
+		{
+			Debug($this->_selCustomerData->Error());
+			return Array();
+		}
+		
+		// Return data or empty array
+		if ($arrCustomer = $this->_selCustomerData->Fetch())
+		{
+			return $arrCustomer;
+		}
+		else
+		{
+			return Array();
+		}
 	}
  	
   	//------------------------------------------------------------------------//
