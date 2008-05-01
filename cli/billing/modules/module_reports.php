@@ -1780,8 +1780,8 @@ class BillingModuleReports
 			$wksWorksheet->write(28, $intCol, $fltReceived					, $arrFormat['Percentage']);
 			
 			$intBillingDate			= strtotime($arrData['BillingDate']);
-			$strPaymentPeriodStart	= date("Y-m-d", strtotime("-1 day", date("Y-m-01", $intBillingDate)));
-			$strPaymentPeriodEnd	= date("Y-m-d", strtotime("-1 month", date("Y-m-01", $intBillingDate)));
+			$strPaymentPeriodStart	= date("Y-m-d", strtotime("-1 day", strtotime(date("Y-m-01", $intBillingDate))));
+			$strPaymentPeriodEnd	= date("Y-m-d", strtotime("-1 month", strtotime(date("Y-m-01", $intBillingDate))));
 			$selPaymentsReceived	= new StatementSelect("Payments", "SUM(Amount) AS Total", "Status IN (101, 103, 150) AND PaidOn BETWEEN '$strPaymentPeriodStart' AND '$strPaymentPeriodEnd'");
 			if ($selPaymentsReceived->Execute() === FALSE)
 			{
