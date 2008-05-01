@@ -680,7 +680,8 @@ if (Vixen.TableSort == undefined)
 				// Create a wrapper to hold the table & navigation controls
 				var wrapper = document.createElement("div");
 				wrapper.className = "paginated-table-wrapper";
-				wrapper.style.width = table.clientWidth + "px";
+				//wrapper.style.width = table.clientWidth + "px";
+				wrapper.style.width = "100%";
 				
 				// Create a container for the navigation controls
 				var nav = document.createElement("div");

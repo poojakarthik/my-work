@@ -30,6 +30,6 @@
 $this->Page->SetLayout('embedded_layout');
 
 // Add the Html Objects to their respective columns
-$this->Page->AddObject('RateGroupImportComponent', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "RateGroupImportComponentDiv");
+$this->Page->AddObject('RateGroupImportComponent', COLUMN_ONE, HTML_CONTEXT_IFRAME, "RateGroupImportComponentDiv");
 
 ?>

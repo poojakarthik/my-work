@@ -205,7 +205,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$intTemplateId			= (DBO()->DocumentTemplate->Id->IsSet)? DBO()->DocumentTemplate->Id->Value : "null";
 		$strDescription			= DBO()->DocumentTemplate->Description->Value;
 		$strSchemaVersion		= DBO()->DocumentTemplateSchema->Version->Value;
-		$intPropertyValueLeft	= "120";
+		$intPropertyValueLeft	= 120;
 		$strTextAreaHeight		= "4in";
 
 		if ($strEffectiveOn != NULL)

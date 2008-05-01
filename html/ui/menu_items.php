@@ -188,6 +188,32 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// AddDocumentResource
+	//------------------------------------------------------------------------//
+	/**
+	 * AddDocumentResource()
+	 *
+	 * Compiles the Href to be executed when the AddDocumentResource menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the AddDocumentResource menu item is triggered
+	 * 
+	 * @param	int		$intCustomerGroup		id of the CustomerGroup
+	 * @param	int		$intResourceType		id of the DocumentResourceType to add a new resource to
+	 *
+	 * @return	string				Href to trigger the functionality
+	 * @method
+	 */
+	function AddDocumentResource($intCustomerGroup, $intResourceType, $strResourceTypeName)
+	{
+		// Setup data to send
+		$arrData['CustomerGroup']['Id']			= $intCustomerGroup;
+		$arrData['DocumentResourceType']['Id']	= $intResourceType;
+		
+		$strJsonCode = Json()->encode($arrData);
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddDocumentResourcePopup\", \"large\", \"New Resource - $strResourceTypeName\", \"CustomerGroup\", \"AddDocumentResource\", $strJsonCode, \"modal\")";
+	}
+	
+	//------------------------------------------------------------------------//
 	// ViewAllCustomerGroups
 	//------------------------------------------------------------------------//
 	/**

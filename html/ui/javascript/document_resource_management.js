@@ -42,22 +42,20 @@
  */
 function VixenDocumentResourceManagementClass()
 {
-	this.arrResourceTypes	= null;
-	this.arrFileTypes		= null;
-	this.intCustomerGroup	= null;
-	
-	
-	this.elmSourceCode		= null;
-	this.elmDescription		= null;
-	this.objEffectiveOn		= {};
+	this.arrResourceTypes			= null;
+	this.arrFileTypes				= null;
+	this.intCustomerGroup			= null;
+	this.elmHistoryContainer		= null;
+	this.intDisplayedResourceType	= null;
 
+	
 	// Initialises the Document Resource Management table
 	this.Initialise = function(arrResourceTypes, arrFileTypes, intCustomerGroup)
 	{
-		this.arrResourceTypes	= arrResourceTypes;
-		this.arrFileTypes		= arrFileTypes;
-		this.intCustomerGroup	= intCustomerGroup;
-	
+		this.arrResourceTypes		= arrResourceTypes;
+		this.arrFileTypes			= arrFileTypes;
+		this.intCustomerGroup		= intCustomerGroup;
+		this.elmHistoryContainer	= $ID("Container_ResourceHistory");
 	}
 
 	this.InitialiseEmbeddedFrame = function()
@@ -68,8 +66,15 @@ function VixenDocumentResourceManagementClass()
 
 
 	// Loads the history of a resource
-	this.ShowHistory = function(intResourceType)
+	this.ShowHistory = function(intResourceType, bolShowSplash)
 	{
+		bolShowSplash = (bolShowSplash == undefined)? true : bolShowSplash;
+	
+		if (this.intDisplayedResourceType == intResourceType)
+		{
+			// We are already displaying this ResourceType
+			return;
+		}
 		
 		// Compile data to be sent to the server
 		var objData	=	{
@@ -79,8 +84,28 @@ function VixenDocumentResourceManagementClass()
 										}
 						};
 		
-		Vixen.Popup.ShowPageLoadingSplash("Retrieving History");
-		Vixen.Ajax.CallAppTemplate("CustomerGroup", "GetDocumentResourceHistory", objData, null, true, true, "Container_ResourceHistory");
+		if (bolShowSplash)
+		{
+			Vixen.Popup.ShowPageLoadingSplash("Retrieving History");
+		}
+		Vixen.Ajax.CallAppTemplate("CustomerGroup", "GetDocumentResourceHistory", objData, null, false, true, this.ShowHistoryReturnHandler.bind(this));
+	}
+	
+	// Return handler for the ShowHistory function
+	this.ShowHistoryReturnHandler = function(objXMLHttpRequest, objRequestData)
+	{
+		this.intDisplayedResourceType		= objRequestData.Objects.History.ResourceType;
+		var elmNewHistoryContainer			= this.elmHistoryContainer.cloneNode(false);
+		elmNewHistoryContainer.innerHTML	= objXMLHttpRequest.responseText;
+		this.elmHistoryContainer.parentNode.replaceChild(elmNewHistoryContainer, this.elmHistoryContainer);
+		this.elmHistoryContainer = elmNewHistoryContainer;
+	}
+	
+	// This will display the actual resource in some way
+	this.ShowResource = function(intResourceId)
+	{
+		//TODO! Just have it download the resource
+		$Alert("TODO! Just have it download the resource");
 	}
 	
 	this.ValidateForm = function()

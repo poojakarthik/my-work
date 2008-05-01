@@ -72,12 +72,10 @@ function VixenDelinquentCDRsClass()
 	{
 		this.elmFNNSelector			= $ID("FNNSelector");
 		this.elmFNNGroupContainer	= $ID("Container_FNNGroup");
-		
-		this.elmStartDate	= $ID("StartDate");
-		this.elmEndDate		= $ID("EndDate");
-	
-		this.tableCDRs = $ID("CDRTable");
-		this.elmAllCDRsCheckbox = $ID("CheckBoxSelectAllCDRs");
+		this.elmStartDate			= $ID("StartDate");
+		this.elmEndDate				= $ID("EndDate");
+		this.tableCDRs				= $ID("CDRTable");
+		this.elmAllCDRsCheckbox		= $ID("CheckBoxSelectAllCDRs");
 		
 		// Store a copy of the first record of the table, so that it can be used to add more records
 		this.elmGenericTableRow = this.tableCDRs.rows[1].cloneNode(true);

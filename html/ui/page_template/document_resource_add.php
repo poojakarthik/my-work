@@ -1,39 +1,38 @@
 <?php
 
 //----------------------------------------------------------------------------//
-// (c) copyright 2007 VOIPTEL Pty Ltd
+// (c) copyright 2008 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// rate_group_import.php
+// document_resource_add.php
 //----------------------------------------------------------------------------//
 /**
- * rate_group_import.php
+ * document_resource_add.php
  *
- * Page Template for the Import RateGroup popup window
+ * Page Template for the Add Document Resource popup window
  *
- * Page Template for the Import RateGroup popup window
+ * Page Template for the Add Document Resource popup window
  *
- * @file		rate_group_import.php
+ * @file		document_resource_add.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel 'MagnumSwordFortress' Dawkins
- * @version		7.12
- * @copyright	2007 VOIPTEL Pty Ltd
+ * @version		8.05
+ * @copyright	2008 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
 
 // Set the title of the popup
-$strPopupTitle = (DBO()->RateGroup->Fleet->Value) ? "Import Fleet Rate Group" : "Import Rate Group";
-$this->Page->SetName($strPopupTitle);
+$this->Page->SetName("New Resource - ". DBO()->DocumentResourceType->PlaceHolder->Value);
 
 // Set the layout template for the page
 $this->Page->SetLayout('popup_layout');
 
 // Add the Html Objects to their respective columns
-$this->Page->AddObject('RateGroupImport', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "RateGroupImportDiv");
+$this->Page->AddObject('DocumentResourceAdd', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
 ?>

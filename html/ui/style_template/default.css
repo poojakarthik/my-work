@@ -1186,7 +1186,7 @@
 /**************************************************************************/
 /* INPUTS																  */
 /**************************************************************************/
-	input.InputSubmit,
+	/*input.InputSubmit,*/
 	input.InputSubmitDisabled
 	{
 		background-repeat:	repeat-x;
@@ -1203,7 +1203,21 @@
 		font-size:			10pt;
 	}
 	
-	input.InputSubmit
+	input[type="button"]
+	{
+		background-image:    url('img/template/button_background.png');
+		border:				solid 1px #07548e;
+		color:				#FFFFFF;
+		/*background-color:	#07548e;*/
+		background-repeat:	repeat-x;
+		font-weight:		bold;
+		margin:				0px;
+		padding:			1px, 6px;
+		
+		font-size:			1em;
+	}
+	
+	/*input.InputSubmit
 	{
 		background-image:    url('img/template/button_background.png');
 		
@@ -1211,7 +1225,7 @@
 		
 		color:               #FFFFFF;
 		background-color:    #07548e;
-	}
+	}*/
 	
 	input.InputSubmitDisabled
 	{

@@ -197,7 +197,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		if (DBL()->Invoice->RecordCount() == 0)
 		{
 			// There are no invoices to stick in this table
-			Table()->InvoiceTable->AddRow("<span>No invoices to display</span>");
+			Table()->InvoiceTable->AddRow("No invoices to display");
 			Table()->InvoiceTable->SetRowAlignment("left");
 			Table()->InvoiceTable->SetRowColumnSpan(10);
 		}
