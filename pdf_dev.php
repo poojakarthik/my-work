@@ -11,31 +11,40 @@ $documentTypeIdOrXsltString =  file_get_contents("./template.xsl");
 $customerGroupId = null;
 $effectiveDate = null;
 
-//tsplit("", true);
-for ($i = 0; $i < 1; $i++)
+try
 {
-	// Extend the time limit as this is in a loop...
-	set_time_limit(120);
-	
-	$pdfTemplate = new Flex_Pdf_Template($customerGroupId, $effectiveDate, $documentTypeIdOrXsltString, $xmlData, TRUE, Flex_Pdf_Style::MEDIA_PRINT);
-	//tsplit("created template, creating document...");
-	$pdf = $pdfTemplate->createDocument();
 
-	//tsplit("created document, saving pdf...");
-
-	//ob_end_clean();
-	//exit;
-	header("Content-type: application/pdf;");
-	echo $pdf->render();
-	//ob_flush();
-
-	//$pdf->save("./_junk_/pdf_dev.$i.pdf");
-	//tsplit("releasing resources...");
-	
-	//unset($pdf);
-	$pdfTemplate->destroy();
-	unset($pdfTemplate);
 	//tsplit("", true);
+	for ($i = 0; $i < 1; $i++)
+	{
+		// Extend the time limit as this is in a loop...
+		set_time_limit(120);
+		
+		$pdfTemplate = new Flex_Pdf_Template($customerGroupId, $effectiveDate, $documentTypeIdOrXsltString, $xmlData, Flex_Pdf_Style::MEDIA_EMAIL, TRUE);
+		//tsplit("created template, creating document...");
+		$pdf = $pdfTemplate->createDocument();
+	
+		//tsplit("created document, saving pdf...");
+	
+		//ob_end_clean();
+		//exit;
+		header("Content-type: application/pdf;");
+		echo $pdf->render();
+		//ob_flush();
+	
+		//$pdf->save("./_junk_/pdf_dev.$i.pdf");
+		//tsplit("releasing resources...");
+		
+		//unset($pdf);
+		$pdfTemplate->destroy();
+		unset($pdfTemplate);
+		//tsplit("", true);
+	}
+
+}
+catch (Exception $e)
+{
+	echo "<pre>" . $e->getMessage() . "</pre>";
 }
 
 ob_end_clean();
