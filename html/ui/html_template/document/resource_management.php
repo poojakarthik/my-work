@@ -111,8 +111,6 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 		$intCustomerGroup		= DBO()->CustomerGroup->Id->Value;
 		$arrResourceTypes		= DBO()->DocumentResourceTypes->AsArray->Value;
 		$arrFileTypes			= DBO()->FileTypes->AsArray->Value;
-		$jsonResourceTypes		= Json()->Encode($arrResourceTypes);
-		$jsonFileTypes			= Json()->Encode($arrFileTypes);
 		$intPropertyValueLeft	= 120;
 		
 		// Build the Table listing all the available ResourceTypes
@@ -137,7 +135,7 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 <div class='SmallSeparator'></div>
 
 <div id='Container_ResourceHistory' style='width:100%;'></div>
-<script type='text/javascript'>Vixen.DocumentResourceManagement.Initialise($jsonResourceTypes, $jsonFileTypes, $intCustomerGroup)</script>
+<script type='text/javascript'>Vixen.DocumentResourceManagement.Initialise($intCustomerGroup)</script>
 <!-- END HtmlTemplateDocumentResourceManagement -->
 				";
 	}

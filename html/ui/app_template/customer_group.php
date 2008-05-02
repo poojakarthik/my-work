@@ -778,44 +778,16 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		// Define all the objects required to retrieve the DocumentResourceType information from the database
-		$selResourceType			= new StatementSelect("DocumentResourceType", "*", "", "PlaceHolder");
-		$selResourceTypeFileType	= new StatementSelect("DocumentResourceTypeFileType", "*", "");
-		$selFileType				= new StatementSelect("FileType", "*", "");
-		
-		if ($selResourceType->Execute() === FALSE || $selResourceTypeFileType->Execute() === FALSE || $selFileType->Execute() === FALSE)
+		$selResourceType = new StatementSelect("DocumentResourceType", "*", "", "PlaceHolder");
+		if ($selResourceType->Execute() === FALSE)
 		{
 			DBO()->Error->Message = "Could not load all data required to describe the Document Resource Types.  Please notify your system administrator";
 			$this->LoadPage('error');
 			return TRUE;
 		}
 		
-		$arrFileTypes = Array();
-		$arrRecordSet = $selFileType->FetchAll();
-		foreach ($arrRecordSet as $arrRecord)
-		{
-			$arrFileTypes[$arrRecord['Id']] = $arrRecord;
-		}
-		
-		$arrResourceTypes	= Array();
-		$arrRecordSet		= $selResourceType->FetchAll();
-		foreach ($arrRecordSet as $arrRecord)
-		{
-			$arrResourceTypes[$arrRecord['Id']]							= $arrRecord;
-			$arrResourceTypes[$arrRecord['Id']]['AllowableFileTypes']	= Array();
-		}
-		
-		$arrRecordSet = $selResourceTypeFileType->FetchAll();
-		foreach ($arrRecordSet as $arrRecord)
-		{
-			if (isset($arrResourceTypes[$arrRecord['ResourceType']]))
-			{
-				$arrResourceTypes[$arrRecord['ResourceType']]['AllowableFileTypes'][] = $arrRecord['FileType']; 
-			}
-		}
-		
-		// These arrays have to be wrapped in the DBO() so that they are accessable within the HtmlTemplates
-		DBO()->DocumentResourceTypes->AsArray	= $arrResourceTypes;
-		DBO()->FileTypes->AsArray				= $arrFileTypes;
+		// This array has to be wrapped in the DBO() so that they are accessable within the HtmlTemplates
+		DBO()->DocumentResourceTypes->AsArray = $selResourceType->FetchAll();
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
@@ -932,11 +904,203 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
+		// Retrieve the FileTypes that this resource can be
+		$intResourceType = DBO()->DocumentResource->Type->Value;
+		
+		$strWhere = "Id IN (SELECT FileType FROM DocumentResourceTypeFileType WHERE ResourceType = $intResourceType)";
+		$selFileTypes = new StatementSelect("FileType", "*", $strWhere);
+		$selFileTypes->Execute();
+		$arrFileTypes = $selFileTypes->FetchAll();
+		DBO()->FileTypes->AsArray = $arrFileTypes;
+		
+		// Check if the form has been submitted
+		if (SubmittedForm("ImportResource"))
+		{
+			$intCustomerGroup	= DBO()->DocumentResource->CustomerGroup->Value;
+			$intResourceType	= DBO()->DocumentResource->Type->Value;
+			$mixStart			= DBO()->DocumentResource->Start->Value;
+			$mixEnd				= DBO()->DocumentResource->End->Value;
+			
+			$mixResult = $this->_UploadResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd);
+
+			if ($mixResult === TRUE)
+			{
+				// The file was successfully uploaded
+				DBO()->Import->Success = TRUE;
+			}
+			else
+			{
+				// The import was unsuccessful
+				DBO()->Import->Success	= FALSE;
+				DBO()->Import->ErrorMsg	= $mixResult;
+			}
+		}
+		
 		// Load the page template
 		$this->LoadPage('document_resource_upload_component');
 		return TRUE;
 	}
 
+	// Returns TRUE on success, or an error msg on failure
+	private function _UploadResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd)
+	{
+		$strFilename		= $_FILES['ResourceFile']['name'];
+		$strTempFilename	= $_FILES['ResourceFile']['tmp_name'];
+		$intFileStatus		= $_FILES['ResourceFile']['error'];
+		$strFileType		= $_FILES['ResourceFile']['type'];
+		$intFileSize		= $_FILES['ResourceFile']['size'];
+		
+		$arrFilenameParts	= explode(".", $strFilename);
+		$strExtension		= $arrFilenameParts[count($arrFilenameParts)-1];
+		
+		// Load the DocumentResourceType record
+		$selResourceType = new StatementSelect("DocumentResourceType", "*", "Id = <Id>");
+		if (!$selResourceType->Execute(Array("Id" => $intResourceType)))
+		{
+			return "ERROR: Could not find the DocumentResourceType with Id: $intResourceType";
+		}
+		$arrResourceType = $selResourceType->Fetch();
+		
+		// Load the CustomerGroup record
+		$selCustomerGroup = new StatementSelect("CustomerGroup", "*", "Id = <Id>");
+		if (!$selCustomerGroup->Execute(Array("Id" => $intCustomerGroup)))
+		{
+			return "ERROR: Could not find the CustomerGroup with Id: $intCustomerGroup";
+		}
+		$arrCustomerGroup = $selCustomerGroup->Fetch();
+		
+		// Check that the user has the required permissions to added resources of this type
+		if (!AuthenticatedUser()->UserHasPerm($arrResourceType['PermissionRequired']))
+		{
+			return "ERROR: You do not have the required permissions to add '{$arrResourceType['PlaceHolder']}' resources";
+		}
+
+		// Check that the file was successfully uploaded
+		if ($intFileStatus != UPLOAD_ERR_OK)
+		{
+			// The file was not uploaded properly
+			$strErrorMsg = GetConstantDescription($intFileStatus, "HTTPUploadStatus");
+			if ($strErrorMsg === FALSE)
+			{
+				// The error code is unknown
+				$strErrorMsg = "The file failed to upload, for an undetermined reason";
+			}
+			$strErrorMsg = "ERROR: $strErrorMsg";
+			return $strErrorMsg;
+		}
+		// Check that something was actually uploaded
+		if ($intFileSize == 0)
+		{
+			return "ERROR: File is empty";
+		}
+		
+
+		// Check that the file is of an appropriate type
+		$bolFoundFileType = FALSE;
+		foreach ($arrFileTypes as $arrFileType)
+		{
+			if ($strExtension == $arrFileType['Extension'])
+			{
+				// Check that their MIME Type matches
+				if ($strFileType == $arrFileType['MIMEType'])
+				{
+					$intFileTypeId		= $arrFileType['Id']; 
+					$bolFoundFileType	= TRUE;
+					break;
+				}
+			}
+		}
+		
+		if (!$bolFoundFileType)
+		{
+			// The file is not of an appropriate type
+			return "ERROR: The file is not of an appropriate type, for the '{$arrResourceType['PlaceHolder']}' Resource";
+		}
+		
+		// Validate the Start time and End time
+		$strNow = GetCurrentDateAndTimeForMySQL();
+		if ($mixStart == 0)
+		{
+			// The resource will start immediately
+			$strStartDatetime = $strNow;
+		}
+		else
+		{
+			if (!Validate("ShortDate", $mixStart))
+			{
+				return "ERROR: The Starting date is invalid.  It must be in the format dd/mm/yyyy";
+			}
+			
+			// Check that the StartDate is greater than today
+			$strStartDatetime = ConvertUserDateToMySqlDate($mixStart) . " 00:00:00";
+			if ($strNow >= $strStartDatetime)
+			{
+				return "ERROR: The Starting date is invalid.  It must be in the future";
+			}
+		}
+		
+		if ($mixEnd == 0)
+		{
+			// The resource will be used indefinitely
+			$strEndDatetime = END_OF_TIME;
+		}
+		else
+		{
+			if (!Validate("ShortDate", $mixStart))
+			{
+				return "ERROR: The Ending date is invalid.  It must be in the format dd/mm/yyyy";
+			}
+			
+			// Check that the EndDate is greater than the StartDate
+			$strEndDatetime = ConvertUserDateToMySqlDate($mixEnd) . " 23:59:59";
+			if ($strStartDatetime > $strEndDatetime)
+			{
+				return "ERROR: The Ending date is invalid.  It must be greater than the Starting date";
+			}
+		}
+		
+		// Add the DocumentResource Record
+		TransactionStart();
+		$arrResource = Array(	"CustomerGroup"		=> $intCustomerGroup,
+								"Type"				=> $intResourceType,
+								"FileType"			=> $intFileTypeId,
+								"StartDatetime"		=> $strStartDatetime,
+								"EndDatetime"		=> $strEndDatetime,
+								"CreatedOn"			=> $strNow,
+								"OriginalFilename"	=> $strFilename
+							);
+		$insResource	= new StatementInsert("DocumentResource", $arrResource);
+		$intResourceId	= $insResource->Execute($arrResource);
+		
+		if (!$intResourceId)
+		{
+			// Inserting the DocumentResource record failed
+			TransactionRollback();
+			return "ERROR: Adding the Resource to the database failed, unexpectedly.  Please notify your system administrator";
+		}
+		
+		// Move the file to {SHARED_BASE_PATH}/template/resource/{CustomerGroupId}/{ResourceId}.Extension
+		$strNewFilename	= "{$intResourceId}.{$strExtension}";
+		$strPath		= SHARED_BASE_PATH . "/template/resource/$intCustomerGroup";
+		
+		// Make the directory if it doesn't already exist
+		if (!RecursiveMkdir($strPath))
+		{
+			TransactionRollback();
+			return "ERROR: Creating the directory failed, unexpectedly.  Please notify your system administrator"; 
+		}
+		$strDestination = $strPath . "/". $strNewFilename;
+		
+		if (move_uploaded_file($strTempFilename, $strDestination))
+		{
+			TransactionRollback();
+			return "ERROR: Moving the file to it's destination failed, unexpectedly.  Please notify your system administrator";
+		}
+
+		// Everything worked
+		TransactionCommit();
+		return TRUE;
+	}
 
 	// Returns the record (associative array) of the current document template schema for the specified TemplateType
 	// Returns FALSE on error

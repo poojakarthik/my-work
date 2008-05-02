@@ -163,7 +163,7 @@ function VixenRateGroupImportClass()
 		var elmSubmitButtonValue = this._elmUploadFrame.contentDocument.getElementById("SubmitButtonValue");
 		elmSubmitButtonValue.value = "Import and Commit";
 		
-		// Display the Pablo Splash
+		// Display the Splash
 		Vixen.Popup.ShowPageLoadingSplash("Importing RateGroup", null, null, null, 1000);
 		
 		// Submit the form
@@ -191,7 +191,7 @@ function VixenRateGroupImportClass()
 		this._elmImportReport.scrollTop = 0;
 		this._elmImportReport.innerHTML = strReport;
 		
-		// Close the Pablo Splash
+		// Close the Splash
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		Vixen.Popup.Alert("The RateGroup could not be imported<br />Please review the Import Report");
@@ -226,7 +226,7 @@ function VixenRateGroupImportClass()
 		this._elmImportReport.scrollTop = 0;
 		this._elmImportReport.innerHTML = strReport;
 		
-		// Close the Pablo Splash
+		// Close the Splash
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		// Notify the user

@@ -2235,6 +2235,26 @@ foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 	}
 }
 
+// Upload Status Codes (for php's HTTP POST upload mechanism)
+// The following File Upload related constants are already predefined in php, but their 
+// descriptions are not, which is why they are included here
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_OK]			['Constant']	= 'UPLOAD_ERR_OK';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_OK]			['Description']	= 'The file was successfully uploaded';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_INI_SIZE]	['Constant']	= 'UPLOAD_ERR_INI_SIZE';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_INI_SIZE]	['Description']	= 'The uploaded file exceeds the upload_max_filesize directive in php.ini';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_FORM_SIZE]	['Constant']	= 'UPLOAD_ERR_FORM_SIZE';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_FORM_SIZE]	['Description']	= 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_PARTIAL]	['Constant']	= 'UPLOAD_ERR_PARTIAL';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_PARTIAL]	['Description']	= 'The uploaded file was only partially uploaded';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_NO_FILE]	['Constant']	= 'UPLOAD_ERR_NO_FILE';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_NO_FILE]	['Description']	= 'No file was uploaded';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_NO_TMP_DIR]	['Constant']	= 'UPLOAD_ERR_NO_TMP_DIR';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_NO_TMP_DIR]	['Description']	= 'Missing a temporary folder';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_CANT_WRITE]	['Constant']	= 'UPLOAD_ERR_CANT_WRITE';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_CANT_WRITE]	['Description']	= 'Failed to write file to disk';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_EXTENSION]	['Constant']	= 'UPLOAD_ERR_EXTENSION';
+$GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_EXTENSION]	['Description']	= 'File upload stopped by extension';
+
 
 //TODO!bash! make this (and whatever uses it) work with GetConstantDescription
 $arrRecordDisplayRateName[RECORD_DISPLAY_CALL]			= "Voice Calls";

@@ -42,28 +42,19 @@
  */
 function VixenDocumentResourceManagementClass()
 {
-	this.arrResourceTypes			= null;
-	this.arrFileTypes				= null;
 	this.intCustomerGroup			= null;
 	this.elmHistoryContainer		= null;
 	this.intDisplayedResourceType	= null;
 
 	
 	// Initialises the Document Resource Management table
-	this.Initialise = function(arrResourceTypes, arrFileTypes, intCustomerGroup)
+	this.Initialise = function(intCustomerGroup)
 	{
-		this.arrResourceTypes		= arrResourceTypes;
-		this.arrFileTypes			= arrFileTypes;
 		this.intCustomerGroup		= intCustomerGroup;
 		this.elmHistoryContainer	= $ID("Container_ResourceHistory");
-	}
-
-	this.InitialiseEmbeddedFrame = function()
-	{
-		//TODO!  Assign the new elements to their associated private data tributes and Register listeners
 		
+		// TODO! Register the listener for the NewResourceHistory event
 	}
-
 
 	// Loads the history of a resource
 	this.ShowHistory = function(intResourceType, bolShowSplash)
@@ -107,41 +98,6 @@ function VixenDocumentResourceManagementClass()
 		//TODO! Just have it download the resource
 		$Alert("TODO! Just have it download the resource");
 	}
-	
-	this.ValidateForm = function()
-	{
-		// Validate the EffectiveOn date if one has been specified
-		if ((this.objEffectiveOn.elmCombo.value == "date") && (!this.objEffectiveOn.elmTextbox.Validate("ShortDateInFuture")))
-		{
-			if (!this.objEffectiveOn.elmTextbox.Validate("ShortDate"))
-			{
-				$Alert("ERROR: Invalid 'Effective On' date.<br />It must be in the format dd/mm/yyyy and in the future");
-				return false;
-			}
-			if (!this.objEffectiveOn.elmTextbox.Validate("ShortDateInFuture"))
-			{
-				$Alert("ERROR: Invalid 'Effective On' date.  It must be in the future");
-				return false;
-			}
-		}
-		return true;
-	}
-
-	// Event listener for the EffectiveOnCombo
-	this.EffectiveOnComboOnChange = function()
-	{
-		if (this.objEffectiveOn.elmCombo.value == "date")
-		{
-			this.objEffectiveOn.elmTextbox.style.visibility	= "visible";
-			this.objEffectiveOn.elmTextbox.style.display	= "inline";
-		}
-		else
-		{
-			this.objEffectiveOn.elmTextbox.style.visibility	= "hidden";
-			this.objEffectiveOn.elmTextbox.style.display	= "none";
-		}
-	}
-
 }
 
 if (Vixen.DocumentResourceManagement == undefined)

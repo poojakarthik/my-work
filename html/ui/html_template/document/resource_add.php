@@ -62,7 +62,7 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 		$this->_intContext			= $intContext;
 		$this->_strContainerDivId	= $strId;
 		
-		//$this->LoadJavascript("document_resource_add");
+		$this->LoadJavascript("document_resource_add");
 		$this->LoadJavascript("validation");
 	}
 
@@ -108,12 +108,15 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 	function RenderPopup()
 	{
 		$intCustomerGroup		= DBO()->CustomerGroup->Id->Value;
-		$jsonResourceType		= Json()->Encode(DBO()->DocumentResourceType->_arrProperties);
+		$intResourceType		= DBO()->DocumentResourceType->Id->Value;
+		$strDescription			= DBO()->DocumentResourceType->Description->Value;
 		$intPropertyValueLeft	= 120;
 		
 		echo	"
 <!-- START HtmlTemplateDocumentResourceAdd -->
 <div class='GroupedContent' style='position:relative'>
+	<div style='text-align:center'>$strDescription</div>
+	<div class='ContentSeparator'></div>
 
 	<div style='margin-bottom:8px'>
 		<span style='top:2px'>Starting</span>
@@ -121,7 +124,7 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 			<option value='immediately'>Immediately</option>
 			<option value='date'>Date</option>
 		</select>
-		<input type='text' id='DocumentTemplate.Start' value='' maxlength='10' style='visibility:hidden;display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
+		<input type='text' id='DocumentResource.Start' value='' maxlength='10' style='display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
 	</div>
 	
 	<div style='margin-bottom:8px'>
@@ -130,19 +133,19 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 			<option value='indefinite'>Indefinite</option>
 			<option value='date'>Date</option>
 		</select>
-		<input type='text' id='DocumentTemplate.End' value='' maxlength='10' style='visibility:hidden;display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
+		<input type='text' id='DocumentResource.End' value='' maxlength='10' style='display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
 	</div>
 
-	<iframe src='flex.php/CustomerGroup/UploadResource/' width='100%' height='25px' frameborder='0' id='FrameUploadResource' name='FrameUploadResource'></iframe>
+	<iframe src='flex.php/CustomerGroup/UploadResource/?DocumentResource.Type=$intResourceType&DocumentResource.CustomerGroup=$intCustomerGroup' style='width:100%;height:25px' frameborder='0' id='FrameUploadResource' name='FrameUploadResource'></iframe>
 
 </div>
 <div class='ButtonContainer'>
 	<div class='Right'>
 		<input type='button' id='CancelButton' class='InputSubmit' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
-		<input type='button' id='ButtonSave' class='InputSubmit' value='Save' onclick='Vixen.DocumentResourceManagement.UploadResource()'></input>
+		<input type='button' id='ButtonSave' class='InputSubmit' value='Save' onclick='Vixen.DocumentResourceAdd.Upload()'></input>
 	</div>
 </div>
-<script type='text/javascript'>Vixen.DocumentResourceAdd.Initialise($intCustomerGroup, $jsonResourceType)</script>
+<script type='text/javascript'>Vixen.DocumentResourceAdd.Initialise($intCustomerGroup, $intResourceType)</script>
 <!-- END HtmlTemplateDocumentResourceAdd -->
 				";
 	}
@@ -161,40 +164,51 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 	 */
 	function RenderFileUploadComponent()
 	{
+		$intResourceType	= DBO()->DocumentResource->Type->Value;
+		$intCustomerGroup	= DBO()->DocumentResource->CustomerGroup->Value;
+		$arrFileTypes		= DBO()->FileTypes->AsArray->Value;
+		$jsonFileTypes		= Json()->Encode($arrFileTypes);
+		
+		// Build the comma separated list of accepted file types
+		$arrMIMETypes = Array();
+		foreach ($arrFileTypes as $arrFileType)
+		{
+			$arrMIMETypes[] = $arrFileType['MIMEType'];
+		}
+		$arrMIMETypes			= array_unique($arrMIMETypes);
+		$strAcceptedFileTypes	= implode(", ", $arrMIMETypes);
+		
+		
 		echo "
 <!-- START HtmlTemplateDocumentResourceManagement (File Upload Component) -->
 <form enctype='multipart/form-data' action='flex.php/CustomerGroup/UploadResource/' method='POST'>
 
-	<input type='hidden' name='VixenFormId' value='UploadResource'></input>
+	<input type='hidden' name='VixenFormId' value='ImportResource'></input>
 	<input type='hidden' name='MAX_FILE_SIZE' value='" . RESOURCE_FILE_MAX_SIZE . "'></input>
-	<input type='hidden' name='DocumentResource.Start' value='0'></input>
-	<input type='hidden' name='DocumentResource.End' value='0'></input>
-	<input type='hidden' name='DocumentResource.CustomerGroup' value='0'></input>
+	<input type='hidden' id='DocumentResource.Start' name='DocumentResource.Start' value='0'></input>
+	<input type='hidden' id='DocumentResource.End' name='DocumentResource.End' value='0'></input>
+	<input type='hidden' name='DocumentResource.CustomerGroup' value='$intCustomerGroup'></input>
+	<input type='hidden' name='DocumentResource.Type' value='$intResourceType'></input>
 	
 	<div style='margin-bottom:8px'>
 		<span style='top:2px'>Resource</span>
-		<input type='file' id='ResourceFile' name='ResourceFile' style='padding:1px 2px;position:absolute;left:115px;width:auto;border: solid 1px #D1D1D1' size='50'></input>
+		<input type='file' id='ResourceFile' name='ResourceFile' accept='$strAcceptedFileTypes' style='padding:1px 2px;position:absolute;left:115px;border: solid 1px #D1D1D1' size='65'></input>
 	</div>
 	
 </form>
-<!-- END HtmlTemplateDocumentResourceManagement (File Upload Component) -->
+<script type='text/javascript'>top.Vixen.DocumentResourceAdd.InitialiseFrame($jsonFileTypes)</script>
 			";
-		
-		return;
-		
-		if (DBO()->RateGroupImport->Success->Value)
+
+		if (DBO()->Import->Success->IsSet)
 		{
-			// The import was successful
-			$objRateGroup = Json()->encode(DBO()->RateGroupImport->ArrRateGroup->Value);
-			$objReport = Json()->encode(DBO()->RateGroupImport->Report->Value);
-			echo "<script type='text/javascript'>top.Vixen.RateGroupImport.OnImportSuccess($objReport, $objRateGroup)</script>\n";
+			// The component is being rerendered after a form submittion
+			$strSuccess		= (DBO()->Import->Success->Value)? "true" : "false";
+			$strErrorMsg	= (DBO()->Import->ErrorMsg->IsSet)? htmlspecialchars(DBO()->Import->ErrorMsg->Value, ENT_QUOTES) : "";
+			
+			echo "<script type='text/javascript'>top.Vixen.DocumentResourceAdd.ImportReturnHandler($strSuccess, '$strErrorMsg');</script>";
 		}
-		elseif (DBO()->RateGroupImport->Success->Value === FALSE)
-		{
-			// The import failed. Display the import report
-			$objReport = Json()->encode(DBO()->RateGroupImport->Report->Value);
-			echo "<script type='text/javascript'>top.Vixen.RateGroupImport.OnImportFailure($objReport)</script>\n";
-		}
+		
+		echo "\n<!-- END HtmlTemplateDocumentResourceManagement (File Upload Component) -->\n";
 	}
 }
 

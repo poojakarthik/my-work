@@ -216,5 +216,6 @@ define("EVENT_ON_PROVISIONING_REQUEST_CANCELLATION"	, "OnProvisioningRequestCanc
 
 // Maximum file upload size is 1 megabyte
 define("RATEGROUP_IMPORT_MAXSIZE", 1048576);
-define("RESOURCE_FILE_MAX_SIZE", 1048576);
+define("RESOURCE_FILE_MAX_SIZE", 1048576 * 2);
+
 ?>
