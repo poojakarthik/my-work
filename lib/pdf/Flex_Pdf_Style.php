@@ -236,8 +236,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 			}
 			catch (Exception $e)
 			{
-				// Ignore this for now. Should probably throw a wobbler though!
-				//echo "Unhandled exception: " . $e->getMessage() . " in " . __CLASS__ . "::" . __FUNCTION__ . " @line " . __LINE__;
+				throw $e;
 			}
 		}
 		if ($font != null)

@@ -819,28 +819,28 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 		return $availableHeight;
 	}
 
-	public function destroy()
+	public function _destroy()
 	{
 		$childElements =& $this->headerElements;
 		for ($i = count($childElements) - 1; $i >= 0; $i--)
 		{
-			$childElements[$i]->destroy();
+			$childElements[$i]->_destroy();
 			unset($childElements[$i]);
 		}
 		$childElements =& $this->contentElements;
 		for ($i = count($childElements) - 1; $i >= 0; $i--)
 		{
-			$childElements[$i]->destroy();
+			$childElements[$i]->_destroy();
 			unset($childElements[$i]);
 		}
 		$childElements =& $this->footerElements;
 		for ($i = count($childElements) - 1; $i >= 0; $i--)
 		{
-			$childElements[$i]->destroy();
+			$childElements[$i]->_destroy();
 			unset($childElements[$i]);
 		}
 
-		parent::destroy();
+		parent::_destroy();
 
 		unset($this->pageWrapperCount, $this->pageWrapperIndex, $this->pageTypes, $this->currentParentId, $this->currentPageColumn, $this->sectionElements, $this->preparedWidths, $this->id);
 		unset($this->preparedHeights, $this->preparedAbsTops, $this->preparedAbsLefts, $this->requiredHeaderHeight, $this->requiredNonEndFooterHeight, $this->requiredEndFooterHeight, $this->lastChildRendered);

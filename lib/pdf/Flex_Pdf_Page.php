@@ -621,11 +621,6 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	{
 		return $this->objLineColour;
 	}
-
-	public function getPageColumn()
-	{
-		return "@";
-	}
 }
 
 

@@ -29,17 +29,15 @@ class Flex_Pdf_Resource_Manager
 		// If we haven't already fetched the xslt...
 		if ($this->xsltString === NULL)
 		{
-			// TODO: Need to do the database work here!!
-			
 			// Need to run the following: -
 			/*
 			 $sql =  "
 				  select Source
 				    from DocumentTemplate
-				   where CustomerGroup=$this->customerGroup
-				     and TemplateType=$templateType
+				   where CustomerGroup=<CustomerGroup>
+				     and TemplateType=<TemplateType>
 				     and EffectiveOn is not null
-				     and EffectiveOn <= '$this->effectiveDate'
+				     and EffectiveOn <= <GenerationDate>
 				order by EffectiveOn desc
 				   limit 0, 1
 				";
@@ -75,7 +73,6 @@ class Flex_Pdf_Resource_Manager
 	{
 		if ($this->resources === NULL) 
 		{
-			// Need to run the following (or something like it): -
 			/*
 			 $sql =  "
 				SELECT RT.PlaceHolder PlaceHolder, DR.Id Id, FT.Extension Extension
@@ -148,7 +145,7 @@ class Flex_Pdf_Resource_Manager
 				// Construct the absolute path if we have a match
 				if (array_key_exists($placeholder, $this->resources))
 				{
-					$this->cache[$relativePath] = self::RESOURCE_BASE_PATH . "/" . $this->customerGroup . "/" 
+					$this->cache[$relativePath] = self::RESOURCE_BASE_PATH . $this->customerGroup . "/" 
 						. $this->resources[$placeholder]["Id"] . "." . $this->resources[$placeholder]["Extension"];
 				}
 				// ... else record the fact that we didn't find the resource
@@ -158,10 +155,10 @@ class Flex_Pdf_Resource_Manager
 				}
 			}
 			// if the path is relative (as in the case on font files)...
-			else if ($relativePath == "." || file_exists(self::COMMON_RESOURCE_BASE_PATH . "/" . $relativePath))
+			else if ($relativePath == "." || file_exists(self::COMMON_RESOURCE_BASE_PATH . $relativePath))
 			{
 				// make absolute...
-				$this->cache[$relativePath] = self::COMMON_RESOURCE_BASE_PATH . "/" . $relativePath;
+				$this->cache[$relativePath] = self::COMMON_RESOURCE_BASE_PATH . $relativePath;
 			}
 			// the path must be absolute already...
 			else
@@ -174,7 +171,7 @@ class Flex_Pdf_Resource_Manager
 		return $this->cache[$relativePath];
 	}	
 
-	public function getResourceManager($customerGroup, $effectiveDate)
+	public static function getResourceManager($customerGroup, $effectiveDate)
 	{
 		if (!array_key_exists($customerGroup, self::$handlers))
 		{

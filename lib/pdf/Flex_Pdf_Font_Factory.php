@@ -58,11 +58,22 @@ class Flex_Pdf_Font_Factory
 					if (file_exists($fontName))
 					{
 						// Try to load the file as a font file
-						$font = Zend_Pdf_Font::fontWithPath($fontName);
+						try
+						{
+							$font = Zend_Pdf_Font::fontWithPath($fontName);
+							if (!($font instanceof Zend_Pdf_Resource_Font))
+							{
+								throw new Exception("Failed to create font resource for font name '$fontName'. The font file may be invalid.");
+							}
+						}
+						catch (Exception $e)
+						{
+							throw $e;
+						}
 					}
 					else
 					{
-						throw new Exception("Font resource not found: $fontName");
+						throw new Exception("Font resource not found: $fontName. \nCheck the font name and ensure the font has been listed in <embedded-fonts>.");
 					}
 			}
 			self::$fonts[strtoupper($fontName)] = $font;
