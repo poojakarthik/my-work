@@ -135,7 +135,7 @@ class Zend_Pdf_Page
      *
      * @var Zend_Pdf_ElementFactory_Interface
      */
-    private $_objFactory = null;
+    protected $_objFactory = null;
 
     /**
      * Flag which signals, that page is created separately from any PDF document or
@@ -356,7 +356,7 @@ class Zend_Pdf_Page
      * @param Zend_Pdf_Resource $resource
      * @return string
      */
-    private function _attachResource($type, Zend_Pdf_Resource $resource)
+    protected function _attachResource($type, Zend_Pdf_Resource $resource)
     {
         // Check that Resources dictionary contains appropriate resource set
         if ($this->_pageDictionary->Resources->$type === null) {
@@ -390,7 +390,7 @@ class Zend_Pdf_Page
      *
      * @param string $procSetName
      */
-    private function _addProcSet($procSetName)
+    protected function _addProcSet($procSetName)
     {
         // Check that Resources dictionary contains ProcSet entry
         if ($this->_pageDictionary->Resources->ProcSet === null) {

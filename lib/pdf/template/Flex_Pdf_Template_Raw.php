@@ -52,7 +52,7 @@ class Flex_Pdf_Template_Raw extends Flex_Pdf_Template_Image
 	{
 		if ($this->rawData !== "")
 		{
-			$page->appendToRawContents($this->rawData);
+			$page->drawRawContent($this->rawData);
 		}
 	}
 }

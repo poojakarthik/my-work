@@ -1,7 +1,7 @@
 <?php
 
 require_once "pdf/Flex_Pdf_Text.php";
-
+require_once "pdf/Flex_Pdf_Raw_Resource.php";
 
 class Flex_Pdf_Page extends Zend_Pdf_Page
 {
@@ -621,6 +621,88 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	{
 		return $this->objLineColour;
 	}
+
+	public function getPageColumn()
+	{
+		return "@";
+	}
+
+
+    /**
+     * Attach form resource to the page
+     *
+     * @param string $type
+     * @param Zend_Pdf_Resource $resource
+     * @return string
+     */
+    private function _attachFormResource(Zend_Pdf_Resource $resource)
+    {
+        // Check that Resources dictionary contains appropriate resource set
+        $pageDictionary = $this->getPageDictionary();
+        if ($pageDictionary->Resources->XObject === null) {
+            $pageDictionary->Resources->touch();
+            $pageDictionary->Resources->XObject = new Zend_Pdf_Element_Dictionary();
+        } else {
+            $pageDictionary->Resources->XObject->touch();
+        }
+
+        // Check, that resource is already attached to resource set.
+        $resObject = $resource->getResource();
+        foreach ($pageDictionary->Resources->XObject->getKeys() as $ResID) {
+            if ($pageDictionary->Resources->XObject->$ResID === $resObject) {
+                return $ResID;
+            }
+        }
+
+        $idCounter = 1;
+        do {
+            $newResName = 'X' . $idCounter++;
+        } while ($pageDictionary->Resources->XObject->$newResName !== null);
+
+        $pageDictionary->Resources->XObject->$newResName = $resObject;
+        $this->_objFactory->attach($resource->getFactory());
+
+        return $newResName;
+    }
+
+    /**
+     * Draw an image at the specified position on the page.
+     *
+     * @param Zend_Pdf_Image $image
+     * @param float $x1
+     * @param float $y1
+     * @param float $x2
+     * @param float $y2
+     */
+    public function drawRawContent($rawContent, $top=0, $left=0, $height=NULL, $width=NULL)
+    {
+        $resource = Flex_Pdf_Raw_Resource::createRawResource($rawContent);
+
+        $this->_addProcSet('PDF');
+
+        $resourceName    = $this->_attachResource('XObject', $resource);
+        $resourceNameObj = new Zend_Pdf_Element_Name($resourceName);
+
+
+        $h = $this->getHeight();
+        $w = $this->getWidth();
+
+        if ($width === NULL) $width = $w;
+        if ($height === NULL) $height = $h;
+
+        $x1Obj     = new Zend_Pdf_Element_Numeric($left);
+        $y1Obj     = new Zend_Pdf_Element_Numeric($h - ($top + $height));
+        $widthObj  = new Zend_Pdf_Element_Numeric($width);
+        $heightObj = new Zend_Pdf_Element_Numeric($height);
+
+        $this->_contents .= "q\n"
+                         //.  '1 0 0 1 ' . $x1Obj->toString() . ' ' . $y1Obj->toString() . " cm\n"
+                         //. $widthObj->toString() . ' 0 0 ' . $heightObj->toString() . " 0 0 cm\n"
+                         .  $resourceNameObj->toString() . " Do\n"
+                         .  "Q\n";
+    }
+
+
 }
 
 
