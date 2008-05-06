@@ -1,7 +1,8 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<!-- Voicetalk -->
-	<xsl:variable name="bill_express_biller_id">000376</xsl:variable><!-- MUST BE 6 DIGITS - PAD WITH LEADING ZEROS IF NECESSARY -->
+	<!--
+	<xsl:variable name="bill_express_biller_id">000376</xsl:variable>
 	<xsl:variable name="bill_pay_biller_code">63412</xsl:variable>
 	<xsl:variable name="abn">25 104 357 842</xsl:variable>
 	<xsl:variable name="business-phone">1300 882 172</xsl:variable>
@@ -35,11 +36,11 @@
 	<xsl:template name="pay-slip-logo">
 		<img src="images/logo_grey.png" style="bottom: 0; width: 132.72pt; height: 35.43pt;" />
 	</xsl:template>
-
+	-->
 
 	<!-- Telcoblue -->
-	<!--
-	<xsl:variable name="bill_express_biller_id">000376</xsl:variable>
+	<!-- -->
+	<xsl:variable name="bill_express_biller_id">000376</xsl:variable><!-- MUST BE 6 DIGITS - PAD WITH LEADING ZEROS IF NECESSARY -->
 	<xsl:variable name="bill_pay_biller_code">63412</xsl:variable>
 	<xsl:variable name="abn">25 104 357 842</xsl:variable>
 	<xsl:variable name="business-phone">1300 835 262</xsl:variable>
@@ -73,7 +74,7 @@
 	<xsl:template name="pay-slip-logo">
 		<img src="images/logo_grey.png" style="bottom: 0; left: -10.25; width: 155.23pt; height: 22.55pt;" />
 	</xsl:template>
-	-->
+	<!-- -->
 
 	<!-- Create the zero padded account number for the barcode -->
 	<xsl:variable name="account-number"><xsl:value-of select="/Invoice/Account/@Id" /></xsl:variable>
@@ -195,7 +196,7 @@
 									<span>This Invoice due <xsl:value-of select="/Invoice/Statement/DueDate" /></span>
 								</p>
 								<p style="top: 51pt;">
-									<span style="font-weight: bold;">Total Amount Owing</span>
+									<a href="#accountSummary" style="font-weight: bold;">Total Amount Owing</a>
 								</p>
 							</div>
 							<!-- Details -->
@@ -887,7 +888,7 @@
 		<page-wrap-content identifier="account-summary">
 	
 			<wrapped-header include="first-section">
-				<div style="width: 233.88pt; height: 20pt;">
+				<div style="width: 233.88pt; height: 20pt;" id="accountSummary">
 					<div style="width: 233.88pt; height: 15pt; bottom: 5pt; border-width-bottom: 0.5pt; border-width-top: 0.5pt; border-color: #000; font-weight: bold; font-size: 11pt;"><p style="bottom: 2.8pt;"><span>A</span><span style="font-size: 8pt">CCOUNT<xsl:text> </xsl:text></span><span>S</span><span style="font-size: 8pt">UMMARY</span></p></div>
 				</div>
 			</wrapped-header>
