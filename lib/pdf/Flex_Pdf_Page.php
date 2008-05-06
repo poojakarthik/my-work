@@ -1,7 +1,11 @@
 <?php
 
 require_once "pdf/Flex_Pdf_Text.php";
-require_once "pdf/Flex_Pdf_Raw_Resource.php";
+require_once "pdf/resource/Flex_Pdf_Resource_Raw.php";
+require_once "pdf/element/Flex_Pdf_Element_Array.php";
+require_once "pdf/resource/annotation/Flex_Pdf_Annotation_Link_From.php";
+require_once "pdf/resource/annotation/Flex_Pdf_Annotation_Link_To.php";
+
 
 class Flex_Pdf_Page extends Zend_Pdf_Page
 {
@@ -22,7 +26,9 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 	private $saveFillColours = array();
 	private $saveLineColours = array();
-
+	
+	protected $_arrLinkTargets = array();
+	
 	public function drawImage($zendPdfImageResource, $top, $left, $height, $width)
 	{
 		parent::drawImage($zendPdfImageResource, $left, $this->getHeight() - ($top + $height), $left + $width, $this->getHeight() - $top);
@@ -168,35 +174,35 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 	private function getBoxBoundsDataFourRadii($x1, $y1, $x2, $y2, $cornerRadiusTopLeft, $cornerRadiusTopRight, $cornerRadiusBottomRight, $cornerRadiusBottomLeft)
 	{
-        $deltaTL  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusTopLeft)/3.;
-        $deltaTR  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusTopRight)/3.;
-        $deltaBR  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusBottomRight)/3.;
-        $deltaBL  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusBottomLeft)/3.;
+		$deltaTL  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusTopLeft)/3.;
+		$deltaTR  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusTopRight)/3.;
+		$deltaBR  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusBottomRight)/3.;
+		$deltaBL  = 2*(M_SQRT2 - 1)*(2 * $cornerRadiusBottomLeft)/3.;
 
-        $xLeft  = new Zend_Pdf_Element_Numeric($x1);
-        $xRight = new Zend_Pdf_Element_Numeric($x2);
-        $yUp    = new Zend_Pdf_Element_Numeric($y1);
-        $yDown  = new Zend_Pdf_Element_Numeric($y2);
+		$xLeft  = new Zend_Pdf_Element_Numeric($x1);
+		$xRight = new Zend_Pdf_Element_Numeric($x2);
+		$yUp	= new Zend_Pdf_Element_Numeric($y1);
+		$yDown  = new Zend_Pdf_Element_Numeric($y2);
 
-        $xlt	= new Zend_Pdf_Element_Numeric($x1 + $cornerRadiusTopLeft);
-        $xrt	= new Zend_Pdf_Element_Numeric($x2 - $cornerRadiusTopRight);
-        $yul	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopLeft);
-        $ydl	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomLeft);
+		$xlt	= new Zend_Pdf_Element_Numeric($x1 + $cornerRadiusTopLeft);
+		$xrt	= new Zend_Pdf_Element_Numeric($x2 - $cornerRadiusTopRight);
+		$yul	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopLeft);
+		$ydl	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomLeft);
 
-        $xlb	= new Zend_Pdf_Element_Numeric($x1 + $cornerRadiusBottomLeft);
-        $xrb	= new Zend_Pdf_Element_Numeric($x2 - $cornerRadiusBottomRight);
-        $yur	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopRight);
-        $ydr	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomRight);
+		$xlb	= new Zend_Pdf_Element_Numeric($x1 + $cornerRadiusBottomLeft);
+		$xrb	= new Zend_Pdf_Element_Numeric($x2 - $cornerRadiusBottomRight);
+		$yur	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopRight);
+		$ydr	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomRight);
 
-        $xdlt	= new Zend_Pdf_Element_Numeric($x1 + $deltaTL);
-        $xdrt	= new Zend_Pdf_Element_Numeric($x2 - $deltaTR);
-        $ydul	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopLeft + $deltaTL);
-        $yddl	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomLeft - $deltaBL);
+		$xdlt	= new Zend_Pdf_Element_Numeric($x1 + $deltaTL);
+		$xdrt	= new Zend_Pdf_Element_Numeric($x2 - $deltaTR);
+		$ydul	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopLeft + $deltaTL);
+		$yddl	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomLeft - $deltaBL);
 
-        $xdlb	= new Zend_Pdf_Element_Numeric($x1 + $deltaBL);
-        $xdrb	= new Zend_Pdf_Element_Numeric($x2 - $deltaBR);
-        $ydur	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopRight + $deltaTR);
-        $yddr	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomRight - $deltaBR);
+		$xdlb	= new Zend_Pdf_Element_Numeric($x1 + $deltaBL);
+		$xdrb	= new Zend_Pdf_Element_Numeric($x2 - $deltaBR);
+		$ydur	= new Zend_Pdf_Element_Numeric($y1 - $cornerRadiusTopRight + $deltaTR);
+		$yddr	= new Zend_Pdf_Element_Numeric($y2 + $cornerRadiusBottomRight - $deltaBR);
 
 		// Create the set of rules to draw the area, starting at the top left and going clockwise
 		$raw = "";
@@ -241,157 +247,157 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 
 	private function getBoxBoundsData($x1, $y1, $x2, $y2, $cornerRadiusTopLeft, $cornerRadiusTopRight=NULL, $cornerRadiusBottomRight=NULL, $cornerRadiusBottomLeft=NULL)
 	{
-        return $this->getBoxBoundsDataFourRadii($x1, $y1, $x2, $y2, $cornerRadiusTopLeft, $cornerRadiusTopLeft, $cornerRadiusTopLeft, $cornerRadiusTopLeft);
+		return $this->getBoxBoundsDataFourRadii($x1, $y1, $x2, $y2, $cornerRadiusTopLeft, $cornerRadiusTopLeft, $cornerRadiusTopLeft, $cornerRadiusTopLeft);
 	}
 
 	private function getBoxBorderBounds($x1, $y1, $x2, $y2, $t, $r, $b, $l)
 	{
-        $xLeft  = new Zend_Pdf_Element_Numeric($x1);
-        $xBLeft  = new Zend_Pdf_Element_Numeric($x1 - $l);
-        $xRight = new Zend_Pdf_Element_Numeric($x2);
-        $xBRight = new Zend_Pdf_Element_Numeric($x2 + $r);
-        $yUp    = new Zend_Pdf_Element_Numeric($y1);
-        $yBUp    = new Zend_Pdf_Element_Numeric($y1 + $t);
-        $yDown  = new Zend_Pdf_Element_Numeric($y2);
-        $yBDown  = new Zend_Pdf_Element_Numeric($y2 - $b);
+		$xLeft  = new Zend_Pdf_Element_Numeric($x1);
+		$xBLeft  = new Zend_Pdf_Element_Numeric($x1 - $l);
+		$xRight = new Zend_Pdf_Element_Numeric($x2);
+		$xBRight = new Zend_Pdf_Element_Numeric($x2 + $r);
+		$yUp	= new Zend_Pdf_Element_Numeric($y1);
+		$yBUp	= new Zend_Pdf_Element_Numeric($y1 + $t);
+		$yDown  = new Zend_Pdf_Element_Numeric($y2);
+		$yBDown  = new Zend_Pdf_Element_Numeric($y2 - $b);
 
-        $raw = '';
+		$raw = '';
 
-        if ($t)
-        {
+		if ($t)
+		{
 			$raw .= $xBLeft->toString() . ' ' . $yUp->toString() . " m\n";
 			$raw .= $xBRight->toString() . ' ' . $yUp->toString() . " l\n";
 			$raw .= $xBRight->toString() . ' ' . $yBUp->toString() . " l\n";
 			$raw .= $xBLeft->toString() . ' ' . $yBUp->toString() . " l\n";
 			$raw .= " h\n";
-        }
+		}
 
-        if ($b)
-        {
+		if ($b)
+		{
 			$raw .= $xBLeft->toString() . ' ' . $yDown->toString() . " m\n";
 			$raw .= $xBRight->toString() . ' ' . $yDown->toString() . " l\n";
 			$raw .= $xBRight->toString() . ' ' . $yBDown->toString() . " l\n";
 			$raw .= $xBLeft->toString() . ' ' . $yBDown->toString() . " l\n";
 			$raw .= " h\n";
-        }
+		}
 
-        if ($l)
-        {
+		if ($l)
+		{
 			$raw .= $xBLeft->toString() . ' ' . $yUp->toString() . " m\n";
 			$raw .= $xLeft->toString() . ' ' . $yUp->toString() . " l\n";
 			$raw .= $xLeft->toString() . ' ' . $yDown->toString() . " l\n";
 			$raw .= $xBLeft->toString() . ' ' . $yDown->toString() . " l\n";
 			$raw .= " h\n";
-        }
+		}
 
-        if ($r)
-        {
+		if ($r)
+		{
 			$raw .= $xBRight->toString() . ' ' . $yUp->toString() . " m\n";
 			$raw .= $xRight->toString() . ' ' . $yUp->toString() . " l\n";
 			$raw .= $xRight->toString() . ' ' . $yDown->toString() . " l\n";
 			$raw .= $xBRight->toString() . ' ' . $yDown->toString() . " l\n";
 			$raw .= " h\n";
-        }
+		}
 
-        return rtrim($raw);
+		return rtrim($raw);
 	}
 
-    /**
-     * Append raw data to the PDF document content stream
-     *
-     * @param String $raw data to date to content stream, without trailing new line char
-     *
-     * @note Expected to work like parent rawWrite() method which has not been implemented
-     * @note Relies on _contents variable being 'protected'. It is 'private' in the original
-     * 		 Zend source code.
-     */
-    public function appendToRawContents($raw)
-    {
-    	$this->_contents .= rtrim($raw) . "\n";
-    }
+	/**
+	 * Append raw data to the PDF document content stream
+	 *
+	 * @param String $raw data to date to content stream, without trailing new line char
+	 *
+	 * @note Expected to work like parent rawWrite() method which has not been implemented
+	 * @note Relies on _contents variable being 'protected'. It is 'private' in the original
+	 * 		 Zend source code.
+	 */
+	public function appendToRawContents($raw)
+	{
+		$this->_contents .= rtrim($raw) . "\n";
+	}
 
-    public function saveGS()
-    {
-    	$this->saveFillColours[] = $this->getFillColor();
-    	$this->saveLineColours[] = $this->getLineColor();
-    	parent::saveGS();
-    }
+	public function saveGS()
+	{
+		$this->saveFillColours[] = $this->getFillColor();
+		$this->saveLineColours[] = $this->getLineColor();
+		parent::saveGS();
+	}
 
-    public function restoreGS()
-    {
-    	parent::restoreGS();
-    	$fill = array_pop($this->saveFillColours);
-    	$line = array_pop($this->saveLineColours);
-    	$this->setFillColor($fill);
-    	$this->setLineColor($line);
-    }
+	public function restoreGS()
+	{
+		parent::restoreGS();
+		$fill = array_pop($this->saveFillColours);
+		$line = array_pop($this->saveLineColours);
+		$this->setFillColor($fill);
+		$this->setLineColor($line);
+	}
 
-    private $pageCountStyles = array();
+	private $pageCountStyles = array();
 
-    private function registerPageCount($wrapperStyle=NULL)
-    {
-    	$this->pageCountStyles[] = $wrapperStyle;
-    }
+	private function registerPageCount($wrapperStyle=NULL)
+	{
+		$this->pageCountStyles[] = $wrapperStyle;
+	}
 
-    public function applyPageCounts($nrPages)
-    {
+	public function applyPageCounts($nrPages)
+	{
  		$pageCountMatches = array();
 		preg_match_all("/\nBT\n([0-9\.]+) +([0-9\.]+) +Td\n *\(([^\n]*\<\\0?\<\\0?p\\0?c\\0?\>\\0?\>[^\n]*)\) +Tj\nET\n/", $this->_contents, $pageCountMatches, PREG_SET_ORDER);
 
-    	for ($i = 0, $l = count($this->pageCountStyles); $i < $l; $i++)
-    	{
-    		$pageCountMatch = $pageCountMatches[$i];
-    		$x = $pageCountMatch[1];
+		for ($i = 0, $l = count($this->pageCountStyles); $i < $l; $i++)
+		{
+			$pageCountMatch = $pageCountMatches[$i];
+			$x = $pageCountMatch[1];
 
-    		$string = $pageCountMatch[3];
+			$string = $pageCountMatch[3];
 
-    		$nrPageCounts = preg_match_all("/\<\\0?\<\\0?p\\0?c\\0?\>\\0?\>/", $string, $array=array());
-    		
-    		$isNullSplit = strpos($string, "\0") !== FALSE;
+			$nrPageCounts = preg_match_all("/\<\\0?\<\\0?p\\0?c\\0?\>\\0?\>/", $string, $array=array());
+			
+			$isNullSplit = strpos($string, "\0") !== FALSE;
 
-    		$style = $this->pageCountStyles[$i];
+			$style = $this->pageCountStyles[$i];
 
-    		// If style is text-align left...
-    		if (!$style->isTextAlignLeft() || $style->getRight() !== NULL)
-    		{
- 	    		$x = floatval($x);
+			// If style is text-align left...
+			if (!$style->isTextAlignLeft() || $style->getRight() !== NULL)
+			{
+ 				$x = floatval($x);
 
-    		 	// Get the width of the string "<<pc>>"
-    		 	$pcWidth = Flex_Pdf_Text::widthForStringUsingFontSize("<<pc>>", $style->getFont(), $style->getFontSize());
-    			// Get the width of the new page number string
-    		 	$pnWidth = Flex_Pdf_Text::widthForStringUsingFontSize("$nrPages", $style->getFont(), $style->getFontSize());
+			 	// Get the width of the string "<<pc>>"
+			 	$pcWidth = Flex_Pdf_Text::widthForStringUsingFontSize("<<pc>>", $style->getFont(), $style->getFontSize());
+				// Get the width of the new page number string
+			 	$pnWidth = Flex_Pdf_Text::widthForStringUsingFontSize("$nrPages", $style->getFont(), $style->getFontSize());
 
-    			$shift = $pcWidth - $pnWidth;
+				$shift = $pcWidth - $pnWidth;
 
-    			if ($style->isTextAlignCentre())
-    			{
-    				$shift = $shift/2;
-    			}
+				if ($style->isTextAlignCentre())
+				{
+					$shift = $shift/2;
+				}
 
-    			$x += ($shift * $nrPageCounts);
+				$x += ($shift * $nrPageCounts);
 
-    			$val = new Zend_Pdf_Element_Numeric($x);
-    			$x = $val->toString();
-    		}
-
-
-    		$textElement = $pageCountMatch[0];
-    		
-    		if ($isNullSplit)
-    		{
-    			$nrPages = implode("\0", str_split($nrPages, 1));
-    		}
-    		
-    		$textElement = str_replace("BT\n".$pageCountMatch[1], "BT\n".$x, $textElement);
-
-    		$textElement = str_replace(($isNullSplit ? "<\0<\0p\0c\0>\0>" : "<<pc>>"), $nrPages, $textElement);
+				$val = new Zend_Pdf_Element_Numeric($x);
+				$x = $val->toString();
+			}
 
 
-    		$pos = strpos( $this->_contents, $pageCountMatch[0]);
-    		$len = strlen($pageCountMatch[0]);
+			$textElement = $pageCountMatch[0];
+			
+			if ($isNullSplit)
+			{
+				$nrPages = implode("\0", str_split($nrPages, 1));
+			}
+			
+			$textElement = str_replace("BT\n".$pageCountMatch[1], "BT\n".$x, $textElement);
+
+			$textElement = str_replace(($isNullSplit ? "<\0<\0p\0c\0>\0>" : "<<pc>>"), $nrPages, $textElement);
+
+
+			$pos = strpos( $this->_contents, $pageCountMatch[0]);
+			$len = strlen($pageCountMatch[0]);
 			$this->_contents = substr( $this->_contents, 0, $pos) . $textElement . substr( $this->_contents, $pos + $len);
-    	}
-    }
+		}
+	}
 
    	public function drawText($top, $left, $text, $width=0, $wrapperStyle=NULL)
 	{
@@ -583,14 +589,14 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 		$this->setFont($this->getFont(), $fontSize);
 	}
 
-    /**
-     * Set current font.
-     *
-     * @param Zend_Pdf_Resource_Font $font
-     * @param float $fontSize
-     */
-    /*public function setFont(Zend_Pdf_Resource_Font $font, $fontSize)
-    {
+	/**
+	 * Set current font.
+	 *
+	 * @param Zend_Pdf_Resource_Font $font
+	 * @param float $fontSize
+	 */
+	/*public function setFont(Zend_Pdf_Resource_Font $font, $fontSize)
+	{
 		if ($this->getFont() == $font && $this->getFontSize() == $fontSize)
 		{
 			return;
@@ -628,80 +634,115 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	}
 
 
-    /**
-     * Attach form resource to the page
-     *
-     * @param string $type
-     * @param Zend_Pdf_Resource $resource
-     * @return string
-     */
-    private function _attachFormResource(Zend_Pdf_Resource $resource)
-    {
-        // Check that Resources dictionary contains appropriate resource set
-        $pageDictionary = $this->getPageDictionary();
-        if ($pageDictionary->Resources->XObject === null) {
-            $pageDictionary->Resources->touch();
-            $pageDictionary->Resources->XObject = new Zend_Pdf_Element_Dictionary();
-        } else {
-            $pageDictionary->Resources->XObject->touch();
-        }
+	/**
+	 * Add raw pdf commands as content for the page
+	 *
+	 * @param Zend_Pdf_Image $image
+	 */
+	public function drawRawContent($rawContent)
+	{
+		$resource = Flex_Pdf_Resource_Raw::createRawResource($rawContent);
 
-        // Check, that resource is already attached to resource set.
-        $resObject = $resource->getResource();
-        foreach ($pageDictionary->Resources->XObject->getKeys() as $ResID) {
-            if ($pageDictionary->Resources->XObject->$ResID === $resObject) {
-                return $ResID;
-            }
-        }
+		$this->_addProcSet('PDF');
 
-        $idCounter = 1;
-        do {
-            $newResName = 'X' . $idCounter++;
-        } while ($pageDictionary->Resources->XObject->$newResName !== null);
+		$resourceName	= $this->_attachResource('XObject', $resource);
+		$resourceNameObj = new Zend_Pdf_Element_Name($resourceName);
 
-        $pageDictionary->Resources->XObject->$newResName = $resObject;
-        $this->_objFactory->attach($resource->getFactory());
-
-        return $newResName;
-    }
-
-    /**
-     * Draw an image at the specified position on the page.
-     *
-     * @param Zend_Pdf_Image $image
-     * @param float $x1
-     * @param float $y1
-     * @param float $x2
-     * @param float $y2
-     */
-    public function drawRawContent($rawContent, $top=0, $left=0, $height=NULL, $width=NULL)
-    {
-        $resource = Flex_Pdf_Raw_Resource::createRawResource($rawContent);
-
-        $this->_addProcSet('PDF');
-
-        $resourceName    = $this->_attachResource('XObject', $resource);
-        $resourceNameObj = new Zend_Pdf_Element_Name($resourceName);
+		$this->_contents .= "q\n"
+						 .  $resourceNameObj->toString() . " Do\n"
+						 .  "Q\n";
+	}
 
 
-        $h = $this->getHeight();
-        $w = $this->getWidth();
 
-        if ($width === NULL) $width = $w;
-        if ($height === NULL) $height = $h;
+	/**
+	 * Attach annotation to the page
+	 *
+	 * @param string $strAnnotationName
+	 * @param Zend_Pdf_Resource $resource
+	 * @return string
+	 */
+	protected function _attachAnnotation(Flex_Pdf_Annotation_Link_From $objLinkFrom)
+	{
+		$pageDictionary = $this->getPageDictionary();
+		
+		if (!($pageDictionary->Annots instanceof Flex_Pdf_Element_Array))
+		{
+			if ($pageDictionary->Annots instanceof Zend_Pdf_Element_Array)
+			{
+				$objAnnots = $pageDictionary->Annots;
+				$pageDictionary->Annots = new Flex_Pdf_Element_Array();
+				$pageDictionary->Annots->adoptItems($objAnnots);
+			}
+			else if ($pageDictionary->Annots == NULL)
+			{
+				$pageDictionary->Annots = new Flex_Pdf_Element_Array();
+			}
+		}
+		
+        $this->_objFactory->attach($objLinkFrom->getFactory());
+        $pageDictionary->Annots->add(null, $objLinkFrom->getResource());
+	}
 
-        $x1Obj     = new Zend_Pdf_Element_Numeric($left);
-        $y1Obj     = new Zend_Pdf_Element_Numeric($h - ($top + $height));
-        $widthObj  = new Zend_Pdf_Element_Numeric($width);
-        $heightObj = new Zend_Pdf_Element_Numeric($height);
+	/**
+	 * Draw a link at the specified position on the page to the named target.
+	 *
+	 * @param $strTargetName String name of target to link to 
+	 * @param $top		float
+	 * @param $left		float
+	 * @param $height	float
+	 * @param $width	float
+	 */
+	public function drawLinkFrom($strTargetName, $top=0, $left=0, $height=0, $width=0)
+	{
+		$resource = Flex_Pdf_Resource_Raw::createRawResource($rawContent);
 
-        $this->_contents .= "q\n"
-                         //.  '1 0 0 1 ' . $x1Obj->toString() . ' ' . $y1Obj->toString() . " cm\n"
-                         //. $widthObj->toString() . ' 0 0 ' . $heightObj->toString() . " 0 0 cm\n"
-                         .  $resourceNameObj->toString() . " Do\n"
-                         .  "Q\n";
-    }
+		$this->_addProcSet('PDF');
 
+		$resourceNameObj = new Zend_Pdf_Element_Name($resourceName);
+
+		$objName = new Zend_Pdf_Element_String($strTargetName);
+
+		$h = $this->getHeight();
+		$objX1 = new Zend_Pdf_Element_Numeric($left);
+		$objY1 = new Zend_Pdf_Element_Numeric($h - $top - $height);
+		$objX2 = new Zend_Pdf_Element_Numeric($left + $width);
+		$objY2 = new Zend_Pdf_Element_Numeric($h - $top);
+		
+		$objLinkFrom = new Flex_Pdf_Annotation_Link_From($objX1, $objY1, $objX2, $objY2, $objName);
+		$this->_attachAnnotation($objLinkFrom);
+	}
+
+	/**
+	 * Draw a link target at the specified position on the page
+	 *
+	 * @param $strTargetName String name of target to link to 
+	 * @param $top		float
+	 * @param $left		float
+	 */
+	public function drawLinkTo($strTargetName, $top=0, $left=0)
+	{
+		$resource = Flex_Pdf_Resource_Raw::createRawResource($rawContent);
+
+		$this->_addProcSet('PDF');
+
+		$resourceNameObj = new Zend_Pdf_Element_Name($resourceName);
+
+		$objName = new Zend_Pdf_Element_Name($strTargetName);
+
+		$h = $this->getHeight();
+		$objX1 = new Zend_Pdf_Element_Numeric($left);
+		$objY1 = new Zend_Pdf_Element_Numeric($h - $top - $height);
+		
+		$objLinkTo = new Flex_Pdf_Annotation_Link_To($this->getPageDictionary(), $objX1, $objY1, $objName);
+		$this->_arrLinkTargets[$strTargetName] = $objLinkTo->getResource();
+        $this->_objFactory->attach($objLinkTo->getFactory());
+	}
+
+	public function getLinkTargets()
+	{
+		return $this->_arrLinkTargets;
+	}
 
 }
 
