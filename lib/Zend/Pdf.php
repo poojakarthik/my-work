@@ -168,7 +168,7 @@ class Zend_Pdf
      *
      * @var Zend_Pdf_Trailer
      */
-    private $_trailer = null;
+    protected $_trailer = null;
 
 
     /**
@@ -176,7 +176,7 @@ class Zend_Pdf
      *
      * @var Zend_Pdf_ElementFactory_Interface
      */
-    private $_objFactory = null;
+    protected $_objFactory = null;
 
     /**
      * Memory manager for stream objects
@@ -405,7 +405,7 @@ class Zend_Pdf
 
 
     /**
-     * List of inheritable attributesfor pages tree
+     * List of inheritable attributes for pages tree
      *
      * @var array
      */
