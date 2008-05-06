@@ -496,7 +496,7 @@ class Zend_Pdf_Page
         }
 
         if ($this->_attached) {
-            throw new Zend_Pdf_Exception('Page is attached to one documen, but rendered in context of another.');
+            throw new Zend_Pdf_Exception('Page is attached to one document, but rendered in context of another.');
             /**
              * @todo Page cloning must be implemented here instead of exception.
              *       PDF objects (ex. fonts) can be shared between pages.
