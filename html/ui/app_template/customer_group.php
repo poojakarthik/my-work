@@ -481,6 +481,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			DBO()->DocumentTemplate->Source	= DBO()->BaseTemplate->Source->Value;
 		}
 		
+		// Load all the DocumentResourceTypes
+		DBL()->DocumentResourceType->OrderBy("PlaceHolder ASC");
+		DBL()->DocumentResourceType->Load();
+		
 		// Context Menu
 		//TODO!
 		
@@ -526,6 +530,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$this->LoadPage('error');
 			return TRUE;
 		}
+		
+		// Load all the DocumentResourceTypes
+		DBL()->DocumentResourceType->OrderBy("PlaceHolder ASC");
+		DBL()->DocumentResourceType->Load();
 		
 		// Context Menu
 		//TODO!
@@ -878,10 +886,93 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// UploadResource
+	// ViewDocumentResource
 	//------------------------------------------------------------------------//
 	/**
-	 * UploadResource()
+	 * ViewDocumentResource()
+	 *
+	 * Retrieves a Document Resource and declares its MIME type so that an apropriate application can display it
+	 * 
+	 * Retrieves a Document Resource and declares its MIME type so that an apropriate application can display it
+	 * It expects the following objects to be defined
+	 * 	DBO()->DocumentResource->Id					Id of the resource to view
+	 *  DBO()->DocumentResource->DownloadFile		Set to TRUE, to download the file, instead of just viewing it
+	 * 
+	 * @return		void
+	 * @method	ViewDocumentResource
+	 */
+	function ViewDocumentResource()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		$intResourceId			= DBO()->DocumentResource->Id->Value;
+		$bolDownloadResource	= DBO()->DocumentResource->DownloadFile->Value;
+		
+		$arrColumns 	= Array(	"ResourceId"		=> "DR.Id",
+									"CustomerGroup"		=> "DR.CustomerGroup",
+									"OriginalFilename"	=> "DR.OriginalFilename",
+									"MIMEType"			=> "FT.MIMEType",
+									"Extension"			=> "FT.Extension"
+								);
+		$strFrom		= "DocumentResource AS DR INNER JOIN FileType AS FT ON DR.FileType = FT.Id";
+		$selResource	= new StatementSelect($strFrom, $arrColumns, "DR.Id = <Id>");
+		$mixResult		= $selResource->Execute(Array("Id" => $intResourceId));
+		
+		if ($mixResult === FALSE)
+		{
+			DBO()->Error->Message = "An unexpected error occurred when trying to retrieve the Resource from the database.  Please notify your system administrator";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		elseif ($mixResult == 0)
+		{
+			DBO()->Error->Message = "The resource with Id: $intResourceId, could not be found in the database";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		$arrResource = $selResource->Fetch();
+		
+		$strFilename = SHARED_BASE_PATH . "/template/resource/{$arrResource['CustomerGroup']}/{$intResourceId}.{$arrResource['Extension']}";
+		
+		if (!file_exists($strFilename))
+		{
+			// The file could not be found
+			DBO()->Error->Message = "The file could not be found.  Please notify your system administrator";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// Get the contents of the file
+		$strFileContents = file_get_contents($strFilename);
+		
+		if ($strFileContents === FALSE)
+		{
+			// The file could not be openned
+			DBO()->Error->Message = "The file could not be openned.  Please notify your system administrator";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// Send the file to the user
+		header("Content-Type: {$arrResource['MIMEType']}");
+		if ($bolDownloadResource)
+		{
+			// This will prompt the user to save the file, with its original filename
+			header("Content-Disposition: attachment; filename=\"{$arrResource['OriginalFilename']}\"");
+		}
+		echo $strFileContents;
+		exit;
+	}
+
+
+	//------------------------------------------------------------------------//
+	// UploadDocumentResource
+	//------------------------------------------------------------------------//
+	/**
+	 * UploadDocumentResource()
 	 *
 	 * Handles the uploading of a file to be used as a DocumentResource
 	 * 
@@ -896,9 +987,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 *		TODO! define the other Posted values
 	 *
 	 * @return		void
-	 * @method	ViewDocumentResourceHistory
+	 * @method	UploadDocumentResource
 	 */
-	function UploadResource()
+	function UploadDocumentResource()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -921,7 +1012,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$mixStart			= DBO()->DocumentResource->Start->Value;
 			$mixEnd				= DBO()->DocumentResource->End->Value;
 			
-			$mixResult = $this->_UploadResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd);
+			$mixResult = $this->_UploadDocumentResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd);
 
 			if ($mixResult === TRUE)
 			{
@@ -942,7 +1033,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	}
 
 	// Returns TRUE on success, or an error msg on failure
-	private function _UploadResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd)
+	private function _UploadDocumentResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd)
 	{
 		$strFilename		= $_FILES['ResourceFile']['name'];
 		$strTempFilename	= $_FILES['ResourceFile']['tmp_name'];
@@ -1046,7 +1137,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		else
 		{
-			if (!Validate("ShortDate", $mixStart))
+			if (!Validate("ShortDate", $mixEnd))
 			{
 				return "ERROR: The Ending date is invalid.  It must be in the format dd/mm/yyyy";
 			}
@@ -1087,14 +1178,14 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		if (!RecursiveMkdir($strPath))
 		{
 			TransactionRollback();
-			return "ERROR: Creating the directory failed, unexpectedly.  Please notify your system administrator"; 
+			return "ERROR: Creating the directory structure, for resources belong to this customer group, failed unexpectedly.  Please notify your system administrator"; 
 		}
 		$strDestination = $strPath . "/". $strNewFilename;
 		
-		if (move_uploaded_file($strTempFilename, $strDestination))
+		if (!move_uploaded_file($strTempFilename, $strDestination))
 		{
 			TransactionRollback();
-			return "ERROR: Moving the file to it's destination failed, unexpectedly.  Please notify your system administrator";
+			return "ERROR: Moving the file to its destination failed, unexpectedly.  Please notify your system administrator";
 		}
 
 		// Everything worked

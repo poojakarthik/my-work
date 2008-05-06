@@ -40,7 +40,11 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		
 		$this->LoadJavascript("document_template");
 		$this->LoadJavascript("textarea");
+		$this->LoadJavascript("date_textbox");
 		$this->LoadJavascript("validation");
+		$this->LoadJavascript("table_sort");
+		$this->LoadJavascript("highlight");
+		
 	}
 
 	//------------------------------------------------------------------------//
@@ -93,12 +97,23 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	function RenderNew()
 	{
 		// Prepare data
-		$jsonObjTemplate	= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
-		$jsonObjSchema		= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+		$jsonObjTemplate				= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
+		$jsonObjSchema					= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+		$jsonInsertResourcePopupContent	= Json()->encode($this->_BuildResourceSelectorPopupContent());
+
+		// Build the array of ResourceTypes
+		$arrResourceTypes = Array();
+		foreach (DBL()->DocumentResourceType as $dboResourceType)
+		{
+			$arrResourceTypes[$dboResourceType->Id->Value] = Array(	"PlaceHolder" => $dboResourceType->PlaceHolder->Value,
+																	"TagSignature" => str_replace("[PlaceHolder]", $dboResourceType->PlaceHolder->Value, $dboResourceType->TagSignature->Value)
+																	);
+		}
+		$jsonObjResourceTypes = Json()->encode($arrResourceTypes);
 
 		echo "<!-- START HtmlTemplateDocumentTemplate (rendered in 'NEW' context) -->\n";
 		$this->RenderForm();
-		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseAddPage($jsonObjTemplate, $jsonObjSchema)</script>\n";
+		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseAddPage($jsonObjTemplate, $jsonObjSchema, $jsonObjResourceTypes, $jsonInsertResourcePopupContent)</script>\n";
 		echo "<!-- END HtmlTemplateDocumentTemplate -->\n";	
 	}
 
@@ -117,12 +132,23 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	function RenderEdit()
 	{
 		// Prepare data
-		$jsonObjTemplate	= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
-		$jsonObjSchema		= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+		$jsonObjTemplate				= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
+		$jsonObjSchema					= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+		$jsonInsertResourcePopupContent	= Json()->encode($this->_BuildResourceSelectorPopupContent());
 
+		// Build the array of ResourceTypes
+		$arrResourceTypes = Array();
+		foreach (DBL()->DocumentResourceType as $dboResourceType)
+		{
+			$arrResourceTypes[$dboResourceType->Id->Value] = Array(	"PlaceHolder" => $dboResourceType->PlaceHolder->Value,
+																	"TagSignature" => str_replace("[PlaceHolder]", $dboResourceType->PlaceHolder->Value, $dboResourceType->TagSignature->Value)
+																	);
+		}
+		$jsonObjResourceTypes = Json()->encode($arrResourceTypes);
+		
 		echo "<!-- START HtmlTemplateDocumentTemplate (rendered in 'EDIT' context) -->\n";
 		$this->RenderForm();
-		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseEditPage($jsonObjTemplate, $jsonObjSchema)</script>\n";
+		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseEditPage($jsonObjTemplate, $jsonObjSchema, $jsonObjResourceTypes, $jsonInsertResourcePopupContent)</script>\n";
 		echo "<!-- END HtmlTemplateDocumentTemplate -->\n";	
 	}
 	
@@ -233,7 +259,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 					<option value='immediately'>Immediately</option>
 					<option value='date'>Date</option>
 				</select>
-				<input type='text' id='DocumentTemplate.EffectiveOn' value='$strEffectiveOn' maxlength='10' style='visibility:hidden;display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
+				<input type='text' id='DocumentTemplate.EffectiveOn' InputMask='ShortDate' value='$strEffectiveOn' maxlength='10' style='visibility:hidden;display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
 			</div>
 		</div>
 	</div>
@@ -242,7 +268,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 
 	<div class='ButtonContainer'>
 		<div class='Left'>
-			<input type='button' id='ButtonInsertImage' class='InputSubmit' value='Insert Image' onclick='Vixen.DocumentTemplate.InsertImage()'></input>
+			<input type='button' id='ButtonInsertImage' class='InputSubmit' value='Insert Resource' onclick='Vixen.DocumentTemplate.InsertResource()'></input>
 			<input type='button' id='ButtonBuildPDF' class='InputSubmit' value='Build PDF' onclick='Vixen.DocumentTemplate.BuildSamplePDF()'></input>
 		</div>
 		<div class='Right'>
@@ -253,6 +279,55 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 </div>
 <div class='Separator'></div>\n";
 	}
+	
+	
+	//------------------------------------------------------------------------//
+	// _BuildResourceSelectorPopupContent
+	//------------------------------------------------------------------------//
+	/**
+	 * _BuildResourceSelectorPopupContent()
+	 *
+	 * Builds the html required for the Resource Selector Popup, which is displayed when the "Insert Resource" button is used on this form
+	 *
+	 * Builds the html required for the Resource Selector Popup, which is displayed when the "Insert Resource" button is used on this form
+	 * Returns the code required of the Resource Selector popup, which will be stored in DOM memory, for when it is needed
+	 * 
+	 * @return	string		Html content for the popup
+	 * @method
+	 */
+	private function _BuildResourceSelectorPopupContent()
+	{
+		// Build the Table listing all the available ResourceTypes
+		Table()->ResourceType->SetHeader("Resource Type", "Description");
+		Table()->ResourceType->SetWidth("40%", "60%");
+		Table()->ResourceType->SetAlignment("Left", "Left");
+		Table()->ResourceType->SetSortable(TRUE);
+		Table()->ResourceType->SetSortFields("PlaceHolder", "Description");
+		Table()->ResourceType->SetPageSize(10);
+		Table()->ResourceType->RowHighlighting = TRUE;
+		
+		foreach (DBL()->DocumentResourceType as $dboResourceType)
+		{
+			Table()->ResourceType->AddRow($dboResourceType->PlaceHolder->Value, htmlspecialchars($dboResourceType->Description->Value, ENT_QUOTES));
+			Table()->ResourceType->SetOnClick("Vixen.DocumentTemplate.InsertResource({$dboResourceType->Id->Value})");
+		}
+
+		ob_start();
+		echo "
+<div id='PopupPageBody'>\n";
+		Table()->ResourceType->Render();
+		
+		echo "
+	<div class='ButtonContainer'>
+		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='float:right'></input>
+	</div>
+</div>
+				";
+
+		$strPopupContent = ob_get_clean();
+		return $strPopupContent;
+	}
+	
 	
 }
 

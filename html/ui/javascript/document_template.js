@@ -46,17 +46,22 @@ function VixenDocumentTemplateClass()
 	this.objSchema			= null;
 	this.elmSourceCode		= null;
 	this.elmDescription		= null;
+	this.arrResourceTypes	= null;
 	this.objEffectiveOn		= {};
+	
+	this.strInsertResourcePopupContent = null;
 
 	// Handles intialisation processes that should be carried out regardless of it if is for adding a new one, or editing an existing one, or view one
-	this.Initialise = function(objTemplate, objSchema)
+	this.Initialise = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent)
 	{
-		this.objTemplate				= objTemplate;
-		this.objSchema					= objSchema;
-		this.elmSourceCode				= $ID("DocumentTemplate.Source");
-		this.elmDescription				= $ID("DocumentTemplate.Description");
-		this.objEffectiveOn.elmCombo	= $ID("EffectiveOnCombo");
-		this.objEffectiveOn.elmTextbox	= $ID("DocumentTemplate.EffectiveOn");
+		this.objTemplate					= objTemplate;
+		this.objSchema						= objSchema;
+		this.elmSourceCode					= $ID("DocumentTemplate.Source");
+		this.elmDescription					= $ID("DocumentTemplate.Description");
+		this.objEffectiveOn.elmCombo		= $ID("EffectiveOnCombo");
+		this.objEffectiveOn.elmTextbox		= $ID("DocumentTemplate.EffectiveOn");
+		this.strInsertResourcePopupContent	= strInsertResourcePopupContent;
+		this.arrResourceTypes				= arrResourceTypes;
 		
 		// Register tab handler for the textarea
 		Event.startObserving(this.elmSourceCode, "keydown", TextAreaTabListener, true);
@@ -71,9 +76,9 @@ function VixenDocumentTemplateClass()
 		this.elmSourceCode.selectionStart = this.elmSourceCode.selectionEnd = 0;
 	}
 
-	this.InitialiseAddPage = function(objTemplate, objSchema)
+	this.InitialiseAddPage = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent)
 	{
-		this.Initialise(objTemplate, objSchema);
+		this.Initialise(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent);
 		
 		// Null the things that should be null when the template is new
 		this.objTemplate.Id				= null;
@@ -81,12 +86,11 @@ function VixenDocumentTemplateClass()
 		this.objTemplate.EffectiveOn	= null;
 		this.objTemplate.CreatedOn		= null;
 		this.objTemplate.Version		= null;
-		
 	}
 	
-	this.InitialiseEditPage = function(objTemplate, objSchema)
+	this.InitialiseEditPage = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent)
 	{
-		this.Initialise(objTemplate, objSchema);
+		this.Initialise(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent);
 		
 		// Check if there has been a newer version of the document template schema since this doc template was last saved
 		if (objSchema.Id != objTemplate.TemplateSchema)
@@ -196,6 +200,38 @@ function VixenDocumentTemplateClass()
 			this.objEffectiveOn.elmTextbox.style.visibility	= "hidden";
 			this.objEffectiveOn.elmTextbox.style.display	= "none";
 		}
+	}
+	
+	// This will insert the appropriate tag into the template, to reference the selected resource
+	this.InsertResource = function(intResourceType)
+	{
+		if (intResourceType == undefined)
+		{
+			// Show the Resource Type selector popup
+			Vixen.Popup.Create("InsertResourcePopup", this.strInsertResourcePopupContent, "large", "centre", "modal", "Insert Resource Place Holder");	
+			return;
+		}
+		
+		// The user has declared a resource place holder to insert into the document
+		Vixen.Popup.Close("InsertResourcePopup");
+		
+		if (!this.arrResourceTypes[intResourceType])
+		{
+			return;
+		}
+		
+		// Insert the tag
+		var intSelStart		= this.elmSourceCode.selectionStart;
+		var intSelEnd		= this.elmSourceCode.selectionEnd;
+		var intScrollTop	= this.elmSourceCode.scrollTop;
+		var strPre			= this.elmSourceCode.value.slice(0, intSelStart);
+		var strPost			= this.elmSourceCode.value.slice(intSelEnd, this.elmSourceCode.value.length);
+		
+		this.elmSourceCode.value			= strPre + this.arrResourceTypes[intResourceType].TagSignature + strPost;
+		this.elmSourceCode.selectionStart	= intSelStart;
+		this.elmSourceCode.selectionEnd		= intSelStart + this.arrResourceTypes[intResourceType].TagSignature.length;
+		
+		
 	}
 
 }

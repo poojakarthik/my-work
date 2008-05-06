@@ -2624,14 +2624,14 @@ class AppTemplateService extends ApplicationTemplate
 				$strEarliestCreatedOnDate = $arrServiceRatePlan['CreatedOn'];
 				
 				// Find all ServiceRateGroup records that were created at or after $strEarliestCreatedOnDate
-				$arrColumns	= Array("Id" => "SRG.Id",
-									"CreatedOn" => "SRG.CreatedOn",
-									"StartDatetime" => "SRG.StartDatetime",
-									"EndDatetime" => "SRG.EndDatetime",
-									"RateGroupId" => "RG.Id",
-									"RecordType" => "RG.RecordType",
-									"Fleet" => "RG.Fleet",
-									"Archived" => "RG.Archived"	
+				$arrColumns	= Array("Id"			=> "SRG.Id",
+									"CreatedOn"		=> "SRG.CreatedOn",
+									"StartDatetime"	=> "SRG.StartDatetime",
+									"EndDatetime"	=> "SRG.EndDatetime",
+									"RateGroupId"	=> "RG.Id",
+									"RecordType"	=> "RG.RecordType",
+									"Fleet"			=> "RG.Fleet",
+									"Archived"		=> "RG.Archived"	
 									);
 				$strWhere	= "SRG.Service=<Service> AND RG.RecordType=<RecordType> AND ADDTIME(SRG.CreatedOn, SEC_TO_TIME(5)) > <EarliestCreatedOn> AND SRG.StartDatetime < SRG.EndDatetime AND SRG.Id != <RateGroupToRemove> AND RG.Fleet = 0 AND RG.Archived = 0";
 				$strTables	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";

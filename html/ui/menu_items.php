@@ -199,8 +199,9 @@ class MenuItems
 	 * 
 	 * @param	int		$intCustomerGroup		id of the CustomerGroup
 	 * @param	int		$intResourceType		id of the DocumentResourceType to add a new resource to
+	 * @param	int		$strResourceTypeName	Name of the resource type (gets displayed in the popup's title bar)
 	 *
-	 * @return	string				Href to trigger the functionality
+	 * @return	string							Href to trigger the functionality
 	 * @method
 	 */
 	function AddDocumentResource($intCustomerGroup, $intResourceType, $strResourceTypeName)
@@ -212,6 +213,59 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddDocumentResourcePopup\", \"large\", \"New Resource - $strResourceTypeName\", \"CustomerGroup\", \"AddDocumentResource\", $strJsonCode, \"modal\")";
 	}
+	
+	//------------------------------------------------------------------------//
+	// ViewDocumentResource
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewDocumentResource()
+	 *
+	 * Compiles the Href to be executed when the ViewDocumentResource menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewDocumentResource menu item is triggered
+	 * 
+	 * @param	int		$intResourceId		id of the DocumentResource to view
+	 * @param	bool	$bolDownloadFile	optional, defaults to FALSE, if set to TRUE
+	 *										then the user will be prompted to save the file
+	 *										or choose a program to open it with
+	 *										If set to false, the resource will be sent to the
+	 *										browser with its MIME type declared and the browser
+	 *										will display it however it does for files of this 
+	 *										MIME type
+	 *
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ViewDocumentResource($intResourceId, $bolDownloadFile=FALSE)
+	{
+		$strDownload = "";
+		if ($bolDownloadFile)
+		{
+			$strDownload = "&DocumentResource.DownloadFile=TRUE";
+		}
+		return "flex.php/CustomerGroup/ViewDocumentResource/?DocumentResource.Id=$intResourceId{$strDownload}";
+	}
+	
+	//------------------------------------------------------------------------//
+	// ViewDocumentResources
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewDocumentResources()
+	 *
+	 * Compiles the Href to be executed when the ViewDocumentResources menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewDocumentResources menu item is triggered
+	 * 
+	 * @param	int		$intCustomerGroup	id of the CustomerGroup to view the resources of
+	 *
+	 * @return	string						Href to trigger the functionality
+	 * @method
+	 */
+	function ViewDocumentResources($intCustomerGroup)
+	{
+		return "flex.php/CustomerGroup/ViewDocumentResources/?CustomerGroup.Id=$intCustomerGroup";
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// ViewAllCustomerGroups

@@ -110,8 +110,6 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 	{
 		$intCustomerGroup		= DBO()->CustomerGroup->Id->Value;
 		$arrResourceTypes		= DBO()->DocumentResourceTypes->AsArray->Value;
-		$arrFileTypes			= DBO()->FileTypes->AsArray->Value;
-		$intPropertyValueLeft	= 120;
 		
 		// Build the Table listing all the available ResourceTypes
 		Table()->ResourceType->SetHeader("Resource Type", "Description");
@@ -125,15 +123,14 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 		foreach ($arrResourceTypes as $arrResourceType)
 		{
 			Table()->ResourceType->AddRow($arrResourceType['PlaceHolder'], htmlspecialchars($arrResourceType['Description'], ENT_QUOTES));
-			Table()->ResourceType->SetOnClick("Vixen.DocumentResourceManagement.ShowHistory({$arrResourceType['Id']})");
+			Table()->ResourceType->SetOnClick("Vixen.DocumentResourceManagement.ShowHistory({$arrResourceType['Id']}, false)");
 		}
-		
+
+		echo "\n<!-- START HtmlTemplateDocumentResourceManagement -->\n";		
 		Table()->ResourceType->Render();
 		
 		echo	"
-<!-- START HtmlTemplateDocumentResourceManagement -->
 <div class='SmallSeparator'></div>
-
 <div id='Container_ResourceHistory' style='width:100%;'></div>
 <script type='text/javascript'>Vixen.DocumentResourceManagement.Initialise($intCustomerGroup)</script>
 <!-- END HtmlTemplateDocumentResourceManagement -->
@@ -162,18 +159,19 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 		$strPlaceHolder = DBO()->DocumentResourceType->PlaceHolder->Value;
 		
 		// Build the code to draw the "Upload New Resource" button, but only if the user has permission to
+		$bolUserCanEdit = AuthenticatedUser()->UserHasPerm(DBO()->DocumentResourceType->PermissionRequired->Value);
 		$strAddResourceButtonHtml = "";
-		if (AuthenticatedUser()->UserHasPerm(DBO()->DocumentResourceType->PermissionRequired->Value))
+		if ($bolUserCanEdit)
 		{
 			$strHref = Href()->AddDocumentResource(DBO()->CustomerGroup->Id->Value, DBO()->DocumentResourceType->Id->Value, $strPlaceHolder);
 			$strHref = htmlspecialchars($strHref, ENT_QUOTES);
-			$strAddResourceButtonHtml = "\n<input type='button' value='Upload New' onClick='$strHref'></input>\n";
+			$strAddResourceButtonHtml = "<input type='button' value='Upload New' onClick='$strHref'></input>";
 		}
 		
 		// Build the Table listing all the available ResourceTypes
-		Table()->Resources->SetHeader("Uploaded", "File Name", "Effective", "&nbsp;", "&nbsp;");
-		Table()->Resources->SetWidth("10%", "68%", "10%", "2%", "10%");
-		Table()->Resources->SetAlignment("Left", "Left", "Left", "Center", "Left");
+		Table()->Resources->SetHeader("Uploaded", "File Name", "Effective", "&nbsp;", "&nbsp;", "&nbsp");
+		Table()->Resources->SetWidth("10%", "60%", "10%", "2%", "10%", "8%");
+		Table()->Resources->SetAlignment("Left", "Left", "Left", "Center", "Left", "Right");
 		
 		// Sorting functionality cannot currently handle sorting dates in the format "dd/mm/yyyy" 
 		// as you can't just do a string comparison. Currently the pagination funcationality only works
@@ -202,10 +200,16 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 			
 			//TODO! make sure you draw a line through those that are completely overridden
 			
+			//TODO! add delete functionality
+			
 			$strFilename = htmlspecialchars($arrResource['OriginalFilename']);
 			
-			Table()->Resources->AddRow($strCreatedOn, $strFilename, $strStart, "-", $strEnd);
-			Table()->Resources->SetOnClick("Vixen.DocumentResourceManagement.ShowResource({$arrResource['Id']})");
+			$strView		= "<a href='". Href()->ViewDocumentResource($arrResource['Id']) ."' title='View Resource'><img src='img/template/view.png'></img></a>";
+			$strDownload	= "<a href='". Href()->ViewDocumentResource($arrResource['Id'], TRUE) ."' title='Download Resource'><img src='img/template/download.png'></img></a>";
+			
+			
+			
+			Table()->Resources->AddRow($strCreatedOn, $strFilename, $strStart, "-", $strEnd, $strView . $strDownload);
 		}
 		if (count($arrResources) == 0)
 		{

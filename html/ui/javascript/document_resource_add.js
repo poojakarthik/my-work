@@ -100,6 +100,11 @@ function VixenDocumentResourceAddClass()
 				return false;
 			}
 			
+			if (this.objStart.elmCombo.value == 'immediate')
+			{
+				var strImmediateClause = "<br /><br />Because this resource will come into effect immediately, it cannot be deleted once it has been uploaded.";
+			}
+			
 			// Prompt the user
 			Vixen.Popup.Confirm("Are you sure you want to upload this file?", function(){this.Upload(true);}.bind(this));
 			return;
@@ -125,6 +130,18 @@ function VixenDocumentResourceAddClass()
 		if (bolSuccess)
 		{
 			$Alert("The upload was successful");
+			
+			// Trigger an update of anything interested in the fact that a new resource has been added
+			// (this has to be run in a separate thread otherwise the ajax request 
+			// made to update the Resource History table throws an error)
+			// If the popup isn't closed, then the error doesn't occur, which is odd
+			var objData = 	{	CustomerGroup	: this.intCustomerGroup,
+								ResourceType	: this.intResourceType
+							};
+			setTimeout(function(){Vixen.EventHandler.FireEvent("OnNewDocumentResource", objData)}, 1);
+			
+			// Close the popup 
+			Vixen.Popup.Close("AddDocumentResourcePopup");
 		}
 		else
 		{

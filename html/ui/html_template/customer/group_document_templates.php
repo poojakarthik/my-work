@@ -35,8 +35,8 @@ class HtmlTemplateCustomerGroupDocumentTemplates extends HtmlTemplate
 	 */
 	function __construct($intContext, $strId)
 	{
-		$this->_intContext = $intContext;
-		$this->_strContainerDivId = $strId;
+		$this->_intContext			= $intContext;
+		$this->_strContainerDivId	= $strId;
 		
 		$this->LoadJavascript("highlight");
 	}
@@ -88,6 +88,14 @@ class HtmlTemplateCustomerGroupDocumentTemplates extends HtmlTemplate
 		
 		Table()->DocumentTemplate->RowHighlighting = TRUE;
 		Table()->DocumentTemplate->Render();
+		
+		// Draw the button to link to the "View Document Resources" page
+		$strViewDocumentResourceLink = htmlspecialchars(Href()->ViewDocumentResources(DBO()->CustomerGroup->Id->Value), ENT_QUOTES);
+		echo "
+<div class='ButtonContainer'>
+	<input type='button' value='View Document Resources' onClick='window.location = \"$strViewDocumentResourceLink\"' style='float:right'></input>
+</div>
+			";
 	}
 }
 

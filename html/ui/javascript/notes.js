@@ -28,7 +28,7 @@
 // Note related constants (this should be moved to definitions.js (which doesn't exist yet) and only be given scope within the Vixen object)
 if (SYSTEM_NOTE_TYPE == undefined)
 {
-	var SYSTEM_NOTE_TYPE = 7;
+	var SYSTEM_NOTE_TYPE	= 7;
 	
 	var NOTE_FILTER_ALL		= 1;
 	var NOTE_FILTER_USER	= 2;

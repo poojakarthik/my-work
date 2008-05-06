@@ -136,7 +136,7 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 		<input type='text' id='DocumentResource.End' value='' maxlength='10' style='display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
 	</div>
 
-	<iframe src='flex.php/CustomerGroup/UploadResource/?DocumentResource.Type=$intResourceType&DocumentResource.CustomerGroup=$intCustomerGroup' style='width:100%;height:25px' frameborder='0' id='FrameUploadResource' name='FrameUploadResource'></iframe>
+	<iframe src='flex.php/CustomerGroup/UploadDocumentResource/?DocumentResource.Type=$intResourceType&DocumentResource.CustomerGroup=$intCustomerGroup' style='width:100%;height:25px' frameborder='0' id='FrameUploadResource' name='FrameUploadResource'></iframe>
 
 </div>
 <div class='ButtonContainer'>
@@ -181,7 +181,7 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 		
 		echo "
 <!-- START HtmlTemplateDocumentResourceManagement (File Upload Component) -->
-<form enctype='multipart/form-data' action='flex.php/CustomerGroup/UploadResource/' method='POST'>
+<form enctype='multipart/form-data' action='flex.php/CustomerGroup/UploadDocumentResource/' method='POST'>
 
 	<input type='hidden' name='VixenFormId' value='ImportResource'></input>
 	<input type='hidden' name='MAX_FILE_SIZE' value='" . RESOURCE_FILE_MAX_SIZE . "'></input>

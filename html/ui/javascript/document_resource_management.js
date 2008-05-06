@@ -53,18 +53,25 @@ function VixenDocumentResourceManagementClass()
 		this.intCustomerGroup		= intCustomerGroup;
 		this.elmHistoryContainer	= $ID("Container_ResourceHistory");
 		
-		// TODO! Register the listener for the NewResourceHistory event
+		// Register the listener for the OnNewDocumentResource event
+		Vixen.EventHandler.AddListener("OnNewDocumentResource", this.UpdateResourceHistory.bind(this));
 	}
 
 	// Loads the history of a resource
-	this.ShowHistory = function(intResourceType, bolShowSplash)
+	// If bolIsRefresh is set to true, then the splash isn't shown, and it will reload the history even if it is the one currently displayed
+	this.ShowHistory = function(intResourceType, bolIsRefresh)
 	{
-		bolShowSplash = (bolShowSplash == undefined)? true : bolShowSplash;
+		bolIsRefresh = (bolIsRefresh == undefined)? true : bolIsRefresh;
 	
-		if (this.intDisplayedResourceType == intResourceType)
+		if (!bolIsRefresh)
 		{
-			// We are already displaying this ResourceType
-			return;
+			if (this.intDisplayedResourceType == intResourceType)
+			{
+				// We are already displaying this ResourceType
+				return;
+			}
+			
+			Vixen.Popup.ShowPageLoadingSplash("Retrieving History");
 		}
 		
 		// Compile data to be sent to the server
@@ -75,10 +82,6 @@ function VixenDocumentResourceManagementClass()
 										}
 						};
 		
-		if (bolShowSplash)
-		{
-			Vixen.Popup.ShowPageLoadingSplash("Retrieving History");
-		}
 		Vixen.Ajax.CallAppTemplate("CustomerGroup", "GetDocumentResourceHistory", objData, null, false, true, this.ShowHistoryReturnHandler.bind(this));
 	}
 	
@@ -95,8 +98,18 @@ function VixenDocumentResourceManagementClass()
 	// This will display the actual resource in some way
 	this.ShowResource = function(intResourceId)
 	{
-		//TODO! Just have it download the resource
+		//TODO! Just have it download the resource in a new window/tab
 		$Alert("TODO! Just have it download the resource");
+	}
+	
+	// Reloads the Resource History table if it is currently displaying the 
+	this.UpdateResourceHistory = function(objEvent)
+	{
+		if (objEvent.Data.CustomerGroup == this.intCustomerGroup && objEvent.Data.ResourceType == this.intDisplayedResourceType)
+		{
+			// Reload the History
+			this.ShowHistory(objEvent.Data.ResourceType, true);
+		}
 	}
 }
 
