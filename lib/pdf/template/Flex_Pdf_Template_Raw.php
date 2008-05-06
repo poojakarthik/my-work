@@ -50,6 +50,8 @@ class Flex_Pdf_Template_Raw extends Flex_Pdf_Template_Image
 
 	function renderOnPage($page, $parent=NULL)
 	{
+		$this->renderAsLinkTarget($page);
+
 		if ($this->rawData !== "")
 		{
 			$page->drawRawContent($this->rawData);

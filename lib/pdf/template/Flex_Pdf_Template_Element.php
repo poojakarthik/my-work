@@ -12,6 +12,8 @@ abstract class Flex_Pdf_Template_Element
 	private $_bolInGetWidth = FALSE;
 
 	private $_bolSuitableForTargetMedia = NULL;
+	
+	private $_strLinkTargetName = NULL;
 
 	public function __construct($domNode, $parentElement)
 	{
@@ -23,6 +25,11 @@ abstract class Flex_Pdf_Template_Element
 		if (!$this->includeForCurrentMedia())
 		{
 			return;
+		}
+		
+		if ($domNode->hasAttribute('id'))
+		{
+			$this->_strLinkTargetName = $domNode->getAttribute('id');
 		}
 
 		$this->initialize();
@@ -81,6 +88,23 @@ abstract class Flex_Pdf_Template_Element
 
 	abstract function renderOnPage($page, $parent=NULL);
 
+	protected function renderAsLinkTarget($page)
+	{
+		if ($this->isLinkTarget() && $this->getTemplate()->getTargetMedia() != Flex_Pdf_Style::MEDIA_PRINT)
+		{
+			$page->drawLinkTo($this->_strLinkTargetName, $this->getPreparedAbsTop(), $this->getPreparedAbsLeft());
+		}
+	}
+	
+	public function isLinkTarget()
+	{
+		return $this->_strLinkTargetName !== NULL;
+	}
+	
+	public function getLinkTargetName()
+	{
+		return $this->_strLinkTargetName;
+	}
 
 	public function appendToDom($doc, $parentNode, $parent=NULL)
 	{

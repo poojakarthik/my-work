@@ -6,6 +6,7 @@ require_once "pdf/template/Flex_Pdf_Template_Image.php";
 require_once "pdf/template/Flex_Pdf_Template_Barcode.php";
 require_once "pdf/template/Flex_Pdf_Template_Paragraph.php";
 require_once "pdf/template/Flex_Pdf_Template_Span.php";
+require_once "pdf/template/Flex_Pdf_Template_Link.php";
 require_once "pdf/template/Flex_Pdf_Template_Page_Wrap_Include.php";
 require_once "pdf/template/Flex_Pdf_Template_Stationery.php";
 require_once "pdf/template/Flex_Pdf_Template_Raw.php";
@@ -49,6 +50,7 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 					// BR elements shouldn't be at this level, they should only be in SPAN elements.
 					$node = $this->wrapNode($node, "span");
 					// This still isn't right, so let's go to the next case to sort it out...
+				case "A":
 				case "SPAN":
 					// Span elements shouldn't be at this level, they should only be in P elements.
 					$node = $this->wrapNode($node, "p");

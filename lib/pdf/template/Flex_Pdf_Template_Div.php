@@ -28,6 +28,7 @@ class Flex_Pdf_Template_Div extends Flex_Pdf_Template_Element
 					// BR elements shouldn't be at this level, they should only be in SPAN elements.
 					$node = $this->wrapNode($node, "span");
 					// This still isn't right, so let's go to the next case to sort it out...
+				case "A":
 				case "SPAN":
 					// Span elements shouldn't be at this level, they should only be in P elements.
 					$node = $this->wrapNode($node, "p");
@@ -80,6 +81,8 @@ class Flex_Pdf_Template_Div extends Flex_Pdf_Template_Element
 	{
 		// To render a border, we need to know how tall this div was. That could depend on the size of the contents.
 		$page->drawBackground($this);
+		
+		$this->renderAsLinkTarget($page);
 
 		$childElements = $this->getChildElements();
 		for ($i = 0, $l = count($childElements); $i < $l; $i++)

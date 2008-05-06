@@ -1,7 +1,7 @@
 <?php
 
 require_once "barcode/Flex_Barcode.php";
-require_once "pdf/template/resource/Flex_Pdf_Resource_Image_Png.php";
+require_once "pdf/resource/image/Flex_Pdf_Resource_Image_Png.php";
 
 class Flex_Pdf_Template_Barcode extends Flex_Pdf_Template_Image
 {

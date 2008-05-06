@@ -1,6 +1,6 @@
 <?php
 
-//require_once "pdf/resource/Flex_Pdf_Resource_Image_SVG.php";
+//require_once "pdf/resource/image/Flex_Pdf_Resource_Image_SVG.php";
 
 class Flex_Pdf_Template_Image extends Flex_Pdf_Template_Element
 {
@@ -89,6 +89,8 @@ class Flex_Pdf_Template_Image extends Flex_Pdf_Template_Element
 	function renderOnPage($page, $parent=NULL)
 	{
 		$page->drawBackground($this);
+
+		$this->renderAsLinkTarget($page);
 
 		if (!$this->objImage)
 		{

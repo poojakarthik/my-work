@@ -25,12 +25,17 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 			switch (strtoupper($node->tagName))
 			{
 				case "BR":
-					// BR elements shouldn't be at this level, they should only be in SPAN elements.
+					// BR elements shouldn't be at this level, they should only be in SPAN or LINK elements.
 					$node = $this->wrapNode($node, "span");
 					// This still isn't right, so let's go to the next case to sort it out...
 				case "SPAN":
-					// Span elements shouldn't be at this level, they should only be in text elements.
+					// Span elements can be at this level.
 					$child = new Flex_Pdf_Template_Span($node, $this);
+					break;
+
+				case "A":
+					// A elements can also be at this level.
+					$child = new Flex_Pdf_Template_Link($node, $this);
 					break;
 
 				default:
@@ -108,6 +113,8 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 
 	function renderOnPage($page, $parent=NULL)
 	{
+		$this->renderAsLinkTarget($page);
+
 		// To render the text we need to know the top and left position of this paragraph
 		$top = $this->getPreparedAbsTop();
 		$left = $this->getPreparedAbsLeft();
@@ -185,6 +192,24 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 
 				$page->drawText($drawY, $drawX, $strings[$i], $widths[$i], $this->getStyle());
 
+				// If the span is a link target...
+				if ($i === 0 && $childElements[$c]->isLinkTarget())
+				{
+					$childElements[$c]->preparedAbsTop = $drawY;
+					$childElements[$c]->preparedAbsLeft = $drawX;
+					$childElements[$c]->renderAsLinkTarget($page);
+				}
+				
+				// If the element is a link to somewhere else...
+				if ($childElements[$c] instanceof Flex_Pdf_Template_Link)
+				{
+					$childElements[$c]->preparedAbsTop = $drawY;
+					$childElements[$c]->preparedAbsLeft = $drawX;
+					$childElements[$c]->preparedWidth = $widths[$i];
+					$childElements[$c]->preparedHeight = $lineHeight;
+					$childElements[$c]->renderAsLink($page);
+				}
+			
 				$usedWidth += $strW;
 
 				// If we might not be rendering everything...

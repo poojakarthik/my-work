@@ -130,6 +130,7 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 
 			switch (strtoupper($node->tagName))
 			{
+				case "A":
 				case "SPAN":
 					// Span elements shouldn't be at this level, they should only be in P elements.
 					$node = $this->wrapNode($node, "P");

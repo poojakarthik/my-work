@@ -52,9 +52,10 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 					$textContent .= "<<pc>>";
 					break;
 
+				case "A":
 				case "SPAN":
-					// Span elements shouldn't be at this level, they should only be in the level above
-					// In effect, a nested span splits the parent span (the one we are in) into 3 spans!
+					// Span and A elements shouldn't be at this level, they should only be in the level above
+					// In effect, a nested span/a splits the parent span/a (the one we are in) into 3 spans/as!
 					// It would be nice if we could handle this.
 					break;
 
@@ -107,7 +108,7 @@ class Flex_Pdf_Template_Span extends Flex_Pdf_Template_Element
 	function renderOnPage($page, $parent=NULL)
 	{
 		// Span rendering is currently handled by the paragraph object.
-		// Bit messy - could do with improving this a sit makes rendring border/background a bit tricky.
+		// Bit messy - could do with improving this as it makes rendring border/background a bit tricky.
 	}
 
 	public function clearTemporaryDetails()
