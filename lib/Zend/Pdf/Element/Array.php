@@ -45,7 +45,7 @@ class Zend_Pdf_Element_Array extends Zend_Pdf_Element
      *
      * @var Zend_Pdf_PhpArray
      */
-    private $_items;
+    protected $_items;
 
 
     /**
