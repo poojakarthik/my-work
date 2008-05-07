@@ -596,7 +596,7 @@
 	 */ 
 	function Debug()
 	{
-		if ((defined(USER_NAME)) && (USER_NAME != "Intranet_app"))
+		if (defined("USER_NAME") && (USER_NAME != "Intranet_app"))
 		{
 			Debug($this->Error(), 'console');
 		}
