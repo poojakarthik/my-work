@@ -1,11 +1,7 @@
 <?php
 
-// If the SHARED_BASE_PATH has not been defined (i.e. If this is being used outside of Flex)...
-if (!defined('SHARED_BASE_PATH'))
-{
-	define("SHARED_BASE_PATH", realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR));
-	set_include_path(get_include_path() . PATH_SEPARATOR . SHARED_BASE_PATH);
-}
+// Add the lib directory to the include path, as it is required for the Zend library
+set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR));
 
 require_once "Zend/Pdf.php";
 require_once "pdf/Flex_Pdf_Template.php";
