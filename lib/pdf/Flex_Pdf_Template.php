@@ -159,7 +159,7 @@ class Flex_Pdf_Template
 	 * This function is intended for internal use only.
 	 * 
 	 * @param $intCustomerGroupId 			integer Customer group Id
-	 * @param $strEffectiveDate 			String 	Effective date in db format "YYYY-MM-DD hh:ii:ss"
+	 * @param $mxdEffectiveDate 			mixed 	Effective date in db format "YYYY-MM-DD hh:ii:ss" or as Unix timestamp
 	 * @param $mxdDocumentTypeIdOrXSLString mixed 	Integer DocumentType::Id or String containing the XSLT document
 	 * 												Can be NULL if $bolTransformXML is FALSE
 	 * @param $strXmlData 					String 	containing data for document in XML format. 
@@ -172,8 +172,18 @@ class Flex_Pdf_Template
 	 * 
 	 * @return void
 	 */
-	public function __construct($intCustomerGroupId, $strEffectiveDate, $mxdDocumentTypeIdOrXSLString, $strXmlData=NULL, $intTargetMedia=Flex_Pdf_Style::MEDIA_ALL, $bolTransformXML=TRUE)
+	public function __construct($intCustomerGroupId, $mxdEffectiveDate, $mxdDocumentTypeIdOrXSLString, $strXmlData=NULL, $intTargetMedia=Flex_Pdf_Style::MEDIA_ALL, $bolTransformXML=TRUE)
 	{
+		// Convert the effective date to a string date
+		if (is_numeric($mxdEffectiveDate))
+		{
+			$strEffectiveDate = date("Y-m-d H:i:s", intval($mxdEffectiveDate));
+		}
+		else
+		{
+			$strEffectiveDate = strval($mxdEffectiveDate);
+		}
+		
 		// Get a resource manager for locating file resources
 		$this->_objResourceManager = Flex_Pdf_Resource_Manager::getResourceManager($intCustomerGroupId, $strEffectiveDate);
 		
