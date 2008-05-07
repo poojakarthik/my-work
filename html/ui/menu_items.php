@@ -213,7 +213,34 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddDocumentResourcePopup\", \"large\", \"New Resource - $strResourceTypeName\", \"CustomerGroup\", \"AddDocumentResource\", $strJsonCode, \"modal\")";
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// ViewDocumentTemplateSamplePDF
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewDocumentTemplateSamplePDF()
+	 *
+	 * Compiles the Href to be executed when the View Document Template Sample PDF menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the View Document Template Sample PDF menu item is triggered
+	 * 
+	 * @param	int		$intCustomerGroup		optional, defaults to NULL, id of the CustomerGroup
+	 * @param	int		$intTemplateType		optional, defaults to NULL, id of the DocumentTemplateType to build a pdf of
+	 *
+	 * @return	string							Href to trigger the functionality
+	 * @method
+	 */
+	function ViewDocumentTemplateSamplePDF($intCustomerGroup=NULL, $intTemplateType=NULL)
+	{
+		// Setup data to send
+		$arrData['CustomerGroup']['Id']			= $intCustomerGroup;
+		$arrData['DocumentTemplateType']['Id']	= $intTemplateType;
+		
+		$strJsonCode = Json()->encode($arrData);
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewDocumentTemplateSamplePDFPopup\", \"medium\", \"Sample PDF\", \"CustomerGroup\", \"ViewSamplePDF\", $strJsonCode, \"modal\")";
+	}
+
+
 	//------------------------------------------------------------------------//
 	// ViewDocumentResource
 	//------------------------------------------------------------------------//

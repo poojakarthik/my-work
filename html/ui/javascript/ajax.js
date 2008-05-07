@@ -497,7 +497,8 @@ function VixenAjaxClass()
 						break;
 					case "Page":
 						//FIX ME! This looks like it's working properly, but if you reload the page, none of the styling is loaded
-						objDoc = document.open("text/html", "replace");
+						//objDoc = document.open("text/html", "replace");
+objDoc = document.open("application/pdf", "replace");						
 						objDoc.write(strReply);
 						objDoc.close();
 						break;

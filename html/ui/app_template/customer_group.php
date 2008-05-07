@@ -1032,6 +1032,115 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		return TRUE;
 	}
 
+	//------------------------------------------------------------------------//
+	// ViewSamplePDF
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewSamplePDF()
+	 *
+	 * Produces the "Sample PDF" popup
+	 * 
+	 * Produces the "Sample PDF" popup
+	 * It can have the following values declared, although they are both optional:
+	 *	DBO()->CustomerGroup->Id			Id of the customer group
+	 *	DBO()->DocumentTemplateType->Id		Id of the DocumentTemplateType to produce a pdf of
+	 *
+	 * @return	void
+	 * @method	ViewSamplePDF
+	 */
+	function ViewSamplePDF()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		// Load all Customer Groups
+		DBL()->CustomerGroup->OrderBy("InternalName ASC");
+		DBL()->CustomerGroup->Load();
+		
+		// Load all the Document Template Types
+		DBL()->DocumentTemplateType->OrderBy("Name");
+		DBL()->DocumentTemplateType->Load();
+		
+		
+		// Load the page template
+		$this->LoadPage('ViewSamplePDF');
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// BuildSamplePDF
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildSamplePDF()
+	 *
+	 * Produces a sample pdf based on a Document Template
+	 * 
+	 * Produces a sample pdf based on a Document Template
+	 * It must have the following values declared:
+	 * either:
+	 * 	DBO()->DocumentTemplateType->Id		Id of the DocumentTemplateType
+	 * 	DBO()->CustomerGroup->Id			Id of the CustomerGroup
+	 *  DBO()->Generation->Date				Hypothetical date on which the PDF will be generated (dd/mm/yyyy)
+	 *	DBO()->Generation->Time				Hypothetical time on which the PDF will be generated (hh:mm:ss)
+	 *	(The appropriate DocumentTemplateType will be found and used)
+	 * OR
+	 *	DBO()->DocumentTemplate->Id			Id of the DocumentTemplate to use
+	 *  DBO()->Generation->Date				Hypothetical date on which the PDF will be generated (dd/mm/yyyy)
+	 *	DBO()->Generation->Time				Hypothetical time on which the PDF will be generated (hh:mm:ss)
+	 *	(The declared DocumentTemplate will be used)
+	 * OR 
+	 * 	DBO()->Template->Source				SourceCode of the DocumentTemplate
+	 *	DBO()->CustomerGroup->Id			Id of the customer group
+	 *	DBO()->Schema->Id					Id of the DocumentTemplateType to produce a pdf of
+	 *  DBO()->Generation->Date				Hypothetical date on which the PDF will be generated (dd/mm/yyyy)
+	 *	DBO()->Generation->Time				Hypothetical time on which the PDF will be generated (hh:mm:ss)
+	 *	(the pdf will be built using the supplied Source code and schema)
+	 *
+	 * If Generation->Date and Generation->Time are not declared then it will use NOW()
+	 *
+	 * @return	void
+	 * @method	BuildSamplePDF
+	 */
+	function BuildSamplePDF()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		DBO()->Schema->SetTable("DocumentTemplateSchema");
+		if (!DBO()->Schema->Load())
+		{
+			echo "Error loading the schema record";
+			return TRUE;
+		}
+		
+		DBO()->Template->SetTable("DocumentTemplate");
+		DBO()->Template->Load();
+		
+		$strDate			= ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value);
+		//$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
+$strEffectiveDate	= time();
+		//$strTemplateXSLT	= DBO()->Template->Source->Value;
+$strTemplateXSLT	= DBO()->Template->Source->Value;		
+		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
+		$strSampleXML		= DBO()->Schema->Sample->Value;
+		
+		VixenRequire("lib/pdf/Flex_Pdf_Template.php");
+		
+		set_time_limit(120);
+		
+		$pdfTemplate = new Flex_Pdf_Template($intCustomerGroup, $strEffectiveDate, $strTemplateXSLT, $strSampleXML, Flex_Pdf_Style::MEDIA_ALL, TRUE);
+		$pdf = $pdfTemplate->createDocument();
+	
+		header("Content-type: application/pdf;");
+		echo $pdf->render();
+		$pdfTemplate->destroy();
+		unset($pdfTemplate);
+		
+		return TRUE;
+	}
+	
 	// Returns TRUE on success, or an error msg on failure
 	private function _UploadDocumentResource($arrFileTypes, $intResourceType, $intCustomerGroup, $mixStart, $mixEnd)
 	{

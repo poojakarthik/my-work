@@ -54,6 +54,7 @@ function VixenValidationClass()
 	this.regexPositiveInteger			= /^\d+$/;
 	this.regexPositiveIntegerNonZero	= /^[1-9]\d*$/;
 	this.regexLettersOnly				= /^[A-Za-z]+$/;
+	this.regexTime24Hr					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2}$/;
 
 	// Wrapper for the individual validation functions.  This is used
 	// to manage bolRequired functionality.  If a value isn't required, and 
@@ -174,7 +175,13 @@ function VixenValidationClass()
 	{
 		return this.regexPostCode.test(strValue);
 	}
-	
+
+	this.Time24Hr = function(strValue)
+	{
+		return this.regexTime24Hr.test(strValue);
+	}
+
+
 }
 
 

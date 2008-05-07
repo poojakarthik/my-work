@@ -18,6 +18,35 @@
 class HtmlTemplateDocumentTemplate extends HtmlTemplate
 {
 
+	// This forms the popup content for the "Build PDF" functionality, allowing 
+	// the user to specify a hypothetical date and time for when the PDF will
+	// be built
+	private $_strBuildSamplePDFPopupContent = "
+<div id='PopupPageBody'>
+	<div class='GroupedContent' style='position:relative;margin-bottom:5px;'>
+		<span>Please specify the hypothetical date and time that this pdf will be generated on</span>
+		
+		<div class='ContentSeparator'></div>
+		
+		<div style='margin-bottom:8px;'>
+			<span style='top:2px'>Date</span>
+			<input type='text' id='SamplePdfDate' value='<date>' InputMask='ShortDate' maxlength='10' style='padding:1px 2px;position:absolute;left:50%;width:11em;border: solid 1px #D1D1D1' />
+		</div>
+		<div style='margin-bottom:8px;'>
+			<span style='top:2px'>Effective On</span>
+			<input type='text' id='SamplePdfTime' value='<time>' InputMask='Time24Hr' maxlength='8' style='padding:1px 2px;position:absolute;left:50%;width:11em;border: solid 1px #D1D1D1'/>
+		</div>
+	</div>
+
+	<div class='ButtonContainer'>
+		<div style='float:right'>
+			<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
+			<input type='button' value='Build PDF' onclick='Vixen.DocumentTemplate.BuildSamplePDF(true)'></input>
+		</div>
+	</div>
+	<script type='text/javascript'>RegisterAllInputMasks();</script>
+</div>";
+
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -40,11 +69,16 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		
 		$this->LoadJavascript("document_template");
 		$this->LoadJavascript("textarea");
-		$this->LoadJavascript("date_textbox");
+		$this->LoadJavascript("input_masks");
 		$this->LoadJavascript("validation");
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("highlight");
 		
+		
+		// Fill in the placeholders in the $_strBuildSamplePDFPopupContent string
+		// The time doesn't have to be too accurate, which is why it's ok to generate it here
+		$this->_strBuildSamplePDFPopupContent = str_replace("<date>", date("d/m/Y"), $this->_strBuildSamplePDFPopupContent);
+		$this->_strBuildSamplePDFPopupContent = str_replace("<time>", date("H:i:s"), $this->_strBuildSamplePDFPopupContent);
 	}
 
 	//------------------------------------------------------------------------//
@@ -100,7 +134,9 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$jsonObjTemplate				= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
 		$jsonObjSchema					= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
 		$jsonInsertResourcePopupContent	= Json()->encode($this->_BuildResourceSelectorPopupContent());
-
+		$jsonBuildPdfPopupContent		= Json()->encode($this->_strBuildSamplePDFPopupContent);
+		
+		
 		// Build the array of ResourceTypes
 		$arrResourceTypes = Array();
 		foreach (DBL()->DocumentResourceType as $dboResourceType)
@@ -113,7 +149,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 
 		echo "<!-- START HtmlTemplateDocumentTemplate (rendered in 'NEW' context) -->\n";
 		$this->RenderForm();
-		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseAddPage($jsonObjTemplate, $jsonObjSchema, $jsonObjResourceTypes, $jsonInsertResourcePopupContent)</script>\n";
+		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseAddPage($jsonObjTemplate, $jsonObjSchema, $jsonObjResourceTypes, $jsonInsertResourcePopupContent, $jsonBuildPdfPopupContent)</script>\n";
 		echo "<!-- END HtmlTemplateDocumentTemplate -->\n";	
 	}
 
@@ -135,6 +171,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$jsonObjTemplate				= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
 		$jsonObjSchema					= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
 		$jsonInsertResourcePopupContent	= Json()->encode($this->_BuildResourceSelectorPopupContent());
+		$jsonBuildPdfPopupContent		= Json()->encode($this->_strBuildSamplePDFPopupContent);
 
 		// Build the array of ResourceTypes
 		$arrResourceTypes = Array();
@@ -148,7 +185,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		
 		echo "<!-- START HtmlTemplateDocumentTemplate (rendered in 'EDIT' context) -->\n";
 		$this->RenderForm();
-		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseEditPage($jsonObjTemplate, $jsonObjSchema, $jsonObjResourceTypes, $jsonInsertResourcePopupContent)</script>\n";
+		echo "<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseEditPage($jsonObjTemplate, $jsonObjSchema, $jsonObjResourceTypes, $jsonInsertResourcePopupContent, $jsonBuildPdfPopupContent)</script>\n";
 		echo "<!-- END HtmlTemplateDocumentTemplate -->\n";	
 	}
 	
@@ -176,8 +213,10 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$strTextAreaHeight		= "4in";
 		$strEffectiveOn			= (DBO()->DocumentTemplate->EffectiveOn->Value != NULL)? OutputMask()->LongDateAndTime(DBO()->DocumentTemplate->EffectiveOn->Value) : "Undeclared";
 		
-		$jsonObjTemplate	= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
-		$jsonObjSchema		= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+		$jsonObjTemplate			= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
+		$jsonObjSchema				= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
+		$jsonBuildPdfPopupContent	= Json()->encode($this->_strBuildSamplePDFPopupContent);
+
 
 		echo "
 <!-- START HtmlTemplateDocumentTemplate (rendered in 'VIEW' context) -->
@@ -206,7 +245,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	</div>
 </div>
 <div class='Separator'></div>
-<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseViewPage($jsonObjTemplate, $jsonObjSchema)</script>
+<script type='text/javascript'>Vixen.DocumentTemplate.InitialiseViewPage($jsonObjTemplate, $jsonObjSchema, $jsonBuildPdfPopupContent)</script>
 <!-- END HtmlTemplateDocumentTemplate -->\n";
 	}
 
@@ -268,11 +307,11 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 
 	<div class='ButtonContainer'>
 		<div class='Left'>
-			<input type='button' id='ButtonInsertImage' class='InputSubmit' value='Insert Resource' onclick='Vixen.DocumentTemplate.InsertResource()'></input>
-			<input type='button' id='ButtonBuildPDF' class='InputSubmit' value='Build PDF' onclick='Vixen.DocumentTemplate.BuildSamplePDF()'></input>
+			<input type='button' id='ButtonInsertImage' value='Insert Resource' onclick='Vixen.DocumentTemplate.InsertResource()'></input>
+			<input type='button' id='ButtonBuildPDF' value='Build PDF' onclick='Vixen.DocumentTemplate.BuildSamplePDF()'></input>
 		</div>
 		<div class='Right'>
-			<input type='button' id='ButtonSave' class='InputSubmit' value='Save' onclick='Vixen.DocumentTemplate.Save()'></input>
+			<input type='button' id='ButtonSave' value='Save' onclick='Vixen.DocumentTemplate.Save()'></input>
 		</div>
 	</div>
 

@@ -49,10 +49,15 @@ function VixenDocumentTemplateClass()
 	this.arrResourceTypes	= null;
 	this.objEffectiveOn		= {};
 	
+	this.strSampleDate		= null;
+	this.strSampleTime		= null;
+	
 	this.strInsertResourcePopupContent = null;
 
+	this.strBuildSamplePDFPopupContent = null;
+
 	// Handles intialisation processes that should be carried out regardless of it if is for adding a new one, or editing an existing one, or view one
-	this.Initialise = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent)
+	this.Initialise = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent, strBuildSamplePDFPopupContent)
 	{
 		this.objTemplate					= objTemplate;
 		this.objSchema						= objSchema;
@@ -62,6 +67,7 @@ function VixenDocumentTemplateClass()
 		this.objEffectiveOn.elmTextbox		= $ID("DocumentTemplate.EffectiveOn");
 		this.strInsertResourcePopupContent	= strInsertResourcePopupContent;
 		this.arrResourceTypes				= arrResourceTypes;
+		this.strBuildSamplePDFPopupContent	= strBuildSamplePDFPopupContent;
 		
 		// Register tab handler for the textarea
 		Event.startObserving(this.elmSourceCode, "keydown", TextAreaTabListener, true);
@@ -76,9 +82,9 @@ function VixenDocumentTemplateClass()
 		this.elmSourceCode.selectionStart = this.elmSourceCode.selectionEnd = 0;
 	}
 
-	this.InitialiseAddPage = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent)
+	this.InitialiseAddPage = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent, strBuildSamplePDFPopupContent)
 	{
-		this.Initialise(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent);
+		this.Initialise(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent, strBuildSamplePDFPopupContent);
 		
 		// Null the things that should be null when the template is new
 		this.objTemplate.Id				= null;
@@ -88,9 +94,9 @@ function VixenDocumentTemplateClass()
 		this.objTemplate.Version		= null;
 	}
 	
-	this.InitialiseEditPage = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent)
+	this.InitialiseEditPage = function(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent, strBuildSamplePDFPopupContent)
 	{
-		this.Initialise(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent);
+		this.Initialise(objTemplate, objSchema, arrResourceTypes, strInsertResourcePopupContent, strBuildSamplePDFPopupContent);
 		
 		// Check if there has been a newer version of the document template schema since this doc template was last saved
 		if (objSchema.Id != objTemplate.TemplateSchema)
@@ -99,10 +105,12 @@ function VixenDocumentTemplateClass()
 		}
 	}
 	
-	this.InitialiseViewPage = function(objTemplate, objSchema)
+	this.InitialiseViewPage = function(objTemplate, objSchema, strBuildSamplePDFPopupContent)
 	{
-		this.objTemplate	= objTemplate;
-		this.objSchema		= objSchema;
+		this.objTemplate					= objTemplate;
+		this.objSchema						= objSchema;
+		this.strBuildSamplePDFPopupContent	= strBuildSamplePDFPopupContent;
+		this.elmSourceCode					= $ID("DocumentTemplate.Source");
 	}
 	
 
@@ -230,8 +238,61 @@ function VixenDocumentTemplateClass()
 		this.elmSourceCode.value			= strPre + this.arrResourceTypes[intResourceType].TagSignature + strPost;
 		this.elmSourceCode.selectionStart	= intSelStart;
 		this.elmSourceCode.selectionEnd		= intSelStart + this.arrResourceTypes[intResourceType].TagSignature.length;
+	}
+	
+	// Prompts the user to specify a build datetime, and then generates the pdf based on the current template
+	this.BuildSamplePDF = function(bolDateDeclared)
+	{
+		if (!bolDateDeclared)
+		{
+			// Prompt the user to specify the time and date that the sample pdf will be hypothetically generated on.
+			// This is required so that the approriate Document Resources are used
+			Vixen.Popup.Create("BuildSamplePDFPopup", this.strBuildSamplePDFPopupContent, "medium", "centre", "modal", "Build Sample PDF");	
+			
+			if (this.strSampleDate != null)
+			{
+				var elmDate		= $ID("SamplePdfDate");
+				var elmTime		= $ID("SamplePdfTime");
+				elmDate.value	= this.strSampleDate;
+				elmTime.value	= this.strSampleTime;
+			}
+			return;
+		}
 		
+		// Validate the Date and time
+		var elmDate	= $ID("SamplePdfDate");
+		var elmTime	= $ID("SamplePdfTime");
 		
+		if (!elmDate.Validate("ShortDate"))
+		{
+			$Alert("ERROR: Invalid date.<br />It must be in the format dd/mm/yyyy");
+			return;
+		}
+		if (!elmTime.Validate("Time24Hr"))
+		{
+			$Alert("ERROR: Invalid time.<br />It must be in the format hh:mm:ss");
+			return;
+		}
+		
+		// Save the user's generation date
+		this.strSampleDate	= elmDate.value;
+		this.strSampleTime	= elmTime.value;
+		
+		Vixen.Popup.Close("BuildSamplePDFPopup");
+		
+		// Compile data to be sent to the server
+		var objData	= 	{
+							Template		:	{	Source : this.elmSourceCode.value},
+							Generation		:	{
+													Date : elmDate.value,
+													Time : elmTime.value
+												},
+							CustomerGroup	:	{	Id	: this.objTemplate.CustomerGroup},
+							Schema			:	{	Id	: this.objSchema.Id}
+						}
+		//Vixen.Ajax.CallAppTemplate("CustomerGroup", "BuildSamplePDF", objData, null, false, false, null);
+		window.location = "flex.php/CustomerGroup/BuildSamplePDF/?Template.Id="+ this.objTemplate.Id +"&Generation.Date=1&Generation.Time=1&CustomerGroup.Id="+ this.objTemplate.CustomerGroup +"&Schema.Id="+this.objSchema.Id;
+		//$Alert("flex.php/CustomerGroup/BuildSamplePDF/?Template.Source=1&Generation.Date=1&Generation.Time=1&CustomerGroup.Id="+ this.objTemplate.CustomerGroup +"&Schema.Id="+this.objSchema.Id);
 	}
 
 }
