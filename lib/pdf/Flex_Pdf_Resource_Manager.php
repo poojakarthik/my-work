@@ -100,7 +100,7 @@ class Flex_Pdf_Resource_Manager
 			 					 "Id" 			=> "DR.Id",
 			 					 "Extension" 	=> "FT.Extension");
 
-			$strWhere = "DR.createdOn = (
+			$strWhere = "DR.CreatedOn = (
 					SELECT max(DR2.CreatedOn) FROM DocumentResource DR2
 					WHERE <GenerationDate> between StartDatetime and EndDatetime
 					AND DR2.CustomerGroup = <CustomerGroup>
