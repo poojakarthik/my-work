@@ -125,7 +125,7 @@ class Flex_Pdf_Resource_Manager
 
 			for ($i = 0; $i < $mixResult; $i++)
 			{
-				$this->resources[$arrRecordSet[$i]['PlaceHolder']] = Array("Id" => $arrRecordSet[$i]['Id'], "Extension" => $arrRecordSet[$i]['Extension']);
+				$this->resources[strtolower($arrRecordSet[$i]['PlaceHolder'])] = Array("Id" => $arrRecordSet[$i]['Id'], "Extension" => $arrRecordSet[$i]['Extension']);
 			}
 		}
 	}
