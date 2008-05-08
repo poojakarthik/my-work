@@ -81,6 +81,10 @@ abstract class Flex_Pdf_Template_Element
 
 	public function getChildElements()
 	{
+		if (!isset($this->childElements))
+		{
+			return NULL;
+		}
 		return $this->childElements;
 	}
 
@@ -359,10 +363,13 @@ abstract class Flex_Pdf_Template_Element
 	public function _destroy()
 	{
 		$childElements = $this->getChildElements();
-		for ($i = count($childElements) - 1; $i >= 0; $i--)
+		if ($childElements !== NULL)
 		{
-			$childElements[$i]->_destroy();
-			unset($childElements[$i]);
+			for ($i = count($childElements) - 1; $i >= 0; $i--)
+			{
+				$childElements[$i]->_destroy();
+				unset($childElements[$i]);
+			}
 		}
 		unset($this->dom, $this->style, $this->parent, $this->childElements, $this->_depth, $this->_bolInGetWidth, $this->_bolSuitableForTargetMedia);
 	}
