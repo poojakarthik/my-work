@@ -58,11 +58,11 @@ class Flex_Pdf_Resource_Manager
 
 			if ($mixResult === FALSE)
 			{
-				throw new Exception("An error occurred when fetching document type '$documentType' template for Customer Group Id'$this->customerGroup' on generation date '$this->effectiveDate'");
+				throw new Exception("An error occurred when fetching document type '$documentType' template for Customer Group Id '$this->customerGroup' on generation date '$this->effectiveDate'.");
 			}
 			else if (!$mixResult)
 			{
-				throw new Exception("No template found for document type '$documentType' for Customer Group Id '$this->customerGroup' on generation date '$this->effectiveDate'");
+				throw new Exception("No template found for document type '$documentType' for Customer Group Id '$this->customerGroup' on generation date '$this->effectiveDate'.");
 			}
 			else
 			{
@@ -116,7 +116,7 @@ class Flex_Pdf_Resource_Manager
 
 			if ($mixResult === FALSE)
 			{
-				throw new Exception("An error occurred when fetching template resources for Customer Group Id'$this->customerGroup' on generation date '$this->effectiveDate'");
+				throw new Exception("An error occurred when fetching template resources for Customer Group Id '$this->customerGroup' on generation date '$this->effectiveDate'.");
 			}
 
 			$arrRecordSet = $selDocumentResources->FetchAll();
@@ -153,25 +153,33 @@ class Flex_Pdf_Resource_Manager
 					$this->cache[$relativePath] = self::RESOURCE_BASE_PATH . $this->customerGroup . "/" 
 						. $this->resources[$placeholder]["Id"] . "." . $this->resources[$placeholder]["Extension"];
 				}
-				// ... else record the fact that we didn't find the resource
+				// ... else throw an exception to show that we didn't find the resource
 				else
 				{
-					$this->cache[$relativePath] = "";
+					throw new Exception("No resource found for '$relativePath' for Customer Group Id '$this->customerGroup' on generation date '$this->effectiveDate'.");
 				}
 			}
 			// if the path is relative (as in the case on font files)...
 			else if ($relativePath == "." || file_exists(self::COMMON_RESOURCE_BASE_PATH . $relativePath))
 			{
+				// Check that the file exists
+				if (!file_exists(self::COMMON_RESOURCE_BASE_PATH . $relativePath) || !is_file(self::COMMON_RESOURCE_BASE_PATH . $relativePath))
+				{
+					throw new Exception("No resource file found for '$relativePath'.");
+				}
+				
 				// make absolute...
 				$this->cache[$relativePath] = self::COMMON_RESOURCE_BASE_PATH . $relativePath;
 			}
 			// the path must be absolute already...
 			else
 			{
+				// We could try to copy the file from the absolute (possibly remote) location to a tmp local directory.
+				// This would allow us to handle retrieval problems at this point.
 				$this->cache[$relativePath] = $relativePath;
 			}
 		}
-
+		
 		// Return the cached absolute path
 		return $this->cache[$relativePath];
 	}	
