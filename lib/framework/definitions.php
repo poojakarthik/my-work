@@ -423,9 +423,10 @@ $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[280]	['Constant']	= 'PROVFI
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[280]	['Description']	= 'Sent';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[281]	['Constant']	= 'PROVFILE_REJECTED';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[281]	['Description']	= 'Rejected';
+/*
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[282]	['Constant']	= 'PROVFILE_SENT';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[282]	['Description']	= 'Sent';
-
+*/
 
 // Invoice Status
 /*define("INVOICE_TEMP"				, 100);
@@ -2252,6 +2253,11 @@ $GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_NO_TMP_DIR]	['Constant
 $GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_NO_TMP_DIR]	['Description']	= 'Missing a temporary folder';
 $GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_CANT_WRITE]	['Constant']	= 'UPLOAD_ERR_CANT_WRITE';
 $GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_CANT_WRITE]	['Description']	= 'Failed to write file to disk';
+// UPLOAD_ERR_EXTENSION introduced in PHP 5.2.0, but I'm currently running on PHP 5.1.2 (Hadrian)
+if (!defined("UPLOAD_ERR_EXTENSION"))
+{
+	define("UPLOAD_ERR_EXTENSION", 8);
+}
 $GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_EXTENSION]	['Constant']	= 'UPLOAD_ERR_EXTENSION';
 $GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_EXTENSION]	['Description']	= 'File upload stopped by extension';
 
