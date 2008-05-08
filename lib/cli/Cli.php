@@ -155,7 +155,7 @@ abstract class Cli
 				$this->showUsage("Please provide all required arguments.");
 			}
 			$this->_arrValidatedArguments = $validArgs;
-			$this->dieIfErrored();
+			$this->dieIfErred();
 		}
 		return $this->_arrValidatedArguments;
 	}
@@ -164,7 +164,7 @@ abstract class Cli
 	{
 		$this->startErrorCatching();
 		require_once $this->getFlexBasePath() . $strFilePath;
-		$this->dieIfErrored();
+		$this->dieIfErred();
 	}
 	
 	protected function getFlexBasePath()
@@ -185,7 +185,7 @@ abstract class Cli
 		set_error_handler("Cli_Error_Handler", E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE | E_WARNING | E_NOTICE);
 	}
 	
-	public function dieIfErrored()
+	public function dieIfErred()
 	{
 		restore_error_handler();
 		// Access the global error string to check for errors
@@ -232,6 +232,58 @@ abstract class Cli
 			return intval($int);
 		}
 		throw new Exception("Invalid integer specified: '$int'");
+	}
+	
+	public static function _validReadableFileOrDirectory($file)
+	{
+		if (file_exists($file))
+		{
+			if (is_readable($file))
+			{
+				return $file;
+			}
+			
+			if (is_file($file))
+			{		
+				throw new Exception("Unreadable file specified: '$file'");
+			}
+			else
+			{
+				throw new Exception("Unreadable directory specified: '$file'");
+			}
+		}
+		throw new Exception("File or directory not found: '$file'");
+	}
+	
+	public static function _validWritableFileOrDirectory($file)
+	{
+		// If it writable, it's good no matter what it is!
+		if (is_writable($file))
+		{
+			return $file;
+		}
+		
+		// If it's a file (exiting or not)
+		if (!is_dir($file))
+		{		
+			// If it exists then it isn't writable
+			if (file_exists($file))
+			{
+				throw new Exception("Unwritable file specified: '$file'");
+			}
+			// Check to see if it can be created in the directory
+			$dir = dirname($file);
+			if (is_writable($dir))
+			{
+				return $file;
+			}
+			throw new Exception("Unable to create file '" . basename($file) . "' in unwritable directory '$dir'");
+		}
+		else if (file_exists($file))
+		{
+			throw new Exception("Unwritable directory specified: '$file'");
+		}
+		throw new Exception("Directory not found: '$file'");
 	}
 	
 	public static function _validFile($file, $checkReadable=TRUE)
