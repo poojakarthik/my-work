@@ -319,6 +319,7 @@ function VixenAjaxClass()
 	{
 		// Turn the cursor into the "waiting" icon
 		document.body.style.cursor = "wait";
+//window.style.cursor = "wait"
 
 		/*
 		for (strObject in objObject.Objects)
@@ -497,8 +498,7 @@ function VixenAjaxClass()
 						break;
 					case "Page":
 						//FIX ME! This looks like it's working properly, but if you reload the page, none of the styling is loaded
-						//objDoc = document.open("text/html", "replace");
-objDoc = document.open("application/pdf", "replace");						
+						objDoc = document.open("text/html", "replace");
 						objDoc.write(strReply);
 						objDoc.close();
 						break;

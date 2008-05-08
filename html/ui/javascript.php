@@ -136,6 +136,12 @@ function VixenIncludeJsFiles($arrFilenames, $bolStripComments=FALSE)
 	}
 	
 	header( 'Content-type: text/javascript');
+	
+	// I'm unsuccessfully trying to set a useful expirey date on these javascript files, so that they are 
+	// only downloaded when one of them is updated
+	//header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+	//header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+	//header("Expires: ". date("D, j M Y H:i:s e", strtotime("+1 day")));
 	echo $strJavascriptToSend;
 	
 	return TRUE;

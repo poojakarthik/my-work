@@ -1803,6 +1803,26 @@ class Validation
 	}	
 	
 	//------------------------------------------------------------------------//
+	// Time
+	//------------------------------------------------------------------------//
+	/**
+	 * Time()
+	 *
+	 * Checks if a value is in a valid time format (HH:MM:SS)
+	 *
+	 * Checks if a value is in a valid time format (HH:MM:SS)
+	 *
+	 * @param	string	$strTime	the value to validate
+	 * 
+	 * @return	bool
+	 * @method
+	 */
+	static function Time($strTime)
+	{
+		return self::RegexValidate('^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2}$^' , $strTime); 
+	}	
+	
+	//------------------------------------------------------------------------//
 	// IsValidDate
 	//------------------------------------------------------------------------//
 	/**

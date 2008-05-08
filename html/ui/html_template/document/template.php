@@ -38,6 +38,15 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		</div>
 	</div>
 
+	<form id='FormBuildSamplePDF' name='FormBuildSamplePDF' method='post' target='PdfWindow' action='flex.php/CustomerGroup/BuildSamplePDF/'>
+		<input type='hidden' name='Template.Source' value=''></input>
+		<input type='hidden' name='Generation.Date' value=''></input>
+		<input type='hidden' name='Generation.Time' value=''></input>
+		<input type='hidden' name='CustomerGroup.Id' value=''></input>
+		<input type='hidden' name='DocumentTemplateType.Id' value=''></input>
+		<input type='hidden' name='Schema.Id' value=''></input>
+	</form>
+
 	<div class='ButtonContainer'>
 		<div style='float:right'>
 			<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>

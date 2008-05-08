@@ -1078,23 +1078,18 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * 
 	 * Produces a sample pdf based on a Document Template
 	 * It must have the following values declared:
-	 * either:
-	 * 	DBO()->DocumentTemplateType->Id		Id of the DocumentTemplateType
+	 * 	DBO()->DocumentTemplateType->Id
 	 * 	DBO()->CustomerGroup->Id			Id of the CustomerGroup
 	 *  DBO()->Generation->Date				Hypothetical date on which the PDF will be generated (dd/mm/yyyy)
 	 *	DBO()->Generation->Time				Hypothetical time on which the PDF will be generated (hh:mm:ss)
 	 *	(The appropriate DocumentTemplateType will be found and used)
 	 * OR
-	 *	DBO()->DocumentTemplate->Id			Id of the DocumentTemplate to use
-	 *  DBO()->Generation->Date				Hypothetical date on which the PDF will be generated (dd/mm/yyyy)
-	 *	DBO()->Generation->Time				Hypothetical time on which the PDF will be generated (hh:mm:ss)
-	 *	(The declared DocumentTemplate will be used)
-	 * OR 
 	 * 	DBO()->Template->Source				SourceCode of the DocumentTemplate
-	 *	DBO()->CustomerGroup->Id			Id of the customer group
 	 *	DBO()->Schema->Id					Id of the DocumentTemplateType to produce a pdf of
-	 *  DBO()->Generation->Date				Hypothetical date on which the PDF will be generated (dd/mm/yyyy)
-	 *	DBO()->Generation->Time				Hypothetical time on which the PDF will be generated (hh:mm:ss)
+	 * 	DBO()->DocumentTemplateType->Id
+	 *	DBO()->CustomerGroup->Id
+	 *  DBO()->Generation->Date
+	 *	DBO()->Generation->Time
 	 *	(the pdf will be built using the supplied Source code and schema)
 	 *
 	 * If Generation->Date and Generation->Time are not declared then it will use NOW()
@@ -1108,21 +1103,72 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
+		if (!DBO()->CustomerGroup->Load())
+		{
+			echo "ERROR: Could not load the CustomerGroup record";
+			exit;
+		}
+		
+		if (!DBO()->DocumentTemplateType->Load())
+		{
+			echo "ERROR: Could not load the DocumentTemplateType record";
+			exit;
+		}
+		
+		// Validate the Date and Time parameters
+		if (!Validate("ShortDate", DBO()->Generation->Date->Value))
+		{
+			echo "ERROR: The Generation Date is invalid.  It must be in the format DD/MM/YYYY";
+			exit;
+		}
+		
+		if (!Validate("Time", DBO()->Generation->Date->Value))
+		{
+			echo "ERROR: The Generation Time is invalid.  It must be in the format HH:MM:SS";
+			exit;
+		}
+		$strGenerationDate = ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value) ." ". DBO()->Generation->Time->Value;
+		
+		
+		// Check if the template's source code hasn't been supplied
+		if (!DBO()->Template->Source->IsSet)
+		{
+			// Find the right template to use
+			$strWhere = "TemplateType = <TemplateType> AND CustomerGroup = <CustomerGroup> AND EffectiveOn <= <GenerationDate>";
+			$arrWhere = Array	(	
+									"TemplateType"	=> DBO()->DocumentTemplateType->Id->Value,
+									"CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
+									"EffectiveOn"	=> $strGenerationDate
+								);
+			$selTemplate = new StatementSelect("DocumentTemplate", "Source, TemplateSchema", $strWhere, "CreatedOn DESC", "1");
+			$mixResult = $selTemplate->Execute($arrWhere);
+			if ($mixResult === FALSE)
+			{
+				echo "ERROR: Retrieving the approriate DocumentTemplate from the database failed, unexpectedly.  Please notify your system administrator";
+				exit;
+			}
+			if ($mixResult == 0)
+			{
+				echo "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->InternalName->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value;
+				exit;
+			}
+			
+			$arrTemplate			= $selTemplate->Fetch();
+			DBO()->Template->Source	= $arrTemplate['Source'];
+			DBO()->Schema->Id		= $arrTemplate['TemplateSchema'];
+		}
+		
+		// Load the Schema
 		DBO()->Schema->SetTable("DocumentTemplateSchema");
 		if (!DBO()->Schema->Load())
 		{
-			echo "Error loading the schema record";
-			return TRUE;
+			echo "ERROR: Could not load DocumentTemplateSchema record";
+			exit;
 		}
 		
-		DBO()->Template->SetTable("DocumentTemplate");
-		DBO()->Template->Load();
-		
 		$strDate			= ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value);
-		//$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
-$strEffectiveDate	= time();
-		//$strTemplateXSLT	= DBO()->Template->Source->Value;
-$strTemplateXSLT	= DBO()->Template->Source->Value;		
+		$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
+		$strTemplateXSLT	= DBO()->Template->Source->Value;
 		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
 		$strSampleXML		= DBO()->Schema->Sample->Value;
 		
@@ -1130,15 +1176,28 @@ $strTemplateXSLT	= DBO()->Template->Source->Value;
 		
 		set_time_limit(120);
 		
-		$pdfTemplate = new Flex_Pdf_Template($intCustomerGroup, $strEffectiveDate, $strTemplateXSLT, $strSampleXML, Flex_Pdf_Style::MEDIA_ALL, TRUE);
-		$pdf = $pdfTemplate->createDocument();
-	
+		try
+		{
+			$objPDFTemplate	= new Flex_Pdf_Template($intCustomerGroup, $strEffectiveDate, $strTemplateXSLT, $strSampleXML, Flex_Pdf_Style::MEDIA_ALL, TRUE);
+			$objPDFDocument	= $objPDFTemplate->createDocument();
+
+			ob_start();
+			echo $objPDFDocument->render();
+			$strPdf = ob_get_clean();
+		}
+		catch (Exception $objException) 
+		{
+			// Turn output buffering off, if it was on
+			ob_get_clean();
+			echo "ERROR: PDF generation failed<br /><br />". $objException->getMessage();
+			exit;
+		}
+		// The pdf was successfully created
+		$strFilename = "Sample.pdf";
 		header("Content-type: application/pdf;");
-		echo $pdf->render();
-		$pdfTemplate->destroy();
-		unset($pdfTemplate);
-		
-		return TRUE;
+		header("Content-Disposition: attachment; filename=\"$strFilename\"");
+		echo $strPdf;
+		exit;
 	}
 	
 	// Returns TRUE on success, or an error msg on failure

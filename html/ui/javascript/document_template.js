@@ -278,8 +278,21 @@ function VixenDocumentTemplateClass()
 		this.strSampleDate	= elmDate.value;
 		this.strSampleTime	= elmTime.value;
 		
-		Vixen.Popup.Close("BuildSamplePDFPopup");
+		var elmForm = document.forms.FormBuildSamplePDF;
 		
+		elmForm.elements['Template.Source'].value	= this.elmSourceCode.value;
+		elmForm.elements['Generation.Date'].value	= elmDate.value;
+		elmForm.elements['Generation.Time'].value	= elmTime.value;
+		elmForm.elements['CustomerGroup.Id'].value	= this.objTemplate.CustomerGroup;
+		elmForm.elements['DocumentTemplateType.Id'].value	= this.objTemplate.TemplateType;
+		elmForm.elements['Schema.Id'].value			= this.objSchema.Id;
+		
+		
+		elmForm.submit();
+		
+		$Alert("The PDF should open soon in a new window");
+		
+		/*
 		// Compile data to be sent to the server
 		var objData	= 	{
 							Template		:	{	Source : this.elmSourceCode.value},
@@ -290,9 +303,35 @@ function VixenDocumentTemplateClass()
 							CustomerGroup	:	{	Id	: this.objTemplate.CustomerGroup},
 							Schema			:	{	Id	: this.objSchema.Id}
 						}
-		//Vixen.Ajax.CallAppTemplate("CustomerGroup", "BuildSamplePDF", objData, null, false, false, null);
-		window.location = "flex.php/CustomerGroup/BuildSamplePDF/?Template.Id="+ this.objTemplate.Id +"&Generation.Date=1&Generation.Time=1&CustomerGroup.Id="+ this.objTemplate.CustomerGroup +"&Schema.Id="+this.objSchema.Id;
+		Vixen.Ajax.CallAppTemplate("CustomerGroup", "BuildSamplePDF", objData, null, true, false, this.BuildSamplePDFReturnHandler.bind(this));
+		//window.location = "flex.php/CustomerGroup/BuildSamplePDF/?Template.Id="+ this.objTemplate.Id +"&Generation.Date=1&Generation.Time=1&CustomerGroup.Id="+ this.objTemplate.CustomerGroup +"&Schema.Id="+this.objSchema.Id;
 		//$Alert("flex.php/CustomerGroup/BuildSamplePDF/?Template.Source=1&Generation.Date=1&Generation.Time=1&CustomerGroup.Id="+ this.objTemplate.CustomerGroup +"&Schema.Id="+this.objSchema.Id);
+		*/
+		//Vixen.Popup.Close("BuildSamplePDFPopup");
+	}
+
+	this.BuildSamplePDFReturnHandler = function(objXMLHttpRequest)
+	{
+		var strPDF = objXMLHttpRequest.responseText;
+//<INPUT type="button" value="New Window!" onClick="window.open('http://www.pageresource.com/jscript/jex5.htm','mywindow','width=400,height=200,toolbar=yes,
+//location=yes,directories=yes,status=yes,menubar=yes,scrollbars=yes,copyhistory=yes,
+//resizable=yes')">
+	//window.open('javascript:objDoc = document.open("application/pdf");objDoc.write(strPDF);objDoc.close();','_blank','toolbar=yes, location=yes,directories=yes,status=yes,menubar=yes,scrollbars=yes,copyhistory=yes, resizable=yes');
+		//var objDoc = windy.document.open("application/pdf", "replace");
+		
+		setTimeout(function(){
+		DebugWindow = window.open("", 'Debug Mode', 'scrollbars=yes');
+		DebugWindow.document.write('<xmp>');
+		DebugWindow.document.write("hello");
+		DebugWindow.document.write('</xmp>');
+		DebugWindow.document.close();
+							}, 5000);
+		
+		/*
+		objDoc = document.open("application/pdf");
+		objDoc.write(strPDF);
+		objDoc.close();
+		*/
 	}
 
 }
