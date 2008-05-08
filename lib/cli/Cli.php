@@ -80,6 +80,12 @@ abstract class Cli
 		{
 			$this->startErrorCatching();
 			global $argv;
+			if (!isset($argv) || !is_array($argv))
+			{
+				// Prevent execution by any means other than the command line!
+				// (prevents access via a browser)
+				exit(1);
+			}
 			$this->_strApplicationFile = array_shift($argv);
 
 			$validArgs = array();
