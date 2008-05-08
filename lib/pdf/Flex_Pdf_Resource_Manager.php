@@ -119,7 +119,7 @@ class Flex_Pdf_Resource_Manager
 				throw new Exception("An error occurred when fetching template resources for Customer Group Id'$this->customerGroup' on generation date '$this->effectiveDate'");
 			}
 
-			$arrRecordSet = $selDocumentTemplate->FetchAll();
+			$arrRecordSet = $selDocumentResources->FetchAll();
 
 			$this->resources = array();
 
