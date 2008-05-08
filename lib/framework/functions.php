@@ -1743,7 +1743,7 @@ function VixenRequire($strFilename)
 function GetVixenBase()
 {
 	// Determin base dir
-	if (!$GLOBALS['**strVixenBasePath'])
+	if (!array_key_exists('**strVixenBasePath', $GLOBALS) || !$GLOBALS['**strVixenBasePath'])
 	{
 		if (defined('FLEX_BASE_PATH'))
 		{
