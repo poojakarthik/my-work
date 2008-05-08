@@ -49,7 +49,7 @@ class Flex_Pdf_Resource_Manager
 			*/
 			$strWhere = "CustomerGroup = <CustomerGroup> AND TemplateType = <TemplateType> AND EffectiveOn IS NOT NULL AND EffectiveOn <= <GenerationDate>";
 			$arrWhere = Array(	"CustomerGroup"		=> $this->customerGroup, 
-								"TemplateType"		=> $templateType, 
+								"TemplateType"		=> $documentType, 
 								"GenerationDate"	=> $this->effectiveDate);
 
 			$selDocumentTemplate = new StatementSelect("DocumentTemplate", "Source", $strWhere, "EffectiveOn desc", "0, 1");
@@ -58,11 +58,11 @@ class Flex_Pdf_Resource_Manager
 
 			if ($mixResult === FALSE)
 			{
-				throw new Exception("An error occurred when fetching document type '$documentType' template for Customer Group Id'$this->customerGroup' on generation date '$generationDate'");
+				throw new Exception("An error occurred when fetching document type '$documentType' template for Customer Group Id'$this->customerGroup' on generation date '$this->effectiveDate'");
 			}
 			else if (!$mixResult)
 			{
-				throw new Exception("No template found for document type '$documentType' for Customer Group Id '$this->customerGroup' on generation date '$generationDate'");
+				throw new Exception("No template found for document type '$documentType' for Customer Group Id '$this->customerGroup' on generation date '$this->effectiveDate'");
 			}
 			else
 			{
@@ -116,7 +116,7 @@ class Flex_Pdf_Resource_Manager
 
 			if ($mixResult === FALSE)
 			{
-				throw new Exception("An error occurred when fetching template resources for Customer Group Id'$this->customerGroup' on generation date '$generationDate'");
+				throw new Exception("An error occurred when fetching template resources for Customer Group Id'$this->customerGroup' on generation date '$this->effectiveDate'");
 			}
 
 			$arrRecordSet = $selDocumentTemplate->FetchAll();
