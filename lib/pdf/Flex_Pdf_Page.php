@@ -695,11 +695,7 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	 */
 	public function drawLinkFrom($strTargetName, $top=0, $left=0, $height=0, $width=0)
 	{
-		$resource = Flex_Pdf_Resource_Raw::createRawResource($rawContent);
-
 		$this->_addProcSet('PDF');
-
-		$resourceNameObj = new Zend_Pdf_Element_Name($resourceName);
 
 		$objName = new Zend_Pdf_Element_String($strTargetName);
 
@@ -722,17 +718,13 @@ class Flex_Pdf_Page extends Zend_Pdf_Page
 	 */
 	public function drawLinkTo($strTargetName, $top=0, $left=0)
 	{
-		$resource = Flex_Pdf_Resource_Raw::createRawResource($rawContent);
-
 		$this->_addProcSet('PDF');
-
-		$resourceNameObj = new Zend_Pdf_Element_Name($resourceName);
 
 		$objName = new Zend_Pdf_Element_Name($strTargetName);
 
 		$h = $this->getHeight();
 		$objX1 = new Zend_Pdf_Element_Numeric($left);
-		$objY1 = new Zend_Pdf_Element_Numeric($h - $top - $height);
+		$objY1 = new Zend_Pdf_Element_Numeric($h - $top);
 		
 		$objLinkTo = new Flex_Pdf_Annotation_Link_To($this->getPageDictionary(), $objX1, $objY1, $objName);
 		$this->_arrLinkTargets[$strTargetName] = $objLinkTo->getResource();
