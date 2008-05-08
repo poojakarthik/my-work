@@ -27,7 +27,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	const MEDIA_PRINT = 1;
 	const MEDIA_EMAIL = 2;
 	const MEDIA_ALL = 3;
-
+	
 	// Inherited properties
 	private $intTextDecoration = self::TEXT_DECORATION_NONE;
 	private $lineHeight = 0;
@@ -859,6 +859,20 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		$style[] = "border-width-left: " . $this->getBorderWidthLeft() . "pt";
 
 		return implode("; ", $style);
+	}
+
+
+	public function mediaForMediaName($strMediaName)
+	{
+		switch (strtoupper(trim($strMediaName)))
+		{
+			case "EMAIL":
+				return self::MEDIA_EMAIL;
+			case "PRINT":
+				return self::MEDIA_PRINT;
+			default:
+				return self::MEDIA_EMAIL;
+		}
 	}
 
 }

@@ -160,15 +160,15 @@ class Flex_Pdf_Template
 	 * 												Can be NULL if $bolTransformXML is FALSE
 	 * @param $strXmlData 					String 	containing data for document in XML format. 
 	 * 												NULL if it will be supplied via the loadXML() function.
-	 * @param $intTargetMedia 				integer	Media type to render document for. Current options are: -
-	 * 													Flex_Pdf_Style::MEDIA_PRINT for pages without stationery
-	 * 												or	Flex_Pdf_Style::MEDIA_EMAIL for pages with stationery includes  
+	 * @param $mxdTargetMedia 				mixed	Media type to render document for. Current options are: -
+	 * 													Flex_Pdf_Style::MEDIA_PRINT or "PRINT" for pages without stationery
+	 * 												or	Flex_Pdf_Style::MEDIA_EMAIL or "EMAIL" for pages with stationery includes  
 	 * @param $bolTransformXML 				boolean	FALSE if $strXmlData is in renderable format already,
 	 * 												TRUE if $strXmlData requires XSLT transformation
 	 * 
 	 * @return void
 	 */
-	public function __construct($intCustomerGroupId, $mxdEffectiveDate, $mxdDocumentTypeIdOrXSLString, $strXmlData=NULL, $intTargetMedia=Flex_Pdf_Style::MEDIA_ALL, $bolTransformXML=TRUE)
+	public function __construct($intCustomerGroupId, $mxdEffectiveDate, $mxdDocumentTypeIdOrXSLString, $strXmlData=NULL, $mxdTargetMedia=Flex_Pdf_Style::MEDIA_ALL, $bolTransformXML=TRUE)
 	{
 		// Convert the effective date to a string date
 		if (is_numeric($mxdEffectiveDate))
@@ -178,6 +178,15 @@ class Flex_Pdf_Template
 		else
 		{
 			$strEffectiveDate = strval($mxdEffectiveDate);
+		}
+		
+		if (is_numeric($mxdTargetMedia))
+		{
+			$intTargetMedia = intval($mxdTargetMedia);
+		}
+		else
+		{
+			$intTargetMedia = Flex_Pdf_Style::mediaForMediaName(strval($mxdTargetMedia));
 		}
 		
 		// Get a resource manager for locating file resources
@@ -197,7 +206,7 @@ class Flex_Pdf_Template
 			{
 				// Need to load the XSL from the database, based on  customer group id, effective date and document type id.
 				// XSL File name and be a combination  of these keys
-				$this->_strXsltFilename =  "xslt:$intCustomerGroupId:$strEffectiveDate:$mxdDocumentTypeIdOrXSLString:";
+				$this->_strXsltFilename =  "xslt:$intCustomerGroupId:$strEffectiveDate:$mxdDocumentTypeIdOrXSLString";
 				if (!array_key_exists($this->_strXsltFilename, self::$_arrXSLTs))
 				{
 					$strXslXml = $this->_objResourceManager->getXSLT($mxdDocumentTypeIdOrXSLString);
@@ -243,7 +252,7 @@ class Flex_Pdf_Template
 					$this->_stopErrorHandler();
 					throw $e;
 				}
-				
+
 				// Add the XSLTProcessor to the cache
 				self::$_arrXSLTs[$this->_strXsltFilename] = $objXsltProcessor;
 			}			
