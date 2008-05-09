@@ -53,12 +53,12 @@ function InputMaskListener(objEvent)
 
 	var elmTarget	= objEvent.currentTarget;
 	var strKey		= String.fromCharCode(objEvent.charCode);
+	objEvent.preventDefault();
 	if (!elmTarget.mask.regex.test(strKey))
 	{
-		objEvent.preventDefault();
+		// Not a valid char
 		return false;
 	}
-	objEvent.preventDefault();
 	
 	
 	var intSelStart	= elmTarget.selectionStart;
@@ -74,6 +74,8 @@ function InputMaskListener(objEvent)
 		strInsert = strMaskPart;
 	}
 	strInsert += strKey;
+	
+	// TODO! If the max length of the mask has been reached, then don't add the chars
 	
 	elmTarget.value = strPre + strInsert + ((intSelStart != intSelEnd)? strPost : strPost.substr(strInsert.length));
 	elmTarget.selectionStart = elmTarget.selectionEnd = intSelStart + strInsert.length;

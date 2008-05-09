@@ -141,8 +141,9 @@
 					View and Add Employees.
 				</td>
 			</tr>
-			<!-- If Admin... -->
+			<!-- Conditional Options-->
 			<xsl:choose>
+				<!-- If SuperAdmin -->
 				<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Super Admin']) = 1">
 					<!-- System Settings Menu -->
 					<tr>
@@ -154,6 +155,21 @@
 						<td>
 							<strong> System Settings Menu</strong><br />
 							Manage system settings.
+						</td>
+					</tr>
+				</xsl:when>
+				<!-- If Not SuperAdmin, but has CustomerGroupAdmin permission -->
+				<xsl:when test="(count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Customer Group Admin']) = 1) and (count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Super Admin']) = 0)">
+					<!-- Customer Group Menu -->
+					<tr>
+						<td>
+							<a href="flex.php/CustomerGroup/ViewAll/">
+								<img src="img/template/customer_groups_menu_item.png" title="Manage Customer Groups" class="MenuIcon" />
+							</a>
+						</td>
+						<td>
+							<strong>Manage Customer Groups</strong><br />
+							Upload new marketting images.
 						</td>
 					</tr>
 				</xsl:when>

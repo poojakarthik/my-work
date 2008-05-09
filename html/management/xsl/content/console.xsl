@@ -84,7 +84,7 @@
 			<!-- View Personal Details -->
 			<tr>
 				<td>
-					<a href="#" onclick="return FlexModalContent.display('./flex_modal_link.php/Employee/EmployeeDetils/', '400px', '500px')">
+					<a href="#" onclick="return FlexModalContent.display('./flex_modal_link.php/Employee/EmployeeDetails/', '400px', '500px')">
 						<img src="img/template/contact.png" title="View Personal Details" class="MenuIcon" />
 					</a>
 				</td>
@@ -97,42 +97,42 @@
 				</td>
 			</tr>
 			<!-- If Admin... -->
-			 <xsl:choose>
-			<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">
-				 <!-- Administrative Console --> 
-				 <tr>
-					<td>
-						<a href="console_admin.php">
-							<img src="img/template/admin_console.png" title="Administrative Console" class="MenuIcon" />
-						</a>
-					</td>
-					<td>
-						<strong>
-							Administrative Console
-						</strong>
-						<br />
-						Additional Administrative Options.
-					</td>
-				</tr>
-			</xsl:when>
-			<!-- If Accounts... -->
-			<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Accounts']) = 1"> 
-				<!-- Administrative Console --> 
-				<tr>
-					<td>
-						<a href="console_admin.php">
-							<img src="img/template/admin_console.png" title="Accounts Console" class="MenuIcon" />
-						</a>
-					</td>
-					<td>
-						<strong>
-							Accounts Console
-						</strong>
-						<br />
-						Additional Accounts Options.
-					</td>
-				</tr> 
-			</xsl:when> 
+			<xsl:choose>
+				<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">
+					 <!-- Administrative Console --> 
+					 <tr>
+						<td>
+							<a href="console_admin.php">
+								<img src="img/template/admin_console.png" title="Administrative Console" class="MenuIcon" />
+							</a>
+						</td>
+						<td>
+							<strong>
+								Administrative Console
+							</strong>
+							<br />
+							Additional Administrative Options.
+						</td>
+					</tr>
+				</xsl:when>
+				<!-- If Accounts... -->
+				<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Accounts']) = 1"> 
+					<!-- Administrative Console --> 
+					<tr>
+						<td>
+							<a href="console_admin.php">
+								<img src="img/template/admin_console.png" title="Accounts Console" class="MenuIcon" />
+							</a>
+						</td>
+						<td>
+							<strong>
+								Accounts Console
+							</strong>
+							<br />
+							Additional Accounts Options.
+						</td>
+					</tr> 
+				</xsl:when> 
 			</xsl:choose>
 			<!-- User Manual -->
 			<!--

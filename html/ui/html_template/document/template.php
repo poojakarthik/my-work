@@ -73,8 +73,8 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	 */
 	function __construct($intContext, $strId)
 	{
-		$this->_intContext = $intContext;
-		$this->_strContainerDivId = $strId;
+		$this->_intContext			= $intContext;
+		$this->_strContainerDivId	= $strId;
 		
 		$this->LoadJavascript("document_template");
 		$this->LoadJavascript("textarea");

@@ -56,6 +56,7 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 	 */
 	function Render()
 	{
+		$bolUserIsSuperAdmin = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 		echo "<!-- START HtmlTemplateDocumentTemplateHistory -->\n";
 		
 		Table()->TemplateHistory->SetHeader("Version", "Description", "Effective", "Created", "Modified", "Last Used", "&nbsp");
@@ -100,23 +101,32 @@ class HtmlTemplateDocumentTemplateHistory extends HtmlTemplate
 			$strActionsCell = "";
 			$strNew			= "<img src='img/template/new.png' title='Build new template based on this one' onclick='Vixen.DocumentTemplateHistory.BuildNew({$dboTemplate->Id->Value}, {$dboTemplate->Version->Value})' style='cursor:pointer'/>";
 			$strView		= "<img src='img/template/view.png' title='View the template' onclick='Vixen.DocumentTemplateHistory.View({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
-			$strEdit		= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplateHistory.Edit({$dboTemplate->Id->Value})' style='cursor:pointer'/>"; 
-			if ($dboTemplate->EffectiveOn->Value == NULL)
+			$strEdit		= "<img src='img/template/edit.png' title='Edit Draft' onclick='Vixen.DocumentTemplateHistory.Edit({$dboTemplate->Id->Value})' style='cursor:pointer'/>";
+			if (!$bolUserIsSuperAdmin)
 			{
-				// The template is the draft template
-				$intDraftVersion	= $dboTemplate->Version->Value;
-				$strActionsCell		= $strEdit . $strView;
-			}
+				// The user cannot add or edit templates, they can only view them
+				$strActionsCell = $strView;
+			} 
 			else
 			{
-				// The template has been committed (it has an effective on date set)
-				if ($dboTemplate->EffectiveOn->Value > $strNow)
+				// The user can add and edit templates
+				if ($dboTemplate->EffectiveOn->Value == NULL)
 				{
-					// The Template can still be editted as its effective date has not been reached yet
-					$strActionsCell = $strEdit;
+					// The template is the draft template
+					$intDraftVersion	= $dboTemplate->Version->Value;
+					$strActionsCell		= $strEdit . $strView;
 				}
-				
-				$strActionsCell	.= $strNew . $strView;
+				else
+				{
+					// The template has been committed (it has an effective on date set)
+					if ($dboTemplate->EffectiveOn->Value > $strNow)
+					{
+						// The Template can still be editted as its effective date has not been reached yet
+						$strActionsCell = $strEdit;
+					}
+					
+					$strActionsCell	.= $strNew . $strView;
+				}
 			}
 			
 			Table()->TemplateHistory->AddRow($strVersion, $strDescription, $strEffectiveOnCell, $strCreatedOnCell, $strModifiedOnCell, $strLastUsedOnCell, $strActionsCell);

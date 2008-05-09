@@ -217,7 +217,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	function EmployeeDetils()
+	function EmployeeDetails()
 	{
 		AuthenticatedUser()->CheckAuth();
 		DBO()->Employee->Id = AuthenticatedUser()->GetUserId();
@@ -452,7 +452,17 @@ class AppTemplateEmployee extends ApplicationTemplate
 	 */
 	private function _SetPrivileges()
 	{
-		$proposedPrivileges = array_sum(DBO()->Employee->Privileges->Value);
+		// This is the old way, when each permission was a single bit, but now, some permissions automatically include others
+		//$proposedPrivileges = array_sum(DBO()->Employee->Privileges->Value);
+		
+		// Logically OR all the privileges together
+		$arrPrivileges = DBO()->Employee->Privileges->Value;
+		$proposedPrivileges = 0;
+		foreach ($arrPrivileges as $intPrivilege)
+		{
+			$proposedPrivileges = $proposedPrivileges | $intPrivilege;
+		}
+		
 		$originalPrivileges = 0;
 		if (DBO()->Employee->Id->Value >= 0)
 		{
@@ -464,12 +474,20 @@ class AppTemplateEmployee extends ApplicationTemplate
 		}
 		
 		// Don't allow super admin, god or debug privileges to be changed
-		$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_SUPER_ADMIN | PERMISSION_DEBUG);
+		//$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_SUPER_ADMIN | PERMISSION_DEBUG);
+		$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, Array(PERMISSION_SUPER_ADMIN, PERMISSION_DEBUG, USER_PERMISSION_GOD));
 		
-		// If user is not an admin, don't allow them to change the rate admin, credit card or admin privileges
+		
+		// If user is not an admin, don't allow them to change the rate management, credit card or admin privileges
 		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
-			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_CREDIT_CARD | PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+			//$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_CREDIT_CARD | PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CREDIT_CARD, PERMISSION_RATE_MANAGEMENT, PERMISSION_ADMIN));
+		}
+		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+		{
+			// If the user isn't a SuperAdmin, then don't allow them to change the CustomerGroupAdmin privilege
+			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CUSTOMER_GROUP_ADMIN));
 		}
 		
 		DBO()->Employee->Privileges = $proposed;
@@ -483,22 +501,50 @@ class AppTemplateEmployee extends ApplicationTemplate
 	 * 
 	 * Preserve privileges that exist in an original set and prevent addition in a proposed set
 	 * 
-	 * @param int $original		Original set of privileges containing those to be preserved
-	 * @param int $proposed		Proposed set of privileges
-	 * @param int $privileges	Privileges to be preserved
+	 * Preserve privileges that exist in an original set and prevent addition in a proposed set
 	 * 
-	 * @return int privileges containing only those $privileges that existed in $original privileges
+	 * @param int $intOriginal		Original set of privileges containing those to be preserved
+	 * @param int $intProposed		Proposed set of privileges
+	 * @param int $mixPrivileges	int:	Privilege to be preserved
+	 * 								array:	array of privileges to be preserved
 	 * 
+	 * @return int 					modified list of proposed privileges
 	 * @method
 	 */
-	private function _PreservePrivileges($original, $proposed, $privileges)
+	private function _PreservePrivileges($intOriginal, $intProposed, $mixPrivileges)
 	{
+		$arrPrivileges = (is_array($mixPrivileges))? $mixPrivileges : Array($mixPrivileges);
+		
+		//TODO! iterate through the array of privileges, and if it is in $original, then remove it from $proposed
+		foreach ($arrPrivileges as $intPrivilege)
+		{
+			if (($intOriginal & $intPrivilege) == $intPrivilege)
+			{
+				// The privilege is in the original.  Add it to the proposed
+				$intProposed = $intProposed | $intPrivilege;
+			}
+			else
+			{
+				// The privilege is not in the original.  Remove it from the proposed, but only if it is in the proposed
+				if (($intProposed & $intPrivilege) == $intPrivilege)
+				{
+					$intProposed = $intProposed - $intPrivilege;
+				}
+				  
+			} 
+		}
+		
+		return $intProposed;
+		
+		/*OLD method which doesn't handle privilege groups such as SuperAdmin
+		
 		// Prevent the privilege being added by proposition
 		$proposed = $proposed - ($proposed & $privileges);
 		// Add the privileges if originally present
 		$proposed = $proposed | ($original & $privileges);
 		// Return the proposed privileges with the preserved values
 		return $proposed;
+		*/
 	}
 	
 	

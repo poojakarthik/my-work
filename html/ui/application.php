@@ -647,7 +647,7 @@ class Application
 				die;
 			}
 			else
-			{				
+			{
 				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
 			}	

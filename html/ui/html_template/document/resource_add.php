@@ -64,6 +64,7 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 		
 		$this->LoadJavascript("document_resource_add");
 		$this->LoadJavascript("validation");
+		$this->LoadJavascript("input_masks");
 	}
 
 	//------------------------------------------------------------------------//
@@ -124,7 +125,7 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 			<option value='immediately'>Immediately</option>
 			<option value='date'>Date</option>
 		</select>
-		<input type='text' id='DocumentResource.Start' value='' maxlength='10' style='display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
+		<input type='text' id='DocumentResource.Start' value='' InputMask='ShortDate' maxlength='10' style='display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
 	</div>
 	
 	<div style='margin-bottom:8px'>
@@ -133,7 +134,7 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 			<option value='indefinite'>Indefinite</option>
 			<option value='date'>Date</option>
 		</select>
-		<input type='text' id='DocumentResource.End' value='' maxlength='10' style='display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
+		<input type='text' id='DocumentResource.End' value='' InputMask='ShortDate' maxlength='10' style='display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
 	</div>
 
 	<iframe src='flex.php/CustomerGroup/UploadDocumentResource/?DocumentResource.Type=$intResourceType&DocumentResource.CustomerGroup=$intCustomerGroup' style='width:100%;height:25px' frameborder='0' id='FrameUploadResource' name='FrameUploadResource'></iframe>

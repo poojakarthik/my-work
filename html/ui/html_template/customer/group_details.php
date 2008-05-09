@@ -121,6 +121,8 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 	 */
 	private function _RenderForViewing()
 	{
+		$bolUserIsSuperAdmin = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
+		
 		echo "<h2 class='CustomerGroup'>Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 
@@ -132,9 +134,16 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		echo "</div>\n"; // GroupedContent
 		
 		// Render the buttons
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Edit Details", "Vixen.CustomerGroupDetails.RenderDetailsForEditing();");
-		echo "</div></div>\n";
+		if ($bolUserIsSuperAdmin)
+		{
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
+			$this->Button("Edit Details", "Vixen.CustomerGroupDetails.RenderDetailsForEditing();");
+			echo "</div></div>\n";
+		}
+		else
+		{
+			echo "<div class='SmallSeparator'></div>\n";
+		}
 		
 		// Initialise the CustomerGroupDetails object and register the OnCustomerGroupDetailsUpdate Listener
 		$intCustomerGroupId = DBO()->CustomerGroup->Id->Value;

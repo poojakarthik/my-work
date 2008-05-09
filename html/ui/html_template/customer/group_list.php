@@ -71,6 +71,8 @@ class HtmlTemplateCustomerGroupList extends HtmlTemplate
 	 */
 	function Render()
 	{
+		$bolUserIsSuperAdmin = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
+		
 		// Set up the header information for the table of CustomerGroups
 		Table()->CustomerGroups->SetHeader("Internal Name", "External Name", "&nbsp;");
 		Table()->CustomerGroups->SetWidth("45%", "45%", "10%");
@@ -101,10 +103,13 @@ class HtmlTemplateCustomerGroupList extends HtmlTemplate
 				
 		Table()->CustomerGroups->Render();
 		
-		// Render an "Add new Customer Group" button
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Add New Customer Group", "window.location=\"" . Href()->AddCustomerGroup() . "\"");
-		echo "</div></div>\n";
+		// Render an "Add new Customer Group" button, if the user is allowed to add a new customer group
+		if ($bolUserIsSuperAdmin)
+		{
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
+			$this->Button("Add New Customer Group", "window.location=\"" . Href()->AddCustomerGroup() . "\"");
+			echo "</div></div>\n";
+		}
 	}
 }
 

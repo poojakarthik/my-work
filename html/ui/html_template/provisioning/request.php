@@ -63,6 +63,7 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("provisioning_page");
+		$this->LoadJavascript("input_masks");
 	}
 
 	//------------------------------------------------------------------------//
@@ -147,7 +148,7 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		$strAuthorisationDate = date("d/m/Y");
 		echo "      <span style='margin-left:10px;'>Authorisation Date</span>\n";
 		echo "      <span>\n";
-		echo "         <input type='text' id='AuthorisationDateTextBox' name='ProvisioningRequest->AuthorisationDate' value='$strAuthorisationDate' style='width:85px'/>\n";
+		echo "         <input type='text' id='AuthorisationDateTextBox' name='ProvisioningRequest.AuthorisationDate' InputMask='ShortDate' maxlength='10' value='$strAuthorisationDate' style='width:85px'/>\n";
 		echo "      </span>\n";
 		
 		echo "   </div>\n"; // Left

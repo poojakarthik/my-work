@@ -111,14 +111,14 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<!-- START HtmlTemplateEmployeeEdit -->\n";
-		$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		$bolAdding = FALSE;
-		$strEditDisplay = " style='display: none;'";
-		$strViewDisplay = "";
+		$bolAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolAdding		= FALSE;
+		$strEditDisplay	= " style='display: none;'";
+		$strViewDisplay	= "";
 
-		$bolUserIsSelf = DBO()->Employee->Id->Value == AuthenticatedUser()->GetUserId();
+		$bolUserIsSelf	= DBO()->Employee->Id->Value == AuthenticatedUser()->GetUserId();
 
-		$bolEditSelf = FALSE;
+		$bolEditSelf	= FALSE;
 
 		if (DBO()->Employee->Id->Value == -1)
 		{
@@ -209,7 +209,8 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		foreach ($GLOBALS['Permissions'] as $intKey => $strValue)
 		{
 			// Don't allow super admin permissions to be set
-			if (PermCheck(PERMISSION_SUPER_ADMIN, $intKey))
+			//if (PermCheck(PERMISSION_SUPER_ADMIN, $intKey))
+			if (PERMISSION_SUPER_ADMIN == $intKey)
 			{
 				continue;
 			}
@@ -222,6 +223,12 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 					continue;
 				}
 			}
+			// Only allow SuperAdmins to set the CustomerGroupAdmin permission
+			if (PermCheck(PERMISSION_CUSTOMER_GROUP_ADMIN, $intKey) && !AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
+				continue;
+			}
+			
 			if (PermCheck(DBO()->Employee->Privileges->Value, $intKey))
 			{
 				$strDisableAdmin = ($bolUserIsSelf && PermCheck(PERMISSION_ADMIN, $intKey)) ? " disabled" : "";

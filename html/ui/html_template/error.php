@@ -45,22 +45,6 @@
 class HtmlTemplateError extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -71,14 +55,14 @@ class HtmlTemplateError extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
-		
-		// Load all java script specific to the page here
+		$this->_strContainerDivId = $strId;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -94,10 +78,14 @@ class HtmlTemplateError extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
-		echo "<div Id='VixenError' Class=''>\n	";
-		DBO()->Error->Message->Render();
-		echo "\n</div>\n";
+	{
+		$strErrorMsg = DBO()->Error->Message->Value;
+		echo "
+<div id='ErrorMsg'>
+	$strErrorMsg
+</div>
+<input type='button' value='Back' onClick='history.back();' style='margin-top:20px'></input>
+			";
 	}
 }
 

@@ -179,20 +179,24 @@ define('SYSTEM_EMPLOYEE_NAME', 	"Automated System");
 
 // Permissions
 // These are described as Hexedecimal values so they can be logically ORed together, without influencing eachother
-													$arrPermissions = Array ();
-define("PERMISSION_PUBLIC"				, 0x01);	$arrPermissions[PERMISSION_PUBLIC]			= "Public";			// 1
-define("PERMISSION_ADMIN"				, 0x02);	$arrPermissions[PERMISSION_ADMIN]			= "Admin";			// 2	
-define("PERMISSION_OPERATOR"			, 0x04);	$arrPermissions[PERMISSION_OPERATOR]		= "Operator";		// 4
-define("PERMISSION_SALES"				, 0x08);	$arrPermissions[PERMISSION_SALES]			= "Sales";			// 8
-define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]		= "Accounts";		// 16
-define("PERMISSION_RATE_MANAGEMENT"		, 0x20);	$arrPermissions[PERMISSION_RATE_MANAGEMENT]	= "Rate Management";// 32
-define("PERMISSION_CREDIT_CARD"			, 0x40);	$arrPermissions[PERMISSION_CREDIT_CARD]		= "Credit Card";	// 64
-define("PERMISSION_OPERATOR_VIEW"		, 0x80);	$arrPermissions[PERMISSION_OPERATOR_VIEW]	= "Operator View";	// 128
-define("PERMISSION_SUPER_ADMIN"			, 0x100);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 256
-Define("PERMISSION_DEBUG"		, 0x80000000);
-Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
+// When giving a user multiple permissions, they should be logically ORed together, not added together
+														$arrPermissions = Array ();
+define("PERMISSION_PUBLIC"					, 0x01);	$arrPermissions[PERMISSION_PUBLIC]			= "Public";			// 1
+//define("PERMISSION_ADMIN"					, 0x02);	$arrPermissions[PERMISSION_ADMIN]			= "Admin";			// 2	
+define("PERMISSION_ADMIN"					, 0x9F);	$arrPermissions[PERMISSION_ADMIN]			= "Admin";			// 159 (2 + PERMISSION_PUBLIC + PERMISSION_OPERATOR + PERMISSION_SALES + PERMISSION_ACCOUNTS + OPERATOR_VIEW)
+define("PERMISSION_OPERATOR"				, 0x04);	$arrPermissions[PERMISSION_OPERATOR]		= "Operator";		// 4
+define("PERMISSION_SALES"					, 0x08);	$arrPermissions[PERMISSION_SALES]			= "Sales";			// 8
+define("PERMISSION_ACCOUNTS"				, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]		= "Accounts";		// 16
+define("PERMISSION_RATE_MANAGEMENT"			, 0x20);	$arrPermissions[PERMISSION_RATE_MANAGEMENT]	= "Rate Management";// 32
+define("PERMISSION_CREDIT_CARD"				, 0x40);	$arrPermissions[PERMISSION_CREDIT_CARD]		= "Credit Card";	// 64
+define("PERMISSION_OPERATOR_VIEW"			, 0x80);	$arrPermissions[PERMISSION_OPERATOR_VIEW]	= "Operator View";	// 128
+define("PERMISSION_SUPER_ADMIN"				, 0x3FF);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// (1023) (256 + All other permissions except DEBUG and GOD) 
+define("PERMISSION_CUSTOMER_GROUP_ADMIN"	, 0x200);	$arrPermissions[PERMISSION_CUSTOMER_GROUP_ADMIN]	= "Customer Group Admin";	// 512
+define("PERMISSION_DEBUG"					, 0x80000000);
+define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFFFFFF);
 
-													$GLOBALS['Permissions']	= $arrPermissions;
+$GLOBALS['Permissions']	= $arrPermissions;
+
 // This is used in the datbase to represent an "end Date" or "Closed on date" that should never be reached
 define('END_OF_TIME', 	'9999-12-31 23:59:59');
 

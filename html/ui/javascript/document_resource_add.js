@@ -70,7 +70,8 @@ function VixenDocumentResourceAddClass()
 		Event.startObserving(this.objStart.elmCombo, "click", this.DateComboOnChange.bind(this.objStart), true);
 		Event.startObserving(this.objEnd.elmCombo, "keypress", this.DateComboOnChange.bind(this.objEnd), true);
 		Event.startObserving(this.objEnd.elmCombo, "click", this.DateComboOnChange.bind(this.objEnd), true);
-
+		
+		RegisterAllInputMasks();
 	}
 
 	this.InitialiseFrame = function(arrFileTypes)

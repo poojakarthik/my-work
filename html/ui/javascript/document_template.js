@@ -290,6 +290,7 @@ function VixenDocumentTemplateClass()
 		
 		elmForm.submit();
 		
+		Vixen.Popup.Close("BuildSamplePDFPopup");
 		$Alert("The PDF should open soon in a new window");
 		
 		/*
@@ -307,7 +308,7 @@ function VixenDocumentTemplateClass()
 		//window.location = "flex.php/CustomerGroup/BuildSamplePDF/?Template.Id="+ this.objTemplate.Id +"&Generation.Date=1&Generation.Time=1&CustomerGroup.Id="+ this.objTemplate.CustomerGroup +"&Schema.Id="+this.objSchema.Id;
 		//$Alert("flex.php/CustomerGroup/BuildSamplePDF/?Template.Source=1&Generation.Date=1&Generation.Time=1&CustomerGroup.Id="+ this.objTemplate.CustomerGroup +"&Schema.Id="+this.objSchema.Id);
 		*/
-		//Vixen.Popup.Close("BuildSamplePDFPopup");
+		
 	}
 
 	this.BuildSamplePDFReturnHandler = function(objXMLHttpRequest)

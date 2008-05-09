@@ -63,11 +63,14 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+		{
+			BreadCrumb()->System_Settings_Menu();
+		}
 		BreadCrumb()->SetCurrentPage("Customer Groups");
 		
 		// Retrieve the list of customer groups
@@ -166,7 +169,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		// Load the CustomerGroupDetails
 		if (!DBO()->CustomerGroup->Load())
@@ -197,7 +200,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+		{
+			BreadCrumb()->System_Settings_Menu();
+		}
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("Customer Group");
 		
@@ -229,7 +235,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 
 		// Load the CustomerGroup
 		DBO()->CustomerGroup->Load();
@@ -326,7 +332,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
+		$bolUserIsSuperAdmin = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 		
 		if (!DBO()->CustomerGroup->Load())
 		{
@@ -373,8 +380,17 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		if (DBL()->Templates->RecordCount() == 0)
 		{
 			// There aren't any templates for this CustomerGroup/TemplateType combination
-			// Redirect the user to the AddNewTemplate page
-			return $this->BuildNewTemplate();
+			// Redirect the user to the AddNewTemplate page, if they have permission to add a new template
+			if ($bolUserIsSuperAdmin)
+			{
+				return $this->BuildNewTemplate();
+			}
+			else
+			{
+				DBO()->Error->Message = "You do not have permission to build a new template";
+				$this->LoadPage('error');
+				return TRUE;
+			}
 		}
 		
 		// Build Context Menu
@@ -382,7 +398,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
-		BreadCrumb()->SystemSettingsMenu();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+		{
+			BreadCrumb()->System_Settings_Menu();
+		}
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
 		BreadCrumb()->SetCurrentPage("Template History");
@@ -571,7 +590,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		if (!$this->_LoadTemplate(DBO()->DocumentTemplate->Id->Value, FALSE))
 		{
@@ -586,7 +605,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		//BreadCrumb Menu
 		BreadCrumb()->Admin_Console();
-		BreadCrumb()->SystemSettingsMenu();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+		{
+			BreadCrumb()->System_Settings_Menu();
+		}
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
@@ -776,7 +798,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		if (!DBO()->CustomerGroup->Load())
 		{
@@ -799,7 +821,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
-		BreadCrumb()->SystemSettingsMenu();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+		{
+			BreadCrumb()->System_Settings_Menu();
+		}
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
 		BreadCrumb()->SetCurrentPage("Document Resources");
@@ -829,7 +854,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		$intResourceType	= DBO()->History->ResourceType->Value;
 		$intCustomerGroup	= DBO()->History->CustomerGroup->Value;
@@ -860,7 +885,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		if (!DBO()->CustomerGroup->Load())
 		{
@@ -905,7 +930,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		$intResourceId			= DBO()->DocumentResource->Id->Value;
 		$bolDownloadResource	= DBO()->DocumentResource->DownloadFile->Value;
@@ -993,7 +1018,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		// Retrieve the FileTypes that this resource can be
 		$intResourceType = DBO()->DocumentResource->Type->Value;
@@ -1038,7 +1063,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	/**
 	 * ViewSamplePDF()
 	 *
-	 * Produces the "Sample PDF" popup
+	 * Produces the "Sample PDF" popup (THIS ISN'T USED YET)
 	 * 
 	 * Produces the "Sample PDF" popup
 	 * It can have the following values declared, although they are both optional:
@@ -1050,9 +1075,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 */
 	function ViewSamplePDF()
 	{
+		//TODO! Implement this popup
+		//(Currently Sample PDFs are built through a popup that is defined in the DocumentTemplate HtmlTemplate and document_template.js files)
+		
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		// Load all Customer Groups
 		DBL()->CustomerGroup->OrderBy("InternalName ASC");
@@ -1101,7 +1129,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		if (!DBO()->CustomerGroup->Load())
 		{
@@ -1122,7 +1150,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			exit;
 		}
 		
-		if (!Validate("Time", DBO()->Generation->Date->Value))
+		if (!Validate("Time", DBO()->Generation->Time->Value))
 		{
 			echo "ERROR: The Generation Time is invalid.  It must be in the format HH:MM:SS";
 			exit;
@@ -1140,8 +1168,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 									"CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
 									"EffectiveOn"	=> $strGenerationDate
 								);
-			$selTemplate = new StatementSelect("DocumentTemplate", "Source, TemplateSchema", $strWhere, "CreatedOn DESC", "1");
-			$mixResult = $selTemplate->Execute($arrWhere);
+			$selTemplate	= new StatementSelect("DocumentTemplate", "Source, TemplateSchema", $strWhere, "CreatedOn DESC", "1");
+			$mixResult		= $selTemplate->Execute($arrWhere);
 			if ($mixResult === FALSE)
 			{
 				echo "ERROR: Retrieving the approriate DocumentTemplate from the database failed, unexpectedly.  Please notify your system administrator";
@@ -1149,7 +1177,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			}
 			if ($mixResult == 0)
 			{
-				echo "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->InternalName->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value;
+				echo "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->InternalName->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value .", for generation on $strGenerationDate";
 				exit;
 			}
 			
@@ -1192,8 +1220,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			echo "ERROR: PDF generation failed<br /><br />". $objException->getMessage();
 			exit;
 		}
+		
 		// The pdf was successfully created
-		$strFilename = "Sample.pdf";
+		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->InternalName->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
 		header("Content-type: application/pdf;");
 		header("Content-Disposition: attachment; filename=\"$strFilename\"");
 		echo $strPdf;
