@@ -19,6 +19,27 @@ class Cli_Pdf extends Cli
 			$strDestination = $arrArgs[Cli_Pdf::SWITCH_OUTPUT_FILE_PATH_AND_NAME];
 			$strSource = $arrArgs[Cli_Pdf::SWITCH_XML_DATA_FILE_LOCATION];
 			
+			// Check to see if target is an archive
+			$bolArchived = FALSE;
+			if ($strDestination !== NULL && !is_dir($strDestination))
+			{
+				$matches = array();
+				if (preg_match("/\.tar(?:\.(bz2|gz)|)$/", $strDestination, $matches))
+				{
+					var_dump($matches);
+					$strCompression = count($matches) == 1 ? NULL : strtolower($matches[1]);
+					$bolArchived = TRUE;
+
+					$strArchiveFile = $strDestination;
+					$strDestination = dirname($strDestination);
+	
+					// Check that the PEAR library 'Archive_Tar' is available
+					$this->startErrorCatching();
+					require_once "Archive/Tar.php";
+					$this->dieIfErred();
+				}
+			}
+			
 			// Check the destination type is valid (can't have file destination for source directory)
 			if ($strDestination !== NULL && !is_dir($strDestination) && is_dir($strSource))
 			{
@@ -97,6 +118,19 @@ class Cli_Pdf extends Cli
 				$this->dieIfErred();
 			}
 			
+			// If writing to an archived file...
+			if ($bolArchived)
+			{
+				$objArchive = new Archive_Tar($strArchiveFile, $strCompression);
+				$objArchive->add($arrFiles);
+				
+				// Remove the archived folder
+				foreach ($arrFiles as $strSource => $strDestination)
+				{
+					unlink($strDestination);
+				}
+			}
+
 			// Must have worked! Exit with 'OK' code 0
 			exit(0);
 		}
