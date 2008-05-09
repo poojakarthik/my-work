@@ -1782,7 +1782,7 @@ class BillingModuleReports
 			$intBillingDate			= strtotime($arrData['BillingDate']);
 			$strPaymentPeriodStart	= date("Y-m-d", strtotime("-1 day", strtotime(date("Y-m-01", $intBillingDate))));
 			$strPaymentPeriodEnd	= date("Y-m-d", strtotime("-1 month", strtotime(date("Y-m-01", $intBillingDate))));
-			$selPaymentsReceived	= new StatementSelect("Payments", "SUM(Amount) AS Total", "Status IN (101, 103, 150) AND PaidOn BETWEEN '$strPaymentPeriodStart' AND '$strPaymentPeriodEnd'");
+			$selPaymentsReceived	= new StatementSelect("Payment", "SUM(Amount) AS Total", "Status IN (101, 103, 150) AND PaidOn BETWEEN '$strPaymentPeriodStart' AND '$strPaymentPeriodEnd'");
 			if ($selPaymentsReceived->Execute() === FALSE)
 			{
 				Debug($selPaymentsReceived->Error());
@@ -1806,7 +1806,7 @@ class BillingModuleReports
 		{
 			$wksWorksheet->writeFormula($i-1, 4, "=IF(AND(C$i <> 0, NOT(C$i = \"N/A\")), (C$i - D$i) / ABS(C$i), \"N/A\")", $arrFormat['Percentage']);
 		}
-		for ($i = 27; $i <= 29; $i++)
+		for ($i = 27; $i <= 30; $i++)
 		{
 			$wksWorksheet->writeFormula($i-1, 4, "=IF(AND(C$i <> 0, NOT(C$i = \"N/A\")), (C$i - D$i) / ABS(C$i), \"N/A\")", $arrFormat['Percentage']);
 		}

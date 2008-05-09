@@ -368,16 +368,11 @@
 		
 		// FIXME: Invoice Inserts (do this properly)
 		$arrInserts = array_fill(0, 6, '0');
-		switch ($arrCustomerData['CustomerGroup'])
+		
+		$intLastBillDate	= strtotime("-1 month", date("Y-m-01", strtotime($arrInvoiceDetails['CreatedOn'])));
+		if (($arrCustomerData['CustomerGroup'] == CUSTOMER_GROUP_VOICETALK) && (strtotime($arrCustomerData['CreatedOn']) >= $intLastBillDate) && ($arrInvoiceDetails['DeliveryMethod'] == BILLING_METHOD_POST))
 		{
-			case CUSTOMER_GROUP_VOICETALK:
-				$arrInserts[1]	= '1';
-				break;
-				
-			default:
 				$arrInserts[0]	= '1';
-				break;					
-				
 		}
 		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= implode($arrInserts);
 		

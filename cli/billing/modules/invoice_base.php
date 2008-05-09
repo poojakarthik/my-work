@@ -6,42 +6,42 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// module_printing
+// invoice_base
 //----------------------------------------------------------------------------//
 /**
- * module_printing
+ * invoice_base
  *
- * Module for Bill Printing
+ * Billing module for Invoice Printing Base Class
  *
- * Module for Bill Printing
+ * Billing module for Invoice Printing Base Class
  *
  * @file		module_printing.php
  * @language	PHP
  * @package		billing
  * @author		Jared 'flame' Herbohn, Rich 'Waste' Davis
- * @version		6.12
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @version		8.05
+ * @copyright	2008 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
 
 
 //----------------------------------------------------------------------------//
-// BillingModulePrint
+// BillingModuleInvoice
 //----------------------------------------------------------------------------//
 /**
- * BillingModulePrint
+ * BillingModuleInvoice
  *
- * Billing module for Bill Printing
+ * Billing module for Invoice Printing Base Class
  *
- * Billing module for Bill Printing
+ * Billing module for Invoice Printing Base Class
  *
  * @prefix		bil
  *
  * @package		billing
- * @class		BillingModulePrint
+ * @class		BillingModuleInvoice
  */
-class BillingModulePrint
+class BillingModuleInvoice
 {
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -49,15 +49,15 @@ class BillingModulePrint
 	/**
 	 * __construct()
 	 *
-	 * Constructor method for BillingModulePrint
+	 * Constructor method for BillingModuleInvoice
 	 *
-	 * Constructor method for BillingModulePrint
+	 * Constructor method for BillingModuleInvoice
 	 *
-	 * @return		BillingModulePrint
+	 * @return		BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	function __construct($ptrThisDB, $arrConfig)
+ 	function __construct($ptrThisDB, $arrConfig, $strCDRTable = 'CDR')
  	{
 		// Set up the database reference
 		$this->db = $ptrThisDB;
@@ -65,6 +65,53 @@ class BillingModulePrint
 		// Init member variables
 		$this->_strFilename		= NULL;
 		$this->_strSampleFile	= NULL;
+		
+		//--------------------------------------------------------------------//
+		// Statements
+		//--------------------------------------------------------------------//
+		
+		// Service Details
+		$arrService					= Array();
+		$arrService['FNN']			= "Service.FNN";
+		$arrService['CostCentre']	= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END) AS CostCentre";
+		$arrService['Indial100']	= "Service.Indial100";
+		$arrService['Extension']	= "ServiceExtension.Name";
+		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
+		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";
+		$arrService['IsRendered']	= "(CASE WHEN ForceInvoiceRender = 1 THEN 1 WHEN ServiceTotal != 0.0 THEN 1 WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0) AS IsRendered";
+		$arrService['ServiceTotal']	= "SUM(ServiceTotal.TotalCharge + ServiceTotal.Debit - ServiceTotal.Credit)";
+		$arrService['RatePlan']		= "RatePlan.Name";
+		$arrService['RatedTotal']	= "ServiceTotal.CappedCharge + ServiceTotal.UncappedCharge";
+		$arrService['PlanCharge']	= "ServiceTotal.PlanCharge";
+		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
+																	$arrService,
+																	"Service.Account = <Account> AND Status != ".SERVICE_ARCHIVED.")",
+																	"Service.ServiceType, Service.FNN, ServiceExtension.Name",
+																	NULL,
+																	"Service.FNN, ServiceExtension.Name");
+		
+		$this->_selServiceInstances			= new StatementSelect(	"Service LEFT JOIN ServiceExtension ON (Service.Id = ServiceExtension.Service AND ServiceExtension.Archived = 0)", 
+																	"Service.Id AS Id", 
+																	"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.Name <=> <Extension>)");
+				
+		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
+																	"RG.Description AS Description, SUM(ServiceTypeTotal.Charge) AS Total",
+																	"Account = <Id> AND InvoiceRun = <InvoiceRun>",
+																	"RG.Description",
+																	NULL,
+																	"RG.Id");
+		
+		$this->_selAccountSummaryCharges	= new StatementSelect(	"Charge",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Charge) AS Total",
+																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+		
+		$this->_selPlanCharges				= new StatementSelect(	"Charge",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0) AS PlanDebit",
+																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+		
+		$this->_selCustomerData				= new StatementSelect(	"Account",
+																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup",
+																	"Account = <Account>");
  	}
  	
  	//------------------------------------------------------------------------//
@@ -192,12 +239,12 @@ class BillingModulePrint
 	 			case BILL_FACTORY_ITEMISE_RECORD_TYPES:
 	 				$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
 						(	
-							"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
+							"$strCDRTable USE INDEX (Service_3) JOIN RecordType ON $strCDRTable.RecordType = RecordType.Id, RecordType AS RecordGroup",
 							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
 							"$strWhereService AND " .
 							"RecordGroup.Id = RecordType.GroupId AND " .
 							"RecordGroup.Itemised = 1 AND " .
-							"CDR.InvoiceRun = <InvoiceRun> AND " .
+							"$strCDRTable.InvoiceRun = <InvoiceRun> AND " .
 							"FNN BETWEEN <RangeStart> AND <RangeEnd>",
 							"RecordGroup.Description",
 							NULL,
@@ -207,28 +254,28 @@ class BillingModulePrint
 	 				
 	 			case BILL_FACTORY_ITEMISE_CALLS:
 					$arrColumns = Array();
-					$arrColumns['Charge']			= "CDR.Charge";
-					$arrColumns['Source']			= "CDR.Source";
-					$arrColumns['Destination']		= "CDR.Destination";
-					$arrColumns['StartDatetime']	= "CDR.StartDatetime";
-					$arrColumns['EndDatetime']		= "CDR.EndDatetime";
-					$arrColumns['Units']			= "CDR.Units";
-					$arrColumns['Description']		= "CDR.Description";
-					$arrColumns['DestinationCode']	= "CDR.DestinationCode";
+					$arrColumns['Charge']			= "$strCDRTable.Charge";
+					$arrColumns['Source']			= "$strCDRTable.Source";
+					$arrColumns['Destination']		= "$strCDRTable.Destination";
+					$arrColumns['StartDatetime']	= "$strCDRTable.StartDatetime";
+					$arrColumns['EndDatetime']		= "$strCDRTable.EndDatetime";
+					$arrColumns['Units']			= "$strCDRTable.Units";
+					$arrColumns['Description']		= "$strCDRTable.Description";
+					$arrColumns['DestinationCode']	= "$strCDRTable.DestinationCode";
 					$arrColumns['DisplayType']		= "RecordGroup.DisplayType";
 					$arrColumns['RecordGroup']		= "RecordGroup.Description";
  					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
  					(	
-						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
+						"$strCDRTable USE INDEX (Service_3) JOIN RecordType ON $strCDRTable.RecordType = RecordType.Id" .
 						", RecordType as RecordGroup",
 						$arrColumns,
 						"$strWhereService AND " .
 						"RecordGroup.Id = RecordType.GroupId AND " .
 						"RecordGroup.Id = <RecordGroup> AND " .
-						"RecordGroup.Itemised = 1 AND " .
-						"CDR.InvoiceRun = <InvoiceRun> AND " .
+						/*"RecordGroup.Itemised = 1 AND " .*/
+						"$strCDRTable.InvoiceRun = <InvoiceRun> AND " .
 						"FNN BETWEEN <RangeStart> AND <RangeEnd>",
-						"CDR.StartDatetime"
+						"$strCDRTable.StartDatetime"
  					);
 	 				break;
 	 				
@@ -241,7 +288,7 @@ class BillingModulePrint
 					(	
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND InvoiceRun = <InvoiceRun>"
+						"$strWhereService AND InvoiceRun = <InvoiceRun> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'"
 					);
 	 				break;
 	 				
@@ -266,6 +313,35 @@ class BillingModulePrint
 						"Nature",
 						2,
 						"Nature"
+					);
+	 				break;
+	 				
+	 			case BILL_FACTORY_RECORD_TYPES:
+					$arrRecordType	= Array();
+					$arrRecordType['RecordGroup']	= "RecordGroup.Description";
+					$arrRecordType['GroupId']		= "RecordGroup.Id";
+					/*$arrRecordType['Itemised']		= "RecordGroup.Itemised";*/
+					$arrRecordType['DisplayType']	= "RecordGroup.DisplayType";
+					$arrRecordType['TotalCharge']	= "ServiceTypeTotal.Charge";
+					$arrRecordType['Records']		= "RecordGroup.DisplayType";
+					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
+					(
+	 					"(ServiceTypeTotal JOIN RecordType ON RecordType.Id = ServiceTypeTotal.RecordType) JOIN RecordType RecordGroup ON RecordType.GroupId = RecordGroup.Id",
+						$arrRecordType,
+						"InvoiceRun = <InvoiceRun> AND $strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd>"
+					);
+	 				break;
+	 				
+	 			case BILL_FACTORY_PLAN_ADJUSTMENTS:
+	 				$arrColumns['Charge']				= "Amount";
+					$arrColumns['Description']			= "Description";
+					$arrColumns['ChargeType']			= "ChargeType";
+					$arrColumns['Nature']				= "Nature";
+					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
+					(	
+						"Charge",
+						$arrColumns,
+						"$strWhereService AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')"
 					);
 	 				break;
 	 			
@@ -295,6 +371,50 @@ class BillingModulePrint
  	}
  	
   	//------------------------------------------------------------------------//
+	// _GetOldInvoice()
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetOldInvoice()
+	 *
+	 * Returns the Invoice Data from the Xth last Invoice
+	 *
+	 * Returns the Invoice Data from the Xth last Invoice
+	 * 
+	 * @param	integer	$intAccount					The Account number to limit to
+	 * @param	integer	$intPeriodsAgo				The number of billing periods ago to check (eg. 1 will return the last Invoice)
+	 *
+	 * @return	array								Old Invoice Data
+	 *
+	 * @method
+	 */
+	protected function _GetOldInvoice($intAccount, $intPeriodsAgo)
+	{
+		if ((int)$intPeriodsAgo < 1)
+		{
+			// Either not an integer, or an invalid number of periods ago
+			return FALSE;
+		}
+		
+		$intPeriodsAgo--;
+		$selOldInvoice	= new StatementSelect("Invoice", "*", "Account = $intAccount", "CreatedOn", "$intPeriodsAgo, 1");
+		if ($selOldInvoice->Execute === FALSE)
+		{
+			Debug($selOldInvoice->Error());
+			return Array();
+		}
+		
+		// Return data or empty array
+		if ($arrInvoice = $selOldInvoice->Fetch())
+		{
+			return $arrInvoice;
+		}
+		else
+		{
+			return Array();
+		}
+	}
+ 	
+  	//------------------------------------------------------------------------//
 	// _GetCustomerData()
 	//------------------------------------------------------------------------//
 	/**
@@ -311,11 +431,7 @@ class BillingModulePrint
 	 * @method
 	 */
 	protected function _GetCustomerData($arrInvoice)
-	{
-		$this->_selCustomerData	= new StatementSelect(	"Account",
-														"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup",
-														"Account = <Account>");
-		
+	{		
 		// Retrieve the Customer Data
 		if ($this->_selCustomerData->Execute === FALSE)
 		{
@@ -332,6 +448,160 @@ class BillingModulePrint
 		{
 			return Array();
 		}
+	}
+ 	
+  	//------------------------------------------------------------------------//
+	// _GetServices()
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetServices()
+	 *
+	 * Gets a list of Services that have been Invoiced this run
+	 *
+	 * Gets a list of Services that have been Invoiced this run
+	 * 
+	 * @param	array	$arrInvoice						Invoice Details
+	 * 
+	 * @return	array									Account Summary Array
+	 *
+	 * @method
+	 */
+	protected function _GetServices($arrInvoice)
+	{		
+		// Get Service Details
+		if ($this->_selServiceDetails->Execute($arrInvoice) === FALSE)
+		{
+			Debug($this->_selServiceDetails->Error());
+			return Array();
+		}
+		
+		$arrServices	= $this->_selServices->FetchAll();
+		
+		// Get List of Service IDs for each FNN
+		foreach ($arrServices as $intKey=>$arrService)
+		{
+			$arrWhere = Array();
+			$arrWhere['Account']	= $arrInvoice['Account'];
+			$arrWhere['FNN']		= $arrService['FNN'];
+			$arrWhere['Extension']	= $arrService['Extension'];
+			if (!$this->_selServiceInstances->Execute($arrWhere))
+			{
+				Debug("Error on _selServiceInstances!");
+				Debug($this->_selServiceInstances->Error());
+			}
+			else
+			{
+				$arrService['Id']	= Array();
+				while ($arrId = $this->_selServiceInstances->Fetch())
+				{
+					$arrService['Id'][] = $arrId['Id'];
+				}
+			}
+			$arrServices[$intKey] = $arrService;
+		}
+		
+		foreach ($arrServices as &$arrService)
+		{
+			// Get Record Types
+			$arrWhere	= Array();
+			$arrWhere['InvoiceRun']	= $arrInvoice['InvoiceRun'];
+			$arrWhere['RangeStart']	= $arrService['RangeStart'];
+			$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
+			$arrRecordTypes	= $this->_BillingFactory(BILL_FACTORY_RECORD_TYPES, $arrService, $arrWhere);
+			foreach ($arrRecordTypes as $arrRecordType)
+			{
+				// Get Call Itemisation
+				$arrWhere['RecordGroup']		= $arrRecordType['GroupId'];
+				$arrRecordType['Itemisation']	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CALLS, $arrService, $arrWhere);
+				
+				// Add Record Type to Service Array
+				$arrService['RecordTypes'][$arrRecordType['Description']]	= $arrRecordType;
+			}
+			
+			// Get Adjustments
+			$arrItemised	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrWhere);
+			if (count($arrItemised))
+			{
+				$fltAdjustmentsTotal	= 0;
+				
+				// Convert each Adjustment to a CDR
+				foreach ($arrItemised as $arrCharge)
+				{
+					$arrCDR	= Array();
+					if ($arrCharge['Nature'] == NATURE_CR)
+					{
+						$arrCDR['Charge']	= 0 - $arrCharge['Charge'];
+					}
+					$fltAdjustmentsTotal	+= $arrCDR['Charge'];
+					
+					$arrCDR['Units']		= 1;
+					$arrCDR['Description']	= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
+					
+					$arrRecordTypes['Other Charges & Credits']['Itemisation'][]	= $arrCDR;
+				}
+				
+				$arrRecordTypes['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+				$arrRecordTypes['Other Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
+				$arrRecordTypes['Other Charges & Credits']['Records']		= count($arrItemised);
+			}
+			
+			// Get Plan Charges & Credits
+			$fltPlanChargeTotal			= 0;
+			$arrPlanAdjustments			= $this->_BillingFactory(BILL_FACTORY_PLAN_ADJUSTMENTS, $arrService, $arrWhere);
+			$arrPlanChargeItemisation	= Array();
+			foreach ($arrPlanAdjustments as $arrAdjustment)
+			{
+				// Format Plan Adjustment as CDR
+				$arrCDR	= Array();
+				if ($arrCharge['Nature'] == NATURE_CR)
+				{
+					$arrCDR['Charge']		= 0 - $arrCharge['Charge'];
+				}
+				$fltPlanChargeTotal			+= $arrCDR['Charge'];
+				
+				$arrCDR['Units']			= 1;
+				$arrCDR['Description']		= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
+				$arrPlanChargeItemisation[]	= $arrCDR;
+			}
+			
+			// Add ServiceTotal.PlanCharge as a CDR
+			if ((float)$arrService['PlanCharge'])
+			{
+				// Add an adjustment (Date is hack fixed to 1 month periods)
+				$fltPlanChargeTotal			= $arrService['PlanCharge'];
+				
+				$arrCDR	= Array();
+				$arrCDR['Charge']			= $arrService['PlanCharge'];				
+				$arrCDR['Units']			= 1;
+				$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
+				$arrPlanChargeItemisation[]	= $arrCDR;
+			
+				// Check for ServiceTotal vs Rated Total, then add as CDR
+				if ($arrService['ServiceTotal'] - $arrService['RatedTotal'])
+				{
+					$fltPlanChargeTotal			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
+					
+					$arrCDR	= Array();
+					$arrCDR['Charge']			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];				
+					$arrCDR['Units']			= 1;
+					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
+					$arrPlanChargeItemisation[]	= $arrCDR;
+				}
+			}
+			
+			// Add to Service Array
+			if (count($arrPlanChargeItemisation))
+			{
+				$arrRecordTypes['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+				$arrRecordTypes['Plan Charges & Credits']['TotalCharge']	= $fltPlanChargeTotal;
+				$arrRecordTypes['Plan Charges & Credits']['Records']		= count($arrPlanChargeItemisation);
+				$arrRecordTypes['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
+			}
+			
+			$arrService['RecordTypes']	= $arrRecordTypes;
+		}
+		
+		return $arrServices;
 	}
  	
   	//------------------------------------------------------------------------//
@@ -359,21 +629,6 @@ class BillingModulePrint
 	protected function _GetAccountSummary($arrInvoice, $bolAdjustments = TRUE, $bolPlanAdjustments = TRUE, $bolGST = TRUE)
 	{
 		$arrAccountSummary	= Array();
-		
-		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
-																	"RG.Description AS Description, SUM(ServiceTypeTotal.Charge) AS Total",
-																	"Account = <Id> AND InvoiceRun = <InvoiceRun>",
-																	"RG.Description",
-																	NULL,
-																	"RG.Id");
-		
-		$this->_selAccountSummaryCharges	= new StatementSelect(	"Charge",
-																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Charge) AS Total",
-																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
-		
-		$this->_selPlanCharges				= new StatementSelect(	"Charge",
-																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0) AS PlanDebit",
-																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
 		
 		// Get Account Summary
 		if ($this->_selAccountSummary->Execute($arrInvoice) === FALSE)

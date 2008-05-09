@@ -161,6 +161,7 @@
 		$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
 		$arrCharge['InvoiceRun']	= $arrInvoice['InvoiceRun'];
 		$arrCharge['ChargedOn']		= date("Y-m-d");
+		$arrCharge['CreatedOn']		= date("Y-m-d");
 		
 		// Return FALSE or amount charged
 		if (!$GLOBALS['fwkFramework']->AddCharge($arrCharge))

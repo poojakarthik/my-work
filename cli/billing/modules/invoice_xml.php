@@ -57,10 +57,10 @@
 	 *
 	 * @method
 	 */
- 	function __construct($ptrThisDB, $arrConfig)
+ 	function __construct($ptrThisDB, $arrConfig, $strCDRTable = 'CDR')
  	{
 		// Call Parent Constructor
-		parent::__construct();
+		parent::__construct($ptrThisDB, $arrConfig, $strCDRTable);
  	}
  	
  	//------------------------------------------------------------------------//
@@ -73,9 +73,9 @@
 	 *
 	 * Adds an invoice to the bill
 	 * 
-	 * @param		array		$arrInvoice				Associative array of details for this Invoice
-	 * @param		boolean		$bolDebug				optional TRUE	: Doesn't insert to database, returns data array
-	 * 															 FALSE	: Inserts to database, returns boolean
+	 * @param		array		$arrInvoice							Associative array of details for this Invoice
+	 * @param		boolean		$bolDebug				[optional]	TRUE	: Doesn't write to file, returns XML data
+	 * 																FALSE	: Writes to file, returns boolean (default)
 	 *
 	 * @return		mixed
 	 *
@@ -87,51 +87,101 @@
 		$arrOutputData	= Array();
 		
 		// Get Customer Information
-		// TODO
+		$arrCustomer	= $this->_GetCustomerData($arrInvoice);
 		
 		// Init our XML Document
 		$this->_domDocument	= new DOMDocument('1.0'); 
-		 
+		
+		//--------------------------------------------------------------------//
 		// Invoice Object
+		//--------------------------------------------------------------------//
 		$xmlInvoice	= $this->_AddElement($this->_domDocument, 'Invoice');
-		$this->_AddAttribute($xmlInvoice, 'Id', 'SAMPLE');
+		$this->_AddAttribute($xmlInvoice, 'Id'				, 'SAMPLE');
+		$this->_AddAttribute($xmlInvoice, 'DeliveryMethod'	, GetConstantName($arrInvoice['DeliveryMethod'], 'BillingMethod'));
 		
+		//--------------------------------------------------------------------//
 		// Currency Symbol (at the moment, we always use AUD, so $)
-		$this->_AddElement($xmlInvoice, 'CurrencySymbol', '$');
+		//--------------------------------------------------------------------//
+		$xmlCurrency	= $this->_AddElement($xmlInvoice, 'Currency');
+		$xmlSymbol		= $this->_AddElement($xmlCurrency, 'Symbol', '$');
+		$this->_AddAttribute($xmlSymbol, 'Location', 'Prefix');
+		$xmlNegative	= $this->_AddElement($xmlCurrency, 'Negative', 'CR');
+		$this->_AddAttribute($xmlNegative, 'Location', 'Suffix');
 		
+		//--------------------------------------------------------------------//
 		// Account Information
+		//--------------------------------------------------------------------//
 		$xmlAccount	= $this->_AddElement($xmlInvoice, 'Account');
 		$this->_AddAttribute($xmlAccount, 'Id', $arrInvoice['Id']);
 		$this->_AddAttribute($xmlAccount, 'Name', $arrInvoice['BusinessName']);
+		$this->_AddAttribute($xmlAccount, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
 		$this->_AddElement($xmlAccount, 'Addressee', $arrInvoice['BusinessName']);
 		$this->_AddElement($xmlAccount, 'AddressLine1', $arrInvoice['Address1']);
 		$this->_AddElement($xmlAccount, 'AddressLine2', $arrInvoice['Address2']);
 		$this->_AddElement($xmlAccount, 'Suburb', $arrInvoice['Suburb']);
 		$this->_AddElement($xmlAccount, 'Postcode', $arrInvoice['Postcode']);
 		$this->_AddElement($xmlAccount, 'State', $arrInvoice['State']);
-		$this->_AddElement($xmlAccount, 'CustomerReference', $arrInvoice['Id'].MakeLuhn($arrInvoice['Id']));
 		
+		//--------------------------------------------------------------------//
+		// Payment Information
+		//--------------------------------------------------------------------//
+		$xmlPayment		= $this->_AddElement($xmlInvoice, 'PaymentDetails');
+		$xmlBPay		= $this->_AddElement($xmlPayment, 'BPay');
+		$this->_AddElement($xmlBPay, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));
+		$xmlBillExpress	= $this->_AddElement($xmlPayment, 'BillExpress');
+		$this->_AddElement($xmlBillExpress, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));		// FIXME
+		
+		//--------------------------------------------------------------------//
 		// Statement
+		//--------------------------------------------------------------------//
+		// HACKHACKHACK: These dates work off the "Bill every month on the 1st" premise
+		$intBillingDate			= strtotime($arrInvoice['CreatedOn']);
+		$strBillingPeriodStart	= date("j M y", strtotime("-1 month", strtotime(date("Y-m-01", $intBillingDate))));
+		$strBillingPeriodEnd	= date("j M y", strtotime("-1 day", strtotime(date("Y-m-01", $intBillingDate))));
+		
+		// Add to XML schema
+		$arrLastInvoice	= $this->_GetOldInvoice($arrInvoice['Account'], 1);
 		$xmlStatement	= $this->_AddElement($xmlInvoice, 'Account');
-		$this->_AddElement($xmlAccount, 'OpeningBalance', NULL);								// FIXME
-		$this->_AddElement($xmlAccount, 'Payments', NULL);										// FIXME
-		$this->_AddElement($xmlAccount, 'Overdue', $arrOutputData['AccountBalance']);
-		$this->_AddElement($xmlAccount, 'NewCharges', $arrOutputData['Total'] + $arrOutputData['Tax']);
-		$this->_AddElement($xmlAccount, 'TotalOwing', $arrOutputData['TotalOwing']);
-		$this->_AddElement($xmlAccount, 'BillingPeriodStart', NULL);							// FIXME
-		$this->_AddElement($xmlAccount, 'BillingPeriodEnd', NULL);								// FIXME
+		$this->_AddElement($xmlAccount, 'OpeningBalance', $arrLastInvoice['TotalOwing']);
+		$this->_AddElement($xmlAccount, 'Payments', max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0));
+		$this->_AddElement($xmlAccount, 'Overdue', $arrInvoice['AccountBalance']);
+		$this->_AddElement($xmlAccount, 'NewCharges', $arrInvoice['Total'] + $arrInvoice['Tax']);
+		$this->_AddElement($xmlAccount, 'TotalOwing', $arrInvoice['TotalOwing']);
+		$this->_AddElement($xmlAccount, 'BillingPeriodStart', $strBillingPeriodStart);
+		$this->_AddElement($xmlAccount, 'BillingPeriodEnd', $strBillingPeriodEnd);
+		$this->_AddElement($xmlAccount, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
 		
+		//--------------------------------------------------------------------//
 		// Account Summary
-		$arrChargeTotal		= $this->_GetAccountSummary($arrInvoice);
+		//--------------------------------------------------------------------//
+		$arrChargeTotals	= $this->_GetAccountSummary($arrInvoice);
 		$xmlAccountSummary	= $this->_AddElement($xmlInvoice, 'AccountSummary');
-		foreach ($arrChargeTotals as $arrChargeTotal)
+		foreach ($arrChargeTotals as $strDescription=>$fltTotal)
 		{
-			$this->_AddElement($xmlAccountSummary, 'Category', $arrChargeTotal['Total']);
-			$this->_AddAttribute($xmlAccountSummary, 'Description', $arrChargeTotal['Description']);
+			$this->_AddElement($xmlAccountSummary, 'Category', $fltTotal);
+			$this->_AddAttribute($xmlAccountSummary, 'Description', $strDescription);
 		}
-		$this->_AddAttribute($xmlAccountSummary, 'GrandTotal', $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax']);
+		$this->_AddAttribute($xmlAccountSummary, 'GrandTotal', round($arrInvoice['Total'] + $arrInvoice['Tax']), 2);
 		
+		//--------------------------------------------------------------------//
+		// Service (Data retrieval only)
+		//--------------------------------------------------------------------//
+		$arrServices	= $this->_GetServices($arrInvoice);
+		
+		//--------------------------------------------------------------------//
 		// Cost Centre Summary
+		//--------------------------------------------------------------------//
+		$arrCostCentres	= Array();
+		foreach ($arrServices as $arrService)
+		{
+			// Is this Service in a Cost Centre?
+			if ($arrService['CostCentre'] && $arrService['IsRendered'])
+			{
+				$arrCostCentres[$arrService['CostCentre']]['Services'][$arrService['FNN']]	= $arrService['ServiceTotal'];
+				$arrCostCentres[$arrService['CostCentre']]['GrandTotal']					+= (float)$arrService['ServiceTotal'];
+			}
+		}
+		
 		$xmlCostCentreSummary	= $this->_AddElement($xmlInvoice, 'CostCentreSummary');
 		foreach ($arrCostCentres as $arrCostCentre)
 		{
@@ -140,14 +190,16 @@
 			$this->_AddAttribute($xmlCostCentre, 'Name', $arrCostCentre['Name']);
 			$this->_AddAttribute($xmlCostCentre, 'Total', $arrCostCentre['GrandTotal']);
 			
-			foreach ($arrCostCentreServices as $arrCostCentreService)
+			foreach ($arrCostCentre['Services'] as $strFNN=>$fltServiceTotal)
 			{
-				$xmlService	= $this->_AddElement($xmlCostCentre, 'Service', $arrCostCentreService['GrandTotal']);
-				$this->_AddAttribute($xmlService, 'FNN', $arrCostCentreService['FNN']);
+				$xmlService	= $this->_AddElement($xmlCostCentre, 'Service', round($fltServiceTotal, 2));
+				$this->_AddAttribute($xmlService, 'FNN', $strFNN);
 			}
 		}
 		
-		// Services
+		//--------------------------------------------------------------------//
+		// Services XML
+		//--------------------------------------------------------------------//
 		$xmlServices	= $this->_AddElement($xmlInvoice, 'Services');
 		foreach ($arrServices as $arrService)
 		{
@@ -159,37 +211,54 @@
 			// Charge Summary
 			$fltChargeTotal		= 0.0;
 			$xmlChargeSummary	= $this->_AddElement($xmlService, 'ChargeSummary');
-			foreach ($arrChargeSummaries as $arrChargeSummary)
+			foreach ($arrService['RecordTypes'] as $strName=>$arrRecordType)
 			{
-				$xmlChargeType	= $this->_AddElement($xmlChargeSummary, 'Category', $arrChargeSummary['GrandTotal']);
-				$this->_AddAttribute($xmlChargeType, 'Description', $arrChargeSummary['Description']);
+				$xmlChargeType	= $this->_AddElement($xmlChargeSummary, 'Category', $arrRecordType['TotalCharge']);
+				$this->_AddAttribute($xmlChargeType, 'Description', $strName);
 				
-				$fltChargeTotal	+= (float)$arrChargeSummary['GrandTotal'];
+				$fltChargeTotal	+= (float)$arrRecordType['TotalCharge'];
 			}
-			$this->_AddAttribute($xmlChargeSummary, 'Total', $arrService['ServiceTotal']);
+			$this->_AddAttribute($xmlChargeSummary, 'Total', $fltChargeTotal);
 			
 			// Service Itemisation
 			$xmlItemisation	= $this->_AddElement($xmlService, 'Itemisation');
-			foreach ($arrChargeTypes as $arrChargeType)
+			foreach ($arrService['RecordTypes'] as $strName=>$arrChargeType)
 			{
 				$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
-				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', $arrChargeType['GrandTotal']);
-				$this->_AddAttribute($xmlItemisationType, 'RenderType', NULL);								// FIXME
+				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', $arrChargeType['TotalCharge']);
+				$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				
 				// Charge Itemisation
 				$xmlItemisationItems	= $this->_AddElement($xmlItemisationType, 'Items');
-				foreach ($arrCDRs as $arrCDR)
+				foreach ($arrChargeType['Itemisation'] as $arrCDR)
 				{
 					$xmlItem	= $this->_AddElement($xmlItemisationItems, 'Item');
 					
 					// Item Fields
-					foreach ($arrFields as $strField)
+					foreach ($arrCDR as $strField=>$mixValue)
 					{
-						$this->_AddElement($xmlItem, $strField, $arrCDR[$strField]);
+						$this->_AddElement($xmlItem, $strField, $mixValue);
 					}
 				}
 			}
 		}
+		
+		// Determine Output/Return data
+		if ($bolDebug)
+		{
+			// Return XML Schema (plain text)
+			$mixReturn	= $this->_domDocument->saveXML();
+		}
+		else
+		{
+			// Save to file, return success
+			// TODO
+			$mixReturn	= FALSE;
+		}
+		
+		// Destroy XML object and return
+		unset($this->_domDocument);
+		return $mixReturn;
 	 }
  	
  	//------------------------------------------------------------------------//
@@ -221,31 +290,31 @@
 		switch ($intOutputType)
 		{
 			case BILL_SAMPLE:
-				$strFilename		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".zip";
+				$strFilename		= BILLING_LOCAL_PATH_SAMPLE."xml/sample".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH_SAMPLE."xml/sample".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH_SAMPLE."xml/sample".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'InvoiceTemp';
 				$bolSample			= TRUE;
 				break;
 			
 			case BILL_COMPLETE:
-				$strFilename		= BILLING_LOCAL_PATH.date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH.date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
+				$strFilename		= BILLING_LOCAL_PATH."xml/".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH."xml/".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH."xml/".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'Invoice';
 				break;
 				
 			case BILL_REPRINT:
-				$strFilename		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
+				$strFilename		= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'Invoice';
 				break;	
 				
 			case BILL_REPRINT_TEMP:
-				$strFilename		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
+				$strFilename		= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'InvoiceTemp';
 				$strAccountList		= implode(', ', $arrAccounts);
 				break;	
@@ -438,163 +507,69 @@
 		return $this->SendOutput(TRUE);
  	}
  	
- 	
- 	
   	//------------------------------------------------------------------------//
-	// _BillingFactory()
+	// _AddElement()
 	//------------------------------------------------------------------------//
 	/**
-	 * _BillingFactory()
+	 * _AddElement()
 	 *
-	 * Creates and executes a Bill Printing Query, summing values for all of the services
-	 * passed in
+	 * Adds an Element to the $this->_domDocument XML Schema
 	 *
-	 * Creates and executes a Bill Printing Query, summing values for all of the services
-	 * passed in
+	 * Adds an Element to the $this->_domDocument XML Schema
 	 * 
-	 * @param	integer	$intType		The type of query to run
-	 * @param	array	$arrService		MySQL resultset from _selService with additional 'Id' array
-	 * @param	array	$arrParams		WHERE parameters
+	 * @param	element	&$xmlParent					The Parent DOMNode for this Element
+	 * @param	array	$strName					The name of this Element
+	 * @param	array	$mixValue		[optional]	The value of this Element
 	 *
-	 * @return	mixed					string	: invoice data
-	 * 									FALSE	: invalid input
+	 * @return	mixed-+
 	 *
 	 * @method
 	 */
- 	protected function _BillingFactory($intType, $arrService, $arrParams)
+ 	protected function _AddElement(&$xmlParent, $strName, $mixValue = NULL)
  	{
- 		$intCount = count($arrService['Id']);
- 		
- 		// Is there a Statement for this many Service Ids and Type?
- 		if (!$this->_arrFactoryQueries[$intType][$intCount])
+ 		if ($xmlParent instanceof DOMNode)
  		{
-	 		$arrWhere = Array();
-	 		foreach ($arrService['Id'] as $intKey=>$intId)
-	 		{
-	 			$arrWhere[] = "Service = <Service$intKey>";
-	 		}
-	 		$strWhereService = "(".implode(' OR ', $arrWhere).")";
-	 		
-	 		switch ($intType)
-	 		{
-	 			case BILL_FACTORY_SERVICE_SUMMARY:
-	 				$arrColumns = Array();
-			 		$arrColumns['RecordType']	= "GroupType.Description";
-			 		$arrColumns['Total']		= "SUM(ServiceTypeTotal.Charge)";
-			 		$arrColumns['Records']		= "SUM(Records)";
- 					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
- 						(
-							"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
-							$arrColumns,
-		 					"$strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
-		 					"ServiceTypeTotal.FNN, GroupType.Description",
-		 					NULL,
-		 					"GroupType.Description DESC"
-	 					);
-	 				break;
-	 				
-	 			case BILL_FACTORY_ITEMISE_RECORD_TYPES:
-	 				$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
-						(	
-							"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
-							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
-							"$strWhereService AND " .
-							"RecordGroup.Id = RecordType.GroupId AND " .
-							"RecordGroup.Itemised = 1 AND " .
-							"CDR.InvoiceRun = <InvoiceRun> AND " .
-							"FNN BETWEEN <RangeStart> AND <RangeEnd>",
-							"RecordGroup.Description",
-							NULL,
-							"RecordGroup.Id"
-	 					);
-	 				break;
-	 				
-	 			case BILL_FACTORY_ITEMISE_CALLS:
-					$arrColumns = Array();
-					$arrColumns['Charge']			= "CDR.Charge";
-					$arrColumns['Source']			= "CDR.Source";
-					$arrColumns['Destination']		= "CDR.Destination";
-					$arrColumns['StartDatetime']	= "CDR.StartDatetime";
-					$arrColumns['EndDatetime']		= "CDR.EndDatetime";
-					$arrColumns['Units']			= "CDR.Units";
-					$arrColumns['Description']		= "CDR.Description";
-					$arrColumns['DestinationCode']	= "CDR.DestinationCode";
-					$arrColumns['DisplayType']		= "RecordGroup.DisplayType";
-					$arrColumns['RecordGroup']		= "RecordGroup.Description";
- 					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
- 					(	
-						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
-						", RecordType as RecordGroup",
-						$arrColumns,
-						"$strWhereService AND " .
-						"RecordGroup.Id = RecordType.GroupId AND " .
-						"RecordGroup.Id = <RecordGroup> AND " .
-						"RecordGroup.Itemised = 1 AND " .
-						"CDR.InvoiceRun = <InvoiceRun> AND " .
-						"FNN BETWEEN <RangeStart> AND <RangeEnd>",
-						"CDR.StartDatetime"
- 					);
-	 				break;
-	 				
-	 			case BILL_FACTORY_ITEMISE_CHARGES:
-	 				$arrColumns['Charge']				= "Amount";
-					$arrColumns['Description']			= "Description";
-					$arrColumns['ChargeType']			= "ChargeType";
-					$arrColumns['Nature']				= "Nature";
-					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
-					(	
-						"Charge",
-						$arrColumns,
-						"$strWhereService AND InvoiceRun = <InvoiceRun>"
-					);
-	 				break;
-	 				
-	 			case BILL_FACTORY_SERVICE_TOTAL:
-					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
-					(
-						"ServiceTotal",
-						"SUM(TotalCharge + Debit - Credit) AS TotalCharge, PlanCharge",
-						"$strWhereService AND InvoiceRun = <InvoiceRun>",
-						NULL,
-						NULL,
-						"Service"
-					);
-	 				break;
-	 				
-	 			case BILL_FACTORY_SERVICE_CHARGES_TOTAL:
-					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
-					(
-	 					"Charge",
-						"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
-						"$strWhereService AND InvoiceRun = <InvoiceRun>",
-						"Nature",
-						2,
-						"Nature"
-					);
-	 				break;
-	 			
-	 			default:
-	 				// No such Type
-	 				return FALSE;
-	 		}
- 		}
- 		
- 		// Prepare WHERE parameters
- 		foreach ($arrService['Id'] as $intKey=>$intId)
- 		{
- 			$arrParams["Service$intKey"] = $intId;
- 		}
- 		
- 		// Execute and return data
- 		if ($this->_arrFactoryQueries[$intType][$intCount]->Execute($arrParams) === FALSE)
- 		{
- 			Debug($this->_arrFactoryQueries[$intType][$intCount]->Error());
- 			Debug($this->_arrFactoryQueries[$intType][$intCount]->_strQuery);
- 			return FALSE;
+ 			// Valid Parent
+ 			$mixReturn	= $xmlParent->appendChild(new DOMElement($strName, $mixValue));
  		}
  		else
  		{
- 			return $this->_arrFactoryQueries[$intType][$intCount]->FetchAll();
+ 			// $xmlParent is not a valid Parent Node
+ 			$mixReturn	= FALSE;
+ 		}
+ 		
+ 		return $mixReturn;
+ 	}
+ 	
+  	//------------------------------------------------------------------------//
+	// _AddAttribute()
+	//------------------------------------------------------------------------//
+	/**
+	 * _AddAttribute()
+	 *
+	 * Adds an Attribute to the specified XML Element
+	 *
+	 * Adds an Attribute to the specified XML Element
+	 * 
+	 * @param	element	&$xmlParent					The Parent DOMNode for this Attribute
+	 * @param	array	$strName					The name of this Attribute
+	 * @param	array	$mixValue					The value of this Attribute
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 */
+ 	protected function _AddAttribute(&$xmlParent, $strName, $mixValue = NULL)
+ 	{
+ 		if ($xmlParent instanceof DOMNode)
+ 		{
+ 			// Valid Parent
+ 			return (bool)$xmlParent->setAttributeNode(new DOMAttr($strName, $mixValue));
+ 		}
+ 		else
+ 		{
+ 			// $xmlParent is not a valid Parent Node
+ 			return FALSE;
  		}
  	}
  }
