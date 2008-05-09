@@ -132,7 +132,7 @@ abstract class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	abstract function AddInvoice($arrInvoiceDetails, $bolDebug = FALSE);
+ 	abstract protected function AddInvoice($arrInvoiceDetails, $bolDebug = FALSE);
  	
  	//------------------------------------------------------------------------//
 	// BuildOutput()
@@ -154,7 +154,7 @@ abstract class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	abstract function BuildOutput($intOutputType = BILL_COMPLETE, $arrAccounts = NULL);
+ 	abstract protected function BuildOutput($intOutputType = BILL_COMPLETE, $arrAccounts = NULL);
  	
  	//------------------------------------------------------------------------//
 	// SendOutput()
@@ -172,7 +172,7 @@ abstract class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	abstract function SendOutput($bolSample);
+ 	abstract protected function SendOutput($bolSample);
  	
   	//------------------------------------------------------------------------//
 	// _BillingFactory()
