@@ -73,7 +73,7 @@ abstract class BillingModuleInvoice
 		// Service Details
 		$arrService					= Array();
 		$arrService['FNN']			= "Service.FNN";
-		$arrService['CostCentre']	= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END) AS CostCentre";
+		$arrService['CostCentre']	= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END)";
 		$arrService['Indial100']	= "Service.Indial100";
 		$arrService['Extension']	= "ServiceExtension.Name";
 		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
@@ -95,23 +95,23 @@ abstract class BillingModuleInvoice
 																	"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.Name <=> <Extension>)");
 				
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
-																	"RG.Description AS Description, SUM(ServiceTypeTotal.Charge) AS Total",
+																	"RG.Description AS Description, SUM(STT.Charge) AS Total",
 																	"Account = <Id> AND InvoiceRun = <InvoiceRun>",
 																	"RG.Description",
 																	NULL,
 																	"RG.Id");
 		
 		$this->_selAccountSummaryCharges	= new StatementSelect(	"Charge",
-																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Charge) AS Total",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Charge END) AS Total",
 																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
 		
 		$this->_selPlanCharges				= new StatementSelect(	"Charge",
-																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0) AS PlanDebit",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit",
 																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
 		
 		$this->_selCustomerData				= new StatementSelect(	"Account",
 																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup",
-																	"Account = <Account>");
+																	"Id = <Account>");
  	}
  	
  	//------------------------------------------------------------------------//
