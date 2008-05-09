@@ -2,10 +2,11 @@
 
 // Framework & Billing Application
 require_once("../../flex.require.php");
+$arrConfig	= LoadApplication();
 
 define("INVOICE_XML_PATH",	FILES_BASE_PATH."invoices/xml/");
 
-$bilInvoiceXML	= new BillingModuleInvoiceXML($GLOBALS['dbaDatabase']);
+$bilInvoiceXML	= new BillingModuleInvoiceXML($GLOBALS['dbaDatabase'], $arrConfig, 'CDRInvoiced');
 
 // Get Command Line Arguments
 $strInvoiceRun	= $argv[2];

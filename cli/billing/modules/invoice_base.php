@@ -41,7 +41,7 @@
  * @package		billing
  * @class		BillingModuleInvoice
  */
-class BillingModuleInvoice
+abstract class BillingModuleInvoice
 {
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -132,10 +132,7 @@ class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	abstract function AddInvoice($arrInvoiceDetails, $bolDebug = FALSE)
- 	{
-		
-	}
+ 	abstract function AddInvoice($arrInvoiceDetails, $bolDebug = FALSE);
  	
  	//------------------------------------------------------------------------//
 	// BuildOutput()
@@ -157,10 +154,7 @@ class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	abstract function BuildOutput($intOutputType = BILL_COMPLETE, $arrAccounts = NULL)
- 	{
-	
-	}
+ 	abstract function BuildOutput($intOutputType = BILL_COMPLETE, $arrAccounts = NULL);
  	
  	//------------------------------------------------------------------------//
 	// SendOutput()
@@ -178,10 +172,7 @@ class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	abstract function SendOutput($bolSample)
- 	{
-		
- 	}
+ 	abstract function SendOutput($bolSample);
  	
   	//------------------------------------------------------------------------//
 	// _BillingFactory()
