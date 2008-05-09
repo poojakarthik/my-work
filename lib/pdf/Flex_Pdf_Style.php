@@ -862,7 +862,7 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	}
 
 
-	public function mediaForMediaName($strMediaName)
+	public static function mediaForMediaName($strMediaName)
 	{
 		switch (strtoupper(trim($strMediaName)))
 		{

@@ -401,7 +401,30 @@ class Flex_Pdf_Template
 		$fontResources = array();
 		foreach ($fonts as $font)
 		{
-			$fontResources[strtoupper($font->getAttribute("name"))] = $this->getResourcePath($font->getAttribute("path"));
+			// If a media has been specified...
+			if ($font->hasAttribute("media"))
+			{
+				$intMedia = Flex_Pdf_Style::mediaForMediaName($font->getAttribute("media"));
+				// Check that the font is suitable for this media
+				if (!($intMedia & $this->_intTargetMedia))
+				{
+					// The font is not suitable for this media, so ignore it
+					continue;
+				}
+			}
+			if ($font->hasAttribute("path"))
+			{
+				$path = $this->getResourcePath($font->getAttribute("path"));
+			}
+			else if ($font->hasAttribute("default"))
+			{
+				$path = $font->getAttribute("default");
+			}
+			else
+			{
+				$path = "HELVETICA";
+			}
+			$fontResources[strtoupper($font->getAttribute("name"))] = $path;
 		}
 
 		$this->_objStyle = new Flex_Pdf_Style();
