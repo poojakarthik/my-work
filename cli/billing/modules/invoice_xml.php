@@ -41,7 +41,7 @@
  * @package		billing
  * @class		BillingModuleInvoiceXML
  */
- class BillingModuleInvoiceXML
+ class BillingModuleInvoiceXML extends BillingModuleInvoice
  {
 	//------------------------------------------------------------------------//
 	// __construct()
