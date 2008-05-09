@@ -368,6 +368,8 @@ $GLOBALS['*arrConstant']['CDR'][175]['Description'] = 'CDR Credited';
 $GLOBALS['*arrConstant']['CDR'][176]['Constant'] 	= 'CDR_CREDIT_ADDED';
 $GLOBALS['*arrConstant']['CDR'][176]['Description'] = 'CDR Credit Added';
 
+$GLOBALS['*arrConstant']['CDR'][201]['Constant']	= 'CDR_DUPLICATE';
+$GLOBALS['*arrConstant']['CDR'][201]['Description'] = 'Duplicate CDR';
 
 //TODO!rich! when you have time, update all constant definitons to work like the CDR ones
 //$GLOBALS['*arrConstant']['CDR'][100]['Constant'] = 'CDR_READY';
