@@ -104,11 +104,21 @@
 			 The relative path to the font files should be specified to allow the font to be loaded. -->
 
 		<embedded-fonts>
-			<embedded-font name="ARIAL_NARROW" path="fonts/arial_narrow.ttf" />
-			<embedded-font name="ARIAL" path="fonts/arial.ttf" />
-			<embedded-font name="ARIAL BOLD" path="fonts/arial_bold.ttf" />
-			<embedded-font name="ARIAL BOLD ITALIC" path="fonts/arial_bold_italic.ttf" />
-			<embedded-font name="ARIAL ITALIC" path="fonts/arial_italic.ttf" />
+
+			<!-- Use embedded ARIAL fonts for the email versions -->
+			<embedded-font media="PRINT" name="ARIAL_NARROW" 		path="fonts/arial_narrow.ttf" />
+			<embedded-font media="PRINT" name="ARIAL" 				path="fonts/arial.ttf" />
+			<embedded-font media="PRINT" name="ARIAL BOLD" 			path="fonts/arial_bold.ttf" />
+			<embedded-font media="PRINT" name="ARIAL BOLD ITALIC" 	path="fonts/arial_bold_italic.ttf" />
+			<embedded-font media="PRINT" name="ARIAL ITALIC" 		path="fonts/arial_italic.ttf" />
+
+			<!-- Use standard, non-embedded fonts for the email versions -->
+			<embedded-font media="EMAIL" name="ARIAL_NARROW" 		default="HELVETICA" />
+			<embedded-font media="EMAIL" name="ARIAL" 				default="HELVETICA" />
+			<embedded-font media="EMAIL" name="ARIAL BOLD" 			default="HELVETICA BOLD" />
+			<embedded-font media="EMAIL" name="ARIAL BOLD ITALIC" 	default="HELVETICA BOLD ITALIC" />
+			<embedded-font media="EMAIL" name="ARIAL ITALIC" 		default="HELVETICA ITALIC" />
+
 		</embedded-fonts>
 
 		<!-- page-order defines the order in which page-object's are to be included -->
@@ -508,10 +518,7 @@
 										<span>- Biller Code: <xsl:value-of select="$bill_pay_biller_code" /> Customer Ref:<xsl:text> </xsl:text><xsl:value-of select="/Invoice/Payment/BPay/CustomerReference" /></span>
 									</p>
 									<p style="left: 17mm;">
-										<span>Call your bank, credit union or building society to make payment from your cheque, savings or credit</span>
-									</p>
-									<p style="left: 17mm;">
-										<span>card account. More info: www.bpay.com.au</span>
+										<span>Call your bank, credit union or building society to make payment from your cheque, savings or credit card account. More info: www.bpay.com.au</span>
 									</p>
 								</div>
 			
@@ -534,7 +541,7 @@
 								
 								<div style="left: 0; top: 63mm;">
 									<img src="images/bill_express.png" style="width: 13.46mm; height: 5.251mm; top: 1.1mm; left: 0mm;" />
-									<p style="left: 17mm; font-size: 6pt;"><span>BILL EXPRESS</span></p>
+									<p style="left: 17mm; font-size: 7pt;"><span>BILL EXPRESS</span></p>
 									<p style="left: 17mm;"><span>Look for the red BillEXPRESS logo at newsagents to pay this account with cash, cheque or debit card. For locations call 1300 739 250 or visit www.billexpress.com.au</span></p>
 								</div>
 								
