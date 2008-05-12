@@ -78,7 +78,7 @@ abstract class BillingModuleInvoice
 		$arrService['Extension']	= "ServiceExtension.Name";
 		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
 		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";
-		$arrService['IsRendered']	= "(CASE WHEN ForceInvoiceRender = 1 THEN 1 WHEN ServiceTotal != 0.0 THEN 1 WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0 END) AS IsRendered";
+		$arrService['IsRendered']	= "(CASE WHEN ForceInvoiceRender = 1 THEN 1 WHEN ServiceTotal != 0.0 THEN 1 WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0 END)";
 		$arrService['ServiceTotal']	= "SUM(ServiceTotal.TotalCharge + ServiceTotal.Debit - ServiceTotal.Credit)";
 		$arrService['RatePlan']		= "RatePlan.Name";
 		$arrService['RatedTotal']	= "ServiceTotal.CappedCharge + ServiceTotal.UncappedCharge";
@@ -102,12 +102,14 @@ abstract class BillingModuleInvoice
 																	"RG.Id");
 		
 		$this->_selAccountSummaryCharges	= new StatementSelect(	"Charge",
-																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Charge END) AS Total",
-																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total",
+																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'");
 		
 		$this->_selPlanCharges				= new StatementSelect(	"Charge",
 																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit",
-																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
 		
 		$this->_selCustomerData				= new StatementSelect(	"Account",
 																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup",
