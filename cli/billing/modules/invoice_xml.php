@@ -122,6 +122,32 @@
 		$this->_AddElement($xmlAccount, 'Postcode', $arrInvoice['Postcode']);
 		$this->_AddElement($xmlAccount, 'State', $arrInvoice['State']);
 		
+		// Account Summary & Itemisation
+		$arrAccountCharges	= $this->_GetAccountCharges($arrInvoice);
+		$xmlItemisation	= $this->_AddElement($xmlAccount, 'Charges');
+		
+		$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
+		$this->_AddAttribute($xmlItemisationType, 'GrandTotal', $arrAccountCharges['TotalCharge']);
+		$this->_AddAttribute($xmlItemisationType, 'Records', @count($arrAccountCharges['Itemisation']));
+		$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrAccountCharges['DisplayType'], 'DisplayType'));
+		
+		// Charge Itemisation
+		if (@count($arrAccountCharges['Itemisation']))
+		{
+			$xmlItemisationItems	= $this->_AddElement($xmlItemisationType, 'Items');
+			foreach ($arrAccountCharges['Itemisation'] as $arrCDR)
+			{
+				$xmlItem	= $this->_AddElement($xmlItemisationItems, 'Item');
+				
+				// Item Fields
+				foreach ($arrCDR as $strField=>$mixValue)
+				{
+					$this->_AddElement($xmlItem, $strField, $mixValue);
+				}
+			}
+		}
+		
+		
 		//--------------------------------------------------------------------//
 		// Payment Information
 		//--------------------------------------------------------------------//
@@ -150,18 +176,6 @@
 		$this->_AddElement($xmlAccount, 'BillingPeriodStart', $strBillingPeriodStart);
 		$this->_AddElement($xmlAccount, 'BillingPeriodEnd', $strBillingPeriodEnd);
 		$this->_AddElement($xmlAccount, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
-		
-		//--------------------------------------------------------------------//
-		// Account Summary
-		//--------------------------------------------------------------------//
-		$arrChargeTotals	= $this->_GetAccountSummary($arrInvoice);
-		$xmlAccountSummary	= $this->_AddElement($xmlInvoice, 'AccountSummary');
-		foreach ($arrChargeTotals as $strDescription=>$fltTotal)
-		{
-			$this->_AddElement($xmlAccountSummary, 'Category', $fltTotal);
-			$this->_AddAttribute($xmlAccountSummary, 'Description', $strDescription);
-		}
-		$this->_AddAttribute($xmlAccountSummary, 'GrandTotal', round($arrInvoice['Total'] + $arrInvoice['Tax']), 2);
 		
 		//--------------------------------------------------------------------//
 		// Service (Data retrieval only)
@@ -208,7 +222,7 @@
 			$this->_AddAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			$this->_AddAttribute($xmlService, 'Plan', $arrService['Plan']);
 			
-			// Charge Summary
+			/*// Charge Summary
 			$fltChargeTotal		= 0.0;
 			$xmlChargeSummary	= $this->_AddElement($xmlService, 'ChargeSummary');
 			foreach ($arrService['RecordTypes'] as $strName=>$arrRecordType)
@@ -218,7 +232,7 @@
 				
 				$fltChargeTotal	+= (float)$arrRecordType['TotalCharge'];
 			}
-			$this->_AddAttribute($xmlChargeSummary, 'Total', $fltChargeTotal);
+			$this->_AddAttribute($xmlChargeSummary, 'Total', $fltChargeTotal);*/
 			
 			// Service Itemisation
 			$xmlItemisation	= $this->_AddElement($xmlService, 'Itemisation');
@@ -226,6 +240,7 @@
 			{
 				$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
 				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', $arrChargeType['TotalCharge']);
+				$this->_AddAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				
 				// Charge Itemisation

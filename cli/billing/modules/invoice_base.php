@@ -78,7 +78,7 @@ abstract class BillingModuleInvoice
 		$arrService['Extension']	= "ServiceExtension.Name";
 		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
 		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";
-		$arrService['IsRendered']	= "(CASE WHEN ForceInvoiceRender = 1 THEN 1 WHEN ServiceTotal != 0.0 THEN 1 WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0) AS IsRendered";
+		$arrService['IsRendered']	= "(CASE WHEN ForceInvoiceRender = 1 THEN 1 WHEN ServiceTotal != 0.0 THEN 1 WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0 END) AS IsRendered";
 		$arrService['ServiceTotal']	= "SUM(ServiceTotal.TotalCharge + ServiceTotal.Debit - ServiceTotal.Credit)";
 		$arrService['RatePlan']		= "RatePlan.Name";
 		$arrService['RatedTotal']	= "ServiceTotal.CappedCharge + ServiceTotal.UncappedCharge";
@@ -112,6 +112,25 @@ abstract class BillingModuleInvoice
 		$this->_selCustomerData				= new StatementSelect(	"Account",
 																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup",
 																	"Id = <Account>");
+		
+		$this->_selPlanAdjustments			= new StatementSelect(	"Charge",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total",
+																	"InvoiceRun = <InvoiceRun> AND Account = <Account>",
+																	NULL,
+																	NULL,
+																	"Account");
+		
+		$this->_selPlanChargeTotals			= new StatementSelect(	"ServiceTotal",
+																	"SUM(PlanCharge) AS PlanChargeTotal, SUM(UncappedCharge + CappedCharge) AS RatedTotal, SUM(TotalCharge) AS GrandServiceTotal",
+																	"InvoiceRun = <InvoiceRun> AND Account = <Account>",
+																	NULL,
+																	NULL,
+																	"Account");
+		
+		$this->_selAccountAdjustments		= new StatementSelect(	"Charge",
+																	"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description",
+																	"InvoiceRun = <InvoiceRun> AND Account = <Account> AND Service IS NULL AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'");
+		
  	}
  	
  	//------------------------------------------------------------------------//
@@ -573,7 +592,7 @@ abstract class BillingModuleInvoice
 					$fltPlanChargeTotal			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
 					
 					$arrCDR	= Array();
-					$arrCDR['Charge']			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];				
+					$arrCDR['Charge']			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
 					$arrCDR['Units']			= 1;
 					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
 					$arrPlanChargeItemisation[]	= $arrCDR;
@@ -596,14 +615,58 @@ abstract class BillingModuleInvoice
 	}
  	
   	//------------------------------------------------------------------------//
-	// _GetAccountSummary()
+	// _GetAccountAdjustments()
 	//------------------------------------------------------------------------//
 	/**
-	 * _GetAccountSummary()
+	 * _GetAccountAdjustments()
 	 *
-	 * Returns the Account Summary as an associative array for a given Invoice
+	 * Returns a CDR array of Account Adjustments
 	 *
-	 * Returns the Account Summary as an associative array for a given Invoice
+	 * Returns a CDR array of Account Adjustments
+	 * 
+	 * @param	array	$arrInvoice						Invoice Details
+	 *
+	 * @return	array									Account Adjustments Array
+	 *
+	 * @method
+	 */
+	protected function _GetAccountAdjustments($arrInvoice)
+	{
+		$arrAdjustments			= Array();
+		$fltAccountChargeTotal	= 0.0;
+		if ($this->_selAccountAdjustments->Execute($arrInvoice) === FALSE)
+		{
+			Debug($this->_selAccountAdjustments->Error());
+		}
+		else
+		{
+			while ($arrAdjustment = $this->_selAccountAdjustments-Fetch())
+			{
+				$arrCDR								= Array();
+				$arrCDR['Description']				= $arrAdjustment['ChargeType'] . ' - ' . $arrAdjustment['Description'];
+				$arrCDR['Units']					= 1;
+				$arrCDR['Charge']					= $arrAdjustment['Amount'];
+				$arrAdjustments['Itemisation'][]	= $arrCDR;
+				$fltAccountChargeTotal				+= $arrCDR['Charge'];
+			}
+		}
+		
+		$arrAdjustments['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+		$arrAdjustments['TotalCharge']	= $fltAccountChargeTotal;
+		$arrAdjustments['Records']		= count($arrAdjustments['Itemisation']);
+		
+		return $arrAdjustments;
+	}
+ 	
+  	//------------------------------------------------------------------------//
+	// _GetAccountCharges()
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetAccountCharges()
+	 *
+	 * Returns the Account Summary and Itemisation as an associative array for a given Invoice
+	 *
+	 * Returns the Account Summary and Itemisation as an associative array for a given Invoice
 	 * 
 	 * @param	array	$arrInvoice						Invoice Details
 	 * @param	boolean	$bolAdjustments		[optional]	TRUE	: Include 'Other Charges & Credits'
@@ -617,7 +680,7 @@ abstract class BillingModuleInvoice
 	 *
 	 * @method
 	 */
-	protected function _GetAccountSummary($arrInvoice, $bolAdjustments = TRUE, $bolPlanAdjustments = TRUE, $bolGST = TRUE)
+	protected function _GetAccountCharges($arrInvoice, $bolAdjustments = TRUE, $bolPlanAdjustments = TRUE, $bolGST = TRUE)
 	{
 		$arrAccountSummary	= Array();
 		
@@ -630,7 +693,7 @@ abstract class BillingModuleInvoice
 		{
 			while ($arrSummary = $this->_selAccountSummary->Fetch())
 			{
-				$arrAccountSummary[$arrSummary['Description']]	= round($arrSummary['Total'], 2);
+				$arrAccountSummary[$arrSummary['Description']]['TotalCharge']	= round($arrSummary['Total'], 2);
 			}
 		}
 		
@@ -643,12 +706,16 @@ abstract class BillingModuleInvoice
 			}
 			else
 			{
-				$arrAccountSummary['Other Charges & Credits']	= round($arrSummary['Total'], 2);
+				$arrAccountSummary['Other Charges & Credits']['TotalCharge']	= round($arrSummary['Total'], 2);
 			}
 		}
 		
+		// Account Charges and Credits
+		$arrAccountSummary['Account Charges & Credits']	= $this->_GetAccountAdjustments($arrInvoice);
+		
 		// Add Plan Charges and Credits
-		if ($bolPlanAdjustments)
+		// TODO: This will work when Plan Charges are entirely Adjustment-based, and use the Charge Links
+		/*if ($bolPlanAdjustments)
 		{
 			if ($this->_selPlanCharges->Execute($arrInvoice) === FALSE)
 			{
@@ -670,12 +737,45 @@ abstract class BillingModuleInvoice
 					$arrAccountSummary['Plan Credits']	= round($arrPlanCharges['PlanCredit'], 2);
 				}
 			}
+		}*/
+		
+		if ($bolPlanAdjustments)
+		{
+			$fltGrandTotal	= 0.0;
+			
+			// Plan Adjustments
+			if ($this->_selPlanAdjustments->Execute($arrInvoice) === FALSE)
+			{
+				Debug($this->_selPlanAdjustments->Error());
+			}
+			else
+			{
+				$arrPlanCharges	= $this->_selPlanAdjustments->Fetch();
+				$fltGrandTotal	+= $arrPlanCharges['Total'];
+			}
+			
+			// ServiceTotal Plan Charges
+			if ($this->_selPlanChargeTotals->Execute($arrInvoice))
+			{
+				Debug($this->_selPlanChargeTotals->Error());
+			}
+			else
+			{
+				$arrPlanCharges	= $this->_selPlanChargeTotals->Fetch();
+				$fltGrandTotal	+= ($arrPlanCharges['GrandServiceTotal'] - $arrPlanCharges['RatedTotal']);
+			}
+			
+			$fltGrandTotal	= round($fltGrandTotal, 2);
+			if ($fltGrandTotal)
+			{
+				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	 = $fltGrandTotal;
+			}
 		}
 		
 		// Add GST Element
 		if ($bolGST)
 		{
-			$arrAccountSummary['GST Total']	= round($arrInvoice['Tax'], 2);
+			$arrAccountSummary['GST Total']['TotalCharge']	= round($arrInvoice['Tax'], 2);
 		}
 		
 		// Return Array
