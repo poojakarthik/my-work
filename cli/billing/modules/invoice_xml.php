@@ -90,7 +90,8 @@
 		$arrCustomer	= $this->_GetCustomerData($arrInvoice);
 		
 		// Init our XML Document
-		$this->_domDocument	= new DOMDocument('1.0'); 
+		$this->_domDocument					= new DOMDocument('1.0'); 
+		$this->_domDocument->formatOutput	= TRUE;
 		
 		//--------------------------------------------------------------------//
 		// Invoice Object
