@@ -92,7 +92,7 @@ abstract class BillingModuleInvoice
 		
 		$this->_selServiceInstances			= new StatementSelect(	"Service LEFT JOIN ServiceExtension ON (Service.Id = ServiceExtension.Service AND ServiceExtension.Archived = 0)", 
 																	"Service.Id AS Id", 
-																	"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.Name <=> <Extension>)");
+																	"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
 				
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
 																	"RG.Description AS Description, SUM(STT.Charge) AS Total",
@@ -498,7 +498,7 @@ abstract class BillingModuleInvoice
 			$arrWhere['Account']	= $arrInvoice['Account'];
 			$arrWhere['FNN']		= $arrService['FNN'];
 			$arrWhere['Extension']	= $arrService['Extension'];
-			if (!$this->_selServiceInstances->Execute($arrWhere))
+			if ($this->_selServiceInstances->Execute($arrWhere) === FALSE)
 			{
 				Debug("Error on _selServiceInstances!");
 				Debug($this->_selServiceInstances->Error());
