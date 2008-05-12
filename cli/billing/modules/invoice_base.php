@@ -642,7 +642,7 @@ abstract class BillingModuleInvoice
 		}
 		else
 		{
-			while ($arrAdjustment = $this->_selAccountAdjustments-Fetch())
+			while ($arrAdjustment = $this->_selAccountAdjustments->Fetch())
 			{
 				$arrCDR								= Array();
 				$arrCDR['Description']				= $arrAdjustment['ChargeType'] . ' - ' . $arrAdjustment['Description'];
