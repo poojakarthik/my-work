@@ -217,7 +217,7 @@
 		$xmlServices	= $this->_AddElement($xmlInvoice, 'Services');
 		foreach ($arrServices as $arrService)
 		{
-			$xmlService	= $this->_AddElement($xmlService, 'Service');
+			$xmlService	= $this->_AddElement($xmlServices, 'Service');
 			$this->_AddAttribute($xmlService, 'FNN', $arrService['FNN']);
 			$this->_AddAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			$this->_AddAttribute($xmlService, 'Plan', $arrService['Plan']);
