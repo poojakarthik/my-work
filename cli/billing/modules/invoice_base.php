@@ -79,7 +79,7 @@ abstract class BillingModuleInvoice
 		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
 		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";
 		$arrService['IsRendered']	= "(CASE WHEN ForceInvoiceRender = 1 THEN 1 WHEN ServiceTotal.Credit != 0.0 AND ServiceTotal.Debit THEN 1 WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0 END)";
-		$arrService['ServiceTotal']	= "SUM(ServiceTotal.TotalCharge)";
+		$arrService['ServiceTotal']	= "SUM(ServiceTotal.TotalCharge + ServiceTotal.Debit - ServiceTotal.Credit)";
 		$arrService['RatePlan']		= "RatePlan.Name";
 		$arrService['RatedTotal']	= "ServiceTotal.CappedCharge + ServiceTotal.UncappedCharge";
 		$arrService['PlanCharge']	= "ServiceTotal.PlanCharge";
@@ -93,7 +93,7 @@ abstract class BillingModuleInvoice
 		$this->_selServiceInstances			= new StatementSelect(	"Service LEFT JOIN ServiceExtension ON (Service.Id = ServiceExtension.Service AND ServiceExtension.Archived = 0)", 
 																	"Service.Id AS Id", 
 																	"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
-				
+		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
 																	"RG.Description AS Description, SUM(STT.Charge) AS Total",
 																	"Account = <Id> AND InvoiceRun = <InvoiceRun>",

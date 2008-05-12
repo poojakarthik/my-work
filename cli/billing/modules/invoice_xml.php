@@ -113,7 +113,7 @@
 		// Account Information
 		//--------------------------------------------------------------------//
 		$xmlAccount	= $this->_AddElement($xmlInvoice, 'Account');
-		$this->_AddAttribute($xmlAccount, 'Id', $arrCustomer['Id']);
+		$this->_AddAttribute($xmlAccount, 'Id', $arrInvoice['Account']);
 		$this->_AddAttribute($xmlAccount, 'Name', $arrCustomer['BusinessName']);
 		$this->_AddAttribute($xmlAccount, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
 		$this->_AddElement($xmlAccount, 'Addressee', $arrCustomer['BusinessName']);
@@ -240,6 +240,7 @@
 			foreach ($arrService['RecordTypes'] as $strName=>$arrChargeType)
 			{
 				$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
+				$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
 				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', $arrChargeType['TotalCharge']);
 				$this->_AddAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
