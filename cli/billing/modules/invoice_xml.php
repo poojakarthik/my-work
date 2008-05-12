@@ -113,15 +113,15 @@
 		// Account Information
 		//--------------------------------------------------------------------//
 		$xmlAccount	= $this->_AddElement($xmlInvoice, 'Account');
-		$this->_AddAttribute($xmlAccount, 'Id', $arrInvoice['Id']);
-		$this->_AddAttribute($xmlAccount, 'Name', $arrInvoice['BusinessName']);
+		$this->_AddAttribute($xmlAccount, 'Id', $arrCustomer['Id']);
+		$this->_AddAttribute($xmlAccount, 'Name', $arrCustomer['BusinessName']);
 		$this->_AddAttribute($xmlAccount, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
-		$this->_AddElement($xmlAccount, 'Addressee', $arrInvoice['BusinessName']);
-		$this->_AddElement($xmlAccount, 'AddressLine1', $arrInvoice['Address1']);
-		$this->_AddElement($xmlAccount, 'AddressLine2', $arrInvoice['Address2']);
-		$this->_AddElement($xmlAccount, 'Suburb', $arrInvoice['Suburb']);
-		$this->_AddElement($xmlAccount, 'Postcode', $arrInvoice['Postcode']);
-		$this->_AddElement($xmlAccount, 'State', $arrInvoice['State']);
+		$this->_AddElement($xmlAccount, 'Addressee', $arrCustomer['BusinessName']);
+		$this->_AddElement($xmlAccount, 'AddressLine1', $arrCustomer['Address1']);
+		$this->_AddElement($xmlAccount, 'AddressLine2', $arrCustomer['Address2']);
+		$this->_AddElement($xmlAccount, 'Suburb', $arrCustomer['Suburb']);
+		$this->_AddElement($xmlAccount, 'Postcode', $arrCustomer['Postcode']);
+		$this->_AddElement($xmlAccount, 'State', $arrCustomer['State']);
 		
 		// Account Summary & Itemisation
 		$arrAccountCharges	= $this->_GetAccountCharges($arrInvoice);
@@ -219,9 +219,9 @@
 		foreach ($arrServices as $arrService)
 		{
 			$xmlService	= $this->_AddElement($xmlServices, 'Service');
-			$this->_AddAttribute($xmlService, 'FNN', $arrService['FNN']);
+			$this->_AddAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
 			$this->_AddAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
-			$this->_AddAttribute($xmlService, 'Plan', $arrService['Plan']);
+			$this->_AddAttribute($xmlService, 'Plan', $arrService['RatePlan']);
 			
 			/*// Charge Summary
 			$fltChargeTotal		= 0.0;

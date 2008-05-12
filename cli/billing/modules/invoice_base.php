@@ -514,6 +514,8 @@ abstract class BillingModuleInvoice
 		
 		foreach ($arrServices as &$arrService)
 		{
+			$arrCategories	= Array();
+			
 			// Get Record Types
 			$arrWhere	= Array();
 			$arrWhere['InvoiceRun']	= $arrInvoice['InvoiceRun'];
@@ -527,7 +529,7 @@ abstract class BillingModuleInvoice
 				$arrRecordType['Itemisation']	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CALLS, $arrService, $arrWhere);
 				
 				// Add Record Type to Service Array
-				$arrService['RecordTypes'][$arrRecordType['Description']]	= $arrRecordType;
+				$arrCategories[$arrRecordType['Description']]	= $arrRecordType;
 			}
 			
 			// Get Adjustments
@@ -549,12 +551,12 @@ abstract class BillingModuleInvoice
 					$arrCDR['Units']		= 1;
 					$arrCDR['Description']	= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
 					
-					$arrRecordTypes['Other Charges & Credits']['Itemisation'][]	= $arrCDR;
+					$arrCategories['Other Charges & Credits']['Itemisation'][]	= $arrCDR;
 				}
 				
-				$arrRecordTypes['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-				$arrRecordTypes['Other Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
-				$arrRecordTypes['Other Charges & Credits']['Records']		= count($arrItemised);
+				$arrCategories['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+				$arrCategories['Other Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
+				$arrCategories['Other Charges & Credits']['Records']		= count($arrItemised);
 			}
 			
 			// Get Plan Charges & Credits
@@ -604,13 +606,13 @@ abstract class BillingModuleInvoice
 			// Add to Service Array
 			if (count($arrPlanChargeItemisation))
 			{
-				$arrRecordTypes['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-				$arrRecordTypes['Plan Charges & Credits']['TotalCharge']	= $fltPlanChargeTotal;
-				$arrRecordTypes['Plan Charges & Credits']['Records']		= count($arrPlanChargeItemisation);
-				$arrRecordTypes['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
+				$arrCategories['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+				$arrCategories['Plan Charges & Credits']['TotalCharge']	= $fltPlanChargeTotal;
+				$arrCategories['Plan Charges & Credits']['Records']		= count($arrPlanChargeItemisation);
+				$arrCategories['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
 			}
 			
-			$arrService['RecordTypes']	= $arrRecordTypes;
+			$arrService['RecordTypes']	= $arrCategories;
 		}
 		
 		return $arrServices;
