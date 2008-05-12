@@ -47,22 +47,6 @@
 class HtmlTemplateServiceEdit extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -82,7 +66,8 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
 		
-		$this->LoadJavascript("service_edit");
+		// Depricated
+		//$this->LoadJavascript("service_edit");
 	}
 	
 	//------------------------------------------------------------------------//

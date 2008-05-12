@@ -65,6 +65,7 @@ class HtmlTemplateDelinquentCDRs extends HtmlTemplate
 		$this->LoadJavascript("delinquent_cdrs");
 		$this->LoadJavascript("date_time_picker_xy");
 		$this->LoadJavascript("validation");
+		$this->LoadJavascript("input_masks");
 	}
 
 	//------------------------------------------------------------------------//
@@ -93,14 +94,14 @@ class HtmlTemplateDelinquentCDRs extends HtmlTemplate
 	<div id='Container_SelectionControls' style='height:25px'>
 		<div class='Left'>
 			<span>Earliest Date </span>
-			<input type='text' id='StartDate' value='$strStartingDate' $strYearLowerLimit style='width:85px'/>
+			<input type='text' id='StartDate' InputMask='ShortDate' maxlength='10' value='$strStartingDate' $strYearLowerLimit style='width:85px'/>
 			<a href='javascript:DateChooser.showChooser(\$ID(\"StartDate\"), \$ID(\"StartingDateCalender\"), $strYearLowerLimit, $strYearUpperLimit, \"d/m/Y\", false, true, true, $strYearLowerLimit);'>
 				<img src='img/template/calendar_small.png'/>
 			</a>
 			<div id='StartingDateCalender' class='date-time select-free' style='display:none; visibility:hidden;'></div>
 			
 			<span> Latest Date </span>
-			<input type='text' id='EndDate' value='$strEndingDate' $strYearUpperLimit style='width:85px'/>
+			<input type='text' id='EndDate' InputMask='ShortDate' maxlength='10' value='$strEndingDate' $strYearUpperLimit style='width:85px'/>
 			<a href='javascript:DateChooser.showChooser(\$ID(\"EndDate\"), \$ID(\"EndingDateCalender\"), $strYearLowerLimit, $strYearUpperLimit, \"d/m/Y\", false, true, true, $strYearUpperLimit);'>
 				<img src='img/template/calendar_small.png'/>
 			</a>

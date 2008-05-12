@@ -688,9 +688,6 @@ class AppTemplateService extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		// Load default values for the ServiceAddress details
-		$this->_SetDefaultValuesForServiceAddress(DBO()->ServiceAddress, DBO()->Account);
-		
 		// Load the ServiceAddress details for all Services currently belonging to the account
 		DBO()->Account->AllAddresses = $this->_GetAllServiceAddresses(DBO()->Account->Id->Value);
 		
@@ -1704,6 +1701,13 @@ class AppTemplateService extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
+		// Services can not be editted while an invoice run is processing
+		if (IsInvoicing())
+		{
+			Ajax()->AddCommand("Alert", "Billing is in progress.  Services cannot be modified while this is happening.  Please try again in a couple of hours.  If this problem persists, please notify your system administrator");
+			return TRUE;
+		}
+
 		if (SubmittedForm("EditService","Apply Changes"))
 		{
 			if (DBO()->Service->IsInvalid())
@@ -2090,7 +2094,7 @@ class AppTemplateService extends ApplicationTemplate
 				switch (DBO()->Service->NewStatus->Value)
 				{
 					case SERVICE_ACTIVE:
-						$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->Indial100->Value, DBO()->Service->ClosedOn->Value);
+						$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->Indial100->Value, DBO()->Service->CreatedOn->Value, DBO()->Service->ClosedOn->Value);
 						if ($mixResult !== TRUE)
 						{
 							// Activating the service failed, and an error message has been returned
@@ -2156,7 +2160,6 @@ class AppTemplateService extends ApplicationTemplate
 				}
 				else
 				{
-					// A new service record was new created, so add the note to the current service record
 					$intServiceId = DBO()->Service->Id->Value;
 				}
 			
@@ -3020,15 +3023,18 @@ class AppTemplateService extends ApplicationTemplate
 	 * 		
 	 * @param			integer		$intService		Id of the service to activate
 	 * @param			string		$strFNN			FNN of the service to activate
+	 * @param			bool		$bolIsIndial	TRUE if the service is an Indial100
+	 * @param			string		$strCreatedOn	CreatedOn date for the Service record identified by $intService
 	 * @param			string		$strClosedOn	date on which the service was closed (YYYY-MM-DD)
 	 *	 
 	 * @return			mix			returns TRUE if the service can be activated, else it returns an error 
 	 *								message (string) detailing why the service could not be activated
 	 * @method
 	 */
-	// 
-	private function _ActivateService($intService, $strFNN, $bolIsIndial, $strClosedOn)
+	private function _ActivateService($intService, $strFNN, $bolIsIndial, $strCreatedOn, $strClosedOn)
 	{
+		$strNow = GetCurrentDateForMySQL();
+		
 		// Check if the FNN is currently in use
 		$arrWhere					= Array();
 		$arrWhere['FNN']			= ($bolIsIndial) ? substr($strFNN, 0, -2) . "__" : $strFNN; 
@@ -3036,7 +3042,7 @@ class AppTemplateService extends ApplicationTemplate
 		$arrWhere['Service']		= $intService;
 		$arrWhere['ClosedOn']		= $strClosedOn;
 		
-		$selFNNInUse = new StatementSelect("Service", "Id", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn Is NULL OR (ClosedOn >= CreatedOn AND NOW() <= ClosedOn)) AND Id != <Service>");
+		$selFNNInUse = new StatementSelect("Service", "Id", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn IS NULL OR (ClosedOn >= CreatedOn AND NOW() <= ClosedOn)) AND Id != <Service>");
 		if ($selFNNInUse->Execute($arrWhere))
 		{
 			// At least one record was returned, which means the FNN is currently in use by an active service
@@ -3047,7 +3053,31 @@ class AppTemplateService extends ApplicationTemplate
 			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.  The other service must be disconnected or archived before this service can be activated";
 		}
 		
+		// If the Service was created today, then just update the ClosedOn and Status properties
+		// You do not need to create a new record
+		if ($strCreatedOn == $strNow)
+		{
+			// Just update the record
+			$arrUpdate = Array	(	"Id"		=> $intService,
+									"ClosedOn"	=> NULL,
+									"Status"	=> SERVICE_ACTIVE
+								);
+			$updService = new StatementUpdateById("Service", $arrUpdate);
+			if ($updService->Execute($arrUpdate) === FALSE)
+			{
+				// There was an error while trying to activate the service
+				return "ERROR: Activating the service failed, unexpectedly";
+			}
+			
+			// Service was activated successfully
+			return TRUE;
+		}
+		
+		
+		
 		// Check if the FNN has been used by another de-activated service since $intService was de-activated
+		/* This check is no longer required because we now always create a new service record when activating a
+		 * service irregardless of whether or not the FNN has since been used by a now disconnected service
 		$selFNNInUse = new StatementSelect("Service", "Id", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn Is NULL OR (ClosedOn >= CreatedOn AND ClosedOn > <ClosedOn>)) AND Id != <Service>");
 		if ($selFNNInUse->Execute($arrWhere) == 0)
 		{
@@ -3066,9 +3096,9 @@ class AppTemplateService extends ApplicationTemplate
 			// Service was activated successfully
 			return TRUE;
 		}
+		*/
 		
-		// The FNN has been used by another service since this service was last de-activated
-		// Now both services are de-activated.  Create a new service
+		// Create the new service record, based on the old service record
 		$intOldServiceId = $intService;
 		DBO()->NewService->SetTable("Service");
 		DBO()->NewService->Id = $intOldServiceId;
@@ -3076,7 +3106,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// By setting the Id to zero, a new record will be inserted when the Save method is executed
 		DBO()->NewService->Id						= 0;
-		DBO()->NewService->CreatedOn				= GetCurrentDateForMySQL();
+		DBO()->NewService->CreatedOn				= $strNow;
 		DBO()->NewService->CreatedBy				= AuthenticatedUser()->_arrUser['Id'];
 		DBO()->NewService->ClosedOn					= NULL;
 		DBO()->NewService->ClosedBy					= NULL;
@@ -3152,6 +3182,33 @@ class AppTemplateService extends ApplicationTemplate
 		$intNewServiceId = DBO()->NewService->Id->Value;
 		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active) ".
 														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active ".
+														"FROM ServiceRatePlan WHERE Service = $intOldServiceId";
+		$qryInsertServicePlanDetails = new Query();
+		
+		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRatePlanRecordsToNewService) === FALSE)
+		{
+			// Inserting the records into the ServiceRatePlan table failed
+			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
+		}
+		
+		// Copy all ServiceRateGroup records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
+		$strCopyServiceRateGroupRecordsToNewService =	"INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ".
+														"SELECT NULL, $intNewServiceId, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active ".
+														"FROM ServiceRateGroup WHERE Service = $intOldServiceId";
+														
+		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRateGroupRecordsToNewService) === FALSE)
+		{
+			// Inserting the records into the ServiceRateGroup table failed
+			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
+		}
+		
+		/* The old method only copies the RatePlan details that are currently used, or will be used in the future.
+		 * We now copy the entire history of the Service's RatePlan over to the new service, so you will always
+		 * have a complete history of the plans for a given service 
+		// Copy all ServiceRatePlan records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
+		$intNewServiceId = DBO()->NewService->Id->Value;
+		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active) ".
+														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active ".
 														"FROM ServiceRatePlan WHERE Service = $intOldServiceId AND EndDatetime > NOW() AND StartDatetime < EndDatetime";
 		$qryInsertServicePlanDetails = new Query();
 		
@@ -3171,6 +3228,7 @@ class AppTemplateService extends ApplicationTemplate
 			// Inserting the records into the ServiceRateGroup table failed
 			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
 		}
+		*/
 		
 		// Activating the account was successfull
 		return TRUE;
@@ -3403,6 +3461,47 @@ class AppTemplateService extends ApplicationTemplate
 
 		$dboServiceAddress->BillPostcode = $dboAccount->Postcode->Value;
 		$dboServiceAddress->ServiceState = $dboAccount->State->Value;
+	}
+	
+	// Returns TRUE if the FNN can be changed for the given service Id, else FALSE
+	// It is assumed that $intService relates to the most recent Service record
+	// It is a precondition that the service referenced by $intService exists in the database 
+	function FNNCanBeEditted($intService)
+	{
+		// Retrieve the record from the database and the current date
+		$arrColumns = Array("FNN"		=> "FNN",
+							"Account"	=>	"Account",
+							"Today"		=>	"CAST(NOW() AS DATE)"
+							);
+		$selService = new StatementSelect("Service", $arrColumns, "Id = <Id>");
+		$selService->Execute(Array("Id"=>$intService));
+		$arrService	= $selService->Fetch();
+		$strToday	= $arrService["Today"];
+		if ($arrService['CreatedOn'] != $strToday)
+		{
+			// The FNN cannot be Editted
+			return FALSE;
+		}
+		
+		// If there are other records belonging to the same account as $intService, with the same FNN, then 
+		// you cannot change the FNN
+		$selHasMultipleRecords = new StatementSelect("Service", "Id", "Account = <Account> AND FNN = <FNN> AND Service != <Id>");
+		$mixResult = $selHasMultipleRecords->Execute($arrService);
+		
+		if ($mixResult != 0)
+		{
+			// The account has multiple service records associated with this FNN.  The FNN cannot be editted
+			// because it is safe to assume that it wasn't actually created today, but instead Activated today
+			return FALSE;
+		}
+		
+		$strYesterday = date("Y-m-d", strtotime("-1 day", $strToday));
+		// Check that this service's CreatedOn Date isn't just set to today because a change of lessee was scheduled
+		$selChangeOfLessee = new StatementSelect("Service", "Id", "FNN = <FNN> AND ClosedOn = <Yesterday>");
+		
+		//TODO! but what if you schedule a change of lessee for the future, and then archive the current service, thus changing
+		// the ClosedOn date of the service which was scheduled to be disconnected in the future (one day before the service
+		// goes to the new lessee)
 	}
 	
 	//----- DO NOT REMOVE -----//

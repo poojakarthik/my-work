@@ -42,6 +42,7 @@
  */
 function VixenDelinquentCDRsClass()
 {
+	// Used for paginating the table of delinquent CDRs
 	this.intMaxRowsToShow	= 10;
 	this.intFirstRowShown	= null;
 
@@ -67,7 +68,20 @@ function VixenDelinquentCDRsClass()
 	// This stores the list of selected CDRs which a Service assignment will be applied to
 	this.arrSelectedCDRs = null;
 
-	// This is called when the page is loaded
+	//------------------------------------------------------------------------//
+	// Initialise
+	//------------------------------------------------------------------------//
+	/**
+	 * Initialise()
+	 *
+	 * Initialises the Delinquent CDRs page/functionality
+	 *
+	 * Initialises the Delinquent CDRs page/functionality
+	 * This is called when the page is loaded
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.Initialise = function()
 	{
 		this.elmFNNSelector			= $ID("FNNSelector");
@@ -84,7 +98,19 @@ function VixenDelinquentCDRsClass()
 		this.objCDRTableCaption.elmBottom	= $ID("CDRTableCaptionBottom");
 	}
 
-	// This is used to find the Delinquent CDRs between the 2 date ranges
+	//------------------------------------------------------------------------//
+	// GetFNNs
+	//------------------------------------------------------------------------//
+	/**
+	 * GetFNNs()
+	 *
+	 * Makes the request to the server to retrieve details of all FNNs with delinquent CDRs between the 2 dates declared
+	 *
+	 * Makes the request to the server to retrieve details of all FNNs with delinquent CDRs between the 2 dates declared
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.GetFNNs = function()
 	{
 		if (Vixen.Ajax.strFormCurrentlyProcessing)
@@ -133,14 +159,40 @@ function VixenDelinquentCDRsClass()
 		Vixen.Ajax.CallAppTemplate("Misc", "GetDelinquentFNNs", objData, null, true, true, this.GetFNNsReturnHandler.bind(this));
 	}
 	
-	// This is used to lock the controls, usually for when a request to the server is made
+	//------------------------------------------------------------------------//
+	// LockControls
+	//------------------------------------------------------------------------//
+	/**
+	 * LockControls()
+	 *
+	 * Locks all controls on the page that require locking during certain actions/requests to the server
+	 *
+	 * Locks all controls on the page that require locking during certain actions/requests to the server
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.LockControls = function(bolLock)
 	{
 		this.elmFNNSelector.disabled = bolLock;
 	}
 	
-	
-	// This handles the reply from the server triggered by GetFNNs
+	//------------------------------------------------------------------------//
+	// GetFNNsReturnHandler
+	//------------------------------------------------------------------------//
+	/**
+	 * GetFNNsReturnHandler()
+	 *
+	 * Return handler for the server request trigger by the GetFNNs function
+	 *
+	 * Return handler for the server request trigger by the GetFNNs function
+	 * This populates the the FNN selector control
+	 *
+	 * @param	XMLHttpRequest	objXMLHttpRequest	the XMLHttpRequest object including the response from the server
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.GetFNNsReturnHandler = function(objXMLHttpRequest)
 	{
 		var objResponse = JSON.parse(objXMLHttpRequest.responseText);
@@ -170,7 +222,19 @@ function VixenDelinquentCDRsClass()
 		this.LockControls(false);
 	}
 	
-	// Retrieves all the CDRs once an item in the FNN Selector listbox is selected
+	//------------------------------------------------------------------------//
+	// GetCDRs
+	//------------------------------------------------------------------------//
+	/**
+	 * GetCDRs()
+	 *
+	 * Makes the request to the server to retrieve details of all delinquent CDRs once an item in the FNN selector listbox is selected
+	 *
+	 * Makes the request to the server to retrieve details of all delinquent CDRs once an item in the FNN selector listbox is selected
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.GetCDRs = function()
 	{
 		if (Vixen.Ajax.strFormCurrentlyProcessing)
@@ -201,7 +265,22 @@ function VixenDelinquentCDRsClass()
 		Vixen.Ajax.CallAppTemplate("Misc", "GetDelinquentCDRs", objData, null, true, true, this.GetCDRsReturnHandler.bind(this));
 	}
 	
-	// This handles the reply from the server triggered by GetFNNs
+	//------------------------------------------------------------------------//
+	// GetCDRsReturnHandler
+	//------------------------------------------------------------------------//
+	/**
+	 * GetCDRsReturnHandler()
+	 *
+	 * Return handler for the server request trigger by the GetCDRs function
+	 *
+	 * Return handler for the server request trigger by the GetCDRs function
+	 * This populates the CDR table on the page
+	 *
+	 * @param	XMLHttpRequest	objXMLHttpRequest	the XMLHttpRequest object including the response from the server
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.GetCDRsReturnHandler = function(objXMLHttpRequest)
 	{
 		var objResponse = JSON.parse(objXMLHttpRequest.responseText);
@@ -229,7 +308,21 @@ function VixenDelinquentCDRsClass()
 		this.LockControls(false);
 	}
 	
-	// Loads the table of CDRs and handles the pagination
+	//------------------------------------------------------------------------//
+	// BuildTable
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildTable()
+	 *
+	 * Builds the table of delinquent CDRs and handles pagination
+	 *
+	 * Builds the table of delinquent CDRs and handles pagination
+	 *
+	 * @param	array	arrCDRs		array of details of each CDR to be added to the table
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.BuildTable = function(arrCDRs)
 	{
 		$ID("CheckBoxSelectAllCDRs").checked = false;
@@ -300,13 +393,48 @@ function VixenDelinquentCDRsClass()
 		this.objCDRTableCaption.elmBottom.innerHTML	= strCaption;
 	}
 	
-	// Handles highlighting of a row of the CDR table
-	this.HighlightRow = function(objThis, bolHighligh, intCDR)
+	//------------------------------------------------------------------------//
+	// HighlightRow
+	//------------------------------------------------------------------------//
+	/**
+	 * HighlightRow()
+	 *
+	 * Handles highlighting of a row of the CDR table
+	 *
+	 * Handles highlighting of a row of the CDR table
+	 *
+	 * @param	TR element	objThis			reference to the row element being highlighted
+	 * @param	boolean		bolHighlight	TRUE to highlight the row. FALSE to unhighlight the row
+	 * @param	int			intCDR			index of the row's CDR in the array of CDRs contained in the delinquent CDR table
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.HighlightRow = function(objThis, bolHighlight, intCDR)
 	{
-		this.arrCDRs[intCDR].Row.className = (bolHighligh)? "Hover" : this.arrCDRs[intCDR].DefaultClassName;
+		this.arrCDRs[intCDR].Row.className = (bolHighlight)? "Hover" : this.arrCDRs[intCDR].DefaultClassName;
 	}
 	
-	// Both of these are optional.  If they are not included then the Service will be applied to all selected CDRs
+	//------------------------------------------------------------------------//
+	// OpenDeclareServicePopup
+	//------------------------------------------------------------------------//
+	/**
+	 * OpenDeclareServicePopup()
+	 *
+	 * Opens the Popup which allows the user to choose an owner for the delinquent CDRs
+	 *
+	 * Opens the Popup which allows the user to choose an owner for the delinquent CDRs
+	 *
+	 * @param	TD element	objThis			optional, reference to the row cell element which was 
+	 *										clicked on to trigger this popup opening.
+	 *										not suplying this parameter indicates that the ownership 
+	 *										should be applied to all currently selected (via checkbox) CDRs
+	 * @param	int			intCDRIndex		optional, index of te CDR that the ownership will be applied to,
+	 *										if being aplied to a single CDR
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.OpenDeclareServicePopup = function(objThis, intCDRIndex)
 	{
 		if (Vixen.Ajax.strFormCurrentlyProcessing)
@@ -354,7 +482,22 @@ function VixenDelinquentCDRsClass()
 		}
 	}
 	
-	// This is called when an item is selected from the list of Services in the ServiceSelector popup
+	//------------------------------------------------------------------------//
+	// SetService
+	//------------------------------------------------------------------------//
+	/**
+	 * SetService()
+	 *
+	 * This is called when an item is selected from the list of Services in the ServiceSelector popup
+	 *
+	 * This is called when an item is selected from the list of Services in the ServiceSelector popup
+	 * The service will be applied as the owner of each CDR referenced in this.arrSelectedCDRs
+	 *
+	 * @param	int		intServiceId	Id of the Service to own the CDRs
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.SetService = function(intServiceId)
 	{
 		Vixen.Popup.Close("DelinquentCDRsServiceSelector");
@@ -368,8 +511,22 @@ function VixenDelinquentCDRsClass()
 		}
 	}
 	
-	// This will update the Service field of a row in the table, based on the Service property of the 
-	// record in this.arrCDRs 
+	//------------------------------------------------------------------------//
+	// UpdateDeclaredService
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateDeclaredService()
+	 *
+	 * Updates a single row of the Delinquent CDRs table, to specify proposed ownership of the CDR
+	 *
+	 * Updates a single row of the Delinquent CDRs table, to specify proposed ownership of the CDR
+	 * The proposed ownership of a CDR, or lack there of, is defined in this.arrCDRs[i].Service
+	 *
+	 * @param	int		intCDRIndex		index into this.arrCDRs, of the CDR to update in the table
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.UpdateDeclaredService = function(intCDRIndex)
 	{
 		var objCDR = this.arrCDRs[intCDRIndex];
@@ -390,7 +547,21 @@ function VixenDelinquentCDRsClass()
 		}
 	}
 
-	// This will make a request to the server to commit the owner allocation for all CDRs that have been allocated an owner
+	//------------------------------------------------------------------------//
+	// Commit
+	//------------------------------------------------------------------------//
+	/**
+	 * Commit()
+	 *
+	 * Makes a request to the server to commit the owner allocation for all CDRs that have been allocated an owner
+	 *
+	 * Makes a request to the server to commit the owner allocation for all CDRs that have been allocated an owner
+	 *
+	 * @param	bool	bolConfirmed	optional, TRUE if the user has confirmed the action
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.Commit = function(bolConfirmed)
 	{
 		if (Vixen.Ajax.strFormCurrentlyProcessing)
@@ -469,7 +640,21 @@ function VixenDelinquentCDRsClass()
 		Vixen.Ajax.CallAppTemplate("Misc", "AssignCDRsToServices", objData, null, true, true, this.CommitReturnHandler.bind(this));
 	}
 	
-	// Return Handler for the Commit method
+	//------------------------------------------------------------------------//
+	// CommitReturnHandler
+	//------------------------------------------------------------------------//
+	/**
+	 * CommitReturnHandler()
+	 *
+	 * Return handler for the Commit function's server request
+	 *
+	 * Return handler for the Commit function's server request
+	 *
+	 * @param	XMLHttpRequest	objXMLHttpRequest	the XMLHttpRequest object including the response from the server
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.CommitReturnHandler = function(objXMLHttpRequest)
 	{
 		var objResponse = JSON.parse(objXMLHttpRequest.responseText);
@@ -503,7 +688,22 @@ function VixenDelinquentCDRsClass()
 		this.LockControls(false);
 	}
 	
-	// Removes the CDRs from the table, reorders the existing ones and if there are none left, it will notify the user
+	//------------------------------------------------------------------------//
+	// RemoveCDRs
+	//------------------------------------------------------------------------//
+	/**
+	 * RemoveCDRs()
+	 *
+	 * Removes the CDRs from the table, reorders the existing ones and if there are none left, it will notify the user
+	 *
+	 * Removes the CDRs from the table, reorders the existing ones and if there are none left, it will notify the user
+	 *
+	 * @param	array	arrCDRsToRemove		array of indexes into the this.arrCDRs table, representing which ones to
+	 *										remove from the table
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.RemoveCDRs = function(arrCDRsToRemove)
 	{
 		for (i in arrCDRsToRemove)
@@ -536,7 +736,19 @@ function VixenDelinquentCDRsClass()
 		this.BuildTable(arrNewCDRs);
 	}
 	
-	
+	//------------------------------------------------------------------------//
+	// MoveNext
+	//------------------------------------------------------------------------//
+	/**
+	 * MoveNext()
+	 *
+	 * Moves the Delinquent CDRs table to the next page
+	 *
+	 * Moves the Delinquent CDRs table to the next page
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.MoveNext = function()
 	{
 		var intCurrentFirstCDRShown = this.intFirstRowShown - 1;
@@ -551,6 +763,19 @@ function VixenDelinquentCDRsClass()
 		this.ShowFromCDR(intFirstCDRToShow);
 	}
 
+	//------------------------------------------------------------------------//
+	// MovePrevious
+	//------------------------------------------------------------------------//
+	/**
+	 * MovePrevious()
+	 *
+	 * Moves the Delinquent CDRs table to the previous page
+	 *
+	 * Moves the Delinquent CDRs table to the previous page
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.MovePrevious = function()
 	{
 		var intCurrentFirstCDRShown = this.intFirstRowShown - 1;
@@ -564,11 +789,37 @@ function VixenDelinquentCDRsClass()
 		this.ShowFromCDR(intFirstCDRToShow);
 	}
 	
+	//------------------------------------------------------------------------//
+	// MoveFirst
+	//------------------------------------------------------------------------//
+	/**
+	 * MoveFirst()
+	 *
+	 * Moves the Delinquent CDRs table to the first page
+	 *
+	 * Moves the Delinquent CDRs table to the first page
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.MoveFirst = function()
 	{
 		this.ShowFromCDR(0);
 	}
 	
+	//------------------------------------------------------------------------//
+	// MoveLast
+	//------------------------------------------------------------------------//
+	/**
+	 * MoveLast()
+	 *
+	 * Moves the Delinquent CDRs table to the last page
+	 *
+	 * Moves the Delinquent CDRs table to the last page
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.MoveLast = function()
 	{
 		var intCurrentFirstCDRShown = this.intFirstRowShown - 1;
@@ -584,7 +835,21 @@ function VixenDelinquentCDRsClass()
 		this.ShowFromCDR(intFirstCDRToShow);
 	}
 	
-	// Displays the allowed number of records, starting with record intRecord
+	//------------------------------------------------------------------------//
+	// ShowFromCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowFromCDR()
+	 *
+	 * Draws a page of the delinquent CDR table, starting at the declared CDR
+	 *
+	 * Draws a page of the delinquent CDR table, starting at the declared CDR
+	 *
+	 * @param	int		intFirstCDR		index into the this.arrCDRs array of the first CDR to show in the page
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.ShowFromCDR = function(intFirstCDR)
 	{
 		// Hide all rows
@@ -610,7 +875,21 @@ function VixenDelinquentCDRsClass()
 		this.objCDRTableCaption.elmBottom.innerHTML	= strCaption;
 	}
 	
-	// Checks/Unchecks all the checkboxes
+	//------------------------------------------------------------------------//
+	// SelectAllCDRs
+	//------------------------------------------------------------------------//
+	/**
+	 * SelectAllCDRs()
+	 *
+	 * Checks/unchecks each checkbox in the Delinquent CDRs table, signifying their selection
+	 *
+	 * Checks/unchecks each checkbox in the Delinquent CDRs table, signifying their selection
+	 *
+	 * @param	bool	bolChecked	true to select them all; false to unselect them all
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.SelectAllCDRs = function(bolChecked)
 	{
 		for (i in this.arrCDRs)
@@ -619,8 +898,23 @@ function VixenDelinquentCDRsClass()
 		}
 	}
 	
-	// Event Listener for when the checkbox of a CDR row is selected
-	// It updates the checkbox which signifies that they are all selected
+	//------------------------------------------------------------------------//
+	// SelectCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * SelectCDR()
+	 *
+	 * Event Listener for when the checkbox of a CDR row is selected
+	 *
+	 * Event Listener for when the checkbox of a CDR row is selected
+	 * It updates the checkbox which signifies that they are all selected
+	 *
+	 * @param	Checkbox	objThis			checkbox that was toggled
+	 * @param	int			intCDRIndex		index into the this.arrCDRs array relating to the row who's checkbox was toggled
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.SelectCDR = function(objThis, intCDRIndex)
 	{
 		//this.arrCDRs[intCDRIndex].elmCheckBox.checked = (!this.arrCDRs[intCDRIndex].elmCheckBox.checked);
