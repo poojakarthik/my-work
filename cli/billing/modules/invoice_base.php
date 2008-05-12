@@ -487,7 +487,7 @@ abstract class BillingModuleInvoice
 			return Array();
 		}
 		
-		$arrServices	= $this->_selServices->FetchAll();
+		$arrServices	= $this->_selServiceDetails->FetchAll();
 		
 		// Get List of Service IDs for each FNN
 		foreach ($arrServices as $intKey=>$arrService)
