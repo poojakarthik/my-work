@@ -9,10 +9,10 @@ define("INVOICE_XML_PATH",	FILES_BASE_PATH."invoices/xml/");
 $bilInvoiceXML	= new BillingModuleInvoiceXML($GLOBALS['dbaDatabase'], $arrConfig, 'CDRInvoiced');
 
 // Get Command Line Arguments
-$strInvoiceRun	= $argv[2];
+$strInvoiceRun	= $argv[1];
 CliEcho("\n[ REPRINTING INVOICE RUN '$strInvoiceRun' ]\n");
 $arrAccounts	= Array();
-for ($i = 3; $i <= $argc; $i++)
+for ($i = 2; $i <= $argc; $i++)
 {
 	// Parse Account Numbers
 	$intArgument	= (int)$argv[$i]; 
