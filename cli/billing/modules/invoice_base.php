@@ -445,7 +445,7 @@ abstract class BillingModuleInvoice
 	protected function _GetCustomerData($arrInvoice)
 	{		
 		// Retrieve the Customer Data
-		if ($this->_selCustomerData->Execute === FALSE)
+		if ($this->_selCustomerData->Execute($arrInvoice) === FALSE)
 		{
 			Debug($this->_selCustomerData->Error());
 			return Array();
@@ -492,6 +492,8 @@ abstract class BillingModuleInvoice
 		// Get List of Service IDs for each FNN
 		foreach ($arrServices as $intKey=>$arrService)
 		{
+			$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
+			
 			$arrWhere = Array();
 			$arrWhere['Account']	= $arrInvoice['Account'];
 			$arrWhere['FNN']		= $arrService['FNN'];

@@ -192,17 +192,17 @@
 			// Is this Service in a Cost Centre?
 			if ($arrService['CostCentre'] && $arrService['IsRendered'])
 			{
-				$arrCostCentres[$arrService['CostCentre']]['Services'][$arrService['FNN']]	= $arrService['ServiceTotal'];
-				$arrCostCentres[$arrService['CostCentre']]['GrandTotal']					+= (float)$arrService['ServiceTotal'];
+				$arrCostCentres[$arrService['CostCentre']]['Services'][$arrService['Extension']]	= $arrService['ServiceTotal'];
+				$arrCostCentres[$arrService['CostCentre']]['GrandTotal']							+= (float)$arrService['ServiceTotal'];
 			}
 		}
 		
 		$xmlCostCentreSummary	= $this->_AddElement($xmlInvoice, 'CostCentreSummary');
-		foreach ($arrCostCentres as $arrCostCentre)
+		foreach ($arrCostCentres as $strName=>$arrCostCentre)
 		{
 			// Get Cost Centre Services
 			$xmlCostCentre	= $this->_AddElement($xmlCostCentreSummary, 'CostCentre');
-			$this->_AddAttribute($xmlCostCentre, 'Name', $arrCostCentre['Name']);
+			$this->_AddAttribute($xmlCostCentre, 'Name', $strName);
 			$this->_AddAttribute($xmlCostCentre, 'Total', $arrCostCentre['GrandTotal']);
 			
 			foreach ($arrCostCentre['Services'] as $strFNN=>$fltServiceTotal)
