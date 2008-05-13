@@ -132,7 +132,7 @@
 		{
 			$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
 			$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
-			$this->_AddAttribute($xmlItemisationType, 'GrandTotal', number_format($arrCategory['TotalCharge']), 2, '.', '');
+			$this->_AddAttribute($xmlItemisationType, 'GrandTotal', number_format($arrCategory['TotalCharge'], 2, '.', ''));
 			$this->_AddAttribute($xmlItemisationType, 'Records', @count($arrCategory['Itemisation']));
 			$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
 			
@@ -177,11 +177,11 @@
 		// Add to XML schema
 		$arrLastInvoice	= $this->_GetOldInvoice($arrInvoice['Account'], 1);
 		$xmlStatement	= $this->_AddElement($xmlInvoice, 'Account');
-		$this->_AddElement($xmlAccount, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing']), 2, '.', '');
-		$this->_AddElement($xmlAccount, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0)), 2, '.', '');
-		$this->_AddElement($xmlAccount, 'Overdue', number_format($arrInvoice['AccountBalance']), 2, '.', '');
-		$this->_AddElement($xmlAccount, 'NewCharges', number_format($arrInvoice['Total'] + $arrInvoice['Tax']), 2, '.', '');
-		$this->_AddElement($xmlAccount, 'TotalOwing', number_format($arrInvoice['TotalOwing']), 2, '.', '');
+		$this->_AddElement($xmlAccount, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
+		$this->_AddElement($xmlAccount, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
+		$this->_AddElement($xmlAccount, 'Overdue', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
+		$this->_AddElement($xmlAccount, 'NewCharges', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
+		$this->_AddElement($xmlAccount, 'TotalOwing', number_format($arrInvoice['TotalOwing'], 2, '.', ''));
 		$this->_AddElement($xmlAccount, 'BillingPeriodStart', $strBillingPeriodStart);
 		$this->_AddElement($xmlAccount, 'BillingPeriodEnd', $strBillingPeriodEnd);
 		$this->_AddElement($xmlAccount, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
@@ -211,7 +211,7 @@
 			// Get Cost Centre Services
 			$xmlCostCentre	= $this->_AddElement($xmlCostCentreSummary, 'CostCentre');
 			$this->_AddAttribute($xmlCostCentre, 'Name', $strName);
-			$this->_AddAttribute($xmlCostCentre, 'Total', number_format($arrCostCentre['TotalCharge']), 2, '.', '');
+			$this->_AddAttribute($xmlCostCentre, 'Total', number_format($arrCostCentre['TotalCharge'], 2, '.', ''));
 			
 			foreach ($arrCostCentre['Services'] as $strFNN=>$fltServiceTotal)
 			{
@@ -239,7 +239,7 @@
 				
 				$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
 				$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
-				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', number_format($arrChargeType['TotalCharge']), 2, '.', '');
+				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', number_format($arrChargeType['TotalCharge'], 2, '.', ''));
 				$this->_AddAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				
