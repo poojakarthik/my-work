@@ -97,7 +97,7 @@ abstract class BillingModuleInvoice
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
 																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RecordGroup.DisplayType AS DisplayType",
-																	"Account = <Id> AND InvoiceRun = <InvoiceRun>",
+																	"Account = <Account> AND InvoiceRun = <InvoiceRun>",
 																	"RG.Description",
 																	NULL,
 																	"RG.Id");
@@ -105,12 +105,12 @@ abstract class BillingModuleInvoice
 		$this->_selAccountSummaryCharges	= new StatementSelect(	"Charge",
 																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total",
 																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
-																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'");
+																	"Account = <Account> AND InvoiceRun = <InvoiceRun> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'");
 		
 		$this->_selPlanCharges				= new StatementSelect(	"Charge",
 																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit",
 																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
-																	"Account = <Id> AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
+																	"Account = <Account> AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
 		
 		$this->_selCustomerData				= new StatementSelect(	"Account",
 																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup",
