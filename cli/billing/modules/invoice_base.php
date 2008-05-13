@@ -531,7 +531,6 @@ abstract class BillingModuleInvoice
 			$arrWhere['RangeStart']	= $arrService['RangeStart'];
 			$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
 			$arrRecordTypes	= $this->_BillingFactory(BILL_FACTORY_RECORD_TYPES, $arrService, $arrWhere);
-			//Debug($arrRecordTypes);
 			foreach ($arrRecordTypes as $arrRecordType)
 			{
 				// Get Call Itemisation

@@ -230,6 +230,7 @@
 			$this->_AddAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
 			$this->_AddAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			$this->_AddAttribute($xmlService, 'Plan', $arrService['RatePlan']);
+			$this->_AddAttribute($xmlService, 'GrandTotal', $arrService['ServiceTotal']);
 			
 			// Service Itemisation
 			$xmlItemisation	= $this->_AddElement($xmlService, 'Itemisation');
