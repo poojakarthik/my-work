@@ -223,22 +223,12 @@
 			$this->_AddAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			$this->_AddAttribute($xmlService, 'Plan', $arrService['RatePlan']);
 			
-			/*// Charge Summary
-			$fltChargeTotal		= 0.0;
-			$xmlChargeSummary	= $this->_AddElement($xmlService, 'ChargeSummary');
-			foreach ($arrService['RecordTypes'] as $strName=>$arrRecordType)
-			{
-				$xmlChargeType	= $this->_AddElement($xmlChargeSummary, 'Category', $arrRecordType['TotalCharge']);
-				$this->_AddAttribute($xmlChargeType, 'Description', $strName);
-				
-				$fltChargeTotal	+= (float)$arrRecordType['TotalCharge'];
-			}
-			$this->_AddAttribute($xmlChargeSummary, 'Total', $fltChargeTotal);*/
-			
 			// Service Itemisation
 			$xmlItemisation	= $this->_AddElement($xmlService, 'Itemisation');
 			foreach ($arrService['RecordTypes'] as $strName=>$arrChargeType)
 			{
+				Debug($arrService['RecordTypes']);
+				
 				$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
 				$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
 				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', $arrChargeType['TotalCharge']);
