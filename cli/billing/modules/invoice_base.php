@@ -519,14 +519,19 @@ abstract class BillingModuleInvoice
 		{
 			$arrCategories	= Array();
 			
+			// Correct Extension Ranges
+			$arrService['RangeStart']	= ($arrService['RangeStart']) ? substr($arrService['FNN'], -2).$arrService['RangeStart'] : $arrService['FNN'];
+			$arrService['RangeEnd']		= ($arrService['RangeEnd']) ? substr($arrService['FNN'], -2).$arrService['RangeEnd'] : $arrService['FNN'];
+			
 			// Get Record Types
 			$arrWhere	= Array();
 			$arrWhere['InvoiceRun']	= $arrInvoice['InvoiceRun'];
 			$arrWhere['RangeStart']	= $arrService['RangeStart'];
 			$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
 			$arrRecordTypes	= $this->_BillingFactory(BILL_FACTORY_RECORD_TYPES, $arrService, $arrWhere);
+			Debug($arrRecordTypes);
 			foreach ($arrRecordTypes as $arrRecordType)
-			{
+			{				
 				// Get Call Itemisation
 				$arrWhere['RecordGroup']		= $arrRecordType['GroupId'];
 				$arrRecordType['Itemisation']	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CALLS, $arrService, $arrWhere);
