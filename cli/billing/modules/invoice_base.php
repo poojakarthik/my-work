@@ -520,7 +520,7 @@ abstract class BillingModuleInvoice
 		{
 			$arrCategories	= Array();
 			$fltRatedTotal	= 0.0;
-						
+			
 			// Correct Extension Ranges
 			$arrService['RangeStart']	= ($arrService['RangeStart']) ? substr($arrService['FNN'], -2).$arrService['RangeStart'] : $arrService['FNN'];
 			$arrService['RangeEnd']		= ($arrService['RangeEnd']) ? substr($arrService['FNN'], -2).$arrService['RangeEnd'] : $arrService['FNN'];
@@ -642,6 +642,7 @@ abstract class BillingModuleInvoice
 			}
 			
 			$arrService['RecordTypes']	= $arrCategories;
+			//$arrService['IsRendered']	= (!$arrService['IsRendered'] && $fltRatedTotal == 0.0) ? FALSE : TRUE;
 		}
 		
 		return $arrServices;
