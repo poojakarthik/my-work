@@ -96,7 +96,7 @@ abstract class BillingModuleInvoice
 																	"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
-																	"RG.Description AS Description, SUM(STT.Charge) AS Total",
+																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RecordGroup.DisplayType AS DisplayType",
 																	"Account = <Id> AND InvoiceRun = <InvoiceRun>",
 																	"RG.Description",
 																	NULL,
@@ -555,7 +555,7 @@ abstract class BillingModuleInvoice
 				$arrItemised	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrWhere);
 				if (count($arrItemised))
 				{
-					$fltAdjustmentsTotal	= 0;
+					$fltAdjustmentsTotal	= 0.0;
 					
 					// Convert each Adjustment to a CDR
 					foreach ($arrItemised as $arrCharge)
@@ -581,7 +581,7 @@ abstract class BillingModuleInvoice
 				}
 				
 				// Get Plan Charges & Credits
-				$fltPlanChargeTotal			= 0;
+				$fltPlanChargeTotal			= 0.0;
 				$arrPlanAdjustments			= $this->_BillingFactory(BILL_FACTORY_PLAN_ADJUSTMENTS, $arrService, $arrWhere);
 				$arrPlanChargeItemisation	= Array();
 				foreach ($arrPlanAdjustments as $arrAdjustment)
