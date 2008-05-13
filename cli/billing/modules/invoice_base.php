@@ -519,7 +519,7 @@ abstract class BillingModuleInvoice
 			}
 			$arrServices[$intKey] = $arrService;
 			
-			Debug($arrService);
+			//Debug($arrService);
 		}
 		
 		foreach ($arrServices as &$arrService)
@@ -582,7 +582,7 @@ abstract class BillingModuleInvoice
 						$fltAdjustmentsTotal	+= $arrCDR['Charge'];
 						
 						$arrCDR['Units']		= 1;
-						$arrCDR['Description']	= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
+						$arrCDR['Description']	= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 						
 						$arrCategories['Other Charges & Credits']['Itemisation'][]	= $arrCDR;
 					}
@@ -609,7 +609,7 @@ abstract class BillingModuleInvoice
 					$fltPlanChargeTotal			+= $arrCDR['Charge'];
 					
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
+					$arrCDR['Description']		= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 					$arrPlanChargeItemisation[]	= $arrCDR;
 				}
 				
@@ -686,7 +686,7 @@ abstract class BillingModuleInvoice
 			while ($arrAdjustment = $this->_selAccountAdjustments->Fetch())
 			{
 				$arrCDR								= Array();
-				$arrCDR['Description']				= $arrAdjustment['ChargeType'] . ' - ' . $arrAdjustment['Description'];
+				$arrCDR['Description']				= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
 				$arrCDR['Units']					= 1;
 				$arrCDR['Charge']					= $arrAdjustment['Amount'];
 				$arrAdjustments['Itemisation'][]	= $arrCDR;

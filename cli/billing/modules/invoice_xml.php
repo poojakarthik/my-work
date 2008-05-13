@@ -226,6 +226,12 @@
 		$xmlServices	= $this->_AddElement($xmlInvoice, 'Services');
 		foreach ($arrServices as $arrService)
 		{
+			// Only Render if there is data or ForceInvoiceRender is set
+			if (!$arrService['IsRendered'])
+			{
+				continue;
+			}
+			
 			$xmlService	= $this->_AddElement($xmlServices, 'Service');
 			$this->_AddAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
 			$this->_AddAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
