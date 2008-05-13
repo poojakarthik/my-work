@@ -548,9 +548,22 @@ abstract class BillingModuleInvoice
 				}
 			}
 			
+			// Handle ServiceTotals
+			if ($arrService['Indial100'])
+			{
+				// Indial 100s should only have Rated Totals				
+				$arrService['ServiceTotal']	= $fltRatedTotal;
+			}
+			else
+			{
+				// Get the ServiceTotal
+				$arrServiceTotal			= $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrInvoice);
+				$arrService['ServiceTotal']	= $arrServiceTotal['GrandTotal'];
+			}
+			
 			// Only if this is a non-Indial or is the Primary FNN
 			if ($arrService['Primary'])
-			{
+			{				
 				// Get Adjustments
 				$arrItemised	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrWhere);
 				if (count($arrItemised))
@@ -634,11 +647,6 @@ abstract class BillingModuleInvoice
 					
 					$fltRatedTotal	+= $fltPlanChargeTotal;
 				}
-			}
-			elseif ($arrService['Indial100'])
-			{
-				// Indial 100s should only have Rated Totals				
-				$arrService['ServiceTotal']	= $fltRatedTotal;
 			}
 			
 			$arrService['RecordTypes']	= $arrCategories;

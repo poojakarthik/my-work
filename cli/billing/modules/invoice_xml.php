@@ -176,7 +176,7 @@
 		
 		// Add to XML schema
 		$arrLastInvoice	= $this->_GetOldInvoice($arrInvoice['Account'], 1);
-		$xmlStatement	= $this->_AddElement($xmlInvoice, 'Account');
+		$xmlStatement	= $this->_AddElement($xmlInvoice, 'Statement');
 		$this->_AddElement($xmlAccount, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
 		$this->_AddElement($xmlAccount, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
 		$this->_AddElement($xmlAccount, 'Overdue', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
@@ -230,7 +230,7 @@
 			$this->_AddAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
 			$this->_AddAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
 			$this->_AddAttribute($xmlService, 'Plan', $arrService['RatePlan']);
-			$this->_AddAttribute($xmlService, 'GrandTotal', $arrService['ServiceTotal']);
+			$this->_AddAttribute($xmlService, 'GrandTotal', number_format($arrService['ServiceTotal'], 2, '.', ''));
 			
 			// Service Itemisation
 			$xmlItemisation	= $this->_AddElement($xmlService, 'Itemisation');
