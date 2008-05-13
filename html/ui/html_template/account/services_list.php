@@ -398,6 +398,213 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		Table()->ServiceTable->RowHighlighting = TRUE;
 		Table()->ServiceTable->Render();
 	}
+	
+	//------------------------------------------------------------------------//
+	// RenderTableNewWay
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderTableNewWay()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	function RenderTableNewWay()
+	{
+		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$arrServices			= DBO()->Account->Services->Value;
+		
+		Table()->Services->SetHeader("&nbsp;", "FNN #", "Plan", "&nbsp;", "&nbsp;", "&nbsp;", "Actions");
+		Table()->Services->SetWidth("3%", "10%", "46%", "7%", "11%", "15%", "8%");
+		Table()->Services->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left", "Left");
+		
+		$strStatusTitles = "Status :<br />Line :";
+		
+		foreach ($arrServices as $arrService)
+		{
+			// Build the Actions Cell
+			$strEditService				= "";
+			$strChangePlan				= "";
+			$strProvisioning			= "";
+			$strViewProvisioningHistory	= "";
+			if ($bolUserHasOperatorPerm)
+			{
+				// The user can edit stuff
+				$strEditServiceLink	= Href()->EditService($arrService['Id']);
+				$strEditService		= "<img src='img/template/edit.png' title='Edit Service' onclick='$strEditServiceLink' style='cursor:pointer'/>";
+				
+				$strChangePlanLink	= Href()->ChangePlan($arrService['Id']);
+				$strChangePlan		= "<img src='img/template/plan.png' title='Change Plan' onclick='$strChangePlanLink' style='cursor:pointer'/>";
+	
+				// Include a button for provisioning, if the service is a landline
+				if ($arrService['ServiceType'] == SERVICE_TYPE_LAND_LINE)
+				{
+					$strProvisioningLink	= Href()->Provisioning($arrService['Id']);
+					$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
+					
+					$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($arrService['Id']);
+					$strViewProvisioningHisotry		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink' style='cursor:pointer'/>";
+				}
+			}
+			
+			$strViewServiceNotesLink	= Href()->ViewServiceNotes($arrService['Id']);
+			$strViewServiceNotes		= "<img src='img/template/note.png' title='View Notes' onclick='$strViewServiceNotesLink' style='cursor:pointer'/>";
+			
+			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);
+			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
+			
+			$strActionsCell				= "$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning $strViewProvisioningHistory";
+
+			// Create a link to the View Plan for Service page
+			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($arrService['Id']);
+
+			if ($arrService['CurrentPlan'] != NULL)
+			{
+				// The Service has a current plan
+				$strPlanCell = "<span><a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['CurrentPlan']['Name']}</a></span>";
+			}
+			else
+			{
+				// There is no current plan for the service
+				$strPlanCell = "<span class='Red'>No Plan Selected</span>";
+			}
+			
+			if ($arrService['FuturePlan'] != NULL)
+			{
+				$strStartDate = OutputMask()->ShortDate($arrService['FuturePlan']['StartDatetime']); 
+				$strPlanCell .= "<br /><span>As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['FuturePlan']['Name']}</a></span>";
+			}
+			
+			// Work out the Date to display along with the status
+			$intClosedOn	= strtotime($arrService[History][0]['ClosedOn']);
+			$intCurrentDate	= strtotime(GetCurrentDateForMySQL());
+			
+			// Check if the ClosedOn date has been set
+			$bolFlagStatus = FALSE;
+			if ($arrService[History][0]['ClosedOn'] == NULL)
+			{
+//TODO! I'm up to HERE with this function				
+				// The service is not scheduled to close.  It is either active or hasn't been activated yet.
+				// Check if it is currently active
+				$intCreatedOn = strtotime($dboService->CreatedOn->Value);
+				if ($intCurrentDate >= $intCreatedOn)
+				{
+					// The service is currently active
+					$strStatusDesc = "Opened";
+				}
+				else
+				{
+					// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
+					$strStatusDesc = "Opens";
+					$bolFlagStatus = TRUE;
+				}
+				$strStatusDescDate = OutputMask()->ShortDate($dboService->CreatedOn->Value);
+			}
+			else
+			{
+				// The service has a ClosedOn date; check if it is in the future or past
+				if ($intClosedOn >= $intCurrentDate)
+				{
+					// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date) or today
+					$strStatusDesc = "Closes";
+					$bolFlagStatus = TRUE;
+				}
+				else
+				{
+					// The service has been closed
+					$strStatusDesc = "Closed";
+				}
+				$strStatusDescDate = OutputMask()->ShortDate($dboService->ClosedOn->Value);
+			}
+
+			// Prepare the Status' of the service
+			$strStatus			= GetConstantDescription($dboService->Status->Value, "Service");
+			$strLineStatus		= GetConstantDescription($dboService->LineStatus->Value, "LineStatus");
+			$strLineStatusDate	= $dboService->LineStatusDate->Value;
+
+			$strLineStatusDesc = NULL;
+			if ($strLineStatus === FALSE)
+			{
+				// The line status is unknown
+				$strLineStatus = "Unknown";
+			}
+			elseif ($strLineStatusDate != NULL)
+			{
+				// LineStatus Date has been supplied
+				$strLineStatusDate = substr($strLineStatusDate, 11, 8) ." ". substr($strLineStatusDate, 8, 2) ."/". substr($strLineStatusDate, 5, 2) ."/". substr($strLineStatusDate, 0, 4);
+				$strLineStatusDesc = "Line Status was last updated: $strLineStatusDate";
+			}
+
+			$strStatusCell = "$strStatus<br />$strLineStatus";
+			if ($strLineStatusDesc)
+			{
+				$strStatusCell = "<span title='$strLineStatusDesc'>$strStatusCell</span>";
+			}
+			
+			$strStatusDescCell = "$strStatusDesc $strStatusDescDate";
+			if ($bolFlagStatus)
+			{
+				$strStatusDescCell = "<span class='Red'>$strStatusDescCell</span>";
+			}
+			
+			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
+			
+			if ($dboService->FNN->Value == NULL)
+			{
+				// The service doesn't have an FNN yet
+				$strFnnDescription = "[not specified]";
+			}
+			else
+			{
+				// The service has an FNN
+				$strFnnDescription = $dboService->FNN->Value;
+			}
+
+			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
+			
+			//$strServiceType = GetConstantDescription($dboService->ServiceType->Value, "ServiceType");
+			
+			switch ($dboService->ServiceType->Value)
+			{
+				case SERVICE_TYPE_MOBILE:
+					$strServiceTypeClass = "ServiceTypeIconMobile";
+					break;
+				case SERVICE_TYPE_LAND_LINE:
+					$strServiceTypeClass = "ServiceTypeIconLandLine";
+					break;
+				case SERVICE_TYPE_ADSL:
+					$strServiceTypeClass = "ServiceTypeIconADSL";
+					break;
+				case SERVICE_TYPE_INBOUND:
+					$strServiceTypeClass = "ServiceTypeIconInbound";
+					break;
+				default:
+					$strServiceTypeClass = "ServiceTypeIconBlank";
+					break;
+			}
+			
+			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
+			
+			Table()->ServiceTable->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);
+		}
+		
+		// If the account has no services then output an appropriate message in the table
+		if (Table()->ServiceTable->RowCount() == 0)
+		{
+			// There are no services to stick in this table
+			Table()->ServiceTable->AddRow("No services to display");
+			Table()->ServiceTable->SetRowAlignment("left");
+			Table()->ServiceTable->SetRowColumnSpan(7);
+		}
+		
+		// Row highlighting doesn't seem to be working with popups
+		// Row highlighting has been turned off, because it stops working if the Service table is ever redrawn
+		Table()->ServiceTable->RowHighlighting = TRUE;
+		Table()->ServiceTable->Render();
+	}
+	
 }
 
 ?>

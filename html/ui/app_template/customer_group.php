@@ -1239,7 +1239,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		$intFileSize		= $_FILES['ResourceFile']['size'];
 		
 		$arrFilenameParts	= explode(".", $strFilename);
-		$strExtension		= $arrFilenameParts[count($arrFilenameParts)-1];
+		$strExtension		= strtolower($arrFilenameParts[count($arrFilenameParts)-1]);
 		
 		// Load the DocumentResourceType record
 		$selResourceType = new StatementSelect("DocumentResourceType", "*", "Id = <Id>");
@@ -1287,7 +1287,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		$bolFoundFileType = FALSE;
 		foreach ($arrFileTypes as $arrFileType)
 		{
-			if ($strExtension == $arrFileType['Extension'])
+			if ($strExtension == strtolower($arrFileType['Extension']))
 			{
 				// Check that their MIME Type matches
 				if ($strFileType == $arrFileType['MIMEType'])

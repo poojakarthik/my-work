@@ -297,9 +297,8 @@ class Application
 		$this->_intMode = AJAX_MODE;
 		
 		// Get submitted data
-		$objSubmit = new SubmittedData();
-		$objAjax = $objSubmit->Ajax();
-
+		$objSubmit		= new SubmittedData();
+		$objAjax		= $objSubmit->Ajax();
 		$strClass 		= 'AppTemplate' . $objAjax->Class;
 		$strMethod 		= $objAjax->Method;
 		

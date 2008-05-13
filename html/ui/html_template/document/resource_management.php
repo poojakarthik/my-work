@@ -216,7 +216,7 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 			// There are no resources of this ResourceType
 			Table()->Resources->AddRow("No records to display");
 			Table()->Resources->SetRowAlignment("left");
-			Table()->Resources->SetRowColumnSpan(5);
+			Table()->Resources->SetRowColumnSpan(6);
 		}
 		ob_start();
 		echo "

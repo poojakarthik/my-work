@@ -604,6 +604,177 @@ class AppTemplateAccount extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
+	// GetServices
+	//------------------------------------------------------------------------//
+	/**
+	 * GetServices()
+	 *
+	 * Builds an array structure defining every service belonging to the account, and a history of their status, and their plan details
+	 * 
+	 * Builds an array structure defining every service belonging to the account, and a history of their status, and their plan details
+	 * The history details when the service was activated(or created) and Closed(disconnected or archived)
+	 * It will always have at least one record
+	 * On Success the returned array will be of the format:
+	 * $arrServices[]	['Id']
+	 * 					['FNN']
+	 * 					['ServiceType']
+	 * 					['CurrentPlan']	['Id']
+	 * 									['Name']
+	 * 					['FuturePlan']	['Id']
+	 * 									['Name']
+	 * 									['StartDatetime']
+	 * 					['History'][]	['ServiceId']		These will be ordered from Latest to Earliest Service records modelling this Service for this account
+	 * 									['CreatedOn']
+	 * 									['ClosedOn']
+	 * 									['CreatedBy']
+	 * 									['ClosedBy']
+	 * 									['Status']
+	 * 									['LineStatus']
+	 * 									['LineStatusDate']
+	 * 
+	 * @param	int		$intAccount		Id of the Account to retrieve the services of 
+	 *
+	 * @return	mixed					FALSE:	On database error
+	 * 									Array:  $arrServices
+	 * 	
+	 * @method
+	 */
+	function GetServices($intAccount)
+	{
+		// Load all the services belonging to the account
+		// OLD method
+		//DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
+		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
+		//DBL()->Service->Load();
+		
+		// Retrieve all the services belonging to the account and whether or not they have address details defined
+		$strTables	= "	Service AS S 
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
+								FROM ServiceRatePlan AS SRP2 
+								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
+								ORDER BY SRP2.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
+								FROM ServiceRatePlan AS SRP4 
+								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
+								ORDER BY SRP4.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
+		$arrColumns	= Array("Id" 						=> "S.Id",
+							"FNN"						=> "S.FNN",
+							"ServiceType"				=> "S.ServiceType", 
+							"Status"		 			=> "S.Status",
+							"LineStatus"				=> "S.LineStatus",
+							"LineStatusDate"			=> "S.LineStatusDate",
+							"CreatedOn"					=> "S.CreatedOn", 
+							"ClosedOn"					=> "S.ClosedOn",
+							"CreatedBy"					=> "S.CreatedBy", 
+							"ClosedBy"					=> "S.ClosedBy",
+							"CurrentPlanId" 			=> "RP1.Id",
+							"CurrentPlanName"			=> "RP1.Name",
+							"FuturePlanId"				=> "RP2.Id",
+							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
+		$strWhere	= "S.Account = <AccountId>";
+		$arrWhere	= Array("AccountId" => $intAccount);
+		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
+		
+		$selServices = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+		if ($selServices->Execute($arrWhere) === FALSE)
+		{
+			// An error occurred
+			return FALSE;
+		}
+		
+		$arrServices	= Array();
+		$arrRecord		= $selServices->Fetch();
+		while ($arrRecord !== FALSE)
+		{
+			// Create the Service Array
+			$arrService = Array (
+									"Id"	=> $arrRecord['Id'],
+									"FNN"	=> $arrRecord['FNN'],
+									"ServiceType"		=> $arrRecord['ServiceType']
+								);
+
+			// Add details about the Service's current plan, if it has one
+			if ($arrRecord['CurrentPlanId'] != NULL)
+			{
+				$arrService['CurrentPlan'] = Array	(
+														"Id"	=> $arrRecord['CurrentPlanId'],
+														"Name"	=> $arrRecord['CurrentPlanName']
+													);
+			}
+			else
+			{
+				$arrService['CurrentPlan'] = NULL;
+			}
+			
+			// Add details about the Service's Future scheduled plan, if it has one
+			if ($arrRecord['FuturePlanId'] != NULL)
+			{
+				$arrService['FuturePlan'] = Array	(
+														"Id"	=> $arrRecord['FuturePlanId'],
+														"Name"	=> $arrRecord['FuturePlanName'],
+														"StartDatetime"	=> $arrRecord['FuturePlanStartDatetime']
+													);
+			}
+			else
+			{
+				$arrService['FuturePlan'] = NULL;
+			}
+			
+			// Add this record's details to the history array
+			$arrService['History']		= Array();
+			$arrService['History'][]	= Array	(
+													"ServiceId"	=> $arrRecord['Id'],
+													"CreatedOn"	=> $arrRecord['CreatedOn'],
+													"ClosedOn"	=> $arrRecord['ClosedOn'],
+													"CreatedBy"	=> $arrRecord['CreatedBy'],
+													"ClosedBy"	=> $arrRecord['ClosedBy'],
+													"Status"	=> $arrRecord['Status'],
+													"LineStatus"		=> $arrRecord['LineStatus'],
+													"LineStatusDate"	=> $arrRecord['LineStatusDate'],
+												);
+			 
+			
+			// If multiple Service records relate to the one actual service then they will be consecutive in the RecordSet
+			// Find each one and add it to the Status history
+			while (($arrRecord = $selServices->Fetch()) !== FALSE)
+			{
+				if ($arrRecord['FNN'] == $arrService['FNN'])
+				{
+					// This record relates to the same Service
+					$arrService['History'][]	= Array	(
+															"ServiceId"	=> $arrRecord['Id'],
+															"CreatedOn"	=> $arrRecord['CreatedOn'],
+															"ClosedOn"	=> $arrRecord['ClosedOn'],
+															"CreatedBy"	=> $arrRecord['CreatedBy'],
+															"ClosedBy"	=> $arrRecord['ClosedBy'],
+															"Status"	=> $arrRecord['Status'],
+															"LineStatus"		=> $arrService['LineStatus'],
+															"LineStatusDate"	=> $arrService['LineStatusDate'],
+														);
+				}
+				else
+				{
+					// We have moved on to the next Service
+					break;
+				}
+			}
+			
+			// Add the Service to the array of Services
+			$arrServices[] = $arrService;
+		}
+		
+		return $arrServices;
+	}
+	
+	
+	//------------------------------------------------------------------------//
 	// RenderAccountDetailsForViewing
 	//------------------------------------------------------------------------//
 	/**

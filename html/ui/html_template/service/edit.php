@@ -161,7 +161,8 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		
 		// The user can only change the FNN if the service was created today
 		// (They should only need to change the FNN if they accidently got it wrong to begin with)
-		if (DBO()->Service->CreatedOn->Value == GetCurrentDateForMySQL())
+		$appService = Singleton::Instance('Application');
+		if ($appService->objAppTemplate->FNNCanBeChanged(DBO()->Service->Id->Value))
 		{
 			// The service was created today, so they can change the FNN
 			DBO()->Service->FNN->RenderInput();

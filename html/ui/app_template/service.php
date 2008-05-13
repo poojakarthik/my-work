@@ -44,6 +44,39 @@
  */
 class AppTemplateService extends ApplicationTemplate
 {
+	// If Service.Id is passed and isn't the most recent record refencing the Service, then change it to the most recent one
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Initialises the ApplicationTemplate object
+	 * 
+	 * Initialises the ApplicationTemplate object
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function __construct()
+	{
+		parent::__construct();
+		
+		// If a service's Id has been passed by GET, POST or ajax request, make sure it references
+		// the most recent Service record which belongs to the Account and models the physical Service
+		/* Until all this functionality is complete (multiple Service records representing the one service)
+		 * Don't manipulate the Service Id
+		if (DBO()->Service->Id->IsSet)
+		{
+			$intNewestServiceId = $this->GetMostRecentServiceRecordId(DBO()->Service->Id->Value);
+			if ($intNewestServiceId != FALSE)
+			{
+				DBO()->Service->Id = $intNewestServiceId;
+			}
+		}
+		*/
+	}
+	
 	//------------------------------------------------------------------------//
 	// View
 	//------------------------------------------------------------------------//
@@ -63,8 +96,8 @@ class AppTemplateService extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
-		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
 		// Setup all DBO and DBL objects required for the page
 		if (!DBO()->Service->Load())
@@ -3024,7 +3057,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * @param			integer		$intService		Id of the service to activate
 	 * @param			string		$strFNN			FNN of the service to activate
 	 * @param			bool		$bolIsIndial	TRUE if the service is an Indial100
-	 * @param			string		$strCreatedOn	CreatedOn date for the Service record identified by $intService
+	 * @param			string		$strCreatedOn	CreatedOn date for the Service record identified by $intService (YYYY-MM-DD)
 	 * @param			string		$strClosedOn	date on which the service was closed (YYYY-MM-DD)
 	 *	 
 	 * @return			mix			returns TRUE if the service can be activated, else it returns an error 
@@ -3033,6 +3066,13 @@ class AppTemplateService extends ApplicationTemplate
 	 */
 	private function _ActivateService($intService, $strFNN, $bolIsIndial, $strCreatedOn, $strClosedOn)
 	{
+		if ($strClosedOn < $strCreatedOn)
+		{
+			$strCreatedOn	= OutputMask()->ShortDate($strCreatedOn);
+			$strClosedOn	= OutputMask()->ShortDate($strClosedOn);
+			return "ERROR: This service cannot be activated as its CreatedOn date ($strCreatedOn) is greater than its ClosedOn date ($strClosedOn) signifying that it was never actually used by this account";
+		}
+		
 		$strNow = GetCurrentDateForMySQL();
 		
 		// Check if the FNN is currently in use
@@ -3054,7 +3094,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// If the Service was created today, then just update the ClosedOn and Status properties
-		// You do not need to create a new record
+		// You do not need to create a new record, or renormalise CDRs
 		if ($strCreatedOn == $strNow)
 		{
 			// Just update the record
@@ -3177,34 +3217,6 @@ class AppTemplateService extends ApplicationTemplate
 				break;
 		}
 		
-		// Give the new service the same RatePlan as the old service (including future rate plans and overrides)
-		// Copy all ServiceRatePlan records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
-		$intNewServiceId = DBO()->NewService->Id->Value;
-		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active) ".
-														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active ".
-														"FROM ServiceRatePlan WHERE Service = $intOldServiceId";
-		$qryInsertServicePlanDetails = new Query();
-		
-		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRatePlanRecordsToNewService) === FALSE)
-		{
-			// Inserting the records into the ServiceRatePlan table failed
-			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
-		}
-		
-		// Copy all ServiceRateGroup records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
-		$strCopyServiceRateGroupRecordsToNewService =	"INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ".
-														"SELECT NULL, $intNewServiceId, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active ".
-														"FROM ServiceRateGroup WHERE Service = $intOldServiceId";
-														
-		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRateGroupRecordsToNewService) === FALSE)
-		{
-			// Inserting the records into the ServiceRateGroup table failed
-			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
-		}
-		
-		/* The old method only copies the RatePlan details that are currently used, or will be used in the future.
-		 * We now copy the entire history of the Service's RatePlan over to the new service, so you will always
-		 * have a complete history of the plans for a given service 
 		// Copy all ServiceRatePlan records across from the old service where EndDatetime is in the future and StartDatetime < EndDatetime
 		$intNewServiceId = DBO()->NewService->Id->Value;
 		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active) ".
@@ -3228,7 +3240,16 @@ class AppTemplateService extends ApplicationTemplate
 			// Inserting the records into the ServiceRateGroup table failed
 			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
 		}
-		*/
+
+		// Renormalise all CDRs relating to the old Service record which is in the CDR table
+		$strWhere	= "Service = <OldService> AND Status = ". CDR_RATED;
+		$arrWhere	= Array("OldService" => $intService);
+		$arrUpdate	= Array("Status" => CDR_READY);
+		$updCDRs	= new StatementUpdate("CDR", $strWhere, $arrUpdate);
+		if ($updCDRs->Execute($arrUpdate, $arrWhere) === FALSE)
+		{
+			return "ERROR: Activating the service failed, unexpectedly.  Updateing CDRs to be re-normalised failed";
+		}
 		
 		// Activating the account was successfull
 		return TRUE;
@@ -3463,30 +3484,47 @@ class AppTemplateService extends ApplicationTemplate
 		$dboServiceAddress->ServiceState = $dboAccount->State->Value;
 	}
 	
-	// Returns TRUE if the FNN can be changed for the given service Id, else FALSE
-	// It is assumed that $intService relates to the most recent Service record
-	// It is a precondition that the service referenced by $intService exists in the database 
-	function FNNCanBeEditted($intService)
+	//------------------------------------------------------------------------//
+	// FNNCanBeChanged
+	//------------------------------------------------------------------------//
+	/**
+	 * FNNCanBeChanged()
+	 *
+	 * Checks if the FNN of the given service can be changed
+	 * 
+	 * Checks if the FNN of the given service can be changed
+	 * An FNN can only be changed on the day that the service was originally entered into Flex
+	 * 
+	 * @param	int		$intService		Id of the most recently added Service record which models
+	 * 									this service on the account that the service belongs to
+	 * 									It is a precondition that this service exists in the database
+	 *
+	 * @return	bool					TRUE if the Service's FNN can be changed, else FALSE
+	 * @method	FNNCanBeChanged
+	 */
+	function FNNCanBeChanged($intService)
 	{
 		// Retrieve the record from the database and the current date
-		$arrColumns = Array("FNN"		=> "FNN",
+		$arrColumns = Array("Id"		=>	"Id",
+							"FNN"		=>	"FNN",
 							"Account"	=>	"Account",
+							"CreatedOn"	=>	"CreatedOn",
 							"Today"		=>	"CAST(NOW() AS DATE)"
 							);
 		$selService = new StatementSelect("Service", $arrColumns, "Id = <Id>");
 		$selService->Execute(Array("Id"=>$intService));
 		$arrService	= $selService->Fetch();
-		$strToday	= $arrService["Today"];
+		$strToday	= $arrService['Today'];
 		if ($arrService['CreatedOn'] != $strToday)
 		{
-			// The FNN cannot be Editted
+			// The FNN cannot be changed
 			return FALSE;
 		}
 		
 		// If there are other records belonging to the same account as $intService, with the same FNN, then 
 		// you cannot change the FNN
-		$selHasMultipleRecords = new StatementSelect("Service", "Id", "Account = <Account> AND FNN = <FNN> AND Service != <Id>");
-		$mixResult = $selHasMultipleRecords->Execute($arrService);
+		$selHasMultipleRecords	= new StatementSelect("Service", "Id", "Account = <Account> AND FNN = <FNN> AND Id != <Id>");
+		$mixResult				= $selHasMultipleRecords->Execute($arrService);
 		
 		if ($mixResult != 0)
 		{
@@ -3495,14 +3533,41 @@ class AppTemplateService extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		$strYesterday = date("Y-m-d", strtotime("-1 day", $strToday));
 		// Check that this service's CreatedOn Date isn't just set to today because a change of lessee was scheduled
-		$selChangeOfLessee = new StatementSelect("Service", "Id", "FNN = <FNN> AND ClosedOn = <Yesterday>");
+		$arrService['Yesterday']	= date("Y-m-d", strtotime("-1 day", $strToday));
+		$selChangeOfLessee			= new StatementSelect("Service", "Id", "FNN = <FNN> AND ClosedOn = <Yesterday>");
+		$mixResult					= $selChangeOfLessee->Execute($arrService);
+		
+		if ($mixResult < 1)
+		{
+			// A change of lessee must be why the CreatedOn date of this service is today
+			// don't allow the user to modify the FNN
+			return FALSE;
+		}
 		
 		//TODO! but what if you schedule a change of lessee for the future, and then archive the current service, thus changing
 		// the ClosedOn date of the service which was scheduled to be disconnected in the future (one day before the service
 		// goes to the new lessee)
+
+		// It's safe to say that the Service was genuinely created today, and therefor the FNN can be changed
+		return TRUE;
 	}
+	
+	// Returns the Id of the most recently added Service record which models the same Service 
+	// as the record referenced by $intService.  If $intService is the most recent, then it will be returned
+	function GetMostRecentServiceRecordId($intService)
+	{
+		$strWhere = "Account = (SELECT Account FROM Service WHERE Id = $intService) AND FNN = (SELECT FNN FROM Service WHERE Id = $intService)";
+		$selMostRecentService = new StatementSelect("Service", "Id", $strWhere, "Id DESC", "1");
+		if (!$selMostRecentService->Execute())
+		{
+			return FALSE;
+		}
+		
+		$arrRecord = $selMostRecentService->Fetch();
+		return $arrRecord['Id'];
+	}
+	
 	
 	//----- DO NOT REMOVE -----//
 	
