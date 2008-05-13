@@ -131,6 +131,7 @@
 		foreach ($arrAccountCategories as $strName=>$arrCategory)
 		{
 			$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
+			$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
 			$this->_AddAttribute($xmlItemisationType, 'GrandTotal', number_format($arrCategory['TotalCharge']), 2, '.', '');
 			$this->_AddAttribute($xmlItemisationType, 'Records', @count($arrCategory['Itemisation']));
 			$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
@@ -142,7 +143,7 @@
 				foreach ($arrCategory['Itemisation'] as $arrCDR)
 				{
 					$xmlItem	= $this->_AddElement($xmlItemisationItems, 'Item');
-						
+					
 					// Process the CDR
 					$arrItem	= $this->_CDR2Itemise($arrCDR, $arrCategory['DisplayType']);
 					
@@ -234,7 +235,7 @@
 			$xmlItemisation	= $this->_AddElement($xmlService, 'Itemisation');
 			foreach ($arrService['RecordTypes'] as $strName=>$arrChargeType)
 			{
-				Debug($arrService['RecordTypes']);
+				//Debug($arrService['RecordTypes']);
 				
 				$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
 				$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
