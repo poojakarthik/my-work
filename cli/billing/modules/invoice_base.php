@@ -65,6 +65,7 @@ abstract class BillingModuleInvoice
 		// Init member variables
 		$this->_strFilename		= NULL;
 		$this->_strSampleFile	= NULL;
+		$this->_strCDRTable		= $strCDRTable;
 		
 		//--------------------------------------------------------------------//
 		// Statements
@@ -251,12 +252,12 @@ abstract class BillingModuleInvoice
 	 			case BILL_FACTORY_ITEMISE_RECORD_TYPES:
 	 				$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
 						(	
-							"$strCDRTable USE INDEX (Service_3) JOIN RecordType ON $strCDRTable.RecordType = RecordType.Id, RecordType AS RecordGroup",
+							"{$this->_strCDRTable} USE INDEX (Service_3) JOIN RecordType ON {$this->_strCDRTable}.RecordType = RecordType.Id, RecordType AS RecordGroup",
 							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
 							"$strWhereService AND " .
 							"RecordGroup.Id = RecordType.GroupId AND " .
 							"RecordGroup.Itemised = 1 AND " .
-							"$strCDRTable.InvoiceRun = <InvoiceRun> AND " .
+							"{$this->_strCDRTable}.InvoiceRun = <InvoiceRun> AND " .
 							"FNN BETWEEN <RangeStart> AND <RangeEnd>",
 							"RecordGroup.Description",
 							NULL,
@@ -266,28 +267,28 @@ abstract class BillingModuleInvoice
 	 				
 	 			case BILL_FACTORY_ITEMISE_CALLS:
 					$arrColumns = Array();
-					$arrColumns['Charge']			= "$strCDRTable.Charge";
-					$arrColumns['Source']			= "$strCDRTable.Source";
-					$arrColumns['Destination']		= "$strCDRTable.Destination";
-					$arrColumns['StartDatetime']	= "$strCDRTable.StartDatetime";
-					$arrColumns['EndDatetime']		= "$strCDRTable.EndDatetime";
-					$arrColumns['Units']			= "$strCDRTable.Units";
-					$arrColumns['Description']		= "$strCDRTable.Description";
-					$arrColumns['DestinationCode']	= "$strCDRTable.DestinationCode";
+					$arrColumns['Charge']			= "{$this->_strCDRTable}.Charge";
+					$arrColumns['Source']			= "{$this->_strCDRTable}.Source";
+					$arrColumns['Destination']		= "{$this->_strCDRTable}.Destination";
+					$arrColumns['StartDatetime']	= "{$this->_strCDRTable}.StartDatetime";
+					$arrColumns['EndDatetime']		= "{$this->_strCDRTable}.EndDatetime";
+					$arrColumns['Units']			= "{$this->_strCDRTable}.Units";
+					$arrColumns['Description']		= "{$this->_strCDRTable}.Description";
+					$arrColumns['DestinationCode']	= "{$this->_strCDRTable}.DestinationCode";
 					$arrColumns['DisplayType']		= "RecordGroup.DisplayType";
 					$arrColumns['RecordGroup']		= "RecordGroup.Description";
  					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
  					(	
-						"$strCDRTable USE INDEX (Service_3) JOIN RecordType ON $strCDRTable.RecordType = RecordType.Id" .
+						"{$this->_strCDRTable} USE INDEX (Service_3) JOIN RecordType ON {$this->_strCDRTable}.RecordType = RecordType.Id" .
 						", RecordType as RecordGroup",
 						$arrColumns,
 						"$strWhereService AND " .
 						"RecordGroup.Id = RecordType.GroupId AND " .
 						"RecordGroup.Id = <RecordGroup> AND " .
 						/*"RecordGroup.Itemised = 1 AND " .*/
-						"$strCDRTable.InvoiceRun = <InvoiceRun> AND " .
+						"{$this->_strCDRTable}.InvoiceRun = <InvoiceRun> AND " .
 						"FNN BETWEEN <RangeStart> AND <RangeEnd>",
-						"$strCDRTable.StartDatetime"
+						"{$this->_strCDRTable}.StartDatetime"
  					);
 	 				break;
 	 				
