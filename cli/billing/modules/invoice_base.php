@@ -96,7 +96,7 @@ abstract class BillingModuleInvoice
 																	"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
-																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RecordGroup.DisplayType AS DisplayType",
+																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RG.DisplayType AS DisplayType",
 																	"Account = <Account> AND InvoiceRun = <InvoiceRun>",
 																	"RG.Description",
 																	NULL,
