@@ -124,24 +124,27 @@
 		$this->_AddElement($xmlAccount, 'State', $arrCustomer['State']);
 		
 		// Account Summary & Itemisation
-		$arrAccountCharges	= $this->_GetAccountCharges($arrInvoice);
+		$arrAccountCategories	= $this->_GetAccountCharges($arrInvoice);
 		$xmlItemisation	= $this->_AddElement($xmlAccount, 'Charges');
 		
-		$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
-		$this->_AddAttribute($xmlItemisationType, 'GrandTotal', $arrAccountCharges['TotalCharge']);
-		$this->_AddAttribute($xmlItemisationType, 'Records', @count($arrAccountCharges['Itemisation']));
-		$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrAccountCharges['DisplayType'], 'DisplayType'));
-		
 		// Charge Itemisation
-		if (@count($arrAccountCharges['Itemisation']))
+		foreach ($arrAccountCategories as $strName=>$arrCategory)
 		{
+			$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
+			$this->_AddAttribute($xmlItemisationType, 'GrandTotal', round($arrCategory['TotalCharge']), 2);
+			$this->_AddAttribute($xmlItemisationType, 'Records', @count($arrCategory['Itemisation']));
+			$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
+			
 			$xmlItemisationItems	= $this->_AddElement($xmlItemisationType, 'Items');
-			foreach ($arrAccountCharges['Itemisation'] as $arrCDR)
+			foreach ($arrCategory['Itemisation'] as $arrCDR)
 			{
 				$xmlItem	= $this->_AddElement($xmlItemisationItems, 'Item');
+					
+				// Process the CDR
+				$arrItem	= $this->_CDR2Itemise($arrCDR, $arrCategory['DisplayType']);
 				
 				// Item Fields
-				foreach ($arrCDR as $strField=>$mixValue)
+				foreach ($arrItem as $strField=>$mixValue)
 				{
 					$this->_AddElement($xmlItem, $strField, $mixValue);
 				}
@@ -169,11 +172,11 @@
 		// Add to XML schema
 		$arrLastInvoice	= $this->_GetOldInvoice($arrInvoice['Account'], 1);
 		$xmlStatement	= $this->_AddElement($xmlInvoice, 'Account');
-		$this->_AddElement($xmlAccount, 'OpeningBalance', $arrLastInvoice['TotalOwing']);
-		$this->_AddElement($xmlAccount, 'Payments', max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0));
-		$this->_AddElement($xmlAccount, 'Overdue', $arrInvoice['AccountBalance']);
-		$this->_AddElement($xmlAccount, 'NewCharges', $arrInvoice['Total'] + $arrInvoice['Tax']);
-		$this->_AddElement($xmlAccount, 'TotalOwing', $arrInvoice['TotalOwing']);
+		$this->_AddElement($xmlAccount, 'OpeningBalance', round($arrLastInvoice['TotalOwing']), 2);
+		$this->_AddElement($xmlAccount, 'Payments', round(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0)), 2);
+		$this->_AddElement($xmlAccount, 'Overdue', round($arrInvoice['AccountBalance']), 2);
+		$this->_AddElement($xmlAccount, 'NewCharges', round($arrInvoice['Total'] + $arrInvoice['Tax']), 2);
+		$this->_AddElement($xmlAccount, 'TotalOwing', round($arrInvoice['TotalOwing']), 2);
 		$this->_AddElement($xmlAccount, 'BillingPeriodStart', $strBillingPeriodStart);
 		$this->_AddElement($xmlAccount, 'BillingPeriodEnd', $strBillingPeriodEnd);
 		$this->_AddElement($xmlAccount, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
@@ -203,7 +206,7 @@
 			// Get Cost Centre Services
 			$xmlCostCentre	= $this->_AddElement($xmlCostCentreSummary, 'CostCentre');
 			$this->_AddAttribute($xmlCostCentre, 'Name', $strName);
-			$this->_AddAttribute($xmlCostCentre, 'Total', $arrCostCentre['GrandTotal']);
+			$this->_AddAttribute($xmlCostCentre, 'Total', round($arrCostCentre['GrandTotal']), 2);
 			
 			foreach ($arrCostCentre['Services'] as $strFNN=>$fltServiceTotal)
 			{
@@ -231,7 +234,7 @@
 				
 				$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
 				$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
-				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', $arrChargeType['TotalCharge']);
+				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', round($arrChargeType['TotalCharge']), 2);
 				$this->_AddAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				
@@ -241,8 +244,11 @@
 				{
 					$xmlItem	= $this->_AddElement($xmlItemisationItems, 'Item');
 					
+					// Process the CDR
+					$arrItem	= $this->_CDR2Itemise($arrCDR, $arrChargeType['DisplayType']);
+					
 					// Item Fields
-					foreach ($arrCDR as $strField=>$mixValue)
+					foreach ($arrItem as $strField=>$mixValue)
 					{
 						$this->_AddElement($xmlItem, $strField, $mixValue);
 					}
@@ -578,6 +584,71 @@
  			// $xmlParent is not a valid Parent Node
  			return FALSE;
  		}
+ 	}
+ 	
+  	//------------------------------------------------------------------------//
+	// _CDR2Itemise()
+	//------------------------------------------------------------------------//
+	/**
+	 * _CDR2Itemise()
+	 *
+	 * Converts a CDR Record to an Itemised Item, based on it's DisplayType
+	 *
+	 * Converts a CDR Record to an Itemised Item, based on it's DisplayType
+	 * 
+	 * @param	element	&$xmlParent					The Parent DOMNode for this Attribute
+	 * @param	array	$strName					The name of this Attribute
+	 * @param	array	$mixValue					The value of this Attribute
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 */
+ 	protected function _CDR2Itemise($arrCDR, $intDisplayType)
+ 	{
+ 		$arrItem	= Array();
+ 		switch ($intDisplayType)
+ 		{
+			case RECORD_DISPLAY_S_AND_E:
+				//$arrItem['Date']			= date("j M Y", strtotime($arrCDR['StartDatetime']));
+				$arrItem['Description']		= $arrCDR['Description'];
+				$arrItem['Items']			= (int)$arrCDR['Units'];
+				$arrItem['Charge']			= round($arrCDR['Charge'], 2);
+				break;
+			
+			case RECORD_DISPLAY_DATA:
+				$arrItem['Date']			= date("j M Y", strtotime($arrCDR['StartDatetime']));
+				$arrItem['Time']			= date("H:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['CalledParty']		= $arrCDR['Destination'];
+				$arrItem['Description']		= $arrCDR['Description'];
+				$arrItem['KB']				= (int)$arrCDR['Units'];
+				$arrItem['Charge']			= round($arrCDR['Charge'], 2);
+				break;
+			
+			case RECORD_DISPLAY_SMS:
+				$arrItem['Date']			= date("j M Y", strtotime($arrCDR['StartDatetime']));
+				$arrItem['Time']			= date("H:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['CalledParty']		= $arrCDR['Destination'];
+				$arrItem['Items']			= (int)$arrCDR['Units'];
+				$arrItem['Description']		= $arrCDR['Description'];
+				$arrItem['Charge']			= round($arrCDR['Charge'], 2);
+				break;
+			
+			case RECORD_DISPLAY_CALL:
+			default:
+				$intHours		= floor((int)$arrCDR['Units'] / 3600);
+				$strDuration	= "$intHours:".date("i:s", (int)$arrCDR['Units']);
+				
+				$arrItem['Date']			= date("j M Y", strtotime($arrCDR['StartDatetime']));
+				$arrItem['Time']			= date("H:i:s", strtotime($arrCDR['StartDatetime']));
+				$arrItem['CalledParty']		= $arrCDR['Destination'];
+				$arrItem['Description']		= $arrCDR['Description'];
+				$arrItem['Duration']		= $strDuration;
+				$arrItem['Charge']			= round($arrCDR['Charge'], 2);
+				break;
+ 		}
+ 		
+ 		return $arrItem;
  	}
  }
 

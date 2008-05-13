@@ -267,7 +267,7 @@ abstract class BillingModuleInvoice
 	 				
 	 			case BILL_FACTORY_ITEMISE_CALLS:
 					$arrColumns = Array();
-					$arrColumns['Charge']			= "{$this->_strCDRTable}.Charge";
+					$arrColumns['Charge']			= "CASE WHEN {$this->_strCDRTable}.Credit = 0 THEN {$this->_strCDRTable}.Charge ELSE 0 - {$this->_strCDRTable}.Charge END";
 					$arrColumns['Source']			= "{$this->_strCDRTable}.Source";
 					$arrColumns['Destination']		= "{$this->_strCDRTable}.Destination";
 					$arrColumns['StartDatetime']	= "{$this->_strCDRTable}.StartDatetime";
@@ -491,8 +491,9 @@ abstract class BillingModuleInvoice
 		$arrServices	= $this->_selServiceDetails->FetchAll();
 		
 		// Get List of Service IDs for each FNN
-		foreach ($arrServices as $intKey=>$arrService)
+		foreach ($arrServices as $intKey=>&$arrService)
 		{
+			$arrService['Primary']		= (!$arrService['Extension'] || ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd'])) ? TRUE : FALSE;
 			$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
 			
 			$arrWhere = Array();
@@ -518,7 +519,8 @@ abstract class BillingModuleInvoice
 		foreach ($arrServices as &$arrService)
 		{
 			$arrCategories	= Array();
-			
+			$fltRatedTotal	= 0.0;
+						
 			// Correct Extension Ranges
 			$arrService['RangeStart']	= ($arrService['RangeStart']) ? substr($arrService['FNN'], -2).$arrService['RangeStart'] : $arrService['FNN'];
 			$arrService['RangeEnd']		= ($arrService['RangeEnd']) ? substr($arrService['FNN'], -2).$arrService['RangeEnd'] : $arrService['FNN'];
@@ -529,95 +531,114 @@ abstract class BillingModuleInvoice
 			$arrWhere['RangeStart']	= $arrService['RangeStart'];
 			$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
 			$arrRecordTypes	= $this->_BillingFactory(BILL_FACTORY_RECORD_TYPES, $arrService, $arrWhere);
-			Debug($arrRecordTypes);
+			//Debug($arrRecordTypes);
 			foreach ($arrRecordTypes as $arrRecordType)
-			{				
+			{
 				// Get Call Itemisation
 				$arrWhere['RecordGroup']		= $arrRecordType['GroupId'];
 				$arrRecordType['Itemisation']	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CALLS, $arrService, $arrWhere);
 				
 				// Add Record Type to Service Array
 				$arrCategories[$arrRecordType['Description']]	= $arrRecordType;
+				
+				// Calculate Rated Total
+				foreach ($arrRecordType['Itemisation'] as $arrCDR)
+				{
+					$fltRatedTotal	+= $arrCDR['Charge'];
+				}
 			}
 			
-			// Get Adjustments
-			$arrItemised	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrWhere);
-			if (count($arrItemised))
+			// Only if this is a non-Indial or is the Primary FNN
+			if ($arrService['Primary'])
 			{
-				$fltAdjustmentsTotal	= 0;
-				
-				// Convert each Adjustment to a CDR
-				foreach ($arrItemised as $arrCharge)
+				// Get Adjustments
+				$arrItemised	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrWhere);
+				if (count($arrItemised))
 				{
+					$fltAdjustmentsTotal	= 0;
+					
+					// Convert each Adjustment to a CDR
+					foreach ($arrItemised as $arrCharge)
+					{
+						$arrCDR	= Array();
+						if ($arrCharge['Nature'] == NATURE_CR)
+						{
+							$arrCDR['Charge']	= 0 - $arrCharge['Charge'];
+						}
+						$fltAdjustmentsTotal	+= $arrCDR['Charge'];
+						
+						$arrCDR['Units']		= 1;
+						$arrCDR['Description']	= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
+						
+						$arrCategories['Other Charges & Credits']['Itemisation'][]	= $arrCDR;
+					}
+					
+					$arrCategories['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+					$arrCategories['Other Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
+					$arrCategories['Other Charges & Credits']['Records']		= count($arrItemised);
+					
+					$fltRatedTotal	+= $fltAdjustmentsTotal;
+				}
+				
+				// Get Plan Charges & Credits
+				$fltPlanChargeTotal			= 0;
+				$arrPlanAdjustments			= $this->_BillingFactory(BILL_FACTORY_PLAN_ADJUSTMENTS, $arrService, $arrWhere);
+				$arrPlanChargeItemisation	= Array();
+				foreach ($arrPlanAdjustments as $arrAdjustment)
+				{
+					// Format Plan Adjustment as CDR
 					$arrCDR	= Array();
 					if ($arrCharge['Nature'] == NATURE_CR)
 					{
-						$arrCDR['Charge']	= 0 - $arrCharge['Charge'];
+						$arrCDR['Charge']		= 0 - $arrCharge['Charge'];
 					}
-					$fltAdjustmentsTotal	+= $arrCDR['Charge'];
+					$fltPlanChargeTotal			+= $arrCDR['Charge'];
 					
-					$arrCDR['Units']		= 1;
-					$arrCDR['Description']	= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
-					
-					$arrCategories['Other Charges & Credits']['Itemisation'][]	= $arrCDR;
-				}
-				
-				$arrCategories['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-				$arrCategories['Other Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
-				$arrCategories['Other Charges & Credits']['Records']		= count($arrItemised);
-			}
-			
-			// Get Plan Charges & Credits
-			$fltPlanChargeTotal			= 0;
-			$arrPlanAdjustments			= $this->_BillingFactory(BILL_FACTORY_PLAN_ADJUSTMENTS, $arrService, $arrWhere);
-			$arrPlanChargeItemisation	= Array();
-			foreach ($arrPlanAdjustments as $arrAdjustment)
-			{
-				// Format Plan Adjustment as CDR
-				$arrCDR	= Array();
-				if ($arrCharge['Nature'] == NATURE_CR)
-				{
-					$arrCDR['Charge']		= 0 - $arrCharge['Charge'];
-				}
-				$fltPlanChargeTotal			+= $arrCDR['Charge'];
-				
-				$arrCDR['Units']			= 1;
-				$arrCDR['Description']		= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
-				$arrPlanChargeItemisation[]	= $arrCDR;
-			}
-			
-			// Add ServiceTotal.PlanCharge as a CDR
-			if ((float)$arrService['PlanCharge'])
-			{
-				// Add an adjustment (Date is hack fixed to 1 month periods)
-				$fltPlanChargeTotal			= $arrService['PlanCharge'];
-				
-				$arrCDR	= Array();
-				$arrCDR['Charge']			= $arrService['PlanCharge'];				
-				$arrCDR['Units']			= 1;
-				$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
-				$arrPlanChargeItemisation[]	= $arrCDR;
-			
-				// Check for ServiceTotal vs Rated Total, then add as CDR
-				if ($arrService['ServiceTotal'] - $arrService['RatedTotal'])
-				{
-					$fltPlanChargeTotal			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
-					
-					$arrCDR	= Array();
-					$arrCDR['Charge']			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
+					$arrCDR['Description']		= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
 					$arrPlanChargeItemisation[]	= $arrCDR;
 				}
-			}
+				
+				// Add ServiceTotal.PlanCharge as a CDR
+				if ((float)$arrService['PlanCharge'])
+				{
+					// Add an adjustment (Date is hack fixed to 1 month periods)
+					$fltPlanChargeTotal			+= $arrService['PlanCharge'];
+					
+					$arrCDR	= Array();
+					$arrCDR['Charge']			= $arrService['PlanCharge'];				
+					$arrCDR['Units']			= 1;
+					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
+					$arrPlanChargeItemisation[]	= $arrCDR;
+				
+					// Check for ServiceTotal vs Rated Total, then add as CDR
+					if ($arrService['ServiceTotal'] != $arrService['RatedTotal'])
+					{
+						$fltPlanChargeTotal			+= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
+						
+						$arrCDR	= Array();
+						$arrCDR['Charge']			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
+						$arrCDR['Units']			= 1;
+						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
+						$arrPlanChargeItemisation[]	= $arrCDR;
+					}
+				}
 			
-			// Add to Service Array
-			if (count($arrPlanChargeItemisation))
+				// Add to Service Array
+				if (count($arrPlanChargeItemisation))
+				{
+					$arrCategories['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+					$arrCategories['Plan Charges & Credits']['TotalCharge']	= $fltPlanChargeTotal;
+					$arrCategories['Plan Charges & Credits']['Records']		= count($arrPlanChargeItemisation);
+					$arrCategories['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
+					
+					$fltRatedTotal	+= $fltPlanChargeTotal;
+				}
+			}
+			elseif ($arrService['Indial100'])
 			{
-				$arrCategories['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-				$arrCategories['Plan Charges & Credits']['TotalCharge']	= $fltPlanChargeTotal;
-				$arrCategories['Plan Charges & Credits']['Records']		= count($arrPlanChargeItemisation);
-				$arrCategories['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
+				// Indial 100s should only have Rated Totals				
+				$arrService['ServiceTotal']	= $fltRatedTotal;
 			}
 			
 			$arrService['RecordTypes']	= $arrCategories;
