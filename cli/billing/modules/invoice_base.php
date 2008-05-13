@@ -539,7 +539,7 @@ abstract class BillingModuleInvoice
 				$arrRecordType['Itemisation']	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CALLS, $arrService, $arrWhere);
 				
 				// Add Record Type to Service Array
-				$arrCategories[$arrRecordType['Description']]	= $arrRecordType;
+				$arrCategories[$arrRecordType['RecordGroup']]	= $arrRecordType;
 				
 				// Calculate Rated Total
 				foreach ($arrRecordType['Itemisation'] as $arrCDR)
@@ -727,7 +727,7 @@ abstract class BillingModuleInvoice
 		{
 			while ($arrSummary = $this->_selAccountSummary->Fetch())
 			{
-				$arrAccountSummary[$arrSummary['Description']]['TotalCharge']	= round($arrSummary['Total'], 2);
+				$arrAccountSummary[$arrSummary['Description']]['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
 			}
 		}
 		
@@ -740,7 +740,7 @@ abstract class BillingModuleInvoice
 			}
 			else
 			{
-				$arrAccountSummary['Other Charges & Credits']['TotalCharge']	= round($arrSummary['Total'], 2);
+				$arrAccountSummary['Other Charges & Credits']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
 			}
 		}
 		
@@ -762,13 +762,13 @@ abstract class BillingModuleInvoice
 				// Add Plan Charges
 				if ((float)$arrPlanCharges['PlanDebit'])
 				{
-					$arrAccountSummary['Plan Charges']	= round($arrPlanCharges['PlanDebit'], 2);
+					$arrAccountSummary['Plan Charges']	= number_format($arrPlanCharges['PlanDebit'], 2, '.', '');
 				}
 				
 				// Add Plan Credits
 				if ((float)$arrPlanCharges['PlanCredit'])
 				{
-					$arrAccountSummary['Plan Credits']	= round($arrPlanCharges['PlanCredit'], 2);
+					$arrAccountSummary['Plan Credits']	= number_format($arrPlanCharges['PlanCredit'], 2, '.', '');
 				}
 			}
 		}*/
@@ -799,7 +799,7 @@ abstract class BillingModuleInvoice
 				$fltGrandTotal	+= ($arrPlanCharges['GrandServiceTotal'] - $arrPlanCharges['RatedTotal']);
 			}
 			
-			$fltGrandTotal	= round($fltGrandTotal, 2);
+			$fltGrandTotal	= number_format($fltGrandTotal, 2, '.', '');
 			if ($fltGrandTotal)
 			{
 				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	 = $fltGrandTotal;
@@ -809,7 +809,7 @@ abstract class BillingModuleInvoice
 		// Add GST Element
 		if ($bolGST)
 		{
-			$arrAccountSummary['GST Total']['TotalCharge']	= round($arrInvoice['Tax'], 2);
+			$arrAccountSummary['GST Total']['TotalCharge']	= number_format($arrInvoice['Tax'], 2, '.', '');
 		}
 		
 		// Return Array
