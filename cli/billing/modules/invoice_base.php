@@ -493,6 +493,9 @@ abstract class BillingModuleInvoice
 		// Get List of Service IDs for each FNN
 		foreach ($arrServices as $intKey=>&$arrService)
 		{
+			// Correct Extension Ranges
+			$arrService['RangeStart']	= ($arrService['RangeStart']) ? substr($arrService['FNN'], -2).$arrService['RangeStart'] : $arrService['FNN'];
+			$arrService['RangeEnd']		= ($arrService['RangeEnd']) ? substr($arrService['FNN'], -2).$arrService['RangeEnd'] : $arrService['FNN'];
 			$arrService['Primary']		= (!$arrService['Extension'] || ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd'])) ? TRUE : FALSE;
 			$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
 			
@@ -522,10 +525,6 @@ abstract class BillingModuleInvoice
 		{
 			$arrCategories	= Array();
 			$fltRatedTotal	= 0.0;
-			
-			// Correct Extension Ranges
-			$arrService['RangeStart']	= ($arrService['RangeStart']) ? substr($arrService['FNN'], -2).$arrService['RangeStart'] : $arrService['FNN'];
-			$arrService['RangeEnd']		= ($arrService['RangeEnd']) ? substr($arrService['FNN'], -2).$arrService['RangeEnd'] : $arrService['FNN'];
 			
 			// Get Record Types
 			$arrWhere	= Array();
