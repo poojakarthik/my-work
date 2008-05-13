@@ -177,14 +177,14 @@
 		// Add to XML schema
 		$arrLastInvoice	= $this->_GetOldInvoice($arrInvoice['Account'], 1);
 		$xmlStatement	= $this->_AddElement($xmlInvoice, 'Statement');
-		$this->_AddElement($xmlAccount, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
-		$this->_AddElement($xmlAccount, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
-		$this->_AddElement($xmlAccount, 'Overdue', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
-		$this->_AddElement($xmlAccount, 'NewCharges', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
-		$this->_AddElement($xmlAccount, 'TotalOwing', number_format($arrInvoice['TotalOwing'], 2, '.', ''));
-		$this->_AddElement($xmlAccount, 'BillingPeriodStart', $strBillingPeriodStart);
-		$this->_AddElement($xmlAccount, 'BillingPeriodEnd', $strBillingPeriodEnd);
-		$this->_AddElement($xmlAccount, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
+		$this->_AddElement($xmlStatement, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
+		$this->_AddElement($xmlStatement, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
+		$this->_AddElement($xmlStatement, 'Overdue', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
+		$this->_AddElement($xmlStatement, 'NewCharges', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
+		$this->_AddElement($xmlStatement, 'TotalOwing', number_format($arrInvoice['TotalOwing'], 2, '.', ''));
+		$this->_AddElement($xmlStatement, 'BillingPeriodStart', $strBillingPeriodStart);
+		$this->_AddElement($xmlStatement, 'BillingPeriodEnd', $strBillingPeriodEnd);
+		$this->_AddElement($xmlStatement, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
 		
 		//--------------------------------------------------------------------//
 		// Service (Data retrieval only)
