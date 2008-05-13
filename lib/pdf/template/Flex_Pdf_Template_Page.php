@@ -163,15 +163,17 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 
 		for ($i = 0, $l = count($paths); $i < $l; $i++)
 		{
+			$stationery = $this->getResourcePath($paths[$i]);
+			
 			$fileExt = @substr($stationery, strrpos($stationery, ".") + 1);
 
 			if ($fileExt != "raw")
 			{
-				$this->stationeries[] = new Flex_Pdf_Template_Stationery($this->getResourcePath($paths[$i]));
+				$this->stationeries[] = new Flex_Pdf_Template_Stationery($stationery);
 			}
 			else
 			{
-				$this->stationeries[] = new Flex_Pdf_Template_Raw(file_get_contents($this->getResourcePath($paths[$i])));
+				$this->stationeries[] = new Flex_Pdf_Template_Raw(file_get_contents($stationery));
 			}
 		}
 
