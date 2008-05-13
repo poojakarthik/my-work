@@ -79,7 +79,8 @@ abstract class BillingModuleInvoice
 		$arrService['Extension']	= "ServiceExtension.Name";
 		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
 		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";
-		$arrService['IsRendered']	= "(CASE WHEN ForceInvoiceRender = 1 THEN 1 WHEN ServiceTotal.Credit != 0.0 AND ServiceTotal.Debit THEN 1 WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0 END)";
+		//$arrService['IsRendered']	= "(CASE WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0 END)";
+		$arrService['ForceRender']	= "Service.ForceInvoiceRender";
 		$arrService['ServiceTotal']	= "SUM(ServiceTotal.TotalCharge + ServiceTotal.Debit - ServiceTotal.Credit)";
 		$arrService['RatePlan']		= "RatePlan.Name";
 		$arrService['RatedTotal']	= "ServiceTotal.CappedCharge + ServiceTotal.UncappedCharge";
@@ -650,7 +651,7 @@ abstract class BillingModuleInvoice
 			}
 			
 			$arrService['RecordTypes']	= $arrCategories;
-			//$arrService['IsRendered']	= (!$arrService['IsRendered'] && $fltRatedTotal == 0.0) ? FALSE : TRUE;
+			$arrService['IsRendered']	= ($arrService['ForceRender'] || count($arrCategories)) ? TRUE : FALSE;
 		}
 		
 		return $arrServices;
