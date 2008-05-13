@@ -33,6 +33,7 @@ class Flex_Pdf_Resource_Raw extends Zend_Pdf_Resource
 
         $this->_resource->dictionary->Type    = new Zend_Pdf_Element_Name('XObject');
         $this->_resource->dictionary->Subtype = new Zend_Pdf_Element_Name('Form');
+        $this->_resource->dictionary->Filter  = new Zend_Pdf_Element_Name('FlateDecode');
         $this->_resource->dictionary->FormType = $_1;
         $this->_resource->dictionary->BBox = new Zend_Pdf_Element_Array($bbox);
         $this->_resource->dictionary->Matrix = new Zend_Pdf_Element_Array($matrix);
