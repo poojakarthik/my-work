@@ -514,6 +514,8 @@ abstract class BillingModuleInvoice
 				}
 			}
 			$arrServices[$intKey] = $arrService;
+			
+			Debug($arrService);
 		}
 		
 		foreach ($arrServices as &$arrService)
@@ -727,6 +729,7 @@ abstract class BillingModuleInvoice
 			while ($arrSummary = $this->_selAccountSummary->Fetch())
 			{
 				$arrAccountSummary[$arrSummary['Description']]['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
+				$arrAccountSummary[$arrSummary['Description']]['DisplayType']	= $arrSummary['DisplayType'];
 			}
 		}
 		
