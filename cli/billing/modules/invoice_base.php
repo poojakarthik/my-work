@@ -495,8 +495,8 @@ abstract class BillingModuleInvoice
 		foreach ($arrServices as $intKey=>&$arrService)
 		{
 			// Correct Extension Ranges
-			$arrService['RangeStart']	= ($arrService['RangeStart']) ? substr($arrService['FNN'], 0, -2).$arrService['RangeStart'] : $arrService['FNN'];
-			$arrService['RangeEnd']		= ($arrService['RangeEnd']) ? substr($arrService['FNN'], 0, -2).$arrService['RangeEnd'] : $arrService['FNN'];
+			$arrService['RangeStart']	= ($arrService['RangeStart']) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
+			$arrService['RangeEnd']		= ($arrService['RangeEnd']) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
 			$arrService['Primary']		= (!$arrService['Extension'] || ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd'])) ? TRUE : FALSE;
 			$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
 			
