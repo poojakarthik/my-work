@@ -411,7 +411,7 @@ abstract class BillingModuleInvoice
 		
 		$intPeriodsAgo--;
 		$selOldInvoice	= new StatementSelect("Invoice", "*", "Account = $intAccount", "CreatedOn DESC", "$intPeriodsAgo, 1");
-		if ($selOldInvoice->Execute === FALSE)
+		if ($selOldInvoice->Execute() === FALSE)
 		{
 			Debug($selOldInvoice->Error());
 			return Array();
