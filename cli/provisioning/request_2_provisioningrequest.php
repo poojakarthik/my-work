@@ -5,14 +5,29 @@ require_once("../../flex.require.php");
 
 // Statements
 $insProvisioningRequest	= new StatementInsert("ProvisioningRequest");
-$selRequest				= new StatementSelect(	"(Request JOIN Service ON Service.Id = Request.Service) LEFT JOIN ProvisioningLog ON ProvisioningLog.Request = Request.Id",
-												"Request.*, Account, AccountGroup, FNN, ProvisioningLog.Description",
-												"ProvisioningLog.Id = (SELECT MAX(Id) FROM ProvisioningLog PL2 WHERE Request = Request.Id)");
+$selRequest				= new StatementSelect(	"Request JOIN Service ON Service.Id = Request.Service",
+												"Request.*, Account, AccountGroup, FNN",
+												"1");
+
+$selDescription			= new StatementSelect(	"ProvisioningLog",
+												"Description",
+												"Request = <Request>",
+												"Id DESC",
+												"1");
+
+CliEcho("\n");
 
 // Get Requests
 $selRequest->Execute();
 while ($arrRequest = $selRequest->Fetch())
 {
+	CliEcho(" + Request #".$arrRequest['Id']);
+	
+	if ($selDescription->Execute($arrRequest))
+	{
+		$arrDescription	= $selDescription->Fetch();
+	}
+	
 	$arrProvisioningRequest	= Array();
 	$arrProvisioningRequest['AccountGroup']			= $arrRequest['AccountGroup'];
 	$arrProvisioningRequest['Account']				= $arrRequest['Account'];
@@ -24,7 +39,7 @@ while ($arrRequest = $selRequest->Fetch())
 	$arrProvisioningRequest['CarrierRef']			= $arrRequest['Sequence'];
 	$arrProvisioningRequest['FileExport']			= NULL;
 	$arrProvisioningRequest['Response']				= NULL;
-	$arrProvisioningRequest['Description']			= $arrRequest['Description'];
+	$arrProvisioningRequest['Description']			= $arrDescription['Description'];
 	$arrProvisioningRequest['RequestedOn']			= $arrRequest['RequestDatetime'];
 	$arrProvisioningRequest['AuthorisationDate']	= $arrRequest['RequestDatetime'];
 	$arrProvisioningRequest['SentOn']				= $arrRequest['RequestDatetime'];
