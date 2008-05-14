@@ -809,7 +809,8 @@ abstract class BillingModuleInvoice
 			$fltGrandTotal	= number_format($fltGrandTotal, 2, '.', '');
 			if ($fltGrandTotal)
 			{
-				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	 = $fltGrandTotal;
+				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	= $fltGrandTotal;
+				$arrAccountSummary['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 			}
 		}
 		
@@ -817,6 +818,7 @@ abstract class BillingModuleInvoice
 		if ($bolGST)
 		{
 			$arrAccountSummary['GST Total']['TotalCharge']	= number_format($arrInvoice['Tax'], 2, '.', '');
+			$arrAccountSummary['GST Total']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 		}
 		
 		// Return Array
