@@ -50,7 +50,7 @@ function VixenValidationClass()
 {
 	this.regexShortDate					= /^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
 	this.regexABN						= /^\d{11}$/;
-	this.regexPostCode					= /^[1-9]\d{3}$/;
+	this.regexPostCode					= /^\d{4}$/;
 	this.regexPositiveInteger			= /^\d+$/;
 	this.regexPositiveIntegerNonZero	= /^[1-9]\d*$/;
 	this.regexLettersOnly				= /^[A-Za-z]+$/;

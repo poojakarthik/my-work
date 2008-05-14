@@ -1599,20 +1599,14 @@ class Validation
 	 *
 	 * Checks if a value is a valid Australian Postcode
 	 *
-	 * @param	mix			$intValue			the value to validate
+	 * @param	mix			$mixValue	postcode to validate
 	 * 
 	 * @return	bool
-	 *
 	 * @method
 	 */
-	static function IsValidPostcode($intValue)
+	static function IsValidPostcode($mixValue)
 	{
-		if (strlen($intValue) != 4)
-		{
-			return FALSE;
-		}
-		
-		return self::IsValidInteger($intValue);
+		return preg_match("/^\d{4}$/", $mixValue);
 	}
 
 	//------------------------------------------------------------------------//
@@ -2201,28 +2195,28 @@ class OutputMasks
 	 * Converts a Date from YYYY-MM-DD (MySql Date) to DD/MM/YYYY
 	 * Should also be able to handle Datetime datatype (YYYY-MM-DD HH:MM:SS)
 	 *
-	 * @param	string	$strMySqlDate				in the format YYYY-MM-DD (standard MySql Date data type)
-	 * @return	string								date in format DD/MM/YYYY
+	 * @param	string	$strISODate				in the format YYYY-MM-DD (standard ISO Date data type)
+	 * @return	string							date in format DD/MM/YYYY
 	 *
 	 * @method
 	 */
-	function ShortDate($strMySqlDate)
+	function ShortDate($strISODate)
 	{
 		// Don't change the date if it is alread in the format DD/MM/YYYY
-		if (Validate("ShortDate", $strMySqlDate))
+		if (Validate("ShortDate", $strISODate))
 		{
-			return $strMySqlDate;
+			return $strISODate;
 		}
 
 		// If $strMySqlDate is a Datetime data type, truncate the time
-		$arrDateParts = explode(" ", $strMySqlDate);
-		$strMySqlDate = $arrDateParts[0];
+		$arrDateParts = explode(" ", $strISODate);
+		$strISODate = $arrDateParts[0];
 
 		// The following line can't handle dates like 9999-12-31
 		//$strDate = date("Y-m-d", strtotime($strMySqlDate));
 		
 		// if it is a date and time, then just grab the date
-		$arrDate = explode(" ", $strMySqlDate);
+		$arrDate = explode(" ", $strISODate);
 		
 		// split the date into year, month and day
 		$arrDate = explode("-", $arrDate[0]);
@@ -2233,7 +2227,7 @@ class OutputMasks
 		}
 		else
 		{
-			$strDate = $strMySqlDate;
+			$strDate = $strISODate;
 		}
 		return $strDate;
 	}

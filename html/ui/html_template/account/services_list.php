@@ -68,6 +68,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		
 		$this->LoadJavascript("account_services");
 		$this->LoadJavascript("highlight");
+		$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -577,7 +578,10 @@ $this->RenderTableNewWay();
 			
 			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
 			
+			$strHistoryDetails = $this->_GetHistory($arrService);
+			
 			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);
+			Table()->Services->SetDetail($strHistoryDetails);
 		}
 		
 		// If the account has no services then output an appropriate message in the table
@@ -593,6 +597,31 @@ $this->RenderTableNewWay();
 		// Row highlighting has been turned off, because it stops working if the Service table is ever redrawn
 		Table()->Services->RowHighlighting = TRUE;
 		Table()->Services->Render();
+	}
+	
+	// Builds a HTML table detailing the history of a service (activations/deactivations)
+	private function _GetHistory($arrService)
+	{
+return "Insert History here";		
+		$intLastRecordIndex = count($arrService['History']) - 1;
+		$strRows = "";
+		foreach ($arrService['History'] as $intIndex=>$arrHistoryItem)
+		{
+			$strCreatedBy			= GetEmployeeName($arrHistoryItem['CreatedBy']) ." (". GetEmployeeUserName($arrHistoryItem['CreatedBy']) .")";
+			$strCreatedOn			= OutputMask()->ShortDate($arrHistoryItem['CreatedOn']);
+			$strNatureOfCreation	= ($intIndex == $intLastRecordIndex)? "Created" : "Activated";
+			/*
+			if ($arrHistoryItem['ClosedOn'] != NULL)
+			{
+				$strClosedBy	= ($arrHistoryItem['ClosedBy'] != NULL)? $strClosedBy = GetEmployeeName($arrHistoryItem['ClosedBy']) ." (". GetEmployeeUserName($arrHistoryItem['ClosedBy']) .")" : "";
+				$strClosedOn	= ($arrHistoryItem['ClosedOn'] != NULL)? OutputMask()->ShortDate($arrHistoryItem['ClosedOn']) : "";
+			
+				$strNatureOfClosure		= ($arrHistoryItem['ClosedOn'] == )
+				
+			}
+			*/
+			
+		}
 	}
 	
 }
