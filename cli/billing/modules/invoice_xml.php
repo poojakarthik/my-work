@@ -211,7 +211,7 @@
 			// Get Cost Centre Services
 			$xmlCostCentre	= $this->_AddElement($xmlCostCentreSummary, 'CostCentre');
 			$this->_AddAttribute($xmlCostCentre, 'Name', $strName);
-			$this->_AddAttribute($xmlCostCentre, 'Total', number_format($arrCostCentre['TotalCharge'], 2, '.', ''));
+			$this->_AddAttribute($xmlCostCentre, 'Total', number_format($arrCostCentre['GrandTotal'], 2, '.', ''));
 			
 			foreach ($arrCostCentre['Services'] as $strFNN=>$fltServiceTotal)
 			{

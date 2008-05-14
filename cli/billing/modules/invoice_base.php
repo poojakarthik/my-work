@@ -559,7 +559,7 @@ abstract class BillingModuleInvoice
 			{
 				// Get the ServiceTotal
 				$arrServiceTotal			= $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrInvoice);
-				$arrService['ServiceTotal']	= $arrServiceTotal['GrandTotal'];
+				$arrService['ServiceTotal']	= $arrServiceTotal['TotalCharge'];
 			}
 			
 			// Only if this is a non-Indial or is the Primary FNN
@@ -596,20 +596,20 @@ abstract class BillingModuleInvoice
 				
 				// Get Plan Charges & Credits
 				$fltPlanChargeTotal			= 0.0;
-				$arrPlanAdjustments			= $this->_BillingFactory(BILL_FACTORY_PLAN_ADJUSTMENTS, $arrService, $arrWhere);
+				$arrPlanAdjustments			= $this->_BillingFactory(BILL_FACTORY_PLAN_ADJUSTMENTS, $arrService, $arrInvoice);
 				$arrPlanChargeItemisation	= Array();
 				foreach ($arrPlanAdjustments as $arrAdjustment)
 				{
 					// Format Plan Adjustment as CDR
 					$arrCDR	= Array();
-					if ($arrCharge['Nature'] == NATURE_CR)
+					if ($arrAdjustment['Nature'] == NATURE_CR)
 					{
-						$arrCDR['Charge']		= 0 - $arrCharge['Charge'];
+						$arrCDR['Charge']		= 0 - $arrAdjustment['Charge'];
 					}
 					$fltPlanChargeTotal			+= $arrCDR['Charge'];
 					
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
+					$arrCDR['Description']		= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
 					$arrPlanChargeItemisation[]	= $arrCDR;
 				}
 				
@@ -624,7 +624,7 @@ abstract class BillingModuleInvoice
 					$arrCDR['Units']			= 1;
 					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
 					$arrPlanChargeItemisation[]	= $arrCDR;
-				
+					
 					// Check for ServiceTotal vs Rated Total, then add as CDR
 					if ($arrService['ServiceTotal'] != $arrService['RatedTotal'])
 					{
@@ -637,7 +637,7 @@ abstract class BillingModuleInvoice
 						$arrPlanChargeItemisation[]	= $arrCDR;
 					}
 				}
-			
+				
 				// Add to Service Array
 				if (count($arrPlanChargeItemisation))
 				{
