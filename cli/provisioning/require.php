@@ -29,32 +29,9 @@
 
 // Application modules
 $strModuleDir = "cli/provisioning/modules/";
-/*VixenRequire($strModuleDir."base_import_module.php");
-VixenRequire($strModuleDir."base_export_module.php");
-
-VixenRequire($strModuleDir."unitel/export_module_unitel_order.php");
-VixenRequire($strModuleDir."unitel/export_module_unitel_preselection.php");
-VixenRequire($strModuleDir."unitel/import_module_unitel_order.php");
-VixenRequire($strModuleDir."unitel/import_module_unitel_preselection.php");
-VixenRequire($strModuleDir."unitel/import_module_unitel_status.php");
-
-VixenRequire($strModuleDir."optus/export_module_optus_preselection.php");
-VixenRequire($strModuleDir."optus/export_module_optus_preselect_reverse.php");
-VixenRequire($strModuleDir."optus/export_module_optus_bar.php");
-VixenRequire($strModuleDir."optus/export_module_optus_restore.php");
-VixenRequire($strModuleDir."optus/export_module_optus_suspend.php");
-VixenRequire($strModuleDir."optus/import_module_optus_status.php");
-
-VixenRequire($strModuleDir."aapt/export_module_aapt_eoe.php");
-VixenRequire($strModuleDir."aapt/import_module_aapt_eoe.php");
-VixenRequire($strModuleDir."aapt/import_module_aapt_lsd.php");
-VixenRequire($strModuleDir."aapt/import_module_aapt_reject.php");*/
-
-// New Modules
 
 VixenRequire($strModuleDir."import_base.php");
 VixenRequire($strModuleDir."export_base.php");
-
 
 VixenRequire($strModuleDir."optus/import_ppr.php");
 
@@ -64,7 +41,6 @@ VixenRequire($strModuleDir."optus/export_preselect_reversal.php");
 VixenRequire($strModuleDir."optus/export_preselect.php");
 VixenRequire($strModuleDir."optus/export_unbar.php");
 
-
 VixenRequire($strModuleDir."unitel/import_dsc.php");
 VixenRequire($strModuleDir."unitel/import_preselection.php");
 VixenRequire($strModuleDir."unitel/import_line_status.php");
@@ -72,4 +48,6 @@ VixenRequire($strModuleDir."unitel/import_line_status.php");
 VixenRequire($strModuleDir."unitel/export_preselection.php");
 VixenRequire($strModuleDir."unitel/export_daily_order.php");
 
+// Remote Copy
+VixenRequire("lib/framework/remote_copy.php");
  ?>
