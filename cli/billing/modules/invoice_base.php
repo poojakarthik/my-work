@@ -748,6 +748,7 @@ abstract class BillingModuleInvoice
 			else
 			{
 				$arrAccountSummary['Other Charges & Credits']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
+				$arrAccountSummary['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 			}
 		}
 		
