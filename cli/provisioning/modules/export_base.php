@@ -586,7 +586,7 @@
 		$strPath	= $this->GetConfigField('Path');
 		
 		// Copy File
-		$rcpRemoteCopy	= new RemoteCopyFTP();
+		$rcpRemoteCopy	= new RemoteCopyFTP($strServer, $strUser, $strPass);
 		$rcpRemoteCopy->Connect($strServer, $strUser, $strPass);
 		$mixResult		= $rcpRemoteCopy->Copy($this->_strFilePath, $strPath, RCOPY_OVERWRITE);
 		
