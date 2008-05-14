@@ -40,9 +40,9 @@ while ($arrRequest = $selRequest->Fetch())
 	$arrProvisioningRequest['FileExport']			= NULL;
 	$arrProvisioningRequest['Response']				= NULL;
 	$arrProvisioningRequest['Description']			= $arrDescription['Description'];
-	$arrProvisioningRequest['RequestedOn']			= $arrRequest['RequestDatetime'];
-	$arrProvisioningRequest['AuthorisationDate']	= $arrRequest['RequestDatetime'];
-	$arrProvisioningRequest['SentOn']				= $arrRequest['RequestDatetime'];
+	$arrProvisioningRequest['RequestedOn']			= $arrRequest['RequestDateTime'];
+	$arrProvisioningRequest['AuthorisationDate']	= $arrRequest['RequestDateTime'];
+	$arrProvisioningRequest['SentOn']				= $arrRequest['RequestDateTime'];
 	$arrProvisioningRequest['LastUpdated']			= NULL;
 	$arrProvisioningRequest['Status']				= $arrRequest['Status'];
 	
