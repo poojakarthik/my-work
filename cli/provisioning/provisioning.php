@@ -1,7 +1,7 @@
 <?php
 
 // Provisioning Debug Mode (don't deliver files)
-define("PROVISIONING_DEBUG_MODE",	TRUE);
+define("PROVISIONING_DEBUG_MODE",	FALSE);
 
 //----------------------------------------------------------------------------//
 // (c) copyright 2007 VOIPTEL Pty Ltd

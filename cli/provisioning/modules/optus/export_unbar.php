@@ -82,7 +82,7 @@
  		$this->intCarrierReference	= 0;
  		
  		// Module Description
- 		$this->strDescription		= "Bar";
+ 		$this->strDescription		= "UnBar";
  		
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
