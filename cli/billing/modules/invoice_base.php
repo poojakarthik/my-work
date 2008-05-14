@@ -749,8 +749,11 @@ abstract class BillingModuleInvoice
 			}
 			elseif ($mixResult)
 			{
-				$arrAccountSummary['Other Charges & Credits']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
-				$arrAccountSummary['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+				while ($arrSummary = $this->_selAccountSummaryCharges->Fetch())
+				{
+					$arrAccountSummary['Other Charges & Credits']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
+					$arrAccountSummary['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+				}
 			}
 		}
 		
