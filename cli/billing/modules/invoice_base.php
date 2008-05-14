@@ -418,9 +418,9 @@ abstract class BillingModuleInvoice
 		}
 		
 		// Return data or empty array
-		if ($arrInvoice = $selOldInvoice->Fetch())
+		if ($arrOldInvoice = $selOldInvoice->Fetch())
 		{
-			return $arrInvoice;
+			return $arrOldInvoice;
 		}
 		else
 		{

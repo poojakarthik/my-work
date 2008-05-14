@@ -177,7 +177,7 @@
 		$strBillingPeriodEnd	= date("j M y", strtotime("-1 day", strtotime(date("Y-m-01", $intBillingDate))));
 		
 		// Add to XML schema
-		$arrLastInvoice	= $this->_GetOldInvoice($arrInvoice['Account'], 1);
+		$arrLastInvoice	= $this->_GetOldInvoice($arrInvoice, 1);
 		$xmlStatement	= $this->_AddElement($xmlInvoice, 'Statement');
 		$this->_AddElement($xmlStatement, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
 		$this->_AddElement($xmlStatement, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
