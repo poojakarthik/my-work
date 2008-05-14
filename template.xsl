@@ -14,11 +14,6 @@
 	<xsl:variable name="business-payable-address">Locked Bag 4000, Fortitude Valley, QLD 4006</xsl:variable>
 	<xsl:variable name="business-friendly-name">Voicetalk</xsl:variable>
 
-	<xsl:template name="marketing-image">
-		<img src="images/marketing_print.jpg" style="left: 56.6pt; top: 267pt; width: 523pt; height: 295pt; media: print;" />
-		<img src="images/marketing_email.jpg" style="left: 56.6pt; top: 267pt; width: 523pt; height: 295pt; media: email;" />
-	</xsl:template>
-
 	<xsl:template name="statement-title">
 		<p>
 			<span style="font-size: 19pt;">V</span><span>OICETALK </span>
@@ -26,16 +21,6 @@
 		</p>
 	</xsl:template>
 
-	<xsl:template name="logo-and-label">
-		<div style="top: 74.6pt; left: 80.19pt; height: 0pt;">
-			<img src="images/logo.png" style="media: email; width: 177.32pt; height: 45.56pt; bottom: 0pt; left: -0.47pt" />
-			<p style="font-family: Arial_Narrow; font-size: 7pt; top: 3.19pt; left: 0pt; "><span>ABN: <xsl:value-of select="$abn" /></span></p>
-		</div>
-	</xsl:template>
-
-	<xsl:template name="pay-slip-logo">
-		<img src="images/logo_grey.png" style="bottom: 0; width: 132.72pt; height: 35.43pt;" />
-	</xsl:template>
 	-->
 
 	<!-- Telcoblue -->
@@ -52,11 +37,6 @@
 	<xsl:variable name="business-payable-address">Locked Bag 4000, Fortitude Valley, QLD 4006</xsl:variable>
 	<xsl:variable name="business-friendly-name">Telco Blue</xsl:variable>
 
-	<xsl:template name="marketing-image">
-		<img src="images/marketing_print.jpg" style="left: 56.6pt; top: 267pt; width: 523pt; height: 295pt;" />
-		<img src="images/marketing_email.jpg" style="left: 56.6pt; top: 267pt; width: 523pt; height: 295pt;" />
-	</xsl:template>
-
 	<xsl:template name="statement-title">
 		<p>
 			<span style="font-size: 19pt;">T</span><span>ELCOBLUE </span>
@@ -64,21 +44,16 @@
 		</p>
 	</xsl:template>
 
-	<xsl:template name="logo-and-label">
-		<div style="top: 74.6pt; left: 80.19pt; height: 0pt;">
-			<img src="images/logo.png" style="media: email; width: 223.11pt; height: 32.12pt; bottom: 0pt; left:-15.96pt" />
-			<p style="font-family: Arial_Narrow; font-size: 7pt; top: 3.19pt; left: 0pt;"><span>ABN: <xsl:value-of select="$abn" /></span></p>
-		</div>
+	<!-- -->
+
+	<xsl:template name="logo-abn-label">
+		<div style="font-family: Arial_Narrow; font-size: 7pt; bottom: 769.14pt; left: 80.19pt;"><p><span>ABN: <xsl:value-of select="$abn" /></span></p></div>
 	</xsl:template>
 
-	<xsl:template name="pay-slip-logo">
-		<img src="images/logo_grey.png" style="bottom: 0; left: -10.25; width: 155.23pt; height: 22.55pt;" />
-	</xsl:template>
-	<!-- -->
 
 	<!-- Create the zero padded account number for the barcode -->
 	<xsl:variable name="account-number"><xsl:value-of select="/Invoice/Account/@Id" /></xsl:variable>
-	<xsl:variable name="account-reference"><xsl:value-of select="/Invoice/Payment/BillExpress/CustomerReference" /></xsl:variable><!-- SHOULD BE 20 DIGITS INCLUDING A 'mod 10' CHECK DIGIT -->
+	<xsl:variable name="account-reference"><xsl:value-of select="/Invoice/PaymentDetails/BillExpress/CustomerReference" /></xsl:variable><!-- SHOULD BE 20 DIGITS INCLUDING A 'mod 10' CHECK DIGIT -->
 
 	<!-- Create the zero padded amount (in cents) for the barcode -->
 	<xsl:variable name="decimal_amount"><xsl:value-of select="/Invoice/Statement/TotalOwing" /></xsl:variable>
@@ -105,19 +80,19 @@
 
 		<embedded-fonts>
 
-			<!-- Use embedded ARIAL fonts for the email versions -->
-			<embedded-font media="PRINT" name="ARIAL_NARROW" 		path="fonts/arial_narrow.ttf" />
-			<embedded-font media="PRINT" name="ARIAL" 				path="fonts/arial.ttf" />
-			<embedded-font media="PRINT" name="ARIAL BOLD" 			path="fonts/arial_bold.ttf" />
-			<embedded-font media="PRINT" name="ARIAL BOLD ITALIC" 	path="fonts/arial_bold_italic.ttf" />
-			<embedded-font media="PRINT" name="ARIAL ITALIC" 		path="fonts/arial_italic.ttf" />
-
 			<!-- Use standard, non-embedded fonts for the email versions -->
 			<embedded-font media="EMAIL" name="ARIAL_NARROW" 		default="HELVETICA" />
 			<embedded-font media="EMAIL" name="ARIAL" 				default="HELVETICA" />
 			<embedded-font media="EMAIL" name="ARIAL BOLD" 			default="HELVETICA BOLD" />
 			<embedded-font media="EMAIL" name="ARIAL BOLD ITALIC" 	default="HELVETICA BOLD ITALIC" />
 			<embedded-font media="EMAIL" name="ARIAL ITALIC" 		default="HELVETICA ITALIC" />
+
+			<!-- Use embedded ARIAL fonts for the printed versions -->
+			<embedded-font media="PRINT" name="ARIAL_NARROW" 		path="fonts/arial_narrow.ttf" />
+			<embedded-font media="PRINT" name="ARIAL" 				path="fonts/arial.ttf" />
+			<embedded-font media="PRINT" name="ARIAL BOLD" 			path="fonts/arial_bold.ttf" />
+			<embedded-font media="PRINT" name="ARIAL BOLD ITALIC" 	path="fonts/arial_bold_italic.ttf" />
+			<embedded-font media="PRINT" name="ARIAL ITALIC" 		path="fonts/arial_italic.ttf" />
 
 		</embedded-fonts>
 
@@ -144,10 +119,10 @@
 
 				<pages>
 
-					<page type="pageOne" stationery="/raw/header_odd.raw">
+					<page type="pageOne" stationery="fdbp://Stationery (Front)">
 			
-						<!-- Logo and label -->
-						<xsl:call-template name="logo-and-label" />
+						<!-- Logo ABN label -->
+						<xsl:call-template name="logo-abn-label" />
 
 						<!-- Contact details -->
 						<xsl:call-template name="contact-details" />
@@ -178,10 +153,11 @@
 						</div>
 						
 						<!-- Promotional Content -->
-						<xsl:call-template name="marketing-image" />
+						<img src="fdbp://Invoice Ad (Print)" style="left: 56.6pt; top: 267pt; width: 523pt; height: 295pt; media: print;" />
+						<img src="fdbp://Invoice Ad (Other)" style="left: 56.6pt; top: 267pt; width: 523pt; height: 295pt; media: email;" />
 						
 						<!-- Cut Here -->
-						<raw src="raw/scissors_front.raw" />
+						<raw src="fdbp://Scissor Line (Front)" />
 			
 	
 						<!-- Amounts due -->
@@ -495,7 +471,7 @@
 						
 							<div style="top: 2pt; left: 8.535pt; font-size: 5pt;">
 								<div style="height: 35.43pt; left: 14.8pt;">
-									<xsl:call-template name="pay-slip-logo" />
+									<raw src="fdbp://Payslip Logo (Front)" />
 								</div>
 								<p style="font-family: Arial_Narrow; left: 14.8pt;">
 									<span style="font-size: 6pt;">ABN:</span><span> <xsl:value-of select="$abn" /></span>
@@ -512,10 +488,10 @@
 								</div>
 			
 								<div style="left: 0; top: 23.8mm;">
-									<img src="images/bill_pay.png" style="width: 6mm; height: 9mm; top: 1.1mm; left: 4mm;" />
+									<raw src="fdbp://Bill Pay" />
 									<p style="left: 17mm;">
 										<span style="font-size: 7pt;">BPAY </span>
-										<span>- Biller Code: <xsl:value-of select="$bill_pay_biller_code" /> Customer Ref:<xsl:text> </xsl:text><xsl:value-of select="/Invoice/Payment/BPay/CustomerReference" /></span>
+										<span>- Biller Code: <xsl:value-of select="$bill_pay_biller_code" /> Customer Ref:<xsl:text> </xsl:text><xsl:value-of select="/Invoice/PaymentDetails/BPay/CustomerReference" /></span>
 									</p>
 									<p style="left: 17mm;">
 										<span>Call your bank, credit union or building society to make payment from your cheque, savings or credit card account. More info: www.bpay.com.au</span>
@@ -528,19 +504,19 @@
 								</div>
 			
 								<div style="left: 0; top: 44.5mm;">
-									<img src="images/direct_debit.png" style="width: 9mm; height: 10.288mm; top: -5.5mm; left: 2mm;" />
+									<raw src="fdbp://Direct Debit" />
 									<p style="left: 17mm; font-size: 7t;"><span>DIRECT DEBIT</span></p>
 									<p style="left: 17mm;"><span>To apply please call our customer service team on <xsl:value-of select="$customer-service-team-phone" /></span></p>
 								</div>
 								
 								<div style="left: 0; top: 51.5mm;">
-									<img src="images/mail.png" style="width: 13mm; height: 6.5mm; top: 1.1mm; left: 0.25mm;" />
+									<raw src="fdbp://Mail" />
 									<p style="left: 17mm; font-size: 7pt;"><span>MAIL</span></p>
 									<p style="left: 17mm;"><span>Detach the payment slip from the bottom of your account and return it together with your cheque or credit card details. Cheques should be made payable to "<xsl:value-of select="$business-payable-name" />" and mailed to: <xsl:value-of select="$business-payable-name" />, <xsl:value-of select="$business-payable-address" /></span></p>
 								</div>
 								
 								<div style="left: 0; top: 63mm;">
-									<img src="images/bill_express.png" style="width: 13.46mm; height: 5.251mm; top: 1.1mm; left: 0mm;" />
+									<raw src="fdbp://Bill Express" />
 									<p style="left: 17mm; font-size: 7pt;"><span>BILL EXPRESS</span></p>
 									<p style="left: 17mm;"><span>Look for the red BillEXPRESS logo at newsagents to pay this account with cash, cheque or debit card. For locations call 1300 739 250 or visit www.billexpress.com.au</span></p>
 								</div>
@@ -555,7 +531,7 @@
 									</xsl:element>
 								
 									<p style="top: 8.6mm; left: 0"><span>Biller ID: <xsl:value-of select="$bill_express_biller_id" /></span></p>
-									<p style="top: 8.6mm;"><span>Ref:<xsl:text> </xsl:text><xsl:value-of select="/Invoice/Payment/BillExpress/CustomerReference" /></span></p>
+									<p style="top: 8.6mm;"><span>Ref:<xsl:text> </xsl:text><xsl:value-of select="/Invoice/PaymentDetails/BillExpress/CustomerReference" /></span></p>
 								</div>
 			
 							</div>
@@ -654,12 +630,12 @@
 
 					</page>
 
-					<page type="pageTwo" stationery="/raw/header_even.raw">
+					<page type="pageTwo" stationery="fdbp://Stationery (Back)">
 
 						<xsl:call-template name="page-details-even" />
 
 						<!-- Cut Here -->
-						<raw src="raw/scissors_back.raw" />
+						<raw src="fdbp://Scissor Line (Back)" />
 
 						<!-- Payment Advice -->
 						<div style="top: 595.6pt; left: 21.7pt;">
@@ -675,7 +651,7 @@
 	
 							<div style="top: 2pt; left: 0pt; font-size: 5pt;">
 								<div style="height: 35.43pt; left: 14.8pt;">
-									<xsl:call-template name="pay-slip-logo" />
+									<raw src="fdbp://Payslip Logo (Back)" />
 								</div>
 							</div>
 	
@@ -820,12 +796,12 @@
 		
 					</page>
 		
-					<page type="pageOdd" stationery="/raw/header_odd.raw">
+					<page type="pageOdd" stationery="fdbp://Stationery (Front)">
 			
 						<xsl:call-template name="page-details-odd" />
 						
-						<!-- Logo and label -->
-						<xsl:call-template name="logo-and-label" />
+						<!-- Logo ABN label -->
+						<xsl:call-template name="logo-abn-label" />
 			
 						<div where="page_odd_section_1" style="top: 128.84pt; left: 70.85pt; width: 233.88pt; height: 695pt; border-color: #000; border-width-right: 0.5pt; padding-right: 12.4pt">
 						
@@ -841,7 +817,7 @@
 	
 					</page>
 		
-					<page type="pageEven" stationery="/raw/header_even.raw">
+					<page type="pageEven" stationery="fdbp://Stationery (Back)">
 			
 						<xsl:call-template name="page-details-even" />
 			
@@ -866,6 +842,7 @@
 					<page-wrap-content identifier="breakdown">
 						<wrapped-content>
 							<page-wrap-include content="account-summary" />
+							<xsl:call-template name="charge-summary-includes" />
 							<page-wrap-include content="cost-centre-summaries" />
 							<page-wrap-include content="service-summaries" />
 							<xsl:call-template name="itemisation-includes" />
@@ -873,6 +850,8 @@
 					</page-wrap-content>
 					
 					<xsl:call-template name="account-summary" />
+	
+					<xsl:call-template name="charge-summaries" />
 	
 					<xsl:call-template name="cost-centre-summaries" />
 	
@@ -912,31 +891,41 @@
 					<p style="right: 8.002; top: 0pt; text-align: right;"><span>Charge</span></p>
 				</div>
 			</wrapped-header>
-	
-	
+
+
 			<wrapped-content>
-				<xsl:for-each select="/Invoice/AccountSummary/Category">
+				<xsl:for-each select="/Invoice/Charges/Category">
 					<div style="width: 233.88pt; font-size: 7pt; height: 10pt;">
-						<p style="left: 0; top: 0pt; width: 194.53pt;"><span><xsl:value-of select="@Description" /></span></p>
+
+						<p style="left: 0; top: 0pt; width: 194.53pt;">
+							<xsl:element name="a">
+								<xsl:if test="@Records > 0">
+									<xsl:attribute name="href">#chargeSummary<xsl:value-of select="generate-id()" /></xsl:attribute>
+								</xsl:if>
+								<xsl:value-of select="@Name" />
+							</xsl:element>
+						</p>
+
 						<p style="right: 8.002pt; top: 0pt; text-align: right;">
 							<span>
 								<xsl:value-of select="/Invoice/Currency/Symbol" />
 								<xsl:call-template name="abs">
-									<xsl:with-param name="amount"><xsl:value-of select="." /></xsl:with-param>
+									<xsl:with-param name="amount"><xsl:value-of select="@GrandTotal" /></xsl:with-param>
 								</xsl:call-template>
 							</span>
 						</p>
 						<p style="right: -4pt; top: 1pt; text-align: right; font-size: 6pt;">
 							<span>
 								<xsl:call-template name="cr">
-									<xsl:with-param name="amount"><xsl:value-of select="." /></xsl:with-param>
+									<xsl:with-param name="amount"><xsl:value-of select="@GrandTotal" /></xsl:with-param>
 								</xsl:call-template>
 							</span>
 						</p>
 					</div>
 				</xsl:for-each>
 			</wrapped-content>
-	
+
+
 			<wrapped-footer include="last-section">
 				<div style="width: 233.88pt;height: 20pt;">
 					<div style="width: 233.88pt; font-size: 7pt; font-weight: bold; height: 10pt; bottom: 0pt;">
@@ -945,14 +934,14 @@
 							<span>
 								<xsl:value-of select="/Invoice/Currency/Symbol" />
 								<xsl:call-template name="abs">
-									<xsl:with-param name="amount"><xsl:value-of select="/Invoice/AccountSummary/@GrandTotal" /></xsl:with-param>
+									<xsl:with-param name="amount"><xsl:value-of select="/Invoice/Statement/NewCharges" /></xsl:with-param>
 								</xsl:call-template>
 							</span>
 						</p>
 						<p style="right: -4pt; top: 1pt; text-align: right; font-size: 6pt;">
 							<span>
 								<xsl:call-template name="cr">
-									<xsl:with-param name="amount"><xsl:value-of select="/Invoice/AccountSummary/@GrandTotal" /></xsl:with-param>
+									<xsl:with-param name="amount"><xsl:value-of select="/Invoice/Statement/NewCharges" /></xsl:with-param>
 								</xsl:call-template>
 							</span>
 						</p>
@@ -971,6 +960,46 @@
 	
 	
 	
+	<xsl:template name="charge-summary-includes">
+		<xsl:for-each select="/Invoice/Charges/Category[@Records>0]">
+			<xsl:element name="page-wrap-include">
+				<xsl:attribute name="content">charge-summary-<xsl:value-of select="generate-id()" /></xsl:attribute>
+			</xsl:element>
+		</xsl:for-each>
+	</xsl:template>
+	
+	<xsl:template name="charge-summaries">
+
+		<xsl:for-each select="/Invoice/Charges/Category[@Records>0]">
+	
+			<xsl:element name="page-wrap-content">
+				<xsl:attribute name="identifier">charge-summary-<xsl:value-of select="generate-id()" /></xsl:attribute>
+		
+				<wrapped-header include="first-section">
+					<xsl:element name="div">
+						<xsl:attribute name="style">width: 233.88pt; height: 20pt;</xsl:attribute>
+						<xsl:attribute name="id">chargeSummary<xsl:value-of select="generate-id()" /></xsl:attribute>
+						<div style="width: 233.88pt; height: 15pt; bottom: 5pt; border-width-bottom: 0.5pt; border-width-top: 0.5pt; border-color: #000; font-weight: bold; font-size: 8pt;"><p style="bottom: 2.8pt;"><span><xsl:value-of select="@Name" /></span></p></div>
+					</xsl:element>
+				</wrapped-header>
+		
+				<wrapped-header include="after-first-section">
+					<div style="width: 233.88pt; height: 20pt;">
+						<div style="width: 233.88pt; height: 15pt; bottom: 5pt; border-width-bottom: 0.5pt; border-width-top: 0.5pt; border-color: #000; font-weight: bold; font-size: 8pt;"><p style="bottom: 2.8pt;"><span><xsl:value-of select="@Name" /></span><span style="font-size: 7pt; font-weight: normal;"><xsl:text> </xsl:text>continued...</span></p></div>
+					</div>
+				</wrapped-header>
+		
+				<xsl:apply-templates select="." />
+
+				<wrapped-footer include="last-section-if-fits">
+					<div style="width: 233.88pt;height: 20pt;" />
+				</wrapped-footer>
+		
+			</xsl:element>
+		
+		</xsl:for-each>
+	
+	</xsl:template>	
 	
 	
 	
@@ -1019,9 +1048,11 @@
 				</wrapped-header>
 	
 				<wrapped-header include="first-section">
-					<div style="top: 0; width: 60pt; width: 233.88pt; font-size: 7pt; height: 0pt;">
+					<xsl:element name="div">
+						<xsl:attribute name="id">costCentre<xsl:value-of select="generate-id()" /></xsl:attribute>
+						<xsl:attribute name="style">top: 0; width: 60pt; width: 233.88pt; font-size: 7pt; height: 0pt;</xsl:attribute>
 						<p style="left: 0; top: 0px; font-weight: bold;"><span><xsl:value-of select="@Name" /></span></p>
-					</div>
+					</xsl:element>
 				</wrapped-header>
 	
 				<wrapped-header include="after-first-section">
@@ -1034,7 +1065,16 @@
 				<wrapped-content>
 					<xsl:for-each select="Service">
 						<div style="width: 233.88pt; font-size: 7pt; height: 10pt;">
-							<p style="left: 60; top: 0px;"><span><xsl:value-of select="@FNN" /></span></p>
+
+							<xsl:element name="p">
+									<xsl:attribute name="id">costCentre<xsl:value-of select="@FNN" /></xsl:attribute>
+									<xsl:attribute name="style">left: 60; top: 0px;</xsl:attribute>
+									<xsl:element name="a">
+										<xsl:attribute name="href">#serviceSummary<xsl:value-of select="@FNN" /></xsl:attribute>
+										<xsl:value-of select="@FNN" />
+									</xsl:element>
+							</xsl:element>
+
 							<p style="right: 8.002pt; top: 0px; text-align: right;">
 								<span>
 									<xsl:value-of select="/Invoice/Currency/Symbol" />
@@ -1117,9 +1157,11 @@
 				<xsl:attribute name="identifier">service-summary-<xsl:value-of select="generate-id()" /></xsl:attribute>
 	
 				<wrapped-header include="first-section">
-					<div style="width: 233.88pt; height: 20pt;">
+					<xsl:element name="div">
+						<xsl:attribute name="style">width: 233.88pt; height: 20pt;</xsl:attribute>
+						<xsl:attribute name="id">serviceSummary<xsl:value-of select="@FNN" /></xsl:attribute>
 						<div style="width: 233.88pt; height: 15pt; bottom: 5; border-width-bottom: 0.5pt; border-width-top: 0.5pt; border-color: #000; font-weight: bold; font-size: 11pt;"><p style="bottom: 2.8pt;"><span>S</span><span style="font-size: 8pt">ERVICE<xsl:text> </xsl:text></span><span>S</span><span style="font-size: 8pt">UMMARY</span></p></div>
-					</div>
+					</xsl:element>
 				</wrapped-header>
 	
 				<wrapped-header include="after-first-section">
@@ -1137,33 +1179,82 @@
 				</wrapped-header>
 	
 				<wrapped-content>
-					<div style="top: 20; width: 60pt; width: 233.88pt; font-size: 7pt; height: 10pt;">
-						<p style="left: 0; top: 0px; font-weight: bold; font-style: italic;"><span>Your Services</span></p>
-						<p style="left: 0; top: 10px;"><span>Cost Centre:</span></p>
-						<p style="left: 0; top: 20px; font-weight: bold;"><span><xsl:value-of select="@CostCentre" /></span></p>
-						<p style="left: 0; top: 30px; font-weight: bold;"><span><xsl:value-of select="@FNN" /></span></p>
-						<p style="left: 0; top: 40px;"><span><xsl:value-of select="@Plan" /></span></p>
-					</div>
-					<xsl:for-each select="ChargeSummary/Category">
-						<div style="width: 233.88pt; font-size: 7pt; height: 10pt;">
-							<p style="left: 60; top: 0px;"><span><xsl:value-of select="@Description" /></span></p>
-							<p style="left: 160; top: 0px;"><span><xsl:value-of select="@Usage" /></span></p>
+					<xsl:element name="div">
+
+						<xsl:choose>
+							<xsl:when test="@CostCentre=''">
+								<xsl:attribute name="style">top: 17.5; width: 60pt;; font-size: 7pt; line-height: 10pt;</xsl:attribute>
+								<p style="left: 0; font-weight: bold; font-style: italic;"><span>Your Services</span></p>
+								<p style="left: 0; font-weight: bold;"><span><xsl:value-of select="@FNN" /></span></p>
+								<p style="left: 0;"><span><xsl:value-of select="@Plan" /></span></p>
+								<div style="left: 0; height: 10pt;" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:attribute name="style">top: 17.5; width: 60pt; font-size: 7pt; line-height: 10pt;</xsl:attribute>
+								<p style="left: 0; font-weight: bold; font-style: italic;"><span>Your Services</span></p>
+								<p style="left: 0;">
+									<xsl:element name="a">
+										<xsl:call-template name="cost-centre-attribute">
+											<xsl:with-param name="name"><xsl:value-of select="@CostCentre" /></xsl:with-param>
+										</xsl:call-template>
+										Cost Centre:
+									</xsl:element>
+								</p>
+	
+								<p style="left: 0; font-weight: bold;">
+									<xsl:element name="a">
+										<xsl:call-template name="cost-centre-attribute">
+											<xsl:with-param name="name"><xsl:value-of select="@CostCentre" /></xsl:with-param>
+										</xsl:call-template>
+										<xsl:value-of select="@CostCentre" />
+									</xsl:element>
+								</p>
+								<p style="left: 0; font-weight: bold;">
+									<xsl:element name="a">
+										<xsl:attribute name="href">#costCentre<xsl:value-of select="@FNN" /></xsl:attribute>
+										<xsl:value-of select="@FNN" />
+									</xsl:element>
+								</p>
+								<p style="left: 0;">
+									<xsl:element name="a">
+										<xsl:attribute name="href">#costCentre<xsl:value-of select="@FNN" /></xsl:attribute>
+										<xsl:value-of select="@Plan" />
+									</xsl:element>
+								</p>
+								<div style="left: 0; height: 10pt;" />
+							</xsl:otherwise>
+						</xsl:choose>
+
+					</xsl:element>
+					<xsl:for-each select="Itemisation/Category">
+						<xsl:element name="div">
+							<xsl:attribute name="id">serviceSummaryType<xsl:value-of select="generate-id()" /></xsl:attribute>
+							<xsl:attribute name="style">width: 233.88pt; font-size: 7pt; height: 10pt;</xsl:attribute>
+
+							<p style="left: 60; top: 0px;">
+								<xsl:element name="a">
+									<xsl:attribute name="href">#itemisation<xsl:value-of select="generate-id()" /></xsl:attribute>
+									<xsl:value-of select="@Name" />
+								</xsl:element>
+							</p>
+
+							<p style="left: 160; top: 0px;"><span><xsl:value-of select="@Records" /></span></p>
 							<p style="right: 8.002pt; top: 0px; text-align: right;">
 								<span>
 									<xsl:value-of select="/Invoice/Currency/Symbol" />
 									<xsl:call-template name="abs">
-										<xsl:with-param name="amount"><xsl:value-of select="." /></xsl:with-param>
+										<xsl:with-param name="amount"><xsl:value-of select="@GrandTotal" /></xsl:with-param>
 									</xsl:call-template>
 								</span>
 							</p>
 							<p style="right: -4pt; top: 1px; text-align: right; font-size: 6pt;">
 								<span>
 									<xsl:call-template name="cr">
-										<xsl:with-param name="amount"><xsl:value-of select="." /></xsl:with-param>
+										<xsl:with-param name="amount"><xsl:value-of select="@GrandTotal" /></xsl:with-param>
 									</xsl:call-template>
 								</span>
 							</p>
-						</div>
+						</xsl:element>
 					</xsl:for-each>
 				</wrapped-content>
 	
@@ -1174,14 +1265,14 @@
 							<span>
 								<xsl:value-of select="/Invoice/Currency/Symbol" />
 								<xsl:call-template name="abs">
-									<xsl:with-param name="amount"><xsl:value-of select="ChargeSummary/@Total" /></xsl:with-param>
+									<xsl:with-param name="amount"><xsl:value-of select="@GrandTotal" /></xsl:with-param>
 								</xsl:call-template>
 							</span>
 						</p>
 						<p style="right: -4pt; top: 1px; text-align: right; font-size: 6pt;">
 							<span>
 								<xsl:call-template name="cr">
-									<xsl:with-param name="amount"><xsl:value-of select="ChargeSummary/@Total" /></xsl:with-param>
+									<xsl:with-param name="amount"><xsl:value-of select="@GrandTotal" /></xsl:with-param>
 								</xsl:call-template>
 							</span>
 						</p>
@@ -1195,6 +1286,12 @@
 			</xsl:element>
 		</xsl:for-each>
 	
+	</xsl:template>
+	
+	
+	<xsl:template name="cost-centre-attribute">
+		<xsl:param name="name" />
+		<xsl:attribute name="href">#costCentre<xsl:value-of select="generate-id(/Invoice/CostCentreSummary/CostCentre[@Name=$name])" /></xsl:attribute>
 	</xsl:template>
 	
 	<xsl:template name="itemisation-includes">
@@ -1213,13 +1310,28 @@
 				
 				<wrapped-header include="first-page">
 					<div style="width: 233.88pt; height: 0pt;">
-						<div style="width: 233.88pt; font-weight: bold; font-size: 12pt; height: 15pt; bottom: 5pt;"><p style="bottom: 2.8pt;"><span>Itemisation for <xsl:value-of select="@FNN" /></span></p></div>
+						<div style="width: 233.88pt; font-weight: bold; font-size: 12pt; height: 15pt; bottom: 5pt;"><p style="bottom: 2.8pt;">
+							<xsl:element name="a">
+								<xsl:attribute name="href">#serviceSummary<xsl:value-of select="@FNN" /></xsl:attribute>
+								Itemisation for <xsl:value-of select="@FNN" />
+							</xsl:element>
+						</p></div>
 					</div>
 				</wrapped-header>
 	
 				<wrapped-header include="after-first-page">
 					<div style="width: 233.88pt; height: 0pt;">
-						<div style="width: 233.88pt; font-weight: bold; font-size: 12pt; height: 15pt; bottom: 5pt;"><p style="bottom: 2.8pt;"><span>Itemisation for <xsl:value-of select="@FNN" /><xsl:text> </xsl:text></span><span style="font-size: 8pt; font-weight: normal;"><xsl:text> </xsl:text>continued...</span></p></div>
+						<div style="width: 233.88pt; font-weight: bold; font-size: 12pt; height: 15pt; bottom: 5pt;"><p style="bottom: 2.8pt;">
+							<xsl:element name="a">
+								<xsl:attribute name="href">#serviceSummary<xsl:value-of select="@FNN" /></xsl:attribute>
+								Itemisation for <xsl:value-of select="@FNN" />
+							</xsl:element>
+							<xsl:element name="a">
+								<xsl:attribute name="href">#serviceSummary<xsl:value-of select="@FNN" /></xsl:attribute>
+								<xsl:attribute name="style">font-size: 8pt; font-weight: normal;</xsl:attribute>
+								<xsl:text> </xsl:text>continued...
+							</xsl:element>
+						</p></div>
 					</div>
 				</wrapped-header>
 	
@@ -1254,113 +1366,39 @@
 					<xsl:attribute name="identifier">itemisation-<xsl:value-of select="generate-id(..)" />-<xsl:value-of select="generate-id()" /></xsl:attribute>
 	
 					<wrapped-header include="first-section">
-						<div style="width: 233.88pt; height: 20pt;">
-							<div style="width: 233.88pt; height: 15pt; bottom: 5pt; border-width-bottom: 0.5pt; border-width-top: 0.5pt; border-color: #000; font-weight: bold; font-size: 11pt;"><p style="bottom: 2.8pt;"><span><xsl:value-of select="@Name" /></span></p></div>
-						</div>
+						<xsl:element name="div">
+							<xsl:attribute name="id">itemisation<xsl:value-of select="generate-id()" /></xsl:attribute>
+							<xsl:attribute name="style">width: 233.88pt; height: 20pt;</xsl:attribute>
+							<div style="width: 233.88pt; height: 15pt; bottom: 5pt; border-width-bottom: 0.5pt; border-width-top: 0.5pt; border-color: #000; font-weight: bold; font-size: 11pt;">
+								<p style="bottom: 2.8pt;">
+									<xsl:element name="a">
+										<xsl:attribute name="href">#serviceSummaryType<xsl:value-of select="generate-id()" /></xsl:attribute>
+										<xsl:value-of select="@Name" />
+									</xsl:element>
+								</p>
+							</div>
+						</xsl:element>
 					</wrapped-header>
 	
 					<wrapped-header include="after-first-section">
 						<div style="width: 233.88pt; height: 20pt;">
-							<div style="width: 233.88pt; height: 15pt; bottom: 5pt; border-width-bottom: 0.5pt; border-width-top: 0.5pt; border-color: #000; font-weight: bold; font-size: 11pt;"><p style="bottom: 2.8pt;"><span><xsl:value-of select="@Name" /><xsl:text> </xsl:text></span><span style="font-size: 7pt; font-weight: normal;"><xsl:text> </xsl:text>continued...</span></p></div>
+							<div style="width: 233.88pt; font-weight: bold; font-size: 11pt; height: 15pt; bottom: 5pt; border-width-bottom: 0.5pt; border-width-top: 0.5pt; border-color: #000;"><p style="bottom: 2.8pt;">
+								<xsl:element name="a">
+									 <xsl:attribute name="href">#serviceSummaryType<xsl:value-of select="generate-id()" /></xsl:attribute>
+									<xsl:value-of select="@Name" /><xsl:text> </xsl:text>
+								</xsl:element>
+								<xsl:element name="a">
+									<xsl:attribute name="href">#serviceSummaryType<xsl:value-of select="generate-id()" /></xsl:attribute>
+									<xsl:attribute name="style">font-size: 7pt; font-weight: normal;</xsl:attribute>
+									<xsl:text> </xsl:text><xsl:text>    </xsl:text><xsl:text> 	 
+									</xsl:text><xsl:text> continued...</xsl:text>
+								</xsl:element>
+							</p></div>
 						</div>
 					</wrapped-header>
-	
-	
-					<xsl:choose>
-	
-						<xsl:when test="@RenderType = 'RECORD_DISPLAY_CALL'">
-	
-							<wrapped-header include="every-section">
-								<div style="width: 233.88pt; font-weight: bold; font-size: 7pt; font-style: italic; height: 10pt;">
-									<p style="left: 0; top: 0px;"><span>Date</span></p>
-									<p style="left: 37; top: 0px;"><span>Time</span></p>
-									<p style="left: 69; top: 0px;"><span>Called Party</span></p>
-									<p style="left: 115; top: 0px;"><span>Location</span></p>
-									<p style="left: 167; top: 0px;"><span>Duration</span></p>
-									<p style="right: 8.002; top: 0px; text-align: right"><span>Charge</span></p>
-								</div>
-							</wrapped-header>
-	
-							<wrapped-content>
-	
-								<xsl:for-each select="Item">
-									<div style="width: 233.88pt; font-size: 7pt; height: 10pt;">
-										<p style="right: 200.82; top: 0px; text-align: right;"><span><xsl:value-of select="Date" /></span></p>
-										<p style="left: 37; top: 0px;"><span><xsl:value-of select="Time" /></span></p>
-										<p style="left: 69; top: 0px;"><span><xsl:value-of select="CalledParty" /></span></p>
-										<p style="left: 115; top: 0px;"><span><xsl:value-of select="Location" /></span></p>
-										<p style="left: 167; top: 0px;"><span><xsl:value-of select="Duration" /></span></p>
-										<p style="right: 8.002pt; top: 0px; text-align: right">
-											<span>
-												<xsl:value-of select="/Invoice/Currency/Symbol" />
-												<xsl:call-template name="abs">
-													<xsl:with-param name="amount"><xsl:value-of select="Charge" /></xsl:with-param>
-												</xsl:call-template>
-											</span>
-										</p>
-										<p style="right: -4pt; top: 1px; text-align: right; font-size: 6pt;">
-											<span>
-												<xsl:call-template name="cr">
-													<xsl:with-param name="amount"><xsl:value-of select="Charge" /></xsl:with-param>
-												</xsl:call-template>
-											</span>
-										</p>
-									</div>
-								</xsl:for-each>
-	
-							</wrapped-content>
-	
-	
-						</xsl:when>
-	
-						<xsl:when test="@RenderType = 'RECORD_DISPLAY_SERVICE_AND_EQUIPMENT'">
-	
-							<wrapped-header include="every-section">
-								<div style="width: 233.88pt; font-weight: bold; font-size: 7pt; font-style: italic; height: 10pt;">
-									<p style="left: 0; top: 0px;"><span>Date</span></p>
-									<p style="left: 37; width: 168.88; top: 0px;"><span>Description</span></p>
-									<p style="right: 8.002; top: 0px; text-align: right"><span>Charge</span></p>
-								</div>
-							</wrapped-header>
-	
-							<wrapped-content>
-	
-								<xsl:for-each select="Item">
-									<div style="width: 233.88pt; font-size: 7pt; height: 10pt;">
-										<p style="right: 200.82; top: 0px; text-align: right;"><span><xsl:value-of select="Date" /></span></p>
-										<p style="left: 37; width: 168.88; top: 0px;"><span><xsl:value-of select="Description" /></span></p>
-										<p style="right: 8.002pt; top: 0px; text-align: right">
-											<span>
-												<xsl:value-of select="/Invoice/Currency/Symbol" />
-												<xsl:call-template name="abs">
-													<xsl:with-param name="amount"><xsl:value-of select="Charge" /></xsl:with-param>
-												</xsl:call-template>
-											</span>
-										</p>
-										<p style="right: -4pt; top: 1px; text-align: right; font-size: 6pt;">
-											<span>
-												<xsl:call-template name="cr">
-													<xsl:with-param name="amount"><xsl:value-of select="Charge" /></xsl:with-param>
-												</xsl:call-template>
-											</span>
-										</p>
-									</div>
-								</xsl:for-each>
-	
-							</wrapped-content>
-	
-	
-						</xsl:when>
-	
-						<xsl:otherwise>
-							<wrapped-content>
-								<p><span>ERROR: Itemisation category type not recognised: <xsl:value-of select="@RenderType" /></span></p>
-							</wrapped-content>
-						</xsl:otherwise>
-	
-					</xsl:choose>
-	
-	
+
+					<xsl:apply-templates select="." />
+					
 					<wrapped-footer include="last-section-if-fits">
 						<div style="width: 233.88pt;height: 10pt;" />
 					</wrapped-footer>
@@ -1370,6 +1408,106 @@
 			</xsl:for-each>
 		</xsl:for-each>
 	</xsl:template>
+	
+	
+	<xsl:template match="Category">
+
+		<xsl:choose>
+
+			<xsl:when test="(@RenderType = 'RECORD_DISPLAY_CALL') or (@RenderType = 'RECORD_DISPLAY_SMS')">
+
+				<wrapped-header include="every-section">
+					<div style="width: 233.88pt; font-weight: bold; font-size: 7pt; font-style: italic; height: 10pt;">
+						<p style="left: 0; top: 0px;"><span>Date</span></p>
+						<p style="left: 33.5; top: 0px;"><span>Time</span></p>
+						<p style="left: 62.5; top: 0px;"><span>Called Party</span></p>
+						<p style="left: 127; top: 0px;"><span>Location</span></p>
+						<p style="left: 167; top: 0px;"><span>Duration</span></p>
+						<p style="right: 8.002; top: 0px; text-align: right"><span>Charge</span></p>
+					</div>
+				</wrapped-header>
+
+				<wrapped-content>
+
+					<xsl:for-each select="Items/Item">
+						<div style="width: 233.88pt; font-size: 7pt; line-height: 10pt;">
+							<p style="right: 203; top: 0px; text-align: right;"><span><xsl:value-of select="Date" /></span></p>
+							<p style="left: 33.5; top: 0px;"><span><xsl:value-of select="Time" /></span></p>
+							<p style="left: 62.5; top: 0px; width: 62.5;"><span><xsl:value-of select="CalledParty" /></span></p>
+							<p style="left: 127; top: 0px; width: 39;"><span><xsl:value-of select="Description" /></span></p>
+							<p style="left: 167; top: 0px;"><span><xsl:value-of select="Duration" /></span></p>
+							<p style="right: 8.002pt; top: 0px; text-align: right">
+								<span>
+									<xsl:value-of select="/Invoice/Currency/Symbol" />
+									<xsl:call-template name="abs">
+										<xsl:with-param name="amount"><xsl:value-of select="Charge" /></xsl:with-param>
+									</xsl:call-template>
+								</span>
+							</p>
+							<p style="right: -4pt; top: 1px; text-align: right; font-size: 6pt;">
+								<span>
+									<xsl:call-template name="cr">
+										<xsl:with-param name="amount"><xsl:value-of select="Charge" /></xsl:with-param>
+									</xsl:call-template>
+								</span>
+							</p>
+						</div>
+					</xsl:for-each>
+
+				</wrapped-content>
+
+
+			</xsl:when>
+
+			<xsl:when test="@RenderType = 'RECORD_DISPLAY_S_AND_E'">
+
+				<wrapped-header include="every-section">
+					<div style="width: 233.88pt; font-weight: bold; font-size: 7pt; font-style: italic; height: 10pt;">
+						<p style="left: 0; width: 168.88; top: 0px;"><span>Description</span></p>
+						<p style="right: 35.94; top: 0px;"><span>Items</span></p>
+						<p style="right: 8.002; top: 0px; text-align: right"><span>Charge</span></p>
+					</div>
+				</wrapped-header>
+
+				<wrapped-content>
+
+					<xsl:for-each select="Items/Item">
+						<div style="width: 233.88pt; font-size: 7pt; line-height: 10pt;">
+							<p style="left: 0; width: 168.88; top: 0px;"><span><xsl:value-of select="Description" /></span></p>
+							<p style="right: 35.94; top: 0px; text-align: right;"><span><xsl:value-of select="Items" /></span></p>
+							<p style="right: 8.002pt; top: 0px; text-align: right">
+								<span>
+									<xsl:value-of select="/Invoice/Currency/Symbol" />
+									<xsl:call-template name="abs">
+										<xsl:with-param name="amount"><xsl:value-of select="Charge" /></xsl:with-param>
+									</xsl:call-template>
+								</span>
+							</p>
+							<p style="right: -4pt; top: 1px; text-align: right; font-size: 6pt;">
+								<span>
+									<xsl:call-template name="cr">
+										<xsl:with-param name="amount"><xsl:value-of select="Charge" /></xsl:with-param>
+									</xsl:call-template>
+								</span>
+							</p>
+						</div>
+					</xsl:for-each>
+
+				</wrapped-content>
+
+
+			</xsl:when>
+
+			<xsl:otherwise>
+				<wrapped-content>
+					<p><span>ERROR: Itemisation category type not recognised: <xsl:value-of select="@RenderType" /></span></p>
+				</wrapped-content>
+			</xsl:otherwise>
+
+		</xsl:choose>
+
+	</xsl:template>
+	
 	
 	
 	

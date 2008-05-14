@@ -21,16 +21,6 @@
 		</p>
 	</xsl:template>
 
-	<xsl:template name="logo-and-label">
-		<div style="top: 74.6pt; left: 80.19pt; height: 0pt;">
-			<img src="images/logo.png" style="media: email; width: 177.32pt; height: 45.56pt; bottom: 0pt; left: -0.47pt" />
-			<p style="font-family: Arial_Narrow; font-size: 7pt; top: 3.19pt; left: 0pt; "><span>ABN: <xsl:value-of select="$abn" /></span></p>
-		</div>
-	</xsl:template>
-
-	<xsl:template name="pay-slip-logo">
-		<img src="images/logo_grey.png" style="bottom: 0; width: 132.72pt; height: 35.43pt;" />
-	</xsl:template>
 	-->
 
 	<!-- Telcoblue -->
@@ -54,16 +44,6 @@
 		</p>
 	</xsl:template>
 
-	<xsl:template name="logo-and-label">
-		<div style="top: 74.6pt; left: 80.19pt; height: 0pt;">
-			<img src="images/logo.png" style="media: email; width: 223.11pt; height: 32.12pt; bottom: 0pt; left:-15.96pt" />
-			<p style="font-family: Arial_Narrow; font-size: 7pt; top: 3.19pt; left: 0pt;"><span>ABN: <xsl:value-of select="$abn" /></span></p>
-		</div>
-	</xsl:template>
-
-	<xsl:template name="pay-slip-logo">
-		<img src="images/logo_grey.png" style="bottom: 0; left: -10.25; width: 155.23pt; height: 22.55pt;" />
-	</xsl:template>
 	<!-- -->
 
 	<!-- Create the zero padded account number for the barcode -->
@@ -86,6 +66,10 @@
 
 
 
+	<xsl:template name="logo-abn-label">
+		<p style="font-family: Arial_Narrow; font-size: 7pt; top: 77.79pt; left: 80.19pt; "><span>ABN: <xsl:value-of select="$abn" /></span></p>
+	</xsl:template>
+
 
 	<xsl:template match="/">
 
@@ -95,19 +79,19 @@
 
 		<embedded-fonts>
 
-			<!-- Use embedded ARIAL fonts for the printed versions -->
-			<embedded-font media="PRINT" name="ARIAL_NARROW" 		path="fonts/arial_narrow.ttf" />
-			<embedded-font media="PRINT" name="ARIAL" 				path="fonts/arial.ttf" />
-			<embedded-font media="PRINT" name="ARIAL BOLD" 			path="fonts/arial_bold.ttf" />
-			<embedded-font media="PRINT" name="ARIAL BOLD ITALIC" 	path="fonts/arial_bold_italic.ttf" />
-			<embedded-font media="PRINT" name="ARIAL ITALIC" 		path="fonts/arial_italic.ttf" />
-
 			<!-- Use standard, non-embedded fonts for the email versions -->
 			<embedded-font media="EMAIL" name="ARIAL_NARROW" 		default="HELVETICA" />
 			<embedded-font media="EMAIL" name="ARIAL" 				default="HELVETICA" />
 			<embedded-font media="EMAIL" name="ARIAL BOLD" 			default="HELVETICA BOLD" />
 			<embedded-font media="EMAIL" name="ARIAL BOLD ITALIC" 	default="HELVETICA BOLD ITALIC" />
 			<embedded-font media="EMAIL" name="ARIAL ITALIC" 		default="HELVETICA ITALIC" />
+
+			<!-- Use embedded ARIAL fonts for the printed versions -->
+			<embedded-font media="PRINT" name="ARIAL_NARROW" 		path="fonts/arial_narrow.ttf" />
+			<embedded-font media="PRINT" name="ARIAL" 				path="fonts/arial.ttf" />
+			<embedded-font media="PRINT" name="ARIAL BOLD" 			path="fonts/arial_bold.ttf" />
+			<embedded-font media="PRINT" name="ARIAL BOLD ITALIC" 	path="fonts/arial_bold_italic.ttf" />
+			<embedded-font media="PRINT" name="ARIAL ITALIC" 		path="fonts/arial_italic.ttf" />
 
 		</embedded-fonts>
 
@@ -134,10 +118,10 @@
 
 				<pages>
 
-					<page type="pageOne" stationery="/raw/header_odd.raw">
+					<page type="pageOne" stationery="fdbp://Stationery (Front)">
 			
 						<!-- Logo and label -->
-						<xsl:call-template name="logo-and-label" />
+						<xsl:call-template name="logo-abn-label" />
 
 						<!-- Contact details -->
 						<xsl:call-template name="contact-details" />
@@ -168,7 +152,7 @@
 						</div>
 						
 						<!-- Cut Here -->
-						<raw src="raw/scissors_front.raw" />
+						<raw src="fdbp://Scissor Line (Front)" />
 			
 	
 						<!-- Amounts due -->
@@ -294,7 +278,7 @@
 						
 							<div style="top: 2pt; left: 8.535pt; font-size: 5pt;">
 								<div style="height: 35.43pt; left: 14.8pt;">
-									<xsl:call-template name="pay-slip-logo" />
+									<raw src="fdbp://Payslip Logo (Front)" />
 								</div>
 								<p style="font-family: Arial_Narrow; left: 14.8pt;">
 									<span style="font-size: 6pt;">ABN:</span><span> <xsl:value-of select="$abn" /></span>
@@ -311,7 +295,7 @@
 								</div>
 			
 								<div style="left: 0; top: 23.8mm;">
-									<img src="images/bill_pay.png" style="width: 6mm; height: 9mm; top: 1.1mm; left: 4mm;" />
+									<raw src="fdbp://Bill Pay" />
 									<p style="left: 17mm;">
 										<span style="font-size: 7pt;">BPAY </span>
 										<span>- Biller Code: <xsl:value-of select="$bill_pay_biller_code" /> Customer Ref:<xsl:text> </xsl:text><xsl:value-of select="/Document/Payment/BPay/CustomerReference" /></span>
@@ -327,19 +311,19 @@
 								</div>
 			
 								<div style="left: 0; top: 44.5mm;">
-									<img src="images/direct_debit.png" style="width: 9mm; height: 10.288mm; top: -5.5mm; left: 2mm;" />
+									<raw src="fdbp://Direct Debit" />
 									<p style="left: 17mm; font-size: 7t;"><span>DIRECT DEBIT</span></p>
 									<p style="left: 17mm;"><span>To apply please call our customer service team on <xsl:value-of select="$customer-service-team-phone" /></span></p>
 								</div>
 								
 								<div style="left: 0; top: 51.5mm;">
-									<img src="images/mail.png" style="width: 13mm; height: 6.5mm; top: 1.1mm; left: 0.25mm;" />
+									<raw src="fdbp://Mail" />
 									<p style="left: 17mm; font-size: 7pt;"><span>MAIL</span></p>
 									<p style="left: 17mm;"><span>Detach the payment slip from the bottom of your account and return it together with your cheque or credit card details. Cheques should be made payable to "<xsl:value-of select="$business-payable-name" />" and mailed to: <xsl:value-of select="$business-payable-name" />, <xsl:value-of select="$business-payable-address" /></span></p>
 								</div>
 								
 								<div style="left: 0; top: 63mm;">
-									<img src="images/bill_express.png" style="width: 13.46mm; height: 5.251mm; top: 1.1mm; left: 0mm;" />
+									<raw src="fdbp://Bill Express" />
 									<p style="left: 17mm; font-size: 7pt;"><span>BILL EXPRESS</span></p>
 									<p style="left: 17mm;"><span>Look for the red BillEXPRESS logo at newsagents to pay this account with cash, cheque or debit card. For locations call 1300 739 250 or visit www.billexpress.com.au</span></p>
 								</div>
@@ -453,12 +437,12 @@
 
 					</page>
 
-					<page type="pageTwo" stationery="/raw/header_even.raw">
+					<page type="pageTwo" stationery="fdbp://Stationery (Back)">
 
 						<xsl:call-template name="page-details-even" />
 
 						<!-- Cut Here -->
-						<raw src="raw/scissors_back.raw" />
+						<raw src="fdbp://Scissor Line (Back)" />
 
 						<!-- Payment Advice -->
 						<div style="top: 595.6pt; left: 21.7pt;">
@@ -473,9 +457,9 @@
 							</div>
 	
 							<div style="top: 2pt; left: 0pt; font-size: 5pt;">
-								<div style="height: 35.43pt; left: 14.8pt;">
-									<xsl:call-template name="pay-slip-logo" />
-								</div>
+								<!-- div style="height: 35.43pt; left: 14.8pt;" -->
+									<raw src="fdbp://Payslip Logo (Back)" />
+								<!-- /div -->
 							</div>
 	
 							<div style="top: 52pt; left: 0pt; height: 172pt; width: 508.2pt; corner-radius: 16.3pt; border-width: 0.5pt; border-color: #000; background-color: #fff;">
@@ -613,12 +597,12 @@
 		
 					</page>
 		
-					<page type="pageOdd" stationery="/raw/header_odd.raw">
+					<page type="pageOdd" stationery="fdbp://Stationery (Front)">
 			
 						<xsl:call-template name="page-details-odd" />
 						
 						<!-- Logo and label -->
-						<xsl:call-template name="logo-and-label" />
+						<xsl:call-template name="logo-abn-label" />
 			
 						<div where="page_odd_section_1" style="top: 128.84pt; left: 70.85pt; width: 524.66pt; height: 695pt;">
 						
@@ -628,7 +612,7 @@
 
 					</page>
 		
-					<page type="pageEven" stationery="/raw/header_even.raw">
+					<page type="pageEven" stationery="fdbp://Stationery (Back)">
 			
 						<xsl:call-template name="page-details-even" />
 			
