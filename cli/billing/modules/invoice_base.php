@@ -549,13 +549,8 @@ abstract class BillingModuleInvoice
 				}
 			}
 			
-			// Handle ServiceTotals
-			if ($arrService['Indial100'])
-			{
-				// Indial 100s should only have Rated Totals				
-				$arrService['ServiceTotal']	= $fltRatedTotal;
-			}
-			else
+			// Handle ServiceTotals for non-Indials
+			if (!$arrService['Indial100'])
 			{
 				// Get the ServiceTotal
 				$arrServiceTotal			= $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrInvoice);
@@ -645,6 +640,13 @@ abstract class BillingModuleInvoice
 					
 					$fltRatedTotal	+= $fltPlanChargeTotal;
 				}
+			}
+			
+			// Handle ServiceTotals for Indials
+			if ($arrService['Indial100'])
+			{
+				// Indial 100s should only have Rated Totals
+				$arrService['ServiceTotal']	= $fltRatedTotal;
 			}
 			
 			$arrService['RecordTypes']	= $arrCategories;
