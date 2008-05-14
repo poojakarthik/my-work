@@ -119,7 +119,7 @@ abstract class BillingModuleInvoice
 		
 		$this->_selPlanAdjustments			= new StatementSelect(	"Charge",
 																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total",
-																	"InvoiceRun = <InvoiceRun> AND Account = <Account>",
+																	"InvoiceRun = <InvoiceRun> AND Account = <Account> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')",
 																	NULL,
 																	NULL,
 																	"Account");
@@ -743,11 +743,11 @@ abstract class BillingModuleInvoice
 		// Add Other Charges and Credits
 		if ($bolAdjustments)
 		{
-			if ($this->_selAccountSummaryCharges->Execute($arrInvoice) === FALSE)
+			if (($mixResult = $this->_selAccountSummaryCharges->Execute($arrInvoice)) === FALSE)
 			{
 				Debug($this->_selAccountSummaryCharges->Error());
 			}
-			else
+			elseif ($mixResult)
 			{
 				$arrAccountSummary['Other Charges & Credits']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
 				$arrAccountSummary['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
@@ -792,9 +792,8 @@ abstract class BillingModuleInvoice
 			{
 				Debug($this->_selPlanAdjustments->Error());
 			}
-			else
+			elseif ($arrPlanCharges	= $this->_selPlanAdjustments->Fetch())
 			{
-				$arrPlanCharges	= $this->_selPlanAdjustments->Fetch();
 				$fltGrandTotal	+= $arrPlanCharges['Total'];
 			}
 			
