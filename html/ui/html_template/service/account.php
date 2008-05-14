@@ -19,22 +19,6 @@
 class HtmlTemplateServiceAccount extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -67,6 +51,7 @@ class HtmlTemplateServiceAccount extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		echo "<h2 class='account'>Account Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		DBO()->Account->Id->RenderOutput();

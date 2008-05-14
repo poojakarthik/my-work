@@ -541,6 +541,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// TODO: While this functionality is complete in this method, the contact is not currently displayed in the HtmlTemplate
 		// as I can't work out where the account_view.php link is in the contact_view.php file
 		// This means there is no way of specifying DBO()->LastContact->Id unless you explicitly write it into the browser's address bar
+		// TODO! Save the last contact in the Session data, once we implement sessions properly
 		if ((DBO()->LastContact->Id->Value) && (DBO()->LastContact->Id->Value != DBO()->Account->PrimaryContact->Value))
 		{
 			DBO()->LastContact->SetTable("Contact");
@@ -556,9 +557,12 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Load the List of services
 		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)
-		DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
-		DBL()->Service->Load();
+		//DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
+		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
+		//DBL()->Service->Load();
+$arrServices = $this->GetServices(DBO()->Account->Id->Value);
+DBO()->Account->Services = $arrServices;
+//DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 		
 		// Load the user notes
 		LoadNotes(DBO()->Account->Id->Value);
@@ -593,9 +597,12 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		// Load all the services belonging to the account, that the user has permission to view
-		DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
-		DBL()->Service->Load();
+		//DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
+		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
+		//DBL()->Service->Load();
+$arrServices = $this->GetServices(DBO()->Account->Id->Value);
+DBO()->Account->Services = $arrServices;
+//DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 		
 		//Render the AccountServices table
 		Ajax()->RenderHtmlTemplate("AccountServicesList", HTML_CONTEXT_DEFAULT, DBO()->TableContainer->Id->Value);

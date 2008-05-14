@@ -47,22 +47,6 @@
 class HtmlTemplateServiceDetails extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -130,6 +114,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
+		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
@@ -157,6 +142,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='NarrowForm'>\n";
+		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		DBO()->Account->Id->RenderOutput();
 		if (DBO()->Account->BusinessName->Value)
 		{
@@ -189,6 +175,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
+		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		

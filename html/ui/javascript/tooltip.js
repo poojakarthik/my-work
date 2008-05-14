@@ -24,12 +24,12 @@ function VixenTooltipClass()
 		if (this.bolExists)
 		{
 			// Grab tooltip
-			elmTooltip = document.getElementById('VixenTooltip');
+			elmTooltip = $ID('VixenTooltip');
 		}
 		else
 		{
 			// Add event listeners only ONCE
-			elmTooltip = document.getElementById('VixenTooltip');
+			elmTooltip = $ID('VixenTooltip');
 			
 			// Set the behaviour of the tooltip
 			elmTooltip.addEventListener('mouseover', HoverHandler, TRUE);
@@ -44,7 +44,7 @@ function VixenTooltipClass()
 		
 		
 		// Get the content of the tooltip
-		strContent = document.getElementById(strRowId + 'DIV-TOOLTIP').innerHTML;
+		strContent = $ID(strRowId + 'DIV-TOOLTIP').innerHTML;
 		if (!strContent)
 		{
 			strContent = "No data<br />";
@@ -166,21 +166,22 @@ function VixenTooltipClass()
 	this.Close = function()
 	{
 		// Get the tooltip
-		var objClose = document.getElementById('VixenTooltip');
+		var objClose = $ID('VixenTooltip');
 		if (objClose)
 		{
 			// Close the tooltip
-			this.timer.push( window.setTimeout('document.getElementById("VixenTooltip").style.display = "none";', 250));
-			this.timer.push( window.setTimeout('Vixen.Tooltip.target = "";', 250));
+			this.timer.push(window.setTimeout('document.getElementById("VixenTooltip").style.display = "none";', 250));
+			this.timer.push(window.setTimeout('Vixen.Tooltip.target = "";', 250));
 		}
 	}
 
-	this.Attach =function(strTableId, intTotalRows)
+	this.Attach = function(strTableId)
 	{
-		for (var i=0; i <=intTotalRows; i++)
+		for (var i=0; i < Vixen.table[strTableId].totalRows; i++)
 		{
 			// Add some behaviour to the row
-			var elmRow = document.getElementById(strTableId + '_' + i);
+			var elmRow = $ID(strTableId + '_' + i);
+			elmRow.intRowIndex = i;
 			elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
 			elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
 		}

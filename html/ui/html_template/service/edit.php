@@ -84,6 +84,8 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
+		
 		// Start the form
 		$this->FormStart("EditService", "Service", "Edit");
 

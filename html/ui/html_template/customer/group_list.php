@@ -19,22 +19,6 @@
 class HtmlTemplateCustomerGroupList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -74,18 +58,18 @@ class HtmlTemplateCustomerGroupList extends HtmlTemplate
 		$bolUserIsSuperAdmin = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 		
 		// Set up the header information for the table of CustomerGroups
-		Table()->CustomerGroups->SetHeader("Internal Name", "External Name", "&nbsp;");
-		Table()->CustomerGroups->SetWidth("45%", "45%", "10%");
-		Table()->CustomerGroups->SetAlignment("Left", "Left", "Right");
+		Table()->CustomerGroups->SetHeader("Internal Name", "External Name");
+		Table()->CustomerGroups->SetWidth("50%", "50%");
+		Table()->CustomerGroups->SetAlignment("Left", "Left");
 
 		foreach (DBL()->CustomerGroup as $dboCustomerGroup)
 		{
 			$strViewCustomerGroupHref = Href()->ViewCustomerGroup($dboCustomerGroup->Id->Value);
-			$strViewCustomerGroupLink = "<a href='$strViewCustomerGroupHref' title='View'><img src='img/template/view.png'></img></a>";
 
 			Table()->CustomerGroups->AddRow($dboCustomerGroup->InternalName->AsValue(),
-											$dboCustomerGroup->ExternalName->AsValue(),
-											$strViewCustomerGroupLink);
+											$dboCustomerGroup->ExternalName->AsValue()
+											);
+			Table()->CustomerGroups->SetOnClick("window.location = '$strViewCustomerGroupHref'");
 		}
 		
 		// Check if the table is empty

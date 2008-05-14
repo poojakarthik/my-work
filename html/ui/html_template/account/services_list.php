@@ -96,7 +96,8 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$this->RenderInPage($strTableContainerDivId);
 				break;
 			default:
-				$this->RenderTable();
+				//$this->RenderTable();
+$this->RenderTableNewWay();
 		}
 	}
 	
@@ -125,7 +126,8 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		echo "<div id='$strTableContainerDivId' $strTableContainerStyle>\n";
 		
 		// Draw the table
-		$this->RenderTable();
+		//$this->RenderTable();
+$this->RenderTableNewWay();
 		
 		echo "</div>\n";  // Table Container
 	
@@ -164,7 +166,8 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		
 		// Draw the table
 		echo "<div id='$strTableContainerDivId'>\n";
-		$this->RenderTable();
+		//$this->RenderTable();
+$this->RenderTableNewWay();
 		echo "</div>\n";
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
@@ -463,7 +466,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			if ($arrService['CurrentPlan'] != NULL)
 			{
 				// The Service has a current plan
-				$strPlanCell = "<span><a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['CurrentPlan']['Name']}</a></span>";
+				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['CurrentPlan']['Name']}</a>";
 			}
 			else
 			{
@@ -474,21 +477,20 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			if ($arrService['FuturePlan'] != NULL)
 			{
 				$strStartDate = OutputMask()->ShortDate($arrService['FuturePlan']['StartDatetime']); 
-				$strPlanCell .= "<br /><span>As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['FuturePlan']['Name']}</a></span>";
+				$strPlanCell .= "<br />As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['FuturePlan']['Name']}</a>";
 			}
 			
 			// Work out the Date to display along with the status
-			$intClosedOn	= strtotime($arrService[History][0]['ClosedOn']);
+			$intClosedOn	= strtotime($arrService['History'][0]['ClosedOn']);
 			$intCurrentDate	= strtotime(GetCurrentDateForMySQL());
 			
 			// Check if the ClosedOn date has been set
 			$bolFlagStatus = FALSE;
-			if ($arrService[History][0]['ClosedOn'] == NULL)
+			if ($arrService['History'][0]['ClosedOn'] == NULL)
 			{
-//TODO! I'm up to HERE with this function				
 				// The service is not scheduled to close.  It is either active or hasn't been activated yet.
 				// Check if it is currently active
-				$intCreatedOn = strtotime($dboService->CreatedOn->Value);
+				$intCreatedOn = strtotime($arrService['History'][0]['CreatedOn']);
 				if ($intCurrentDate >= $intCreatedOn)
 				{
 					// The service is currently active
@@ -500,7 +502,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 					$strStatusDesc = "Opens";
 					$bolFlagStatus = TRUE;
 				}
-				$strStatusDescDate = OutputMask()->ShortDate($dboService->CreatedOn->Value);
+				$strStatusDescDate = OutputMask()->ShortDate($arrService['History'][0]['CreatedOn']);
 			}
 			else
 			{
@@ -516,13 +518,13 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 					// The service has been closed
 					$strStatusDesc = "Closed";
 				}
-				$strStatusDescDate = OutputMask()->ShortDate($dboService->ClosedOn->Value);
+				$strStatusDescDate = OutputMask()->ShortDate($arrService['History'][0]['ClosedOn']);
 			}
 
 			// Prepare the Status' of the service
-			$strStatus			= GetConstantDescription($dboService->Status->Value, "Service");
-			$strLineStatus		= GetConstantDescription($dboService->LineStatus->Value, "LineStatus");
-			$strLineStatusDate	= $dboService->LineStatusDate->Value;
+			$strStatus			= GetConstantDescription($arrService['History'][0]['Status'], "Service");
+			$strLineStatus		= GetConstantDescription($arrService['History'][0]['LineStatus'], "LineStatus");
+			$strLineStatusDate	= $arrService['History'][0]['LineStatusDate'];
 
 			$strLineStatusDesc = NULL;
 			if ($strLineStatus === FALSE)
@@ -549,24 +551,12 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$strStatusDescCell = "<span class='Red'>$strStatusDescCell</span>";
 			}
 			
-			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
+			$strViewServiceLink	= Href()->ViewService($arrService['Id']);
+			$strFnnDescription	= ($arrService['FNN'] != NULL)? $arrService['FNN'] : "[not specified]";
+			$strFnnCell			= "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
 			
-			if ($dboService->FNN->Value == NULL)
-			{
-				// The service doesn't have an FNN yet
-				$strFnnDescription = "[not specified]";
-			}
-			else
-			{
-				// The service has an FNN
-				$strFnnDescription = $dboService->FNN->Value;
-			}
-
-			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
 			
-			//$strServiceType = GetConstantDescription($dboService->ServiceType->Value, "ServiceType");
-			
-			switch ($dboService->ServiceType->Value)
+			switch ($arrService['ServiceType'])
 			{
 				case SERVICE_TYPE_MOBILE:
 					$strServiceTypeClass = "ServiceTypeIconMobile";
@@ -587,22 +577,22 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			
 			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
 			
-			Table()->ServiceTable->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);
+			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);
 		}
 		
 		// If the account has no services then output an appropriate message in the table
-		if (Table()->ServiceTable->RowCount() == 0)
+		if (Table()->Services->RowCount() == 0)
 		{
 			// There are no services to stick in this table
-			Table()->ServiceTable->AddRow("No services to display");
-			Table()->ServiceTable->SetRowAlignment("left");
-			Table()->ServiceTable->SetRowColumnSpan(7);
+			Table()->Services->AddRow("No services to display");
+			Table()->Services->SetRowAlignment("left");
+			Table()->Services->SetRowColumnSpan(7);
 		}
 		
 		// Row highlighting doesn't seem to be working with popups
 		// Row highlighting has been turned off, because it stops working if the Service table is ever redrawn
-		Table()->ServiceTable->RowHighlighting = TRUE;
-		Table()->ServiceTable->Render();
+		Table()->Services->RowHighlighting = TRUE;
+		Table()->Services->Render();
 	}
 	
 }

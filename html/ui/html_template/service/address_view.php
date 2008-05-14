@@ -77,6 +77,8 @@ class HtmlTemplateServiceAddressView extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
+		
 		$dboAddress = DBO()->ServiceAddress;
 		// Render the Details
 		echo "<div class='GroupedContent'>\n";

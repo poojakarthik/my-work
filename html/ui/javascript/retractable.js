@@ -23,7 +23,7 @@ function VixenSlidingClass()
 	{
 		// Grab the div which we want to slide
 		objId = tblId + '_' + intRow + 'DIV-DETAIL';
-		this.obj = document.getElementById(objId);
+		this.obj = $ID(objId);
 		
 		// How long to slide for (seconds)
 		this.duration = 1;
@@ -135,12 +135,12 @@ function VixenSlidingClass()
 	
 	}
 	
-	this.CollapseAll =function(strTableId)
+	this.CollapseAll = function(strTableId)
 	{
 		// Slide up any divs which are currently down
 		objTable = Vixen.table[strTableId];
 		
-		for (var i=0; i<=objTable.totalRows; i++)
+		for (var i=0; i < objTable.totalRows; i++)
 		{
 			var objRow = objTable.row[i];
 			if (objTable.row[i].Up != TRUE)
@@ -180,25 +180,23 @@ function VixenSlidingClass()
 			this.Slide(strTableId, intIndex).up();
 			objTable.row[intIndex].Up = TRUE;
 		}
-		document.getElementById(strTargetId).style.display ="block";
+		$ID(strTargetId).style.display = "block";
 	}
 	
-	this.Attach =function (strTableId, totalRows, bolOneOnly)
+	this.Attach = function(strTableId, bolOneOnly)
 	{
 		// Add behaviour to the rows of the table
-
-		// Grab the javascript table object
-		objTable = Vixen.table[strTableId];
-		objTable.collapseAll = bolOneOnly;
-		objTable.totalRows = totalRows;
+		// Grab the table object
+		objTable				= Vixen.table[strTableId];
+		objTable.collapseAll	= bolOneOnly;
 		
-		for (var i=0; i <=totalRows; i++)
-		{	
+		for (var i=0; i < objTable.totalRows; i++)
+		{
 			objTable.row[i].Up = TRUE;			
-			
-			var elmRow = document.getElementById(strTableId + '_' + i);
-			
-			elmRow.addEventListener('mousedown', MouseDownHandler, FALSE);
+			var elmRow = $ID(strTableId + '_' + i);
+			elmRow.intRowIndex = i;
+			elmRow.addEventListener('click', SingleClickHandler, true);
+			elmRow.addEventListener('dblclick', DoubleClickHandler, true);
 			
 			// Table is just loaded, collapse all the expanded divs
 			//  this is needed so the div will figure out the correct height itself
@@ -207,10 +205,20 @@ function VixenSlidingClass()
 		}
 	}
 	
-	function MouseDownHandler ()
+	function DoubleClickHandler()
 	{
 		// MouseDown on row, slide the div
 		Vixen.Slide.ToggleSlide(this.parentNode.parentNode.id, this.id);
+	}
+	
+	// If the row that is clickedOn isn't the currently highlighted row, then retract all other drop-down details
+	function SingleClickHandler(objEvent)
+	{
+		var elmRow	= objEvent.currentTarget;
+		if (Vixen.table[elmRow.parentNode.parentNode.id].row[elmRow.intRowIndex].Up)
+		{
+			Vixen.Slide.CollapseAll(elmRow.parentNode.parentNode.id);
+		}
 	}
 }
 

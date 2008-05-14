@@ -785,9 +785,17 @@
 	table.Listing tr.Selected th,
 	table.Listing tr.Selected td
 	{
-		background-color:    #99FF33;
-		vertical-align:			top;		
+		background-color:	#99FF33;
+		vertical-align:		top;		
 	}
+
+	table.Listing tr.PrimarySelected th,
+	table.Listing tr.PrimarySelected td
+	{
+		background-color:	#11FF33;
+		vertical-align:		top;
+	}
+
 	
 	table.Listing tr.Hover th,
 	table.Listing tr.Hover td

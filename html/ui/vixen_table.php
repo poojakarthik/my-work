@@ -895,22 +895,19 @@ class VixenTable
 	function Render()
 	{
 		$strTableName = $this->_strName;
+		$strVixenTable = "Vixen.table.{$strTableName}";
 
-		// I don't know why this block of code was placed in this condition, because further blocks of code require it to have been executed
-		//if ($this->_bolDetails || $this->_bolRowHighlighting || $this->_bolToolTips || $this->_bolLinked)
-		//{
-			echo "<script type='text/javascript'>\n";
+		echo "
+<script type='text/javascript'>
+	{$strVixenTable} = Object();
+	{$strVixenTable}.collapseAll = TRUE;
+	{$strVixenTable}.linked = TRUE;
+	{$strVixenTable}.totalRows = 0;
+	{$strVixenTable}.row = Array();
+</script>";
 			
-			$strVixenTable = "Vixen.table." . $strTableName;
-			echo $strVixenTable . " = Object(); \n";
-			echo $strVixenTable . ".collapseAll = TRUE;\n";
-			echo $strVixenTable . ".linked = TRUE;\n";
-			echo $strVixenTable . ".totalRows = 0;\n";
-			echo $strVixenTable . ".row = Array(); \n";
-			echo "</script>\n";
-		//}
 		
-		$strPageSize = $this->_intPageSize > 0 ?  " page_size='$this->_intPageSize' " : "";
+		$strPageSize = $this->_intPageSize > 0 ?  " page_size='{$this->_intPageSize}' " : "";
 
 		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'$strPageSize>\n";
 		
@@ -939,11 +936,11 @@ class VixenTable
 		echo "</tr>\n";
 		
 		// Build rows
-		$intRowCount = -1;
+		$intRow = -1;
 		foreach ($this->_arrRows AS $objRow)
 		{
-			$intRowCount++;
-			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd';
+			$intRow++;
+			$strClass = ($intRow % 2) ? 'Even' : 'Odd';
 			$strStyle = "";
 			
 			if (isset($objRow['OnClick']))
@@ -957,7 +954,7 @@ class VixenTable
 				$strOnClick = "";
 			}
 			
-			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass' $strOnClick style='$strStyle'>\n";
+			echo "<tr id='" . $strTableName . "_" . $intRow . "' class='$strClass' $strOnClick style='$strStyle'>\n";
 			
 			$intColCount = 0;
 			// Build fields
@@ -1013,7 +1010,7 @@ class VixenTable
 				echo "</tr>";
 				echo "<tr>";
 				echo "<td colspan=". count($this->_arrHeader) ." style='padding: 0px 1px 1px 1px;'>";
-				echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-DETAIL' style='display: block; overflow:hidden;'>";
+				echo "<div id='" . $strTableName . "_" . $intRow . "DIV-DETAIL' style='display: block; overflow:hidden;'>";
 				echo $objRow['Detail'];
 				echo "</div>";
 				echo "</td>\n";
@@ -1025,7 +1022,7 @@ class VixenTable
 				echo "</tr>";
 				echo "<tr>";
 				echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
-				echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-TOOLTIP' style='display: none;'>";
+				echo "<div id='" . $strTableName . "_" . $intRow . "DIV-TOOLTIP' style='display: none;'>";
 				echo $objRow['ToolTip'];
 				echo "</div>\n";
 				echo "</td>";
@@ -1060,24 +1057,27 @@ class VixenTable
 			echo "</script>\n";
 			echo "</tr>\n";
 		}
-		
+		$intRowCount = $intRow + 1;
 		echo "</table>\n";
 		
-		echo "<script>{$strVixenTable}.totalRows = $intRowCount;</script>\n";	
+		echo "<script type='text/javascript'>{$strVixenTable}.totalRows = $intRowCount;</script>\n";	
 		
 		if ($this->_bolRowHighlighting)
 		{
-			echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
+			// The following "Vixen.AddCommand" method breaks down when you try dynamicly inserting a VixenTable into
+			// the DOM, because AddCommand only triggers the command when the body.onload event is triggered
+			//echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
+			echo "<script type='text/javascript'>Vixen.Highlight.Attach('$strTableName');</script>";
 		}
 		
 		if ($this->_bolToolTips)
 		{
-			echo "<script type='text/javascript'>Vixen.Tooltip.Attach('$strTableName', $intRowCount);</script>";
+			echo "<script type='text/javascript'>Vixen.Tooltip.Attach('$strTableName');</script>";
 		}
 		
 		if ($this->_bolDetails)
 		{
-			echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>\n";
+			echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', TRUE);</script>\n";
 		}
 		
 		if ($this->_bolLinked)
@@ -1111,10 +1111,6 @@ class VixenTable
 		{
 			echo "<script type='text/javascript'>Vixen.TableSort.prepare('$strTableName');</script>\n";
 		}
-		
-		//echo "<div class='seperator'></div>";
-	
-	
 	}
 	
 	//------------------------------------------------------------------------//

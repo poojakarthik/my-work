@@ -64,17 +64,15 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// If a service's Id has been passed by GET, POST or ajax request, make sure it references
 		// the most recent Service record which belongs to the Account and models the physical Service
-		/* Until all this functionality is complete (multiple Service records representing the one service)
-		 * Don't manipulate the Service Id
 		if (DBO()->Service->Id->IsSet)
 		{
+			DBO()->ActualRequestedService->Id = DBO()->Service->Id->Value;			
 			$intNewestServiceId = $this->GetMostRecentServiceRecordId(DBO()->Service->Id->Value);
 			if ($intNewestServiceId != FALSE)
 			{
 				DBO()->Service->Id = $intNewestServiceId;
 			}
 		}
-		*/
 	}
 	
 	//------------------------------------------------------------------------//

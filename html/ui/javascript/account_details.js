@@ -42,10 +42,9 @@
  */
 function VixenAccountDetailsClass()
 {
-	this.strContainerDivId = null;
-	
-	this.intAccountId = null;
-	this.bolInvoicesAndPaymentsPage = null;
+	this.intAccountId				= null;
+	this.strContainerDivId			= null;
+	this.bolInvoicesAndPaymentsPage	= null;
 	
 	//------------------------------------------------------------------------//
 	// InitialiseView
@@ -57,8 +56,9 @@ function VixenAccountDetailsClass()
 	 *  
 	 * Initialises the object for when the AccountDetails HtmlTemplate is rendered with VIEW context
 	 *
-	 * @param	int		intAccountId			Id of the account
-	 * @param 	string	strTableContainerDivId	Id of the div that stores the table which lists all the services
+	 * @param	int		intAccountId				Id of the account
+	 * @param 	string	strTableContainerDivId		Id of the div that stores the table which lists all the services
+	 * @param	bool	bolInvoicesAndPaymentsPage	TRUE, if this is being rendered for the invoices and payments page, ELSE FALSE
 	 *
 	 * @return	void
 	 * @method
@@ -74,6 +74,23 @@ function VixenAccountDetailsClass()
 		Vixen.EventHandler.AddListener("OnAccountDetailsUpdate", this.OnUpdate);
 	}
 	
+	//------------------------------------------------------------------------//
+	// InitialiseView
+	//------------------------------------------------------------------------//
+	/**
+	 * InitialiseView
+	 *
+	 * Initialises the object for when the AccountDetails HtmlTemplate is rendered with VIEW context
+	 *  
+	 * Initialises the object for when the AccountDetails HtmlTemplate is rendered with VIEW context
+	 *
+	 * @param	int		intAccountId				Id of the account
+	 * @param 	string	strTableContainerDivId		Id of the div that stores the table which lists all the services
+	 * @param	bool	bolInvoicesAndPaymentsPage	TRUE, if this is being rendered for the invoices and payments page, ELSE FALSE
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.InitialiseEdit = function(intAccountId, strContainerDivId, bolInvoicesAndPaymentsPage)
 	{
 		// Save the parameters
@@ -82,6 +99,19 @@ function VixenAccountDetailsClass()
 		this.bolInvoicesAndPaymentsPage = bolInvoicesAndPaymentsPage;
 	}
 
+	//------------------------------------------------------------------------//
+	// RenderAccountDetailsForEditing
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderAccountDetailsForEditing
+	 *
+	 * Makes an Ajax request to the server to render the AccountDetails HtmlTemplate with EDIT context
+	 *  
+	 * Makes an Ajax request to the server to render the AccountDetails HtmlTemplate with EDIT context
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.RenderAccountDetailsForEditing = function()
 	{
 		// Organise the data to send
@@ -96,6 +126,19 @@ function VixenAccountDetailsClass()
 		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountDetailsForEditing", objObjects, null, true);
 	}
 	
+	//------------------------------------------------------------------------//
+	// CancelEdit
+	//------------------------------------------------------------------------//
+	/**
+	 * CancelEdit
+	 *
+	 * Makes an Ajax request to the server to render the AccountDetails HtmlTemplate with VIEW context
+	 *  
+	 * Makes an Ajax request to the server to render the AccountDetails HtmlTemplate with VIEW context
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.CancelEdit = function()
 	{
 		// Organise the data to send
@@ -150,12 +193,6 @@ function VixenAccountDetailsClass()
 		// Call the AppTemplate method which renders just the AccountServices table
 		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountDetailsForViewing", objObjects);
 	}
-	
-	// This will be used to initialise the View/Edit Account functionality, when it is displayed in a popup
-	//TODO! Sometime
-	this.InitialisePopup = function()
-	{
-	}	
 }
 
 // instanciate the object

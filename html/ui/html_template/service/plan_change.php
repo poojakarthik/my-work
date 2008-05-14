@@ -19,22 +19,6 @@
 class HtmlTemplateServicePlanChange extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -71,6 +55,8 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 	 */
 	function Render()
 	{
+		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
+		
 		$this->FormStart("ChangePlan", "Service", "ChangePlan");
 		
 		echo "<div class='NarrowForm'>\n";
