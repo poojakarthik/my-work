@@ -4,7 +4,7 @@
 require_once("../../flex.require.php");
 
 // Statements
-$intProvisioningRequest	= new StatementInsert("ProvisioningRequest");
+$insProvisioningRequest	= new StatementInsert("ProvisioningRequest");
 $selRequest				= new StatementSelect(	"(Request JOIN Service ON Service.Id = Request.Service) LEFT JOIN ProvisioningLog ON ProvisioningLog.Request = Request.Id",
 												"Request.*, Account, AccountGroup, FNN, ProvisioningLog.Description",
 												"ProvisioningLog.Id = (SELECT MAX(Id) FROM ProvisioningLog PL2 WHERE Request = Request.Id)");
@@ -32,6 +32,11 @@ while ($arrRequest = $selRequest->Fetch())
 	$arrProvisioningRequest['Status']				= $arrRequest['Status'];
 	
 	// Insert ProvisioningRequest
+	if ($insProvisioningRequest->Execute($arrProvisioningRequest) === FALSE)
+	{
+		Debug($insProvisioningRequest->Error());
+		die;
+	}
 }
 
 
