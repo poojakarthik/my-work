@@ -394,14 +394,14 @@ abstract class BillingModuleInvoice
 	 *
 	 * Returns the Invoice Data from the Xth last Invoice
 	 * 
-	 * @param	integer	$intAccount					The Account number to limit to
+	 * @param	array	$arrInvoice					The current Invoice to work from
 	 * @param	integer	$intPeriodsAgo				The number of billing periods ago to check (eg. 1 will return the last Invoice)
 	 *
 	 * @return	array								Old Invoice Data
 	 *
 	 * @method
 	 */
-	protected function _GetOldInvoice($intAccount, $intPeriodsAgo)
+	protected function _GetOldInvoice($arrInvoice, $intPeriodsAgo)
 	{
 		if ((int)$intPeriodsAgo < 1)
 		{
@@ -410,8 +410,8 @@ abstract class BillingModuleInvoice
 		}
 		
 		$intPeriodsAgo--;
-		$selOldInvoice	= new StatementSelect("Invoice", "*", "Account = $intAccount", "CreatedOn DESC", "$intPeriodsAgo, 1");
-		if ($selOldInvoice->Execute() === FALSE)
+		$selOldInvoice	= new StatementSelect("Invoice", "*", "Account = <Account> AND CreatedOn < <CreatedOn>", "CreatedOn DESC", "$intPeriodsAgo, 1");
+		if ($selOldInvoice->Execute($arrInvoice) === FALSE)
 		{
 			Debug($selOldInvoice->Error());
 			return Array();
