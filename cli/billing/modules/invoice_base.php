@@ -602,15 +602,12 @@ abstract class BillingModuleInvoice
 				{
 					// Format Plan Adjustment as CDR
 					$arrCDR	= Array();
-					if ($arrAdjustment['Nature'] == NATURE_CR)
-					{
-						$arrCDR['Charge']		= 0 - $arrAdjustment['Charge'];
-					}
-					$fltPlanChargeTotal			+= $arrCDR['Charge'];
-					
+					$arrCDR['Charge']			= ($arrAdjustment['Nature'] == 'CR') ? 0 - $arrAdjustment['Charge'] : $arrAdjustment['Charge'];
 					$arrCDR['Units']			= 1;
 					$arrCDR['Description']		= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
 					$arrPlanChargeItemisation[]	= $arrCDR;
+					
+					$fltPlanChargeTotal			+= $arrCDR['Charge'];
 				}
 				
 				// Add ServiceTotal.PlanCharge as a CDR
