@@ -6,6 +6,7 @@ class Flex_Pdf_Template_Link extends Flex_Pdf_Template_Span
 	
 	public function initialize()
 	{
+		parent::initialize();
 		if ($this->dom->hasAttribute('href'))
 		{
 			$strTargetName = $this->dom->getAttribute('href');
@@ -14,7 +15,6 @@ class Flex_Pdf_Template_Link extends Flex_Pdf_Template_Span
 				$this->strTargetName = substr($strTargetName, 1);
 			}
 		}
-		parent::initialize();
 	}
 
 	public function renderAsLink($page)

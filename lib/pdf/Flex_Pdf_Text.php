@@ -78,6 +78,11 @@ class Flex_Pdf_Text
 		$stringWidths = array();
 		$subString = "";
 		
+		if ($maxRowWidth == $initialWidth)
+		{
+			$initialWidth = -1;
+		}
+		
 		$firstRowDone = FALSE;
 		$doingAnInitialRow = FALSE;
 		if ($initialWidth >= 0)
@@ -123,7 +128,7 @@ class Flex_Pdf_Text
 				if (($breakRules & Flex_Pdf_Text::CHAR_BREAK_BEFORE) || ($strAfterLastBreak && !$strBeforeLastBreak))
 				{
 					// If this is the first row and it is an initial row, we don't want to force a break
-					if (!($breakRules & Flex_Pdf_Text::CHAR_BREAK_BEFORE) && !$firstRowDone)
+					if (!($breakRules & Flex_Pdf_Text::CHAR_BREAK_BEFORE) && !$firstRowDone && $doingAnInitialRow)
 					{
 						$strings[] = "";
 						$stringWidths[] = 0;

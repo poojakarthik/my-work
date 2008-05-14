@@ -78,7 +78,9 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 		for ($i = 0, $l = count($childElements); $i < $l; $i++)
 		{
 			// Get the prepared content for the span (the span will store this for using later)
-			$pc = $childElements[$i]->prepare($availableWidth, ($availableWidth - $this->rowWidths[count($this->rowWidths) - 1]));
+			$intInitWidth = ($availableWidth - $this->rowWidths[count($this->rowWidths) - 1]);
+			if ($intInitWidth == $availableWidth) $intInitWidth = -1;
+			$pc = $childElements[$i]->prepare($availableWidth, $intInitWidth);
 
 			$nrRows = count($pc["WIDTHS"]);
 
@@ -195,19 +197,36 @@ class Flex_Pdf_Template_Paragraph extends Flex_Pdf_Template_Element
 				// If the span is a link target...
 				if ($i === 0 && $childElements[$c]->isLinkTarget())
 				{
+					$fltTmpTop = $childElements[$c]->preparedAbsTop;
+					$fltTmpLeft = $childElements[$c]->preparedAbsLeft;
+
 					$childElements[$c]->preparedAbsTop = $drawY;
 					$childElements[$c]->preparedAbsLeft = $drawX;
 					$childElements[$c]->renderAsLinkTarget($page);
+					
+					$childElements[$c]->preparedAbsTop = $fltTmpTop;
+					$childElements[$c]->preparedAbsLeft = $fltTmpLeft;
 				}
 				
 				// If the element is a link to somewhere else...
 				if ($childElements[$c] instanceof Flex_Pdf_Template_Link)
 				{
+					$fltTmpTop = $childElements[$c]->preparedAbsTop;
+					$fltTmpLeft = $childElements[$c]->preparedAbsLeft;
+					$fltTmpWidth = $childElements[$c]->preparedWidth;
+					$fltTmpHeight = $childElements[$c]->preparedHeight;
+					
 					$childElements[$c]->preparedAbsTop = $drawY;
 					$childElements[$c]->preparedAbsLeft = $drawX;
 					$childElements[$c]->preparedWidth = $widths[$i];
 					$childElements[$c]->preparedHeight = $lineHeight;
+					
 					$childElements[$c]->renderAsLink($page);
+					
+					$childElements[$c]->preparedAbsTop = $fltTmpTop;
+					$childElements[$c]->preparedAbsLeft = $fltTmpLeft;
+					$childElements[$c]->preparedWidth = $fltTmpWidth;
+					$childElements[$c]->preparedHeight = $fltTmpHeight;
 				}
 			
 				$usedWidth += $strW;
