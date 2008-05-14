@@ -559,7 +559,7 @@ abstract class BillingModuleInvoice
 			{
 				// Get the ServiceTotal
 				$arrServiceTotal			= $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrInvoice);
-				$arrService['ServiceTotal']	= $arrServiceTotal['TotalCharge'];
+				$arrService['ServiceTotal']	= $arrServiceTotal[0]['TotalCharge'];
 			}
 			
 			// Only if this is a non-Indial or is the Primary FNN
