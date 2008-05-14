@@ -123,9 +123,11 @@
 		$this->_AddElement($xmlAccount, 'Postcode', $arrCustomer['Postcode']);
 		$this->_AddElement($xmlAccount, 'State', $arrCustomer['State']);
 		
+		//--------------------------------------------------------------------//
 		// Account Summary & Itemisation
+		//--------------------------------------------------------------------//
 		$arrAccountCategories	= $this->_GetAccountCharges($arrInvoice);
-		$xmlItemisation	= $this->_AddElement($xmlAccount, 'Charges');
+		$xmlItemisation	= $this->_AddElement($xmlInvoice, 'Charges');
 		
 		// Charge Itemisation
 		foreach ($arrAccountCategories as $strName=>$arrCategory)
