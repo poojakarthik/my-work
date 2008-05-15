@@ -232,9 +232,9 @@ function $ID(element)
 
 
 // Wrapper for the Vixen.Popup.Alert function
-function $Alert(strMessage, strSize, strPopupId)
+function $Alert(strMessage, strSize, strPopupId, strWindowType)
 {
-	Vixen.Popup.Alert(strMessage, strSize, strPopupId);
+	Vixen.Popup.Alert(strMessage, strSize, strPopupId, strWindowType);
 }
 
 // Trims whitespace from both ends of a string

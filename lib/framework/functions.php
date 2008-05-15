@@ -1665,9 +1665,10 @@ function AjaxRecieve()
 {
 	//$json = new Services_JSON();
 	// get the JSON object and decode it into an object
-	$input = file_get_contents('php://input', 1000000);
-	//$input = $json->decode($input);
+	$input = file_get_contents('php://input');
+
 	$input = Json()->decode($input);
+	//$input = json_decode($input, TRUE);
 	
 	// expected to return an array of data if a connection was made
 	// or false if not

@@ -37,7 +37,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 			<input type='text' id='SamplePdfTime' value='<time>' InputMask='Time24Hr' maxlength='8' style='padding:1px 2px;position:absolute;left:50%;width:11em;border: solid 1px #D1D1D1'/>
 		</div>
 	</div>
-
+<!-- This form is no longer required -->
 	<form id='FormBuildSamplePDF' name='FormBuildSamplePDF' method='post' target='PdfWindow' action='flex.php/CustomerGroup/BuildSamplePDF/'>
 		<input type='hidden' name='Template.Source' value=''></input>
 		<input type='hidden' name='Generation.Date' value=''></input>
@@ -46,6 +46,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		<input type='hidden' name='DocumentTemplateType.Id' value=''></input>
 		<input type='hidden' name='Schema.Id' value=''></input>
 	</form>
+<!-- This form is no longer required -->
 
 	<div class='ButtonContainer'>
 		<div style='float:right'>
@@ -80,8 +81,10 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$this->LoadJavascript("textarea");
 		$this->LoadJavascript("input_masks");
 		$this->LoadJavascript("validation");
-		$this->LoadJavascript("table_sort");
-		$this->LoadJavascript("highlight");
+		
+		// I don't know why I included these 
+		//$this->LoadJavascript("table_sort");
+		//$this->LoadJavascript("highlight");
 		
 		
 		// Fill in the placeholders in the $_strBuildSamplePDFPopupContent string

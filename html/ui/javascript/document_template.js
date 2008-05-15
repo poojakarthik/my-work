@@ -277,7 +277,7 @@ function VixenDocumentTemplateClass()
 		// Save the user's generation date
 		this.strSampleDate	= elmDate.value;
 		this.strSampleTime	= elmTime.value;
-		
+		/* Form submit way
 		var elmForm = document.forms.FormBuildSamplePDF;
 		
 		elmForm.elements['Template.Source'].value	= this.elmSourceCode.value;
@@ -292,6 +292,37 @@ alert("Source code is "+ elmForm.elements['Template.Source'].value.length +" cha
 		
 		Vixen.Popup.Close("BuildSamplePDFPopup");
 		$Alert("The PDF should open soon in a new window");
+		*/
+		
+		// Ajax way
+/*		var objData			= {}
+		objData.Template	= {};
+		objData.Generation	= {};
+		objData.CustomerGroup	={};
+		objData.DocumentTemplateType = {};
+		objData.Schema	= {};
+		
+		objData.Template.Source	= this.elmSourceCode.value;
+		objData.Generation.Date = elmDate.value;
+		objData.Generation.Time = elmTime.value;
+		objData.CustomerGroup.Id = this.objTemplate.CustomerGroup;
+		objData.DocumentTemplateType.Id	= this.objTemplate.TemplateType;
+		objData.Schema.Id = this.objSchema.Id;
+*/		
+		var objData	= 	{
+							Template				:	{	Source : this.elmSourceCode.value},
+							Generation				:	{
+															Date : elmDate.value,
+															Time : elmTime.value
+														},
+							CustomerGroup			:	{	Id	: this.objTemplate.CustomerGroup},
+							DocumentTemplateType	:	{	Id	: this.objTemplate.TemplateType},
+							Schema					:	{	Id	: this.objSchema.Id}
+						};
+
+		Vixen.Ajax.CallAppTemplate("CustomerGroup", "BuildSamplePDF", objData, null, true, true, this.BuildSamplePDFReturnHandler.bind(this));
+		
+		
 		
 		/*
 		// Compile data to be sent to the server
@@ -302,6 +333,7 @@ alert("Source code is "+ elmForm.elements['Template.Source'].value.length +" cha
 													Time : elmTime.value
 												},
 							CustomerGroup	:	{	Id	: this.objTemplate.CustomerGroup},
+							DocumentTemplateType	:	{	Id	:	this.objTemplate.TemplateType},
 							Schema			:	{	Id	: this.objSchema.Id}
 						}
 		Vixen.Ajax.CallAppTemplate("CustomerGroup", "BuildSamplePDF", objData, null, true, false, this.BuildSamplePDFReturnHandler.bind(this));
@@ -313,26 +345,26 @@ alert("Source code is "+ elmForm.elements['Template.Source'].value.length +" cha
 
 	this.BuildSamplePDFReturnHandler = function(objXMLHttpRequest)
 	{
-		var strPDF = objXMLHttpRequest.responseText;
-//<INPUT type="button" value="New Window!" onClick="window.open('http://www.pageresource.com/jscript/jex5.htm','mywindow','width=400,height=200,toolbar=yes,
-//location=yes,directories=yes,status=yes,menubar=yes,scrollbars=yes,copyhistory=yes,
-//resizable=yes')">
-	//window.open('javascript:objDoc = document.open("application/pdf");objDoc.write(strPDF);objDoc.close();','_blank','toolbar=yes, location=yes,directories=yes,status=yes,menubar=yes,scrollbars=yes,copyhistory=yes, resizable=yes');
-		//var objDoc = windy.document.open("application/pdf", "replace");
+		var objResponse = JSON.parse(objXMLHttpRequest.responseText);
 		
-		setTimeout(function(){
-		DebugWindow = window.open("", 'Debug Mode', 'scrollbars=yes');
-		DebugWindow.document.write('<xmp>');
-		DebugWindow.document.write("hello");
-		DebugWindow.document.write('</xmp>');
-		DebugWindow.document.close();
-							}, 5000);
+		if (objResponse.Success == undefined)
+		{
+			this.strPdfGenerationErrors = objXMLHttpRequest.responseText;
+			$Alert("There were errors in generating the sample pdf<br />Click <a href='javascript:Vixen.DocumentTemplate.ShowPdfGenerationErrors()'>here</a> to view them in a new window", null, null, "modal");
+			return true;
+		}
 		
-		/*
-		objDoc = document.open("application/pdf");
-		objDoc.write(strPDF);
-		objDoc.close();
-		*/
+		// retrieve the pdf (in a separate thread)
+		setTimeout(function(){window.location = "flex.php/CustomerGroup/GetSamplePDF/"}, 100);
+	}
+	
+	// This triggers the openning of a new window and displaying of any unhandled error messages produced when generating a sample pdf
+	this.ShowPdfGenerationErrors = function()
+	{
+		win = window.open(null, 'PdfGenerationErrors','toolbar=yes,location=yes,directories=yes,status=yes,menubar=yes,scrollbars=yes,copyhistory=yes, resizable=yes')
+		win.document.open("text/html");
+		win.document.write(this.strPdfGenerationErrors);
+		win.document.close();
 	}
 
 }

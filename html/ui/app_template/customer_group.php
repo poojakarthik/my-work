@@ -1099,10 +1099,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
-	// BuildSamplePDF
+	// BuildSamplePDFOldMethodUsingFormSubmittion DEPRICATED
 	//------------------------------------------------------------------------//
 	/**
-	 * BuildSamplePDF()
+	 * BuildSamplePDFOldMethodUsingFormSubmittion()
 	 *
 	 * Produces a sample pdf based on a Document Template
 	 * 
@@ -1125,9 +1125,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * If Generation->Date and Generation->Time are not declared then it will use NOW()
 	 *
 	 * @return	void
-	 * @method	BuildSamplePDF
+	 * @method	BuildSamplePDFOldMethodUsingFormSubmittion
 	 */
-	function BuildSamplePDF()
+	function BuildSamplePDFOldMethodUsingFormSubmittion()
 	{
 		if(is_array($_POST))
 		{
@@ -1236,6 +1236,187 @@ die;
 		
 		// The pdf was successfully created
 		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->InternalName->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
+		header("Content-type: application/pdf;");
+		header("Content-Disposition: attachment; filename=\"$strFilename\"");
+		echo $strPdf;
+		exit;
+	}
+	
+	//------------------------------------------------------------------------//
+	// BuildSamplePDF
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildSamplePDF()
+	 *
+	 * Produces a sample pdf based on a Document Template
+	 * 
+	 * Produces a sample pdf based on a Document Template
+	 * It must have the following values declared:
+	 * 	DBO()->DocumentTemplateType->Id
+	 * 	DBO()->CustomerGroup->Id			Id of the CustomerGroup
+	 *  DBO()->Generation->Date				Hypothetical date on which the PDF will be generated (dd/mm/yyyy)
+	 *	DBO()->Generation->Time				Hypothetical time on which the PDF will be generated (hh:mm:ss)
+	 *	(The appropriate DocumentTemplateType will be found and used)
+	 * OR
+	 * 	DBO()->Template->Source				SourceCode of the DocumentTemplate
+	 *	DBO()->Schema->Id					Id of the DocumentTemplateType to produce a pdf of
+	 * 	DBO()->DocumentTemplateType->Id
+	 *	DBO()->CustomerGroup->Id
+	 *  DBO()->Generation->Date
+	 *	DBO()->Generation->Time
+	 *	(the pdf will be built using the supplied Source code and schema)
+	 *
+	 * @return	void
+	 * @method	BuildSamplePDF
+	 */
+	function BuildSamplePDF()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
+		
+		//HACK! php sessions should be implemented in the user authentication function not here.
+		// (but they're not yet)
+		session_start();
+		$_SESSION['DocumentTemplateSamplePDF'] = "";
+				
+		if (!DBO()->CustomerGroup->Load())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Could not load the CustomerGroup record");
+			return TRUE;
+		}
+		
+		if (!DBO()->DocumentTemplateType->Load())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Could not load the DocumentTemplateType record");
+			return TRUE;
+		}
+		
+		// Validate the Date and Time parameters
+		if (!Validate("ShortDate", DBO()->Generation->Date->Value))
+		{
+			Ajax()->AddCommand("Alert", "ERROR: The Generation Date is invalid.  It must be in the format DD/MM/YYYY");
+			return TRUE;
+		}
+		
+		if (!Validate("Time", DBO()->Generation->Time->Value))
+		{
+			Ajax()->AddCommand("Alert", "ERROR: The Generation Time is invalid.  It must be in the format HH:MM:SS");
+			return TRUE;
+		}
+		$strGenerationDate = ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value) ." ". DBO()->Generation->Time->Value;
+		
+		
+		// Check if the template's source code hasn't been supplied
+		if (!DBO()->Template->Source->IsSet)
+		{
+			// Find the right template to use
+			$strWhere = "TemplateType = <TemplateType> AND CustomerGroup = <CustomerGroup> AND EffectiveOn <= <GenerationDate>";
+			$arrWhere = Array	(	
+									"TemplateType"	=> DBO()->DocumentTemplateType->Id->Value,
+									"CustomerGroup"	=> DBO()->CustomerGroup->Id->Value,
+									"EffectiveOn"	=> $strGenerationDate
+								);
+			$selTemplate	= new StatementSelect("DocumentTemplate", "Source, TemplateSchema", $strWhere, "CreatedOn DESC", "1");
+			$mixResult		= $selTemplate->Execute($arrWhere);
+			if ($mixResult === FALSE)
+			{
+				Ajax()->AddCommand("Alert", "ERROR: Retrieving the approriate DocumentTemplate from the database failed, unexpectedly.  Please notify your system administrator");
+				return TRUE;
+			}
+			if ($mixResult == 0)
+			{
+				Ajax()->AddCommand("Alert", "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->InternalName->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value .", for generation on $strGenerationDate");
+				return TRUE;
+			}
+			
+			$arrTemplate			= $selTemplate->Fetch();
+			DBO()->Template->Source	= $arrTemplate['Source'];
+			DBO()->Schema->Id		= $arrTemplate['TemplateSchema'];
+		}
+		
+		// Load the Schema
+		DBO()->Schema->SetTable("DocumentTemplateSchema");
+		if (!DBO()->Schema->Load())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Could not load DocumentTemplateSchema record");
+			return TRUE;
+		}
+		
+		$strDate			= ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value);
+		$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
+		$strTemplateXSLT	= DBO()->Template->Source->Value;
+		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
+		$strSampleXML		= DBO()->Schema->Sample->Value;
+		
+		VixenRequire("lib/pdf/Flex_Pdf_Template.php");
+		
+		set_time_limit(120);
+
+		try
+		{
+			$objPDFTemplate	= new Flex_Pdf_Template($intCustomerGroup, $strEffectiveDate, $strTemplateXSLT, $strSampleXML, Flex_Pdf_Style::MEDIA_ALL, TRUE);
+			$objPDFDocument	= $objPDFTemplate->createDocument();
+
+			ob_start();
+			echo $objPDFDocument->render();
+			$strPdf = ob_get_clean();
+		}
+		catch (Exception $objException) 
+		{
+			// Turn output buffering off, if it was on
+			ob_get_clean();
+			Ajax()->AddCommand("Alert", "ERROR: PDF generation failed<br /><br />". $objException->getMessage());
+			return TRUE;
+		}
+
+		// The pdf was successfully built
+		// Save it to the session, so that we can both report on the process, and let the user retrieve it as a file
+		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->InternalName->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
+		$_SESSION['DocumentTemplateSamplePdf'] = $strPdf;
+		$_SESSION['DocumentTemplateSamplePdfFilename'] = $strFilename;
+		
+		$arrReply = Array('Success' => TRUE);
+		AjaxReply($arrReply);
+		return TRUE;
+		
+		// The pdf was successfully created
+		
+		//header("Content-type: application/pdf;");
+		header("Content-type: text/plain;");
+		header("Content-Disposition: attachment; filename=\"$strFilename\"");
+		echo $strPdf;
+		exit;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetSamplePDF
+	//------------------------------------------------------------------------//
+	/**
+	 * GetSamplePDF()
+	 *
+	 * Retrieves the sample pdf which should be stored in the user's session data
+	 * 
+	 * Retrieves the sample pdf which should be stored in the user's session data
+	 *
+	 * @return	void
+	 * @method	GetSamplePDF
+	 */
+	function GetSamplePDF()
+	{
+		//HACK! php sessions should be implemented in the user authentication function not here.
+		// (but they're not yet)
+		session_start();
+		$strPdf = $_SESSION['DocumentTemplateSamplePdf'];
+		$strFilename = $_SESSION['DocumentTemplateSamplePdfFilename'];
+		
+		if ($strPdf == "")
+		{
+			DBO()->Error->Message = "ERROR: Could not find the pdf requested";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
 		header("Content-type: application/pdf;");
 		header("Content-Disposition: attachment; filename=\"$strFilename\"");
 		echo $strPdf;

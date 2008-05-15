@@ -505,12 +505,23 @@ function VixenPopupClass()
 	 * @param	string	strSize				optional, size of the popup box ("small|medium|large")
 	 *										Defaults to "alertsize"
 	 * @param	string	strPopupId			optional, Id for the popup.  Defaults to "VixenAlertBox"
+	 * @param	string	strWindowType		optional, defaults to 'autohide', but can be modal, or nonmodal
 	 * @return	void
 	 *
 	 * @method
 	 */
-	this.Alert = function(strMessage, strSize, strPopupId)
+	this.Alert = function(strMessage, strSize, strPopupId, strWindowType)
 	{
+		if (strWindowType == null)
+		{
+			var strWindowType = "autohide";
+			var strOkButtonOnClick = "";
+		}
+		else
+		{
+			var strOkButtonOnClick = "onclick='Vixen.Popup.Close(this)'";
+		}
+		
 		// set a default value for strSize
 		if (strSize == null)
 		{
@@ -521,11 +532,12 @@ function VixenPopupClass()
 			strPopupId = "VixenAlertBox";
 		}
 	
+		// TODO! fix this up so that the paragraph elements are being used properly
 		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						"<p></div>\n" +
-						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
+						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK' "+ strOkButtonOnClick +"><br></div>" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', 'autohide');
+		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType);
 	}
 	
 	//------------------------------------------------------------------------//
