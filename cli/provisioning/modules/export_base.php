@@ -556,9 +556,10 @@
 	 	}
 	 	
 	 	// Update the FileExport and ProvisioningRequest tables	 	
-	 	$arrCols			= Array();
- 		$arrCols['Id']		= $this->_intFileExport;
- 		$arrCols['Status']	= ($mixResult['Pass']) ? FILE_DELIVERED : FILE_DELIVERY_FAILED;
+	 	$arrCols					= Array();
+ 		$arrCols['Id']				= $this->_intFileExport;
+ 		$arrCols['Status']			= ($mixResult['Pass']) ? FILE_DELIVERED : FILE_DELIVERY_FAILED;
+ 		$this->_ubiFileDelivered	= new StatementUpdateById("FileExport", $arrCols);
  		if ($this->_ubiFileDelivered->Execute($arrCols) === FALSE)
  		{
  			return Array('Pass' => FALSE, 'Description' => "Unable to update FileExport to Delivered Status");
@@ -570,7 +571,7 @@
 	 		$arrCols['Status']		= REQUEST_STATUS_DELIVERED;
 	 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
 	 		$arrCols['FileExport']	= $this->_intFileExport;
-	 		$ubiRequest	= new StatementUpdateById("ProvisioningRequest", $arrCols);
+	 		$ubiRequest				= new StatementUpdateById("ProvisioningRequest", $arrCols);
 	 		foreach ($this->_arrFileContent as $arrRequest)
 	 		{
 	 			$arrCols['Id']	= $arrRequest['**Request'];
