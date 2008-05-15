@@ -624,14 +624,14 @@
  		switch ($intDisplayType)
  		{
 			case RECORD_DISPLAY_S_AND_E:
-				//$arrItem['Date']			= date("j M Y", strtotime($arrCDR['StartDatetime']));
+				//$arrItem['Date']			= date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Description']		= $arrCDR['Description'];
 				$arrItem['Items']			= (int)$arrCDR['Units'];
 				$arrItem['Charge']			= number_format($arrCDR['Charge'], 2, '.', '');
 				break;
 			
 			case RECORD_DISPLAY_DATA:
-				$arrItem['Date']			= date("j M Y", strtotime($arrCDR['StartDatetime']));
+				$arrItem['Date']			= date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Time']			= date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CalledParty']		= $arrCDR['Destination'];
 				$arrItem['Description']		= $arrCDR['Description'];
@@ -640,7 +640,7 @@
 				break;
 			
 			case RECORD_DISPLAY_SMS:
-				$arrItem['Date']			= date("j M Y", strtotime($arrCDR['StartDatetime']));
+				$arrItem['Date']			= date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Time']			= date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CalledParty']		= $arrCDR['Destination'];
 				$arrItem['Items']			= (int)$arrCDR['Units'];
@@ -653,7 +653,7 @@
 				$intHours		= floor((int)$arrCDR['Units'] / 3600);
 				$strDuration	= "$intHours:".date("i:s", (int)$arrCDR['Units']);
 				
-				$arrItem['Date']			= date("j M Y", strtotime($arrCDR['StartDatetime']));
+				$arrItem['Date']			= date("j M y", strtotime($arrCDR['StartDatetime']));
 				$arrItem['Time']			= date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CalledParty']		= $arrCDR['Destination'];
 				$arrItem['Description']		= $arrCDR['Description'];
