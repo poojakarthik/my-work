@@ -60,20 +60,22 @@ if (count($arrAccounts))
 }
 else
 {
-	/*// Select entire InvoiceRun
+	// Select entire InvoiceRun
 	$selInvoices	= new StatementSelect("Invoice", "*", "InvoiceRun = <InvoiceRun>");
 	if (!$selInvoices->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 	{
 		// Invalid Invoice Run
 		CliEcho("Invoice Run '$strInvoiceRun' is invalid!\n");
 	}
-	
-	while ($arrInvoice = $selInvoices->Fetch())
+	else
 	{
-		// Print the Invoice
-		$strXML	= $bilInvoiceXML->AddInvoice($arrInvoice);
-		WriteXMLToFile($strXML, $arrInvoice['Account']);
-	}*/
+		while ($arrInvoice = $selInvoices->Fetch())
+		{
+			// Print the Invoice
+			$strXML	= $bilInvoiceXML->AddInvoice($arrInvoice);
+			WriteXMLToFile($strXML, $arrInvoice['Account']);
+		}
+	}
 }
 die;
 
