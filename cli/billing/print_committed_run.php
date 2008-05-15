@@ -71,6 +71,8 @@ else
 	{
 		while ($arrInvoice = $selInvoices->Fetch())
 		{
+			CliEcho("\t + {$arrInvoice['Account']}");
+			
 			// Print the Invoice
 			$strXML	= $bilInvoiceXML->AddInvoice($arrInvoice);
 			WriteXMLToFile($strXML, $arrInvoice['Account']);
