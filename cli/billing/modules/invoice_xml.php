@@ -557,7 +557,7 @@
  		if ($xmlParent instanceof DOMNode)
  		{
  			// Valid Parent
- 			$mixReturn	= $xmlParent->appendChild(new DOMElement($strName, $mixValue));
+ 			$mixReturn	= $xmlParent->appendChild(new DOMElement($strName, htmlspecialchars($mixValue)));
  		}
  		else
  		{
@@ -591,7 +591,7 @@
  		if ($xmlParent instanceof DOMNode)
  		{
  			// Valid Parent
- 			return (bool)$xmlParent->setAttributeNode(new DOMAttr($strName, $mixValue));
+ 			return (bool)$xmlParent->setAttributeNode(new DOMAttr($strName, htmlspecialchars($mixValue)));
  		}
  		else
  		{
