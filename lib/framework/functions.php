@@ -3960,5 +3960,37 @@ function FlexCast($mixVariable, $intDataType)
 	}
 }
 
+//------------------------------------------------------------------------//
+// EscapeXML()
+//------------------------------------------------------------------------//
+/**
+ * EscapeXML()
+ *
+ * Escapes a string for use in XML
+ *
+ * Escapes a string for use in XML
+ * 
+ * @param	string	$strText					The string to escape
+ * @param	boolean	$bolAttribute				TRUE	: This string is for use in an Attribute (only escape quotes)
+ * 												FALSE	: This string is for general XML use (escape everything)
+ *
+ * @return	string								Escaped string
+ *
+ * @function
+ */
+function EscapeXML($strText, $bolAttribute = FALSE)
+{
+	if (!$bolAttribute)
+	{
+		$strText	= str_replace('&', '&amp;', $strText);
+		$strText	= str_replace('<', '&lt;', $strText);
+		$strText	= str_replace('>', '&gt;', $strText);
+	}
+	
+	$strText	= str_replace('"', '&quot;', $strText);
+	$strText	= str_replace("'", '&apos;', $strText);
+	
+	return $strText;
+}
 
 ?>

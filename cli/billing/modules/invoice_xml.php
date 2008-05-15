@@ -557,7 +557,7 @@
  		if ($xmlParent instanceof DOMNode)
  		{
  			// Valid Parent
- 			$mixReturn	= $xmlParent->appendChild(new DOMElement($strName, str_replace('&', '&amp;', $mixValue)));
+ 			$mixReturn	= $xmlParent->appendChild(new DOMElement($strName, EscapeXML($mixValue)));
  		}
  		else
  		{
