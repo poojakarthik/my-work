@@ -542,18 +542,43 @@
 	 	switch ($this->_strDeliveryType)
 	 	{
 	 		case 'FTP':
-	 			return $this->_DeliverFTP();
+	 			$mixResult	= $this->_DeliverFTP();
 	 			break;
 	 		
 	 		case 'EmailAttach':
-	 			return $this->_DeliverEmailAttachment();
+	 			$mixResult	= $this->_DeliverEmailAttachment();
 	 			break;
 	 		
 	 		case 'Email':
 	 		case 'EmailText':
-	 			return $this->_DeliverEmail();
+	 			$mixResult	= $this->_DeliverEmail();
 	 			break;
 	 	}
+	 	
+	 	// Update the FileExport and ProvisioningRequest tables	 	
+	 	$arrCols			= Array();
+ 		$arrCols['Id']		= $this->_intFileExport;
+ 		$arrCols['Status']	= ($mixResult['Pass']) ? FILE_DELIVERED : FILE_DELIVERY_FAILED;
+ 		if ($this->_ubiFileDelivered->Execute($arrCols) === FALSE)
+ 		{
+ 			return Array('Pass' => FALSE, 'Description' => "Unable to update FileExport to Delivered Status");
+ 		}
+ 		else
+ 		{
+	 		// Update ProvisioningRequest records
+	 		$arrCols	= Array();
+	 		$arrCols['Status']		= REQUEST_STATUS_DELIVERED;
+	 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
+	 		$arrCols['FileExport']	= $this->_intFileExport;
+	 		$ubiRequest	= new StatementUpdateById("ProvisioningRequest", $arrCols);
+	 		foreach ($this->_arrFileContent as $arrRequest)
+	 		{
+	 			$arrCols['Id']	= $arrRequest['**Request'];
+	 			$ubiRequest->Execute($arrCols);
+	 		}
+ 		}
+ 		 		
+		return Array('Pass' => TRUE, 'Description' => "File Successfully Delivered");
 	 }
 	
 	
@@ -919,17 +944,7 @@
  			return Array('Pass' => FALSE, 'Description' => "Unable to create FileExport DB entry!");
  		}
  		
- 		// Update ProvisioningRequest records
- 		$arrCols	= Array();
- 		$arrCols['Status']		= REQUEST_STATUS_DELIVERED;
- 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
- 		$arrCols['FileExport']	= $intFileExport;
- 		$ubiRequest	= new StatementUpdateById("ProvisioningRequest", $arrCols);
- 		foreach ($this->_arrFileContent as $arrRequest)
- 		{
- 			$arrCols['Id']	= $arrRequest['**Request'];
- 			$ubiRequest->Execute($arrCols);
- 		}
+ 		$this->_intFileExport	= $intFileExport;
  		
  		return Array('Pass' => TRUE, 'Description' => "UpdateDB() Successful");
  	}

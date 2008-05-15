@@ -306,7 +306,7 @@
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
  		$this->_arrFilename['HoursMinutes']	= date("Hi");
- 		$this->_arrFilename['Date']			= date("Ymd");
+ 		$this->_arrFilename['Date']			= date("Y-m-d");
  		
  		// Generate Header
  		$this->_arrHeader	= Array();
