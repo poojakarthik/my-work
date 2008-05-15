@@ -663,11 +663,11 @@
 		$strEmailAddress	= $this->GetConfigField('Destination');
 		$strSubject			= $this->GetConfigField('Subject');
 		$strReplyTo			= $this->GetConfigField('ReplyTo');
-		$arrCC				= $this->GetConfigField('CarbonCopy');
+		$strCC				= $this->GetConfigField('CarbonCopy');
 		
-		if ($arrCC)
+		if ($strCC)
 		{
-			$strEmailAddress .= ', ' . implode(', ', $arrCC);
+			$strEmailAddress .= ', ' . $strCC;
 		}
 		
 		if (PROVISIONING_DEBUG_MODE === TRUE)
@@ -711,11 +711,11 @@
 		$strEmailAddress	= $this->GetConfigField('Destination');
 		$strSubject			= $this->GetConfigField('Subject');
 		$strReplyTo			= $this->GetConfigField('ReplyTo');
-		$arrCC				= $this->GetConfigField('CarbonCopy');
+		$strCC				= $this->GetConfigField('CarbonCopy');
 		
-		if ($arrCC)
+		if ($strCC)
 		{
-			$strEmailAddress .= ', ' . implode(', ', $arrCC);
+			$strEmailAddress .= ', ' . $strCC;
 		}
 		
 		if (PROVISIONING_DEBUG_MODE === TRUE)
