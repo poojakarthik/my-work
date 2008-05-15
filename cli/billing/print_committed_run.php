@@ -74,7 +74,7 @@ else
 			CliEcho("\t + {$arrInvoice['Account']}");
 			
 			// Print the Invoice
-			$strXML	= $bilInvoiceXML->AddInvoice($arrInvoice);
+			$strXML	= $bilInvoiceXML->AddInvoice($arrInvoice, TRUE);
 			WriteXMLToFile($strXML, $arrInvoice['Account']);
 		}
 	}
