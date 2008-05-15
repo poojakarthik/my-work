@@ -773,6 +773,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		$arrReply["Template"]	= DBO()->Template->_arrProperties;
+		// Don't send back the template's source code
+		unset($arrReply['Template']['Source']);
 		$arrReply["Success"]	= TRUE;
 		
 		AjaxReply($arrReply);
@@ -1127,6 +1129,17 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 */
 	function BuildSamplePDF()
 	{
+		if(is_array($_POST))
+		{
+			foreach($_POST AS $strName=>$strValue)
+			{
+				// parse variable
+				echo "<br />POST variable '$strName' is ". strlen($strValue) ." chars long, assuming it's a string\n";
+			}
+		}
+
+echo "<br />Source Code length = ". strlen(DBO()->Template->Source->Value);
+die;
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);

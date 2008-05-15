@@ -287,7 +287,7 @@ function VixenDocumentTemplateClass()
 		elmForm.elements['DocumentTemplateType.Id'].value	= this.objTemplate.TemplateType;
 		elmForm.elements['Schema.Id'].value			= this.objSchema.Id;
 		
-		
+alert("Source code is "+ elmForm.elements['Template.Source'].value.length +" chars long");
 		elmForm.submit();
 		
 		Vixen.Popup.Close("BuildSamplePDFPopup");

@@ -10,7 +10,7 @@
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
-		<script language="javascript" src="js/contact_list_1.js"></script>
+		<script language="javascript" src="js/contact_verify_1.js"></script>
 		
 		<!-- TODO!bash! [  DONE  ]		This page has a popup error when fields are not filled in correctly!!!  It needs to have a msgerror saying EXACTLY "You did not fill in this form correctly.  Please try again."-->
 		<!-- do NOT change the wording of the error-->
