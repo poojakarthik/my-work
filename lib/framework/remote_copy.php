@@ -320,7 +320,7 @@
  		if (is_file($strLocalPath))
  		{ 			
  			// move to the right directory
- 			chdir(rtrim($strLocalPath, basename($strLocalPath)));
+ 			chdir(dirname($strLocalPath));
  			
  			// FILE
  			switch ($intCopyMode)
@@ -669,7 +669,7 @@
  			// FILE
  			// move to the right directory
  			//echo rtrim($strLocalPath, basename($strLocalPath));
- 			chdir(rtrim($strLocalPath, basename($strLocalPath)));
+ 			chdir(dirname($strLocalPath));
  			
  			switch ($intCopyMode)
  			{
