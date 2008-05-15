@@ -618,7 +618,7 @@
 			{
 				if ($mixResult = ftp_chdir($ptrConnection, $strPath))
 				{
-					if ($mixResult = ftp_put($ptrConnection, basename($this->_strFilePath), $this->_strFilePath))
+					if ($mixResult = ftp_put($ptrConnection, basename($this->_strFilePath), $this->_strFilePath, FTP_BINARY))
 					{
 						$mixResult = ftp_close($ptrConnection);
 					}
