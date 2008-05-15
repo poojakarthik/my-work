@@ -164,7 +164,7 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 		for ($i = 0, $l = count($paths); $i < $l; $i++)
 		{
 			$stationery = $this->getResourcePath($paths[$i]);
-			
+
 			$fileExt = @substr($stationery, strrpos($stationery, ".") + 1);
 
 			if ($fileExt != "raw")
@@ -173,6 +173,15 @@ class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 			}
 			else
 			{
+				$fileContents = file_get_contents($stationery);
+				if ($fileContents === FALSE)
+				{
+					if (!file_exists($stationery))
+					{
+						throw new Exception("Raw resource file '$stationery' does not exist.");
+					}
+					throw new Exception("Raw resource file '$stationery' cannot be read. Check file permissions.");
+				}
 				$this->stationeries[] = new Flex_Pdf_Template_Raw(file_get_contents($stationery));
 			}
 		}
