@@ -494,7 +494,7 @@ class Services_JSON
 		// This function was introduced in php 5.2.0
 		if (function_exists('json_decode'))
 		{
-			return json_decode($str, TRUE);
+			return json_decode($str);
 		}
 		else
 		{
