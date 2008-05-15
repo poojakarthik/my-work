@@ -234,7 +234,7 @@ class Services_JSON
     * @return   mixed   JSON string representation of input var or an error if a problem occurs
     * @access   public
     */
-    function encode($var)
+    function encodeRecursive($var)
     {
         switch (gettype($var)) {
             case 'boolean':
@@ -469,6 +469,74 @@ class Services_JSON
         return trim($str);
     }
 
+	//------------------------------------------------------------------------//
+	// decode
+	//------------------------------------------------------------------------//
+	/**
+	 * decode()
+	 * 
+	 * decodes a json object  
+	 * 
+	 * decodes a json object
+	 *
+	 * @param    string  $str    JSON-formatted string
+	 *
+	 * @return   mixed   number, boolean, string, array, or object
+	 *                   corresponding to given JSON input string.
+	 *                   See argument 1 to Services_JSON() above for object-output behavior.
+	 *                   Note that decode() always returns strings
+	 *                   in ASCII or UTF-8 format!
+	 * @method
+	 */
+	function decode($str)
+	{
+		// If the function json_decode exists, then use it
+		// This function was introduced in php 5.2.0
+		if (function_exists('json_decode'))
+		{
+			return json_decode($str, TRUE);
+		}
+		else
+		{
+			// It doesn't exist so use the version defined in this class
+			return $this->decodeRecursive($str);
+		}
+	}
+
+	//------------------------------------------------------------------------//
+	// encode
+	//------------------------------------------------------------------------//
+	/**
+	 * encode()
+	 * 
+	 * encodes a json object  
+	 * 
+	 * encodes a json object
+	 *
+	 * @param    mixed   $var    any number, boolean, string, array, or object to be encoded.
+	 *                           see argument 1 to Services_JSON() above for array-parsing behavior.
+	 *                           if var is a strng, note that encode() always expects it
+	 *                           to be in ASCII or UTF-8 format!
+	 *
+	 * @return   mixed   JSON string representation of input var or an error if a problem occurs
+	 * @method
+	 */
+	function encode($str)
+	{
+		// If the function json_encode exists, then use it
+		// This function was introduced in php 5.2.0
+		if (function_exists('json_encode'))
+		{
+			return json_encode($str);
+		}
+		else
+		{
+			// It doesn't exist so use the version defined in this class
+			return $this->encodeRecursive($str);
+		}
+	}
+
+
    /**
     * decodes a JSON string into appropriate variable
     *
@@ -481,7 +549,7 @@ class Services_JSON
     *                   in ASCII or UTF-8 format!
     * @access   public
     */
-    function decode($str)
+    function decodeRecursive($str)
     {
         $str = $this->reduce_string($str);
 
@@ -658,7 +726,7 @@ class Services_JSON
 
                             if (reset($stk) == SERVICES_JSON_IN_ARR) {
                                 // we are in an array, so just push an element onto the stack
-                                array_push($arr, $this->decode($slice));
+                                array_push($arr, $this->decodeRecursive($slice));
 
                             } elseif (reset($stk) == SERVICES_JSON_IN_OBJ) {
                                 // we are in an object, so figure
@@ -669,8 +737,8 @@ class Services_JSON
                                 
                                 if (preg_match('/^\s*(["\'].*[^\\\]["\'])\s*:\s*(\S.*),?$/Uis', $slice, $parts)) {
                                     // "name":value pair
-                                    $key = $this->decode($parts[1]);
-                                    $val = $this->decode($parts[2]);
+                                    $key = $this->decodeRecursive($parts[1]);
+                                    $val = $this->decodeRecursive($parts[2]);
 
                                     if ($this->use & SERVICES_JSON_LOOSE_TYPE) {
                                         $obj[$key] = $val;
@@ -680,7 +748,7 @@ class Services_JSON
                                 } elseif (preg_match('/^\s*(\w+)\s*:\s*(\S.*),?$/Uis', $slice, $parts)) {
                                     // name:value pair, where name is unquoted
                                     $key = $parts[1];
-                                    $val = $this->decode($parts[2]);
+                                    $val = $this->decodeRecursive($parts[2]);
 
                                     if ($this->use & SERVICES_JSON_LOOSE_TYPE) {
                                         $obj[$key] = $val;
