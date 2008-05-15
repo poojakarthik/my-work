@@ -612,13 +612,16 @@
 		$strPath	= $this->GetConfigField('Path');
 		
 		// Copy File
-		if ($ptrConnection = ftp_connect($strServer, $strUser, $strPass))
+		if ($ptrConnection = ftp_connect($strServer))
 		{
-			if ($mixResult = ftp_chdir($ptrConnection, $strPath))
+			if ($mixResult = ftp_login($ptrConnection, $strUser, $strPass))
 			{
-				if ($mixResult = ftp_put($ptrConnection, basename($this->_strFilePath), $this->_strFilePath))
+				if ($mixResult = ftp_chdir($ptrConnection, $strPath))
 				{
-					$mixResult = ftp_close($ptrConnection);
+					if ($mixResult = ftp_put($ptrConnection, basename($this->_strFilePath), $this->_strFilePath))
+					{
+						$mixResult = ftp_close($ptrConnection);
+					}
 				}
 			}
 		}
