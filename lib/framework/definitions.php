@@ -1923,14 +1923,14 @@ $GLOBALS['*arrConstant']	['DeliveryMethod']	[3]	['Constant']	= 'DELIVERY_METHOD_
 $GLOBALS['*arrConstant']	['DeliveryMethod']	[3]	['Description']	= 'Email Sent';
 
 // Billing Method (legacy)
-$GLOBALS['*arrConstant']	['BillingMethod']	[DELIVERY_METHOD_POST]			['Constant']	= 'BILLING_METHOD_POST';
-$GLOBALS['*arrConstant']	['BillingMethod']	[DELIVERY_METHOD_POST]			['Description']	= 'Post';
-$GLOBALS['*arrConstant']	['BillingMethod']	[DELIVERY_METHOD_EMAIL]			['Constant']	= 'BILLING_METHOD_EMAIL';
-$GLOBALS['*arrConstant']	['BillingMethod']	[DELIVERY_METHOD_EMAIL]			['Description']	= 'Email';
-$GLOBALS['*arrConstant']	['BillingMethod']	[DELIVERY_METHOD_DO_NOT_SEND]	['Constant']	= 'BILLING_METHOD_DO_NOT_SEND';
-$GLOBALS['*arrConstant']	['BillingMethod']	[DELIVERY_METHOD_DO_NOT_SEND]	['Description']	= 'Do Not Send';
-$GLOBALS['*arrConstant']	['BillingMethod']	[DELIVERY_METHOD_EMAIL_SENT]	['Constant']	= 'BILLING_METHOD_EMAIL_SENT';
-$GLOBALS['*arrConstant']	['BillingMethod']	[DELIVERY_METHOD_EMAIL_SENT]	['Description']	= 'Email Sent';
+$GLOBALS['*arrConstant']	['BillingMethod']	[0]	['Constant']	= 'BILLING_METHOD_POST';
+$GLOBALS['*arrConstant']	['BillingMethod']	[0]	['Description']	= 'Post';
+$GLOBALS['*arrConstant']	['BillingMethod']	[1]	['Constant']	= 'BILLING_METHOD_EMAIL';
+$GLOBALS['*arrConstant']	['BillingMethod']	[1]	['Description']	= 'Email';
+$GLOBALS['*arrConstant']	['BillingMethod']	[2]	['Constant']	= 'BILLING_METHOD_DO_NOT_SEND';
+$GLOBALS['*arrConstant']	['BillingMethod']	[2]	['Description']	= 'Do Not Send';
+$GLOBALS['*arrConstant']	['BillingMethod']	[3]	['Constant']	= 'BILLING_METHOD_EMAIL_SENT';
+$GLOBALS['*arrConstant']	['BillingMethod']	[3]	['Description']	= 'Email Sent';
 
 // Billing Types
 /*define("BILLING_TYPE_DIRECT_DEBIT"		, 1);
