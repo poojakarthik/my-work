@@ -3,7 +3,7 @@
 
 class Flex_Pdf_Template_Raw extends Flex_Pdf_Template_Image
 {
-	private $rawData = NULL;
+	protected $rawData = NULL;
 
 	public function __construct($arg1, $arg2=NULL)
 	{

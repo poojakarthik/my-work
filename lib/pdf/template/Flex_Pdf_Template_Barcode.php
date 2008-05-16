@@ -1,27 +1,27 @@
 <?php
 
-require_once "barcode/Flex_Barcode.php";
-require_once "pdf/resource/image/Flex_Pdf_Resource_Image_Png.php";
+require_once dirname(__FILE__) . "/../Flex_Pdf_Barcode.php";
 
-class Flex_Pdf_Template_Barcode extends Flex_Pdf_Template_Image
+
+class Flex_Pdf_Template_Barcode extends Flex_Pdf_Template_Element
 {
 	private $strType = "";
 	private $strValue = "";
-	
+	private $rawData = NULL;
+
 	function initialize()
 	{
 		// Need to get the type and value the barcode.
 		$this->strType = $this->dom->getAttribute("type");
 		$this->strValue = $this->dom->getAttribute("value");
-		
-		$this->prepare();
+
 	}
 
 	public function appendToDom($doc, $parentNode, $parent=NULL)
 	{
 		// Create a node for this element
 		$node = $doc->createElement($this->dom->nodeName);
-		
+
 		// Apply the style to this node
 		$node->setAttribute("style", $this->getStyle()->getHTMLStyleAttributeValue());
 
@@ -33,53 +33,50 @@ class Flex_Pdf_Template_Barcode extends Flex_Pdf_Template_Image
 		$parentNode->appendChild($node);
 	}
 
-	function prepare()
+	public function prepareSize($offsetTop=0)
+	{
+		$this->preparedWidth = $this->getStyle()->hasFixedWidth() ? $this->getStyle()->getWidth() : ((strlen($this->strValue) + 2.2) * 4.4);
+		$this->preparedHeight = $this->getStyle()->hasFixedHeight() ? $this->getStyle()->getHeight() : 20;
+
+		$this->requiredWidth = $this->preparedWidth + ($this->getOffsetLeft() ? $this->getOffsetLeft(): $this->getOffsetRight());
+		$this->requiredHeight = $this->preparedHeight + ($this->getOffsetTop() ? $this->getOffsetTop() : $this->getOffsetBottom());
+	}
+
+	public function prepareChildPositions()
+	{
+	}
+
+	function prepare($pageHeight)
 	{
 		// Need to load up the image to find out the dimensions
-		if ($this->objImage === NULL)
+		if ($this->rawData === NULL)
 		{
-			try 
-			{
-				// Create a Flex_Barcode object for the appropriate barcode type 
-				$barcode = Flex_Barcode::create($this->strType);
-				
-				// Create the image resource
-				$barcodeImg = $barcode->draw($this->strValue, "png");
-				
-				// Create a temporary file for the image
-				$imageFileResource = tmpfile();
-				
-				// Output the image into the buffer
-				ob_start();
-				imagepng($barcodeImg);
-				
-				// Write the buffer to the temporary file
-				fwrite($imageFileResource, ob_get_contents());
-				
-				// Clean the buffer
-				ob_end_clean();
-				
-				// Move the file pointer to the start of the file (just to be tidy)		
-				fseek($imageFileResource, 0);
-				
-				// Create an image resource for the temporary image file resource
-				$this->objImage = new Flex_Pdf_Resource_Image_Png($imageFileResource);
-				
-				// Close the temporary file to release the resources
-				fclose($imageFileResource);
+			// Create a Flex_Pdf_Barcode object for the appropriate barcode type
+			$barcode = Flex_Pdf_Barcode::create($this->strType);
 
-				// Get the dimensions of the image (approx. point size)
-				$this->fltWidth = $this->objImage->getPixelWidth() * 0.75;
-				$this->fltHeight = $this->objImage->getPixelHeight() * 0.75;
-			}
-			catch (Exception $e)
-			{
-				// Set objOmage to FALSE to prevent subsequent attempts to load the image
-				$this->objImage = FALSE;
-			}
+			$bottom = $pageHeight - $this->getPreparedAbsTop() - $this->getPreparedHeight();
+
+			// Create the image resource
+			$this->rawData = $barcode->getRaw($this->strValue, $bottom, $this->getPreparedAbsLeft(), $this->getPreparedHeight(), $this->getPreparedWidth());
 		}
 	}
 
+	function renderOnPage($page, $parent=NULL)
+	{
+		$this->prepare($page->getHeight());
+
+		$this->renderAsLinkTarget($page);
+
+		if ($this->rawData !== "")
+		{
+			$page->drawRawContent($this->rawData);
+		}
+	}
+
+	public function clearTemporaryDetails()
+	{
+		// Nothing to clear out... makes sense to keep the raw data just in case we need it again
+	}
 }
 
 ?>
