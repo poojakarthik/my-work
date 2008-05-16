@@ -86,7 +86,7 @@ function WriteXMLToFile($strXML, $arrInvoice)
 	$intAccount			= $arrInvoice['Account'];
 	$intCustomerGroup	= $arrInvoice['CustomerGroup'];
 	
-	@mkdir(INVOICE_XML_PATH_SAMPLE, 0777, TRUE);
+	@mkdir(INVOICE_XML_PATH_SAMPLE."$intCustomerGroup/", 0777, TRUE);
 	
 	$strFilename	= INVOICE_XML_PATH_SAMPLE."$intCustomerGroup/$intAccount.xml";
 	file_put_contents($strFilename, $strXML);
