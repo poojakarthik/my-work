@@ -2902,10 +2902,9 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voipt
  */
 function GetCCType($mixNumber, $bolAsString = FALSE)
 {
-	$intNumber = (int)str_replace (" ", "", $mixNumber);
 	
 	// Find Card Type
-	switch ((int)substr($intNumber, 0, 2))
+	switch ((int)substr(trim($mixNumber), 0, 2))
 	{
 		// VISA
 		case 40:
