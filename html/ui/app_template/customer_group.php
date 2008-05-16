@@ -1138,8 +1138,6 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			}
 		}
 
-echo "<br />Source Code length = ". strlen(DBO()->Template->Source->Value);
-die;
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
