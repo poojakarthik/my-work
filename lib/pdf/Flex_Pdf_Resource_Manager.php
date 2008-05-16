@@ -150,7 +150,7 @@ class Flex_Pdf_Resource_Manager
 				// Construct the absolute path if we have a match
 				if (array_key_exists($placeholder, $this->resources))
 				{
-					$this->cache[$relativePath] = self::RESOURCE_BASE_PATH . $this->customerGroup . "/" 
+					$this->cache[$relativePath] = self::RESOURCE_BASE_PATH . $this->customerGroup . DIRECTORY_SEPARATOR 
 						. $this->resources[$placeholder]["Id"] . "." . $this->resources[$placeholder]["Extension"];
 				}
 				// ... else throw an exception to show that we didn't find the resource
@@ -158,18 +158,36 @@ class Flex_Pdf_Resource_Manager
 				{
 					throw new Exception("No resource found for '$relativePath' for Customer Group Id '$this->customerGroup' on generation date '$this->effectiveDate'.");
 				}
+
+				// Make sure it exits
+				if (!file_exists($this->cache[$relativePath]) || !is_file($this->cache[$relativePath]))
+				{
+					throw new Exception("Resource file '" . $this->cache[$relativePath] . "' does not exist for resource '$relativePath' and Customer Group Id '$this->customerGroup'.");
+				}
+
+				// Ensure that we can read it
+				if (!is_readable($this->cache[$relativePath]))
+				{
+					throw new Exception("Resource file '" . $this->cache[$relativePath] . "' is unreadable for resource '$relativePath' and Customer Group Id '$this->customerGroup'.");
+				}
 			}
 			// if the path is relative (as in the case on font files)...
 			else if ($relativePath == "." || file_exists(self::COMMON_RESOURCE_BASE_PATH . $relativePath))
 			{
+				// make absolute...
+				$this->cache[$relativePath] = self::COMMON_RESOURCE_BASE_PATH . $relativePath;
+
 				// Check that the file exists
-				if (!file_exists(self::COMMON_RESOURCE_BASE_PATH . $relativePath) || !is_file(self::COMMON_RESOURCE_BASE_PATH . $relativePath))
+				if (!file_exists($this->cache[$relativePath]) || !is_file($this->cache[$relativePath]))
 				{
 					throw new Exception("No resource file found for '$relativePath'.");
 				}
-				
-				// make absolute...
-				$this->cache[$relativePath] = self::COMMON_RESOURCE_BASE_PATH . $relativePath;
+
+				// Ensure that we can read it
+				if (!is_readable($this->cache[$relativePath]))
+				{
+					throw new Exception("Resource file '" . $this->cache[$relativePath] . "' is unreadable.");
+				}
 			}
 			// the path must be absolute already...
 			else
@@ -177,6 +195,18 @@ class Flex_Pdf_Resource_Manager
 				// We could try to copy the file from the absolute (possibly remote) location to a tmp local directory.
 				// This would allow us to handle retrieval problems at this point.
 				$this->cache[$relativePath] = $relativePath;
+
+				// Make sure it exits
+				if (!file_exists($relativePath))
+				{
+					throw new Exception("Resource file '$relativePath' does not exist.");
+				}
+
+				// Ensure that we can read it
+				if (!is_readable($relativePath))
+				{
+					throw new Exception("Resource file '$relativePath' is unreadable.");
+				}
 			}
 		}
 		
