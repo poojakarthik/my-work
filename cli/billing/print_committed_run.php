@@ -38,7 +38,7 @@ if (count($arrAccounts))
 	CliEcho("Generating ".count($arrAccounts)." Invoices...\n");
 	
 	// Select certain Accounts from an InvoiceRun
-	$selInvoices	= new StatementSelect("Invoice", "*", "InvoiceRun = <InvoiceRun> AND Account = <Account>");
+	$selInvoices	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Invoice.*, CustomerGroup", "InvoiceRun = <InvoiceRun> AND Account = <Account>");
 	
 	foreach ($arrAccounts as $intAccount)
 	{
@@ -54,14 +54,14 @@ if (count($arrAccounts))
 		if ($arrInvoice = $selInvoices->Fetch())
 		{ 
 			$strXML	= $bilInvoiceXML->AddInvoice($arrInvoice, TRUE);
-			WriteXMLToFile($strXML, $arrInvoice['Account']);
+			WriteXMLToFile($strXML, $arrInvoice);
 		}
 	}
 }
 else
 {
 	// Select entire InvoiceRun
-	$selInvoices	= new StatementSelect("Invoice", "*", "InvoiceRun = <InvoiceRun>");
+	$selInvoices	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Invoice.*, CustomerGroup", "InvoiceRun = <InvoiceRun>");
 	if (!$selInvoices->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 	{
 		// Invalid Invoice Run
@@ -75,17 +75,20 @@ else
 			
 			// Print the Invoice
 			$strXML	= $bilInvoiceXML->AddInvoice($arrInvoice, TRUE);
-			WriteXMLToFile($strXML, $arrInvoice['Account']);
+			WriteXMLToFile($strXML, $arrInvoice);
 		}
 	}
 }
 die;
 
-function WriteXMLToFile($strXML, $intAccount)
+function WriteXMLToFile($strXML, $arrInvoice)
 {
+	$intAccount			= $arrInvoice['Account'];
+	$intCustomerGroup	= $arrInvoice['CustomerGroup'];
+	
 	@mkdir(INVOICE_XML_PATH_SAMPLE, 0777, TRUE);
 	
-	$strFilename	= INVOICE_XML_PATH_SAMPLE."$intAccount.xml";
+	$strFilename	= INVOICE_XML_PATH_SAMPLE."$intCustomerGroup/$intAccount.xml";
 	file_put_contents($strFilename, $strXML);
 }
 
