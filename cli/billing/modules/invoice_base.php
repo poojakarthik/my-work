@@ -104,12 +104,12 @@ abstract class BillingModuleInvoice
 																	"RG.Id");
 		
 		$this->_selAccountSummaryCharges	= new StatementSelect(	"Charge",
-																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
 																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
 																	"Account = <Account> AND InvoiceRun = <InvoiceRun> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%' AND Service IS NOT NULL");
 		
 		$this->_selPlanCharges				= new StatementSelect(	"Charge",
-																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit, COUNT(Id) AS Records",
 																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
 																	"Account = <Account> AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
 		
@@ -118,14 +118,14 @@ abstract class BillingModuleInvoice
 																	"Id = <Account>");
 		
 		$this->_selPlanAdjustments			= new StatementSelect(	"Charge",
-																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total",
+																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
 																	"InvoiceRun = <InvoiceRun> AND Account = <Account> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')",
 																	NULL,
 																	NULL,
 																	"Account");
 		
 		$this->_selPlanChargeTotals			= new StatementSelect(	"ServiceTotal",
-																	"SUM(PlanCharge) AS PlanChargeTotal, SUM(UncappedCharge + CappedCharge) AS RatedTotal, SUM(TotalCharge) AS GrandServiceTotal",
+																	"SUM(PlanCharge) AS PlanChargeTotal, SUM(UncappedCharge + CappedCharge) AS RatedTotal, SUM(TotalCharge) AS GrandServiceTotal, COUNT(Id) AS Records",
 																	"InvoiceRun = <InvoiceRun> AND Account = <Account>",
 																	NULL,
 																	NULL,
@@ -322,7 +322,7 @@ abstract class BillingModuleInvoice
 					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
 					(
 	 					"Charge",
-						"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
+						"SUM(Amount) AS Charge, 'Service Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
 						"$strWhereService AND InvoiceRun = <InvoiceRun>",
 						"Nature",
 						2,
@@ -561,7 +561,7 @@ abstract class BillingModuleInvoice
 			if ($arrService['Primary'])
 			{				
 				// Get Adjustments
-				$arrItemised	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrWhere);
+				$arrItemised	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrInvoice);
 				if (count($arrItemised))
 				{
 					$fltAdjustmentsTotal	= 0.0;
@@ -570,21 +570,18 @@ abstract class BillingModuleInvoice
 					foreach ($arrItemised as $arrCharge)
 					{
 						$arrCDR	= Array();
-						if ($arrCharge['Nature'] == NATURE_CR)
-						{
-							$arrCDR['Charge']	= 0 - $arrCharge['Charge'];
-						}
+						$arrCDR['Charge']		= ($arrCharge['Nature'] == NATURE_CR) ? 0 - $arrCharge['Charge'] : $arrCharge['Charge'];
 						$fltAdjustmentsTotal	+= $arrCDR['Charge'];
 						
 						$arrCDR['Units']		= 1;
 						$arrCDR['Description']	= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 						
-						$arrCategories['Other Charges & Credits']['Itemisation'][]	= $arrCDR;
+						$arrCategories['Service Charges & Credits']['Itemisation'][]	= $arrCDR;
 					}
 					
-					$arrCategories['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-					$arrCategories['Other Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
-					$arrCategories['Other Charges & Credits']['Records']		= count($arrItemised);
+					$arrCategories['Service Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+					$arrCategories['Service Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
+					$arrCategories['Service Charges & Credits']['Records']		= count($arrItemised);
 					
 					$fltRatedTotal	+= $fltAdjustmentsTotal;
 				}
@@ -711,7 +708,7 @@ abstract class BillingModuleInvoice
 	 * Returns the Account Summary and Itemisation as an associative array for a given Invoice
 	 * 
 	 * @param	array	$arrInvoice						Invoice Details
-	 * @param	boolean	$bolAdjustments		[optional]	TRUE	: Include 'Other Charges & Credits'
+	 * @param	boolean	$bolAdjustments		[optional]	TRUE	: Include 'Service Charges & Credits'
 	 * 													FALSE	: Do not add Adjustments
 	 * @param	boolean	$bolPlanAdjustments	[optional]	TRUE	: Include 'Plan Charges' and 'Plan Credits'
 	 * 													FALSE	: Do not add Plan Adjustments
@@ -751,8 +748,8 @@ abstract class BillingModuleInvoice
 			{
 				while ($arrSummary = $this->_selAccountSummaryCharges->Fetch())
 				{
-					$arrAccountSummary['Other Charges & Credits']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
-					$arrAccountSummary['Other Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+					$arrAccountSummary['Service Charges & Credits']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
+					$arrAccountSummary['Service Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 				}
 			}
 		}
@@ -789,6 +786,7 @@ abstract class BillingModuleInvoice
 		if ($bolPlanAdjustments)
 		{
 			$fltGrandTotal	= 0.0;
+			$intRecords		= 0;
 			
 			// Plan Adjustments
 			if ($this->_selPlanAdjustments->Execute($arrInvoice) === FALSE)

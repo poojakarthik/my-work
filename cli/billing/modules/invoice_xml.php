@@ -94,11 +94,20 @@
 		$this->_domDocument->formatOutput	= TRUE;
 		
 		//--------------------------------------------------------------------//
+		// Document Object
+		//--------------------------------------------------------------------//
+		$xmlDocument	= $this->_AddElement($this->_domDocument, 'Document');
+		$this->_AddElement($xmlDocument, 'DocumentType', 'DOCUMENT_TYPE_INVOICE');
+		$this->_AddElement($xmlDocument, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
+		$this->_AddElement($xmlDocument, 'CreationDate', date('Y-m-d H:i:s'), strtotime($arrInvoice['CreatedOn']));
+		$this->_AddElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'DeliveryMethod'));
+		
+		//--------------------------------------------------------------------//
 		// Invoice Object
 		//--------------------------------------------------------------------//
-		$xmlInvoice	= $this->_AddElement($this->_domDocument, 'Invoice');
+		$xmlInvoice	= $this->_AddElement($xmlDocument, 'Invoice');
 		$this->_AddAttribute($xmlInvoice, 'Id'				, 'SAMPLE');
-		$this->_AddAttribute($xmlInvoice, 'DeliveryMethod'	, GetConstantName($arrInvoice['DeliveryMethod'], 'BillingMethod'));
+		//$this->_AddAttribute($xmlInvoice, 'DeliveryMethod'	, GetConstantName($arrInvoice['DeliveryMethod'], 'BillingMethod'));
 		
 		//--------------------------------------------------------------------//
 		// Currency Symbol (at the moment, we always use AUD, so $)
