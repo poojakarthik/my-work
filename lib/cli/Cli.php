@@ -344,6 +344,16 @@ abstract class Cli
 		}
 		throw new Exception("Invalid directory specified: '$dir'");
 	}
+	
+	public static function _validConstant($name, $prefix="", $suffix="")
+	{
+		$contsantName = $prefix.$name.$suffix;
+		if (!defined($contsantName))
+		{
+			throw new Exception("Undefined constant specified: '$name'" . ($name == $contsantName ? "" : " (i.e. $contsantName)"));
+		}
+		return constant($contsantName);
+	}
 }
 
 //********************************************************************************************

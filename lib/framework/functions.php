@@ -3828,6 +3828,28 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 	}
 	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
 	
+	
+	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
+	// Load in the DocumentTemplateType constants from the DocumentTemplateType table.
+	// These constants are only used by the backend.  The frontend always refers to the database
+	// when dealing with document templates
+	// This block of code can be removed when the backend no longer relies on them
+	$selDocumentTemplateType = new StatementSelect("DocumentTemplateType", "Id, Name", "TRUE", "Id");
+	$selDocumentTemplateType->Execute();
+	$arrDocumentTemplateTypes = $selDocumentTemplateType->FetchAll();
+	foreach ($arrDocumentTemplateTypes as $arrDocumentTemplateType)
+	{
+		// Build the constant name
+		$strConstant				= "DOCUMENT_TEMPLATE_TYPE_" . strtoupper(str_replace(" ", "_", $arrDocumentTemplateType['Name']));
+		$strName					= $arrDocumentTemplateType['Name'];
+		$intDocumentTemplateTypeId	= $arrDocumentTemplateType['Id'];
+		
+		define($strConstant, $intDocumentTemplateTypeId);
+		$GLOBALS['*arrConstant']['DocumentTemplateType'][$intDocumentTemplateTypeId]['Constant']	= $strConstant;
+		$GLOBALS['*arrConstant']['DocumentTemplateType'][$intDocumentTemplateTypeId]['Description']	= $strName;
+	}
+	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
+	
 }
 
 
