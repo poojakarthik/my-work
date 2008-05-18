@@ -554,7 +554,7 @@ HIl<?php
  				$this->intCarrierReference++;
  				$arrRendered['Sequence']		= $this->intCarrierReference;
  				$arrRendered['Date']			= date("Ymd", strtotime($arrRequest['AuthorisationDate']));
-		 		$arrRendered['**Type']			= REQUEST_FULL_SERVICE_REVERSE;
+		 		$arrRendered['**Type']			= $arrRequest['Type'];
 		 		$arrRendered['**Request']		= $arrRequest['Id'];
 			 	$arrRendered['**CarrierRef']	= $this->intCarrierReference;
 		 		$this->_arrFileContent[]		= $arrRendered;
@@ -563,7 +563,7 @@ HIl<?php
 				$this->intCarrierReference++;
 				$arrRendered['Sequence']		= $this->intCarrierReference;
 				$arrRendered['Basket']			= 2;
-		 		$arrRendered['**Type']			= $arrRequest['Type'];
+		 		$arrRendered['**Type']			= REQUEST_FULL_SERVICE;
 		 		$arrRendered['**Request']		= $arrRequest['Id'];
 		 		$arrRendered['**CarrierRef']	= $this->intCarrierReference;
 		 		$this->_arrFileContent[]		= $arrRendered;
