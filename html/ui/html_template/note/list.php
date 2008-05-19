@@ -114,6 +114,8 @@ class HtmlTemplateNoteList extends HtmlTemplate
 	 */
 	private function _RenderInPage()
 	{
+		$intMaxNotes = DBO()->NoteDetails->MaxNotes->Value;
+		
 		if (DBO()->NoteDetails->AccountNotes->Value)
 		{
 			// We are showing Account Notes
@@ -134,39 +136,31 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		}
 		echo "<h2 class='Notes'>$strListTitle</h2>\n";
 		
-		// Render filtering controls
-		echo "<div class='NarrowContent'>";
-		
-		// Render the NoteType Filter
+		// Build the NoteType Filter
 		$arrFilterOptions = Array();
 		$arrFilterOptions[NOTE_FILTER_ALL]		= "All Notes Types";
 		$arrFilterOptions[NOTE_FILTER_USER]		= "User Notes";
 		$arrFilterOptions[NOTE_FILTER_SYSTEM]	= "System Notes";
-		
-		// Create a combobox containing all the filter options
-		echo "<div style='height:25px'>";
-		echo "<div class='Left'>";
-		echo "   <span>Filter</span>\n";
-		echo "   <span>\n";
-		echo "      <select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value; Vixen.NoteList.ApplyFilter(true);' style='width:100%'>\n";
+		$strOptions = "";
 		foreach ($arrFilterOptions as $intFilterOption=>$strFilterOption)
 		{
 			$strSelected = (DBO()->NoteDetails->FilterOption->Value == $intFilterOption) ? "selected='selected'" : "";
-			echo "         <option $strSelected value='$intFilterOption'><span>$strFilterOption</span></option>\n";
+			$strOptions .= "<option $strSelected value='$intFilterOption'>$strFilterOption</option>";
 		}
-		echo "      </select>\n";
-		echo "   </span>\n";
 		
-		$intMaxNotes = DBO()->NoteDetails->MaxNotes->Value;
-		echo "<span>Limit</span><input type='text' class='DefaultInputText' style='left:0px;width:50px;margin-left:5px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter(true);'></input>\n";
+		
+		// Render filtering controls
+		echo "
+<div class='GroupedContent' style='height:auto'>
+	<span>Filter</span>
+	<span>
+		<select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value; Vixen.NoteList.ApplyFilter(true);' style='width:auto'>$strOptions</select>
+	</span>
 
-		// currently the filter is applied when the value of the combobox changes
-		//$this->Button("Filter", "Vixen.NoteList.ApplyFilter();");
-
-		echo "</div>\n"; //Left
-		echo "</div>\n"; //height=40px
-		echo "</div>\n"; // NarrowContent
-		echo "<div class='TinySeperator'></div>\n";
+	<span>Limit</span>
+	<input type='text' class='DefaultInputText' style='left:0px;width:50px;margin-left:0px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter(true);'></input>
+</div>
+<div class='TinySeperator' style='clear:both'></div>";
 		
 	
 		// Render the notes
@@ -271,7 +265,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		echo "</div>\n"; //Right
 		echo "</div>\n"; //height=25px
 		
-		echo "<div class='TinySeperator'></div>\n";
+		echo "<div class='TinySeperator' style='clear:both'></div>\n";
 	
 		// Render the notes
 		$strNotesContainerDivId = "NotesContainerForPopup";
