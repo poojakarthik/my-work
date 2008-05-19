@@ -30,8 +30,9 @@ function VixenMenuClass(objMenu)
 		'Level2': 
 		{
 			'left': 0,
-			'width': 160,
-			'height': 20,
+			'width': 400,
+			'minWidth' : 100,
+			'height': 24,
 			'spacing': 5,
 			'backgroundColor': "#D5E0F8"
 		},
@@ -60,6 +61,7 @@ function VixenMenuClass(objMenu)
 		//Find menu container
 		elmMenu = document.getElementById('VixenMenu');
 		elmMenu.style['overflow'] = 'visible';
+		
 		
 		//Render the initial menu (top-level)
 		for (strKey in this.objMenu)
@@ -94,10 +96,10 @@ function VixenMenuClass(objMenu)
 			top = top + this.config.Level1.height + this.config.Level1.spacing;
 			
 			//Add events
-			elmNode.onclick = function(event) {Vixen.Menu.HandleClick(this)};
-			elmNode.onmouseover = function(event) {Vixen.Menu.HandleMouseOver(this)};
-			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut(this)};
-			elmNode.style.cursor = "default";
+			elmNode.onclick			= function(event) {Vixen.Menu.HandleClick(this)};
+			elmNode.onmouseover		= function(event) {Vixen.Menu.HandleMouseOver(this)};
+			elmNode.onmouseout		= function(event) {Vixen.Menu.HandleMouseOut(this)};
+			elmNode.style.cursor	= "default";
 			
 			//Add some more crap
 			elmNode.action = this.objMenu[strKey];
@@ -124,16 +126,15 @@ function VixenMenuClass(objMenu)
 		var elmNode;
 		var top = 0;
 
-		if (typeof(elmMenuItem) == 'string')
-		{
-			elmMenuItem = document.getElementById(elmMenuItem);	
-		}
+		elmMenuItem	= $ID(elmMenuItem);	
 
-		var object = document.getElementById('VixenMenu__' + elmMenuItem.level);
+		//var elmOldSubMenu	= $ID('VixenMenu__' + elmMenuItem.level);
+		var object	= $ID('VixenMenu__' + elmMenuItem.level);
 		if (object)
 		{
 			object.parentNode.removeChild(object);
 		}
+		
 		
 		//Create and attach the container div for the rest of the submenu to sit in
 		var objContainer = document.createElement('div');
@@ -145,16 +146,19 @@ function VixenMenuClass(objMenu)
 		objContainer.style.backgroundColor	= "#FFFFFF";
 		objContainer.style.width			= this.config.Level2.width + this.config.Level2.spacing;
 		objContainer.style.zIndex			= 2;
-
+		objContainer.style.visibility		= "hidden";
+		
 		elmMenuItem.parentNode.appendChild(objContainer);
-		var elmContainer = document.getElementById('VixenMenu__' + elmMenuItem.level);
+		var elmContainer = $ID('VixenMenu__' + elmMenuItem.level);
 		//elmContainer.style['top'] = this.RemovePx(elmMenuItem.style['top']);
 		//elmContainer.style['left'] = this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
 		//elmContainer.style['position'] = 'absolute';
 		//elmContainer.style['overflow'] = 'visible';
 
 		var intContainerHeight = 0;
-		
+
+		var intMaxScrollWidth = 0;
+		var arrElements = new Array;
 		//Render the menu
 		for (strKey in elmMenuItem.action)
 		{
@@ -182,12 +186,12 @@ function VixenMenuClass(objMenu)
 				// Add text to the node
 				elmNode.appendChild(objTextNode);
 			}
-			
+
 			//Add styles
 			//new_node.style[c_attrib] = value
 			elmNode.style['top'] 			= top;
 			elmNode.style['left'] 			= this.config.Level2.left; 
-			elmNode.style['width'] 			= this.config.Level2.width;
+			elmNode.style['width'] 			= "auto";//this.config.Level2.width;
 			elmNode.style['height'] 		= this.config.Level2.height;
 			elmNode.style['backgroundColor'] = this.config.Level2.backgroundColor;
 			elmNode.style['position']		= 'absolute';
@@ -202,9 +206,9 @@ function VixenMenuClass(objMenu)
 			elmNode.onmouseout		= function(event) {Vixen.Menu.HandleMouseOut(this)};
 			
 			//Add some more crap
-			elmNode.action = elmMenuItem.action[strKey];
-			elmNode.level = elmMenuItem.level + 1;
-			elmNode.style.cursor = "default";
+			elmNode.action			= elmMenuItem.action[strKey];
+			elmNode.level			= elmMenuItem.level + 1;
+			elmNode.style.cursor	= "default";
 
 			// set the class
 			elmNode.className 	= 'ContextMenuItem';
@@ -212,7 +216,23 @@ function VixenMenuClass(objMenu)
 			
 			// Add the menu item element to the container
 			elmContainer.appendChild(elmNode);
+			
+			// Update the MaxScrollWidth encountered
+			intMaxScrollWidth = (elmNode.scrollWidth > intMaxScrollWidth) ? elmNode.scrollWidth : intMaxScrollWidth;
+
+			arrElements.push(elmNode);
 		}
+		
+		// Work out what width to make each element
+		var intWidth = (intMaxScrollWidth > this.config.Level2.minWidth)? intMaxScrollWidth : this.config.Level2.minWidth;
+		elmContainer.style.width = intWidth;
+		for (i in arrElements)
+		{
+			arrElements[i].style.width = intWidth;
+		}
+		
+		// Show the menu
+		elmContainer.style.visibility = "visible";
 	}
 	
 	this.Close = function(intLevel)

@@ -45,24 +45,17 @@
 		?>
 	<div id='PageBody'>
 		<h1> <?php echo $this->_strPageName; ?></h1>
-		<table width='100%' border='0'>
-			<tr>
-				<td width='49%' valign='top'>
-					<?php $this->RenderColumn(COLUMN_ONE); ?>
-				</td>
-				<td width='2%'></td>
-				<td width='49%' valign='top'>
-					<?php $this->RenderColumn(COLUMN_TWO); ?>
-				</td>
-			</tr>
-		</table>
-		<table width='100%' border='0'>
-			<tr>
-				<td width='100%' valign='top'>
-					<?php $this->RenderColumn(COLUMN_THREE); ?>
-				</td>
-			</tr>
-		</table>
+		<div id='Container_Columns_1_And_2' style='width:100%;height:auto'>
+			<div id='Column1' style='width:49%;height:auto;float:left'>
+				<?php $this->RenderColumn(COLUMN_ONE); ?>
+			</div>
+			<div id='Column2' style='width:49%;height:auto;float:right;'>
+				<?php $this->RenderColumn(COLUMN_TWO); ?>
+			</div>
+		</div>
+		<div id='Column3' style='width:100%;clear:both'>
+			<?php $this->RenderColumn(COLUMN_THREE); ?>
+		</div>
 	</div>
 		<?php
 		

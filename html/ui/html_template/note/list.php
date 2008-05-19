@@ -153,12 +153,9 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		echo "
 <div class='GroupedContent' style='height:auto'>
 	<span>Filter</span>
-	<span>
-		<select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value; Vixen.NoteList.ApplyFilter(true);' style='width:auto'>$strOptions</select>
-	</span>
-
+	<select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value; Vixen.NoteList.ApplyFilter(true);' style='width:auto;border:solid 1px #D1D1D1'>$strOptions</select>
 	<span>Limit</span>
-	<input type='text' class='DefaultInputText' style='left:0px;width:50px;margin-left:0px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter(true);'></input>
+	<input type='text' style='border:solid 1px #D1D1D1;padding-left:3px;width:50px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter(true);'></input>
 </div>
 <div class='TinySeperator' style='clear:both'></div>";
 		
@@ -235,37 +232,32 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		}
 		
 		// Render filtering controls
-		// Render the NoteType Filter
-		$arrFilterOptions = Array();
+		$intMaxNotes		= DBO()->NoteDetails->MaxNotes->Value;
+		$arrFilterOptions	= Array();
 		$arrFilterOptions[NOTE_FILTER_ALL]		= "All Notes Types";
 		$arrFilterOptions[NOTE_FILTER_USER]		= "User Notes";
 		$arrFilterOptions[NOTE_FILTER_SYSTEM]	= "System Notes";
-		
-		// Create a combobox containing all the filter options
-		echo "<div class='SmallSeperator'></div>\n";
-		echo "<div style='height:25px'>";
-		echo "<div class='Left'>";
-		echo "   <span>&nbsp;&nbsp;Filter</span>\n";
-		echo "   <span>\n";
-		echo "      <select id='NoteFilterCombo' onChange='Vixen.NoteListPopup.intNoteFilter = this.value;' style='width:100%'>\n";
+		$strFilterOptions = "";
 		foreach ($arrFilterOptions as $intFilterOption=>$strFilterOption)
 		{
 			$strSelected = (DBO()->NoteDetails->FilterOption->Value == $intFilterOption) ? "selected='selected'" : "";
-			echo "         <option $strSelected value='$intFilterOption'><span>$strFilterOption</span></option>\n";
+			$strFilterOptions .= "<option $strSelected value='$intFilterOption'><span>$strFilterOption</span></option>";
 		}
-		echo "      </select>\n";
-		echo "   </span>\n";
 		
-		$intMaxNotes = DBO()->NoteDetails->MaxNotes->Value;
-		echo "   <span style='margin-left:20px;'>Limit</span><input type='text' class='DefaultInputText' style='left:0px;width:50px;margin-left:5px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteListPopup.intMaxNotes = this.value;'></input>\n";
-
-		echo "</div>\n"; //Left
-		echo "<div class='Right'>\n";
-		$this->Button("Filter", "Vixen.NoteListPopup.ApplyFilter(true);");
-		echo "</div>\n"; //Right
-		echo "</div>\n"; //height=25px
 		
-		echo "<div class='TinySeperator' style='clear:both'></div>\n";
+		// Create a combobox containing all the filter options
+		echo "
+<div class='SmallSeperator'></div>
+<div id='FilterControls' style='height:auto'>
+	<div style='float:left'>
+		<span>&nbsp;&nbsp;Filter</span>
+		<select id='NoteFilterCombo' onChange='Vixen.NoteListPopup.intNoteFilter = this.value;' style='border:solid 1px #D1D1D1;'>$strFilterOptions</select>
+		<span style='margin-left:20px;'>Limit</span>
+		<input type='text' style='border:solid 1px #D1D1D1;padding-left:3px;width:50px;margin-left:5px' id='NoteDetails.MaxNotes' maxlength='4' value='$intMaxNotes' onChange='Vixen.NoteListPopup.intMaxNotes = this.value;'></input>
+	</div>
+	<input type='button' value='Filter' onClick='Vixen.NoteListPopup.ApplyFilter(true)' style='float:right'></input>
+</div>
+<div class='TinySeperator' style='clear:both'></div>";
 	
 		// Render the notes
 		$strNotesContainerDivId = "NotesContainerForPopup";
