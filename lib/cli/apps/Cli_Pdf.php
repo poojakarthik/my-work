@@ -7,7 +7,8 @@ class Cli_Pdf extends Cli
 	const SWITCH_EFFECTIVE_DATE = "e";
 	const SWITCH_XML_DATA_FILE_LOCATION = "x";
 	const SWITCH_OUTPUT_FILE_PATH_AND_NAME = "f";
-	const SWITCH_TARGET_MEDIA = "m";
+	const SWITCH_SOURCE_MEDIA = "m";
+	const SWITCH_OUTPUT_MEDIA = "o";
 	const SWITCH_LOG = "l";
 
 	private $logFile = NULL;
@@ -65,13 +66,12 @@ class Cli_Pdf extends Cli
 				$matches = array();
 				if (preg_match("/\.tar(?:\.(bz2|gz)|)$/", $strDestination, $matches))
 				{
-					var_dump($matches);
 					$strCompression = count($matches) == 1 ? NULL : strtolower($matches[1]);
 					$bolArchived = TRUE;
 
 					$strArchiveFile = $strDestination;
 					$strDestination = dirname($strDestination);
-	
+
 					// Check that the PEAR library 'Archive_Tar' is available
 					$this->startErrorCatching();
 					require_once "Archive/Tar.php";
@@ -124,17 +124,24 @@ class Cli_Pdf extends Cli
 				}
 			}
 
+			echo "\nFound " . count($arrFiles) . " potential source files";
+			ob_flush();
+			flush();
 			$this->log("Processing " . count($arrFiles) . " XML source files");
 
 			// Include the pdf library...
 			$this->requireOnce("lib/pdf/Flex_Pdf.php");
+
+			$docCount = 0;
+			$lastDocNameLen = 0;
+			echo "\nProcessing document $docCount   ";
 
 			foreach ($arrFiles as $strSource => $strDestination)
 			{
 				$this->log("Processing XML file: $strSource");
 				// Make sure we have enough time to generate this PDF (2 minutes should hopefully always be enough!)...
 				set_time_limit(180);
-				
+
 				$fileContents = file_get_contents($strSource);
 
 				$parts = array();
@@ -144,7 +151,7 @@ class Cli_Pdf extends Cli
 				{
 					throw new Exception("Unable to identify document properties.");
 				}
-				
+
 				$docProps = array();
 				for($i = 0; $i < 4; $i++)
 				{
@@ -170,13 +177,14 @@ class Cli_Pdf extends Cli
 				{
 					$effectiveDate = $arrArgs[Cli_Pdf::SWITCH_EFFECTIVE_DATE];
 				}
-				if ($arrArgs[Cli_Pdf::SWITCH_DOCUMENT_TYPE_ID] === FALSE)
+
+				$docProps["DocumentType"] = str_replace("DOCUMENT_TYPE_", "DOCUMENT_TEMPLATE_TYPE_", $docProps["DocumentType"]);
+				$documentTypeId = constant($docProps["DocumentType"]);
+
+				if ($arrArgs[Cli_Pdf::SWITCH_DOCUMENT_TYPE_ID] !== FALSE && $arrArgs[Cli_Pdf::SWITCH_DOCUMENT_TYPE_ID] !== $documentTypeId)
 				{
-					$documentTypeId = constant($docProps["CustomerGroup"]);
-				}
-				else
-				{
-					$documentTypeId = $arrArgs[Cli_Pdf::SWITCH_DOCUMENT_TYPE_ID];
+					$this->log("Skipping XML file '$strSource' as it's document type is $documentTypeId (" . $docProps["DocumentType"] . "). We are only processing type " . $arrArgs[Cli_Pdf::SWITCH_DOCUMENT_TYPE_ID] . " documents.");
+					continue;
 				}
 
 				$targetMedia = constant($docProps["DeliveryMethod"]);
@@ -192,16 +200,30 @@ class Cli_Pdf extends Cli
 					default:
 						$this->log("Skipping XML file '$strSource' as it's target media '$targetMedia' is not supported.");
 						continue 2;
-						
 				}
-				if ($arrArgs[Cli_Pdf::SWITCH_TARGET_MEDIA] !== FALSE)
+
+				// Check that we are processing xml files of the intended media type 
+				if ($arrArgs[Cli_Pdf::SWITCH_SOURCE_MEDIA] !== FALSE)
 				{
-					if ($targetMedia != $arrArgs[Cli_Pdf::SWITCH_TARGET_MEDIA])
+					if ($targetMedia != $arrArgs[Cli_Pdf::SWITCH_SOURCE_MEDIA])
 					{
-						$this->log("Skipping XML file '$strSource' as it is for media '$targetMedia'. We are only processing for media '" . $arrArgs[Cli_Pdf::SWITCH_TARGET_MEDIA] . "'.");
+						$this->log("Skipping XML file '$strSource' as it is for media '$targetMedia'. We are only processing for media '" . $arrArgs[Cli_Pdf::SWITCH_SOURCE_MEDIA] . "'.");
 						continue;
 					}
 				}
+
+				// If an output media is specified, force output to suit...
+				if ($arrArgs[Cli_Pdf::SWITCH_OUTPUT_MEDIA] !== FALSE)
+				{
+					$targetMedia = $arrArgs[Cli_Pdf::SWITCH_OUTPUT_MEDIA];
+				}
+
+				$docNameLen = strlen($strSource);
+				$pad = $lastDocNameLen > $docNameLen ? ($lastDocNameLen - $docNameLen) : 0;
+				echo str_repeat(chr(8), strlen($docCount)+$lastDocNameLen+3) . ++$docCount . " ($strSource)" . str_repeat(" ", $pad) . str_repeat(chr(8), $pad);
+				ob_flush();
+				flush();
+				$lastDocNameLen = $docNameLen;
 
 				// Create the PDF template
 				$this->startErrorCatching();
@@ -236,14 +258,25 @@ class Cli_Pdf extends Cli
 				$this->log("Memory usage after saving PDF to file:       " . memory_get_usage());
 			}
 
+			echo str_repeat(chr(8), $lastDocNameLen+3) . "\nProcessing complete";
+			ob_flush();
+			flush();
+
 			// If writing to an archived file...
 			if ($bolArchived)
 			{
+				echo "\nArchiving files... ";
+				ob_flush();
+				flush();
+
 				$this->log("Archiving PDFs to $strArchiveFile");
 				$objArchive = new Archive_Tar($strArchiveFile, $strCompression);
 				$objArchive->add($arrFiles);
 
 				// Remove the archived folder
+				echo "\nRemoving temporary files... ";
+				ob_flush();
+				flush();
 				$this->log("Removing unarchived copies of PDFs");
 				foreach ($arrFiles as $strSource => $strDestination)
 				{
@@ -252,6 +285,10 @@ class Cli_Pdf extends Cli
 			}
 
 			$this->endLog();
+
+			echo "\nCompleted successfully.\n";
+			ob_flush();
+			flush();
 
 			// Must have worked! Exit with 'OK' code 0
 			exit(0);
@@ -272,7 +309,7 @@ class Cli_Pdf extends Cli
 				self::ARG_LABEL 		=> "CUSTOMER_GROUP",
 				self::ARG_REQUIRED 	=> FALSE,
 				self::ARG_DESCRIPTION => "is the name of the customer group to create the PDF file for (from database) [optional, default taken from XML file]",
-				self::ARG_DEFAULT 	=> NULL,
+				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validConstant("%1$s", "CUSTOMER_GROUP_")'
 			),
 
@@ -280,7 +317,7 @@ class Cli_Pdf extends Cli
 				self::ARG_LABEL 		=> "DOCUMENT_TYPE",
 				self::ARG_REQUIRED 	=> FALSE,
 				self::ARG_DESCRIPTION => "is the document type to be generated (e.g. INVOICE or FINAL_DEMAND_NOTICE) [optional, default taken from XML file]",
-				self::ARG_DEFAULT 	=> NULL,
+				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validConstant("%1$s", "DOCUMENT_TEMPLATE_TYPE_")'
 			),
 
@@ -309,10 +346,18 @@ class Cli_Pdf extends Cli
 				self::ARG_VALIDATION 	=> 'Cli::_validDate("%1$s")'
 			),
 		
-			self::SWITCH_TARGET_MEDIA => array(
-				self::ARG_LABEL 		=> "TARGET_MEDIA", 
+			self::SWITCH_SOURCE_MEDIA => array(
+				self::ARG_LABEL 		=> "SOURCE_MEDIA", 
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is the target media for the PDF document (EMAIL or PRINT) [optional, default taken from XML file]",
+				self::ARG_DESCRIPTION => "if specified, only XML documents originally intended for thie media are processed (EMAIL or PRINT)",
+				self::ARG_DEFAULT 	=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validInArray("%1$s", array("EMAIL","PRINT"))'
+			),
+		
+			self::SWITCH_OUTPUT_MEDIA => array(
+				self::ARG_LABEL 		=> "OUTPUT_MEDIA", 
+				self::ARG_REQUIRED 	=> FALSE,
+				self::ARG_DESCRIPTION => "is the output media for the PDF document (EMAIL or PRINT) [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validInArray("%1$s", array("EMAIL","PRINT"))'
 			),
