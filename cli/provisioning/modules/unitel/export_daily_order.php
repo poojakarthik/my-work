@@ -472,58 +472,63 @@ HIl<?php
  	{ 		
  		//--------------------------------------------------------------------//
  		// RENDER
- 		//--------------------------------------------------------------------// 		
+ 		//--------------------------------------------------------------------//
  		$arrRendered				= Array();
+ 		
+ 		// Service Address
+ 		if ($arrRequest['Type'] == REQUEST_FULL_SERVICE || $arrRequest['Type'] == REQUEST_VIRTUAL_PRESELECTION)
+ 		{
+			$arrServiceAddress	= $this->_CleanServiceAddress($arrRequest['Service']);
+			
+			if (is_string($arrServiceAddress))
+			{
+				// Service Address Problems
+		 		$arrRequest['Status']		= REQUEST_STATUS_REJECTED_FLEX;
+		 		$arrRequest['Description']	= $arrServiceAddress;
+				return $arrRequest;
+			}
+			
+			// Common
+			$arrRendered['AgreementDate']		= date("Ymd", strtotime($arrRequest['AuthorisationDate']));
+			$arrRendered['BillName']			= $arrServiceAddress['BillName'];
+			$arrRendered['BillAddress1']		= $arrServiceAddress['BillAddress1'];
+			$arrRendered['BillAddress2']		= $arrServiceAddress['BillAddress2'];
+			$arrRendered['BillLocality']		= $arrServiceAddress['BillLocality'];
+			$arrRendered['BillPostcode']		= $arrServiceAddress['BillPostcode'];
+			
+			// Residential
+			$arrRendered['EndUserTitle']		= $arrServiceAddress['EndUserTitle'];
+			$arrRendered['FirstName']			= $arrServiceAddress['EndUserGivenName'];
+			$arrRendered['LastName']			= $arrServiceAddress['EndUserFamilyName'];
+			$arrRendered['DateOfBirth']			= $arrServiceAddress['DateOfBirth'];
+			$arrRendered['Employer']			= $arrServiceAddress['Employer'];
+			$arrRendered['Occupation']			= $arrServiceAddress['Occupation'];
+			
+			// Business
+			$arrRendered['CompanyName']			= $arrServiceAddress['EndUserCompanyName'];
+			$arrRendered['ABN']					= $arrServiceAddress['ABN'];
+			$arrRendered['TradingName']			= $arrServiceAddress['TradingName'];
+			
+			// Service Location Details
+			$arrRendered['AddressType']			= $arrServiceAddress['ServiceAddressType'];
+			$arrRendered['AdTypeNumber']		= $arrServiceAddress['ServiceAddressTypeNumber'];
+			$arrRendered['AdTypeSuffix']		= $arrServiceAddress['ServiceAddressTypeSuffix'];
+			$arrRendered['StNumberStart']		= $arrServiceAddress['ServiceStreetNumberStart'];
+			$arrRendered['StNumberEnd']			= $arrServiceAddress['ServiceStreetNumberEnd'];
+			$arrRendered['StNumSuffix']			= $arrServiceAddress['ServiceStreetNumberSuffix'];
+			$arrRendered['StreetName']			= $arrServiceAddress['ServiceStreetName'];
+			$arrRendered['StreetType']			= $arrServiceAddress['ServiceStreetType'];
+			$arrRendered['StTypeSuffix']		= $arrServiceAddress['ServiceStreetTypeSuffix'];
+			$arrRendered['PropertyName']		= $arrServiceAddress['ServicePropertyName'];
+			$arrRendered['Locality']			= $arrServiceAddress['ServiceLocality'];
+			$arrRendered['State']				= $arrServiceAddress['ServiceState'];
+			$arrRendered['Postcode']			= $arrServiceAddress['ServicePostcode'];
+ 		}
+ 		
 		$arrRendered['FNN']			= $arrRequest['FNN'];
  		switch ($arrRequest['Type'])
  		{
  			case REQUEST_FULL_SERVICE:
- 				$arrServiceAddress	= $this->_CleanServiceAddress($arrRequest['Service']);
- 				
- 				if (is_string($arrServiceAddress))
- 				{
- 					// Service Address Problems
-			 		$arrRequest['Status']		= REQUEST_STATUS_REJECTED_FLEX;
-			 		$arrRequest['Description']	= $arrServiceAddress;
- 					return $arrRequest;
- 				}
- 				
- 				// Common
- 				$arrRendered['AgreementDate']		= date("Ymd", strtotime($arrRequest['AuthorisationDate']));
-				$arrRendered['BillName']			= $arrServiceAddress['BillName'];
-				$arrRendered['BillAddress1']		= $arrServiceAddress['BillAddress1'];
-				$arrRendered['BillAddress2']		= $arrServiceAddress['BillAddress2'];
-				$arrRendered['BillLocality']		= $arrServiceAddress['BillLocality'];
-				$arrRendered['BillPostcode']		= $arrServiceAddress['BillPostcode'];
-				
-				// Residential
-				$arrRendered['EndUserTitle']		= $arrServiceAddress['EndUserTitle'];
-				$arrRendered['FirstName']			= $arrServiceAddress['EndUserGivenName'];
-				$arrRendered['LastName']			= $arrServiceAddress['EndUserFamilyName'];
-				$arrRendered['DateOfBirth']			= $arrServiceAddress['DateOfBirth'];
-				$arrRendered['Employer']			= $arrServiceAddress['Employer'];
-				$arrRendered['Occupation']			= $arrServiceAddress['Occupation'];
-				
-				// Business
-				$arrRendered['CompanyName']			= $arrServiceAddress['EndUserCompanyName'];
-				$arrRendered['ABN']					= $arrServiceAddress['ABN'];
-				$arrRendered['TradingName']			= $arrServiceAddress['TradingName'];
-				
-				// Service Location Details
-				$arrRendered['AddressType']			= $arrServiceAddress['ServiceAddressType'];
-				$arrRendered['AdTypeNumber']		= $arrServiceAddress['ServiceAddressTypeNumber'];
-				$arrRendered['AdTypeSuffix']		= $arrServiceAddress['ServiceAddressTypeSuffix'];
-				$arrRendered['StNumberStart']		= $arrServiceAddress['ServiceStreetNumberStart'];
-				$arrRendered['StNumberEnd']			= $arrServiceAddress['ServiceStreetNumberEnd'];
-				$arrRendered['StNumSuffix']			= $arrServiceAddress['ServiceStreetNumberSuffix'];
-				$arrRendered['StreetName']			= $arrServiceAddress['ServiceStreetName'];
-				$arrRendered['StreetType']			= $arrServiceAddress['ServiceStreetType'];
-				$arrRendered['StTypeSuffix']		= $arrServiceAddress['ServiceStreetTypeSuffix'];
-				$arrRendered['PropertyName']		= $arrServiceAddress['ServicePropertyName'];
-				$arrRendered['Locality']			= $arrServiceAddress['ServiceLocality'];
-				$arrRendered['State']				= $arrServiceAddress['ServiceState'];
-				$arrRendered['Postcode']			= $arrServiceAddress['ServicePostcode'];
- 				
  				for ($intBasket = 1; $intBasket <= 5; $intBasket++)
  				{
  					$this->intCarrierReference++;
@@ -550,6 +555,15 @@ HIl<?php
  				break;
  				
  			case REQUEST_VIRTUAL_PRESELECTION:
+		 		// Add Basket 2 Re-Request
+				$this->intCarrierReference++;
+				$arrRendered['Sequence']		= $this->intCarrierReference;
+				$arrRendered['Basket']			= 2;
+		 		$arrRendered['**Type']			= REQUEST_FULL_SERVICE;
+		 		$arrRendered['**Request']		= $arrRequest['Id'];
+		 		$arrRendered['**CarrierRef']	= $this->intCarrierReference;
+		 		$this->_arrFileContent[]		= $arrRendered;
+ 				
  				// Add Virtual Preselection Request
  				$this->intCarrierReference++;
  				$arrRendered['Sequence']		= $this->intCarrierReference;
@@ -559,14 +573,6 @@ HIl<?php
 			 	$arrRendered['**CarrierRef']	= $this->intCarrierReference;
 		 		$this->_arrFileContent[]		= $arrRendered;
 		 		
-		 		// Add Basket 2 Re-Request
-				$this->intCarrierReference++;
-				$arrRendered['Sequence']		= $this->intCarrierReference;
-				$arrRendered['Basket']			= 2;
-		 		$arrRendered['**Type']			= REQUEST_FULL_SERVICE;
-		 		$arrRendered['**Request']		= $arrRequest['Id'];
-		 		$arrRendered['**CarrierRef']	= $this->intCarrierReference;
-		 		$this->_arrFileContent[]		= $arrRendered;
  				break;
  				
  			case REQUEST_VIRTUAL_PRESELECTION_REVERSE:
