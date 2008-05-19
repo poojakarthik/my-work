@@ -539,8 +539,12 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 			{
 				if (!$this->contentElements[$i]->hasAbsoluteVertical())
 				{
-					$availableHeight -= $this->contentElements[$i]->getPreparedHeight();
+					// If the height is only sufficient for footers, then there is no point trying to add more relatively positioned content
+					// and chances are, if there was no height available for it, it won't have been prepared yet!
 					if ($availableHeight <= $this->requiredNonEndFooterHeight[$this->currentPageColumn]) break;
+					$availableHeight -= $this->contentElements[$i]->getPreparedHeight();
+					// If there isn't enough height for the footers, then we need to break
+					if ($availableHeight < $this->requiredNonEndFooterHeight[$this->currentPageColumn]) break;
 				}
 				else
 				{
