@@ -112,7 +112,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 	 */
 	private function _RenderInPage()
 	{
-		$strObjectName = "ProvisioningHistoryList";
+		$strObjectName = "ProvisioningHistoryList". ((DBO()->Service->Id->IsSet)? DBO()->Service->Id->Value : "");
 		
 		if (!DBO()->Service->Id->Value)
 		{
@@ -125,7 +125,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		$this->_RenderFilterControls($strObjectName);
 		
 		// Render the history
-		$strHistoryContainerDivId = "HistoryContainerForPage";
+		$strHistoryContainerDivId = "HistoryContainerForPage". ((DBO()->Service->Id->IsSet)? DBO()->Service->Id->Value : "");
 		echo "<div id='$strHistoryContainerDivId'>";
 		$this->_RenderHistory($strObjectName);
 		echo "</div>";
@@ -161,12 +161,12 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 	 */
 	private function _RenderAsPopup()
 	{
-		$strObjectName = "ProvisioningHistoryPopup";
+		$strObjectName = "ProvisioningHistoryPopup". ((DBO()->Service->Id->IsSet)? DBO()->Service->Id->Value : "");
 		
 		$this->_RenderFilterControls($strObjectName);
 	
 		// Render the History
-		$strHistoryContainerDivId = "HistoryContainerForPopup";
+		$strHistoryContainerDivId = "HistoryContainerForPopup". ((DBO()->Service->Id->IsSet)? DBO()->Service->Id->Value : "");
 		echo "<div id='ContainerDiv_ScrollableDiv_History' style='border: solid 1px #606060; padding: 5px 5px 5px 5px'>\n";
 		echo "<div id='ScrollableDiv_History' style='overflow:auto; height:410px; width:auto; padding: 0px 3px 0px 3px'>\n";
 		echo "<div id='$strHistoryContainerDivId'>\n";
@@ -358,7 +358,18 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			}
 			else
 			{
-				Table()->History->AddRow($strOutboundCell, $strTimeStampCell, $arrRecord['FNN'], $strCarrier, $strRequestType, $strStatusCell);
+				// Have a link to the Service's individual Service history from the FNN, if the service is known for this record
+				if ($arrRecord['Service'] != NULL)
+				{
+					$strServiceProvHistoryLink = Href()->ViewProvisioningHistory($arrRecord['Service']);
+					$strFnnCell = "<a href='$strServiceProvHistoryLink' title='View History'>{$arrRecord['FNN']}</a>";
+				}
+				else
+				{
+					$strFnnCell = $arrRecord['FNN'];
+				}
+				
+				Table()->History->AddRow($strOutboundCell, $strTimeStampCell, $strFnnCell, $strCarrier, $strRequestType, $strStatusCell);
 			}
 		}
 		

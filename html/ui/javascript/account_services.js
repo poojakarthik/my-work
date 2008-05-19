@@ -44,26 +44,10 @@
  */
 function VixenAccountServicesClass()
 {
-	//------------------------------------------------------------------------//
-	// strPopupId
-	//------------------------------------------------------------------------//
-	/**
-	 * strPopupId
-	 *
-	 * Stores the PopupId of the popup associated with this object
-	 *
-	 * Stores the PopupId of the popup associated with this object
-	 * Defaults to "AccountServicesPopupId"
-	 * 
-	 * @type		string
-	 *
-	 * @property
-	 */
-	this.strPopupId = null;
-	
-	this.strTableContainerDivId = "AccountServicesTableDiv";
-	
-	this.intAccountId = null;
+	this.strPopupId				= null;
+	this.strTableContainerDivId	= "AccountServicesTableDiv";
+	this.intAccountId			= null;
+	this.elmFilterCombo			= null;
 	
 	//------------------------------------------------------------------------//
 	// Initialise
@@ -95,29 +79,13 @@ function VixenAccountServicesClass()
 		}
 		this.intAccountId = intAccountId;
 		
+		this.elmFilterCombo = $ID("ServicesListFilterCombo");
+		
 		// Register Event Listeners
-		this.AddListeners();
+		Vixen.EventHandler.AddListener("OnServiceUpdate", this.OnUpdate, this);
+		Vixen.EventHandler.AddListener("OnAccountServicesUpdate", this.OnUpdate, this);
 	}
 
-	//------------------------------------------------------------------------//
-	// AddListeners
-	//------------------------------------------------------------------------//
-	/**
-	 * AddListeners
-	 *
-	 * Registers the listeners contained within this class
-	 *  
-	 * Registers the listeners contained within this class
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.AddListeners = function()
-	{
-		Vixen.EventHandler.AddListener("OnServiceUpdate", this.OnUpdate);
-		Vixen.EventHandler.AddListener("OnAccountServicesUpdate", this.OnUpdate);
-	}
-	
 	//------------------------------------------------------------------------//
 	// RemoveListeners
 	//------------------------------------------------------------------------//
@@ -157,32 +125,9 @@ function VixenAccountServicesClass()
 	 * @return	void
 	 * @method
 	 */
-	this.OnUpdate = function(objEvent)
+	this.OnUpdate = function(objEvent, objThis)
 	{
-		// The "this" pointer does not point to this object, when it is called.
-		// It points to the Window object
-		var strPopupId				= Vixen.AccountServices.strPopupId;
-		var strTableContainerDivId	= Vixen.AccountServices.strTableContainerDivId;
-		var intAccountId			= Vixen.AccountServices.intAccountId;
-		
-		/* The old way of handling when the HtmlTemplate is in a page
-		// If strPopupId == null then the list of Services is being displayed in a page, not a popup.
-		// Just reload the page
-		if (strPopupId == null)
-		{
-			// Since this functoin will preform a page reload, make sure there are no popups open,
-			// as reloading the page will destory them.  If there are popups open, wait 0.5 seconds and check again
-			if (Vixen.Popup.PopupsExist())
-			{	
-				// We cant reload yet
-				setTimeout(function(){Vixen.AccountServices.OnUpdate(objEvent)}, 500);
-				return true;
-			}
-		
-			// There aren't any popups open.  Reload the page
-			window.location = window.location;
-		}
-		*/
+		var strPopupId = objThis.strPopupId;
 		
 		// If this is loaded in a popup:
 		// Check that the AccountServices popup is actually open because this will stay in 
@@ -193,17 +138,25 @@ function VixenAccountServicesClass()
 			// The popup isn't open so don't do anything
 			return;
 		}
-
-		// Organise the data to send
-		var objObjects 					= {};
-		objObjects.Account 				= {};
-		objObjects.Account.Id 			= intAccountId;
-		// This will be used so that we know where to rerender the list of services
-		objObjects.TableContainer 		= {};
-		objObjects.TableContainer.Id	= strTableContainerDivId;
+		
+		objThis.ReloadList();
+	}
+	
+	this.ReloadList = function(bolShowSplash)
+	{
+		bolShowSplash = (bolShowSplash != undefined)? bolShowSplash : false;
+		
+		var objData = 	{
+							ServiceList	:	{
+												Account			: this.intAccountId,
+												ContainerDivId	: this.strTableContainerDivId,
+												Filter			: this.elmFilterCombo.value
+											}
+						};
 
 		// Call the AppTemplate method which renders just the AccountServices table
-		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountServicesTable", objObjects);
+		//Vixen.Ajax.CallAppTemplate("Account", "RenderAccountServicesTable", objData, "Div", bolShowSplash);
+		Vixen.Ajax.CallAppTemplate("Account", "RenderAccountServicesTable", objData, null, bolShowSplash);
 	}
 }
 

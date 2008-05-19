@@ -17,8 +17,7 @@
  */
 class HtmlTemplateDocumentTemplate extends HtmlTemplate
 {
-
-	// This forms the popup content for the "Build PDF" functionality, allowing 
+	// This defines the popup content for the "Build PDF" functionality, allowing 
 	// the user to specify a hypothetical date and time for when the PDF will
 	// be built
 	private $_strBuildSamplePDFPopupContent = "
@@ -78,14 +77,12 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$this->_strContainerDivId	= $strId;
 		
 		$this->LoadJavascript("document_template");
-		$this->LoadJavascript("textarea");
+		if ($intContext != HTML_CONTEXT_VIEW)
+		{
+			$this->LoadJavascript("textarea");
+		}
 		$this->LoadJavascript("input_masks");
 		$this->LoadJavascript("validation");
-		
-		// I don't know why I included these 
-		//$this->LoadJavascript("table_sort");
-		//$this->LoadJavascript("highlight");
-		
 		
 		// Fill in the placeholders in the $_strBuildSamplePDFPopupContent string
 		// The time doesn't have to be too accurate, which is why it's ok to generate it here
@@ -216,7 +213,6 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	function RenderView()
 	{
 		// Prepare data
-		$strSource				= DBO()->DocumentTemplate->Source->Value;
 		$intCustomerGroup		= DBO()->CustomerGroup->Id->Value;
 		$intTemplateId			= (DBO()->DocumentTemplate->Id->IsSet)? DBO()->DocumentTemplate->Id->Value : "null";
 		$strDescription			= DBO()->DocumentTemplate->Description->Value;
@@ -248,7 +244,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		</div>
 	</div>
 
-	<textarea id='DocumentTemplate.Source' name='DocumentTemplate.Source' wrap='off' readonly='true' style='overflow:auto;width:100%;height:$strTextAreaHeight;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'>$strSource</textarea>
+	<textarea id='DocumentTemplate.Source' name='DocumentTemplate.Source' wrap='off' readonly='true' style='overflow:auto;width:100%;height:$strTextAreaHeight;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'></textarea>
 
 	<div class='ButtonContainer'>
 		<div class='Left'>
@@ -276,7 +272,6 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	function RenderForm()
 	{
 		// Prepare data
-		$strSource				= DBO()->DocumentTemplate->Source->Value;
 		$strEffectiveOn			= DBO()->DocumentTemplate->EffectiveOn->Value;
 		$intCustomerGroup		= DBO()->CustomerGroup->Id->Value;
 		$intTemplateId			= (DBO()->DocumentTemplate->Id->IsSet)? DBO()->DocumentTemplate->Id->Value : "null";
@@ -315,7 +310,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		</div>
 	</div>
 
-	<textarea id='DocumentTemplate.Source' name='DocumentTemplate.Source' wrap='off' style='overflow:auto;width:100%;height:$strTextAreaHeight;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'>$strSource</textarea>
+	<textarea id='DocumentTemplate.Source' name='DocumentTemplate.Source' wrap='off' style='overflow:auto;width:100%;height:$strTextAreaHeight;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'></textarea>
 
 	<div class='ButtonContainer'>
 		<div class='Left'>

@@ -69,6 +69,9 @@ function VixenDocumentTemplateClass()
 		this.arrResourceTypes				= arrResourceTypes;
 		this.strBuildSamplePDFPopupContent	= strBuildSamplePDFPopupContent;
 		
+		// Copy the Sourcecode into the textarea
+		this.elmSourceCode.innerHTML = this.objTemplate.Source;
+		
 		// Register tab handler for the textarea
 		Event.startObserving(this.elmSourceCode, "keydown", TextAreaTabListener, true);
 		
@@ -111,6 +114,9 @@ function VixenDocumentTemplateClass()
 		this.objSchema						= objSchema;
 		this.strBuildSamplePDFPopupContent	= strBuildSamplePDFPopupContent;
 		this.elmSourceCode					= $ID("DocumentTemplate.Source");
+		
+		// Copy the Sourcecode into the textarea
+		this.elmSourceCode.innerHTML = this.objTemplate.Source;
 	}
 	
 

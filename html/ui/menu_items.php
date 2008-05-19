@@ -717,6 +717,16 @@ class MenuItems
 			throw new Exception("Must specify an AccountId or ServiceId");
 		}
 		
+		if ($intServiceId)
+		{
+			$strPopupId = "ProvisioningHistoryPopup{$intServiceId}";
+		}
+		else
+		{
+			$strPopupId = "AccountProvisioningHistoryPopupId";
+		}
+		
+		
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;
 		$arrData['Account']['Id'] = $intAccountId;
@@ -724,7 +734,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ProvisioningHistoryPopupId\", \"ExtraLarge\", \"History\", \"Provisioning\", \"ViewHistory\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"$strPopupId\", \"ExtraLarge\", \"History\", \"Provisioning\", \"ViewHistory\", $strJsonCode)";
 	}
 
 

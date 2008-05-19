@@ -46,6 +46,7 @@ function VixenProvisioningPageClass()
 	this.elmMasterServiceCheckbox	= null;
 	this.arrServiceCheckboxElements	= null;
 	this.bolMissingAddressDetails	= null;
+	this.elmServiceFilterCombo		= null;
 	
 	this.elmRequestCombo			= null;
 	this.elmCarrierCombo			= null;
@@ -77,7 +78,8 @@ function VixenProvisioningPageClass()
 		this.bolMissingAddressDetails	= bolMissingAddressDetails;
 		
 		// Save a reference to the "SelectAllServices" checkbox
-		this.elmMasterServiceCheckbox = document.getElementById("SelectAllServicesCheckbox");
+		this.elmMasterServiceCheckbox	= $ID("SelectAllServicesCheckbox");
+		this.elmServiceFilterCombo		= $ID("ServicesListFilterCombo");
 		
 		// Save a reference to each Service checkbox element
 		this.arrServiceCheckboxElements = document.getElementsByName('ServiceCheckbox');
@@ -146,9 +148,9 @@ function VixenProvisioningPageClass()
 	/**
 	 * UpdateServiceToggle
 	 *
-	 * Checks/Unchecks all the Select All Services checkbox based on whether or not all the services are currently selected
+	 * Checks/Unchecks the Select All Services checkbox based on whether or not all the services are currently selected
 	 *  
-	 * Checks/Unchecks all the Select All Services checkbox based on whether or not all the services are currently selected
+	 * Checks/Unchecks the Select All Services checkbox based on whether or not all the services are currently selected
 	 *
 	 * @return	void
 	 * @method
@@ -160,6 +162,11 @@ function VixenProvisioningPageClass()
 		for (i=0; i < this.arrServiceCheckboxElements.length; i++)
 		{
 			bolAllSelected = (bolAllSelected && this.arrServiceCheckboxElements[i].checked);
+		}
+		
+		if (this.arrServiceCheckboxElements.length == 0)
+		{
+			bolAllSelected = false;
 		}
 	
 		this.elmMasterServiceCheckbox.checked = bolAllSelected;
@@ -189,9 +196,9 @@ function VixenProvisioningPageClass()
 			this.intAccountId = intAccountId;
 		}
 		
-		this.elmRequestCombo	= document.getElementById("RequestCombo");
-		this.elmCarrierCombo	= document.getElementById("CarrierCombo");
-		this.elmAuthDateTextBox	= document.getElementById("AuthorisationDateTextBox");
+		this.elmRequestCombo	= $ID("RequestCombo");
+		this.elmCarrierCombo	= $ID("CarrierCombo");
+		this.elmAuthDateTextBox	= $ID("AuthorisationDateTextBox");
 	}
 
 	//------------------------------------------------------------------------//
@@ -273,30 +280,40 @@ function VixenProvisioningPageClass()
 	// Listener for when one of the services has its address details updated
 	this.OnServiceDetailsUpdate = function(objEvent, objThis)
 	{
-		// Build a list of all the services that are currently selected
-		var arrServices = new Array();
-		for (i=0; i < objThis.arrServiceCheckboxElements.length; i++)
-		{
-			if (objThis.arrServiceCheckboxElements[i].checked)
-			{
-				arrServices.push(parseInt(objThis.arrServiceCheckboxElements[i].getAttribute('Service')));
-			}
-		}
-
-		// Set up Properties to be sent to AppTemplateProvisioning->RenderHistoryList
-		var objObjects 						= {};
-		objObjects.Account 					= {};
-		objObjects.Account.Id 				= objThis.intAccountId;
-		objObjects.List						= {};
-		objObjects.List.SelectedServices	= arrServices;
-		objObjects.List.ContainerDivId		= objThis.strServicesContainerDivId;
-		
-		Vixen.Ajax.CallAppTemplate("Provisioning", "RenderServiceList", objObjects);
+		objThis.ReloadServiceList();
 	}
 	
+	this.ReloadServiceList = function(bolShowSplash)
+	{
+		bolShowSplash = (bolShowSplash != undefined)? bolShowSplash : false;
+	
+		// Build a list of all the services that are currently selected
+		var arrServices = new Array();
+		for (i=0; i < this.arrServiceCheckboxElements.length; i++)
+		{
+			if (this.arrServiceCheckboxElements[i].checked)
+			{
+				arrServices.push(parseInt(this.arrServiceCheckboxElements[i].getAttribute('Service')));
+			}
+		}
+		
+		// Set up Properties to be sent to AppTemplateProvisioning->RenderServiceList
+		var objData = 	{	Account	:	{	
+											Id					: this.intAccountId
+										},
+							List	:	{
+											SelectedServices	: arrServices,
+											ContainerDivId		: this.strServicesContainerDivId,
+											Filter				: this.elmServiceFilterCombo.value
+										}
+						};
+		
+		
+		Vixen.Ajax.CallAppTemplate("Provisioning", "RenderServiceList", objData, null, bolShowSplash);
+	}
 }
 
-// instanciate the object
+// Instanciate the object
 if (Vixen.ProvisioningPage == undefined)
 {
 	Vixen.ProvisioningPage = new VixenProvisioningPageClass;

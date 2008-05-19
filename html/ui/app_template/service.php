@@ -2181,6 +2181,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// The service was activated, which required a new service to be created
 					$intServiceId = DBO()->NewService->Id->Value;
+					/*  Multiple services modeling a single service should be hidden from the user
 					$intOldServiceRecordId = DBO()->Service->Id->Value;
 					
 					// Create a note for the old service Id detailing what has happened
@@ -2188,6 +2189,7 @@ class AppTemplateService extends ApplicationTemplate
 													"  Please refer to the new service record (id: $intServiceId) for future use of this service.";
 					
 					SaveSystemNote($strNoteForOldServiceRecord, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intOldServiceRecordId);
+					*/
 				}
 				else
 				{
@@ -2219,10 +2221,11 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Alert the user
 			$strMsgNewService = "";
-			if (DBO()->NewService->Id->Value)
+			/*if (DBO()->NewService->Id->Value)
 			{
 				$strMsgNewService = ".  A new service record had to be made.  Please refer to it from now on.  A note detailing this, has been created";
 			}
+			*/
 			
 			// Check that something was actually changed
 			if ($strNoteDetails != "" || $strChangesNote != "")
@@ -3091,9 +3094,9 @@ class AppTemplateService extends ApplicationTemplate
 			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.  The other service must be disconnected or archived before this service can be activated";
 		}
 		
-		// If the Service was created today, then just update the ClosedOn and Status properties
+		// If the Service hasn't closed yet, then just update the ClosedOn and Status properties
 		// You do not need to create a new record, or renormalise CDRs
-		if ($strCreatedOn == $strNow)
+		if ($strClosedOn >= $strNow)
 		{
 			// Just update the record
 			$arrUpdate = Array	(	"Id"		=> $intService,
@@ -3564,6 +3567,28 @@ class AppTemplateService extends ApplicationTemplate
 		
 		$arrRecord = $selMostRecentService->Fetch();
 		return $arrRecord['Id'];
+	}
+	
+	// Retrieves an array storing all Service Ids which are used to model the same Service that $intService references
+	// (for the account the $itnService references)
+	static function GetAllServiceRecordIds($intService)
+	{
+		$strWhere		= "Account = (SELECT Account FROM Service WHERE Id = $intService) AND FNN = (SELECT FNN FROM Service WHERE Id = $intService)";
+		$selAllServices	= new StatementSelect("Service", "Id", $strWhere, "Id DESC");
+		if (!$selAllServices->Execute())
+		{
+			return FALSE;
+		}
+		
+		$arrRecordSet	= $selAllServices->FetchAll();
+		$arrServiceIds	= Array();
+		
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			$arrServiceIds[] = $arrRecord['Id'];
+		}
+		
+		return $arrServiceIds;
 	}
 	
 	

@@ -90,7 +90,7 @@ function VixenAjaxClass()
 			// Draw the Page Loading splash (this will show after 1 second)
 			Vixen.Popup.ShowPageLoadingSplash("Please wait", null, null, null, 1000);
 		}
-	
+
 		// Send object
 		this.Send(objSend);
 	}

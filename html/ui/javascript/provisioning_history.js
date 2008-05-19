@@ -65,7 +65,7 @@ function VixenProvisioningHistoryClass()
 		{
 			this.strPopupId = strPopupId;
 		}
-		
+
 		Vixen.EventHandler.AddListener("OnProvisioningRequestSubmission", this.OnProvisioningHistoryUpdate, this);
 		Vixen.EventHandler.AddListener("OnProvisioningRequestCancellation", this.OnProvisioningHistoryUpdate, this);
 	}
@@ -168,7 +168,7 @@ function VixenProvisioningHistoryClass()
 			// But first remove the listeners as they are no longer required
 			Vixen.EventHandler.RemoveListener("OnProvisioningRequestSubmission", objThis.OnProvisioningHistoryUpdate);
 			Vixen.EventHandler.RemoveListener("OnProvisioningRequestCancellation", objThis.OnProvisioningHistoryUpdate);
-			
+
 			//TODO! And you should probably destroy the object (but I'm currently within the object?)
 			return true;
 		}

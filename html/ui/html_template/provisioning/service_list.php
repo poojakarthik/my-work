@@ -64,6 +64,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("provisioning_page");
+		$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -80,35 +81,27 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$arrSelectedServices = DBO()->Request->ServiceIds->Value;
+		$arrSelectedServices	= DBO()->Request->ServiceIds->Value;
+		$arrServices			= DBO()->Account->Services->Value;
 		
 		// Flag records that can/can't be provisioned and find out if there are any
 		// service address details missing
 		$bolMissingAddressDetails = FALSE;
-		$strLastFNN = NULL;
-		foreach (DBL()->Service as $dboService)
-		{
-			if ($dboService->FNN->Value != $strLastFNN )
-			{
-				// This Service record can be provisioned
-				$dboService->CanProvision = TRUE;
-				
-				if (!$dboService->AddressId->Value)
-				{
-					// At least one service that qualifies for provisioning, doesn't have address details defined
-					$bolMissingAddressDetails = TRUE;
-				}
-			}
-			else
-			{
-				// This Service Record can't be provisioned because it is not the most
-				// recent one associated with this FNN
-				$dboService->CanProvision = FALSE;
-			}
-			$strLastFNN = $dboService->FNN->Value;
-		}
 		
-		echo "<h2 class='Services'>Services</h2>\n";
+		$intFilter = (DBO()->List->Filter->IsSet) ? DBO()->List->Filter->Value : 0;
+		
+		echo "
+<div style='width:100%;height:auto'>
+	<h2 class='Services' style='float:left'>Services</h2>
+			
+	<select id='ServicesListFilterCombo' style='float:left;margin-left:20px' onChange='Vixen.ProvisioningPage.ReloadServiceList(true)'>
+		<option value='0' ". 							(($intFilter == 0)? "selected='selected'" : "") 					.">Show All</option>
+		<option value='". SERVICE_ACTIVE ."' ".			(($intFilter == SERVICE_ACTIVE)? "selected='selected'" : "")		.">Active Only</option>
+		<option value='". SERVICE_DISCONNECTED ." ".	(($intFilter == SERVICE_DISCONNECTED)? "selected='selected'" : "")	."'>Disconnected</option>
+		<option value='". SERVICE_ARCHIVED ."' ".		(($intFilter == SERVICE_ARCHIVED)? "selected='selected'" : "")		.">Archived</option>
+	</select>
+</div>
+<div style='clear:both'></div>";
 		
 		// Build the checkbox used to select/unselect all the services
 		$strSelectAll = "<input type='checkbox' id='SelectAllServicesCheckbox' class='DefaultInputCheckBox' onchange='Vixen.ProvisioningPage.SelectAllServices();' />";
@@ -117,47 +110,41 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		Table()->Services->SetWidth("4%", "11%", "55%", "11%", "11%", "8%");
 		Table()->Services->SetAlignment("Left", "Left", "Left", "Left", "Left", "Right");
 		
-		foreach (DBL()->Service as $dboService)
+		foreach ($arrServices as $arrService)
 		{
-			$intServiceId = $dboService->Id->Value;
+			$intServiceId = $arrService['Id'];
 			
 			// Build the Actions Cell
 			$strViewAddressLink			= Href()->ViewServiceAddress($intServiceId);
 			$strEditAddressLink			= Href()->EditServiceAddress($intServiceId);
 			$strProvisioningHistoryLink	= "javascript:Vixen.ProvisioningPage.ShowHistory($intServiceId)";
-			if ($dboService->AddressId->Value != NULL)
+			if ($arrService['AddressId'] != NULL)
 			{
-				$strActionsCell  = "<a href='$strViewAddressLink'><img src='img/template/address.png' title='Address Details' /></a>";
+				$strActionsCell  = "<img src='img/template/address.png' title='Address Details' onclick='$strViewAddressLink' style='cursor:pointer'/>";
 			}
 			else
 			{
-				$strActionsCell  = "<a href='$strEditAddressLink'><img src='img/template/address.png' title='Address Details' /></a>";
+				$strActionsCell  = "<img src='img/template/address.png' title='Address Details' onclick='$strEditAddressLink' style='cursor:pointer'/>";
 			}
-			$strActionsCell .= "&nbsp;&nbsp;<a href='$strProvisioningHistoryLink'><img src='img/template/provisioning_history.png' title='Provisioning History' /></a>";
+			$strActionsCell .= "&nbsp;&nbsp;<img src='img/template/provisioning_history.png' title='Provisioning History' onclick='$strProvisioningHistoryLink' style='cursor:pointer'/>";
 
 			// Build the checkbox
-			if ($dboService->CanProvision->Value)
+			if ($arrService['AddressId'] != NULL)
 			{
-				if ($dboService->AddressId->Value != NULL)
-				{
-					// The service already has address details defined for it
-					$strChecked = (in_array($dboService->Id->Value, $arrSelectedServices))? "checked='checked'" : "";
-					$strSelectCell = "<input type='checkbox' class='DefaultInputCheckBox' name='ServiceCheckbox' Service='$intServiceId' $strChecked onchange='Vixen.ProvisioningPage.UpdateServiceToggle();'/>";
-				}
-				else
-				{
-					// The service does not have Address details specified.  Flag it
-					$strSelectCell = "<a href='$strEditAddressLink' title='No Address Details defined'><img src='img/template/flag_red.png'/></a>";
-				}
+				// The service already has address details defined for it
+				$strChecked		= (in_array($intServiceId, $arrSelectedServices))? "checked='checked'" : "";
+				$strSelectCell	= "<input type='checkbox' class='DefaultInputCheckBox' name='ServiceCheckbox' Service='$intServiceId' $strChecked onchange='Vixen.ProvisioningPage.UpdateServiceToggle();'/>";
 			}
 			else
 			{
-				// This record can't be provisioned
-				$strSelectCell = "";
+				// The service does not have Address details specified.  Flag it
+				$strSelectCell				= "<img src='img/template/flag_red.png' title='No Address Details defined' onclick='$strEditAddressLink' style='cursor:pointer'/>";
+				$bolMissingAddressDetails	= TRUE;
 			}
+			
 			// Build the FNN cell
 			$strViewServiceLink = Href()->ViewService($intServiceId);
-			if ($dboService->FNN->Value == NULL)
+			if ($arrService['FNN'] == NULL)
 			{
 				// The service doesn't have an FNN yet
 				$strFnn = "[not specified]";
@@ -165,7 +152,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			else
 			{
 				// The service has an FNN
-				$strFnn = $dboService->FNN->Value;
+				$strFnn = $arrService['FNN'];
 			}
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnn</a>"; 
 
@@ -173,11 +160,11 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			$intCurrentDate = strtotime(GetCurrentDateForMySQL());
 			
 			// Check if the ClosedOn date has been set
-			if ($dboService->ClosedOn->Value == NULL)
+			if ($arrService['History'][0]['ClosedOn'] == NULL)
 			{
 				// The service is not scheduled to close.  It is either active or hasn't been activated yet.
 				// Check if it is currently active
-				$intCreatedOn = strtotime($dboService->CreatedOn->Value);
+				$intCreatedOn = strtotime($arrService['History'][0]['CreatedOn']);
 				if ($intCurrentDate >= $intCreatedOn)
 				{
 					// The service is currently active
@@ -188,12 +175,12 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 					// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
 					$strStatusDesc = "Opens";
 				}
-				$strStatusDescDate = OutputMask()->ShortDate($dboService->CreatedOn->Value);
+				$strStatusDescDate = OutputMask()->ShortDate($arrService['History'][0]['CreatedOn']);
 			}
 			else
 			{
 				// The service has a ClosedOn date; check if it is in the future or past
-				$intClosedOn = strtotime($dboService->ClosedOn->Value);
+				$intClosedOn = strtotime($arrService['History'][0]['ClosedOn']);
 				if ($intClosedOn >= $intCurrentDate)
 				{
 					// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date) or today
@@ -204,15 +191,15 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 					// The service has been closed
 					$strStatusDesc = "Closed";
 				}
-				$strStatusDescDate = OutputMask()->ShortDate($dboService->ClosedOn->Value);
+				$strStatusDescDate = OutputMask()->ShortDate($arrService['History'][0]['ClosedOn']);
 			}
 			
 			// Build the plan cell
-			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($dboService->Id->Value);
-			if ($dboService->CurrentPlanId->Value)
+			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($intServiceId);
+			if ($arrService['CurrentPlan']['Id'])
 			{
 				// A plan was found
-				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$dboService->CurrentPlanName->Value}</a>";
+				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['CurrentPlan']['Name']}</a>";
 			}
 			else
 			{
@@ -221,27 +208,27 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			}
 			
 			// Find the future scheduled plan for the service (if there is one)
-			if ($dboService->FuturePlanId->Value)
+			if ($arrService['FuturePlan']['Id'])
 			{
 				// A plan has been found, which is scheduled to start for the next billing period
-				$strStartDate = date("d/m/Y", strtotime($dboService->FuturePlanStartDatetime->Value));
-				$strPlanCell .= "<br />As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$dboService->FuturePlanName->Value}</a>";
+				$strStartDate = date("d/m/Y", strtotime($arrService['FuturePlan']['StartDatetime']));
+				$strPlanCell .= "<br />As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['FuturePlan']['Name']}</a>";
 			}
 			
 			
 			// Build the Status cell
-			$strStatus = GetConstantDescription($dboService->Status->Value, "Service");
+			$strStatus = GetConstantDescription($arrService['History'][0]['Status'], "Service");
 			$strStatusCell = "<span title='$strStatusDesc $strStatusDescDate'>$strStatus<span>";
 			
 			// Build the Line Status cell
-			$strLineStatusCell = GetConstantDescription($dboService->LineStatus->Value, "LineStatus");
+			$strLineStatusCell = GetConstantDescription($arrService['History'][0]['LineStatus'], "LineStatus");
 			if ($strLineStatusCell === FALSE)
 			{
 				$strLineStatusCell = "Unknown";
 			}
 			else
 			{
-				$strLineStatusDate = $dboService->LineStatusDate->Value;
+				$strLineStatusDate = $arrService['History'][0]['LineStatusDate'];
 				if ($strLineStatusDate != NULL)
 				{
 					// LineStatusDate has been specified
@@ -250,8 +237,11 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 					$strLineStatusCell	= "<span title='$strLineStatusDesc'>$strLineStatusCell</span>";
 				}
 			}
-				
+			
+			$strHistoryDetails = HtmlTemplateServiceHistory::GetHistory($arrService['History']);
+			
 			Table()->Services->AddRow($strSelectCell, $strFnnCell, $strPlanCell, $strStatusCell, $strLineStatusCell, $strActionsCell);
+			Table()->Services->SetDetail($strHistoryDetails);
 		}
 		
 		// If the account has no services then output an appropriate message in the table
@@ -267,7 +257,6 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		
 		//Initialise the javascript object that manages this list
 		$intAccount					= DBO()->Account->Id->Value;
-		$intServiceCount			= DBL()->Service->RecordCount();
 		$strMissingAddressDetails	= ($bolMissingAddressDetails)? "true" : "false";
 		echo "<script type='text/javascript'>Vixen.ProvisioningPage.InitialiseServiceList('{$this->_strContainerDivId}', $intAccount, $strMissingAddressDetails)</script>\n";
 		echo "<div class='SmallSeperator'></div>";

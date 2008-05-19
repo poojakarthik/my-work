@@ -97,8 +97,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$this->RenderInPage($strTableContainerDivId);
 				break;
 			default:
-				//$this->RenderTable();
-$this->RenderTableNewWay();
+				$this->RenderTable();
 		}
 	}
 	
@@ -127,8 +126,7 @@ $this->RenderTableNewWay();
 		echo "<div id='$strTableContainerDivId' $strTableContainerStyle>\n";
 		
 		// Draw the table
-		//$this->RenderTable();
-$this->RenderTableNewWay();
+		$this->RenderTable();
 		
 		echo "</div>\n";  // Table Container
 	
@@ -163,12 +161,23 @@ $this->RenderTableNewWay();
 	 */
 	function RenderInPage($strTableContainerDivId)
 	{
-		echo "<h2 class='Services'>Services</h2>\n";
-		
+		echo "
+<div style='width:100%;height:auto'>
+	<h2 class='Services' style='float:left'>Services</h2>
+			
+	<select id='ServicesListFilterCombo' style='float:left;margin-left:20px' onChange='Vixen.AccountServices.ReloadList(true)'>
+		<option value='0'>Show All</option>
+		<option value='". SERVICE_ACTIVE ."' selected='selected'>Active Only</option>
+		<option value='". SERVICE_DISCONNECTED ."'>Disconnected</option>
+		<option value='". SERVICE_ARCHIVED ."'>Archived</option>
+	</select>
+</div>
+<div style='clear:both'></div>";
+
 		// Draw the table
 		echo "<div id='$strTableContainerDivId'>\n";
-		//$this->RenderTable();
-$this->RenderTableNewWay();
+		$this->RenderTable();
+
 		echo "</div>\n";
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
@@ -197,225 +206,6 @@ $this->RenderTableNewWay();
 	 * @method
 	 */
 	function RenderTable()
-	{
-		// Set up the objects required to find the current plan and future plan of a service
-		DBO()->CurrentRatePlan->SetTable("RatePlan");
-		DBO()->FutureRatePlan->SetTable("RatePlan");
-	
-		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-
-		Table()->ServiceTable->SetHeader("&nbsp;", "FNN #", "Plan", "&nbsp;", "&nbsp;", "&nbsp;", "Actions");
-		Table()->ServiceTable->SetWidth("3%", "10%", "46%", "7%", "11%", "15%", "8%");
-		Table()->ServiceTable->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left", "Left");
-		
-		$strStatusTitles = "Status :<br />Line :";
-		
-		foreach (DBL()->Service as $dboService)
-		{
-			// Build the Actions Cell
-			$strEditService				= "";
-			$strChangePlan				= "";
-			$strProvisioning			= "";
-			$strViewProvisioningHistory	= "";
-			if ($bolUserHasOperatorPerm)
-			{
-				// The user can edit stuff
-				$strEditServiceLink			= Href()->EditService($dboService->Id->Value);
-				$strEditService 			= "<a href='$strEditServiceLink' title='Edit Service'><img src='img/template/edit.png'></img></a>";
-				
-				$strChangePlanLink			= Href()->ChangePlan($dboService->Id->Value);
-				$strChangePlan 				= "<a href='$strChangePlanLink' title='Change Plan'><img src='img/template/plan.png'></img></a>";
-	
-				// Include a button for provisioning, if the service is a landline
-				if ($dboService->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
-				{
-					$strProvisioningLink	= Href()->Provisioning($dboService->Id->Value);
-					$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
-					
-					$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($dboService->Id->Value);
-					$strViewProvisioningHistory		= "<a href='$strViewProvisioningHistoryLink' title='View Provisioning History'><img src='img/template/provisioning_history.png'></img></a>";
-				}
-			}
-			
-			$strViewServiceNotesLink	= Href()->ViewServiceNotes($dboService->Id->Value);
-			$strViewServiceNotes 		= "<a href='$strViewServiceNotesLink' title='View Service Notes'><img src='img/template/note.png'></img></a>";
-			
-			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($dboService->Id->Value);
-			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
-			
-			$strActionsCell				= "$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning $strViewProvisioningHistory";
-
-			// Create a link to the View Plan for Service page
-			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($dboService->Id->Value);
-
-			// Find the current plan for the service (if there is one)
-			DBO()->CurrentRatePlan->Id = GetCurrentPlan($dboService->Id->Value);
-			if (DBO()->CurrentRatePlan->Id->Value)
-			{
-				// A plan was found
-				DBO()->CurrentRatePlan->Load();
-				$strCurrentPlan = DBO()->CurrentRatePlan->Name->Value;
-				
-				$strPlanCell = "<span><a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>$strCurrentPlan</a></span>";
-			}
-			else
-			{
-				// There is no current plan for the service
-				$strPlanCell = "<span class='Red'>No Plan Selected</span>";
-			}
-			
-			// Find the future scheduled plan for the service (if there is one)
-			DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod($dboService->Id->Value);
-			if (DBO()->FutureRatePlan->Id->Value)
-			{
-				// A plan has been found, which is scheduled to start for the next billing period
-				DBO()->FutureRatePlan->Load();
-				
-				$strFuturePlan = DBO()->FutureRatePlan->Name->Value;
-				$strPlanCell .= "<br /><span>As of next billing period : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>$strFuturePlan</a></span>";
-			}
-			
-
-			// Work out the Date to display along with the status
-			$intClosedOn = strtotime($dboService->ClosedOn->Value);
-			$intCurrentDate = strtotime(GetCurrentDateForMySQL());
-			
-			// Check if the ClosedOn date has been set
-			$bolFlagStatus = FALSE;
-			if ($dboService->ClosedOn->Value == NULL)
-			{
-				// The service is not scheduled to close.  It is either active or hasn't been activated yet.
-				// Check if it is currently active
-				$intCreatedOn = strtotime($dboService->CreatedOn->Value);
-				if ($intCurrentDate >= $intCreatedOn)
-				{
-					// The service is currently active
-					$strStatusDesc = "Opened";
-				}
-				else
-				{
-					// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
-					$strStatusDesc = "Opens";
-					$bolFlagStatus = TRUE;
-				}
-				$strStatusDescDate = OutputMask()->ShortDate($dboService->CreatedOn->Value);
-			}
-			else
-			{
-				// The service has a ClosedOn date; check if it is in the future or past
-				if ($intClosedOn >= $intCurrentDate)
-				{
-					// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date) or today
-					$strStatusDesc = "Closes";
-					$bolFlagStatus = TRUE;
-				}
-				else
-				{
-					// The service has been closed
-					$strStatusDesc = "Closed";
-				}
-				$strStatusDescDate = OutputMask()->ShortDate($dboService->ClosedOn->Value);
-			}
-
-			// Prepare the Status' of the service
-			$strStatus			= GetConstantDescription($dboService->Status->Value, "Service");
-			$strLineStatus		= GetConstantDescription($dboService->LineStatus->Value, "LineStatus");
-			$strLineStatusDate	= $dboService->LineStatusDate->Value;
-
-			$strLineStatusDesc = NULL;
-			if ($strLineStatus === FALSE)
-			{
-				// The line status is unknown
-				$strLineStatus = "Unknown";
-			}
-			elseif ($strLineStatusDate != NULL)
-			{
-				// LineStatus Date has been supplied
-				$strLineStatusDate = substr($strLineStatusDate, 11, 8) ." ". substr($strLineStatusDate, 8, 2) ."/". substr($strLineStatusDate, 5, 2) ."/". substr($strLineStatusDate, 0, 4);
-				$strLineStatusDesc = "Line Status was last updated: $strLineStatusDate";
-			}
-
-			$strStatusCell = "$strStatus<br />$strLineStatus";
-			if ($strLineStatusDesc)
-			{
-				$strStatusCell = "<span title='$strLineStatusDesc'>$strStatusCell</span>";
-			}
-			
-			$strStatusDescCell = "$strStatusDesc $strStatusDescDate";
-			if ($bolFlagStatus)
-			{
-				$strStatusDescCell = "<span class='Red'>$strStatusDescCell</span>";
-			}
-			
-			$strViewServiceLink = Href()->ViewService($dboService->Id->Value);
-			
-			if ($dboService->FNN->Value == NULL)
-			{
-				// The service doesn't have an FNN yet
-				$strFnnDescription = "[not specified]";
-			}
-			else
-			{
-				// The service has an FNN
-				$strFnnDescription = $dboService->FNN->Value;
-			}
-
-			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
-			
-			//$strServiceType = GetConstantDescription($dboService->ServiceType->Value, "ServiceType");
-			
-			switch ($dboService->ServiceType->Value)
-			{
-				case SERVICE_TYPE_MOBILE:
-					$strServiceTypeClass = "ServiceTypeIconMobile";
-					break;
-				case SERVICE_TYPE_LAND_LINE:
-					$strServiceTypeClass = "ServiceTypeIconLandLine";
-					break;
-				case SERVICE_TYPE_ADSL:
-					$strServiceTypeClass = "ServiceTypeIconADSL";
-					break;
-				case SERVICE_TYPE_INBOUND:
-					$strServiceTypeClass = "ServiceTypeIconInbound";
-					break;
-				default:
-					$strServiceTypeClass = "ServiceTypeIconBlank";
-					break;
-			}
-			
-			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
-			
-			Table()->ServiceTable->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);
-		}
-		
-		// If the account has no services then output an appropriate message in the table
-		if (Table()->ServiceTable->RowCount() == 0)
-		{
-			// There are no services to stick in this table
-			Table()->ServiceTable->AddRow("No services to display");
-			Table()->ServiceTable->SetRowAlignment("left");
-			Table()->ServiceTable->SetRowColumnSpan(7);
-		}
-		
-		// Row highlighting doesn't seem to be working with popups
-		// Row highlighting has been turned off, because it stops working if the Service table is ever redrawn
-		Table()->ServiceTable->RowHighlighting = TRUE;
-		Table()->ServiceTable->Render();
-	}
-	
-	//------------------------------------------------------------------------//
-	// RenderTableNewWay
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderTableNewWay()
-	 *
-	 * Render this HTML Template
-	 *
-	 * Render this HTML Template
-	 *
-	 * @method
-	 */
-	function RenderTableNewWay()
 	{
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$arrServices			= DBO()->Account->Services->Value;
@@ -449,7 +239,7 @@ $this->RenderTableNewWay();
 					$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
 					
 					$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($arrService['Id']);
-					$strViewProvisioningHisotry		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink' style='cursor:pointer'/>";
+					$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink' style='cursor:pointer'/>";
 				}
 			}
 			
@@ -577,8 +367,9 @@ $this->RenderTableNewWay();
 			}
 			
 			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
+
+			$strHistoryDetails = HtmlTemplateServiceHistory::GetHistory($arrService['History']);
 			
-			$strHistoryDetails = $this->_GetHistory($arrService);
 			
 			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);
 			Table()->Services->SetDetail($strHistoryDetails);
@@ -598,32 +389,6 @@ $this->RenderTableNewWay();
 		Table()->Services->RowHighlighting = TRUE;
 		Table()->Services->Render();
 	}
-	
-	// Builds a HTML table detailing the history of a service (activations/deactivations)
-	private function _GetHistory($arrService)
-	{
-return "Insert History here";		
-		$intLastRecordIndex = count($arrService['History']) - 1;
-		$strRows = "";
-		foreach ($arrService['History'] as $intIndex=>$arrHistoryItem)
-		{
-			$strCreatedBy			= GetEmployeeName($arrHistoryItem['CreatedBy']) ." (". GetEmployeeUserName($arrHistoryItem['CreatedBy']) .")";
-			$strCreatedOn			= OutputMask()->ShortDate($arrHistoryItem['CreatedOn']);
-			$strNatureOfCreation	= ($intIndex == $intLastRecordIndex)? "Created" : "Activated";
-			/*
-			if ($arrHistoryItem['ClosedOn'] != NULL)
-			{
-				$strClosedBy	= ($arrHistoryItem['ClosedBy'] != NULL)? $strClosedBy = GetEmployeeName($arrHistoryItem['ClosedBy']) ." (". GetEmployeeUserName($arrHistoryItem['ClosedBy']) .")" : "";
-				$strClosedOn	= ($arrHistoryItem['ClosedOn'] != NULL)? OutputMask()->ShortDate($arrHistoryItem['ClosedOn']) : "";
-			
-				$strNatureOfClosure		= ($arrHistoryItem['ClosedOn'] == )
-				
-			}
-			*/
-			
-		}
-	}
-	
 }
 
 ?>

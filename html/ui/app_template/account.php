@@ -141,9 +141,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$strWhere = "Account = <Account>";
 		
 		// Load all the services belonging to the account, that the user has permission to view
-		DBL()->Service->Where->Set($strWhere, Array("Account"=>DBO()->Account->Id->Value));
-		DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
-		DBL()->Service->Load();
+		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
 		
 		$this->LoadPage('account_services');
 		return TRUE;
@@ -557,12 +555,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Load the List of services
 		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)
-		//DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
-		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
-		//DBL()->Service->Load();
-$arrServices = $this->GetServices(DBO()->Account->Id->Value);
-DBO()->Account->Services = $arrServices;
-//DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
+		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
 		
 		// Load the user notes
 		LoadNotes(DBO()->Account->Id->Value);
@@ -597,15 +590,10 @@ DBO()->Account->Services = $arrServices;
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		// Load all the services belonging to the account, that the user has permission to view
-		//DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
-		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
-		//DBL()->Service->Load();
-$arrServices = $this->GetServices(DBO()->Account->Id->Value);
-DBO()->Account->Services = $arrServices;
-//DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
+		DBO()->Account->Services = $this->GetServices(DBO()->ServiceList->Account->Value, DBO()->ServiceList->Filter->Value);
 		
 		//Render the AccountServices table
-		Ajax()->RenderHtmlTemplate("AccountServicesList", HTML_CONTEXT_DEFAULT, DBO()->TableContainer->Id->Value);
+		Ajax()->RenderHtmlTemplate("AccountServicesList", HTML_CONTEXT_DEFAULT, DBO()->ServiceList->ContainerDivId->Value);
 
 		return TRUE;
 	}
@@ -639,14 +627,19 @@ DBO()->Account->Services = $arrServices;
 	 * 									['LineStatus']
 	 * 									['LineStatusDate']
 	 * 
-	 * @param	int		$intAccount		Id of the Account to retrieve the services of 
+	 * @param	int		$intAccount		Id of the Account to retrieve the services of
+	 * @param	int		$intFilter		optional, Filter constant.  Defaults to SERVICE_ACTIVE
+	 * 									0 						:	Retrieve all Services
+	 * 									SERVICE_ACTIVE			:	Retrieve all Services with ClosedOn == NULL or ClosedOn >= NOW()
+	 * 									SERVICE_DISCONNECTED	:	Retrieve all Services with Status == SERVICE_DISCONNECTED AND ClosedOn in the past 
+	 *									SERVICE_ARCHIVED		:	Retrieve all Services with Status == SERVICE_ARCHIVED AND ClosedOn in the past
 	 *
 	 * @return	mixed					FALSE:	On database error
 	 * 									Array:  $arrServices
 	 * 	
 	 * @method
 	 */
-	function GetServices($intAccount)
+	function GetServices($intAccount, $intFilter=SERVICE_ACTIVE)
 	{
 		// Load all the services belonging to the account
 		// OLD method
@@ -654,7 +647,7 @@ DBO()->Account->Services = $arrServices;
 		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
 		//DBL()->Service->Load();
 		
-		// Retrieve all the services belonging to the account and whether or not they have address details defined
+		// Retrieve all the services belonging to the account
 		$strTables	= "	Service AS S 
 						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
 								FROM ServiceRatePlan AS SRP2 
@@ -775,6 +768,47 @@ DBO()->Account->Services = $arrServices;
 			
 			// Add the Service to the array of Services
 			$arrServices[] = $arrService;
+		}
+		
+		// Apply the filter
+		$strToday = date("Y-m-d");
+		if ($intFilter)
+		{
+			$arrTempServices	= $arrServices;
+			$arrServices		= Array();
+			
+			foreach ($arrTempServices as $arrService)
+			{
+				switch ($intFilter)
+				{
+					case SERVICE_ACTIVE:
+						// Only keep the Service if ClosedOn IS NULL OR NOW() OR in the future
+						if ($arrService['History'][0]['ClosedOn'] == NULL || $arrService['History'][0]['ClosedOn'] >= $strToday)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+					
+					case SERVICE_DISCONNECTED:
+						// Only keep the Service if Status == Disconnected AND ClosedOn < NOW()
+						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strToday)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+					
+					case SERVICE_ARCHIVED:
+						// Only keep the Service if Status == Archived AND ClosedOn < NOW()
+						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strToday)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+				}
+			}
 		}
 		
 		return $arrServices;
@@ -1109,7 +1143,9 @@ DBO()->Account->Services = $arrServices;
 					// the Services where their status is set to Disconnected and their ClosedOn Date is set to today, because that 
 					// is how we are going to update the records anyway.
 					
-					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW()))";
+					//$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW()))";
+					//$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
+					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW())) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
 					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
 
 					// Retrieve all services attached to this Account where the Status is Active
@@ -1133,9 +1169,9 @@ DBO()->Account->Services = $arrServices;
 							$strChangesNote .= "Service Id: " . $dboService->Id->Value . ", FNN: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 							// Set the service ClosedOn, ClosedBy and Status properties and save
 							// Set the Service Status to SERVICE_DISCONNECTED
-							$dboService->ClosedOn = $strTodaysDate;
-							$dboService->ClosedBy = $intEmployeeId;
-							$dboService->Status = SERVICE_DISCONNECTED;
+							$dboService->ClosedOn	= $strTodaysDate;
+							$dboService->ClosedBy	= $intEmployeeId;
+							$dboService->Status		= SERVICE_DISCONNECTED;
 							
 							if (!$dboService->Save())
 							{
@@ -1153,10 +1189,10 @@ DBO()->Account->Services = $arrServices;
 				case ACCOUNT_ARCHIVED:
 					// If user has selected "Archived" for the account status only Active and Disconnected services have their Status and 
 					// ClosedOn/CloseBy properties changed						
-					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR Status = <ServiceDisconnected>)";
+					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR Status = <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
 					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
 					
-					// Retrieve all services attached to this Account where the Status is Active/Disconnected								
+					// Retrieve all services attached to this Account where the Status is Active/Disconnected
 					DBL()->Service->Where->Set($strWhere, $arrWhere);
 					DBL()->Service->Load();
 					
@@ -1176,9 +1212,9 @@ DBO()->Account->Services = $arrServices;
 							$strChangesNote .= "Service Id: " . $dboService->Id->Value . ", FNN: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 
 							// Set the service ClosedOn, ClosedBy and Status properties and save							
-							$dboService->ClosedOn = $strTodaysDate;
-							$dboService->ClosedBy = $intEmployeeId;
-							$dboService->Status = SERVICE_ARCHIVED;
+							$dboService->ClosedOn	= $strTodaysDate;
+							$dboService->ClosedBy	= $intEmployeeId;
+							$dboService->Status		= SERVICE_ARCHIVED;
 							if (!$dboService->Save())
 							{
 								// An error occured in updating one of the services

@@ -843,15 +843,39 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUp
 		$strWhere							= "(Account = <AccountId> OR (AccountGroup = <AccountGroupId> AND Account IS NULL AND Service IS NULL AND Contact IS NULL))";
 		$strCookiePrefix					= "Account";
 	}
-	elseif (DBO()->Service->Id->Value)
+	elseif ($intServiceId)
 	{
 		// Load service notes
 		DBO()->NoteDetails->ServiceNotes	= TRUE;
-		$arrWhere							= Array("ServiceId" => $intServiceId);
-		$strWhere							= "Service = <ServiceId>";
-		$strCookiePrefix					= "Service";
+		
+		// Get all Service Ids relating to $intServiceId
+		$arrServiceIds = AppTemplateService::GetAllServiceRecordIds($intServiceId);
+		
+		if (!is_array($arrServiceIds))
+		{
+			// A database error must have occurred
+			return FALSE;
+		}
+		if (count($arrServiceIds) == 0)
+		{
+			// It couldn't even return $intService as an Id
+			return FALSE; 
+		}
+		elseif (count($arrServiceIds) == 1)
+		{
+			// Just one service record models this service
+			$strWhere = "Service = $intServiceId";
+		}
+		else
+		{
+			// Multiple service records have been required to model this service, for this account
+			$strWhere = "Service IN (". implode(", ", $arrServiceIds) .")";
+		}
+		
+		$arrWhere			= Array();
+		$strCookiePrefix	= "Service";
 	}
-	elseif (DBO()->Contact->Id->Value)
+	elseif ($intContactId)
 	{
 		// Load contact notes
 		DBO()->NoteDetails->ContactNotes	= TRUE;

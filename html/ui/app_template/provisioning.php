@@ -92,7 +92,8 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		}
 		
 		// Retrieve all the services belonging to the account and whether or not they have address details defined
-		$this->_LoadServiceDetails(DBO()->Account->Id->Value);
+		//$this->_LoadServiceDetails(DBO()->Account->Id->Value);
+DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 		
 		// Set up the BreadCrumb menu
 		BreadCrumb()->Employee_Console();
@@ -175,7 +176,8 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// Retrieve all the services belonging to the account and whether or not they have address details defined
-		$this->_LoadServiceDetails(DBO()->Account->Id->Value);
+		//$this->_LoadServiceDetails(DBO()->Account->Id->Value);
+		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, DBO()->List->Filter->Value);
 		
 		// Store the list of currently selected services
 		DBO()->Request->ServiceIds = DBO()->List->SelectedServices->Value;
@@ -574,11 +576,32 @@ class AppTemplateProvisioning extends ApplicationTemplate
 	{
 		//TODO! I think there are some ProvisioningResponse records which should never be shown, based on their Status
 		// Account for this
-	
+			
 		if ($intService)
 		{
 			// We are retrieving all records for a specific Service
-			$strWhereIdObject = "Service = $intService";
+			
+			// Get all Service Ids relating to $intService
+			$arrServiceIds = AppTemplateService::GetAllServiceRecordIds($intService);
+			
+			if (!is_array($arrServiceIds))
+			{
+				// A database error must have occurred
+				return FALSE;
+			}
+			if (count($arrServiceIds) == 0)
+			{
+				// It couldn't even return $intService as an Id
+				return FALSE; 
+			}
+			elseif (count($arrServiceIds) == 1)
+			{
+				$strWhereIdObject = "Service = $intService";
+			}
+			else
+			{
+				$strWhereIdObject = "Service IN (". implode(", ", $arrServiceIds) .")";
+			}
 		}
 		else if ($intAccount)
 		{
@@ -729,6 +752,219 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		DBL()->Service->Where->Set($strWhere, $arrWhere);
 		DBL()->Service->OrderBy("S.FNN ASC, S.Id DESC");
 		return DBL()->Service->Load();
+	}
+
+	//------------------------------------------------------------------------//
+	// GetServices
+	//------------------------------------------------------------------------//
+	/**
+	 * GetServices()
+	 *
+	 * Builds an array structure defining every service belonging to the account, and a history of their status, and their plan details
+	 * 
+	 * Builds an array structure defining every service belonging to the account, and a history of their status, and their plan details
+	 * The history details when the service was activated(or created) and Closed(disconnected or archived)
+	 * It will always have at least one record
+	 * On Success the returned array will be of the format:
+	 * $arrServices[]	['Id']
+	 * 					['FNN']
+	 * 					['ServiceType']
+	 * 					['AddressId']						Only store a reference to the most recent Service record's ServiceAddress record
+	 * 					['CurrentPlan']	['Id']
+	 * 									['Name']
+	 * 					['FuturePlan']	['Id']
+	 * 									['Name']
+	 * 									['StartDatetime']
+	 * 					['History'][]	['ServiceId']		These will be ordered from Latest to Earliest Service records modelling this Service for this account
+	 * 									['CreatedOn']
+	 * 									['ClosedOn']
+	 * 									['CreatedBy']
+	 * 									['ClosedBy']
+	 * 									['Status']
+	 * 									['LineStatus']
+	 * 									['LineStatusDate']
+	 * 
+	 * @param	int		$intAccount		Id of the Account to retrieve the services of 
+	 * @param	int		$intFilter		optional, Filter constant.  Defaults to SERVICE_ACTIVE
+	 * 									0 						:	Retrieve all LandLine Services
+	 * 									SERVICE_ACTIVE			:	Retrieve all LandLine Services with ClosedOn == NULL or ClosedOn >= NOW()
+	 * 									SERVICE_DISCONNECTED	:	Retrieve all LandLine Services with Status == SERVICE_DISCONNECTED AND ClosedOn in the past 
+	 *									SERVICE_ARCHIVED		:	Retrieve all LandLine Services with Status == SERVICE_ARCHIVED AND ClosedOn in the past
+	 *
+	 * @return	mixed					FALSE:	On database error
+	 * 									Array:  $arrServices
+	 * 	
+	 * @method
+	 */
+	function GetServices($intAccount, $intFilter=0)
+	{
+		// Retrieve all the services belonging to the account and whether or not they have address details defined
+		$strTables	= "	Service AS S LEFT JOIN ServiceAddress AS SA ON S.Id = SA.Service
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
+								FROM ServiceRatePlan AS SRP2 
+								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
+								ORDER BY SRP2.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
+								FROM ServiceRatePlan AS SRP4 
+								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
+								ORDER BY SRP4.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
+		$arrColumns	= Array("Id" 						=> "S.Id",
+							"FNN"						=> "S.FNN",
+							"ServiceType"				=> "S.ServiceType", 
+							"Status"		 			=> "S.Status",
+							"LineStatus"				=> "S.LineStatus",
+							"LineStatusDate"			=> "S.LineStatusDate",
+							"CreatedOn"					=> "S.CreatedOn", 
+							"ClosedOn"					=> "S.ClosedOn",
+							"CreatedBy"					=> "S.CreatedBy", 
+							"ClosedBy"					=> "S.ClosedBy",
+							"AddressId"					=> "SA.Id",
+							"CurrentPlanId" 			=> "RP1.Id",
+							"CurrentPlanName"			=> "RP1.Name",
+							"FuturePlanId"				=> "RP2.Id",
+							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
+		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
+		$arrWhere	= Array("AccountId" => $intAccount);
+		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
+		
+		$selServices = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+		if ($selServices->Execute($arrWhere) === FALSE)
+		{
+			// An error occurred
+			return FALSE;
+		}
+		
+		$arrServices	= Array();
+		$arrRecord		= $selServices->Fetch();
+		while ($arrRecord !== FALSE)
+		{
+			// Create the Service Array
+			$arrService = Array (
+									"Id"	=> $arrRecord['Id'],
+									"FNN"	=> $arrRecord['FNN'],
+									"ServiceType"	=> $arrRecord['ServiceType'],
+									"AddressId"		=> $arrRecord['AddressId']
+								);
+
+			// Add details about the Service's current plan, if it has one
+			if ($arrRecord['CurrentPlanId'] != NULL)
+			{
+				$arrService['CurrentPlan'] = Array	(
+														"Id"	=> $arrRecord['CurrentPlanId'],
+														"Name"	=> $arrRecord['CurrentPlanName']
+													);
+			}
+			else
+			{
+				$arrService['CurrentPlan'] = NULL;
+			}
+			
+			// Add details about the Service's Future scheduled plan, if it has one
+			if ($arrRecord['FuturePlanId'] != NULL)
+			{
+				$arrService['FuturePlan'] = Array	(
+														"Id"	=> $arrRecord['FuturePlanId'],
+														"Name"	=> $arrRecord['FuturePlanName'],
+														"StartDatetime"	=> $arrRecord['FuturePlanStartDatetime']
+													);
+			}
+			else
+			{
+				$arrService['FuturePlan'] = NULL;
+			}
+			
+			// Add this record's details to the history array
+			$arrService['History']		= Array();
+			$arrService['History'][]	= Array	(
+													"ServiceId"	=> $arrRecord['Id'],
+													"CreatedOn"	=> $arrRecord['CreatedOn'],
+													"ClosedOn"	=> $arrRecord['ClosedOn'],
+													"CreatedBy"	=> $arrRecord['CreatedBy'],
+													"ClosedBy"	=> $arrRecord['ClosedBy'],
+													"Status"	=> $arrRecord['Status'],
+													"LineStatus"		=> $arrRecord['LineStatus'],
+													"LineStatusDate"	=> $arrRecord['LineStatusDate'],
+												);
+			 
+			
+			// If multiple Service records relate to the one actual service then they will be consecutive in the RecordSet
+			// Find each one and add it to the Status history
+			while (($arrRecord = $selServices->Fetch()) !== FALSE)
+			{
+				if ($arrRecord['FNN'] == $arrService['FNN'])
+				{
+					// This record relates to the same Service
+					$arrService['History'][]	= Array	(
+															"ServiceId"	=> $arrRecord['Id'],
+															"CreatedOn"	=> $arrRecord['CreatedOn'],
+															"ClosedOn"	=> $arrRecord['ClosedOn'],
+															"CreatedBy"	=> $arrRecord['CreatedBy'],
+															"ClosedBy"	=> $arrRecord['ClosedBy'],
+															"Status"	=> $arrRecord['Status'],
+															"LineStatus"		=> $arrService['LineStatus'],
+															"LineStatusDate"	=> $arrService['LineStatusDate'],
+														);
+				}
+				else
+				{
+					// We have moved on to the next Service
+					break;
+				}
+			}
+			
+			// Add the Service to the array of Services
+			$arrServices[] = $arrService;
+		}
+		
+		// Apply the filter
+		$strToday = date("Y-m-d");
+		if ($intFilter)
+		{
+			$arrTempServices	= $arrServices;
+			$arrServices		= Array();
+			
+			foreach ($arrTempServices as $arrService)
+			{
+				switch ($intFilter)
+				{
+					case SERVICE_ACTIVE:
+						// Only keep the Service if ClosedOn IS NULL OR NOW() OR in the future
+						if ($arrService['History'][0]['ClosedOn'] == NULL || $arrService['History'][0]['ClosedOn'] >= $strToday)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+					
+					case SERVICE_DISCONNECTED:
+						// Only keep the Service if Status == Disconnected AND ClosedOn < NOW()
+						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strToday)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+					
+					case SERVICE_ARCHIVED:
+						// Only keep the Service if Status == Archived AND ClosedOn < NOW()
+						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strToday)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+				}
+			}
+		}
+		
+		return $arrServices;
 	}
 
 
