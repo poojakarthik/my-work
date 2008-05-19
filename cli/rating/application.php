@@ -190,7 +190,7 @@
 										
 		$strStandardWhere			= 	"ServiceRateGroup.Active = 1 AND <DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime\n";
 		$strOldCDRWhere				=	"<DateTime> < ServiceRateGroup.StartDatetime\n";
-										
+		
 		//FAKE : for testing only
 		//$strTables = "Rate";
 		//$strWhere  = "1 = 1";
@@ -232,6 +232,25 @@
 		$arrCols['LatestCDR']	= NULL;
 		$this->_selService		= new StatementSelect("Service", $arrCols, "Id = <Service>");
 		$this->_ubiService		= new StatementUpdateById("Service", $arrCols);
+		
+		// New Rating Query
+		$strWhere							=	"( Rate.Monday	= <Monday> OR \n" .
+												"Rate.Tuesday	= <Tuesday> OR \n" .
+												"Rate.Wednesday	= <Wednesday> OR \n" .
+												"Rate.Thursday	= <Thursday> OR \n" .
+												"Rate.Friday	= <Friday> OR \n" .
+												"Rate.Saturday	= <Saturday> OR \n" .
+												"Rate.Sunday	= <Sunday> ) AND \n" .
+												"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND \n" .
+												"ServiceRateGroup.Service = <Service> AND \n" .
+												"Rate.Fleet = <Fleet> AND \n" .
+												"ServiceRateGroup.Active = 1 AND \n" .
+												"(<StartDatetime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime OR <ClosestRate> = 1)";
+		
+		$this->_selRate	= new StatementSelect(	"((ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup) JOIN RateGroupRate ON RateGroupRate.RateGroup = RateGroup.Id) JOIN Rate ON Rate.Id = RateGroup.Rate",
+												"Rate.*, ServiceRateGroup.StartDatetime, ServiceRateGroup.EndDatetime",
+												$strWhere,
+												"(RateGroup.Fleet = Rate.Fleet) DESC");
  	}
  	
 	//------------------------------------------------------------------------//
@@ -280,7 +299,7 @@
 		$this->_arrCurrentCDR = $arrCDR;
 		
 		// Find Rate for this CDR
-		if (!$this->_arrCurrentRate = $this->_FindRate())
+		if (!$this->_arrCurrentRate = $this->_FindRateNew())
 		{
 			//Debug("No rate!");
 			return FALSE;
@@ -429,7 +448,7 @@
 			$this->_arrCurrentCDR = $arrCDR;
 		
 			// Find Rate for this CDR
-			if (!$this->_arrCurrentRate = $this->_FindRate())
+			if (!$this->_arrCurrentRate = $this->_FindRateNew())
 			{
 				// rate not found
 				// set status in database
@@ -1392,6 +1411,146 @@
 	 {
 	 	// TODO
 	 }
+
+
+	//------------------------------------------------------------------------//
+	// _FindRateNew()
+	//------------------------------------------------------------------------//
+	/**
+	 * _FindRateNew()
+	 *
+	 * Find the appropriate rate for the current CDR
+	 *
+	 * Find the appropriate rate for the current CDR
+	 *
+	 * @return	mixed	array	rate details
+	 * 					bool	FALSE if rate not found
+	 * @method
+	 */
+	protected function _FindRateNew()
+	{
+	 	// Set up the rate-finding query
+	 	$intTime					= strtotime($this->_arrCurrentCDR['StartDatetime']);
+	 	$strDay						= date("l", $intTime);
+	 	$arrWhere['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
+	 	$arrWhere['Time']			= date("H:i:s", $intTime);
+	 	$arrWhere['Monday']			= ($strDay == "Monday")		? TRUE : DONKEY;
+	 	$arrWhere['Tuesday']		= ($strDay == "Tuesday")	? TRUE : DONKEY;
+	 	$arrWhere['Wednesday']		= ($strDay == "Wednesday")	? TRUE : DONKEY;
+	 	$arrWhere['Thursday']		= ($strDay == "Thursday")	? TRUE : DONKEY;
+	 	$arrWhere['Friday']			= ($strDay == "Friday")		? TRUE : DONKEY;
+	 	$arrWhere['Saturday']		= ($strDay == "Saturday")	? TRUE : DONKEY;
+	 	$arrWhere['Sunday']			= ($strDay == "Sunday")		? TRUE : DONKEY;
+		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
+		$arrWhere['Destination']	= ($this->_arrCurrentCDR['DestinationCode'] === NULL) ? 0 : $this->_arrCurrentCDR['DestinationCode'];
+		$arrWhere['ClosestRate']	= FALSE;
+		
+		// Could this be a Fleet call?
+		$bolFleet				= FALSE;
+		$arrDestinationOwner	= FindFNNOwner($this->_arrCurrentCDR['FNN'], $this->_arrCurrentCDR['StartDatetime']);
+		if ($arrDestinationOwner['Account'] == $this->_arrCurrentCDR['Account'])
+		{
+			$arrWhere['Account']		= $arrDestinationOwner['Account'];
+			$arrWhere['AccountGroup']	= $arrDestinationOwner['AccountGroup'];
+			$arrWhere['Service']		= $arrDestinationOwner['Service'];
+			$arrWhere['Fleet']			= TRUE;
+			if ($this->_selRate->Execute($arrWhere) === FALSE)
+			{
+				// Error
+				Debug($this->_selRate->Error());
+			}
+			elseif ($arrDestinationRate = $this->_selRate->Fetch())
+			{
+				// Found a Fleet Rate
+				$bolFleet	= TRUE;
+			}
+		}
+		
+		// Find the Rate
+		$arrWhere['Account']		= $this->_arrCurrentCDR['Account'];
+		$arrWhere['AccountGroup']	= $this->_arrCurrentCDR['AccountGroup'];
+		$arrWhere['Service']		= $this->_arrCurrentCDR['Service'];
+		$arrWhere['Fleet']			= $bolFleet;
+		$this->_arrCurrentRate		= NULL;
+		if ($this->_selRate->Execute($arrWhere) === FALSE)
+		{
+			// Error
+			Debug($this->_selRate->Error());
+		}
+		elseif ($arrRate = $this->_selRate->Fetch())
+		{
+			// Found a Rate
+			$this->_arrCurrentRate	= $arrRate;
+		}
+		elseif ($bolFleet)
+		{
+			// Didn't find a Fleet Rate, try to find a normal rate
+			if ($this->_selRate->Execute($arrWhere) === FALSE)
+			{
+				// Error
+				Debug($this->_selRate->Error());
+				
+			}
+			elseif ($arrRate = $this->_selRate->Fetch())
+			{
+				// Found a Standard Rate
+				$this->_arrCurrentRate	= $arrRate;
+			}
+		}
+		
+		// If there is still no Rate, then check for a close match
+		if (!$this->_arrCurrentRate)
+		{
+			$arrWhere['ClosestRate']	= TRUE;
+			if ($this->_selRate->Execute($arrWhere) === FALSE)
+			{
+				// Error
+				Debug($this->_selRate->Error());
+			}
+			
+			// Process each Rate candidate to find the best match
+			$arrBestMatch	= Array();
+			while ($arrRate = $this->_selRate->Fetch())
+			{
+				if ($arrRate['StartDatetime'] > $this->_arrCurrentCDR['StartDatetime'])
+				{
+					// Rate is after CDR
+					$arrRate['Distance']	= strtotime($arrRate['StartDatetime']) - strtotime($this->_arrCurrentCDR['StartDatetime']);
+					$arrBestMatch			= ($arrRate['Distance'] <= $arrBestMatch['Distance']) ? $arrRate : $arrBestMatch;
+				}
+				else
+				{
+					// Rate is before CDR
+					$arrRate['Distance']	= strtotime($this->_arrCurrentCDR['StartDatetime']) - strtotime($arrRate['StartDatetime']);
+					$arrBestMatch			= ($arrRate['Distance'] < $arrBestMatch['Distance']) ? $arrRate : $arrBestMatch;
+				}
+			}
+			
+			// Select the best match
+			$this->_arrCurrentRate	= $arrBestMatch;
+		}
+		
+		// Cast MySQL strings to floats so they don't break our shit
+		if ($this->_arrCurrentRate)
+		{
+			$this->_arrCurrentRate['StdRatePerUnit'] 	= (float)$this->_arrCurrentRate['StdRatePerUnit'];
+			$this->_arrCurrentRate['StdFlagfall'] 		= (float)$this->_arrCurrentRate['StdFlagfall'];
+			$this->_arrCurrentRate['StdPercentage'] 	= (float)$this->_arrCurrentRate['StdPercentage'];
+			$this->_arrCurrentRate['StdMarkup'] 		= (float)$this->_arrCurrentRate['StdMarkup'];
+			$this->_arrCurrentRate['StdMinCharge'] 		= (float)$this->_arrCurrentRate['StdMinCharge'];
+			$this->_arrCurrentRate['ExsRatePerUnit'] 	= (float)$this->_arrCurrentRate['ExsRatePerUnit'];
+			$this->_arrCurrentRate['ExsFlagfall'] 		= (float)$this->_arrCurrentRate['ExsFlagfall'];
+			$this->_arrCurrentRate['ExsPercentage'] 	= (float)$this->_arrCurrentRate['ExsPercentage'];
+			$this->_arrCurrentRate['ExsMarkup'] 		= (float)$this->_arrCurrentRate['ExsMarkup'];
+			$this->_arrCurrentRate['CapCost'] 			= (float)$this->_arrCurrentRate['CapCost'];
+			$this->_arrCurrentRate['CapLimit'] 			= (float)$this->_arrCurrentRate['CapLimit'];
+			return $this->_arrCurrentRate;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
  }
 
 
