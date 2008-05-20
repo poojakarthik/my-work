@@ -24,9 +24,9 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 	const FONT_WEIGHT = 1;
 	const FONT_STYLE = 2;
 
-	const MEDIA_PRINT = 1;
-	const MEDIA_EMAIL = 2;
-	const MEDIA_ALL = 3;
+	const MEDIA_PRINT = DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT;
+	const MEDIA_EMAIL = DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL;
+	const MEDIA_ALL = DOCUMENT_TEMPLATE_MEDIA_TYPE_ALL;
 	
 	// Inherited properties
 	private $intTextDecoration = self::TEXT_DECORATION_NONE;
