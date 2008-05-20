@@ -1,15 +1,15 @@
 <?php	
 //----------------------------------------------------------------------------//
-// (c) copyright 2007 VOIPTEL Pty Ltd
+// (c) copyright 2008 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// 1column.php
+// flex_modal_window.php
 //----------------------------------------------------------------------------//
 /**
- * 1column
+ * flex_modal_window.php
  *
  * Layout Template defining how to display a page for use in a 'Flex Modal Window'
  *
@@ -19,7 +19,7 @@
  * @language	PHP
  * @package		ui_app
  * @author		Hadrian Oliver
- * @version		7.06
+ * @version		8.03
  * @copyright	2008 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *

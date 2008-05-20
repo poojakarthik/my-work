@@ -65,13 +65,66 @@ class HtmlTemplateServiceHistory extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 	}
 
-	//NOTE: this class doesn't currently have a Render method, because it is used by other HtmlTemplateObjects
+	function Render()
+	{
+		switch ($this->_intContext)
+		{
+			case HTML_CONTEXT_POPUP:
+				$this->RenderAsPopup();
+				break;
+				
+			default:
+				echo "ERROR: HtmlTemplateServiceHistory does not now how to render with context '{$this->_intContext}'"; 
+				break;
+		}
+	}
+	
+	function RenderAsPopup()
+	{
+		$arrService	= DBO()->Service->AsArray->Value;
+		
+		Table()->History->SetHeader("Action", "Timestamp", "Instigator");
+		Table()->History->SetWidth("34%", "33%", "33%");
+		Table()->History->SetAlignment("Left", "Left", "Left");
+		
+		$intLastRecordIndex = count($arrService['History']) - 1;
+		foreach ($arrService['History'] as $intIndex=>$arrHistoryItem)
+		{
+			if ($arrHistoryItem['ClosedOn'] != NULL)
+			{
+				$strClosedBy		= ($arrHistoryItem['ClosedBy'] != NULL)? GetEmployeeName($arrHistoryItem['ClosedBy']) ." (". GetEmployeeUserName($arrHistoryItem['ClosedBy']) .")" : "";
+				$strClosedOn		= OutputMask()->ShortDate($arrHistoryItem['ClosedOn']);
+				$strNatureOfClosure = GetConstantDescription($arrHistoryItem['Status'], "Service");
+				Table()->History->AddRow($strNatureOfClosure, $strClosedOn, $strClosedBy);
+			}
+
+			$strCreatedBy			= GetEmployeeName($arrHistoryItem['CreatedBy']) ." (". GetEmployeeUserName($arrHistoryItem['CreatedBy']) .")";
+			$strCreatedOn			= OutputMask()->ShortDate($arrHistoryItem['CreatedOn']);
+			$strNatureOfCreation	= ($intIndex == $intLastRecordIndex)? "Created" : "Activated";
+			Table()->History->AddRow($strNatureOfCreation, $strCreatedOn, $strCreatedBy);
+		}
+		
+		ob_start();
+		Table()->History->Render();
+		$strTable = ob_get_clean();
+		
+		echo "
+<div id='ContainerDiv_ScrollableDiv_History' style='border: solid 1px #D1D1D1; padding: 5px 5px 5px 5px'>
+	<div id='ScrollableDiv_History' style='overflow:auto; height:200px; width:auto; padding: 0px 3px 0px 3px'>
+		$strTable
+	</div>
+</div>
+<div class='ButtonContainer'>
+	<input type='button' style='float:right' value='Close' onClick='Vixen.Popup.Close(this)'></input>
+</div>
+";
+	}
 	
 	//------------------------------------------------------------------------//
-	// GetHistory
+	// GetHistoryForTableDropDownDetail
 	//------------------------------------------------------------------------//
 	/**
-	 * GetHistory()
+	 * GetHistoryForTableDropDownDetail()
 	 *
 	 * Builds a HTML table detailing the history of a service (activations/deactivations)
 	 *
@@ -81,7 +134,7 @@ class HtmlTemplateServiceHistory extends HtmlTemplate
 	 * @return	string					html code to render the history as a table
 	 * @method
 	 */
-	static function GetHistory($arrHistory)
+	static function GetHistoryForTableDropDownDetail($arrHistory)
 	{
 		$intLastRecordIndex = count($arrHistory) - 1;
 		$strRows = "";
@@ -116,6 +169,7 @@ class HtmlTemplateServiceHistory extends HtmlTemplate
 		$strTable = "<div style='width:100%;background-color: #D4D4D4'<table style='width:50%'>$strRows</table></div>";
 		return $strTable;
 	}
+
 	
 }
 

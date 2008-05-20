@@ -695,9 +695,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			// Create the Service Array
 			$arrService = Array (
-									"Id"	=> $arrRecord['Id'],
-									"FNN"	=> $arrRecord['FNN'],
-									"ServiceType"		=> $arrRecord['ServiceType']
+									"Id"			=> $arrRecord['Id'],
+									"FNN"			=> $arrRecord['FNN'],
+									"ServiceType"	=> $arrRecord['ServiceType']
 								);
 
 			// Add details about the Service's current plan, if it has one

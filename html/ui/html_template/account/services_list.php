@@ -368,7 +368,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			
 			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
 
-			$strHistoryDetails = HtmlTemplateServiceHistory::GetHistory($arrService['History']);
+			$strHistoryDetails = HtmlTemplateServiceHistory::GetHistoryForTableDropDownDetail($arrService['History']);
 			
 			
 			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);

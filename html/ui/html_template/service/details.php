@@ -248,7 +248,10 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		
 		// Separate the Service status properties from the rest
 		echo "<div class='ContentSeparator'></div>\n";
-		DBO()->Service->CreatedOn->RenderOutput();
+		$strViewHistoryLink	= Href()->ViewServiceHistory(DBO()->Service->Id->Value);
+		$strViewHistory		= "<a href='$strViewHistoryLink'>history</a>";
+		$strCreatedOn		= DBO()->Service->CreatedOn->FormattedValue() . " ($strViewHistory)";
+		DBO()->Service->CreatedOn->RenderArbitrary($strCreatedOn, RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		DBO()->Service->ClosedOn->RenderOutput();
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
 

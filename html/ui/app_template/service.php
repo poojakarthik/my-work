@@ -163,6 +163,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Context menu
 		ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);	
+		ContextMenu()->Account_Menu->Service->View_Service_History(DBO()->Service->Id->Value);
 		ContextMenu()->Account_Menu->Service->Plan->View_Service_Rate_Plan(DBO()->Service->Id->Value);	
 		if ($bolUserHasOperatorPerm)
 		{
@@ -210,6 +211,184 @@ class AppTemplateService extends ApplicationTemplate
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('service_view');
 		return TRUE;
+	}
+
+	// Display's a service's history in a popup
+	function ViewHistory()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+
+		$arrService = $this->GetService(DBO()->Service->Id->Value);
+		
+		if ($arrService === FALSE)
+		{
+			// Could not load the service record
+			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
+			return TRUE;
+		}
+		
+		DBO()->Service->AsArray = $arrService;
+
+		$this->LoadPage('generic_popup');
+		$this->Page->SetName('Service History - '. $arrService['FNN']);
+
+		$this->Page->AddObject('ServiceHistory', COLUMN_ONE, HTML_CONTEXT_POPUP);
+		return TRUE;
+	}
+
+	//------------------------------------------------------------------------//
+	// GetService
+	//------------------------------------------------------------------------//
+	/**
+	 * GetService()
+	 *
+	 * Builds an array structure defining a service, the service's ServiceType specific extra details, a history of its status, and its plan details
+	 * 
+	 * Builds an array structure defining a service, the service's ServiceType specific extra details, a history of its status, and its plan details
+	 * The history details when the service was activated(or created) and Closed(disconnected or archived)
+	 * It will always have at least one record
+	 * On Success the returned array will be of the format:
+	 * $arrService	['Id']								Id of the most recently added Service record which models the same Service as $intService
+	 * 				['FNN']
+	 * 				['ServiceType']
+	 * 				['CurrentPlan']	['Id']
+	 * 								['Name']
+	 * 				['FuturePlan']	['Id']
+	 * 								['Name']
+	 * 								['StartDatetime']
+	 * 				['History'][]	['ServiceId']		These will be ordered from Latest to Earliest Service records modelling this Service for this account
+	 * 								['CreatedOn']
+	 * 								['ClosedOn']
+	 * 								['CreatedBy']
+	 * 								['ClosedBy']
+	 * 								['Status']
+	 * 								['LineStatus']
+	 * 								['LineStatusDate']
+	 * 				['ExtraDetail']	[]					Stores the ServiceType specific details of the service
+	 * 
+	 * @param	int		$intService		Id of any of the service records used to model this service
+	 *
+	 * @return	mixed					FALSE:	On database error
+	 * 									Array:  $arrService
+	 * 	
+	 * @method
+	 */
+	static function GetService($intService)
+	{
+		//TODO! This currently does not retrieve the ServiceType specific Extra Details
+		
+		// Retrieve all the services belonging to the account
+		$strTables	= "	Service AS S 
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
+								FROM ServiceRatePlan AS SRP2 
+								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
+								ORDER BY SRP2.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
+								FROM ServiceRatePlan AS SRP4 
+								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
+								ORDER BY SRP4.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
+		$arrColumns	= Array("Id" 						=> "S.Id",
+							"FNN"						=> "S.FNN",
+							"ServiceType"				=> "S.ServiceType", 
+							"Status"		 			=> "S.Status",
+							"LineStatus"				=> "S.LineStatus",
+							"LineStatusDate"			=> "S.LineStatusDate",
+							"CreatedOn"					=> "S.CreatedOn", 
+							"ClosedOn"					=> "S.ClosedOn",
+							"CreatedBy"					=> "S.CreatedBy", 
+							"ClosedBy"					=> "S.ClosedBy",
+							"CurrentPlanId" 			=> "RP1.Id",
+							"CurrentPlanName"			=> "RP1.Name",
+							"FuturePlanId"				=> "RP2.Id",
+							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
+		$strWhere	= "	S.Account = (SELECT Account FROM Service WHERE Id = <ServiceId>)
+						AND
+						S.FNN = (SELECT FNN FROM Service WHERE Id = <ServiceId>)";
+		$arrWhere	= Array("ServiceId" => $intService);
+		$strOrderBy	= ("S.Id DESC");
+		
+		$selServices = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+		if ($selServices->Execute($arrWhere) == FALSE)
+		{
+			// An error occurred, or no records could be returned
+			return FALSE;
+		}
+		
+		$arrRecord	= $selServices->Fetch();
+		$arrService = Array (
+								"Id"			=> $arrRecord['Id'],
+								"FNN"			=> $arrRecord['FNN'],
+								"ServiceType"	=> $arrRecord['ServiceType']
+							);
+
+		// Add details about the Service's current plan, if it has one
+		if ($arrRecord['CurrentPlanId'] != NULL)
+		{
+			$arrService['CurrentPlan'] = Array	(
+													"Id"	=> $arrRecord['CurrentPlanId'],
+													"Name"	=> $arrRecord['CurrentPlanName']
+												);
+		}
+		else
+		{
+			$arrService['CurrentPlan'] = NULL;
+		}
+		
+		// Add details about the Service's Future scheduled plan, if it has one
+		if ($arrRecord['FuturePlanId'] != NULL)
+		{
+			$arrService['FuturePlan'] = Array	(
+													"Id"	=> $arrRecord['FuturePlanId'],
+													"Name"	=> $arrRecord['FuturePlanName'],
+													"StartDatetime"	=> $arrRecord['FuturePlanStartDatetime']
+												);
+		}
+		else
+		{
+			$arrService['FuturePlan'] = NULL;
+		}
+		
+		// Add this record's details to the history array
+		$arrService['History']		= Array();
+		$arrService['History'][]	= Array	(
+												"ServiceId"	=> $arrRecord['Id'],
+												"CreatedOn"	=> $arrRecord['CreatedOn'],
+												"ClosedOn"	=> $arrRecord['ClosedOn'],
+												"CreatedBy"	=> $arrRecord['CreatedBy'],
+												"ClosedBy"	=> $arrRecord['ClosedBy'],
+												"Status"	=> $arrRecord['Status'],
+												"LineStatus"		=> $arrRecord['LineStatus'],
+												"LineStatusDate"	=> $arrRecord['LineStatusDate'],
+											);
+		 
+		
+		// If multiple Service records relate to the one actual service then they will be consecutive in the RecordSet
+		// Find each one and add it to the Status history
+		while (($arrRecord = $selServices->Fetch()) !== FALSE)
+		{
+			// This record relates to the same Service
+			$arrService['History'][]	= Array	(
+													"ServiceId"	=> $arrRecord['Id'],
+													"CreatedOn"	=> $arrRecord['CreatedOn'],
+													"ClosedOn"	=> $arrRecord['ClosedOn'],
+													"CreatedBy"	=> $arrRecord['CreatedBy'],
+													"ClosedBy"	=> $arrRecord['ClosedBy'],
+													"Status"	=> $arrRecord['Status'],
+													"LineStatus"		=> $arrService['LineStatus'],
+													"LineStatusDate"	=> $arrService['LineStatusDate'],
+												);
+		}
+		
+		return $arrService;
 	}
 
 	//------------------------------------------------------------------------//

@@ -238,7 +238,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 				}
 			}
 			
-			$strHistoryDetails = HtmlTemplateServiceHistory::GetHistory($arrService['History']);
+			$strHistoryDetails = HtmlTemplateServiceHistory::GetHistoryForTableDropDownDetail($arrService['History']);
 			
 			Table()->Services->AddRow($strSelectCell, $strFnnCell, $strPlanCell, $strStatusCell, $strLineStatusCell, $strActionsCell);
 			Table()->Services->SetDetail($strHistoryDetails);

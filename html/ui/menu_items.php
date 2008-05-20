@@ -737,6 +737,34 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"$strPopupId\", \"ExtraLarge\", \"History\", \"Provisioning\", \"ViewHistory\", $strJsonCode)";
 	}
 
+	//------------------------------------------------------------------------//
+	// ViewServiceHistory
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewServiceHistory()
+	 *
+	 * Compiles the Href to be executed when the ViewServiceHistory functionality is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewServiceHistory functionality is triggered
+	 *
+	 * @param	int		$intServiceId	Id of the Service
+	 *
+	 * @return	string						
+	 *
+	 * @method
+	 */
+	function ViewServiceHistory($intServiceId)
+	{
+		$this->strContextMenuLabel = "View History";
+		
+		// Setup data to send
+		$arrData['Service']['Id'] = $intServiceId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceHistory\", \"Large\", \"Service History\", \"Service\", \"ViewHistory\", $strJsonCode)";
+	}
 
 
 	//------------------------------------------------------------------------//
