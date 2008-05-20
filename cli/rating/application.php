@@ -245,6 +245,8 @@
 												"ServiceRateGroup.Service = <Service> AND \n" .
 												"Rate.Fleet = <Fleet> AND \n" .
 												"ServiceRateGroup.Active = 1 AND \n" .
+												"Destination = <Destination> AND \n" .
+												"Rate.RecordType = <RecordType> AND \n" .
 												"(<StartDatetime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime OR <ClosestRate> = 1)";
 		
 		$this->_selRate	= new StatementSelect(	"((ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup) JOIN RateGroupRate ON RateGroupRate.RateGroup = RateGroup.Id) JOIN Rate ON Rate.Id = RateGroupRate.Rate",
@@ -1432,6 +1434,8 @@
 	 	// Set up the rate-finding query
 	 	$intTime					= strtotime($this->_arrCurrentCDR['StartDatetime']);
 	 	$strDay						= date("l", $intTime);
+	 	
+	 	$arrWhere					= Array();
 	 	$arrWhere['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
 	 	$arrWhere['Time']			= date("H:i:s", $intTime);
 	 	$arrWhere['Monday']			= ($strDay == "Monday")		? TRUE : DONKEY;
@@ -1442,7 +1446,7 @@
 	 	$arrWhere['Saturday']		= ($strDay == "Saturday")	? TRUE : DONKEY;
 	 	$arrWhere['Sunday']			= ($strDay == "Sunday")		? TRUE : DONKEY;
 		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
-		$arrWhere['Destination']	= ($this->_arrCurrentCDR['DestinationCode'] === NULL) ? 0 : $this->_arrCurrentCDR['DestinationCode'];
+		$arrWhere['Destination']	= ($this->_arrCurrentCDR['DestinationCode']) ? $this->_arrCurrentCDR['DestinationCode'] : 0;
 		$arrWhere['ClosestRate']	= FALSE;
 		
 		$this->_Debug("General WHERE Data: \n".print_r($arrWhere, TRUE));
@@ -1491,6 +1495,7 @@
 		elseif ($bolFleet)
 		{
 			// Didn't find a Fleet Rate, try to find a normal rate
+			$arrWhere['Fleet']	= 0;
 			if ($this->_selRate->Execute($arrWhere) === FALSE)
 			{
 				// Error
@@ -1499,7 +1504,7 @@
 			}
 			elseif ($arrRate = $this->_selRate->Fetch())
 			{
-				$this->_Debug("Couldn't find a Fleet Rate, trying for a Standard Rate");
+				$this->_Debug("Couldn't find a Fleet Rate, found a Standard Rate");
 				// Found a Standard Rate
 				$this->_arrCurrentRate	= $arrRate;
 			}
@@ -1510,6 +1515,7 @@
 		{
 			$this->_Debug("Couldn't find a direct match Rate, looking for a close match");
 			$arrWhere['ClosestRate']	= TRUE;
+			$arrWhere['Fleet']			= 0;
 			if (($intCount = $this->_selRate->Execute($arrWhere)) === FALSE)
 			{
 				// Error
