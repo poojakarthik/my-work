@@ -102,7 +102,7 @@
 			<!-- always have page 1 & 2, as these have the payment advice at the bottom -->
 			<page-object include="always" type="pageOne" />
 			<page-object include="always" type="pageTwo" />
-	
+
 			<!-- repeat with odd/even pages until all itemisation has been included -->
 			<page-repeat>
 
@@ -1420,8 +1420,8 @@
 					<div style="width: 233.88pt; font-weight: bold; font-size: 7pt; font-style: italic; height: 10pt;">
 						<p style="left: 0; top: 0px;"><span>Date</span></p>
 						<p style="left: 33.5; top: 0px;"><span>Time</span></p>
-						<p style="left: 62.5; top: 0px;"><span>Called Party</span></p>
-						<p style="left: 127; top: 0px;"><span>Location</span></p>
+						<p style="left: 64; top: 0px;"><span>Called Party</span></p>
+						<p style="left: 130; top: 0px;"><span>Location</span></p>
 						<p style="left: 167; top: 0px;"><span>Duration</span></p>
 						<p style="right: 8.002; top: 0px; text-align: right"><span>Charge</span></p>
 					</div>
@@ -1433,8 +1433,8 @@
 						<div style="width: 233.88pt; font-size: 7pt; line-height: 10pt;">
 							<p style="right: 203; top: 0px; text-align: right;"><span><xsl:value-of select="Date" /></span></p>
 							<p style="left: 33.5; top: 0px;"><span><xsl:value-of select="Time" /></span></p>
-							<p style="left: 62.5; top: 0px; width: 62.5;"><span><xsl:value-of select="CalledParty" /></span></p>
-							<p style="left: 127; top: 0px; width: 39;"><span><xsl:value-of select="Description" /></span></p>
+							<p style="left: 64; top: 0px; width: 62.5;"><span><xsl:value-of select="CalledParty" /></span></p>
+							<p style="left: 130; top: 0px; width: 33.5;"><span><xsl:value-of select="Description" /></span></p>
 							<p style="left: 167; top: 0px;"><span><xsl:value-of select="Duration" /></span></p>
 							<p style="right: 8.002pt; top: 0px; text-align: right">
 								<span>
