@@ -555,14 +555,14 @@ HIl<?php
  				break;
  				
  			case REQUEST_VIRTUAL_PRESELECTION:
-		 		// Add Basket 2 Re-Request
+		 		/*// Add Basket 2 Re-Request
 				$this->intCarrierReference++;
 				$arrRendered['Sequence']		= $this->intCarrierReference;
 				$arrRendered['Basket']			= 2;
 		 		$arrRendered['**Type']			= REQUEST_FULL_SERVICE;
 		 		$arrRendered['**Request']		= $arrRequest['Id'];
 		 		$arrRendered['**CarrierRef']	= $this->intCarrierReference;
-		 		$this->_arrFileContent[]		= $arrRendered;
+		 		$this->_arrFileContent[]		= $arrRendered;*/
  				
  				// Add Virtual Preselection Request
  				$this->intCarrierReference++;
