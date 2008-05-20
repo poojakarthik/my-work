@@ -14,7 +14,7 @@ $arrConfig = LoadApplication();
 $intCDR = (int)$_REQUEST['id'];
 if (!$intCDR)
 {
-	if (!$intCDR = (int)$argv[1])
+	if (!($intCDR = (int)$argv[1]))
 	{
 		echo "No CDR record requested.\n";
 		die;
