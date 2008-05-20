@@ -43,6 +43,7 @@ $arrCDR = $appRating->RateCDR($intCDR, TRUE);
 
 // Print Output
 Debug($arrCDR);
+Debug($appRating->_arrCurrentRate);
 
 die();
 ?>
