@@ -50,7 +50,7 @@ class Flex_Pdf_Resource_Manager
 								"TemplateType"		=> $documentType, 
 								"GenerationDate"	=> $this->effectiveDate);
 
-			$selDocumentTemplate = new StatementSelect("DocumentTemplate", "Source", $strWhere, "EffectiveOn desc", "0, 1");
+			$selDocumentTemplate = new StatementSelect("DocumentTemplate", "Source", $strWhere, "CreatedOn desc", "0, 1");
 
 			$mixResult = $selDocumentTemplate->Execute($arrWhere);
 
