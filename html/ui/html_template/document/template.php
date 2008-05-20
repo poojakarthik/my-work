@@ -20,41 +20,7 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	// This defines the popup content for the "Build PDF" functionality, allowing 
 	// the user to specify a hypothetical date and time for when the PDF will
 	// be built
-	private $_strBuildSamplePDFPopupContent = "
-<div id='PopupPageBody'>
-	<div class='GroupedContent' style='position:relative;margin-bottom:5px;'>
-		<span>Please specify the hypothetical date and time that this pdf will be generated on</span>
-		
-		<div class='ContentSeparator'></div>
-		
-		<div style='margin-bottom:8px;'>
-			<span style='top:2px'>Date</span>
-			<input type='text' id='SamplePdfDate' value='<date>' InputMask='ShortDate' maxlength='10' style='padding:1px 2px;position:absolute;left:50%;width:11em;border: solid 1px #D1D1D1' />
-		</div>
-		<div style='margin-bottom:8px;'>
-			<span style='top:2px'>Effective On</span>
-			<input type='text' id='SamplePdfTime' value='<time>' InputMask='Time24Hr' maxlength='8' style='padding:1px 2px;position:absolute;left:50%;width:11em;border: solid 1px #D1D1D1'/>
-		</div>
-	</div>
-<!-- This form is no longer required -->
-	<form id='FormBuildSamplePDF' name='FormBuildSamplePDF' method='post' target='PdfWindow' action='flex.php/CustomerGroup/BuildSamplePDF/'>
-		<input type='hidden' name='Template.Source' value=''></input>
-		<input type='hidden' name='Generation.Date' value=''></input>
-		<input type='hidden' name='Generation.Time' value=''></input>
-		<input type='hidden' name='CustomerGroup.Id' value=''></input>
-		<input type='hidden' name='DocumentTemplateType.Id' value=''></input>
-		<input type='hidden' name='Schema.Id' value=''></input>
-	</form>
-<!-- This form is no longer required -->
-
-	<div class='ButtonContainer'>
-		<div style='float:right'>
-			<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
-			<input type='button' value='Build PDF' onclick='Vixen.DocumentTemplate.BuildSamplePDF(true)'></input>
-		</div>
-	</div>
-	<script type='text/javascript'>RegisterAllInputMasks();</script>
-</div>";
+	private $_strBuildSamplePDFPopupContent = "";
 
 	//------------------------------------------------------------------------//
 	// __construct
@@ -84,10 +50,61 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$this->LoadJavascript("input_masks");
 		$this->LoadJavascript("validation");
 		
-		// Fill in the placeholders in the $_strBuildSamplePDFPopupContent string
-		// The time doesn't have to be too accurate, which is why it's ok to generate it here
-		$this->_strBuildSamplePDFPopupContent = str_replace("<date>", date("d/m/Y"), $this->_strBuildSamplePDFPopupContent);
-		$this->_strBuildSamplePDFPopupContent = str_replace("<time>", date("H:i:s"), $this->_strBuildSamplePDFPopupContent);
+		$strDate = date("d/m/Y");
+		$strTime = date("H:i:s");
+		$strDocumentTemplateMediaTypeOptions = "";
+		foreach ($GLOBALS['*arrConstant']['DocumentTemplateMediaType'] as $intConstant=>$arrConstant)
+		{
+			if ($intConstant == DOCUMENT_TEMPLATE_MEDIA_TYPE_ALL)
+			{
+				// Don't include this option
+				continue;
+			}
+			$strDocumentTemplateMediaTypeOptions .= "<option value='{$intConstant}'>{$arrConstant['Description']}</option>";
+		}
+		
+		$this->_strBuildSamplePDFPopupContent = "
+<div id='PopupPageBody'>
+	<div class='GroupedContent' style='position:relative;margin-bottom:5px;'>
+		<span>Please specify the hypothetical date and time that this pdf will be generated on, and the media type to use</span>
+		
+		<div class='ContentSeparator'></div>
+		
+		<div style='margin-bottom:8px;'>
+			<span style='top:2px'>Date</span>
+			<input type='text' id='SamplePdfDate' value='$strDate' InputMask='ShortDate' maxlength='10' style='padding:1px 2px;position:absolute;left:50%;width:11em;border: solid 1px #D1D1D1' />
+		</div>
+		<div style='margin-bottom:8px;'>
+			<span style='top:2px'>Time</span>
+			<input type='text' id='SamplePdfTime' value='$strTime' InputMask='Time24Hr' maxlength='8' style='padding:1px 2px;position:absolute;left:50%;width:11em;border: solid 1px #D1D1D1'/>
+		</div>
+		<div style='margin-bottom:8px;'>
+			<span style='top:2px'>Media Type</span>
+			<select id='SamplePdfMediaType' style='position:absolute;left:50%;width:11em;border: solid 1px #D1D1D1'>
+				$strDocumentTemplateMediaTypeOptions
+			</select>
+		</div>
+
+	</div>
+<!-- This form is no longer required -->
+	<form id='FormBuildSamplePDF' name='FormBuildSamplePDF' method='post' target='PdfWindow' action='flex.php/CustomerGroup/BuildSamplePDF/'>
+		<input type='hidden' name='Template.Source' value=''></input>
+		<input type='hidden' name='Generation.Date' value=''></input>
+		<input type='hidden' name='Generation.Time' value=''></input>
+		<input type='hidden' name='CustomerGroup.Id' value=''></input>
+		<input type='hidden' name='DocumentTemplateType.Id' value=''></input>
+		<input type='hidden' name='Schema.Id' value=''></input>
+	</form>
+<!-- This form is no longer required -->
+
+	<div class='ButtonContainer'>
+		<div style='float:right'>
+			<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
+			<input type='button' value='Build PDF' onclick='Vixen.DocumentTemplate.BuildSamplePDF(true)'></input>
+		</div>
+	</div>
+	<script type='text/javascript'>RegisterAllInputMasks();</script>
+</div>";
 	}
 
 	//------------------------------------------------------------------------//

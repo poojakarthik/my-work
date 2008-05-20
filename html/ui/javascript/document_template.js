@@ -51,6 +51,7 @@ function VixenDocumentTemplateClass()
 	
 	this.strSampleDate		= null;
 	this.strSampleTime		= null;
+	this.intSampleMediaType	= null;
 	
 	this.strInsertResourcePopupContent = null;
 
@@ -249,26 +250,29 @@ function VixenDocumentTemplateClass()
 	// Prompts the user to specify a build datetime, and then generates the pdf based on the current template
 	this.BuildSamplePDF = function(bolDateDeclared)
 	{
+		
 		if (!bolDateDeclared)
 		{
-			// Prompt the user to specify the time and date that the sample pdf will be hypothetically generated on.
+			// Prompt the user to specify the time, date and media type that the sample pdf will be hypothetically generated on.
 			// This is required so that the approriate Document Resources are used
 			Vixen.Popup.Create("BuildSamplePDFPopup", this.strBuildSamplePDFPopupContent, "medium", "centre", "modal", "Build Sample PDF");	
 			
 			if (this.strSampleDate != null)
 			{
-				var elmDate		= $ID("SamplePdfDate");
-				var elmTime		= $ID("SamplePdfTime");
-				elmDate.value	= this.strSampleDate;
-				elmTime.value	= this.strSampleTime;
+				var elmDate			= $ID("SamplePdfDate");
+				var elmTime			= $ID("SamplePdfTime");
+				var elmMediaType	= $ID("SamplePdfMediaType");
+				elmDate.value		= this.strSampleDate;
+				elmTime.value		= this.strSampleTime;
+				elmMediaType.value	= this.intMediaType;
 			}
 			return;
 		}
 		
 		// Validate the Date and time
-		var elmDate	= $ID("SamplePdfDate");
-		var elmTime	= $ID("SamplePdfTime");
-		
+		var elmDate			= $ID("SamplePdfDate");
+		var elmTime			= $ID("SamplePdfTime");
+		var elmMediaType	= $ID("SamplePdfMediaType");
 		if (!elmDate.Validate("ShortDate"))
 		{
 			$Alert("ERROR: Invalid date.<br />It must be in the format dd/mm/yyyy");
@@ -280,9 +284,11 @@ function VixenDocumentTemplateClass()
 			return;
 		}
 		
-		// Save the user's generation date
+		// Save the user's specified generation date, and media type
 		this.strSampleDate	= elmDate.value;
 		this.strSampleTime	= elmTime.value;
+		this.intMediaType	= elmMediaType.value;
+		
 		/* Form submit way
 		var elmForm = document.forms.FormBuildSamplePDF;
 		
@@ -318,8 +324,9 @@ alert("Source code is "+ elmForm.elements['Template.Source'].value.length +" cha
 		var objData	= 	{
 							Template				:	{	Source : this.elmSourceCode.value},
 							Generation				:	{
-															Date : elmDate.value,
-															Time : elmTime.value
+															Date 		: elmDate.value,
+															Time 		: elmTime.value,
+															MediaType	: elmMediaType.value
 														},
 							CustomerGroup			:	{	Id	: this.objTemplate.CustomerGroup},
 							DocumentTemplateType	:	{	Id	: this.objTemplate.TemplateType},

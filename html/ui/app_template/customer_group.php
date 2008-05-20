@@ -1233,6 +1233,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 * 	DBO()->CustomerGroup->Id			Id of the CustomerGroup
 	 *  DBO()->Generation->Date				Hypothetical date on which the PDF will be generated (dd/mm/yyyy)
 	 *	DBO()->Generation->Time				Hypothetical time on which the PDF will be generated (hh:mm:ss)
+	 *	DBO()->Generation->MediaType		DocumentTemplateMediaType with which the PDF will be generated as
 	 *	(The appropriate DocumentTemplateType will be found and used)
 	 * OR
 	 * 	DBO()->Template->Source				SourceCode of the DocumentTemplate
@@ -1241,6 +1242,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	 *	DBO()->CustomerGroup->Id
 	 *  DBO()->Generation->Date
 	 *	DBO()->Generation->Time
+	 *	DBO()->Generation->MediaType
 	 *	(the pdf will be built using the supplied Source code and schema)
 	 *
 	 * @return	void
@@ -1321,6 +1323,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		$strDate			= ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value);
+		$intMediaType		= DBO()->Generation->MediaType->Value;
 		$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
 		$strTemplateXSLT	= DBO()->Template->Source->Value;
 		$intCustomerGroup	= DBO()->CustomerGroup->Id->Value;
@@ -1332,7 +1335,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		try
 		{
-			$objPDFTemplate	= new Flex_Pdf_Template($intCustomerGroup, $strEffectiveDate, $strTemplateXSLT, $strSampleXML, Flex_Pdf_Style::MEDIA_ALL, TRUE);
+			$objPDFTemplate	= new Flex_Pdf_Template($intCustomerGroup, $strEffectiveDate, $strTemplateXSLT, $strSampleXML, $intMediaType, TRUE);
 			$objPDFDocument	= $objPDFTemplate->createDocument();
 
 			ob_start();
