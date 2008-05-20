@@ -36,18 +36,13 @@ if (!$selCDR->Execute(Array('Id' => $intCDR)))
 $arrCDR = $selCDR->Fetch();
 */
 
+define('RATING_DEBUG', TRUE);
+
 // Rate the CDR
-$fltCharge = $appRating->RateCDR($intCDR);
+$arrCDR = $appRating->RateCDR($intCDR, TRUE);
 
 // Print Output
-if ($fltCharge !==FALSE)
-{
-	echo 'CDR Rated at : $'.money_format('%i',$fltCharge);
-}
-else
-{
-	echo "Could Not Rate CDR";
-}
+Debug($arrCDR);
 
 die();
 ?>
