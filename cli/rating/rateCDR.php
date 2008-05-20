@@ -14,8 +14,11 @@ $arrConfig = LoadApplication();
 $intCDR = (int)$_REQUEST['id'];
 if (!$intCDR)
 {
-	echo "No CDR record requested.\n";
-	die;
+	if (!$intCDR = (int)$argv[1])
+	{
+		echo "No CDR record requested.\n";
+		die;
+	}
 }
 
 // load rating class
