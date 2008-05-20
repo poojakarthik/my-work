@@ -42,7 +42,10 @@ define('RATING_DEBUG', TRUE);
 $arrCDR = $appRating->RateCDR($intCDR, TRUE);
 
 // Print Output
+CliEcho("CDR:");
 Debug($arrCDR);
+
+CliEcho("Rate:");
 Debug($appRating->_arrCurrentRate);
 
 die();

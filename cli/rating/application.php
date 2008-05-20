@@ -1535,6 +1535,7 @@
 			}
 			
 			// Select the best match
+			$this->_Debug("Found a close match");
 			$this->_arrCurrentRate	= $arrBestMatch;
 		}
 		
@@ -1556,6 +1557,7 @@
 		}
 		else
 		{
+			$this->_Debug("Could not find a Rate");
 			return FALSE;
 		}
 	}
