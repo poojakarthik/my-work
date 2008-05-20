@@ -136,6 +136,8 @@ class Cli_Pdf extends Cli
 			$lastDocNameLen = 0;
 			echo "\nProcessing document $docCount   ";
 
+			$generatedDocs = array();
+
 			foreach ($arrFiles as $strSource => $strDestination)
 			{
 				$this->log("Processing XML file: $strSource");
@@ -256,6 +258,8 @@ class Cli_Pdf extends Cli
 				unset($pdf);
 				$this->dieIfErred();
 				$this->log("Memory usage after saving PDF to file:       " . memory_get_usage());
+
+				$generatedDocs[] = $strDestination;
 			}
 
 			echo str_repeat(chr(8), $lastDocNameLen+3) . "\nProcessing complete";
@@ -271,14 +275,14 @@ class Cli_Pdf extends Cli
 
 				$this->log("Archiving PDFs to $strArchiveFile");
 				$objArchive = new Archive_Tar($strArchiveFile, $strCompression);
-				$objArchive->add($arrFiles);
+				$objArchive->add($generatedDocs);
 
 				// Remove the archived folder
 				echo "\nRemoving temporary files... ";
 				ob_flush();
 				flush();
 				$this->log("Removing unarchived copies of PDFs");
-				foreach ($arrFiles as $strSource => $strDestination)
+				foreach ($generatedDocs as $strSource => $strDestination)
 				{
 					unlink($strDestination);
 				}
