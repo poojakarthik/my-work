@@ -247,7 +247,7 @@
 												"ServiceRateGroup.Active = 1 AND \n" .
 												"(<StartDatetime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime OR <ClosestRate> = 1)";
 		
-		$this->_selRate	= new StatementSelect(	"((ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup) JOIN RateGroupRate ON RateGroupRate.RateGroup = RateGroup.Id) JOIN Rate ON Rate.Id = RateGroup.Rate",
+		$this->_selRate	= new StatementSelect(	"((ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup) JOIN RateGroupRate ON RateGroupRate.RateGroup = RateGroup.Id) JOIN Rate ON Rate.Id = RateGroupRate.Rate",
 												"Rate.*, ServiceRateGroup.StartDatetime, ServiceRateGroup.EndDatetime",
 												$strWhere,
 												"(RateGroup.Fleet = Rate.Fleet) DESC");
