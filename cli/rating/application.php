@@ -1436,7 +1436,7 @@
 	 	$strDay						= date("l", $intTime);
 	 	
 	 	$arrWhere					= Array();
-	 	$arrWhere['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
+	 	$arrWhere['StartDatetime']	= $this->_arrCurrentCDR['StartDatetime'];
 	 	$arrWhere['Time']			= date("H:i:s", $intTime);
 	 	$arrWhere['Monday']			= ($strDay == "Monday")		? TRUE : DONKEY;
 	 	$arrWhere['Tuesday']		= ($strDay == "Tuesday")	? TRUE : DONKEY;
