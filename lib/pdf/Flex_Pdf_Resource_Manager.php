@@ -5,13 +5,11 @@ if (!defined('SHARED_BASE_PATH'))
 	define("SHARED_BASE_PATH", realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR));
 }
 
-define ('RESOURCE_BASE_PATH', SHARED_BASE_PATH . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . 'resource' .   DIRECTORY_SEPARATOR);
 define ('COMMON_RESOURCE_BASE_PATH', SHARED_BASE_PATH . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . 'resource' .   DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR);
 
 
 class Flex_Pdf_Resource_Manager
 {
-	const RESOURCE_BASE_PATH 		= RESOURCE_BASE_PATH;
 	const COMMON_RESOURCE_BASE_PATH = COMMON_RESOURCE_BASE_PATH;
 
 	private static $handlers = array();
@@ -144,14 +142,16 @@ class Flex_Pdf_Resource_Manager
 				// Ensure the resources for the customer group and effective date have been loaded
 				$this->loadResources();
 
+				require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . "Flex_Database_Protocol.php");
+
 				// Get the placeholder from the relative path
 				$placeholder = strtolower(substr($relativePath, 7));
 				
 				// Construct the absolute path if we have a match
 				if (array_key_exists($placeholder, $this->resources))
 				{
-					$this->cache[$relativePath] = self::RESOURCE_BASE_PATH . $this->customerGroup . DIRECTORY_SEPARATOR 
-						. $this->resources[$placeholder]["Id"] . "." . $this->resources[$placeholder]["Extension"];
+					$this->cache[$relativePath] = Flex_Database_Protocol::FDBP_PROTOCOL . "://" . $this->customerGroup . "/" 
+						. $placeholder . "/" . $this->resources[$placeholder]["Id"] . "." . $this->resources[$placeholder]["Extension"];
 				}
 				// ... else throw an exception to show that we didn't find the resource
 				else
@@ -159,6 +159,7 @@ class Flex_Pdf_Resource_Manager
 					throw new Exception("No resource found for '$relativePath' for Customer Group Id '$this->customerGroup' on generation date '$this->effectiveDate'.");
 				}
 
+				/*
 				// Make sure it exits
 				if (!file_exists($this->cache[$relativePath]) || !is_file($this->cache[$relativePath]))
 				{
@@ -170,6 +171,7 @@ class Flex_Pdf_Resource_Manager
 				{
 					throw new Exception("Resource file '" . $this->cache[$relativePath] . "' is unreadable for resource '$relativePath' and Customer Group Id '$this->customerGroup'.");
 				}
+				*/
 			}
 			// if the path is relative (as in the case on font files)...
 			else if ($relativePath == "." || file_exists(self::COMMON_RESOURCE_BASE_PATH . $relativePath))
