@@ -1537,7 +1537,7 @@
 			}
 			
 			// Select the best match
-			if ($arrBestMatch)
+			if ($arrBestMatch['Id'])
 			{
 				$this->_Debug("Found a close match");
 			}
