@@ -1445,11 +1445,15 @@
 		$arrWhere['Destination']	= ($this->_arrCurrentCDR['DestinationCode'] === NULL) ? 0 : $this->_arrCurrentCDR['DestinationCode'];
 		$arrWhere['ClosestRate']	= FALSE;
 		
+		$this->_Debug("General WHERE Data: \n".print_r($arrWhere, TRUE));
+		
 		// Could this be a Fleet call?
 		$bolFleet				= FALSE;
 		$arrDestinationOwner	= FindFNNOwner($this->_arrCurrentCDR['FNN'], $this->_arrCurrentCDR['StartDatetime']);
 		if ($arrDestinationOwner['Account'] == $this->_arrCurrentCDR['Account'])
 		{
+			$this->_Debug("Trying to find a Destination Fleet Rate");
+			
 			$arrWhere['Account']		= $arrDestinationOwner['Account'];
 			$arrWhere['AccountGroup']	= $arrDestinationOwner['AccountGroup'];
 			$arrWhere['Service']		= $arrDestinationOwner['Service'];
@@ -1461,6 +1465,7 @@
 			}
 			elseif ($arrDestinationRate = $this->_selRate->Fetch())
 			{
+				$this->_Debug("Found a Destination Fleet Rate");
 				// Found a Fleet Rate
 				$bolFleet	= TRUE;
 			}
@@ -1479,6 +1484,7 @@
 		}
 		elseif ($arrRate = $this->_selRate->Fetch())
 		{
+			$this->_Debug("Found a Source ".(($bolFleet) ? "Fleet" : "Standard")." Rate");
 			// Found a Rate
 			$this->_arrCurrentRate	= $arrRate;
 		}
@@ -1493,6 +1499,7 @@
 			}
 			elseif ($arrRate = $this->_selRate->Fetch())
 			{
+				$this->_Debug("Couldn't find a Fleet Rate, trying for a Standard Rate");
 				// Found a Standard Rate
 				$this->_arrCurrentRate	= $arrRate;
 			}
@@ -1501,6 +1508,7 @@
 		// If there is still no Rate, then check for a close match
 		if (!$this->_arrCurrentRate)
 		{
+			$this->_Debug("Couldn't find a direct match Rate, looking for a close match");
 			$arrWhere['ClosestRate']	= TRUE;
 			if ($this->_selRate->Execute($arrWhere) === FALSE)
 			{
@@ -1549,6 +1557,29 @@
 		else
 		{
 			return FALSE;
+		}
+	}
+
+
+	//------------------------------------------------------------------------//
+	// _Debug()
+	//------------------------------------------------------------------------//
+	/**
+	 * _Debug()
+	 *
+	 * Outputs a message if in RATING_DEBUG mode
+	 *
+	 * Outputs a message if in RATING_DEBUG mode
+	 *
+	 * @return	mixed	array	rate details
+	 * 					bool	FALSE if rate not found
+	 * @method
+	 */
+	protected function _Debug($strMessage, $bolNewLine = TRUE)
+	{
+		if (RATING_DEBUG === TRUE)
+		{
+			CliEcho($strMessage, $bolNewLine);
 		}
 	}
  }
