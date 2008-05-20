@@ -940,8 +940,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		$arrColumns 	= Array(	"ResourceId"		=> "DR.Id",
 									"CustomerGroup"		=> "DR.CustomerGroup",
 									"OriginalFilename"	=> "DR.OriginalFilename",
-									"MIMEType"			=> "FT.MIMEType",
-									"Extension"			=> "FT.Extension"
+									"FileContent"		=> "DR.FileContent",
+									"MIMEType"			=> "FT.MIMEType"
 								);
 		$strFrom		= "DocumentResource AS DR INNER JOIN FileType AS FT ON DR.FileType = FT.Id";
 		$selResource	= new StatementSelect($strFrom, $arrColumns, "DR.Id = <Id>");
@@ -962,27 +962,6 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		$arrResource = $selResource->Fetch();
 		
-		$strFilename = SHARED_BASE_PATH . "/template/resource/{$arrResource['CustomerGroup']}/{$intResourceId}.{$arrResource['Extension']}";
-		
-		if (!file_exists($strFilename))
-		{
-			// The file could not be found
-			DBO()->Error->Message = "The file could not be found.  Please notify your system administrator";
-			$this->LoadPage('error');
-			return TRUE;
-		}
-		
-		// Get the contents of the file
-		$strFileContents = file_get_contents($strFilename);
-		
-		if ($strFileContents === FALSE)
-		{
-			// The file could not be openned
-			DBO()->Error->Message = "The file could not be openned.  Please notify your system administrator";
-			$this->LoadPage('error');
-			return TRUE;
-		}
-		
 		// Send the file to the user
 		header("Content-Type: {$arrResource['MIMEType']}");
 		if ($bolDownloadResource)
@@ -990,7 +969,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			// This will prompt the user to save the file, with its original filename
 			header("Content-Disposition: attachment; filename=\"{$arrResource['OriginalFilename']}\"");
 		}
-		echo $strFileContents;
+		echo $arrResource['FileContent'];
 		exit;
 	}
 
@@ -1539,6 +1518,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			}
 		}
 		
+		$blobFileContent = file_get_contents($strTempFilename);
+		if ($blobFileContent === FALSE)
+		{
+			return "ERROR: Could not read the file";
+		}
+		
 		// Add the DocumentResource Record
 		TransactionStart();
 		$arrResource = Array(	"CustomerGroup"		=> $intCustomerGroup,
@@ -1547,8 +1532,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 								"StartDatetime"		=> $strStartDatetime,
 								"EndDatetime"		=> $strEndDatetime,
 								"CreatedOn"			=> $strNow,
-								"OriginalFilename"	=> $strFilename
+								"OriginalFilename"	=> $strFilename,
+								"FileContent"		=> $blobFileContent
 							);
+		 
 		$insResource	= new StatementInsert("DocumentResource", $arrResource);
 		$intResourceId	= $insResource->Execute($arrResource);
 		
@@ -1558,7 +1545,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			TransactionRollback();
 			return "ERROR: Adding the Resource to the database failed, unexpectedly.  Please notify your system administrator";
 		}
-		
+/*		
 		// Move the file to {SHARED_BASE_PATH}/template/resource/{CustomerGroupId}/{ResourceId}.Extension
 		$strNewFilename	= "{$intResourceId}.{$strExtension}";
 		$strPath		= SHARED_BASE_PATH . "/template/resource/$intCustomerGroup";
@@ -1576,7 +1563,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			TransactionRollback();
 			return "ERROR: Moving the file to its destination failed, unexpectedly.  Please notify your system administrator";
 		}
-
+*/
 		// Everything worked
 		TransactionCommit();
 		return TRUE;

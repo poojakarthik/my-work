@@ -2918,6 +2918,22 @@ class QueryCopyTable extends Query
 		array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 	 	
+	 	// Send any blobs that have been defined
+	 	$intBlobPos = -1;
+	 	while (($intBlobPos = strpos($strType, "b", ++$intBlobPos)) !== FALSE)
+	 	{
+	 		// The parameter data starts at $arrParams[1]
+	 		$blobParam = $arrParams[1 + $intBlobPos];
+	 		
+	 		// Split into 1MB chunks
+	 		$arrChunks = str_split($blobParam, 1048576);
+	 		
+	 		foreach ($arrChunks as $blobChunk)
+	 		{
+	 			$this->_stmtSqlStatment->send_long_data($intBlobPos, $blobChunk);
+	 		}
+	 	}
+
 	 	// Run the Statement
 	 	$mixResult = $this->_stmtSqlStatment->execute();
 	 	$this->Debug($mixResult);
@@ -3318,6 +3334,22 @@ class QueryCopyTable extends Query
 				Debug("Total Params: ".count($arrParams)."; Data Params: $intParamCount");
 				Debug($this->_strQuery);
 			}
+	 	}
+		
+		// Send any blobs that have been defined
+	 	$intBlobPos = -1;
+	 	while (($intBlobPos = strpos($strType, "b", ++$intBlobPos)) !== FALSE)
+	 	{
+	 		// The parameter data starts at $arrParams[1]
+	 		$blobParam = $arrParams[1 + $intBlobPos];
+	 		
+	 		// Split into 1MB chunks
+	 		$arrChunks = str_split($blobParam, 1048576);
+	 		
+	 		foreach ($arrChunks as $blobChunk)
+	 		{
+	 			$this->_stmtSqlStatment->send_long_data($intBlobPos, $blobChunk);
+	 		}
 	 	}
 		
 		$mixResult = $this->_stmtSqlStatment->execute();

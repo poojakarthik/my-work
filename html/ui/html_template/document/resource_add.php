@@ -137,7 +137,7 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 		<input type='text' id='DocumentResource.End' value='' InputMask='ShortDate' maxlength='10' style='display:none;position:absolute;left:". ($intPropertyValueLeft + 120) ."px;width:85px;border: solid 1px #D1D1D1'/>
 	</div>
 
-	<iframe src='flex.php/CustomerGroup/UploadDocumentResource/?DocumentResource.Type=$intResourceType&DocumentResource.CustomerGroup=$intCustomerGroup' style='width:100%;height:25px' frameborder='0' id='FrameUploadResource' name='FrameUploadResource'></iframe>
+	<iframe src='flex.php/CustomerGroup/UploadDocumentResource/?DocumentResource.Type=$intResourceType&DocumentResource.CustomerGroup=$intCustomerGroup' style='width:100%;height:50px' frameborder='0' id='FrameUploadResource' name='FrameUploadResource'></iframe>
 
 </div>
 <div class='ButtonContainer'>
@@ -191,11 +191,12 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 	<input type='hidden' name='DocumentResource.CustomerGroup' value='$intCustomerGroup'></input>
 	<input type='hidden' name='DocumentResource.Type' value='$intResourceType'></input>
 	
-	<div style='margin-bottom:8px'>
+	<div>
 		<span style='top:2px'>Resource</span>
-		<input type='file' id='ResourceFile' name='ResourceFile' accept='$strAcceptedFileTypes' style='padding:1px 2px;position:absolute;left:115px;border: solid 1px #D1D1D1' size='65'></input>
+		<!-- <input type='file' id='ResourceFile' name='ResourceFile' accept='$strAcceptedFileTypes' style='padding:1px 2px;position:absolute;left:115px;border: solid 1px #D1D1D1' size='65'></input> -->
+		<input type='file' id='ResourceFile' name='ResourceFile' accept='$strAcceptedFileTypes' style='padding:1px 2px;position:absolute;left:115px;border: solid 1px #D1D1D1' size='50'></input>
 	</div>
-	
+
 </form>
 <script type='text/javascript'>top.Vixen.DocumentResourceAdd.InitialiseFrame($jsonFileTypes)</script>
 			";
@@ -204,9 +205,8 @@ class HtmlTemplateDocumentResourceAdd extends HtmlTemplate
 		{
 			// The component is being rerendered after a form submittion
 			$strSuccess		= (DBO()->Import->Success->Value)? "true" : "false";
-			$strErrorMsg	= (DBO()->Import->ErrorMsg->IsSet)? htmlspecialchars(DBO()->Import->ErrorMsg->Value, ENT_QUOTES) : "";
-			
-			echo "<script type='text/javascript'>top.Vixen.DocumentResourceAdd.ImportReturnHandler($strSuccess, '$strErrorMsg');</script>";
+			$strErrorMsg	= Json()->encode((DBO()->Import->ErrorMsg->IsSet)? DBO()->Import->ErrorMsg->Value : "");
+			echo "<script type='text/javascript'>top.Vixen.DocumentResourceAdd.ImportReturnHandler($strSuccess, $strErrorMsg);</script>";
 		}
 		
 		echo "\n<!-- END HtmlTemplateDocumentResourceManagement (File Upload Component) -->\n";

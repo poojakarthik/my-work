@@ -42,7 +42,7 @@ echo "<title>Flex : Embedded page</title>\n";
 echo "<base href='$strBaseDir'/>\n";
 $this->RenderCSS();
 echo "</head>\n";
-echo "<body>\n";
+echo "<body class='EmbeddedComponent'>\n";
 
 $this->RenderColumn(COLUMN_ONE);
 

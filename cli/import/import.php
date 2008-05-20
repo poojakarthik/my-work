@@ -200,6 +200,11 @@
 					$_FIELD ['ObLib'] = "dataFloat";
 				}
 				
+				if (preg_match ("/blob/", $_FIELD ['Type'])) {
+					$_FIELD ['RefType'] = "b";
+					$_FIELD ['ObLib'] = "";
+				}
+				
 				if (preg_match ("/enum/", $_FIELD ['Type'])) {
 					$_FIELD ['RefType'] = "s";
 					$_FIELD ['ObLib'] = "dataString";
