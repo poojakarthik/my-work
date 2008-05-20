@@ -301,7 +301,7 @@
 		// Find Rate for this CDR
 		if (!$this->_arrCurrentRate = $this->_FindRateNew())
 		{
-			//Debug("No rate!");
+			$this->_Debug("No rate found!");
 			return FALSE;
 		}
 
@@ -1510,14 +1510,16 @@
 		{
 			$this->_Debug("Couldn't find a direct match Rate, looking for a close match");
 			$arrWhere['ClosestRate']	= TRUE;
-			if ($this->_selRate->Execute($arrWhere) === FALSE)
+			if (($intCount = $this->_selRate->Execute($arrWhere)) === FALSE)
 			{
 				// Error
 				Debug($this->_selRate->Error());
 			}
+			$this->_Debug("Found $intCount close matches");
 			
 			// Process each Rate candidate to find the best match
-			$arrBestMatch	= Array();
+			$arrBestMatch				= Array();
+			$arrBestMatch['Distance']	= PHP_INT_MAX;
 			while ($arrRate = $this->_selRate->Fetch())
 			{
 				if ($arrRate['StartDatetime'] > $this->_arrCurrentCDR['StartDatetime'])
@@ -1535,7 +1537,14 @@
 			}
 			
 			// Select the best match
-			$this->_Debug("Found a close match");
+			if ($arrBestMatch)
+			{
+				$this->_Debug("Found a close match");
+			}
+			else
+			{
+				$this->_Debug("Could not find a close match");
+			}
 			$this->_arrCurrentRate	= $arrBestMatch;
 		}
 		
