@@ -2229,12 +2229,12 @@ $GLOBALS['*arrConstant']	['FrequencyType']	[4]	['Constant']	= 'FREQUENCY_DAY';
 $GLOBALS['*arrConstant']	['FrequencyType']	[4]	['Description']	= 'Day';
 
 
-$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[0]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT';
-$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[0]	['Description']	= 1;
-$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[1]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL';
-$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[1]	['Description']	= 1;
-$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[2]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_ALL';
-$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[2]	['Description']	= 1;
+$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[1]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT';
+$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[1]	['Description']	= 'Print';
+$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[2]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL';
+$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[2]	['Description']	= 'Email';
+$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[3]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_ALL';
+$GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[3]	['Description']	= 'All';
 
 
 // Special paths
