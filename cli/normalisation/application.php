@@ -213,6 +213,21 @@
  		$this->_updUpdateCDRs = new StatementUpdate("CDR", "Id = <CdrId>", $arrDefine);
 		
 		$this->_arrDelinquents = Array();
+		
+		// Duplicate CDR Query
+	 	$this->_selFindDuplicate	= new StatementSelect(	"CDR",
+	 														"Id",
+	 														"Source = <Source> AND " .
+	 														"Destination = <Destination> AND " .
+	 														"StartDatetime = <StartDatetime> AND " .
+	 														"EndDatetime = <EndDatetime> AND " .
+	 														"Units = <Units> AND " .
+	 														"Cost = <Cost> AND " .
+	 														"SequenceNo = <SequenceNo> AND " .
+	 														"RecordType = <RecordType> AND " .
+	 														"RecordType NOT IN (10, 15, 33)",
+	 														NULL,
+	 														1);
  	}
 
 
@@ -659,6 +674,12 @@
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Cannot match owner"));
 					$arrDelinquents[$this->_arrNormalisationModule[$arrCDR["FileType"]]->strFNN]++;
 					$intDelinquents++;
+					
+					// If this is a duplicate, make sure people cannot assign this CDR to an Account
+					if ($this->_selFindDuplicate->Execute($arrCDR))
+					{
+						$arrCDR['Status']	= CDR_DUPLICATE;
+					}
 					break;
 				case CDR_CANT_NORMALISE_INVALID:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Normalised Data Invalid"));
@@ -674,7 +695,14 @@
 					break;
 				case CDR_NORMALISED:
 					// Normalised OK
-					$intNormalisePassed++;
+					if ($this->_selFindDuplicate->Execute($arrCDR))
+					{
+						$arrCDR['Status']	= CDR_DUPLICATE;
+					}
+					else
+					{
+						$intNormalisePassed++;
+					}
 					break;
 				default:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Unknown Error"));
