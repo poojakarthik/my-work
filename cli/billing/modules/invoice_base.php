@@ -640,7 +640,6 @@ abstract class BillingModuleInvoice
 					
 					$this->_arrPlanCharges['Records']		+= count($arrPlanChargeItemisation);
 					$this->_arrPlanCharges['TotalCharge']	+= $fltPlanChargeTotal;
-					Debug($this->_arrPlanCharges);
 				}
 			}
 			

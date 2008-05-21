@@ -94,6 +94,11 @@
 		$this->_domDocument->formatOutput	= TRUE;
 		
 		//--------------------------------------------------------------------//
+		// Service (Data retrieval only)
+		//--------------------------------------------------------------------//
+		$arrServices	= $this->_GetServices($arrInvoice);
+		
+		//--------------------------------------------------------------------//
 		// Document Object
 		//--------------------------------------------------------------------//
 		$xmlDocument	= $this->_AddElement($this->_domDocument, 'Document');
@@ -196,11 +201,6 @@
 		$this->_AddElement($xmlStatement, 'BillingPeriodStart', $strBillingPeriodStart);
 		$this->_AddElement($xmlStatement, 'BillingPeriodEnd', $strBillingPeriodEnd);
 		$this->_AddElement($xmlStatement, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
-		
-		//--------------------------------------------------------------------//
-		// Service (Data retrieval only)
-		//--------------------------------------------------------------------//
-		$arrServices	= $this->_GetServices($arrInvoice);
 		
 		//--------------------------------------------------------------------//
 		// Cost Centre Summary
