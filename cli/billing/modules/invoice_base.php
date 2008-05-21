@@ -637,7 +637,7 @@ abstract class BillingModuleInvoice
 					$arrCategories['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
 					
 					$fltRatedTotal				+= $fltPlanChargeTotal;
-					$this->_fltPlanChargeTotal	= $fltPlanChargeTotal;
+					$this->_fltPlanChargeTotal	+= $fltPlanChargeTotal;
 				}
 			}
 			
