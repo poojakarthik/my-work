@@ -522,6 +522,7 @@ abstract class BillingModuleInvoice
 			//Debug($arrService);
 		}
 		
+		$this->_fltPlanChargeTotal	= 0.0;
 		foreach ($arrServices as &$arrService)
 		{
 			$arrCategories	= Array();
@@ -611,18 +612,18 @@ abstract class BillingModuleInvoice
 					$arrCDR	= Array();
 					$arrCDR['Charge']			= $arrService['PlanCharge'];				
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
+					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("01/m/Y", strtotime($arrInvoice['CreatedOn'])))));
 					$arrPlanChargeItemisation[]	= $arrCDR;
 					
 					// Check for ServiceTotal vs Rated Total, then add as CDR
-					if ($arrService['ServiceTotal'] != $arrService['RatedTotal'])
+					if ($arrService['ServiceTotal'] != ($fltRatedTotal + $arrService['PlanCharge']))
 					{
-						$fltPlanChargeTotal			+= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
+						$fltPlanChargeTotal			+= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
 						
 						$arrCDR	= Array();
-						$arrCDR['Charge']			= $arrService['ServiceTotal'] - $arrService['RatedTotal'];
+						$arrCDR['Charge']			= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
 						$arrCDR['Units']			= 1;
-						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime(date($arrInvoice['CreatedOn']))))." to ".date("d/m/Y", strtotime("-1 day", date("01/m/Y", strtotime($arrInvoice['CreatedOn']))));
+						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("01/m/Y", strtotime($arrInvoice['CreatedOn'])))));
 						$arrPlanChargeItemisation[]	= $arrCDR;
 					}
 				}
@@ -635,7 +636,8 @@ abstract class BillingModuleInvoice
 					$arrCategories['Plan Charges & Credits']['Records']		= count($arrPlanChargeItemisation);
 					$arrCategories['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
 					
-					$fltRatedTotal	+= $fltPlanChargeTotal;
+					$fltRatedTotal				+= $fltPlanChargeTotal;
+					$this->_fltPlanChargeTotal	= $fltPlanChargeTotal;
 				}
 			}
 			
@@ -785,7 +787,7 @@ abstract class BillingModuleInvoice
 		
 		if ($bolPlanAdjustments)
 		{
-			$fltGrandTotal	= 0.0;
+			/*$fltGrandTotal	= 0.0;
 			$intRecords		= 0;
 			
 			// Plan Adjustments
@@ -807,9 +809,9 @@ abstract class BillingModuleInvoice
 			{
 				$arrPlanCharges	= $this->_selPlanChargeTotals->Fetch();
 				$fltGrandTotal	+= ($arrPlanCharges['GrandServiceTotal'] - $arrPlanCharges['RatedTotal']);
-			}
+			}*/
 			
-			$fltGrandTotal	= number_format($fltGrandTotal, 2, '.', '');
+			$fltGrandTotal	= number_format($this->_fltPlanChargeTotal, 2, '.', '');
 			if ($fltGrandTotal)
 			{
 				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	= $fltGrandTotal;

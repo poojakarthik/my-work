@@ -73,7 +73,8 @@
 		$this->_rptAuditReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Construct the Bill Output objects
-		$this->_arrBillOutput[BILL_PRINT]		= new BillingModulePrint(&$this->db, $arrConfig);
+		$this->_arrBillOutput[BILL_FLEX_XML]	= new BillingModuleInvoiceXML(&$this->db, $arrConfig);
+		//$this->_arrBillOutput[BILL_PRINT]		= new BillingModulePrint(&$this->db, $arrConfig);
 		//$this->_arrBillOutput[BILL_PRINT_ETECH]	= new BillingModuleEtech(&$this->db, $arrConfig);
 		
 		// Init Statements

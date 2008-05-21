@@ -40,6 +40,7 @@ define("LOG_PATH"						, FILES_BASE_PATH."log/billing/");
 // Billy Printing Variations
 define("BILL_PRINT"						, 900);
 define("BILL_PRINT_ETECH"				, 901);
+define("BILL_FLEX_XML"					, 902);
 
 // Charge Modules
 define("CHARGE_MODULE_NON_DDR"			, 666);
