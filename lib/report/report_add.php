@@ -29,7 +29,7 @@ $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "CDR JOIN FileImport ON CDR.File = FileImport.Id";
-$arrDataReport['SQLWhere']		= "Status = ".CDR_DUPLICATE;
+$arrDataReport['SQLWhere']		= "CDR.Status = ".CDR_DUPLICATE;
 $arrDataReport['SQLGroupBy']	= "InvoiceRun";
 
 // Documentation Reqs
