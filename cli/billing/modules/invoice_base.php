@@ -615,7 +615,7 @@ abstract class BillingModuleInvoice
 					$arrCDR	= Array();
 					$arrCDR['Charge']			= $arrService['PlanCharge'];				
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("01/m/Y", strtotime($arrInvoice['CreatedOn'])))));
+					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("Y-m-01", strtotime($arrInvoice['CreatedOn'])))));
 					$arrPlanChargeItemisation[]	= $arrCDR;
 					
 					// Check for ServiceTotal vs Rated Total, then add as CDR
@@ -626,7 +626,7 @@ abstract class BillingModuleInvoice
 						$arrCDR	= Array();
 						$arrCDR['Charge']			= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
 						$arrCDR['Units']			= 1;
-						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("01/m/Y", strtotime($arrInvoice['CreatedOn'])))));
+						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("Y-m-01", strtotime($arrInvoice['CreatedOn'])))));
 						$arrPlanChargeItemisation[]	= $arrCDR;
 					}
 				}
