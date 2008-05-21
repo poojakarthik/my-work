@@ -336,8 +336,8 @@ abstract class BillingModuleInvoice
 					$arrRecordType['GroupId']		= "RecordGroup.Id";
 					/*$arrRecordType['Itemised']		= "RecordGroup.Itemised";*/
 					$arrRecordType['DisplayType']	= "RecordGroup.DisplayType";
-					$arrRecordType['TotalCharge']	= "ServiceTypeTotal.Charge";
-					$arrRecordType['Records']		= "RecordGroup.DisplayType";
+					$arrRecordType['TotalCharge']	= "SUM(ServiceTypeTotal.Charge)";
+					$arrRecordType['Records']		= "SUM(RecordGroup.DisplayType)";
 					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
 					(
 	 					"(ServiceTypeTotal JOIN RecordType ON RecordType.Id = ServiceTypeTotal.RecordType) JOIN RecordType RecordGroup ON RecordType.GroupId = RecordGroup.Id",
