@@ -811,10 +811,9 @@ abstract class BillingModuleInvoice
 				$fltGrandTotal	+= ($arrPlanCharges['GrandServiceTotal'] - $arrPlanCharges['RatedTotal']);
 			}*/
 			
-			$fltGrandTotal	= number_format($this->_fltPlanChargeTotal, 2, '.', '');
-			if ($fltGrandTotal)
+			if ($this->_fltPlanChargeTotal)
 			{
-				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	= $fltGrandTotal;
+				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	= $this->_fltPlanChargeTotal;
 				$arrAccountSummary['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 			}
 		}
