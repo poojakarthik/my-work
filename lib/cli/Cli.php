@@ -172,7 +172,7 @@ abstract class Cli
 		static $strFlexBasePath;
 		if (!isset($strFlexBasePath))
 		{
-			return realpath(dirname(__FILE__) . "/../../") . DIRECTORY_SEPARATOR;
+			$strFlexBasePath = realpath(dirname(__FILE__) . "/../../") . DIRECTORY_SEPARATOR;
 		}
 		return $strFlexBasePath;
 	}

@@ -164,20 +164,19 @@ class Cli_Pdf extends Cli
 					$docProps[$parts[1][$i]] = $parts[2][$i]; 
 				}
 
+				$custGroupId = constant($docProps["CustomerGroup"]);
 				if ($arrArgs[Cli_Pdf::SWITCH_CUSTOMER_GROUP_ID] !== FALSE)
 				{
-					$custGroupId = constant($docProps["CustomerGroup"]);
 					if ($custGroupId != $arrArgs[Cli_Pdf::SWITCH_CUSTOMER_GROUP_ID])
 					{
 						$this->log("Skipping XML file '$strSource' as it is for CustomerGroup $custGroupId. We are only processing CustomerGroup " . $arrArgs[Cli_Pdf::SWITCH_CUSTOMER_GROUP_ID] . ".");
 						continue;
 					}
 				}
-				$custGroupId = constant($docProps["CustomerGroup"]);
 
 				if ($arrArgs[Cli_Pdf::SWITCH_EFFECTIVE_DATE] === FALSE)
 				{
-					$effectiveDate = constant($docProps["CreationDate"]);
+					$effectiveDate = $docProps["CreationDate"];
 				}
 				else
 				{
