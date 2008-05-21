@@ -344,6 +344,7 @@ abstract class BillingModuleInvoice
 						$arrRecordType,
 						"InvoiceRun = <InvoiceRun> AND $strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd>",
 						"RecordGroup.Description",
+						NULL,
 						"RecordGroup.Id"
 					);
 	 				break;
