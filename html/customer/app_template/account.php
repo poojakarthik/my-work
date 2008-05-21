@@ -292,7 +292,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// check if a pdf exists for the invoice
-		if (InvoicePdfExists(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value))
+		if (InvoicePDFExists(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value))
 		{
 			// Try to pull the Invoice PDF
 			$strInvoice = GetPDF(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value);
