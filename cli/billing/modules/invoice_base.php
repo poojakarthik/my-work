@@ -522,7 +522,7 @@ abstract class BillingModuleInvoice
 			//Debug($arrService);
 		}
 		
-		$this->_fltPlanChargeTotal	= 0.0;
+		$this->_arrPlanCharges	= Array();
 		foreach ($arrServices as &$arrService)
 		{
 			$arrCategories	= Array();
@@ -636,8 +636,10 @@ abstract class BillingModuleInvoice
 					$arrCategories['Plan Charges & Credits']['Records']		= count($arrPlanChargeItemisation);
 					$arrCategories['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
 					
-					$fltRatedTotal				+= $fltPlanChargeTotal;
-					$this->_fltPlanChargeTotal	+= $fltPlanChargeTotal;
+					$fltRatedTotal							+= $fltPlanChargeTotal;
+					
+					$this->_arrPlanCharges['Records']		+= count($arrPlanChargeItemisation);
+					$this->_arrPlanCharges['TotalCharge']	+= $fltPlanChargeTotal;
 				}
 			}
 			
@@ -811,9 +813,9 @@ abstract class BillingModuleInvoice
 				$fltGrandTotal	+= ($arrPlanCharges['GrandServiceTotal'] - $arrPlanCharges['RatedTotal']);
 			}*/
 			
-			if ($this->_fltPlanChargeTotal)
+			if ($this->_arrPlanCharges['Records'])
 			{
-				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	= $this->_fltPlanChargeTotal;
+				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	= $this->_arrPlanCharges['TotalCharge'];
 				$arrAccountSummary['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 			}
 		}
