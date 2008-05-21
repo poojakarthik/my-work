@@ -37,7 +37,7 @@ $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['File Name']				['Value']	= "FileExport.FileName";
+$arrSQLSelect['File Name']				['Value']	= "FileImport.FileName";
 
 $arrSQLSelect['Duplicate CDRs']			['Value']	= "COUNT(CDR.Id)";
 $arrSQLSelect['Duplicate CDRs']			['Type']	= EXCEL_TYPE_INTEGER;
@@ -45,7 +45,7 @@ $arrSQLSelect['Duplicate CDRs']			['Type']	= EXCEL_TYPE_INTEGER;
 $arrSQLSelect['Total CDR Cost']			['Value']	= "SUM(CDR.Cost)";
 $arrSQLSelect['Total CDR Cost']			['Type']	= EXCEL_TYPE_CURRENCY;
 
-$arrSQLSelect['Import Date']			['Value']	= "DATE_FORMAT(FileExport.ImportedOn, '%d/%m/%Y %H:%i:%s')";
+$arrSQLSelect['Import Date']			['Value']	= "DATE_FORMAT(FileImport.ImportedOn, '%d/%m/%Y %H:%i:%s')";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
