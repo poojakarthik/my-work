@@ -342,7 +342,9 @@ abstract class BillingModuleInvoice
 					(
 	 					"(ServiceTypeTotal JOIN RecordType ON RecordType.Id = ServiceTypeTotal.RecordType) JOIN RecordType RecordGroup ON RecordType.GroupId = RecordGroup.Id",
 						$arrRecordType,
-						"InvoiceRun = <InvoiceRun> AND $strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd>"
+						"InvoiceRun = <InvoiceRun> AND $strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd>",
+						"RecordGroup.Description",
+						"RecordGroup.Id"
 					);
 	 				break;
 	 				
