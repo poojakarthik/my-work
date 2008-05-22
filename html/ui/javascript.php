@@ -135,8 +135,11 @@ function VixenIncludeJsFiles($arrFilenames, $bolStripComments=FALSE)
 		
 	}
 	
-	header( 'Content-type: text/javascript');
-	
+	header('Content-type: text/javascript');
+	header('Cache-Control: public'); // Set both to confuse browser (causes clash with PHP's own headers) forcing browser to decide
+	header('Pragma: public');		 // (see above)
+	header('Last-Modified: '.date('r', time()-10000)); // Some time in the past	
+	header('Expires: '.date('r', time()+(365*24*60*60))); // About a year from now
 	// I'm unsuccessfully trying to set a useful expirey date on these javascript files, so that they are 
 	// only downloaded when one of them is updated
 	//header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1

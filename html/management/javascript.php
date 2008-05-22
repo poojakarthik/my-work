@@ -29,6 +29,15 @@
  *
  */
 
+// The JS file URI contains a unique 'version number' (the md5 of the JS content).
+// If the browser is checking to see if has changed, the copy it has MUST be the latest version.
+// No point sending it again, so send a 304 (not changed) header instead.
+if (array_key_exists('v', $_GET) && array_key_exists('HTTP_IF_MODIFIED_SINCE', $_SERVER))
+{
+	header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'], true, 304);
+	exit;
+}
+
 /* 
  * Javascript files can be defined in the application's local javascript directory
  * and in the ui_app directory.  Any js files in the application's local directory

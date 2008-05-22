@@ -16,12 +16,13 @@
 		$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 	}
 	
+	$strMd5 = md5_file(TEMPLATE_BASE_DIR."default.css");
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml"><head><title>Flex Systems Login</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <base href='<?php echo $strBaseDir ?>'/>
-<link rel='stylesheet' type='text/css' href='css.php' />
+<link rel='stylesheet' type='text/css' href='css.php?v=$strMd5' />
 </head>
 
 			<body onload='document.getElementById("VixenUserNameId").focus()'>

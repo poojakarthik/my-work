@@ -29,6 +29,15 @@
  *
  */
 
+// The JS file URI contains a unique 'version number' (the md5 of the JS content).
+// If the browser is checking to see if has changed, the copy it has MUST be the latest version.
+// No point sending it again, so send a 304 (not changed) header instead.
+if (array_key_exists('v', $_GET) && array_key_exists('HTTP_IF_MODIFIED_SINCE', $_SERVER))
+{
+	header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'], true, 304);
+	exit;
+}
+
 // From the config information, work out where the local application code is and where the framework code is
 //TODO! I don't think the appropriate config object has been implemented yet
 Define ('LOCAL_BASE_DIR', "../customer");

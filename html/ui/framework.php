@@ -281,7 +281,8 @@ class Page
 	 */
 	function RenderCSS()
 	{
-		echo "<link rel='stylesheet' type='text/css' href='css.php' />\n";
+		$strMd5 = md5_file(MODULE_DEFAULT_CSS);
+		echo "<link rel='stylesheet' type='text/css' href='css.php?v=$strMd5' />\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -330,15 +331,8 @@ class Page
 		$arrJsFiles = array_unique($GLOBALS['*arrJavaScript']);
 		
 		// Build the get variables for the javascript.php script
-		$strFiles = "";
-		foreach ($arrJsFiles as $strFileName)
-		{
-			$strFiles .= "File[]=$strFileName.js&";
-		}
-		
-		// Remove the last '&'
-		$strFiles = substr($strFiles, 0, -1);
-		
+		$strFiles = GetJsFilesQueryString($arrJsFiles);
+
 		// Echo the reference to the javascript.php script which retrieves all the javascript
 		echo "<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
@@ -384,31 +378,6 @@ class Page
 	 */
 	function RenderJS()
 	{
-		// I don't know if these header calls are actually necessary as they will have already been run in Page->RenderHeader()
-		/*
-		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-		header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
-		header('Cache-Control: no-store, no-cache, must-revalidate');
-		header('Cache-Control: post-check=0, pre-check=0', FALSE);
-		header('Pragma: no-cache');
-		*/
-		
-		/*
-		if (is_array($GLOBALS['*arrJavaScript']))
-		{
-			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
-			{
-				echo "<script type='text/javascript' src='javascript.php?File=$strValue.js' ></script>\n";
-				
-				// The following method was used before we had to worry about applications and customers overridding the framework
-				//echo "<script type='text/javascript' src='". JAVASCRIPT_BASE_DIR ."javascript/$strValue.js'></script>\n";
-				
-				// The autoloader method; which never actually worked with popups
-				//echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
-			}
-		}
-		*/
-		
 		if (!is_array($GLOBALS['*arrJavaScript']))
 		{
 			// There is no javascript to include
@@ -419,14 +388,7 @@ class Page
 		$arrJsFiles = array_unique($GLOBALS['*arrJavaScript']);
 		
 		// Build the get variables for the javascript.php script
-		$strFiles = "";
-		foreach ($arrJsFiles as $strFileName)
-		{
-			$strFiles .= "File[]=$strFileName.js&";
-		}
-		
-		// Remove the last '&'
-		$strFiles = substr($strFiles, 0, -1);
+		$strFiles = GetJsFilesQueryString($arrJsFiles);
 		
 		// Echo the reference to the javascript.php script which retrieves all the javascript
 		echo "<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
