@@ -952,6 +952,7 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Entity'	=> "DataReport",
 										'Documentation-Field'	=> "EndDateRange",
 									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 //----------------------------------------------------------------------------//
 // Administration Fees
@@ -1002,5 +1003,6 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Entity'	=> "DataReport",
 										'Documentation-Field'	=> "EndDateRange",
 									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
  ?>

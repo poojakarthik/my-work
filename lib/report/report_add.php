@@ -66,6 +66,7 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Entity'	=> "DataReport",
 										'Documentation-Field'	=> "EndDateRange",
 									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 //----------------------------------------------------------------------------//
 // Insert the Data Report
