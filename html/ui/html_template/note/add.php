@@ -151,7 +151,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		}
 		
 		// Draw the Note TextArea
-		echo "<textarea id='Note.Note' name='Note.Note' rows='6' class='DefaultInputTextArea' style='overflow:auto;left:0px;width:100%;'></textarea>\n";
+		echo "<textarea id='Note.Note' name='Note.Note' rows='6' class='DefaultInputTextArea' style='overflow:auto;left:0px;width:100%;border:solid 1px #D1D1D1'></textarea>\n";
 		
 		// Draw the Note Type combobox
 		DBL()->AvailableNoteTypes->SetTable("NoteType");
@@ -162,7 +162,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		echo "   <div class='Left'>\n";
 		echo "      <span>&nbsp;&nbsp;Note Type</span>\n";
 		echo "      <span>\n";
-		echo "         <select id='NoteTypeCombo' name='Note.NoteType'>\n";
+		echo "         <select id='NoteTypeCombo' name='Note.NoteType'style='border:solid 1px #D1D1D1'>\n";
 		// add each Note Type
 		foreach (DBL()->AvailableNoteTypes as $dboNoteType)
 		{

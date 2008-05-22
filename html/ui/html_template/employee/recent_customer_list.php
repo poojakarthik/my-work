@@ -164,7 +164,7 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 			}
 			else
 			{
-				// A constact is not associated with this customer
+				// A contact is not associated with this customer
 				$strContactCell = "[no contact specified]";
 			}
 			Table()->RecentCustomers->AddRow($strAccountCell, $strAccountNameCell, $strContactCell, $strDate);

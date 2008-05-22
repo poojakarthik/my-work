@@ -133,7 +133,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				if ($bolUserHasOperatorPerm)
 				{
 					$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
-					$strEmailLabel 	= "<a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a>";
+					$strEmailLabel = "<img src='img/template/email.png' title='Email PDF Invoice' onclick='$strEmailHref'></img>";
 				}
 			}
 			

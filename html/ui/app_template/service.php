@@ -213,16 +213,28 @@ class AppTemplateService extends ApplicationTemplate
 		return TRUE;
 	}
 
-	// Display's a service's history in a popup
+	//------------------------------------------------------------------------//
+	// ViewHistory
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewHistory()
+	 *
+	 * Performs the logic for viewing the service history popup
+	 * 
+	 * Performs the logic for viewing the service history popup
+	 * It expects the following objects to be set:
+	 * 	DBO()->Service->Id		Id of the service to view (can be the Id of any of the Service records that have been used to model the service, for the account)
+	 *
+	 * @return		void
+	 * @method		ViewHistory
+	 */
 	function ViewHistory()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 
-		$arrService = $this->GetService(DBO()->Service->Id->Value);
-		
-		if ($arrService === FALSE)
+		if (($arrService = $this->GetService(DBO()->Service->Id->Value)) === FALSE)
 		{
 			// Could not load the service record
 			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
@@ -231,9 +243,9 @@ class AppTemplateService extends ApplicationTemplate
 		
 		DBO()->Service->AsArray = $arrService;
 
+		// Use the generic popup page template
 		$this->LoadPage('generic_popup');
 		$this->Page->SetName('Service History - '. $arrService['FNN']);
-
 		$this->Page->AddObject('ServiceHistory', COLUMN_ONE, HTML_CONTEXT_POPUP);
 		return TRUE;
 	}
@@ -305,6 +317,7 @@ class AppTemplateService extends ApplicationTemplate
 							"ClosedOn"					=> "S.ClosedOn",
 							"CreatedBy"					=> "S.CreatedBy", 
 							"ClosedBy"					=> "S.ClosedBy",
+							"Account"					=> "S.Account",
 							"CurrentPlanId" 			=> "RP1.Id",
 							"CurrentPlanName"			=> "RP1.Name",
 							"FuturePlanId"				=> "RP2.Id",
@@ -327,7 +340,8 @@ class AppTemplateService extends ApplicationTemplate
 		$arrService = Array (
 								"Id"			=> $arrRecord['Id'],
 								"FNN"			=> $arrRecord['FNN'],
-								"ServiceType"	=> $arrRecord['ServiceType']
+								"ServiceType"	=> $arrRecord['ServiceType'],
+								"Account"		=> $arrRecord['Account']
 							);
 
 		// Add details about the Service's current plan, if it has one
@@ -389,6 +403,49 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		return $arrService;
+	}
+
+	// Displays the change of lessee / move service page
+	function Move()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
+		// Check if the billing/invoice process is being run
+		if (IsInvoicing())
+		{
+			// There are currently records in the InvoiceTemp table, which means a bill run is taking place.
+			// Lessee Changes cannot be made when a bill run is taking place
+			$strErrorMsg =  "Billing is in progress.  Services cannot be moved while this is happening.  ".
+							"Please try again in a couple of hours.  If this problem persists, please ".
+							"notify your system administrator";
+			Ajax()->AddCommand("Alert", $strErrorMsg);
+			return TRUE;
+		}
+		
+		//TODO!	Check if this service is already scheduled to be moved, or has already been moved, in which case
+		//		alert the user that movement cannot be done.  Use the NextOwner property to check this
+		
+		
+		// Load the Service's details
+		if (($arrService = $this->GetService(DBO()->Service->Id->Value)) === FALSE)
+		{
+			// Could not load the service record
+			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
+			return TRUE;
+		}
+		DBO()->Account->Id = $arrService['Account'];
+		DBO()->Account->Load();
+		DBO()->Service->AsArray = $arrService;
+		
+		
+		
+		// Use the generic popup page template
+		$this->LoadPage('generic_popup');
+		$this->Page->SetName('Service Movement - '. $arrService['FNN']);
+		$this->Page->AddObject('ServiceMovement', COLUMN_ONE);
+		return TRUE;
 	}
 
 	//------------------------------------------------------------------------//
@@ -3682,7 +3739,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * @return	bool					TRUE if the Service's FNN can be changed, else FALSE
 	 * @method	FNNCanBeChanged
 	 */
-	function FNNCanBeChanged($intService)
+	static function FNNCanBeChanged($intService)
 	{
 		// Retrieve the record from the database and the current date
 		$arrColumns = Array("Id"		=>	"Id",

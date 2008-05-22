@@ -2228,13 +2228,31 @@ $GLOBALS['*arrConstant']	['FrequencyType']	[3]	['Description']	= 'Hour';
 $GLOBALS['*arrConstant']	['FrequencyType']	[4]	['Constant']	= 'FREQUENCY_DAY';
 $GLOBALS['*arrConstant']	['FrequencyType']	[4]	['Description']	= 'Day';
 
-
+// Media Types that a Document Template could be generated for
 $GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[1]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT';
 $GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[1]	['Description']	= 'Print';
 $GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[2]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL';
 $GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[2]	['Description']	= 'Email';
 $GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[3]	['Constant']	= 'DOCUMENT_TEMPLATE_MEDIA_TYPE_ALL';
 $GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[3]	['Description']	= 'All';
+
+// Nature of Service Record Creation
+// Identifies the reason why a Service record was created
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[100]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_NEW';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[100]	['Description']	= 'Created';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[101]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_ACTIVATION';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[101]	['Description']	= 'Activated';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[102]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_DEACTIVATION';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[102]	['Description']	= 'Deactivated';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[103]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_LESSEE_CHANGE';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[103]	['Description']	= 'Lessee Changed';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[104]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_ACCOUNT_MOVE';
+$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[104]	['Description']	= 'Moved to other account';
+
+// Nature of Service Record Closure
+// Identifies the reason why a Service record was Closed
+//TODO!
+
 
 
 // Special paths

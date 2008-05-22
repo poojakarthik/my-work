@@ -66,8 +66,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
 		
-		// Depricated
-		//$this->LoadJavascript("service_edit");
+		$this->LoadJavascript("service_edit");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -84,6 +83,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
+		$intCurrentSatatus = DBO()->Service->CurrentStatus->Value;
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		
 		// Start the form
@@ -163,8 +163,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		
 		// The user can only change the FNN if the service was created today
 		// (They should only need to change the FNN if they accidently got it wrong to begin with)
-		$appService = Singleton::Instance('Application');
-		if ($appService->objAppTemplate->FNNCanBeChanged(DBO()->Service->Id->Value))
+		if (AppTemplateService::FNNCanBeChanged(DBO()->Service->Id->Value))
 		{
 			// The service was created today, so they can change the FNN
 			DBO()->Service->FNN->RenderInput();
@@ -191,7 +190,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Status :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Service.NewStatus' style='width:155px'>\n";
+		echo "      <select id='ServiceEditStatusCombo' name='Service.NewStatus' style='width:155px'>\n";
 		foreach ($GLOBALS['*arrConstant']['Service'] as $intConstant=>$arrServiceStatus)
 		{
 			// Only users with admin privileges can archive an account
@@ -278,12 +277,19 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		
 		echo "</div>\n";  // GroupedContent
 		
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(this)");
-		$this->AjaxSubmit("Apply Changes");
-		echo "</div></div>\n";
-		
+		// Render buttons
+		echo "
+<div class='ButtonContainer'>
+	<input type='button' style='display:none;float:right' id='ServiceEditSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_EditService', 'Apply Changes', 'Service', 'Edit', 'Popup', 'EditServicePopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
+	<input type='button' value='Apply Changes' style='float:right' onclick='Vixen.ServiceEdit.ApplyChanges()'></input>
+	<input type='button' value='Cancel' style='float:right;margin-right:5px' onclick='Vixen.Popup.Close(this)'></input>
+</div>
+";
+
 		$this->FormEnd();
+		
+		// Initialise the javascript object
+		echo "<script type='text/javascript'>Vixen.ServiceEdit.Initialise($intCurrentSatatus)</script>\n";
 	}	
 }
 

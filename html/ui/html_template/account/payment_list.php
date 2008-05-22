@@ -158,13 +158,13 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 					if ($bolOldEtechPaymentWithNoInvoices)
 					{
 						// Payment cannot be reversed, but should be marked as being a special case
-						$strDeletePaymentLabel = "<span><img src='img/template/etech_payment_notice.png' title=\"Etech payment which can't be reversed\" /></span>";
+						$strDeletePaymentLabel = "<img src='img/template/etech_payment_notice.png' title=\"Etech payment which can't be reversed\" />";
 					}
 					else
 					{
 						// Build the "Reverse Payment" link
 						$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
-						$strDeletePaymentLabel = "<span><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Reverse Payment' /></a></span>";
+						$strDeletePaymentLabel = "<img src='img/template/delete.png' title='Reverse Payment' onclick='$strDeletePaymentHref'></img>";
 					}
 				}
 				else

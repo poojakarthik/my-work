@@ -102,7 +102,8 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		echo "<h2 class='Adjustment'>Recurring Adjustments</h2>\n";
 
 		// Check if the user has admin privileges
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolUserIsGod		= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
 		
 		// define the table's header
 		if ($bolHasAdminPerm)
@@ -131,7 +132,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				{
 					// build the "Delete Recurring Adjustment" link
 					$strDeleteRecurringAdjustmentHref  = Href()->DeleteRecurringAdjustment($dboRecurringCharge->Id->Value);
-					$strDeleteRecurringAdjustmentLabel = "<span><a href='$strDeleteRecurringAdjustmentHref'><img src='img/template/delete.png' title='Cancel Recurring Adjustment' /></a></span>";
+					$strDeleteRecurringAdjustmentLabel = "<img src='img/template/delete.png' title='Cancel Recurring Adjustment' onclick='$strDeleteRecurringAdjustmentHref'></img>";
 				}
 				else
 				{
@@ -146,11 +147,21 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			}
 			
 			// Add tooltip
-			$strFNN = "";
+			$strToolTipHtml = "";
+			if ($bolUserIsGod)
+			{
+				// Display the associated RecurringCharge Id if the user is GOD
+				$strToolTipHtml .= $dboRecurringCharge->Id->AsOutput();
+			}
 			if ($dboRecurringCharge->Service->Value)
 			{
+				if ($bolUserIsGod)
+				{
+					// Display the associated service Id if the user is GOD
+					$strToolTipHtml .= $dboRecurringCharge->Service->AsOutput();
+				}
 				// The Recurring Charge is a Service Recurring Charge.  Display the FNN of the Service
-				$strFNN = $dboRecurringCharge->FNN->AsOutput();
+				$strToolTipHtml .= $dboRecurringCharge->FNN->AsOutput();
 			}
 			
 			// Add GST to the MinCharge and RecursionCharge
@@ -172,7 +183,6 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				$dboRecurringCharge->TimesToCharge = "Infinity";
 			}
 			
-			$strToolTipHtml  = $strFNN;
 			$strToolTipHtml .= $dboRecurringCharge->LastChargedOn->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 			$strToolTipHtml .= $dboRecurringCharge->Nature->AsOutput();
@@ -229,9 +239,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				$strEndTime = "Infinity";
 			}
 			
-			//TODO Use Started on instead of CreatedOn!!!
 			$strToolTipHtml .= $dboRecurringCharge->StartedOn->AsOutput();
-
 			
 			$dboRecurringCharge->EndDate = $strEndTime;
 			$strToolTipHtml .= $dboRecurringCharge->EndDate->AsOutput();
@@ -282,7 +290,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		}
 		
 		// Sometimes the tooltip is rendered off the bottom of the screen.  This prevents that from being a problem.
-		echo "<div style='height:300px'></div>\n";
+		echo "<div style='height:330px'></div>\n";
 	}
 }
 

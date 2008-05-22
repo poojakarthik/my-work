@@ -49,6 +49,8 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		}
 		$this->LoadJavascript("input_masks");
 		$this->LoadJavascript("validation");
+		$this->LoadJavascript("table_sort");
+		$this->LoadJavascript("highlight");
 		
 		$strDate = date("d/m/Y");
 		$strTime = date("H:i:s");

@@ -31,9 +31,9 @@
 /**
  * VixenServiceEditClass
  *
- * Encapsulates all event handling required of the "Add/Edit Service" webpages
+ * Encapsulates all event handling required of the "Edit Service" popup
  *
- * Encapsulates all event handling required of the "Add/Edit Service" webpages
+ * Encapsulates all event handling required of the "Edit Service" popup
  *
  * @package	ui_app
  * @class	VixenServiceEditClass
@@ -41,91 +41,91 @@
  */
 function VixenServiceEditClass()
 {
-	// These constants should only be visible from within this class
-	// They should reflect the ServiceType constants defined in framework/definitions.php
-	var SERVICE_TYPE_ADSL		= 100;
-	var SERVICE_TYPE_MOBILE		= 101;
-	var SERVICE_TYPE_LAND_LINE	= 102;
-	var SERVICE_TYPE_INBOUND	= 103;
-	var SERVICE_TYPE_DIALUP		= 104;
+	var SERVICE_ACTIVE			= 400;
+	var SERVICE_DISCONNECTED	= 402;
+	var SERVICE_ARCHIVED		= 403;
+	
+	this.intCurrentStatus = null;
 
 	//------------------------------------------------------------------------//
-	// InitialisePage
+	// Initialise
 	//------------------------------------------------------------------------//
 	/**
-	 * InitialisePage
+	 * Initialise
 	 *
-	 * Initialises the page
+	 * Initialises the Popup
 	 *
-	 * Initialises the page
+	 * Initialises the Popup
 	 *
-	 * @param	bool	bolAdd		optional, TRUE if the page is to be set up to Add a new service
-	 *								FALSE or NULL if the page is to be set up to Edit an existing service
+	 * @param	int		intCurrentStatus	The current status of the service
 	 *
 	 * @return	void
 	 * @method
 	 */
-	this.InitialisePage = function(bolAdd)
+	this.Initialise = function(intCurrentStatus)
 	{
-		// Initialise bolEdit to false, if it has not been declared
-		bolAdd = (bolAdd) ? true : false;
-		
-		if (bolAdd)
-		{
-			// The page is to be set up for adding a new service
-		}
-		else
-		{
-			// The page is to be set up for editing a service
-			document.getElementById("Service.ServiceType").disabled = true;
-		}
-		
+		this.intCurrentStatus = intCurrentStatus;
 	}
 	
-	//------------------------------------------------------------------------//
-	// ServiceTypeOnChange
-	//------------------------------------------------------------------------//
-	/**
-	 * ServiceTypeOnChange
-	 *
-	 * Event handler for when the Service Type is chosen from the Service Type Combobox
-	 *  
-	 * Event handler for when the Service Type is chosen from the Service Type Combobox
-	 *
-	 * @param	int		intServiceType		Id of the ServiceType selected
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.ServiceTypeOnChange = function(intServiceType)
+	this.ApplyChanges = function(bolConfirmed)
 	{
-		switch (parseInt(intServiceType))
+		if (!bolConfirmed)
 		{
-			case SERVICE_TYPE_MOBILE:
-				// hide any details not required for a mobile and display the mobile details
-				document.getElementById('InboundDetailDiv').style.display='none';
-				document.getElementById('LandlineDetailDiv').style.display='none';
-				document.getElementById('MobileDetailDiv').style.display='inline';
-				break;
-			case SERVICE_TYPE_INBOUND:
-				// hide any details not required for inbound services and show the inbound services details
-				document.getElementById('MobileDetailDiv').style.display='none';
-				document.getElementById('LandlineDetailDiv').style.display='none';
-				document.getElementById('InboundDetailDiv').style.display='inline';
-				break;
-			case SERVICE_TYPE_LAND_LINE:
-				// hide any details not required for inbound services and show the inbound services details
-				document.getElementById('MobileDetailDiv').style.display='none';
-				document.getElementById('InboundDetailDiv').style.display='none';
-				document.getElementById('LandlineDetailDiv').style.display='inline';
-				break;
-			default:
-				// hide all extra details
-				document.getElementById('MobileDetailDiv').style.display='none';
-				document.getElementById('InboundDetailDiv').style.display='none';
-				document.getElementById('LandlineDetailDiv').style.display='none';
-				break;
+			var elmNewStatus	= $ID("ServiceEditStatusCombo");
+			var intNewStatus	= parseInt(elmNewStatus.value);
+			var strMsg			= "Are you sure you want to make changes to this service?";
+			if (intNewStatus != this.intCurrentStatus)
+			{
+				if (this.intCurrentStatus == SERVICE_ACTIVE)
+				{
+
+					switch (intNewStatus)
+					{
+						case SERVICE_DISCONNECTED:
+							strMsg += 	"<br /><br />You have chosen to <strong>disconnect</strong> a currently <strong>active</strong> service." +
+										"<br />Disconnected services still get invoiced, as long as the account gets invoiced.";
+							break;
+						case SERVICE_ARCHIVED:
+							strMsg += 	"<br /><br />You have chosen to <strong>archive</strong> a currently <strong>active</strong> service." +
+										"<br />This will prohibit all outstanding CDRs, adjustments and recurring adjustments from being invoiced until such time that the service is unarchived.";
+							break;
+					}
+				}
+				else if (this.intCurrentStatus == SERVICE_DISCONNECTED)
+				{
+					switch (intNewStatus)
+					{
+						case SERVICE_ACTIVE:
+							strMsg += 	"<br /><br />You have chosen to <strong>activate</strong> a currently <strong>disconnected</strong> service.";
+							break;
+						case SERVICE_ARCHIVED:
+							strMsg += 	"<br /><br />You have chosen to <strong>archive</strong> a currently <strong>disconnected</strong> service." +
+										"<br />This will prohibit all outstanding CDRs, adjustments and recurring adjustments from being invoiced until such time that the service is unarchived.";
+							break;
+					}
+				}
+				else if (this.intCurrentStatus == SERVICE_ARCHIVED)
+				{
+					switch (intNewStatus)
+					{
+						case SERVICE_ACTIVE:
+							strMsg += 	"<br /><br />You have chosen to <strong>activate</strong> a currently <strong>archived</strong> service." +
+										"<br /><strong>WARNING:</strong> Unarchiving this service will cause all outstanding unbilled CDRs, adjustments and recurring adjustments to be eligible for billing";
+							break;
+						case SERVICE_DISCONNECTED:
+							strMsg += 	"<br /><br />You have chosen to upgrade the status of the service from <strong>archived</strong> to <strong>disconnected</strong>." +
+										"<br /><strong>WARNING:</strong> Unarchiving this service will cause all outstanding unbilled CDRs, adjustments and recurring adjustments to be eligible for billing";
+							break;
+					}
+				}
+				
+			}
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.ServiceEdit.ApplyChanges(true)});
+			return;
 		}
+		
+		var elmSubmitButton = $ID("ServiceEditSubmitButton");
+		elmSubmitButton.click();
 	}
 }
 

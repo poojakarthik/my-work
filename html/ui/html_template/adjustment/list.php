@@ -100,8 +100,9 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		echo "<h2 class='Adjustment'>Adjustments</h2>\n";
 
 		// Check if the user has admin privileges
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-
+		$bolHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolUserIsGod		= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
+		
 		// define the table's header
 		if ($bolHasAdminPerm)
 		{
@@ -139,7 +140,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				{
 					// build the "Delete Adjustment" link
 					$strDeleteAdjustmentHref  = Href()->DeleteAdjustment($dboCharge->Id->Value);
-					$strDeleteAdjustmentLabel = "<span><a href='$strDeleteAdjustmentHref'><img src='img/template/delete.png' title='Delete Adjustment' /></a></span>";
+					$strDeleteAdjustmentLabel = "<img src='img/template/delete.png' title='Delete Adjustment' onclick='$strDeleteAdjustmentHref'></img>";
 				}
 				else
 				{
@@ -163,16 +164,23 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			}
 			
 			// add tooltip
+			$strToolTipHtml = "";
+			if ($bolUserIsGod)
+			{
+				// Display the associated charge Id if the user is GOD
+				$strToolTipHtml .= $dboCharge->Id->AsOutput();
+			}
+			
 			if ($dboCharge->Service->Value)
 			{
+				if ($bolUserIsGod)
+				{
+					// Display the associated service Id if the user is GOD
+					$strToolTipHtml .= $dboCharge->Service->AsOutput();
+				}
 				// The Charge is a Service Charge. Display the FNN
-				$strFNN = $dboCharge->FNN->AsOutput();
+				$strToolTipHtml .= $dboCharge->FNN->AsOutput();
 			}
-			else
-			{
-				$strFNN = "";
-			}
-			$strToolTipHtml  = $strFNN;
 			
 			if ($dboCharge->CreatedBy->Value && $dboCharge->CreatedBy->Value != USER_ID)
 			{

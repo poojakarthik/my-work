@@ -1593,6 +1593,32 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// MoveService
+	//------------------------------------------------------------------------//
+	/**
+	 * MoveService()
+	 *
+	 * Compiles the javascript to be executed when the MoveService menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the MoveService menu item is clicked
+	 * 
+	 * @param	int		$intServiceId	id of the service to move
+	 *
+	 * @return	string					action to be executed when the MoveService menu item is clicked
+	 *
+	 * @method
+	 */
+	function MoveService($intServiceId)
+	{
+		// Setup data to send
+		$arrData['Service']['Id'] = $intServiceId;
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MoveService\", \"ExtraLarge\", \"Service Movement\", \"Service\", \"Move\", $strJsonCode)";
+	}
+
+
+	//------------------------------------------------------------------------//
 	// ViewServiceNotes
 	//------------------------------------------------------------------------//
 	/**

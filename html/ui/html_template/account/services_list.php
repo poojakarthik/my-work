@@ -227,10 +227,10 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			{
 				// The user can edit stuff
 				$strEditServiceLink	= Href()->EditService($arrService['Id']);
-				$strEditService		= "<img src='img/template/edit.png' title='Edit Service' onclick='$strEditServiceLink' style='cursor:pointer'/>";
+				$strEditService		= "<img src='img/template/edit.png' title='Edit Service' onclick='$strEditServiceLink'/>";
 				
 				$strChangePlanLink	= Href()->ChangePlan($arrService['Id']);
-				$strChangePlan		= "<img src='img/template/plan.png' title='Change Plan' onclick='$strChangePlanLink' style='cursor:pointer'/>";
+				$strChangePlan		= "<img src='img/template/plan.png' title='Change Plan' onclick='$strChangePlanLink'/>";
 	
 				// Include a button for provisioning, if the service is a landline
 				if ($arrService['ServiceType'] == SERVICE_TYPE_LAND_LINE)
@@ -239,12 +239,12 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 					$strProvisioning		= "<a href='$strProvisioningLink' title='Provisioning'><img src='img/template/provisioning.png'></img></a>";
 					
 					$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($arrService['Id']);
-					$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink' style='cursor:pointer'/>";
+					$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink'/>";
 				}
 			}
 			
 			$strViewServiceNotesLink	= Href()->ViewServiceNotes($arrService['Id']);
-			$strViewServiceNotes		= "<img src='img/template/note.png' title='View Notes' onclick='$strViewServiceNotesLink' style='cursor:pointer'/>";
+			$strViewServiceNotes		= "<img src='img/template/note.png' title='View Notes' onclick='$strViewServiceNotesLink'/>";
 			
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);
 			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";

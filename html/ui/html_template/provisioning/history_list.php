@@ -234,7 +234,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		// Create a combobox containing all the Category filter options
 		echo "<span>Category</span>\n";
 		echo "<span>\n";
-		echo "   <select id='ProvHistoryCategoryCombo' onChange='Vixen.$strObjectName.intCategoryFilter = this.value;'>\n";
+		echo "   <select id='ProvHistoryCategoryCombo' onChange='Vixen.$strObjectName.intCategoryFilter = this.value;' style='border:solid 1px #D1D1D1'>\n";
 		foreach ($arrCatFilterOptions as $intOption=>$strDescription)
 		{
 			$strSelected = (DBO()->History->CategoryFilter->Value == $intOption) ? "selected='selected'" : "";
@@ -246,7 +246,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		// Create a combobox containing all the Request Type filter options
 		echo "<span style='margin-left:20px'>Request Type</span>\n";
 		echo "<span>\n";
-		echo "   <select id='ProvHistoryTypeCombo' onChange='Vixen.$strObjectName.intTypeFilter = this.value;'>\n";
+		echo "   <select id='ProvHistoryTypeCombo' onChange='Vixen.$strObjectName.intTypeFilter = this.value;' style='border:solid 1px #D1D1D1'>\n";
 		foreach ($arrTypeFilterOptions as $intOption=>$strDescription)
 		{
 			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
@@ -263,7 +263,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		// Create a combobox containing all the MaxItems options
 		echo "<span style='margin-left:20px'>Max Items</span>\n";
 		echo "<span>\n";
-		echo "   <select id='ProvHistoryMaxItemsCombo' onChange='Vixen.$strObjectName.intMaxItems = this.value;'>\n";
+		echo "   <select id='ProvHistoryMaxItemsCombo' onChange='Vixen.$strObjectName.intMaxItems = this.value;' style='border:solid 1px #D1D1D1'>\n";
 		foreach ($arrMaxItems as $intOption=>$strDescription)
 		{
 			$strSelected = (DBO()->History->MaxItems->Value == $intOption) ? "selected='selected'" : "";
@@ -358,11 +358,23 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			}
 			else
 			{
-				// Have a link to the Service's individual Service history from the FNN, if the service is known for this record
+				
+				/*// Have a link to the Service's individual Provisioning history from the FNN, if the service is known for this record
 				if ($arrRecord['Service'] != NULL)
 				{
 					$strServiceProvHistoryLink = Href()->ViewProvisioningHistory($arrRecord['Service']);
 					$strFnnCell = "<a href='$strServiceProvHistoryLink' title='View History'>{$arrRecord['FNN']}</a>";
+				}
+				else
+				{
+					$strFnnCell = $arrRecord['FNN'];
+				}*/
+
+				// Have a link to the Service Details page from the FNN, if the service is known for this record
+				if ($arrRecord['Service'] != NULL)
+				{
+					$strServiceLink	= Href()->ViewService($arrRecord['Service']);
+					$strFnnCell		= "<a href='$strServiceLink' title='View Service'>{$arrRecord['FNN']}</a>";
 				}
 				else
 				{

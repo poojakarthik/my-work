@@ -61,8 +61,11 @@ class HtmlTemplateServiceHistory extends HtmlTemplate
 	 */
 	function __construct($intContext=NULL, $strId=NULL)
 	{
-		$this->_intContext = $intContext;
-		$this->_strContainerDivId = $strId;
+		$this->_intContext			= $intContext;
+		$this->_strContainerDivId	= $strId;
+		
+		$this->LoadJavascript("table_sort");
+		
 	}
 
 	function Render()
@@ -83,9 +86,13 @@ class HtmlTemplateServiceHistory extends HtmlTemplate
 	{
 		$arrService	= DBO()->Service->AsArray->Value;
 		
-		Table()->History->SetHeader("Action", "Timestamp", "Instigator");
+		Table()->History->SetHeader("Action", "Timestamp", "Performed By");
 		Table()->History->SetWidth("34%", "33%", "33%");
 		Table()->History->SetAlignment("Left", "Left", "Left");
+		Table()->History->SetSortable(TRUE);
+		//Table()->History->SetSortFields("Action", "Timestamp", "Performed By");
+		Table()->History->SetSortFields(NULL, NULL, NULL);
+		Table()->History->SetPageSize(10);
 		
 		$intLastRecordIndex = count($arrService['History']) - 1;
 		foreach ($arrService['History'] as $intIndex=>$arrHistoryItem)
@@ -109,11 +116,7 @@ class HtmlTemplateServiceHistory extends HtmlTemplate
 		$strTable = ob_get_clean();
 		
 		echo "
-<div id='ContainerDiv_ScrollableDiv_History' style='border: solid 1px #D1D1D1; padding: 5px 5px 5px 5px'>
-	<div id='ScrollableDiv_History' style='overflow:auto; height:200px; width:auto; padding: 0px 3px 0px 3px'>
-		$strTable
-	</div>
-</div>
+$strTable
 <div class='ButtonContainer'>
 	<input type='button' style='float:right' value='Close' onClick='Vixen.Popup.Close(this)'></input>
 </div>

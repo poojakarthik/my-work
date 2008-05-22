@@ -155,7 +155,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 	<span>Filter</span>
 	<select id='NoteFilterCombo' onChange='Vixen.NoteList.intNoteFilter = this.value; Vixen.NoteList.ApplyFilter(true);' style='width:auto;border:solid 1px #D1D1D1'>$strOptions</select>
 	<span>Limit</span>
-	<input type='text' style='border:solid 1px #D1D1D1;padding-left:3px;width:50px' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter(true);'></input>
+	<input type='text' style='border:solid 1px #D1D1D1;padding-left:3px;width:50px' maxlength='4' id='NoteDetails.MaxNotes' value='$intMaxNotes' onChange='Vixen.NoteList.intMaxNotes = this.value; Vixen.NoteList.ApplyFilter(true);'></input>
 </div>
 <div class='TinySeperator' style='clear:both'></div>";
 		
