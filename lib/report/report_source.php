@@ -865,4 +865,41 @@ $arrSQLFields['InvoiceRun']	= Array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
+
+//----------------------------------------------------------------------------//
+// Duplicate Unbilled CDR Files in a given Period
+//----------------------------------------------------------------------------//
+
+// General Data
+$arrDataReport['Name']			= "Duplicate Unbilled CDR Files in a given Period";
+$arrDataReport['Summary']		= "Displays a list of CDR Files which have duplicate unbilled CDRs in them.";
+$arrDataReport['FileName']		= "Duplicate Unbilled CDR Files as of <DATETIME()>";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "CDR JOIN FileImport ON CDR.File = FileImport.Id";
+$arrDataReport['SQLWhere']		= "CDR.Status = ".CDR_DUPLICATE;
+$arrDataReport['SQLGroupBy']	= "InvoiceRun";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['File Name']				['Value']	= "FileImport.FileName";
+
+$arrSQLSelect['Duplicate CDRs']			['Value']	= "COUNT(CDR.Id)";
+$arrSQLSelect['Duplicate CDRs']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Total CDR Cost']			['Value']	= "SUM(CDR.Cost)";
+$arrSQLSelect['Total CDR Cost']			['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Import Date']			['Value']	= "DATE_FORMAT(FileImport.ImportedOn, '%d/%m/%Y %H:%i:%s')";
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+
+// SQL Fields
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
  ?>
