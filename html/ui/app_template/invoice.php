@@ -70,11 +70,14 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$arrEmailList	= Array(); // Emails from checkboxes
 		$arrExploded	= Array();
 		$arrPDFtoSend	= Array();
+		$intInvoiceId	= DBO()->Invoice->Id->Value;
+		$strInvoiceRun	= DBO()->Invoice->InvoiceRun->Value;
 		$intYear		= DBO()->Invoice->Year->Value;
 		$intMonth		= DBO()->Invoice->Month->Value;
-
+		$intAccount		= DBO()->Account->Id->Value;
+		
 		// check if the form was submitted
-		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice'))
+		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice')) 
 		{		
 			foreach (DBO()->Email as $strPropertyName=>$mixProperty)
 			{
@@ -84,7 +87,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 					// Load the email to the emails array
 					$arrEmails[] = $mixProperty->Value; 
 				}
-				
+
 				// Using the checkboxes
 				elseif ($strPropertyName != "Extra" && $mixProperty->Value == 1)
 				{
@@ -103,17 +106,16 @@ class AppTemplateInvoice extends ApplicationTemplate
 						// We have emails from checkboxes, merge with $arrEmails
 						array_merge($arrEmails, $arrEmailList);
 					}
-					
+
 					// Add emails not in a list (i.e single ones)
 					$arrEmails[] = DBO()->Contact->Email->Value;
 				}
 			}
-			
+
 			// Get PDF filenames
-			$strGlob = PATH_INVOICE_PDFS . $intYear . "/" . $intMonth . "/" . DBO()->Account->Id->Value . "_*.pdf";
-			$arrPDFtoSend = glob($strGlob);
-			$strPDFtoSend = $arrPDFtoSend[0];
-			
+			$strPDFtoSend = GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun, DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL);
+			$strInvoiceFileName = GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
+
 			// Load account details for sending the email
 			$strTables	= "Account AS A INNER JOIN CustomerGroup AS CG ON A.CustomerGroup = CG.Id";
 			$arrColumns	= Array("CustomerGroup" => "CG.ExternalName", "OutboundEmail" => "CG.OutboundEmail");
@@ -121,7 +123,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 			$selAccount = new StatementSelect($strTables, $arrColumns, $strWhere);
 			$selAccount->Execute(Array("AccountId" => DBO()->Account->Id->Value));
 			$arrAccount = $selAccount->Fetch();
-			
+
 			// Set up the email message
 			$strBillingPeriod = date("F", strtotime("$intYear-$intMonth-01")) . " " . $intYear; // eg 'May 2007'
 			$strCustomerGroup = $arrAccount['CustomerGroup'];
@@ -129,17 +131,17 @@ class AppTemplateInvoice extends ApplicationTemplate
 			$strContent = str_replace("<custgrp>", $strCustomerGroup, INVOICE_EMAIL_CONTENT);
 			$strSubject = str_replace("<billperiod>", $strBillingPeriod, INVOICE_EMAIL_SUBJECT);
 			$arrHeaders = Array('From' => $strFromAddress, 'Subject' => $strSubject);
-			
+
 			// Send them
 			foreach ($arrEmails as $strEmailAddress)
 			{
 				$mimMime = new Mail_mime("\n");
 				$mimMime->setTXTBody($strContent);
-				$mimMime->addAttachment($strPDFtoSend, 'application/pdf');
+				$mimMime->addAttachment($strPDFtoSend, 'application/pdf', $strInvoiceFileName, FALSE);
 				$strBody = $mimMime->get();
 				$strHeaders = $mimMime->headers($arrHeaders);
 				$emlMail =& Mail::factory('mail');
-				
+
 				if (!$emlMail->send($strEmailAddress, $strHeaders, $strBody))
 				{
 					// Sending the email failed
@@ -147,13 +149,13 @@ class AppTemplateInvoice extends ApplicationTemplate
 					return TRUE;
 				}
 			}
-			
+
 			// The emails were successfully sent
 			Ajax()->AddCommand("ClosePopup", "EmailPDFInvoicePopupId");
 			Ajax()->AddCommand("Alert", "Email(s) successfully sent.");
 			return TRUE;
 		}
-		
+
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Account->Load())
@@ -161,20 +163,20 @@ class AppTemplateInvoice extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "The account with account id:". DBO()->Account->Id->value ."could not be found");
 			return TRUE;
 		}
-		
+
 		$strWhere  = "(Account = ". DBO()->Account->Id->Value ." OR ";
 		$strWhere .= "(AccountGroup = ". DBO()->Account->AccountGroup->Value ." AND CustomerContact = 1))";
 		$strWhere .= " AND Email != '' AND Email != 'no email'";
 		
 		DBL()->Contact->Where->SetString($strWhere);
 		DBL()->Contact->Load();
-		
+
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('email_pdf_invoice');
 
 		return TRUE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ExportAsCSV
 	//------------------------------------------------------------------------//

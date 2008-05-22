@@ -375,11 +375,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function DownloadInvoicePDF($intAccountId, $intYear, $intMonth)
+	function DownloadInvoicePDF($intAccountId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun)
 	{
 		$this->strLabel	= "Download Invoice Pdf";
 		
-		return $this->GetBaseURL()."flex.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth";
+		return $this->GetBaseURL()."flex.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth&Invoice.Id=$intInvoiceId&Invoice.InvoiceRun=$strInvoiceRun";
 	}
 	
 	//------------------------------------------------------------------------//

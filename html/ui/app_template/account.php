@@ -517,7 +517,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->Invoice->SetLimit(3);
 		DBL()->Invoice->Load();
-		
+
 		// Calculate the Account Balance
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 

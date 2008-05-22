@@ -292,11 +292,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// check if a pdf exists for the invoice
-		if (InvoicePDFExists(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value))
+		if (InvoicePDFExists(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, DBO()->Invoice->InvoiceRun->Value))
 		{
 			// Try to pull the Invoice PDF
-			$strInvoice = GetPDF(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value);
-			$strInvoiceFilename = GetPdfFilename(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value);
+			$strInvoice = GetPDFContent(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, DBO()->Invoice->InvoiceRun->Value);
+			$strInvoiceFilename = GetPdfFilename(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, DBO()->Invoice->InvoiceRun->Value);
 			header("Content-Type: application/pdf");
 			header("Content-Disposition: attachment; filename=\"$strInvoiceFilename\"");
 			echo $strInvoice;

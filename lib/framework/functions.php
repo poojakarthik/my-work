@@ -844,6 +844,7 @@ function HasPermission($mixUser, $mixPermission)
 
 //------------------------------------------------------------------------//
 // ListPDF INCOMPLETE
+// - Not used?
 //------------------------------------------------------------------------//
 /**
  * ListPDF()
@@ -863,26 +864,71 @@ function HasPermission($mixUser, $mixPermission)
 function ListPDF($intAccount)
 {
 	$arrReturn = Array();
-	
-	// GLOB for year directories
+
+	// Get the XML invoices...
+	// GLOB for xml/year directories
+	$arrYears = glob(PATH_INVOICE_PDFS .DIRECTORY_SEPARATOR."/xml/*", GLOB_ONLYDIR);
+
+	foreach($arrYears as $strYear)
+	{
+		// GLOB for month directories
+		$arrMonths = glob("$strYear/*", GLOB_ONLYDIR);
+
+		foreach($arrMonths as $strMonth)
+		{
+			// GLOB for account filename
+			$arrInvoices = glob("$strMonth/".$intAccount."_*.xml");
+			if (count($arrInvoices))
+			{
+				$arrReturn[basename ($strYear)][basename ($strMonth)]	= basename($arrInvoices[0]);
+			}
+		}
+	}
+
+	// GLOB for pdf/year directories - i.e. pdfs generated prior to the introduction of pdf generation by flex
+	$arrYears = glob(PATH_INVOICE_PDFS .DIRECTORY_SEPARATOR."/pdf/*", GLOB_ONLYDIR);
+
+	foreach($arrYears as $strYear)
+	{
+		// GLOB for month directories
+		$arrMonths = glob("$strYear/*", GLOB_ONLYDIR);
+
+		foreach($arrMonths as $strMonth)
+		{
+			if (!(array_key_exists(basename ($strYear), $arrReturn) && array_key_exists(basename ($strMonth), $arrReturn[basename ($strYear)])))
+			{
+				// GLOB for account filename
+				$arrInvoices = glob("$strMonth/".$intAccount."_*.pdf");
+				if (count($arrInvoices))
+				{
+					$arrReturn[basename ($strYear)][basename ($strMonth)]	= basename($arrInvoices[0]);
+				}
+			}
+		}
+	}
+
+	// GLOB for year directories - This is old school! Should be removed once updates are complete!!
 	$arrYears = glob(PATH_INVOICE_PDFS ."*", GLOB_ONLYDIR);
 	
 	foreach($arrYears as $strYear)
 	{
 		// GLOB for month directories
 		$arrMonths = glob("$strYear/*", GLOB_ONLYDIR);
-		
+
 		foreach($arrMonths as $strMonth)
 		{
-			// GLOB for account filename
-			$arrInvoices = glob("$strMonth/".$intAccount."_*.pdf");
-			if ($arrInvoices[0])
+			if (!(array_key_exists(basename ($strYear), $arrReturn) && array_key_exists(basename ($strMonth), $arrReturn[basename ($strYear)])))
 			{
-				$arrReturn[basename ($strYear)][basename ($strMonth)]	= basename($arrInvoices[0]);
+				// GLOB for account filename
+				$arrInvoices = glob("$strMonth/".$intAccount."_*.pdf");
+				if (count($arrInvoices))
+				{
+					$arrReturn[basename ($strYear)][basename ($strMonth)]	= basename($arrInvoices[0]);
+				}
 			}
 		}
 	}
-	
+
 	return $arrReturn;
 }
 
@@ -2632,6 +2678,44 @@ function GetCurrentPlan($intService)
 	return ($arrRatePlan) ? $arrRatePlan['RatePlan'] : FALSE;
 }
 
+
+//------------------------------------------------------------------------//
+// ListPDFSamples
+//------------------------------------------------------------------------//
+/**
+ * ListPDFSamples()
+ *
+ * Checks if the invoice pdf exists for the given month, year and account id
+ *
+ * Checks if the invoice pdf exists for the given month, year and account id
+ * 
+ * @param		integer	$intAccountId		the invoice's associated Account
+ * @param		integer $intYear			numeric repressentation of the year relating to the invoice's pdf (4 digit year)
+ * @param		integer	$intMonth			numeric repressentation of the month relating to the invoice's pdf
+ *
+ * @return		boolean						TRUE if the pdf was found, else 
+ *
+ * @method
+ */ 
+function ListPDFSamples($intAccountId)
+{
+	$strGlob = PATH_INVOICE_PDFS ."xml/*-*/{$intAccountId}.xml";
+	$arrPDFs = glob($strGlob);
+	$arrInvoiceRuns = array();
+	if ($arrPDFs && count($arrPDFs))
+	{
+		$strPaths = str_replace("\\", "/", implode("!", $arrPDFs)) . "!";
+		preg_match_all("/xml\/([^\-]+\-([^\/]+))\/[^_]+\.xml/U", $strPaths, $arrInvoiceRuns);
+		if (count($arrInvoiceRuns))
+		{
+			$arrInvoiceRuns = array_map('ucwords', array_map('strtolower', array_combine($arrInvoiceRuns[1], $arrInvoiceRuns[2])));
+		}
+	}
+	krsort($arrInvoiceRuns);
+	return $arrInvoiceRuns;
+}
+
+
 //------------------------------------------------------------------------//
 // InvoicePDFExists
 //------------------------------------------------------------------------//
@@ -2650,14 +2734,41 @@ function GetCurrentPlan($intService)
  *
  * @method
  */ 
-function InvoicePDFExists($intAccountId, $intYear, $intMonth)
+function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun)
 {
-	$strGlob = PATH_INVOICE_PDFS ."$intYear/$intMonth/{$intAccountId}_*.pdf";
-	$arrPDFs = glob($strGlob);
-	
-	if (count($arrPDFs))
+	if ($intInvoiceId)
 	{
-		return TRUE;
+		$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml";
+		$arrPDFs = glob($strGlob);
+		if ($arrPDFs && count($arrPDFs))
+		{
+			return $arrPDFs[0];
+		}
+	}
+	else
+	{
+		$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}.xml";
+		$arrPDFs = glob($strGlob);
+		if ($arrPDFs && count($arrPDFs))
+		{
+			return $arrPDFs[0];
+		}
+		return FALSE;
+	}
+
+	$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
+	$arrPDFs = glob($strGlob);
+	if ($arrPDFs && count($arrPDFs))
+	{
+		return $arrPDFs[0];
+	}
+
+	$strGlob = PATH_INVOICE_PDFS ."pdf/$intYear/$intMonth/{$intAccountId}_{$intInvoiceId}.pdf";
+	$arrPDFs = glob($strGlob);
+
+	if ($arrPDFs && count($arrPDFs))
+	{
+		return $arrPDFs[0];
 	}
 	return FALSE;
 }
@@ -2675,32 +2786,155 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth)
  * @param	int		$intAccount			Account to find PDFs for
  * @param	int		$intYear			Year to match
  * @param	int		$intMonth			Month to match
+ * @param	int		$intInvoiceId		Id of invoice
+ * @param	int		$strInvoiceRun		Invoice run of invoice
  *
  * @return	mixed						string: filename of the PDF invoice
  * 										FALSE: there was an error
  * 
  * @function
  */
-function GetPdfFilename($intAccount, $intYear, $intMonth)
+function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun)
 {
-	$arrReturn = Array();
-	
-	// GLOB for account filename
-	$arrInvoices = glob(PATH_INVOICE_PDFS . $intYear."/".$intMonth."/".$intAccount."_*.pdf");
-	
-	if (count($arrInvoices) == 0 || $arrInvoices === FALSE)
+	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
+	if (!$mxdInvoicePath)
 	{
-		// Either glob had an error, or the filename doesn't exist
 		return FALSE;
 	}
-	
-	//grab the filename
-	$strFilename = explode("/", $arrInvoices[0]);
-	$strFilename = $strFilename[(count($strFilename)-1)];
-	
-	return $strFilename;
+	else
+	{
+		$fileName = preg_replace("/(.xml|.xml.bz2)$/", ".pdf", basename($mxdInvoicePath));
+		return $fileName;
+	}
 }
 
+//------------------------------------------------------------------------//
+// GetPDFContent
+//------------------------------------------------------------------------//
+/**
+ * GetPDFContent()
+ * 
+ * Return the contents of a PDF invoice in a string
+ * 
+ * Return the contents of a PDF invoice in a string for the specified account, year, and month
+ * 
+ * @param	obj	$objInvoice		Invoice to get PDF document for
+ * @param	int	$intTargetMedia	Target media (if generated on the fly) if not default for file
+ *
+ * @return	mixed						string: contents of the PDF invoice
+ * 										FALSE: there was an error
+ * 
+ * @function
+ */
+function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun, $intTargetMedia=0)
+{
+	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
+
+	if (!$mxdInvoicePath)
+	{
+		return FALSE;
+	}
+	else
+	{
+		$ext = substr($mxdInvoicePath, strrpos($mxdInvoicePath, '.'));
+
+		switch ($ext)
+		{
+			case '.bz2':
+				// Load the xml from the bz2 file
+				$xml = '';
+				$bz = bzopen($mxdInvoicePath, 'r');
+				$line = TRUE;
+				while (!feof($bz) && $line)
+				{
+					$line = bzread($bz, 8192);
+					$xml .= $line;
+				}
+				bzclose($bz);
+
+			case '.xml':
+				// Load the xml from the xml file
+				if ($ext == '.xml')
+				{
+					$xml = file_get_contents($mxdInvoicePath);
+				}
+
+				// Get the document properties from the file
+				$parts = array();
+				preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $xml, $parts);
+
+				// Check that we have a full set
+				if (count($parts) != 3 || count($parts[1]) != 4 || count($parts[2]) != 4)
+				{
+					throw new Exception("Unable to identify document properties.");
+				}
+
+				// Create a [name=>value,...] arrray...
+				$docProps = array();
+				for($i = 0; $i < 4; $i++)
+				{
+					$docProps[$parts[1][$i]] = $parts[2][$i]; 
+				}
+
+				// If no target media has been specified, get the default media type for the file
+				if (!$intTargetMedia)
+				{
+					$targetMedia = $docProps["DeliveryMethod"];
+					switch($targetMedia)
+					{
+						case 'DELIVERY_METHOD_EMAIL':
+						case 'DELIVERY_METHOD_EMAIL_SENT':
+							$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL;
+							break;
+						case 'DELIVERY_METHOD_POST':
+						case 'DELIVERY_METHOD_PRINT':
+							$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT;
+							break;
+						default:
+							return FALSE;
+					}
+				}
+
+				// Take the effective date to be the document Creation Date
+				$effectiveDate = $docProps["CreationDate"];
+
+				// Take the customer group from the file - this should be the same as the one for the invoice
+				$custGroupId = constant($docProps["CustomerGroup"]);
+
+				VixenRequire('lib/pdf/Flex_Pdf.php');
+
+				try
+				{
+				// Generate the pdf document on the fly
+				$pdfTemplate = new Flex_Pdf_Template(
+								$custGroupId, 
+								$effectiveDate, 
+								DOCUMENT_TEMPLATE_TYPE_INVOICE, 
+								$xml, 
+								$intTargetMedia, 
+								TRUE);
+
+				$pdfDocument = $pdfTemplate->createDocument();
+
+				$pdf = $pdfDocument->render();
+				}
+				catch (Exception $e)
+				{
+					throw $e;
+				}
+
+				break;
+
+			case '.pdf':
+				$pdf = file_get_contents($mxdInvoicePath);
+				break;
+
+			default:
+				$pdf = FALSE;
+		}
+		return $pdf;
+	}
+}
 
  
  
@@ -3236,7 +3470,10 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 	// Store a running total of how many were successfully generated, and how many failed, for each notice type
 	$arrGeneratedNotices = Array("Successful" => 0, "Failed" => 0);
 	$arrSummary = Array();
-	
+
+	VixenRequire('lib/dom/Flex_Dom_Document.php');
+	$dom = new Flex_Dom_Document();
+
 	// For each account retrieved, work out if a late payment notice really has to be made for it
 	$arrAccounts	= $selOverdue->FetchAll();
 	$strToday		= date("Y-m-d");
@@ -4013,6 +4250,39 @@ function EscapeXML($strText, $bolAttribute = FALSE)
 	$strText	= str_replace("'", '&apos;', $strText);
 	
 	return $strText;
+}
+
+
+function GetJsFilesQueryString($arrFilenames)
+{
+	$strFiles = '';
+	$strMd5 = '';
+	
+	VixenRequire('/html/ui/javascript.php');
+	
+	foreach ($arrFilenames as $strFilename)
+	{
+		$strFiles .= "File[]=$strFilename.js&";
+
+		// If nothing has been requested, return FALSE;
+		if (trim($strFilename) == "")
+		{
+			continue;
+		}
+
+		// Try and find the javascript file
+		if (HasJavascriptFile($strFilename, LOCAL_BASE_DIR . "/javascript"))
+		{
+			// A local js file has been found.  Include it
+			$strMd5 .= md5_file(LOCAL_BASE_DIR. "/javascript/$strFilename");
+		}
+		else if (HasJavascriptFile($strFilename, FRAMEWORK_BASE_DIR . "/javascript"))
+		{
+			// The file has been found in the framework.  Include it
+			$strMd5 .= md5_file(FRAMEWORK_BASE_DIR. "/javascript/$strFilename");
+		}
+	}
+	return $strFiles . 'v=' . md5($strMd5);
 }
 
 ?>

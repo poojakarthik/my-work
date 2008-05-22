@@ -100,6 +100,8 @@ class HtmlTemplateInvoiceEmail extends HtmlTemplate
 		echo "<div class='GroupedContent'>\n";
 		
 		DBO()->Account->Id->RenderHidden();
+		DBO()->Invoice->Id->RenderHidden();
+		DBO()->Invoice->InvoiceRun->RenderHidden();
 		DBO()->Invoice->Year->RenderHidden();
 		DBO()->Invoice->Month->RenderHidden();
 		

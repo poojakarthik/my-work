@@ -5,7 +5,6 @@
 	//
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
-	
 	// call application loader
 	require ('config/application_loader.php');
 	
@@ -17,24 +16,25 @@
 	// call application
 	require ('config/application.php');
 	
-	
 	// Get Invoice PDF
 	try
 	{
 		// Try to pull the Invoice PDF
-		$strInvoice = getPDF (
+		$strInvoice = GetPDFContent(
 			$_GET ['Account'],
 			$_GET ['Year'],
-			$_GET ['Month']
+			$_GET ['Month'],
+			$_GET ['Invoice'],
+			$_GET ['InvoiceRun']
 		);
 		
 		if ($strInvoice == "")
 		{
 			throw new Exception ("Not Found");
 		}
-		
-		$strInvoiceFilename = GetPdfFilename($_GET['Account'], $_GET['Year'], $_GET['Month']);
-		
+
+		$strInvoiceFilename = GetPdfFilename($_GET['Account'], $_GET['Year'], $_GET['Month'], $_GET ['Invoice'], $_GET ['InvoiceRun']);
+
 		header("Content-Type: application/pdf");
 		header("Content-Disposition: attachment; filename=\"$strInvoiceFilename\"");
 		echo $strInvoice;
