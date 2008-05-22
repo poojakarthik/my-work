@@ -22,14 +22,14 @@ $arrSQLSelect	= Array();
 $arrSQLFields	= Array();
 
 // General Data
-$arrDataReport['Name']			= "Contract Cancellation Fees in a Time Period";
-$arrDataReport['Summary']		= "Displays a list of Contract Cancellation Fees for a specified period.";
-$arrDataReport['FileName']		= "Contract Cancellation Fees between <StartDate> AND <EndDate>";
+$arrDataReport['Name']			= "Administration Fees in a Time Period";
+$arrDataReport['Summary']		= "Displays a list of Administration Fees for a specified period.";
+$arrDataReport['FileName']		= "Administration Fees between <StartDate> AND <EndDate>";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "Charge";
-$arrDataReport['SQLWhere']		= "ChargeType IN ('DSLCAN', 'CONT', 'EARL') AND CreatedOn BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLWhere']		= "ChargeType IN ('ADMF') AND CreatedOn BETWEEN <StartDate> AND <EndDate>";
 $arrDataReport['SQLGroupBy']	= "InvoiceRun";
 
 // Documentation Reqs
