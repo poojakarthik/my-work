@@ -916,7 +916,7 @@ $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "Charge";
 $arrDataReport['SQLWhere']		= "ChargeType IN ('DSLCAN', 'CONT', 'EARL') AND CreatedOn BETWEEN <StartDate> AND <EndDate>";
-$arrDataReport['SQLGroupBy']	= "InvoiceRun";
+$arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
@@ -967,7 +967,7 @@ $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "Charge";
 $arrDataReport['SQLWhere']		= "ChargeType IN ('ADMF') AND CreatedOn BETWEEN <StartDate> AND <EndDate>";
-$arrDataReport['SQLGroupBy']	= "InvoiceRun";
+$arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
