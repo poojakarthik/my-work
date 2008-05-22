@@ -11,7 +11,7 @@ if ($strLine)
 }
 fclose($ptrInputFile);
 
-Debug($arrArray);
+print_r($arrArray);
 
 //------------------//
 // MAKE CHANGES HERE
@@ -19,7 +19,7 @@ Debug($arrArray);
 
 //------------------//
 
-Debug($arrArray);
+print_r($arrArray);
 
 file_put_contents("serialised.output", serialise($arrArray));
 $ptrOututFile	= fopen("serialised.output", 'w');
