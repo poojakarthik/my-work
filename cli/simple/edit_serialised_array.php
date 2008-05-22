@@ -21,7 +21,7 @@ print_r($arrArray);
 
 print_r($arrArray);
 
-file_put_contents("serialised.output", serialise($arrArray));
+file_put_contents("serialised.output", serialize($arrArray));
 $ptrOututFile	= fopen("serialised.output", 'w');
 
 ?>
