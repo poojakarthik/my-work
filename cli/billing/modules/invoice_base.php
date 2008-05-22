@@ -87,7 +87,7 @@ abstract class BillingModuleInvoice
 		$arrService['PlanCharge']	= "ServiceTotal.PlanCharge";
 		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																	$arrService,
-																	"Service.Account = <Account> AND Status != ".SERVICE_ARCHIVED,
+																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND Service.Account = <Account> AND Status != ".SERVICE_ARCHIVED,
 																	"Service.ServiceType, Service.FNN, ServiceExtension.Name",
 																	NULL,
 																	"Service.FNN, ServiceExtension.Name");
