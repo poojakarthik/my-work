@@ -1352,7 +1352,7 @@ class MenuItems
 
 		return "flex.php/Plan/Add/?$strGetVariables";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AvailablePlans
 	//------------------------------------------------------------------------//
@@ -1380,7 +1380,7 @@ class MenuItems
 		
 		return "flex.php/Plan/AvailablePlans/$strFilter";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewPlan
 	//------------------------------------------------------------------------//
@@ -1449,14 +1449,14 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewInvoicePDF($intAccount, $intYear, $intMonth)
+	function ViewInvoicePDF($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun="")
 	{
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel = "pdf acct: $intAccount, $intMonth/$intYear";
-		return "invoice_pdf.php?Account=$intAccount&Year=$intYear&Month=$intMonth";
+
+		$this->strLabel = "pdf acct: $intAccount, $intInvoiceId/$strInvoiceRun";
+		return "invoice_pdf.php?Account=$intAccount&Invoice=$intInvoiceId&InvoiceRun=$strInvoiceRun&Year=$intYear&Month=$intMonth";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewInvoice
 	//------------------------------------------------------------------------//
@@ -1481,7 +1481,7 @@ class MenuItems
 		$this->strLabel = "inv: $intInvoice";
 		return "invoice_view.php?Invoice=$intInvoice";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewAccountNotes
 	//------------------------------------------------------------------------//
@@ -1798,7 +1798,7 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EmailPDFInvoice($intId, $intYear, $intMonth)
+	function EmailPDFInvoice($intId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun)
 	{
 		$this->strContextMenuLabel = "";
 		
@@ -1806,6 +1806,8 @@ class MenuItems
 		
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
+		$arrData['Invoice']['Id'] = $intInvoiceId;
+		$arrData['Invoice']['InvoiceRun'] = $strInvoiceRun;
 		$arrData['Invoice']['Year'] = $intYear;
 		$arrData['Invoice']['Month'] = $intMonth;
 		
