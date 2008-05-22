@@ -290,8 +290,6 @@ class AppTemplateService extends ApplicationTemplate
 	static function GetService($intService)
 	{
 		//TODO! This currently does not retrieve the ServiceType specific Extra Details
-		
-		// Retrieve all the services belonging to the account
 		$strTables	= "	Service AS S 
 						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
 								FROM ServiceRatePlan AS SRP2 
