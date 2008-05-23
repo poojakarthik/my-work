@@ -34,6 +34,9 @@ $strVixenBaseDir = GetVixenBase();
 Define ('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "html/ui/");
 Define ('MODULE_BASE_DIR', 		$strVixenBaseDir . "html/ui/");
 Define ('MODULE_DEFAULT_CSS', 	$strVixenBaseDir . "html/ui/style_template/default.css");
+Define ('LOCAL_BASE_DIR', 		$strVixenBaseDir . "html/ui/");
+Define ('FRAMEWORK_BASE_DIR', 	$strVixenBaseDir . "html/ui/");
+
 
 // Define which flavour of browsers are supported by this application
 Define ('BROWSER_IE',	0x1);

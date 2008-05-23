@@ -4261,37 +4261,4 @@ function EscapeXML($strText, $bolAttribute = FALSE)
 	return $strText;
 }
 
-
-function GetJsFilesQueryString($arrFilenames)
-{
-	$strFiles = '';
-	$strMd5 = '';
-	
-	VixenRequire('/html/ui/javascript.php');
-	
-	foreach ($arrFilenames as $strFilename)
-	{
-		$strFiles .= "File[]=$strFilename.js&";
-
-		// If nothing has been requested, return FALSE;
-		if (trim($strFilename) == "")
-		{
-			continue;
-		}
-
-		// Try and find the javascript file
-		if (HasJavascriptFile($strFilename, LOCAL_BASE_DIR . "/javascript"))
-		{
-			// A local js file has been found.  Include it
-			$strMd5 .= md5_file(LOCAL_BASE_DIR. "/javascript/$strFilename");
-		}
-		else if (HasJavascriptFile($strFilename, FRAMEWORK_BASE_DIR . "/javascript"))
-		{
-			// The file has been found in the framework.  Include it
-			$strMd5 .= md5_file(FRAMEWORK_BASE_DIR. "/javascript/$strFilename");
-		}
-	}
-	return $strFiles . 'v=' . md5($strMd5);
-}
-
 ?>

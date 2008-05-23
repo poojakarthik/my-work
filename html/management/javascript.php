@@ -47,7 +47,7 @@ if (array_key_exists('v', $_GET) && array_key_exists('HTTP_IF_MODIFIED_SINCE', $
  * application framework.  We just want to retrieve the requested js files
  */
  
-Define ('LOCAL_BASE_DIR', "../management");
+Define ('LOCAL_BASE_DIR', "../ui");
 Define ('FRAMEWORK_BASE_DIR', "../ui");
 
 // include the framework javascript.php file

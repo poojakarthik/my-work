@@ -1321,7 +1321,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not load DocumentTemplateSchema record");
 			return TRUE;
 		}
-		
+echo DBO()->Generation->MediaType->Value;
+return TRUE;
 		$strDate			= ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value);
 		$intMediaType		= DBO()->Generation->MediaType->Value;
 		$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
@@ -1362,11 +1363,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 		// The pdf was successfully created
 		
-		//header("Content-type: application/pdf;");
+		/*//header("Content-type: application/pdf;");
 		header("Content-type: text/plain;");
 		header("Content-Disposition: attachment; filename=\"$strFilename\"");
 		echo $strPdf;
 		exit;
+		*/
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1387,8 +1389,12 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		//HACK! php sessions should be implemented in the user authentication function not here.
 		// (but they're not yet)
 		session_start();
-		$strPdf = $_SESSION['DocumentTemplateSamplePdf'];
-		$strFilename = $_SESSION['DocumentTemplateSamplePdfFilename'];
+		$strPdf			= $_SESSION['DocumentTemplateSamplePdf'];
+		$strFilename	= $_SESSION['DocumentTemplateSamplePdfFilename'];
+		
+		// Remove the pdf from the session array
+		unset($_SESSION['DocumentTemplateSamplePdf']);
+		unset($_SESSION['DocumentTemplateSamplePdfFilename']);
 		
 		if ($strPdf == "")
 		{

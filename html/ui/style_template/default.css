@@ -67,6 +67,19 @@
 		color:				#0000FF;
 		text-decoration:	underline;
 	}
+	
+	/* An alternative to using anchor tags.  This will stop the hyperlink
+	 * from being displayed in the status bar
+	 */
+	span[onclick]
+	{
+		cursor: pointer;
+	}
+	
+	span[onclick]:hover
+	{
+		text-decoration: underline;
+	}
 
 	div#BreadCrumbMenu a:hover
 	{
