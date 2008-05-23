@@ -708,7 +708,7 @@ abstract class NormalisationModule
 		}
 		
 		// Find the Owner
-		if (is_array($mixResult = $GLOBALS['fwkFramework']>FindFNNOwner($this->_arrNormalisedData['FNN'], $strDate)))
+		if (is_array($mixResult = FindFNNOwner($this->_arrNormalisedData['FNN'], $strDate)))
 		{
 			// Found an Owner
 	 		$this->_arrNormalisedData['AccountGroup']	= $mixResult['AccountGroup'];
