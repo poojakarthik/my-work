@@ -47,11 +47,11 @@ $selSampleAccounts	= new StatementSelect("Account JOIN InvoiceTemp ON Account.Id
 $selSampleAccounts->Execute();
 while ($arrAccount = $selSampleAccounts->Fetch())
 {
-	$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}: {$arrAccount['BusinessName']}</a><br>";
+	$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}: {$arrAccount['BusinessName']}</a>";
 }
 
 $strTo		= "rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au";
-$strContent	= implode("\n", $arrAccounts);
-SendEmail($strTo, date("F", strtotime("-2 days", time()))." $strMode Samples", date("F", strtotime("-2 days", time()))." $strMode Samples\n\n".$strContent);
+$strContent	= implode("<br/>\n", $arrAccounts);
+SendEmail($strTo, date("F", strtotime("-2 days", time()))." $strMode Samples", date("F", strtotime("-2 days", time()))." $strMode Samples<br>\n<br>\n".$strContent);
 
 ?>
