@@ -186,7 +186,7 @@
 		
 		// Create an instance of each Normalisation module
  		$this->_arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();
- 		$this->_arrNormalisationModule[CDR_UNTIEL_SE]			&= $this->_arrNormalisationModule[CDR_UNITEL_RSLCOM];
+ 		$this->_arrNormalisationModule[CDR_UNTIEL_SE]			= new NormalisationModuleRSLCOM();
  		//$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
  		$this->_arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
  		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
