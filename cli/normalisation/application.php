@@ -191,7 +191,7 @@
  		$this->_arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
  		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
- 		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		&= $this->_arrNormalisationModule[CDR_OPTUS_STANDARD];	// Uses Optus' format
+ 		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleOptus();	// Uses Optus' format
 		
 		$this->_selCreditCDRs = new StatementSelect("CDR", "Id, FNN, Source, Destination, Cost, Units, StartDatetime", "Credit = 1 AND Status = ".CDR_RATED, NULL, "1000");
 		
