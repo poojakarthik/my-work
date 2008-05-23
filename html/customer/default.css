@@ -476,7 +476,7 @@ span.IncorrectLogin
 		position:				relative;
 		overflow:				visible;
 		height:					auto;
-		border:					solid 1px, #FFFFFF;
+		border:					solid 1px #FFFFFF;
 	}
 	
 	.DefaultHiddenElement
