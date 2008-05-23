@@ -47,7 +47,7 @@ $selSampleAccounts	= new StatementSelect("Account JOIN InvoiceTemp ON Account.Id
 $selSampleAccounts->Execute();
 while ($arrAccount = $selSampleAccounts->Fetch())
 {
-	$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}: {$arrAccount['BusinessName']}</a>";
+	$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}: {$arrAccount['BusinessName']}</a><br>";
 }
 
 $strTo		= "rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au";
