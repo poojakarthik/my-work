@@ -11,6 +11,7 @@
  
 // load application
 require_once("../../flex.require.php");
+$arrConfig = LoadApplication();
 
 // Parse command-line parameters
 $strBillingModule	= trim($argv[1]);
@@ -27,7 +28,6 @@ elseif (!defined($strBillingModule))
 
 
 // Application entry point - create an instance of the application object
-$arrConfig = LoadApplication();
 $appBilling = new ApplicationBilling($arrConfig);
 
 // Email Status

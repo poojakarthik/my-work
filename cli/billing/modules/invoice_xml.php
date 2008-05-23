@@ -63,6 +63,26 @@
 		parent::__construct($ptrThisDB, $arrConfig, $strCDRTable);
  	}
  	
+	//------------------------------------------------------------------------//
+	// Clean()
+	//------------------------------------------------------------------------//
+	/**
+	 * Clean()
+	 *
+	 * Cleans the database table where our data is stored
+	 *
+	 * Cleans the database table where our data is stored
+	 *
+	 * @return		boolean
+	 *
+	 * @method
+	 */
+ 	function Clean()
+ 	{
+		// Redundant
+		return TRUE;
+ 	}
+ 	
  	//------------------------------------------------------------------------//
 	// AddInvoice()
 	//------------------------------------------------------------------------//
