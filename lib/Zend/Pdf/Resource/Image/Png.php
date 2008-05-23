@@ -124,7 +124,7 @@ class Zend_Pdf_Resource_Image_Png extends Zend_Pdf_Resource_Image
          * followed by the chunk signature, a four byte code. IDAT and IEND are manditory in any PNG.
          */
         while(($chunkLengthBytes = fread($imageFile, 4)) !== false) {
-            $chunkLengthtmp         = unpack('Ni', $chunkLengthBytes);
+            $chunkLengthtmp         = @unpack('Ni', $chunkLengthBytes) or die;
             $chunkLength            = $chunkLengthtmp['i'];
             $chunkType                      = fread($imageFile, 4);
             switch($chunkType) {
