@@ -76,7 +76,7 @@ if (chdir("../../lib/pdf"))
 	// Create Sample PDFs
 	foreach ($arrAccounts as $intAccount)
 	{
-		CliEcho(shell_exec("php cli.php -x$strFullDirectory -f$strSampleDirectory -oEMAIL"));
+		CliEcho(shell_exec("php cli.php -x{$strFullDirectory}$intAccount.xml -f$strSampleDirectory -oEMAIL"));
 	}
 	
 	// ZIP samples, copy to public location
