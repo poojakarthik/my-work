@@ -202,6 +202,9 @@ class Cli_Pdf extends Cli
 					case DELIVERY_METHOD_POST:
 						$targetMedia = "PRINT";
 						break;
+					case DELIVERY_METHOD_DO_NOT_SEND:
+						$targetMedia = "DO_NOT_SEND";
+						break;
 					default:
 						$this->log("Skipping XML file '$strSource' as it's target media '$targetMedia' is not supported.");
 						continue 2;
@@ -215,6 +218,11 @@ class Cli_Pdf extends Cli
 						$this->log("Skipping XML file '$strSource' as it is for media '$targetMedia'. We are only processing for media '" . $arrArgs[Cli_Pdf::SWITCH_SOURCE_MEDIA] . "'.");
 						continue;
 					}
+				}
+
+				if ($targetMedia == 'DO_NOT_SEND')
+				{
+					$targetMedia = "PRINT";
 				}
 
 				// If an output media is specified, force output to suit...

@@ -2888,6 +2888,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvo
 							break;
 						case 'DELIVERY_METHOD_POST':
 						case 'DELIVERY_METHOD_PRINT':
+						case 'DELIVERY_METHOD_DO_NOT_SEND':
 							$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT;
 							break;
 						default:
