@@ -70,6 +70,7 @@ SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', "viXen Billing
 $strWorkingDir		= getcwd();
 $strFullDirectory	= INVOICE_XML_PATH.$strInvoiceRun.'/';
 $strSampleDirectory	= $strFullDirectory."samples/";
+@mkdir($strSampleDirectory, 0777, TRUE);
 if (chdir("../../lib/pdf"))
 {
 	// Create Sample PDFs
