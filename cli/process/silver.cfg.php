@@ -74,7 +74,7 @@ $arrConfig['BillExecute']				= $arrSubscript;
 
 // Billing Print
 $arrSubscript = Array();
-$arrSubscript['Command']	=       'php billing_print.php';
+$arrSubscript['Command']	=       'php billing_print.php BILL_FLEX_XML';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
 $arrConfig['BillPrint']				= $arrSubscript;
 
@@ -82,7 +82,7 @@ $arrConfig['BillPrint']				= $arrSubscript;
 $arrSubscript = Array();
 $arrSubscript['Command']	=       'php billing_samples.php silver';
 $arrSubscript['Directory']	=       BACKEND_BASE_PATH.'billing/';
-$arrConfig['BillSamples']				= $arrSubscript;
+//$arrConfig['BillSamples']				= $arrSubscript;
 
 // Management Reports
 $arrSubscript = Array();
