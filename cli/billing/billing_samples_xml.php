@@ -90,7 +90,7 @@ if (chdir("../../lib/pdf"))
 	
 	// ZIP samples, copy to public location
 	chdir($strSampleDirectory);
-	$strBaseZipname = date("F")." $strMode Samples";
+	$strBaseZipname = date("F", strtotime("-2 days", time()))." $strMode Samples";
 	$strZipname		= $strBaseZipname.'.zip';
 	$intVersion		= 1;
 	while (file_exists($strZipname))

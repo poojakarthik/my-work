@@ -3096,7 +3096,7 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
  *
  * @method
  */
-function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voiptelsystems.com.au')
+function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voiptelsystems.com.au', $bolHTML = FALSE)
 {
 	$arrHeaders = Array	(
 							'From'		=> $strFrom,
@@ -3104,7 +3104,15 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voipt
 							'Subject'	=> $strSubject
 						);
 	$mimMime = new Mail_mime("\n");
-	$mimMime->setTXTBody($strContent);
+	
+	if ($bolHTML)
+	{
+		$mimMime->setTXTBody($strContent);
+	}
+	else
+	{
+		$mimMime->setHTMLBody($strContent);
+	}
 	
 	$strBody = $mimMime->get();
 	$strHeaders = $mimMime->headers($arrHeaders);

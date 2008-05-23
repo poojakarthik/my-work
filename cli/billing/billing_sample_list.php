@@ -39,15 +39,15 @@ switch (strtoupper(trim($argv[1])))
 		die;
 }
 
-Debug("[ GENERATING ".strtoupper($strMode)." SAMPLES ]");
+Debug("[ GENERATING ".strtoupper($strMode)." SAMPLES LIST ]");
 
 // Get list of Accounts
 $arrAccounts		= Array();
-$selSampleAccounts	= new StatementSelect("Account JOIN InvoiceTemp ON Account.Id = InvoiceTemp.Account", "Account.Id", "Account.Sample != 0");
+$selSampleAccounts	= new StatementSelect("Account JOIN InvoiceTemp ON Account.Id = InvoiceTemp.Account", "Account.Id, Account.BusinessName", "Account.Sample != 0");
 $selSampleAccounts->Execute();
 while ($arrAccount = $selSampleAccounts->Fetch())
 {
-	$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}</a>";
+	$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}: {$arrAccount['BusinessName']}</a>";
 }
 
 $strTo		= "rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au";
