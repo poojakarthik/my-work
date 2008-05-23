@@ -70,7 +70,7 @@ SendEmail('turdminator@hotmail.com, mark.s@yellowbilling.com.au', "viXen Billing
 $strWorkingDir		= getcwd();
 $strFullDirectory	= INVOICE_XML_PATH.$strInvoiceRun.'/';
 $strSampleDirectory	= $strFullDirectory."samples/";
-if (chdir($strFullDirectory))
+if (chdir("../../lib/pdf"))
 {
 	// Create Sample PDFs
 	foreach ($arrAccounts as $intAccount)
@@ -100,11 +100,6 @@ if (chdir($strFullDirectory))
 	}
 	$rcpRemoteCopySamples->Copy($strDownloadDir.$strZipname, "/data/www/samples.yellowbilling.com.au/html/$strCustomerName/$strDir", RCOPY_BACKUP);
 	$rcpRemoteCopySamples->Disconnect();
-}
-else
-{
-	// No XML Data
-	CliEcho("No XML Data exists for temporary Invoice Run ($strInvoiceRun)");
 }
 
 // Email Status
