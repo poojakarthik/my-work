@@ -280,16 +280,23 @@
 		}
 		
 		// Determine Output/Return data
-		if ($bolDebug)
+		$strXMLOutput	= $this->_domDocument->saveXML();
+		if (!$bolDebug)
 		{
-			// Return XML Schema (plain text)
-			$mixReturn	= $this->_domDocument->saveXML();
+			// Save to file, return success
+			$intAccount			= $arrInvoice['Account'];
+			$intCustomerGroup	= $arrCustomer['CustomerGroup'];
+			$strFullDirectory	= INVOICE_XML_PATH.$arrInvoice['InvoiceRun'];
+			
+			@mkdir($strFullDirectory, 0777, TRUE);
+			
+			$strFilename	= "$strFullDirectory/$intAccount.xml";
+			$mixReturn		= (bool)file_put_contents($strFilename, $strXMLOutput);
 		}
 		else
 		{
-			// Save to file, return success
-			// TODO
-			$mixReturn	= FALSE;
+			// Return XML Data
+			$mixReturn	= $strXMLOutput;
 		}
 		
 		// Destroy XML object and return
@@ -317,135 +324,47 @@
 	 *
 	 * @method
 	 */
- 	function BuildOutput($intOutputType = BILL_COMPLETE, $arrAccounts = NULL)
+ 	function BuildOutput($intOutputType = BILL_COMPLETE, $arrAccounts = Array())
  	{
-		$bolSample			= FALSE;
-		$strAccountList		= NULL;
-		
-		// generate filenames
+		// Determine Invoice Run Type
 		switch ($intOutputType)
 		{
 			case BILL_SAMPLE:
-				$strFilename		= BILLING_LOCAL_PATH_SAMPLE."xml/sample".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH_SAMPLE."xml/sample".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH_SAMPLE."xml/sample".date("Y-m-d").".zip";
+				$strFilename		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'InvoiceTemp';
 				$bolSample			= TRUE;
 				break;
 			
 			case BILL_COMPLETE:
-				$strFilename		= BILLING_LOCAL_PATH."xml/".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH."xml/".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH."xml/".date("Y-m-d").".zip";
+				$strFilename		= BILLING_LOCAL_PATH.date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH.date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
 				$strInvoiceTable	= 'Invoice';
 				break;
 				
 			case BILL_REPRINT:
-				$strFilename		= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".zip";
+				$strFilename		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'Invoice';
 				break;	
 				
 			case BILL_REPRINT_TEMP:
-				$strFilename		= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH."xml/reprint".date("Y-m-d").".zip";
+				$strFilename		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'InvoiceTemp';
 				$strAccountList		= implode(', ', $arrAccounts);
 				break;	
 		}
 		
-		$selMetaData = new StatementSelect("InvoiceOutput", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "1", NULL, NULL, "InvoiceRun");
-		if ($selMetaData->Execute() === FALSE)
+		if (!count($arrAccounts))
 		{
-			Debug('$selMetaData : '.$selMetaData->Error());
-			return FALSE;
+			// Grab full list of Accounts
+			$selAccounts	= new StatementSelect("InvoiceTemp");
 		}
-		$arrMetaData = $selMetaData->Fetch();
-		
-		Debug("{$arrMetaData['MinId']} {$arrMetaData['MaxId']} {$arrMetaData['Invoices']} {$arrMetaData['InvoiceRun']}");
-
-		// Set the InvoiceRun
-		$strInvoiceRun = $arrMetaData['InvoiceRun'];
-		
-		if($arrMetaData['Invoices'] == 0)
-		{
-			// Nothing to do
-			Debug("Nothing to do");
-			return FALSE;
-		}
-
-		$qryBuildFile	= new Query();
-		$strColumns		= "'0010', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, '0'), InvoiceOutput.Data";
-		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
-		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
-							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
-							"WHERE $strWhere \n";
-		
-		// Add account list for Sample reprints
-		if ($strAccountList)
-		{
-			$strQuery .= " AND Account IN ($strAccountList) ";
-		}
-		
-		// LIMIT sample runs			
-		if($bolSample)
-		{
-			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
-			{
-				$strQuery .= "LIMIT ".(int)$arrMetaData['MaxId'];
-				$arrMetaData['Invoices'] = (int)$arrMetaData['MaxId'];
-			}
-			else
-			{
-				$strQuery .= "LIMIT ".rand((int)$arrMetaData['MinId'] , (int)$arrMetaData['MaxId'] - BILL_PRINT_SAMPLE_LIMIT).", ".BILL_PRINT_SAMPLE_LIMIT;
-				$arrMetaData['Invoices'] = BILL_PRINT_SAMPLE_LIMIT;
-			}
-		}
-		if (file_exists($strFilename))
-		{
-			unlink($strFilename);
-			unlink($strMetaName);
-			unlink($strZipName);
-		}
-		if ($qryBuildFile->Execute($strQuery) === FALSE)
-		{
-			// ERROR
-			Debug($qryBuildFile->Error());
-			return FALSE;
-		}
-		
-		// Append metadata to bill output file
-		$strFooter		=	"0019" .
-							date("d/m/Y") .
-							str_pad($arrMetaData['Invoices'], 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT);
-		
-		$ptrFile		= fopen($strFilename, "a");
-		fwrite($ptrFile, $strFooter);
-		fclose($ptrFile);
-		
-		// create metadata file
-		$ptrMetaFile	= fopen($strMetaName, "w");
-		// TODO - get actual insert ids for this billing run
-		$strLine		= 	date("d/m/Y").
-							basename($strFilename).
-							sha1_file($strFilename);
-		fwrite($ptrMetaFile, $strLine);
-		fclose($ptrMetaFile);
-		
-		// zip files
-		$strCommand = "zip $strZipName $strFilename $strMetaName";
-		exec($strCommand);
-		
-		// set filename internally
-		$this->_strFilename = $strZipName;
 		
 		// return zip's filename
 		return $strZipName;
@@ -469,37 +388,8 @@
 	 */
  	function SendOutput($bolSample)
  	{
-		// Set the remote directory
-		if ($bolSample)
-		{
-			$strRemoteDir	= BILL_PRINT_REMOTE_DIR_SAMPLE;
-			$strFile		= $this->_strSampleFile;
-		}
-		else
-		{
-			$strRemoteDir	= BILL_PRINT_REMOTE_DIR;
-			$strFile		= $this->Filename;
-		}
-		
-		/*
-		// Connect to FTP
-		$ptrFTP = ftp_connect(BILL_PRINT_HOST);
-		if (!ftp_login($ptrFTP, BILL_PRINT_USERNAME, BILL_PRINT_PASSWORD))
-		{
-			// Log in failed
-			return FALSE;
-		}
-		ftp_chdir($ptrFTP, $strRemoteDir);
-		
-		// Upload file
-		if(!ftp_put($ptrFTP, basename($strFile), $strFile, FTP_ASCII))
-		{
-			return FALSE;
-		}
-		
-		// Close the FTP connection
-		ftp_close($ptrFTP);
-		*/
+		// Deliver Print and Email PDFs
+		// TODO
 		return TRUE;
  	}
 	

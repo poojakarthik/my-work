@@ -4,7 +4,6 @@
 require_once("../../flex.require.php");
 $arrConfig	= LoadApplication();
 
-define("INVOICE_XML_PATH",	FILES_BASE_PATH."invoices/xml/");
 
 $bilInvoiceXML	= new BillingModuleInvoiceXML($GLOBALS['dbaDatabase'], $arrConfig, 'CDRInvoiced');
 

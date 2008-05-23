@@ -2066,94 +2066,129 @@
 	 */
 	 function GenerateInvoiceOutput($intPrintTartget = BILL_PRINT)
 	 {
-		// Truncate the InvoiceOutput table
-		$this->_rptBillingReport->AddMessage("Truncating InvoiceOutput table...\t\t\t", FALSE);
-		$qryTruncateInvoiceOutput = new QueryTruncate();
-		if ($qryTruncateInvoiceOutput->Execute("InvoiceOutput") === FALSE)
+		switch ($intPrintTartget)
 		{
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-		}
-		else
-		{
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
-		$arrUpdateData = Array();
-		$arrUpdateData['Id']		= NULL;
-		$arrUpdateData['Status']	= INVOICE_PRINT;
-		$ubiInvoiceStatus = new StatementUpdateById("InvoiceTemp", $arrUpdateData);
-		
-		// limit to 100 non zero accounts
-		//$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 3", NULL, 100);
-		
-		// full run
-		$selInvoices = new StatementSelect("InvoiceTemp", "*", "1");
-		
-		if ($selInvoices->Execute() === FALSE)
-		{
-			// ERROR
-			Debug($selInvoices->Error());
-			return FALSE;
-		}
-		
-		$arrInvoices = $selInvoices->FetchAll();
-		
-		// for each invoice
-		$intPassed = 0;
-		echo "Invoices to generate: ".count($arrInvoices)."\n\n";
-		foreach($arrInvoices as $arrInvoice)
-		{			
-			echo "Generating output for {$arrInvoice['Id']}...\t\t\t";
-			ob_flush();
+			case BILL_PRINT:
+				// Truncate the InvoiceOutput table
+				$this->_rptBillingReport->AddMessage("Truncating InvoiceOutput table...\t\t\t", FALSE);
+				$qryTruncateInvoiceOutput = new QueryTruncate();
+				if ($qryTruncateInvoiceOutput->Execute("InvoiceOutput") === FALSE)
+				{
+					$this->_rptBillingReport->AddMessage(MSG_FAILED);
+				}
+				else
+				{
+					$this->_rptBillingReport->AddMessage(MSG_OK);
+				}
+				
+				$arrUpdateData = Array();
+				$arrUpdateData['Id']		= NULL;
+				$arrUpdateData['Status']	= INVOICE_PRINT;
+				$ubiInvoiceStatus = new StatementUpdateById("InvoiceTemp", $arrUpdateData);
+				
+				// limit to 100 non zero accounts
+				//$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 3", NULL, 100);
+				
+				// full run
+				$selInvoices = new StatementSelect("InvoiceTemp", "*", "1");
+				
+				if ($selInvoices->Execute() === FALSE)
+				{
+					// ERROR
+					Debug($selInvoices->Error());
+					return FALSE;
+				}
+				
+				$arrInvoices = $selInvoices->FetchAll();
+				
+				// for each invoice
+				$intPassed = 0;
+				echo "Invoices to generate: ".count($arrInvoices)."\n\n";
+				foreach($arrInvoices as $arrInvoice)
+				{			
+					echo "Generating output for {$arrInvoice['Id']}...\t\t\t";
+					ob_flush();
+					
+					// stick stuff in invoice output
+					$this->_arrBillOutput[$intPrintTartget]->AddInvoice($arrInvoice);
+					
+					// update Invoice Status to PRINT
+					$arrUpdateData['Id'] = $arrInvoice['Id'];
+					if($ubiInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+					{
+						Debug("Update status to PRINT failed! : ".$updInvoiceStatus->Error());
+						return;
+					}
+				
+					$intPassed++;
+					echo "[   OK   ]\n";
+				}
+				
+				// Report how many passed
+				$intFailed = count($arrInvoices) - $intPassed;
+				Debug("$intPassed Invoice Outputs generated ($intFailed failed)");
+				if ($intPassed == 0)
+				{
+					return FALSE;
+				}
+				
+				// build an output file
+				if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput(BILL_SAMPLE))
+				{
+					Debug("Building Output FAILED!");
+					return FALSE;
+				}
+				
+				// send billing output
+				if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(BILL_SAMPLE))
+				{
+					Debug("Sending Output FAILED!");
+					return FALSE;
+				}
+				
+				// update Invoice Status to INVOICE_TEMP
+				$arrUpdateData = Array();
+				$arrUpdateData['Status'] = INVOICE_TEMP;
+				$updInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_PRINT, $arrUpdateData);
+				if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+				{
+					Debug("Update status to INVOICE_TEMP failed! : ".$updInvoiceStatus->Error());
+					return FALSE;
+				}
+				
+				return TRUE;
+				break;
 			
-			// stick stuff in invoice output
-			$this->_arrBillOutput[$intPrintTartget]->AddInvoice($arrInvoice);
-			
-			// update Invoice Status to PRINT
-			$arrUpdateData['Id'] = $arrInvoice['Id'];
-			if($ubiInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
-			{
-				Debug("Update status to PRINT failed! : ".$updInvoiceStatus->Error());
-				return;
-			}
-		
-			$intPassed++;
-			echo "[   OK   ]\n";
+			case BILL_FLEX_XML:
+				// Get all of the Temporary Invoices
+				$selInvoices = new StatementSelect("InvoiceTemp", "*", "1");
+				
+				if ($selInvoices->Execute() === FALSE)
+				{
+					Debug($selInvoices->Error());
+					return FALSE;
+				}
+				
+				// Generate XML Data for each Invoice
+				while ($arrInvoice = $selInvoices->Fetch())
+				{
+					CliEcho(" + Generating XML for Account #{$arrInvoice['Account']}...\t\t\t", FALSE);
+					if (!$this->_arrBillOutput[$intPrintTartget]->AddInvoice($arrInvoice))
+					{
+						CliEcho("[ FAILED ]\n\t-- Could not write XML to file");
+					}
+					else
+					{
+						CliEcho("[   OK   ]");
+					}
+				}
+				
+				return TRUE;
+				break;
+				
+			default:
+				CliEcho("'$intPrintTartget' is not a registered Billing Output Module!");
 		}
-		
-		// Report how many passed
-		$intFailed = count($arrInvoices) - $intPassed;
-		Debug("$intPassed Invoice Outputs generated ($intFailed failed)");
-		if ($intPassed == 0)
-		{
-			return FALSE;
-		}
-		
-		// build an output file
-		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput(BILL_SAMPLE))
-		{
-			Debug("Building Output FAILED!");
-			return FALSE;
-		}
-		
-		// send billing output
-		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(BILL_SAMPLE))
-		{
-			Debug("Sending Output FAILED!");
-			return FALSE;
-		}
-		
-		// update Invoice Status to INVOICE_TEMP
-		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = INVOICE_TEMP;
-		$updInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_PRINT, $arrUpdateData);
-		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
-		{
-			Debug("Update status to INVOICE_TEMP failed! : ".$updInvoiceStatus->Error());
-			return FALSE;
-		}
-		
-		return TRUE;
 	 }
 	
 	//------------------------------------------------------------------------//

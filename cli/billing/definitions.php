@@ -163,6 +163,7 @@ define("BILL_PRINT_SAMPLE_LIMIT"			, 10);
 define("BILLING_LOCAL_PATH"					, FILES_BASE_PATH."bill_output/");
 define("BILLING_LOCAL_PATH_SAMPLE"			, BILLING_LOCAL_PATH."sample/");
 define("INVOICE_MIN_CHARGE"					, 10);
+define("INVOICE_XML_PATH"					, FILES_BASE_PATH."invoices/xml/");
 
 // Bill Printing FTP data
 define("BILL_PRINT_HOST"					, "");	// TODO
