@@ -44,7 +44,7 @@ Debug("[ GENERATING ".strtoupper($strMode)." SAMPLES ]");
 
 // Get list of Accounts
 $arrAccounts		= Array();
-$selSampleAccounts	= new StatementSelect("Account", "Id", "Sample != 0");
+$selSampleAccounts	= new StatementSelect("Account JOIN InvoiceTemp ON Account.Id = InvoiceTemp.Account", "Account.Id", "Account.Sample != 0");
 $selSampleAccounts->Execute();
 while ($arrAccount = $selSampleAccounts->Fetch())
 {
@@ -76,7 +76,16 @@ if (chdir("../../lib/pdf"))
 	// Create Sample PDFs
 	foreach ($arrAccounts as $intAccount)
 	{
-		CliEcho(shell_exec("php cli.php -x{$strFullDirectory}$intAccount.xml -f$strSampleDirectory -oEMAIL"));
+		CliEcho(" + Generating PDF for $intAccount...\t\t\t", FALSE);
+		$strReturn	= shell_exec("php cli.php -x{$strFullDirectory}$intAccount.xml -f$strSampleDirectory -oEMAIL");
+		if (stripos($strReturn, 'Completed Successfully'))
+		{
+			CliEcho("[   OK   ]");
+		}
+		else
+		{
+			CliEcho("[ FAILED ]");
+		}
 	}
 	
 	// ZIP samples, copy to public location
