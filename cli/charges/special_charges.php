@@ -21,10 +21,10 @@ $appCharge->MarkInboundSAndECDR();
 $appCharge->AddLLSAndECredits();
 
 // Add Inbound Service Fee
-$appCharge->AddActiveInboundFees();
+//$appCharge->AddActiveInboundFees();
 
 // Add Pinnacle Mobile Fees
-$appCharge->AddPinnacleMobileFees();
+//$appCharge->AddPinnacleMobileFees();
 
 // finished
 echo("\n-- End of Charges::Special --\n");
