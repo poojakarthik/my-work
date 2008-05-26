@@ -1254,9 +1254,6 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
-		//HACK! php sessions should be implemented in the user authentication function not here.
-		// (but they're not yet)
-		session_start();
 		$_SESSION['DocumentTemplateSamplePDF'] = "";
 				
 		if (!DBO()->CustomerGroup->Load())
@@ -1321,8 +1318,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Could not load DocumentTemplateSchema record");
 			return TRUE;
 		}
-echo DBO()->Generation->MediaType->Value;
-return TRUE;
+		
 		$strDate			= ConvertUserDateToMySqlDate(DBO()->Generation->Date->Value);
 		$intMediaType		= DBO()->Generation->MediaType->Value;
 		$strEffectiveDate	= $strDate ." ". DBO()->Generation->Time->Value;
@@ -1360,15 +1356,6 @@ return TRUE;
 		$arrReply = Array('Success' => TRUE);
 		AjaxReply($arrReply);
 		return TRUE;
-		
-		// The pdf was successfully created
-		
-		/*//header("Content-type: application/pdf;");
-		header("Content-type: text/plain;");
-		header("Content-Disposition: attachment; filename=\"$strFilename\"");
-		echo $strPdf;
-		exit;
-		*/
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1386,9 +1373,6 @@ return TRUE;
 	 */
 	function GetSamplePDF()
 	{
-		//HACK! php sessions should be implemented in the user authentication function not here.
-		// (but they're not yet)
-		session_start();
 		$strPdf			= $_SESSION['DocumentTemplateSamplePdf'];
 		$strFilename	= $_SESSION['DocumentTemplateSamplePdfFilename'];
 		
