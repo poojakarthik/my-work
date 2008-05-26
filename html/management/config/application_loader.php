@@ -33,7 +33,7 @@
 //----------------------------------------------------------------------------//
 
 // Before we do anything is check that we're using Firefox
-if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE)
+if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE && stristr ($_SERVER ['HTTP_USER_AGENT'], 'Prism') === FALSE)
 {
 	echo "<p>Firefox Only - <a href='http://www.getfirefox.com/'>Get Firefox</a></p>";
 	exit;
@@ -128,6 +128,9 @@ $framework = $GLOBALS['fwkFramework'];
 
 // New Method for loading the framework
 //require_once($strFrameworkDir."functions.php");
+
+Define ('FLEX_SESSION_NAME',	'flex_admin_sess_id');
+
 //LoadFramework();
 require_once("../../flex.require.php");
 
