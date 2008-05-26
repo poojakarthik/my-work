@@ -1442,6 +1442,12 @@ class BrowserInfo
 			$this->_bolIsIE = TRUE;
 			$this->_bolIsNS = FALSE;
 		}
+		elseif (stristr($_SERVER ['HTTP_USER_AGENT'], 'Prism') !== FALSE)
+		{
+			$this->_intCurrentBrowser = BROWSER_PR;
+			$this->_bolIsIE = FALSE;
+			$this->_bolIsNS = TRUE;
+		}
 		else
 		{
 			// I don't know what browser it is.  It certainly isn't supported by any of our systems

@@ -41,8 +41,9 @@ Define ('FRAMEWORK_BASE_DIR', 	$strVixenBaseDir . "html/ui/");
 // Define which flavour of browsers are supported by this application
 Define ('BROWSER_IE',	0x1);
 Define ('BROWSER_NS',	0x2);
-Define ('SUPPORTED_BROWSERS', BROWSER_NS);
-Define ('SUPPORTED_BROWSERS_DESCRIPTION', "Firefox");
+Define ('BROWSER_PR',	0x4);
+Define ('SUPPORTED_BROWSERS', BROWSER_NS | BROWSER_PR);
+Define ('SUPPORTED_BROWSERS_DESCRIPTION', "Firefox, Prism");
 // If the app were to support both IE and NS then SUPPORTED_BROWSERS = BROWSER_IE | BROWSER_NS
 Define ("APPLICATION_VIXEN",	101);
 Define ("APPLICAITON_CLIENT",	102);
