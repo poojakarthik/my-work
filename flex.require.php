@@ -27,6 +27,14 @@
  *
  */
  
+
+// Open the PHP session for the request
+// This is done as early as possible 
+//if (!defined('FLEX_SESSION_NAME')) { echo "NOW!!!"; error_log(var_export($_SERVER, TRUE)); exit; }
+session_name(FLEX_SESSION_NAME);
+session_start();
+
+
 // Load flex.cfg.php for path constants
 $strPath	= dirname(__FILE__);
 require_once("$strPath/flex.cfg.php");
