@@ -443,44 +443,18 @@ class Application
 	 */
 	function CheckAuth()
 	{
-		// If there is a cookie then use it to find the details of the user and check if their session is still valid
-		if (isset($_COOKIE['Id']) && isset($_COOKIE['SessionId']))
+		// If there is nothing about login in the session, record that the user is not logged in
+		if (!array_key_exists('LoggedIn', $_SESSION))
 		{
-			// Find the employee information for the employee declared in the cookie
-			$selAuthenticated = new StatementSelect(
-					"Employee",
-					"*", 
-					"Id = <Id> AND SessionId = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
-					null,
-					1
-				);
-				
-			$intRowsReturned = $selAuthenticated->Execute(Array("Id" => $_COOKIE['Id'], "SessionId" => $_COOKIE['SessionId']));
-			$arrAuthentication = $selAuthenticated->Fetch();
+			$_SESSION['LoggedIn'] = FALSE;
+		}
 
-			// check if an employee could be found
-			if ($intRowsReturned)
-			{
-				// Employee was found.
-				$bolLoggedIn = TRUE;
-				
-				//Load user object from db
-				$this->_arrUser = $arrAuthentication;
-			}
-			else
-			{
-				// the employee could not be found
-				$this->_arrUser = NULL;
-				$bolLoggedIn = FALSE;
-			}
-		}
-		else
+		// If the user is logged in but the session has expired
+		if ($_SESSION['LoggedIn'] && $_SESSION['SessionExpire'] < time())
 		{
-			// There was no cookie found
-			$this->_arrUser = NULL;
-			$bolLoggedIn = FALSE;
+			$_SESSION['LoggedIn'] = FALSE;
 		}
-		
+
 		// Check if the user has just logged in
 		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
 		{
@@ -492,56 +466,36 @@ class Application
 				null, 
 				"1"
 			);
-			
+
 			$selSelectStatement->Execute(Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword']));
-			
+
 			// Check if an employee was found
 			if ($selSelectStatement->Count() == 1)
 			{
+				$currentUser = $selSelectStatement->Fetch();
+
+				// If this is a new user, clean out the session to remove any info for a previous user
+				if (!array_key_exists($_SESSION['User']) || $_SESSION['User']['Id'] != $currentUser['Id'])
+				{
+					$_SESSION = array();
+				}
+
 				// The session is authenticated.
 				// Therefore, we have to store the Authentication
-				$this->_arrUser = $selSelectStatement->Fetch();
-
-				// We have to create a new session Id for the user
-				$this->_arrUser['SessionId'] = sha1(uniqid(rand(), true));
-
-				$bolLoggedIn = TRUE;
+				$_SESSION['User'] = $currentUser;
+				$_SESSION['LoggedIn'] = TRUE;
 			}
 			else
 			{
-				// Could not find the user.  Login failed.
-				$bolLoggedIn = FALSE;
+				// Could not find the user. Login failed.
+				$_SESSION['LoggedIn'] = FALSE;
 			}
 		}
 
-		if ($bolLoggedIn)
+		if ($_SESSION['LoggedIn'])
 		{
 			//Update the user's session details in the employee table of the database
-			if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
-			{
-				$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(), SEC_TO_TIME(" . GOD_TIMEOUT . "))"));
-				$intTime = time() + GOD_TIMEOUT;
-			}
-			else
-			{
-				$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
-				$intTime = time() + USER_TIMEOUT;
-			}
-
-			// update the table
-			$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id> AND Archived = 0", $arrUpdate);
-			if ($updUpdateStatement->Execute($arrUpdate, Array("Id"=>$this->_arrUser['Id'])) === FALSE)
-			{
-				// could not update the user's session details in the database.  Mark user as not logged in
-				$bolLoggedIn = FALSE;
-			}
-		}
-		
-		if ($bolLoggedIn)
-		{
-			//set the cookie
-			setCookie("Id", $this->_arrUser['Id'], $intTime, "/");
-			setCookie("SessionId", $this->_arrUser['SessionId'], $intTime, "/");
+			$_SESSION['SessionExpire'] = time() + ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? GOD_TIMEOUT : USER_TIMEOUT);
 		}
 		else
 		{
@@ -558,9 +512,9 @@ class Application
 				die;
 			}	
 		}
-		
+
 		// by default set user as local
-		$this->_arrUser['IsLocal'] = TRUE;
+		$_SESSION['User']['IsLocal'] = TRUE;
 		
 		// user is logged in at this point
 		
@@ -570,7 +524,7 @@ class Application
 			$arrServerLogin = explode('@', $_SERVER['PHP_AUTH_USER']);
 			
 			// check for username match
-			if (strtolower($arrServerLogin[0]) != strtolower($this->_arrUser['UserName']))
+			if (strtolower($arrServerLogin[0]) != strtolower($_SESSION['User']['UserName']))
 			{
 				// send login headers and die
 				header('WWW-Authenticate: Basic realm="Yellow Billing"');
@@ -593,10 +547,10 @@ class Application
 			
 			// Remove all the user's privileges except for PERMISSION_OPERATOR, PERMISSION_PUBLIC and PERMISSION_OPERATOR_VIEW
 			$intAllowableRemotePerms = PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR | PERMISSION_PUBLIC;
-			$this->_arrUser['Privileges'] = $this->_arrUser['Privileges'] & ($intAllowableRemotePerms);
+			$_SESSION['User']['Privileges'] = $_SESSION['User']['Privileges'] & ($intAllowableRemotePerms);
 			
 			// Set user as remote
-			$this->_arrUser['IsLocal'] = FALSE;
+			$_SESSION['User']['IsLocal'] = FALSE;
 		}
 		
 		// Work out if we are in Debug Mode or not
@@ -674,12 +628,12 @@ class Application
 	function UserHasPerm($intPerms, $bolRequireLocal=NULL)
 	{
 		// check for local user
-		if ($bolRequireLocal == TRUE && $this->_arrUser['IsLocal'] !== TRUE)
+		if ($bolRequireLocal == TRUE && $_SESSION['User']['IsLocal'] !== TRUE)
 		{
 			return FALSE;
 		}
 		// Do a binary 'AND' between the user's privilages and the paramerter
-		$intChecked = $this->_arrUser['Privileges'] & $intPerms;
+		$intChecked = $_SESSION['User']['Privileges'] & $intPerms;
 		
 		// If the user has all the privileges defined in $intPerms, then $intChecked will equal $intPerms
 		if ($intChecked == $intPerms)
@@ -706,44 +660,18 @@ class Application
 	 */
 	function CheckClientAuth($bolLinkBackToConsole=FALSE)
 	{
-		// If there is a cookie then use it to find the details of the user and check if their session is still valid
-		if (isset($_COOKIE['ClientId']) && isset($_COOKIE['ClientSessionId']))
+		// If there is nothing about login in the session, record that the user is not logged in
+		if (!array_key_exists('LoggedIn', $_SESSION))
 		{
-			// Find the contact information for the client declared in the cookie
-			$selAuthenticated = new StatementSelect(
-					"Contact",
-					"*", 
-					"Id = <ClientId> AND SessionId = <ClientSessionId> AND SessionExpire > NOW() AND Archived = 0",
-					null,
-					1
-				);
-				
-			$intRowsReturned = $selAuthenticated->Execute(Array("ClientId" => $_COOKIE['ClientId'], "ClientSessionId" => $_COOKIE['ClientSessionId']));
-			$arrAuthentication = $selAuthenticated->Fetch();
+			$_SESSION['LoggedIn'] = FALSE;
+		}
 
-			// check if the user could be found
-			if ($intRowsReturned)
-			{
-				// user was found.
-				$bolLoggedIn = TRUE;
-				
-				// Load user object from db
-				$this->_arrUser = $arrAuthentication;
-			}
-			else
-			{
-				// the user could not be found
-				$this->_arrUser = NULL;
-				$bolLoggedIn = FALSE;
-			}
-		}
-		else
+		// If the user is logged in but the session has expired
+		if ($_SESSION['LoggedIn'] && $_SESSION['SessionExpire'] < time())
 		{
-			// There was no cookie found
-			$this->_arrUser = NULL;
-			$bolLoggedIn = FALSE;
+			$_SESSION['LoggedIn'] = FALSE;
 		}
-		
+
 		// Check if the user has just logged in
 		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
 		{
@@ -761,43 +689,31 @@ class Application
 			// Check if the contact was found
 			if ($selSelectStatement->Count() == 1)
 			{
+				$currentUser = $selSelectStatement->Fetch();
+				
+				// If the user logging in is not the same user to which previous session data belongs, clear out the old stuff!
+				if (!array_key_exists('User', $_SESSION) || $_SESSION['User']['Id'] != $currentUser['Id'])
+				{
+					$_SESSION = array();
+				}
+				
 				// The session is authenticated.
 				// Therefore, we have to store the Authentication
-				$this->_arrUser = $selSelectStatement->Fetch();
-
-				// We have to create a new session Id for the user
-				$this->_arrUser['SessionId'] = sha1(uniqid(rand(), true));
-
-				$bolLoggedIn = TRUE;
+				$_SESSION['User'] = $currentUser;
+				$_SESSION['LoggedIn'] = TRUE;
 			}
 			else
 			{
 				// Could not find the user.  Login failed.
 				DBO()->Login->Failed = TRUE;
-				$bolLoggedIn = FALSE;
+				$_SESSION['LoggedIn'] = FALSE;
 			}
 		}
 
-		if ($bolLoggedIn)
+		if ($_SESSION['LoggedIn'])
 		{
-			//Update the user's session details in the contact table of the database
-			$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
-			$intTime = time() + USER_TIMEOUT;
-
-			// update the table
-			$updUpdateStatement = new StatementUpdate("Contact", "Id = <Id> AND Archived = 0", $arrUpdate);
-			if ($updUpdateStatement->Execute($arrUpdate, Array("Id"=>$this->_arrUser['Id'])) === FALSE)
-			{
-				// could not update the user's session details in the database.  Mark user as not logged in
-				$bolLoggedIn = FALSE;
-			}
-		}
-		
-		if ($bolLoggedIn)
-		{
-			//set the cookie
-			setCookie("ClientId", $this->_arrUser['Id'], $intTime, "/");
-			setCookie("ClientSessionId", $this->_arrUser['SessionId'], $intTime, "/");
+			//Update the user's session details in the employee table of the database
+			$_SESSION['SessionExpire'] = time() + USER_TIMEOUT;
 		}
 		else
 		{
@@ -837,54 +753,11 @@ class Application
 	 */
 	function Logout()
 	{
-		// Only log the user out, if they are currently logged in	
-		if (isset($_COOKIE['Id']) && isset($_COOKIE['SessionId']))
-		{
-			// Find the contact information for the user declared in the cookie
-			// I'm doing this as a safety measure so as to only logout the user if they are the proper user
-			$selAuthenticated	= new StatementSelect("Employee",	"*", "Id = <Id> AND SessionId = <SessionId>", NULL, 1);
-			$intRowsReturned	= $selAuthenticated->Execute(Array("Id" => $_COOKIE['Id'], "SessionId" => $_COOKIE['SessionId']));
-			$arrAuthentication	= $selAuthenticated->Fetch();
+		// Blank the PHP session
+		$_SESSION = array();
+		$_SESSION['LoggedIn'] = FALSE;
 
-			// Check if the user could be found
-			if ($intRowsReturned)
-			{
-				// User was found.
-				$bolLoggedIn = TRUE;
-				
-				// Load user object from db
-				$this->_arrUser = $arrAuthentication;
-			}
-			else
-			{
-				// The user could not be found
-				$this->_arrUser = NULL;
-				$bolLoggedIn = FALSE;
-			}
-		}
-		else
-		{
-			// There was no cookie found
-			$this->_arrUser = NULL;
-			$bolLoggedIn = FALSE;
-		}
-		
-		if ($bolLoggedIn)
-		{
-			// Update the user's session details in the employee table of the database, so that the SessionExpire time is in the past
-			$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction("SUBTIME(NOW(), SEC_TO_TIME(1))"));
-			
-			// Update the table
-			$updUpdateStatement	= new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
-			$bolSuccess			= ($updUpdateStatement->Execute($arrUpdate, Array("Id"=>$this->_arrUser['Id'])) !== FALSE); 
-		}
-		else
-		{
-			// If they are not currently logged in, then they are logically logged out
-			$bolSuccess = TRUE;
-		}
-
-		return $bolSuccess;
+		return TRUE;
 	}
 
 
@@ -904,60 +777,11 @@ class Application
 	 */
 	function LogoutClient()
 	{
-		// We only need to log the client out, if they are currently logged in	
-		if (isset($_COOKIE['ClientId']) && isset($_COOKIE['ClientSessionId']))
-		{
-			// Find the contact information for the client declared in the cookie
-			// I'm doing this as a safety measure so as to only logout the user if they are the proper user
-			$selAuthenticated = new StatementSelect(
-					"Contact",
-					"*", 
-					"Id = <ClientId> AND SessionId = <ClientSessionId> AND Archived = 0",
-					null,
-					1
-				);
-				
-			$intRowsReturned = $selAuthenticated->Execute(Array("ClientId" => $_COOKIE['ClientId'], "ClientSessionId" => $_COOKIE['ClientSessionId']));
-			$arrAuthentication = $selAuthenticated->Fetch();
+		// Blank the PHP session
+		$_SESSION = array();
+		$_SESSION['LoggedIn'] = FALSE;
 
-			// check if the user could be found
-			if ($intRowsReturned)
-			{
-				// user was found.
-				$bolLoggedIn = TRUE;
-				
-				// Load user object from db
-				$this->_arrUser = $arrAuthentication;
-			}
-			else
-			{
-				// the user could not be found
-				$this->_arrUser = NULL;
-				$bolLoggedIn = FALSE;
-			}
-		}
-		else
-		{
-			// There was no cookie found
-			$this->_arrUser = NULL;
-			$bolLoggedIn = FALSE;
-		}
-		
-		if ($bolLoggedIn)
-		{
-			// Update the user's session details in the contact table of the database, so that the SessionExpire time is in the past
-			$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction ("SUBTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
-			
-			// update the table
-			$updUpdateStatement = new StatementUpdate("Contact", "Id = <Id> AND Archived = 0", $arrUpdate);
-			if ($updUpdateStatement->Execute($arrUpdate, Array("Id"=>$this->_arrUser['Id'])) === FALSE)
-			{
-				// could not update the user's session details in the database.  Mark user as not logged in
-				$bolLoggedIn = FALSE;
-			}
-		}
-
-		// If ($bolLoggedIn === TRUE) then loggin out the user has failed.  I don't know what to do in this situation.  It probably wont ever occur.
+		return TRUE;
 	}
 	
 	
@@ -973,10 +797,35 @@ class Application
 	 */
 	function GetUserId()
 	{
-		return (int)$_COOKIE['Id'];
+		$id = 0;
+		if ($_SESSION['LoggedIn'])
+		{
+			$id = $_SESSION['User']['Id'];
+		}
+		return (int)$id;
 	}
 
-
+	
+	//----------------------------------------------------------------------------//
+	// __get
+	//----------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 * 
+	 * This function os here for backwards compatibility only!
+	 * 
+	 * @param	String $propName of property to be retreived. MUST BE '_arrUser'
+	 * 
+	 * @return	array $_SESSION['User'] if $propName == '_arrUser', otherwise NULL
+	 */
+	function __get($propName)
+	{
+		if ($propName == '_arrUser')
+		{
+			return $_SESSION['User'];
+		}
+		return NULL;
+	}
 }
 
 //----------------------------------------------------------------------------//
@@ -1832,6 +1681,7 @@ class SubmittedData
 		DBO()->{$arrName[0]}->AddProperty($arrName[1], $mixValue, $intContext);
 		return TRUE;
 	}
+
 }
 
 ?>

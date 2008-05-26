@@ -78,60 +78,19 @@
 		{
 			// Construct the Object
 			parent::__construct ("Authentication");
-			
+
 			// If the authentication wants to see if it can come through ...
-			if (isset ($_COOKIE ['Id']) && isset ($_COOKIE ['SessionId']))
+			if ($_SESSION['LoggedIn'] && $_SESSION['SessionExpire'] > time())
 			{
-				// Check their session is valid ...
-				$selAuthenticated = new StatementSelect (
-					"Employee",
-					"count(Id) as length, MAX(Privileges) as Privileges", 
-					"Id = <Id> AND SessionId = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
-					null,
-					1
-				);
-				
-				$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
-				$arrAuthentication = $selAuthenticated->Fetch ();
-				
-				// If the session is valid
-				if ($arrAuthentication ['length'] == 1)
-				{
-					// Mark the Session as Authenticated
-					$this->aemAuthenticatedEmployee = $this->Push (new AuthenticatedEmployee);
-					
-					// Revalidate the session so they can have another 20 minutes
-					if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
-					{
-						$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDDATE(NOW(), INTERVAL 7 DAY)"));
-					}
-					else
-					{
-						$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'01:00:00')"));
-					}
-					
-					$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
-					$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE ['Id']));
-					
-					// set cookie timeout
-					if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
-					{
-						// God Cookies last for 7 days
-						$intTime = time () + (60 * 60 * 24 * 7);
-					}
-					else
-					{
-						// Normal Cookies last for 20 min
-						$intTime = time () + (60 * 20);
-					}
-					
-					setCookie ("Id", $_COOKIE ['Id'], $intTime, "/");
-					setCookie ("SessionId", $_COOKIE ['SessionId'], $intTime, "/");
-				} else {
-					// Unset the cookies so we don't have to bother checking them
-					setCookie ("Id", "", time () - 3600);
-					setCookie ("SessionId", "", time () - 3600);
-				}
+				// Mark the Session as Authenticated
+				$this->aemAuthenticatedEmployee = $this->Push (new AuthenticatedEmployee);
+
+				// Revalidate the session so they can have another 20 minutes (or 7 days if GOD)
+				$_SESSION['SessionExpire'] = time() + ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? (60 * 60 * 24 * 7) : (60 * 20));
+			}
+			else
+			{
+				$_SESSION['LoggedIn'] = FALSE;
 			}
 		}
 		
@@ -193,54 +152,44 @@
 		 *
 		 * @method
 		 */
-		
 		public function Login ($strUserName, $strPassWord)
 		{
 			// Get the Id of the Employee (Identified by UserName and PassWord combination)
 			$selSelectStatement = new StatementSelect (
 				"Employee", 
-				"Id", 
+				"*", 
 				"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
-				null, 
+				NULL, 
 				"1"
 			);
-			
+
 			$selSelectStatement->Execute(Array("UserName"=>$strUserName, "PassWord"=>$strPassWord));
-			
+
 			// If the employee could not be found, return false
 			if ($selSelectStatement->Count () <> 1)
 			{
-				return false;
+				$_SESSION['LoggedIn'] = FALSE;
+				return FALSE;
 			}
-			
+
+			$currentUser = $selSelectStatement->Fetch();
+
+			// If data exists in the session but is for another user, clear it out
+			if (!array_key_exists('User', $_SESSION) || $_SESSION['User']['Id'] != $currentUser['Id'])
+			{
+				$_SESSION = array();
+			}
+
 			// If we reach this part of the Method, the session is authenticated.
 			// Therefore, we have to store the Authentication
-			$arrFetch = $selSelectStatement->Fetch ();
-			$Id = $arrFetch ['Id'];
-			
-			
-			
-			// Generate a new session ID
-			$SessionId = sha1(uniqid(rand(), true));
-			
+			$_SESSION['User'] = $currentUser;
+			$_SESSION['LoggedIn'] = TRUE;
+
 			// Updating information
-			$Update = Array("SessionId" => $SessionId, "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'01:00:00')"));
-			
-			// update the table
-			$updUpdateStatement = new StatementUpdate("Employee", "UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", $Update);
-			
-			// If we successfully update the database table
-			if ($updUpdateStatement->Execute($Update, Array("UserName" => $strUserName, "PassWord" => $strPassWord)) == 1)
-			{
-				setCookie ("Id", $Id, time () + (60 * 20), "/");
-				setCookie ("SessionId", $SessionId, time () + (60 * 20), "/");
-				
-				return true;
-			}
-			
-			return false;
+			$_SESSION['SessionExpire'] = time() + ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? (60 * 60 * 24 * 7) : (60 * 20));
+			return TRUE;
 		}
-		
+
 		//------------------------------------------------------------------------//
 		// Logout
 		//------------------------------------------------------------------------//
@@ -258,29 +207,9 @@
 		 
 		 public function Logout ()
 		 {
-		 	// Check if the person is logged in because we don't want unauthenticated users
-		 	// to try logging authenticated users out
-		 	
-		 	if (!$this->isAuthenticated ())
-		 	{
-		 		return false;
-		 	}
-		 	
-			// Updating information
-			$Update = Array ("SessionExpire" => new MySQLFunction ("NOW()"), "SessionId" => "");
-			
-			// update the table
-			$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id> AND SessionId = <SessionId> AND Archived = 0", $Update);
-			
-			// If we successfully update the database table
-			$updUpdateStatement->Execute($Update, Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
-			
-			// Unset the cookies so we don't have to bother checking them
-			setCookie ("Id", "", time () - 3600);
-			setCookie ("SessionId", "", time () - 3600);
-			
+			$_SESSION = array();
+			$_SESSION['LoggedIn'] = FALSE;
 			return true;
 		 }
 	}
-	
 ?>

@@ -1,4 +1,8 @@
 <?php
+
+Define ('FLEX_SESSION_NAME',	'flex_admin_sess_id');
+
+
 // Work out the application template and method from the URL
 // takes a URL like : http://.../flex.php/ApplicationTemplate/Method/?Object.Property=Value
 $arrScript 		= explode('.php', $_SERVER['PHP_SELF'], 2);

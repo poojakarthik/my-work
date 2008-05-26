@@ -98,13 +98,13 @@
 			$selEmployee = new StatementSelect (
 				'Employee', 
 				'*', 
-				'Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW() AND Archived = 0', 
+				'Id = <Id>', 
 				null, 
 				'1'
 			);
 			
 			$selEmployee->useObLib (TRUE);
-			$selEmployee->Execute(Array('Id' => $_COOKIE ['Id'], 'SessionId' => $_COOKIE ['SessionId']));
+			$selEmployee->Execute(Array('Id' => $_SESSION['User']['Id']));
 			
 			// If the session is invalid - then throw an exception
 			if ($selEmployee->Count () <> 1)
