@@ -30,7 +30,7 @@
 require_once("../../flex.require.php");
 
 // Declare constants
-Define(DEFAULT_BASE_PATH, "./late_notices");
+Define(DEFAULT_BASE_PATH, FILES_BASE_PATH);
 
 // Get the command line arguments
 $arrArgs = $_SERVER['argv'];
