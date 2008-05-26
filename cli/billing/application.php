@@ -207,7 +207,7 @@
 	 *
 	 * @method
 	 */
- 	function Execute()
+ 	function Execute($strMode = 'gold')
  	{
 		// Start the stopwatch
 		$this->Framework->StartWatch();
@@ -220,8 +220,25 @@
 		}
 		
 		// generate an InvoiceRun Id
-		$strInvoiceRun = uniqid();
-		$this->_strInvoiceRun = $strInvoiceRun;
+		//$strInvoiceRun			= uniqid();
+		$strInvoiceRun			= date("YmdHis");
+		switch (strtolower($strMode))
+		{
+			case 'gold':
+				$this->_strInvoiceRun	= $strInvoiceRun;
+				break;
+			
+			case 'silver':
+			case 'bronze':
+				$this->_strInvoiceRun	= $strInvoiceRun.'-'.strtolower($strMode);
+				break;
+			
+			default:
+				// Unhandled type
+				CliEcho("'$strMode' is not a valid Billing::Execute() type!\n");
+				return FALSE;
+				break;
+		}		
 		
 		$intPassed = 0;
 		$intFailed = 0;
@@ -236,86 +253,6 @@
 		
 		// Generate the Invoices
 		$this->GenerateInvoices($arrAccounts);
-
-		// BILLING VALIDATION
-		// Make sure all of our totals add up
-		/*
-			Direct SQL.......
-			
-			SELECT InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM( ServiceTypeTotal.Charge ) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM( ServiceTotal.TotalCharge ) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal
-			FROM ServiceTotal, ServiceTypeTotal, InvoiceTemp
-			WHERE ServiceTypeTotal.Service = ServiceTotal.Service
-			AND ServiceTotal.Account = InvoiceTemp.Account
-			GROUP BY InvoiceTemp.Account
-			HAVING (
-			SUM( ServiceTypeTotal.Charge ) != ServiceTotal.TotalCharge
-			OR SUM( ServiceTotal.TotalCharge ) != InvoiceTemp.Total
-			)
-		 */
-		/*$this->_rptBillingReport->AddMessage("Validating Invoice Totals...\t\t\t", FALSE);
-		$strSelect	=	"InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM(ServiceTypeTotal.Charge) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM(ServiceTotal.TotalCharge) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal";
-		$strFrom	=	"ServiceTotal, ServiceTypeTotal, InvoiceTemp";
-		$strWhere	=	"ServiceTypeTotal.Service = ServiceTotal.Service AND " .
-						"ServiceTotal.Account = InvoiceTemp.Account";
-		$strHaving	=	"(SUM(ServiceTypeTotal.Charge) != ServiceTotal.TotalCharge OR " .
-						"SUM(ServiceTotal.TotalCharge) != InvoiceTemp.Total)";
-		$selBillValidate = new StatementSelect($strFrom, $strSelect, $strWhere, NULL, NULL, "InvoiceTemp.Account\nHAVING ".$strHaving);
-		$intInvalid = $selBillValidate->Execute();
-		$arrBillValid = $selBillValidate->Fetch();
-		if($intInvalid === FALSE)
-		{
-			// Error
-		}
-		if ($intInvalid == 0)
-		{
-			// Report Success
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		else
-		{
-			// Report Bad Match & how many didn't match
-			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- $intInvalid invalid invoices");
-		}*/
-		
-		/*
-		// BILLING OUTPUT
-		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
-		{
-			$this->_rptBillingReport->AddMessage("Generating sample invoices for output type $strKey...\t\t", FALSE);
-			
-			// build billing output sample
-			if ($this->_arrBillOutput[$strKey]->BuildSample($strInvoiceRun) === FALSE)
-			{
-				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- Reason: Building Sample Invoices failed");
-				continue;
-			}
-			
-			// send billing output sample
-			if ($this->_arrBillOutput[$strKey]->SendSample() === FALSE)
-			{
-				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- Reason: Sending Sample Invoices failed");
-				continue;
-			}
-			
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
-		// update Invoice Status to INVOICE_TEMP
-		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
-		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = INVOICE_TEMP;
-		$updInvoiceStatus = new StatementUpdate("InvoiceTemp", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_PRINT, $arrUpdateData);
-		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
-		{
-			Debug($updInvoiceStatus->Error());
-			// Report
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-		}
-		else
-		{
-			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}*/
 		
 		// Finish off Billing Report
 		$arrReportLines['<Total>']	= $this->intPassed + $this->intFailed;
@@ -2191,8 +2128,10 @@
 				}
 				
 				// Generate XML Data for each Invoice
+				$strInvoiceRun	= NULL;
 				while ($arrInvoice = $selInvoices->Fetch())
 				{
+					$strInvoiceRun	= $arrInvoice['InvoiceRun'];
 					CliEcho(" + Generating XML for Account #{$arrInvoice['Account']}...\t\t\t", FALSE);
 					if (!$this->_arrBillOutput[$intPrintTartget]->AddInvoice($arrInvoice))
 					{
@@ -2202,6 +2141,14 @@
 					{
 						CliEcho("[   OK   ]");
 					}
+				}
+				
+				// If this is a Gold Invoice Run, make a Symlink from /YYYYMMDDHHIISS-gold/ to /YYYYMMDDHHIISS/
+				if (!stripos($strInvoiceRun, '-'))
+				{
+					$strFullDirectory	= INVOICE_XML_PATH.$strInvoiceRun;
+					@mkdir($strFullDirectory, 0777, TRUE);
+					@symlink($strFullDirectory, $strFullDirectory.'-gold');
 				}
 				
 				return TRUE;
