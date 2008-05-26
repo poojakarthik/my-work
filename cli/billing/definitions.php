@@ -45,6 +45,12 @@ define("BILL_FLEX_XML"					, 902);
 // Charge Modules
 define("CHARGE_MODULE_NON_DDR"			, 666);
 define("CHARGE_MODULE_LATE_PAYMENT"		, 667);
+define("CHARGE_MODULE_INBOUND"			, 668);
+define("CHARGE_MODULE_PINNACLE"			, 669);
+define("CHARGE_MODULE_PLAN"				, 670);
+define("CHARGE_MODULE_PLAN_ADVANCE"		, 671);
+define("CHARGE_MODULE_PLAN_ARREARS"		, 672);
+define("CHARGE_MODULE_PLAN_CREDIT"		, 673);
 
 // Non-DDR minimum invoice total
 define("NON_DDR_MINIMUM_CHARGE"			, 2.50);

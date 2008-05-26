@@ -104,7 +104,7 @@
 	 */
  	function Revoke($strInvoiceRun, $intAccount)
  	{
- 		Debug("InvoiceRun: '$strInvoiceRun'\nAccount: $intAccount\nCharge Type: '$this->_strChargeType'");
+ 		//Debug("InvoiceRun: '$strInvoiceRun'\nAccount: $intAccount\nCharge Type: '$this->_strChargeType'");
  		
  		// Delete the charge
  		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount AND ChargeType = '$this->_strChargeType' AND InvoiceRun = '$strInvoiceRun'");

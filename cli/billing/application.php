@@ -181,6 +181,12 @@
 		// TODO future: Only init these if they're enabled for this Yellow Billing client
 		$this->_arrChargeModules[CHARGE_MODULE_NON_DDR]			= new ChargeNonDirectDebit();
 		$this->_arrChargeModules[CHARGE_MODULE_LATE_PAYMENT]	= new ChargeLatePayment();
+		$this->_arrChargeModules[CHARGE_MODULE_INBOUND]			= new ChargeInboundService();
+		$this->_arrChargeModules[CHARGE_MODULE_PINNACLE]		= new ChargePinnacle();
+		//$this->_arrChargeModules[CHARGE_MODULE_PLAN]			= new ChargePlan();
+		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_ADVANCE]	= new ChargePlanAdvance();
+		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_ARREARS]	= new ChargePlanArrears();
+		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_CREDIT]		= new ChargePlanCredit();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1369,6 +1375,21 @@
 			{
 				// Revoke charges
 				$mixResult = $chgModule->RevokeAll($strInvoiceRun);
+			}
+			
+			// Remove Plan Charge Adjustments
+			$this->_rptBillingReport->AddMessage("Removing Plan Charge Adjustments...\t\t\t", FALSE);
+			$qryRemovePlanCharges	= new Query();
+			$strChargeType			= "ChargeType LIKE 'PCA%' OR ChargeType LIKE 'PCP%'";
+			$strQuery				= "DELETE FROM Charge WHERE InvoiceRun = '$strInvoiceRun' AND ($strChargeType)";
+			if ($qryRemovePlanCharges->Execute($strQuery) === FALSE)
+			{
+				Debug($qryRemovePlanCharges);
+				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			}
+			else
+			{
+				$this->_rptBillingReport->AddMessage(MSG_OK);
 			}
 			
 			// clean up ServiceTotal table
