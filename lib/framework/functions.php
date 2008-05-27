@@ -3314,12 +3314,7 @@ function IsInvoicing()
 	$intRows		= $selInvoiceTemp->Execute();
 	
 	// If there are records in the InvoiceTemp Table, then the invoicing process is occurring
-	if ($intRows)
-	{
-		return TRUE;
-	}
-	
-	return FALSE;
+	return (bool)$intRows;
 }
 
 //------------------------------------------------------------------------//
@@ -3348,6 +3343,25 @@ function GetCurrentDateAndTimeForMySQL()
 }
 
 //------------------------------------------------------------------------//
+// GetCurrentISODateTime
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentISODateTime()
+ *
+ * Retrieves the current date and time in the ISO Datetime format
+ *
+ * Retrieves the current date and time in the ISO Datetime format
+ * This current time is taken from the database
+ *
+ * @return	string			current date and time as a ISO Datetime string (YYYY-MM-DD HH:MM:SS)
+ * @function
+ */
+function GetCurrentISODateTime()
+{
+	return GetCurrentDateAndTimeForMySQL();
+}
+
+//------------------------------------------------------------------------//
 // GetCurrentDateForMySQL
 //------------------------------------------------------------------------//
 /**
@@ -3364,8 +3378,30 @@ function GetCurrentDateAndTimeForMySQL()
  */
 function GetCurrentDateForMySQL()
 {
-	return date("Y-m-d", strtotime(GetCurrentDateAndTimeForMySQL()));
+	$strDatetime	= GetCurrentDateAndTimeForMySQL();
+	$arrTimeParts	= explode(" ", $strDatetime);
+	return $arrTimeParts[0];
 }
+
+//------------------------------------------------------------------------//
+// GetCurrentISODate
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentISODate()
+ *
+ * Retrieves the current date and time in the ISO Date format
+ *
+ * Retrieves the current date and time in the ISO Date format
+ * This current time is taken from the database
+ *
+ * @return	string			current date and time as a ISO Datetime string (YYYY-MM-DD)
+ * @function
+ */
+function GetCurrentISODate()
+{
+	return GetCurrentDateForMySQL();
+}
+
 
 //------------------------------------------------------------------------//
 // GetCurrentTimeForMySQL

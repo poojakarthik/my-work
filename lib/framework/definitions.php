@@ -2265,21 +2265,36 @@ $GLOBALS['*arrConstant']	['DocumentTemplateMediaType']	[3]	['Description']	= 'Al
 
 // Nature of Service Record Creation
 // Identifies the reason why a Service record was created
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[100]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_NEW';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[100]	['Description']	= 'Created';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[101]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_ACTIVATION';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[101]	['Description']	= 'Activated';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[102]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_DEACTIVATION';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[102]	['Description']	= 'Deactivated';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[103]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_LESSEE_CHANGE';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[103]	['Description']	= 'Lessee Changed';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[104]	['Constant']	= 'SERVICE_NATURE_OF_CREATION_ACCOUNT_MOVE';
-$GLOBALS['*arrConstant']	['ServiceNatureOfCreation']	[104]	['Description']	= 'Moved to other account';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[100]	['Constant']	= 'SERVICE_CREATION_NEW';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[100]	['Description']	= 'Created';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[101]	['Constant']	= 'SERVICE_CREATION_ACTIVATED';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[101]	['Description']	= 'Activated';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[102]	['Constant']	= 'SERVICE_CREATION_LESSEE_CHANGED';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[102]	['Description']	= 'Lessee Changed';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[103]	['Constant']	= 'SERVICE_CREATION_ACCOUNT_CHANGED';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[103]	['Description']	= 'Account Changed';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[104]	['Constant']	= 'SERVICE_CREATION_LESSEE_CHANGE_REVERSED';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[104]	['Description']	= 'Lessee Change Reversed';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[105]	['Constant']	= 'SERVICE_CREATION_ACCOUNT_CHANGE_REVERSED';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[105]	['Description']	= 'Account Change Reversed';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[106]	['Constant']	= 'SERVICE_CREATION_STATUS_CHANGED';
+$GLOBALS['*arrConstant']	['ServiceCreation']	[106]	['Description']	= 'Status Changed';
+
 
 // Nature of Service Record Closure
 // Identifies the reason why a Service record was Closed
-//TODO!
-
+$GLOBALS['*arrConstant']	['ServiceClosure']	[100]	['Constant']	= 'SERVICE_CLOSURE_DISCONNECTED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[100]	['Description']	= 'Disconnected';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[101]	['Constant']	= 'SERVICE_CLOSURE_ARCHIVED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[101]	['Description']	= 'Archived';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[102]	['Constant']	= 'SERVICE_CLOSURE_LESSEE_CHANGED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[102]	['Description']	= 'Lessee Changed';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[103]	['Constant']	= 'SERVICE_CLOSURE_ACCOUNT_CHANGED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[103]	['Description']	= 'Account Changed';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[104]	['Constant']	= 'SERVICE_CLOSURE_LESSEE_CHANGE_REVERSED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[104]	['Description']	= 'Lessee Change Reversed';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[105]	['Constant']	= 'SERVICE_CLOSURE_ACCOUNT_CHANGE_REVERSED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[105]	['Description']	= 'Account Change Reversed';
 
 
 // Special paths

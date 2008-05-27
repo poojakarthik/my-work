@@ -3473,7 +3473,7 @@ class AppTemplateService extends ApplicationTemplate
 		if ($qryInsertServicePlanDetails->Execute($strCopyServiceRateGroupRecordsToNewService) === FALSE)
 		{
 			// Inserting the records into the ServiceRateGroup table failed
-			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRatePlan table failed";
+			return "ERROR: Activating the service failed, unexpectedly.  Inserting records into the ServiceRateGroup table failed";
 		}
 
 		// Renormalise all CDRs relating to the old Service record which is in the CDR table
