@@ -3405,7 +3405,7 @@ function GetCurrentTimeForMySQL()
  *											Array['Failed'] 	= number of notices that failed to generate, of the NoticeType
  * @function
  */
-function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
+function GenerateLatePaymentNotices($intNoticeType, $strBasePath=FILES_BASE_PATH)
 {
 	$selPriorNotices = new StatementSelect("AccountLetterLog", "Id", "Invoice = <InvoiceId> AND LetterType = <NoticeType>", "", 1);
 
@@ -3450,6 +3450,7 @@ function GenerateLatePaymentNotices($intNoticeType, $strBasePath="./")
 							'LatePaymentAmnesty'	=> "Account.LatePaymentAmnesty", 
 							'FirstName'				=> "Contact.FirstName",
 							'LastName'				=> "Contact.LastName",
+							'Title'					=> "Contact.Title",
 							'AddressLine1'			=> "Account.Address1",
 							'AddressLine2'			=> "Account.Address2",
 							'Suburb'				=> "Account.Suburb",
@@ -3645,73 +3646,90 @@ function RecursiveMkdir($strPath, $intMode = 0777)
  *
  * @function
  */
-function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
+function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $strDeliveryMethod='DELIVERY_METHOD_POST')
 {
-	//TODO! Modify this so that it builds actual pdfs, instead of just text files representing the pdfs
-	
 	// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
 	// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
 	// made in a run
 	static $insNotice;
 	static $insFileExport;
-	
-	// The key of this array is the CustomerGroup Id of the template
-	static $arrLetterTemplates = Array();
-	
-	if (!isset($arrLetterTemplates[$intNoticeType]))
-	{
-		$arrLetterTemplates[$intNoticeType] = Array();
-		// Cache the letter template details
-		//TODO! you will also have to retrieve details from the LetterTemplateVar table, as soon as we work out
-		// how the letter templates will work
-		$strTables	= "CustomerGroup AS CG INNER JOIN LetterTemplate AS LT ON CG.Id = LT.CustomerGroup";
-		$arrColumns	= Array("CustomerGroupId" => "CG.Id", "CustomerGroupInternalName" => "CG.InternalName", "CustomerGroupExternalName" => "CG.ExternalName", "Template" => "LT.Template", "TemplateId" => "LT.Id");
-		$strWhere	= "LT.LetterType = <LetterType> AND LT.Id = (SELECT MAX(Id) FROM LetterTemplate WHERE LetterType = <LetterType> AND CustomerGroup = CG.Id)";
-		$selLetterTemplates = new StatementSelect($strTables, $arrColumns, $strWhere);
-		$selLetterTemplates->Execute(Array('LetterType' => $intNoticeType));
-		
-		// Load each CustomerGroup's Letter Template details into the $arrLetterTemplates array
-		while (($arrLetterTemplate = $selLetterTemplates->Fetch()) !== FALSE)
-		{
-			$arrLetterTemplates[$intNoticeType][$arrLetterTemplate['CustomerGroupId']] = $arrLetterTemplate;
-		}
-	}
-	
-	// Check that LetterTemplate details were retrieved for the CustomerGroup, that this Account belongs to
-	if (!isset($arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]))
-	{
-		// LetterTemplate details have not been defined for this LetterType and CustomerGroup
-		return FALSE;
-	}
-	
+
 	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
-	$strFullPath = 	$strBasePath . strtolower(str_replace(" ", "_", $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['CustomerGroupInternalName'])) ."/". 
-					str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))) ."/". date("Y/m/d");
+	$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))) . "/xml/" . date("Ymd");
 	
 	// Make the directory structure if it hasn't already been made
 	if (!is_dir($strFullPath))
 	{
 		RecursiveMkdir($strFullPath);
 	}
-	
-	// Create the filename
-	$strFilename = $arrAccount['AccountId'] . ".txt";
-	
-	// Set up all values required of the notice, which have not been defined yet
-	$strDateIssued								= date("d-m-Y");
-	$strDueDateForAction						= date("d-F-Y", strtotime("+7 days"));
-	$arrAccount['CustomerGroupInternalName']	= $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['CustomerGroupInternalName'];
-	$arrAccount['CustomerGroupExternalName']	= $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['CustomerGroupExternalName'];
-	$arrAccount['AccountStatus']				= GetConstantDescription($arrAccount['AccountStatus'], "Account");
-	$arrAccount['NoticeTemplate']				= $arrLetterTemplates[$intNoticeType][$arrAccount['CustomerGroup']]['Template'];
-	$arrAccount['BPay Biller Code']				= BPAY_BILLER_CODE;
-	$arrAccount['Customer Reference Number']	= $arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']); 
 
-	// Format the monetary values
-	$arrAccount['OutstandingNotOverdue'] = number_format($arrAccount['OutstandingNotOverdue'], 2, ".", "");
-	$arrAccount['Overdue'] = number_format($arrAccount['Overdue'], 2, ".", "");
-	$arrAccount['TotalOutstanding'] = number_format($arrAccount['TotalOutstanding'], 2, ".", "");
+	// Create the filename
+	$strFilename = $arrAccount['AccountId'] . ".xml";
+
+	// Build XML for the data...
+	VixenRequire('lib/dom/Flex_Dom_Document.php');
+	$dom = new Flex_Dom_Document();
+
+	// Set up all values required of the notice, which have not been defined yet
+	$dom->Document->DateIssued = date("d M Y");
+	switch ($intNoticeType)
+	{
+		case LETTER_TYPE_OVERDUE:
+			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_OVERDUE_NOTICE');
+			break;
+		case LETTER_TYPE_SUSPENSION:
+			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_SUSPENSION_NOTICE');
+			break;
+		case LETTER_TYPE_FINAL_DEMAND:
+			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_FINAL_DEMAND_NOTICE');
+			break;
+	}
+	$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
+	$dom->Document->CreationDate->setValue(date("Y-m-d 00:00:00"));
+	$dom->Document->DeliveryMethod->setValue($strDeliveryMethod);
 	
+	$dom->Document->Currency->Symbol->Location = 'Prefix';
+	$dom->Document->Currency->Symbol->setValue('$');
+	$dom->Document->Currency->Negative->Location = 'Suffix';
+	$dom->Document->Currency->Negative->setValue('CR');
+
+	$dom->Document->Account->Id = $arrAccount['AccountId'];
+	$dom->Document->Account->Name = $arrAccount['BusinessName'];
+	$dom->Document->Account->CustomerGroup = GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup');
+	$dom->Document->Account->Addressee->setValue($arrAccount['BusinessName']);
+	$dom->Document->Account->AddressLine1;
+	if (trim($arrAccount['AddressLine1']))
+	{
+		$dom->Document->Account->AddressLine1->setValue(trim($arrAccount['AddressLine1']));
+	}
+	$dom->Document->Account->AddressLine2;
+	if (trim($arrAccount['AddressLine2']))
+	{
+		$dom->Document->Account->AddressLine2->setValue(trim($arrAccount['AddressLine2']));
+	}
+	$dom->Document->Account->Suburb->setValue(strtoupper($arrAccount['Suburb']));
+	$dom->Document->Account->Postcode->setValue($arrAccount['Postcode']);
+	$dom->Document->Account->State->setValue(strtoupper($arrAccount['State']));
+
+	$dom->Document->PrimaryContact->FirstName->setValue($arrAccount['FirstName']);
+	$dom->Document->PrimaryContact->LastName->setValue($arrAccount['LastName']);
+	$dom->Document->PrimaryContact->Title->setValue($arrAccount['Title']);
+	$dom->Document->PrimaryContact->FullName->setValue(
+		($arrAccount['Title'] ? $arrAccount['Title'] . ' ' : '') .
+		($arrAccount['FirstName'] ? $arrAccount['FirstName'] . ' ' : '') .
+		$arrAccount['LastName']);
+
+	$dom->Document->Payment->BPay->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
+	$dom->Document->Payment->BillExpress->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
+
+	$dom->Document->Outstanding->Overdue->setValue(number_format($arrAccount['Overdue'], 2, ".", ""));
+	$dom->Document->Outstanding->NotOverdue->setValue(number_format($arrAccount['OutstandingNotOverdue'], 2, ".", ""));
+	$dom->Document->Outstanding->Total->setValue(number_format($arrAccount['TotalOutstanding'], 2, ".", ""));
+	$dom->Document->Outstanding->CurrentInvoiceId->setValue($arrAccount['InvoiceId']);
+	$dom->Document->Outstanding->ActionDate->setValue(date("d M Y", strtotime("+7 days")));
+
+	$strXML = $dom->saveXML();
+
 	// Open the file in text mode
 	$ptrNoticeFile = fopen($strFullPath ."/". $strFilename, 'wt');
 	if ($ptrNoticeFile === FALSE)
@@ -3719,57 +3737,24 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 		// The file could not be opened
 		return FALSE;
 	}
-	
-	// Include NoticeType specific stuff here
-	switch ($intNoticeType)
-	{
-		case LETTER_TYPE_OVERDUE:
-			$strMessage =	"Our records indicate that your account for the amount of \${$arrAccount['Overdue']} remains unpaid.\n".
-							"Please ensure payment is made by $strDueDateForAction to avoid any further recovery action and possible disruption to your services\n";
-			break;
-		case LETTER_TYPE_SUSPENSION:
-			$strMessage =	"Further to our recent reminder letter, our records indicate that your account remains unpaid.\n".
-							"\tTotal Amount Owing: \${$arrAccount['Overdue']}\n\n".
-							"Please be advised that if we do not recieve payment by $strDueDateForAction your services will be suspended without further notice and we will commence appropriate collection action immediately.\n";
-			break;
-		case LETTER_TYPE_FINAL_DEMAND:
-			$strMessage =	"We note that dispite numerous reminders to pay this outstanding amount, the account still remains in arrears in the amount of \${$arrAccount['Overdue']}\n".
-							"Your service is due to be temporarily disconnected because of your failure to pay your accounts.\n".
-							"Your current balance not outstanding is \${$arrAccount['OutstandingNotOverdue']}\n".
-							"Total Amount Due: \${$arrAccount['TotalOutstanding']}\n\n".
-							"If you would like to avoid the impending actions, we request that you contact this office within 7 days with a view to payment of the outstanding account.\n";
-			break;
-	}
-	
-	$strMessage .= "Date Issued: $strDateIssued\n";
-	
-	// The account's Suburb and State must be in all uppercase
-	$arrAccount['Suburb'] = strtoupper($arrAccount['Suburb']);
-	$arrAccount['State'] = strtoupper($arrAccount['State']);
-	
-	// Output the contents of $arrAccount
-	foreach ($arrAccount as $strProperty=>$mixValue)
-	{
-		$strMessage .= "$strProperty: $mixValue\n";
-	}
-	
-	fwrite($ptrNoticeFile, $strMessage);
+
+	fwrite($ptrNoticeFile, $strXML);
 	fclose($ptrNoticeFile);
-	
+
 	$strNow = date("Y-m-d H:i:s");
 	// Log the Notice in the AccountLetterLog Table
 	$arrLetterLog = Array(	'Account'		=> $arrAccount['AccountId'],
 							'Invoice'		=> $arrAccount['InvoiceId'],
 							'LetterType'	=> $intNoticeType,
 							'CreatedOn'		=> $strNow);
-	
+
 	// Only define the StatementInsert object if it hasn't already been defined				
 	if (!isset($insNotice))
 	{
 		$insNotice = new StatementInsert("AccountLetterLog", $arrLetterLog);
 	}
 	$insNotice->Execute($arrLetterLog);
-	
+
 	// Record the File in the FileExport table
 	//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
 	$arrFileLog = Array(	'FileName'		=>	$strFilename,
@@ -3778,7 +3763,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 							'ExportedOn'	=>	$strNow,
 							'Status'		=>	0,
 							'FileType'		=>	0,
-							'SHA1'			=>	sha1($strFilename));
+							'SHA1'			=>	sha1($strXML));
 
 	// Only define the StatementInsert object if it hasn't already been defined				
 	if (!isset($insFileExport))
@@ -3786,14 +3771,14 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath="./")
 		$insFileExport = new StatementInsert("FileExport", $arrFileLog);
 	}
 	$insFileExport->Execute($arrFileLog);
-	
+
 	// Create a system note for the account
 	$strNote = 	GetConstantDescription($intNoticeType, "LetterType") . " has been generated\n".
-				"Outstanding Overdue: \${$arrAccount['Overdue']}\n".
-				"Outstanding Not Overdue: \${$arrAccount['OutstandingNotOverdue']}";
-				
+				"Outstanding Overdue: \$" . number_format($arrAccount['Overdue'], 2, '.', '') . "\n".
+				"Outstanding Not Overdue: \$" . number_format($arrAccount['OutstandingNotOverdue'], 2, '.', '');
+
 	$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, NULL, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
-	
+
 	return TRUE;
 }
 
