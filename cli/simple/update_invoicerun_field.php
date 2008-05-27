@@ -14,7 +14,7 @@ if ($mixTables = $qryShowTables->Execute("SHOW FULL TABLES WHERE Table_type != '
 		// Check the fields in this table
 		$strTable	= $arrTable[0];
 		
-		CliEcho(str_pad(" + $strTable...", 40, STR_PAD_RIGHT), FALSE);
+		CliEcho(str_pad(" + $strTable...", 40, ' ', STR_PAD_RIGHT), FALSE);
 		
 		if ($qryShowColumns->Execute("SHOW COLUMNS FROM $strTable WHERE Field = 'InvoiceRun'")->num_rows)
 		{			
