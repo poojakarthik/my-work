@@ -43,7 +43,7 @@
  class ImportUnitelPreselection extends ImportBase
  {
 	public $intBaseCarrier		= CARRIER_UNITEL;
-	public $intBaseFileType		= FILE_IMPORT_UNITEL_PRESELECTION;
+	public $intBaseFileType		= FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION;
 	
  	//------------------------------------------------------------------------//
 	// __construct

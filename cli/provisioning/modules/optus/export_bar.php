@@ -53,7 +53,7 @@
 	protected	$_ptrFile;
 	
 	public $intBaseCarrier		= CARRIER_OPTUS;
-	public $intBaseFileType		= FILE_EXPORT_OPTUS_BAR;
+	public $intBaseFileType		= FILE_EXPORT_PROVISIONING_OPTUS_BAR;
 	public $_strDeliveryType	= 'EmailAttach';
 	
 	

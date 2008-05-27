@@ -196,54 +196,81 @@ $GLOBALS['*arrConstant']	['FileStatus']	[303]	['Constant']	= 'FILE_DELIVERY_FAIL
 $GLOBALS['*arrConstant']	['FileStatus']	[303]	['Description']	= 'Delivery Failed';
 
 
+//----------------------------------------------------------------------------//
 // EXPORT File Types
+//----------------------------------------------------------------------------//
 // PROVISIONING
-$GLOBALS['*arrConstant']	['FileExport']	[1000]	['Constant']	= 'FILE_EXPORT_UNITEL_PRESELECTION';
+$GLOBALS['*arrConstant']	['FileExport']	[1000]	['Constant']	= 'FILE_EXPORT_PROVISIONING_UNITEL_PRESELECTION';
 $GLOBALS['*arrConstant']	['FileExport']	[1000]	['Description']	= 'Unitel Preselection';
-$GLOBALS['*arrConstant']	['FileExport']	[1001]	['Constant']	= 'FILE_EXPORT_UNITEL_DAILY_ORDER';
+$GLOBALS['*arrConstant']	['FileExport']	[1001]	['Constant']	= 'FILE_EXPORT_PROVISIONING_UNITEL_DAILY_ORDER';
 $GLOBALS['*arrConstant']	['FileExport']	[1001]	['Description']	= 'Unitel Daily Order';
 
-$GLOBALS['*arrConstant']	['FileExport']	[1100]	['Constant']	= 'FILE_EXPORT_AAPT_EOE';
+$GLOBALS['*arrConstant']	['FileExport']	[1100]	['Constant']	= 'FILE_EXPORT_PROVISIONING_AAPT_EOE';
 $GLOBALS['*arrConstant']	['FileExport']	[1100]	['Description']	= 'AAPT EOE';
 
-$GLOBALS['*arrConstant']	['FileExport']	[1200]	['Constant']	= 'FILE_EXPORT_OPTUS_PRESELECTION';
+$GLOBALS['*arrConstant']	['FileExport']	[1200]	['Constant']	= 'FILE_EXPORT_PROVISIONING_OPTUS_PRESELECTION';
 $GLOBALS['*arrConstant']	['FileExport']	[1200]	['Description']	= 'Optus Preselection';
-$GLOBALS['*arrConstant']	['FileExport']	[1201]	['Constant']	= 'FILE_EXPORT_OPTUS_BAR';
+$GLOBALS['*arrConstant']	['FileExport']	[1201]	['Constant']	= 'FILE_EXPORT_PROVISIONING_OPTUS_BAR';
 $GLOBALS['*arrConstant']	['FileExport']	[1201]	['Description']	= 'Optus Barring';
-$GLOBALS['*arrConstant']	['FileExport']	[1202]	['Constant']	= 'FILE_EXPORT_OPTUS_SUSPEND';
+$GLOBALS['*arrConstant']	['FileExport']	[1202]	['Constant']	= 'FILE_EXPORT_PROVISIONING_OPTUS_SUSPEND';
 $GLOBALS['*arrConstant']	['FileExport']	[1202]	['Description']	= 'Optus Suspension';
-$GLOBALS['*arrConstant']	['FileExport']	[1203]	['Constant']	= 'FILE_EXPORT_OPTUS_RESTORE';
+$GLOBALS['*arrConstant']	['FileExport']	[1203]	['Constant']	= 'FILE_EXPORT_PROVISIONING_OPTUS_RESTORE';
 $GLOBALS['*arrConstant']	['FileExport']	[1203]	['Description']	= 'Optus Restoration';
-$GLOBALS['*arrConstant']	['FileExport']	[1204]	['Constant']	= 'FILE_EXPORT_OPTUS_PRESELECTION_REVERSAL';
+$GLOBALS['*arrConstant']	['FileExport']	[1204]	['Constant']	= 'FILE_EXPORT_PROVISIONING_OPTUS_PRESELECTION_REVERSAL';
 $GLOBALS['*arrConstant']	['FileExport']	[1204]	['Description']	= 'Optus Preselection Reversal';
-$GLOBALS['*arrConstant']	['FileExport']	[1205]	['Constant']	= 'FILE_EXPORT_OPTUS_DEACTIVATION';
+$GLOBALS['*arrConstant']	['FileExport']	[1205]	['Constant']	= 'FILE_EXPORT_PROVISIONING_OPTUS_DEACTIVATION';
 $GLOBALS['*arrConstant']	['FileExport']	[1205]	['Description']	= 'Optus Deactivation';
+//----------------------------------------------------------------------------//
 
+//----------------------------------------------------------------------------//
 // IMPORT File Types
+//----------------------------------------------------------------------------//
 // PROVISIONING
-$GLOBALS['*arrConstant']	['FileImport']	[5000]	['Constant']	= 'FILE_IMPORT_UNITEL_DAILY_ORDER';
+$GLOBALS['*arrConstant']	['FileImport']	[5000]	['Constant']	= 'FILE_IMPORT_PROVISIONING_UNITEL_DAILY_ORDER';
 $GLOBALS['*arrConstant']	['FileImport']	[5000]	['Description']	= 'Unitel Daily Order Report';
-$GLOBALS['*arrConstant']	['FileImport']	[5001]	['Constant']	= 'FILE_IMPORT_UNITEL_DAILY_STATUS';
+$GLOBALS['*arrConstant']	['FileImport']	[5001]	['Constant']	= 'FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS';
 $GLOBALS['*arrConstant']	['FileImport']	[5001]	['Description']	= 'Unitel Daily Status Report';
-$GLOBALS['*arrConstant']	['FileImport']	[5002]	['Constant']	= 'FILE_IMPORT_UNITEL_BASKETS';
+$GLOBALS['*arrConstant']	['FileImport']	[5002]	['Constant']	= 'FILE_IMPORT_PROVISIONING_UNITEL_BASKETS';
 $GLOBALS['*arrConstant']	['FileImport']	[5002]	['Description']	= 'Unitel Agreed Baskets Report';
-$GLOBALS['*arrConstant']	['FileImport']	[5003]	['Constant']	= 'FILE_IMPORT_UNITEL_PRESELECTION';
+$GLOBALS['*arrConstant']	['FileImport']	[5003]	['Constant']	= 'FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION';
 $GLOBALS['*arrConstant']	['FileImport']	[5003]	['Description']	= 'Unitel Preselection Report';
-$GLOBALS['*arrConstant']	['FileImport']	[5004]	['Constant']	= 'FILE_IMPORT_UNITEL_LINE_STATUS';
+$GLOBALS['*arrConstant']	['FileImport']	[5004]	['Constant']	= 'FILE_IMPORT_PROVISIONING_UNITEL_LINE_STATUS';
 $GLOBALS['*arrConstant']	['FileImport']	[5004]	['Description']	= 'Unitel Line Status Report';
 
-$GLOBALS['*arrConstant']	['FileImport']	[5100]	['Constant']	= 'FILE_IMPORT_OPTUS_PPR';
+$GLOBALS['*arrConstant']	['FileImport']	[5100]	['Constant']	= 'FILE_IMPORT_PROVISIONING_OPTUS_PPR';
 $GLOBALS['*arrConstant']	['FileImport']	[5100]	['Description']	= 'Optus Line Status Report';
 
-$GLOBALS['*arrConstant']	['FileImport']	[5200]	['Constant']	= 'FILE_IMPORT_AAPT_EOE_RETURN';
+$GLOBALS['*arrConstant']	['FileImport']	[5200]	['Constant']	= 'FILE_IMPORT_PROVISIONING_AAPT_EOE_RETURN';
 $GLOBALS['*arrConstant']	['FileImport']	[5200]	['Description']	= 'AAPT EOE Return File';
-$GLOBALS['*arrConstant']	['FileImport']	[5201]	['Constant']	= 'FILE_IMPORT_AAPT_LSD';
+$GLOBALS['*arrConstant']	['FileImport']	[5201]	['Constant']	= 'FILE_IMPORT_PROVISIONING_AAPT_LSD';
 $GLOBALS['*arrConstant']	['FileImport']	[5201]	['Description']	= 'AAPT Line Status Report';
-$GLOBALS['*arrConstant']	['FileImport']	[5202]	['Constant']	= 'FILE_IMPORT_AAPT_REJECT';
+$GLOBALS['*arrConstant']	['FileImport']	[5202]	['Constant']	= 'FILE_IMPORT_PROVISIONING_AAPT_REJECT';
 $GLOBALS['*arrConstant']	['FileImport']	[5202]	['Description']	= 'AAPT Rejections Report';
-$GLOBALS['*arrConstant']	['FileImport']	[5203]	['Constant']	= 'FILE_IMPORT_AAPT_LOSS';
+$GLOBALS['*arrConstant']	['FileImport']	[5203]	['Constant']	= 'FILE_IMPORT_PROVISIONING_AAPT_LOSS';
 $GLOBALS['*arrConstant']	['FileImport']	[5203]	['Description']	= 'AAPT Loss Report';
 
+// CDR NORMALISATION
+$GLOBALS['*arrConstant']	['FileImport']	[4000]	['Constant']	= 'FILE_IMPORT_CDR_UNITEL_STANDARD';
+$GLOBALS['*arrConstant']	['FileImport']	[4000]	['Description']	= 'Unitel Standard CDR';
+$GLOBALS['*arrConstant']	['FileImport']	[4001]	['Constant']	= 'FILE_IMPORT_CDR_UNITEL_MOBILE';
+$GLOBALS['*arrConstant']	['FileImport']	[4001]	['Description']	= 'Unitel Mobile CDR';
+
+$GLOBALS['*arrConstant']	['FileImport']	[4100]	['Constant']	= 'FILE_IMPORT_CDR_OPTUS_STANDARD';
+$GLOBALS['*arrConstant']	['FileImport']	[4100]	['Description']	= 'AAPT Rejections Report';
+
+$GLOBALS['*arrConstant']	['FileImport']	[4200]	['Constant']	= 'FILE_IMPORT_CDR_AAPT_STANDARD';
+$GLOBALS['*arrConstant']	['FileImport']	[4200]	['Description']	= 'AAPT Standard CDR';
+
+// PAYMENT NORMALISATION
+$GLOBALS['*arrConstant']	['FileImport']	[3000]	['Constant']	= 'FILE_IMPORT_PAYMENT_BPAY_STANDARD';
+$GLOBALS['*arrConstant']	['FileImport']	[3000]	['Description']	= 'BPay Standard File';
+
+$GLOBALS['*arrConstant']	['FileImport']	[3100]	['Constant']	= 'FILE_IMPORT_PAYMENT_BILLEXPRESS_STANDARD';
+$GLOBALS['*arrConstant']	['FileImport']	[3100]	['Description']	= 'Bill Express Standard File';
+
+$GLOBALS['*arrConstant']	['FileImport']	[3200]	['Constant']	= 'FILE_IMPORT_PAYMENT_SECUREPAY_STANDARD';
+$GLOBALS['*arrConstant']	['FileImport']	[3200]	['Description']	= 'SecurePay Standard File';
+//----------------------------------------------------------------------------//
 
 
 // Carriers

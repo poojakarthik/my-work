@@ -53,7 +53,7 @@
 	protected	$_ptrFile;
 	
 	public $intBaseCarrier		= CARRIER_UNITEL;
-	public $intBaseFileType		= FILE_EXPORT_UNITEL_PRESELECTION;
+	public $intBaseFileType		= FILE_EXPORT_PROVISIONING_UNITEL_PRESELECTION;
 	public $_strDeliveryType	= 'FTP';
 	
 	
