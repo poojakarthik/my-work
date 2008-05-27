@@ -30,7 +30,10 @@
 
 // Open the PHP session for the request
 // This is done as early as possible 
-//if (!defined('FLEX_SESSION_NAME')) { echo "NOW!!!"; error_log(var_export($_SERVER, TRUE)); exit; }
+if (!defined('FLEX_SESSION_NAME'))
+{
+	define('FLEX_SESSION_NAME', 'flex_default_sess');	
+}
 session_name(FLEX_SESSION_NAME);
 session_start();
 
