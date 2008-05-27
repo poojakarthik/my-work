@@ -331,7 +331,7 @@ class Cli_Pdf extends Cli
 			self::SWITCH_DOCUMENT_TYPE_ID => array(
 				self::ARG_LABEL 		=> "DOCUMENT_TYPE",
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is the document type to be generated (e.g. INVOICE or FINAL_DEMAND_NOTICE) [optional, default taken from XML file]",
+				self::ARG_DESCRIPTION => "is the document type to be generated (e.g. INVOICE OVERDUE_NOTICE, SUSPENSION_NOTICE or FINAL_DEMAND_NOTICE) [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validConstant("%1$s", "DOCUMENT_TEMPLATE_TYPE_")'
 			),
