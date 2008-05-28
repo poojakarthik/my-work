@@ -116,6 +116,8 @@ class Cli_Pdf extends Cli
 					// Ignore directories (including source directory '.' and parent directory '..')
 					if (is_file($strPath))
 					{
+						// Ignore non-xml files
+						if (substr($strPath, -4) != '.xml') continue;
 						// If the file cannot be read, we'd better throw a wobbler as the user may be expecting a PDF for it!
 						if (!is_readable($strPath))
 						{
