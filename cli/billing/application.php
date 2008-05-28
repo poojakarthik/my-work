@@ -629,7 +629,7 @@
 					foreach ($this->_arrServiceChargeModules as $chgModule)
 					{
 						// Generate charge
-						$mixResult = $chgModule->Generate(Array('InvoiceRun' => $this->_strInvoiceRun), $arrAccount);
+						$mixResult = $chgModule->Generate(Array('InvoiceRun' => $this->_strInvoiceRun), $arrService);
 						
 						// Add to totals
 						if (!is_bool($mixResult))
