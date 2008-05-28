@@ -28,14 +28,18 @@
  */
  
 
-// Open the PHP session for the request
-// This is done as early as possible 
+// Handle non-session client requests..
 if (!defined('FLEX_SESSION_NAME'))
 {
-	define('FLEX_SESSION_NAME', 'flex_default_sess');	
+	$_SESSION = array();
 }
-session_name(FLEX_SESSION_NAME);
-session_start();
+// Open the PHP session for the request
+// This is done as early as possible 
+else
+{
+	session_name(FLEX_SESSION_NAME);
+	session_start();
+}
 
 
 // Load flex.cfg.php for path constants
