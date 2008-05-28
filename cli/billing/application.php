@@ -179,14 +179,20 @@
 		
 		// Init Charge Modules
 		// TODO future: Only init these if they're enabled for this Yellow Billing client
-		$this->_arrChargeModules[CHARGE_MODULE_NON_DDR]			= new ChargeNonDirectDebit();
+		/*$this->_arrChargeModules[CHARGE_MODULE_NON_DDR]			= new ChargeNonDirectDebit();
 		$this->_arrChargeModules[CHARGE_MODULE_LATE_PAYMENT]	= new ChargeLatePayment();
 		$this->_arrChargeModules[CHARGE_MODULE_INBOUND]			= new ChargeInboundService();
-		$this->_arrChargeModules[CHARGE_MODULE_PINNACLE]		= new ChargePinnacle();
+		$this->_arrChargeModules[CHARGE_MODULE_PINNACLE]		= new ChargePinnacle();*/
 		//$this->_arrChargeModules[CHARGE_MODULE_PLAN]			= new ChargePlan();
 		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_ADVANCE]	= new ChargePlanAdvance();
 		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_ARREARS]	= new ChargePlanArrears();
 		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_CREDIT]		= new ChargePlanCredit();
+		
+		$this->_arrAccountChargeModules[CHARGE_MODULE_NON_DDR]		= new ChargeNonDirectDebit();
+		$this->_arrAccountChargeModules[CHARGE_MODULE_LATE_PAYMENT]	= new ChargeLatePayment();
+		
+		$this->_arrServiceChargeModules[CHARGE_MODULE_INBOUND]		= new ChargeInboundService();
+		$this->_arrServiceChargeModules[CHARGE_MODULE_PINNACLE]		= new ChargePinnacle();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -617,11 +623,32 @@
 					$arrSharedPlans[$arrService['RatePlan']]['UsageCap'] -= $fltUncappedCDRCharge;
 				}
 				
-				// Charges and Recurring Charges (Credits and Debits) are not included
-				// in caps or minimum monthlys (above)
-				
-				// Add Recurring Charges
-				// this is done in the Recurring Charges engine, so there is nothing to do here
+				// Add in Service modular charges
+				if (!$bolRegenerate)
+				{
+					foreach ($this->_arrServiceChargeModules as $chgModule)
+					{
+						// Generate charge
+						$mixResult = $chgModule->Generate(Array('InvoiceRun' => $this->_strInvoiceRun), $arrAccount);
+						
+						// Add to totals
+						if (!is_bool($mixResult))
+						{
+							if ($mixResult < 0)
+							{
+								// Credit
+								$fltTotalCredits	+= $mixResult;
+							}
+							else
+							{
+								// Debit
+								$fltTotalDebits		+= $mixResult;
+							}
+							
+							$arrAccountReturn['ChargeModules'][] = $mixResult;
+						}
+					}
+				}
 				
 				// Calculate Service Debit and Credit Totals
 				//$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
@@ -770,10 +797,10 @@
 			
 			$arrAccountReturn['InitialInvoiceData'] = $arrInvoiceData;
 			
-			// Add in modular charges
+			// Add in Account modular charges
 			if (!$bolRegenerate)
 			{
-				foreach ($this->_arrChargeModules as $chgModule)
+				foreach ($this->_arrAccountChargeModules as $chgModule)
 				{
 					// Generate charge
 					$mixResult = $chgModule->Generate($arrInvoiceData, $arrAccount);
@@ -1308,9 +1335,14 @@
 		if ($strInvoiceRun)
 		{
 			// Remove Billing-time modular charges
-			foreach ($this->_arrChargeModules as $chgModule)
+			foreach ($this->_arrAccountChargeModules as $chgModule)
 			{
-				// Revoke charges
+				// Revoke Account charges
+				$mixResult = $chgModule->RevokeAll($strInvoiceRun);
+			}
+			foreach ($this->_arrServiceChargeModules as $chgModule)
+			{
+				// Revoke Service charges
 				$mixResult = $chgModule->RevokeAll($strInvoiceRun);
 			}
 			
@@ -1721,11 +1753,17 @@
 		}		
 		
 		// Remove Billing-time modular charges
-		foreach ($this->_arrChargeModules as $chgModule)
+		foreach ($this->_arrAccountChargeModules as $chgModule)
 		{
-			// Revoke charges
+			// Revoke Account charges
 			$mixResult = $chgModule->RevokeAll($strInvoiceRun);
 		}
+		foreach ($this->_arrServiceChargeModules as $chgModule)
+		{
+			// Revoke Service charges
+			$mixResult = $chgModule->RevokeAll($strInvoiceRun);
+		}
+		
 		
 		// clean up ServiceTotal table
 		$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
@@ -1921,9 +1959,14 @@
 		if ($strInvoiceRun)
 		{
 			// Remove Billing-time modular charges
-			foreach ($this->_arrChargeModules as $chgModule)
+			foreach ($this->_arrAccountChargeModules as $chgModule)
 			{
-				// Revoke charges
+				// Revoke Account charges
+				$mixResult = $chgModule->Revoke($strInvoiceRun, $intAccount);
+			}
+			foreach ($this->_arrServiceChargeModules as $chgModule)
+			{
+				// Revoke Service charges
 				$mixResult = $chgModule->Revoke($strInvoiceRun, $intAccount);
 			}
 			
