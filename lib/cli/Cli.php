@@ -62,14 +62,27 @@ abstract class Cli
 	    
 		echo "\nUsage:{$sp}php " . $this->_strApplicationFile;
 		$where = "\nwhere:";
-	    
+		$switches = "\nwith switches:";
+	    $switched = FALSE;
 	    foreach ($this->_arrCommandLineArguments as $switch => $param)
 	    {
-	    	echo " " . ($param[Cli::ARG_REQUIRED] ? "" : "[") . "-" . $switch . $param[Cli::ARG_LABEL] . ($param[Cli::ARG_REQUIRED] ? "" : "]");
-	    	$where .= $sp . $param[Cli::ARG_LABEL] . substr($pad, strlen($param[Cli::ARG_LABEL])) . $param[Cli::ARG_DESCRIPTION];
+	    	$labelled = array_key_exists(self::ARG_LABEL, $param);
+	    	$label = array_key_exists(self::ARG_LABEL, $param) ? $param[self::ARG_LABEL] : '';
+	    	echo " " . ($param[self::ARG_REQUIRED] ? "" : "[") . "-" . $switch . $label . ($param[self::ARG_REQUIRED] ? "" : "]");
+	    	if ($labelled)
+	    	{
+		    	$where .= $sp . $label . substr($pad, strlen($label)) . $param[self::ARG_DESCRIPTION];
+	    	}
+	    	else
+	    	{
+	    		$label = "-$switch";
+	    		$switches .= $sp . $label . substr($pad, strlen($label)) . $param[self::ARG_DESCRIPTION];
+	    		$switched = TRUE;
+	    	}
 	    }
 	    
-		echo "$where\n\n";
+		echo "$where";
+		echo $switched ? "$switches\n\n" : "\n";
 		
 		exit($error ? 1 : 0);
 	}
@@ -93,8 +106,8 @@ abstract class Cli
 			$requiredSwitches = 0;
 			$swiches = "";
 			$switched = 0;
-		    foreach ($this->_arrCommandLineArguments as $switch => $param)
-		    {
+			foreach ($this->_arrCommandLineArguments as $switch => $param)
+			{
 				$req = pow(2, $i);
 				if ($param[Cli::ARG_REQUIRED])
 				{
@@ -108,7 +121,7 @@ abstract class Cli
 				$i++;
 				$swiches .= $switch;
 				$this->_arrCommandLineArguments[$switch]["BIN_SWITCH"] = $req;
-		    }
+			}
 			
 			for ($i = 0, $l = count($argv); $i < $l; $i++)
 			{
@@ -116,8 +129,12 @@ abstract class Cli
 				// add it to the next value and continue to that value
 				if (strlen($argv[$i]) <= 2 && $argv[$i][0] == "-" && $i < $l - 1)
 				{
-					$argv[$i+1] = $argv[$i] . $argv[$i+1];
-					continue; 
+					// But only if the next parameter is not a switch too!
+					if ($argv[$i+1][0] != '-')
+					{
+						$argv[$i+1] = $argv[$i] . $argv[$i+1];
+						continue; 
+					}
 				}
 			
 				// If the value does not start with a switch, show the usage message 
@@ -214,6 +231,11 @@ abstract class Cli
 			return intval($date);
 		}
 		throw new Exception("Invalid date specified: '$date'");
+	}
+	
+	public static function _validIsSet()
+	{
+		return TRUE;
 	}
 	
 	public static function _validInArray($value, $array)
