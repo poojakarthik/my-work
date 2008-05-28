@@ -43,6 +43,8 @@ VixenRequire($strModuleDir."module_reports.php");
 VixenRequire($strModuleDir."charge_base.php");
 VixenRequire($strModuleDir."charge_latepayment.php");
 VixenRequire($strModuleDir."charge_nonddr.php");
+VixenRequire($strModuleDir."charge_inbound.php");
+VixenRequire($strModuleDir."charge_pinnacle.php");
 
 // Remote Copy
 VixenRequire("lib/framework/remote_copy.php");
