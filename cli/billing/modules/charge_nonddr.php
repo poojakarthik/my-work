@@ -42,7 +42,7 @@
  * @package		billing_app
  * @class		ChargeNonDirectDebit
  */
- class ChargeNonDirectDebit extends ChargeBase
+ class ChargeNonDirectDebit extends ChargeBaseAccount
  {
  	
 	//------------------------------------------------------------------------//

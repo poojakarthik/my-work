@@ -42,7 +42,7 @@
  * @package		billing_app
  * @class		ChargeLatePayment
  */
- class ChargeLatePayment extends ChargeBase
+ class ChargeLatePayment extends ChargeBaseAccount
  {
  	
 	//------------------------------------------------------------------------//
