@@ -37,6 +37,7 @@ if (!defined('FLEX_SESSION_NAME'))
 // This is done as early as possible 
 else
 {
+	session_cache_limiter('private');
 	session_name(FLEX_SESSION_NAME);
 	session_start();
 }
