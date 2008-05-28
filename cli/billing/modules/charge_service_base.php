@@ -86,7 +86,7 @@
 	 *
 	 * @method
 	 */
- 	abstract function Generate($arrInvoiceRun, $arrService)
+ 	function Generate($arrInvoiceRun, $arrService)
  	{
  		
  	}
