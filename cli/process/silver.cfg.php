@@ -80,7 +80,7 @@ $arrConfig['BillPrint']				= $arrSubscript;
 
 // Billing Samples
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php billing_samples_list.php silver';
+$arrSubscript['Command']			= 'php billing_sample_list.php silver';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
 $arrConfig['BillSamples']			= $arrSubscript;
 
