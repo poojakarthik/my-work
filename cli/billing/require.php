@@ -41,6 +41,8 @@ VixenRequire($strModuleDir."module_reports.php");
 
 // Charge Modules
 VixenRequire($strModuleDir."charge_base.php");
+VixenRequire($strModuleDir."charge_account_base.php");
+VixenRequire($strModuleDir."charge_service_base.php");
 VixenRequire($strModuleDir."charge_latepayment.php");
 VixenRequire($strModuleDir."charge_nonddr.php");
 VixenRequire($strModuleDir."charge_inbound.php");
