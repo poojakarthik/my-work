@@ -515,28 +515,24 @@ class Cli_Invoice_XML_Test extends Cli
 				throw new Exception("Cost Centre '$name' is listed multiple times.");
 			}
 			$listedCostCentres[] = $name;
-			$grandTotal = round(round(floatval($costCentre->getAttribute('GrandTotal')), 2)*100);
-			$records = round(round(floatval($costCentre->getAttribute('Records')), 2)*100);
+			$grandTotal = round(round(floatval($costCentre->getAttribute('Total')), 2)*100);
 
 			$services = $costCentre->getElementsByTagName('Service');
-			if ($services->length != $records)
-			{
-				throw new Exception("Cost Centre '$name' claims to have $records services but lists " . $services->length . ".");
-			}
-
-			if (!$this->precisionEquals($cache['costCentreServicesTotal'][$name], $grandTotal, $records))
-			{
-				throw new Exception("Cost Centre '$name' claims total charges of $grandTotal service itemisations total " . $cache['costCentreServicesTotal'][$name] . ".");
-			}
-
+			$records = $services->length;
+			
 			if ($records && !array_key_exists($name, $cache['costCentreServices']))
 			{
-				throw new Exception("Cost Centre '$name' claims to have $records services but no service itemisations exist for it.");
+				throw new Exception("Cost Centre '$name' lists $records services but no service itemisations exist for it.");
 			}
 
 			if (count($cache['costCentreServices'][$name]) != $records)
 			{
 				throw new Exception("Cost Centre '$name' claims to have $records services but " . count($cache['costCentreServices'][$name]) . " services are itemised as belonging to it.");
+			}
+
+			if (!$this->precisionEquals($cache['costCentreServicesTotal'][$name], $grandTotal, $records))
+			{
+				throw new Exception("Cost Centre '$name' claims total charges of $grandTotal, but service itemisations total " . $cache['costCentreServicesTotal'][$name] . ".");
 			}
 
 			$costCentreTotal = 0;
@@ -556,16 +552,16 @@ class Cli_Invoice_XML_Test extends Cli
 					throw new Exception("Cost Centre '$name' claims to have service '$fnn' but itemisation of that service claims it is for Cost Centre " . $cache['serviceCostCentre'][$fnn] . ".");
 				}
 
-				if (!$this->precisionEquals($total, $cahce['services'][$fnn], 0))
+				if (!$this->precisionEquals($total, $cache['services'][$fnn], 0))
 				{
-					throw new Exception("Cost Centre '$name' lists service '$fnn' total as $total, but itemisation of that service claims total of " . $cahce['services'][$fnn] . ".");
+					throw new Exception("Cost Centre '$name' lists service '$fnn' total as $total, but itemisation of that service claims total of " . $cache['services'][$fnn] . ".");
 				}
 			}
 		}
 		
 		foreach ($cache['serviceCostCentre'] as $fnn => $costCentre)
 		{
-			if ($costCentre && !array_key_exists($costCentre, $listedCostCentres))
+			if ($costCentre && array_search($costCentre, $listedCostCentres) === FALSE)
 			{
 				throw new Exception("Service '$fnn' is itemised as belonging to Cost Centre '$costCentre', but no such Cost Centre is listed.");
 			}
