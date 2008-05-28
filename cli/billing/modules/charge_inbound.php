@@ -42,7 +42,7 @@
  * @package		billing_app
  * @class		ChargeInboundService
  */
- class ChargeInboundService extends ChargeBase
+ class ChargeInboundService extends ChargeBaseService
  {
  	
 	//------------------------------------------------------------------------//
@@ -67,7 +67,7 @@
  		// Statements
 		$this->_selINB15Services = new StatementSelect(	"CDR", 
 														"Service, Account, AccountGroup, COUNT(CDR.Id) AS CDRCount", 
-														"Account = <Account> AND Credit = 0 AND Status = ".CDR_RATED." AND ServiceType = ".SERVICE_TYPE_INBOUND, 
+														"Service = <Service> AND Credit = 0 AND Status = ".CDR_RATED." AND ServiceType = ".SERVICE_TYPE_INBOUND, 
 														NULL, 
 														NULL, 
 														"Service \n HAVING CDRCount > 0");
@@ -91,12 +91,12 @@
 	 *
 	 * @method
 	 */
- 	function Generate($arrInvoice, $arrAccount)
+ 	function Generate($arrInvoiceRun, $arrService)
  	{
 		$fltTotalCharged	= 0.0;
- 		if ($this->_selINB15Services->Execute($arrAccount))
+ 		if ($this->_selINB15Services->Execute($arrService))
  		{
-			while ($arrService = $this->_selINB15Services->Fetch())
+			while ($arrServiceDetails = $this->_selINB15Services->Fetch())
 			{
 				$arrCharge = Array();
 				$arrCharge['Nature']		= 'DR';
@@ -106,10 +106,10 @@
 				$arrCharge['ChargedOn']		= date("Y-m-d");
 				$arrCharge['Amount']		= 15.00;
 				$arrCharge['Status']		= CHARGE_APPROVED;
-				$arrCharge['Service'] 		= $arrService['Service'];
-				$arrCharge['Account'] 		= $arrService['Account'];
-				$arrCharge['AccountGroup'] 	= $arrService['AccountGroup'];
-				$arrCharge['InvoiceRun']	= $arrInvoice['InvoiceRun'];
+				$arrCharge['Service'] 		= $arrServiceDetails['Service'];
+				$arrCharge['Account'] 		= $arrServiceDetails['Account'];
+				$arrCharge['AccountGroup'] 	= $arrServiceDetails['AccountGroup'];
+				$arrCharge['InvoiceRun']	= $arrInvoiceRun['InvoiceRun'];
  				$GLOBALS['fwkFramework']->AddCharge($arrCharge);
  				
  				$fltTotalCharged			+= $arrCharge['Amount'];

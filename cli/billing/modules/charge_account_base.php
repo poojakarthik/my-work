@@ -6,16 +6,16 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// charge_base
+// charge_account_base
 //----------------------------------------------------------------------------//
 /**
- * charge_base
+ * charge_account_base
  *
- * Base Charge module for the Billing Application
+ * Account Base Charge module for the Billing Application
  *
- * Base Charge module for the Billing Application
+ * Account Base Charge module for the Billing Application
  *
- * @file		charge_base.php
+ * @file		charge_account_base.php
  * @language	PHP
  * @package		framework
  * @author		Rich Davis
@@ -27,22 +27,22 @@
 
 
 //----------------------------------------------------------------------------//
-// ChargeBase
+// ChargeBaseAccount
 //----------------------------------------------------------------------------//
 /**
- * ChargeBase
+ * ChargeBaseAccount
  *
- * Base Charge module for the Billing Application
+ * Account Base Charge module for the Billing Application
  *
- * Base Charge module for the Billing Application
+ * Account Base Charge module for the Billing Application
  *
  *
  * @prefix		chg
  *
  * @package		billing_app
- * @class		ChargeBase
+ * @class		ChargeBaseAccount
  */
- abstract class ChargeBase
+ abstract class ChargeBaseAccount extends ChargeBase
  {
  	public $strChargeType;
  	
@@ -56,7 +56,7 @@
 	 *
 	 * Constructor for the Charge Object
 	 *
-	 * @return			BaseCharge
+	 * @return			ChargeBaseAccount
 	 *
 	 * @method
 	 */
@@ -85,7 +85,7 @@
 	 *
 	 * @method
 	 */
- 	abstract function Generate();
+ 	abstract function Generate($arrInvoice, $arrAccount);
  	
  	
 	//------------------------------------------------------------------------//
@@ -102,7 +102,13 @@
 	 *
 	 * @method
 	 */
- 	abstract function Revoke();
+ 	function Revoke($strInvoiceRun, $intAccount)
+ 	{
+ 		//Debug("InvoiceRun: '$strInvoiceRun'\nAccount: $intAccount\nCharge Type: '$this->_strChargeType'");
+ 		
+ 		// Delete the charge
+ 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount AND ChargeType = '$this->_strChargeType' AND InvoiceRun = '$strInvoiceRun'");
+ 	}
  	
  	
 	//------------------------------------------------------------------------//
@@ -119,7 +125,18 @@
 	 *
 	 * @method
 	 */
- 	abstract function RevokeAll();
+ 	function RevokeAll($strInvoiceRun)
+ 	{
+ 		// Delete the charges
+ 		if (!$this->_selGetAccounts->Execute(Array('InvoiceRun' => $strInvoiceRun)))
+ 		{
+ 			Debug($this->_selGetAccounts->Error());
+ 		}
+ 		while ($arrAccount = $this->_selGetAccounts->Fetch())
+ 		{
+ 			$this->Revoke($strInvoiceRun, $arrAccount['Account']);
+ 		}
+ 	}
  }
  
  ?>

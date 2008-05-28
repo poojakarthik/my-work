@@ -6,16 +6,16 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// charge_base
+// charge_service_base
 //----------------------------------------------------------------------------//
 /**
- * charge_base
+ * charge_service_base
  *
- * Base Charge module for the Billing Application
+ * Service Base Charge module for the Billing Application
  *
- * Base Charge module for the Billing Application
+ * Service Base Charge module for the Billing Application
  *
- * @file		charge_base.php
+ * @file		charge_service_base.php
  * @language	PHP
  * @package		framework
  * @author		Rich Davis
@@ -27,22 +27,22 @@
 
 
 //----------------------------------------------------------------------------//
-// ChargeBase
+// ChargeBaseService
 //----------------------------------------------------------------------------//
 /**
- * ChargeBase
+ * ChargeBaseService
  *
- * Base Charge module for the Billing Application
+ * Service Base Charge module for the Billing Application
  *
- * Base Charge module for the Billing Application
+ * Service Base Charge module for the Billing Application
  *
  *
  * @prefix		chg
  *
  * @package		billing_app
- * @class		ChargeBase
+ * @class		ChargeBaseService
  */
- abstract class ChargeBase
+ abstract class ChargeBaseService extends ChargeBase
  {
  	public $strChargeType;
  	
@@ -56,7 +56,7 @@
 	 *
 	 * Constructor for the Charge Object
 	 *
-	 * @return			BaseCharge
+	 * @return			ChargeBaseService
 	 *
 	 * @method
 	 */
@@ -64,7 +64,8 @@
  	{
  		// Statements					
 		$this->_qryDelete = new Query();
-		$this->_selGetAccounts = new StatementSelect("Invoice", "Account", "InvoiceRun = <InvoiceRun> UNION SELECT Account FROM InvoiceTemp WHERE InvoiceRun = <InvoiceRun>");
+		$this->_selGetAccounts	= new StatementSelect("Invoice", "Account", "InvoiceRun = <InvoiceRun> UNION SELECT Account FROM InvoiceTemp WHERE InvoiceRun = <InvoiceRun>");
+		$this->_selGetServices	= new StatementSelect("ServiceTotal", "Service", "InvoiceRun = <InvoiceRun>");
 		
 		$this->_strChargeType	= NULL;
  	}
@@ -85,7 +86,7 @@
 	 *
 	 * @method
 	 */
- 	abstract function Generate();
+ 	abstract function Generate($arrInvoiceRun, $arrService);
  	
  	
 	//------------------------------------------------------------------------//
@@ -102,7 +103,13 @@
 	 *
 	 * @method
 	 */
- 	abstract function Revoke();
+ 	function Revoke($strInvoiceRun, $intAccount)
+ 	{
+ 		//Debug("InvoiceRun: '$strInvoiceRun'\nAccount: $intAccount\nCharge Type: '$this->_strChargeType'");
+ 		
+ 		// Delete the charge
+ 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount AND ChargeType = '$this->_strChargeType' AND InvoiceRun = '$strInvoiceRun'");
+ 	}
  	
  	
 	//------------------------------------------------------------------------//
@@ -119,7 +126,18 @@
 	 *
 	 * @method
 	 */
- 	abstract function RevokeAll();
+ 	function RevokeAll($strInvoiceRun)
+ 	{
+ 		// Delete the charges
+ 		if (!$this->_selGetAccounts->Execute(Array('InvoiceRun' => $strInvoiceRun)))
+ 		{
+ 			Debug($this->_selGetAccounts->Error());
+ 		}
+ 		while ($arrAccount = $this->_selGetAccounts->Fetch())
+ 		{
+ 			$this->Revoke($strInvoiceRun, $arrAccount['Account']);
+ 		}
+ 	}
  }
  
  ?>
