@@ -475,7 +475,7 @@ class Application
 				$currentUser = $selSelectStatement->Fetch();
 
 				// If this is a new user, clean out the session to remove any info for a previous user
-				if (!array_key_exists($_SESSION['User']) || $_SESSION['User']['Id'] != $currentUser['Id'])
+				if (!array_key_exists('User', $_SESSION) || $_SESSION['User']['Id'] != $currentUser['Id'])
 				{
 					$_SESSION = array();
 				}

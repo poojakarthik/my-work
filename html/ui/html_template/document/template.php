@@ -52,8 +52,11 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("highlight");
 		
-		$strDate = date("d/m/Y");
-		$strTime = date("H:i:s");
+		
+		$strNow = GetCurrentISODateTime();
+		$intNow = strtotime($strNow);
+		$strDate = date("d/m/Y", $intNow);
+		$strTime = date("H:i:s", $intNow);
 		$strDocumentTemplateMediaTypeOptions = "";
 		foreach ($GLOBALS['*arrConstant']['DocumentTemplateMediaType'] as $intConstant=>$arrConstant)
 		{

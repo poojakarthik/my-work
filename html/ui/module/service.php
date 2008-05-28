@@ -7,6 +7,38 @@
 // The service is also identifiable with an FNN and Account Id
 
 
+
+//TODO! 
+// I was also thinking of moving most of the ModuleService::_LoadDetails() code into 
+// the derived classes, so they can retrieve their extended details in the same query, 
+// and maybe also the plan details.  It would certainly make sense to download the 
+// ServiceType specific details, that way, when you create a ServiceMobile object, you can
+// guarantee that all the required details have been downloaded
+// Maybe keep the Plan Details separate, so that they have to be specifically 
+// retrieved from the database.  Plan Details retrieval can be kept in the base class because
+// it is exactly the same for all ServiceTypes
+// OR MAYBE leave the ModuleService::_LoadDetails the way it is, and make a separate select query
+// in the Derived class' _LoadDetails method to load the ServiceType specific details.
+// All the required StatementSelect objects could be defined in the constructors to save time
+// as the Refresh function also calls _LoadDetails.
+
+
+//----------------------------------------------------------------------------//
+// ModuleService
+//----------------------------------------------------------------------------//
+/**
+ * ModuleService
+ *
+ * Models a generic service that is currently defined in the database
+ *
+ * Models a generic service that is currently defined in the database
+ * This is an abstract class which is extended by the classes
+ * ModuleLandLine, ModuleMobile, ModuleADSL, ModuleInbound
+ *
+ * @package	ui_app
+ * @class	ModuleService
+ * @abstract
+ */
 abstract class ModuleService
 {
 	protected $_strErrorMsg				= NULL;
@@ -37,20 +69,59 @@ abstract class ModuleService
 /******************************************************************************/
 // Constructor
 /******************************************************************************/
-	// The user must supply a Service Id
+
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for the ModuleService class 
+	 * 
+	 * Constructor for the ModuleService class
+	 * 
+	 * @param	int		$intService		Id of the service that this object will model
+	 * 									PRE: Id must reference a valid service in the Service table of the database.
+	 * 									It does not have to reference the most recently added Service record modelling this
+	 * 									FNN on this Account, but the object will logically model the use of this service
+	 * 									record's FNN on this service record's Account
+	 *
+	 * @throws	Exception on error
+	 *
+	 * @return	void
+	 * @method
+	 */
 	function __construct($intService)
 	{
 		// Service Id has been supplied
 		// Retrieve its details
-		if (!$this->_LoadDetails($intService))
+		$this->_intCurrentId = $intService;
+		if (!$this->_LoadDetails())
 		{
 			throw new Exception($this->_strErrorMsg);
 		}
 	}
 
-	// Loads in the service from the database (doesn't load extra details)
-	protected function _LoadDetails($intService)
+	//------------------------------------------------------------------------//
+	// _LoadDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * _LoadDetails()
+	 *
+	 * Loads the details that are generic of all services 
+	 * 
+	 * Loads the details that are generic of all services
+	 * Loads the basic Service Record details.  It does not load the Service's address details
+	 * It will load in the Service Table Record relating to the most recently added record
+	 * that models the FNN for the Account of the ServiceId currently stored in $this->_intCurrentId,
+	 * _intCurrentId will then be changed to the Id of this service
+	 * 
+	 * @return	bool		TRUE on success, FALSE on failure
+	 * @method
+	 */
+	protected function _LoadDetails()
 	{
+		$intService = $this->_intCurrentId;
 		$strWhere	= "	Account = (SELECT Account FROM Service WHERE Id = <ServiceId>)
 						AND
 						FNN = (SELECT FNN FROM Service WHERE Id = <ServiceId>)";
@@ -113,10 +184,22 @@ abstract class ModuleService
 		return TRUE;
 	}
 
-	// Refresh the Service Object from the database
+	//------------------------------------------------------------------------//
+	// Refresh
+	//------------------------------------------------------------------------//
+	/**
+	 * Refresh()
+	 *
+	 * Refreshes the loaded details of the service (effectively reloads the service, and any extra details if they have previously been requested) 
+	 * 
+	 * Refreshes the loaded details of the service (effectively reloads the service, and any extra details if they have previously been requested)
+	 *
+	 * @return	bool					TRUE on success, FALSE on failure
+	 * @method
+	 */
 	function Refresh()
 	{
-		if ($this->_LoadDetails($this->_intCurrentId) === FALSE)
+		if ($this->_LoadDetails() === FALSE)
 		{
 			return FALSE;
 		}
@@ -133,7 +216,19 @@ abstract class ModuleService
 		return TRUE;
 	}
 	
-	// Loads in details regarding the current plan and future scheduled plan, if there is one
+	//------------------------------------------------------------------------//
+	// LoadPlanDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadPlanDetails()
+	 *
+	 * Retrieves plan details from the database and stores them in the object 
+	 * 
+	 * Retrieves plan details from the database and stores them in the object
+	 *
+	 * @return	bool					TRUE on success, FALSE on failure
+	 * @method
+	 */
 	function LoadPlanDetails()
 	{
 		// Get the Id of the most recent Service Record
@@ -233,7 +328,7 @@ abstract class ModuleService
 /******************************************************************************/
 	
 	// Returns a multi-dimensional array representing the Service and all its currently loaded associated components
-	function GetArray()
+	function GetServiceAsArray()
 	{
 		//TODO!
 		$this->_strErrorMsg = "GetArray() functionality has not been implemented yet";
@@ -270,18 +365,60 @@ abstract class ModuleService
 		return $this->_intServiceType;
 	}
 	
+	function GetCurrentPlan($bolForceReload=FALSE)
+	{
+		// Check if the plan details have been loaded, or if the user is forcing a reload
+		if (!$this->_bolPlanDetailsLoaded || $bolForceReload)
+		{
+			if ($this->LoadPlanDetails() === FALSE)
+			{
+				// An error occurred
+				return FALSE;
+			}
+		}
+		return $this->_arrCurrentPlan;
+	}
+
+	function GetFuturePlan($bolForceReload=FALSE)
+	{
+		// Check if the plan details have been loaded, or if the user is forcing a reload
+		if (!$this->_bolPlanDetailsLoaded || $bolForceReload)
+		{
+			if ($this->LoadPlanDetails() === FALSE)
+			{
+				// An error occurred
+				return FALSE;
+			}
+		}
+		return $this->_arrFuturePlan;
+	}
 	
-	// Builds an array detailing the history
-	/*
-	 * $arrHistory[]['ServiceId']			Id of the Service record that this particular Historical event is associated with
-	 * 				['IsCreationEvent']		TRUE if the action falls under the SERVICE_CREATION_ group of actions/events
-	 * 										FALSE if the action falls under the SERVICE_CLOSURE_ group of actions/events
-	 * 				['Event']				References constant from the ServiceCreation ConstantGroup if IsCreationAction == TRUE
-	 * 										References constant from the ServiceClosure ConstantGroup if IsCreationAction == FALSE
-	 * 				['TimeStamp']			Time at which the event occured
-	 * 				['Employee']			Id of the employee who instigated the event
-	 * 				['RelatedService']		Id of the other service if the Event is a LESSEE_CHANGE, ACCOUNT_CHANGE, or REVERSAL
-	 * The most recent event is first and the oldest event is last 
+	function GetStatus()
+	{
+		return $this->_arrServiceRecords[0]['Status'];
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetHistory
+	//------------------------------------------------------------------------//
+	/**
+	 * GetHistory()
+	 *
+	 * Returns an array detailing the history of the FNN/Account of the service that the object models 
+	 * 
+	 * Returns an array detailing the history of the FNN/Account of the service that the object models
+	 *
+	 * @return	mixed		FALSE	: An error occurred while building the history
+	 *						Array	: $arrHistory[]	['ServiceId']			Id of the Service record that this particular Historical event is associated with
+	 *												['IsCreationEvent']		TRUE if the action falls under the SERVICE_CREATION_ group of actions/events
+	 *						 												FALSE if the action falls under the SERVICE_CLOSURE_ group of actions/events
+	 *												['Event']				References constant from the ServiceCreation ConstantGroup if IsCreationAction == TRUE
+	 *																		References constant from the ServiceClosure ConstantGroup if IsCreationAction == FALSE
+	 *												['TimeStamp']			Time at which the event occured
+	 * 												['Employee']			Id of the employee who instigated the event
+	 *												['RelatedService']		Id of the other service if the Event is a LESSEE_CHANGE, ACCOUNT_CHANGE, or REVERSAL
+	 *									The most recent event is first and the oldest event is last
+	 * @method
 	 */
 	function GetHistory()
 	{
@@ -397,9 +534,24 @@ abstract class ModuleService
 		return TRUE;
 	}
 
-	// Saves the details to the most recent Service Record modelling this Service for this account
-	// Note that this will never create a new record
-	// It assumes $this->_intCurrentId is the id of the most recent Service Record modelling this service for this account
+	//------------------------------------------------------------------------//
+	// SaveService
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveService()
+	 *
+	 * Saves the changes made to the Service Record relating to this Service 
+	 * 
+	 * Saves the changes made to the Service Record relating to this Service
+	 * Saves the details to the most recent Service Record modelling this Service for this account
+	 * Note that this will never create a new record
+	 * It assumes $this->_intCurrentId is the id of the most recent Service Record modelling this service for this account
+	 * The user can change the FNN, CostCentre and the ForceInvoiceRender properties
+	 * 
+	 *
+	 * @return	bool					TRUE on success, FALSE on failure
+	 * @method
+	 */
 	function SaveService()
 	{
 		$arrUpdate = Array(	"FNN"					=> $this->_strFNN,
@@ -420,10 +572,28 @@ abstract class ModuleService
 		return TRUE;
 	}
 	
-	// This will commit changes to the database
-	// This does not create a system note
-	// NOTE that this will make the object out of date, and it should be reloaded
-	// Change the status of a service
+	//------------------------------------------------------------------------//
+	// SetStatus
+	//------------------------------------------------------------------------//
+	/**
+	 * SetStatus()
+	 *
+	 * Changes the status of the Service (active/disconnected/archived) 
+	 * 
+	 * Changes the status of the Service (active/disconnected/archived)
+	 * Before processing the StatusChange it will run SaveService() if there are 
+	 * any currently unsaved changes made to the service.
+	 * If a new Service record is required to model the change of status, then the plan details (current and future)
+	 * of the last service record, will be copied and reference this new record.
+	 * All these new details will be reloaded in the object, if it is necessary
+	 * 
+	 * @param	int		$intStatus		The new Service Status to set the service to (SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED)
+	 * @param	string	$strTimeStamp	optional, TimeStamp at which the Status Change will be recorded as having been made
+	 * 									This should not be in the past.  Defaults to NOW() 
+	 *
+	 * @return	bool					TRUE on success, FALSE on failure
+	 * @method
+	 */
 	function SetStatus($intStatus, $strTimeStamp=NULL)
 	{
 		$strTimeStamp = ($strTimeStamp == NULL)? GetCurrentISODateTime() : $strTimeStamp;
@@ -490,11 +660,28 @@ abstract class ModuleService
 		return TRUE;
 	}
 	
-	// Activates the service (This will create a new service record, and copy across all details relating to the service,
-	// which aren't specific to the service type)
-	// It will not copy across all unbilled CDRs, Charges, Recurring Charges
-	// It will copy across plan details
-	protected function _Activate($strTimeStamp)
+	//------------------------------------------------------------------------//
+	// _Activate
+	//------------------------------------------------------------------------//
+	/**
+	 * _Activate()
+	 *
+	 * Activates the service 
+	 * 
+	 * Activates the service. 
+	 * If the Service is scheduled to close at a future time then the current 
+	 * Service record is updated to specify that it is active.
+	 * If the Service has already closed then a new Service record will be added,
+	 * based on the current Service record in the database
+	 * It will not copy across unbilled CDRs, Charges, recurring charges or the plan details
+	 * 
+	 * @param	string	$strTimeStamp	TimeStamp at which the Activation will be recorded as having been made.
+	 * 									This should not be in the past 
+	 *
+	 * @return	bool					TRUE on success, FALSE on failure
+	 * @method
+	 */
+	private function _Activate($strTimeStamp)
 	{
 		$intService		= $this->_intCurrentId;
 		$strFNN			= $this->_strFNN;
@@ -503,6 +690,12 @@ abstract class ModuleService
 		// The most recent values for CreatedOn and ClosedOn
 		$strCreatedOn	= $this->_arrServiceRecords[0]['CreatedOn'];
 		$strClosedOn	= $this->_arrServiceRecords[0]['ClosedOn'];
+		
+		if ($strClosedOn === NULL)
+		{
+			$this->_strErrorMsg = "This service is already active";
+			return FALSE;
+		}
 		
 		if ($strClosedOn < $strCreatedOn)
 		{
@@ -614,10 +807,26 @@ abstract class ModuleService
 		return TRUE;
 	}
 	
-	// Deactivates the service (Disconnected or Archived)
-	// This can create a new Service record, if the status is being changed between Disconnected and Archived
-	// It will copy across plan details
-	protected function _Deactivate($intStatus, $strTimeStamp)
+	//------------------------------------------------------------------------//
+	// _Deactivate
+	//------------------------------------------------------------------------//
+	/**
+	 * _Deactivate()
+	 *
+	 * Deactivate the service (Sets status to DISCONNECTED or ARCHIVED)
+	 * 
+	 * Deactivate the service (Sets status to DISCONNECTED or ARCHIVED)
+	 * This will create a new Service record, if the status is being changed between Disconnected and Archived 
+	 * It will not copy across unbilled CDRs, Charges, recurring charges or the plan details
+	 * 
+	 * @param	int		$intStatus		Status to change the service to (SERVICE_DISCONNECTED or SERVICE_ARCHIVED)
+	 * @param	string	$strTimeStamp	TimeStamp at which the Activation will be recorded as having been made.
+	 * 									This should not be in the past 
+	 *
+	 * @return	bool					TRUE on success, FALSE on failure
+	 * @method
+	 */
+	private function _Deactivate($intStatus, $strTimeStamp)
 	{
 		$intService		= $this->_intCurrentId;
 		
@@ -759,6 +968,89 @@ abstract class ModuleService
 		throw new Exception("MoveToAccount() functionality has not been implemented yet");
 	}
 	
+	//------------------------------------------------------------------------//
+	// GetService
+	//------------------------------------------------------------------------//
+	/**
+	 * GetService()
+	 *
+	 * Creates and returns the ServiceType specific ModuleService derived object modelling the service specified
+	 * 
+	 * Creates and returns the ServiceType specific ModuleService derived object modelling the service specified
+	 * (Factory method for creating Service objects specific to the service's ServiceType)
+	 * 
+	 * @param	int		$intServiceId		Id of the service to create an object of.  Must reference a valid service
+	 * 										record in the database
+	 * @param	int		$intServiceType		optional, the proper ServiceType for the service.  If not supplied, then
+	 * 										it is calculated, but this requires an extra interaction with the database
+	 *
+	 * @return	mixed						FALSE	: Error has occurred
+	 * 										NULL	: The Service could not be found in the database
+	 * 										object	: one of either ModuleLandLine, ModuleMobile, ModuleADSL or ModuleInbound
+	 * 													modelling the service
+	 * @method
+	 * @static
+	 */
+	static function GetService($intServiceId, $intServiceType=NULL)
+	{
+		static $selServiceType;
+		if ($intServiceType === NULL)
+		{
+			// The ServiceType is not known, find out what it is
+			if (!isset($selServiceType))
+			{
+				// Create the prepared statement
+				$selServiceType = new StatementSelect("Service", "ServiceType", "Id = <ServiceId>");
+			}
+			$mixResult = $selServiceType->Execute(Array("ServiceId"=>$intServiceId));
+			if ($mixResult === FALSE)
+			{
+				// An error occurred
+				return FALSE;
+			}
+			if ($mixResult == 0)
+			{
+				// The service could not be found
+				return NULL;
+			}
+			$arrRecord = $selServiceType->Fetch();
+			$intServiceType = $arrRecord['ServiceType'];
+		}
+		
+		// Instanciate the object
+		try
+		{
+			switch ($intServiceType)
+			{
+				case SERVICE_TYPE_LAND_LINE:
+					$objService = new ModuleLandLine($intServiceId);
+					break;
+					
+				case SERVICE_TYPE_MOBILE:
+					$objService = new ModuleMobile($intServiceId);
+					break;
+					
+				case SERVICE_TYPE_ADSL:
+					$objService = new ModuleADSL($intServiceId);
+					break;
+					
+				case SERVICE_TYPE_INBOUND:
+					$objService = new ModuleInbound($intServiceId);
+					break;
+					
+				default;
+					return FALSE;
+			}
+		}
+		catch (Exception $e)
+		{
+			return FALSE;
+		}
+		
+		
+		return $objService;
+	}
+	
 }
 
 //----------------------------------------------------------------------------//
@@ -814,7 +1106,7 @@ class ModuleLandLine extends ModuleService
 		
 		if ($this->_intServiceType != SERVICE_TYPE_LAND_LINE)
 		{
-			throw new Exception("Service with Id '$intService' is not a landline service");
+			throw new Exception("Service with Id '{$this->_intCurrentId}' is not a landline service");
 		}
 	}
 	
@@ -830,18 +1122,12 @@ class ModuleLandLine extends ModuleService
 	 * Loads the basic Service Record details, and works out if ELB is turned on if the service is an Indial100
 	 * It does not load the Service's address details
 	 * 
-	 * @param	int		$intService		Id of the LandLine service that this object will model
-	 * 									PRE: Id must reference a valid landline service in the Service table of the database.
-	 * 									It does not have to reference the most recently added Service record modelling this
-	 * 									FNN on this Account, but the object will logically model the use of this service
-	 * 									record's FNN on this service record's Account
-	 *
-	 * @return	bool					TRUE on success, FALSE on failure
+	 * @return	bool		TRUE on success, FALSE on failure
 	 * @method
 	 */
-	protected function _LoadDetails($intService)
+	protected function _LoadDetails()
 	{
-		if (parent::_LoadDetails($intService) === FALSE)
+		if (parent::_LoadDetails() === FALSE)
 		{
 			return FALSE;
 		}
@@ -1094,7 +1380,7 @@ class ModuleMobile extends ModuleService
 		
 		if ($this->_intServiceType != SERVICE_TYPE_MOBILE)
 		{
-			throw new Exception("Service with Id '$intService' is not a mobile service");
+			throw new Exception("Service with Id '{$this->_intCurrentId}' is not a mobile service");
 		}
 	}
 	
@@ -1110,18 +1396,12 @@ class ModuleMobile extends ModuleService
 	 * Loads the basic Service Record details
 	 * It does not load the Service's extra details (ServiceMobileDetail record)
 	 * 
-	 * @param	int		$intService		Id of the Mobile service that this object will model
-	 * 									PRE: Id must reference a valid mobile service in the Service table of the database.
-	 * 									It does not have to reference the most recently added Service record modelling this
-	 * 									FNN on this Account, but the object will logically model the use of this service
-	 * 									record's FNN on this service record's Account
-	 *
-	 * @return	bool					TRUE on success, FALSE on failure
+	 * @return	bool		TRUE on success, FALSE on failure
 	 * @method
 	 */
-	protected function _LoadDetails($intService)
+	protected function _LoadDetails()
 	{
-		return parent::_LoadDetails($intService);
+		return parent::_LoadDetails();
 	}
 	
 	// TODO! implement this properly
@@ -1324,7 +1604,7 @@ class ModuleADSL extends ModuleService
 		
 		if ($this->_intServiceType != SERVICE_TYPE_ADSL)
 		{
-			throw new Exception("Service with Id '$intService' is not an ADSL service");
+			throw new Exception("Service with Id '{$this->_intCurrentId}' is not an ADSL service");
 		}
 	}
 	
@@ -1339,18 +1619,12 @@ class ModuleADSL extends ModuleService
 	 * Loads the details for the ADSL Service
 	 * Loads the basic Service Record details
 	 * 
-	 * @param	int		$intService		Id of the ADSL service that this object will model
-	 * 									PRE: Id must reference a valid ASDSL service in the Service table of the database.
-	 * 									It does not have to reference the most recently added Service record modelling this
-	 * 									FNN on this Account, but the object will logically model the use of this service
-	 * 									record's FNN on this service record's Account
-	 *
-	 * @return	bool					TRUE on success, FALSE on failure
+	 * @return	bool		TRUE on success, FALSE on failure
 	 * @method
 	 */
-	protected function _LoadDetails($intService)
+	protected function _LoadDetails()
 	{
-		return parent::_LoadDetails($intService);
+		return parent::_LoadDetails();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1418,8 +1692,237 @@ class ModuleADSL extends ModuleService
 	}
 }
 
-class ModuleInbound extends ModuleService
+//----------------------------------------------------------------------------//
+// ModuleIndial
+//----------------------------------------------------------------------------//
+/**
+ * ModuleIndial
+ *
+ * Models an Indial service that is currently defined in the database
+ *
+ * Models an Indial service that is currently defined in the database
+ *
+ * @package	ui_app
+ * @class	ModuleIndial
+ * @extends	ModuleService
+ */
+class ModuleIndial extends ModuleService
 {
+	// While there is a ModuleService->_bolHasUnsavedChanges property, I should work out when I need 
+	// to save these details, and when I don't
+	// If this is NULL and $_bolExtraDetailsLoaded == TRUE, then one can conclude that the Service doesn't even have
+	// a ServiceInboundDetail record associated with it
+	private $_arrExtraDetails		= NULL;
+	
+	// Used to keep track of whether or not the extra details have been loaded from the database
+	private $_bolExtraDetailsLoaded	= NULL;
+	
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for the ModuleInbound class 
+	 * 
+	 * Constructor for the ModuleInbound class
+	 * 
+	 * @param	int		$intService		Id of the Inbound service that this object will model
+	 * 									PRE: Id must reference a valid Inbound service in the Service table of the database.
+	 * 									It does not have to reference the most recently added Service record modelling this
+	 * 									FNN on this Account, but the object will logically model the use of this service
+	 * 									record's FNN on this service record's Account
+	 *
+	 * @throws	Exception on error or if $intService doesn't reference an Inbound service in the database
+	 *
+	 * @return	void
+	 * @method
+	 */
+	function __construct($intService)
+	{
+		parent::__construct($intService);
+		
+		if ($this->_intServiceType != SERVICE_TYPE_INBOUND)
+		{
+			throw new Exception("Service with Id '{$this->_intCurrentId}' is not an Inbound service");
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// _LoadDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * _LoadDetails()
+	 *
+	 * Loads the details for the Inbound Service
+	 * 
+	 * Loads the details for the Inbound Service
+	 * Loads the basic Service Record details
+	 * It does not load the Service's extra details (ServiceInboundDetail record)
+	 * 
+	 * @return	bool		TRUE on success, FALSE on failure
+	 * @method
+	 */
+	protected function _LoadDetails()
+	{
+		return parent::_LoadDetails();
+	}
+	
+	// TODO! implement this properly
+	function SaveService()
+	{
+		parent::SaveService();
+		
+		// Save the Inbound Extra details (this could involve updating an existing record, or inserting a new one)
+		//TODO!
+		
+		$this->_bolHasUnsavedChanges = TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// SetStatus
+	//------------------------------------------------------------------------//
+	/**
+	 * SetStatus()
+	 *
+	 * Changes the status of the Inbound (active/disconnected/archived) 
+	 * 
+	 * Changes the status of the Inbound (active/disconnected/archived)
+	 * Before processing the StatusChange it will run SaveService() if there are 
+	 * any currently unsaved changes made to the service.
+	 * If a new Service record is required to model the change of status, then a new ServiceInboundDetail record
+	 * will also be made.  These new details will be reloaded in the object, if it is necessary
+	 * The plan details will also be copied across
+	 * 
+	 * @param	int		$intStatus		The new Service Status to set the service to (SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED)
+	 * @param	string	$strTimeStamp	optional, TimeStamp at which the Status Change will be recorded as having been made
+	 * 									This should not be in the past.  Defaults to NOW() 
+	 *
+	 * @return	bool					TRUE on success, FALSE on failure
+	 * @method
+	 */
+	function SetStatus($intStatus, $strTimeStamp=NULL)
+	{
+		$strTimeStamp = ($strTimeStamp == NULL)? GetCurrentISODateTime() : $strTimeStamp;
+		
+		if (parent::SetStatus($intStatus, $strTimeStamp) === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Check if a new Service Record was made
+		if ($this->_intServiceId != $this->_arrServiceRecords[0]['ServiceId'])
+		{
+			// Make a new ServiceInboundDetail record
+			$intNewServiceId	= $this->_intCurrentId;
+			$intOldServiceId	= $this->_arrServiceRecords[0]['ServiceId'];
+			
+			// Retrieve the old ServiceInboundDetail record, if one exists
+			$selExtraDetail	= new StatementSelect("ServiceInboundDetail", "*", "Service = <OldServiceId>", "Id DESC", "1");
+			$mixResult		= $selExtraDetail->Execute(Array("OldServiceId"=>$intOldServiceId));
+			if ($mixResult === FALSE)
+			{
+				$this->_strErrorMsg = "Unexpected Database error occurred while trying to retrieve a record from the ServiceInboundDetail table";
+				return FALSE;
+			}
+			if ($mixResult == 1)
+			{
+				// A ServiceInboundDetail record exists, insert it as a new record referencing the new Service Id
+				$arrExtraDetail				= $selExtraDetail->Fetch();
+				$arrExtraDetail['Service']	= $intNewServiceId;
+				$arrExtraDetail['Id']		= NULL;
+				
+				$insExtraDetail = new StatementInsert("ServiceInboundDetail", $arrExtraDetail);
+				if ($insExtraDetail->Execute($arrExtraDetail) === FALSE)
+				{
+					$this->_strErrorMsg = "Unexpected Database error occurred while trying to insert a record into the ServiceInboundDetail table";
+					return FALSE;
+				}
+			}
+			
+			// Refresh the object			
+			return $this->Refresh();
+		}
+		
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Refresh
+	//------------------------------------------------------------------------//
+	/**
+	 * Refresh()
+	 *
+	 * Refreshes the loaded details of the service (effectively reloads the service, and any extra details if they have previously been requested) 
+	 * 
+	 * Refreshes the loaded details of the service (effectively reloads the service, and any extra details if they have previously been requested)
+	 *
+	 * @return	bool					TRUE on success, FALSE on failure
+	 * @method
+	 */
+	function Refresh()
+	{
+		if (parent::Refresh() === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Reload the ServiceInboundDetail record, if it has previously been loaded
+		if ($this->_bolExtraDetailsLoaded)
+		{
+			$mixResult = GetInboundSpecificDetails(TRUE);
+			return (bool)($mixResult !== FALSE);
+		}
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetInboundSpecificDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * GetInboundSpecificDetails()
+	 *
+	 * Retrieves the Inbound's current ServiceInboundDetail record, if there is one 
+	 * 
+	 * Retrieves the Inbound's current ServiceInboundDetail record, if there is one
+	 *
+	 * @param	bool	$bolForceRefresh	optional, defaults to FALSE.  If TRUE then the ServiceInboundDetail
+	 * 										record will be retrieved from the database.  If FALSE then
+	 * 										the method will only access the database, if it
+	 * 										isn't already being stored in the object, from a previous call to this method
+	 *
+	 * @return	mixed						FALSE	: Error occurred
+	 * 										NULL	: The service doesn't have an associated ServiceInboundDetail record
+	 * 										Array	: The ServiceInboundDetail record
+	 * @method
+	 */
+	function GetInboundSpecificDetails($bolForceRefresh=FALSE)
+	{
+		if ($this->_bolExtraDetailsLoaded && !$bolForceRefresh)
+		{
+			// The details have already been loaded, and we are not forcing a refresh
+			return $this->_arrExtraDetails;
+		}
+		
+		$selExtraDetails	= new StatementSelect("ServiceInboundDetail", "*", "Service = <ServiceId>", "Id DESC", "1");
+		$mixResult			= $selExtraDetails->Execute(Array("ServiceId" => $this->_intCurrentId));
+		if ($mixResult === FALSE)
+		{
+			// Database error occured
+			$this->_strErrorMsg = "Unexpected Database error occurred while trying to retrieve the ServiceInboundDetail record";
+			return FALSE;
+		}
+		if ($mixResult == 0)
+		{
+			// The service doesn't have a ServiceInboundDetail record
+			return NULL;
+		}
+		
+		// Save the extra details
+		$this->_arrExtraDetails			= $selExtraDetails->Fetch();
+		$this->_bolExtraDetailsLoaded	= TRUE;
+		return $this->_arrExtraDetails;
+	}
 }
 
 ?>
