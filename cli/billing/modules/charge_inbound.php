@@ -67,7 +67,7 @@
  		// Statements
 		$this->_selINB15Services = new StatementSelect(	"CDR", 
 														"Service, Account, AccountGroup, COUNT(CDR.Id) AS CDRCount", 
-														"Service = <Service> AND Credit = 0 AND Status = ".CDR_RATED." AND ServiceType = ".SERVICE_TYPE_INBOUND, 
+														"Service = <Service> AND Credit = 0 AND Status = 198 AND ServiceType = ".SERVICE_TYPE_INBOUND, 
 														NULL, 
 														NULL, 
 														"Service \n HAVING CDRCount > 0");
