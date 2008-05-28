@@ -76,7 +76,7 @@ class Cli_Invoice_XML_Test extends Cli
 			if (is_file($strSource))
 			{
 				// Store the destination file for the source file
-				$arrFiles[$strSource] = is_dir($strDestination) ? ($strDestination . DIRECTORY_SEPARATOR . basename($strSource) . ".pdf") : $strDestination;
+				$arrFiles[] = realpath($strSource);
 			}
 			else
 			{
