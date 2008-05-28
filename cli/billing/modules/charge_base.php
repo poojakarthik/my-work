@@ -125,7 +125,10 @@
 	 *
 	 * @method
 	 */
- 	abstract function RevokeAll();
+ 	function RevokeAll()
+ 	{
+ 		
+ 	}
  }
  
  ?>
