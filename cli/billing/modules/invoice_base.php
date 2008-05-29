@@ -647,11 +647,13 @@ abstract class BillingModuleInvoice
 					$arrPlanChargeItemisation[]	= $arrCDR;
 					
 					// Check for ServiceTotal vs Rated Total, then add as CDR
-					$fltPlanChargeTotal			+= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
-					if ($fltPlanChargeTotal >= 0.01)
+					$fltPlanCredit				= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
+					if ($fltPlanCredit >= 0.01)
 					{
+						$fltPlanChargeTotal			+= $fltPlanCredit;
+						
 						$arrCDR	= Array();
-						$arrCDR['Charge']			= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
+						$arrCDR['Charge']			= $fltPlanChargeTotal;
 						$arrCDR['Units']			= 1;
 						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("Y-m-01", strtotime($arrInvoice['CreatedOn'])))));
 						$arrPlanChargeItemisation[]	= $arrCDR;
