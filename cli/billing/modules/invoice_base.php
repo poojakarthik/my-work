@@ -71,30 +71,41 @@ abstract class BillingModuleInvoice
 		// Statements
 		//--------------------------------------------------------------------//
 		
-		// Service Details
+		// Account FNNs
+		$arrCols				= Array();
+		$arrCols['CurrentId']	= "MAX(ServiceTotal.Service)";
+		$arrCols['FNN']			= "ServiceTotal.FNN";
+		$arrCols['Extension']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN ServiceExtension.Name ELSE ServiceTotal.FNN END";
+		$arrCols['RangeStart']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 0, -2), ServiceExtension.RangeStart) ELSE ServiceTotal.FNN END";
+		$arrCols['RangeEnd']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 0, -2), ServiceExtension.RangeEnd) ELSE ServiceTotal.FNN END";
+		$this->_selAccountFNNs	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) LEFT JOIN ",
+														$arrCols,
+														"Account = <Account> AND InvoiceRun = <InvoiceRun>",
+														"ServiceType, Extension",
+														NULL,
+														"Extension");
+		
+		
+		
+		// Current Service Details
 		$arrService					= Array();
 		$arrService['FNN']			= "Service.FNN";
 		$arrService['CostCentre']	= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END)";
-		$arrService['Indial100']	= "Service.Indial100";
+		$arrService['Indial100']	= "MAX(Service.Indial100)";
 		$arrService['Extension']	= "ServiceExtension.Name";
 		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
 		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";
-		//$arrService['IsRendered']	= "(CASE WHEN Status = ".SERVICE_ACTIVE." THEN 1 ELSE 0 END)";
 		$arrService['ForceRender']	= "Service.ForceInvoiceRender";
-		$arrService['ServiceTotal']	= "SUM(ServiceTotal.TotalCharge + ServiceTotal.Debit - ServiceTotal.Credit)";
-		$arrService['RatePlan']		= "RatePlan.Name";
-		$arrService['RatedTotal']	= "ServiceTotal.CappedCharge + ServiceTotal.UncappedCharge";
-		$arrService['PlanCharge']	= "ServiceTotal.PlanCharge";
 		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																	$arrService,
-																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND Service.Account = <Account> AND Status != ".SERVICE_ARCHIVED,
+																	"Service.Id = <CurrentId>",
 																	"Service.ServiceType, Service.FNN, ServiceExtension.Name",
 																	NULL,
 																	"Service.FNN, ServiceExtension.Name");
 		
-		$this->_selServiceInstances			= new StatementSelect(	"Service LEFT JOIN ServiceExtension ON (Service.Id = ServiceExtension.Service AND ServiceExtension.Archived = 0)", 
-																	"Service.Id AS Id", 
-																	"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
+		$this->_selServiceInstances			= new StatementSelect(	"((ServiceTotal JOIN Service ON ServiceTotal.Service = Service.Id) LEFT JOIN ServiceExtension ON (Service.Id = ServiceExtension.Service AND ServiceExtension.Archived = 0)) LEFT JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan", 
+																	"ServiceTotal.Service AS Id, RatePlan.Name AS RatePlan, RatePlan.PlanCharge AS PlanCharge", 
+																	"ServiceTotal.Account = <Account> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
 																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RG.DisplayType AS DisplayType",
@@ -484,45 +495,60 @@ abstract class BillingModuleInvoice
 	 * @method
 	 */
 	protected function _GetServices($arrInvoice)
-	{		
-		// Get Service Details
-		if ($this->_selServiceDetails->Execute($arrInvoice) === FALSE)
+	{
+		// Get (Primary) FNNs for this Account
+		if ($this->_selAccountFNNs->Execute($arrInvoice) === FALSE)
 		{
-			Debug($this->_selServiceDetails->Error());
+			Debug($this->_selAccountFNNs->Error());
 			return Array();
 		}
-		
-		$arrServices	= $this->_selServiceDetails->FetchAll();
+		$arrAccountFNNs	= $this->_selAccountFNNs->FetchAll();
 		
 		// Get List of Service IDs for each FNN
-		foreach ($arrServices as $intKey=>&$arrService)
+		$arrServices	= Array();
+		foreach ($arrAccountFNNs as $intKey=>$arrService)
 		{
-			// Correct Extension Ranges
-			$arrService['RangeStart']	= (is_int($arrService['RangeStart'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
-			$arrService['RangeEnd']		= (is_int($arrService['RangeEnd'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
-			$arrService['Primary']		= (!$arrService['Extension'] || ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd'])) ? TRUE : FALSE;
-			$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
-			
-			$arrWhere = Array();
-			$arrWhere['Account']	= $arrInvoice['Account'];
-			$arrWhere['FNN']		= $arrService['FNN'];
-			$arrWhere['Extension']	= $arrService['Extension'];
-			if ($this->_selServiceInstances->Execute($arrWhere) === FALSE)
+			// Get details from the Current Service
+			if ($this->_selServiceDetails->Execute($arrService) === FALSE)
 			{
-				Debug("Error on _selServiceInstances!");
-				Debug($this->_selServiceInstances->Error());
+				Debug("Error on _selServiceDetails!");
+				Debug($this->_selServiceDetails->Error());
 			}
 			else
 			{
-				$arrService['Id']	= Array();
-				while ($arrId = $this->_selServiceInstances->Fetch())
+				$arrServiceDetails	= $this->_selServiceDetails->FetchAll();
+				
+				// Get all Service Ids that are associated with this FNN
+				$arrWhere = Array();
+				$arrWhere['Account']	= $arrInvoice['Account'];
+				$arrWhere['FNN']		= $arrService['FNN'];
+				$arrWhere['Extension']	= $arrService['Extension'];
+				if ($this->_selServiceInstances->Execute($arrWhere) === FALSE)
 				{
-					$arrService['Id'][] = $arrId['Id'];
+					Debug("Error on _selServiceInstances!");
+					Debug($this->_selServiceInstances->Error());
 				}
+				else
+				{
+					$arrService['Id']	= Array();
+					while ($arrId = $this->_selServiceInstances->Fetch())
+					{
+						$arrService['Id'][] = $arrId['Id'];
+					}
+				}
+				
+				foreach ($arrServiceDetails as $arrExtension)
+				{
+					// Correct Extension Ranges
+					//$arrService['RangeStart']	= (is_int($arrService['RangeStart'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
+					//$arrService['RangeEnd']		= (is_int($arrService['RangeEnd'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
+					$arrService['Primary']		= ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd']) ? TRUE : FALSE;
+					//$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
+				}
+				
+				$arrServices[] = $arrService;			
+				Debug($arrService);
 			}
-			$arrServices[$intKey] = $arrService;
-			
-			//Debug($arrService);
 		}
 		
 		$this->_arrPlanCharges	= Array();
@@ -554,12 +580,13 @@ abstract class BillingModuleInvoice
 			}
 			
 			// Handle ServiceTotals for non-Indials
-			if (!$arrService['Indial100'])
+			// NOTE: Trying something new
+			/*if (!$arrService['Indial100'])
 			{
 				// Get the ServiceTotal
 				$arrServiceTotal			= $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrInvoice);
 				$arrService['ServiceTotal']	= $arrServiceTotal[0]['TotalCharge'];
-			}
+			}*/
 			
 			// Only if this is a non-Indial or is the Primary FNN
 			if ($arrService['Primary'])
@@ -647,11 +674,11 @@ abstract class BillingModuleInvoice
 			}
 			
 			// Handle ServiceTotals for Indials
-			if ($arrService['Indial100'])
-			{
+			/*if ($arrService['Indial100'])
+			{*/
 				// Indial 100s should only have Rated Totals
 				$arrService['ServiceTotal']	= $fltRatedTotal;
-			}
+			//}
 			
 			$arrService['RecordTypes']	= $arrCategories;
 			$arrService['IsRendered']	= ($arrService['ForceRender'] || count($arrCategories)) ? TRUE : FALSE;
