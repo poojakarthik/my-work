@@ -96,6 +96,7 @@ abstract class BillingModuleInvoice
 		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
 		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";
 		$arrService['ForceRender']	= "Service.ForceInvoiceRender";
+		$arrService['PlanCharge']	= "ServiceTotal.PlanCharge";
 		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																	$arrService,
 																	"Service.Id = <CurrentId>",
@@ -105,7 +106,7 @@ abstract class BillingModuleInvoice
 		
 		$this->_selServiceInstances			= new StatementSelect(	"((ServiceTotal JOIN Service ON ServiceTotal.Service = Service.Id) LEFT JOIN ServiceExtension ON (Service.Id = ServiceExtension.Service AND ServiceExtension.Archived = 0)) LEFT JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan", 
 																	"ServiceTotal.Service AS Id, RatePlan.Name AS RatePlan, ServiceTotal.PlanCharge AS PlanCharge", 
-																	"ServiceTotal.Account = <Account> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
+																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND ServiceTotal.Account = <Account> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
 																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RG.DisplayType AS DisplayType",
