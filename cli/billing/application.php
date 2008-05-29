@@ -408,20 +408,19 @@
 			$selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
 			$selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <ServiceRatePlan> AND LastChargedOn IS NOT NULL");
 			$selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)");
-			if ($selLastBillDate->Execute($arrAccount))
+			/*if ($selLastBillDate->Execute($arrAccount))
 			{
 				// Previous Invoice
 				$arrLastBillDate	= $selLastBillDate->Fetch();
 				$intLastBillDate	= strtotime($arrLastBillDate['CreatedOn']);
 			}
 			else
-			{
-				// No Previous Invoice: Calculate what it should have been
-				//$strBillingDate		= str_pad($arrAccount['BillingDate'], 2, '0', STR_PAD_LEFT);
+			{*/
+				// When was the Billing Period supposed to start?
 				$strBillingDate		= '01';
 				$intDate			= strtotime(date("Y-m-01", time()));
 				$intLastBillDate	= strtotime("-{$arrAccount['BillingFreq']} month", strtotime(date("Y-m-$strBillingDate", $intDate)));
-			}
+			//}
 			$arrSharedPlans	= Array();
 			foreach($arrServices as $mixIndex=>$arrService)
 			{
@@ -449,7 +448,8 @@
 							$arrAdvanceCharge['AccountGroup']	= $arrAccount['AccountGroup'];
 							$arrAdvanceCharge['Account']		= $arrAccount['Id'];
 							$arrAdvanceCharge['Service']		= $arrService['Service'];
-							$arrAdvanceCharge['ChargeType']		= 'PCA'.round($arrService['MinMonthly'], 2);
+							//$arrAdvanceCharge['ChargeType']		= 'PCA'.round($arrService['MinMonthly'], 2);
+							$arrAdvanceCharge['ChargeType']		= 'PCA';
 							$arrAdvanceCharge['Description']	= "Plan Charge in Advance from ".date("01/m/Y")." to ".date("d/m/Y", strtotime("-1 day", strtotime("+1 month", strtotime(date("Y-m-01")))));
 							$arrAdvanceCharge['ChargedOn']		= date("Y-m-d");
 							$arrAdvanceCharge['Nature']			= 'DR';
@@ -475,7 +475,8 @@
 							$arrProrataCharge['AccountGroup']	= $arrAccount['AccountGroup'];
 							$arrProrataCharge['Account']		= $arrAccount['Id'];
 							$arrProrataCharge['Service']		= $arrService['Service'];
-							$arrProrataCharge['ChargeType']		= 'PCP'.round($arrService['MinMonthly'], 2);
+							//$arrProrataCharge['ChargeType']		= 'PCP'.round($arrService['MinMonthly'], 2);
+							$arrProrataCharge['ChargeType']		= 'PCP';
 							$arrProrataCharge['Description']	= "Plan Charge in Arrears from ".date("d/m/Y", $intCDRDate)." to ".date("d/m/Y", strtotime("-1 day", time()));
 							$arrProrataCharge['ChargedOn']		= date("Y-m-d");
 							$arrProrataCharge['Nature']			= 'DR';
