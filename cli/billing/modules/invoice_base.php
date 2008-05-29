@@ -349,7 +349,7 @@ abstract class BillingModuleInvoice
 					/*$arrRecordType['Itemised']		= "RecordGroup.Itemised";*/
 					$arrRecordType['DisplayType']	= "RecordGroup.DisplayType";
 					$arrRecordType['TotalCharge']	= "SUM(ServiceTypeTotal.Charge)";
-					$arrRecordType['Records']		= "SUM(RecordGroup.DisplayType)";
+					$arrRecordType['Records']		= "SUM(RecordGroup.Records)";
 					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
 					(
 	 					"(ServiceTypeTotal JOIN RecordType ON RecordType.Id = ServiceTypeTotal.RecordType) JOIN RecordType RecordGroup ON RecordType.GroupId = RecordGroup.Id",
@@ -524,6 +524,7 @@ abstract class BillingModuleInvoice
 				$arrWhere['Account']	= $arrInvoice['Account'];
 				$arrWhere['FNN']		= $arrService['FNN'];
 				$arrWhere['Extension']	= $arrService['Extension'];
+				$arrWhere['InvoiceRun']	= $arrInvoice['InvoiceRun'];
 				if ($this->_selServiceInstances->Execute($arrWhere) === FALSE)
 				{
 					Debug("Error on _selServiceInstances!");
