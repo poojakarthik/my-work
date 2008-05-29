@@ -80,7 +80,7 @@ abstract class BillingModuleInvoice
 		$arrCols['RangeEnd']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 0, -2), ServiceExtension.RangeEnd) ELSE ServiceTotal.FNN END";
 		$this->_selAccountFNNs	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)",
 														$arrCols,
-														"Account = <Account> AND InvoiceRun = <InvoiceRun>",
+														"ServiceTotal.Account = <Account> AND ServiceTotal.InvoiceRun = <InvoiceRun>",
 														"Service.ServiceType, Extension",
 														NULL,
 														"Extension");
