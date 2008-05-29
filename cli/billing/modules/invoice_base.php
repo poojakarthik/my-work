@@ -511,6 +511,7 @@ abstract class BillingModuleInvoice
 		foreach ($arrAccountFNNs as $intKey=>$arrService)
 		{
 			// Get details from the Current Service
+			$arrService['InvoiceRun']	= $arrInvoice['InvoiceRun'];
 			if ($this->_selServiceDetails->Execute($arrService) === FALSE)
 			{
 				Debug("Error on _selServiceDetails!");
@@ -647,10 +648,9 @@ abstract class BillingModuleInvoice
 					$arrPlanChargeItemisation[]	= $arrCDR;
 					
 					// Check for ServiceTotal vs Rated Total, then add as CDR
-					if ($arrService['ServiceTotal'] != ($fltRatedTotal + $arrService['PlanCharge']))
+					$fltPlanChargeTotal			+= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
+					if ($fltPlanChargeTotal >= 0.01)
 					{
-						$fltPlanChargeTotal			+= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
-						
 						$arrCDR	= Array();
 						$arrCDR['Charge']			= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
 						$arrCDR['Units']			= 1;
