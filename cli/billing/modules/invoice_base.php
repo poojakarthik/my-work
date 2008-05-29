@@ -89,17 +89,17 @@ abstract class BillingModuleInvoice
 		
 		// Current Service Details
 		$arrService					= Array();
-		$arrService['FNN']			= "Service.FNN";
+		//$arrService['FNN']			= "Service.FNN";
 		$arrService['CostCentre']	= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END)";
 		$arrService['Indial100']	= "MAX(Service.Indial100)";
-		$arrService['Extension']	= "ServiceExtension.Name";
+		/*$arrService['Extension']	= "ServiceExtension.Name";
 		$arrService['RangeStart']	= "ServiceExtension.RangeStart";
-		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";
+		$arrService['RangeEnd']		= "ServiceExtension.RangeEnd";*/
 		$arrService['ForceRender']	= "Service.ForceInvoiceRender";
 		$arrService['PlanCharge']	= "ServiceTotal.PlanCharge";
 		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																	$arrService,
-																	"Service.Id = <CurrentId>",
+																	"Service.Id = <CurrentId> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)",
 																	"Service.ServiceType, Service.FNN, ServiceExtension.Name",
 																	NULL,
 																	"Service.FNN, ServiceExtension.Name");
@@ -517,8 +517,15 @@ abstract class BillingModuleInvoice
 			}
 			else
 			{
-				$arrServiceDetails	= $this->_selServiceDetails->FetchAll();
+				$arrServiceDetails	= $this->_selServiceDetails->Fetch();
+				$arrService			= array_merge($arrService, $arrServiceDetails);
 				
+				// Correct Extension Ranges
+				//$arrService['RangeStart']	= (is_int($arrService['RangeStart'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
+				//$arrService['RangeEnd']		= (is_int($arrService['RangeEnd'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
+				//$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
+				$arrService['Primary']		= ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd']) ? TRUE : FALSE;
+								
 				// Get all Service Ids that are associated with this FNN
 				$arrWhere = Array();
 				$arrWhere['Account']	= $arrInvoice['Account'];
@@ -537,15 +544,6 @@ abstract class BillingModuleInvoice
 					{
 						$arrService['Id'][] = $arrId['Id'];
 					}
-				}
-				
-				foreach ($arrServiceDetails as $arrExtension)
-				{
-					// Correct Extension Ranges
-					//$arrService['RangeStart']	= (is_int($arrService['RangeStart'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
-					//$arrService['RangeEnd']		= (is_int($arrService['RangeEnd'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
-					$arrService['Primary']		= ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd']) ? TRUE : FALSE;
-					//$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
 				}
 				
 				$arrServices[] = $arrService;			
