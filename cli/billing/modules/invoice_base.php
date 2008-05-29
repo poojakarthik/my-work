@@ -582,13 +582,12 @@ abstract class BillingModuleInvoice
 			}
 			
 			// Handle ServiceTotals for non-Indials
-			// NOTE: Trying something new
-			/*if (!$arrService['Indial100'])
+			if (!$arrService['Indial100'])
 			{
 				// Get the ServiceTotal
 				$arrServiceTotal			= $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrInvoice);
 				$arrService['ServiceTotal']	= $arrServiceTotal[0]['TotalCharge'];
-			}*/
+			}
 			
 			// Only if this is a non-Indial or is the Primary FNN
 			if ($arrService['Primary'])
@@ -675,11 +674,11 @@ abstract class BillingModuleInvoice
 			}
 			
 			// Handle ServiceTotals for Indials
-			/*if ($arrService['Indial100'])
-			{*/
+			if ($arrService['Indial100'])
+			{
 				// Indial 100s should only have Rated Totals
 				$arrService['ServiceTotal']	= $fltRatedTotal;
-			//}
+			}
 			
 			$arrService['RecordTypes']	= $arrCategories;
 			$arrService['IsRendered']	= ($arrService['ForceRender'] || count($arrCategories)) ? TRUE : FALSE;
