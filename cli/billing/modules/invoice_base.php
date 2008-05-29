@@ -78,10 +78,10 @@ abstract class BillingModuleInvoice
 		$arrCols['Extension']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN ServiceExtension.Name ELSE ServiceTotal.FNN END";
 		$arrCols['RangeStart']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 0, -2), ServiceExtension.RangeStart) ELSE ServiceTotal.FNN END";
 		$arrCols['RangeEnd']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 0, -2), ServiceExtension.RangeEnd) ELSE ServiceTotal.FNN END";
-		$this->_selAccountFNNs	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) LEFT JOIN ",
+		$this->_selAccountFNNs	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)",
 														$arrCols,
 														"Account = <Account> AND InvoiceRun = <InvoiceRun>",
-														"ServiceType, Extension",
+														"Service.ServiceType, Extension",
 														NULL,
 														"Extension");
 		
@@ -104,7 +104,7 @@ abstract class BillingModuleInvoice
 																	"Service.FNN, ServiceExtension.Name");
 		
 		$this->_selServiceInstances			= new StatementSelect(	"((ServiceTotal JOIN Service ON ServiceTotal.Service = Service.Id) LEFT JOIN ServiceExtension ON (Service.Id = ServiceExtension.Service AND ServiceExtension.Archived = 0)) LEFT JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan", 
-																	"ServiceTotal.Service AS Id, RatePlan.Name AS RatePlan, RatePlan.PlanCharge AS PlanCharge", 
+																	"ServiceTotal.Service AS Id, RatePlan.Name AS RatePlan, ServiceTotal.PlanCharge AS PlanCharge", 
 																	"ServiceTotal.Account = <Account> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
