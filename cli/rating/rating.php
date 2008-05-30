@@ -33,7 +33,7 @@ foreach ($argv as $strArg)
 $appRating = new ApplicationRating($arrConfig);
 
 // Change status of all CDRs with missing rate 
-//$appRating->ReRate(CDR_RATE_NOT_FOUND);
+$appRating->ReRate(CDR_RATE_NOT_FOUND);
 
 // run the Rate method until there is nothing left to rate
 while ($appRating->Rate($bolOnlyNew))

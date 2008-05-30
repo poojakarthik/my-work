@@ -376,7 +376,7 @@
 		$strWhere = "Status = ".CDR_NORMALISED;	
 		if (!$bolOnlyNew)
 		{
-			$strWhere .= " OR Status = ".CDR_RERATE." OR Status = ".CDR_RATE_NOT_FOUND;
+			$strWhere .= " OR Status = ".CDR_RERATE;
 		}
 		
 		// Select CDR Query
