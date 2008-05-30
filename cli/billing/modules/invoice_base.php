@@ -99,6 +99,7 @@ abstract class BillingModuleInvoice
 		$arrService['ForceRender']	= "Service.ForceInvoiceRender";
 		$arrService['PlanCharge']	= "ServiceTotal.PlanCharge";
 		$arrService['RatePlan']		= "RatePlan.Name";
+		$arrService['InAdvance']	= "RatePlan.InAdvance";
 		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																	$arrService,
 																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND Service.Id = <CurrentId> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)",
@@ -641,10 +642,13 @@ abstract class BillingModuleInvoice
 					// Add an adjustment (Date is hack fixed to 1 month periods)
 					$fltPlanChargeTotal			+= $arrService['PlanCharge'];
 					
+					$intPlanChargeDate			= ($arrService['InAdvance']) ? strtotime("+1 month", strtotime($arrInvoice['CreatedOn'])) : strtotime($arrInvoice['CreatedOn']); 
+					$strPlanChargePeriod		= date("01/m/Y", strtotime("-1 month", $intPlanChargeDate))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("Y-m-01", $intPlanChargeDate))));
+					
 					$arrCDR	= Array();
 					$arrCDR['Charge']			= $arrService['PlanCharge'];				
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("Y-m-01", strtotime($arrInvoice['CreatedOn'])))));
+					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".$strPlanChargePeriod;
 					$arrPlanChargeItemisation[]	= $arrCDR;
 					
 					// Check for ServiceTotal vs Rated Total, then add as CDR
@@ -656,7 +660,7 @@ abstract class BillingModuleInvoice
 						$arrCDR	= Array();
 						$arrCDR['Charge']			= $fltPlanChargeTotal;
 						$arrCDR['Units']			= 1;
-						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".date("01/m/Y", strtotime("-1 month", strtotime($arrInvoice['CreatedOn'])))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("Y-m-01", strtotime($arrInvoice['CreatedOn'])))));
+						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".$strPlanChargePeriod;
 						$arrPlanChargeItemisation[]	= $arrCDR;
 					}
 				}
