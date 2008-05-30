@@ -57,10 +57,10 @@
 	 *
 	 * @method
 	 */
- 	function __construct($ptrThisDB, $arrConfig, $strCDRTable = 'CDR')
+ 	function __construct($ptrThisDB, $arrConfig)
  	{
 		// Call Parent Constructor
-		parent::__construct($ptrThisDB, $arrConfig, $strCDRTable);
+		parent::__construct($ptrThisDB, $arrConfig);
  	}
  	
 	//------------------------------------------------------------------------//
@@ -131,7 +131,7 @@
 		// Invoice Object
 		//--------------------------------------------------------------------//
 		$xmlInvoice	= $this->_AddElement($xmlDocument, 'Invoice');
-		$this->_AddAttribute($xmlInvoice, 'Id'				, 'SAMPLE');
+		$this->_AddAttribute($xmlInvoice, 'Id', ($this->_strInvoiceTable == 'Invoice') ? $arrInvoice['Id'] : 'SAMPLE');
 		//$this->_AddAttribute($xmlInvoice, 'DeliveryMethod'	, GetConstantName($arrInvoice['DeliveryMethod'], 'BillingMethod'));
 		
 		//--------------------------------------------------------------------//
@@ -333,9 +333,7 @@
 	 * Builds the bill file
 	 *
 	 * Builds the bill file
-	 *
-	 * @param		boolean		bolSample		optional This is a sample billing file
-	 *
+	 * 
 	 * @param		array		$arrAccounts	Indexed array of valid account numbers
 	 * 											which have invoices in the InvoiceTemp table
 	 * 											Only used with BILL_REPRINT_TEMP
@@ -344,50 +342,39 @@
 	 *
 	 * @method
 	 */
- 	function BuildOutput($intOutputType = BILL_COMPLETE, $arrAccounts = Array())
+ 	function BuildOutput($strInvoiceRun, $arrAccounts = Array())
  	{
-		// Determine Invoice Run Type
-		switch ($intOutputType)
-		{
-			case BILL_SAMPLE:
-				$strFilename		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".zip";
-				$strInvoiceTable	= 'InvoiceTemp';
-				$bolSample			= TRUE;
-				break;
-			
-			case BILL_COMPLETE:
-				$strFilename		= BILLING_LOCAL_PATH.date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH.date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
-				$strInvoiceTable	= 'Invoice';
-				break;
-				
-			case BILL_REPRINT:
-				$strFilename		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
-				$strInvoiceTable	= 'Invoice';
-				break;	
-				
-			case BILL_REPRINT_TEMP:
-				$strFilename		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbf";
-				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
-				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
-				$strInvoiceTable	= 'InvoiceTemp';
-				$strAccountList		= implode(', ', $arrAccounts);
-				break;	
-		}
-		
+		// Get Invoice Detail
+		$arrInvoices	= Array();
 		if (!count($arrAccounts))
 		{
 			// Grab full list of Accounts
-			$selAccounts	= new StatementSelect("InvoiceTemp");
+			$selAccounts	= new StatementSelect($this->_strInvoiceTable, "*", "InvoiceRun = <InvoiceRun>");
+			$selAccounts->Execute();
+			$arrInvoices	= $selAccounts->FetchAll();
+		}
+		else
+		{
+			// Grab specified Accounts
+			$selAccountsById	= new StatementSelect($this->_strInvoiceTable, "*", "Account = <Account> AND InvoiceRun = <InvoiceRun>");
+			foreach ($arrAccounts as $intAccount)
+			{
+				$selAccountsById->Execute(Array('Account' => $intAccount));
+				if ($arrInvoice = $selAccountsById->Fetch())
+				{
+					$arrInvoices[]	= $arrInvoice;
+				}
+			}
+		}		
+		
+		// Generate Output for each Account
+		foreach ($arrInvoices as $arrInvoice)
+		{
+			$this->AddInvoice($arrInvoice);
 		}
 		
-		// return zip's filename
-		return $strZipName;
+		// Return Pass/Fail
+		return TRUE;
  	}
  	
  	//------------------------------------------------------------------------//
@@ -406,51 +393,140 @@
 	 *
 	 * @method
 	 */
- 	function SendOutput($bolSample)
+ 	function SendOutput($strInvoiceRun)
  	{
-		// Deliver Print and Email PDFs
-		// TODO
+		// Get list of CustomerGroups
+		$selCustomerGroups	= new StatementSelect("CustomerGroup", "InternalName", "1");
+		$selCustomerGroups->Execute();
+		$arrCustomerGroups	= $selCustomerGroups->FetchAll();
+		
+		// Define Output Modes
+		$arrOutputModes				= Array();
+		$arrOutputModes['PRINT']['Archive']		= TRUE;
+		$arrOutputModes['PRINT']['Delivery']	= 'SFTP';
+		
+		$arrOutputModes['EMAIL']['Archive']		= FALSE;
+		$arrOutputModes['EMAIL']['Delivery']	= 'EmailAttachment';
+		
+		// Generate the PDFs
+		$strCommandDir	= FLEX_BASE_PATH."lib/pdf/";
+		$strXMLPath		= INVOICE_XML_PATH.$strInvoiceRun.'/';
+		$intRunning	= 0;
+		foreach ($arrOutputModes as $strMode=>&$arrOptions)
+		{
+			foreach ($arrCustomerGroups as $strName=>$arrCustomerGroup)
+			{
+				$strCustomerGroup	= str_replace(' ', '_', strtoupper($arrCustomerGroup['InternalName']));
+				$strTARName			= str_replace(' ', '', strtolower($arrCustomerGroup['InternalName']))."-invoice-{$strInvoiceRun}.tar";
+				$strTARPath			= ($arrOptions['Archive']) ? "-f ".$strXMLPath.$strTARName : "";
+				$strCommand			= "cd {$strCommandDir}; php cli.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode";
+				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['FilePath']			= $strTARPath;
+				
+				// Start the PDF generation process
+				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes']			= Array();
+				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][0]	= Array('pipe', 'r');
+				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][1]	= Array('pipe', 'w');
+				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][2]	= Array('pipe', 'w');
+				if (!$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Process']	= proc_open($strCommand, $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'], $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes']))
+				{
+					// There was an error starting the child process
+					// TODO?
+				}
+				else
+				{
+					$intRunning++;
+				}
+			}
+		}
+		
+		// Monitor PDF Generation Processes
+		while ($intRunning)
+		{
+			foreach ($arrOutputModes as $strMode=>&$arrOptions)
+			{
+				foreach ($arrCustomerGroups as $strName=>$arrCustomerGroup)
+				{
+					// Is this Process still running?
+					if ($arrCustomerGroup['Process'])
+					{
+						$arrStatus	= proc_get_status($arrCustomerGroup['Process']);
+						if (!$arrStatus['running'])
+						{
+							// Close the process
+							@pclose($arrCustomerGroup['Pipes'][0]);
+							@pclose($arrCustomerGroup['Pipes'][1]);
+							@pclose($arrCustomerGroup['Pipes'][2]);
+							@proc_close($arrCustomerGroup['Process']);
+							$intRunning--;
+						}
+					}
+				}
+			}
+		}
+		
+		// Deliver the PDFs
+		foreach ($arrOutputModes as $strMode=>&$arrOptions)
+		{
+			switch ($arrOptions['Delivery'])
+			{
+				case 'SFTP':
+				case 'FTP':
+					// Connect to the FTP Server
+					if ($arrOptions['Delivery'] == 'SFTP')
+					{
+						$ptrConnection	= ftp_ssl_connect('ftp.salmat.com.au');
+					}
+					elseif ($arrOptions['Delivery'] == 'FTP')
+					{
+						$ptrConnection	= ftp_connect('ftp.salmat.com.au');
+					}
+					else
+					{
+						// WTF? This shouldn't happen
+						// TODO
+					}
+					
+					if ($ptrConnection)
+					{
+						// Log in to the FTP Server
+						if (ftp_login($ptrConnection, 'yellowbilling', '9uA8;mGL'))
+						{
+							// Upload all necessary files
+							foreach ($arrCustomerGroups as $strName=>$arrCustomerGroup)
+							{
+								if (ftp_put($ptrConnection, basename($arrCustomerGroup['FilePath']), $arrCustomerGroup['FilePath'], FTP_BINARY))
+								{
+									// Successfully Uploaded
+									// TODO
+								}
+								else
+								{
+									// Could not upload the file
+									// TODO
+								}
+							}
+						}
+						else
+						{
+							// Unable to log in
+							// TODO
+						}
+					}
+					else
+					{
+						// Unable to connect to SFTP server
+						// TODO
+					}
+					break;
+				
+				case 'EmailAttachment':
+					
+					break;
+			}
+			
+		}
+		
 		return TRUE;
- 	}
-	
-	//------------------------------------------------------------------------//
-	// BuildSample()
-	//------------------------------------------------------------------------//
-	/**
-	 * BuildSample()
-	 *
-	 * Builds a sample bill file
-	 *
-	 * Builds a sample bill file
-	 *
- 	 * @param		string		strInvoiceRun	The Invoice Run to build from
- 	 * 
-	 * @return		string						filename
-	 *
-	 * @method
-	 */
- 	function BuildSample($strInvoiceRun)
- 	{
-		return $this->BuildOutput(BILL_SAMPLE);
- 	}
- 	
- 	//------------------------------------------------------------------------//
-	// SendSample()
-	//------------------------------------------------------------------------//
-	/**
-	 * SendOutput()
-	 *
-	 * Sends a sample bill file
-	 *
-	 * Sends a sample bill file
-	 *
-	 * @return		boolean
-	 *
-	 * @method
-	 */
- 	function SendSample()
- 	{
-		return $this->SendOutput(TRUE);
  	}
  	
   	//------------------------------------------------------------------------//

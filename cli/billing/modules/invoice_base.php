@@ -57,7 +57,7 @@ abstract class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	function __construct($ptrThisDB, $arrConfig, $strCDRTable = 'CDR')
+ 	function __construct($ptrThisDB, $arrConfig)
  	{
 		// Set up the database reference
 		$this->db = $ptrThisDB;
@@ -65,7 +65,8 @@ abstract class BillingModuleInvoice
 		// Init member variables
 		$this->_strFilename		= NULL;
 		$this->_strSampleFile	= NULL;
-		$this->_strCDRTable		= $strCDRTable;
+		$this->_strCDRTable		= ($arrConfig['PrintingMode'] === 'FINAL') ? 'CDRInvoiced'	: 'CDR';
+		$this->_strInvoiceTable	= ($arrConfig['PrintingMode'] === 'FINAL') ? 'Invoice'		: 'InvoiceTemp';
 		
 		//--------------------------------------------------------------------//
 		// Statements

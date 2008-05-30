@@ -939,7 +939,7 @@
  	{
 		// Report Title
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TITLE."\n");
-		/*
+		
 		// FAIL if there are temporary invoices in the invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CHECK_TEMP_INVOICES, FALSE);
 		$selCheckTempInvoices = new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP);
@@ -958,7 +958,7 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-		*/
+		
 		// Get InvoiceRun of the current Temporary Invoice Run
 		$this->_rptBillingReport->AddMessage("Retrieving InvoiceRun Id to commit...\t", FALSE);
 		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
@@ -979,7 +979,7 @@
 		$strInvoiceRun	= $arrInvoiceRun['InvoiceRun'];
 		$this->_rptBillingReport->AddMessage(MSG_OK);
 		
-		/*
+		
 		// copy temporary invoices to invoice table
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
 		$siqInvoice = new QuerySelectInto();
@@ -1069,7 +1069,7 @@
 		}
 		
 		// update Invoice Status to PRINT
-		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
+		/*$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_PRINT;
 		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_TEMP, $arrUpdateData);
@@ -1084,9 +1084,9 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		*/
-		// BILLING OUTPUT
+		}*/
+		/*
+		// BILLING OUTPUT (now in billing_deliver.php)
 		foreach ($this->_arrBillOutput AS $strKey=>$objValue)
 		{
 			$this->_rptBillingReport->AddMessage(MSG_BUILD_SEND_OUTPUT, FALSE);
@@ -1107,6 +1107,7 @@
 			// Report success
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
+		*/
 		
 		// Alert YBS that file is ready for upload
 		SendEmail('rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au, turdminator@hotmail.com', 'Invoice Run Ready for Upload', 'The Invoice Run VBF file is ready for upload');
