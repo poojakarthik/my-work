@@ -1202,6 +1202,7 @@
 		// calculate number of units to charge
 		if ($u === NULL)
 		{
+			Debug($this->_arrCurrentRate);
 			die;
 		}
 		$n = ceil($q / $u);
