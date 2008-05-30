@@ -1551,12 +1551,12 @@
 			if ($arrBestMatch['Id'])
 			{
 				$this->_Debug("Found a close match");
+				$this->_arrCurrentRate	= $arrBestMatch;
 			}
 			else
 			{
 				$this->_Debug("Could not find a close match");
 			}
-			$this->_arrCurrentRate	= $arrBestMatch;
 		}
 		
 		// Cast MySQL strings to floats so they don't break our shit
