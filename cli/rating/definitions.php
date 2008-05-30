@@ -34,6 +34,8 @@
 // user name
 define("USER_NAME"						, "Rating_app");
 
+define("RATING_DEBUG"					, TRUE);
+
 // Log path (with trailing /)
 define("LOG_PATH"						, FILES_BASE_PATH."log/rating/");
 
