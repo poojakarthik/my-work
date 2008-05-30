@@ -247,6 +247,59 @@
 		
 		return Array('Total' => $intTotal, 'Passed' => $intPassed);
 	}
+
+
+	//------------------------------------------------------------------------//
+	// ApplyPostSelectProcesses
+	//------------------------------------------------------------------------//
+	/**
+	 * ApplyPostSelectProcesses()
+	 *
+	 * Applies and configurred PostSelectProcesses to the data in a report
+	 *
+	 * Applies and configurred PostSelectProcesses to the data in a report
+	 *
+	 * @param	array	$arrData				MySQL resultset to generate from
+	 * @param	array	$arrDataReport			Report data
+
+	 * @return	void							The passed $arrData array is updated directly
+	 *
+	 * @method
+	 */
+	function ApplyPostSelectProcesses(&$arrData, &$arrDataReport)
+	{
+		// Check for any post-select data modifications such as Decrypt of str_replace
+		if ($arrDataReport['PostSelectProcess'])
+		{
+			// Unserialize the array...
+			$arrPostSelectProcesses = unserialize($arrDataReport['PostSelectProcess']);
+
+			// If there are any post process functions to be run...
+			if (count($arrPostSelectProcesses))
+			{
+				// For each tuple...
+				foreach ($arrData as $intIndex => $arrTuple)
+				{
+					// And for each post process function
+					foreach ($arrPostSelectProcesses as $strColumnName => $strFunctionName)
+					{
+						// Chuck a wobbler if the post process function does not exist
+						if (!function_exists($strFunctionName))
+						{
+							throw new Exception("Report requires undefined post processing function '$strFunctionName'.");
+						}
+						// If the column exists in the tuple..
+						if (array_key_exists($strColumnName, $arrTuple))
+						{
+							// Set the new value to be the return value from the function on the current value
+							$arrData[$intIndex][$strColumnName] = call_user_func($strFunctionName, $arrData[$intIndex][$strColumnName]);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	
 	
 	//------------------------------------------------------------------------//
@@ -272,6 +325,9 @@
 	 */
  	function ExportCSV($arrData, $arrReport, $arrReportParameters, $bolSave = TRUE)
  	{
+		// Apply any post select processing
+		$this->ApplyPostSelectProcesses($arrData, $arrReport);
+
 		// Check for overrides
 		$arrReport['Overrides']	= ($arrReport['Overrides']) ? unserialize($arrReport['Overrides']) : Array();
 		//Debug($arrReport['Overrides']);
@@ -351,7 +407,10 @@
 	 * @method
 	 */
  	function ExportXLS($arrData, $arrReport, $arrReportParameters, $bolSave = TRUE)
- 	{ 		
+ 	{
+		// Apply any post select processing
+		$this->ApplyPostSelectProcesses($arrData, $arrReport);
+
 		// Generate Excel 5 Workbook
  		$strFileName = $this->_MakeFileName($arrReport, $arrReportParameters);
  		

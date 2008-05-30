@@ -511,7 +511,7 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
 $arrSQLSelect = Array();
-$arrSQLSelect['CC Number']			['Value']	= "REPLACE(CreditCard.CardNumber, ' ', '')";
+$arrSQLSelect['CC Number']			['Value']	= "CreditCard.CardNumber";
 $arrSQLSelect['Expiry Date']		['Value']	= "CONCAT(LPAD(CreditCard.ExpMonth, 2, '00'), '/', LPAD(SUBSTR(LPAD(CreditCard.ExpYear, 4, '2000'), -2), 2, '0'))";
 //$arrSQLSelect['Amount Charged']	['Value']		= "Invoice.Balance";
 $arrSQLSelect['Amount Charged']		['Value']	= "CAST(ROUND(SUM(Invoice.Balance * 100)) AS SIGNED)";
@@ -534,6 +534,10 @@ $arrSQLSelect['Customer Name']		['Value']	=	"LEFT(" .
 													"	, '\\'', '')" .
 													", 32)";
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+$arrPostSelectProcess = array();
+$arrPostSelectProcess['CC Number'] = "DecryptAndStripSpaces";
+$arrDateReport['PostSelectProcess'] = serialize($arrPostSelectProcess);
 
 // SQL Fields
 $arrSQLFields = Array();

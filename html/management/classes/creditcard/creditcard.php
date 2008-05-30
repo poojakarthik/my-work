@@ -73,6 +73,10 @@
 			// Construct the object
 			parent::__construct ('CreditCard', $this->Pull ('Id')->getValue ());
 			
+			// Decrypt the CardNumber & CVV
+			$this->Pull('CardNumber')->setValue(Decrypt($this->Pull('CardNumber')->getValue()));
+			$this->Pull('CVV')->setValue(Decrypt($this->Pull('CVV')->getValue()));
+
 			$this->Push (new dataString ('Masked', MaskCreditCard($this->Pull ('CardNumber')->getValue ())));
 			$this->Push (new dataString ('Last4Digits', substr (preg_replace ('/[\D]/', '', $this->Pull ('CardNumber')->getValue ()), -4)));
 			$this->Push (new CreditCardTypes ($this->Pull ('CardType')->getValue ()));

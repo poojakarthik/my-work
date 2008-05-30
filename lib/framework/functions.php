@@ -4282,4 +4282,99 @@ function EscapeXML($strText, $bolAttribute = FALSE)
 	return $strText;
 }
 
+//------------------------------------------------------------------------//
+// Encrypt($strKey, $strDecryptedString)
+//------------------------------------------------------------------------//
+/**
+ * Encrypt($strKey, $strDecryptedString)
+ *
+ * Encrypts a string
+ *
+ * Encrypts a string
+ * 
+ * @param	boolean	$strDecryptedString	The string to encrypt
+ *
+ * @return	string						Encrypted string base 64 encoded
+ *
+ * @function
+ */
+function Encrypt($strDecryptedString)
+{
+	if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
+	{
+		throw new Exception("Encryption key has not been configurred in customer configuration.");
+	}
+	$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
+	if ($strDecryptedString === '' || $strDecryptedString === NULL) return '';
+	$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
+	$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
+	$ks = mcrypt_enc_get_key_size($cipher);
+	$key = substr($strKey.sha1($strKey), 0, $ks);
+	mcrypt_generic_init($cipher, $key, $iv);
+	$strEncryptedString = mcrypt_generic($cipher, $strDecryptedString);
+	mcrypt_generic_deinit($cipher);
+	mcrypt_module_close($cipher);
+	return base64_encode($strEncryptedString);
+}
+
+//------------------------------------------------------------------------//
+// Decrypt($strKey, $strBase64EncodedEncryptedString)
+//------------------------------------------------------------------------//
+/**
+ * Decrypt($strKey, $strBase64EncodedEncryptedString)
+ *
+ * Decrypts a string
+ *
+ * Decrypts a string
+ * 
+ * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
+ * 														(as returned by Encrypt() function)
+ *
+ * @return	string										Decrypted string
+ *
+ * @function
+ */
+function Decrypt($strBase64EncodedEncryptedString)
+{
+	if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
+	{
+		throw new Exception("Encryption key has not been configurred in customer configuration.");
+	}
+	$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
+	if ($strBase64EncodedEncryptedString === '' || $strBase64EncodedEncryptedString === NULL) return '';
+	$strEncryptedString = base64_decode($strBase64EncodedEncryptedString);
+	$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
+	$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
+	$ks = mcrypt_enc_get_key_size($cipher);
+	$key = substr($strKey.sha1($strKey), 0, $ks);
+	mcrypt_generic_init($cipher, $key, $iv);
+	$strDecryptedString = mdecrypt_generic($cipher, $strEncryptedString);
+	mcrypt_generic_deinit($cipher);
+	mcrypt_module_close($cipher);
+	return $strDecryptedString;
+}
+
+//------------------------------------------------------------------------//
+// Decrypt($strKey, $strBase64EncodedEncryptedString)
+//------------------------------------------------------------------------//
+/**
+ * DecryptAndStripSpaces($strKey, $strBase64EncodedEncryptedString)
+ *
+ * Decrypts a string and strips spaces from it
+ *
+ * Decrypts a string and strips spaces from it. Used by the "Credit Card Payments Report"
+ * 
+ * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
+ * 														(as returned by Encrypt() function and 
+ * 														stored in the database)
+ *
+ * @return	string										Decrypted string with spaces removed
+ *
+ * @function
+ */
+function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
+{
+	return str_replace(' ', '', Decrypt($strBase64EncodedEncryptedString));
+}
+
 ?>
