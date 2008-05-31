@@ -681,8 +681,8 @@
 					// If this is a duplicate, make sure people cannot assign this CDR to an Account
 					if ($this->_selFindDuplicate->Execute($arrCDR))
 					{
-						$arrDuplicateCDR	= $this->_selFindDuplicate->Fetch();
-						CliEcho("!!! CDR #{$arrCDR['Id']} is a duplicate of #{$arrDuplicate['Id']}");
+						$arrDuplicateCDR        = $this->_selFindDuplicate->Fetch();
+                                                CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a duplicate of #{$arrDuplicate['Id']}");
 						$arrCDR['Status']	= CDR_DUPLICATE;
 					}
 					break;
