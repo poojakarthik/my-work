@@ -216,18 +216,21 @@
 		
 		// Duplicate CDR Query
 	 	$this->_selFindDuplicate	= new StatementSelect(	"CDR",
-	 														"Id",
-	 														"Source = <Source> AND " .
-	 														"Destination = <Destination> AND " .
-	 														"StartDatetime = <StartDatetime> AND " .
-	 														"EndDatetime = <EndDatetime> AND " .
-	 														"Units = <Units> AND " .
-	 														"Cost = <Cost> AND " .
-	 														"SequenceNo = <SequenceNo> AND " .
-	 														"RecordType = <RecordType> AND " .
-	 														"RecordType NOT IN (10, 15, 33)",
-	 														NULL,
-	 														1);
+															"Id",
+															"Id != <Id> AND " .
+															"Source = <Source> AND " .
+															"Destination = <Destination> AND " .
+															"StartDatetime = <StartDatetime> AND " .
+															"EndDatetime = <EndDatetime> AND " .
+															"Units = <Units> AND " .
+															"Cost = <Cost> AND " .
+															"SequenceNo = <SequenceNo> AND " .
+															"RecordType = <RecordType> AND " .
+															"RecordType NOT IN (10, 15, 33) AND " .
+															"Credit = <Credit> AND " .
+															"Status != ".CDR_DUPLICATE,
+															NULL,
+															1);
  	}
 
 
