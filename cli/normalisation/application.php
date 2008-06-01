@@ -184,7 +184,8 @@
 		$this->rptDelinquentsReport		= new Report("Delinquents Report for ". date("Y-m-d H:i:s"), $$mixEmailAddress, FALSE);
 		$this->errErrorHandler			= new ErrorHandler();
 		
-		// Create an instance of each Normalisation module
+		/*
+		// Create an instance of each Normalisation module (OLD METHOD)
  		$this->_arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();
  		$this->_arrNormalisationModule[CDR_UNTIEL_SE]			= new NormalisationModuleRSLCOM();
  		//$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
@@ -192,14 +193,24 @@
  		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
  		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleOptus();	// Uses Optus' format
+ 		*/
+ 		
+ 		// Load CDR Normalisation CarrierModules
+ 		CliEcho(" * IMPORT MODULES");
+ 		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_NORMALISATION_CDR));
+ 		while ($arrModule = $this->_selCarrierModules->Fetch())
+ 		{
+ 			$this->_arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
+ 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 		}
 		
+		
+		// STATEMENTS
 		$this->_selCreditCDRs = new StatementSelect("CDR", "Id, FNN, Source, Destination, Cost, Units, StartDatetime", "Credit = 1 AND Status = ".CDR_RATED, NULL, "1000");
-		
 		
 		$strStatus = " AND (Status = ".CDR_RATED." OR Status = ".CDR_NORMALISED." OR Status = ".CDR_BAD_OWNER." OR Status = ".CDR_BAD_RECORD_TYPE." OR Status = ".CDR_BAD_DESTINATION." OR Status = ".CDR_FIND_OWNER." OR Status = ".CDR_RENORMALISE." OR Status = ".CDR_RATE_NOT_FOUND.")";
 		$this->_selDebitCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDatetime> $strStatus", NULL, 1);
 	 	//$this->_selRatedCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDatetime> AND Status = ".CDR_RATED, NULL, 1);
-		
 		
 		$arrUpdateColumns = Array();
  		$arrUpdateColumns['Status']	= '';
@@ -440,9 +451,9 @@
 			
 			// check for a preprocessor
 			$bolPreprocessor = FALSE;
-			if ($this->_arrNormalisationModule[$arrCDRFile["FileType"]])
+			if ($this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]])
 			{
-				if (method_exists ($this->_arrNormalisationModule[$arrCDRFile["FileType"]], "Preprocessor" ))
+				if (method_exists ($this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]], "Preprocessor" ))
 				{
 					$bolPreprocessor = TRUE;
 				}
@@ -465,7 +476,7 @@
 				// run Preprocessor
 				if ($bolPreprocessor)
 				{
-					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDRFile["FileType"]]->Preprocessor(fgets($fileCDRFile));
+					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]]->Preprocessor(fgets($fileCDRFile));
 				}
 				else
 				{
@@ -628,18 +639,18 @@
 			$arrReportLine['<FileName>']	= TruncateName($arrCDR['FileName'], MSG_MAX_FILENAME_LENGTH);
 			
  			// Is there a normalisation module for this type?
-			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
+			if ($this->_arrNormalisationModule[$arrCDR['Carrier']][$arrCDR["FileType"]])
 			{
 				// normalise
 				switch ($arrCDR['Status'])
 				{
 					case CDR_FIND_OWNER:
-						$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->FindOwner($arrCDR);
+						$arrCDR = $this->_arrNormalisationModule[$arrCDR['Carrier']][$arrCDR["FileType"]]->FindOwner($arrCDR);
 						break;
 					case CDR_READY:
 					case CDR_RENORMALISE:
 					default:
-						$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
+						$arrCDR = $this->_arrNormalisationModule[$arrCDR['Carrier']][$arrCDR["FileType"]]->Normalise($arrCDR);
 						break;
 				}
 			}
@@ -676,7 +687,7 @@
 					break;
 				case CDR_BAD_OWNER:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Cannot match owner"));
-					$arrDelinquents[$this->_arrNormalisationModule[$arrCDR["FileType"]]->strFNN]++;
+					$arrDelinquents[$this->_arrNormalisationModule[$arrCDR['Carrier']][$arrCDR["FileType"]]->strFNN]++;
 					$intDelinquents++;
 					
 					// If this is a duplicate, make sure people cannot assign this CDR to an Account
