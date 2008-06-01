@@ -551,7 +551,7 @@ abstract class BillingModuleInvoice
 				}
 				
 				$arrServices[] = $arrService;			
-				Debug($arrService);
+				//Debug($arrService);
 			}
 		}
 		
