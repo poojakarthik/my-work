@@ -682,7 +682,7 @@
 					if ($this->_selFindDuplicate->Execute($arrCDR))
 					{
 						$arrDuplicateCDR        = $this->_selFindDuplicate->Fetch();
-						CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a duplicate of #{$arrDuplicate['Id']}");
+						CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a duplicate of #{$arrDuplicateCDR['Id']}");
 						$arrCDR['Status']	= CDR_DUPLICATE;
 					}
 					break;
@@ -703,7 +703,7 @@
 					if ($this->_selFindDuplicate->Execute($arrCDR))
 					{
 						$arrDuplicateCDR	= $this->_selFindDuplicate->Fetch();
-						CliEcho("!!! CDR #{$arrCDR['Id']} is a duplicate of #{$arrDuplicate['Id']}");
+						CliEcho("!!! CDR #{$arrCDR['Id']} is a duplicate of #{$arrDuplicateCDR['Id']}");
 						$arrCDR['Status']	= CDR_DUPLICATE;
 					}
 					else
