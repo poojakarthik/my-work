@@ -218,6 +218,7 @@
 	 	$this->_selFindDuplicate	= new StatementSelect(	"CDR",
 															"Id",
 															"Id != <Id> AND " .
+															"FNN = <FNN> AND " .
 															"Source = <Source> AND " .
 															"Destination = <Destination> AND " .
 															"StartDatetime = <StartDatetime> AND " .
