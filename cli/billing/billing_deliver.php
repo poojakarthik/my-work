@@ -32,7 +32,7 @@ foreach ($argv as $strArg)
 			break;
 			
 		case '-e':
-			$arrModes[]	= 'POST';
+			$arrModes[]	= 'EMAIL';
 			break;
 		
 		case '-p':
