@@ -630,7 +630,7 @@
 					 			$emlMail	= &Mail::factory('mail');
 					 			
 					 			// Uncomment this to Debug
-					 			$strEmail = 'rich@voiptelsystems.com.au';
+					 			//$strEmail = 'rich@voiptelsystems.com.au';
 					 			
 					 			// Send the email
 					 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
@@ -641,7 +641,7 @@
 								else
 								{
 						 			// Uncomment this to Debug
-						 			die;
+						 			//die;
 					 			
 									// Update DeliveryMethod
 									$arrUpdateData						= Array();
