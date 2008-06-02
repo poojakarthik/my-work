@@ -421,6 +421,8 @@
 		$arrOutputModes['EMAIL']['Archive']		= FALSE;
 		$arrOutputModes['EMAIL']['Delivery']	= 'EmailAttachment';
 		
+		CliEcho("Delivering for InvoiceRun '$strInvoiceRun'...");
+		
 		// Generate the PDFs
 		$strCommandDir	= FLEX_BASE_PATH."lib/pdf/";
 		$strXMLPath		= INVOICE_XML_PATH.$strInvoiceRun.'/';
@@ -440,10 +442,10 @@
 				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][0]	= Array('pipe', 'r');
 				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][1]	= Array('pipe', 'w');
 				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][2]	= Array('pipe', 'w');
-				if (!$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Process']	= proc_open($strCommand, $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'], $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes']))
+				if (!($arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Process']	= proc_open($strCommand, $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'], $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes'])))
 				{
 					// There was an error starting the child process
-					CliEcho("Unable to start child process for $strName::$strMode!");
+					CliEcho("Unable to start child process ('$strCommand') for $strName::$strMode!");
 				}
 				else
 				{
