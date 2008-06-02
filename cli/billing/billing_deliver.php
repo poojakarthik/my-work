@@ -26,15 +26,19 @@ foreach ($argv as $strArg)
 			break;
 			
 		default:
-			$bolSendOutput	= TRUE;
-			$bolBuildOutput	= TRUE;
+			$strInvoiceRun	= $strArg;
 			break;
 	}
 }
-if (!($strInvoiceRun	= $argv[1]))
+if (!($strInvoiceRun))
 {
 	CliEcho("\nPlease specify an InvoiceRun!\n");
 	die;
+}
+if ($argc === 2)
+{
+	$bolSendOutput	= TRUE;
+	$bolBuildOutput	= TRUE;
 }
 
 // Load Application
