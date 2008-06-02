@@ -1110,7 +1110,7 @@
 		*/
 		
 		// Alert YBS that file is ready for upload
-		SendEmail('rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au, turdminator@hotmail.com', 'Invoice Run Ready for Upload', 'The Invoice Run VBF file is ready for upload');
+		//SendEmail('rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au, turdminator@hotmail.com', 'Invoice Run Ready for Upload', 'The Invoice Run VBF file is ready for upload');
 		
 		
 		// update Invoice Status to COMMITTED, or SETTLED if the invoice balance is zero
