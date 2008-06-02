@@ -13,6 +13,8 @@
 require_once("../../flex.require.php");
 
 // Parse Command Line Parameters
+$arrModes		= Array();
+$bolDeliverOnly	= FALSE;
 foreach ($argv as $strArg)
 {
 	switch (trim($strArg))
@@ -23,6 +25,18 @@ foreach ($argv as $strArg)
 			
 		case '-s':
 			$bolSendOutput	= TRUE;
+			break;
+			
+		case '-d':
+			$bolDeliverOnly	= TRUE;
+			break;
+			
+		case '-e':
+			$arrModes[]	= 'POST';
+			break;
+		
+		case '-p':
+			$arrModes[]	= 'PRINT';
 			break;
 			
 		default:
@@ -39,6 +53,10 @@ if ($argc === 2)
 {
 	$bolSendOutput	= TRUE;
 	$bolBuildOutput	= TRUE;
+}
+if (!count($arrModes))
+{
+	$arrModes		= NULL;
 }
 
 // Load Application
@@ -65,7 +83,7 @@ foreach ($appBilling->_arrBillOutput as $intModule=>&$bilOutputModule)
 	if ($bolSendOutput && $bolBuildResult)
 	{
 		CliEcho("[ DELIVERING OUTPUT FOR $intModule ]");
-		$mixResult	= $bilOutputModule->SendOutput($strInvoiceRun);
+		$mixResult	= $bilOutputModule->SendOutput($strInvoiceRun, $arrModes, $bolDeliverOnly);
 		
 		if (is_array($mixResult))
 		{

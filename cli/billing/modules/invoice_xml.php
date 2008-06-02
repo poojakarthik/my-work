@@ -405,7 +405,7 @@
 	 *
 	 * @method
 	 */
- 	function SendOutput($strInvoiceRun)
+ 	function SendOutput($strInvoiceRun, $arrModes = NULL, $bolGeneratePDFs = TRUE)
  	{
 		// Get list of CustomerGroups
 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "InternalName", "1");
@@ -414,71 +414,84 @@
 		
 		// Define Output Modes
 		$arrOutputModes				= Array();
+		$arrSupportedModes			= Array();
 		
-		$arrOutputModes['PRINT']['Archive']		= TRUE;
-		$arrOutputModes['PRINT']['Delivery']	= 'SFTP';
+		$arrSupportedModes['PRINT']['Archive']	= TRUE;
+		$arrSupportedModes['PRINT']['Delivery']	= 'SFTP';
 		
-		$arrOutputModes['EMAIL']['Archive']		= FALSE;
-		$arrOutputModes['EMAIL']['Delivery']	= 'EmailAttachment';
+		$arrSupportedModes['EMAIL']['Archive']	= FALSE;
+		$arrSupportedModes['EMAIL']['Delivery']	= 'EmailAttachment';
+		
+		if (is_array($arrModes))
+		{
+			foreach ($arrModes as $strMode)
+			{
+				$arrOutputModes[$strMode]	= $arrSupportedModes[$strMode];
+			}
+		}
 		
 		CliEcho("Delivering for InvoiceRun '$strInvoiceRun'...");
 		
 		// Generate the PDFs
 		$strCommandDir	= FLEX_BASE_PATH."lib/pdf/";
 		$strXMLPath		= INVOICE_XML_PATH.$strInvoiceRun.'/';
-		$intRunning	= 0;
-		foreach ($arrOutputModes as $strMode=>&$arrOptions)
-		{
-			foreach ($arrCustomerGroups as $strName=>&$arrCustomerGroup)
-			{
-				$strCustomerGroup	= str_replace(' ', '_', strtoupper($arrCustomerGroup['InternalName']));
-				$strTARName			= str_replace(' ', '', strtolower($arrCustomerGroup['InternalName']))."-invoice-{$strInvoiceRun}.tar";
-				$strTARPath			= ($arrOptions['Archive']) ? "-f ".$strXMLPath.$strTARName : "";
-				$strCommand			= "cd {$strCommandDir}; php cli.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode";
-				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['FilePath']			= $strTARPath;
-				
-				// Start the PDF generation process
-				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes']			= Array();
-				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][0]	= Array('pipe', 'r');
-				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][1]	= Array('pipe', 'w');
-				$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][2]	= Array('pipe', 'w');
-				if (!($arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Process']	= proc_open($strCommand, $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'], $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes'])))
-				{
-					// There was an error starting the child process
-					CliEcho("Unable to start child process ('$strCommand') for $strName::$strMode!");
-				}
-				else
-				{
-					$arrCustomerGroup['StartDatetime']	= time();
-					$arrStatus							= proc_get_status($arrCustomerGroup['Process']);
-					CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process started successfully with PID {$arrStatus['pid']}!");
-					stream_set_blocking($arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes'][1], 0);
-					$intRunning++;
-				}
-			}
-		}
-		
-		// Monitor PDF Generation Processes
-		while ($intRunning)
+		$strPDFPath		= FILES_BASE_PATH."invoices/pdf/".$strInvoiceRun.'/';
+		$intRunning		= 0;
+		if ($bolGeneratePDFs)
 		{
 			foreach ($arrOutputModes as $strMode=>&$arrOptions)
 			{
-				foreach ($arrCustomerGroups as $strName=>$arrCustomerGroup)
+				foreach ($arrCustomerGroups as $strName=>&$arrCustomerGroup)
 				{
-					// Is this Process still running?
-					if ($arrCustomerGroup['Process'])
+					$strCustomerGroup	= str_replace(' ', '_', strtoupper($arrCustomerGroup['InternalName']));
+					$strTARName			= str_replace(' ', '', strtolower($arrCustomerGroup['InternalName']))."-invoice-{$strInvoiceRun}.tar";
+					$strTARPath			= ($arrOptions['Archive']) ? "-f ".$strXMLPath.$strTARName : "";
+					$strCommand			= "cd {$strCommandDir}; php cli.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode";
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['FilePath']			= $strTARPath;
+					
+					// Start the PDF generation process
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes']			= Array();
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][0]	= Array('pipe', 'r');
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][1]	= Array('pipe', 'w');
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][2]	= Array('pipe', 'w');
+					if (!($arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Process']	= proc_open($strCommand, $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'], $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes'])))
 					{
-						$arrStatus	= proc_get_status($arrCustomerGroup['Process']);
-						if (!$arrStatus['running'])
+						// There was an error starting the child process
+						CliEcho("Unable to start child process ('$strCommand') for $strName::$strMode!");
+					}
+					else
+					{
+						$arrCustomerGroup['StartDatetime']	= time();
+						$arrStatus							= proc_get_status($arrCustomerGroup['Process']);
+						CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process started successfully with PID {$arrStatus['pid']}!");
+						stream_set_blocking($arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes'][1], 0);
+						$intRunning++;
+					}
+				}
+			}
+			
+			// Monitor PDF Generation Processes
+			while ($intRunning)
+			{
+				foreach ($arrOutputModes as $strMode=>&$arrOptions)
+				{
+					foreach ($arrCustomerGroups as $strName=>$arrCustomerGroup)
+					{
+						// Is this Process still running?
+						if ($arrCustomerGroup['Process'])
 						{
-							// Close the process
-							$intTotalTime	= time() - $arrCustomerGroup['StartDatetime'];
-							CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process has completed in $intTotalTime seconds");
-							@pclose($arrCustomerGroup['Pipes'][0]);
-							@pclose($arrCustomerGroup['Pipes'][1]);
-							@pclose($arrCustomerGroup['Pipes'][2]);
-							@proc_close($arrCustomerGroup['Process']);
-							$intRunning--;
+							$arrStatus	= proc_get_status($arrCustomerGroup['Process']);
+							if (!$arrStatus['running'])
+							{
+								// Close the process
+								$intTotalTime	= time() - $arrCustomerGroup['StartDatetime'];
+								CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process has completed in $intTotalTime seconds");
+								@pclose($arrCustomerGroup['Pipes'][0]);
+								@pclose($arrCustomerGroup['Pipes'][1]);
+								@pclose($arrCustomerGroup['Pipes'][2]);
+								@proc_close($arrCustomerGroup['Process']);
+								$intRunning--;
+							}
 						}
 					}
 				}
@@ -542,7 +555,108 @@
 					break;
 				
 				case 'EmailAttachment':
+					// Get list of PDFs
+					$arrPDFs	= glob($strPDFPath."*.pdf");
 					
+					// Email Content Template
+		 			$strContentTemplate	=	"Please find attached your most recent invoice from <CustomerGroup>\r\n\r\n" .
+ 											"Regards\r\n\r\n" .
+ 											"The Team at <CustomerGroup>";
+					
+					foreach ($arrPDFs as $strPDF)
+					{
+						// Get Account Number from the filename
+						$arrPDFSplit	= explode('.', basename($strPDF));
+						$intAccount		= (int)$arrPDFSplit[0];
+						CliEcho(basename($strPDF)." >> ".$intAccount);
+						
+						// Is this Invoice set to be Emailed?
+						$selAccountEmail	= new StatementSelect(	"((Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact ON Contact.Account = Account.Id) JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id",
+																	"Invoice.Account, CustomerGroup.ExternalName, CustomerGroup.OutboundEmail, Email, FirstName",
+																	"InvoiceRun = <InvoiceRun> AND Account = <Account> AND DeliveryMethod = ".DELIVERY_METHOD_EMAIL);
+						
+						if ($selAccountEmail->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun)) === FALSE)
+			 			{
+			 				Debug($selAccountEmail->Error());
+			 				return FALSE;
+			 			}
+			 			if (!$arrDetails = $selAccountEmail->FetchAll())
+			 			{
+			 				// Bad Account Number or Non-Email Account
+			 				continue;
+			 			}
+			 			
+				 		CliEcho("\n\t+ Emailing Invoice(s) for Account #$intAccount...");
+			 			
+			 			// for each email-able contact
+			 			foreach ($arrDetails as $arrDetail)
+			 			{
+				 			// Set email headers
+				 			$arrHeaders = Array	(
+				 									'From'		=> $arrDetail['OutboundEmail'],
+				 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
+				 								);
+		 					$strContent	=	str_replace('<CustomerGroup>', $arrDetail['ExternalName'], $strContentTemplate);
+					 		
+					 		// Does the customer have a first name?
+					 		if (trim($arrDetail['FirstName']))
+					 		{
+					 			$strContent = "Dear ".$arrDetail['FirstName']."\r\n\r\n" . $strContent;
+					 		}
+					 		
+				 			// Account for , separated email addresses
+				 			$arrEmails = explode(',', $arrDetail['Email']);
+				 			foreach ($arrEmails as $strEmail)
+				 			{
+					 			$strEmail = trim($strEmail);
+					 			
+					 			CliEcho(str_pad("\t\tAddress: '$strEmail'...", 70, " ", STR_PAD_RIGHT), FALSE);
+					 			
+					 			// Validate email address
+					 			if (!preg_match('/^([[:alnum:]]([+-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $strEmail))
+					 			{
+					 				CliEcho("[ FAILED ]\n\t\t\t-Reason: Email address is invalid");
+					 				continue;
+					 			}
+					 			
+					 			$mimMime	= new Mail_mime("\r\n");
+					 			$mimMime->setTXTBody($strContent);
+					 			$mimMime->addAttachment($strPDF, 'application/pdf');
+								$strBody	= $mimMime->get();
+								$strHeaders	= $mimMime->headers($arrHeaders);
+					 			$emlMail	= &Mail::factory('mail');
+					 			
+					 			// Uncomment this to Debug
+					 			$strEmail = 'rich@voiptelsystems.com.au';
+					 			
+					 			// Send the email
+					 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
+					 			{
+					 				CliEcho("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
+					 				continue;
+					 			}
+								else
+								{
+									// Update DeliveryMethod
+									$arrUpdateData						= Array();
+									$arrUpdateData['DeliveryMethod']	= BILLING_METHOD_EMAIL_SENT;
+									$arrWhere				= Array();
+									$arrWhere['InvoiceRun']	= $strInvoiceRun;
+									$arrWhere['Account']	= $arrDetail['Account'];
+									if ($updDeliveryMethod->Execute($arrUpdateData, $arrWhere))
+									{
+										//Debug("Success!");
+									}
+									else
+									{
+										//Debug("Failure!");
+									}
+									
+				 					CliEcho("[   OK   ]");
+								}
+				 			}
+			 			}
+					}
 					break;
 			}
 			
