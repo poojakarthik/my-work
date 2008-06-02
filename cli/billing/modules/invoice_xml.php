@@ -559,9 +559,12 @@
 					$arrPDFs	= glob($strPDFPath."*.pdf");
 					
 					// Email Content Template
-		 			$strContentTemplate	=	"Please find attached your most recent invoice from <CustomerGroup>\r\n\r\n" .
+		 			$strContentTemplate	=	"Please find attached your most recent Invoice from <CustomerGroup>\r\n\r\n" .
  											"Regards\r\n\r\n" .
  											"The Team at <CustomerGroup>";
+ 					
+ 					// Get Billing Period
+ 					$strBillingPeriod	= date("F Y", strtotime("-1 month", strtotime($strInvoiceRun)));
 					
 					foreach ($arrPDFs as $strPDF)
 					{
