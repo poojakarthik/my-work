@@ -13,7 +13,11 @@
 require_once("../../flex.require.php");
 
 // Parse Command Line Parameters
-
+if (!($strInvoiceRun	= $argv[1]))
+{
+	CliEcho("\nPlease specify an InvoiceRun!\n");
+	die;
+}
 
 // Load Application
 $arrConfig					= LoadApplication();
