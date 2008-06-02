@@ -449,7 +449,7 @@
 				{
 					$arrCustomerGroup['StartDatetime']	= time();
 					$arrStatus							= proc_get_status($arrCustomerGroup['Process']);
-					CliEcho("$strName::$strMode process started successfully with PID {$arrStatus['pid']}!");
+					CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process started successfully with PID {$arrStatus['pid']}!");
 					$intRunning++;
 				}
 			}
@@ -470,7 +470,7 @@
 						{
 							// Close the process
 							$intTotalTime	= time() - $arrCustomerGroup['StartDatetime'];
-							CliEcho("$strName::$strMode process has completed in $intTotalTime seconds");
+							CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process has completed in $intTotalTime seconds");
 							@pclose($arrCustomerGroup['Pipes'][0]);
 							@pclose($arrCustomerGroup['Pipes'][1]);
 							@pclose($arrCustomerGroup['Pipes'][2]);

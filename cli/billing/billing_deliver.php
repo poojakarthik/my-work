@@ -13,6 +13,24 @@
 require_once("../../flex.require.php");
 
 // Parse Command Line Parameters
+foreach ($argv as $strArg)
+{
+	switch (trim($strArg))
+	{
+		case '-b':
+			$bolBuildOutput	= TRUE;
+			break;
+			
+		case '-s':
+			$bolSendOutput	= TRUE;
+			break;
+			
+		default:
+			$bolSendOutput	= TRUE;
+			$bolBuildOutput	= TRUE;
+			break;
+	}
+}
 if (!($strInvoiceRun	= $argv[1]))
 {
 	CliEcho("\nPlease specify an InvoiceRun!\n");
@@ -28,10 +46,20 @@ $appBilling					= new ApplicationBilling($arrConfig);
 foreach ($appBilling->_arrBillOutput as $intModule=>&$bilOutputModule)
 {
 	// Build Output
-	CliEcho("[ BUILDING OUTPUT FOR $intModule ]");
-	if ($bilOutputModule->BuildOutput($strInvoiceRun))
+	$bolBuildResult	= TRUE;
+	if ($bolBuildOutput)
 	{
-		// Deliver Output (disabled for the time being)
+		CliEcho("[ BUILDING OUTPUT FOR $intModule ]");
+		if (!($bolBuildResult = $bilOutputModule->BuildOutput($strInvoiceRun)))
+		{
+			// Error Generating Output
+			CliEcho("Building Output Failed!");
+		}
+	}
+	
+	// Deliver Output
+	if ($bolSendOutput && $bolBuildResult)
+	{
 		CliEcho("[ DELIVERING OUTPUT FOR $intModule ]");
 		$mixResult	= $bilOutputModule->SendOutput();
 		
@@ -41,11 +69,6 @@ foreach ($appBilling->_arrBillOutput as $intModule=>&$bilOutputModule)
 			// Which ones failed?
 			// TODO
 		}
-	}
-	else
-	{
-		// Error Generating Output
-		CliEcho("Building Output Failed!");
 	}
 }
 
