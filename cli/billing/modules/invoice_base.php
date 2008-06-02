@@ -65,8 +65,24 @@ abstract class BillingModuleInvoice
 		// Init member variables
 		$this->_strFilename		= NULL;
 		$this->_strSampleFile	= NULL;
-		$this->_strCDRTable		= ($arrConfig['PrintingMode'] === 'FINAL') ? 'CDRInvoiced'	: 'CDR';
-		$this->_strInvoiceTable	= ($arrConfig['PrintingMode'] === 'FINAL') ? 'Invoice'		: 'InvoiceTemp';
+		
+		switch (strtoupper($arrConfig['PrintingMode']))
+		{
+			case 'FINAL':
+				$this->_strCDRTable		= 'CDR';
+				$this->_strInvoiceTable	= 'Invoice';
+				break;
+				
+			case 'COMMITTED_REPRINT':
+				$this->_strCDRTable		= 'CDRInvoiced';
+				$this->_strInvoiceTable	= 'Invoice';
+				break;
+				
+			default:
+				$this->_strCDRTable		= 'CDR';
+				$this->_strInvoiceTable	= 'InvoiceTemp';
+				break;
+		}
 		
 		//--------------------------------------------------------------------//
 		// Statements
