@@ -577,6 +577,7 @@
 						$selAccountEmail	= new StatementSelect(	"((Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact ON Contact.Account = Account.Id) JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id",
 																	"Invoice.Id AS InvoiceNumber, Invoice.Account, CustomerGroup.ExternalName, CustomerGroup.OutboundEmail, Email, FirstName",
 																	"Email != '' AND Contact.Archived = 0 AND InvoiceRun = <InvoiceRun> AND Invoice.Account = <Account> AND Invoice.DeliveryMethod = ".DELIVERY_METHOD_EMAIL);
+						$updDeliveryMethod	= new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
 						
 						if ($selAccountEmail->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun)) === FALSE)
 			 			{
