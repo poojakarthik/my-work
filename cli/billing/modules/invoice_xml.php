@@ -429,7 +429,7 @@
 		$intRunning	= 0;
 		foreach ($arrOutputModes as $strMode=>&$arrOptions)
 		{
-			foreach ($arrCustomerGroups as $strName=>$arrCustomerGroup)
+			foreach ($arrCustomerGroups as $strName=>&$arrCustomerGroup)
 			{
 				$strCustomerGroup	= str_replace(' ', '_', strtoupper($arrCustomerGroup['InternalName']));
 				$strTARName			= str_replace(' ', '', strtolower($arrCustomerGroup['InternalName']))."-invoice-{$strInvoiceRun}.tar";
@@ -452,6 +452,7 @@
 					$arrCustomerGroup['StartDatetime']	= time();
 					$arrStatus							= proc_get_status($arrCustomerGroup['Process']);
 					CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process started successfully with PID {$arrStatus['pid']}!");
+					stream_set_blocking($arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes'][1], 0);
 					$intRunning++;
 				}
 			}
