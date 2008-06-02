@@ -623,7 +623,7 @@
 					 				continue;
 					 			}
 					 			
-					 			$mimMime	= new Mail_mime("\r\n");
+					 			$mimMime	= new Mail_mime("\n");
 					 			$mimMime->setTXTBody($strContent);
 					 			$mimMime->addAttachment(file_get_contents($strPDF), 'application/pdf', "{$intAccount}_{$arrDetail['InvoiceNumber']}.pdf", FALSE);
 								$strBody	= $mimMime->get();
