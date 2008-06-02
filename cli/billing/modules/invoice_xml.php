@@ -402,6 +402,7 @@
 		
 		// Define Output Modes
 		$arrOutputModes				= Array();
+		
 		$arrOutputModes['PRINT']['Archive']		= TRUE;
 		$arrOutputModes['PRINT']['Delivery']	= 'SFTP';
 		
@@ -430,7 +431,7 @@
 				if (!$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Process']	= proc_open($strCommand, $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'], $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes']))
 				{
 					// There was an error starting the child process
-					// TODO?
+					CliEcho("Unable to start child process for $strName::$strMode!");
 				}
 				else
 				{
@@ -483,7 +484,8 @@
 					else
 					{
 						// WTF? This shouldn't happen
-						// TODO
+						CliEcho("Unexpected Delivery Mode '{$arrOptions['Delivery']}'!");
+						break;
 					}
 					
 					if ($ptrConnection)
@@ -497,25 +499,25 @@
 								if (ftp_put($ptrConnection, basename($arrCustomerGroup['FilePath']), $arrCustomerGroup['FilePath'], FTP_BINARY))
 								{
 									// Successfully Uploaded
-									// TODO
+									CliEcho("Archive was successfully uploaded to the Salmat Server");
 								}
 								else
 								{
 									// Could not upload the file
-									// TODO
+									CliEcho("Unable to upload the Archive to the Salmat Server");
 								}
 							}
 						}
 						else
 						{
 							// Unable to log in
-							// TODO
+							CliEcho("Unable to log in to the Salmat Server with provided credentials");
 						}
 					}
 					else
 					{
 						// Unable to connect to SFTP server
-						// TODO
+						CliEcho("Unable to establish a connection with the Salmat Server");
 					}
 					break;
 				
