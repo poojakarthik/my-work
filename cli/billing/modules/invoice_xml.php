@@ -349,6 +349,7 @@
 		if (!count($arrAccounts))
 		{
 			// Grab full list of Accounts
+			CliEcho("Retrieving full list of Invoices for '$strInvoiceRun'...");
 			$selAccounts	= new StatementSelect($this->_strInvoiceTable, "*", "InvoiceRun = <InvoiceRun>");
 			$selAccounts->Execute();
 			$arrInvoices	= $selAccounts->FetchAll();
@@ -356,6 +357,7 @@
 		else
 		{
 			// Grab specified Accounts
+			CliEcho("Retrieving specified list of Invoices for '$strInvoiceRun'...");
 			$selAccountsById	= new StatementSelect($this->_strInvoiceTable, "*", "Account = <Account> AND InvoiceRun = <InvoiceRun>");
 			foreach ($arrAccounts as $intAccount)
 			{
@@ -368,8 +370,10 @@
 		}		
 		
 		// Generate Output for each Account
+		CliEcho("Generating XML...");
 		foreach ($arrInvoices as $arrInvoice)
 		{
+			CliEcho("{$arrInvoice['Account']}...");
 			$this->AddInvoice($arrInvoice);
 		}
 		
