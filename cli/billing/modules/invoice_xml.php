@@ -559,8 +559,8 @@
 					$arrPDFs	= glob($strPDFPath."*.pdf");
 					
 					// Email Content Template
-		 			$strContentTemplate	=	"Please find attached your most recent Invoice from <CustomerGroup>\r\n\r\n" .
- 											"Regards\r\n\r\n" .
+		 			$strContentTemplate	=	"Please find attached your most recent Invoice from <CustomerGroup>\n\n" .
+ 											"Regards\n" .
  											"The Team at <CustomerGroup>";
  					
  					// Get Billing Period
@@ -605,7 +605,7 @@
 					 		// Does the customer have a first name?
 					 		if (trim($arrDetail['FirstName']))
 					 		{
-					 			$strContent = "Dear ".$arrDetail['FirstName']."\r\n\r\n" . $strContent;
+					 			$strContent = "Dear ".$arrDetail['FirstName']."\n\n" . $strContent;
 					 		}
 					 		
 				 			// Account for , separated email addresses
