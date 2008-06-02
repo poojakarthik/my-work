@@ -637,6 +637,9 @@
 					 			}
 								else
 								{
+						 			// Uncomment this to Debug
+						 			die;
+					 			
 									// Update DeliveryMethod
 									$arrUpdateData						= Array();
 									$arrUpdateData['DeliveryMethod']	= BILLING_METHOD_EMAIL_SENT;
