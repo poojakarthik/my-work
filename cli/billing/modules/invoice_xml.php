@@ -568,12 +568,12 @@
 						// Get Account Number from the filename
 						$arrPDFSplit	= explode('.', basename($strPDF));
 						$intAccount		= (int)$arrPDFSplit[0];
-						CliEcho(basename($strPDF)." >> ".$intAccount);
+						//CliEcho(basename($strPDF)." >> ".$intAccount);
 						
 						// Is this Invoice set to be Emailed?
 						$selAccountEmail	= new StatementSelect(	"((Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact ON Contact.Account = Account.Id) JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id",
-																	"Invoice.Account, CustomerGroup.ExternalName, CustomerGroup.OutboundEmail, Email, FirstName",
-																	"InvoiceRun = <InvoiceRun> AND Account = <Account> AND DeliveryMethod = ".DELIVERY_METHOD_EMAIL);
+																	"Invoice.Id AS InvoiceNumber, Invoice.Account, CustomerGroup.ExternalName, CustomerGroup.OutboundEmail, Email, FirstName",
+																	"InvoiceRun = <InvoiceRun> AND Invoice.Account = <Account> AND Invoice.DeliveryMethod = ".DELIVERY_METHOD_EMAIL);
 						
 						if ($selAccountEmail->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun)) === FALSE)
 			 			{
@@ -621,7 +621,7 @@
 					 			
 					 			$mimMime	= new Mail_mime("\r\n");
 					 			$mimMime->setTXTBody($strContent);
-					 			$mimMime->addAttachment($strPDF, 'application/pdf');
+					 			$mimMime->addAttachment(file_get_contents($strPDF), 'application/pdf', "{$intAccount}_{$arrDetail['InvoiceNumber']}.pdf", FALSE);
 								$strBody	= $mimMime->get();
 								$strHeaders	= $mimMime->headers($arrHeaders);
 					 			$emlMail	= &Mail::factory('mail');
