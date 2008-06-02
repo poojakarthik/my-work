@@ -61,7 +61,7 @@ foreach ($appBilling->_arrBillOutput as $intModule=>&$bilOutputModule)
 	if ($bolSendOutput && $bolBuildResult)
 	{
 		CliEcho("[ DELIVERING OUTPUT FOR $intModule ]");
-		$mixResult	= $bilOutputModule->SendOutput();
+		$mixResult	= $bilOutputModule->SendOutput($strInvoiceRun);
 		
 		if (is_array($mixResult))
 		{
