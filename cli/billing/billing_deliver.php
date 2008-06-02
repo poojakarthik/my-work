@@ -13,34 +13,34 @@
 require_once("../../flex.require.php");
 
 // Parse Command Line Parameters
-$arrModes		= Array();
-$bolDeliverOnly	= FALSE;
+$arrModes			= Array();
+$bolGeneratePDFs	= TRUE;
 foreach ($argv as $strArg)
 {
 	switch (trim($strArg))
 	{
 		case '-b':
-			$bolBuildOutput	= TRUE;
+			$bolBuildOutput		= TRUE;
 			break;
 			
 		case '-s':
-			$bolSendOutput	= TRUE;
+			$bolSendOutput		= TRUE;
 			break;
 			
 		case '-d':
-			$bolDeliverOnly	= TRUE;
+			$bolGeneratePDFs	= FALSE;
 			break;
 			
 		case '-e':
-			$arrModes[]	= 'EMAIL';
+			$arrModes[]			= 'EMAIL';
 			break;
 		
 		case '-p':
-			$arrModes[]	= 'PRINT';
+			$arrModes[]			= 'PRINT';
 			break;
 			
 		default:
-			$strInvoiceRun	= $strArg;
+			$strInvoiceRun		= $strArg;
 			break;
 	}
 }
