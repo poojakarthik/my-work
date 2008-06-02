@@ -351,7 +351,11 @@
 			// Grab full list of Accounts
 			CliEcho("Retrieving full list of Invoices for '$strInvoiceRun'...");
 			$selAccounts	= new StatementSelect($this->_strInvoiceTable, "*", "InvoiceRun = <InvoiceRun>");
-			$selAccounts->Execute();
+			if ($selAccounts->Execute() === FALSE)
+			{
+				Debug($selAccounts->Error());
+				return FALSE;
+			}
 			$arrInvoices	= $selAccounts->FetchAll();
 		}
 		else
@@ -361,7 +365,11 @@
 			$selAccountsById	= new StatementSelect($this->_strInvoiceTable, "*", "Account = <Account> AND InvoiceRun = <InvoiceRun>");
 			foreach ($arrAccounts as $intAccount)
 			{
-				$selAccountsById->Execute(Array('Account' => $intAccount));
+				if ($selAccountsById->Execute(Array('Account' => $intAccount)) === FALSE)
+				{
+					Debug($selAccountsById->Error());
+					return FALSE;
+				}
 				if ($arrInvoice = $selAccountsById->Fetch())
 				{
 					$arrInvoices[]	= $arrInvoice;
