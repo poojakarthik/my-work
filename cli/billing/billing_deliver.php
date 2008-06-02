@@ -24,13 +24,16 @@ $appBilling					= new ApplicationBilling($arrConfig);
 foreach ($appBilling->_arrBillOutput as $intModule=>&$bilOutputModule)
 {
 	// Build Output
+	CliEcho("[ BUILDING OUTPUT FOR $intModule ]");
 	if ($bilOutputModule->BuildOutput($strInvoiceRun))
 	{
 		// Deliver Output (disabled for the time being)
-		//$mixResult	= $bilOutputModule->SendOutput();
+		CliEcho("[ DELIVERING OUTPUT FOR $intModule ]");
+		$mixResult	= $bilOutputModule->SendOutput();
 		
 		if (is_array($mixResult))
 		{
+			CliEcho("Sending Output Failed!");
 			// Which ones failed?
 			// TODO
 		}
@@ -38,7 +41,7 @@ foreach ($appBilling->_arrBillOutput as $intModule=>&$bilOutputModule)
 	else
 	{
 		// Error Generating Output
-		// TODO
+		CliEcho("Building Output Failed!");
 	}
 }
 
