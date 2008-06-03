@@ -126,7 +126,7 @@
 	 *
 	 * @property
 	 */
-	private $_arrNormalisationModule;
+	public $_arrNormalisationModule;
 	
 	//------------------------------------------------------------------------//
 	// _intImportPass
