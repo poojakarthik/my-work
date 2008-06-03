@@ -4,7 +4,7 @@
 require_once('../../flex.require.php');
 
 $arrConfig	= LoadApplication();
-$appNormalisation	= new ApplicationNormalisation($arrConfig);
+$appNormalisation	= new ApplicationNormalise($arrConfig);
 
 // show cdr
 $intCDR = (int)$_REQUEST['id'];
