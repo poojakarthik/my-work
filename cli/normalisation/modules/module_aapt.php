@@ -78,6 +78,8 @@ class NormalisationModuleAAPT extends NormalisationModule
 	 */
 	private $_strCallDate;
 	
+	public $intBaseCarrier	= CARRIER_AAPT;
+	public $intBaseFileType	= FILE_IMPORT_CDR_AAPT_STANDARD;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -92,17 +94,14 @@ class NormalisationModuleAAPT extends NormalisationModule
 	 *
 	 * @method
 	 */
-	function __construct()
+	function __construct($intCarrier)
 	{
 		// call parent constructor
-		parent::__construct();
+		parent::__construct($intCarrier);
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
 		//##----------------------------------------------------------------##//
-		
-		// Module Carrier (does not overwrite CDR field)
-		$this->_intCarrier	= CARRIER_AAPT;
 		
 		// define row start (account for header rows)
 		$this->_intStartRow = 1;

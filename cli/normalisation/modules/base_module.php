@@ -43,7 +43,7 @@
  * @package		vixen
  * @class		<ClassName||InstanceName>
  */
-abstract class NormalisationModule
+abstract class NormalisationModule extends CarrierModule 
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -231,16 +231,13 @@ abstract class NormalisationModule
 	public $strFNN;
 	
 	protected $_intCarrier;
+	protected $_intBaseCarrier;
 	
-	function __construct($errErrorHandler=NULL, $rptNormalisationReport=NULL)
+	function __construct($intCarrier)
 	{
-		// The purpose of this is to have a generic constructor for all Normalisation
-		// modules.  It will never be called to instanciate an object of type
-		// NormalisationModule, though
+ 		// Call CarrierModule Constructor
+ 		parent::__construct($intCarrier, MODULE_TYPE_NORMALISATION_CDR);
 		
-		$this->_errErrorHander 			= $errErrorHandler;
-		$this->_rptNormalisationReport 	= $rptNormalisationReport;
-
 		//$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		//$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$strAccountStatus	= ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.", ".ACCOUNT_DEBT_COLLECTION.", ".ACCOUNT_SUSPENDED;
@@ -838,7 +835,7 @@ abstract class NormalisationModule
 	 protected function FindRecordCode($mixCarrierCode)
 	 {
 
-	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->_intCarrier, "CarrierCode" => $mixCarrierCode));
+	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->_intBaseCarrier, "CarrierCode" => $mixCarrierCode));
 		
 		if($intResult === FALSE)
 		{
@@ -913,7 +910,7 @@ abstract class NormalisationModule
 	 */
 	 protected function FindDestination($mixCarrierCode, $bolDontError=FALSE)
 	 {
-	 	$arrData = Array("Carrier" => $this->_intCarrier, "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
+	 	$arrData = Array("Carrier" => $this->_intBaseCarrier, "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
 		$intResult = $this->_selFindDestination->Execute($arrData);
 		
 		if ($intResult === FALSE)

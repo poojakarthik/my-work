@@ -44,6 +44,8 @@
  */
 class NormalisationModuleOptus extends NormalisationModule
 {
+	public $intBaseCarrier	= CARRIER_OPTUS;
+	public $intBaseFileType	= FILE_IMPORT_CDR_OPTUS_STANDARD;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -58,13 +60,10 @@ class NormalisationModuleOptus extends NormalisationModule
 	 *
 	 * @method
 	 */
-	function __construct()
+	function __construct($intCarrier)
 	{
 		// call parent constructor
-		parent::__construct();
-		
-		// Module Carrier (does not overwrite CDR field)
-		$this->_intCarrier	= CARRIER_OPTUS;
+		parent::__construct($intCarrier);
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format

@@ -43,6 +43,8 @@
  */
 class NormalisationModuleRSLCOM extends NormalisationModule
 {
+	public $intBaseCarrier	= CARRIER_UNITEL;
+	public $intBaseFileType	= FILE_IMPORT_CDR_UNITEL_STANDARD;
 
 	//------------------------------------------------------------------------//
 	// __construct
@@ -57,13 +59,10 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 	 *
 	 * @method
 	 */
-	function __construct()
+	function __construct($intCarrier)
 	{
 		// call parent constructor
-		parent::__construct();
-		
-		// Module Carrier (does not overwrite CDR field)
-		$this->_intCarrier	= CARRIER_UNITEL;
+		parent::__construct($intCarrier);
 		
 		// define the column delimiter
 		$this->_strDelimiter = ",";

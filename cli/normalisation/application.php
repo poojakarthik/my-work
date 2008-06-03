@@ -1,4 +1,4 @@
-<?php
+ <?php
 //----------------------------------------------------------------------------//
 // (c) copyright 2006 VOIPTEL Pty Ltd
 //
@@ -29,7 +29,7 @@
 
 
 //----------------------------------------------------------------------------//
-// ClassName
+// ApplicationNormalise
 //----------------------------------------------------------------------------//
 /**
  * ApplicationNormalise
@@ -196,7 +196,7 @@
  		*/
  		
  		// Load CDR Normalisation CarrierModules
- 		CliEcho(" * IMPORT MODULES");
+ 		CliEcho(" * NORMALISATION MODULES");
  		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_NORMALISATION_CDR));
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{

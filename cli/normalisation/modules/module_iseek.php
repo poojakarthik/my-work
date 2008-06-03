@@ -44,6 +44,8 @@
  */
 class NormalisationModuleIseek extends NormalisationModule
 {
+	public $intBaseCarrier	= CARRIER_ISEEK;
+	public $intBaseFileType	= FILE_IMPORT_CDR_ISEEK_ADSL1;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -58,13 +60,10 @@ class NormalisationModuleIseek extends NormalisationModule
 	 *
 	 * @method
 	 */
-	function __construct()
+	function __construct($intCarrier)
 	{
 		// call parent constructor
-		parent::__construct();
-		
-		// Module Carrier (does not overwrite CDR field)
-		$this->_intCarrier	= CARRIER_ISEEK;
+		parent::__construct($intCarrier);
 		
 		// define the column delimiter
 		$this->_strDelimiter = "\t";

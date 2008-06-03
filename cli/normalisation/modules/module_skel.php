@@ -59,10 +59,10 @@ class NormalisationModuleSkel extends NormalisationModule
 	 *
 	 * @method
 	 */
-	function __construct()
+	function __construct($intCarrier)
 	{
 		// call parent constructor
-		parent::__construct();
+		parent::__construct($intCarrier);
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
