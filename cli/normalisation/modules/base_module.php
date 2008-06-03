@@ -230,8 +230,8 @@ abstract class NormalisationModule extends CarrierModule
 	
 	public $strFNN;
 	
-	protected $_intCarrier;
-	protected $intBaseCarrier;
+	public $_intCarrier;
+	public $intBaseCarrier;
 	
 	function __construct($intCarrier)
 	{
