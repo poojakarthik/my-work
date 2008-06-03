@@ -261,6 +261,9 @@ $GLOBALS['*arrConstant']	['FileImport']	[4100]	['Description']	= 'AAPT Rejection
 $GLOBALS['*arrConstant']	['FileImport']	[4200]	['Constant']	= 'FILE_IMPORT_CDR_AAPT_STANDARD';
 $GLOBALS['*arrConstant']	['FileImport']	[4200]	['Description']	= 'AAPT Standard CDR';
 
+$GLOBALS['*arrConstant']	['FileImport']	[4300]	['Constant']	= 'FILE_IMPORT_CDR_ISEEK_ADSL1';
+$GLOBALS['*arrConstant']	['FileImport']	[4300]	['Description']	= 'iSeek ADSL1 Usage CDR';
+
 // PAYMENT NORMALISATION
 $GLOBALS['*arrConstant']	['FileImport']	[3000]	['Constant']	= 'FILE_IMPORT_PAYMENT_BPAY_STANDARD';
 $GLOBALS['*arrConstant']	['FileImport']	[3000]	['Description']	= 'BPay Standard File';

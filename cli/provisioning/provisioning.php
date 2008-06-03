@@ -66,9 +66,6 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
  	{
  		parent::__construct();
  		
- 		// Get list of Carrier Modules
- 		$this->_selCarrierModules	= new StatementSelect("CarrierModule", "*", "Type = <Type> AND Active = 1");
- 		
 	 	$this->_arrImportFiles		= Array();
 	 	$this->_arrExportFiles		= Array();
 	 	$this->_arrExportModules	= Array();
