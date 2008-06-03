@@ -68,7 +68,7 @@ abstract class Cli
 	    {
 	    	$labelled = array_key_exists(self::ARG_LABEL, $param);
 	    	$label = array_key_exists(self::ARG_LABEL, $param) ? $param[self::ARG_LABEL] : '';
-	    	echo " " . ($param[self::ARG_REQUIRED] ? "" : "[") . "-" . $switch . $label . ($param[self::ARG_REQUIRED] ? "" : "]");
+	    	echo " " . ($param[self::ARG_REQUIRED] ? "" : "[") . "-" . $switch . " " . $label . ($param[self::ARG_REQUIRED] ? "" : "]");
 	    	if ($labelled)
 	    	{
 		    	$where .= $sp . $label . substr($pad, strlen($label)) . $param[self::ARG_DESCRIPTION];
