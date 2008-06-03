@@ -231,7 +231,7 @@ abstract class NormalisationModule extends CarrierModule
 	public $strFNN;
 	
 	protected $_intCarrier;
-	protected $_intBaseCarrier;
+	protected $intBaseCarrier;
 	
 	function __construct($intCarrier)
 	{
@@ -835,7 +835,7 @@ abstract class NormalisationModule extends CarrierModule
 	 protected function FindRecordCode($mixCarrierCode)
 	 {
 
-	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->_intBaseCarrier, "CarrierCode" => $mixCarrierCode));
+	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->intBaseCarrier, "CarrierCode" => $mixCarrierCode));
 		
 		if($intResult === FALSE)
 		{
@@ -910,7 +910,7 @@ abstract class NormalisationModule extends CarrierModule
 	 */
 	 protected function FindDestination($mixCarrierCode, $bolDontError=FALSE)
 	 {
-	 	$arrData = Array("Carrier" => $this->_intBaseCarrier, "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
+	 	$arrData = Array("Carrier" => $this->intBaseCarrier, "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
 		$intResult = $this->_selFindDestination->Execute($arrData);
 		
 		if ($intResult === FALSE)
