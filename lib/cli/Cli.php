@@ -12,16 +12,53 @@ abstract class Cli
 	const ARG_DESCRIPTION = 2;
 	const ARG_DEFAULT = 3;
 	const ARG_VALIDATION = 4;
-	
+
 	private $_arrCommandLineArguments = NULL;
 	private $_arrValidatedArguments = NULL;
 	private $_strApplicationFile = NULL;
-	
+
+	const SWITCH_LOG = "l";
+	const SWITCH_VERBOSE = "v";
+	const SWITCH_SILENT = "s";
+
+	private $logFile = NULL;
+	private $logSilent = FALSE;
+	private $logVerbose = FALSE;
+
 	protected final function __construct()
 	{
 		$this->_arrCommandLineArguments = $this->getCommandLineArguments();
+
+		if (array_key_exists(self::SWITCH_LOG, $this->_arrCommandLineArguments) 
+		 || array_key_exists(self::SWITCH_VERBOSE, $this->_arrCommandLineArguments) 
+		 || array_key_exists(self::SWITCH_SILENT, $this->_arrCommandLineArguments))
+		{
+			echo "Invalid implementation. The following command line switches are reserved: " . self::SWITCH_LOG . ", " . self::SWITCH_VERBOSE . " and " . self::SWITCH_SILENT;
+		}
+
+		$this->_arrCommandLineArguments[self::SWITCH_LOG] = array(
+			self::ARG_LABEL			=> "LOG_FILE", 
+			self::ARG_REQUIRED		=> FALSE,
+			self::ARG_DESCRIPTION	=> "is a writable file location to write log messages to (EMAIL or PRINT) [optional, default is no logging]",
+			self::ARG_DEFAULT		=> FALSE,
+			self::ARG_VALIDATION	=> 'Cli::_validFile("%1$s", FALSE)'
+		);
+
+		$this->_arrCommandLineArguments[self::SWITCH_VERBOSE] = array(
+			self::ARG_REQUIRED		=> FALSE,
+			self::ARG_DESCRIPTION	=> "for verbose messages [optional, default is to output errors only]",
+			self::ARG_DEFAULT		=> FALSE,
+			self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+		);
+
+		$this->_arrCommandLineArguments[self::SWITCH_SILENT] = array(
+			self::ARG_REQUIRED		=> FALSE,
+			self::ARG_DESCRIPTION	=> "no not output messages to console [optional, default is to output messages]",
+			self::ARG_DEFAULT		=> FALSE,
+			self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+		);
 	}
-	
+
 	public static final function execute($class)
 	{
 		$classFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . $class . ".php";
@@ -31,7 +68,21 @@ abstract class Cli
 			{
 				require_once $classFile;
 				$app = new $class();
-				$app->run();
+
+				$logSwitches = array(self::SWITCH_LOG, self::SWITCH_VERBOSE, self::SWITCH_SILENT);
+
+				$logArgs = $app->_getValidatedArguments($logSwitches);
+
+				$app->startLog($logArgs[self::SWITCH_LOG], $logArgs[self::SWITCH_SILENT], $logArgs[self::SWITCH_VERBOSE]);
+
+				$exitCode = $app->run();
+
+				$app->endLog();
+
+				if ($exitCode)
+				{
+					exit($exitCode);
+				}
 			}
 			else
 			{
@@ -45,18 +96,25 @@ abstract class Cli
 			exit(1);
 		}
 	}
-	
-	abstract protected function getCommandLineArguments(); 
+
+	protected function getCommandLineArguments()
+	{
+		$commandLineArguments = array(
+		);
+		return $commandLineArguments;
+	}
 
 	abstract protected function run(); 
-	
-	protected function showUsage($error="")
+
+	protected function showUsage($error="", $supressNewLine=FALSE)
 	{
 		if ($error)
 		{
-			echo "\nError: $error\n";
+			$this->log("\nError: $error\n", TRUE, $supressNewLine, TRUE);
 		}
-	
+
+		$this->endLog();
+
 		$sp = "\n	";
 		$pad = str_repeat(" ", 30);
 		
@@ -87,71 +145,73 @@ abstract class Cli
 		exit($error ? 1 : 0);
 	}
 	
-	protected function getValidatedArguments()
+	protected function _getValidatedArguments($arrArgs=NULL)
 	{
-		if ($this->_arrValidatedArguments === NULL)
+		$this->startErrorCatching();
+		global $argv;
+		$arrArgv = array_values($argv);
+		if (!isset($arrArgv) || !is_array($arrArgv))
 		{
-			$this->startErrorCatching();
-			global $argv;
-			if (!isset($argv) || !is_array($argv))
-			{
-				// Prevent execution by any means other than the command line!
-				// (prevents access via a browser)
-				exit(1);
-			}
-			$this->_strApplicationFile = array_shift($argv);
+			// Prevent execution by any means other than the command line!
+			// (prevents access via a browser)
+			exit(1);
+		}
+		$this->_strApplicationFile = array_shift($arrArgv);
 
-			$validArgs = array();
-			$i = 0;
-			$requiredSwitches = 0;
-			$swiches = "";
-			$switched = 0;
-			foreach ($this->_arrCommandLineArguments as $switch => $param)
+		$validArgs = array();
+		$i = 0;
+		$requiredSwitches = 0;
+		$swiches = "";
+		$switched = 0;
+		foreach ($this->_arrCommandLineArguments as $switch => $param)
+		{
+			$req = pow(2, $i);
+			if ($param[Cli::ARG_REQUIRED])
 			{
-				$req = pow(2, $i);
-				if ($param[Cli::ARG_REQUIRED])
+				$requiredSwitches = $requiredSwitches | $req;
+			}
+			else
+			{
+				$validArgs[$switch] = $param[Cli::ARG_DEFAULT];
+				$switched = $switched | $req;
+			}
+			$i++;
+			$swiches .= $switch;
+			$this->_arrCommandLineArguments[$switch]["BIN_SWITCH"] = $req;
+		}
+
+		for ($i = 0, $l = count($arrArgv); $i < $l; $i++)
+		{
+			// If the arg is only a parameter switch, 
+			// add it to the next value and continue to that value
+			if (strlen($arrArgv[$i]) <= 2 && $arrArgv[$i][0] == "-" && $i < $l - 1)
+			{
+				// But only if the next parameter is not a switch too!
+				if ($arrArgv[$i+1][0] != '-')
 				{
-					$requiredSwitches = $requiredSwitches | $req;
+					$arrArgv[$i+1] = $arrArgv[$i] . $arrArgv[$i+1];
+					continue; 
 				}
-				else
-				{
-					$validArgs[$switch] = $param[Cli::ARG_DEFAULT];
-					$switched = $switched | $req;
-				}
-				$i++;
-				$swiches .= $switch;
-				$this->_arrCommandLineArguments[$switch]["BIN_SWITCH"] = $req;
+			}
+		
+			// If the value does not start with a switch, show the usage message 
+			if (strlen($arrArgv[$i]) < 2 || $arrArgv[$i][0] != "-")
+			{
+				$this->showUsage("Invalid arguments passed.");
 			}
 			
-			for ($i = 0, $l = count($argv); $i < $l; $i++)
-			{
-				// If the arg is only a parameter switch, 
-				// add it to the next value and continue to that value
-				if (strlen($argv[$i]) <= 2 && $argv[$i][0] == "-" && $i < $l - 1)
-				{
-					// But only if the next parameter is not a switch too!
-					if ($argv[$i+1][0] != '-')
-					{
-						$argv[$i+1] = $argv[$i] . $argv[$i+1];
-						continue; 
-					}
-				}
+			// We have a switch with a value
+			$switch = $arrArgv[$i][1];
+			$value = substr($arrArgv[$i], 2);
 			
-				// If the value does not start with a switch, show the usage message 
-				if (strlen($argv[$i]) < 2 || $argv[$i][0] != "-")
-				{
-					$this->showUsage("Invalid arguments passed.");
-				}
-				
-				// We have a switch with a value
-				$switch = $argv[$i][1];
-				$value = substr($argv[$i], 2);
-				
-				if (!array_key_exists($switch, $this->_arrCommandLineArguments))
-				{
-					$this->showUsage("Argument '-$switch' not supported.");
-				}
-				
+			if (!array_key_exists($switch, $this->_arrCommandLineArguments))
+			{
+				$this->showUsage("Argument '-$switch' not supported.");
+			}
+
+			// If we are only getting a subset of the switches (as when setting up logging)
+			if (!is_array($arrArgs) || array_search($switch, $arrArgs) !== FALSE)
+			{
 				// Escape the string to make it safer for eval'ing
 				$evalValue = addcslashes($value, "\$\"\\");
 				$validation = sprintf($this->_arrCommandLineArguments[$switch][Cli::ARG_VALIDATION], $evalValue);
@@ -163,16 +223,26 @@ abstract class Cli
 				{
 					$this->showUsage($e->getMessage());
 				}
-				
-				$switched = $switched | $this->_arrCommandLineArguments[$switch]["BIN_SWITCH"];
 			}
+			
+			$switched = $switched | $this->_arrCommandLineArguments[$switch]["BIN_SWITCH"];
+		}
 
-			if ($requiredSwitches ^ ($requiredSwitches & $switched))
-			{
-				$this->showUsage("Please provide all required arguments.");
-			}
-			$this->_arrValidatedArguments = $validArgs;
-			$this->dieIfErred();
+		if (!is_array($arrArgs) && $requiredSwitches ^ ($requiredSwitches & $switched))
+		{
+			$this->showUsage("Please provide all required arguments.");
+		}
+
+		$this->dieIfErred();
+
+		return $validArgs;
+	}
+	
+	protected function getValidatedArguments()
+	{
+		if ($this->_arrValidatedArguments === NULL)
+		{
+			$this->_arrValidatedArguments = $this->_getValidatedArguments();
 		}
 		return $this->_arrValidatedArguments;
 	}
@@ -183,7 +253,7 @@ abstract class Cli
 		require_once $this->getFlexBasePath() . $strFilePath;
 		$this->dieIfErred();
 	}
-	
+
 	protected function getFlexBasePath()
 	{
 		static $strFlexBasePath;
@@ -213,6 +283,70 @@ abstract class Cli
 		}
 	}
 	
+
+
+	protected function startLog($logFile, $logSilent=FALSE, $logVerbose=FALSE)
+	{
+		$this->logSilent = $logSilent;
+		$this->logVerbose = $logVerbose;
+		if ($logFile && $this->logFile == NULL)
+		{
+			$this->logFile = fopen($logFile, "a+");
+			$this->log("\n::START::");
+		}
+	}
+
+	protected function log($message, $isError=FALSE, $suppressNewLine=FALSE, $alwaysEcho=FALSE)
+	{
+		if (!$alwaysEcho && !$this->logVerbose && !$isError) return;
+		if (!$this->logSilent || $alwaysEcho) 
+		{
+			echo $message . ($suppressNewLine ? "" : "\n");
+			flush();
+		}
+		if (!$this->logVerbose && !$isError) return;
+		if ($this->logFile == NULL) return;
+		fwrite($this->logFile, date("Y-m-d H-i-s.u :: ") . trim(str_replace(chr(8), '', $message)) . "\n");
+		if ($message === "::END::")
+		{
+			fwrite($this->logFile, "\n\n\n");
+		}
+	}
+
+	protected function endLog()
+	{
+		if ($this->logFile == NULL) return;
+		$this->log("::END::");
+		fclose($this->logFile);
+	}
+
+
+	/**
+	 * This function can be invoked by the subclass to interact with a user at the command line.
+	 */
+	protected function getUserResponse($strPrompt)
+	{
+		if ($fh = fopen('php://stdout','w'))
+		{
+			fwrite($fh, $strPrompt . " ");
+			fclose($fh);
+		}
+		if ($fh = fopen('php://stdin','rb'))
+		{
+			$strResponse = fread($fh,1024);
+			fclose($fh);
+		}
+		return trim($strResponse);
+	}
+
+
+
+
+
+	/**
+	 * Validation functions used for command line arg validation
+	 */
+
 	public static function _validDate($date)
 	{
 		if (preg_match("/^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}(| ([01]{1,1}[0-9]{1,1}|2[0-3]{1,1}):[0-5]{1,1}[0-9]{1,1}:[0-5]{1,1}[0-9]{1,1})$/", $date))

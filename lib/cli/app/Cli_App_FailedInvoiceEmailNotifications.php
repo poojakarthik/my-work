@@ -4,48 +4,6 @@
 class Cli_App_FailedInvoiceEmailNotifications extends Cli
 {
 	const SWITCH_POSTFIX_LOG = "f";
-	const SWITCH_LOG = "l";
-	const SWITCH_VERBOSE = "v";
-	const SWITCH_SILENT = "s";
-
-	private $logFile = NULL;
-	private $logSilent = FALSE;
-	private $logVerbose = FALSE;
-	private $rounding = 1;
-
-	private function startLog($logFile, $logSilent=FALSE, $logVerbose=FALSE)
-	{
-		$this->logSilent = $logSilent;
-		$this->logVerbose = $logVerbose;
-		if ($logFile && $this->logFile == NULL)
-		{
-			$this->logFile = fopen($logFile, "a+");
-			$this->log("\n::START::");
-		}
-	}
-
-	private function log($message, $isError=FALSE, $suppressNewLine=FALSE)
-	{
-		if (!$this->logVerbose && !$isError) return;
-		if (!$this->logSilent) 
-		{
-			echo $message . ($suppressNewLine ? "" : "\n");
-			flush();
-		}
-		if ($this->logFile == NULL) return;
-		fwrite($this->logFile, date("Y-m-d H-i-s.u :: ") . trim(str_replace(chr(8), '', $message)) . "\n");
-		if ($message === "::END::")
-		{
-			fwrite($this->logFile, "\n\n\n");
-		}
-	}
-
-	private function endLog()
-	{
-		$this->log("::END::");
-		if ($this->logFile == NULL) return;
-		fclose($this->logFile);
-	}
 
 	function run()
 	{
@@ -54,14 +12,8 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
 
-			// Check to see if we are logging...
-			$this->startLog($arrArgs[self::SWITCH_LOG], $arrArgs[self::SWITCH_SILENT], $arrArgs[self::SWITCH_VERBOSE]);
-
 			// Include the application... 
 			$this->requireOnce('flex.require.php');
-
-			// Path to the mail log dir
-			$pathToLog = $arrArgs[self::SWITCH_POSTFIX_LOG];
 
 			// !!!HACK HACK HACK!!!
 			// This is always for telcoblue, but it will need changing for other customer groups!
@@ -79,8 +31,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			if (!$arrEmailAddresses || !count($arrEmailAddresses))
 			{
 				$this->log('No bounced messages detected.');
-				$this->endLog();
-				exit(0);
+				return 0;
 			}
 			$this->log(count($arrEmailAddresses) . ' bounced email address detected.');
 
@@ -111,8 +62,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			if (!$intNrCustGroups)
 			{
 				$this->log('No customer groups were related.');
-				$this->endLog();
-				exit(0);
+				return 0;
 			}
 			else
 			{
@@ -178,16 +128,13 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			}
 
 			$this->log("Finished.");
-			$this->endLog();
-			exit($exitCode);
+			return $exitCode;
 
 		}
 		catch(Exception $exception)
 		{
-			$this->log('ERROR: ' . $exception->getMessage(), TRUE);
-			$this->endLog();
-			$this->showUsage($exception->getMessage());
-			exit(1);
+			$this->showUsage('ERROR: ' . $exception->getMessage());
+			return 1;
 		}
 	}
 
@@ -200,28 +147,6 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				self::ARG_DESCRIPTION => "is the full path to the Postfix log (or error file)",
 				self::ARG_DEFAULT 	=> NULL,
 				self::ARG_VALIDATION 	=> 'Cli::_validFile("%1$s", TRUE)'
-			),
-
-			self::SWITCH_LOG => array(
-				self::ARG_LABEL 		=> "LOG_FILE", 
-				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is a writable file location to write log messages to (EMAIL or PRINT) [optional, default is no logging]",
-				self::ARG_DEFAULT 	=> FALSE,
-				self::ARG_VALIDATION 	=> 'Cli::_validFile("%1$s", FALSE)'
-			),
-
-			self::SWITCH_VERBOSE => array(
-				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "for verbose messages [optional, default is to output errors only]",
-				self::ARG_DEFAULT 	=> FALSE,
-				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
-			),
-
-			self::SWITCH_SILENT => array(
-				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "no not output messages to console [optional, default is to output messages]",
-				self::ARG_DEFAULT 	=> FALSE,
-				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
 			),
 
 		);

@@ -3,59 +3,17 @@
 class Cli_App_InvoiceXMLTest extends Cli
 {
 	const SWITCH_XML_DATA_FILE_LOCATION = "x";
-	const SWITCH_LOG = "l";
-	const SWITCH_VERBOSE = "v";
 	const SWITCH_PRECISE = "p";
-	const SWITCH_SILENT = "s";
 
-	private $logFile = NULL;
-	private $logSilent = FALSE;
-	private $logVerbose = FALSE;
 	private $rounding = 1;
-
-	private function startLog($logFile, $logSilent=FALSE, $logVerbose=FALSE)
-	{
-		$this->logSilent = $logSilent;
-		$this->logVerbose = $logVerbose;
-		if ($logFile && $this->logFile == NULL)
-		{
-			$this->logFile = fopen($logFile, "w+");
-			$this->log("\n::START::");
-		}
-	}
-
-	private function log($message, $isError=FALSE, $suppressNewLine=FALSE)
-	{
-		if (!$this->logVerbose && !$isError) return;
-		if (!$this->logSilent) 
-		{
-			echo $message . ($suppressNewLine ? "" : "\n");
-			flush();
-		}
-		if ($this->logFile == NULL) return;
-		fwrite($this->logFile, date("Y-m-d H-i-s.u :: ") . trim(str_replace(chr(8), '', $message)) . "\n");
-	}
-
-	private function endLog()
-	{
-		$this->log("::END::");
-		if ($this->logFile == NULL) return;
-		fclose($this->logFile);
-	}
 
 	function run()
 	{
 		$testingMessageLength = 0;
 		try
 		{
-			// Include the application... 
-			//$this->requireOnce("flex.require.php");
-
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
-
-			// Check to see if we are logging...
-			$this->startLog($arrArgs[self::SWITCH_LOG], $arrArgs[self::SWITCH_SILENT], $arrArgs[self::SWITCH_VERBOSE]);
 
 			$this->rounding = $arrArgs[self::SWITCH_PRECISE] ? 0 : 1;
 
@@ -150,17 +108,13 @@ class Cli_App_InvoiceXMLTest extends Cli
 									: "\nCompleted successfully with no errors detected in $passCount files.\n";
 			$this->log($message, $errorCount);
 
-			$this->endLog();
-
 			// Must have worked! Exit with 'OK' code 0 for no errors, or positive int of number of errors
-			exit($errorCount);
+			return $errorCount;
 		}
 		catch(Exception $exception)
 		{
-			$this->log($undo."\nERROR: " . $exception->getMessage(), TRUE);
-			$this->endLog();
-			$this->showUsage($exception->getMessage());
-			exit(1);
+			$this->showUsage($undo."\nERROR: " . $exception->getMessage(), TRUE);
+			return 1;
 		}
 	}
 
@@ -176,34 +130,6 @@ class Cli_App_InvoiceXMLTest extends Cli
 				self::ARG_VALIDATION 	=> 'Cli::_validReadableFileOrDirectory("%1$s")'
 			),
 
-			self::SWITCH_LOG => array(
-				self::ARG_LABEL 		=> "LOG_FILE", 
-				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is a writable file location to write log messages to (EMAIL or PRINT) [optional, default is no logging]",
-				self::ARG_DEFAULT 	=> FALSE,
-				self::ARG_VALIDATION 	=> 'Cli::_validFile("%1$s", FALSE)'
-			),
-
-			self::SWITCH_VERBOSE => array(
-				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "for verbose messages [optional, default is to output errors only]",
-				self::ARG_DEFAULT 	=> FALSE,
-				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
-			),
-
-			self::SWITCH_SILENT => array(
-				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "no not output messages to console [optional, default is to output messages]",
-				self::ARG_DEFAULT 	=> FALSE,
-				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
-			),
-
-			self::SWITCH_PRECISE => array(
-				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "to treat 'rounding errors' as errors [optional, default is to ignore rounding errors]",
-				self::ARG_DEFAULT 	=> FALSE,
-				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
-			)
 		);
 		return $commandLineArguments;
 	}
