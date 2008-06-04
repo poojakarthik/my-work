@@ -72,9 +72,9 @@ class DataAccessUI extends DatabaseAccess
 	/**
 	 * SelectById()
 	 *
-	 * Performs a MySQLi SELECT using only the field's Id as a restraint
+	 * Performs a Database SELECT using only the field's Id as a restraint
 	 *
-	 * Performs a MySQLi SELECT using only the field's Id as a restraint
+	 * Performs a Database SELECT using only the field's Id as a restraint
 	 *
 	 * @param	array	$strTable					Table name we want to use
 	 * @param	array	$arrColumns					Can be either associative or indexed array.
@@ -118,9 +118,9 @@ class DataAccessUI extends DatabaseAccess
 	/**
 	 * Select()
 	 *
-	 * Performs a MySQLi SELECT
+	 * Performs a Database SELECT
 	 *
-	 * Performs a MySQLi SELECT
+	 * Performs a Database SELECT
 	 *
 	 * @param	array		$strTable					Name of table to select from
 	 * @param	array		$arrColumns					Can be either associative or indexed array.
