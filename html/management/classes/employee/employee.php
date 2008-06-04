@@ -67,7 +67,7 @@
 			{
 				//TODO!flame! DO NOT DIE IF EMPLOYEE DOES NOT EXIST !!!!!!!!!!!!!!!!!
 				//throw new Exception ('Employee does not exist.');
-				$selEmployee->db->FetchCleanOblib('Employee', $this);
+				$selEmployee->FetchCleanOblib('Employee', $this);
 			}
 			else
 			{

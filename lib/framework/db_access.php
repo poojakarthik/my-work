@@ -74,7 +74,7 @@
 	 *
 	 * @property
 	 */
-	public $refMysqliConnection;
+	private $refMysqliConnection;
 	
  	//------------------------------------------------------------------------//
 	// DataAccess() - Constructor
@@ -376,7 +376,7 @@
 	 *
 	 * @property
 	 */
-	public $intSQLMode;
+	protected $intSQLMode;
 	
  	//------------------------------------------------------------------------//
 	// db	
@@ -392,7 +392,7 @@
 	 *
 	 * @property
 	 */
-	public $db;
+	protected $db;
 
 	//------------------------------------------------------------------------//
 	// DatabaseAccess() - Constructor
@@ -768,6 +768,11 @@
 		}
 		
 		return implode(', ', $arrReturn);
+	}
+
+	public function FetchCleanOblib($strTableName, $oblobjPushObject)
+	{
+		$this->db->FetchCleanOblib($strTableName, $oblobjPushObject);
 	}
  }
  
