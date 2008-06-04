@@ -1,7 +1,7 @@
 <?
 
 
-class Cli_Failed_Invoice_Email_Notifications extends Cli
+class Cli_App_FailedInvoiceEmailNotifications extends Cli
 {
 	const SWITCH_POSTFIX_LOG = "f";
 	const SWITCH_LOG = "l";

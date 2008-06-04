@@ -71,13 +71,13 @@ $strWorkingDir		= getcwd();
 $strFullDirectory	= INVOICE_XML_PATH.$strInvoiceRun.'/';
 $strSampleDirectory	= $strFullDirectory."samples/";
 @mkdir($strSampleDirectory, 0777, TRUE);
-if (chdir("../../lib/pdf"))
+if (chdir("../../cli"))
 {
 	// Create Sample PDFs
 	foreach ($arrAccounts as $intAccount)
 	{
 		CliEcho(" + Generating PDF for $intAccount...\t\t\t", FALSE);
-		$strReturn	= shell_exec("php cli.php -x{$strFullDirectory}$intAccount.xml -f$strSampleDirectory -oEMAIL");
+		$strReturn	= shell_exec("php pdf.php -x{$strFullDirectory}$intAccount.xml -f$strSampleDirectory -oEMAIL");
 		if (stripos($strReturn, 'Completed Successfully'))
 		{
 			CliEcho("[   OK   ]");

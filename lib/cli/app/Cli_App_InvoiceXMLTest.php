@@ -1,6 +1,6 @@
 <?php
 
-class Cli_Invoice_XML_Test extends Cli
+class Cli_App_InvoiceXMLTest extends Cli
 {
 	const SWITCH_XML_DATA_FILE_LOCATION = "x";
 	const SWITCH_LOG = "l";

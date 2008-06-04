@@ -1,6 +1,6 @@
 <?php
 
-class Cli_Encrypt_Credit_Cards extends Cli
+class Cli_App_EncryptCreditCards extends Cli
 {
 
 	function run()

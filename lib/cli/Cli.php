@@ -24,7 +24,7 @@ abstract class Cli
 	
 	public static final function execute($class)
 	{
-		$classFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . "apps" . DIRECTORY_SEPARATOR . $class . ".php";
+		$classFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . $class . ".php";
 		try
 		{
 			if (file_exists($classFile))
@@ -57,30 +57,30 @@ abstract class Cli
 			echo "\nError: $error\n";
 		}
 	
-	    $sp = "\n    ";
-	    $pad = str_repeat(" ", 30);
-	    
+		$sp = "\n	";
+		$pad = str_repeat(" ", 30);
+		
 		echo "\nUsage:{$sp}php " . $this->_strApplicationFile;
 		$where = "\nwhere:";
 		$switches = "\nwith switches:";
-	    $switched = FALSE;
-	    foreach ($this->_arrCommandLineArguments as $switch => $param)
-	    {
-	    	$labelled = array_key_exists(self::ARG_LABEL, $param);
-	    	$label = array_key_exists(self::ARG_LABEL, $param) ? $param[self::ARG_LABEL] : '';
-	    	echo " " . ($param[self::ARG_REQUIRED] ? "" : "[") . "-" . $switch . " " . $label . ($param[self::ARG_REQUIRED] ? "" : "]");
-	    	if ($labelled)
-	    	{
-		    	$where .= $sp . $label . substr($pad, strlen($label)) . $param[self::ARG_DESCRIPTION];
-	    	}
-	    	else
-	    	{
-	    		$label = "-$switch";
-	    		$switches .= $sp . $label . substr($pad, strlen($label)) . $param[self::ARG_DESCRIPTION];
-	    		$switched = TRUE;
-	    	}
-	    }
-	    
+		$switched = FALSE;
+		foreach ($this->_arrCommandLineArguments as $switch => $param)
+		{
+			$labelled = array_key_exists(self::ARG_LABEL, $param);
+			$label = array_key_exists(self::ARG_LABEL, $param) ? $param[self::ARG_LABEL] : '';
+			echo " " . ($param[self::ARG_REQUIRED] ? "" : "[") . "-" . $switch . " " . $label . ($param[self::ARG_REQUIRED] ? "" : "]");
+			if ($labelled)
+			{
+				$where .= $sp . $label . substr($pad, strlen($label)) . $param[self::ARG_DESCRIPTION];
+			}
+			else
+			{
+				$label = "-$switch";
+				$switches .= $sp . $label . substr($pad, strlen($label)) . $param[self::ARG_DESCRIPTION];
+				$switched = TRUE;
+			}
+		}
+
 		echo "$where";
 		echo $switched ? "$switches\n\n" : "\n";
 		
@@ -284,14 +284,46 @@ abstract class Cli
 		{
 			return $file;
 		}
-		
-		// If it's a file (exiting or not)
+
+		// If the file/dir does not exist, we must check that we can create the dir
+		if (!file_exists($file))
+		{
+			$first = TRUE;
+			$path = $file;
+			do
+			{
+				$base = basename($path);
+				$path = dirname($path);
+				// If this is the base part of the path and it's a file, ignore it 
+				// as we want to know if the directory is writable.
+				if ($first && strpos($base, '.') !== FALSE)
+				{
+					// The base part is a file, so skip this bit.
+					$first = FALSE;
+					continue;
+				}
+				// If the directory exists but is not writable
+				if (file_exists($path) && (!is_dir($path) || !is_writable($path)))
+				{
+					throw new Exception("Unwritable directory specified: $path");
+				}
+				$first = FALSE;
+				// If the directory exists it is writable
+				if (file_exists($path))
+				{
+					return $file;
+				}
+			}
+			while (!file_exists($path));
+		}
+
+		// If it's a file (exiting or not, or a non-existing directory)
 		if (!is_dir($file))
-		{		
+		{
 			// If it exists then it isn't writable
 			if (file_exists($file))
 			{
-				throw new Exception("Unwritable file specified: '$file'");
+				throw new Exception("Unwritable file specified: '$file'.");
 			}
 			// Check to see if it can be created in the directory
 			$dir = dirname($file);
@@ -307,7 +339,7 @@ abstract class Cli
 		}
 		throw new Exception("Directory not found: '$file'");
 	}
-	
+
 	public static function _validFile($file, $checkReadable=TRUE)
 	{
 		if (file_exists($file))
@@ -316,7 +348,7 @@ abstract class Cli
 			{
 				throw new Exception("'$file' is not a file.");
 			}
-	
+
 			if ($checkReadable)
 			{
 				if (is_readable($file))
@@ -350,7 +382,7 @@ abstract class Cli
 		{
 			throw new Exception("Unable to create file '$name' in unwritable directory '$dir'");
 		}
-		
+
 		throw new Exception("Invalid file specified: '$file'");
 	}
 	

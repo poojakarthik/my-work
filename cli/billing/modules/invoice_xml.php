@@ -433,7 +433,7 @@
 		CliEcho("Delivering for InvoiceRun '$strInvoiceRun'...");
 		
 		// Generate the PDFs
-		$strCommandDir	= FLEX_BASE_PATH."lib/pdf/";
+		$strCommandDir	= FLEX_BASE_PATH."cli/";
 		$strXMLPath		= INVOICE_XML_PATH.$strInvoiceRun.'/';
 		$strPDFPath		= FILES_BASE_PATH."invoices/pdf/".$strInvoiceRun.'/';
 		$intRunning		= 0;
@@ -446,7 +446,7 @@
 					$strCustomerGroup	= str_replace(' ', '_', strtoupper($arrCustomerGroup['InternalName']));
 					$strTARName			= str_replace(' ', '', strtolower($arrCustomerGroup['InternalName']))."-invoice-{$strInvoiceRun}.tar";
 					$strTARPath			= ($arrOptions['Archive']) ? "-f ".$strXMLPath.$strTARName : "";
-					$strCommand			= "cd {$strCommandDir}; php cli.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode";
+					$strCommand			= "cd {$strCommandDir}; php pdf.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode";
 					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['FilePath']			= $strTARPath;
 					
 					// Start the PDF generation process
