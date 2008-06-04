@@ -76,7 +76,6 @@ class AppTemplateDefault extends ApplicationTemplate
 
 				
 		// Context menu options
-		//$this->ContextMenu->Account->ViewAccount($this->Dbo->Account-Id->Value);
 		// context menu
 		ContextMenu()->Logout();
 		
