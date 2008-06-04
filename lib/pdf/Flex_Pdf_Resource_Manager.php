@@ -19,7 +19,7 @@ class Flex_Pdf_Resource_Manager
 
 	private $customerGroup = NULL;
 	private $effectiveDate = NULL;
-	private $xsltString = NULL;
+	private $xsltStrings = array();
 
 	private function __construct($customerGroupId, $generationDate)
 	{
@@ -30,7 +30,7 @@ class Flex_Pdf_Resource_Manager
 	public function getXSLT($documentType)
 	{
 		// If we haven't already fetched the xslt...
-		if ($this->xsltString === NULL)
+		if (!array_key_exists($documentType, $this->xsltStrings))
 		{
 			// Need to run the following: -
 			/*
@@ -65,11 +65,11 @@ class Flex_Pdf_Resource_Manager
 			else
 			{
 				$arrRecordSet = $selDocumentTemplate->FetchAll();
-				$this->xsltString = $arrRecordSet[0]['Source'];
+				$this->xsltStrings[$documentType] = $arrRecordSet[0]['Source'];
 			}
 		}
 		// Return the cached xslt
-		return $this->xsltString;
+		return $this->xsltStrings[$documentType];
 	}
 	
 	private function loadResources()
