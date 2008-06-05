@@ -74,7 +74,7 @@
 	 *
 	 * @property
 	 */
-	private $refMysqliConnection;
+	public $refMysqliConnection;
 	
  	//------------------------------------------------------------------------//
 	// DataAccess() - Constructor
