@@ -4455,7 +4455,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			if ($intReturn > 0)
 			{
 				// An error occurred
-				return FALSE;
+				//return FALSE;
 			}
 			break;
 			
@@ -4473,7 +4473,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			if ($intReturn > 0)
 			{
 				// An error occurred
-				return FALSE;
+				//return FALSE;
 			}
 			break;
 		
