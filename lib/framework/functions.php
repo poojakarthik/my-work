@@ -4435,6 +4435,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	// Unpack
 	$arrOutput	= Array();
 	$intReturn	= NULL;
+	$strCommand	= NULL;
 	switch (strtolower($strType))
 	{
 		case 'zip':
@@ -4475,6 +4476,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			break;				
 	}
 	
-	return Array();
+	Debug("Command: '$strCommand'");
+	return $arrOutput;
 }
 ?>
