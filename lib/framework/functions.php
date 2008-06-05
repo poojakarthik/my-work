@@ -4417,10 +4417,13 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	// Source and Destination manipulation
 	$strBasename	= basename($strSourcePath);
 	$strDirname		= dirname($strSourcePath);
-	if (!@mkdir($strDestinationPath, 0644, TRUE))
+	if (!(file_exists($strDestinationPath) && is_dir($strDestinationPath)))
 	{
-		// Unable to create the Destination Path
-		return FALSE;
+		if (!@mkdir($strDestinationPath, 0644, TRUE))
+		{
+			// Unable to create the Destination Path
+			return FALSE;
+		}
 	}
 	
 	// Get the type
