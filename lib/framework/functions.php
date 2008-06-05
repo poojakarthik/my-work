@@ -4460,12 +4460,13 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			break;
 			
 		case 'tar':
-			$strCommand		= "tar -xv ";
+			$strCommand		= "tar";
+			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/(\w+\/)*,,'" : '';
+			$strCommand		.= " -xv ";
 			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.bz2', 'tbz', 'tbz2', 'tb2'))) ? '--bzip2 ' : '';
 			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.gz', 'tgz'))) ? '--gzip ' : '';
 			$strCommand		.= "-f $strSourcePath";
 			$strCommand		.= ($strDestinationPath !== NULL) ? " -C $strDestinationPath" : '';
-			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/(\w+\/)*,,'" : '';
 			
 			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
 			
