@@ -3,9 +3,9 @@
 // Framework
 require_once("../../flex.require.php");
 
-$strSourcePath			= "/home/richdavis/Desktop/archivetest/__extract/archivetest.tar";
-$strDestinationPath		= NULL;
-$bolJunkPaths			= FALSE;
+$strSourcePath			= "/home/rdavis/archive_test/archivetest.tar";
+$strDestinationPath		= "/home/rdavis/archive_test/__extract";
+$bolJunkPaths			= TRUE;
 $strPassword			= NULL;
 $strType				= NULL;
 
