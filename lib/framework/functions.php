@@ -4476,7 +4476,8 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			break;				
 	}
 	
-	Debug("Command: '$strCommand'");
+	Debug("Command\t: '$strCommand'");
+	Debug("Last Line\t: '$strLastLine'");
 	return $arrOutput;
 }
 ?>
