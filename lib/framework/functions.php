@@ -4459,7 +4459,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.gz', 'tgz'))) ? '--gzip ' : '';
 			$strCommand		.= "-f $strSourcePath";
 			$strCommand		.= ($strDestinationPath !== NULL) ? " -C $strDestinationPath" : '';
-			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/(\w+\/)*,'" : '';
+			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/(\w+\/)*,,'" : '';
 			
 			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
 			
