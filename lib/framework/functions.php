@@ -4389,7 +4389,7 @@ function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
  * Unpacks an Archive to a given location.  Accepted Force Types are 'zip', 'tar', 'tar.bz2'
  * 
  * @param	string	$strSourcePath						Full path to the Source Archive
- * @param	string	$strDestinationPath		[optional]	Full path to where the Archive should be extracted. (Default: NULL)
+ * @param	string	$strDestinationPath		[optional]	Full path to where the Archive should be extracted. (Default: NULL - Current Working Directory)
  * @param	boolean	$bolJunkPaths			[optional]	TRUE: Do not recreate Archive directory structure. (Default: FALSE)
  * @param	string	$strPassword			[optional]	Archive password. (Default: NULL)
  * @param	string	$strType				[optional]	Archive is of this type. (Default: NULL)
@@ -4458,7 +4458,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.bz2', 'tbz', 'tbz2', 'tb2'))) ? '--bzip2 ' : '';
 			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.gz', 'tgz'))) ? '--gzip ' : '';
 			$strCommand		.= "-f $strSourcePath";
-			$strCommand		.= ($strDestinationPath !== NULL) ? "-C $strDestinationPath" : '';
+			$strCommand		.= ($strDestinationPath !== NULL) ? " -C $strDestinationPath" : '';
 			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/(\w+\/)*,'" : '';
 			
 			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
