@@ -2286,18 +2286,18 @@ $GLOBALS['*arrConstant']	['ServiceCreation']	[106]	['Description']	= 'Status Cha
 
 // Nature of Service Record Closure
 // Identifies the reason why a Service record was Closed
-$GLOBALS['*arrConstant']	['ServiceClosure']	[100]	['Constant']	= 'SERVICE_CLOSURE_DISCONNECTED';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[100]	['Description']	= 'Disconnected';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[101]	['Constant']	= 'SERVICE_CLOSURE_ARCHIVED';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[101]	['Description']	= 'Archived';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[102]	['Constant']	= 'SERVICE_CLOSURE_LESSEE_CHANGED';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[102]	['Description']	= 'Lessee Changed';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[103]	['Constant']	= 'SERVICE_CLOSURE_ACCOUNT_CHANGED';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[103]	['Description']	= 'Account Changed';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[104]	['Constant']	= 'SERVICE_CLOSURE_LESSEE_CHANGE_REVERSED';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[104]	['Description']	= 'Lessee Change Reversed';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[105]	['Constant']	= 'SERVICE_CLOSURE_ACCOUNT_CHANGE_REVERSED';
-$GLOBALS['*arrConstant']	['ServiceClosure']	[105]	['Description']	= 'Account Change Reversed';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[200]	['Constant']	= 'SERVICE_CLOSURE_DISCONNECTED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[200]	['Description']	= 'Disconnected';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[201]	['Constant']	= 'SERVICE_CLOSURE_ARCHIVED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[201]	['Description']	= 'Archived';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[202]	['Constant']	= 'SERVICE_CLOSURE_LESSEE_CHANGED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[202]	['Description']	= 'Lessee Changed';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[203]	['Constant']	= 'SERVICE_CLOSURE_ACCOUNT_CHANGED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[203]	['Description']	= 'Account Changed';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[204]	['Constant']	= 'SERVICE_CLOSURE_LESSEE_CHANGE_REVERSED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[204]	['Description']	= 'Lessee Change Reversed';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[205]	['Constant']	= 'SERVICE_CLOSURE_ACCOUNT_CHANGE_REVERSED';
+$GLOBALS['*arrConstant']	['ServiceClosure']	[205]	['Description']	= 'Account Change Reversed';
 
 
 // Special paths

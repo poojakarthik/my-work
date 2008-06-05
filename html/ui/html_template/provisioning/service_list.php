@@ -83,6 +83,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 	{
 		$arrSelectedServices	= DBO()->Request->ServiceIds->Value;
 		$arrServices			= DBO()->Account->Services->Value;
+		$intCurrentDate			= strtotime(GetCurrentDateForMySQL());
 		
 		// Flag records that can/can't be provisioned and find out if there are any
 		// service address details missing
@@ -120,13 +121,13 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			$strProvisioningHistoryLink	= "javascript:Vixen.ProvisioningPage.ShowHistory($intServiceId)";
 			if ($arrService['AddressId'] != NULL)
 			{
-				$strActionsCell  = "<img src='img/template/address.png' title='Address Details' onclick='$strViewAddressLink' style='cursor:pointer'/>";
+				$strActionsCell  = "<img src='img/template/address.png' title='Address Details' onclick='$strViewAddressLink'/>";
 			}
 			else
 			{
-				$strActionsCell  = "<img src='img/template/address.png' title='Address Details' onclick='$strEditAddressLink' style='cursor:pointer'/>";
+				$strActionsCell  = "<img src='img/template/address.png' title='Address Details' onclick='$strEditAddressLink'/>";
 			}
-			$strActionsCell .= "&nbsp;&nbsp;<img src='img/template/provisioning_history.png' title='Provisioning History' onclick='$strProvisioningHistoryLink' style='cursor:pointer'/>";
+			$strActionsCell .= "&nbsp;&nbsp;<img src='img/template/provisioning_history.png' title='Provisioning History' onclick='$strProvisioningHistoryLink'/>";
 
 			// Build the checkbox
 			if ($arrService['AddressId'] != NULL)
@@ -157,8 +158,6 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnn</a>"; 
 
 			// Work out the Date to display along with the status
-			$intCurrentDate = strtotime(GetCurrentDateForMySQL());
-			
 			// Check if the ClosedOn date has been set
 			if ($arrService['History'][0]['ClosedOn'] == NULL)
 			{
@@ -238,10 +237,11 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 				}
 			}
 			
-			$strHistoryDetails = HtmlTemplateServiceHistory::GetHistoryForTableDropDownDetail($arrService['History']);
-			
+			$strHistoryDetailsTable	= HtmlTemplateServiceHistory::GetHistoryForTableDropDownDetail($arrService['History']);
+			$strDropDownDetail		= "<div style='width:100%;background-color: #D4D4D4'>$strHistoryDetailsTable</div>";
+
 			Table()->Services->AddRow($strSelectCell, $strFnnCell, $strPlanCell, $strStatusCell, $strLineStatusCell, $strActionsCell);
-			Table()->Services->SetDetail($strHistoryDetails);
+			Table()->Services->SetDetail($strDropDownDetail);
 		}
 		
 		// If the account has no services then output an appropriate message in the table

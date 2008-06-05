@@ -687,6 +687,15 @@ function ConvertUserDateToMySqlDate($strUserDate)
 	$arrDate = explode("/", $strUserDate);
 	return "{$arrDate[2]}-{$arrDate[1]}-{$arrDate[0]}";
 }
+function ConvertDateToISODate($strDate)
+{
+	$arrDate = explode("/", $strDate);
+	if (count($arrDate) != 3)
+	{
+		return FALSE;
+	}
+	return "{$arrDate[2]}-{$arrDate[1]}-{$arrDate[0]}";
+}
 
 //------------------------------------------------------------------------//
 // ConvertMySQLDateToUnixTimeStamp

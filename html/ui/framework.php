@@ -2229,6 +2229,21 @@ class OutputMasks
 		}
 		return $strDate;
 	}
+	
+	function ShortDateTime($strISODateTime, $bolMonthAsWord=FALSE)
+	{
+		if ($bolMonthAsWord)
+		{
+			// 17:47:12 Jun 3, 2008
+			$strFormat = "H:i:s M j, Y";
+		}
+		else
+		{
+			// 17:47:12 03/06/2008
+			$strFormat = "H:i:s d/m/Y";
+		}
+		return date($strFormat, strtotime($strISODateTime));
+	}
 
 	//------------------------------------------------------------------------//
 	// LongDateAndTime

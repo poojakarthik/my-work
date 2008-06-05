@@ -1614,7 +1614,7 @@ class MenuItems
 		$arrData['Service']['Id'] = $intServiceId;
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MoveService\", \"ExtraLarge\", \"Service Movement\", \"Service\", \"Move\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MoveServicePopup\", \"mediumlarge\", \"Service Movement\", \"ServiceMovement\", \"DisplayServiceMovementPopup\", $strJsonCode)";
 	}
 
 

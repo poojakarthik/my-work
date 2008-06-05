@@ -84,31 +84,21 @@ class HtmlTemplateServiceHistory extends HtmlTemplate
 	
 	function RenderAsPopup()
 	{
-		$arrService	= DBO()->Service->AsArray->Value;
+		$objService	= DBO()->Service->AsObject->Value;
 		
-		Table()->History->SetHeader("Action", "Timestamp", "Performed By");
-		Table()->History->SetWidth("34%", "33%", "33%");
+		Table()->History->SetHeader("Timestamp", "Event", "Performed By");
+		Table()->History->SetWidth("24%", "43%", "33%");
 		Table()->History->SetAlignment("Left", "Left", "Left");
 		Table()->History->SetSortable(TRUE);
-		//Table()->History->SetSortFields("Action", "Timestamp", "Performed By");
 		Table()->History->SetSortFields(NULL, NULL, NULL);
 		Table()->History->SetPageSize(10);
-		
-		$intLastRecordIndex = count($arrService['History']) - 1;
-		foreach ($arrService['History'] as $intIndex=>$arrHistoryItem)
-		{
-			if ($arrHistoryItem['ClosedOn'] != NULL)
-			{
-				$strClosedBy		= ($arrHistoryItem['ClosedBy'] != NULL)? GetEmployeeName($arrHistoryItem['ClosedBy']) ." (". GetEmployeeUserName($arrHistoryItem['ClosedBy']) .")" : "";
-				$strClosedOn		= OutputMask()->ShortDate($arrHistoryItem['ClosedOn']);
-				$strNatureOfClosure = GetConstantDescription($arrHistoryItem['Status'], "Service");
-				Table()->History->AddRow($strNatureOfClosure, $strClosedOn, $strClosedBy);
-			}
 
-			$strCreatedBy			= GetEmployeeName($arrHistoryItem['CreatedBy']) ." (". GetEmployeeUserName($arrHistoryItem['CreatedBy']) .")";
-			$strCreatedOn			= OutputMask()->ShortDate($arrHistoryItem['CreatedOn']);
-			$strNatureOfCreation	= ($intIndex == $intLastRecordIndex)? "Created" : "Activated";
-			Table()->History->AddRow($strNatureOfCreation, $strCreatedOn, $strCreatedBy);
+
+		$arrHistoryForDisplay = HtmlTemplateServiceHistory::_GetHistoryDetailsForDisplay($objService);
+		
+		foreach ($arrHistoryForDisplay as $arrHistoryItem)
+		{
+			Table()->History->AddRow($arrHistoryItem['TimeStamp'], $arrHistoryItem['Event'], $arrHistoryItem['EmployeeName']);
 		}
 		
 		ob_start();
@@ -139,41 +129,156 @@ $strTable
 	 */
 	static function GetHistoryForTableDropDownDetail($arrHistory)
 	{
-		$intLastRecordIndex = count($arrHistory) - 1;
-		$strRows = "";
-		foreach ($arrHistory as $intIndex=>$arrHistoryItem)
+		$arrHistoryForDisplay = HtmlTemplateServiceHistory::_GetHistoryDetailsForDisplay($arrHistory);
+		
+		foreach ($arrHistoryForDisplay as $intIndex=>$arrHistoryItem)
 		{
-			if ($arrHistoryItem['ClosedOn'] != NULL)
+			if ($intIndex == 0)
 			{
-				$strClosedBy		= ($arrHistoryItem['ClosedBy'] != NULL)? "by ". GetEmployeeName($arrHistoryItem['ClosedBy']) ." (". GetEmployeeUserName($arrHistoryItem['ClosedBy']) .")" : "";
-				$strClosedOn		= OutputMask()->ShortDate($arrHistoryItem['ClosedOn']);
-				$strNatureOfClosure = GetConstantDescription($arrHistoryItem['Status'], "Service");
+				// Declare the widths in the first row
 				$strRows .= "
 <tr>
-	<td>$strNatureOfClosure</td>
-	<td style='text-align:right'>$strClosedOn</td>
-	<td>$strClosedBy</td>
+	<td width='26%'>{$arrHistoryItem['TimeStamp']}</td>
+	<td width='44%'>{$arrHistoryItem['Event']}</td>
+	<td width='30%'>{$arrHistoryItem['EmployeeName']}</td>
 </tr>";
 			}
-
-			$strCreatedBy			= "by ". GetEmployeeName($arrHistoryItem['CreatedBy']) ." (". GetEmployeeUserName($arrHistoryItem['CreatedBy']) .")";
-			$strCreatedOn			= OutputMask()->ShortDate($arrHistoryItem['CreatedOn']);
-			$strNatureOfCreation	= ($intIndex == $intLastRecordIndex)? "Created" : "Activated";
-			
-			$strRows .= "
+			else
+			{
+				$strRows .= "
 <tr>
-	<td>$strNatureOfCreation</td>
-	<td style='text-align:right'>$strCreatedOn</td>
-	<td>$strCreatedBy</td>
+	<td>{$arrHistoryItem['TimeStamp']}</td>
+	<td>{$arrHistoryItem['Event']}</td>
+	<td>{$arrHistoryItem['EmployeeName']}</td>
 </tr>";
-			
+			}
 		}
 		
-		$strTable = "<div style='width:100%;background-color: #D4D4D4'<table style='width:50%'>$strRows</table></div>";
+		$strTable = "<table style='width:100%'>$strRows</table>";
 		return $strTable;
 	}
-
 	
+	
+	//$mixService can be a ModuleService object OR an array of Service records detailing the history of a service
+	/* @return		array			$arrHistory[]	['TimeStamp']
+	 * 												['Event']		(Description, includes link to Related Account if there is one)
+	 * 												['EmployeeName']
+	 */ 
+	static private function _GetHistoryDetailsForDisplay($mixService)
+	{
+		static $intNowTimeStamp;
+		if (!isset($intNowTimeStamp))
+		{
+			$intNowTimeStamp = strtotime(GetCurrentISODateTime());
+		}
+		
+		// Retrieve the History of the service
+		if (is_object($mixService))
+		{
+			$arrHistory = $mixService->GetHistory();
+		}
+		else
+		{
+			$arrHistory = ModuleService::GetHistoryForAnonymous($mixService);
+		}
+		
+		$arrHistoryForDisplay = Array();
+		foreach ($arrHistory as $arrHistoryItem)
+		{
+			$intTimeStamp	= strtotime($arrHistoryItem['TimeStamp']);
+			$strTimeStamp	= date("H:i:s M j, Y", $intTimeStamp);
+			$strEmployee	= GetEmployeeName($arrHistoryItem['Employee']);
+			
+			// Check if there is another account related to this history item
+			$strAccount = "";
+			if ($arrHistoryItem['RelatedAccount'] != NULL)
+			{
+				// Create a link to it
+				$strAccountLink = Href()->AccountOverview($arrHistoryItem['RelatedAccount']);
+				$strAccount = "<a href='$strAccountLink'>{$arrHistoryItem['RelatedAccount']}</a>";
+			}
+			
+			if ($arrHistoryItem['IsCreationEvent'])
+			{
+				switch ($arrHistoryItem['Event'])
+				{
+					case SERVICE_CREATION_NEW:
+						$strEvent = "Created";
+						break;
+						
+					case SERVICE_CREATION_ACTIVATED:
+						$strEvent = "Activated";
+						break;
+						
+					case SERVICE_CREATION_LESSEE_CHANGED:
+						$strEvent = "Acquired from Account: $strAccount<br />(Change of Lessee)";
+						break;
+						
+					case SERVICE_CREATION_ACCOUNT_CHANGED:
+						$strEvent = "Acquired from Account: $strAccount<br />(Account Move)";
+						break;
+						
+					case SERVICE_CREATION_LESSEE_CHANGE_REVERSED:
+						$strEvent = "Acquired from Account: $strAccount<br />(Reversal of Change of Lessee)";
+						break;
+						
+					case SERVICE_CREATION_ACCOUNT_CHANGE_REVERSED:
+						$strEvent = "Acquired from Account: $strAccount<br />(Reversal of Account Move)";
+						break;
+						
+					default:
+						$strEvent = GetConstantDescription($arrHistoryItem['Event'], "ServiceClosure");
+						break;
+				}
+			}
+			else
+			{
+				switch ($arrHistoryItem['Event'])
+				{
+					case SERVICE_CLOSURE_DISCONNECTED:
+						$strEvent = "Disconnected";
+						break;
+						
+					case SERVICE_CLOSURE_ARCHIVED:
+						$strEvent = "Archived";
+						break;
+						
+					case SERVICE_CLOSURE_LESSEE_CHANGED:
+						$strEvent = "Moved to Account: $strAccount<br />(Change of Lessee)";
+						break;
+						
+					case SERVICE_CLOSURE_ACCOUNT_CHANGED:
+						$strEvent = "Moved to Account: $strAccount<br />(Account Move)";
+						break;
+						
+					case SERVICE_CLOSURE_LESSEE_CHANGE_REVERSED:
+						$strEvent = "Moved to Account: $strAccount<br />(Reversal of Change of Lessee)";
+						break;
+						
+					case SERVICE_CLOSURE_ACCOUNT_CHANGE_REVERSED:
+						$strEvent = "Moved to Account: $strAccount<br />(Reversal of Account Move)";
+						break;
+						
+					default:
+						$strEvent = GetConstantDescription($arrHistoryItem['Event'], "ServiceClosure");
+						break;
+				}
+			}
+			
+			// Check if the event has been scheduled for a future time
+			if ($intTimeStamp > $intNowTimeStamp)
+			{
+				$strEvent = "Will be " . strtolower(substr($strEvent, 0, 1)) . substr($strEvent, 1);
+			}
+			
+			$arrHistoryForDisplay[] = Array(
+											"TimeStamp" => $strTimeStamp,
+											"Event"		=> $strEvent,
+											"EmployeeName"	=> $strEmployee
+											);
+		}
+		return $arrHistoryForDisplay;
+	}
 }
 
 ?>

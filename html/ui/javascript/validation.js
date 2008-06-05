@@ -93,7 +93,7 @@ function VixenValidationClass()
 			return false;
 		}
 		
-		// Convert the date into MM/DD/YYYY so it can be easily converted to a Date object
+		// Convert the date into MM/DD/YYYY (american style) so it can be easily converted to a Date object
 		var strDate		= mixValue.substr(3, 2) + "/" + mixValue.substr(0, 2) + "/" + mixValue.substr(6, 4);
 		var objDate		= new Date(strDate);
 		var objToday	= new Date();

@@ -228,7 +228,7 @@ class AppTemplateService extends ApplicationTemplate
 	 * @return		void
 	 * @method		ViewHistory
 	 */
-	function ViewHistory()
+	function ViewHistoryOld()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -246,6 +246,38 @@ class AppTemplateService extends ApplicationTemplate
 		// Use the generic popup page template
 		$this->LoadPage('generic_popup');
 		$this->Page->SetName('Service History - '. $arrService['FNN']);
+		$this->Page->AddObject('ServiceHistory', COLUMN_ONE, HTML_CONTEXT_POPUP);
+		return TRUE;
+	}
+	
+	function ViewHistory()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+
+		$intService = DBO()->Service->Id->Value;
+		$objService = ModuleService::GetServiceById($intService);
+		
+		if ($objService === FALSE)
+		{
+			// Instantiating the Service object failed
+			Ajax()->AddCommand("Alert", "ERROR: Retrieving the service (Id: $intService) failed unexpectedly");
+			return TRUE;
+		}
+		elseif ($objService === NULL)
+		{
+			// Could not find the service
+			Ajax()->AddCommand("Alert", "ERROR: Could not find the service with Service Id: $intService");
+			return TRUE;
+		}
+		
+		// The Service object was successfully created
+		DBO()->Service->AsObject = $objService;
+
+		// Use the generic popup page template
+		$this->LoadPage('generic_popup');
+		$this->Page->SetName('Service History - '. $objService->GetFNN());
 		$this->Page->AddObject('ServiceHistory', COLUMN_ONE, HTML_CONTEXT_POPUP);
 		return TRUE;
 	}
@@ -315,6 +347,10 @@ class AppTemplateService extends ApplicationTemplate
 							"ClosedOn"					=> "S.ClosedOn",
 							"CreatedBy"					=> "S.CreatedBy", 
 							"ClosedBy"					=> "S.ClosedBy",
+							"NatureOfCreation"			=> "S.NatureOfCreation",
+							"NatureOfClosure"			=> "S.NatureOfClosure",
+							"LastOwner"					=> "S.LastOwner",
+							"NextOwner"					=> "S.NextOwner",
 							"Account"					=> "S.Account",
 							"CurrentPlanId" 			=> "RP1.Id",
 							"CurrentPlanName"			=> "RP1.Name",
@@ -372,12 +408,16 @@ class AppTemplateService extends ApplicationTemplate
 		// Add this record's details to the history array
 		$arrService['History']		= Array();
 		$arrService['History'][]	= Array	(
-												"ServiceId"	=> $arrRecord['Id'],
-												"CreatedOn"	=> $arrRecord['CreatedOn'],
-												"ClosedOn"	=> $arrRecord['ClosedOn'],
-												"CreatedBy"	=> $arrRecord['CreatedBy'],
-												"ClosedBy"	=> $arrRecord['ClosedBy'],
-												"Status"	=> $arrRecord['Status'],
+												"ServiceId"			=> $arrRecord['Id'],
+												"CreatedOn"			=> $arrRecord['CreatedOn'],
+												"ClosedOn"			=> $arrRecord['ClosedOn'],
+												"CreatedBy"			=> $arrRecord['CreatedBy'],
+												"ClosedBy"			=> $arrRecord['ClosedBy'],
+												"NatureOfCreation"	=> $arrRecord['NatureOfCreation'],
+												"NatureOfClosure"	=> $arrRecord['NatureOfClosure'],
+												"LastOwner"			=> $arrRecord['LastOwner'],
+												"NextOwner"			=> $arrRecord['NextOwner'],
+												"Status"			=> $arrRecord['Status'],
 												"LineStatus"		=> $arrRecord['LineStatus'],
 												"LineStatusDate"	=> $arrRecord['LineStatusDate'],
 											);
@@ -401,49 +441,6 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		return $arrService;
-	}
-
-	// Displays the change of lessee / move service page
-	function Move()
-	{
-		// Check user authorization and permissions
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		
-		// Check if the billing/invoice process is being run
-		if (IsInvoicing())
-		{
-			// There are currently records in the InvoiceTemp table, which means a bill run is taking place.
-			// Lessee Changes cannot be made when a bill run is taking place
-			$strErrorMsg =  "Billing is in progress.  Services cannot be moved while this is happening.  ".
-							"Please try again in a couple of hours.  If this problem persists, please ".
-							"notify your system administrator";
-			Ajax()->AddCommand("Alert", $strErrorMsg);
-			return TRUE;
-		}
-		
-		//TODO!	Check if this service is already scheduled to be moved, or has already been moved, in which case
-		//		alert the user that movement cannot be done.  Use the NextOwner property to check this
-		
-		
-		// Load the Service's details
-		if (($arrService = $this->GetService(DBO()->Service->Id->Value)) === FALSE)
-		{
-			// Could not load the service record
-			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
-			return TRUE;
-		}
-		DBO()->Account->Id = $arrService['Account'];
-		DBO()->Account->Load();
-		DBO()->Service->AsArray = $arrService;
-		
-		
-		
-		// Use the generic popup page template
-		$this->LoadPage('generic_popup');
-		$this->Page->SetName('Service Movement - '. $arrService['FNN']);
-		$this->Page->AddObject('ServiceMovement', COLUMN_ONE);
-		return TRUE;
 	}
 
 	//------------------------------------------------------------------------//
@@ -2356,7 +2353,47 @@ class AppTemplateService extends ApplicationTemplate
 			// First check that the Service Status has actually changed
 			if (DBO()->Service->NewStatus->Value != DBO()->Service->Status->Value)
 			{
-				switch (DBO()->Service->NewStatus->Value)
+				$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->ServiceType->Value);
+				if ($objService === FALSE)
+				{
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Could not create the Service object required to handle the Status change.  All modifications to the service have been aborted");
+					return TRUE;
+				}
+				if ($objService === NULL)
+				{
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Could not create the Service object required to handle the Status change, because a service record with Id '". DBO()->Service->Id->Value ."' could not be found in the database.  All modifications to the service have been aborted");
+					return TRUE;
+				}
+				if (!is_object($objService))
+				{
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "<pre>ERROR:\n". print_r($objService, TRUE) ."</pre>");
+					return TRUE;
+				}
+
+				if ($objService->ChangeStatus(DBO()->Service->NewStatus->Value) === FALSE)
+				{
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Changing the Status of the Service failed.<br />". $objService->GetErrorMsg());
+					return TRUE;
+				}
+				
+				// The status was successfully changed
+				// Check if a new record was created
+				if ($objService->GetId() > DBO()->Service->Id->Value)
+				{
+					// A new record was made
+					DBO()->NewService->Id = $objService->GetId();
+				}
+				
+				// Build the note part detailing the Status change
+				$strOldStatus = GetConstantDescription(DBO()->Service->Status->Value, "Service");
+				$strNewStatus = GetConstantDescription(DBO()->Service->NewStatus->Value, "Service");
+				$strChangesNote = "Status changed from $strOldStatus to $strNewStatus\n". $strChangesNote;
+				
+/*				switch (DBO()->Service->NewStatus->Value)
 				{
 					case SERVICE_ACTIVE:
 						$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->Indial100->Value, DBO()->Service->CreatedOn->Value, DBO()->Service->ClosedOn->Value);
@@ -2406,9 +2443,12 @@ class AppTemplateService extends ApplicationTemplate
 						}
 						break;
 				}
+*/				
 			}
 
-			// Add an automatic note if the service has been archived or unarchived
+			
+
+/*			// Add an automatic note if the service has been archived or unarchived
 			if ($strNoteDetails)
 			{
 				if (DBO()->NewService->Id->Value)
@@ -2424,7 +2464,7 @@ class AppTemplateService extends ApplicationTemplate
 					
 					SaveSystemNote($strNoteForOldServiceRecord, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intOldServiceRecordId);
 					*/
-				}
+/*				}
 				else
 				{
 					$intServiceId = DBO()->Service->Id->Value;
@@ -2446,6 +2486,11 @@ class AppTemplateService extends ApplicationTemplate
 				$strSystemChangesNote  = "Service modified.\n$strChangesNote";
 				SaveSystemNote($strSystemChangesNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 			}
+*/
+			if ($strChangesNote != "")
+			{
+				SaveSystemNote("Service modified.\n$strChangesNote", DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, (DBO()->NewService->Id->IsSet)? DBO()->NewService->Id->Value : DBO()->Service->Id->Value);
+			}
 
 			// Commit the transaction
 			TransactionCommit();
@@ -2453,18 +2498,10 @@ class AppTemplateService extends ApplicationTemplate
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 			
-			// Alert the user
-			$strMsgNewService = "";
-			/*if (DBO()->NewService->Id->Value)
-			{
-				$strMsgNewService = ".  A new service record had to be made.  Please refer to it from now on.  A note detailing this, has been created";
-			}
-			*/
-			
 			// Check that something was actually changed
-			if ($strNoteDetails != "" || $strChangesNote != "")
+			if ($strChangesNote != "")
 			{
-				Ajax()->AddCommand("Alert", "The service was successfully updated$strMsgNewService");
+				Ajax()->AddCommand("Alert", "The service was successfully updated");
 
 				// Build event object
 				// The contents of this object should be declared in the doc block of this method
@@ -2476,7 +2513,7 @@ class AppTemplateService extends ApplicationTemplate
 				Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 				
 				// Fire the OnNewNote Event
-				Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+				Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, (DBO()->NewService->Id->IsSet)? DBO()->NewService->Id->Value : DBO()->Service->Id->Value);
 			}
 			return TRUE;
 		}

@@ -64,7 +64,7 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 		$this->_intContext			= $intContext;
 		$this->_strContainerDivId	= $strId;
 		
-		//$this->LoadJavascript("service_movement");
+		$this->LoadJavascript("service_movement");
 		$this->LoadJavascript("validation");
 		$this->LoadJavascript("input_masks");
 	}
@@ -83,11 +83,12 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$arrService	= DBO()->Service->AsArray->Value;
-		$arrAccount	= DBO()->Account->_arrProperties;
+		$objService			= DBO()->ServiceMove->ServiceObject->Value;
+		$arrProbableAction	= DBO()->ServiceMove->ProbableActionDetails->Value;
+		$arrAccount			= DBO()->Account->_arrProperties;
+		$arrPreviousOwner	= DBO()->ServiceMove->PreviousOwner->Value;
 		
-		$intCurrentAccountId = $arrAccount['Id'];
-		
+		$intAccountId	= $arrAccount['Id'];
 		if ($arrAccount['BusinessName'])
 		{
 			$strAccountName = $arrAccount['BusinessName'];
@@ -101,114 +102,143 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 			$strAccountName = "[Not Specified]";
 		}
 		
+		$strTimeOfAcquisition			= $objService->GetTimeOfAcquisition();
+		$strNow							= GetCurrentISODateTime();
+		$strTimeOfAcquisitionFormatted	= OutputMask()->ShortDateTime($strTimeOfAcquisition, TRUE);
+		
+		$arrPossibleActions = array();
+		if ($arrPreviousOwner !== NULL)
+		{
+			// The Move can be reversed
+			switch ($arrPreviousOwner['Action'])
+			{
+				case SERVICE_CREATION_LESSEE_CHANGED:
+					$arrPossibleActions['ReverseLesseeChange'] = "Reverse Change of Lessee";
+					break;
+				case SERVICE_CREATION_ACCOUNT_CHANGED:
+					$arrPossibleActions['ReverseAccountChange'] = "Reverse Change of Account";
+					break;
+			}
+			
+			$strPreviousOwnerAccount	= "{$arrPreviousOwner['AccountName']} ({$arrPreviousOwner['Id']})";
+			$strPreviousOwnerStatus		= $arrPreviousOwner['StatusDesc'];
+		}
+		else
+		{
+			$strPreviousOwnerAccount	= "";
+			$strPreviousOwnerStatus		= "";
+		}
+		
+		// You can only perform a change of lessee/account move if the Service has come into effect on this account
+		if ($strTimeOfAcquisition < $strNow)
+		{
+			$arrPossibleActions['LesseeChange']		= "Change of Lessee";
+			$arrPossibleActions['AccountChange']	= "Change of Account";
+		}
+		
 		// Build the options for the MovementType ComboBox
-		$strMovementTypeOptions = "";
-		//TODO! veto these based on the service and the user's permissions
-		$strMovementTypeOptions = "
-<option value='0'></option>
-<option value='ChangeLessee'>Change Lessee</option>
-<option value='Move'>Move</option>
-<option value='ReverseChangeLessee'>Reverse Change Lessee</option>
-<option value='ReverseMove'>Reverse Move</option>
-";
+		$strActionOptions = "<option value='NoAction' selected='selected'></option>";
+		foreach ($arrPossibleActions as $strAction=>$strDescription)
+		{
+			$strActionOptions .= "<option value='$strAction'>$strDescription</option>";
+		}
 		
-		$intNextBillDate	= GetStartDateTimeForNextBillingPeriod();
-		$strStartingDate	= date("d/m/Y", strtotime("-185 days", $intNextBillDate));
-		$strEndingDate		= date("d/m/Y", $intNextBillDate);
+		// Check if the cached action can be performed on this service
+		if ($arrProbableAction !== NULL && !array_key_exists($arrProbableAction['Action'], $arrPossibleActions))
+		{
+			$arrProbableAction = NULL;
+		}
 		
-		$strYearLowerLimit	= substr($strStartingDate, 6);
-		$strYearUpperLimit	= substr($strEndingDate, 6);
+		$objPreviousOwner	= Json()->Encode($arrPreviousOwner);
+		$objProbableAction	= Json()->Encode($arrProbableAction);
+		$objCurrentAccount	= Json()->Encode(array("Id" => $intAccountId, "Name" => $strAccountName));
+		$intServiceId		= $objService->GetId();
+		$objFNN				= Json()->Encode($objService->GetFNN());
 		
 		echo "
-<div class='GroupedContent'>
-	<div id='Container_SelectionControls' style='height:25px'>
-		<div class='Left'>
-			<span>Earliest Date </span>
-			<input type='text' id='StartDate' InputMask='ShortDate' maxlength='10' value='$strStartingDate' $strYearLowerLimit style='width:85px'/>
-			<a href='javascript:DateChooser.showChooser(\$ID(\"StartDate\"), \$ID(\"StartingDateCalender\"), $strYearLowerLimit, $strYearUpperLimit, \"d/m/Y\", false, true, true, $strYearLowerLimit);'>
-				<img src='img/template/calendar_small.png'/>
-			</a>
-			<div id='StartingDateCalender' class='date-time select-free' style='display:none; visibility:hidden;'></div>
-			
-			<span> Latest Date </span>
-			<input type='text' id='EndDate' InputMask='ShortDate' maxlength='10' value='$strEndingDate' $strYearUpperLimit style='width:85px'/>
-			<a href='javascript:DateChooser.showChooser(\$ID(\"EndDate\"), \$ID(\"EndingDateCalender\"), $strYearLowerLimit, $strYearUpperLimit, \"d/m/Y\", false, true, true, $strYearUpperLimit);'>
-				<img src='img/template/calendar_small.png'/>
-			</a>
-			<div id='EndingDateCalender' class='date-time select-free' style='display:none; visibility:hidden;'></div>
+<form id='ServiceMovementForm'>
+	<div class='GroupedContent'>
+		<strong>Current Owner</strong>
+		<div style='margin-bottom:8px;position:relative;'>
+			<span>Account :</span>
+			<span style='position:absolute;left:30%;'>$strAccountName ($intAccountId)</span>
 		</div>
-
-		<div class='Right'>
-			<input type='button' class='InputSubmit' value='Search' onclick='Vixen.DelinquentCDRs.GetFNNs()'></input>
-		</div>
-
-	</div>
-	<div class='SmallSeparator'></div>
-				
-	<span style='white-space:pre;font-family:Courier New, monospace;padding-left:4px'>FNN          Carrier                          Cost     Count     Earliest       Latest</span>
-	<select id='FNNSelector' size='8' style='width:100%; border-color:#D1D1D1;font-family:Courier New, monospace' onChange='Vixen.DelinquentCDRs.GetCDRs()'></select>
-
-</div>		
-<div class='SmallSeparator'></div>
-
-<div id='Container_FNNGroup' style='width:100%;display:none;'>
-	<div class='GroupedContent' style='height:24px'>
-		<div class='Left'>
-			<input type='checkbox' id='CheckBoxSelectAllCDRs' class='DefaultInputCheckBox' onChange='Vixen.DelinquentCDRs.SelectAllCDRs(this.checked)'/>
-			<input type='Button' value='Bulk Declare Service' onclick='Vixen.DelinquentCDRs.OpenDeclareServicePopup()'/>
-		</div>
-		<div class='Right'>
-			<input type='Button' value='Commit' onclick='Vixen.DelinquentCDRs.Commit()'/>
+		<div style='margin-bottom:8px;position:relative;'>
+			<span>Time of Acquisition :</span>
+			<span style='position:absolute;left:30%;'>$strTimeOfAcquisitionFormatted</span>
 		</div>
 	</div>
-
-	<div style='height:24px; width:100%'>
-		<div class='Left'>
-			<a href='javascript:Vixen.DelinquentCDRs.MoveFirst()' >&lt;&lt;</a>
-			<a href='javascript:Vixen.DelinquentCDRs.MovePrevious()' style='margin-left:20px'>&lt;</a>
+	<div class='TinySeparator'></div>
+	<div class='GroupedContent'>
+		<!-- <strong>Action</strong> -->
+		<div style='margin-bottom:8px;position:relative;'>
+			<span style='top:2px'>Action :</span>
+			<select name='ActionType' style='position:absolute;left:30%;width:40%;border: solid 1px #D1D1D1'>$strActionOptions</select>
 		</div>
-		<div class='Right'>
-			<a href='javascript:Vixen.DelinquentCDRs.MoveNext()' style='margin-right:20px'>&gt;</a>
-			<a href='javascript:Vixen.DelinquentCDRs.MoveLast()'>&gt;&gt;</a>
+	
+		<div id='ServiceMovement.AccountIdInputContainer' style='margin-bottom:5px;position:relative;display:none'>
+			<span style='top:2px'>Account :</span>
+			<input type='text' name='AccountId' maxlength='15' style='position:absolute;left:30%;width:20%;border: solid 1px #D1D1D1'></input>
+			<input type='button' value='Find' onclick='Vixen.ServiceMovement.FindAccount()' style='position:absolute;left:52%;'></input>
 		</div>
-		<div id='CDRTableCaptionTop' style='text-align:center'></div>
 	</div>
-
-	<table id='CDRTable' class='Listing' width='100%' cellspacing='0' cellpadding='3' border='0'>
-		<tr class='First' style='display:table-row;'>
-			<th width='4%' align='left'>&nbsp;</th>
-			<th width='5%' align='left'>Rec#</th>
-			<th width='15%' align='left'>Start Time</th>
-			<th width='7%' align='right'>Cost</th>
-			<th width='43%' align='left'>New Owner</th>
-			<th width='18%' align='left'>&nbsp;</th>
-			<th width='8%' align='right'>Service</th>
-		</tr>
-		<tr class='Odd' style='display:table-row;'>
-			<td align='left'><input type='checkbox'/></td>
-			<td align='left'></td>
-			<td align='left'></td>
-			<td align='right'></td>
-			<td align='left' style='cursor:pointer;'></td>
-			<td align='left'></td>
-			<td align='right'></td>
-		</tr>
-	</table>
-
-	<div style='height:24px; width:100%'>
-		<div class='Left'>
-			<a href='javascript:Vixen.DelinquentCDRs.MoveFirst()'>&lt;&lt;</a>
-			<a href='javascript:Vixen.DelinquentCDRs.MovePrevious()' style='margin-left:20px'>&lt;</a>
+	
+	<div id='ServiceMovement.PreviousOwnerContainer' class='GroupedContent' style='margin-top:5px;display:none'>
+		<strong>Previous Owner</strong>
+		<div style='margin-bottom:5px;position:relative;'>
+			<span>Account :</span>
+			<span style='position:absolute;left:30%;width:55%'>$strPreviousOwnerAccount</span>
 		</div>
-		<div class='Right'>
-			<a href='javascript:Vixen.DelinquentCDRs.MoveNext()' style='margin-right:20px'>&gt;</a>
-			<a href='javascript:Vixen.DelinquentCDRs.MoveLast()'>&gt;&gt;</a>
+	
+		<div style='margin-bottom:5px;position:relative'>
+			<span>Status :</span>
+			<span style='position:absolute;left:30%;width:55%'>$strPreviousOwnerStatus</span>
 		</div>
-		<div id='CDRTableCaptionBottom' style='text-align:center'></div>
+		<input type='button' value='Commit' onclick='Vixen.ServiceMovement.CommitReverse()' style='position:absolute;right:5px;bottom:5px'></input>
 	</div>
+	
+	<div id='ServiceMovement.NewOwnerContainer' class='GroupedContent' style='margin-top:5px;display:none'>
+		<strong>New Owner</strong>
+		<div style='margin-bottom:8px;position:relative;'>
+			<span>Account Number :</span>
+			<span id='ServiceMovement.NewAccountId' style='position:absolute;left:30%'>9999999999</span>
+		</div>
+		<div style='margin-bottom:8px;position:relative;'>
+			<span>Account Name :</span>
+			<span id='ServiceMovement.NewAccountName' style='position:absolute;left:30%;width:55%'>Dummy Account Name (1000123456)</span>
+		</div>
+	
+		<div style='margin-bottom:8px;position:relative'>
+			<span>Status :</span>
+			<span id='ServiceMovement.NewAccountStatus' style='position:absolute;left:30%;width:55%'>Fake Status</span>
+		</div>
+		<div style='margin-bottom:8px'>
+			<span style='top:2px'>Time of Acquisition :</span>
+			<select name='EffectiveOnType' style='position:absolute;left:30%;width:110px;border: solid 1px #D1D1D1'>
+				<option value='Immediately'>Immediately</option>
+				<option value='Date'>Date</option>
+			</select>
+			<input type='text' name='EffectiveOnDate' InputMask='ShortDate' maxlength='10' style='display:none;position:absolute;left:55%;width:85px;border: solid 1px #D1D1D1'/>
+		</div>
+		<div style='margin-bottom:8px;position:relative'>
+			<span style='top:2px'>Move unbilled CDRs :</span>
+			<input type='checkbox' name='MoveCDRs' style='position:absolute;left:30%;'></input>
+		</div>
+		<div style='margin-bottom:8px;position:relative'>
+			<span style='top:2px'>Retain Plan Details :</span>
+			<input type='checkbox' name='MovePlan' style='position:absolute;left:30%;'></input>
+		</div>
+		<input type='button' value='Commit' onclick='Vixen.ServiceMovement.CommitServiceMove()' style='position:absolute;right:5px;bottom:5px'></input>
+	</div>
+</form>
 
+<div class='ButtonContainer'>
+	<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='float:right'></input>
 </div>
-<script type='text/javascript'>Vixen.DelinquentCDRs.Initialise()</script>";
+
+<script type='text/javascript'>Vixen.ServiceMovement.Initialise($objFNN, $intServiceId, $objCurrentAccount, $objPreviousOwner, $objProbableAction)</script>
+";
+		
 	}
 }
 

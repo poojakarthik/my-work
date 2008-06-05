@@ -3351,14 +3351,46 @@ function GetCurrentDateAndTimeForMySQL()
  * Retrieves the current date and time in the ISO Datetime format
  *
  * Retrieves the current date and time in the ISO Datetime format
- * This current time is taken from the database
+ * By default this value is cached, for subsequent calls
+ * 
+ * @param	bool	$bolForceRefresh	optional, defaults to FALSE.  If set to TRUE
+ * 										then the "current" Time is retrieved from the
+ * 										database's server.  If set to FALSE then the
+ * 										cached "current" time is retrieved.
+ * 
+ * @param	bool	$bolUpdateCache		optional, defaults to FALSE.  If set to TRUE
+ * 										then the cached value is updated.
+ * 										If $bolForceRefresh == FALSE then $bolUpdateCache
+ * 										is ignored
  *
- * @return	string			current date and time as a ISO Datetime string (YYYY-MM-DD HH:MM:SS)
+ * @return	string			"current" date and time as an ISO Datetime string (YYYY-MM-DD HH:MM:SS)
  * @function
  */
-function GetCurrentISODateTime()
+function GetCurrentISODateTime($bolForceRefresh=FALSE, $bolUpdateCache=FALSE)
 {
-	return GetCurrentDateAndTimeForMySQL();
+	if ($bolForceRefresh)
+	{
+		// Retrieve a fresh value for "Current" time
+		$strTime = GetCurrentDateAndTimeForMySQL();
+	}
+	else
+	{
+		// Retrieve the cached "Current" time
+		if (!isset($GLOBALS['CurrentISODateTime']))
+		{
+			// The "Current" timestamp isn't cached yet, do it now
+			$GLOBALS['CurrentISODateTime'] = GetCurrentDateAndTimeForMySQL();
+		}
+		
+		$strTime = $GLOBALS['CurrentISODateTime'];
+	}
+	
+	if ($bolUpdateCache)
+	{
+		$GLOBALS['CurrentISODateTime'] = $strTime;
+	}
+	
+	return $strTime;
 }
 
 //------------------------------------------------------------------------//
@@ -3392,14 +3424,25 @@ function GetCurrentDateForMySQL()
  * Retrieves the current date and time in the ISO Date format
  *
  * Retrieves the current date and time in the ISO Date format
- * This current time is taken from the database
+ * By default this value is cached, for subsequent calls
+ * 
+ * @param	bool	$bolForceRefresh	optional, defaults to FALSE.  If set to TRUE
+ * 										then the "current" Date is retrieved from the
+ * 										database's server.  If set to FALSE then the
+ * 										cached "current" time is retrieved.
+ * 
+ * @param	bool	$bolUpdateCache		optional.  Only applicable when $bolForceRefresh == TRUE.
+ * 										Defaults to FALSE.  If set to TRUE
+ * 										then the cached value is updated
  *
- * @return	string			current date and time as a ISO Datetime string (YYYY-MM-DD)
+ * @return	string			"current" date as an ISO Date string (YYYY-MM-DD)
  * @function
  */
-function GetCurrentISODate()
+function GetCurrentISODate($bolForceRefresh=FALSE, $bolUpdateCache=FALSE)
 {
-	return GetCurrentDateForMySQL();
+	$strDatetime	= GetCurrentISODateTime($bolForceRefresh, $bolUpdateCache);
+	$arrTimeParts	= explode(" ", $strDatetime);
+	return $arrTimeParts[0];
 }
 
 

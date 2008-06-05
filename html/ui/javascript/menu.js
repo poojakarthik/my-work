@@ -96,7 +96,7 @@ function VixenMenuClass(objMenu)
 			top = top + this.config.Level1.height + this.config.Level1.spacing;
 			
 			//Add events
-			elmNode.onclick			= function(event) {Vixen.Menu.HandleClick(this)};
+			elmNode.onclick			= function(event) {Vixen.Menu.HandleClick(this, event)};
 			elmNode.onmouseover		= function(event) {Vixen.Menu.HandleMouseOver(this)};
 			elmNode.onmouseout		= function(event) {Vixen.Menu.HandleMouseOut(this)};
 			elmNode.style.cursor	= "default";
@@ -244,10 +244,17 @@ function VixenMenuClass(objMenu)
 		}
 	}
 	
-	this.HandleClick = function(objMenuItem)
+	this.HandleClick = function(objMenuItem, objEvent)
 	{
 		clearTimeout(this.timeoutOpen);
 		clearTimeout(this.timeoutClose);
+		
+		// If the menu item action is wrapped in an anchor element, prevent the default action, so that it isn't executed twice
+		if (objEvent != undefined)
+		{
+			objEvent.preventDefault();
+		}
+		
 		if (typeof(objMenuItem.action) == 'string')
 		{
 			// Check if the menu item is a href or a call to javascript code
@@ -261,7 +268,7 @@ function VixenMenuClass(objMenu)
 				// Follow the link
 				document.location.href = objMenuItem.action;
 			}
-			this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);			
+			this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);
 		}
 		else if (typeof(objMenuItem.action) == 'object')
 		{

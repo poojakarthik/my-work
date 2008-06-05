@@ -209,8 +209,9 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	{
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$arrServices			= DBO()->Account->Services->Value;
+		$intCurrentDate			= strtotime(GetCurrentDateForMySQL());
 		
-		Table()->Services->SetHeader("&nbsp;", "FNN #", "Plan", "&nbsp;", "&nbsp;", "&nbsp;", "Actions");
+		Table()->Services->SetHeader("&nbsp;", "FNN", "Plan", "&nbsp;", "&nbsp;", "&nbsp;", "Actions");
 		Table()->Services->SetWidth("3%", "10%", "46%", "7%", "11%", "15%", "8%");
 		Table()->Services->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left", "Left");
 		
@@ -231,6 +232,9 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				
 				$strChangePlanLink	= Href()->ChangePlan($arrService['Id']);
 				$strChangePlan		= "<img src='img/template/plan.png' title='Change Plan' onclick='$strChangePlanLink'/>";
+				
+				$strMoveServiceLink	= Href()->MoveService($arrService['Id']);
+				$strMoveService		= "<img src='img/template/move.png' title='Move Service' onclick='$strMoveServiceLink'/>";
 	
 				// Include a button for provisioning, if the service is a landline
 				if ($arrService['ServiceType'] == SERVICE_TYPE_LAND_LINE)
@@ -249,7 +253,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);
 			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
 			
-			$strActionsCell				= "$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning $strViewProvisioningHistory";
+			$strActionsCell				= "$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning $strViewProvisioningHistory $strMoveService";
 
 			// Create a link to the View Plan for Service page
 			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($arrService['Id']);
@@ -272,9 +276,6 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			}
 			
 			// Work out the Date to display along with the status
-			$intClosedOn	= strtotime($arrService['History'][0]['ClosedOn']);
-			$intCurrentDate	= strtotime(GetCurrentDateForMySQL());
-			
 			// Check if the ClosedOn date has been set
 			$bolFlagStatus = FALSE;
 			if ($arrService['History'][0]['ClosedOn'] == NULL)
@@ -297,6 +298,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			}
 			else
 			{
+				$intClosedOn = strtotime($arrService['History'][0]['ClosedOn']);
 				// The service has a ClosedOn date; check if it is in the future or past
 				if ($intClosedOn >= $intCurrentDate)
 				{
@@ -368,11 +370,20 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			
 			$strServiceTypeCell = "<div class='$strServiceTypeClass'></div>";
 
-			$strHistoryDetails = HtmlTemplateServiceHistory::GetHistoryForTableDropDownDetail($arrService['History']);
+			$strHistoryDetailsTable = HtmlTemplateServiceHistory::GetHistoryForTableDropDownDetail($arrService['History']);
+			$strDropDownDetail = "
+<div style='width:100%;height:100%;background-color: #D4D4D4'>
+	<div style='width:70%;float:left'>
+		$strHistoryDetailsTable
+	</div>
+	<div style='width:20%;float:right;text-align:right'>
+		$strActionsCell
+	</div>
+</div>
+";
 			
-			
-			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, $strActionsCell);
-			Table()->Services->SetDetail($strHistoryDetails);
+			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, ""/*$strActionsCell*/);
+			Table()->Services->SetDetail($strDropDownDetail);
 		}
 		
 		// If the account has no services then output an appropriate message in the table

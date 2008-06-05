@@ -151,7 +151,7 @@ function VixenDocumentTemplateClass()
 		}
 		
 		// Compile data to be sent to the server
-		var objData			= {}
+		var objData			= {};
 		objData.Template	= {};
 		for (i in this.objTemplate)
 		{

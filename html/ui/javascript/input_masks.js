@@ -46,7 +46,7 @@ InputMasks.time24hr =	{
 function InputMaskListener(objEvent)
 {
 	// Handle control keys (like backspace, delete, arrow keys, etc)
-	if (objEvent.charCode == 0)
+	if (objEvent.charCode == 0 || objEvent.altKey || objEvent.ctrlKey)
 	{
 		return true;
 	}

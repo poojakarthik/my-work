@@ -135,7 +135,9 @@ class AppTemplatePayment extends ApplicationTemplate
 				}
 				
 				// The Credit Card number is valid
-				DBO()->Payment->OriginId	= str_replace(' ', '', DBO()->Payment->CreditCardNum->Value);
+				$strCreditCardNum			= str_replace(' ', '', DBO()->Payment->CreditCardNum->Value);
+				$strCreditCardMasked		= substr($strCreditCardNum, 0, 6) ."...". substr($strCreditCardNum, -3);
+				DBO()->Payment->OriginId	= $strCreditCardMasked;
 			}
 			else
 			{

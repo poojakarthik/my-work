@@ -528,6 +528,9 @@ function VixenAjaxClass()
 				case "Alert":
 					Vixen.Popup.Alert(objInput[intKey].Data);
 					break;
+				case "ModalAlert":
+					Vixen.Popup.Alert(objInput[intKey].Data, null, null, "modal");
+					break;
 				case "AlertReload":
 					strContent = "<div align='center'><p>" + objInput[intKey].Data + "</p>" +
 									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = window.location;'></p></div>\n" +
