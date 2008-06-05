@@ -4437,7 +4437,7 @@ function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
  * @param	string	$strPassword			[optional]	Archive password. (Default: NULL)
  * @param	string	$strType				[optional]	Archive is of this type. (Default: NULL)
  *
- * @return	mixed										Array: full paths to the files extracted; FALSE: Failed
+ * @return	mixed										Array: full paths to the files extracted; string: Error Message
  *
  * @method
  */
@@ -4460,12 +4460,17 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	// Source and Destination manipulation
 	$strBasename	= basename($strSourcePath);
 	$strDirname		= dirname($strSourcePath);
+	if (!file_exists($strSourcePath))
+	{
+		// Source file does not exist
+		return "Unable to locate Source file '$strSourcePath'";
+	}
 	if (!(file_exists($strDestinationPath) && is_dir($strDestinationPath)))
 	{
 		if (!@mkdir($strDestinationPath, 0644, TRUE))
 		{
 			// Unable to create the Destination Path
-			return FALSE;
+			return "Unable to create Destination path '$strDestinationPath'";
 		}
 	}
 	
@@ -4488,11 +4493,13 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	$arrOutput	= Array();
 	$intReturn	= NULL;
 	$strCommand	= NULL;
+	$arrFiles	= Array($strSourcePath);
 	switch (strtolower($strType))
 	{
 		case 'zip':
 			$strCommand		= "unzip ";
 			$strCommand		.= ($bolJunkPaths) ? '-j ' : '';
+			$strCommand		.= ($strPassword !== NULL) ? "-P {$strPassword}" : '';
 			$strCommand		.= "$strSourcePath ";
 			$strCommand		.= ($strDestinationPath !== NULL) ? "-d $strDestinationPath" : "-d $strDirname";
 			
@@ -4501,7 +4508,18 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			if ($intReturn > 0)
 			{
 				// An error occurred
-				//return FALSE;
+				return "Unable to unzip archive '$strSourcePath'";
+			}
+			
+			// Get list of files extracted
+			$arrFiles	= Array();
+			foreach ($arrOutput as $strLine)
+			{
+				if (stripos($strLine, 'Archive: ') === FALSE)
+				{
+					$arrLine	= explode(': ', $strLine, 1);
+					$arrFiles[]	= $arrLine[1];
+				}
 			}
 			break;
 			
@@ -4520,18 +4538,27 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			if ($intReturn > 0)
 			{
 				// An error occurred
-				//return FALSE;
+				return "Unable to untar file '$strSourcePath'";
 			}
-			break;
-		
-		default:
-			// Unhandled type
-			return Array($strSourcePath);
-			break;				
+			
+			// Get list of files extracted
+			$arrFiles		= $arrOutput;
+			foreach ($arrFiles as &$strFile)
+			{
+				if ($strDestinationPath !== NULL)
+				{
+					$strFile	= rtrim($strDestinationPath, '/').'/'.$strFile;
+				}
+				else
+				{
+					$strFile	= getcwd().'/'.$strFile;
+				}
+			}
+			break;	
 	}
 	
-	Debug("Command\t: '$strCommand'");
-	Debug("Last Line\t: '$strLastLine'");
-	return $arrOutput;
+	//Debug("Command\t: '$strCommand'");
+	//Debug("Last Line\t: '$strLastLine'");
+	return $arrFiles;
 }
 ?>
