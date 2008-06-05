@@ -4400,22 +4400,33 @@ function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
  */
 function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths = FALSE, $strPassword = NULL, $strType = NULL)
 {
-	$arrHandledTypes	= Array();
-	$arrHandledTypes[]	= 'zip';
-	$arrHandledTypes[]	= 'tar';
-	$arrHandledTypes[]	= 'tar.bz2';
+	$arrHandledTypes			= Array();
+	
+	// ZIP types
+	$arrHandledTypes['zip']		= 'zip';
+	
+	// TAR types
+	$arrHandledTypes['tar']		= 'tar';
+	$arrHandledTypes['tar.bz2']	= 'tar';
+	$arrHandledTypes['tbz']		= 'tar';
+	$arrHandledTypes['tbz2']	= 'tar';
+	$arrHandledTypes['tb2']		= 'tar';
+	$arrHandledTypes['tar.gz']	= 'tar';
+	$arrHandledTypes['tgz']		= 'tar';
 	
 	$strBasename	= basename($strSourcePath);
 	$strDirname		= dirname($strSourcePath);
 	
 	// Get the type
+	$strExtension	= '';
 	if ($strType === NULL)
 	{
-		foreach ($arrHandledTypes as $strExtension)
+		foreach ($arrHandledTypes as $strHandledExtension=>$strBaseType)
 		{
-			if ($strExtension === strtolower(substr($strBasename, strripos($strBasename, $strExtension))))
+			if ($strHandledExtension === strtolower(substr($strBasename, strripos($strBasename, $strHandledExtension))))
 			{
-				$strType	= $strExtension;
+				$strType		= $strBaseType;
+				$strExtension	= $strHandledExtension;
 				break;
 			}
 		}
@@ -4442,12 +4453,20 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			break;
 			
 		case 'tar':
-		case 'tar.bz2':
 			$strCommand		= "tar -x ";
-			$strCommand		.= (strtolower($strType) === 'tar.bz2') ? '--bzip2 ' : '';
+			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.bz2', 'tbz', 'tbz2', 'tb2'))) ? '--bzip2 ' : '';
+			$strCommand		.= (in_array(strtolower($strHandledExtension), Array('tar.gz', 'tgz'))) ? '--gzip ' : '';
 			$strCommand		.= "-f $strSourcePath";
 			$strCommand		.= ($strDestinationPath !== NULL) ? "-C $strDestinationPath" : '';
 			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/(\w+\/)*,'" : '';
+			
+			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
+			
+			if ($intReturn > 0)
+			{
+				// An error occurred
+				return FALSE;
+			}
 			break;
 		
 		default:
