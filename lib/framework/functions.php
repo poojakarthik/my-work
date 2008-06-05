@@ -4414,8 +4414,14 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	$arrHandledTypes['tar.gz']	= 'tar';
 	$arrHandledTypes['tgz']		= 'tar';
 	
+	// Source and Destination manipulation
 	$strBasename	= basename($strSourcePath);
 	$strDirname		= dirname($strSourcePath);
+	if (!@mkdir($strDestinationPath, 0644, TRUE))
+	{
+		// Unable to create the Destination Path
+		return FALSE;
+	}
 	
 	// Get the type
 	$strExtension	= '';
