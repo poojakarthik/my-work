@@ -4377,4 +4377,85 @@ function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
 	return str_replace(' ', '', Decrypt($strBase64EncodedEncryptedString));
 }
 
+	
+//------------------------------------------------------------------------//
+// UnpackArchive
+//------------------------------------------------------------------------//
+/**
+ * UnpackArchive()
+ *
+ * Unpacks an Archive
+ *
+ * Unpacks an Archive to a given location.  Accepted Force Types are 'zip', 'tar', 'tar.bz2'
+ * 
+ * @param	string	$strSourcePath						Full path to the Source Archive
+ * @param	string	$strDestinationPath		[optional]	Full path to where the Archive should be extracted. (Default: NULL)
+ * @param	boolean	$bolJunkPaths			[optional]	TRUE: Do not recreate Archive directory structure. (Default: FALSE)
+ * @param	string	$strPassword			[optional]	Archive password. (Default: NULL)
+ * @param	string	$strType				[optional]	Archive is of this type. (Default: NULL)
+ *
+ * @return	mixed										Array: full paths to the files extracted; FALSE: Failed
+ *
+ * @method
+ */
+function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths = FALSE, $strPassword = NULL, $strType = NULL)
+{
+	$arrHandledTypes	= Array();
+	$arrHandledTypes[]	= 'zip';
+	$arrHandledTypes[]	= 'tar';
+	$arrHandledTypes[]	= 'tar.bz2';
+	
+	$strBasename	= basename($strSourcePath);
+	$strDirname		= dirname($strSourcePath);
+	
+	// Get the type
+	if ($strType === NULL)
+	{
+		foreach ($arrHandledTypes as $strExtension)
+		{
+			if ($strExtension === strtolower(substr($strBasename, strripos($strBasename, $strExtension))))
+			{
+				$strType	= $strExtension;
+				break;
+			}
+		}
+	}
+	
+	// Unpack
+	$arrOutput	= Array();
+	$intReturn	= NULL;
+	switch (strtolower($strType))
+	{
+		case 'zip':
+			$strCommand		= "unzip ";
+			$strCommand		.= ($bolJunkPaths) ? '-j ' : '';
+			$strCommand		.= "$strSourcePath ";
+			$strCommand		.= ($strDestinationPath !== NULL) ? "-d $strDestinationPath" : "-d $strDirname";
+			
+			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
+			
+			if ($intReturn > 0)
+			{
+				// An error occurred
+				return FALSE;
+			}
+			break;
+			
+		case 'tar':
+		case 'tar.bz2':
+			$strCommand		= "tar -x ";
+			$strCommand		.= (strtolower($strType) === 'tar.bz2') ? '--bzip2 ' : '';
+			$strCommand		.= "-f $strSourcePath";
+			$strCommand		.= ($strDestinationPath !== NULL) ? "-C $strDestinationPath" : '';
+			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/(\w+\/)*,'" : '';
+			break;
+		
+		default:
+			// Unhandled type
+			return Array($strSourcePath);
+			break;				
+	}
+	
+	return Array();
+}
 ?>
