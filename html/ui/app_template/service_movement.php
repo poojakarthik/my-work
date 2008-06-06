@@ -153,26 +153,23 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		if ($objService->CanReverseMove())
 		{
 			// The Move can be reversed, get the previous owner
-			$intPreviousOwner = $objService->GetPreviousOwner();
+			$intPreviousOwner	= $objService->GetPreviousOwner();
+			$arrAccount			= $this->_GetAccountDetails($intPreviousOwner);
 			
-			$arrColumns = array("AccountName"	=> "CASE WHEN BusinessName != \"\" THEN BusinessName WHEN TradingName != \"\" THEN TradingName ELSE NULL END",
-								"Status"		=> "Archived"
-								);
-			$selAccount = new StatementSelect("Account", $arrColumns, "Id = <Id>");
-			if ($selAccount->Execute(array("Id" => $intPreviousOwner)))
+			if ($arrAccount === FALSE)
 			{
-				// The account could be found
-				$arrRecord = $selAccount->Fetch();
-				DBO()->ServiceMove->PreviousOwner = array(
-															"Id"			=> $intPreviousOwner,
-															"Action"		=> $objService->GetNatureOfAcquisition(),
-															"AccountName"	=> $arrRecord['AccountName'],
-															"Status"		=> $arrRecord['Status'],
-															"StatusDesc"	=> GetConstantDescription($arrRecord['Status'], "Account")
-														);
+				return FALSE;
 			}
+			
+			// The account could be found
+			DBO()->ServiceMove->PreviousOwner = array(
+														"Id"			=> $intPreviousOwner,
+														"Action"		=> $objService->GetNatureOfAcquisition(),
+														"AccountName"	=> $arrAccount['Name'],
+														"Status"		=> $arrAccount['Status'],
+														"StatusDesc"	=> GetConstantDescription($arrAccount['Status'], "Account")
+													);
 		}
-		
 		
 		// Use the generic popup page template
 		$this->LoadPage('generic_popup');
@@ -219,20 +216,9 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		}
 		
 		// Retrieve the required Account details
-		$arrColumns = array("Id"		=> "Id",
-							"Name"		=> "CASE WHEN BusinessName != \"\" THEN BusinessName WHEN TradingName != \"\" THEN TradingName ELSE NULL END",
-							"Status"	=> "Archived"
-							);
-		$selAccount = new StatementSelect("Account", $arrColumns, "Id = <Id>");
-		if ($selAccount->Execute(array("Id" => $intAccountId)) === FALSE)
+		if (($arrAccount = $this->_GetAccountDetails($intAccountId)) === FALSE)
 		{
-			Ajax()->AddCommand("Alert", "ERROR: Retrieving the Account with Id: $intAccountId, from the database failed, unexpectedly.  Please notify your system administrators");
-			return TRUE;
-		}
-		
-		if (($arrAccount = $selAccount->Fetch()) === FALSE)
-		{
-			Ajax()->AddCommand("Alert", "ERROR: Account with Id: $intAccountId, could not be found");
+			// Error retrieving the account details (error reporting has been handled)
 			return TRUE;
 		}
 		
@@ -263,7 +249,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 	 * 	DBO()->Movement->MoveCDRs			boolean.  If TRUE then all unbilled cdrs will be moved to the new Account
 	 * 	DBO()->Movement->MovePlan			boolean.  If TRUE then the service will retain its plan details when it moves
 	 *
-	 *  When successful, it will fire an OnNewNote event and an OnServiceUpdate event
+	 *  If successful, it will fire an OnNewNote event and an OnServiceUpdate event
 	 *
 	 * @return		void
 	 * @method
@@ -331,22 +317,9 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		
 		// Find out when the Gaining Account was created
 		// You can't have the EffectiveOn timestamp to a time before this
-		$arrColumns = array("Id"			=> "Id",
-							"AccountGroup"	=> "AccountGroup",
-							"CreatedOn"		=> "CreatedOn",
-							"AccountName"	=> "CASE WHEN BusinessName != \"\" THEN BusinessName WHEN TradingName != \"\" THEN TradingName ELSE NULL END"
-							);
-		$selGainingAccount = new StatementSelect("Account", $arrColumns, "Id = <Id>");
-		if ($selGainingAccount->Execute(array("Id"=>$intGainingAccount)) === FALSE)
+		if (($arrGainingAccount = $this->_GetAccountDetails($intGainingAccount)) === FALSE)
 		{
-			// Database error
-			Ajax()->AddCommand("Alert", "ERROR: Retrieving Account with Id: $intGainingAccount, from the database failed, unexpectedly.  Please notify your system administrators");
-			return TRUE;
-		}
-		if (($arrGainingAccount = $selGainingAccount->Fetch()) === FALSE)
-		{
-			// Could not find the account
-			Ajax()->AddCommand("Alert", "ERROR: Could not find Account with Id: $intGainingAccount");
+			// Could not retrieve the details of the gaining account
 			return TRUE;
 		}
 		
@@ -414,7 +387,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		$strFNN						= $objService->GetFNN();
 		$strAction					= ($bolChangeOfLessee)? "Change of Lessee" : "Change of Account";
 		$strEffectiveOnFormatted	= OutputMask()->LongDateAndTime($strEffectiveOn);
-		$strOldOwnerAccountMsg		= "$strAction has been performed.  Effective $strEffectiveOnFormatted, its new owner is Account $intGainingAccount ({$arrGainingAccount['AccountName']}).";
+		$strOldOwnerAccountMsg		= "$strAction has been performed.  Effective $strEffectiveOnFormatted, its new owner is Account $intGainingAccount ({$arrGainingAccount['Name']}).";
 		SaveSystemNote($strOldOwnerAccountMsg, $objService->GetAccountGroup(), $intAccountId, NULL, $objService->GetId());
 		
 		// Create System Note for the account that is gaining ownership
@@ -447,7 +420,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		// Close the popup
 		Ajax()->AddCommand("ClosePopup", "MoveServicePopup");
 		
-		$strMsg = "$strAction has been successful.<br />Account $intGainingAccount ({$arrGainingAccount['AccountName']}) gains control of the service, effective from $strEffectiveOnFormatted";
+		$strMsg = "$strAction has been successful.<br />Account $intGainingAccount ({$arrGainingAccount['Name']}) gains control of the service, effective from $strEffectiveOnFormatted";
 		Ajax()->AddCommand("Alert", $strMsg);
 		
 		// Fire events
@@ -472,7 +445,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 	 * It expects the following objects to be set:
 	 * 	DBO()->Movement->ServiceId		Id of one of the service records modelling the service on the Account that is losing ownership (current Account)
 	 *
-	 *  When successful, it will fire an OnNewNote event and an OnServiceUpdate event
+	 *  If successful, it will fire an OnNewNote event and an OnServiceUpdate event
 	 *
 	 * @return		void
 	 * @method
@@ -499,20 +472,21 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		}
 		
 		// Check that we are dealing with the newest owner of the service
-		$intAccountId		= $objService->GetAccount();
-		$intNewestOwnerId	= $objService->GetNewestOwner();
+		$intOutgoingOwner		= $objService->GetAccount();
+		$intOutgoingServiceId	= $objService->GetId();
+		$intNewestOwner			= ModuleService::GetNewestOwner($objService->GetFNN());
 		
-		if ($intAccountId != $intNewestOwnerId)
+		if ($intOutgoingOwner != $intNewestOwner)
 		{
 			// The service object is not representing the service's usage on the newest owner
-			Ajax()->AddCommand("Alert", "ERROR: This account is not the current owner of the service.  The current owner of this service is account: $intNewestOwnerId");
+			Ajax()->AddCommand("Alert", "ERROR: This account is not the current owner of the service.  The current owner of this service is account: $intNewestOwner");
 			return TRUE;
 		}
 		
 		// Check that there is a previous owner
-		$intPreviousOwnerId = $objService->GetPreviousOwner();
+		$intIncomingOwner = $objService->GetPreviousOwner();
 		
-		if (!$intPreviousOwnerId)
+		if (!$intIncomingOwner)
 		{
 			// Cannot establish a previous owner
 			Ajax()->AddCommand("Alert", "ERROR: Cannot establish who was the previous owner of this service");
@@ -542,12 +516,25 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		// Retrieve details about the outgoing owner
+		if (($arrOutgoingOwner = $this->_GetAccountDetails($intOutgoingOwner)) === FALSE)
+		{
+			// Error (error reporting has been handled already)
+			return TRUE; 
+		}
+		
+		// Retrieve details about the previous owner
+		if (($arrIncomingOwner = $this->_GetAccountDetails($intIncomingOwner)) === FALSE)
+		{
+			// Error (error reporting has been handled already)
+			return TRUE;
+		}
+		
 		// It should be fine to do the reverse
-		//TODO! Do the reverse
 		TransactionStart();
 
-		$intEmployee = AuthenticatedUser()->_arrUser['Id'];
-		$intNewServiceId = $objService->ReverseMove($intEmployee);
+		$intEmployee		= AuthenticatedUser()->_arrUser['Id'];
+		$intNewServiceId	= $objService->ReverseMove($intEmployee);
 		if ($intNewServiceId === FALSE)
 		{
 			// An Error occurred
@@ -556,60 +543,63 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// The service move was successful
+		// The Reversal was successful
 		TransactionCommit();
 		
 		// Create System Note for the account that is losing ownership
-		$strFNN						= $objService->GetFNN();
-		$strAction					= ($bolChangeOfLessee)? "Change of Lessee" : "Change of Account";
-		$strEffectiveOnFormatted	= OutputMask()->LongDateAndTime($strEffectiveOn);
-		$strOldOwnerAccountMsg		= "$strAction has been performed.  Effective $strEffectiveOnFormatted, its new owner is Account $intGainingAccount ({$arrGainingAccount['AccountName']}).";
-		SaveSystemNote($strOldOwnerAccountMsg, $objService->GetAccountGroup(), $intAccountId, NULL, $objService->GetId());
+		$strFNN					= $objService->GetFNN();
+		$strAction				= ($intNatureOfAcquisition == SERVICE_CREATION_ACCOUNT_CHANGED)? "Change of Account" : "Change of Lessee";
+		$strOutgoingOwnerMsg	= "$strAction Reversal has been performed.  This service now belongs to account {$arrIncomingOwner['Id']} ({$arrIncomingOwner['Name']}).";
+		SaveSystemNote($strOutgoingOwnerMsg, $arrOutgoingOwner['AccountGroup'], $intOutgoingOwner, NULL, $intOutgoingServiceId);
 		
-		// Create System Note for the account that is gaining ownership
-		$strOldOwnerName			= DBO()->Movement->CurrentAccountName->Value;
-		$strNewOwnerAccountMsg		= "This service has been acquired through a $strAction operation, effective $strEffectiveOnFormatted.  Its previous owner was Account $intAccountId ({$strOldOwnerName}).";
-		if ($bolMoveCDRs && $strEffectiveOn < GetCurrentISODateTime())
-		{
-			// The service movement is retroactive
-			$strNewOwnerAccountMsg	.= "\nUnbilled CDRs since the time of acquisition will be applied to this account";
-		}
-		if ($bolMovePlan)
-		{
-			$strNewOwnerAccountMsg	.= "\nThe service has retained its Plan details";
-		}
-		SaveSystemNote($strNewOwnerAccountMsg, $arrGainingAccount['AccountGroup'], $intGainingAccount, NULL, $intNewServiceId);
-		
-		// Update the cached action details regarding the ServiceMovement popup
-		$arrCachedActionDetails = array(
-										"CurrentAccount"	=> $intAccountId,
-										"GainingAccount"	=> $intGainingAccount,
-										"Action"			=> $strActionType,
-										"EffectiveOnType"	=> $strEffectiveOnType,
-										"EffectiveOn"		=> $strEffectiveOn,
-										"MoveCDRs"			=> $bolMoveCDRs,
-										"MovePlan"			=> $bolMovePlan
-										);
-										
-		$_SESSION['ServiceMove'] = $arrCachedActionDetails;
+		// Create System Note for the account that is gaining ownership (previous owner)
+		$strIncomingOwnerMsg	= "$strAction Reversal has been performed.  This account now owns this service again.  The $strAction was to account {$arrOutgoingOwner['Id']} ({$arrOutgoingOwner['Name']}).";
+		SaveSystemNote($strIncomingOwnerMsg, $arrIncomingOwner['AccountGroup'], $intIncomingOwner, NULL, $intNewServiceId);
 		
 		// Close the popup
 		Ajax()->AddCommand("ClosePopup", "MoveServicePopup");
 		
-		$strMsg = "$strAction has been successful.<br />Account $intGainingAccount ({$arrGainingAccount['AccountName']}) gains control of the service, effective from $strEffectiveOnFormatted";
+		$strMsg = "$strAction Reversal has been successful.<br />Account {$arrIncomingOwner['Id']} ({$arrIncomingOwner['Name']}) once again has control of this service.";
 		Ajax()->AddCommand("Alert", $strMsg);
 		
 		// Fire events
 		// The contents of this object should be declared in the doc block of this method
-		$arrEvent['Service']['Id'] = $intServiceId;
+		$arrEvent['Service']['Id'] = $intOutgoingServiceId;
 		Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 		
 		// Fire the OnNewNote Event
-		Ajax()->FireOnNewNoteEvent($intAccountId, $intServiceId);
+		Ajax()->FireOnNewNoteEvent($intOutgoingOwner, $intOutgoingServiceId);
 		return TRUE;
 		
 		
 	}
+	
+	// Usually when I want to get details about an account, I want the same information
+	// If an error occurrs, this will add an Alert command to the ajax response
+	private function _GetAccountDetails($intAccount)
+	{
+		$arrColumns = array("Id"			=> "Id",
+							"AccountGroup"	=> "AccountGroup",
+							"CreatedOn"		=> "CreatedOn",
+							"Name"			=> "CASE WHEN BusinessName != \"\" THEN BusinessName WHEN TradingName != \"\" THEN TradingName ELSE NULL END",
+							"Status"		=> "Archived"
+							);
+		$selAccount = new StatementSelect("Account", $arrColumns, "Id = <Id>");
+		if ($selAccount->Execute(array("Id"=>$intAccount)) === FALSE)
+		{
+			// Database error
+			Ajax()->AddCommand("Alert", "ERROR: Retrieving Account with Id: $intAccount, from the database failed, unexpectedly.  Please notify your system administrators");
+			return FALSE;
+		}
+		if (($arrAccount = $selAccount->Fetch()) === FALSE)
+		{
+			// Could not find the account
+			Ajax()->AddCommand("Alert", "ERROR: Could not find Account with Id: $intAccount");
+			return FALSE;
+		}
+		return $arrAccount;
+	}
+	
 	
 }
 ?>

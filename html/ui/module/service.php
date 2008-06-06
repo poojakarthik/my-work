@@ -671,12 +671,6 @@ abstract class ModuleService
 		return ($this->_intAccount == $intFinalOwner) ? TRUE : FALSE;
 	}
 	
-	// Wrapper for the static ModuleService::GetNewestOwner() function
-	function GetNewestOwner()
-	{
-		return ModuleService::GetNewestOwner($this->_strFNN);
-	}
-	
 	
 	// Returns the Account that most recently previously owned this service, before this 
 	// account most recently owned this service
@@ -684,7 +678,13 @@ abstract class ModuleService
 	// Note that if this account (account A) disconnects the service, and then the service is created on
 	// another account (account B), then closed on that account, and activated again on the original account (A),
 	// then this function will return account B as the previous owner
-	function GetPreviousOwner()
+	/* If $bolReturnAllDetails == TRUE then the following details are returned relating to the PreviousOwner ServiceRecord
+	 *	$arrPreviousOwner	['ServiceId']
+	 *						['Account']
+	 *						['AccountGroup']
+	 *						['LastOwner']
+	 */
+	function GetPreviousOwner($bolReturnAllDetails=FALSE)
 	{
 		// Retrieve all Service Records that have a createdOn date less than that of the most recent Service Record
 		// for this FNN/Account
@@ -700,20 +700,30 @@ abstract class ModuleService
 								"LastCreatedOn"		=> $this->_arrServiceRecords[0]['CreatedOn']
 								);
 		$strOrderBy		= "Id DESC";
-		$arrColumns		= array("Id", "Account", "CreatedOn", "NatureOfCreation", "ClosedOn", "NatureOfClosure");
+		$arrColumns		= array("Id", "Account", "AccountGroup", "CreatedOn", "NatureOfCreation", "ClosedOn", "NatureOfClosure", "LastOwner");
 		$selServices	= new StatementSelect("Service", $arrColumns, $strWhere, $strOrderBy, "1");
 		if ($selServices->Execute($arrWhere) === FALSE)
 		{
 			$this->_strErrorMsg = "Unexpected Database error occurred";
 			return FALSE;
 		}
-		if (($arrServices = $selServices->Fetch()) === FALSE)
+		if (($arrService = $selServices->Fetch()) === FALSE)
 		{
 			// There was no previous owner before this one
 			return NULL;
 		}
-		
-		return $arrServices['Account'];
+		if ($bolReturnAllDetails)
+		{
+			return array(	"ServiceId"		=> $arrService['Id'],
+							"Id"			=> $arrService['Account'],
+							"AccountGroup"	=> $arrService['AccountGroup'],
+							"LastOwner"		=> $arrService['LastOwner']
+						);
+		}
+		else
+		{
+			return $arrService['Account'];
+		}
 	}
 	
 	// Returns the datetime at which this Account most recently took ownership of the service
@@ -944,7 +954,7 @@ abstract class ModuleService
 	 * @param	bool	$bolMovePlan			set to TRUE to move the service's plan details to the new owning account
 	 * @param	int		$intEmployee			Id of the employee performing the move operation
 	 *
-	 * @return	mix								int		: Id of the new Service record created
+	 * @return	mix								int		: Id of the newest Service record created (referencing the new owner)
 	 * 											bool	: FALSE on error (the error message can be retrieved using GetErrorMsg())
 	 * @method
 	 */
@@ -1117,7 +1127,164 @@ abstract class ModuleService
 		$this->Refresh();
 		
 		return $intNewService;
-	}	
+	}
+	
+	//------------------------------------------------------------------------//
+	// ReverseMove
+	//------------------------------------------------------------------------//
+	/**
+	 * ReverseMove()
+	 *
+	 * Reverses the last "move" operation
+	 * 
+	 * Reverses the last "move" operation
+	 * (Copies all data pertinent to the service)
+	 * NOTE: THIS METHOD HAS TO BE RUN FROM WITHIN A TRANSACTION
+	 * It is the responsibility of the calling code to manage this transaction including
+	 * committing on success and rolling back on error
+	 * POST:	On success, the Service object will be refreshed and will now reference the new owner
+	 *
+	 * @param	int		$intEmployee			Id of the employee performing the move operation
+	 *
+	 * @return	mix								int		: Id of the newest Service record created (referencing the new owner)
+	 * 											bool	: FALSE on error (the error message can be retrieved using GetErrorMsg())
+	 * @method
+	 */
+	function ReverseMove($intEmployee)
+	{
+		if (($strEarliestAllowableMoveTime = $this->GetEarliestAllowableMoveTime()) === FALSE)
+		{
+			// Error
+			return NULL;
+		}
+		if (($strTimeOfAcquisition = $this->GetTimeOfAcquisition()) === FALSE)
+		{
+			// Error
+			return NULL;
+		}
+		if (($intNatureOfAcquisition = $this->GetNatureOfAcquisition()) === FALSE)
+		{
+			// Error
+			return NULL;
+		}
+		
+		if ($intNatureOfAcquisition != SERVICE_CREATION_LESSEE_CHANGED && $intNatureOfAcquisition != SERVICE_CREATION_ACCOUNT_CHANGED)
+		{
+			// The nature of Acquisition was not by means of a "Move" operation
+			$this->_strErrorMsg = "Cannot establish the nature of acquisition";
+			return FALSE;
+		}
+		
+		if ($strEarliestAllowableMoveTime != $strTimeOfAcquisition)
+		{
+			// The "Move" can no longer be reversed
+			$this->_strErrorMsg = "Cannot reverse as this account has been billed for this service";
+			return FALSE;
+		}
+		
+		// Get the details of the incoming owner
+		if (($arrIncomingOwner = $this->GetPreviousOwner(TRUE)) === FALSE)
+		{
+			// Database error
+			return FALSE;
+		}
+		if ($arrIncomingOwner === NULL)
+		{
+			$this->_strErrorMsg = "Cannot find the previous owner";
+			return FALSE;
+		}
+		
+		$intServiceId = $this->_intCurrentId;
+		
+		// Make the new service record for the IncomingOwner
+		$arrNewService = array(
+								"FNN"					=> $this->_strFNN,
+								"ServiceType"			=> $this->_intServiceType,
+								"Indial100"				=> $this->_bolIndial100,
+								"AccountGroup"			=> $arrIncomingOwner['AccountGroup'],
+								"Account"				=> $arrIncomingOwner['Id'],
+								"CreatedOn"				=> $strTimeOfAcquisition,
+								"CreatedBy"				=> $intEmployee,
+								"NatureOfCreation"		=> ($intNatureOfAcquisition == SERVICE_CREATION_LESSEE_CHANGED)? SERVICE_CREATION_LESSEE_CHANGE_REVERSED : SERVICE_CREATION_ACCOUNT_CHANGE_REVERSED,
+								"Carrier"				=> $this->_arrServiceRecords[0]['Carrier'],
+								"CarrierPreselect"		=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+								"ForceInvoiceRender"	=> $this->_bolForceInvoiceRender,
+								"LastOwner"				=> $arrIncomingOwner['LastOwner'],
+								"Status"				=> SERVICE_ACTIVE
+							);
+		
+		// Insert the new Service Record
+		$insService	= new StatementInsert("Service", $arrNewService);
+		$mixResult	= $insService->Execute($arrNewService);
+		if (!$mixResult)
+		{
+			$this->_strErrorMsg = "Unexpected Database error occurred while trying to insert the new service record into the service table";
+			return FALSE;
+		}
+		
+		// Store the new Service Record's Id
+		$intNewService = $mixResult;
+		
+		// Copy the Plan Details
+		if ($this->_CopyPlanDetails($intNewService, $strTimeOfAcquisition) === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Renormalise Unbilled CDRs
+		if ($this->_RenormaliseUnbilledCDRs() === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Copy the ServiceType specific details
+		if ($this->_CopySupplementaryDetails($intNewService, $arrIncomingOwner['Id'], $arrIncomingOwner['AccountGroup']) === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Update all the Service records relating to the Outgoing owner that have CreatedOn >= $strTimeOfAcquisition
+		// Find the Ids of all the service records that need to be closed
+		$arrServiceRecordsToClose = array();
+		foreach ($this->_arrServiceRecords as $arrServiceRecord)
+		{
+			if ($arrServiceRecord['CreatedOn'] >= $strTimeOfAcquisition)
+			{
+				// This record needs to be updated
+				$arrServiceRecordsToClose[] = $arrServiceRecord['ServiceId'];
+			}
+		}
+		
+		if (count($arrServiceRecordsToClose) > 0)
+		{
+			// There are service records to update
+			// Set the ClosedOn to 1 second before the TimeOfAcquisition
+			$strClosedOn = date("Y-m-d H:i:s", strtotime($strTimeOfAcquisition) - 1);
+			$intNatureOfClosure = ($intNatureOfAcquisition == SERVICE_CREATION_LESSEE_CHANGED)? SERVICE_CLOSURE_LESSEE_CHANGE_REVERSED : SERVICE_CLOSURE_ACCOUNT_CHANGE_REVERSED;
+			
+			$strWhere	= "Id IN (". implode(", ", $arrServiceRecordsToClose) .")";
+			$arrUpdate	= array(
+								"ClosedOn"			=> $strClosedOn,
+								"ClosedBy"			=> $intEmployee,
+								"NatureOfClosure"	=> $intNatureOfClosure,
+								"Status"			=> SERVICE_ARCHIVED
+								);
+			$updOutgoingService = new StatementUpdate("Service", $strWhere, $arrUpdate);
+			if ($updOutgoingService->Execute($arrUpdate, array()) === FALSE)
+			{
+				// Database error
+				$this->_strErrorMsg = "Could not update the Service Records of the Outgoing Account";
+				return FALSE;
+			}
+		}
+		
+		// The reverse has been successful
+		// Refresh this Service object so that it now reflects the usage of the service, on the new Account (The account that the service was reversed to)
+		$this->_intNewId = $intNewService;
+		$this->Refresh();
+		
+		return $intNewService;
+	}
 	
 	//------------------------------------------------------------------------//
 	// _CopySupplementaryDetails
@@ -1201,7 +1368,8 @@ abstract class ModuleService
 	}
 	
 	// Returns TRUE on success and FALSE on failure
-	protected function _RenormaliseUnbilledCDRs($strEffectiveDateTime)
+	// if $strEffectiveDateTime is not supplied then it will renormalise ALL CDRs, not just those that have StartDatetime > $strEffectiveDateTime
+	protected function _RenormaliseUnbilledCDRs($strEffectiveDateTime=NULL)
 	{
 		$arrUpdate	= array("Status" => CDR_READY);
 		
@@ -1210,7 +1378,14 @@ abstract class ModuleService
 		$arrExemptCDRs = array(CDR_READY, CDR_INVOICED, CDR_TEMP_INVOICE);
 		$strExemptCDRs = implode(", ", $arrExemptCDRs);
 		
-		$strWhere	= "FNN LIKE <FNN> AND StartDatetime >= <EffectiveFrom> AND Status NOT IN ($strExemptCDRs)";
+		if ($strEffectiveDateTime !== NULL)
+		{
+			$strWhere	= "FNN LIKE <FNN> AND StartDatetime >= <EffectiveFrom> AND Status NOT IN ($strExemptCDRs)";
+		}
+		else
+		{
+			$strWhere	= "FNN LIKE <FNN> AND Status NOT IN ($strExemptCDRs)";
+		}
 		$arrWhere	= array("FNN" => $strFNN, "EffectiveFrom" => $strEffectiveDateTime);
 		$updCDR		= new StatementUpdate("CDR", $strWhere, $arrUpdate);
 		if ($updCDR->Execute($arrUpdate, $arrWhere) === FALSE)
@@ -1765,7 +1940,7 @@ abstract class ModuleService
 		$strFNNIndialRange = substr($strFNN, 0, 8) . "__";
 		
 		// Find the Service Record modelling this service with the highest Id		
-		$strWhere		= "(FNN = <FNN> OR (Indial100 = 1 AND FNN LIKE <FNNIndialRange>)) AND (ClosedOn IS NULL OR CreatedOn <= ClosedOn)";
+		$strWhere		= "(FNN = <FNN> OR (Indial100 = 1 AND FNN LIKE <FNNIndialRange>)) AND (ClosedOn IS NULL OR CreatedOn < ClosedOn)";
 		$arrWhere		= array("FNN" => $strFNN, "FNNIndialRange" => $strFNNIndialRange);
 		$strOrderBy		= "Id DESC";
 		$selFinalOwner	= new StatementSelect("Service", "Account", $strWhere, $strOrderBy, "1");
@@ -2063,6 +2238,7 @@ class ModuleLandLine extends ModuleService
 	 */
 	protected function _CopySupplementaryDetails($intDestServiceId, $intDestAccountId, $intDestAccountGroup)
 	{
+		// Check if the Destination account is the same as the current account
 		if ($intDestAccountId == $this->_intAccount)
 		{
 			// It is safe to copy the ServiceAddress record

@@ -682,7 +682,7 @@ class AppTemplateAccount extends ApplicationTemplate
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
 							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId>";
+		$strWhere	= "S.Account = <AccountId> AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
 		$arrWhere	= Array("AccountId" => $intAccount);
 		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
 		

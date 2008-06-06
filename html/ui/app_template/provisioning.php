@@ -834,7 +834,7 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
 							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
-		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .")";
+		$strWhere	= "S.Account = <AccountId> AND S.ServiceType IN (". SERVICE_TYPE_LAND_LINE .") AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
 		$arrWhere	= Array("AccountId" => $intAccount);
 		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
 		

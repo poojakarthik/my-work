@@ -111,6 +111,31 @@ class AppTemplateService extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
+		
+		// Check that ClosedOn >= CreatedOn if ClosedOn IS NOT NULL
+		if (DBO()->Service->ClosedOn->Value != NULL && DBO()->Service->ClosedOn->Value < DBO()->Service->CreatedOn->Value)
+		{
+			// This service record is invalid
+			// Try to find the current owner of this Service
+			$intOwner		= ModuleService::GetNewestOwner(DBO()->Service->FNN->Value);
+			$intAccount		= DBO()->Service->Account->Value;
+			$strAccountLink	= Href()->AccountOverview($intAccount);
+			$strErrorMsg	= "This is an invalid service record.  It belonged to account <a href='$strAccountLink' title='Account Overview'>$intAccount</a>";
+			
+			if ($intOwner == FALSE)
+			{
+				$strErrorMsg .= "<br />The current owning account cannot be established.";
+			}
+			else
+			{
+				$strOwnerLink = Href()->AccountOverview($intOwner);
+				$strErrorMsg .= "<br />The current owning account is <a href='$strOwnerLink' title='Account Overview'>$intOwner</a>";
+			}
+			DBO()->Error->Message = $strErrorMsg;
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
 		if (DBO()->Service->Indial100->Value)
 		{
 			DBL()->ServiceExtension->Service = DBO()->Service->Id->Value;
