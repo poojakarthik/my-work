@@ -396,7 +396,7 @@
 			{
 				// Report and continue
 				//$this->_rptBillingReport->AddMessageVariables(MSG_LINE_FAILED, Array('<Reason>' => "No Services for this Account"));
-				continue;
+				//continue;
 			}
 			//$this->_rptBillingReport->AddMessage(MSG_OK);
 			
@@ -516,7 +516,7 @@
 					$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
 					$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
-					continue;
+					die;
 				}
 				else
 				{
@@ -665,7 +665,7 @@
 					$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 					$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
-					continue;
+					die;
 				}
 				else
 				{
@@ -712,7 +712,7 @@
 					$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 					$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
-					continue;
+					die;
 				}
 				//$this->_rptBillingReport->AddMessage(MSG_OK);
 				
@@ -737,7 +737,7 @@
 				$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
 				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED);
-				continue;
+				die;
 			}
 			else
 			{
@@ -768,7 +768,7 @@
 				$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Cannot retrieve Account Balance");
 				$this->intFailed++;
-				continue;
+				die;
 			}
 			
 			// calculate initial invoice total and total owing
@@ -886,7 +886,7 @@
 				$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Insert failed");
 				$this->intFailed++;
-				continue;
+				die;
 			}
 			
 			// work out the bill printing target
