@@ -4554,11 +4554,14 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 					$strFile	= getcwd().'/'.$strFile;
 				}
 			}
-			break;	
+			break;
+			
+		default:
+			return Array('Files' => Array($strSourcePath));
 	}
 	
 	//Debug("Command\t: '$strCommand'");
 	//Debug("Last Line\t: '$strLastLine'");
-	return $arrFiles;
+	return Array('Files' => $arrFiles, 'Processed' => TRUE);
 }
 ?>
