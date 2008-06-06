@@ -26,8 +26,8 @@
  *
  */
 
-$GLOBALS['**arrDatabase']['User']		= "root";
-$GLOBALS['**arrDatabase']['Password']	= "zeemu";
+$GLOBALS['**arrDatabase']['flex']['User']		= "root";
+$GLOBALS['**arrDatabase']['flex']['Password']	= "zeemu";
 
 require("../../flex.require.php");
 

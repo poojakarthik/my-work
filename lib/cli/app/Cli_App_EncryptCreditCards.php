@@ -101,7 +101,7 @@ class Cli_App_EncryptCreditCards extends Cli
 
 			$this->log("\nUpdating database...");
 			
-			$GLOBALS['dbaDatabase']->TransactionStart();
+			DataAccess::getDataAccess()->TransactionStart();
 			
 			for ($i = 0; $i < $mixResult; $i++)
 			{
@@ -176,7 +176,7 @@ class Cli_App_EncryptCreditCards extends Cli
 			}
 			$this->log("\nPost-update encryption test passed.");
 
-			$GLOBALS['dbaDatabase']->TransactionCommit();
+			DataAccess::getDataAccess()->TransactionCommit();
 
 			// Must have worked! Exit with 'OK' code 0
 			$this->log("\nCompleted successfully (max length of encrypted data is $maxLen & $maxLenCVV characters).\n");
@@ -184,7 +184,7 @@ class Cli_App_EncryptCreditCards extends Cli
 		}
 		catch(Exception $exception)
 		{
-			$GLOBALS['dbaDatabase']->TransactionRollback();
+			DataAccess::getDataAccess()->TransactionRollback();
 			$this->showUsage('ERROR: ' . $exception->getMessage());
 			return 1;
 		}

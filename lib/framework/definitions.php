@@ -2300,6 +2300,14 @@ $GLOBALS['*arrConstant']	['ServiceClosure']	[205]	['Constant']	= 'SERVICE_CLOSUR
 $GLOBALS['*arrConstant']	['ServiceClosure']	[205]	['Description']	= 'Account Change Reversed';
 
 
+$GLOBALS['*arrConstant']	['DatabaseConnection']	['flex']	['Constant']	= 'FLEX_DATABASE_CONNECTION_DEFAULT';
+$GLOBALS['*arrConstant']	['DatabaseConnection']	['flex']	['Description']	= 'Default Database Connection';
+$GLOBALS['*arrConstant']	['DatabaseConnection']	['admin']	['Constant']	= 'FLEX_DATABASE_CONNECTION_ADMIN';
+$GLOBALS['*arrConstant']	['DatabaseConnection']	['admin']	['Description']	= 'Admin Database Connection';
+$GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Constant']	= 'FLEX_DATABASE_CONNECTION_CDR';
+$GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Description']	= 'CDR Database Connection';
+
+
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, FILES_BASE_PATH."payments/");
 define("PATH_INVOICE_PDFS"				, FILES_BASE_PATH."invoices/");

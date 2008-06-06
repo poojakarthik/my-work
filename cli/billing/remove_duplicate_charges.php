@@ -2,7 +2,7 @@
 
 LoadApplication();
 
-//$GLOBALS['dbaDatabase']->TransactionStart();
+//DataAccess::getDataAccess()->TransactionStart();
 
 // Statements
 $arrFields = Array();
@@ -74,7 +74,7 @@ while ($arrInvoice = $selTempInvoice->Fetch())
 }
 
 
-//$GLOBALS['dbaDatabase']->TransactionRollback();
+//DataAccess::getDataAccess()->TransactionRollback();
 
 
 

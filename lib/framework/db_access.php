@@ -75,7 +75,35 @@
 	 * @property
 	 */
 	public $refMysqliConnection;
-	
+
+
+	private static $arrDataAccessCache = array();
+
+	public static function getDataAccess($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
+	{
+		if (!array_key_exists($strConnectionType, self::$arrDataAccessCache))
+		{
+			self::$arrDataAccessCache[$strConnectionType] = new DataAccess($strConnectionType);
+		}
+		return self::$arrDataAccessCache[$strConnectionType];
+	}
+
+
+	/**
+	 * connected()
+	 * 
+	 * Determines whether or not a connection has already been established to a gived
+	 * database.
+	 * 
+	 * @param string $strConnectionType A configured database connection 
+	 * 									(Default is FLEX_DATABASE_CONNECTION_DEFAULT)
+	 */
+	public static function connected($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
+	{
+		return array_key_exists($strConnectionType, self::$arrDataAccessCache);
+	}
+
+
  	//------------------------------------------------------------------------//
 	// DataAccess() - Constructor
 	//------------------------------------------------------------------------//
@@ -85,20 +113,54 @@
 	 * Constructor for DataAccess
 	 *
 	 * Constructor for DataAccess
-
+	 * Access instances throught the DataAccess::getDataAccess() factory function.
+	 * 
 	 * @return		void
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
+	 * @access private
 	 */ 
-	function __construct()
+	private function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
+		// TODO: Remove this once all config files have been ported to the new format
+		// This is 'if block' here for backwards compatibility only!
+		if ($strConnectionType == FLEX_DATABASE_CONNECTION_DEFAULT &&
+			array_key_exists('**arrDatabase', $GLOBALS) &&
+			!array_key_exists($strConnectionType, $GLOBALS['**arrDatabase']))
+		{
+			$GLOBALS['**arrDatabase'][$strConnectionType] = array();
+			if (array_key_exists('Type', $GLOBALS['**arrDatabase']))
+			{
+				$GLOBALS['**arrDatabase'][$strConnectionType]['Type'] = array();
+			}
+			if (array_key_exists('URL', $GLOBALS['**arrDatabase']))
+			{
+				$GLOBALS['**arrDatabase'][$strConnectionType]['URL'] = array();
+			}
+			if (array_key_exists('User', $GLOBALS['**arrDatabase']))
+			{
+				$GLOBALS['**arrDatabase'][$strConnectionType]['User'] = array();
+			}
+			if (array_key_exists('Password', $GLOBALS['**arrDatabase']))
+			{
+				$GLOBALS['**arrDatabase'][$strConnectionType]['Password'] = array();
+			}
+			if (array_key_exists('Database', $GLOBALS['**arrDatabase']))
+			{
+				$GLOBALS['**arrDatabase'][$strConnectionType]['Database'] = array();
+			}
+		}
+
 		// Make sure we have a config
-		if (!$arrDBConfig = $GLOBALS['**arrDatabase'])
+		if ( !array_key_exists('**arrDatabase', $GLOBALS) || !$GLOBALS['**arrDatabase']
+		  || !array_key_exists($strConnectionType, $GLOBALS['**arrDatabase']) || !$GLOBALS['**arrDatabase'][$strConnectionType])
 		{
 			throw new Exception("Database Configuration not found!");
 		}
-		
+
+		$arrDBConfig = $GLOBALS['**arrDatabase'][$strConnectionType];
+
 		// Connect to MySQL database
 		$this->refMysqliConnection = new mysqli($arrDBConfig['URL'], $arrDBConfig['User'], $arrDBConfig['Password'], $arrDBConfig['Database']);
 		
@@ -341,7 +403,7 @@
 	
 	
  }
- 
+
 //----------------------------------------------------------------------------//
 // DatabaseAccess
 //----------------------------------------------------------------------------//
@@ -408,16 +470,10 @@
 	 *
 	 * @method
 	 */ 
-	function __construct()
+	function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		// connect to database if not already connected
-		if (!isset ($GLOBALS['dbaDatabase']) || !$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
-		{
-			$GLOBALS['dbaDatabase'] = new DataAccess();
-		}
-		
 		// make global database object available
-		$this->db = &$GLOBALS['dbaDatabase'];
+		$this->db = DataAccess::getDataAccess($strConnectionType);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -860,10 +916,10 @@
 	 *
 	 * @method
 	 */ 
-	 function __construct()
+	 function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	 {
 	 	$this->intSQLMode = SQL_STATEMENT;
-		parent::__construct();
+		parent::__construct($strConnectionType);
 	 }
 	 
 	
@@ -959,10 +1015,10 @@
 	 *
 	 * @method
 	 */ 
-	 function __construct()
+	 function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	 {
 	 	$this->intSQLMode =SQL_QUERY;
-		parent::__construct();
+		parent::__construct($strConnectionType);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -1056,7 +1112,7 @@ class MySQLFunction
 		$this->_strFunction = $strFunction;
 		$this->_arrParams = $arrParams;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// getFunction()
 	//------------------------------------------------------------------------//
@@ -1156,9 +1212,9 @@ class MySQLFunction
 	 *
 	 * @method
 	 */ 
- 	function __construct($strQuery, $intLimit=NULL)
+ 	function __construct($strQuery, $intLimit=NULL, $strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct();
+		parent::__construct($strConnectionType);
 		
 		// set query
 		$this->strQuery = $strQuery;
@@ -1279,9 +1335,9 @@ class MySQLFunction
  */
  class QueryCreate extends Query
  {
- 	function __construct()
+ 	function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct();
+		parent::__construct($strConnectionType);
 	}
 		
  	//------------------------------------------------------------------------//
@@ -1495,9 +1551,9 @@ class MySQLFunction
  */
  class QuerySelectInto extends Query
  {
- 	function __construct()
+ 	function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct();
+		parent::__construct($strConnectionType);
 	}
 		
  	//------------------------------------------------------------------------//
@@ -1611,9 +1667,9 @@ class MySQLFunction
  */
 class QueryCopyTable extends Query
 {
- 	function __construct()
+ 	function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct();
+		parent::__construct($strConnectionType);
 	}
 		
  	//------------------------------------------------------------------------//
@@ -1728,9 +1784,9 @@ class QueryCopyTable extends Query
  */
  class QueryListTables extends Query
  {
- 	function __construct()
+ 	function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct();
+		parent::__construct($strConnectionType);
 	}
 		
  	//------------------------------------------------------------------------//
@@ -1814,9 +1870,9 @@ class QueryCopyTable extends Query
  */
  class QueryTruncate extends Query
  {
- 	function __construct()
+ 	function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct();
+		parent::__construct($strConnectionType);
 	}
 		
  	//------------------------------------------------------------------------//
@@ -1888,9 +1944,9 @@ class QueryCopyTable extends Query
  */
  class QueryDropTable extends Query
  {
- 	function __construct()
+ 	function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct();
+		parent::__construct($strConnectionType);
 	}
 		
  	//------------------------------------------------------------------------//
@@ -2024,9 +2080,9 @@ class QueryCopyTable extends Query
 	 *
 	 * @method
 	 */ 
- 	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "", $strGroupBy = "")
+ 	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "", $strGroupBy = "", $strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct($strTables, $mixColumns, $mixWhere, $strOrder, $strLimit, $strGroupBy);
+		parent::__construct($strTables, $mixColumns, $mixWhere, $strOrder, $strLimit, $strGroupBy, $strConnectionType);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -2259,9 +2315,9 @@ class QueryCopyTable extends Query
 	 *
 	 * @method
 	 */ 
-	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "", $strGroupBy = "")
+	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "", $strGroupBy = "", $strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
-		parent::__construct();
+		parent::__construct($strConnectionType);
 		
 		// Trace
 		$this->Trace("Input: $strTables, $mixColumns, $mixWhere, $strOrder, $strLimit, $strGroupBy");
@@ -2732,9 +2788,9 @@ class QueryCopyTable extends Query
 	 *
 	 * @method
 	 */ 
-	 function __construct($strTable, $arrColumns = NULL, $bolWithId = NULL)
+	 function __construct($strTable, $arrColumns = NULL, $bolWithId = NULL, $strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	 {
-		parent::__construct();
+		parent::__construct($strConnectionType);
 		
 		// Trace
 		$this->Trace("Input: $strTable, $arrColumns");
@@ -3000,10 +3056,10 @@ class QueryCopyTable extends Query
 	 *
 	 * @method
 	 */ 
- 	function __construct($strTable, $arrColumns = null)
+ 	function __construct($strTable, $arrColumns = null, $strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
 		// make global database object available
-		$this->db = &$GLOBALS['dbaDatabase'];
+		$this->db = DataAccess::getDataAccess($strConnectionType);
 		$strId = $this->db->arrTableDefine[$strTable]['Id'];
 		if (!$strId)
 		{

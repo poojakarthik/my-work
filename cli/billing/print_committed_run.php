@@ -5,7 +5,7 @@ require_once("../../flex.require.php");
 $arrConfig	= LoadApplication();
 
 
-$bilInvoiceXML	= new BillingModuleInvoiceXML($GLOBALS['dbaDatabase'], $arrConfig, 'CDRInvoiced');
+$bilInvoiceXML	= new BillingModuleInvoiceXML(DataAccess::getDataAccess(), $arrConfig, 'CDRInvoiced');
 
 // Get Command Line Arguments
 $strInvoiceRun	= $argv[1];

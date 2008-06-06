@@ -4,7 +4,7 @@
 require_once('../../flex.require.php');
 
 
-$arrRate			= $GLOBALS['dbaDatabase']->FetchClean("Rate");
+$arrRate			= DataAccess::getDataAccess()->FetchClean("Rate");
 
 Debug($arrRate);
 

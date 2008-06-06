@@ -15,7 +15,7 @@ $selDefaults			= new StatementSelect(	"RatePlanRateGroup JOIN RateGroup ON RateP
 
 $selServiceRateGroup	= new StatementSelect("ServiceRateGroup JOIN RateGroup ON ServiceRateGroup.RateGroup = RateGroup.Id", "ServiceRateGroup.*", "Service = <Service> AND RecordType = <RecordType> AND NOW() BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
 
-$arrServiceRateGroup	= $GLOBALS['dbaDatabase']->FetchClean("ServiceRateGroup");
+$arrServiceRateGroup	= DataAccess::getDataAccess()->FetchClean("ServiceRateGroup");
 unset($arrServiceRateGroup['Id']);
 $arrServiceRateGroup['CreatedOn']	= new MySQLFunction("NOW()");
 $insServiceRateGroup	= new StatementInsert("ServiceRateGroup", $arrServiceRateGroup);

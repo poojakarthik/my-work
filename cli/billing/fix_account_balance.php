@@ -3,7 +3,7 @@
 
 LoadApplication();
 
-//$GLOBALS['dbaDatabase']->TransactionStart();
+//DataAccess::getDataAccess()->TransactionStart();
 
 $arrCols = Array();
 $arrCols['AccountBalance']	= NULL;
@@ -34,6 +34,6 @@ while ($arrInvoice = $selTempInvoice->Fetch())
 	}
 }
 
-//$GLOBALS['dbaDatabase']->TransactionRollback();
+//DataAccess::getDataAccess()->TransactionRollback();
 
 ?>

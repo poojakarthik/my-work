@@ -1,7 +1,7 @@
 <?php
 
-$GLOBALS['**arrDatabase']['User']		= "root";
-$GLOBALS['**arrDatabase']['Password']	= "zeemu";
+$GLOBALS['**arrDatabase']['flex']['User']		= "root";
+$GLOBALS['**arrDatabase']['flex']['Password']	= "zeemu";
 
 require_once("../../flex.require.php");
 

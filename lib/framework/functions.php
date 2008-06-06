@@ -2440,14 +2440,14 @@ function ArchiveAccounts($arrAccounts)
  */ 
 function TransactionStart()
 {
-	if (!$GLOBALS['dbaDatabase'])
+	if (!DataAccess::connected())
 	{
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
 	
 	// Start Transaction
-	return $GLOBALS['dbaDatabase']->TransactionStart();
+	return DataAccess::getDataAccess()->TransactionStart();
 }
 
 //------------------------------------------------------------------------//
@@ -2467,14 +2467,14 @@ function TransactionStart()
  */ 
 function TransactionRollback()
 {
-	if (!$GLOBALS['dbaDatabase'])
+	if (!DataAccess::connected())
 	{
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
 	
 	// Rollback Transaction
-	return $GLOBALS['dbaDatabase']->TransactionRollback();
+	return DataAccess::getDataAccess()->TransactionRollback();
 }
 
 //------------------------------------------------------------------------//
@@ -2494,14 +2494,14 @@ function TransactionRollback()
  */ 
 function TransactionCommit()
 {
-	if (!$GLOBALS['dbaDatabase'])
+	if (!DataAccess::connected())
 	{
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
 	
 	// Commit Transaction
-	return $GLOBALS['dbaDatabase']->TransactionCommit();
+	return DataAccess::getDataAccess()->TransactionCommit();
 }
 
 //------------------------------------------------------------------------//
@@ -2525,19 +2525,19 @@ function TransactionCommit()
  *
  * @method
  */ 
-function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPassword=NULL)
+function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPassword=NULL, $strDatabaseConnection=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
-	if ($GLOBALS['dbaDatabase'])
+	if (DataAccess::connected())
 	{
 		// Can't override if already connected
 		return FALSE;
 	}
 	
 	// Override
-	$GLOBALS['**arrDatabase']['URL']		= ($strURL)			? $strURL		: $GLOBALS['**arrDatabase']['URL'];
-	$GLOBALS['**arrDatabase']['Database']	= ($strDatabase)	? $strDatabase	: $GLOBALS['**arrDatabase']['Database'];
-	$GLOBALS['**arrDatabase']['User']		= ($strUser)		? $strUser		: $GLOBALS['**arrDatabase']['User'];
-	$GLOBALS['**arrDatabase']['Password']	= ($strPassword)	? $strPassword	: $GLOBALS['**arrDatabase']['Password'];
+	$GLOBALS['**arrDatabase'][$strDatabaseConnection]['URL']		= ($strURL)			? $strURL		: $GLOBALS['**arrDatabase'][$strDatabaseConnection]['URL'];
+	$GLOBALS['**arrDatabase'][$strDatabaseConnection]['Database']	= ($strDatabase)	? $strDatabase	: $GLOBALS['**arrDatabase'][$strDatabaseConnection]['Database'];
+	$GLOBALS['**arrDatabase'][$strDatabaseConnection]['User']		= ($strUser)		? $strUser		: $GLOBALS['**arrDatabase'][$strDatabaseConnection]['User'];
+	$GLOBALS['**arrDatabase'][$strDatabaseConnection]['Password']	= ($strPassword)	? $strPassword	: $GLOBALS['**arrDatabase'][$strDatabaseConnection]['Password'];
 	
 	return TRUE;
 }

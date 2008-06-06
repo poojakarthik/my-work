@@ -6,7 +6,7 @@ $strUser		= 'vixen';
 $strPassword	= 'V1x3n';
 $strDatabase	= 'vixen';
 
-$arrCols = $GLOBALS['dbaDatabase']->FetchClean('CDR');
+$arrCols = DataAccess::getDataAccess()->FetchClean('CDR');
 unset($arrCols['CarrierRef']);
 unset($arrCols['CDR']);
 unset($arrCols['Charge']);

@@ -1,10 +1,10 @@
 <?php
 
 // Make sure we are the root database user
-$GLOBALS['**arrDatabase']['URL']		= "192.168.2.224";
-$GLOBALS['**arrDatabase']['User']		= "rich";
-$GLOBALS['**arrDatabase']['Password']	= "richEEE";
-$GLOBALS['**arrDatabase']['Database']	= "vixen";
+$GLOBALS['**arrDatabase']['flex']['URL']		= "192.168.2.224";
+$GLOBALS['**arrDatabase']['flex']['User']		= "rich";
+$GLOBALS['**arrDatabase']['flex']['Password']	= "richEEE";
+$GLOBALS['**arrDatabase']['flex']['Database']	= "vixen";
 
 // Destination Database
 $strDestination	= "flexdemodata";

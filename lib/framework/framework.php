@@ -190,7 +190,7 @@
 		
 		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
 		
-		$arrColumns						= $GLOBALS['dbaDatabase']->FetchClean("Charge");
+		$arrColumns						= DataAccess::getDataAccess()->FetchClean("Charge");
 		$arrColumns ['CreatedOn']		= new MySQLFunction("NOW()");
 		$this->_insCharge				= new StatementInsert("Charge", $arrColumns);
 		
@@ -1484,14 +1484,8 @@
 	function __construct()
 	{
 		// connect to database if not already connected
-		if (!isset ($GLOBALS['dbaDatabase']) || !$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
-		{
-			$GLOBALS['dbaDatabase'] = new DataAccess();
-		}
-		
-		// make global database object available
-		$this->db = &$GLOBALS['dbaDatabase'];
-		
+		$this->db = DataAccess::getDataAccess();
+
 		// make global framework object available
 		$this->Framework = &$GLOBALS['fwkFramework'];
 		

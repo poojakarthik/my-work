@@ -63,8 +63,8 @@ $intCustomers = rand(0, 5);
 
 for ($i = 0; $i < $intCustomers; $i++)
 {
-	$arrAccount = $GLOBALS['dbaDatabase']->FetchClean('Account');
-	$arrContact	= $GLOBALS['dbaDatabase']->FetchClean('Contact');
+	$arrAccount = DataAccess::getDataAccess()->FetchClean('Account');
+	$arrContact	= DataAccess::getDataAccess()->FetchClean('Contact');
 	
 	// Generate names, etc
 	switch (rand(0, 1))

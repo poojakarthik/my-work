@@ -64,7 +64,7 @@ $arrServices = $selServices->FetchAll();
 $intFile = time();
 for ($i = 0; $i < rand(10*$intServices, $intServices*100); $i++)
 {
-	$arrCDR	= $GLOBALS['dbaDatabase']->FetchClean('CDR');
+	$arrCDR	= DataAccess::getDataAccess()->FetchClean('CDR');
 	
 	// Randomly select a service
 	$arrService = $arrServices[rand(0, count($arrServices)-1)];

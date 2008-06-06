@@ -4,7 +4,7 @@
 require_once('../../flex.require.php');
 
 // Set up the databases correctly
-$strDestinationDB	= $GLOBALS['**arrDatabase']['Database'] . '_working';
+$strDestinationDB	= $GLOBALS['**arrDatabase']['flex']['Database'] . '_working';
 
 LoadApplication();
 

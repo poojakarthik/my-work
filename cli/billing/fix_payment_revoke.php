@@ -2,7 +2,7 @@
 
 LoadApplication();
 
-//$GLOBALS['dbaDatabase']->TransactionStart();
+//DataAccess::getDataAccess()->TransactionStart();
 
 $selLastInvoices	= new StatementSelect("Invoice", "*", "InvoiceRun = '465f4b2218916'");
 $selInvoicePayments	= new StatementSelect("InvoicePayment", "SUM(Amount) AS TotalAmount", "InvoiceRun = <InvoiceRun> AND Account = <Account>");
@@ -42,6 +42,6 @@ CliEcho("\nTotal Fucked Invoices\t: {$intCount}");
 CliEcho("Total Revoked\t\t: \${$fltTotal}");
 
 
-//$GLOBALS['dbaDatabase']->TransactionRollback();
+//DataAccess::getDataAccess()->TransactionRollback();
 
 ?>

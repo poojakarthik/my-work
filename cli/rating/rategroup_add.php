@@ -18,7 +18,7 @@ $arrPlans[30]	= 167;
 
 require_once('../../flex.require.php');
 
-$arrRateGroup	= $GLOBALS['dbaDatabase']->FetchClean("RateGroup");
+$arrRateGroup	= DataAccess::getDataAccess()->FetchClean("RateGroup");
 
 // Create RateGroup
 $arrRateGroup['Name']			= "S&E-R2979-B3567";
