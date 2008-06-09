@@ -243,7 +243,15 @@ class ApplicationCollection extends ApplicationBaseClass
 		}
 		
 		// Check uniqueness
-		// TODO
+		$arrWhere				= Array();
+		$arrWhere['SHA1']		= sha1_file($strFilePath);
+		$arrWhere['FileName']	= basename($strFilePath);
+		$selFileUnique	= new StatementSelect("FileImport", "Id", $arrFileType['Uniqueness']);
+		if ($selFileUnique->Execute($arrWhere))
+		{
+			// Not Unique
+			// TODO
+		}
 		
 		// Insert into FileImport
 		$arrFileImport	= Array();
