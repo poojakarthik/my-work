@@ -34,6 +34,7 @@ abstract class Cli
 		 || array_key_exists(self::SWITCH_SILENT, $this->_arrCommandLineArguments))
 		{
 			echo "Invalid implementation. The following command line switches are reserved: " . self::SWITCH_LOG . ", " . self::SWITCH_VERBOSE . " and " . self::SWITCH_SILENT;
+			exit(1);
 		}
 
 		$this->_arrCommandLineArguments[self::SWITCH_LOG] = array(
