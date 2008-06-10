@@ -125,6 +125,7 @@
 		$this->_AddElement($xmlDocument, 'DocumentType', 'DOCUMENT_TYPE_INVOICE');
 		$this->_AddElement($xmlDocument, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
 		$this->_AddElement($xmlDocument, 'CreationDate', date('Y-m-d H:i:s', strtotime($arrInvoice['CreatedOn'])));
+		$this->_AddElement($xmlDocument, 'DateIssued', date('Y-m-d H:i:s', strtotime($arrInvoice['CreatedOn'])));
 		$this->_AddElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'DeliveryMethod'));
 		
 		//--------------------------------------------------------------------//
