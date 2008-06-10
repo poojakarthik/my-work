@@ -108,6 +108,22 @@
 		 */
 		
 		private $_seoOrder;
+
+		//------------------------------------------------------------------------//
+		// _database
+		//------------------------------------------------------------------------//
+		/**
+		 * _database
+		 *
+		 * The database to connect to. Default is FLEX_DATABASE_CONNECTION_DEFAULT.
+		 *
+		 * The database to connect to. Default is FLEX_DATABASE_CONNECTION_DEFAULT.
+		 *
+		 * @type int	
+		 *
+		 * @property
+		 */
+		private $_database;
 		
 		//------------------------------------------------------------------------//
 		// AccountSearch
@@ -123,12 +139,14 @@
 		 */
 		 //TODO!gui! fix this docblock
 		 
-		function __construct ($strSearchName, $strTable, $strResultClass)
+		function __construct ($strSearchName, $strTable, $strResultClass, $database=FLEX_DATABASE_CONNECTION_DEFAULT)
 		{
 			parent::__construct ($strSearchName);
 			
 			$this->_strTable = $strTable;
 			$this->_strResultClass = $strResultClass;
+			
+			$this->_database = $database;
 			
 			$this->_oblarrConstraints = $this->Push (new dataArray ('Constraints', 'SearchConstraint'));
 			$this->_seoOrder = $this->Push (new SearchOrder ($strTable));
@@ -248,7 +266,8 @@
 				$this->_strTable, 
 				$this->_strResultClass,
 				$this->_oblarrConstraints, 
-				$this->_seoOrder
+				$this->_seoOrder,
+				$this->_database
 			);
 			
 			return $this->Push ($serResults->Sample ($intPage, $intLength));

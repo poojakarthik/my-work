@@ -126,14 +126,31 @@
 		 *
 		 * @method
 		 */
+
+		//------------------------------------------------------------------------//
+		// _database
+		//------------------------------------------------------------------------//
+		/**
+		 * _database
+		 *
+		 * The database to connect to. Default is FLEX_DATABASE_CONNECTION_DEFAULT.
+		 *
+		 * The database to connect to. Default is FLEX_DATABASE_CONNECTION_DEFAULT.
+		 *
+		 * @type int	
+		 *
+		 * @property
+		 */
+		private $_database;
 		
-		function __construct ($strTable, $strResultClass, $oblarrConstraints, $seoOrder)
+		function __construct ($strTable, $strResultClass, $oblarrConstraints, $seoOrder, $database=FLEX_DATABASE_CONNECTION_DEFAULT)
 		{
 			// Because the Table and Result Class are strings, they can be sent to the object
 			// straight away
 			$this->_strTable = $strTable;
 			$this->_strResultClass = $strResultClass;
 			
+			$this->_database = $database;
 			
 			// Put all of the dataArray Constraints into a PHP Array
 			// so that we can do a Search against the constraint
@@ -159,7 +176,7 @@
 			
 			// Notice that here, we are not using the OrderBy so we can 
 			// save time
-			$selSearchResults = new StatementSelect ($this->_strTable, 'count(*) AS collationLength', $this->_arrConditions);
+			$selSearchResults = new StatementSelect ($this->_strTable, 'count(*) AS collationLength', $this->_arrConditions, '', '', '', $this->_database);
 			$selSearchResults->Execute($this->_arrConditions);
 			$arrLength = $selSearchResults->Fetch ();
 			
@@ -211,7 +228,9 @@
 				'Id', 
 				$this->_arrConditions,
 				$this->_strOrderClause,
-				$intIndex . ', 1'
+				$intIndex . ', 1',
+				'',
+				$this->_database
 			);
 			
 			
@@ -249,7 +268,9 @@
 				'Id', 
 				$this->_arrConditions,
 				$this->_strOrderClause,
-				$intStart . ', ' . $intLength
+				$intStart . ', ' . $intLength,
+				'',
+				$this->_database
 			);
 			
 			$selSearchResults->Execute ($this->_arrConditions);
