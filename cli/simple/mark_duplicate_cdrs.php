@@ -9,6 +9,7 @@ $selCDR				= new StatementSelect("CDR", "*", "Status IN (101, 107, 150, 151) AND
 $selFindDuplicate	= new StatementSelect(	"CDR",
 											"Id",
 											"Id != <Id> AND " .
+											"FNN = <FNN> AND " .
 											"Source = <Source> AND " .
 											"Destination = <Destination> AND " .
 											"StartDatetime = <StartDatetime> AND " .
