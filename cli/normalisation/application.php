@@ -236,7 +236,6 @@
 															"EndDatetime = <EndDatetime> AND " .
 															"Units = <Units> AND " .
 															"Cost = <Cost> AND " .
-															"SequenceNo = <SequenceNo> AND " .
 															"RecordType = <RecordType> AND " .
 															"RecordType NOT IN (10, 15, 33) AND " .
 															"Credit = <Credit> AND " .
