@@ -6,11 +6,14 @@ require_once('Flex_Rollout_Version.php');
 class Flex_Rollout
 {
 
-	public function updateFromVersion($intVersion=NULL)
+	public function updateToLatestVersion($intVersion=NULL)
 	{
+		// Turn on error reporting for all rollout errors
+		@mysqli_report(MYSQLI_REPORT_ALL);
+
 		// Using the default connection, find the current (maximum) version number
-		$strTables = 'DATABASE_VERSION';
-		$arrColumns = array( 'VERSION' 	=> 'max(VERSION)');
+		$strTables = 'database_version';
+		$arrColumns = array( 'version' 	=> 'max(version)');
 		$strWhere = NULL;
 		$arrWhere = Array();
 		$selVersion = new StatementSelect($strTables, $arrColumns, $strWhere);
@@ -24,7 +27,7 @@ class Flex_Rollout
 
 		// Get the version number from the results
 		$arrVersion = $selVersion->Fetch();
-		$intVersion = intval($arrVersion['VERSION']);
+		$intVersion = intval($arrVersion['version']);
 
 		// Get the available versions after the current version
 		$arrVersions = self::_getVersionsAfter($intVersion);
@@ -75,14 +78,14 @@ class Flex_Rollout
 
 			// Using the default database connection, update the database version number
 			$arrValues = array(
-				'VERSION' => max($versions),
-				'ROLLED_OUT_DATE' => date('Y-m-d H:i:s')
+				'version' => max($versions),
+				'rolled_out_date' => date('Y-m-d H:i:s')
 			);
-			$insVersion = new StatementInsert($strTables, NULL);
+			$insVersion = new StatementInsert($strTables);
 			$mxdResult = $insVersion->Execute($arrValues);
 			if ($mxdResult === FALSE)
 			{
-				throw new Exception('Failed to update the database version number to ' . max($versions));
+				throw new Exception('Failed to update the database version number to ' . max($versions) . '. ' . mysqli_errno() . '::' . mysqli_error());
 			}
 		}
 		catch (Exception $exception)

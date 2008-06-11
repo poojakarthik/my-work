@@ -9808,14 +9808,14 @@
  		
 	unset($arrDefine);
 	 
-	$arrDefine['Name']		= "DATABASE_VERSION"; 
+	$arrDefine['Name']		= "database_version"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
 	$arrDefine['Index'][] 		= ""; 
 	$arrDefine['Unique'][] 		= "";
  
 	// Define Columns 
-	$strName = "VERSION"; 
+	$strName = "version"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
@@ -9824,7 +9824,7 @@
 		 
 
 	// Define Columns 
-	$strName = "ROLLED_OUT_DATE"; 
+	$strName = "rolled_out_date"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 

@@ -11,7 +11,7 @@ class Cli_App_Rollout extends Cli
 			// Include the Rollout handler class 
 			$this->requireOnce('lib/rollout/Flex_Rollout.php');
 
-			Flex_Rollout::updateFromVersion();
+			Flex_Rollout::updateToLatestVersion();
 
 			// We need to connect to the database and check that the 'DatabaseSchemaVersion' table
 			// exists.
