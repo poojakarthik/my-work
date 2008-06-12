@@ -56,7 +56,6 @@ else
 		$arrHeaders	= Array("Account", "Duplicates", "Cost", "Charge");
 		fwrite($ptrCSVFile, '"'.implode('","', $arrHeaders).'"'."\n");
 		
-		
 		// Calculate Totals
 		$arrAccounts	= Array();
 		while ($arrRow = $mixResult->fetch_assoc())
@@ -71,7 +70,7 @@ else
 			$arrAccounts[$arrRow['Account']]['Charge']		+= $fltCharge;
 		}
 		
-		// Dump to CSV
+		// Dump data to CSV
 		foreach ($arrAccounts as $intAccount=>$arrAccount)
 		{
 			foreach ($arrAccount as &$strValue)
