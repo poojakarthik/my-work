@@ -23,6 +23,7 @@ $strQuery	=	"SELECT Account, COUNT(Id) AS 'CDR Count', SUM(Cost) AS 'Cost to TB'
 				"	Credit = CDR.Credit" .
 				")" .
 				"GROUP BY Account";
+$strQuery	=	"SELECT * FROM InvoiceRun";
 //----------------------------------------------------------------------------//
 
 // Load Framework
@@ -54,6 +55,7 @@ else
 	if ($ptrCSVFile)
 	{
 		// Dump headers
+		$arrHeaders	= Array();
 		while ($arrHeader = $mixResult->fetch_field())
 		{
 			$arrHeaders[]	= $arrHeader['name'];
