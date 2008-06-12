@@ -58,7 +58,7 @@ else
 		$arrHeaders	= Array();
 		while ($arrHeader = $mixResult->fetch_field())
 		{
-			$arrHeaders[]	= $arrHeader->name;
+			$arrHeaders[]	= addslashes($arrHeader->name);
 		}
 		fwrite($ptrCSVFile, '"'.implode('","', $arrHeaders).'"'."\n");
 		
