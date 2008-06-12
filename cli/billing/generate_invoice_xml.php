@@ -6,6 +6,7 @@ $arrConfig	= LoadApplication();
 
 define("BILLING_INVOICE_DEBUG"	, TRUE);
 
+$arrConfig['PrintingMode']	= 'COMMITTED_REPRINT';
 $bilInvoiceXML	= new BillingModuleInvoiceXML($GLOBALS['dbaDatabase'], $arrConfig);
 
 // Get Command Line Arguments
