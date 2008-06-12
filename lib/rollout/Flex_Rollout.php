@@ -169,7 +169,7 @@ class Flex_Rollout
 
 		$pattern = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'version' . DIRECTORY_SEPARATOR . 'Flex_Rollout_Version_*.php';
 		$arrVersions = array();
-		preg_match_all("/_([0-9]+)\.php$/", implode("\n", glob($pattern)), $arrVersions);
+		preg_match_all("/_([0-9]+)\.php$/m", implode("\n", glob($pattern)), $arrVersions);
 		$arrNewVersions = array();
 		foreach($arrVersions[1] as $strVersion)
 		{
