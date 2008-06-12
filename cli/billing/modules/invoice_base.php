@@ -229,6 +229,28 @@ abstract class BillingModuleInvoice
  	abstract protected function SendOutput($strInvoiceRun);
  	
   	//------------------------------------------------------------------------//
+	// _Debug()
+	//------------------------------------------------------------------------//
+	/**
+	 * _Debug()
+	 *
+	 * Outputs a message if BILLING_INVOICE_DEBUG is set to TRUE
+	 *
+	 * Outputs a message if BILLING_INVOICE_DEBUG is set to TRUE
+	 * 
+	 * @param	mixed	$mixOutput					Message/Object to output
+	 *
+	 * @method
+	 */
+	protected function _Debug($mixOutput)
+	{
+		if (defined("BILLING_INVOICE_DEBUG") && BILLING_INVOICE_DEBUG)
+		{
+			Debug($mixOutput);
+		}
+	}
+ 	
+  	//------------------------------------------------------------------------//
 	// _BillingFactory()
 	//------------------------------------------------------------------------//
 	/**
@@ -523,6 +545,7 @@ abstract class BillingModuleInvoice
 			return Array();
 		}
 		$arrAccountFNNs	= $this->_selAccountFNNs->FetchAll();
+		$this->_Debug($arrAccountFNNs);
 		
 		// Get List of Service IDs for each FNN
 		$arrServices	= Array();
@@ -566,8 +589,8 @@ abstract class BillingModuleInvoice
 					}
 				}
 				
-				$arrServices[] = $arrService;			
-				//Debug($arrService);
+				$arrServices[] = $arrService;
+				$this->_Debug($arrService);
 			}
 		}
 		
