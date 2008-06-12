@@ -82,7 +82,7 @@ class Cli_App_InvoiceXMLTest extends Cli
 				$this->log($undo.$testingMessage.$pad, FALSE, TRUE);
 
 				// Make sure we have enough time to test the XML file (180 should be mega safe!)...
-				set_time_limit(180);
+				set_time_limit(600);
 
 				// Create the PDF template
 				$this->startErrorCatching();
