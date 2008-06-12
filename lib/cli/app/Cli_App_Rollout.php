@@ -8,22 +8,12 @@ class Cli_App_Rollout extends Cli
 	{
 		try
 		{
+			$this->log("Starting.");
+
 			// Include the Rollout handler class 
 			$this->requireOnce('lib/rollout/Flex_Rollout.php');
 
 			Flex_Rollout::updateToLatestVersion();
-
-			// We need to connect to the database and check that the 'DatabaseSchemaVersion' table
-			// exists.
-
-
-			// Next we need to select record (if there is one) from that table
-
-			// We then need to list each of the rollout scripts from /lib/rollout/update IN ORDER 
-
-			// For each script that is BEFORE the current db version, we need to call the rollout() function 
-
-			// We now need to update the 'DatabaseSchemaVersion' table with the last update applied
 
 			$this->log("Finished.");
 			return 0;
