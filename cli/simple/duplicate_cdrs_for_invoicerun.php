@@ -4,7 +4,7 @@
 require_once("../../flex.require.php");
 
 // Get list of CDRs which have duplicates
-$strQuery	=	"SELECT Account, Service, FNN, Source, Destination, StartDatetime, EndDatetime, Units, Cost, RecordType, Credit, COUNT(Id) AS Copies " .
+$strQuery	=	"SELECT Account, Service, FNN, Source, Destination, StartDatetime, EndDatetime, Units, Cost, Charge, RecordType, Credit, COUNT(Id) AS Copies " .
 				"FROM CDRInvoiced " .
 				"WHERE InvoiceRun = '20080601105406' " .
 				"AND 0 < " .
