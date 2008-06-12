@@ -60,12 +60,12 @@ else
 		{
 			$arrHeaders[]	= $arrHeader->name;
 		}
-		fwrite('"'.implode('","', $arrHeaders).'"'."\n");
+		fwrite($ptrCSVFile, '"'.implode('","', $arrHeaders).'"'."\n");
 		
 		// Dump data to CSV
 		while ($arrRow = $mixResult->fetch_assoc())
 		{
-			fwrite('"'.implode('","', $arrRow).'"'."\n");
+			fwrite($ptrCSVFile, '"'.implode('","', $arrRow).'"'."\n");
 		}
 		
 		// Close the file
