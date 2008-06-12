@@ -23,7 +23,7 @@ $strQuery	=	"SELECT Account, COUNT(Id) AS 'CDR Count', SUM(Cost) AS 'Cost to TB'
 				"	Credit = CDR.Credit" .
 				")" .
 				"GROUP BY Account";
-$strQuery	=	"SELECT * FROM InvoiceRun";
+//$strQuery	=	"SELECT * FROM InvoiceRun";
 //----------------------------------------------------------------------------//
 
 // Load Framework
