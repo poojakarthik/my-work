@@ -3,10 +3,10 @@
 //----------------------------------------------------------------------------//
 // QUERY
 //----------------------------------------------------------------------------//
-$strQuery	=	"SELECT Account, COUNT(Id) AS 'CDR Count', SUM(Cost) AS 'Cost to TB', SUM(Charge) AS 'Charge to Account'" .
-				"FROM CDRInvoiced" .
-				"WHERE InvoiceRun = '20080601105406'" .
-				"AND 0 <" .
+$strQuery	=	"SELECT Account, COUNT(Id) AS 'CDR Count', SUM(Cost) AS 'Cost to TB', SUM(Charge) AS 'Charge to Account' " .
+				"FROM CDRInvoiced " .
+				"WHERE InvoiceRun = '20080601105406' " .
+				"AND 0 < " .
 				"(" .
 				"	SELECT COUNT(Id)" .
 				"	FROM CDRInvoiced CDRI2" .
@@ -22,7 +22,8 @@ $strQuery	=	"SELECT Account, COUNT(Id) AS 'CDR Count', SUM(Cost) AS 'Cost to TB'
 				"	RecordType NOT IN (10, 15, 33) AND" .
 				"	Credit = CDR.Credit" .
 				")" .
-				"GROUP BY Account";
+				"GROUP BY Account " .
+				"ORDER BY Account";
 //$strQuery	=	"SELECT * FROM InvoiceRun";
 //----------------------------------------------------------------------------//
 
