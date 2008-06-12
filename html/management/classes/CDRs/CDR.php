@@ -66,8 +66,8 @@
 			
 			if ($selCDR->Count() <> 1)
 			{
-				// The CDR was not present in the CDR table.  Try looking for it in the CDRInvoiced table
-				$selCDR = new StatementSelect('CDRInvoiced', '*', 'Id = <Id>', null, 1);
+				// The CDR was not present in the CDR table.  Try looking for it in the ARCHIVED CDRInvoiced table
+				$selCDR = new StatementSelect('CDRInvoiced', '*', 'Id = <Id>', null, 1, '', FLEX_DATABASE_CONNECTION_CDR);
 				$selCDR->useObLib(TRUE);
 				$selCDR->Execute($arrWhere);
 				

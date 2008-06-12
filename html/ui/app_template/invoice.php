@@ -217,7 +217,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$strWhere = "CDRI.Account = <Account> AND CDRI.InvoiceRun = <InvoiceRun>";
 		$strTables = "CDRInvoiced AS CDRI INNER JOIN RecordType AS RT ON CDRI.RecordType = RT.Id";
 		
-		$selCDR = new StatementSelect($strTables, $arrColumns, $strWhere, "ServiceType, FNN, RecordTypeDescription, StartDatetime");
+		$selCDR = new StatementSelect($strTables, $arrColumns, $strWhere, "ServiceType, FNN, RecordTypeDescription, StartDatetime", '', '', FLEX_DATABASE_CONNECTION_CDR);
 		$intNumRecords = $selCDR->Execute(Array("Account"=> DBO()->Invoice->Account->Value, "InvoiceRun"=> DBO()->Invoice->InvoiceRun->Value));
 		
 		if ($intNumRecords === FALSE)

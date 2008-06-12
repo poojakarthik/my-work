@@ -78,7 +78,14 @@
 			$this->_invInvoice =& $invInvoice;
 			$this->_srvService =& $srvService;
 			
-			parent::__construct ('CDRs-Invoiced', 'CDRInvoiced', 'CDR');
+			// This is potentially inadequate!! 
+			// There will be a period of time between the issuing of an invoice and the archiving of 
+			// the CDRInvoiced record. This should really query both the live and archive database
+			// and combine the results in one resultset.
+			// Note: As this object is used for retreiving results that can be paged accross, returning
+			// a resultset that is a combination from two databases would require more considerable work
+			// to get working smoothly.
+			parent::__construct ('CDRs-Invoiced', 'CDRInvoiced', 'CDR', FLEX_DATABASE_CONNECTION_CDR);
 			
 			$this->Constrain	('InvoiceRun',		'=',	$invInvoice->Pull ('InvoiceRun')->getValue ());
 			$this->Constrain	('Account',			'=',	$invInvoice->Pull ('Account')->getValue ());
