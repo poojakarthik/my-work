@@ -65,6 +65,12 @@ else
 		// Dump data to CSV
 		while ($arrRow = $mixResult->fetch_assoc())
 		{
+			foreach ($arrRow as &$strValue)
+			{
+				// Escape each value
+				$strValue	= addslashes($strValue);
+			}
+			
 			fwrite($ptrCSVFile, '"'.implode('","', $arrRow).'"'."\n");
 		}
 		
