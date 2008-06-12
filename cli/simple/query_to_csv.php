@@ -10,17 +10,17 @@ $strQuery	=	"SELECT Account, COUNT(Id) AS 'CDR Count', SUM(Cost) AS 'Cost to TB'
 				"(" .
 				"	SELECT COUNT(Id)" .
 				"	FROM CDRInvoiced CDRI2" .
-				"	WHERE Id != CDR.Id AND" .
-				"	FNN = CDR.FNN AND" .
-				"	Source = CDR.Source AND" .
-				"	Destination = CDR.Destination AND" .
-				"	StartDatetime = CDR.StartDatetime AND" .
-				"	EndDatetime = CDR.EndDatetime AND" .
-				"	Units = CDR.Units AND" .
-				"	Cost = CDR.Cost AND" .
-				"	RecordType = CDR.RecordType AND" .
+				"	WHERE Id != CDRInvoiced.Id AND" .
+				"	FNN = CDRInvoiced.FNN AND" .
+				"	Source = CDRInvoiced.Source AND" .
+				"	Destination = CDRInvoiced.Destination AND" .
+				"	StartDatetime = CDRInvoiced.StartDatetime AND" .
+				"	EndDatetime = CDRInvoiced.EndDatetime AND" .
+				"	Units = CDRInvoiced.Units AND" .
+				"	Cost = CDRInvoiced.Cost AND" .
+				"	RecordType = CDRInvoiced.RecordType AND" .
 				"	RecordType NOT IN (10, 15, 33) AND" .
-				"	Credit = CDR.Credit" .
+				"	Credit = CDRInvoiced.Credit" .
 				")" .
 				"GROUP BY Account " .
 				"ORDER BY Account";
