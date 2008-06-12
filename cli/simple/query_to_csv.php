@@ -21,7 +21,7 @@ $strQuery	=	"SELECT Account, COUNT(Id) AS 'CDR Count', SUM(Cost) AS 'Cost to TB'
 				"	RecordType = CDRInvoiced.RecordType AND" .
 				"	RecordType NOT IN (10, 15, 33) AND" .
 				"	Credit = CDRInvoiced.Credit" .
-				")" .
+				") " .
 				"GROUP BY Account " .
 				"ORDER BY Account";
 //$strQuery	=	"SELECT * FROM InvoiceRun";
