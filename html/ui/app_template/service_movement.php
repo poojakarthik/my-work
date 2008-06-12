@@ -107,6 +107,13 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		// Check that the service is active
+		if ($objService->GetStatus() != SERVICE_ACTIVE)
+		{
+			Ajax()->AddCommand("Alert", "Only active services can be moved");
+			return TRUE;
+		}
+		
 		DBO()->ServiceMove->ServiceObject	= $objService;
 		DBO()->Account->Id					= $objService->GetAccount();
 		DBO()->Account->Load();

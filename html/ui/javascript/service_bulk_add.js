@@ -56,7 +56,7 @@ function $Const(strConstant)
 }
 
 // class encapsulates the data stored in a single row of the Services table of the Service Bulk Add page
-function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre)
+function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre, elmDealer, elmCost)
 {
 	// Constructor
 	this.intServiceType	= null;
@@ -65,6 +65,8 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	this.elmFnnConfirm	= elmFnnConfirm;
 	this.elmPlan		= elmPlan;
 	this.elmCostCentre	= elmCostCentre;
+	this.elmDealer		= elmDealer;
+	this.elmCost		= elmCost;
 	this.intArrayIndex	= null;	// The object's position in its containing array
 	
 	this.objExtraDetails = null;
@@ -86,6 +88,11 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	{
 		Vixen.ServiceBulkAdd.intLastCostCentreChosen = this.elmCostCentre.value;
 	}
+	
+	this.DealerChangeListener = function(ovjEvent)
+	{
+		Vixen.ServiceBulkAdd.intLastDealerChosen = this.elmDealer.value;
+	}
 
 	// Register event listeners
 	this.elmFnn.addEventListener('keyup', this.FnnUpdateListener.bind(this), true);
@@ -94,6 +101,7 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	this.elmFnnConfirm.addEventListener('change', this.FnnUpdateListener.bind(this), true);
 	this.elmPlan.addEventListener('change', this.PlanChangeListener.bind(this), true);
 	this.elmCostCentre.addEventListener('change', this.CostCentreChangeListener.bind(this), true);
+	this.elmDealer.addEventListener('change', this.DealerChangeListener.bind(this), true);
 
 	// These event listeners prohibit the user from copying/pasting the FNNs
 	this.elmFnn.addEventListener('keydown', FnnTextboxKeyHandler, true);
@@ -199,21 +207,26 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 		}
 		this.objExtraDetails = null;
 		this.FlagFnnTextboxes();
+		this.FlagCostTextbox();
 		this._LoadPlans();
 		
 		if (intServiceType != null)
 		{
-			// Set the values of the plan and the CostCentre to that of the last one defined
-			this.elmCostCentre.value = Vixen.ServiceBulkAdd.intLastCostCentreChosen;
+			// Set the values of the plan, CostCentre and dealer to that of the last one defined
+			this.elmCostCentre.value	= Vixen.ServiceBulkAdd.intLastCostCentreChosen;
+			this.elmDealer.value		= Vixen.ServiceBulkAdd.intLastDealerChosen;
 			
 			if (Vixen.ServiceBulkAdd.objServiceTypeDetails[this.intServiceType].intLastPlanChosen != null)
 			{
 				this.elmPlan.value = Vixen.ServiceBulkAdd.objServiceTypeDetails[this.intServiceType].intLastPlanChosen;
 			}
 		}
+		
+		// Reset the cost textbox
+		this.elmCost.value = "";
 	}
 	
-	// This makes a reference to the Vixen.ServiceBulkAdd object
+	// This makes reference to the Vixen.ServiceBulkAdd object
 	this._LoadPlans = function()
 	{
 		var elmOption;
@@ -294,15 +307,29 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 		this.elmFnnConfirm.SetHighlight(bolIsInvalid);
 	}
 	
+	this.FlagCostTextbox = function(bolIsInvalid)
+	{
+		this.elmCost.SetHighlight(bolIsInvalid);
+	}
+	
 	// returns the details of the Service, as an object
 	// some details will differ depending on the ServiceType of the service
 	this.GetProperties = function()
 	{
+		var fltCost = parseFloat(this.elmCost.value);
+		if (isNaN(fltCost))
+		{
+			// Cost is not a number
+			fltCost = 0.0;
+		}
+		
 		objService =	{
 							intServiceType	: this.intServiceType,
 							strFNN			: this.elmFnn.value,
 							intPlanId		: parseInt(this.elmPlan.value),
 							intCostCentre	: parseInt(this.elmCostCentre.value),
+							intDealer		: parseInt(this.elmDealer.value),
+							fltCost			: fltCost,
 							intArrayIndex	: this.intArrayIndex
 						};
 						
@@ -392,7 +419,8 @@ function VixenServiceBulkAddClass()
 																				strPopupId : "ExtraDetailInbound",
 																			};
 	
-	this.intLastCostCentreChosen = 0;
+	this.intLastCostCentreChosen	= 0;
+	this.intLastDealerChosen		= 0;
 	
 	// I think this isn't needed anymore
 	this.intServiceTypeOfCurrentlyLoadedPopup = null;
@@ -402,7 +430,7 @@ function VixenServiceBulkAddClass()
 		this.intAccountId = intAccountId;
 		this.arrRatePlans = arrRatePlans;
 		
-		this.tableServices = document.getElementById("Services");
+		this.tableServices = $ID("Services");
 		
 		// Store a copy of the first record of the table, so that it can be used to add more records
 		this.elmGenericTableRow = this.tableServices.rows[1].cloneNode(true);
@@ -442,14 +470,16 @@ function VixenServiceBulkAddClass()
 	// Stores references to the various elements contained in a row which may require manipulation
 	this.AddToServiceArray = function(elmRow)
 	{
-		// Retrieve refernces to the controls that can be manipulated
+		// Retrieve references to the controls that can be manipulated
 		var elmServiceType	= elmRow.cells[0].firstChild;
 		var elmFnn			= elmRow.cells[1].firstChild;
 		var elmFnnConfirm	= elmRow.cells[2].firstChild;
 		var elmPlan			= elmRow.cells[3].firstChild;
 		var elmCostCentre	= elmRow.cells[4].firstChild;
+		var elmDealer		= elmRow.cells[5].firstChild;
+		var elmCost			= elmRow.cells[6].firstChild;
 
-		var intArrayIndex = this.arrServices.push(new ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre)) - 1;
+		var intArrayIndex = this.arrServices.push(new ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre, elmDealer, elmCost)) - 1;
 		this.arrServices[intArrayIndex].intArrayIndex = intArrayIndex;
 	}
 	
@@ -528,6 +558,25 @@ function VixenServiceBulkAddClass()
 	// Performs initial validation of details
 	this._ValidateFNNs = function()
 	{
+		// Validate the cost textboxes
+		this.FlagInvalidCostFields(null, true);
+		var arrInvalidCostFields = new Array();
+		for (i in this.arrServices)
+		{
+			if (!this.arrServices[i].elmCost.Validate("MonetaryValue", true))
+			{
+				// The cost has been specified but is invalid
+				arrInvalidCostFields.push(i);
+			}
+		}
+		if (arrInvalidCostFields.length > 0)
+		{
+			// There were some invalid cost fields
+			this.FlagInvalidCostFields(arrInvalidCostFields, true);
+			$Alert("ERROR: Invalid Costs");
+			return;
+		}
+
 		// Check that no new service has the same fnn as any of the other new services
 		var arrDuplicatedServices = new Array();
 		for (i=0; i < this.arrServices.length; i++)
@@ -553,7 +602,7 @@ function VixenServiceBulkAddClass()
 		if (arrDuplicatedServices.length > 0)
 		{
 			this.FlagInvalidFNNs(arrDuplicatedServices, true);
-			Vixen.Popup.Alert("ERROR: Duplicate services are highlighted");
+			$Alert("ERROR: Duplicate services are highlighted");
 			return;
 		}
 
@@ -598,7 +647,7 @@ function VixenServiceBulkAddClass()
 	
 	// intLastService is the index into this.arrServices, of the last Service to have its details displayed, optional
 	// 
-	// if bolMoveBack is true then it will load up the details of the 
+	// if bolMoveBack is true then it will load up the details of the previous service
 	this.GetExtraDetailsForNextService = function(intLastService, bolMoveBack)
 	{
 		// Order all the services as to how they should be ordered for the adding of extra details
@@ -711,7 +760,29 @@ function VixenServiceBulkAddClass()
 		}
 	}
 	
-	
+	// This will highlight the textboxes for all services that have invalid costs defined
+	// arrInvalidServices is an array of indexes of the this.arrServices array
+	this.FlagInvalidCostFields = function(arrInvalidServices, bolClear)
+	{
+		if (bolClear)
+		{
+			// Clear all of the flags, before flagging the ones defined in arrInvalidServices
+			for (i in this.arrServices)
+			{
+				this.arrServices[i].FlagCostTextbox(false);
+			}
+		}
+		
+		if (arrInvalidServices != undefined)
+		{
+			for (i in arrInvalidServices)
+			{
+				this.arrServices[arrInvalidServices[i]].FlagCostTextbox(true);
+			}
+		}
+	}
+
+
 	// Submits all the data to the server, to save all the services
 	this._SaveServices = function(bolConfirmed)
 	{
@@ -728,14 +799,14 @@ function VixenServiceBulkAddClass()
 		
 		if (!bolConfirmed)
 		{
-			var intNumOfServices = arrDeclaredServices.length;
-			var strServices = (intNumOfServices == 1)? "this service?" : "these "+ intNumOfServices +" services?";
-			var strMessage = "All details have now been declared.  Are you sure you want to add " + strServices;
+			var intNumOfServices	= arrDeclaredServices.length;
+			var strServices			= (intNumOfServices == 1)? "this service?" : "these "+ intNumOfServices +" services?";
+			var strMessage			= "All details have now been declared.  Are you sure you want to add " + strServices;
 			Vixen.Popup.Confirm(strMessage, function(){Vixen.ServiceBulkAdd._SaveServices(true);});
 			return;
 		}
 		
-		// Make the AJAX call to the server for preliminary validation of the services
+		// Make the AJAX call to the server
 		var objObjects		= {};
 		objObjects.Services	= {};
 		objObjects.Services.Data	= arrDeclaredServices;

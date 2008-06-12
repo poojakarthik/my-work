@@ -745,7 +745,7 @@ class AppTemplateAccount extends ApplicationTemplate
 													"NextOwner"			=> $arrRecord['NextOwner'],
 													"Status"			=> $arrRecord['Status'],
 													"LineStatus"		=> $arrRecord['LineStatus'],
-													"LineStatusDate"	=> $arrRecord['LineStatusDate'],
+													"LineStatusDate"	=> $arrRecord['LineStatusDate']
 												);
 			 
 			
@@ -766,9 +766,9 @@ class AppTemplateAccount extends ApplicationTemplate
 															"NatureOfClosure"	=> $arrRecord['NatureOfClosure'],
 															"LastOwner"			=> $arrRecord['LastOwner'],
 															"NextOwner"			=> $arrRecord['NextOwner'],
-															"Status"	=> $arrRecord['Status'],
+															"Status"			=> $arrRecord['Status'],
 															"LineStatus"		=> $arrService['LineStatus'],
-															"LineStatusDate"	=> $arrService['LineStatusDate'],
+															"LineStatusDate"	=> $arrService['LineStatusDate']
 														);
 				}
 				else
@@ -783,7 +783,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// Apply the filter
-		$strToday = date("Y-m-d");
+		$strNow = GetCurrentISODateTime();
 		if ($intFilter)
 		{
 			$arrTempServices	= $arrServices;
@@ -795,7 +795,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				{
 					case SERVICE_ACTIVE:
 						// Only keep the Service if ClosedOn IS NULL OR NOW() OR in the future
-						if ($arrService['History'][0]['ClosedOn'] == NULL || $arrService['History'][0]['ClosedOn'] >= $strToday)
+						if ($arrService['History'][0]['ClosedOn'] == NULL || $arrService['History'][0]['ClosedOn'] >= $strNow)
 						{
 							// Keep it
 							$arrServices[] = $arrService;
@@ -804,7 +804,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					
 					case SERVICE_DISCONNECTED:
 						// Only keep the Service if Status == Disconnected AND ClosedOn < NOW()
-						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strToday)
+						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strNow)
 						{
 							// Keep it
 							$arrServices[] = $arrService;
@@ -813,7 +813,7 @@ class AppTemplateAccount extends ApplicationTemplate
 					
 					case SERVICE_ARCHIVED:
 						// Only keep the Service if Status == Archived AND ClosedOn < NOW()
-						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strToday)
+						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strNow)
 						{
 							// Keep it
 							$arrServices[] = $arrService;
@@ -890,6 +890,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
+		// Accounts can not have their details editted while an invoice run is processing
+		if (IsInvoicing())
+		{
+			Ajax()->AddCommand("Alert", "Billing is in progress.  Accounts cannot be modified while this is happening.  Please try again in a couple of hours.  If this problem persists, please notify your system administrator");
+			return TRUE;
+		}
+
 		// Load the account
 		DBO()->Account->LoadMerge();
 		
@@ -920,6 +927,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Accounts can not have their details editted while an invoice run is processing
+		if (IsInvoicing())
+		{
+			Ajax()->AddCommand("Alert", "Billing is in progress.  Accounts cannot be modified while this is happening.  Please try again in a couple of hours.  If this problem persists, please notify your system administrator");
+			return TRUE;
+		}
 
 		// If the validation has failed display the invalid fields
 		if (DBO()->Account->IsInvalid())
@@ -1173,25 +1187,30 @@ class AppTemplateAccount extends ApplicationTemplate
 					{
 						$strChangesNote .= "The following services have been set to ". GetConstantDescription(SERVICE_DISCONNECTED, "Service") ." :\n\n";
 						
-						// Update the services
+						// Iterate through the services and try to disconnect each one
 						foreach (DBL()->Service as $dboService)
 						{
-							// For each service attached to this account append information onto the note being generated
-							
-							$strChangesNote .= "Service Id: " . $dboService->Id->Value . ", FNN: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
-							// Set the service ClosedOn, ClosedBy and Status properties and save
-							// Set the Service Status to SERVICE_DISCONNECTED
-							$dboService->ClosedOn	= $strTodaysDate;
-							$dboService->ClosedBy	= $intEmployeeId;
-							$dboService->Status		= SERVICE_DISCONNECTED;
-							
-							if (!$dboService->Save())
+							$objService = ModuleService::GetServiceById($dboService->Id->Value, $dboService->ServiceType->Value);
+							if ($objService === FALSE || $objService === NULL)
 							{
-								// An error occured in updating one of the services
+								// An error occurred
 								TransactionRollback();
-								Ajax()->AddCommand("Alert", "ERROR: Updating one of the corresponding Services failed, unexpectedly.  The account has not been updated");
+								Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to disconnect Service: {$dboService->FNN->Value}.  The account has not been updated");
 								return TRUE;
 							}
+							
+							if ($objService->ChangeStatus(SERVICE_DISCONNECTED) === FALSE)
+							{
+								// Could not change the status of the service
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Could not disconnect service: {$dboService->FNN->Value}.<br />{$objService->GetErrorMsg()}<br />The account has not been updated");
+								return TRUE;
+							}
+							
+							// The service has been successfully updated
+							
+							// For each service attached to this account append information onto the note being generated
+							$strChangesNote .= "Service: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 						}
 						
 						// At least one service has been modified
@@ -1217,23 +1236,30 @@ class AppTemplateAccount extends ApplicationTemplate
 					{
 						$strChangesNote .= "The following services have been set to ". GetConstantDescription(SERVICE_ARCHIVED, "Service") ." :\n\n";
 						
-						// Update the services
+						// Iterate through the services and try to disconnect each one
 						foreach (DBL()->Service as $dboService)
 						{
-							// For each service attached to this account append information onto the note being generated
-							$strChangesNote .= "Service Id: " . $dboService->Id->Value . ", FNN: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
-
-							// Set the service ClosedOn, ClosedBy and Status properties and save							
-							$dboService->ClosedOn	= $strTodaysDate;
-							$dboService->ClosedBy	= $intEmployeeId;
-							$dboService->Status		= SERVICE_ARCHIVED;
-							if (!$dboService->Save())
+							$objService = ModuleService::GetServiceById($dboService->Id->Value, $dboService->ServiceType->Value);
+							if ($objService === FALSE || $objService === NULL)
 							{
-								// An error occured in updating one of the services
+								// An error occurred
 								TransactionRollback();
-								Ajax()->AddCommand("Alert", "ERROR: Updating one of the corresponding Services failed, unexpectedly.  The account has not been updated");
+								Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to archive Service: {$dboService->FNN->Value}.  The account has not been updated");
 								return TRUE;
 							}
+							
+							if ($objService->ChangeStatus(SERVICE_ARCHIVED) === FALSE)
+							{
+								// Could not change the status of the service
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Could not archive service: {$dboService->FNN->Value}.<br />{$objService->GetErrorMsg()}<br />The account has not been updated");
+								return TRUE;
+							}
+							
+							// The service has been successfully updated
+							
+							// For each service attached to this account append information onto the note being generated
+							$strChangesNote .= "Service: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
 						}
 						
 						// At least one service has been modified

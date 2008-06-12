@@ -251,9 +251,8 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		$strViewHistoryLink	= Href()->ViewServiceHistory(DBO()->Service->Id->Value);
 		$strViewHistory		= "<a href='$strViewHistoryLink'>history</a>";
 		$strCreatedOn		= DBO()->Service->CreatedOn->FormattedValue() . " ($strViewHistory)";
-		DBO()->Service->CreatedOn->RenderArbitrary($strCreatedOn, RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
-		DBO()->Service->ClosedOn->RenderOutput();
-		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
+		//DBO()->Service->CreatedOn->RenderArbitrary($strCreatedOn, RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		//DBO()->Service->ClosedOn->RenderOutput();
 
 		if (DBO()->Service->LineStatus->Value !== NULL)
 		{
@@ -269,6 +268,14 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			}
 		}
 		
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
+		
+		$objService		= ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);		
+		$arrLastEvent	= HtmlTemplateServiceHistory::GetLastEvent($objService);
+		$strLastEvent	= "{$arrLastEvent['Event']}<br />on {$arrLastEvent['TimeStamp']}<br />by {$arrLastEvent['EmployeeName']} ({$strViewHistory})";
+		DBO()->Service->MostRecentEvent = $strLastEvent;
+		DBO()->Service->MostRecentEvent->RenderOutput();
+
 		// Register a listener to handle when the service has been updated
 		echo "<script type='text/javascript'>Vixen.EventHandler.AddListener('". EVENT_ON_SERVICE_UPDATE ."', Vixen.ServiceUpdateListener.OnUpdate);</script>\n";
 

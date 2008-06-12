@@ -225,14 +225,13 @@
 		
 		$this->_selFNN				= new StatementSelect("Service", "FNN", "Id = <Service>");
 		
-		// Why is this declared twice (as 2 different queries) in the one function?
 		$this->_selFindOwner		= new StatementSelect(	"Service JOIN Account ON Account.Id = Service.Account",
 															"Account.Id AS Account, Service.AccountGroup AS AccountGroup, Service.Id AS Service",
-															"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (CAST(<DateTime> AS DATE) BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= CAST(<DateTime> AS DATE)))",
+															"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (<DateTime> BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= <DateTime>))",
 															"Service.CreatedOn DESC");
 
 		// This is used to check if an FNN is/has-been in use, or is scheduled to be used in the future
-		$this->_selFNNInUse			= new StatementSelect("Service", "Id, Account, AccountGroup", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn IS NULL OR (ClosedOn >= CreatedOn AND CAST(<DateTime> AS DATE) <= ClosedOn))");
+		$this->_selFNNInUse			= new StatementSelect("Service", "Id, Account, AccountGroup", "(FNN LIKE <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (ClosedOn IS NULL OR (ClosedOn >= CreatedOn AND <DateTime> <= ClosedOn))");
 	 }
 	 
 	//------------------------------------------------------------------------//

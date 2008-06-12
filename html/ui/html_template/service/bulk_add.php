@@ -67,8 +67,6 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 		$this->LoadJavascript("service_extra_details_mobile");
 		$this->LoadJavascript("service_extra_details_land_line");
 		$this->LoadJavascript("validation");
-		
-		
 	}
 
 	//------------------------------------------------------------------------//
@@ -85,14 +83,26 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
+		$arrDealers = DBO()->Dealers->AsArray->Value;
+		
+		// Build the Dealer combobox options
+		$strDealerOptions = "<option value='0'></option>";
+		foreach ($arrDealers as $arrDealer)
+		{
+			$strName = htmlspecialchars($arrDealer['Name'], ENT_QUOTES) . " (Id: {$arrDealer['Id']})";
+			$strDealerOptions .= "<option value='{$arrDealer['Id']}'>$strName</option>";
+		}
+		
 		// Build the table and add a single row to it, which can then be cloned to add more rows
-		Table()->Services->SetHeader("&nbsp;", "FNN", "Confirm FNN", "Plan", "Cost Centre");
-		Table()->Services->SetWidth("4%", "12%", "12%", "36%", "36%");
-		Table()->Services->SetAlignment("Center", "Left", "Left", "Left", "Left");
+		Table()->Services->SetHeader("&nbsp;", "FNN", "Confirm FNN", "Plan", "Cost Centre", "Dealer", "Cost (\$)");
+		Table()->Services->SetWidth("4%", "12%", "12%", "22%", "21%", "21%", "8%");
+		Table()->Services->SetAlignment("Center", "Left", "Left", "Left", "Left", "Left", "Left");
 		
 		$strFnnCell			= "<input id='FnnTextBox' type='text' maxlength='20' style='width:100%'></input>";
 		$strFnnConfirmCell	= "<input id='FnnConfirmTextBox' type='text' maxlength='20' style='width:100%'></input>";
 		$strServiceTypeCell	= "<div class='ServiceTypeIconBlank'></div>";
+		$strDealerCell		= "<select id='DealerCombo' style='width:100%'>$strDealerOptions</select>";
+		$strCostCell		= "<input id='CostTextBox' type='text' maxlength='7' style='width:100%'></input>";
 		
 		$strCostCentreCell	 = "<select id='CostCentreCombo' style='width:100%'>";
 		$strCostCentreCell	.= "<option value='0'>&nbsp;</option>";
@@ -105,30 +115,22 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 		
 		$strPlanCell		= "<select id='PlanCombo' style='width:100%'></select>";
 		
-		Table()->Services->AddRow($strServiceTypeCell, $strFnnCell, $strFnnConfirmCell, $strPlanCell, $strCostCentreCell);
+		Table()->Services->AddRow($strServiceTypeCell, $strFnnCell, $strFnnConfirmCell, $strPlanCell, $strCostCentreCell, $strDealerCell, $strCostCell);
 		
 		Table()->Services->Render();
-		
-		echo "<div class='ButtonContainer'><div class='right'>\n";
-		
-		// The following commented out functionality isn't really needed anymore
-		/*echo "<span>Add </span><input type='text' id='ServiceBulkAdd.NumServicesTextBox' value='1' maxlength='2' style='width:25px'></input><span> More Services </span>";
-		$this->Button("Go", "var elmTextbox = document.getElementById('ServiceBulkAdd.NumServicesTextBox'); Vixen.ServiceBulkAdd.AddMoreServices(elmTextbox.value)");
-		*/
-		$this->Button("Save", "Vixen.ServiceBulkAdd.ConfirmSave()");
-		
-		echo "</div></div>\n";  //Button Container
 		
 		// Initialise the Javascript object which facilitates this page
 		$arrRatePlans	= DBO()->Account->AllRatePlans->Value;
 		$jsonRatePlans	= Json()->encode($arrRatePlans);
 		$intAccountId	= DBO()->Account->Id->Value;
+		$strJsScript	= "Vixen.ServiceBulkAdd.Initialise($intAccountId, $jsonRatePlans);";
 		
-		$strJsScript = "Vixen.ServiceBulkAdd.Initialise($intAccountId, $jsonRatePlans);";
-		echo "<script type='text/javascript'>$strJsScript</script>\n";
-		
-		
-		echo "<div class='SmallSeparator'></div>\n";
+		echo "
+<div class='ButtonContainer'>
+	<input type='button' value='Save' onclick='Vixen.ServiceBulkAdd.ConfirmSave()' style='float:right'></input>
+</div>
+<script type='text/javascript'>$strJsScript</script>
+<div class='SmallSeparator'></div>";
 	}
 }
 

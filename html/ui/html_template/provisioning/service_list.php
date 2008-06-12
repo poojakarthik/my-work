@@ -83,7 +83,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 	{
 		$arrSelectedServices	= DBO()->Request->ServiceIds->Value;
 		$arrServices			= DBO()->Account->Services->Value;
-		$intCurrentDate			= strtotime(GetCurrentDateForMySQL());
+		$intCurrentDate			= strtotime(GetCurrentISODate());
 		
 		// Flag records that can/can't be provisioned and find out if there are any
 		// service address details missing
@@ -157,6 +157,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			}
 			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnn</a>"; 
 
+			// This is no longer used (but they might want to use it again in the future)
 			// Work out the Date to display along with the status
 			// Check if the ClosedOn date has been set
 			if ($arrService['History'][0]['ClosedOn'] == NULL)
@@ -217,7 +218,8 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			
 			// Build the Status cell
 			$strStatus = GetConstantDescription($arrService['History'][0]['Status'], "Service");
-			$strStatusCell = "<span title='$strStatusDesc $strStatusDescDate'>$strStatus<span>";
+			//$strStatusCell = "<span title='$strStatusDesc $strStatusDescDate'>$strStatus<span>";
+			$strStatusCell = $strStatus;
 			
 			// Build the Line Status cell
 			$strLineStatusCell = GetConstantDescription($arrService['History'][0]['LineStatus'], "LineStatus");

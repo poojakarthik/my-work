@@ -89,13 +89,13 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		// Start the form
 		$this->FormStart("EditService", "Service", "Edit");
 
-		//echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		
 		$intClosedOn = strtotime(DBO()->Service->ClosedOn->Value);
 		$intCurrentDate = strtotime(GetCurrentDateForMySQL());
 		
 		// Check if the ClosedOn date has been set
+		/* This code is no longer used
 		if (DBO()->Service->ClosedOn->Value == NULL)
 		{
 			// The service is not scheduled to close.  It is either active or hasn't been activated yet
@@ -130,7 +130,14 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 				// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date)
 				echo "&nbsp;&nbsp;Scheduled to close on ". DBO()->Service->ClosedOn->FormattedValue() ."<br>";
 			}
-		}
+		}*/
+		$strViewHistoryLink	= Href()->ViewServiceHistory(DBO()->Service->Id->Value);
+		$strViewHistory		= "<a href='$strViewHistoryLink'>history</a>";
+		$objService			= ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);		
+		$arrLastEvent		= HtmlTemplateServiceHistory::GetLastEvent($objService);
+		$strLastEvent		= "{$arrLastEvent['Event']}<br />on {$arrLastEvent['TimeStamp']}<br />by {$arrLastEvent['EmployeeName']} ({$strViewHistory})";
+		DBO()->Service->MostRecentEvent = $strLastEvent;
+		DBO()->Service->MostRecentEvent->RenderOutput();
 		
 		echo "<div class='ContentSeparator'></div>\n";
 		
@@ -163,7 +170,8 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		
 		// The user can only change the FNN if the service was created today
 		// (They should only need to change the FNN if they accidently got it wrong to begin with)
-		if (AppTemplateService::FNNCanBeChanged(DBO()->Service->Id->Value))
+		$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value);
+		if ($objService->FNNCanBeChanged())
 		{
 			// The service was created today, so they can change the FNN
 			DBO()->Service->FNN->RenderInput();

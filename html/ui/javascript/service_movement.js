@@ -241,11 +241,11 @@ function VixenServiceMovementClass()
 			var strEffective = (this.objInputs.EffectiveOnType.value == "Immediately")? "Immediately" : "at the beginning of " + this.objInputs.EffectiveOnDate.value;
 			
 			
-			var strMsg 	= "Are you sure you want to perform " + strAction + " effective " + strEffective + "?<br /><br />";
+			var strMsg 	= "Are you sure you want to perform " + strAction + " on service "+ this.strFNN +" effective " + strEffective + "?<br /><br />";
 			strMsg		+= "<table cellpadding='0' cellspacing='0'>";
 			strMsg 		+= "<tr><td width='45%'>Current Account:</td><td width='55%'>"+ this.objCurrentAccount.Name +" ("+ this.objCurrentAccount.Id +")</td></tr>";
 			strMsg		+= "<tr><td>New Account:</td><td>"+ this.elmNewAccountName.innerHTML +" ("+ this.intGainingAccount +")</td></tr>";
-			strMsg		+= "<tr><td>Move Unbilled CDRs:</td><td>" + ((this.objInputs.MoveCDRs.checked)? "Yes (only CDRs from after the EffectiveOn date will be moved)" : "No") + "</td></tr>";
+			strMsg		+= "<tr><td>Move Unbilled CDRs:</td><td>" + ((this.objInputs.MoveCDRs.checked)? "Yes (only CDRs from after the 'Time of Acquisition' will be moved)" : "No") + "</td></tr>";
 			strMsg		+= "<tr><td>Copy Plan details:</td><td>" + ((this.objInputs.MovePlan.checked)? "Yes" : "No") +"</td></tr>";
 			strMsg		+= "</table>";
 			
@@ -310,7 +310,7 @@ function VixenServiceMovementClass()
 					break;
 			}
 			
-			var strMsg 	= "Are you sure you want to reverse the " + strAction + "?<br /><br />";
+			var strMsg 	= "Are you sure you want to reverse the " + strAction + " of service "+ this.strFNN +"?<br /><br />";
 			strMsg		+= "<table cellpadding='0' cellspacing='0'>";			
 			strMsg 		+= "<tr><td width='45%'>Current Account:</td><td width='55%'>"+ this.objCurrentAccount.Name +" ("+ this.objCurrentAccount.Id +")</td></tr>";
 			strMsg		+= "<tr><td>Account to revert to:</td><td>"+ this.objPreviousAccount.AccountName +" ("+ this.objPreviousAccount.Id +")</td></tr>";

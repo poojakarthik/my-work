@@ -157,7 +157,119 @@ $strTable
 		$strTable = "<table style='width:100%'>$strRows</table>";
 		return $strTable;
 	}
+
+	// Returns a description of the last event as a string
+	static function GetLastEvent($mixService)
+	{
+		$arrHistory = HtmlTemplateServiceHistory::_GetHistoryDetailsForDisplay($mixService);
+		return $arrHistory[0];
+	}
 	
+	// Returns a description of the last event as a string
+	static function GetLastEvent2($mixService)
+	{
+		$intNowTimeStamp = strtotime(GetCurrentISODateTime());
+		
+		// Retrieve the LastEvent of the service
+		if (is_object($mixService))
+		{
+			$arrHistory	= $mixService->GetHistory();
+			$arrEvent	= $arrHistory[0];
+		}
+		else
+		{
+			$arrHistory	= ModuleService::GetHistoryForAnonymous($mixService);
+			$arrEvent	= $arrHistory[0];
+		}
+		
+		$intTimeStamp	= strtotime($arrEvent['TimeStamp']);
+		$strTimeStamp	= date("H:i:s M j, Y", $intTimeStamp);
+		
+		// Check if there is another account related to this Event
+		$strAccount = "";
+		if ($arrEvent['RelatedAccount'] != NULL)
+		{
+			// Create a link to it
+			$strAccountLink	= Href()->AccountOverview($arrEvent['RelatedAccount']);
+			$strAccount		= "<a href='$strAccountLink'>{$arrEvent['RelatedAccount']}</a>";
+		}
+			
+		if ($arrEvent['IsCreationEvent'])
+		{
+			switch ($arrEvent['Event'])
+			{
+				case SERVICE_CREATION_NEW:
+					$strEvent = "Created";
+					break;
+					
+				case SERVICE_CREATION_ACTIVATED:
+					$strEvent = "Activated";
+					break;
+					
+				case SERVICE_CREATION_LESSEE_CHANGED:
+					$strEvent = "Acquired from Account: $strAccount (Change of Lessee)";
+					break;
+					
+				case SERVICE_CREATION_ACCOUNT_CHANGED:
+					$strEvent = "Acquired from Account: $strAccount (Account Move)";
+					break;
+					
+				case SERVICE_CREATION_LESSEE_CHANGE_REVERSED:
+					$strEvent = "Activated (Reversal of Change of Lessee)";
+					break;
+					
+				case SERVICE_CREATION_ACCOUNT_CHANGE_REVERSED:
+					$strEvent = "Activated (Reversal of Account Move)";
+					break;
+					
+				default:
+					$strEvent = GetConstantDescription($arrEvent['Event'], "ServiceCreation");
+					break;
+			}
+		}
+		else
+		{
+			switch ($arrEvent['Event'])
+			{
+				case SERVICE_CLOSURE_DISCONNECTED:
+					$strEvent = "Disconnected";
+					break;
+					
+				case SERVICE_CLOSURE_ARCHIVED:
+					$strEvent = "Archived";
+					break;
+					
+				case SERVICE_CLOSURE_LESSEE_CHANGED:
+					$strEvent = "Moved to Account: $strAccount (Change of Lessee)";
+					break;
+					
+				case SERVICE_CLOSURE_ACCOUNT_CHANGED:
+					$strEvent = "Moved to Account: $strAccount (Account Move)";
+					break;
+					
+				case SERVICE_CLOSURE_LESSEE_CHANGE_REVERSED:
+					$strEvent = "Deactivated (Reversal of Change of Lessee)";
+					break;
+					
+				case SERVICE_CLOSURE_ACCOUNT_CHANGE_REVERSED:
+					$strEvent = "Deactivated (Reversal of Account Move)";
+					break;
+					
+				default:
+					$strEvent = GetConstantDescription($arrEvent['Event'], "ServiceCreation");
+					break;
+			}
+		}
+		
+		// Check if the event has been scheduled for a future time
+		if ($intTimeStamp > $intNowTimeStamp)
+		{
+			$strEvent = "Will be " . strtolower(substr($strEvent, 0, 1)) . substr($strEvent, 1);
+		}
+		
+		$strEvent	= "$strEvent on $strTimeStamp";
+		return $strEvent;
+	}
 	
 	//$mixService can be a ModuleService object OR an array of Service records detailing the history of a service
 	/* @return		array			$arrHistory[]	['TimeStamp']
@@ -219,15 +331,15 @@ $strTable
 						break;
 						
 					case SERVICE_CREATION_LESSEE_CHANGE_REVERSED:
-						$strEvent = "Acquired from Account: $strAccount<br />(Reversal of Change of Lessee)";
+						$strEvent = "Activated<br />(Reversal of Change of Lessee)";
 						break;
 						
 					case SERVICE_CREATION_ACCOUNT_CHANGE_REVERSED:
-						$strEvent = "Acquired from Account: $strAccount<br />(Reversal of Account Move)";
+						$strEvent = "Activated<br />(Reversal of Account Move)";
 						break;
 						
 					default:
-						$strEvent = GetConstantDescription($arrHistoryItem['Event'], "ServiceClosure");
+						$strEvent = GetConstantDescription($arrHistoryItem['Event'], "ServiceCreation");
 						break;
 				}
 			}
@@ -252,11 +364,11 @@ $strTable
 						break;
 						
 					case SERVICE_CLOSURE_LESSEE_CHANGE_REVERSED:
-						$strEvent = "Moved to Account: $strAccount<br />(Reversal of Change of Lessee)";
+						$strEvent = "Deactivated<br />(Reversal of Change of Lessee)";
 						break;
 						
 					case SERVICE_CLOSURE_ACCOUNT_CHANGE_REVERSED:
-						$strEvent = "Moved to Account: $strAccount<br />(Reversal of Account Move)";
+						$strEvent = "Deactivated<br />(Reversal of Account Move)";
 						break;
 						
 					default:
@@ -269,6 +381,7 @@ $strTable
 			if ($intTimeStamp > $intNowTimeStamp)
 			{
 				$strEvent = "Will be " . strtolower(substr($strEvent, 0, 1)) . substr($strEvent, 1);
+				$strEvent = "<span style='color:#FF0000'>$strEvent</span>";
 			}
 			
 			$arrHistoryForDisplay[] = Array(

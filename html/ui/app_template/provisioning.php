@@ -111,7 +111,7 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 			ContextMenu()->Account_Menu->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Plan->Change_Plan(DBO()->Service->Id->Value);
-			ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);
+			ContextMenu()->Account_Menu->Service->Move_Service(DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Adjustments->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
@@ -936,7 +936,7 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 		}
 		
 		// Apply the filter
-		$strToday = date("Y-m-d");
+		$strNow = GetCurrentISODateTime();
 		if ($intFilter)
 		{
 			$arrTempServices	= $arrServices;
@@ -948,7 +948,7 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 				{
 					case SERVICE_ACTIVE:
 						// Only keep the Service if ClosedOn IS NULL OR NOW() OR in the future
-						if ($arrService['History'][0]['ClosedOn'] == NULL || $arrService['History'][0]['ClosedOn'] >= $strToday)
+						if ($arrService['History'][0]['ClosedOn'] == NULL || $arrService['History'][0]['ClosedOn'] >= $strNow)
 						{
 							// Keep it
 							$arrServices[] = $arrService;
@@ -957,7 +957,7 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 					
 					case SERVICE_DISCONNECTED:
 						// Only keep the Service if Status == Disconnected AND ClosedOn < NOW()
-						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strToday)
+						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strNow)
 						{
 							// Keep it
 							$arrServices[] = $arrService;
@@ -966,7 +966,7 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 					
 					case SERVICE_ARCHIVED:
 						// Only keep the Service if Status == Archived AND ClosedOn < NOW()
-						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strToday)
+						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strNow)
 						{
 							// Keep it
 							$arrServices[] = $arrService;
@@ -978,9 +978,5 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 		
 		return $arrServices;
 	}
-
-
-    //----- DO NOT REMOVE -----//
-
 }
 ?>

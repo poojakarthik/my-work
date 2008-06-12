@@ -5,12 +5,13 @@
 
 // Set the page title
 $strServiceType	= GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType");
-$strFnn			= DBO()->Service->FNN->FormattedValue();
-$this->Page->SetName("Service Details: $strServiceType - $strFnn");
+$strFnn			= DBO()->Service->FNN->Value;
+$strIndial		= (DBO()->Service->Indial100->Value)? " (Indial100)" : "";
+$this->Page->SetName("Service Details: $strServiceType - $strFnn{$strIndial}");
 
 $this->Page->SetLayout('3Column');
 
-$id = $this->Page->AddObject('ServiceAccount', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('ServiceAccount', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 {

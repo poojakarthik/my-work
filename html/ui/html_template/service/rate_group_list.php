@@ -114,7 +114,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 			{	
 				// The user has permission to override RateGroups.  Build the link to the RateGroup Override popup
 				$strOverrideRateGroupHref	= Href()->OverrideRateGroup(DBO()->Service->Id->Value, $dboRecordType->Id->Value);
-				$strOverrideRateGroup		= "<a href='$strOverrideRateGroupHref'><img src='img/template/edit.png' title='Declare an Overriding RateGroup'></img></a>";
+				$strOverrideRateGroup		= "<img src='img/template/edit.png' title='Declare an Overriding RateGroup' onclick='$strOverrideRateGroupHref'></img>";
 			}
 			$strRecordTypeCell = $dboRecordType->Description->Value;
 			

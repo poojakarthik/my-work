@@ -194,7 +194,7 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Plan->Change_Plan(DBO()->Service->Id->Value);	
-			ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+			ContextMenu()->Account_Menu->Service->Move_Service(DBO()->Service->Id->Value);	
 			ContextMenu()->Account_Menu->Service->Adjustments->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 			// Only Landlines can have provisioning
@@ -1007,6 +1007,25 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		DBO()->Account->AllRatePlans = $arrRatePlans;
 		
+		// Retrieve all Dealer details
+		$arrColumns = array("id", "first_name", "last_name", "title");
+		$strWhere	= "termination_date > NOW()";
+		$strOrderBy	= "title ASC, first_name ASC, last_name ASC, id ASC";
+		$selDealers	= new StatementSelect("dealer", $arrColumns, $strWhere, $strOrderBy);
+		$arrDealers = array();
+		if ($selDealers->Execute())
+		{
+			$arrRecordSet = $selDealers->FetchAll();
+			foreach ($arrRecordSet as $arrRecord)
+			{
+				$strName = trim(trim($arrRecord['title']) ." ". trim($arrRecord['first_name']) ." ". trim($arrRecord['last_name']));
+				$arrDealers[] = array(	"Id"	=> $arrRecord['id'], 
+										"Name"	=> $strName);
+			}
+		}
+		
+		DBO()->Dealers->AsArray = $arrDealers;
+		
 		// Context menu
 		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
 		ContextMenu()->Account_Menu->Account->Invoices_and_Payments(DBO()->Account->Id->Value);
@@ -1121,7 +1140,7 @@ class AppTemplateService extends ApplicationTemplate
 		$mixResult		= $selRatePlans->Execute();
 		if ($mixResult === FALSE || count($arrRatePlanIds) != $mixResult)
 		{
-			// At least one of the Plans declared for the Services could  not be retrieved
+			// At least one of the Plans declared for the Services could not be retrieved
 			Ajax()->AddCommand("Alert", "ERROR: Could not retrieve all the Plans required.  Bulk service creation aborted.  Please report this to the system administrators");
 			return TRUE;
 		}
@@ -1135,7 +1154,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Declare variables that are common amoungst the services being added
-		$strNowDateTime		= GetCurrentDateAndTimeForMySQL();
+		$strNowDateTime		= GetCurrentISODateTime();
 		$strNowDate			= substr($strNowDateTime, 0, 10);
 		$intEmployeeId		= AuthenticatedUser()->_arrUser['Id'];
 		$intAccountGroup	= DBO()->Account->AccountGroup->Value;
@@ -1151,10 +1170,14 @@ class AppTemplateService extends ApplicationTemplate
 									"AccountGroup"		=> $intAccountGroup,
 									"Account"			=> $intAccount,
 									"CostCentre"		=> ($objService->intCostCentre)? $objService->intCostCentre : NULL,
-									"CreatedOn"			=> $strNowDate,
+									"CreatedOn"			=> $strNowDateTime,
 									"CreatedBy"			=> $intEmployeeId,
+									"NatureOfCreation"	=> SERVICE_CREATION_NEW,
 									"Carrier"			=> $arrRatePlans[$objService->intPlanId]['CarrierFullService'],
-									"CarrierPreselect"	=> $arrRatePlans[$objService->intPlanId]['CarrierPreselection'] 
+									"CarrierPreselect"	=> $arrRatePlans[$objService->intPlanId]['CarrierPreselection'],
+									"Status"			=> SERVICE_ACTIVE,
+									"Dealer"			=> ($objService->intDealer)? $objService->intDealer : NULL,
+									"Cost"				=> $objService->fltCost
 								);
 								
 			switch ($objService->intServiceType)
@@ -1268,8 +1291,12 @@ class AppTemplateService extends ApplicationTemplate
 							"CostCentre"		=> NULL,
 							"CreatedOn"			=> NULL,
 							"CreatedBy"			=> NULL,
+							"NatureOfCreation"	=> NULL,
 							"Carrier"			=> NULL,
-							"CarrierPreselect"	=> NULL, 
+							"CarrierPreselect"	=> NULL,
+							"Status"			=> SERVICE_ACTIVE,
+							"Dealer"			=> NULL,
+							"Cost"				=> 0
 							);
 		
 		$insService = new StatementInsert("Service", $arrColumns);
@@ -1663,7 +1690,6 @@ class AppTemplateService extends ApplicationTemplate
 					$arrInvalidServiceIndexes[] = $arrServices[$i]->intArrayIndex; 
 					$arrInvalidServiceIndexes[] = $arrServices[$j]->intArrayIndex; 
 				}
-				
 			}
 		}
 		// Remove any duplicates from the array
@@ -1780,187 +1806,6 @@ class AppTemplateService extends ApplicationTemplate
 		$this->LoadPage('service_bulk_add_extra_details');
 		return TRUE;
 	}
-	
-	
-	//------------------------------------------------------------------------//
-	// Add  This functionality is not actually used yet
-	//------------------------------------------------------------------------//
-	/**
-	 * Add()
-	 *
-	 * Performs the logic for adding a service
-	 * 
-	 * Performs the logic for adding a service
-	 *
-	 * @return		void
-	 * @method		Add
-	 *
-	 */
-	function Add()
-	{
-		// Check user authorization
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-
-		if (!DBO()->Account->Load())
-		{
-			// The Account could not be loaded
-			BreadCrumb()->Employee_Console(DBO()->Account->Id->Value);
-			BreadCrumb()->SetCurrentPage("Error");
-		
-			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
-			$this->LoadPage('error');
-			return FALSE;
-		}
-
-		if (SubmittedForm("AddService","Save"))
-		{
-			if (DBO()->Service->ServiceType->Value != SERVICE_TYPE_MOBILE)
-			{
-				// sets the invalid to valid on the DBO within the servicemobiledetail field
-				// i.e. if the user hasn't chosen mobile as the service type
-				DBO()->ServiceMobileDetail->Clean();
-			}
-			
-			// test initial validation of fields
-			if (DBO()->Service->IsInvalid() || ((DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE) && (DBO()->ServiceMobileDetail->IsInvalid())))
-			{
-				// The form has not passed initial validation
-				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("ServiceAdd", HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
-				return TRUE;
-			}
-			
-			// only validate the FNN if it has been supplied
-			if (DBO()->Service->FNN->Value != "")
-			{
-				if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
-				{
-					// This is entered if the FNN is different from FNNConfirm 
-					// i.e. a typo when entering on the form
-					// -------------------------------------------------------				
-				
-					DBO()->Service->FNN->SetToInvalid();
-					DBO()->Service->FNNConfirm->SetToInvalid();
-					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Service # and Confirm Service # must be the same");
-					Ajax()->RenderHtmlTemplate("ServiceAdd", HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
-					return TRUE;
-				}
-				
-				// Make sure the new FNN is valid for the service type
-				$intServiceType = ServiceType(DBO()->Service->FNN->Value);
-				if ($intServiceType != DBO()->Service->ServiceType->Value)
-				{
-					// The FNN is invalid for the services servicetype, output an appropriate message
-					DBO()->Service->FNN->SetToInvalid();
-					Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
-					Ajax()->RenderHtmlTemplate("ServiceAdd", HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
-					return TRUE;
-				}
-				
-				// Test that the FNN is currently not being used
-				$strWhere = "FNN LIKE \"". DBO()->Service->FNN->Value . "\"";
-				DBL()->Service->Where->SetString($strWhere);
-				DBL()->Service->Load();
-				if (DBL()->Service->RecordCount() > 0)
-				{	
-					DBO()->Service->FNN->SetToInvalid();
-					DBO()->Service->FNNConfirm->SetToInvalid();
-					Ajax()->AddCommand("Alert", "This Service Number already exists in the Database");
-					Ajax()->RenderHtmlTemplate("ServiceAdd", HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
-					return TRUE;
-				}	
-			}
-			
-			// Test that the costcentre is null i.e. nothing selected set the database to NULL
-			if (DBO()->Service->CostCentre->Value == 0)
-			{
-				DBO()->Service->CostCentre = NULL;
-			}	
-			// all properties are valid. now set remaining properties of the record service record
-			if (DBO()->Service->ServiceType->Value != SERVICE_TYPE_LAND_LINE)
-			{
-				DBO()->Service->Indial100 = 0;
-			}
-			DBO()->Service->AccountGroup	= DBO()->Account->AccountGroup->Value;
-			DBO()->Service->Account			= DBO()->Account->Id->Value;
-			DBO()->Service->CreatedOn		= GetCurrentDateForMySQL();
-			DBO()->Service->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->Service->CappedCharge	= 0;
-			DBO()->Service->UncappedCharge	= 0;
-			
-			DBO()->Service->SetColumns("Id, FNN, ServiceType, Indial100, AccountGroup, Account, CostCentre, CappedCharge, UncappedCharge, CreatedOn, CreatedBy");
-
-			// Start the transaction
-			TransactionStart();
-
-			// Save the Service record
-			if (!DBO()->Service->Save())
-			{
-				// inserting records into the database failed unexpectedly
-				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: saving this service failed, unexpectedly");
-				return TRUE;
-			}
-			
-			// The service record was successfully saved.  Now add the record specific to the type of service
-			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
-			{
-				// Service is a mobile phone.  Add record to ServiceMobileDetail table
-				DBO()->ServiceMobileDetail->Account			= DBO()->Account->Id->Value;
-				DBO()->ServiceMobileDetail->AccountGroup	= DBO()->Account->AccountGroup->Value;
-				DBO()->ServiceMobileDetail->Service			= DBO()->Service->Id->Value;
-				DBO()->ServiceMobileDetail->DOB				= ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
-				DBO()->ServiceMobileDetail->SetColumns("Id, AccountGroup, Account, Service, SimPUK, SimESN, SimState, DOB, Comments");
-				
-				// Save the ServiceMobileDetail record
-				if (!DBO()->ServiceMobileDetail->Save())
-				{
-					// inserting the record into the database failed unexpectedly
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: saving this service failed, unexpectedly");
-					return TRUE;
-				}
-			}
-
-			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
-			{
-				// Service is an inbound 1300/1800 number.  Add record to ServiceInboundDetail table
-				DBO()->ServiceInboundDetail->Service		= DBO()->Service->Id->Value;
-				DBO()->ServiceInboundDetail->Complex		= 0;
-				DBO()->ServiceInboundDetail->SetColumns("Id, Service, AnswerPoint, Complex, Configuration");				
-			
-				// Save the ServiceInboundDetail record
-				if (!DBO()->ServiceInboundDetail->Save())
-				{
-					// inserting the record into the database failed unexpectedly
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: saving this service failed, unexpectedly");
-					return TRUE;
-				}				
-			}
-
-			// All records defining the service have successfully been inserted into the database
-			
-			// commit the transaction
-			TransactionCommit();
-
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "This service was successfully created", "Location" => Href()->InvoicesAndPayments(DBO()->Account->Id->Value)));
-			return TRUE;
-		}
-		
-		// Context menu
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
-		
-		// Breadcrumb menu
-		BreadCrumb()->Employee_Console();
-		BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
-		BreadCrumb()->SetCurrentPage("Add Service");
-		
-		$this->LoadPage('service_add');
-	}
-	
 	
 	//------------------------------------------------------------------------//
 	// Edit
@@ -2086,6 +1931,7 @@ class AppTemplateService extends ApplicationTemplate
 				else
 				{
 					$strChangesNote .= "FNN was changed from ". DBO()->Service->CurrentFNN->Value ." to " . DBO()->Service->FNN->Value . "\n";
+					$strWarningForFNNChange = "WARNING: The FNN has been changed.  Any provisioning requests, that have not been sent yet, should be cancelled.";
 				}
 			}
 			
@@ -2526,7 +2372,13 @@ class AppTemplateService extends ApplicationTemplate
 			// Check that something was actually changed
 			if ($strChangesNote != "")
 			{
-				Ajax()->AddCommand("Alert", "The service was successfully updated");
+				$strAlert = "The service was successfully updated";
+				if (isset($strWarningForFNNChange))
+				{
+					$strAlert .= "<br />$strWarningForFNNChange";
+				}
+				
+				Ajax()->AddCommand("Alert", $strAlert);
 
 				// Build event object
 				// The contents of this object should be declared in the doc block of this method
@@ -2642,7 +2494,7 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			ContextMenu()->Account_Menu->Service->Edit_Service(DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Plan->Change_Plan(DBO()->Service->Id->Value);	
-			ContextMenu()->Account_Menu->Service->Change_of_Lessee(DBO()->Service->Id->Value);	
+			ContextMenu()->Account_Menu->Service->Move_Service(DBO()->Service->Id->Value);	
 			ContextMenu()->Account_Menu->Service->Adjustments->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 			ContextMenu()->Account_Menu->Service->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
 			// Only Landlines can have provisioning
@@ -3781,77 +3633,24 @@ class AppTemplateService extends ApplicationTemplate
 		$dboServiceAddress->ServiceState = $dboAccount->State->Value;
 	}
 	
+	
 	//------------------------------------------------------------------------//
-	// FNNCanBeChanged
+	// GetMostRecentServiceRecordId
 	//------------------------------------------------------------------------//
 	/**
-	 * FNNCanBeChanged()
+	 * GetMostRecentServiceRecordId()
 	 *
-	 * Checks if the FNN of the given service can be changed
+	 * Returns the Id of the most recently added Service record which models the same Service as the record referenced by $intService
 	 * 
-	 * Checks if the FNN of the given service can be changed
-	 * An FNN can only be changed on the day that the service was originally entered into Flex
+	 * Returns the Id of the most recently added Service record which models the same Service as the record referenced by $intService
+	 * If $intService is the most recent, then it will be returned
 	 * 
-	 * @param	int		$intService		Id of the most recently added Service record which models
-	 * 									this service on the account that the service belongs to
-	 * 									It is a precondition that this service exists in the database
+	 * @param	int		$intService		Id of any of the service records modelling the service 
+	 * 									for the account that the service record belongs to
 	 *
-	 * @return	bool					TRUE if the Service's FNN can be changed, else FALSE
-	 * @method	FNNCanBeChanged
+	 * @return	int 					Service record Id
+	 * @method
 	 */
-	static function FNNCanBeChanged($intService)
-	{
-		// Retrieve the record from the database and the current date
-		$arrColumns = Array("Id"		=>	"Id",
-							"FNN"		=>	"FNN",
-							"Account"	=>	"Account",
-							"CreatedOn"	=>	"CreatedOn",
-							"Today"		=>	"CAST(NOW() AS DATE)"
-							);
-		$selService = new StatementSelect("Service", $arrColumns, "Id = <Id>");
-		$selService->Execute(Array("Id"=>$intService));
-		$arrService	= $selService->Fetch();
-		$strToday	= $arrService['Today'];
-		if ($arrService['CreatedOn'] != $strToday)
-		{
-			// The FNN cannot be changed
-			return FALSE;
-		}
-		
-		// If there are other records belonging to the same account as $intService, with the same FNN, then 
-		// you cannot change the FNN
-		$selHasMultipleRecords	= new StatementSelect("Service", "Id", "Account = <Account> AND FNN = <FNN> AND Id != <Id>");
-		$mixResult				= $selHasMultipleRecords->Execute($arrService);
-		
-		if ($mixResult != 0)
-		{
-			// The account has multiple service records associated with this FNN.  The FNN cannot be editted
-			// because it is safe to assume that it wasn't actually created today, but instead Activated today
-			return FALSE;
-		}
-		
-		// Check that this service's CreatedOn Date isn't just set to today because a change of lessee was scheduled
-		$arrService['Yesterday']	= date("Y-m-d", strtotime("-1 day", $strToday));
-		$selChangeOfLessee			= new StatementSelect("Service", "Id", "FNN = <FNN> AND ClosedOn = <Yesterday>");
-		$mixResult					= $selChangeOfLessee->Execute($arrService);
-		
-		if ($mixResult < 1)
-		{
-			// A change of lessee must be why the CreatedOn date of this service is today
-			// don't allow the user to modify the FNN
-			return FALSE;
-		}
-		
-		//TODO! but what if you schedule a change of lessee for the future, and then archive the current service, thus changing
-		// the ClosedOn date of the service which was scheduled to be disconnected in the future (one day before the service
-		// goes to the new lessee)
-
-		// It's safe to say that the Service was genuinely created today, and therefor the FNN can be changed
-		return TRUE;
-	}
-	
-	// Returns the Id of the most recently added Service record which models the same Service 
-	// as the record referenced by $intService.  If $intService is the most recent, then it will be returned
 	function GetMostRecentServiceRecordId($intService)
 	{
 		$strWhere = "Account = (SELECT Account FROM Service WHERE Id = $intService) AND FNN = (SELECT FNN FROM Service WHERE Id = $intService)";
@@ -3865,8 +3664,23 @@ class AppTemplateService extends ApplicationTemplate
 		return $arrRecord['Id'];
 	}
 	
-	// Retrieves an array storing all Service Ids which are used to model the same Service that $intService references
-	// (for the account the $itnService references)
+	//------------------------------------------------------------------------//
+	// GetAllServiceRecordIds
+	//------------------------------------------------------------------------//
+	/**
+	 * GetAllServiceRecordIds()
+	 *
+	 * Retrieves an array storing all Service Ids which are used to model the same Service that $intService references
+	 * 
+	 * Retrieves an array storing all Service Ids which are used to model the same Service that $intService references
+	 * (for the account the $intService references)
+	 * 
+	 * @param	int		$intService		Id of any of the service records modelling the service 
+	 * 									for the account that the service record belongs to
+	 *
+	 * @return	array					indexed array of Service Ids
+	 * @method
+	 */
 	static function GetAllServiceRecordIds($intService)
 	{
 		$strWhere		= "Account = (SELECT Account FROM Service WHERE Id = $intService) AND FNN = (SELECT FNN FROM Service WHERE Id = $intService)";
@@ -3886,9 +3700,6 @@ class AppTemplateService extends ApplicationTemplate
 		
 		return $arrServiceIds;
 	}
-	
-	
-	//----- DO NOT REMOVE -----//
 	
 }
 ?>

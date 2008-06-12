@@ -68,7 +68,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
-			Ajax()->AddCommand("Alert", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			Ajax()->AddCommand("Alert", "ERROR: The account with account id: '". DBO()->Account->Id->value ."' could not be found");
 			return TRUE;
 		}
 		
@@ -78,7 +78,16 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			// A service has been specified.  Load it, to check that it actually exists
 			if (!DBO()->Service->Load())
 			{
-				Ajax()->AddCommand("Alert", "The service with service id: '". DBO()->Service->Id->value ."' could not be found");
+				Ajax()->AddCommand("Alert", "ERROR: The service with service id: '". DBO()->Service->Id->value ."' could not be found");
+				return TRUE;
+			}
+			
+			// It is assumed that this is the newest most record modelling this service for the account
+			// that the service belongs to.  Check that the service is currently active
+			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value);
+			if (!$objService->IsCurrentlyActive())
+			{
+				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be applied to active services.");
 				return TRUE;
 			}
 		}
@@ -204,8 +213,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
-			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			Ajax()->AddCommand("Alert", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
 			return TRUE;
 		}
 
@@ -215,10 +223,18 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			// A service has been specified.  Load it, to check that it actually exists
 			if (!DBO()->Service->Load())
 			{
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", "The service with service id: '". DBO()->Service->Id->value ."' could not be found");
+				Ajax()->AddCommand("Alert", "The service with service id: '". DBO()->Service->Id->value ."' could not be found");
 				return TRUE;
 			}
+			// It is assumed that this is the newest most record modelling this service for the account
+			// that the service belongs to.  Check that the service is currently active
+			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value);
+			if (!$objService->IsCurrentlyActive())
+			{
+				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be applied to active services.");
+				return TRUE;
+			}
+			
 		}
 
 		// Load all charge types that aren't archived
@@ -303,12 +319,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$strMinCharge		= OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
 				$strRecursionCharge	= OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
 
-				$strNote  = "recurring charge created\n";
+				$strNote  = "Recurring charge created\n";
 				$strNote .= "Type: " . DBO()->RecurringCharge->ChargeType->FormattedValue() . "\n";
 				$strNote .= "Description: " . DBO()->RecurringCharge->Description->FormattedValue() . "\n";
 				$strNote .= "Nature: " . DBO()->RecurringCharge->Nature->FormattedValue() . "\n";
 				$strNote .= "Minimum Charge: $strMinCharge (inc GST)\n";
-				$strNote .= "Recursion Charge: $strRecursionCharge (inc GST)\n";
+				$strNote .= "Recurring Charge: $strRecursionCharge (inc GST)\n";
 
 				// Save the recurring adjustment to the charge table of the vixen database
 				if (!DBO()->RecurringCharge->Save())

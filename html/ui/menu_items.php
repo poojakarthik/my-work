@@ -1610,6 +1610,8 @@ class MenuItems
 	 */
 	function MoveService($intServiceId)
 	{
+		$this->strContextMenuLabel = "Move Service";
+		
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;
 		$strJsonCode = Json()->encode($arrData);

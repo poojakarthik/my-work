@@ -209,11 +209,14 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	{
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$arrServices			= DBO()->Account->Services->Value;
-		$intCurrentDate			= strtotime(GetCurrentDateForMySQL());
+		$intCurrentDate			= strtotime(GetCurrentISODate());
 		
-		Table()->Services->SetHeader("&nbsp;", "FNN", "Plan", "&nbsp;", "&nbsp;", "&nbsp;", "Actions");
-		Table()->Services->SetWidth("3%", "10%", "46%", "7%", "11%", "15%", "8%");
-		Table()->Services->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left", "Left");
+		Table()->Services->SetHeader("&nbsp;", "FNN", "Plan", "&nbsp;", "&nbsp;", "Actions");
+		
+		// These were the column widths used when we included the "Opened/Closed dd/mm/yyyy" in the table
+		//Table()->Services->SetWidth("3%", "10%", "44%", "7%", "11%", "15%", "10%");
+		Table()->Services->SetWidth("3%", "10%", "50%", "7%", "20%", "10%");
+		Table()->Services->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left");
 		
 		$strStatusTitles = "Status :<br />Line :";
 		
@@ -253,7 +256,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);
 			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
 			
-			$strActionsCell				= "$strViewServiceNotes $strEditService $strChangePlan $strViewUnbilledCharges $strProvisioning $strViewProvisioningHistory $strMoveService";
+			$strActionsCell				= "{$strViewServiceNotes} {$strEditService} {$strChangePlan} {$strViewUnbilledCharges} {$strMoveService} {$strProvisioning} {$strViewProvisioningHistory}";
 
 			// Create a link to the View Plan for Service page
 			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($arrService['Id']);
@@ -275,6 +278,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$strPlanCell .= "<br />As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['FuturePlan']['Name']}</a>";
 			}
 			
+			// This is no longer used (but they might want to use it again in the future)
 			// Work out the Date to display along with the status
 			// Check if the ClosedOn date has been set
 			$bolFlagStatus = FALSE;
@@ -376,13 +380,10 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	<div style='width:70%;float:left'>
 		$strHistoryDetailsTable
 	</div>
-	<div style='width:20%;float:right;text-align:right'>
-		$strActionsCell
-	</div>
 </div>
 ";
 			
-			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strStatusDescCell, ""/*$strActionsCell*/);
+			Table()->Services->AddRow($strServiceTypeCell, $strFnnCell,	$strPlanCell, $strStatusTitles, $strStatusCell, $strActionsCell);
 			Table()->Services->SetDetail($strDropDownDetail);
 		}
 		
@@ -392,7 +393,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			// There are no services to stick in this table
 			Table()->Services->AddRow("No services to display");
 			Table()->Services->SetRowAlignment("left");
-			Table()->Services->SetRowColumnSpan(7);
+			Table()->Services->SetRowColumnSpan(6);
 		}
 		
 		// Row highlighting doesn't seem to be working with popups
