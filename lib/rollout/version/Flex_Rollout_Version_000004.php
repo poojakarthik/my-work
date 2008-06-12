@@ -29,25 +29,24 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to create payment_terms table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
 
-		$qryQuery = new StatementInsert('payment_terms', NULL);
+		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 
 		// Need to get the payment terms from the user
-		$intInvoiceDay 				= $this->getInteger("On which day of the month should invoices be generated?");
-		$intPaymentTerms 			= $this->getInteger("How many days after invoicing before payment is due?");
-		$intOverdueDays 			= $this->getInteger("How many days after payment is due before overdue notices should be sent?");
-		$intSuspensionDays 			= $this->getInteger("How many days after overdue notices are sent before suspension notices should be sent?");
-		$intFinalDemandDays 		= $this->getInteger("How many days after suspension notices are sent before final demands should be sent?");
-		$intAutomaticBarringDays 	= $this->getInteger("How many days after final demands are sent before accounts should be automatically barred?");
+		$intInvoiceDay 				= 						  $this->getInteger("On which day of the month should invoices be generated?");
+		$intPaymentTerms 			= $intInvoiceDay 		+ $this->getInteger("How many days after invoicing before payment is due?");
+		$intOverdueDays 			= $intPaymentTerms 		+ $this->getInteger("How many days after payment is due before overdue notices should be sent?");
+		$intSuspensionDays 			= $intOverdueDays 		+ $this->getInteger("How many days after overdue notices are sent before suspension notices should be sent?");
+		$intFinalDemandDays 		= $intSuspensionDays 	+ $this->getInteger("How many days after suspension notices are sent before final demands should be sent?");
+		$intAutomaticBarringDays 	= $intFinalDemandDays 	+ $this->getInteger("How many days after final demands are sent before accounts should be automatically barred?");
 
-		$arrValues = array();
-		$arrValues['invoice_day'] 				= $intInvoiceDay;
-		$arrValues['payment_terms'] 			= $intPaymentTerms 			+ $arrValues['invoice_day'];
-		$arrValues['overdue_notice_days'] 		= $intOverdueDays 			+ $arrValues['payment_terms'];
-		$arrValues['suspension_notice_days'] 	= $intSuspensionDays 		+ $arrValues['overdue_notice_days'];
-		$arrValues['final_demand_notice_days'] 	= $intFinalDemandDays 		+ $arrValues['suspension_notice_days'];
-		$arrValues['automatic_barring_days'] 	= $intAutomaticBarringDays 	+ $arrValues['final_demand_notice_days'];
+		$strSQL = "
+			INSERT INTO payment_terms 
+						(invoice_day, 			payment_terms, 				overdue_notice_days, 
+						suspension_notice_days, final_demand_notice_days, 	automatic_barring_days)
+				VALUES ($intInvoiceDay, 		$intPaymentTerms, 			$intOverdueDays, 
+						$intSuspensionDays, 	$intFinalDemandDays, 		$intAutomaticBarringDays)";
 
-		$qryQuery->Execute($arrValues);
+		$qryQuery->Execute($strSQL);
 	}
 
 	public function getInteger($message)
