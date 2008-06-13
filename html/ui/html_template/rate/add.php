@@ -315,6 +315,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			echo "</div>";
 			DBO()->Rate->StdMinCharge->RenderInput(CONTEXT_DEFAULT, TRUE);
 			DBO()->Rate->StdFlagfall->RenderInput(CONTEXT_DEFAULT, TRUE);
+			DBO()->Rate->discount_percentage->RenderInput(CONTEXT_DEFAULT);
 			echo "</div>\n"; // PassThrough
 
 			echo "<div id='RateDetailDiv' style='display:inline'>\n"; //beginning of the ratedetail DIV

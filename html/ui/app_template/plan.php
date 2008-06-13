@@ -351,6 +351,21 @@ class AppTemplatePlan extends ApplicationTemplate
 			return "ERROR: Invalid fields are highlighted";
 		}
 		
+		// Nullify fields that can be null
+		if ((float)DBO()->RatePlan->discount_cap->Value == 0)
+		{
+			DBO()->RatePlan->discount_cap = NULL;			
+		}
+		if ((integer)DBO()->RatePlan->ContractTerm->Value == 0)
+		{
+			DBO()->RatePlan->ContractTerm = NULL;
+		}
+		if ((float)DBO()->RatePlan->RecurringCharge->Value == 0)
+		{
+			DBO()->RatePlan->RecurringCharge = NULL;
+		}
+		
+		
 		// V2: ServiceType
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{

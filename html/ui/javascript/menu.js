@@ -201,7 +201,7 @@ function VixenMenuClass(objMenu)
 			top = top + this.config.Level2.height + this.config.Level2.spacing;
 			
 			//Add events
-			elmNode.onclick			= function(event) {Vixen.Menu.HandleClick(this)};
+			elmNode.onclick			= function(event) {Vixen.Menu.HandleClick(this, event)};
 			elmNode.onmouseover		= function(event) {Vixen.Menu.HandleMouseOver(this)};
 			elmNode.onmouseout		= function(event) {Vixen.Menu.HandleMouseOut(this)};
 			
@@ -248,7 +248,7 @@ function VixenMenuClass(objMenu)
 	{
 		clearTimeout(this.timeoutOpen);
 		clearTimeout(this.timeoutClose);
-		
+
 		// If the menu item action is wrapped in an anchor element, prevent the default action, so that it isn't executed twice
 		if (objEvent != undefined)
 		{

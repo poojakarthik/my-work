@@ -102,12 +102,12 @@ class HtmlTemplateRateView extends HtmlTemplate
 			if (DBO()->Rate->Archived->Value == RATE_STATUS_DRAFT)
 			{
 				// The Rate is currently saved as a draft
-				echo "<span class='Red'><center>This rate is currently saved as a draft</center></span>\n";
+				echo "<div style='color:#FF0000;text-align:center'>This rate is currently saved as a draft</div>";
 			}
 			else
 			{
 				// The RateGroup must be archived
-				echo "<span class='Red'><center>This rate has been archived</center></span>\n";
+				echo "<div style='color:#FF0000;text-align:center'>This rate has been archived</div>";
 			}
 			echo "<div class='ContentSeparator'></div>\n";
 		}
@@ -187,6 +187,11 @@ class HtmlTemplateRateView extends HtmlTemplate
 		DBO()->Rate->Uncapped->RenderOutput();
 		DBO()->Rate->StdMinCharge->RenderOutput();
 		DBO()->Rate->StdFlagfall->RenderOutput();
+		
+		if (DBO()->Rate->discount_percentage->Value != NULL)
+		{
+			DBO()->Rate->discount_percentage->RenderOutput();
+		}
 		
 		if ($bolPassThrough)
 		{

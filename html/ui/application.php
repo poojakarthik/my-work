@@ -1615,7 +1615,7 @@ class SubmittedData
 				foreach($objObject AS $strProperty=>$mixValue)
 				{
 					// parse variable
-					$this->_ParseData("{$strObject}_{$strProperty}", $mixValue);
+					$this->_ParseData("{$strObject}.{$strProperty}", $mixValue, ".");
 				}
 			}
 		}
@@ -1636,17 +1636,18 @@ class SubmittedData
 	 * This will also load the global variables $GLOBALS['*SubmittedForm']
 	 * and $GLOBALS['*SubmittedButtin'] if $strName equals "VixenFormId" or "VixenButtonId"
 	 *
-	 * @param	string	$strName	the Get or Post variable name.  This must be
-	 *								in the format ObjectName_PropertyName_Context
-	 *								where Context is an integer
-	 *								the Context is optional, ObjectName_PropertyName
-	 *								will suffice
-	 * @param	mixed	$mixValue	the value for the property
+	 * @param	string	$strName		the Get or Post variable name.  This must be
+	 *									in the format ObjectName_PropertyName_Context
+	 *									where Context is an integer
+	 *									the Context is optional, ObjectName_PropertyName
+	 *									will suffice
+	 * @param	mixed	$mixValue		the value for the property
+	 * @param	string	$strSeparator	optional, defaults to "_".  The delimeter that concatinates the ObjectName_PropertyName_Context together
 	 * @return	boolean
 	 *
 	 * @method
 	 */
-	function _ParseData($strName, $mixValue)
+	function _ParseData($strName, $mixValue, $strSeparator="_")
 	{
 		// check if $strName is either "VixenFormId" or "VixenButtonId"
 		if ($strName == "VixenFormId")
@@ -1661,7 +1662,7 @@ class SubmittedData
 		}
 	
 		// split name into object, property & [optional] context
-		$arrName = explode("_", $strName, 3);
+		$arrName = explode($strSeparator, $strName, 3);
 		
 		// fail if we don't have object and property
 		if(!$arrName[0] || !$arrName[1])

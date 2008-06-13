@@ -228,15 +228,16 @@ class AppTemplateRate extends ApplicationTemplate
 	private function _ValidateAndSaveRate()
 	{
 		// Strip dollar signs off the fields that can contain them
-		DBO()->Rate->StdRatePerUnit	= ltrim(DBO()->Rate->StdRatePerUnit->Value, '$');
-		DBO()->Rate->StdMarkup		= ltrim(DBO()->Rate->StdMarkup->Value, '$');
-		DBO()->Rate->CapCost		= ltrim(DBO()->Rate->CapCost->Value, '$');
-		DBO()->Rate->CapLimit		= ltrim(DBO()->Rate->CapLimit->Value, '$');
-		DBO()->Rate->ExsFlagfall	= ltrim(DBO()->Rate->ExsFlagfall->Value, '$');
-		DBO()->Rate->ExsRatePerUnit	= ltrim(DBO()->Rate->ExsRatePerUnit->Value, '$');
-		DBO()->Rate->ExsMarkup		= ltrim(DBO()->Rate->ExsMarkup->Value, '$');
-		DBO()->Rate->StdFlagfall	= ltrim(DBO()->Rate->StdFlagfall->Value, '$');
-		DBO()->Rate->StdMinCharge	= ltrim(DBO()->Rate->StdMinCharge->Value, '$');
+		DBO()->Rate->StdRatePerUnit			= ltrim(DBO()->Rate->StdRatePerUnit->Value, '$');
+		DBO()->Rate->StdMarkup				= ltrim(DBO()->Rate->StdMarkup->Value, '$');
+		DBO()->Rate->CapCost				= ltrim(DBO()->Rate->CapCost->Value, '$');
+		DBO()->Rate->CapLimit				= ltrim(DBO()->Rate->CapLimit->Value, '$');
+		DBO()->Rate->ExsFlagfall			= ltrim(DBO()->Rate->ExsFlagfall->Value, '$');
+		DBO()->Rate->ExsRatePerUnit			= ltrim(DBO()->Rate->ExsRatePerUnit->Value, '$');
+		DBO()->Rate->ExsMarkup				= ltrim(DBO()->Rate->ExsMarkup->Value, '$');
+		DBO()->Rate->StdFlagfall			= ltrim(DBO()->Rate->StdFlagfall->Value, '$');
+		DBO()->Rate->StdMinCharge			= ltrim(DBO()->Rate->StdMinCharge->Value, '$');
+		DBO()->Rate->discount_percentage	= ltrim(DBO()->Rate->discount_percentage->Value, '$');
 	
 		// Test initial validation of fields
 		if (DBO()->Rate->IsInvalid())
@@ -244,6 +245,12 @@ class AppTemplateRate extends ApplicationTemplate
 			// The form has not passed initial validation
 			Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv", $this->_objAjax, $this->_intTemplateMode);
 			return "ERROR: Could not save the rate.  Invalid fields are highlighted";
+		}
+		
+		// Nullify fields that can be null
+		if ((float)DBO()->Rate->discount_percentage->Value == 0)
+		{
+			DBO()->Rate->discount_percentage = NULL;			
 		}
 		
 		// Check that a Rate of the same RecordType, is not already using the name of this rate

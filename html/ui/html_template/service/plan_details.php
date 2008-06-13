@@ -111,7 +111,6 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->Name->RenderArbitrary($strPlanSummaryLink, RENDER_OUTPUT);
 			$dboRatePlan->Description->RenderOutput();
 			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
-			$dboRatePlan->Shared->RenderOutput();
 			
 			$intFullService = $dboRatePlan->CarrierFullService->Value;
 			if (!isset($GLOBALS['*arrConstant'][Carrier][$intFullService]))
@@ -135,10 +134,30 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			}
 			$dboRatePlan->CarrierPreselection->RenderArbitrary($strPreselection, RENDER_OUTPUT);
 			
+			$dboRatePlan->Shared->RenderOutput();
 			$dboRatePlan->InAdvance->RenderOutput();
+			if ($dboRatePlan->ContractTerm->Value == NULL)
+			{
+				// There is no contract term
+				$dboRatePlan->ContractTerm->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			}
+			else
+			{
+				$dboRatePlan->ContractTerm->RenderOutput();
+			}
 			$dboRatePlan->MinMonthly->RenderOutput();
 			$dboRatePlan->ChargeCap->RenderOutput();
 			$dboRatePlan->UsageCap->RenderOutput();
+			$dboRatePlan->RecurringCharge->RenderOutput();
+			
+			if ($dboRatePlan->discount_cap->Value == NULL)
+			{
+				$dboRatePlan->discount_cap->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			}
+			else
+			{
+				$dboRatePlan->discount_cap->RenderOutput();
+			}
 			
 			if ($dboRatePlan->StartDatetime->IsSet)
 			{

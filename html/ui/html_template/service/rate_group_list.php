@@ -99,9 +99,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 	
 		echo "<h2 class='Plan'>Rate Groups</h2>\n";
 		
-		echo "<div class='GroupedContent'>\n";
-		echo "<span><center>Rate Groups coloured green are those currently being used</center></span>\n";
-		echo "</div>\n";
+		echo "<div class='GroupedContent' style='text-align:center'>Rate Groups coloured green are those currently being used</div>\n";
 		echo "<div class='SmallSeperator'></div>\n";
 		
 		foreach (DBL()->RecordType as $dboRecordType)
@@ -159,7 +157,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					$arrShownRateGroups[] = $arrRateGroupTimeRange;
 					
 					// Check if it is the RateGroup that is currently in use
-					if (!$bolFoundCurrentFleetRateGroup && strtotime($dboRateGroup->StartDatetime->Value) <= $intNow)
+					if (!$bolFoundCurrentFleetRateGroup && $arrRateGroupTimeRange['Start'] <= $intNow && ($arrRateGroupTimeRange['IsIndefinite'] || $arrRateGroupTimeRange['End'] > $intNow))
 					{
 						// This RateGroup is currently being used
 						$bolFoundCurrentFleetRateGroup	= TRUE;
@@ -271,7 +269,7 @@ class HtmlTemplateServiceRateGroupList extends HtmlTemplate
 					$arrShownRateGroups[] = $arrRateGroupTimeRange;
 					
 					// Check if it is the RateGroup that is currently in use
-					if (!$bolFoundCurrentNormalRateGroup && strtotime($dboRateGroup->StartDatetime->Value) <= $intNow)
+					if (!$bolFoundCurrentNormalRateGroup && $arrRateGroupTimeRange['Start'] <= $intNow && ($arrRateGroupTimeRange['IsIndefinite'] || $arrRateGroupTimeRange['End'] > $intNow))
 					{
 						// This RateGroup is currently being used
 						$bolFoundCurrentNormalRateGroup	= TRUE;

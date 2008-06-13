@@ -8,7 +8,7 @@
  *		It sets the time component to "23:59:59"
  *	3:	Adds the following properties to the Service table:
  * 		NatureOfCreation, NatureOfClosure, LastOwner, NextOwner
- *	4:	Adds the default_rate_plan table and populates it
+ *	4:	Adds the default_rate_plan table
  */
 
 class Flex_Rollout_Version_000002 extends Flex_Rollout_Version

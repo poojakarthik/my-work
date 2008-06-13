@@ -1757,6 +1757,33 @@ class Validation
 	}
 	
 	//------------------------------------------------------------------------//
+	// UnsignedFloat
+	//------------------------------------------------------------------------//
+	/**
+	 * UnsignedFloat()
+	 *
+	 * Checks if a value is a valid unsigned float
+	 *
+	 * Checks if a value is a valid unsigned float
+	 *
+	 * @param	mix			$mixValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	static function UnsignedFloat($mixValue)
+	{
+		if ((float)$mixValue > 0 && (string)(float)$mixValue == (string)$mixValue)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
+	}
+	
+	
+	//------------------------------------------------------------------------//
 	// ShortDate
 	//------------------------------------------------------------------------//
 	/**
