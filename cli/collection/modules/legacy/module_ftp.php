@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2008 VOIPTEL Pty Ltd
+// (c) copyright 2006 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------/
@@ -17,10 +17,10 @@
  *
  * @file		module_ftp.php
  * @language	PHP
- * @package		collection
+ * @package		vixen
  * @author		Rich Davis
- * @version		8.06
- * @copyright	2008 VOIPTEL Pty Ltd
+ * @version		6.11
+ * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -36,16 +36,75 @@
  * FTP Collection Module
  *
  *
- * @prefix		mod
+ * @prefix		ftp
  *
- * @package		collection
+ * @package		vixen
  * @class		CollectionModuleFTP
  */
  class CollectionModuleFTP
  {
+ 	//------------------------------------------------------------------------//
+	// _resConnection
+	//------------------------------------------------------------------------//
+	/**
+	 * _resCollection
+	 *
+	 * FTP Connection
+	 *
+	 * FTP Connection
+	 *
+	 * @type		resource
+	 *
+	 * @property
+	 */
 	private $_resConnection;
+	
+ 	//------------------------------------------------------------------------//
+	// _arrDefine
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrDefine
+	 *
+	 * Collection definition
+	 *
+	 * Current Collection definition
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
 	private $_arrDefine;
+	
+	//------------------------------------------------------------------------//
+	// _arrFileListing
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrFileListing
+	 *
+	 * File list
+	 *
+	 * File list for current working directory
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
 	private $_arrFileListing;
+ 	
+	//------------------------------------------------------------------------//
+	// _selFileExists
+	//------------------------------------------------------------------------//
+	/**
+	 * _selFileExists
+	 *
+	 * StatementSelect used to tell if file is already downloaded
+	 *
+	 * StatementSelect used to tell if file is already downloaded
+	 *
+	 * @type		StatementSelect
+	 *
+	 * @property
+	 */
  	private $_selFileExists;
  	
  	//------------------------------------------------------------------------//
@@ -62,30 +121,9 @@
 	 *
 	 * @method
 	 */
- 	function __construct($intCarrier)
+ 	function __construct()
  	{
- 		parent::__construct($intCarrier);
- 		
-		//##----------------------------------------------------------------##//
-		// Define Module Configuration and Defaults
-		//##----------------------------------------------------------------##//
-		
-		// Mandatory
- 		$this->_arrModuleConfig['Host']			['Default']		= 'ftp.rslcom.com.au';
- 		$this->_arrModuleConfig['Host']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Host']			['Description']	= "FTP Server to connect to";
- 		
- 		$this->_arrModuleConfig['Username']		['Default']		= '';
- 		$this->_arrModuleConfig['Username']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Username']		['Description']	= "FTP Username";
- 		
- 		$this->_arrModuleConfig['Password']		['Default']		= '';
- 		$this->_arrModuleConfig['Password']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Password']		['Description']	= "FTP Password";
- 		
- 		$this->_arrModuleConfig['PathDefine']	['Default']		= Array();
- 		$this->_arrModuleConfig['PathDefine']	['Type']		= DATA_TYPE_ARRAY;
- 		$this->_arrModuleConfig['PathDefine']	['Description']	= "Directory to drop the file in";
+ 		$this->_selFileExists = new StatementSelect("FileDownload", "Id", "FileName = <filename>");
  	}
  	
  	//------------------------------------------------------------------------//
@@ -98,35 +136,47 @@
 	 *
 	 * Connects to FTP server using passed definition
 	 *
-	 * @return	mixed									TRUE: Pass; string: Error
+	 * @return		boolean
 	 *
 	 * @method
 	 */
- 	function Connect()
+ 	function Connect($arrDefine)
  	{
-		$strHost		= $this->GetConfigField('Host');
-		$strUsername	= $this->GetConfigField('Username');
-		$strPassword	= $this->GetConfigField('Password');
+		// Connect to the remote server
+		if (($this->_resConnection = ftp_connect($arrDefine["Server"])) === FALSE)
+		{
+			return FALSE;
+		}
 		
-		// Connect to the Server
-		$this->_resConnection	= ($this->GetConfigField('SFTP') === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
-		if ($this->_resConnection)
+		// Login using passed details
+		if (!ftp_login($this->_resConnection, $arrDefine["Username"], $arrDefine["PWord"]))
 		{
-			// Log in to the Server
-			if (@ftp_login($this->_resConnection, $strUsername, $strPassword))
-			{
-				// Retrieve full file listing
-				$this->_GetDownloadPaths();
-			}
-			else
-			{
-				return "Could not log in to server with Username '$strUsername' and Password '".str_repeat('*', strlen($strPassword))."'";
-			}
+			return FALSE;
 		}
-		else
+		
+		// get connection type
+		$this->_strConnectionType = ftp_systype($this->_resConnection);
+		
+		// Set private copy of arrDefine
+		$this->_arrDefine = $arrDefine;
+
+		// If the directory passed to us is just a string, convert it to an array so we can
+		// handle directories uniformly
+		if (is_string($this->_arrDefine['Dir']))
 		{
-			return "Could not connect to server '$strHost'";
+			$this->_arrDefine['Dir'] = Array($this->_arrDefine['Dir']);
 		}
+		
+		// Set the directory
+		reset($this->_arrDefine['Dir']);
+		if (current($this->_arrDefine['Dir']))
+		{
+			ftp_chdir($this->_resConnection, current($this->_arrDefine['Dir']));
+		}
+		//Debug("Starting directory: ".current($this->_arrDefine['Dir']));
+		// Get our first list of files
+		$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."), $this->_strConnectionType);
+		return TRUE;
  	}
  	
   	//------------------------------------------------------------------------//
@@ -257,52 +307,82 @@
  	}
  	
   	//------------------------------------------------------------------------//
-	// _GetDownloadPaths
+	// ParseRawList
 	//------------------------------------------------------------------------//
 	/**
-	 * _GetDownloadPaths()
+	 * ParseRawList()
 	 *
-	 * Gets a full list of all files to download
+	 * Parses ftp_rawlist()
 	 *
-	 * Gets a full list of all files to download
+	 * Parses an array containing results from ftp_rawlist()
+	 *
+	 * @param		array		$arrRawList			Array to parse
+	 * @param		string		$strType			connection type
 	 * 
-	 * @return		array							Array of files to download
+	 * @return		array							Cleaned array
 	 *
 	 * @method
 	 */
-	protected function _GetDownloadPaths()
+	function ParseRawlist($arrRawList, $strType = 'Unix')
 	{
-		// Get Path Definitions
-		$arrDefinitions	= $this->GetConfigField('PathDefine');
-		
-		foreach ($arrDefinitions as $intFileType=>$arrFileType)
+		$arrCleanList = Array();
+		foreach($arrRawList as $strFile)
 		{
-			foreach ($arrFileType['Paths'] as $strPath)
+			switch ($strType)
 			{
-				// Get the directory listing for this
-				$arrFiles	= @ftp_nlist($this->_resConnection, "-F $strPath");
-				
-				// Filter file names that we don't want
-				foreach ($arrFiles as $strPath)
-				{
-					if (substr(trim($strPath), -1) === '/')
+				case "Windows_NT":
+					ereg("([0-9]{2})-([0-9]{2})-([0-9]{2}) +([0-9]{2}):([0-9]{2})(AM|PM) +([0-9]+|<DIR>) +(.+)", $strFile, $arrSplit);
+					if (is_array($arrSplit))
 					{
-						// This is a directory, ignore
-						continue;
+						// 4digit year fix
+						if ($arrSplit[3]<70)
+						{
+							$arrSplit[3]+=2000;
+						}
+						else
+						{
+							$arrSplit[3]+=1900;
+						} 
+						
+						// type
+						if ($arrSplit[7]=="<DIR>")
+						{
+							$arrFile['Type']	= 'd';
+						}
+						else
+						{
+							$arrFile['Type']	= '-';
+						}
+						$arrFile['Size']		= $arrSplit[7];
+						$arrFile['Month']		= $arrSplit[1];
+						$arrFile['Day']			= $arrSplit[2];
+						$arrFile['TimeYear']	= $arrSplit[3];
+						$arrFile['Name']		= $arrSplit[8];
 					}
+					break;
 					
-					// Does this file match our REGEX?
-					if (!preg_match($arrFileType['Regex'], trim($strPath)))
-					{
-						// No match
-						continue;
-					}
-					
-					// As far as we can tell, this file is valid
-					$this->_arrDownloadPaths[]	= trim($strPath);
-				}
+				default:
+					$arrFile = array();
+					$arrSplit = preg_split("/[ ]+/", $strFile, 9);
+			
+					$arrFile['Type']				= $arrSplit[0]{0};
+					$arrFile['Permissions']			= $arrSplit[0];
+					$arrFile['Number']				= $arrSplit[1];
+					$arrFile['Owner']				= $arrSplit[2];
+					$arrFile['Group']				= $arrSplit[3];
+					$arrFile['Size']				= $arrSplit[4];
+					$arrFile['Month']				= $arrSplit[5];
+					$arrFile['Day']					= $arrSplit[6];
+					$arrFile['TimeYear']			= $arrSplit[7];
+					$arrFile['Raw']					= $strFile;
+					$arrFile['FullName']			= $arrSplit[8];
+					$arrFile['Name']				= array_shift(explode(' -> ', $arrSplit[8]));
 			}
+			$arrCleanList[$arrFile['Name']]	= $arrFile;
 		}
+		array_unshift($arrCleanList, FALSE);
+		return $arrCleanList;
+		
 	}
 }
 

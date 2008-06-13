@@ -164,15 +164,15 @@ class ApplicationCollection extends ApplicationBaseClass
 							foreach ($arrResult['Files'] as $strFilePath)
 							{
 								// Import into Flex
-								$arrImportResult	= $this->ImportFile($modModule, $strFilePath);
-								if ($arrImportResult['Pass'])
+								$mixImportResult	= $this->ImportFile($modModule, $strFilePath);
+								if (is_int($mixImportResult))
 								{
 									CliEcho("[   OK   ]");
 								}
 								else
 								{
 									CliEcho("[ FAILED ]");
-									CliEcho("\t\t\t\t\t\t -- ".$arrImportResult['Message']);
+									CliEcho("\t\t\t\t\t\t -- $mixImportResult");
 								}
 							}
 						}
@@ -202,7 +202,54 @@ class ApplicationCollection extends ApplicationBaseClass
 		}
 		
 		// TAR-BZ2 all downloaded files
-		// TODO
+		$strDownloadDir	= FILES_BASE_PATH."download/";
+		$strTARDir		= $strDownloadDir."archived/";
+		$strTARFile		= $strTARDir.date("Ymdhis")."tar";
+		$strTARBZ2File	= $strTARDir.date("Ymdhis")."tar.bz2";
+		$strTARCommand	= "tar -cvf $strTARFile $strDownloadDir";
+		$strBZ2Command	= "bzip2 $strTARFile";
+		
+		CliEcho("\n * Archiving Downloaded Files to '".basename($strTARFile)."'...\t\t\t", FALSE);
+		$intTARReturn	= NULL;
+		$intBZ2Return	= NULL;
+		exec($strTARCommand, NULL, $intTARReturn);
+		if (!$intTARReturn && file_exists($strTARFile))
+		{
+			CliEcho("[   OK   ]");
+			
+			// TAR succeeded, so BZ2 it
+			CliEcho("\n * Compressing Archive to '".basename($strTARBZ2File)."'...\t\t\t", FALSE);
+			exec($strBZ2Command, NULL, $intBZ2Return);
+			if (!$intBZ2Return && file_exists($strTARBZ2File))
+			{
+				// BZ2 succeeded
+				CliEcho("[   OK   ]");
+			}
+			else
+			{
+				CliEcho("[ FAILED ]");
+				CliEcho("\t -- Code '$intBZ2Return' returned");
+			}
+			
+			// If we have successfully Archived (even if not compressed), then remove the raw files
+			CliEcho("\n * Removing Raw Downloaded Files...\t\t\t\t", FALSE);
+			$arrIgnoredDirectories	= Array("archived");
+			$arrDirectories			= glob($strDownloadDir, GLOB_ONLYDIR);
+			foreach ($arrDirectories as $strDirectory)
+			{
+				if (!in_array($strDirectory, $arrIgnoredDirectories))
+				{
+					exec("rm -R $strDirectory");
+				}
+			}
+			CliEcho("[   OK   ]");
+		}
+		else
+		{
+			CliEcho("[ FAILED ]");
+			CliEcho("\t -- Code '$intTARReturn' returned");
+		}
+		CliEcho('');
 	}
 	
 	//------------------------------------------------------------------------//
@@ -217,48 +264,72 @@ class ApplicationCollection extends ApplicationBaseClass
 	 * 
 	 * 
 	 *
-	 * @return	array							['Pass']	: TRUE/FALSE
-	 * 											['Message']	: Error Message
+	 * @return	mixed								integer: Insert Id; string: Error message
 	 *
 	 * @method
 	 */
 	function ImportFile(&$modCarrierModule, $strFilePath)
 	{
+		// Set initial File Status
+		$arrFileImport	= Array();
+		$arrFileImport['Status']		= FILE_IMPORTED;
+		
 		// Determine File Type
 		if (($arrFileType = $modCarrierModule->GetFileType($strFilePath)) === FALSE)
 		{
 			// Unknown File Type
-			// TODO
+			$arrFileImport['Status']	= FILE_UNKNOWN_TYPE;
 		}
-		
-		// Copy to final location
-		$intCarrier		= $modCarrierModule->intCarrier;
-		$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($arrFileType['FileImportType'], 'FileImport').'/';
-		$strNewFileName	= basename($strFilePath);
-		$strDestination	.= $strFilePath;
-		if (!copy($strFilePath, $strDestination))
+		else
 		{
-			// Unable to copy
-			// TODO
-		}
-		
-		// Check uniqueness
-		$arrWhere				= Array();
-		$arrWhere['SHA1']		= sha1_file($strFilePath);
-		$arrWhere['FileName']	= basename($strFilePath);
-		$selFileUnique	= new StatementSelect("FileImport", "Id", $arrFileType['Uniqueness']);
-		if ($selFileUnique->Execute($arrWhere))
-		{
-			// Not Unique
-			// TODO
-		}
+			// Copy to final location
+			$intCarrier		= $modCarrierModule->intCarrier;
+			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($arrFileType['FileImportType'], 'FileImport').'/';
+			$strNewFileName	= basename($strFilePath);
+			$strDestination	.= $strFilePath;
+			if (!copy($strFilePath, $strDestination))
+			{
+				// Unable to copy
+				$arrFileImport['Status']	= FILE_MOVE_FAILED;
+			}
+			else
+			{
+				// Check uniqueness
+				$arrWhere				= Array();
+				$arrWhere['SHA1']		= sha1_file($strFilePath);
+				$arrWhere['FileName']	= basename($strFilePath);
+				$selFileUnique	= new StatementSelect("FileImport", "Id", $arrFileType['Uniqueness']);
+				if ($selFileUnique->Execute($arrWhere))
+				{
+					// Not Unique
+					$arrFileImport['Status']	= FILE_NOT_UNIQUE;
+				}
+			}
+		}		
 		
 		// Insert into FileImport
-		$arrFileImport	= Array();
-		$intInsertId	= $insFileImport->Execute($arrFileImport);
+		$arrFileImport['FileName']		= $arrWhere['FileName'];
+		$arrFileImport['Location']		= $strFilePath;
+		$arrFileImport['Carrier']		= $modCarrierModule->intCarrier;
+		$arrFileImport['ImportedOn']	= date("Y-m-d H:i:s");
+		$arrFileImport['FileType']		= $arrFileType['FileImportType'];
+		$arrFileImport['SHA1']			= $arrWhere['SHA1'];
+		if (($intInsertId = $insFileImport->Execute($arrFileImport)) === FALSE)
+		{
+			// Unable to Import
+			return "Import Failed";
+		}
 		
-		// Return the Insert Id
-		return $intInsertId;
+		if ($arrFileImport['Status'] === FILE_IMPORTED)
+		{
+			// Return the Insert Id
+			return $intInsertId;
+		}
+		else
+		{
+			// Return error message
+			return GetConstantDescription($arrFileImport['Status'], 'FileStatus');
+		}
 	}
 }
 ?>
