@@ -169,7 +169,7 @@
 						</td>
 						<td>
 							<strong>Manage Customer Groups</strong><br />
-							Upload new marketting images.
+							Upload new marketing images.
 						</td>
 					</tr>
 				</xsl:when>
