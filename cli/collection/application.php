@@ -109,7 +109,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				CliEcho("\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResourceType'));
 				
 				// Download paths
-				$strDownloadPath	= FILES_BASE_PATH."download/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intResourceType, 'FileResourceType').'/';
+				$strDownloadDirectory	= FILES_BASE_PATH."download/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intResourceType, 'FileResourceType').'/';
 				
 				// Connect to the Source
 				CliEcho("\t\t\t * Connecting to Repository...\t\t\t", FALSE);
@@ -121,70 +121,79 @@ class ApplicationCollection extends ApplicationBaseClass
 					// Download all new files
 					$intTotal	= 0;
 					CliEcho("\t\t\t * Downloading new files...\n");
-					while ($strDownloadPath	= $modModule->Download())
+					while ($mixDownloadFile	= $modModule->Download($strDownloadDirectory))
 					{
-						$strFileName	= basename($strDownloadPath);
-						$intSize		= filesize($strDownloadPath) / 1024;
-						
-						CliEcho("\t\t\t\t + $strFileName ({$intSize}KB)");
-						
-						// Unpack this file
-						CliEcho("\t\t\t\t * Unpacking Archive...", FALSE);
-						$strPassword	= $modModule->GetConfigField('ArchivePassword');
-						$strUnzipPath	= $strDownloadPath.basename($strDownloadPath).'_temp';
-						$arrResult		= UnpackArchive($strDownloadPath, $strUnzipPath, TRUE, $strPassword);
-						if (is_string($arrResult))
+						if (is_string($mixDownloadFile))
 						{
-							// Error
-							CliEcho("[ FAILED ]");
-							CliEcho("\t\t\t\t\t -- $arrResult");
+							CliEcho("\t\t\t\t ERROR: $mixDownloadFile");
 							continue;
 						}
-						elseif ($arrResult['Processed'])
-						{
-							CliEcho("[   OK   ]");
-						}
 						else
 						{
-							CliEcho("[  SKIP  ]");
-						}
-						
-						CliEcho("\t\t\t\t\t > Importing ".basename($strDownloadPath)."...", FALSE);
-						
-						// Insert into FileDownload table
-						$arrFileDownload	= Array();
-						$arrFileDownload['FileName']	= basename($strDownloadPath);
-						$arrFileDownload['Location']	= $strDownloadPath;
-						$arrFileDownload['Carrier']		= $intCarrier;
-						$arrFileDownload['CollectedOn']	= date("Y-m-d H:i:s");
-						$arrFileDownload['Status']		= FILE_COLLECTED;
-						if (($arrFileDownload['Id'] = $insFileDownload->Execute($arrFileDownload)) !== FALSE)
-						{
-							// Process each file
-							foreach ($arrResult['Files'] as $strFilePath)
+							$strDownloadPath	= $mixDownloadFile['LocalPath'];
+							$strFileName		= basename($strDownloadPath);
+							$intSize			= filesize($strDownloadPath) / 1024;
+							
+							CliEcho("\t\t\t\t + $strFileName ({$intSize}KB)");
+							
+							// Unpack this file
+							CliEcho("\t\t\t\t * Unpacking Archive...", FALSE);
+							$strPassword	= $modModule->GetConfigField('ArchivePassword');
+							$strUnzipPath	= $strDownloadDirectory.basename($strDownloadPath).'_temp';
+							$arrResult		= UnpackArchive($strDownloadPath, $strUnzipPath, TRUE, $strPassword);
+							if (is_string($arrResult))
 							{
-								// Import into Flex
-								$mixImportResult	= $this->ImportFile($modModule, $strFilePath);
-								if (is_int($mixImportResult))
+								// Error
+								CliEcho("[ FAILED ]");
+								CliEcho("\t\t\t\t\t -- $arrResult");
+								continue;
+							}
+							elseif ($arrResult['Processed'])
+							{
+								CliEcho("[   OK   ]");
+							}
+							else
+							{
+								CliEcho("[  SKIP  ]");
+							}
+							
+							// Insert into FileDownload table
+							$arrFileDownload	= Array();
+							$arrFileDownload['FileName']	= basename($strDownloadPath);
+							$arrFileDownload['Location']	= $strDownloadPath;
+							$arrFileDownload['Carrier']		= $intCarrier;
+							$arrFileDownload['CollectedOn']	= date("Y-m-d H:i:s");
+							$arrFileDownload['Status']		= FILE_COLLECTED;
+							if (($arrFileDownload['Id'] = $insFileDownload->Execute($arrFileDownload)) !== FALSE)
+							{
+								// Process each file
+								foreach ($arrResult['Files'] as $strFilePath)
 								{
-									CliEcho("[   OK   ]");
-								}
-								else
-								{
-									CliEcho("[ FAILED ]");
-									CliEcho("\t\t\t\t\t\t -- $mixImportResult");
+									CliEcho("\t\t\t\t\t > Importing ".basename($strFilePath)."...", FALSE);
+									
+									// Import into Flex
+									$mixImportResult	= $this->ImportModuleFile($strFilePath, $modModule);
+									if (is_int($mixImportResult))
+									{
+										CliEcho("[   OK   ]");
+									}
+									else
+									{
+										CliEcho("[ FAILED ]");
+										CliEcho("\t\t\t\t\t\t -- $mixImportResult");
+									}
 								}
 							}
+							else
+							{
+								// MySQL Error
+								CliEcho("[ FAILED ]");
+								CliEcho("\t\t\t\t\t\t -- ".$insFileDownload->Error());
+							}
+							
+							// Cleanup Archive directory
+							@rmdir($strUnzipPath);
 						}
-						else
-						{
-							// MySQL Error
-							CliEcho("[ FAILED ]");
-							CliEcho("\t\t\t\t\t\t -- ".$insFileDownload->Error());
-						}
-						
-						// Cleanup Archive directory
-						@rmdir($strUnzipPath);
 					}
 				}
 				elseif (is_string($mixResult))
@@ -253,6 +262,38 @@ class ApplicationCollection extends ApplicationBaseClass
 	}
 	
 	//------------------------------------------------------------------------//
+	// ImportModuleFile
+	//------------------------------------------------------------------------//
+	/**
+	 * ImportModuleFile()
+	 *
+	 * Imports a file into Flex using information from a passed CarrierModule
+	 *
+	 * Imports a file into Flex using information from a passed CarrierModule
+	 * 
+	 * 
+	 *
+	 * @return	mixed								integer: Insert Id; string: Error message
+	 *
+	 * @method
+	 */
+	function ImportModuleFile($strFilePath, &$modCarrierModule)
+	{
+		// Determine File Type
+		if (($arrFileType = $modCarrierModule->GetFileType($strFilePath)) === FALSE)
+		{
+			// Unknown File Type
+			$arrFileType					= Array();
+			return ApplicationCollection::ImportFile($strFilePath, NULL, $modCarrierModule->intCarrier);
+		}
+		else
+		{
+			// Known File Type
+			return ApplicationCollection::ImportFile($strFilePath, $arrFileType['FileImportType'], $modCarrierModule->intCarrier, $arrFileType['Uniqueness']);
+		}
+	}
+	
+	//------------------------------------------------------------------------//
 	// ImportFile
 	//------------------------------------------------------------------------//
 	/**
@@ -262,20 +303,23 @@ class ApplicationCollection extends ApplicationBaseClass
 	 *
 	 * Imports a file into Flex
 	 * 
-	 * 
+	 * @param	string	$strFilePath					Full Path to the file to be imported
+	 * @param	integer	$intFileType					The FileImport type for the file
+	 * @param	integer	$intCarrier						The Carrier from where this file originated
+	 * @param	string	$strUniqueness		[optional]	SQL WHERE Clause on the FileImport table, where a positive match means that the file already exists in Flex; default: FileName or SHA1 must be unique
 	 *
-	 * @return	mixed								integer: Insert Id; string: Error message
+	 * @return	mixed									integer: Insert Id; string: Error message
 	 *
 	 * @method
 	 */
-	function ImportFile(&$modCarrierModule, $strFilePath)
+	static function ImportFile($strFilePath, $intFileType, $intCarrier, $strUniqueness = "FileName = <FileName> AND SHA1 = <SHA1>")
 	{
 		// Set initial File Status
 		$arrFileImport	= Array();
 		$arrFileImport['Status']		= FILE_IMPORTED;
 		
 		// Determine File Type
-		if (($arrFileType = $modCarrierModule->GetFileType($strFilePath)) === FALSE)
+		if (GetConstantName($intFileType, 'FileImport') === FALSE)
 		{
 			// Unknown File Type
 			$arrFileImport['Status']	= FILE_UNKNOWN_TYPE;
@@ -283,8 +327,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		else
 		{
 			// Copy to final location
-			$intCarrier		= $modCarrierModule->intCarrier;
-			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($arrFileType['FileImportType'], 'FileImport').'/';
+			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intFileType['FileImportType'], 'FileImport').'/';
 			$strNewFileName	= basename($strFilePath);
 			$strDestination	.= $strFilePath;
 			if (!copy($strFilePath, $strDestination))
@@ -298,21 +341,21 @@ class ApplicationCollection extends ApplicationBaseClass
 				$arrWhere				= Array();
 				$arrWhere['SHA1']		= sha1_file($strFilePath);
 				$arrWhere['FileName']	= basename($strFilePath);
-				$selFileUnique	= new StatementSelect("FileImport", "Id", $arrFileType['Uniqueness']);
+				$selFileUnique	= new StatementSelect("FileImport", "Id", $strUniqueness);
 				if ($selFileUnique->Execute($arrWhere))
 				{
 					// Not Unique
 					$arrFileImport['Status']	= FILE_NOT_UNIQUE;
 				}
 			}
-		}		
+		}
 		
 		// Insert into FileImport
 		$arrFileImport['FileName']		= $arrWhere['FileName'];
 		$arrFileImport['Location']		= $strFilePath;
 		$arrFileImport['Carrier']		= $modCarrierModule->intCarrier;
 		$arrFileImport['ImportedOn']	= date("Y-m-d H:i:s");
-		$arrFileImport['FileType']		= $arrFileType['FileImportType'];
+		$arrFileImport['FileType']		= $intFileType;
 		$arrFileImport['SHA1']			= $arrWhere['SHA1'];
 		if (($intInsertId = $insFileImport->Execute($arrFileImport)) === FALSE)
 		{
