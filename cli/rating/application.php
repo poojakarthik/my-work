@@ -252,7 +252,29 @@
 		$this->_selRate	= new StatementSelect(	"((ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup) JOIN RateGroupRate ON RateGroupRate.RateGroup = RateGroup.Id) JOIN Rate ON Rate.Id = RateGroupRate.Rate",
 												"Rate.*, ServiceRateGroup.StartDatetime, ServiceRateGroup.EndDatetime",
 												$strWhere,
-												"(RateGroup.Fleet = Rate.Fleet) DESC");
+												"(RateGroup.Fleet = Rate.Fleet) DESC, ServiceRateGroup.StartDatetime DESC");
+		
+		$this->_selCDRTotalDetails	= new StatementSelect("Service LEFT JOIN CDR ON Service.Id = CDR.Service", "cdr_count, cdr_amount, discount_start_datetime, COUNT(CDR.Id) AS new_cdr_count, SUM(CDR.Charge) AS new_cdr_amount", "Service.Id = <Service> AND CDR.Credit = 0 AND CDR.Status = 150", NULL, NULL, "Service.Id");
+		
+		$arrCols			= Array();
+		$arrCols['Status']	= CDR_RERATE;
+		$this->_updReRateService	= new StatementUpdate("CDR", "Service = <Service>", $arrCols);
+		
+		$this->_selRatePlan			= new StatementSelect(	"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan",
+															"RatePlan.*",
+															"Active = 1 AND <StartDatetime> BETWEEN StartDatetime AND EndDatetime",
+															"ServiceRatePlan.CreatedOn DESC",
+															"1");
+		
+		$arrCols	= Array();
+		$arrCols['Status']				= CDR_RERATE;
+		$this->_updReRateDiscountCDRs	= new StatementSelect(	"CDR",
+														"Service = <Service> AND Status = 150 AND StartDatetime >= <StartDatetime>",
+														$arrCols);
+		
+		$arrService	= Array();
+		$arrService['discount_start_datetime']	= NULL;
+		$this->_ubiDiscountStartDatetime	= new StatementUpdateById("Service", $arrService);
  	}
  	
 	//------------------------------------------------------------------------//
@@ -296,6 +318,31 @@
 		$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
 		
 		//Debug($arrCDR);
+		
+		// Does this call qualify for a discount?
+		$arrCDRTotalDetails	= Array();
+		$bolDiscount		= FALSE;
+		if (!$this->_selCDRTotalDetails->Execute($this->_arrCurrentCDR))
+		{
+			// Error
+			CliEcho("Service {$this->_arrCurrentCDR['Service'] not found!}");
+			return FALSE;
+		}
+		else
+		{
+			$arrCDRTotalDetails	= $this->_selCDRTotalDetails->Fetch();
+			
+			// Is the current CDR older than the latest CDR in the cap?
+			if ($arrCDRTotalDetails['discount_start_datetime'] !== NULL && strtotime($arrCDRTotalDetails['discount_start_datetime']) > strtotime($this->_arrCurrentCDR['StartDatetime']))
+			{
+				// Because this is only for debug, we can just assume that this CDR would be in the Cap, and therefore not discounted
+				$bolDiscount	= FALSE;
+			}
+			else
+			{
+				$bolDiscount	= TRUE;
+			}
+		}
 
 		// set current CDR
 		$this->_arrCurrentCDR = $arrCDR;
@@ -339,9 +386,26 @@
 				//Debug("_CalculateProrate() Failed!");
 				return FALSE;
 			}
-
+			
 			// Rounding
 			$this->_Rounding();
+		}
+		
+		// Has the Service reached its cap?
+		$this->_selRatePlan->Execute($this->_arrCurrentCDR);
+		$arrRatePlan	= $this->_selRatePlan->Fetch();
+		if ($bolDiscount && ($arrRatePlan['discount_cap'] !== NULL))
+		{
+			if (((float)$arrCDRTotalDetails['cdr_amount_new']) >= ((float)$arrRatePlan['discount_cap']))
+			{
+				// Apply the discount
+				if ($this->_arrCurrentRate['discount_percentage'])
+				{
+					$dp				= (float)$this->_arrCurrentRate['discount_percentage'];
+					$fltDiscount	= $fltCharge * $dp;
+					$fltCharge		= $fltCharge - $$fltDiscount;
+				}
+			}
 		}
 		
 		if ($bolReturnCDR)
@@ -373,6 +437,14 @@
 	 */
 	 function Rate($bolOnlyNew = FALSE)
 	 {
+		// Is there a Bill Run active?
+		$selInvoiceTemp	= new StatementSelect("InvoiceTemp", "Id", "1", NULL, 1);
+		if ($selInvoiceTemp->Execute())
+		{
+			CliEcho("WARNING: Rating will not run while there is a Temporary Invoice Run active!");
+			return FALSE;
+		}
+		
 		$strWhere = "Status = ".CDR_NORMALISED;	
 		if (!$bolOnlyNew)
 		{
@@ -390,7 +462,7 @@
 		unset($arrColumns['SequenceNo']);
 		$arrColumns['Id'] = 0;
 		//$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
-		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, NULL, "1000");
+		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime ASC", "1000");
 		
 	 	// get list of CDRs to rate (limit results to 1000)
 	 	$this->_selGetCDRs->Execute();
@@ -467,6 +539,61 @@
 				continue;
 			}
 			
+			// Does this call qualify for a discount?
+			$arrCDRTotalDetails	= Array();
+			$bolDiscount		= FALSE;
+			if (!$this->_selCDRTotalDetails->Execute($this->_arrCurrentCDR))
+			{
+				// Error
+				CliEcho("Service {$this->_arrCurrentCDR['Service']} not found!");
+				$intFailed++;
+				continue;
+			}
+			else
+			{
+				$arrCDRTotalDetails	= $this->_selCDRTotalDetails->Fetch();
+				
+				// Is the current CDR older than the latest CDR in the cap?
+				if ($arrCDRTotalDetails['discount_start_datetime'] !== NULL && strtotime($arrCDRTotalDetails['discount_start_datetime']) > strtotime($this->_arrCurrentCDR['StartDatetime']))
+				{
+					// Hold up, we have a CDR that is older than the last CDR in the Discount Cap
+					// This means we need to rerate every CDR on or after this StartDatetime (including this CDR)
+					$arrCols					= Array();
+					$arrCols['Status']			= CDR_RERATE;
+					$arrWhere					= Array();
+					$arrWhere['StartDatetime']	= $this->_arrCurrentCDR['StartDatetime'];
+					$arrWhere['Service']		= $this->_arrCurrentCDR['Service'];
+					if ($this->_updReRateDiscountCDRs->Execute($arrCols, $arrWhere) === FALSE)
+					{
+						// Error
+						CliEcho("\$updReRateDiscountCDRs failed: ".$updReRateDiscountCDRs->Error());
+						$intFailed++;
+						continue;
+					}
+					
+					// We also need to update the Service to reflect the new discount_start_datetime
+					$arrService	= Array();
+					$arrService['Id']						= $this->_arrCurrentCDR['Service'];
+					$arrService['discount_start_datetime']	= $this->_arrCurrentCDR['StartDatetime'];
+					if ($this->_ubiDiscountStartDatetime->Execute($arrService) === FALSE)
+					{
+						// Error
+						CliEcho("\$ubiDiscountStartDatetime failed: ".$this->_ubiDiscountStartDatetime->Error());
+						$intFailed++;
+						continue;
+					}
+					
+					CliEcho("Service {$this->_arrCurrentCDR['Service']} is being rerated from {$this->_arrCurrentCDR['StartDatetime']}");
+					continue;
+				}
+				else
+				{
+					// Nothing needs to be rerated
+					$bolDiscount	= TRUE;
+				}
+			}
+			
+			// Calculate Charge from Rate
 			if ($this->_arrCurrentRate['PassThrough'])
 			{
 				// Calculate Passthrough rate
@@ -536,9 +663,41 @@
 					continue;
 				}
 			}
-				// Rounding
-				$fltCharge = $this->_Rounding();
-				
+			
+			// Has the Service reached its cap?
+			$this->_selRatePlan->Execute($this->_arrCurrentCDR);
+			$arrRatePlan	= $this->_selRatePlan->Fetch();
+			if ($bolDiscount && ($arrRatePlan['discount_cap'] !== NULL))
+			{
+				if (((float)$arrCDRTotalDetails['cdr_amount_new']) >= ((float)$arrRatePlan['discount_cap']))
+				{
+					// Apply the discount
+					if ($this->_arrCurrentRate['discount_percentage'])
+					{
+						$dp				= (float)$this->_arrCurrentRate['discount_percentage'];
+						$fltDiscount	= $fltCharge * $dp;
+						$fltCharge		= $fltCharge - $$fltDiscount;
+					}
+				}
+				else
+				{
+					// Update the Service to reflect the lastest CDR in the discount cap
+					$arrService	= Array();
+					$arrService['Id']						= $this->_arrCurrentCDR['Service'];
+					$arrService['discount_start_datetime']	= $this->_arrCurrentCDR['StartDatetime'];
+					if ($this->_ubiDiscountStartDatetime->Execute($arrService) === FALSE)
+					{
+						// Error
+						CliEcho("\$ubiDiscountStartDatetime failed: ".$this->_ubiDiscountStartDatetime->Error());
+						$intFailed++;
+						continue;
+					}
+				}
+			}
+			
+			// Rounding
+			$fltCharge = $this->_Rounding();
+			
 			// Update Service & Account Totals
 			$mixResult = $this->_UpdateTotals($arrCDR['Service']);
 			if ($mixResult === FALSE)
@@ -806,55 +965,7 @@
 		
 		// return something
 		return $this->_arrCurrentRate;
-	 }
-	 
- 
-	//------------------------------------------------------------------------//
-	// _FindServiceByFNN
-	//------------------------------------------------------------------------//
-	/**
-	 * _FindServiceByFNN()
-	 *
-	 * Find the Id for a Service (by FNN)
-	 *
-	 * Find the Id for a Service (by FNN).  Returns the most recently created service as of $Date
-	 * with the specified FNN.
-	 *
-	 * @param	str		$strFNN		Service FNN
-	 * @param	str		$strDate	optional Date to check on
-	 *	 
-	 * @return	mixed	int			Service Id
-	 * 					bool		FALSE if Service not found
-	 * @method
-	 */
-	 private function _FindServiceByFNN($strFNN, $strDate)
-	 {
-	 	// return FALSE if invalid FNN
-		if ((int)$strFNN == 0)
-		{
-			return FALSE; 
-		}
-		
-		// correct missing date
-		if ((int)$strDate == 0)
-		{
-			$strDate = "0000-00-00 00:00:00"; 
-		}
-		
-		// set prefix
-		$strPrefix = substr($strFNN, 0, -2).'__';
-		
-	 	// find Service (ignores achived services, accounts for Indial 100s)
-	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate, 'Prefix' => $strPrefix));
-		if ($arrService = $this->_selServiceByFNN->Fetch())
-		{
-			return $arrService['Id'];
-		}
-		
-		// return FALSE if Account not found
-		return FALSE;
-	 }
-	 
+	 }	 
 	 
 	//------------------------------------------------------------------------//
 	// _Rounding
@@ -1177,8 +1288,7 @@
 		$f	= $this->_arrCurrentRate[$strType.'Flagfall'];		// flagfall
 		$p	= $this->_arrCurrentRate[$strType.'Percentage'];	// percentage markup
 		$d	= $this->_arrCurrentRate[$strType.'Markup'];		// dollar markup per unit
-		$u	= $this->_arrCurrentRate[$strType.'Units'];			// units to charge in
-		
+		$u	= $this->_arrCurrentRate[$strType.'Units'];			// units to charge in		
 		// ------------------------------------------------ //
 		
 		// ------------------------------------------------ //
