@@ -46,7 +46,10 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 				VALUES ($intInvoiceDay, 		$intPaymentTerms, 			$intOverdueDays, 
 						$intSuspensionDays, 	$intFinalDemandDays, 		$intAutomaticBarringDays)";
 
-		$qryQuery->Execute($strSQL);
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to populate payment_terms table. ' . mysqli_errno() . '::' . mysqli_error());
+		}
 	}
 
 	public function getInteger($message)
