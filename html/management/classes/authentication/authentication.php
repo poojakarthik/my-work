@@ -83,10 +83,17 @@
 			if ($_SESSION['LoggedIn'] && $_SESSION['SessionExpire'] > time())
 			{
 				// Mark the Session as Authenticated
-				$this->aemAuthenticatedEmployee = $this->Push (new AuthenticatedEmployee);
-
-				// Revalidate the session so they can have another 20 minutes (or 7 days if GOD)
-				$_SESSION['SessionExpire'] = time() + ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? (60 * 60 * 24 * 7) : (60 * 20));
+				try
+				{
+					$this->aemAuthenticatedEmployee = $this->Push (new AuthenticatedEmployee);
+	
+					// Revalidate the session so they can have another 20 minutes (or 7 days if GOD)
+					$_SESSION['SessionExpire'] = time() + ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? (60 * 60 * 24 * 7) : (60 * 20));
+				}
+				catch(Exception $e)
+				{
+					$_SESSION['LoggedIn'] = FALSE;
+				}
 			}
 			else
 			{
