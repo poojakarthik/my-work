@@ -1,0 +1,55 @@
+Notes regarding the Invoices and Payments page
+
+with the radio buttons, NULL must equate to Zero. (0 == Charge a late payment fee)
+(DONE)
+
+Also when the apply changes is pressed a popup should tell the user that the changes have been saved.
+(this could be done by having the page object accept some javascript which it runs once the page has been rendered.
+Once the page is rendered, you could just display a popup.)
+This could be rendered in the render footer.
+OR I could just change the "Apply Changes" button to do an AJAX submit instead of a regular submit
+(DONE)
+
+Everything on the page should be inclusive of GST (Make sure everything is)
+
+
+The automatic notes relating to delete operations should be more descriptive.
+And also, possibly the popup description where you can manually specify a note.
+(DONE)
+
+There might be an issue with hitting backspace when you are typing in a textbox.
+(There isn't an issue with this)
+
+
+TODO!
+The UIAppDocumentation tables will have to be updated on catwalk
+
+
+Make sure that the Make Payments popup can handle an account not having an account group
+check account: 1000008111
+The current way that the combo box is set up in HtmlTemplatePaymentAdd, it will not include the option to apply the payment
+to an entire group, if there is only 1 account belonging to the account group.
+(NOT FIXED BECAUSE NOT BROKEN TO BEING WITH)
+
+
+In the add adjustment popup, only the most recent 6 invoices should be in the invoice popup.  Currently they are all being added to the combo.
+(FIXED)
+
+
+Have icons for the status of invoices.
+(NOT DONE)
+
+
+DO THIS!!!
+What about denoting manditory fields?
+(DONE)
+
+
+TODO!! TOMORROW!!!
+That thing that is on the board.
+which is:
+	Have a special image where the delete button should be for payment records that satisfy the conditions:
+	(Payment.Balance == 0) && (Payment.Status == Finished) && 
+	(has no attached invoices (Payment <--> InvoicePayment <--> Invoice)) <-- (that is to say the payment is not connected to an invoice
+										but it can be connected to an invoicePayment record)
+(DONE)

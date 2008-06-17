@@ -1,0 +1,57 @@
+TODO ON MONDAY!!! TODO ON MONDAY!!! TODO ON MONDAY!!! TODO ON MONDAY!!! TODO ON MONDAY!!!
+Finish the javascript for the Add Recurring Adjustments popup.  Make it work exactly like the existing one.
+TODO ON MONDAY!!! TODO ON MONDAY!!! TODO ON MONDAY!!! TODO ON MONDAY!!! TODO ON MONDAY!!!
+
+
+Get the alignment and widths working for the vixen tables
+(Nathan is working on this)
+
+
+Things to do today
+Fix the AddCommand calls that I have used in the app templates
+(DONE)
+
+Fix the checking of permissions hack that I have included in most things
+(DONE but not completely tested)
+
+Fix the user authentication stuff in each of the app templates
+(DONE but not completely tested)
+
+TODO!!!!!
+Ask Jared about how the javascript is working in "Add Recurring Adjustment".  Is it working the way you want it to?
+ANSWER: do it exactly like the existing system.  They must be able to explicitly specify a minimum charge AND a recuring charge that isn't quite
+a multiple of the minimum charge.
+
+Tell Jared about the reloading the form when it has posted data on it (clicking Apply Changes and then doing anything that reloads the form)
+
+Context Menu and Breadcrumb Menu
+Should we have the same menu options as the existing system?
+
+TODO
+Remove the H-Hole tax charge type
+
+Should balance in the Account Details htmlTemplate declare that GST is included in it?
+
+BUG!
+I had to log into both systems
+(This is not a bug, you were using dps and localhost)
+
+Checked all the GST stuff
+It looks like it's working propperly
+
+BUG!
+There are magic variables used in AppTemplateNote::View()
+
+
+What Payment statuses can I delete?
+You get a list of:
+	PAYMENT_WAITING
+	PAYMENT_PAYING
+	PAYMENT_FINISHED
+	PAYMENT_REVERSED
+You can delete:
+	PAYMENT_WAITING
+	PAYMENT_PAYING
+	PAYMENT_FINISHED
+Make sure you check for this status type in AppTemplatePayment::Delete()
+(DONE)

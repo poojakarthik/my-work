@@ -1,0 +1,59 @@
+BUG!
+There is currently a problem with the "Add Recurring Adjustment" popup.  We are getting an "uncaught exception: null" error/warning
+and the initalising of the "Times to Charge" is not occuring.  The error is occuring in axaj.js line 241
+PARTIAL FIX! This being is being caused by the addEventListener() line of ValidateRecurringAdjustment.InitialiseForm in
+validate_recurring_adjustment.js.  I have commented this out but, it will eventually need to be included.
+
+
+You have not finished the javascript required for Add Recurring Adjustment.
+
+
+
+In the tooltip detail of the vixen tables, dates of 00/00/0000 are not being formatted properly.
+
+TODO
+Remove that function (DeleteRecordPopup) you added yesterday to the popup class 
+
+TODO
+at some point you will have to go through each of the WHERE clauses for invoices and payments and make sure the conditions are correct.
+
+TODO
+GetEmployeeName doesn't return anything if the employee's id is 0 (which usually denotes the system was responsible for the action).
+It should probably return "System" or "Mr System" or "Pablo" in this case.
+
+TODO
+I think I should change the way I'm saving TimeStamps to the database.
+
+TODO
+Currently there is a HACK in each of the appTemplate methods that handle the deleting of records.
+The user's permsission is not properly checked to see if they are allowed to delete records.
+This hack is also in the HtmlTemplates that display the tables of the InvoicesAndPayments page.
+The checking of the user's permissions inside the AppTemplate delete methods, should be in the SubmittedForm block of code
+
+TO ASK JARED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Do we show archived Recurring Adjustments? in the list of Recurring Adjustments?  (I currently am)
+(ANSWER: we do not show archived ones)
+Also, what is required in order to delete a recurring adjustment?
+(ANSWER: you already know this)
+Should I do this as a transaction? so that if any of the modifications to the database fail, the whole transaction is rolled back? I would think so.
+(YES YOU SHOULD)
+
+TODO TODO TODO
+Implement transactions with the delete Payment and delete adjustment appTemplate methods (incase a note fails to save)
+(DONT WORRY ABOUT THIS)
+
+TODO TOMORROW!!!  LOOK AT ME! LOOK AT ME!
+Fix the UserHasPerm thing
+
+Fix the delete popup for when you are deleting a Recurring adjustment and you want to see how much the charge will be.
+(DONE 12th July)
+
+Also add a cancel button to this popup.
+(DONE 12th July)
+
+
+
+
+
+http://localhost/joel/vixen/ui_app/vixen.php/Account/InvoicesAndPayments/?Account.Id=1000163204
+

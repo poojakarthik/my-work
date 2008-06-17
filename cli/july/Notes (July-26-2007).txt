@@ -1,0 +1,52 @@
+Check out the list of services at the bottom of the View Account page in intranet app
+The dates are taken from the services table, however there can be multiple records in the ServiceRatePlan table
+relating to the one Service or FNN
+
+Within the Service table there can be multiple Services relating to the one FNN, but I think only one can be active at any one time.
+
+
+I'm messing around with account 1000007177.
+It has 2 Services listed with the same FNN.  One is closed and one is open.  The dates on which they close and open are recorded in the Service table.
+
+
+A given FNN could be associated with multiple serviceId's.  Work out how to find out which ones you need
+
+For a given Service:
+	To work out what the current rate plan is, if there is more than one listed for that serviceId in ServiceRatePlan:
+		If there is only one record where the StartDatetime is before NOW and EndDatetime is after NOW then it is the current RatePlan
+			
+		else
+		If there is more than one record where the StartDatetime is before NOW and EndDatetime is after NOW then:
+			The current rate plan is the one with the most recent CreatedOn date
+		Bashkim's Query to find this is:
+			SELECT * FROM ServiceRatePlan 
+			WHERE Serive = <service> AND (Now() BETWEEN StartDateTime AND EndDatetime)
+			ORDER BY CreatedOn DESC
+		The first record of the record set will be the one to use
+
+
+How do you work out which is the current ServiceId if there is more than one record in the Service table that has the same FNN?
+
+For the moment, just list all service Ids regardless of whether they have been closed or not.
+You should probably Display a status field that lists their Start date, if it has not been closed yet; or lists the date it was closed, if not null.
+	We can assume that the date it was closed is always in the past as it doesn't look like it's something that is scheduled; it's just left as NULL.
+
+
+TODO
+For the list of Services in the "View Unbilled Charges for Account" page:
+	Does the "Total of Current Unbilled Charges" comprise of both the unbilled adjustments for this service AND all unbilled CDR charges?
+	OR just one of these two things?  Check in the existing system.
+ANSWER: It has the total of unbilled CDR charges but not unbilled adjustments
+
+For the "Console" and the "View Unbilled Charges for Account" pages, does the "Current unbilled total for account" include 
+unbilled adjustments AND unbilled CDRs? or just adjustments?
+ANSWER: it includes all unbilled adjustments AND all unbilled CDRs
+
+To get the total of the unbilled adjustments (inc GST) just use Framework->GetUnbilledCharges().  This will subtract any APPROVED credit charges from 
+the APPROVED debit charges.
+We also have to work out how to calculate the sum of all unbilled CDRs for an Account.  You could probably make a method that finds the sum of
+all unbilled CDRs for a service, and then add these together.
+
+
+
+
