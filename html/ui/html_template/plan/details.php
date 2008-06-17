@@ -19,22 +19,6 @@
 class HtmlTemplatePlanDetails extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -130,7 +114,8 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			DBO()->RatePlan->ContractTerm->RenderOutput();
 		}
 		echo "</td><td width='50%'>\n";
-				
+		DBO()->RatePlan->CustomerGroup = DBO()->RatePlan->customer_group->Value;
+		DBO()->RatePlan->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
 		DBO()->RatePlan->MinMonthly->RenderOutput();
 		DBO()->RatePlan->ChargeCap->RenderOutput();
 		DBO()->RatePlan->UsageCap->RenderOutput();

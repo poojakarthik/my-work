@@ -133,17 +133,20 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 										"MoveCDRs"				=> $_SESSION['ServiceMove']['MoveCDRs'],
 										"MovePlan"				=> $_SESSION['ServiceMove']['MovePlan'],
 									);
-			$arrColumns = array("AccountName"	=> "CASE WHEN BusinessName != \"\" THEN BusinessName WHEN TradingName != \"\" THEN TradingName ELSE NULL END",
-								"Status"		=> "Archived"
+			$arrColumns = array("AccountName"	=> "CASE WHEN BusinessName != '' THEN BusinessName WHEN TradingName != '' THEN TradingName ELSE NULL END",
+								"Status"		=> "Archived",
+								"CustomerGroup"	=> "CustomerGroup"
 								);
 			$selGainingAccount = new StatementSelect("Account", $arrColumns, "Id = <Id>");
 			if ($selGainingAccount->Execute(array("Id"=>$arrProbableAction['GainingAccount'])))
 			{
 				// The account could be found
 				$arrRecord = $selGainingAccount->Fetch();
-				$arrProbableAction['AccountName']	= $arrRecord['AccountName'];
-				$arrProbableAction['Status']		= $arrRecord['Status'];
-				$arrProbableAction['StatusDesc']	= GetConstantDescription($arrRecord['Status'], "Account");
+				$arrProbableAction['AccountName']		= $arrRecord['AccountName'];
+				$arrProbableAction['Status']			= $arrRecord['Status'];
+				$arrProbableAction['StatusDesc']		= GetConstantDescription($arrRecord['Status'], "Account");
+				$arrProbableAction['CustomerGroup']		= $arrRecord['CustomerGroup'];
+				$arrProbableAction['CustomerGroupName']	= GetConstantDescription($arrRecord['CustomerGroup'], "CustomerGroup");
 				
 				DBO()->ServiceMove->ProbableActionDetails = $arrProbableAction;
 			}
@@ -170,11 +173,13 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 			
 			// The account could be found
 			DBO()->ServiceMove->PreviousOwner = array(
-														"Id"			=> $intPreviousOwner,
-														"Action"		=> $objService->GetNatureOfAcquisition(),
-														"AccountName"	=> $arrAccount['Name'],
-														"Status"		=> $arrAccount['Status'],
-														"StatusDesc"	=> GetConstantDescription($arrAccount['Status'], "Account")
+														"Id"				=> $intPreviousOwner,
+														"Action"			=> $objService->GetNatureOfAcquisition(),
+														"AccountName"		=> $arrAccount['Name'],
+														"Status"			=> $arrAccount['Status'],
+														"StatusDesc"		=> GetConstantDescription($arrAccount['Status'], "Account"),
+														"CustomerGroup"		=> $arrAccount['CustomerGroup'],
+														"CustomerGroupName"	=> GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup"),
 													);
 		}
 		
@@ -230,7 +235,8 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		}
 		
 		// Send the retrieved record
-		$arrAccount['StatusDesc'] = GetConstantDescription($arrAccount['Status'], "Account");
+		$arrAccount['StatusDesc']			= GetConstantDescription($arrAccount['Status'], "Account");
+		$arrAccount['CustomerGroupName']	= GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
 		AjaxReply($arrAccount);
 		return TRUE;
 	}
@@ -405,7 +411,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 			// The service movement is retroactive
 			$strNewOwnerAccountMsg	.= "\nUnbilled CDRs since the time of acquisition will be applied to this account";
 		}
-		if ($bolMovePlan)
+		if ($bolMovePlan && DBO()->Movement->SameCustomerGroups->Value == TRUE)
 		{
 			$strNewOwnerAccountMsg	.= "\nThe service has retained its Plan details";
 		}
@@ -582,14 +588,15 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 	}
 	
 	// Usually when I want to get details about an account, I want the same information
-	// If an error occurrs, this will add an Alert command to the ajax response
+	// If an error occurs, this will add an Alert command to the ajax response
 	private function _GetAccountDetails($intAccount)
 	{
 		$arrColumns = array("Id"			=> "Id",
 							"AccountGroup"	=> "AccountGroup",
 							"CreatedOn"		=> "CreatedOn",
-							"Name"			=> "CASE WHEN BusinessName != \"\" THEN BusinessName WHEN TradingName != \"\" THEN TradingName ELSE NULL END",
-							"Status"		=> "Archived"
+							"Name"			=> "CASE WHEN BusinessName != '' THEN BusinessName WHEN TradingName != '' THEN TradingName ELSE NULL END",
+							"Status"		=> "Archived",
+							"CustomerGroup" => "CustomerGroup"
 							);
 		$selAccount = new StatementSelect("Account", $arrColumns, "Id = <Id>");
 		if ($selAccount->Execute(array("Id"=>$intAccount)) === FALSE)

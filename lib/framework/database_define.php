@@ -7082,6 +7082,16 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
 		 
+				 
+				 
+	// Define Columns 
+	$strName = "customer_group"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
 					 
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 

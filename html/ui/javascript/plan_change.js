@@ -41,8 +41,9 @@
  */
 function VixenPlanChangeClass()
 {
-	this._intServiceId	= null;
-	this._strPopupId	= null;
+	this.intServiceId		= null;
+	this.strPopupId			= null;
+	this.elmViewPlanLink	= null;
 	
 	//------------------------------------------------------------------------//
 	// Initialise
@@ -61,15 +62,16 @@ function VixenPlanChangeClass()
 	 */
 	this.Initialise = function(intServiceId, strPopupId)
 	{
-		this._intServiceId	= intServiceId;
-		this._strPopupId	= strPopupId;
+		this.intServiceId		= intServiceId;
+		this.strPopupId			= strPopupId;
+		this.elmViewPlanLink	= $ID("ChangePlan.ViewPlanDetails");
 	}
 	
 	// Event handler for the "Change Plan" button
 	// This prompts the user describing the consequences of the plan change
 	this.ChangePlan = function(bolConfirmed)
 	{
-		var intStartTimeComboValue = document.getElementById("Combo_NewPlan.StartTime").value;
+		var intStartTimeComboValue = $ID("Combo_NewPlan.StartTime").value;
 		
 		// Check that the Plan Change has been confirmed
 		if (bolConfirmed == null)
@@ -89,27 +91,7 @@ function VixenPlanChangeClass()
 		}
 		
 		// Submit the form data
-		Vixen.Ajax.SendForm("VixenForm_ChangePlan", "Change Plan", "Service", "ChangePlan", "", this._strPopupId);
-	}
-	
-	//------------------------------------------------------------------------//
-	// ViewPlanDetails
-	//------------------------------------------------------------------------//
-	/**
-	 * ViewPlanDetails
-	 *
-	 * Event handler for when the View Plan Details action is triggered
-	 *  
-	 * Event handler for when the View Plan Details action is triggered
-	 * Relocates the user to the "Rate Plan Details" page
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.ViewPlanDetails = function()
-	{
-		var intPlanId = document.getElementById('Combo_NewPlan.Id').value;
-		window.location = 'flex.php/Plan/View/?RatePlan.Id=' + intPlanId;
+		Vixen.Ajax.SendForm("VixenForm_ChangePlan", "Change Plan", "Service", "ChangePlan", "", this.strPopupId);
 	}
 }
 

@@ -994,8 +994,13 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->Account->AllCostCenters = $arrCostCenters;
 		
 		// Retrieve all usable RatePlans
-		$selRatePlans	= new StatementSelect("RatePlan", "Id, ServiceType, Name", "Archived = 0", "Name ASC");
-		$mixResult		= $selRatePlans->Execute();
+		$strWhere		= "Archived = <RatePlanActive> AND customer_group = <CustomerGroup>";
+		$arrWhere		= array(
+								"RatePlanActive"	=> RATE_STATUS_ACTIVE,
+								"CustomerGroup"		=> DBO()->Account->CustomerGroup->Value
+								);
+		$selRatePlans	= new StatementSelect("RatePlan", "Id, ServiceType, Name", $strWhere, "Name ASC");
+		$mixResult		= $selRatePlans->Execute($arrWhere);
 		$arrRatePlans	= Array();
 		if ($mixResult)
 		{
@@ -2991,6 +2996,10 @@ class AppTemplateService extends ApplicationTemplate
 			$strCurrentDateAndTime						= GetCurrentDateAndTimeForMySQL();
 			$intStartDateTimeForCurrentBillingPeriod	= GetStartDateTimeForBillingPeriod($strCurrentDateAndTime);
 			$intStartDateTimeForNextBillingPeriod		= GetStartDateTimeForNextBillingPeriod($strCurrentDateAndTime);
+			DBO()->Service->Load();
+			DBO()->Account->Id = DBO()->Service->Account->Value;
+			DBO()->Account->Load();
+			
 			if (DBO()->NewPlan->StartTime->Value == 1)
 			{
 				// Get the StartDatetime for the next billing period
@@ -3011,7 +3020,7 @@ class AppTemplateService extends ApplicationTemplate
 				$intActive = 1;
 				
 				// Declare the note part detailing when the Plan Change will come into effect
-				$strNotePlanStart = "This plan change has come into effect as of the beginging of the current billing period. (". date("d/m/Y", $intStartDatetime) .")";
+				$strNotePlanStart = "This plan change has come into effect as of the beginning of the current billing period. (". date("d/m/Y", $intStartDatetime) .")";
 			}
 			$strStartDatetime = ConvertUnixTimeToMySQLDateTime($intStartDatetime);
 			
@@ -3040,6 +3049,23 @@ class AppTemplateService extends ApplicationTemplate
 			// Retrieve the new plan
 			DBO()->NewPlan->SetTable("RatePlan");
 			DBO()->NewPlan->Load();
+			
+			// Check that the Plan is active and is of the appropriate ServiceType and CustomerGroup
+			if (DBO()->NewPlan->Archived->Value != RATE_STATUS_ACTIVE)
+			{
+				Ajax()->AddCommand("Alert", "ERROR: This Plan is not currently active");
+				return TRUE;
+			}
+			if (DBO()->NewPlan->ServiceType->Value != DBO()->Service->ServiceType->Value)
+			{
+				Ajax()->AddCommand("Alert", "ERROR: This Plan is not of the same ServiceType as the Service");
+				return TRUE;
+			}
+			if (DBO()->NewPlan->customer_group->Value != DBO()->Account->CustomerGroup->Value)
+			{
+				Ajax()->AddCommand("Alert", "ERROR: This Plan does not belong to the CustomerGroup that this account belongs to");
+				return TRUE;
+			}
 			
 			// Start the transaction
 			TransactionStart();
@@ -3108,8 +3134,8 @@ class AppTemplateService extends ApplicationTemplate
 			{
 				// The plan change is retroactive to the start of the current month
 				// Set the status of all CDRs that are currently "rated" (CDR_RATED) to "ready for rating" (CDR_NORMALISED)
-				$arrUpdate = Array('Status' => CDR_NORMALISED);
-				$updCDRs = new StatementUpdate("CDR", "Service = <Service> AND Status = <CDRRated>", $arrUpdate);
+				$arrUpdate	= Array('Status' => CDR_NORMALISED);
+				$updCDRs	= new StatementUpdate("CDR", "Service = <Service> AND Status = <CDRRated>", $arrUpdate);
 				if ($updCDRs->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "CDRRated"=>CDR_RATED)) === FALSE)
 				{
 					// Could not update records in CDR table. Exit gracefully
@@ -3179,6 +3205,15 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AccCommand("Alert", "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service");
 			return TRUE;
 		}
+		
+		// Retrieve all available plans for this ServiceType/CustomerGroup
+		$strWhere	= "ServiceType = <ServiceType> AND customer_group = <CustomerGroup> AND Archived = <ActiveStatus>";
+		$arrWhere	= array("ServiceType"	=>DBO()->Service->ServiceType->Value,
+							"CustomerGroup"	=>DBO()->Account->CustomerGroup->Value,
+							"ActiveStatus"	=> RATE_STATUS_ACTIVE);
+		DBL()->RatePlan->Where->Set($strWhere, $arrWhere);
+		DBL()->RatePlan->OrderBy("Name");
+		DBL()->RatePlan->Load();
 		
 		// Set the default for the scheduled start time of the new plan
 		// Defaults to "Start billing at begining of next billing period"

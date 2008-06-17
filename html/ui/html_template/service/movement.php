@@ -88,7 +88,8 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 		$arrAccount			= DBO()->Account->_arrProperties;
 		$arrPreviousOwner	= DBO()->ServiceMove->PreviousOwner->Value;
 		
-		$intAccountId	= $arrAccount['Id'];
+		$strCustomerGroup	= GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+		$intAccountId		= $arrAccount['Id'];
 		if ($arrAccount['BusinessName'])
 		{
 			$strAccountName = $arrAccount['BusinessName'];
@@ -101,7 +102,6 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 		{
 			$strAccountName = "[Not Specified]";
 		}
-		
 		$strTimeOfAcquisition			= $objService->GetTimeOfAcquisition();
 		$strNow							= GetCurrentISODateTime();
 		$strTimeOfAcquisitionFormatted	= OutputMask()->ShortDateTime($strTimeOfAcquisition, TRUE);
@@ -120,13 +120,15 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 					break;
 			}
 			
-			$strPreviousOwnerAccount	= "{$arrPreviousOwner['AccountName']} ({$arrPreviousOwner['Id']})";
-			$strPreviousOwnerStatus		= $arrPreviousOwner['StatusDesc'];
+			$strPreviousOwnerAccount			= "{$arrPreviousOwner['AccountName']} ({$arrPreviousOwner['Id']})";
+			$strPreviousOwnerStatus				= $arrPreviousOwner['StatusDesc'];
+			$strPreviousOwnerCustomerGroupName	= $arrPreviousOwner['CustomerGroupName'];
 		}
 		else
 		{
-			$strPreviousOwnerAccount	= "";
-			$strPreviousOwnerStatus		= "";
+			$strPreviousOwnerAccount			= "";
+			$strPreviousOwnerStatus				= "";
+			$strPreviousOwnerCustomerGroupName	= "";
 		}
 		
 		// You can only perform a change of lessee/account move if the Service has come into effect on this account
@@ -151,7 +153,14 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 		
 		$objPreviousOwner	= Json()->Encode($arrPreviousOwner);
 		$objProbableAction	= Json()->Encode($arrProbableAction);
-		$objCurrentAccount	= Json()->Encode(array("Id" => $intAccountId, "Name" => $strAccountName));
+		$objCurrentAccount	= Json()->Encode(
+												array(
+														"Id"				=> $intAccountId, 
+														"Name"				=> $strAccountName,
+														"CustomerGroup"		=> $arrAccount['CustomerGroup'],
+														"CustomerGroupName"	=> $strCustomerGroup
+													)
+											);
 		$intServiceId		= $objService->GetId();
 		$objFNN				= Json()->Encode($objService->GetFNN());
 		
@@ -162,6 +171,10 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 		<div style='margin-bottom:8px;position:relative;'>
 			<span>Account :</span>
 			<span style='position:absolute;left:30%;'>$strAccountName ($intAccountId)</span>
+		</div>
+		<div style='margin-bottom:8px;position:relative;'>
+			<span>Customer Group :</span>
+			<span style='position:absolute;left:30%;'>$strCustomerGroup</span>
 		</div>
 		<div style='margin-bottom:8px;position:relative;'>
 			<span>Time of Acquisition :</span>
@@ -189,7 +202,10 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 			<span>Account :</span>
 			<span style='position:absolute;left:30%;width:55%'>$strPreviousOwnerAccount</span>
 		</div>
-	
+		<div style='margin-bottom:5px;position:relative;'>
+			<span>Customer Group :</span>
+			<span style='position:absolute;left:30%;width:55%'>$strPreviousOwnerCustomerGroupName</span>
+		</div>
 		<div style='margin-bottom:5px;position:relative'>
 			<span>Status :</span>
 			<span style='position:absolute;left:30%;width:55%'>$strPreviousOwnerStatus</span>
@@ -205,7 +221,11 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 		</div>
 		<div style='margin-bottom:8px;position:relative;'>
 			<span>Account Name :</span>
-			<span id='ServiceMovement.NewAccountName' style='position:absolute;left:30%;width:55%'>Dummy Account Name (1000123456)</span>
+			<span id='ServiceMovement.NewAccountName' style='position:absolute;left:30%;width:55%'>Dummy Account Name</span>
+		</div>
+		<div style='margin-bottom:8px;position:relative;'>
+			<span>Customer Group :</span>
+			<span id='ServiceMovement.NewAccountCustomerGroup' style='position:absolute;left:30%;width:55%'>Dummy Customer Group</span>
 		</div>
 	
 		<div style='margin-bottom:8px;position:relative'>

@@ -471,7 +471,7 @@ abstract class ModuleService
 	 */
 	static private function _GetHistory($arrServiceRecords)
 	{
-		$arrHistory = Array();		
+		$arrHistory			= Array();
 		// Iterate through the Service records stored in $this->_arrHistory
 		foreach ($arrServiceRecords as $intIndex=>$arrServiceRecord)
 		{
@@ -568,8 +568,27 @@ abstract class ModuleService
 			// Add the history item to the history
 			$arrHistory[] = $arrHistoryItem;
 		}
+
+		// Now remove any Events that have a TimeStamp which is more in the future than the event before it.
+		// Keeping in mind the event with index 0 is the most recent thing to have happened, and the
+		// event with the highest index is the oldest thing that happened
+		$arrCleanedHistory = array();
 		
-		return $arrHistory;
+		if (count($arrHistory) > 0)
+		{
+			$strLastTimeStamp = $arrHistory[0]['TimeStamp'];
+			foreach ($arrHistory as $arrHistoryItem)
+			{
+				if ($strLastTimeStamp >= $arrHistoryItem['TimeStamp'])
+				{
+					// Include this history item
+					$arrCleanedHistory[]	= $arrHistoryItem;
+					$strLastTimeStamp		= $arrHistoryItem['TimeStamp'];
+				}
+			}
+		}
+		
+		return $arrCleanedHistory;
 		
 	}
 	
@@ -641,6 +660,10 @@ abstract class ModuleService
 		return TRUE;
 	}
 	
+/******************************************************************************/
+// Change Of Lessee related Methods
+/******************************************************************************/
+
 	//------------------------------------------------------------------------//
 	// IsNewestOwner
 	//------------------------------------------------------------------------//
@@ -681,16 +704,19 @@ abstract class ModuleService
 	 *						['Account']
 	 *						['AccountGroup']
 	 *						['LastOwner']
+	 *						['CustomerGroup']
 	 */
 	function GetPreviousOwner($bolReturnAllDetails=FALSE)
 	{
-		// Retrieve all Service Records that have a createdOn date less than that of the most recent Service Record
+		// Retrieve all Service Records that have a createdOn date less than or equal to that of the most recent Service Record
 		// for this FNN/Account
 		// Only include those records where CreatedOn <= ClosedOn
 		// Only include records not belonging to this account
+		// Note that we cannot rely on the Service.LastOwner property 
+		
 		$strFNNIndialRange = substr($this->_strFNN, 0, 8) . "__";
 		
-		$strWhere		= "(FNN = <FNN> OR (Indial100 = 1 AND FNN LIKE <FNNIndialRange>)) AND Account != <Account> AND CreatedOn < <LastCreatedOn> AND ClosedOn IS NOT NULL AND CreatedOn <= ClosedOn";
+		$strWhere		= "(S.FNN = <FNN> OR (S.Indial100 = 1 AND S.FNN LIKE <FNNIndialRange>)) AND S.Account != <Account> AND S.CreatedOn <= <LastCreatedOn> AND S.ClosedOn IS NOT NULL AND S.CreatedOn <= S.ClosedOn";
 		$arrWhere		= array(
 								"FNN"				=> $this->_strFNN, 
 								"FNNIndialRange"	=> $strFNNIndialRange, 
@@ -698,8 +724,19 @@ abstract class ModuleService
 								"LastCreatedOn"		=> $this->_arrServiceRecords[0]['CreatedOn']
 								);
 		$strOrderBy		= "Id DESC";
-		$arrColumns		= array("Id", "Account", "AccountGroup", "CreatedOn", "NatureOfCreation", "ClosedOn", "NatureOfClosure", "LastOwner");
-		$selServices	= new StatementSelect("Service", $arrColumns, $strWhere, $strOrderBy, "1");
+		$arrColumns		= array(
+								"Id"				=> "S.Id",
+								"Account"			=> "S.Account", 
+								"AccountGroup"		=> "S.AccountGroup",
+								"CreatedOn"			=> "S.CreatedOn",
+								"NatureOfCreation"	=> "S.NatureOfCreation",
+								"ClosedOn"			=> "S.ClosedOn",
+								"NatureOfClosure"	=> "S.NatureOfClosure",
+								"LastOwner"			=> "S.LastOwner",
+								"CustomerGroup"		=> "A.CustomerGroup"
+								);
+		$strTables		= "Service AS S INNER JOIN Account AS A ON S.Account = A.Id";
+		$selServices	= new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "1");
 		if ($selServices->Execute($arrWhere) === FALSE)
 		{
 			$this->_strErrorMsg = "Unexpected Database error occurred";
@@ -715,7 +752,8 @@ abstract class ModuleService
 			return array(	"ServiceId"		=> $arrService['Id'],
 							"Id"			=> $arrService['Account'],
 							"AccountGroup"	=> $arrService['AccountGroup'],
-							"LastOwner"		=> $arrService['LastOwner']
+							"LastOwner"		=> $arrService['LastOwner'],
+							"CustomerGroup"	=> $arrService['CustomerGroup']
 						);
 		}
 		else
@@ -731,7 +769,7 @@ abstract class ModuleService
 	{
 		$strFNNIndialRange = substr($this->_strFNN, 0, 8) . "__";
 		
-		$strWhere		= "(FNN = <FNN> OR (Indial100 = 1 AND FNN LIKE <FNNIndialRange>)) AND Account != <Account> AND CreatedOn < <LastCreatedOn> AND ClosedOn IS NOT NULL AND CreatedOn <= ClosedOn";
+		$strWhere		= "(FNN = <FNN> OR (Indial100 = 1 AND FNN LIKE <FNNIndialRange>)) AND Account != <Account> AND CreatedOn <= <LastCreatedOn> AND ClosedOn IS NOT NULL AND CreatedOn <= ClosedOn";
 		$arrWhere		= array(
 								"FNN"				=> $this->_strFNN, 
 								"FNNIndialRange"	=> $strFNNIndialRange, 
@@ -750,7 +788,7 @@ abstract class ModuleService
 		{
 			// There was no previous owner before this one
 			// Time of Acquisition is the oldest CreatedOn time for this service on this account (Time Of Creation)
-			$strTimeOfCreation =  $this->_arrServiceRecords[count($this->_arrServiceRecords)-1]['CreatedOn'];
+			$strTimeOfCreation = $this->_arrServiceRecords[count($this->_arrServiceRecords)-1]['CreatedOn'];
 			return $strTimeOfCreation;
 		}
 		
@@ -977,8 +1015,8 @@ abstract class ModuleService
 		}
 		
 		// Close the current service record
-		$intNatureOfClosure = ($bolChangeOfLessee)? SERVICE_CLOSURE_LESSEE_CHANGED : SERVICE_CLOSURE_ACCOUNT_CHANGED;
-		$arrUpdateColumns = array(
+		$intNatureOfClosure	= ($bolChangeOfLessee)? SERVICE_CLOSURE_LESSEE_CHANGED : SERVICE_CLOSURE_ACCOUNT_CHANGED;
+		$arrUpdateColumns	= array(
 									"Id"				=> $this->_intCurrentId,
 									"ClosedOn"			=> NULL,
 									"ClosedBy"			=> $intEmployee,
@@ -1011,7 +1049,7 @@ abstract class ModuleService
 				return FALSE;
 			}
 			
-			$arrServiceRecord = Array(	"FNN"					=> $this->_strFNN,
+			$arrServiceRecord = array(	"FNN"					=> $this->_strFNN,
 										"ServiceType"			=> $this->_intServiceType,
 										"Indial100"				=> $this->_bolIndial100,
 										"AccountGroup"			=> $this->_intAccountGroup,
@@ -1056,15 +1094,27 @@ abstract class ModuleService
 		}
 		
 		// Get the details of the new account
-		$selAccount = new StatementSelect("Account", "Id, AccountGroup", "Id = <AccountId>");
+		$selAccount = new StatementSelect("Account", "Id, AccountGroup, CustomerGroup", "Id = <AccountId>");
 		if ($selAccount->Execute(array("AccountId" => $intNewOwningAccount)) === FALSE)
 		{
 			$this->_strErrorMsg = "Unexpected Database error occurred while trying to retrieve details of the new owning Account with Id: $intNewOwningAccount";
 			return FALSE;
 		}
-		if (($arrAccount = $selAccount->Fetch()) === FALSE)
+		if (($arrNewAccount = $selAccount->Fetch()) === FALSE)
 		{
 			$this->_strErrorMsg = "Can't find the new owning Account with Id: $intNewOwningAccount, in the database";
+			return FALSE;
+		}
+		
+		// Get the details of the current owning account (the only thing we don't already have is the CustomerGroup)
+		if ($selAccount->Execute(array("AccountId" => $this->_intAccount)) === FALSE)
+		{
+			$this->_strErrorMsg = "Unexpected Database error occurred while trying to retrieve details of the current owning Account with Id: {$this->_intAccount}";
+			return FALSE;
+		}
+		if (($arrCurrentAccount = $selAccount->Fetch()) === FALSE)
+		{
+			$this->_strErrorMsg = "Can't find the current owning Account with Id: {$this->_intAccount}, in the database";
 			return FALSE;
 		}
 		
@@ -1073,7 +1123,7 @@ abstract class ModuleService
 								"FNN"					=> $this->_strFNN,
 								"ServiceType"			=> $this->_intServiceType,
 								"Indial100"				=> $this->_bolIndial100,
-								"AccountGroup"			=> $arrAccount['AccountGroup'],
+								"AccountGroup"			=> $arrNewAccount['AccountGroup'],
 								"Account"				=> $intNewOwningAccount,
 								"CreatedOn"				=> $strEffectiveDateTime,
 								"CreatedBy"				=> $intEmployee,
@@ -1097,8 +1147,8 @@ abstract class ModuleService
 		// Store the new Service Record's Id
 		$intNewService = $mixResult;
 		
-		// Copy the Plan Details
-		if ($bolMovePlan)
+		// Copy the Plan Details, but only if the new owner is in the same CustomerGroup as the current owner
+		if ($bolMovePlan && $arrCurrentAccount['CustomerGroup'] == $arrNewAccount['CustomerGroup'])
 		{
 			if ($this->_CopyPlanDetails($intNewService, $strEffectiveDateTime) === FALSE)
 			{
@@ -1116,7 +1166,7 @@ abstract class ModuleService
 		}
 		
 		// Copy the ServiceType specific details
-		if ($this->_CopySupplementaryDetails($intNewService, $intNewOwningAccount, $arrAccount['AccountGroup']) === FALSE)
+		if ($this->_CopySupplementaryDetails($intNewService, $intNewOwningAccount, $arrNewAccount['AccountGroup']) === FALSE)
 		{
 			return FALSE;
 		}
@@ -1275,10 +1325,26 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		// Store the new Service Record's Id
 		$intNewService = $mixResult;
 		
-		// Copy the Plan Details
-		if ($this->_CopyPlanDetails($intNewService, $strTimeOfAcquisition) === FALSE)
+		// Get the details of the outgoing account (the only thing we don't already have is the CustomerGroup)
+		$selAccount = new StatementSelect("Account", "Id, CustomerGroup", "Id = <AccountId>");
+		if ($selAccount->Execute(array("AccountId" => $this->_intAccount)) === FALSE)
 		{
+			$this->_strErrorMsg = "Unexpected Database error occurred while trying to retrieve details of the current owning Account with Id: {$this->_intAccount}";
 			return FALSE;
+		}
+		if (($arrOutgoingOwner = $selAccount->Fetch()) === FALSE)
+		{
+			$this->_strErrorMsg = "Can't find the current owning Account with Id: {$this->_intAccount}, in the database";
+			return FALSE;
+		}
+				
+		// Copy the Plan Details, but only if the incoming owner is in the same customer group as the outgoing owner
+		if ($arrIncomingOwner['CustomerGroup'] == $arrOutgoingOwner['CustomerGroup'])
+		{
+			if ($this->_CopyPlanDetails($intNewService, $strTimeOfAcquisition) === FALSE)
+			{
+				return FALSE;
+			}
 		}
 		
 		// Renormalise Unbilled CDRs
@@ -1829,16 +1895,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		
 	}
 	
-/******************************************************************************/
-// Change Of Lessee related Methods
-/******************************************************************************/
 	
-	function HasServiceMoveScheduled()
-	{
-		//TODO!
-		$this->_strErrorMsg = "HasServiceMoveScheduled() functionality has not been implemented yet";
-		return FALSE;
-	}
 	
 /******************************************************************************/
 // Static Methods

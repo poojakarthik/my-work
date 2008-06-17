@@ -44,7 +44,9 @@ function VixenServiceMovementClass()
 {
 	// Current Service Id
 	this.intServiceId		= null;
-	this.intGainingAccount	= null;
+	
+	this.intGainingAccount				= null;
+	this.intGainingAccountCustomerGroup	= null;
 	
 	this.strFNN				= null;
 	this.objCurrentAccount	= null;
@@ -55,6 +57,10 @@ function VixenServiceMovementClass()
 	this.elmAccountIdInputContainerDiv	= null;
 	this.elmPreviousOwnerContainerDiv	= null;
 	this.elmNewOwnerContainerDiv		= null;
+	this.elmNewAccountName				= null;
+	this.elmNewAccountId				= null;
+	this.elmNewAccountStatus			= null;
+	this.elmNewAccountCustomerGroup		= null;
 	
 	this.strActionTypeLastSelected		= null;
 	
@@ -95,6 +101,7 @@ function VixenServiceMovementClass()
 		this.elmNewAccountName				= $ID("ServiceMovement.NewAccountName");
 		this.elmNewAccountId				= $ID("ServiceMovement.NewAccountId");
 		this.elmNewAccountStatus			= $ID("ServiceMovement.NewAccountStatus");
+		this.elmNewAccountCustomerGroup		= $ID("ServiceMovement.NewAccountCustomerGroup");
 		
 		// Register Listeners
 		Event.startObserving(this.objInputs.ActionType, "keypress", this.ActionTypeComboOnChange.bind(this), true);
@@ -117,14 +124,19 @@ function VixenServiceMovementClass()
 		this.objInputs.ActionType.value = objProbableAction.Action;
 		this.ActionTypeComboOnChange();
 		
-		this.SetNewOwner(objProbableAction.GainingAccount, objProbableAction.AccountName, objProbableAction.StatusDesc, true);
+		this.SetNewOwner(objProbableAction.GainingAccount, objProbableAction.CustomerGroup, objProbableAction.AccountName, objProbableAction.StatusDesc, objProbableAction.CustomerGroupName, true);
 		
 		// Set the remaining inputs
 		this.objInputs.EffectiveOnType.value = objProbableAction.EffectiveOnType;
 		this.EffectiveOnTypeComboOnChange();
 		this.objInputs.EffectiveOnDate.value = objProbableAction.EffectiveOnFormatted;
 		this.objInputs.MoveCDRs.checked = objProbableAction.MoveCDRs;
-		this.objInputs.MovePlan.checked = objProbableAction.MovePlan;
+		
+		// Only set the MovePlan checkbox if it isn't currently disabled
+		if (!this.objInputs.MovePlan.disabled)
+		{
+			this.objInputs.MovePlan.checked = objProbableAction.MovePlan;
+		}
 		
 		// Display the NewOwner container
 		this.elmNewOwnerContainerDiv.style.display = "block";
@@ -207,21 +219,33 @@ function VixenServiceMovementClass()
 			return;
 		}
 
-		this.SetNewOwner(objAccount.Id, objAccount.Name, objAccount.StatusDesc);
+		this.SetNewOwner(objAccount.Id, objAccount.CustomerGroup, objAccount.Name, objAccount.StatusDesc, objAccount.CustomerGroupName);
 	}
 	
 	// Sets the details of the new owner and displays the container div
-	this.SetNewOwner = function(intAccountId, strAccountName, strAccountStatusDesc, bolDontDisplay)
+	this.SetNewOwner = function(intAccountId, intCustomerGroup, strAccountName, strAccountStatusDesc, strCustomerGroup, bolDontDisplay)
 	{
 		// Defaults to false
 		bolDontDisplay = (bolDontDisplay != undefined)? bolDontDisplay : false;
 	
-		var strViewAccountLink				= "flex.php/Account/Overview/?Account.Id=" + intAccountId;
-		this.intGainingAccount				= intAccountId;
-		this.objInputs.AccountId.value		= intAccountId;
-		this.elmNewAccountId.innerHTML		= "<a href='"+ strViewAccountLink +"' title='View Account'>"+ intAccountId +"</a>";
-		this.elmNewAccountName.innerHTML	= strAccountName;
-		this.elmNewAccountStatus.innerHTML	= strAccountStatusDesc;
+		this.intGainingAccount						= intAccountId;
+		this.intGainingAccountCustomerGroup			= intCustomerGroup;
+		this.objInputs.AccountId.value				= intAccountId;
+		this.elmNewAccountId.innerHTML				= "<a href='flex.php/Account/Overview/?Account.Id="+ intAccountId +"' title='View Account'>"+ intAccountId +"</a>";
+		this.elmNewAccountName.innerHTML			= strAccountName;
+		this.elmNewAccountStatus.innerHTML			= strAccountStatusDesc;
+		this.elmNewAccountCustomerGroup.innerHTML	= strCustomerGroup;
+		
+		if (this.intGainingAccountCustomerGroup != this.objCurrentAccount.CustomerGroup)
+		{
+			// The CustomerGroups differ which means the Plan details will not be able to be copied across
+			this.objInputs.MovePlan.disabled	= true;
+			this.objInputs.MovePlan.checked		= false;
+		}
+		else
+		{
+			this.objInputs.MovePlan.disabled	= false;
+		}
 		
 		this.elmNewOwnerContainerDiv.style.display = (bolDontDisplay)? "none":"block";
 	}
@@ -237,17 +261,22 @@ function VixenServiceMovementClass()
 		if (!bolConfirmed)
 		{
 			// Confirm with the user their actions
-			var strAction = (this.objInputs.ActionType.value == "LesseeChange")? "a Change of Lessee" : "a Change of Account";
-			var strEffective = (this.objInputs.EffectiveOnType.value == "Immediately")? "Immediately" : "at the beginning of " + this.objInputs.EffectiveOnDate.value;
+			var strAction		= (this.objInputs.ActionType.value == "LesseeChange")? "a Change of Lessee" : "a Change of Account";
+			var strEffective	= (this.objInputs.EffectiveOnType.value == "Immediately")? "immediately" : "at the beginning of " + this.objInputs.EffectiveOnDate.value;
 			
+			var strPlanWarning	= "";
+			if (this.intGainingAccountCustomerGroup != this.objCurrentAccount.CustomerGroup)
+			{
+				strPlanWarning = "<br /><span style='margin-top:10px;color:#FF0000'>WARNING: Plan details will not be copied across, due to the new owner being in a different Customer Group to the current owner.  You will have to manually set a plan for this Service once the move has been made.</span>";
+			}
 			
 			var strMsg 	= "Are you sure you want to perform " + strAction + " on service "+ this.strFNN +" effective " + strEffective + "?<br /><br />";
 			strMsg		+= "<table cellpadding='0' cellspacing='0'>";
 			strMsg 		+= "<tr><td width='45%'>Current Account:</td><td width='55%'>"+ this.objCurrentAccount.Name +" ("+ this.objCurrentAccount.Id +")</td></tr>";
 			strMsg		+= "<tr><td>New Account:</td><td>"+ this.elmNewAccountName.innerHTML +" ("+ this.intGainingAccount +")</td></tr>";
 			strMsg		+= "<tr><td>Move Unbilled CDRs:</td><td>" + ((this.objInputs.MoveCDRs.checked)? "Yes (only CDRs from after the 'Time of Acquisition' will be moved)" : "No") + "</td></tr>";
-			strMsg		+= "<tr><td>Copy Plan details:</td><td>" + ((this.objInputs.MovePlan.checked)? "Yes" : "No") +"</td></tr>";
-			strMsg		+= "</table>";
+			strMsg		+= "<tr><td>Copy Plan Details:</td><td>" + ((this.objInputs.MovePlan.checked)? "Yes" : "No") +"</td></tr>";
+			strMsg		+= "</table>" + strPlanWarning;
 			
 			Vixen.Popup.Confirm(strMsg, function(){Vixen.ServiceMovement.CommitServiceMove(true)});
 			
@@ -265,7 +294,8 @@ function VixenServiceMovementClass()
 											EffectiveOnType		: this.objInputs.EffectiveOnType.value,
 											EffectiveOnDate		: this.objInputs.EffectiveOnDate.value,
 											MoveCDRs			: this.objInputs.MoveCDRs.checked,
-											MovePlan			: this.objInputs.MovePlan.checked
+											MovePlan			: this.objInputs.MovePlan.checked,
+											SameCustomerGroups	: (this.intGainingAccountCustomerGroup == this.objCurrentAccount.CustomerGroup)? true : false
 										}
 						};
 		Vixen.Ajax.CallAppTemplate("ServiceMovement", "PerformServiceMove", objData, null, true, true);
@@ -310,11 +340,17 @@ function VixenServiceMovementClass()
 					break;
 			}
 			
+			var strPlanWarning = "";
+			if (this.objPreviousAccount.CustomerGroup != this.objCurrentAccount.CustomerGroup)
+			{
+				strPlanWarning = "<br /><span style='margin-top:10px;color:#FF0000'>WARNING: Plan details will not be copied across, due to the previous account being in a different Customer Group.  You will have to manually set a plan for this Service once you have reversed the move.</span>";
+			}
+			
 			var strMsg 	= "Are you sure you want to reverse the " + strAction + " of service "+ this.strFNN +"?<br /><br />";
 			strMsg		+= "<table cellpadding='0' cellspacing='0'>";			
 			strMsg 		+= "<tr><td width='45%'>Current Account:</td><td width='55%'>"+ this.objCurrentAccount.Name +" ("+ this.objCurrentAccount.Id +")</td></tr>";
 			strMsg		+= "<tr><td>Account to revert to:</td><td>"+ this.objPreviousAccount.AccountName +" ("+ this.objPreviousAccount.Id +")</td></tr>";
-			strMsg		+= "</table>";
+			strMsg		+= "</table>" + strPlanWarning;
 			
 			Vixen.Popup.Confirm(strMsg, function(){Vixen.ServiceMovement.CommitReverse(true)});
 			

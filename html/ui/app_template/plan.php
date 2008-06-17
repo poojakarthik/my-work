@@ -92,22 +92,67 @@ class AppTemplatePlan extends ApplicationTemplate
 		Breadcrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Available Plans");
 		
-		// Retrieve all RatePlans that aren't currently archived
-		
-		// Check if a filter has been specified
-		if (DBO()->RatePlan->ServiceType->Value)
+		// Update the Session details with the current filter, if one has been specified
+		if (DBO()->RatePlan->ServiceType->IsSet)
 		{
-			// A filter has been specified.  Only retrieve records of the desired ServiceType
-			$strWhere = "Archived != <Archived> AND ServiceType = <ServiceType>";
+			// A valid ServiceType filter has been specified
+			if (array_key_exists(DBO()->RatePlan->ServiceType->Value, $GLOBALS['*arrConstant']['ServiceType']))
+			{
+				// A specific ServiceType has been requested
+				$_SESSION['AvailablePlansPage']['Filter']['ServiceType'] = DBO()->RatePlan->ServiceType->Value;
+			}
+			else
+			{
+				// Show all services
+				$_SESSION['AvailablePlansPage']['Filter']['ServiceType'] = 0;
+			}
+			
 		}
-		else
+		elseif (!isset($_SESSION['AvailablePlansPage']['Filter']['ServiceType']))
 		{
-			// A filter has not been specified
-			$strWhere = "Archived != <Archived>";
+			// A ServiceType filter hasn't been specified, and one isn't currently cached, set it to view all ServiceTypes
+			$_SESSION['AvailablePlansPage']['Filter']['ServiceType'] = 0;
 		}
 		
-		DBL()->RatePlan->Where->Set($strWhere, Array("Archived" => RATE_STATUS_ARCHIVED, "ServiceType"=>DBO()->RatePlan->ServiceType->Value));
-		DBL()->RatePlan->OrderBy("ServiceType, Name");
+		if (DBO()->RatePlan->CustomerGroup->IsSet)
+		{
+			if (array_key_exists(DBO()->RatePlan->CustomerGroup->Value, $GLOBALS['*arrConstant']['CustomerGroup']))
+			{
+				// A specific CustomerGroup filter has been specified
+				$_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'] = DBO()->RatePlan->CustomerGroup->Value;
+			}
+			else
+			{
+				// Show all CustomerGroups
+				$_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'] = 0;
+			}
+		}
+		elseif (!isset($_SESSION['AvailablePlansPage']['Filter']['ServiceType']))
+		{
+			// A CustomerGroup filter hasn't been specified, and one isn't currently cached, set it to view all CustomerGroups
+			$_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'] = 0;
+		}
+		
+		// Retrieve all RatePlans that aren't currently archived, and satisfy the filter conditions
+		$strServiceTypeFilter	= "";
+		$strCustomerGroupFilter	= "";
+		if ($_SESSION['AvailablePlansPage']['Filter']['ServiceType'])
+		{
+			$strServiceTypeFilter = "AND ServiceType = <ServiceType>";
+		}
+		if ($_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'])
+		{
+			$strCustomerGroupFilter = "AND customer_group = <CustomerGroup>";
+		}
+		$strWhere = "Archived != <Archived> $strServiceTypeFilter $strCustomerGroupFilter";
+		$arrWhere = array(
+							"Archived"	=> RATE_STATUS_ARCHIVED,
+							"ServiceType"	=> $_SESSION['AvailablePlansPage']['Filter']['ServiceType'],
+							"CustomerGroup"	=> $_SESSION['AvailablePlansPage']['Filter']['CustomerGroup']
+						);
+		
+		DBL()->RatePlan->Where->Set($strWhere, $arrWhere);
+		DBL()->RatePlan->OrderBy("ServiceType, Name, customer_group");
 		DBL()->RatePlan->Load();
 	
 		$this->LoadPage('plans_list');
@@ -188,26 +233,9 @@ class AppTemplatePlan extends ApplicationTemplate
 					// The plan was successfully saved to the database
 					TransactionCommit();
 					
-					// Work out which page called this one
-					if (DBO()->CallingPage->Href->Value)
-					{
-						$strCallingPage = DBO()->CallingPage->Href->Value;
-					}
-					else
-					{
-						$strCallingPage = Href()->AdminConsole();
-					}
-					
 					// Set the message appropriate to the action
-					if (DBO()->Plan->Archived->Value == RATE_STATUS_ACTIVE)
-					{
-						$strSuccessMsg = "The plan has been successfully saved";
-					}
-					else
-					{
-						$strSuccessMsg = "The plan has been successfully saved as a draft";
-					}
-					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strSuccessMsg, "Location" => $strCallingPage));
+					$strSuccessMsg = (DBO()->Plan->Archived->Value == RATE_STATUS_ACTIVE)? "The plan has been successfully saved" : "The plan has been successfully saved as a draft";
+					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strSuccessMsg, "Location" => Href()->AvailablePlans()));
 					return TRUE;
 				}
 			}
@@ -336,12 +364,12 @@ class AppTemplatePlan extends ApplicationTemplate
 	{
 		/* 
 		 * Validation process:
-		 *		V1: Check that a Name and Description have been declared						(implemented via UiAppDocumentation table of database)
-		 *		V1: Check that the MinCharge, ChargeCap and UsageCap are valid monetary values	(implemented via UiAppDocumentation table of database)
-		 *		V2: Check that a service type has been declared									(implemented)
-		 *		V3: If ServiceType == LandLine, Check that CarrierFullService and CarrierPreselection have been declared			(implemented)
-		 *		V4: Check that the Name is unique when compared with all other Rate Plans (including all archived and draft plans)	(implemented)
-		 *		V5: Check that a non-fleet Rate Group has been declared for each RecordType which is Required						(implemented)
+		 *		V1: Check that a Name and Description have been declared
+		 *		V1: Check that the MinCharge, ChargeCap and UsageCap are valid monetary values
+		 *		V2: Check that a service type has been declared
+		 *		V3: If ServiceType == LandLine, Check that CarrierFullService and CarrierPreselection have been declared
+		 *		V4: Check that the Name is unique when compared with all other Rate Plans, for a given CustomerGroup/ServiceType combination (including all archived and draft plans)
+		 *		V5: Check that a non-fleet Rate Group has been declared for each RecordType which is Required
 		 */
 	
 		// V1: Validate the fields
@@ -364,7 +392,6 @@ class AppTemplatePlan extends ApplicationTemplate
 		{
 			DBO()->RatePlan->RecurringCharge = NULL;
 		}
-		
 		
 		// V2: ServiceType
 		if (!DBO()->RatePlan->ServiceType->Value)
@@ -392,24 +419,31 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 		}
 		
-		// V4: Make sure the name of the rate plan isn't currently in use
+		// V4: Make sure the name of the rate plan isn't currently in use for this CustomerGroup/ServiceType
 		if (DBO()->RatePlan->Id->Value == 0)
 		{
 			// The RatePlan name should not be in the database
-			$strWhere = "Name=<Name>";
+			$strWhere = "Name=<Name> AND ServiceType = <ServiceType> AND customer_group = <CustomerGroup>";
 		}
 		else
 		{
 			// We are working with an already saved draft.  Check that the New name is not used by any other RatePlan
-			$strWhere = "Name=<Name> AND Id != ". DBO()->RatePlan->Id->Value;
+			$strWhere = "Name=<Name> AND ServiceType = <ServiceType> AND customer_group = <CustomerGroup> AND Id != ". DBO()->RatePlan->Id->Value;
 		}
+		$arrWhere = array(
+							"Name"			=> DBO()->RatePlan->Name->Value,
+							"ServiceType"	=> DBO()->RatePlan->ServiceType->Value,
+							"CustomerGroup"	=> DBO()->RatePlan->customer_group->Value
+						);
 		$selRatePlanName = new StatementSelect("RatePlan", "Id", $strWhere);
-		if ($selRatePlanName->Execute(Array("Name" => DBO()->RatePlan->Name->Value)) > 0)
+		if ($selRatePlanName->Execute($arrWhere) > 0)
 		{
 			// The Name is already being used by another rate plan
+			$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "ServiceType");
+			$strCustomerGroup = GetConstantDescription(DBO()->RatePlan->customer_group->Value, "CustomerGroup");
 			DBO()->RatePlan->Name->SetToInvalid();
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
-			return "ERROR: This name is already used by another Plan<br />Please choose a unique name";
+			return "ERROR: The $strCustomerGroup customer group already has a plan with this name, for $strServiceType services<br />Please choose a unique name";
 		}
 		
 		

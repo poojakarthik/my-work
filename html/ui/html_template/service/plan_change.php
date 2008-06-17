@@ -102,31 +102,33 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 			DBO()->FutureRatePlan->Name->RenderOutput();
 		}
 		
-		//DBO()->RatePlan->Id->RenderHidden();  This should always be calculated on the fly
 		DBO()->Service->Id->RenderHidden();
 		
-		// Retrieve all available rate plans for this service type
-		DBL()->RatePlan->ServiceType = DBO()->Service->ServiceType->Value;
-		DBL()->RatePlan->Archived = RATE_STATUS_ACTIVE;
-		DBL()->RatePlan->OrderBy("Name");
-		DBL()->RatePlan->Load();
-		if (DBL()->RatePlan->RecordCount() > 0)
+		$strNewPlanOnChangeJsCode = 'Vixen.PlanChange.elmViewPlanLink.href = "'. Href()->ViewPlan("") .'" + this.value;';
+		
+		// Build the RatePlan combobox
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;New Plan :</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select id='Combo_NewPlan.Id' name='NewPlan.Id' style='width:90%' onchange='$strNewPlanOnChangeJsCode'>\n";
+		$intFirstRatePlan = NULL;
+		foreach (DBL()->RatePlan as $dboRatePlan)
 		{
-			echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;New Plan :</div>\n";
-			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select id='Combo_NewPlan.Id' name='NewPlan.Id' style='width:100%'>\n";
-	
-			foreach (DBL()->RatePlan as $dboRatePlan)
+			$strSelected = "";
+			if ($intFirstRatePlan === NULL)
 			{
-				$strSelected = (DBO()->RatePlan->Id->Value == $dboRatePlan->Id->Value) ? "selected='selected'" : "";
-				echo "<option value='". $dboRatePlan->Id->Value ."' $strSelected>". $dboRatePlan->Name->Value ."</option>\n";
+				// We need to initialise the View Rate Plan link
+				$intFirstRatePlan	= $dboRatePlan->Id->Value;
+				$strSelected		= "selected='selected'";
 			}
-	
-			echo "      </select>\n";
-			echo "   </div>\n";
-			echo "</div>\n";
+			echo "<option value='{$dboRatePlan->Id->Value}' $strSelected>{$dboRatePlan->Name->Value}</option>\n";
 		}
+		
+		$strViewFirstRatePlanLink = Href()->ViewPlan($intFirstRatePlan);
+		echo "      </select>\n";
+		echo "      <a id='ChangePlan.ViewPlanDetails' href='$strViewFirstRatePlanLink' title='View Plan Details'><img src='img/template/view.png'></img></a>\n";
+		echo "   </div>\n";
+		echo "</div>\n";
 		
 		// Render the Start time options
 		echo "<div class='DefaultElement'>\n";
@@ -136,13 +138,13 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 
 		if (DBO()->NewPlan->StartTime->Value == 0)
 		{
-			$strSelectCurrentBillingPeriod = "selected='selected'";
-			$strSelectNextBillingPeriod = "";
+			$strSelectCurrentBillingPeriod	= "selected='selected'";
+			$strSelectNextBillingPeriod		= "";
 		}
 		else
 		{
-			$strSelectNextBillingPeriod = "selected='selected'";
-			$strSelectCurrentBillingPeriod = "";
+			$strSelectNextBillingPeriod		= "selected='selected'";
+			$strSelectCurrentBillingPeriod	= "";
 		}
 
 		echo "<option value='0' $strSelectCurrentBillingPeriod>Begining of current billing period</option>\n";
@@ -156,7 +158,6 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 
  		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(this);");
-		$this->Button("View Details of New Plan", "Vixen.PlanChange.ViewPlanDetails();");
 		
 		// Make this utilise a confirm box which details what happens when they change the plan.  If one is scheduled for a future date
 		// And they declare a new plan for the current month, then the scheduled plan will be removed.  Also notify them that all Rate overrides
