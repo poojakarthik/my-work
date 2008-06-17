@@ -116,7 +116,8 @@
 			if (@ftp_login($this->_resConnection, $strUsername, $strPassword))
 			{
 				// Retrieve full file listing
-				$this->_GetDownloadPaths();
+				$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
+				reset($this->_arrDownloadPaths);
 			}
 			else
 			{
@@ -168,93 +169,73 @@
  	{
  		if (!$this->_resConnection)
 		{
-			DebugBacktrace();
-			throw new Exception("Download called before Connect!");
+			return "Download() called before Connect()";
 		}
 		
-		// Download the next file
-		if (next($this->_arrFileListing))
+		// Get the Current path element
+		if (!($arrCurrentFile = current($this->_arrDownloadPaths)))
 		{
-			$arrCurrent = current($this->_arrFileListing);
-			if ($arrCurrent['Type'] == "-")
-			{
-				// Check that we don't already have this file
-				if(!$this->_selFileExists->Execute(Array('filename' => key($this->_arrFileListing))))
-				{
-					if ($this->_selFileExists->Error())
-					{
-
-					}
-					
-					// Check the file size, sleep for a second, check the size again (make sure a file isnt current uploading to the server)
-					$intFilesize = ftp_size($this->_resConnection, key($this->_arrFileListing));
-					usleep(5000000);
-					if ($intFilesize != ftp_size($this->_resConnection, key($this->_arrFileListing)))
-					{
-						// File is still uploading to the server, so ignore it, and call Download() again
-						return $this->Download($strDestination);
-					}
-					
-					// set download mode
-					if(strtolower(substr(key($this->_arrFileListing), -3)) == "zip")
-					{
-						$intMode = FTP_BINARY;
-					}
-					else
-					{
-						$intMode = FTP_ASCII;
-					}
-
-					// We have a usable file, so download and return the filename
-					//Debug(Array($this->_resConnection, TEMP_DOWNLOAD_DIR.key($this->_arrFileListing), key($this->_arrFileListing), $intMode));
-					ftp_get($this->_resConnection, TEMP_DOWNLOAD_DIR.key($this->_arrFileListing), key($this->_arrFileListing), $intMode);
-					return key($this->_arrFileListing);					
-				}
-				else
-				{
-					// If the file is already downloaded, call Download() again
-					return $this->Download($strDestination);
-				}
-			}
-			else
-			{
-				// Recursively call Download() until a usable file is found
-				return $this->Download($strDestination);
-			}
-		}
-		elseif (next($this->_arrDefine['Dir']))
-		{
-			// Change to the next directory and call Download() again
-			$strDir = current($this->_arrDefine['Dir']);
-
-			// Account for nested directories
-			$strDotDotSlash = "";
-			if ($strDir{0} != "/")
-			{
-				$intDepth = count(explode("/", $strDir));
-				for ($i = 0; $i <= $intDepth; $i++)
-				{
-					$strDotDotSlash .= "../";
-				}
-			}
-			//Debug("Changing directory to: '$strDotDotSlash$strDir'");
-			if (!ftp_chdir($this->_resConnection, $strDotDotSlash.$strDir))
-			{
-				// Problem changing directory, error out
-				return $this->Download($strDestination);
-			}
-			
-			// Get our new list of files
-			$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."), $this->_strConnectionType);
-			return $this->Download($strDestination);
+			// No files left, return FALSE
+			return FALSE;
 		}
 		else
 		{
-			// There are no more files to download
-			return FALSE;
+			// Advance the arrDownloadPaths internal pointer
+			next($this->_arrDownloadPaths);
+			
+			// Calculate Local Download Path
+			$arrCurrentFile['LocalPath']	= $strDestination.basename($arrCurrentFile['RemotePath']);
+			
+			// Attempt to download this file
+			if (ftp_get($this->_resConnection, $arrCurrentFile['LocalPath'], $arrCurrentFile['RemotePath'], $arrCurrentFile['FileType']['FTPMode']))
+			{
+				return $arrCurrentFile;
+			}
+			else
+			{
+				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}'";
+			}
 		}
-		
  	}
+ 	
+  	//------------------------------------------------------------------------//
+	// _GetFileType
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetFileType()
+	 *
+	 * Determines the FileImport type for a given file
+	 *
+	 * Determines the FileImport type for a given file
+	 * 
+	 * @param	array	$arrDownloadFile				FileDownload properties
+	 * @param	string	$strArchiveFile		[optional]	File from inside the FileDownload archive
+	 * 
+	 * @return	mixed									integer: FileImport Type; NULL: Unrecognised type
+	 *
+	 * @method
+	 */
+	protected function _GetFileType($arrDownloadFile, $strArchiveFile = NULL)
+	{
+		if ($strArchiveFile && $strArchiveFile !== $arrDownloadFile['LocalPath'])
+		{
+			// This file has been extracted from a downloaded archive
+			foreach ($arrDownloadFile['SubTypes'] as $intFileType=>$strRegex)
+			{
+				// Does this file match our REGEX?
+				if (preg_match($strRegex, trim(basename($strArchiveFile))))
+				{
+					// We have a match
+					continue;
+				}
+			}
+		}
+		else
+		{
+			// The File Type for this file is already defined
+			return $arrDownloadFile['FileImportType'];
+		}
+	}
  	
   	//------------------------------------------------------------------------//
 	// _GetDownloadPaths
@@ -292,17 +273,21 @@
 					}
 					
 					// Does this file match our REGEX?
-					if (!preg_match($arrFileType['Regex'], trim($strPath)))
+					if (!preg_match($arrFileType['Regex'], trim(basename($strPath))))
 					{
 						// No match
 						continue;
 					}
 					
+					// Add the FileImport Type to our element
+					$arrFileType['FileImportType']	= $intFileType;
+					
 					// As far as we can tell, this file is valid
-					$this->_arrDownloadPaths[]	= trim($strPath);
+					$arrDownloadPaths[]	= Array('RemotePath' => trim($strPath), 'FileType' => &$arrFileType);
 				}
 			}
 		}
+		return $arrDownloadPaths;
 	}
 }
 
