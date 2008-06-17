@@ -1,1 +1,0 @@
-NOTE: This folder does not actually get used by Flex.  It is simply to keep a history of the configurations we have set up the database.

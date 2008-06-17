@@ -1,5 +1,0 @@
-Check out the list of services at the bottom of the View Account page in intranet app
-The dates are taken from the services table, however there can be multiple records in the ServiceRatePlan table
-relating to the one Service or FNN
-
-Within the Service table there can be multiple Services relating to the one FNN, but I think only one can be active at any one time.

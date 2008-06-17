@@ -1,4 +1,0 @@
-The console app should be able to accept an account id
-If an account Id is specified then it will display the details relating to that account,
-as opposed to whatever the contact's primary account is.
-(It gets the contact's details from the cookie, or their login name and password)
