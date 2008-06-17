@@ -1,0 +1,1431 @@
+<?php
+//----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+
+//----------------------------------------------------------------------------//
+// account
+//----------------------------------------------------------------------------//
+/**
+ * account
+ *
+ * contains all ApplicationTemplate extended classes relating to Account functionality
+ *
+ * contains all ApplicationTemplate extended classes relating to Account functionality
+ *
+ * @file		account.php
+ * @language	PHP
+ * @package		framework
+ * @author		Sean, Jared 'flame' Herbohn
+ * @version		7.05
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+
+//----------------------------------------------------------------------------//
+// AppTemplateAccount
+//----------------------------------------------------------------------------//
+/**
+ * AppTemplateAccount
+ *
+ * The AppTemplateAccount class
+ *
+ * The AppTemplateAccount class.  This incorporates all logic for all pages
+ * relating to accounts
+ *
+ *
+ * @package	ui_app
+ * @class	AppTemplateAccount
+ * @extends	ApplicationTemplate
+ */
+class AppTemplateAccount extends ApplicationTemplate
+{
+	//------------------------------------------------------------------------//
+	// ViewServices
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewServices()
+	 *
+	 * Performs the logic for viewing the Services belonging to this account
+	 * 
+	 * Performs the logic for viewing the Services belonging to this account
+	 * This is a popup which will only ever be executed via an Ajax request
+	 * either	DBO()->Account->Id	must be specified
+	 * or		DBO()->Service->Id	must be specified, in which case, it will work out the Service Id
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function ViewServices()
+	{
+		// Check user authorization
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		
+		// If Account.Id is not set, but Service.Id is, then find the account that the service belongs to
+		if ((!DBO()->Account->Id->Value) && (DBO()->Service->Id->Value))
+		{
+			if (!DBO()->Service->Load())
+			{
+				// The service could not be found
+				
+				// For when it is used as a popup
+				//Ajax()->AddCommand("AlertReload", "The service with Id: ". DBO()->Service->Id->Value ." could not be found");
+				
+				// For when it is used as a page
+				DBO()->Error->Message = "The service with id: ". DBO()->Service->Id->value ." could not be found";
+				$this->LoadPage('error');
+				return TRUE;
+			}
+			
+			// We want to view all services belonging to the account that this service belongs to
+			DBO()->Account->Id = DBO()->Service->Account->Value;
+		}
+		
+		// Attempt to load the account
+		if (!DBO()->Account->Load())
+		{
+			// For when it is used as a popup
+			//Ajax()->AddCommand("AlertReload", "The account ". DBO()->Account->Id->Value ." could not be found");
+			
+			// For when it is used as a page
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
+			$this->LoadPage('error');
+			return TRUE;
+		}
+		
+		// breadcrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Services");
+		
+		// context menu
+		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		if ($bolUserHasOperatorPerm)
+		{
+			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		}
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		
+		/*  Currently Operators can view archived services
+		if (!$bolUserHasAdminPerm)
+		{
+			// User does not have admin privileges and therefore cannot view archived services
+			$strWhere = "Account = <Account> AND Status != ". SERVICE_ARCHIVED;
+		}
+		else
+		{
+			// User has admin privileges and can view all services regardless of their status
+			$strWhere = "Account = <Account>";
+		}
+		*/
+		$strWhere = "Account = <Account>";
+		
+		// Load all the services belonging to the account, that the user has permission to view
+		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
+		
+		$this->LoadPage('account_services');
+		return TRUE;
+	}	
+
+	//------------------------------------------------------------------------//
+	// ViewContacts
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewContacts()
+	 *
+	 * Performs the logic for viewing the Services belonging to this account
+	 * 
+	 * Performs the logic for viewing the Services belonging to this account
+	 * This is a popup which will only ever be executed via an Ajax request
+	 * DBO()->Account->Id		Id of the Account to view the contacts of
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function ViewContacts()
+	{
+		// Check user authorization
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+
+		// Attempt to load the account
+		if (!DBO()->Account->Load())
+		{
+			Ajax()->AddCommand("Alert", "The account ". DBO()->Account->Id->Value ." could not be found");
+			return TRUE;
+		}
+		
+		// Load all the contacts who belong to the AccountGroup and can view the Account
+		$strWhere = "(AccountGroup = <AccountGroup> AND CustomerContact = 1) OR Account = <Account>";
+		$arrWhere = array("AccountGroup"=>DBO()->Account->AccountGroup->Value, "Account"=>DBO()->Account->Id->Value);
+		DBL()->Contact->Where->Set($strWhere, $arrWhere);
+		DBL()->Contact->OrderBy("FirstName, LastName");
+		DBL()->Contact->Load();
+		
+		$this->LoadPage('account_contacts');
+		return TRUE;
+	}	
+
+	//------------------------------------------------------------------------//
+	// InvoicesAndPayments
+	//------------------------------------------------------------------------//
+	/**
+	 * InvoicesAndPayments()
+	 *
+	 * Performs the logic for the invoices_and_payments.php webpage
+	 * 
+	 * Performs the logic for the invoices_and_payments.php webpage
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function InvoicesAndPayments()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		
+		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
+		//check if the form was submitted
+		/* DEPRICATED
+		if (SubmittedForm('AccountDetails', 'Apply Changes') && $bolUserHasOperatorPerm)
+		{
+			DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
+			DBO()->CurrentAccount->SetTable("Account");
+			DBO()->CurrentAccount->Load();
+			
+			// if DisableLatePayment === NULL, then, in this context, it logically equals 0
+			if (DBO()->CurrentAccount->DisableLatePayment->Value === NULL)
+			{
+				DBO()->CurrentAccount->DisableLatePayment = 0;
+			}
+			
+			// Check that the user can edit the account
+			$intAccountStatus = DBO()->Account->Archived->Value;
+			if (	($intAccountStatus == ACCOUNT_ARCHIVED || $intAccountStatus == ACCOUNT_DEBT_COLLECTION 
+					|| $intAccountStatus == ACCOUNT_SUSPENDED) && (!$bolUserHasAdminPerm))
+			{
+				// The user can't edit the Account
+				Ajax()->AddCommand("AlertReload", "ERROR: Due to the account's status, and your permissions, you cannot edit this account");
+				return TRUE;
+			}
+		
+			//Save the AccountDetails
+			if (!DBO()->Account->IsInvalid())
+			{
+				// Define what will go in the system generated note
+				if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
+				{
+					$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "no longer" : "now") ." charged an admin fee\n";
+				}		
+				if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
+				{
+					$intCurrentValue = DBO()->CurrentAccount->DisableLatePayment->Value;
+					if ($intCurrentValue === NULL)
+					{
+						$intCurrentValue = 0;
+					}
+					$strChangesNote .=	"Charging of Late Payment Fee was changed from '".
+										DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue).
+										"' to '". DBO()->Account->DisableLatePayment->FormattedValue() ."'\n";	
+				}
+				if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
+				{
+					$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
+					$strChangesNote .=	"Sending of Late Notices was changed from '".
+										DBO()->Account->DisableLateNotices->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue).
+										"' to '". DBO()->Account->DisableLateNotices->FormattedValue() ."'\n";
+										
+					// When this property is changed you have to update the LatePaymentAmnesty property
+					switch (DBO()->Account->DisableLateNotices->Value)
+					{
+						case 0:
+						case 1:
+							DBO()->Account->LatePaymentAmnesty = NULL;
+							break;
+							
+						case (-1):
+							// This account is ineligible to receive late notices, until after the due date of the current bill
+							DBO()->Account->LatePaymentAmnesty = $this->GetLatePaymentAmnestyDate(DBO()->CurrentAccount->PaymentTerms->Value);
+							//$intPaymentTerms					= DBO()->CurrentAccount->PaymentTerms->Value;
+							//DBO()->Account->LatePaymentAmnesty	= date("Y-m-d", strtotime("+{$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
+							$strChangesNote .= "Late Notices will not be generated until after ". date("d/m/Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
+							break;
+					}
+				}
+				else
+				{
+					// Retain the current value of Account.LateNoticeAmnesty
+					DBO()->Account->LatePaymentAmnesty = DBO()->CurrentAccount->LatePaymentAmnesty->Value;
+				}
+				
+				
+				// Update the record in the Account table
+				DBO()->Account->SetColumns("DisableDDR, DisableLatePayment, DisableLateNotices, LatePaymentAmnesty");
+				
+				// Save the payment to the payment table of the vixen database
+				if (!DBO()->Account->Save())
+				{
+					// The account details could not be updated
+					Ajax()->AddCommand("AlertReload", "ERROR: Updating the Account failed, unexpectedly");
+					return TRUE;
+				}
+				
+				// The account details were successfully updated
+				if ($strChangesNote)
+				{
+					$strSystemChangesNote = "Account details have been edited.  The following changes have been made:\n$strChangesNote";
+					SaveSystemNote($strSystemChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, NULL);
+				}
+				Ajax()->AddCommand("Alert", "The Account details have been successfully updated");
+				
+				// Fire the OnNewNote Event
+				Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
+				
+				// Fire the OnAccountDetailsUpdate Event
+				$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
+				Ajax()->FireEvent(EVENT_ON_ACCOUNT_DETAILS_UPDATE, $arrEvent);
+				
+				return TRUE;
+			}
+		}
+		*/
+		
+		// breadcrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Invoices and Payments");
+		
+		// Setup all DBO and DBL objects required for the page
+		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		/* Currently Operators can view Archived accounts
+		// If the account is archived, check that the user has permission to view it
+		if (DBO()->Account->Archived->Value == ACCOUNT_ARCHIVED && !$bolUserHasAdminPerm)
+		{
+			// The user does not have permission to view this account
+			DBO()->Error->Message = "You do not have permission to view account: ". DBO()->Account->Id->value ." because its status = " . GetConstantDescription(DBO()->Account->Archived->Value, "Account");
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		*/
+
+		// context menu
+		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Services->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		if ($bolUserHasOperatorPerm)
+		{
+			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		}
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		
+		// the DBList storing the invoices should be ordered so that the most recent is first
+		// same with the payments list
+		DBL()->Invoice->Account = DBO()->Account->Id->Value;
+		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->Invoice->Load();
+		
+		// Retrieve the Payments
+		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId> AND Account IS NULL)) AND (Status conditions)"
+		$strWhere  = "((Payment.Account = ". DBO()->Account->Id->Value .")";
+		$strWhere .= " OR (Payment.AccountGroup = ". DBO()->Account->AccountGroup->Value ." AND Payment.Account IS NULL))";
+		$strWhere .= " AND Payment.Status IN (". PAYMENT_WAITING .", ". PAYMENT_PAYING .", ". PAYMENT_FINISHED .", ". PAYMENT_REVERSED .")";
+		DBL()->Payment->Where->SetString($strWhere);
+		
+		$arrColumns = Array(	"Id"			=> "Payment.Id",
+								"AccountGroup"	=> "Payment.AccountGroup",
+								"Account"		=> "Payment.Account",
+								"Status"		=> "Payment.Status",
+								"Balance"		=> "Payment.Balance",
+								"PaidOn"		=> "Payment.PaidOn",
+								"Amount"		=> "Payment.Amount",
+								"PaymentType"	=> "Payment.PaymentType",
+								"EnteredBy"		=> "Payment.EnteredBy",
+								"ImportedOn"	=> "FileImport.ImportedOn"
+							);
+		DBL()->Payment->SetColumns($arrColumns);
+		DBL()->Payment->SetTable("Payment LEFT OUTER JOIN FileImport ON Payment.File = FileImport.Id");
+		DBL()->Payment->OrderBy("Payment.PaidOn DESC, Payment.Id DESC");
+		DBL()->Payment->Load();
+		
+		DBL()->InvoicePayment->Account = DBO()->Account->Id->Value;
+		DBL()->InvoicePayment->OrderBy("Id DESC");
+		DBL()->InvoicePayment->Load();
+		
+		// Build the list of columns to use for the Charge DBL (as it is pulling this information from 2 tables)
+		$arrColumns = Array(	'Id' => 'C.Id',	'AccountGroup'=>'C.AccountGroup',	'Account'=>'C.Account',	'Service'=>'C.Service',
+								'InvoiceRun'=>'C.InvoiceRun',	'CreatedBy'=>'C.CreatedBy', 'CreatedOn'=>'C.CreatedOn', 'ApprovedBy'=>'C.ApprovedBy',
+								'ChargeType'=>'C.ChargeType', 'Description'=>'C.Description', 'ChargedOn'=>'C.ChargedOn', 'Nature'=>'C.Nature',
+								'Amount'=>'C.Amount', 'Invoice'=>'C.Invoice', 'Notes'=>'C.Notes', 'Status'=>'C.Status', 'LinkType' => 'C.LinkType',
+								'LinkId' => 'C.LinkId', 'FNN'=>'S.FNN');
+		DBL()->Charge->SetColumns($arrColumns);
+		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id");
+		
+		//"WHERE (Account = <accId>) AND (Status conditions)"
+		$strWhere  = "C.Account = ". DBO()->Account->Id->Value;
+		$strWhere .= " AND C.Status IN (". CHARGE_WAITING .", ". CHARGE_APPROVED .", ". CHARGE_TEMP_INVOICE .", ". CHARGE_INVOICED .")";
+		DBL()->Charge->Where->SetString($strWhere);
+		DBL()->Charge->OrderBy("ChargedOn DESC, Id DESC");
+		DBL()->Charge->Load();
+		
+		// Build the list of columns to use for the RecurringCharge DBL (as it is pulling this information from 2 tables)
+		$arrColumns = Array(	'Id' => 'RC.Id',	'AccountGroup'=>'RC.AccountGroup',	'Account'=>'RC.Account',	'Service'=>'RC.Service',
+								'CreatedBy'=>'RC.CreatedBy', 'ApprovedBy'=>'RC.ApprovedBy', 'ChargeType'=>'RC.ChargeType',
+								'Description'=>'RC.Description', 'Nature'=>'RC.Nature', 'CreatedOn'=>'RC.CreatedOn',
+								'StartedOn'=>'RC.StartedOn', 'LastChargedOn'=>'RC.LastChargedOn', 'RecurringFreqType'=>'RC.RecurringFreqType',
+								'RecurringFreq'=>'RC.RecurringFreq', 'MinCharge'=>'RC.MinCharge', 'RecursionCharge'=>'RC.RecursionCharge',
+								'CancellationFee'=>'RC.CancellationFee', 'Continuable'=>'RC.Continuable', 'PlanCharge'=>'RC.PlanCharge',
+								'UniqueCharge'=>'RC.UniqueCharge', 'TotalCharged'=>'RC.TotalCharged', 'TotalRecursions'=>'RC.TotalRecursions',
+								'Archived'=>'RC.Archived', 'FNN'=>'S.FNN');
+		DBL()->RecurringCharge->SetColumns($arrColumns);
+		DBL()->RecurringCharge->SetTable("RecurringCharge AS RC LEFT OUTER JOIN Service AS S ON RC.Service = S.Id");
+		
+		// I can't directly use a DBObject property or method as a parameter of another DBObject or DBList method
+		// On account of how the Property token works 
+		$intAccountId = DBO()->Account->Id->Value;
+		DBL()->RecurringCharge->Where->Set("RC.Account = <Account> AND RC.Archived = 0", Array("Account"=>$intAccountId));
+		DBL()->RecurringCharge->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->RecurringCharge->Load();
+		
+		// Calculate the Account Balance
+		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+
+		// Calculate the Account Overdue Amount
+		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
+		
+		// Calculate the Account's total unbilled adjustments
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		
+		// Load the primary contact
+		if (DBO()->Account->PrimaryContact->Value)
+		{
+			DBL()->Contact->Id = DBO()->Account->PrimaryContact->Value;
+			DBL()->Contact->Load();
+		}
+		
+		LoadNotes(DBO()->Account->Id->Value);
+
+		// Flag the Account as being shown in the InvoicesAndPayments Page
+		DBO()->Account->InvoicesAndPaymentsPage = 1;
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('invoices_and_payments');
+
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Overview
+	//------------------------------------------------------------------------//
+	/**
+	 * Overview()
+	 *
+	 * Performs the logic for the Account Overview webpage
+	 * 
+	 * Performs the logic for the Account Overview webpage
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Overview()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		
+		
+		// breadcrumb menu
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->SetCurrentPage("Account");
+		
+		
+		// Setup all DBO and DBL objects required for the page
+		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		// context menu
+		ContextMenu()->Account_Menu->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Services->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		if ($bolUserHasOperatorPerm)
+		{
+			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+		}
+		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+
+		// The DBList storing the invoices should be ordered so that the most recent is first
+		DBL()->Invoice->Account = DBO()->Account->Id->Value;
+		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->Invoice->SetLimit(3);
+		DBL()->Invoice->Load();
+
+		// Calculate the Account Balance
+		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+
+		// Calculate the Account Overdue Amount
+		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
+		
+		// Calculate the Account's total unbilled adjustments
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		
+		// Load the primary contact
+		if (DBO()->Account->PrimaryContact->Value)
+		{
+			DBL()->Contact->Id = DBO()->Account->PrimaryContact->Value;
+			DBL()->Contact->Load();
+		}
+		
+		// Load the last looked at contact, if this page was triggered from the Contact View page and the last contact viewed is
+		// different to the Primary Contact
+		// TODO: While this functionality is complete in this method, the contact is not currently displayed in the HtmlTemplate
+		// as I can't work out where the account_view.php link is in the contact_view.php file
+		// This means there is no way of specifying DBO()->LastContact->Id unless you explicitly write it into the browser's address bar
+		// TODO! Save the last contact in the Session data, once we implement sessions properly
+		if ((DBO()->LastContact->Id->Value) && (DBO()->LastContact->Id->Value != DBO()->Account->PrimaryContact->Value))
+		{
+			DBO()->LastContact->SetTable("Contact");
+			DBO()->LastContact->Load();
+			
+			// Make sure this contact is associated with this account
+			if (DBO()->LastContact->Account->Value != DBO()->Account->Id->Value)
+			{
+				// It's not associated with the account
+				DBO()->LastContact->Id = NULL;
+			}
+		}
+		
+		// Load the List of services
+		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)
+		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
+		
+		// Load the user notes
+		LoadNotes(DBO()->Account->Id->Value);
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('account_overview');
+
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderAccountServicesTable
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderAccountServicesTable()
+	 *
+	 * Renders just the VixenTable storing the services belonging to the account
+	 * 
+	 * Renders just the VixenTable storing the Account Services
+	 * It expects	DBO()->Account->Id 			The account Id 
+	 *				DBO()->TableContainer->Id	The id of the container div of the VixenTable 
+	 *											that displays the Services of the Account
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function RenderAccountServicesTable()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
+		// Load all the services belonging to the account, that the user has permission to view
+		DBO()->Account->Services = $this->GetServices(DBO()->ServiceList->Account->Value, DBO()->ServiceList->Filter->Value);
+		
+		//Render the AccountServices table
+		Ajax()->RenderHtmlTemplate("AccountServicesList", HTML_CONTEXT_DEFAULT, DBO()->ServiceList->ContainerDivId->Value);
+
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetServices
+	//------------------------------------------------------------------------//
+	/**
+	 * GetServices()
+	 *
+	 * Builds an array structure defining every service belonging to the account, and a history of their status, and their plan details
+	 * 
+	 * Builds an array structure defining every service belonging to the account, and a history of their status, and their plan details
+	 * The history details when the service was activated(or created) and Closed(disconnected or archived)
+	 * It will always have at least one record
+	 * On Success the returned array will be of the format:
+	 * $arrServices[]	['Id']
+	 * 					['FNN']
+	 * 					['ServiceType']
+	 * 					['CurrentPlan']	['Id']
+	 * 									['Name']
+	 * 					['FuturePlan']	['Id']
+	 * 									['Name']
+	 * 									['StartDatetime']
+	 * 					['History'][]	['ServiceId']		These will be ordered from Latest to Earliest Service records modelling this Service for this account
+	 * 									['CreatedOn']
+	 * 									['ClosedOn']
+	 * 									['CreatedBy']
+	 * 									['ClosedBy']
+	 * 									['Status']
+	 * 									['LineStatus']
+	 * 									['LineStatusDate']
+	 * 
+	 * @param	int		$intAccount		Id of the Account to retrieve the services of
+	 * @param	int		$intFilter		optional, Filter constant.  Defaults to SERVICE_ACTIVE
+	 * 									0 						:	Retrieve all Services
+	 * 									SERVICE_ACTIVE			:	Retrieve all Services with ClosedOn == NULL or ClosedOn >= NOW()
+	 * 									SERVICE_DISCONNECTED	:	Retrieve all Services with Status == SERVICE_DISCONNECTED AND ClosedOn in the past 
+	 *									SERVICE_ARCHIVED		:	Retrieve all Services with Status == SERVICE_ARCHIVED AND ClosedOn in the past
+	 *
+	 * @return	mixed					FALSE:	On database error
+	 * 									Array:  $arrServices
+	 * 	
+	 * @method
+	 */
+	function GetServices($intAccount, $intFilter=SERVICE_ACTIVE)
+	{
+		// Load all the services belonging to the account
+		// OLD method
+		//DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
+		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
+		//DBL()->Service->Load();
+		
+		// Retrieve all the services belonging to the account
+		$strTables	= "	Service AS S 
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
+								FROM ServiceRatePlan AS SRP2 
+								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
+								ORDER BY SRP2.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
+								FROM ServiceRatePlan AS SRP4 
+								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
+								ORDER BY SRP4.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
+		$arrColumns	= Array("Id" 						=> "S.Id",
+							"FNN"						=> "S.FNN",
+							"ServiceType"				=> "S.ServiceType", 
+							"Status"		 			=> "S.Status",
+							"LineStatus"				=> "S.LineStatus",
+							"LineStatusDate"			=> "S.LineStatusDate",
+							"CreatedOn"					=> "S.CreatedOn", 
+							"ClosedOn"					=> "S.ClosedOn",
+							"CreatedBy"					=> "S.CreatedBy", 
+							"ClosedBy"					=> "S.ClosedBy",
+							"NatureOfCreation"			=> "S.NatureOfCreation",
+							"NatureOfClosure"			=> "S.NatureOfClosure",
+							"LastOwner"					=> "S.LastOwner",
+							"NextOwner"					=> "S.NextOwner",
+							"CurrentPlanId" 			=> "RP1.Id",
+							"CurrentPlanName"			=> "RP1.Name",
+							"FuturePlanId"				=> "RP2.Id",
+							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
+		$strWhere	= "S.Account = <AccountId> AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
+		$arrWhere	= Array("AccountId" => $intAccount);
+		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
+		
+		$selServices = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+		if ($selServices->Execute($arrWhere) === FALSE)
+		{
+			// An error occurred
+			return FALSE;
+		}
+		
+		$arrServices	= Array();
+		$arrRecord		= $selServices->Fetch();
+		while ($arrRecord !== FALSE)
+		{
+			// Create the Service Array
+			$arrService = Array (
+									"Id"			=> $arrRecord['Id'],
+									"FNN"			=> $arrRecord['FNN'],
+									"ServiceType"	=> $arrRecord['ServiceType']
+								);
+
+			// Add details about the Service's current plan, if it has one
+			if ($arrRecord['CurrentPlanId'] != NULL)
+			{
+				$arrService['CurrentPlan'] = Array	(
+														"Id"	=> $arrRecord['CurrentPlanId'],
+														"Name"	=> $arrRecord['CurrentPlanName']
+													);
+			}
+			else
+			{
+				$arrService['CurrentPlan'] = NULL;
+			}
+			
+			// Add details about the Service's Future scheduled plan, if it has one
+			if ($arrRecord['FuturePlanId'] != NULL)
+			{
+				$arrService['FuturePlan'] = Array	(
+														"Id"	=> $arrRecord['FuturePlanId'],
+														"Name"	=> $arrRecord['FuturePlanName'],
+														"StartDatetime"	=> $arrRecord['FuturePlanStartDatetime']
+													);
+			}
+			else
+			{
+				$arrService['FuturePlan'] = NULL;
+			}
+			
+			// Add this record's details to the history array
+			$arrService['History']		= Array();
+			$arrService['History'][]	= Array	(
+													"ServiceId"			=> $arrRecord['Id'],
+													"CreatedOn"			=> $arrRecord['CreatedOn'],
+													"ClosedOn"			=> $arrRecord['ClosedOn'],
+													"CreatedBy"			=> $arrRecord['CreatedBy'],
+													"ClosedBy"			=> $arrRecord['ClosedBy'],
+													"NatureOfCreation"	=> $arrRecord['NatureOfCreation'],
+													"NatureOfClosure"	=> $arrRecord['NatureOfClosure'],
+													"LastOwner"			=> $arrRecord['LastOwner'],
+													"NextOwner"			=> $arrRecord['NextOwner'],
+													"Status"			=> $arrRecord['Status'],
+													"LineStatus"		=> $arrRecord['LineStatus'],
+													"LineStatusDate"	=> $arrRecord['LineStatusDate']
+												);
+			 
+			
+			// If multiple Service records relate to the one actual service then they will be consecutive in the RecordSet
+			// Find each one and add it to the Status history
+			while (($arrRecord = $selServices->Fetch()) !== FALSE)
+			{
+				if ($arrRecord['FNN'] == $arrService['FNN'])
+				{
+					// This record relates to the same Service
+					$arrService['History'][]	= Array	(
+															"ServiceId"	=> $arrRecord['Id'],
+															"CreatedOn"			=> $arrRecord['CreatedOn'],
+															"ClosedOn"			=> $arrRecord['ClosedOn'],
+															"CreatedBy"			=> $arrRecord['CreatedBy'],
+															"ClosedBy"			=> $arrRecord['ClosedBy'],
+															"NatureOfCreation"	=> $arrRecord['NatureOfCreation'],
+															"NatureOfClosure"	=> $arrRecord['NatureOfClosure'],
+															"LastOwner"			=> $arrRecord['LastOwner'],
+															"NextOwner"			=> $arrRecord['NextOwner'],
+															"Status"			=> $arrRecord['Status'],
+															"LineStatus"		=> $arrService['LineStatus'],
+															"LineStatusDate"	=> $arrService['LineStatusDate']
+														);
+				}
+				else
+				{
+					// We have moved on to the next Service
+					break;
+				}
+			}
+			
+			// Add the Service to the array of Services
+			$arrServices[] = $arrService;
+		}
+		
+		// Apply the filter
+		$strNow = GetCurrentISODateTime();
+		if ($intFilter)
+		{
+			$arrTempServices	= $arrServices;
+			$arrServices		= Array();
+			
+			foreach ($arrTempServices as $arrService)
+			{
+				switch ($intFilter)
+				{
+					case SERVICE_ACTIVE:
+						// Only keep the Service if ClosedOn IS NULL OR NOW() OR in the future
+						if ($arrService['History'][0]['ClosedOn'] == NULL || $arrService['History'][0]['ClosedOn'] >= $strNow)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+					
+					case SERVICE_DISCONNECTED:
+						// Only keep the Service if Status == Disconnected AND ClosedOn < NOW()
+						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strNow)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+					
+					case SERVICE_ARCHIVED:
+						// Only keep the Service if Status == Archived AND ClosedOn < NOW()
+						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strNow)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+				}
+			}
+		}
+		
+		return $arrServices;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// RenderAccountDetailsForViewing
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderAccountDetailsForViewing()
+	 *
+	 * Renders the AccountDetails Html Template for viewing
+	 * 
+	 * Renders the AccountDetails Html Template for viewing
+	 * It expects	DBO()->Account->Id 							account Id 
+	 *				DBO()->Account->InvoicesAndPaymentsPage		set to TRUE if the HtmlTemplate is to be rendered
+	 *															on the InvoicesAndPayments page 
+	 *				DBO()->Container->Id						id of the container div in which to place the 
+	 *															Rendered HtmlTemplate
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function RenderAccountDetailsForViewing()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
+		// Load the account
+		DBO()->Account->LoadMerge();
+		
+		// Calculate the Balance, Amount Overdue, and the Total Un-billed adjustments
+		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		
+		// Render the AccountDetails HtmlTemplate for Viewing
+		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_VIEW, DBO()->Container->Id->Value);
+
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderAccountDetailsForEditing
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderAccountDetailsForEditing()
+	 *
+	 * Renders the AccountDetails Html Template for editing
+	 * 
+	 * Renders the AccountDetails Html Template for editing
+	 * It expects	DBO()->Account->Id 							account Id 
+	 *				DBO()->Account->InvoicesAndPaymentsPage		set to TRUE if the HtmlTemplate is to be rendered
+	 *															on the InvoicesAndPayments page 
+	 *				DBO()->Container->Id						id of the container div in which to place the 
+	 *															Rendered HtmlTemplate
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function RenderAccountDetailsForEditing()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Accounts can not have their details editted while an invoice run is processing
+		if (IsInvoicing())
+		{
+			Ajax()->AddCommand("Alert", "Billing is in progress.  Accounts cannot be modified while this is happening.  Please try again in a couple of hours.  If this problem persists, please notify your system administrator");
+			return TRUE;
+		}
+
+		// Load the account
+		DBO()->Account->LoadMerge();
+		
+		// Render the AccountDetails HtmlTemplate for Viewing
+		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, DBO()->Container->Id->Value);
+
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// SaveDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveDetails()
+	 *
+	 * Handles the logic of validating and saving the details of an account
+	 * 
+	 * Handles the logic of validating and saving the details of an account
+	 * This works with the HtmlTemplateAccountDetails object, when rendered in Edit mode (HTML_CONTEXT_EDIT)
+	 * It fires the OnAccountDetailsUpdate, OnAccountServicesUpdate and OnNewNote Events if relevent to the
+	 * changes made to the account
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function SaveDetails()
+	{
+		// Check permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// Accounts can not have their details editted while an invoice run is processing
+		if (IsInvoicing())
+		{
+			Ajax()->AddCommand("Alert", "Billing is in progress.  Accounts cannot be modified while this is happening.  Please try again in a couple of hours.  If this problem persists, please notify your system administrator");
+			return TRUE;
+		}
+
+		// If the validation has failed display the invalid fields
+		if (DBO()->Account->IsInvalid())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Invalid fields are highlighted");
+			Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+			return TRUE;
+		}
+		
+		// Merge the Account data from the database with the newly defined details
+		DBO()->Account->LoadMerge();
+		
+		// This will store the properties that have been changed and have to cascade 
+		// to tables other than the Account table, which I believe is only the 
+		// ServiceAddress table at the moment
+		$arrCascadingFields = Array();
+		
+		// Load the current account details, so you can work out what has been changed, and include these details in the system note
+		DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
+		DBO()->CurrentAccount->SetTable("Account");
+		DBO()->CurrentAccount->Load();
+
+		if (DBO()->Account->BusinessName->Value != DBO()->CurrentAccount->BusinessName->Value)
+		{
+			$strChangesNote .= "Business Name was changed from '". DBO()->CurrentAccount->BusinessName->Value ."' to '" . DBO()->Account->BusinessName->Value . "'\n";
+			$arrCascadingFields[] = "Business Name";
+		}
+		if (DBO()->Account->TradingName->Value != DBO()->CurrentAccount->TradingName->Value)
+		{
+			$strChangesNote .= "Trading Name was changed from '". DBO()->CurrentAccount->TradingName->Value ."' to '" . DBO()->Account->TradingName->Value . "'\n";
+			$arrCascadingFields[] = "Trading Name";
+		}	
+		if (DBO()->Account->ABN->Value != DBO()->CurrentAccount->ABN->Value)
+		{
+			$strChangesNote .= "ABN was changed from ". DBO()->CurrentAccount->ABN->Value ." to " . DBO()->Account->ABN->Value . "\n";
+			$arrCascadingFields[] = "ABN";
+		}
+		if (DBO()->Account->ACN->Value != DBO()->CurrentAccount->ACN->Value)
+		{
+			$strChangesNote .= "ACN was changed from ". DBO()->CurrentAccount->ACN->Value ." to " . DBO()->Account->ACN->Value . "\n";
+		}
+		if (DBO()->Account->Address1->Value != DBO()->CurrentAccount->Address1->Value)
+		{
+			$strChangesNote .= "Address Line 1 was changed from '". DBO()->CurrentAccount->Address1->Value ."' to '" . DBO()->Account->Address1->Value . "'\n";
+			$arrCascadingFields[] = "Address Line 1";
+		}
+		if (DBO()->Account->Address2->Value != DBO()->CurrentAccount->Address2->Value)
+		{
+			$strChangesNote .= "Address Line 2 was changed from '". DBO()->CurrentAccount->Address2->Value ."' to '" . DBO()->Account->Address2->Value . "'\n";
+			$arrCascadingFields[] = "Address Line 2";
+		}
+		if (DBO()->Account->Suburb->Value != DBO()->CurrentAccount->Suburb->Value)
+		{
+			$strChangesNote .= "Suburb was changed from '". DBO()->CurrentAccount->Suburb->Value ."' to '" . DBO()->Account->Suburb->Value . "'\n";
+			$arrCascadingFields[] = "Suburb";
+		}
+		if (DBO()->Account->Postcode->Value != DBO()->CurrentAccount->Postcode->Value)
+		{
+			$strChangesNote .= "Postcode was changed from ". DBO()->CurrentAccount->Postcode->Value ." to " . DBO()->Account->Postcode->Value . "\n";
+			$arrCascadingFields[] = "Postcode";
+		}
+		if (DBO()->Account->State->Value != DBO()->CurrentAccount->State->Value)
+		{
+			$strChangesNote .= "State was changed from ". DBO()->CurrentAccount->State->Value ." to " . DBO()->Account->State->Value . "\n";
+		}
+		if (DBO()->Account->BillingMethod->Value != DBO()->CurrentAccount->BillingMethod->Value)
+		{
+			$strChangesNote .= "Billing Method was changed from ". GetConstantDescription(DBO()->CurrentAccount->BillingMethod->Value, 'BillingMethod') ." to " . GetConstantDescription(DBO()->Account->BillingMethod->Value, 'BillingMethod') . "\n";
+		}
+		if (DBO()->Account->CustomerGroup->Value != DBO()->CurrentAccount->CustomerGroup->Value)
+		{
+			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "Id = <Id>");
+			$selCustomerGroup->Execute(Array("Id" => DBO()->CurrentAccount->CustomerGroup->Value));
+			$arrCurrentCustomerGroup = $selCustomerGroup->Fetch();
+			$selCustomerGroup->Execute(Array("Id" => DBO()->Account->CustomerGroup->Value));
+			$arrNewCustomerGroup = $selCustomerGroup->Fetch();
+			
+			$strChangesNote .= "Customer Group was changed from {$arrCurrentCustomerGroup['InternalName']} to {$arrNewCustomerGroup['InternalName']}\n";
+		}
+		DBO()->Account->DisableDDR = !(DBO()->Account->ChargeAdminFee->Value);
+		if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
+		{
+			$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "no longer" : "now") ." charged an admin fee\n";
+		}
+		
+		// if DisableLatePayment === NULL, then, in this context, it logically equals 0
+		if (DBO()->CurrentAccount->DisableLatePayment->Value === NULL)
+		{
+			DBO()->CurrentAccount->DisableLatePayment = 0;
+		}
+		if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
+		{
+			$intCurrentValue = DBO()->CurrentAccount->DisableLatePayment->Value;
+			if ($intCurrentValue === NULL)
+			{
+				$intCurrentValue = 0;
+			}
+			elseif ($intCurrentValue < -1)
+			{
+				$intCurrentValue = abs($intCurrentValue);
+			}
+			$strChangesNote .= "Charging of Late Payment Fee was changed from '". 
+								DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
+								"' to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	
+		}
+		if (DBO()->Account->Sample->Value != DBO()->CurrentAccount->Sample->Value)
+		{
+			$intCurrentValue = DBO()->CurrentAccount->Sample->Value;
+			$strChangesNote .= "Sample was changed from '". 
+								DBO()->Account->Sample->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
+								"' to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
+		}
+		if (DBO()->Account->LatePaymentAmnesty->Value != DBO()->CurrentAccount->LatePaymentAmnesty->Value)
+		{
+			// When refering to END_OF_TIME, we just want the date part, not the time part
+			$strEndOfTime = substr(END_OF_TIME, 0, 10);
+			
+			if (DBO()->Account->LatePaymentAmnesty->Value == NULL)
+			{
+				// Explicity set it to NULL, if it loosely equals NULL
+				DBO()->Account->LatePaymentAmnesty = NULL;
+			}
+			
+			if (DBO()->CurrentAccount->LatePaymentAmnesty->Value != $strEndOfTime)
+			{
+				if (DBO()->CurrentAccount->LatePaymentAmnesty->Value < date("Y-m-d"))
+				{
+					// The account is currently eligable for late notices
+					$bolAmnestyExpired = TRUE;
+					$strOldSetting = "Send late notices";
+				}
+				else
+				{
+					// The account currently has an explicit late notice amnesty
+					$bolAmnestyExpired = FALSE;
+					$strOldSetting = "Not eligible for late notices until after ". date("jS F, Y", strtotime(DBO()->CurrentAccount->LatePaymentAmnesty->Value));
+				}
+			}
+			else
+			{
+				// The account is currently set to "Never send late notices"
+				$bolAmnestyExpired = FALSE;
+				$strOldSetting = "Never send late notices";
+			}
+			
+			// Interpret the new LatePaymentAmnesty value
+			if (DBO()->Account->LatePaymentAmnesty->Value == NULL)
+			{
+				// The account has been set to "Send late notices"
+				$strNewSetting = "Send late Notices";
+			}
+			elseif (DBO()->Account->LatePaymentAmnesty->Value == $strEndOfTime)
+			{
+				// The account has been set to "Never send late notices"
+				$strNewSetting = "Never send late notices"; 
+			}
+			else
+			{
+				// An explicit date has been set for the LatePaymentAmnesty
+				$strNewSetting = "Not eligible for late notices until after ". date("jS F, Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
+			}
+			
+			if (DBO()->Account->LatePaymentAmnesty->Value == NULL && $bolAmnestyExpired)
+			{
+				// The user has set the property to "Send late notices", however the existing amnesty has expired which means it is logically
+				// already set to "Send late notices", so don't bother logging this change in the system note
+			}
+			else
+			{
+				// Update the content of the system note
+				$strChangesNote .= "Sending of late notices was changed from '$strOldSetting' to '$strNewSetting'\n";
+			}
+		}
+		
+		/* OLD way of handling LateNotice exemptions
+		if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
+		{
+			$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
+			$strChangesNote .=	"Sending of Late Notices was changed from '". 
+								DBO()->Account->DisableLateNotices->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
+								"' to '" . DBO()->Account->DisableLateNotices->FormattedValue() . "'\n";
+
+			// When this property is changed you have to update the LateNoticeAmnesty property
+			switch (DBO()->Account->DisableLateNotices->Value)
+			{
+				case 0:
+				case 1:
+					DBO()->Account->LatePaymentAmnesty = NULL;
+					break;
+					
+				case (-1):
+					// This account is ineligible to receive late notices until after the due date of the next bill
+					DBO()->Account->LatePaymentAmnesty = $this->GetLatePaymentAmnestyDate(DBO()->CurrentAccount->PaymentTerms->Value);
+					//DBO()->Account->LatePaymentAmnesty = date("Y-m-d", strtotime("+1 month {$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
+					$strChangesNote .= "Late Notices will not be generated until after ". date("d/m/Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
+					break;
+			}
+		}
+		else
+		{
+			// Retain the current value of Account.LateNoticeAmnesty
+			DBO()->Account->LatePaymentAmnesty = DBO()->CurrentAccount->LatePaymentAmnesty->Value;
+		}
+*/
+		// Start the transaction
+		TransactionStart();
+
+		// Check if the Status property has been changed
+		if (DBO()->Account->Archived->Value != DBO()->CurrentAccount->Archived->Value)
+		{
+			// Define one variable for MYSQL date/time and one of the EmployeeID
+			$strTodaysDate = GetCurrentDateForMySQL();
+			$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
+		
+			// This is a Flag for checking if any of the account's services had to be updated
+			// because of the Account's status being changed
+			$bolServicesUpdated = FALSE;
+		
+			$strChangesNote .= "Account Status was changed from ". GetConstantDescription(DBO()->CurrentAccount->Archived->Value, 'Account') ." to ". GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\n";
+	
+			switch (DBO()->Account->Archived->Value)
+			{
+				case ACCOUNT_ACTIVE:
+					// If user has selected Active for the account status no subsequent actions have to take place
+					break;
+				case ACCOUNT_CLOSED:
+				case ACCOUNT_DEBT_COLLECTION:
+				case ACCOUNT_SUSPENDED:
+					// If user has selected "Closed", "Debt Collection", "Suspended" for the account status, only Active services have their Status and 
+					// ClosedOn/CloseBy properties changed
+					// Active Services are those that have their Status set to Active or (their status is set to Disconnected and 
+					// their ClosedOn date is in the future (signifying a change of lessee) or today).  We don't have to worry about 
+					// the Services where their status is set to Disconnected and their ClosedOn Date is set to today, because that 
+					// is how we are going to update the records anyway.
+					
+					//$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW()))";
+					//$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
+					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW())) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
+					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
+
+					// Retrieve all services attached to this Account where the Status is Active
+					DBL()->Service->Where->Set($strWhere, $arrWhere);
+					DBL()->Service->Load();
+					
+					// If there are no records retrieved append to note stating this, stops confusion on notes
+					if (!DBL()->Service->RecordCount() > 0)
+					{
+						$strChangesNote .= "No services have been affected";
+					}
+					else
+					{
+						$strChangesNote .= "The following services have been set to ". GetConstantDescription(SERVICE_DISCONNECTED, "Service") ." :\n\n";
+						
+						// Iterate through the services and try to disconnect each one
+						foreach (DBL()->Service as $dboService)
+						{
+							$objService = ModuleService::GetServiceById($dboService->Id->Value, $dboService->ServiceType->Value);
+							if ($objService === FALSE || $objService === NULL)
+							{
+								// An error occurred
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to disconnect Service: {$dboService->FNN->Value}.  The account has not been updated");
+								return TRUE;
+							}
+							
+							if ($objService->ChangeStatus(SERVICE_DISCONNECTED) === FALSE)
+							{
+								// Could not change the status of the service
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Could not disconnect service: {$dboService->FNN->Value}.<br />{$objService->GetErrorMsg()}<br />The account has not been updated");
+								return TRUE;
+							}
+							
+							// The service has been successfully updated
+							
+							// For each service attached to this account append information onto the note being generated
+							$strChangesNote .= "Service: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
+						}
+						
+						// At least one service has been modified
+						$bolServicesUpdated = TRUE;
+					}
+					break;
+				case ACCOUNT_ARCHIVED:
+					// If user has selected "Archived" for the account status only Active and Disconnected services have their Status and 
+					// ClosedOn/CloseBy properties changed						
+					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR Status = <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
+					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
+					
+					// Retrieve all services attached to this Account where the Status is Active/Disconnected
+					DBL()->Service->Where->Set($strWhere, $arrWhere);
+					DBL()->Service->Load();
+					
+					// If their are no records retrieved append to note stating this, stops confusion on notes
+					if (!DBL()->Service->RecordCount() > 0)
+					{
+						$strChangesNote .= "No services have been affected\n\n";
+					}
+					else
+					{
+						$strChangesNote .= "The following services have been set to ". GetConstantDescription(SERVICE_ARCHIVED, "Service") ." :\n\n";
+						
+						// Iterate through the services and try to disconnect each one
+						foreach (DBL()->Service as $dboService)
+						{
+							$objService = ModuleService::GetServiceById($dboService->Id->Value, $dboService->ServiceType->Value);
+							if ($objService === FALSE || $objService === NULL)
+							{
+								// An error occurred
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to archive Service: {$dboService->FNN->Value}.  The account has not been updated");
+								return TRUE;
+							}
+							
+							if ($objService->ChangeStatus(SERVICE_ARCHIVED) === FALSE)
+							{
+								// Could not change the status of the service
+								TransactionRollback();
+								Ajax()->AddCommand("Alert", "ERROR: Could not archive service: {$dboService->FNN->Value}.<br />{$objService->GetErrorMsg()}<br />The account has not been updated");
+								return TRUE;
+							}
+							
+							// The service has been successfully updated
+							
+							// For each service attached to this account append information onto the note being generated
+							$strChangesNote .= "Service: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
+						}
+						
+						// At least one service has been modified
+						$bolServicesUpdated = TRUE;
+					}
+					break;
+			}
+		}
+		
+		if ($strChangesNote)
+		{
+			$strChangesNote = "Account details have been modified.\n$strChangesNote";
+			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
+		}
+
+		// Set the columns to save
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, DisableLateNotices, LatePaymentAmnesty");
+														
+		if (!DBO()->Account->Save())
+		{
+			// Saving the account record failed
+			TransactionRollback();
+			Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
+			return TRUE;
+		}
+		
+		// All Database interactions were successfull
+		TransactionCommit();
+
+		// Handle cascading for values that can cascade
+		if (count($arrCascadingFields) > 0)
+		{
+			$strAlertMsg = "The account details were successfully updated.<br />The following modified fields could compromise the integrety of the Address details defined for the services belonging to this account.<br />Please update these address details accordingly.";
+			$strAlertMsg .= "<br />Fields: ". implode(", ", $arrCascadingFields);
+			Ajax()->AddCommand("Alert", $strAlertMsg);
+		}
+		
+		// Fire the OnAccountDetailsUpdate Event
+		$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
+		Ajax()->FireEvent(EVENT_ON_ACCOUNT_DETAILS_UPDATE, $arrEvent);
+		
+		// Fire the OnNewNote event
+		if ($strChangesNote)
+		{
+			Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
+		}
+		
+		// Fire the OnAccountServicesUpdate Event
+		if ($bolServicesUpdated)
+		{
+			Ajax()->FireEvent(EVENT_ON_ACCOUNT_SERVICES_UPDATE, $arrEvent);
+		}
+		
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// DeleteRecord
+	//------------------------------------------------------------------------//
+	/**
+	 * DeleteRecord()
+	 *
+	 * Creates a generic Delete Popup for either a Payment, Adjustment or Recurring Adjustment record
+	 * 
+	 * Creates a generic Delete Popup for either a Payment, Adjustment or Recurring Adjustment record
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function DeleteRecord()
+	{
+		// Check user authorization
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+
+		// Non of these records can be deleted/cancelled/reversed while the invoicing process is running
+		$bolIsInvoicing = IsInvoicing();
+
+		// Check what sort of record is being deleted
+		switch (DBO()->DeleteRecord->RecordType->Value)
+		{
+			case "Payment":
+				if ($bolIsInvoicing)
+				{
+					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Payments cannot be reversed at this time.  Please try again later";
+					break;
+				}
+				DBO()->DeleteRecord->Application = "Payment";
+				DBO()->DeleteRecord->Method = "Delete";
+				DBO()->Payment->Load();
+				break;
+			case "Adjustment":
+				if ($bolIsInvoicing)
+				{
+					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Adjustments cannot be deleted at this time.  Please try again later";
+					break;
+				}
+				DBO()->DeleteRecord->Application = "Adjustment";
+				DBO()->DeleteRecord->Method = "DeleteAdjustment";
+				DBO()->Charge->Load();
+				break;
+			case "RecurringAdjustment":
+				if ($bolIsInvoicing)
+				{
+					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Recurring Adjustments cannot be cancelled at this time.  Please try again later";
+					break;
+				}
+				DBO()->DeleteRecord->Application = "Adjustment";
+				DBO()->DeleteRecord->Method = "DeleteRecurringAdjustment";
+				DBO()->RecurringCharge->Load();
+				break;
+			default:
+				Ajax()->AddCommand("Alert", "ERROR: No record type has been declared to be deleted");
+				return FALSE;
+		}
+		
+		if ($bolIsInvoicing)
+		{
+			// Records cannot be deleted while the Invoicing process is running
+			Ajax()->AddCommand("Alert", $strErrorMsg);
+			return FALSE;
+		}
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('delete_record');
+
+		return TRUE;
+	}
+	
+	// $intPaymentTerms is the number of days the customer has to pay their bill
+	// Returns the LatePaymentAmnesty Date as a string "dd/mm/yyyy"
+	function GetLatePaymentAmnestyDate($intPaymentTerms)
+	{
+		// This date should be 1 month after the due date of the most recently committed bill
+		// If the bill was committed today, then you would probably be refering to last month's bill
+		// however the DisableLateNotices property only gets revereted from -1 to 0 when the bill is committed
+		
+		// Retrieve the date that the most recent bill was committed
+		$selBillDate = new StatementSelect("InvoiceRun", Array("BillingDate"=>"MAX(BillingDate)"), "TRUE");
+		$selBillDate->Execute();
+		$arrBillDate = $selBillDate->Fetch();
+		$intBillDate = strtotime($arrBillDate['BillingDate']);
+		
+		/*
+		if (date("d/m/Y", $intBillDate) == date("d/m/Y"))
+		{
+			// The most recent bill was committed today
+			$strDaysToAdd = "+ $intPaymentTerms days";
+		}
+		else
+		{
+			// The most recent bill was committed earlier than today
+			$strDaysToAdd = "+ 1 month $intPaymentTerms days";
+		}
+		*/
+		
+		$strDaysToAdd = "+ 1 month $intPaymentTerms days";
+		
+		$strAmnestyDate = date("Y-m-d", strtotime($strDaysToAdd, $intBillDate));
+		
+		return $strAmnestyDate;
+	}
+
+    //----- DO NOT REMOVE -----//
+	
+	
+}
+?>
