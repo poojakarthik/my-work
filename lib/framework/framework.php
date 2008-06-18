@@ -123,7 +123,7 @@
 		
 		// Init application log
 		$this->_strLogFileName	= date("Y-m-d_His", time()).".log";
-		if (LOG_TO_FILE && !SAFE_LOGGING && defined(LOG_PATH))
+		if (LOG_TO_FILE && !SAFE_LOGGING && defined('LOG_PATH'))
 		{
 			$this->_ptrLog = fopen(LOG_PATH.$this->_strLogFileName, "a");
 		}
@@ -249,7 +249,7 @@
 	 function __destruct()
 	 {
 		// Close application log
-		if (LOG_TO_FILE && !SAFE_LOGGING && defined(LOG_PATH))
+		if (LOG_TO_FILE && !SAFE_LOGGING && defined('LOG_PATH'))
 		{
 			fclose($this->_ptrLog);
 		}
