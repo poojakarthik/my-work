@@ -80,7 +80,7 @@ class Cli_App_LateNoticeRun extends Cli
 						$intCustGrp = $arrDetails['Account']['CustomerGroup'];
 						$intAccountId = $arrDetails['Account']['AccountId'];
 						$xmlFilePath = $arrDetails['XMLFilePath'];
-						$intAutoInvoiceAction = $arrDetails['Account']['automatice_invoice_action'];
+						$intAutoInvoiceAction = $arrDetails['Account']['automatic_invoice_action'];
 
 						switch ($arrDetails['Account']['DeliveryMethod'])
 						{
@@ -112,13 +112,8 @@ class Cli_App_LateNoticeRun extends Cli
 									}
 									else
 									{
-										// WIP This bit needs error handling!!!!
-										$targetFile = FILES_BASE_PATH . DIRECTORY_SEPARATOR . $letterType;
-										if (!file_exists($targetFile)) mkdir($targetFile);
-										$targetFile .= DIRECTORY_SEPARATOR . date('Ymd');
-										if (!file_exists($targetFile)) mkdir($targetFile);
-										$targetFile .= DIRECTORY_SEPARATOR . $custGroupName;
-										if (!file_exists($targetFile)) mkdir($targetFile);
+										$targetFile = FILES_BASE_PATH . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . date('Ymd') . DIRECTORY_SEPARATOR . $custGroupName;
+										RecursiveMkdir($targetFile);
 
 										$arrSummary[$intCustGrp]['output_directory'] = $targetFile;
 									}
@@ -229,10 +224,10 @@ class Cli_App_LateNoticeRun extends Cli
 		$error = '';
 
 		$qryQuery = new Query();
-		$strSQL = 'UPDATE Account SET automatic_invoice_action = ' . $intTo . ' WHERE Id = ' . $intAccount;
-		if (!$qryQuery->Execute($strSQL))
+		$strSQL = 'UPDATE Account SET last_automatic_invoice_action = ' . $intTo . ' WHERE Id = ' . $intAccount;
+		if (!$outcome = $qryQuery->Execute($strSQL))
 		{
-			$message = ' Failed to update Account ' . $intAccount . ' automatic_invoice_action from ' . $intFrom . ' to ' . $intTo . '. '. mysqli_errno() . '::' . mysqli_error();
+			$message = ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
 			$this->log($message, TRUE);
 			$error .= $message;
 		}
@@ -247,9 +242,9 @@ class Cli_App_LateNoticeRun extends Cli
 				'\'' . $qryQuery->EscapeString($strReason) . '\', ' .
 				' now()' .
 				')';
-		if (!$qryQuery->Execute($strSQL))
+		if (!$outcome = $qryQuery->Execute($strSQL))
 		{
-			$message = ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. mysqli_errno() . '::' . mysqli_error();
+			$message = ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
 			$this->log($message, TRUE);
 			$error .= $message;
 		}
@@ -258,8 +253,6 @@ class Cli_App_LateNoticeRun extends Cli
 
 	private function getPDFContent($custGroupId, $effectiveDate, $documentTypeId, $pathToXMLFile, $targetMedia)
 	{
-		var_dump($f=func_get_args());
-		
 		$this->startErrorCatching();
 		$fileContents = file_get_contents($pathToXMLFile);
 
