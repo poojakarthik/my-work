@@ -54,6 +54,7 @@ abstract class Flex_Rollout_Version
 	 */
 	protected function getUserResponse($strPrompt)
 	{
+		set_time_limit(0);
 		if ($fh = fopen('php://stdout','w'))
 		{
 			fwrite($fh, $strPrompt . " ");
@@ -64,6 +65,7 @@ abstract class Flex_Rollout_Version
 			$strResponse = fread($fh,1024);
 			fclose($fh);
 		}
+		set_time_limit(600);
 		return trim($strResponse);
 	}
 

@@ -12,6 +12,8 @@
 
 class Flex_Rollout_Version_000001 extends Flex_Rollout_Version
 {
+	private $rollbackSQL = array();
+	
 	public function rollout()
 	{
 		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
@@ -26,6 +28,7 @@ class Flex_Rollout_Version_000001 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter Service table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
+		$this->rollbackSQL[] = "ALTER TABLE Service DROP cdr_discount, DROP cdr_amount, DROP discount_start_datetime";
 
 		$strSQL = "
 			ALTER TABLE RatePlan
@@ -36,6 +39,7 @@ class Flex_Rollout_Version_000001 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter RatePlan table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
+		$this->rollbackSQL[] = "ALTER TABLE RatePlan DROP discount_cap, DROP default_discount_percentage";
 
 		$strSQL = "
 			ALTER TABLE Rate
@@ -44,6 +48,23 @@ class Flex_Rollout_Version_000001 extends Flex_Rollout_Version
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter Rate table. ' . mysqli_errno() . '::' . mysqli_error());
+		}
+		$this->rollbackSQL[] = "ALTER TABLE Rate DROP discount_percentage";
+	}
+
+
+	function rollback()
+	{
+		if (count($this->rollbackSQL))
+		{
+			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
+			{
+				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
+				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
+				{
+					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . mysqli_errno() . '::' . mysqli_error());
+				}
+			}
 		}
 	}
 }

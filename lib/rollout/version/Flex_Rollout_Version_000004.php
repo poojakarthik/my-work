@@ -8,6 +8,8 @@
 
 class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 {
+	private $rollbackSQL = array();
+	
 	public function rollout()
 	{
 		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
@@ -28,8 +30,7 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create payment_terms table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
-
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
+		$this->rollbackSQL[] = "DROP TABLE payment_terms";
 
 		// Need to get the payment terms from the user
 		$intInvoiceDay 				= 						  $this->getUserResponseInteger("On which day of the month should invoices be generated?");
@@ -49,6 +50,21 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate payment_terms table. ' . mysqli_errno() . '::' . mysqli_error());
+		}
+	}
+
+	function rollback()
+	{
+		if (count($this->rollbackSQL))
+		{
+			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
+			{
+				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
+				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
+				{
+					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . mysqli_errno() . '::' . mysqli_error());
+				}
+			}
 		}
 	}
 

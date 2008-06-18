@@ -13,6 +13,8 @@
 
 class Flex_Rollout_Version_000002 extends Flex_Rollout_Version
 {
+	private $rollbackSQL = array();
+	
 	public function rollout()
 	{
 		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
@@ -32,6 +34,7 @@ class Flex_Rollout_Version_000002 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter Service table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
+		$this->rollbackSQL[] = "ALTER TABLE Service DROP NatureOfCreation, DROP NatureOfClosure, DROP LastOwner, DROP NextOwner";
 
 		// Update the ClosedOn values in the Service Table 
 		$strSQL = "
@@ -59,7 +62,23 @@ class Flex_Rollout_Version_000002 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the default_rate_plan table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
+		$this->rollbackSQL[] = "DROP TABLE default_rate_plan";
 		
+	}
+
+	function rollback()
+	{
+		if (count($this->rollbackSQL))
+		{
+			for ($l = count($this->rollbackSQL) - 1; $l >= 0; $l--)
+			{
+				$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
+				if (!$qryQuery->Execute($this->rollbackSQL[$l]))
+				{
+					throw new Exception(__CLASS__ . ' Failed to rollback: ' . $this->rollbackSQL[$l] . '. ' . mysqli_errno() . '::' . mysqli_error());
+				}
+			}
+		}
 	}
 }
 

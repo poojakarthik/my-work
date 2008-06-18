@@ -23,6 +23,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 	public function rollout()
 	{
 		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
+
 		$strSQL = "
 			CREATE TABLE account_status (
 			  id bigint(20) unsigned NOT NULL COMMENT 'Id for the status',
@@ -40,7 +41,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='DROP TABLE account_status;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			INSERT INTO account_status (id, name, can_bar, send_late_notice, description) VALUES
 			(0, 'Active', 1, 1, 'The account is active.'),
@@ -54,7 +54,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to populate credit_control_status table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			CREATE TABLE credit_control_status (
 			  id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Id for the status',
@@ -72,7 +71,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='DROP TABLE credit_control_status;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			INSERT INTO credit_control_status (id, name, can_bar, send_late_notice, description) VALUES
 			(1, 'Up to date', 1, 1, 'Can be barred.'),
@@ -85,7 +83,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to populate credit_control_status table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "ALTER TABLE account ADD credit_control_status BIGINT UNSIGNED NOT NULL DEFAULT '1' COMMENT 'FK to credit_control_status.id' AFTER Archived";
 		if (!$qryQuery->Execute($strSQL))
 		{
@@ -93,14 +90,12 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='ALTER TABLE account DROP credit_control_status ;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "ALTER TABLE account ADD INDEX ( credit_control_status )";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add index to Account table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = " ALTER TABLE payment_terms 
 					DROP automatic_barring_days, 
 					ADD minimum_balance_to_pursue decimal(4,2) unsigned NOT NULL DEFAULT 27 COMMENT 'The minimum balance required for automatic notice generation to be applied',
@@ -121,7 +116,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to update "payment_terms" table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = " ALTER TABLE payment_terms 
 					CHANGE created created DATETIME NOT NULL COMMENT 'Date/Time at which the payment terms were created'
 		";
@@ -130,7 +124,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to alter "payment_terms" table (2). ' . mysqli_errno() . '::' . mysqli_error());
 		}
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			CREATE TABLE automatic_invoice_action (
 				id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Id for the action',
@@ -146,7 +139,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='DROP TABLE automatic_invoice_action;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			INSERT INTO automatic_invoice_action (id, name, description) VALUES
 			(1, 'None', 'None'),
@@ -159,7 +151,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to insert into automatic_invoice_action table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			CREATE TABLE automatic_barring_status (
 				id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Id for the status',
@@ -175,7 +166,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='DROP TABLE automatic_barring_status;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			INSERT INTO automatic_barring_status (id, name, description) VALUES
 			(1, 'None', 'None'),
@@ -187,7 +177,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to insert into automatic_barring_status table. ' . mysqli_errno() . '::' . mysqli_error());
 		}
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			ALTER TABLE Account
 			ADD last_automatic_invoice_action BIGINT( 20 ) UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Last automatic invoice action. FK to automatic_invoice_action.id',
@@ -201,7 +190,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='ALTER TABLE Account DROP last_automatic_invoice_action, DROP last_automatic_invoice_action_datetime, DROP automatic_barring_status, DROP automatic_barring_datetime;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			CREATE TABLE automatic_invoice_action_history (
 				id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Unique identifier for the historic event',
@@ -219,7 +207,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='DROP TABLE automatic_invoice_action_history;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			CREATE TABLE automatic_barring_status_history (
 				id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Unique identifier for the historic event',
@@ -237,7 +224,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='DROP TABLE automatic_barring_status_history;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			CREATE TABLE credit_control_status_history (
 				id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Unique identifier for the historic event',
@@ -255,7 +241,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='DROP TABLE credit_control_status_history;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			CREATE TABLE account_status_history (
 				id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Unique identifier for the historic event',
@@ -273,7 +258,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='DROP TABLE account_status_history;';
 
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = "
 			ALTER TABLE InvoiceRun 
 				ADD automatic_overdue_datetime DATETIME NULL DEFAULT NULL COMMENT 'Date/time at which automatic overdue notice run ran',
@@ -289,7 +273,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		$this->rollbackSQL[] ='ALTER TABLE InvoiceRun DROP automatic_overdue_datetime, DROP automatic_suspension_datetime, DROP automatic_final_demand_datetime, DROP scheduled_automatic_bar_datetime, DROP automatic_bar_datetime;';
 
 		// Find the last InvoiceRun.Id
-		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$strSQL = 'SELECT MAX(Id) FROM InvoiceRun';
 		$result = $qryQuery->Execute($strSQL);
 		if (!$result)
@@ -302,7 +285,6 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		if ($maxId !== NULL)
 		{
 			// Apply default dates to all existing invoiceruns but the latest one to prevent late notices & barring being applied to them
-			$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 			$strSQL = "
 				UPDATE InvoiceRun 
 				SET 

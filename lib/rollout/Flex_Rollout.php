@@ -140,7 +140,7 @@ class Flex_Rollout
 				catch (Exception $e)
 				{
 					// This really shouldn't happen!
-					$errors[] = "WARNING: Failed to rollback version " . $versions[$index] . " (non-database changes only)";
+					$errors[] = "WARNING: Failed to rollback version " . $versions[$index] . " (non-data changes):\n" . $e->getMessage();
 				}
 			}
 
