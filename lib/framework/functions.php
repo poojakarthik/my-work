@@ -3752,10 +3752,12 @@ function GenerateLatePaymentNotices($intNoticeType, $intStartOfDay=0, $strBasePa
 				$i = count($arrGeneratedNotices['Details']);
 				$arrGeneratedNotices['Details'][$i]['Account'] = $arrAccount;
 				$arrGeneratedNotices['Details'][$i]['XMLFilePath'] = $mxdSuccess;
+				$bolSuccess = TRUE;
 			}
 			else 
 			{
 				$arrGeneratedNotices['Failed'] += 1;
+				$bolSuccess = FALSE;
 			}
 
 			$arrSummary[] = Array(	"AccountId"					=> $arrAccount['AccountId'], 
