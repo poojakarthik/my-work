@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class Cli_App_FailedInvoiceEmailNotifications extends Cli

@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class Cli_App_Rollout extends Cli
