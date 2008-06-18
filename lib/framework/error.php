@@ -261,7 +261,7 @@ class ErrorHandler
 	 function PHPErrorCatcher($intErrorNo, $strErrorMessage, $strErrorFile, $intErrorLine)
 	 {
 	 	// build error msg
-	 	$strUser 		= USER_NAME;
+	 	$strUser 		= defined("USER_NAME") ? USER_NAME : '_unknown_user_';
 	 	$strLocation 	= $strErrorFile . " (Line " .  $intErrorLine . ")";
 	 	$strMessage		= $strErrorMessage . "\n";
 	 	$arrTrace = debug_backtrace();
