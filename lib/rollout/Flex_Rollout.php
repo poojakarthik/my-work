@@ -1,6 +1,8 @@
 <?php
 
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'flex.require.php');
+// Note: Supress errors whilst loading application as there may well be some if the 
+// database model files have not yet been generated.
+@require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'flex.require.php');
 require_once('Flex_Rollout_Version.php');
 
 class Flex_Rollout
@@ -39,6 +41,31 @@ class Flex_Rollout
 		$nrConnections = count($arrConnectionNames);
 		$arrConnections = array();
 
+
+		$errors = array();
+
+		// We always want to update the data model, as this ensures a model exists
+		for ($i = 0; $i < $nrConnections; $i++)
+		{
+			try
+			{
+				@mysqli_report(MYSQLI_REPORT_ERROR);
+				Flex_Data_Model::generateDataModelForDatabase($arrConnectionNames[$i]);
+			}
+			catch (Exception $e)
+			{
+				$errors[] = "ERROR: Rollout failed to generate new data model for data source '" . $arrConnectionNames[$i] . "'.\nThis must be resolved manually (or by re-running rollout).\n" . $e->getMessage();
+			}
+		}
+
+		$errors = implode("\n", $errors);
+
+		if ($errors)
+		{
+			throw new Exception($errors);
+		}
+
+		$errors = array();
 		$index = 0;
 		$nrVersions = count($versions);
 
@@ -64,8 +91,6 @@ class Flex_Rollout
 				throw new Exception("Rollout failed to $step database ''$dbName' prior to starting: " . $e->getMessage());
 			}
 		}
-
-		$errors = array();
 
 		try
 		{
@@ -132,6 +157,16 @@ class Flex_Rollout
 			catch (Exception $e)
 			{
 				$errors[] = "ERROR: Rollout failed to commit changes to db " . $arrConnectionNames[$i] . ": " . $e->getMessage();
+			}
+
+			try
+			{
+				@mysqli_report(MYSQLI_REPORT_ERROR);
+				Flex_Data_Model::generateDataModelForDatabase($arrConnectionNames[$i]);
+			}
+			catch (Exception $e)
+			{
+				$errors[] = "ERROR: Rollout failed to generate new data model for data source '" . $arrConnectionNames[$i] . "'.\nThis must be resolved manually (or by re-running rollout).\n" . $e->getMessage();
 			}
 		}
 

@@ -20,7 +20,12 @@ class Cli_App_GenerateLateNotices extends Cli
 			$this->log("Generating ". GetConstantDescription($intNoticeType, "LetterType"). "s");
 			$this->log("Outputting files to " . $strBasePath);
 
-			$mixResult = GenerateLatePaymentNotices($intNoticeType, $strBasePath);
+			$day = intval(date('d'));
+			$month = intval(date('m'));
+			$year = intval(date('Y'));
+			$todayTimestamp = mktime(0, 0, 0, $month, $day, $year);
+
+			$mixResult = GenerateLatePaymentNotices($intNoticeType, $todayTimestamp, $strBasePath);
 
 			if ($mixResult === FALSE)
 			{

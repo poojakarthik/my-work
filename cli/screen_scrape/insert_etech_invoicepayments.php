@@ -9,7 +9,6 @@
 	require_once($strFrameworkDir."functions.php");
 	require_once($strFrameworkDir."definitions.php");
 	require_once($strFrameworkDir."config.php");
-	require_once($strFrameworkDir."database_define.php");
 	require_once($strFrameworkDir."db_access.php");
 	require_once($strFrameworkDir."report.php");
 	require_once($strFrameworkDir."error.php");

@@ -87,7 +87,7 @@ echo "Generating ". GetConstantDescription($intNoticeType, "LetterType"). "s..."
 // output buffering (ob_start()).  If I do start it, it doesn't work
 ob_end_flush();
 
-$mixResult = GenerateLatePaymentNotices($intNoticeType, $strBasePath);
+$mixResult = GenerateLatePaymentNotices($intNoticeType, 0, $strBasePath);
 
 if ($mixResult === FALSE)
 {

@@ -42,6 +42,9 @@
  * @package		framework
  * @class		DataAccess
  */
+ 
+ require_once(dirname(__FILE__) . '/../data/model/Flex_Data_Model.php');
+
  class DataAccess
  {
  	//------------------------------------------------------------------------//
@@ -176,7 +179,7 @@
 		$this->_bolHasTransaction = FALSE;
 		
 		// make global database definitions available
-		$this->arrTableDefine = &$GLOBALS['arrDatabaseTableDefine'];
+		$this->arrTableDefine = new Flex_Data_Model();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -196,9 +199,9 @@
 	 */ 
 	function FetchTableDefine($strTableName)
 	{
-		if($this->arrTableDefine[$strTableName])
+		if($this->arrTableDefine->{$strTableName})
 		{
-			return $this->arrTableDefine[$strTableName];
+			return $this->arrTableDefine->{$strTableName};
 		}
 		else
 		{
@@ -225,9 +228,9 @@
 	 */ 
 	function FetchClean($strTableName)
 	{
-		if($this->arrTableDefine[$strTableName])
+		if($this->arrTableDefine->{$strTableName})
 		{
-			foreach($this->arrTableDefine[$strTableName]['Column'] as $strKey => $strValue)
+			foreach($this->arrTableDefine->{$strTableName}['Column'] as $strKey => $strValue)
 			{
 				$arrClean[$strKey] = '';
 			}
@@ -267,12 +270,12 @@
 		}
 		
 		// retunr false if table does not exist
-		if(!$this->arrTableDefine[$strTableName])
+		if(!$this->arrTableDefine->{$strTableName})
 		{
 			return FALSE;
 		}
 		
-		foreach($this->arrTableDefine[$strTableName]['Column'] as $strKey => $strValue)
+		foreach($this->arrTableDefine->{$strTableName}['Column'] as $strKey => $strValue)
 		{
 			$arrClean[$strKey] = '';
 			// Create a new instance of an oblib object using the ObLib parameter of the database definition
@@ -829,6 +832,11 @@
 	public function FetchCleanOblib($strTableName, $oblobjPushObject)
 	{
 		$this->db->FetchCleanOblib($strTableName, $oblobjPushObject);
+	}
+
+	function EscapeString($strString)
+	{
+		return $this->db->refMysqliConnection->real_escape_string($strString);
 	}
  }
  
@@ -1388,9 +1396,9 @@ class MySQLFunction
 		{
 			//echo($strTableName);
 			// check that table def exists
-			if (is_array($this->db->arrTableDefine[$strTableName]))
+			if (is_array($this->db->arrTableDefine->{$strTableName}))
 			{
-				$arrTableDefine = $this->db->arrTableDefine[$strTableName];
+				$arrTableDefine = $this->db->arrTableDefine->{$strTableName};
 				
 				/* CREATE TABLE `{$define['Name']}` (
 				 *		`{$define['Id']}`	bigint	NOT NULL	auto_increment,
@@ -1580,16 +1588,16 @@ class MySQLFunction
 		$this->Trace("Input: $strTableDestination, $strTableSource, $strWhere, $strLimit");
 		
 		// check that table defs exists
-		if (is_array($this->db->arrTableDefine[$strTableDestination]) && is_array($this->db->arrTableDefine[$strTableSource]))
+		if (is_array($this->db->arrTableDefine->{$strTableDestination}) && is_array($this->db->arrTableDefine->{$strTableSource}))
 		{
 			// empty column list
 			$arrColumns = Array();
 			
 			// for each destination column
-			foreach ($this->db->arrTableDefine[$strTableDestination]['Column'] as $strColumnKey=>$arrColumn)
+			foreach ($this->db->arrTableDefine->{$strTableDestination}['Column'] as $strColumnKey=>$arrColumn)
 			{
 				// check if there is a matching source column
-				if (isset($this->db->arrTableDefine[$strTableSource]['Column'][$strColumnKey]))
+				if (isset($this->db->arrTableDefine->{$strTableSource}['Column'][$strColumnKey]))
 				{
 					// add column to the query
 					$arrColumns[] = $strColumnKey;
@@ -2661,11 +2669,11 @@ class QueryCopyTable extends Query
 					else
 					{
 						// Create a new instance of an oblib object using the ObLib parameter of the database definition
-						if (isset ($this->db->arrTableDefine[$fldField->table]["Column"][$fldField->name]["ObLib"]))
+						if (isset ($this->db->arrTableDefine->{$fldField->table}["Column"][$fldField->name]["ObLib"]))
 						{
 							$oblobjPushObject->Push
 							(
-								new $this->db->arrTableDefine[$fldField->table]["Column"][$fldField->name]["ObLib"]
+								new $this->db->arrTableDefine->{$fldField->table}["Column"][$fldField->name]["ObLib"]
 								(
 									$fldField->name, $this->_arrBoundResults [$fldField->name]
 								)
@@ -2810,7 +2818,7 @@ class QueryCopyTable extends Query
 				// remove the index column
 				if ($bolWithId !== TRUE)
 				{
-					unset($this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]);
+					unset($this->_arrColumns[$this->db->arrTableDefine->{$this->_strTable}['Id']]);
 				}
 			}
 			else
@@ -2827,12 +2835,12 @@ class QueryCopyTable extends Query
 		else
 		{
 			// Full Insert, so retrieve columns from the Table definition array
-			$this->_arrColumns = $this->db->arrTableDefine[$strTable]["Column"];
+			$this->_arrColumns = $this->db->arrTableDefine->{$strTable}["Column"];
 			
 			// add the Id
 			if ($bolWithId === TRUE)
 			{
-				$this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]['Type'] = "i";
+				$this->_arrColumns[$this->db->arrTableDefine->{$this->_strTable}['Id']]['Type'] = "i";
 			}
 		}
 		
@@ -2918,15 +2926,15 @@ class QueryCopyTable extends Query
 				}
 				else
 				{
-					if (!isset ($this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"]))
+					if (!isset ($this->db->arrTableDefine->{$this->_strTable}["Column"][$mixKey]["Type"]))
 					{
-						if (!$mixKey == $this->db->arrTableDefine[$this->_strTable]['Id'])
+						if (!$mixKey == $this->db->arrTableDefine->{$this->_strTable}['Id'])
 						{
 							throw new Exception ("Could not find data type: " . $this->_strTable . "." . $mixKey);
 						}
 					}
 					
-					if ($mixKey == $this->db->arrTableDefine[$this->_strTable]['Id'])
+					if ($mixKey == $this->db->arrTableDefine->{$this->_strTable}['Id'])
 					{
 						// add Id
 						$strType .= 'd';
@@ -2934,7 +2942,7 @@ class QueryCopyTable extends Query
 					else
 					{
 						// add normal value
-						$strType .= $this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"];
+						$strType .= $this->db->arrTableDefine->{$this->_strTable}["Column"][$mixKey]["Type"];
 		 			}
 					
 					// account for table.column key names
@@ -2952,7 +2960,7 @@ class QueryCopyTable extends Query
 	 	else
 		{
 			// full insert
-			foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
+			foreach ($this->db->arrTableDefine->{$this->_strTable}["Column"] as $strColumnName=>$arrColumnValue)
 			{
 				if (isset ($arrData[$strColumnName]))
 				{
@@ -2972,7 +2980,7 @@ class QueryCopyTable extends Query
 			{
 				// add in the Id if needed
 				$strType .= "d";
-				$arrParams[] = $arrData[$this->db->arrTableDefine[$this->_strTable]['Id']];
+				$arrParams[] = $arrData[$this->db->arrTableDefine->{$this->_strTable}['Id']];
 			}
 		}
 		
@@ -3060,12 +3068,11 @@ class QueryCopyTable extends Query
 	{
 		// make global database object available
 		$this->db = DataAccess::getDataAccess($strConnectionType);
-		$strId = $this->db->arrTableDefine[$strTable]['Id'];
+		$strId = $this->db->arrTableDefine->{$strTable}['Id'];
 		if (!$strId)
 		{
 			throw new Exception("Missing Table Id for : $strTable");
 		}
-		
 		$strWhere = "$strId = <$strId>";
 		parent::__construct($strTable, $strWhere, $arrColumns);
 	}
@@ -3092,7 +3099,7 @@ class QueryCopyTable extends Query
 	 */ 
 	 function Execute($arrData)
 	 {
-	 	$strId = $this->db->arrTableDefine[$this->_strTable]['Id'];
+	 	$strId = $this->db->arrTableDefine->{$this->_strTable}['Id'];
 		$intId = $arrData[$strId];
 		$arrWhere = Array($strId => $intId);
 	 	return parent::Execute($arrData, $arrWhere);
@@ -3209,7 +3216,7 @@ class QueryCopyTable extends Query
 			if (!is_string($arrColumns))
 			{
 				// remove the index column
-				unset($this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]);
+				unset($this->_arrColumns[$this->db->arrTableDefine->{$this->_strTable}['Id']]);
 			}
 			else
 			{
@@ -3239,14 +3246,14 @@ class QueryCopyTable extends Query
 	 	else
 	 	{
 		 	// Full Update, so retrieve columns from the Table definition arrays
-		 	reset($this->db->arrTableDefine[$this->_strTable]["Column"]);
-		 	for ($i = 0; $i < (count($this->db->arrTableDefine[$this->_strTable]["Column"]) - 1); $i++)
+		 	reset($this->db->arrTableDefine->{$this->_strTable}["Column"]);
+		 	for ($i = 0; $i < (count($this->db->arrTableDefine->{$this->_strTable}["Column"]) - 1); $i++)
 		 	{
-		 		$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?, ";
-		 		next($this->db->arrTableDefine[$this->_strTable]["Column"]);
+		 		$strQuery .= key($this->db->arrTableDefine->{$this->_strTable}["Column"]) . " = ?, ";
+		 		next($this->db->arrTableDefine->{$this->_strTable}["Column"]);
 		 	}
 		 	// Last column is different
-		 	$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?\n";
+		 	$strQuery .= key($this->db->arrTableDefine->{$this->_strTable}["Column"]) . " = ?\n";
 	 	}
 
 	 	// Add the WHERE clause
@@ -3260,7 +3267,7 @@ class QueryCopyTable extends Query
 	 	else
 	 	{
 	 		// We MUST have a WHERE clause
-	 		throw new Exception();
+	 		throw new Exception("No where clause.");
 	 	}
 	 	
 		// Add the LIMIT clause
@@ -3337,12 +3344,12 @@ class QueryCopyTable extends Query
 				}
 				else
 				{
-					if (!isset ($this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"]))
+					if (!isset ($this->db->arrTableDefine->{$this->_strTable}["Column"][$mixKey]["Type"]))
 					{
 						throw new Exception ("Could not find data type: " . $this->_strTable . "." . $mixKey);
 					}
 					
-					$strType .= $this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"];
+					$strType .= $this->db->arrTableDefine->{$this->_strTable}["Column"][$mixKey]["Type"];
 		 			
 					// account for table.column key names
 					if (isset($arrData [$mixKey]))
@@ -3359,7 +3366,7 @@ class QueryCopyTable extends Query
 	 	else
 	 	{
 		 	// Bind the VALUES data to our mysqli_stmt
-		 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
+		 	foreach ($this->db->arrTableDefine->{$this->_strTable}["Column"] as $strColumnName=>$arrColumnValue)
 		 	{
 				$strType .= $arrColumnValue["Type"];
 				$arrParams[] = $arrData[$strColumnName];
@@ -3397,6 +3404,7 @@ class QueryCopyTable extends Query
 			}
 	 	}
 		
+
 		// Send any blobs that have been defined
 	 	$intBlobPos = -1;
 	 	while (($intBlobPos = strpos($strType, "b", ++$intBlobPos)) !== FALSE)
@@ -3414,6 +3422,7 @@ class QueryCopyTable extends Query
 	 	}
 		
 		$mixResult = $this->_stmtSqlStatment->execute();
+
 		$this->Debug($mixResult);
 	 	// Run the Statement
 	 	if ($mixResult)

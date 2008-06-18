@@ -108,27 +108,6 @@ if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE && stristr ($_SE
 // LOGIC
 //----------------------------------------------------------------------------//
 
-// load framework OLD
-/*
-require_once($strFrameworkDir."framework.php");
-require_once($strFrameworkDir."functions.php");
-require_once($strFrameworkDir."definitions.php");
-require_once($strFrameworkDir."config.php");
-require_once($strFrameworkDir."database_define.php");
-require_once($strFrameworkDir."db_access.php");
-require_once($strFrameworkDir."report.php");
-require_once($strFrameworkDir."error.php");
-require_once($strFrameworkDir."exception_vixen.php");
-
-
-// create framework instance
-$GLOBALS['fwkFramework'] = new Framework();
-$framework = $GLOBALS['fwkFramework'];
-*/
-
-// New Method for loading the framework
-//require_once($strFrameworkDir."functions.php");
-
 Define ('FLEX_SESSION_NAME',	'flex_admin_sess_id');
 
 //LoadFramework();
@@ -137,7 +116,5 @@ require_once("../../flex.require.php");
 // load application 
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");
-require_once($strApplicationDir."database_define.php");
-//require_once($strApplicationDir."application.php");
 
  ?>

@@ -83,6 +83,13 @@ class HtmlTemplateSystemSettingsMenu extends HtmlTemplate
 		$strItemDescription = "Edit and Add Customer Groups";
 		$strHref = Href()->ViewAllCustomerGroups();
 		$this->_RenderMenuItem($strImage, $strItemName, $strItemDescription, $strHref);
+
+		// Render the link the the "Constants Management" page
+		$strImage = "img/template/payment_terms.png";
+		$strItemName = "Manage Payment Terms";
+		$strItemDescription = "Manage system payment terms";
+		$strHref = Href()->ManagePaymentTerms();
+		$this->_RenderMenuItem($strImage, $strItemName, $strItemDescription, $strHref);
 	}	
 	
 	private function _RenderMenuItem($strImage, $strItemName, $strItemDescription, $strHref)

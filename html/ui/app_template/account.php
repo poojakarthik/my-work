@@ -1107,40 +1107,39 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strChangesNote .= "Sending of late notices was changed from '$strOldSetting' to '$strNewSetting'\n";
 			}
 		}
-		
-		/* OLD way of handling LateNotice exemptions
-		if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
+		else if (DBO()->Account->LatePaymentAmnesty->Value == NULL)
 		{
-			$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
-			$strChangesNote .=	"Sending of Late Notices was changed from '". 
-								DBO()->Account->DisableLateNotices->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
-								"' to '" . DBO()->Account->DisableLateNotices->FormattedValue() . "'\n";
+			DBO()->Account->LatePaymentAmnesty = NULL;
+		}
 
-			// When this property is changed you have to update the LateNoticeAmnesty property
-			switch (DBO()->Account->DisableLateNotices->Value)
-			{
-				case 0:
-				case 1:
-					DBO()->Account->LatePaymentAmnesty = NULL;
-					break;
-					
-				case (-1):
-					// This account is ineligible to receive late notices until after the due date of the next bill
-					DBO()->Account->LatePaymentAmnesty = $this->GetLatePaymentAmnestyDate(DBO()->CurrentAccount->PaymentTerms->Value);
-					//DBO()->Account->LatePaymentAmnesty = date("Y-m-d", strtotime("+1 month {$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
-					$strChangesNote .= "Late Notices will not be generated until after ". date("d/m/Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
-					break;
-			}
-		}
-		else
-		{
-			// Retain the current value of Account.LateNoticeAmnesty
-			DBO()->Account->LatePaymentAmnesty = DBO()->CurrentAccount->LatePaymentAmnesty->Value;
-		}
-*/
 		// Start the transaction
 		TransactionStart();
 
+		if (DBO()->Account->credit_control_status->Value != DBO()->CurrentAccount->credit_control_status->Value)
+		{
+			DBO()->credit_control_status_original->SetTable('credit_control_status');
+			DBO()->credit_control_status_original->Id = DBO()->CurrentAccount->credit_control_status->Value;
+			DBO()->credit_control_status_original->Load();
+			DBO()->credit_control_status_new->SetTable('credit_control_status');
+			DBO()->credit_control_status_new->Id = DBO()->Account->credit_control_status->Value;
+			DBO()->credit_control_status_new->Load();
+			$strChangesNote .= "Credit control status was changed from ". DBO()->credit_control_status_original->name->Value . "(" . DBO()->CurrentAccount->credit_control_status->Value . ") to ". DBO()->credit_control_status_new->name->Value . "(" . DBO()->Account->credit_control_status->Value . ")\n";
+			DBO()->Account->credit_control_status = intval(DBO()->Account->credit_control_status->Value);
+
+			DBO()->credit_control_status_history->account = DBO()->Account->Id->Value;
+			DBO()->credit_control_status_history->from_status = DBO()->CurrentAccount->credit_control_status->Value;
+			DBO()->credit_control_status_history->to_status = DBO()->Account->credit_control_status->Value;
+			DBO()->credit_control_status_history->employee = AuthenticatedUser()->GetUserId();
+			DBO()->credit_control_status_history->change_datetime = date('Y-m-d h:i:s');
+			if (!DBO()->credit_control_status_history->Save())
+			{
+				// Saving the credit control status history record failed
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "ERROR: Recording credit control status change history failed");
+				return TRUE;
+			}
+		}
+		
 		// Check if the Status property has been changed
 		if (DBO()->Account->Archived->Value != DBO()->CurrentAccount->Archived->Value)
 		{
@@ -1153,6 +1152,19 @@ class AppTemplateAccount extends ApplicationTemplate
 			$bolServicesUpdated = FALSE;
 		
 			$strChangesNote .= "Account Status was changed from ". GetConstantDescription(DBO()->CurrentAccount->Archived->Value, 'Account') ." to ". GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\n";
+
+			DBO()->account_status_history->account = DBO()->Account->Id->Value;
+			DBO()->account_status_history->from_status = DBO()->CurrentAccount->Archived->Value;
+			DBO()->account_status_history->to_status = DBO()->Account->Archived->Value;
+			DBO()->account_status_history->employee = AuthenticatedUser()->GetUserId();
+			DBO()->account_status_history->change_datetime = date('Y-m-d h:i:s');
+			if (!DBO()->account_status_history->Save())
+			{
+				// Saving the account status history record failed
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "ERROR: Recording account status change history failed");
+				return TRUE;
+			}
 	
 			switch (DBO()->Account->Archived->Value)
 			{
@@ -1276,7 +1288,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 
 		// Set the columns to save
-		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, DisableLateNotices, LatePaymentAmnesty");
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, DisableLateNotices, credit_control_status, LatePaymentAmnesty");
 														
 		if (!DBO()->Account->Save())
 		{

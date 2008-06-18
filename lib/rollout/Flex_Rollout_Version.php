@@ -66,6 +66,45 @@ abstract class Flex_Rollout_Version
 		}
 		return trim($strResponse);
 	}
-}
 
+	/**
+	 * This function can be invoked by the subclass to interact with a user at the command line
+	 * and wait for an integer response.
+	 */
+	public function getUserResponseInteger($message)
+	{
+		$ok = TRUE;
+		do
+		{
+			$msg = "\n".$message;
+			if (!$ok)
+			{
+				$msg = "\nInvalid response. Please enter an integer value." . $msg;
+			}
+			$response = $this->getUserResponse($msg);
+			$ok = FALSE;
+		} while(!is_numeric($response));
+		return intval($response);
+	}
+
+	/**
+	 * This function can be invoked by the subclass to interact with a user at the command line
+	 * and wait for a decimal response.
+	 */
+	public function getUserResponseDecimal($message)
+	{
+		$ok = TRUE;
+		do
+		{
+			$msg = "\n".$message;
+			if (!$ok)
+			{
+				$msg = "\nInvalid response. Please enter a decimal value." . $msg;
+			}
+			$response = $this->getUserResponse($msg);
+			$ok = FALSE;
+		} while(!is_numeric($response));
+		return floatval($response);
+	}
+}
 ?>

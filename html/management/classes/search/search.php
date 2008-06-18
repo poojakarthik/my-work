@@ -190,13 +190,14 @@
 			else
 			{
 				// Make sure the Field Exists
-				if (!isset ($GLOBALS['arrDatabaseTableDefine'][$this->_strTable]['Column'][$strFieldName]))
+				$arrModel = Flex_Data_Model::get($this->_strTable);
+				if ($arrModel === NULL || !isset ($arrModel['Column'][$strFieldName]))
 				{
 					throw new Exception ('Field does not exist.');
 				}
 				
 				// Get the definition and set the Constaint
-				$arrDefinition = $GLOBALS['arrDatabaseTableDefine'][$this->_strTable]['Column'][$strFieldName];
+				$arrDefinition = $arrModel['Column'][$strFieldName];
 				
 				$scoConstraintObject = new SearchConstraint 
 				(

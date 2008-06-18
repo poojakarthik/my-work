@@ -315,6 +315,13 @@ class MenuItems
 		return "flex.php/CustomerGroup/ViewAll/";
 	}
 
+	function ManagePaymentTerms()
+	{
+		$this->strLabel	= "Payment Terms";
+		$this->strContextMenuLabel = "";
+		return "flex.php/PaymentTerms/Manage/";
+	}
+
 	//------------------------------------------------------------------------//
 	// AddCustomerGroup
 	//------------------------------------------------------------------------//

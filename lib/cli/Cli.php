@@ -25,6 +25,8 @@ abstract class Cli
 	private $logSilent = FALSE;
 	private $logVerbose = FALSE;
 
+	private $bolCachingErrors = FALSE;
+
 	protected final function __construct()
 	{
 		$this->_arrCommandLineArguments = $this->getCommandLineArguments();
@@ -270,18 +272,39 @@ abstract class Cli
 		// Declare a global error string for error handling
 		global $cli_error;
 		$cli_error = "";
-		set_error_handler("Cli_Error_Handler", E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE | E_WARNING | E_NOTICE);
+		if (!$this->bolCachingErrors)
+		{
+			set_error_handler("Cli_Error_Handler", E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE | E_WARNING | E_NOTICE);
+			$this->bolCachingErrors = TRUE;
+		}
 	}
 	
 	public function dieIfErred()
 	{
-		restore_error_handler();
+		if ($this->bolCachingErrors)
+		{
+			restore_error_handler();
+			$this->bolCachingErrors = FALSE;
+		}
 		// Access the global error string to check for errors
 		global $cli_error;
 		if ($cli_error !== "")
 		{
 			$this->showUsage($cli_error);
 		}
+	}
+
+
+	public function getCachedError()
+	{
+		if ($this->bolCachingErrors)
+		{
+			restore_error_handler();
+			$this->bolCachingErrors = FALSE;
+		}
+		// Access the global error string to check for errors
+		global $cli_error;
+		return $cli_error;
 	}
 	
 

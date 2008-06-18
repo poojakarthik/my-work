@@ -2237,6 +2237,8 @@ $GLOBALS['*arrConstant']	['LetterType']	[3]	['Constant']	= 'LETTER_TYPE_FINAL_DE
 $GLOBALS['*arrConstant']	['LetterType']	[3]	['Description']	= 'Final Demand Notice';
 $GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_INVOICE';
 $GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Invoice';
+$GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_AUTOMATIC_BARRING';
+$GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Automatic Barring';
 
 // DataTypes for Constants
 $GLOBALS['*arrConstant']	['DataType']	[1]	['Constant']	= 'DATA_TYPE_STRING';
@@ -2306,6 +2308,34 @@ $GLOBALS['*arrConstant']	['DatabaseConnection']	['admin']	['Constant']	= 'FLEX_D
 $GLOBALS['*arrConstant']	['DatabaseConnection']	['admin']	['Description']	= 'Admin Database Connection';
 $GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Constant']	= 'FLEX_DATABASE_CONNECTION_CDR';
 $GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Description']	= 'CDR Database Connection';
+
+
+$GLOBALS['*arrConstant']	['AutomaticInvoiceAction']	[1]	['Constant']	= 'AUTOMATIC_INVOICE_ACTION_NONE';
+$GLOBALS['*arrConstant']	['AutomaticInvoiceAction']	[1]	['Description']	= 'No automatic invoice actions performed';
+$GLOBALS['*arrConstant']	['AutomaticInvoiceAction']	[2]	['Constant']	= 'AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE';
+$GLOBALS['*arrConstant']	['AutomaticInvoiceAction']	[2]	['Description']	= 'Overdue Notice sent';
+$GLOBALS['*arrConstant']	['AutomaticInvoiceAction']	[3]	['Constant']	= 'AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE';
+$GLOBALS['*arrConstant']	['AutomaticInvoiceAction']	[3]	['Description']	= 'Suspension Notice sent';
+$GLOBALS['*arrConstant']	['AutomaticInvoiceAction']	[4]	['Constant']	= 'AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND';
+$GLOBALS['*arrConstant']	['AutomaticInvoiceAction']	[4]	['Description']	= 'Final Demand sent';
+
+
+$GLOBALS['*arrConstant']	['AutomaticBarringStatus']	[1]	['Constant']	= 'AUTOMATIC_BARRING_STATUS_NONE';
+$GLOBALS['*arrConstant']	['AutomaticBarringStatus']	[1]	['Description']	= 'No automatic barring applied';
+$GLOBALS['*arrConstant']	['AutomaticBarringStatus']	[2]	['Constant']	= 'AUTOMATIC_BARRING_STATUS_BARRED';
+$GLOBALS['*arrConstant']	['AutomaticBarringStatus']	[2]	['Description']	= 'Account automatically barred';
+$GLOBALS['*arrConstant']	['AutomaticBarringStatus']	[3]	['Constant']	= 'AUTOMATIC_BARRING_STATUS_UNBARRED';
+$GLOBALS['*arrConstant']	['AutomaticBarringStatus']	[3]	['Description']	= 'Account automatically unbarred';
+
+
+$GLOBALS['*arrConstant']	['CreditControlStatus']	[1]	['Constant']	= 'CREDIT_CONTROL_STATUS_UP_TO_DATE';
+$GLOBALS['*arrConstant']	['CreditControlStatus']	[1]	['Description']	= 'Up to date';
+$GLOBALS['*arrConstant']	['CreditControlStatus']	[2]	['Constant']	= 'CREDIT_CONTROL_STATUS_EXTENSION';
+$GLOBALS['*arrConstant']	['CreditControlStatus']	[2]	['Description']	= 'Extension given';
+$GLOBALS['*arrConstant']	['CreditControlStatus']	[3]	['Constant']	= 'CREDIT_CONTROL_STATUS_SENDING_TO_AUSTRAL';
+$GLOBALS['*arrConstant']	['CreditControlStatus']	[3]	['Description']	= 'Sending to Austral';
+$GLOBALS['*arrConstant']	['CreditControlStatus']	[4]	['Constant']	= 'CREDIT_CONTROL_STATUS_WITH_AUSTRAL';
+$GLOBALS['*arrConstant']	['CreditControlStatus']	[4]	['Description']	= 'With Austral';
 
 
 // Special paths

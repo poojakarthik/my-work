@@ -32,12 +32,12 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 
 		// Need to get the payment terms from the user
-		$intInvoiceDay 				= 						  $this->getInteger("On which day of the month should invoices be generated?");
-		$intPaymentTerms 			= $intInvoiceDay 		+ $this->getInteger("How many days after invoicing before payment is due?");
-		$intOverdueDays 			= $intPaymentTerms 		+ $this->getInteger("How many days after payment is due before overdue notices should be sent?");
-		$intSuspensionDays 			= $intOverdueDays 		+ $this->getInteger("How many days after overdue notices are sent before suspension notices should be sent?");
-		$intFinalDemandDays 		= $intSuspensionDays 	+ $this->getInteger("How many days after suspension notices are sent before final demands should be sent?");
-		$intAutomaticBarringDays 	= $intFinalDemandDays 	+ $this->getInteger("How many days after final demands are sent before accounts should be automatically barred?");
+		$intInvoiceDay 				= 						  $this->getUserResponseInteger("On which day of the month should invoices be generated?");
+		$intPaymentTerms 			= $intInvoiceDay 		+ $this->getUserResponseInteger("How many days after invoicing before payment is due?");
+		$intOverdueDays 			= $intPaymentTerms 		+ $this->getUserResponseInteger("How many days after payment is due before overdue notices should be sent?");
+		$intSuspensionDays 			= $intOverdueDays 		+ $this->getUserResponseInteger("How many days after overdue notices are sent before suspension notices should be sent?");
+		$intFinalDemandDays 		= $intSuspensionDays 	+ $this->getUserResponseInteger("How many days after suspension notices are sent before final demands should be sent?");
+		$intAutomaticBarringDays 	= 0;
 
 		$strSQL = "
 			INSERT INTO payment_terms 
@@ -52,21 +52,6 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 		}
 	}
 
-	public function getInteger($message)
-	{
-		$ok = TRUE;
-		do
-		{
-			$msg = "\n".$message;
-			if (!$ok)
-			{
-				$msg = "\nInvalid response. Please enter an integer value." . $msg;
-			}
-			$response = $this->getUserResponse($msg);
-			$ok = FALSE;
-		} while(!is_numeric($response));
-		return intval($response);
-	}
 }
 
 ?>

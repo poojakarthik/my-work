@@ -229,7 +229,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->LatePaymentAmnesty = "Exempt until after ". date("jS F, Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
 		}
 		DBO()->Account->LatePaymentAmnesty->RenderOutput();
-		
+
+
+		// Load the credit control statuses
+		DBO()->credit_control_status->Id = DBO()->Account->credit_control_status->Value;
+		DBO()->credit_control_status->Load();
+		DBO()->Account->credit_control_status = DBO()->credit_control_status->name->Value;
+		DBO()->Account->credit_control_status->RenderOutput();
+
 		if (DBO()->Account->DisableLatePayment->Value === NULL)
 		{
 			// If DisableLatePayment is NULL then set it to 0
@@ -244,6 +251,38 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// To avoid a double negative display ChargeAdminFee instead of DisableDDR
 		DBO()->Account->ChargeAdminFee = !(DBO()->Account->DisableDDR->Value);
 		DBO()->Account->ChargeAdminFee->RenderOutput();
+
+
+		// Details of last automated actions
+		// ... automatic notices sent
+		DBO()->automatic_invoice_action->Id = DBO()->Account->last_automatic_invoice_action->Value;
+		DBO()->automatic_invoice_action->Load();
+		if (DBO()->Account->last_automatic_invoice_action->Value != AUTOMATIC_INVOICE_ACTION_NONE)
+		{
+			DBO()->Account->last_automatic_invoice_action = 
+				DBO()->automatic_invoice_action->name->Value . ' on ' .
+				OutputMask()->LongDateAndTime(DBO()->Account->last_automatic_invoice_action_datetime->Value);
+		}
+		else
+		{
+			DBO()->Account->last_automatic_invoice_action = DBO()->automatic_invoice_action->name->Value;
+		}
+		DBO()->Account->last_automatic_invoice_action->RenderOutput();
+		// ... automatic account barring
+		DBO()->automatic_barring_status->Id = DBO()->Account->automatic_barring_status->Value;
+		DBO()->automatic_barring_status->Load();
+		if (DBO()->Account->automatic_barring_status->Value != AUTOMATIC_BARRING_STATUS_NONE)
+		{
+			DBO()->Account->automatic_barring_status = 
+				DBO()->automatic_barring_status->name->Value . ' on ' .
+				OutputMask()->LongDateAndTime(DBO()->Account->automatic_barring_datetime->Value);
+		}
+		else
+		{
+			DBO()->Account->automatic_barring_status = DBO()->automatic_barring_status->name->Value;
+		}
+		DBO()->Account->automatic_barring_status->RenderOutput();
+
 		
 		echo "</div>\n"; // GroupedContent
 		
@@ -324,31 +363,20 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		
 		// Reorder the list of Account Status values
-		$arrAccountStatus[ACCOUNT_ACTIVE]			= GetConstantDescription(ACCOUNT_ACTIVE, "Account");
-		$arrAccountStatus[ACCOUNT_CLOSED]			= GetConstantDescription(ACCOUNT_CLOSED, "Account");
-		$arrAccountStatus[ACCOUNT_SUSPENDED]		= GetConstantDescription(ACCOUNT_SUSPENDED, "Account");
-		$arrAccountStatus[ACCOUNT_DEBT_COLLECTION]	= GetConstantDescription(ACCOUNT_DEBT_COLLECTION, "Account");
-		$arrAccountStatus[ACCOUNT_ARCHIVED]			= GetConstantDescription(ACCOUNT_ARCHIVED, "Account");
+		DBL()->account_status->Load();
 		
 		// Render the Account Status Combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Account.Archived' name='Account.Archived' style='width:330px'>\n";
-		foreach ($arrAccountStatus as $intConstant=>$strAccountStatus)
+		while ($status = DBL()->account_status->current())
 		{
-			if (($intConstant == ACCOUNT_DEBT_COLLECTION) || ($intConstant == ACCOUNT_ARCHIVED) || ($intConstant == ACCOUNT_SUSPENDED))
-			{
-				// Only users with Admin privileges can mark an account as ACCOUNT_DEBT_COLLECTION or ACCOUNT_ARCHIVED
-				if (!$bolUserHasAdminPerm)
-				{
-					// The user does not have permission to select these options
-					continue;
-				}
-			}
-
-			$strSelected = (DBO()->Account->Archived->Value == $intConstant) ? "selected='selected'" : "";
-			echo "         <option value='$intConstant' $strSelected>$strAccountStatus</option>\n";
+			$id = $status->id->Value;
+			$strLabel = $status->name->Value;
+			$strSelected = (DBO()->Account->Archived->Value == $id) ? "selected='selected'" : "";
+			echo "		<option value='$id' $strSelected>$strLabel</option>\n";
+			DBL()->account_status->next();
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
@@ -454,6 +482,25 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
+
+		// Load the credit control statuses
+		DBL()->credit_control_status->Load();
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Credit Control Status :</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select id='Account.credit_control_status' name='Account.credit_control_status' style='width:330px'>\n";
+		while ($cc = DBL()->credit_control_status->current())
+		{
+			$id = $cc->id->Value;
+			$strLabel = $cc->name->Value;
+			$strSelected = (DBO()->Account->credit_control_status->Value == $id) ? "selected='selected'" : "";
+			echo "		<option value='$id' $strSelected>$strLabel</option>\n";
+			DBL()->credit_control_status->next();
+		}
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";
+
 		DBO()->Account->DisableLatePayment->RenderInput(1);
 		
 		// To avoid a double negative, display ChargeAdminFee instead of DisableDDR

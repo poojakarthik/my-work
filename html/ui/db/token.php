@@ -1048,6 +1048,11 @@ class PropertyToken
 			
 			$strDestination .= $strSource[$i];
 		}
+
+		if ($strDestination == strtolower($strDestination))
+		{
+			$strDestination = ucwords($strDestination);
+		}
 	
 		return $strDestination;
 	}

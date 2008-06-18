@@ -142,7 +142,8 @@
 			if ($strColumnName != 'Id')
 			{
 				// If the column does not exist
-				if (!isset ($GLOBALS['arrDatabaseTableDefine'][$this->_strTable]['Column'][$strColumnName]))
+				$arrModel = Flex_Data_Model::get($this->_strTable);
+				if ($arrModel === NULL || !isset ($arrModel['Column'][$strColumnName]))
 				{
 					// Throw an Error
 					throw new Exception ('Field not exists.');
