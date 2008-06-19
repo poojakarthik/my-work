@@ -1,4 +1,4 @@
-<?
+<?php
 	
 	define ("CONNECTION_TRANSMIT_METHOD_GET"	, "GET");
 	define ("CONNECTION_TRANSMIT_METHOD_POST"	, "POST");
