@@ -377,9 +377,16 @@ abstract class Cli
 	{
 		if (preg_match("/^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}(| ([01]{1,1}[0-9]{1,1}|2[0-3]{1,1}):[0-5]{1,1}[0-9]{1,1}:[0-5]{1,1}[0-9]{1,1})$/", $date))
 		{
-			if (checkdate(intval(substr($date, 5, 2)), intval(substr($date, 8)), intval(substr($date, 0, 4))))
+			if (checkdate(intval(substr($date, 5, 2)), intval(substr($date, 8, 2)), intval(substr($date, 0, 4))))
 			{
-				return $date;
+				$hasTime = strlen($date) > 10;
+				$Y = intval(substr($date, 0, 4));
+				$m = intval(substr($date, 5, 2));
+				$d = intval(substr($date, 8, 2));
+				$H = $hasTime ? intval(substr($date, 11, 2)) : 0;
+				$i = $hasTime ? intval(substr($date, 14, 2)) : 0;
+				$s = $hasTime ? intval(substr($date, 17, 2)) : 0;
+				return mktime($H, $i, $s, $m, $d, $Y, FALSE);
 			}
 			else
 			{
