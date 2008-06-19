@@ -83,7 +83,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to populate credit_control_status table. ' . $qryQuery->Error());
 		}
 
-		$strSQL = "ALTER TABLE account ADD credit_control_status BIGINT UNSIGNED NOT NULL DEFAULT '1' COMMENT 'FK to credit_control_status.id' AFTER Archived";
+		$strSQL = "ALTER TABLE Account ADD credit_control_status BIGINT UNSIGNED NOT NULL DEFAULT '1' COMMENT 'FK to credit_control_status.id' AFTER Archived";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter Account table (2). ' . $qryQuery->Error());
