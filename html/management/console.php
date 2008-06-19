@@ -20,7 +20,7 @@
 	
 	// If we're loading this page after a Login, then we will
 	// have a "PabloSays" request
-	if ($_GET ['PabloSays'])
+	if (array_key_exists('PabloSays', $_GET) && $_GET ['PabloSays'])
 	{
 		// Try and Load a tip from PabloSays. If no tip
 		// is found, then don't error, just continue.
