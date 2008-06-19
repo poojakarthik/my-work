@@ -122,7 +122,11 @@ class PropertyToken
 		{
 			// The property's value
 			case "value":
-				return $this->_dboOwner->_arrProperties[$this->_strProperty];
+				if (array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties))
+				{
+					return $this->_dboOwner->_arrProperties[$this->_strProperty];
+				}
+				return NULL;
 			// The property's validity
 			case "valid":
 				return $this->_dboOwner->_arrValid[$this->_strProperty];
@@ -273,7 +277,7 @@ class PropertyToken
 	{
 		echo $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask, $arrAdditionalArgs);
 		
-		return $this->_dboOwner->_arrProperties[$this->_strProperty];
+		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : NULL;
 	}
 
 	//------------------------------------------------------------------------//
@@ -296,7 +300,7 @@ class PropertyToken
 	{
 		echo $this->_RenderIO(RENDER_OUTPUT, $intContext);
 		
-		return $this->_dboOwner->_arrProperties[$this->_strProperty];
+		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : NULL;
 	}
 
 	//------------------------------------------------------------------------//
@@ -352,7 +356,7 @@ class PropertyToken
 	private function _CalculateContext($intCurrentContext, $mixValue = NULL)
 	{
 		// if a value has not been specified then use the current value of the property
-		if ($mixValue === NULL)
+		if ($mixValue === NULL && array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties))
 		{
 			$mixValue = $this->_dboOwner->_arrProperties[$this->_strProperty];
 		}
@@ -360,7 +364,7 @@ class PropertyToken
 		$intContext = $intCurrentContext;
 		
 		// work out if the context of the property is subject to its value
-		if (is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts']))
+		if (array_key_exists('ConditionalContexts', $this->_dboOwner->_arrDefine[$this->_strProperty]) && is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts']))
 		{
 			// test each defined condition and use the context of the first one that is found to be true
 			foreach ($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts'] as $arrCondition)
@@ -415,15 +419,18 @@ class PropertyToken
 		$arrParams['Object'] 			= $this->_dboOwner->_strName;
 		$arrParams['Property'] 			= $this->_strProperty;
 		$arrParams['Context'] 			= $intContext;
-		$arrParams['Value'] 			= $this->_dboOwner->_arrProperties[$this->_strProperty];
-		$arrParams['Valid'] 			= $this->_dboOwner->_arrValid[$this->_strProperty];
+		$arrParams['Value'] 			= array_key_exists($this->_strProperty, $this->_dboOwner->_arrProperties) ? $this->_dboOwner->_arrProperties[$this->_strProperty] : NULL;
+		if (array_key_exists($this->_strProperty, $this->_dboOwner->_arrValid)) 
+		{
+			$arrParams['Valid'] 			= $this->_dboOwner->_arrValid[$this->_strProperty];
+		}
 		$arrParams['Required'] 			= $bolRequired;
 		$arrParams['Type']				= $strType;
 		$arrParams['ApplyOutputMask']	= $bolApplyOutputMask;
 
 		// work out the base class to use
 		$arrParams['Definition']['BaseClass'] = CLASS_DEFAULT; // Default
-		if ($arrParams['Valid'] === FALSE)
+		if (array_key_exists('Valid', $arrParams) && $arrParams['Valid'] === FALSE)
 		{
 			$arrParams['Definition']['BaseClass'] .= "Invalid"; // DefaultInvalid
 		}
@@ -1073,7 +1080,7 @@ class PropertyToken
 	 */
 	function IsInvalid()
 	{
-		return $this->_dboOwner->_arrValid[$this->_strProperty] === FALSE;
+		return !array_key_exists($this->_strProperty, $this->_dboOwner->_arrValid) || $this->_dboOwner->_arrValid[$this->_strProperty] === FALSE;
 	}
 	
 	
