@@ -519,7 +519,7 @@ class Application
 		// user is logged in at this point
 		
 		// check for a server forced login
-		if ($_SERVER['PHP_AUTH_USER'])
+		if (array_key_exists('PHP_AUTH_USER', $_SERVER) && $_SERVER['PHP_AUTH_USER'])
 		{
 			$arrServerLogin = explode('@', $_SERVER['PHP_AUTH_USER']);
 			
@@ -1432,11 +1432,11 @@ class SubmittedData
 	function __construct($arrDefine=NULL)
 	{
 		// get form and button Id
-		if ($_REQUEST['VixenFormId'])
+		if (array_key_exists('VixenFormId', $_REQUEST) && $_REQUEST['VixenFormId'])
 		{
 			$GLOBALS['*SubmittedForm'] = $_REQUEST['VixenFormId'];	
 		}
-		if ($_REQUEST['VixenButtonId'])
+		if (array_key_exists('VixenButtonId', $_REQUEST) && $_REQUEST['VixenButtonId'])
 		{
 			$GLOBALS['*SubmittedButton'] = $_REQUEST['VixenButtonId'];	
 		}
