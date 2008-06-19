@@ -1204,6 +1204,10 @@ class HtmlTemplate extends BaseTemplate
 	 */
 	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strTargetType=NULL, $strStyleClass="InputSubmit")
 	{
+		$strTarget = '';
+		$strId = '';
+		$strSize = '';
+		
 		if (!$strTemplate)
 		{
 			$strTemplate = $this->_strTemplate;
@@ -1588,11 +1592,11 @@ class SubmittedData
 		$objAjax = AjaxRecieve();
 
 		// get form Id and Button Id
-		if ($objAjax->FormId)
+		if (isset($objAjax->FormId) && $objAjax->FormId)
 		{
 			$GLOBALS['*SubmittedForm'] = $objAjax->FormId;
 		}
-		if ($objAjax->ButtonId)
+		if (isset($objAjax->ButtonId) && $objAjax->ButtonId)
 		{
 			$GLOBALS['*SubmittedButton'] = $objAjax->ButtonId;
 		}
@@ -1671,7 +1675,7 @@ class SubmittedData
 		}
 		
 		// make sure context is an int
-		$intContext = (int)$arrName[2];
+		$intContext = array_key_exists(2, $arrName) ? (int)$arrName[2] : 0;
 		if (!$intContext)
 		{
 			// if not set it to the default context
