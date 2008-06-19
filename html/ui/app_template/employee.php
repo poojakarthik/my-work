@@ -150,7 +150,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		
 		// Retrieve all Employees
 		
-		if ($_POST['Archived'] != 1)
+		if (!array_key_exists('Archived', $_POST) || $_POST['Archived'] != 1)
 		{
 			DBL()->Employee->Archived = 0;
 		}
