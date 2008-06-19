@@ -7,19 +7,23 @@ class Cli_App_LateNoticeRun extends Cli
 {
 	const SWITCH_EFFECTIVE_DATE = "e";
 
+	private $runDateTime = '';
+
 	function run()
 	{
+		$now = time();
+		$this->runDateTime = date('Y-m-d H:i:s', $now);
+		$pathDate = date('Ymd', $now);
+
 		try
 		{
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
 
-			// Get date in YYYY-mm-dd format
-			$now = substr($arrArgs[self::SWITCH_EFFECTIVE_DATE], 0, 10);
-			// Convert to unix timestamp for date
-			$day = intval(substr($now, 8, 2));
-			$month = intval(substr($now, 5, 2));
-			$year = intval(substr($now, 0, 4));
+			// Convert effective date to unix timestamp for start of day
+			$day = intval(date('d', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
+			$month = intval(date('m', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
+			$year = intval(date('Y', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
 			$todayTimestamp = mktime(0, 0, 0, $month, $day, $year, FALSE);
 
 			$arrNoticeTypes = array(
@@ -33,6 +37,10 @@ class Cli_App_LateNoticeRun extends Cli
 
 			$arrSummary = array();
 
+			$arrGeneralErrors = array();
+
+			$invcoieRunAutoFields = array();
+
 			foreach($arrNoticeTypes as $intNoticeType)
 			{
 				$mixResult = GenerateLatePaymentNotices($intNoticeType, $todayTimestamp);
@@ -41,46 +49,75 @@ class Cli_App_LateNoticeRun extends Cli
 				// Notices were generated iff the results contain an 
 				if ($mixResult === FALSE)
 				{
-					$this->log("ERROR: Generating " . $strLetterType . "s failed, unexpectedly", 0);
-					$errors += 1;
+					$message = "ERROR: Generating " . $strLetterType . "s failed, unexpectedly";
+					$this->log($message, 0);
+					$arrGeneralErrors[] = $message;
+					$errors++;
 				}
 				else
 				{
+					$outputs[$strLetterType]['success'] = $mixResult['Successful'];
+					$outputs[$strLetterType]['failure'] = $mixResult['Failed'];
+					if ($mixResult['Failed'])
+					{
+						$errors++;
+					}
+					$this->log("{$strLetterType}s successfully generated  : {$mixResult['Successful']}");
+					$this->log("{$strLetterType}s that failed to generate : {$mixResult['Failed']}");
+
+
 					$newAutoInvAction = NULL;
+					$autorunField = NULL;
 					// Take action appropriate for the notice type
 					switch ($intNoticeType)
 					{
 						case LETTER_TYPE_OVERDUE:
 							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE;
+							$autorunField = 'automatic_overdue_datetime';
 							break;
 						case LETTER_TYPE_SUSPENSION:
 							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE;
+							$autorunField = 'automatic_suspension_datetime';
 							break;
 						case LETTER_TYPE_FINAL_DEMAND:
 							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND;
+							$autorunField = 'automatic_final_demand_datetime';
 							break;
 						default:
 							continue;
 					}
 
-					$this->log("Notices successfully generated  : {$mixResult['Successful']}");
-					$this->log("Notices that failed to generate : {$mixResult['Failed']}");
+					if (!array_key_exists($autorunField, $invcoieRunAutoFields))
+					{
+						$invcoieRunAutoFields[$autorunField] = array();
+					}
 
 					// We now need to email/print each of the notices that have been generated
 					foreach($mixResult['Details'] as $arrDetails)
 					{
-						if (!array_key_exists($arrDetails['Account']['AccountGroup'], $arrSummary))
-						{
-							$arrSummary[$arrDetails['Account']['AccountGroup']] = array();
-							$arrSummary[$arrDetails['Account']['AccountGroup']]['emails'] = array();
-							$arrSummary[$arrDetails['Account']['AccountGroup']]['prints'] = array();
-							$arrSummary[$arrDetails['Account']['AccountGroup']]['errors'] = array();
-						}
-
 						$intCustGrp = $arrDetails['Account']['CustomerGroup'];
+						$strCustGroupName = $arrDetails['Account']['CustomerGroupName'];
 						$intAccountId = $arrDetails['Account']['AccountId'];
 						$xmlFilePath = $arrDetails['XMLFilePath'];
 						$intAutoInvoiceAction = $arrDetails['Account']['automatic_invoice_action'];
+
+						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
+						if (!array_key_exists($intCustGrp, $arrSummary))
+						{
+							$arrSummary[$strCustGroupName] = array();
+							$arrSummary[$strCustGroupName][$strLetterType]['emails'] = array();
+							$arrSummary[$strCustGroupName][$strLetterType]['prints'] = array();
+							$arrSummary[$strCustGroupName][$strLetterType]['errors'] = array();
+							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = 
+								realpath(FILES_BASE_PATH . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $pathDate . DIRECTORY_SEPARATOR . $custGroupName);
+						}
+
+						$invoiceRun = $arrDetails['Account']['InvoiceRun'];
+						if (!array_key_exists($invoiceRun, $invcoieRunAutoFields[$autorunField]))
+						{
+							$invcoieRunAutoFields[$autorunField][$invoiceRun] = 0;
+						}
+						$invcoieRunAutoFields[$autorunField][$invoiceRun]++;
 
 						switch ($arrDetails['Account']['DeliveryMethod'])
 						{
@@ -88,54 +125,45 @@ class Cli_App_LateNoticeRun extends Cli
 								// We need to generate the pdf for the XML and save it to the 
 								// files/type/pdf/date/cust_group/account.pdf storage
 								// Need to add a note of this to the email
-								$this->log("Generating print PDF ($intNoticeType) for account ". $arrDetails['Account']['AccountId']);
+								$this->log("Generating print PDF $strLetterType for account ". $arrDetails['Account']['AccountId']);
 								$pdfContent = $this->getPDFContent($intCustGrp, time(), $intNoticeType, $xmlFilePath, 'PRINT');
 
 								// If the PDF generation failed.
 								if (!$pdfContent)
 								{
 									$error = $this->getCachedError();
-									$message = "Failed to generate PDF ($intNoticeType) for " . $intAccountId . "\n" . $error;
-									$arrSummary[$intCustGrp]['errors'][] = $message;
+									$message = "Failed to generate PDF $strLetterType for " . $intAccountId . "\n" . $error;
+									$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
+									$errors++;
 									$this->log($message, TRUE);
 								}
 								// We have a PDF, so we should store it for sending to the printers
 								else
 								{
-									$this->log("Storing notice ($intNoticeType) for account ". $intAccountId);
-									$letterType = strtolower(str_replace(' ', '_', $strLetterType));
+									$this->log("Storing PDF ($intNoticeType) for account ". $intAccountId);
 									$custGroupName = strtolower(str_replace(' ', '_', $arrDetails['Account']['CustomerGroupName']));
 
-									if (array_key_exists('output_directory', $arrSummary[$intCustGrp]))
-									{
-										$targetFile = $arrSummary[$intCustGrp]['output_directory'];
-									}
-									else
-									{
-										$targetFile = FILES_BASE_PATH . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . date('Ymd') . DIRECTORY_SEPARATOR . $custGroupName;
-										RecursiveMkdir($targetFile);
+									$outputDirectory = $arrSummary[$strCustGroupName][$strLetterType]['output_directory'];
 
-										$arrSummary[$intCustGrp]['output_directory'] = $targetFile;
+									if (!file_exists($outputDirectory))
+									{
+										RecursiveMkdir($outputDirectory);
 									}
 
 									// WIP This bit needs error handling
-									$targetFile .= DIRECTORY_SEPARATOR . $intAccountId . '.pdf';
+									$targetFile = $outputDirectory . DIRECTORY_SEPARATOR . $intAccountId . '.pdf';
 									$file = fopen($targetFile, 'w');
 									fwrite($file, $pdfContent);
 									fclose($file);
 
-									$arrSummary[$intCustGrp]['prints'][] = $intAccountId;
-
+									$arrSummary[$strCustGroupName][$strLetterType]['prints'][] = $intAccountId;
 
 									// We need to log the fact that we've created it, by updating the account automatic_invoice_action
-									$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType emailed to $name ($emailTo)");
+									$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType stored for printing in $outputDirectory");
 									if ($outcome !== TRUE)
 									{
-										$arrSummary[$intCustGrp]['errors'][] = $outcome;
-									}
-									else
-									{
-										
+										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
+										$errors++;
 									}
 								}
 
@@ -143,15 +171,16 @@ class Cli_App_LateNoticeRun extends Cli
 
 							case BILLING_METHOD_EMAIL:
 								// We can safely go ahead and generate this pdf.
-								$this->log("Generating email PDF ($intNoticeType) for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
+								$this->log("Generating email PDF $strLetterType for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
 								$pdfContent = $this->getPDFContent($intCustGrp, time(), $intNoticeType, $xmlFilePath, 'EMAIL');
 
 								// If the PDF generation failed.
 								if (!$pdfContent)
 								{
 									$error = $this->getCachedError();
-									$message = "Failed to generate PDF ($intNoticeType) for " . $intAccountId . "\n" . $error;
-									$arrSummary[$intCustGrp]['errors'][] = $message;
+									$message = "Failed to generate PDF $strLetterType for " . $intAccountId . "\n" . $error;
+									$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
+									$errors++;
 									$this->log($message, TRUE);
 								}
 								// We have a PDF, so we should email it
@@ -161,14 +190,18 @@ class Cli_App_LateNoticeRun extends Cli
 									$custGroupName = $arrDetails['Account']['CustomerGroupName'];
 									$fileName = str_replace(' ', '_', $strLetterType) . '.pdf';
 									$emailTo = 'holiver@yellowbilling.com.au'; //$arrDetails['Account']['Email'];
-									$emailFrom = 'me@yellowbilling.com.au';//$arrDetails['Account']['EmailFrom'];
+									$emailFrom = 'holiver@yellowbilling.com.au';//$arrDetails['Account']['EmailFrom'];
 									$subject = "$custGroupName $strLetterType";
 
+									/*
 									$name = array();
 									if (trim($arrDetails['Account']['Title'])) $name[] = trim($arrDetails['Account']['Title']);
 									if (trim($arrDetails['Account']['FirstName'])) $name[] = trim($arrDetails['Account']['FirstName']);
 									if (trim($arrDetails['Account']['LastName'])) $name[] = trim($arrDetails['Account']['LastName']);
 									$name = implode(' ', $name);
+									*/
+
+									$name = trim($arrDetails['Account']['FirstName']);
 
 									$a = 'a';
 									if (strpos('aeiou', strtolower($strLetterType[0])) !== FALSE)
@@ -177,7 +210,7 @@ class Cli_App_LateNoticeRun extends Cli
 									}
 
 				 					$strContent = "Dear $name,\r\n\r\n" .
-				 								  "Please find attached $a $strLetterType from $custGroupName\r\n\r\n" .
+				 								  "Please find attached $a $strLetterType from $custGroupName.\r\n\r\n" .
 				 								  "Regards\r\n\r\n" .
 				 								  "The Team at $custGroupName";
 
@@ -185,28 +218,141 @@ class Cli_App_LateNoticeRun extends Cli
 
 									if ($outcome === TRUE)
 									{
-										$arrSummary[$intCustGrp]['emails'][] = $intAccountId;
+										$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
 
 										// We need to log the fact that we've sent it, by updating the account automatic_invoice_action
 										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType emailed to $name ($emailTo)");
 										if ($outcome !== TRUE)
 										{
-											$arrSummary[$intCustGrp]['errors'][] = $outcome;
+											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
+											$errors++;
 										}
 									}
 									else
 									{
 										// We need to log the fact that the sending of the email failed
 										$message = "Failed to email $strLetterType PDF for account " . $intAccountId . ' to ' . $emailTo . ($outcome ? "\n$outcome" : '');
-										$arrSummary[$intCustGrp]['errors'][] = $message;
+										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
+										$errors++;
 										$this->log($message, TRUE);
 									}
-									
+
 								}
 								break;
 						}
 					}
 				}
+			}
+
+			foreach ($invcoieRunAutoFields as $autoField => $invoiceRunCounts)
+			{
+				foreach ($invoiceRunCounts as $invoiceRun => $count)
+				{
+					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, $autoField);
+					if ($result !== TRUE)
+					{
+						$arrGeneralErrors[] = $result;
+					}
+				}
+			}
+
+			// We now need to build a report detailing actions taken for each of the customer groups
+			$this->log("Building report");
+			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ' Automated late notice generation log for run dated ' . $this->runDateTime;
+			$report = array();
+			if ($errors)
+			{
+				$report[] = "***ERRORS WERE DETECTED WHILST GENERATING LATE NOTICES***";
+				$report[] = "";
+			}
+			else
+			{
+				$report[] = "The late notice generation completed without any errors being detected.";
+				$report[] = "";
+			}
+			if (!empty($arrGeneralErrors))
+			{
+				$report[] = "***GENERAL ERRORS***";
+				$report[] = "The following general errors were encountered: -";
+				$report = array_merge($report, $arrGeneralErrors);
+				$report[] = "";
+				$report[] = "";
+			}
+			$report[] = "Breakdown of XML generation: -";
+			foreach ($outputs as $letterType => $results)
+			{
+				$report[] = "    $letterType: " . $results['success'] . " XML files Created, " . $results['failure'] . " XML file generations Failed";
+			}
+			$report[] = "";
+			$report[] = "";
+			if (!empty($arrSummary))
+			{
+				$report[] = "Breakdown of late notice generation by customer group (for successfully generated XML files only): -";
+				foreach ($arrSummary as $custGroup => $letterTypeSummarries)
+				{
+					$report[] = "";
+					$report[] = "";
+					$report[] = "Customer Group: $custGroup";
+
+					foreach ($letterTypeSummarries as $letterType => $letterTypeSummary)
+					{
+						$report[] = "[Start of $letterType breakdown for Customer Group: $custGroup]";
+						if (!empty($letterTypeSummary['errors']))
+						{
+							$report[] = "";
+							$report[] = "***ERRORS ENCOUNTERED***";
+							$report = array_merge($report, $letterTypeSummary['errors']);
+							$report[] = "";
+						}
+						else
+						{
+							$report[] = "";
+							$report[] = "No errors were encountered.";
+							$report[] = "";
+						}
+						if (!empty($letterTypeSummary['prints']))
+						{
+							$report[] = "Print: " . count($letterTypeSummary['prints']) . " {$letterType}s were created for printing and stored in " . $letterTypeSummary['output_directory'] . '.';
+						}
+						else
+						{
+							$report[] = "Print: No documents were created for printing";
+						}
+						if (!empty($letterTypeSummary['emails']))
+						{
+							$report[] = "Email: " . count($letterTypeSummary['emails']) . " {$letterType}s were created and emailed.";
+							$report[] = "Emails were sent for the following accounts: -";
+							$report[] = implode(', ', $letterTypeSummary['emails']);
+						}
+						else
+						{
+							$report[] = "Email: No documents were emailed";
+						}
+						$report[] = "[End of $letterType breakdown for Customer Group: $custGroup]";
+						$report[] = "";
+					}
+
+					$report[] = "[End of breakdown for Customer Group: $custGroup]";
+					$report[] = "";
+					$report[] = "";
+				}
+			}
+			else
+			{
+				$report[] = "No automated late notices were generated.";
+			}
+			$body = implode("\r\n", $report);
+
+			$this->log("Sending report");
+			$outcome = $this->sendEmail("ybs-admin@yellowbilling.com.au", "holiver@yellowbilling.com.au", $subject, $body);
+
+			if ($outcome === TRUE)
+			{
+				$this->log("Report sent");
+			}
+			else
+			{
+				$this->log("Failed to email report. ". ($outcome ? "\n$outcome" : ''), TRUE);
 			}
 
 			$this->log("Finished.");
@@ -219,12 +365,26 @@ class Cli_App_LateNoticeRun extends Cli
 		}
 	}
 
+	private function changeInvoiceRunAutoActionDateTime($invoiceRun, $autoField)
+	{
+		$qryQuery = new Query();
+		$invoiceRun = $qryQuery->EscapeString($invoiceRun);
+		$strSQL = "UPDATE InvoiceRun SET $autoField = '$this->runDateTime' WHERE InvoiceRun = '$invoiceRun'";
+		$message = TRUE;
+		if (!$qryQuery->Execute($strSQL))
+		{
+			$message = ' Failed to update InvoiceRun ' . $invoiceRun . ' ' . $autoField . ' to ' . $this->runDateTime . '. '. $qryQuery->Error();
+			$this->log($message, TRUE);
+		}
+		return $message;
+	}
+
 	private function changeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason)
 	{
 		$error = '';
 
 		$qryQuery = new Query();
-		$strSQL = 'UPDATE Account SET last_automatic_invoice_action = ' . $intTo . ' WHERE Id = ' . $intAccount;
+		$strSQL = 'UPDATE Account SET last_automatic_invoice_action = ' . $intTo . ', last_automatic_invoice_action_datetime = \'' . $this->runDateTime . '\' WHERE Id = ' . $intAccount;
 		if (!$outcome = $qryQuery->Execute($strSQL))
 		{
 			$message = ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
@@ -240,7 +400,7 @@ class Cli_App_LateNoticeRun extends Cli
 				$intFrom . ', ' .
 				$intTo .', ' .
 				'\'' . $qryQuery->EscapeString($strReason) . '\', ' .
-				' now()' .
+				'\'' . $this->runDateTime . '\'' .
 				')';
 		if (!$outcome = $qryQuery->Execute($strSQL))
 		{
@@ -297,7 +457,6 @@ class Cli_App_LateNoticeRun extends Cli
 				$attachment = $attachments[$i];
 				$attachmentName = $attachmentNames[$i];
 				$attachmentMimeType = $attachmentMimeTypes[$i];
-
 				$mimMime->addAttachment($attachment, $attachmentMimeType, $attachmentName, FALSE);
 			}
 		}
@@ -305,7 +464,6 @@ class Cli_App_LateNoticeRun extends Cli
 		$strBody = $mimMime->get();
 		$strHeaders = $mimMime->headers($arrHeaders);
 		$emlMail =& Mail::factory('mail');
-
 		$result = TRUE;
 
 		if (!$emlMail->send($to, $strHeaders, $strBody))
