@@ -1094,7 +1094,7 @@ class HTMLElements
 			// Don't apply output mask
 			$strValue = $arrParams['Value'];
 		}
-		elseif (is_array($arrParams['Definition']['Options']))
+		elseif (array_key_exists('Options', $arrParams['Definition']) && is_array($arrParams['Definition']['Options']))
 		{			
 			// Find the correct output label to use instead of the value
 			foreach ($arrParams['Definition']['Options'] as $arrOption)
