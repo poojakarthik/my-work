@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000007 extends Flex_Rollout_Version
 					;"; 
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to rename Service.cdr_discount to Service.cdr_count. ' . mysqli_errno() . '::' . mysqli_error());
+			throw new Exception(__CLASS__ . ' Failed to add new Billing Samples columns to payment_terms. ' . mysqli_errno() . '::' . mysqli_error());
 		}
 		$this->rollbackSQL[] =	'ALTER TABLE payment_terms 
 									DROP COLUMN samples_internal_initial_days,
