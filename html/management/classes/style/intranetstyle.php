@@ -1,4 +1,4 @@
-<?
+<?php
 	
 	//----------------------------------------------------------------------------//
 	// intranetstyle.php
@@ -138,6 +138,10 @@
 						$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
 						$this->InsertDOM (Array('IsDebug'=> "1" ), 'PermissionDEBUG');
 					}
+					else
+					{
+						$this->InsertDOM (Array('IsDebug'=> 0 ), 'PermissionDEBUG');
+					}
 				}
 				
 				// Attach the Serialized GET and POST details
@@ -148,6 +152,7 @@
 				$oblarrDataSerialised->Push (new dataString ("POST",	serialize ($_POST)));
 			}
 			
+			$this->InsertDOM (Array('IsDebug'=> 0 ), 'PermissionDEBUG');
 			parent::Output ($strXSLFilename);
 		}
 	}
