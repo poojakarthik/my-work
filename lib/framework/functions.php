@@ -3568,7 +3568,7 @@ function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 	$pt = GetPaymentTerms();
 
 	$strOrderBy	= "Invoice.Account ASC";
-	$strGroupBy	= "Invoice.Account HAVING Overdue > ". $pt['minimum_balance_to_pursue'];
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
 
 
 //echo "\n\nSELECT " . implode(",\n\t", $arrColumns) . "\n FROM " . $strTables . "\n GROUP BY " . $strGroupBy . "\n ORDER BY " . $strOrderBy;
