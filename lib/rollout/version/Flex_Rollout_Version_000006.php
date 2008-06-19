@@ -88,7 +88,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to alter Account table (2). ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] ='ALTER TABLE account DROP credit_control_status ;';
+		$this->rollbackSQL[] ='ALTER TABLE Account DROP credit_control_status ;';
 
 		$strSQL = "ALTER TABLE Account ADD INDEX ( credit_control_status )";
 		if (!$qryQuery->Execute($strSQL))
