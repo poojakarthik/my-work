@@ -95,7 +95,7 @@ class DBObject extends DBObjectBase
 			// use the table from parameters
 			$this->_strTable = $strTable;
 		}
-		elseif ($this->_arrDefine['Table'])
+		elseif ($this->_arrDefine !== NULL && array_key_exists('Table', $this->_arrDefine) && $this->_arrDefine['Table'])
 		{
 			// use the table from the definition
 			$this->_strTable = $this->_arrDefine['Table'];
