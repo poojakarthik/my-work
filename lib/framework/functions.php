@@ -3467,6 +3467,55 @@ function GetCurrentTimeForMySQL()
 	return date("H:i:s", strtotime(GetCurrentDateAndTimeForMySQL()));
 }
 
+/*
+function ListAutomaticBarringAccounts($intTime)
+{
+	$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED);
+	$arrApplicableAccountStatuses = implode(", ", $arrApplicableAccountStatuses);
+
+	$arrColumns = array(
+							'AccountId'				=> "Invoice.Account",
+							'CustomerGroup'			=> "Account.CustomerGroup",
+							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
+	);
+
+	$strTables	= "InvoiceRun 
+					JOIN Invoice 
+					  ON InvoiceRun.automatic_bar_datetime IS NULL
+					 AND InvoiceRun.scheduled_automatic_bar_datetime IS NOT NULL
+					 AND UNIX_TIMESTAMP(InvoiceRun.scheduled_automatic_bar_datetime) <= $intTime
+					 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun 
+					JOIN Account 
+					  ON Invoice.Account = Account.Id
+					 AND Account.Archived IN ($arrApplicableAccountStatuses) 
+					 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW())
+					JOIN credit_control_status 
+					  ON Account.credit_control_status = credit_control_status.id
+					 AND credit_control_status.can_bar = 1
+					JOIN account_status 
+					  ON Account.Archived = account_status.id
+					 AND account_status.can_bar = 1
+					JOIN CustomerGroup 
+					  ON Account.CustomerGroup = CustomerGroup.Id
+					JOIN (
+						SELECTService 
+					  ON Service.Account = Account.Id
+					JOIN Carrier 
+					  ON Carrier.Id = Service.Carrier
+		";
+
+	$strWhere	= "";
+
+	$pt = GetPaymentTerms();
+
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
+	$strOrderBy	= "Invoice.Account ASC";
+
+	$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
+	$mxdReturn = $selOverdue->Execute();
+	return $mxdReturn === FALSE ? $mxdReturn : $selOverdue->FetchAll();
+}
+*/
 
 function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 {
