@@ -321,7 +321,7 @@ class Page
 		*/
 		
 		// Prepend the js files that all pages require, to the list of js files to include
-		if (!is_array($GLOBALS['*arrJavaScript']))
+		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
 		{
 			$GLOBALS['*arrJavaScript'] = Array();
 		}
@@ -443,7 +443,7 @@ class Page
 		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
 		$intLastSlash = strrpos($arrScript[0], "/");
 		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
-		if ($_SERVER['HTTPS'])
+		if (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'])
 		{
 			$strBaseDir = "https://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
@@ -847,7 +847,7 @@ class DBOFramework
 	{
 	
 		// Instanciate the DBObject if we can't find an instance
-		if (!$this->_arrProperty[$strName])
+		if (!array_key_exists($strName, $this->_arrProperty) || !$this->_arrProperty[$strName])
 		{
 			$this->_arrProperty[$strName] = new DBObject($strName);
 		}
@@ -996,7 +996,7 @@ class DBLFramework
 	function __get($strName)
 	{
 		// Instanciate the DBList if we can't find an instance
-		if (!$this->_arrProperty[$strName])
+		if (!array_key_exists($strName, $this->_arrProperty) || !$this->_arrProperty[$strName])
 		{
 			$this->_arrProperty[$strName] = new DBList($strName);
 		}
@@ -1115,7 +1115,7 @@ class VixenTableFramework
 	function __get($strName)
 	{
 		// Instanciate the VixenTable if we can't find an instance
-		if (!$this->_arrTable[$strName])
+		if (!array_key_exists($strName, $this->_arrTable) || !$this->_arrTable[$strName])
 		{
 			$this->_arrTable[$strName] = new VixenTable($strName);
 		}
@@ -1259,6 +1259,7 @@ class Config
 	 */
 	function Get($strType, $strName=NULL)
 	{
+		$strType = strtolower($strType);
 		if ($strName === NULL)
 		{
 			return $this->_arrConfig[$strType];
@@ -1267,7 +1268,7 @@ class Config
 		{
 			if (!isset($this->_arrConfig[$strType][$strName]))
 			{
-				switch (strtolower($strType))
+				switch ($strType)
 				{
 					case "dbo":
 						// Retrieve the documentation so that it can be cached
@@ -1339,7 +1340,10 @@ class Config
 						break;
 				}
 			}
-			return $this->_arrConfig[$strType][$strName];
+			if (array_key_exists($strType, $this->_arrConfig) && array_key_exists($strName, $this->_arrConfig[$strType]))
+			{
+				return $this->_arrConfig[$strType][$strName];
+			}
 		}
 	}
 }
