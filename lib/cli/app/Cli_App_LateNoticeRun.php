@@ -146,7 +146,7 @@ class Cli_App_LateNoticeRun extends Cli
 								// We have a PDF, so we should store it for sending to the printers
 								else
 								{
-									$this->log("Storing PDF ($intNoticeType) for account ". $intAccountId);
+									$this->log("Storing PDF $strLetterType for account ". $intAccountId);
 									$custGroupName = strtolower(str_replace(' ', '_', $arrDetails['Account']['CustomerGroupName']));
 
 									$outputDirectory = $arrSummary[$strCustGroupName][$strLetterType]['output_directory'];
@@ -156,20 +156,33 @@ class Cli_App_LateNoticeRun extends Cli
 										RecursiveMkdir($outputDirectory);
 									}
 
-									// WIP This bit needs error handling
+									// Write the PDF file contents to storage
 									$targetFile = $outputDirectory . DIRECTORY_SEPARATOR . $intAccountId . '.pdf';
-									$file = fopen($targetFile, 'w');
-									fwrite($file, $pdfContent);
-									fclose($file);
-
-									$arrSummary[$strCustGroupName][$strLetterType]['prints'][] = $intAccountId;
-
-									// We need to log the fact that we've created it, by updating the account automatic_invoice_action
-									$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType stored for printing in $outputDirectory");
-									if ($outcome !== TRUE)
+									$file = @fopen($targetFile, 'w');
+									$ok = FALSE;
+									if ($file)
 									{
-										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-										$errors++;
+										$ok = @fwrite($file, $pdfContent);
+									}
+									if ($ok === FALSE)
+									{
+										$message = "Failed to write PDF $strLetterType for account $intAccountId to $targetFile.";
+										$this->log($message, TRUE);
+										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
+									}
+									else
+									{
+										@fclose($file);
+
+										$arrSummary[$strCustGroupName][$strLetterType]['prints'][] = $intAccountId;
+	
+										// We need to log the fact that we've created it, by updating the account automatic_invoice_action
+										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType stored for printing in $outputDirectory");
+										if ($outcome !== TRUE)
+										{
+											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
+											$errors++;
+										}
 									}
 								}
 
