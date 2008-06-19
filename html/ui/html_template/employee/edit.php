@@ -203,7 +203,9 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		
 		
 		// Control the display of the permissions lists
-		$arrCurrentPerms = "";
+		$arrCurrentPerms = array();
+		$strSelectedPerms = '';
+		$strAvailPerms = '';
 		$intPermIndex = 1;
 		asort($GLOBALS['Permissions']);
 		foreach ($GLOBALS['Permissions'] as $intKey => $strValue)
@@ -241,7 +243,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			}
 		}
 		
-		$strCurrentPerms = is_array($arrCurrentPerms) ? implode($arrCurrentPerms, "<br/>") : "[No permissions]";
+		$strCurrentPerms = !empty($arrCurrentPerms) ? implode($arrCurrentPerms, "<br/>") : "[No permissions]";
 		
 		echo "<p>
 
