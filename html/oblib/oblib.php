@@ -1165,7 +1165,7 @@
  		public function Output ($strXSLFilename)
  		{
 			//Creates the new DOM Document and loads XML file
-			if (!$this->_domDocument)
+			if (!isset($this->_domDocument) || !$this->_domDocument)
 			{
 				$this->_domDocument = new DomDocument ('1.0', 'utf-8');
 			}
@@ -1221,8 +1221,8 @@
 			if (DEBUG_MODE == TRUE)
 			{
 				// Get user permission
-				//debug($this->_arrOutput[PermissionDEBUG][IsDebug]);
-				$intUserPermission = $this->_arrOutput[PermissionDEBUG][IsDebug];
+				//debug($this->_arrOutput['PermissionDEBUG']['IsDebug']);
+				$intUserPermission = $this->_arrOutput['PermissionDEBUG']['IsDebug'];
 
 				// Check if the user is allowed to view debug info
 				if ($intUserPermission == 1)
