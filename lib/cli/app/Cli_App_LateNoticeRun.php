@@ -336,7 +336,7 @@ class Cli_App_LateNoticeRun extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			$outcome = $this->sendEmail("late_notice_run@yellowbilling.com.au", "holiver@yellowbilling.com.au", $subject, $body);
+			$outcome = $this->sendEmail("late_notice_run@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body);
 
 			if ($outcome === TRUE)
 			{
