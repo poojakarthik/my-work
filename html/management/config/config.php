@@ -45,7 +45,6 @@ $arrConfig['Modules'][MODULE_RECURRING_CHARGE] 			= "recurringcharge";
 $arrConfig['Modules'][MODULE_CDR] 						= "CDRs";
 $arrConfig['Modules'][MODULE_NOTE] 						= "notes";
 $arrConfig['Modules'][MODULE_BILLING] 					= "billing";
-$arrConfig['Modules'][MODULE_CHARGE] 					= "charges";
 $arrConfig['Modules'][MODULE_CONTACT] 					= "contacts";
 $arrConfig['Modules'][MODULE_RATE] 						= "rate";
 $arrConfig['Modules'][MODULE_RATE_GROUP] 				= "rategroup";
