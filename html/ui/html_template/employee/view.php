@@ -91,7 +91,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 	 */
 	private function _RenderFullDetail()
 	{
-		if ($_POST['Archived'])
+		$strArchivedValue = '';
+		if (array_key_exists('Archived', $_POST) && $_POST['Archived'])
 		{
 			$strArchivedValue = 'checked';
 		}
