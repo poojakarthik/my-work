@@ -590,9 +590,12 @@ class AppTemplateEmployee extends ApplicationTemplate
 			DBO()->Employee->Password->SetToInvalid();
 			$arrValidationErrors[] = "Password does not match Password Confirmation.";
 		}
-		// Set the validated password value into the password property
-		DBO()->Employee->PassWord = sha1(DBO()->Employee->Password->Value[0]);
-		DBO()->Employee->Password = DBO()->Employee->Password->Value[0];
+		else
+		{
+			// Set the validated password value into the password property
+			DBO()->Employee->PassWord = sha1(DBO()->Employee->Password->Value[0]);
+			DBO()->Employee->Password = DBO()->Employee->Password->Value[0];
+		}
 	}
 
 }
