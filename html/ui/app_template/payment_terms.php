@@ -185,7 +185,7 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			}
 		}
 		// Fire the OnCustomerGroupDetailsUpdate Event
-		Ajax()->FireEvent('OnPaymentTermsUpdate', $arrEvent);
+		Ajax()->FireEvent('OnPaymentTermsUpdate', array());
 		return TRUE;
 	}
 
