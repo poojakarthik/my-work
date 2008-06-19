@@ -93,7 +93,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		
 		// Retrieve all the services belonging to the account and whether or not they have address details defined
 		//$this->_LoadServiceDetails(DBO()->Account->Id->Value);
-DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
+		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 		
 		// Set up the BreadCrumb menu
 		BreadCrumb()->Employee_Console();
@@ -261,7 +261,7 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 		DBO()->Account->Load();
 		
 		// Retrieve the Service records
-		$strColumns = "Id, AccountGroup, Account, FNN";
+		$strColumns = "Id, AccountGroup, Account, FNN, Status";
 		$strWhere	= "Account = <AccountId> AND Id IN (". implode(", ", $arrServiceIds) .")";
 		$selService = new StatementSelect("Service", $strColumns, $strWhere, "FNN");
 		$intServicesFound = $selService->Execute(Array("AccountId" => DBO()->Account->Id->Value));
@@ -289,6 +289,16 @@ DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);
 		$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
 		
 		$arrServices = $selService->FetchAll();
+		
+		// Check that none of the services are pending activation
+		foreach ($arrServices as $arrService)
+		{
+			if ($arrService['Status'] == SERVICE_PENDING)
+			{
+				Ajax()->AddCommand("Alert", "ERROR: Service {$arrService['FNN']} cannot be provisioned as it is pending activation.  Provisioning request aborted");
+				return TRUE;
+			}
+		}
 		
 		// Start the database transaction
 		TransactionStart();

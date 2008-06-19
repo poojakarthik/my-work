@@ -238,43 +238,6 @@ class AppTemplateService extends ApplicationTemplate
 		return TRUE;
 	}
 
-	//------------------------------------------------------------------------//
-	// ViewHistory
-	//------------------------------------------------------------------------//
-	/**
-	 * ViewHistory()
-	 *
-	 * Performs the logic for viewing the service history popup
-	 * 
-	 * Performs the logic for viewing the service history popup
-	 * It expects the following objects to be set:
-	 * 	DBO()->Service->Id		Id of the service to view (can be the Id of any of the Service records that have been used to model the service, for the account)
-	 *
-	 * @return		void
-	 * @method		ViewHistory
-	 */
-	function ViewHistoryOld()
-	{
-		// Check user authorization and permissions
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
-
-		if (($arrService = $this->GetService(DBO()->Service->Id->Value)) === FALSE)
-		{
-			// Could not load the service record
-			Ajax()->AddCommand("Alert", "ERROR: Could not find service with Id = ". DBO()->Service->Id->Value);
-			return TRUE;
-		}
-		
-		DBO()->Service->AsArray = $arrService;
-
-		// Use the generic popup page template
-		$this->LoadPage('generic_popup');
-		$this->Page->SetName('Service History - '. $arrService['FNN']);
-		$this->Page->AddObject('ServiceHistory', COLUMN_ONE, HTML_CONTEXT_POPUP);
-		return TRUE;
-	}
-	
 	function ViewHistory()
 	{
 		// Check user authorization and permissions
@@ -1180,7 +1143,7 @@ class AppTemplateService extends ApplicationTemplate
 									"NatureOfCreation"	=> SERVICE_CREATION_NEW,
 									"Carrier"			=> $arrRatePlans[$objService->intPlanId]['CarrierFullService'],
 									"CarrierPreselect"	=> $arrRatePlans[$objService->intPlanId]['CarrierPreselection'],
-									"Status"			=> SERVICE_ACTIVE,
+									"Status"			=> ($objService->bolActive)? SERVICE_ACTIVE : SERVICE_PENDING,
 									"Dealer"			=> ($objService->intDealer)? $objService->intDealer : NULL,
 									"Cost"				=> $objService->fltCost
 								);
@@ -1299,7 +1262,7 @@ class AppTemplateService extends ApplicationTemplate
 							"NatureOfCreation"	=> NULL,
 							"Carrier"			=> NULL,
 							"CarrierPreselect"	=> NULL,
-							"Status"			=> SERVICE_ACTIVE,
+							"Status"			=> NULL,
 							"Dealer"			=> NULL,
 							"Cost"				=> 0
 							);
@@ -1313,8 +1276,8 @@ class AppTemplateService extends ApplicationTemplate
 			$arrServiceRec		= $arrServiceDetails['ServiceRec'];
 			$arrExtraDetails	= $arrServiceDetails['ExtraDetailsRec'];
 			$intPlanId			= $arrServiceDetails['PlanId'];
-			
-			$strNote .= "\n". GetConstantDescription($arrServiceRec['ServiceType'], "ServiceType") ." - {$arrServiceRec['FNN']}";
+			$strStatus			= GetConstantDescription($arrServiceRec['Status'], "Service");
+			$strNote .= "\n". GetConstantDescription($arrServiceRec['ServiceType'], "ServiceType") ." - {$arrServiceRec['FNN']} ($strStatus)";
 			
 			$mixResult = $insService->Execute($arrServiceRec);
 			if ($mixResult === FALSE)
@@ -1359,14 +1322,17 @@ class AppTemplateService extends ApplicationTemplate
 					break;
 					
 				case SERVICE_TYPE_LAND_LINE:
-					// Add this service to the list of those to provision
-					$arrServicesToProvision[] = Array(	"Id"				=> $intServiceId,
-														"FNN"				=> $arrServiceRec['FNN'],
-														"Carrier"			=> $arrServiceRec['Carrier'],
-														"CarrierPreselect"	=> $arrServiceRec['CarrierPreselect'],
-														"AuthorisationDate"	=> $arrServiceRec['AuthorisationDate']
-													);
-					
+					// Add this service to the list of those to provision, but
+					// only if the Service will be immediately activated
+					if ($arrServiceRec['Status'] == SERVICE_ACTIVE)
+					{
+						$arrServicesToProvision[] = Array(	"Id"				=> $intServiceId,
+															"FNN"				=> $arrServiceRec['FNN'],
+															"Carrier"			=> $arrServiceRec['Carrier'],
+															"CarrierPreselect"	=> $arrServiceRec['CarrierPreselect'],
+															"AuthorisationDate"	=> $arrServiceRec['AuthorisationDate']
+														);
+					}
 					if (!isset($insLandLine))
 					{
 						// Declare the StatementInsert object, as it has not been declared yet
@@ -1693,7 +1659,7 @@ class AppTemplateService extends ApplicationTemplate
 				{
 					// Add these services to the list of invalid ones
 					$arrInvalidServiceIndexes[] = $arrServices[$i]->intArrayIndex; 
-					$arrInvalidServiceIndexes[] = $arrServices[$j]->intArrayIndex; 
+					$arrInvalidServiceIndexes[] = $arrServices[$j]->intArrayIndex;
 				}
 			}
 		}
@@ -2248,11 +2214,18 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "<pre>ERROR:\n". print_r($objService, TRUE) ."</pre>");
 					return TRUE;
 				}
-
+				
+				if (DBO()->Service->NewStatus->Value == SERVICE_PENDING)
+				{
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: You cannot change the status of the service to PENDING.  All modifications to the service have been aborted");
+					return TRUE;
+				}
+				
 				if ($objService->ChangeStatus(DBO()->Service->NewStatus->Value) === FALSE)
 				{
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Changing the Status of the Service failed.<br />". $objService->GetErrorMsg());
+					Ajax()->AddCommand("Alert", "ERROR: Changing the Status of the Service failed.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
 					return TRUE;
 				}
 				
@@ -2264,105 +2237,39 @@ class AppTemplateService extends ApplicationTemplate
 					DBO()->NewService->Id = $objService->GetId();
 				}
 				
+				$intService				= $objService->GetId();
+				$strProvisioningNote	= "";
+				if (DBO()->Service->NewStatus->Value == SERVICE_ACTIVE && DBO()->Service->Status->Value == SERVICE_PENDING)
+				{
+					// The service has been activated for the first time
+					// Do FullService and Preselection provisioning requests
+					if ($objService->CanBeProvisioned())
+					{
+						if (!$objService->MakeFullServiceProvisioningRequest())
+						{
+							// Failed to make the FullService provisioning Request
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: Failed to make the Full Service provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
+							return TRUE;
+						}
+						if (!$objService->MakePreselectionProvisioningRequest())
+						{
+							// Failed to make the Preselection provisioning Request
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: Failed to make the Preselection provisioning request.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
+							return TRUE;
+						}
+						
+						$strProvisioningNote = "  FullService and Preselection provisioning requests have been made.";
+					}
+				}
+				
 				// Build the note part detailing the Status change
-				$strOldStatus = GetConstantDescription(DBO()->Service->Status->Value, "Service");
-				$strNewStatus = GetConstantDescription(DBO()->Service->NewStatus->Value, "Service");
-				$strChangesNote = "Status changed from $strOldStatus to $strNewStatus\n". $strChangesNote;
-				
-/*				switch (DBO()->Service->NewStatus->Value)
-				{
-					case SERVICE_ACTIVE:
-						$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->Indial100->Value, DBO()->Service->CreatedOn->Value, DBO()->Service->ClosedOn->Value);
-						if ($mixResult !== TRUE)
-						{
-							// Activating the service failed, and an error message has been returned
-							TransactionRollback();
-							Ajax()->AddCommand("Alert", $mixResult);
-							return TRUE;
-						}
-						else
-						{
-							// Activating the service was successfull. Define system generated note
-							$strNoteDetails = "activated";
-						}
-						break;
-					case SERVICE_ARCHIVED:
-						// Check that the user has permission to archive the service
-						if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
-						{
-							// The user does not have permission to Archive the service
-							TransactionRollback();
-							Ajax()->AddCommand("Alert", "ERROR: You do not have permission to archive services");
-							return TRUE;
-						}
-						// Now perform the same logic to disconnect a service
-					case SERVICE_DISCONNECTED:
-						// Set ClosedOn date to today's date
-						DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
-						// Set ClosedBy to authenticated user ID
-						DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
-						// Set the Status
-						DBO()->Service->Status = DBO()->Service->NewStatus->Value;
-						
-						// Define system generated note
-						$strNoteDetails = strtolower(GetConstantDescription(DBO()->Service->Status->Value, "Service"));
-						
-						// Declare columns to update
-						DBO()->Service->SetColumns("ClosedOn, ClosedBy, Status");
-						// Save the service to the service table
-						if (!DBO()->Service->Save())
-						{
-							// The service did not save
-							TransactionRollback();
-							Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly.  All modifications to the service have been aborted");
-							return TRUE;
-						}
-						break;
-				}
-*/				
+				$strOldStatus	= GetConstantDescription(DBO()->Service->Status->Value, "Service");
+				$strNewStatus	= GetConstantDescription(DBO()->Service->NewStatus->Value, "Service");
+				$strChangesNote = "Status changed from $strOldStatus to $strNewStatus.{$strProvisioningNote}\n". $strChangesNote;
 			}
 
-			
-
-/*			// Add an automatic note if the service has been archived or unarchived
-			if ($strNoteDetails)
-			{
-				if (DBO()->NewService->Id->Value)
-				{
-					// The service was activated, which required a new service to be created
-					$intServiceId = DBO()->NewService->Id->Value;
-					/*  Multiple services modeling a single service should be hidden from the user
-					$intOldServiceRecordId = DBO()->Service->Id->Value;
-					
-					// Create a note for the old service Id detailing what has happened
-					$strNoteForOldServiceRecord = 	"This service has been activated which required the creation of a new service record.".
-													"  Please refer to the new service record (id: $intServiceId) for future use of this service.";
-					
-					SaveSystemNote($strNoteForOldServiceRecord, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intOldServiceRecordId);
-					*/
-/*				}
-				else
-				{
-					$intServiceId = DBO()->Service->Id->Value;
-				}
-			
-				$strNote  = "Service has been $strNoteDetails";
-				
-				if ($strChangesNote)
-				{
-					// Append the other changes made to the service, to this note
-					$strNote .= "\nThe following changes were also made:\n$strChangesNote";
-				}
-				
-				// Save the note. (this will save it to the new service id, if one was created)
-				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, $intServiceId);
-			}
-			elseif ($strChangesNote != "")
-			{
-				$strSystemChangesNote  = "Service modified.\n$strChangesNote";
-				SaveSystemNote($strSystemChangesNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
-			}
-*/
 			if ($strChangesNote != "")
 			{
 				SaveSystemNote("Service modified.\n$strChangesNote", DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, (DBO()->NewService->Id->IsSet)? DBO()->NewService->Id->Value : DBO()->Service->Id->Value);
@@ -2378,6 +2285,10 @@ class AppTemplateService extends ApplicationTemplate
 			if ($strChangesNote != "")
 			{
 				$strAlert = "The service was successfully updated";
+				if ($strProvisioningNote != "")
+				{
+					$strAlert .= "<br />$strProvisioningNote";
+				}
 				if (isset($strWarningForFNNChange))
 				{
 					$strAlert .= "<br />$strWarningForFNNChange";
@@ -3432,7 +3343,7 @@ class AppTemplateService extends ApplicationTemplate
 		$updCDRs	= new StatementUpdate("CDR", $strWhere, $arrUpdate);
 		if ($updCDRs->Execute($arrUpdate, $arrWhere) === FALSE)
 		{
-			return "ERROR: Activating the service failed, unexpectedly.  Updateing CDRs to be re-normalised failed";
+			return "ERROR: Activating the service failed, unexpectedly.  Updating CDRs to be re-normalised failed";
 		}
 		
 		// Activating the account was successfull

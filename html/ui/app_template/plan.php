@@ -103,7 +103,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 			else
 			{
-				// Show all services
+				// Show all services types
 				$_SESSION['AvailablePlansPage']['Filter']['ServiceType'] = 0;
 			}
 			
@@ -133,30 +133,143 @@ class AppTemplatePlan extends ApplicationTemplate
 			$_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'] = 0;
 		}
 		
-		// Retrieve all RatePlans that aren't currently archived, and satisfy the filter conditions
-		$strServiceTypeFilter	= "";
-		$strCustomerGroupFilter	= "";
+		if (DBO()->RatePlan->Status->IsSet)
+		{
+			// A valid ServiceType filter has been specified
+			if (array_key_exists(DBO()->RatePlan->Status->Value, $GLOBALS['*arrConstant']['RateStatus']))
+			{
+				// A specific RateStatus has been requested
+				$_SESSION['AvailablePlansPage']['Filter']['Status'] = DBO()->RatePlan->Status->Value;
+			}
+			else
+			{
+				// Show all RatePlans
+				$_SESSION['AvailablePlansPage']['Filter']['Status'] = -1;
+			}
+			
+		}
+		elseif (!isset($_SESSION['AvailablePlansPage']['Filter']['Status']))
+		{
+			// A Status filter hasn't been specified, and one isn't currently cached, set it to view all Active RatePlans
+			$_SESSION['AvailablePlansPage']['Filter']['Status'] = 0;
+		}
+		
+		// Retrieve all RatePlans that satisfy the filter conditions
+		$strServiceTypeFilter	= "TRUE";
+		$strCustomerGroupFilter	= "TRUE";
+		$strStatusFilter		= "TRUE";
 		if ($_SESSION['AvailablePlansPage']['Filter']['ServiceType'])
 		{
-			$strServiceTypeFilter = "AND ServiceType = <ServiceType>";
+			$strServiceTypeFilter = "RP.ServiceType = <ServiceType>";
 		}
 		if ($_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'])
 		{
-			$strCustomerGroupFilter = "AND customer_group = <CustomerGroup>";
+			$strCustomerGroupFilter = "RP.customer_group = <CustomerGroup>";
 		}
-		$strWhere = "Archived != <Archived> $strServiceTypeFilter $strCustomerGroupFilter";
+		if (array_key_exists($_SESSION['AvailablePlansPage']['Filter']['Status'], $GLOBALS['*arrConstant']['RateStatus']))
+		{
+			$strStatusFilter = "RP.Archived = <Status>";
+		}
+		
+		$strWhere = "$strServiceTypeFilter AND $strCustomerGroupFilter AND $strStatusFilter";
 		$arrWhere = array(
-							"Archived"	=> RATE_STATUS_ARCHIVED,
 							"ServiceType"	=> $_SESSION['AvailablePlansPage']['Filter']['ServiceType'],
-							"CustomerGroup"	=> $_SESSION['AvailablePlansPage']['Filter']['CustomerGroup']
+							"CustomerGroup"	=> $_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'],
+							"Status"		=> $_SESSION['AvailablePlansPage']['Filter']['Status']
 						);
 		
-		DBL()->RatePlan->Where->Set($strWhere, $arrWhere);
-		DBL()->RatePlan->OrderBy("ServiceType, Name, customer_group");
-		DBL()->RatePlan->Load();
+		$arrColumns = array(
+							"Id"					=> "RP.Id",
+							"ServiceType"			=> "RP.ServiceType",
+							"Name"					=> "RP.Name",
+							"Description"			=> "RP.Description",
+							"CarrierFullService"	=> "RP.CarrierFullService",
+							"CarrierPreselection"	=> "RP.CarrierPreselection",
+							"customer_group"		=> "RP.customer_group",
+							"Archived"				=> "RP.Archived",
+							"IsDefault"				=> "CASE WHEN drp.Id IS NOT NULL THEN TRUE ELSE FALSE END"
+							);
+		$strTables		= "RatePlan AS RP LEFT JOIN default_rate_plan AS drp ON RP.Id = drp.rate_plan AND RP.customer_group = drp.customer_group AND RP.ServiceType = drp.service_type";
+		$strOrderBy		= "ServiceType, Name, customer_group";
+		$selRatePlans	= new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+		if ($selRatePlans->Execute($arrWhere) === FALSE)
+		{
+			DBO()->Error->Message = "Unexpected database error occurred when trying to retrieve RatePlans.  Please notify your system administrator";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		DBO()->RatePlans->AsArray = $selRatePlans->FetchAll();
+		
 	
 		$this->LoadPage('plans_list');
 
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// TogglePlanStatus
+	//------------------------------------------------------------------------//
+	/**
+	 * TogglePlanStatus()
+	 *
+	 * Changes the status of a plan between Active and Archived
+	 * 
+	 * Changes the status of a plan between Active and Archived
+	 * It expects the following objects to be defined
+	 * 	DBO()->RatePlan->Id		Id of the RatePlan to toggle the status of
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function TogglePlanStatus()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		if (!DBO()->RatePlan->Load())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Could not find RatePlan with Id: ". DBO()->RatePlan->Id->Value);
+			return TRUE;
+		}
+		
+		// The status of a RatePlan is stored in the Archived property of the RatePlan table
+		switch (DBO()->RatePlan->Archived->Value)
+		{
+			case RATE_STATUS_ACTIVE:
+				DBO()->RatePlan->Archived = RATE_STATUS_ARCHIVED;
+				break;
+				
+			case RATE_STATUS_ARCHIVED:
+				DBO()->RatePlan->Archived = RATE_STATUS_ACTIVE;
+				break;
+				
+			default:
+				// Cannot toggle from whatever the status currently is
+				Ajax()->AddCommand("Alert", "ERROR: The RatePlan's status cannot be changed");
+				return TRUE;
+		}
+		
+		// Check that the plan isn't one of the default plans for the Customer Group
+		DBL()->default_rate_plan->rate_plan = DBO()->RatePlan->Id->Value;
+		DBL()->default_rate_plan->Load();
+		if (DBL()->default_rate_plan->RecordCount() > 0)
+		{
+			Ajax()->AddCommand("Alert", "ERROR: This Plan is being used as a default rate plan and cannot have its status changed");
+			return TRUE;
+		}
+		
+		// Save the changes
+		if (!DBO()->RatePlan->Save())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Saving the status change failed, unexpectedly.  Please notify your system administrator");
+			return TRUE;
+		}
+
+		// Everything worked
+		Ajax()->AddCommand("AlertReload", "Status change was successful");
+		
 		return TRUE;
 	}
 	

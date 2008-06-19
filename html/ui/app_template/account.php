@@ -1183,8 +1183,8 @@ class AppTemplateAccount extends ApplicationTemplate
 					
 					//$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW()))";
 					//$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
-					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW())) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
-					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
+					$strWhere = "Account = <AccountId> AND (Status IN (<ServiceActive>, <ServicePending>) OR (Status = <ServiceDisconnected> AND ClosedOn > NOW())) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
+					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServicePending" => SERVICE_PENDING, "ServiceDisconnected" => SERVICE_DISCONNECTED);
 
 					// Retrieve all services attached to this Account where the Status is Active
 					DBL()->Service->Where->Set($strWhere, $arrWhere);
@@ -1232,8 +1232,8 @@ class AppTemplateAccount extends ApplicationTemplate
 				case ACCOUNT_ARCHIVED:
 					// If user has selected "Archived" for the account status only Active and Disconnected services have their Status and 
 					// ClosedOn/CloseBy properties changed						
-					$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR Status = <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
-					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServiceDisconnected" => SERVICE_DISCONNECTED);
+					$strWhere = "Account = <AccountId> AND (Status IN (<ServiceActive>, <ServicePending>) OR Status = <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
+					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServicePending" => SERVICE_PENDING, "ServiceDisconnected" => SERVICE_DISCONNECTED);
 					
 					// Retrieve all services attached to this Account where the Status is Active/Disconnected
 					DBL()->Service->Where->Set($strWhere, $arrWhere);

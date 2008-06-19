@@ -56,7 +56,7 @@ function $Const(strConstant)
 }
 
 // class encapsulates the data stored in a single row of the Services table of the Service Bulk Add page
-function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre, elmDealer, elmCost)
+function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre, elmDealer, elmCost, elmActive)
 {
 	// Constructor
 	this.intServiceType	= null;
@@ -67,6 +67,7 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	this.elmCostCentre	= elmCostCentre;
 	this.elmDealer		= elmDealer;
 	this.elmCost		= elmCost;
+	this.elmActive		= elmActive;
 	this.intArrayIndex	= null;	// The object's position in its containing array
 	
 	this.objExtraDetails = null;
@@ -93,7 +94,7 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 	{
 		Vixen.ServiceBulkAdd.intLastDealerChosen = this.elmDealer.value;
 	}
-
+	
 	// Register event listeners
 	this.elmFnn.addEventListener('keyup', this.FnnUpdateListener.bind(this), true);
 	this.elmFnn.addEventListener('change', this.FnnUpdateListener.bind(this), true);
@@ -330,6 +331,7 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 							intCostCentre	: parseInt(this.elmCostCentre.value),
 							intDealer		: parseInt(this.elmDealer.value),
 							fltCost			: fltCost,
+							bolActive		: this.elmActive.checked,
 							intArrayIndex	: this.intArrayIndex
 						};
 						
@@ -474,12 +476,13 @@ function VixenServiceBulkAddClass()
 		var elmServiceType	= elmRow.cells[0].firstChild;
 		var elmFnn			= elmRow.cells[1].firstChild;
 		var elmFnnConfirm	= elmRow.cells[2].firstChild;
-		var elmPlan			= elmRow.cells[3].firstChild;
-		var elmCostCentre	= elmRow.cells[4].firstChild;
-		var elmDealer		= elmRow.cells[5].firstChild;
-		var elmCost			= elmRow.cells[6].firstChild;
+		var elmActive		= elmRow.cells[3].firstChild;
+		var elmPlan			= elmRow.cells[4].firstChild;
+		var elmCostCentre	= elmRow.cells[5].firstChild;
+		var elmDealer		= elmRow.cells[6].firstChild;
+		var elmCost			= elmRow.cells[7].firstChild;
 
-		var intArrayIndex = this.arrServices.push(new ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre, elmDealer, elmCost)) - 1;
+		var intArrayIndex = this.arrServices.push(new ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, elmCostCentre, elmDealer, elmCost, elmActive)) - 1;
 		this.arrServices[intArrayIndex].intArrayIndex = intArrayIndex;
 	}
 	
@@ -535,19 +538,49 @@ function VixenServiceBulkAddClass()
 	this.ConfirmSave = function()
 	{
 		// Notify the user as to how many services they are trying to add
-		// (this should probably be broken down into how many of each ServiceType they are trying to add)
+		var objServiceTallys = {};
+		for (i in Vixen.Constants.ServiceType)
+		{
+			objServiceTallys[i] = {intTotal : 0, intActive : 0, intPending : 0};
+		}
+		
+		// Work out how many new services there are of each ServiceType, and how many will be active and how many will be pending
 		var intServiceCount = 0;
+		var intTotalActive	= 0;
+		var intTotalPending	= 0;
 		for (i in this.arrServices)
 		{
 			if (this.arrServices[i].intServiceType != null)
 			{
 				intServiceCount++;
+				objServiceTallys[this.arrServices[i].intServiceType].intTotal++;
+				if (this.arrServices[i].elmActive.checked)
+				{
+					objServiceTallys[this.arrServices[i].intServiceType].intActive++;
+					intTotalActive++;
+				}
+				else
+				{
+					objServiceTallys[this.arrServices[i].intServiceType].intPending++;
+					intTotalPending++;
+				}
 			}
 		}
 		
 		if (intServiceCount)
 		{
-			Vixen.Popup.Confirm("Are you sure you want to add "+ intServiceCount +" services to this account?", function(){Vixen.ServiceBulkAdd._ValidateFNNs();});
+			var strServiceBreakdown = "<table cellspacing='5%' width='100%' style='margin-top:10px'><tr><th align='left'>Type</th><th align='right'>Active</th><th align='right'>Pending Activation</th><th align='right'>Total</th></tr>";
+			for (i in objServiceTallys)
+			{
+				if (objServiceTallys[i].intTotal > 0)
+				{
+					// The user is adding Services of this type
+					strServiceBreakdown += "<tr><td>"+ Vixen.Constants.ServiceType[i].Description +"</td><td align='right'>"+ objServiceTallys[i].intActive +"</td><td align='right'>"+ objServiceTallys[i].intPending +"</td><td align='right'>"+ objServiceTallys[i].intTotal +"</td></tr>";
+				}
+			}
+			strServiceBreakdown += "<tr><td></td><td align='right' style='border-top: solid 1px #000000'>"+ intTotalActive +"</td><td align='right' style='border-top: solid 1px #000000'>"+ intTotalPending +"</td><td align='right' style='border-top: solid 1px #000000'>"+ intServiceCount +"</td></tr></table>";
+			var strMsg = "Are you sure you want to add "+ intServiceCount +" services to this account?" + strServiceBreakdown;
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.ServiceBulkAdd._ValidateFNNs();});
 		}
 		else
 		{

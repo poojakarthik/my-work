@@ -19,22 +19,6 @@
 class HtmlTemplatePlanList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -57,6 +41,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
+		$this->LoadJavascript("available_plans_page");
 	}
 
 	//------------------------------------------------------------------------//
@@ -76,11 +61,13 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		// If the user has Rate Management permissions then they can add and edit Plans
 		$bolHasPlanEditPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 	
+		$arrRatePlans			= DBO()->RatePlans->AsArray->Value;
 		$intServiceTypeFilter	= $_SESSION['AvailablePlansPage']['Filter']['ServiceType'];
-		$intCustomerGroupFilter	= $_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'];	
+		$intCustomerGroupFilter	= $_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'];
+		$intStatusFilter		= $_SESSION['AvailablePlansPage']['Filter']['Status'];
 	
 		// Build the contents for the ServiceType filter combobox
-		$strServiceTypeFilterOptions = "<option value='0' ". (($intServiceTypeFilter == 0)? "selected='selected'" : "") .">All</option>\n";
+		$strServiceTypeFilterOptions = "<option value='0' ". (($intServiceTypeFilter == 0)? "selected='selected'" : "") .">All Service Types</option>\n";
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intServiceType=>$arrServiceType)
 		{
 			$strSelected					= ($intServiceTypeFilter == $intServiceType) ? "selected='selected'" : "";
@@ -88,11 +75,19 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		}
 
 		// Build the contents for the CustomerGroup filter combobox
-		$strCustomerGroupFilterOptions = "<option value='0' ". (($intCustomerGroupFilter == 0)? "selected='selected'" : "") .">All</option>\n";
+		$strCustomerGroupFilterOptions = "<option value='0' ". (($intCustomerGroupFilter == 0)? "selected='selected'" : "") .">All Customer Groups</option>\n";
 		foreach ($GLOBALS['*arrConstant']['CustomerGroup'] as $intCustomerGroup=>$arrCustomerGroup)
 		{
 			$strSelected					= ($intCustomerGroupFilter == $intCustomerGroup) ? "selected='selected'" : "";
 			$strCustomerGroupFilterOptions	.= "<option value='$intCustomerGroup' $strSelected>{$arrCustomerGroup['Description']}</option>\n";
+		}
+		
+		// Build the contents for the Status filter combobox
+		$strStatusFilterOptions = "<option value='-1' ". (($intStatusFilter == -1)? "selected='selected'" : "") .">All</option>\n";
+		foreach ($GLOBALS['*arrConstant']['RateStatus'] as $intStatus=>$arrStatus)
+		{
+			$strSelected			= ($intStatusFilter == $intStatus) ? "selected='selected'" : "";
+			$strStatusFilterOptions	.= "<option value='$intStatus' $strSelected>{$arrStatus['Description']}</option>\n";
 		}
 		
 		$strNewBlankRatePlanLink = Href()->AddRatePlan();
@@ -109,15 +104,17 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		$strFilterButtonOnClickJsCode	= "
 var elmServiceTypeFilter	= \$ID(\"ServiceTypeFilter\");
 var elmCustomerGroupFilter	= \$ID(\"CustomerGroupFilter\");
-window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServiceTypeFilter.value +\"&RatePlan.CustomerGroup=\"+ elmCustomerGroupFilter.value;
+var elmStatusFilter			= \$ID(\"StatusFilter\");
+window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServiceTypeFilter.value +\"&RatePlan.CustomerGroup=\"+ elmCustomerGroupFilter.value +\"&RatePlan.Status=\"+ elmStatusFilter.value;
 ";
 		
 		echo "
 <div class='GroupedContent'>
-	<div style='float:left'>Service Type</div>
-	<select id='ServiceTypeFilter' style='float:left;margin-left:10px;max-width:150px'>$strServiceTypeFilterOptions</select>
-	<div style='float:left;margin-left:20px'>Customer Group</div>
-	<select id='CustomerGroupFilter' style='float:left;margin-left:10px;max-width:150px'>$strCustomerGroupFilterOptions</select>
+	<!-- <div style='float:left;margin-top:3px'>Service Type</div> -->
+	<select id='ServiceTypeFilter' style='float:left;max-width:150px'>$strServiceTypeFilterOptions</select>
+	<!-- <div style='float:left;margin-left:20px;margin-top:3px'>Customer Group</div> -->
+	<select id='CustomerGroupFilter' style='float:left;margin-left:10px;max-width:160px'>$strCustomerGroupFilterOptions</select>
+	<select id='StatusFilter' style='float:left;margin-left:10px;max-width:160px'>$strStatusFilterOptions</select>
 	<input type='button' value='Filter' style='float:left;margin-left:20px'onclick='$strFilterButtonOnClickJsCode'></input>
 	$strAddNewPlan
 	<div style='float:none;clear:both'></div>
@@ -128,29 +125,35 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		// Render the header of the Plan Table.  This depends on the privileges of the user
 		if ($bolHasPlanEditPerm)
 		{
-			Table()->PlanTable->SetHeader("&nbsp;", "Name", "Customer Group", "Status", "&nbsp;");
-			Table()->PlanTable->SetWidth("4%", "50%", "30%", "12%", "4%");
-			Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Center", "Right");
+			Table()->PlanTable->SetHeader("&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;");
+			Table()->PlanTable->SetWidth("4%", "36%", "4%", "20%", "10%", "10%", "12%", "4%");
+			Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Right");
 		}
 		else
 		{
-			Table()->PlanTable->SetHeader("&nbsp;", "Name", "Customer Group", "Status");
-			Table()->PlanTable->SetWidth("4%", "54%", "30%", "12%");
-			Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Center");
+			Table()->PlanTable->SetHeader("&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status");
+			Table()->PlanTable->SetWidth("4%", "40%", "4%", "20%", "10%", "10%", "12%");
+			Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left");
 		}
 
-		foreach (DBL()->RatePlan as $dboRatePlan)
+		// This array will store the details required for the javascript code that archives a RatePlan
+		$arrRatePlanDetails = array();
+		
+		foreach ($arrRatePlans as $arrRatePlan)
 		{
-			// Workout the status of the Rate Plan
-			$strStatusCell = GetConstantDescription($dboRatePlan->Archived->Value, "RateStatus");
-			
 			// Format the Name and Description (The title attribute of the Name will be set to the description)
-			$strDescription		= htmlspecialchars($dboRatePlan->Description->Value, ENT_QUOTES);
-			$strName			= $dboRatePlan->Name->FormattedValue();
-			$strViewPlanHref	= Href()->ViewPlan($dboRatePlan->Id->Value);
+			$strDescription		= htmlspecialchars($arrRatePlan['Description'], ENT_QUOTES);
+			$strName			= htmlspecialchars($arrRatePlan['Name'], ENT_QUOTES);
+			$strViewPlanHref	= Href()->ViewPlan($arrRatePlan['Id']);
 			$strNameCell		= "<a href='$strViewPlanHref' title='$strDescription'>$strName</a>";
+			$strServiceType		= htmlspecialchars(GetConstantDescription($arrRatePlan['ServiceType'], "ServiceType"), ENT_QUOTES);
+			$strCustomerGroup	= htmlspecialchars(GetConstantDescription($arrRatePlan['customer_group'], "CustomerGroup"), ENT_QUOTES);
+			$strStatusCell		= GetConstantDescription($arrRatePlan['Archived'], "RateStatus");
 			
-			switch ($dboRatePlan->ServiceType->Value)
+			$strCarrierFullServiceCell	= GetConstantDescription($arrRatePlan['CarrierFullService'], "Carrier");
+			$strCarrierPreselectionCell	= GetConstantDescription($arrRatePlan['CarrierPreselection'], "Carrier");
+			
+			switch ($arrRatePlan['ServiceType'])
 			{
 				case SERVICE_TYPE_MOBILE:
 					$strServiceTypeClass = "ServiceTypeIconMobile";
@@ -169,84 +172,62 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					break;
 			}
 			
+			$strDefaultCell = "";
+			if ($arrRatePlan['IsDefault'] == TRUE)
+			{
+				$strDefaultCell = "<img src='img/template/flag.png' title='Default plan for $strCustomerGroup, $strServiceType services'></img>";
+			}
+						
 			$strServiceTypeCell	= "<div class='$strServiceTypeClass'></div>";
-			$strCustomerGroup	= GetConstantDescription($dboRatePlan->customer_group->Value, "CustomerGroup");
-			
+						
 			// Add the Rate Plan to the VixenTable
 			if ($bolHasPlanEditPerm)
 			{
 				// User can add and edit Rate Plans
 				// Build the Edit Rate Plan link, if the RatePlan is currently a draft
 				$strEdit = "";
-				if ($dboRatePlan->Archived->Value == RATE_STATUS_DRAFT)
+				if ($arrRatePlan['Archived'] == RATE_STATUS_DRAFT)
 				{
-					$strEditPlanLink	= Href()->EditRatePlan($dboRatePlan->Id->Value);
+					$strEditPlanLink	= Href()->EditRatePlan($arrRatePlan['Id']);
 					$strEdit			= "<a href='$strEditPlanLink' title='Edit'><img src='img/template/edit.png'></img></a>";
 				}
 				
+				if ((!$arrRatePlan['IsDefault']) && ($arrRatePlan['Archived'] == RATE_STATUS_ACTIVE || $arrRatePlan['Archived'] == RATE_STATUS_ARCHIVED))
+				{
+					// The user can toggle the status between Active and Archived
+					$strStatusCell = "<span title='Toggle Status' onclick='Vixen.AvailablePlansPage.TogglePlanStatus({$arrRatePlan['Id']})'>$strStatusCell</span>";
+				}
+				
 				// Build the "Add Rate Plan Based On Existing" link
-				$strAddPlanLink	= Href()->AddRatePlan($dboRatePlan->Id->Value);
+				$strAddPlanLink	= Href()->AddRatePlan($arrRatePlan['Id']);
 				$strAdd			= "<a href='$strAddPlanLink' title='Create a new plan based on this one'><img src='img/template/new.png'></img></a>";
 				$strActionCell	= "{$strEdit}{$strAdd}";
 				
 				// Add the row
-				Table()->PlanTable->AddRow($strServiceTypeCell, $strNameCell, $strCustomerGroup, $strStatusCell, $strActionCell);
+				Table()->PlanTable->AddRow($strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strActionCell);
 			}
 			else
 			{
+				
 				// User can not Add or Edit Rate Plans
 				// Add the Row
-				Table()->PlanTable->AddRow($strServiceTypeCell, $strNameCell, $strCustomerGroup, $strStatusCell);
+				Table()->PlanTable->AddRow($strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell);
 			}
 			
-
-/* Don't include drop down details
-			$strDetail = "<table border='0' cellspacing='0' cellpadding='0' width='100%' style='background-color:#D1D1D1'><tr>\n";
-			$strDetail .= "<td width='50%'>\n";
-			
-			$intFullService = $dboRatePlan->CarrierFullService->Value;
-			$strFullService = (!isset($GLOBALS['*arrConstant']['Carrier'][$intFullService]))? "[Not Specified]" : $GLOBALS['*arrConstant']['Carrier'][$intFullService]['Description'];
-			$strDetail .= $dboRatePlan->CarrierFullService->AsArbitrary($strFullService, RENDER_OUTPUT);
-			
-			$intPreselection = $dboRatePlan->CarrierPreselection->Value;
-			$strPreselection = (!isset($GLOBALS['*arrConstant']['Carrier'][$intPreselection]))? "[Not Specified]" : $strPreselection = $GLOBALS['*arrConstant']['Carrier'][$intPreselection]['Description'];
-	
-			$strDetail .= $dboRatePlan->CarrierPreselection->AsArbitrary($strPreselection, RENDER_OUTPUT);
-			$strDetail .= $dboRatePlan->Shared->AsOutput();
-			$strDetail .= $dboRatePlan->InAdvance->AsOutput();
-			$strContractTerm = (DBO()->RatePlan->ContractTerm->Value == NULL)? "[Not Specified]" : DBO()->RatePlan->ContractTerm->Value;
-			$strDetail .= $dboRatePlan->ContractTerm->AsArbitrary($strContractTerm, RENDER_OUTPUT);
-			$strDetail .= "</td><td width='50%'>\n";
-					
-			$strDetail .= $dboRatePlan->MinMonthly->AsOutput();
-			$strDetail .= $dboRatePlan->ChargeCap->AsOutput();
-			$strDetail .= $dboRatePlan->UsageCap->AsOutput();
-			$strDetail .= $dboRatePlan->RecurringCharge->AsOutput();
-			
-			if ($dboRatePlan->discount_cap->Value == NULL)
-			{
-				$strDetail .= $dboRatePlan->discount_cap->AsArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
-			}
-			else
-			{
-				$strDetail .= $dboRatePlan->discount_cap->AsOutput();
-			}
-			
-			$strDetail .= "</td></tr></table>\n";
-			Table()->PlanTable->SetDetail($strDetail);
-*/
-
-			
-			
+			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
+																"CustomerGroup"	=> $strCustomerGroup,
+																"ServiceType"	=> $strServiceType,
+																"Status"		=> $arrRatePlan['Archived']
+															);
 		}
 		
 		// Check if the table is empty
-		if (Table()->PlanTable->RowCount() == 0)
+		if (count($arrRatePlans) == 0)
 		{
 			// There are no RatePlans to stick in this table
 			Table()->PlanTable->AddRow("No Rate Plans to display");
 			Table()->PlanTable->SetRowAlignment("left");
-			$intNumofColumns = ($bolHasPlanEditPerm) ? 5 : 4;
+			$intNumofColumns = ($bolHasPlanEditPerm) ? 8 : 7;
 			Table()->PlanTable->SetRowColumnSpan($intNumofColumns);
 		}
 		else
@@ -255,6 +236,10 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		}
 		
 		Table()->PlanTable->Render();
+		
+		$objRatePlans = Json()->Encode($arrRatePlanDetails);
+		echo "<script type='text/javascript'>Vixen.AvailablePlansPage.Initialise($objRatePlans);</script>";
+		
 		echo "<div class='SmallSeparator'></div>";
 	}
 }

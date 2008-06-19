@@ -352,6 +352,12 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			
 			$strDescription = htmlspecialchars($arrRecord['Description'], ENT_QUOTES);
 			
+			if ($arrRecord['Employee'] != NULL)
+			{
+				$strEmployee = htmlspecialchars(GetEmployeeName($arrRecord['Employee']), ENT_QUOTES);
+				$strRequestType = "<span title='Requested by $strEmployee'>$strRequestType</span>";
+			}
+			
 			if ($bolForServiceOnly)
 			{
 				Table()->History->AddRow($strOutboundCell, $strTimeStampCell, $strCarrier, $strRequestType, $strStatusCell);

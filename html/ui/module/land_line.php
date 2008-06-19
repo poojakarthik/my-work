@@ -98,41 +98,6 @@ class ModuleLandLine extends ModuleService
 	}
 	
 	//------------------------------------------------------------------------//
-	// ChangeStatus
-	//------------------------------------------------------------------------//
-	/**
-	 * ChangeStatus()
-	 *
-	 * Changes the status of the Landline (active/disconnected/archived) 
-	 * 
-	 * Changes the status of the Landline (active/disconnected/archived)
-	 * Before processing the StatusChange it will run SaveService() if there are 
-	 * any currently unsaved changes made to the service.
-	 * If a new Service record is required to model the change of status, then a new ServiceAddress record
-	 * will also be made (if the service currently has a ServiceAddress) and new records will be added to the
-	 * ServiceExtension table if ELB is turned on.  All these new details will be reloaded in the object, if it is
-	 * necessary
-	 * 
-	 * @param	int		$intStatus		The new Service Status to set the service to (SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED)
-	 * @param	string	$strTimeStamp	optional, TimeStamp at which the Status Change will be recorded as having been made
-	 * 									This should not be in the past.  Defaults to NOW() 
-	 *
-	 * @return	bool					TRUE on success, FALSE on failure
-	 * @method
-	 */
-	function ChangeStatus($intStatus, $strTimeStamp=NULL)
-	{
-		$strTimeStamp = ($strTimeStamp == NULL)? GetCurrentISODateTime() : $strTimeStamp;
-		
-		if (parent::ChangeStatus($intStatus, $strTimeStamp) === FALSE)
-		{
-			return FALSE;
-		}
-		
-		return TRUE;
-	}
-	
-	//------------------------------------------------------------------------//
 	// Refresh
 	//------------------------------------------------------------------------//
 	/**
@@ -227,6 +192,25 @@ class ModuleLandLine extends ModuleService
 	{
 		return (bool)$this->_bolIndial100;
 	}
+	
+	//------------------------------------------------------------------------//
+	// CanBeProvisioned
+	//------------------------------------------------------------------------//
+	/**
+	 * CanBeProvisioned()
+	 *
+	 * Returns TRUE if the service can be provisioned, ELSE FALSE 
+	 * 
+	 * Returns TRUE if the service can be provisioned, ELSE FALSE
+	 *
+	 * @return	bool	TRUE if the service can be provisioned
+	 * @method
+	 */
+	public function CanBeProvisioned()
+	{
+		return TRUE;
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// _CopySupplementaryDetails

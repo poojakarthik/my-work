@@ -84,8 +84,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			
 			// It is assumed that this is the newest most record modelling this service for the account
 			// that the service belongs to.  Check that the service is currently active
-			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value);
-			if (!$objService->IsCurrentlyActive())
+			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
+			if ($objService->GetStatus() == SERVICE_PENDING)
+			{
+				Ajax()->AddCommand("Alert", "This service is pending activation.  Adjustments can only be applied to active services.");
+				return TRUE;
+			}
+			elseif (!$objService->IsCurrentlyActive())
 			{
 				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be applied to active services.");
 				return TRUE;
@@ -228,8 +233,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			}
 			// It is assumed that this is the newest most record modelling this service for the account
 			// that the service belongs to.  Check that the service is currently active
-			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value);
-			if (!$objService->IsCurrentlyActive())
+			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
+			if ($objService->GetStatus() == SERVICE_PENDING)
+			{
+				Ajax()->AddCommand("Alert", "This service is pending activation.  Adjustments can only be applied to active services.");
+				return TRUE;
+			}
+			elseif (!$objService->IsCurrentlyActive())
 			{
 				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be applied to active services.");
 				return TRUE;

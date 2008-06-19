@@ -86,8 +86,8 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		$intCurrentDate			= strtotime(GetCurrentISODate());
 		
 		// Flag records that can/can't be provisioned and find out if there are any
-		// service address details missing
-		$bolMissingAddressDetails = FALSE;
+		// service address details missing, or are pending activation
+		$bolHasFlaggedServices = FALSE;
 		
 		$intFilter = (DBO()->List->Filter->IsSet) ? DBO()->List->Filter->Value : 0;
 		
@@ -108,7 +108,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		$strSelectAll = "<input type='checkbox' id='SelectAllServicesCheckbox' class='DefaultInputCheckBox' onchange='Vixen.ProvisioningPage.SelectAllServices();' />";
 		
 		Table()->Services->SetHeader($strSelectAll, "FNN #", "Plan", "Status", "Line Status", "&nbsp;");
-		Table()->Services->SetWidth("4%", "11%", "55%", "11%", "11%", "8%");
+		Table()->Services->SetWidth("4%", "11%", "46%", "11%", "20%", "8%");
 		Table()->Services->SetAlignment("Left", "Left", "Left", "Left", "Left", "Right");
 		
 		foreach ($arrServices as $arrService)
@@ -130,7 +130,13 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			$strActionsCell .= "&nbsp;&nbsp;<img src='img/template/provisioning_history.png' title='Provisioning History' onclick='$strProvisioningHistoryLink'/>";
 
 			// Build the checkbox
-			if ($arrService['AddressId'] != NULL)
+			if ($arrService['History'][0]['Status'] == SERVICE_PENDING)
+			{
+				// The service has not been activated yet, flag it
+				$strSelectCell			= "<img src='img/template/flag_red.png' title='Pending Activation' />";
+				$bolHasFlaggedServices	= TRUE;
+			}
+			elseif ($arrService['AddressId'] != NULL)
 			{
 				// The service already has address details defined for it
 				$strChecked		= (in_array($intServiceId, $arrSelectedServices))? "checked='checked'" : "";
@@ -139,8 +145,8 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			else
 			{
 				// The service does not have Address details specified.  Flag it
-				$strSelectCell				= "<img src='img/template/flag_red.png' title='No Address Details defined' onclick='$strEditAddressLink' style='cursor:pointer'/>";
-				$bolMissingAddressDetails	= TRUE;
+				$strSelectCell			= "<img src='img/template/flag_red.png' title='No Address Details defined' onclick='$strEditAddressLink' />";
+				$bolHasFlaggedServices	= TRUE;
 			}
 			
 			// Build the FNN cell
@@ -258,9 +264,9 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 		Table()->Services->Render();
 		
 		//Initialise the javascript object that manages this list
-		$intAccount					= DBO()->Account->Id->Value;
-		$strMissingAddressDetails	= ($bolMissingAddressDetails)? "true" : "false";
-		echo "<script type='text/javascript'>Vixen.ProvisioningPage.InitialiseServiceList('{$this->_strContainerDivId}', $intAccount, $strMissingAddressDetails)</script>\n";
+		$intAccount				= DBO()->Account->Id->Value;
+		$strHasFlaggedServices	= ($bolHasFlaggedServices)? "true" : "false";
+		echo "<script type='text/javascript'>Vixen.ProvisioningPage.InitialiseServiceList('{$this->_strContainerDivId}', $intAccount, $strHasFlaggedServices)</script>\n";
 		echo "<div class='SmallSeperator'></div>";
 	}
 }

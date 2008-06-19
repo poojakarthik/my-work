@@ -45,7 +45,7 @@ function VixenProvisioningPageClass()
 	this.strServicesContainerDivId	= null;
 	this.elmMasterServiceCheckbox	= null;
 	this.arrServiceCheckboxElements	= null;
-	this.bolMissingAddressDetails	= null;
+	this.bolHasFlaggedServices		= null;
 	this.elmServiceFilterCombo		= null;
 	
 	this.elmRequestCombo			= null;
@@ -70,12 +70,12 @@ function VixenProvisioningPageClass()
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseServiceList = function(strServicesContainerDivId, intAccountId, bolMissingAddressDetails)
+	this.InitialiseServiceList = function(strServicesContainerDivId, intAccountId, bolHasFlaggedServices)
 	{
 		// Save the parameters
 		this.strServicesContainerDivId	= strServicesContainerDivId;
 		this.intAccountId				= intAccountId;
-		this.bolMissingAddressDetails	= bolMissingAddressDetails;
+		this.bolHasFlaggedServices		= bolHasFlaggedServices;
 		
 		// Save a reference to the "SelectAllServices" checkbox
 		this.elmMasterServiceCheckbox	= $ID("SelectAllServicesCheckbox");
@@ -111,10 +111,10 @@ function VixenProvisioningPageClass()
 			this.arrServiceCheckboxElements[i].checked = this.elmMasterServiceCheckbox.checked;
 		}
 		
-		if (this.elmMasterServiceCheckbox.checked && (this.bolMissingAddressDetails))
+		if (this.elmMasterServiceCheckbox.checked && (this.bolHasFlaggedServices))
 		{
-			// Not all of the services could be selected as some of them do not have address details defined
-			Vixen.Popup.Alert("WARNING: Some services could not be selected as they do not have address details defined");
+			// Not all of the services could be selected as some of them do not have address details defined or are pending activation
+			Vixen.Popup.Alert("WARNING: Flagged services could not be selected");
 		}
 	}
 	

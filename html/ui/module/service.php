@@ -119,7 +119,7 @@ abstract class ModuleService
 	 * Loads the details that are generic of all services 
 	 * 
 	 * Loads the details that are generic of all services
-	 * Loads the basic Service Record details.  It does not load the Service's address details
+	 * Loads the basic Service Record details.  
 	 * It will load in the Service Table Record relating to the most recently added record
 	 * that models the FNN for the Account of the ServiceId currently stored in $this->_intCurrentId,
 	 * _intCurrentId will then be changed to the Id of this service
@@ -218,7 +218,7 @@ abstract class ModuleService
 		// Refresh the plan details if they have already been loaded
 		if ($this->_bolPlanDetailsLoaded)
 		{
-			if (!$this->LoadPlanDetails())
+			if (!$this->LoadPlanDetails(TRUE))
 			{
 				return FALSE;
 			}
@@ -237,11 +237,22 @@ abstract class ModuleService
 	 * 
 	 * Retrieves plan details from the database and stores them in the object
 	 *
+	 * @param	$bolForceReload			optional, If set to TRUE then the plan details will always
+	 * 									be retrieved from the database.  If set to FALSE then they will
+	 * 									only be retrieved from the database if they have not already been loaded.
+	 * 									Defaults to FALSE
+	 *
 	 * @return	bool					TRUE on success, FALSE on failure
 	 * @method
 	 */
-	function LoadPlanDetails()
+	function LoadPlanDetails($bolForceReload=FALSE)
 	{
+		if ($this->_bolPlanDetailsLoaded && !$bolForceReload)
+		{
+			// The plan details have already been loaded, and a force reload from the database has not been requested
+			return TRUE;
+			
+		}
 		// Get the Id of the most recent Service Record
 		$intServiceId = $this->_intCurrentId;
 		
@@ -262,8 +273,12 @@ abstract class ModuleService
 						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
 		$arrColumns	= Array("CurrentPlanId" 			=> "RP1.Id",
 							"CurrentPlanName"			=> "RP1.Name",
+							"CurrentPlanCarrierFullService"		=> "RP1.CarrierFullService",
+							"CurrentPlanCarrierPreselection"	=> "RP1.CarrierPreselection",
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanCarrierFullService"	=> "RP2.CarrierFullService",
+							"FuturePlanCarrierPreselection"	=> "RP2.CarrierPreselection",
 							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
 		$strWhere	= "	S.Id = <ServiceId>";
 		$arrWhere	= Array("ServiceId" => $intServiceId);
@@ -284,8 +299,10 @@ abstract class ModuleService
 		{
 			// The service has a current plan defined
 			$this->_arrCurrentPlan = Array(
-											"PlanId"	=> $arrRecord['CurrentPlanId'],
-											"Name"		=> $arrRecord['CurrentPlanName']
+											"PlanId"				=> $arrRecord['CurrentPlanId'],
+											"Name"					=> $arrRecord['CurrentPlanName'],
+											"CarrierFullService"	=> $arrRecord['CurrentPlanCarrierFullService'],
+											"CarrierPreselection"	=> $arrRecord['CurrentPlanCarrierPreselection']
 											);
 		}
 		
@@ -294,9 +311,11 @@ abstract class ModuleService
 		{
 			// The service has a plan scheduled to start some time in the future
 			$this->_arrFuturePlan = Array(
-											"PlanId"		=> $arrRecord['FuturePlanId'],
-											"Name"			=> $arrRecord['FuturePlanName'],
-											"StartDatetime"	=> $arrRecord['FuturePlanStartDatetime']
+											"PlanId"				=> $arrRecord['FuturePlanId'],
+											"Name"					=> $arrRecord['FuturePlanName'],
+											"StartDatetime"			=> $arrRecord['FuturePlanStartDatetime'],
+											"CarrierFullService"	=> $arrRecord['FuturePlanCarrierFullService'],
+											"CarrierPreselection"	=> $arrRecord['FuturePlanCarrierPreselection']
 											);
 		}
 		
@@ -381,7 +400,7 @@ abstract class ModuleService
 		// Check if the plan details have been loaded, or if the user is forcing a reload
 		if (!$this->_bolPlanDetailsLoaded || $bolForceReload)
 		{
-			if ($this->LoadPlanDetails() === FALSE)
+			if ($this->LoadPlanDetails($bolForceReload) === FALSE)
 			{
 				// An error occurred
 				return FALSE;
@@ -395,7 +414,7 @@ abstract class ModuleService
 		// Check if the plan details have been loaded, or if the user is forcing a reload
 		if (!$this->_bolPlanDetailsLoaded || $bolForceReload)
 		{
-			if ($this->LoadPlanDetails() === FALSE)
+			if ($this->LoadPlanDetails($bolForceReload) === FALSE)
 			{
 				// An error occurred
 				return FALSE;
@@ -471,7 +490,7 @@ abstract class ModuleService
 	 */
 	static private function _GetHistory($arrServiceRecords)
 	{
-		$arrHistory			= Array();
+		$arrHistory = Array();
 		// Iterate through the Service records stored in $this->_arrHistory
 		foreach ($arrServiceRecords as $intIndex=>$arrServiceRecord)
 		{
@@ -601,7 +620,8 @@ abstract class ModuleService
 	 * Checks if the FNN of the given service can be changed
 	 * 
 	 * Checks if the FNN of the given service can be changed
-	 * An FNN can only be changed on the day that the service was originally entered into Flex
+	 * An FNN can only be changed on the day that the service was originally entered into Flex, and if the
+	 * Service object is referencing the newest owner of the service
 	 * 
 	 * @param	int		$intService		Id of the most recently added Service record which models
 	 * 									this service on the account that the service belongs to
@@ -631,7 +651,14 @@ abstract class ModuleService
 		$strToday			= GetCurrentISODate();
 		$strCreationDate	= substr($strTimeOfCreation, 0, 10);
 		
-		return (bool)($strToday == $strCreationDate);
+		if ($strToday == $strCreationDate)
+		{
+			return (bool)($this->IsNewestOwner() == TRUE);
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -656,8 +683,9 @@ abstract class ModuleService
 		}
 		
 		// The most recently added service record does not have a ClosedOn set
-		// It is currently active
-		return TRUE;
+		// It will either be active or pending activation
+		
+		return (bool)($this->_arrServiceRecords[0]['Status'] == SERVICE_ACTIVE);
 	}
 	
 /******************************************************************************/
@@ -1007,9 +1035,9 @@ abstract class ModuleService
 			}
 		}
 		
-		if ($this->_arrServiceRecords[0]['ClosedOn'] !== NULL)
+		if (!($this->_arrServiceRecords[0]['ClosedOn'] == NULL && $this->_arrServiceRecords[0]['Status'] == SERVICE_ACTIVE))
 		{
-			// The Service has to be "Active" to do an account move, and it is currently deactivated
+			// The Service has to be "Active" to do an account move, and it is currently deactivated or pending activation
 			$this->_strErrorMsg = "Service must be active to perform ". (($bolChangeOfLessee)? "a Change of Lessee":"an Account Change");
 			return TRUE;
 		}
@@ -1582,6 +1610,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 	 * If a new Service record is required to model the change of status, then the plan details (current and future)
 	 * of the last service record, will be copied and reference this new record.
 	 * All these new details will be reloaded in the object, if it is necessary
+	 * No automatic provisioning is currently triggered from this function
 	 * 
 	 * @param	int		$intStatus		The new Service Status to set the service to (SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED)
 	 * @param	string	$strTimeStamp	optional, TimeStamp at which the Status Change will be recorded as having been made
@@ -1611,8 +1640,6 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			return FALSE;
 		}
 		
-		
-		
 		if ($intStatus == SERVICE_ACTIVE)
 		{
 			// The service is being activated
@@ -1621,13 +1648,19 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 				return FALSE;
 			}
 		}
-		else
+		elseif ($intStatus == SERVICE_DISCONNECTED || $intStatus == SERVICE_ARCHIVED)
 		{
 			// The service is being deactivated (disconnected or archived)
 			if ($this->_Deactivate($intStatus, $strTimeStamp) === FALSE)
 			{
 				return FALSE;
 			}
+		}
+		else
+		{
+			// Invalid Status to change to
+			$this->_strErrorMsg = "Can not change the status of the service to ". GetConstantDescription($intStatus, "Service");
+			return FALSE;
 		}
 		
 		// If a new Service record was made, then we have to make a copy the Plan details which references it
@@ -1681,8 +1714,37 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		$bolIsIndial	= $this->_bolIndial100;
 		
 		// The most recent values for CreatedOn and ClosedOn
-		$strCreatedOn	= $this->_arrServiceRecords[0]['CreatedOn'];
-		$strClosedOn	= $this->_arrServiceRecords[0]['ClosedOn'];
+		$strCreatedOn		= $this->_arrServiceRecords[0]['CreatedOn'];
+		$strClosedOn		= $this->_arrServiceRecords[0]['ClosedOn'];
+		$intCurrentStatus	= $this->_arrServiceRecords[0]['Status'];
+		
+		if ($this->_arrServiceRecords[0]['Status'] == SERVICE_PENDING)
+		{
+			// The service is being activated for the first time
+			if ($strClosedOn !== NULL)
+			{
+				$this->_strErrorMsg = "Service is pending activation, but has a ClosedOn date declared";
+				return FALSE;
+			}
+			
+			// Just update the record
+			$arrUpdate = Array	(	"Id"		=> $intService,
+									"Status"	=> SERVICE_ACTIVE
+								);
+			$updService = new StatementUpdateById("Service", $arrUpdate);
+			if ($updService->Execute($arrUpdate) === FALSE)
+			{
+				// There was an error while trying to activate the service
+				$this->_strErrorMsg = "Unexpected Database error occurred while trying to activate the Service with Id '{$this->_intCurrentId}'";
+				return FALSE;
+			}
+			
+			// Update the corresponding record in the _arrServiceRecords array
+			$this->_arrServiceRecords[0]['Status'] = SERVICE_ACTIVE;
+			
+			// Service was activated successfully
+			return TRUE;
+		}
 		
 		if ($strClosedOn === NULL)
 		{
@@ -1807,6 +1869,13 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		$strCreatedOn	= $this->_arrServiceRecords[0]['CreatedOn'];
 		$strClosedOn	= $this->_arrServiceRecords[0]['ClosedOn'];
 
+		if ($this->GetStatus() == SERVICE_PENDING)
+		{
+			// You cannot deactivate a service that is pending activation
+			$this->_strErrorMsg = "Cannot deactivate a service that is pending activation";
+			return FALSE;
+		}
+
 		// Work out the nature of the closure
 		$intNatureOfClosure	= ($intStatus == SERVICE_DISCONNECTED)? SERVICE_CLOSURE_DISCONNECTED : SERVICE_CLOSURE_ARCHIVED;
 		$intUserId			= AuthenticatedUser()->_arrUser['Id'];
@@ -1895,7 +1964,150 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		
 	}
 	
+/******************************************************************************/
+// Provisioning related Methods
+/******************************************************************************/
+
+	//------------------------------------------------------------------------//
+	// MakeProvisioningRequest
+	//------------------------------------------------------------------------//
+	/**
+	 * MakeProvisioningRequest()
+	 *
+	 * Makes a provisioning request
+	 * 
+	 * Makes a provisioning request
+	 *
+	 * @param	int		$intRequest				Request to make
+	 * @param	int		$intCarrier				Carrier to send the request to
+	 * @param	string	$strAuthoristationDate	optional, Date for those requests that require one
+	 * 											Defaults to todays date, if set to NULL
+	 * 
+	 * @return	bool							TRUE on success, FALSE on Failure
+	 * 		
+	 * @method
+	 */
+	public function MakeProvisioningRequest($intRequest, $intCarrier, $strAuthorisationDate=NULL)
+	{
+		if (!$this->CanBeProvisioned())
+		{
+			$this->_strErrorMsg = "service cannot be provisioned";
+			return FALSE;
+		}
+		
+		$intService	= ($this->_intNewId !== NULL)? $this->_intNewId : $this->_intCurrentId;
+		$strNow		= GetCurrentISODateTime();
+		if ($strAuthorisationDate == NULL)
+		{
+			$strAuthorisationDate = GetCurrentISODate();
+		}
+		
+		$arrInsertValues = Array(	"AccountGroup"		=> $this->_intAccountGroup,
+									"Account"			=> $this->_intAccount,
+									"Service"			=> $intService,
+									"FNN"				=> $this->_strFNN,
+									"Employee"			=> AuthenticatedUser()->_arrUser['Id'],
+									"Carrier"			=> $intCarrier,
+									"Type"				=> $intRequest,
+									"RequestedOn"		=> $strNow,
+									"AuthorisationDate"	=> $strAuthorisationDate,
+									"Status"			=> REQUEST_STATUS_WAITING
+								);
+		$insRequest = new StatementInsert("ProvisioningRequest", $arrInsertValues);
+		
+		if ($insRequest->Execute($arrInsertValues) === FALSE)
+		{
+			// The request could not be made
+			$strRequest = GetConstantDescription($intRequest, "Request");
+			$strCarrier	= GetConstantDescription($intCarrier, "Carrier");
+			$this->_strErrorMsg = "Unexpected database error occurred while trying to make a '$strRequest' request to the '$strCarrier' carrier";
+			return FALSE;
+		}
+		return TRUE;
+	}
+
+	//------------------------------------------------------------------------//
+	// MakeFullServiceProvisioningRequest
+	//------------------------------------------------------------------------//
+	/**
+	 * MakeFullServiceProvisioningRequest()
+	 *
+	 * Makes a FullService provisioning request to the FullService Carrier defined by the Services current RatePlan
+	 * 
+	 * Makes a FullService provisioning request to the FullService Carrier defined by the Services current RatePlan
+	 *
+	 * @param	string	$strAuthoristationDate	optional, Date for those requests that require one
+	 * 											Defaults to todays date, if set to NULL
+	 * 
+	 * @return	bool							TRUE on success, FALSE on Failure
+	 * 		
+	 * @method
+	 */
+	public function MakeFullServiceProvisioningRequest($strAuthorisationDate=NULL)
+	{
+		$arrCurrentPlan = $this->GetCurrentPlan(TRUE);
+		if ($arrCurrentPlan === NULL)
+		{
+			$this->_strErrorMsg = "Service does not currently have a plan";
+			return FALSE;
+		}
+		if ($arrCurrentPlan['CarrierFullService'] == NULL)
+		{
+			$this->_strErrorMsg = "The service's current plan does not declare a Full Service carrier";
+			return FALSE;
+		}
+		
+		return $this->MakeProvisioningRequest(REQUEST_FULL_SERVICE, $arrCurrentPlan['CarrierFullService'], $strAuthorisationDate);
+	}
 	
+	//------------------------------------------------------------------------//
+	// MakePreselectionProvisioningRequest
+	//------------------------------------------------------------------------//
+	/**
+	 * MakePreselectionProvisioningRequest()
+	 *
+	 * Makes a Preselection provisioning request to the Preselection Carrier defined by the Services current RatePlan
+	 * 
+	 * Makes a Preselection provisioning request to the Preselection Carrier defined by the Services current RatePlan
+	 *
+	 * @param	string	$strAuthoristationDate	optional, Date for those requests that require one
+	 * 											Defaults to todays date, if set to NULL
+	 * 
+	 * @return	bool							TRUE on success, FALSE on Failure
+	 * 		
+	 * @method
+	 */
+	public function MakePreselectionProvisioningRequest($strAuthorisationDate=NULL)
+	{
+		$arrCurrentPlan = $this->GetCurrentPlan(TRUE);
+		if ($arrCurrentPlan === NULL)
+		{
+			$this->_strErrorMsg = "Service does not currently have a plan";
+			return FALSE;
+		}
+		if ($arrCurrentPlan['CarrierPreselection'] == NULL)
+		{
+			$this->_strErrorMsg = "The service's current plan does not declare a Preselection carrier";
+			return FALSE;
+		}
+		
+		return $this->MakeProvisioningRequest(REQUEST_PRESELECTION, $arrCurrentPlan['CarrierPreselection'], $strAuthorisationDate);
+	}
+	
+	//------------------------------------------------------------------------//
+	// CanBeProvisioned
+	//------------------------------------------------------------------------//
+	/**
+	 * CanBeProvisioned()
+	 *
+	 * Returns TRUE if the service can be provisioned, ELSE FALSE 
+	 * 
+	 * Returns TRUE if the service can be provisioned, ELSE FALSE
+	 *
+	 * @return	bool	TRUE if the service can be provisioned
+	 * @method
+	 */
+	abstract public function CanBeProvisioned();
 	
 /******************************************************************************/
 // Static Methods

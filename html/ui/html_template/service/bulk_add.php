@@ -94,15 +94,16 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 		}
 		
 		// Build the table and add a single row to it, which can then be cloned to add more rows
-		Table()->Services->SetHeader("&nbsp;", "FNN", "Confirm FNN", "Plan", "Cost Centre", "Dealer", "Cost (\$)");
-		Table()->Services->SetWidth("4%", "12%", "12%", "22%", "21%", "21%", "8%");
-		Table()->Services->SetAlignment("Center", "Left", "Left", "Left", "Left", "Left", "Left");
+		Table()->Services->SetHeader("&nbsp;", "FNN", "Confirm FNN", "Active", "Plan", "Cost Centre", "Dealer", "Cost (\$)");
+		Table()->Services->SetWidth("4%", "12%", "12%", "5%", "22%", "18%", "19%", "8%");
+		Table()->Services->SetAlignment("Center", "Left", "Left", "Center", "Left", "Left", "Left", "Left");
 		
 		$strFnnCell			= "<input id='FnnTextBox' type='text' maxlength='20' style='width:100%'></input>";
 		$strFnnConfirmCell	= "<input id='FnnConfirmTextBox' type='text' maxlength='20' style='width:100%'></input>";
 		$strServiceTypeCell	= "<div class='ServiceTypeIconBlank'></div>";
 		$strDealerCell		= "<select id='DealerCombo' style='width:100%'>$strDealerOptions</select>";
 		$strCostCell		= "<input id='CostTextBox' type='text' maxlength='7' style='width:100%'></input>";
+		$strActivateCell	= "<input id='ActivateCheckBox' type='checkbox'></input>";
 		
 		$strCostCentreCell	 = "<select id='CostCentreCombo' style='width:100%'>";
 		$strCostCentreCell	.= "<option value='0'>&nbsp;</option>";
@@ -115,7 +116,7 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 		
 		$strPlanCell		= "<select id='PlanCombo' style='width:100%'></select>";
 		
-		Table()->Services->AddRow($strServiceTypeCell, $strFnnCell, $strFnnConfirmCell, $strPlanCell, $strCostCentreCell, $strDealerCell, $strCostCell);
+		Table()->Services->AddRow($strServiceTypeCell, $strFnnCell, $strFnnConfirmCell, $strActivateCell, $strPlanCell, $strCostCentreCell, $strDealerCell, $strCostCell);
 		
 		Table()->Services->Render();
 		

@@ -322,7 +322,12 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strStatus			= GetConstantDescription($arrService['History'][0]['Status'], "Service");
 			$strLineStatus		= GetConstantDescription($arrService['History'][0]['LineStatus'], "LineStatus");
 			$strLineStatusDate	= $arrService['History'][0]['LineStatusDate'];
-
+			if ($arrService['History'][0]['Status'] == SERVICE_PENDING)
+			{
+				// Highlight the status
+				$strStatus = "<span style='color:#FF0000'>$strStatus</span>";
+			}
+			
 			$strLineStatusDesc = NULL;
 			if ($strLineStatus === FALSE)
 			{

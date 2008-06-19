@@ -676,6 +676,9 @@ $GLOBALS['*arrConstant']	['Service']	[402]	['Constant']	= 'SERVICE_DISCONNECTED'
 $GLOBALS['*arrConstant']	['Service']	[402]	['Description']	= 'Disconnected';
 $GLOBALS['*arrConstant']	['Service']	[403]	['Constant']	= 'SERVICE_ARCHIVED';
 $GLOBALS['*arrConstant']	['Service']	[403]	['Description']	= 'Archived';
+$GLOBALS['*arrConstant']	['Service']	[404]	['Constant']	= 'SERVICE_PENDING';
+$GLOBALS['*arrConstant']	['Service']	[404]	['Description']	= 'Pending Activation';
+
 
 
 // Service Line Status

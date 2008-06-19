@@ -83,7 +83,8 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$intCurrentSatatus = DBO()->Service->CurrentStatus->Value;
+		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$intCurrentSatatus		= DBO()->Service->CurrentStatus->Value;
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		
 		// Start the form
@@ -194,26 +195,42 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			DBO()->Service->NewStatus = DBO()->Service->Status->Value;
 		}
 		
-		// Render the Service Status Combobox
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Status :</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ServiceEditStatusCombo' name='Service.NewStatus' style='width:155px'>\n";
-		foreach ($GLOBALS['*arrConstant']['Service'] as $intConstant=>$arrServiceStatus)
+		// Work out what options should be available in the Status combobox
+		$arrStatusOptions = $GLOBALS['*arrConstant']['Service'];
+		if ($objService->GetStatus() != SERVICE_PENDING)
 		{
-			// Only users with admin privileges can archive an account
-			if (($intConstant == SERVICE_ARCHIVED) && (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN)))
+			// Remove the SERVICE_PENDING option
+			unset($arrStatusOptions[SERVICE_PENDING]);
+			
+			if ($objService->GetStatus() != SERVICE_ARCHIVED && !$bolUserHasAdminPerm)
 			{
-				// The user does not have admin privileges
-				continue;
+				// Remove the ARCHIVE option as only admin users can archive services
+				unset($arrStatusOptions[SERVICE_ARCHIVED]);
 			}
-
-			$strSelected = (DBO()->Service->NewStatus->Value == $intConstant) ? "selected='selected'" : "";
-			echo "         <option value='$intConstant' $strSelected>{$arrServiceStatus['Description']}</option>\n";
 		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";
+		else
+		{
+			// The service is pending activation.  They should not be able to disconnect it or archive it
+			unset($arrStatusOptions[SERVICE_DISCONNECTED]);
+			unset($arrStatusOptions[SERVICE_ARCHIVED]);
+		}
+		
+		$strStatusOptions = "";
+		foreach ($arrStatusOptions as $intStatus=>$arrStatus)
+		{
+			$strSelected		= (DBO()->Service->NewStatus->Value == $intStatus) ? "selected='selected'" : "";
+			$strStatusOptions	.= "<option value='$intStatus' $strSelected>{$arrStatus['Description']}</option>";
+		}
+		
+		// Render the Service Status Combobox
+		echo "
+<div class='DefaultElement'>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Status :</div>
+	<div class='DefaultOutput'>
+		<select id='ServiceEditStatusCombo' name='Service.NewStatus' style='width:155px'>$strStatusOptions</select>
+	</div>
+</div>
+";
 		
 		// load cost centre details
 		$strWhere = "Account IN (0, ". DBO()->Service->Account->Value .")";
@@ -297,7 +314,16 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$this->FormEnd();
 		
 		// Initialise the javascript object
-		echo "<script type='text/javascript'>Vixen.ServiceEdit.Initialise($intCurrentSatatus)</script>\n";
+		if ($objService->GetServiceType() == SERVICE_TYPE_LAND_LINE && $objService->GetCurrentPlan() != NULL)
+		{
+			// The service can be automatically provisioned
+			$strCanBeProvisioned = "true";
+		}
+		else
+		{
+			$strCanBeProvisioned = "false";
+		}
+		echo "<script type='text/javascript'>Vixen.ServiceEdit.Initialise($intCurrentSatatus, $strCanBeProvisioned)</script>\n";
 	}	
 }
 

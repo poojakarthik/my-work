@@ -212,7 +212,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		// Draw buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$strViewAccountContactsLink = Href()->ListContacts(DBO()->Account->Id->Value);
-		$this->Button("View All Contacts", $strViewAccountContactsLink);
+		$this->Button("View All", $strViewAccountContactsLink);
 		echo "</div></div>\n";
 	}
 	
