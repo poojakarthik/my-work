@@ -3626,15 +3626,15 @@ function GetEffectiveInvoiceDateForNoticeType($intNoticeType, $intStartOfDay)
 	switch ($intNoticeType)
 	{
 		case LETTER_TYPE_FINAL_DEMAND:
-			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['final_demand_notice_days'] - $paymentTerms['invoice_day']) * $intDay);
+			$effectiveInvoiceDate = $intStartOfDay - ($paymentTerms['final_demand_notice_days'] * $intDay);
 			break;
 
 		case LETTER_TYPE_SUSPENSION:
-			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['suspension_notice_days'] - $paymentTerms['invoice_day']) * $intDay);
+			$effectiveInvoiceDate = $intStartOfDay - ($paymentTerms['suspension_notice_days'] * $intDay);
 			break;
 
 		case LETTER_TYPE_OVERDUE:
-			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['overdue_notice_days'] - $paymentTerms['invoice_day']) * $intDay);
+			$effectiveInvoiceDate = $intStartOfDay - ($paymentTerms['overdue_notice_days'] * $intDay);
 			break;
 
 		default:

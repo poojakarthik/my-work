@@ -96,20 +96,20 @@ function VixenPaymentTermsDisplayClass()
 		this.invoiceDayDisplay.innerHTML = place;
 		this.invoiceDayActual.value = intInvoiceDay;
 
-		var intPaymentTerms = parseInt(this.paymentTerms.value) + intInvoiceDay;
-		this.paymentTermsDisplay.innerHTML = isNaN(intPaymentTerms) ? '?' : (intPaymentTerms - intInvoiceDay);
+		var intPaymentTerms = parseInt(this.paymentTerms.value);
+		this.paymentTermsDisplay.innerHTML = isNaN(intPaymentTerms) ? '?' : intPaymentTerms;
 		this.paymentTermsActual.value = intPaymentTerms;
 
 		var intOverdueDays = parseInt(this.overdueDays.value) + intPaymentTerms;
-		this.overdueDaysDisplay.innerHTML = isNaN(intOverdueDays) ? '?' : (intOverdueDays - intInvoiceDay);
+		this.overdueDaysDisplay.innerHTML = isNaN(intOverdueDays) ? '?' : intOverdueDays;
 		this.overdueDaysActual.value = intOverdueDays;
 
 		var intSuspensionDays = parseInt(this.suspensionDays.value) + intOverdueDays;
-		this.suspensionDaysDisplay.innerHTML = isNaN(intSuspensionDays) ? '?' : (intSuspensionDays - intInvoiceDay);
+		this.suspensionDaysDisplay.innerHTML = isNaN(intSuspensionDays) ? '?' : intSuspensionDays;
 		this.suspensionDaysActual.value = intSuspensionDays;
 
 		var intFinalDemandDays = parseInt(this.finalDemandDays.value) + intSuspensionDays;
-		this.finalDemandDaysDisplay.innerHTML = isNaN(intFinalDemandDays) ? '?' : (intFinalDemandDays - intInvoiceDay);
+		this.finalDemandDaysDisplay.innerHTML = isNaN(intFinalDemandDays) ? '?' : intFinalDemandDays;
 		this.finalDemandDaysActual.value = intFinalDemandDays;
 
 		if (!isNaN(parseFloat(this.minimumBalanceToPursue.value)))

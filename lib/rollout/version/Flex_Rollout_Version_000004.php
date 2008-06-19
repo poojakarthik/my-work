@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000004 extends Flex_Rollout_Version
 
 		// Need to get the payment terms from the user
 		$intInvoiceDay 				= 						  $this->getUserResponseInteger("On which day of the month should invoices be generated?");
-		$intPaymentTerms 			= $intInvoiceDay 		+ $this->getUserResponseInteger("How many days after invoicing before payment is due?");
+		$intPaymentTerms 			= 						  $this->getUserResponseInteger("How many days after invoicing before payment is due?");
 		$intOverdueDays 			= $intPaymentTerms 		+ $this->getUserResponseInteger("How many days after payment is due before overdue notices should be sent?");
 		$intSuspensionDays 			= $intOverdueDays 		+ $this->getUserResponseInteger("How many days after overdue notices are sent before suspension notices should be sent?");
 		$intFinalDemandDays 		= $intSuspensionDays 	+ $this->getUserResponseInteger("How many days after suspension notices are sent before final demands should be sent?");
