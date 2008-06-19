@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../pdf/Flex_Pdf.php';
 class Cli_App_LateNoticeRun extends Cli
 {
 	const SWITCH_EFFECTIVE_DATE = "e";
+	const SWITCH_TEST_RUN = "t";
 
 	private $runDateTime = '';
 
@@ -19,6 +20,11 @@ class Cli_App_LateNoticeRun extends Cli
 		{
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
+
+			if ($arrArgs[self::SWITCH_TEST_RUN])
+			{
+				$this->log("Running in test mode. Emails will not be sent to account holders.", TRUE);
+			}
 
 			// Convert effective date to unix timestamp for start of day
 			$day = intval(date('d', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
@@ -187,6 +193,10 @@ class Cli_App_LateNoticeRun extends Cli
 								else
 								{
 									$this->log("Emailing notice ($intNoticeType) for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
+									if ($arrArgs[self::SWITCH_TEST_RUN])
+									{
+										$this->log("...NOT!!!");
+									}
 									$custGroupName = $arrDetails['Account']['CustomerGroupName'];
 									$fileName = str_replace(' ', '_', $strLetterType) . '.pdf';
 									$emailTo = $arrDetails['Account']['Email'];
@@ -206,7 +216,14 @@ class Cli_App_LateNoticeRun extends Cli
 				 								  "Regards\r\n\r\n" .
 				 								  "The Team at $custGroupName";
 
-									$outcome = $this->sendEmail($emailFrom, $emailTo, $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
+									if (!$arrArgs[self::SWITCH_TEST_RUN])
+									{
+										$outcome = $this->sendEmail($emailFrom, $emailTo, $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
+									}
+									else
+									{
+										$outcome = TRUE;
+									}
 
 									if ($outcome === TRUE)
 									{
@@ -250,8 +267,13 @@ class Cli_App_LateNoticeRun extends Cli
 
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
-			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ' Automated late notice generation log for run dated ' . $this->runDateTime;
+			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') . ' Automated late notice generation log for run dated ' . $this->runDateTime;
 			$report = array();
+			if ($arrArgs[self::SWITCH_TEST_RUN])
+			{
+				$report[] = "***RUN TEST MODE - EMAILS WERE NOT SENT TO ACCOUNT HOLDERS***";
+				$report[] = "";
+			}
 			if ($errors)
 			{
 				$report[] = "***ERRORS WERE DETECTED WHILST GENERATING LATE NOTICES***";
@@ -483,6 +505,13 @@ class Cli_App_LateNoticeRun extends Cli
 										"format [optional, default is today]",
 				self::ARG_DEFAULT		=> time(),
 				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
+			),
+		
+			self::SWITCH_TEST_RUN => array(
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "for testing script outcome [fully functional EXCEPT emails will not be sent to clients]",
+				self::ARG_DEFAULT		=> FALSE,
+				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
 		
 		);
