@@ -109,7 +109,7 @@ define("MODULE_CHARGE"					, 0x40);
 define("MODULE_CDR"						, 0x80);
 define("MODULE_NOTE"					, 0x100);
 define("MODULE_BILLING"					, 0x200);
-define("MODULE_CHARGE"					, 0x400);
+define("MODULE_SERVICE_TYPE"			, 0x400);
 define("MODULE_CONTACT"					, 0x800);
 define("MODULE_RATE"					, 0x1000);
 define("MODULE_SERVICE"					, 0x2000);
@@ -135,6 +135,8 @@ define("MODULE_MOBILE_DETAIL"			, 0x100000000);
 define("MODULE_STATE"					, 0x200000000);
 define("MODULE_TITLE"					, 0x400000000);
 define("MODULE_COST_CENTRE"				, 0x800000000);
+define("MODULE_SERVICE_ADDRESS"         , 0x1000000000);
+define("MODULE_INBOUND"         		, 0x2000000000);
 
 define("MODULE_MAXIMUM"					, 0x4000000000000000);
 define("MODULE_ALL"						, 0x7FFFFFFFFFFFFFFF);
