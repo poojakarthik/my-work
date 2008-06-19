@@ -144,8 +144,10 @@ class HTMLElements
 	function InputText($arrParams, $arrAdditionalArgs=NULL)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
+		$strStyle = '';
+		$strElementAttributes = '';
 		
-		if ($arrParams['Valid'] === FALSE)
+		if (array_key_exists('Valid', $arrParams) && $arrParams['Valid'] === FALSE)
 		{
 			$strValue = $arrParams['Value'];
 		}
@@ -201,6 +203,10 @@ class HTMLElements
 		{
 			$strRequiredIdClause = str_replace("<id>", $strId, $strRequiredIdClause);
 		}
+		else
+		{
+			$strRequiredIdClause = '';
+		}
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
@@ -236,7 +242,7 @@ class HTMLElements
 	{
 		$strLabel = $arrParams['Definition']['Label'];
 		
-		if ($arrParams['Valid'] === FALSE)
+		if (array_key_exists('Valid', $arrParams) && $arrParams['Valid'] === FALSE)
 		{
 			$strValue = $arrParams['Value'];
 		}
@@ -308,7 +314,7 @@ class HTMLElements
 	{
 		$strLabel = $arrParams['Definition']['Label'];
 		
-		if ($arrParams['Valid'] === FALSE)
+		if (array_key_exists('Valid', $arrParams) && $arrParams['Valid'] === FALSE)
 		{
 			$strValue = $arrParams['Value'];
 		}
