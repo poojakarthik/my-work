@@ -48,7 +48,7 @@ class DBList extends DBListBase
 	public $Where;
 	public $_intLimitStart	= NULL;
 	public $_intLimitCount	= NULL;
-	public $_intMode 		= DBO_RETURN;
+	//public $_intMode 		= DBO_RETURN;
 	public $_strIdColumn 	= 'Id';
 	public $_strUseIndex 	= NULL;
 	public $_strOrderBy 	= NULL;
