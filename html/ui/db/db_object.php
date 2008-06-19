@@ -111,7 +111,7 @@ class DBObject extends DBObjectBase
 		
 		// set ID column name
 		//TODO!!!! look harder to find this
-		if ($this->_arrDefine['IdColumn'])
+		if ($this->_arrDefine != NULL && array_key_exists('IdColumn', $this->_arrDefine) && $this->_arrDefine['IdColumn'])
 		{
 			$this->_strIdColumn = $this->_arrDefine['IdColumn'];
 		}
@@ -920,7 +920,7 @@ class DBObject extends DBObjectBase
 			$arrColumns = explode(",", $mixColumns);
 			$this->_arrColumns = $arrColumns;
 		}
-		elseif ($this->_arrDefine['Columns'])
+		elseif ($this->_arrDefine !== NULL && array_key_exists('Columns', $this->_arrDefine) && $this->_arrDefine['Columns'])
 		{
 			// currently $this->_arrDefine['Columns'] is not defined so this
 			// block of code will never be run
