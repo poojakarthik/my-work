@@ -3513,11 +3513,12 @@ function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 	if ($intStartOfDay)
 	{
 		$intEffectiveInvoiceDate = GetEffectiveInvoiceDateForNoticeType($intNoticeType, $intStartOfDay);
-		$strBillingDateClause = " AND DATE(InvoiceRun.BillingDate) >= DATE(FROM_UNIXTIME($intEffectiveInvoiceDate))";
+		$strBillingDateClause = " AND DATE(InvoiceRun.BillingDate) <= DATE(FROM_UNIXTIME($intEffectiveInvoiceDate))";
 	}
 
 	// Find all Accounts that fit the requirements for Late Notice generation
-	$arrColumns = Array(	'AccountId'				=> "Invoice.Account",
+	$arrColumns = Array(	'InvoiceRun'			=> "Invoice.InvoiceRun",
+							'AccountId'				=> "Invoice.Account",
 							'AccountGroup'			=> "Account.AccountGroup",
 							'BusinessName'			=> "Account.BusinessName",
 							'TradingName'			=> "Account.TradingName",
@@ -3625,15 +3626,15 @@ function GetEffectiveInvoiceDateForNoticeType($intNoticeType, $intStartOfDay)
 	switch ($intNoticeType)
 	{
 		case LETTER_TYPE_FINAL_DEMAND:
-			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['final_demand_notice_days'] - 1) * $intDay);
+			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['final_demand_notice_days'] - $paymentTerms['invoice_day']) * $intDay);
 			break;
 
 		case LETTER_TYPE_SUSPENSION:
-			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['suspension_notice_days'] - 1) * $intDay);
+			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['suspension_notice_days'] - $paymentTerms['invoice_day']) * $intDay);
 			break;
 
 		case LETTER_TYPE_OVERDUE:
-			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['overdue_notice_days'] - 1) * $intDay);
+			$effectiveInvoiceDate = $intStartOfDay - (($paymentTerms['overdue_notice_days'] - $paymentTerms['invoice_day']) * $intDay);
 			break;
 
 		default:
