@@ -651,7 +651,7 @@ function GetEmployeeUserName($intEmployeeId)
  */
 function SubmittedForm($strFormId, $strButtonId=NULL)
 {
-	if ($strFormId == $GLOBALS['*SubmittedForm'])
+	if (array_key_exists('*SubmittedForm', $GLOBALS) && $strFormId == $GLOBALS['*SubmittedForm'])
 	{
 		if ($strButtonId && $strButtonId == $GLOBALS['*SubmittedButton'])
 		{
