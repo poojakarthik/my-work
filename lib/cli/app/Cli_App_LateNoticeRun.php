@@ -189,17 +189,9 @@ class Cli_App_LateNoticeRun extends Cli
 									$this->log("Emailing notice ($intNoticeType) for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
 									$custGroupName = $arrDetails['Account']['CustomerGroupName'];
 									$fileName = str_replace(' ', '_', $strLetterType) . '.pdf';
-									$emailTo = 'holiver@yellowbilling.com.au'; //$arrDetails['Account']['Email'];
-									$emailFrom = 'holiver@yellowbilling.com.au';//$arrDetails['Account']['EmailFrom'];
+									$emailTo = $arrDetails['Account']['Email'];
+									$emailFrom = $arrDetails['Account']['EmailFrom'];
 									$subject = "$custGroupName $strLetterType";
-
-									/*
-									$name = array();
-									if (trim($arrDetails['Account']['Title'])) $name[] = trim($arrDetails['Account']['Title']);
-									if (trim($arrDetails['Account']['FirstName'])) $name[] = trim($arrDetails['Account']['FirstName']);
-									if (trim($arrDetails['Account']['LastName'])) $name[] = trim($arrDetails['Account']['LastName']);
-									$name = implode(' ', $name);
-									*/
 
 									$name = trim($arrDetails['Account']['FirstName']);
 
@@ -344,7 +336,7 @@ class Cli_App_LateNoticeRun extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			$outcome = $this->sendEmail("ybs-admin@yellowbilling.com.au", "holiver@yellowbilling.com.au", $subject, $body);
+			$outcome = $this->sendEmail("late_notice_run@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body);
 
 			if ($outcome === TRUE)
 			{
