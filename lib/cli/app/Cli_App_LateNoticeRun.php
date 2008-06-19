@@ -192,7 +192,7 @@ class Cli_App_LateNoticeRun extends Cli
 								// We have a PDF, so we should email it
 								else
 								{
-									$this->log("Emailing notice ($intNoticeType) for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
+									$this->log("Emailing $strLetterType for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
 									if ($arrArgs[self::SWITCH_TEST_RUN])
 									{
 										$this->log("...NOT!!!");
@@ -201,7 +201,7 @@ class Cli_App_LateNoticeRun extends Cli
 									$fileName = str_replace(' ', '_', $strLetterType) . '.pdf';
 									$emailTo = $arrDetails['Account']['Email'];
 									$emailFrom = $arrDetails['Account']['EmailFrom'];
-									$subject = "$custGroupName $strLetterType";
+									$subject = "$custGroupName $strLetterType for Account $intAccountId";
 
 									$name = trim($arrDetails['Account']['FirstName']);
 
@@ -223,6 +223,7 @@ class Cli_App_LateNoticeRun extends Cli
 									else
 									{
 										$outcome = TRUE;
+										//$outcome = $this->sendEmail($emailFrom, "billing-notifications@yellowbilling.com.au", $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
 									}
 
 									if ($outcome === TRUE)
