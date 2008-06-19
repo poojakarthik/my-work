@@ -90,7 +90,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] ='ALTER TABLE account DROP credit_control_status ;';
 
-		$strSQL = "ALTER TABLE account ADD INDEX ( credit_control_status )";
+		$strSQL = "ALTER TABLE Account ADD INDEX ( credit_control_status )";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add index to Account table. ' . $qryQuery->Error());
