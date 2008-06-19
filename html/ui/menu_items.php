@@ -1275,7 +1275,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}AddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{}AddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $strJsonCode)";
 	}
 
 	
