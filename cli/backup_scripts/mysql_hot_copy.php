@@ -3,17 +3,23 @@
 // we use the actual tables not the db def in case it is out of date
 require_once('../../flex.require.php');
 
-// Set up the databases correctly
-$strDestinationDB	= $GLOBALS['**arrDatabase']['flex']['Database'] . '_working';
+// Are we running on a _working server?
+if (!($intRPos = strrpos($GLOBALS['**arrDatabase']['flex']['Database'], '_working')))
+{
+	// '_working' is not present in the Database name, therefore we are probably connected to a live server
+	exit(1);
+}
 
-LoadApplication();
+// Set up the databases correctly
+$strDestinationDB	= $GLOBALS['**arrDatabase']['flex']['Database'];
+$strSourceDB		= substr($GLOBALS['**arrDatabase']['flex']['Database'], 0, $intRPos);
 
 define("MODE_INCLUDE"	, 1);
 define("MODE_EXCLUDE"	, 2);
 
 CliEcho("\n[ MYSQL HOT COPY ]\n");
 
-CliEcho("Copying to database '$strDestinationDB' from '{$GLOBALS['**arrDatabase']['Database']}'");
+CliEcho("Copying from database '$strSourceDB' to '$strDestinationDB'");
 
 $arrSpecifiedTables = Array();
 if ($argc > 2)
@@ -55,17 +61,25 @@ switch ($argv[1])
 
 CliEcho("\n * Copying Tables...");
 
-// set up list tables object
-$qltListTable = new QueryListTables();
-
 // get tables from Source DB
-$arrTables = $qltListTable->Execute();
+$arrTables		= Array();
+$qryListTables	= new Query();
+if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strSourceDB WHERE Table_type = 'BASE TABLE'")))
+{
+	// Error on ListTables
+	CliEcho("ERROR: \$qryListTables failed -- ".$qryListTables->Error());
+	exit(2);
+}
+else
+{
+	while ($arrRow = $mixResult->fetch_row())
+	{
+		$arrTables[]	= $arrRow[0];
+	}
+}
 
-// set up copy table object
-$qctCopyTable = new QueryCopyTable();
-
-// clean tables list
-foreach($arrTables AS $mixKey=>$strTable)
+// Copy specified Tables
+foreach($arrTables AS $strTable)
 {
 	CliEcho(str_pad("\t + $strTable...", 35, ' ', STR_PAD_RIGHT), FALSE);
 	$strStatus	= '[   OK   ]';
@@ -87,7 +101,7 @@ foreach($arrTables AS $mixKey=>$strTable)
 			$GLOBALS['fwkFramework']->StartWatch();
 			
 			// copy a table
-			if (!$qctCopyTable->Execute("$strDestinationDB.$strTable", $strTable))
+			if (!mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB))
 			{
 				$strStatus	= '[ FAILED ]';
 			}
@@ -103,7 +117,7 @@ foreach($arrTables AS $mixKey=>$strTable)
 		$GLOBALS['fwkFramework']->StartWatch();
 		
 		// copy a table
-		if (!$qctCopyTable->Execute("$strDestinationDB.$strTable", $strTable))
+		if (!mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB))
 		{
 			$strStatus	= '[ FAILED ]';
 		}
@@ -119,4 +133,33 @@ foreach($arrTables AS $mixKey=>$strTable)
 
 $intTotalTime	= (int)$GLOBALS['fwkFramework']->Uptime();
 CliEcho("\n * vixenworking Hot Copy completed in {$intTotalTime}s\n");
+
+// Exit with error code 0
+exit;
+
+
+
+
+// COPY TABLE
+function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB)
+{
+	$qryQuery	= new Query();
+	if ($qryQuery->Execute("CREATE TABLE $strDestinationDB.$strTable LIKE $strSourceDB.$strTable") === FALSE)
+	{
+		CliEcho("ERROR: Unable to copy structure from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
+		exit(3);
+	}
+	else
+	{
+		if ($qryQuery->Execute("INSERT INTO $strDestinationDB.$strTable SELECT * FROM $strSourceDB.$strTable") === FALSE)
+		{
+			CliEcho("ERROR: Unable to copy data from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
+			exit(4);
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+}
 ?>
