@@ -86,7 +86,7 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		$strSQL = "ALTER TABLE account ADD credit_control_status BIGINT UNSIGNED NOT NULL DEFAULT '1' COMMENT 'FK to credit_control_status.id' AFTER Archived";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter Account table. ' . mysqli_errno() . '::' . mysqli_error());
+			throw new Exception(__CLASS__ . ' Failed to alter Account table (2). ' . mysqli_errno() . '::' . mysqli_error());
 		}
 		$this->rollbackSQL[] ='ALTER TABLE account DROP credit_control_status ;';
 
