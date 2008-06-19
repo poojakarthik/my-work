@@ -107,7 +107,7 @@
 				}
 			}
 			
-			return $oblarrPermissions;
+			return $this->_oblarrPrivileges;
 		}
 		
 		//------------------------------------------------------------------------//
