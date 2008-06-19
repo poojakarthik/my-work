@@ -960,6 +960,7 @@ class VixenTable
 			// Build fields
 			foreach ($objRow['Columns'] as $objField)
 			{
+				$strWidth = '';
 				// Work out which width to use
 				//TODO! After setting the widths once in the header, you shouldn't have to set them again, but we are anyway.
 				//This could cut down the size of the html file generated
