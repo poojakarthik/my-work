@@ -325,7 +325,7 @@
 		if (!$this->_selCDRTotalDetails->Execute($this->_arrCurrentCDR))
 		{
 			// Error
-			CliEcho("Service {$this->_arrCurrentCDR['Service'] not found!}");
+			CliEcho("Service {$this->_arrCurrentCDR['Service']} not found!");
 			return FALSE;
 		}
 		else
