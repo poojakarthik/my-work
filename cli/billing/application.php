@@ -1193,6 +1193,14 @@
 			}
 		}
 		
+		// Update Service.discount_start_datetime to NULL
+		$qryUpdateServiceDiscountDate	= new Query();
+		$strQuery						= "UPDATE Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service WHERE InvoiceRun = '$strInvoiceRun' SET discount_start_datetime = NULL, cdr_count = NULL, cdr_amount = NULL";
+		if ($qryUpdateServiceDiscountDate->Execute($strQuery) === FALSE)
+		{
+			Debug($qryUpdateServiceDiscountDate->Error());
+		}
+		
 		// Generate InvoiceRun table entry
 		$this->_rptBillingReport->AddMessage("Generating Profit Data...", FALSE);
 		$arrResponse = $this->CalculateProfitData($strInvoiceRun, TRUE);
