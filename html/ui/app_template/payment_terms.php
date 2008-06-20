@@ -172,12 +172,21 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			DBO()->payment_terms->final_demand_notice_days->Value != DBO()->current_payment_terms->final_demand_notice_days->Value ||
 			DBO()->payment_terms->minimum_balance_to_pursue->Value != DBO()->current_payment_terms->minimum_balance_to_pursue->Value)
 		{
-			DBO()->payment_terms->Id = 0;
-			DBO()->payment_terms->employee = AuthenticatedUser()->GetUserId();
-			DBO()->payment_terms->created = date('Y-m-d h:i:s');
+			// Copy over the values that we wish to save
+			DBO()->current_payment_terms->invoice_day = DBO()->payment_terms->invoice_day->Value;
+			DBO()->current_payment_terms->payment_terms = DBO()->payment_terms->payment_terms->Value;
+			DBO()->current_payment_terms->overdue_notice_days = DBO()->payment_terms->overdue_notice_days->Value;
+			DBO()->current_payment_terms->suspension_notice_days = DBO()->payment_terms->suspension_notice_days->Value;
+			DBO()->current_payment_terms->final_demand_notice_days = DBO()->payment_terms->final_demand_notice_days->Value;
+			DBO()->current_payment_terms->minimum_balance_to_pursue = DBO()->payment_terms->minimum_balance_to_pursue->Value;
+			// Blank the Id to force a new record to be created
+			DBO()->current_payment_terms->Id = 0;
+			// Set the employee and date for auditing purposes
+			DBO()->current_payment_terms->employee = AuthenticatedUser()->GetUserId();
+			DBO()->current_payment_terms->created = date('Y-m-d h:i:s');
 	
 			// The payment terms are valid.  Save them
-			if (!DBO()->payment_terms->Save())
+			if (!DBO()->current_payment_terms->Save())
 			{
 				// The CustomerGroup could not be saved for some unforseen reason
 				Ajax()->AddCommand("Alert", "ERROR: Saving changes to the Payment Terms failed, unexpectedly");
