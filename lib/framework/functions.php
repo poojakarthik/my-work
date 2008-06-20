@@ -3484,7 +3484,8 @@ function ListAutomaticUnbarringAccounts($intTime)
 
 	$arrColumns = array(
 							'AccountId'				=> "Invoice.Account",
-							'CustomerGroup'			=> "Account.CustomerGroup",
+							'CustomerGroupId'		=> "Account.CustomerGroup",
+							'CustomerGroupName'		=> "CustomerGroup.Name",
 							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
 							'CanAutomate'			=> "CASE WHEN COUNT(DISTINCT(Service.Id)) = EnabledServices.OKServices THEN 1 ELSE 0 END",
 	);
@@ -3518,7 +3519,20 @@ function ListAutomaticUnbarringAccounts($intTime)
 				GROUP BY Service.Account
 			) EnabledServices
 		  ON EnabledServices.Account = Account.Id
+		JOIN CustomerGroup
+		  ON CustomerGroup.Id = Account.CustomerGroup
 	";
+
+	$strWhere	= "";
+
+	$pt = GetPaymentTerms();
+
+	$strGroupBy	= "Invoice.Account HAVING Overdue < ". $pt['minimum_balance_to_pursue'];
+	$strOrderBy	= "Invoice.Account ASC";
+
+	$selUnbarrable = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
+	$mxdReturn = $selUnbarrable->Execute();
+	return $mxdReturn === FALSE ? $mxdReturn : $selUnbarrable->FetchAll();
 }
 
 
@@ -3527,8 +3541,10 @@ function ListAutomaticBarringAccounts($intTime)
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
 
 	$arrColumns = array(
+							'InvoiceRun'			=> "Invoice.InvoiceRun",
 							'AccountId'				=> "Invoice.Account",
-							'CustomerGroup'			=> "Account.CustomerGroup",
+							'CustomerGroupId'		=> "Account.CustomerGroup",
+							'CustomerGroupName'		=> "CustomerGroup.Name",
 							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
 							'CanAutomate'			=> "CASE WHEN COUNT(DISTINCT(Service.Id)) = EnabledServices.OKServices THEN 1 ELSE 0 END",
 	);
@@ -3573,6 +3589,8 @@ function ListAutomaticBarringAccounts($intTime)
 				GROUP BY Service.Account
 			) EnabledServices
 		  ON EnabledServices.Account = Account.Id
+		JOIN CustomerGroup
+		  ON CustomerGroup.Id = Account.CustomerGroup
 		";
 
 	$strWhere	= "";
@@ -3582,9 +3600,9 @@ function ListAutomaticBarringAccounts($intTime)
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
 	$strOrderBy	= "Invoice.Account ASC";
 
-	$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
-	$mxdReturn = $selOverdue->Execute();
-	return $mxdReturn === FALSE ? $mxdReturn : $selOverdue->FetchAll();
+	$selBarrable = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
+	$mxdReturn = $selBarrable->Execute();
+	return $mxdReturn === FALSE ? FALSE : $selBarrable->FetchAll();
 }
 
 
