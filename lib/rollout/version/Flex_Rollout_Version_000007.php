@@ -50,12 +50,11 @@ class Flex_Rollout_Version_000007 extends Flex_Rollout_Version
 		$intBronzeOffset 			= 0 - abs($this->getUserResponseInteger("How many days before the Invoice Run should the Bronze Samples run?"));
 		$intSilverOffset 			= 0 - abs($this->getUserResponseInteger("How many days before the Invoice Run should the Silver Samples run?"));
 
-		$strSQL = "
-			INSERT INTO payment_terms 
-						(samples_internal_initial_days, 	samples_internal_final_days,
-						samples_bronze_days,				samples_silver_days)
-				VALUES ($intInternalIntitialOffset, 		$intInternalFinalOffset, 
-						$intBronzeOffset,				 	$intSilverOffset)";
+		$strSQL = "	UPDATE payment_terms SET 
+						samples_internal_initial_days = $intInternalIntitialOffset,
+						samples_internal_final_days = $intInternalFinalOffset,
+						samples_bronze_days = $intBronzeOffset,
+						samples_silver_days = $intSilverOffset";
 
 		if (!$qryQuery->Execute($strSQL))
 		{
