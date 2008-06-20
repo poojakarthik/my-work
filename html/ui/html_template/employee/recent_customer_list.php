@@ -45,22 +45,6 @@
 class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -149,8 +133,10 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 				$strAccountName = "";
 			}
 			
+			$strAccountName = htmlspecialchars($strAccountName, ENT_QUOTES);
+			
 			$strAccountLink = Href()->AccountOverview($dboCustomer->AccountId->Value);
-			$strAccountCell = "<a href='$strAccountLink' title='View Account Details'>{$dboCustomer->AccountId->Value}</a>";
+			$strAccountCell = "<span onclick='window.location = \"$strAccountLink\"' title='View Account Details'>{$dboCustomer->AccountId->Value}</span>";
 			
 			$strAccountNameCell = "<a href='$strAccountLink' title='View Account Details' style='color:black'>$strAccountName</a>";
 			
