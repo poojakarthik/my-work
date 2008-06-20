@@ -114,7 +114,6 @@
  		{
  			case 0:			// Credit Card
 		 		$this->_Append('OriginType', PAYMENT_TYPE_CREDIT_CARD);
-		 		$this->_Append('OriginId', $mixValue);
  				break;
  			
  			case 2:			// Batch Payment
@@ -128,7 +127,6 @@
  				
  			case 0:			// IVR (Credit Card)
 		 		$this->_Append('OriginType', PAYMENT_TYPE_CREDIT_CARD);
-		 		$this->_Append('OriginId', $mixValue);
  				break;
  		}
  		
