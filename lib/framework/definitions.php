@@ -186,6 +186,17 @@ $GLOBALS['*arrConstant']	['FileStatus']	[206]	['Description']	= 'Normalisation F
 $GLOBALS['*arrConstant']	['FileStatus']	[207]	['Constant']	= 'FILE_NORMALISED';
 $GLOBALS['*arrConstant']	['FileStatus']	[207]	['Description']	= 'Normalised';
 
+$GLOBALS['*arrConstant']	['FileStatus']	[251]	['Constant']	= 'FILE_DOWNLOAD_FAILED';
+$GLOBALS['*arrConstant']	['FileStatus']	[251]	['Description']	= 'Download Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[252]	['Constant']	= 'FILE_UNZIP_FAILED';
+$GLOBALS['*arrConstant']	['FileStatus']	[252]	['Description']	= 'Unarchiving Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[256]	['Constant']	= 'FILE_MOVE_FAILED';
+$GLOBALS['*arrConstant']	['FileStatus']	[256]	['Description']	= 'Download Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[257]	['Constant']	= 'FILE_UNKNOWN_TYPE';
+$GLOBALS['*arrConstant']	['FileStatus']	[257]	['Description']	= 'Download Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[260]	['Constant']	= 'FILE_NOT_UNIQUE';
+$GLOBALS['*arrConstant']	['FileStatus']	[260]	['Description']	= 'File is not Unique';
+
 $GLOBALS['*arrConstant']	['FileStatus']	[300]	['Constant']	= 'FILE_RENDERED';
 $GLOBALS['*arrConstant']	['FileStatus']	[300]	['Description']	= 'Rendered';
 $GLOBALS['*arrConstant']	['FileStatus']	[301]	['Constant']	= 'FILE_RENDER_FAILED';
@@ -254,6 +265,8 @@ $GLOBALS['*arrConstant']	['FileImport']	[4000]	['Constant']	= 'FILE_IMPORT_CDR_U
 $GLOBALS['*arrConstant']	['FileImport']	[4000]	['Description']	= 'Unitel Standard CDR';
 $GLOBALS['*arrConstant']	['FileImport']	[4001]	['Constant']	= 'FILE_IMPORT_CDR_UNITEL_MOBILE';
 $GLOBALS['*arrConstant']	['FileImport']	[4001]	['Description']	= 'Unitel Mobile CDR';
+$GLOBALS['*arrConstant']	['FileImport']	[4002]	['Constant']	= 'FILE_IMPORT_CDR_UNITEL_S_AND_E';
+$GLOBALS['*arrConstant']	['FileImport']	[4002]	['Description']	= 'Unitel Service & Equipment CDR';
 
 $GLOBALS['*arrConstant']	['FileImport']	[4100]	['Constant']	= 'FILE_IMPORT_CDR_OPTUS_STANDARD';
 $GLOBALS['*arrConstant']	['FileImport']	[4100]	['Description']	= 'AAPT Rejections Report';
@@ -678,7 +691,6 @@ $GLOBALS['*arrConstant']	['Service']	[403]	['Constant']	= 'SERVICE_ARCHIVED';
 $GLOBALS['*arrConstant']	['Service']	[403]	['Description']	= 'Archived';
 $GLOBALS['*arrConstant']	['Service']	[404]	['Constant']	= 'SERVICE_PENDING';
 $GLOBALS['*arrConstant']	['Service']	[404]	['Description']	= 'Pending Activation';
-
 
 
 // Service Line Status
