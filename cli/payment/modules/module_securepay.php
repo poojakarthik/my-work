@@ -108,11 +108,28 @@
  		$mixValue	= $this->_FetchRaw('ReferenceNo');
  		$this->_Append('TXNReference', $mixValue);
  		
- 		// Credit Card Number
- 		if ($mixValue	= $this->_FetchRaw('CCNo'))
+ 		// Transaction Type
+		$this->_Append('OriginId', $this->_FetchRaw('CCNo'));
+ 		switch ((int)$this->_FetchRaw('TransactionType'))
  		{
-	 		$this->_Append('OriginType', PAYMENT_TYPE_CREDIT_CARD);
-	 		$this->_Append('OriginId', $mixValue);
+ 			case 0:			// Credit Card
+		 		$this->_Append('OriginType', PAYMENT_TYPE_CREDIT_CARD);
+		 		$this->_Append('OriginId', $mixValue);
+ 				break;
+ 			
+ 			case 2:			// Batch Payment
+ 				break;
+ 			
+ 			case 15:		// Direct Debit Bank Transfer
+ 				break;
+ 			
+ 			case 16:		// Direct Debit Reject
+ 				break;
+ 				
+ 			case 0:			// IVR (Credit Card)
+		 		$this->_Append('OriginType', PAYMENT_TYPE_CREDIT_CARD);
+		 		$this->_Append('OriginId', $mixValue);
+ 				break;
  		}
  		
  		// PaidOn
