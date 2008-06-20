@@ -7,25 +7,47 @@ require_once("../../flex.require.php");
 if (!$argv[1])
 {
 	CliEcho("Please specify a config file");
-	die;
+	exit(1);
 }
 if (!include_once($argv[1]))
 {
 	CliEcho("Could not find config file '{$argv[1]}'!");
-	die;
+	exit(1);
 }
 
+// Check for Commandline Options specified as '--CommandLineOption=Value'
+$arrCommandLineOptions	= Array();
+foreach ($argv as $intIndex=>$strOption)
+{
+	if ($intIndex > 1 && substr($strOption, 0, 2) === '--')
+	{
+		// This is a valid option, so parse
+		$arrOption	= explode('=', ltrim($strOption, '-'));
+		$strAlias	= $arrOption[0];
+		array_shift($arrOption);
+		$arrCommandLineOptions[$strAlias]	= implode('=', $arrOption);
+	}
+}
+
+// Run Scripts
 $intStartTime	= time();
 CliEcho("Starting Multipart Script '{$argv[1]}' @ ".date("Y-m-d H:i:s", $intStartTime));
 CliEcho('');
-// Run Scripts
 foreach ($arrConfig as $strName=>$arrProperties)
 {
 	CliEcho("Starting SubScript: $strName @ ".date("Y-m-d H:i:s"));
 	
+	// Pass through any commandline options
+	$strCommand	= $arrProperties['Command'];
+	foreach ($arrCommandLineOptions as $strAlias=>$strValue)
+	{
+		$strCommand	= str_replace("<$strAlias>", $strValue, $strCommand);
+	}
+	
+	// Execute Child Script
 	$strWorkingDirectory	= getcwd();
 	chdir($arrProperties['Directory']);
-	$ptrProcess	= popen($arrProperties['Command'], 'r');
+	$ptrProcess	= popen($strCommand, 'r');
 	$arrBlank	= Array();
 	stream_set_blocking($ptrProcess, 0);
 	while (!feof($ptrProcess))
@@ -37,10 +59,22 @@ foreach ($arrConfig as $strName=>$arrProperties)
 			CliEcho(stream_get_contents($ptrProcess), FALSE);
 		}
 	}
-	pclose($ptrProcess);
+	$intReturnCode = pclose($ptrProcess);
+	
 	chdir($strWorkingDirectory);
 	
 	CliEcho("Finished SubScript: $strName @ ".date("Y-m-d H:i:s"));
+	
+	if ($intReturnCode > 0)
+	{
+		// Child Process returned an error code
+		if ($arrProperties['ChildDie'])
+		{
+			// This child has died, so stop the whole script, and pass the error code on
+			CliEcho("\n\nERROR: Child Script '$strName' died with error code '$intReturnCode'\n\n");
+			exit($intReturnCode);
+		}
+	}
 }
 
 $intEndTime		= time();

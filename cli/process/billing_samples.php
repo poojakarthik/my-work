@@ -8,83 +8,74 @@ if (!defined('BACKEND_BASE_PATH'))
 }
 
 //----------------------------------------------------------------------------//
-// BILLING MULTIPART SCRIPT
+// BILLING SAMPLES MULTIPART SCRIPT
 //----------------------------------------------------------------------------//
 $arrConfig = Array();
 
-// Collection
+// Database Copy
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php collection.php';
-$arrSubscript['Directory']			= BACKEND_BASE_PATH.'collection/';
+$arrSubscript['Command']			= 'php mysql_hot_copy.php -e CDRInvoiced InvoiceOuptut InvoiceOutputArchive';
+$arrSubscript['Directory']			= BACKEND_BASE_PATH.'backup_scripts/';
 $arrSubscript['ChildDie']			= TRUE;
-$arrConfig['Collect']				= $arrSubscript;
+$arrConfig['DBCopy']				= $arrSubscript;
 
 // Normalisation
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php normalisation.php -i';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'normalisation/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['Normalise']				= $arrSubscript;
 
 // Rating
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php rating.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'rating/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['Rate']					= $arrSubscript;
 
 // Rate LL S&E Credits
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php rate_ll_se_credits.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'rating/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['RateLLSECredits']		= $arrSubscript;
 
 // Backup Invoice Output
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php backup_invoice_output.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['BackupInvoiceOutput']	= $arrSubscript;
 
 // Check Un-Invoiced Special Charges
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php charges_check_special.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'charges/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['CheckSpecialCharges']	= $arrSubscript;
 
 // Special Charges
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php special_charges.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'charges/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['SpecialCharges']		= $arrSubscript;
 
 // Recurring Charges
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php recurring_charges.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'charges/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['RecurringCharges']		= $arrSubscript;
 
 // Payments
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php payments.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'payment/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['Payments']				= $arrSubscript;
 
 // Check CDR Files
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php cdrcheck.php -v';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
-$arrSubscript['ChildDie']			= TRUE;
 $arrConfig['CDRFileCheck']			= $arrSubscript;		
 
 // Billing Execute
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php billing_execute.php gold';
+$arrSubscript['Command']			= 'php billing_execute.php <BillingMode>';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['BillExecute']			= $arrSubscript;
@@ -98,7 +89,7 @@ $arrConfig['BillPrint']				= $arrSubscript;
 
 // Billing Samples
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php billing_sample_list.php gold';
+$arrSubscript['Command']			= 'php billing_sample_list.php <BillingMode>';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['BillSamples']			= $arrSubscript;
@@ -108,6 +99,6 @@ $arrSubscript = Array();
 $arrSubscript['Command']			= 'php billing_reports.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
 $arrSubscript['ChildDie']			= TRUE;
-$arrConfig['ManagementReports']		= $arrSubscript;
+//$arrConfig['ManagementReports']		= $arrSubscript;
 
 ?>
