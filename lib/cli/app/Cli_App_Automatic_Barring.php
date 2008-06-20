@@ -22,245 +22,134 @@ class Cli_App_Automatic_Barring extends Cli
 				$this->log("Running in test mode. Emails will not be sent to account holders.", TRUE);
 			}
 
-			// Convert effective date to unix timestamp for start of day
-			$day = intval(date('d', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
-			$month = intval(date('m', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
-			$year = intval(date('Y', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
-			$todayTimestamp = mktime(0, 0, 0, $month, $day, $year, FALSE);
-
-			$arrNoticeTypes = array(
-				LETTER_TYPE_OVERDUE,
-				LETTER_TYPE_SUSPENSION,
-				LETTER_TYPE_FINAL_DEMAND);
-
-			$outputs = array();
+			$nowTimestamp = $arrArgs[self::SWITCH_EFFECTIVE_DATE];
 
 			$errors = 0;
 
-			$arrSummary = array();
+			$barSummary = array();
+			$unbarSummary = array();
 
 			$arrGeneralErrors = array();
 
-			$invcoieRunAutoFields = array();
+			$autobarInvoiceRuns = array();
 
-			foreach($arrNoticeTypes as $intNoticeType)
+
+
+			$mixResult = ListAutomaticBarringAccounts($nowTimestamp);
+
+			if (!is_array($mixResult))
 			{
-				$mixResult = GenerateLatePaymentNotices($intNoticeType, $todayTimestamp);
-				$strLetterType = GetConstantDescription($intNoticeType, "LetterType");
-
-				// Notices were generated iff the results contain an 
-				if ($mixResult === FALSE)
+				$message = "ERROR: Failed to find accounts to bar automatically.";
+				$this->log($message, 0);
+				$arrGeneralErrors[] = $message;
+				$errors++;
+			}
+			else
+			{
+				foreach($mixResult as $account)
 				{
-					$message = "ERROR: Generating " . $strLetterType . "s failed, unexpectedly";
-					$this->log($message, 0);
-					$arrGeneralErrors[] = $message;
-					$errors++;
-				}
-				else
-				{
-					$outputs[$strLetterType]['success'] = $mixResult['Successful'];
-					$outputs[$strLetterType]['failure'] = $mixResult['Failed'];
-					if ($mixResult['Failed'])
+					$accountId 			= intval($account['AccountId']);
+					$customerGroupId 	= intval($account['CustomerGroupId']);
+					$invoiceRun 		= $account['InvoiceRun'];
+					$customerGroupName 	= $account['CustomerGroupName'];
+					$amountOverdue 		= $account['Overdue'];
+					$bolCanAutomate 	= ($account['CanAutomate'] == 1);
+
+					if (!array_key_exists($invoiceRun, $autobarInvoiceRuns))
 					{
-						$errors++;
+						$autobarInvoiceRuns[$invoiceRun] = 0;
 					}
-					$this->log("{$strLetterType}s successfully generated  : {$mixResult['Successful']}");
-					$this->log("{$strLetterType}s that failed to generate : {$mixResult['Failed']}");
+					$autobarInvoiceRuns[$invoiceRun]++;
 
-
-					$newAutoInvAction = NULL;
-					$autorunField = NULL;
-					// Take action appropriate for the notice type
-					switch ($intNoticeType)
+					if (!array_key_exists($customerGroupName, $barSummary))
 					{
-						case LETTER_TYPE_OVERDUE:
-							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE;
-							$autorunField = 'automatic_overdue_datetime';
-							break;
-						case LETTER_TYPE_SUSPENSION:
-							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE;
-							$autorunField = 'automatic_suspension_datetime';
-							break;
-						case LETTER_TYPE_FINAL_DEMAND:
-							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND;
-							$autorunField = 'automatic_final_demand_datetime';
-							break;
-						default:
-							continue;
+						$barSummary[$customerGroupName] = array('manual' => array(), 'auto' => array(), 'failed' => array());
 					}
 
-					if (!array_key_exists($autorunField, $invcoieRunAutoFields))
+					if ($bolCanAutomate)
 					{
-						$invcoieRunAutoFields[$autorunField] = array();
+						try
+						{
+							BarAccount($accountId, TRUE);
+							$barSummary[$customerGroupName]['auto'][] = $accountId;
+						}
+						catch (Exception $e)
+						{
+							$message = "ERROR: Failed to bar account $accountId for customer group $customerGroupName ($customerGroupId).\n" . $e->getMessage();
+							$this->log($message, TRUE);
+							$barSummary[$customerGroupName]['failed'][$accountId] = $message;
+							$errors++;
+						}
 					}
-
-					// We now need to email/print each of the notices that have been generated
-					foreach($mixResult['Details'] as $arrDetails)
+					else
 					{
-						$intCustGrp = $arrDetails['Account']['CustomerGroup'];
-						$strCustGroupName = $arrDetails['Account']['CustomerGroupName'];
-						$intAccountId = $arrDetails['Account']['AccountId'];
-						$xmlFilePath = $arrDetails['XMLFilePath'];
-						$intAutoInvoiceAction = $arrDetails['Account']['automatic_invoice_action'];
-
-						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
-						if (!array_key_exists($intCustGrp, $arrSummary))
-						{
-							$arrSummary[$strCustGroupName] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['emails'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['prints'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['errors'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = 
-								realpath(FILES_BASE_PATH . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $pathDate . DIRECTORY_SEPARATOR . $custGroupName);
-						}
-
-						$invoiceRun = $arrDetails['Account']['InvoiceRun'];
-						if (!array_key_exists($invoiceRun, $invcoieRunAutoFields[$autorunField]))
-						{
-							$invcoieRunAutoFields[$autorunField][$invoiceRun] = 0;
-						}
-						$invcoieRunAutoFields[$autorunField][$invoiceRun]++;
-
-						switch ($arrDetails['Account']['DeliveryMethod'])
-						{
-							case BILLING_METHOD_POST:
-								// We need to generate the pdf for the XML and save it to the 
-								// files/type/pdf/date/cust_group/account.pdf storage
-								// Need to add a note of this to the email
-								$this->log("Generating print PDF $strLetterType for account ". $arrDetails['Account']['AccountId']);
-								$pdfContent = $this->getPDFContent($intCustGrp, time(), $intNoticeType, $xmlFilePath, 'PRINT');
-
-								// If the PDF generation failed.
-								if (!$pdfContent)
-								{
-									$error = $this->getCachedError();
-									$message = "Failed to generate PDF $strLetterType for " . $intAccountId . "\n" . $error;
-									$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
-									$errors++;
-									$this->log($message, TRUE);
-								}
-								// We have a PDF, so we should store it for sending to the printers
-								else
-								{
-									$this->log("Storing PDF ($intNoticeType) for account ". $intAccountId);
-									$custGroupName = strtolower(str_replace(' ', '_', $arrDetails['Account']['CustomerGroupName']));
-
-									$outputDirectory = $arrSummary[$strCustGroupName][$strLetterType]['output_directory'];
-
-									if (!file_exists($outputDirectory))
-									{
-										RecursiveMkdir($outputDirectory);
-									}
-
-									// WIP This bit needs error handling
-									$targetFile = $outputDirectory . DIRECTORY_SEPARATOR . $intAccountId . '.pdf';
-									$file = fopen($targetFile, 'w');
-									fwrite($file, $pdfContent);
-									fclose($file);
-
-									$arrSummary[$strCustGroupName][$strLetterType]['prints'][] = $intAccountId;
-
-									// We need to log the fact that we've created it, by updating the account automatic_invoice_action
-									$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType stored for printing in $outputDirectory");
-									if ($outcome !== TRUE)
-									{
-										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-										$errors++;
-									}
-								}
-
-								break;
-
-							case BILLING_METHOD_EMAIL:
-								// We can safely go ahead and generate this pdf.
-								$this->log("Generating email PDF $strLetterType for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
-								$pdfContent = $this->getPDFContent($intCustGrp, time(), $intNoticeType, $xmlFilePath, 'EMAIL');
-
-								// If the PDF generation failed.
-								if (!$pdfContent)
-								{
-									$error = $this->getCachedError();
-									$message = "Failed to generate PDF $strLetterType for " . $intAccountId . "\n" . $error;
-									$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
-									$errors++;
-									$this->log($message, TRUE);
-								}
-								// We have a PDF, so we should email it
-								else
-								{
-									$this->log("Emailing $strLetterType for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
-									if ($arrArgs[self::SWITCH_TEST_RUN])
-									{
-										$this->log("...NOT!!!");
-									}
-									$custGroupName = $arrDetails['Account']['CustomerGroupName'];
-									$fileName = str_replace(' ', '_', $strLetterType) . '.pdf';
-									$emailTo = $arrDetails['Account']['Email'];
-									$emailFrom = $arrDetails['Account']['EmailFrom'];
-									$subject = "$custGroupName $strLetterType for Account $intAccountId";
-
-									$name = trim($arrDetails['Account']['FirstName']);
-
-									$a = 'a';
-									if (strpos('aeiou', strtolower($strLetterType[0])) !== FALSE)
-									{
-										$a = 'an';
-									}
-
-				 					$strContent = "Dear $name,\r\n\r\n" .
-				 								  "Please find attached $a $strLetterType from $custGroupName.\r\n\r\n" .
-				 								  "Regards\r\n\r\n" .
-				 								  "The Team at $custGroupName";
-
-									if (!$arrArgs[self::SWITCH_TEST_RUN])
-									{
-										$outcome = $this->sendEmail($emailFrom, $emailTo, $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
-									}
-									else
-									{
-										$outcome = TRUE;
-										//$outcome = $this->sendEmail($emailFrom, "billing-notifications@yellowbilling.com.au", $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
-									}
-
-									if ($outcome === TRUE)
-									{
-										$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
-
-										// We need to log the fact that we've sent it, by updating the account automatic_invoice_action
-										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType emailed to $name ($emailTo)");
-										if ($outcome !== TRUE)
-										{
-											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-											$errors++;
-										}
-									}
-									else
-									{
-										// We need to log the fact that the sending of the email failed
-										$message = "Failed to email $strLetterType PDF for account " . $intAccountId . ' to ' . $emailTo . ($outcome ? "\n$outcome" : '');
-										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
-										$errors++;
-										$this->log($message, TRUE);
-									}
-
-								}
-								break;
-						}
+						$barSummary[$customerGroupName]['manual'][] = $accountId;
 					}
 				}
 			}
 
-			foreach ($invcoieRunAutoFields as $autoField => $invoiceRunCounts)
+
+			foreach ($autobarInvoiceRuns as $invoiceRun => $invoiceRunCounts)
 			{
-				foreach ($invoiceRunCounts as $invoiceRun => $count)
+				$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, 'automatic_bar_datetime');
+				if ($result !== TRUE)
 				{
-					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, $autoField);
-					if ($result !== TRUE)
+					$arrGeneralErrors[] = $result;
+					$this->log($result, TRUE);
+				}
+			}
+
+
+
+
+			$mixResult = ListAutomaticUnbarringAccounts($nowTimestamp);
+
+			if (!is_array($mixResult))
+			{
+				$message = "ERROR: Failed to find accounts to unbar automatically.";
+				$this->log($message, 0);
+				$arrGeneralErrors[] = $message;
+				$errors++;
+			}
+			else
+			{
+				foreach($mixResult as $account)
+				{
+					$accountId 			= intval($account['AccountId']);
+					$customerGroupId 	= intval($account['CustomerGroupId']);
+					$customerGroupName 	= $account['CustomerGroupName'];
+					$amountOverdue 		= $account['Overdue'];
+					$bolCanAutomate 	= ($account['CanAutomate'] == 1);
+
+					if (!array_key_exists($customerGroupName, $unbarSummary))
 					{
-						$arrGeneralErrors[] = $result;
+						$unbarSummary[$customerGroupName] = array('manual' => array(), 'auto' => array(), 'failed' => array());
+					}
+
+					if ($bolCanAutomate)
+					{
+						try
+						{
+							UnbarAccount($accountId, TRUE);
+							$unbarSummary[$customerGroupName]['auto'][] = $accountId;
+						}
+						catch (Exception $e)
+						{
+							$message = "ERROR: Failed to unbar account $accountId for customer group $customerGroupName ($customerGroupId).\n" . $e->getMessage();
+							$this->log($message, TRUE);
+							$unbarSummary[$customerGroupName]['failed'][$accountId] = $message;
+							$errors++;
+						}
+					}
+					else
+					{
+						$unbarSummary[$customerGroupName]['manual'][] = $accountId;
 					}
 				}
 			}
+
+
+
 
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
@@ -296,10 +185,10 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 			$report[] = "";
 			$report[] = "";
-			if (!empty($arrSummary))
+			if (!empty($unbarSummary))
 			{
 				$report[] = "Breakdown of late notice generation by customer group (for successfully generated XML files only): -";
-				foreach ($arrSummary as $custGroup => $letterTypeSummarries)
+				foreach ($unbarSummary as $custGroup => $letterTypeSummarries)
 				{
 					$report[] = "";
 					$report[] = "";
