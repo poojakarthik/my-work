@@ -236,6 +236,8 @@
 			
 			case 'silver':
 			case 'bronze':
+			case 'internalinitial':
+			case 'internalfinal':
 				$this->_strInvoiceRun	= $strInvoiceRun.'-'.strtolower($strMode);
 				break;
 			
