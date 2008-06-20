@@ -2737,6 +2737,13 @@ function ListPDFSamples($intAccountId)
  */ 
 function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun)
 {
+	$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}.xml";
+	$arrPDFs = glob($strGlob);
+	if ($arrPDFs && count($arrPDFs))
+	{
+		return $arrPDFs[0];
+	}
+
 	if ($intInvoiceId)
 	{
 		$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml";
@@ -2746,31 +2753,34 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $st
 			return $arrPDFs[0];
 		}
 	}
-	else
+
+	$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}.xml.bz2";
+	$arrPDFs = glob($strGlob);
+	if ($arrPDFs && count($arrPDFs))
 	{
-		$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}.xml";
+		return $arrPDFs[0];
+	}
+
+	if ($intInvoiceId)
+	{
+		$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
 		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs))
 		{
 			return $arrPDFs[0];
 		}
-		return FALSE;
 	}
 
-	$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
-	$arrPDFs = glob($strGlob);
-	if ($arrPDFs && count($arrPDFs))
+	if ($intInvoiceId)
 	{
-		return $arrPDFs[0];
+		$strGlob = PATH_INVOICE_PDFS ."pdf/$intYear/$intMonth/{$intAccountId}_{$intInvoiceId}.pdf";
+		$arrPDFs = glob($strGlob);
+		if ($arrPDFs && count($arrPDFs))
+		{
+			return $arrPDFs[0];
+		}
 	}
 
-	$strGlob = PATH_INVOICE_PDFS ."pdf/$intYear/$intMonth/{$intAccountId}_{$intInvoiceId}.pdf";
-	$arrPDFs = glob($strGlob);
-
-	if ($arrPDFs && count($arrPDFs))
-	{
-		return $arrPDFs[0];
-	}
 	return FALSE;
 }
 
@@ -3467,41 +3477,102 @@ function GetCurrentTimeForMySQL()
 	return date("H:i:s", strtotime(GetCurrentDateAndTimeForMySQL()));
 }
 
-/*
-function ListAutomaticBarringAccounts($intTime)
+
+function ListAutomaticUnbarringAccounts($intTime)
 {
-	$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED);
-	$arrApplicableAccountStatuses = implode(", ", $arrApplicableAccountStatuses);
+	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
 
 	$arrColumns = array(
 							'AccountId'				=> "Invoice.Account",
 							'CustomerGroup'			=> "Account.CustomerGroup",
 							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
+							'CanAutomate'			=> "CASE WHEN COUNT(DISTINCT(Service.Id)) = EnabledServices.OKServices THEN 1 ELSE 0 END",
 	);
 
-	$strTables	= "InvoiceRun 
-					JOIN Invoice 
-					  ON InvoiceRun.automatic_bar_datetime IS NULL
-					 AND InvoiceRun.scheduled_automatic_bar_datetime IS NOT NULL
-					 AND UNIX_TIMESTAMP(InvoiceRun.scheduled_automatic_bar_datetime) <= $intTime
-					 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun 
-					JOIN Account 
-					  ON Invoice.Account = Account.Id
-					 AND Account.Archived IN ($arrApplicableAccountStatuses) 
-					 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW())
-					JOIN credit_control_status 
-					  ON Account.credit_control_status = credit_control_status.id
-					 AND credit_control_status.can_bar = 1
-					JOIN account_status 
-					  ON Account.Archived = account_status.id
-					 AND account_status.can_bar = 1
-					JOIN CustomerGroup 
-					  ON Account.CustomerGroup = CustomerGroup.Id
-					JOIN (
-						SELECTService 
-					  ON Service.Account = Account.Id
-					JOIN Carrier 
-					  ON Carrier.Id = Service.Carrier
+	$unbarringProvisioningTypeName = 'xxx';
+
+	$strTables = "
+			 Invoice
+		JOIN Account 
+		  ON Invoice.Account = Account.Id
+		 AND Account.Archived IN ($strApplicableAccountStatuses) 
+		JOIN automatic_barring_status
+		  ON automatic_barring_status.name = 'Barred'
+		 AND Account.automatic_barring_status = automatic_barring_status.id
+		JOIN Service 
+		  ON Account.Id = Service.Account
+		LEFT OUTER JOIN (
+				SELECT COUNT(DISTINCT(Service.Id)) OKServices, Service.Account Account
+				FROM Service
+				JOIN CarrierModule 
+				  ON Service.Carrier = CarrierModule.Carrier
+				JOIN carrier_module_provisioning_support 
+				  ON carrier_module_provisioning_support.carrier_module_id = CarrierModule.Id
+				JOIN active_status 
+				  ON active_status.description = 'Active'
+				 AND active_status.active = carrier_module_provisioning_support.status_id
+				JOIN provisioning_type
+				  ON provisioning_type.name = '$unbarringProvisioningTypeName' 
+				 AND provisioning_type.outbound = 1 
+				 AND provisioning_type.id = carrier_module_provisioning_support.provisioning_type_id 
+				GROUP BY Service.Account
+			) EnabledServices
+		  ON EnabledServices.Account = Account.Id
+	";
+}
+
+
+function ListAutomaticBarringAccounts($intTime)
+{
+	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
+
+	$arrColumns = array(
+							'AccountId'				=> "Invoice.Account",
+							'CustomerGroup'			=> "Account.CustomerGroup",
+							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
+							'CanAutomate'			=> "CASE WHEN COUNT(DISTINCT(Service.Id)) = EnabledServices.OKServices THEN 1 ELSE 0 END",
+	);
+
+	$barringProvisioningTypeName = 'xxx';
+
+	$strTables	= "
+			 InvoiceRun 
+		JOIN Invoice 
+		  ON InvoiceRun.automatic_bar_datetime IS NULL
+		 AND InvoiceRun.scheduled_automatic_bar_datetime IS NOT NULL
+		 AND UNIX_TIMESTAMP(InvoiceRun.scheduled_automatic_bar_datetime) <= $intTime
+		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun 
+		JOIN Account 
+		  ON Invoice.Account = Account.Id
+		 AND Account.Archived IN ($strApplicableAccountStatuses) 
+		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW())
+		JOIN credit_control_status 
+		  ON Account.credit_control_status = credit_control_status.id
+		 AND credit_control_status.can_bar = 1
+		JOIN account_status 
+		  ON Account.Archived = account_status.id
+		 AND account_status.can_bar = 1
+		JOIN CustomerGroup 
+		  ON Account.CustomerGroup = CustomerGroup.Id
+		JOIN Service 
+		  ON Account.Id = Service.Account
+		LEFT OUTER JOIN (
+				SELECT COUNT(DISTINCT(Service.Id)) OKServices, Service.Account Account
+				FROM Service
+				JOIN CarrierModule 
+				  ON Service.Carrier = CarrierModule.Carrier
+				JOIN carrier_module_provisioning_support 
+				  ON carrier_module_provisioning_support.carrier_module_id = CarrierModule.Id
+				JOIN active_status 
+				  ON active_status.description = 'Active'
+				 AND active_status.active = carrier_module_provisioning_support.status_id
+				JOIN provisioning_type
+				  ON provisioning_type.name = '$barringProvisioningTypeName' 
+				 AND provisioning_type.outbound = 1 
+				 AND provisioning_type.id = carrier_module_provisioning_support.provisioning_type_id 
+				GROUP BY Service.Account
+			) EnabledServices
+		  ON EnabledServices.Account = Account.Id
 		";
 
 	$strWhere	= "";
@@ -3515,7 +3586,7 @@ function ListAutomaticBarringAccounts($intTime)
 	$mxdReturn = $selOverdue->Execute();
 	return $mxdReturn === FALSE ? $mxdReturn : $selOverdue->FetchAll();
 }
-*/
+
 
 function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 {
@@ -3593,24 +3664,25 @@ function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 							'CreatedOn'				=> "Invoice.CreatedOn",
 							'TotalOutstanding'		=> "SUM(Invoice.Balance)");
 
-	$strTables	= "InvoiceRun 
-					JOIN Invoice 
-					  ON InvoiceRun.$atrInvoiceRunDateField IS NULL $strInvoiceRunPreCondition $strBillingDateClause
-					 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun 
-					JOIN Account 
-					  ON Invoice.Account = Account.Id $strNoticeTypePreCondition
-					 AND Account.Archived IN ($arrApplicableAccountStatuses) 
-					 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW())
-					JOIN credit_control_status 
-					  ON Account.credit_control_status = credit_control_status.id
-					 AND credit_control_status.send_late_notice = 1
-					JOIN account_status 
-					  ON Account.Archived = account_status.id
-					 AND account_status.send_late_notice = 1
-					JOIN Contact 
-					  ON Account.PrimaryContact = Contact.Id 
-					JOIN CustomerGroup 
-					  ON Account.CustomerGroup = CustomerGroup.Id";
+	$strTables	= "
+			 InvoiceRun 
+		JOIN Invoice 
+		  ON InvoiceRun.$atrInvoiceRunDateField IS NULL $strInvoiceRunPreCondition $strBillingDateClause
+		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun 
+		JOIN Account 
+		  ON Invoice.Account = Account.Id $strNoticeTypePreCondition
+		 AND Account.Archived IN ($arrApplicableAccountStatuses) 
+		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW())
+		JOIN credit_control_status 
+		  ON Account.credit_control_status = credit_control_status.id
+		 AND credit_control_status.send_late_notice = 1
+		JOIN account_status 
+		  ON Account.Archived = account_status.id
+		 AND account_status.send_late_notice = 1
+		JOIN Contact 
+		  ON Account.PrimaryContact = Contact.Id 
+		JOIN CustomerGroup 
+		  ON Account.CustomerGroup = CustomerGroup.Id";
 
 	$strWhere	= "";
 
