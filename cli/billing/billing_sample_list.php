@@ -20,18 +20,29 @@ VixenRequire('lib/framework/remote_copy.php');
 $appBilling = new ApplicationBilling($arrConfig);
 
 // Get Command-line Params
+$bolInternal	= FALSE;
 switch (strtoupper(trim($argv[1])))
 {
 	case 'SILVER':
-		$strMode	= "Silver";
+		$strMode		= "Silver";
 		break;
 	
 	case 'BRONZE':
-		$strMode	= "Bronze";
+		$strMode		= "Bronze";
 		break;
 	
 	case 'GOLD':
-		$strMode	= "Gold";
+		$strMode		= "Gold";
+		break;
+		
+	case 'INTERNALINITIAL':
+		$bolInternal	= TRUE;
+		$strMode		= "Initial Internal";
+		break;
+		
+	case 'INTERNALFINAL':
+		$bolInternal	= TRUE;
+		$strMode		= "Final Internal";
 		break;
 	
 	default:
@@ -51,7 +62,8 @@ while ($arrAccount = $selSampleAccounts->Fetch())
 }
 
 $strTo		= "turdminator@hotmail.com, rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au";
-$strContent	= implode("<br/>\n", $arrAccounts);
+$strContent	= ($bolInternal) ? "NOTE: THIS IS AN INTERNAL SAMPLE RUN -- DO NOT FORWARD TO CUSTOMERS <br/>\n<br/>\n" : "";
+$strContent	.= implode("<br/>\n", $arrAccounts);
 SendEmail($strTo, date("F", strtotime("-2 days", time()))." $strMode Samples", date("F", strtotime("-2 days", time()))." $strMode Samples<br>\n<br>\n".$strContent);
 
 ?>
