@@ -1619,14 +1619,14 @@ function UnmaskShortDate ($strShortDate)
  * 
  * Writes a string to stdout
  *
- * @param	string	$strOutput				The string to write to stdout
- * @param	boolean	$bolNewLine	optional	Whether to automatically add a new line character
+ * @param	string	$strOutput		[optional]	The string to write to stdout; default: ''
+ * @param	boolean	$bolNewLine		[optional]	Whether to automatically add a new line character; default: TRUE
  *
- * @return	string							The string written to stdout
+ * @return	string								The string written to stdout
  * 
  * @function
  */
-function CliEcho($strOutput, $bolNewLine=TRUE)
+function CliEcho($strOutput='', $bolNewLine=TRUE)
 {
 	if (!$GLOBALS['**stdout'])
 	{
