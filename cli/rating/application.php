@@ -254,7 +254,7 @@
 												$strWhere,
 												"(RateGroup.Fleet = Rate.Fleet) DESC, ServiceRateGroup.StartDatetime DESC");
 		
-		$this->_selCDRTotalDetails	= new StatementSelect("Service LEFT JOIN CDR ON Service.Id = CDR.Service", "cdr_count, cdr_amount, discount_start_datetime, COUNT(CDR.Id) AS new_cdr_count, SUM(CDR.Charge) AS new_cdr_amount", "Service.Id = <Service> AND CDR.Credit = 0 AND CDR.Status = 150", NULL, NULL, "Service.Id");
+		$this->_selCDRTotalDetails	= new StatementSelect("Service LEFT JOIN CDR ON (Service.Id = CDR.Service AND CDR.Credit = 0 AN CDR.Status = 150)", "cdr_count, cdr_amount, discount_start_datetime, COUNT(CDR.Id) AS new_cdr_count, SUM(CDR.Charge) AS new_cdr_amount", "Service.Id = <Service> AND CDR.Credit = 0 AND CDR.Status = 150", NULL, NULL, "Service.Id");
 		
 		$arrCols			= Array();
 		$arrCols['Status']	= CDR_RERATE;
