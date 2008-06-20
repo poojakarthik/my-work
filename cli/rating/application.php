@@ -268,7 +268,7 @@
 		
 		$arrCols	= Array();
 		$arrCols['Status']				= CDR_RERATE;
-		$this->_updReRateDiscountCDRs	= new StatementSelect(	"CDR",
+		$this->_updReRateDiscountCDRs	= new StatementUpdate(	"CDR",
 														"Service = <Service> AND Status = 150 AND StartDatetime >= <StartDatetime>",
 														$arrCols);
 		
