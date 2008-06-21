@@ -1791,7 +1791,7 @@ function VixenRequire($strFilename)
  */
 function GetVixenBase()
 {
-	// Determin base dir
+	// Determine base dir
 	if (!array_key_exists('**strVixenBasePath', $GLOBALS) || !$GLOBALS['**strVixenBasePath'])
 	{
 		if (defined('FLEX_BASE_PATH'))
@@ -1803,29 +1803,6 @@ function GetVixenBase()
 			// DIE
 			echo "FLEX_BASE_PATH is not defined!\n";
 			die;
-			
-			// Interpret current dir
-			$arrPath = explode('/', getcwd());
-			$strVixenRoot	= "/";
-			$strCurrent		= "";
-			foreach ($arrPath as $strDir)
-			{
-				$strCurrent .= "$strDir/";
-				if ($strDir === "vixen")
-				{
-					$strVixenRoot = $strCurrent;
-				}
-			}
-			
-			// Set path
-			if ($strVixenRoot !== '/')
-			{
-				$GLOBALS['**strVixenBasePath'] = $strVixenRoot;
-			}
-			else
-			{
-				throw new Exception("Cannot find viXen base path");
-			}
 		}
 	}
 	return $GLOBALS['**strVixenBasePath'];
