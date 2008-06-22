@@ -1,5 +1,7 @@
 <?php
 
+define('MYSQL_HOT_COPY_DEBUG'			, TRUE);
+
 // we use the actual tables not the db def in case it is out of date
 require_once('../../flex.require.php');
 
@@ -87,7 +89,6 @@ foreach($arrTables AS $strTable)
 	if (strpos($strTable, '_') !== FALSE)
 	{
 		// tables with an '_' are temporary backups
-		//CliEcho("Skipping Backup Table\t: $strTable");
 		CliEcho(str_pad("[  SKIP  ]", 25, ' ', STR_PAD_LEFT));
 	}
 	elseif ($arrSpecifiedTables[$strTable])
@@ -112,8 +113,6 @@ foreach($arrTables AS $strTable)
 	}
 	elseif (!$intMode || ($intMode == MODE_EXCLUDE))
 	{
-		//CliEcho("Copying table\t\t: $strTable");
-		
 		$GLOBALS['fwkFramework']->StartWatch();
 		
 		// copy a table
@@ -132,7 +131,7 @@ foreach($arrTables AS $strTable)
 }
 
 $intTotalTime	= (int)$GLOBALS['fwkFramework']->Uptime();
-CliEcho("\n * vixenworking Hot Copy completed in {$intTotalTime}s\n");
+CliEcho("\n * flex Hot Copy completed in {$intTotalTime}s\n");
 
 // Exit with error code 0
 exit;
@@ -143,22 +142,42 @@ exit;
 // COPY TABLE
 function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB)
 {
-	$qryQuery	= new Query();
-	if ($qryQuery->Execute("CREATE TABLE $strDestinationDB.$strTable LIKE $strSourceDB.$strTable") === FALSE)
+	if (defined('MYSQL_HOT_COPY_DEBUG') && MYSQL_HOT_COPY_DEBUG)
 	{
-		CliEcho("ERROR: Unable to copy structure from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
-		exit(3);
+		// Debug mode, so don't perform the copy
+		return TRUE;
 	}
 	else
 	{
-		if ($qryQuery->Execute("INSERT INTO $strDestinationDB.$strTable SELECT * FROM $strSourceDB.$strTable") === FALSE)
+		$qryQuery	= new Query();
+		
+		// Drop Existing Table
+		if ($qryQuery->Execute("DROP TABLE IF EXISTS $strDestinationDB.$strTable"))
 		{
-			CliEcho("ERROR: Unable to copy data from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
-			exit(4);
+			// Replace with new Table
+			if ($qryQuery->Execute("CREATE TABLE $strDestinationDB.$strTable LIKE $strSourceDB.$strTable") === FALSE)
+			{
+				CliEcho("ERROR: Unable to copy structure from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
+				exit(3);
+			}
+			else
+			{
+				// Copy data
+				if ($qryQuery->Execute("INSERT INTO $strDestinationDB.$strTable SELECT * FROM $strSourceDB.$strTable") === FALSE)
+				{
+					CliEcho("ERROR: Unable to copy data from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
+					exit(4);
+				}
+				else
+				{
+					return TRUE;
+				}
+			}
 		}
 		else
 		{
-			return TRUE;
+			CliEcho("ERROR: Unable to drop existing table $strDestinationDB.$strTable -- ".$qryQuery->Error());
+			exit(5);
 		}
 	}
 }
