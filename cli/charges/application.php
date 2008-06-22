@@ -161,6 +161,7 @@
 				$this->_rptRecurringChargesReport->AddMessageVariables(MSG_LINE, Array('<Id>' => $arrCharge['Id']), FALSE);
 				
 				// Calculate partial charge if needed
+				// -HOHOHO- Q: Shouldn't this check if the TotalCharged + RecursionCharge _<_ MinCharge, rather than _>_?
 				if (!$arrCharge['Continuable'] && ($arrCharge['TotalCharged'] + $arrCharge['RecursionCharge']) > $arrCharge['MinCharge'])
 				{
 					// final (partial) charge for a non-continuable charge
@@ -241,7 +242,7 @@
 					AND Status			!= CHARGE_INVOICED
 					LIMIT 1
 					*/
-					//$intNotUnique =
+					//$intNotUnique = // Note: It looks like this is referred to as $intNonUnique elsewhere!!!
 					if ($intNotUnique)
 					{
 						// update RecuringCharge Table
