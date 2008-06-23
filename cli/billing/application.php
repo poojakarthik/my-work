@@ -378,7 +378,6 @@
 			$strExtensionsQuery .= " AND ServiceRateGroup.Id = (SELECT SRG.Id FROM ServiceRateGroup SRG WHERE NOW() BETWEEN SRG.StartDatetime AND SRG.EndDatetime AND SRG.Service = CDR.Service ORDER BY CreatedOn DESC LIMIT 1) ";
 			$strExtensionsQuery .= " GROUP BY Service, FNN, RecordType";
 			
-			/* TODO in MAY: ServiceTypeTotal Generation moved to RATING? */
 			// run query
 			$qryServiceTypeTotal = new Query();
 			$qryServiceTypeTotal->Execute($strExtensionsQuery);
@@ -518,7 +517,8 @@
 					$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
 					$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
-					die;
+					CliEcho("\n".__LINE__." >> Unable to Mark Credits & Debits for Account #{$arrAccount['Id']}");
+					exit(1);
 				}
 				else
 				{
@@ -660,14 +660,17 @@
 				{
 					if ($mixResult === FALSE)
 					{
-
+						CliEcho("\n".__LINE__." >> Unable to Calculate Service Debit & Credit Totals Account #{$arrAccount['Id']}::{$arrService['FNN']}");
+						CliEcho($this->selDebitsCredits->Error());
+						exit(1);
 					}
 					
 					// Incorrect number of rows returned or an error
 					$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 					$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
-					die;
+					CliEcho("\n".__LINE__." >> Unable to Calculate Service Debit & Credit Totals Account #{$arrAccount['Id']}::{$arrService['FNN']}");
+					exit(1);
 				}
 				else
 				{
@@ -714,7 +717,8 @@
 					$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 					$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
-					die;
+					CliEcho("\n".__LINE__." >> Unable to add Service Total for Account #{$arrAccount['Id']}::{$arrService['FNN']}");
+					exit(1);
 				}
 				//$this->_rptBillingReport->AddMessage(MSG_OK);
 				
@@ -739,7 +743,8 @@
 				$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
 				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED);
-				die;
+				CliEcho("\n".__LINE__." >> Unable to Calculate Account Debits and Credits for Account #{$arrAccount['Id']}");
+				exit(1);
 			}
 			else
 			{
@@ -770,7 +775,7 @@
 				$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Cannot retrieve Account Balance");
 				$this->intFailed++;
-				die;
+				CliEcho("\n".__LINE__." >> Find Account Balance for Account #{$arrAccount['Id']}");
 			}
 			
 			// calculate initial invoice total and total owing
@@ -858,7 +863,7 @@
 					}
 					break;
 			}
-						
+			
 			/*if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL || $arrAccount['BillingMethod'] == BILLING_METHOD_EMAIL)
 			{
 				$intDeliveryMethod	= $arrAccount['BillingMethod'];
@@ -888,7 +893,8 @@
 				$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Insert failed");
 				$this->intFailed++;
-				die;
+				CliEcho("\n".__LINE__." >> Unable to add Temporary Invoice for Account #{$arrAccount['Id']}");
+				exit(1);
 			}
 			
 			// work out the bill printing target
