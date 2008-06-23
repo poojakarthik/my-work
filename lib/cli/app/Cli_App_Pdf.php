@@ -135,7 +135,7 @@ class Cli_App_Pdf extends Cli
 				$parts = array();
 				preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $fileContents, $parts);
 
-				if (count($parts) != 3 || count($parts[1]) != 4 || count($parts[2]) != 4)
+				if (count($parts) != 3 || count($parts[1]) != 5 || count($parts[2]) != 5)
 				{
 					var_dump($parts);
 					throw new Exception("Unable to identify document properties: $strSource");
