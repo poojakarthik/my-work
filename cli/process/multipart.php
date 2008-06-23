@@ -29,6 +29,37 @@ foreach ($argv as $intIndex=>$strOption)
 	}
 }
 
+// Make sure we've satisfied all of our required parameters
+$arrMissing	= Array();
+foreach ($arrConfig as $strName=>$arrProperties)
+{
+	// Get the list of parameters for this script
+	$arrAliases	= Array();
+	if (preg_match_all("/<([\d\w]+)>/misU", $arrProperties['Command'], $arrAliases, PREG_SET_ORDER))
+	{
+		// Ensure this parameter has been provided
+		foreach ($arrAliases as $arrAlias)
+		{
+			if (!array_key_exists($arrAlias[1], $arrCommandLineOptions))
+			{
+				// This parameter is missing
+				$arrMissing[]	= $arrAlias[1];
+			}
+		}
+	}
+}
+
+if (count($arrMissing))
+{
+	CliEcho("Unable to execute, as the following parameters are missing:\n");
+	foreach ($arrMissing as $strParameter)
+	{
+		CliEcho("\t * '$strParameter'");
+	}
+	CliEcho();
+	exit(1);
+}
+
 // Run Scripts
 $intStartTime	= time();
 CliEcho("Starting Multipart Script '{$argv[1]}' @ ".date("Y-m-d H:i:s", $intStartTime));
