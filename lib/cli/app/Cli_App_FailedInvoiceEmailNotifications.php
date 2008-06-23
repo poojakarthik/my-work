@@ -30,6 +30,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			@$arrEmailAddresses = array_unique($matches[1]);
 			if (!$arrEmailAddresses || !count($arrEmailAddresses))
 			{
+				mail('holiver@yellobilling.com.au', 'mail.log', $log, array('From' => 'bne-feprod-01@yellowbilling.com.au'));
 				$this->log('No bounced messages detected.');
 				return 0;
 			}
