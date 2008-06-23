@@ -41,7 +41,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				$this->log('No bounced messages detected.');
 				return 0;
 			}
-			$this->log(count($arrEmailAddresses) . ' bounced email address detected.');
+			$this->log(count($arrEmailAddresses) . ' different failed email address detected.');
 
 			// Escape the email address strings to prevent sql injection & prevent errors - this is a bit hacky!
 			$func = function_exists('mysql_escape_string') ? 'mysql_escape_string' : (function_exists('mysqli_escape_string') ? 'mysqli_escape_string' : 'pg_escape_string');
@@ -69,12 +69,12 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 
 			if (!$intNrCustGroups)
 			{
-				$this->log('No customer groups were related.');
+				$this->log('None of the failed emails related to the customer groups.');
 				return 0;
 			}
 			else
 			{
-				$this->log($intNrCustGroups . ' customer groups were related.');
+				$this->log('The failed emails were related to ' . $intNrCustGroups . ' customer groups.');
 			}
 
 			$sel = array('TR' => "Concat('<tr><td>', Account.Id, '</td>\t<td>', Contact.FirstName, ' ', Contact.LastName, '</td>\t<td>', Contact.Email, '</td>\t<td>',
@@ -124,8 +124,8 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				$email = $email->encode();
 
 				$strHeaders	= $email['headers'];
-				//$strHeaders['Bcc'] = 'ybs-admin@yellowbilling.com.au';
-				$strNoticationEmail = 'holiver@yellowbilling.com.au';
+				$strHeaders['Bcc'] = 'ybs-admin@yellowbilling.com.au';
+				$strHeaders['From'] = 'EmailCheck@yellowbilling.com.au';
 				$strBody	= $email['body'];
 				$emlMail 	= &Mail::factory('mail');
 				if (!$emlMail->send($strNoticationEmail, $strHeaders, $strBody))
