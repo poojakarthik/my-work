@@ -86,12 +86,8 @@ foreach($arrTables AS $strTable)
 	CliEcho(str_pad("\t + $strTable...", 35, ' ', STR_PAD_RIGHT), FALSE);
 	$strStatus	= '[   OK   ]';
 	
-	if (strpos($strTable, '_') !== FALSE)
-	{
-		// tables with an '_' are temporary backups
-		CliEcho(str_pad("[  SKIP  ]", 25, ' ', STR_PAD_LEFT));
-	}
-	elseif ($arrSpecifiedTables[$strTable])
+	
+	if ($arrSpecifiedTables[$strTable])
 	{
 		if ($intMode == MODE_EXCLUDE)
 		{
