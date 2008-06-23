@@ -23,7 +23,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			$strIntro = 'The email addresses for the following accounts were recently found to be invalid. Any recent attempts to send emails to those addresses will have failed. Please check the details are entered correctly for each account.';
 			$strFooter = "Regards,<br/>\n<br/>\nThe Team at Yellow Billing";
 
-			$pathToLog = $arrArgs[SWITCH_POSTFIX_LOG];
+			$pathToLog = $arrArgs[self::SWITCH_POSTFIX_LOG];
 
 			// Need to parse the log file here to extract the rejected email addresses
 			$log = file_get_contents($pathToLog);
