@@ -137,7 +137,8 @@ class Cli_App_Pdf extends Cli
 
 				if (count($parts) != 3 || count($parts[1]) != 4 || count($parts[2]) != 4)
 				{
-					throw new Exception("Unable to identify document properties.");
+					var_dump($parts);
+					throw new Exception("Unable to identify document properties: $strSource");
 				}
 
 				$docProps = array();
