@@ -133,18 +133,29 @@ class Cli_App_Pdf extends Cli
 				$fileContents = file_get_contents($strSource);
 
 				$parts = array();
-				preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $fileContents, $parts);
+				$requiredTags = array('DocumentType', 'CustomerGroup', 'CreationDate', 'DeliveryMethod');
+				preg_match_all("/(?:\<(" . implode('|', $requiredTags) . ")\>([^\<]*)\<)/", $fileContents, $parts);
 
-				if (count($parts) != 3 || count($parts[1]) != 5 || count($parts[2]) != 5)
+				if (count($parts) != 3 || count($parts[1]) < 4 || count($parts[2]) < 4)
 				{
-					var_dump($parts);
-					throw new Exception("Unable to identify document properties: $strSource");
+					throw new Exception("Unable to identify document properties in file: $strSource");
 				}
 
 				$docProps = array();
 				for($i = 0; $i < 4; $i++)
 				{
-					$docProps[$parts[1][$i]] = $parts[2][$i]; 
+					if (!array_key_exists($parts[1][$i], $docProps))
+					{
+						$docProps[$parts[1][$i]] = $parts[2][$i];
+					}
+				}
+
+				foreach ($requiredTags as $requiredTag)
+				{
+					if (!array_key_exists($requiredTag, $docProps))
+					{
+						throw new Exception("Unable to identify document property: $requiredTag");
+					}
 				}
 
 				$custGroupId = constant($docProps["CustomerGroup"]);
