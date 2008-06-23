@@ -122,7 +122,7 @@
 		$this->_intLapTime			= microtime(TRUE);
 		
 		// Init application log
-		$this->_strLogFileName	= date("Y-m-d_His", time()).".log";
+		/*$this->_strLogFileName	= date("Y-m-d_His", time()).".log";
 		if (LOG_TO_FILE && !SAFE_LOGGING && defined('LOG_PATH'))
 		{
 			$this->_ptrLog = fopen(LOG_PATH.$this->_strLogFileName, "a");
@@ -130,7 +130,7 @@
 		else
 		{
 			$this->_ptrLog = NULL;
-		}
+		}*/
 		
 		// init statements
 		$arrServiceColumns = Array();
@@ -249,10 +249,10 @@
 	 function __destruct()
 	 {
 		// Close application log
-		if (LOG_TO_FILE && !SAFE_LOGGING && defined('LOG_PATH'))
+		/*if (LOG_TO_FILE && !SAFE_LOGGING && defined('LOG_PATH'))
 		{
 			fclose($this->_ptrLog);
-		}
+		}*/
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -368,7 +368,7 @@
 	 */
 	 function AddToLog($strText, $bolNewLine = TRUE)
 	 {
-	 	// Are we logging?
+	 	/*// Are we logging?
 	 	if (!LOG_TO_FILE || !defined(LOG_PATH))
 	 	{
 	 		return;
@@ -390,7 +390,7 @@
 	 	else
 	 	{
 	 		fwrite($this->_ptrLog, $strText);
-	 	}
+	 	}*/
 	 }
 	 
 	//------------------------------------------------------------------------//
