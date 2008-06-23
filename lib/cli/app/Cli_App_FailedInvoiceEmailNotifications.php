@@ -25,12 +25,17 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 
 			// Need to parse the log file here to extract the rejected email addresses
 			$log = file_get_contents($pathToLog);
+			if (!$log)
+			{
+				$this->log("Log file '$pathToLog' is empty.");
+				return 0;
+			}
+
 			$matches = array();
 			preg_match_all("/.+ said: [45]{1,1}[0-9]{2,2} .*\<([^\>]+)\>/", $log, $matches);
 			@$arrEmailAddresses = array_unique($matches[1]);
 			if (!$arrEmailAddresses || !count($arrEmailAddresses))
 			{
-				$this->log($log);
 				$this->log('No bounced messages detected.');
 				return 0;
 			}
