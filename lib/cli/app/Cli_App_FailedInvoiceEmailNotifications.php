@@ -116,7 +116,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				$email = $email->encode();
 
 				$strHeaders	= $email['headers'];
-				$strHeaders['Bcc'] = 'root@bne-beprod-01.yellowbilling.com.au';
+				$strHeaders['Bcc'] = 'ybs-admin@yellowbilling.com.au';
 				$strBody	= $email['body'];
 				$emlMail 	= &Mail::factory('mail');
 				if (!$emlMail->send($strNoticationEmail, $strHeaders, $strBody))
