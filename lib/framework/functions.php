@@ -3477,7 +3477,7 @@ function ListAutomaticUnbarringAccounts($intTime)
 	$arrColumns = array(
 							'AccountId'				=> "Invoice.Account",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
-							'CustomerGroupName'		=> "CustomerGroup.Name",
+							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
 							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
 							'CanAutomate'			=> "CASE WHEN COUNT(DISTINCT(Service.Id)) = EnabledServices.OKServices THEN 1 ELSE 0 END",
 	);
@@ -3536,7 +3536,7 @@ function ListAutomaticBarringAccounts($intTime)
 							'InvoiceRun'			=> "Invoice.InvoiceRun",
 							'AccountId'				=> "Invoice.Account",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
-							'CustomerGroupName'		=> "CustomerGroup.Name",
+							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
 							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
 							'CanAutomate'			=> "CASE WHEN COUNT(DISTINCT(Service.Id)) = EnabledServices.OKServices THEN 1 ELSE 0 END",
 	);
@@ -3581,8 +3581,6 @@ function ListAutomaticBarringAccounts($intTime)
 				GROUP BY Service.Account
 			) EnabledServices
 		  ON EnabledServices.Account = Account.Id
-		JOIN CustomerGroup
-		  ON CustomerGroup.Id = Account.CustomerGroup
 		";
 
 	$strWhere	= "";
@@ -4899,4 +4897,77 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	//Debug("Last Line\t: '$strLastLine'");
 	return Array('Files' => $arrFiles, 'Processed' => TRUE);
 }
+
+
+function BarAccount($intAccountId, $bolAutomatic=FALSE)
+{
+	// Throw exception if fails
+
+	// Bar the account
+
+	// Add a note to the account
+	
+	// If automatic, change auto_barring_status for the account
+	if ($bolAutomatic)
+	{
+		ChangeAccountAutomaticBarringStatus($intAccountId, AUTOMATIC_BARRING_STATUS_BARRED, 'Account automatically barred.');
+	}
+}
+
+function UnbarAccount($intAccountId, $bolAutomatic=FALSE)
+{
+	// Throw exception if fails
+
+	// Unbar the account
+
+	// Add a note to the account
+	
+	// If automatic, change auto_barring_status for the account
+	if ($bolAutomatic)
+	{
+		ChangeAccountAutomaticBarringStatus($intAccountId, AUTOMATIC_BARRING_STATUS_UNBARRED, 'Account automatically unbarred.');
+	}
+}
+
+function ChangeAccountAutomaticBarringStatus($intAccount, $intTo, $strReason)
+{
+	$error = '';
+
+	$strDate = date('Y-m-d H:i:s');
+	
+	// Need to find out the current status of the account
+	$selQuery = new StatementSelect('Account', 'automatic_barring_status', 'Id=<Id>');
+	if (!$outcome = $selQuery->Execute(array('Id' => $intAccount)))
+	{
+		throw new Exception('Failed to retreive current automatic barring status for account $intAccount. ' .  $qryQuery->Error());
+	}
+	$arrFrom =  $selQuery->Fetch();
+	$intFrom = intval($arrFrom['automatic_barring_status']);
+
+	$qryQuery = new Query();
+	$strSQL = 'UPDATE Account SET automatic_barring_status = ' . $intTo . ', last_automatic_barring_status_datetime = \'' . $strDate . '\' WHERE Id = ' . $intAccount;
+	if (!$outcome = $qryQuery->Execute($strSQL))
+	{
+		$message = ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
+		throw new Exception($message);
+	}
+
+	// and creating a corresponding automatic_barring_status_history entry.
+	$qryQuery = new Query();
+	$strSQL = 'INSERT INTO automatic_barring_status_history (account, from_action, to_action, reason, change_datetime) ' .
+			' VALUES (' .
+			$intAccount . ', ' .
+			$intFrom . ', ' .
+			$intTo .', ' .
+			'\'' . $qryQuery->EscapeString($strReason) . '\', ' .
+			'\'' . $strDate . '\'' .
+			')';
+	if (!$outcome = $qryQuery->Execute($strSQL))
+	{
+		$message = ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
+		throw new Exception($message);
+	}
+	return TRUE;
+}
+
 ?>

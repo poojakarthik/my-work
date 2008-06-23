@@ -107,6 +107,8 @@ class Cli_App_LateNoticeRun extends Cli
 						$xmlFilePath = $arrDetails['XMLFilePath'];
 						$intAutoInvoiceAction = $arrDetails['Account']['automatic_invoice_action'];
 
+						$custGroupName = strtolower(str_replace(' ', '_', $strCustGroupName));
+
 						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
 						if (!array_key_exists($strCustGroupName, $arrSummary))
 						{
@@ -150,7 +152,6 @@ class Cli_App_LateNoticeRun extends Cli
 								else
 								{
 									$this->log("Storing PDF $strLetterType for account ". $intAccountId);
-									$custGroupName = strtolower(str_replace(' ', '_', $arrDetails['Account']['CustomerGroupName']));
 
 									$outputDirectory = $arrSummary[$strCustGroupName][$strLetterType]['output_directory'];
 
@@ -213,11 +214,10 @@ class Cli_App_LateNoticeRun extends Cli
 									{
 										$this->log("...NOT!!!");
 									}
-									$custGroupName = $arrDetails['Account']['CustomerGroupName'];
 									$fileName = str_replace(' ', '_', $strLetterType) . '.pdf';
 									$emailTo = $arrDetails['Account']['Email'];
 									$emailFrom = $arrDetails['Account']['EmailFrom'];
-									$subject = "$custGroupName $strLetterType for Account $intAccountId";
+									$subject = "$strCustGroupName $strLetterType for Account $intAccountId";
 
 									$name = trim($arrDetails['Account']['FirstName']);
 
@@ -228,9 +228,9 @@ class Cli_App_LateNoticeRun extends Cli
 									}
 
 				 					$strContent = "Dear $name,\r\n\r\n" .
-				 								  "Please find attached $a $strLetterType from $custGroupName.\r\n\r\n" .
+				 								  "Please find attached $a $strLetterType from $strCustGroupName.\r\n\r\n" .
 				 								  "Regards\r\n\r\n" .
-				 								  "The Team at $custGroupName";
+				 								  "The Team at $strCustGroupName";
 
 									if (!$arrArgs[self::SWITCH_TEST_RUN])
 									{

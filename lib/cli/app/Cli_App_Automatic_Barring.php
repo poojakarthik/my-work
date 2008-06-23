@@ -12,30 +12,34 @@ class Cli_App_Automatic_Barring extends Cli
 		$now = time();
 		$this->runDateTime = date('Y-m-d H:i:s', $now);
 
+		$barSummary = array();
+		$unbarSummary = array();
+		$report = array();
+
 		try
 		{
+			$this->log('Beginning database transaction.');
+			$conConnection = DataAccess::getDataAccess();
+			$conConnection->TransactionStart();
+
+
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
 
 			if ($arrArgs[self::SWITCH_TEST_RUN])
 			{
-				$this->log("Running in test mode. Emails will not be sent to account holders.", TRUE);
+				$this->log("Running in test mode. The database will not be updated.", TRUE);
 			}
 
-			$nowTimestamp = $arrArgs[self::SWITCH_EFFECTIVE_DATE];
+			$effectiveDate = $arrArgs[self::SWITCH_EFFECTIVE_DATE];
 
 			$errors = 0;
-
-			$barSummary = array();
-			$unbarSummary = array();
 
 			$arrGeneralErrors = array();
 
 			$autobarInvoiceRuns = array();
 
-
-
-			$mixResult = ListAutomaticBarringAccounts($nowTimestamp);
+			$mixResult = ListAutomaticBarringAccounts($effectiveDate);
 
 			if (!is_array($mixResult))
 			{
@@ -43,6 +47,7 @@ class Cli_App_Automatic_Barring extends Cli
 				$this->log($message, 0);
 				$arrGeneralErrors[] = $message;
 				$errors++;
+				throw new Exception($message);
 			}
 			else
 			{
@@ -70,7 +75,15 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						try
 						{
-							BarAccount($accountId, TRUE);
+							if (!$arrArgs[self::SWITCH_TEST_RUN])
+							{
+								$this->log('Barring account ' . $accountId);
+								BarAccount($accountId, TRUE);
+							}
+							else
+							{
+								$this->log('NOT Barring account ' . $accountId . ' as this is only a test run.');
+							}
 							$barSummary[$customerGroupName]['auto'][] = $accountId;
 						}
 						catch (Exception $e)
@@ -79,6 +92,7 @@ class Cli_App_Automatic_Barring extends Cli
 							$this->log($message, TRUE);
 							$barSummary[$customerGroupName]['failed'][$accountId] = $message;
 							$errors++;
+							throw new Exception($message);
 						}
 					}
 					else
@@ -89,20 +103,32 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 
 
-			foreach ($autobarInvoiceRuns as $invoiceRun => $invoiceRunCounts)
+			if (!empty($autobarInvoiceRuns))
 			{
-				$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, 'automatic_bar_datetime');
-				if ($result !== TRUE)
+				$this->log('Marking any effected Invoice Runs as automatically barred.');
+				if (!$arrArgs[self::SWITCH_TEST_RUN])
 				{
-					$arrGeneralErrors[] = $result;
-					$this->log($result, TRUE);
+					foreach ($autobarInvoiceRuns as $invoiceRun => $invoiceRunCounts)
+					{
+						$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, 'automatic_bar_datetime');
+						if ($result !== TRUE)
+						{
+							$arrGeneralErrors[] = $result;
+							$this->log($result, TRUE);
+						}
+					}
+				}
+				else
+				{
+					$this->log('NOT! This is only a test run!');
 				}
 			}
+			else
+			{
+				$this->log('No automatic barring or unbaring required.');
+			}
 
-
-
-
-			$mixResult = ListAutomaticUnbarringAccounts($nowTimestamp);
+			$mixResult = ListAutomaticUnbarringAccounts($effectiveDate);
 
 			if (!is_array($mixResult))
 			{
@@ -110,6 +136,7 @@ class Cli_App_Automatic_Barring extends Cli
 				$this->log($message, 0);
 				$arrGeneralErrors[] = $message;
 				$errors++;
+				throw new Exception($message);
 			}
 			else
 			{
@@ -130,7 +157,15 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						try
 						{
-							UnbarAccount($accountId, TRUE);
+							if (!$arrArgs[self::SWITCH_TEST_RUN])
+							{
+								$this->log('Unbarring account ' . $accountId);
+								UnbarAccount($accountId, TRUE);
+							}
+							else
+							{
+								$this->log('NOT Unbarring account ' . $accountId . ' as this is only a test run.');
+							}
 							$unbarSummary[$customerGroupName]['auto'][] = $accountId;
 						}
 						catch (Exception $e)
@@ -139,6 +174,7 @@ class Cli_App_Automatic_Barring extends Cli
 							$this->log($message, TRUE);
 							$unbarSummary[$customerGroupName]['failed'][$accountId] = $message;
 							$errors++;
+							throw new Exception($message);
 						}
 					}
 					else
@@ -153,8 +189,7 @@ class Cli_App_Automatic_Barring extends Cli
 
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
-			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') . ' Automated late notice generation log for run dated ' . $this->runDateTime;
-			$report = array();
+			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') . ' Automated barring log for run dated ' . $this->runDateTime;
 			if ($arrArgs[self::SWITCH_TEST_RUN])
 			{
 				$report[] = "***RUN TEST MODE - EMAILS WERE NOT SENT TO ACCOUNT HOLDERS***";
@@ -162,12 +197,12 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 			if ($errors)
 			{
-				$report[] = "***ERRORS WERE DETECTED WHILST GENERATING LATE NOTICES***";
+				$report[] = "***ERRORS WERE DETECTED WHILST RUNNING AUTOMATED [UN]BARRING***";
 				$report[] = "";
 			}
 			else
 			{
-				$report[] = "The late notice generation completed without any errors being detected.";
+				$report[] = "The automated [un]barring completed without any errors being detected.";
 				$report[] = "";
 			}
 			if (!empty($arrGeneralErrors))
@@ -178,73 +213,123 @@ class Cli_App_Automatic_Barring extends Cli
 				$report[] = "";
 				$report[] = "";
 			}
-			$report[] = "Breakdown of XML generation: -";
-			foreach ($outputs as $letterType => $results)
+			$report[] = "Breakdown of Barring: -";
+			if (!empty($barSummary))
 			{
-				$report[] = "    $letterType: " . $results['success'] . " XML files Created, " . $results['failure'] . " XML file generations Failed";
-			}
-			$report[] = "";
-			$report[] = "";
-			if (!empty($unbarSummary))
-			{
-				$report[] = "Breakdown of late notice generation by customer group (for successfully generated XML files only): -";
-				foreach ($unbarSummary as $custGroup => $letterTypeSummarries)
+				$report[] = "Breakdown of barring by customer group: -";
+				foreach ($barSummary as $custGroup => $breakdown)
 				{
 					$report[] = "";
 					$report[] = "";
 					$report[] = "Customer Group: $custGroup";
-
-					foreach ($letterTypeSummarries as $letterType => $letterTypeSummary)
-					{
-						$report[] = "[Start of $letterType breakdown for Customer Group: $custGroup]";
-						if (!empty($letterTypeSummary['errors']))
-						{
-							$report[] = "";
-							$report[] = "***ERRORS ENCOUNTERED***";
-							$report = array_merge($report, $letterTypeSummary['errors']);
-							$report[] = "";
-						}
-						else
-						{
-							$report[] = "";
-							$report[] = "No errors were encountered.";
-							$report[] = "";
-						}
-						if (!empty($letterTypeSummary['prints']))
-						{
-							$report[] = "Print: " . count($letterTypeSummary['prints']) . " {$letterType}s were created for printing and stored in " . $letterTypeSummary['output_directory'] . '.';
-						}
-						else
-						{
-							$report[] = "Print: No documents were created for printing";
-						}
-						if (!empty($letterTypeSummary['emails']))
-						{
-							$report[] = "Email: " . count($letterTypeSummary['emails']) . " {$letterType}s were created and emailed.";
-							$report[] = "Emails were sent for the following accounts: -";
-							$report[] = implode(', ', $letterTypeSummary['emails']);
-						}
-						else
-						{
-							$report[] = "Email: No documents were emailed";
-						}
-						$report[] = "[End of $letterType breakdown for Customer Group: $custGroup]";
-						$report[] = "";
-					}
-
-					$report[] = "[End of breakdown for Customer Group: $custGroup]";
 					$report[] = "";
+
+					if (!empty($breakdown['failed']))
+					{
+						$report[] = '***AUTOMATED BARRING ERRORS DETECTED***';
+						$report[] = 'The following automated barring failures were detected: -';
+						foreach($breakdown['failed'] as $intAccountId => $strError)
+						{
+							$report[] = "***ERROR*** Account $intAccountId: $strError";
+						}
+					}
+					else 
+					{
+						$report[] = 'No automated barring failures were detected.';
+					}
+					$report[] = "";
+					
+					$intCount = $breakdown['auto'];
+					if ($intCount)
+					{
+						$report[] = 'The following ' . $intCount . ' accounts were automatically barred: -';
+						$report[] = implode(', ', $breakdown['auto']);
+					}
+					else
+					{
+						$report[] = 'No accounts were automatically barred.';
+					}
+					
+					$intCount = $breakdown['manual'];
+					if ($intCount)
+					{
+						$report[] = 'The following ' . $intCount . ' accounts could not be barred automatically, so should be barred manually: -';
+						$report[] = implode(', ', $breakdown['manual']);
+					}
+					else
+					{
+						$report[] = 'No accounts require manual barring.';
+					}
 					$report[] = "";
 				}
 			}
 			else
 			{
-				$report[] = "No automated late notices were generated.";
+				$report[] = "No accounts required barring.";
 			}
+
+			$report[] = "";
+			$report[] = "";
+			$report[] = "";
+			$report[] = "Breakdown of Unbarring: -";
+			if (!empty($unbarSummary))
+			{
+				$report[] = "Breakdown of unbarring by customer group: -";
+				foreach ($unbarSummary as $custGroup => $breakdown)
+				{
+					$report[] = "";
+					$report[] = "";
+					$report[] = "Customer Group: $custGroup";
+					$report[] = "";
+
+					if (!empty($breakdown['failed']))
+					{
+						$report[] = '***AUTOMATED UNBARRING ERRORS DETECTED***';
+						$report[] = 'The following automated unbarring failures were detected: -';
+						foreach($breakdown['failed'] as $intAccountId => $strError)
+						{
+							$report[] = "***ERROR*** Account $intAccountId: $strError";
+						}
+					}
+					else 
+					{
+						$report[] = 'No automated unbarring failures were detected.';
+					}
+					$report[] = "";
+					
+					$intCount = $breakdown['auto'];
+					if ($intCount)
+					{
+						$report[] = 'The following ' . $intCount . ' accounts were automatically unbarred: -';
+						$report[] = implode(', ', $breakdown['auto']);
+					}
+					else
+					{
+						$report[] = 'No accounts were automatically unbarred.';
+					}
+					
+					$intCount = $breakdown['manual'];
+					if ($intCount)
+					{
+						$report[] = 'The following ' . $intCount . ' accounts could not be unbarred automatically, so should be unbarred manually: -';
+						$report[] = implode(', ', $breakdown['manual']);
+					}
+					else
+					{
+						$report[] = 'No accounts require manual unbarring.';
+					}
+					$report[] = "";
+				}
+			}
+			else
+			{
+				$report[] = "No accounts required unbarring.";
+			}
+			
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			$outcome = $this->sendEmail("late_notice_run@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body);
+			$outcome = $this->sendEmail("AutomatedBarring@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body);
 
 			if ($outcome === TRUE)
 			{
@@ -255,11 +340,52 @@ class Cli_App_Automatic_Barring extends Cli
 				$this->log("Failed to email report. ". ($outcome ? "\n$outcome" : ''), TRUE);
 			}
 
+			$this->log('Committing transaction.');
+			$conConnection->TransactionCommit();
+
 			$this->log("Finished.");
 			return $errors;
 		}
 		catch(Exception $exception)
 		{
+			$this->log('Rolling back database transaction.');
+			$conConnection->TransactionRollback();
+			
+			$this->log('Sending error report via email.');
+			$subject = '[ERROR] Automatic [un]barring failed - Database transaction rolled back at ' . date('Y-m-d H:i:s');
+			$body = array();
+			$body[] = 'The automatic account [un]barring process failed. The database transaction was rolled back. The following error details are available: -'; 
+			$body[] = '';
+			$body[] = $exception->getMessage();
+			if (count($report))
+			{
+				$body[] = '';
+				$body[] = '';
+				$body[] = 'The following (probably partial) report was generated: -';
+				$body[] = implode("\r\n", $report);
+			}
+			else if (count($unbarSummary))
+			{
+				$body[] = '';
+				$body[] = '';
+				$body[] = 'The problem may have occurred during the unbarring stage. The following unbarring information had been cached: -';
+				$body[] = '$unbarSummary = ' . var_export($unbarSummary, TRUE);
+				$body[] = '';
+				$body[] = 'The loaded data at the time was as follows: -';
+				$body[] = '$mixResult = ' . var_export($mixResult, TRUE);
+			}
+			else if (count($barSummary))
+			{
+				$body[] = '';
+				$body[] = '';
+				$body[] = 'The problem may have occurred during the barring stage. The following barring information had been cached: -';
+				$body[] = '$barSummary = ' . var_export($barSummary, TRUE);
+				$body[] = '';
+				$body[] = 'The loaded data at the time was as follows: -';
+				$body[] = '$mixResult = ' . var_export($mixResult, TRUE);
+			}
+			$body = implode("\r\n", $body);
+			$outcome = $this->sendEmail("AutomatedBarring@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body);
 			$this->showUsage('ERROR: ' . $exception->getMessage());
 			return 1;
 		}
@@ -277,61 +403,6 @@ class Cli_App_Automatic_Barring extends Cli
 			$this->log($message, TRUE);
 		}
 		return $message;
-	}
-
-	private function changeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason)
-	{
-		$error = '';
-
-		$qryQuery = new Query();
-		$strSQL = 'UPDATE Account SET last_automatic_invoice_action = ' . $intTo . ', last_automatic_invoice_action_datetime = \'' . $this->runDateTime . '\' WHERE Id = ' . $intAccount;
-		if (!$outcome = $qryQuery->Execute($strSQL))
-		{
-			$message = ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
-			$this->log($message, TRUE);
-			$error .= $message;
-		}
-
-		// and creating a corresponding automatic_invoice_action_history entry.
-		$qryQuery = new Query();
-		$strSQL = 'INSERT INTO automatic_invoice_action_history (account, from_action, to_action, reason, change_datetime) ' .
-				' VALUES (' .
-				$intAccount . ', ' .
-				$intFrom . ', ' .
-				$intTo .', ' .
-				'\'' . $qryQuery->EscapeString($strReason) . '\', ' .
-				'\'' . $this->runDateTime . '\'' .
-				')';
-		if (!$outcome = $qryQuery->Execute($strSQL))
-		{
-			$message = ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
-			$this->log($message, TRUE);
-			$error .= $message;
-		}
-		return $error == '' ? TRUE : $error;
-	}
-
-	private function getPDFContent($custGroupId, $effectiveDate, $documentTypeId, $pathToXMLFile, $targetMedia)
-	{
-		$this->startErrorCatching();
-		$fileContents = file_get_contents($pathToXMLFile);
-
-		$pdfTemplate = new Flex_Pdf_Template(
-						$custGroupId, 
-						$effectiveDate, 
-						$documentTypeId, 
-						$fileContents, 
-						$targetMedia, 
-						TRUE);
-
-		$pdf = $pdfTemplate->createDocument();
-		$pdfTemplate->destroy();
-		$pdf = $pdf->render();
-		if ($this->getCachedError())
-		{
-			return FALSE;
-		}
-		return $pdf;
 	}
 
 	private function sendEmail($from, $to, $subject, $message, $attachments=NULL, $attachmentNames=NULL, $attachmentMimeTypes=NULL)
