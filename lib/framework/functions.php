@@ -3837,8 +3837,10 @@ function GenerateLatePaymentNotices($intNoticeType, $intStartOfDay=0, $strBasePa
 	VixenRequire('lib/dom/Flex_Dom_Document.php');
 	$dom = new Flex_Dom_Document();
 
+	if (!$intStartOfDay) $intStartOfDay = time();
+
 	// For each account retrieved, work out if a late payment notice really has to be made for it
-	$strToday		= date("Y-m-d");
+	$strToday		= date("Y-m-d", $intStartOfDay);
 	$intToday		= strtotime($strToday);
 	foreach ($arrAccounts as $arrAccount)
 	{
@@ -3860,7 +3862,7 @@ function GenerateLatePaymentNotices($intNoticeType, $intStartOfDay=0, $strBasePa
 			case LETTER_TYPE_OVERDUE:
 				// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
 				// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
-				$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_OVERDUE, $arrAccount, $strBasePath);
+				$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_OVERDUE, $arrAccount, $strBasePath, $intStartOfDay);
 				break;
 
 			case LETTER_TYPE_SUSPENSION:
@@ -3869,7 +3871,7 @@ function GenerateLatePaymentNotices($intNoticeType, $intStartOfDay=0, $strBasePa
 				if ($intNumRows == 1)
 				{
 					// An "Overdue" notice has been sent for this invoice.  Build the Suspension notice
-					$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_SUSPENSION, $arrAccount, $strBasePath);
+					$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_SUSPENSION, $arrAccount, $strBasePath, $intStartOfDay);
 				}
 				break;
 
@@ -3879,7 +3881,7 @@ function GenerateLatePaymentNotices($intNoticeType, $intStartOfDay=0, $strBasePa
 				if ($intNumRows == 1)
 				{
 					// A "Suspension" notice has been sent for this invoice.  Build the Final Demand notice
-					$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_FINAL_DEMAND, $arrAccount, $strBasePath);
+					$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_FINAL_DEMAND, $arrAccount, $strBasePath, $intStartOfDay);
 				}
 				break;
 		}
@@ -3911,10 +3913,9 @@ function GenerateLatePaymentNotices($intNoticeType, $intStartOfDay=0, $strBasePa
 									"TotalOutstanding"			=> $arrAccount['TotalOutstanding']);
 		}
 	}
-	
 	// Build the summary file
 	$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))). 
-					"_summary_". date("Y_m_d") .".csv";
+					"_summary_". date("Y_m_d", $intStartOfDay) .".csv";
 	$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
 	if ($ptrSummaryFile !== FALSE)
 	{
@@ -3932,7 +3933,7 @@ function GenerateLatePaymentNotices($intNoticeType, $intStartOfDay=0, $strBasePa
 	$arrFileLog = Array(	'FileName'		=>	$strFilename,
 							'Location'		=>	ltrim($strBasePath, "."),
 							'Carrier'		=>	0,
-							'ExportedOn'	=>	date("Y-m-d H:i:s"),
+							'ExportedOn'	=>	date("Y-m-d H:i:s", $intStartOfDay),
 							'Status'		=>	0,
 							'FileType'		=>	0,
 							'SHA1'			=>	sha1($strFilename));
@@ -4003,13 +4004,15 @@ function RecursiveMkdir($strPath, $intMode = 0777)
  *
  * @function
  */
-function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH)
+function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intStartOfDay=0)
 {
 	// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
 	// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
 	// made in a run
 	static $insNotice;
 	static $insFileExport;
+
+	if (!$intStartOfDay) $intStartOfDay = time();
 
 	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
 	$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))) . "/xml/" . date("Ymd");
@@ -4028,7 +4031,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	$dom = new Flex_Dom_Document();
 
 	// Set up all values required of the notice, which have not been defined yet
-	$dom->Document->DateIssued = date("d M Y");
+	$dom->Document->DateIssued = date("d M Y", $intStartOfDay);
 	switch ($intNoticeType)
 	{
 		case LETTER_TYPE_OVERDUE:
@@ -4058,7 +4061,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	}
 
 	$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
-	$dom->Document->CreationDate->setValue(date("Y-m-d 00:00:00"));
+	$dom->Document->CreationDate->setValue(date("Y-m-d 00:00:00", $intStartOfDay));
 	$dom->Document->DeliveryMethod->setValue($strDeliveryMethod);
 
 	$dom->Document->Currency->Symbol->Location = 'Prefix';
