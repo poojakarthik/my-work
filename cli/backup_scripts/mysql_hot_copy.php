@@ -1,6 +1,6 @@
 <?php
 
-define('MYSQL_HOT_COPY_DEBUG'			, TRUE);
+define('MYSQL_HOT_COPY_DEBUG'			, FALSE);
 
 // we use the actual tables not the db def in case it is out of date
 require_once('../../flex.require.php');
