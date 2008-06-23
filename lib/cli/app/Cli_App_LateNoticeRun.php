@@ -235,7 +235,7 @@ class Cli_App_LateNoticeRun extends Cli
 									}
 									else
 									{
-										$outcome = TRUE;
+										$outcome = $this->sendEmail($emailFrom, 'holiver@yellowbilling.com.au', $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
 										//$outcome = $this->sendEmail($emailFrom, "billing-notifications@yellowbilling.com.au", $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
 									}
 
