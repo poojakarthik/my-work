@@ -3587,35 +3587,39 @@ function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 {
 	// Set up NoticeType specific stuff here
 	$arrApplicableAccountStatuses = array();
-	$atrInvoiceRunDateField = '';
+	$strInvoiceRunDateField = '';
 	$strInvoiceRunPreCondition = '';
 	$strNoticeTypePreCondition = '';
+	$arrApplicableInvoiceStatuses = array();
 
 	switch ($intNoticeType)
 	{
 		case LETTER_TYPE_OVERDUE:
 			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
-			$atrInvoiceRunDateField = 'automatic_overdue_datetime';
+			$strInvoiceRunDateField = 'automatic_overdue_datetime';
 			$strInvoiceRunPreCondition = '';
 			$strNoticeTypePreCondition = '';
+			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
 		case LETTER_TYPE_SUSPENSION:
 			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
-			$atrInvoiceRunDateField = 'automatic_suspension_datetime';
+			$strInvoiceRunDateField = 'automatic_suspension_datetime';
 			$strInvoiceRunPreCondition = ' AND InvoiceRun.automatic_overdue_datetime IS NOT NULL ';
 			$strNoticeTypePreCondition = ' JOIN automatic_invoice_action_history ' . 
 										 '   ON automatic_invoice_action_history.to_action = ' . AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE . 
 										 '  AND DATE(automatic_invoice_action_history.change_datetime) = DATE(InvoiceRun.automatic_overdue_datetime)' .
 										 '  AND Account.Id = automatic_invoice_action_history.account ';
+			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
 		case LETTER_TYPE_FINAL_DEMAND:
 			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED);
-			$atrInvoiceRunDateField = 'automatic_final_demand_datetime';
+			$strInvoiceRunDateField = 'automatic_final_demand_datetime';
 			$strInvoiceRunPreCondition = ' AND InvoiceRun.automatic_suspension_datetime IS NOT NULL ';
 			$strNoticeTypePreCondition = ' JOIN automatic_invoice_action_history ' . 
 										 '   ON automatic_invoice_action_history.to_action = ' . AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE . 
 										 '  AND DATE(automatic_invoice_action_history.change_datetime) = DATE(InvoiceRun.automatic_suspension_datetime)' .
 										 '  AND Account.Id = automatic_invoice_action_history.account ';
+			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
 		default:
 			// Unrecognised notice type
@@ -3623,6 +3627,7 @@ function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 			break;
 	}
 	$arrApplicableAccountStatuses = implode(", ", $arrApplicableAccountStatuses);
+	$strApplicableInvoiceStatuses = implode(", ", $arrApplicableInvoiceStatuses);
 
 	$strBillingDateClause = '';
 	if ($intStartOfDay)
@@ -3659,13 +3664,10 @@ function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 							'CreatedOn'				=> "Invoice.CreatedOn",
 							'TotalOutstanding'		=> "SUM(Invoice.Balance)");
 
-	$strTables	= "
-			 InvoiceRun 
-		JOIN Invoice 
-		  ON InvoiceRun.$atrInvoiceRunDateField IS NULL $strInvoiceRunPreCondition $strBillingDateClause
-		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun 
+	$strTables	= "Invoice 
 		JOIN Account 
-		  ON Invoice.Account = Account.Id $strNoticeTypePreCondition
+		  ON Invoice.Account = Account.Id 
+		 AND Invoice.Status IN ($strApplicableInvoiceStatuses)
 		 AND Account.Archived IN ($arrApplicableAccountStatuses) 
 		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW())
 		JOIN credit_control_status 
@@ -3679,7 +3681,24 @@ function ListLatePaymentAccounts($intNoticeType, $intStartOfDay)
 		JOIN CustomerGroup 
 		  ON Account.CustomerGroup = CustomerGroup.Id";
 
-	$strWhere	= "";
+	$strWhere	= "Account.Id IN (
+		SELECT DISTINCT(Account.Id) 
+		FROM InvoiceRun 
+		JOIN Invoice
+		  ON InvoiceRun.$strInvoiceRunDateField IS NULL $strInvoiceRunPreCondition $strBillingDateClause
+	         AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun
+		JOIN Account 
+		  ON Account.Id = Invoice.Account
+	         AND Account.Archived IN ($arrApplicableAccountStatuses) $strNoticeTypePreCondition
+	         AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW())
+		JOIN credit_control_status 
+		  ON Account.credit_control_status = credit_control_status.id
+		 AND credit_control_status.send_late_notice = 1
+		JOIN account_status 
+		  ON Account.Archived = account_status.id
+		 AND account_status.send_late_notice = 1
+	)";
 
 	$pt = GetPaymentTerms();
 
