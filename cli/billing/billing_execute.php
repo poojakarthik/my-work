@@ -21,7 +21,7 @@ $appBilling = new ApplicationBilling($arrConfig);
 $strParam	= trim($argv[1]);
 if (!$strParam)
 {
-	CliEcho("Please specify a Billing Execute mode! (gold, silver or bronze)");	
+	CliEcho("Please specify a Billing Execute mode! (gold, silver, bronze, internalinitial or internalfinal)");	
 }
 else
 {

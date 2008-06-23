@@ -13,9 +13,6 @@
 require_once("../../flex.require.php");
 $arrConfig = LoadApplication();
 
-// load remote copy
-VixenRequire('lib/framework/remote_copy.php');
-
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
 

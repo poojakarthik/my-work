@@ -2206,6 +2206,65 @@
 					@symlink($strFullDirectory, $strFullDirectory.'-gold');
 				}
 				
+				// Copy XML files to Frontend Server
+				CliEcho("\nCopying XML files to bne-feprod-01...\t\t\t", FALSE);
+				$strCopyFiles	= $strFullDirectory.'/*.xml';
+				$strWarning		= '';
+				$resFEPROD		= ssh2_connect('10.50.50.131');
+				if ($resFEPROD)
+				{
+					// Log in
+					if (ssh2_auth_password($resFEPROD, 'rdavis', 'password'))
+					{
+						// Init SFTP
+						$resSFTP	= ssh2_sftp($resFEPROD);
+						if ($resSFTP)
+						{
+							// Create Directory & Symlink
+							if (ssh2_sftp_mkdir($resSFTP, $strFullDirectory, 0777, TRUE))
+							{
+								// Copy XML files
+								CliEcho(shell_exec("rcp \"$strCopyFiles\" rdavis@10.50.50.131:\"$strFullDirectory\""));
+								
+								CliEcho("[   OK   ]");
+								if (!stripos($strInvoiceRun, '-'))
+								{
+									// Gold Run, so create a symlink
+									if (!ssh2_sftp_symlink($resSFTP, $strFullDirectory, $strFullDirectory.'-gold'))
+									{
+										// Warning
+										CliEcho("\t -- WARNING: Unable to create remote symlink '{$strFullDirectory}-gold'");
+									}
+								}
+							}
+							else
+							{
+								// Error
+								CliEcho("[ FAILED ]");
+								CliEcho("\t -- Unable to create remote directory '$strFullDirectory'");
+							}
+						}
+						else
+						{
+							// Error
+							CliEcho("[ FAILED ]");
+							CliEcho("\t -- Unable to init SFTP protocol");
+						}
+					}
+					else
+					{
+						// Error
+						CliEcho("[ FAILED ]");
+						CliEcho("\t -- Unable to connect with provided credentials");
+					}
+				}
+				else
+				{
+					// Error
+					CliEcho("[ FAILED ]");
+					CliEcho("\t -- Unable to connect to SSH2 server");
+				}
+				
 				return TRUE;
 				break;
 				
