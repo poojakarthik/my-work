@@ -40,13 +40,6 @@ $arrSubscript['Directory']			= BACKEND_BASE_PATH.'rating/';
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['RateLLSECredits']		= $arrSubscript;
 
-// Backup Invoice Output
-$arrSubscript = Array();
-$arrSubscript['Command']			= 'php backup_invoice_output.php';
-$arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
-$arrSubscript['ChildDie']			= TRUE;
-$arrConfig['BackupInvoiceOutput']	= $arrSubscript;
-
 // Check Un-Invoiced Special Charges
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php charges_check_special.php';

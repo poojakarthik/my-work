@@ -14,7 +14,7 @@ $arrConfig = Array();
 
 // Database Copy
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php mysql_hot_copy.php -e CDRInvoiced InvoiceOuptut InvoiceOutputArchive';
+$arrSubscript['Command']			= 'php mysql_hot_copy.php -e UnitelFundedFNNs';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'backup_scripts/';
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['DBCopy']				= $arrSubscript;
@@ -36,12 +36,6 @@ $arrSubscript = Array();
 $arrSubscript['Command']			= 'php rate_ll_se_credits.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'rating/';
 $arrConfig['RateLLSECredits']		= $arrSubscript;
-
-// Backup Invoice Output
-$arrSubscript = Array();
-$arrSubscript['Command']			= 'php backup_invoice_output.php';
-$arrSubscript['Directory']			= BACKEND_BASE_PATH.'billing/';
-$arrConfig['BackupInvoiceOutput']	= $arrSubscript;
 
 // Check Un-Invoiced Special Charges
 $arrSubscript = Array();

@@ -10,5 +10,5 @@ while ($intLoop < 12)
 	$intLoop++;
 }
 CliEcho("Complete!");
-die;
+exit(1);
 ?>
