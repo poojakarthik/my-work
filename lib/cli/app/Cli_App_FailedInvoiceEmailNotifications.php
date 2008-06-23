@@ -108,8 +108,8 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				// Complete building the html body
 				$html = '<html>' .
 						"<head><style content='text/css'>body { background-color: #fff; font-family: Arial, Verdana, Sans-Serif !important };th { font-weight: bold; }</style></head>" .
-						"<body>$strIntro\n\n<table><tr><th>Account</th>\t<th>Contact</th>\t<th>Email</th>\t<th>Link to account in Flex</th></tr>\n" .
-						implode("\n", $arrRows) . "</table>\n<br/>\n<br/>$strFooter" . $arrCustomerGroup[1] . "</body></html>";
+						"<body>$strIntro\r\n\r\n<table><tr><th>Account</th>\t<th>Contact</th>\t<th>Email</th>\t<th>Link to account in Flex</th></tr>\r\n" .
+						implode("\r\n", $arrRows) . "</table>\r\n<br/>\r\n<br/>$strFooter" . $arrCustomerGroup[1] . "</body></html>";
 
 				// Build the text body
 				// Strip out the style
