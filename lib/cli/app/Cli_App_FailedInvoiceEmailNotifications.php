@@ -108,8 +108,8 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				// Complete building the html body
 				$html = '<html>' .
 						"<head><style content='text/css'>body { background-color: #fff; font-family: Arial, Verdana, Sans-Serif !important };th { font-weight: bold; }</style></head>" .
-						"<body>$strIntro\r\n\r\n<table><tr><th>Account</th>\t<th>Contact</th>\t<th>Email</th>\t<th>Link to account in Flex</th></tr>\r\n" .
-						implode("\r\n", $arrRows) . "</table>\r\n<br/>\r\n<br/>$strFooter" . $arrCustomerGroup[1] . "</body></html>";
+						"<body>$strIntro\n\n<table><tr><th>Account</th>\t<th>Contact</th>\t<th>Email</th>\t<th>Link to account in Flex</th></tr>\n" .
+						implode("\n", $arrRows) . "</table>\n<br/>\n<br/>$strFooter" . $arrCustomerGroup[1] . "</body></html>";
 
 				// Build the text body
 				// Strip out the style
@@ -122,17 +122,15 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				$body = $email->addSubPart('' , array('content_type' => 'multipart/alternative'));
 				$body->addSubPart($text, array('content_type' => 'text/plain'));
 				$body->addSubPart($html, array('content_type' => 'text/html'));
-				//$mimMime->_parts = array(0=>$body);
-				//$mimMime->addBcc("root@bne-beprod-01.yellowbilling.com.au");
 				$email = $email->encode();
 
 				$strHeaders	= $email['headers'];
-				$strHeaders['Bcc'] = 'holiver@yellowbilling.com.au';//'ybs-admin@yellowbilling.com.au';
+				$strHeaders['Bcc'] = 'ybs-admin@yellowbilling.com.au';
 				$strHeaders['From'] = 'EmailCheck@yellowbilling.com.au';
 				$strHeaders['Subject'] = 'Recent Email Failures: ' . date('Y-m-d H:i:s');
 				$strBody	= $email['body'];
 				$emlMail 	= &Mail::factory('mail');
-				if (!$emlMail->send(/*$strNoticationEmail*/'holiver@yellowbilling.com.au', $strHeaders, $strBody))
+				if (!$emlMail->send($strNoticationEmail, $strHeaders, $strBody))
 				{
 					$this->log("ERROR: Failed to send email to $strNoticationEmail for customer group $intCustomerGroup.", TRUE);
 					$exitCode++;
