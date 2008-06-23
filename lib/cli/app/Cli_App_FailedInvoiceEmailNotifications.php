@@ -100,7 +100,10 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				}
 
 				$arrRows = $selAccounts->FetchAll();
-				foreach ($arrRows as $idx => $email) $arrRows[$idx] = $email['TR'];
+				foreach ($arrRows as $idx => $email) 
+				{
+					$arrRows[$idx] = $email['TR'];
+				}
 
 				// Complete building the html body
 				$html = '<html>' .
@@ -124,11 +127,12 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				$email = $email->encode();
 
 				$strHeaders	= $email['headers'];
-				$strHeaders['Bcc'] = 'ybs-admin@yellowbilling.com.au';
+				$strHeaders['Bcc'] = 'holiver@yellowbilling.com.au';//'ybs-admin@yellowbilling.com.au';
 				$strHeaders['From'] = 'EmailCheck@yellowbilling.com.au';
+				$strHeaders['Subject'] = 'Recent Email Failures: ' . date('Y-m-d H:i:s');
 				$strBody	= $email['body'];
 				$emlMail 	= &Mail::factory('mail');
-				if (!$emlMail->send($strNoticationEmail, $strHeaders, $strBody))
+				if (!$emlMail->send(/*$strNoticationEmail*/'holiver@yellowbilling.com.au', $strHeaders, $strBody))
 				{
 					$this->log("ERROR: Failed to send email to $strNoticationEmail for customer group $intCustomerGroup.", TRUE);
 					$exitCode++;
