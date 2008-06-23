@@ -108,9 +108,12 @@ class Cli_App_LateNoticeRun extends Cli
 						$intAutoInvoiceAction = $arrDetails['Account']['automatic_invoice_action'];
 
 						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
-						if (!array_key_exists($intCustGrp, $arrSummary))
+						if (!array_key_exists($strCustGroupName, $arrSummary))
 						{
 							$arrSummary[$strCustGroupName] = array();
+						}
+						if (!array_key_exists($strLetterType, $arrSummary[$strCustGroupName]))
+						{
 							$arrSummary[$strCustGroupName][$strLetterType]['emails'] = array();
 							$arrSummary[$strCustGroupName][$strLetterType]['prints'] = array();
 							$arrSummary[$strCustGroupName][$strLetterType]['errors'] = array();
@@ -132,7 +135,7 @@ class Cli_App_LateNoticeRun extends Cli
 								// files/type/pdf/date/cust_group/account.pdf storage
 								// Need to add a note of this to the email
 								$this->log("Generating print PDF $strLetterType for account ". $arrDetails['Account']['AccountId']);
-								$pdfContent = $this->getPDFContent($intCustGrp, time(), $intNoticeType, $xmlFilePath, 'PRINT');
+								$pdfContent = $this->getPDFContent($intCustGrp, $arrArgs[self::SWITCH_EFFECTIVE_DATE], $intNoticeType, $xmlFilePath, 'PRINT');
 
 								// If the PDF generation failed.
 								if (!$pdfContent)
@@ -191,7 +194,7 @@ class Cli_App_LateNoticeRun extends Cli
 							case BILLING_METHOD_EMAIL:
 								// We can safely go ahead and generate this pdf.
 								$this->log("Generating email PDF $strLetterType for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
-								$pdfContent = $this->getPDFContent($intCustGrp, time(), $intNoticeType, $xmlFilePath, 'EMAIL');
+								$pdfContent = $this->getPDFContent($intCustGrp, $arrArgs[self::SWITCH_EFFECTIVE_DATE], $intNoticeType, $xmlFilePath, 'EMAIL');
 
 								// If the PDF generation failed.
 								if (!$pdfContent)
