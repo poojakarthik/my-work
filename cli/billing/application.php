@@ -2202,8 +2202,9 @@
 				}
 				
 				// Copy XML files to Frontend Server
-				CliEcho("\nCopying XML files to bne-feprod-01...\t\t\t", FALSE);
+				CliEcho("\n * Copying XML files to bne-feprod-01...\t\t\t\t", FALSE);
 				$strCopyFiles	= $strFullDirectory.'/*.xml';
+				$strRemoteDir	= str_replace('working.', '.', $strFullDirectory);
 				$strWarning		= '';
 				$resFEPROD		= ssh2_connect('10.50.50.131');
 				if ($resFEPROD)
