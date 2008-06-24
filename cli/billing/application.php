@@ -108,11 +108,11 @@
 		$this->arrServiceColumns['Indial100']		= "Service.Indial100";
 		$this->arrServiceColumns['LastChargedOn']	= "ServiceRatePlan.LastChargedOn";
 		$this->arrServiceColumns['ServiceRatePlan']	= "ServiceRatePlan.Id";
-		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
+		$this->selServices					= new StatementSelect(	"Service LEFT JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																	"RatePlan",
 																	$this->arrServiceColumns,
 																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
-																	"Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.") AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
+																	"Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.") " .
 																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1 ORDER BY CreatedOn DESC LIMIT 1)",
 																	"RatePlan.Id");
 		$this->strTestAccounts =		" AND " .
@@ -356,7 +356,7 @@
 			// SERVICE TYPE TOTALS
 			
 			// build query (no Service Extensions)
-			$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup)";
+			/*$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup)";
 			$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
 			$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup";
 			$strQuery .= " FROM CDR USE INDEX (Account_2) JOIN ServiceRateGroup ON ServiceRateGroup.Service = CDR.Service";
@@ -364,24 +364,28 @@
 			$strQuery .= " AND Status = ".CDR_TEMP_INVOICE;
 			$strQuery .= " AND Account = ".$arrAccount['Id'];
 			$strQuery .= " AND CDR.Credit = 0";
-			$strQuery .= " GROUP BY Service, RecordType";
+			$strQuery .= " GROUP BY Service, RecordType";*/
 			
 			// build query (with Service Extensions)
 			$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup, Cost)";
-			$strExtensionsQuery .= " SELECT FNN, AccountGroup, Account, CDR.Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
-			$strExtensionsQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup, SUM(Cost) AS Cost";
-			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2), ServiceRateGroup";
-			$strExtensionsQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
-			$strExtensionsQuery .= " AND Status = ".CDR_TEMP_INVOICE;
-			$strExtensionsQuery .= " AND Account = ".$arrAccount['Id'];
+			$strExtensionsQuery .= " SELECT CDR.FNN, CDR.AccountGroup, CDR.Account, CDR.Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
+			$strExtensionsQuery .= " CDR.RecordType, SUM(CDR.Charge) AS Charge, SUM(CDR.Units) AS Units, COUNT(CDR.Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup, SUM(CDR.Cost) AS Cost";
+			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2) JOIN Service ON Service.Id = CDR.Service, ServiceRateGroup";
+			$strExtensionsQuery .= " WHERE CDR.FNN IS NOT NULL AND CDR.RecordType IS NOT NULL";
+			$strExtensionsQuery .= " AND CDR.Status = ".CDR_TEMP_INVOICE;
+			$strExtensionsQuery .= " AND CDR.Account = ".$arrAccount['Id'];
 			$strExtensionsQuery .= " AND CDR.Credit = 0 ";
+			$strExtensionsQuery .= " AND Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.") ";
 			$strExtensionsQuery .= " AND ServiceRateGroup.Id = (SELECT SRG.Id FROM ServiceRateGroup SRG WHERE NOW() BETWEEN SRG.StartDatetime AND SRG.EndDatetime AND SRG.Service = CDR.Service ORDER BY CreatedOn DESC LIMIT 1) ";
-			$strExtensionsQuery .= " GROUP BY Service, FNN, RecordType";
+			$strExtensionsQuery .= " GROUP BY CDR.Service, CDR.FNN, CDR.RecordType";
 			
 			// run query
 			$qryServiceTypeTotal = new Query();
-			$qryServiceTypeTotal->Execute($strExtensionsQuery);
-			Debug($qryServiceTypeTotal->Error());
+			if ($qryServiceTypeTotal->Execute($strExtensionsQuery) === FALSE)
+			{
+				CliEcho("\n".__LINE__."Unable to calculate ServiceTypeTotals for Account #{$arrAccount['Id']}");
+				exit(1);
+			}
 			
 			// zero out totals
 			$fltDebits			= 0.0;
