@@ -2217,10 +2217,10 @@
 						if ($resSFTP)
 						{
 							// Create Directory & Symlink
-							if (ssh2_sftp_mkdir($resSFTP, $strFullDirectory, 0777, TRUE))
+							if (ssh2_sftp_mkdir($resSFTP, $strRemoteDir, 0777, TRUE))
 							{
 								// Copy XML files
-								CliEcho(shell_exec("rcp \"$strCopyFiles\" rdavis@10.50.50.131:\"$strFullDirectory\""));
+								CliEcho(shell_exec("rcp \"$strCopyFiles\" rdavis@10.50.50.131:\"$strRemoteDir\""));
 								
 								CliEcho("[   OK   ]");
 								if (!stripos($strInvoiceRun, '-'))
