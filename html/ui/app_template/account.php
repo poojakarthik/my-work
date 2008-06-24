@@ -1157,7 +1157,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			DBO()->account_status_history->from_status = DBO()->CurrentAccount->Archived->Value;
 			DBO()->account_status_history->to_status = DBO()->Account->Archived->Value;
 			DBO()->account_status_history->employee = AuthenticatedUser()->GetUserId();
-			DBO()->account_status_history->change_datetime = date('Y-m-d h:i:s');
+			DBO()->account_status_history->change_datetime = GetCurrentISODateTime();
 			if (!DBO()->account_status_history->Save())
 			{
 				// Saving the account status history record failed
@@ -1168,12 +1168,12 @@ class AppTemplateAccount extends ApplicationTemplate
 	
 			switch (DBO()->Account->Archived->Value)
 			{
-				case ACCOUNT_ACTIVE:
+				case ACCOUNT_STATUS_ACTIVE:
 					// If user has selected Active for the account status no subsequent actions have to take place
 					break;
-				case ACCOUNT_CLOSED:
-				case ACCOUNT_DEBT_COLLECTION:
-				case ACCOUNT_SUSPENDED:
+				case ACCOUNT_STATUS_CLOSED:
+				case ACCOUNT_STATUS_DEBT_COLLECTION:
+				case ACCOUNT_STATUS_SUSPENDED:
 					// If user has selected "Closed", "Debt Collection", "Suspended" for the account status, only Active services have their Status and 
 					// ClosedOn/CloseBy properties changed
 					// Active Services are those that have their Status set to Active or (their status is set to Disconnected and 
@@ -1229,7 +1229,7 @@ class AppTemplateAccount extends ApplicationTemplate
 						$bolServicesUpdated = TRUE;
 					}
 					break;
-				case ACCOUNT_ARCHIVED:
+				case ACCOUNT_STATUS_ARCHIVED:
 					// If user has selected "Archived" for the account status only Active and Disconnected services have their Status and 
 					// ClosedOn/CloseBy properties changed						
 					$strWhere = "Account = <AccountId> AND (Status IN (<ServiceActive>, <ServicePending>) OR Status = <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
@@ -1278,6 +1278,14 @@ class AppTemplateAccount extends ApplicationTemplate
 						$bolServicesUpdated = TRUE;
 					}
 					break;
+					
+				case ACCOUNT_STATUS_PENDING_ACTIVATION:
+					// The account's status should never be changed to this
+				default:
+					// Unknown Status
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Invalid Account Status");
+					return;
 			}
 		}
 		

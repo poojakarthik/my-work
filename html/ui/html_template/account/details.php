@@ -379,12 +379,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			$strStatus			= GetConstantDescription($intStatus, "account_status");
 			$strStatusOptions	.= "<option value='$intStatus' $strSelected>$strStatus</option>";
 		}
+		
 		// Render the Account Status Combobox
 		echo "
 <div class='DefaultElement'>
 	<div class='DefaultLabel'>&nbsp;&nbsp;Status :</div>
 	<div class='DefaultOutput'>
-		<select id='Account.Archived' name='Account.Archived' style='width:330px'>$strStatusOptions</select>
+		<select id='AccountStatusCombo' name='Account.Archived' style='width:330px'>$strStatusOptions</select>
 	</div>
 </div>";
 		
@@ -521,11 +522,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		echo "</div>\n"; // GroupedContent
 		
-		// Render the buttons
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.AccountDetails.CancelEdit();");
-		$this->AjaxSubmit("Commit Changes");
-		echo "</div></div>\n";
+		// Render buttons
+		echo "
+<div class='ButtonContainer'>
+	<input type='button' style='display:none;float:right' id='AccountEditSubmitButton' value='Commit Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_EditAccount', 'Commit Changes', 'Account', 'SaveDetails', '', '', '', '{$this->_strContainerDivId}')\"></input>
+	<input type='button' value='Commit Changes' style='float:right' onclick='Vixen.AccountDetails.CommitChanges()'></input>
+	<input type='button' value='Cancel' style='float:right;margin-right:5px' onclick='Vixen.AccountDetails.CancelEdit();'></input>
+</div>
+";
 		
 		// Load the Constants required for the javascript code
 		$jsonAccountStatuses = Json()->encode($GLOBALS['*arrConstant']['account_status']);

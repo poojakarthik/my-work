@@ -116,6 +116,13 @@ function VixenConstantsClass()
 		return this.Group[strConstantGroup][mixConstantValue].Description;
 	}
 	
+	// Returns true if the constant value is in the ConstantGroup, else false
+	// It is a precondition that the ConstantGroup is loaded
+	this.ConstantGroupHasConstant = function(mixConstantValue, strConstantGroup)
+	{
+		return (this.Group[strConstantGroup][mixConstantValue] != undefined);
+	}
+	
 	this.LoadConstantGroupFromServer = function(strConstantGroup)
 	{
 		//TODO! retrieves the constant group from the server
