@@ -114,13 +114,13 @@ class Cli_App_LateNoticeRun extends Cli
 						{
 							$arrSummary[$strCustGroupName] = array();
 						}
+
 						if (!array_key_exists($strLetterType, $arrSummary[$strCustGroupName]))
 						{
 							$arrSummary[$strCustGroupName][$strLetterType]['emails'] = array();
 							$arrSummary[$strCustGroupName][$strLetterType]['prints'] = array();
 							$arrSummary[$strCustGroupName][$strLetterType]['errors'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = 
-								realpath(FILES_BASE_PATH . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $pathDate . DIRECTORY_SEPARATOR . $custGroupName);
+							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = FILES_BASE_PATH . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $pathDate . DIRECTORY_SEPARATOR . $custGroupName;
 						}
 
 						$invoiceRun = $arrDetails['Account']['InvoiceRun'];
@@ -157,11 +157,32 @@ class Cli_App_LateNoticeRun extends Cli
 
 									if (!file_exists($outputDirectory))
 									{
-										RecursiveMkdir($outputDirectory);
+										$outputDirectories = explode('/', str_replace('\\', '/', $outputDirectory));
+										$directory = '';
+										foreach($outputDirectories as $subDirectory)
+										{
+											$xdirectory = $directory ? ($directory . DIRECTORY_SEPARATOR . $subDirectory) : $subDirectory;
+											if (!file_exists($xdirectory))
+											{
+												$ok = @mkdir($xdirectory);
+												if (!$ok)
+												{
+													$this->log("Failed to create directory for PDF output: $xdirectory", TRUE);
+												}
+											}
+											$directory = $xdirectory . DIRECTORY_SEPARATOR;
+										}
+										$outputDirectory = realpath($directory);
 									}
+									else
+									{
+										$outputDirectory = realpath($outputDirectory) . DIRECTORY_SEPARATOR;
+									}
+									$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = $outputDirectory;
 
 									// Write the PDF file contents to storage
 									$targetFile = $outputDirectory . DIRECTORY_SEPARATOR . $intAccountId . '.pdf';
+
 									$file = @fopen($targetFile, 'w');
 									$ok = FALSE;
 									if ($file)
@@ -179,6 +200,7 @@ class Cli_App_LateNoticeRun extends Cli
 										@fclose($file);
 
 										$arrSummary[$strCustGroupName][$strLetterType]['prints'][] = $intAccountId;
+										$arrSummary[$strCustGroupName][$strLetterType]['pdfs'][] = $targetFile;
 	
 										// We need to log the fact that we've created it, by updating the account automatic_invoice_action
 										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType stored for printing in $outputDirectory");
@@ -282,6 +304,33 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 
+			foreach($arrSummary as $strCustGroupName => $letterTypes)
+			{
+				foreach($letterTypes as $strLetterType => $details)
+				{
+					if (count($details['pdfs']))
+					{
+						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
+						$custGroup = strtolower(str_replace(' ', '_', $strCustGroupName));
+						$strTarPath = FILES_BASE_PATH . DIRECTORY_SEPARATOR . date('YmdHis', $now) . '.' .$letterType . '.' . $custGroup . '.tar';
+						$this->log("Moving generated $strLetterType PDFs for customer group $strCustGroupName to $strTarPath");
+
+						require_once "Archive/Tar.php";
+						$objArchive = new Archive_Tar($strTarPath, NULL);
+						$pathToRemove = dirname($details['pdfs'][0]).DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR;
+						$objArchive->addModify($details['pdfs'], NULL, $pathToRemove);
+
+						// Remove the archived folder
+						$this->log("Removing unarchived copies of PDFs");
+						foreach ($details['pdfs'] as $strTempPdf)
+						{
+							unlink($strTempPdf);
+						}
+					}
+					$this->log("Finished moving $strLetterType PDFs for customer group $strCustGroupName to $strTarPath");
+				}
+			}
+
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
 			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') . ' Automated late notice generation log for run dated ' . $this->runDateTime;
@@ -316,7 +365,7 @@ class Cli_App_LateNoticeRun extends Cli
 			}
 			$report[] = "";
 			$report[] = "";
-			if (!empty($arrSummary))
+			if (count($arrSummary))
 			{
 				$report[] = "Breakdown of late notice generation by customer group (for successfully generated XML files only): -";
 				foreach ($arrSummary as $custGroup => $letterTypeSummarries)
