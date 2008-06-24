@@ -2194,9 +2194,9 @@
 				}
 				
 				// If this is a Gold Invoice Run, make a Symlink from /YYYYMMDDHHIISS-gold/ to /YYYYMMDDHHIISS/
+				$strFullDirectory	= INVOICE_XML_PATH.$strInvoiceRun;
 				if (!stripos($strInvoiceRun, '-'))
 				{
-					$strFullDirectory	= INVOICE_XML_PATH.$strInvoiceRun;
 					@mkdir($strFullDirectory, 0777, TRUE);
 					@symlink($strFullDirectory, $strFullDirectory.'-gold');
 				}
