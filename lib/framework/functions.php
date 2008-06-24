@@ -3474,19 +3474,18 @@ function GetCurrentTimeForMySQL()
 }
 
 
-function ListAutomaticUnbarringAccounts($intTime)
+function ListAutomaticUnbarringAccounts($intEffectiveTime)
 {
+	$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
+
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
 
 	$arrColumns = array(
 							'AccountId'				=> "Invoice.Account",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
 							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
-							'CanAutomate'			=> "CASE WHEN COUNT(DISTINCT(Service.Id)) = EnabledServices.OKServices THEN 1 ELSE 0 END",
+							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
 	);
-
-	$unbarringProvisioningTypeName = 'xxx';
 
 	$strTables = "
 			 Invoice
@@ -3498,23 +3497,6 @@ function ListAutomaticUnbarringAccounts($intTime)
 		 AND Account.automatic_barring_status = automatic_barring_status.id
 		JOIN Service 
 		  ON Account.Id = Service.Account
-		LEFT OUTER JOIN (
-				SELECT COUNT(DISTINCT(Service.Id)) OKServices, Service.Account Account
-				FROM Service
-				JOIN CarrierModule 
-				  ON Service.Carrier = CarrierModule.Carrier
-				JOIN carrier_module_provisioning_support 
-				  ON carrier_module_provisioning_support.carrier_module_id = CarrierModule.Id
-				JOIN active_status 
-				  ON active_status.description = 'Active'
-				 AND active_status.active = carrier_module_provisioning_support.status_id
-				JOIN provisioning_type
-				  ON provisioning_type.name = '$unbarringProvisioningTypeName' 
-				 AND provisioning_type.outbound = 1 
-				 AND provisioning_type.id = carrier_module_provisioning_support.provisioning_type_id 
-				GROUP BY Service.Account
-			) EnabledServices
-		  ON EnabledServices.Account = Account.Id
 		JOIN CustomerGroup
 		  ON CustomerGroup.Id = Account.CustomerGroup
 	";
@@ -3532,32 +3514,27 @@ function ListAutomaticUnbarringAccounts($intTime)
 }
 
 
-function ListAutomaticBarringAccounts($intTime)
+function ListAutomaticBarringAccounts($intEffectiveTime)
 {
+	$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
+
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
+	$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
 
 	$arrColumns = array(
-							'InvoiceRun'			=> "Invoice.InvoiceRun",
+							'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
 							'AccountId'				=> "Invoice.Account",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
 							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
-							'CanAutomate'			=> "CASE WHEN COUNT(DISTINCT(Service.Id)) = EnabledServices.OKServices THEN 1 ELSE 0 END",
+							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
 	);
 
-	$barringProvisioningTypeName = 'xxx';
-
 	$strTables	= "
-			 InvoiceRun 
-		JOIN Invoice 
-		  ON InvoiceRun.automatic_bar_datetime IS NULL
-		 AND InvoiceRun.scheduled_automatic_bar_datetime IS NOT NULL
-		 AND UNIX_TIMESTAMP(InvoiceRun.scheduled_automatic_bar_datetime) <= $intTime
-		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun 
+			 Invoice 
 		JOIN Account 
 		  ON Invoice.Account = Account.Id
 		 AND Account.Archived IN ($strApplicableAccountStatuses) 
-		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < NOW())
+		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		JOIN credit_control_status 
 		  ON Account.credit_control_status = credit_control_status.id
 		 AND credit_control_status.can_bar = 1
@@ -3566,33 +3543,39 @@ function ListAutomaticBarringAccounts($intTime)
 		 AND account_status.can_bar = 1
 		JOIN CustomerGroup 
 		  ON Account.CustomerGroup = CustomerGroup.Id
-		JOIN Service 
-		  ON Account.Id = Service.Account
-		LEFT OUTER JOIN (
-				SELECT COUNT(DISTINCT(Service.Id)) OKServices, Service.Account Account
-				FROM Service
-				JOIN CarrierModule 
-				  ON Service.Carrier = CarrierModule.Carrier
-				JOIN carrier_module_provisioning_support 
-				  ON carrier_module_provisioning_support.carrier_module_id = CarrierModule.Id
-				JOIN active_status 
-				  ON active_status.description = 'Active'
-				 AND active_status.active = carrier_module_provisioning_support.status_id
-				JOIN provisioning_type
-				  ON provisioning_type.name = '$barringProvisioningTypeName' 
-				 AND provisioning_type.outbound = 1 
-				 AND provisioning_type.id = carrier_module_provisioning_support.provisioning_type_id 
-				GROUP BY Service.Account
-			) EnabledServices
-		  ON EnabledServices.Account = Account.Id
 		";
 
-	$strWhere	= "";
-
+	$strWhere	= "Account.Id IN (
+		SELECT DISTINCT(Account.Id) 
+		FROM InvoiceRun 
+		JOIN Invoice
+		  ON InvoiceRun.automatic_bar_datetime IS NULL
+		 AND InvoiceRun.scheduled_automatic_bar_datetime IS NOT NULL
+		 AND UNIX_TIMESTAMP(InvoiceRun.scheduled_automatic_bar_datetime) <= $intEffectiveTime
+		 AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun
+		JOIN Account 
+		  ON Account.Id = Invoice.Account
+		 AND Account.Archived IN ($strApplicableAccountStatuses) $strNoticeTypePreCondition
+		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		JOIN credit_control_status 
+		  ON Account.credit_control_status = credit_control_status.id
+		 AND credit_control_status.can_bar = 1
+		JOIN account_status 
+		  ON Account.Archived = account_status.id
+		 AND account_status.can_bar = 1
+	)";
 	$pt = GetPaymentTerms();
 
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
 	$strOrderBy	= "Invoice.Account ASC";
+
+	//*
+	// DEBUG: Output the query that gets run
+	$select = array();
+	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
+	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy\n\n";
+	//*/
 
 	$selBarrable = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
 	$mxdReturn = $selBarrable->Execute();
@@ -3648,10 +3631,10 @@ function ListLatePaymentAccounts($intNoticeType, $intEffectiveDate)
 
 	$intEffectiveInvoiceDate = GetEffectiveInvoiceDateForNoticeType($intNoticeType, $intEffectiveDate);
 	$strBillingDateClause = " AND DATE(InvoiceRun.BillingDate) <= DATE(FROM_UNIXTIME($intEffectiveInvoiceDate))";
-	$strEffectiveDate = date('Y-m-d H:i:s', $intEffectiveDate);
+	$strEffectiveDate = date("'Y-m-d'", $intEffectiveDate);
 
 	// Find all Accounts that fit the requirements for Late Notice generation
-	$arrColumns = Array(	'InvoiceRun'			=> "MAX(CASE WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
+	$arrColumns = Array(	'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
 							'AccountId'				=> "Invoice.Account",
 							'AccountGroup'			=> "Account.AccountGroup",
 							'BusinessName'			=> "Account.BusinessName",
@@ -3672,10 +3655,10 @@ function ListLatePaymentAccounts($intNoticeType, $intEffectiveDate)
 							'Suburb'				=> "UPPER(Account.Suburb)",
 							'Postcode'				=> "Account.Postcode",
 							'State'					=> "Account.State",
-							'InvoiceId'				=> "MAX(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Id END)",
-							'OutstandingNotOverdue'	=> "SUM(CASE WHEN CURDATE() <= Invoice.DueOn THEN Invoice.Balance END)",
-							'Overdue'				=> "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)",
-							'CreatedOn'				=> "MAX(Invoice.CreatedOn)",
+							'InvoiceId'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Id END)",
+							'CreatedOn'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.CreatedOn END)",
+							'OutstandingNotOverdue'	=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance END)",
+							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
 							'TotalOutstanding'		=> "SUM(Invoice.Balance)");
 
 	$strTables	= "Invoice 
@@ -3719,9 +3702,20 @@ function ListLatePaymentAccounts($intNoticeType, $intEffectiveDate)
 	$strOrderBy	= "Invoice.Account ASC";
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
 
+	/*
+	// DEBUG: Output the query that gets run
+	$select = array();
+	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
+	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy\n\n";
+	*/
+
 	$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
 	$mxdReturn = $selOverdue->Execute();
-	return $mxdReturn === FALSE ? $mxdReturn : $selOverdue->FetchAll();
+	if ($mxdReturn !== FALSE)
+	{
+		$mxdReturn = $selOverdue->FetchAll();
+	}
+	return $mxdReturn;
 }
 
 
@@ -3858,22 +3852,9 @@ function GenerateLatePaymentNotices($intNoticeType, $intEffectiveDate=0, $strBas
 	VixenRequire('lib/dom/Flex_Dom_Document.php');
 	$dom = new Flex_Dom_Document();
 
-	// For each account retrieved, work out if a late payment notice really has to be made for it
-	$strToday		= date("Y-m-d", $intEffectiveDate);
-	$intToday		= strtotime($strToday);
+	// For each account retrieved, build the late payment notice for it
 	foreach ($arrAccounts as $arrAccount)
 	{
-		// Check if the account has a LatePayment amnesty period
-		/* This is no longer needed as any Accounts with a valid LatePaymentAmnesty will not be retrieved by the query 
-		if (($arrAccount['LatePaymentAmnesty'] !== NULL) && ($intToday < strtotime($arrAccount['LatePaymentAmnesty'])))
-		{
-			// The account is within its LatePayment amnesty.  Don't produce Late Notices
-			// (This is primarily to veto the production of Final Demand notices, as they are generated after the 
-			// following bill is committed which sets DisableLateNotices to DisableLateNotices+1 for all accounts 
-			// where DisableLateNotices < 0)
-			continue; 
-		}
-		*/
 		$mxdSuccess = NULL;
 
 		switch ($intNoticeType)
@@ -3934,7 +3915,7 @@ function GenerateLatePaymentNotices($intNoticeType, $intEffectiveDate=0, $strBas
 	}
 	// Build the summary file
 	$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))). 
-					"_summary_". date("Y_m_d", $intEffectiveDate) .".csv";
+					"_summary_". date("Y_m_d") .".csv";
 	$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
 	if ($ptrSummaryFile !== FALSE)
 	{
@@ -3952,7 +3933,7 @@ function GenerateLatePaymentNotices($intNoticeType, $intEffectiveDate=0, $strBas
 	$arrFileLog = Array(	'FileName'		=>	$strFilename,
 							'Location'		=>	ltrim($strBasePath, "."),
 							'Carrier'		=>	0,
-							'ExportedOn'	=>	date("Y-m-d H:i:s", $intEffectiveDate),
+							'ExportedOn'	=>	date("Y-m-d H:i:s"),
 							'Status'		=>	0,
 							'FileType'		=>	0,
 							'SHA1'			=>	sha1($strFilename));
@@ -4031,13 +4012,6 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	static $insNotice;
 	static $insFileExport;
 
-	$paymentTerms = GetPaymentTerms();
-	$year = intval(substr($arrAccount['CreatedOn'], 0, 4));
-	$month = intval(substr($arrAccount['CreatedOn'], 5, 2));
-	$day = intval(substr($arrAccount['CreatedOn'], 8, 2));
-	$invoiceTime = mktime(0, 0, 0, $month, $day, $year);
-	$oneDaySecs =  24 * 60 * 60;
-
 	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
 	$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))) . "/xml/" . date("Ymd");
 	
@@ -4059,25 +4033,19 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	{
 		case LETTER_TYPE_OVERDUE:
 			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_OVERDUE_NOTICE');
-			$scheduledOffset = $paymentTerms['overdue_notice_days'] * $oneDaySecs;
-			$actionDateOffset = $paymentTerms['suspension_notice_days'] * $oneDaySecs;
 			break;
 		case LETTER_TYPE_SUSPENSION:
 			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_SUSPENSION_NOTICE');
-			$scheduledOffset = $paymentTerms['suspension_notice_days'] * $oneDaySecs;
-			$actionDateOffset = $paymentTerms['final_demand_notice_days'] * $oneDaySecs;
 			break;
 		case LETTER_TYPE_FINAL_DEMAND:
 			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_FINAL_DEMAND_NOTICE');
-			$scheduledOffset = $paymentTerms['final_demand_notice_days'] * $oneDaySecs;
-			$actionDateOffset = 0;
 			break;
 	}
-	$scheduledDate = $scheduledOffset + $invoiceTime;
-	$actionDate = $actionDateOffset + $invoiceTime;
+
+	$actionDate = (7 * 24 * 60 * 60) + $intEffectiveDate; // TODO: 7 days later - this should be made configurable
 
 	// Always issue on the scheduled date!
-	$dom->Document->DateIssued = date("d M Y", $invoiceTime + $scheduledOffset);
+	$dom->Document->DateIssued = date("d M Y", $intEffectiveDate);
 
 	switch($arrAccount['DeliveryMethod'])
 	{
@@ -4095,7 +4063,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	}
 
 	$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
-	$dom->Document->CreationDate->setValue(date("Y-m-d 00:00:00", $intEffectiveDate));
+	$dom->Document->CreationDate->setValue(date("Y-m-d H:i:s"));
 	$dom->Document->DeliveryMethod->setValue($strDeliveryMethod);
 
 	$dom->Document->Currency->Symbol->Location = 'Prefix';
@@ -4107,7 +4075,6 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	$dom->Document->Account->Name = $arrAccount['BusinessName'];
 	$dom->Document->Account->CustomerGroup = GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup');
 	$dom->Document->Account->Email->setValue($arrAccount['Email']);
-	$dom->Document->Account->DeliveryMethod->setValue($arrAccount['DeliveryMethod']);
 	$dom->Document->Account->Addressee->setValue($arrAccount['BusinessName']);
 	$dom->Document->Account->AddressLine1;
 	if (trim($arrAccount['AddressLine1']))
@@ -4971,6 +4938,11 @@ function ChangeAccountAutomaticBarringStatus($intAccount, $intTo, $strReason)
 		throw new Exception($message);
 	}
 	return TRUE;
+}
+
+function ListAutomaticallyBarrable()
+{
+	
 }
 
 
