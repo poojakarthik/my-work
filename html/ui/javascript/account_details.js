@@ -46,6 +46,9 @@ function VixenAccountDetailsClass()
 	this.strContainerDivId			= null;
 	this.bolInvoicesAndPaymentsPage	= null;
 	
+	// Stores the current details of the account
+	this.objAccount					= null;
+	
 	//------------------------------------------------------------------------//
 	// InitialiseView
 	//------------------------------------------------------------------------//
@@ -71,32 +74,33 @@ function VixenAccountDetailsClass()
 		this.bolInvoicesAndPaymentsPage = bolInvoicesAndPaymentsPage;
 		
 		// Register Event Listeners
-		Vixen.EventHandler.AddListener("OnAccountDetailsUpdate", this.OnUpdate);
+		Vixen.EventHandler.AddListener("OnAccountDetailsUpdate", this.OnUpdate, this);
 	}
 	
 	//------------------------------------------------------------------------//
-	// InitialiseView
+	// InitialiseEdit
 	//------------------------------------------------------------------------//
 	/**
-	 * InitialiseView
+	 * InitialiseEdit
 	 *
-	 * Initialises the object for when the AccountDetails HtmlTemplate is rendered with VIEW context
+	 * Initialises the object for when the AccountDetails HtmlTemplate is rendered with Edit context
 	 *  
-	 * Initialises the object for when the AccountDetails HtmlTemplate is rendered with VIEW context
+	 * Initialises the object for when the AccountDetails HtmlTemplate is rendered with Edit context
 	 *
-	 * @param	int		intAccountId				Id of the account
+	 * @param	object	objAccount					account record as taken from the database
 	 * @param 	string	strTableContainerDivId		Id of the div that stores the table which lists all the services
 	 * @param	bool	bolInvoicesAndPaymentsPage	TRUE, if this is being rendered for the invoices and payments page, ELSE FALSE
 	 *
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseEdit = function(intAccountId, strContainerDivId, bolInvoicesAndPaymentsPage)
+	this.InitialiseEdit = function(objAccount, strContainerDivId, bolInvoicesAndPaymentsPage)
 	{
 		// Save the parameters
-		this.intAccountId				= intAccountId;
+		this.intAccountId				= objAccount.Id;
 		this.strContainerDivId			= strContainerDivId;
 		this.bolInvoicesAndPaymentsPage = bolInvoicesAndPaymentsPage;
+		this.objAccount					= objAccount;
 	}
 
 	//------------------------------------------------------------------------//
@@ -168,13 +172,13 @@ function VixenAccountDetailsClass()
 	 * @return	void
 	 * @method
 	 */
-	this.OnUpdate = function(objEvent)
+	this.OnUpdate = function(objEvent, objThis)
 	{
 		// The "this" pointer does not point to this object, when it is called.
 		// It points to the Window object
-		var strContainerDivId			= Vixen.AccountDetails.strContainerDivId;
-		var intAccountId				= Vixen.AccountDetails.intAccountId;
-		var bolInvoicesAndPaymentsPage	= Vixen.AccountDetails.bolInvoicesAndPaymentsPage;
+		var strContainerDivId			= objThis.strContainerDivId;
+		var intAccountId				= objThis.intAccountId;
+		var bolInvoicesAndPaymentsPage	= objThis.bolInvoicesAndPaymentsPage;
 		
 		if (intAccountId != objEvent.Data.Account.Id)
 		{

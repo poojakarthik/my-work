@@ -151,6 +151,9 @@
 		<form method="POST" action="account_add.php">
 			<xsl:choose>
 				<xsl:when test="/Response/AccountGroup">
+					<div class="MsgNoticeWide">
+						<strong><span class="Attention">Attention</span> : </strong>The account's status will default to &quot;Pending Activation&quot;
+					</div>
 					<div class="Wide-Form">
 						<div class="Form-Content">
 							<table border="0" cellpadding="3" cellspacing="0">
@@ -181,7 +184,9 @@
 					<div class="MsgNoticeWide">
 						<strong><span class="Attention">Attention</span> :</strong>
 						This form will add a new Customer. If you wish to add an Account to an existing Customer, 
-						you will need to use the &quot; Add Associated Account&quot; link from the existing Account.
+						you will need to use the &quot;Add Associated Account&quot; link from the existing Account.
+						<br />
+						<strong><span class="Attention">Attention</span> : </strong>The account's status will default to &quot;Pending Activation&quot;
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>

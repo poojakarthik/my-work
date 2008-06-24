@@ -64,6 +64,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("account_details");
+		$this->LoadJavascript("constants");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -82,9 +83,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		switch ($this->_intContext)
 		{
-			case HTML_CONTEXT_LEDGER_DETAIL:
-				$this->_RenderLedgerDetail();
-				break;
 			case HTML_CONTEXT_VIEW:
 				$this->_RenderForViewing();
 				break;
@@ -362,25 +360,34 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroupName, RENDER_OUTPUT);
 		}
 		
-		// Reorder the list of Account Status values
-		DBL()->account_status->Load();
-		
-		// Render the Account Status Combobox
-		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Account Status :</div>\n";
-		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Account.Archived' name='Account.Archived' style='width:330px'>\n";
-		while ($status = DBL()->account_status->current())
+		// Work out which Account Status' can be chosen
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
-			$id = $status->id->Value;
-			$strLabel = $status->name->Value;
-			$strSelected = (DBO()->Account->Archived->Value == $id) ? "selected='selected'" : "";
-			echo "		<option value='$id' $strSelected>$strLabel</option>\n";
-			DBL()->account_status->next();
+			// The account is pending activation
+			$arrAccountStatuses = array(ACCOUNT_STATUS_PENDING_ACTIVATION, ACCOUNT_STATUS_ACTIVE);
 		}
-		echo "      </select>\n";
-		echo "   </div>\n";
-		echo "</div>\n";
+		else
+		{
+			// The account has already been activated
+			$arrAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED, ACCOUNT_STATUS_DEBT_COLLECTION, ACCOUNT_STATUS_ARCHIVED);
+		}
+		
+		$strStatusOptions = "";
+		foreach ($arrAccountStatuses as $intStatus)
+		{
+			$strSelected		= (DBO()->Account->Archived->Value == $intStatus)? "selected='selected'" : "";
+			$strStatus			= GetConstantDescription($intStatus, "account_status");
+			$strStatusOptions	.= "<option value='$intStatus' $strSelected>$strStatus</option>";
+		}
+		// Render the Account Status Combobox
+		echo "
+<div class='DefaultElement'>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Status :</div>
+	<div class='DefaultOutput'>
+		<select id='Account.Archived' name='Account.Archived' style='width:330px'>$strStatusOptions</select>
+	</div>
+</div>";
+		
 		
 		DBO()->Account->BusinessName->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
 		DBO()->Account->TradingName->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
@@ -520,10 +527,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->AjaxSubmit("Commit Changes");
 		echo "</div></div>\n";
 		
+		// Load the Constants required for the javascript code
+		$jsonAccountStatuses = Json()->encode($GLOBALS['*arrConstant']['account_status']);
+		echo "<script type='text/javascript'>\$Const.SetConstantGroup('account_status', $jsonAccountStatuses);</script>";
+		
 		// Initialise the AccountDetails object
 		$strInvoicesAndPaymentsPage = (DBO()->Account->InvoicesAndPaymentsPage->Value) ? "true" : "false";		
-		$intAccountId				= DBO()->Account->Id->Value;
-		$strJavascript = "Vixen.AccountDetails.InitialiseEdit($intAccountId, '{$this->_strContainerDivId}', $strInvoicesAndPaymentsPage);";
+		$jsonObjAccount				= Json()->encode(DBO()->Account->_arrProperties);
+		$strJavascript = "Vixen.AccountDetails.InitialiseEdit($jsonObjAccount, '{$this->_strContainerDivId}', $strInvoicesAndPaymentsPage);";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 		
 		$this->FormEnd();
@@ -539,138 +550,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<script type='text/javascript'>$strJsCode</script>";
 	}
 
-	//------------------------------------------------------------------------//
-	// _RenderLedgerDetail DEPRICATED
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderLedgerDetail()
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * @method
-	 */
-	private function _RenderLedgerDetail()
-	{
-		echo "<h2 class='Account'>Account Details</h2>\n";
-		echo "<div class='GroupedContent'>\n";
-
-		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
-		
-		// Render the Id of the Account as a hidden input
-		DBO()->Account->Id->RenderHidden();
-		DBO()->Account->Archived->RenderHidden();
-
-		// Use a table to stick the account details and the checkbox and radio buttons next to each other
-
-		echo "<table border='0' cellspacing='0' cellpadding='0'>\n";
-		echo "   <tr>\n";
-		echo "      <td width='65%' valign='top'>\n";
-		// Render the details of the Account
-		DBO()->Account->Id->RenderHidden();
-		DBO()->Account->AccountGroup->RenderHidden();
-		DBO()->Account->Id->RenderOutput();
-		if (DBO()->Account->BusinessName->Value != "")
-		{
-			// Display the Business Name, but only if there is one
-			DBO()->Account->BusinessName->RenderOutput();
-		}
-		elseif (DBO()->Account->TradingName->Value != "")
-		{
-			// If there was no Business Name, display the Trading Name, if there is one
-			DBO()->Account->TradingName->RenderOutput();
-		}
-		else
-		{
-			// There is no Business Name or Trading Name
-			DBO()->Account->BusinessName->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
-		}
-		if (DBO()->Account->ABN->Value != "")
-		{
-			DBO()->Account->ABN->RenderOutput();
-		}
-		elseif (DBO()->Account->ACN->Value != "")
-		{
-			DBO()->Account->ACN->RenderOutput();
-		}
-		else
-		{
-			DBO()->Account->ABN->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
-		}
-		
-		// Retrieve the CustomerGroup
-		DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
-		DBO()->CustomerGroup->Load();
-		$strCustomerGroup = DBO()->CustomerGroup->InternalName->Value;
-		
-		DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroup, RENDER_OUTPUT);
-		
-		DBO()->Account->Balance->RenderOutput();
-		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
-		{
-			// The user can edit the Admin fee and late payment fee properties
-			// Finish off the first column
-			echo "      </td>\n";
-			
-			// Start the second
-			echo "      <td width='35%' valign='top'>\n";
-			// Render the properties that can be changed
-			DBO()->Account->DisableDDR->RenderInput();
-			echo "<div class='ContentSeparator'></div>\n";
-			DBO()->Account->DisableLatePayment->RenderInput();
-			echo "<div class='ContentSeparator'></div>\n";
-			DBO()->Account->DisableLateNotices->RenderInput(1);
-			echo "      </td>\n";
-		}
-		else
-		{
-			// The user can't edit the Admin fee and late payment fee properties
-			// Render them as labels
-			DBO()->Account->DisableDDR->RenderOutput();
-			DBO()->Account->DisableLateNotices->RenderOutput();
-			if (DBO()->Account->DisableLatePayment->Value === NULL)
-			{
-				// If DisableLatePayment is NULL then set it to 0
-				DBO()->Account->DisableLatePayment = 0;
-			}
-			DBO()->Account->DisableLatePayment->RenderOutput();
-			echo "      </td>\n";
-		}
-		// Finish the table
-		echo "   </tr>\n";
-		echo "</table>\n";
-
-		// If the user doesn't have Admin privileges they cannot select the "Never charge a late payment fee" option
-		// If the user doesn't have Operator privileges then the checkbox and radio buttons aren't even rendered
-		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN) && AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
-		{
-			// Disable the "Never Charge a late payment fee" radio option
-			echo "<script type='text/javascript'>document.getElementById('Account.DisableLatePayment_1').disabled = true;
-					document.getElementById('Account.DisableLatePayment_1.Label').style.color='#4C4C4C';</script>";
-		}
-		
-		echo "</div>\n";  //GroupedContent
-		
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
-		{
-			// Render the submit button
-			echo "<div class='ButtonContainer'><div class='Right'>\n";
-			$this->AjaxSubmit("Apply Changes");
-			echo "</div></div>\n";
-		}
-		else
-		{
-			echo "<div class='SmallSeperator'></div>\n";
-		}
-		
-		// Declare the end of the form
-		$this->FormEnd();
-	}
 }
 
 ?>

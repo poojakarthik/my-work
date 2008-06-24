@@ -900,7 +900,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load the account
 		DBO()->Account->LoadMerge();
 		
-		// Render the AccountDetails HtmlTemplate for Viewing
+		// Render the AccountDetails HtmlTemplate for Editing
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, DBO()->Container->Id->Value);
 
 		return TRUE;

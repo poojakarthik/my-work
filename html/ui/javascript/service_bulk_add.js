@@ -26,7 +26,8 @@
  */
 
 // Define constants used by this class
-//TODO! These should probably be defined elsewhere
+//TODO! Vixen.Constants is now defined in constants.js.  You have to load the ConstantGroups into it from the server
+//$Const 
 if (Vixen.Constants == undefined)
 {
 	Vixen.Constants = {};

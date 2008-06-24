@@ -187,7 +187,7 @@
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				'DisableDDR'			=> ($arrDetails ['Account']['DisableDDR']) ? $arrDetails ['Account']['DisableDDR'] : 0,
 				'DisableLatePayment'	=> $arrDetails ['Account']['DisableLatePayment'],
-				'Archived'				=> 0
+				'Archived'				=> ACCOUNT_STATUS_PENDING_ACTIVATION
 			);
 			
 			$insAccount = new StatementInsert ('Account', $arrAccount);

@@ -329,6 +329,9 @@ $GLOBALS['*arrConstant']['Account'][3]['Constant']		= 'ACCOUNT_DEBT_COLLECTION';
 $GLOBALS['*arrConstant']['Account'][3]['Description']	= 'Debt Collection';
 $GLOBALS['*arrConstant']['Account'][4]['Constant']		= 'ACCOUNT_SUSPENDED';
 $GLOBALS['*arrConstant']['Account'][4]['Description']	= 'Suspended';
+$GLOBALS['*arrConstant']['Account'][5]['Constant']		= 'ACCOUNT_PENDING_ACTIVATION';
+$GLOBALS['*arrConstant']['Account'][5]['Description']	= 'Pending Activation';
+
 
 // CDR status
 // CDR Handling (Range is 100-199)

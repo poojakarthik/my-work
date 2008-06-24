@@ -1854,6 +1854,10 @@ function LoadFramework($strFrameworkDir=NULL)
 	// Load framework
 	require_once($strFrameworkDir."framework.php");
 	require_once($strFrameworkDir."functions.php");
+	if (file_exists($strFrameworkDir."database_constants.php"))
+	{
+		require_once($strFrameworkDir."database_constants.php");
+	}
 	require_once($strFrameworkDir."definitions.php");
 	
 	require_once($strFrameworkDir."db_access.php");
@@ -4898,7 +4902,6 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	return Array('Files' => $arrFiles, 'Processed' => TRUE);
 }
 
-
 function BarAccount($intAccountId, $bolAutomatic=FALSE)
 {
 	// Throw exception if fails
@@ -4969,5 +4972,6 @@ function ChangeAccountAutomaticBarringStatus($intAccount, $intTo, $strReason)
 	}
 	return TRUE;
 }
+
 
 ?>
