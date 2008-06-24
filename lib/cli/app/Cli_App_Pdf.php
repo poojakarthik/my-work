@@ -337,7 +337,7 @@ class Cli_App_Pdf extends Cli
 				self::ARG_LABEL 		=> "EFFECTIVE_DATE",
 				self::ARG_REQUIRED 	=> FALSE,
 				self::ARG_DESCRIPTION => "is the effective date of the document in 'YYYY-mm-dd hh:ii:ss' or Unix " .
-										"timestamp format [optional, default taken from XML file]",
+										"timestamp format and detmines the template used [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> time(),
 				self::ARG_VALIDATION 	=> 'Cli::_validDate("%1$s")'
 			),
