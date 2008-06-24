@@ -146,9 +146,6 @@
 															  		NULL,
 															  		"2",
 															  		"Nature");
-		
-		// service silos
-		//$this->selSilos	= new StatementSelect("Silo", "*", "RatePlan = <RatePlan> AND RecordType = <RecordType>");
 
 		// Init Update Statements
 		$this->arrCDRCols = Array();
@@ -334,18 +331,26 @@
 			$arrAccountReturn = Array();
 			
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
+
+
+		$this->arrCDRCols = Array();
+		$this->arrCDRCols['Status']			= CDR_TEMP_INVOICE;
+		$this->arrCDRCols['InvoiceRun']		= NULL;
+		$this->updCDRs						= new StatementUpdate("CDR USE INDEX (Account_2)", "Account = <Account> AND Credit = 0 AND Status = ".CDR_RATED, $this->arrCDRCols);
 			
+
 			// Link CDRs if creating a new Invoice
+			$qryUpdateCDRs	= new Query();
 			if (!$bolRegenerate)
 			{
 				//$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 				
 				// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
 				$this->arrCDRCols['InvoiceRun'] = $this->_strInvoiceRun;
-				if(!$this->updCDRs->Execute($this->arrCDRCols, Array('Account' => $arrAccount['Id'])))
+				if($qryUpdateCDRs->Execute("UPDATE CDR JOIN Service ON Service.Id = CDR.Service SET CDR.Status = ".CDR_TEMP_INVOICE." WHERE CDR.Account = {$arrAccount['Id']} AND CDR.Credit = 0 AND Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.")") === FALSE)
 				{
-					// Report and continue
-					//$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
+					CliEcho("\n".__LINE__." >> Unable to Update Account CDRs: ".$qryUpdateCDRs->Error());
+					exit(1);
 				}
 				else
 				{
@@ -353,19 +358,7 @@
 				}
 			}
 			
-			// SERVICE TYPE TOTALS
-			
-			// build query (no Service Extensions)
-			/*$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup)";
-			$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
-			$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup";
-			$strQuery .= " FROM CDR USE INDEX (Account_2) JOIN ServiceRateGroup ON ServiceRateGroup.Service = CDR.Service";
-			$strQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
-			$strQuery .= " AND Status = ".CDR_TEMP_INVOICE;
-			$strQuery .= " AND Account = ".$arrAccount['Id'];
-			$strQuery .= " AND CDR.Credit = 0";
-			$strQuery .= " GROUP BY Service, RecordType";*/
-			
+			// SERVICE TYPE TOTALS			
 			// build query (with Service Extensions)
 			$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup, Cost)";
 			$strExtensionsQuery .= " SELECT CDR.FNN, CDR.AccountGroup, CDR.Account, CDR.Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
