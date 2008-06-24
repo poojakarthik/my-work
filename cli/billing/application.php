@@ -331,14 +331,7 @@
 			$arrAccountReturn = Array();
 			
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
-
-
-		$this->arrCDRCols = Array();
-		$this->arrCDRCols['Status']			= CDR_TEMP_INVOICE;
-		$this->arrCDRCols['InvoiceRun']		= NULL;
-		$this->updCDRs						= new StatementUpdate("CDR USE INDEX (Account_2)", "Account = <Account> AND Credit = 0 AND Status = ".CDR_RATED, $this->arrCDRCols);
 			
-
 			// Link CDRs if creating a new Invoice
 			$qryUpdateCDRs	= new Query();
 			if (!$bolRegenerate)
@@ -346,8 +339,7 @@
 				//$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 				
 				// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
-				$this->arrCDRCols['InvoiceRun'] = $this->_strInvoiceRun;
-				if($qryUpdateCDRs->Execute("UPDATE CDR JOIN Service ON Service.Id = CDR.Service SET CDR.Status = ".CDR_TEMP_INVOICE." WHERE CDR.Account = {$arrAccount['Id']} AND CDR.Credit = 0 AND Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.")") === FALSE)
+				if($qryUpdateCDRs->Execute("UPDATE CDR USE INDEX (Account_2) JOIN Service ON Service.Id = CDR.Service SET InvoiceRun = '{$this->_strInvoiceRun}' AND CDR.Status = ".CDR_TEMP_INVOICE." WHERE CDR.Account = {$arrAccount['Id']} AND CDR.Credit = 0 AND Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.")") === FALSE)
 				{
 					CliEcho("\n".__LINE__." >> Unable to Update Account CDRs: ".$qryUpdateCDRs->Error());
 					exit(1);
