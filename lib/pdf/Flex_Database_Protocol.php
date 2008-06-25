@@ -629,13 +629,14 @@ class Flex_Database_Protocol
 	*/
 	public function unlink($path)
 	{
-		// TODO
+		// TODO: Complete implementation to make fully functional
 		return FALSE;
 
-
+		/* This worked for file writes, but should be modified to perform db deletes
 		$f = new Flex_Database_Protocol();
 		$p = "";
 		return ($f->stream_open($path, "d", STREAM_REPORT_ERRORS, $p) && $f->deleteFile());
+		*/
 	}
 
 
@@ -693,9 +694,9 @@ class Flex_Database_Protocol
 		}
 
 
-		// TODO
+		// TODO: Complete implementation to make fully functional
 		return FALSE;
-
+		/*
 		// If we have a placeholder name then we should get all of the available resources for it
 		if ($this->urlParts[self::FDBP_URL_PLACEHOLDER_NAME])
 		{
@@ -707,6 +708,7 @@ class Flex_Database_Protocol
 		{
 
 		}
+		*/
 	}
 
 
@@ -763,8 +765,9 @@ class Flex_Database_Protocol
 
 	private function saveFile()
 	{
-		// TODO
+		// TODO: Complete implementation to make fully functional
 		return FALSE;
+		/* The following worked for file writes, but needs modifying for db.
 		if (!$this->bolChangesToSave)
 		{
 			return TRUE;
@@ -793,6 +796,7 @@ class Flex_Database_Protocol
 
 		$this->bolChangesToSave = !$savedOK;
 		return $savedOK;
+		*/
 	}
 
 	private function createFile()
@@ -888,7 +892,8 @@ class Flex_Database_Protocol
 		else //This must be TRUE >> if ($this->urlParts[self::FDBP_URL_EFFECTIVE_DATE])
 		{
 			// Load the resource that was effective on that effective date
-			// TODO
+			// TODO: Complete implementation to make fully functional
+			$arrRecord = array(); // Should be result of db query!!
 			$this->strFileContents = $arrRecord["FileContent"];
 			$this->effectiveToDate = intval($arrRecord["EndDatetime"]);
 			$this->urlParts[self::FDBP_URL_EFFECTIVE_DATE] = intval($arrRecord["StartDatetime"]);
