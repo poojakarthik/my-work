@@ -53,7 +53,7 @@
 											[inputID] <- to be added
 								|
 							[serviceN]
-							[errorCount]
+							['errorCount']
 							[error1] -		[errorDescription]
 											[inputID] <- to be added
 								|
@@ -88,12 +88,12 @@
 			else
 			{
 				 // Reply: !error! FNN already exists
-				 $arrReply[errorCount]++;
-				 $arrReply["error" . $arrReply[errorCount]] = "The service " . $objResults->{"service$i"}->FNN . " already exists";
+				 $arrReply['errorCount']++;
+				 $arrReply["error" . $arrReply['errorCount']] = "The service " . $objResults->{"service$i"}->FNN . " already exists";
 			}
 		}
 		// if any already exist, immediately tell the user
-		if ($arrReply[errorCount] <> 0)
+		if ($arrReply['errorCount'] <> 0)
 		{
 			AjaxReply($arrReply);
 			exit;
@@ -129,8 +129,8 @@
 				catch (Exception $e)
 				{
 					// Reply: !error! Adding service failed
-					$arrReply[errorCount]++;
-					$arrReply["error" . $arrReply[errorCount]] = "Service " . $strFNN . " could not be added";
+					$arrReply['errorCount']++;
+					$arrReply["error" . $arrReply['errorCount']] = "Service " . $strFNN . " could not be added";
 				}
 				// This plan was successfuly
 				
@@ -183,8 +183,8 @@
 					catch (Exception $e)
 					{
 						// Reply: !error! Adding provisioning failed
-						$arrReply[errorCount]++;
-						$arrReply["error" . $arrReply[errorCount]] = "Provisioning Details for service " . $strFNN . " could not be added";
+						$arrReply['errorCount']++;
+						$arrReply["error" . $arrReply['errorCount']] = "Provisioning Details for service " . $strFNN . " could not be added";
 					}
 					
 					
@@ -210,8 +210,8 @@
 						if (!$carCarrier->setValue ($arrRatePlan['CarrierPreselection']) || !$carCarrier->setValue ($arrRatePlan['CarrierFullService']))
 						{	
 							// Reply: !error! Provisioning request failed
-							$arrReply[errorCount]++;
-							$arrReply["error" . $arrReply[errorCount]] ="Provisioning Request for service " . $strFNN . " was not successful";
+							$arrReply['errorCount']++;
+							$arrReply["error" . $arrReply['errorCount']] ="Provisioning Request for service " . $strFNN . " was not successful";
 						}
 						
 						// Check the requested Provisioning Request Type exists
@@ -219,8 +219,8 @@
 						if (!$prtRequestType->setValue (901) || !$prtRequestType->setValue (900))
 						{
 							// Reply: !error! Provisioning request failed
-							$arrReply[errorCount]++;
-							$arrReply["error" . $arrReply[errorCount]] ="Provisioning Request for service " . $strFNN . " was not successful";
+							$arrReply['errorCount']++;
+							$arrReply["error" . $arrReply['errorCount']] ="Provisioning Request for service " . $strFNN . " was not successful";
 						}
 						
 						// Do the Provisioning Request
@@ -230,8 +230,8 @@
 					catch (Exception $e)
 					{
 						// Reply: !error! Provisioning request failed
-						$arrReply[errorCount]++;
-						$arrReply["error" . $arrReply[errorCount]] ="Provisioning Request for service " . $strFNN . " was not successful";
+						$arrReply['errorCount']++;
+						$arrReply["error" . $arrReply['errorCount']] ="Provisioning Request for service " . $strFNN . " was not successful";
 					}
 				} // end of landline provisioning request if
 			
