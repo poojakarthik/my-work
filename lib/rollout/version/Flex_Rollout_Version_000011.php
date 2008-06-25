@@ -28,12 +28,12 @@ class Flex_Rollout_Version_000011 extends Flex_Rollout_Version
 			INSERT INTO carrier_provisioning_support 
 			(carrier_id, provisioning_type_id, status_id)
 			VALUES
-			(1, 902, 1),
-			(1, 903, 1),
-			(2, 902, 1),
-			(2, 903, 1),
-			(5, 902, 1),
-			(5, 903, 1);
+			(1, 902, 2),
+			(1, 903, 2),
+			(2, 902, 2),
+			(2, 903, 2),
+			(5, 902, 2),
+			(5, 903, 2);
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
