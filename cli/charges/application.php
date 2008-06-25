@@ -242,6 +242,7 @@
 					AND Status			!= CHARGE_INVOICED
 					LIMIT 1
 					*/
+					$intNotUnique = FALSE; // Added as false, just so that it is initialised!
 					//$intNotUnique = // Note: It looks like this is referred to as $intNonUnique elsewhere!!!
 					if ($intNotUnique)
 					{
@@ -409,7 +410,7 @@
 	 {
 	 	// No longer used
 	 	return FALSE;
-	 	
+	 	/*
 	 	if (!$strRef)
 		{
 			$strRef = date('my');
@@ -447,7 +448,7 @@
 			if (($fltBalance = $this->Framework->GetOverdueBalance($arrAccount['Id'])) > 10)
 			{
 				// add to report
-				//TODO!rich! replace this echo with report output
+				//TO DO!rich! replace this echo with report output
 				echo("{$arrAccount['Id']} : ".number_format($fltBalance,2)."\n");
 				
 				// add to the count
@@ -461,10 +462,11 @@
 		}
 		
 		// Change late payment fee settings
-		// TODO!flame! make this do something
+		// TO DO!flame! make this do something
 		
 		// return count
 		return $intCount;
+		*/
 	 }
 	
 	//------------------------------------------------------------------------//
