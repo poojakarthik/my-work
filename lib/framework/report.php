@@ -354,6 +354,9 @@ class Report
 		}
 		
 		// TODO: Finish Me
+		$strMessage = ''; // <<< This is of no use!
+		$bolNewLine = FALSE; // <<< ???
+		$bolDisplay = FALSE; // <<< ???
 		
 		$this->AddMessage($strMessage, $bolNewLine, $bolDisplay);
 	}	
