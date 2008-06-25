@@ -206,7 +206,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$this->_AppendCDR('RecordType', $mixValue);
 
 		// Destination Code & Description (context based)
-		unset($strDescription);
+		$strDescription = '';
 		if ($this->_intContext > 0)
 		{
 			if ($intCarrierRecordType == "7")

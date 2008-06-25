@@ -262,7 +262,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$this->_AppendCDR('EndDatetime', $mixValue);
 	
 		// Description
-		unset($strDescription);
+		$strDescription = '';
 		//TODO-LATER !!!! - add description
 		if ($strDescription)
 		{

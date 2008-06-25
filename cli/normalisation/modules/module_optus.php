@@ -305,7 +305,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		$this->_AppendCDR('Units', $mixValue);
 		
 		// Description
-		unset($strDescription);
+		$strDescription = '';
 		//TODO-LATER !!!! - add description
 		if ($strDescription)
 		{
