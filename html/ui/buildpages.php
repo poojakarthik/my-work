@@ -1,5 +1,7 @@
 <?php
 
+// CULL:: Is this used? If not, get rid. Also, can probably get rid of the skel_pages directory if this goes.
+
 function NewPage($strApp, $strMethod)
 {
 	/*------------------------------------------------------------------
