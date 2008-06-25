@@ -82,7 +82,7 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
-		if ($bolUserHasAdminPerm)
+		if ($bolIsAdminUser)
 		{
 			// User must have admin permissions to view the Administrative Console
 			ContextMenu()->Admin_Console();
@@ -166,7 +166,7 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
-		if ($bolUserHasAdminPerm)
+		if ($bolIsAdminUser)
 		{
 			// User must have admin permissions to view the Administrative Console
 			ContextMenu()->Admin_Console();
