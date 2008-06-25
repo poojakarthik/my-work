@@ -11,6 +11,8 @@
 require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
+define('FLEX_RATING_BATCH_LIMIT'	, 1000);
+
 echo "<pre>\n";
 
 // Turn on reporting
@@ -18,14 +20,25 @@ $arrConfig['Reporting'] = TRUE;
 
 // Parse Command Line Arguments
 $bolOnlyNew	= FALSE;
-foreach ($argv as $strArg)
+$intLimit	= NULL;
+foreach ($argv as $intIndex=>$strArg)
 {
-	switch (trim($strArg))
+	if ($intIndex > 0)
 	{
-		case '-n':
-			// Only Rate new CDRs
-			$bolOnlyNew = TRUE;
-			break;
+		switch (trim($strArg))
+		{
+			case '-n':
+				// Only Rate new CDRs
+				$bolOnlyNew = TRUE;
+				break;
+			
+			default:
+				if ((int)$strArg)
+				{
+					// Limit
+					$intLimit	= (int)$strArg;
+				}
+		}
 	}
 }
 
@@ -36,9 +49,26 @@ $appRating = new ApplicationRating($arrConfig);
 $appRating->ReRate(CDR_RATE_NOT_FOUND);
 
 // run the Rate method until there is nothing left to rate
-while ($appRating->Rate($bolOnlyNew))
+$mixRemaining	= ($intLimit) ? $intLimit : TRUE;
+$intBatch		= FLEX_RATING_BATCH_LIMIT;
+while ($mixRemaining)
 {
-
+	if (is_int($mixRemaining))
+	{
+		$mixRemaining	= ($mixRemaining - $intBatch);
+		if ($intBatch > $mixRemaining)
+		{
+			$intBatch		= $mixRemaining;
+			$mixRemaining	= 0;
+		}
+	}
+	
+	// Rate this batch
+	if ($appRating->Rate($bolOnlyNew, $intBatch) === FALSE)
+	{
+		// If there is nothing left to rate, then exit
+		break;
+	}
 }
 
 // Check our profit margin

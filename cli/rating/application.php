@@ -435,7 +435,7 @@
 	 * @return	bool	returns true untill all CDRs have been rated
 	 * @method
 	 */
-	 function Rate($bolOnlyNew = FALSE)
+	 function Rate($bolOnlyNew = FALSE, $intLimit = 1000)
 	 {
 		// Is there a Bill Run active?
 		$selInvoiceTemp	= new StatementSelect("InvoiceTemp", "Id", "1", NULL, 1);
@@ -462,7 +462,7 @@
 		unset($arrColumns['SequenceNo']);
 		$arrColumns['Id'] = 0;
 		//$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
-		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime ASC", "1000");
+		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime ASC", (int)$intLimit);
 		
 	 	// get list of CDRs to rate (limit results to 1000)
 	 	$this->_selGetCDRs->Execute();
