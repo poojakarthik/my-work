@@ -102,6 +102,7 @@ class Flex_Data_Model
 			{
 				return NULL;
 			}
+			$modelDefinition = NULL;
 			require $filePath;
 			self::$cache[$tableName] = $modelDefinition;
 		}
