@@ -2690,7 +2690,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Currently don't allow the user to use this functionality
 		Ajax()->AddCommand("Alert", "ERROR: This functionality has been prohibited, as it currently compromises the integrity and accuracy of the history of the Service's plan details");
 		return TRUE;
-
+/*
 		// Removing RateGroups can not be done while billing is in progress
 		if (IsInvoicing())
 		{
@@ -2876,6 +2876,7 @@ class AppTemplateService extends ApplicationTemplate
 
 		Ajax()->AddCommand("Alert", "The RateGroup has been successfully removed");
 		return TRUE;
+*/
 	}
 	
 	//------------------------------------------------------------------------//
