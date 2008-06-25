@@ -115,24 +115,24 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
 			
 			$intFullService = $dboRatePlan->CarrierFullService->Value;
-			if (!isset($GLOBALS['*arrConstant'][Carrier][$intFullService]))
+			if (!isset($GLOBALS['*arrConstant']['Carrier'][$intFullService]))
 			{
 				$strFullService = "[Not Specified]";
 			}
 			else
 			{
-				$strFullService = $GLOBALS['*arrConstant'][Carrier][$intFullService]['Description'];
+				$strFullService = $GLOBALS['*arrConstant']['Carrier'][$intFullService]['Description'];
 			}
 			$dboRatePlan->CarrierFullService->RenderArbitrary($strFullService, RENDER_OUTPUT);
 			
 			$intPreselection = $dboRatePlan->CarrierPreselection->Value;
-			if (!isset($GLOBALS['*arrConstant'][Carrier][$intPreselection]))
+			if (!isset($GLOBALS['*arrConstant']['Carrier'][$intPreselection]))
 			{
 				$strPreselection = "[Not Specified]";
 			}
 			else
 			{
-				$strPreselection = $GLOBALS['*arrConstant'][Carrier][$intPreselection]['Description'];
+				$strPreselection = $GLOBALS['*arrConstant']['Carrier'][$intPreselection]['Description'];
 			}
 			$dboRatePlan->CarrierPreselection->RenderArbitrary($strPreselection, RENDER_OUTPUT);
 			
