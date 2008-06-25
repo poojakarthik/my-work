@@ -2,8 +2,8 @@
 
 abstract class Flex_Pdf_Page_Orderable
 {
-	var $dom = null;
-	var $template = null;
+	public $dom = null;
+	public $template = null;
 
 	function __construct($template, $domNode)
 	{
@@ -17,9 +17,9 @@ abstract class Flex_Pdf_Page_Orderable
 
 class Flex_Pdf_Page_Order extends Flex_Pdf_Page_Orderable
 {
-	var $pages = array();
-	var $currentIndex = -1;
-	var $nrPages = 0;
+	public $pages = array();
+	public $currentIndex = -1;
+	public $nrPages = 0;
 
 	function parseDomNode()
 	{
@@ -149,7 +149,7 @@ class Flex_Pdf_Page_Order extends Flex_Pdf_Page_Orderable
 class Flex_Pdf_Page_Repeat extends Flex_Pdf_Page_Order
 {
 	// Default to TRUE to ensure we loop through the pages at least once
-	var $loopRequiredOverflowOutput = TRUE;
+	public $loopRequiredOverflowOutput = TRUE;
 
 	function nextPage()
 	{
@@ -237,9 +237,9 @@ class Flex_Pdf_Page_Repeat extends Flex_Pdf_Page_Order
 
 class Flex_Pdf_Page_Object extends Flex_Pdf_Page_Orderable
 {
-	var $strType = NULL;
-	var $strInclude = "";
-	var $intInclusions = 0;
+	public $strType = NULL;
+	public $strInclude = "";
+	public $intInclusions = 0;
 
 	function parseDomNode()
 	{
