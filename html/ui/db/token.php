@@ -1312,6 +1312,7 @@ class MenuToken
 		// recursively printout the names from the array, until it gets to the final
 		// one where it will printout value
 		$arrMenu = $this->_objOwner->arrProperties;
+		$strExtraTabs = '';
 		foreach ($this->_arrPath as $strPathItem)
 		{
 			$strOutput .=  $strExtraTabs . $strTabs.$strPathItem . "\n";
