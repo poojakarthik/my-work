@@ -1,4 +1,6 @@
 <?php
+
+// CULL:: Check that this isn't being used by scheduled tasks
 /*
 
 DEPRECATED - Use /flex/cli/pdf.php instead
