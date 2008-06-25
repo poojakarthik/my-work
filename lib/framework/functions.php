@@ -1922,6 +1922,7 @@ function LoadApplication($strApplication=NULL)
 	else
 	{
 		// Load from this dir
+		$arrConfig = NULL;
 		require_once("require.php");
 		require_once("application.php");
 		require_once("definitions.php");
@@ -2062,126 +2063,6 @@ function CorrectPartialAccountNum($intPartialAccNum)
 }
 
 //------------------------------------------------------------------------//
-// CorrectShortAccountNum
-//------------------------------------------------------------------------//
-/**
- * CorrectShortAccountNum()
- *
- * Corrects an account number that is short on '0s' to the proper 10 digit format 
- *
- * This function is used to correct an account number that starts with
- * '10' but may not have enough '0s' in it to make it 10 digits long.
- * It is expected that the passed account number begins with at least '10'
- * For example: 1000439 will become 1000000439
- * 
- *
- * @param	integer	$intShortAccNum		The account number to convert.
- *										Assume this is less than or equal to 
- *										10 digits in length.
- *
- * @return	integer 					the corrected account number or
- *										FALSE if the short account number
- *										could not be fixed
- *
- * @function
- */
-function CorrectShortAccountNum($intShortAccNum)
-{	
-	// check that $intShortAccNum can be converted to a 10 digit account number
-	if (!is_numeric($intShortAccNum))
-	{
-		// the argument is not numeric so return false
-		return FALSE;
-	}
-
-	// check that $intShortAccNum is no longer than 10 digits
-	if (strlen($intPartialAccNum) > 10)
-    {
-echo "[strlength > 10]";
-		// the arguement is an invalid account number
-		return FALSE;
-	}
-
-	// If $intShortAccNum is exactly 10 characters long, then one can assume it
-	// is already in the correct format.  This is to account for the case when
-	// the account number is has no zeros between the leading "1" and the other
-	// digits of the number.
-	if (strlen($intPartialAccNum) == 10)
-	{
-echo "[strlength == 10]";
-		// the account number must already be in a correct format
-		return $intPartialAccNum;
-	}
-
-	// check that $intShortAccNum begins with "1"
-	if (substr($intShortAccNum, 0, 2) != 10)
-	{
-echo "[accNum does not begin with 10]";	
-		// $intShortAccNum does not begin with a '10' so return FALSE
-		return FALSE;
-	}
-
-	// this line corrects the number of leading zeros in the account number
-	// and makes sure that it starts with a leading "1"
-	$strCorrectedAccNum = str_pad(substr($intShortAccNum, 1), 10, "1000000000", STR_PAD_LEFT);
-	
-	return $strCorrectedAccNum;
-}
-
-//------------------------------------------------------------------------//
-// AccountExists
-//------------------------------------------------------------------------//
-/**
- * AccountExists()
- *
- * Checks if an account exists and is not archived.
- *
- * When passed an account number, this function checks if an account
- * associated with the number exists in the database butis not archived
- * in the database.
- *
- * @param	integer	$intAccNum	The account number to check.  Note that
- *								this function accepts partial account numbers
- *								and account numbers that are less than 10 digits
- *                              long.
- *
- * @return	integer 			The account number assuming it was found and 
- *								is not archived.  Otherwise it returns FALSE.
- *
- * @function
- */
-function AccountExists($intAccNum)
-{
-	$strArchived = ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.", ".ACCOUNT_DEBT_COLLECTION;
-	$selAccount = new StatementSelect("Account", "Id", "Id = <Id> AND Archived IN ($strArchived)");
-	
-	// check for partial account number first
-	if (strlen($intAccNum) < 10)
-	{
-		$intTemp = CorrectPartialAccountNum($intAccNum);
-		if ((intTemp) && ($selAccount->Execute(Array('Id' => $intTemp))))
-		{
-			return $intTemp;
-		}
-		
-		$intTemp = CorrectShortAccountNum($intAccNum);
-		if (($intTemp) && ($selAccount->Execute(Array('Id' => $intTemp))))
-		{
-			return $intTemp;
-		}
-		
-		return FALSE;
-	}
-	
-	if ($selAccount->Execute(Array('Id' => $intAccNum)))
-	{
-		return $intAccNum;
-	}
-	
-	return FALSE;
-}
-
-//------------------------------------------------------------------------//
 // AddGST
 //------------------------------------------------------------------------//
 /**
@@ -2304,7 +2185,7 @@ function ParseArguments($arrConfig)
 		
 		// Print the command line options
 		// TODO
-		return FALSE;
+		//return FALSE;
 	}
 	
 	// Convert options to meaningful variables
