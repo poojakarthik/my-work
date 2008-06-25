@@ -2,18 +2,26 @@
 
 abstract class Flex_Pdf_Template_Element
 {
-	var $dom = NULL;
-	var $style = NULL;
-	var $parent = NULL;
-	var $childElements = array();
+	public $dom = NULL;
+	public $style = NULL;
+	public $parent = NULL;
+	public $childElements = array();
 
-	var $_depth = 0;
+	public $_depth = 0;
 
 	private $_bolInGetWidth = FALSE;
 
 	private $_bolSuitableForTargetMedia = NULL;
 	
 	private $_strLinkTargetName = NULL;
+
+	public $requiredWidth = 0;
+	public $requiredHeight = 0;
+	public $preparedWidth = 0;
+	public $preparedHeight = 0;
+
+	public $preparedAbsTop = 0;
+	public $preparedAbsLeft = 0;
 
 	public function __construct($domNode, $parentElement)
 	{
@@ -264,13 +272,6 @@ abstract class Flex_Pdf_Template_Element
 		return $this->preparedHeight;
 	}
 
-	var $requiredWidth = 0;
-	var $requiredHeight = 0;
-	var $preparedWidth = 0;
-	var $preparedHeight = 0;
-
-
-
 	public function preparePosition($parentWidth=0, $parentHeight=0, $offsetTop=0, $offsetLeft=0)
 	{
 		$this->preparedAbsTop = $offsetTop;
@@ -332,10 +333,6 @@ abstract class Flex_Pdf_Template_Element
 	{
 		return $this->preparedAbsLeft;
 	}
-
-	var $preparedAbsTop = 0;
-	var $preparedAbsLeft = 0;
-
 
 	public function getAvailablePreparedHeightForChildElement($childElement)
 	{
