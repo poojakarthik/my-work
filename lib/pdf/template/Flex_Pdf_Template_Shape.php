@@ -304,7 +304,7 @@ class Flex_Pdf_Template_Shape extends Flex_Pdf_Template_Element
 	public function preparePosition($parentWidth=0, $parentHeight=0, $offsetTop=0, $offsetLeft=0)
 	{
 		if ($this->isInvalid) return;
-		return parent::preparePosition($parentWidth, $parentHeight, $offsetTop, $offsetLeft)
+		return parent::preparePosition($parentWidth, $parentHeight, $offsetTop, $offsetLeft);
 	}
 }
 
