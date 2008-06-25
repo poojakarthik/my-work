@@ -12,7 +12,7 @@ require_once 'Zend/Pdf/Element/Numeric.php';
 /** Zend_Pdf_Element_Name */
 require_once 'Zend/Pdf/Element/Name.php';
 
-require_once 'pdf/element/Flex_Pdf_Element_Raw.php';
+require_once '../../element/Flex_Pdf_Element_Raw.php';
 
 class Flex_Pdf_Resource_Image_SVG extends Zend_Pdf_Resource_Image
 {
