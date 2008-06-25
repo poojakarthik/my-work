@@ -40,9 +40,9 @@
  * @prefix		xxx
  *
  * @package		package
- * @class		Class
+ * @class		ClassName
  */
- class Class
+ class ClassName
  {
  	//------------------------------------------------------------------------//
 	// property
