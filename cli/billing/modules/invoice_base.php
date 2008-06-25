@@ -568,7 +568,7 @@ abstract class BillingModuleInvoice
 				//$arrService['RangeEnd']		= (is_int($arrService['RangeEnd'])) ? substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT) : $arrService['FNN'];
 				//$arrService['Extension']	= ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN'];
 				$arrService['Primary']		= ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd']) ? TRUE : FALSE;
-								
+				
 				// Get all Service Ids that are associated with this FNN
 				$arrWhere = Array();
 				$arrWhere['Account']	= $arrInvoice['Account'];
@@ -626,8 +626,12 @@ abstract class BillingModuleInvoice
 			if (!$arrService['Indial100'])
 			{
 				// Get the ServiceTotal
-				$arrServiceTotal			= $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrInvoice);
-				$arrService['ServiceTotal']	= $arrServiceTotal[0]['TotalCharge'];
+				$arrServiceTotals			= $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrInvoice);
+				$arrService['ServiceTotal']	= 0.0;
+				foreach ($arrServiceTotals as $arrServiceTotal)
+				{
+					$arrService['ServiceTotal']	+= $arrServiceTotal['TotalCharge'];
+				}
 			}
 			
 			// Only if this is a non-Indial or is the Primary FNN
