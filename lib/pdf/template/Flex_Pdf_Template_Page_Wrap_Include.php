@@ -2,9 +2,9 @@
 
 class Flex_Pdf_Template_Page_Wrap_Include extends Flex_Pdf_Template_Element
 {
-	var $id = null;
-	var $wrapperId = 0;
-	var $pageWrapContent = NULL;
+	public $id = null;
+	public $wrapperId = 0;
+	public $pageWrapContent = NULL;
 
 	function initialize()
 	{
