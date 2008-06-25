@@ -1427,8 +1427,8 @@ class MySQLFunction
 				 */
 				 
 				// clean reused variables 
-				unset($strIndex);
-				unset($strUnique);
+				$strIndex = '';
+				$strUnique = '';
 
 				// set defaults primary index
                 if (empty($arrTableDefine['Id']))
@@ -2201,7 +2201,7 @@ class QueryCopyTable extends Query
 			// Add the results to our huge array of results
 			while($this->_stmtSqlStatment->fetch())
 			{
-				unset($arrTemp);
+				$arrTemp = array();
 				foreach($this->_arrBoundResults as $strKey=>$mixValue)
 				{
 					$arrTemp[$strKey] = '"'.$this->_stmtSqlStatment->real_escape_string($mixValue).'"';
@@ -2687,7 +2687,7 @@ class QueryCopyTable extends Query
 			else
 			{
 				// If we're not using oblib, return an associative array
- 				unset($arrResult);
+ 				$arrResult = array();
 				foreach($this->_arrBoundResults as $strKey=>$mixValue)
 				{
 					$arrResult[$strKey] = $mixValue;
@@ -2727,7 +2727,7 @@ class QueryCopyTable extends Query
 		// Add the results to our huge array of results
 	 	while($this->_stmtSqlStatment->fetch())
 	 	{
-			unset($arrTemp);
+			$arrTemp = array();
 			foreach($this->_arrBoundResults as $strKey=>$mixValue)
 			{
 				$arrTemp[$strKey] = $mixValue;
