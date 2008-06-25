@@ -84,6 +84,9 @@ abstract class BillingModuleInvoice
 				break;
 		}
 		
+		Debug("CDR Table: {$this->_strCDRTable}; Invoice Table: {$this->_strInvoiceTable};");
+		sleep(1);
+		
 		//--------------------------------------------------------------------//
 		// Statements
 		//--------------------------------------------------------------------//

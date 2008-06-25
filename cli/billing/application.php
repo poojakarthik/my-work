@@ -2220,13 +2220,24 @@
 							if (ssh2_sftp_mkdir($resSFTP, $strRemoteDir, 0777, TRUE))
 							{
 								// Copy XML files
-								CliEcho(shell_exec("rcp \"$strCopyFiles\" rdavis@10.50.50.131:\"$strRemoteDir\""));
+								$arrFiles	= glob($strCopyFiles);
+								foreach ($arrFiles as $strPath)
+								{
+									if (is_file($strPath))
+									{
+										// This is a file, copy it
+										if (!ssh2_scp_send($resFEPROD, $strPath, $strRemoteDir.'/'.basename($strPath)))
+										{
+											CliEcho("\n -- Unable to send file '".basename($strPath)."'");
+										}
+									}
+								}
 								
 								CliEcho("[   OK   ]");
 								if (!stripos($strInvoiceRun, '-'))
 								{
 									// Gold Run, so create a symlink
-									if (!ssh2_sftp_symlink($resSFTP, $strFullDirectory, $strFullDirectory.'-gold'))
+									if (!ssh2_sftp_symlink($resSFTP, $strRemoteDir, $strRemoteDir.'-gold'))
 									{
 										// Warning
 										CliEcho("\t -- WARNING: Unable to create remote symlink '{$strFullDirectory}-gold'");
