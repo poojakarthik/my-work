@@ -3476,12 +3476,17 @@ function GetCurrentTimeForMySQL()
 
 function ListAutomaticUnbarringAccounts($intEffectiveTime)
 {
+	if (!$intEffectiveTime)
+	{
+		$intEffectiveTime = time();
+	}
 	$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
 
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
 
 	$arrColumns = array(
 							'AccountId'				=> "Invoice.Account",
+							'AccountGroupId'		=> "Account.AccountGroup",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
 							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
 							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
@@ -3508,6 +3513,13 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 	$strGroupBy	= "Invoice.Account HAVING Overdue < ". $pt['minimum_balance_to_pursue'];
 	$strOrderBy	= "Invoice.Account ASC";
 
+	/*
+	// DEBUG: Output the query that gets run
+	$select = array();
+	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
+	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nGROUP BY $strGroupBy\nORDER BY $strOrderBy\n\n";
+	//*/
+
 	$selUnbarrable = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
 	$mxdReturn = $selUnbarrable->Execute();
 	return $mxdReturn === FALSE ? $mxdReturn : $selUnbarrable->FetchAll();
@@ -3516,6 +3528,10 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 
 function ListAutomaticBarringAccounts($intEffectiveTime)
 {
+	if (!$intEffectiveTime)
+	{
+		$intEffectiveTime = time();
+	}
 	$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
 
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
@@ -3524,6 +3540,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime)
 	$arrColumns = array(
 							'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
 							'AccountId'				=> "Invoice.Account",
+							'AccountGroupId'		=> "Account.AccountGroup",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
 							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
 							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
@@ -3570,7 +3587,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime)
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
 	$strOrderBy	= "Invoice.Account ASC";
 
-	//*
+	/*
 	// DEBUG: Output the query that gets run
 	$select = array();
 	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
@@ -4869,44 +4886,148 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	return Array('Files' => $arrFiles, 'Processed' => TRUE);
 }
 
-function BarAccount($intAccountId, $bolAutomatic=FALSE)
+function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE)
 {
 	// Throw exception if fails
 
 	// Bar the account
 
-	// Add a note to the account
-	
-	// If automatic, change auto_barring_status for the account
-	if ($bolAutomatic)
+	$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
+
+	$arrAutomaticallyBarrableCarriers = ListAutomaticallyBarrableCarriers();
+
+	$arrUnbarrableAccountServices = array();
+	$arrBarrableAccountServices = array();
+
+	$bolBarred = FALSE;
+
+	$bolBarredFNNs = array();
+
+	foreach($arrAccountServices as $intServiceId => $arrDetails)
 	{
-		ChangeAccountAutomaticBarringStatus($intAccountId, AUTOMATIC_BARRING_STATUS_BARRED, 'Account automatically barred.');
+		if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyBarrableCarriers) !== FALSE)
+		{
+			// Write the record to bar the service
+			$arrColumns = array(
+				'AccountGroup' 		=> $intAccountGroup,
+				'Account'			=> $intAccountId,
+				'Service'			=> $intServiceId,
+				'FNN'				=> $arrDetails['FNN'],
+				'Employee'			=> USER_ID,
+				'Carrier'			=> $arrDetails['CarrierId'],
+				'Type'				=> PROVISIONING_TYPE_BAR,
+				'RequestedOn'		=> new MySQLFunction('NOW()'),
+				'AuthorisationDate'	=> new MySQLFunction('NOW()'),
+				'Status'			=> REQUEST_STATUS_WAITING,
+			);
+			$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
+			$mxdResult = $insProvisioningRequest->Execute($arrColumns);
+			if ($mxdResult === FALSE)
+			{
+				throw new Exception('Failed to create provisioning request for barring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+			}
+
+			// Add a note to the service
+			$GLOBALS['fwkFramework']->AddNote('Service automatically barred.', SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, NULL, $intServiceId);
+
+			$bolBarred = TRUE;
+			$bolBarredFNNs[] = $arrDetails['FNN'];
+			$arrBarrableAccountServices[$intServiceId] = $arrDetails;
+		}
+		else
+		{
+			$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
+		}
 	}
+
+	// If automatic, change auto_barring_status for the account
+	if ($bolAutomatic && $bolBarred)
+	{
+		$strReason = 'Automatically barred the following services: ' . implode(', ', $bolBarredFNNs) . '. ';
+		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_BARRED, $strReason);
+	}
+
+	$outcome = array('BARRED' => $arrBarrableAccountServices, 'NOT_BARRED' => $arrUnbarrableAccountServices);
+
+	// Return a list of services that could and could not be barred
+	return $outcome;
 }
 
-function UnbarAccount($intAccountId, $bolAutomatic=FALSE)
+function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE)
 {
 	// Throw exception if fails
 
-	// Unbar the account
+	// Bar the account
 
-	// Add a note to the account
-	
-	// If automatic, change auto_barring_status for the account
-	if ($bolAutomatic)
+	$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
+
+	$arrAutomaticallyUnbarrableCarriers = ListAutomaticallyUnbarrableCarriers();
+
+	$arrNonUnbarrableAccountServices = array();
+	$arrUnbarrableAccountServices = array();
+
+	$bolUnbarred = FALSE;
+
+	$bolUnbarredFNNs = array();
+
+	foreach($arrAccountServices as $intServiceId => $arrDetails)
 	{
-		ChangeAccountAutomaticBarringStatus($intAccountId, AUTOMATIC_BARRING_STATUS_UNBARRED, 'Account automatically unbarred.');
+		if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyUnbarrableCarriers) !== FALSE)
+		{
+			// Write the record to unbar the service
+			$arrColumns = array(
+				'AccountGroup' 		=> $intAccountGroup,
+				'Account'			=> $intAccountId,
+				'Service'			=> $intServiceId,
+				'FNN'				=> $arrDetails['FNN'],
+				'Employee'			=> USER_ID,
+				'Carrier'			=> $arrDetails['CarrierId'],
+				'Type'				=> PROVISIONING_TYPE_UNBAR,
+				'RequestedOn'		=> new MySQLFunction('NOW()'),
+				'AuthorisationDate'	=> new MySQLFunction('NOW()'),
+				'Status'			=> REQUEST_STATUS_WAITING,
+			);
+			$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
+			$mxdResult = $insProvisioningRequest->Execute($arrColumns);
+			if ($mxdResult === FALSE)
+			{
+				throw new Exception('Failed to create provisioning request for unbarring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+			}
+
+			// Add a note to the service
+			$GLOBALS['fwkFramework']->AddNote('Service automatically unbarred.', SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, NULL, $intServiceId);
+
+			$bolUnbarred = TRUE;
+			$bolUnbarredFNNs[] = $arrDetails['FNN'];
+			$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
+		}
+		else
+		{
+			$arrNonUnbarrableAccountServices[$intServiceId] = $arrDetails;
+		}
 	}
+
+	// If automatic, change auto_barring_status for the account
+	if ($bolAutomatic && $bolUnbarred)
+	{
+		$strReason = 'Automatically unbarred the following services: ' . implode(', ', $bolUnbarredFNNs) . '. ';
+		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_UNBARRED, $strReason);
+	}
+
+	$outcome = array('UNBARRED' => $arrUnbarrableAccountServices, 'NOT_UNBARRED' => $arrNonUnbarrableAccountServices);
+
+	// Return a list of services that could and could not be unbarred
+	return $outcome;
 }
 
-function ChangeAccountAutomaticBarringStatus($intAccount, $intTo, $strReason)
+function ChangeAccountAutomaticBarringStatus($intAccount, $intAccountGroup, $intTo, $strReason)
 {
 	$error = '';
 
 	$strDate = date('Y-m-d H:i:s');
 	
 	// Need to find out the current status of the account
-	$selQuery = new StatementSelect('Account', 'automatic_barring_status', 'Id=<Id>');
+	$selQuery = new StatementSelect('Account', array('automatic_barring_status' => 'automatic_barring_status'), 'Id=<Id>');
 	if (!$outcome = $selQuery->Execute(array('Id' => $intAccount)))
 	{
 		throw new Exception('Failed to retreive current automatic barring status for account $intAccount. ' .  $qryQuery->Error());
@@ -4915,16 +5036,16 @@ function ChangeAccountAutomaticBarringStatus($intAccount, $intTo, $strReason)
 	$intFrom = intval($arrFrom['automatic_barring_status']);
 
 	$qryQuery = new Query();
-	$strSQL = 'UPDATE Account SET automatic_barring_status = ' . $intTo . ', last_automatic_barring_status_datetime = \'' . $strDate . '\' WHERE Id = ' . $intAccount;
+	$strSQL = 'UPDATE Account SET automatic_barring_status = ' . $intTo . ', automatic_barring_datetime = \'' . $strDate . '\' WHERE Id = ' . $intAccount;
 	if (!$outcome = $qryQuery->Execute($strSQL))
 	{
-		$message = ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
+		$message = ' Failed to update Account ' . $intAccount . ' automatic_barring_status from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
 		throw new Exception($message);
 	}
 
 	// and creating a corresponding automatic_barring_status_history entry.
 	$qryQuery = new Query();
-	$strSQL = 'INSERT INTO automatic_barring_status_history (account, from_action, to_action, reason, change_datetime) ' .
+	$strSQL = 'INSERT INTO automatic_barring_status_history (account, from_status, to_status, reason, change_datetime) ' .
 			' VALUES (' .
 			$intAccount . ', ' .
 			$intFrom . ', ' .
@@ -4934,16 +5055,185 @@ function ChangeAccountAutomaticBarringStatus($intAccount, $intTo, $strReason)
 			')';
 	if (!$outcome = $qryQuery->Execute($strSQL))
 	{
-		$message = ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
+		$message = ' Failed to create automatic_barring_status_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
 		throw new Exception($message);
 	}
+
+	// Add a note to the account
+	$GLOBALS['fwkFramework']->AddNote($strReason, SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, $intAccount);
+
 	return TRUE;
 }
 
-function ListAutomaticallyBarrable()
+function ListServicesAndCarriersForAccount($accountId)
 {
-	
+	$arrServices = ListAccountServices($accountId);
+
+	// Build an array of service ids
+	$arrServiceIds = array();
+	$arrServicesById = array();
+	foreach($arrServices as $arrService)
+	{
+		$arrServiceIds[] = $arrService['Id'];
+		$arrServicesById[$arrService['Id']] = $arrService;
+		$arrServicesById[$arrService['Id']]['CarrierId'] = NULL;
+		$arrServicesById[$arrService['Id']]['CarrierName'] = NULL;
+	}
+
+	// Retreive the carriers for the services
+	$arrCarriersForServices = ListCarriersForServices($arrServiceIds);
+
+	foreach($arrCarriersForServices as $serviceId => $carrierDetails)
+	{
+		$arrServicesById[$serviceId]['CarrierId'] = $carrierDetails['CarrierId'];
+		$arrServicesById[$serviceId]['CarrierName'] = $carrierDetails['CarrierName'];
+	}
+
+	return $arrServicesById;
 }
 
+function ListAccountServices($accountId)
+{
+	$strServiceStatuses = implode(', ', array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED));
+	$arrColumns = array('Id' => 'Service.Id', 'FNN' => 'Service.FNN');
+	$strTables = "Service
+  INNER JOIN (
+    SELECT MAX(Service.Id) serviceId
+      FROM Service
+     WHERE 
+     (
+       Service.ClosedOn IS NULL
+       OR NOW() < Service.ClosedOn
+     )
+     AND Service.CreatedOn < NOW()
+     AND Service.FNN IN (SELECT FNN FROM Service WHERE Account = $accountId)
+     GROUP BY Service.FNN
+   ) CurrentService
+   ON Service.Account = $accountId
+   AND Service.Id = CurrentService.serviceId
+   AND Service.Status IN ($strServiceStatuses)";
+
+	$strOrderBy = "Service.FNN ASC";
+
+	/*
+	// DEBUG: Output the query that gets run
+	$select = array();
+	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
+	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nORDER BY $strOrderBy\n\n";
+	//*/
+
+
+	$selServices = new StatementSelect($strTables, $arrColumns, "", $strOrderBy);
+	$mxdReturn = $selServices->Execute();
+	if ($mxdReturn === FALSE)
+	{
+		throw new Exception("Failed to list services for account $accountId: " . $qryQuery->Error());
+	}
+	return $selServices->FetchAll();
+}
+
+/*
+ * Returns an array of carrier details indexed by Service Id
+ * [ServiceId] = array('ServiceId'=>$serviceId, 'CarrierId'=>$carrierId, 'CarrierName'=>$carrierName);
+ */
+function ListCarriersForServices($arrServiceIds)
+{
+	$carriers = array();
+	if (count($arrServiceIds))
+	{
+		// We also want the carriers for these services
+		$strServiceIds = implode(', ', $arrServiceIds);
+		$arrColumns = array('ServiceId' => 'Services.Id', 'CarrierId' => ' Carrier.Id', 'CarrierName' => 'Carrier.Name');
+		$strTables = "
+				   (SELECT Service.Id FROM Service WHERE Service.Id IN ($strServiceIds)) Services
+				   LEFT JOIN (SELECT MAX(Id) Id, ServiceRatePlan.Service Service
+					  FROM ServiceRatePlan 
+					 WHERE ServiceRatePlan.Service IN ($strServiceIds)
+					   AND ServiceRatePlan.Active = 1
+					   AND ServiceRatePlan.StartDateTime < ServiceRatePlan.EndDateTime
+					   AND NOW() BETWEEN ServiceRatePlan.StartDateTime AND ServiceRatePlan.EndDateTime
+					 GROUP BY ServiceRatePlan.Service
+					) ServiceRatePlans
+					ON ServiceRatePlans.Service = Services.Id
+					LEFT JOIN ServiceRatePlan
+					  ON ServiceRatePlan.Id = ServiceRatePlans.Id
+					LEFT JOIN RatePlan
+					  ON ServiceRatePlan.RatePlan = RatePlan.Id
+					LEFT JOIN Carrier
+					  ON RatePlan.CarrierPreselection = Carrier.Id
+		";
+
+		/*
+		// DEBUG: Output the query that gets run
+		$select = array();
+		foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
+		echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\n\n";
+		//*/
+
+
+		$selCarriers = new StatementSelect($strTables, $arrColumns);
+		$mxdReturn = $selCarriers->Execute();
+		if ($mxdReturn === FALSE)
+		{
+			throw new Exception("Failed to list carriers for services $strServiceIds: " . $qryQuery->Error());
+		}
+		$arrCarriers = $selCarriers->FetchAll();
+		foreach($arrCarriers as $carrier)
+		{
+			$carriers[$carrier['ServiceId']] = $carrier;
+		}
+	}
+	return $carriers;
+}
+
+function ListAutomaticallyBarrableCarriers()
+{
+	return ListAutomatableCarriers(PROVISIONING_TYPE_BAR, FALSE, TRUE);
+}
+
+function ListAutomaticallyUnbarrableCarriers()
+{
+	return ListAutomatableCarriers(PROVISIONING_TYPE_UNBAR, FALSE, TRUE);
+}
+
+function ListAutomatableCarriers($intProvisioningTypeConstant, $bolInbound=FALSE, $bolOutbound=FALSE)
+{
+	// The result of this query is highly unlikely to change, so cache the result statically
+	static $carriers;
+	if (!isset($carriers))
+	{
+		$carriers = array();
+	}
+	$key = $intProvisioningTypeConstant . '|' . $bolInbound . '|' . $bolOutbound;
+	if (!array_key_exists($key, $carriers))
+	{
+		$strInbound = $bolInbound ? ' AND provisioning_type.inbound = 1' : '';
+		$strOutbound = $bolInbound ? ' AND provisioning_type.outbound = 1' : '';
+		$arrColumns = array("Id" => "DISTINCT(Carrier.Id)");
+		$strTables = "
+			Carrier
+			  JOIN carrier_provisioning_support
+			    ON carrier_provisioning_support.carrier_id = Carrier.Id
+			  JOIN active_status
+			    ON carrier_provisioning_support.status_id = active_status.id
+			   AND active_status.active = 1
+			  JOIN provisioning_type
+			    ON provisioning_type.id = $intProvisioningTypeConstant
+			   AND provisioning_type.id = carrier_provisioning_support.provisioning_type_id	";
+	
+		$selCarriers = new StatementSelect($strTables, $arrColumns);
+		$mxdResult = $selCarriers->Execute();
+		if ($mxdResult === FALSE)
+		{
+			throw new Exception("Failed to load automatable carriers for provisioning type $intProvisioningTypeConstant (inbound: $bolInbound, outbound: $bolOutbound): " . $qryQuery->Error());
+		}
+		$arrResults = $selCarriers->FetchAll();
+		foreach($arrResults as $arrCarrier)
+		{
+			$carriers[$key][] = intval($arrCarrier['Id']);
+		}
+	}
+	return $carriers[$key];
+}
 
 ?>
