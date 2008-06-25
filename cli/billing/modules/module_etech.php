@@ -1365,7 +1365,7 @@
 						}
 						break;
 					case ETECH_DATE_YYYYMMDD:
-						if (!strtotime)
+						if (!$strValue)
 						{
 							$strValue = "19700101";
 						}
