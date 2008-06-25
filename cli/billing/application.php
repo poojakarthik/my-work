@@ -339,7 +339,7 @@
 				//$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 				
 				// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
-				if($qryUpdateCDRs->Execute("UPDATE CDR USE INDEX (Account_2) JOIN Service ON Service.Id = CDR.Service SET InvoiceRun = '{$this->_strInvoiceRun}' AND CDR.Status = ".CDR_TEMP_INVOICE." WHERE CDR.Account = {$arrAccount['Id']} AND CDR.Credit = 0 AND Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.")") === FALSE)
+				if($qryUpdateCDRs->Execute("UPDATE CDR USE INDEX (Account_2) JOIN Service ON Service.Id = CDR.Service SET InvoiceRun = '{$this->_strInvoiceRun}', CDR.Status = ".CDR_TEMP_INVOICE." WHERE CDR.Status = ".CDR_RATED." AND CDR.Account = {$arrAccount['Id']} AND CDR.Credit = 0 AND Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.")") === FALSE)
 				{
 					CliEcho("\n".__LINE__." >> Unable to Update Account CDRs: ".$qryUpdateCDRs->Error());
 					exit(1);
@@ -2217,7 +2217,7 @@
 						if ($resSFTP)
 						{
 							// Create Directory & Symlink
-							if (ssh2_sftp_mkdir($resSFTP, $strRemoteDir, 0777, TRUE))
+							if (ssh2_sftp_mkdir($resSFTP, $strRemoteDir, 0777, TRUE) || ssh2_sftp_stat($resSFTP, $strRemoteDir))
 							{
 								// Copy XML files
 								$arrFiles	= glob($strCopyFiles);
@@ -2226,7 +2226,7 @@
 									if (is_file($strPath))
 									{
 										// This is a file, copy it
-										if (!ssh2_scp_send($resFEPROD, $strPath, $strRemoteDir.'/'.basename($strPath)))
+										if (!ssh2_scp_send($resFEPROD, $strPath, $strRemoteDir.'/'.basename($strPath), 0777))
 										{
 											CliEcho("\n -- Unable to send file '".basename($strPath)."'");
 										}
@@ -2240,7 +2240,7 @@
 									if (!ssh2_sftp_symlink($resSFTP, $strRemoteDir, $strRemoteDir.'-gold'))
 									{
 										// Warning
-										CliEcho("\t -- WARNING: Unable to create remote symlink '{$strFullDirectory}-gold'");
+										CliEcho("\t -- WARNING: Unable to create remote symlink '{$strRemoteDir}-gold'");
 									}
 								}
 							}
@@ -2248,7 +2248,7 @@
 							{
 								// Error
 								CliEcho("[ FAILED ]");
-								CliEcho("\t -- Unable to create remote directory '$strFullDirectory'");
+								CliEcho("\t -- Unable to create remote directory '$strRemoteDir'");
 							}
 						}
 						else
