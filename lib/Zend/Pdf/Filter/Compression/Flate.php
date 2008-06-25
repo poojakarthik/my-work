@@ -41,6 +41,7 @@ class Zend_Pdf_Filter_Compression_Flate extends Zend_Pdf_Filter_Compression
      */
     public static function encode($data, $params = null)
     {
+        $php_errormsg = NULL;
         if ($params != null) {
             $data = self::_applyEncodeParams($data, $params);
         }
