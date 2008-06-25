@@ -1,10 +1,10 @@
 <?php
 
-require_once "pdf/Flex_Pdf_Text.php";
-require_once "pdf/resource/Flex_Pdf_Resource_Raw.php";
-require_once "pdf/element/Flex_Pdf_Element_Array.php";
-require_once "pdf/resource/annotation/Flex_Pdf_Annotation_Link_From.php";
-require_once "pdf/resource/annotation/Flex_Pdf_Annotation_Link_To.php";
+require_once "Flex_Pdf_Text.php";
+require_once "resource/Flex_Pdf_Resource_Raw.php";
+require_once "element/Flex_Pdf_Element_Array.php";
+require_once "resource/annotation/Flex_Pdf_Annotation_Link_From.php";
+require_once "resource/annotation/Flex_Pdf_Annotation_Link_To.php";
 
 
 class Flex_Pdf_Page extends Zend_Pdf_Page

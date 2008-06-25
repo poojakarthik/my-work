@@ -3,12 +3,12 @@
 // Add the lib directory to the include path, as it is required for the Zend library
 set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR));
 
-require_once "pdf/Flex_Pdf.php";
-require_once "pdf/Flex_Pdf_Style.php";
-require_once "pdf/Flex_Pdf_Page_Order.php";
-require_once "pdf/template/Flex_Pdf_Template_Page.php";
-require_once "pdf/template/Flex_Pdf_Template_Page_Wrap_Content.php";
-require_once "pdf/Flex_Pdf_Resource_Manager.php";
+require_once "Flex_Pdf.php";
+require_once "Flex_Pdf_Style.php";
+require_once "Flex_Pdf_Page_Order.php";
+require_once "template/Flex_Pdf_Template_Page.php";
+require_once "template/Flex_Pdf_Template_Page_Wrap_Content.php";
+require_once "Flex_Pdf_Resource_Manager.php";
 
 class Flex_Pdf_Template
 {

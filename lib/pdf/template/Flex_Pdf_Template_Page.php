@@ -1,15 +1,15 @@
 <?php
 
-require_once "pdf/template/Flex_Pdf_Template_Element.php";
-require_once "pdf/template/Flex_Pdf_Template_Div.php";
-require_once "pdf/template/Flex_Pdf_Template_Image.php";
-require_once "pdf/template/Flex_Pdf_Template_Barcode.php";
-require_once "pdf/template/Flex_Pdf_Template_Paragraph.php";
-require_once "pdf/template/Flex_Pdf_Template_Span.php";
-require_once "pdf/template/Flex_Pdf_Template_Link.php";
-require_once "pdf/template/Flex_Pdf_Template_Page_Wrap_Include.php";
-require_once "pdf/template/Flex_Pdf_Template_Stationery.php";
-require_once "pdf/template/Flex_Pdf_Template_Raw.php";
+require_once "Flex_Pdf_Template_Element.php";
+require_once "Flex_Pdf_Template_Div.php";
+require_once "Flex_Pdf_Template_Image.php";
+require_once "Flex_Pdf_Template_Barcode.php";
+require_once "Flex_Pdf_Template_Paragraph.php";
+require_once "Flex_Pdf_Template_Span.php";
+require_once "Flex_Pdf_Template_Link.php";
+require_once "Flex_Pdf_Template_Page_Wrap_Include.php";
+require_once "Flex_Pdf_Template_Stationery.php";
+require_once "Flex_Pdf_Template_Raw.php";
 
 class Flex_Pdf_Template_Page extends Flex_Pdf_Template_Element
 {

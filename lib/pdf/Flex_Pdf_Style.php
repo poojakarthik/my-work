@@ -1,8 +1,8 @@
 <?php
 
 require_once "Zend/Pdf/Style.php";
-require_once "pdf/Flex_Pdf_Font_Factory.php";
-require_once "pdf/Flex_Pdf_Colour.php";
+require_once "Flex_Pdf_Font_Factory.php";
+require_once "Flex_Pdf_Colour.php";
 
 
 class Flex_Pdf_Style extends Zend_Pdf_Style
