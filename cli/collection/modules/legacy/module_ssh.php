@@ -243,6 +243,7 @@
 					}
 					
 					// We have a usable file, so download and return the filename
+					$intMode = NULL;
 					ftp_get($this->_resConnection, TEMP_DOWNLOAD_DIR.key($this->_arrFileListing), key($this->_arrFileListing), $intMode);
 					ssh2_scp_recv($this->_resConnection, $arrCurrent['FileName'], TEMP_DOWNLOAD_DIR.$arrCurrent['FileName']);
 					return $arrCurrent['FileName'];					
