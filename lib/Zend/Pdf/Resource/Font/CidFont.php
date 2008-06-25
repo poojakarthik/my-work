@@ -158,6 +158,8 @@ abstract class Zend_Pdf_Resource_Font_CidFont extends Zend_Pdf_Resource_Font
         /* Width array optimization. Step2: Compact character codes sequences */
         $lastCharCode = -1;
         $widthsSequences = array();
+        $charCodesSequense = NULL;
+        $sequenceStartCode = NULL;
         foreach ($charWidths as $charCode => $width) {
         	if ($lastCharCode == -1) {
                 $charCodesSequense = array();
