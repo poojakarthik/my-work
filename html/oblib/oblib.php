@@ -365,7 +365,7 @@
 		public function __sleep ()
 		{
 			$this->_sleepTagName = $this->tagName ();
-			$this->_sleepObjectData = $_DATA;
+			$this->_sleepObjectData = $this->_DATA;
 			
 			return Array (
 				"_sleepTagName",
