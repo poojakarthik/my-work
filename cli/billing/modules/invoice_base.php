@@ -96,8 +96,8 @@ abstract class BillingModuleInvoice
 		$arrCols['CurrentId']	= "MAX(ServiceTotal.Service)";
 		$arrCols['FNN']			= "ServiceTotal.FNN";
 		$arrCols['Extension']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN ServiceExtension.Name ELSE ServiceTotal.FNN END";
-		$arrCols['RangeStart']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 0, CHAR_LENGTH(ServiceTotal.FNN)-2)), LPAD(ServiceExtension.RangeStart, 2, '0')) ELSE ServiceTotal.FNN END";
-		$arrCols['RangeEnd']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 0, CHAR_LENGTH(ServiceTotal.FNN)-2)), LPAD(ServiceExtension.RangeEnd, 2, '0')) ELSE ServiceTotal.FNN END";
+		$arrCols['RangeStart']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeStart, 2, '0')) ELSE ServiceTotal.FNN END";
+		$arrCols['RangeEnd']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeEnd, 2, '0')) ELSE ServiceTotal.FNN END";
 		$this->_selAccountFNNs	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)",
 														$arrCols,
 														"ServiceTotal.Account = <Account> AND ServiceTotal.InvoiceRun = <InvoiceRun>",
