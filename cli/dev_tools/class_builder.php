@@ -88,6 +88,7 @@ class ClassBuilderPHP
 			$this->intLineNumber++;
 			$strLine = trim(str_replace("\t", ' ', $strLine));
 			$strFirstChar = strtolower(substr($strLine, 0, 1));
+			$intKey = ''; // This clearly makes no sense, but without declaring it, this is what it defaults to!
 			switch ($strFirstChar)
 			{
 				// Class
