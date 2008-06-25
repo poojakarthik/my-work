@@ -57,6 +57,7 @@ class Zend_Pdf_Filter_AsciiHex implements Zend_Pdf_Filter_Interface
         $output  = '';
         $oddCode = true;
         $commentMode = false;
+        $hexCodeHigh = 0;
 
         for ($count = 0; $count < strlen($data)  &&  $data[$count] != '>'; $count++) {
             $charCode = ord($data[$count]);
