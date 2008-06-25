@@ -260,6 +260,13 @@ class AppTemplateProvisioning extends ApplicationTemplate
 
 		DBO()->Account->Load();
 		
+		// Check that the Account's status allows for provisioning of services
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			Ajax()->AddCommand("Alert", "The account is pending activation.  Provisioning cannot be performed.");
+			return TRUE;
+		}
+		
 		// Retrieve the Service records
 		$strColumns = "Id, AccountGroup, Account, FNN, Status";
 		$strWhere	= "Account = <AccountId> AND Id IN (". implode(", ", $arrServiceIds) .")";

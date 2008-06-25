@@ -1015,20 +1015,21 @@ class AppTemplateService extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
-	// BulkValidateFNNs
+	// BulkValidateServices
 	//------------------------------------------------------------------------//
 	/**
-	 * BulkValidateFNNs()
+	 * BulkValidateServices()
 	 *
 	 * Performs preliminary Validation of services defined using the "Bulk Add Services" webpage
 	 * 
 	 * Performs preliminary Validation of services defined using the "Bulk Add Services" webpage
+	 * It currently Validates the FNNs and checks that a plan has been specified 
 	 * 
 	 *
 	 * @return		void
-	 * @method		BulkValidateFNNs
+	 * @method		BulkValidateServices
 	 */
-	function BulkValidateFNNs()
+	function BulkValidateServices()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -1044,7 +1045,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Note that this is an array of objects (structs), not an array of associative arrays
 		$arrServices = DBO()->Services->Data->Value;
 		
-		$JsCode = $this->_BulkValidateFNNs($arrServices);
+		$JsCode = $this->_BulkValidateServices($arrServices);
 		if ($JsCode !== NULL)
 		{
 			// At least one of the FNNs was invalid
@@ -1053,7 +1054,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// To have gotten this far, the FNNs must all be valid
-		Ajax()->AddCommand("ExecuteJavascript", "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(true);");
+		Ajax()->AddCommand("ExecuteJavascript", "Vixen.ServiceBulkAdd.ValidateServicesReturnHandler(true);");
 		return TRUE;
 	}
 	
@@ -1087,7 +1088,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Note that this is an array of objects (structs), not an array of associative arrays
 		$arrServices = DBO()->Services->Data->Value;
 		
-		$JsCode = $this->_BulkValidateFNNs($arrServices);
+		$JsCode = $this->_BulkValidateServices($arrServices);
 		if ($JsCode !== NULL)
 		{
 			// At least one of the FNNs was invalid
@@ -1096,11 +1097,12 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Retrieve a list of all RatePlans required, and their Carrier details
-		$arrRatePlanIds = Array();
+		$arrRatePlanIds = array();
 		foreach ($arrServices as $objService)
 		{
 			$arrRatePlanIds[] = $objService->intPlanId;
 		}
+		
 		$arrRatePlanIds = array_unique($arrRatePlanIds);
 		
 		$strWhere		= "Id IN (". implode(", ", $arrRatePlanIds) .")";
@@ -1132,6 +1134,9 @@ class AppTemplateService extends ApplicationTemplate
 		$arrServicesDetails = Array();
 		foreach ($arrServices as $intIndex=>$objService)
 		{
+			// If the Account is pending activation, then the status has to be SERVICE_PENDING
+			$intServiceStatus = (DBO()->Account->Archived->Value != ACCOUNT_STATUS_PENDING_ACTIVATION && $objService->bolActive)? SERVICE_ACTIVE : SERVICE_PENDING;
+			
 			$arrServiceRec = Array("FNN"				=> $objService->strFNN,
 									"ServiceType"		=> $objService->intServiceType,
 									"Indial100"			=> 0,
@@ -1143,7 +1148,7 @@ class AppTemplateService extends ApplicationTemplate
 									"NatureOfCreation"	=> SERVICE_CREATION_NEW,
 									"Carrier"			=> $arrRatePlans[$objService->intPlanId]['CarrierFullService'],
 									"CarrierPreselect"	=> $arrRatePlans[$objService->intPlanId]['CarrierPreselection'],
-									"Status"			=> ($objService->bolActive)? SERVICE_ACTIVE : SERVICE_PENDING,
+									"Status"			=> $intServiceStatus,
 									"Dealer"			=> ($objService->intDealer)? $objService->intDealer : NULL,
 									"Cost"				=> $objService->fltCost
 								);
@@ -1632,12 +1637,12 @@ class AppTemplateService extends ApplicationTemplate
 	// Checks the array of objects, $arrServices, for duplicates within the array, and then in the database
 	// returns javascript to execute if there are duplicates, else returns NULL if they are all valid
 	// It is assumed that all the FNNs are already valid Australian FNNs
-	function _BulkValidateFNNs($arrServices)
+	function _BulkValidateServices($arrServices)
 	{
 		// Check that there are not duplicate numbers in the list, or FNNs in the 
 		// Indial100 range of any newly specified Indial100 landlines
 		// This has already been done in javascript, but I want to check again
-		$arrInvalidServiceIndexes = Array();
+		$arrInvalidServiceIndexes = array();
 		for ($i = 0; $i < count($arrServices); $i++)
 		{
 			$bolIndial100 = FALSE;
@@ -1670,7 +1675,7 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			// At least 2 of the new services have the same FNN
 			$jsonInvalidServiceIndexes = Json()->encode($arrInvalidServiceIndexes);
-			$strJs = "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: Duplicate services are highlighted');";
+			$strJs = "Vixen.ServiceBulkAdd.ValidateServicesReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: Duplicate services are highlighted');";
 			return $strJs;
 		}
 		
@@ -1688,7 +1693,23 @@ class AppTemplateService extends ApplicationTemplate
 		if (count($arrInvalidServiceIndexes) > 0)
 		{
 			$jsonInvalidServiceIndexes = Json()->encode($arrInvalidServiceIndexes);
-			$strJs = "Vixen.ServiceBulkAdd.ValidateFNNsReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: highlighted FNNs are currently active in the database and can not be used for new services');";
+			$strJs = "Vixen.ServiceBulkAdd.ValidateServicesReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: highlighted FNNs are currently active in the database and can not be used for new services');";
+			return $strJs;
+		}
+		
+		// Check that each Service has a plan declared
+		foreach ($arrServices as $objService)
+		{
+			if ($objService->intPlanId == NULL)
+			{
+				// The service doesn't have a plan specified
+				$arrInvalidServiceIndexes[] = $objService->intArrayIndex;
+			}
+		}
+		if (count($arrInvalidServiceIndexes) > 0)
+		{
+			$jsonInvalidServiceIndexes = Json()->encode($arrInvalidServiceIndexes);
+			$strJs = "Vixen.ServiceBulkAdd.ValidateServicesReturnHandler(false, $jsonInvalidServiceIndexes, 'ERROR: Plans must be specified');";
 			return $strJs;
 		}
 		
@@ -2215,13 +2236,6 @@ class AppTemplateService extends ApplicationTemplate
 					return TRUE;
 				}
 				
-				if (DBO()->Service->NewStatus->Value == SERVICE_PENDING)
-				{
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: You cannot change the status of the service to PENDING.  All modifications to the service have been aborted");
-					return TRUE;
-				}
-				
 				if ($objService->ChangeStatus(DBO()->Service->NewStatus->Value) === FALSE)
 				{
 					TransactionRollback();
@@ -2314,7 +2328,15 @@ class AppTemplateService extends ApplicationTemplate
 		// Load the service record
 		if (!DBO()->Service->Load())
 		{
-			Ajax()->AddCommand("Alert", "ERROR: The service with id: ". DBO()->Service->Id->Value ." you were attempting to view could not be found");
+			Ajax()->AddCommand("Alert", "ERROR: The service with id: ". DBO()->Service->Id->Value ." could not be found");
+			return FALSE;
+		}
+		
+		// Load the Account record
+		DBO()->Account->Id = DBO()->Service->Account->Value;
+		if (!DBO()->Account->Load())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: The account with id: ". DBO()->Account->Id->Value ." could not be found");
 			return FALSE;
 		}
 	

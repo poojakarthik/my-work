@@ -525,9 +525,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render buttons
 		echo "
 <div class='ButtonContainer'>
-	<input type='button' style='display:none;float:right' id='AccountEditSubmitButton' value='Commit Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_EditAccount', 'Commit Changes', 'Account', 'SaveDetails', '', '', '', '{$this->_strContainerDivId}')\"></input>
-	<input type='button' value='Commit Changes' style='float:right' onclick='Vixen.AccountDetails.CommitChanges()'></input>
-	<input type='button' value='Cancel' style='float:right;margin-right:5px' onclick='Vixen.AccountDetails.CancelEdit();'></input>
+	<div style='float:right'>
+		<input type='button' style='display:none;' id='AccountEditSubmitButton' value='Commit Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_EditAccount', 'Commit Changes', 'Account', 'SaveDetails', '', '', '', '{$this->_strContainerDivId}')\"></input>
+		<input type='button' value='Cancel' onclick='Vixen.AccountDetails.CancelEdit();'></input>
+		<input type='button' value='Commit Changes' onclick='Vixen.AccountDetails.CommitChanges()'></input>
+	</div>
 </div>
 ";
 		

@@ -218,8 +218,9 @@
 		$this->_insAddNote			= new StatementInsert("Note", $arrData);
 		
 		$this->_selCheckELB			= new StatementSelect("ServiceExtension", "*", "Service = <Service>");
-		
+
 		$this->_insAddExtension		= new StatementInsert("ServiceExtension");
+
 		
 		$this->_updServiceExtension	= new StatementUpdate("ServiceExtension", "Service = <Service>", Array("Archived" => NULL));
 		

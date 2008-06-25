@@ -234,6 +234,13 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		// Check that the status of the account is acceptable
+		if ($arrAccount['Status'] == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Account $intAccountId is pending activation.  Services cannot be moved to it");
+			return TRUE;
+		}
+		
 		// Send the retrieved record
 		$arrAccount['StatusDesc']			= GetConstantDescription($arrAccount['Status'], "Account");
 		$arrAccount['CustomerGroupName']	= GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
@@ -332,7 +339,14 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		// You can't have the EffectiveOn timestamp to a time before this
 		if (($arrGainingAccount = $this->_GetAccountDetails($intGainingAccount)) === FALSE)
 		{
-			// Could not retrieve the details of the gaining account
+			// Could not retrieve the details of the gaining account (error reporting has been handled)
+			return TRUE;
+		}
+		
+		// Check that the status of the gaining account is acceptable
+		if ($arrGainingAccount['Status'] == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			Ajax()->AddCommand("Alert", "ERROR: Account $intGainingAccount is pending activation.  Services cannot be moved to it");
 			return TRUE;
 		}
 		

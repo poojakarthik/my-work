@@ -103,7 +103,15 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 		$strServiceTypeCell	= "<div class='ServiceTypeIconBlank'></div>";
 		$strDealerCell		= "<select id='DealerCombo' style='width:100%'>$strDealerOptions</select>";
 		$strCostCell		= "<input id='CostTextBox' type='text' maxlength='7' style='width:100%'></input>";
-		$strActivateCell	= "<input id='ActivateCheckBox' type='checkbox'></input>";
+		
+		$strDisabled = "";
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			// The Account is pending activation.  The user can only add services that are pending activation
+			$strDisabled = "disabled='true'";
+			echo "<div class='MsgNotice'>The account is pending activation.  New services cannot be activated until the account is activated.</div>";
+		}
+		$strActivateCell	= "<input id='ActivateCheckBox' type='checkbox' $strDisabled></input>";
 		
 		$strCostCentreCell	 = "<select id='CostCentreCombo' style='width:100%'>";
 		$strCostCentreCell	.= "<option value='0'>&nbsp;</option>";
@@ -128,7 +136,7 @@ class HtmlTemplateServiceBulkAdd extends HtmlTemplate
 		
 		echo "
 <div class='ButtonContainer'>
-	<input type='button' value='Save' onclick='Vixen.ServiceBulkAdd.ConfirmSave()' style='float:right'></input>
+	<input type='button' value='Save' onclick='Vixen.ServiceBulkAdd.ValidateServices()' style='float:right'></input>
 </div>
 <script type='text/javascript'>$strJsScript</script>
 <div class='SmallSeparator'></div>";

@@ -210,6 +210,7 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 		this.objExtraDetails = null;
 		this.FlagFnnTextboxes();
 		this.FlagCostTextbox();
+		this.FlagPlanCombo();
 		this._LoadPlans();
 		
 		if (intServiceType != null)
@@ -314,6 +315,11 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 		this.elmCost.SetHighlight(bolIsInvalid);
 	}
 	
+	this.FlagPlanCombo = function(bolIsInvalid)
+	{
+		this.elmPlan.SetHighlight(bolIsInvalid);
+	}
+	
 	// returns the details of the Service, as an object
 	// some details will differ depending on the ServiceType of the service
 	this.GetProperties = function()
@@ -324,11 +330,18 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 			// Cost is not a number
 			fltCost = 0.0;
 		}
-		
+
+		var intPlanId = parseInt(this.elmPlan.value);
+		if (isNaN(intPlanId))
+		{
+			// A plan has not been specified.  This only happens when there are no plans for the given ServiceType/CustomerGroup
+			intPlanId = NULL;
+		}
+
 		objService =	{
 							intServiceType	: this.intServiceType,
 							strFNN			: this.elmFnn.value,
-							intPlanId		: parseInt(this.elmPlan.value),
+							intPlanId		: intPlanId,
 							intCostCentre	: parseInt(this.elmCostCentre.value),
 							intDealer		: parseInt(this.elmDealer.value),
 							fltCost			: fltCost,
@@ -581,7 +594,7 @@ function VixenServiceBulkAddClass()
 			}
 			strServiceBreakdown += "<tr><td></td><td align='right' style='border-top: solid 1px #000000'>"+ intTotalActive +"</td><td align='right' style='border-top: solid 1px #000000'>"+ intTotalPending +"</td><td align='right' style='border-top: solid 1px #000000'>"+ intServiceCount +"</td></tr></table>";
 			var strMsg = "Are you sure you want to add "+ intServiceCount +" services to this account?" + strServiceBreakdown;
-			Vixen.Popup.Confirm(strMsg, function(){Vixen.ServiceBulkAdd._ValidateFNNs();});
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.ServiceBulkAdd.GetExtraDetailsForNextService();});
 		}
 		else
 		{
@@ -590,26 +603,40 @@ function VixenServiceBulkAddClass()
 	}
 	
 	// Performs initial validation of details
-	this._ValidateFNNs = function()
+	this.ValidateServices = function()
 	{
-		// Validate the cost textboxes
-		this.FlagInvalidCostFields(null, true);
+		// Validate the cost textboxes and the Plan details
 		var arrInvalidCostFields = new Array();
+		var arrInvalidPlanFields = new Array();
 		for (i in this.arrServices)
 		{
-			if (!this.arrServices[i].elmCost.Validate("MonetaryValue", true))
+			// Check that this row defines a new service (the FNNs match and it is a valid FNN)
+			if (this.arrServices[i].intServiceType != null)
 			{
-				// The cost has been specified but is invalid
-				arrInvalidCostFields.push(i);
+				if (!this.arrServices[i].elmCost.Validate("MonetaryValue", true))
+				{
+					// The cost has been specified but is invalid
+					arrInvalidCostFields.push(i);
+				}
+				if (this.arrServices[i].elmPlan.value == "")
+				{
+					// A Plan has not been specified for the service
+					arrInvalidPlanFields.push(i);
+				}
 			}
 		}
-		if (arrInvalidCostFields.length > 0)
+		
+		// Highlight the invalid fields (this will first unhighlight all fields)
+		this.FlagInvalidCostFields(arrInvalidCostFields, true);
+		this.FlagInvalidPlans(arrInvalidPlanFields, true);
+		
+		if ((arrInvalidCostFields.length > 0) || (arrInvalidPlanFields.length > 0))
 		{
-			// There were some invalid cost fields
-			this.FlagInvalidCostFields(arrInvalidCostFields, true);
-			$Alert("ERROR: Invalid Costs");
+			// There were some invalid fields
+			$Alert("ERROR: Invalid fields are highlighted");
 			return;
 		}
+		
 
 		// Check that no new service has the same fnn as any of the other new services
 		var arrDuplicatedServices = new Array();
@@ -651,6 +678,13 @@ function VixenServiceBulkAddClass()
 			}
 		}
 		
+		if (arrDeclaredServices.length == 0)
+		{
+			// No Services have been declared
+			$Alert("No services have been properly specified");
+			return;
+		}
+		
 		// Make the AJAX call to the server for preliminary validation of the services
 		var objObjects		= {};
 		objObjects.Services	= {};
@@ -658,11 +692,11 @@ function VixenServiceBulkAddClass()
 		objObjects.Account 			= {Id : this.intAccountId};
 		
 		Vixen.Popup.ShowPageLoadingSplash("Performing preliminary validation of FNNs");
-		Vixen.Ajax.CallAppTemplate("Service", "BulkValidateFNNs", objObjects, null, false, true);
+		Vixen.Ajax.CallAppTemplate("Service", "BulkValidateServices", objObjects, null, false, true);
 	}
 	
 	// The server will trigger this method, after validating the FNNs
-	this.ValidateFNNsReturnHandler = function(bolAllValid, arrInvalidServiceIndexes, strErrorMsg)
+	this.ValidateServicesReturnHandler = function(bolAllValid, arrInvalidServiceIndexes, strErrorMsg)
 	{
 		if (!bolAllValid)
 		{
@@ -676,7 +710,7 @@ function VixenServiceBulkAddClass()
 		this.FlagInvalidFNNs(null, true);
 		
 		// Load up each of the ServiceType "Extra Details" popups so as to aquire the extra information required of each Service
-		this.GetExtraDetailsForNextService();
+		this.ConfirmSave();
 	}
 	
 	// intLastService is the index into this.arrServices, of the last Service to have its details displayed, optional
@@ -816,6 +850,27 @@ function VixenServiceBulkAddClass()
 		}
 	}
 
+	// This will highlight the combobox for all services that no plan defined
+	// arrInvalidServices is an array of indexes of the this.arrServices array
+	this.FlagInvalidPlans = function(arrInvalidServices, bolClear)
+	{
+		if (bolClear)
+		{
+			// Clear all of the flags, before flagging the ones defined in arrInvalidServices
+			for (i in this.arrServices)
+			{
+				this.arrServices[i].FlagPlanCombo(false);
+			}
+		}
+		
+		if (arrInvalidServices != undefined)
+		{
+			for (i in arrInvalidServices)
+			{
+				this.arrServices[arrInvalidServices[i]].FlagPlanCombo(true);
+			}
+		}
+	}
 
 	// Submits all the data to the server, to save all the services
 	this._SaveServices = function(bolConfirmed)

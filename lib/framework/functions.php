@@ -1850,7 +1850,6 @@ function LoadFramework($strFrameworkDir=NULL)
 	
 	// Load the viXen/Flex Global Config File (defining database and path constants)
 	require_once($strFrameworkDir."config.php");
-	
 	// Load framework
 	require_once($strFrameworkDir."framework.php");
 	require_once($strFrameworkDir."functions.php");
@@ -1859,8 +1858,8 @@ function LoadFramework($strFrameworkDir=NULL)
 		require_once($strFrameworkDir."database_constants.php");
 	}
 	require_once($strFrameworkDir."definitions.php");
-	
 	require_once($strFrameworkDir."db_access.php");
+	
 	
 	// Retrieve all constants stored in the database
 	// Note that this will not override constants that have already been defined

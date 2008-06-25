@@ -72,6 +72,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		// Adjustments can not be added if the account is pending activation
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			Ajax()->AddCommand("Alert", "The account is pending activation.  Adjustments cannot be added.");
+			return TRUE;
+		}
+		
 		// Check if the adjustment relates to a particular service
 		if (DBO()->Service->Id->Value)
 		{
@@ -219,6 +226,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		if (!DBO()->Account->Load())
 		{
 			Ajax()->AddCommand("Alert", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			return TRUE;
+		}
+
+		// Adjustments can not be added if the account is pending activation
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			Ajax()->AddCommand("Alert", "The account is pending activation.  Adjustments cannot be added.");
 			return TRUE;
 		}
 

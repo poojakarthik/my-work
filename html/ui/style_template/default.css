@@ -275,6 +275,16 @@
 		text-decoration:	none;
 	}
 	
+	div.MsgNotice
+	{
+		margin:				5px 0px 5px 0px;
+		padding:			5px;
+		border:				solid 1px #D1D1D1;
+		background-color:	#FFFFCC;
+		position:			relative;
+	}
+	
+	
 /**************************************************************************/
 /* IMAGES														  		  */
 /**************************************************************************/	

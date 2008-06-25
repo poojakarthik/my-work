@@ -132,7 +132,7 @@ function VixenAccountDetailsClass()
 				{
 					// The account is being activated for the first time
 					strStatusChangeMsg = "<br />You have chosen to <strong>activate</strong> the account for the first time." + 
-										"<br style='margin-top:10px'/><span style='color:#FF0000'>WARNING: This will automatically activate and provision all services that are currently pending activation</span>";
+										"<br /><span style='color:#FF0000'>WARNING: This will automatically activate and provision all services that are currently pending activation</span>";
 				}
 				else
 				{

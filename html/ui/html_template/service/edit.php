@@ -95,43 +95,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$intClosedOn = strtotime(DBO()->Service->ClosedOn->Value);
 		$intCurrentDate = strtotime(GetCurrentDateForMySQL());
 		
-		// Check if the ClosedOn date has been set
-		/* This code is no longer used
-		if (DBO()->Service->ClosedOn->Value == NULL)
-		{
-			// The service is not scheduled to close.  It is either active or hasn't been activated yet
-			// Check if it is currently active
-			$intCreatedOn = strtotime(DBO()->Service->CreatedOn->Value);
-			if ($intCurrentDate >= $intCreatedOn)
-			{
-				// The service is currently active
-				echo "&nbsp;&nbsp;Service opened on ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
-			}
-			else
-			{
-				// This service hasn't been activated yet (change of lessee has been scheduled at a future date)
-				echo "&nbsp;&nbsp;Scheduled to be acquired by this lessee on ". DBO()->Service->CreatedOn->FormattedValue() ."<br>";
-			}
-		}
-		else
-		{
-			// The service has a closedon date check if it is in the future or past
-			if ($intClosedOn < $intCurrentDate)
-			{
-				// The service has been closed
-				echo "&nbsp;&nbsp;Service was closed on ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
-			}
-			elseif ($intClosedOn == $intCurrentDate)
-			{
-				// The service closes today
-				echo "&nbsp;&nbsp;Service closes at the end of today";
-			}
-			else
-			{
-				// The service is scheduled to be closed in the future (change of lessee has been scheduled at a future date)
-				echo "&nbsp;&nbsp;Scheduled to close on ". DBO()->Service->ClosedOn->FormattedValue() ."<br>";
-			}
-		}*/
 		$strViewHistoryLink	= Href()->ViewServiceHistory(DBO()->Service->Id->Value);
 		$strViewHistory		= "<a href='$strViewHistoryLink'>history</a>";
 		$objService			= ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);		
@@ -154,14 +117,8 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->CurrentForceInvoiceRender->RenderHidden();
 		DBO()->ServiceInboundDetail->CurrentAnswerPoint->RenderHidden();
 		DBO()->ServiceInboundDetail->CurrentConfiguration->RenderHidden();
+		DBO()->Account->Archived->RenderHidden();
 		
-		// I'm pretty sure these are no longer required		
-		//DBO()->ServiceMobileDetail->CurrentSimPUK->RenderHidden();
-		//DBO()->ServiceMobileDetail->CurrentSimESN->RenderHidden();
-		//DBO()->ServiceMobileDetail->CurrentSimState->RenderHidden();
-		//DBO()->ServiceMobileDetail->CurrentDOB->RenderHidden();
-		//DBO()->ServiceMobileDetail->CurrentComments->RenderHidden();
-
 		DBO()->Service->Account->RenderHidden();
 		DBO()->Service->AccountGroup->RenderHidden();
 		DBO()->Service->Indial100->RenderHidden();
@@ -192,27 +149,35 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		// Intialise the value for the Service Status combobox
 		if (!DBO()->Service->NewStatus->IsSet)
 		{
-			DBO()->Service->NewStatus = DBO()->Service->Status->Value;
+			DBO()->Service->NewStatus = DBO()->Service->CurrentStatus->Value;
 		}
 		
 		// Work out what options should be available in the Status combobox
-		$arrStatusOptions = $GLOBALS['*arrConstant']['Service'];
-		if ($objService->GetStatus() != SERVICE_PENDING)
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
-			// Remove the SERVICE_PENDING option
-			unset($arrStatusOptions[SERVICE_PENDING]);
-			
-			if ($objService->GetStatus() != SERVICE_ARCHIVED && !$bolUserHasAdminPerm)
-			{
-				// Remove the ARCHIVE option as only admin users can archive services
-				unset($arrStatusOptions[SERVICE_ARCHIVED]);
-			}
+			// The status cannot be changed
+			$arrStatusOptions[DBO()->Service->CurrentStatus->Value] = $GLOBALS['*arrConstant']['Service'][DBO()->Service->CurrentStatus->Value];
 		}
 		else
 		{
-			// The service is pending activation.  They should not be able to disconnect it or archive it
-			unset($arrStatusOptions[SERVICE_DISCONNECTED]);
-			unset($arrStatusOptions[SERVICE_ARCHIVED]);
+			$arrStatusOptions = $GLOBALS['*arrConstant']['Service'];
+			if ($objService->GetStatus() != SERVICE_PENDING)
+			{
+				// Remove the SERVICE_PENDING option
+				unset($arrStatusOptions[SERVICE_PENDING]);
+				
+				if ($objService->GetStatus() != SERVICE_ARCHIVED && !$bolUserHasAdminPerm)
+				{
+					// Remove the ARCHIVE option as only admin users can archive services
+					unset($arrStatusOptions[SERVICE_ARCHIVED]);
+				}
+			}
+			else
+			{
+				// The service is pending activation.  They should not be able to disconnect it or archive it
+				unset($arrStatusOptions[SERVICE_DISCONNECTED]);
+				unset($arrStatusOptions[SERVICE_ARCHIVED]);
+			}
 		}
 		
 		$strStatusOptions = "";
@@ -305,9 +270,11 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		// Render buttons
 		echo "
 <div class='ButtonContainer'>
-	<input type='button' style='display:none;float:right' id='ServiceEditSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_EditService', 'Apply Changes', 'Service', 'Edit', 'Popup', 'EditServicePopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
-	<input type='button' value='Apply Changes' style='float:right' onclick='Vixen.ServiceEdit.ApplyChanges()'></input>
-	<input type='button' value='Cancel' style='float:right;margin-right:5px' onclick='Vixen.Popup.Close(this)'></input>
+	<div style='float:right'>
+		<input type='button' style='display:none;' id='ServiceEditSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_EditService', 'Apply Changes', 'Service', 'Edit', 'Popup', 'EditServicePopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
+		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
+		<input type='button' value='Apply Changes' onclick='Vixen.ServiceEdit.ApplyChanges()'></input>
+	</div>
 </div>
 ";
 

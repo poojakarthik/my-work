@@ -214,7 +214,7 @@ class Application
 	{
 		// Check that the user's browser is supported.  This will die if the user's browser is not supported
 		$this->_CheckBrowser();
-	
+		
 		// Split template name
 		$arrTemplate 	= explode ('.', $strTemplateName);
 		$strClass 		= 'AppTemplate'.$arrTemplate[0];

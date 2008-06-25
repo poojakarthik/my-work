@@ -610,7 +610,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * The history details when the service was activated(or created) and Closed(disconnected or archived)
 	 * It will always have at least one record
 	 * On Success the returned array will be of the format:
-	 * $arrServices[]	['Id']
+	 * $arrServices[]	['Id']			This will be the Id of the latest service record to model this FNN on this account
 	 * 					['FNN']
 	 * 					['ServiceType']
 	 * 					['CurrentPlan']	['Id']
@@ -623,6 +623,10 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * 									['ClosedOn']
 	 * 									['CreatedBy']
 	 * 									['ClosedBy']
+	 * 									['NatureOfCreation']
+	 * 									['NatureOfClosure']
+	 * 									['LastOwner']
+	 * 									['NextOwner']
 	 * 									['Status']
 	 * 									['LineStatus']
 	 * 									['LineStatusDate']
@@ -1140,24 +1144,38 @@ class AppTemplateAccount extends ApplicationTemplate
 			}
 		}
 		
+		// Set the columns to save
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, credit_control_status, LatePaymentAmnesty");
+														
+		if (!DBO()->Account->Save())
+		{
+			// Saving the account record failed
+			TransactionRollback();
+			Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
+			return TRUE;
+		}
+		
 		// Check if the Status property has been changed
+		$arrModifiedServices = array();
 		if (DBO()->Account->Archived->Value != DBO()->CurrentAccount->Archived->Value)
 		{
 			// Define one variable for MYSQL date/time and one of the EmployeeID
 			$strTodaysDate = GetCurrentDateForMySQL();
-			$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
+			$intEmployeeId = AuthenticatedUser()->GetUserId();
 		
-			// This is a Flag for checking if any of the account's services had to be updated
-			// because of the Account's status being changed
-			$bolServicesUpdated = FALSE;
+			// This will store the Status that services are changed to, due to the changing of the account status
+			$intModifiedServicesNewStatus	= NULL;
+			
+			// Stores details of services that should have been automatically provisioned, but failed
+			$arrServicesFailedToProvision	= array();
 		
-			$strChangesNote .= "Account Status was changed from ". GetConstantDescription(DBO()->CurrentAccount->Archived->Value, 'Account') ." to ". GetConstantDescription(DBO()->Account->Archived->Value, 'Account') . "\n";
+			$strChangesNote .= "Account Status was changed from ". GetConstantDescription(DBO()->CurrentAccount->Archived->Value, 'account_status') ." to ". GetConstantDescription(DBO()->Account->Archived->Value, 'account_status') . "\n";
 
-			DBO()->account_status_history->account = DBO()->Account->Id->Value;
-			DBO()->account_status_history->from_status = DBO()->CurrentAccount->Archived->Value;
-			DBO()->account_status_history->to_status = DBO()->Account->Archived->Value;
-			DBO()->account_status_history->employee = AuthenticatedUser()->GetUserId();
-			DBO()->account_status_history->change_datetime = GetCurrentISODateTime();
+			DBO()->account_status_history->account			= DBO()->Account->Id->Value;
+			DBO()->account_status_history->from_status		= DBO()->CurrentAccount->Archived->Value;
+			DBO()->account_status_history->to_status		= DBO()->Account->Archived->Value;
+			DBO()->account_status_history->employee			= AuthenticatedUser()->GetUserId();
+			DBO()->account_status_history->change_datetime	= GetCurrentISODateTime();
 			if (!DBO()->account_status_history->Save())
 			{
 				// Saving the account status history record failed
@@ -1169,11 +1187,59 @@ class AppTemplateAccount extends ApplicationTemplate
 			switch (DBO()->Account->Archived->Value)
 			{
 				case ACCOUNT_STATUS_ACTIVE:
-					// If user has selected Active for the account status no subsequent actions have to take place
+					$intModifiedServicesNewStatus = SERVICE_ACTIVE;
+					if (DBO()->CurrentAccount->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
+					{
+						// The account is being activated for the first time
+						// Activate all services that are pending activation
+						$arrServices = $this->GetServices(DBO()->Account->Id->Value);
+						
+						foreach ($arrServices as $arrService)
+						{
+							// Check that the service is pending activation (they all should be in this scenario)
+							if ($arrService['History'][0]['Status'] == SERVICE_PENDING)
+							{
+								$objService = ModuleService::GetServiceById($arrService['Id'], $arrService['ServiceType']);
+								if ($objService === FALSE || $objService === NULL)
+								{
+									// The service object could not be created
+									TransactionRollback();
+									Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to activate Service: {$arrService['FNN']}.  The account has not been updated");
+									return TRUE;
+								}
+								
+								// Activate the service
+								if (!$objService->ChangeStatus($intModifiedServicesNewStatus))
+								{
+									// Updating the status failed
+									TransactionRollback();
+									Ajax()->AddCommand("Alert", "ERROR: Could not activate Service: {$arrService['FNN']}.  {$objService->GetErrorMsg()}.  The account has not been updated.");
+									return TRUE;
+								}
+								
+								// Do FullService and Preselection provisioning requests
+								if ($objService->CanBeProvisioned())
+								{
+									if (!$objService->MakeFullServiceProvisioningRequest() || !$objService->MakePreselectionProvisioningRequest())
+									{
+										// Failed to make the FullService provisioning Request or the Preselection provisioning Request
+										$arrServicesFailedToProvision[] = array("FNN"			=> $arrService['FNN'],
+																				"ServiceType"	=> $arrService['ServiceType']);
+									}
+								}
+								
+								// Add the details of the service to the list of modified services
+								$arrModifiedServices[] = array(	"FNN"			=> $arrService['FNN'],
+																"ServiceType"	=> $arrService['ServiceType']);
+							}
+						}
+					}
 					break;
+					
 				case ACCOUNT_STATUS_CLOSED:
 				case ACCOUNT_STATUS_DEBT_COLLECTION:
 				case ACCOUNT_STATUS_SUSPENDED:
+					$intModifiedServicesNewStatus = SERVICE_DISCONNECTED;
 					// If user has selected "Closed", "Debt Collection", "Suspended" for the account status, only Active services have their Status and 
 					// ClosedOn/CloseBy properties changed
 					// Active Services are those that have their Status set to Active or (their status is set to Disconnected and 
@@ -1187,95 +1253,73 @@ class AppTemplateAccount extends ApplicationTemplate
 					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServicePending" => SERVICE_PENDING, "ServiceDisconnected" => SERVICE_DISCONNECTED);
 
 					// Retrieve all services attached to this Account where the Status is Active
+					DBL()->Service->SetColumns("Id, FNN, ServiceType, Status");
 					DBL()->Service->Where->Set($strWhere, $arrWhere);
 					DBL()->Service->Load();
 					
-					// If there are no records retrieved append to note stating this, stops confusion on notes
-					if (!DBL()->Service->RecordCount() > 0)
+					// Iterate through the services and try to disconnect each one
+					foreach (DBL()->Service as $dboService)
 					{
-						$strChangesNote .= "No services have been affected";
-					}
-					else
-					{
-						$strChangesNote .= "The following services have been set to ". GetConstantDescription(SERVICE_DISCONNECTED, "Service") ." :\n\n";
-						
-						// Iterate through the services and try to disconnect each one
-						foreach (DBL()->Service as $dboService)
+						$objService = ModuleService::GetServiceById($dboService->Id->Value, $dboService->ServiceType->Value);
+						if ($objService === FALSE || $objService === NULL)
 						{
-							$objService = ModuleService::GetServiceById($dboService->Id->Value, $dboService->ServiceType->Value);
-							if ($objService === FALSE || $objService === NULL)
-							{
-								// An error occurred
-								TransactionRollback();
-								Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to disconnect Service: {$dboService->FNN->Value}.  The account has not been updated");
-								return TRUE;
-							}
-							
-							if ($objService->ChangeStatus(SERVICE_DISCONNECTED) === FALSE)
-							{
-								// Could not change the status of the service
-								TransactionRollback();
-								Ajax()->AddCommand("Alert", "ERROR: Could not disconnect service: {$dboService->FNN->Value}.<br />{$objService->GetErrorMsg()}<br />The account has not been updated");
-								return TRUE;
-							}
-							
-							// The service has been successfully updated
-							
-							// For each service attached to this account append information onto the note being generated
-							$strChangesNote .= "Service: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
+							// An error occurred
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to disconnect Service: {$dboService->FNN->Value}.  The account has not been updated");
+							return TRUE;
 						}
 						
-						// At least one service has been modified
-						$bolServicesUpdated = TRUE;
+						if ($objService->ChangeStatus($intModifiedServicesNewStatus) === FALSE)
+						{
+							// Could not change the status of the service
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: Could not disconnect service: {$dboService->FNN->Value}.  {$objService->GetErrorMsg()}<br />The account has not been updated");
+							return TRUE;
+						}
+						
+						// The service has been successfully updated
+						// Add the details of the service to the list of modified services
+						$arrModifiedServices[] = array(	"FNN"			=> $dboService->FNN->Value,
+														"ServiceType"	=> $dboService->ServiceType->Value);
 					}
 					break;
+					
 				case ACCOUNT_STATUS_ARCHIVED:
+					$intModifiedServicesNewStatus = SERVICE_ARCHIVED;
 					// If user has selected "Archived" for the account status only Active and Disconnected services have their Status and 
 					// ClosedOn/CloseBy properties changed						
-					$strWhere = "Account = <AccountId> AND (Status IN (<ServiceActive>, <ServicePending>) OR Status = <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
+					$strWhere = "Account = <AccountId> AND Status IN (<ServiceActive>, <ServicePending>, <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN)";
 					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServicePending" => SERVICE_PENDING, "ServiceDisconnected" => SERVICE_DISCONNECTED);
 					
-					// Retrieve all services attached to this Account where the Status is Active/Disconnected
+					// Retrieve all services attached to this Account where the Status is Active/Disconnected/Pending
+					DBL()->Service->SetColumns("Id, FNN, ServiceType, Status");
 					DBL()->Service->Where->Set($strWhere, $arrWhere);
 					DBL()->Service->Load();
 					
-					// If their are no records retrieved append to note stating this, stops confusion on notes
-					if (!DBL()->Service->RecordCount() > 0)
+					// Iterate through the services and try to disconnect each one
+					foreach (DBL()->Service as $dboService)
 					{
-						$strChangesNote .= "No services have been affected\n\n";
-					}
-					else
-					{
-						$strChangesNote .= "The following services have been set to ". GetConstantDescription(SERVICE_ARCHIVED, "Service") ." :\n\n";
-						
-						// Iterate through the services and try to disconnect each one
-						foreach (DBL()->Service as $dboService)
+						$objService = ModuleService::GetServiceById($dboService->Id->Value, $dboService->ServiceType->Value);
+						if ($objService === FALSE || $objService === NULL)
 						{
-							$objService = ModuleService::GetServiceById($dboService->Id->Value, $dboService->ServiceType->Value);
-							if ($objService === FALSE || $objService === NULL)
-							{
-								// An error occurred
-								TransactionRollback();
-								Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to archive Service: {$dboService->FNN->Value}.  The account has not been updated");
-								return TRUE;
-							}
-							
-							if ($objService->ChangeStatus(SERVICE_ARCHIVED) === FALSE)
-							{
-								// Could not change the status of the service
-								TransactionRollback();
-								Ajax()->AddCommand("Alert", "ERROR: Could not archive service: {$dboService->FNN->Value}.<br />{$objService->GetErrorMsg()}<br />The account has not been updated");
-								return TRUE;
-							}
-							
-							// The service has been successfully updated
-							
-							// For each service attached to this account append information onto the note being generated
-							$strChangesNote .= "Service: " . $dboService->FNN->Value . ", Type: " . GetConstantDescription($dboService->ServiceType->Value, 'ServiceType') . "\n";
+							// An error occurred
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: Unexpected problem occurred when trying to archive Service: {$dboService->FNN->Value}.  The account has not been updated");
+							return TRUE;
 						}
 						
-						// At least one service has been modified
-						$bolServicesUpdated = TRUE;
+						if ($objService->ChangeStatus($intModifiedServicesNewStatus) === FALSE)
+						{
+							// Could not change the status of the service
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "ERROR: Could not archive service: {$dboService->FNN->Value}.  {$objService->GetErrorMsg()}<br />The account has not been updated");
+							return TRUE;
+						}
+						
+						// The service has been successfully updated
+						// Add the details of the service to the list of modified services
+						$arrModifiedServices[] = array(	"FNN"			=> $dboService->FNN->Value,
+														"ServiceType"	=> $dboService->ServiceType->Value);
 					}
 					break;
 					
@@ -1289,23 +1333,32 @@ class AppTemplateAccount extends ApplicationTemplate
 			}
 		}
 		
+		// Changes have been made
 		if ($strChangesNote)
 		{
 			$strChangesNote = "Account details have been modified.\n$strChangesNote";
+			if (count($arrModifiedServices) > 0)
+			{
+				// Some services have had their status updated
+				$strChangesNote .= "\nThe following services have been set to ". GetConstantDescription($intModifiedServicesNewStatus, "Service") .":";
+				foreach ($arrModifiedServices as $arrService)
+				{
+					$strChangesNote .= "\n". GetConstantDescription($arrService['ServiceType'], "ServiceType") .": {$arrService['FNN']}";
+				}
+			}
+			if (count($arrServicesFailedToProvision) > 0)
+			{
+				// Some services that should be able to be provisioned automatically, failed
+				$strChangesNote .= "\n\nProvisioning requests failed to be automatically generated for the following services:";
+				foreach ($arrServicesFailedToProvision as $arrService)
+				{
+					$strChangesNote .= "\n". GetConstantDescription($arrService['ServiceType'], "ServiceType") .": {$arrService['FNN']}";
+				}
+			}
+			
 			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
 		}
 
-		// Set the columns to save
-		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, DisableLateNotices, credit_control_status, LatePaymentAmnesty");
-														
-		if (!DBO()->Account->Save())
-		{
-			// Saving the account record failed
-			TransactionRollback();
-			Ajax()->AddCommand("Alert", "ERROR: Updating the account details failed, unexpectedly");
-			return TRUE;
-		}
-		
 		// All Database interactions were successfull
 		TransactionCommit();
 
@@ -1328,7 +1381,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// Fire the OnAccountServicesUpdate Event
-		if ($bolServicesUpdated)
+		if (count($arrModifiedServices) > 0)
 		{
 			Ajax()->FireEvent(EVENT_ON_ACCOUNT_SERVICES_UPDATE, $arrEvent);
 		}

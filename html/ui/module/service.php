@@ -1640,6 +1640,22 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			return FALSE;
 		}
 		
+		// Check that the Account is of an appropriate Status
+		$selAccount = new StatementSelect("Account", "Archived", "Id = <AccountId>");
+		if (!$selAccount->Execute(array("AccountId" => $this->_intAccount)))
+		{
+			// Could not find the account
+			$this->_strErrorMsg = "Unexpected database error occurred when trying to retrieve details of the account that this service belongs to";
+			return FALSE;
+		}
+		$arrAccount = $selAccount->Fetch();
+		if ($arrAccount['Archived'] == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			// The service's Account is pending activation, which means you can't change the status of any of the services belonging to it
+			$this->_strErrorMsg = "The status cannot be changed while the Account is pending activation";
+			return FALSE;
+		}
+		
 		if ($intStatus == SERVICE_ACTIVE)
 		{
 			// The service is being activated
@@ -1995,6 +2011,24 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			return FALSE;
 		}
 		
+		// Check that the Account is of an appropriate Status for service provisioning
+		//TODO! This could really slow things down. Perhaps it should retrieve the Status of the Account when it loads the details of the service
+		$selAccount = new StatementSelect("Account", "Archived", "Id = <AccountId>");
+		if (!$selAccount->Execute(array("AccountId" => $this->_intAccount)))
+		{
+			// Could not find the account
+			$this->_strErrorMsg = "Unexpected database error occurred when trying to retrieve details of the account that this service belongs to";
+			return FALSE;
+		}
+		$arrAccount = $selAccount->Fetch();
+		if ($arrAccount['Archived'] == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			// The service's Account is pending activation, which means you can't provision the service
+			$this->_strErrorMsg = "The status cannot be changed while the Account is pending activation";
+			return FALSE;
+		}
+
+		
 		$intService	= ($this->_intNewId !== NULL)? $this->_intNewId : $this->_intCurrentId;
 		$strNow		= GetCurrentISODateTime();
 		if ($strAuthorisationDate == NULL)
@@ -2006,7 +2040,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 									"Account"			=> $this->_intAccount,
 									"Service"			=> $intService,
 									"FNN"				=> $this->_strFNN,
-									"Employee"			=> AuthenticatedUser()->_arrUser['Id'],
+									"Employee"			=> AuthenticatedUser()->GetUserId(),
 									"Carrier"			=> $intCarrier,
 									"Type"				=> $intRequest,
 									"RequestedOn"		=> $strNow,
