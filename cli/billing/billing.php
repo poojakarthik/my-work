@@ -65,18 +65,22 @@ else
 	switch ($strTodaysDate)
 	{
 		case $strBronzeDate:
+			CliEcho("Bronze Samples are Scheduled for today...");
 			$strBillingMode	= 'bronze';
 			break;
 			
 		case $strSilverDate:
+			CliEcho("Silver Samples are Scheduled for today...");
 			$strBillingMode	= 'silver';
 			break;
 			
 		case $strInternalInitialDate:
+			CliEcho("Initial Internal Samples are Scheduled for today...");
 			$strBillingMode	= 'internalinitial';
 			break;
 			
 		case $strInternalFinalDate:
+			CliEcho("Final Internal Samples are Scheduled for today...");
 			$strBillingMode	= 'internalfinal';
 			break;
 		
@@ -94,6 +98,12 @@ else
 if ($strScript)
 {
 	$strCommand				= "php multipart.php ".$strScript;
+	
+	// DEBUG
+	Debug($strCommand);
+	die;
+	// DEBUG
+	
 	$strWorkingDirectory	= getcwd();
 	chdir(BACKEND_BASE_PATH.'process/');
 	$ptrProcess				= popen($strCommand, 'r');
@@ -118,6 +128,7 @@ else
 {
 	// No Multipart Script to run
 	CliEcho("No Multipart Script to run");
+	Debug($arrPaymentTerms);
 	exit(1);
 }
 
