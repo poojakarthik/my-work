@@ -28,13 +28,12 @@ elseif (!$mixResult)
 $arrPaymentTerms	= $selPaymentTerms->Fetch();
 
 // Calculate the next Invoice Date
-$intInvoiceOffset		= $arrPaymentTerms['invoice_day'] - 1;
-CliEcho($strDate		= date("Y-m-01"));
-$intInvoiceDate			= strtotime("+{$intInvoiceOffset} days", strtotime($strDate));
+$intInvoiceOffset	= $arrPaymentTerms['invoice_day'] - 1;
+$strDate			= date("Y-m-01");
+$intInvoiceDate		= strtotime("+{$intInvoiceOffset} days", strtotime($strDate));
 if ($intInvoiceDate < time())
 {
 	// Calculated date is in the past, add 1 month
-	CliEcho($strAddMonth	= date("Y-m-d", strtotime("+1 months", strtotime($strDate))));
 	$intInvoiceDate			= strtotime("+{$intInvoiceOffset} days", strtotime("+1 months", strtotime($strDate)));
 }
 $intBronzeDate			= strtotime("+{$arrPaymentTerms['samples_bronze_days']} days", $intInvoiceDate);
@@ -42,12 +41,12 @@ $intSilverDate			= strtotime("+{$arrPaymentTerms['samples_silver_days']} days", 
 $intInternalInitialDate	= strtotime("+{$arrPaymentTerms['samples_internal_initial_days']} days", $intInvoiceDate);
 $intInternalFinalDate	= strtotime("+{$arrPaymentTerms['samples_internal_final_days']} days", $intInvoiceDate);
 
-CliEcho($strInvoiceDate			= date("Y-m-d", $intInvoiceDate));
-CliEcho($strBronzeDate			= date("Y-m-d", $intBronzeDate));
-CliEcho($strSilverDate			= date("Y-m-d", $intSilverDate));
-CliEcho($strInternalInitialDate	= date("Y-m-d", $intInternalInitialDate));
-CliEcho($strInternalFinalDate	= date("Y-m-d", $intInternalFinalDate));
-CliEcho($strTodaysDate			= date("Y-m-d"));
+$strInvoiceDate			= date("Y-m-d", $intInvoiceDate);
+$strBronzeDate			= date("Y-m-d", $intBronzeDate);
+$strSilverDate			= date("Y-m-d", $intSilverDate);
+$strInternalInitialDate	= date("Y-m-d", $intInternalInitialDate);
+$strInternalFinalDate	= date("Y-m-d", $intInternalFinalDate);
+$strTodaysDate			= date("Y-m-d");
 
 // What are we supposed to run today?
 $strScript	= NULL;
