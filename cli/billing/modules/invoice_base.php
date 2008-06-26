@@ -144,9 +144,12 @@ abstract class BillingModuleInvoice
 																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
 																	"Account = <Account> AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
 		
-		$this->_selCustomerData				= new StatementSelect(	"Account",
-																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup",
-																	"Id = <Account>");
+		$this->_selCustomerData				= new StatementSelect(	"Account LEFT JOIN Invoice ON Account.Id = Invoice.Account",
+																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup, COUNT(Invoice.Id) AS InvoiceCount",
+																	"Account.Id = <Account>",
+																	NULL,
+																	NULL,
+																	"Account.Id");
 		
 		$this->_selPlanAdjustments			= new StatementSelect(	"Charge",
 																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",

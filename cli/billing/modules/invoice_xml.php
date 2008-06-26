@@ -151,6 +151,7 @@
 		$this->_AddAttribute($xmlAccount, 'Id', $arrInvoice['Account']);
 		$this->_AddAttribute($xmlAccount, 'Name', $arrCustomer['BusinessName']);
 		$this->_AddAttribute($xmlAccount, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
+		$this->_AddAttribute($xmlAccount, 'NewCustomer', ($arrCustomer['InvoiceCount'] > 0) ? 0 : 1);
 		$this->_AddElement($xmlAccount, 'Addressee', $arrCustomer['BusinessName']);
 		$this->_AddElement($xmlAccount, 'AddressLine1', $arrCustomer['Address1']);
 		$this->_AddElement($xmlAccount, 'AddressLine2', $arrCustomer['Address2']);
