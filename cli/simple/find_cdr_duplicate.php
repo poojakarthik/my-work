@@ -5,7 +5,7 @@ require_once("../../flex.require.php");
 
 // Statements
 $selFindDuplicate	= new StatementSelect(	"CDR",
-											"Id",
+											"*",
 											"Id != <Id> AND " .
 											"FNN = <FNN> AND " .
 											"Source = <Source> AND " .
@@ -35,7 +35,7 @@ if ($selGetCDR->Execute($arrSourceCDR))
 	if ($selFindDuplicate->Execute($arrSourceCDR))
 	{
 		$arrDuplicateCDR	= $selFindDuplicate->Fetch();
-		CliEcho("Duplicate CDR Id: '$arrDuplicateCDR'\n");
+		CliEcho("Duplicate CDR Id: '{$arrDuplicateCDR['Id']}'\n");
 		
 		foreach ($arrSourceCDR as $strField=>$mixValue)
 		{
