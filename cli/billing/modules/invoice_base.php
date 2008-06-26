@@ -711,7 +711,7 @@ abstract class BillingModuleInvoice
 					// Check for ServiceTotal vs Rated Total, then add as CDR
 					$fltPlanCredit				= $arrService['ServiceTotal'] - ($fltRatedTotal + $fltPlanChargeTotal);
 					$this->_Debug("Plan Credit: \${$fltPlanCredit}");
-					if ($fltPlanCredit <= 0.01)
+					if ($fltPlanCredit <= -0.01)
 					{
 						$fltPlanChargeTotal			+= $fltPlanCredit;
 						
