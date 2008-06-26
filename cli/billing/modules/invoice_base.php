@@ -709,7 +709,7 @@ abstract class BillingModuleInvoice
 					$arrPlanChargeItemisation[]	= $arrCDR;
 					
 					// Check for ServiceTotal vs Rated Total, then add as CDR
-					$fltPlanCredit				= $arrService['ServiceTotal'] - ($fltRatedTotal + $arrService['PlanCharge']);
+					$fltPlanCredit				= $arrService['ServiceTotal'] - ($fltRatedTotal + $fltPlanChargeTotal);
 					$this->_Debug("Plan Credit: \${$fltPlanCredit}");
 					if ($fltPlanCredit <= 0.01)
 					{
