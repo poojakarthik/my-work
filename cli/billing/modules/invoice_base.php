@@ -716,7 +716,7 @@ abstract class BillingModuleInvoice
 						$fltPlanChargeTotal			+= $fltPlanCredit;
 						
 						$arrCDR	= Array();
-						$arrCDR['Charge']			= $fltPlanChargeTotal;
+						$arrCDR['Charge']			= $fltPlanCredit;
 						$arrCDR['Units']			= 1;
 						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".$strPlanChargePeriod;
 						$arrPlanChargeItemisation[]	= $arrCDR;
