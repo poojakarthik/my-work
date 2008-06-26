@@ -125,7 +125,7 @@ abstract class BillingModuleInvoice
 		
 		$this->_selServiceInstances			= new StatementSelect(	"(ServiceTotal JOIN Service ON ServiceTotal.Service = Service.Id) LEFT JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan", 
 																	"ServiceTotal.Service AS Id, RatePlan.Name AS RatePlan, ServiceTotal.PlanCharge AS PlanCharge", 
-																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND ServiceTotal.Account = <Account> AND ServiceTotal.FNN BETWEEN <RangeStart> AND <RangeEnd>");
+																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND ServiceTotal.Account = <Account> AND (ServiceTotal.FNN BETWEEN <RangeStart> AND <RangeEnd> OR ServiceTotal.FNN = <FNN>)");
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
 																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RG.DisplayType AS DisplayType",
