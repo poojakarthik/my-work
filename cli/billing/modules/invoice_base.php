@@ -720,6 +720,8 @@ abstract class BillingModuleInvoice
 						$arrCDR['Units']			= 1;
 						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".$strPlanChargePeriod;
 						$arrPlanChargeItemisation[]	= $arrCDR;
+						
+						$this->_Debug("Added Plan Credit for \${$arrCDR['Charge']}");
 					}
 				}
 				
