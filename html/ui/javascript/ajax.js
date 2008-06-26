@@ -633,6 +633,9 @@ function VixenAjaxClass()
 				case "FireEvent":
 					Vixen.EventHandler.FireEvent(objInput[intKey].Data.Event, objInput[intKey].Data.EventData);
 					break;
+				case "VerifyUser":
+					Vixen.Popup.ShowAjaxPopup("LoginPopup", "medium", "Login", "User", "DisplayLoginPopup", null, "nonmodal");
+					break;
 				default:
 					alert("Command: (default case)\nError: Don't know how to process command type '" + objInput[intKey].Type + "'");
 					break;

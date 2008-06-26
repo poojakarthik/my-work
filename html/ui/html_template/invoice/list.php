@@ -47,22 +47,6 @@
 class HtmlTemplateInvoiceList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -83,7 +67,6 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
-		$this->LoadJavascript("tooltip");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -115,7 +98,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		$arrSampleInvoices = ListPDFSamples(DBO()->Account->Id->Value);
 		foreach ($arrSampleInvoices as $strInvoiceRun => $strSampleType)
 		{
-			$strPdfHref = Href()->ViewInvoicePdf(DBO()->Account->Id->Value, 0, 0, 0, $strInvoiceRun);
+			$strPdfHref		= Href()->ViewInvoicePdf(DBO()->Account->Id->Value, 0, 0, 0, $strInvoiceRun);
 			$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View $strSampleType Sample PDF Invoice' /></a>";
 			$strInvoiceRunDate = is_numeric(substr($strInvoiceRun, 0, 8)) 
 									? substr($strInvoiceRun, 6, 2) . '/' . substr($strInvoiceRun, 4, 2) . '/' .substr($strInvoiceRun, 0, 4) 
@@ -217,7 +200,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			Table()->InvoiceTable->AddIndex("InvoiceRun", $dboInvoice->InvoiceRun->Value);
 		}
 		
-		if (DBL()->Invoice->RecordCount() == 0)
+		if (Table()->InvoiceTable->RowCount() == 0)
 		{
 			// There are no invoices to stick in this table
 			Table()->InvoiceTable->AddRow("No invoices to display");

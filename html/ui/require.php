@@ -28,7 +28,7 @@
  */
 
 // Framework Requirements
-require_once("../../flex.require.php");
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'flex.require.php');
 
 // Set Application Dir
 $strApplicationDir = "html/ui/";

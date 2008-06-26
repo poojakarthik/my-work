@@ -325,7 +325,7 @@ class Page
 		{
 			$GLOBALS['*arrJavaScript'] = Array();
 		}
-		array_unshift($GLOBALS['*arrJavaScript'], "vixen", "menu", "popup", "dhtml", "ajax", "event_handler");
+		array_unshift($GLOBALS['*arrJavaScript'], "vixen", "menu", "popup", "dhtml", "ajax", "event_handler", "login");
 		
 		// Remove any duplicates from the list
 		$arrJsFiles = array_unique($GLOBALS['*arrJavaScript']);

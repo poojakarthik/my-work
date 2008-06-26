@@ -455,8 +455,24 @@ class Application
 			$_SESSION['LoggedIn'] = FALSE;
 		}
 
-		// Check if the user has just logged in
+		$bolAttemptingLogIn = FALSE;
 		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
+		{
+			// The user is loging in via the login page
+			$bolAttemptingLogIn	= TRUE;
+			$strUserName		= $_POST['VixenUserName'];
+			$strPassword		= $_POST['VixenPassword'];
+		}
+		elseif ($this->_intMode == AJAX_MODE && DBO()->Login->UserName->IsSet && DBO()->Login->Password->IsSet)
+		{
+			// The user is loging in via ajax
+			$bolAttemptingLogIn	= TRUE;
+			$strUserName		= DBO()->Login->UserName->Value;
+			$strPassword		= DBO()->Login->Password->Value;
+		}
+
+		// Check if the user has just logged in
+		if ($bolAttemptingLogIn)
 		{
 			// user has just logged in. Get the Id of the Employee (Identified by UserName and PassWord combination)
 			$selSelectStatement = new StatementSelect (
@@ -467,7 +483,7 @@ class Application
 				"1"
 			);
 
-			$selSelectStatement->Execute(Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword']));
+			$selSelectStatement->Execute(Array("UserName"=>$strUserName, "PassWord"=>$strPassword));
 
 			// Check if an employee was found
 			if ($selSelectStatement->Count() == 1)
@@ -502,7 +518,16 @@ class Application
 			//The user is not logged in.  Redirect them to the login page
 			if ($this->_intMode == AJAX_MODE)
 			{
-				Ajax()->AddCommand("Reload");
+				//Ajax()->AddCommand("Reload");
+				if ($bolAttemptingLogIn)
+				{
+					// The user has just attempted to log in via the login popup
+					AjaxReply(array("Success" => FALSE));
+					die;
+				}
+				
+				// The user needs to log in.  Show the login popup
+				Ajax()->AddCommand("VerifyUser");
 				Ajax()->Reply();
 				die;
 			}
@@ -563,6 +588,13 @@ class Application
 		}
 		$GLOBALS['bolDebugMode'] = ($bolDebugMode && $this->UserHasPerm(PERMISSION_DEBUG)) ? TRUE : FALSE;
 		
+		// Check if the user has just successfully logged in via Ajax
+		if ($this->_intMode == AJAX_MODE && $bolAttemptingLogIn && $_SESSION['LoggedIn'])
+		{
+			// Reply to the Ajax request
+			AjaxReply(array("Success" => TRUE));
+			die;
+		}
 	}
 	
 	

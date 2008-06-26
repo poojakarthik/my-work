@@ -25,14 +25,6 @@ function VixenRootClass()
 	this.debug = FALSE;
 	this.table = Object();
 	
-	// Vixen Login
-	this.Login = function(username, password)
-	{
-		// AJAX transaction to login in user
-		// SHA1.js has already been included, used to hash the password
-		
-	}
-	
 	// Vixen Logout
 	this.Logout = function()
 	{

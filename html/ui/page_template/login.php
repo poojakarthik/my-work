@@ -63,6 +63,20 @@
 					
 					margin-bottom:       10px;
 			    }
+			    
+			    td.clientInterfaceLink
+			    {
+			    	font-size: smaller;
+			    	vertical-align: bottom;
+			    }
+			    
+			    a.clientInterfaceLink
+			    {
+			    	font-size: smaller;
+			    	text-decoration: underline;
+			    	color:	#000;
+			    	vertical-align: bottom;
+			    }
 			     
 			</style>
 			
@@ -101,6 +115,9 @@
 						<td>
 							<input type="submit" value="Continue &#xBB;" class="Right"/>
 						</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="clientInterfaceLink"><a class="clientInterfaceLink" href="../customer/">Customer System</a></td>
 					</tr>
 				</table>
 				<?php
