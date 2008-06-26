@@ -91,13 +91,13 @@ else
 	}
 	
 	// We have a Sample Run due today
-	$strScript	= "billing_samples.cfg.php --BillingMode={$strBillingMode}";
 }
 
 // Run the Billing/Samples Multipart Script
-if ($strScript)
+if ($strBillingMode)
 {
-	$strCommand				= "php multipart.php ".$strScript;
+	$strScript	= "billing_samples.cfg.php --BillingMode={$strBillingMode}";
+	$strCommand	= "php multipart.php ".$strScript;
 	
 	// DEBUG
 	Debug($strCommand);
