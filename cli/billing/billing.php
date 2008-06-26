@@ -98,8 +98,8 @@ if ($strBillingMode)
 	$strCommand	= "php multipart.php ".$strScript;
 	
 	// DEBUG
-	Debug($strCommand);
-	die;
+	//Debug($strCommand);
+	//die;
 	// DEBUG
 	
 	$strWorkingDirectory	= getcwd();
