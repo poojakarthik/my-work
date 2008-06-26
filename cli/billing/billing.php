@@ -13,7 +13,7 @@
 require_once("../../flex.require.php");
 
 // Grab the lastest payment_terms details
-$selPaymentTerms	= new StatementSelect("payment_terms", "*", "created <= NOW()", "created DESC", "1");
+$selPaymentTerms	= new StatementSelect("payment_terms", "*", "created <= NOW()", "Id DESC", "1");
 $mixResult			= $selPaymentTerms->Execute();
 if ($mixResult === FALSE)
 {
