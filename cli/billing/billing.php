@@ -40,12 +40,12 @@ $intSilverDate			= strtotime("+{$arrPaymentTerms['samples_silver_days']} days", 
 $intInternalInitialDate	= strtotime("+{$arrPaymentTerms['samples_internal_initial_days']} days", $intInvoiceDate);
 $intInternalFinalDate	= strtotime("+{$arrPaymentTerms['samples_internal_final_days']} days", $intInvoiceDate);
 
-$strInvoiceDate			= date("Y-m-d", $intInvoiceDate);
-$strBronzeDate			= date("Y-m-d", $intBronzeDate);
-$strSilverDate			= date("Y-m-d", $intSilverDate);
-$strInternalInitialDate	= date("Y-m-d", $intInternalInitialDate);
-$strInternalFinalDate	= date("Y-m-d", $intInternalFinalDate);
-$strTodaysDate			= date("Y-m-d");
+CliEcho($strInvoiceDate			= date("Y-m-d", $intInvoiceDate));
+CliEcho($strBronzeDate			= date("Y-m-d", $intBronzeDate));
+CliEcho($strSilverDate			= date("Y-m-d", $intSilverDate));
+CliEcho($strInternalInitialDate	= date("Y-m-d", $intInternalInitialDate));
+CliEcho($strInternalFinalDate	= date("Y-m-d", $intInternalFinalDate));
+CliEcho($strTodaysDate			= date("Y-m-d"));
 
 // What are we supposed to run today?
 $strScript	= NULL;
