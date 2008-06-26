@@ -278,6 +278,11 @@ abstract class BillingModuleInvoice
  	{
  		$intCount = count($arrService['Id']);
  		
+ 		if (!$intCount)
+ 		{
+			$this->_Debug($arrService);
+ 		}
+ 		
  		// Is there a Statement for this many Service Ids and Type?
  		if (!$this->_arrFactoryQueries[$intType][$intCount])
  		{
