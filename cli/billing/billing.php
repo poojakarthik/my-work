@@ -87,10 +87,7 @@ else
 		default:
 			// Nothing happens today
 			CliEcho("No Billing is scheduled for today ($strTodaysDate)");
-			exit(0);
 	}
-	
-	// We have a Sample Run due today
 }
 
 // Run the Billing/Samples Multipart Script
