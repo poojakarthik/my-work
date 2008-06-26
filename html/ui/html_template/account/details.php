@@ -115,9 +115,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$strCustomerGroup = DBO()->CustomerGroup->InternalName->Value;
 		DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroup, RENDER_OUTPUT);
 		
-		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("Account"), RENDER_OUTPUT);
-		//$strAccountStatus = "<strong>". GetConstantDescription(DBO()->Account->Archived->Value, "Account") ."</strong>";
-		//DBO()->Account->Archived->RenderArbitrary($strAccountStatus, RENDER_OUTPUT);
+		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("account_status"), RENDER_OUTPUT);
 		
 		DBO()->Account->Id->RenderOutput();
 		
@@ -317,7 +315,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 */
 	private function _RenderForEditing()
 	{
-		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolIsAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 	
 		$this->FormStart("EditAccount", "Account", "SaveDetails");
 		echo "<h2 class='Account'>Account Details</h2>\n";
@@ -331,7 +329,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
 
-		if ($bolUserHasAdminPerm)
+		if ($bolIsAdminUser)
 		{
 			// Render the CustomerGroup combobox
 			DBL()->CustomerGroup->OrderBy("InternalName");
@@ -546,7 +544,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->FormEnd();
 		
 		// If the user doesn't have Admin privileges they cannot select the "Never charge a late payment fee" option
-		if (!$bolUserHasAdminPerm)
+		if (!$bolIsAdminUser)
 		{
 			// The user doesn't have admin privileges
 			$strJsCode .=	"document.getElementById('Account.DisableLatePayment_1').disabled = true;\n".

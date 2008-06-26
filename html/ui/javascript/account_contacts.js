@@ -83,6 +83,7 @@ function VixenAccountContactsListClass()
 		objObjects.Objects.PrimaryContact.Id	= intPrimaryContactId;
 
 		// Call the AppTemplate method which renders just the AccountServices table
+		Vixen.Popup.ShowPageLoadingSplash("Setting Primary Contact");
 		Vixen.Ajax.CallAppTemplate("Contact", "SetPrimaryForAccount", objObjects.Objects);
 	}
 	

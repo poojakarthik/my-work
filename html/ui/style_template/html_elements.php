@@ -424,7 +424,7 @@ class HTMLElements
 		// The potentially taller of the two divs must go first
 		// create the text area
 		//TODO! Find out if the number of rows and columns in the textarea should be hard coded here
-		$strHtml .= "   <textarea id='$strId' name='$strName' class='$strClass' rows='6' cols='29' style='overflow:auto;'>$strValue</textarea>\n";
+		$strHtml .= "   <textarea id='$strId' name='$strName' class='$strClass' rows='6' style='overflow:auto;'>$strValue</textarea>\n";
 		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
 		$strHtml .= "   <span class='RequiredInput'>". (($arrParams['Required'])? "*" : "&nbsp") ."</span>\n";
 		$strHtml .= "   <span id='$strId.Label.Text'>{$strLabel} : </span></div>\n";

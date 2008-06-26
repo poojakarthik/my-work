@@ -122,7 +122,6 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		{
 			// Record the Status of the Contact
 			$strStatus = ($dboContact->Archived->Value) ? "Archived" : "Active";
-			$strStatusCell = "<span>$strStatus</span>";
 			
 			// Build the Actions Cell
 			$strViewContactLink = Href()->ViewContact($dboContact->Id->Value);
@@ -131,8 +130,8 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 			{
 				// The contact is not the primary contact, and they are not archived
 				// Allow them to be set as the primary contact
-				$strSetAsPrimaryContactLink	= "javascript:Vixen.AccountContactsList.SetPrimary({$dboContact->Id->Value})";
-				$strSetAsPrimaryContact		= "<a href='$strSetAsPrimaryContactLink'><img src='img/template/primary_contact.png' title='Set as Primary Contact'</a>";
+				//$strSetAsPrimaryContactLink	= "javascript:";
+				$strSetAsPrimaryContact		= "<img src='img/template/primary_contact.png' onclick='Vixen.AccountContactsList.SetPrimary({$dboContact->Id->Value})' title='Set as Primary Contact'</img>";
 			}
 			else
 			{
@@ -172,7 +171,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 				$strPhoneCell = "<span>[Not Specified]</span>";
 			}
 			
-			Table()->ContactTable->AddRow($strNameCell, $strPrimaryCell, $strPhoneCell, $strStatusCell, $strActionsCell);
+			Table()->ContactTable->AddRow($strNameCell, $strPrimaryCell, $strPhoneCell, $strStatus, $strActionsCell);
 		}
 		
 		// If the account has no contacts then output an appropriate message in the table

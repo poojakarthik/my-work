@@ -530,7 +530,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load the primary contact
 		if (DBO()->Account->PrimaryContact->Value)
 		{
-			DBL()->Contact->Id = DBO()->Account->PrimaryContact->Value;
+			// Make sure the contact specified belongs to the AccountGroup
+			DBL()->Contact->Id				= DBO()->Account->PrimaryContact->Value;
+			DBL()->Contact->AccountGroup	= DBO()->Account->AccountGroup->Value; 
 			DBL()->Contact->Load();
 		}
 		
