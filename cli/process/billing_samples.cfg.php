@@ -21,7 +21,7 @@ $arrConfig['DBCopy']				= $arrSubscript;
 
 // Normalisation
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php normalisation.php -i';
+$arrSubscript['Command']			= 'php normalisation.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'normalisation/';
 $arrConfig['Normalise']				= $arrSubscript;
 
