@@ -123,9 +123,9 @@ abstract class BillingModuleInvoice
 																	NULL,
 																	"Service.FNN, ServiceExtension.Name");
 		
-		$this->_selServiceInstances			= new StatementSelect(	"((ServiceTotal JOIN Service ON ServiceTotal.Service = Service.Id) LEFT JOIN ServiceExtension ON (Service.Id = ServiceExtension.Service AND ServiceExtension.Archived = 0)) LEFT JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan", 
+		$this->_selServiceInstances			= new StatementSelect(	"(ServiceTotal JOIN Service ON ServiceTotal.Service = Service.Id) LEFT JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan", 
 																	"ServiceTotal.Service AS Id, RatePlan.Name AS RatePlan, ServiceTotal.PlanCharge AS PlanCharge", 
-																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND ServiceTotal.Account = <Account> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)");
+																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND ServiceTotal.Account = <Account> AND ServiceTotal.FNN BETWEEN <RangeStart> AND <RangeEnd>");
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
 																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RG.DisplayType AS DisplayType",
@@ -577,6 +577,8 @@ abstract class BillingModuleInvoice
 				$arrWhere['Account']	= $arrInvoice['Account'];
 				$arrWhere['FNN']		= $arrService['FNN'];
 				$arrWhere['Extension']	= $arrService['Extension'];
+				$arrWhere['RangeStart']	= $arrService['RangeStart'];
+				$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
 				$arrWhere['InvoiceRun']	= $arrInvoice['InvoiceRun'];
 				if ($this->_selServiceInstances->Execute($arrWhere) === FALSE)
 				{
