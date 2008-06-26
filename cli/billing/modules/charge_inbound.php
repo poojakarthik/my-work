@@ -105,7 +105,7 @@
 				$arrCharge['CreatedOn']		= date("Y-m-d");
 				$arrCharge['ChargedOn']		= date("Y-m-d");
 				$arrCharge['Amount']		= 15.00;
-				$arrCharge['Status']		= CHARGE_APPROVED;
+				$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
 				$arrCharge['Service'] 		= $arrServiceDetails['Service'];
 				$arrCharge['Account'] 		= $arrServiceDetails['Account'];
 				$arrCharge['AccountGroup'] 	= $arrServiceDetails['AccountGroup'];
