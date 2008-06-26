@@ -40,7 +40,7 @@ if ($selGetCDR->Execute($arrSourceCDR))
 		foreach ($arrSourceCDR as $strField=>$mixValue)
 		{
 			CliEcho("[ $strField ]");
-			CliEcho("Source\t: $mixValue");
+			CliEcho("Source\t\t: $mixValue");
 			CliEcho("Duplicate\t: {$arrDuplicateCDR[$strField]}");
 		}
 	}
