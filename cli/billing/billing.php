@@ -35,7 +35,7 @@ if ($intInvoiceDate < time())
 {
 	// Calculated date is in the past, add 1 month
 	CliEcho($strAddMonth	= date("Y-m-d", strtotime("+1 months", strtotime($strDate))));
-	$intInvoiceDate			= strtotime("+$intOffset days", strtotime("+1 months", strtotime($strDate)));
+	$intInvoiceDate			= strtotime("+{$intOffset} days", strtotime("+1 months", strtotime($strDate)));
 }
 $intBronzeDate			= strtotime("+{$arrPaymentTerms['samples_bronze_days']} days", $intInvoiceDate);
 $intSilverDate			= strtotime("+{$arrPaymentTerms['samples_silver_days']} days", $intInvoiceDate);
