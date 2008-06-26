@@ -96,8 +96,8 @@ abstract class BillingModuleInvoice
 		$arrCols['CurrentId']	= "MAX(ServiceTotal.Service)";
 		$arrCols['FNN']			= "ServiceTotal.FNN";
 		$arrCols['Extension']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN ServiceExtension.Name ELSE ServiceTotal.FNN END";
-		$arrCols['RangeStart']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeStart, 2, '0')) ELSE ServiceTotal.FNN END";
-		$arrCols['RangeEnd']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeEnd, 2, '0')) ELSE ServiceTotal.FNN END";
+		$arrCols['RangeStart']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeStart, 2, '0')) WHEN Service.Indial100 = 1 THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), '00') ELSE ServiceTotal.FNN END";
+		$arrCols['RangeEnd']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeEnd, 2, '0')) WHEN Service.Indial100 = 1 THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), '99') ELSE ServiceTotal.FNN END";
 		$this->_selAccountFNNs	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)",
 														$arrCols,
 														"ServiceTotal.Account = <Account> AND ServiceTotal.InvoiceRun = <InvoiceRun>",
@@ -628,7 +628,7 @@ abstract class BillingModuleInvoice
 					$fltRatedTotal	+= $arrCDR['Charge'];
 					$fltCDRTotal	+= $arrCDR['Charge'];
 				}
-				$this->_Debug("CDR Total: \${$fltCDRTotal}");
+				$this->_Debug("CDR Total for : \${$fltCDRTotal}");
 			}
 			
 			// Handle ServiceTotals for non-Indials
@@ -645,7 +645,7 @@ abstract class BillingModuleInvoice
 			
 			// Only if this is a non-Indial or is the Primary FNN
 			if ($arrService['Primary'])
-			{				
+			{
 				// Get Adjustments
 				$arrItemised	= $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrInvoice);
 				if (count($arrItemised))
