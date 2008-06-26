@@ -38,9 +38,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
 		
-		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
-		$this->LoadJavascript("retractable");
 		$this->LoadJavascript("available_plans_page");
 	}
 

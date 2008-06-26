@@ -66,6 +66,8 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
+		$this->LoadJavascript("tooltip");
+		$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//

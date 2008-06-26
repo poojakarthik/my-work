@@ -47,22 +47,6 @@
 class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -81,8 +65,8 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
-		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
+		$this->LoadJavascript("tooltip");
 	}
 	
 	//------------------------------------------------------------------------//

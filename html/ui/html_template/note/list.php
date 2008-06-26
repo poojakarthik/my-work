@@ -309,8 +309,8 @@ class HtmlTemplateNoteList extends HtmlTemplate
 		
 		if (DBL()->Note->RecordCount() == 0)
 		{
-			echo "<div class='NarrowContent'>\n";
-			echo "<div class='DefaultOutputSpan'>There are no notes to display</div>\n";
+			echo "<div class='GroupedContent'>\n";
+			echo "<div>There are no notes to display</div>\n";
 			echo "</div>\n";
 		}
 		
@@ -334,7 +334,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 			}
 			
 			// setup the div to reflect the Note Type
-			echo "<div style='border: solid 1px #{$strBorderColor}; background-color: #{$strBackgroundColor}; color: #{$strTextColor}; padding: 3px;overflow:hidden'>\n";
+			echo "<div style='border: solid 1px #{$strBorderColor}; background-color: #{$strBackgroundColor}; color: #{$strTextColor}; margin-bottom:4px; padding: 3px;overflow:hidden'>\n";
 			
 			// Note details
 			$strDetailsHtml = "Created on ";
@@ -379,9 +379,6 @@ class HtmlTemplateNoteList extends HtmlTemplate
 			// Output the actual note
 			$dboNote->Note->RenderValue();
 			echo "</div>\n";
-			
-			// Include a separator
-			echo "<div class='TinySeperator'></div>\n";
 		}
 	}
 }

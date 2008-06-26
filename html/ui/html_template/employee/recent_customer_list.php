@@ -133,8 +133,6 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 				$strAccountName = "";
 			}
 			
-			$strAccountName = htmlspecialchars($strAccountName, ENT_QUOTES);
-			
 			$strAccountLink = Href()->AccountOverview($dboCustomer->AccountId->Value);
 			$strAccountCell = "<span onclick='window.location = \"$strAccountLink\"' title='View Account Details'>{$dboCustomer->AccountId->Value}</span>";
 			
