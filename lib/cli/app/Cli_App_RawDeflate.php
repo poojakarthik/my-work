@@ -6,7 +6,7 @@
 
 class Cli_App_RawDeflate extends Cli
 {
-	const SWITCH_FLATE_FILE_LOCATION = "r";
+	const SWITCH_FLATE_FILE_LOCATION = "f";
 
 	private $logFile = NULL;
 
@@ -99,7 +99,7 @@ class Cli_App_RawDeflate extends Cli
 		$commandLineArguments = array(
 
 			self::SWITCH_FLATE_FILE_LOCATION => array(
-				self::ARG_LABEL 		=> "RAW_FLATE_FILE_LOCATION",
+				self::ARG_LABEL 		=> "FLATE_FILE_LOCATION",
 				self::ARG_REQUIRED 	=> TRUE,
 				self::ARG_DESCRIPTION => "is the full path to a file containing flate compressed data or directory containing such files",
 				self::ARG_DEFAULT 	=> NULL,
