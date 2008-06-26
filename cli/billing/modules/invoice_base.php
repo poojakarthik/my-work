@@ -344,6 +344,7 @@ abstract class BillingModuleInvoice
 						"RecordGroup.Id = <RecordGroup> AND " .
 						/*"RecordGroup.Itemised = 1 AND " .*/
 						"{$this->_strCDRTable}.InvoiceRun = <InvoiceRun> AND " .
+						"{$this->_strCDRTable}.Status = ".CDR_TEMP_INVOICE." AND " .
 						"FNN BETWEEN <RangeStart> AND <RangeEnd>",
 						"{$this->_strCDRTable}.StartDatetime"
  					);
@@ -621,10 +622,13 @@ abstract class BillingModuleInvoice
 				$arrCategories[$arrRecordType['RecordGroup']]	= $arrRecordType;
 				
 				// Calculate Rated Total
+				$fltCDRTotal	= 0.0;
 				foreach ($arrRecordType['Itemisation'] as $arrCDR)
 				{
 					$fltRatedTotal	+= $arrCDR['Charge'];
+					$fltCDRTotal	+= $arrCDR['Charge'];
 				}
+				$this->_Debug("CDR Total: \${$fltCDRTotal}");
 			}
 			
 			// Handle ServiceTotals for non-Indials
