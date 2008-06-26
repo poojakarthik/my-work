@@ -18,6 +18,8 @@ class Flex_Pdf_Template_Wrapped_Header extends Flex_Pdf_Template_Div
 	const INCLUDE_AFTER_FIRST_SECTION 	= 6; // self::FIRST_SECTION_OTHER_PAGE | self::NON_FIRST_SECTION_ANY_PAGE;
 	const INCLUDE_AFTER_FIRST_PAGE_SECTION 	= 4; // self::NON_FIRST_SECTION_ANY_PAGE;
 	const INCLUDE_EACH_SECTION 			= 7; // self::FIRST_SECTION_FIRST_PAGE | self::FIRST_SECTION_OTHER_PAGE | self::NON_FIRST_SECTION_ANY_PAGE;
+	const INCLUDE_ODD_PAGE				= 8;
+	const INCLUDE_EVEN_PAGE				= 16;
 
 	function initialize()
 	{
@@ -56,12 +58,29 @@ class Flex_Pdf_Template_Wrapped_Header extends Flex_Pdf_Template_Div
 			case "every-section":
 				$this->intInclude = self::INCLUDE_EACH_SECTION;
 				break;
+
+			case "odd-page":
+				$this->intInclude = self::INCLUDE_ODD_PAGE;
+				break;
+
+			case "even-page":
+				$this->intInclude = self::INCLUDE_EVEN_PAGE;
+				break;
 		}
 
 	}
 
 	function displayForSection($bolFirstSectionOnPage, $bolFirstHeaders)
 	{
+		if ($this->intInclude == self::INCLUDE_ODD_PAGE)
+		{
+			return ($this->getCurrentPageNumber() % 2) == 1;
+		}
+		if ($this->intInclude == self::INCLUDE_EVEN_PAGE)
+		{
+			return ($this->getCurrentPageNumber() % 2) == 0;
+		}
+		
 		$section = $bolFirstHeaders ? self::FIRST_SECTION_FIRST_PAGE : ($bolFirstSectionOnPage ? self::FIRST_SECTION_OTHER_PAGE : self::NON_FIRST_SECTION_ANY_PAGE);
 		//$section = $bolFirstSectionOnPage ? ($bolFirstHeaders ? self::FIRST_SECTION_FIRST_PAGE : self::FIRST_SECTION_OTHER_PAGE) : self::NON_FIRST_SECTION_ANY_PAGE;
 		return $section & $this->intInclude;
