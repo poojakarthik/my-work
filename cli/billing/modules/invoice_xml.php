@@ -256,6 +256,7 @@
 		//--------------------------------------------------------------------//
 		// Services XML
 		//--------------------------------------------------------------------//
+		$arrDebugCallTypes	= Array();
 		$xmlServices	= $this->_AddElement($xmlInvoice, 'Services');
 		foreach ($arrServices as $arrService)
 		{
@@ -297,9 +298,14 @@
 					{
 						$this->_AddElement($xmlItem, $strField, $mixValue);
 					}
+					
+					// Debug SUM of CDR values
+					$arrDebugCallTypes[$strName][$arrService['FNN']]	+= (float)$arrItem['Charge'];
+					$arrDebugCallTypes[$strName]['**Total']				+= (float)$arrItem['Charge'];
 				}
 			}
 		}
+		$this->_Debug($arrDebugCallTypes);
 		
 		// Determine Output/Return data
 		$strXMLOutput	= $this->_domDocument->saveXML();

@@ -633,7 +633,7 @@ abstract class BillingModuleInvoice
 					$fltRatedTotal	+= $arrCDR['Charge'];
 					$fltCDRTotal	+= $arrCDR['Charge'];
 				}
-				$this->_Debug("CDR Total for : \${$fltCDRTotal}");
+				$this->_Debug("CDR Total for {$arrService['FNN']}: \${$fltCDRTotal}");
 			}
 			
 			// Handle ServiceTotals for non-Indials
