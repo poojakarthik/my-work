@@ -622,23 +622,6 @@
 					{
 						// Generate charge
 						$mixResult = $chgModule->Generate(Array('InvoiceRun' => $this->_strInvoiceRun), $arrService);
-						
-						// Add to totals
-						if (!is_bool($mixResult))
-						{
-							if ($mixResult < 0)
-							{
-								// Credit
-								$fltTotalCredits	+= $mixResult;
-							}
-							else
-							{
-								// Debit
-								$fltTotalDebits		+= $mixResult;
-							}
-							
-							$arrAccountReturn['ChargeModules'][] = $mixResult;
-						}
 					}
 				}
 				
@@ -764,7 +747,8 @@
 				$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Cannot retrieve Account Balance");
 				$this->intFailed++;
-				CliEcho("\n".__LINE__." >> Find Account Balance for Account #{$arrAccount['Id']}");
+				CliEcho("\n".__LINE__." >> Unable to find Account Balance for Account #{$arrAccount['Id']}");
+				exit(1);
 			}
 			
 			// calculate initial invoice total and total owing
