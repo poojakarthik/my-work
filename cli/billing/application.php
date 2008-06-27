@@ -186,7 +186,6 @@
 		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_CREDIT]		= new ChargePlanCredit();
 		
 		$this->_arrAccountChargeModules[CHARGE_MODULE_NON_DDR]		= new ChargeNonDirectDebit();
-		$this->_arrAccountChargeModules[CHARGE_MODULE_LATE_PAYMENT]	= new ChargeLatePayment();
 		
 		$this->_arrServiceChargeModules[CHARGE_MODULE_INBOUND]		= new ChargeInboundService();
 		$this->_arrServiceChargeModules[CHARGE_MODULE_PINNACLE]		= new ChargePinnacle();
