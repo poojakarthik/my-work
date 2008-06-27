@@ -198,6 +198,9 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 	 */
 	function RenderEdit()
 	{
+		// Escape the Source Code
+		DBO()->DocumentTemplate->Source = htmlspecialchars(DBO()->DocumentTemplate->Source->Value, ENT_QUOTES);
+		
 		// Prepare data
 		$jsonObjTemplate				= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
 		$jsonObjSchema					= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
@@ -242,6 +245,9 @@ class HtmlTemplateDocumentTemplate extends HtmlTemplate
 		$intPropertyValueLeft	= "120";
 		$strTextAreaHeight		= "4in";
 		$strEffectiveOn			= (DBO()->DocumentTemplate->EffectiveOn->Value != NULL)? OutputMask()->LongDateAndTime(DBO()->DocumentTemplate->EffectiveOn->Value) : "Undeclared";
+		
+		// Escape the Source Code
+		DBO()->DocumentTemplate->Source = htmlspecialchars(DBO()->DocumentTemplate->Source->Value, ENT_QUOTES);
 		
 		$jsonObjTemplate			= Json()->encode(DBO()->DocumentTemplate->_arrProperties);
 		$jsonObjSchema				= Json()->encode(DBO()->DocumentTemplateSchema->_arrProperties);
