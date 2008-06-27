@@ -220,6 +220,8 @@ class Cli_App_InvoiceXMLTest extends Cli
 
 		for ($j = 0; $j < $categories->length; $j++)
 		{
+			set_time_limit(600);
+
 			$category = $categories->item($j);
 
 			$categoryName = $category->getAttribute('Name');
@@ -351,8 +353,10 @@ class Cli_App_InvoiceXMLTest extends Cli
 
 		$chargesTotal = 0;
 
-		for ($i = 0; $i < $categories->length; $i++)
+		for ($i = 0, $l = $categories->length; $i < $l; $i++)
 		{
+			set_time_limit(60);
+			
 			$categoryName = $categories->item($i)->getAttribute('Name');
 			$categoryTotal = round(round(floatval($categories->item($i)->getAttribute('GrandTotal')), 2)*100);
 			$chargesTotal += $categoryTotal;
@@ -383,6 +387,8 @@ class Cli_App_InvoiceXMLTest extends Cli
 				$total = 0;
 				for ($j = 0; $j < $items->length; $j++)
 				{
+					set_time_limit(60);
+
 					$desc = $items->item($j)->getElementsByTagName('Description');
 					if ($desc->length != 1)
 					{
