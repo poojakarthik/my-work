@@ -316,9 +316,12 @@ class Report
 	{
 		if (is_array($arrAliases))
 		{
-			foreach ($arrAliases as $arrAlias => $arrValue)
+			foreach ($arrAliases as $arrAlias => $mixValue)
 			{
-				$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
+				if (is_scalar($mixValue))
+				{
+					$strMessage = str_replace($arrAlias, $mixValue, $strMessage);
+				}
 			}
 		}
 		$this->AddMessage($strMessage, $bolNewLine, $bolDisplay);
