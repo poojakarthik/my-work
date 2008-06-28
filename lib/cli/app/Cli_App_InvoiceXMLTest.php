@@ -72,6 +72,8 @@ class Cli_App_InvoiceXMLTest extends Cli
 			$errorCount = 0;
 			$passCount = 0;
 
+			set_time_limit(0);
+
 			foreach ($arrFiles as $strSource)
 			{
 				$undo = str_repeat(chr(8), $testingMessageLength);
@@ -80,9 +82,6 @@ class Cli_App_InvoiceXMLTest extends Cli
 				$testingMessageLength = max($testingMessageLength, $messageLen);
 				$pad = str_repeat(' ', $testingMessageLength - $messageLen);
 				$this->log($undo.$testingMessage.$pad, FALSE, TRUE);
-
-				// Make sure we have enough time to test the XML file (180 should be mega safe!)...
-				set_time_limit(600);
 
 				// Create the PDF template
 				$this->startErrorCatching();
@@ -220,8 +219,6 @@ class Cli_App_InvoiceXMLTest extends Cli
 
 		for ($j = 0; $j < $categories->length; $j++)
 		{
-			set_time_limit(600);
-
 			$category = $categories->item($j);
 
 			$categoryName = $category->getAttribute('Name');
@@ -355,8 +352,6 @@ class Cli_App_InvoiceXMLTest extends Cli
 
 		for ($i = 0, $l = $categories->length; $i < $l; $i++)
 		{
-			set_time_limit(60);
-			
 			$categoryName = $categories->item($i)->getAttribute('Name');
 			$categoryTotal = round(round(floatval($categories->item($i)->getAttribute('GrandTotal')), 2)*100);
 			$chargesTotal += $categoryTotal;
@@ -387,8 +382,6 @@ class Cli_App_InvoiceXMLTest extends Cli
 				$total = 0;
 				for ($j = 0; $j < $items->length; $j++)
 				{
-					set_time_limit(60);
-
 					$desc = $items->item($j)->getElementsByTagName('Description');
 					if ($desc->length != 1)
 					{
