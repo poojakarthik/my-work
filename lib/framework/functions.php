@@ -3406,7 +3406,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 }
 
 
-function ListAutomaticBarringAccounts($intEffectiveTime)
+function ListAutomaticBarringAccounts($intEffectiveTime, $bolIgnoreActionableDate=FALSE)
 {
 	if (!$intEffectiveTime)
 	{
@@ -3425,6 +3425,13 @@ function ListAutomaticBarringAccounts($intEffectiveTime)
 							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
 							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
 	);
+
+	$strActionableDateCondition = '';
+	if (!$bolIgnoreActionableDate)
+	{
+		$strActionableDateCondition = " AND InvoiceRun.scheduled_automatic_bar_datetime IS NOT NULL
+		 AND UNIX_TIMESTAMP(InvoiceRun.scheduled_automatic_bar_datetime) <= $intEffectiveTime ";
+	}
 
 	$strTables	= "
 			 Invoice 
@@ -3446,9 +3453,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime)
 		SELECT DISTINCT(Account.Id) 
 		FROM InvoiceRun 
 		JOIN Invoice
-		  ON InvoiceRun.automatic_bar_datetime IS NULL
-		 AND InvoiceRun.scheduled_automatic_bar_datetime IS NOT NULL
-		 AND UNIX_TIMESTAMP(InvoiceRun.scheduled_automatic_bar_datetime) <= $intEffectiveTime
+		  ON InvoiceRun.automatic_bar_datetime IS NULL $strActionableDateCondition
 		 AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
 		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun
 		JOIN Account 
