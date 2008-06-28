@@ -253,17 +253,27 @@ class Cli_App_InvoiceXMLTest extends Cli
 				$charge = round(round(floatval($charge->item(0)->nodeValue), 2)*100);
 				$categoryTotal += $charge;
 
-				$props = "";
+				$categoryItem = "";
 				for ($l = 0; $l < $items->item($k)->childNodes->length; $l++)
 				{
-					$props .= ", \t" . $items->item($k)->childNodes->item($l)->nodeValue;
+					$categoryItem .= ", \t" . $items->item($k)->childNodes->item($l)->nodeValue;
 				}
 
-				if (array_search($props, $categoryItems) !== FALSE)
-				{
-					throw new Exception("Duplicate charge found in itemisation of '$categoryName' for FNN '$fnn'>> $props.");
+				$categoryItems[] = $categoryItem;
+			}
+
+			// Check to see if any of the category items were duplicates
+			if (count(array_unique($categoryItems)) != $items->length)
+			{			
+				// Take the first value out of the array...
+				for ($categoryItem = array_shift($categoryItems); $categoryItem !== NULL; $categoryItem = array_shift($categoryItems))
+				{					
+					// ... and if it is still in the array, it must be a duplicate!
+					if (array_search($categoryItem, $categoryItems) !== FALSE)
+					{
+						throw new Exception("Duplicate charge found in itemisation of '$categoryName' for FNN '$fnn'>> $categoryItem.");
+					}
 				}
-				$categoryItems[] = $props;
 			}
 
 			if (!$this->precisionEquals($categoryTotal, $categoryGrandTotal, $categoryRecords))
