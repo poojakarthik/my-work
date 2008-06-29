@@ -74,6 +74,9 @@ class Cli_App_LateNoticeRunList extends Cli
 			$this->log("Building report");
 			$subject = 'Automated late notice list log for run dated ' . $this->runDateTime;
 			$report = array();
+			$attachments = array();
+			$mimeTypes = array();
+			$attachmentNames = array();
 			if (count($arrSummary))
 			{
 				$report[] = "Breakdown of proposed late notice generation by customer group: -";
@@ -83,6 +86,8 @@ class Cli_App_LateNoticeRunList extends Cli
 					$report[] = "";
 					$report[] = "Customer Group: $custGroup";
 
+					$attachment = '';
+
 					foreach ($letterTypeSummarries as $letterType => $letterTypeSummary)
 					{
 						$report[] = "[Start of $letterType breakdown for Customer Group: $custGroup]";
@@ -91,6 +96,7 @@ class Cli_App_LateNoticeRunList extends Cli
 							$report[] = "Print: " . count($letterTypeSummary['prints']) . " {$letterType}s would be created for printing.";
 							$report[] = "Prints would be created for the following accounts: -";
 							$report[] = implode(', ', $letterTypeSummary['prints']);
+							$attachment .= implode(",Print\n", $letterTypeSummary['prints']).",Print\n";
 						}
 						else
 						{
@@ -101,6 +107,7 @@ class Cli_App_LateNoticeRunList extends Cli
 							$report[] = "Email: " . count($letterTypeSummary['emails']) . " {$letterType}s would be created and emailed.";
 							$report[] = "Emails would be sent for the following accounts: -";
 							$report[] = implode(', ', $letterTypeSummary['emails']);
+							$attachment .= implode(",Email\n", $letterTypeSummary['prints']).",Email\n";
 						}
 						else
 						{
@@ -108,6 +115,13 @@ class Cli_App_LateNoticeRunList extends Cli
 						}
 						$report[] = "[End of $letterType breakdown for Customer Group: $custGroup]";
 						$report[] = "";
+						
+						if ($attachment)
+						{
+							$attachmentNames[] = str_replace(' ', '_', $custGroup) . '_' . str_replace(' ', '_', $letterType) . '.csv';
+							$attachments[] = $attachment;
+							$mimeTypes[] = 'text/csv';
+						}
 					}
 
 					$report[] = "[End of breakdown for Customer Group: $custGroup]";
@@ -122,7 +136,7 @@ class Cli_App_LateNoticeRunList extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			$outcome = $this->sendEmail("late_notice_run@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body);
+			$outcome = $this->sendEmail("late_notice_run@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body, $attachments, $attachmentNames, $mimeTypes);
 
 			if ($outcome === TRUE)
 			{
