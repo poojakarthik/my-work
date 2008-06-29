@@ -48,6 +48,15 @@ $appRating = new ApplicationRating($arrConfig);
 // Change status of all CDRs with missing rate 
 $appRating->ReRate(CDR_RATE_NOT_FOUND);
 
+if ($intLimit)
+{
+	CliEcho("\n *** Rating Run Limit set to $intLimit\n");
+}
+else
+{
+	CliEcho("\n *** No Rating Run Limit set; defaulting to ".FLEX_RATING_BATCH_LIMIT."\n");
+}
+
 // run the Rate method until there is nothing left to rate
 $mixRemaining	= ($intLimit) ? $intLimit : TRUE;
 $intBatch		= FLEX_RATING_BATCH_LIMIT;
@@ -55,6 +64,8 @@ while ($mixRemaining)
 {
 	if (is_int($mixRemaining))
 	{
+		CliEcho("\n *** $mixRemaining CDRs remaining...");
+		
 		$mixRemaining	= ($mixRemaining - $intBatch);
 		if ($intBatch > $mixRemaining)
 		{
