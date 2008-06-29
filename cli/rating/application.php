@@ -499,7 +499,7 @@
 			$strEarliestLatestCDR	=	"UPDATE Service \n " .
 										"SET EarliestCDR = IF(EarliestCDR > '{$arrCDR['StartDatetime']}', '{$arrCDR['StartDatetime']}', EarliestCDR), " .
 										"LatestCDR = IF(LatestCDR < '{$arrCDR['StartDatetime']}', '{$arrCDR['StartDatetime']}', LatestCDR) \n " .
-										"WHERE Service = {$arrCDR['Service']}";
+										"WHERE Id = {$arrCDR['Service']}";
 			if ($qryEarliestLatestCDR->Execute($strEarliestLatestCDR) === FALSE)
 			{
 				// ERROR
