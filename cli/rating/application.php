@@ -495,7 +495,18 @@
 			$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
 			
 			// Set Service Earliest/Latest CDR
-			$this->_selService->Execute($arrCDR);
+			$qryEarliestLatestCDR	= new Query();
+			$strEarliestLatestCDR	=	"UPDATE Service \n" .
+										"SET EarliestCDR = (CASE WHEN EarliestCDR > '{$arrCDR['StartDatetime']}' THEN '{$arrCDR['StartDatetime']}' ELSE EarliestCDR END), " .
+										"SET LatestCDR = (CASE WHEN LatestCDR < '{$arrCDR['StartDatetime']}' THEN '{$arrCDR['StartDatetime']}' ELSE LatestCDR END) \n " .
+										"WHERE Service = {$arrCDR['Service']}";
+			if ($qryEarliestLatestCDR->Execute($strEarliestLatestCDR) === FALSE)
+			{
+				// ERROR
+				CliEcho("\n WARNING -- Unable to updated Service Earliest & Latest CDR fields! (Service: {$arrCDR['Service']}; CDR: {$arrCDR['Id']})");
+			}
+			
+			/*$this->_selService->Execute($arrCDR);
 			$arrService	= $this->_selService->Fetch($arrCDR);
 			
 			$intEarliest	= strtotime($arrService['EarliestCDR']);
@@ -511,7 +522,7 @@
 				$arrService['LatestCDR']	= $arrCDR['StartDatetime'];
 			}
 			
-			$this->_ubiService->Execute($arrService);
+			$this->_ubiService->Execute($arrService);*/
 			
 			// Report
 			/*
@@ -540,56 +551,65 @@
 			}
 			
 			// Does this call qualify for a discount?
+			$bolDiscount	= FALSE;
 			$arrCDRTotalDetails	= Array();
-			$bolDiscount		= FALSE;
-			if (!$this->_selCDRTotalDetails->Execute($this->_arrCurrentCDR))
+			if ($this->_selRatePlan->Execute($this->_arrCurrentCDR))
 			{
-				// Error
-				CliEcho("Service {$this->_arrCurrentCDR['Service']} not found!");
-				$intFailed++;
-				continue;
-			}
-			else
-			{
-				$arrCDRTotalDetails	= $this->_selCDRTotalDetails->Fetch();
+				$arrRatePlan	= $this->_selRatePlan->Fetch();
 				
-				// Is the current CDR older than the latest CDR in the cap?
-				if ($arrCDRTotalDetails['discount_start_datetime'] !== NULL && strtotime($arrCDRTotalDetails['discount_start_datetime']) > strtotime($this->_arrCurrentCDR['StartDatetime']))
+				// Does the RatePlan have Discounting enabled?
+				if ((float)$arrRatePlan['discount_cap'] >= 0.01)
 				{
-					// Hold up, we have a CDR that is older than the last CDR in the Discount Cap
-					// This means we need to rerate every CDR on or after this StartDatetime (including this CDR)
-					$arrCols					= Array();
-					$arrCols['Status']			= CDR_RERATE;
-					$arrWhere					= Array();
-					$arrWhere['StartDatetime']	= $this->_arrCurrentCDR['StartDatetime'];
-					$arrWhere['Service']		= $this->_arrCurrentCDR['Service'];
-					if ($this->_updReRateDiscountCDRs->Execute($arrCols, $arrWhere) === FALSE)
+					if (!$this->_selCDRTotalDetails->Execute($this->_arrCurrentCDR))
 					{
 						// Error
-						CliEcho("\$updReRateDiscountCDRs failed: ".$updReRateDiscountCDRs->Error());
+						CliEcho("Service {$this->_arrCurrentCDR['Service']} not found!");
 						$intFailed++;
 						continue;
 					}
-					
-					// We also need to update the Service to reflect the new discount_start_datetime
-					$arrService	= Array();
-					$arrService['Id']						= $this->_arrCurrentCDR['Service'];
-					$arrService['discount_start_datetime']	= $this->_arrCurrentCDR['StartDatetime'];
-					if ($this->_ubiDiscountStartDatetime->Execute($arrService) === FALSE)
+					else
 					{
-						// Error
-						CliEcho("\$ubiDiscountStartDatetime failed: ".$this->_ubiDiscountStartDatetime->Error());
-						$intFailed++;
-						continue;
+						$arrCDRTotalDetails	= $this->_selCDRTotalDetails->Fetch();
+						
+						// Is the current CDR older than the latest CDR in the cap?
+						if ($arrCDRTotalDetails['discount_start_datetime'] !== NULL && strtotime($arrCDRTotalDetails['discount_start_datetime']) > strtotime($this->_arrCurrentCDR['StartDatetime']))
+						{
+							// Hold up, we have a CDR that is older than the last CDR in the Discount Cap
+							// This means we need to rerate every CDR on or after this StartDatetime (including this CDR)
+							$arrCols					= Array();
+							$arrCols['Status']			= CDR_RERATE;
+							$arrWhere					= Array();
+							$arrWhere['StartDatetime']	= $this->_arrCurrentCDR['StartDatetime'];
+							$arrWhere['Service']		= $this->_arrCurrentCDR['Service'];
+							if ($this->_updReRateDiscountCDRs->Execute($arrCols, $arrWhere) === FALSE)
+							{
+								// Error
+								CliEcho("\$updReRateDiscountCDRs failed: ".$updReRateDiscountCDRs->Error());
+								$intFailed++;
+								continue;
+							}
+							
+							// We also need to update the Service to reflect the new discount_start_datetime
+							$arrService	= Array();
+							$arrService['Id']						= $this->_arrCurrentCDR['Service'];
+							$arrService['discount_start_datetime']	= $this->_arrCurrentCDR['StartDatetime'];
+							if ($this->_ubiDiscountStartDatetime->Execute($arrService) === FALSE)
+							{
+								// Error
+								CliEcho("\$ubiDiscountStartDatetime failed: ".$this->_ubiDiscountStartDatetime->Error());
+								$intFailed++;
+								continue;
+							}
+							
+							CliEcho("Service {$this->_arrCurrentCDR['Service']} is being rerated from {$this->_arrCurrentCDR['StartDatetime']}");
+							continue;
+						}
+						else
+						{
+							// Nothing needs to be rerated
+							$bolDiscount	= TRUE;
+						}
 					}
-					
-					CliEcho("Service {$this->_arrCurrentCDR['Service']} is being rerated from {$this->_arrCurrentCDR['StartDatetime']}");
-					continue;
-				}
-				else
-				{
-					// Nothing needs to be rerated
-					$bolDiscount	= TRUE;
 				}
 			}
 			
@@ -665,8 +685,6 @@
 			}
 			
 			// Has the Service reached its cap?
-			$this->_selRatePlan->Execute($this->_arrCurrentCDR);
-			$arrRatePlan	= $this->_selRatePlan->Fetch();
 			if ($bolDiscount && ($arrRatePlan['discount_cap'] !== NULL))
 			{
 				if (((float)$arrCDRTotalDetails['cdr_amount_new']) >= ((float)$arrRatePlan['discount_cap']))
