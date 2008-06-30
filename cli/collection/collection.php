@@ -11,6 +11,8 @@
 require_once("../../flex.require.php");
 $arrConfig = LoadApplication();
 
+define('COLLECTION_DEBUG_MODE',		TRUE);
+
 echo "<pre>\n";
 
 // Application entry point - create an instance of the application object

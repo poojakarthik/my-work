@@ -112,6 +112,49 @@
 	 * @method
 	 */
  	abstract function Download();
+ 	
+  	//------------------------------------------------------------------------//
+	// _GetFileType
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetFileType()
+	 *
+	 * Determines the FileImport type for a given file
+	 *
+	 * Determines the FileImport type for a given file
+	 * 
+	 * @param	array	$arrDownloadFile				FileDownload properties
+	 * 
+	 * @return	mixed									integer: FileImport Type; NULL: Unrecognised type
+	 *
+	 * @method
+	 */
+	protected function _GetFileType($arrDownloadFile)
+	{
+		// Has this file been extracted from a downloaded archive?
+		if ($arrDownloadFile['ArchiveParent'])
+		{
+			// Get the Download Path relative to the archive extraction directory
+			$strRelativeDir	= str_replace($arrDownloadFile['ExtractionDir'], '', $arrDownloadFile['LocalPath']);
+			$arrRelativeDir	= explode($arrDownloadFile['ExtractionDir'], dirname($arrDownloadFile['LocalPath']));
+			$strRelativeDir	= '/'.trim(end($arrRelativeDir), '/').'/';
+			
+			foreach ($arrDownloadFile['ArchiveParent']['FileImportType']['PathDefine'] as $intFileType=>$arrFileType)
+			{
+				// Does this file match our REGEX?
+				if (preg_match($arrFileType['Regex'], trim(basename($arrDownloadFile['LocalPath']))))
+				{
+					// We have a match
+					return $intFileType;
+				}
+			}
+		}
+		else
+		{
+			// The File Type for this file is already defined
+			return $arrDownloadFile['FileImportType'];
+		}
+	}
 }
 
 ?>

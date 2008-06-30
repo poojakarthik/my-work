@@ -136,27 +136,6 @@ class ApplicationCollection extends ApplicationBaseClass
 							
 							CliEcho("\t\t\t\t + $strFileName ({$intSize}KB)");
 							
-							// Unpack this file
-							CliEcho("\t\t\t\t * Unpacking Archive...", FALSE);
-							$strPassword	= $modModule->GetConfigField('ArchivePassword');
-							$strUnzipPath	= $strDownloadDirectory.basename($strDownloadPath).'_temp';
-							$arrResult		= UnpackArchive($strDownloadPath, $strUnzipPath, TRUE, $strPassword);
-							if (is_string($arrResult))
-							{
-								// Error
-								CliEcho("[ FAILED ]");
-								CliEcho("\t\t\t\t\t -- $arrResult");
-								continue;
-							}
-							elseif ($arrResult['Processed'])
-							{
-								CliEcho("[   OK   ]");
-							}
-							else
-							{
-								CliEcho("[  SKIP  ]");
-							}
-							
 							// Insert into FileDownload table
 							$arrFileDownload	= Array();
 							$arrFileDownload['FileName']	= basename($strDownloadPath);
@@ -164,24 +143,69 @@ class ApplicationCollection extends ApplicationBaseClass
 							$arrFileDownload['Carrier']		= $intCarrier;
 							$arrFileDownload['CollectedOn']	= date("Y-m-d H:i:s");
 							$arrFileDownload['Status']		= FILE_COLLECTED;
-							if (($arrFileDownload['Id'] = $insFileDownload->Execute($arrFileDownload)) !== FALSE)
+							if (!defined('COLLECTION_DEBUG_MODE') || !COLLECTION_DEBUG_MODE)
 							{
-								// Process each file
-								foreach ($arrResult['Files'] as $strFilePath)
+								$arrFileDownload['Id']	= $insFileDownload->Execute($arrFileDownload);
+							}
+							else
+							{
+								$arrFileDownload['Id']	= TRUE;
+							}
+							
+							if ($arrFileDownload['Id'] !== FALSE)
+							{
+								// Process this file, and any files that may get unarchived from it
+								$intIndex	= 0;
+								$arrFiles	= Array();
+								$arrFiles[]	= $strDownloadPath;
+								while ($intIndex < count($arrFiles))
 								{
-									CliEcho("\t\t\t\t\t > Importing ".basename($strFilePath)."...", FALSE);
+									$arrFile	= &$arrFiles[$intIndex];
 									
-									// Import into Flex
-									$mixImportResult	= $this->ImportModuleFile($strFilePath, $modModule);
-									if (is_int($mixImportResult))
+									// If this file is an archive, unpack it
+									if ($arrFile['FileType']['ArchiveType'])
 									{
-										CliEcho("[   OK   ]");
+										CliEcho("\t\t\t\t * Unpacking Archive '".basename($strDownloadPath)."'...\t\t\t", FALSE);
+										$strPassword	= $arrFile['FileType']['ArchivePassword'];
+										$strUnzipPath	= $strDownloadPath.'_files/';
+										$arrResult		= UnpackArchive($strDownloadPath, $strUnzipPath, FALSE, $strPassword, $arrFile['ArchiveType']);
+										if (is_string($arrResult))
+										{
+											// Error
+											CliEcho("[ FAILED ]");
+											CliEcho("\t\t\t\t\t -- $arrResult");
+											continue;
+										}
+										elseif ($arrResult['Processed'])
+										{
+											CliEcho("[   OK   ]");
+											$arrDownloadFile['ArchiveParent']	= &$mixDownloadFile;
+											$arrDownloadFile['ExtractionDir']	= $strUnzipPath;
+										}
+										else
+										{
+											CliEcho("[  SKIP  ]");
+										}
 									}
-									else
+									
+									// If this is not a Download-only file, them Import
+									if (!$arrFile['FileType']['DownloadOnly'])
 									{
-										CliEcho("[ FAILED ]");
-										CliEcho("\t\t\t\t\t\t -- $mixImportResult");
+										$mixImportResult	= $this->ImportModuleFile($arrFile['LocalPath'], $modModule);
+										if (is_int($mixImportResult))
+										{
+											CliEcho("[   OK   ]");
+										}
+										else
+										{
+											CliEcho("[ FAILED ]");
+											CliEcho("\t\t\t\t\t\t -- $mixImportResult");
+										}
 									}
+									
+									// Increment the Index, and remove the reference $arrFile
+									$intIndex++;
+									unset($arrFile);
 								}
 							}
 							else
@@ -190,9 +214,6 @@ class ApplicationCollection extends ApplicationBaseClass
 								CliEcho("[ FAILED ]");
 								CliEcho("\t\t\t\t\t\t -- ".$insFileDownload->Error());
 							}
-							
-							// Cleanup Archive directory
-							@rmdir($strUnzipPath);
 						}
 					}
 				}
@@ -277,19 +298,22 @@ class ApplicationCollection extends ApplicationBaseClass
 	 *
 	 * @method
 	 */
-	function ImportModuleFile($strFilePath, &$modCarrierModule)
+	function ImportModuleFile($arrDownloadFile, &$modCarrierModule)
 	{
 		// Determine File Type
-		if (($arrFileType = $modCarrierModule->GetFileType($strFilePath)) === FALSE)
+		if (!$arrDownloadFile['FileImportType'])
 		{
-			// Unknown File Type
-			$arrFileType					= Array();
-			return ApplicationCollection::ImportFile($strFilePath, NULL, $modCarrierModule->intCarrier);
+			if (($arrFileType = $modCarrierModule->GetFileType($arrDownloadFile)) === FALSE)
+			{
+				// Unknown File Type
+				$arrFileType					= Array();
+				return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], NULL, $modCarrierModule->intCarrier);
+			}
 		}
 		else
 		{
 			// Known File Type
-			return ApplicationCollection::ImportFile($strFilePath, $arrFileType['FileImportType'], $modCarrierModule->intCarrier, $arrFileType['Uniqueness']);
+			return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileImportType'], $modCarrierModule->intCarrier, $arrDownloadFile['Uniqueness']);
 		}
 	}
 	
@@ -350,28 +374,36 @@ class ApplicationCollection extends ApplicationBaseClass
 			}
 		}
 		
-		// Insert into FileImport
-		$arrFileImport['FileName']		= $arrWhere['FileName'];
-		$arrFileImport['Location']		= $strFilePath;
-		$arrFileImport['Carrier']		= $modCarrierModule->intCarrier;
-		$arrFileImport['ImportedOn']	= date("Y-m-d H:i:s");
-		$arrFileImport['FileType']		= $intFileType;
-		$arrFileImport['SHA1']			= $arrWhere['SHA1'];
-		if (($intInsertId = $insFileImport->Execute($arrFileImport)) === FALSE)
+		if (!defined('COLLECTION_DEBUG_MODE') || !COLLECTION_DEBUG_MODE)
 		{
-			// Unable to Import
-			return "Import Failed";
-		}
-		
-		if ($arrFileImport['Status'] === FILE_IMPORTED)
-		{
-			// Return the Insert Id
-			return $intInsertId;
+			// Insert into FileImport
+			$arrFileImport['FileName']		= $arrWhere['FileName'];
+			$arrFileImport['Location']		= $strFilePath;
+			$arrFileImport['Carrier']		= $modCarrierModule->intCarrier;
+			$arrFileImport['ImportedOn']	= date("Y-m-d H:i:s");
+			$arrFileImport['FileType']		= $intFileType;
+			$arrFileImport['SHA1']			= $arrWhere['SHA1'];
+			if (($intInsertId = $insFileImport->Execute($arrFileImport)) === FALSE)
+			{
+				// Unable to Import
+				return "Import Failed";
+			}
+			
+			if ($arrFileImport['Status'] === FILE_IMPORTED)
+			{
+				// Return the Insert Id
+				return $intInsertId;
+			}
+			else
+			{
+				// Return error message
+				return GetConstantDescription($arrFileImport['Status'], 'FileStatus');
+			}
 		}
 		else
 		{
-			// Return error message
-			return GetConstantDescription($arrFileImport['Status'], 'FileStatus');
+			// Debug Mode always returns TRUE
+			return TRUE;
 		}
 	}
 }

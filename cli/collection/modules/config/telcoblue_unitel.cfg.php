@@ -49,6 +49,6 @@ $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_LINE_STATUS]	['Paths']		[]	= '/rep
 $arrModuleConfig['Host']			['Value']		= 'ftp.rslcom.com.au';
 $arrModuleConfig['Username']		['Value']		= 'sp058';
 $arrModuleConfig['Password']		['Value']		= 'BuzzaBee06*#';
-$arrModuleConfig['PathDefine']		['Value']		= $arrStructure;
+$arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
 
 ?>

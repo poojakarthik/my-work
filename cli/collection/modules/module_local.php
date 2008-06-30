@@ -6,16 +6,16 @@
 //----------------------------------------------------------------------------/
 
 //----------------------------------------------------------------------------//
-// module_ftp
+// module_local
 //----------------------------------------------------------------------------//
 /**
- * module_ftp
+ * module_local
  *
- * FTP Collection Module
+ * Local File Collection Module
  *
- * FTP Collection Module
+ * Local File Collection Module
  *
- * @file		module_ftp.php
+ * @file		module_local.php
  * @language	PHP
  * @package		collection
  * @author		Rich Davis
@@ -26,22 +26,22 @@
  */
 
 //----------------------------------------------------------------------------//
-// CollectionModuleFTP
+// CollectionModuleLocal
 //----------------------------------------------------------------------------//
 /**
- * CollectionModuleFTP
+ * CollectionModuleLocal
  *
- * FTP Collection Module
+ * Local File Collection Module
  *
- * FTP Collection Module
+ * Local File Collection Module
  *
  *
  * @prefix		mod
  *
  * @package		collection
- * @class		CollectionModuleFTP
+ * @class		CollectionModuleLocal
  */
- class CollectionModuleFTP extends CollectionModuleBase
+ class CollectionModuleLocal extends CollectionModuleBase
  {
 	private $_resConnection;
  	
@@ -51,11 +51,11 @@
 	/**
 	 * __construct()
 	 *
-	 * Constructor for CollectionModuleFTP
+	 * Constructor for CollectionModuleLocal
 	 *
-	 * Constructor for CollectionModuleFTP
+	 * Constructor for CollectionModuleLocal
 	 *
-	 * @return		CollectionModuleFTP
+	 * @return		CollectionModuleLocal
 	 *
 	 * @method
 	 */
@@ -66,19 +66,6 @@
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
 		//##----------------------------------------------------------------##//
-		
-		// Mandatory
- 		$this->_arrModuleConfig['Host']			['Default']		= '';
- 		$this->_arrModuleConfig['Host']			['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Host']			['Description']	= "FTP Server to connect to";
- 		
- 		$this->_arrModuleConfig['Username']		['Default']		= '';
- 		$this->_arrModuleConfig['Username']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Username']		['Description']	= "FTP Username";
- 		
- 		$this->_arrModuleConfig['Password']		['Default']		= '';
- 		$this->_arrModuleConfig['Password']		['Type']		= DATA_TYPE_STRING;
- 		$this->_arrModuleConfig['Password']		['Description']	= "FTP Password";
  		
  		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
  		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
@@ -91,9 +78,9 @@
 	/**
 	 * Connect()
 	 *
-	 * Connects to FTP server
+	 * Connects to the Local File Server (unused)
 	 *
-	 * Connects to FTP server
+	 * Connects to the Local File Server (unused)
 	 *
 	 * @return	mixed									TRUE: Pass; string: Error
 	 *
@@ -101,30 +88,11 @@
 	 */
  	function Connect()
  	{
-		$strHost		= $this->GetConfigField('Host');
-		$strUsername	= $this->GetConfigField('Username');
-		$strPassword	= $this->GetConfigField('Password');
+		// Server is the localhost - no need to connect
+		$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
 		
-		// Connect to the Server
-		$this->_resConnection	= ($this->GetConfigField('SFTP') === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
-		if ($this->_resConnection)
-		{
-			// Log in to the Server
-			if (@ftp_login($this->_resConnection, $strUsername, $strPassword))
-			{
-				// Retrieve full file listing
-				$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
-				reset($this->_arrDownloadPaths);
-			}
-			else
-			{
-				return "Could not log in to server with Username '$strUsername' and Password '".str_repeat('*', strlen($strPassword))."'";
-			}
-		}
-		else
-		{
-			return "Could not connect to server '$strHost'";
-		}
+		// Prepare list of files to download
+		return TRUE;
  	}
  	
   	//------------------------------------------------------------------------//
@@ -133,18 +101,16 @@
 	/**
 	 * Disconnect()
 	 *
-	 * Disconnect from FTP server
+	 * Disconnects from the Local File Server (unused)
 	 *
-	 * Disconnect from FTP server
+	 * Disconnects from the Local File Server (unused)
 	 *
 	 * @method
 	 */
  	function Disconnect()
  	{
-		if ($this->_resConnection)
-		{
-			ftp_close($this->_resConnection);
-		}
+		// Server is the localhost - no need to disconnect
+		return TRUE;
  	}
  	
   	//------------------------------------------------------------------------//
@@ -163,12 +129,7 @@
 	 * @method
 	 */
  	function Download($strDestination)
- 	{
- 		if (!$this->_resConnection)
-		{
-			return "Download() called before Connect()";
-		}
-		
+ 	{		
 		// Get the Current path element
 		if (!($arrCurrentFile = current($this->_arrDownloadPaths)))
 		{
@@ -219,12 +180,12 @@
 			foreach ($arrFileType['Paths'] as $strPath)
 			{
 				// Get the directory listing for this
-				$arrFiles	= @ftp_nlist($this->_resConnection, "-F $strPath");
+				$arrFiles	= glob($this->_resConnection, $strPath);
 				
 				// Filter file names that we don't want
 				foreach ($arrFiles as $strPath)
 				{
-					if (substr(trim($strPath), -1) === '/')
+					if (is_dir($strPath))
 					{
 						// This is a directory, ignore
 						continue;
