@@ -56,7 +56,9 @@ if (substr($GLOBALS['**arrDatabase']['flex']['Database'], -8) !== '_working')
 	if ($strInvoiceDate === $strTodaysDate)
 	{
 		// Today is the Invoice Run Day, so perform a Gold Run
-		$strScript	= "billing.cfg.php";
+		CliEcho("Gold Samples/Full Billing are Scheduled for today...");
+		$strScript		= "billing.cfg.php";
+		$strBillingMode	= 'gold';
 	}
 }
 else
@@ -89,12 +91,14 @@ else
 			// Nothing happens today
 			CliEcho("No Billing is scheduled for today ($strTodaysDate)");
 	}
+	
+	$strScript	= "billing_samples.cfg.php";
 }
 
 // Run the Billing/Samples Multipart Script
 if ($strBillingMode)
 {
-	$strScript	= "billing_samples.cfg.php --BillingMode={$strBillingMode}";
+	$strScript	.= " --BillingMode={$strBillingMode}";
 	$strCommand	= "php multipart.php ".$strScript;
 	
 	// DEBUG

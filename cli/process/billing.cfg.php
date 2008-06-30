@@ -17,11 +17,12 @@ $arrSubscript = Array();
 $arrSubscript['Command']			= 'php collection.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'collection/';
 $arrSubscript['ChildDie']			= TRUE;
-$arrConfig['Collect']				= $arrSubscript;
+//$arrConfig['Collect']				= $arrSubscript;
 
 // Normalisation
 $arrSubscript = Array();
-$arrSubscript['Command']			= 'php normalisation.php -i';
+//$arrSubscript['Command']			= 'php normalisation.php -i';
+$arrSubscript['Command']			= 'php normalisation.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'normalisation/';
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['Normalise']				= $arrSubscript;
