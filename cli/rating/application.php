@@ -465,8 +465,8 @@
 		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime ASC", (int)$intLimit);
 		
 	 	// get list of CDRs to rate (limit results to 1000)
-	 	$this->_selGetCDRs->Execute();
-		$arrCDRList = $this->_selGetCDRs->FetchAll();
+	 	$intCDRCount	= $this->_selGetCDRs->Execute();
+		$arrCDRList 	= $this->_selGetCDRs->FetchAll();
 		
 		// we will return FALSE if there are no CDRs to rate
 		$bolReturn = FALSE;
@@ -488,6 +488,7 @@
 		$intTotalTime	= 0;
 		$intSplit		= 0;
 		$intCurrentTime	= time();
+		$intCDR			= 1;
 		foreach($arrCDRList as $arrCDR)
 		{
 			// return TRUE if we have rated (or tried to rate) any CDRs
@@ -517,7 +518,8 @@
 			
 			// Report
 			$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
-			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises);
+			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises, FALSE);
+			CliEcho(" ($intCDR/$intCDRCount)");
 			
 			
 			// Set Service Earliest/Latest CDR
