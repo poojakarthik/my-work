@@ -494,18 +494,6 @@
 			$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
 			$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
 			
-			// Set Service Earliest/Latest CDR
-			$qryEarliestLatestCDR	= new Query();
-			$strEarliestLatestCDR	=	"UPDATE Service \n " .
-										"SET EarliestCDR = IF(EarliestCDR > '{$arrCDR['StartDatetime']}', '{$arrCDR['StartDatetime']}', EarliestCDR), " .
-										"LatestCDR = IF(LatestCDR < '{$arrCDR['StartDatetime']}', '{$arrCDR['StartDatetime']}', LatestCDR) \n " .
-										"WHERE Id = {$arrCDR['Service']}";
-			if ($qryEarliestLatestCDR->Execute($strEarliestLatestCDR) === FALSE)
-			{
-				// ERROR
-				CliEcho("\n WARNING -- Unable to updated Service Earliest & Latest CDR fields! (Service: {$arrCDR['Service']}; CDR: {$arrCDR['Id']})");
-			}
-			
 			/*$this->_selService->Execute($arrCDR);
 			$arrService	= $this->_selService->Fetch($arrCDR);
 			
@@ -525,10 +513,22 @@
 			$this->_ubiService->Execute($arrService);*/
 			
 			// Report
-			/*
 			$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
 			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises, FALSE);
-			*/
+			
+			
+			// Set Service Earliest/Latest CDR
+			$qryEarliestLatestCDR	= new Query();
+			$strEarliestLatestCDR	=	"UPDATE Service \n " .
+										"SET EarliestCDR = IF(EarliestCDR > '{$arrCDR['StartDatetime']}', '{$arrCDR['StartDatetime']}', EarliestCDR), " .
+										"LatestCDR = IF(LatestCDR < '{$arrCDR['StartDatetime']}', '{$arrCDR['StartDatetime']}', LatestCDR) \n " .
+										"WHERE Id = {$arrCDR['Service']}";
+			if ($qryEarliestLatestCDR->Execute($strEarliestLatestCDR) === FALSE)
+			{
+				// ERROR
+				CliEcho("\n WARNING -- Unable to updated Service Earliest & Latest CDR fields! (Service: {$arrCDR['Service']}; CDR: {$arrCDR['Id']})");
+			}
+			
 			// set current CDR
 			$this->_arrCurrentCDR = $arrCDR;
 		
