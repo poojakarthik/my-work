@@ -514,7 +514,7 @@
 			
 			// Report
 			$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
-			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises, FALSE);
+			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises);
 			
 			
 			// Set Service Earliest/Latest CDR
