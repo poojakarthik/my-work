@@ -262,7 +262,7 @@
 		
 		$this->_selRatePlan			= new StatementSelect(	"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan",
 															"RatePlan.*",
-															"Active = 1 AND <StartDatetime> BETWEEN StartDatetime AND EndDatetime",
+															"Service = <Service> AND Active = 1 AND <StartDatetime> BETWEEN StartDatetime AND EndDatetime",
 															"ServiceRatePlan.CreatedOn DESC",
 															"1");
 		
@@ -485,6 +485,9 @@
 		$intFailed = 0;
 		
 		// Loop through each CDR
+		$intTotalTime	= 0;
+		$intSplit		= 0;
+		$intCurrentTime	= time();
 		foreach($arrCDRList as $arrCDR)
 		{
 			// return TRUE if we have rated (or tried to rate) any CDRs
