@@ -111,7 +111,7 @@
 	 *
 	 * @method
 	 */
- 	abstract function Download();
+ 	abstract function Download($strDestination);
  	
   	//------------------------------------------------------------------------//
 	// _GetFileType
