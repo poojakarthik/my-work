@@ -50,11 +50,11 @@ $appRating->ReRate(CDR_RATE_NOT_FOUND);
 
 if ($intLimit)
 {
-	CliEcho("\n *** Rating Run Limit set to $intLimit\n");
+	CliEcho("\n *** Rating Run Limit set to $intLimit");
 }
 else
 {
-	CliEcho("\n *** No Rating Run Limit set; defaulting to ".FLEX_RATING_BATCH_LIMIT."\n");
+	CliEcho("\n *** No Rating Run Limit set; defaulting to ".FLEX_RATING_BATCH_LIMIT);
 }
 
 // run the Rate method until there is nothing left to rate
@@ -75,6 +75,7 @@ while ($mixRemaining)
 	}
 	
 	// Rate this batch
+	CliEcho("Rating Batch of $intBatch");
 	if ($appRating->Rate($bolOnlyNew, $intBatch) === FALSE)
 	{
 		// If there is nothing left to rate, then exit
