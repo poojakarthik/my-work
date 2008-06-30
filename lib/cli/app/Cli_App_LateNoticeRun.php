@@ -26,6 +26,11 @@ class Cli_App_LateNoticeRun extends Cli
 				$this->log("Running in test mode. Emails will not be sent to account holders.", TRUE);
 			}
 
+			if (!file_exists(FILES_BASE_PATH))
+			{
+				throw new Exception('The configured FILES_BASE_PATH does not exists. Please add a valid setting to the configuration file.');
+			}
+
 			// Convert effective date to unix timestamp for start of day
 			$day = intval(date('d', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
 			$month = intval(date('m', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
@@ -120,7 +125,7 @@ class Cli_App_LateNoticeRun extends Cli
 							$arrSummary[$strCustGroupName][$strLetterType]['emails'] = array();
 							$arrSummary[$strCustGroupName][$strLetterType]['prints'] = array();
 							$arrSummary[$strCustGroupName][$strLetterType]['errors'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = FILES_BASE_PATH . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $pathDate . DIRECTORY_SEPARATOR . $custGroupName;
+							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = realpath(FILES_BASE_PATH) . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $pathDate . DIRECTORY_SEPARATOR . $custGroupName;
 						}
 
 						$invoiceRun = $arrDetails['Account']['InvoiceRun'];
@@ -161,6 +166,10 @@ class Cli_App_LateNoticeRun extends Cli
 										$directory = '';
 										foreach($outputDirectories as $subDirectory)
 										{
+											if (!$subDirectory) 
+											{
+												continue;
+											}
 											$xdirectory = $directory ? ($directory . DIRECTORY_SEPARATOR . $subDirectory) : $subDirectory;
 											if (!file_exists($xdirectory))
 											{
@@ -172,7 +181,7 @@ class Cli_App_LateNoticeRun extends Cli
 											}
 											$directory = $xdirectory . DIRECTORY_SEPARATOR;
 										}
-										$outputDirectory = realpath($directory);
+										$outputDirectory = realpath($directory) . DIRECTORY_SEPARATOR;
 									}
 									else
 									{
@@ -181,7 +190,7 @@ class Cli_App_LateNoticeRun extends Cli
 									$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = $outputDirectory;
 
 									// Write the PDF file contents to storage
-									$targetFile = $outputDirectory . DIRECTORY_SEPARATOR . $intAccountId . '.pdf';
+									$targetFile = $outputDirectory . $intAccountId . '.pdf';
 
 									$file = @fopen($targetFile, 'w');
 									$ok = FALSE;
@@ -317,7 +326,7 @@ class Cli_App_LateNoticeRun extends Cli
 
 						require_once "Archive/Tar.php";
 						$objArchive = new Archive_Tar($strTarPath, NULL);
-						$pathToRemove = dirname($details['pdfs'][0]).DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR;
+						$pathToRemove = $arrSummary[$strCustGroupName][$strLetterType]['output_directory'];
 						$objArchive->addModify($details['pdfs'], NULL, $pathToRemove);
 
 						// Remove the archived folder
