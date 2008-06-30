@@ -462,7 +462,7 @@
 		unset($arrColumns['SequenceNo']);
 		$arrColumns['Id'] = 0;
 		//$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
-		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime ASC", (int)$intLimit);
+		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, "StartDatetime ASC", $intLimit);
 		
 	 	// get list of CDRs to rate (limit results to 1000)
 	 	$intCDRCount	= $this->_selGetCDRs->Execute();
@@ -488,7 +488,7 @@
 		$intTotalTime	= 0;
 		$intSplit		= 0;
 		$intCurrentTime	= time();
-		$intCDR			= 1;
+		$intCDR			= 0;
 		foreach($arrCDRList as $arrCDR)
 		{
 			// return TRUE if we have rated (or tried to rate) any CDRs
@@ -519,6 +519,7 @@
 			// Report
 			$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
 			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises, FALSE);
+			$intCDR++;
 			CliEcho(" ($intCDR/$intCDRCount)");
 			
 			
