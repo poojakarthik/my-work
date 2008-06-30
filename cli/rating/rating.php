@@ -11,7 +11,7 @@
 require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
-define('FLEX_RATING_BATCH_LIMIT'	, 10000);
+define('FLEX_RATING_BATCH_SIZE'	, 1000);
 
 echo "<pre>\n";
 
@@ -54,12 +54,12 @@ if ($intLimit)
 }
 else
 {
-	CliEcho("\n *** No Rating Run Limit set; defaulting to ".FLEX_RATING_BATCH_LIMIT);
+	CliEcho("\n *** No Rating Run Limit set; will rate until no CDRs left");
 }
 
 // run the Rate method until there is nothing left to rate
 $mixRemaining	= ($intLimit) ? $intLimit : TRUE;
-$intBatch		= FLEX_RATING_BATCH_LIMIT;
+$intBatch		= FLEX_RATING_BATCH_SIZE;
 while ($mixRemaining)
 {
 	if (is_int($mixRemaining))
