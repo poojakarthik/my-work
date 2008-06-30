@@ -127,7 +127,7 @@
 																"Id = 1000158098 OR " .
 																"Id = 1000155964 OR " .
 																"Id = 1000160897";	//  limited to 11 specified accounts
-		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.")"); 
+		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.") AND Id = 1000163539"); 
 		
 		//$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		
@@ -189,6 +189,17 @@
 		
 		$this->_arrServiceChargeModules[CHARGE_MODULE_INBOUND]		= new ChargeInboundService();
 		$this->_arrServiceChargeModules[CHARGE_MODULE_PINNACLE]		= new ChargePinnacle();
+		
+		
+		
+		
+		
+		$this->_selServiceTotalCheckAll	= new StatementSelect(	"ServiceTypeTotal STT LEFT JOIN ServiceTotal ST USING (InvoiceRun, Service)",
+																"STT.Account",
+																"InvoiceRun = <InvoiceRun> AND ST.Id IS NULL",
+																"ST.Id ASC");
+																
+		$this->_selServiceTotalCheck	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND InvoiceRun = <InvoiceRun>");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -698,7 +709,41 @@
 				$fltTotalCredits	+= $fltServiceCredits;
 				
 				$arrAccountReturn['Services'][] = $arrServiceTotal;
+				
+				
+				$mixResult	= $this->_selServiceTotalCheck->Execute($arrServiceTotal);
+				if ($mixResult === FALSE)
+				{
+					Debug($this->_selServiceTotalCheck->Error());
+					exit(1);
+				}
+				elseif(!$mixResult)
+				{
+					CliEcho("\n".__LINE__." >> Unable to find Service Total for Account #{$arrAccount['Id']}::{$arrService['FNN']}");
+					exit(1);
+				}
 			}
+			
+			// DEBUG -- Do a quick check to see if the ServiceTotal has been correctly created
+			$this->_selServiceTotalCheckAll	= new StatementSelect(	"ServiceTypeTotal STT LEFT JOIN ServiceTotal ST USING (InvoiceRun, Service)",
+																	"STT.Account",
+																	"InvoiceRun = <InvoiceRun> AND ST.Id IS NULL",
+																	"ST.Id ASC");
+			$arrWhere	= Array();
+			$arrWhere['InvoiceRun']	= $this->_strInvoiceRun;
+			$arrWhere['Account']	= $arrAccount['Id'];
+			$mixResult	= $this->_selServiceTotalCheckAll->Execute($arrWhere);
+			if ($mixResult === FALSE)
+			{
+				Debug($this->_selServiceTotalCheckAll->Error());
+				exit(1);
+			}
+			elseif(!$mixResult)
+			{
+				CliEcho("\n".__LINE__." >> Unable to find $mixResult ServiceTotals for Account #{$arrAccount['Id']}");
+				exit(1);
+			}
+			
 			
 			// Calculate Account Debit and Credit Totals
 			//$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
