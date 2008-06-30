@@ -24,7 +24,9 @@ class Cli_App_Automatic_Barring_List extends Cli
 
 			$errors = 0;
 
+			$this->log('Summarising barrable accounts...');
 			$barSummary = $this->summarise('ListAutomaticBarringAccounts', 'barred', $effectiveDate);
+			$this->log('Summarising unbarrable accounts...');
 			$unbarSummary = $this->summarise('ListAutomaticUnbarringAccounts', 'unbarred', $effectiveDate);
 
 
