@@ -31,7 +31,7 @@ $arrPaymentTerms	= $selPaymentTerms->Fetch();
 $intInvoiceOffset	= $arrPaymentTerms['invoice_day'] - 1;
 $strDate			= date("Y-m-01");
 $intInvoiceDate		= strtotime("+{$intInvoiceOffset} days", strtotime($strDate));
-if ($intInvoiceDate < time())
+if ($intInvoiceDate < strtotime(date("Y-m-d", time())))
 {
 	// Calculated date is in the past, add 1 month
 	$intInvoiceDate			= strtotime("+{$intInvoiceOffset} days", strtotime("+1 months", strtotime($strDate)));
@@ -52,6 +52,7 @@ $strTodaysDate			= date("Y-m-d");
 $strScript	= NULL;
 if (substr($GLOBALS['**arrDatabase']['flex']['Database'], -8) !== '_working')
 {
+	CliEcho("Operating on the LIVE Server");
 	// This is the Live Server
 	if ($strInvoiceDate === $strTodaysDate)
 	{
@@ -60,9 +61,14 @@ if (substr($GLOBALS['**arrDatabase']['flex']['Database'], -8) !== '_working')
 		$strScript		= "billing.cfg.php";
 		$strBillingMode	= 'gold';
 	}
+	else
+	{
+		CliEcho("Today ($strTodaysDate) is not Billing Day ($strInvoiceDate).");
+	}
 }
 else
 {
+	CliEcho("This is the _working Server");
 	// This is the Working/Samples Server
 	$strBillingMode	= NULL;
 	switch ($strTodaysDate)
@@ -104,7 +110,7 @@ if ($strBillingMode)
 	// DEBUG
 	//Debug($strCommand);
 	//die;
-	// DEBUG
+	//DEBUG
 	
 	$strWorkingDirectory	= getcwd();
 	chdir(BACKEND_BASE_PATH.'process/');
