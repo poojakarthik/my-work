@@ -11,7 +11,7 @@
 require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
-define('FLEX_RATING_BATCH_LIMIT'	, 1000);
+define('FLEX_RATING_BATCH_LIMIT'	, 10000);
 
 echo "<pre>\n";
 
