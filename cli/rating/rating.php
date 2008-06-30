@@ -66,16 +66,19 @@ while ($mixRemaining)
 	{
 		CliEcho("\n *** $mixRemaining CDRs remaining...");
 		
-		$mixRemaining	= ($mixRemaining - $intBatch);
 		if ($intBatch > $mixRemaining)
 		{
 			$intBatch		= $mixRemaining;
 			$mixRemaining	= 0;
 		}
+		else
+		{
+			$mixRemaining	= ($mixRemaining - $intBatch);
+		}
 	}
 	
 	// Rate this batch
-	CliEcho("Rating Batch of $intBatch");
+	CliEcho(" *** Rating Batch of $intBatch");
 	if ($appRating->Rate($bolOnlyNew, $intBatch) === FALSE)
 	{
 		// If there is nothing left to rate, then exit
