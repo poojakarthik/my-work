@@ -38,7 +38,7 @@ $appBilling->FinaliseReport();
 echo("\n\n-- End of Billing --\n");
 echo "</pre>";
 
-if (!$bolResponse)
+if ($bolResponse === FALSE)
 {
 	// An error occurred
 	exit(1);
