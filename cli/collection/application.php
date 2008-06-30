@@ -250,7 +250,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			
 			// TAR succeeded, so BZ2 it
 			CliEcho("\n * Compressing Archive to '".basename($strTARBZ2File)."'...\t\t\t", FALSE);
-			exec($strBZ2Command, NULL, $intBZ2Return);
+			exec($strBZ2Command, $arrOutput, $intBZ2Return);
 			if (!$intBZ2Return && file_exists($strTARBZ2File))
 			{
 				// BZ2 succeeded
