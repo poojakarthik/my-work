@@ -15,6 +15,8 @@ class Cli_App_Automatic_Barring_List extends Cli
 		$unbarSummary = array();
 		$report = array();
 
+		set_time_limit(0);
+
 		try
 		{
 			// The arguments are present and in a valid format if we get past this point.
@@ -44,7 +46,7 @@ class Cli_App_Automatic_Barring_List extends Cli
 				foreach ($barSummary as $custGroup => $arrCSV)
 				{
 					$report[] = "";
-					$report[] = "Customer Group: $custGroup; " . count($arrCSV) . " accounts would be barred.";
+					$report[] = "Customer Group: $custGroup; " . count($arrCSV['services']) . " services would be barred for " . count($arrCSV['accounts']) . " accounts.";
 					$report[] = "";
 				}
 			}
@@ -65,7 +67,7 @@ class Cli_App_Automatic_Barring_List extends Cli
 				foreach ($unbarSummary as $custGroup => $arrCSV)
 				{
 					$report[] = "";
-					$report[] = "Customer Group: $custGroup; " . count($arrCSV) . " accounts would be unbarred.";
+					$report[] = "Customer Group: $custGroup; " . count($arrCSV['services']) . " services would be unbarred for " . count($arrCSV['accounts']) . " accounts.";
 					$report[] = "";
 				}
 			}
@@ -84,20 +86,20 @@ class Cli_App_Automatic_Barring_List extends Cli
 			foreach($barSummary as $custGroup => $list)
 			{
 				$custGroup = str_replace(' ', '_', $custGroup);
-				if (count($list))
+				if (count($list['services']))
 				{
 					$arrFileNames[] = $custGroup.'_Proposed_Account_Services_To_Be_Barred_' . date('Y_m_d_H_i_s') . '.csv';
-					$arrAttachments[] = "Account,FNN$nl" . implode($nl, $list);
+					$arrAttachments[] = "Account,FNN$nl" . implode($nl, $list['services']);
 					$arrMimeTypes[] = 'text/csv';
 				}
 			}
 			foreach($unbarSummary as $custGroup => $list)
 			{
 				$custGroup = str_replace(' ', '_', $custGroup);
-				if (count($list))
+				if (count($list['services']))
 				{
 					$arrFileNames[] = $custGroup.'_Proposed_Account_Services_To_Be_Unbarred_' . date('Y_m_d_H_i_s') . '.csv';
-					$arrAttachments[] = "Account,FNN$nl" . implode($nl, $list);
+					$arrAttachments[] = "Account,FNN$nl" . implode($nl, $list['services']);
 					$arrMimeTypes[] = 'text/csv';
 				}
 			}
@@ -184,7 +186,7 @@ class Cli_App_Automatic_Barring_List extends Cli
 
 				if (!array_key_exists($customerGroupName, $arrSummary))
 				{
-					$arrSummary[$customerGroupName] = array();
+					$arrSummary[$customerGroupName] = array('services'=>array(), 'accounts'=>array());
 				}
 
 				$this->log("Looking for services of account $accountId.");
@@ -194,7 +196,8 @@ class Cli_App_Automatic_Barring_List extends Cli
 					foreach ($arrServices as $intServiceId => $arrServiceDetails)
 					{
 						$fnn = $arrServiceDetails['FNN'];
-						$arrSummary[$customerGroupName][] = "$accountId,$fnn"; 
+						$arrSummary[$customerGroupName]['services'] = "$accountId,$fnn"; 
+						$arrSummary[$customerGroupName]['accounts'][$accountId] = $accountId;
 					}
 				}
 				catch (Exception $e)

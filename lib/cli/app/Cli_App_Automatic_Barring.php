@@ -16,6 +16,8 @@ class Cli_App_Automatic_Barring extends Cli
 		$unbarSummary = array();
 		$report = array();
 
+		set_time_limit(0);
+
 		try
 		{
 			$this->log('Beginning database transaction.');
