@@ -101,7 +101,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			$outcome = $this->sendEmail("late_notice_run@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body, $attachments, $attachmentNames, $attachmentMimeTypes);
+			$outcome = $this->sendEmail("late_payment_run@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body, $attachments, $attachmentNames, $attachmentMimeTypes);
 
 			if ($outcome === TRUE)
 			{
@@ -261,7 +261,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 			}
 
 			// Was this their last chance to avoid a fee?
-			if ($arrAccount['DisableLatePayment'] !== 0)
+			if ($arrAccount['DisableLatePayment'] != 0)
 			{
 				// Yes
 				return FALSE;
