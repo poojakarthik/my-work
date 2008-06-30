@@ -242,7 +242,8 @@ class ApplicationCollection extends ApplicationBaseClass
 		CliEcho("\n * Archiving Downloaded Files to '".basename($strTARFile)."'...\t\t\t", FALSE);
 		$intTARReturn	= NULL;
 		$intBZ2Return	= NULL;
-		exec($strTARCommand, NULL, $intTARReturn);
+		$arrOutput		= Array();
+		exec($strTARCommand, $arrOutput, $intTARReturn);
 		if (!$intTARReturn && file_exists($strTARFile))
 		{
 			CliEcho("[   OK   ]");
