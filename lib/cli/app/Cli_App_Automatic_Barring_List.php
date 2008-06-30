@@ -196,7 +196,7 @@ class Cli_App_Automatic_Barring_List extends Cli
 					foreach ($arrServices as $intServiceId => $arrServiceDetails)
 					{
 						$fnn = $arrServiceDetails['FNN'];
-						$arrSummary[$customerGroupName]['services'] = "$accountId,$fnn"; 
+						$arrSummary[$customerGroupName]['services'][] = "$accountId,$fnn"; 
 						$arrSummary[$customerGroupName]['accounts'][$accountId] = $accountId;
 					}
 				}
