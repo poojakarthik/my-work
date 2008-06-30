@@ -20,6 +20,7 @@ abstract class Cli
 	const SWITCH_LOG = "l";
 	const SWITCH_VERBOSE = "v";
 	const SWITCH_SILENT = "s";
+	const SWITCH_HELP = "?";
 
 	private $logFile = NULL;
 	private $logSilent = FALSE;
@@ -60,6 +61,13 @@ abstract class Cli
 			self::ARG_DEFAULT		=> FALSE,
 			self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 		);
+
+		$this->_arrCommandLineArguments[self::SWITCH_HELP] = array(
+			self::ARG_REQUIRED		=> FALSE,
+			self::ARG_DESCRIPTION	=> "to view this usage information",
+			self::ARG_DEFAULT		=> FALSE,
+			self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+		);
 	}
 
 	public static final function execute($class)
@@ -72,9 +80,14 @@ abstract class Cli
 				require_once $classFile;
 				$app = new $class();
 
-				$logSwitches = array(self::SWITCH_LOG, self::SWITCH_VERBOSE, self::SWITCH_SILENT);
-
+				$logSwitches = array(self::SWITCH_LOG, self::SWITCH_VERBOSE, self::SWITCH_SILENT, self::SWITCH_HELP);
+				
 				$logArgs = $app->_getValidatedArguments($logSwitches);
+
+				if ($logArgs[self::SWITCH_HELP])
+				{
+					$app->showUsage();
+				}
 
 				$app->startLog($logArgs[self::SWITCH_LOG], $logArgs[self::SWITCH_SILENT], $logArgs[self::SWITCH_VERBOSE]);
 
@@ -128,8 +141,8 @@ abstract class Cli
 		foreach ($this->_arrCommandLineArguments as $switch => $param)
 		{
 			$labelled = array_key_exists(self::ARG_LABEL, $param);
-			$label = array_key_exists(self::ARG_LABEL, $param) ? $param[self::ARG_LABEL] : '';
-			echo " " . ($param[self::ARG_REQUIRED] ? "" : "[") . "-" . $switch . " " . $label . ($param[self::ARG_REQUIRED] ? "" : "]");
+			$label = array_key_exists(self::ARG_LABEL, $param) ? ' ' . $param[self::ARG_LABEL] : '';
+			echo " " . ($param[self::ARG_REQUIRED] ? "" : "[") . "-" . $switch . $label . ($param[self::ARG_REQUIRED] ? "" : "]");
 			if ($labelled)
 			{
 				$where .= $sp . $label . substr($pad, strlen($label)) . $param[self::ARG_DESCRIPTION];
