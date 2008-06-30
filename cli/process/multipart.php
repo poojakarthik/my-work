@@ -60,13 +60,19 @@ if (count($arrMissing))
 	exit(1);
 }
 
+// Init Log File
+$strLogDir		= FILES_BASE_PATH."logs/multipart/";
+$strFileName	= basename(trim($argv[1]), '.cfg.php')."_".date("Ymdhis");
+@mkdir($strLogDir, 0777, TRUE);
+$resLogFile		= @fopen($strLogDir.$strFileName, 'w');
+
 // Run Scripts
 $intStartTime	= time();
-CliEcho("Starting Multipart Script '{$argv[1]}' @ ".date("Y-m-d H:i:s", $intStartTime));
-CliEcho('');
+CliLog($resLogFile, "Starting Multipart Script '{$argv[1]}' @ ".date("Y-m-d H:i:s", $intStartTime));
+CliLog($resLogFile);
 foreach ($arrConfig as $strName=>$arrProperties)
 {
-	CliEcho("Starting SubScript: $strName @ ".date("Y-m-d H:i:s"));
+	CliLog($resLogFile, "Starting SubScript: $strName @ ".date("Y-m-d H:i:s"));
 	
 	// Pass through any commandline options
 	$strCommand	= $arrProperties['Command'];
@@ -87,14 +93,14 @@ foreach ($arrConfig as $strName=>$arrProperties)
 		if (stream_select($arrProcess, $arrBlank, $arrBlank, 0, 500000))
 		{
 			// Check for output every 0.5s
-			CliEcho(stream_get_contents($ptrProcess), FALSE);
+			CliLog($resLogFile, stream_get_contents($ptrProcess), FALSE);
 		}
 	}
 	$intReturnCode = pclose($ptrProcess);
 	
 	chdir($strWorkingDirectory);
 	
-	CliEcho("Finished SubScript: $strName @ ".date("Y-m-d H:i:s"));
+	CliLog($resLogFile, "Finished SubScript: $strName @ ".date("Y-m-d H:i:s"));
 	
 	if ($intReturnCode > 0)
 	{
@@ -102,14 +108,25 @@ foreach ($arrConfig as $strName=>$arrProperties)
 		if ($arrProperties['ChildDie'])
 		{
 			// This child has died, so stop the whole script, and pass the error code on
-			CliEcho("\n\nERROR: Child Script '$strName' died with error code '$intReturnCode'\n\n");
+			CliLog($resLogFile, "\n\nERROR: Child Script '$strName' died with error code '$intReturnCode'\n\n");
 			exit($intReturnCode);
 		}
 	}
 }
 
 $intEndTime		= time();
-CliEcho("\nFinished Multipart Script '{$argv[1]}' @ ".date("Y-m-d H:i:s", $intEndTime)." (".($intEndTime-$intStartTime)."s)");
+CliLog($resLogFile, "\nFinished Multipart Script '{$argv[1]}' @ ".date("Y-m-d H:i:s", $intEndTime)." (".($intEndTime-$intStartTime)."s)");
+exit(0);
 
-
+// CliLog
+function CliLog($resLogFile, $strMessage = '', $bolNewLine = TRUE)
+{
+	CliEcho($strMessage, $bolNewLine);
+	
+	if ($bolNewLine)
+	{
+		$strMessage	.= "\n";
+	}
+	return @fwrite($resLogFile, $strMessage);
+}
 ?>
