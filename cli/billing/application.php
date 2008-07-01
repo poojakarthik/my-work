@@ -731,7 +731,11 @@
 			if ($intServicesComplete !== count($arrServices))
 			{
 				CliEcho("\n".__LINE__." >> Only $intServicesComplete of ".count($arrServices)." ServiceTotals were created for Account #{$arrAccount['Id']}");
-				exit(1);
+				exit(1); 
+			}
+			else
+			{
+				CliEcho("Found all $intServicesComplete of ".count($arrServices)." ServiceTotals for Account #{$arrAccount['Id']}");
 			}
 			
 			
