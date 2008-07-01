@@ -127,7 +127,7 @@
 																"Id = 1000158098 OR " .
 																"Id = 1000155964 OR " .
 																"Id = 1000160897";	//  limited to 11 specified accounts
-		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.") AND Id = 1000163539"); 
+		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.")"); 
 		
 		//$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		
@@ -693,7 +693,7 @@
 				$arrServiceTotal['UncappedCost']	= $fltUncappedCDRCost;
 				$arrServiceTotal['PlanCharge']		= $arrService['MinMonthly'];
 				
-				if (!$this->insServiceTotal->Execute($arrServiceTotal) && !$bolReturnData)
+				if (!$this->insServiceTotal->Execute($arrServiceTotal))
 				{
 					Debug($this->insServiceTotal->Error());
 					$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
@@ -711,6 +711,7 @@
 				$arrAccountReturn['Services'][] = $arrServiceTotal;
 				
 				
+				// DEBUG -- Do a quick check to see if the ServiceTotal has been correctly created
 				$mixResult	= $this->_selServiceTotalCheck->Execute($arrServiceTotal);
 				if ($mixResult === FALSE)
 				{
@@ -724,11 +725,7 @@
 				}
 			}
 			
-			// DEBUG -- Do a quick check to see if the ServiceTotal has been correctly created
-			$this->_selServiceTotalCheckAll	= new StatementSelect(	"ServiceTypeTotal STT LEFT JOIN ServiceTotal ST USING (InvoiceRun, Service)",
-																	"STT.Account",
-																	"InvoiceRun = <InvoiceRun> AND ST.Id IS NULL",
-																	"ST.Id ASC");
+			// DEBUG -- Do a quick check to see if the ServiceTotals have been correctly created
 			$arrWhere	= Array();
 			$arrWhere['InvoiceRun']	= $this->_strInvoiceRun;
 			$arrWhere['Account']	= $arrAccount['Id'];
