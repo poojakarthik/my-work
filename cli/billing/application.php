@@ -2565,7 +2565,7 @@
 		 		// Does the customer have a first name?
 		 		if (trim($arrDetail['FirstName']))
 		 		{
-		 			$strContent = "Dear ".$arrDetail['FirstName']."\r\n\r\n" . $strContent;
+		 			$strContent = "Dear ".$arrDetail['FirstName']."\n\n" . $strContent;
 		 		}
 		 		
 	 			// Account for , separated email addresses
