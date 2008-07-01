@@ -2592,7 +2592,7 @@
 		 			
 		 			// Uncomment this to Debug
 		 			//$strEmail = 'rich@voiptelsystems.com.au';
-		 			$strEmail = 'turdminator@hotmail.com';
+		 			//$strEmail = 'turdminator@hotmail.com';
 		 			
 		 			// Send the email
 		 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
@@ -2600,7 +2600,7 @@
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 		 				continue;
 		 			}
-		 			die;
+		 			//die;
 					
 					// Update DeliveryMethod
 					$arrUpdateData	= Array();
