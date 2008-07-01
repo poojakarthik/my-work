@@ -108,12 +108,11 @@
 		$this->arrServiceColumns['Indial100']		= "Service.Indial100";
 		$this->arrServiceColumns['LastChargedOn']	= "ServiceRatePlan.LastChargedOn";
 		$this->arrServiceColumns['ServiceRatePlan']	= "ServiceRatePlan.Id";
-		$this->selServices					= new StatementSelect(	"Service LEFT JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
-																	"RatePlan",
+		$this->selServices					= new StatementSelect(	"Service LEFT JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, RatePlan",
 																	$this->arrServiceColumns,
 																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
 																	"Service.Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.") " .
-																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1 ORDER BY CreatedOn DESC LIMIT 1)",
+																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() >= StartDatetime AND Active = 1 ORDER BY CreatedOn DESC LIMIT 1)",
 																	"RatePlan.Id");
 		$this->strTestAccounts =		" AND " .
 																"Id = 1000009145 OR " .
@@ -733,10 +732,10 @@
 				CliEcho("\n".__LINE__." >> Only $intServicesComplete of ".count($arrServices)." ServiceTotals were created for Account #{$arrAccount['Id']}");
 				exit(1); 
 			}
-			else
+			/*else
 			{
 				CliEcho("Found all $intServicesComplete of ".count($arrServices)." ServiceTotals for Account #{$arrAccount['Id']}");
-			}
+			}*/
 			
 			
 			// Calculate Account Debit and Credit Totals
