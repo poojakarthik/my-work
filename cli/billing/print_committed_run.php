@@ -4,8 +4,10 @@
 require_once("../../flex.require.php");
 $arrConfig	= LoadApplication();
 
+//define("BILLING_INVOICE_DEBUG"	, TRUE);
 
-$bilInvoiceXML	= new BillingModuleInvoiceXML(DataAccess::getDataAccess(), $arrConfig, 'CDRInvoiced');
+$arrConfig['PrintingMode']	= 'COMMITTED_REPRINT';
+$bilInvoiceXML	= new BillingModuleInvoiceXML(DataAccess::getDataAccess(), $arrConfig);
 
 // Get Command Line Arguments
 $strInvoiceRun	= $argv[1];
@@ -29,7 +31,7 @@ if (!$strInvoiceRun)
 }
 
 // Determine XML path
-define("INVOICE_XML_PATH_SAMPLE",	INVOICE_XML_PATH."gold/".$strInvoiceRun."/");
+define("INVOICE_XML_PATH_SAMPLE",	INVOICE_XML_PATH.$strInvoiceRun);
 
 // Generate Invoice XML
 if (count($arrAccounts))
@@ -85,9 +87,9 @@ function WriteXMLToFile($strXML, $arrInvoice)
 	$intAccount			= $arrInvoice['Account'];
 	$intCustomerGroup	= $arrInvoice['CustomerGroup'];
 	
-	@mkdir(INVOICE_XML_PATH_SAMPLE."$intCustomerGroup/", 0777, TRUE);
+	@mkdir(INVOICE_XML_PATH_SAMPLE, 0777, TRUE);
 	
-	$strFilename	= INVOICE_XML_PATH_SAMPLE."$intCustomerGroup/$intAccount.xml";
+	$strFilename	= INVOICE_XML_PATH_SAMPLE."$intAccount.xml";
 	file_put_contents($strFilename, $strXML);
 }
 

@@ -4,10 +4,10 @@
 require_once("../../flex.require.php");
 $arrConfig	= LoadApplication();
 
-define("BILLING_INVOICE_DEBUG"	, TRUE);
+//define("BILLING_INVOICE_DEBUG"	, TRUE);
 
-$arrConfig['PrintingMode']	= 'COMMITTED_REPRINT';
-$bilInvoiceXML	= new BillingModuleInvoiceXML($GLOBALS['dbaDatabase'], $arrConfig);
+$arrConfig['PrintingMode']	= 'FINAL';
+$bilInvoiceXML	= new BillingModuleInvoiceXML(DataAccess::getDataAccess(), $arrConfig);
 
 // Get Command Line Arguments
 $strInvoiceRun	= $argv[1];
@@ -31,7 +31,7 @@ if (!$strInvoiceRun)
 }
 
 // Determine XML path
-define("INVOICE_XML_PATH_SAMPLE",	INVOICE_XML_PATH."/{$strInvoiceRun}/");
+define("INVOICE_XML_PATH_SAMPLE",	INVOICE_XML_PATH.$strInvoiceRun);
 
 // Generate Invoice XML
 if (count($arrAccounts))
