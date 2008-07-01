@@ -31,7 +31,7 @@ if (!$strInvoiceRun)
 }
 
 // Determine XML path
-define("INVOICE_XML_PATH_SAMPLE",	INVOICE_XML_PATH.$strInvoiceRun);
+define("INVOICE_XML_PATH_SAMPLE",	INVOICE_XML_PATH.$strInvoiceRun.'/');
 
 // Generate Invoice XML
 if (count($arrAccounts))
