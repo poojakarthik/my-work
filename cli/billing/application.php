@@ -2520,7 +2520,7 @@
  		foreach ($arrPDFPaths as $strPDFPath) 
  		{
  			// Get the account number from the filename, then find the account's email address
- 			$arrSplit = explode('_', basename($strPDFPath));
+ 			$arrSplit = explode('.', basename($strPDFPath));
  			
  			if ($selAccountEmail->Execute(Array('Account' => $arrSplit[0], 'InvoiceRun' => $arrInvoiceRun['InvoiceRun'])) === FALSE)
  			{
