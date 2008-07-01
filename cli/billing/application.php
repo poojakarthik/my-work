@@ -422,6 +422,7 @@
 				$intLastBillDate	= strtotime("-{$arrAccount['BillingFreq']} month", strtotime(date("Y-m-$strBillingDate", $intDate)));
 			//}
 			$arrSharedPlans	= Array();
+			$intServicesComplete	= 0;
 			foreach($arrServices as $mixIndex=>$arrService)
 			{
 				if ((float)$arrService['MinMonthly'] > 0)
@@ -723,21 +724,13 @@
 					CliEcho("\n".__LINE__." >> Unable to find Service Total for Account #{$arrAccount['Id']}::{$arrService['FNN']}");
 					exit(1);
 				}
+				$intServicesComplete++;
 			}
 			
 			// DEBUG -- Do a quick check to see if the ServiceTotals have been correctly created
-			$arrWhere	= Array();
-			$arrWhere['InvoiceRun']	= $this->_strInvoiceRun;
-			$arrWhere['Account']	= $arrAccount['Id'];
-			$mixResult	= $this->_selServiceTotalCheckAll->Execute($arrWhere);
-			if ($mixResult === FALSE)
+			if ($intServicesComplete !== count($arrServices))
 			{
-				Debug($this->_selServiceTotalCheckAll->Error());
-				exit(1);
-			}
-			elseif(!$mixResult)
-			{
-				CliEcho("\n".__LINE__." >> Unable to find $mixResult ServiceTotals for Account #{$arrAccount['Id']}");
+				CliEcho("\n".__LINE__." >> Only $intServicesComplete of ".count($arrServices)." ServiceTotals were created for Account #{$arrAccount['Id']}");
 				exit(1);
 			}
 			
