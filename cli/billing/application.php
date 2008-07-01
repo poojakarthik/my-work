@@ -2585,7 +2585,7 @@
 		 			
 		 			$mimMime = new Mail_mime("\n");
 		 			$mimMime->setTXTBody($strContent);
-		 			$mimMime->addAttachment(file_get_contents($strPDFPath), 'application/pdf', $arrSplit[0].'_'.str_replace(' ', '_', $strBillingPeriod).".pdf");
+		 			$mimMime->addAttachment(file_get_contents($strPDFPath), 'application/pdf', $arrSplit[0].'_'.str_replace(' ', '_', $strBillingPeriod).".pdf", FALSE);
 					$strBody = $mimMime->get();
 					$strHeaders = $mimMime->headers($arrHeaders);
 		 			$emlMail =& Mail::factory('mail');
