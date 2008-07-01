@@ -2547,8 +2547,8 @@
 			 									'From'		=> "billing@voicetalk.com.au",
 			 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
 			 								);
-	 					$strContent	=	"Please find attached your most recent invoice from Voicetalk\r\n\r\n" .
-	 									"Regards\r\n\r\n" .
+	 					$strContent	=	"Please find attached your most recent invoice from Voicetalk\n\n" .
+	 									"Regards\n\n" .
 	 									"The Team at Voicetalk";
 	 					break;
 	 				default:
@@ -2556,8 +2556,8 @@
 			 									'From'		=> "billing@telcoblue.com.au",
 			 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
 			 								);
-	 					$strContent	=	"Please find attached your most recent invoice from Telco Blue\r\n\r\n" .
-	 									"Regards\r\n\r\n" .
+	 					$strContent	=	"Please find attached your most recent invoice from Telco Blue\n\n" .
+	 									"Regards\n\n" .
 	 									"The Team at Telco Blue";
 	 					break;
 	 			}
@@ -2585,7 +2585,7 @@
 		 			
 		 			$mimMime = new Mail_mime("\n");
 		 			$mimMime->setTXTBody($strContent);
-		 			$mimMime->addAttachment($strPDFPath, 'application/pdf');
+		 			$mimMime->addAttachment(file_get_contents($strPDFPath), 'application/pdf', $arrSplit[0].'_'.str_replace(' ', '_', $strBillingPeriod).".pdf");
 					$strBody = $mimMime->get();
 					$strHeaders = $mimMime->headers($arrHeaders);
 		 			$emlMail =& Mail::factory('mail');
