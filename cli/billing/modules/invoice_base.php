@@ -71,16 +71,19 @@ abstract class BillingModuleInvoice
 			case 'FINAL':
 				$this->_strCDRTable		= 'CDR';
 				$this->_strInvoiceTable	= 'Invoice';
+				$this->_intCDRStatus	= CDR_INVOICED;
 				break;
 				
 			case 'COMMITTED_REPRINT':
 				$this->_strCDRTable		= 'CDRInvoiced';
 				$this->_strInvoiceTable	= 'Invoice';
+				$this->_intCDRStatus	= CDR_INVOICED;
 				break;
 				
 			default:
 				$this->_strCDRTable		= 'CDR';
 				$this->_strInvoiceTable	= 'InvoiceTemp';
+				$this->_intCDRStatus	= CDR_TEMP_INVOICE;
 				break;
 		}
 		
@@ -349,7 +352,7 @@ abstract class BillingModuleInvoice
 						"RecordGroup.Id = <RecordGroup> AND " .
 						/*"RecordGroup.Itemised = 1 AND " .*/
 						"{$this->_strCDRTable}.InvoiceRun = <InvoiceRun> AND " .
-						"{$this->_strCDRTable}.Status = ".CDR_TEMP_INVOICE." AND " .
+						"{$this->_strCDRTable}.Status = ".$this->_intCDRStatus." AND " .
 						"FNN BETWEEN <RangeStart> AND <RangeEnd>",
 						"{$this->_strCDRTable}.StartDatetime"
  					);
