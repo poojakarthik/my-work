@@ -236,7 +236,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		$strTARDir		= $strDownloadDir."archived/";
 		$strTARFile		= $strTARDir.date("Ymdhis").".tar";
 		$strTARBZ2File	= $strTARDir.date("Ymdhis").".tar.bz2";
-		$strTARCommand	= "tar -cvf $strTARFile $strDownloadDir";
+		$strTARCommand	= "tar -cvf $strTARFile $strDownloadDir -X $strTARDir";
 		$strBZ2Command	= "bzip2 $strTARFile";
 		@mkdir($strTARDir, 0777, TRUE);
 		
