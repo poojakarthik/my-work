@@ -1600,7 +1600,6 @@ class Singleton
 class CarrierModule
 {
  	protected $_intModuleType;
- 	protected $intCarrier;
  	protected $_intModuleCarrier;
  	
  	protected $_arrCarrierModule;
@@ -1614,6 +1613,8 @@ class CarrierModule
 	public $_strDeliveryType;
 	
 	public $_bolCanRunModule;
+	
+ 	public $intCarrier;
  	
  	//------------------------------------------------------------------------//
 	// __construct
