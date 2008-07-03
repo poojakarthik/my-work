@@ -158,7 +158,7 @@ class ApplicationCollection extends ApplicationBaseClass
 								// Process this file, and any files that may get unarchived from it
 								$intIndex	= 0;
 								$arrFiles	= Array();
-								$arrFiles[]	= $strDownloadPath;
+								$arrFiles[]	= $mixDownloadFile;
 								while ($intIndex < count($arrFiles))
 								{
 									$arrFile	= &$arrFiles[$intIndex];
