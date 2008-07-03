@@ -3,6 +3,7 @@
 
 class Cli_App_Rollout extends Cli
 {
+	const SWITCH_TEST_RUN = "t";
 
 	function run()
 	{
@@ -10,10 +11,18 @@ class Cli_App_Rollout extends Cli
 		{
 			$this->log("Starting.");
 
+			// The arguments are present and in a valid format if we get past this point.
+			$arrArgs = $this->getValidatedArguments();
+
+			if ($arrArgs[self::SWITCH_TEST_RUN])
+			{
+				$this->log("Running in test mode. All changes will be rolled back.", TRUE);
+			}
+
 			// Include the Rollout handler class 
 			$this->requireOnce('lib/rollout/Flex_Rollout.php');
 
-			Flex_Rollout::updateToLatestVersion();
+			Flex_Rollout::updateToLatestVersion(NULL, $arrArgs[self::SWITCH_TEST_RUN]);
 
 			$this->log("Finished.");
 			return 0;
@@ -27,6 +36,19 @@ class Cli_App_Rollout extends Cli
 		}
 	}
 
+	function getCommandLineArguments()
+	{
+		return array(
+
+			self::SWITCH_TEST_RUN => array(
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "for testing script outcome [performs full rollout and rollback (i.e. there should be no change)]",
+				self::ARG_DEFAULT		=> FALSE,
+				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+			),
+		
+		);
+	}
 }
 
 

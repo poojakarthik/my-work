@@ -8,7 +8,7 @@ require_once('Flex_Rollout_Version.php');
 class Flex_Rollout
 {
 
-	public function updateToLatestVersion($intVersion=NULL)
+	public function updateToLatestVersion($intVersion=NULL, $bolTestOnly=FALSE)
 	{
 		// Turn on error reporting for all rollout errors
 		@mysqli_report(MYSQLI_REPORT_ALL);
@@ -165,7 +165,14 @@ class Flex_Rollout
 		{
 			try
 			{
-				$arrConnections[$i]->TransactionCommit();
+				if ($bolTestOnly)
+				{
+					$arrConnections[$i]->TransactionRollback();
+				}
+				else
+				{
+					$arrConnections[$i]->TransactionCommit();
+				}
 			}
 			catch (Exception $e)
 			{
@@ -188,7 +195,14 @@ class Flex_Rollout
 		{
 			try
 			{
-				$arrVersions[$versions[$index]]->commit();
+				if ($bolTestOnly)
+				{
+					$arrVersions[$versions[$index]]->rollback();
+				}
+				else
+				{
+					$arrVersions[$versions[$index]]->commit();
+				}
 			}
 			catch (Exception $e)
 			{
