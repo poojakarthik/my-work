@@ -286,8 +286,33 @@ $GLOBALS['*arrConstant']	['FileImport']	[3100]	['Description']	= 'Bill Express S
 
 $GLOBALS['*arrConstant']	['FileImport']	[3200]	['Constant']	= 'FILE_IMPORT_PAYMENT_SECUREPAY_STANDARD';
 $GLOBALS['*arrConstant']	['FileImport']	[3200]	['Description']	= 'SecurePay Standard File';
+
+// TESTING
+$GLOBALS['*arrConstant']	['FileImport']	[9000]	['Constant']	= 'FILE_IMPORT_FLEX_TEST_1';
+$GLOBALS['*arrConstant']	['FileImport']	[9000]	['Description']	= 'Flex Collection Test File Type 1';
+
+$GLOBALS['*arrConstant']	['FileImport']	[9001]	['Constant']	= 'FILE_IMPORT_FLEX_TEST_2';
+$GLOBALS['*arrConstant']	['FileImport']	[9001]	['Description']	= 'Flex Collection Test File Type 2';
+
+$GLOBALS['*arrConstant']	['FileImport']	[9002]	['Constant']	= 'FILE_IMPORT_FLEX_TEST_ARCHIVE';
+$GLOBALS['*arrConstant']	['FileImport']	[9002]	['Description']	= 'SecurePay Standard File';
 //----------------------------------------------------------------------------//
 
+
+//----------------------------------------------------------------------------//
+// File Resource Types
+//----------------------------------------------------------------------------//
+$GLOBALS['*arrConstant']	['FileResource']	[10000]	['Constant']	= 'FILE_RESOURCE_FTP';
+$GLOBALS['*arrConstant']	['FileResource']	[10000]	['Description']	= 'FTP File Server';
+$GLOBALS['*arrConstant']	['FileResource']	[10001]	['Constant']	= 'FILE_RESOURCE_SSH2';
+$GLOBALS['*arrConstant']	['FileResource']	[10001]	['Description']	= 'SSH2 File Server';
+$GLOBALS['*arrConstant']	['FileResource']	[10002]	['Constant']	= 'FILE_RESOURCE_AAPT';
+$GLOBALS['*arrConstant']	['FileResource']	[10002]	['Description']	= 'AAPT XML Resource';
+$GLOBALS['*arrConstant']	['FileResource']	[10003]	['Constant']	= 'FILE_RESOURCE_OPTUS';
+$GLOBALS['*arrConstant']	['FileResource']	[10003]	['Description']	= 'Optus XML Resource';
+$GLOBALS['*arrConstant']	['FileResource']	[10004]	['Constant']	= 'FILE_RESOURCE_LOCAL';
+$GLOBALS['*arrConstant']	['FileResource']	[10004]	['Description']	= 'Local Path';
+//----------------------------------------------------------------------------//
 
 // Carriers
 /*define("CARRIER_UNITEL"			, 1);
@@ -2267,6 +2292,10 @@ $GLOBALS['*arrConstant']	['DataType']	[3]	['Constant']	= 'DATA_TYPE_FLOAT';
 $GLOBALS['*arrConstant']	['DataType']	[3]	['Description']	= 'Float';
 $GLOBALS['*arrConstant']	['DataType']	[4]	['Constant']	= 'DATA_TYPE_BOOLEAN';
 $GLOBALS['*arrConstant']	['DataType']	[4]	['Description']	= 'Boolean';
+$GLOBALS['*arrConstant']	['DataType']	[5]	['Constant']	= 'DATA_TYPE_SERIALISED';
+$GLOBALS['*arrConstant']	['DataType']	[5]	['Description']	= 'Serialised';
+$GLOBALS['*arrConstant']	['DataType']	[6]	['Constant']	= 'DATA_TYPE_ARRAY';
+$GLOBALS['*arrConstant']	['DataType']	[6]	['Description']	= 'Array';
 
 // Frequency Types
 $GLOBALS['*arrConstant']	['FrequencyType']	[1]	['Constant']	= 'FREQUENCY_SECOND';
