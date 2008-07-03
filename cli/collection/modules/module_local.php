@@ -185,7 +185,7 @@
 			foreach ($arrFileType['Paths'] as $strPath)
 			{
 				// Get the directory listing for this
-				$arrFiles	= glob($strPath);
+				$arrFiles	= glob($strPath.'/*');
 				
 				// Filter file names that we don't want
 				foreach ($arrFiles as $strFilePath)
