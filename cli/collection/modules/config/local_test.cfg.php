@@ -37,7 +37,7 @@ $arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
 
 
 // Output
-$strOutputFile	= basename(__FILE__, '.cfg.php').'serialised';
+$strOutputFile	= basename(__FILE__, '.cfg.php').'.serialised';
 @unlink($strOutputFile);
 
 if (file_put_contents($strOutputFile, serialize($arrModuleConfig['FileDefine'])))
