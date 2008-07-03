@@ -233,13 +233,22 @@ class ApplicationCollection extends ApplicationBaseClass
 		}
 		
 		// TAR-BZ2 all downloaded files
-		$strDownloadDir	= FILES_BASE_PATH."download/";
-		$strTARDir		= $strDownloadDir."archived/";
-		$strTARFile		= $strTARDir.date("Ymdhis").".tar";
-		$strTARBZ2File	= $strTARDir.date("Ymdhis").".tar.bz2";
-		$strTARCommand	= "tar -cvfX $strTARFile $strDownloadDir $strTARDir*";
-		$strBZ2Command	= "bzip2 $strTARFile";
+		$strDownloadDir		= FILES_BASE_PATH."download/";
+		$strTARDir			= $strDownloadDir."archived/";
+		$strExclusionFile	= $strDownloadDir."tar.exclude";
+		$strTARFile			= $strTARDir.date("Ymdhis").".tar";
+		$strTARBZ2File		= $strTARDir.date("Ymdhis").".tar.bz2";
 		@mkdir($strTARDir, 0777, TRUE);
+		
+		// Create Archive Exclusion File
+		@unlink($strExclusionFile);
+		$arrExclude	= Array();
+		$arrExclude[]	= $strExclusionFile;
+		$arrExclude[]	= $strTARDir;
+		file_put_contents($strExclusionFile, implode("\n", $arrExclude));
+		
+		$strTARCommand		= "tar -cfX $strTARFile $strExclusionFile $strDownloadDir";
+		$strBZ2Command		= "bzip2 $strTARFile";
 		
 		CliEcho("\n * Archiving Downloaded Files to '".basename($strTARFile)."'...\t\t\t", FALSE);
 		$intTARReturn	= NULL;
