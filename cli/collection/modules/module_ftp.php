@@ -45,6 +45,9 @@
  {
 	private $_resConnection;
  	
+	//public $intBaseCarrier			= CARRIER_UNITEL;
+	public $intBaseFileType			= FILE_RESOURCE_FTP;
+	
  	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//

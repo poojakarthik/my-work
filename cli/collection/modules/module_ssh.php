@@ -43,69 +43,13 @@
  */
  class CollectionModuleSSH
  {
- 	//------------------------------------------------------------------------//
-	// _resConnection
-	//------------------------------------------------------------------------//
-	/**
-	 * _resCollection
-	 *
-	 * FTP Connection
-	 *
-	 * FTP Connection
-	 *
-	 * @type		resource
-	 *
-	 * @property
-	 */
 	private $_resConnection;
-	
- 	//------------------------------------------------------------------------//
-	// _arrDefine
-	//------------------------------------------------------------------------//
-	/**
-	 * _arrDefine
-	 *
-	 * Collection definition
-	 *
-	 * Current Collection definition
-	 *
-	 * @type		array
-	 *
-	 * @property
-	 */
 	private $_arrDefine;
-	
-	//------------------------------------------------------------------------//
-	// _arrFileListing
-	//------------------------------------------------------------------------//
-	/**
-	 * _arrFileListing
-	 *
-	 * File list
-	 *
-	 * File list for current working directory
-	 *
-	 * @type		array
-	 *
-	 * @property
-	 */
 	private $_arrFileListing;
- 	
-	//------------------------------------------------------------------------//
-	// _selFileExists
-	//------------------------------------------------------------------------//
-	/**
-	 * _selFileExists
-	 *
-	 * StatementSelect used to tell if file is already downloaded
-	 *
-	 * StatementSelect used to tell if file is already downloaded
-	 *
-	 * @type		StatementSelect
-	 *
-	 * @property
-	 */
  	private $_selFileExists;
+ 	
+	//public $intBaseCarrier			= CARRIER_UNITEL;
+	public $intBaseFileType			= FILE_RESOURCE_SSH2;
  	
  	//------------------------------------------------------------------------//
 	// __construct

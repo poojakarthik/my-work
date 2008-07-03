@@ -45,6 +45,9 @@
  {
 	private $_resConnection;
  	
+	//public $intBaseCarrier			= CARRIER_AAPT;
+	public $intBaseFileType			= FILE_RESOURCE_AAPT;
+	
  	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//

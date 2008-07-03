@@ -44,6 +44,9 @@
  class CollectionModuleLocal extends CollectionModuleBase
  {
 	private $_resConnection;
+	
+	//public $intBaseCarrier			= CARRIER_UNITEL;
+	public $intBaseFileType			= FILE_RESOURCE_LOCAL;
  	
  	//------------------------------------------------------------------------//
 	// __construct
