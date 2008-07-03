@@ -394,7 +394,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		if (!defined('COLLECTION_DEBUG_MODE') || !COLLECTION_DEBUG_MODE)
 		{
 			// Insert into FileImport
-			$arrFileImport['FileName']		= $arrWhere['FileName'];
+			$arrFileImport['FileName']		= basename($strFilePath);
 			$arrFileImport['Location']		= $strFilePath;
 			$arrFileImport['Carrier']		= $modCarrierModule->intCarrier;
 			$arrFileImport['ImportedOn']	= date("Y-m-d H:i:s");
