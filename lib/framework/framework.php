@@ -1878,7 +1878,7 @@ class CarrierModule
 	 		
 	 		$arrModuleConfig			= Array();
 	 		$arrModuleConfig['Id']		= $arrProperties['Id'];
-	 		$arrModuleConfig['Value']	= $this->_EncodeValue($arrProperties['Value']);
+	 		$arrModuleConfig['Value']	= $this->_EncodeValue($arrProperties['Value'], $arrProperties['Type']);
 	 		$mixResult					= $this->_ubiModuleConfig->Execute($arrModuleConfig);
 	 		if ($mixResult === FALSE)
 	 		{
@@ -2000,7 +2000,7 @@ class CarrierModule
 				$arrModuleConfig['CarrierModule']	= $intCarrierModule;
 				$arrModuleConfig['Name']			= $strField;
 				$arrModuleConfig['Type']			= $arrProperties['Type'];
-				$arrModuleConfig['Value']			= $this->_EncodeValue($arrProperties['Default']);
+				$arrModuleConfig['Value']			= $this->_EncodeValue($arrProperties['Default'], $arrProperties['Type']);
 				$arrModuleConfig['Description']		= $arrProperties['Description'];
 				if (!$insCarrierModuleConfig->Execute($arrModuleConfig))
 				{
