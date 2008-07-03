@@ -1684,7 +1684,11 @@ class CarrierModule
 	 	
 	 	// Parse the value and fill in any recognised placeholders (this should only happen once)
 	 	$arrResults	= Array();
-	 	$intCount	= preg_match_all("/<(Config|Function)::([A-Za-z]+)>/i", $mixValue, $arrResults, PREG_SET_ORDER);
+	 	
+	 	if (is_string($mixValue))
+	 	{
+	 		$intCount	= preg_match_all("/<(Config|Function)::([A-Za-z]+)>/i", $mixValue, $arrResults, PREG_SET_ORDER);
+	 	}
 	 	
 	 	//CliEcho("$intCount Placeholders found in '$mixValue'");
 	 	
