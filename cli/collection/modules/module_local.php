@@ -93,7 +93,6 @@
  	{
 		// Server is the localhost - no need to connect
 		$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
-		Debug($this->_arrDownloadPaths);
 		
 		// Prepare list of files to download
 		return TRUE;
@@ -186,7 +185,7 @@
 			foreach ($arrFileType['Paths'] as $strPath)
 			{
 				// Get the directory listing for this
-				$arrFiles	= glob($this->_resConnection, $strPath);
+				$arrFiles	= glob($strPath);
 				
 				// Filter file names that we don't want
 				foreach ($arrFiles as $strPath)
