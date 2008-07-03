@@ -98,7 +98,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		
 		$insFileDownload		= new StatementInsert("FileDownload");
 		
-		CliEcho("[ COLLECTION ]");
+		CliEcho("\n[ COLLECTION ]\n");
 		
 		// For each module
 		foreach ($this->_arrModules as $intCarrier=>&$arrFileTypes)

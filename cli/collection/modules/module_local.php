@@ -93,6 +93,7 @@
  	{
 		// Server is the localhost - no need to connect
 		$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
+		Debug($this->_arrDownloadPaths);
 		
 		// Prepare list of files to download
 		return TRUE;

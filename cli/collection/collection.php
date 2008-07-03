@@ -18,10 +18,9 @@ $appCollection = new ApplicationCollection($arrConfig);
 
 // run the thing
 $appCollection->Collect();
-$appCollection->_rptCollectionReport->Finish(FILES_BASE_PATH."log/collection/".date("Ymd_His").".log");
 
 // finished
-echo("\n-- End of Collection --\n");
-die();
+CliEcho("\n-- End of Collection --\n");
+exit(0);
 
 ?>
