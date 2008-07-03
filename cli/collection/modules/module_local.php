@@ -148,7 +148,7 @@
 			$arrCurrentFile['LocalPath']	= $strDestination.basename($arrCurrentFile['RemotePath']);
 			
 			// Attempt to download this file
-			if (ftp_get($this->_resConnection, $arrCurrentFile['LocalPath'], $arrCurrentFile['RemotePath'], $arrCurrentFile['FileType']['FTPMode']))
+			if (copy($arrCurrentFile['RemotePath'], $arrCurrentFile['LocalPath']))
 			{
 				return $arrCurrentFile;
 			}
