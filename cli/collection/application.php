@@ -249,7 +249,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		$arrExclude[]	= $strTARFile;
 		file_put_contents($strExclusionFile, implode("\n", $arrExclude));
 		
-		$strTARCommand		= "tar -X $strExclusionFile -cvf $strTARFile  $strDownloadDir";
+		$strTARCommand		= "tar -X $strExclusionFile -cf $strTARFile  $strDownloadDir";
 		$strBZ2Command		= "bzip2 $strTARFile";
 		
 		CliEcho("\n * Archiving Downloaded Files to '".basename($strTARFile)."'...\t\t\t", FALSE);
@@ -257,7 +257,6 @@ class ApplicationCollection extends ApplicationBaseClass
 		$intBZ2Return	= NULL;
 		$arrOutput		= Array();
 		exec($strTARCommand, $arrOutput, $intTARReturn);
-		ob_clean();
 		if (!$intTARReturn && file_exists($strTARFile))
 		{
 			CliEcho("[   OK   ]");
