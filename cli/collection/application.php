@@ -166,7 +166,7 @@ class ApplicationCollection extends ApplicationBaseClass
 									// If this file is an archive, unpack it
 									if ($arrFile['FileType']['ArchiveType'])
 									{
-										CliEcho("\t\t\t\t * Unpacking Archive '".basename($strDownloadPath)."'...\t\t\t", FALSE);
+										CliEcho("\n\t\t\t\t * Unpacking Archive '".basename($strDownloadPath)."'...\t\t\t", FALSE);
 										$strPassword	= $arrFile['FileType']['ArchivePassword'];
 										$strUnzipPath	= $strDownloadPath.'_files/';
 										$arrResult		= UnpackArchive($strDownloadPath, $strUnzipPath, FALSE, $strPassword, $arrFile['ArchiveType']);
