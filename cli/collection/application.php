@@ -133,9 +133,9 @@ class ApplicationCollection extends ApplicationBaseClass
 						{
 							$strDownloadPath	= $mixDownloadFile['LocalPath'];
 							$strFileName		= basename($strDownloadPath);
-							$intSize			= filesize($strDownloadPath) / 1024;
+							$intSize			= round(filesize($strDownloadPath) / 1024);
 							
-							CliEcho("\t\t\t\t + $strFileName ({$intSize}KB)");
+							CliEcho("\t\t\t\t + $strFileName ({$intSize}KB)\t\t", FALSE);
 							
 							// Insert into FileDownload table
 							$arrFileDownload	= Array();
@@ -257,6 +257,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		$intBZ2Return	= NULL;
 		$arrOutput		= Array();
 		exec($strTARCommand, $arrOutput, $intTARReturn);
+		ob_clean();
 		if (!$intTARReturn && file_exists($strTARFile))
 		{
 			CliEcho("[   OK   ]");
