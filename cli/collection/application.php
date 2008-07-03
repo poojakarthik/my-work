@@ -356,6 +356,9 @@ class ApplicationCollection extends ApplicationBaseClass
 		$arrFileImport	= Array();
 		$arrFileImport['Status']		= FILE_IMPORTED;
 		
+		// Init Statements
+ 		$insFileImport	= new StatementInsert("FileImport");
+		
 		// Determine File Type
 		if (GetConstantName($intFileType, 'FileImport') === FALSE)
 		{
