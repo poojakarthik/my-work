@@ -1592,8 +1592,8 @@
 		
 		// Could this be a Fleet call?
 		$bolFleet				= FALSE;
-		$arrDestinationOwner	= FindFNNOwner($this->_arrCurrentCDR['FNN'], $this->_arrCurrentCDR['StartDatetime']);
-		if ($arrDestinationOwner['Account'] == $this->_arrCurrentCDR['Account'])
+		$arrDestinationOwner	= FindFNNOwner($this->_arrCurrentCDR['Destination'], $this->_arrCurrentCDR['StartDatetime']);
+		if ($arrDestinationOwner['Account'] === $this->_arrCurrentCDR['Account'])
 		{
 			$this->_Debug("Trying to find a Destination Fleet Rate");
 			
