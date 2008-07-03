@@ -107,7 +107,7 @@ class HtmlTemplateInvoiceEmail extends HtmlTemplate
 		
 		foreach (DBL()->Contact as $dboContact)
 		{
-			$strName = "Email" . $dboContact->Id->Value;
+			$strName = "Email." . $dboContact->Id->Value;
 			$strLabel = "{$dboContact->FirstName->Value} {$dboContact->LastName->Value} - {$dboContact->Email->Value}";
 			$strLabel = substr($strLabel, 0, 60);
 			// Checkboxes are the format 'FirstName LastName - Email', have id and name of "Email." + Id
