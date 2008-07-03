@@ -35,4 +35,18 @@ $arrStructure[FILE_IMPORT_FLEX_TEST_2]				['Paths']		[]	= '/home/rdavis/collecti
 // Config
 $arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
 
+
+// Output
+$strOutputFile	= basename(__FILE__, '.cfg.php').'serialised';
+@unlink($strOutputFile);
+
+if (file_put_contents($strOutputFile, serialize($arrModuleConfig['FileDefine'])))
+{
+	echo "\nSerialised Data successfully dumped to '$strOutputFile'.\n\n";
+}
+else
+{
+	echo "\nUnable to dump serialised data to '$strOutputFile'.\n\n";
+}
+
 ?>
