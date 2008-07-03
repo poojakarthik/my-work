@@ -1,5 +1,7 @@
 <?php
 
+require_once("../../../../flex.require.php");
+
 // Archived Files
 $arrArchiveFiles[FILE_IMPORT_FLEX_TEST_1]			['Regex']		= "/^test1_(\d+).txt$/";
 $arrArchiveFiles[FILE_IMPORT_FLEX_TEST_1]			['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
@@ -34,7 +36,6 @@ $arrStructure[FILE_IMPORT_FLEX_TEST_2]				['Paths']		[]	= '/home/rdavis/collecti
 
 // Config
 $arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
-
 
 // Output
 $strOutputFile	= basename(__FILE__, '.cfg.php').'.serialised';
