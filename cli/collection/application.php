@@ -293,7 +293,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			CliEcho("[ FAILED ]");
 			CliEcho("\t -- Code '$intTARReturn' returned");
 		}
-		CliEcho('');
+		CliEcho();
 	}
 	
 	//------------------------------------------------------------------------//
