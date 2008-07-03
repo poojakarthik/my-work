@@ -133,7 +133,7 @@ class ApplicationCollection extends ApplicationBaseClass
 						{
 							$strDownloadPath	= $mixDownloadFile['LocalPath'];
 							$strFileName		= basename($strDownloadPath);
-							$intSize			= round(filesize($strDownloadPath) / 1024);
+							$intSize			= ceil(filesize($strDownloadPath) / 1024);
 							
 							CliEcho("\t\t\t\t + $strFileName ({$intSize}KB)\t\t", FALSE);
 							
@@ -193,7 +193,7 @@ class ApplicationCollection extends ApplicationBaseClass
 									if (!$arrFile['FileType']['DownloadOnly'])
 									{
 										$mixImportResult	= $this->ImportModuleFile($arrFile['LocalPath'], $modModule);
-										if (is_int($mixImportResult))
+										if (is_int($mixImportResult) || $mixImportResult === TRUE)
 										{
 											CliEcho("[   OK   ]");
 										}
