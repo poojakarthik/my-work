@@ -423,11 +423,11 @@ class AppTemplateMisc extends ApplicationTemplate
 			}
 			
 			// Everything is valid.  Update the FNN
-			$arrUpdateColumns[Id]			= $objCDR->Id;
-			$arrUpdateColumns[Service]		= $arrService['Id'];
-			$arrUpdateColumns[Account]		= $arrService['Account'];
-			$arrUpdateColumns[AccountGroup]	= $arrService['AccountGroup'];
-			$arrUpdateColumns[Status]		= CDR_NORMALISED;
+			$arrUpdateColumns['Id']				= $objCDR->Id;
+			$arrUpdateColumns['Service']		= $arrService['Id'];
+			$arrUpdateColumns['Account']		= $arrService['Account'];
+			$arrUpdateColumns['AccountGroup']	= $arrService['AccountGroup'];
+			$arrUpdateColumns['Status']			= CDR_NORMALISED;
 			
 			if ($updCDR->Execute($arrUpdateColumns) === FALSE)
 			{
