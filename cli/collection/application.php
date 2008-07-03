@@ -250,7 +250,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			CliEcho("[   OK   ]");
 			
 			// TAR succeeded, so BZ2 it
-			CliEcho("\n * Compressing Archive to '".basename($strTARBZ2File)."'...\t\t\t", FALSE);
+			CliEcho(" * Compressing Archive to '".basename($strTARBZ2File)."'...\t\t\t", FALSE);
 			exec($strBZ2Command, $arrOutput, $intBZ2Return);
 			if (!$intBZ2Return && file_exists($strTARBZ2File))
 			{
@@ -264,7 +264,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			}
 			
 			// If we have successfully Archived (even if not compressed), then remove the raw files
-			CliEcho("\n * Removing Raw Downloaded Files...\t\t\t\t", FALSE);
+			CliEcho(" * Removing Raw Downloaded Files...\t\t\t\t\t", FALSE);
 			$arrIgnoredDirectories	= Array("archived");
 			$arrDirectories			= glob($strDownloadDir, GLOB_ONLYDIR);
 			foreach ($arrDirectories as $strDirectory)
