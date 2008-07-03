@@ -180,7 +180,7 @@
 		$arrDefinitionsCopy	= $arrDefinitions;
 		
 		$arrDownloadPaths	= Array();
-		foreach ($arrDefinitionsCopy as $intFileType=>$arrFileType)
+		foreach ($arrDefinitionsCopy as $intFileType=>&$arrFileType)
 		{
 			foreach ($arrFileType['Paths'] as $strPath)
 			{
