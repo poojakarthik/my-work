@@ -852,7 +852,7 @@
 			switch($arrAccount['BillingMethod'])
 			{
 				case BILLING_METHOD_EMAIL:
-					if ($fltTotal+$fltTax != 0 || $fltTotalOwing != 0)
+					if ($fltTotal+$fltTax != 0 || ($fltTotalOwing != 0 && $arrAccount['Status'] == ACCOUNT_ACTIVE))
 					{
 						$intDeliveryMethod	= $arrAccount['BillingMethod'];
 					}
