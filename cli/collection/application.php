@@ -277,7 +277,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			// If we have successfully Archived (even if not compressed), then remove the raw files
 			CliEcho(" * Removing Raw Downloaded Files...\t\t\t\t\t", FALSE);
 			$arrIgnoredDirectories	= Array("archived");
-			$arrDirectories			= glob($strDownloadDir, GLOB_ONLYDIR);
+			$arrDirectories			= glob($strDownloadDir.'*', GLOB_ONLYDIR);
 			foreach ($arrDirectories as $strDirectory)
 			{
 				CliEcho($strDownloadDir."...\t", FALSE);
