@@ -2036,6 +2036,8 @@ class CarrierModule
 	 */
 	 private function _DecodeValue($strValue, $intDataType = DATA_TYPE_STRING)
 	 {
+	 	Debug("Encoded Value: '$strValue'");
+	 	
 	 	$mixValue	= NULL;
 	 	switch ($intDataType)
 	 	{
@@ -2062,6 +2064,9 @@ class CarrierModule
 	 			$mixValue	= (string)$strValue;
 	 			break;
 	 	}
+	 	
+	 	Debug("Decoded Value:");
+	 	Debug($mixValue);
 	 	
 	 	return $mixValue;
 	 }
