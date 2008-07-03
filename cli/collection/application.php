@@ -106,10 +106,10 @@ class ApplicationCollection extends ApplicationBaseClass
 			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'Carrier'));
 			foreach ($arrFileTypes as $intResourceType=>&$modModule)
 			{
-				CliEcho("\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResourceType'));
+				CliEcho("\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResource'));
 				
 				// Download paths
-				$strDownloadDirectory	= FILES_BASE_PATH."download/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intResourceType, 'FileResourceType').'/';
+				$strDownloadDirectory	= FILES_BASE_PATH."download/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intResourceType, 'FileResource').'/';
 				
 				// Connect to the Source
 				CliEcho("\t\t\t * Connecting to Repository...\t\t\t", FALSE);
