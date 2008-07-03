@@ -246,6 +246,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		$arrExclude	= Array();
 		$arrExclude[]	= $strExclusionFile;
 		$arrExclude[]	= $strTARDir;
+		$arrExclude[]	= $strTARFile;
 		file_put_contents($strExclusionFile, implode("\n", $arrExclude));
 		
 		$strTARCommand		= "tar -X $strExclusionFile -cvf $strTARFile  $strDownloadDir";
@@ -280,15 +281,9 @@ class ApplicationCollection extends ApplicationBaseClass
 			$arrDirectories			= glob($strDownloadDir.'*', GLOB_ONLYDIR);
 			foreach ($arrDirectories as $strDirectory)
 			{
-				CliEcho($strDirectory."...\t", FALSE);
 				if (!in_array($strDirectory, $arrIgnoredDirectories))
 				{
 					exec("rm -R $strDirectory");
-					CliEcho("Deleted!");
-				}
-				else
-				{
-					CliEcho();
 				}
 			}
 			CliEcho("[   OK   ]");
