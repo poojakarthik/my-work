@@ -238,6 +238,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		$strTARBZ2File	= $strTARDir.date("Ymdhis").".tar.bz2";
 		$strTARCommand	= "tar -cvf $strTARFile $strDownloadDir";
 		$strBZ2Command	= "bzip2 $strTARFile";
+		@mkdir($strTARDir, 0777, TRUE);
 		
 		CliEcho("\n * Archiving Downloaded Files to '".basename($strTARFile)."'...\t\t\t", FALSE);
 		$intTARReturn	= NULL;
