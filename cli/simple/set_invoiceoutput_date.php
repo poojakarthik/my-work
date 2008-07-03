@@ -30,8 +30,8 @@ while ($arrOutput = $selInvoiceOutput->Fetch())
 CliEcho("Editing file...");
 
 // Update File
-$ptrInputFile	= fopen("/home/vixen_bill_output/2008-03-03.vbf", r);
-$ptrOutputFile	= fopen("/home/vixen_bill_output/2008-03-03.out.vbf", w);
+$ptrInputFile	= fopen("/home/vixen_bill_output/2008-03-03.vbf", 'r');
+$ptrOutputFile	= fopen("/home/vixen_bill_output/2008-03-03.out.vbf", 'w');
 
 while (!feof($ptrInputFile))
 {

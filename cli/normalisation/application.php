@@ -269,8 +269,8 @@
 		
 		// Retrieve list of CDR Files marked as either ready to process, or failed process
 		$strWhere			= "(Status = <status1> OR Status = <status2>) AND Carrier != 10";
-		$arrWhere[status1]	= CDRFILE_WAITING;
-		$arrWhere[status2]	= CDRFILE_REIMPORT;
+		$arrWhere['status1']	= CDRFILE_WAITING;
+		$arrWhere['status2']	= CDRFILE_REIMPORT;
 		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere, NULL, $intLimit);
 		$insInsertCDRLine	= new StatementInsert("CDR");
 		$arrDefine = Array();

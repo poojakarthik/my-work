@@ -218,7 +218,7 @@
 			{
 				$strWhere .= " AND $strKey = <$strKey>";
 			}
-			$arrWhere[Id] = $intStart;
+			$arrWhere['Id'] = $intStart;
 			$selCDR = new StatementSelect('CDR', '*', $strWhere, '', $intLimit);
 		}
 		else
@@ -261,7 +261,7 @@
 			}
 			$strWhere .= " AND $strFullKey = <$strKey>";
 		}
-		$arrWhere[Id] = $intStart;
+		$arrWhere['Id'] = $intStart;
 
 		$selCDR = new StatementSelect($strTable, $strData, $strWhere, '', $intLimit);
 		$selCDR->Execute($arrWhere);
