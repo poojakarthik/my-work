@@ -3634,6 +3634,7 @@ function GetPaymentTerms()
 			'suspension_notice_days' 	=> 'suspension_notice_days',
 			'final_demand_notice_days' 	=> 'final_demand_notice_days',
 			'minimum_balance_to_pursue' => 'minimum_balance_to_pursue',
+			'late_payment_fee' 			=> 'late_payment_fee',
 			'samples_internal_initial_days' => 'samples_internal_initial_days',
 			'samples_internal_final_days' 	=> 'samples_internal_final_days',
 			'samples_bronze_days' 			=> 'samples_bronze_days',

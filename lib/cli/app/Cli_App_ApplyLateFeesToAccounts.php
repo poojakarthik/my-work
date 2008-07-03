@@ -267,6 +267,8 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 				return FALSE;
 			}
 		}
+		
+		$arrPaymentTerms = GetPaymentTerms();
 
 		// Add the charge
 		$arrCharge = Array();
@@ -274,7 +276,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 		$arrCharge['Notes']			= "Automatically Added Charge";
 		$arrCharge['Description']	= "Late Payment Fee";
 		$arrCharge['ChargeType']	= $this->_strChargeType;
-		$arrCharge['Amount']		= 17.27; // WIP Make this amount configurable!!
+		$arrCharge['Amount']		= $arrPaymentTerms('late_payment_fee');
 		$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
 		$arrCharge['Account'] 		= $arrAccount['Id'];
 		$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];

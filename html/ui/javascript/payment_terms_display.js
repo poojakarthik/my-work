@@ -116,6 +116,11 @@ function VixenPaymentTermsDisplayClass()
 		{
 			this.minimumBalanceToPursueActual.value = parseFloat(this.minimumBalanceToPursue.value);
 		}
+
+		if (!isNaN(parseFloat(this.latePaymentFee.value)))
+		{
+			this.latePaymentFeeActual.value = parseFloat(this.latePaymentFee.value);
+		}
 	}
 
 	this.InitialiseEdit = function(strContainerDivId)
@@ -130,6 +135,7 @@ function VixenPaymentTermsDisplayClass()
 		this.finalDemandDays = document.getElementById('final_demand_notice_days');
 		this.finalDemandDays = document.getElementById('final_demand_notice_days');
 		this.minimumBalanceToPursue = document.getElementById('minimum_balance_to_pursue');
+		this.latePaymentFee = document.getElementById('late_payment_fee');
 
 		this.invoiceDayActual = document.getElementById('payment_terms.invoice_day');
 		this.paymentTermsActual = document.getElementById('payment_terms.payment_terms');
@@ -137,6 +143,7 @@ function VixenPaymentTermsDisplayClass()
 		this.suspensionDaysActual = document.getElementById('payment_terms.suspension_notice_days');
 		this.finalDemandDaysActual = document.getElementById('payment_terms.final_demand_notice_days');
 		this.minimumBalanceToPursueActual = document.getElementById('payment_terms.minimum_balance_to_pursue');
+		this.latePaymentFeeActual = document.getElementById('payment_terms.late_payment_fee');
 
 		this.invoiceDayDisplay = document.getElementById('invoice_day_display');
 		this.paymentTermsDisplay = document.getElementById('payment_terms_display');
@@ -145,7 +152,7 @@ function VixenPaymentTermsDisplayClass()
 		this.finalDemandDaysDisplay = document.getElementById('final_demand_notice_days_display');
 
 		var onChange = function() { Vixen.PaymentTermsDisplay.ChangeHandler(); }
-		var fields = new Array(this.invoiceDay, this.paymentTerms, this.overdueDays, this.suspensionDays, this.finalDemandDays, this.minimumBalanceToPursue);
+		var fields = new Array(this.invoiceDay, this.paymentTerms, this.overdueDays, this.suspensionDays, this.finalDemandDays, this.minimumBalanceToPursue, this.latePaymentFee);
 		for (var i in fields)
 		{
 			var field = fields[i];
@@ -194,6 +201,16 @@ function VixenPaymentTermsDisplayClass()
 		else
 		{
 			this.minimumBalanceToPursueActual.value = parseFloat(this.minimumBalanceToPursue.value);
+		}
+
+		if (isNaN(parseFloat(this.latePaymentFee.value)) || parseFloat(this.latePaymentFee.value) < 0)
+		{
+			this.alertAndFocus("The Late Payment Fee must be a decimal amount greater than or equal to 0 (zero).", "latePaymentFee");
+			return false;
+		}
+		else
+		{
+			this.latePaymentFeeActual.value = parseFloat(this.latePaymentFee.value);
 		}
 
 		return true;

@@ -170,7 +170,8 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			DBO()->payment_terms->overdue_notice_days->Value != DBO()->current_payment_terms->overdue_notice_days->Value ||
 			DBO()->payment_terms->suspension_notice_days->Value != DBO()->current_payment_terms->suspension_notice_days->Value ||
 			DBO()->payment_terms->final_demand_notice_days->Value != DBO()->current_payment_terms->final_demand_notice_days->Value ||
-			DBO()->payment_terms->minimum_balance_to_pursue->Value != DBO()->current_payment_terms->minimum_balance_to_pursue->Value)
+			DBO()->payment_terms->minimum_balance_to_pursue->Value != DBO()->current_payment_terms->minimum_balance_to_pursue->Value ||
+			DBO()->payment_terms->late_payment_fee->Value != DBO()->current_payment_terms->late_payment_fee->Value)
 		{
 			// Copy over the values that we wish to save
 			DBO()->current_payment_terms->invoice_day = DBO()->payment_terms->invoice_day->Value;
@@ -179,6 +180,7 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			DBO()->current_payment_terms->suspension_notice_days = DBO()->payment_terms->suspension_notice_days->Value;
 			DBO()->current_payment_terms->final_demand_notice_days = DBO()->payment_terms->final_demand_notice_days->Value;
 			DBO()->current_payment_terms->minimum_balance_to_pursue = DBO()->payment_terms->minimum_balance_to_pursue->Value;
+			DBO()->current_payment_terms->late_payment_fee = DBO()->payment_terms->late_payment_fee->Value;
 			// Blank the Id to force a new record to be created
 			DBO()->current_payment_terms->Id = 0;
 			// Set the employee and date for auditing purposes

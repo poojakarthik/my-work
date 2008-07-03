@@ -137,6 +137,7 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 		$intSuspensionNoticeDays = DBO()->payment_terms->suspension_notice_days->Value - DBO()->payment_terms->overdue_notice_days->Value;
 		$intFinalDemandNoticeDays = DBO()->payment_terms->final_demand_notice_days->Value - DBO()->payment_terms->suspension_notice_days->Value;
 		$decMinimumBalanceToPursue = DBO()->payment_terms->minimum_balance_to_pursue->Value;
+		$decLatePaymentFee = DBO()->payment_terms->late_payment_fee->Value;
 
 		$position = $this->getOrdinal($intInvoiceDay);
 
@@ -144,31 +145,31 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 		echo "
 
 <div class='DefaultElement'>
-	<div id='payment_terms.invoice_day.Output' name='payment_terms.invoice_day' class='DefaultOutput Default '>$intInvoiceDay$position day of month.</div>
+	<div id='payment_terms.invoice_day.Output' name='payment_terms.invoice_day' class='DefaultOutput Default ' style='margin-left: 60;'>$intInvoiceDay$position day of month.</div>
 	<div id='payment_terms.invoice_day.Label' class='DefaultLabel'>
 		<span> &nbsp;</span>
 		<span id='payment_terms.invoice_day.Label.Text'>Invoice Day : </span>
 	</div>
 </div>
 <div class='DefaultElement'>
-	<div id='payment_terms.payment_terms.Output' name='payment_terms.payment_terms' class='DefaultOutput Default '>$intPaymentTerms days from Invoice Day.</div>
-	<span style=\"position: absolute; left: 550px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->payment_terms->Value . "</span> days from invoice run.</span>
+	<div id='payment_terms.payment_terms.Output' name='payment_terms.payment_terms' class='DefaultOutput Default ' style='margin-left: 60;'>$intPaymentTerms days from Invoice Day.</div>
+	<span style=\"position: absolute; left: 650px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->payment_terms->Value . "</span> days from invoice run.</span>
 	<div id='payment_terms.payment_terms.Label' class='DefaultLabel'>
 		<span> &nbsp;</span>
 		<span id='payment_terms.payment_terms.Label.Text'>Payment Terms : </span>
 	</div>
 </div>
 <div class='DefaultElement'>
-	<div id='payment_terms.overdue_notice_days.Output' name='payment_terms.overdue_notice_days' class='DefaultOutput Default '>$intOverdueNoticeDays days after Payment Terms have passed.</div>
-	<span style=\"position: absolute; left: 550px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->overdue_notice_days->Value . "</span> days from invoice run.</span>
+	<div id='payment_terms.overdue_notice_days.Output' name='payment_terms.overdue_notice_days' class='DefaultOutput Default ' style='margin-left: 60;'>$intOverdueNoticeDays days after Payment Terms have passed.</div>
+	<span style=\"position: absolute; left: 650px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->overdue_notice_days->Value . "</span> days from invoice run.</span>
 	<div id='payment_terms.overdue_notice_days.Label' class='DefaultLabel'>
 		<span> &nbsp;</span>
 		<span id='payment_terms.overdue_notice_days.Label.Text'>Overdue Notices Issued : </span>
 	</div>
 </div>
 <div class='DefaultElement'>
-	<div id='payment_terms.suspension_notice_days.Output' name='payment_terms.suspension_notice_days' class='DefaultOutput Default '>$intSuspensionNoticeDays days after issuing Outstanding (Late) Notices.</div>
-	<span style=\"position: absolute; left: 550px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->suspension_notice_days->Value . "</span> days from invoice run.</span>
+	<div id='payment_terms.suspension_notice_days.Output' name='payment_terms.suspension_notice_days' class='DefaultOutput Default ' style='margin-left: 60;'>$intSuspensionNoticeDays days after issuing Outstanding (Late) Notices.</div>
+	<span style=\"position: absolute; left: 650px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->suspension_notice_days->Value . "</span> days from invoice run.</span>
 	<div id='payment_terms.suspension_notice_days.Label' class='DefaultLabel'>
 		<span> &nbsp;</span>
 		<span id='payment_terms.suspension_notice_days.Label.Text'>Suspension Notices Issued : </span>
@@ -176,8 +177,8 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 	</div>
 </div>
 <div class='DefaultElement'>
-	<div id='payment_terms.final_demand_notice_days.Output' name='payment_terms.final_demand_notice_days' class='DefaultOutput Default '>$intFinalDemandNoticeDays days after issuing Suspension Notices.</div>
-	<span style=\"position: absolute; left: 550px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->final_demand_notice_days->Value . "</span> days from invoice run.</span>
+	<div id='payment_terms.final_demand_notice_days.Output' name='payment_terms.final_demand_notice_days' class='DefaultOutput Default ' style='margin-left: 60;'>$intFinalDemandNoticeDays days after issuing Suspension Notices.</div>
+	<span style=\"position: absolute; left: 650px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->final_demand_notice_days->Value . "</span> days from invoice run.</span>
 	<div id='payment_terms.final_demand_notice_days.Label' class='DefaultLabel'>
 		<span> &nbsp;</span>
 		<span id='payment_terms.final_demand_notice_days.Label.Text'>Final Demand Issued : </span>
@@ -185,10 +186,18 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 
 </div>
 <div class='DefaultElement'>
-	<div id='payment_terms.minimum_balance_to_pursue.Output' name='payment_terms.minimum_balance_to_pursue' class='DefaultOutput Default '>\$$decMinimumBalanceToPursue</div>
-	<div id='payment_terms.final_demand_notice_days.Label' class='DefaultLabel'>
+	<div id='payment_terms.minimum_balance_to_pursue.Output' name='payment_terms.minimum_balance_to_pursue' class='DefaultOutput Default ' style='margin-left: 60;'>\$$decMinimumBalanceToPursue</div>
+	<div id='payment_terms.minimum_balance_to_pursue.Label' class='DefaultLabel'>
 		<span> &nbsp;</span>
 		<span id='payment_terms.final_demand_notice_days.Label.Text'>Minimum Balance to Pursue : </span>
+	</div>
+
+</div>
+<div class='DefaultElement'>
+	<div id='payment_terms.late_payment_fee.Output' name='payment_terms.late_payment_fee' class='DefaultOutput Default' style='margin-left: 60;'>\$$decLatePaymentFee</div>
+	<div id='payment_terms.late_payment_fee.Label' class='DefaultLabel'>
+		<span> &nbsp;</span>
+		<span id='payment_terms.final_demand_notice_days.Label.Text'>Late Payment Fee (excl. GST) : </span>
 	</div>
 
 </div>
@@ -262,6 +271,7 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 		$intSuspensionNoticeDays = DBO()->payment_terms->suspension_notice_days->Value - DBO()->payment_terms->overdue_notice_days->Value;
 		$intFinalDemandNoticeDays = DBO()->payment_terms->final_demand_notice_days->Value - DBO()->payment_terms->suspension_notice_days->Value;
 		$decMinimumBalanceToPursue = DBO()->payment_terms->minimum_balance_to_pursue->Value;
+		$decLatePaymentFee = DBO()->payment_terms->late_payment_fee->Value;
 
 		$position = $this->getOrdinal($intInvoiceDay);
 
@@ -274,56 +284,71 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 <input id=\"payment_terms.suspension_notice_days\" name=\"payment_terms.suspension_notice_days\" value=\"" . DBO()->payment_terms->suspension_notice_days->Value . "\" type=\"hidden\">
 <input id=\"payment_terms.final_demand_notice_days\" name=\"payment_terms.final_demand_notice_days\" value=\"" . DBO()->payment_terms->final_demand_notice_days->Value . "\" type=\"hidden\">
 <input id=\"payment_terms.minimum_balance_to_pursue\" name=\"payment_terms.minimum_balance_to_pursue\" value=\"" . DBO()->payment_terms->minimum_balance_to_pursue->Value . "\" type=\"hidden\">
+<input id=\"payment_terms.late_payment_fee\" name=\"payment_terms.late_payment_fee\" value=\"" . DBO()->payment_terms->late_payment_fee->Value . "\" type=\"hidden\">
 
 <div class=\"DefaultElement\">
-	<input id=\"invoice_day\" value=\"$intInvoiceDay\" class=\"DefaultInputText Default\" style=\"width: 50px;\" maxlength=\"255\" type=\"text\">
+	<input id=\"invoice_day\" value=\"$intInvoiceDay\" class=\"DefaultInputText Default\" style=\"width: 50px; margin-left: 60;\" maxlength=\"255\" type=\"text\">
 	<span style=\"margin-left: 200px; \"><span id=\"invoice_day_display\">" . $position . "</span> day of month.</span>
 	<div id=\"payment_terms.invoice_day.Label\" class=\"DefaultLabel\">
-	<span class=\"RequiredInput\">*</span>
-	<span id=\"payment_terms.invoice_day.Label.Text\">Invoice Day : </span></div>
+		<span class=\"RequiredInput\">*</span>
+		<span id=\"payment_terms.invoice_day.Label.Text\">Invoice Day : </span>
+	</div>
 </div>
 
 <div class=\"DefaultElement\">
-	<input id=\"payment_terms\" value=\"$intPaymentTerms\" class=\"DefaultInputText Default\" style=\"width: 50px;\" maxlength=\"255\" type=\"text\">
-	<span style=\"position: absolute; left: 550px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->payment_terms->Value . "</span> days from invoice run.</span>
+	<input id=\"payment_terms\" value=\"$intPaymentTerms\" class=\"DefaultInputText Default\" style=\"width: 50px; margin-left: 60;\" maxlength=\"255\" type=\"text\">
+	<span style=\"position: absolute; left: 650px; top: 4px;\">= <span id=\"payment_terms_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->payment_terms->Value . "</span> days from invoice run.</span>
 	<span style=\"margin-left: 200px;\"> days from Invoice Day.</span>
 	<div id=\"payment_terms.payment_terms.Label\" class=\"DefaultLabel\">
-	<span class=\"RequiredInput\">*</span>
-	<span id=\"payment_terms.payment_terms.Label.Text\">Payment Terms : </span></div>
+		<span class=\"RequiredInput\">*</span>
+		<span id=\"payment_terms.payment_terms.Label.Text\">Payment Terms : </span>
+	</div>
 </div>
 
 <div class=\"DefaultElement\">
-	<input id=\"overdue_notice_days\" value=\"$intOverdueNoticeDays\" class=\"DefaultInputText Default\" style=\"width: 50px;\" maxlength=\"255\" type=\"text\">
-	<span style=\"position: absolute; left: 550px; top: 4px;\">= <span id=\"overdue_notice_days_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->overdue_notice_days->Value . "</span> days from invoice run.</span>
+	<input id=\"overdue_notice_days\" value=\"$intOverdueNoticeDays\" class=\"DefaultInputText Default\" style=\"width: 50px; margin-left: 60;\" maxlength=\"255\" type=\"text\">
+	<span style=\"position: absolute; left: 650px; top: 4px;\">= <span id=\"overdue_notice_days_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->overdue_notice_days->Value . "</span> days from invoice run.</span>
 	<span style=\"margin-left: 200px;\"> days after Payment Terms have passed.</span>
 	<div id=\"payment_terms.overdue_notice_days.Label\" class=\"DefaultLabel\">
-	<span class=\"RequiredInput\">*</span>
-	<span id=\"payment_terms.overdue_notice_days.Label.Text\">Overdue Notices Issued : </span></div>
+		<span class=\"RequiredInput\">*</span>
+		<span id=\"payment_terms.overdue_notice_days.Label.Text\">Overdue Notices Issued : </span>
+	</div>
 </div>
 
 <div class=\"DefaultElement\">
-	<input id=\"suspension_notice_days\" value=\"$intSuspensionNoticeDays\" class=\"DefaultInputText Default\" style=\"width: 50px;\" maxlength=\"255\" type=\"text\">
-	<span style=\"position: absolute; left: 550px; top: 4px;\">= <span id=\"suspension_notice_days_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->suspension_notice_days->Value . "</span> days from invoice run.</span>
-	<span style=\"margin-left: 200px;\"> days after issuing Outstanding (Late) Notices.</span>
+	<input id=\"suspension_notice_days\" value=\"$intSuspensionNoticeDays\" class=\"DefaultInputText Default\" style=\"width: 50px; margin-left: 60;\" maxlength=\"255\" type=\"text\">
+	<span style=\"position: absolute; left: 650px; top: 4px;\">= <span id=\"suspension_notice_days_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->suspension_notice_days->Value . "</span> days from invoice run.</span>
+	<span style=\"margin-left: 200px;\"> days after Outstanding (Late) Notices.</span>
 	<div id=\"payment_terms.suspension_notice_days.Label\" class=\"DefaultLabel\">
-	<span class=\"RequiredInput\">*</span>
-	<span id=\"payment_terms.suspension_notice_days.Label.Text\">Suspension Notices Issued : </span></div>
+		<span class=\"RequiredInput\">*</span>
+		<span id=\"payment_terms.suspension_notice_days.Label.Text\">Suspension Notices Issued : </span>
+	</div>
 </div>
 
 <div class=\"DefaultElement\">
-	<input id=\"final_demand_notice_days\" value=\"$intFinalDemandNoticeDays\" class=\"DefaultInputText Default\" style=\"width: 50px;\" maxlength=\"255\" type=\"text\">
-	<span style=\"position: absolute; left: 550px; top: 4px;\">= <span id=\"final_demand_notice_days_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->final_demand_notice_days->Value . "</span> days from invoice run.</span>
-	<span style=\"margin-left: 200px;\"> days after issuing Suspension Notices.</span>
+	<input id=\"final_demand_notice_days\" value=\"$intFinalDemandNoticeDays\" class=\"DefaultInputText Default\" style=\"width: 50px; margin-left: 60;\" maxlength=\"255\" type=\"text\">
+	<span style=\"position: absolute; left: 650px; top: 4px;\">= <span id=\"final_demand_notice_days_display\" style=\"font-weight: bold;\">" . DBO()->payment_terms->final_demand_notice_days->Value . "</span> days from invoice run.</span>
+	<span style=\"margin-left: 200px;\"> days after Suspension Notices.</span>
 	<div id=\"payment_terms.final_demand_notice_days.Label\" class=\"DefaultLabel\">
-	<span class=\"RequiredInput\">*</span>
-	<span id=\"payment_terms.final_demand_notice_days.Label.Text\">Final Demands Issued : </span></div>
+		<span class=\"RequiredInput\">*</span>
+		<span id=\"payment_terms.final_demand_notice_days.Label.Text\">Final Demands Issued : </span>
+	</div>
 </div>
 
 <div class=\"DefaultElement\">
-	<input id=\"minimum_balance_to_pursue\" value=\"$decMinimumBalanceToPursue\" class=\"DefaultInputText Default\" style=\"width: 50px;\" maxlength=\"255\" type=\"text\">
+	<input id=\"minimum_balance_to_pursue\" value=\"$decMinimumBalanceToPursue\" class=\"DefaultInputText Default\" style=\"width: 50px; margin-left: 60;\" maxlength=\"255\" type=\"text\">
 	<div id=\"payment_terms.minimum_balance_to_pursue.Label\" class=\"DefaultLabel\">
-	<span class=\"RequiredInput\">*</span>
-	<span id=\"payment_terms.minimum_balance_to_pursue.Label.Text\">Minimum Balance to Pursue : </span></div>
+		<span class=\"RequiredInput\">*</span>
+		<span id=\"payment_terms.minimum_balance_to_pursue.Label.Text\">Minimum Balance to Pursue : </span>
+	</div>
+</div>
+
+<div class=\"DefaultElement\">
+	<input id=\"late_payment_fee\" value=\"$decLatePaymentFee\" class=\"DefaultInputText Default\" style=\"width: 50px; margin-left: 60;\" maxlength=\"255\" type=\"text\">
+	<div id=\"payment_terms.late_payment_fee.Label\" class=\"DefaultLabel\">
+		<span class=\"RequiredInput\">*</span>
+		<span id=\"payment_terms.late_payment_fee.Label.Text\">Late Payment Fee (excl. GST) : </span>
+	</div>
 </div>
 
 		";
