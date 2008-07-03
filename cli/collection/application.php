@@ -280,7 +280,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			$arrDirectories			= glob($strDownloadDir.'*', GLOB_ONLYDIR);
 			foreach ($arrDirectories as $strDirectory)
 			{
-				CliEcho($strDownloadDir."...\t", FALSE);
+				CliEcho($strDirectory."...\t", FALSE);
 				if (!in_array($strDirectory, $arrIgnoredDirectories))
 				{
 					exec("rm -R $strDirectory");
