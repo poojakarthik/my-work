@@ -76,7 +76,7 @@
 		function __construct(Invoice &$invInvoice)
 		{
 			$this->_invInvoice =& $invInvoice;
-			$this->_srvService =& $srvService;
+			//$this->_srvService =& $srvService;
 			
 			// This is potentially inadequate!! 
 			// There will be a period of time between the issuing of an invoice and the archiving of 

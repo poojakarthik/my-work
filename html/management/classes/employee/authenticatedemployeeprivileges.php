@@ -131,7 +131,7 @@
 		
 		public function Validate ($intGuardValue)
 		{
-			return HasPermission ($this->_aemAuthenticatedEmployee->Pull ('Privileges')->getValue (), $intGuard);
+			return HasPermission ($this->_aemAuthenticatedEmployee->Pull ('Privileges')->getValue (), $intGuardValue);
 		}
 	}
 	
