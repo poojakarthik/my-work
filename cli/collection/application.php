@@ -234,6 +234,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		
 		// TAR-BZ2 all downloaded files
 		$strDownloadDir		= FILES_BASE_PATH."download/";
+		$strArchiveDir		= FILES_BASE_PATH."download_archive/";
 		$strTARDir			= $strDownloadDir."archived/";
 		$strExclusionFile	= $strDownloadDir."tar.exclude";
 		$strTARFile			= $strTARDir.date("Ymdhis").".tar";
@@ -279,9 +280,15 @@ class ApplicationCollection extends ApplicationBaseClass
 			$arrDirectories			= glob($strDownloadDir, GLOB_ONLYDIR);
 			foreach ($arrDirectories as $strDirectory)
 			{
+				CliEcho($strDownloadDir."...\t", FALSE);
 				if (!in_array($strDirectory, $arrIgnoredDirectories))
 				{
 					exec("rm -R $strDirectory");
+					CliEcho("Deleted!");
+				}
+				else
+				{
+					CliEcho();
 				}
 			}
 			CliEcho("[   OK   ]");
