@@ -234,8 +234,8 @@ class ApplicationCollection extends ApplicationBaseClass
 		// TAR-BZ2 all downloaded files
 		$strDownloadDir	= FILES_BASE_PATH."download/";
 		$strTARDir		= $strDownloadDir."archived/";
-		$strTARFile		= $strTARDir.date("Ymdhis")."tar";
-		$strTARBZ2File	= $strTARDir.date("Ymdhis")."tar.bz2";
+		$strTARFile		= $strTARDir.date("Ymdhis").".tar";
+		$strTARBZ2File	= $strTARDir.date("Ymdhis").".tar.bz2";
 		$strTARCommand	= "tar -cvf $strTARFile $strDownloadDir";
 		$strBZ2Command	= "bzip2 $strTARFile";
 		
