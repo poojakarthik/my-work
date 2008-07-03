@@ -13,8 +13,6 @@ $arrConfig = LoadApplication();
 
 define('COLLECTION_DEBUG_MODE',		TRUE);
 
-echo "<pre>\n";
-
 // Application entry point - create an instance of the application object
 $appCollection = new ApplicationCollection($arrConfig);
 
@@ -24,7 +22,6 @@ $appCollection->_rptCollectionReport->Finish(FILES_BASE_PATH."log/collection/".d
 
 // finished
 echo("\n-- End of Collection --\n");
-echo "</pre>\n";
 die();
 
 ?>
