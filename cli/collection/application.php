@@ -166,14 +166,14 @@ class ApplicationCollection extends ApplicationBaseClass
 									// If this file is an archive, unpack it
 									if ($arrFile['FileType']['ArchiveType'])
 									{
-										CliEcho("\n\t\t\t\t * Unpacking Archive '".basename($strDownloadPath)."'...\t\t\t", FALSE);
+										CliEcho("\n\t\t\t\t * Unpacking Archive... ", FALSE);
 										$strPassword	= $arrFile['FileType']['ArchivePassword'];
 										$strUnzipPath	= $strDownloadPath.'_files/';
 										$arrResult		= UnpackArchive($strDownloadPath, $strUnzipPath, FALSE, $strPassword, $arrFile['ArchiveType']);
 										if (is_string($arrResult))
 										{
 											// Error
-											CliEcho("[ FAILED ]");
+											CliEcho("\t\t\t[ FAILED ]");
 											CliEcho("\t\t\t\t\t -- $arrResult");
 											continue;
 										}
@@ -190,11 +190,12 @@ class ApplicationCollection extends ApplicationBaseClass
 												
 												$arrDownloadedFiles[]	= $arrArchivedFile;
 											}
+											CliEcho(count($arrResult['Files'])." file(s) extracted.\t");
 											CliEcho("[   OK   ]");
 										}
 										else
 										{
-											CliEcho("[  SKIP  ]");
+											CliEcho("\t\t\t[  SKIP  ]");
 										}
 									}
 									
