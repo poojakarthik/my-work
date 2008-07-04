@@ -110,7 +110,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				CliEcho("\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResource'));
 				
 				// Download paths
-				$strDownloadDirectory	= FILES_BASE_PATH."download/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intResourceType, 'FileResource').'/';
+				$strDownloadDirectory	= FILES_BASE_PATH."download/current/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intResourceType, 'FileResource').'/';
 				@mkdir($strDownloadDirectory, 0777, TRUE);
 				
 				// Connect to the Source
@@ -235,8 +235,8 @@ class ApplicationCollection extends ApplicationBaseClass
 		
 		// TAR-BZ2 all downloaded files
 		$strDownloadDir		= FILES_BASE_PATH."download/";
-		$strArchiveDir		= FILES_BASE_PATH."download_archive/";
 		$strTARDir			= $strDownloadDir."archived/";
+		$strDownloadDir		= $strDownloadDir."current/";
 		$strExclusionFile	= $strDownloadDir."tar.exclude";
 		$strTARFile			= $strTARDir.date("Ymdhis").".tar";
 		$strTARBZ2File		= $strTARDir.date("Ymdhis").".tar.bz2";
@@ -250,7 +250,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		$arrExclude[]	= $strTARFile;
 		file_put_contents($strExclusionFile, implode("\n", $arrExclude));
 		
-		$strTARCommand		= "tar -X $strExclusionFile -cf $strTARFile  $strDownloadDir >/dev/null 2>&1";
+		$strTARCommand		= "tar -X $strExclusionFile -cf $strTARFile $strDownloadDir >/dev/null 2>&1";
 		$strBZ2Command		= "bzip2 $strTARFile";
 		
 		CliEcho("\n * Archiving Downloaded Files to '".basename($strTARFile)."'...\t\t", FALSE);
