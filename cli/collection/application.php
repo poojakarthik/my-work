@@ -236,8 +236,8 @@ class ApplicationCollection extends ApplicationBaseClass
 		// TAR-BZ2 all downloaded files
 		$strDownloadDir		= FILES_BASE_PATH."download/";
 		$strTARDir			= $strDownloadDir."archived/";
-		$strDownloadDir		= $strDownloadDir."current/";
 		$strExclusionFile	= $strDownloadDir."tar.exclude";
+		$strDownloadDir		= $strDownloadDir."current/";
 		$strTARFile			= $strTARDir.date("Ymdhis").".tar";
 		$strTARBZ2File		= $strTARDir.date("Ymdhis").".tar.bz2";
 		@mkdir($strTARDir, 0777, TRUE);
@@ -278,14 +278,10 @@ class ApplicationCollection extends ApplicationBaseClass
 			
 			// If we have successfully Archived (even if not compressed), then remove the raw files
 			CliEcho(" * Removing Raw Downloaded Files...\t\t\t\t\t", FALSE);
-			$arrIgnoredDirectories	= Array($strDownloadDir."archived");
 			$arrDirectories			= glob($strDownloadDir.'*', GLOB_ONLYDIR);
 			foreach ($arrDirectories as $strDirectory)
 			{
-				if (!in_array($strDirectory, $arrIgnoredDirectories))
-				{
-					exec("rm -R $strDirectory");
-				}
+				exec("rm -R $strDirectory");
 			}
 			CliEcho("[   OK   ]");
 		}

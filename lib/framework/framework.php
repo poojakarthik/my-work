@@ -2108,5 +2108,24 @@ class CarrierModule
 	 	
 	 	return $mixValue;
 	 }
+	 
+ 	//------------------------------------------------------------------------//
+	// GetCarrier
+	//------------------------------------------------------------------------//
+	/**
+	 * GetCarrier()
+	 *
+	 * Returns the Carrier that is implementing this Module
+	 * 
+	 * Returns the Carrier that is implementing this Module
+	 *  
+	 * @return	integer								Carrier
+	 *
+	 * @method
+	 */
+	 public function GetCarrier()
+	 {
+	 	return $this->intCarrier;
+	 }
 }
 ?>
