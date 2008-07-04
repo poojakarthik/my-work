@@ -227,7 +227,7 @@ class ApplicationCollection extends ApplicationBaseClass
 							else
 							{
 								CliEcho("[ FAILED ]");
-								CliEcho("\t\t\t\t\t\t -- $mixImportResult");
+								CliEcho("\t\t\t\t\t -- $mixImportResult");
 							}
 						}
 						else
@@ -384,9 +384,10 @@ class ApplicationCollection extends ApplicationBaseClass
 				$arrWhere				= Array();
 				$arrWhere['SHA1']		= sha1_file($strFilePath);
 				$arrWhere['FileName']	= basename($strFilePath);
-				$selFileUnique	= new StatementSelect("FileImport", "Id", $strUniqueness);
+				$selFileUnique	= new StatementSelect("FileImport", "*", $strUniqueness);
 				if ($selFileUnique->Execute($arrWhere))
 				{
+					Debug($selFileUnique->FetchAll());
 					// Not Unique
 					$arrFileImport['Status']	= FILE_NOT_UNIQUE;
 				}
