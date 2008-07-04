@@ -125,7 +125,7 @@
 	 * 
 	 * @param	array	$arrDownloadFile				FileDownload properties
 	 * 
-	 * @return	mixed									integer: FileImport Type; NULL: Unrecognised type
+	 * @return	mixed									array: FileImport Type; NULL: Unrecognised type
 	 *
 	 * @method
 	 */
@@ -149,6 +149,9 @@
 					return $arrFileType;
 				}
 			}
+			
+			// No match - this File Type is unrecognised
+			return NULL;
 		}
 		else
 		{
