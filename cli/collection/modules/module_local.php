@@ -177,10 +177,9 @@
 	{
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
-		$arrDefinitionsCopy	= $arrDefinitions;
 		
 		$arrDownloadPaths	= Array();
-		foreach ($arrDefinitionsCopy as $intFileType=>&$arrFileType)
+		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
 			foreach ($arrFileType['Paths'] as $strPath)
 			{

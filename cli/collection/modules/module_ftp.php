@@ -215,8 +215,9 @@
 	protected function _GetDownloadPaths()
 	{
 		// Get Path Definitions
-		$arrDefinitions	= $this->GetConfigField('FileDefine');
+		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
+		$arrDownloadPaths	= Array();
 		foreach ($arrDefinitions as $intFileType=>$arrFileType)
 		{
 			foreach ($arrFileType['Paths'] as $strPath)
@@ -225,16 +226,16 @@
 				$arrFiles	= @ftp_nlist($this->_resConnection, "-F $strPath");
 				
 				// Filter file names that we don't want
-				foreach ($arrFiles as $strPath)
+				foreach ($arrFiles as $strFilePath)
 				{
-					if (substr(trim($strPath), -1) === '/')
+					if (substr(trim($strFilePath), -1) === '/')
 					{
 						// This is a directory, ignore
 						continue;
 					}
 					
 					// Does this file match our REGEX?
-					if (!preg_match($arrFileType['Regex'], trim(basename($strPath))))
+					if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
 					{
 						// No match
 						continue;
@@ -244,7 +245,7 @@
 					$arrFileType['FileImportType']	= $intFileType;
 					
 					// As far as we can tell, this file is valid
-					$arrDownloadPaths[]	= Array('RemotePath' => trim($strPath), 'FileType' => &$arrFileType);
+					$arrDownloadPaths[]	= Array('RemotePath' => trim($strFilePath), 'FileType' => &$arrFileType);
 				}
 			}
 		}
