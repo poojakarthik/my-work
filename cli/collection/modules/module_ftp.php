@@ -227,26 +227,29 @@
 				$arrFiles	= @ftp_nlist($this->_resConnection, "-F $strPath");
 				
 				// Filter file names that we don't want
-				foreach ($arrFiles as $strFilePath)
+				if (is_array($arrFiles))
 				{
-					if (substr(trim($strFilePath), -1) === '/')
+					foreach ($arrFiles as $strFilePath)
 					{
-						// This is a directory, ignore
-						continue;
+						if (substr(trim($strFilePath), -1) === '/')
+						{
+							// This is a directory, ignore
+							continue;
+						}
+						
+						// Does this file match our REGEX?
+						if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
+						{
+							// No match
+							continue;
+						}
+						
+						// Add the FileImport Type to our element
+						$arrFileType['FileImportType']	= $intFileType;
+						
+						// As far as we can tell, this file is valid
+						$arrDownloadPaths[]	= Array('RemotePath' => trim($strFilePath), 'FileType' => &$arrFileType);
 					}
-					
-					// Does this file match our REGEX?
-					if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
-					{
-						// No match
-						continue;
-					}
-					
-					// Add the FileImport Type to our element
-					$arrFileType['FileImportType']	= $intFileType;
-					
-					// As far as we can tell, this file is valid
-					$arrDownloadPaths[]	= Array('RemotePath' => trim($strFilePath), 'FileType' => &$arrFileType);
 				}
 			}
 		}
