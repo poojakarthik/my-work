@@ -323,21 +323,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 */
 	function ImportModuleFile($arrDownloadFile, &$modCarrierModule)
 	{
-		/*// Determine File Type
-		if (!$arrDownloadFile['FileImportType'])
-		{
-			if (($arrFileType = $modCarrierModule->GetFileType($arrDownloadFile)) === FALSE)
-			{
-				// Unknown File Type
-				$arrFileType					= Array();
-				return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], NULL, $modCarrierModule->GetCarrier());
-			}
-		}
-		else
-		{*/
-			// Known File Type
-			return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileImportType'], $modCarrierModule->GetCarrier(), $arrDownloadFile['Uniqueness']);
-		/*}*/
+		return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileImportType'], $modCarrierModule->GetCarrier(), $arrDownloadFile['Uniqueness']);
 	}
 	
 	//------------------------------------------------------------------------//

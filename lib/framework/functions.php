@@ -4724,7 +4724,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			{
 				if (stripos($strLine, 'Archive: ') === FALSE)
 				{
-					$arrLine	= explode(': ', $strLine, 1);
+					$arrLine	= explode(': ', $strLine, 2);
 					$arrFiles[]	= $arrLine[1];
 				}
 			}
