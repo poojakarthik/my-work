@@ -186,7 +186,7 @@ class ApplicationCollection extends ApplicationBaseClass
 												$arrArchivedFile['RemotePath']		= $arrFile['RemotePath'];
 												$arrArchivedFile['ArchiveParent']	= &$arrFile;
 												$arrArchivedFile['ExtractionDir']	= $strUnzipPath;
-												$arrArchivedFile['FileType']		= $modModule->GetFileType($arrArchivedFile);
+												$arrArchivedFile['FileType']		= $modModule->_GetFileType($arrArchivedFile);
 												
 												$arrDownloadedFiles[]	= $arrArchivedFile;
 											}
@@ -326,7 +326,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		/*// Determine File Type
 		if (!$arrDownloadFile['FileImportType'])
 		{
-			if (($arrFileType = $modCarrierModule->GetFileType($arrDownloadFile)) === FALSE)
+			if (($arrFileType = $modCarrierModule->_GetFileType($arrDownloadFile)) === FALSE)
 			{
 				// Unknown File Type
 				$arrFileType					= Array();
