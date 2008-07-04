@@ -395,7 +395,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			$arrFileImport['Carrier']		= $intCarrier;
 			$arrFileImport['ImportedOn']	= date("Y-m-d H:i:s");
 			$arrFileImport['FileType']		= $intFileType;
-			$arrFileImport['SHA1']			= $arrWhere['SHA1'];
+			$arrFileImport['SHA1']			= sha1_file($strFilePath);
 			if (($intInsertId = $insFileImport->Execute($arrFileImport)) === FALSE)
 			{
 				// Unable to Import
