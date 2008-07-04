@@ -145,14 +145,14 @@
 				if (preg_match($arrFileType['Regex'], trim(basename($arrDownloadFile['LocalPath']))))
 				{
 					// We have a match
-					return $intFileType;
+					return $arrFileType;
 				}
 			}
 		}
 		else
 		{
 			// The File Type for this file is already defined
-			return $arrDownloadFile['FileImportType'];
+			return $arrDownloadFile['FileType'];
 		}
 	}
 }

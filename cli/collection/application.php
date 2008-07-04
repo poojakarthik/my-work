@@ -120,7 +120,8 @@ class ApplicationCollection extends ApplicationBaseClass
 					CliEcho("[   OK   ]");
 					
 					// Download all new files
-					$intTotal	= 0;
+					$intTotal			= 0;
+					$arrDownloadedFiles	= Array();
 					CliEcho("\t\t\t * Downloading new files...\n");
 					while ($mixDownloadFile	= $modModule->Download($strDownloadDirectory))
 					{
@@ -155,13 +156,12 @@ class ApplicationCollection extends ApplicationBaseClass
 							
 							if ($arrFileDownload['Id'] !== FALSE)
 							{
-								// Process this file, and any files that may get unarchived from it
+								// Add this file to the Import queue, and any files that may be archived within it
 								$intIndex	= 0;
-								$arrFiles	= Array();
-								$arrFiles[]	= $mixDownloadFile;
-								while ($intIndex < count($arrFiles))
+								$arrDownloadedFiles[]	= $mixDownloadFile;
+								while ($intIndex < count($arrDownloadedFiles))
 								{
-									$arrFile	= &$arrFiles[$intIndex];
+									$arrFile	= &$arrDownloadedFiles[$intIndex];
 									
 									// If this file is an archive, unpack it
 									if ($arrFile['FileType']['ArchiveType'])
@@ -179,28 +179,22 @@ class ApplicationCollection extends ApplicationBaseClass
 										}
 										elseif ($arrResult['Processed'])
 										{
+											foreach ($arrResult['Files'] as $strArchivedFile)
+											{
+												$arrArchivedFile					= Array();
+												$arrArchivedFile['LocalPath']		= $strArchivedFile;
+												$arrArchivedFile['RemotePath']		= $arrFile['RemotePath'];
+												$arrArchivedFile['ArchiveParent']	= &$arrFile;
+												$arrArchivedFile['ExtractionDir']	= $strUnzipPath;
+												$arrArchivedFile['FileType']		= $modCarrierModule->GetFileType($arrArchivedFile);
+												
+												$arrDownloadedFiles[]	= $arrArchivedFile;
+											}
 											CliEcho("[   OK   ]");
-											$arrDownloadFile['ArchiveParent']	= &$mixDownloadFile;
-											$arrDownloadFile['ExtractionDir']	= $strUnzipPath;
 										}
 										else
 										{
 											CliEcho("[  SKIP  ]");
-										}
-									}
-									
-									// If this is not a Download-only file, them Import
-									if (!$arrFile['FileType']['DownloadOnly'])
-									{
-										$mixImportResult	= $this->ImportModuleFile($arrFile['LocalPath'], $modModule);
-										if (is_int($mixImportResult) || $mixImportResult === TRUE)
-										{
-											CliEcho("[   OK   ]");
-										}
-										else
-										{
-											CliEcho("[ FAILED ]");
-											CliEcho("\t\t\t\t\t\t -- $mixImportResult");
 										}
 									}
 									
@@ -214,6 +208,25 @@ class ApplicationCollection extends ApplicationBaseClass
 								// MySQL Error
 								CliEcho("[ FAILED ]");
 								CliEcho("\t\t\t\t\t\t -- ".$insFileDownload->Error());
+							}
+						}
+					}
+					
+					// Import Files
+					foreach ($arrDownloadedFiles as $arrDownloadedFile)
+					{
+						// If this is not a Download-only file, them Import
+						if (!$arrDownloadedFile['FileType']['DownloadOnly'])
+						{
+							$mixImportResult	= $this->ImportModuleFile($arrDownloadedFile['LocalPath'], $modModule);
+							if (is_int($mixImportResult) || $mixImportResult === TRUE)
+							{
+								CliEcho("[   OK   ]");
+							}
+							else
+							{
+								CliEcho("[ FAILED ]");
+								CliEcho("\t\t\t\t\t\t -- $mixImportResult");
 							}
 						}
 					}
@@ -310,7 +323,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 */
 	function ImportModuleFile($arrDownloadFile, &$modCarrierModule)
 	{
-		// Determine File Type
+		/*// Determine File Type
 		if (!$arrDownloadFile['FileImportType'])
 		{
 			if (($arrFileType = $modCarrierModule->GetFileType($arrDownloadFile)) === FALSE)
@@ -321,10 +334,10 @@ class ApplicationCollection extends ApplicationBaseClass
 			}
 		}
 		else
-		{
+		{*/
 			// Known File Type
 			return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileImportType'], $modCarrierModule->GetCarrier(), $arrDownloadFile['Uniqueness']);
-		}
+		/*}*/
 	}
 	
 	//------------------------------------------------------------------------//
