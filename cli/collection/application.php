@@ -185,7 +185,7 @@ class ApplicationCollection extends ApplicationBaseClass
 												$arrArchivedFile					= Array();
 												$arrArchivedFile['LocalPath']		= $strArchivedFile;
 												$arrArchivedFile['RemotePath']		= $arrFile['RemotePath'];
-												$arrArchivedFile['ArchiveParent']	= &$arrDownloadedFiles[key($arrDownloadedFiles)];
+												$arrArchivedFile['ArchiveParent']	= &$arrDownloadedFiles[$mixIndex];
 												$arrArchivedFile['ExtractionDir']	= $strUnzipPath;
 												$arrArchivedFile['FileType']		= $modModule->GetFileType($arrArchivedFile);
 												
