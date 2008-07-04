@@ -122,6 +122,7 @@ class ApplicationCollection extends ApplicationBaseClass
 					// Download all new files
 					$intTotal			= 0;
 					$arrDownloadedFiles	= Array();
+					reset($arrDownloadedFiles);
 					CliEcho("\t\t\t * Downloading new files...\n");
 					while ($mixDownloadFile	= $modModule->Download($strDownloadDirectory))
 					{
