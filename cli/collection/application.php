@@ -370,7 +370,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			// Copy to final location
 			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intFileType['FileImportType'], 'FileImport').'/';
 			$strNewFileName	= basename($strFilePath);
-			$strDestination	.= $strFilePath;
+			$strDestination	.= $strNewFileName;
 			if (!copy($strFilePath, $strDestination))
 			{
 				// Unable to copy
