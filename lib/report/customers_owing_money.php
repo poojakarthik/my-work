@@ -18,7 +18,7 @@ $arrAccounts['90+ Days Overdue']	= "SUM(CASE WHEN CURDATE() >= ADDDATE(Invoice.D
 $arrAccounts['Total Overdue']		= "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)";
 //$arrAccounts['Total Outstanding']	= "SUM(Invoice.Balance)";
 $selAccounts		= new StatementSelect(	"((Account LEFT JOIN Invoice ON Account.Id = Invoice.Account) LEFT JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id) LEFT JOIN Contact ON Account.PrimaryContact = Contact.Id",
-											"Account.Id AS 'Account #', Account.BusinessName AS 'Business Name', CONCAT(Contact.FirstName, ' ', Contact.LastName) AS 'Contact Name', LPAD(Contact.Phone, 10, '0') AS 'Contact Phone'",
+											$arrAccounts,
 											"Account.Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.") AND Invoice.Status IN (".INVOICE_COMMITTED.", ".INVOICE_DISPUTED.")",
 											"Invoice.Account",
 											NULL,
