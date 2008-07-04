@@ -219,7 +219,7 @@ class ApplicationCollection extends ApplicationBaseClass
 						// If this is not a Download-only file, them Import
 						if (!$arrDownloadedFile['FileType']['DownloadOnly'])
 						{
-							$mixImportResult	= $this->ImportModuleFile($arrDownloadedFile['LocalPath'], $modModule);
+							$mixImportResult	= $this->ImportModuleFile($arrDownloadedFile, $modModule);
 							if (is_int($mixImportResult) || $mixImportResult === TRUE)
 							{
 								CliEcho("[   OK   ]");
