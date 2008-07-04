@@ -328,7 +328,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 */
 	function ImportModuleFile($arrDownloadFile, &$modCarrierModule)
 	{
-		return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileImportType'], $modCarrierModule->GetCarrier(), $arrDownloadFile['Uniqueness']);
+		return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileType']['FileImportType'], $modCarrierModule->GetCarrier(), $arrDownloadFile['Uniqueness']);
 	}
 	
 	//------------------------------------------------------------------------//

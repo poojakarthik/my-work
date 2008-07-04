@@ -145,6 +145,7 @@
 				if (preg_match($arrFileType['Regex'], trim(basename($arrDownloadFile['LocalPath']))))
 				{
 					// We have a match
+					$arrFileType['FileImportType']	= $intFileType; 
 					return $arrFileType;
 				}
 			}
