@@ -191,7 +191,6 @@ class ApplicationCollection extends ApplicationBaseClass
 												$arrDownloadedFiles[]	= $arrArchivedFile;
 											}
 											CliEcho(count($arrResult['Files'])." file(s) extracted.\t", FALSE);
-											CliEcho("[   OK   ]");
 										}
 										else
 										{
@@ -199,6 +198,7 @@ class ApplicationCollection extends ApplicationBaseClass
 										}
 									}
 								}
+								CliEcho("[   OK   ]");
 							}
 							else
 							{
