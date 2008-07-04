@@ -210,8 +210,12 @@ class ApplicationCollection extends ApplicationBaseClass
 					}
 					
 					// Import Files
+					CliEcho("\t\t\t * Importing downloaded files...\n");
 					foreach ($arrDownloadedFiles as $arrDownloadedFile)
 					{
+						$strRelativePath	= substr($arrDownloadedFile['LocalPath'], (strlen($strDownloadDirectory)));
+						CliEcho("\t\t\t\t + $strRelativePath\t\t\t", FALSE);
+						
 						// If this is not a Download-only file, them Import
 						if (!$arrDownloadedFile['FileType']['DownloadOnly'])
 						{
@@ -225,6 +229,10 @@ class ApplicationCollection extends ApplicationBaseClass
 								CliEcho("[ FAILED ]");
 								CliEcho("\t\t\t\t\t\t -- $mixImportResult");
 							}
+						}
+						else
+						{
+							CliEcho("[  SKIP  ]");
 						}
 					}
 				}
