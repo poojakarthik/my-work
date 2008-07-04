@@ -210,7 +210,7 @@ class ApplicationCollection extends ApplicationBaseClass
 					}
 					
 					// Import Files
-					CliEcho("\t\t\t * Importing downloaded files...\n");
+					CliEcho("\n\t\t\t * Importing downloaded files...\n");
 					foreach ($arrDownloadedFiles as $arrDownloadedFile)
 					{
 						$strRelativePath	= substr($arrDownloadedFile['LocalPath'], (strlen($strDownloadDirectory)));
