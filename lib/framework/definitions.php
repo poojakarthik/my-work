@@ -191,9 +191,9 @@ $GLOBALS['*arrConstant']	['FileStatus']	[251]	['Description']	= 'Download Failed
 $GLOBALS['*arrConstant']	['FileStatus']	[252]	['Constant']	= 'FILE_UNZIP_FAILED';
 $GLOBALS['*arrConstant']	['FileStatus']	[252]	['Description']	= 'Unarchiving Failed';
 $GLOBALS['*arrConstant']	['FileStatus']	[256]	['Constant']	= 'FILE_MOVE_FAILED';
-$GLOBALS['*arrConstant']	['FileStatus']	[256]	['Description']	= 'Download Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[256]	['Description']	= 'File Move Failed';
 $GLOBALS['*arrConstant']	['FileStatus']	[257]	['Constant']	= 'FILE_UNKNOWN_TYPE';
-$GLOBALS['*arrConstant']	['FileStatus']	[257]	['Description']	= 'Download Failed';
+$GLOBALS['*arrConstant']	['FileStatus']	[257]	['Description']	= 'Unhandled File Type';
 $GLOBALS['*arrConstant']	['FileStatus']	[260]	['Constant']	= 'FILE_NOT_UNIQUE';
 $GLOBALS['*arrConstant']	['FileStatus']	[260]	['Description']	= 'File is not Unique';
 
