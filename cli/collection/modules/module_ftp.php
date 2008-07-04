@@ -248,7 +248,7 @@
 						$arrFileType['FileImportType']	= $intFileType;
 						
 						// As far as we can tell, this file is valid
-						$arrDownloadPaths[]	= Array('RemotePath' => trim($strFilePath), 'FileType' => &$arrFileType);
+						$arrDownloadPaths[]	= Array('RemotePath' => trim($strFilePath), 'FileType' => $arrFileType);
 					}
 				}
 			}
