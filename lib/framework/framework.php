@@ -2125,7 +2125,7 @@ class CarrierModule
 	 */
 	 public function GetCarrier()
 	 {
-	 	return $this->intCarrier;
+	 	return $this->_intModuleCarrier;
 	 }
 }
 ?>

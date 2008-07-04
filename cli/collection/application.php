@@ -73,7 +73,6 @@ class ApplicationCollection extends ApplicationBaseClass
  		{
  			$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
  			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
- 			CliEcho("Carrier for this module is: {$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]->intCarrier} (should be {$arrModule['Carrier']})");
  		}
 	}
 	
@@ -318,13 +317,13 @@ class ApplicationCollection extends ApplicationBaseClass
 			{
 				// Unknown File Type
 				$arrFileType					= Array();
-				return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], NULL, $modCarrierModule->intCarrier);
+				return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], NULL, $modCarrierModule->GetCarrier());
 			}
 		}
 		else
 		{
 			// Known File Type
-			return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileImportType'], $modCarrierModule->intCarrier, $arrDownloadFile['Uniqueness']);
+			return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileImportType'], $modCarrierModule->GetCarrier(), $arrDownloadFile['Uniqueness']);
 		}
 	}
 	
