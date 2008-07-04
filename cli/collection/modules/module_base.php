@@ -139,7 +139,7 @@
 			$arrRelativeDir	= explode($arrDownloadFile['ExtractionDir'], dirname($arrDownloadFile['LocalPath']));
 			$strRelativeDir	= '/'.trim(end($arrRelativeDir), '/').'/';
 			
-			foreach ($arrDownloadFile['ArchiveParent']['FileImportType']['PathDefine'] as $intFileType=>$arrFileType)
+			foreach ($arrDownloadFile['ArchiveParent']['FileType']['PathDefine'] as $intFileType=>$arrFileType)
 			{
 				// Does this file match our REGEX?
 				if (preg_match($arrFileType['Regex'], trim(basename($arrDownloadFile['LocalPath']))))
