@@ -128,6 +128,7 @@
 		{
 			return "Could not connect to server '$strHost'";
 		}
+		return TRUE;
  	}
  	
   	//------------------------------------------------------------------------//

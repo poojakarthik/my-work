@@ -106,14 +106,14 @@ class ApplicationCollection extends ApplicationBaseClass
 			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'Carrier'));
 			foreach ($arrFileTypes as $intResourceType=>&$modModule)
 			{
-				CliEcho("\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResource'));
+				CliEcho("\n\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResource'));
 				
 				// Download paths
 				$strDownloadDirectory	= FILES_BASE_PATH."download/current/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intResourceType, 'FileResource').'/';
 				@mkdir($strDownloadDirectory, 0777, TRUE);
 				
 				// Connect to the Source
-				CliEcho("\t\t\t * Connecting to Repository...\t\t\t", FALSE);
+				CliEcho("\n\t\t\t * Connecting to Repository...\t\t\t", FALSE);
 				$mixResult	= $modModule->Connect();
 				if ($mixResult === TRUE)
 				{
@@ -240,7 +240,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				{
 					// Connection Failed
 					CliEcho("[ FAILED ]");
-					CliEcho("\t\t\t\t -- $mixResult");
+					CliEcho("\t\t\t\t -- {$mixResult}");
 				}
 				else
 				{
