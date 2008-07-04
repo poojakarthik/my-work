@@ -387,7 +387,6 @@ class ApplicationCollection extends ApplicationBaseClass
 				$selFileUnique	= new StatementSelect("FileImport", "*", $strUniqueness);
 				if ($selFileUnique->Execute($arrWhere))
 				{
-					Debug($selFileUnique->FetchAll());
 					// Not Unique
 					$arrFileImport['Status']	= FILE_NOT_UNIQUE;
 				}
