@@ -22,7 +22,7 @@ $selAccounts		= new StatementSelect(	"((Account LEFT JOIN Invoice ON Account.Id 
 											"Account.Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.") AND Invoice.Status IN (".INVOICE_COMMITTED.", ".INVOICE_DISPUTED.")",
 											"Invoice.Account",
 											NULL,
-											"Invoice.Account \n HAVING TotalOverdue > 0.0");
+											"Invoice.Account \n HAVING TotalOverdue > 27.0");
 
 $selServices		= new StatementSelect(	"Service",
 											"Id AS Service, ServiceType",
