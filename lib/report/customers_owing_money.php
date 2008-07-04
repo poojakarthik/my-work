@@ -62,9 +62,11 @@ if ($intAccountCount)
 	fwrite($resChurnedReport, '"'.implode('","', array_keys($arrAccounts)).'"'."\n");
 	
 	// For each Account...
+	$intAccountInc	= 0;
 	while ($arrAccount = $selAccounts->Fetch())
 	{
-		CliEcho("\t + {$arrAccount['Account']}...");
+		$intAccountInc++;
+		CliEcho("\t + ({$intAccountInc}/{$intAccountCount}){$arrAccount['Account']}...");
 		
 		// Find the Services for this Account
 		$bolActiveReport	= FALSE;
