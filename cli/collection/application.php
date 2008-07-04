@@ -73,6 +73,7 @@ class ApplicationCollection extends ApplicationBaseClass
  		{
  			$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
  			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 			CliEcho("Carrier for this module is: {$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]->intCarrier}");
  		}
 	}
 	
