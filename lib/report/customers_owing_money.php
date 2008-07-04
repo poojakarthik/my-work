@@ -6,17 +6,17 @@ require_once("../../flex.require.php");
 // Statements
 $arrAccounts						= Array();
 $arrAccounts['Account']				= "Account.Id";
-$arrAccounts['Customer Group']		= "CustomerGroup.ExternalName";
-$arrAccounts['Account Name']		= "Account.BusinessName";
-$arrAccounts['Contact Name']		= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
-$arrAccounts['Contact Phone']		= "LPAD(Contact.Phone, 10, '0')";
-//$arrAccounts['Not Overdue']			= "SUM(CASE WHEN CURDATE() <= Invoice.DueOn AND Invoice.Status != 106 THEN Invoice.Balance END)";
-$arrAccounts['1-29 Days Overdue']	= "SUM(CASE WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN Invoice.Balance END)";
-$arrAccounts['30-59 Days Overdue']	= "SUM(CASE WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 30 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 59 DAY) THEN Invoice.Balance END)";
-$arrAccounts['60-89 Days Overdue']	= "SUM(CASE WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 60 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 89 DAY) THEN Invoice.Balance END)";
-$arrAccounts['90+ Days Overdue']	= "SUM(CASE WHEN CURDATE() >= ADDDATE(Invoice.DueOn, INTERVAL 90 DAY) THEN Invoice.Balance END)";
-$arrAccounts['Total Overdue']		= "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)";
-//$arrAccounts['Total Outstanding']	= "SUM(Invoice.Balance)";
+$arrAccounts['CustomerGroup']		= "CustomerGroup.ExternalName";
+$arrAccounts['AccountName']			= "Account.BusinessName";
+$arrAccounts['ContactName']			= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
+$arrAccounts['ContactPhone']		= "LPAD(Contact.Phone, 10, '0')";
+//$arrAccounts['NotOverdue']		= "SUM(CASE WHEN CURDATE() <= Invoice.DueOn AND Invoice.Status != 106 THEN Invoice.Balance END)";
+$arrAccounts['1-29DaysOverdue']		= "SUM(CASE WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN Invoice.Balance END)";
+$arrAccounts['30-59DaysOverdue']	= "SUM(CASE WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 30 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 59 DAY) THEN Invoice.Balance END)";
+$arrAccounts['60-89DaysOverdue']	= "SUM(CASE WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 60 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 89 DAY) THEN Invoice.Balance END)";
+$arrAccounts['90+DaysOverdue']		= "SUM(CASE WHEN CURDATE() >= ADDDATE(Invoice.DueOn, INTERVAL 90 DAY) THEN Invoice.Balance END)";
+$arrAccounts['TotalOverdue']		= "SUM(CASE WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance END)";
+//$arrAccounts['TotalOutstanding']	= "SUM(Invoice.Balance)";
 $selAccounts		= new StatementSelect(	"((Account LEFT JOIN Invoice ON Account.Id = Invoice.Account) LEFT JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id) LEFT JOIN Contact ON Account.PrimaryContact = Contact.Id",
 											$arrAccounts,
 											"Account.Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.") AND Invoice.Status IN (".INVOICE_COMMITTED.", ".INVOICE_DISPUTED.")",
