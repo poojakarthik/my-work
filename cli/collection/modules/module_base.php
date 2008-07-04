@@ -114,10 +114,10 @@
  	abstract function Download($strDestination);
  	
   	//------------------------------------------------------------------------//
-	// _GetFileType
+	// GetFileType
 	//------------------------------------------------------------------------//
 	/**
-	 * _GetFileType()
+	 * GetFileType()
 	 *
 	 * Determines the FileImport type for a given file
 	 *
@@ -129,7 +129,7 @@
 	 *
 	 * @method
 	 */
-	protected function _GetFileType($arrDownloadFile)
+	public function GetFileType($arrDownloadFile)
 	{
 		// Has this file been extracted from a downloaded archive?
 		if ($arrDownloadFile['ArchiveParent'])
