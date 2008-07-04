@@ -158,13 +158,9 @@ class ApplicationCollection extends ApplicationBaseClass
 							{
 								// Add this file to the Import queue, and any files that may be archived within it
 								$arrDownloadedFiles[]	= $mixDownloadFile;
-								while (current($arrDownloadedFiles))
+								while ($arrFile = current($arrDownloadedFiles))
 								{
-									if (isset($arrFile))
-									{
-										unset($arrFile);
-									}
-									$arrFile	= &$arrDownloadedFiles[key($arrDownloadedFiles)];
+									$mixIndex	= key($arrDownloadedFiles);
 									next($arrDownloadedFiles);
 									
 									// If this file is an archive, unpack it
