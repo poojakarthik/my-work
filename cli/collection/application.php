@@ -157,16 +157,23 @@ class ApplicationCollection extends ApplicationBaseClass
 							if ($arrFileDownload['Id'] !== FALSE)
 							{
 								// Add this file to the Import queue, and any files that may be archived within it
-								$intIndex	= 0;
+								$intIndex	= -1;
 								$arrDownloadedFiles[]	= $mixDownloadFile;
 								while ($intIndex < count($arrDownloadedFiles))
 								{
+									// Increment the Index, and remove the reference $arrFile
+									if (isset($arrFile))
+									{
+										unset($arrFile);
+									}
+									
+									$intIndex++;
 									$arrFile	= &$arrDownloadedFiles[$intIndex];
 									
 									// If this file is an archive, unpack it
 									if ($arrFile['FileType']['ArchiveType'])
 									{
-										CliEcho("\n\t\t\t\t * Unpacking Archive... ", FALSE);
+										CliEcho("\n\t\t\t\t\t * Unpacking Archive... ", FALSE);
 										$strPassword	= $arrFile['FileType']['ArchivePassword'];
 										$strUnzipPath	= $strDownloadPath.'_files/';
 										$arrResult		= UnpackArchive($strDownloadPath, $strUnzipPath, FALSE, $strPassword, $arrFile['ArchiveType']);
@@ -198,10 +205,6 @@ class ApplicationCollection extends ApplicationBaseClass
 											CliEcho("\t\t\t[  SKIP  ]");
 										}
 									}
-									
-									// Increment the Index, and remove the reference $arrFile
-									$intIndex++;
-									unset($arrFile);
 								}
 							}
 							else
