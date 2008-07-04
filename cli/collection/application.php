@@ -160,6 +160,10 @@ class ApplicationCollection extends ApplicationBaseClass
 								$arrDownloadedFiles[]	= $mixDownloadFile;
 								while (current($arrDownloadedFiles))
 								{
+									if (isset($arrFile))
+									{
+										unset($arrFile);
+									}
 									$arrFile	= &$arrDownloadedFiles[key($arrDownloadedFiles)];
 									next($arrDownloadedFiles);
 									
@@ -184,7 +188,7 @@ class ApplicationCollection extends ApplicationBaseClass
 												$arrArchivedFile					= Array();
 												$arrArchivedFile['LocalPath']		= $strArchivedFile;
 												$arrArchivedFile['RemotePath']		= $arrFile['RemotePath'];
-												$arrArchivedFile['ArchiveParent']	= &$arrFile;
+												$arrArchivedFile['ArchiveParent']	= &$arrDownloadedFiles[key($arrDownloadedFiles)];
 												$arrArchivedFile['ExtractionDir']	= $strUnzipPath;
 												$arrArchivedFile['FileType']		= $modModule->GetFileType($arrArchivedFile);
 												
