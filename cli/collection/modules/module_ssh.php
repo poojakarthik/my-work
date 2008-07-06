@@ -41,7 +41,7 @@
  * @package		collection
  * @class		CollectionModuleSSH
  */
- class CollectionModuleSSH
+ class CollectionModuleSSH extends CollectionModuleBase
  {
 	private $_resConnection;
 	private $_arrDefine;
@@ -57,17 +57,38 @@
 	/**
 	 * __construct()
 	 *
-	 * Constructor for CollectionModuleFTP
+	 * Constructor for CollectionModuleSSH
 	 *
-	 * Constructor for CollectionModuleFTP
+	 * Constructor for CollectionModuleSSH
 	 *
-	 * @return		CollectionModuleFTP
+	 * @return		CollectionModuleSSH
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
- 		$this->_selFileExists = new StatementSelect("FileDownload", "Id", "FileName = <filename>");
+ 		parent::__construct($intCarrier);
+ 		
+		//##----------------------------------------------------------------##//
+		// Define Module Configuration and Defaults
+		//##----------------------------------------------------------------##//
+		
+		// Mandatory
+ 		$this->_arrModuleConfig['Host']			['Default']		= '';
+ 		$this->_arrModuleConfig['Host']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Host']			['Description']	= "SSH Server to connect to";
+ 		
+ 		$this->_arrModuleConfig['Username']		['Default']		= '';
+ 		$this->_arrModuleConfig['Username']		['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Username']		['Description']	= "SSH Username";
+ 		
+ 		$this->_arrModuleConfig['Password']		['Default']		= '';
+ 		$this->_arrModuleConfig['Password']		['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['Password']		['Description']	= "SSH Password";
+ 		
+ 		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
+ 		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
+ 		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
  	}
  	
  	//------------------------------------------------------------------------//
