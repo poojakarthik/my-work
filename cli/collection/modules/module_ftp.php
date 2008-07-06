@@ -219,7 +219,7 @@
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
 		$arrDownloadPaths	= Array();
-		foreach ($arrDefinitions as $intFileType=>$arrFileType)
+		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
 			foreach ($arrFileType['Paths'] as $strPath)
 			{
@@ -229,8 +229,10 @@
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
 				{
-					foreach ($arrFiles as $strFilePath)
+					foreach ($arrFiles as &$strFilePath)
 					{
+						$strFilePath	= rtrim(trim($strFilePath), '*');
+						
 						if (substr(trim($strFilePath), -1) === '/')
 						{
 							// This is a directory, ignore

@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2006 VOIPTEL Pty Ltd
+// (c) copyright 2008 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------/
@@ -17,10 +17,10 @@
  *
  * @file		module_ssh.php
  * @language	PHP
- * @package		vixen
+ * @package		collection
  * @author		Rich Davis
- * @version		7.10
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @version		8.07
+ * @copyright	2008 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -36,9 +36,9 @@
  * SSH Collection Module
  *
  *
- * @prefix		ssh
+ * @prefix		mod
  *
- * @package		vixen
+ * @package		collection
  * @class		CollectionModuleSSH
  */
  class CollectionModuleSSH
@@ -84,39 +84,33 @@
 	 *
 	 * @method
 	 */
- 	function Connect($arrDefine)
- 	{ 		
+ 	function Connect()
+ 	{
+		$strHost		= $this->GetConfigField('Host');
+		$strUsername	= $this->GetConfigField('Username');
+		$strPassword	= $this->GetConfigField('Password');
+		
  		// Connect to SSH2 server
- 		if (!$this->_resConnection = ssh2_connect($arrDefine["Server"]))
+ 		if ($this->_resConnection = ssh2_connect($strHost))
  		{
- 			return FALSE;
+	 		// Authenticate
+	 		if (ssh2_auth_password($this->_resConnection, $strUsername, $strPassword))
+	 		{
+				// Retrieve full file listing
+				$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
+				reset($this->_arrDownloadPaths);
+	 		}
+	 		else
+	 		{
+	 			return "Invalid username/password combination";
+	 		}
+ 		}
+ 		else
+ 		{
+ 			return "Unable to connect to SSH2 server";
  		}
  		
- 		// Authenticate
- 		if (!ssh2_auth_password($this->_resConnection, $arrDefine["Username"], $arrDefine["PWord"]))
- 		{
- 			return FALSE;
- 		}
- 		
-		// Set private copy of arrDefine
-		$this->_arrDefine = $arrDefine;
-		
-		// If the directory passed to us is just a string, convert it to an array so we can
-		// handle directories uniformly
-		if (is_string($this->_arrDefine['Dir']))
-		{
-			$this->_arrDefine['Dir'] = Array($this->_arrDefine['Dir']);
-		}
- 		
-		// Set the directory
-		reset($this->_arrDefine['Dir']);
-		if (current($this->_arrDefine['Dir']))
-		{
-			$this->_SSH2Execute("cd ".current($this->_arrDefine['Dir']));
-		}
-		
-		// Get our first list of files
-		$this->_arrFileListing = $this->DirectoryListing();
+ 		// All good, return TRUE
 		return TRUE;
  	}
  	
@@ -134,10 +128,7 @@
 	 */
  	function Disconnect()
  	{
-		if ($this->_resConnection)
-		{
-			ftp_close($this->_resConnection);
-		}
+		unset($this->_resConnection);
  	}
  	
   	//------------------------------------------------------------------------//
@@ -159,111 +150,34 @@
  	{
  		if (!$this->_resConnection)
 		{
-			DebugBacktrace();
-			throw new Exception("Download called before Connect!");
+			return "Download() called before Connect()";
 		}
 		
-		// Download the next file
-		if (next($this->_arrFileListing))
+		// Get the Current path element
+		if (!($arrCurrentFile = current($this->_arrDownloadPaths)))
 		{
-			$arrCurrent = current($this->_arrFileListing);
-			if (!$arrCurrent['Directory'])
-			{
-				// Check that we don't already have this file
-				if(!$this->_selFileExists->Execute(Array('filename' => key($this->_arrFileListing))))
-				{
-					if ($this->_selFileExists->Error())
-					{
-
-					}
-					
-					// Check the file size, sleep for a second, check the size again (make sure a file isnt current uploading to the server)
-					$strStat = $this->_SSH2Execute($arrCurrent['FileName']);
-					usleep(5000000);
-					if ($strStat != $this->_SSH2Execute($arrCurrent['FileName']))
-					{
-						// File is still uploading to the server, so ignore it, and call Download() again
-						return $this->Download($strDestination);
-					}
-					
-					// We have a usable file, so download and return the filename
-					$intMode = NULL;
-					ftp_get($this->_resConnection, TEMP_DOWNLOAD_DIR.key($this->_arrFileListing), key($this->_arrFileListing), $intMode);
-					ssh2_scp_recv($this->_resConnection, $arrCurrent['FileName'], TEMP_DOWNLOAD_DIR.$arrCurrent['FileName']);
-					return $arrCurrent['FileName'];					
-				}
-				else
-				{
-					// If the file is already downloaded, call Download() again
-					return $this->Download($strDestination);
-				}
-			}
-			else
-			{
-				// Recursively call Download() until a usable file is found
-				return $this->Download($strDestination);
-			}
-		}
-		elseif (next($this->_arrDefine['Dir']))
-		{
-			// Change to the next directory and call Download() again
-			$strDir = current($this->_arrDefine['Dir']);
-
-			// Account for nested directories
-			$strDotDotSlash = "";
-			if ($strDir{0} != "/")
-			{
-				$intDepth = count(explode("/", $strDir));
-				for ($i = 0; $i <= $intDepth; $i++)
-				{
-					$strDotDotSlash .= "../";
-				}
-			}
-			
-			$this->_SSH2Execute("cd {$strDotDotSlash}$strDir");
-			
-			// Get our new list of files
-			$this->_arrFileListing = $this->DirectoryListing();
-			return $this->Download($strDestination);
+			// No files left, return FALSE
+			return FALSE;
 		}
 		else
 		{
-			// There are no more files to download
-			return FALSE;
+			// Advance the arrDownloadPaths internal pointer
+			next($this->_arrDownloadPaths);
+			
+			// Calculate Local Download Path
+			$arrCurrentFile['LocalPath']	= $strDestination.basename($arrCurrentFile['RemotePath']);
+			
+			// Attempt to download this file
+			if (ssh2_scp_recv($this->_resConnection, $arrCurrentFile['RemotePath'], $arrCurrentFile['LocalPath']))
+			{
+				return $arrCurrentFile;
+			}
+			else
+			{
+				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}'";
+			}
 		}
-		
  	}
- 	
-  	//------------------------------------------------------------------------//
-	// DirectoryListing
-	//------------------------------------------------------------------------//
-	/**
-	 * DirectoryListing()
-	 *
-	 * Get a directory listing
-	 *
-	 * Get a directory listing
-	 * 
-	 * @return		array							Directory Listing
-	 *
-	 * @method
-	 */
-	function DirectoryListing()
-	{
-		// Get Raw List
-		$arrRawFiles	= explode("\n", $this->_SSH2Execute("ls"));
-		
-		// Check if files are directories or normal files
-		$arrParsedFiles	= Array();
-		foreach ($arrRawFiles as $strFile)
-		{
-			$arrParsedFiles['FileName']		= $strFile;
-			$arrParsedFiles['Directory']	= $this->_SSH2IsDir($strFile);
-		}
-		
-		// Return Parsed List
-		return $arrParsedFiles;
-	}
 
 	//------------------------------------------------------------------------//
 	// _SSH2Execute
@@ -312,6 +226,64 @@
  		$arrAttribs = explode("\n", $strOutput);
  		return (bool)stristr($arrAttribs[1], "directory");
  	}
+ 	
+  	//------------------------------------------------------------------------//
+	// _GetDownloadPaths
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetDownloadPaths()
+	 *
+	 * Gets a full list of all files to download
+	 *
+	 * Gets a full list of all files to download
+	 * 
+	 * @return		array							Array of files to download
+	 *
+	 * @method
+	 */
+	protected function _GetDownloadPaths()
+	{
+		// Get Path Definitions
+		$arrDefinitions		= $this->GetConfigField('FileDefine');
+		
+		$arrDownloadPaths	= Array();
+		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
+		{
+			foreach ($arrFileType['Paths'] as $strPath)
+			{				
+				// Filter file names that we don't want
+				$strFiles	= $this->_SSH2Execute("ls $strPath");
+				$arrFiles	= explode('  ', $strFiles);
+				if (is_array($arrFiles))
+				{
+					foreach ($arrFiles as $strFilePath)
+					{
+						$strFilePath	= trim($strFilePath);
+						
+						if ($this->_SSH2IsDir($strFilePath))
+						{
+							// This is a directory, ignore
+							continue;
+						}
+						
+						// Does this file match our REGEX?
+						if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
+						{
+							// No match
+							continue;
+						}
+						
+						// Add the FileImport Type to our element
+						$arrFileType['FileImportType']	= $intFileType;
+						
+						// As far as we can tell, this file is valid
+						$arrDownloadPaths[]	= Array('RemotePath' => trim($strFilePath), 'FileType' => $arrFileType);
+					}
+				}
+			}
+		}
+		return $arrDownloadPaths;
+	}
 }
 
 ?>
