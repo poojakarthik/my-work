@@ -44,9 +44,6 @@
  class CollectionModuleSSH extends CollectionModuleBase
  {
 	private $_resConnection;
-	private $_arrDefine;
-	private $_arrFileListing;
- 	private $_selFileExists;
  	
 	//public $intBaseCarrier			= CARRIER_UNITEL;
 	public $intBaseFileType			= FILE_RESOURCE_SSH2;
