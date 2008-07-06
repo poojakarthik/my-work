@@ -33,5 +33,5 @@ VixenRequire("cli/collection/modules/module_local.php");
 VixenRequire("cli/collection/modules/module_ftp.php");
 //VixenRequire("cli/collection/modules/module_aapt.php");
 //VixenRequire("cli/collection/modules/module_optus.php");
-//VixenRequire("cli/collection/modules/module_ssh.php");
+VixenRequire("cli/collection/modules/module_ssh.php");
 ?>
