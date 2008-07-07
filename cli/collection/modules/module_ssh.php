@@ -268,10 +268,19 @@
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
 			foreach ($arrFileType['Paths'] as $strPath)
-			{				
-				// Filter file names that we don't want
+			{
+				// Get Directory Listing
 				$strFiles	= $this->_SSH2Execute("ls $strPath");
-				$arrFiles	= explode('  ', $strFiles);
+				$arrFiles	= Array();
+				foreach (explode("\n", $strFiles) as $strLine)
+				{
+					if ($arrLine = explode('  ', $strFiles))
+					{
+						$arrFiles	= array_merge($arrFiles, $arrLine);
+					}
+				}
+				
+				// Filter file names that we don't want
 				if (is_array($arrFiles))
 				{
 					foreach ($arrFiles as $strFilePath)
