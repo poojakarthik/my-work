@@ -272,8 +272,8 @@
 				// Get Directory Listing
 				$strFiles	= $this->_SSH2Execute("ls $strPath");
 				$arrFiles	= Array();
-				$arrOutput	= explode("\n", $strFiles);
-				foreach ($arrOutput as $strLine)
+				$arrFiles	= explode("\n", $strFiles);
+				/*foreach ($arrOutput as $strLine)
 				{
 					if ($arrLine = explode('  ', $strFiles))
 					{
@@ -282,7 +282,7 @@
 							$arrFiles[]	= $strToken;
 						}
 					}
-				}
+				}*/
 				
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
