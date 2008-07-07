@@ -111,7 +111,7 @@
 		$intCustId	= $this->GetConfigField('CustomerId');
 		$intCheckId	= $this->GetConfigField('CheckId');
 		$strURL		= $this->GetConfigField('URL');
-		//Debug($strURL);
+		
 		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
@@ -138,6 +138,14 @@
 		foreach ($arrLines as $intIndex=>$strLine)
 		{
 			$arrLine = explode("\t", $strLine);
+			
+			// Does this file match our REGEX?
+			if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
+			{
+				// No match
+				continue;
+			}
+			
 			
 			// Make sure there are no double-ups
 			if (!in_array(Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]), $arrLines))
@@ -194,30 +202,30 @@
 	 */
  	function Download($strDestination)
  	{
- 		if (!$this->_arrFiles)
+		// Get the Current path element
+		if (!($arrCurrentFile = current($this->_arrDownloadPaths)))
 		{
-			// No files to download
+			// No files left, return FALSE
 			return FALSE;
 		}
-		
-		// Download the next file
-		if ($arrCurrent = next($this->_arrFiles))
+		else
 		{
-			$strTestName	= $arrCurrent['FileName'];
-			if (stripos($strTestName, '.zip'))
-			{
-				$strTestName	= substr($arrCurrent['FileName'], 0, -4);
-			}
+			// Advance the arrDownloadPaths internal pointer
+			next($this->_arrDownloadPaths);
+			
+			// Calculate Local Download Path
+			$arrCurrentFile['LocalPath']	= $strDestination.$arrCurrentFile['FileName'];
 			
 			// Do we already have this file?
-			if ($this->_selFileImported->Execute(Array('FileName' => $strTestName)))
+			$strUnzippedName	= (stripos($arrCurrentFile['FileName'], '.zip')) ? substr($arrCurrentFile['FileName'], 0, -4) : $arrCurrentFile['FileName'];
+			if ($this->_selFileImported->Execute(Array('FileName' => $strUnzippedName)))
 			{
 				// Yes, recursively call until we find a new file (or FALSE)
 				return $this->Download($strDestination);
 			}
 			
-			// Download the file
-			curl_setopt($this->_ptrSession, CURLOPT_URL				, trim($arrCurrent['URL']));
+			// Attempt to download this file
+			curl_setopt($this->_ptrSession, CURLOPT_URL				, trim($arrCurrentFile['URL']));
 			curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
 			curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
 			curl_setopt($this->_ptrSession, CURLOPT_HEADER			, FALSE);
@@ -227,19 +235,95 @@
 			$strDownloadedFile = curl_exec($this->_ptrSession);
 			
 			// Write to download directory
-			$ptrTempFile	= fopen($strDestination.$arrCurrent['FileName'], 'w');
-			fwrite($ptrTempFile, $strDownloadedFile);
-			fclose($ptrTempFile);
+			file_put_contents($arrCurrentFile['LocalPath'], $strDownloadedFile);
 			
-			// Return file path
-			return $strDestination.$arrCurrent['FileName'];
-		}
-		else
-		{
-			// No more files to download
-			return FALSE;
+			return $arrCurrentFile;
 		}
  	}
+ 	
+  	//------------------------------------------------------------------------//
+	// _GetDownloadPaths
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetDownloadPaths()
+	 *
+	 * Gets a full list of all files to download
+	 *
+	 * Gets a full list of all files to download
+	 * 
+	 * @return		array							Array of files to download
+	 *
+	 * @method
+	 */
+	protected function _GetDownloadPaths()
+	{
+		// Retrieve file listing
+		$intCustId		= $this->GetConfigField('CustomerId');
+		$intCheckId		= $this->GetConfigField('CheckId');
+		$strURL			= $this->GetConfigField('URL');
+		
+		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
+		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
+		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
+		curl_setopt($this->_ptrSession, CURLOPT_HEADER			, FALSE);
+		curl_setopt($this->_ptrSession, CURLOPT_RETURNTRANSFER	, TRUE);
+		curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
+		curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
+		
+		// Get the directory listing for this
+		$strCatalogFile	= curl_exec($this->_ptrSession);
+		if (!$strCatalogFile)
+		{
+			// No Response
+			return "No Response from the Server";
+		}
+		elseif (stripos($strCatalogFile, '<html>'))
+		{
+			// Malformed Catalog
+			return "Catalog is malformed";
+		}
+		
+		$arrFiles = Array();
+		$arrLines = explode("\r\n", trim($strCatalogFile));
+		foreach ($arrLines as $intIndex=>$strLine)
+		{
+			$arrLine = explode("\t", $strLine);
+			
+			// Make sure there are no double-ups
+			if (!in_array(Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]), $arrLines))
+			{
+				$arrFiles[] = Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]);
+			}
+		}
+		
+		// Get File Definitions
+		$arrDefinitions	= $this->GetConfigField('FileDefine');
+		
+		$arrDownloadPaths	= Array();
+		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
+		{
+			// Filter file names that we don't want
+			if (is_array($arrFiles))
+			{
+				foreach ($arrFiles as $arrFileDetails)
+				{					
+					// Does this file match our REGEX?
+					if (!preg_match($arrFileType['Regex'], trim($arrFileDetails['FileName'])))
+					{
+						// No match
+						continue;
+					}
+					
+					// Add the FileImport Type to our element
+					$arrFileType['FileImportType']	= $intFileType;
+					
+					// As far as we can tell, this file is valid
+					$arrDownloadPaths[]	= Array('RemotePath' => trim($arrFileDetails['URL']), 'FileType' => $arrFileType, 'FileName' => trim($arrFileDetails['FileName']));
+				}
+			}
+		}
+		return $arrDownloadPaths;
+	}
 }
 
 ?>
