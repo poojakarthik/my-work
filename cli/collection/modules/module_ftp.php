@@ -246,6 +246,17 @@
 							continue;
 						}
 						
+						// Does this FileType have download uniqueness?
+						if ($arrFileType['DownloadUnique'])
+						{
+							// Does this File Name exist in the database?
+							if ($this->_selFileImported->Execute(Array('FileName' => basename($strFilePath))))
+							{
+								// Yes, so we should skip this file
+								continue;
+							}
+						}
+						
 						// Add the FileImport Type to our element
 						$arrFileType['FileImportType']	= $intFileType;
 						

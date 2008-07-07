@@ -180,14 +180,6 @@
 			// Calculate Local Download Path
 			$arrCurrentFile['LocalPath']	= $strDestination.$arrCurrentFile['FileName'];
 			
-			// Do we already have this file?
-			$strUnzippedName	= (stripos($arrCurrentFile['FileName'], '.zip')) ? substr($arrCurrentFile['FileName'], 0, -4) : $arrCurrentFile['FileName'];
-			if ($this->_selFileImported->Execute(Array('FileName' => $strUnzippedName)))
-			{
-				// Yes, recursively call until we find a new file (or FALSE)
-				return $this->Download($strDestination);
-			}
-			
 			// Attempt to download this file
 			curl_setopt($this->_ptrSession, CURLOPT_URL				, trim($arrCurrentFile['RemotePath']));
 			curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
@@ -276,6 +268,17 @@
 					{
 						// No match
 						continue;
+					}
+						
+					// Does this FileType have download uniqueness?
+					if ($arrFileType['DownloadUnique'])
+					{
+						// Does this File Name exist in the database?
+						if ($this->_selFileImported->Execute(Array('FileName' => trim($arrFileDetails['FileName']))))
+						{
+							// Yes, so we should skip this file
+							continue;
+						}
 					}
 					
 					// Add the FileImport Type to our element
