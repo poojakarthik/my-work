@@ -276,7 +276,10 @@
 				{
 					if ($arrLine = explode('  ', $strFiles))
 					{
-						$arrFiles	= array_merge($arrFiles, $arrLine);
+						foreach ($arrLine as $strToken)
+						{
+							$arrFiles[]	= $strToken;
+						}
 					}
 				}
 				
