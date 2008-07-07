@@ -189,7 +189,7 @@
 			}
 			
 			// Attempt to download this file
-			curl_setopt($this->_ptrSession, CURLOPT_URL				, trim($arrCurrentFile['URL']));
+			curl_setopt($this->_ptrSession, CURLOPT_URL				, trim($arrCurrentFile['RemotePath']));
 			curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
 			curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
 			curl_setopt($this->_ptrSession, CURLOPT_HEADER			, FALSE);
