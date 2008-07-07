@@ -41,7 +41,7 @@
  * @package		collection
  * @class		CollectionModuleOptus
  */
- class CollectionModuleOptus extends CarrierModueBase
+ class CollectionModuleOptus extends CarrierModuleBase
  {
 	private $_resConnection;
  	
