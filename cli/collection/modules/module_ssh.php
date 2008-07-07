@@ -272,7 +272,8 @@
 				// Get Directory Listing
 				$strFiles	= $this->_SSH2Execute("ls $strPath");
 				$arrFiles	= Array();
-				foreach (explode("\n", $strFiles) as $strLine)
+				$arrOutput	= explode("\n", $strFiles);
+				foreach ($arrOutput as $strLine)
 				{
 					if ($arrLine = explode('  ', $strFiles))
 					{
