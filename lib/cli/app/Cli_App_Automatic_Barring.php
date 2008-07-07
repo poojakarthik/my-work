@@ -471,7 +471,7 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 
 			$this->log("Sending report");
-			$outcome = $this->sendEmail("AutomatedBarring@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au, rebecca.u@yellowbilling.com.au", $subject, $body, $arrAttachments, $arrFileNames, $arrMimeTypes);
+			$outcome = $this->sendEmail("AutomatedBarring@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au, rebecca.u@telcoblue.com.au", $subject, $body, $arrAttachments, $arrFileNames, $arrMimeTypes);
 
 			if ($outcome === TRUE)
 			{
