@@ -107,62 +107,26 @@
  		// Init CURL session
  		$this->_ptrSession = curl_init();
  		
-		// Get the Catalogue File
-		$intCustId	= $this->GetConfigField('CustomerId');
-		$intCheckId	= $this->GetConfigField('CheckId');
-		$strURL		= $this->GetConfigField('URL');
-		
-		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
-		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
-		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
-		curl_setopt($this->_ptrSession, CURLOPT_HEADER			, FALSE);
-		curl_setopt($this->_ptrSession, CURLOPT_RETURNTRANSFER	, TRUE);
-		curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
-		curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
-		
-		$strCatalogFile	= curl_exec($this->_ptrSession);
-		if (!$strCatalogFile)
-		{
-			// No Response
-			return "No Response from the Server";
-		}
-		elseif (stripos($strCatalogFile, '<html>'))
-		{
-			// Malformed XML
-			return "XML is malformed";
-		}
-		
-		// Parse Catalogue File
-		$this->_arrFiles = Array();
-		$arrLines = explode("\r\n", trim($strCatalogFile));
-		foreach ($arrLines as $intIndex=>$strLine)
-		{
-			$arrLine = explode("\t", $strLine);
+ 		if ($this->_ptrSession)
+ 		{
+			$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
 			
-			// Does this file match our REGEX?
-			if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
+			if (is_string($this->_arrDownloadPaths))
 			{
-				// No match
-				continue;
+				// Error
+				return $this->_arrDownloadPaths;
 			}
-			
-			
-			// Make sure there are no double-ups
-			if (!in_array(Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]), $arrLines))
+			else
 			{
-				$this->_arrFiles[] = Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]);
+				// Success
+				reset($this->_arrDownloadPaths);
+				return TRUE;
 			}
-		}
-		reset($this->_arrFiles);
-		
-		if ($this->_arrFiles)
-		{
-			return TRUE;
-		}
-		else
-		{
-			return "Unable to retrieve file list";
-		}
+ 		}
+ 		else
+ 		{
+ 			return "Unable to initiate CURL session";
+ 		}
  	}
  	
   	//------------------------------------------------------------------------//
