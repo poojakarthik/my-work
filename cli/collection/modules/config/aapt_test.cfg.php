@@ -14,6 +14,7 @@ $arrStructure['XML_ARCHIVE']						['Uniqueness']		= "FileName = <FileName> AND S
 $arrStructure['XML_ARCHIVE']						['Paths']			[]	= '';
 $arrStructure['XML_ARCHIVE']						['DownloadOnly']	= TRUE;
 $arrStructure['XML_ARCHIVE']						['ArchiveType']		= 'zip';
+$arrStructure['XML_ARCHIVE']						['ArchivePassword']	= 'zbj6v04ls';
 
 // Config
 $arrModuleConfig['Host']			['Value']		= '10.50.50.132';
