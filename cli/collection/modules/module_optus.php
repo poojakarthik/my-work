@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2007 VOIPTEL Pty Ltd
+// (c) copyright 2008 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------/
@@ -17,10 +17,10 @@
  *
  * @file		module_optus.php
  * @language	PHP
- * @package		vixen
+ * @package		collection
  * @author		Rich Davis
- * @version		7.06
- * @copyright	2007 VOIPTEL Pty Ltd
+ * @version		8.07
+ * @copyright	2008 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -36,7 +36,7 @@
  * Optus Collection Module (because they're special (see: retards))
  *
  *
- * @prefix		col
+ * @prefix		mod
  *
  * @package		collection
  * @class		CollectionModuleOptus
@@ -44,9 +44,6 @@
  class CollectionModuleOptus
  {
 	private $_resConnection;
-	private $_arrDefine;
-	private $_arrFileListing;
- 	private $_selFileExists;
  	
 	//public $intBaseCarrier			= CARRIER_OPTUS;
 	public $intBaseFileType			= FILE_RESOURCE_OPTUS;
@@ -65,12 +62,30 @@
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
- 		$this->_selFileExists = new StatementSelect("FileImport", "Id", "FileName = <FileName>");
+ 		parent::__construct($intCarrier);
  		
- 		// Init CURL session
- 		$this->_ptrSession = curl_init();
+		//##----------------------------------------------------------------##//
+		// Define Module Configuration and Defaults
+		//##----------------------------------------------------------------##//
+		
+		// Mandatory
+ 		$this->_arrModuleConfig['URL']			['Default']		= "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=<Config::CustomerId>&check=<Config::CheckId>&_function=catalog&_filetype=Speedi";
+ 		$this->_arrModuleConfig['URL']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['URL']			['Description']	= "URL to retrieve XML from";
+ 		
+ 		$this->_arrModuleConfig['CustomerId']	['Default']		= '';
+ 		$this->_arrModuleConfig['CustomerId']	['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['CustomerId']	['Description']	= "Customer Id";
+ 		
+ 		$this->_arrModuleConfig['CheckId']		['Default']		= '';
+ 		$this->_arrModuleConfig['CheckId']		['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['CheckId']		['Description']	= "6-digit Check Id";
+ 		
+ 		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
+ 		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
+ 		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
  	}
  	
  	//------------------------------------------------------------------------//
@@ -87,15 +102,15 @@
 	 *
 	 * @method
 	 */
- 	function Connect($arrDefine)
+ 	function Connect()
  	{
-		// Set private copy of arrDefine
-		$this->_arrDefine = $arrDefine;
-		
+ 		// Init CURL session
+ 		$this->_ptrSession = curl_init();
+ 		
 		// Get the Catalogue File
-		$intCustId	= $arrDefine['Username'];
-		$intCheckId	= $arrDefine['PWord'];
-		$strURL		= "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=$intCustId&check=$intCheckId&_function=catalog&_filetype=Speedi";
+		$intCustId	= $this->GetConfigField('CustomerId');
+		$intCheckId	= $this->GetConfigField('CheckId');
+		$strURL		= $this->GetConfigField('URL');
 		//Debug($strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
@@ -105,10 +120,16 @@
 		curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
 		
-		if (!($strCatalogFile = curl_exec($this->_ptrSession)) || stripos($strCatalogFile, '<html>'))
+		$strCatalogFile	= curl_exec($this->_ptrSession);
+		if (!$strCatalogFile)
 		{
-			// Can't connect (probably no internet)
-			return FALSE;
+			// No Response
+			return "No Response from the Server";
+		}
+		elseif (stripos($strCatalogFile, '<html>'))
+		{
+			// Malformed XML
+			return "XML is malformed";
 		}
 		
 		// Parse Catalogue File
@@ -125,7 +146,15 @@
 			}
 		}
 		reset($this->_arrFiles);
-		return (bool)$this->_arrFiles;
+		
+		if ($this->_arrFiles)
+		{
+			return TRUE;
+		}
+		else
+		{
+			return "Unable to retrieve file list";
+		}
  	}
  	
   	//------------------------------------------------------------------------//
@@ -181,8 +210,7 @@
 			}
 			
 			// Do we already have this file?
-			//if ($this->_selFileExists->Execute(Array('FileName' => substr($arrCurrent['FileName'], -4))))
-			if ($this->_selFileExists->Execute(Array('FileName' => $strTestName)))
+			if ($this->_selFileImported->Execute(Array('FileName' => $strTestName)))
 			{
 				// Yes, recursively call until we find a new file (or FALSE)
 				return $this->Download($strDestination);
@@ -198,13 +226,13 @@
 			curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
 			$strDownloadedFile = curl_exec($this->_ptrSession);
 			
-			// Write to temporary directory
+			// Write to download directory
 			$ptrTempFile	= fopen($strDestination.$arrCurrent['FileName'], 'w');
 			fwrite($ptrTempFile, $strDownloadedFile);
 			fclose($ptrTempFile);
 			
 			// Return file path
-			return $arrCurrent['FileName'];
+			return $strDestination.$arrCurrent['FileName'];
 		}
 		else
 		{
