@@ -110,14 +110,14 @@
 		// Connect to the remote server
 		$arrParams['username']		= "username=".urlencode($this->GetConfigField('Username'));
 		$arrParams['password']		= "password=".urlencode($this->GetConfigField('Password'));
-		//$arrParams['fileAction']	= "fileAction=".urlencode("allNew");
+		$arrParams['fileAction']	= "fileAction=".urlencode("allNew");
 		curl_setopt($this->_resConnection, CURLOPT_URL				, $this->GetConfigField('Host').'preparedownloads.asp');
 		curl_setopt($this->_resConnection, CURLOPT_SSL_VERIFYPEER	, FALSE);
 		curl_setopt($this->_resConnection, CURLOPT_SSL_VERIFYHOST	, FALSE);
 		curl_setopt($this->_resConnection, CURLOPT_HEADER			, FALSE);
 		curl_setopt($this->_resConnection, CURLOPT_RETURNTRANSFER	, TRUE);
 		curl_setopt($this->_resConnection, CURLOPT_POSTFIELDS		, implode($arrParams, "&"));
-		curl_setopt($this->_resConnection, CURLOPT_POST			, TRUE);
+		curl_setopt($this->_resConnection, CURLOPT_POST				, TRUE);
 		curl_setopt($this->_resConnection, CURLOPT_BINARYTRANSFER	, FALSE);
 		
 		// Prepare the download and retrieve token
@@ -202,13 +202,13 @@
 		fwrite($ptrTempFile, $strZIPData);
 		fclose($ptrTempFile);
 		
-		$this->_strToken = NULL;
+		$this->_strToken	= NULL;
 		
 		// Return file name, or FALSE on failure
-		$arrFileType	= $this->GetConfigField('PathDefine');
+		$arrFileTypes	= $this->GetConfigField('PathDefine');
 		$arrFile		= Array();
 		$arrFile['FileImportType']	= 'XML_ARCHIVE';
-		$arrFile['FileType']		= &$arrFileType['XML_ARCHIVE'];
+		$arrFile['FileType']		= &$arrFileTypes['XML_ARCHIVE'];
 		$arrFile['RemotePath']		= $strBasename;
 		$arrFile['LocalPath']		= $strDestination.$strBasename;
 		return (@filesize($strDestination.$strBasename)) ? $arrFile : FALSE;
