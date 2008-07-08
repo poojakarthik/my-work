@@ -1,0 +1,309 @@
+<?php
+//----------------------------------------------------------------------------//
+// (c) copyright 2008 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+
+//----------------------------------------------------------------------------//
+// module_m2
+//----------------------------------------------------------------------------//
+/**
+ * module_m2.php
+ *
+ * Normalisation module for M2 CDR batch files
+ *
+ * Normalisation module for M2 CDR batch files
+ *
+ * @file			module_m2.php
+ * @language		PHP
+ * @package			normalisation
+ * @author			Rich Davis
+ * @version			8.07
+ * @copyright		2008 VOIPTEL Pty Ltd
+ * @license			NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+
+//----------------------------------------------------------------------------//
+// NormalisationModuleM2
+//----------------------------------------------------------------------------//
+/**
+ * NormalisationModuleM2
+ *
+ * Normalisation module for M2 CDR batch files
+ *
+ * Normalisation module for M2 CDR batch files
+ *
+ * @prefix			nrm
+ *
+ * @package			normalisation
+ * @class			NormalisationModuleM2
+ */
+class NormalisationModuleM2 extends NormalisationModule
+{
+	public $intBaseCarrier	= CARRIER_M2;
+	public $intBaseFileType	= FILE_IMPORT_CDR_M2_STANDARD;
+
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for the Normalising Module
+	 *
+	 * Constructor for the Normalising Module
+	 *
+	 *
+	 * @method
+	 */
+	function __construct($intCarrier)
+	{
+		// call parent constructor
+		parent::__construct($intCarrier);
+		
+		// define the column delimiter
+		$this->_strDelimiter = "|";
+		
+		// define row start (account for header rows)
+		$this->_intStartRow = 1;
+		
+		// define the carrier CDR format
+		$arrDefine['RecordType']			['Index']		= 0;	// HE: Header/TR: Trailer/US: Usage/OC: Other Charges
+		$arrDefine['CarrierId']				['Index']		= 1;	// Carrier the Charge Originated from
+		$arrDefine['ReferenceNumber']		['Index']		= 2;	// Unique ID for the record (when combined with the RecordType)
+		$arrDefine['FNN']					['Index']		= 3;	// Billed FNN
+		$arrDefine['Source']				['Index']		= 4;	// Originating phone number
+		$arrDefine['Destination']			['Index']		= 5;	// Destination phone number
+		$arrDefine['ChargeDate']			['Index']		= 6;	// Date the call occurred on
+		$arrDefine['ChargeTime']			['Index']		= 7;	// Time the call started
+		$arrDefine['Duration']				['Index']		= 8;	// Seconds/KB
+		$arrDefine['ChargeDateEnd']			['Index']		= 9;	// Charge Period End Date (Recurring Charges Only)
+		$arrDefine['Description']			['Index']		= 10;	// Charge Description (Other Charges Only)
+		$arrDefine['Quantity']				['Index']		= 11;	// Quantity of a product
+		$arrDefine['ChargeAmount']			['Index']		= 12;	// Charge to YBS Customer in Cents
+		$arrDefine['Tariff']				['Index']		= 13;	// M2 Tariff Code (Call Type)
+		$arrDefine['ForeignChargeType']		['Index']		= 14;	// Originating Carrier Call Type
+		$arrDefine['ForiegnCallDescCode']	['Index']		= 15;	// Originating Carrier Call Description
+		$arrDefine['ServiceName']			['Index']		= 16;	// Name associated with ther Service number
+		$arrDefine['ServiceDepartment']		['Index']		= 17;	// Department that the Service number belongs to
+		$arrDefine['InstalmentNumber']		['Index']		= 18;	// Instalment number for this record of this product
+		$arrDefine['InstalmentOf']			['Index']		= 19;	// Total Number of Installment payments that there will be
+		$arrDefine['InstalmentTaxTreatment']['Index']		= 20;	// How GST should be applied to the Installment Charge
+		$arrDefine['InstalmentTotalCharge']	['Index']		= 21;	// Total Charge for the Product
+		$arrDefine['ExtensionPrimeNumber']	['Index']		= 22;	// If FNN is an Indial Extension, this is it's prime number
+		
+		$this->_arrDefineCarrier = $arrDefine;
+	}
+
+	//------------------------------------------------------------------------//
+	// Normalise
+	//------------------------------------------------------------------------//
+	/**
+	 * Normalise()
+	 *
+	 * Normalises raw data from the CDR
+	 *
+	 * Normalises raw data from the CDR
+	 * 
+	 * @param	array		arrCDR		Array returned from SELECT query on CDR
+	 *
+	 * @return	array					Normalised Data, ready for direct UPDATE
+	 * 									into DB
+	 *
+	 * @method
+	 */	
+	function Normalise($arrCDR)
+	{
+		// set up CDR
+		$this->_NewCDR($arrCDR);
+		
+		// covert CDR string to array
+		$this->_SplitRawCDR($arrCDR['CDR']);
+		
+		// ignore header/footer rows
+		$strRecordType	= $this->_FetchRawCDR('RecordType');
+		switch ($strRecordType)
+		{
+			case 'HE':
+			case 'TR':
+				return $this->_ErrorCDR(CDR_CANT_NORMALISE_HEADER);
+				break;
+			
+			case 'US':
+				// Usage
+				// TODO
+				break;
+			
+			case 'OC':
+				// Other Charges
+				// TODO
+				break;
+			
+			default:
+				// Unrecognised Type
+				return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
+		
+		// validation of Raw CDR
+		if (!$this->_ValidateRawCDR())
+		{
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_RAW);
+		}
+		
+		//--------------------------------------------------------------------//
+		// add fields to CDR
+		//--------------------------------------------------------------------//
+		
+		// FNN
+		$strFNN = $this->_FetchRawCDR('FNN');
+		$strFNN	= $this->RemoveAusCode($strFNN);
+		$this->_AppendCDR('FNN', $strFNN);
+		
+		// ServiceType
+		$intServiceType	= ServiceType($strFNN);
+		if ($intServiceType)
+		{
+			$this->_AppendCDR('ServiceType', $intServiceType);
+		}
+		else
+		{
+			// Temporary Debugging until ServiceType() can parse all FNNs
+			SendEmail();
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
+		
+		// CarrierRef
+		$mixValue 						= $strRecordType.$this->_FetchRawCDR('ReferenceNumber');
+		$this->_AppendCDR('CarrierRef', $mixValue);
+		
+		// StartDateTime & EndDateTime
+		if ($this->_FetchRawCDR('ChargeDateEnd'))
+		{
+		 	// Other Charges?
+		}
+		else
+		{
+		 	// Usage
+			$this->_AppendCDR('StartDatetime', $this->RemoveAusCode($mixValue));
+			$this->_AppendCDR('EndDatetime', $this->RemoveAusCode($mixValue));
+		}
+		
+		// Cost
+		$mixValue	= ((float)$this->_FetchRawCDR('ChargeAmount')) / 100;
+		$this->_AppendCDR('Cost', (float)$mixValue);
+		
+		// Source
+		$mixValue	= $this->_FetchRawCDR('Source');
+		$this->_AppendCDR('Source', $this->RemoveAusCode($mixValue));
+		
+		// Destination
+		$mixValue	= $this->_FetchRawCDR('Destination');
+		$this->_AppendCDR('Destination', $this->RemoveAusCode($mixValue));
+		
+		// Is Credit?
+		$this->_IsCredit();
+		
+		//--------------------------------------------------------------------//
+		
+		// Apply Ownership
+		$this->ApplyOwnership();
+		
+		// Validation of Normalised data
+		$this->Validate();
+		
+		// return output array
+		return $this->_OutputCDR();
+	}
+
+	//------------------------------------------------------------------------//
+	// ConvertTime
+	//------------------------------------------------------------------------//
+	/**
+	 * ConvertTime()
+	 *
+	 * Convert time format
+	 *
+	 * Converts a datetime string from carrier's format to our own
+	 *
+	 * @param	string	$strTime	Datetime string to be converted
+	 * @return	string				Converted Datetime string
+	 *
+	 * @method
+	 */
+	function ConvertTime($strTime)
+	{
+		$strReturn 	= substr($strTime, 6, 4);				// Year
+		$strReturn .=  "-" . substr($strTime, 3, 2);		// Month
+		$strReturn .=  "-" . substr($strTime, 0, 2);		// Day
+		$strReturn .=  " 00:00:00";							// Time
+		return $strReturn;
+	}
+	
+	//------------------------------------------------------------------------//
+	// RawDestinationCode
+	//------------------------------------------------------------------------//
+	/**
+	 * RawDestinationCode()
+	 *
+	 * Returns the Raw Destination Code from the CDR
+	 *
+	 * Returns the Raw Destination Code from the CDR
+	 * 
+	 *
+	 * @return	mixed					Raw Destination Code
+	 *
+	 * @method
+	 */
+	 function RawDestinationCode()
+	 {
+	 	return $this->_FetchRawCDR('RateId');
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// RawDescription
+	//------------------------------------------------------------------------//
+	/**
+	 * RawDescription()
+	 *
+	 * Returns the Raw Description from the CDR
+	 *
+	 * Returns the Raw Description from the CDR
+	 * 
+	 *
+	 * @return	mixed					Raw Description
+	 *
+	 * @method
+	 */
+	 function RawDescription()
+	 {
+	 	return $this->_FetchRawCDR('Description');
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// RawRecordType
+	//------------------------------------------------------------------------//
+	/**
+	 * RawRecordType()
+	 *
+	 * Returns the Raw RawRecord Type from the CDR
+	 *
+	 * Returns the Raw RawRecord Type from the CDR
+	 * 
+	 *
+	 * @return	mixed					Raw RawRecord Type
+	 *
+	 * @method
+	 */
+	 function RawRecordType()
+	 {
+	 	return (int)$this->_FetchRawCDR('CallType');
+	 }
+}
+	
+	//------------------------------------------------------------------------//
+	// Constants for NormalisationModuleRSLCOM
+	//------------------------------------------------------------------------//
+?>

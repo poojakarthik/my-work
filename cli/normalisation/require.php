@@ -36,5 +36,6 @@ VixenRequire($strApplicationDir."module_commander.php");
 VixenRequire($strApplicationDir."module_iseek.php");
 VixenRequire($strApplicationDir."module_optus.php");
 VixenRequire($strApplicationDir."module_rslcom.php");
+VixenRequire($strApplicationDir."module_m2.php");
 
  ?>
