@@ -290,13 +290,14 @@
 		
 		if ($selSelectCDRFiles->Execute() === FALSE)
 		{
-			
+			Debug($selSelectCDRFiles);
+			exit(1);
 		}
 		
 		$intCount = 0;
 		$this->_intImportFail = 0;
 		$this->_intImportPass = 0;
-
+		
 		// Loop through the CDR File entries
 		while ($arrCDRFile = $selSelectCDRFiles->Fetch())
 		{
