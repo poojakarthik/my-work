@@ -171,7 +171,7 @@ class NormalisationModuleM2 extends NormalisationModule
 		else
 		{
 			// Temporary Debugging until ServiceType() can parse all FNNs
-			SendEmail();
+			SendEmail("rich@voiptelsystems.com.au", "ServiceType() Unhandled FNN", "ServiceType() was unable to handle the FNN: '{$strFNN}'");
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 		

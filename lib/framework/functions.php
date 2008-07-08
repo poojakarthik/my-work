@@ -2984,7 +2984,7 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
  *
  * @method
  */
-function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='rich@voiptelsystems.com.au', $bolHTML = FALSE)
+function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yellowbilling.com.au', $bolHTML = FALSE)
 {
 	$arrHeaders = Array	(
 							'From'		=> $strFrom,
