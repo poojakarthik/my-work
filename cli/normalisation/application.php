@@ -268,10 +268,21 @@
 		$this->Framework->StartWatch();
 		
 		// Retrieve list of CDR Files marked as either ready to process, or failed process
-		$strWhere			= "(Status = <status1> OR Status = <status2>) AND Carrier != 10";
+		$arrFileTypes	= Array();
+		foreach ($this->_arrNormalisationModule as $intCarrier=>$arrCarrierFileTypes)
+		{
+			foreach (array_keys($arrCarrierFileTypes) as $intFileType)
+			{
+				$arrFileTypes[]	= $intFileType;
+			}
+		}
+		
+		$strWhere				= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
+		//$strWhere			= "(Status = <status1> OR Status = <status2>) AND Carrier != 10";
 		$arrWhere['status1']	= CDRFILE_WAITING;
 		$arrWhere['status2']	= CDRFILE_REIMPORT;
 		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere, NULL, $intLimit);
+		
 		$insInsertCDRLine	= new StatementInsert("CDR");
 		$arrDefine = Array();
 		$arrDefine['Status']		= TRUE;
@@ -279,9 +290,9 @@
 		$updUpdateCDRFiles			= new StatementUpdate("FileImport", "Id = <id>", $arrDefine);
 		
 		
-		if ($selSelectCDRFiles->Execute($arrWhere) === FALSE)
+		if ($selSelectCDRFiles->Execute() === FALSE)
 		{
-
+			
 		}
 		
 		$intCount = 0;
