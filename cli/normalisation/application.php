@@ -277,6 +277,12 @@
 			}
 		}
 		
+		// Do we have any FileTypes to import?
+		if (!count($arrFileTypes))
+		{
+			return FALSE;
+		}
+		
 		$strWhere			= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
 		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere, NULL, $intLimit);
 		
