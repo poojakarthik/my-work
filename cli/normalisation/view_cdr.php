@@ -35,7 +35,7 @@ if ($intCDR)
 	$arrCDR = $selCDR->Fetch();
 	
 	// Check for a Normalisation Module
-	if ($arrNormalisationModule[$arrCDR['FileType']])
+	if ($arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']])
 	{
 		// normalise CDR
 		$mixReturn = $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->Normalise($arrCDR);
