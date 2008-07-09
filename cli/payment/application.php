@@ -66,8 +66,6 @@
 		$this->_rptPaymentReport = new Report("Payments Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
-		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", "Carrier = ".CARRIER_PAYMENT." AND Status = ".CDRFILE_WAITING);
-		
 		$arrColumns = Array();
 		$arrColumns['Status']		= NULL;
 		$this->_ubiPaymentFile		= new StatementUpdateById("FileImport", $arrColumns);
@@ -109,10 +107,14 @@
 		
 		$this->_insInvoicePayment			= new StatementInsert("InvoicePayment");
 		
-		// Payment modules
-		$this->_arrPaymentModules[PAYMENT_TYPE_BILLEXPRESS]	= new PaymentModuleBillExpress();
-		$this->_arrPaymentModules[PAYMENT_TYPE_BPAY]		= new PaymentModuleBPay();
-		$this->_arrPaymentModules[PAYMENT_TYPE_SECUREPAY]	= new PaymentModuleSecurePay();
+ 		// Load Payment Normalisation CarrierModules
+ 		CliEcho(" * PAYMENT MODULES");
+ 		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_NORMALISATION_PAYMENT));
+ 		while ($arrModule = $this->_selCarrierModules->Fetch())
+ 		{
+ 			$this->_arrPaymentModules[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
+ 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrPaymentModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -208,7 +210,26 @@
 	 {
 		$this->_rptPaymentReport->AddMessage(MSG_IMPORT_TITLE);
 		$this->Framework->StartWatch();
-	
+		
+		// Retrieve list of Payment Files marked as either ready to process, or failed process
+		$arrFileTypes	= Array();
+		foreach ($this->_arrPaymentModules as $intCarrier=>$arrCarrierFileTypes)
+		{
+			foreach (array_keys($arrCarrierFileTypes) as $intFileType)
+			{
+				$arrFileTypes[]	= $intFileType;
+			}
+		}
+		
+		// Do we have any FileTypes to import?
+		if (!count($arrFileTypes))
+		{
+			return FALSE;
+		}
+		
+		$strWhere					= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
+		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", $strWhere);
+		
 		// Loop through the Payment File entries
 		$intCount	= 0;
 		$intPassed	= 0;
@@ -228,7 +249,7 @@
 				$arrColumns['Status']	= CDRFILE_IMPORT_FAILED;
 				if ($this->_ubiPaymentFile->Execute($arrColumns) === FALSE)
 				{
-
+					
 				}
 				
 				// Add to the Normalisation report
@@ -244,7 +265,7 @@
 			{
 				continue;
 			}
-
+			
 			// Import
 			$ptrFile		= fopen($arrFile['Location'], "r");
 			$intSequence	= 1;
@@ -311,21 +332,21 @@
 		
 		$intPassed = 0;
 		foreach($arrPayments as $arrPayment)
-		{			
+		{
 			// use payment module to decode the payment
-			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment['Payment']);
+			$arrNormalised = $this->_arrPaymentModules[$arrPayment['Carrier']][$arrPayment['FileType']]->Normalise($arrPayment['Payment']);
 			if($arrNormalised['Status'] || !is_array($arrNormalised))
 			{
 				$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
 				
 				if (is_array($arrNormalised))
 				{
-					$intStatus = $arrNormalised['Status'];
+					$intStatus		= $arrNormalised['Status'];
 				}
 				else
 				{
-					$intStatus = $arrNormalised;
-					$arrNormalised = $arrPayment;
+					$intStatus		= $arrNormalised;
+					$arrNormalised	= $arrPayment;
 				}
 				
 				// An error has occurred

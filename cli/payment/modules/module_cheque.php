@@ -45,9 +45,12 @@
  */
  class PaymentModuleCheque extends PaymentModule
  {
- 	function __construct()
+	public $intBaseCarrier	= CARRIER_PAYMENT;
+	public $intBaseFileType	= FILE_IMPORT_PAYMENT_CHEQUE;
+	
+ 	function __construct($intCarrier)
  	{
- 		parent::__construct();
+ 		parent::__construct($intCarrier);
  		
  		// Define file format
  		$this->_strDelimiter	= ",";

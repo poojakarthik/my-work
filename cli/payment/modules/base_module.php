@@ -43,10 +43,12 @@
  * @package		Payment_application
  * @class		PaymentModule
  */
- class PaymentModule
+ class PaymentModule extends CarrierModule
  {
- 	function __construct()
+ 	function __construct($intCarrier)
  	{
+ 		parent::__construct($intCarrier, MODULE_TYPE_NORMALISATION_PAYMENT);
+ 		
  		// Init member variables
  		$this->_strDelimiter	= NULL;
  		$this->_strEnclosedBy	= NULL;
