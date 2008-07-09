@@ -358,7 +358,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	{
 		// Set initial File Status
 		$arrFileImport	= Array();
-		$arrFileImport['Status']		= FILE_IMPORTED;
+		$arrFileImport['Status']		= FILE_COLLECTED;
 		
 		// Init Statements
  		$insFileImport	= new StatementInsert("FileImport");
@@ -413,7 +413,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				return "Import Failed";
 			}
 			
-			if ($arrFileImport['Status'] === FILE_IMPORTED)
+			if ($arrFileImport['Status'] === FILE_COLLECTED)
 			{
 				// Return the Insert Id
 				return $intInsertId;
