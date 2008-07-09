@@ -180,16 +180,21 @@ class NormalisationModuleM2 extends NormalisationModule
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDateTime & EndDateTime
+		 $strStartDatetime	= $this->ConvertTime($this->_FetchRawCDR('ChargeDate')).' '.$this->_FetchRawCDR('ChargeTime');
 		if ($this->_FetchRawCDR('ChargeDateEnd'))
 		{
 		 	// Other Charges?
+			$this->_AppendCDR('StartDatetime', $strStartDatetime);
 			$this->_AppendCDR('EndDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDateEnd')).' 00:00:00');
 		}
 		else
 		{
 		 	// Usage
-			$this->_AppendCDR('StartDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDate')).' '.$this->_FetchRawCDR('ChargeTime'));
-			$this->_AppendCDR('EndDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDateEnd')));
+			$intSeconds			= (int)$this->_FetchRawCDR('Duration');
+			$strEndDatetime		= date("Y-m-d H:i:s", strtotime("+{$intSeconds} seconds", strtotime($strStartDatetime)));
+			
+			$this->_AppendCDR('StartDatetime', $strStartDatetime);
+			$this->_AppendCDR('EndDatetime', $strEndDatetime);
 		}
 		
 		// Cost
