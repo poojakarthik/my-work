@@ -15,12 +15,15 @@ if ($argc > 1)
 if ($intCDR)
 {
 	// Create an instance of each Normalisation module
-	$arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();
-	$arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
-	$arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
-	$arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
-	$arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
-
+	CliEcho(" * NORMALISATION MODULES");
+	$selCarrierModules->Execute(Array('Type' => MODULE_TYPE_NORMALISATION_CDR));
+	while ($arrModule = $selCarrierModules->Fetch())
+	{
+		$arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
+		CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+	}
+	CliEcho();
+	
 	// get CDR
 	$selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.*, FileImport.FileType AS FileType", "CDR.Id = <Id>");
 	if (!$selCDR->Execute(Array('Id' => $intCDR)))
@@ -34,10 +37,10 @@ if ($intCDR)
 	if ($arrNormalisationModule[$arrCDR['FileType']])
 	{
 		// normalise CDR
-		$mixReturn = $arrNormalisationModule[$arrCDR['FileType']]->Normalise($arrCDR);
+		$mixReturn = $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->Normalise($arrCDR);
 		
 		// debug CDR
-		$arrDebugCDR = $arrNormalisationModule[$arrCDR['FileType']]->DebugCDR();
+		$arrDebugCDR = $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->DebugCDR();
 	}
 	else
 	{
