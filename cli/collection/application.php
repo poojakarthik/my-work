@@ -401,7 +401,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		{
 			// Insert into FileImport
 			$arrFileImport['FileName']		= basename($strFilePath);
-			$arrFileImport['Location']		= $strDestination;
+			$arrFileImport['Location']		= ($strDestination) ? $strDestination : $strFilePath;
 			$arrFileImport['Carrier']		= $intCarrier;
 			$arrFileImport['ImportedOn']	= date("Y-m-d H:i:s");
 			$arrFileImport['FileType']		= $intFileType;
