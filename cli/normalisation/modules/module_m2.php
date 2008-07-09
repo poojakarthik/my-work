@@ -216,7 +216,7 @@ class NormalisationModuleM2 extends NormalisationModule
 		$this->_AppendCDR('Source', $this->RemoveAusCode($mixValue));
 		
 		// Destination
-		$mixValue	= ($this->_FetchRawCDR('Destination')) ? $this->_FetchRawCDR('Source') : $this->_FetchRawCDR('FNN');
+		$mixValue	= ($this->_FetchRawCDR('Destination')) ? $this->_FetchRawCDR('Destination') : $this->_FetchRawCDR('FNN');
 		$this->_AppendCDR('Destination', $this->RemoveAusCode($mixValue));
 		
 		// Is Credit?
