@@ -274,7 +274,7 @@
 					if ($arrFileType['DownloadUnique'])
 					{
 						// Does this File Name exist in the database?
-						if ($this->_selFileImported->Execute(Array('FileName' => trim($arrFileDetails['FileName']))))
+						if ($this->_selFileDownloaded->Execute(Array('FileName' => trim($arrFileDetails['FileName']))))
 						{
 							// Yes, so we should skip this file
 							continue;
