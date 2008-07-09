@@ -406,11 +406,11 @@ abstract class NormalisationModule extends CarrierModule
 	{
 		if (strpos($strFNN, '+61') === 0)
 		{
-			return str_replace("+61", "0", $strFNN, 1);
+			return str_replace("+61", "0", $strFNN, $intCount = 1);
 		}
 		elseif (strpos($strFNN, '61') === 0)
 		{
-			return str_replace("61", "0", $strFNN, 1);
+			return str_replace("61", "0", $strFNN, $intCount = 1);
 		}
 		return $strFNN;
 	}
