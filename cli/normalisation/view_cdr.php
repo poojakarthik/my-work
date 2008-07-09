@@ -16,6 +16,7 @@ if ($intCDR)
 {
 	// Create an instance of each Normalisation module
 	CliEcho(" * NORMALISATION MODULES");
+ 	$selCarrierModules	= new StatementSelect("CarrierModule", "*", "Type = <Type> AND Active = 1");
 	$selCarrierModules->Execute(Array('Type' => MODULE_TYPE_NORMALISATION_CDR));
 	while ($arrModule = $selCarrierModules->Fetch())
 	{
