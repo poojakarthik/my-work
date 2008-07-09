@@ -183,12 +183,13 @@ class NormalisationModuleM2 extends NormalisationModule
 		if ($this->_FetchRawCDR('ChargeDateEnd'))
 		{
 		 	// Other Charges?
+			$this->_AppendCDR('EndDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDateEnd')).' 00:00:00');
 		}
 		else
 		{
 		 	// Usage
-			$this->_AppendCDR('StartDatetime', $this->RemoveAusCode($mixValue));
-			$this->_AppendCDR('EndDatetime', $this->RemoveAusCode($mixValue));
+			$this->_AppendCDR('StartDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDate')).' '.$this->_FetchRawCDR('ChargeTime'));
+			$this->_AppendCDR('EndDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDateEnd')));
 		}
 		
 		// Cost
@@ -235,11 +236,7 @@ class NormalisationModuleM2 extends NormalisationModule
 	 */
 	function ConvertTime($strTime)
 	{
-		$strReturn 	= substr($strTime, 6, 4);				// Year
-		$strReturn .=  "-" . substr($strTime, 3, 2);		// Month
-		$strReturn .=  "-" . substr($strTime, 0, 2);		// Day
-		$strReturn .=  " 00:00:00";							// Time
-		return $strReturn;
+		return str_replace('/', '-', $strTime);
 	}
 	
 	//------------------------------------------------------------------------//
