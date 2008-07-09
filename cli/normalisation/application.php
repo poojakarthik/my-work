@@ -287,6 +287,7 @@
 		}
 		
 		$strWhere			= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
+		Debug($strWhere);
 		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere, NULL, $intLimit);
 		
 		$insInsertCDRLine	= new StatementInsert("CDR");
