@@ -273,9 +273,12 @@
 		{
 			foreach (array_keys($arrCarrierFileTypes) as $intFileType)
 			{
+				Debug($intFileType);
 				$arrFileTypes[]	= $intFileType;
 			}
 		}
+		
+		Debug($arrFileTypes);
 		
 		// Do we have any FileTypes to import?
 		if (!count($arrFileTypes))

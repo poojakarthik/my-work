@@ -24,7 +24,7 @@ $appNormalise = new ApplicationNormalise($mixEmailAddress);
 $appNormalise->Import($intLimit);
 
 // finished
-echo("\n-- End of Normalise::ImportSingle --\n");
+echo("\n-- End of Normalise::Import --\n");
 die();
 
 ?>
