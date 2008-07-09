@@ -1,5 +1,7 @@
 <?php
 
+require_once("../../../../../flex.require.php");
+
 // CDR
 $arrStructure[FILE_IMPORT_CDR_M2_STANDARD]				['Regex']			= "/^(cdr|bli)_[a-z0-9]+_[a-z0-9]+_\d+_\d+_\d{8}\.txt$/";
 $arrStructure[FILE_IMPORT_CDR_M2_STANDARD]				['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
