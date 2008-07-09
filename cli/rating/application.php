@@ -526,8 +526,8 @@
 			// Set Service Earliest/Latest CDR
 			$qryEarliestLatestCDR	= new Query();
 			$strEarliestLatestCDR	=	"UPDATE Service \n " .
-										"SET EarliestCDR = IF(EarliestCDR > '{$arrCDR['StartDatetime']}', '{$arrCDR['StartDatetime']}', EarliestCDR), " .
-										"LatestCDR = IF(LatestCDR < '{$arrCDR['StartDatetime']}', '{$arrCDR['StartDatetime']}', LatestCDR) \n " .
+										"SET EarliestCDR = IF(EarliestCDR > '{$arrCDR['StartDatetime']}' OR ISNULL(EarliestCDR), '{$arrCDR['StartDatetime']}', EarliestCDR), " .
+										"LatestCDR = IF(LatestCDR < '{$arrCDR['StartDatetime']}' OR ISNULL(LatestCDR), '{$arrCDR['StartDatetime']}', LatestCDR) \n " .
 										"WHERE Id = {$arrCDR['Service']}";
 			if ($qryEarliestLatestCDR->Execute($strEarliestLatestCDR) === FALSE)
 			{
