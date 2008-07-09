@@ -158,7 +158,8 @@ class ApplicationCollection extends ApplicationBaseClass
 							if ($arrFileDownload['Id'] !== FALSE)
 							{
 								// Add this file to the Import queue, and any files that may be archived within it
-								$arrDownloadedFiles[]	= $mixDownloadFile;
+								$mixDownloadFile['file_download']	= $arrFileDownload['Id'];
+								$arrDownloadedFiles[]				= $mixDownloadFile;
 								while ($arrFile = current($arrDownloadedFiles))
 								{
 									$mixIndex	= key($arrDownloadedFiles);
@@ -188,6 +189,7 @@ class ApplicationCollection extends ApplicationBaseClass
 												$arrArchivedFile['ArchiveParent']	= &$arrDownloadedFiles[$mixIndex];
 												$arrArchivedFile['ExtractionDir']	= $strUnzipPath;
 												$arrArchivedFile['FileType']		= $modModule->GetFileType($arrArchivedFile);
+												$arrArchivedFile['file_download']	= $arrFileDownload['Id'];
 												
 												$arrDownloadedFiles[]	= $arrArchivedFile;
 											}
@@ -329,7 +331,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 */
 	function ImportModuleFile($arrDownloadFile, &$modCarrierModule)
 	{
-		return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileType']['FileImportType'], $modCarrierModule->GetCarrier(), $arrDownloadFile['FileType']['Uniqueness']);
+		return ApplicationCollection::ImportFile($arrDownloadFile['LocalPath'], $arrDownloadFile['FileType']['FileImportType'], $modCarrierModule->GetCarrier(), $arrDownloadFile['FileType']['Uniqueness'], $arrDownloadFile['file_download']);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -346,12 +348,13 @@ class ApplicationCollection extends ApplicationBaseClass
 	 * @param	integer	$intFileType					The FileImport type for the file
 	 * @param	integer	$intCarrier						The Carrier from where this file originated
 	 * @param	string	$strUniqueness		[optional]	SQL WHERE Clause on the FileImport table, where a positive match means that the file already exists in Flex; default: FileName or SHA1 must be unique
+	 * @param	integer	$intFileDownload	[optional]	Entry in the FileDownload table for this file or the archive from which it was extracted
 	 *
 	 * @return	mixed									integer: Insert Id; string: Error message
 	 *
 	 * @method
 	 */
-	static function ImportFile($strFilePath, $intFileType, $intCarrier, $strUniqueness = "FileName = <FileName> AND SHA1 = <SHA1>")
+	static function ImportFile($strFilePath, $intFileType, $intCarrier, $strUniqueness = "FileName = <FileName> AND SHA1 = <SHA1>", $intFileDownload)
 	{
 		// Set initial File Status
 		$arrFileImport	= Array();
@@ -403,6 +406,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			$arrFileImport['ImportedOn']	= date("Y-m-d H:i:s");
 			$arrFileImport['FileType']		= $intFileType;
 			$arrFileImport['SHA1']			= sha1_file($strFilePath);
+			$arrFileImport['file_download']	= $intFileDownload;
 			if (($intInsertId = $insFileImport->Execute($arrFileImport)) === FALSE)
 			{
 				// Unable to Import
