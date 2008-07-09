@@ -133,13 +133,7 @@ class NormalisationModuleM2 extends NormalisationModule
 				break;
 			
 			case 'US':
-				// Usage
-				// TODO
-				break;
-			
 			case 'OC':
-				// Other Charges
-				// TODO
 				break;
 			
 			default:
@@ -195,6 +189,22 @@ class NormalisationModuleM2 extends NormalisationModule
 			
 			$this->_AppendCDR('StartDatetime', $strStartDatetime);
 			$this->_AppendCDR('EndDatetime', $strEndDatetime);
+		}
+		
+		// Record Type-specific fields
+		switch ($strRecordType)
+		{
+			// Usage Records
+			case 'US':
+				
+				// Units (seconds or KB)
+				$this->_AppendCDR('Units', (int)$this->_FetchRawCDR('Duration'));
+				
+				break;
+			
+			// Other Charges
+			case 'OC':
+				break;
 		}
 		
 		// Cost
