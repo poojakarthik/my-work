@@ -124,10 +124,10 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 			INSERT INTO Carrier 
 			(Id, Name, carrier_type)
 			VALUES
-			(NULL, 'M2', (SELECT id FROM carrier_type WHERE name = 'Telecom' LIMIT 1)), 
-			(NULL, 'BPAY Westpac', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1)), 
-			(NULL, 'BillExpress', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1)), 
-			(NULL, 'SecurePay', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1));
+			(6, 'M2', (SELECT id FROM carrier_type WHERE name = 'Telecom' LIMIT 1)), 
+			(7, 'BPAY Westpac', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1)), 
+			(8, 'BillExpress', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1)), 
+			(9, 'SecurePay', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1));
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
