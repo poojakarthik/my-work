@@ -128,7 +128,7 @@
  			case 16:		// Direct Debit Reject
  				break;
  				
- 			case 0:			// IVR (Credit Card)
+ 			case 20:		// IVR (Credit Card)
 		 		$this->_Append('OriginType', PAYMENT_TYPE_CREDIT_CARD);
  				break;
  		}
