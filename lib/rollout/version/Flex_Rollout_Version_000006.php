@@ -169,8 +169,8 @@ class Flex_Rollout_Version_000006 extends Flex_Rollout_Version
 		$strSQL = "
 			INSERT INTO automatic_barring_status (id, name, description) VALUES
 			(1, 'None', 'None'),
-			(2, 'Barred', 'Overdue Notice sent'),
-			(3, 'Unbarred', 'Suspension Notice sent')
+			(2, 'Barred', 'Barred'),
+			(3, 'Unbarred', 'Unbarred')
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
