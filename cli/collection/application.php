@@ -354,7 +354,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 *
 	 * @method
 	 */
-	static function ImportFile($strFilePath, $intFileType, $intCarrier, $strUniqueness = "FileName = <FileName> AND SHA1 = <SHA1>", $intFileDownload)
+	static function ImportFile($strFilePath, $intFileType, $intCarrier, $strUniqueness = "FileName = <FileName> AND SHA1 = <SHA1>", $intFileDownload = NULL)
 	{
 		// Set initial File Status
 		$arrFileImport	= Array();
