@@ -2275,6 +2275,8 @@ $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Description']	= 'Draft';
 
 
 // Account Letter Types
+$GLOBALS['*arrConstant']	['LetterType']	[1]	['Constant']	= 'LETTER_TYPE_FRIENDLY';
+$GLOBALS['*arrConstant']	['LetterType']	[1]	['Description']	= 'Friendly Reminder';
 $GLOBALS['*arrConstant']	['LetterType']	[1]	['Constant']	= 'LETTER_TYPE_OVERDUE';
 $GLOBALS['*arrConstant']	['LetterType']	[1]	['Description']	= 'Overdue Notice';
 $GLOBALS['*arrConstant']	['LetterType']	[2]	['Constant']	= 'LETTER_TYPE_SUSPENSION';
