@@ -297,7 +297,7 @@ class Flex_Rollout
 		while ($arrTable = $objTables->fetch_assoc())
 		{
 			$strTable	= current($arrTable);
-			$strQuery	= "SHOW COLUMNS FROM $strTable WHERE Field IN ('id', 'const_name', 'description')";
+			$strQuery	= "SHOW COLUMNS FROM $strTable WHERE LCASE(Field) IN ('id', 'const_name', 'description')";
 			$objColumns	= $qryQuery->Execute($strQuery);
 			
 			if (!$objColumns)
@@ -307,8 +307,18 @@ class Flex_Rollout
 			
 			// Check if it has all 3 columns
 			$intColumns = 0;
+			$strId = '';
+			$strDescription = '';
 			while ($arrColumn = $objColumns->fetch_assoc())
 			{
+				if (strtolower($arrColumn['Field']) == "id") 
+				{
+					$strId = $arrColumn['Field'];
+				}
+				if (strtolower($arrColumn['Field']) == "description") 
+				{
+					$strDescription = $arrColumn['Field'];
+				}
 				$intColumns++;
 			}
 			
@@ -321,7 +331,8 @@ class Flex_Rollout
 			
 			// The table has all 3 columns, which means we should convert it to constant declarations
 			// Retrieve the values and create a constant group
-			$strQuery		= "SELECT id, const_name, description FROM $strTable WHERE const_name IS NOT NULL AND const_name != '' ORDER BY id ASC";
+			$strQuery		= "SELECT $strId 'id', const_name 'const_name', $strDescription 'description' FROM $strTable WHERE const_name IS NOT NULL AND const_name != '' ORDER BY $strId ASC";
+
 			$objRecordSet	= $qryQuery->Execute($strQuery);
 			
 			if (!$objRecordSet)
