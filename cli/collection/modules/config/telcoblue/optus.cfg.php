@@ -17,11 +17,6 @@ $arrStructure['ARCHIVE']							['DownloadOnly']	= TRUE;
 $arrStructure['ARCHIVE']							['DownloadUnique']	= TRUE;
 $arrStructure['ARCHIVE']							['ArchiveType']		= 'zip';
 
-$arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]		['Regex']			= "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_[sl]\.dat$/misU";
-$arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]		['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]		['DownloadUnique']	= TRUE;
-$arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]		['Paths']			[]	= '';
-
 
 // Config
 $arrModuleConfig['Host']			['Value']		= '10.50.50.132';
