@@ -128,8 +128,8 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 			VALUES
 			(NULL, 'M2', (SELECT id FROM carrier_type WHERE name = 'Telecom' LIMIT 1), 'M2', 'CARRIER_M2'), 
 			(NULL, 'BPAY Westpac', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1), 'BPay Westpac', 'CARRIER_BPAY_WESTPAC'), 
-			(NULL, 'BillExpress', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1), 'BillExpress', 'CARRIER_'), 
-			(NULL, 'SecurePay', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1), 'SecurePay');
+			(NULL, 'BillExpress', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1), 'BillExpress', 'CARRIER_BILLEXPRESS'), 
+			(NULL, 'SecurePay', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1), 'SecurePay', 'CARRIER_SECUREPAY');
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
