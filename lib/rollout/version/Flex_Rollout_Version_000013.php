@@ -8,10 +8,10 @@
  *	3:	Adds CarrierModule.description field
  *	4:	Adds 3G Usage RecordType
  *	5:	Adds Payment.carrier Foreign Key to the Carrier table
- *	6:	Adds carrier_type table, which defines the different types of Carriers Flex Supports (eg. CDR, Payment, etc)
+ *	6 :	Adds carrier_type table, which defines the different types of Carriers Flex Supports (eg. CDR, Payment, etc), Carrier.const_name, Carrier.description, and makes Carrier.Id autoincrement to make it compatible with the new constants framework
  *	7:	Populates carrier_type table
  *	8:	Adds Carrier.carrier_type Foreign Key to the carrier_type table
- *	9:	Adds M2, Westpac BPAY, BillExpress and SecurePay Carriers
+ *	9:	Adds M2, Westpac BPAY, BillExpress, SecurePay and Payment (temporary) Carriers
  */
 
 class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
@@ -105,29 +105,31 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		
 		// Adds Carrier.carrier_type Foreign Key to the Carrier table
 		$strSQL = " ALTER TABLE Carrier
-						ADD carrier_type BIGINT(20) NOT NULL COMMENT '(FK) The type of Carrier'";
+						ADD carrier_type BIGINT(20) NOT NULL COMMENT '(FK) The type of Carrier', 
+						ADD description VARCHAR(255) NOT NULL COMMENT 'Description for this Carrier', 
+						ADD const_name VARCHAR(255) NOT NULL COMMENT 'Constant representation of this Carrier', 
+						MODIFY Id BIGINT(20) NOT NULL AUTO_INCREMENT";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add Carrier.carrier_type. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to add new Carrier fields. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "ALTER TABLE Carrier DROP carrier_type";
+		$this->rollbackSQL[] = "ALTER TABLE Carrier DROP carrier_type, description, const_name, MODIFY Id BIGINT(20) NOT NULL";
 		$strSQL 		= " UPDATE Carrier
-							SET carrier_type = (SELECT id FROM carrier_type WHERE name = 'Telecom') ";
+							SET carrier_type = (SELECT id FROM carrier_type WHERE name = 'Telecom'), description = Name, const_name = IF(Name = 'Unitel (VoiceTalk), 'CARRIER_UNITEL_VOICETALK', 'UCASE(CONCAT('carrier_', Name)))";
 		if (!($intInsertId = $qryQuery->Execute($strSQL)))
 		{
-			throw new Exception(__CLASS__ . ' Failed to Set Carrier.carrier_type. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to set new Carrier fields. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "UPDATE Carrier SET carrier_type = 0";
 		
  		// Adds M2, Westpac BPAY, BillExpress and SecurePay Carriers
 		$strSQL = "
 			INSERT INTO Carrier 
-			(Id, Name, carrier_type)
+			(Id, Name, carrier_type, description, const_name)
 			VALUES
-			(6, 'M2', (SELECT id FROM carrier_type WHERE name = 'Telecom' LIMIT 1)), 
-			(7, 'BPAY Westpac', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1)), 
-			(8, 'BillExpress', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1)), 
-			(9, 'SecurePay', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1));
+			(NULL, 'M2', (SELECT id FROM carrier_type WHERE name = 'Telecom' LIMIT 1), 'M2', 'CARRIER_M2'), 
+			(NULL, 'BPAY Westpac', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1), 'BPay Westpac', 'CARRIER_BPAY_WESTPAC'), 
+			(NULL, 'BillExpress', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1), 'BillExpress', 'CARRIER_'), 
+			(NULL, 'SecurePay', (SELECT id FROM carrier_type WHERE name = 'Payment' LIMIT 1), 'SecurePay');
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
