@@ -68,10 +68,10 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		
 		// Adds Payment.carrier Foreign Key to the Carrier table
 		$strSQL = " ALTER TABLE Payment
-						ADD carrier BIGINT(20) NULL COMMENT '(FK) Carrier from which this payment came from'";
+						ADD carrier BIGINT(20) NULL COMMENT '(FK) Carrier from which this payment came from' AFTER PaidOn";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add FileImport.file_download. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to add Payment.carrier. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE Payment DROP carrier";
 		
