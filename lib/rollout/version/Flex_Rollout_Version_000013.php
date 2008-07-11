@@ -113,7 +113,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to add new Carrier fields. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "ALTER TABLE Carrier DROP carrier_type, description, const_name, MODIFY Id BIGINT(20) NOT NULL";
+		$this->rollbackSQL[] = "ALTER TABLE Carrier DROP carrier_type, DROP description, DROP const_name, MODIFY Id BIGINT(20) NOT NULL";
 		$strSQL 		= " UPDATE Carrier
 							SET carrier_type = (SELECT id FROM carrier_type WHERE name = 'Telecom'), description = Name, const_name = IF(Name = 'Unitel (VoiceTalk), 'CARRIER_UNITEL_VOICETALK', 'UCASE(CONCAT('carrier_', Name)))";
 		if (!($intInsertId = $qryQuery->Execute($strSQL)))
