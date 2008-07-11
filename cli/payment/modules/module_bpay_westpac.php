@@ -28,22 +28,22 @@
  
  
 //----------------------------------------------------------------------------//
-// PaymentModuleBPay
+// PaymentModuleBPayWestpac
 //----------------------------------------------------------------------------//
 /**
- * PaymentModuleBPay
+ * PaymentModuleBPayWestpac
  *
- * Payment Module for BPay Transactions
+ * Payment Module for BPay Transactions through Westpac
  *
- * Payment Module for BPay Transactions
+ * Payment Module for BPay Transactions through Westpac
  *
  *
  * @prefix		pay
  *
- * @package		Payment_application
- * @class		PaymentModuleBPay
+ * @package		payment
+ * @class		PaymentModuleBPayWestpac
  */
- class PaymentModuleBPay extends PaymentModule
+ class PaymentModuleBPayWestpac extends PaymentModule
  {
 	public $intBaseCarrier	= CARRIER_PAYMENT;
 	public $intBaseFileType	= FILE_IMPORT_PAYMENT_BPAY_STANDARD;

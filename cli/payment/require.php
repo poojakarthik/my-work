@@ -31,7 +31,7 @@
 $strApplicationDir = "cli/payment/modules/";
 VixenRequire($strApplicationDir."base_module.php");
 VixenRequire($strApplicationDir."module_billexpress.php");
-VixenRequire($strApplicationDir."module_bpay.php");
+VixenRequire($strApplicationDir."module_bpay_westpac.php");
 VixenRequire($strApplicationDir."module_securepay.php");
 
 ?>
