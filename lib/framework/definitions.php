@@ -281,8 +281,8 @@ $GLOBALS['*arrConstant']	['FileImport']	[4400]	['Constant']	= 'FILE_IMPORT_CDR_M
 $GLOBALS['*arrConstant']	['FileImport']	[4400]	['Description']	= 'M2 Standard CDR';
 
 // PAYMENT NORMALISATION
-$GLOBALS['*arrConstant']	['FileImport']	[3000]	['Constant']	= 'FILE_IMPORT_PAYMENT_BPAY_STANDARD';
-$GLOBALS['*arrConstant']	['FileImport']	[3000]	['Description']	= 'BPay Standard File';
+$GLOBALS['*arrConstant']	['FileImport']	[3000]	['Constant']	= 'FILE_IMPORT_PAYMENT_BPAY_WESTPAC';
+$GLOBALS['*arrConstant']	['FileImport']	[3000]	['Description']	= 'Westpac BPay File';
 
 $GLOBALS['*arrConstant']	['FileImport']	[3100]	['Constant']	= 'FILE_IMPORT_PAYMENT_BILLEXPRESS_STANDARD';
 $GLOBALS['*arrConstant']	['FileImport']	[3100]	['Description']	= 'Bill Express Standard File';
