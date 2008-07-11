@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		
 		// Adds CarrierModule.description field
 		$strSQL = " ALTER TABLE CarrierModule
-						ADD description VARCHAR(512) NULL COMMENT 'Description for this instance of the specific Module'";
+						ADD description VARCHAR(512) NULL COMMENT 'Description for this instance of the specific Module' AFTER FileType";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add CarrierModule.description. ' . $qryQuery->Error());
@@ -57,7 +57,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to add 3G RecordType. ' . $qryQuery->Error());
 		}
-		$intInsertId	= $dbaDB->insert_id;
+		$intInsertId	= $dbaDB->refMysqliConnection->insert_id;
 		$strSQL 		= " UPDATE RecordType
 							SET GroupId = {$intInsertId} WHERE Id = {$intInsertId}";
 		if (!($intInsertId = $qryQuery->Execute($strSQL)))
