@@ -364,7 +364,7 @@ class PropertyToken
 		$intContext = $intCurrentContext;
 		
 		// work out if the context of the property is subject to its value
-		if (array_key_exists($this->_strProperty, $this->_dboOwner->_arrDefine) && array_key_exists('ConditionalContexts', $this->_dboOwner->_arrDefine[$this->_strProperty]) && is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts']))
+		if (is_array($this->_dboOwner->_arrDefine) && array_key_exists($this->_strProperty, $this->_dboOwner->_arrDefine) && array_key_exists('ConditionalContexts', $this->_dboOwner->_arrDefine[$this->_strProperty]) && is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts']))
 		{
 			// test each defined condition and use the context of the first one that is found to be true
 			foreach ($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts'] as $arrCondition)
