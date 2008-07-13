@@ -53,7 +53,7 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->System_Settings_Menu();
-		BreadCrumb()->SetCurrentPage("Payment Terms");
+		BreadCrumb()->SetCurrentPage("Payment Process");
 
 		$qryQuery = new StatementSelect('payment_terms', array('id' => 'MAX(id)'));
 		$id = 0;
@@ -63,7 +63,14 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			$id = $id['id'];
 		}
 		DBO()->payment_terms->Load($id);
-		
+
+		$strWhere = "NOT id = <AUTOMATIC_INVOICE_ACTION_NONE>";
+		$arrWhere = array('AUTOMATIC_INVOICE_ACTION_NONE' => AUTOMATIC_INVOICE_ACTION_NONE);
+		DBL()->automatic_invoice_action->SetColumns(array('id', 'name', 'days_from_invoice'));
+		DBL()->automatic_invoice_action->Where->Set($strWhere, $arrWhere);
+		DBL()->automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
+		DBL()->automatic_invoice_action->Load();
+
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('payment_terms_display');
 
@@ -103,6 +110,13 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			$id = $id['id'];
 		}
 		DBO()->payment_terms->Load($id);
+
+		$strWhere = "NOT id = <AUTOMATIC_INVOICE_ACTION_NONE>";
+		$arrWhere = array('AUTOMATIC_INVOICE_ACTION_NONE' => AUTOMATIC_INVOICE_ACTION_NONE);
+		DBL()->automatic_invoice_action->SetColumns(array('id', 'name', 'days_from_invoice'));
+		DBL()->automatic_invoice_action->Where->Set($strWhere, $arrWhere);
+		DBL()->automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
+		DBL()->automatic_invoice_action->Load();
 
 		// Work out which context to render the HtmlTemplate in
 		$intContext = HTML_CONTEXT_VIEW;
@@ -163,39 +177,70 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		}
 		DBO()->current_payment_terms->SetTable('payment_terms');
 		DBO()->current_payment_terms->Load($id);
-		
+
+		$strWhere = "NOT id = <AUTOMATIC_INVOICE_ACTION_NONE>";
+		$arrWhere = array('AUTOMATIC_INVOICE_ACTION_NONE' => AUTOMATIC_INVOICE_ACTION_NONE);
+		DBL()->current_automatic_invoice_action->SetTable('automatic_invoice_action');
+		DBL()->current_automatic_invoice_action->Where->Set($strWhere, $arrWhere);
+		DBL()->current_automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
+		DBL()->current_automatic_invoice_action->Load();
+
+		TransactionStart();
+
+		foreach (DBL()->current_automatic_invoice_action as $dboAutomaticInvoiceAction)
+		{
+			// Get the submitted version
+			$submitted = DBO()->{'automatic_invoice_action_' . $dboAutomaticInvoiceAction->id->Value};
+
+			// Check to see if the value is set
+			if ($dboAutomaticInvoiceAction->id->Value == $submitted->Id->Value)
+			{
+				// Check to see if the value has been changed
+				if (intval($submitted->days_from_invoice->Value) != $dboAutomaticInvoiceAction->days_from_invoice->Value)
+				{
+					// Update the value and change it
+					$dboAutomaticInvoiceAction->SetColumns(array('days_from_invoice'));
+					$dboAutomaticInvoiceAction->Id = $dboAutomaticInvoiceAction->id->Value;
+					$dboAutomaticInvoiceAction->days_from_invoice = intval($submitted->days_from_invoice->Value);
+					if (!$dboAutomaticInvoiceAction->Save())
+					{
+						// The CustomerGroup could not be saved for some unforseen reason
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: Saving changes to the scheduled times failed.");
+						return TRUE;
+					}
+				}
+			}
+		}
+
 		// Only save the new record if the table has changed
 		if (DBO()->payment_terms->invoice_day->Value != DBO()->current_payment_terms->invoice_day->Value ||
 			DBO()->payment_terms->payment_terms->Value != DBO()->current_payment_terms->payment_terms->Value ||
-			DBO()->payment_terms->overdue_notice_days->Value != DBO()->current_payment_terms->overdue_notice_days->Value ||
-			DBO()->payment_terms->suspension_notice_days->Value != DBO()->current_payment_terms->suspension_notice_days->Value ||
-			DBO()->payment_terms->final_demand_notice_days->Value != DBO()->current_payment_terms->final_demand_notice_days->Value ||
 			DBO()->payment_terms->minimum_balance_to_pursue->Value != DBO()->current_payment_terms->minimum_balance_to_pursue->Value ||
 			DBO()->payment_terms->late_payment_fee->Value != DBO()->current_payment_terms->late_payment_fee->Value)
 		{
 			// Copy over the values that we wish to save
 			DBO()->current_payment_terms->invoice_day = DBO()->payment_terms->invoice_day->Value;
 			DBO()->current_payment_terms->payment_terms = DBO()->payment_terms->payment_terms->Value;
-			DBO()->current_payment_terms->overdue_notice_days = DBO()->payment_terms->overdue_notice_days->Value;
-			DBO()->current_payment_terms->suspension_notice_days = DBO()->payment_terms->suspension_notice_days->Value;
-			DBO()->current_payment_terms->final_demand_notice_days = DBO()->payment_terms->final_demand_notice_days->Value;
 			DBO()->current_payment_terms->minimum_balance_to_pursue = DBO()->payment_terms->minimum_balance_to_pursue->Value;
 			DBO()->current_payment_terms->late_payment_fee = DBO()->payment_terms->late_payment_fee->Value;
 			// Blank the Id to force a new record to be created
 			DBO()->current_payment_terms->Id = 0;
 			// Set the employee and date for auditing purposes
 			DBO()->current_payment_terms->employee = AuthenticatedUser()->GetUserId();
-			DBO()->current_payment_terms->created = date('Y-m-d h:i:s');
+			DBO()->current_payment_terms->created = date('Y-m-d H:i:s');
 	
 			// The payment terms are valid.  Save them
 			if (!DBO()->current_payment_terms->Save())
 			{
 				// The CustomerGroup could not be saved for some unforseen reason
+				TransactionRollback();
 				Ajax()->AddCommand("Alert", "ERROR: Saving changes to the Payment Terms failed, unexpectedly");
 				return TRUE;
 			}
 		}
 		// Fire the OnCustomerGroupDetailsUpdate Event
+		TransactionCommit();
 		Ajax()->FireEvent('OnPaymentTermsUpdate', array());
 		return TRUE;
 	}

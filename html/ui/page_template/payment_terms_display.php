@@ -27,7 +27,7 @@
  */
 
 // Set the page title
-$this->Page->SetName("Payment Terms");
+$this->Page->SetName("Payment Process");
 
 //Sset the layout template for the page.
 $this->Page->SetLayout('1Column');

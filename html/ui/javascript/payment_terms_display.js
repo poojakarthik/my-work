@@ -44,6 +44,10 @@ function VixenPaymentTermsDisplayClass()
 {
 	this.strContainerDivId	= null;
 	
+	this.invoiceActions = null;
+	this.invoiceActionsActual = null;
+	this.invoiceActionsLabel = null;
+
 	//------------------------------------------------------------------------//
 	// InitialiseView
 	//------------------------------------------------------------------------//
@@ -97,20 +101,7 @@ function VixenPaymentTermsDisplayClass()
 		this.invoiceDayActual.value = intInvoiceDay;
 
 		var intPaymentTerms = parseInt(this.paymentTerms.value);
-		this.paymentTermsDisplay.innerHTML = isNaN(intPaymentTerms) ? '?' : intPaymentTerms;
 		this.paymentTermsActual.value = intPaymentTerms;
-
-		var intOverdueDays = parseInt(this.overdueDays.value) + intPaymentTerms;
-		this.overdueDaysDisplay.innerHTML = isNaN(intOverdueDays) ? '?' : intOverdueDays;
-		this.overdueDaysActual.value = intOverdueDays;
-
-		var intSuspensionDays = parseInt(this.suspensionDays.value) + intOverdueDays;
-		this.suspensionDaysDisplay.innerHTML = isNaN(intSuspensionDays) ? '?' : intSuspensionDays;
-		this.suspensionDaysActual.value = intSuspensionDays;
-
-		var intFinalDemandDays = parseInt(this.finalDemandDays.value) + intSuspensionDays;
-		this.finalDemandDaysDisplay.innerHTML = isNaN(intFinalDemandDays) ? '?' : intFinalDemandDays;
-		this.finalDemandDaysActual.value = intFinalDemandDays;
 
 		if (!isNaN(parseFloat(this.minimumBalanceToPursue.value)))
 		{
@@ -121,38 +112,51 @@ function VixenPaymentTermsDisplayClass()
 		{
 			this.latePaymentFeeActual.value = parseFloat(this.latePaymentFee.value);
 		}
+
+		for (var i in this.invoiceActions)
+		{
+			this.invoiceActionsActual[i].value = parseInt(this.invoiceActions[i].value);
+		}
 	}
 
-	this.InitialiseEdit = function(strContainerDivId)
+	this.InitialiseEdit = function(strContainerDivId, arrInvoiceActionIds)
 	{
+		// Register Event Listeners
+		Vixen.EventHandler.AddListener("OnPaymentTermsUpdate", this.OnUpdate);
+
+		var submitButton = document.getElementById('PaymentTermsSubmit');
+		submitButton.setAttribute('onclick', 'if (Vixen.PaymentTermsDisplay.formIsValid()) { ' + submitButton.getAttribute('onclick') + '; return true;} else return false;');
+
 		// Save the parameters
 		this.strContainerDivId	= strContainerDivId;
 
 		this.invoiceDay = document.getElementById('invoice_day');
 		this.paymentTerms = document.getElementById('payment_terms');
-		this.overdueDays = document.getElementById('overdue_notice_days');
-		this.suspensionDays = document.getElementById('suspension_notice_days');
-		this.finalDemandDays = document.getElementById('final_demand_notice_days');
-		this.finalDemandDays = document.getElementById('final_demand_notice_days');
 		this.minimumBalanceToPursue = document.getElementById('minimum_balance_to_pursue');
 		this.latePaymentFee = document.getElementById('late_payment_fee');
 
 		this.invoiceDayActual = document.getElementById('payment_terms.invoice_day');
 		this.paymentTermsActual = document.getElementById('payment_terms.payment_terms');
-		this.overdueDaysActual = document.getElementById('payment_terms.overdue_notice_days');
-		this.suspensionDaysActual = document.getElementById('payment_terms.suspension_notice_days');
-		this.finalDemandDaysActual = document.getElementById('payment_terms.final_demand_notice_days');
 		this.minimumBalanceToPursueActual = document.getElementById('payment_terms.minimum_balance_to_pursue');
 		this.latePaymentFeeActual = document.getElementById('payment_terms.late_payment_fee');
 
 		this.invoiceDayDisplay = document.getElementById('invoice_day_display');
-		this.paymentTermsDisplay = document.getElementById('payment_terms_display');
-		this.overdueDaysDisplay = document.getElementById('overdue_notice_days_display');
-		this.suspensionDaysDisplay = document.getElementById('suspension_notice_days_display');
-		this.finalDemandDaysDisplay = document.getElementById('final_demand_notice_days_display');
 
 		var onChange = function() { Vixen.PaymentTermsDisplay.ChangeHandler(); }
-		var fields = new Array(this.invoiceDay, this.paymentTerms, this.overdueDays, this.suspensionDays, this.finalDemandDays, this.minimumBalanceToPursue, this.latePaymentFee);
+		var fields = new Array(this.invoiceDay, this.paymentTerms, this.minimumBalanceToPursue, this.latePaymentFee);
+
+		this.invoiceActions = new Array();
+		this.invoiceActionsActual = new Array();
+		this.invoiceActionsLabel = new Array();
+		for (var i in arrInvoiceActionIds)
+		{
+			var id = arrInvoiceActionIds[i];
+			this.invoiceActions[i] = document.getElementById('invoiceActions.' + id);
+			this.invoiceActionsActual[i] = document.getElementById('invoiceActions[' + id + ']');
+			this.invoiceActionsLabel[i] = document.getElementById('invoiceActions.' + id + '.Label.Text').innerHTML;
+			fields[i + 4] = this.invoiceActions[i];
+		}
+
 		for (var i in fields)
 		{
 			var field = fields[i];
@@ -166,7 +170,7 @@ function VixenPaymentTermsDisplayClass()
 
 	this.formIsValid = function()
 	{
-		this.ChangeHandler();
+		//this.ChangeHandler();
 		if (isNaN(parseInt(this.invoiceDay.value)) || parseInt(this.invoiceDay.value) <= 0)
 		{
 			this.alertAndFocus("Invoice Day must on or after the first day of the month.", "invoiceDay");
@@ -177,20 +181,13 @@ function VixenPaymentTermsDisplayClass()
 			this.alertAndFocus("Payment Terms must allow at least one day after invoicing.", "paymentTerms");
 			return false;
 		}
-		if (isNaN(parseInt(this.overdueDays.value)) || parseInt(this.overdueDays.value) < 0)
+		for (var i in this.invoiceActions)
 		{
-			this.alertAndFocus("Overdue Notices should not be sent before Payment Terms have beed exceeded.", "overdueDays");
-			return false;
-		}
-		if (isNaN(parseInt(this.suspensionDays.value)) || parseInt(this.suspensionDays.value) <= 0)
-		{
-			this.alertAndFocus("Suspension Notices should be issued at least one day after Overdue Notices are issued.", "suspensionDays");
-			return false;
-		}
-		if (isNaN(parseInt(this.finalDemandDays.value)) || parseInt(this.finalDemandDays.value) <= 0)
-		{
-			this.alertAndFocus("Final Demands should be issued at least one day after Suspension Notices are issued.", "finalDemandDays");
-			return false;
+			if (isNaN(parseInt(this.invoiceActions[i].value)) || parseInt(this.invoiceActions[i].value) < 0)
+			{
+				this.alertAndFocus(this.invoiceActionsLabel[i] + " must be set to a number of days after the invoice day.", 'invoiceActions[' + i + ']');
+				return false;
+			}
 		}
 
 		if (isNaN(parseFloat(this.minimumBalanceToPursue.value)) || parseFloat(this.minimumBalanceToPursue.value) <= 0)
@@ -261,24 +258,9 @@ function VixenPaymentTermsDisplayClass()
 	 */
 	this.OnUpdate = function(objEvent)
 	{
-		if (!Vixen.PaymentTermsDisplay.formIsValid())
-		{
-			if (document.all)
-			{
-				objEvent = objEvent ? objEvent : window.event;
-				objEvent.cancelBubble;
-			}
-			else objEvent.stopPropagation();
-			return false;
-		}
-
-		// The "this" pointer does not point to this object, when it is called.
-		// It points to the Window object
-		var strContainerDivId	= Vixen.PaymentTermsDisplay.strContainerDivId;
-
 		// Organise the data to send
 		var objData	=	{
-							Container		:	{	Id		:	strContainerDivId},
+							Container		:	{	Id		:	Vixen.PaymentTermsDisplay.strContainerDivId},
 							Context			:	{	View	:	true}
 						};
 
