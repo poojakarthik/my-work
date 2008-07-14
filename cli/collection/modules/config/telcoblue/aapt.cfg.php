@@ -34,4 +34,17 @@ $arrModuleConfig['Username']		['Value']		= 'telcoblue';
 $arrModuleConfig['Password']		['Value']		= 'zbj6v04ls';
 $arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
 
+// Output
+$strOutputFile	= basename(__FILE__, '.cfg.php').'.serialised';
+@unlink($strOutputFile);
+
+if (file_put_contents($strOutputFile, serialize($arrStructure)))
+{
+	echo "\nSerialised Data successfully dumped to '$strOutputFile'.\n\n";
+}
+else
+{
+	echo "\nUnable to dump serialised data to '$strOutputFile'.\n\n";
+}
+
 ?>
