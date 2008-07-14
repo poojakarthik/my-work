@@ -1,5 +1,7 @@
 <?php
 
+require_once("../../../../../flex.require.php");
+
 // CDR
 $arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['Regex']		= "/^[A-Za-z]\d{7}\.csv$/";
 $arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
