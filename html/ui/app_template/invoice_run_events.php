@@ -210,7 +210,7 @@ class AppTemplateInvoiceRunEvents extends ApplicationTemplate
 	{
 		// Check permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
 		// Load the automatic invoice run events for the invoice run
 		$strWhere = "invoice_run_id = <INVOICE_RUN_ID>";
