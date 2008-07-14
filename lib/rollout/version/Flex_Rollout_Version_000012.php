@@ -52,6 +52,13 @@ class Flex_Rollout_Version_000012 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add const_name columns to automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE automatic_invoice_action DROP const_name";
+		
+		$strSQL = "UPDATE automatic_invoice_action SET const_name = REPLACE(UCASE(CONCAT('automatic_invoice_action_', name)), ' ', '_')";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to automatic_invoice_action table. ' . $qryQuery->Error());
+		}
+
 		$strSQL = "UPDATE automatic_invoice_action SET const_name = UCASE(CONCAT('automatic_invoice_action_', name))";
 		if (!$qryQuery->Execute($strSQL))
 		{
