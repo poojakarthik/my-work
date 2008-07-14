@@ -141,6 +141,17 @@
 					View and Add Employees.
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<a href="flex.php/InvoiceRunEvents/Manage/">
+						<img src="img/template/schedule.png" title="Invoice Run Events" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong> Schedule Invoice Run Events</strong><br />
+					View and Schedule Invoice Run Events.
+				</td>
+			</tr>
 			<!-- Conditional Options-->
 			<xsl:choose>
 				<!-- If SuperAdmin -->

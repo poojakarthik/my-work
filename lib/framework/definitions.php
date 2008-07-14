@@ -2275,18 +2275,22 @@ $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Description']	= 'Draft';
 
 
 // Account Letter Types
-$GLOBALS['*arrConstant']	['LetterType']	[1]	['Constant']	= 'LETTER_TYPE_FRIENDLY';
-$GLOBALS['*arrConstant']	['LetterType']	[1]	['Description']	= 'Friendly Reminder';
+/* These have been aligned with, and their usage replaced by, the DOCUMENT_TEMPLATE_TYPE_xxx constants
+$GLOBALS['*arrConstant']	['LetterType']	[5]	['Constant']	= 'LETTER_TYPE_FRIENDLY_REMINDER';
+$GLOBALS['*arrConstant']	['LetterType']	[5]	['Description']	= 'Friendly Reminder';
 $GLOBALS['*arrConstant']	['LetterType']	[1]	['Constant']	= 'LETTER_TYPE_OVERDUE';
 $GLOBALS['*arrConstant']	['LetterType']	[1]	['Description']	= 'Overdue Notice';
 $GLOBALS['*arrConstant']	['LetterType']	[2]	['Constant']	= 'LETTER_TYPE_SUSPENSION';
 $GLOBALS['*arrConstant']	['LetterType']	[2]	['Description']	= 'Suspension Notice';
 $GLOBALS['*arrConstant']	['LetterType']	[3]	['Constant']	= 'LETTER_TYPE_FINAL_DEMAND';
 $GLOBALS['*arrConstant']	['LetterType']	[3]	['Description']	= 'Final Demand Notice';
-$GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_INVOICE';
-$GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Invoice';
-$GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_AUTOMATIC_BARRING';
-$GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Automatic Barring';
+// Invoice constant was not used anywhere
+//$GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_INVOICE';
+//$GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Invoice';
+// This is not defined properly (it has same value as LETTER_TYPE_INVOICE) and does not exist in the code base
+//$GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_AUTOMATIC_BARRING';
+//$GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Automatic Barring';
+ */
 
 // DataTypes for Constants
 $GLOBALS['*arrConstant']	['DataType']	[1]	['Constant']	= 'DATA_TYPE_STRING';

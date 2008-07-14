@@ -2,6 +2,8 @@
 
 	require_once dirname(__FILE__) . "/../lib/cli/Cli.php";	
 
-	Cli::execute("Cli_App_Automatic_Barring_List");
+	// Force this to run in test mode!
+	$argv[] = '-r';
+	Cli::execute("Cli_App_Automatic_Barring");
 
 ?>

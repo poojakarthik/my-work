@@ -22,6 +22,10 @@ abstract class Cli
 	const SWITCH_SILENT = "s";
 	const SWITCH_HELP = "?";
 
+	const EMAIL_ATTACHMENT_NAME = 'content_type';
+	const EMAIL_ATTACHMENT_MIME_TYPE = 'dfilename';
+	const EMAIL_ATTACHMENT_CONTENT = 'CONTENT';
+
 	private $logFile = NULL;
 	private $logSilent = FALSE;
 	private $logVerbose = FALSE;
@@ -378,8 +382,88 @@ abstract class Cli
 		return trim($strResponse);
 	}
 
+	protected function sendEmailNotification($intEmailNotification, $intCustomerGroupId, $strToEmail, $strSubject, $strHTMLMessage, $strTextMessage=NULL, $arrAttachments=NULL)
+	{
+		// Get the default email addresses for the notification type
+		if (!$intCustomerGroupId) $intCustomerGroupId = NULL;
+		if (!$strToEmail) $strToEmail = NULL;
+		$addresses = GetEmailAddresses($intEmailNotification, $intCustomerGroupId, $strToEmail);
 
+		// Add the custom 'to' address
+		if ($strToEmail)
+		{
+			$addresses[EMAIL_ADDRESS_USAGE_TO][] = $strToEmail;
+		}
 
+		// Ensure we have an html body
+		if (!$strHTMLMessage)
+		{
+			$strHTMLMessage = '<pre>' . ($strTextMessage ? $strTextMessage : '') . '</pre>';
+		}
+
+		// Ensure we have a text body
+		if (!$strTextMessage)
+		{
+			// Strip out the style
+			$strTextMessage = preg_replace(array("/\<style.*\/style\>/s", "/\<script.*\/script\>/s"), '', $strHTMLMessage);
+			// Strip all other tags
+			$strTextMessage = strip_tags($strTextMessage);
+		}
+
+		// Determine the type of email to send
+		$hasAttachments = is_array($arrAttachments) && count($arrAttachments);
+
+		$strContentType = $hasAttachments ? "multipart/mixed" : "multipart/alternative";
+
+		// Send email to cust group email address
+		$message = new Mail_mimePart('' , array('content_type' => $strContentType));
+		if ($hasAttachments)
+		{
+			$messageSection =& $message->addSubPart('' , array('content_type' => 'multipart/alternative'));
+		}
+		else
+		{
+			$messageSection =& $message;
+		}
+		$messageSection->addSubPart($strTextMessage, array('content_type' => 'text/plain;', 'encoding' => '7bit'));
+		$messageSection->addSubPart($strHTMLMessage, array('content_type' => 'text/html;'));
+
+		if ($hasAttachments)
+		{
+			foreach ($arrAttachments as $arrAttchment)
+			{
+				$params['content_type'] = $arrAttchment[self::EMAIL_ATTACHMENT_MIME_TYPE]; 
+				$params['encoding'] = 'base64'; 
+				$params['disposition'] = 'attachment'; 
+				$params['dfilename'] = $arrAttchment[self::EMAIL_ATTACHMENT_NAME]; 
+				$attach =& $message->addSubPart($arrAttchment[self::EMAIL_ATTACHMENT_CONTENT], $params);
+			}
+		}
+
+		$email = $message->encode();
+
+		if (array_key_exists(EMAIL_ADDRESS_USAGE_CC, $addresses) && count($addresses))
+		{
+			$email['headers']['Cc'] = implode(",", $addresses[EMAIL_ADDRESS_USAGE_CC]);
+		}
+		if (array_key_exists(EMAIL_ADDRESS_USAGE_BCC, $addresses) && count($addresses))
+		{
+			$email['headers']['Bcc'] = implode(",", $addresses[EMAIL_ADDRESS_USAGE_BCC]);
+		}
+		if (array_key_exists(EMAIL_ADDRESS_USAGE_FROM, $addresses) && count($addresses))
+		{
+			$email['headers']['From'] = implode(",", $addresses[EMAIL_ADDRESS_USAGE_FROM]);
+		}
+		$strTo = implode(",", $addresses[EMAIL_ADDRESS_USAGE_TO]);
+		$email['headers']['Subject'] = $strSubject;
+		$emlMail 	= &Mail::factory('mail');
+		if (!$emlMail->send($strTo, $email['headers'], $email['body']))
+		{
+			$this->log("ERROR: Failed to send email to $strTo" . ($intCustomerGroupId ? " for customer group $intCustomerGroupId" : "") . ".", TRUE);
+			return FALSE;
+		}
+		return TRUE;
+	}
 
 
 	/**

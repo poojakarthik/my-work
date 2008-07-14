@@ -64,10 +64,9 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		}
 		DBO()->payment_terms->Load($id);
 
-		$strWhere = "NOT id = <AUTOMATIC_INVOICE_ACTION_NONE>";
-		$arrWhere = array('AUTOMATIC_INVOICE_ACTION_NONE' => AUTOMATIC_INVOICE_ACTION_NONE);
-		DBL()->automatic_invoice_action->SetColumns(array('id', 'name', 'days_from_invoice'));
-		DBL()->automatic_invoice_action->Where->Set($strWhere, $arrWhere);
+		$strWhere = "can_schedule = 1";
+		DBL()->automatic_invoice_action->SetColumns(array('id', 'name', 'days_from_invoice', 'response_days'));
+		DBL()->automatic_invoice_action->Where->Set($strWhere);
 		DBL()->automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
 		DBL()->automatic_invoice_action->Load();
 
@@ -111,10 +110,9 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		}
 		DBO()->payment_terms->Load($id);
 
-		$strWhere = "NOT id = <AUTOMATIC_INVOICE_ACTION_NONE>";
-		$arrWhere = array('AUTOMATIC_INVOICE_ACTION_NONE' => AUTOMATIC_INVOICE_ACTION_NONE);
-		DBL()->automatic_invoice_action->SetColumns(array('id', 'name', 'days_from_invoice'));
-		DBL()->automatic_invoice_action->Where->Set($strWhere, $arrWhere);
+		$strWhere = "can_schedule = 1";
+		DBL()->automatic_invoice_action->SetColumns(array('id', 'name', 'days_from_invoice', 'response_days'));
+		DBL()->automatic_invoice_action->Where->Set($strWhere);
 		DBL()->automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
 		DBL()->automatic_invoice_action->Load();
 
@@ -178,10 +176,9 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		DBO()->current_payment_terms->SetTable('payment_terms');
 		DBO()->current_payment_terms->Load($id);
 
-		$strWhere = "NOT id = <AUTOMATIC_INVOICE_ACTION_NONE>";
-		$arrWhere = array('AUTOMATIC_INVOICE_ACTION_NONE' => AUTOMATIC_INVOICE_ACTION_NONE);
+		$strWhere = "can_schedule = 1";
 		DBL()->current_automatic_invoice_action->SetTable('automatic_invoice_action');
-		DBL()->current_automatic_invoice_action->Where->Set($strWhere, $arrWhere);
+		DBL()->current_automatic_invoice_action->Where->Set($strWhere);
 		DBL()->current_automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
 		DBL()->current_automatic_invoice_action->Load();
 
@@ -196,12 +193,14 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			if ($dboAutomaticInvoiceAction->id->Value == $submitted->Id->Value)
 			{
 				// Check to see if the value has been changed
-				if (intval($submitted->days_from_invoice->Value) != $dboAutomaticInvoiceAction->days_from_invoice->Value)
+				if (intval($submitted->days_from_invoice->Value) != $dboAutomaticInvoiceAction->days_from_invoice->Value 
+					|| intval($submitted->response_days->Value) != $dboAutomaticInvoiceAction->response_days->Value)
 				{
 					// Update the value and change it
-					$dboAutomaticInvoiceAction->SetColumns(array('days_from_invoice'));
+					$dboAutomaticInvoiceAction->SetColumns(array('days_from_invoice', 'response_days'));
 					$dboAutomaticInvoiceAction->Id = $dboAutomaticInvoiceAction->id->Value;
 					$dboAutomaticInvoiceAction->days_from_invoice = intval($submitted->days_from_invoice->Value);
+					$dboAutomaticInvoiceAction->response_days = intval($submitted->response_days->Value);
 					if (!$dboAutomaticInvoiceAction->Save())
 					{
 						// The CustomerGroup could not be saved for some unforseen reason

@@ -111,26 +111,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 						"<body>$strIntro\n\n<table><tr><th>Account</th>\t<th>Contact</th>\t<th>Email</th>\t<th>Link to account in Flex</th></tr>\n" .
 						implode("\n", $arrRows) . "</table>\n<br/>\n<br/>$strFooter" . $arrCustomerGroup[1] . "</body></html>";
 
-				// Build the text body
-				// Strip out the style
-				$text = preg_replace("/\<style.*\/style\>/s", '', $html);
-				// Strip all other tags
-				$text = strip_tags($text);
-
-				// Send email to cust group email address
-				$email = new Mail_mimePart('' , array('content_type' => 'multipart/related; type="multipart/alternative"'));
-				$body = $email->addSubPart('' , array('content_type' => 'multipart/alternative'));
-				$body->addSubPart($text, array('content_type' => 'text/plain'));
-				$body->addSubPart($html, array('content_type' => 'text/html'));
-				$email = $email->encode();
-
-				$strHeaders	= $email['headers'];
-				$strHeaders['Bcc'] = 'ybs-admin@yellowbilling.com.au';
-				$strHeaders['From'] = 'EmailCheck@yellowbilling.com.au';
-				$strHeaders['Subject'] = 'Recent Email Failures: ' . date('Y-m-d H:i:s');
-				$strBody	= $email['body'];
-				$emlMail 	= &Mail::factory('mail');
-				if (!$emlMail->send($strNoticationEmail, $strHeaders, $strBody))
+				if (!$this->sendEmailNotification(EMAIL_NOTIFICATION_FAILED_EMAIL_REPORT, $intCustomerGroup, NULL, 'Recent Email Failures: ' . date('Y-m-d H:i:s'), $html, NULL))
 				{
 					$this->log("ERROR: Failed to send email to $strNoticationEmail for customer group $intCustomerGroup.", TRUE);
 					$exitCode++;

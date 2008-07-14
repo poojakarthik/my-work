@@ -317,7 +317,7 @@ class MenuItems
 
 	function ManagePaymentTerms()
 	{
-		$this->strLabel	= "Payment Terms";
+		$this->strLabel	= "Payment Process";
 		$this->strContextMenuLabel = "";
 		return "flex.php/PaymentTerms/Manage/";
 	}
@@ -2173,6 +2173,55 @@ class MenuItems
 		
 		$this->strLabel = "Article";
 		return "flex.php/KnowledgeBase/ViewArticle/?KnowledgeBase.Id=$intId";
+	}
+
+	//------------------------------------------------------------------------//
+	// EditInvoiceRunEvents
+	//------------------------------------------------------------------------//
+	/**
+	 * EditInvoiceRunEvents()
+	 *
+	 * Compiles the Href to be executed when the EditInvoiceRunEvents menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the EditInvoiceRunEvents menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
+	 * @param	int			$intId		id of the invoice run to view events for
+	 *
+	 * @return	string					Href to be executed when the EditInvoiceRunEvents menu item is clicked
+	 *
+	 * @method
+	 */
+	function EditInvoiceRunEvents($intId)
+	{
+		$this->strContextMenuLabel = "";
+		
+		$this->strLabel = "Events";
+		return "javascript:Vixen.InvoiceRunEvents.RenderDetailsForViewing($intId);";
+	}
+
+
+	//------------------------------------------------------------------------//
+	// ManageInvoiceRunEvents
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageInvoiceRunEvents()
+	 *
+	 * Compiles the Href to be executed when the ManageInvoiceRunEvents menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ManageInvoiceRunEvents menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
+	 * @return	string					Href to be executed when the ManageInvoiceRunEvents menu item is clicked
+	 *
+	 * @method
+	 */
+	function ManageInvoiceRunEvents()
+	{
+		$this->strContextMenuLabel = "";
+		
+		$this->strLabel = "Invoice Runs";
+		return "flex.php/InvoiceRunEvents/Manage";
 	}
 
 

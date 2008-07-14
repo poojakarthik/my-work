@@ -650,6 +650,10 @@ function GetConstantName($intCode, $strType='CDR')
 	{
 		return $GLOBALS['*arrConstant'][$strType][$intCode]['Constant'];
 	}
+	else if (isset($GLOBALS['*arrConstant'][strtolower($strType)][$intCode]['Constant']))
+	{
+		return $GLOBALS['*arrConstant'][strtolower($strType)][$intCode]['Constant'];
+	}
 	else
 	{
 		return FALSE;
@@ -679,6 +683,10 @@ function GetConstantDescription($intCode, $strType='CDR')
 	if (isset($GLOBALS['*arrConstant'][$strType][$intCode]['Description']))
 	{
 		return $GLOBALS['*arrConstant'][$strType][$intCode]['Description'];
+	}
+	else if (isset($GLOBALS['*arrConstant'][strtolower($strType)][$intCode]['Description']))
+	{
+		return $GLOBALS['*arrConstant'][strtolower($strType)][$intCode]['Description'];
 	}
 	else
 	{
@@ -3354,6 +3362,64 @@ function GetCurrentTimeForMySQL()
 }
 
 
+function EnsureLatestInvoiceRunEventsAreDefined()
+{
+	$arrColumns = array(
+		'invoice_run_id' 	=> 'last_invoice_run.invoice_run_id',
+		'processed' 		=> 'existing.invoice_run_id',
+	);
+
+	$strTables = "
+		(SELECT MAX(Id) invoice_run_id FROM InvoiceRun) last_invoice_run
+		LEFT OUTER JOIN (SELECT MAX(invoice_run_id) invoice_run_id FROM automatic_invoice_run_event) existing
+		ON last_invoice_run.invoice_run_id = existing.invoice_run_id
+		HAVING processed IS NULL
+	";
+
+	$selInvoiceRun = new StatementSelect($strTables, $arrColumns, "");
+
+	$mxdReturn = $selInvoiceRun->Execute();
+	if ($mxdReturn === FALSE)
+	{
+		throw new Exception("Failed to find latest invoice run: " . $selInvoiceRun->Error());
+	}
+
+	$invoiceRun = $selInvoiceRun->Fetch();
+
+	if (!$invoiceRun)
+	{
+		// No invoice run to process
+		return;
+	}
+
+	$invoiceRunId = $invoiceRun['invoice_run_id'];
+
+	// Load up the automatic invoice actions
+	$strTables = 'automatic_invoice_action';
+	$arrColumns = array(
+		'automatic_invoice_action_id' => 'id'
+	);
+	$strWhere = 'can_schedule = 1';
+	$selInvoiceActions = new StatementSelect($strTables, $arrColumns, $strWhere);
+
+	$mxdReturn = $selInvoiceActions->Execute();
+	if ($mxdReturn === FALSE)
+	{
+		throw new Exception("Failed to load the automatic invoice actions: " . $selInvoiceActions->Error());
+	}
+	$arrColumns = array('automatic_invoice_action_id' => 0, 'invoice_run_id' => $invoiceRunId);
+	$insEvent  = new StatementInsert('automatic_invoice_run_event', $arrColumns);
+	while($invoiceAction = $selInvoiceActions->Fetch())
+	{
+		$arrColumns['automatic_invoice_action_id'] = $invoiceAction['automatic_invoice_action_id'];
+		$mxdReturn = $insEvent->Execute($arrColumns);
+		if ($mxdReturn === FALSE)
+		{
+			throw new Exception("Failed to create invoice run ($invoiceRunId) event ($invoiceAction): " . $insEvent->Error());
+		}
+	}
+}
+
 function ListAutomaticUnbarringAccounts($intEffectiveTime)
 {
 	if (!$intEffectiveTime)
@@ -3365,6 +3431,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
 
 	$arrColumns = array(
+							'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
 							'AccountId'				=> "Invoice.Account",
 							'AccountGroupId'		=> "Account.AccountGroup",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
@@ -3377,9 +3444,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		JOIN Account 
 		  ON Invoice.Account = Account.Id
 		 AND Account.Archived IN ($strApplicableAccountStatuses) 
-		JOIN automatic_barring_status
-		  ON automatic_barring_status.name = 'Barred'
-		 AND Account.automatic_barring_status = automatic_barring_status.id
+		 AND Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 		JOIN Service 
 		  ON Account.Id = Service.Account
 		JOIN CustomerGroup
@@ -3406,12 +3471,22 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 }
 
 
-function ListAutomaticBarringAccounts($intEffectiveTime, $bolIgnoreActionableDate=FALSE)
+function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOICE_ACTION_BARRING)
 {
 	if (!$intEffectiveTime)
 	{
 		$intEffectiveTime = time();
 	}
+
+	// First, we need to find which invoice runs are involved (if any)
+	$arrInvoiceRuns = ListInvoiceRunsForAutomaticInvoiceActionAndDate($action, $intEffectiveTime);
+	if (!count($arrInvoiceRuns))
+	{
+		// No invoice runs, so no accounts
+		return array();
+	}
+	$strInvoiceRunIds = implode(', ', $arrInvoiceRuns);
+
 	$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
 
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
@@ -3426,18 +3501,12 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $bolIgnoreActionableDat
 							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
 	);
 
-	$strActionableDateCondition = '';
-	if (!$bolIgnoreActionableDate)
-	{
-		$strActionableDateCondition = " AND InvoiceRun.scheduled_automatic_bar_datetime IS NOT NULL
-		 AND UNIX_TIMESTAMP(InvoiceRun.scheduled_automatic_bar_datetime) <= $intEffectiveTime ";
-	}
-
 	$strTables	= "
 			 Invoice 
 		JOIN Account 
 		  ON Invoice.Account = Account.Id
 		 AND Account.Archived IN ($strApplicableAccountStatuses) 
+		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		JOIN credit_control_status 
 		  ON Account.credit_control_status = credit_control_status.id
@@ -3453,13 +3522,14 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $bolIgnoreActionableDat
 		SELECT DISTINCT(Account.Id) 
 		FROM InvoiceRun 
 		JOIN Invoice
-		  ON InvoiceRun.automatic_bar_datetime IS NULL $strActionableDateCondition
+		  ON InvoiceRun.Id IN ($strInvoiceRunIds)
 		 AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
 		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun
 		JOIN Account 
 		  ON Account.Id = Invoice.Account
-		 AND Account.Archived IN ($strApplicableAccountStatuses) $strNoticeTypePreCondition
+		 AND Account.Archived IN ($strApplicableAccountStatuses) 
 		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 		JOIN credit_control_status 
 		  ON Account.credit_control_status = credit_control_status.id
 		 AND credit_control_status.can_bar = 1
@@ -3484,43 +3554,99 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $bolIgnoreActionableDat
 	return $mxdReturn === FALSE ? FALSE : $selBarrable->FetchAll();
 }
 
-
-function ListLatePaymentAccounts($intNoticeType, $intEffectiveDate)
+function ListInvoiceRunsForAutomaticInvoiceActionAndDate($intAutomaticInvoiceActionType, $intEffectiveDate)
 {
+	$strEffectiveDate = date("'Y-m-d H:i:s'", $intEffectiveDate);
+	$arrColumns = array(
+		"invoice_run_id" => "automatic_invoice_run_event.invoice_run_id",
+		"unsatisfied" => "unsatisfied_dependencies.nr"
+	);
+
+	$strTables = "
+		automatic_invoice_run_event
+		LEFT OUTER JOIN 
+		(
+			SELECT invoice_run_id, count(*) nr
+			  FROM automatic_invoice_run_event aire
+			 WHERE actioned_datetime IS NULL
+			   AND automatic_invoice_action_id IN 
+				(
+					SELECT prerequisite_automatic_invoice_action_id 
+					  FROM automatic_invoice_action_dependency 
+					 WHERE dependent_automatic_invoice_action_id = $intAutomaticInvoiceActionType
+				)
+			GROUP BY invoice_run_id
+		) unsatisfied_dependencies
+		ON automatic_invoice_action_id = $intAutomaticInvoiceActionType
+		AND unsatisfied_dependencies.invoice_run_id = automatic_invoice_run_event.invoice_run_id
+	";
+
+	$strWhere = "
+			actioned_datetime IS NULL
+		AND scheduled_datetime IS NOT NULL
+		AND scheduled_datetime <= $strEffectiveDate
+		AND automatic_invoice_action_id = $intAutomaticInvoiceActionType
+	";
+
+	$strGroupBy = " automatic_invoice_run_event.invoice_run_id HAVING (unsatisfied IS NULL OR unsatisfied = 0)";
+
+	/*
+	// DEBUG: Output the query that gets run
+	$select = array();
+	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
+	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nGROUP BY $strGroupBy\n\n";
+	//*/
+
+	$selInvoiceRuns = new StatementSelect($strTables, $arrColumns, $strWhere, '', '', $strGroupBy);
+	$mxdReturn = $selInvoiceRuns->Execute();
+	if ($mxdReturn === FALSE)
+	{
+		throw new Exception('Failed to find relevant invoice runs: ' . $selInvoiceRuns->Error());
+	}
+	$arrInvoiceRuns = $selInvoiceRuns->FetchAll();
+	foreach($arrInvoiceRuns as $i => $invoiceRun)
+	{
+		$arrInvoiceRuns[$i] = $invoiceRun['invoice_run_id'];
+	}
+	return $arrInvoiceRuns;
+}
+
+function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDate)
+{
+	$strEffectiveDate = date("'Y-m-d'", $intEffectiveDate);
+
 	// Set up NoticeType specific stuff here
 	$arrApplicableAccountStatuses = array();
-	$strInvoiceRunDateField = '';
-	$strInvoiceRunPreCondition = '';
-	$strNoticeTypePreCondition = '';
 	$arrApplicableInvoiceStatuses = array();
 
-	switch ($intNoticeType)
+	// First, we need to find which invoice runs are involved (if any)
+	$arrInvoiceRuns = ListInvoiceRunsForAutomaticInvoiceActionAndDate($intAutomaticInvoiceActionType, $intEffectiveDate);
+	if (!count($arrInvoiceRuns))
 	{
-		case LETTER_TYPE_OVERDUE:
+		// No invoice runs, so no accounts
+		return array();
+	}
+	$strInvoiceRunIds = implode(', ', $arrInvoiceRuns);
+
+	switch ($intAutomaticInvoiceActionType)
+	{
+		case AUTOMATIC_INVOICE_ACTION_LATE_FEES:
+		case AUTOMATIC_INVOICE_ACTION_LATE_FEES_LIST:
+		case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER_LIST:
+		case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
+		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
+		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE_LIST:
 			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
-			$strInvoiceRunDateField = 'automatic_overdue_datetime';
-			$strInvoiceRunPreCondition = '';
-			$strNoticeTypePreCondition = '';
 			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
-		case LETTER_TYPE_SUSPENSION:
+		case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
+		case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE_LIST:
 			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
-			$strInvoiceRunDateField = 'automatic_suspension_datetime';
-			$strInvoiceRunPreCondition = ' AND InvoiceRun.automatic_overdue_datetime IS NOT NULL ';
-			$strNoticeTypePreCondition = ' JOIN automatic_invoice_action_history ' . 
-										 '   ON automatic_invoice_action_history.to_action = ' . AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE . 
-										 '  AND DATE(automatic_invoice_action_history.change_datetime) = DATE(InvoiceRun.automatic_overdue_datetime)' .
-										 '  AND Account.Id = automatic_invoice_action_history.account ';
 			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
-		case LETTER_TYPE_FINAL_DEMAND:
+		case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND:
+		case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND_LIST:
 			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED);
-			$strInvoiceRunDateField = 'automatic_final_demand_datetime';
-			$strInvoiceRunPreCondition = ' AND InvoiceRun.automatic_suspension_datetime IS NOT NULL ';
-			$strNoticeTypePreCondition = ' JOIN automatic_invoice_action_history ' . 
-										 '   ON automatic_invoice_action_history.to_action = ' . AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE . 
-										 '  AND DATE(automatic_invoice_action_history.change_datetime) = DATE(InvoiceRun.automatic_suspension_datetime)' .
-										 '  AND Account.Id = automatic_invoice_action_history.account ';
 			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
 		default:
@@ -3530,10 +3656,6 @@ function ListLatePaymentAccounts($intNoticeType, $intEffectiveDate)
 	}
 	$arrApplicableAccountStatuses = implode(", ", $arrApplicableAccountStatuses);
 	$strApplicableInvoiceStatuses = implode(", ", $arrApplicableInvoiceStatuses);
-
-	$intEffectiveInvoiceDate = GetEffectiveInvoiceDateForNoticeType($intNoticeType, $intEffectiveDate);
-	$strBillingDateClause = " AND DATE(InvoiceRun.BillingDate) <= DATE(FROM_UNIXTIME($intEffectiveInvoiceDate))";
-	$strEffectiveDate = date("'Y-m-d'", $intEffectiveDate);
 
 	// Find all Accounts that fit the requirements for Late Notice generation
 	$arrColumns = Array(	'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
@@ -3557,6 +3679,7 @@ function ListLatePaymentAccounts($intNoticeType, $intEffectiveDate)
 							'Suburb'				=> "UPPER(Account.Suburb)",
 							'Postcode'				=> "Account.Postcode",
 							'State'					=> "Account.State",
+							'DisableLatePayment'	=> "Account.DisableLatePayment",
 							'InvoiceId'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Id END)",
 							'CreatedOn'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.CreatedOn END)",
 							'OutstandingNotOverdue'	=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance END)",
@@ -3584,12 +3707,12 @@ function ListLatePaymentAccounts($intNoticeType, $intEffectiveDate)
 		SELECT DISTINCT(Account.Id) 
 		FROM InvoiceRun 
 		JOIN Invoice
-		  ON InvoiceRun.$strInvoiceRunDateField IS NULL $strInvoiceRunPreCondition $strBillingDateClause
-	         AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		  ON InvoiceRun.id IN ($strInvoiceRunIds)
+	     AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
 		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun
 		JOIN Account 
 		  ON Account.Id = Invoice.Account
-	         AND Account.Archived IN ($arrApplicableAccountStatuses) $strNoticeTypePreCondition
+	         AND Account.Archived IN ($arrApplicableAccountStatuses)
 	         AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		JOIN credit_control_status 
 		  ON Account.credit_control_status = credit_control_status.id
@@ -3630,9 +3753,6 @@ function GetPaymentTerms()
 		$arrColumns = array(
 			'invoice_day' 				=> 'invoice_day',
 			'payment_terms' 			=> 'payment_terms',
-			'overdue_notice_days' 		=> 'overdue_notice_days',
-			'suspension_notice_days' 	=> 'suspension_notice_days',
-			'final_demand_notice_days' 	=> 'final_demand_notice_days',
 			'minimum_balance_to_pursue' => 'minimum_balance_to_pursue',
 			'late_payment_fee' 			=> 'late_payment_fee',
 			'samples_internal_initial_days' => 'samples_internal_initial_days',
@@ -3658,46 +3778,26 @@ function GetPaymentTerms()
 		}
 
 		$paymentTerms = $payementTerms[0];
+
+		$strTables = 'automatic_invoice_action';
+		$strWhere = 'NOT id = ' . AUTOMATIC_INVOICE_ACTION_NONE;
+		$arrColumns = array(
+			'id' => 'id',
+			'days_from_invoice' => 'days_from_invoice',
+		);
+		$selSelect = new StatementSelect($strTables, $arrColumns, $strWhere);
+		$mxdResult = $selSelect->Execute();
+		if ($mxdResult === FALSE)
+		{
+			throw new Exception('Failed to load payment terms.');
+		}
+		$arrAutomaticInvoiceActions = $selSelect->FetchAll();
+		foreach ($arrAutomaticInvoiceActions as $arrAutomaticInvoiceAction)
+		{
+			$paymentTerms[$arrAutomaticInvoiceAction['id']] = $arrAutomaticInvoiceAction['days_from_invoice'];
+		}
 	}
 	return $paymentTerms;
-}
-
-/**
- * Given an effective date and a notice type, returns the 
- * date on which invoices should have been issued for the notice
- * to be issued on the effective date, according to the current 
- * payment terms.
- * 
- */
-function GetEffectiveInvoiceDateForNoticeType($intNoticeType, $intEffectiveDate)
-{
-	$intStartOfDay = mktime(0, 0, 0, intval(date('m', $intEffectiveDate)), intval(date('d', $intEffectiveDate)), intval(date('Y', $intEffectiveDate)));
-
-	$paymentTerms = GetPaymentTerms();
-	$intDay = 60 * 60 * 24;
-
-	$effectiveInvoiceDate = 0;
-
-	switch ($intNoticeType)
-	{
-		case LETTER_TYPE_FINAL_DEMAND:
-			$effectiveInvoiceDate = $intStartOfDay - ($paymentTerms['final_demand_notice_days'] * $intDay);
-			break;
-
-		case LETTER_TYPE_SUSPENSION:
-			$effectiveInvoiceDate = $intStartOfDay - ($paymentTerms['suspension_notice_days'] * $intDay);
-			break;
-
-		case LETTER_TYPE_OVERDUE:
-			$effectiveInvoiceDate = $intStartOfDay - ($paymentTerms['overdue_notice_days'] * $intDay);
-			break;
-
-		default:
-			// Unrecognised notice type
-			break;
-	}
-
-	return $effectiveInvoiceDate;
 }
 
 //------------------------------------------------------------------------//
@@ -3710,7 +3810,7 @@ function GetEffectiveInvoiceDateForNoticeType($intNoticeType, $intEffectiveDate)
  *
  * Generates the appropriate Late Payment Notices
  *
- * @param	int		$intNoticeType	type of notice to be made. ie LETTER_TYPE_SUSPENSION
+ * @param	int		$intAutomaticInvoiceActionType	type of action to produce a notice for. eg AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE
  * @param	string	$strBasePath	optional, path where the generated notices will be placed
  *									
  * @return	mixed					returns FALSE on failure 
@@ -3718,7 +3818,7 @@ function GetEffectiveInvoiceDateForNoticeType($intNoticeType, $intEffectiveDate)
  *											Array['Failed'] 	= number of notices that failed to generate, of the NoticeType
  * @function
  */
-function GenerateLatePaymentNotices($intNoticeType, $intEffectiveDate=0, $strBasePath=FILES_BASE_PATH)
+function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiveDate=0, $strBasePath=FILES_BASE_PATH)
 {
 	$selPriorNotices = new StatementSelect("AccountLetterLog", "Id", "Invoice = <InvoiceId> AND LetterType = <NoticeType>", "", 1);
 
@@ -3740,7 +3840,7 @@ function GenerateLatePaymentNotices($intNoticeType, $intEffectiveDate=0, $strBas
 	$intEffectiveDate = $intEffectiveDate ? $intEffectiveDate : time();
 
 	// Find all Accounts that fit the requirements for Late Notice generation
-	$arrAccounts = ListLatePaymentAccounts($intNoticeType, $intEffectiveDate);
+	$arrAccounts = ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDate);
 
 	if ($arrAccounts === FALSE)
 	{
@@ -3760,31 +3860,41 @@ function GenerateLatePaymentNotices($intNoticeType, $intEffectiveDate=0, $strBas
 	{
 		$mxdSuccess = NULL;
 
-		switch ($intNoticeType)
+		switch ($intAutomaticInvoiceActionType)
 		{
-			case LETTER_TYPE_OVERDUE:
+			case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
 				// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
 				// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
-				$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_OVERDUE, $arrAccount, $strBasePath, $intEffectiveDate);
+				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER;
+				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
 				break;
 
-			case LETTER_TYPE_SUSPENSION:
+			case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
+				// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
+				// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
+				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE;
+				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
+				break;
+
+			case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
 				// Check if the Overdue Notice was built this month, and if so build the suspension notice
-				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => LETTER_TYPE_OVERDUE));
+				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE));
+				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE;
 				if ($intNumRows == 1)
 				{
 					// An "Overdue" notice has been sent for this invoice.  Build the Suspension notice
-					$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_SUSPENSION, $arrAccount, $strBasePath, $intEffectiveDate);
+					$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
 				}
 				break;
 
-			case LETTER_TYPE_FINAL_DEMAND:
+			case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND:
 				// Check if the Suspension Notice was built this month, and if so build the final demand notice
-				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => LETTER_TYPE_SUSPENSION));
+				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE));
+				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND;
 				if ($intNumRows == 1)
 				{
 					// A "Suspension" notice has been sent for this invoice.  Build the Final Demand notice
-					$mxdSuccess = BuildLatePaymentNotice(LETTER_TYPE_FINAL_DEMAND, $arrAccount, $strBasePath, $intEffectiveDate);
+					$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
 				}
 				break;
 		}
@@ -3817,7 +3927,7 @@ function GenerateLatePaymentNotices($intNoticeType, $intEffectiveDate=0, $strBas
 		}
 	}
 	// Build the summary file
-	$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))). 
+	$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))). 
 					"_summary_". date("Y_m_d") .".csv";
 	$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
 	if ($ptrSummaryFile !== FALSE)
@@ -3889,6 +3999,34 @@ function RecursiveMkdir($strPath, $intMode = 0777)
     return TRUE;
 }
 
+function GetAutomaticInvoiceActionResponseTime($intActionId)
+{
+	static $cache;
+	if (!isset($cache))
+	{
+		$cache = array();
+	}
+	if (!array_key_exists($intActionId, $cache))
+	{
+		$arrColumns = array('response_days', 'response_days');
+		$strTables = "automatic_invoice_action";
+		$strWhere = "id = $intActionId";
+		$selDays = new StatementSelect($strTables, $arrColumns, $strWhere);
+		$mxdReturn = $selDays->Execute();
+		$result = FALSE;
+		if ($mxdReturn !== FALSE)
+		{
+			$days = $selDays->Fetch();
+			if ($days)
+			{
+				$result = $days['response_days'];
+			}
+		}
+		$cache[$intActionId] = $result;
+	}
+	return $cache[$intActionId];
+}
+
 //------------------------------------------------------------------------//
 // BuildLatePaymentNotice
 //------------------------------------------------------------------------//
@@ -3899,7 +4037,7 @@ function RecursiveMkdir($strPath, $intMode = 0777)
  *
  * Generates the chosen Late Payment Notice for an Account
  *
- * @param	integer	$intNoticeType	Type of notice to generate (LETTER_TYPE_OVERDUE | _SUSPENSION | _FINAL_DEMAND)
+ * @param	integer	$intNoticeType	Type of notice to generate DOCUMENT_TEMPLATE_TYPE_[OVERDUE_NOTICE|SUSPENSION_NOTICE|FINAL_DEMAND|FRIENDLY_REMINDER]
  * @param	array	$arrAccount		All Account, Contact and Invoice data required for the notice
  * @param	string	$strBasePath	optional, base path where the generated notices will be placed. Must end with a '/'
  *									
@@ -3907,7 +4045,7 @@ function RecursiveMkdir($strPath, $intMode = 0777)
  *
  * @function
  */
-function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate)
+function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate, $intAutomaticInvoiceActionType)
 {
 	// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
 	// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
@@ -3932,20 +4070,10 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	$dom = new Flex_Dom_Document();
 
 	// Set up all values required of the notice, which have not been defined yet
-	switch ($intNoticeType)
-	{
-		case LETTER_TYPE_OVERDUE:
-			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_OVERDUE_NOTICE');
-			break;
-		case LETTER_TYPE_SUSPENSION:
-			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_SUSPENSION_NOTICE');
-			break;
-		case LETTER_TYPE_FINAL_DEMAND:
-			$dom->Document->DocumentType->setValue('DOCUMENT_TYPE_FINAL_DEMAND_NOTICE');
-			break;
-	}
+	$dom->Document->DocumentType->setValue(GetConstantName('DocumentTemplateType', $intNoticeType));
 
-	$actionDate = (7 * 24 * 60 * 60) + $intEffectiveDate; // TODO: 7 days later - this should be made configurable
+	$responseDays = GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType);
+	$actionDate = ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
 
 	// Always issue on the scheduled date!
 	$dom->Document->DateIssued = date("d M Y", $intEffectiveDate);
@@ -4059,7 +4187,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	$insFileExport->Execute($arrFileLog);
 
 	// Create a system note for the account
-	$strNote = 	GetConstantDescription($intNoticeType, "LetterType") . " has been generated\n".
+	$strNote = 	GetConstantDescription($intNoticeType, "DocumentTemplateType") . " has been generated\n".
 				"Outstanding Overdue: \$" . number_format($arrAccount['Overdue'], 2, '.', '') . "\n".
 				"Outstanding Not Overdue: \$" . number_format($arrAccount['OutstandingNotOverdue'], 2, '.', '');
 
@@ -4343,29 +4471,6 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 		$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Description']	= $strDescription;
 	}
 	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
-	
-	
-	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
-	// Load in the DocumentTemplateType constants from the DocumentTemplateType table.
-	// These constants are only used by the backend.  The frontend always refers to the database
-	// when dealing with document templates
-	// This block of code can be removed when the backend no longer relies on them
-	$selDocumentTemplateType = new StatementSelect("DocumentTemplateType", "Id, Name", "TRUE", "Id");
-	$selDocumentTemplateType->Execute();
-	$arrDocumentTemplateTypes = $selDocumentTemplateType->FetchAll();
-	foreach ($arrDocumentTemplateTypes as $arrDocumentTemplateType)
-	{
-		// Build the constant name
-		$strConstant				= "DOCUMENT_TEMPLATE_TYPE_" . strtoupper(str_replace(" ", "_", $arrDocumentTemplateType['Name']));
-		$strName					= $arrDocumentTemplateType['Name'];
-		$intDocumentTemplateTypeId	= $arrDocumentTemplateType['Id'];
-		
-		define($strConstant, $intDocumentTemplateTypeId);
-		$GLOBALS['*arrConstant']['DocumentTemplateType'][$intDocumentTemplateTypeId]['Constant']	= $strConstant;
-		$GLOBALS['*arrConstant']['DocumentTemplateType'][$intDocumentTemplateTypeId]['Description']	= $strName;
-	}
-	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
-	
 }
 
 
@@ -4780,7 +4885,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 	return Array('Files' => $arrFiles, 'Processed' => TRUE);
 }
 
-function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE)
+function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
 {
 	// Throw exception if fails
 
@@ -4839,6 +4944,7 @@ function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE)
 	{
 		$strReason = 'Automatically barred the following services: ' . implode(', ', $bolBarredFNNs) . '. ';
 		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_BARRED, $strReason);
+		ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_BARRING, $strReason, NULL, $invoiceRun);
 	}
 
 	$outcome = array('BARRED' => $arrBarrableAccountServices, 'NOT_BARRED' => $arrUnbarrableAccountServices);
@@ -4847,7 +4953,7 @@ function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE)
 	return $outcome;
 }
 
-function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE)
+function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
 {
 	// Throw exception if fails
 
@@ -4906,6 +5012,7 @@ function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE)
 	{
 		$strReason = 'Automatically unbarred the following services: ' . implode(', ', $bolUnbarredFNNs) . '. ';
 		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_UNBARRED, $strReason);
+		ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_UNBARRING, $strReason, NULL, $invoiceRun);
 	}
 
 	$outcome = array('UNBARRED' => $arrUnbarrableAccountServices, 'NOT_UNBARRED' => $arrNonUnbarrableAccountServices);
@@ -4958,6 +5065,55 @@ function ChangeAccountAutomaticBarringStatus($intAccount, $intAccountGroup, $int
 
 	return TRUE;
 }
+
+function ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $strDateTime=NULL, $mxdInvoiceRun=NULL)
+{
+	$error = '';
+
+	if ($strDateTime == NULL)
+	{
+		$strDateTime = date("Y-m-d H:i:s");
+	}
+
+	if ($intFrom === NULL)
+	{
+		// Need to find the current status for the account (do this as part of the other queries)
+		$intFrom = "(SELECT last_automatic_invoice_action FROM Account WHERE Id = $intAccount)";
+	}
+
+	// If mxdInvoiceRun is onot an int, we should assume that it is the InvoiceRun string value of an InvoiceRun record
+	if (!is_int($mxdInvoiceRun))
+	{
+		$invoiceRunId = "(SELECT Id FROM InvoiceRun WHERE InvoiceRun = '$mxdInvoiceRun')";
+	}
+	// Else we can assume that an invoice run id has been passed
+	else
+	{
+		$invoiceRunId = $mxdInvoiceRun;
+	}
+
+	// Creating an automatic_invoice_action_history entry.
+	$qryQuery = new Query();
+	$strReason = $qryQuery->EscapeString($strReason);
+	$strSQL = "INSERT INTO automatic_invoice_action_history (account, from_action, to_action, reason, change_datetime, invoice_run_id)
+				VALUES ($intAccount, $intFrom, $intTo, '$strReason', '$strDateTime', $invoiceRunId)";
+//echo "\n\n$strSQL\n\n";
+	if (!$outcome = $qryQuery->Execute($strSQL))
+	{
+		return ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change to ' . $intTo . '. '. $qryQuery->Error();
+	}
+
+	$qryQuery = new Query();
+	$strSQL = "UPDATE Account SET last_automatic_invoice_action = $intTo, last_automatic_invoice_action_datetime = '$strDateTime' WHERE Id = $intAccount";
+	if (!$outcome = $qryQuery->Execute($strSQL))
+	{
+		return ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action to ' . $intTo . '. '. $qryQuery->Error();
+	}
+
+	return TRUE;
+}
+
+
 
 function ListServicesAndCarriersForAccount($accountId)
 {
@@ -5128,6 +5284,81 @@ function ListAutomatableCarriers($intProvisioningTypeConstant, $bolInbound=FALSE
 		}
 	}
 	return $carriers[$key];
+}
+
+function GetEmailAddresses($intEmailNotification, $intCustGroupId=NULL, $strToEmail=NULL)
+{
+	$addresses = array(EMAIL_ADDRESS_USAGE_TO => array(), EMAIL_ADDRESS_USAGE_FROM => array(), EMAIL_ADDRESS_USAGE_CC => array(), EMAIL_ADDRESS_USAGE_BCC => array());
+	$intEmailNotification = intval($intEmailNotification);
+
+	$arrColumns = array(
+		'EmailUsage' => 'email_address_usage_id',
+		'EmailAddress' => 'LCASE(email_address)',
+	);
+	$strTables = " email_notification_address"; 
+	$custWhere = '';
+	if (is_int($intCustGroupId))
+	{
+		$custWhere = ' OR customer_group_id = ' . $intCustGroupId . ' ';
+	}
+	$strWhere = "email_notification_id = $intEmailNotification AND (customer_group_id IS NULL$custWhere)";
+
+	/*
+	// DEBUG: Output the query that gets run
+	$select = array();
+	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
+	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\n\n";
+	//*/
+
+	$selEmails = new StatementSelect($strTables, $arrColumns, $strWhere);
+	$result = $selEmails->Execute();
+	if ($result === FALSE)
+	{
+		throw new Exception('Failed to find email addresses for email notification type: '. $intEmailNotification);
+	}
+	$emailAddresses = $selEmails->FetchAll();
+	foreach ($emailAddresses as $address)
+	{
+		$addresses[$address['EmailUsage']][] = $address['EmailAddress'];
+	}
+	foreach ($addresses as $usage => $emails)
+	{
+		$addresses[$usage] = array_unique($emails);
+	}
+	if (empty($addresses[EMAIL_ADDRESS_USAGE_FROM]))
+	{
+		$addresses[EMAIL_ADDRESS_USAGE_FROM][] = 'ybs-admin@yellowbilling.com.au';
+	}
+	// If 'to' address was specified, ensure that it is in the list
+	if ($strToEmail)
+	{
+		$addresses[EMAIL_ADDRESS_USAGE_TO][] = $strToEmail;
+	}
+	// Make sure there is at least one 'to' recipient
+	if (empty($addresses[EMAIL_ADDRESS_USAGE_TO]))
+	{
+		$addresses[EMAIL_ADDRESS_USAGE_TO][] = 'ybs-admin@yellowbilling.com.au';
+	}
+	foreach ($addresses[EMAIL_ADDRESS_USAGE_TO] as $email)
+	{
+		if (($index = array_search($email, $addresses[EMAIL_ADDRESS_USAGE_CC])) !== FALSE)
+		{
+			unset($addresses[EMAIL_ADDRESS_USAGE_CC][$index]);
+		}
+		if (($index = array_search($email, $addresses[EMAIL_ADDRESS_USAGE_BCC])) !== FALSE)
+		{
+			unset($addresses[EMAIL_ADDRESS_USAGE_BCC][$index]);
+		}
+	}
+	foreach ($addresses[EMAIL_ADDRESS_USAGE_CC] as $email)
+	{
+		if (($index = array_search($email, $addresses[EMAIL_ADDRESS_USAGE_BCC])) !== FALSE)
+		{
+			unset($addresses[EMAIL_ADDRESS_USAGE_BCC][$index]);
+		}
+	}
+
+	return $addresses;
 }
 
 ?>

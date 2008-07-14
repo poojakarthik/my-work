@@ -180,11 +180,15 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 			$id = $invoiceAction->id->Value;
 			$name = $invoiceAction->name->Value;
 			$daysFromInvoice = $invoiceAction->days_from_invoice->Value;
+			$responseDays = $invoiceAction->response_days->Value;
 
 			echo "
 
 <div class='DefaultElement'>
-	<div id='invoiceActions.$id.Output' name='payment_terms.payment_terms' class='DefaultOutput Default ' style='margin-left: 60;'>$daysFromInvoice days from Invoice Day.</div>
+	<div id='invoiceActions.$id.Output' name='payment_terms.payment_terms' class='DefaultOutput Default ' style='margin-left: 60;'>$daysFromInvoice days from Invoice Day.
+		<span name='payment_terms.payment_terms' class='DefaultOutput Default ' style='position: absolute; left: 175px;'>Response time: $responseDays days.</span>
+	</div>
+	
 	<div id='invoiceActions.$id.Label' class='DefaultLabel'>
 		<span> &nbsp;</span>
 		<span id='invoiceActions.$id.Label.Text'>$name : </span>
@@ -313,15 +317,24 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 			$id = $invoiceAction->id->Value;
 			$name = $invoiceAction->name->Value;
 			$daysFromInvoice = $invoiceAction->days_from_invoice->Value;
+			$responseDays = $invoiceAction->response_days->Value;
 			$arrInvoiceActionIds[] = $id;
 			echo "<input name=\"automatic_invoice_action_$id.Id\" value=\"$id\" type=\"hidden\">\n";
 			echo "<input id=\"invoiceActions[$id]\" name=\"automatic_invoice_action_$id.days_from_invoice\" value=\"$daysFromInvoice\" type=\"hidden\">\n";
+			echo "<input id=\"invoiceActionResponses[$id]\" name=\"automatic_invoice_action_$id.response_days\" value=\"$responseDays\" type=\"hidden\">\n";
 			
 			echo "
 
 <div class=\"DefaultElement\">
 	<input id=\"invoiceActions.$id\" value=\"$daysFromInvoice\" class=\"DefaultInputText Default\" style=\"width: 50px; margin-left: 60;\" maxlength=\"255\" type=\"text\">
 	<span style=\"margin-left: 200px;\"> days from Invoice Day.</span>
+
+	<div style='position: absolute; display: inline; left: 470px;'>
+		<span>Response time : </span>
+	<input id=\"invoiceActionResponses.$id\" value=\"$responseDays\" class=\"DefaultInputText Default\" style=\"left: 0; width: 50px; margin-left: 0;\" maxlength=\"255\" type=\"text\">
+	<span style=\"\"> days</span>
+	</div>
+
 	<div id=\"invoiceActions.$id.Label\" class=\"DefaultLabel\">
 		<span class=\"RequiredInput\">*</span>
 		<span id=\"invoiceActions.$id.Label.Text\">$name</span><span> : </span>

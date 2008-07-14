@@ -178,6 +178,10 @@ class Cli_App_Pdf extends Cli
 				}
 
 				$docProps["DocumentType"] = str_replace("DOCUMENT_TYPE_", "DOCUMENT_TEMPLATE_TYPE_", $docProps["DocumentType"]);
+				if ($docProps["DocumentType"] == 'DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND_NOTICE')
+				{
+					$docProps["DocumentType"] = 'DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND';
+				}
 				$documentTypeId = constant($docProps["DocumentType"]);
 
 				if ($arrArgs[self::SWITCH_DOCUMENT_TYPE_ID] !== FALSE && $arrArgs[self::SWITCH_DOCUMENT_TYPE_ID] !== $documentTypeId)
@@ -312,7 +316,7 @@ class Cli_App_Pdf extends Cli
 			self::SWITCH_DOCUMENT_TYPE_ID => array(
 				self::ARG_LABEL 		=> "DOCUMENT_TYPE",
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is the document type to be generated (e.g. INVOICE OVERDUE_NOTICE, SUSPENSION_NOTICE or FINAL_DEMAND_NOTICE) [optional, default taken from XML file]",
+				self::ARG_DESCRIPTION => "is the document type to be generated (e.g. INVOICE, FRIENDLY_REMINDER, OVERDUE_NOTICE, SUSPENSION_NOTICE or FINAL_DEMAND_NOTICE) [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validConstant("%1$s", "DOCUMENT_TEMPLATE_TYPE_")'
 			),

@@ -44,6 +44,8 @@ function VixenPaymentTermsDisplayClass()
 {
 	this.strContainerDivId	= null;
 	
+	this.invoiceActionResponses = null;
+	this.invoiceActionResponsesActual = null;
 	this.invoiceActions = null;
 	this.invoiceActionsActual = null;
 	this.invoiceActionsLabel = null;
@@ -117,6 +119,11 @@ function VixenPaymentTermsDisplayClass()
 		{
 			this.invoiceActionsActual[i].value = parseInt(this.invoiceActions[i].value);
 		}
+
+		for (var i in this.invoiceActionResponses)
+		{
+			this.invoiceActionResponsesActual[i].value = parseInt(this.invoiceActionResponses[i].value);
+		}
 	}
 
 	this.InitialiseEdit = function(strContainerDivId, arrInvoiceActionIds)
@@ -147,14 +154,19 @@ function VixenPaymentTermsDisplayClass()
 
 		this.invoiceActions = new Array();
 		this.invoiceActionsActual = new Array();
+		this.invoiceActionResponses = new Array();
+		this.invoiceActionResponsesActual = new Array();
 		this.invoiceActionsLabel = new Array();
 		for (var i in arrInvoiceActionIds)
 		{
 			var id = arrInvoiceActionIds[i];
 			this.invoiceActions[i] = document.getElementById('invoiceActions.' + id);
 			this.invoiceActionsActual[i] = document.getElementById('invoiceActions[' + id + ']');
+			this.invoiceActionResponses[i] = document.getElementById('invoiceActionResponses.' + id);
+			this.invoiceActionResponsesActual[i] = document.getElementById('invoiceActionResponses[' + id + ']');
 			this.invoiceActionsLabel[i] = document.getElementById('invoiceActions.' + id + '.Label.Text').innerHTML;
-			fields[i + 4] = this.invoiceActions[i];
+			fields[(i*2) + 4] = this.invoiceActions[i];
+			fields[(i*2) + 5] = this.invoiceActionResponses[i];
 		}
 
 		for (var i in fields)
@@ -186,6 +198,15 @@ function VixenPaymentTermsDisplayClass()
 			if (isNaN(parseInt(this.invoiceActions[i].value)) || parseInt(this.invoiceActions[i].value) < 0)
 			{
 				this.alertAndFocus(this.invoiceActionsLabel[i] + " must be set to a number of days after the invoice day.", 'invoiceActions[' + i + ']');
+				return false;
+			}
+		}
+
+		for (var i in this.invoiceActionResponses)
+		{
+			if (isNaN(parseInt(this.invoiceActionResponses[i].value)) || parseInt(this.invoiceActionResponses[i].value) < 0)
+			{
+				this.alertAndFocus(this.invoiceActionsLabel[i] + " must be set to a number of days after the event.", 'invoiceActionResponses[' + i + ']');
 				return false;
 			}
 		}

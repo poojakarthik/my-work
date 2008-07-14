@@ -916,7 +916,7 @@ class ApplicationTemplate extends ApplicationBaseClass
 	 * @return		void
 	 * @method
 	 */
-	function LoadPage($strPageName)
+	function LoadPage($strPageName, $intContext=HTML_CONTEXT_DEFAULT)
 	{
 		if ($this->_intTemplateMode == AJAX_MODE)
 		{
@@ -1234,7 +1234,7 @@ class HtmlTemplate extends BaseTemplate
 	 * @return		void
 	 * @method
 	 */
-	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strTargetType=NULL, $strStyleClass="InputSubmit")
+	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strTargetType=NULL, $strStyleClass="InputSubmit", $strButtonId='VixenButtonId')
 	{
 		$strTarget = '';
 		$strId = '';
@@ -1261,7 +1261,7 @@ class HtmlTemplate extends BaseTemplate
 			$strTarget = $strTargetType;
 		}
 		
-		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}')\"></input>\n";
+		echo "<input type='button' value='$strLabel' class='$strStyleClass' id='$strButtonId' name='VixenButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}')\"></input>\n";
 	}
 
 	//------------------------------------------------------------------------//

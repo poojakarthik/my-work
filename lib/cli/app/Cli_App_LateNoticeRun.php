@@ -31,16 +31,12 @@ class Cli_App_LateNoticeRun extends Cli
 				throw new Exception('The configured FILES_BASE_PATH does not exists. Please add a valid setting to the configuration file.');
 			}
 
-			// Convert effective date to unix timestamp for start of day
-			$day = intval(date('d', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
-			$month = intval(date('m', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
-			$year = intval(date('Y', $arrArgs[self::SWITCH_EFFECTIVE_DATE]));
-			$todayTimestamp = mktime(0, 0, 0, $month, $day, $year, FALSE);
-
 			$arrNoticeTypes = array(
-				LETTER_TYPE_OVERDUE,
-				LETTER_TYPE_SUSPENSION,
-				LETTER_TYPE_FINAL_DEMAND);
+				DOCUMENT_TEMPLATE_TYPE_FRIENDLY_REMINDER => AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER,
+				DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE => AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE,
+				DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE => AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE,
+				DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND => AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND,
+			);
 
 			$outputs = array();
 
@@ -50,12 +46,24 @@ class Cli_App_LateNoticeRun extends Cli
 
 			$arrGeneralErrors = array();
 
-			$invcoieRunAutoFields = array();
+			$invoiceRunAutoFields = array();
 
-			foreach($arrNoticeTypes as $intNoticeType)
+			$sendEmail = FALSE;
+
+			foreach($arrNoticeTypes as $intNoticeType => $intAutomaticInvoiceAction)
 			{
-				$mixResult = GenerateLatePaymentNotices($intNoticeType, $todayTimestamp);
-				$strLetterType = GetConstantDescription($intNoticeType, "LetterType");
+				// This query is repeated by the GenerateLatePaymentNotices function. Consider revising.
+				$arrInvoiceRunIds = ListInvoiceRunsForAutomaticInvoiceActionAndDate($intAutomaticInvoiceAction, $arrArgs[self::SWITCH_EFFECTIVE_DATE]);
+				if (!count($arrInvoiceRunIds))
+				{
+					$this->log("No applicable invoice runs found for action type $intAutomaticInvoiceAction.");
+					continue;
+				}
+
+				$mixResult = GenerateLatePaymentNotices($intAutomaticInvoiceAction, $arrArgs[self::SWITCH_EFFECTIVE_DATE]);
+				$strLetterType = GetConstantDescription($intNoticeType, "DocumentTemplateType");
+
+				$sendEmail = TRUE;
 
 				// Notices were generated iff the results contain an 
 				if ($mixResult === FALSE)
@@ -76,31 +84,9 @@ class Cli_App_LateNoticeRun extends Cli
 					$this->log("{$strLetterType}s successfully generated  : {$mixResult['Successful']}");
 					$this->log("{$strLetterType}s that failed to generate : {$mixResult['Failed']}");
 
-
-					$newAutoInvAction = NULL;
-					$autorunField = NULL;
-					// Take action appropriate for the notice type
-					switch ($intNoticeType)
+					if (!array_key_exists($intAutomaticInvoiceAction, $invoiceRunAutoFields))
 					{
-						case LETTER_TYPE_OVERDUE:
-							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE;
-							$autorunField = 'automatic_overdue_datetime';
-							break;
-						case LETTER_TYPE_SUSPENSION:
-							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE;
-							$autorunField = 'automatic_suspension_datetime';
-							break;
-						case LETTER_TYPE_FINAL_DEMAND:
-							$newAutoInvAction = AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND;
-							$autorunField = 'automatic_final_demand_datetime';
-							break;
-						default:
-							continue;
-					}
-
-					if (!array_key_exists($autorunField, $invcoieRunAutoFields))
-					{
-						$invcoieRunAutoFields[$autorunField] = array();
+						$invoiceRunAutoFields[$intAutomaticInvoiceAction] = array();
 					}
 
 					// We now need to email/print each of the notices that have been generated
@@ -129,11 +115,11 @@ class Cli_App_LateNoticeRun extends Cli
 						}
 
 						$invoiceRun = $arrDetails['Account']['InvoiceRun'];
-						if (!array_key_exists($invoiceRun, $invcoieRunAutoFields[$autorunField]))
+						if (!array_key_exists($invoiceRun, $invoiceRunAutoFields[$intAutomaticInvoiceAction]))
 						{
-							$invcoieRunAutoFields[$autorunField][$invoiceRun] = 0;
+							$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRun] = 0;
 						}
-						$invcoieRunAutoFields[$autorunField][$invoiceRun]++;
+						$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRun]++;
 
 						switch ($arrDetails['Account']['DeliveryMethod'])
 						{
@@ -166,11 +152,12 @@ class Cli_App_LateNoticeRun extends Cli
 										$directory = '';
 										foreach($outputDirectories as $subDirectory)
 										{
+											// If root directory on linux/unix
 											if (!$subDirectory) 
 											{
 												continue;
 											}
-											$xdirectory = $directory ? ($directory . DIRECTORY_SEPARATOR . $subDirectory) : $subDirectory;
+											$xdirectory = $directory . DIRECTORY_SEPARATOR . $subDirectory;
 											if (!file_exists($xdirectory))
 											{
 												$ok = @mkdir($xdirectory);
@@ -212,7 +199,7 @@ class Cli_App_LateNoticeRun extends Cli
 										$arrSummary[$strCustGroupName][$strLetterType]['pdfs'][] = $targetFile;
 	
 										// We need to log the fact that we've created it, by updating the account automatic_invoice_action
-										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType stored for printing in $outputDirectory");
+										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType stored for printing in $outputDirectory", $invoiceRun);
 										if ($outcome !== TRUE)
 										{
 											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
@@ -263,22 +250,21 @@ class Cli_App_LateNoticeRun extends Cli
 				 								  "Regards\r\n\r\n" .
 				 								  "The Team at $strCustGroupName";
 
-									if (!$arrArgs[self::SWITCH_TEST_RUN])
-									{
-										$outcome = $this->sendEmail($emailFrom, $emailTo, $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
-									}
-									else
-									{
-										$outcome = $this->sendEmail($emailFrom, 'billing-notifications@yellowbilling.com.au', $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
-										//$outcome = $this->sendEmail($emailFrom, "billing-notifications@yellowbilling.com.au", $subject, $strContent, $pdfContent, $fileName, 'application/pdf');
-									}
+									$to = $arrArgs[self::SWITCH_TEST_RUN] ? 'billing-notifications@yellowbilling.com.au' : $emailTo;
 
-									if ($outcome === TRUE)
+									$attachments = array();
+									$attachment = array();
+									$attachment[self::EMAIL_ATTACHMENT_NAME] = $fileName;
+									$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/pdf';
+									$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
+									$attachments[] = $attachment;
+
+									if ($this->sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments))
 									{
 										$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
 
 										// We need to log the fact that we've sent it, by updating the account automatic_invoice_action
-										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $newAutoInvAction, "$strLetterType emailed to $name ($emailTo)");
+										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRun);
 										if ($outcome !== TRUE)
 										{
 											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
@@ -301,11 +287,11 @@ class Cli_App_LateNoticeRun extends Cli
 				}
 			}
 
-			foreach ($invcoieRunAutoFields as $autoField => $invoiceRunCounts)
+			foreach ($invoiceRunAutoFields as $intAutomaticInvoiceAction => $invoiceRunCounts)
 			{
 				foreach ($invoiceRunCounts as $invoiceRun => $count)
 				{
-					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, $autoField);
+					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, $intAutomaticInvoiceAction);
 					if ($result !== TRUE)
 					{
 						$arrGeneralErrors[] = $result;
@@ -338,6 +324,12 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 					$this->log("Finished moving $strLetterType PDFs for customer group $strCustGroupName to $strTarPath");
 				}
+			}
+
+			if (!$sendEmail)
+			{
+				$this->log("No applicable invoice runs found. Exiting normally.");
+				return 0;
 			}
 
 			// We now need to build a report detailing actions taken for each of the customer groups
@@ -433,15 +425,13 @@ class Cli_App_LateNoticeRun extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			$outcome = $this->sendEmail("late_notice_run@yellowbilling.com.au", "ybs-admin@yellowbilling.com.au", $subject, $body);
-
-			if ($outcome === TRUE)
+			if ($this->sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body))
 			{
 				$this->log("Report sent");
 			}
 			else
 			{
-				$this->log("Failed to email report. ". ($outcome ? "\n$outcome" : ''), TRUE);
+				$this->log("Failed to email report.", TRUE);
 			}
 
 			$this->log("Finished.");
@@ -454,50 +444,29 @@ class Cli_App_LateNoticeRun extends Cli
 		}
 	}
 
-	private function changeInvoiceRunAutoActionDateTime($invoiceRun, $autoField)
+	private function changeInvoiceRunAutoActionDateTime($invoiceRun, $intAutomaticInvoiceAction)
 	{
 		$qryQuery = new Query();
 		$invoiceRun = $qryQuery->EscapeString($invoiceRun);
-		$strSQL = "UPDATE InvoiceRun SET $autoField = '$this->runDateTime' WHERE InvoiceRun = '$invoiceRun'";
+		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id IN (SELECT Id FROM InvoiceRun WHERE InvoiceRun = '$invoiceRun') AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
+
 		$message = TRUE;
 		if (!$qryQuery->Execute($strSQL))
 		{
-			$message = ' Failed to update InvoiceRun ' . $invoiceRun . ' ' . $autoField . ' to ' . $this->runDateTime . '. '. $qryQuery->Error();
+			$message = ' Failed to update automatic_invoice_run_event for invoice_run ' . $invoiceRun . ' and action ' . $intAutomaticInvoiceAction . ' to ' . $this->runDateTime . '. '. $qryQuery->Error();
 			$this->log($message, TRUE);
 		}
 		return $message;
 	}
 
-	private function changeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason)
+	private function changeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $invoiceRun)
 	{
-		$error = '';
-
-		$qryQuery = new Query();
-		$strSQL = 'UPDATE Account SET last_automatic_invoice_action = ' . $intTo . ', last_automatic_invoice_action_datetime = \'' . $this->runDateTime . '\' WHERE Id = ' . $intAccount;
-		if (!$outcome = $qryQuery->Execute($strSQL))
+		$error = ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $this->runDateTime, $invoiceRun);
+		if ($error !== TRUE)
 		{
-			$message = ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
-			$this->log($message, TRUE);
-			$error .= $message;
+			$this->log($error, TRUE);
 		}
-
-		// and creating a corresponding automatic_invoice_action_history entry.
-		$qryQuery = new Query();
-		$strSQL = 'INSERT INTO automatic_invoice_action_history (account, from_action, to_action, reason, change_datetime) ' .
-				' VALUES (' .
-				$intAccount . ', ' .
-				$intFrom . ', ' .
-				$intTo .', ' .
-				'\'' . $qryQuery->EscapeString($strReason) . '\', ' .
-				'\'' . $this->runDateTime . '\'' .
-				')';
-		if (!$outcome = $qryQuery->Execute($strSQL))
-		{
-			$message = ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
-			$this->log($message, TRUE);
-			$error .= $message;
-		}
-		return $error == '' ? TRUE : $error;
+		return $error;
 	}
 
 	private function getPDFContent($custGroupId, $effectiveDate, $documentTypeId, $pathToXMLFile, $targetMedia)

@@ -57,14 +57,13 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to add 3G RecordType. ' . $qryQuery->Error());
 		}
-		$intInsertId	= $dbaDB->refMysqliConnection->insert_id;
 		$strSQL 		= " UPDATE RecordType
-							SET GroupId = {$intInsertId} WHERE Id = {$intInsertId}";
+							SET GroupId = Id WHERE Code = '3G' AND Name = '3G' AND Description = '3G Data' AND Context = 101 AND GroupId = 0 AND DisplayType = 3";
 		if (!($intInsertId = $qryQuery->Execute($strSQL)))
 		{
 			throw new Exception(__CLASS__ . ' Failed to Set 3G RecordType\'s GroupId. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DELETE FROM CarrierModule WHERE Id = {$intInsertId}";
+		$this->rollbackSQL[] = "DELETE FROM CarrierModule WHERE Code = '3G' AND Name = '3G' AND Description = '3G Data' AND Context = 101 AND GroupId = Id AND DisplayType = 3";
 		
 		// Adds Payment.carrier Foreign Key to the Carrier table
 		$strSQL = " ALTER TABLE Payment
@@ -116,7 +115,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "ALTER TABLE Carrier DROP carrier_type, DROP description, DROP const_name, MODIFY Id BIGINT(20) NOT NULL";
 		$strSQL 		= " UPDATE Carrier
 							SET carrier_type = (SELECT id FROM carrier_type WHERE name = 'Telecom'), description = Name, const_name = IF(Name = 'Unitel (VoiceTalk)', 'CARRIER_UNITEL_VOICETALK', UCASE(CONCAT('carrier_', Name)))";
-		if (!($intInsertId = $qryQuery->Execute($strSQL)))
+		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to set new Carrier fields. ' . $qryQuery->Error());
 		}

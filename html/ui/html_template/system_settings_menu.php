@@ -86,8 +86,8 @@ class HtmlTemplateSystemSettingsMenu extends HtmlTemplate
 
 		// Render the link the the "Constants Management" page
 		$strImage = "img/template/payment_terms.png";
-		$strItemName = "Manage Payment Terms";
-		$strItemDescription = "Manage system payment terms";
+		$strItemName = "Manage Payment Process";
+		$strItemDescription = "Manage system payment process";
 		$strHref = Href()->ManagePaymentTerms();
 		$this->_RenderMenuItem($strImage, $strItemName, $strItemDescription, $strHref);
 	}	
