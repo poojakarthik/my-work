@@ -37,8 +37,7 @@ class Cli_App_Automatic_Barring extends Cli
 			$arrInvoiceRunIds = ListInvoiceRunsForAutomaticInvoiceActionAndDate($action, $now);
 			if (!count($arrInvoiceRunIds))
 			{
-				$this->log("No applicable invoice runs found. Exiting normally.");
-				return 0;
+				$this->log("No applicable invoice runs found for barring. Exiting normally.");
 			}
 
 			$this->log('Beginning database transaction.');
