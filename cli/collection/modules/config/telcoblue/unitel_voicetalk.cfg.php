@@ -7,7 +7,7 @@ $arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['Regex']		= "/^[A-Za-z]\d{7}\
 $arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['FTPMode']		= FTP_BINARY;
 $arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/';
-$arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/archive/';
+//$arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/archive/';
 
 $arrStructure[FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Regex']		= "/^[A-Za-z]{3}(On|Off)netBatch_SE_[A-Z]\d{5}_\d{8}.csv$/";
 $arrStructure[FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
@@ -29,7 +29,7 @@ $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS]	['Regex']		= "/^rsl\
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS]	['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS]	['FTPMode']		= FTP_BINARY;
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS]	['Paths']		[]	= '/ebill_dailyorderfiles/dsc_reports/';
-$arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS]	['Paths']		[]	= '/ebill_dailyorderfiles/dsc_reports/archive/';
+//$arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS]	['Paths']		[]	= '/ebill_dailyorderfiles/dsc_reports/archive/';
 
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_BASKETS]		['Regex']		= "/^rsl\d{3}a\d{4}\d{4}[01]\d[0-3]\d.txt$/";
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_BASKETS]		['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
@@ -40,7 +40,7 @@ $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION]	['Regex']		= "/^rssa
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION]	['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION]	['FTPMode']		= FTP_BINARY;
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION]	['Paths']		[]	= '/dailychurn/';
-$arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION]	['Paths']		[]	= '/dailychurn/sentreports/';
+//$arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION]	['Paths']		[]	= '/dailychurn/sentreports/';
 
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_LINE_STATUS]	['Regex']		= "/^LineStatus.csv$/";
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_LINE_STATUS]	['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
