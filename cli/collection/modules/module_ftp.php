@@ -231,7 +231,7 @@
 				{
 					foreach ($arrFiles as &$strFilePath)
 					{
-						$strFilePath	= rtrim(trim($strFilePath), '*');
+						$strFilePath	= $strPath.rtrim(trim($strFilePath), '*');
 						
 						if (substr(trim($strFilePath), -1) === '/')
 						{
