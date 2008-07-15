@@ -144,7 +144,7 @@ class Zend_Pdf_Element_Dictionary extends Zend_Pdf_Element
 
         foreach ($this->_items as $name => $element) {
             if (!is_object($element)) {
-                throw new Zend_Pdf_Exception('Wrong data' . "  $name = " . $element);
+                throw new Zend_Pdf_Exception('Wrong data');
             }
 
             if (strlen($outStr) - $lastNL > 128)  {
