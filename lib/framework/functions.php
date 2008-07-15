@@ -4967,6 +4967,7 @@ function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $inv
 	$arrUnbarrableAccountServices = array();
 
 	$bolUnbarred = FALSE;
+	$bolManualUnbars = FALSE;
 
 	$bolUnbarredFNNs = array();
 
@@ -5004,11 +5005,14 @@ function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $inv
 		else
 		{
 			$arrNonUnbarrableAccountServices[$intServiceId] = $arrDetails;
+			$bolManualUnbars = TRUE;
 		}
 	}
 
 	// If automatic, change auto_barring_status for the account
-	if ($bolAutomatic && $bolUnbarred)
+	// Note: We do this when we have either auto-unbarred some services (any)
+	// or when there were no services associated with the account 
+	if ($bolAutomatic && ($bolUnbarred || (!$bolUnbarred && !$bolManualUnbars)))
 	{
 		$strReason = 'Automatically unbarred the following services: ' . implode(', ', $bolUnbarredFNNs) . '. ';
 		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_UNBARRED, $strReason);
