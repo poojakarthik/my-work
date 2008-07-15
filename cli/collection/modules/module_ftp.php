@@ -194,7 +194,7 @@
 			}
 			else
 			{
-				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}'";
+				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}': {$php_errormsg}";
 			}
 		}
  	}

@@ -17,7 +17,9 @@ define('COLLECTION_DEBUG_MODE',		FALSE);
 $appCollection = new ApplicationCollection($arrConfig);
 
 // run the thing
+$intOldTrackErrors	= ini_set('track_errors', 1);
 $appCollection->Collect();
+ini_set('track_errors', $intOldTrackErrors);
 
 // finished
 CliEcho("\n-- End of Collection --\n");
