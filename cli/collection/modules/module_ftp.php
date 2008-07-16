@@ -109,7 +109,7 @@
 		$strPassword	= $this->GetConfigField('Password');
 		
 		// Connect to the Server
-		$this->_resConnection	= ($this->GetConfigField('SFTP') === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
+		$this->_resConnection	= ($this->GetConfigField('SSL') === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
 		if ($this->_resConnection)
 		{
 			// Log in to the Server
