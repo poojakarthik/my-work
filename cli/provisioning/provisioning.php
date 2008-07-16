@@ -116,6 +116,23 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 	 */
 	function Import()
  	{
+		// Get list of Provisioning Files to import
+		$arrFileTypes	= Array();
+		foreach ($this->_arrImportFiles as $intCarrier=>$arrCarrierFileTypes)
+		{
+			foreach (array_keys($arrCarrierFileTypes) as $intFileType)
+			{
+				$arrFileTypes[]	= $intFileType;
+			}
+		}
+		
+		// Do we have any FileTypes to import?
+		if (!count($arrFileTypes))
+		{
+			return FALSE;
+		}
+ 		
+ 		
  		// Statements
  		$arrCols				= Array();
 		$arrCols['Id']			= NULL;
@@ -123,7 +140,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 		$arrCols['LastUpdated']	= NULL;
  		$ubiRequest			= new StatementUpdateById("ProvisioningRequest", $arrCols);
  		
- 		$selImport			= new StatementSelect("FileImport", "*", "Status = ".PROVFILE_WAITING);
+ 		$selImport			= new StatementSelect("FileImport", "*", "FileType IN (".implode(', ', $arrFileTypes).") AND Status = ".FILE_COLLECTED);
  		$selServiceCarrier	= new StatementSelect("Service", "Carrier, CarrierPreselect", "Id = <Service>");
  		
  		$arrCols				= $this->db->FetchClean("ProvisioningResponse");
