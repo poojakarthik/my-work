@@ -207,7 +207,7 @@
 							while ($arrStatement = $selStatement->Fetch())
 							{
 								//Debug($arrStatement);
-								$oblOption = new $arrInput['DBSelect']['ValueType']('Option', $arrStatement['Value']);
+								$oblOption =& new $arrInput['DBSelect']['ValueType']('Option', $arrStatement['Value']);
 								$oblOption->setAttribute('Label', $arrStatement['Label']);
 								$oblarrValue->Push($oblOption);
 							}
