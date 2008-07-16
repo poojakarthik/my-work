@@ -37,7 +37,7 @@ class Cli_App_Automatic_Barring extends Cli
 			$arrInvoiceRunIds = ListInvoiceRunsForAutomaticInvoiceActionAndDate($action, $now);
 			if (!count($arrInvoiceRunIds))
 			{
-				$this->log("No applicable invoice runs found for barring. Exiting normally.");
+				$this->log("No applicable invoice runs found for barring.");
 			}
 
 			$this->log('Beginning database transaction.');
@@ -307,7 +307,11 @@ class Cli_App_Automatic_Barring extends Cli
 
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
-			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') . " Automated barring log for$strListing run dated " . $this->runDateTime;
+			$arrTmpActions = array();
+			if (!empty($barSummary)) $arrTmpActions[] = 'barring';
+			if (!empty($unbarSummary)) $arrTmpActions[] = 'barring';
+			$strTmpActions = implode(' and ', $arrTmpActions);
+			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') . " Automated $strTmpActions log for$strListing run dated " . $this->runDateTime;
 			if ($arrArgs[self::SWITCH_TEST_RUN])
 			{
 				$report[] = "***TEST RUN - NO DATABASE CHANGES WERE COMMITTED***";
@@ -318,11 +322,7 @@ class Cli_App_Automatic_Barring extends Cli
 				$report[] = $arrArgs[self::SWITCH_LIST_RUN] ? "***ERRORS WERE DETECTED WHILST RUNNING AUTOMATED [UN]BARRING LISTING***" : "***ERRORS WERE DETECTED WHILST RUNNING AUTOMATED [UN]BARRING***";
 				$report[] = "";
 			}
-			else
-			{
-				$report[] = "The automated [un]barring$strListing completed without any errors being detected.";
-				$report[] = "";
-			}
+
 			if (!empty($arrGeneralErrors))
 			{
 				$report[] = "***GENERAL ERRORS***";
@@ -342,7 +342,7 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						$nrAccounts = count($autoBarAccounts[$custGroup]);
 						$nrServices = count($autoBars[$custGroup]);
-						$report[] = "$nrServices for $nrAccounts were barred automatically.";
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " " . ($nrServices == 1 ? "was" : "were") . " barred automatically.";
 					}
 					else
 					{
@@ -352,7 +352,7 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						$nrAccounts = count($manualBarAccounts[$custGroup]);
 						$nrServices = count($manualBars[$custGroup]);
-						$report[] = "$nrServices for $nrAccounts should be barred manually.";
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " should be barred manually.";
 					}
 					else
 					{
@@ -373,7 +373,7 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						$nrAccounts = count($autoUnbarAccounts[$custGroup]);
 						$nrServices = count($autoUnbars[$custGroup]);
-						$report[] = "$nrServices for $nrAccounts were unbarred automatically.";
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " " . ($nrServices == 1 ? "was" : "were") . " unbarred automatically.";
 					}
 					else
 					{
@@ -383,7 +383,7 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						$nrAccounts = count($manualUnbarAccounts[$custGroup]);
 						$nrServices = count($manualUnbars[$custGroup]);
-						$report[] = "$nrServices for $nrAccounts should be unbarred manually.";
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " should be unbarred manually.";
 					}
 					else
 					{
@@ -429,7 +429,7 @@ class Cli_App_Automatic_Barring extends Cli
 						$intCount = count($breakdown['auto']);
 						if ($intCount)
 						{
-							$report[] = 'The following ' . $intCount . ' services for account ' . $intAccountId . ($arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : 'were') . ' barred automatically: -';
+							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' ' . ($arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : ($intCount == 1 ? 'was' : 'were')) . ' barred automatically: -';
 							$report[] = implode(', ', $breakdown['auto']);
 						}
 						else
@@ -440,7 +440,7 @@ class Cli_App_Automatic_Barring extends Cli
 						$intCount = count($breakdown['manual']);
 						if ($intCount)
 						{
-							$report[] = 'The following ' . $intCount . ' services for account ' . $intAccountId . ' should be barred manually: -';
+							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' should be barred manually: -';
 							$report[] = implode(', ', $breakdown['manual']);
 						}
 						else
@@ -493,7 +493,7 @@ class Cli_App_Automatic_Barring extends Cli
 						$intCount = count($breakdown['auto']);
 						if ($intCount)
 						{
-							$report[] = 'The following ' . $intCount . ' services for account ' . $intAccountId . ($arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : 'were') . ' unbarred automatically: -';
+							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' ' . ($arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : ($intCount == 1 ? 'was' : 'were')) . ' unbarred automatically: -';
 							$report[] = implode(', ', $breakdown['auto']);
 						}
 						else
@@ -504,7 +504,7 @@ class Cli_App_Automatic_Barring extends Cli
 						$intCount = count($breakdown['manual']);
 						if ($intCount)
 						{
-							$report[] = 'The following ' . $intCount . ' services for account ' . $intAccountId . ' should be unbarred manually: -';
+							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' should be unbarred manually: -';
 							$report[] = implode(', ', $breakdown['manual']);
 						}
 						else
