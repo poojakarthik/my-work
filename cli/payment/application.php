@@ -80,6 +80,7 @@
 
 		$arrColumns = Array();
 		$arrColumns['Id']			= "Payment.Id";
+		$arrColumns['carrier']		= "Payment.carrier";
 		$arrColumns['Payment']		= "Payment.Payment";
 		$arrColumns['FileType']		= "FileImport.FileType";
 		$arrColumns['File']			= "FileImport.Id";
