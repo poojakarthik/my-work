@@ -71,6 +71,7 @@
 		$this->_ubiPaymentFile		= new StatementUpdateById("FileImport", $arrColumns);
 		
 		$arrColumns = Array();
+		$arrColumns['carrier']		= NULL;
 		$arrColumns['Payment']		= NULL;
 		$arrColumns['SequenceNo']	= NULL;
 		$arrColumns['File']			= NULL;
