@@ -109,7 +109,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				CliEcho("\n\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResource'));
 				
 				// Download paths
-				$strCarrierName			= preg_replace('/\W/', '_', GetConstantDescription($intCarrier, 'Carrier'));
+				$strCarrierName			= preg_replace("/\W/", '_', GetConstantDescription($intCarrier, 'Carrier'));
 				$strDownloadDirectory	= FILES_BASE_PATH."download/current/{$strCarrierName}/".GetConstantName($intResourceType, 'FileResource').'/';
 				@mkdir($strDownloadDirectory, 0777, TRUE);
 				
@@ -302,7 +302,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			$arrDirectories			= glob($strDownloadDir.'*', GLOB_ONLYDIR);
 			foreach ($arrDirectories as $strDirectory)
 			{
-				exec("rm -R $strDirectory");
+				exec("rm -R \"$strDirectory\"");
 			}
 			CliEcho("[   OK   ]");
 		}
