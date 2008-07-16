@@ -272,6 +272,7 @@
 			while (!feof($ptrFile))
 			{
 				// Read line
+				$arrData['carrier']		= $arrFile['Carrier'];
 				$arrData['Payment']		= fgets($ptrFile);
 				$arrData['SequenceNo']	= $intSequence;
 				$arrData['File']		= $arrFile['Id'];
