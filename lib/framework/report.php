@@ -202,6 +202,7 @@ class Report
 			}
 			
 			// Write log file
+			@mkdir(dirname($strPath));
 			if ($ptrFile = fopen($strPath, 'w'))
 			{
 				// write
