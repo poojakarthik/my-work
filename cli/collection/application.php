@@ -109,7 +109,8 @@ class ApplicationCollection extends ApplicationBaseClass
 				CliEcho("\n\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResource'));
 				
 				// Download paths
-				$strDownloadDirectory	= FILES_BASE_PATH."download/current/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intResourceType, 'FileResource').'/';
+				$strCarrierName			= preg_replace('/\W/', '_', GetConstantDescription($intCarrier, 'Carrier'));
+				$strDownloadDirectory	= FILES_BASE_PATH."download/current/{$strCarrierName}/".GetConstantName($intResourceType, 'FileResource').'/';
 				@mkdir($strDownloadDirectory, 0777, TRUE);
 				
 				// Connect to the Source
