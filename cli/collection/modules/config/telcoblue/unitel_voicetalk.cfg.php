@@ -24,6 +24,7 @@ $arrStructure[FILE_IMPORT_CDR_UNITEL_MOBILE]				['Paths']		[]	= '/mobilecdrbatch
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_ORDER]	['Regex']		= "/^rsl\d{3}w\d{4}\d{4}[01]\d[0-3]\d.txt$/";
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_ORDER]	['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_ORDER]	['FTPMode']		= FTP_BINARY;
+$arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_ORDER]	['DownloadUnique']	= TRUE;
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_ORDER]	['Paths']		[]	= '/ebill_dailyorderfiles/';
 
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS]	['Regex']		= "/^rsl\d{3}d\d{4}[01]\d[0-3]\d\_[0-2]\d[0-5]\d[0-5]\d.txt$/";
