@@ -12,6 +12,7 @@ $arrStructure[FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/'
 $arrStructure[FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Regex']		= "/^[A-Za-z]{3}(On|Off)netBatch_SE_[A-Z]\d{5}_\d{8}.csv$/";
 $arrStructure[FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[FILE_IMPORT_CDR_UNITEL_S_AND_E]				['FTPMode']		= FTP_BINARY;
+$arrStructure[FILE_IMPORT_CDR_UNITEL_S_AND_E]				['DownloadUnique']	= TRUE;
 $arrStructure[FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Paths']		[]	= '/cdrbatchesoffnet/';
 
 $arrStructure[FILE_IMPORT_CDR_UNITEL_MOBILE]				['Regex']		= "/^[A-Za-z]\d{7}\.csv$/";
@@ -34,6 +35,7 @@ $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS]	['Paths']		[]	= '/eb
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_BASKETS]		['Regex']		= "/^rsl\d{3}a\d{4}\d{4}[01]\d[0-3]\d.txt$/";
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_BASKETS]		['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_BASKETS]		['FTPMode']		= FTP_BINARY;
+$arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_BASKETS]		['DownloadUnique']	= TRUE;
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_BASKETS]		['Paths']		[]	= '/reports/ebill_agreedservicebaskets/';
 
 $arrStructure[FILE_IMPORT_PROVISIONING_UNITEL_PRESELECTION]	['Regex']		= "/^rssaw\d{4}\d{4}[01]\d[0-3]\d$/";
