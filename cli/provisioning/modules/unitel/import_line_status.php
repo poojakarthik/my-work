@@ -171,12 +171,12 @@
 				$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
 		}
 		
-		if (stripos($arrData['Preselection Confirmed']) !== FALSE)
+		if (stripos($arrData['PreselectionStatus'], 'Preselection Confirmed') !== FALSE)
 		{
 			$arrPDR['Type']					= REQUEST_PRESELECTION;
 			$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
 		}
-		elseif (stripos($arrData['Lost to ']) !== FALSE)
+		elseif (stripos($arrData['PreselectionStatus'], 'Lost to ') !== FALSE)
 		{
 			$arrPDR['Type']					= REQUEST_LOSS_PRESELECT;
 			$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
