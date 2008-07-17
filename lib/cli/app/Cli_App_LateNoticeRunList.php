@@ -135,7 +135,7 @@ class Cli_App_LateNoticeRunList extends Cli
 
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
-			$subject = 'Automated late notice list log for run dated ' . $this->runDateTime;
+			$subject = '[Success] Automated late notice list log for run dated ' . $this->runDateTime;
 			$report = array();
 			$attachments = array();
 			if (count($arrSummary))

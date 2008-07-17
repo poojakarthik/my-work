@@ -321,8 +321,14 @@ class Cli_App_LateNoticeRun extends Cli
 						{
 							unlink($strTempPdf);
 						}
+
+						$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = $strTarPath;
+						$this->log("Finished moving $strLetterType PDFs for customer group $strCustGroupName to $strTarPath");
 					}
-					$this->log("Finished moving $strLetterType PDFs for customer group $strCustGroupName to $strTarPath");
+					else
+					{
+						$this->log("There were no print $strLetterType PDFs for customer group $strCustGroupName");
+					}
 				}
 			}
 

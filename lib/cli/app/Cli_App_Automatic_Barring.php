@@ -39,6 +39,12 @@ class Cli_App_Automatic_Barring extends Cli
 			{
 				$this->log("No applicable invoice runs found for barring.");
 			}
+			else
+			{
+				// Regardless of the outcome, we want to send an email to let users know that barring was applied to
+				// and invoice run, even if no accounts require barring.
+				$sendEmail = TRUE;
+			}
 
 			$this->log('Beginning database transaction.');
 			$conConnection = DataAccess::getDataAccess();
@@ -162,96 +168,102 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 
 
-			$mixResult = ListAutomaticUnbarringAccounts($effectiveDate);
+			// When listing, we are only interested in the barring of accounts, so skip the unbarring.
+			if (!$arrArgs[self::SWITCH_LIST_RUN])
+			{
 
-			if (!is_array($mixResult))
-			{
-				$message = "ERROR: Failed to find accounts to unbar automatically.";
-				$this->log($message, 0);
-				$arrGeneralErrors[] = $message;
-				$errors++;
-				throw new Exception($message);
-			}
-			else
-			{
-				$nrAccounts = count($mixResult);
-				if ($nrAccounts)
+				$mixResult = ListAutomaticUnbarringAccounts($effectiveDate);
+
+				if (!is_array($mixResult))
 				{
-					$this->log("Unbarring $nrAccounts accounts.");
-					// We will send an email to say which accounts/services were unbarred
-					$sendEmail = TRUE;
+					$message = "ERROR: Failed to find accounts to unbar automatically.";
+					$this->log($message, 0);
+					$arrGeneralErrors[] = $message;
+					$errors++;
+					throw new Exception($message);
 				}
 				else
 				{
-					$this->log("No accounts require unbarring.");
+					$nrAccounts = count($mixResult);
+					if ($nrAccounts)
+					{
+						$this->log("Unbarring $nrAccounts accounts.");
+						// We will send an email to say which accounts/services were unbarred
+						$sendEmail = TRUE;
+					}
+					else
+					{
+						$this->log("No accounts require unbarring.");
+					}
+					foreach($mixResult as $account)
+					{
+						$accountId 			= intval($account['AccountId']);
+						$accountGroupId		= intval($account['AccountGroupId']);
+						$customerGroupId 	= intval($account['CustomerGroupId']);
+						$customerGroupName 	= $account['CustomerGroupName'];
+						$amountOverdue 		= $account['Overdue'];
+						$invoiceRun 		= $account['InvoiceRun'];
+
+						if (!array_key_exists($customerGroupName, $unbarSummary))
+						{
+							$unbarSummary[$customerGroupName] = array();
+							$unbarFailuers[$customerGroupName] = array();
+							$manualUnbars[$customerGroupName] = array();
+							$autoUnbars[$customerGroupName] = array();
+							$manualUnbarAccounts[$customerGroupName] = array();
+							$autoUnbarAccounts[$customerGroupName] = array();
+						}
+						$unbarSummary[$customerGroupName][$accountId] = array('manual' => array(), 'auto' => array(), 'failed' => array());
+
+						$this->log('Unbarring account ' . $accountId);
+						try
+						{
+							$unbarOutcome[$accountId] = UnbarAccount($accountId, $accountGroupId, TRUE, $invoiceRun);
+						}
+						catch (Exception $e)
+						{
+							$message = "ERROR: Failed to unbar account $accountId for customer group $customerGroupName ($customerGroupId).\n" . $e->getMessage();
+							$this->log($message, TRUE);
+							$unbarFailuers[$accountId] = $message;
+							$errors++;
+							throw new Exception($message);
+						}
+
+						if (count($unbarOutcome[$accountId]['UNBARRED']))
+						{
+							$autoUnbarAccounts[$customerGroupName][] = $accountId;
+							$arrFNNs = array();
+							foreach($unbarOutcome[$accountId]['UNBARRED'] as $intServiceId => $arrDetails)
+							{
+								$arrFNNs[] = $arrDetails['FNN'] ." ($intServiceId)"; 
+								$autoUnbars[$customerGroupName][] = $accountId . ',' . $arrDetails['FNN'];
+							}
+							$unbarSummary[$customerGroupName][$accountId]['auto'] = $arrFNNs;
+							$this->log("The following services for account $accountId were automatically unbarred:\n" . implode("   \n", $arrFNNs));
+						}
+						else
+						{
+							$this->log("No services for account $accountId were automatically unbarred.");
+						}
+
+						if (count($unbarOutcome[$accountId]['NOT_UNBARRED']))
+						{
+							$manualUnbarAccounts[$customerGroupName][] = $accountId;
+							$arrFNNs = array();
+							foreach($unbarOutcome[$accountId]['NOT_UNBARRED'] as $intServiceId => $arrDetails)
+							{
+								$arrFNNs[] = $arrDetails['FNN'] ." ($intServiceId)"; 
+								$manualUnbars[$customerGroupName][] = $accountId . ',' . $arrDetails['FNN'];
+							}
+							$unbarSummary[$customerGroupName][$accountId]['manual'] = $arrFNNs;
+							$this->log("The following services for account $accountId need to be unbarred manually:\n" . implode("   \n", $arrFNNs));
+						}
+						else
+						{
+							$this->log("All services for account $accountId were automatically unbarred.");
+						}
+					}
 				}
-				foreach($mixResult as $account)
-				{
-					$accountId 			= intval($account['AccountId']);
-					$accountGroupId		= intval($account['AccountGroupId']);
-					$customerGroupId 	= intval($account['CustomerGroupId']);
-					$customerGroupName 	= $account['CustomerGroupName'];
-					$amountOverdue 		= $account['Overdue'];
-					$invoiceRun 		= $account['InvoiceRun'];
-
-					if (!array_key_exists($customerGroupName, $unbarSummary))
-					{
-						$unbarSummary[$customerGroupName] = array();
-						$unbarFailuers[$customerGroupName] = array();
-						$manualUnbars[$customerGroupName] = array();
-						$autoUnbars[$customerGroupName] = array();
-						$manualUnbarAccounts[$customerGroupName] = array();
-						$autoUnbarAccounts[$customerGroupName] = array();
-					}
-					$unbarSummary[$customerGroupName][$accountId] = array('manual' => array(), 'auto' => array(), 'failed' => array());
-
-					$this->log('Unbarring account ' . $accountId);
-					try
-					{
-						$unbarOutcome[$accountId] = UnbarAccount($accountId, $accountGroupId, TRUE, $invoiceRun);
-					}
-					catch (Exception $e)
-					{
-						$message = "ERROR: Failed to unbar account $accountId for customer group $customerGroupName ($customerGroupId).\n" . $e->getMessage();
-						$this->log($message, TRUE);
-						$unbarFailuers[$accountId] = $message;
-						$errors++;
-						throw new Exception($message);
-					}
-
-					if (count($unbarOutcome[$accountId]['UNBARRED']))
-					{
-						$autoUnbarAccounts[$customerGroupName][] = $accountId;
-						$arrFNNs = array();
-						foreach($unbarOutcome[$accountId]['UNBARRED'] as $intServiceId => $arrDetails)
-						{
-							$arrFNNs[] = $arrDetails['FNN'] ." ($intServiceId)"; 
-							$autoUnbars[$customerGroupName][] = $accountId . ',' . $arrDetails['FNN'];
-						}
-						$unbarSummary[$customerGroupName][$accountId]['auto'] = $arrFNNs;
-						$this->log("The following services for account $accountId were automatically unbarred:\n" . implode("   \n", $arrFNNs));
-					}
-					else
-					{
-						$this->log("No services for account $accountId were automatically unbarred.");
-					}
-
-					if (count($unbarOutcome[$accountId]['NOT_UNBARRED']))
-					{
-						$manualUnbarAccounts[$customerGroupName][] = $accountId;
-						$arrFNNs = array();
-						foreach($unbarOutcome[$accountId]['NOT_UNBARRED'] as $intServiceId => $arrDetails)
-						{
-							$arrFNNs[] = $arrDetails['FNN'] ." ($intServiceId)"; 
-							$manualUnbars[$customerGroupName][] = $accountId . ',' . $arrDetails['FNN'];
-						}
-						$unbarSummary[$customerGroupName][$accountId]['manual'] = $arrFNNs;
-						$this->log("The following services for account $accountId need to be unbarred manually:\n" . implode("   \n", $arrFNNs));
-					}
-					else
-					{
-						$this->log("All services for account $accountId were automatically unbarred.");
-					}				}
 			}
 
 
@@ -303,15 +315,20 @@ class Cli_App_Automatic_Barring extends Cli
 				return 0;
 			}
 
-			$strListing = $arrArgs[self::SWITCH_TEST_RUN] ? ' listing' : '';
+			$strListing = $arrArgs[self::SWITCH_LIST_RUN] ? ' listing' : '';
 
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
 			$arrTmpActions = array();
 			if (!empty($barSummary)) $arrTmpActions[] = 'barring';
-			if (!empty($unbarSummary)) $arrTmpActions[] = 'barring';
+			if (!empty($unbarSummary)) $arrTmpActions[] = 'unbarring';
 			$strTmpActions = implode(' and ', $arrTmpActions);
+
+			// If there were no actions performed and we are still sending an email, we must have been barring
+			if (!$strTmpActions) $strTmpActions = 'barring';
+
 			$subject = ($errors ? '[FAILURE]' : '[SUCCESS]') . ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') . " Automated $strTmpActions log for$strListing run dated " . $this->runDateTime;
+
 			if ($arrArgs[self::SWITCH_TEST_RUN])
 			{
 				$report[] = "***TEST RUN - NO DATABASE CHANGES WERE COMMITTED***";
@@ -342,21 +359,25 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						$nrAccounts = count($autoBarAccounts[$custGroup]);
 						$nrServices = count($autoBars[$custGroup]);
-						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " " . ($nrServices == 1 ? "was" : "were") . " barred automatically.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? ' would be' : ($nrServices == 1 ? ' was' : ' were');
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " " . $actionDesc . " barred automatically.";
 					}
 					else
 					{
-						$report[] = $arrArgs[self::SWITCH_LIST_RUN] ? "No services or accounts would be barred automatically." : "No services or accounts were barred automatically.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : 'were';
+						$report[] = "No services or accounts $actionDesc barred automatically.";
 					}
 					if (!empty($manualBarAccounts[$custGroup]))
 					{
 						$nrAccounts = count($manualBarAccounts[$custGroup]);
 						$nrServices = count($manualBars[$custGroup]);
-						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " should be barred manually.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? 'would need to be' : ($nrServices ==  1 ? 'needs to be' : 'need to be');
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " $actionDesc barred manually.";
 					}
 					else
 					{
-						$report[] = "No services or accounts should be barred manually.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? 'would need to be' : 'need to be';
+						$report[] = "No services or accounts $actionDesc barred manually.";
 					}
 					$report[] = "";
 					$report[] = "";
@@ -373,21 +394,25 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						$nrAccounts = count($autoUnbarAccounts[$custGroup]);
 						$nrServices = count($autoUnbars[$custGroup]);
-						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " " . ($nrServices == 1 ? "was" : "were") . " unbarred automatically.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? ' would be' : ($nrServices == 1 ? ' was' : ' were');
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " " . $actionDesc . " unbarred automatically.";
 					}
 					else
 					{
-						$report[] = $arrArgs[self::SWITCH_LIST_RUN] ? "No services or accounts would be unbarred automatically." : "No services or accounts were unbarred automatically.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : 'were';
+						$report[] = "No services or accounts $actionDesc unbarred automatically.";
 					}
 					if (!empty($manualUnbarAccounts[$custGroup]))
 					{
 						$nrAccounts = count($manualUnbarAccounts[$custGroup]);
 						$nrServices = count($manualUnbars[$custGroup]);
-						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " should be unbarred manually.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? 'would need to be' : ($nrServices ==  1 ? 'needs to be' : 'need to be');
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " $actionDesc unbarred manually.";
 					}
 					else
 					{
-						$report[] = "No services or accounts should be unbarred manually.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? 'would need to be' : 'need to be';
+						$report[] = "No services or accounts $actionDesc unbarred manually.";
 					}
 					$report[] = "";
 					$report[] = "";
@@ -414,10 +439,6 @@ class Cli_App_Automatic_Barring extends Cli
 							$report[] = "***ERROR*** Account $intAccountId: $strError";
 						}
 					}
-					else 
-					{
-						$report[] = "No automated barring failures were detected for customer group $custGroup.";
-					}
 					$report[] = "";
 
 					foreach ($custGroupBreakdown as $intAccountId => $breakdown)
@@ -427,25 +448,27 @@ class Cli_App_Automatic_Barring extends Cli
 						$report[] = "";
 
 						$intCount = count($breakdown['auto']);
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? ' would be' : ($intCount == 1 ? ' was' : ' were');
 						if ($intCount)
 						{
-							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' ' . ($arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : ($intCount == 1 ? 'was' : 'were')) . ' barred automatically: -';
+							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . $actionDesc . ' barred automatically: -';
 							$report[] = implode(', ', $breakdown['auto']);
 						}
 						else
 						{
-							$report[] = 'No services were barred automatically for account ' . $intAccountId . '.';
+							$report[] = 'No services' . $actionDesc . ' barred automatically for account ' . $intAccountId . '.';
 						}
 						
 						$intCount = count($breakdown['manual']);
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? ' would' : '';
 						if ($intCount)
 						{
-							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' should be barred manually: -';
+							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . $actionDesc . ' need to be barred manually: -';
 							$report[] = implode(', ', $breakdown['manual']);
 						}
 						else
 						{
-							$report[] = 'No services require manual barring for account ' . $intAccountId . '.';
+							$report[] = 'No services' . $actionDesc . ' need to be barred manually for account ' . $intAccountId . '.';
 						}
 						$report[] = "";
 					}
@@ -456,118 +479,122 @@ class Cli_App_Automatic_Barring extends Cli
 				$report[] = "No accounts required barring.";
 			}
 
-			$report[] = "";
-			$report[] = "";
-			$report[] = "";
-			if (!empty($unbarSummary))
+			// We never do unbarring when we are listing, so do not summarise
+			if (!$arrArgs[self::SWITCH_LIST_RUN])
 			{
-				$report[] = "Breakdown of unbarring by customer group: -";
-				foreach ($unbarSummary as $custGroup => $custGroupBreakdown)
+				$report[] = "";
+				$report[] = "";
+				$report[] = "";
+				if (!empty($unbarSummary))
 				{
-					$report[] = "";
-					$report[] = "";
-					$report[] = "Customer Group: $custGroup";
-					$report[] = "";
-
-					if (!empty($unbarFailuers[$custGroup]))
-					{
-						$report[] = '***AUTOMATED UNBARRING ERRORS DETECTED***';
-						$report[] = 'The following automated unbarring failures were detected: -';
-						foreach($unbarFailuers['failed'] as $intAccountId => $strError)
-						{
-							$report[] = "***ERROR*** Account $intAccountId: $strError";
-						}
-					}
-					else 
-					{
-						$report[] = "No automated unbarring failures were detected for customer group $custGroup.";
-					}
-					$report[] = "";
-
-					foreach ($custGroupBreakdown as $intAccountId => $breakdown)
+					$report[] = "Breakdown of unbarring by customer group: -";
+					foreach ($unbarSummary as $custGroup => $custGroupBreakdown)
 					{
 						$report[] = "";
-						$report[] = "Customer Group: $custGroup; Account: $intAccountId";
 						$report[] = "";
-
-						$intCount = count($breakdown['auto']);
-						if ($intCount)
+						$report[] = "Customer Group: $custGroup";
+						$report[] = "";
+	
+						if (!empty($unbarFailuers[$custGroup]))
 						{
-							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' ' . ($arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : ($intCount == 1 ? 'was' : 'were')) . ' unbarred automatically: -';
-							$report[] = implode(', ', $breakdown['auto']);
-						}
-						else
-						{
-							$report[] = 'No services were unbarred automatically for account ' . $intAccountId . '.';
-						}
-						
-						$intCount = count($breakdown['manual']);
-						if ($intCount)
-						{
-							$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' should be unbarred manually: -';
-							$report[] = implode(', ', $breakdown['manual']);
-						}
-						else
-						{
-							$report[] = 'No services require manual unbarring for account ' . $intAccountId . '.';
+							$report[] = '***AUTOMATED UNBARRING ERRORS DETECTED***';
+							$report[] = 'The following automated unbarring failures were detected: -';
+							foreach($unbarFailuers['failed'] as $intAccountId => $strError)
+							{
+								$report[] = "***ERROR*** Account $intAccountId: $strError";
+							}
 						}
 						$report[] = "";
+	
+						foreach ($custGroupBreakdown as $intAccountId => $breakdown)
+						{
+							$report[] = "";
+							$report[] = "Customer Group: $custGroup; Account: $intAccountId";
+							$report[] = "";
+	
+							$intCount = count($breakdown['auto']);
+							if ($intCount)
+							{
+								$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' ' . ($arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : ($intCount == 1 ? 'was' : 'were')) . ' unbarred automatically: -';
+								$report[] = implode(', ', $breakdown['auto']);
+							}
+							else
+							{
+								$report[] = 'No services were unbarred automatically for account ' . $intAccountId . '.';
+							}
+							
+							$intCount = count($breakdown['manual']);
+							if ($intCount)
+							{
+								$report[] = 'The following ' . $intCount . ' service' . ($intCount == 1 ? '' : 's') . ' for account ' . $intAccountId . ' need to be unbarred manually: -';
+								$report[] = implode(', ', $breakdown['manual']);
+							}
+							else
+							{
+								$report[] = 'No services require manual unbarring for account ' . $intAccountId . '.';
+							}
+							$report[] = "";
+						}
 					}
 				}
+				else
+				{
+					$report[] = "No accounts required unbarring.";
+				}
 			}
-			else
-			{
-				$report[] = "No accounts required unbarring.";
-			}
-			
+
 			$body = implode("\r\n", $report);
 
 			$this->log("Adding attachments...");
 			$nl = "\n";
 			$attachments = array();
+			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_Proposed_To_Be_Manually_Barred_' : '_Services_To_Be_Manually_Barred_';
 			foreach($manualBars as $custGroup => $list)
 			{
 				$custGroup = str_replace(' ', '_', $custGroup);
 				if (count($list))
 				{
 					$attachment = array();
-					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.'_Services_To_Be_Manually_Barred_' . date('Y_m_d_H_i_s') . '.csv';
+					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv';
 					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
 				}
 			}
+			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_Proposed_To_Be_Manually_Unbarred_' : '_Services_To_Be_Manually_Unbarred_';
 			foreach($manualUnbars as $custGroup => $list)
 			{
 				$custGroup = str_replace(' ', '_', $custGroup);
 				if (count($list))
 				{
 					$attachment = array();
-					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.'_Services_To_Be_Manually_Unbarred_' . date('Y_m_d_H_i_s') . '.csv';
+					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv';
 					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
 				}
 			}
+			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_That_Would_Be_Automatically_Barred_' : '_Automatically_Barred_Services_';
 			foreach($autoBars as $custGroup => $list)
 			{
 				$custGroup = str_replace(' ', '_', $custGroup);
 				if (count($list))
 				{
 					$attachment = array();
-					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.'_Automatically_Barred_Services_' . date('Y_m_d_H_i_s') . '.csv';
+					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv';
 					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
 				}
 			}
+			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_That_Would_Be_Automatically_Unbarred_' : '_Automatically_Unbarred_Services_';
 			foreach($autoUnbars as $custGroup => $list)
 			{
 				$custGroup = str_replace(' ', '_', $custGroup);
 				if (count($list))
 				{
 					$attachment = array();
-					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.'_Automatically_Unbarred_Services_' . date('Y_m_d_H_i_s') . '.csv';
+					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv';
 					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
