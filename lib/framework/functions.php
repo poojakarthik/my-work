@@ -4054,7 +4054,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	static $insFileExport;
 
 	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
-	$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "LetterType"))) . "/xml/" . date("Ymd");
+	$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))) . "/xml/" . date("Ymd");
 	
 	// Make the directory structure if it hasn't already been made
 	if (!is_dir($strFullPath))
@@ -4070,7 +4070,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	$dom = new Flex_Dom_Document();
 
 	// Set up all values required of the notice, which have not been defined yet
-	$dom->Document->DocumentType->setValue(GetConstantName('DocumentTemplateType', $intNoticeType));
+	$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
 
 	$responseDays = GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType);
 	$actionDate = ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
