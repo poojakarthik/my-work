@@ -1863,13 +1863,13 @@ class BillingModuleReports
 		$selTempInvoice			= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>", NULL, 1);
 		
 		$selProfitSummaryComm	= new StatementSelect(	"(Invoice JOIN ServiceTypeTotal STT USING (InvoiceRun)) JOIN Account ON Invoice.Account = Account.Id", 
-														"SUM(STT.Cost) AS TotalCost, SUM(STT.Charge) AS TotalRated, SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Total + Tax) AS GrandTotalInvoiced",
+														"SUM(STT.Cost) AS TotalCost, SUM(STT.Charge) AS TotalRated, SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Invoice.Total + Invoice.Tax) AS GrandTotalInvoiced",
 														"Invoice.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>",
 														NULL,
 														NULL,
 														"CustomerGroup");
 		$selProfitSummaryTemp	= new StatementSelect(	"(InvoiceTemp JOIN ServiceTypeTotal STT USING (InvoiceRun)) JOIN Account ON Invoice.Account = Account.Id", 
-														"SUM(STT.Cost) AS TotalCost, SUM(STT.Charge) AS TotalRated, SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Total + Tax) AS GrandTotalInvoiced",
+														"SUM(STT.Cost) AS TotalCost, SUM(STT.Charge) AS TotalRated, SUM(InvoiceTemp.Total) AS TotalInvoiced, SUM(InvoiceTemp.Tax) AS TotalTaxed, SUM(InvoiceTemp.Total + InvoiceTemp.Tax) AS GrandTotalInvoiced",
 														"Invoice.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>",
 														NULL,
 														NULL,
@@ -1896,7 +1896,7 @@ class BillingModuleReports
 														NULL, 
 														"State");
 		$selDestinationTemp		= new StatementSelect(	"InvoiceTemp JOIN Account ON Account.Id = Invoice.Account", 
-														"Account.State AS State, COUNT(Invoice.Id) AS InvoiceCount, SUM(Invoice.Total) AS RetailValue", 
+														"Account.State AS State, COUNT(InvoiceTemp.Id) AS InvoiceCount, SUM(InvoiceTemp.Total) AS RetailValue", 
 														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup>", 
 														"State ASC", 
 														NULL, 
