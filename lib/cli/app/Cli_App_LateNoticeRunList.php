@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../' . 'flex.require.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../lib/dom/Flex_Dom_Document.php';
 
 class Cli_App_LateNoticeRunList extends Cli
 {
@@ -135,9 +136,12 @@ class Cli_App_LateNoticeRunList extends Cli
 
 			// We now need to build a report detailing actions taken for each of the customer groups
 			$this->log("Building report");
-			$subject = '[Success] Automated late notice list log for run dated ' . $this->runDateTime;
+			$email = new Email_Notification(EMAIL_NOTIFICATION_LATE_NOTICE_LIST);
+			$email->setSubject('[Success] Automated late notice list log for run dated ' . $this->runDateTime);
+			$body = new Flex_Dom_Document();
+			$body->html->body->h2()->setValue('Automated late notice list log for run dated ' . $this->runDateTime);
 			$report = array();
-			$attachments = array();
+			$attachments = FALSE;
 			if (count($arrSummary))
 			{
 				$report[] = "Breakdown of proposed late notice generation by customer group: -";
@@ -145,29 +149,51 @@ class Cli_App_LateNoticeRunList extends Cli
 				{
 					$report[] = "";
 					$report[] = "";
+					$body->html->body->h2()->setValue("Customer Group: $custGroup");
 					$report[] = "Customer Group: $custGroup";
+					$table =& $body->html->body->table();
+					$table->style = "border: 1px solid #aaaaaa;";
+					$table->tr(0)->th(0)->setValue('Letter type');
+					$table->tr(0)->th(0)->style = "text-align: left;";
+					$table->tr(0)->th(0)->align = "align";
+					$table->tr(0)->th(1)->setValue('Delivery Method');
+					$table->tr(0)->th(1)->style = "text-align: left;";
+					$table->tr(0)->th(1)->align = "align";
+					$table->tr(0)->th(2)->setValue('Number Of Accounts');
+					$table->tr(0)->th(2)->style = "text-align: right;";
+					$table->tr(0)->th(2)->align = "right";
 
 					foreach ($letterTypeSummarries as $letterType => $letterTypeSummary)
 					{
 						$attachment = '';
+						$tr =& $table->tr();
+						$tr->td(0)->setValue($letterType);
+						$tr->td(1)->setValue("Print");
+						$tr->td(2)->setValue(count($letterTypeSummary['prints']));
+						$tr->th(2)->style = "text-align: right;";
+						$tr->th(2)->align = "right";
 
 						$report[] = "[Start of $letterType breakdown for Customer Group: $custGroup]";
 						if (!empty($letterTypeSummary['prints']))
 						{
 							$report[] = "Print: " . count($letterTypeSummary['prints']) . " {$letterType}s would be created for printing.";
-							$report[] = "Prints would be created for the following accounts: -";
-							$report[] = implode(', ', $letterTypeSummary['prints']);
 							$attachment .= implode(",Print\n", $letterTypeSummary['prints']).",Print\n";
 						}
 						else
 						{
 							$report[] = "Print: No documents would be created for printing";
 						}
+
+						$tr =& $table->tr();
+						$tr->td(0)->setValue($letterType);
+						$tr->td(1)->setValue("Email");
+						$tr->td(2)->setValue(count($letterTypeSummary['emails']));
+						$tr->th(2)->style = "text-align: right;";
+						$tr->th(2)->align = "right";
+
 						if (!empty($letterTypeSummary['emails']))
 						{
 							$report[] = "Email: " . count($letterTypeSummary['emails']) . " {$letterType}s would be created and emailed.";
-							$report[] = "Emails would be sent for the following accounts: -";
-							$report[] = implode(', ', $letterTypeSummary['emails']);
 							$attachment .= implode(",Email\n", $letterTypeSummary['prints']).",Email\n";
 						}
 						else
@@ -179,11 +205,8 @@ class Cli_App_LateNoticeRunList extends Cli
 						
 						if ($attachment)
 						{
-							$arrAttachment = array();
-							$arrAttachment[self::EMAIL_ATTACHMENT_NAME] = str_replace(' ', '_', $custGroup) . '_' . str_replace(' ', '_', $letterType) . '.csv';
-							$arrAttachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
-							$arrAttachment[self::EMAIL_ATTACHMENT_CONTENT] = $attachment;
-							$attachments[] = $arrAttachment;
+							$attachments = TRUE;
+							$email->addAttachment($attachment, str_replace(' ', '_', $custGroup) . '_' . str_replace(' ', '_', $letterType) . '.csv', 'text/csv');
 						}
 					}
 
@@ -196,17 +219,25 @@ class Cli_App_LateNoticeRunList extends Cli
 			{
 				$report[] = "No automated late notices would be generated.";
 			}
-			$body = implode("\r\n", $report);
+
+			if ($attachments)
+			{
+				$body->html->body->br();
+				$body->html->body->span()->b->setValue("[see attachments for full lists of accounts]");
+				$report[] = "";
+				$report[] = "[see attachments for full lists of accounts]";
+			}
+
+			$bodyText = implode("\r\n", $report);
+			$bodyHTML = $body->saveHTML();
+
+			$email->setBodyText($bodyText);
+			$email->setBodyHtml($bodyHTML);
 
 			$this->log("Sending report");
-			if ($this->sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_LIST, NULL, NULL, $subject, NULL, $body, $attachments))
-			{
-				$this->log("Report sent");
-			}
-			else
-			{
-				$this->log("Failed to email report.", TRUE);
-			}
+			$email->send();
+
+			$this->log("Report sent");
 
 			$this->log("Finished.");
 			return $errors;
