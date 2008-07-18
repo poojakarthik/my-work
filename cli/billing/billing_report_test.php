@@ -44,7 +44,7 @@ if ($strInvoiceRun)
 	// Committed Run
 	if ($selInvoiceRun->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 	{
-		$arrProfitData['ThisMonth']	= $selProfitData->Fetch();
+		$arrProfitData['ThisMonth']	= $selInvoiceRun->Fetch();
 	}
 	else
 	{
