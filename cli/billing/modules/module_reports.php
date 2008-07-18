@@ -66,8 +66,18 @@ class BillingModuleReports
  			// No Profit Data
  			return FALSE;
  		}
+ 		else
+ 		{ 		
+ 			$this->_arrProfitData	= $arrProfitData;
+ 		}
  		
- 		$this->_arrProfitData = $arrProfitData;
+ 		// Base Path
+ 		$intBillPeriod				= strototime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate']));
+ 		$strYear					= date("Y", $intBillPeriod);
+ 		$strMonth					= str_pad(date("m", $intBillPeriod), 2, '0', STR_PAD_LEFT);
+ 		//$this->_strReportBasePath	= FILES_BASE_PATH."reports/management/{$arrProfitData['InvoiceRun']}/";
+ 		$this->_strReportBasePath	= FILES_BASE_PATH."reports/management/{$strYear}/{$strMonth}/";				// Temporary
+ 		@mkdir($this->_strReportBasePath, 0777, TRUE);
  	}
  	
  	
@@ -340,7 +350,7 @@ class BillingModuleReports
 		$selServicesGained	= new StatementSelect("ServiceTotal ST", "ST.Id", "ST.InvoiceRun = <InvoiceRun> AND ST.Service NOT IN (SELECT ST2.Service FROM ServiceTotal ST2 WHERE ST2.InvoiceRun = <LastInvoiceRun>)");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Service_Summary.xls";
+		$strFilename = $this->_strReportBasePath."Service_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -540,7 +550,7 @@ class BillingModuleReports
 			$strServiceType = str_replace(' ', '_', GetConstantDescription($intServiceType, 'ServiceType'));
 			$strServiceType = str_replace('/', '_', $strServiceType);
 			$strServiceType = str_replace('\\', '_', $strServiceType);
-			$strFilename	= "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Plan_Summary_with_Breakdown_($strServiceType).xls";
+			$strFilename	= $this->_strReportBasePath."Plan_Summary_with_Breakdown_($strServiceType).xls";
 			$arrFilenames[]	= $strFilename;
 			@unlink($strFilename);
 			$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
@@ -797,7 +807,7 @@ class BillingModuleReports
 
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Adjustment_Summary.xls";
+		$strFilename = $this->_strReportBasePath."Adjustment_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -1000,7 +1010,7 @@ class BillingModuleReports
 		$selCustomersGained	= new StatementSelect("Account", "Id", "CreatedOn BETWEEN <LastBillingDate> AND <BillingDate>");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Customer_Summary.xls";
+		$strFilename = $this->_strReportBasePath."Customer_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -1222,7 +1232,7 @@ class BillingModuleReports
 												"RecurringCharge.ChargeType");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Recurring_Adjustment_Summary.xls";
+		$strFilename = $this->_strReportBasePath."Recurring_Adjustment_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -1477,7 +1487,7 @@ class BillingModuleReports
 		$selAdjustments	= new StatementSelect("Charge JOIN Employee ON Charge.CreatedBy = Employee.Id", $arrCols, "InvoiceRun = <InvoiceRun>", "Charge.Nature", NULL, "Charge.CreatedBy, Charge.Description");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Adjustments_by_Employee_Summary.xls";
+		$strFilename = $this->_strReportBasePath."Adjustments_by_Employee_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -1624,7 +1634,7 @@ class BillingModuleReports
 		$selLastInvoiceTotal	= new StatementSelect("InvoiceRun", "BillInvoiced+BillTax AS GrandTotal", "InvoiceRun = <LastInvoiceRun>");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Invoice_Summary.xls";
+		$strFilename = $this->_strReportBasePath."Invoice_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -1809,6 +1819,333 @@ class BillingModuleReports
 		for ($i = 27; $i <= 30; $i++)
 		{
 			$wksWorksheet->writeFormula($i-1, 4, "=IF(AND(C$i <> 0, NOT(C$i = \"N/A\")), (C$i - D$i) / ABS(C$i), \"N/A\")", $arrFormat['Percentage']);
+		}
+		
+		// Set Column Widths
+		$fltExcelWidthRatio = 5;
+		$wksWorksheet->setColumn(0, 0, 6.5 * $fltExcelWidthRatio);
+		$wksWorksheet->setColumn(1, 1, 10 * $fltExcelWidthRatio);
+		$wksWorksheet->setColumn(2, 2, 3 * $fltExcelWidthRatio);
+		$wksWorksheet->setColumn(3, 3, 3 * $fltExcelWidthRatio);
+		$wksWorksheet->setColumn(4, 4, 3 * $fltExcelWidthRatio);
+		
+		// Close Workbook
+		$wkbWorkbook->close();
+		chmod($strFilename, 0777);
+		
+		return Array($strFilename);
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// _ReportCustomerGroup()
+	//------------------------------------------------------------------------//
+	/**
+	 * _ReportCustomerGroup()
+	 *
+	 * Create a Customer Group Summary Management Report and return the path to the file
+	 *
+	 * Create a Customer Group Summary Management Report and return the path to the file
+	 *
+	 * @return	mixed							Array of paths to the management report XLS files or FALSE on error
+	 *
+	 * @method
+	 */
+	protected function _ReportCustomerGroup()
+	{
+		//--------------------------------------------------------------------//
+		// DATA
+		//--------------------------------------------------------------------//
+		
+		// Statements
+		$selCustomerGroups		= new StatementSelect("CustomerGroup", "Id AS CustomerGroup, InternalName");
+		
+		$selTempInvoice			= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>", NULL, 1);
+		
+		$selProfitSummaryComm	= new StatementSelect(	"(Invoice JOIN ServiceTypeTotal STT USING (InvoiceRun)) JOIN Account ON Invoice.Account = Account.Id", 
+														"SUM(STT.Cost) AS TotalCost, SUM(STT.Charge) AS TotalRated, SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Total + Tax) AS GrandTotalInvoiced",
+														"Invoice.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>",
+														NULL,
+														NULL,
+														"CustomerGroup");
+		$selProfitSummaryTemp	= new StatementSelect(	"(InvoiceTemp JOIN ServiceTypeTotal STT USING (InvoiceRun)) JOIN Account ON Invoice.Account = Account.Id", 
+														"SUM(STT.Cost) AS TotalCost, SUM(STT.Charge) AS TotalRated, SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Total + Tax) AS GrandTotalInvoiced",
+														"Invoice.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>",
+														NULL,
+														NULL,
+														"CustomerGroup");
+		
+		$selDeliveryComm		= new StatementSelect(	"Invoice JOIN Account ON Account.Id = Invoice.Account",
+														"DeliveryMethod, SUM(Invoice.Total) AS RetailValue, COUNT(Invoice.Id) AS InvoiceCount",
+														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup>",
+														"DeliveryMethod ASC",
+														NULL,
+														"DeliveryMethod");
+		$selDeliveryTemp		= new StatementSelect(	"InvoiceTemp JOIN Account ON Account.Id = InvoiceTemp.Account",
+														"DeliveryMethod, SUM(InvoiceTemp.Total) AS RetailValue, COUNT(InvoiceTemp.Id) AS InvoiceCount",
+														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup>",
+														"DeliveryMethod ASC",
+														NULL,
+														"DeliveryMethod");
+		
+		$selDestinations		= new StatementSelect("Account", "DISTINCT State", "1", "State ASC");
+		$selDestinationComm		= new StatementSelect(	"Invoice JOIN Account ON Account.Id = Invoice.Account", 
+														"Invoice.DeliveryMethod, COUNT(Invoice.Id) AS Total", 
+														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup> AND State = <State>", 
+														"Invoice.DeliveryMethod", 
+														NULL, 
+														"State");
+		$selDestinationTemp		= new StatementSelect(	"InvoiceTemp JOIN Account ON Account.Id = Invoice.Account", 
+														"Account.State AS State, COUNT(Invoice.Id) AS InvoiceCount, SUM(Invoice.Total) AS RetailValue", 
+														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup>", 
+														"State ASC", 
+														NULL, 
+														"State");
+		
+		// Retrieve list of States
+		if ($selDestinations->Execute())
+		{
+			$arrDestinations	= Array();
+			while ($arrDestination = $selDestinations->Fetch())
+			{
+				$arrDestinations[]	= $arrDestination['State'];
+			}
+			
+			// Retrieve Customer Groups
+			if ($intCustomerGroupCount = $selCustomerGroups->Execute())
+			{
+				$intColumns			= 1 + ($intCustomerGroupCount * 2) + 1;
+				
+				// Get Data grouped by Invoice Run
+				foreach ($this->_arrProfitData as $strPeriod=>&$arrProfitData)
+				{
+					// Committed or Temporary Run?
+					if ($selTempInvoice->Execute($arrProfitData['InvoiceRun']))
+					{
+						// Temporary
+						$selProfitSummary	= &$selProfitSummaryTemp;
+						$selDestination		= &$selDestinationTemp;
+						$selDelivery		= &$selDeliveryTemp;
+					}
+					else
+					{
+						// Committed
+						$selProfitSummary	= &$selProfitSummaryComm;
+						$selDestination		= &$selDestinationComm;
+						$selDelivery		= &$selDeliveryComm;
+					}
+					
+					// Get Customer Group data
+					while ($arrCustomerGroup = $selCustomerGroups->Fetch())
+					{
+						// Get Profit Summary
+						$selProfitSummary->Execute(Array('InvoiceRun' => $arrProfitData['InvoiceRun'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
+						$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary']	= $selProfitSummary->Fetch();
+						
+						// Get Delivery Summary
+						$selDelivery->Execute(Array('InvoiceRun' => $arrProfitData['InvoiceRun'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
+						while ($arrDeliveryMethod = $selDelivery->Fetch())
+						{
+							switch ($arrDeliveryMethod['DeliveryMethod'])
+							{
+								case DELIVERY_METHOD_POST:
+									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['PostTotal']		+= $arrDeliveryMethod['RetailValue'];
+									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['PostCount']		+= $arrDeliveryMethod['InvoiceCount'];
+									break;
+								
+								case DELIVERY_METHOD_DO_NOT_SEND:
+									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['WithheldTotal']	+= $arrDeliveryMethod['RetailValue'];
+									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['WithheldCount']	+= $arrDeliveryMethod['InvoiceCount'];
+									break;
+								
+								case DELIVERY_METHOD_EMAIL:
+								case DELIVERY_METHOD_EMAIL_SENT:
+									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['EmailTotal']		+= $arrDeliveryMethod['RetailValue'];
+									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['EmailCount']		+= $arrDeliveryMethod['InvoiceCount'];
+									break;
+							}
+						}
+						
+						// Get Destination Summaries
+						foreach ($arrDestinations as $strState)
+						{
+							$selDestination->Execute(Array('State' => $strState, 'InvoiceRun' => $arrProfitData['InvoiceRun'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
+							while ($arrDestination = $selDestination->Fetch())
+							{
+								switch ($arrDestination['DeliveryMethod'])
+								{
+									case DELIVERY_METHOD_POST:
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['PostTotal']		+= $arrDestination['RetailValue'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['PostCount']		+= $arrDestination['InvoiceCount'];
+										break;
+									
+									case DELIVERY_METHOD_DO_NOT_SEND:
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['WithheldTotal']	+= $arrDestination['RetailValue'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['WithheldCount']	+= $arrDestination['InvoiceCount'];
+										break;
+									
+									case DELIVERY_METHOD_EMAIL:
+									case DELIVERY_METHOD_EMAIL_SENT:
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['EmailTotal']	+= $arrDestination['RetailValue'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['EmailCount']	+= $arrDestination['InvoiceCount'];
+										break;
+								}
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				// No CustomerGroups found
+				Debug($selCustomerGroups->Error());
+				return FALSE;
+			}
+		}
+		else
+		{
+			// Destinations not found
+			Debug($selDestinations->Error());
+			return FALSE;
+		}
+		
+		//--------------------------------------------------------------------//
+		// OUTPUT
+		//--------------------------------------------------------------------//
+		
+		// Create Workbook
+		$strFilename = $this->_strReportBasePath."Customer_Group.xls";
+		@unlink($strFilename);
+		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
+		
+		// Init formats
+		$arrFormat = $this->_InitExcelFormats($wkbWorkbook);
+		
+		// Create Worksheet & Header
+		$wksWorksheet =& $wkbWorkbook->addWorksheet("Customer Group Summary");
+		$wksWorksheet->setLandscape();
+		$wksWorksheet->hideGridlines();
+		$wksWorksheet->fitToPages(1, 99);
+		
+		$strPageTitle	= strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Customer Group Summary for Telco Blue");
+		
+		$arrOutline	= Array();
+		$intLine	= 0;
+		
+		// Headings
+		$wksWorksheet->writeString($intLine++, 2, $strPageTitle, $arrFormat['PageTitle']);
+		
+		// Invoice Run Details
+		$intHeaderLine	= $intLine;
+		$arrOutline['BlankUnderline']	[]	= Array('LineNumber' => $intLine++, 'ColStart' => 0, 'ColEnd' => $intColumns);
+		$wksWorksheet->writeString($intLine, $intColumns-1, "This Month"		, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString($intLine, $intColumns, "Last Month"		, $arrFormat['TitleItalic']);
+		
+		$wksWorksheet->writeString($intLine++, 0, "Bill Date"		, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Billing Period"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Invoice Run"		, $arrFormat['TextBold']);
+		
+		$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 0, 'ColEnd' => $intColumns);
+		$wksWorksheet->writeString($intLine++, 0, "Invoice Profit Summary"	, $arrFormat['Title']);
+		
+		$intProfitSummaryLine	= $intLine;
+		$wksWorksheet->writeString($intLine++, 0, "Total Cost"				, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Total Rated"				, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Total Invoiced (ex Tax)"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Total Taxed"				, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Total Invoiced (inc Tax)", $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Gross Profit (ex Tax)"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Profit Margin"			, $arrFormat['TextBold']);
+		
+		$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 1, 'ColEnd' => $intColumns);
+		$wksWorksheet->writeString($intLine++, 0, "Invoice Delivery Summary"	, $arrFormat['Title']);
+		
+		$intInvoiceDeliveryLine	= $intLine;
+		$wksWorksheet->writeString($intLine++, 0, "Total Invoices Posted"			, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Total Invoices Emailed"			, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Total Invoices Withheld"			, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Posted Invoices Retail Value"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Emailed Invoices Retail Value"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString($intLine++, 0, "Withheld Invoices Retail Value"	, $arrFormat['TextBold']);
+		
+		$arrDestinationLine	= Array();
+		foreach ($arrDestinations as $strState=>$arrDestination)
+		{
+			$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 1, 'ColEnd' => $intColumns);
+			$wksWorksheet->writeString($intLine++, 0, "Invoice Destination: {$strState}"	, $arrFormat['Title']);
+			
+			$arrDestinationLine[$strState]	= $intLine;
+			$wksWorksheet->writeString($intLine++, 0, "Total Invoices Posted"			, $arrFormat['TextBold']);
+			$wksWorksheet->writeString($intLine++, 0, "Total Invoices Emailed"			, $arrFormat['TextBold']);
+			$wksWorksheet->writeString($intLine++, 0, "Total Invoices Withheld"			, $arrFormat['TextBold']);
+		}
+		
+		// Draw Spacers/Formatting
+		foreach ($arrOutline as $strFormat=>$arrLine)
+		{
+			for ($i = $arrLine['ColStart']; $i < $arrLine['ColEnd']; $i++)
+			{
+				$wksWorksheet->writeBlank($arrLine['LineNumber'], $i, $strFormat);
+			}
+		}
+		
+		$intFirstCol	= 1;
+		$intColInit		= $intFirstCol;
+		$intColJump		= 2;
+		$intHeaderCol	= $intColumns - 2;
+		$arrLetters		= range('A', 'Z');
+		foreach ($this->_arrProfitData as $arrData)
+		{
+			// Header
+			$intLine	= $intHeaderLine;
+			$wksWorksheet->writeString($intLine++, $intHeaderCol, date("d/m/Y", strtotime($arrData['BillingDate'])));
+			$wksWorksheet->writeString($intLine++, $intHeaderCol, date("F Y", strtotime("-1 month", strtotime($arrData['BillingDate']))));
+			$wksWorksheet->writeString($intLine++, $intHeaderCol, $arrData['InvoiceRun']);
+			
+			// Content
+			$intCol	= $intColInit;
+			foreach ($arrData['CustomerGroups'] as $arrCustomerGroup)
+			{
+				// Profit Summary
+				$intLine			= $intProfitSummaryLine;
+				$arrProfitSummary	= $arrCustomerGroup['ProfitSummary'];
+				$fltProfit			= $arrProfitSummary['TotalInvoiced'] - $arrProfitSummary['TotalCost'];
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrProfitSummary['TotalCost']			, $arrFormat['Currency']);
+				$intCostRow		= $intLine;
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrProfitSummary['TotalRated']			, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrProfitSummary['TotalInvoiced']		, $arrFormat['Currency']);
+				$intInvoicedRow	= $intLine;
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrProfitSummary['TotalTaxed']			, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrProfitSummary['GrandTotalInvoiced']	, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber($intLine++, $intCol, $fltProfit								, $arrFormat['Currency']);
+				
+				$strColumn		= $arrLetters[$intFirstCol + $intCol + 1];
+				$wksWorksheet->writeFormula($intLine++, $intCol, "=IF(AND({$strColumn}{$intInvoicedRow} <> 0, NOT({$strColumn}{$intInvoicedRow} = \"N/A\")), ({$strColumn}{$intInvoicedRow} - {$strColumn}{$intCostRow}) / ABS({$strColumn}{$intInvoicedRow}), \"N/A\")", $arrFormat['Percentage']);
+				
+				// Delivery Summary
+				$intLine		= $intInvoiceDeliveryLine;
+				$arrDelivery	= $arrCustomerGroup['DeliverySummary'];
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrDelivery['PostCount']		, $arrFormat['Integer']);
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrDelivery['EmailCount']		, $arrFormat['Integer']);
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrDelivery['WithheldCount']	, $arrFormat['Integer']);
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrDelivery['PostTotal']		, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrDelivery['EmailTotal']		, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber($intLine++, $intCol, $arrDelivery['WithheldTotal']	, $arrFormat['Currency']);
+				
+				// Destination Summary
+				foreach ($arrDestinations as $strState=>$arrDestination)
+				{
+					$intLine	= $arrDestinationLine[$strState];
+					$wksWorksheet->writeNumber($intLine++, 0, "Total Invoices Posted"			, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, 0, "Total Invoices Emailed"			, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, 0, "Total Invoices Withheld"			, $arrFormat['Integer']);
+				}
+				
+				$intCol	+= $intColJump;
+			}
+			
+			$intColInit++;
+			$intHeaderCol++;
 		}
 		
 		// Set Column Widths
