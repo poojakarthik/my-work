@@ -20,8 +20,8 @@ foreach ($arrFiles as $strFile)
 	{
 		$arrInvoice	= $selInvoice->Fetch();
 		$strCommand	= "perl -pi -e 's/20080701112204/{$arrInvoice['Id']}/g' {$strFile}";
-		//shell_exec($strCommand);
-		CliEcho($strCommand);
+		shell_exec($strCommand);
+		//CliEcho($strCommand);
 	}
 	else
 	{
