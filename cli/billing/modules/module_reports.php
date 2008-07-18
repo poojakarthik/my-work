@@ -72,7 +72,7 @@ class BillingModuleReports
  		}
  		
  		// Base Path
- 		$intBillPeriod				= strototime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate']));
+ 		$intBillPeriod				= strtotime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate']));
  		$strYear					= date("Y", $intBillPeriod);
  		$strMonth					= str_pad(date("m", $intBillPeriod), 2, '0', STR_PAD_LEFT);
  		//$this->_strReportBasePath	= FILES_BASE_PATH."reports/management/{$arrProfitData['InvoiceRun']}/";
