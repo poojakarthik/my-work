@@ -1868,9 +1868,9 @@ class BillingModuleReports
 														NULL,
 														NULL,
 														"CustomerGroup");
-		$selProfitSummaryTemp	= new StatementSelect(	"(InvoiceTemp JOIN ServiceTypeTotal STT USING (InvoiceRun)) JOIN Account ON Invoice.Account = Account.Id", 
+		$selProfitSummaryTemp	= new StatementSelect(	"(InvoiceTemp JOIN ServiceTypeTotal STT USING (InvoiceRun)) JOIN Account ON InvoiceTemp.Account = Account.Id", 
 														"SUM(STT.Cost) AS TotalCost, SUM(STT.Charge) AS TotalRated, SUM(InvoiceTemp.Total) AS TotalInvoiced, SUM(InvoiceTemp.Tax) AS TotalTaxed, SUM(InvoiceTemp.Total + InvoiceTemp.Tax) AS GrandTotalInvoiced",
-														"Invoice.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>",
+														"InvoiceTemp.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>",
 														NULL,
 														NULL,
 														"CustomerGroup");
