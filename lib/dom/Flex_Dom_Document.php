@@ -82,6 +82,21 @@ class Flex_Dom_Document extends Flex_Dom_Object
 	}
 
 	/**
+	 * Creates and returns a string representing the HTML document.
+	 * 
+	 * Creates and returns a string representing the HTML document.
+	 * 
+	 * @param void
+	 * 
+	 * @return String HTML document
+	 */
+	public function saveHTML()
+	{
+		// Return the XML string for the wrapped DOMDocument
+		return $this->_objDomDocument->saveHTML();
+	}
+
+	/**
 	 * Accessor function for the wrapped DOMNode object
 	 * 
 	 * Accessor function for the wrapped DOMNode object (i.e. the DOMDocument)
