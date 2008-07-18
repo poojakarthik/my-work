@@ -2,32 +2,40 @@
 
 // Framework
 require_once("../../flex.require.php");
-$strInvoiceRun	= "20080701112204";
 $selInvoice		= new StatementSelect("Invoice", "Id", "Account = <Account> AND InvoiceRun = <InvoiceRun>");
+$selInvoiceRun	= new StatementSelect("InvoiceRun", "Id", "InvoiceRun = <InvoiceRun>");
 
-
+// Read Command Line Parameter
+$strInvoiceRun	= $argv[1];
 $strXMLPath	= FILES_BASE_PATH."invoices/xml/{$strInvoiceRun}/";
-
-// Get File List
-chdir($strXMLPath);
-$arrFiles	= glob('*.xml');
-
-foreach ($arrFiles as $strFile)
+if ($selInvoiceRun->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 {
-	$intAccount		= (int)basename($strFile, 'xml');
+	// Get File List
+	chdir($strXMLPath);
+	$arrFiles	= glob('*.xml');
 	
-	if ($selInvoice->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun)))
+	foreach ($arrFiles as $strFile)
 	{
-		CliEcho($intAccount);
-		$arrInvoice	= $selInvoice->Fetch();
-		$strCommand	= "perl -pi -e 's/20080701112204/{$arrInvoice['Id']}/g' {$strXMLPath}{$strFile}";
-		CliEcho(shell_exec($strCommand));
-		//CliEcho($strCommand);
+		$intAccount		= (int)basename($strFile, 'xml');
+		
+		if ($selInvoice->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun)))
+		{
+			CliEcho($intAccount);
+			$arrInvoice	= $selInvoice->Fetch();
+			$strCommand	= "perl -pi -e 's/SAMPLE/{$arrInvoice['Id']}/g' {$strXMLPath}{$strFile}";
+			CliEcho(shell_exec($strCommand));
+			//CliEcho($strCommand);
+		}
+		else
+		{
+			CliEcho("Error retrieving Invoice Id for '{$intAccount}'");
+			exit(1);
+		}
 	}
-	else
-	{
-		CliEcho("Error retrieving Invoice Id for '{$intAccount}'");
-		exit(1);
-	}
+}
+else
+{
+	CliEcho("'{$strInvoiceRun}' is not a committed InvoiceRun!");
+	exit(2);
 }
 ?>
