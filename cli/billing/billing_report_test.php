@@ -73,7 +73,7 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 	$bilManagementReports = new BillingModuleReports($arrProfitData);
 	
 	$arrReports = Array();
-	CliEcho("Invoice Summary...");
+	CliEcho("Generating Report...");
 	$bilManagementReports->CreateReport($strReportType);
 }
 
