@@ -18,9 +18,10 @@ foreach ($arrFiles as $strFile)
 	
 	if ($selInvoice->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun)))
 	{
+		CliEcho($intAccount);
 		$arrInvoice	= $selInvoice->Fetch();
-		$strCommand	= "perl -pi -e 's/20080701112204/{$arrInvoice['Id']}/g' {$strFile}";
-		shell_exec($strCommand);
+		$strCommand	= "perl -pi -e 's/20080701112204/{$arrInvoice['Id']}/g' {$strXMLPath}{$strFile}";
+		CliEcho(shell_exec($strCommand));
 		//CliEcho($strCommand);
 	}
 	else
