@@ -1894,7 +1894,7 @@ class BillingModuleReports
 														NULL, 
 														"Invoice.DeliveryMethod");
 		$selDestinationTemp		= new StatementSelect(	"InvoiceTemp JOIN Account ON Account.Id = InvoiceTemp.Account", 
-														"Account.DeliveryMethod, COUNT(InvoiceTemp.Id) AS InvoiceCount, SUM(InvoiceTemp.Total) AS RetailValue", 
+														"InvoiceTemp.DeliveryMethod, COUNT(InvoiceTemp.Id) AS InvoiceCount, SUM(InvoiceTemp.Total) AS RetailValue", 
 														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup> AND State = <State>", 
 														"InvoiceTemp.DeliveryMethod ASC", 
 														NULL, 
