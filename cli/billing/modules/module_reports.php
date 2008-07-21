@@ -2051,9 +2051,9 @@ class BillingModuleReports
 		$wksWorksheet->writeString($intLine++, 2, $strPageTitle, $arrFormat['PageTitle']);
 		
 		// Invoice Run Details
-		$arrOutline['BlankUnderline']	[]	= Array('LineNumber' => $intLine++, 'ColStart' => 0, 'ColEnd' => $intColumns);
+		$arrOutline['BlankUnderline']	[]	= Array('LineNumber' => $intLine, 'ColStart' => 0, 'ColEnd' => $intColumns);
 		$wksWorksheet->writeString($intLine, $intColumns-3, "This Month"		, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString($intLine, $intColumns-2, "Last Month"		, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString($intLine++, $intColumns-2, "Last Month"		, $arrFormat['TitleItalic']);
 		
 		$intHeaderLine	= $intLine;
 		$wksWorksheet->writeString($intLine++, 0, "Bill Date"		, $arrFormat['TextBold']);
