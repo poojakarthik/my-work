@@ -1888,13 +1888,13 @@ class BillingModuleReports
 		
 		$selDestinations		= new StatementSelect("Account", "DISTINCT State", "1", "State ASC");
 		$selDestinationComm		= new StatementSelect(	"Invoice JOIN Account ON Account.Id = Invoice.Account", 
-														"Invoice.DeliveryMethod, COUNT(Invoice.Id) AS Total", 
+														"Invoice.DeliveryMethod, COUNT(Invoice.Id) AS InvoiceCount, SUM(Invoice.Total) AS RetailValue", 
 														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup> AND State = <State>", 
 														"Invoice.DeliveryMethod ASC", 
 														NULL, 
 														"Invoice.DeliveryMethod");
 		$selDestinationTemp		= new StatementSelect(	"InvoiceTemp JOIN Account ON Account.Id = InvoiceTemp.Account", 
-														"Account.State AS State, COUNT(InvoiceTemp.Id) AS InvoiceCount, SUM(InvoiceTemp.Total) AS RetailValue", 
+														"Account.DeliveryMethod, COUNT(InvoiceTemp.Id) AS InvoiceCount, SUM(InvoiceTemp.Total) AS RetailValue", 
 														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup> AND State = <State>", 
 														"InvoiceTemp.DeliveryMethod ASC", 
 														NULL, 
