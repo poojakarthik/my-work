@@ -1990,19 +1990,19 @@ class BillingModuleReports
 								switch ($arrDestination['DeliveryMethod'])
 								{
 									case DELIVERY_METHOD_POST:
-										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['PostTotal']		+= $arrDestination['RetailValue'];
-										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['PostCount']		+= $arrDestination['InvoiceCount'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['PostTotal']		+= $arrDestination['RetailValue'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['PostCount']		+= $arrDestination['InvoiceCount'];
 										break;
 									
 									case DELIVERY_METHOD_DO_NOT_SEND:
-										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['WithheldTotal']	+= $arrDestination['RetailValue'];
-										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['WithheldCount']	+= $arrDestination['InvoiceCount'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['WithheldTotal']	+= $arrDestination['RetailValue'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['WithheldCount']	+= $arrDestination['InvoiceCount'];
 										break;
 									
 									case DELIVERY_METHOD_EMAIL:
 									case DELIVERY_METHOD_EMAIL_SENT:
-										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['EmailTotal']	+= $arrDestination['RetailValue'];
-										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$arrDestination['State']]['EmailCount']	+= $arrDestination['InvoiceCount'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['EmailTotal']	+= $arrDestination['RetailValue'];
+										$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['EmailCount']	+= $arrDestination['InvoiceCount'];
 										break;
 								}
 							}
