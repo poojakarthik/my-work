@@ -24,6 +24,7 @@ abstract class Cli
 	const SWITCH_SILENT = "s";
 	const SWITCH_HELP = "?";
 
+	// Depricated! Use Email_Notification class for emailing!!
 	const EMAIL_ATTACHMENT_NAME = 'content_type';
 	const EMAIL_ATTACHMENT_MIME_TYPE = 'dfilename';
 	const EMAIL_ATTACHMENT_CONTENT = 'CONTENT';
