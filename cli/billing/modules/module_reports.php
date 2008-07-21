@@ -1865,7 +1865,7 @@ class BillingModuleReports
 		$selProfitSummaryComm	= new StatementSelect(	"Invoice JOIN Account ON Invoice.Account = Account.Id", 
 														"SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Invoice.Total + Invoice.Tax) AS GrandTotalInvoiced",
 														"Invoice.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>");
-		$selProfitSummaryTemp	= new StatementSelect(	"InvoiceTemp JOIN Account ON Invoice.Account = Account.Id", 
+		$selProfitSummaryTemp	= new StatementSelect(	"InvoiceTemp JOIN Account ON InvoiceTemp.Account = Account.Id", 
 														"SUM(InvoiceTemp.Total) AS TotalInvoiced, SUM(InvoiceTemp.Tax) AS TotalTaxed, SUM(InvoiceTemp.Total + InvoiceTemp.Tax) AS GrandTotalInvoiced",
 														"InvoiceTemp.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>");
 		
