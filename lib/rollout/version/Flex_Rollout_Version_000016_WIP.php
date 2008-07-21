@@ -270,6 +270,7 @@ class Flex_Rollout_Version_000016 extends Flex_Rollout_Version
 									",
 
 			"ticketing_correspondance_source" => "INSERT INTO ticketing_correspondance_source (id, name, description, const_name) VALUES
+									(0, 'XML', 		'XML', 		'TICKETING_CORRESPONDANCE_SOURCE_XML'),
 									(1, 'Email', 	'Email', 	'TICKETING_CORRESPONDANCE_SOURCE_EMAIL'),
 									(2, 'Web',		'Web', 		'TICKETING_CORRESPONDANCE_SOURCE_WEB'),
 									(3, 'Phone', 	'Phone', 	'TICKETING_CORRESPONDANCE_SOURCE_PHONE')

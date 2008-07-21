@@ -25,6 +25,12 @@ class Ticketing_Service
 			// Parse the file
 			$details = self::parseXmlFile($xmlFile);
 
+			$details['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
+			$details['source_id'] = TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
+			$details['user_id'] = USER_ID;
+			$details['creation_datetime'] = date('Y-m-d H-i-s');
+			$details['delivery_datetime'] = date('Y-m-d H-i-s');
+
 			// Load the details into the ticketing system
 			$correspondance = new Ticketing_Correspondance($details);
 

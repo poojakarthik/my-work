@@ -9,11 +9,16 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATO
 
 class Ticketing_Correspondance
 {
-	private $strSubject;
-	private $strMessage;
+	private $summary;
+	private $details;
 	private $arrAttachments;
-	private $intTicketNumber;
+	private $ticketId;
 	private $id;
+	private $contactId = NULL;
+	private $sourceId = NULL;
+	private $userId = NULL;
+	private $deliveryStatusId = NULL;
+
 	private $contact = NULL;
 
 	public function __construct()
@@ -27,7 +32,7 @@ class Ticketing_Correspondance
 		// Ticket message number - Existing message!
 		else if (count($arrArgs) == 1 && is_int($arrArgs[0]))
 		{
-			$this->loadForMessageId($arrArgs[0]);
+			$this->loadForCorrespondanceId($arrArgs[0]);
 		}
 	}
 
@@ -39,27 +44,35 @@ class Ticketing_Correspondance
 		$from = $arrDetails['from']['address'];
 		$name = $arrDetails['from']['name'];
 
+		$this->deliveryStatusId = $arrDetails['delivery_status'];
+		$this->userId = $arrDetails['user_id'];
+		$this->sourceId = $arrDetails['source_id'];
+		$this->creationDatetime = $arrDetails['creation_datetime'];
+		$this->deliveryDatetime = $arrDetails['delivery_datetime'];
+
 		// If a contact does not exists for the email address, one will be created
 		$this->contact = Ticketing_Contact::getForEmailAddress($from, $name);
+		$this->contactId = $this->contact->id;
 
-		$this->strSubject = $arrDetails['subject'];
-		$this->strMessage = $arrDetails['message'];
+		$this->summary = $arrDetails['subject'];
+		$this->details = $arrDetails['message'];
 
 		// Check the subject for a ticket number
 		// TODO: Q: Could this apply to more than one ticket?
 		$arrMatches = array();
-		if (preg_match("/\[ *#[0-9 ]+\]/", $this->strSubject, $arrMatches))
+		if (preg_match("/\[ *#[0-9 ]+\]/", $this->summary, $arrMatches))
 		{
-			$this->strSubject = str_replace("/\[ *#([0-9 ]+)\]/", "", $arrMatches[0]);
-			$this->intTicketNumber = preg_replace("/[^0-9]*/", "", $arrMatches[0]);
+			$this->summary = str_replace("/\[ *#([0-9 ]+)\]/", "", $arrMatches[0]);
+			$this->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
 		}
 
-		// WIP:: If we don't have a ticket number, we must create a ticket at this point 
-		// (we need a ticket number to be able to save this record)
-		
+		// Load the ticket for this correspondance (if a ticket does not exist, one will be created)
+		// Note: If we have a ticket number that does not exist, it will be overwritten.
+		$ticket = Ticketing_Ticket::forCorrespondance($this);
 
-		// WIP:: Need to save this correspondance to get assigned an id, in order that we may create associated attchments
-		$this->id = NULL;
+		// Need to save this correspondance to get assigned the id, 
+		// which we need in order that we may create associated attchments
+		$this->save();
 
 		foreach ($arrDetails['attachments'] as $attachmentDetails)
 		{
@@ -68,7 +81,7 @@ class Ticketing_Correspondance
 		}
 	}
 
-	private function loadForMessageId($intMessageNumber)
+	private function loadForCorrespondanceId($intMessageNumber)
 	{
 		// Query the DB to get the details of the message
 		$this->intMessageNumber = $intMessageNumber;
@@ -76,32 +89,16 @@ class Ticketing_Correspondance
 
 	public function acknowledgeReceipt()
 	{
-		// Send an email to customer to acknowledge receipt
+		// WIP:: Send an email to customer to acknowledge receipt
 	}
 
 	public function emailToCustomer()
 	{
-		// Send an email to customer containing the details of this message
-	}
-
-	public function getTicketNumber()
-	{
-		return $this->intTicketNumber;
-	}
-
-	public function correctTicketNumber($intTicketNumber)
-	{
-		$t6his->setTicketNumber($intTicketNumber);
-	}
-
-	public function setTicketNumber($intTicketNumber)
-	{
-		$t6his->intTicketNumber = $intTicketNumber;
+		// WIP:: Send an email to customer containing the details of this message
 	}
 
 	public function save()
 	{
-		// WIP:: Save to DB, inserting if necessary
 		if ($this->_saved)
 		{
 			// Nothing to save
@@ -114,24 +111,25 @@ class Ticketing_Correspondance
 			'user_id' => $this->user_id, 
 			'contact_id' => $this->contact_id, 
 			'source_id' => $this->source_id, 
+			'delivery_status_id' => $this->delivery_status_id,
 			'creation_datetime' => $this->creation_datetime, 
 			'delivery_datetime' => $this->delivery_datetime
 		);
 		// No id means that this must be a new record
 		if (!$this->id)
 		{
-			$statement = new StatementInsert('ticketing_contact', $arrValues);
+			$statement = new StatementInsert('ticketing_correspondance', $arrValues);
 		}
 		// This must be an update
 		else
 		{
 			
 			$arrValues['id'] = $this->id;
-			$statement = new StatementUpdateById('ticketing_contact', $arrValues);
+			$statement = new StatementUpdateById('ticketing_correspondance', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save contact details: ' . $statement->Error());
+			throw new Exception('Failed to save correspondance details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{
