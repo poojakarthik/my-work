@@ -2105,7 +2105,7 @@ class BillingModuleReports
 			{
 				for ($i = $arrLine['ColStart']; $i < $arrLine['ColEnd']; $i++)
 				{
-					$wksWorksheet->writeBlank($arrLine['LineNumber'], $i, $strFormat);
+					$wksWorksheet->writeBlank($arrLine['LineNumber'], $i, $arrFormat[$strFormat]);
 				}
 			}
 		}
