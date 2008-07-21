@@ -2073,7 +2073,7 @@ class BillingModuleReports
 		$wksWorksheet->writeString($intLine++, 0, "Gross Profit (ex Tax)"	, $arrFormat['TextBold']);
 		$wksWorksheet->writeString($intLine++, 0, "Profit Margin"			, $arrFormat['TextBold']);
 		
-		$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 1, 'ColEnd' => $intColumns-1);
+		$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 0, 'ColEnd' => $intColumns-1);
 		$arrCustomerGroupHeaders		[]	= $intLine;
 		$wksWorksheet->writeString($intLine++, 0, "Invoice Delivery Summary"	, $arrFormat['Title']);
 		
@@ -2088,7 +2088,7 @@ class BillingModuleReports
 		$arrDestinationLine	= Array();
 		foreach ($arrDestinations as $strState)
 		{
-			$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 1, 'ColEnd' => $intColumns-1);
+			$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 0, 'ColEnd' => $intColumns-1);
 			$arrCustomerGroupHeaders		[]	= $intLine;
 			$wksWorksheet->writeString($intLine++, 0, "Invoice Destination: {$strState}"	, $arrFormat['Title']);
 			
@@ -2097,6 +2097,8 @@ class BillingModuleReports
 			$wksWorksheet->writeString($intLine++, 0, "Total Invoices Emailed"			, $arrFormat['TextBold']);
 			$wksWorksheet->writeString($intLine++, 0, "Total Invoices Withheld"			, $arrFormat['TextBold']);
 		}
+		
+		$arrOutline['BlankOverline']	[]	= Array('LineNumber' => $intLine, 'ColStart' => 0, 'ColEnd' => $intColumns-1);
 		
 		// Draw Spacers/Formatting
 		foreach ($arrOutline as $strFormat=>$arrLines)
@@ -2154,7 +2156,7 @@ class BillingModuleReports
 				$wksWorksheet->writeNumber($intLine++, $intCol, $arrProfitSummary['GrandTotalInvoiced']	, $arrFormat['Currency']);
 				$wksWorksheet->writeNumber($intLine++, $intCol, $fltProfit								, $arrFormat['Currency']);
 				
-				$strColumn		= $arrLetters[$intFirstCol + $intCol + 1];
+				$strColumn		= $arrLetters[$intCol];
 				$wksWorksheet->writeFormula($intLine++, $intCol, "=IF(AND({$strColumn}{$intInvoicedRow} <> 0, NOT({$strColumn}{$intInvoicedRow} = \"N/A\")), ({$strColumn}{$intInvoicedRow} - {$strColumn}{$intCostRow}) / ABS({$strColumn}{$intInvoicedRow}), \"N/A\")", $arrFormat['Percentage']);
 				
 				// Delivery Summary
