@@ -1862,12 +1862,16 @@ class BillingModuleReports
 		
 		$selTempInvoice			= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>", NULL, 1);
 		
-		$selProfitSummaryComm	= new StatementSelect(	"(Invoice JOIN ServiceTotal ST USING (InvoiceRun, Account)) JOIN Account ON Invoice.Account = Account.Id", 
-														"SUM(ST.UncappedCost + ST.CappedCost) AS TotalCost, SUM(ST.CappedCharge + ST.UncappedCharge) AS TotalRated, SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Invoice.Total + Invoice.Tax) AS GrandTotalInvoiced",
+		$selProfitSummaryComm	= new StatementSelect(	"Invoice JOIN Account ON Invoice.Account = Account.Id", 
+														"SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Invoice.Total + Invoice.Tax) AS GrandTotalInvoiced",
 														"Invoice.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>");
-		$selProfitSummaryTemp	= new StatementSelect(	"(InvoiceTemp JOIN ServiceTotal ST USING (InvoiceRun, Account)) JOIN Account ON InvoiceTemp.Account = Account.Id", 
-														"SUM(ST.UncappedCost + ST.CappedCost) AS TotalCost, SUM(ST.CappedCharge + ST.UncappedCharge) AS TotalRated, SUM(InvoiceTemp.Total) AS TotalInvoiced, SUM(InvoiceTemp.Tax) AS TotalTaxed, SUM(InvoiceTemp.Total + InvoiceTemp.Tax) AS GrandTotalInvoiced",
+		$selProfitSummaryTemp	= new StatementSelect(	"InvoiceTemp JOIN Account ON Invoice.Account = Account.Id", 
+														"SUM(InvoiceTemp.Total) AS TotalInvoiced, SUM(InvoiceTemp.Tax) AS TotalTaxed, SUM(InvoiceTemp.Total + InvoiceTemp.Tax) AS GrandTotalInvoiced",
 														"InvoiceTemp.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>");
+		
+		$selCostSummary			= new StatementSelect(	"ServiceTotal JOIN Account ON Account.Id = ServiceTotal.Account",
+														"SUM(UncappedCost + CappedCost) AS TotalCost, SUM(CappedCharge + UncappedCharge) AS TotalRated",
+														"InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>");
 		
 		$selDeliveryComm		= new StatementSelect(	"Invoice JOIN Account ON Account.Id = Invoice.Account",
 														"DeliveryMethod, SUM(Invoice.Total) AS RetailValue, COUNT(Invoice.Id) AS InvoiceCount",
@@ -1945,6 +1949,11 @@ class BillingModuleReports
 						CliEcho("Getting Profit Summary...");
 						$selProfitSummary->Execute(Array('InvoiceRun' => $arrProfitData['InvoiceRun'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
 						$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary']	= $selProfitSummary->Fetch();
+						
+						// Get Cost Summary
+						CliEcho("Getting Cost Summary...");
+						$selCostSummary->Execute(Array('InvoiceRun' => $arrProfitData['InvoiceRun'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
+						$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary']	= array_merge($arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary'], $selCostSummary->Fetch());
 						
 						// Get Delivery Summary
 						CliEcho("Getting Delivery Summary...");
