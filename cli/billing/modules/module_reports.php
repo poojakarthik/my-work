@@ -1862,10 +1862,10 @@ class BillingModuleReports
 		
 		$selTempInvoice			= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>", NULL, 1);
 		
-		$selProfitSummaryComm	= new StatementSelect(	"(Invoice JOIN ServiceTotal ST USING (InvoiceRun)) JOIN Account ON Invoice.Account = Account.Id", 
+		$selProfitSummaryComm	= new StatementSelect(	"(Invoice JOIN ServiceTotal ST USING (InvoiceRun, Account)) JOIN Account ON Invoice.Account = Account.Id", 
 														"SUM(ST.UncappedCost + ST.CappedCost) AS TotalCost, SUM(ST.CappedCharge + ST.UncappedCharge) AS TotalRated, SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Invoice.Total + Invoice.Tax) AS GrandTotalInvoiced",
 														"Invoice.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>");
-		$selProfitSummaryTemp	= new StatementSelect(	"(InvoiceTemp JOIN ServiceTotal ST USING (InvoiceRun)) JOIN Account ON InvoiceTemp.Account = Account.Id", 
+		$selProfitSummaryTemp	= new StatementSelect(	"(InvoiceTemp JOIN ServiceTotal ST USING (InvoiceRun, Account)) JOIN Account ON InvoiceTemp.Account = Account.Id", 
 														"SUM(ST.UncappedCost + ST.CappedCost) AS TotalCost, SUM(ST.CappedCharge + ST.UncappedCharge) AS TotalRated, SUM(InvoiceTemp.Total) AS TotalInvoiced, SUM(InvoiceTemp.Tax) AS TotalTaxed, SUM(InvoiceTemp.Total + InvoiceTemp.Tax) AS GrandTotalInvoiced",
 														"InvoiceTemp.InvoiceRun = <InvoiceRun> AND Account.CustomerGroup = <CustomerGroup>");
 		
@@ -2044,8 +2044,8 @@ class BillingModuleReports
 		// Invoice Run Details
 		$intHeaderLine	= $intLine;
 		$arrOutline['BlankUnderline']	[]	= Array('LineNumber' => $intLine++, 'ColStart' => 0, 'ColEnd' => $intColumns);
-		$wksWorksheet->writeString($intLine, $intColumns-1, "This Month"		, $arrFormat['TitleItalic']);
-		$wksWorksheet->writeString($intLine, $intColumns, "Last Month"		, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString($intLine, $intColumns-3, "This Month"		, $arrFormat['TitleItalic']);
+		$wksWorksheet->writeString($intLine, $intColumns-2, "Last Month"		, $arrFormat['TitleItalic']);
 		
 		$wksWorksheet->writeString($intLine++, 0, "Bill Date"		, $arrFormat['TextBold']);
 		$wksWorksheet->writeString($intLine++, 0, "Billing Period"	, $arrFormat['TextBold']);
@@ -2075,7 +2075,7 @@ class BillingModuleReports
 		$wksWorksheet->writeString($intLine++, 0, "Withheld Invoices Retail Value"	, $arrFormat['TextBold']);
 		
 		$arrDestinationLine	= Array();
-		foreach ($arrDestinations as $strState=>$arrDestination)
+		foreach ($arrDestinations as $strState)
 		{
 			$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 1, 'ColEnd' => $intColumns);
 			$wksWorksheet->writeString($intLine++, 0, "Invoice Destination: {$strState}"	, $arrFormat['Title']);
@@ -2139,12 +2139,12 @@ class BillingModuleReports
 				$wksWorksheet->writeNumber($intLine++, $intCol, $arrDelivery['WithheldTotal']	, $arrFormat['Currency']);
 				
 				// Destination Summary
-				foreach ($arrDestinations as $strState=>$arrDestination)
+				foreach ($arrCustomerGroup['Destinations'] as $strState=>$arrDestination)
 				{
 					$intLine	= $arrDestinationLine[$strState];
-					$wksWorksheet->writeNumber($intLine++, 0, "Total Invoices Posted"			, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber($intLine++, 0, "Total Invoices Emailed"			, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber($intLine++, 0, "Total Invoices Withheld"			, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['InvoiceCount']	, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['InvoiceCount']	, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['InvoiceCount']	, $arrFormat['Integer']);
 				}
 				
 				$intCol	+= $intColJump;
