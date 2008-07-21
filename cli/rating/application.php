@@ -780,8 +780,8 @@
 		// Deliver the report
 		$this->_rptRatingReport->Finish();
 		
-		// Return TRUE or FALSE
-		return $bolReturn;
+		// Return Number of CDRs rated or FALSE
+		return ($intCDR > 0) ? $intCDR : FALSE;
 	 }
 	
 	//------------------------------------------------------------------------//

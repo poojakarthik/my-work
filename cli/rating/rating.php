@@ -62,27 +62,29 @@ $mixRemaining	= ($intLimit) ? $intLimit : TRUE;
 $intBatch		= FLEX_RATING_BATCH_SIZE;
 while ($mixRemaining)
 {
+	// Determine batch size
 	if (is_int($mixRemaining))
 	{
 		CliEcho("\n *** $mixRemaining CDRs remaining...");
 		
 		if ($intBatch > $mixRemaining)
 		{
-			$intBatch		= $mixRemaining;
-			$mixRemaining	= 0;
-		}
-		else
-		{
-			$mixRemaining	= ($mixRemaining - $intBatch);
+			$intBatch	= $mixRemaining;
 		}
 	}
 	
 	// Rate this batch
 	CliEcho(" *** Rating Batch of $intBatch");
-	if ($appRating->Rate($bolOnlyNew, $intBatch) === FALSE)
+	$mixResult	= $appRating->Rate($bolOnlyNew, $intBatch);
+	if (!$mixResult)
 	{
 		// If there is nothing left to rate, then exit
 		break;
+	}
+	elseif (is_int($mixRemaining))
+	{
+		// Rated this many CDRs -- adjust $mixRemaining
+		$mixRemaining	= ($mixRemaining - $intBatch);
 	}
 }
 
