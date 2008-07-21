@@ -2051,11 +2051,11 @@ class BillingModuleReports
 		$wksWorksheet->writeString($intLine++, 2, $strPageTitle, $arrFormat['PageTitle']);
 		
 		// Invoice Run Details
-		$intHeaderLine	= $intLine;
 		$arrOutline['BlankUnderline']	[]	= Array('LineNumber' => $intLine++, 'ColStart' => 0, 'ColEnd' => $intColumns);
 		$wksWorksheet->writeString($intLine, $intColumns-3, "This Month"		, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString($intLine, $intColumns-2, "Last Month"		, $arrFormat['TitleItalic']);
 		
+		$intHeaderLine	= $intLine;
 		$wksWorksheet->writeString($intLine++, 0, "Bill Date"		, $arrFormat['TextBold']);
 		$wksWorksheet->writeString($intLine++, 0, "Billing Period"	, $arrFormat['TextBold']);
 		$wksWorksheet->writeString($intLine++, 0, "Invoice Run"		, $arrFormat['TextBold']);
@@ -2063,7 +2063,8 @@ class BillingModuleReports
 		$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 0, 'ColEnd' => $intColumns);
 		$wksWorksheet->writeString($intLine++, 0, "Invoice Profit Summary"	, $arrFormat['Title']);
 		
-		$intProfitSummaryLine	= $intLine;
+		$intProfitSummaryLine			= $intLine;
+		$arrCustomerGroupHeaders	[]	= $intLine;
 		$wksWorksheet->writeString($intLine++, 0, "Total Cost"				, $arrFormat['TextBold']);
 		$wksWorksheet->writeString($intLine++, 0, "Total Rated"				, $arrFormat['TextBold']);
 		$wksWorksheet->writeString($intLine++, 0, "Total Invoiced (ex Tax)"	, $arrFormat['TextBold']);
@@ -2075,7 +2076,8 @@ class BillingModuleReports
 		$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 1, 'ColEnd' => $intColumns);
 		$wksWorksheet->writeString($intLine++, 0, "Invoice Delivery Summary"	, $arrFormat['Title']);
 		
-		$intInvoiceDeliveryLine	= $intLine;
+		$intInvoiceDeliveryLine			= $intLine;
+		$arrCustomerGroupHeaders	[]	= $intLine;
 		$wksWorksheet->writeString($intLine++, 0, "Total Invoices Posted"			, $arrFormat['TextBold']);
 		$wksWorksheet->writeString($intLine++, 0, "Total Invoices Emailed"			, $arrFormat['TextBold']);
 		$wksWorksheet->writeString($intLine++, 0, "Total Invoices Withheld"			, $arrFormat['TextBold']);
@@ -2087,6 +2089,7 @@ class BillingModuleReports
 		foreach ($arrDestinations as $strState)
 		{
 			$arrOutline['Spacer']			[]	= Array('LineNumber' => $intLine++, 'ColStart' => 1, 'ColEnd' => $intColumns);
+			$arrCustomerGroupHeaders		[]	= $intLine;
 			$wksWorksheet->writeString($intLine++, 0, "Invoice Destination: {$strState}"	, $arrFormat['Title']);
 			
 			$arrDestinationLine[$strState]	= $intLine;
@@ -2103,6 +2106,20 @@ class BillingModuleReports
 				$wksWorksheet->writeBlank($arrLine['LineNumber'], $i, $strFormat);
 			}
 		}
+		
+		// CustomerGroup headers
+		foreach ($arrCustomerGroupHeaders as $intLine)
+		{
+			$intCol	= 1;
+			foreach ($arrCustomerGroups as $arrCustomerGroup)
+			{
+				foreach (Array("This Month", "Last Month") as $strPeriod)
+				{
+					$wksWorksheet->writeString($intLine, $intCol++, $arrCustomerGroup['InternalName']." ({$strPeriod})", $arrFormat['TitleItalic']);
+				}
+			}
+		}
+		
 		
 		$intFirstCol	= 1;
 		$intColInit		= $intFirstCol;
