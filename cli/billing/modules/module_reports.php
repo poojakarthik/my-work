@@ -1890,15 +1890,15 @@ class BillingModuleReports
 		$selDestinationComm		= new StatementSelect(	"Invoice JOIN Account ON Account.Id = Invoice.Account", 
 														"Invoice.DeliveryMethod, COUNT(Invoice.Id) AS Total", 
 														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup> AND State = <State>", 
-														"Invoice.DeliveryMethod", 
+														"Invoice.DeliveryMethod ASC", 
 														NULL, 
-														"State");
+														"Invoice.DeliveryMethod");
 		$selDestinationTemp		= new StatementSelect(	"InvoiceTemp JOIN Account ON Account.Id = InvoiceTemp.Account", 
 														"Account.State AS State, COUNT(InvoiceTemp.Id) AS InvoiceCount, SUM(InvoiceTemp.Total) AS RetailValue", 
-														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup>", 
-														"State ASC", 
+														"InvoiceRun = <InvoiceRun> AND CustomerGroup = <CustomerGroup> AND State = <State>", 
+														"Invoice.DeliveryMethod ASC", 
 														NULL, 
-														"State");
+														"Invoice.DeliveryMethod");
 		
 		// Retrieve list of States
 		CliEcho("Getting Destinations...");
