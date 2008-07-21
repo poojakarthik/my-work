@@ -1903,6 +1903,7 @@ class BillingModuleReports
 														"State");
 		
 		// Retrieve list of States
+		CliEcho("Getting Destinations...");
 		if ($selDestinations->Execute())
 		{
 			$arrDestinations	= Array();
@@ -1912,13 +1913,17 @@ class BillingModuleReports
 			}
 			
 			// Retrieve Customer Groups
+			CliEcho("Getting CustomerGroups...");
 			if ($intCustomerGroupCount = $selCustomerGroups->Execute())
 			{
+				$arrCustomerGroups	= $selCustomerGroups->FetchAll();
 				$intColumns			= 1 + ($intCustomerGroupCount * 2) + 1;
 				
 				// Get Data grouped by Invoice Run
 				foreach ($this->_arrProfitData as $strPeriod=>&$arrProfitData)
 				{
+					CliEcho("[ {$strPeriod} ]");
+					
 					// Committed or Temporary Run?
 					if ($selTempInvoice->Execute($arrProfitData['InvoiceRun']))
 					{
@@ -1926,6 +1931,7 @@ class BillingModuleReports
 						$selProfitSummary	= &$selProfitSummaryTemp;
 						$selDestination		= &$selDestinationTemp;
 						$selDelivery		= &$selDeliveryTemp;
+						CliEcho("Temporary Run...");
 					}
 					else
 					{
@@ -1933,16 +1939,21 @@ class BillingModuleReports
 						$selProfitSummary	= &$selProfitSummaryComm;
 						$selDestination		= &$selDestinationComm;
 						$selDelivery		= &$selDeliveryComm;
+						CliEcho("Committed Run...");
 					}
 					
 					// Get Customer Group data
-					while ($arrCustomerGroup = $selCustomerGroups->Fetch())
+					foreach ($arrCustomerGroups as $arrCustomerGroup)
 					{
+						CliEcho("++ {$arrCustomerGroup['InternalName']} ++");
+						
 						// Get Profit Summary
+						CliEcho("Getting Profit Summary...");
 						$selProfitSummary->Execute(Array('InvoiceRun' => $arrProfitData['InvoiceRun'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
 						$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary']	= $selProfitSummary->Fetch();
 						
 						// Get Delivery Summary
+						CliEcho("Getting Delivery Summary...");
 						$selDelivery->Execute(Array('InvoiceRun' => $arrProfitData['InvoiceRun'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
 						while ($arrDeliveryMethod = $selDelivery->Fetch())
 						{
@@ -1969,6 +1980,7 @@ class BillingModuleReports
 						// Get Destination Summaries
 						foreach ($arrDestinations as $strState)
 						{
+							CliEcho("Getting Destination Summary for {$strState}...");
 							$selDestination->Execute(Array('State' => $strState, 'InvoiceRun' => $arrProfitData['InvoiceRun'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
 							while ($arrDestination = $selDestination->Fetch())
 							{
@@ -2094,7 +2106,7 @@ class BillingModuleReports
 		$intColJump		= 2;
 		$intHeaderCol	= $intColumns - 2;
 		$arrLetters		= range('A', 'Z');
-		foreach ($this->_arrProfitData as $arrData)
+		foreach ($this->_arrProfitData as $strPeriod=>$arrData)
 		{
 			// Header
 			$intLine	= $intHeaderLine;
