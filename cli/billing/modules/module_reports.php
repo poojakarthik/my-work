@@ -2173,9 +2173,9 @@ class BillingModuleReports
 				foreach ($arrCustomerGroup['Destinations'] as $strState=>$arrDestination)
 				{
 					$intLine	= $arrDestinationLine[$strState];
-					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['InvoiceCount']	, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['InvoiceCount']	, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['InvoiceCount']	, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['PostCount']		, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['EmailCount']		, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['WithheldCount']	, $arrFormat['Integer']);
 				}
 				
 				$intCol	+= $intColJump;
