@@ -2170,12 +2170,12 @@ class BillingModuleReports
 				$wksWorksheet->writeNumber($intLine++, $intCol, $arrDelivery['WithheldTotal']	, $arrFormat['Currency']);
 				
 				// Destination Summary
-				foreach ($arrCustomerGroup['Destinations'] as $strState=>$arrDestination)
+				foreach ($arrDestinations as $strState)
 				{
 					$intLine	= $arrDestinationLine[$strState];
-					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['PostCount']		, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['EmailCount']		, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber($intLine++, $intCol, $arrDestination['WithheldCount']	, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrCustomerGroup['Destinations'][$strState]['PostCount']		, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrCustomerGroup['Destinations'][$strState]['EmailCount']		, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber($intLine++, $intCol, $arrCustomerGroup['Destinations'][$strState]['WithheldCount']	, $arrFormat['Integer']);
 				}
 				
 				$intCol	+= $intColJump;
