@@ -608,7 +608,7 @@
 							}
 							
 							CliEcho("Service {$this->_arrCurrentCDR['Service']} is being rerated from {$this->_arrCurrentCDR['StartDatetime']}");
-							continue;
+							break;
 						}
 						else
 						{
