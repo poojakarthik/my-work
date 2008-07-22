@@ -36,7 +36,7 @@ class Flex_Rollout_Version_000016 extends Flex_Rollout_Version
 										protocol varchar(50) NOT NULL DEFAULT 'Pop3' COMMENT 'Currently only POP3, IMAP, MBOX and MailDir are supported',
 										host varchar(255) NOT NULL COMMENT 'Host machine (POP3 or IMAP) or directory path (MBOX or MailDir)',
 										port BIGINT(20) DEFAULT NULL COMMENT 'Port for mail retrieval on host machine (NULL uses default port)',
-										username varchar(50) DEFAULT NULL COMMENT 'Username to use when retrieving emails',
+										username varchar(50) DEFAULT NULL COMMENT 'Username to use when retrieving emails (or backup dir for XML files)',
 										password varchar(50) DEFAULT NULL COMMENT 'Password (encrypted) to use when retrieving emails',
 										PRIMARY KEY (id)
 									) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Configuration setting for the ticketing system';
@@ -143,13 +143,14 @@ class Flex_Rollout_Version_000016 extends Flex_Rollout_Version
 
 			"ticketing_ticket" => " CREATE TABLE ticketing_ticket (
 										id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Id for the table',
-										group_ticket_id bigint(20) unsigned NOT NULL COMMENT 'FK to ticket that this ticket belongs to',
+										group_ticket_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to ticket that this ticket belongs to',
 										subject varchar(50) NOT NULL COMMENT 'Name of the category',
 										priority_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_priority table',
-										owner_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_user table',
+										owner_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to the ticketing_user table',
 										contact_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_contact table',
 										status_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_status table',
-										account_id bigint(20) unsigned NOT NULL COMMENT 'FK to the Account table',
+										customer_group_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to the CustomerGroup table',
+										account_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to the Account table',
 										category_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_category table',
 										creation_datetime datetime default NULL COMMENT 'Date/Time that the ticket was created',
 										modified_datetime datetime default NULL COMMENT 'Date/Time that the ticket was modified',
@@ -163,9 +164,10 @@ class Flex_Rollout_Version_000016 extends Flex_Rollout_Version
 										group_ticket_id bigint(20) unsigned NOT NULL COMMENT 'FK to ticket that this ticket belongs to',
 										subject varchar(50) NOT NULL COMMENT 'Name of the category',
 										priority_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_priority table',
-										owner_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_user table',
+										owner_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to the ticketing_user table',
 										contact_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_contact table',
 										status_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_status table',
+										customer_group_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to the CustomerGroup table',
 										account_id bigint(20) unsigned NOT NULL COMMENT 'FK to the Account table',
 										category_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_category table',
 										creation_datetime datetime default NULL COMMENT 'Date/Time that the ticket was created',
@@ -282,6 +284,7 @@ class Flex_Rollout_Version_000016 extends Flex_Rollout_Version
 									",
 
 			"ticketing_category" => "INSERT INTO ticketing_category (id, name, description, const_name) VALUES
+									( 0, 'Uncategorized', 			'Uncategorized', 			'TICKETING_CATEGORY_UNCATEGORIZED'),
 									( 1, 'Billing Enquiries', 		'Billing enquiries', 		'TICKETING_CATEGORY_BILLING_ENQUIRIES'),
 									( 2, 'Product Enquiries',		'Product enquiries', 		'TICKETING_CATEGORY_PRODUCT_ENQUIRIES'),
 									( 3, 'Credit Control',			'Credit control', 			'TICKETING_CATEGORY_CREDIT_CONTROL'),
@@ -342,6 +345,16 @@ class Flex_Rollout_Version_000016 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DROP VIEW account_services";
 
+		$strSQL = "
+					ALTER TABLE CustomerGroup
+						ADD flex_url varchar(255) NOT NULL COMMENT 'The base URL for the Flex web interface for this customer group',
+						ADD email_domain varchar(255) NOT NULL COMMENT 'The domain part of email addresses sent to to this customer group'
+		";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . " Failed to alter CustomerGroup table. " . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "ALTER TABLE CustomerGroup DROP flex_url, DROP email_domain";
 	}
 
 	function rollback()
