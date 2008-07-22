@@ -6,7 +6,7 @@ require_once("../../../../../flex.require.php");
 $arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]				['Regex']			= "/^tap_isk4_\d{14}_\d{8}_\d{6}_a_s\.dat$/i";
 $arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]				['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]				['DownloadUnique']	= TRUE;
-$arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]				['Paths']			[]	= '/home/telcoblue/Incoming/cdr/aapt/';
+$arrStructure[FILE_IMPORT_CDR_OPTUS_STANDARD]				['Paths']			[]	= '/home/telcoblue/Incoming/cdr/iseek/';
 
 // Config
 $arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
