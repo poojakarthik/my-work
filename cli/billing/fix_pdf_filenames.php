@@ -6,6 +6,7 @@ require_once("../../flex.require.php");
 $strPath	= FILES_BASE_PATH."invoices/pdf/";
 
 // Get list of "Year" directories
+CliEcho("\n * Fixing FileName in '{$strPath}'...");
 $arrYearDirs	= glob($strPath.'*', GLOB_ONLYDIR);
 foreach ($arrYearDirs as $strYearDir)
 {
@@ -14,6 +15,8 @@ foreach ($arrYearDirs as $strYearDir)
 	$arrMonthDirs	= glob($strYearPath.'/*', GLOB_ONLYDIR);
 	foreach ($arrMonthDirs as $strMonthDir)
 	{
+		CliEcho("\n + Directory: '{$strMonthDir}'");
+		
 		// Get list of PDFs for this InvoiceRun
 		$strMonthPath	= rtrim($strYearPath, '/').'/'.rtrim($strMonthDir, '/');
 		$arrPDFPaths	= glob($strMonthPath.'/*.pdf');
