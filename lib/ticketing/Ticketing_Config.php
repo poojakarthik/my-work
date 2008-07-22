@@ -33,6 +33,34 @@ class Ticketing_Config
 		return self::$objInstance;
 	}
 
+	public function getSourceDirectory()
+	{
+		return $this->getRealDir($this->host);
+	}
+
+	public function getBackupDirectory()
+	{
+		return $this->getRealDir($this->username);
+	}
+
+	private function getRealDir($path)
+	{
+		if ($path && file_exists($path) && is_dir($path))
+		{
+			$path = realpath($path);
+			if ($path[strlen($path) - 1] != DIRECTORY_SEPARATOR)
+			{
+				$path .= DIRECTORY_SEPARATOR;
+			}
+			echo $path;
+		}
+		else
+		{
+			$path = NULL;
+		}
+		return $path;
+	}
+
 	public function __get($property)
 	{
 		if (array_key_exists($property, $this->arrProperties))

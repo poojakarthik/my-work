@@ -2,6 +2,7 @@
 
 // Ensure that we have the Ticketing_Ticket class
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Ticket.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Contact.php';
 
 
 // Ensure that we have the email notification class
@@ -21,64 +22,137 @@ class Ticketing_Correspondance
 
 	private $contact = NULL;
 
-	public function __construct()
+	private static $custGroupDomains = NULL;
+
+	private function __construct()
 	{
 		$arrArgs = func_get_args();
-		// Array of details parsed from an incoming email
-		if (count($arrArgs) == 1 && is_array($arrArgs[0]))
-		{
-			$this->createForDetails($arrArgs);
-		}
 		// Ticket message number - Existing message!
-		else if (count($arrArgs) == 1 && is_int($arrArgs[0]))
+		if (count($arrArgs) == 1 && is_int($arrArgs[0]))
 		{
 			$this->loadForCorrespondanceId($arrArgs[0]);
 		}
 	}
 
-	private function createForDetails($arrDetails)
+	public static function createForDetails($arrDetails)
 	{
-		// We should look at the to address to determine which customer group this is for.
+		// We should look at the 'to' addresses to determine which customer group this is for.
+		// If the 'to' addresses are not for a customer broup, we should check the 'cc' addresses
+		// If the 'to' and 'cc' addresses are not for a customer broup, we should check the 'bcc' addresses
+		$addresses = array();
+		if (array_key_exists('tos', $arrDetails)) 
+		{
+			$addresses[] = $arrDetails['tos'];
+		}
+		if (array_key_exists('ccs', $arrDetails)) 
+		{
+			$addresses[] = $arrDetails['ccs'];
+		}
+		if (array_key_exists('bccs', $arrDetails)) 
+		{
+			$addresses[] = $arrDetails['bccs'];
+		}
+		$custGroupId = self::getCustomerGroupForEmailAddress($addresses);
+
+//		if ($custGroupId === NULL)
+//		{
+//			throw new Exception('No customer group found for email.');
+//		}
 
 		// We should use the 'from' address to determine the contact
 		$from = $arrDetails['from']['address'];
 		$name = $arrDetails['from']['name'];
 
-		$this->deliveryStatusId = $arrDetails['delivery_status'];
-		$this->userId = $arrDetails['user_id'];
-		$this->sourceId = $arrDetails['source_id'];
-		$this->creationDatetime = $arrDetails['creation_datetime'];
-		$this->deliveryDatetime = $arrDetails['delivery_datetime'];
+		$objCorrespondance = new TicketingCorrespondance();
+
+		$objCorrespondance->deliveryStatusId = $arrDetails['delivery_status'];
+		$objCorrespondance->userId = $arrDetails['user_id'];
+		$objCorrespondance->sourceId = $arrDetails['source_id'];
+		$objCorrespondance->creationDatetime = $arrDetails['creation_datetime'];
+		$objCorrespondance->deliveryDatetime = $arrDetails['delivery_datetime'];
 
 		// If a contact does not exists for the email address, one will be created
-		$this->contact = Ticketing_Contact::getForEmailAddress($from, $name);
-		$this->contactId = $this->contact->id;
+		$objCorrespondance->contact = Ticketing_Contact::getForEmailAddress($from, $name);
+		$objCorrespondance->contactId = $objCorrespondance->contact->id;
 
-		$this->summary = $arrDetails['subject'];
-		$this->details = $arrDetails['message'];
+		$objCorrespondance->summary = $arrDetails['subject'];
+		$objCorrespondance->details = $arrDetails['message'];
 
 		// Check the subject for a ticket number
 		// TODO: Q: Could this apply to more than one ticket?
 		$arrMatches = array();
-		if (preg_match("/\[ *#[0-9 ]+\]/", $this->summary, $arrMatches))
+		if (preg_match("/\[ *#[0-9 ]+\]/", $objCorrespondance->summary, $arrMatches))
 		{
-			$this->summary = str_replace("/\[ *#([0-9 ]+)\]/", "", $arrMatches[0]);
-			$this->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
+			$objCorrespondance->summary = str_replace("/\[ *#([0-9 ]+)\]/", "", $arrMatches[0]);
+			$objCorrespondance->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
 		}
 
 		// Load the ticket for this correspondance (if a ticket does not exist, one will be created)
 		// Note: If we have a ticket number that does not exist, it will be overwritten.
-		$ticket = Ticketing_Ticket::forCorrespondance($this);
+		$ticket = Ticketing_Ticket::forCorrespondance($objCorrespondance, $custGroupId);
 
 		// Need to save this correspondance to get assigned the id, 
 		// which we need in order that we may create associated attchments
-		$this->save();
+		$objCorrespondance->save();
 
 		foreach ($arrDetails['attachments'] as $attachmentDetails)
 		{
-			$objAttchment = Ticketing_Attachment::create($this, $attachmentDetails['name'], $attachmentDetails['type'], $attachmentDetails['data']);
-			$this->arrAttchments[$objAttchment->id] = $objAttchment;
+			$objAttchment = Ticketing_Attachment::create($objCorrespondance, $attachmentDetails['name'], $attachmentDetails['type'], $attachmentDetails['data']);
+			$objCorrespondance->arrAttchments[$objAttchment->id] = $objAttchment;
 		}
+	}
+
+	public function getContact()
+	{
+		if ($this->contact !== NULL)
+		{
+			return $this->contact;
+		}
+		
+	}
+
+	private static function getCustomerGroupForEmailAddress()
+	{
+		$args = func_get_args();
+		$custGroup = NULL;
+		foreach($args as $arg)
+		{
+			if (is_array($arg))
+			{
+				$custGroup = self::getCustomerGroupForEmailAddress($arg);
+			}
+			else if (is_string($arg) && ($offset = strrpos($arg, '@')) !== FALSE)
+			{
+				$domain = substr($arg, $offset);
+				$custGroup = self::getCustomerGroupForEmailDomain($domain);
+			}
+			if ($custGroup !== NULL)
+			{
+				break;
+			}
+		}
+		return $custGroup;
+	}
+
+	private static function getCustomerGroupForEmailDomain($strDomain)
+	{
+		if (self::$custGroupDomains === NULL)
+		{
+			$selCustGroups = new StatementSelect('CustomerGroup', array('id' => 'Id', 'email_domain' => 'email_domain'));
+			if (($outcome = $selCustGroups->Execute()) === FALSE)
+			{
+				throw new Exception('Failed to list contact groups: ' . $selCustGroups->Error());
+			}
+			while ($custGroup = $selCustGroups->Fetch())
+			{
+				self::$custGroupDomains[strtolower(trim($custGroup['email_domain']))] = $custGroup['id'];
+			}
+		}
+		if (array_key_exists(strtolower(trim($custGroup['email_domain'])), self::$custGroupDomains))
+		{
+			return self::$custGroupDomains[strtolower(trim($custGroup['email_domain']))];
+		}
+		return NULL;
 	}
 
 	private function loadForCorrespondanceId($intMessageNumber)
@@ -154,6 +228,15 @@ class Ticketing_Correspondance
 		{
 			if ($this->{$strName} != $mxdValue)
 			{
+				if ($strName == 'contactId')
+				{
+					$this->contact = NULL;
+				}
+				else if ($strName == 'contact')
+				{
+					$this->contactId = $mxdValue->id;
+				}
+
 				$this->{$strName} = $mxdValue;
 				$this->_saved = FALSE;
 			}

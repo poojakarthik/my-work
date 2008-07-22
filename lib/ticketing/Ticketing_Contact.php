@@ -11,6 +11,7 @@ class Ticketing_Contact
 	private $fax = NULL;
 	private $mobile = NULL;
 	private $phone = NULL;
+	private $status = NULL;
 
 	private $_saved = FALSE;
 
@@ -18,12 +19,17 @@ class Ticketing_Contact
 	{
 		if ($id)
 		{
-			$selContacts = new StatementSelect("ticketing_contact", array("id", "title", "first_name", "last_name", "job_title", "email", "fax", "mobile", "phone"), "id = <Id>");
+			$selContacts = new StatementSelect("ticketing_contact", array("id", "title", "first_name", "last_name", "job_title", "email", "fax", "mobile", "phone", "status"), "id = <Id>");
 
-			if ($selContacts->Execute(array("Id" => $id)) === FALSE)
+			if (($outcome = $selContacts->Execute(array("Id" => $id))) === FALSE)
 			{
 				throw new Exception("Failed to load existing contact by id '$id': " . $selContacts->Error());
 			}
+			if (!$outcome)
+			{
+				throw new Exception("Contact not found for id " . $id);
+			}
+
 			$properties = $selContacts->Fetch();
 
 			foreach($properties as $name => $value)
@@ -34,6 +40,28 @@ class Ticketing_Contact
 			// Load up the details of the contact
 			$this->_saved = TRUE;
 		}
+	}
+
+	public static function getForCorrespondance(Ticketing_Correspondance $objCorrespondance)
+	{
+		return new Ticketing_Contact($objCorrespondance->contactId);
+	}
+
+	public function getAccountIds()
+	{
+		// Need to load the account ids associated with this contact
+		$selAccounts = new StatementSelect('ticketing_contact_account', array('account_id'), 'ticketing_contact_id = <ContactId>');
+		$arrWhere = array('ContactId' => $this->id);
+		if (($outcome = $selAccounts->Execute($arrWhere)) === FALSE)
+		{
+			throw new Exception('Fialed to list accounts for contact: ' . $selAccounts->Error());
+		}
+		$accountIds = array();
+		while($accId = $selAccounts->Fetch())
+		{
+			$accountIds[] = $accId['account_id'];
+		}
+		return $accountIds;
 	}
 
 	public static function getForEmailAddress($strEmailAddress, $name)
@@ -64,6 +92,7 @@ class Ticketing_Contact
 				$name = explode(' ', $name);
 				$contact->lastName = array_pop($name);
 				$contact->firstName = implode(' ', $name);
+				$contact->status = ACTIVE_STATUS_ACTIVE;
 			}
 			$contact->save();
 		}
@@ -86,7 +115,8 @@ class Ticketing_Contact
 			'email' => $this->email, 
 			'fax' => $this->fax, 
 			'mobile' => $this->mobile, 
-			'phone' => $this->phone
+			'phone' => $this->phone, 
+			'status' => $this->status
 		);
 		// No id means that this must be a new record
 		if (!$this->id)

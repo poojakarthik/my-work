@@ -12,30 +12,136 @@ require_once 'ticketing/Ticketing_Ticket.php';
 
 class Ticketing_Service
 {
+	public static function loadEmails()
+	{
+		// Load the ticketing configuration
+		$config = Ticketing_Config::load();
+
+		switch(strtoupper($config->protocol))
+		{
+			case 'XML':
+				$outcome = self::loadXmlFiles();
+				break;
+
+			default:
+				$outcome = self::loadFromMailServer();
+				break;
+		}
+
+		return $outcome;
+	}
+
 	public static function loadXmlFiles()
 	{
 		// Load the ticketing configuration
 		$config = Ticketing_Config::load();
 
+		// Get the source directory
+		$strSourceDirectory = $config->getSourceDirectory();
+
+		// Get the backup directory
+		$strBackupDirectory = $config->getBackupDirectory();
+
 		// Assume the dir is in the host setting
-		$xmlFiles = scandir($config['host'] . DIRECTORY_SEPARATOR . '/*.xml');
+		$xmlFiles = glob($strSourceDirectory . '*.xml');
 
 		foreach($xmlFiles as $xmlFile)
 		{
-			// Parse the file
-			$details = self::parseXmlFile($xmlFile);
+			try
+			{
+				// Each email should be processed in its own db transaction,
+				// as each email will be deleted separately
+				$dbAccess = DataAccess::getDataAccess();
+				$dbAccess->TransactionStart();
+	
+				// Parse the file
+				$details = self::parseXmlFile($xmlFile);
+	
+				// Set delivery status to received (this is inbound)
+				$details['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED; //
+	
+				// XML files originate from emails
+				$details['source_id'] = TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
+	
+				// System user id
+				$details['user_id'] = USER_ID;
+	
+				// Set delivery time (to system) same as creation time (now)
+				$details['delivery_datetime'] = $details['creation_datetime'] = date('Y-m-d H-i-s');
+	
+				// Load the details into the ticketing system
+				$correspondance = Ticketing_Correspondance::createForDetails($details);
+	
+				// Determine whether we will be backing up files
+				$bolBackup = $strBackupDirectory ? TRUE : FALSE;
+	
+				$dbAccess->TransactionCommit();
+			}
+			catch (Exception $exception)
+			{
+				$dbAccess->TransactionRollback();
+				throw $exception;
+			}
 
-			$details['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
-			$details['source_id'] = TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
-			$details['user_id'] = USER_ID;
-			$details['creation_datetime'] = date('Y-m-d H-i-s');
-			$details['delivery_datetime'] = date('Y-m-d H-i-s');
+// WIP *** REMOVE THIS LINE ***
+continue;
 
-			// Load the details into the ticketing system
-			$correspondance = new Ticketing_Correspondance($details);
+			// Backup or remove files as required
+			for ($i = 1; $i <= 2; $i++)
+			{
+				foreach ($details['files_to_remove'] as $path)
+				{
+					if (file_exists($path))
+					{
+						$strRealPath = realpath($path);
 
-			// Remove the XML file so that we don't pick it up again
-			unlink($xmlFile);
+						// First run through we move / remove the files
+						if ($i == 1 && is_file($strRealPath))
+						{
+							if ($bolBackup)
+							{
+								// Work out the location for the backup
+								$newPath = str_replace($strSourceDirectory, $strBackupDirectory, $strRealPath);
+								// Ensure the directory exists
+								self::mkdir(dirname($newPath));
+								// Move the file to the new location
+								rename($path, $newPath);
+							}
+							else
+							{
+								// We don't care about the file. Just remove it
+								@unlink($path);
+							}
+						}
+
+						// On the second pass we can remove any directories
+						// (can't do this on the first pass as they may contain the files we are backing up)
+						else if ($i == 2 && is_dir($strRealPath))
+						{
+							$baseDir = realpath($strSourceDirectory);
+							while ($baseDir != $strRealPath && strpos($strRealPath, $baseDir) === 0)
+							{
+								@rmdir($strRealPath);
+								$strRealPath = realpath(dirname($strRealPath));
+							}
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	private static function mkdir($path)
+	{
+		$parentDir = dirname($path);
+		if (!file_exists($parentDir))
+		{
+			self::mkdir($parentDir);
+		}
+		if (!file_exists($path))
+		{
+			@mkdir($path);
 		}
 	}
 
@@ -78,9 +184,15 @@ class Ticketing_Service
 			</document>
 		*/
 
+		// Resolve to a real path (removing symbolics)
+		$xmlFilePath = realpath($xmlFilePath);
+
 		$dom = new DOMDocument();
 		$dom->load($xmlFilePath);
 		$details = array();
+
+		$details['files_to_remove'] = array();
+		$details['files_to_remove'][] = $xmlFilePath;
 
 		$details['timestamp'] = $dom->getElementsByTagName('timestamp')->item(0)->textContent;
 
@@ -91,7 +203,6 @@ class Ticketing_Service
 			'name' => $email->getElementsByTagName('name')->item(0)->textContent,
 			'address' => $email->getElementsByTagName('address')->item(0)->textContent,
 		);
-		
 
 		$details['to'] = array();
 		$emails = $dom->getElementsByTagName('to');
@@ -125,6 +236,8 @@ class Ticketing_Service
 
 		$attachments = $dom->getElementsByTagName('file');
 		$details['attachments'] = array();
+
+		// Extract attachments that are included in the XML file
 		for ($x = 0; $x < $attachments->length; $x++)
 		{
 			$attachment = $attachments->item($x);
@@ -135,26 +248,47 @@ class Ticketing_Service
 				'data' => base64_decode(trim($data->textContent))
 			);
 		}
-		
+
+		// Check for attachments in an associated directory
+		$attachmentDirPath = $xmlFilePath . '.attachments';
+		if (file_exists($attachmentDirPath) && is_dir($attachmentDirPath))
+		{
+			$attachmentFiles = glob($attachmentDirPath . DIRECTORY_SEPARATOR . '*');
+			foreach($attachmentFiles as $attachmentFile)
+			{
+				if (is_file($attachmentFile))
+				{
+					$details['attachments'][] = array(
+						'name' => basename($attachmentFile),
+						// TODO:: Replace mime_content_type (deprecated) with PECL FileInfo function
+						'type' => mime_content_type($attachmentFile),
+						'data' => file_get_contents($attachmentFile)
+					);
+					$details['files_to_remove'][] = $attachmentFile;
+				}
+			}
+			$details['files_to_remove'][] = $attachmentDirPath;
+		}
+
 		return $details;
 	}
 
 	private function html2txt($document)
 	{
-		$search = array("/<script[^>]*?>.*?</script>/si",	// Strip out javascript
-						"/<style[^>]*?>.*?</style>/siU",	// Strip style tags properly
-						"/<[\/\!]*?[^<>]*?>/si",			// Strip out HTML tags
-						"/<![\s\S]*?--[ \t\n\r]*>/"			// Strip multi-line comments including CDATA
+		$search = array("/\<script[^\>]*?\>.*?\<\/script\>/si",	// Strip out javascript
+						"/\<style[^>]*?\>.*?\<\/style\>/siU",	// Strip style tags properly
+						"/\<[\/\!]*?[^\<\>]*?>/si",			// Strip out HTML tags
+						"/\<![\s\S]*?--[ \t\n\r]*\>/"			// Strip multi-line comments including CDATA
 		);
 		$text = preg_replace($search, '', $document);
 		return $text;
 	}
 
-	public static function loadEmails()
+	public static function loadFromMailServer()
 	{
 		// This function has not been fully implemented!!
 		// Requires email parsing!
-		return NULL;
+		return FALSE;
 
 		// Connect to the email storage
 		$storage = self::getEmailStorage();

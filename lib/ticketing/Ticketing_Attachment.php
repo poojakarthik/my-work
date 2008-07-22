@@ -11,9 +11,12 @@ class Ticketing_Attachment
 
 	private $_saved = FALSE;
 
-	private function __construct($id=NULL)
+	private function __construct($arrProperties=NULL)
 	{
-		$this->id = NULL;
+		if ($arrProperties)
+		{
+			$this->init($arrProperties);
+		}
 	}
 
 	public static function create(Ticketing_Correspondance $objCorrespondance, $strFileName, $strFileType, $strFileContent)
@@ -26,11 +29,15 @@ class Ticketing_Attachment
 			return NULL;
 		}
 
-		$this->correspondanceId = $objCorrespondance->id;
-		$this->fileName = trim($strFileName);
-		$this->attachmentTypeId = $objAttachmentType->id;
-		$this->fileContent = $strFileContent;
-		$this->blacklistOverride = ACTIVE_STATUS_INACTIVE;
+		$objAttachment = new Ticketing_Attachment();
+
+		$objAttachment->correspondanceId = $objCorrespondance->id;
+		$objAttachment->fileName = trim($strFileName);
+		$objAttachment->attachmentTypeId = $objAttachmentType->id;
+		$objAttachment->fileContent = $strFileContent;
+		$objAttachment->blacklistOverride = ACTIVE_STATUS_INACTIVE;
+
+		$objAttachment->save();
 	}
 
 	private static function discoverAttachmentType($strFileType, $strFileName)
@@ -65,8 +72,7 @@ class Ticketing_Attachment
 			throw new Exception("Attachment '$id' was not found.");
 		}
 
-		$objAttachment =& new Ticketing_Attachment();
-		$objAttachment->init($selAttachments->Fetch());
+		$objAttachment =& new Ticketing_Attachment($selAttachments->Fetch());
 
 		return $objAttachment;
 	}
