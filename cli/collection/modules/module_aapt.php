@@ -207,10 +207,10 @@
 		// Return file name, or FALSE on failure
 		$arrFileTypes	= $this->GetConfigField('PathDefine');
 		$arrFile		= Array();
-		$arrFile['FileImportType']	= 'XML_ARCHIVE';
-		$arrFile['FileType']		= &$arrFileTypes['XML_ARCHIVE'];
-		$arrFile['RemotePath']		= $strBasename;
-		$arrFile['LocalPath']		= $strDestination.$strBasename;
+		$arrFile['FileType']					= &$arrFileTypes['XML_ARCHIVE'];
+		$arrFile['FileType']['FileImportType']	= 'XML_ARCHIVE';
+		$arrFile['RemotePath']					= $strBasename;
+		$arrFile['LocalPath']					= $strDestination.$strBasename;
 		return (@filesize($strDestination.$strBasename)) ? $arrFile : FALSE;
  	}
 }
