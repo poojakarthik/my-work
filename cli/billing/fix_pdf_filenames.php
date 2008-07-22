@@ -11,14 +11,14 @@ $arrYearDirs	= glob($strPath.'*', GLOB_ONLYDIR);
 foreach ($arrYearDirs as $strYearDir)
 {
 	// Get list of "Month" directories
-	$strYearPath	= rtrim($strPath, '/').'/'.$strYearDir;
+	$strYearPath	= rtrim($strYearDir, '/');
 	$arrMonthDirs	= glob($strYearPath.'/*', GLOB_ONLYDIR);
 	foreach ($arrMonthDirs as $strMonthDir)
 	{
 		CliEcho("\n + Directory: '{$strMonthDir}'");
 		
 		// Get list of PDFs for this InvoiceRun
-		$strMonthPath	= rtrim($strYearPath, '/').'/'.rtrim($strMonthDir, '/');
+		$strMonthPath	= rtrim($strMonthDir, '/');
 		$arrPDFPaths	= glob($strMonthPath.'/*.pdf');
 		foreach ($arrPDFPaths as $strPDFPath)
 		{
