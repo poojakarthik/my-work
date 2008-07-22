@@ -26,13 +26,13 @@ foreach ($arrYearDirs as $strYearDir)
 			if (preg_match("/\d{10}_\d{11}.pdf/", basename($strPDFPath)))
 			{
 				// Correctly form this PDF Filename
-				$strFileName	= basename($strPDFPath, 'pdf');
+				$strFileName	= basename($strPDFPath, '.pdf');
 				$arrFileName	= explode('_', $strFileName);
 				$strNewFileName	= (int)$arrFileName[0].'_'.(int)$arrFileName[1].'.pdf';
 				
 				if (preg_match("/d{10}_\d{10}.pdf/", $strNewFileName))
 				{
-					CliEcho("\t + Renaming '{$strFileName}' to '{$strNewFileName}'...");
+					CliEcho("\t + Renaming '{$strFileName}.pdf' to '{$strNewFileName}'...");
 					rename($strMonthPath.'/'.$strFileName.'.pdf', $strMonthPath.'/'.$strNewFileName);
 				}
 			}
