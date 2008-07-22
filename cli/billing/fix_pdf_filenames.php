@@ -33,7 +33,7 @@ foreach ($arrYearDirs as $strYearDir)
 				if (preg_match("/d{10}_\d{10}.pdf/", $strNewFileName))
 				{
 					CliEcho("\t + Renaming '{$strFileName}' to '{$strNewFileName}'...");
-					rename($strMonthPath.'/'.$strFileName, $strMonthPath.'/'.$strNewFileName);
+					rename($strMonthPath.'/'.$strFileName.'.pdf', $strMonthPath.'/'.$strNewFileName);
 				}
 			}
 		}
