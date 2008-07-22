@@ -6,12 +6,12 @@ require_once("../../flex.require.php");
 $strPath	= FILES_BASE_PATH."invoices/pdf/";
 
 // Get list of "Year" directories
-$arrYearDirs	= glob($strPath, GLOB_ONLYDIR);
+$arrYearDirs	= glob($strPath.'*', GLOB_ONLYDIR);
 foreach ($arrYearDirs as $strYearDir)
 {
 	// Get list of "Month" directories
 	$strYearPath	= rtrim($strPath, '/').'/'.$strYearDir;
-	$arrMonthDirs	= glob($strYearPath, GLOB_ONLYDIR);
+	$arrMonthDirs	= glob($strYearPath.'/*', GLOB_ONLYDIR);
 	foreach ($arrMonthDirs as $strMonthDir)
 	{
 		// Get list of PDFs for this InvoiceRun
