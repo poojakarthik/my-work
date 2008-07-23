@@ -126,7 +126,7 @@
 																"Id = 1000158098 OR " .
 																"Id = 1000155964 OR " .
 																"Id = 1000160897";	//  limited to 11 specified accounts
-		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.")"); 
+		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")"); 
 		
 		//$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		
@@ -852,7 +852,7 @@
 			switch($arrAccount['BillingMethod'])
 			{
 				case BILLING_METHOD_EMAIL:
-					if ($fltTotal+$fltTax != 0 || ($fltTotalOwing != 0 && $arrAccount['Status'] == ACCOUNT_ACTIVE))
+					if ($fltTotal+$fltTax != 0 || ($fltTotalOwing != 0 && $arrAccount['Status'] == ACCOUNT_STATUS_ACTIVE))
 					{
 						$intDeliveryMethod	= $arrAccount['BillingMethod'];
 					}

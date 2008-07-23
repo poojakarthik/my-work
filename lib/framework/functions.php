@@ -3428,7 +3428,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 	}
 	$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
 
-	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
+	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED));
 
 	$arrColumns = array(
 							'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
@@ -3489,7 +3489,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 
 	$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
 
-	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED));
+	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED));
 	$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
 
 	$arrColumns = array(
@@ -3636,17 +3636,17 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
 		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
 		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE_LIST:
-			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
+			$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
 			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
 		case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
 		case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE_LIST:
-			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED);
+			$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
 			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
 		case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND:
 		case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND_LIST:
-			$arrApplicableAccountStatuses = array(ACCOUNT_ACTIVE, ACCOUNT_CLOSED, ACCOUNT_SUSPENDED);
+			$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED);
 			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
 		default:

@@ -226,8 +226,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			// Check that the user can edit the account
 			$intAccountStatus = DBO()->Account->Archived->Value;
-			if (	($intAccountStatus == ACCOUNT_ARCHIVED || $intAccountStatus == ACCOUNT_DEBT_COLLECTION 
-					|| $intAccountStatus == ACCOUNT_SUSPENDED) && (!$bolUserHasAdminPerm))
+			if (	($intAccountStatus == ACCOUNT_STATUS_ARCHIVED || $intAccountStatus == ACCOUNT_STATUS_DEBT_COLLECTION 
+					|| $intAccountStatus == ACCOUNT_STATUS_SUSPENDED) && (!$bolUserHasAdminPerm))
 			{
 				// The user can't edit the Account
 				Ajax()->AddCommand("AlertReload", "ERROR: Due to the account's status, and your permissions, you cannot edit this account");
@@ -331,10 +331,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		/* Currently Operators can view Archived accounts
 		// If the account is archived, check that the user has permission to view it
-		if (DBO()->Account->Archived->Value == ACCOUNT_ARCHIVED && !$bolUserHasAdminPerm)
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_ARCHIVED && !$bolUserHasAdminPerm)
 		{
 			// The user does not have permission to view this account
-			DBO()->Error->Message = "You do not have permission to view account: ". DBO()->Account->Id->value ." because its status = " . GetConstantDescription(DBO()->Account->Archived->Value, "Account");
+			DBO()->Error->Message = "You do not have permission to view account: ". DBO()->Account->Id->value ." because its status = " . GetConstantDescription(DBO()->Account->Archived->Value, "account_status");
 			$this->LoadPage('error');
 			return FALSE;
 		}

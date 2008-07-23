@@ -240,7 +240,7 @@ abstract class NormalisationModule extends CarrierModule
 		
 		//$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		//$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
-		$strAccountStatus	= ACCOUNT_ACTIVE.", ".ACCOUNT_CLOSED.", ".ACCOUNT_DEBT_COLLECTION.", ".ACCOUNT_SUSPENDED;
+		$strAccountStatus	= ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.", ".ACCOUNT_STATUS_DEBT_COLLECTION.", ".ACCOUNT_STATUS_SUSPENDED;
 		$strServiceStatus	= SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED;
 		$this->_selFindOwner			= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "FNN = <fnn> AND ((CAST(<date> AS DATE) BETWEEN Service.CreatedOn AND Service.ClosedOn AND Status = ".SERVICE_ARCHIVED.") OR Service.Status IN ($strServiceStatus)) AND Account.Archived IN ($strAccountStatus)", "(Service.ClosedOn IS NULL) DESC, Service.CreatedOn DESC, Account DESC", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "FNN LIKE <fnn> AND (Indial100 = TRUE) AND ((CAST(<date> AS DATE) BETWEEN Service.CreatedOn AND Service.ClosedOn AND Service.Status = ".SERVICE_ARCHIVED.") OR Service.Status IN ($strServiceStatus)) AND Account.Archived IN ($strAccountStatus)", "(Service.ClosedOn IS NULL) DESC, Service.CreatedOn DESC, Account DESC", "1");

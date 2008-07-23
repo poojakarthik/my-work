@@ -68,7 +68,7 @@
 		$arrWhere				= "StartedOn <= NOW() " .
 								  "AND RecurringFreq > 0 " .
 								  "AND RecurringCharge.Archived = 0 " .
-								  "AND Account.Archived = ".ACCOUNT_ACTIVE." " .
+								  "AND Account.Archived = ".ACCOUNT_STATUS_ACTIVE." " .
 								  "AND Service.ClosedOn IS NULL AND " .
 								  "(" .
 								  "		Continuable = 1 " .

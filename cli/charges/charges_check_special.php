@@ -43,7 +43,7 @@ foreach ($arrFees as $strType=>$arrFee)
 		while ($arrCharge	= $selFindCharges->Fetch())
 		{
 			$arrCharge['Service'] = ($arrCharge['Service']) ? "::".$arrCharge['Service'] : "\t\t";
-			$strContent .= CliEcho("\t+ {$arrCharge['Account']}{$arrCharge['Service']} (".GetConstantDescription($arrCharge['Archived'], 'Account').")\t\${$arrCharge['Amount']}\t{$arrCharge['CreatedOn']}");
+			$strContent .= CliEcho("\t+ {$arrCharge['Account']}{$arrCharge['Service']} (".GetConstantDescription($arrCharge['Archived'], 'account_status').")\t\${$arrCharge['Amount']}\t{$arrCharge['CreatedOn']}");
 			$intTotal += $arrCharge['Amount'];
 		}
 		$strContent .= CliEcho("\t! Found $intCount Charges, totalling \$$intTotal !");

@@ -144,7 +144,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 				$arrRecord = $selGainingAccount->Fetch();
 				$arrProbableAction['AccountName']		= $arrRecord['AccountName'];
 				$arrProbableAction['Status']			= $arrRecord['Status'];
-				$arrProbableAction['StatusDesc']		= GetConstantDescription($arrRecord['Status'], "Account");
+				$arrProbableAction['StatusDesc']		= GetConstantDescription($arrRecord['Status'], "account_status");
 				$arrProbableAction['CustomerGroup']		= $arrRecord['CustomerGroup'];
 				$arrProbableAction['CustomerGroupName']	= GetConstantDescription($arrRecord['CustomerGroup'], "CustomerGroup");
 				
@@ -177,7 +177,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 														"Action"			=> $objService->GetNatureOfAcquisition(),
 														"AccountName"		=> $arrAccount['Name'],
 														"Status"			=> $arrAccount['Status'],
-														"StatusDesc"		=> GetConstantDescription($arrAccount['Status'], "Account"),
+														"StatusDesc"		=> GetConstantDescription($arrAccount['Status'], "account_status"),
 														"CustomerGroup"		=> $arrAccount['CustomerGroup'],
 														"CustomerGroupName"	=> GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup"),
 													);
@@ -242,7 +242,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		}
 		
 		// Send the retrieved record
-		$arrAccount['StatusDesc']			= GetConstantDescription($arrAccount['Status'], "Account");
+		$arrAccount['StatusDesc']			= GetConstantDescription($arrAccount['Status'], "account_status");
 		$arrAccount['CustomerGroupName']	= GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
 		AjaxReply($arrAccount);
 		return TRUE;
