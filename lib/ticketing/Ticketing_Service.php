@@ -42,11 +42,16 @@ class Ticketing_Service
 		// Get the backup directory
 		$strBackupDirectory = $config->getBackupDirectory();
 
+		// Get the junk mail directory
+		$strJunkDirectory = $config->getJunkDirectory();
+
 		// Assume the dir is in the host setting
 		$xmlFiles = glob($strSourceDirectory . '*.xml');
 
 		foreach($xmlFiles as $xmlFile)
 		{
+			$correspondance = NULL;
+
 			try
 			{
 				// Each email should be processed in its own db transaction,
@@ -71,9 +76,17 @@ class Ticketing_Service
 	
 				// Load the details into the ticketing system
 				$correspondance = Ticketing_Correspondance::createForDetails($details);
+
+				// If a correspondance was created...
+				if ($correspondance)
+				{
+					// Acknowledge receipt of the correspondance
+					$correspondance->acknowledgeReceipt();
+				}
 	
 				// Determine whether we will be backing up files
-				$bolBackup = $strBackupDirectory ? TRUE : FALSE;
+				$bolBackup = $correspondance ? ($strBackupDirectory ? TRUE : FALSE) : ($strJunkDirectory ? TRUE : FALSE);
+				$strMoveToDir = $correspondance ? $strBackupDirectory : $strJunkDirectory;
 	
 				$dbAccess->TransactionCommit();
 			}
@@ -101,7 +114,7 @@ continue;
 							if ($bolBackup)
 							{
 								// Work out the location for the backup
-								$newPath = str_replace($strSourceDirectory, $strBackupDirectory, $strRealPath);
+								$newPath = str_replace($strSourceDirectory, $strMoveToDir, $strRealPath);
 								// Ensure the directory exists
 								self::mkdir(dirname($newPath));
 								// Move the file to the new location

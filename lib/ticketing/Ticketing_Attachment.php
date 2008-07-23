@@ -19,6 +19,44 @@ class Ticketing_Attachment
 		}
 	}
 
+	public function save()
+	{
+		if ($this->_saved)
+		{
+			// Nothing to save
+			return TRUE;
+		}
+		$arrValues = array(
+			'correspondance_id' => $this->correspondanceId, 
+			'file_name' => $this->fileName, 
+			'attachment_type_id' => $this->attachmentTypeId, 
+			'file_content' => $this->fileContent, 
+			'blacklist_override' => $this->blacklistOverride
+		);
+		// No id means that this must be a new record
+		if (!$this->id)
+		{
+			$statement = new StatementInsert('ticketing_attachment', $arrValues);
+		}
+		// This must be an update
+		else
+		{
+			
+			$arrValues['id'] = $this->id;
+			$statement = new StatementUpdateById('ticketing_attachment', $arrValues);
+		}
+		if (($outcome = $statement->Execute($arrValues)) === FALSE)
+		{
+			throw new Exception('Failed to save attachment details: ' . $statement->Error());
+		}
+		if (!$this->id)
+		{
+			$this->id = $outcome;
+		}
+		$this->_saved = TRUE;
+		return TRUE;
+	}
+
 	public static function create(Ticketing_Correspondance $objCorrespondance, $strFileName, $strFileType, $strFileContent)
 	{
 		$objAttachmentType = self::discoverAttachmentType($strFileType, $strFileName);

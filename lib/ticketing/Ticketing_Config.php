@@ -43,6 +43,11 @@ class Ticketing_Config
 		return $this->getRealDir($this->username);
 	}
 
+	public function getJunkDirectory()
+	{
+		return $this->getRealDir($this->password);
+	}
+
 	private function getRealDir($path)
 	{
 		if ($path && file_exists($path) && is_dir($path))

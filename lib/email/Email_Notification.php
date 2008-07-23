@@ -18,6 +18,47 @@ class Email_Notification extends Zend_Mail
 	private $_cc = array();
 	private $_bcc = array();
 
+	public function __set($property, $value)
+	{
+		switch(strtolower($property))
+		{
+			case 'subject':
+				$this->setSubject($value);
+				break;
+			case 'html':
+				$this->setBodyHtml($value);
+				break;
+			case 'text':
+				$this->setBodyText($value);
+				break;
+			case 'from':
+				$this->setFrom($value);
+				break;
+			case 'to':
+				$this->addTo($value);
+			case 'cc':
+				$this->addCc($value);
+			case 'bcc':
+				$this->addBcc($value);
+				break;
+		}
+	}
+
+	public function __get($property)
+	{
+		switch(strtolower($property))
+		{
+			case 'subject':
+				return $this->getSubject();
+			case 'html':
+				return $this->getBodyHtml();
+			case 'text':
+				return $this->getBodyText();
+			case 'from':
+				return $this->getFrom();
+		}
+	}
+
 	public function __construct($intEmailNotification, $intCustomerGroupId=NULL, $charset='iso-8859-1')
 	{
 		$this->setEmailNotification($intEmailNotification);

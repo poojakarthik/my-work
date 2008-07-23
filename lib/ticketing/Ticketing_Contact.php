@@ -12,39 +12,21 @@ class Ticketing_Contact
 	private $mobile = NULL;
 	private $phone = NULL;
 	private $status = NULL;
+	private $autoReply = NULL;
 
 	private $_saved = FALSE;
 
-	private function __construct($id)
+	private function __construct($arrProperties)
 	{
-		if ($id)
+		if ($arrProperties)
 		{
-			$selContacts = new StatementSelect("ticketing_contact", array("id", "title", "first_name", "last_name", "job_title", "email", "fax", "mobile", "phone", "status"), "id = <Id>");
-
-			if (($outcome = $selContacts->Execute(array("Id" => $id))) === FALSE)
-			{
-				throw new Exception("Failed to load existing contact by id '$id': " . $selContacts->Error());
-			}
-			if (!$outcome)
-			{
-				throw new Exception("Contact not found for id " . $id);
-			}
-
-			$properties = $selContacts->Fetch();
-
-			foreach($properties as $name => $value)
-			{
-				$this->{$name} = $value;
-			}
-
-			// Load up the details of the contact
-			$this->_saved = TRUE;
+			$this->init($arrProperties);
 		}
 	}
 
 	public static function getForCorrespondance(Ticketing_Correspondance $objCorrespondance)
 	{
-		return new Ticketing_Contact($objCorrespondance->contactId);
+		return Ticketing_Contact::getForId($objCorrespondance->contactId);
 	}
 
 	public function getAccountIds()
@@ -64,28 +46,42 @@ class Ticketing_Contact
 		return $accountIds;
 	}
 
+	private static function getFor($where, $arrWhere)
+	{
+		// Note: Email address should be unique, so only fetch the first record
+		$selContacts = new StatementSelect(
+			"ticketing_contact", 
+			array("id", "title", "first_name", "last_name", "job_title", "email", "fax", "mobile", "phone", "status", "auto_reply"), 
+			$where);
+		if (($outcome = $selContacts->Execute($arrWhere)) === FALSE)
+		{
+			throw new Exception("Failed to check for existing contact: " . $selContacts->Error());
+		}
+		if (!$outcome)
+		{
+			return NULL;
+		}
+		return new Ticketing_Contact($selContacts->Fetch());
+	}
+
+	public function autoReply()
+	{
+		return $this->autoReply === ACTIVE_STATUS_ACTIVE;
+	}
+
+	public static function getForId($id)
+	{
+		$this->getFor("id = <Id>", array("Id" => $id));
+	}
+
 	public static function getForEmailAddress($strEmailAddress, $name)
 	{
 		// Note: Email address should be unique, so only fetch the first record
-		$selContacts = new StatementSelect("ticketing_contact", "id", "email = <Email>");
-		if ($selContacts->Execute(array("Email" => $strEmailAddress)) === FALSE)
-		{
-			throw new Exception("Failed to check for existing contact by email address: " . $selContacts->Error());
-		}
-		$contact = $selContacts->Fetch();
-		if ($contact)
-		{
-			$id = $contact["id"];
-		}
-		else
-		{
-			$id = NULL;
-		}
+		$contact = $this->getFor("email = <Email>", array("Email" => $strEmailAddress));
 
-		$contact = new Ticketing_Contact($id);
-
-		if (!$id)
+		if (!$contact)
 		{
+			$contact = new Ticketing_Contact();
 			$contact->email = trim(strtolower($strEmailAddress));
 			if ($name)
 			{
@@ -93,6 +89,7 @@ class Ticketing_Contact
 				$contact->lastName = array_pop($name);
 				$contact->firstName = implode(' ', $name);
 				$contact->status = ACTIVE_STATUS_ACTIVE;
+				$contact->autoReply = ACTIVE_STATUS_ACTIVE;
 			}
 			$contact->save();
 		}
@@ -116,7 +113,8 @@ class Ticketing_Contact
 			'fax' => $this->fax, 
 			'mobile' => $this->mobile, 
 			'phone' => $this->phone, 
-			'status' => $this->status
+			'status' => $this->status,
+			'auto_reply' => $this->autoReply
 		);
 		// No id means that this must be a new record
 		if (!$this->id)
@@ -140,6 +138,16 @@ class Ticketing_Contact
 		}
 		$this->_saved = TRUE;
 		return TRUE;
+	}
+
+	private function init($arrProperties)
+	{
+		foreach($arrProperties as $name => $value)
+		{
+			$this->{$name} = $value;
+		}
+		$this->_saved = TRUE;
+		
 	}
 
 	public function __get($strName)

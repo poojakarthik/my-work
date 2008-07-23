@@ -20,7 +20,7 @@ class Ticketing_Ticket
 
 	protected $_saved = FALSE;
 
-	public static function forCorrespondance(Ticketing_Correspondance $correspondance, $custGroupId)
+	public static function forCorrespondance(Ticketing_Correspondance $correspondance)
 	{
 		$mxdTicketId = $correspondance->ticketId;
 
@@ -34,7 +34,7 @@ class Ticketing_Ticket
 		}
 		else
 		{
-			$ticket = self::createNew($correspondance->getContact(), $correspondance->summary, $custGroupId);
+			$ticket = self::createNew($correspondance->getContact(), $correspondance->summary, $correspondance->getCustomerGroupEmail()->customerGroupId);
 		}
 	}
 
@@ -53,7 +53,7 @@ class Ticketing_Ticket
 		$objTicket->categoryId = TICKETING_CATEGORY_UNCATEGORIZED;
 		$objTicket->creationDatetime = $objTicket->modifiedDatetime = date('Y-m-d H-i-s');
 
-		// WIP:: We can check to see if the contact is associated with just one account. 
+		// We can check to see if the contact is associated with just one account. 
 		// If so, should we set that account on this correspondance by default?
 		$accountIds = $contact->getAccountIds();
 		if (count($accountIds) === 1)
@@ -76,7 +76,6 @@ class Ticketing_Ticket
 
 	protected function init($arrProperties)
 	{
-		$arrProperties = $selProperties->Fetch();
 		foreach($arrProperties as $name => $property)
 		{
 			$this->{$name} = $property;
@@ -86,18 +85,34 @@ class Ticketing_Ticket
 
 	protected function getValuesToSave()
 	{
+		$arrColumns = self::getColumns();
+		$arrValues = array();
+		foreach ($arrColumns as $strColumn)
+		{
+			if ($strColumn == 'id') 
+			{
+				continue;
+			}
+			$arrValues->{$strColumn} = $this->{$strColumn};
+		}
+		return $arrColumns;
+	}
+
+	protected static function getColumns()
+	{
 		return array(
-			'group_ticket_id' => $this->group_ticket_id, 
-			'subject' => $this->subject, 
-			'priority_id' => $this->priority_id, 
-			'owner_id' => $this->owner_id, 
-			'contact_id' => $this->contact_id, 
-			'status_id' => $this->status_id, 
-			'customer_group_id' => $this->customer_group_id, 
-			'account_id' => $this->account_id, 
-			'category_id' => $this->category_id, 
-			'creation_datetime' => $this->creation_datetime, 
-			'modified_datetime' => $this->modified_datetime
+			'id',
+			'group_ticket_id',
+			'subject',
+			'priority_id',
+			'owner_id',
+			'contact_id',
+			'status_id',
+			'customer_group_id',
+			'account_id',
+			'category_id',
+			'creation_datetime',
+			'modified_datetime',
 		);
 	}
 
@@ -173,14 +188,86 @@ class Ticketing_Ticket
 		return new Ticketing_Ticket($selProperties->Fetch());
 	}
 
-	public function getCorrespondances()
+	private static function getFor($strWhere, $arrWhere, $multiple=FALSE)
 	{
-		// WIP: Implement this
+		// Note: Email address should be unique, so only fetch the first record
+		$selMatches = new StatementSelect(
+			strtolower(__CLASS__), 
+			$this->getColumns(), 
+			$strWhere);
+		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
+		{
+			throw new Exception("Failed to check for existing customer group email: " . $selMatches->Error());
+		}
+		if (!$outcome)
+		{
+			return NULL;
+		}
+		$arrInstances = array();
+		while($details = $selMatches->Fetch())
+		{
+			$arrInstances[] = new Ticketing_Ticket($selMatches->Fetch());
+			if (!$multiple)
+			{
+				return $arrInstances[0];
+			}
+		}
+		return $arrInstances;
 	}
 
-	public function addCorrespondance($strSubject, $strMessage, $arrAttchments=NULL)
+	public static function getForId($id)
+	{
+		return self::getFor("id = <Id>", array("Id" => $id));
+	}
+
+	public function getCorrespondances()
+	{
+		return Ticketing_Correspondance::getForTicket($this);
+	}
+
+	public function addCorrespondance($strSubject, $strMessage, $arrAttchments=NULL, $intSource=TICKETING_CORRESPONDANCE_SOURCE_PHONE, $bolInbound=FALSE, $bolAlreadyCommunicated=TRUE, $defaultGroupEmail=NULL, $contactOrUserId=NULL)
 	{
 		// WIP: Create and return a correspondance for this ticket with the details given
+		
+		$now = date('Y-m-d H:i:s');
+		$arrDetails = array(
+			'source_id' 	=>	$intSource, 	// The source id (TICKETING_CORRESPONDANCE_SOURCE_xxx)
+			'summary'		=>	$strSubject, 	// String summary (single line) (eg: Email subject) of the correspondance
+			'details'		=>	$strMessage, 	// String description of the email, much more detailed than the summary
+			'ticket_id'		=>	$this->id, 		//If not specified, a new ticket will be created for the correspondance
+			'customer_group_id' => $this->customerGroupId, //(id of record in ticketing_customer_group_config table) to use default address for
+			'creation_datetime'	=> $now, 		// Date in 'YYYY-mm-dd HH:ii:ss' format (Defaults to current date/time)
+		);
+
+		if ($defaultGroupEmail)
+		{
+			$arrDetails['default_email_id'] = $defaultGroupEmail; // (id of record in ticketing_customer_group_email table) of address to send email from
+		}
+
+		if ($bolAlreadyCommunicated)
+		{
+			$arrDetails['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT; // Delivery status (Default is TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT)
+			$arrDetails['delivery_datetime'] = $now; // Date in 'YYYY-mm-dd HH:ii:ss' format (Defaults to null (not sent))
+		}
+		else
+		{
+			$arrDetails['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
+		}
+
+		if ($bolInbound)
+		{
+			$arrDetails['contact_id'] = $contactOrUserId; // Integer id of ticketing system contact creating the record (NULL if created by user)
+		}
+		else
+		{
+			$arrDetails['user_id'] = $contactOrUserId; // Integer id of ticketing system user creating the record (NULL if created by customer)
+		}
+
+		if (($correspondance=TicketingTicket::createForDetails($arrDetails)) === NULL)
+		{
+			throw new Exception('Failed to create the correspondance.');
+		}
+		return $correspondance;
 	}
 }
 
