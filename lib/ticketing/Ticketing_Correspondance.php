@@ -94,7 +94,7 @@ class Ticketing_Correspondance
 			{
 				if (!array_key_exists('customer_group_id', $arrDetails))
 				{
-					// WIP:: Don't give up so easy! If a ticket has been specified, check for a previous correspondance and use the address from that.
+					// TODO:: Don't give up so easy! If a ticket has been specified, check for a previous correspondance and use the address from that.
 					throw new Exception('Unable to create correspondance as email address could be determined for a sender.');
 				}
 				$custGroupEmail = Ticketing_Customer_Group_Config::getForId($arrDetails['customer_group_id']);
@@ -320,15 +320,34 @@ class Ticketing_Correspondance
 		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM, $customerGroupId);
 		$email->to = $this->getContact()->email;
 		$email->from = $custGroupEmail->email;
-		$email->subject = "[" . $this->ticketId . "] " . $this->summary;
+		$email->subject = $this->summary . " [" . $this->ticketId . "]";
 		$email->text = str_replace('[TICKET_ID]', $this->ticketId, $custGroupConfig->emailReceiptAcknowledgement);
 		$email->send();
 	}
 
+	// TODO: Change this to allow emails to be sent to multiple contacts (and Cc'd)
 	public function emailToCustomer()
 	{
-		// WIP:: Send an email to customer containing the details of this message
-		// WIP:: Update the status of this correspondance to TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT
+		$ticket = $this->getTicket();
+		$contact = $ticket->getContact();
+
+		require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'Email_Notification.php';
+
+		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM);
+
+		$email->addTo($contact->email, $contact->getName()); // The contact from the ticket (contact_id)
+		
+		// TODO: Check for previous outgoing correspondances and send to same address 
+		$email->setFrom($this->getCustomerGroupEmail()->email, $this->getCustomerGroupEmail()->name);
+
+		$email->subject = $this->summary . " [" . $this->ticketId . "]";
+		$email->text = $this->details;
+
+		$email->send();
+
+		$this->deliveryStatus = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT;
+		$this->_saved = FALSE;
+		$this->save();
 	}
 
 	public function save()

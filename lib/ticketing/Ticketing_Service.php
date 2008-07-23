@@ -58,22 +58,22 @@ class Ticketing_Service
 				// as each email will be deleted separately
 				$dbAccess = DataAccess::getDataAccess();
 				$dbAccess->TransactionStart();
-	
+
 				// Parse the file
 				$details = self::parseXmlFile($xmlFile);
 	
 				// Set delivery status to received (this is inbound)
 				$details['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED; //
-	
+
 				// XML files originate from emails
 				$details['source_id'] = TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
-	
+
 				// System user id
 				$details['user_id'] = USER_ID;
-	
+
 				// Set delivery time (to system) same as creation time (now)
 				$details['delivery_datetime'] = $details['creation_datetime'] = date('Y-m-d H-i-s');
-	
+
 				// Load the details into the ticketing system
 				$correspondance = Ticketing_Correspondance::createForDetails($details);
 
@@ -83,11 +83,11 @@ class Ticketing_Service
 					// Acknowledge receipt of the correspondance
 					$correspondance->acknowledgeReceipt();
 				}
-	
+
 				// Determine whether we will be backing up files
 				$bolBackup = $correspondance ? ($strBackupDirectory ? TRUE : FALSE) : ($strJunkDirectory ? TRUE : FALSE);
 				$strMoveToDir = $correspondance ? $strBackupDirectory : $strJunkDirectory;
-	
+
 				$dbAccess->TransactionCommit();
 			}
 			catch (Exception $exception)

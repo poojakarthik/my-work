@@ -215,6 +215,11 @@ class Ticketing_Ticket
 		return $arrInstances;
 	}
 
+	public function getContact()
+	{
+		return Ticketing_Contact::getForId($this->contactId);
+	}
+
 	public static function getForId($id)
 	{
 		return self::getFor("id = <Id>", array("Id" => $id));
@@ -227,8 +232,6 @@ class Ticketing_Ticket
 
 	public function addCorrespondance($strSubject, $strMessage, $arrAttchments=NULL, $intSource=TICKETING_CORRESPONDANCE_SOURCE_PHONE, $bolInbound=FALSE, $bolAlreadyCommunicated=TRUE, $defaultGroupEmail=NULL, $contactOrUserId=NULL)
 	{
-		// WIP: Create and return a correspondance for this ticket with the details given
-		
 		$now = date('Y-m-d H:i:s');
 		$arrDetails = array(
 			'source_id' 	=>	$intSource, 	// The source id (TICKETING_CORRESPONDANCE_SOURCE_xxx)

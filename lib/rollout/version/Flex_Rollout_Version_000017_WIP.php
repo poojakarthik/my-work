@@ -255,6 +255,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 										id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Id for the table',
 										customer_group_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to the CustomerGroup table',
 										email varchar(255) DEFAULT NULL COMMENT 'Email address for accepted emails',
+										name varchar(255) DEFAULT NULL COMMENT 'Email name for outbound emails',
 										auto_reply tinyint(1) NOT NULL COMMENT 'FK to active_status',
 										PRIMARY KEY (id)
 									) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Attachments to correspondances in the ticketing system';

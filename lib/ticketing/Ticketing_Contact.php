@@ -24,6 +24,11 @@ class Ticketing_Contact
 		}
 	}
 
+	public function getName()
+	{
+		return ($this->firstName ? $this->firstName : '') . ($this->firstName && $this->lastName ? ' ' : '') . ($this->lastName ? $this->lastName : '');
+	}
+
 	public static function getForCorrespondance(Ticketing_Correspondance $objCorrespondance)
 	{
 		return Ticketing_Contact::getForId($objCorrespondance->contactId);
