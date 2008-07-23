@@ -1,0 +1,35 @@
+table#ticketing {
+	width: 80%;
+	min-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid #333;
+	border-spacing: 0px;
+}
+
+table#ticketing caption {
+	text-align: right;
+	font-weight: bold;
+	padding: 1px 5px;
+}
+
+table#ticketing thead,tfoot {
+	background-color: #333;
+	color: #eee;
+	text-align: left;
+	padding: 1px 5px;
+}
+
+table#ticketing td,th {
+	padding: 1px 5px;
+}
+
+table#ticketing tr td{
+	background-color: #eee;
+	color: #333
+}
+
+table#ticketing tr.alt td{
+	background-color: #fff;
+	color: #333
+}
