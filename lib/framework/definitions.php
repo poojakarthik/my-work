@@ -59,114 +59,9 @@ define("APPLICATION_PAYMENTS"		, 5);
 //TODO!!!! - make this a little more friendly
 define("ERROR_MESSAGE"				, "an error occured... sucks to be you");
 
-// CDR TYPES
-/*define("CDR_UNKNOWN"				, 0);
-define("CDR_UNITEL_RSLCOM"			, 1);
-define("CDR_UNITEL_COMMANDER"		, 2);
-define("CDR_OPTUS_STANDARD"			, 3);
-define("CDR_AAPT_STANDARD"			, 4);
-define("CDR_ISEEK_STANDARD"			, 5);
-define("CDR_UNITEL_SE"				, CDR_UNITEL_RSLCOM);
-define("CDR_UNTIEL_RSLCOM"			, CDR_UNITEL_RSLCOM);		// Backwards Compatability
-define("CDR_UNTIEL_COMMANDER"		, CDR_UNITEL_COMMANDER);	// Backwards Compatability*/
-//----------------------------------------------------------------------------//
-// These are now stored in the database and loaded from the LoadFramework()
-//----------------------------------------------------------------------------//
-/*
-$GLOBALS['*arrConstant']	['CDRType']	[0]	['Constant']	= 'CDR_UNKNOWN';
-$GLOBALS['*arrConstant']	['CDRType']	[0]	['Description']	= 'Unknown Type';
-$GLOBALS['*arrConstant']	['CDRType']	[1]	['Constant']	= 'CDR_UNITEL_RSLCOM';
-$GLOBALS['*arrConstant']	['CDRType']	[1]	['Description']	= 'Unitel Usage/S&E/OC&C';
-$GLOBALS['*arrConstant']	['CDRType']	[2]	['Constant']	= 'CDR_UNITEL_COMMANDER';
-$GLOBALS['*arrConstant']	['CDRType']	[2]	['Description']	= 'Unitel Mobile Usage';
-$GLOBALS['*arrConstant']	['CDRType']	[3]	['Constant']	= 'CDR_OPTUS_STANDARD';
-$GLOBALS['*arrConstant']	['CDRType']	[3]	['Description']	= 'Optus Usage';
-$GLOBALS['*arrConstant']	['CDRType']	[4]	['Constant']	= 'CDR_AAPT_STANDARD';
-$GLOBALS['*arrConstant']	['CDRType']	[4]	['Description']	= 'AAPT Usage';
-$GLOBALS['*arrConstant']	['CDRType']	[5]	['Constant']	= 'CDR_ISEEK_STANDARD';
-$GLOBALS['*arrConstant']	['CDRType']	[5]	['Description']	= 'iSeek Usage';
-$GLOBALS['*arrConstant']	['CDRType']	[6]	['Constant']	= 'CDR_ISEEK_BROADBAND';
-$GLOBALS['*arrConstant']	['CDRType']	[6]	['Description']	= 'iSeek Broadband Usage';
-*/
-
-// Collection Server Types
-//----------------------------------------------------------------------------//
-// These are now stored in the database and loaded from the LoadFramework()
-//----------------------------------------------------------------------------//
-/*
-$GLOBALS['*arrConstant']	['CollectionType']	[100]	['Constant']	= 'COLLECTION_TYPE_FTP';
-$GLOBALS['*arrConstant']	['CollectionType']	[100]	['Description']	= 'FTP';
-$GLOBALS['*arrConstant']	['CollectionType']	[101]	['Constant']	= 'COLLECTION_TYPE_AAPT';
-$GLOBALS['*arrConstant']	['CollectionType']	[101]	['Description']	= 'HTTPS/AAPT';
-$GLOBALS['*arrConstant']	['CollectionType']	[102]	['Constant']	= 'COLLECTION_TYPE_OPTUS';
-$GLOBALS['*arrConstant']	['CollectionType']	[102]	['Description']	= 'HTTPS/OPTUS';
-$GLOBALS['*arrConstant']	['CollectionType']	[103]	['Constant']	= 'COLLECTION_TYPE_SSH2';
-$GLOBALS['*arrConstant']	['CollectionType']	[103]	['Description']	= 'SSH2';
-*/
-
 // Provisioning Types
 define("PRV_IMPORT_RANGE_MIN"			, 100);
 define("PRV_IMPORT_RANGE_MAX"			, 199);
-/*define("PRV_UNITEL_DAILY_ORDER_RPT"		, 100);
-define("PRV_UNITEL_DAILY_STATUS_RPT"	, 101);
-define("PRV_UNITEL_BASKETS_RPT"			, 102);
-define("PRV_UNITEL_OUT"					, 103);
-define("PRV_OPTUS_ALL"					, 104);
-define("PRV_AAPT_ALL"					, 105);
-define("PRV_UNITEL_PRESELECTION_RPT"	, 106);
-define("PRV_AAPT_EOE_RETURN"			, 107);
-define("PRV_AAPT_LSD"					, 108);
-define("PRV_AAPT_REJECT"				, 109);
-define("PRV_AAPT_LOSS"					, 110);
-
-define("PRV_UNITEL_PRESELECTION_EXP"	, 150);
-define("PRV_UNITEL_DAILY_ORDER_EXP"		, 151);
-define("PRV_AAPT_EOE"					, 152);
-*/
-//----------------------------------------------------------------------------//
-// These are now stored in the database and loaded from the LoadFramework()
-//----------------------------------------------------------------------------//
-/*
-$GLOBALS['*arrConstant']	['ProvisioningType']	[100]	['Constant']	= 'PRV_UNITEL_DAILY_ORDER_RPT';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[100]	['Description']	= 'Unitel Daily Order Report';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[101]	['Constant']	= 'PRV_UNITEL_DAILY_STATUS_RPT';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[101]	['Description']	= 'Unitel Daily Status Report';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[102]	['Constant']	= 'PRV_UNITEL_BASKETS_RPT';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[102]	['Description']	= 'Unitel Agreed Baskets Report';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[103]	['Constant']	= 'PRV_UNITEL_OUT';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[103]	['Description']	= 'Unitel Standard Output File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[104]	['Constant']	= 'PROV_OPTUS_IMPORT';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[104]	['Description']	= 'Optus Line Status Report';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[105]	['Constant']	= 'PRV_AAPT_ALL';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[105]	['Description']	= 'AAPT Provisioning Input File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[106]	['Constant']	= 'PRV_UNITEL_PRESELECTION_RPT';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[106]	['Description']	= 'Unitel Preselection Report';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[107]	['Constant']	= 'PRV_AAPT_EOE_RETURN';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[107]	['Description']	= 'AAPT EOE Return File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[108]	['Constant']	= 'PRV_AAPT_LSD';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[108]	['Description']	= 'AAPT Line Status Report';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[109]	['Constant']	= 'PRV_AAPT_REJECT';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[109]	['Description']	= 'AAPT Rejections Report';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[110]	['Constant']	= 'PRV_AAPT_LOSS';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[110]	['Description']	= 'AAPT Loss Report';
-
-$GLOBALS['*arrConstant']	['ProvisioningType']	[150]	['Constant']	= 'PRV_UNITEL_PRESELECTION_EXP';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[150]	['Description']	= 'Unitel Preselection Order File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[151]	['Constant']	= 'PRV_UNITEL_DAILY_ORDER_EXP';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[151]	['Description']	= 'Unitel Daily Order File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[152]	['Constant']	= 'PRV_AAPT_EOE';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[152]	['Description']	= 'AAPT EOE Order File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[153]	['Constant']	= 'PRV_OPTUS_PRESELECTION_EXP';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[153]	['Description']	= 'Optus Preselection Order File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[154]	['Constant']	= 'PRV_OPTUS_BAR_EXP';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[154]	['Description']	= 'Optus Barring Order File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[155]	['Constant']	= 'PRV_OPTUS_SUSPEND_EXP';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[155]	['Description']	= 'Optus Suspension Order File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[156]	['Constant']	= 'PRV_OPTUS_RESTORE_EXP';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[156]	['Description']	= 'Optus Restoration Order File';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[157]	['Constant']	= 'PRV_OPTUS_PRESELECTION_REV_EXP';
-$GLOBALS['*arrConstant']	['ProvisioningType']	[157]	['Description']	= 'Optus Preselection Reversal Order File';
-//*/
 
 // File Status
 $GLOBALS['*arrConstant']	['FileStatus']	[200]	['Constant']	= 'FILE_COLLECTED';
@@ -317,49 +212,11 @@ $GLOBALS['*arrConstant']	['FileResource']	[10004]	['Constant']	= 'FILE_RESOURCE_
 $GLOBALS['*arrConstant']	['FileResource']	[10004]	['Description']	= 'Local Path';
 //----------------------------------------------------------------------------//
 
-// Carriers
-/*define("CARRIER_UNITEL"			, 1);
-define("CARRIER_OPTUS"			, 2);
-define("CARRIER_AAPT"			, 3);
-define("CARRIER_ISEEK"			, 4);*/
-//----------------------------------------------------------------------------//
-// These are now stored in the database and loaded from the LoadFramework()
-//----------------------------------------------------------------------------//
-/*
-$GLOBALS['*arrConstant']	['Carrier']	[1]	['Constant']	= 'CARRIER_UNITEL';
-$GLOBALS['*arrConstant']	['Carrier']	[1]	['Description']	= 'Unitel';
-$GLOBALS['*arrConstant']	['Carrier']	[2]	['Constant']	= 'CARRIER_OPTUS';
-$GLOBALS['*arrConstant']	['Carrier']	[2]	['Description']	= 'Optus';
-$GLOBALS['*arrConstant']	['Carrier']	[3]	['Constant']	= 'CARRIER_AAPT';
-$GLOBALS['*arrConstant']	['Carrier']	[3]	['Description']	= 'AAPT';
-$GLOBALS['*arrConstant']	['Carrier']	[4]	['Constant']	= 'CARRIER_ISEEK';
-$GLOBALS['*arrConstant']	['Carrier']	[4]	['Description']	= 'iSeek';
-$GLOBALS['*arrConstant']	['Carrier']	[5]	['Constant']	= 'CARRIER_UNITEL_VOICETALK';
-$GLOBALS['*arrConstant']	['Carrier']	[5]	['Description']	= 'Unitel (VoiceTalk)';
-$GLOBALS['*arrConstant']	['Carrier']	[10]['Constant']	= 'CARRIER_PAYMENT';
-$GLOBALS['*arrConstant']	['Carrier']	[10]['Description']	= 'Payment';
-*/
-
 // ERROR TABLE
 define("FATAL_ERROR_LEVEL"			, 10000);
 
 define("NON_FATAL_TEST_EXCEPTION"	, 1337);
 define("FATAL_TEST_EXCEPTION"		, 80085);
-
-// Account Status
-$GLOBALS['*arrConstant']['Account'][0]['Constant']		= 'ACCOUNT_ACTIVE';
-$GLOBALS['*arrConstant']['Account'][0]['Description']	= 'Active';
-$GLOBALS['*arrConstant']['Account'][1]['Constant']		= 'ACCOUNT_ARCHIVED';
-$GLOBALS['*arrConstant']['Account'][1]['Description']	= 'Archived';
-$GLOBALS['*arrConstant']['Account'][2]['Constant']		= 'ACCOUNT_CLOSED';
-$GLOBALS['*arrConstant']['Account'][2]['Description']	= 'Closed';
-$GLOBALS['*arrConstant']['Account'][3]['Constant']		= 'ACCOUNT_DEBT_COLLECTION';
-$GLOBALS['*arrConstant']['Account'][3]['Description']	= 'Debt Collection';
-$GLOBALS['*arrConstant']['Account'][4]['Constant']		= 'ACCOUNT_SUSPENDED';
-$GLOBALS['*arrConstant']['Account'][4]['Description']	= 'Suspended';
-$GLOBALS['*arrConstant']['Account'][5]['Constant']		= 'ACCOUNT_PENDING_ACTIVATION';
-$GLOBALS['*arrConstant']['Account'][5]['Description']	= 'Pending Activation';
-
 
 // CDR status
 // CDR Handling (Range is 100-199)
@@ -446,19 +303,9 @@ $GLOBALS['*arrConstant']['CDR'][201]['Constant']	= 'CDR_DUPLICATE';
 $GLOBALS['*arrConstant']['CDR'][201]['Description'] = 'Duplicate CDR';
 
 //TODO!rich! when you have time, update all constant definitons to work like the CDR ones
-//$GLOBALS['*arrConstant']['CDR'][100]['Constant'] = 'CDR_READY';
-//$GLOBALS['*arrConstant']['CDR'][100]['Description'] = 'CDR is ready to normalise';
 
 
 // CDR File Handling (Range is 200-299)
-/*define("CDRFILE_WAITING"			, 200);
-define("CDRFILE_IMPORTING"			, 201);
-define("CDRFILE_IMPORTED"			, 202);
-define("CDRFILE_REIMPORT"			, 203);
-define("CDRFILE_IGNORE"				, 204);
-define("CDRFILE_IMPORT_FAILED"		, 205);
-define("CDRFILE_NORMALISE_FAILED"	, 206);
-define("CDRFILE_NORMALISED"			, 207);*/
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[200]	['Constant']	= 'CDRFILE_WAITING';
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[200]	['Description']	= 'Collected';
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[201]	['Constant']	= 'CDRFILE_IMPORTING';
@@ -483,10 +330,6 @@ $GLOBALS['*arrConstant']	['CDRFileStatus']	[215]	['Description']	= 'File Name Ex
 
 
 // Provisioning File Handling
-/*define("PROVFILE_WAITING"			, 250);
-define("PROVFILE_READING"			, 251);
-define("PROVFILE_IGNORE"			, 252);
-define("PROVFILE_COMPLETE"			, 253);*/
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[250]	['Constant']	= 'PROVFILE_WAITING';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[250]	['Description']	= 'Collected';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[251]	['Constant']	= 'PROVFILE_READING';
@@ -499,17 +342,8 @@ $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[280]	['Constant']	= 'PROVFI
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[280]	['Description']	= 'Sent';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[281]	['Constant']	= 'PROVFILE_REJECTED';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[281]	['Description']	= 'Rejected';
-/*
-$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[282]	['Constant']	= 'PROVFILE_SENT';
-$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[282]	['Description']	= 'Sent';
-*/
 
 // Invoice Status
-/*define("INVOICE_TEMP"				, 100);
-define("INVOICE_COMMITTED"			, 101);
-define("INVOICE_DISPUTED"			, 102);
-define("INVOICE_SETTLED"			, 103);
-define("INVOICE_DISPUTED_SETTLED"	, 104); // undisputed portion paid in full*/
 $GLOBALS['*arrConstant']	['InvoiceStatus']	[100]	['Constant']	= 'INVOICE_TEMP';
 $GLOBALS['*arrConstant']	['InvoiceStatus']	[100]	['Description']	= 'Temporary Invoice';
 $GLOBALS['*arrConstant']	['InvoiceStatus']	[101]	['Constant']	= 'INVOICE_COMMITTED';
@@ -554,11 +388,6 @@ $GLOBALS['*arrConstant']	['Where']			[111]	['Description']	= 'SEARCH';
 
 
 // Charge Status
-/*define("CHARGE_WAITING"				, 100);
-define("CHARGE_APPROVED"			, 101);
-define("CHARGE_DECLINED"			, 104);
-define("CHARGE_TEMP_INVOICE"		, 102);
-define("CHARGE_INVOICED"			, 103);*/
 $GLOBALS['*arrConstant']	['ChargeStatus']	[100]	['Constant']	= 'CHARGE_WAITING';
 $GLOBALS['*arrConstant']	['ChargeStatus']	[100]	['Description']	= 'Awaiting Approval';
 $GLOBALS['*arrConstant']	['ChargeStatus']	[101]	['Constant']	= 'CHARGE_APPROVED';
@@ -588,29 +417,6 @@ $GLOBALS['*arrConstant']	['ChargeLink']		[505]	['Constant']	= 'CHARGE_LINK_CHARG
 $GLOBALS['*arrConstant']	['ChargeLink']		[505]	['Description']	= 'Adjustment Negation';
 
 
-// Customer Group Constants
-/*define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
-define("CUSTOMER_GROUP_VOICETALK"	, 2);
-define("CUSTOMER_GROUP_IMAGINE"		, 3);*/
-// Deprecated now that CustomerGroups are defined in the CustomerGroup table of the database
-/* These CustomerGroup constants are currently created when the Database constants are loaded
-$GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Constant']	= 'CUSTOMER_GROUP_TELCOBLUE';
-$GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Description']	= 'Telco Blue';
-$GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Constant']	= 'CUSTOMER_GROUP_VOICETALK';
-$GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Description']	= 'VoiceTalk';
-$GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Constant']	= 'CUSTOMER_GROUP_IMAGINE';
-$GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Description']	= 'Imagine';
-*/
-
-/* Deprecated now that CustomerGroups are defined in the CustomerGroup table of the database
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_TELCOBLUE';
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Description']	= 'billing@telcoblue.com.au';
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_VOICETALK';
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Description']	= 'billing@voicetalk.com.au';
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Constant']	= 'CUSTOMER_GROUP_EMAIL_IMAGINE';
-$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Description']	= 'Imagine';
-*/
-
 // Credit Card Constants
 $GLOBALS['*arrConstant']	['CreditCard']	[1]	['Constant']	= 'CREDIT_CARD_VISA';
 $GLOBALS['*arrConstant']	['CreditCard']	[1]	['Description']	= 'VISA';
@@ -632,11 +438,6 @@ define("INVOICE_EMAIL_SUBJECT", "Telephone Billing for <billperiod>.");
 define("DONKEY"						, -1);
 
 // Service Types
-/*define("SERVICE_TYPE_ADSL"			, 100);
-define("SERVICE_TYPE_MOBILE"		, 101);
-define("SERVICE_TYPE_LAND_LINE"		, 102);
-define("SERVICE_TYPE_INBOUND"		, 103);
-define("SERVICE_TYPE_DIALUP"		, 104);*/
 $GLOBALS['*arrConstant']	['ServiceType']	[100]	['Constant']	= 'SERVICE_TYPE_ADSL';
 $GLOBALS['*arrConstant']	['ServiceType']	[100]	['Description']	= 'ADSL';
 $GLOBALS['*arrConstant']	['ServiceType']	[101]	['Constant']	= 'SERVICE_TYPE_MOBILE';
@@ -665,11 +466,6 @@ define("SQL_QUERY"				, 100);
 define("SQL_STATEMENT"			, 200);
 
 // Provisioning Request Status
-/*define("REQUEST_STATUS_WAITING"			, 300);
-define("REQUEST_STATUS_PENDING"			, 301);
-define("REQUEST_STATUS_REJECTED"		, 302);
-define("REQUEST_STATUS_COMPLETED"		, 303);
-define("REQUEST_STATUS_CANCELLED"		, 304);*/
 $GLOBALS['*arrConstant']	['RequestStatus']	[300]	['Constant']	= 'REQUEST_STATUS_WAITING';
 $GLOBALS['*arrConstant']	['RequestStatus']	[300]	['Description']	= 'Awaiting Dispatch';
 $GLOBALS['*arrConstant']	['RequestStatus']	[301]	['Constant']	= 'REQUEST_STATUS_PENDING';
@@ -702,8 +498,6 @@ $GLOBALS['*arrConstant']	['ResponseStatus']	[403]	['Description']	= 'Redundant';
 
 
 // Provisioning Request Status
-/*define("REQUEST_DIRECTION_OUTGOING"		, 0);
-define("REQUEST_DIRECTION_INCOMING"		, 1);*/
 $GLOBALS['*arrConstant']	['RequestDirection']	[0]	['Constant']	= 'REQUEST_DIRECTION_OUTGOING';
 $GLOBALS['*arrConstant']	['RequestDirection']	[0]	['Description']	= 'Outgoing';
 $GLOBALS['*arrConstant']	['RequestDirection']	[1]	['Constant']	= 'REQUEST_DIRECTION_INCOMING';
@@ -714,8 +508,6 @@ $GLOBALS['*arrConstant']	['RequestDirection']	[1]	['Description']	= 'Incoming';
 // Service Status
 $GLOBALS['*arrConstant']	['Service']	[400]	['Constant']	= 'SERVICE_ACTIVE';
 $GLOBALS['*arrConstant']	['Service']	[400]	['Description']	= 'Active';
-/*$GLOBALS['*arrConstant']	['Service']	[401]	['Constant']	= 'SERVICE_BARRED';
-$GLOBALS['*arrConstant']	['Service']	[401]	['Description']	= 'Barred';*/
 $GLOBALS['*arrConstant']	['Service']	[402]	['Constant']	= 'SERVICE_DISCONNECTED';
 $GLOBALS['*arrConstant']	['Service']	[402]	['Description']	= 'Disconnected';
 $GLOBALS['*arrConstant']	['Service']	[403]	['Constant']	= 'SERVICE_ARCHIVED';
@@ -744,16 +536,6 @@ $GLOBALS['*arrConstant']	['LineStatus']	[507]	['Description']	= 'Churn Reversed'
 
 
 // Provisioning Request Types
-/*define("REQUEST_FULL_SERVICE"			, 900);
-define("REQUEST_PRESELECTION"			, 901);
-define("REQUEST_BAR_SOFT"				, 902);
-define("REQUEST_UNBAR_SOFT"				, 903);
-define("REQUEST_ACTIVATION"				, 904);
-define("REQUEST_DEACTIVATION"			, 905);
-define("REQUEST_PRESELECTION_REVERSE"	, 906);
-define("REQUEST_FULL_SERVICE_REVERSE"	, 907);
-define("REQUEST_BAR_HARD"				, 908);
-define("REQUEST_UNBAR_HARD"				, 909);*/
 $GLOBALS['*arrConstant']	['Request']	[900]	['Constant']	= 'REQUEST_FULL_SERVICE';
 $GLOBALS['*arrConstant']	['Request']	[900]	['Description']	= 'Full Service';
 $GLOBALS['*arrConstant']	['Request']	[901]	['Constant']	= 'REQUEST_PRESELECTION';
@@ -789,9 +571,6 @@ $GLOBALS['*arrConstant']	['Request']	[915]	['Description']	= 'Virtual Preselecti
 
 
 // Provisioning Line Actions (Log)
-/*define("LINE_ACTION_OTHER"				, 600);
-define("LINE_ACTION_GAIN"				, 601);
-define("LINE_ACTION_LOSS"				, 602);*/
 $GLOBALS['*arrConstant']	['LineAction']	[600]	['Constant']	= 'LINE_ACTION_OTHER';
 $GLOBALS['*arrConstant']	['LineAction']	[600]	['Description']	= 'Other';
 $GLOBALS['*arrConstant']	['LineAction']	[601]	['Constant']	= 'LINE_ACTION_GAIN';
@@ -801,82 +580,6 @@ $GLOBALS['*arrConstant']	['LineAction']	[602]	['Description']	= 'Loss';
 
 // God help me ...
 // Service Address Types
-/*
-define("SERVICE_ADDR_TYPE_APARTMENT"				, "APT");
-define("SERVICE_ADDR_TYPE_ATCO_PORTABLE_DWELLING"	, "ATC");
-define("SERVICE_ADDR_TYPE_BASEMENT"					, "BMT");
-define("SERVICE_ADDR_TYPE_BAY"						, "BAY");
-define("SERVICE_ADDR_TYPE_BERTH"					, "BT");
-define("SERVICE_ADDR_TYPE_BLOCK"					, "BLK");
-define("SERVICE_ADDR_TYPE_BUILDING"					, "BG");
-define("SERVICE_ADDR_TYPE_BUILDING_2"				, "BLG");
-define("SERVICE_ADDR_TYPE_CARAVAN"					, "CRV");
-define("SERVICE_ADDR_TYPE_CARE_PO"					, "CPO");
-define("SERVICE_ADDR_TYPE_CHAMBERS"					, "CB");
-define("SERVICE_ADDR_TYPE_CMA"						, "CMA");
-define("SERVICE_ADDR_TYPE_CMB"						, "CMB");
-define("SERVICE_ADDR_TYPE_COMPLEX"					, "CX");
-define("SERVICE_ADDR_TYPE_COTTAGE"					, "CTG");
-define("SERVICE_ADDR_TYPE_COUNTER"					, "CN");
-define("SERVICE_ADDR_TYPE_DUPLEX"					, "DUP");
-define("SERVICE_ADDR_TYPE_ENTRANCE"					, "ENT");
-define("SERVICE_ADDR_TYPE_FACTORY"					, "FY");
-define("SERVICE_ADDR_TYPE_FARM"						, "FAR");
-define("SERVICE_ADDR_TYPE_FLAT"						, "FL");
-define("SERVICE_ADDR_TYPE_FLAT_2"					, "FLA");
-define("SERVICE_ADDR_TYPE_FLAT_3"					, "FLT");
-define("SERVICE_ADDR_TYPE_FLOOR"					, "FLR");
-define("SERVICE_ADDR_TYPE_GATE"						, "GT");
-define("SERVICE_ADDR_TYPE_GATE_A"					, "GTE");
-define("SERVICE_ADDR_TYPE_GPO_BOX"					, "GPO");
-define("SERVICE_ADDR_TYPE_GROUND_GROUND_FLOOR"		, "G");
-define("SERVICE_ADDR_TYPE_HANGAR"					, "HG");
-define("SERVICE_ADDR_TYPE_HOUSE"					, "HSE");
-define("SERVICE_ADDR_TYPE_IGLOO"					, "IG");
-define("SERVICE_ADDR_TYPE_JETTY"					, "JT");
-define("SERVICE_ADDR_TYPE_KIOSK"					, "KSK");
-define("SERVICE_ADDR_TYPE_LANE"						, "LN");
-define("SERVICE_ADDR_TYPE_LEVEL"					, "LV");
-define("SERVICE_ADDR_TYPE_LEVEL_2"					, "LVL");
-define("SERVICE_ADDR_TYPE_LOCKED_BAG"				, "LB");
-define("SERVICE_ADDR_TYPE_LOT"						, "LOT");
-define("SERVICE_ADDR_TYPE_LOWER_GROUND_FLOOR"		, "LG");
-define("SERVICE_ADDR_TYPE_MAISONETTE"				, "MST");
-define("SERVICE_ADDR_TYPE_MEZZANINE"				, "M");
-define("SERVICE_ADDR_TYPE_MS"						, "MS");
-define("SERVICE_ADDR_TYPE_OFFICE"					, "OF");
-define("SERVICE_ADDR_TYPE_OFFICE_2"					, "OFC");
-define("SERVICE_ADDR_TYPE_PENTHOUSE"				, "PHS");
-define("SERVICE_ADDR_TYPE_PIER"						, "PR");
-define("SERVICE_ADDR_TYPE_PO_BOX"					, "POB");
-define("SERVICE_ADDR_TYPE_FF_OFFICE"				, "PO");
-define("SERVICE_ADDR_TYPE_PRIVATE_BAG"				, "BAG");
-define("SERVICE_ADDR_TYPE_PRIVATE_BAG_2"			, "PB");
-define("SERVICE_ADDR_TYPE_RMB"						, "RMB");
-define("SERVICE_ADDR_TYPE_RMS"						, "RMS");
-define("SERVICE_ADDR_TYPE_ROOM"						, "RM");
-define("SERVICE_ADDR_TYPE_RSD"						, "RSD");
-define("SERVICE_ADDR_TYPE_RURAL_MAIL_DELIVERY"		, "RMD");
-define("SERVICE_ADDR_TYPE_SHED"						, "SD");
-define("SERVICE_ADDR_TYPE_SHED_2"					, "SHD");
-define("SERVICE_ADDR_TYPE_SHOP"						, "SHP");
-define("SERVICE_ADDR_TYPE_SHOP_2"					, "SP");
-define("SERVICE_ADDR_TYPE_SITE"						, "SIT");
-define("SERVICE_ADDR_TYPE_STALL"					, "SL");
-define("SERVICE_ADDR_TYPE_STALL_2"					, "STL");
-define("SERVICE_ADDR_TYPE_STUDIO"					, "STU");
-define("SERVICE_ADDR_TYPE_SUITE"					, "STE");
-define("SERVICE_ADDR_TYPE_TIER"						, "TR");
-define("SERVICE_ADDR_TYPE_TOWER"					, "TW");
-define("SERVICE_ADDR_TYPE_TOWER_2"					, "TWR");
-define("SERVICE_ADDR_TYPE_TOWNHOUSE"				, "THS");
-define("SERVICE_ADDR_TYPE_UNIT"						, "UN");
-define("SERVICE_ADDR_TYPE_UNIT_2"					, "UNT");
-define("SERVICE_ADDR_TYPE_UPPER_GROUND_FLOOR"		, "UG");
-define("SERVICE_ADDR_TYPE_VILLA"					, "VIL");
-define("SERVICE_ADDR_TYPE_WARD"						, "WRD");
-define("SERVICE_ADDR_TYPE_WHARF"					, "WF");
-*/
 // Service Address Types
 $GLOBALS['*arrConstant']	['ServiceAddrType']	["APT"]	['Constant']	= 'SERVICE_ADDR_TYPE_APARTMENT';
 $GLOBALS['*arrConstant']	['ServiceAddrType']	["APT"]	['Description']	= 'Apartment';
@@ -1029,22 +732,6 @@ $GLOBALS['*arrConstant']	['ServiceAddrType']	["WF"]	['Description']	= 'Wharf';
 
 
 // Postal Address Types
-/*
-define("POSTAL_ADDR_TYPE_PO_BOX"					, "POB");
-define("POSTAL_ADDR_TYPE_POST_OFFICE"				, "PO");
-define("POSTAL_ADDR_TYPE_PRIVATE_BAG"				, "BAG");
-define("POSTAL_ADDR_TYPE_COMMUNITY_MAIL_AGENT"		, "CMA");
-define("POSTAL_ADDR_TYPE_COMMUNITY_MAIL_BAG"		, "CMB");
-define("POSTAL_ADDR_TYPE_PRIVATE_BAG_2"				, "PB");
-define("POSTAL_ADDR_TYPE_GPO_BOX"					, "GPO");
-define("POSTAL_ADDR_TYPE_MAIL_SERVICE"				, "MS");
-define("POSTAL_ADDR_TYPE_RURAL_MAIL_DELIVERY"		, "RMD");
-define("POSTAL_ADDR_TYPE_ROADSIDE_MAIL_BAG_BOX"		, "RMB");
-define("POSTAL_ADDR_TYPE_LOCKED_BAG"				, "LB");
-define("POSTAL_ADDR_TYPE_ROADSIDE_MAIL_SERVICE"		, "RMS");
-define("POSTAL_ADDR_TYPE_ROADSIDE_DELIVERY"			, "RD");
-*/
-// Postal Address Types
 $GLOBALS['*arrConstant']	['PostalAddrType']	["POB"]	['Constant']	= 'POSTAL_ADDR_TYPE_PO_BOX';
 $GLOBALS['*arrConstant']	['PostalAddrType']	["POB"]	['Description']	= 'PO Box';
 $GLOBALS['*arrConstant']	['PostalAddrType']	["PO"]	['Constant']	= 'POSTAL_ADDR_TYPE_POST_OFFICE';
@@ -1074,282 +761,6 @@ $GLOBALS['*arrConstant']	['PostalAddrType']	["RD"]	['Description']	= 'Roadside D
 
 
 // Service Street Type
-/*
-define("SERVICE_STREET_TYPE_ACCESS"					, "ACCS");
-define("SERVICE_STREET_TYPE_ALLEY"					, "ALLY");
-define("SERVICE_STREET_TYPE_ALLEYWAY"				, "ALWY");
-define("SERVICE_STREET_TYPE_AMBLE"					, "AMBL");
-define("SERVICE_STREET_TYPE_ANCHORAGE"				, "ANCG");
-define("SERVICE_STREET_TYPE_APPROACH"				, "APP");
-define("SERVICE_STREET_TYPE_ARCADE"					, "ARC");
-define("SERVICE_STREET_TYPE_ARTERIAL"				, "ARTL");
-define("SERVICE_STREET_TYPE_ARTERY"					, "ART");
-define("SERVICE_STREET_TYPE_AVENUE"					, "AV");
-define("SERVICE_STREET_TYPE_AVENUE_2"				, "AVE");
-define("SERVICE_STREET_TYPE_BANK"					, "BNK");
-define("SERVICE_STREET_TYPE_BARRACKS"				, "BRKS");
-define("SERVICE_STREET_TYPE_BASIN"					, "BASN");
-define("SERVICE_STREET_TYPE_BAY"					, "BAY");
-define("SERVICE_STREET_TYPE_BAY_2"					, "BY");
-define("SERVICE_STREET_TYPE_BEACH"					, "BCH");
-define("SERVICE_STREET_TYPE_BEND"					, "BEND");
-define("SERVICE_STREET_TYPE_BLOCK"					, "BLK");
-define("SERVICE_STREET_TYPE_BOULEVARD"				, "BLV");
-define("SERVICE_STREET_TYPE_BOULEVARD_2"			, "BVD");
-define("SERVICE_STREET_TYPE_BOUNDARY"				, "BNDY");
-define("SERVICE_STREET_TYPE_BOWL"					, "BWL");
-define("SERVICE_STREET_TYPE_BRACE"					, "BR");
-define("SERVICE_STREET_TYPE_BRACE_2"				, "BRCE");
-define("SERVICE_STREET_TYPE_BRAE"					, "BRAE");
-define("SERVICE_STREET_TYPE_BRANCH"					, "BRCH");
-define("SERVICE_STREET_TYPE_BREA"					, "BREA");
-define("SERVICE_STREET_TYPE_BREAK"					, "BRK");
-define("SERVICE_STREET_TYPE_BRIDGE"					, "BDGE");
-define("SERVICE_STREET_TYPE_BRIDGE_2"				, "BRDG");
-define("SERVICE_STREET_TYPE_BROADWAY"				, "BDWY");
-define("SERVICE_STREET_TYPE_BROW"					, "BROW");
-define("SERVICE_STREET_TYPE_BYPASS"					, "BYPA");
-define("SERVICE_STREET_TYPE_BYWAY"					, "BYWY");
-define("SERVICE_STREET_TYPE_CAUSEWAY"				, "CAUS");
-define("SERVICE_STREET_TYPE_CENTRE"					, "CNTR");
-define("SERVICE_STREET_TYPE_CENTRE_2"				, "CTR");
-define("SERVICE_STREET_TYPE_CENTREWAY"				, "CNWY");
-define("SERVICE_STREET_TYPE_CHASE"					, "CH");
-define("SERVICE_STREET_TYPE_CIRCLE"					, "CIR");
-define("SERVICE_STREET_TYPE_CIRCLET"				, "CLT");
-define("SERVICE_STREET_TYPE_CIRCUIT"				, "CCT");
-define("SERVICE_STREET_TYPE_CIRCUIT_2"				, "CRCT");
-define("SERVICE_STREET_TYPE_CIRCUS"					, "CRCS");
-define("SERVICE_STREET_TYPE_CLOSE"					, "CL");
-define("SERVICE_STREET_TYPE_COLONNADE"				, "CLDE");
-define("SERVICE_STREET_TYPE_COMMON"					, "CMMN");
-define("SERVICE_STREET_TYPE_COMMUNITY"				, "COMM");
-define("SERVICE_STREET_TYPE_CONCOURSE"				, "CON");
-define("SERVICE_STREET_TYPE_CONNECTION"				, "CNTN");
-define("SERVICE_STREET_TYPE_COPSE"					, "CPS");
-define("SERVICE_STREET_TYPE_CORNER"					, "CNR");
-define("SERVICE_STREET_TYPE_CORSO"					, "CSO");
-define("SERVICE_STREET_TYPE_COURSE"					, "CORS");
-define("SERVICE_STREET_TYPE_COURT"					, "CT");
-define("SERVICE_STREET_TYPE_COURTYARD"				, "CTYD");
-define("SERVICE_STREET_TYPE_COVE"					, "COVE");
-define("SERVICE_STREET_TYPE_CREEK"					, "CK");
-define("SERVICE_STREET_TYPE_CREEK_2"				, "CRK");
-define("SERVICE_STREET_TYPE_CRESCENT"				, "CR");
-define("SERVICE_STREET_TYPE_CRESCENT_2"				, "CRES");
-define("SERVICE_STREET_TYPE_CREST"					, "CRST");
-define("SERVICE_STREET_TYPE_CRIEF"					, "CRF");
-define("SERVICE_STREET_TYPE_CROSS"					, "CRSS");
-define("SERVICE_STREET_TYPE_CROSSING"				, "CRSG");
-define("SERVICE_STREET_TYPE_CROSSROADS"				, "CRD");
-define("SERVICE_STREET_TYPE_CROSSWAY"				, "COWY");
-define("SERVICE_STREET_TYPE_CRUISEWAY"				, "CUWY");
-define("SERVICE_STREET_TYPE_CUL_DE_SAC"				, "CDS");
-define("SERVICE_STREET_TYPE_CUTTING"				, "CTTG");
-define("SERVICE_STREET_TYPE_DALE"					, "DALE");
-define("SERVICE_STREET_TYPE_DELL"					, "DELL");
-define("SERVICE_STREET_TYPE_DEVIATION"				, "DEVN");
-define("SERVICE_STREET_TYPE_DIP"					, "DIP");
-define("SERVICE_STREET_TYPE_DISTRIBUTOR"			, "DSTR");
-define("SERVICE_STREET_TYPE_DOWNS"					, "DWNS");
-define("SERVICE_STREET_TYPE_DRIVE"					, "DR");
-define("SERVICE_STREET_TYPE_DRIVE_2"				, "DRV");
-define("SERVICE_STREET_TYPE_DRIVEWAY"				, "DRWY");
-define("SERVICE_STREET_TYPE_EASEMENT"				, "EMNT");
-define("SERVICE_STREET_TYPE_EDGE"					, "EDGE");
-define("SERVICE_STREET_TYPE_ELBOW"					, "ELB");
-define("SERVICE_STREET_TYPE_END"					, "END");
-define("SERVICE_STREET_TYPE_ENTRANCE"				, "ENT");
-define("SERVICE_STREET_TYPE_ESPLANADE"				, "ESP");
-define("SERVICE_STREET_TYPE_ESTATE"					, "EST");
-define("SERVICE_STREET_TYPE_EXPRESSWAY"				, "EXP");
-define("SERVICE_STREET_TYPE_EXPRESSWAY_2"			, "EXWY");
-define("SERVICE_STREET_TYPE_EXTENSION"				, "EXT");
-define("SERVICE_STREET_TYPE_EXTENSION_2"			, "EXTN");
-define("SERVICE_STREET_TYPE_FAIR"					, "FAIR");
-define("SERVICE_STREET_TYPE_FAIRWAY"				, "FAWY");
-define("SERVICE_STREET_TYPE_FIRE_TRACK"				, "FTRK");
-define("SERVICE_STREET_TYPE_FIRETRAIL"				, "FITR");
-define("SERVICE_STREET_TYPE_FIRETRALL"				, "FTRL");
-define("SERVICE_STREET_TYPE_FLAT"					, "FLAT");
-define("SERVICE_STREET_TYPE_FOLLOW"					, "FOWL");
-define("SERVICE_STREET_TYPE_FOOTWAY"				, "FTWY");
-define("SERVICE_STREET_TYPE_FORESHORE"				, "FSHR");
-define("SERVICE_STREET_TYPE_FORMATION"				, "FORM");
-define("SERVICE_STREET_TYPE_FREEWAY"				, "FRWY");
-define("SERVICE_STREET_TYPE_FREEWAY_2"				, "FWY");
-define("SERVICE_STREET_TYPE_FRONT"					, "FRNT");
-define("SERVICE_STREET_TYPE_FRONTAGE"				, "FRTG");
-define("SERVICE_STREET_TYPE_GAP"					, "GAP");
-define("SERVICE_STREET_TYPE_GARDEN"					, "GDN");
-define("SERVICE_STREET_TYPE_GARDENS"				, "GDNS");
-define("SERVICE_STREET_TYPE_GATE"					, "GTE");
-define("SERVICE_STREET_TYPE_GATES"					, "GTES");
-define("SERVICE_STREET_TYPE_GATEWAY"				, "GTWY");
-define("SERVICE_STREET_TYPE_GLADE"					, "GLD");
-define("SERVICE_STREET_TYPE_GLEN"					, "GLEN");
-define("SERVICE_STREET_TYPE_GRANGE"					, "GRA");
-define("SERVICE_STREET_TYPE_GREEN"					, "GRN");
-define("SERVICE_STREET_TYPE_GROUND"					, "GRND");
-define("SERVICE_STREET_TYPE_GROVE"					, "GR");
-define("SERVICE_STREET_TYPE_GROVE_2"				, "GV");
-define("SERVICE_STREET_TYPE_GULLY"					, "GLY");
-define("SERVICE_STREET_TYPE_HEATH"					, "HTH");
-define("SERVICE_STREET_TYPE_HEIGHTS"				, "HTS");
-define("SERVICE_STREET_TYPE_HIGHROAD"				, "HRD");
-define("SERVICE_STREET_TYPE_HIGHWAY"				, "HWY");
-define("SERVICE_STREET_TYPE_HILL"					, "HILL");
-define("SERVICE_STREET_TYPE_HILLSIDE"				, "HLSD");
-define("SERVICE_STREET_TYPE_HOUSE"					, "HSE");
-define("SERVICE_STREET_TYPE_INTERCHANGE"			, "INTG");
-define("SERVICE_STREET_TYPE_INTERSECTION"			, "INTN");
-define("SERVICE_STREET_TYPE_ISLAND"					, "IS");
-define("SERVICE_STREET_TYPE_JUNCTION"				, "JNC");
-define("SERVICE_STREET_TYPE_JUNCTION_2"				, "JNCT");
-define("SERVICE_STREET_TYPE_KEY"					, "KEY");
-define("SERVICE_STREET_TYPE_KNOLL"					, "KNLL");
-define("SERVICE_STREET_TYPE_LANDING"				, "LDG");
-define("SERVICE_STREET_TYPE_LANE"					, "L");
-define("SERVICE_STREET_TYPE_LANE_2"					, "LANE");
-define("SERVICE_STREET_TYPE_LANE_3"					, "LN");
-define("SERVICE_STREET_TYPE_LANEWAY"				, "LNWY");
-define("SERVICE_STREET_TYPE_LEES"					, "LEES");
-define("SERVICE_STREET_TYPE_LINE"					, "LINE");
-define("SERVICE_STREET_TYPE_LINK"					, "LINK");
-define("SERVICE_STREET_TYPE_LITTLE"					, "LT");
-define("SERVICE_STREET_TYPE_LOCATION"				, "LOCN");
-define("SERVICE_STREET_TYPE_LOOKOUT"				, "LKT");
-define("SERVICE_STREET_TYPE_LOOP"					, "LOOP");
-define("SERVICE_STREET_TYPE_LOWER"					, "LWR");
-define("SERVICE_STREET_TYPE_MALL"					, "MALL");
-define("SERVICE_STREET_TYPE_MARKETLAND"				, "MKLD");
-define("SERVICE_STREET_TYPE_MARKETTOWN"				, "MKTN");
-define("SERVICE_STREET_TYPE_MEAD"					, "MEAD");
-define("SERVICE_STREET_TYPE_MEANDER"				, "MNDR");
-define("SERVICE_STREET_TYPE_MEW"					, "MEW");
-define("SERVICE_STREET_TYPE_MEWS"					, "MEWS");
-define("SERVICE_STREET_TYPE_MOTORWAY"				, "MWY");
-define("SERVICE_STREET_TYPE_MOUNT"					, "MT");
-define("SERVICE_STREET_TYPE_MOUNTAIN"				, "MTN");
-define("SERVICE_STREET_TYPE_NOOK"					, "NOOK");
-define("SERVICE_STREET_TYPE_NOT_REQUIRED"			, "NR");
-define("SERVICE_STREET_TYPE_OUTLOOK"				, "OTLK");
-define("SERVICE_STREET_TYPE_OVAL"					, "OVAL");
-define("SERVICE_STREET_TYPE_PARADE"					, "PDE");
-define("SERVICE_STREET_TYPE_PARADISE"				, "PDSE");
-define("SERVICE_STREET_TYPE_PARK"					, "PARK");
-define("SERVICE_STREET_TYPE_PARK_2"					, "PK");
-define("SERVICE_STREET_TYPE_PARKLANDS"				, "PKLD");
-define("SERVICE_STREET_TYPE_PARKWAY"				, "PKWY");
-define("SERVICE_STREET_TYPE_PART"					, "PART");
-define("SERVICE_STREET_TYPE_PASS"					, "PASS");
-define("SERVICE_STREET_TYPE_PATH"					, "PATH");
-define("SERVICE_STREET_TYPE_PATHWAY"				, "PWAY");
-define("SERVICE_STREET_TYPE_PATHWAY_2"				, "PWY");
-define("SERVICE_STREET_TYPE_PENINSULA"				, "PEN");
-define("SERVICE_STREET_TYPE_PIAZZA"					, "PIAZ");
-define("SERVICE_STREET_TYPE_PIER"					, "PR");
-define("SERVICE_STREET_TYPE_PLACE"					, "PL");
-define("SERVICE_STREET_TYPE_PLATEAU"				, "PLAT");
-define("SERVICE_STREET_TYPE_PLAZA"					, "PLZA");
-define("SERVICE_STREET_TYPE_POCKET"					, "PKT");
-define("SERVICE_STREET_TYPE_POINT"					, "PNT");
-define("SERVICE_STREET_TYPE_PORT"					, "PORT");
-define("SERVICE_STREET_TYPE_PORT_2"					, "PRT");
-define("SERVICE_STREET_TYPE_PROMENADE"				, "PROM");
-define("SERVICE_STREET_TYPE_PURSUIT"				, "PUR");
-define("SERVICE_STREET_TYPE_QUAD"					, "QUAD");
-define("SERVICE_STREET_TYPE_QUADRANGLE"				, "QDGL");
-define("SERVICE_STREET_TYPE_QUADRANT"				, "QDRT");
-define("SERVICE_STREET_TYPE_QUAY"					, "QY");
-define("SERVICE_STREET_TYPE_QUAYS"					, "QYS");
-define("SERVICE_STREET_TYPE_RACECOURSE"				, "RCSE");
-define("SERVICE_STREET_TYPE_RAMBLE"					, "RMBL");
-define("SERVICE_STREET_TYPE_RAMP"					, "RAMP");
-define("SERVICE_STREET_TYPE_RANGE"					, "RNGE");
-define("SERVICE_STREET_TYPE_REACH"					, "RCH");
-define("SERVICE_STREET_TYPE_RESERVE"				, "RES");
-define("SERVICE_STREET_TYPE_REST"					, "REST");
-define("SERVICE_STREET_TYPE_RETREAT"				, "RTT");
-define("SERVICE_STREET_TYPE_RETURN"					, "RTRN");
-define("SERVICE_STREET_TYPE_RIDE"					, "RIDE");
-define("SERVICE_STREET_TYPE_RIDGE"					, "RDGE");
-define("SERVICE_STREET_TYPE_RIDGEWAY"				, "RGWY");
-define("SERVICE_STREET_TYPE_RIGHT_OF_WAY"			, "ROWY");
-define("SERVICE_STREET_TYPE_RING"					, "RING");
-define("SERVICE_STREET_TYPE_RISE"					, "RISE");
-define("SERVICE_STREET_TYPE_RIVER"					, "RVR");
-define("SERVICE_STREET_TYPE_RIVERWAY"				, "RVWY");
-define("SERVICE_STREET_TYPE_RIVIERA"				, "RVRA");
-define("SERVICE_STREET_TYPE_ROAD"					, "RD");
-define("SERVICE_STREET_TYPE_ROADS"					, "RDS");
-define("SERVICE_STREET_TYPE_ROADSIDE"				, "RDSD");
-define("SERVICE_STREET_TYPE_ROADWAY"				, "RDWY");
-define("SERVICE_STREET_TYPE_RONDE"					, "RNDE");
-define("SERVICE_STREET_TYPE_ROSEBOWL"				, "RSBL");
-define("SERVICE_STREET_TYPE_ROTARY"					, "RTY");
-define("SERVICE_STREET_TYPE_ROUND"					, "RND");
-define("SERVICE_STREET_TYPE_ROUTE"					, "RTE");
-define("SERVICE_STREET_TYPE_ROW"					, "ROW");
-define("SERVICE_STREET_TYPE_ROWE"					, "RWE");
-define("SERVICE_STREET_TYPE_RUE"					, "RUE");
-define("SERVICE_STREET_TYPE_RUN"					, "RUN");
-define("SERVICE_STREET_TYPE_SECTION"				, "SEC");
-define("SERVICE_STREET_TYPE_SERVICE_WAY"			, "SWY");
-define("SERVICE_STREET_TYPE_SIDING"					, "SDNG");
-define("SERVICE_STREET_TYPE_SLOPE"					, "SLPE");
-define("SERVICE_STREET_TYPE_SOUND"					, "SND");
-define("SERVICE_STREET_TYPE_SPUR"					, "SPUR");
-define("SERVICE_STREET_TYPE_SQUARE"					, "SQ");
-define("SERVICE_STREET_TYPE_STAIRS"					, "STRS");
-define("SERVICE_STREET_TYPE_STATE_HIGHWAY"			, "SHWY");
-define("SERVICE_STREET_TYPE_STATION"				, "STN");
-define("SERVICE_STREET_TYPE_STEPS"					, "STPS");
-define("SERVICE_STREET_TYPE_STOP"					, "STOP");
-define("SERVICE_STREET_TYPE_STRAIGHT"				, "STGT");
-define("SERVICE_STREET_TYPE_STRAND"					, "STRA");
-define("SERVICE_STREET_TYPE_STREET"					, "ST");
-define("SERVICE_STREET_TYPE_STRIP"					, "STP");
-define("SERVICE_STREET_TYPE_STRIP_2"				, "STRP");
-define("SERVICE_STREET_TYPE_SUBWAY"					, "SBWY");
-define("SERVICE_STREET_TYPE_TARN"					, "TARN");
-define("SERVICE_STREET_TYPE_TERRACE"				, "TCE");
-define("SERVICE_STREET_TYPE_THOROUGHFARE"			, "THOR");
-define("SERVICE_STREET_TYPE_TOLLWAY"				, "TLWY");
-define("SERVICE_STREET_TYPE_TOP"					, "TOP");
-define("SERVICE_STREET_TYPE_TOR"					, "TOR");
-define("SERVICE_STREET_TYPE_TOWER"					, "TWR");
-define("SERVICE_STREET_TYPE_TOWERS"					, "TWRS");
-define("SERVICE_STREET_TYPE_TRACK"					, "TRK");
-define("SERVICE_STREET_TYPE_TRAIL"					, "TRL");
-define("SERVICE_STREET_TYPE_TRAILER"				, "TRLR");
-define("SERVICE_STREET_TYPE_TRIANGLE"				, "TRI");
-define("SERVICE_STREET_TYPE_TRUNKWAY"				, "TKWY");
-define("SERVICE_STREET_TYPE_TURN"					, "TURN");
-define("SERVICE_STREET_TYPE_UNDERPASS"				, "UPAS");
-define("SERVICE_STREET_TYPE_UPPER"					, "UPR");
-define("SERVICE_STREET_TYPE_VALE"					, "VALE");
-define("SERVICE_STREET_TYPE_VALLEY"					, "VLY");
-define("SERVICE_STREET_TYPE_VIADUCT"				, "VDCT");
-define("SERVICE_STREET_TYPE_VIEW"					, "VIEW");
-define("SERVICE_STREET_TYPE_VILLAGE"				, "VLGE");
-define("SERVICE_STREET_TYPE_VILLAS"					, "VLLS");
-define("SERVICE_STREET_TYPE_VISTA"					, "VSTA");
-define("SERVICE_STREET_TYPE_WADE"					, "WADE");
-define("SERVICE_STREET_TYPE_WALK"					, "WALK");
-define("SERVICE_STREET_TYPE_WALK_2"					, "WK");
-define("SERVICE_STREET_TYPE_WALKWAY"				, "WKWY");
-define("SERVICE_STREET_TYPE_WATERS"					, "WTRS");
-define("SERVICE_STREET_TYPE_WAY"					, "WAY");
-define("SERVICE_STREET_TYPE_WAY_2"					, "WY");
-define("SERVICE_STREET_TYPE_WEST"					, "WEST");
-define("SERVICE_STREET_TYPE_WHARF"					, "WHF");
-define("SERVICE_STREET_TYPE_WHARF_2"				, "WHRF");
-define("SERVICE_STREET_TYPE_WOOD"					, "WOOD");
-define("SERVICE_STREET_TYPE_WYND"					, "WYND");
-define("SERVICE_STREET_TYPE_YARD"					, "YARD");
-define("SERVICE_STREET_TYPE_YARD_2"					, "YRD");
-*/
 $GLOBALS['*arrConstant']	['ServiceStreetType']	["ACCS"]	['Constant']	= 'SERVICE_STREET_TYPE_ACCESS';
 $GLOBALS['*arrConstant']	['ServiceStreetType']	["ACCS"]	['Description']	= 'Access';
 $GLOBALS['*arrConstant']	['ServiceStreetType']	["ALLY"]	['Constant']	= 'SERVICE_STREET_TYPE_ALLEY';
@@ -1901,21 +1312,6 @@ $GLOBALS['*arrConstant']	['ServiceStreetType']	["YRD"]		['Description']	= 'Yard'
 
 
 // Service Street Suffix Type
-/*
-define("SERVICE_STREET_SUFFIX_TYPE_CENTRAL"			, "CN");
-define("SERVICE_STREET_SUFFIX_TYPE_EAST"			, "E");
-define("SERVICE_STREET_SUFFIX_TYPE_EXTENSION"		, "EX");
-define("SERVICE_STREET_SUFFIX_TYPE_LOWER"			, "L");
-define("SERVICE_STREET_SUFFIX_TYPE_NORTH"			, "N");
-define("SERVICE_STREET_SUFFIX_TYPE_NORTH_EAST"		, "NE");
-define("SERVICE_STREET_SUFFIX_TYPE_NORTH_WEST"		, "NW");
-define("SERVICE_STREET_SUFFIX_TYPE_SOUTH"			, "S");
-define("SERVICE_STREET_SUFFIX_TYPE_SOUTH_EAST"		, "SE");
-define("SERVICE_STREET_SUFFIX_TYPE_SOUTH_WEST"		, "SW");
-define("SERVICE_STREET_SUFFIX_TYPE_UPPER"			, "U");
-define("SERVICE_STREET_SUFFIX_TYPE_WEST"			, "W");
-*/
-// Service Street Suffix Type
 $GLOBALS['*arrConstant']	['ServiceStreetSuffixType']	["CN"]	['Constant']	= 'SERVICE_STREET_SUFFIX_TYPE_CENTRAL';
 $GLOBALS['*arrConstant']	['ServiceStreetSuffixType']	["CN"]	['Description']	= 'Central';
 $GLOBALS['*arrConstant']	['ServiceStreetSuffixType']	["E"]	['Constant']	= 'SERVICE_STREET_SUFFIX_TYPE_EAST';
@@ -1943,15 +1339,6 @@ $GLOBALS['*arrConstant']	['ServiceStreetSuffixType']	["W"]	['Description']	= 'We
 
 
 // End User Titles
-/*
-define("END_USER_TITLE_TYPE_DOCTOR"					, "DR");
-define("END_USER_TITLE_TYPE_MASTER"					, "MSTR");
-define("END_USER_TITLE_TYPE_MISS"					, "MISS");
-define("END_USER_TITLE_TYPE_MISTER"					, "MR");
-define("END_USER_TITLE_TYPE_MRS"					, "MRS");
-define("END_USER_TITLE_TYPE_MS"						, "MS");
-define("END_USER_TITLE_TYPE_PROFESSOR"				, "PROF");
-*/
 $GLOBALS['*arrConstant']	['EndUserTitleType']	['DR']		['Constant']	= 'END_USER_TITLE_TYPE_DOCTOR';
 $GLOBALS['*arrConstant']	['EndUserTitleType']	['DR']		['Description']	= 'Dr';
 $GLOBALS['*arrConstant']	['EndUserTitleType']	['MSTR']	['Constant']	= 'END_USER_TITLE_TYPE_MASTER';
@@ -2009,9 +1396,6 @@ $GLOBALS['*arrConstant']	['BillingMethod']	[3]	['Constant']	= 'BILLING_METHOD_EM
 $GLOBALS['*arrConstant']	['BillingMethod']	[3]	['Description']	= 'Email Sent';
 
 // Billing Types
-/*define("BILLING_TYPE_DIRECT_DEBIT"		, 1);
-define("BILLING_TYPE_CREDIT_CARD"		, 2);
-define("BILLING_TYPE_ACCOUNT"			, 3);*/
 $GLOBALS['*arrConstant']	['BillingType']	[1]	['Constant']	= 'BILLING_TYPE_DIRECT_DEBIT';
 $GLOBALS['*arrConstant']	['BillingType']	[1]	['Description']	= 'Direct Debit';
 $GLOBALS['*arrConstant']	['BillingType']	[2]	['Constant']	= 'BILLING_TYPE_CREDIT_CARD';
@@ -2027,20 +1411,11 @@ define("BILLING_FREQ_DAY"				, 1);
 define("BILLING_FREQ_MONTH"				, 2);
 define("BILLING_FREQ_HALF_MONTH"		, 3);
 
-// Billing Minimum Total
-// Now defined in database
-//define("BILLING_MINIMUM_TOTAL"			, 5.0);
-
 // Set the defaults for Billing (Once every Month on the First)
-//define("BILLING_DEFAULT_DATE"			, 1); Now defined in database
 define("BILLING_DEFAULT_FREQ"			, 1);
 define("BILLING_DEFAULT_FREQ_TYPE"		, BILLING_FREQ_MONTH);
 
 // Record Type Display Types
-/*define("RECORD_DISPLAY_CALL"		, 1);
-define("RECORD_DISPLAY_S_AND_E"		, 2);
-define("RECORD_DISPLAY_DATA"		, 3);
-define("RECORD_DISPLAY_SMS"			, 4);*/
 $GLOBALS['*arrConstant']	['DisplayType']	[1]	['Constant']	= 'RECORD_DISPLAY_CALL';
 $GLOBALS['*arrConstant']	['DisplayType']	[1]	['Description']	= 'Call';
 $GLOBALS['*arrConstant']	['DisplayType']	[2]	['Constant']	= 'RECORD_DISPLAY_S_AND_E';
@@ -2062,16 +1437,6 @@ define("PABLO_TIP_DRUNK"			, 4);
 
 // Payments
 // payment status
-/*define("PAYMENT_IMPORTED"				, 100);
-define("PAYMENT_WAITING"				, 101);
-define("PAYMENT_PAYING"					, 103);
-define("PAYMENT_FINISHED"				, 150);
-define("PAYMENT_BAD_IMPORT"				, 200);
-define("PAYMENT_BAD_PROCESS"			, 201);
-define("PAYMENT_BAD_NORMALISE"			, 202);
-define("PAYMENT_CANT_NORMALISE_HEADER"	, 203);
-define("PAYMENT_CANT_NORMALISE_FOOTER"	, 204);
-define("PAYMENT_CANT_NORMALISE_INVALID"	, 205);*/
 $GLOBALS['*arrConstant']	['PaymentStatus']	[100]	['Constant']	= 'PAYMENT_IMPORTED';
 $GLOBALS['*arrConstant']	['PaymentStatus']	[100]	['Description']	= 'Imported';
 $GLOBALS['*arrConstant']	['PaymentStatus']	[101]	['Constant']	= 'PAYMENT_WAITING';
@@ -2101,12 +1466,6 @@ $GLOBALS['*arrConstant']	['PaymentStatus']	[250]	['Description']	= 'Reversed';
 
 
 // payment types
-/*define("PAYMENT_TYPE_BILLEXPRESS"	, 1);
-define("PAYMENT_TYPE_BPAY"			, 2);
-define("PAYMENT_TYPE_CHEQUE"		, 3);
-define("PAYMENT_TYPE_SECUREPAY"		, 4);
-define("PAYMENT_TYPE_CREDIT_CARD"	, 5);*/
-
 $GLOBALS['*arrConstant']	['PaymentType']	[1]	['Constant']	= 'PAYMENT_TYPE_BILLEXPRESS';
 $GLOBALS['*arrConstant']	['PaymentType']	[1]	['Description']	= 'BillExpress';
 $GLOBALS['*arrConstant']	['PaymentType']	[2]	['Constant']	= 'PAYMENT_TYPE_BPAY';
@@ -2131,10 +1490,6 @@ $GLOBALS['*arrConstant']	['PaymentType']	[9]	['Description']	= 'Contra';
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
 
 // Bug Type
-/*define("BUG_UNREAD"					, 100);
-define("BUG_UNASSIGNED"				, 101);
-define("BUG_UNRESOLVED"				, 102);
-define("BUG_RESOLVED"				, 103);*/
 $GLOBALS['*arrConstant']	['BugStatus']	[100]	['Constant']	= 'BUG_UNREAD';
 $GLOBALS['*arrConstant']	['BugStatus']	[100]	['Description']	= 'New';
 $GLOBALS['*arrConstant']	['BugStatus']	[101]	['Constant']	= 'BUG_UNASSIGNED';
@@ -2143,14 +1498,6 @@ $GLOBALS['*arrConstant']	['BugStatus']	[102]	['Constant']	= 'BUG_UNRESOLVED';
 $GLOBALS['*arrConstant']	['BugStatus']	[102]	['Description']	= 'Unresolved';
 $GLOBALS['*arrConstant']	['BugStatus']	[103]	['Constant']	= 'BUG_RESOLVED';
 $GLOBALS['*arrConstant']	['BugStatus']	[103]	['Description']	= 'Resolved';
-
-// Note parsing
-/*
- * These are now stored in the ConfigConstant table of the database
- *
-define("SYSTEM_NOTE_TYPE",	7);
-define("GENERAL_NOTE_TYPE",	1);
-*/
 
 //Report Result Types
 define("REPORT_RESULT_TYPE_CSV"		, "CSV");
@@ -2170,9 +1517,6 @@ $GLOBALS['*arrConstant']	['CopyMethod']	[3]	['Description']	= 'Overwrite Files';
 
 
 // resolve dispute status codes
-/*define("DISPUTE_RESOLVE_FULL_PAYMENT"		, 1);
-define("DISPUTE_RESOLVE_PARTIAL_PAYMENT"	, 2);
-define("DISPUTE_RESOLVE_NO_PAYMENT"			, 3);*/
 $GLOBALS['*arrConstant']	['DistputeResolve']	[1]	['Constant']	= 'DISPUTE_RESOLVE_FULL_PAYMENT';
 $GLOBALS['*arrConstant']	['DistputeResolve']	[1]	['Description']	= 'Full Payment';
 $GLOBALS['*arrConstant']	['DistputeResolve']	[2]	['Constant']	= 'DISPUTE_RESOLVE_PARTIAL_PAYMENT';
@@ -2273,25 +1617,6 @@ $GLOBALS['*arrConstant']	['RateStatus']	[1]	['Description']	= 'Archived';
 $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Constant']	= 'RATE_STATUS_DRAFT';
 $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Description']	= 'Draft';
 
-
-// Account Letter Types
-/* These have been aligned with, and their usage replaced by, the DOCUMENT_TEMPLATE_TYPE_xxx constants
-$GLOBALS['*arrConstant']	['LetterType']	[5]	['Constant']	= 'LETTER_TYPE_FRIENDLY_REMINDER';
-$GLOBALS['*arrConstant']	['LetterType']	[5]	['Description']	= 'Friendly Reminder';
-$GLOBALS['*arrConstant']	['LetterType']	[1]	['Constant']	= 'LETTER_TYPE_OVERDUE';
-$GLOBALS['*arrConstant']	['LetterType']	[1]	['Description']	= 'Overdue Notice';
-$GLOBALS['*arrConstant']	['LetterType']	[2]	['Constant']	= 'LETTER_TYPE_SUSPENSION';
-$GLOBALS['*arrConstant']	['LetterType']	[2]	['Description']	= 'Suspension Notice';
-$GLOBALS['*arrConstant']	['LetterType']	[3]	['Constant']	= 'LETTER_TYPE_FINAL_DEMAND';
-$GLOBALS['*arrConstant']	['LetterType']	[3]	['Description']	= 'Final Demand Notice';
-// Invoice constant was not used anywhere
-//$GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_INVOICE';
-//$GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Invoice';
-// This is not defined properly (it has same value as LETTER_TYPE_INVOICE) and does not exist in the code base
-//$GLOBALS['*arrConstant']	['LetterType']	[4]	['Constant']	= 'LETTER_TYPE_AUTOMATIC_BARRING';
-//$GLOBALS['*arrConstant']	['LetterType']	[4]	['Description']	= 'Automatic Barring';
- */
-
 // DataTypes for Constants
 $GLOBALS['*arrConstant']	['DataType']	[1]	['Constant']	= 'DATA_TYPE_STRING';
 $GLOBALS['*arrConstant']	['DataType']	[1]	['Description']	= 'String';
@@ -2369,9 +1694,6 @@ $GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Description']	= 'CDR 
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, FILES_BASE_PATH."payments/");
 define("PATH_INVOICE_PDFS"				, FILES_BASE_PATH."invoices/");
-// The function GetBasePath() does not yet exist
-//define("PATH_INVOICE_PDFS"			, GetBasePath() . "vixen_invoices/");
-//define("PATH_PAYMENT_UPLOADS"			, GetBasePath() . "vixen_payments/");
 
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
