@@ -211,7 +211,7 @@ function $ID(element)
 	{
 		for (var i = 0, elements = [], length = arguments.length; i < length; i++)
 		{
-      		elements.push($(arguments[i]));
+      		elements.push($ID(arguments[i]));
       	}
 		return elements;
 	}
