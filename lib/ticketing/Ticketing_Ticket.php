@@ -3,9 +3,11 @@
 // Ensure that we have the Ticketing_Ticket_Message class
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Correspondance.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Config.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Contact.php';
 
 class Ticketing_Ticket
 {
+	protected $id = NULL;
 	protected $groupTicketId = NULL;
 	protected $subject = NULL;
 	protected $priorityId = NULL;
@@ -32,10 +34,12 @@ class Ticketing_Ticket
 			// Check that the ticket number exists. If not, we need to create a new ticket
 			$ticket = self::loadForTicketId($mxdTicketId);
 		}
-		else
+		if (!$ticket)
 		{
 			$ticket = self::createNew($correspondance->getContact(), $correspondance->summary, $correspondance->getCustomerGroupEmail()->customerGroupId);
 		}
+
+		return $ticket;
 	}
 
 	public static function createNew(Ticketing_Contact $contact, $strSubject, $custGroupId)
@@ -83,21 +87,6 @@ class Ticketing_Ticket
 		$this->_saved = TRUE;
 	}
 
-	protected function getValuesToSave()
-	{
-		$arrColumns = self::getColumns();
-		$arrValues = array();
-		foreach ($arrColumns as $strColumn)
-		{
-			if ($strColumn == 'id') 
-			{
-				continue;
-			}
-			$arrValues->{$strColumn} = $this->{$strColumn};
-		}
-		return $arrColumns;
-	}
-
 	protected static function getColumns()
 	{
 		return array(
@@ -114,6 +103,21 @@ class Ticketing_Ticket
 			'creation_datetime',
 			'modified_datetime',
 		);
+	}
+
+	protected function getValuesToSave()
+	{
+		$arrColumns = self::getColumns();
+		$arrValues = array();
+		foreach ($arrColumns as $strColumn)
+		{
+			if ($strColumn == 'id') 
+			{
+				continue;
+			}
+			$arrValues[$strColumn] = $this->{$strColumn};
+		}
+		return $arrValues;
 	}
 
 	protected function getTableName()
@@ -149,14 +153,13 @@ class Ticketing_Ticket
 		{
 			$this->id = $outcome;
 			// Don't overwrite a group ticket id if we already have one
-			// (not possible for this class, but maybe true for subclasses)
+			// (should not be possible for this class, but maybe true for subclasses)
 			if ($this->group_ticket_id === NULL)
 			{
 				$this->group_ticket_id = $outcome;
 			}
-			return $this->save();
 		}
-		else
+		if (get_class($this) == 'Ticketing_Ticket_History')
 		{
 			// Each time we update the record, we need to copy the details to the history table
 			$this->recordHistoricCopy();
@@ -173,7 +176,7 @@ class Ticketing_Ticket
 	protected static function loadForTicketId($intTicketNumber)
 	{
 		// Load and return the ticket for the given ticket number
-		$selProperties = new StatementSelect('ticketing_ticket', array(), "id = <Id>");
+		$selProperties = new StatementSelect('ticketing_ticket', self::getColumns(), "id = <Id>");
 		$arrWhere = array('Id' => $intTicketNumber);
 		if (($outcome = $selProperties->Execute($arrWhere)) === FALSE)
 		{
@@ -193,7 +196,7 @@ class Ticketing_Ticket
 		// Note: Email address should be unique, so only fetch the first record
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 
-			$this->getColumns(), 
+			self::getColumns(), 
 			$strWhere);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
@@ -271,6 +274,52 @@ class Ticketing_Ticket
 			throw new Exception('Failed to create the correspondance.');
 		}
 		return $correspondance;
+	}
+
+	public function __get($strName)
+	{
+		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
+		{
+			return $this->{$strName};
+		}
+		return NULL;
+	}
+
+	public function __set($strName, $mxdValue)
+	{
+		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
+		{
+			if ($this->{$strName} != $mxdValue)
+			{
+				if ($strName == 'contactId')
+				{
+					$this->contact = NULL;
+				}
+				else if ($strName == 'contact')
+				{
+					$this->contactId = $mxdValue->id;
+				}
+
+				if ($strName == 'customerGroupEmailId')
+				{
+					$this->customerGroupEmail = NULL;
+				}
+				else if ($strName == 'customerGroupEmail')
+				{
+					$this->customerGroupEmailId = $mxdValue->id;
+				}
+
+				$this->{$strName} = $mxdValue;
+				$this->_saved = FALSE;
+			}
+		}
+	}
+
+	private function tidyName($name)
+	{
+		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
 	}
 }
 

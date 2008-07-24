@@ -7,7 +7,7 @@ class Ticketing_Attachment_Type
 	private $mimeType = NULL;
 	private $blacklistStatusId = NULL;
 
-	private function __construct($arrProperties)
+	private function __construct($arrProperties=NULL)
 	{
 		if ($arrProperties)
 		{
@@ -69,11 +69,16 @@ class Ticketing_Attachment_Type
 			$objType->mimeType = $strMimeType;
 			// Default the attachment type to being grey-listed.
 			$objType->blacklistStatusId = TICKETING_ATTACHMENT_BLACKLIST_STATUS_GREY;
-			$objTyp->save();
+			$objType->save();
 
 			// Send an email to ybs to inform of the newly created attachment type, so that they may blacklist if necessary
 			self::sendEmailNotification($objType);
 		}
+		else
+		{
+			$objType = new Ticketing_Attachment_Type($selType->Fetch());
+		}
+		return $objType;
 	}
 
 	public function sendEmailNotification($objType)
@@ -112,6 +117,43 @@ If this file type is safe please manually change it's blacklist_status_id to TIC
 		$email->html = $body->saveHTML();
 
 		$email->send();
+	}
+
+	protected function init($arrProperties)
+	{
+		foreach($arrProperties as $name => $property)
+		{
+			$this->{$name} = $property;
+		}
+		$this->_saved = TRUE;
+	}
+
+	public function __get($strName)
+	{
+		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
+		{
+			return $this->{$strName};
+		}
+		return NULL;
+	}
+
+	public function __set($strName, $mxdValue)
+	{
+		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
+		{
+			if ($this->{$strName} != $mxdValue)
+			{
+				$this->{$strName} = $mxdValue;
+				$this->_saved = FALSE;
+			}
+		}
+	}
+
+	private function tidyName($name)
+	{
+		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
 	}
 }
 

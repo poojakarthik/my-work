@@ -57,7 +57,6 @@ class Ticketing_Config
 			{
 				$path .= DIRECTORY_SEPARATOR;
 			}
-			echo $path;
 		}
 		else
 		{

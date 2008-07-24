@@ -10,7 +10,7 @@ class Ticketing_Customer_Group_Config
 
 	private $_saved = FALSE;
 
-	private function __construct($arrProperties)
+	private function __construct($arrProperties=NULL)
 	{
 		if ($arrProperties)
 		{
@@ -23,7 +23,7 @@ class Ticketing_Customer_Group_Config
 		return $this->acknowledgeEmailReceipts === ACTIVE_STATUS_ACTIVE;
 	}
 
-	private function getColumns()
+	private static function getColumns()
 	{
 		return array(
 			'id' => 'id',
@@ -38,7 +38,7 @@ class Ticketing_Customer_Group_Config
 	{
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 
-			$this->getColumns(), 
+			self::getColumns(), 
 			$where);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
@@ -93,7 +93,9 @@ class Ticketing_Customer_Group_Config
 
 	private function tidyName($name)
 	{
-		return strtolower(str_replace(' ', '', ucwords(str_replace('_', ' ', $name))));
+		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
 	}
 }
 

@@ -5,11 +5,12 @@ class Ticketing_Customer_Group_Email
 	private $id = NULL;
 	private $customerGroupId = NULL;
 	private $email = NULL;
+	private $name = NULL;
 	private $autoReply = NULL;
 
 	private $_saved = FALSE;
 
-	private function __construct($arrProperties)
+	private function __construct($arrProperties=NULL)
 	{
 		if ($arrProperties)
 		{
@@ -22,12 +23,13 @@ class Ticketing_Customer_Group_Email
 		return $this->autoReply === ACTIVE_STATUS_ACTIVE;
 	}
 
-	private function getColumns()
+	private static function getColumns()
 	{
 		return array(
 			'id' => 'id',
 			'customerGroupId' => 'customer_group_id',
 			'email' => 'email',
+			'name' => 'name',
 			'autoReply' => 'auto_reply',
 		);
 	}
@@ -37,8 +39,9 @@ class Ticketing_Customer_Group_Email
 		// Note: Email address should be unique, so only fetch the first record
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 
-			$this->getColumns(), 
-			$where);
+			self::getColumns(), 
+			$where
+		);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
 			throw new Exception("Failed to check for existing customer group email: " . $selMatches->Error());
@@ -92,7 +95,9 @@ class Ticketing_Customer_Group_Email
 
 	private function tidyName($name)
 	{
-		return strtolower(str_replace(' ', '', ucwords(str_replace('_', ' ', $name))));
+		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
 	}
 }
 

@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Attachment_Type.php';
+
 class Ticketing_Attachment
 {
 	private $id = NULL;
@@ -195,7 +197,9 @@ class Ticketing_Attachment
 
 	private function tidyName($name)
 	{
-		return strtolower(str_replace(' ', '', ucwords(str_replace('_', ' ', $name))));
+		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
 	}
 }
 

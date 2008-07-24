@@ -10,6 +10,14 @@
 require_once 'ticketing/Ticketing_Ticket.php';
 
 
+function glog($str)
+{
+	$f = fopen('php://stdout', 'w');
+	fwrite($f, $str . "\n");
+	fclose($f);
+}
+
+
 class Ticketing_Service
 {
 	public static function loadEmails()
@@ -61,7 +69,7 @@ class Ticketing_Service
 
 				// Parse the file
 				$details = self::parseXmlFile($xmlFile);
-	
+
 				// Set delivery status to received (this is inbound)
 				$details['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED; //
 
@@ -69,14 +77,13 @@ class Ticketing_Service
 				$details['source_id'] = TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
 
 				// System user id
-				$details['user_id'] = USER_ID;
+				//$details['user_id'] = USER_ID;
 
 				// Set delivery time (to system) same as creation time (now)
 				$details['delivery_datetime'] = $details['creation_datetime'] = date('Y-m-d H-i-s');
 
 				// Load the details into the ticketing system
 				$correspondance = Ticketing_Correspondance::createForDetails($details);
-
 				// If a correspondance was created...
 				if ($correspondance)
 				{
@@ -95,9 +102,6 @@ class Ticketing_Service
 				$dbAccess->TransactionRollback();
 				throw $exception;
 			}
-
-// WIP *** REMOVE THIS LINE ***
-continue;
 
 			// Backup or remove files as required
 			for ($i = 1; $i <= 2; $i++)
@@ -142,6 +146,7 @@ continue;
 					}
 				}
 			}
+
 		}
 	}
 
@@ -214,7 +219,7 @@ continue;
 		$email = $dom->getElementsByTagName('from')->item(0);
 		$details['from'] = array(
 			'name' => $email->getElementsByTagName('name')->item(0)->textContent,
-			'address' => $email->getElementsByTagName('address')->item(0)->textContent,
+			'address' => $email->getElementsByTagName('email')->item(0)->textContent,
 		);
 
 		$details['to'] = array();
@@ -224,7 +229,7 @@ continue;
 			$email = $emails->item($x);
 			$details['to'][] = array(
 				'name' => $email->getElementsByTagName('name')->item(0)->textContent,
-				'address' => $email->getElementsByTagName('address')->item(0)->textContent,
+				'address' => $email->getElementsByTagName('email')->item(0)->textContent,
 			);
 		}
 
@@ -235,12 +240,31 @@ continue;
 			$email = $emails->item($x);
 			$details['cc'][] = array(
 				'name' => $email->getElementsByTagName('name')->item(0)->textContent,
-				'address' => $email->getElementsByTagName('address')->item(0)->textContent,
+				'address' => $email->getElementsByTagName('email')->item(0)->textContent,
 			);
 		}
 
 		$body = $dom->getElementsByTagName('body')->item(0);
 		$details['message'] = $body->textContent;
+
+		// Check to see if the message looks like it might be base64 encoded
+		// If it contains no word spaces
+		if (!preg_match("/[a-zA-Z0-9\+\/]+ +[a-zA-Z0-9\+\/]+/", trim($details['message'])))
+		{
+			// Get the message with all whitespace removed
+			$sansWhiteSpace = preg_replace("/[\r\n\t ]*/", "", $details['message']);
+			// If this has a multiple of 4 chars and only comprises base64 chars with either 0, 1 or 2 trailing '='
+			if((strlen($sansWhiteSpace)%4 == 0) && preg_match("/^[a-zA-Z0-9\+\/]+[=]{0,2}$/", $sansWhiteSpace))
+			{
+				// Decode it
+				$decoded = @base64_decode($sansWhiteSpace);
+				if ($decoded)
+				{
+					$details['message'] = $decoded;
+				}
+			}
+		}
+
 		if (trim(strtolower($body->getAttribute('type'))) == 'html')
 		{
 			// De-html'ify the message
@@ -263,10 +287,10 @@ continue;
 		}
 
 		// Check for attachments in an associated directory
-		$attachmentDirPath = $xmlFilePath . '.attachments';
+		$attachmentDirPath = $xmlFilePath . '-attachments';
 		if (file_exists($attachmentDirPath) && is_dir($attachmentDirPath))
 		{
-			$attachmentFiles = glob($attachmentDirPath . DIRECTORY_SEPARATOR . '*');
+			$attachmentFiles = glob($attachmentDirPath . DIRECTORY_SEPARATOR . '*.*');
 			foreach($attachmentFiles as $attachmentFile)
 			{
 				if (is_file($attachmentFile))
@@ -310,7 +334,7 @@ continue;
 		$arrUniqueIds = $storage->getUniqueId();
 		$nrMessages = count($arrUniqueIds);
 
-echo 'Nr. messages: ' . $nrMessages . "\n\n";
+//echo 'Nr. messages: ' . $nrMessages . "\n\n";
 
 		if (!$nrMessages)
 		{
@@ -320,12 +344,12 @@ echo 'Nr. messages: ' . $nrMessages . "\n\n";
 		foreach($arrUniqueIds as $idx => $strUniqueId)
 		{
 			$objMessage = $storage->getMessage($storage->getNumberByUniqueId($strUniqueId));
-echo 'Id: ' . $strUniqueId . '(' . $idx . ')' . "\n";
+//echo 'Id: ' . $strUniqueId . '(' . $idx . ')' . "\n";
 
 			// Process the email
 			// Get the details of the email
 			$strSubject = $objMessage->subject;
-echo 'Subject: ' . $strSubject . "\n";
+//echo 'Subject: ' . $strSubject . "\n";
 
 			$arrSections = array();
 			self::extractEmailParts($arrSections, $objMessage);
@@ -343,7 +367,7 @@ echo 'Subject: ' . $strSubject . "\n";
 			// we should create a Ticketing_Ticket_Message,
 			$ticketingMessage = new Ticketing_Correspondance($strSubject, $strMessage, $arrAttachments);
 
-echo 'Ticket number: ' . $ticketingMessage->getTicketNumber() . "\n\n";
+//echo 'Ticket number: ' . $ticketingMessage->getTicketNumber() . "\n\n";
 
 			// which we should save to the db 
 			$ticketingMessage->save();
@@ -361,7 +385,7 @@ echo 'Ticket number: ' . $ticketingMessage->getTicketNumber() . "\n\n";
 		// Find out if the message part is multipart
 		if ($objMessagePart->isMultipart())
 		{
-			echo "\n=========START========= MULTI  PART =========START========\n";
+			//echo "\n=========START========= MULTI  PART =========START========\n";
 			var_dump($objMessagePart->getHeaders());
 			//echo $objMessagePart->getContent();
 			// For each part we need to extract the sub-parts
@@ -369,9 +393,9 @@ echo 'Ticket number: ' . $ticketingMessage->getTicketNumber() . "\n\n";
 			{
 				try 
 				{
-					echo "\nxxLooking for content disposition\n";
+					//echo "\nxxLooking for content disposition\n";
 					$strDisposition = $objMessagePart->ContentDisposition;
-					echo "\$strDisposition = $strDisposition\n\n";
+					//echo "\$strDisposition = $strDisposition\n\n";
 				}
 				catch(Exception $exception)
 				{
@@ -393,20 +417,20 @@ echo 'Ticket number: ' . $ticketingMessage->getTicketNumber() . "\n\n";
 				}
 				self::extractEmailParts($arrEmailSections, $objChildMessagePart, $bolAlternative);
 			}
-			echo "\n==========END========== MULTI  PART ==========END=========\n";
+			//echo "\n==========END========== MULTI  PART ==========END=========\n";
 		}
 		else
 		{
 			// We have a single part.
-			echo "\n=========START========= SINGLE PART =========START========\n";
+			//echo "\n=========START========= SINGLE PART =========START========\n";
 
 			// Check out whether or not this is 'inline' (part of the message body)
 			// We need to look at the content type and the disposition to decide what to do with it
 			try 
 			{
-				echo "\nLooking for content disposition\n";
+				//echo "\nLooking for content disposition\n";
 				$strDisposition = $objMessagePart->ContentDisposition;
-				echo "\$strDisposition = $strDisposition\n\n";
+				//echo "\$strDisposition = $strDisposition\n\n";
 			}
 			catch(Exception $exception)
 			{
@@ -416,7 +440,7 @@ echo 'Ticket number: ' . $ticketingMessage->getTicketNumber() . "\n\n";
 			try 
 			{
 				$strType = $objMessagePart->ContentType;
-				echo "\n\nsingle part type: $strType\n\n";
+				//echo "\n\nsingle part type: $strType\n\n";
 			}
 			catch(Exception $exception)
 			{
@@ -441,7 +465,7 @@ echo 'Ticket number: ' . $ticketingMessage->getTicketNumber() . "\n\n";
 			}
 
 			//echo $objMessagePart->getContent();
-			echo "\n==========END========== SINGLE PART ==========END=========\n";
+			//echo "\n==========END========== SINGLE PART ==========END=========\n";
 		}
 	}
 

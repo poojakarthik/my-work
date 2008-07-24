@@ -3,6 +3,9 @@
 // Ensure that we have the Ticketing_Ticket class
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Ticket.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Contact.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Attachment.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Customer_Group_Email.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Customer_Group_Config.php';
 
 
 // Ensure that we have the email notification class
@@ -74,17 +77,17 @@ class Ticketing_Correspondance
 		// If the 'to' addresses are not for a customer group, we should check the 'cc' addresses
 		// If the 'to' and 'cc' addresses are not for a customer broup, we should check the 'bcc' addresses
 		$addresses = array();
-		if (array_key_exists('tos', $arrDetails)) 
+		if (array_key_exists('to', $arrDetails)) 
 		{
-			$addresses[] = $arrDetails['tos'];
+			$addresses[] = $arrDetails['to'];
 		}
-		if (array_key_exists('ccs', $arrDetails)) 
+		if (array_key_exists('cc', $arrDetails)) 
 		{
-			$addresses[] = $arrDetails['ccs'];
+			$addresses[] = $arrDetails['cc'];
 		}
-		if (array_key_exists('bccs', $arrDetails)) 
+		if (array_key_exists('bcc', $arrDetails)) 
 		{
-			$addresses[] = $arrDetails['bccs'];
+			$addresses[] = $arrDetails['bcc'];
 		}
 
 		$emailIdField = 'id';
@@ -95,7 +98,7 @@ class Ticketing_Correspondance
 				if (!array_key_exists('customer_group_id', $arrDetails))
 				{
 					// TODO:: Don't give up so easy! If a ticket has been specified, check for a previous correspondance and use the address from that.
-					throw new Exception('Unable to create correspondance as email address could be determined for a sender.');
+					throw new Exception('Unable to create correspondance as email address could not be determined for a sender.');
 				}
 				$custGroupEmail = Ticketing_Customer_Group_Config::getForId($arrDetails['customer_group_id']);
 				$emailIdField = 'default_email_id';
@@ -161,7 +164,7 @@ class Ticketing_Correspondance
 		}
 
 		// Set either the userId (for outbound) or contactId (for inbound)
-		if (!$bolOutbound)
+		if ($bolOutbound)
 		{
 			$objCorrespondance->userId = $arrDetails['user_id'];
 			$objCorrespondance->contact = NULL;
@@ -181,9 +184,9 @@ class Ticketing_Correspondance
 		// Check the subject for a ticket number
 		// TODO: Q: Could this apply to more than one ticket?
 		$arrMatches = array();
-		if (preg_match("/\[ *#[0-9 ]+\]/", $objCorrespondance->summary, $arrMatches))
+		if (preg_match("/T[0-9 ]+Z/i", $objCorrespondance->summary, $arrMatches))
 		{
-			$objCorrespondance->summary = str_replace("/\[ *#([0-9 ]+)\]/", "", $arrMatches[0]);
+			$objCorrespondance->summary = str_replace("/\T([0-9 ]+)Z/i", "", $arrMatches[0]);
 			$objCorrespondance->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
 		}
 
@@ -193,8 +196,11 @@ class Ticketing_Correspondance
 		}
 
 		// Load the ticket for this correspondance (if a ticket does not exist, one will be created)
-		// Note: If this record has a ticket number that does not exist, it will be replaced with the new one.
+		// Note: If this record has a ticket number that does not exist, a new ticket will be created.
 		$ticket = Ticketing_Ticket::forCorrespondance($objCorrespondance);
+
+		// Update this instances ticket id, as a new ticket may have been created if an existing ticket was not found
+		$objCorrespondance->ticketId = $ticket->id;
 
 		// Need to save this correspondance to get assigned the id, 
 		// which we need in order that we may create associated attchments
@@ -205,6 +211,8 @@ class Ticketing_Correspondance
 			$objAttchment = Ticketing_Attachment::create($objCorrespondance, $attachmentDetails['name'], $attachmentDetails['type'], $attachmentDetails['data']);
 			$objCorrespondance->arrAttchments[$objAttchment->id] = $objAttchment;
 		}
+
+		return $objCorrespondance;
 	}
 
 	public function getTicket()
@@ -214,11 +222,11 @@ class Ticketing_Correspondance
 
 	public function getContact()
 	{
-		if ($this->contact !== NULL)
+		if ($this->contact == NULL)
 		{
-			return $this->contact;
+			$this->contact = Ticketing_Contact::getForId($this->contactId);
 		}
-		return Ticketing_Contact::getForId($this->contactId);
+		return $this->contact;
 	}
 
 	public function getCustomerGroupEmail()
@@ -238,13 +246,14 @@ class Ticketing_Correspondance
 		{
 			if (is_array($arg))
 			{
-				$custGroupEmail = self::getCustomerGroupEmailForEmailAddresses($arg);
+				$custGroupEmail = call_user_func_array(array('Ticketing_Correspondance', 'getCustomerGroupEmailForEmailAddresses'), $arg);
 			}
 			else if (is_string($arg) && ($offset = strrpos($arg, '@')) !== FALSE)
 			{
+				$arg = str_replace(array('<', '>', "'", '"'), '', $arg);
 				$custGroupEmail = Ticketing_Customer_Group_Email::getForEmailAddress($arg);
 			}
-			if ($custGroupEmail !== NULL)
+			if ($custGroupEmail !== NULL && $custGroupEmail !== FALSE)
 			{
 				break;
 			}
@@ -300,9 +309,18 @@ class Ticketing_Correspondance
 		}
 
 		// Check to see if this contact gets auto reply emails
-		$contact = Ticketing_Contact::getForId($this->contactId);
-		if (!$contact->autoReply())
+		if (!$this->getContact()->autoReply())
 		{
+			return;
+		}
+
+		// Do a sanity check at this point!
+		// If the 'to' address is one of the ticketing system in-boxes, do not send mail to it!
+		if (Ticketing_Customer_Group_Email::getForEmailAddress($this->getContact()->email))
+		{
+			$contact = $this->getContact();
+			$contact->autoReply = ACTIVE_STATUS_INACTIVE;
+			$contact->save();
 			return;
 		}
 
@@ -320,8 +338,8 @@ class Ticketing_Correspondance
 		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM, $customerGroupId);
 		$email->to = $this->getContact()->email;
 		$email->from = $custGroupEmail->email;
-		$email->subject = $this->summary . " [" . $this->ticketId . "]";
-		$email->text = str_replace('[TICKET_ID]', $this->ticketId, $custGroupConfig->emailReceiptAcknowledgement);
+		$email->subject = $this->summary . " [T" . $this->ticketId . "Z]";
+		$email->text = str_replace('[TICKET_ID]', 'T'.$this->ticketId.'Z', $custGroupConfig->emailReceiptAcknowledgement);
 		$email->send();
 	}
 
@@ -340,7 +358,7 @@ class Ticketing_Correspondance
 		// TODO: Check for previous outgoing correspondances and send to same address 
 		$email->setFrom($this->getCustomerGroupEmail()->email, $this->getCustomerGroupEmail()->name);
 
-		$email->subject = $this->summary . " [" . $this->ticketId . "]";
+		$email->subject = $this->summary . " [T" . $this->ticketId . "Z]";
 		$email->text = $this->details;
 
 		$email->send();
@@ -433,7 +451,9 @@ class Ticketing_Correspondance
 
 	private function tidyName($name)
 	{
-		return strtolower(str_replace(' ', '', ucwords(str_replace('_', ' ', $name))));
+		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
 	}
 
 }

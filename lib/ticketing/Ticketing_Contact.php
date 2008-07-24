@@ -16,7 +16,7 @@ class Ticketing_Contact
 
 	private $_saved = FALSE;
 
-	private function __construct($arrProperties)
+	private function __construct($arrProperties=NULL)
 	{
 		if ($arrProperties)
 		{
@@ -76,31 +76,72 @@ class Ticketing_Contact
 
 	public static function getForId($id)
 	{
-		$this->getFor("id = <Id>", array("Id" => $id));
+		return self::getFor("id = <Id>", array("Id" => $id));
 	}
 
 	public static function getForEmailAddress($strEmailAddress, $name)
 	{
+		$strEmailAddress = self::sanitizeAddresses($strEmailAddress);
+		$name = self::sanitizeAddresses($name);
+
 		// Note: Email address should be unique, so only fetch the first record
-		$contact = $this->getFor("email = <Email>", array("Email" => $strEmailAddress));
+		$contact = self::getFor("email = <Email>", array("Email" => $strEmailAddress));
 
 		if (!$contact)
 		{
 			$contact = new Ticketing_Contact();
 			$contact->email = trim(strtolower($strEmailAddress));
+			$contact->status = ACTIVE_STATUS_ACTIVE;
+			$contact->autoReply = ACTIVE_STATUS_ACTIVE;
 			if ($name)
 			{
 				$name = explode(' ', $name);
 				$contact->lastName = array_pop($name);
 				$contact->firstName = implode(' ', $name);
-				$contact->status = ACTIVE_STATUS_ACTIVE;
-				$contact->autoReply = ACTIVE_STATUS_ACTIVE;
 			}
 			$contact->save();
 		}
 
 		return $contact;
 	}
+
+	private static function sanitizeAddresses($strAddresses)
+	{
+		if (!$strAddresses) return $strAddresses;
+		return trim(str_replace(array('"', "'", "<", '>'), '', $strAddresses));
+	}
+
+	protected static function getColumns()
+	{
+		return array(
+			'id',
+			'title',
+			'first_name',
+			'last_name',
+			'job_title',
+			'email',
+			'fax',
+			'mobile',
+			'phone',
+			'status',
+			'auto_reply',
+		);
+	}
+
+	protected function getValuesToSave()
+	{
+		$arrColumns = self::getColumns();
+		$arrValues = array();
+		foreach($arrColumns as $strColumn)
+		{
+			if ($strColumn == 'id') 
+			{
+				continue;
+			}
+			$arrValues[$strColumn] = $this->{$strColumn};
+		}
+		return $arrValues;
+	} 
 
 	public function save()
 	{
@@ -109,18 +150,8 @@ class Ticketing_Contact
 			// Nothing to save
 			return TRUE;
 		}
-		$arrValues = array(
-			'title' => $this->title, 
-			'first_name' => $this->firstName, 
-			'last_name' => $this->lastName, 
-			'job_title' => $this->jobTitle, 
-			'email' => $this->email, 
-			'fax' => $this->fax, 
-			'mobile' => $this->mobile, 
-			'phone' => $this->phone, 
-			'status' => $this->status,
-			'auto_reply' => $this->autoReply
-		);
+		$arrValues = $this->getValuesToSave();
+
 		// No id means that this must be a new record
 		if (!$this->id)
 		{
@@ -129,8 +160,7 @@ class Ticketing_Contact
 		// This must be an update
 		else
 		{
-			
-			$arrValues['id'] = $this->id;
+			$arrValues['Id'] = $this->id;
 			$statement = new StatementUpdateById('ticketing_contact', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
@@ -178,7 +208,9 @@ class Ticketing_Contact
 
 	private function tidyName($name)
 	{
-		return strtolower(str_replace(' ', '', ucwords(str_replace('_', ' ', $name))));
+		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
 	}
 }
 
