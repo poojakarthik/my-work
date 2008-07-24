@@ -27,7 +27,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate email_notification table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DELETE FROM email_notification WHERE const_name IN ('EMAIL_NOTIFICATION_TICKETING_SYSTEM')";
+		$this->rollbackSQL[] = "DELETE FROM email_notification WHERE const_name IN ('EMAIL_NOTIFICATION_TICKETING_SYSTEM', 'EMAIL_NOTIFICATION_TICKETING_SYSTEM_ADMIN_MESSAGE')";
 
 
 		$strTableSQLs = array(
