@@ -192,6 +192,7 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
         // MX check on hostname via dns_get_record()
         if ($this->_validateMx) {
             if ($this->validateMxSupported()) {
+                $mxHosts = array();
                 $result = dns_get_mx($this->_hostname, $mxHosts);
                 if (count($mxHosts) < 1) {
                     $hostnameResult = false;

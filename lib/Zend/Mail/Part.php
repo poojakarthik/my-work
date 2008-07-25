@@ -125,6 +125,7 @@ class Zend_Mail_Part implements RecursiveIterator
                 $this->_headers = $params['headers'];
             } else {
                 if (!empty($params['noToplines'])) {
+                    $null = null;
                     Zend_Mime_Decode::splitMessage($params['headers'], $this->_headers, $null);
                 } else {
                     Zend_Mime_Decode::splitMessage($params['headers'], $this->_headers, $this->_topLines);
@@ -291,6 +292,7 @@ class Zend_Mail_Part implements RecursiveIterator
                 $this->_headers = array();
             } else {
                 $part = $this->_mail->getRawHeader($this->_messageNum);
+                $null = null;
                 Zend_Mime_Decode::splitMessage($part, $this->_headers, $null);
             }
         }

@@ -275,6 +275,7 @@ class Zend_Mail_Protocol_Imap
      */
     public function readLine(&$tokens = array(), $wantedTag = '*', $dontParse = false)
     {
+        $tag = "";
         $line = $this->_nextTaggedLine($tag);
         if (!$dontParse) {
             $tokens = $this->_decodeLine($line);
@@ -300,6 +301,7 @@ class Zend_Mail_Protocol_Imap
     public function readResponse($tag, $dontParse = false)
     {
         $lines = array();
+        $tokens = array();
         while (!$this->readLine($tokens, $tag, $dontParse)) {
             $lines[] = $tokens;
         }
@@ -377,6 +379,7 @@ class Zend_Mail_Protocol_Imap
      */
     public function requestAndResponse($command, $tokens = array(), $dontParse = false)
     {
+        $tag = "";
         $this->sendRequest($command, $tokens, $tag);
         $response = $this->readResponse($tag, $dontParse);
 
@@ -493,9 +496,11 @@ class Zend_Mail_Protocol_Imap
      */
     public function examineOrSelect($command = 'EXAMINE', $box = 'INBOX')
     {
+        $tag = "";
         $this->sendRequest($command, array($this->escapeString($box)), $tag);
 
         $result = array();
+        $tokens = array();
         while (!$this->readLine($tokens, $tag)) {
             if ($tokens[0] == 'FLAGS') {
                 array_shift($tokens);
@@ -574,9 +579,11 @@ class Zend_Mail_Protocol_Imap
         $items = (array)$items;
         $itemList = $this->escapeList($items);
 
+        $tag = "";
         $this->sendRequest('FETCH', array($set, $itemList), $tag);
 
         $result = array();
+        $tokens = array();
         while (!$this->readLine($tokens, $tag)) {
             // ignore other responses
             if ($tokens[1] != 'FETCH') {

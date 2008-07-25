@@ -94,6 +94,8 @@ class Zend_Mime_Decode
         }
         $result = array();
         foreach ($parts as $part) {
+            $headers = "";
+            $body = "";
             self::splitMessage($part, $headers, $body, $EOL);
             $result[] = array('header' => $headers,
                               'body'   => $body    );

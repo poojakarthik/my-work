@@ -62,6 +62,8 @@ class Zend_Mail_Storage_Pop3 extends Zend_Mail_Storage_Abstract
      */
     public function countMessages()
     {
+        $count = 0;
+        $null = 0;
         $this->_protocol->status($count, $null);
         return (int)$count;
     }
@@ -141,6 +143,8 @@ class Zend_Mail_Storage_Pop3 extends Zend_Mail_Storage_Abstract
 
         $content = $this->_protocol->retrieve($id);
         // TODO: find a way to avoid decoding the headers
+        $null = null;
+        $body = null;
         Zend_Mime_Decode::splitMessage($content, $null, $body);
         return $body;
     }
