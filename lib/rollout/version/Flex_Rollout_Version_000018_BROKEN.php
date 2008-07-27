@@ -65,7 +65,7 @@ class Flex_Rollout_Version_000018 extends Flex_Rollout_Version
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for the Nature', " .
 						"name VARCHAR(256) NOT NULL COMMENT 'Name for the Nature', " .
 						"description VARCHAR(512) NOT NULL COMMENT 'Description for the Nature', " .
-						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Nature, " .
+						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Nature', " .
 						"service_type BIGINT(20) NOT NULL COMMENT 'Service Type that this Nature corresponds to'" .
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
@@ -76,11 +76,11 @@ class Flex_Rollout_Version_000018 extends Flex_Rollout_Version
 		
 		// 5:	Populates provisioning_request_type_nature Table
 		$strSQL = "INSERT INTO provisioning_request_type_nature (name, description, const_name, service_type) VALUES " .
-					"('Full Service', 'Land Line: Full Service', 'REQUEST_TYPE_NATURE_FULL_SERVICE'), " .
-					"('Preselection', 'Land Line: Preselection', 'REQUEST_TYPE_NATURE_PRESELECTION'), " .
-					"('Mobile', 'Mobile', 'REQUEST_TYPE_NATURE_MOBILE'), " .
-					"('Inbound', 'Inbound', 'REQUEST_TYPE_NATURE_INBOUND')," .
-					"('ADSL', 'ADSL', 'REQUEST_TYPE_NATURE_ADSL');";
+					"('Full Service', 'Land Line: Full Service', 'REQUEST_TYPE_NATURE_FULL_SERVICE', ".SERVICE_TYPE_LAND_LINE."), " .
+					"('Preselection', 'Land Line: Preselection', 'REQUEST_TYPE_NATURE_PRESELECTION', ".SERVICE_TYPE_LAND_LINE."), " .
+					"('Mobile', 'Mobile', 'REQUEST_TYPE_NATURE_MOBILE', ".SERVICE_TYPE_MOBILE."), " .
+					"('Inbound', 'Inbound', 'REQUEST_TYPE_NATURE_INBOUND', ".SERVICE_TYPE_INBOUND.")," .
+					"('ADSL', 'ADSL', 'REQUEST_TYPE_NATURE_ADSL', ".SERVICE_TYPE_ADSL.");";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add provisioning_request_type_nature Table. ' . $qryQuery->Error());
@@ -93,7 +93,7 @@ class Flex_Rollout_Version_000018 extends Flex_Rollout_Version
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for the Request Type', " .
 						"name VARCHAR(256) NOT NULL COMMENT 'Name for the Nature', " .
 						"description VARCHAR(512) NOT NULL COMMENT 'Description for the Nature', " .
-						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Nature, " .
+						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Nature', " .
 						"provisioning_request_type_nature BIGINT(20) NOT NULL COMMENT 'Nature of this Request Type'" .
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
@@ -121,7 +121,7 @@ class Flex_Rollout_Version_000018 extends Flex_Rollout_Version
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for the Line Status', " .
 						"name VARCHAR(256) NOT NULL COMMENT 'Name for the Nature', " .
 						"description VARCHAR(512) NOT NULL COMMENT 'Description for the Nature', " .
-						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Nature" .
+						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Nature' " .
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
@@ -148,7 +148,7 @@ class Flex_Rollout_Version_000018 extends Flex_Rollout_Version
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id', " .
 						"current_line_status BIGINT(20) NOT NULL COMMENT 'Current Line Status', " .
 						"provisioning_request_type BIGINT(20) NOT NULL COMMENT 'Request Type', " .
-						"new_line_status BIGINT(20) NOT NULL COMMENT 'Resulting Line Status" .
+						"new_line_status BIGINT(20) NOT NULL COMMENT 'Resulting Line Status'" .
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
