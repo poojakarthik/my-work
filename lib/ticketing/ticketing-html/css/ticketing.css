@@ -7,7 +7,22 @@ table#ticketing {
 	border-spacing: 0px;
 }
 
-table#ticketing caption {
+table#ticketing caption div#caption_bar {
+	width: 100%;
+	clear: both;
+}
+
+table#ticketing caption div#caption_title{
+	float: left;
+	width: 49%;
+	text-align: left;
+	font-weight: bold;
+	padding: 1px 5px;
+}
+
+table#ticketing caption div#caption_options{
+	float: right;
+	width: 49%;
 	text-align: right;
 	font-weight: bold;
 	padding: 1px 5px;
@@ -24,12 +39,17 @@ table#ticketing td,th {
 	padding: 1px 5px;
 }
 
-table#ticketing tr td{
+table#ticketing tr td {
 	background-color: #eee;
 	color: #333
 }
 
-table#ticketing tr.alt td{
+table#ticketing tr.alt td {
 	background-color: #fff;
 	color: #333
+}
+
+table#ticketing a {
+	color: #F88017;
+	font-weight: bold;
 }

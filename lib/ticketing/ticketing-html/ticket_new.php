@@ -1,5 +1,3 @@
-<? include('header.php'); ?>
-
 		<table id="ticketing" name="ticketing">
 			<caption>
 				Owner: 
@@ -51,7 +49,7 @@ for ($i = 1; $i <= 24; $i++) {
 ?>
 
 				<tr class="<?=$tr_alt?>">
-					<td><?=$i?></td>
+					<td><a href="<?=$basepath?>ticket/view/<?=$i?>"><?=$i?></a></td>
 					<td>a</td>
 					<td>a</td>
 					<td>a</td>
@@ -67,4 +65,3 @@ for ($i = 1; $i <= 24; $i++) {
 ?>
 			</tbody>
 		</table>
-<? include('footer.php'); ?>
