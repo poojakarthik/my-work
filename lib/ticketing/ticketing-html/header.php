@@ -32,7 +32,7 @@
 			<div id="nav" name="nav">
 				<ul>
 					<li><a href="console.php">Home</a></li>
-					<li><a href="#">Customers</a>
+					<li class="dropdown"><a href="#">Customers</a>
 						<ul>
 							<li><a href="account_add.php">Add Customer</a>
 							<li><a href="contact_verify.php">Find a Customer</a></li>
@@ -40,7 +40,7 @@
 						</ul>
 					</li>
 					<li><a href="rates_plan_list.php">Plans</a></li>
-					<li><a href="console_admin.php">Admin Console</a>
+					<li class="dropdown"><a href="console_admin.php">Admin Console</a>
 						<ul>
 							<li><a href="account_list.php">Advanced Account Search</a></li>
 							<li><a href="contact_list.php">Advanced Contact Search</a></li>
