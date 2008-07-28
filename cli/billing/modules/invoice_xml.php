@@ -454,7 +454,7 @@
 					$strCustomerGroup	= str_replace(' ', '_', strtoupper($arrCustomerGroup['InternalName']));
 					$strTARName			= str_replace(' ', '', strtolower($arrCustomerGroup['InternalName']))."-invoice-{$strInvoiceRun}.tar";
 					$strTARPath			= ($arrOptions['Archive']) ? "-f ".$strXMLPath.$strTARName : "";
-					$strCommand			= "cd {$strCommandDir}; php pdf.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode";
+					$strCommand			= "cd {$strCommandDir}; php pdf.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode -j";
 					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['FilePath']			= $strTARPath;
 					
 					// Start the PDF generation process
