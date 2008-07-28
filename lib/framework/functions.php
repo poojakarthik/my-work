@@ -4819,7 +4819,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 		case 'zip':
 			$strCommand		= "unzip ";
 			$strCommand		.= ($bolJunkPaths) ? '-j ' : '';
-			$strCommand		.= ($strPassword !== NULL) ? "-P {$strPassword}" : '';
+			$strCommand		.= ($strPassword !== NULL) ? "-P {$strPassword} " : '';
 			$strCommand		.= "$strSourcePath ";
 			$strCommand		.= ($strDestinationPath !== NULL) ? "-d $strDestinationPath" : "-d $strDirname";
 			
