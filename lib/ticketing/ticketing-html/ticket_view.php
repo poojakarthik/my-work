@@ -1,67 +1,36 @@
-		<table id="ticketing" name="ticketing">
-			<caption>
-				Owner: 
-				<select id="x" name="x">
-					<option id="a" name="a">all</option>
-					<option id="a" name="a">Lee Jell</option>
-					<option id="a" name="a">Cane McKinnon</option>
-				</select>
-				Category: 
-				<select id="y" name="y">
-					<option id="a" name="a">all</option>
-					<option id="a" name="a">Adds Moves Changes</option>
-					<option id="a" name="a">Faults</option>
-				</select>
-				Status: 
-				<select id="z" name="z">
-					<option id="a" name="a">all</option>
-					<option id="a" name="a">Active</option>
-					<option id="a" name="a">Assigned</option>
-				</select>
-			</caption>
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Subject</th>
-					<th>Last Actioned</th>
-					<th>Received</th>
-					<th>Owner</th>
-					<th>Category</th>
-					<th>Status</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tfoot>
-				<tr>
-					<th colspan=8 align=right> Total Tickets: XXXX</th>
-				</tr>
-			</tfoot>
-			<tbody>
-
-<?
-
-for ($i = 1; $i <= 24; $i++) {
-	if ($i % 2) {
-		$tr_alt =  "alt";
-	} else {
-		$tr_alt = "";
-	}
-?>
-
-				<tr class="<?=$tr_alt?>">
-					<td><a href="<?=$basepath?>ticket/view/<?=$i?>"><?=$i?></a></td>
-					<td>a</td>
-					<td>a</td>
-					<td>a</td>
-					<td>a</td>
-					<td>a</td>
-					<td>a</td>
-					<td>a</td>
-				</tr>
-<? 
-
-}
-
-?>
-			</tbody>
-		</table>
+<table id="ticketing" name="ticketing">
+	<caption>
+		<div id="caption_bar" name="caption_bar">
+		<div id="caption_title" name="caption_title">
+			Viewing ticket: <?=$args[2]?>
+		</div>
+		<div id="caption_options" name="caption_options">
+            <a href="#">Take</a> |
+			<a href="#">Re-assign</a> |
+			<a href="#">Assign</a>
+		</div>
+		</div>
+	</caption>
+	<thead>
+		<tr>
+			<th colspan="2">&nbsp;</th>
+		</tr>
+	</thead>
+	<tfoot>
+		<tr>
+			<th colspan="2"><input type="submit" id="submit" name="submit" value="Edit" /></th>
+		</tr>
+	</tfoot>
+	<tbody>
+		<form id="add_ticket" name"add_ticket">
+		<tr class="alt">
+			<td class="title">Subject: </td>
+			<td>a</td>
+		</tr>
+		<tr class="alt">
+			<td class="title">Owner: </td>
+			<td>Lee Jell</td>
+		</tr>
+		</form>
+	</tbody>
+</table>

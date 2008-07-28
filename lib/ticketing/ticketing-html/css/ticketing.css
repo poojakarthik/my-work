@@ -53,3 +53,7 @@ table#ticketing a {
 	color: #F88017;
 	font-weight: bold;
 }
+
+table#ticketing td.title {
+	width: 20%;
+}
