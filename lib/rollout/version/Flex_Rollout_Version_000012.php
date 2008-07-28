@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000012 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add name and const_name columns to active_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE active_status DROP name, DROP const_name";
-		$strSQL = "UPDATE active_status SET name = description, const_name = UCASE(CONCAT('active_status_', description))";
+		$strSQL = "UPDATE active_status SET name = description, const_name = UCASE(CONCAT('active_status_', REPLACE(description, ' ', '_')))";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to active_status table. ' . $qryQuery->Error());
@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000012 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add const_name columns to credit_control_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE credit_control_status DROP const_name";
-		$strSQL = "UPDATE credit_control_status SET const_name = UCASE(CONCAT('credit_control_status_', name))";
+		$strSQL = "UPDATE credit_control_status SET const_name = UCASE(CONCAT('credit_control_status_', REPLACE(name, ' ', '_'))";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to credit_control_status table. ' . $qryQuery->Error());
@@ -59,7 +59,7 @@ class Flex_Rollout_Version_000012 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to automatic_invoice_action table. ' . $qryQuery->Error());
 		}
 
-		$strSQL = "UPDATE automatic_invoice_action SET const_name = UCASE(CONCAT('automatic_invoice_action_', name))";
+		$strSQL = "UPDATE automatic_invoice_action SET const_name = UCASE(CONCAT('automatic_invoice_action_', REPLACE(name, ' ', '_')))";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to automatic_invoice_action table. ' . $qryQuery->Error());
@@ -73,7 +73,7 @@ class Flex_Rollout_Version_000012 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add const_name columns to automatic_barring_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE automatic_barring_status DROP const_name";
-		$strSQL = "UPDATE automatic_barring_status SET const_name = UCASE(CONCAT('automatic_barring_status_', name))";
+		$strSQL = "UPDATE automatic_barring_status SET const_name = UCASE(CONCAT('automatic_barring_status_', REPLACE(name, ' ', '_')))";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to automatic_barring_status table. ' . $qryQuery->Error());
