@@ -6,7 +6,6 @@
 	line-height: 1;
 	font-weight: bold;
 	padding: 0;
-	border-width: 1px 0;
 	margin: 0 0 1em 0;
 }
 
@@ -28,9 +27,10 @@
 	position: absolute;
 	left: -999em;
 	height: auto;
-	width: 16.5em;
+	width: 14em;
 	font-weight: normal;
 	margin: 0;
+	background-color: transparent;
 }
 
 #nav li li {
@@ -38,12 +38,13 @@
 }
 
 #nav li ul a {
+	margin-top: .1em;
 	width: 14em;
+	border-left: .1em solid #111;
+	border-right: .1em solid #111;
+	border-bottom: .1em solid #111;
 	color: #111;
 	background-color: #eee;
-	margin-left: .25em;
-	margin-bottom: .25em;
-	margin-right: .25em;
 }
 
 #nav li ul ul {
@@ -52,13 +53,13 @@
 
 #nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul {
 	left: -999em;
-	background-color: #111;
-	color: #eee;
+	background-color: transparent;
+	color: #ffde05;
 }
 
 #nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul {
 	left: auto;
-	background-color: #111;
+	background-color: transparent;
 	color: #ffde05;
 }
 
