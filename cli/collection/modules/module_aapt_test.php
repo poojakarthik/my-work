@@ -201,7 +201,7 @@
 		
 		// Download file and save
 		$strBasename	= "AAPT_NewFiles_".date("Y-m-d_His").".zip";
-		copy('/home/rdavis/AAPT_TEST.zip', $strBasename);
+		copy('/home/rdavis/AAPT_TEST.zip', $strDestination.$strBasename);
 		/*
 		$strZIPData		= curl_exec($this->_resConnection);
 		$ptrTempFile	= fopen($strDestination.$strBasename, 'w');
@@ -213,7 +213,7 @@
 		$this->_strToken	= NULL;
 		
 		// Return file name, or FALSE on failure
-		$arrFileTypes	= $this->GetConfigField('PathDefine');
+		$arrFileTypes	= $this->GetConfigField('FileDefine');
 		$arrFile		= Array();
 		$arrFile['FileType']					= &$arrFileTypes['XML_ARCHIVE'];
 		$arrFile['FileType']['FileImportType']	= 'XML_ARCHIVE';
