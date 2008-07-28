@@ -126,6 +126,11 @@
 				// Save the Employee Session Information
 				$this->_athAuthentication->AuthenticatedEmployee ()->Save ();
 				
+				// Hack - Chuck in a flag for whether or not they can use the ticketing system
+				VixenRequire('lib/ticketing/Ticketing_User.php');
+				$bolCanUseTicketing = TICKETING_USER_PERMISSION_NONE != Ticketing_User::getPermissionForEmployeeId($this->_athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue ());
+				$oblstrTicketing = $this->attachObject (new dataString ('Ticketing', ($bolCanUseTicketing ? '1' : '0')));
+				
 				// If we are in DEBUG MODE and we have permission to view a Debug then Output the Debug
 				if (DEBUG_MODE == TRUE)
 				{

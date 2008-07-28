@@ -26,7 +26,7 @@
  */
  
 require_once("../../flex.require.php");
-require_once("../framework/remote_copy.php");
+require_once("../../lib/framework/remote_copy.php");
  
 // Definitions
 define("REMOTE_SERVER_DPS"		, 1);

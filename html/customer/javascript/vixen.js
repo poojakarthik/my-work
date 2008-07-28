@@ -36,7 +36,7 @@ function VixenRootClass()
 	// Vixen Logout
 	this.Logout = function()
 	{
-		var x = window.confirm ("Are you sure you would like to Logout?");
+		var x = window.confirm("Are you sure you would like to Logout?");
 		if (x)
 		{
 			return TRUE;
@@ -219,7 +219,7 @@ function $ID(element)
 	{
 		for (var i = 0, elements = [], length = arguments.length; i < length; i++)
 		{
-      		elements.push($(arguments[i]));
+      		elements.push($ID(arguments[i]));
       	}
 		return elements;
 	}
@@ -325,9 +325,9 @@ var Event = {};
 /**
  * startObserving
  *
- * Cross-browser function for doing an 'addEventLister'
+ * Cross-browser function for doing an 'addEventListener'
  *
- * Cross-browser function for doing an 'addEventLister'
+ * Cross-browser function for doing an 'addEventListener'
  *
  * @param element		DOMElement	to listen to handle events for
  * @param strName		String		name of the event (without 'on' prefix)
@@ -352,7 +352,7 @@ Event.startObserving = function (element, strName, func, useCapture)
 
 
 /**
- * startObserving
+ * stopObserving
  *
  * Cross-browser function for doing an 'addEventLister'
  *

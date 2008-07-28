@@ -1,6 +1,6 @@
 <?php
 
-require_once("../framework/require.php");
+require_once("../../lib/framework/require.php");
 
 // Update DB
 $arrCols = Array();

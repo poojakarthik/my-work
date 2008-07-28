@@ -7,7 +7,7 @@
 	<xsl:template name="Content">
 		<h1>Make Payment</h1>
 		
-		<form method="post" action="payment_add.php">
+		<form method="post" action="../ui/flex.php/Account/InvoicesAndPayments/?Account.Id=">
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
 					<xsl:choose>

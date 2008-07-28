@@ -7,7 +7,7 @@
 	//----------------------------------------------------------------------------//
 	
 	// call application loader
-	require ('config/application_loader.php');
+	require_once ('config/application_loader.php');
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
@@ -15,7 +15,7 @@
 	$arrPage['Modules']		= MODULE_BASE;
 	
 	// call application
-	require ('config/application.php');
+	require_once ('config/application.php');
 	
 	if ($athAuthentication->isAuthenticated ())
 	{

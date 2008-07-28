@@ -106,7 +106,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="flex.php/Misc/MoveDelinquentCDRs/">
+					<a href="../ui/flex.php/Misc/MoveDelinquentCDRs/">
 						<img src="img/template/charge.png" title="Move Delinquent CDRs" class="MenuIcon" />
 					</a>
 				</td>
@@ -132,7 +132,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="employee_list.php">
+					<a href="../ui/flex.php/Employee/EmployeeList/">
 						<img src="img/template/contact.png" title="Employees" class="MenuIcon" />
 					</a>
 				</td>
@@ -143,7 +143,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="flex.php/InvoiceRunEvents/Manage/">
+					<a href="../ui/flex.php/InvoiceRunEvents/Manage/">
 						<img src="img/template/schedule.png" title="Invoice Run Events" class="MenuIcon" />
 					</a>
 				</td>
@@ -159,7 +159,7 @@
 					<!-- System Settings Menu -->
 					<tr>
 						<td>
-							<a href="flex.php/Config/SystemSettingsMenu/">
+							<a href="../ui/flex.php/Config/SystemSettingsMenu/">
 								<img src="img/template/system_settings_menu_item.png" title="System Settings Menu" class="MenuIcon" />
 							</a>
 						</td>
@@ -174,7 +174,7 @@
 					<!-- Customer Group Menu -->
 					<tr>
 						<td>
-							<a href="flex.php/CustomerGroup/ViewAll/">
+							<a href="../ui/flex.php/CustomerGroup/ViewAll/">
 								<img src="img/template/customer_groups_menu_item.png" title="Manage Customer Groups" class="MenuIcon" />
 							</a>
 						</td>

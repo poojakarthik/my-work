@@ -191,6 +191,11 @@ class Ticketing_Ticket
 		return new Ticketing_Ticket($selProperties->Fetch());
 	}
 
+	public static function findMatching($columns=NULL, $sort=NULL, $filter=NULL, $offset=NULL, $limit=NULL)
+	{
+		// WIP :: Implement this function
+	}
+
 	private static function getFor($strWhere, $arrWhere, $multiple=FALSE)
 	{
 		// Note: Email address should be unique, so only fetch the first record

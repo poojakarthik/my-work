@@ -244,10 +244,15 @@ class AppTemplateEmployee extends ApplicationTemplate
 	{
 		AuthenticatedUser()->CheckAuth();
 		$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		
+		$bolUserIsSelf = FALSE;
+
 		if (DBO()->Employee->Id->Value != AuthenticatedUser()->GetUserId())
 		{
 			AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		}
+		else
+		{
+			$bolUserIsSelf = TRUE;
 		}
 
 		$bolEditSelf = $bolEditSelf || DBO()->Employee->EditSelf->Value;
@@ -255,140 +260,174 @@ class AppTemplateEmployee extends ApplicationTemplate
 		//check if the form was submitted
 		if (SubmittedForm('Employee', 'Save'))
 		{
-			// Determine if this is to be a new employee
-			$bolCreateNew = DBO()->Employee->Id->Value < 0;
-			
-			$arrValidationErrors = array();
+			// Start the transaction
+			TransactionStart();
 
-			if ($bolCreateNew)
+			try
 			{
-				DBO()->Employee->UserName = trim(DBO()->Employee->UserName->Value);
-				DBO()->Employee->UserName->ValidateProperty($arrValidationErrors, true);
-				if (!DBO()->Employee->UserName->IsInvalid())
+				// Determine if this is to be a new employee
+				$bolCreateNew = DBO()->Employee->Id->Value < 0;
+				
+				$arrValidationErrors = array();
+	
+				if ($bolCreateNew)
 				{
-					$strWhere	= "Employee.UserName = <UserName>";
-					$arrWhere	= array("UserName" => DBO()->Employee->UserName->Value);
-					DBL()->RecentCustomers->SetColumns(array("UserName"));
-					DBL()->RecentCustomers->SetTable("Employee");
-					DBL()->RecentCustomers->Where->Set($strWhere, $arrWhere);
-					DBL()->RecentCustomers->SetLimit(1);
-					DBL()->RecentCustomers->Load();
-					if (DBL()->RecentCustomers->RecordCount() > 0)
+					DBO()->Employee->UserName = trim(DBO()->Employee->UserName->Value);
+					DBO()->Employee->UserName->ValidateProperty($arrValidationErrors, true);
+					if (!DBO()->Employee->UserName->IsInvalid())
 					{
-						DBO()->Employee->UserName->SetToInvalid();
-						$strLabel = DBO()->Employee->UserName->strGetLabel();
-						$arrValidationErrors[] = "$strLabel \"" . DBO()->Employee->UserName->Value . "\" is already in use.";
+						$strWhere	= "Employee.UserName = <UserName>";
+						$arrWhere	= array("UserName" => DBO()->Employee->UserName->Value);
+						DBL()->RecentCustomers->SetColumns(array("UserName"));
+						DBL()->RecentCustomers->SetTable("Employee");
+						DBL()->RecentCustomers->Where->Set($strWhere, $arrWhere);
+						DBL()->RecentCustomers->SetLimit(1);
+						DBL()->RecentCustomers->Load();
+						if (DBL()->RecentCustomers->RecordCount() > 0)
+						{
+							DBO()->Employee->UserName->SetToInvalid();
+							$strLabel = DBO()->Employee->UserName->strGetLabel();
+							$arrValidationErrors[] = "$strLabel \"" . DBO()->Employee->UserName->Value . "\" is already in use.";
+						}
 					}
 				}
-			}
-			
-			if (!$bolEditSelf && $bolAdminUser)
-			{
-				DBO()->Employee->FirstName = trim(DBO()->Employee->FirstName->Value);
-				DBO()->Employee->FirstName->ValidateProperty($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
-				DBO()->Employee->LastName = trim(DBO()->Employee->LastName->Value);
-				DBO()->Employee->LastName->ValidateProperty	($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
 				
-				DBO()->Employee->DOB = trim(DBO()->Employee->DOB->Value);
-				DBO()->Employee->DOB = UnmaskShortDate(DBO()->Employee->DOB->Value);
-				DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDate");
-				DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDateInPast", "<label> must be in the past.");
-			}
-			
-			DBO()->Employee->Email = trim(DBO()->Employee->Email->Value);
-			DBO()->Employee->Email->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidEmail");
-			DBO()->Employee->Extension = trim(DBO()->Employee->Extension->Value);
-			DBO()->Employee->Extension->ValidateProperty($arrValidationErrors, false, CONTEXT_DEFAULT);
-
-			DBO()->Employee->Phone = trim(DBO()->Employee->Phone->Value);
-			DBO()->Employee->Phone->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidPhoneNumber");
-
-			DBO()->Employee->Mobile = trim(DBO()->Employee->Mobile->Value);
-			DBO()->Employee->Mobile->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidPhoneNumber");
-
-			// Check that the password has been entered and confirmed, as appropriate
-			$this->_ValidatePassword($arrValidationErrors, $bolCreateNew);
-			
-			if (!$bolEditSelf && $bolAdminUser)
-			{
-				// Sanitize the permissions that have been set
-				$this->_SetPrivileges();
-			}
-			
-			if (!$bolCreateNew)
-			{
-				// Restrict the fields that can be updated
-				$updatedColumns = array();
-				$updatedColumns[] = "Email";
-				$updatedColumns[] = "Extension";
-				$updatedColumns[] = "Phone";
-				$updatedColumns[] = "Mobile";
-				
-				// Only change the following through the admin console, not when editing self
 				if (!$bolEditSelf && $bolAdminUser)
 				{
-					$updatedColumns[] = "FirstName";
-					$updatedColumns[] = "LastName";
-					$updatedColumns[] = "DOB";
-					$updatedColumns[] = "Archived";
-					$updatedColumns[] = "Privileges";
+					DBO()->Employee->FirstName = trim(DBO()->Employee->FirstName->Value);
+					DBO()->Employee->FirstName->ValidateProperty($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
+					DBO()->Employee->LastName = trim(DBO()->Employee->LastName->Value);
+					DBO()->Employee->LastName->ValidateProperty	($arrValidationErrors, true, CONTEXT_DEFAULT, "IsNotEmptyString");
+					
+					DBO()->Employee->DOB = trim(DBO()->Employee->DOB->Value);
+					DBO()->Employee->DOB = UnmaskShortDate(DBO()->Employee->DOB->Value);
+					DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDate");
+					DBO()->Employee->DOB->ValidateProperty		($arrValidationErrors, true, CONTEXT_DEFAULT, "IsValidDateInPast", "<label> must be in the past.");
 				}
-
-				// If changing the password, allow  it to be updated
-				if (!DBO()->Employee->Password->IsInvalid() && strlen(DBO()->Employee->Password->Value) > 0)
-				{
-					$updatedColumns[] = "PassWord";
-				}
-
-				// Fill in any blanks from the original
-				DBO()->Employee->LoadMerge();
 				
-				// Need to specifiy the columns to be updated to ensure no other values are changed
-				DBO()->Employee->SetColumns($updatedColumns);
-			}
-			else
-			{
-				DBO()->Employee->DOB = GetCurrentDateForMySQL();
+				DBO()->Employee->Email = trim(DBO()->Employee->Email->Value);
+				DBO()->Employee->Email->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidEmail");
+				DBO()->Employee->Extension = trim(DBO()->Employee->Extension->Value);
+				DBO()->Employee->Extension->ValidateProperty($arrValidationErrors, false, CONTEXT_DEFAULT);
+	
+				DBO()->Employee->Phone = trim(DBO()->Employee->Phone->Value);
+				DBO()->Employee->Phone->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidPhoneNumber");
+	
+				DBO()->Employee->Mobile = trim(DBO()->Employee->Mobile->Value);
+				DBO()->Employee->Mobile->ValidateProperty	($arrValidationErrors, false, CONTEXT_DEFAULT, "IsValidPhoneNumber");
+	
+				// Check that the password has been entered and confirmed, as appropriate
+				$this->_ValidatePassword($arrValidationErrors, $bolCreateNew);
 				
-				// Apply default values for non-nullable fields
-				DBO()->Employee->SessionId = "";
-				DBO()->Employee->SessionExpire = GetCurrentDateAndTimeForMySQL();
-				DBO()->Employee->Session = "";
-				DBO()->Employee->Karma = 0;
-				DBO()->Employee->PabloSays = PABLO_TIP_POLITE;
-				DBO()->Employee->Archived = 0;
-			}
-			
-			//Save the employee
-			if (!DBO()->Employee->IsInvalid())
-			{
-				//echo "Employee is NOT invalid Employee would be saved";
-				if (DBO()->Employee->Save())
+				if (!$bolEditSelf && $bolAdminUser)
 				{
-					$scriptInit = "";
-					$scriptOnClose = "";
-					if ($bolEditSelf)
+					// Sanitize the permissions that have been set
+					$this->_SetPrivileges();
+				}
+				
+				if (!$bolCreateNew)
+				{
+					// Restrict the fields that can be updated
+					$updatedColumns = array();
+					$updatedColumns[] = "Email";
+					$updatedColumns[] = "Extension";
+					$updatedColumns[] = "Phone";
+					$updatedColumns[] = "Mobile";
+					
+					// Only change the following through the admin console, not when editing self
+					if (!$bolEditSelf && $bolAdminUser)
 					{
-						$scriptInit = "document.getElementsByTagName('TABLE')[0].style.display = 'none';";
-						$scriptOnClose .= "Vixen.Popup.Close('CloseFlexModalWindow');";
+						$updatedColumns[] = "FirstName";
+						$updatedColumns[] = "LastName";
+						$updatedColumns[] = "DOB";
+						$updatedColumns[] = "Archived";
+						$updatedColumns[] = "Privileges";
 					}
-					else
+	
+					// If changing the password, allow  it to be updated
+					if (!DBO()->Employee->Password->IsInvalid() && strlen(DBO()->Employee->Password->Value) > 0)
 					{
-						$scriptInit .= "Vixen.Popup.Close('" . $this->_objAjax->strId . "');";
-						//$scriptInit .= "EmployeeView.Update();";
-						$scriptOnClose .= "EmployeeView.Update();";
+						$updatedColumns[] = "PassWord";
 					}
-
-					$arrParams = array();
-					$arrParams["Message"] = "The information was successfully saved.";
-					$arrParams["ScriptInit"] = $scriptInit;
-					$arrParams["ScriptOnClose"] = $scriptOnClose;
-
-					Ajax()->AddCommand("AlertAndExecuteJavascript", $arrParams);
-					return TRUE;
+	
+					// Fill in any blanks from the original
+					DBO()->Employee->LoadMerge();
+					
+					// Need to specifiy the columns to be updated to ensure no other values are changed
+					DBO()->Employee->SetColumns($updatedColumns);
+				}
+				else
+				{
+					DBO()->Employee->DOB = GetCurrentDateForMySQL();
+					
+					// Apply default values for non-nullable fields
+					DBO()->Employee->SessionId = "";
+					DBO()->Employee->SessionExpire = GetCurrentDateAndTimeForMySQL();
+					DBO()->Employee->Session = "";
+					DBO()->Employee->Karma = 0;
+					DBO()->Employee->PabloSays = PABLO_TIP_POLITE;
+					DBO()->Employee->Archived = 0;
+				}
+				
+				//Save the employee
+				if (!DBO()->Employee->IsInvalid())
+				{
+					// This could update multiple tables, so needs to be done within a single transaction
+					
+	
+					//echo "Employee is NOT invalid Employee would be saved";
+					if (DBO()->Employee->Save())
+					{
+						VixenRequire('lib/ticketing/Ticketing_User.php');
+						$currentUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId());
+						if ($bolUserIsSelf)
+						{
+							$displayUserTicketingPermission = $currentUserTicketingPermission;
+						}
+						else
+						{
+							$displayUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(DBO()->Employee->Id->Value);
+						}
+						if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
+						{
+							Ticketing_User::setPermissionForEmployeeId(DBO()->Employee->Id->Value, intval(DBO()->ticketing_user->permission->Value));
+						}
+	
+						// All Database interactions were successfull
+						TransactionCommit();
+	
+						$scriptInit = "";
+						$scriptOnClose = "";
+						if ($bolEditSelf)
+						{
+							$scriptInit = "document.getElementsByTagName('TABLE')[0].style.display = 'none';";
+							$scriptOnClose .= "Vixen.Popup.Close('CloseFlexModalWindow');";
+						}
+						else
+						{
+							$scriptInit .= "Vixen.Popup.Close('" . $this->_objAjax->strId . "');";
+							//$scriptInit .= "EmployeeView.Update();";
+							$scriptOnClose .= "EmployeeView.Update();";
+						}
+	
+						$arrParams = array();
+						$arrParams["Message"] = "The information was successfully saved.";
+						$arrParams["ScriptInit"] = $scriptInit;
+						$arrParams["ScriptOnClose"] = $scriptOnClose;
+	
+						Ajax()->AddCommand("AlertAndExecuteJavascript", $arrParams);
+						return TRUE;
+					}
 				}
 			}
-			
+			catch(Exception $e)
+			{
+				
+			}
+
+			// Rollback the changes
+			TransactionRollback();
+
 			Ajax()->AddCommand("Alert", "The information could not be saved.<br />Please correct the following: -<br />" . implode("<br />\n", $arrValidationErrors));
 			return TRUE;			
 		}

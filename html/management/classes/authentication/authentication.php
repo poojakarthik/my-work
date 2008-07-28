@@ -193,7 +193,8 @@
 			$_SESSION['LoggedIn'] = TRUE;
 
 			// Updating information
-			$_SESSION['SessionExpire'] = time() + ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? (60 * 60 * 24 * 7) : (60 * 20));
+			$_SESSION['SessionDuration'] = ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? (60 * 60 * 24 * 7) : (60 * 20));
+			$_SESSION['SessionExpire'] = time() + $_SESSION['SessionDuration'];
 			return TRUE;
 		}
 

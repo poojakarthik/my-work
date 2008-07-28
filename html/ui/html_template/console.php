@@ -156,7 +156,7 @@ class HtmlTemplateConsole extends HtmlTemplate
                 <td><strong>
 						Account Details
 					</strong><br />
-					Go to the <a href="account_view.php?Account.Id=1000160841">account details</a> page of 1000160841<br />
+					Go to the <a href="../ui/flex.php/Account/Overview/?Account.Id=1000160841">account details</a> page of 1000160841<br />
 					Go to the <a href="invoices_and_payments.php?Account.Id=1000160841">invoices and payments</a> page of 1000160841
 				</td>
 
@@ -177,7 +177,7 @@ class HtmlTemplateConsole extends HtmlTemplate
               </tr>
               <tr>
                 <td>
-                  <a href="rates_plan_list.php">
+                  <a href="../ui/flex.php/Plan/AvailablePlans/">
                     <img src="img/template/plans.png" title="View Plan Details" class="MenuIcon" />
                   </a>
                 </td>

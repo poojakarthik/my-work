@@ -53,7 +53,8 @@ if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE && stristr ($_SE
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= "../../lib/framework/"; 
+ $thisDir = dirname(__FILE__).DIRECTORY_SEPARATOR;
+ $strFrameworkDir		= $thisDir."../../../lib/framework/"; 
  
 //----------------------------------------------------------------//
 // strApplicationDir
@@ -85,7 +86,7 @@ if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE && stristr ($_SE
  * @variable
  * @package	framework
  */
- $strObLibDir		= "../oblib/"; 
+ $strObLibDir		= $thisDir."../../oblib/"; 
  
 //----------------------------------------------------------------//
 // strWebDir
@@ -111,7 +112,7 @@ if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE && stristr ($_SE
 Define ('FLEX_SESSION_NAME',	'flex_admin_sess_id');
 
 //LoadFramework();
-require_once("../../flex.require.php");
+require_once($thisDir."../../../flex.require.php");
 
 // load application 
 require_once($strApplicationDir."definitions.php");

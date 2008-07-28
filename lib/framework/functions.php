@@ -80,7 +80,7 @@ function CleanDir($strDirectory)
 function RemoveDir($strDirectory)
 {
 	CleanDir($strDirectory);
-	rmdir($strDirectory);		
+	rmdir($strDirectory);
 }
 
 //------------------------------------------------------------------------//
@@ -1711,8 +1711,7 @@ function RoundCurrency($fltValue, $intPlaces = 4)
  */
 function Json()
 {
-	$objJson = Singleton::Instance('Services_JSON');
-	return $objJson;
+	return JSON_Services::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -1734,13 +1733,11 @@ function Json()
  */
 function AjaxRecieve()
 {
-	//$json = new Services_JSON();
 	// get the JSON object and decode it into an object
 	$input = file_get_contents('php://input');
 
 	$input = Json()->decode($input);
-	//$input = json_decode($input, TRUE);
-	
+
 	// expected to return an array of data if a connection was made
 	// or false if not
 	return $input;
@@ -1765,8 +1762,6 @@ function AjaxRecieve()
 function AjaxReply($arrReply)
 {
 	echo Json()->encode($arrReply);
-	//$json = new Services_JSON();
-	//echo $json->encode($arrReply);
 }
 
 
@@ -1847,7 +1842,7 @@ function GetVixenBase()
  *
  * @function
  */
-function LoadFramework($strFrameworkDir=NULL)
+function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE)
 {
 	// Get viXen base dir
 	if (!$strFrameworkDir)
@@ -1858,15 +1853,24 @@ function LoadFramework($strFrameworkDir=NULL)
 	
 	// Load the viXen/Flex Global Config File (defining database and path constants)
 	require_once($strFrameworkDir."config.php");
+
 	// Load framework
-	require_once($strFrameworkDir."framework.php");
+	if (!$bolBasicsOnly)
+	{
+		require_once($strFrameworkDir."framework.php");
+	}
+
 	require_once($strFrameworkDir."functions.php");
 	if (file_exists($strFrameworkDir."database_constants.php"))
 	{
 		require_once($strFrameworkDir."database_constants.php");
 	}
 	require_once($strFrameworkDir."definitions.php");
-	require_once($strFrameworkDir."db_access.php");
+
+	if (!$bolBasicsOnly)
+	{
+		require_once($strFrameworkDir."db_access.php");
+	}
 	
 	
 	// Retrieve all constants stored in the database
@@ -1880,20 +1884,22 @@ function LoadFramework($strFrameworkDir=NULL)
 		echo "\nFATAL ERROR: Unable to find Flex customer configuration file at location '$strPath'\n\n";
 		die;
 	}
-	
-	require_once($strFrameworkDir."report.php");
-	require_once($strFrameworkDir."error.php");
-	require_once($strFrameworkDir."exception_vixen.php");
 
+	if (!$bolBasicsOnly)
+	{
+		require_once($strFrameworkDir."report.php");
+		require_once($strFrameworkDir."error.php");
+		require_once($strFrameworkDir."exception_vixen.php");
 	
-	// PEAR Packages
-	require_once("Console/Getopt.php");
-	require_once("Spreadsheet/Excel/Writer.php");
-	require_once("Mail.php");
-	require_once("Mail/mime.php");
-	
+		// PEAR Packages
+		require_once("Console/Getopt.php");
+		require_once("Spreadsheet/Excel/Writer.php");
+		require_once("Mail.php");
+		require_once("Mail/mime.php");
+	}
+
 	// Create framework instance
-	$GLOBALS['fwkFramework'] = new Framework();
+	$GLOBALS['fwkFramework'] = new Framework($bolBasicsOnly);
 	return $GLOBALS['fwkFramework'];
 }
 
@@ -1932,7 +1938,9 @@ function LoadApplication($strApplication=NULL)
 		// Load from this dir
 		$arrConfig = NULL;
 		require_once("require.php");
-		require_once("application.php");
+		// There is no application.php in this dir! This will load the next application.php in the include path.
+		// Marked with "" . "..." to prevent IDE giving warning
+		require_once("" . "application.php");
 		require_once("definitions.php");
 		require_once("config.php");
 		return $arrConfig;

@@ -1565,7 +1565,7 @@ class AppTemplateService extends ApplicationTemplate
 								"CreatedOn" => $strCreatedOn,
 								"StartDatetime" => $strStartDatetime,
 								"EndDatetime" => $strEndDatetime,
-								"Active" => (bolActive)? 1 : 0
+								"Active" => ($bolActive)? 1 : 0
 							);
 		if (!isset($insServiceRatePlan))
 		{

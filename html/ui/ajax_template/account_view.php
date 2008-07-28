@@ -1,4 +1,5 @@
 <?php
+// CULL :: Doesn't look like this is used, but make sure before removing.
 
 /*
 $this->arrSend = Array();

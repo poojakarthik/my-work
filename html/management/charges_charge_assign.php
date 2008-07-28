@@ -50,7 +50,7 @@
 	}
 	catch (Exception $e)
 	{
-		header ('Location: service_view.php?Id=' . $srvService->Pull ('Id')->getValue ());
+		header ('Location: ../ui/flex.php/Service/View/?Service.Id=' . $srvService->Pull ('Id')->getValue ());
 		exit;
 	}
 	

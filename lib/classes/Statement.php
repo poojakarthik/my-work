@@ -1,0 +1,153 @@
+<?php
+
+//----------------------------------------------------------------------------//
+// Statement
+//----------------------------------------------------------------------------//
+/**
+ * Statement
+ *
+ * Statement Abstract Base Class
+ *
+ * Statement Abstract Base Class
+ *
+ *
+ * @prefix		bst
+ *
+ * @package		framework
+ * @class		Statement
+ */
+ abstract class Statement extends DatabaseAccess
+ {
+  	//------------------------------------------------------------------------//
+	// stmtSqlStatement	
+	//------------------------------------------------------------------------//
+	/**
+	 * stmtSqlStatement
+	 *
+	 * Stores our statement
+	 *
+	 * Stores our statement
+	 *
+	 * @type		mysql_stmt
+	 *
+	 * @property
+	 * @see			<MethodName()||typePropertyName>
+	 */
+	private $_stmtSqlStatment;
+	
+	//------------------------------------------------------------------------//
+	// arrWhereAliases	
+	//------------------------------------------------------------------------//
+	/**
+	 * arrWhereAliases
+	 *
+	 * Stores the WHERE aliases
+	 *
+	 * Stores the WHERE aliases
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 * @see			<MethodName()||typePropertyName>
+	 */
+	private $_arrWhereAliases;
+	
+	//------------------------------------------------------------------------//
+	// strTable	
+	//------------------------------------------------------------------------//
+	/**
+	 * strTable
+	 *
+	 * Name of the table we're working with (if UPDATE or INSERT)
+	 *
+	 * Name of the table we're working with (if UPDATE or INSERT)
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 * @see			<MethodName()||typePropertyName>
+	 */
+	private $_strTable;
+
+ 	//------------------------------------------------------------------------//
+	// Statement() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * Statement()
+	 *
+	 * Constructor for Statement
+	 *
+	 * Constructor for Statement Abstract Base Class
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 */ 
+	 function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
+	 {
+	 	$this->intSQLMode = SQL_STATEMENT;
+		parent::__construct($strConnectionType);
+	 }
+	 
+	
+	
+	//------------------------------------------------------------------------//
+	// GetDBInputType()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetDBInputType()
+	 *
+	 * Determines the type of a passed variable
+	 *
+	 * Determines the type of a passed variable.
+	 * Returns:		"s" - String
+	 * 				"i" - Integer
+	 * 				"d" - Float/Double
+	 * 				"b" - Binary
+	 *
+	 * @param		mixed	$mixData		Data to be checked
+	 * 
+	 * @return		string					"s" : String
+	 * 										"i" : Integer
+	 * 										"d" : Float/Double
+	 * 										"b" : Binary
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function GetDBInputType($mixData) 
+	{
+		// Special case for mysql functions
+		
+		
+		//print_r($mixData);
+		if ($mixData instanceOf MySQLFunction)
+		{
+			return "i";
+		}
+		elseif (is_int($mixData))
+ 		{
+ 			// It's an integer
+ 			return "d";
+ 		}
+ 		elseif (is_float($mixData))
+ 		{
+ 			// It's a float/double
+ 			return "d";
+ 		}
+		/*
+		 * this was commented on nov. 2 2006 because of conflicts with string
+ 		elseif (!is_scalar($mixData))
+ 		{
+ 			// It's a binary object
+ 			return "b";
+ 		}
+		*/
+ 		
+ 		// Else, it's a string
+ 		return "s";
+	}
+	
+
+}
+
+?>

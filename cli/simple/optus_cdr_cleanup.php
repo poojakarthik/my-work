@@ -6,7 +6,7 @@ $strCarrier	= "optus";
 // Include Framework
 if (!@include("../../flex.require.php"))
 {
-	require_once('../framework/require.php');
+	require_once('../../lib/framework/require.php');
 }
 
 if (!defined('FILES_BASE_PATH'))

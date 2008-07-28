@@ -11,7 +11,7 @@
 		</div>
 		
 		<div class = "Right">
-			Continue to <a href="rates_plan_list.php">List Rate Plans</a>
+			Continue to <a href="../ui/flex.php/Plan/AvailablePlans/">List Rate Plans</a>
 		</div>
 	</xsl:template>
 </xsl:stylesheet>

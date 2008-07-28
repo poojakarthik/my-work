@@ -1,7 +1,8 @@
 <?php
 	
-	require_once("classes/billing/billingfreqtypes.php");
-	require_once("classes/billing/billingfreqtype.php");
+	$thisDir = dirname(__FILE__).DIRECTORY_SEPARATOR;
+	require_once($thisDir."../billing/billingfreqtypes.php");
+	require_once($thisDir."../billing/billingfreqtype.php");
 	//----------------------------------------------------------------------------//
 	// recurringchargetype.php
 	//----------------------------------------------------------------------------//

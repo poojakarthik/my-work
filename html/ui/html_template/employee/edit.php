@@ -118,6 +118,17 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 
 		$bolUserIsSelf	= DBO()->Employee->Id->Value == AuthenticatedUser()->GetUserId();
 
+		VixenRequire('lib/ticketing/Ticketing_User.php');
+		$currentUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId());
+		if ($bolUserIsSelf)
+		{
+			$displayUserTicketingPermission = $currentUserTicketingPermission;
+		}
+		else
+		{
+			$displayUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(DBO()->Employee->Id->Value);
+		}
+
 		$bolEditSelf	= FALSE;
 
 		if (DBO()->Employee->Id->Value == -1)
@@ -179,6 +190,42 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		{
 			DBO()->Employee->Archived->RenderInput();
 		}
+
+		// If the current user is super admin OR (a ticketing admin and not editing self), allow modification
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
+		{
+			echo "
+<div class=\"DefaultElement\">
+	<select id=\"ticketing_user.permission\" name=\"ticketing_user.permission\" class=\"DefaultInputText Default\">
+		<option value='".TICKETING_USER_PERMISSION_NONE ."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_NONE  ? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_NONE, 'ticketing_user_permission') . "</option>
+		<option value='".TICKETING_USER_PERMISSION_USER ."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_USER  ? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_USER, 'ticketing_user_permission') . "</option>
+		<option value='".TICKETING_USER_PERMISSION_ADMIN."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN ? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_ADMIN, 'ticketing_user_permission') . "</option>
+	</select>
+   <div id=\"ticketing_user.permission.Label\" class=\"DefaultLabel\">
+      <span> &nbsp;</span>
+      <span id=\"ticketing_user.permission.Label.Text\">Ticketing System : </span>
+
+   </div>
+</div>
+			";
+		}
+		// Else, just display an output
+		else
+		{
+			$description = htmlspecialchars(GetConstantDescription($displayUserTicketingPermission, 'ticketing_user_permission'));
+			echo "
+<div class=\"DefaultElement\">
+   <div id=\"ticketing_user.permission.Output\" name=\"ticketing_user.permission.id\" class=\"DefaultOutput Default\">$description</div>
+   <div id=\"ticketing_user.permission.Label\" class=\"DefaultLabel\">
+      <span> &nbsp;</span>
+      <span id=\"ticketing_user.permission.Label.Text\">Ticketing System : </span>
+
+   </div>
+</div>
+			";
+		}
+
 		echo "</div>";
 
 		echo "<div id='Employee.View'$strViewDisplay>";
@@ -197,7 +244,18 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		{
 			DBO()->Employee->Archived->RenderOutput();
 		}
-		
+
+		$description = htmlspecialchars(GetConstantDescription($displayUserTicketingPermission, 'ticketing_user_permission'));
+		echo "
+<div class=\"DefaultElement\">
+   <div id=\"ticketing_user.permission.Output\" name=\"ticketing_user.permission.id\" class=\"DefaultOutput Default\">$description</div>
+   <div id=\"ticketing_user.permission.Label\" class=\"DefaultLabel\">
+      <span> &nbsp;</span>
+      <span id=\"ticketing_user.permission.Label.Text\">Ticketing System : </span>
+   </div>
+</div>
+		";
+
 		echo "</div>";
 		echo "</div>";
 		

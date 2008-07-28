@@ -266,8 +266,7 @@ function Href()
  */
 function Ajax()
 {
-	$objAjaxFramework = Singleton::Instance('AjaxFramework');
-	return $objAjaxFramework;
+	return AjaxFramework::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -287,8 +286,7 @@ function Ajax()
  */
 function Browser()
 {
-	$objBrowserInfo = Singleton::Instance('BrowserInfo');
-	return $objBrowserInfo;
+	return BrowserInfo::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -342,8 +340,7 @@ function PermCheck($intPermSet, $intPerm)
  */
 function PropertyToken()
 {
-	$objPropertyToken = Singleton::Instance('PropertyToken');
-	return $objPropertyToken;
+	return PropertyToken::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -394,7 +391,7 @@ function GetAuthenticatedUserDBObject()
  */
 function Validate($strValidationRule, $mixValue)
 {
-	$objValidation = Singleton::Instance('Validation');
+	$objValidation = Validation::instance();
 	
 	// Check if the validation rule is a REGEX or list of methods
 	if (substr($strValidationRule, 0, 6) == "REGEX:")
@@ -443,8 +440,9 @@ function Validate($strValidationRule, $mixValue)
  */
 function ContextMenu()
 {
-	return Singleton::Instance('ContextMenuFramework');
+	return ContextMenuFramework::instance();//return Singleton::Instance('ContextMenuFramework');
 }
+
 
 //------------------------------------------------------------------------//
 // BreadCrumb
@@ -463,7 +461,7 @@ function ContextMenu()
  */
 function BreadCrumb()
 {
-	return Singleton::Instance('BreadCrumbFramework');
+	return BreadCrumbFramework::instance();
 }
 
 
@@ -486,8 +484,7 @@ function BreadCrumb()
 function AuthenticatedUser()
 {
 	// woah, do we really need to return the entire application, or just user?
-	$objAuthenticatedUser = Singleton::Instance('Application');
-	return $objAuthenticatedUser;
+	return Application::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -756,7 +753,7 @@ function ConvertUnixTimeToMySQLDateTime($intTime)
  */
 function OutputMask()
 {
-	return Singleton::Instance('OutputMasks');
+	return OutputMasks::instance();
 }
 
 //------------------------------------------------------------------------//

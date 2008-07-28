@@ -1,4 +1,4 @@
-<?php
+
 //----------------------------------------------------------------------------//
 // (c) copyright 2007 VOIPTEL Pty Ltd
 //
@@ -136,7 +136,7 @@ class <ClassName> extends HtmlTemplate
 		<!--EXAMPLE:
 		<div class='NarrowForm'>
 			<table border='0' cellpadding='3' cellspacing='0'>
-				<?php
+				< ?php
 				/*foreach (DBO()->Account AS $strProperty=>$objValue)
 				{	
 					echo "<tr>\n";
@@ -148,9 +148,8 @@ class <ClassName> extends HtmlTemplate
 		</div>
 		-->
 		<div class='Seperator'></div>
-		<?php
+		< ?php
 
 	}
 }
 
-?>

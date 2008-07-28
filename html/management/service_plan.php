@@ -54,7 +54,7 @@
 			
 			$srvService->PlanSelect ($athAuthentication->AuthenticatedEmployee (), $rplRatePlan);
 			
-			header ('Location: service_view.php?Id=' . $_POST ['Service']);
+			header ('Location: ../ui/flex.php/Service/View/?Service.Id=' . $_POST ['Service']);
 			exit;
 		}
 		catch (Exception $e)

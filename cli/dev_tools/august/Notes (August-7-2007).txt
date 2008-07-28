@@ -49,7 +49,7 @@ There is a merge data function in the DBObject class.  This should probably be u
 
 TODO!!!
 DBO()->Object->Where->Property = Value
-we also need DBO()->Object->Where->Clean() which clears the contents of the DbWhere object.
+we also need DBO()->Object->Where->Clean() which clears the contents of the DBWhere object.
 
 
 The new pages to choose rates.  
