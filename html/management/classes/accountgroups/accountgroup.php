@@ -259,7 +259,8 @@
 				'BSB'			=> $arrData ['BSB'],
 				'AccountNumber' => $arrData ['AccountNumber'],
 				'AccountName'	=> $arrData ['AccountName'],
-				'Archived'		=> 0
+				'Archived'		=> 0,
+				'created_on'	=> GetCurrentISODateTime()
 			);
 			
 			$insDirectDebit = new StatementInsert ('DirectDebit');
@@ -367,7 +368,8 @@
 				'ExpMonth'		=> $arrData ['ExpMonth'],
 				'ExpYear'		=> $arrData ['ExpYear'],
 				'CVV'			=> Encrypt($arrData ['CVV']),
-				'Archived'		=> 0
+				'Archived'		=> 0,
+				'created_on'	=> GetCurrentISODateTime()
 			);
 			
 			$insCreditCard = new StatementInsert ('CreditCard');

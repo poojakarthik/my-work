@@ -114,6 +114,7 @@
 					<th>BSB#</th>
 					<th>Account Number</th>
 					<th>Account Name</th>
+					<th>Created On</th>
 				</tr>
 				<xsl:for-each select="/Response/DirectDebits/DirectDebit">
 					<tr>
@@ -151,6 +152,13 @@
 						<td><xsl:value-of select="./BSB" /></td>
 						<td><xsl:value-of select="./AccountNumber" /></td>
 						<td><xsl:value-of select="./AccountName" /></td>
+						<td>
+							<xsl:attribute name="title">
+								<xsl:value-of select="./created_on/hour" />:<xsl:value-of select="./created_on/minute" />:<xsl:value-of select="./created_on/second" />
+							</xsl:attribute>
+							<xsl:value-of select="./created_on/day" />/<xsl:value-of select="./created_on/month" />/<xsl:value-of select="./created_on/year" />
+						</td>
+						
 					</tr>
 				</xsl:for-each>
 			</table>
@@ -185,6 +193,7 @@
 					<th>Card Number</th>
 					<th>Expiry Date</th>
 					<th>CVV</th>
+					<th>Created On</th>
 				</tr>
 				<xsl:for-each select="/Response/CreditCards/CreditCard">
 					<tr>
@@ -270,6 +279,12 @@
 									</xsl:choose>
 								</span>
 							</strong>
+						</td>
+						<td>
+							<xsl:attribute name="title">
+								<xsl:value-of select="./created_on/hour" />:<xsl:value-of select="./created_on/minute" />:<xsl:value-of select="./created_on/second" />
+							</xsl:attribute>
+							<xsl:value-of select="./created_on/day" />/<xsl:value-of select="./created_on/month" />/<xsl:value-of select="./created_on/year" />
 						</td>
 					</tr>
 				</xsl:for-each>
