@@ -205,7 +205,7 @@
 		$this->_strToken	= NULL;
 		
 		// Return file name, or FALSE on failure
-		$arrFileTypes	= $this->GetConfigField('PathDefine');
+		$arrFileTypes	= $this->GetConfigField('FileDefine');
 		$arrFile		= Array();
 		$arrFile['FileType']					= &$arrFileTypes['XML_ARCHIVE'];
 		$arrFile['FileType']['FileImportType']	= 'XML_ARCHIVE';
