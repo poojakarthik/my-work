@@ -19,6 +19,11 @@
 				<div id="search_bar" name="search_bar">
 					Search: 
 					<input type="text" id="search_string" name="search_string" />
+					<select name="category" id="category">
+						<option>Tickets</option>
+						<option>Customers</option>
+						<option>Services</option>
+					</select>
 				</div>
 			</div>
 			<div id="nav" name="nav">
@@ -26,7 +31,21 @@
 					<li><a href="#">Home</a></li>
 					<li><a href="#">Customers</a>
 						<ul>
-							<li><a href="#">Add Customer</a></li>
+							<li><a href="#">Add Customer</a>
+								<ul>
+									<li><a href="#">Find a Customer</a></li>
+									<li><a href="#">Find a Customer</a></li>
+									<li><a href="#">Find a Customer</a></li>
+									<li><a href="#">Find a Customer</a></li>
+									<li><a href="#">Find a Customer</a></li>
+									<li><a href="#">Find a Customer</a></li>
+									<li><a href="#">Find a Customer</a>
+										<ul>
+											<li><a href="#">Find a Customer</a></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
 							<li><a href="#">Find a Customer</a></li>
 							<li><a href="#">Recent Customers</a></li>
 							<li><a href="#">Recent Customers</a></li>
