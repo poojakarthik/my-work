@@ -29,6 +29,7 @@ $arrStructure['XML_ARCHIVE']								['PathDefine']		= $arrArchiveFiles;
 $arrStructure['XML_ARCHIVE']								['Regex']			= "/^(AAPT_|)(NewFiles)_\d{4}-\d{2}-\d{2}_\d{6}\.zip$/";
 $arrStructure['XML_ARCHIVE']								['DownloadOnly']	= TRUE;
 $arrStructure['XML_ARCHIVE']								['ArchiveType']		= 'zip';
+$arrStructure['XML_ARCHIVE']								['ArchivePassword']	= 'zbj6v04ls';
 
 // Config
 $arrModuleConfig['Host']			['Value']		= 'https://wholesalebbs.aapt.com.au/';
