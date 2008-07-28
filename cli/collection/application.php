@@ -127,8 +127,6 @@ class ApplicationCollection extends ApplicationBaseClass
 					CliEcho("\t\t\t * Downloading new files...\n");
 					while ($mixDownloadFile	= $modModule->Download($strDownloadDirectory))
 					{
-						Debug($mixDownloadFile);
-						
 						if (is_string($mixDownloadFile))
 						{
 							CliEcho("\t\t\t\t ERROR: $mixDownloadFile");
