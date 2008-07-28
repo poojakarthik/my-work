@@ -29,8 +29,7 @@
 	position: absolute;
 	left: -999em;
 	height: auto;
-	width: 14.4em;
-	w\idth: 13.9em;
+	width: 15em;
 	font-weight: normal;
 	border-width: 0.25em;
 	margin: 0;
@@ -38,12 +37,11 @@
 
 #nav li li {
 	padding-right: 1em;
-	width: 13em
+	width: 15em
 }
 
 #nav li ul a {
-	width: 13em;
-	w\idth: 9em;
+	width: 15em;
 	color: #ccc;
 }
 
