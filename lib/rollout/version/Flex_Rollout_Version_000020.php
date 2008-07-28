@@ -12,7 +12,7 @@
  *	7:	Populates provisioning_request_type Table
  *	8:	Adds service_line_status Table
  *	9:	Populates service_line_status Table
- *	10:	Adds provisioning_request_line_status Table
+ *	10:	Adds service_line_status_update Table
  */
 
 class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
@@ -47,12 +47,12 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS service_type;";
 		
 		// 3:	Poulate service_type Table
-		$arrServiceTypeSQL	= Array();
-		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intId=>$arrConstant)
-		{
-			$arrServiceTypeSQL[]	= "({$intId}, '{$arrConstant['Description']}', '{$arrConstant['Description']}', '{$arrConstant['Constant']}')";
-		}
-		$strSQL = "INSERT INTO service_type (id, name, description, const_name) VALUES ".implode(', ', $arrServiceTypeSQL).";";
+		$strSQL = "INSERT INTO service_type (id, name, description, const_name) VALUES " .
+				"	(100, 'ADSL'		, 'ADSL'					, 'SERVICE_TYPE_ADSL'),
+					(101, 'Mobile'		, 'Mobile'					, 'SERVICE_TYPE_MOBILE'),
+					(102, 'Land Line'	, 'Land Line'				, 'SERVICE_TYPE_LAND_LINE'),
+					(103, 'Inbound'		, 'Inbound 13/1300/1800'	, 'SERVICE_TYPE_INBOUND'),
+					(104, 'Dialup'		, 'Dialup Internet'			, 'SERVICE_TYPE_DIALUP');";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate service_type Table. ' . $qryQuery->Error());
@@ -76,11 +76,11 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		
 		// 5:	Populates provisioning_request_type_nature Table
 		$strSQL = "INSERT INTO provisioning_request_type_nature (name, description, const_name, service_type) VALUES " .
-					"('Full Service', 'Land Line: Full Service', 'REQUEST_TYPE_NATURE_FULL_SERVICE', ".SERVICE_TYPE_LAND_LINE."), " .
-					"('Preselection', 'Land Line: Preselection', 'REQUEST_TYPE_NATURE_PRESELECTION', ".SERVICE_TYPE_LAND_LINE."), " .
-					"('Mobile', 'Mobile', 'REQUEST_TYPE_NATURE_MOBILE', ".SERVICE_TYPE_MOBILE."), " .
-					"('Inbound', 'Inbound', 'REQUEST_TYPE_NATURE_INBOUND', ".SERVICE_TYPE_INBOUND.")," .
-					"('ADSL', 'ADSL', 'REQUEST_TYPE_NATURE_ADSL', ".SERVICE_TYPE_ADSL.");";
+					"('Full Service', 'Land Line: Full Service', 'REQUEST_TYPE_NATURE_FULL_SERVICE', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_LAND_LINE')), " .
+					"('Preselection', 'Land Line: Preselection', 'REQUEST_TYPE_NATURE_PRESELECTION', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_LAND_LINE')), " .
+					"('Mobile', 'Mobile', 'REQUEST_TYPE_NATURE_MOBILE', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_MOBILE')), " .
+					"('Inbound', 'Inbound', 'REQUEST_TYPE_NATURE_INBOUND', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_INBOUND'))," .
+					"('ADSL', 'ADSL', 'REQUEST_TYPE_NATURE_ADSL', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_ADSL'));";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add provisioning_request_type_nature Table. ' . $qryQuery->Error());
@@ -103,12 +103,25 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS provisioning_request_type;";
 		
 		// 7:	Populates provisioning_request_type Table
-		$arrRequestTypeSQL	= Array();
-		foreach ($GLOBALS['*arrConstant']['Request'] as $intId=>$arrConstant)
-		{
-			$arrRequestTypeSQL[]	= "({$intId}, '{$arrConstant['Description']}', '{$arrConstant['Description']}', '{$arrConstant['Constant']}')";
-		}
-		$strSQL = "INSERT INTO provisioning_request_type (id, name, description, const_name) VALUES ".implode(', ', $arrRequestTypeSQL).";";
+		$strSQL = "INSERT INTO provisioning_request_type (id, name, description, const_name, provisioning_request_type_nature) VALUES " .
+				"	(900, 'Full Service'						, 'Full Service'						, 'REQUEST_FULL_SERVICE'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(901, 'Preselection'						, 'Preselection'						, 'REQUEST_PRESELECTION'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(902, 'Bar'									, 'Bar'									, 'REQUEST_BAR'								, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(903, 'UnBar'								, 'UnBar'								, 'REQUEST_UNBAR'							, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(904, 'Activation'							, 'Activation'							, 'REQUEST_ACTIVATION'						, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(905, 'Deactivation'						, 'Deactivation'						, 'REQUEST_DEACTIVATION'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(906, 'Preselection Reversal'				, 'Preselection Reversal'				, 'REQUEST_PRESELECTION_REVERSE'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(907, 'Full Service Reversal'				, 'Full Service Reversal'				, 'REQUEST_FULL_SERVICE_REVERSE'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(908, 'Temporary Disconnection'				, 'Temporary Disconnection'				, 'REQUEST_DISCONNECT_TEMPORARY'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(909, 'Temporary Disconnection Reversal'	, 'Temporary Disconnection Reversal'	, 'REQUEST_RECONNECT_TEMPORARY'				, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(910, 'Full Service Lost (Churned)'			, 'Full Service Lost (Churned)'			, 'REQUEST_LOSS_FULL'						, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(911, 'Preselection Lost (Churned)'			, 'Preselection Lost (Churned)'			, 'REQUEST_LOSS_PRESELECT'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(912, 'Address Change'						, 'Address Change'						, 'REQUEST_CHANGE_ADDRESS'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(913, 'Virtual Preselection'				, 'Virtual Preselection'				, 'REQUEST_VIRTUAL_PRESELECTION'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(914, 'Virtual Preselection Reversal'		, 'Virtual Preselection Reversal'		, 'REQUEST_VIRTUAL_PRESELECTION_REVERSE'	, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(915, 'Virtual Preselection Lost'			, 'Virtual Preselection Lost'			, 'REQUEST_LOSS_VIRTUAL_PRESELECTION'		, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(916, 'Full Service Lost (Diconnected)'		, 'Full Service Lost (Diconnected)'		, 'REQUEST_DISCONNECT_FULL'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(917, 'Preselection Lost (Diconnected)'		, 'Preselection Lost (Diconnected)'		, 'REQUEST_DISCONNECT_PRESELECT'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection'));";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate provisioning_request_type Table. ' . $qryQuery->Error());
@@ -130,20 +143,23 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS service_line_status;";
 		
 		// 9:	Populates service_line_status Table
-		$arrRequestTypeSQL	= Array();
-		foreach ($GLOBALS['*arrConstant']['LineStatus'] as $intId=>$arrConstant)
-		{
-			$arrRequestTypeSQL[]	= "({$intId}, '{$arrConstant['Description']}', '{$arrConstant['Description']}', '{$arrConstant['Constant']}')";
-		}
-		$strSQL = "INSERT INTO service_line_status (id, name, description, const_name) VALUES ".implode(', ', $arrRequestTypeSQL).";";
+		$strSQL = "INSERT INTO service_line_status (id, name, description, const_name) VALUES " .
+				"	(500, 'Pending'						, 'Pending Connection'			, 'SERVICE_LINE_PENDING');
+					(501, 'Active'						, 'Active'						, 'SERVICE_LINE_ACTIVE'),
+					(502, 'Disconnected'				, 'Disconnected'				, 'SERVICE_LINE_DISCONNECTED'),
+					(503, 'Barred'						, 'Barred'						, 'SERVICE_LINE_BARRED'),
+					(504, 'Temporarily Disconnected'	, 'Temporarily Disconnected'	, 'SERVICE_LINE_TEMPORARY_DISCONNECT'),
+					(505, 'Rejected'					, 'Churn Request Rejected'		, 'SERVICE_LINE_REJECTED'),
+					(506, 'Churned'						, 'Churned Away'				, 'SERVICE_LINE_CHURNED'),
+					(507, 'Reversed'					, 'Churn Reversed'				, 'SERVICE_LINE_REVERSED');";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate service_line_status Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE service_line_status;";
 		
-		// 10:	Adds provisioning_request_line_status Table
-		$strSQL = "CREATE TABLE provisioning_request_line_status " .
+		// 10:	Adds service_line_status_update Table
+		$strSQL = "CREATE TABLE service_line_status_update " .
 					"(" .
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id', " .
 						"current_line_status BIGINT(20) NOT NULL COMMENT 'Current Line Status', " .
@@ -152,9 +168,9 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add provisioning_request_line_status Table. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to add service_line_status_update Table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DROP TABLE IF EXISTS provisioning_request_line_status;";
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS service_line_status_update;";
 		
 	}
 	
