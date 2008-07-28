@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Version 18 (eighteen) of database update.
+ * Version 20 (twenty) of database update.
  * This version: -
  *	1:	Adds ServiceTotal.service_rate_plan Field
  *	2:	Adds service_type Table
@@ -15,7 +15,7 @@
  *	10:	Adds provisioning_request_line_status Table
  */
 
-class Flex_Rollout_Version_000018 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
