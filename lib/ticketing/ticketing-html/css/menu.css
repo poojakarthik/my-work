@@ -25,24 +25,25 @@
 }
 
 #nav li ul {
-	background-color: #111;
 	position: absolute;
 	left: -999em;
 	height: auto;
-	width: 15em;
+	width: 16.5em;
 	font-weight: normal;
-	border-width: 0.25em;
 	margin: 0;
 }
 
 #nav li li {
 	padding-right: 1em;
-	width: 15em
 }
 
 #nav li ul a {
-	width: 15em;
-	color: #ccc;
+	width: 14em;
+	color: #111;
+	background-color: #eee;
+	margin-left: .25em;
+	margin-bottom: .25em;
+	margin-right: .25em;
 }
 
 #nav li ul ul {
@@ -51,14 +52,22 @@
 
 #nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul {
 	left: -999em;
+	background-color: #111;
+	color: #eee;
 }
 
 #nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul {
 	left: auto;
+	background-color: #111;
+	color: #ffde05;
 }
 
 #nav li:hover, #nav li.sfhover {
+	background-color: #111;
+	color: #ffde05;
 }
 
 #nav a:hover {
+	background-color: #111;
+	color: #ffde05;
 }
