@@ -63,7 +63,7 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to Set 3G RecordType\'s GroupId. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DELETE FROM CarrierModule WHERE Code = '3G' AND Name = '3G' AND Description = '3G Data' AND ServiceType = 101 AND GroupId = Id AND DisplayType = 3";
+		$this->rollbackSQL[] = "DELETE FROM RecordType WHERE Code = '3G' AND Name = '3G' AND Description = '3G Data' AND ServiceType = 101 AND GroupId = Id AND DisplayType = 3";
 		
 		// Adds Payment.carrier Foreign Key to the Carrier table
 		$strSQL = " ALTER TABLE Payment
