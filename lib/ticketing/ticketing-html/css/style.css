@@ -61,9 +61,8 @@ div#menu {
 
 div#content {
 	padding-top: 1em;
-	clear: both;
-	position: relative;
 	z-index: -1000;
+	clear: both;
 	width: 100%;
 	float: top;
 }
