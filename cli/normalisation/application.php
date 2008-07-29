@@ -239,6 +239,7 @@
 															"RecordType = <RecordType> AND " .
 															"RecordType NOT IN (10, 15, 33) AND " .
 															"Credit = <Credit> AND " .
+															"Description = <Description> AND " .
 															"Status != ".CDR_DUPLICATE,
 															NULL,
 															1);
