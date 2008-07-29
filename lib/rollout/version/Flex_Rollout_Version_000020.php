@@ -6,13 +6,14 @@
  *	1:	Adds ServiceTotal.service_rate_plan Field
  *	2:	Adds service_type Table
  *	3:	Poulate service_type Table
- *	4:	Adds provisioning_request_type_nature Table
- *	5:	Populates provisioning_request_type_nature Table
- *	6:	Adds provisioning_request_type Table
- *	7:	Populates provisioning_request_type Table
- *	8:	Adds service_line_status Table
- *	9:	Populates service_line_status Table
- *	10:	Adds service_line_status_update Table
+ *	4:	Adds provisioning_type_nature Table
+ *	5:	Populates provisioning_type_nature Table
+ *	6:	Adds provisioning_type.provisioning_type_nature Field
+ *	7:	Sets provisioning_type.provisioning_type_nature for existing records
+ *	8:	Finishes populating provisioning_type Table
+ *	9:	Adds service_line_status Table
+ *	10:	Populates service_line_status Table
+ *	11:	Adds service_line_status_update Table
  */
 
 class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
@@ -59,8 +60,8 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE service_type;";
 		
-		// 4:	Adds provisioning_request_type_nature Table
-		$strSQL = "CREATE TABLE provisioning_request_type_nature " .
+		// 4:	Adds provisioning_type_nature Table
+		$strSQL = "CREATE TABLE provisioning_type_nature " .
 					"(" .
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for the Nature', " .
 						"name VARCHAR(256) NOT NULL COMMENT 'Name for the Nature', " .
@@ -70,12 +71,12 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add provisioning_request_type_nature Table. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to add provisioning_type_nature Table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DROP TABLE IF EXISTS provisioning_request_type_nature;";
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS provisioning_type_nature;";
 		
-		// 5:	Populates provisioning_request_type_nature Table
-		$strSQL = "INSERT INTO provisioning_request_type_nature (name, description, const_name, service_type) VALUES " .
+		// 5:	Populates provisioning_type_nature Table
+		$strSQL = "INSERT INTO provisioning_type_nature (name, description, const_name, service_type) VALUES " .
 					"('Full Service', 'Land Line: Full Service', 'REQUEST_TYPE_NATURE_FULL_SERVICE', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_LAND_LINE')), " .
 					"('Preselection', 'Land Line: Preselection', 'REQUEST_TYPE_NATURE_PRESELECTION', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_LAND_LINE')), " .
 					"('Mobile', 'Mobile', 'REQUEST_TYPE_NATURE_MOBILE', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_MOBILE')), " .
@@ -83,52 +84,47 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 					"('ADSL', 'ADSL', 'REQUEST_TYPE_NATURE_ADSL', (SELECT id FROM service_type WHERE const_name = 'SERVICE_TYPE_ADSL'));";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add provisioning_request_type_nature Table. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to add provisioning_type_nature Table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "TRUNCATE TABLE provisioning_request_type_nature;";
+		$this->rollbackSQL[] = "TRUNCATE TABLE provisioning_type_nature;";
 		
- 		// 6:	Adds provisioning_request_type Table
-		$strSQL = "CREATE TABLE provisioning_request_type " .
-					"(" .
-						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for the Request Type', " .
-						"name VARCHAR(256) NOT NULL COMMENT 'Name for the Nature', " .
-						"description VARCHAR(512) NOT NULL COMMENT 'Description for the Nature', " .
-						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Nature', " .
-						"provisioning_request_type_nature BIGINT(20) NOT NULL COMMENT 'Nature of this Request Type'" .
-					") ENGINE = innodb;";
+		// 6:	Adds provisioning_type.provisioning_type_nature Field
+		$strSQL = "ALTER TABLE provisioning_type ADD provisioning_type_nature BIGINT(20) UNSIGNED NULL AFTER outbound";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add provisioning_request_type Table. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to add provisioning_type.provisioning_type_nature. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DROP TABLE IF EXISTS provisioning_request_type;";
+		$this->rollbackSQL[] = "ALTER TABLE provisioning_type DROP provisioning_type_nature";
 		
-		// 7:	Populates provisioning_request_type Table
-		$strSQL = "INSERT INTO provisioning_request_type (id, name, description, const_name, provisioning_request_type_nature) VALUES " .
-				"	(900, 'Full Service'						, 'Full Service'						, 'REQUEST_FULL_SERVICE'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
-					(901, 'Preselection'						, 'Preselection'						, 'REQUEST_PRESELECTION'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(902, 'Bar'									, 'Bar'									, 'REQUEST_BAR'								, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(903, 'UnBar'								, 'UnBar'								, 'REQUEST_UNBAR'							, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(904, 'Activation'							, 'Activation'							, 'REQUEST_ACTIVATION'						, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(905, 'Deactivation'						, 'Deactivation'						, 'REQUEST_DEACTIVATION'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(906, 'Preselection Reversal'				, 'Preselection Reversal'				, 'REQUEST_PRESELECTION_REVERSE'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(907, 'Full Service Reversal'				, 'Full Service Reversal'				, 'REQUEST_FULL_SERVICE_REVERSE'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
-					(908, 'Temporary Disconnection'				, 'Temporary Disconnection'				, 'REQUEST_DISCONNECT_TEMPORARY'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
-					(909, 'Temporary Disconnection Reversal'	, 'Temporary Disconnection Reversal'	, 'REQUEST_RECONNECT_TEMPORARY'				, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
-					(910, 'Full Service Lost (Churned)'			, 'Full Service Lost (Churned)'			, 'REQUEST_LOSS_FULL'						, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
-					(911, 'Preselection Lost (Churned)'			, 'Preselection Lost (Churned)'			, 'REQUEST_LOSS_PRESELECT'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(912, 'Address Change'						, 'Address Change'						, 'REQUEST_CHANGE_ADDRESS'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
-					(913, 'Virtual Preselection'				, 'Virtual Preselection'				, 'REQUEST_VIRTUAL_PRESELECTION'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(914, 'Virtual Preselection Reversal'		, 'Virtual Preselection Reversal'		, 'REQUEST_VIRTUAL_PRESELECTION_REVERSE'	, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(915, 'Virtual Preselection Lost'			, 'Virtual Preselection Lost'			, 'REQUEST_LOSS_VIRTUAL_PRESELECTION'		, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
-					(916, 'Full Service Lost (Diconnected)'		, 'Full Service Lost (Diconnected)'		, 'REQUEST_DISCONNECT_FULL'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
-					(917, 'Preselection Lost (Diconnected)'		, 'Preselection Lost (Diconnected)'		, 'REQUEST_DISCONNECT_PRESELECT'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection'));";
+		// 7:	Sets provisioning_type.provisioning_type_nature for existing records
+		$strSQL = "UPDATE provisioning_type SET " .
+					"provisioning_type_nature = " .
+					"(CASE " .
+					"	WHEN name IN ('Full Service', 'Full Service Reverse') THEN (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service') " .
+					"	WHEN name IN ('Pre-Selection', 'Bar', 'Unbar', 'Activation', 'Deactivation', 'Pre-Selection Reverse', 'Virtual Pre-Selection', 'Virtual Pre-Selection Reverse') THEN (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection') " .
+					"END);";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to update provisioning_type.provisioning_type_nature Field. ' . $qryQuery->Error());
+		}
+		
+		// 8:	Finishes populating provisioning_type Table
+		$strSQL = "INSERT INTO provisioning_type (id, name, inbound, outbound, description, const_name, provisioning_type_nature) VALUES " .
+				"	(908, 'Temporary Disconnection'				, 0, 0, 'Temporary Disconnection'			, 'REQUEST_DISCONNECT_TEMPORARY'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(909, 'Temporary Disconnection Reversal'	, 0, 0, 'Temporary Disconnection Reversal'	, 'REQUEST_RECONNECT_TEMPORARY'				, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(910, 'Full Service Lost (Churned)'			, 1, 0, 'Full Service Lost (Churned)'		, 'REQUEST_LOSS_FULL'						, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(911, 'Preselection Lost (Churned)'			, 1, 0, 'Preselection Lost (Churned)'		, 'REQUEST_LOSS_PRESELECT'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(912, 'Address Change'						, 1, 0, 'Address Change'					, 'REQUEST_CHANGE_ADDRESS'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(915, 'Virtual Preselection Lost'			, 1, 0, 'Virtual Preselection Lost'			, 'REQUEST_LOSS_VIRTUAL_PRESELECTION'		, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection')),
+					(916, 'Full Service Lost (Diconnected)'		, 1, 0, 'Full Service Lost (Diconnected)'	, 'REQUEST_DISCONNECT_FULL'					, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Full Service')),
+					(917, 'Preselection Lost (Diconnected)'		, 1, 0, 'Preselection Lost (Diconnected)'	, 'REQUEST_DISCONNECT_PRESELECT'			, (SELECT id FROM provisioning_request_type_nature WHERE name = 'Preselection'));";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate provisioning_request_type Table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE provisioning_request_type;";
 		
-		// 8:	Adds service_line_status Table
+		// 9:	Adds service_line_status Table
 		$strSQL = "CREATE TABLE service_line_status " .
 					"(" .
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for the Line Status', " .
@@ -142,7 +138,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS service_line_status;";
 		
-		// 9:	Populates service_line_status Table
+		// 10:	Populates service_line_status Table
 		$strSQL = "INSERT INTO service_line_status (id, name, description, const_name) VALUES " .
 				"	(500, 'Pending'						, 'Pending Connection'			, 'SERVICE_LINE_PENDING');
 					(501, 'Active'						, 'Active'						, 'SERVICE_LINE_ACTIVE'),
@@ -158,12 +154,12 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE service_line_status;";
 		
-		// 10:	Adds service_line_status_update Table
+		// 11:	Adds service_line_status_update Table
 		$strSQL = "CREATE TABLE service_line_status_update " .
 					"(" .
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id', " .
 						"current_line_status BIGINT(20) NOT NULL COMMENT 'Current Line Status', " .
-						"provisioning_request_type BIGINT(20) NOT NULL COMMENT 'Request Type', " .
+						"provisioning_type BIGINT(20) NOT NULL COMMENT 'Request Type', " .
 						"new_line_status BIGINT(20) NOT NULL COMMENT 'Resulting Line Status'" .
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
