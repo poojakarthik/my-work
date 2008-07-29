@@ -222,7 +222,7 @@
 				}
 				return $_selGetCDR;
 		
-			case 'insCharge':
+			case '_insCharge':
 				if (!isset($_insCharge))
 				{
 					$arrColumns						= DataAccess::getDataAccess()->FetchClean("Charge");
