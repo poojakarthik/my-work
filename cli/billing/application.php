@@ -145,7 +145,7 @@
 															  		NULL,
 															  		"2",
 															  		"Nature");
-
+		
 		// Init Update Statements
 		$this->arrCDRCols = Array();
 		$this->arrCDRCols['Status']			= CDR_TEMP_INVOICE;
@@ -199,6 +199,10 @@
 																"ST.Id ASC");
 																
 		$this->_selServiceTotalCheck	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND InvoiceRun = <InvoiceRun>");
+		
+		$this->_selEarliestCDR		= new StatementSelect("Service", "EarliestCDR", "Id = <Service>");
+		$this->_selPlanDate			= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1", "CreatedOn DESC", 1);
+		$this->_selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -228,12 +232,13 @@
 		// This is safe, because there should be no CDRs with CDR_TEMP_INVOICE status anyway
 		if (!$this->Revoke())
 		{
-			return;		// Return if this fails
+			// Return if this fails
+			CliEcho("Revoke() failed: aborting Execute()");
+			return;
 		}
 		
 		// generate an InvoiceRun Id
-		//$strInvoiceRun			= uniqid();
-		$strInvoiceRun			= date("YmdHis");
+		$strInvoiceRun					= date("YmdHis");
 		switch (strtolower($strMode))
 		{
 			case 'gold':
@@ -252,16 +257,15 @@
 				CliEcho("'$strMode' is not a valid Billing::Execute() type!\n");
 				return FALSE;
 				break;
-		}		
+		}
 		
 		$intPassed = 0;
 		$intFailed = 0;
 		
-		// get a list of all accounts that require billing today
-		//TODO-LATER : Make this work with daily and 1/2 monthly billing
+		// Get a list of all accounts that require billing today
 		if ($this->selAccounts->Execute() === FALSE)
 		{
-
+			CliEcho("Unable to retrieve list of Accounts: ".$this->selAccounts->Error());
 		}
 		$arrAccounts = $this->selAccounts->FetchAll();
 		
@@ -399,38 +403,22 @@
 			}
 			//$this->_rptBillingReport->AddMessage(MSG_OK);
 			
-			// Get a list of shared plans for this account
-			//$selEarliestCDR		= new StatementSelect("CDR USE INDEX (Service)", "MIN(StartDatetime) AS MinStartDatetime", "Service = <Service>");
-			$selEarliestCDR		= new StatementSelect("Service", "EarliestCDR", "Id = <Service>");
-			$selPlanDate		= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1", "CreatedOn DESC", 1);
-			$selLastBillDate	= new StatementSelect("Invoice", "CreatedOn", "Account = <Id>", "CreatedOn DESC", 1);
-			$selLastTotal		= new StatementSelect("ServiceTotal", "Id", "Service = <Service>");
-			$selPlanLastBilled	= new StatementSelect("ServiceRatePlan", "Id", "Id = <ServiceRatePlan> AND LastChargedOn IS NOT NULL");
-			$selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)");
-			/*if ($selLastBillDate->Execute($arrAccount))
-			{
-				// Previous Invoice
-				$arrLastBillDate	= $selLastBillDate->Fetch();
-				$intLastBillDate	= strtotime($arrLastBillDate['CreatedOn']);
-			}
-			else
-			{*/
-				// When was the Billing Period supposed to start?
-				$strBillingDate		= '01';
-				$intDate			= strtotime(date("Y-m-01", time()));
-				$intLastBillDate	= strtotime("-{$arrAccount['BillingFreq']} month", strtotime(date("Y-m-$strBillingDate", $intDate)));
-			//}
-			$arrSharedPlans	= Array();
+			
+			// When was the Billing Period supposed to start?
+			$strBillingDate			= '01';
+			$intDate				= strtotime(date("Y-m-01", time()));
+			$intLastBillDate		= strtotime("-{$arrAccount['BillingFreq']} month", strtotime(date("Y-m-$strBillingDate", $intDate)));
+			$arrSharedPlans			= Array();
 			$intServicesComplete	= 0;
 			foreach($arrServices as $mixIndex=>$arrService)
 			{
 				if ((float)$arrService['MinMonthly'] > 0)
 				{
 					// Prorate Minimum Monthly
-					$selEarliestCDR->Execute($arrService);
-					$selPlanDate->Execute($arrService);
-					$arrEarliestCDR	= $selEarliestCDR->Fetch();
-					$arrPlanDate	= $selPlanDate->Fetch();
+					$this->_selEarliestCDR->Execute($arrService);
+					$this->_selPlanDate->Execute($arrService);
+					$arrEarliestCDR	= $this->_selEarliestCDR->Fetch();
+					$arrPlanDate	= $this->_selPlanDate->Fetch();
 					
 					$intCDRDate		= strtotime($arrEarliestCDR['EarliestCDR']);
 					$intServiceDate	= strtotime($arrService['CreatedOn']);
@@ -439,7 +427,7 @@
 					// If the Service is tolling (has an EarliestCDR)
 					if ($intCDRDate)
 					{
-						$bolHasInvoicedCDRs	= $selHasInvoicedCDRs->Execute($arrService);
+						$bolHasInvoicedCDRs	= (bool)$this->_selHasInvoicedCDRs->Execute($arrService);
 						
 						// If this is the first invoice for this plan, add in "Charge in Advance" Adjustment
 						if ((!$arrService['LastChargedOn'] || !$bolHasInvoicedCDRs) && $arrService['InAdvance'])
@@ -507,7 +495,7 @@
 			//$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
 			if (!$bolRegenerate)
 			{
-				$arrUpdateData = Array();
+				$arrUpdateData					= Array();
 				$arrUpdateData['InvoiceRun']	= $this->_strInvoiceRun;
 				$arrUpdateData['Status']		= CHARGE_TEMP_INVOICE;
 				if($updChargeStatus->Execute($arrUpdateData, Array('Account' => $arrAccount['Id'])) === FALSE)
@@ -542,7 +530,7 @@
 				
 				// get capped & uncapped charges
 				$selCDRTotals->Execute($arrService);
-				$arrCDRTotals = $selCDRTotals->FetchAll();
+				$arrCDRTotals	= $selCDRTotals->FetchAll();
 				foreach($arrCDRTotals as $arrCDRTotal)
 				{
 					$fltCappedCDRCost		+= $arrCDRTotal['CappedCost'];
@@ -906,13 +894,6 @@
 				CliEcho("\n".__LINE__." >> Unable to add Temporary Invoice for Account #{$arrAccount['Id']}");
 				exit(1);
 			}
-			
-			// work out the bill printing target
-			// TODO - LATER : fake it for now
-			$intPrintTarget = BILL_PRINT;
-			
-			// build billing output for this invoice
-			//$this->_arrBillOutput[$intPrintTarget]->AddInvoice($arrInvoiceData);
 			
 			$this->intPassed++;
 			
