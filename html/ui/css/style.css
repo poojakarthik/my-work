@@ -7,7 +7,7 @@ body {
 }
 
 a {
-	color: #eee;
+	color: #ffde05;
 	text-decoration: none;
 }
 
@@ -31,7 +31,6 @@ div#person_search {
 	float: top;
 	width: 99%;
 	height: 50px;
-	z-index: 1;
 }
 
 div#person {
@@ -69,9 +68,9 @@ div#menu {
 }
 
 div#content {
-	padding-top: 4em;
-	position: fixed;
+	padding-top: 1em;
 	z-index: -1000;
+	clear: both;
 	width: 100%;
 	float: top;
 	overflow: auto;
