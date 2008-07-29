@@ -237,7 +237,7 @@
 															"Units = <Units> AND " .
 															"Cost = <Cost> AND " .
 															"RecordType = <RecordType> AND " .
-															"RecordType NOT IN (10, 15, 33) AND " .
+															"RecordType NOT IN (10, 15, 33, 21) AND " .
 															"Credit = <Credit> AND " .
 															"Description = <Description> AND " .
 															"Status != ".CDR_DUPLICATE,
