@@ -22,18 +22,17 @@ $arrSQLSelect	= Array();
 $arrSQLFields	= Array();
 
 //----------------------------------------------------------------------------//
-// Contract Cancellation Fees
+// Credit Cards Expiring Next Month
 //----------------------------------------------------------------------------//
 
 // General Data
-$arrDataReport['Name']			= "Contract Cancellation Fees in a Time Period";
-$arrDataReport['Summary']		= "Displays a list of Contract Cancellation Fees for a specified period.";
-$arrDataReport['FileName']		= "Contract Cancellation Fees between <StartDate> AND <EndDate>";
+$arrDataReport['Name']			= "Credit Cards Expiring Next Month";
+$arrDataReport['Summary']		= "Displays a list of Accounts whose Credit Cards will Expire Next Month.";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "Charge";
-$arrDataReport['SQLWhere']		= "ChargeType IN ('DSLCAN', 'CONT', 'EARL') AND CreatedOn BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLTable']		= "CreditCard LEFT JOIN Account USING (AccountGroup)";
+$arrDataReport['SQLWhere']		= "((<Active> = 1 AND Account.CreditCard = CreditCard.Id AND Account.BillingType = ".BILLING_TYPE_CREDIT_CARD.") OR (<Active> = 0)) AND CONCAT(LPAD(CAST(CAST(ExpYear AS UNSIGNED) AS CHAR), 4, '2000'), '-', LPAD(CAST(CAST(ExpMonth AS UNSIGNED) AS CHAR), 2, '0'), '-01') = ADDDATE(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
@@ -41,34 +40,22 @@ $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Account']				['Value']	= "Account";
-$arrSQLSelect['Account']				['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Account Group']			['Value']	= "DISTINCT Account.AccountGroup";
 
-$arrSQLSelect['Date Created']			['Value']	= "DATE_FORMAT(CreatedOn, '%d/%m/%Y')";
+$arrSQLSelect['Account #']				['Value']	= "Account.Account";
 
-$arrSQLSelect['Description']			['Value']	= "Description";
+$arrSQLSelect['Business Name']			['Value']	= "Account.BusinessName";
 
-$arrSQLSelect['Date Charged']			['Value']	= "DATE_FORMAT(ChargedOn, '%d/%m/%Y')";
-
-$arrSQLSelect['Amount']					['Value']	= "CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END";
-$arrSQLSelect['Amount']					['Type']	= EXCEL_TYPE_CURRENCY;
-
-$arrSQLSelect['Notes']					['Value']	= "Notes";
+$arrSQLSelect['Expiry']					['Value']	= "CONCAT(LPAD(CAST(CAST(ExpMonth AS UNSIGNED) AS CHAR), 2, '0'), '/', LPAD(CAST(CAST(ExpYear AS UNSIGNED) AS CHAR), 4, '2000'))";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 
 // SQL Fields
-$arrDataReport['SQLFields'] = serialize($arrSQLFields);
-$arrSQLFields['StartDate']	= Array(
-										'Type'					=> "dataDate",
+$arrSQLFields['Active']	= Array(
+										'Type'					=> "dataBoolean",
 										'Documentation-Entity'	=> "DataReport",
 										'Documentation-Field'	=> "StartDateRange",
-									);
-$arrSQLFields['EndDate']	= Array(
-										'Type'					=> "dataDate",
-										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "EndDateRange",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 

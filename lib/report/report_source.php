@@ -877,13 +877,13 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 // General Data
 $arrDataReport['Name']			= "Duplicate Unbilled CDR Files in a given Period";
 $arrDataReport['Summary']		= "Displays a list of CDR Files which have duplicate unbilled CDRs in them.";
-$arrDataReport['FileName']		= "Duplicate Unbilled CDR Files as of <DATETIME()>";
+$arrDataReport['FileName']		= "Duplicate Unbilled CDR Files between <StartDate> AND <EndDate>";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "CDR JOIN FileImport ON CDR.File = FileImport.Id";
-$arrDataReport['SQLWhere']		= "CDR.Status = ".CDR_DUPLICATE;
-$arrDataReport['SQLGroupBy']	= "InvoiceRun";
+$arrDataReport['SQLTable']		= "(CDR JOIN FileImport ON CDR.File = FileImport.Id) JOIN Carrier ON Carrier.Id = FileImport.Carrier";
+$arrDataReport['SQLWhere']		= "CDR.StartDatetime BETWEEN <StartDate> AND <EndDate> AND CDR.Status = ".CDR_DUPLICATE;
+$arrDataReport['SQLGroupBy']	= "CDR.File";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
@@ -892,18 +892,37 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 // SQL Select
 $arrSQLSelect['File Name']				['Value']	= "FileImport.FileName";
 
+$arrSQLSelect['Carrier']				['Value']	= "Carrier.Name";
+
 $arrSQLSelect['Duplicate CDRs']			['Value']	= "COUNT(CDR.Id)";
 $arrSQLSelect['Duplicate CDRs']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Total CDR Cost']			['Value']	= "SUM(CDR.Cost)";
 $arrSQLSelect['Total CDR Cost']			['Type']	= EXCEL_TYPE_CURRENCY;
 
+$arrSQLSelect['Earliest CDR Date']		['Value']	= "DATE_FORMAT(MIN(CDR.StartDatetime), '%d/%m/%Y %H:%i:%s')";
+
+$arrSQLSelect['Latest CDR Date']		['Value']	= "DATE_FORMAT(MAX(CDR.StartDatetime), '%d/%m/%Y %H:%i:%s')";
+
 $arrSQLSelect['Import Date']			['Value']	= "DATE_FORMAT(FileImport.ImportedOn, '%d/%m/%Y %H:%i:%s')";
+
+$arrSQLSelect['YBS File Reference']		['Value']	= "FileImport.Id";
+$arrSQLSelect['YBS File Reference']		['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 
 // SQL Fields
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 
@@ -997,6 +1016,216 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+//----------------------------------------------------------------------------//
+// Contract Cancellation Fees
+//----------------------------------------------------------------------------//
+
+// General Data
+$arrDataReport['Name']			= "Contract Cancellation Fees in a Time Period";
+$arrDataReport['Summary']		= "Displays a list of Contract Cancellation Fees for a specified period.";
+$arrDataReport['FileName']		= "Contract Cancellation Fees between <StartDate> AND <EndDate>";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Charge";
+$arrDataReport['SQLWhere']		= "ChargeType IN ('DSLCAN', 'CONT', 'EARL') AND CreatedOn BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Account']				['Value']	= "Account";
+$arrSQLSelect['Account']				['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Date Created']			['Value']	= "DATE_FORMAT(CreatedOn, '%d/%m/%Y')";
+
+$arrSQLSelect['Description']			['Value']	= "Description";
+
+$arrSQLSelect['Date Charged']			['Value']	= "DATE_FORMAT(ChargedOn, '%d/%m/%Y')";
+
+$arrSQLSelect['Amount']					['Value']	= "CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END";
+$arrSQLSelect['Amount']					['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Notes']					['Value']	= "Notes";
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+
+// SQL Fields
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+
+//----------------------------------------------------------------------------//
+// Bar Requests Sent in a Time Period
+//----------------------------------------------------------------------------//
+
+// General Data
+$arrDataReport['Name']			= "Bar Requests Sent in a Time Period";
+$arrDataReport['Summary']		= "Displays a list of Bar Requests sent in a specified time period.";
+$arrDataReport['FileName']		= "Bar Requests Sent between <StartDate> AND <EndDate>";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "ProvisioningRequest PR JOIN Carrier ON PR.Carrier = Carrier.Id";
+$arrDataReport['SQLWhere']		= "Type = 902 AND CAST(SentOn AS DATE) BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Account']				['Value']	= "Account";
+$arrSQLSelect['Account']				['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['FNN']					['Value']	= "FNN";
+$arrSQLSelect['FNN']					['Type']	= EXCEL_TYPE_FNN;
+
+$arrSQLSelect['Carrier']				['Value']	= "Carrier.Name";
+
+$arrSQLSelect['Date Requested']			['Value']	= "DATE_FORMAT(RequestedOn, '%d/%m/%Y %H:%i:%s')";
+
+$arrSQLSelect['Date Sent']				['Value']	= "DATE_FORMAT(SentOn, '%d/%m/%Y %H:%i:%s')";
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+
+// SQL Fields
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+//----------------------------------------------------------------------------//
+// Payments to Debt Collection Accounts in a Time Period
+//----------------------------------------------------------------------------//
+
+// General Data
+$arrDataReport['Name']			= "Payments to Debt Collection Accounts in a Time Period";
+$arrDataReport['Summary']		= "Shows any Payments that have been applied to Debt Collection Accounts in the specified period.";
+$arrDataReport['FileName']		= "Payments to Debt Collection Accounts between <StartDate> AND <EndDate>";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "(Payment JOIN Account ON Payment.Account = Account.Id) JOIN ConfigConstant ON (ConstantGroup = 18 AND Payment.PaymentType = ConfigConstant.Value)";
+$arrDataReport['SQLWhere']		= "Payment.Status IN (101, 103, 150) AND Account.Archived = 3 AND PaidOn BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Account']				['Value']	= "Account";
+$arrSQLSelect['Account']				['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Business Name']			['Value']	= "BusinessName";
+
+$arrSQLSelect['Payment Type']			['Value']	= "ConfigConstant.Description";
+
+$arrSQLSelect['Paid On']				['Value']	= "DATE_FORMAT(PaidOn, '%d/%m/%Y')";
+
+$arrSQLSelect['Amount']					['Value']	= "Payment.Amount";
+$arrSQLSelect['Amount']					['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Applied']				['Value']	= "Payment.Amount - Payment.Balance";
+$arrSQLSelect['Applied']				['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Remaining']				['Value']	= "Payment.Balance";
+$arrSQLSelect['Remaining']				['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+
+// SQL Fields
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+//----------------------------------------------------------------------------//
+// Duplicate Unbilled CDR Files in a given Period
+//----------------------------------------------------------------------------//
+
+// General Data
+$arrDataReport['Name']			= "Duplicate Unbilled CDR Files in a given Period";
+$arrDataReport['Summary']		= "Displays a list of CDR Files which have duplicate unbilled CDRs in them.";
+$arrDataReport['FileName']		= "Duplicate Unbilled CDR Files between <StartDate> AND <EndDate>";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "(CDR JOIN FileImport ON CDR.File = FileImport.Id) JOIN Carrier ON Carrier.Id = FileImport.Carrier";
+$arrDataReport['SQLWhere']		= "CDR.StartDatetime BETWEEN <StartDate> AND <EndDate> AND CDR.Status = ".CDR_DUPLICATE;
+$arrDataReport['SQLGroupBy']	= "CDR.File";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['File Name']				['Value']	= "FileImport.FileName";
+
+$arrSQLSelect['Carrier']				['Value']	= "Carrier.Name";
+
+$arrSQLSelect['Duplicate CDRs']			['Value']	= "COUNT(CDR.Id)";
+$arrSQLSelect['Duplicate CDRs']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Total CDR Cost']			['Value']	= "SUM(CDR.Cost)";
+$arrSQLSelect['Total CDR Cost']			['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Earliest CDR Date']		['Value']	= "DATE_FORMAT(MIN(CDR.StartDatetime), '%d/%m/%Y %H:%i:%s')";
+
+$arrSQLSelect['Latest CDR Date']		['Value']	= "DATE_FORMAT(MAX(CDR.StartDatetime), '%d/%m/%Y %H:%i:%s')";
+
+$arrSQLSelect['Import Date']			['Value']	= "DATE_FORMAT(FileImport.ImportedOn, '%d/%m/%Y %H:%i:%s')";
+
+$arrSQLSelect['YBS File Reference']		['Value']	= "FileImport.Id";
+$arrSQLSelect['YBS File Reference']		['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+
+// SQL Fields
 $arrSQLFields['StartDate']	= Array(
 										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "DataReport",
