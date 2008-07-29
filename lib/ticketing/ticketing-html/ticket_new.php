@@ -8,12 +8,12 @@
 		</div>
 		</div>
 	</caption>
-	<thead>
+	<thead class="header">
 		<tr>
 			<th colspan="2">&nbsp;</th>
 		</tr>
 	</thead>
-	<tfoot>
+	<tfoot class="footer">
 		<tr>
 			<th colspan="2"><input type="submit" id="submit" name="submit" value="Add" /></th>
 		</tr>
