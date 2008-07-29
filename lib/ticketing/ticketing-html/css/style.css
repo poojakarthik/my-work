@@ -60,8 +60,9 @@ div#menu {
 }
 
 div#content {
-	padding-top: 4em;
-	position: fixed;
+	padding-top: 1em;
+	clear: both;
+	position: relative;
 	z-index: -1000;
 	width: 100%;
 	float: top;

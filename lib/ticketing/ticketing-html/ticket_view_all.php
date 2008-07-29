@@ -57,13 +57,13 @@
 
 		<tr class="<?=$tr_alt?>">
 			<td><a href="<?=$basepath?>ticket/view/<?=$i?>"><?=$i?></a></td>
-			<td>a</td>
-			<td>a</td>
-			<td>a</td>
-			<td>a</td>
-			<td>a</td>
-			<td>a</td>
-			<td>a</td>
+			<td>one two three four five six seven eight nine ten the quick brown fox jumps over the lazy dog.</td>
+			<td> 10:00 28/7/08</td>
+			<td> 9:00 28/7/08</td>
+			<td> Lee Jell</td>
+			<td> Faults</td>
+			<td> Assigned</td>
+			<td>a b c d e f</td>
 		</tr>
 		<? 
 
