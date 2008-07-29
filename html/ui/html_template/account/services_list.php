@@ -320,7 +320,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 
 			// Prepare the Status' of the service
 			$strStatus			= GetConstantDescription($arrService['History'][0]['Status'], "Service");
-			$strLineStatus		= GetConstantDescription($arrService['History'][0]['LineStatus'], "LineStatus");
+			$strLineStatus		= GetConstantDescription($arrService['History'][0]['LineStatus'], "service_line_status");
 			$strLineStatusDate	= $arrService['History'][0]['LineStatusDate'];
 			if ($arrService['History'][0]['Status'] == SERVICE_PENDING)
 			{

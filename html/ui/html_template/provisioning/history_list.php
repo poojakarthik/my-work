@@ -252,10 +252,15 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
 			echo "      <option $strSelected value='$intOption'>$strDescription</option>\n";
 		}
-		foreach ($GLOBALS['*arrConstant']['Request'] as $intOption => $arrConstant)
+		DBL()->provisioning_type->Where->SetString("TRUE");
+		DBL()->provisioning_type->SetColumns("id, name");
+		DBL()->provisioning_type->OrderBy("name");
+		DBL()->provisioning_type->Load();
+		
+		foreach (DBL()->provisioning_type as $dboProvisioningType)
 		{
-			$strSelected = (DBO()->History->TypeFilter->Value == $intOption) ? "selected='selected'" : "";
-			echo "      <option $strSelected value='$intOption'>{$arrConstant['Description']}</option>\n";
+			$strSelected = (DBO()->History->TypeFilter->Value == $dboProvisioningType->id->Value) ? "selected='selected'" : "";
+			echo "      <option $strSelected value='{$dboProvisioningType->id->Value}'>{$dboProvisioningType->name->Value}</option>\n";
 		}
 		echo "   </select>\n";
 		echo "</span>\n";
@@ -347,7 +352,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			// Build the TimeStamp field
 			$strTimeStampCell	= date("j M y H:i:s", strtotime($arrRecord['TimeStamp']));
 			
-			$strRequestType	= GetConstantDescription($arrRecord['Type'], "Request");
+			$strRequestType	= GetConstantDescription($arrRecord['Type'], "provisioning_type");
 			$strCarrier		= GetConstantDescription($arrRecord['Carrier'], "Carrier");
 			
 			$strDescription = htmlspecialchars($arrRecord['Description'], ENT_QUOTES);

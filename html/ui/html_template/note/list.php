@@ -364,7 +364,7 @@ class HtmlTemplateNoteList extends HtmlTemplate
 				DBO()->NoteService->Id = $dboNote->Service->Value;
 				if (DBO()->NoteService->Load())
 				{
-					$strServiceType = GetConstantDescription(DBO()->NoteService->ServiceType->Value, "ServiceType");
+					$strServiceType = GetConstantDescription(DBO()->NoteService->ServiceType->Value, "service_type");
 					$strDetailsHtml .= "<br />$strServiceType: <a href='$strServiceLink'>". DBO()->NoteService->FNN->Value ."</a>";
 				}
 			}

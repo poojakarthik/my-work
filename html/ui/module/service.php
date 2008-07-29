@@ -2091,7 +2091,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			return FALSE;
 		}
 		
-		return $this->MakeProvisioningRequest(REQUEST_FULL_SERVICE, $arrCurrentPlan['CarrierFullService'], $strAuthorisationDate);
+		return $this->MakeProvisioningRequest(PROVISIONING_TYPE_FULL_SERVICE, $arrCurrentPlan['CarrierFullService'], $strAuthorisationDate);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -2125,7 +2125,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			return FALSE;
 		}
 		
-		return $this->MakeProvisioningRequest(REQUEST_PRESELECTION, $arrCurrentPlan['CarrierPreselection'], $strAuthorisationDate);
+		return $this->MakeProvisioningRequest(PROVISIONING_TYPE_PRESELECTION, $arrCurrentPlan['CarrierPreselection'], $strAuthorisationDate);
 	}
 	
 	//------------------------------------------------------------------------//

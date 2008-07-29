@@ -43,22 +43,6 @@
 class HtmlTemplateRateGroupView extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -114,7 +98,7 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 		
 		DBO()->RateGroup->Name->RenderOutput();
 		DBO()->RateGroup->Description->RenderOutput();
-		DBO()->RateGroup->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);
+		DBO()->RateGroup->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);
 		DBO()->RecordType->Name->RenderOutput();
 		DBO()->RateGroup->Fleet->RenderOutput();
 		$intRetrievedRatesCount = DBL()->Rate->RecordCount();

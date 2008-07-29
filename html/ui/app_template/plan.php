@@ -96,7 +96,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		if (DBO()->RatePlan->ServiceType->IsSet)
 		{
 			// A valid ServiceType filter has been specified
-			if (array_key_exists(DBO()->RatePlan->ServiceType->Value, $GLOBALS['*arrConstant']['ServiceType']))
+			if (array_key_exists(DBO()->RatePlan->ServiceType->Value, $GLOBALS['*arrConstant']['service_type']))
 			{
 				// A specific ServiceType has been requested
 				$_SESSION['AvailablePlansPage']['Filter']['ServiceType'] = DBO()->RatePlan->ServiceType->Value;

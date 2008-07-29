@@ -124,7 +124,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->Indial100->RenderHidden();
 		DBO()->Service->Status->RenderHidden();
 		
-		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
+		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
 		
 		// The user can only change the FNN if the service was created today
 		// (They should only need to change the FNN if they accidently got it wrong to begin with)

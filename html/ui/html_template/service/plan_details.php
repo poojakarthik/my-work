@@ -110,7 +110,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 		
 			$dboRatePlan->Name->RenderArbitrary($strPlanSummaryLink, RENDER_OUTPUT);
 			$dboRatePlan->Description->RenderOutput();
-			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
+			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
 			$dboRatePlan->CustomerGroup = $dboRatePlan->customer_group->Value;
 			$dboRatePlan->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
 			

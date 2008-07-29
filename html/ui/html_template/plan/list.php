@@ -66,7 +66,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 	
 		// Build the contents for the ServiceType filter combobox
 		$strServiceTypeFilterOptions = "<option value='0' ". (($intServiceTypeFilter == 0)? "selected='selected'" : "") .">All Service Types</option>\n";
-		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intServiceType=>$arrServiceType)
+		foreach ($GLOBALS['*arrConstant']['service_type'] as $intServiceType=>$arrServiceType)
 		{
 			$strSelected					= ($intServiceTypeFilter == $intServiceType) ? "selected='selected'" : "";
 			$strServiceTypeFilterOptions	.= "<option value='$intServiceType' $strSelected>{$arrServiceType['Description']}</option>\n";
@@ -109,7 +109,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		echo "
 <div class='GroupedContent'>
 	<!-- <div style='float:left;margin-top:3px'>Service Type</div> -->
-	<select id='ServiceTypeFilter' style='float:left;max-width:150px'>$strServiceTypeFilterOptions</select>
+	<select id='ServiceTypeFilter' style='float:left;max-width:200px'>$strServiceTypeFilterOptions</select>
 	<!-- <div style='float:left;margin-left:20px;margin-top:3px'>Customer Group</div> -->
 	<select id='CustomerGroupFilter' style='float:left;margin-left:10px;max-width:160px'>$strCustomerGroupFilterOptions</select>
 	<select id='StatusFilter' style='float:left;margin-left:10px;max-width:160px'>$strStatusFilterOptions</select>
@@ -144,7 +144,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strName			= htmlspecialchars($arrRatePlan['Name'], ENT_QUOTES);
 			$strViewPlanHref	= Href()->ViewPlan($arrRatePlan['Id']);
 			$strNameCell		= "<a href='$strViewPlanHref' title='$strDescription'>$strName</a>";
-			$strServiceType		= htmlspecialchars(GetConstantDescription($arrRatePlan['ServiceType'], "ServiceType"), ENT_QUOTES);
+			$strServiceType		= htmlspecialchars(GetConstantDescription($arrRatePlan['service_type'], "ServiceType"), ENT_QUOTES);
 			$strCustomerGroup	= htmlspecialchars(GetConstantDescription($arrRatePlan['customer_group'], "CustomerGroup"), ENT_QUOTES);
 			$strStatusCell		= GetConstantDescription($arrRatePlan['Archived'], "RateStatus");
 			

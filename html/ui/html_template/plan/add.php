@@ -195,13 +195,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		// Build the list of carriers
 		$arrCarriers = Array();
-		foreach ($GLOBALS['*arrConstant']['Carrier'] as $intCarrier=>$arrConstant)
+		DBL()->Carrier->SetColumns("Id, Name, carrier_type");
+		DBL()->Carrier->carrier_type = CARRIER_TYPE_TELECOM;
+		DBL()->Carrier->OrderBy("Name");
+		DBL()->Carrier->Load();
+		
+		foreach (DBL()->Carrier as $dboCarrier)
 		{
-			// Add the Carrier, so long as it's not CARRIER_PAYMENT
-			if ($intCarrier != CARRIER_PAYMENT)
-			{
-				$arrCarriers[$intCarrier] = $arrConstant['Description'];
-			}
+			$arrCarriers[$dboCarrier->Id->Value] = $dboCarrier->Name->Value;
 		}
 		
 		// Build the list of default Carrier values for each ServiceType that has defaults
@@ -219,7 +220,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type :</div>\n";
 		echo "      <select id='ServiceTypeCombo' name='RatePlan.ServiceType' class='DefaultInputComboBox' style='width:155px;' onchange='javascript: Vixen.RatePlanAdd.ChangeServiceType(this.value, true);' $strServiceTypeDisabled>\n";
 		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
-		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
+		foreach ($GLOBALS['*arrConstant']['service_type'] as $intKey=>$arrValue)
 		{
 			// If the ServiceType has default values for the Carrier fields, then include them in the <option> tag as attributes
 			$strCarrierDefaults = "";
@@ -433,7 +434,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		if (DBL()->RecordType->RecordCount() == 0)
 		{
-			$strServiceType = DBO()->RatePlan->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType"));
+			$strServiceType = DBO()->RatePlan->ServiceType->AsCallback("GetConstantDescription", Array("service_type"));
 			// There are no RecordTypes required for the ServiceType chosen
 			Table()->RateGroups->AddRow("<span class='DefaultOutputSpan Default'>No Record Types required for Service Type: $strServiceType</span>");
 			Table()->RateGroups->SetRowAlignment("left");

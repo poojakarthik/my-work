@@ -238,7 +238,12 @@ class Page
 	function RenderCSS()
 	{
 		$strMd5 = md5_file(MODULE_DEFAULT_CSS);
-		echo "<link rel='stylesheet' type='text/css' href='css.php?v=$strMd5' />\n";
+		echo "\t\t<link rel='stylesheet' type='text/css' href='css.php?v=$strMd5' />\n";
+		$cssFiles = glob(GetVixenBase() . '/html/ui/css/*.css');
+		foreach($cssFiles as $cssFile)
+		{
+			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/" . basename($cssFile) . "' />\n";
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -437,7 +442,7 @@ class Page
 		// the following div holds any popup windows that are instantiated within the page
 		echo "<div id='PopupHolder'></div>\n";
 	}
-		
+	
 	//------------------------------------------------------------------------//
 	// RenderHeaderFlexModal
 	//------------------------------------------------------------------------//
@@ -580,6 +585,53 @@ class Page
 	{
 		$objHeader = new HtmlTemplateVixenHeader(HTML_CONTEXT_DEFAULT);
 		$objHeader->Render();
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderFlexHeader
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderFlexHeader()
+	 *
+	 * Renders the Flex header including the context menu
+	 *
+	 * Renders the Flex header including the context menu
+	 * (This is the new Flex header with the horizontal context menu and search functionality)
+	 * 
+	 * @method
+	 */
+	function RenderFlexHeader($bolWithSearch=TRUE)
+	{
+		echo "
+	<div id=\"header\" name=\"header\">
+		<div id=\"logo\">
+			<div id=\"blurb\" name=\"blurb\">Flex Customer Management System</div>
+		</div>\n";
+/*
+		if ($bolWithSearch && Flex::loggedIn())
+		{
+			$this->RenderSearchField();
+		}
+*/		
+	}
+
+	function RenderSearchField()
+	{
+/*		
+		$strUserName = Flex::getDisplayName();
+*/		
+		echo "
+		<div id=\"person_search\" name=\"person_search\">
+			<div id=\"person\" name=\"person\">
+				Logged in as: $strUserName
+			<!--	| <a href=\"#\">Preferences</a> -->
+				| <a href=\"logout.php\">Logout</a>
+			</div>
+			<div id=\"search_bar\" name=\"search_bar\">
+				Search: 
+				<input type=\"text\" id=\"search_string\" name=\"search_string\" />
+			</div>
+		</div>\n";
 	}
 	
 	//------------------------------------------------------------------------//

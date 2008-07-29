@@ -124,7 +124,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 				echo "<tr><td width='2%' rowspan=10>&nbsp;</td><td width='98%'>".DBO()->Rate->Name->AsInput(CONTEXT_DEFAULT, TRUE, FALSE, Array("style:width"=>"380px"))."</td></tr>\n";
 				echo "<tr><td>".DBO()->Rate->Description->AsInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"380px"))."</td></tr>\n";
-				echo "<tr><td>".DBO()->Rate->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT, CONTEXT_DEFAULT)."</td></tr>\n";
+				echo "<tr><td>".DBO()->Rate->ServiceType->AsCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT, CONTEXT_DEFAULT)."</td></tr>\n";
 				echo "<tr><td>".DBO()->RecordType->Description->AsOutput(CONTEXT_DEFAULT,TRUE)."</td></tr>\n";
 				DBO()->Rate->Fleet->RenderOutput();
 				

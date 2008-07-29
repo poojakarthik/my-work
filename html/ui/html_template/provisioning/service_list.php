@@ -228,7 +228,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			$strStatusCell = $strStatus;
 			
 			// Build the Line Status cell
-			$strLineStatusCell = GetConstantDescription($arrService['History'][0]['LineStatus'], "LineStatus");
+			$strLineStatusCell = GetConstantDescription($arrService['History'][0]['LineStatus'], "service_line_status");
 			if ($strLineStatusCell === FALSE)
 			{
 				$strLineStatusCell = "Unknown";

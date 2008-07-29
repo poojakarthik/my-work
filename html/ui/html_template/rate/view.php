@@ -161,7 +161,7 @@ class HtmlTemplateRateView extends HtmlTemplate
 		
 		DBO()->Rate->Name->RenderOutput();
 		DBO()->Rate->Description->RenderOutput();
-		DBO()->Rate->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);
+		DBO()->Rate->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);
 		
 		if (DBO()->Rate->Destination->Value)
 		{

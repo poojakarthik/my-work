@@ -79,7 +79,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		echo "<div class='ContentSeparator' ></div>\n";
 		echo "<table border='0' cellspacing='0' cellpadding='0' width='100%'><tr>\n";
 		echo "<td width='50%'>\n";
-		DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
+		DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
 		
 		$intFullService = DBO()->RatePlan->CarrierFullService->Value;
 		if (!isset($GLOBALS['*arrConstant']['Carrier'][$intFullService]))
@@ -137,82 +137,6 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		echo "<div class='SmallSeperator'></div>\n";
 	}
 
-	//------------------------------------------------------------------------//
-	// _RenderRateDetail (HTML_CONTEXT_RATE_DETAIL) (DEPRICATED)
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderRateDetail()
-	 *
-	 * Render this HTML Template with Rate detail
-	 *
-	 * Render this HTML Template with Rate detail
-	 *
-	 * @method
-	 */
-	private function _RenderRateDetail()
-	{
-		echo "<h2 class='plan'>Plan Details</h2>\n";
-		echo "<div class='GroupedContent'>\n";
-		
-		DBO()->RatePlan->Name->RenderOutput();
-		DBO()->RatePlan->Description->RenderOutput();
-		DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
-		DBO()->RatePlan->Archived->RenderOutput();
-		DBO()->RatePlan->ChargeCap->RenderOutput();
-		DBO()->RatePlan->UsageCap->RenderOutput();
-		DBO()->RatePlan->MinMonthly->RenderOutput();
-		DBO()->RatePlan->Shared->RenderOutput();
-		DBO()->RatePlan->InAdvance->RenderOutput();
-
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-	}	
-
-	//------------------------------------------------------------------------//
-	// _RenderFullDetail (HTML_CONTEXT_FULL_DETAIL) (DEPRICATED)
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderFullDetail()
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * @method
-	 */
-	private function _RenderFullDetail()
-	{
-		echo "<h2 class='plan'>Plan Details</h2>\n";
-		echo "<div class='NarrowContent'>\n";
-		
-		if (DBO()->RatePlan->Id->Value)
-		{
-			DBO()->RatePlan->Name->RenderOutput();
-			DBO()->RatePlan->Description->RenderOutput();
-			DBO()->RatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
-			DBO()->RatePlan->Shared->RenderOutput();
-			DBO()->RatePlan->InAdvance->RenderOutput();
-			DBO()->RatePlan->MinMonthly->RenderOutput();
-			DBO()->RatePlan->ChargeCap->RenderOutput();
-			DBO()->RatePlan->UsageCap->RenderOutput();
-			
-			if (DBO()->RatePlan->StartDatetime->IsSet)
-			{
-				DBO()->RatePlan->StartDatetime->RenderOutput();
-			}
-			
-			if (DBO()->RatePlan->EndDatetime->IsSet)
-			{
-				DBO()->RatePlan->EndDatetime->RenderOutput();
-			}
-		}
-		else
-		{
-			echo "This service does not currently have a plan\n";
-		}
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-	}	
 }
 
 ?>

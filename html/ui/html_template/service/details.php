@@ -256,7 +256,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 
 		if (DBO()->Service->LineStatus->Value !== NULL)
 		{
-			DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("LineStatus"), RENDER_OUTPUT);
+			DBO()->Service->LineStatus->RenderCallback("GetConstantDescription", Array("service_line_status"), RENDER_OUTPUT);
 		
 			if (DBO()->Service->LineStatusDate->Value !== NULL && DBO()->Service->LineStatusDate->Value != "0000-00-00 00:00:00")
 			{

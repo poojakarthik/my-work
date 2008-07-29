@@ -109,7 +109,7 @@ class HtmlTemplateRateGroupImport extends HtmlTemplate
 		// Display known details of the RateGroup
 		echo "<div class='GroupedContent'>";
 		DBO()->RateGroup->ServiceType = DBO()->RecordType->ServiceType->Value;
-		DBO()->RateGroup->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT); 
+		DBO()->RateGroup->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT); 
 		DBO()->RecordType->Description->RenderOutput();
 		DBO()->RateGroup->Fleet->RenderOutput();
 		

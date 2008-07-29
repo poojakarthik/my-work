@@ -143,7 +143,7 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 		{
 			DBO()->Account->TradingName->RenderOutput();
 		}
-		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
+		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderOutput();
 		DBO()->RecordType->Description->RenderOutput();
 		

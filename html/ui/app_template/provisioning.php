@@ -141,6 +141,18 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		$mixResult = $this->GetHistory(DBO()->History->CategoryFilter->Value, DBO()->History->TypeFilter->Value, DBO()->Account->Id->Value, NULL, DBO()->History->MaxItems->Value);
 		DBO()->History->Records	= $mixResult;
 		
+		// Retrieve all outbound provisioning request types
+		DBL()->provisioning_type->SetColumns("id, name, outbound");
+		DBL()->provisioning_type->outbound = 1;
+		DBL()->provisioning_type->OrderBy("name");
+		DBL()->provisioning_type->Load();
+		
+		// Retrieve all 'telco' carriers
+		DBL()->Carrier->SetColumns("Id, Name, carrier_type");
+		DBL()->Carrier->carrier_type = CARRIER_TYPE_TELECOM;
+		DBL()->Carrier->OrderBy("Name");
+		DBL()->Carrier->Load();
+		
 		// The service record is no longer needed
 		DBO()->Service->Clean();
 		
@@ -347,10 +359,10 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		// (if more than 1 service, then make the one note but don't specify a service)
 		switch ($intRequestType)
 		{
-			case REQUEST_BAR:
+			case PROVISIONING_TYPE_BAR:
 				$strBarAction = "Bar";
 				break;
-			case REQUEST_UNBAR:
+			case PROVISIONING_TYPE_UNBAR:
 				$strBarAction = "Bar Reversal";
 				break;
 			default:
@@ -648,7 +660,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		{
 			case PROVISIONING_HISTORY_FILTER_BARRINGS_ONLY:
 				// Only include records relating to barrings and barring reversals
-				$arrBarringTypes = Array(REQUEST_BAR, REQUEST_UNBAR);
+				$arrBarringTypes = Array(PROVISIONING_TYPE_BAR, PROVISIONING_TYPE_UNBAR);
 				$strTypeFilter = "Type IN (". implode(", ", $arrBarringTypes) .")";
 				break;
 			case 0;

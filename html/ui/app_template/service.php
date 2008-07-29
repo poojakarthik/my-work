@@ -1282,7 +1282,7 @@ class AppTemplateService extends ApplicationTemplate
 			$arrExtraDetails	= $arrServiceDetails['ExtraDetailsRec'];
 			$intPlanId			= $arrServiceDetails['PlanId'];
 			$strStatus			= GetConstantDescription($arrServiceRec['Status'], "Service");
-			$strNote .= "\n". GetConstantDescription($arrServiceRec['ServiceType'], "ServiceType") ." - {$arrServiceRec['FNN']} ($strStatus)";
+			$strNote .= "\n". GetConstantDescription($arrServiceRec['ServiceType'], "service_type") ." - {$arrServiceRec['FNN']} ($strStatus)";
 			
 			$mixResult = $insService->Execute($arrServiceRec);
 			if ($mixResult === FALSE)
@@ -1416,7 +1416,7 @@ class AppTemplateService extends ApplicationTemplate
 				
 				// Full Service Request
 				$arrInsertValues['Carrier']	= $arrService['Carrier'];
-				$arrInsertValues['Type']	= REQUEST_FULL_SERVICE;
+				$arrInsertValues['Type']	= PROVISIONING_TYPE_FULL_SERVICE;
 				
 				if ($insRequest->Execute($arrInsertValues) === FALSE)
 				{
@@ -1426,7 +1426,7 @@ class AppTemplateService extends ApplicationTemplate
 				
 				// Preselection Request				
 				$arrInsertValues['Carrier'] = $arrService['CarrierPreselect'];
-				$arrInsertValues['Type']	= REQUEST_PRESELECTION;
+				$arrInsertValues['Type']	= PROVISIONING_TYPE_PRESELECTION;
 				
 				if ($insRequest->Execute($arrInsertValues) === FALSE)
 				{
@@ -3371,100 +3371,6 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Activating the account was successfull
 		return TRUE;
-	}
-	
-	
-	
-	//------------------------------------------------------------------------//
-	// BulkSetPlanForUnplanned  This is not currently in use
-	//------------------------------------------------------------------------//
-	/**
-	 * BulkSetPlanForUnplanned()
-	 *
-	 * Performs the logic for declaring plans for all services that have an FNN but no current plan
-	 * 
-	 * Performs the logic for declaring plans for all services that have an FNN but no current plan
-	 *
-	 * @return		void
-	 * @method
-	 *
-	 */
-	function BulkSetPlanForUnplanned()
-	{
-		// Check user authorization and permissions
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		
-		//check if the form was submitted
-		if (SubmittedForm('SetPlans', 'Submit Changes'))
-		{
-			TransactionStart();
-			
-			$mixReturn = $this->_BulkSetPlans();
-			if ($mixReturn === TRUE)
-			{
-				TransactionCommit();
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert"=>"Plans have been successfully set", "Location" => Href()->Admin_Console()));
-				return TRUE;
-			}
-			elseif ($mixReturn === FALSE)
-			{
-				TransactionRollback();
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert"=>"ERROR: Commiting changes to the database failed, unexpectedly", "Location" => Href()->Admin_Console()));
-				return TRUE;
-			}
-			else
-			{
-				TransactionRollback();
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert"=>"ERROR: Commiting changes to the database failed, unexpectedly", "Location" => Href()->Admin_Console()));
-				return TRUE;
-			}
-		}
-		
-		// context menu
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
-		
-		// breadcrumb menu
-		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->SetCurrentPage("Services Without Plans");
-		
-		
-		// Retrieve the list of services that currently don't have an active plan
-		// Shouldn't constants be used here instead of the actual numbers?
-		$strWhere = "ServiceType >= 100 AND ServiceType <= 104 AND ClosedOn IS NULL AND Id NOT IN (SELECT Service FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime)";
-		DBL()->Service->Where->Set($strWhere);
-		DBL()->Service->Load();
-		
-		// retrieve a list of all plans for each type of service
-		DBL()->RatePlan->Archived = 0;
-		DBL()->RatePlan->OrderBy("Name");
-		DBL()->RatePlan->Load();
-		
-		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('set_unplanned_services');
-
-		return TRUE;
-	}
-	
-	function _BulkSetPlans()
-	{
-		foreach (DBO()->Service as $strService=>$objNewPlan)
-		{
-			if ($objNewPlan->Value)
-			{
-				// A plan has been declared for the service
-				$intServiceId = str_replace("NewPlan", "", $strService);
-				if (!ChangePlan($intServiceId, $objNewPlan->Value))
-				{
-					// The plan couldn't declared for some reason
-					return FALSE;
-				}
-			}
-			return TRUE;
-		}
 	}
 	
 	//------------------------------------------------------------------------//

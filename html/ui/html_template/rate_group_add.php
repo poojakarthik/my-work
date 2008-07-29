@@ -175,7 +175,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type:</div>\n";
 				echo "      <select id='ServiceTypeCombo' name='RateGroup.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='Vixen.RateGroupAdd.ChangeServiceType(this.value)'>\n";
 				echo "         <option value='0' selected='selected'>&nbsp;</option>";
-				foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
+				foreach ($GLOBALS['*arrConstant']['service_type'] as $intKey=>$arrValue)
 				{
 					// Check if this is the currently selected ServiceType
 					$strSelected = ($intServiceType == $intKey) ? "selected='selected'" : "";

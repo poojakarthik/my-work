@@ -85,36 +85,19 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		//TODO! use this "Plan Select" option, when plan Carrier select functionality has been implemented
 		//$arrCarrierOptions[] = Array("Name" => "(Plan Select)", "Value" => "0");
 		$arrCarrierOptions[] = Array("Name" => "&nbsp;", "Value" => "0");
-		foreach ($GLOBALS['*arrConstant']['Carrier'] as $intCarrier=>$arrCarrier)
+		foreach (DBL()->Carrier as $dboCarrier)
 		{
-			if ($intCarrier == CARRIER_PAYMENT)
-			{
-				// Skip this special case
-				continue;
-			}
-			$arrCarrierOptions[] = Array("Name" => $arrCarrier['Description'], "Value" => $intCarrier);
+			$arrCarrierOptions[] = Array(	"Name"	=> $dboCarrier->Name->Value,
+											"Value"	=> $dboCarrier->Id->Value);
 		}
 		
 		// Build the list of values that can go into the Request combobox
 		$arrRequestOptions = Array();
-		$arrRequestOptions[] = Array("Name" => "&nbsp;", 				"Value" => "0");
-		foreach ($GLOBALS['*arrConstant']['Request'] as $intConstant=>$arrConstant)
+		$arrRequestOptions[] = Array("Name" => "&nbsp;", "Value" => "0");
+		foreach (DBL()->provisioning_type as $dboProvisioningType)
 		{
-			switch ($intConstant)
-			{
-				case REQUEST_CHANGE_ADDRESS:
-				case REQUEST_LOSS_VIRTUAL_PRESELECTION:
-				case REQUEST_LOSS_PRESELECT:
-				case REQUEST_LOSS_FULL:
-				case REQUEST_DISCONNECT_TEMPORARY:
-				case REQUEST_RECONNECT_TEMPORARY:
-					continue;
-					break;
-					
-				default:
-					$arrRequestOptions[] = Array("Name" => $arrConstant['Description'], "Value"	=> $intConstant);
-					break;
-			}
+			$arrRequestOptions[] = array(	"Name"	=> $dboProvisioningType->name->Value,
+											"Value"	=> $dboProvisioningType->id->Value);
 		}
 		
 		echo "<div class='GroupedContent'>";
