@@ -1,4 +1,4 @@
-table#ticketing {
+table#reflex {
 	width: 80%;
 	margin-left: auto;
 	margin-right: auto;
@@ -6,12 +6,12 @@ table#ticketing {
 	border-spacing: 0px;
 }
 
-table#ticketing caption div#caption_bar {
+table#reflex caption div#caption_bar {
 	width: 100%;
 	clear: both;
 }
 
-table#ticketing caption div#caption_title{
+table#reflex caption div#caption_title{
 	float: left;
 	width: 25%;
 	height: 100%;
@@ -23,7 +23,7 @@ table#ticketing caption div#caption_title{
 	padding-bottom: .25em;
 }
 
-table#ticketing caption div#caption_options{
+table#reflex caption div#caption_options{
 	float: right;
 	width: 70%;
 	text-align: right;
@@ -31,36 +31,36 @@ table#ticketing caption div#caption_options{
 	padding: 1px 5px;
 }
 
-table#ticketing thead, table#ticketing tfoot {
+table#reflex thead, table#reflex tfoot {
 	background-color: #333;
 	color: #eee;
 	text-align: left;
 }
 
-table#ticketing thead tr th, table#ticketing tfoot tr th {
+table#reflex thead tr th, table#reflex tfoot tr th {
 	padding-top: .25em;
 	padding-bottom: .25em;
 }
 
-table#ticketing td, table#ticketing th {
+table#reflex td, table#reflex th {
 	padding: .25em .5em;
 }
 
-table#ticketing tr td {
+table#reflex tr td {
 	background-color: #eee;
 	color: #333
 }
 
-table#ticketing tr.alt td {
+table#reflex tr.alt td {
 	background-color: #fff;
 	color: #333
 }
 
-table#ticketing a {
+table#reflex a {
 	color: #F88017;
 	font-weight: bold;
 }
 
-table#ticketing td.title {
+table#reflex td.title {
 	width: 20%;
 }
