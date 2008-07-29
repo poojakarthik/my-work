@@ -49,8 +49,8 @@ else
 }
 
 // Init Statements
-$selFiles = new StatementSelect("FileImport", "*", "Carrier = <Carrier> AND FileType = <FileType> AND Status = 207 AND ImportedOn >= '$strStartOfMonth'", "FileName");
-$selCDRCheck = new StatementSelect("CDR", "Id", "Status >= 198 AND File = <File>", NULL, 1);
+$selFiles		= new StatementSelect("FileImport", "*", "Carrier = <Carrier> AND FileType = <FileType> AND Status = 207 AND ImportedOn >= '$strStartOfMonth'", "FileName");
+$selCDRCheck	= new StatementSelect("CDR", "Id", "Status IN (198, 150) AND Credit = 0 AND File = <File>", NULL, 1);
 
 $GLOBALS['*strEmailContents']	= "";
 CLIEchoString("\n[ VALIDATING CDR FILES ]\n\n");
@@ -75,8 +75,8 @@ foreach ($arrConfig['CDRCheck'] as $arrCDRCheck)
 		// Match Regex
 		if (preg_match($arrCDRCheck['FileNameRegex'], $arrResult['FileName']))
 		{
-			// Make sure it hasn't been invoiced
-			if (!$selCDRCheck->Execute(Array('File' => $arrResult['Id'])))
+			// Are there any CDRs?
+			if ($selCDRCheck->Execute(Array('File' => $arrResult['Id'])))
 			{
 				$arrMatches[] = $arrResult;
 			}
