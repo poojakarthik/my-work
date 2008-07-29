@@ -110,14 +110,14 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		
 		// 8:	Finishes populating provisioning_type Table
 		$strSQL = "INSERT INTO provisioning_type (id, name, inbound, outbound, description, const_name, provisioning_type_nature) VALUES " .
-				"	(908, 'Temporary Disconnection'				, 0, 0, 'Temporary Disconnection'			, 'REQUEST_DISCONNECT_TEMPORARY'			, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
-					(909, 'Temporary Disconnection Reversal'	, 0, 0, 'Temporary Disconnection Reversal'	, 'REQUEST_RECONNECT_TEMPORARY'				, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
-					(910, 'Full Service Lost (Churned)'			, 1, 0, 'Full Service Lost (Churned)'		, 'REQUEST_LOSS_FULL'						, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
-					(911, 'Preselection Lost (Churned)'			, 1, 0, 'Preselection Lost (Churned)'		, 'REQUEST_LOSS_PRESELECT'					, (SELECT id FROM provisioning_type_nature WHERE name = 'Preselection')),
-					(912, 'Address Change'						, 1, 0, 'Address Change'					, 'REQUEST_CHANGE_ADDRESS'					, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
-					(915, 'Virtual Preselection Lost'			, 1, 0, 'Virtual Preselection Lost'			, 'REQUEST_LOSS_VIRTUAL_PRESELECTION'		, (SELECT id FROM provisioning_type_nature WHERE name = 'Preselection')),
-					(916, 'Full Service Lost (Diconnected)'		, 1, 0, 'Full Service Lost (Diconnected)'	, 'REQUEST_DISCONNECT_FULL'					, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
-					(917, 'Preselection Lost (Diconnected)'		, 1, 0, 'Preselection Lost (Diconnected)'	, 'REQUEST_DISCONNECT_PRESELECT'			, (SELECT id FROM provisioning_type_nature WHERE name = 'Preselection'));";
+				"	(908, 'Temporary Disconnection'				, 0, 0, 'Temporary Disconnection'			, 'PROVISIONING_TYPE_DISCONNECT_TEMPORARY'			, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
+					(909, 'Temporary Disconnection Reversal'	, 0, 0, 'Temporary Disconnection Reversal'	, 'PROVISIONING_TYPE_RECONNECT_TEMPORARY'				, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
+					(910, 'Full Service Lost (Churned)'			, 1, 0, 'Full Service Lost (Churned)'		, 'PROVISIONING_TYPE_LOSS_FULL'						, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
+					(911, 'Preselection Lost (Churned)'			, 1, 0, 'Preselection Lost (Churned)'		, 'PROVISIONING_TYPE_LOSS_PRESELECT'					, (SELECT id FROM provisioning_type_nature WHERE name = 'Preselection')),
+					(912, 'Address Change'						, 1, 0, 'Address Change'					, 'PROVISIONING_TYPE_CHANGE_ADDRESS'					, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
+					(915, 'Virtual Preselection Lost'			, 1, 0, 'Virtual Preselection Lost'			, 'PROVISIONING_TYPE_LOSS_VIRTUAL_PRESELECTION'		, (SELECT id FROM provisioning_type_nature WHERE name = 'Preselection')),
+					(916, 'Full Service Lost (Diconnected)'		, 1, 0, 'Full Service Lost (Diconnected)'	, 'PROVISIONING_TYPE_DISCONNECT_FULL'					, (SELECT id FROM provisioning_type_nature WHERE name = 'Full Service')),
+					(917, 'Preselection Lost (Diconnected)'		, 1, 0, 'Preselection Lost (Diconnected)'	, 'PROVISIONING_TYPE_DISCONNECT_PRESELECT'			, (SELECT id FROM provisioning_type_nature WHERE name = 'Preselection'));";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate provisioning_type Table. ' . $qryQuery->Error());
