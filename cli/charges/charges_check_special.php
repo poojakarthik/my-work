@@ -11,10 +11,6 @@
 require_once("../../flex.require.php");
 
 $arrFees = Array();
-// Late Payment Fee
-$arrFees['LatePayment']	['Like']		= 'LP____';
-$arrFees['LatePayment']	['BillTime']	= TRUE;
-
 // Account Processing Fee
 $arrFees['AccountProc']	['Like']		= 'AP___';
 $arrFees['AccountProc']	['BillTime']	= TRUE;
@@ -54,5 +50,5 @@ foreach ($arrFees as $strType=>$arrFee)
 Debug("Emailing results...");
 $strAddress	= 'rich@voiptelsystems.com.au, turdminator@hotmail.com';
 $strSubject	= "Unbilled Special Charges Report for ".date('Y-m-d H:i:s');
-SendEmail($strAddress, $strSubject, $strContent);
+SendEmail($strAddress, $strSubject, nl2br($strContent));
 ?>
