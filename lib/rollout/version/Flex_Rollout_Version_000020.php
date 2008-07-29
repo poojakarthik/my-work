@@ -140,7 +140,7 @@ class Flex_Rollout_Version_000020 extends Flex_Rollout_Version
 		
 		// 10:	Populates service_line_status Table
 		$strSQL = "INSERT INTO service_line_status (id, name, description, const_name) VALUES " .
-				"	(500, 'Pending'						, 'Pending Connection'			, 'SERVICE_LINE_PENDING');
+				"	(500, 'Pending'						, 'Pending Connection'			, 'SERVICE_LINE_PENDING'),
 					(501, 'Active'						, 'Active'						, 'SERVICE_LINE_ACTIVE'),
 					(502, 'Disconnected'				, 'Disconnected'				, 'SERVICE_LINE_DISCONNECTED'),
 					(503, 'Barred'						, 'Barred'						, 'SERVICE_LINE_BARRED'),
