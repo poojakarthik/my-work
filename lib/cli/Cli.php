@@ -449,6 +449,16 @@ abstract class Cli
 		throw new Exception("Invalid integer specified: '$int'");
 	}
 	
+	public static function _validFileName($filename)
+	{
+		$misc = "(){}[]<>&)-+*:_ ";
+		if (preg_match("/[^a-zA-Z0-9" . preg_quote($misc) ." ]+/", $filename))
+		{
+			throw new Exception("Filename contains invalid characters (Allowed: a-zA-Z0-9$misc): $filename");
+		}
+		return $filename;
+	}
+
 	public static function _validReadableFileOrDirectory($file)
 	{
 		if (file_exists($file))
@@ -468,6 +478,34 @@ abstract class Cli
 			}
 		}
 		throw new Exception("File or directory not found: '$file'");
+	}
+	
+	public static function _validWritableFile($file)
+	{
+		if (file_exists($file))
+		{
+			if (is_dir($file))
+			{
+				throw new Exception("Directory specified but file required: $file");
+			}
+			if (!is_writable($file))
+			{
+				throw new Exception("Unwritable file specified: $file");
+			}
+			return $file;
+		}
+		$path = dirname($file);
+		$lastPath = NULL;
+		while ($path !== $lastPath && !file_exists($path))
+		{
+			$lastPath = $path;
+			$path = dirname($path);
+		}
+		if (!is_writable($path))
+		{
+			throw new Exception("Unable to create file in unwritable directory: $file");
+		}
+		return $file;
 	}
 	
 	public static function _validWritableFileOrDirectory($file)

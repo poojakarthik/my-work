@@ -9,11 +9,15 @@ class Cli_App_Pdf extends Cli
 	const SWITCH_OUTPUT_FILE_PATH_AND_NAME = "f";
 	const SWITCH_SOURCE_MEDIA = "m";
 	const SWITCH_OUTPUT_MEDIA = "o";
+	const SWITCH_SINGLE_PDF = "j";
+	const SWITCH_SKIP_XML_OVERVIEW = "i";
 
 	private $logFile = NULL;
 
 	function run()
 	{
+		$mungeError = '';
+
 		try
 		{
 			// Include the application... 
@@ -113,6 +117,20 @@ class Cli_App_Pdf extends Cli
 				}
 			}
 
+			$singlePdfFile = $archiveDir && $arrArgs[self::SWITCH_SINGLE_PDF];
+			if ($singlePdfFile)$this->log("Will be munging into one PDF ($archiveDir :: " . $arrArgs[self::SWITCH_SINGLE_PDF] . ")");
+
+			$xmlSummaryFile = NULL;
+			$xmlDocumentType = NULL;
+			$xmlCustomerGroup = NULL;
+			$xmlEffectiveDate = NULL;
+			if ($singlePdfFile && !$arrArgs[self::SWITCH_SKIP_XML_OVERVIEW])
+			{
+				$xmlSummaryFile = fopen($archiveDir.'/index.xml', 'w');
+				fwrite($xmlSummaryFile, "<PDF>\n\t<Accounts>");
+			}
+
+
 			$this->log("Processing " . count($arrFiles) . " XML source files");
 
 			// Include the pdf library...
@@ -120,9 +138,11 @@ class Cli_App_Pdf extends Cli
 
 			$docCount = 0;
 			$lastDocNameLen = 0;
-			echo "Processing document $docCount   ";
+			$this->log("Processing document $docCount   ", FALSE, TRUE, TRUE);
 
 			$generatedDocs = array();
+
+			$pageCountOffset = 0;
 
 			foreach ($arrFiles as $strSource => $strDestination)
 			{
@@ -150,6 +170,17 @@ class Cli_App_Pdf extends Cli
 					}
 				}
 
+				if ($singlePdfFile && !$arrArgs[self::SWITCH_SKIP_XML_OVERVIEW])
+				{
+					$match = array();
+					preg_match("/\<Account +[\s\S]*\<\/Account\>/Ui", $fileContents, $match);
+					if (!count($match))
+					{
+						throw new Exception("Unable to find account details in XML file: $strSource");
+					}
+					$xmlDetail = $match[0];
+				}
+
 				foreach ($requiredTags as $requiredTag)
 				{
 					if (!array_key_exists($requiredTag, $docProps))
@@ -168,6 +199,11 @@ class Cli_App_Pdf extends Cli
 					}
 				}
 
+				if ($xmlCustomerGroup === NULL)
+				{
+					$xmlCustomerGroup = $custGroupId;
+				}
+
 				if ($arrArgs[self::SWITCH_EFFECTIVE_DATE] === FALSE)
 				{
 					$effectiveDate = $docProps["CreationDate"];
@@ -175,6 +211,11 @@ class Cli_App_Pdf extends Cli
 				else
 				{
 					$effectiveDate = $arrArgs[self::SWITCH_EFFECTIVE_DATE];
+				}
+
+				if ($xmlEffectiveDate == NULL)
+				{
+					$xmlEffectiveDate = $effectiveDate;
 				}
 
 				$docProps["DocumentType"] = str_replace("DOCUMENT_TYPE_", "DOCUMENT_TEMPLATE_TYPE_", $docProps["DocumentType"]);
@@ -188,6 +229,11 @@ class Cli_App_Pdf extends Cli
 				{
 					$this->log("Skipping XML file '$strSource' as it's document type is $documentTypeId (" . $docProps["DocumentType"] . "). We are only processing type " . $arrArgs[self::SWITCH_DOCUMENT_TYPE_ID] . " documents.");
 					continue;
+				}
+
+				if ($xmlDocumentType === NULL)
+				{
+					$xmlDocumentType = $documentTypeId;
 				}
 
 				$targetMedia = constant($docProps["DeliveryMethod"]);
@@ -231,7 +277,7 @@ class Cli_App_Pdf extends Cli
 
 				$docNameLen = strlen($strSource);
 				$pad = $lastDocNameLen > $docNameLen ? ($lastDocNameLen - $docNameLen) : 0;
-				echo str_repeat(chr(8), strlen($docCount)+$lastDocNameLen+3) . ++$docCount . " ($strSource)" . str_repeat(" ", $pad) . str_repeat(chr(8), $pad);
+				$this->log(str_repeat(chr(8), strlen($docCount)+$lastDocNameLen+3) . ++$docCount . " ($strSource)" . str_repeat(" ", $pad) . str_repeat(chr(8), $pad), FALSE, TRUE, TRUE);
 				ob_flush();
 				flush();
 				$lastDocNameLen = $docNameLen;
@@ -247,8 +293,11 @@ class Cli_App_Pdf extends Cli
 								TRUE);
 				$this->dieIfErred();
 
+				// Release memory used by file contents
+				$fileContents = "";
+
 				// Create the documents for the template
-				$this->log("Creating PDF for $strSource");
+				$this->log("\nCreating PDF for $strSource");
 				$this->startErrorCatching();
 				$pdf = $pdfTemplate->createDocument();
 				$this->dieIfErred();
@@ -264,6 +313,15 @@ class Cli_App_Pdf extends Cli
 				$this->log("Memory usage before saving PDF to file:      " . memory_get_usage());
 				$this->startErrorCatching();
 				$pdf->save($strDestination);
+
+				if ($singlePdfFile && !$arrArgs[self::SWITCH_SKIP_XML_OVERVIEW])
+				{
+					$nrPages = $pdf->getNrPages();
+					/*PageOffset=\"$pageCountOffset\" */ // Can't rely on this as we can't rely on the munging to munge files in same order!!!
+					fwrite($xmlSummaryFile, "\n\t\t" . substr($xmlDetail, 0, 8) . " Pages=\"$nrPages\" " . substr($xmlDetail, 9));
+					$pageCountOffset += $nrPages;
+				}
+
 				unset($pdf);
 				$this->dieIfErred();
 				$this->log("Memory usage after saving PDF to file:       " . memory_get_usage());
@@ -271,23 +329,108 @@ class Cli_App_Pdf extends Cli
 				$generatedDocs[] = $strDestination;
 			}
 
-			echo str_repeat(chr(8), $lastDocNameLen+3) . "\nProcessing complete";
+			$this->log(str_repeat(chr(8), $lastDocNameLen+3) . "\nProcessing complete", FALSE, TRUE, TRUE);
+			$this->log("\n");
+
 			ob_flush();
 			flush();
+
+			$rmDir = NULL;
+			if ($singlePdfFile)
+			{
+				// Need to munge all pdfs created into a single pdf file.
+				$mungedFile = $archiveDir . '/all.pdf';
+
+				// WIP :: Munge pdfs together IN ORDER THAT THEY APPEAR IN $generatedDocs
+				$rd = realpath($archiveDir).DIRECTORY_SEPARATOR;
+				$this->log("Munging PDFs to $mungedFile");
+				ob_flush();
+				flush();
+
+				$mungeError = shell_exec("pdftk {$rd}*.pdf cat output {$rd}all.pdf 2>&1");
+
+				if ($mungeError)
+				{
+					$this->log("Failed to munge PDFs. Will pack individually.", TRUE);
+				}
+				else
+				{
+					// Delete all the existing individual pdf files
+					$this->log("Removing individual PDFs");
+					foreach ($generatedDocs as $strSource => $strDestination)
+					{
+						unlink($strDestination);
+					}
+
+					// WIP :: Next, set the $generatedDocs array to contain ONLY the one PDF
+					$this->log("Updating the generated docs array PDFs");
+					$generatedDocs = array();
+					$generatedDocs[] = $mungedFile;
+				}
+
+				$images = "";
+				switch($xmlDocumentType)
+				{
+					case DOCUMENT_TEMPLATE_TYPE_INVOICE:
+
+						$this->log("Loading image resource ('fdbp://Invoice Ad (Print)' for CustomerGroup.Id: $xmlCustomerGroup, Effctive date: " . date('Y-m-d H:i:s', $xmlEffectiveDate) . ")");
+						$rm = Flex_Pdf_Resource_Manager::getResourceManager($xmlCustomerGroup, date('Y-m-d H:i:s', $xmlEffectiveDate));
+						$filePath = $rm->getResourcePath('fdbp://Invoice Ad (Print)');
+						$this->log("Resource path: $filePath");
+
+						$fileName = basename($filePath);
+						$fileName = 'advert' . substr($fileName, strrpos($fileName, '.'));
+						$this->log("File name: $fileName");
+
+						// <img src="fdbp://Invoice Ad (Print)" style="left: 56.6pt; top: 267pt; width: 523pt; height: 295pt; media: print;" />
+						$images = "\n\t<Images>\n\t\t<Image page=\"1\" src=\"images/" . htmlspecialchars($fileName) . "\" width=\"523pt\" height=\"295pt\" top=\"267pt\" left=\"56.6pt\" />\n\t</Images>";
+						$imgDir = $archiveDir . '/images';
+						if (!file_exists($imgDir))
+						{
+							mkdir($imgDir);
+							$rmDir = $imgDir;
+						}
+						$this->log("Copying image resource to file system");
+						copy($filePath, $imgDir . '/' . $fileName);
+						$generatedDocs[] = $imgDir . '/' . $fileName;
+						break;
+				}
+
+				if (!$arrArgs[self::SWITCH_SKIP_XML_OVERVIEW])
+				{
+					$this->log("Ending XML summary file, including image details");
+					// Create an XML record of all the files created containing account details (from xml) and nr pages (from individual pdf)
+					fwrite($xmlSummaryFile, "\n\t</Accounts>$images\n</PDF>");
+					fclose($xmlSummaryFile);
+					$generatedDocs[] = $archiveDir . '/index.xml';
+				}
+
+			}
 
 			// If writing to an archived file...
 			if ($bolArchived)
 			{
-				$this->log("Archiving PDFs to $strArchiveFile");
+				$this->log("Archiving files to $strArchiveFile");
 				$objArchive = new Archive_Tar($strArchiveFile, $strCompression);
 				$objArchive->addModify($generatedDocs, '', $archiveDir);
 
 				// Remove the archived folder
-				$this->log("Removing unarchived copies of PDFs");
+				$this->log("Removing unarchived copies of files");
 				foreach ($generatedDocs as $strSource => $strDestination)
 				{
 					unlink($strDestination);
 				}
+
+				if ($rmDir)
+				{
+					rmdir($rmDir);
+				}
+			}
+
+			if ($mungeError)
+			{
+				$this->log("\nCompleted with munge error. PDFs have been packed individually, not merged because:\n$mungeError", TRUE, FALSE, TRUE);
+				return 1;
 			}
 
 			$this->log("\nCompleted successfully.\n", FALSE, FALSE, TRUE);
@@ -308,7 +451,7 @@ class Cli_App_Pdf extends Cli
 			self::SWITCH_CUSTOMER_GROUP_ID => array(
 				self::ARG_LABEL 		=> "CUSTOMER_GROUP",
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is the name of the customer group to create the PDF file for (from database) [optional, default taken from XML file]",
+				self::ARG_DESCRIPTION => "is the name of the 'c'ustomer group to create the PDF file for (from database) [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validConstant("%1$s", "CUSTOMER_GROUP_")'
 			),
@@ -316,7 +459,7 @@ class Cli_App_Pdf extends Cli
 			self::SWITCH_DOCUMENT_TYPE_ID => array(
 				self::ARG_LABEL 		=> "DOCUMENT_TYPE",
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is the document type to be generated (e.g. INVOICE, FRIENDLY_REMINDER, OVERDUE_NOTICE, SUSPENSION_NOTICE or FINAL_DEMAND_NOTICE) [optional, default taken from XML file]",
+				self::ARG_DESCRIPTION => "is the 'd'ocument type to be generated (e.g. INVOICE, FRIENDLY_REMINDER, OVERDUE_NOTICE, SUSPENSION_NOTICE or FINAL_DEMAND_NOTICE)",
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validConstant("%1$s", "DOCUMENT_TEMPLATE_TYPE_")'
 			),
@@ -324,7 +467,7 @@ class Cli_App_Pdf extends Cli
 			self::SWITCH_XML_DATA_FILE_LOCATION => array(
 				self::ARG_LABEL 		=> "XML_DATA_FILE_LOCATION",
 				self::ARG_REQUIRED 	=> TRUE,
-				self::ARG_DESCRIPTION => "is the full path to an XML data file or directory containing XML files",
+				self::ARG_DESCRIPTION => "is the full path to an 'X'ML data file or directory containing XML files",
 				self::ARG_DEFAULT 	=> NULL,
 				self::ARG_VALIDATION 	=> 'Cli::_validReadableFileOrDirectory("%1$s")'
 			),
@@ -332,7 +475,7 @@ class Cli_App_Pdf extends Cli
 			self::SWITCH_OUTPUT_FILE_PATH_AND_NAME => array(
 				self::ARG_LABEL 		=> "OUTPUT_FILE_PATH_AND_NAME",
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is the full path for the output PDF file or directory (if PDF files exist, they may be overwritten)",
+				self::ARG_DESCRIPTION => "is the full path for the output PDF 'f'ile or directory (if PDF files exist, they may be overwritten)",
 				self::ARG_DEFAULT 	=> NULL,
 				self::ARG_VALIDATION 	=> 'Cli::_validWritableFileOrDirectory("%1$s")'
 			),
@@ -340,7 +483,7 @@ class Cli_App_Pdf extends Cli
 			self::SWITCH_EFFECTIVE_DATE => array(
 				self::ARG_LABEL 		=> "EFFECTIVE_DATE",
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is the effective date of the document in 'YYYY-mm-dd hh:ii:ss' or Unix " .
+				self::ARG_DESCRIPTION => "is the 'e'ffective date of the document in 'YYYY-mm-dd hh:ii:ss' or Unix " .
 										"timestamp format and detmines the template used [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> time(),
 				self::ARG_VALIDATION 	=> 'Cli::_validDate("%1$s")'
@@ -349,18 +492,33 @@ class Cli_App_Pdf extends Cli
 			self::SWITCH_SOURCE_MEDIA => array(
 				self::ARG_LABEL 		=> "SOURCE_MEDIA", 
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "if specified, only XML documents originally intended for thie media are processed (EMAIL or PRINT)",
+				self::ARG_DESCRIPTION => "if specified, only XML documents originally intended for the 'm'edia are processed (EMAIL or PRINT)",
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validInArray("%1$s", array("EMAIL","PRINT"))'
 			),
-		
+
 			self::SWITCH_OUTPUT_MEDIA => array(
 				self::ARG_LABEL 		=> "OUTPUT_MEDIA", 
 				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => "is the output media for the PDF document (EMAIL or PRINT) [optional, default taken from XML file]",
+				self::ARG_DESCRIPTION => "is the 'o'utput media for the PDF document (EMAIL or PRINT) [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validInArray("%1$s", array("EMAIL","PRINT"))'
 			),
+
+			self::SWITCH_SINGLE_PDF => array(
+				self::ARG_REQUIRED 	=> FALSE,
+				self::ARG_DESCRIPTION => " if set, 'j'oins all pdfs to a single pdf file (only effective when archiving files)",
+				self::ARG_DEFAULT 	=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
+			),
+
+			self::SWITCH_SKIP_XML_OVERVIEW => array(
+				self::ARG_REQUIRED 	=> FALSE,
+				self::ARG_DESCRIPTION => " if set, skips generation of an 'i'ndex.xml summary file when outputting to a single PDF file",
+				self::ARG_DEFAULT 	=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
+			),
+
 		);
 		return $commandLineArguments;
 	}

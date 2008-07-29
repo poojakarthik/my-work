@@ -62,6 +62,10 @@ class Flex_Pdf extends Zend_Pdf
 		}
 	}
 
+	public function getNrPages()
+	{
+		return count($this->pages);
+	}
 }
 
 ?>
