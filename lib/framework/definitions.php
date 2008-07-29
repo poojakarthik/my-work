@@ -438,7 +438,7 @@ define("INVOICE_EMAIL_SUBJECT", "Telephone Billing for <billperiod>.");
 define("DONKEY"						, -1);
 
 // Service Types
-$GLOBALS['*arrConstant']	['ServiceType']	[100]	['Constant']	= 'SERVICE_TYPE_ADSL';
+/*$GLOBALS['*arrConstant']	['ServiceType']	[100]	['Constant']	= 'SERVICE_TYPE_ADSL';
 $GLOBALS['*arrConstant']	['ServiceType']	[100]	['Description']	= 'ADSL';
 $GLOBALS['*arrConstant']	['ServiceType']	[101]	['Constant']	= 'SERVICE_TYPE_MOBILE';
 $GLOBALS['*arrConstant']	['ServiceType']	[101]	['Description']	= 'Mobile';
@@ -447,7 +447,7 @@ $GLOBALS['*arrConstant']	['ServiceType']	[102]	['Description']	= 'Land Line';
 $GLOBALS['*arrConstant']	['ServiceType']	[103]	['Constant']	= 'SERVICE_TYPE_INBOUND';
 $GLOBALS['*arrConstant']	['ServiceType']	[103]	['Description']	= 'Inbound 1300/1800';
 $GLOBALS['*arrConstant']	['ServiceType']	[104]	['Constant']	= 'SERVICE_TYPE_DIALUP';
-$GLOBALS['*arrConstant']	['ServiceType']	[104]	['Description']	= 'Dialup Internet';
+$GLOBALS['*arrConstant']	['ServiceType']	[104]	['Description']	= 'Dialup Internet';*/
 
 // Context
 define("CONTEXT_NORMAL"			, 0);
@@ -517,7 +517,7 @@ $GLOBALS['*arrConstant']	['Service']	[404]	['Description']	= 'Pending Activation
 
 
 // Service Line Status
-$GLOBALS['*arrConstant']	['LineStatus']	[500]	['Constant']	= 'SERVICE_LINE_PENDING';
+/*$GLOBALS['*arrConstant']	['LineStatus']	[500]	['Constant']	= 'SERVICE_LINE_PENDING';
 $GLOBALS['*arrConstant']	['LineStatus']	[500]	['Description']	= 'Pending Connection';
 $GLOBALS['*arrConstant']	['LineStatus']	[501]	['Constant']	= 'SERVICE_LINE_ACTIVE';
 $GLOBALS['*arrConstant']	['LineStatus']	[501]	['Description']	= 'Active';
@@ -528,15 +528,15 @@ $GLOBALS['*arrConstant']	['LineStatus']	[503]	['Description']	= 'Barred';
 $GLOBALS['*arrConstant']	['LineStatus']	[504]	['Constant']	= 'SERVICE_LINE_TEMPORARY_DISCONNECT';
 $GLOBALS['*arrConstant']	['LineStatus']	[504]	['Description']	= 'Temporarily Disconnected';
 $GLOBALS['*arrConstant']	['LineStatus']	[505]	['Constant']	= 'SERVICE_LINE_REJECTED';
-$GLOBALS['*arrConstant']	['LineStatus']	[505]	['Description']	= 'Connection Request Rejected';
+$GLOBALS['*arrConstant']	['LineStatus']	[505]	['Description']	= 'Churn Request Rejected';
 $GLOBALS['*arrConstant']	['LineStatus']	[506]	['Constant']	= 'SERVICE_LINE_CHURNED';
 $GLOBALS['*arrConstant']	['LineStatus']	[506]	['Description']	= 'Churned Away';
 $GLOBALS['*arrConstant']	['LineStatus']	[507]	['Constant']	= 'SERVICE_LINE_REVERSED';
-$GLOBALS['*arrConstant']	['LineStatus']	[507]	['Description']	= 'Churn Reversed';
+$GLOBALS['*arrConstant']	['LineStatus']	[507]	['Description']	= 'Churn Reversed';*/
 
 
 // Provisioning Request Types
-$GLOBALS['*arrConstant']	['Request']	[900]	['Constant']	= 'REQUEST_FULL_SERVICE';
+/*$GLOBALS['*arrConstant']	['Request']	[900]	['Constant']	= 'REQUEST_FULL_SERVICE';
 $GLOBALS['*arrConstant']	['Request']	[900]	['Description']	= 'Full Service';
 $GLOBALS['*arrConstant']	['Request']	[901]	['Constant']	= 'REQUEST_PRESELECTION';
 $GLOBALS['*arrConstant']	['Request']	[901]	['Description']	= 'Preselection';
@@ -557,9 +557,9 @@ $GLOBALS['*arrConstant']	['Request']	[908]	['Description']	= 'Temporary Disconne
 $GLOBALS['*arrConstant']	['Request']	[909]	['Constant']	= 'REQUEST_RECONNECT_TEMPORARY';
 $GLOBALS['*arrConstant']	['Request']	[909]	['Description']	= 'Temporary Disconnection Reversal';
 $GLOBALS['*arrConstant']	['Request']	[910]	['Constant']	= 'REQUEST_LOSS_FULL';
-$GLOBALS['*arrConstant']	['Request']	[910]	['Description']	= 'Full Service Lost';
+$GLOBALS['*arrConstant']	['Request']	[910]	['Description']	= 'Full Service Lost (Churned)';
 $GLOBALS['*arrConstant']	['Request']	[911]	['Constant']	= 'REQUEST_LOSS_PRESELECT';
-$GLOBALS['*arrConstant']	['Request']	[911]	['Description']	= 'Preselection Lost';
+$GLOBALS['*arrConstant']	['Request']	[911]	['Description']	= 'Preselection Lost (Churned)';
 $GLOBALS['*arrConstant']	['Request']	[912]	['Constant']	= 'REQUEST_CHANGE_ADDRESS';
 $GLOBALS['*arrConstant']	['Request']	[912]	['Description']	= 'Address Changed';
 $GLOBALS['*arrConstant']	['Request']	[913]	['Constant']	= 'REQUEST_VIRTUAL_PRESELECTION';
@@ -568,6 +568,10 @@ $GLOBALS['*arrConstant']	['Request']	[914]	['Constant']	= 'REQUEST_VIRTUAL_PRESE
 $GLOBALS['*arrConstant']	['Request']	[914]	['Description']	= 'Virtual Preselection Reversal';
 $GLOBALS['*arrConstant']	['Request']	[915]	['Constant']	= 'REQUEST_LOSS_VIRTUAL_PRESELECTION';
 $GLOBALS['*arrConstant']	['Request']	[915]	['Description']	= 'Virtual Preselection Lost';
+$GLOBALS['*arrConstant']	['Request']	[916]	['Constant']	= 'REQUEST_DISCONNECT_FULL';
+$GLOBALS['*arrConstant']	['Request']	[916]	['Description']	= 'Full Service Lost (Diconnected)';
+$GLOBALS['*arrConstant']	['Request']	[917]	['Constant']	= 'REQUEST_DISCONNECT_PRESELECT';
+$GLOBALS['*arrConstant']	['Request']	[917]	['Description']	= 'Preselection Lost (Diconnected)';*/
 
 
 // Provisioning Line Actions (Log)
