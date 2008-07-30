@@ -29,7 +29,7 @@
 // set the page title
 if (DBO()->Service->Id->IsSet)
 {
-	$strServiceType	= GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType");
+	$strServiceType	= GetConstantDescription(DBO()->Service->ServiceType->Value, "service_type");
 	$strStatus		= (DBO()->Service->Status->Value != SERVICE_ACTIVE)? "(". GetConstantDescription(DBO()->Service->Status->Value, "Service") .")" : "";
 	$strFNN			= DBO()->Service->FNN->Value;
 	$strPageName = "Provisioning History - $strServiceType - $strFNN";

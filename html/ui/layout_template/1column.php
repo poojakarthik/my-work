@@ -27,9 +27,7 @@
 
 
 $this->RenderHeader();
-$this->RenderVixenHeader();
-$this->RenderBreadCrumbMenu();
-$this->RenderContextMenu();
+$this->RenderFlexHeader(TRUE, TRUE, TRUE);
 ?>
 
 

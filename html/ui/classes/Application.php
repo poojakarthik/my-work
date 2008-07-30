@@ -150,20 +150,24 @@ class Application
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		$this->objAppTemplate->SetModal($bolModal);
 	
+		ContextMenu()->Employee_Console();
+		
 		// Run AppTemplate
 		$fltStart = microtime(TRUE);		
 		$this->objAppTemplate->{$strMethod}();
 		$fltAppTemplateTime = microtime(TRUE) - $fltStart;		
 		
 		// Append default options to the Context Menu
-		ContextMenu()->Employee_Console();
+		ContextMenu()->Customer->View_Recent_Customers();
+		ContextMenu()->Customer->Find_Customer();
+		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
-			ContextMenu()->Add_Customer();
+			ContextMenu()->Customer->Add_Customer();
 		}
-		ContextMenu()->Find_Customer();
-		ContextMenu()->View_Recent_Customers();
+		
 		ContextMenu()->Available_Plans();
+		ContextMenu()->Ticketing_Console();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
 			ContextMenu()->Admin_Console();
@@ -174,9 +178,6 @@ class Application
 		{
 			ContextMenu()->Ticketing_Console();
 		}
-
-		ContextMenu()->Logout();
-		
 		
 		// Render Page
 		//ob_start();

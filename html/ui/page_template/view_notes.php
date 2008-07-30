@@ -33,7 +33,7 @@
 // set the page title
 if (DBO()->Service->Id->IsSet)
 {
-	$strPageName = "Service Notes - " . GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType") . " - " . DBO()->Service->FNN->Value;
+	$strPageName = "Service Notes - " . GetConstantDescription(DBO()->Service->ServiceType->Value, "service_type") . " - " . DBO()->Service->FNN->Value;
 }
 elseif (DBO()->Contact->Id->IsSet)
 {

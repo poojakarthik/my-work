@@ -30,7 +30,7 @@
 if (DBO()->RatePlan->ServiceType->Value)
 {
 	// The filter has been used
-	$strPageTitle = "Available " . GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "ServiceType") . " Plans";
+	$strPageTitle = "Available " . GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "service_type") . " Plans";
 }
 else
 {

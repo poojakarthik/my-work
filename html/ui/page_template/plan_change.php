@@ -31,7 +31,7 @@
  */
 
 // Set the page title
-$strTitle = "Change Plan - ". GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType") ." - ". DBO()->Service->FNN->Value;
+$strTitle = "Change Plan - ". GetConstantDescription(DBO()->Service->ServiceType->Value, "service_type") ." - ". DBO()->Service->FNN->Value;
 $this->Page->SetName($strTitle);
 
 // Set the page layout

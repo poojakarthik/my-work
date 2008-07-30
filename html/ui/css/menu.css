@@ -26,8 +26,12 @@
 	padding: 0.25em 1em;
 }
 
+#nav a[onclick], #nav a[href] {
+	cursor: pointer;
+}
+
 #nav li.dropdown {
-	background-image: url('https://telcoblue.yellowbilling.com.au/management/img/template/order_desc.png');
+	background-image: url('../img/template/order_desc.png');
 	background-position: 0% 50%;
 	background-repeat: no-repeat;
 }

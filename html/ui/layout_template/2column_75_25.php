@@ -27,30 +27,30 @@
 
 
 $this->RenderHeader();
-$this->RenderVixenHeader();
-$this->RenderBreadCrumbMenu();
-$this->RenderContextMenu();
+$this->RenderFlexHeader(TRUE, TRUE, TRUE);
 
 // Render the columns
 ?>
 
 <div id='PageBody'>
-<h1> <?php echo $this->_strPageName; ?></h1>
-<table width='100%' border='0'>
-	<tr>
-		<td width='74%' valign='top'>
-			
-			<?php $this->RenderColumn(COLUMN_ONE); ?>
-			
-		</td>
-		<td width='1%'></td>
-		<td width='25%' valign='top'>
-			
-			<?php $this->RenderColumn(COLUMN_TWO); ?>
-			
-		</td>
-	</tr>
-</table>
+	<div id='PageTitle' name='PageTitle'>
+		<h1> <?php echo $this->_strPageName; ?></h1>
+	</div>
+	<table width='100%' border='0'>
+		<tr>
+			<td width='74%' valign='top'>
+				
+				<?php $this->RenderColumn(COLUMN_ONE); ?>
+				
+			</td>
+			<td width='1%'></td>
+			<td width='25%' valign='top'>
+				
+				<?php $this->RenderColumn(COLUMN_TWO); ?>
+				
+			</td>
+		</tr>
+	</table>
 </div>
 
 <?php

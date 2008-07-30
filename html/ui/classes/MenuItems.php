@@ -127,7 +127,7 @@ class MenuItems
 	 */
 	function TicketingConsole()
 	{
-		$this->strContextMenuLabel = "Ticketing System";
+		$this->strContextMenuLabel = "Ticketing";
 		$this->strLabel = "Ticketing";
 		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/System";
 	}
@@ -387,7 +387,7 @@ class MenuItems
 	function EmployeeConsole()
 	{
 		$this->strLabel	= "Console";
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Console";
 		return self::OLD_FRAMEWORK . "console.php";
 	}
 	

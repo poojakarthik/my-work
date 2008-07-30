@@ -11,6 +11,9 @@ $arrScript 		= explode('/', $strScript);
 $strTemplate 	= $arrScript[0];
 $strMethod 		= $arrScript[1];
 
+// Get the Flex class...
+require_once '../../lib/classes/Flex.php';
+
 // load framework
 require_once('../ui/require.php');
 

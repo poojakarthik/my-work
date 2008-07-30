@@ -239,11 +239,14 @@ class Page
 	{
 		$strMd5 = md5_file(MODULE_DEFAULT_CSS);
 		echo "\t\t<link rel='stylesheet' type='text/css' href='css.php?v=$strMd5' />\n";
-		$cssFiles = glob(GetVixenBase() . '/html/ui/css/*.css');
+		
+		$cssFiles = glob(Flex::getBase() . '/html/ui/css/*.css');
 		foreach($cssFiles as $cssFile)
 		{
 			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/" . basename($cssFile) . "' />\n";
 		}
+		
+		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -527,31 +530,6 @@ class Page
 	
 	
 	//------------------------------------------------------------------------//
-	// RenderContextMenu
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderContextMenu()
-	 *
-	 * Renders the context menu
-	 *
-	 * Renders the context menu
-	 * 
-	 * @method
-	 */
-	function RenderContextMenu()
-	{
-		// build array
-		$arrContextMenu = ContextMenu()->BuildArray();
-		
-		// convert to json
-		$strContextMenu = Json()->Encode($arrContextMenu);
-		
-		// add to html and run js
-		echo "<div id='VixenMenu' class='ContextMenu'></div>\n";
-		echo "<script type='text/javascript'>Vixen.Menu.objMenu = $strContextMenu; Vixen.Menu.Render();</script>\n";
-	}
-	
-	//------------------------------------------------------------------------//
 	// RenderBreadCrumbMenu
 	//------------------------------------------------------------------------//
 	/**
@@ -598,41 +576,136 @@ class Page
 	 * Renders the Flex header including the context menu
 	 * (This is the new Flex header with the horizontal context menu and search functionality)
 	 * 
+	 * @param	bool	$bolWithSearch		optional, defaults to TRUE.  Set to FALSE to suppress rendering of search controls and user details
+	 * @param	bool	$bolWithMenu		optional, defaults to TRUE.  Set to FALSE to suppress rendering of the context menu
+	 * @param	bool	$bolWithBreadCrumbs	optional, defaults to TRUE.  Set to FALSE to suppress rendering of the bread crumb menu
+	 * 
 	 * @method
 	 */
-	function RenderFlexHeader($bolWithSearch=TRUE)
+	function RenderFlexHeader($bolWithSearch=TRUE, $bolWithMenu=TRUE, $bolWithBreadCrumbs=TRUE)
 	{
 		echo "
-	<div id=\"header\" name=\"header\">
-		<div id=\"logo\">
-			<div id=\"blurb\" name=\"blurb\">Flex Customer Management System</div>
+	<div id='header' name='header'>
+		<div id='logo'>
+			<div id='blurb' name='blurb'>Flex Customer Management System</div>
 		</div>\n";
-/*
+
 		if ($bolWithSearch && Flex::loggedIn())
 		{
 			$this->RenderSearchField();
 		}
-*/		
+		
+		if ($bolWithMenu)
+		{
+			$this->RenderContextMenu();
+		}
+		
+		// Close the header div
+		echo "\t</div>\n";
+		
+		if ($bolWithBreadCrumbs)
+		{
+			$this->RenderBreadCrumbMenu();
+		}
+		
 	}
 
+	//------------------------------------------------------------------------//
+	// RenderSearchField
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderSearchField()
+	 *
+	 * Renders the user details and search controls in the page header
+	 *
+	 * Renders the user details and search controls in the page header
+	 * 
+	 * @method
+	 */
 	function RenderSearchField()
 	{
-/*		
 		$strUserName = Flex::getDisplayName();
-*/		
+
 		echo "
-		<div id=\"person_search\" name=\"person_search\">
-			<div id=\"person\" name=\"person\">
+		<div id='person_search' name='person_search'>
+			<div id='person' name='person'>
 				Logged in as: $strUserName
-			<!--	| <a href=\"#\">Preferences</a> -->
-				| <a href=\"logout.php\">Logout</a>
+				| <a href='#' >Preferences</a>
+				| <a href='flex.php/Employee/Logout/' >Logout</a>
 			</div>
-			<div id=\"search_bar\" name=\"search_bar\">
+			<div id='search_bar' name='search_bar'>
 				Search: 
-				<input type=\"text\" id=\"search_string\" name=\"search_string\" />
+				<input type='text' id='search_string' name='search_string' />
+				<select name='category' id='category'>
+
+					<option>Tickets</option>
+				</select>
+				<input type='submit' id='Search' name='Search' value='Search' onclick='\$Alert(\"Search feature is not yet implemented\")'/>
 			</div>
 		</div>\n";
 	}
+
+	//------------------------------------------------------------------------//
+	// RenderContextMenu
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderContextMenu()
+	 *
+	 * Renders the context menu
+	 *
+	 * Renders the context menu
+	 * 
+	 * @method
+	 */
+	function RenderContextMenu()
+	{
+		// Build array
+		$arrContextMenu = ContextMenu()->BuildArray();
+		
+		echo "
+			<div id='nav' name='nav'>\n";
+		self::renderMenuLevel($arrContextMenu);
+		echo "
+			</div>\n";
+		return;
+	}
+
+	private function renderMenuLevel($arrItems, $intLevel=0)
+	{
+		$strIndent = str_repeat("\t", 4 + (2 * $intLevel));
+		if (!is_array($arrItems) || empty($arrItems))
+		{
+			return;
+		}
+		echo "$strIndent<ul>\n";
+		foreach ($arrItems as $strLabel => $mixValue)
+		{
+			if (is_string($mixValue))
+			{
+				// $mixValue is an action/link
+				if (strtolower(substr($mixValue, 0, 11)) == "javascript:")
+				{
+					// The action is javascript
+					$mixValue = substr($mixValue, 11);
+					echo "$strIndent\t<li><a onclick=\"" . htmlspecialchars($mixValue, ENT_QUOTES) . "\">" . htmlspecialchars($strLabel) . "</a></li>\n";
+				}
+				else
+				{
+					// The action is a href
+					echo "$strIndent\t<li><a href=\"" . htmlspecialchars($mixValue, ENT_QUOTES) . "\">" . htmlspecialchars($strLabel) . "</a></li>\n";
+				}
+			}
+			else
+			{
+				// $mixValue is a submenu
+				echo "$strIndent\t<li class='dropdown'><a>" . htmlspecialchars($strLabel, ENT_QUOTES) . "</a>\n";
+				self::renderMenuLevel($mixValue, $intLevel + 1);
+				echo "$strIndent\t</li>\n";
+			}
+		}
+		echo "$strIndent</ul>\n";
+	}
+
 	
 	//------------------------------------------------------------------------//
 	// RenderClientAppHeader DEPRECIATED

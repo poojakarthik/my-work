@@ -27,15 +27,15 @@
 
 
 $this->RenderHeader();
-$this->RenderVixenHeader();
-$this->RenderBreadCrumbMenu();
-$this->RenderContextMenu();
+$this->RenderFlexHeader(TRUE, TRUE, TRUE);
 
 // Render the columns
 ?>
 
 <div id='PageBody'>
-	<h1> <?php echo $this->_strPageName; ?></h1>
+	<div id='PageTitle' name='PageTitle'>
+		<h1> <?php echo $this->_strPageName; ?></h1>
+	</div>
 	<table width='100%' border='0'>
 		<tr>
 			<td valign='top' colspan='3'>

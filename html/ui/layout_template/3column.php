@@ -34,30 +34,30 @@
 		// this echo will be replaced by a page template
 		// and a header template
 		
-		$this->RenderHeader();
-		$this->RenderVixenHeader();
-		$this->RenderBreadCrumbMenu();
-		$this->RenderContextMenu();
+$this->RenderHeader();
+$this->RenderFlexHeader(TRUE, TRUE, TRUE);
 
 		//var_dump($this->Page->arrObjects);
 		//$this->RenderColumn(COLUMN_ONE);
 		
-		?>
-	<div id='PageBody'>
+?>
+<div id='PageBody'>
+	<div id='PageTitle' name='PageTitle'>
 		<h1> <?php echo $this->_strPageName; ?></h1>
-		<div id='Container_Columns_1_And_2' style='width:100%;height:auto'>
-			<div id='Column1' style='width:49%;height:auto;float:left'>
-				<?php $this->RenderColumn(COLUMN_ONE); ?>
-			</div>
-			<div id='Column2' style='width:49%;height:auto;float:right;'>
-				<?php $this->RenderColumn(COLUMN_TWO); ?>
-			</div>
+	</div>
+	<div id='Container_Columns_1_And_2' style='width:100%;height:auto'>
+		<div id='Column1' style='width:49%;height:auto;float:left'>
+			<?php $this->RenderColumn(COLUMN_ONE); ?>
 		</div>
-		<div id='Column3' style='width:100%;clear:both'>
-			<?php $this->RenderColumn(COLUMN_THREE); ?>
+		<div id='Column2' style='width:49%;height:auto;float:right;'>
+			<?php $this->RenderColumn(COLUMN_TWO); ?>
 		</div>
 	</div>
-		<?php
+	<div id='Column3' style='width:100%;clear:both'>
+		<?php $this->RenderColumn(COLUMN_THREE); ?>
+	</div>
+</div>
+<?php
 		
 		$this->RenderFooter();
 		

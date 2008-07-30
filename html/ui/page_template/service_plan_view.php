@@ -4,7 +4,7 @@
 // to put into each column on the page
 
 // Set the page title
-$strServiceType	= GetConstantDescription(DBO()->Service->ServiceType->Value, "ServiceType");
+$strServiceType	= GetConstantDescription(DBO()->Service->ServiceType->Value, "service_type");
 $strFnn			= DBO()->Service->FNN->FormattedValue();
 $this->Page->SetName("Service Plan: $strServiceType - $strFnn");
 

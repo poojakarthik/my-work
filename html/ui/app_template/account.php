@@ -107,24 +107,25 @@ class AppTemplateAccount extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Services");
 		
 		// context menu
-		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Account_Overview(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Services->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Services->Add_Services(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		}
-		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 		
 		/*  Currently Operators can view archived services
 		if (!$bolUserHasAdminPerm)
@@ -341,24 +342,25 @@ class AppTemplateAccount extends ApplicationTemplate
 		*/
 
 		// context menu
-		ContextMenu()->Account_Menu->Account->Account_Overview(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Services->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Account_Overview(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Services->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Services->Add_Services(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		}
-		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 		
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
@@ -493,24 +495,25 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// context menu
-		ContextMenu()->Account_Menu->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Services->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
-		ContextMenu()->Account_Menu->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Account_Overview(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Services->List_Services(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
+		ContextMenu()->Account->View_Cost_Centres(DBO()->Account->Id->Value);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account_Menu->Account->Services->Add_Services(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account_Menu->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Services->Add_Services(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
+			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		}
-		ContextMenu()->Account_Menu->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 
 		// The DBList storing the invoices should be ordered so that the most recent is first
 		DBL()->Invoice->Account = DBO()->Account->Id->Value;
