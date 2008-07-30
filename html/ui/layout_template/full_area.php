@@ -31,7 +31,6 @@ $this->RenderBreadCrumbMenu();
 $this->RenderContextMenu();
 ?>
 		<div id='content' class='maximum-area-body'>
-			<h1 id='page-title'><?php echo $this->_strPageName; ?></h1>
 			<?php $this->RenderColumn(COLUMN_ONE); ?>
 		</div>
 
