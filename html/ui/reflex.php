@@ -19,10 +19,10 @@ Flex::load();
 $arrScript 		= explode('.php', $_SERVER['PHP_SELF'], 2);
 $strScript 		= ltrim($arrScript[1], '/'); 
 $arrScript 		= explode('/', $strScript);
-$strHandler 	= $arrScript[0];
-$strMethod 		= $arrScript[1];
+$strHandler 	= array_shift($arrScript);
+$strMethod 		= array_shift($arrScript);
 
 // instanciate application & load application
-Application::instance()->LoadPageHandler($strHandler, $strMethod);
+Application::instance()->LoadPageHandler($strHandler, $strMethod, $arrScript);
 
 ?>

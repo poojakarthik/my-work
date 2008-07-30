@@ -267,20 +267,42 @@ class Ticketing_Correspondance
 		$this->intMessageNumber = $intMessageNumber;
 	}
 
+	protected static function getColumns()
+	{
+		return array(
+			'id', 
+			'ticket_id', 
+			'summary', 
+			'details', 
+			'user_id', 
+			'contact_id', 
+			'source_id', 
+			'delivery_status_id',
+			'creation_datetime', 
+			'customer_group_email_id', 
+			'delivery_datetime',
+		);
+	}
+
+	protected function getValuesToSave()
+	{
+		$arrColumns = self::getColumns();
+		$arrValues = array();
+		foreach ($arrColumns as $strColumn)
+		{
+			if ($strColumn == 'id') 
+			{
+				continue;
+			}
+			$arrValues[$strColumn] = $this->{$strColumn};
+		}
+		return $arrValues;
+	}
+
 	public function getForTicket(Ticketing_Ticket $ticket)
 	{
-		$arrColumns = array(
-			'id' => 'id', 
-			'ticketId' => 'ticket_id', 
-			'summary' => 'summary', 
-			'details' => 'details', 
-			'userId' => 'user_id', 
-			'contactId' => 'contact_id', 
-			'sourceId' => 'source_id', 
-			'deliveryStatusId' => 'delivery_status_id',
-			'creationDatetime' => 'creation_datetime', 
-			'deliveryDatetime' => 'delivery_datetime'
-		);
+		$arrColumns = $this->getColumns();
+
 		$selMatches = new StatementSelect('ticketing_correspondance', $arrColumns, 'ticket_id = <TicketId>');
 		$arrWhere = array('TicketId' => $ticket->id);
 
@@ -375,17 +397,7 @@ class Ticketing_Correspondance
 			// Nothing to save
 			return TRUE;
 		}
-		$arrValues = array(
-			'ticket_id' => $this->ticket_id, 
-			'summary' => $this->summary, 
-			'details' => $this->details, 
-			'user_id' => $this->user_id, 
-			'contact_id' => $this->contact_id, 
-			'source_id' => $this->source_id, 
-			'delivery_status_id' => $this->delivery_status_id,
-			'creation_datetime' => $this->creation_datetime, 
-			'delivery_datetime' => $this->delivery_datetime
-		);
+		$arrValues = $this->getValuesToSave();
 		// No id means that this must be a new record
 		if (!$this->id)
 		{

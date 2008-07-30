@@ -42,7 +42,7 @@ class Application
 		return $instance;
 	}
 
-	public function LoadPageHandler($strHandlerName, $strHandlerMethod, $bolModal=FALSE)
+	public function LoadPageHandler($strHandlerName, $strHandlerMethod, $subPath=NULL, $bolModal=FALSE)
 	{
 		// Check that the user's browser is supported.  This will die if the user's browser is not supported
 		$this->_CheckBrowser();
@@ -61,14 +61,14 @@ class Application
 		DBO()->Validate();
 
 		// Create AppTemplate Object (autoloaded from /html/ui/app_template/
-		$this->objAppTemplate = new $strClass;
+		$this->objAppTemplate = new $strClass();
 		
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		$this->objAppTemplate->SetModal($bolModal);
 	
 		// Run AppTemplate
 		$fltStart = microtime(TRUE);		
-		$this->objAppTemplate->{$strHandlerMethod}();
+		$this->objAppTemplate->{$strHandlerMethod}($subPath);
 		$fltAppTemplateTime = microtime(TRUE) - $fltStart;		
 		
 		// Append default options to the Context Menu
@@ -547,22 +547,26 @@ class Application
 		}
 		else
 		{
-			// ask user to login, then return to page
-			if ($this->_intMode == AJAX_MODE)
-			{
-				Ajax()->AddCommand("Alert", "You do not have the required user privileges to perform this action");
-				Ajax()->Reply();
-				die;
-			}
-			else
-			{
-				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
-				die;
-			}	
-		exit;
+			$this->InsufficientPrivilegeDie();
 		}
 	}
 	
+	function InsufficientPrivilegeDie()
+	{
+		// ask user to login, then return to page
+		if ($this->_intMode == AJAX_MODE)
+		{
+			Ajax()->AddCommand("Alert", "You do not have the required user privileges to perform this action");
+			Ajax()->Reply();
+			die;
+		}
+		else
+		{
+			require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
+			die;
+		}	
+	}
+
 	//------------------------------------------------------------------------//
 	// UserHasPerm
 	//------------------------------------------------------------------------//

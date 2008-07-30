@@ -87,6 +87,11 @@ class Ticketing_Ticket
 		$this->_saved = TRUE;
 	}
 
+	public function delete()
+	{
+		//$this->
+	}
+
 	protected static function getColumns()
 	{
 		return array(
@@ -191,30 +196,104 @@ class Ticketing_Ticket
 		return new Ticketing_Ticket($selProperties->Fetch());
 	}
 
-	public static function findMatching($columns=NULL, $sort=NULL, $filter=NULL, $offset=NULL, $limit=NULL)
+	public static function countMatching($filter=NULL)
 	{
-		// WIP :: Implement this function
+		$where = '';
+		$arrWhere = array();
+		foreach ($filter as $column => $style)
+		{
+			$column = self::uglifyName($column);
+			switch($style['comparison'])
+			{
+				case '=':
+					if ($style['value'] === NULL)
+					{
+						$where .= ($where ? ' AND ' : '') . " $column IS NULL";
+					}
+					else
+					{
+						$where .= ($where ? ' AND ' : '') . " $column = <" . strtoupper($column) . ">";
+						$arrWhere[strtoupper($column)] = $style['value'];
+					}
+			}
+		}
+		if (!$where)
+		{
+			$where = NULL;
+		}
+		$selMatches = new StatementSelect(
+			strtolower(__CLASS__), 
+			array('nr' => 'count(id)'), 
+			$where);
+		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
+		{
+			throw new Exception("Failed to count tickets: " . $selMatches->Error());
+		}
+		if (!$outcome)
+		{
+			return 0;
+		}
+		$outcome = $selMatches->Fetch();
+		return intval($outcome['nr']);
 	}
 
-	private static function getFor($strWhere, $arrWhere, $multiple=FALSE)
+	public static function findMatching($columns=NULL, $sort=NULL, $filter=NULL, $offset=0, $limit=NULL)
+	{
+		// WIP :: Fully implement this function
+		$where = '';
+		$arrWhere = array();
+		foreach ($filter as $column => $style)
+		{
+			$column = self::uglifyName($column);
+			switch($style['comparison'])
+			{
+				case '=':
+					if ($style['value'] === NULL)
+					{
+						$where .= ($where ? ' AND ' : '') . " $column IS NULL";
+					}
+					else
+					{
+						$where .= ($where ? ' AND ' : '') . " $column = <" . strtoupper($column) . ">";
+						$arrWhere[strtoupper($column)] = $style['value'];
+					}
+			}
+		}
+		if (!$where)
+		{
+			$where = NULL;
+		}
+		$strSort = '';
+		foreach ($sort as $column => $asc)
+		{
+			$strSort = ($strSort ? ', ' : '') . self::uglifyName($column) . ' ' . ($asc ? ' ASC ' : ' DESC ');
+		}
+		$strSort = $strSort ? $strSort : NULL;
+		$strLimit = intval($limit) ? (intval($offset) . ", " . intval($limit)): NULL;
+		return self::getFor($where, $arrWhere, TRUE, $strSort, $strLimit);
+	}
+
+	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
 	{
 		// Note: Email address should be unique, so only fetch the first record
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 
 			self::getColumns(), 
-			$strWhere);
+			$strWhere,
+			$strSort,
+			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing customer group email: " . $selMatches->Error());
+			throw new Exception("Failed to load tickets: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{
-			return NULL;
+			return $multiple ? array() : NULL;
 		}
 		$arrInstances = array();
 		while($details = $selMatches->Fetch())
 		{
-			$arrInstances[] = new Ticketing_Ticket($selMatches->Fetch());
+			$arrInstances[] = new Ticketing_Ticket($details);
 			if (!$multiple)
 			{
 				return $arrInstances[0];
@@ -226,6 +305,31 @@ class Ticketing_Ticket
 	public function getContact()
 	{
 		return Ticketing_Contact::getForId($this->contactId);
+	}
+
+	public function getPriority()
+	{
+		return Ticketing_Priority::getForId($this->priorityId);
+	}
+
+	public function getStatus()
+	{
+		return Ticketing_Status::getForId($this->statusId);
+	}
+
+	public function getCategory()
+	{
+		return Ticketing_Category::getForId($this->categoryId);
+	}
+
+	public function getOwner()
+	{
+		return Ticketing_User::getForId($this->ownerId);
+	}
+
+	public function getCustomerGroup()
+	{
+		return Customer_Group::getForId($this->customerGroupId);
 	}
 
 	public static function getForId($id)
@@ -324,6 +428,12 @@ class Ticketing_Ticket
 	{
 		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
+	}
+
+	private function uglifyName($name)
+	{
+		$tidy = str_replace(' ', '_', strtolower(preg_replace("/([A-Z])/", " \${1}", $name)));
 		return $tidy;
 	}
 }

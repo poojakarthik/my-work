@@ -10,6 +10,8 @@ class Ticketing_User
 	private $_loadedEmployeeDetails = FALSE;
 	private $_arrEmployeeDetails = NULL;
 
+	protected static $cache = array();
+
 	private function __construct($arrProperties=NULL, $bolPropertiesIncludeEmployeeDetails=FALSE)
 	{
 		if ($arrProperties)
@@ -17,6 +19,11 @@ class Ticketing_User
 			$this->init($arrProperties);
 			$this->_loadedEmployeeDetails = $bolPropertiesIncludeEmployeeDetails;
 		}
+	}
+
+	public static function listAll()
+	{
+		return self::getFor(array(), array(), TRUE);
 	}
 
 	public static function setPermissionForEmployeeId($employeeId, $permission=TICKETING_USER_PERMISSION_NONE)
@@ -89,9 +96,40 @@ class Ticketing_User
 		}
 	}
 
+	public static function getCurrentUser()
+	{
+		return self::getForEmployeeId(Flex::getUserId());
+	}
+
+	public function isAdminUser()
+	{
+		return $this->permissionId === TICKETING_USER_PERMISSION_ADMIN;
+	}
+
+	public function isNormalUser()
+	{
+		return $this->permissionId === TICKETING_USER_PERMISSION_USER;
+	}
+
+	public function isUser()
+	{
+		return $this->permissionId !== TICKETING_USER_PERMISSION_NONE;
+	}
+
+	public static function currentUserIsTicketingUser()
+	{
+		return self::getCurrentUser()->isUser();
+	}
+
 	public static function getForEmployeeId($intEmployeeId)
 	{
-		return self::getFor("employee_id = <EmployeeId>", array("EmployeeId" => $intEmployeeId));
+		$user = self::getFor("employee_id = <EmployeeId>", array("EmployeeId" => $intEmployeeId));
+		if ($user == NULL)
+		{
+			$user = new Ticketing_User(array('employee_id' => $intEmployeeId, 'permission_id' => TICKETING_USER_PERMISSION_NONE));
+			$user->_saved = FALSE;
+		}
+		return $user;
 	}
 
 	public static function getForCorrespondance(Ticketing_Correspondance $objCorrespondance)
@@ -104,7 +142,7 @@ class Ticketing_User
 		return Ticketing_User::getForId($objTicket->ownerId);
 	}
 
-	private static function getFor($where, $arrWhere)
+	private static function getFor($where, $arrWhere, $bolAsArray=FALSE)
 	{
 		$selUsers = new StatementSelect(
 			"ticketing_user", 
@@ -114,11 +152,21 @@ class Ticketing_User
 		{
 			throw new Exception("Failed to check for existing user: " . $selUsers->Error());
 		}
-		if (!$outcome)
+
+		$records = array();
+		while ($props = $selUsers->Fetch())
 		{
-			return NULL;
+			if (!array_key_exists($props['id'], self::$cache))
+			{
+				self::$cache[$props['id']] = new Ticketing_User($props);
+			}
+			$records[] = self::$cache[$props['id']];
+			if (!$bolAsArray)
+			{
+				return $records[0];
+			}
 		}
-		return new Ticketing_User($selUsers->Fetch());
+		return $records;
 	}
 
 	public function autoReply()
@@ -128,6 +176,10 @@ class Ticketing_User
 
 	public static function getForId($id)
 	{
+		if (array_key_exists($id, self::$cache))
+		{
+			return self::$cache[$id];
+		}
 		return self::getFor("id = <Id>", array("Id" => $id));
 	}
 
