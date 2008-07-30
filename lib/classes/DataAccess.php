@@ -359,7 +359,10 @@ class DataAccess
 		}
 	}
 	
-	
+	function escape($value)
+	{
+		return $this->refMysqliConnection->real_escape_string($value);
+	}
 }
 
 ?>
