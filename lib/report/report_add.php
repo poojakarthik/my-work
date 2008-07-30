@@ -37,6 +37,7 @@ $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
+$arrDocReq[]	= "CreditCard";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
