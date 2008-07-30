@@ -49,6 +49,15 @@ final class Flex
 		return NULL;
 	}
 
+	public static function getUserId()
+	{
+		if (self::loggedIn())
+		{
+			return $_SESSION['User']['Id'];
+		}
+		return NULL;
+	}
+
 	public static function getDisplayName()
 	{
 		if (self::loggedIn())
