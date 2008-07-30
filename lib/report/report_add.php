@@ -42,7 +42,7 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 // SQL Select
 $arrSQLSelect['Account Group']			['Value']	= "DISTINCT Account.AccountGroup";
 
-$arrSQLSelect['Account #']				['Value']	= "Account.Account";
+$arrSQLSelect['Account #']				['Value']	= "Account.Id";
 
 $arrSQLSelect['Business Name']			['Value']	= "Account.BusinessName";
 
@@ -54,8 +54,8 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 // SQL Fields
 $arrSQLFields['Active']	= Array(
 										'Type'					=> "dataBoolean",
-										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "StartDateRange",
+										'Documentation-Entity'	=> "CreditCard",
+										'Documentation-Field'	=> "Active",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
