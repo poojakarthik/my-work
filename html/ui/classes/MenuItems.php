@@ -127,10 +127,53 @@ class MenuItems
 	 */
 	function TicketingConsole()
 	{
-		$this->strContextMenuLabel = "Ticketing";
-		$this->strLabel = "Ticketing";
+		$this->strContextMenuLabel = "View All Tickets";
+		$this->strLabel = "Tickets";
 		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/System";
 	}
+	
+	//------------------------------------------------------------------------//
+	// ViewUserTickets
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewUserTickets()
+	 *
+	 * Compiles the Href to be executed when the "View User's Tickets" menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the "View User's Tickets" menu item is clicked
+	 * 
+	 * @return	string				Href to be executed
+	 *
+	 * @method
+	 */
+	function ViewUserTickets()
+	{
+		$this->strContextMenuLabel = "View My Tickets";
+		$this->strLabel = "My Tickets";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets";
+	}
+	
+	//------------------------------------------------------------------------//
+	// AddTicket
+	//------------------------------------------------------------------------//
+	/**
+	 * AddTicket()
+	 *
+	 * Compiles the Href to be executed when the "Add Ticket" menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the "Add Ticket" menu item is clicked
+	 * 
+	 * @return	string				Href to be executed
+	 *
+	 * @method
+	 */
+	function AddTicket()
+	{
+		$this->strContextMenuLabel = "Add New Ticket";
+		$this->strLabel = "New Ticket";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Add";
+	}
+	
 
 	//------------------------------------------------------------------------//
 	// ViewServiceRatePlan
@@ -336,14 +379,28 @@ class MenuItems
 	function ViewAllCustomerGroups()
 	{
 		$this->strLabel	= "Customer Groups";
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "View Customer Groups";
 		return self::NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewAll/";
 	}
 
+	//------------------------------------------------------------------------//
+	// ManagePaymentTerms
+	//------------------------------------------------------------------------//
+	/**
+	 * ManagePaymentTerms()
+	 *
+	 * Compiles the Href to be executed when the ManagePaymentTerms menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ManagePaymentTerms menu item is clicked
+	 * 
+	 * @return	string				Href to be executed when the ManagePaymentTerms menu item is clicked
+	 *
+	 * @method
+	 */
 	function ManagePaymentTerms()
 	{
 		$this->strLabel	= "Payment Process";
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Manage Payment Process";
 		return self::NEW_FRAMEWORK . "flex.php/PaymentTerms/Manage/";
 	}
 
@@ -570,7 +627,7 @@ class MenuItems
 	function ViewAllConstants()
 	{
 		$this->strLabel	= "Constants Management";
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Manage Constants";
 		return self::NEW_FRAMEWORK . "flex.php/Config/ManageConstants/";
 	}
 	
@@ -584,7 +641,7 @@ class MenuItems
 	 *
 	 * Compiles the Href to be executed when the SystemSettingsMenu menu item is triggered
 	 * 
-	 * @return	string						Href to be executed when the ExportInvoiceAsCSV menu item is triggered
+	 * @return	string						Href to be executed when the SystemSettingsMenu menu item is triggered
 	 *
 	 * @method
 	 */
@@ -1403,7 +1460,7 @@ class MenuItems
 	 */
 	function AvailablePlans($intServiceType = 0)
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Plans";
 		
 		$this->strLabel = "Available Plans";
 		
@@ -2243,13 +2300,213 @@ class MenuItems
 	 */
 	function ManageInvoiceRunEvents()
 	{
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Manage Invoice Run Events";
 		
-		$this->strLabel = "Invoice Runs";
+		$this->strLabel = "Invoice Run Events";
 		return self::NEW_FRAMEWORK . "flex.php/InvoiceRunEvents/Manage";
 	}
 
 
+	//------------------------------------------------------------------------//
+	// AdvancedAccountSearch
+	//------------------------------------------------------------------------//
+	/**
+	 * AdvancedAccountSearch()
+	 *
+	 * Compiles the Href to be executed when the AdvancedAccountSearch menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the AdvancedAccountSearch menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function AdvancedAccountSearch()
+	{
+		$this->strContextMenuLabel	= "Advanced Account Search";
+		$this->strLabel				= "Advanced Account Search";
+		return self::OLD_FRAMEWORK . "account_list.php";
+	}
+
+	//------------------------------------------------------------------------//
+	// AdvancedContactSearch
+	//------------------------------------------------------------------------//
+	/**
+	 * AdvancedContactSearch()
+	 *
+	 * Compiles the Href to be executed when the AdvancedContactSearch menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the AdvancedContactSearch menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function AdvancedContactSearch()
+	{
+		$this->strContextMenuLabel	= "Advanced Contact Search";
+		$this->strLabel				= "Advanced Contact Search";
+		return self::OLD_FRAMEWORK . "contact_list.php";
+	}
+
+	//------------------------------------------------------------------------//
+	// AdvancedServiceSearch
+	//------------------------------------------------------------------------//
+	/**
+	 * AdvancedServiceSearch()
+	 *
+	 * Compiles the Href to be executed when the AdvancedServiceSearch menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the AdvancedServiceSearch menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function AdvancedServiceSearch()
+	{
+		$this->strContextMenuLabel	= "Advanced Service Search";
+		$this->strLabel				= "Advanced Service Search";
+		return self::OLD_FRAMEWORK . "service_list.php";
+	}
+
+	//------------------------------------------------------------------------//
+	// ManageAdjustments
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageAdjustments()
+	 *
+	 * Compiles the Href to be executed when the ManageAdjustments menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageAdjustments menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageAdjustments()
+	{
+		$this->strContextMenuLabel	= "Approve and Decline Adjustments";
+		$this->strLabel				= "Manage Adjustments";
+		return self::OLD_FRAMEWORK . "charges_approve.php";
+	}
+
+	//------------------------------------------------------------------------//
+	// ManageSingleAdjustmentTypes
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageSingleAdjustmentTypes()
+	 *
+	 * Compiles the Href to be executed when the ManageSingleAdjustmentTypes menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageSingleAdjustmentTypes menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageSingleAdjustmentTypes()
+	{
+		$this->strContextMenuLabel	= "Manage Single Adjustment Types";
+		$this->strLabel				= "Manage Single Adjustment Types";
+		return self::OLD_FRAMEWORK . "charges_charge_list.php";
+	}
+
+	//------------------------------------------------------------------------//
+	// ManageRecurringAdjustmentTypes
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageRecurringAdjustmentTypes()
+	 *
+	 * Compiles the Href to be executed when the ManageRecurringAdjustmentTypes menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageRecurringAdjustmentTypes menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageRecurringAdjustmentTypes()
+	{
+		$this->strContextMenuLabel	= "Manage Recurring Adjustment Types";
+		$this->strLabel				= "Manage Recurring Adjustment Types";
+		return self::OLD_FRAMEWORK . "charges_recurringcharge_list.php";
+	}
+
+	//------------------------------------------------------------------------//
+	// PaymentDownload
+	//------------------------------------------------------------------------//
+	/**
+	 * PaymentDownload()
+	 *
+	 * Compiles the Href to be executed when the PaymentDownload menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the PaymentDownload menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function PaymentDownload()
+	{
+		$this->strContextMenuLabel	= "Payment Download";
+		$this->strLabel				= "Payment Download";
+		return self::OLD_FRAMEWORK . "payment_download.php";
+	}
+	
+	//------------------------------------------------------------------------//
+	// MoveDelinquentCDRs
+	//------------------------------------------------------------------------//
+	/**
+	 * MoveDelinquentCDRs()
+	 *
+	 * Compiles the Href to be executed when the MoveDelinquentCDRs menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the MoveDelinquentCDRs menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function MoveDelinquentCDRs()
+	{
+		$this->strContextMenuLabel	= "Move Delinquent CDRs";
+		$this->strLabel				= "Delinquent CDRs";
+		return self::NEW_FRAMEWORK . "flex.php/Misc/MoveDelinquentCDRs/";
+	}
+	
+	//------------------------------------------------------------------------//
+	// DataReports
+	//------------------------------------------------------------------------//
+	/**
+	 * DataReports()
+	 *
+	 * Compiles the Href to be executed when the DataReports menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the DataReports menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function DataReports()
+	{
+		$this->strContextMenuLabel	= "Data Reports";
+		$this->strLabel				= "Data Reports";
+		return self::OLD_FRAMEWORK . "datareport_list.php";
+	}
+
+	//------------------------------------------------------------------------//
+	// ManageEmployees
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageEmployees()
+	 *
+	 * Compiles the Href to be executed when the ManageEmployees menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageEmployees menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageEmployees()
+	{
+		$this->strContextMenuLabel	= "Manage Employees";
+		$this->strLabel				= "Employees";
+		return self::NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

@@ -289,7 +289,7 @@ class Page
 		{
 			$GLOBALS['*arrJavaScript'] = Array();
 		}
-		array_unshift($GLOBALS['*arrJavaScript'], "vixen", "menu", "popup", "dhtml", "ajax", "event_handler", "login");
+		array_unshift($GLOBALS['*arrJavaScript'], "vixen", "popup", "dhtml", "ajax", "event_handler", "login");
 		
 		// Remove any duplicates from the list
 		$arrJsFiles = array_unique($GLOBALS['*arrJavaScript']);
@@ -298,7 +298,7 @@ class Page
 		$strFiles = $this->_GetJsFilesQueryString($arrJsFiles);
 
 		// Echo the reference to the javascript.php script which retrieves all the javascript
-		echo "<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
+		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 	}
 	
 	
@@ -407,6 +407,7 @@ class Page
 		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
 		$intLastSlash = strrpos($arrScript[0], "/");
 		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
+		
 		if (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'])
 		{
 			$strBaseDir = "https://{$_SERVER['SERVER_NAME']}$strBaseDir";
@@ -415,35 +416,18 @@ class Page
 		{
 			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
-		
-		// The following code is supposed to make the browser retrieve new js 
-		// files every time, although I don't think it works.  I think it was more so
-		// for testing purposes because the most recent js files weren't being used
-		// but, for general operation, you want the user's browser to cache the js,
-		// as it shouldn't be being changed that often
-		
-		/* 
-		 * This was prohibitting the effective use of going back through the browser history. 
-		 * (popups weren't being displayed; the page was always reloading)
-		 * It should probably be updated so that the page expires within an hour of being loaded
-		 *
-		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-		header('Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT');
-		header('Cache-Control: no-store, no-cache, must-revalidate');
-		header('Cache-Control: post-check=0, pre-check=0', FALSE);
-		header('Pragma: no-cache');
-		*/
-		
-		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
-		echo "<title>Flex - $this->_strPageName</title>\n";
-		echo "<base href='$strBaseDir'/>\n";
+		echo "
+<html>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>
+		<title>Flex - {$this->_strPageName}</title>
+		<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
 		$this->RenderCSS();
-		echo "</head>\n";
-		echo "<body onload='Vixen.Init();'>\n";
-		
-		// the following div holds any popup windows that are instantiated within the page
-		echo "<div id='PopupHolder'></div>\n";
+		echo "
+	</head>
+	<body onload='Vixen.Init();'>
+		<div id='PopupHolder'></div>\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -585,10 +569,10 @@ class Page
 	function RenderFlexHeader($bolWithSearch=TRUE, $bolWithMenu=TRUE, $bolWithBreadCrumbs=TRUE)
 	{
 		echo "
-	<div id='header' name='header'>
-		<div id='logo'>
-			<div id='blurb' name='blurb'>Flex Customer Management System</div>
-		</div>\n";
+		<div id='header' name='header'>
+			<div id='logo'>
+				<div id='blurb' name='blurb'>Flex Customer Management System</div>
+			</div>\n";
 
 		if ($bolWithSearch && Flex::loggedIn())
 		{
@@ -601,7 +585,7 @@ class Page
 		}
 		
 		// Close the header div
-		echo "\t</div>\n";
+		echo "\t\t</div> <!-- header -->\n";
 		
 		if ($bolWithBreadCrumbs)
 		{
@@ -627,22 +611,22 @@ class Page
 		$strUserName = Flex::getDisplayName();
 
 		echo "
-		<div id='person_search' name='person_search'>
-			<div id='person' name='person'>
-				Logged in as: $strUserName
-				| <a href='#' >Preferences</a>
-				| <a href='flex.php/Employee/Logout/' >Logout</a>
-			</div>
-			<div id='search_bar' name='search_bar'>
-				Search: 
-				<input type='text' id='search_string' name='search_string' />
-				<select name='category' id='category'>
-
-					<option>Tickets</option>
-				</select>
-				<input type='submit' id='Search' name='Search' value='Search' onclick='\$Alert(\"Search feature is not yet implemented\")'/>
-			</div>
-		</div>\n";
+			<div id='person_search' name='person_search'>
+				<div id='person' name='person'>
+					Logged in as: $strUserName
+					| <a href='#' >Preferences</a>
+					| <a href='flex.php/Employee/Logout/' >Logout</a>
+				</div>
+				<div id='search_bar' name='search_bar'>
+					Search: 
+					<input type='text' id='search_string' name='search_string' />
+					<select name='category' id='category'>
+	
+						<option>Tickets</option>
+					</select>
+					<input type='submit' id='Search' name='Search' value='Search' onclick='\$Alert(\"Search feature is not yet implemented\")'/>
+				</div>
+			</div> <!-- person_search-->\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -666,7 +650,7 @@ class Page
 			<div id='nav' name='nav'>\n";
 		self::renderMenuLevel($arrContextMenu);
 		echo "
-			</div>\n";
+			</div> <!-- nav -->\n";
 		return;
 	}
 

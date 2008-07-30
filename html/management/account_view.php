@@ -7,5 +7,5 @@
 	//----------------------------------------------------------------------------//
 	
 	$intAccount = $_GET['Id'];
-	header("Location: flex.php/Account/Overview/?Account.Id=$intAccount");
+	header("Location: ../ui/flex.php/Account/Overview/?Account.Id=$intAccount");
 ?>

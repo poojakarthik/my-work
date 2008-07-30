@@ -7,6 +7,6 @@
 	//----------------------------------------------------------------------------//
 	
 	$intService = $_GET['Id'];
-	header("Location: flex.php/Service/View/?Service.Id=$intService");
+	header("Location: ../ui/flex.php/Service/View/?Service.Id=$intService");
 
 ?>

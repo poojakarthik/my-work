@@ -6,7 +6,7 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	header("Location: flex.php/Plan/AvailablePlans/");
+	header("Location: ../ui/flex.php/Plan/AvailablePlans/");
 
 
 ?>

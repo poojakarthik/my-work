@@ -5,6 +5,6 @@
 	//
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
-	header("Location: flex.php/Employee/EmployeeList/");
+	header("Location: ../ui/flex.php/Employee/EmployeeList/");
 	
 ?>

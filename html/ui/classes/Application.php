@@ -167,17 +167,46 @@ class Application
 		}
 		
 		ContextMenu()->Available_Plans();
-		ContextMenu()->Ticketing_Console();
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
-		{
-			ContextMenu()->Admin_Console();
-		}
-
+		
 		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
 		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) !== TICKETING_USER_PERMISSION_NONE)
 		{
-			ContextMenu()->Ticketing_Console();
+			ContextMenu()->Ticketing->TicketingConsole();
+			ContextMenu()->Ticketing->ViewUserTickets();
+			ContextMenu()->Ticketing->AddTicket();
 		}
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+		{
+			//ContextMenu()->Admin_Console();
+			ContextMenu()->Admin->AdvancedAccountSearch();
+			ContextMenu()->Admin->AdvancedContactSearch();
+			ContextMenu()->Admin->AdvancedServiceSearch();
+			
+			ContextMenu()->Admin->Adjustments->ManageAdjustments();
+			ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
+			ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
+			
+			ContextMenu()->Admin->PaymentDownload();
+			ContextMenu()->Admin->MoveDelinquentCDRs();
+			ContextMenu()->Admin->DataReports();
+			
+			ContextMenu()->Admin->ManageEmployees();
+			ContextMenu()->Admin->ManageInvoiceRunEvents();
+			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->View_All_Constants();
+				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
+			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
+			}
+			
+			
+		}
+
 		
 		// Render Page
 		//ob_start();
