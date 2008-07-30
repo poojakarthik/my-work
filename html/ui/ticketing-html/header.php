@@ -9,7 +9,7 @@ $args = explode('/', $_SERVER['PATH_INFO']);
 		<meta name="generator" content="Flex" />
 		<title>Ticketing Mockup</title>
 		<link rel="stylesheet" type="text/css" media="screen" href="<?=$basepath?>css/style.css" />
-		<link rel="stylesheet" type="text/css" media="screen" href="<?=$basepath?>css/ticketing.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="<?=$basepath?>css/reflex.css" />
 		<link rel="stylesheet" type="text/css" media="screen" href="<?=$basepath?>css/menu.css" />
 	</head>
 	<body>

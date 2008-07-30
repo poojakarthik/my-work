@@ -1,4 +1,4 @@
-<table id="ticketing" name="ticketing">
+<table class="reflex">
 	<caption>
 		<div id="caption_bar" name="caption_bar">
 		<div id="caption_title" name="caption_title">
