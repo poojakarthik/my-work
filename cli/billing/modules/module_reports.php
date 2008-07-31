@@ -561,7 +561,7 @@ class BillingModuleReports
 				$intI++;
 				
 				// Add new Worksheet
-				$strWorksheet = preg_replace("/\W+/misU", "_", $arrRatePlan['Description']);
+				$strWorksheet = preg_replace("/\W+/misU", "_", $arrRatePlan['Name']);
 				Debug($strWorksheet);
 				$wksWorksheet =& $wkbWorkbook->addWorksheet($strWorksheet);
 				$wksWorksheet->setLandscape();
