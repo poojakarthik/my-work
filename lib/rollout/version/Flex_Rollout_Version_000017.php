@@ -178,7 +178,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 										contact_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_contact table',
 										status_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_status table',
 										customer_group_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to the CustomerGroup table',
-										account_id bigint(20) unsigned NOT NULL COMMENT 'FK to the Account table',
+										account_id bigint(20) unsigned DEFAULT NULL COMMENT 'FK to the Account table',
 										category_id bigint(20) unsigned NOT NULL COMMENT 'FK to the ticketing_category table',
 										creation_datetime datetime default NULL COMMENT 'Date/Time that the ticket was created',
 										modified_datetime datetime default NULL COMMENT 'Date/Time that the ticket was modified',
