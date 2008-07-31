@@ -126,7 +126,7 @@ class Cli_App_Pdf extends Cli
 			$xmlEffectiveDate = NULL;
 			if ($singlePdfFile && !$arrArgs[self::SWITCH_SKIP_XML_OVERVIEW])
 			{
-				$xmlSummaryFile = fopen($archiveDir.'/index.xml', 'w');
+				$xmlSummaryFile = fopen($archiveDir.'/' . $instanceRef . '.index.xml', 'w');
 				fwrite($xmlSummaryFile, "<PDF>\n\t<Accounts>");
 			}
 
@@ -317,8 +317,7 @@ class Cli_App_Pdf extends Cli
 				if ($singlePdfFile && !$arrArgs[self::SWITCH_SKIP_XML_OVERVIEW])
 				{
 					$nrPages = $pdf->getNrPages();
-					/*PageOffset=\"$pageCountOffset\" */ // Can't rely on this as we can't rely on the munging to munge files in same order!!!
-					fwrite($xmlSummaryFile, "\n\t\t" . substr($xmlDetail, 0, 8) . " Pages=\"$nrPages\" " . substr($xmlDetail, 9));
+					fwrite($xmlSummaryFile, "\n\t\t" . substr($xmlDetail, 0, 8) . " Pages=\"$nrPages\" PageOffset=\"$pageCountOffset\" " . substr($xmlDetail, 9));
 					$pageCountOffset += $nrPages;
 				}
 
@@ -339,15 +338,46 @@ class Cli_App_Pdf extends Cli
 			if ($singlePdfFile)
 			{
 				// Need to munge all pdfs created into a single pdf file.
-				$mungedFile = $archiveDir . '/all.pdf';
+				$mungedFile = 'all.pdf';
+				$partialFile = 'partial.pdf';
 
-				// WIP :: Munge pdfs together IN ORDER THAT THEY APPEAR IN $generatedDocs
-				$rd = realpath($archiveDir).DIRECTORY_SEPARATOR;
+				$cwd = getcwd();
+				chdir($archiveDir);
+
 				$this->log("Munging PDFs to $mungedFile");
 				ob_flush();
 				flush();
 
-				$mungeError = shell_exec("pdftk {$rd}*.pdf cat output {$rd}all.pdf 2>&1");
+				// Munge pdfs together IN ORDER THAT THEY APPEAR IN $generatedDocs
+				$blocks = array_chunk($generatedDocs, 10);
+				$first = TRUE;
+				foreach ($blocks as $block)
+				{
+					foreach ($block as $i => $v) $block[$i] = basename($v);
+					if (!$first)
+					{
+						rename("$instanceRef.$mungedFile", "$instanceRef.$partialFile");
+					}
+					$paths = ($first ? '' : $instanceRef.'.partial.pdf ' ) . implode(' ', $block);
+
+					$rd = realpath($archiveDir).DIRECTORY_SEPARATOR;
+					$mungeError = shell_exec("pdftk $paths cat output $instanceRef.$mungedFile 2>&1");
+					$first = FALSE;
+					if (!$first)
+					{
+						unlink("$instanceRef.$partialFile");
+					}
+					if ($mungeError)
+					{
+						if (file_exists("$instanceRef.$mungedFile"))
+						{
+							unlink("$instanceRef.$mungedFile");
+						}
+						break;
+					}
+				}
+
+				chdir($cwd);
 
 				if ($mungeError)
 				{
@@ -362,10 +392,11 @@ class Cli_App_Pdf extends Cli
 						unlink($strDestination);
 					}
 
-					// WIP :: Next, set the $generatedDocs array to contain ONLY the one PDF
+					// Next, set the $generatedDocs array to contain ONLY the one PDF
 					$this->log("Updating the generated docs array PDFs");
 					$generatedDocs = array();
-					$generatedDocs[] = $mungedFile;
+					$generatedDocs[] = "$archiveDir/$mungedFile";
+					rename("$archiveDir/$instanceRef.$mungedFile", "$archiveDir/$mungedFile");
 				}
 
 				$images = "";
@@ -373,7 +404,7 @@ class Cli_App_Pdf extends Cli
 				{
 					case DOCUMENT_TEMPLATE_TYPE_INVOICE:
 
-						$this->log("Loading image resource ('fdbp://Invoice Ad (Print)' for CustomerGroup.Id: $xmlCustomerGroup, Effctive date: " . date('Y-m-d H:i:s', $xmlEffectiveDate) . ")");
+						$this->log("Loading image resource ('fdbp://Invoice Ad (Print)' for CustomerGroup.Id: $xmlCustomerGroup, Effective date: " . date('Y-m-d H:i:s', $xmlEffectiveDate) . ")");
 						$rm = Flex_Pdf_Resource_Manager::getResourceManager($xmlCustomerGroup, date('Y-m-d H:i:s', $xmlEffectiveDate));
 						$filePath = $rm->getResourcePath('fdbp://Invoice Ad (Print)');
 						$this->log("Resource path: $filePath");
@@ -403,6 +434,7 @@ class Cli_App_Pdf extends Cli
 					fwrite($xmlSummaryFile, "\n\t</Accounts>$images\n</PDF>");
 					fclose($xmlSummaryFile);
 					$generatedDocs[] = $archiveDir . '/index.xml';
+					rename($archiveDir . '/' . $instanceRef . '.index.xml', $archiveDir . '/index.xml');
 				}
 
 			}
