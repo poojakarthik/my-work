@@ -378,8 +378,8 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 
 		$strSQL = "
 					ALTER TABLE CustomerGroup
-						ADD flex_url varchar(255) NOT NULL COMMENT 'The base URL for the Flex web interface for this customer group',
-						ADD email_domain varchar(255) NOT NULL COMMENT 'The domain part of email addresses sent to to this customer group'
+						ADD flex_url varchar(255) DEFAULT NULL COMMENT 'The base URL for the Flex web interface for this customer group',
+						ADD email_domain varchar(255) DEFAULT NULL COMMENT 'The domain part of email addresses sent to to this customer group'
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{
