@@ -547,8 +547,7 @@ class BillingModuleReports
 		foreach ($arrServiceTypes as $intServiceType=>$arrRatePlans)
 		{
 			// Create new Workbook
-			$strServiceType = str_replace(' ', '_', GetConstantDescription($intServiceType, 'service_type'));
-			$strServiceType	= preg_replace("/\W+/misU", "_", $strServiceType);
+			$strServiceType	= preg_replace("/\W+/misU", "_", GetConstantDescription($intServiceType, 'service_type'));
 			$strFilename	= $this->_strReportBasePath."Plan_Summary_with_Breakdown_($strServiceType).xls";
 			$arrFilenames[]	= $strFilename;
 			@unlink($strFilename);
@@ -562,7 +561,9 @@ class BillingModuleReports
 				$intI++;
 				
 				// Add new Worksheet
-				$wksWorksheet =& $wkbWorkbook->addWorksheet($arrRatePlan['Description']);
+				$strWorksheet = preg_replace("/\W+/misU", "_", $arrRatePlan['Description']);
+				Debug($strWorksheet);
+				$wksWorksheet =& $wkbWorkbook->addWorksheet($strWorksheet);
 				$wksWorksheet->setLandscape();
 				$wksWorksheet->hideGridlines();
 				$wksWorksheet->fitToPages(1, 99);
