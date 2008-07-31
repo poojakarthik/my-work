@@ -255,6 +255,16 @@ final class Flex
 		}");
 	}
 
+	public static function getUrlBase()
+	{
+		return dirname($_SERVER['SCRIPT_NAME']) . "/";
+	}
+
+	public static function getPathInfo()
+	{
+		return explode('/', trim($_SERVER['PATH_INFO'] , ' /'));
+	}
+
 	public static function getBase()
 	{
 		static $base;
