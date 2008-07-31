@@ -123,7 +123,32 @@ class HtmlElements
 			[Type] => Input
 		)
 	*/
-	
+
+
+	//------------------------------------------------------------------------//
+	// instance
+	//------------------------------------------------------------------------//
+	/**
+	 * instance()
+	 *
+	 * Returns a singleton instance of this class
+	 *
+	 * Returns a singleton instance of this class
+	 *
+	 * @return	__CLASS__
+	 *
+	 * @method
+	 */
+	public static function instance()
+	{
+		static $instance;
+		if (!isset($instance))
+		{
+			$instance = new self();
+		}
+		return $instance;
+	}
+
 	//------------------------------------------------------------------------//
 	// InputText
 	//------------------------------------------------------------------------//
