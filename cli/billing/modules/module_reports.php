@@ -1923,7 +1923,7 @@ class BillingModuleReports
 					CliEcho("[ {$strPeriod} ]");
 					
 					// Committed or Temporary Run?
-					if ($selTempInvoice->Execute($arrProfitData['InvoiceRun']))
+					if ($selTempInvoice->Execute($arrProfitData))
 					{
 						// Temporary
 						$selProfitSummary	= &$selProfitSummaryTemp;
