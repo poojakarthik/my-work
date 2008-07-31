@@ -26,11 +26,13 @@ $intFNNCount	= 0;
 $intCDRCount	= 0;
 while ($arrRow	= fgetcsv($resFile))
 {
-	$arrFNN	= Array('FNN' => str_pad(trim($arrRow[0]), 10, 0, STR_PAD_LEFT));
+	$arrFNN		= Array('FNN' => str_pad(trim($arrRow[0]), 10, 0, STR_PAD_LEFT));
 	CliEcho(" * Updating {$arrFNN['FNN']}...\t\t\t", FALSE);
 	
 	// Find Disconnected Instances of this FNNs
-	if ($selFNNDisconnectedInstances->Execute($arrFNN))
+	$arrOwner			= FindFNNOwner($arrFNN['FNN'], date('Y-m-d'));
+	$arrOwner['FNN']	= $arrFNN['FNN'];
+	if ($selFNNDisconnectedInstances->Execute($arrOwner))
 	{
 		while ($arrService = $selFNNDisconnectedInstances->Fetch())
 		{
@@ -45,7 +47,7 @@ while ($arrRow	= fgetcsv($resFile))
 		}
 		
 		// Re-own all of these CDRs to be on the current Service, and re-rate
-		$arrCDR				= FindFNNOwner($arrFNN['FNN'], date('Y-m-d'));
+		$arrCDR	= $arrOwner;
 		if (is_array($arrCDR))
 		{
 			$arrCDR['Status']	= CDR_NORMALISED;
@@ -70,7 +72,7 @@ while ($arrRow	= fgetcsv($resFile))
 	}
 	else
 	{
-		CliEcho("[  SKIP  ]\n\t -- No Disconnected Services found for {$arrService['Id']}: ".$ubiService->Error());
+		CliEcho("[  SKIP  ]\n\t -- No Disconnected Services found for {$arrFNN['FNN']}: ".$ubiService->Error());
 	}
 	$intFNNCount++;
 }
