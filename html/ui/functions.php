@@ -61,7 +61,7 @@ function Framework()
  */
 function DBO()
 {
-	return Singleton::Instance('DBOFramework');
+	return DBOFramework::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -80,7 +80,7 @@ function DBO()
  */
 function DBL()
 {
-	return Singleton::Instance('DBLFramework');
+	return DBLFramework::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -99,7 +99,7 @@ function DBL()
  */
 function Table()
 {
-	return Singleton::Instance('VixenTableFramework');
+	return VixenTableFramework::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -200,32 +200,30 @@ function ImplodeTables($arrTables)
  */
 function Config()
 {
-	$objConfig = Singleton::Instance('Config');
-	return $objConfig;
+	return Config::instance();
 }
 
 
 //------------------------------------------------------------------------//
-// HTMLElements
+// HtmlElements
 //------------------------------------------------------------------------//
 /**
- * HTMLElements()
+ * HtmlElements()
  *
- * Returns the singleton HTMLElements object
+ * Returns the singleton HtmlElements object
  *
- * Returns the singleton HTMLElements object
- * Note that this will return a new HTMLElements object if one has not yet been
+ * Returns the singleton HtmlElements object
+ * Note that this will return a new HtmlElements object if one has not yet been
  * created.  If one has been created, it will return a reference to it.
  *
- * @return	HTMLElements object
+ * @return	HtmlElements object
  *
  * @function
  * 
  */
-function HTMLElements()
+function HtmlElements()
 {
-	$objHTMLElements = Singleton::Instance('HTMLElements');
-	return $objHTMLElements;
+	return HtmlElements::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -245,8 +243,7 @@ function HTMLElements()
  */
 function Href()
 {
-	$objHrefFramework = Singleton::Instance('HrefFramework');
-	return $objHrefFramework;
+	return HrefFramework::instance();
 }
 
 //------------------------------------------------------------------------//
@@ -440,7 +437,7 @@ function Validate($strValidationRule, $mixValue)
  */
 function ContextMenu()
 {
-	return ContextMenuFramework::instance();//return Singleton::Instance('ContextMenuFramework');
+	return ContextMenuFramework::instance();
 }
 
 

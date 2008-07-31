@@ -18,7 +18,7 @@ require_once '../../lib/classes/Flex.php';
 require_once('../ui/require.php');
 
 // instanciate application
-$Application = Singleton::Instance('Application');
+$Application = Application::instance();
 
 // load application
 $TemplateName = $strTemplate .".". $strMethod;

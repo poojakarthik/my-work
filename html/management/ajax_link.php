@@ -8,7 +8,7 @@ require_once '../../lib/classes/Flex.php';
 require_once('../ui/require.php');
 
 // instanciate application
-$Application = Singleton::Instance('Application');
+$Application = Application::instance();
 
 // call ajax_load
 $Application->AjaxLoad();

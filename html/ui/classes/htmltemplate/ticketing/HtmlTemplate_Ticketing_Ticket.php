@@ -5,7 +5,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 	public function Render()
 	{
 		$ticket = $this->mxdDataToRender['ticket'];
-		$renderer = strtolower('render_'.$this->mxdDataToRender['action']);
+		$renderer = strtolower('render_'.str_replace('-', '', $this->mxdDataToRender['action']));
 		if (method_exists($this, $renderer))
 		{
 			$this->{$renderer}($ticket);
@@ -22,19 +22,27 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$this->render_view($ticket, "This ticket has been marked as deleted.");
 	}
 
-	private function render_reassign($ticket)
+	private function render_assign($ticket)
 	{
-		$this->render_view($ticket, "This ticket has been re-assigned.");
+		$this->render_reassign($ticket, TRUE);
+	}
+
+	private function render_reassign($ticket, $assigned=FALSE)
+	{
+		$targetUser = $this->mxdDataToRender['targetUser'];
+		if ($targetUser)
+		{
+			$this->render_view($ticket, "This ticket has been {$re}assigned to " . $targetUser->getName() . ".");
+		}
+		else
+		{
+			$this->render_edit($ticket);
+		}
 	}
 
 	private function render_take($ticket)
 	{
 		$this->render_view($ticket, "This ticket has been assigned to you.");
-	}
-
-	private function render_assign($ticket)
-	{
-		$this->render_view($ticket, "This ticket has been assigned.");
 	}
 
 	private function render_error($ticket)
@@ -45,13 +53,39 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 	private function render_view($ticket, $message=NULL, $bolIsError=FALSE)
 	{
+		// If there is no ticket, we need to tell the user as much
+		if (!$ticket)
+		{
+			return $this->no_ticket();
+		}
+
 		$owner = $ticket->getOwner();
 		$ownerName = htmlspecialchars($owner ? $owner->getName() : '['.Ticketing_Status::getForId(TICKETING_STATUS_UNASSIGNED)->name.']');
 		$contact = $ticket->getContact();
 		$contactName = htmlspecialchars($contact ? $contact->getName() : '[No associated contact]');
+
+		if ($message)
+		{
+			?>
+		<div class="message<?=($bolIsError ? " error" : "")?>"><?=$message?></div><?php
+		}
+
+		$actionLinks = array();
+		foreach($this->mxdDataToRender['permitted_actions'] as $action)
+		{
+			if ($action !== 'create')
+			{
+				$id = $ticket->id . '/';
+			}
+			$action[0] = strtoupper($action[0]);
+			$action = htmlspecialchars($action);
+			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/$id$action\">$action</a>";
+		}
+		$actionLinks = implode(' | ', $actionLinks);
+
 		?>
 
-		<form id="add_ticket" name"add_ticket">
+		<form id="view_ticket" name="view_ticket">
 			<table id="ticketing" name="ticketing" class="reflex">
 				<caption>
 					<div id="caption_bar" name="caption_bar">
@@ -59,9 +93,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						Viewing ticket: <?=$ticket->id?>
 					</div>
 					<div id="caption_options" name="caption_options">
-						<a href="#">Take</a> |
-						<a href="#">Re-assign</a> |
-						<a href="#">Assign</a>
+						<?=$actionLinks?>
 					</div>
 					</div>
 				</caption>
@@ -161,6 +193,40 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			<td><input type="text" id="subject" name="subject" size="50"/></td>
 		</tr>
 		</form>
+	</tbody>
+</table>
+
+		<?php
+	}
+
+	private function no_ticket()
+	{
+		?>
+
+<table class="reflex">
+	<caption>
+		<div id="caption_bar" name="caption_bar">
+		<div id="caption_title" name="caption_title">
+			Error
+		</div>
+		<div id="caption_options" name="caption_options">
+		</div>
+		</div>
+	</caption>
+	<thead class="header">
+		<tr>
+			<th colspan="2">&nbsp;</th>
+		</tr>
+	</thead>
+	<tfoot class="footer">
+		<tr>
+			<th colspan="2">&nbsp;</th>
+		</tr>
+	</tfoot>
+	<tbody>
+		<tr class="alt">
+			<td colspan="2" class="title">No ticket selected.</td>
+		</tr>
 	</tbody>
 </table>
 

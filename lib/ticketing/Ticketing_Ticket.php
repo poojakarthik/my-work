@@ -53,6 +53,11 @@ class Ticketing_Ticket
 		$objTicket->priorityId = TICKETING_PRIORITY_MEDIUM;
 		$objTicket->contactId = $contact->id;
 		$objTicket->statusId = TICKETING_STATUS_UNASSIGNED;
+		$customerGroup = Customer_Group::getForId($custGroupId);
+		if ($customerGroup == NULL)
+		{
+			throw new Exception("Customer group $custGroupId does not exist.");
+		}
 		$objTicket->customerGroupId = $custGroupId;
 		$objTicket->categoryId = TICKETING_CATEGORY_UNCATEGORIZED;
 		$objTicket->creationDatetime = $objTicket->modifiedDatetime = date('Y-m-d H-i-s');
@@ -87,9 +92,19 @@ class Ticketing_Ticket
 		$this->_saved = TRUE;
 	}
 
+	public function assignTo($user)
+	{
+		$this->statusId = TICKETING_STATUS_ASSIGNED;
+		$this->ownerId = $user->id;
+		$this->_saved = FALSE;
+		$this->save();
+	}
+
 	public function delete()
 	{
-		//$this->
+		$this->statusId = TICKETING_STATUS_DELETED;
+		$this->_saved = FALSE;
+		$this->save();
 	}
 
 	protected static function getColumns()
@@ -147,7 +162,8 @@ class Ticketing_Ticket
 		// This must be an update
 		else
 		{
-			$arrValues['id'] = $this->id;
+			$arrValues['Id'] = $this->id;
+			$arrValues['modified_datetime'] = date('Y-m-d H:i:s');
 			$statement = new StatementUpdateById($this->getTableName(), $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
@@ -161,10 +177,12 @@ class Ticketing_Ticket
 			// (should not be possible for this class, but maybe true for subclasses)
 			if ($this->group_ticket_id === NULL)
 			{
-				$this->group_ticket_id = $outcome;
+				$this->groupTicketId = $outcome;
+				$this->_saved = FALSE;
+				return $this->save();
 			}
 		}
-		if (get_class($this) == 'Ticketing_Ticket_History')
+		if (get_class($this) !== 'Ticketing_Ticket_History')
 		{
 			// Each time we update the record, we need to copy the details to the history table
 			$this->recordHistoricCopy();
@@ -317,6 +335,16 @@ class Ticketing_Ticket
 		return Ticketing_Status::getForId($this->statusId);
 	}
 
+	public function isAssigned()
+	{
+		return $this->statusId !== TICKETING_STATUS_UNASSIGNED;
+	}
+
+	public function isAssignedTo($user)
+	{
+		return $this->ownerId === $user->id;
+	}
+
 	public function getCategory()
 	{
 		return Ticketing_Category::getForId($this->categoryId);
@@ -325,6 +353,11 @@ class Ticketing_Ticket
 	public function getOwner()
 	{
 		return Ticketing_User::getForId($this->ownerId);
+	}
+
+	public function ownedBy($user)
+	{
+		return $user->id === $this->ownerId;
 	}
 
 	public function getCustomerGroup()
@@ -398,7 +431,7 @@ class Ticketing_Ticket
 	{
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
-			if ($this->{$strName} != $mxdValue)
+			if ($this->{$strName} !== $mxdValue)
 			{
 				if ($strName == 'contactId')
 				{

@@ -3,7 +3,7 @@
 	require_once('require.php');
 	
 	// instanciate application
-	$Application = Singleton::Instance('Application');
+	$Application = Application::instance();
 	
 	// call ajax_load
 	$Application->AjaxLoad();

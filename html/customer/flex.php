@@ -41,7 +41,7 @@ $strMethod 		= $arrScript[1];
 require_once('require.php');
 
 // instanciate application
-$Application = Singleton::Instance('Application');
+$Application = Application::instance();
 
 // load application
 $TemplateName = $strTemplate .".". $strMethod;

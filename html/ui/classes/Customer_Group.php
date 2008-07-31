@@ -52,7 +52,8 @@ class Customer_Group
 	public static function getForId($id)
 	{
 		$instances = self::listAll();
-		return $instances[$id];
+		$id = intval($id);
+		return (array_key_exists($id, $instances)) ? $instances[$id] : NULL;
 	}
 }
 

@@ -14,7 +14,7 @@ class Ticketing_Ticket_History extends Ticketing_Ticket
 
 	protected function createForTicket($objTicket)
 	{
-		$arrPropertyNames = $ticket->getValuesToSave();
+		$arrPropertyNames = $objTicket->getValuesToSave();
 		$objHistory = new Ticketing_Ticket_History();
 		foreach($arrPropertyNames as $strName => $strValue)
 		{
@@ -32,7 +32,7 @@ class Ticketing_Ticket_History extends Ticketing_Ticket
 
 	protected function getValuesToSave()
 	{
-		$arrValuesToSave = super::getValuesToSave();
+		$arrValuesToSave = parent::getValuesToSave();
 		$arrValuesToSave['ticket_id'] = $this->ticketId;
 		return $arrValuesToSave;
 	}

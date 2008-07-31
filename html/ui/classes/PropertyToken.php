@@ -326,7 +326,7 @@ class PropertyToken
 		// Build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext, $strType, $bolRequired, $bolApplyOutputMask);
 
-		return HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams, $arrAdditionalArgs);
+		return HtmlElements()->$arrParams['Definition'][$strType.'Type']($arrParams, $arrAdditionalArgs);
 	}
 
 	//------------------------------------------------------------------------//
@@ -475,7 +475,7 @@ class PropertyToken
 	 */
 	function Render($strOutputMask=NULL)
 	{
-		$strValue = HTMLElements()->ApplyOutputMask($this->_dboOwner->_arrProperties[$this->_strProperty], $strOutputMask);
+		$strValue = HtmlElements()->ApplyOutputMask($this->_dboOwner->_arrProperties[$this->_strProperty], $strOutputMask);
 		
 		echo $strValue;
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
@@ -508,7 +508,7 @@ class PropertyToken
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext);
 		
-		return HTMLElements()->RenderValue($arrParams);
+		return HtmlElements()->RenderValue($arrParams);
 	}
 
 	//------------------------------------------------------------------------//
@@ -628,7 +628,7 @@ class PropertyToken
 			$arrParams['Value'] = $mixArbitrary;
 		}
 		
-		$strFormattedValue = HTMLElements()->BuildOutputValue($arrParams);
+		$strFormattedValue = HtmlElements()->BuildOutputValue($arrParams);
 		return $strFormattedValue;
 	}
 
@@ -655,7 +655,7 @@ class PropertyToken
 		// build up parameters
 		$arrParams = $this->_BuildParams($intContext);
 		
-		return HTMLElements()->RenderLink($arrParams, $strHref);
+		return HtmlElements()->RenderLink($arrParams, $strHref);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -733,14 +733,14 @@ class PropertyToken
 		switch ($strRenderType)
 		{
 			case RENDER_INPUT:
-				return HTMLElements()->$arrParams['Definition']['InputType']($arrParams);
+				return HtmlElements()->$arrParams['Definition']['InputType']($arrParams);
 				break;
 			case RENDER_OUTPUT:
-				return HTMLElements()->$arrParams['Definition']['OutputType']($arrParams);
+				return HtmlElements()->$arrParams['Definition']['OutputType']($arrParams);
 				break;
 			case RENDER_VALUE:
 			default:
-				return HTMLElements()->RenderValue($arrParams);
+				return HtmlElements()->RenderValue($arrParams);
 				break;
 		}
 	}
@@ -834,14 +834,14 @@ class PropertyToken
 		switch ($strRenderType)
 		{
 			case RENDER_INPUT:
-				return HTMLElements()->$arrParams['Definition']['InputType']($arrParams);
+				return HtmlElements()->$arrParams['Definition']['InputType']($arrParams);
 				break;
 			case RENDER_OUTPUT:
-				return HTMLElements()->$arrParams['Definition']['OutputType']($arrParams);
+				return HtmlElements()->$arrParams['Definition']['OutputType']($arrParams);
 				break;
 			case RENDER_VALUE:
 			default:
-				return HTMLElements()->RenderValue($arrParams);
+				return HtmlElements()->RenderValue($arrParams);
 				break;
 		}
 	}
@@ -922,7 +922,7 @@ class PropertyToken
 		$arrParams['Value']		= $this->_dboOwner->_arrProperties[$this->_strProperty];
 
 		// Render the value as hidden
-		return HTMLElements()->InputHidden($arrParams);
+		return HtmlElements()->InputHidden($arrParams);
 	}
 
 	//------------------------------------------------------------------------//

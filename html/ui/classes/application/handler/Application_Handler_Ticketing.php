@@ -151,33 +151,149 @@ class Application_Handler_Ticketing extends Application_Handler
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
-		$permittedActions = $currentUser->isAdminUser() 
-			? array('view', 'edit', 'delete', 'reassign', 'assign', 'take', 'create') 
-			: array('view', 'edit', 'delete', 'take', 'create');
-
-		// WIP :: Kinda obvious ... this needs filling out a bit!
 		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
-		if (!array_search($action, $permittedActions))
+
+		if (is_numeric($action))
 		{
-			$action = 'view';
+			$_REQUEST['ticketId'] = $action;
+			$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
 		}
 
-		
+		$ticket = array_key_exists('ticketId', $_REQUEST) ? Ticketing_Ticket::getForId($_REQUEST['ticketId']) : NULL;
 
-		switch ($action)
+		$permittedActions = array();
+		$editableValues = array();
+
+		if ($ticket)
 		{
-			case 'delete':
-				$ticket->delete();
-				break;
+			$permittedActions[] = 'view';
+			$permittedActions[] = 'edit';
 
-			case 'view':
-			default:
+			if (!$ticket->isAssigned() || ($currentUser->isAdminUser() && !$ticket->isAssignedTo($currentUser)))
+			{
+				$permittedActions[] = 'take';
+			}
+
+			if ($currentUser->isAdminUser())
+			{
+				if ($ticket->isAssigned())
+				{
+					$permittedActions[] = 're-assign';
+				}
+				else
+				{
+					$permittedActions[] = 'assign';
+				}
+				$permittedActions[] = 'delete';
+			}
+		}
+
+		$permittedActions[] = 'create';
+
+		$detailsToRender = array();
+
+		// Default the action if the selected action is not permitted
+		if (array_search($action, $permittedActions) === FALSE)
+		{
+			$action = 'error';
+			$detailsToRender['error'] = 'You are not authorised to perform that action.';
+		}
+
+		try
+		{
+			if (!$ticket && $action != 'create')
+			{
+				$detailsToRender['error'] = 'Unable to perform action';
+				throw new Exception('No ticket selected.');
+			}
+
+			switch ($action)
+			{
+				case 'delete':
+					$detailsToRender['error'] = 'Failed to mark ticket as deleted';
+					$ticket->delete();
+					break;
+
+				case 'take':
+					$detailsToRender['error'] = 'Failed to assign ticket to you';
+					$ticket->assignTo($currentUser);
+					break;
+
+				case 'assign':
+				case 're-assign':
+					$editableValues[] = 'ownerId';
+					$targetUser = NULL;
+					$targetUserId = count($subPath) ? $subPath[0] : NULL;
+					if (!is_numeric($targetUserId)) $targetUserId = NULL;
+					if ($targetUserId === NULL)
+					{
+						if (array_key_exists('userId', $_REQUEST) && is_numeric($_REQUEST['userId']))
+						{
+							$targetUserId = $_REQUEST['userId'];
+						}
+					}
+					if ($targetUserId !== NULL)
+					{
+						$targetUserId = intval($targetUserId);
+						$targetUser = Ticketing_User::getForId($targetUserId);
+					}
+					if ($targetUser && !$targetUser->isUser())
+					{
+						throw new Exception($targetUser->getName() . ' is not an authorised ticketing system user.');
+					}
+					if ($targetUser)
+					{
+						$detailsToRender['error'] = 'Failed to assign ticket to ' . $targetUser->getName();
+						$detailsToRender['targetUser'] = $targetUser;
+						$ticket->assignTo($targetUser);
+					}
+					break;
+
+				case 'create':
+					$editableValues[] = 'ownerId';
+					if (array_key_exists('save', $_REQUEST))
+					{
+						// WIP :: Create a new ticket for the passed details, if valid
+
+						$detailsToRender['saved'] = TRUE;
+					}
+					else
+					{
+
+						$detailsToRender['saved'] = FALSE;
+					}
+
+					break;
+
+				case 'edit':
+					if (array_key_exists('save', $_REQUEST))
+					{
+						// WIP :: Validate the passed details and save if valid
+
+						$detailsToRender['saved'] = TRUE;
+					}
+					else
+					{
+
+						$detailsToRender['saved'] = FALSE;
+					}
+
+					break;
+
+				case 'error':
+				case 'view':
+				default:
+			}
+		}
+		catch(Exception $exception)
+		{
+			$action = 'error';
+			$detailsToRender['error'] .= ': ' . $exception->getMessage();
 		}
 
 		// We need to load the details of the ticket specified by a ticket_id in $_REQUEST
-		$detailsToRender = array();
 		$detailsToRender['action'] = $action;
-		$detailsToRender['ticket'] = Ticketing_Ticket::getForId($_REQUEST['ticketId']);
+		$detailsToRender['ticket'] = $ticket;
 		$detailsToRender['permitted_actions'] = $permittedActions;
 
 		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);

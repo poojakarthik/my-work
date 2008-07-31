@@ -86,7 +86,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			</tr>
 		</tfoot>
 		<tbody>
-	
+
 		<?
 
 		$i = 0;
@@ -102,7 +102,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		?>
 
 			<tr class="<?=$tr_alt?>">
-				<td><a href="reflex.php/Ticketing/Ticket/View?ticketId=<?php echo $ticket->id; ?>"><?php echo $ticket->id; ?></a></td>
+				<td><a href="reflex.php/Ticketing/Ticket/<?=$ticket->id?>/View"><?php echo $ticket->id; ?></a></td>
 				<td><?php echo $ticket->subject; ?></td>
 				<td><?php echo $ticket->modifiedDatetime; ?></td>
 				<td><?php echo $ticket->creationDatetime; ?></td>
