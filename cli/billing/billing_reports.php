@@ -87,6 +87,8 @@ if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
 	CliEcho("Customer Summary...");
 	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('CustomerSummary'));
+	CliEcho("CustomerGroup Summary...");
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('CustomerGroup'));
 	CliEcho("Plan Summary...");
 	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
 	
