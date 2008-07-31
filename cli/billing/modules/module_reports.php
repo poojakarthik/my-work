@@ -547,7 +547,7 @@ class BillingModuleReports
 		foreach ($arrServiceTypes as $intServiceType=>$arrRatePlans)
 		{
 			// Create new Workbook
-			$strServiceType = str_replace(' ', '_', GetConstantDescription($intServiceType, 'ServiceType'));
+			$strServiceType = str_replace(' ', '_', GetConstantDescription($intServiceType, 'service_type'));
 			$strServiceType = str_replace('/', '_', $strServiceType);
 			$strServiceType = str_replace('\\', '_', $strServiceType);
 			$strFilename	= $this->_strReportBasePath."Plan_Summary_with_Breakdown_($strServiceType).xls";
