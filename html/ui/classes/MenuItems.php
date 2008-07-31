@@ -452,7 +452,7 @@ class MenuItems
 	// EmployeeList
 	//------------------------------------------------------------------------//
 	/**
-	 * EmployeeConsole()
+	 * EmployeeList()
 	 *
 	 * Compiles the Href to be executed when the EmployeeList menu item is clicked
 	 *
@@ -1326,9 +1326,31 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}EditPopup\", \"medium\", \"Employee\", \"Employee\", \"Edit\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"Edit\", $strJsonCode)";
 	}
+	
+	//------------------------------------------------------------------------//
+	// ViewUserDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewUserDetails()
+	 *
+	 * Compiles the Href to be executed when the ViewUserDetails menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewUserDetails menu item is triggered
+	 * In this case the user is the currently logged in user
+	 * 
+	 * @return	string				Href to be execute the functionality
+	 *
+	 * @method
+	 */
+	function ViewUserDetails()
+	{
+		$this->strContextMenuLabel = "View Employee details";
 		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"EmployeeDetails\", null)";
+	}
+	
 	//------------------------------------------------------------------------//
 	// AddEmployee
 	//------------------------------------------------------------------------//
@@ -2462,7 +2484,7 @@ class MenuItems
 	 */
 	function MoveDelinquentCDRs()
 	{
-		$this->strContextMenuLabel	= "Move Delinquent CDRs";
+		$this->strContextMenuLabel	= "Delinquent CDRs";
 		$this->strLabel				= "Delinquent CDRs";
 		return self::NEW_FRAMEWORK . "flex.php/Misc/MoveDelinquentCDRs/";
 	}

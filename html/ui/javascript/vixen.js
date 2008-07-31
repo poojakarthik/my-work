@@ -26,14 +26,15 @@ function VixenRootClass()
 	this.table = Object();
 	
 	// Vixen Logout
-	this.Logout = function()
+	this.Logout = function(bolConfirm)
 	{
-		var x = window.confirm("Are you sure you would like to Logout?");
-		if (x)
+		if (!bolConfirm)
 		{
-			return TRUE;
+			Vixen.Popup.Confirm("Are you sure you want to logout?", function(){Vixen.Logout(true)});
+			return;
 		}
-		return FALSE;
+		
+		window.location = "flex.php/Employee/Logout/";
 	}
 	
 	this.Init =function()

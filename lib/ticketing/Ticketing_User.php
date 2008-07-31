@@ -263,7 +263,7 @@ class Ticketing_User
 		if ($strName[0] === '_') return; // It is read only!
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
-			if ($this->{$strName} != $mxdValue)
+			if ($this->{$strName} !== $mxdValue)
 			{
 				$this->{$strName} = $mxdValue;
 				$this->_saved = FALSE;

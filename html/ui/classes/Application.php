@@ -39,6 +39,7 @@ class Application
 		{
 			$instance = new self();
 		}
+
 		return $instance;
 	}
 
@@ -246,7 +247,7 @@ class Application
 	function AjaxLoad()
 	{
 		$this->_intMode = AJAX_MODE;
-		
+
 		// Get submitted data
 		$objSubmit		= new SubmittedData();
 		$objAjax		= $objSubmit->Ajax();

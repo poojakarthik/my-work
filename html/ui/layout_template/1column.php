@@ -32,8 +32,12 @@ $this->RenderFlexHeader(TRUE, TRUE, TRUE);
 
 
 <div id='PageBody'>
-<h1> <?php echo $this->_strPageName; ?></h1>
-	<?php $this->RenderColumn(COLUMN_ONE); ?>
+	<div id='PageTitle' name='PageTitle'>
+		<h1> <?php echo $this->_strPageName; ?></h1>
+	</div>
+	<div id='Column1' style='height:auto;margin:0px 1px'>
+		<?php $this->RenderColumn(COLUMN_ONE); ?>
+	</div>
 </div>
 
 <?php

@@ -532,7 +532,7 @@ class Page
 	}
 	
 	//------------------------------------------------------------------------//
-	// RenderVixenHeader
+	// RenderVixenHeader DEPRECIATED
 	//------------------------------------------------------------------------//
 	/**
 	 * RenderVixenHeader()
@@ -609,13 +609,15 @@ class Page
 	function RenderSearchField()
 	{
 		$strUserName = Flex::getDisplayName();
+		
+		$strUserPreferencesLink = Href()->ViewUserDetails();
 
 		echo "
 			<div id='person_search' name='person_search'>
 				<div id='person' name='person'>
 					Logged in as: $strUserName
-					| <a href='#' >Preferences</a>
-					| <a href='flex.php/Employee/Logout/' >Logout</a>
+					| <a onclick='$strUserPreferencesLink' >Preferences</a>
+					| <a onclick='Vixen.Logout();'>Logout</a>
 				</div>
 				<div id='search_bar' name='search_bar'>
 					Search: 

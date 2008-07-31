@@ -19,22 +19,6 @@
 class HtmlTemplateEmployeeEdit extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -52,15 +36,14 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strId = $strId;
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
+
 		$this->LoadJavascript("permissions");
 		$this->LoadJavascript("employee_edit");
 		$this->LoadJavascript("date_time_picker_xy");
 
 		if (DBO()->Employee->EditSelf->Value)
 		{
-			$this->LoadJavascript("vixen_modal");
+			//$this->LoadJavascript("vixen_modal");
 		}
 	}
 	
@@ -78,22 +61,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch ($this->_intContext)
-		{
-			/*case HTML_CONTEXT_SEANS_DETAIL:
-				$this->_RenderSeansDetail();
-				break;
-			case HTML_CONTEXT_LEDGER_DETAIL:
-				$this->_RenderLedgerDetail();
-				break;
-			case HTML_CONTEXT_FULL_DETAIL:
-		
-				$this->_RenderFullDetail();
-				break;*/
-			default:
-				$this->_RenderFullDetail();
-				break;
-		}
+		$this->_RenderFullDetail();
 	}
 
 	//------------------------------------------------------------------------//
@@ -245,6 +213,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			DBO()->Employee->Archived->RenderOutput();
 		}
 
+echo "Ticket perm = ". $displayUserTicketingPermission;
 		$description = htmlspecialchars(GetConstantDescription($displayUserTicketingPermission, 'ticketing_user_permission'));
 		echo "
 <div class=\"DefaultElement\">

@@ -227,7 +227,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		$arrMaxItems = Array(10 => "10", 50 => "50", 100 => "100", 200 => "200", 500 => "500", 0 => "Show All");
 
 		// Render filtering controls
-		echo "<div class='GroupedContent'>";
+		echo "<div class='GroupedContent' >";
 		echo "<div style='height:25px'>";
 		echo "<div class='Left'>";
 		
@@ -284,7 +284,8 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		echo "</div>\n"; //height=25px
 		echo "</div>\n"; // GroupedContent
 		
-		echo "<div class='TinySeperator'></div>\n";
+		echo "<div class='TinySeperator' style='clear:both'></div>\n";
+		
 	}
 	
 	
