@@ -38,7 +38,7 @@ while ($arrRow	= fgetcsv($resFile))
 		{
 			// Archive this Service
 			$arrService['Status']	= SERVICE_ARCHIVED;
-			if (!TRUE/*$ubiService->Execute($arrService)*/)
+			if (!$ubiService->Execute($arrService))
 			{
 				// Error
 				CliEcho("[ FAILED ]\n\t -- Unable to update Service {$arrService['Id']}: ".$ubiService->Error());
@@ -51,8 +51,8 @@ while ($arrRow	= fgetcsv($resFile))
 		if (is_array($arrCDR))
 		{
 			$arrCDR['Status']	= CDR_NORMALISED;
-			//$intCDRsUpdated	= $updCDRs->Execute($arrCDR, Array('FNN' => $arrFNN['FNN'], 'Account' => $arrCDR['Account']));
-			$intCDRsUpdated	= TRUE;
+			$intCDRsUpdated	= $updCDRs->Execute($arrCDR, Array('FNN' => $arrFNN['FNN'], 'Account' => $arrCDR['Account']));
+			//$intCDRsUpdated	= TRUE;
 			if ($intCDRsUpdated === FALSE)
 			{
 				// Error
