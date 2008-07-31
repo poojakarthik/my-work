@@ -548,8 +548,7 @@ class BillingModuleReports
 		{
 			// Create new Workbook
 			$strServiceType = str_replace(' ', '_', GetConstantDescription($intServiceType, 'service_type'));
-			$strServiceType = str_replace('/', '_', $strServiceType);
-			$strServiceType = str_replace('\\', '_', $strServiceType);
+			$strServiceType	= preg_replace("/\W+/misU", "_", $strServiceType);
 			$strFilename	= $this->_strReportBasePath."Plan_Summary_with_Breakdown_($strServiceType).xls";
 			$arrFilenames[]	= $strFilename;
 			@unlink($strFilename);
