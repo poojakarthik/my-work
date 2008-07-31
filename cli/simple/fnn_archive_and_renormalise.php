@@ -14,11 +14,14 @@ $arrCols						= Array();
 $arrCols['Status']				= SERVICE_ARCHIVED;
 $ubiService						= new StatementUpdateById("Service", $arrCols);
 
-$arrCDR						= Array();
-$arrCDR['Status']				= CDR_READY;
+$arrCDR							= Array();
+$arrCDR['Status']				= CDR_NORMALISED;
+$arrCDR['Service']				= NULL;
+$arrCDR['Account']				= NULL;
+$arrCDR['AccountGroup']			= NULL;
 $updCDRs	= new StatementUpdate("CDR", "FNN = <FNN>", $arrCDR);
 
-$selFNNDisconnectedInstances	= new StatementSelect("Service", "Id", "Status = ".SERVICE_DISCONNECTED." AND FNN = <FNN>");
+$selFNNDisconnectedInstances	= new StatementSelect("Service", "Id", "Status = ".SERVICE_DISCONNECTED." AND FNN = <FNN> AND Account = <Account>");
 $intFNNCount	= 0;
 $intCDRCount	= 0;
 while ($arrRow	= fgetcsv($resFile))
@@ -33,7 +36,7 @@ while ($arrRow	= fgetcsv($resFile))
 		{
 			// Archive this Service
 			$arrService['Status']	= SERVICE_ARCHIVED;
-			if (!$ubiService->Execute($arrService))
+			if (!TRUE/*$ubiService->Execute($arrService)*/)
 			{
 				// Error
 				CliEcho("[ FAILED ]\n\t -- Unable to update Service {$arrService['Id']}: ".$ubiService->Error());
@@ -41,18 +44,28 @@ while ($arrRow	= fgetcsv($resFile))
 			}
 		}
 		
-		// Set all CDRs for this FNN to be ReNormalised
-		$intCDRsUpdated	= $updCDRs->Execute($arrCDR, $arrFNN);
-		if ($intCDRsUpdated === FALSE)
+		// Re-own all of these CDRs to be on the current Service, and re-rate
+		$arrCDR				= FindFNNOwner($arrFNN['FNN'], date('Y-m-d'));
+		if (is_array($arrCDR))
 		{
-			// Error
-			CliEcho("[ FAILED ]\n\t -- Unable to update Service {$arrService['Id']}: ".$ubiService->Error());
-			die;
+			$arrCDR['Status']	= CDR_NORMALISED;
+			//$intCDRsUpdated	= $updCDRs->Execute($arrCDR, Array('FNN' => $arrFNN['FNN'], 'Account' => $arrCDR['Account']));
+			$intCDRsUpdated	= TRUE;
+			if ($intCDRsUpdated === FALSE)
+			{
+				// Error
+				CliEcho("[ FAILED ]\n\t -- Unable to update Service {$arrService['Id']}: ".$ubiService->Error());
+				die;
+			}
+			else
+			{
+				CliEcho("{$intCDRsUpdated} CDRs Updated");
+				$intCDRCount	+= $intCDRsUpdated;
+			}
 		}
 		else
 		{
-			CliEcho("{$intCDRsUpdated} CDRs Updated");
-			$intCDRCount	+= $intCDRsUpdated;
+			CliEcho("No current owner for {$arrFNN['FNN']}");
 		}
 	}
 	$intFNNCount++;
