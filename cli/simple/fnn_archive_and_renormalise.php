@@ -68,6 +68,10 @@ while ($arrRow	= fgetcsv($resFile))
 			CliEcho("No current owner for {$arrFNN['FNN']}");
 		}
 	}
+	else
+	{
+		CliEcho("[  SKIP  ]\n\t -- No Disconnected Services found for {$arrService['Id']}: ".$ubiService->Error());
+	}
 	$intFNNCount++;
 }
 
