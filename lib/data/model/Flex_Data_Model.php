@@ -139,6 +139,11 @@ class Flex_Data_Model
 				$colDef['RefType'] = "s";
 				$colDef['ObLib'] = "dataDatetime";
 			}
+			
+			if (preg_match ("/timestamp/", $colDef['Type'])) {
+				$colDef['RefType'] = "s";
+				$colDef['ObLib'] = "dataDatetime";
+			}
 
 			if (preg_match ("/int/", $colDef['Type'])) {
 				$colDef['RefType'] = "i";
