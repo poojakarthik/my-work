@@ -257,7 +257,20 @@ final class Flex
 
 	public static function getUrlBase()
 	{
-		return dirname($_SERVER['SCRIPT_NAME']) . "/";
+		static $strBaseDir;
+		if (!isset($strBaseDir))
+		{
+			$strBaseDir = dirname($_SERVER['SCRIPT_NAME']) . "/";
+			if (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'])
+			{
+				$strBaseDir = "https://{$_SERVER['SERVER_NAME']}$strBaseDir";
+			}
+			else
+			{
+				$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
+			}
+		}
+		return $strBaseDir;
 	}
 
 	public static function getPathInfo()

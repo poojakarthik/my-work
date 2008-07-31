@@ -252,17 +252,7 @@ class Application_Page extends Page
 	 */
 	function RenderHeader($bolWithSearch=TRUE)
 	{	
-		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
-		$intLastSlash = strrpos($arrScript[0], "/");
-		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
-		if (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'])
-		{
-			$strBaseDir = "https://{$_SERVER['SERVER_NAME']}$strBaseDir";
-		}
-		else
-		{
-			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
-		}
+		$strBaseDir = Flex::getUrlBase();
 		$strEmployeeConsoleLink = Href()->EmployeeConsole();
 
 		echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
