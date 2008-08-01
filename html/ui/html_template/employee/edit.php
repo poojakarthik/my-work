@@ -114,9 +114,9 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			$bolEditSelf = TRUE;
 		}
 		
-		$strMinWidth = $bolEditSelf ? " style='width: 400px;'" : "";
+		//$strMinWidth = $bolEditSelf ? " style='width: 400px;'" : "";
 		
-		echo "<div class='NarrowForm'$strMinWidth>";
+		echo "<div class='GroupedContent'$strMinWidth>";
 		
 		echo "<div id='Employee.Edit'$strEditDisplay>";
 		
@@ -213,7 +213,6 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			DBO()->Employee->Archived->RenderOutput();
 		}
 
-echo "Ticket perm = ". $displayUserTicketingPermission;
 		$description = htmlspecialchars(GetConstantDescription($displayUserTicketingPermission, 'ticketing_user_permission'));
 		echo "
 <div class=\"DefaultElement\">
@@ -274,7 +273,7 @@ echo "Ticket perm = ". $displayUserTicketingPermission;
 		
 		echo "<p>
 
-			  <div class='NarrowContent'>
+			  <div class='GroupedContent'>
 				  <div class='SmallSeperator'></div>";
 		
 		if ($bolAdminUser && !$bolEditSelf)

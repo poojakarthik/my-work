@@ -107,6 +107,26 @@ class BreadCrumbFramework
 		return $arrBreadCrumb;
 	}
 	
+	
+	//------------------------------------------------------------------------//
+	// HasBreadCrumbs
+	//------------------------------------------------------------------------//
+	/**
+	 * HasBreadCrumbs
+	 *
+	 * Used to check if breadcrumbs have been defined
+	 *
+	 * Used to check if breadcrumbs have been defined
+	 * 
+	 * @return	array				TRUE if breadcrumbs have been defined, else FALSE
+	 *
+	 * @method
+	 */
+	function HasBreadCrumbs()
+	{
+		return ($this->_strCurrentPage !== NULL || count(DBO()->BreadCrumb->_arrProperties) > 0);
+	}
+	
 	//------------------------------------------------------------------------//
 	// SetCurrentPage
 	//------------------------------------------------------------------------//

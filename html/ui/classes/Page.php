@@ -427,7 +427,8 @@ class Page
 		echo "
 	</head>
 	<body onload='Vixen.Init();'>
-		<div id='PopupHolder'></div>\n";
+		<div id='PopupHolder'></div>
+		<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -527,8 +528,29 @@ class Page
 	 */
 	function RenderBreadCrumbMenu()
 	{
-		$objBreadCrumb = new HtmlTemplateBreadCrumb(HTML_CONTEXT_DEFAULT);
-		$objBreadCrumb->Render();
+		$strHtmlCode = "<div id='BreadCrumbMenu'>\n";
+		foreach (DBO()->BreadCrumb as $objProperty)
+		{
+			$strHtmlCode .= "<a href='{$objProperty->Value}'>{$objProperty->Label}</a> &gt; ";
+		}
+		
+		// Add the current page as a breadcrumb
+		$mixCurrentPage = BreadCrumb()->GetCurrentPage();
+		if ($mixCurrentPage !== FALSE)
+		{
+			// the current page has been defined.  Attach it to the bread crumb trail
+			$strHtmlCode .= $mixCurrentPage;
+		}
+		
+		// Remove the last 6 chars from html code, if it is equal to " &gt; "
+		if (substr($strHtmlCode, -6) == " &gt; ")
+		{
+			$strHtmlCode = substr($strHtmlCode, 0, -6);
+		}
+		
+		$strHtmlCode .= "\n</div>\n";
+		
+		echo $strHtmlCode;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -587,11 +609,10 @@ class Page
 		// Close the header div
 		echo "\t\t</div> <!-- header -->\n";
 		
-		if ($bolWithBreadCrumbs)
+		if ($bolWithBreadCrumbs && BreadCrumb()->HasBreadCrumbs())
 		{
 			$this->RenderBreadCrumbMenu();
 		}
-		
 	}
 
 	//------------------------------------------------------------------------//
