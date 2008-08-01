@@ -23,9 +23,9 @@ if ($selInvoiceRun->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 			CliEcho($intAccount);
 			$arrInvoice	= $selInvoice->Fetch();
 			$strCommand	= "perl -pi -e 's/<Invoice Id=\\\"SAMPLE\\\">/<Invoice Id=\\\"{$arrInvoice['Id']}\\\">/g' {$strXMLPath}{$strFile}";
-			CliEcho($strCommand);
-			die;
-			//CliEcho(shell_exec($strCommand));
+			//CliEcho($strCommand);
+			//die;
+			CliEcho(shell_exec($strCommand));
 		}
 		else
 		{
