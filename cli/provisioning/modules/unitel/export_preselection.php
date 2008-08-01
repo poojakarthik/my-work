@@ -243,7 +243,7 @@
 		$arrDefine['AgreementDate']	['Length']		= 8;
 		$arrDefine['AgreementDate']	['Type']		= 'Date::YYYYMMDD';
 		
-		$this->_arrDefine[REQUEST_PRESELECTION] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_PRESELECTION] = $arrDefine;
 		
  		//--------------------------------------------------------------------//
  		// Bar
@@ -266,7 +266,7 @@
 		$arrDefine['Action']		['Type']		= 'Integer';
 		$arrDefine['Action']		['Value']		= '1';
 		
-		$this->_arrDefine[REQUEST_BAR] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_BAR] = $arrDefine;
 		
  		//--------------------------------------------------------------------//
  		// UnBar
@@ -289,7 +289,7 @@
 		$arrDefine['Action']		['Type']		= 'Integer';
 		$arrDefine['Action']		['Value']		= '0';
 		
-		$this->_arrDefine[REQUEST_UNBAR] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_UNBAR] = $arrDefine;
  		
  		//--------------------------------------------------------------------//
  		// Activation
@@ -311,7 +311,7 @@
 		$arrDefine['AgreementDate']	['Length']		= 8;
 		$arrDefine['AgreementDate']	['Type']		= 'Date::YYYYMMDD';
 		
-		$this->_arrDefine[REQUEST_ACTIVATION] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_ACTIVATION] = $arrDefine;
  		
  		//--------------------------------------------------------------------//
  		// Deactivation
@@ -329,7 +329,7 @@
 		$arrDefine['FNN']			['Length']		= 10;
 		$arrDefine['FNN']			['Type']		= 'FNN';
 		
-		$this->_arrDefine[REQUEST_DEACTIVATION] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_DEACTIVATION] = $arrDefine;
  		
  		//--------------------------------------------------------------------//
  		// Preselection Reversal
@@ -347,7 +347,7 @@
 		$arrDefine['FNN']			['Length']		= 10;
 		$arrDefine['FNN']			['Type']		= 'FNN';
 		
-		$this->_arrDefine[REQUEST_PRESELECTION_REVERSE] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_PRESELECTION_REVERSE] = $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//
@@ -376,29 +376,29 @@
  		$arrRendered	= Array();
  		switch ($arrRequest['Type'])
  		{
- 			case REQUEST_PRESELECTION:
+ 			case PROVISIONING_TYPE_PRESELECTION:
  				$arrRendered['FNN']				= $arrRequest['FNN'];
  				$arrRendered['AgreementDate']	= date("Ymd", strtotime($arrRequest['RequestedOn']));
  				break;
  				
- 			case REQUEST_BAR:
+ 			case PROVISIONING_TYPE_BAR:
  				$arrRendered['FNN']				= $arrRequest['FNN'];
  				break;
  				
- 			case REQUEST_UNBAR:
+ 			case PROVISIONING_TYPE_UNBAR:
  				$arrRendered['FNN']				= $arrRequest['FNN'];
  				break;
  				
- 			case REQUEST_ACTIVATION:
+ 			case PROVISIONING_TYPE_ACTIVATION:
  				$arrRendered['FNN']				= $arrRequest['FNN'];
  				$arrRendered['AgreementDate']	= date("Ymd", strtotime($arrRequest['RequestedOn']));
  				break;
  				
- 			case REQUEST_DEACTIVATION:
+ 			case PROVISIONING_TYPE_DEACTIVATION:
  				$arrRendered['FNN']				= $arrRequest['FNN'];
  				break;
  				
- 			case REQUEST_PRESELECTION_REVERSE:
+ 			case PROVISIONING_TYPE_PRESELECTION_REVERSE:
  				$arrRendered['FNN']				= $arrRequest['FNN'];
  				break;
  		}

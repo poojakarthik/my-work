@@ -187,7 +187,7 @@
 		$arrDefine['FNN']			['Length']		= 10;
 		$arrDefine['FNN']			['Type']		= 'FNN';
 		
-		$this->_arrDefine[REQUEST_PRESELECTION_REVERSE] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_PRESELECTION_REVERSE] = $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//

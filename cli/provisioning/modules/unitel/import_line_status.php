@@ -154,31 +154,31 @@
 		switch (trim($arrData['AccountStatus']))
 		{
 			case 'Activation Confirmed':
-				$arrPDR['Type']				= REQUEST_ACTIVATION;
+				$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
 				$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
 				
 			case 'Deactivation Confirmed':
-				$arrPDR['Type']				= REQUEST_ACTIVATION;
+				$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
 				$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
 				
 			case 'Bar Confirmed':
 			case 'Barred by Another SP':
-				$arrPDR['Type']				= REQUEST_SOFT_BAR;
+				$arrPDR['Type']				= PROVISIONING_TYPE_BAR;
 				$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
 				
 			default:
-				$arrPDR['Type']				= REQUEST_PRESELECTION;
+				$arrPDR['Type']				= PROVISIONING_TYPE_PRESELECTION;
 				$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
 		}
 		
 		if (stripos($arrData['PreselectionStatus'], 'Preselection Confirmed') !== FALSE)
 		{
-			$arrPDR['Type']					= REQUEST_PRESELECTION;
+			$arrPDR['Type']					= PROVISIONING_TYPE_PRESELECTION;
 			$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
 		}
 		elseif (stripos($arrData['PreselectionStatus'], 'Lost to ') !== FALSE)
 		{
-			$arrPDR['Type']					= REQUEST_LOSS_PRESELECT;
+			$arrPDR['Type']					= PROVISIONING_TYPE_LOSS_PRESELECT;
 			$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
 		}
 		//----------------------------------------------------------------//
@@ -189,20 +189,17 @@
 		//----------------------------------------------------------------//
  		
 		//----------------------------------------------------------------//
-		// Description
+		// Description & EffectiveDate
 		if (trim($arrData['PreselectionStatus']))
 		{
-			$arrPDR['Description']	= $arrData['PreselectionStatus'];
+			$arrPDR['Description']		= $arrData['PreselectionStatus'];
+			$arrPDR['EffectiveDate']	= date("Y-m-d", strtotime($arrData['UnitelStatusDate']));
 		}
 		else
 		{
-			$arrPDR['Description']	= $arrData['AccountStatus'];
+			$arrPDR['Description']		= $arrData['AccountStatus'];
+			$arrPDR['EffectiveDate']	= date("Y-m-d", strtotime($arrData['DateCreated']));
 		}
-		//----------------------------------------------------------------//
-		
-		//----------------------------------------------------------------//
-		// EffectiveDate
-		// Handled Elsewhere
 		//----------------------------------------------------------------//
 		
 		//----------------------------------------------------------------//

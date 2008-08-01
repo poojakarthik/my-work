@@ -240,7 +240,7 @@
 		$arrDefine['Lessee']		['Type']		= 'String';
 		$arrDefine['Lessee']		['Value']		= 'n';
  		
-		$this->_arrDefine[REQUEST_PRESELECTION] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_PRESELECTION] = $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//

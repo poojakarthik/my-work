@@ -365,7 +365,7 @@ HIl<?php
 		$arrDefine['Postcode']		['Start']		= 539;
 		$arrDefine['Postcode']		['Length']		= 4;
 		
-		$this->_arrDefine[REQUEST_FULL_SERVICE] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_FULL_SERVICE] = $arrDefine;
 		
  		//--------------------------------------------------------------------//
  		// Churn/Full Service Reversal
@@ -395,7 +395,7 @@ HIl<?php
 		$arrDefine['Basket']		['PadChar']		= '0';
 		$arrDefine['Basket']		['PadType']		= STR_PAD_LEFT;
 		
-		$this->_arrDefine[REQUEST_FULL_SERVICE_REVERSE] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_FULL_SERVICE_REVERSE] = $arrDefine;
 		
  		//--------------------------------------------------------------------//
  		// Virtual Preselection
@@ -425,7 +425,7 @@ HIl<?php
 		$arrDefine['Date']			['PadChar']		= '0';
 		$arrDefine['Date']			['PadType']		= STR_PAD_LEFT;
 		
-		$this->_arrDefine[REQUEST_VIRTUAL_PRESELECTION] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_VIRTUAL_PRESELECTION] = $arrDefine;
 		
  		//--------------------------------------------------------------------//
  		// Virtual Preselection Reversal
@@ -449,7 +449,7 @@ HIl<?php
 		$arrDefine['FNN']			['Length']		= 10;
 		$arrDefine['FNN']			['Type']		= 'FNN';
 		
-		$this->_arrDefine[REQUEST_VIRTUAL_PRESELECTION_REVERSE] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_VIRTUAL_PRESELECTION_REVERSE] = $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//
@@ -476,7 +476,7 @@ HIl<?php
  		$arrRendered				= Array();
  		
  		// Service Address
- 		if ($arrRequest['Type'] == REQUEST_FULL_SERVICE || $arrRequest['Type'] == REQUEST_VIRTUAL_PRESELECTION)
+ 		if ($arrRequest['Type'] == PROVISIONING_TYPE_FULL_SERVICE || $arrRequest['Type'] == PROVISIONING_TYPE_PRESELECTION)
  		{
 			$arrServiceAddress	= $this->_CleanServiceAddress($arrRequest['Service']);
 			
@@ -528,7 +528,7 @@ HIl<?php
 		$arrRendered['FNN']			= $arrRequest['FNN'];
  		switch ($arrRequest['Type'])
  		{
- 			case REQUEST_FULL_SERVICE:
+ 			case PROVISIONING_TYPE_FULL_SERVICE:
  				for ($intBasket = 1; $intBasket <= 5; $intBasket++)
  				{
  					$this->intCarrierReference++;
@@ -541,7 +541,7 @@ HIl<?php
  				}
  				break;
  				
- 			case REQUEST_FULL_SERVICE_REVERSE:
+ 			case PROVISIONING_TYPE_FULL_SERVICE_REVERSE:
  				for ($intBasket = 1; $intBasket <= 5; $intBasket++)
  				{
  					$this->intCarrierReference++;
@@ -554,12 +554,12 @@ HIl<?php
  				}
  				break;
  				
- 			case REQUEST_VIRTUAL_PRESELECTION:
+ 			case PROVISIONING_TYPE_VIRTUAL_PRESELECTION:
 		 		/*// Add Basket 2 Re-Request
 				$this->intCarrierReference++;
 				$arrRendered['Sequence']		= $this->intCarrierReference;
 				$arrRendered['Basket']			= 2;
-		 		$arrRendered['**Type']			= REQUEST_FULL_SERVICE;
+		 		$arrRendered['**Type']			= PROVISIONING_TYPE_FULL_SERVICE;
 		 		$arrRendered['**Request']		= $arrRequest['Id'];
 		 		$arrRendered['**CarrierRef']	= $this->intCarrierReference;
 		 		$this->_arrFileContent[]		= $arrRendered;*/
@@ -575,7 +575,7 @@ HIl<?php
 		 		
  				break;
  				
- 			case REQUEST_VIRTUAL_PRESELECTION_REVERSE:
+ 			case PROVISIONING_TYPE_VIRTUAL_PRESELECTION_REVERSE:
  				$this->intCarrierReference++;
  				$arrRendered['Sequence']		= $this->intCarrierReference;
 		 		$arrRendered['**Type']			= $arrRequest['Type'];

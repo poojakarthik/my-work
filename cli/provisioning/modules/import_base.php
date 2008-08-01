@@ -79,6 +79,19 @@
 		$this->_selTranslateCarrierCode	= new StatementSelect("ProvisioningTranslation", "Description", "Context = <Context> AND CarrierCode = <CarrierCode>");
 		
 		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_INPUT);
+		
+		$this->_selLineStatus			= new StatementSelect("Service", "LineStatus, LineStatusDate, PreselectionStatus, PreselectionStatusDate", "Id = <Id>");
+		
+		$arrColumns	= Array();
+		$arrColumns['LineStatus']				= NULL;
+		$arrColumns['LineStatusDate']			= NULL;
+		$arrColumns['PreselectionStatus']		= NULL;
+		$arrColumns['PreselectionStatusDate']	= NULL;
+		$this->_ubiLineStatus			= new StatementUpdateById("Service", $arrColumns);
+		
+		$this->_selLineStatusAction		= new StatementSelect("provisioning_type LEFT JOIN service_line_status_update ON service_line_status_update.provisioning_type = provisioning_type.id", "new_line_status, provisioning_type_nature", "(current_line_status = <LineStatus> OR current_line_status IS NULL) AND provisioning_type = <Request>", "ISNULL(current_line_status) ASC", 1);
+
+		$this->_selProvisioningType		= new StatementSelect("provisioning_type", "*", "id = <id>");
  	}
  	
  	//------------------------------------------------------------------------//
@@ -293,5 +306,110 @@
 	 	
 	 	return $arrPDR;
 	 }
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// UpdateLineStatus
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateLineStatus()
+	 *
+	 * Checks the Line Status and updates if necessary
+	 *
+	 * Checks the Line Status and updates if necessary
+	 * 
+	 * @param	integer	$intService				Id for the Service to update
+	 * @param	array	$arrResponse			The Response received from the Carrier
+	 * @param	string	$strEffectiveDate		Id for the Service to update
+	 * 
+	 * @return	mixed							TRUE: Pass; string: Error Message; FALSE: Not Updated				
+	 *
+	 * @method
+	 */
+	function UpdateLineStatus($intService, $arrResponse, $strEffectiveDate)
+	{
+		// Get Current Line Status for the Service
+		if ($this->_selLineStatus->Execute(Array('Service' => $intService)))
+		{
+			$arrLineStatus	= $this->_selLineStatus->Fetch();
+			
+			// Get the Provisioning Type Nature Details
+			if ($this->_selProvisioningType->Execute(Array('id' => $arrResponse['Type'])))
+			{
+				$arrProvisioningType	= $this->_selProvisioningType->Fetch();
+				if ($arrProvisioningType['provisioning_type_nature'] === REQUEST_TYPE_NATURE_PRESELECTION)
+				{
+					// Land Line Preselection Status
+					$strCurrentEffectiveDate	= &$arrLineStatus['PreselectionStatusDate'];
+					$intCurrentLineStatus		= &$arrLineStatus['PreselectionStatus'];
+				}
+				else
+				{
+					// Line Status
+					$strCurrentEffectiveDate	= &$arrLineStatus['LineStatusDate'];
+					$intCurrentLineStatus		= &$arrLineStatus['LineStatus'];
+				}
+				
+				// Is this Status newer than the current Status?
+				if ($strEffectiveDate > $strCurrentEffectiveDate)
+				{
+					// Current Status is older than this Status
+					$intCurrentLineStatus	= NULL;
+					
+				}
+				elseif ($strEffectiveDate === $strCurrentEffectiveDate)
+				{
+					// Same Date
+					$intActionLineStatus	= $intCurrentLineStatus;
+				}
+				else
+				{
+					// Current Status is newer, don't update
+					return TRUE;
+				}
+				
+				// Get the Update Details for the Current Status + the Request Type
+				if ($this->_selLineStatusAction->Execute(Array('LineStatus' => $intCurrentLineStatus, 'Request' => $arrProvisioningType['id'])))
+				{
+					$arrLineStatusAction		= $this->_selLineStatusAction->Fetch();
+					$strCurrentEffectiveDate	= $strEffectiveDate;
+					$intCurrentLineStatus		= $arrLineStatusAction['new_line_status'];
+					
+					// Save the new Line Status
+					if ($this->_ubiLineStatus->Execute($arrLineStatus) === FALSE)
+					{
+						return "DB Error for _ubiLineStatus: ".$this->_ubiLineStatus->Error();
+					}
+					else
+					{
+						return TRUE;
+					}
+				}
+				else
+				{
+					// No Definition or Default for this Relationship, don't update
+					return TRUE;
+				}
+			}
+			elseif ($this->_selProvisioningType->Error())
+			{
+				// Error
+				return "DB Error for _selProvisioningType: ".$this->_selProvisioningType->Error();
+			}
+			else
+			{
+				return "Unable to retrieve ProvisioningType details for id '{$arrResponse['Type']}'";
+			}
+		}
+		elseif ($this->_selLineStatus->Error())
+		{
+			// Error
+			return "DB Error for _selLineStatus: ".$this->_selLineStatus->Error();
+		}
+		else
+		{
+			return "Unable to retrieve Line Status Details for Service '{$intService}'";
+		}
+	}
  }
 ?>

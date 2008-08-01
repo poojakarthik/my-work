@@ -222,16 +222,16 @@
 			{
 				case "11":	// Migration Request
 				case "12":	// Churn to eBill
-					$arrPDR['Type']	= REQUEST_FULL_SERVICE;
+					$arrPDR['Type']	= PROVISIONING_TYPE_FULL_SERVICE;
 					break;
 				case "13":	// Virtual PreSelection
-					$arrPDR['Type']	= REQUEST_VIRTUAL_PRESELECTION;
+					$arrPDR['Type']	= PROVISIONING_TYPE_VIRTUAL_PRESELECTION;
 					break;
 				case "52":
-					$arrPDR['Type']	= REQUEST_FULL_SERVICE_REVERSE;
+					$arrPDR['Type']	= PROVISIONING_TYPE_FULL_SERVICE_REVERSE;
 					break;
 				case "53":
-					$arrPDR['Type']	= REQUEST_VIRTUAL_PRESELECTION_REVERSE;
+					$arrPDR['Type']	= PROVISIONING_TYPE_VIRTUAL_PRESELECTION_REVERSE;
 					break;
 				default:
 					// Either unhandled or not required
@@ -241,7 +241,7 @@
  			switch ($arrData['RecordType'])
  			{
 				case "S":	// Gain - new service
-					$arrPDR['Type']			= REQUEST_FULL_SERVICE;
+					$arrPDR['Type']			= PROVISIONING_TYPE_FULL_SERVICE;
 					$arrPDR['Description']	= "Service Gained";
 					$arrPDR['LineStatus']	= SERVICE_LINE_ACTIVE;
 					
@@ -250,7 +250,7 @@
 					break;
 					
 				case "G":	// Gain - reversal
-					$arrPDR['Type']			= REQUEST_FULL_SERVICE;
+					$arrPDR['Type']			= PROVISIONING_TYPE_FULL_SERVICE;
 					$arrPDR['Description']	= "Service Gained by Reversal";
 					$arrPDR['LineStatus']	= SERVICE_LINE_ACTIVE;
 					
@@ -264,7 +264,7 @@
 					if ($arrPDR['Type'] || (int)$arrData['Basket'] != 6)
 					{
 						// If there are multiple lines, Full Service Loss
-						$arrPDR['Type']			= REQUEST_LOSS_FULL;
+						$arrPDR['Type']			= PROVISIONING_TYPE_LOSS_FULL;
 						$arrPDR['Description']	= "Service lost to Carrier #{$arrData['LostTo']}";
 						$arrPDR['LineStatus']	= SERVICE_LINE_CHURNED;
 						$bolFullServiceChurn	= TRUE;
@@ -272,7 +272,7 @@
 					else
 					{
 						// If there is only Basket 6, then Preslection Loss
-						$arrPDR['Type']			= REQUEST_LOSS_VIRTUAL_PRESELECTION;
+						$arrPDR['Type']			= PROVISIONING_TYPE_LOSS_VIRTUAL_PRESELECTION;
 						$arrPDR['Description']	= "Preselection lost to Carrier #{$arrData['LostTo']}";
 					}
 					
@@ -281,8 +281,8 @@
 					break;
 					
 				case "X":	// Loss - cancellation
-					$arrPDR['Type']			= REQUEST_LOSS_FULL;
-					$arrPDR['Description']	= "Service Cancelled";
+					$arrPDR['Type']			= PROVISIONING_TYPE_DISCONNECT_FULL;
+					$arrPDR['Description']	= "Service Cancelled/Disconnected";
 					$arrPDR['LineStatus']	= SERVICE_LINE_CANCELLED;
 					
 					// This can span over multiple lines in the file
@@ -292,7 +292,7 @@
 				case "N":	// Change - number
 				case "M":	// Change - address
 				case "B":	// Change - number & address
-					$arrPDR['Type']				= REQUEST_CHANGE_ADDRESS;
+					$arrPDR['Type']				= PROVISIONING_TYPE_CHANGE_ADDRESS;
 					$arrPDR['Description']		= "Address Changed";
 					break;
 					
@@ -374,7 +374,7 @@
 		$arrPDR	= $this->FindFNNOwner($arrPDR);
 		if ($arrPDR['Account'])
 		{
-			if ($arrPDR['Type'] == REQUEST_LOSS_FULL)
+			if ($arrPDR['Type'] == PROVISIONING_TYPE_LOSS_FULL)
 			{
 				// Add System Note
 				//AddServiceChurnNote($arrOwner['Account'], $arrOwner['AccountGroup'], $arrPDR['FNN'], CARRIER_UNITEL);

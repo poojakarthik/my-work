@@ -200,7 +200,7 @@
 		$arrDefine['AccountId']		['Index']		= 4;
 		$arrDefine['AccountId']		['Type']		= 'Integer';
 		
-		$this->_arrDefine[REQUEST_BAR] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_BAR] = $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//

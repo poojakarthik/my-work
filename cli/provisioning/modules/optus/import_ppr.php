@@ -209,7 +209,7 @@
 		if ((int)$arrData['EndYear'])
 		{
 			// This is a Loss
-			$arrPDR['Type']				= REQUEST_LOSS_PRESELECT;
+			$arrPDR['Type']				= PROVISIONING_TYPE_LOSS_PRESELECT;
 			$arrPDR['EffectiveDate']	= $arrData['EndYear'].'-'.$arrData['EndMonth'].'-'.$arrData['EndDay'];
 			
 			switch ($arrData['LossCode'])
@@ -244,7 +244,7 @@
 		elseif ((int)$arrData['ConfirmYear'])
 		{
 			// This is a Completed Request
-			$arrPDR['Type']				= REQUEST_PRESELECTION;
+			$arrPDR['Type']				= PROVISIONING_TYPE_PRESELECTION;
 			$arrPDR['EffectiveDate']	= $arrData['ConfirmYear'].'-'.$arrData['ConfirmMonth'].'-'.$arrData['ConfirmDay'];
 			
 			switch ($arrData['Status'])
@@ -277,7 +277,7 @@
 		elseif ((int)$arrData['ChoiceYear'])
 		{
 			// This is a Pending Request
-			$arrPDR['Type']				= REQUEST_PRESELECTION;
+			$arrPDR['Type']				= PROVISIONING_TYPE_PRESELECTION;
 			$arrPDR['EffectiveDate']	= $arrData['ChoiceYear'].'-'.$arrData['ChoiceMonth'].'-'.$arrData['ChoiceDay'];
 			$arrPDR['Description']		= "Pending";
 			$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;
@@ -285,7 +285,7 @@
 		else
 		{
 			// This is an Activated Pending Request
-			$arrPDR['Type']				= REQUEST_ACTIVATION;
+			$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
 			$arrPDR['EffectiveDate']	= $arrData['ReportYear'].'-'.$arrData['ReportMonth'].'-'.$arrData['ReportDay'];
 			$arrPDR['Description']		= "Activated";
 			$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;

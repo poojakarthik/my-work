@@ -153,27 +153,27 @@
 		switch ($arrData['Type'])
 		{
 			case 'Activate':
-				$arrPDR['Type']			= REQUEST_ACTIVATION;
+				$arrPDR['Type']			= PROVISIONING_TYPE_ACTIVATION;
 				break;
 				
 			case 'Deactivation':
-				$arrPDR['Type']			= REQUEST_DEACTIVATION;
+				$arrPDR['Type']			= PROVISIONING_TYPE_DEACTIVATION;
 				break;
 				
 			case 'Bar':
-				$arrPDR['Type']			= REQUEST_BAR_SOFT;
+				$arrPDR['Type']			= PROVISIONING_TYPE_BAR;
 				break;
 				
 			case 'Unbar':
-				$arrPDR['Type']			= REQUEST_UNBAR_SOFT;
+				$arrPDR['Type']			= PROVISIONING_TYPE_UNBAR;
 				break;
 				
 			case 'Preselect':
-				$arrPDR['Type']			= REQUEST_PRESELECTION;
+				$arrPDR['Type']			= PROVISIONING_TYPE_PRESELECTION;
 				break;
 				
 			case 'PSReversal':
-				$arrPDR['Type']			= REQUEST_PRESELECTION_REVERSE;
+				$arrPDR['Type']			= PROVISIONING_TYPE_PRESELECTION_REVERSE;
 				break;
 				
 			default:

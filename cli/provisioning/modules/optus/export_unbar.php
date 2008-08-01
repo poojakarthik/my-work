@@ -193,7 +193,7 @@
 		$arrDefine['CustomerRef']	['Type']		= 'String';
 		$arrDefine['CustomerRef']	['Value']		= '';
 		
-		$this->_arrDefine[REQUEST_UNBAR] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_UNBAR] = $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//

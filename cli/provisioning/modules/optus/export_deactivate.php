@@ -193,7 +193,7 @@
 		$arrDefine['CustomerRef']	['Type']		= 'String';
 		$arrDefine['CustomerRef']	['Value']		= '';
 		
-		$this->_arrDefine[REQUEST_DEACTIVATION] = $arrDefine;
+		$this->_arrDefine[PROVISIONING_TYPE_DEACTIVATION] = $arrDefine;
  	}
  	
  	//------------------------------------------------------------------------//

@@ -135,9 +135,10 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
  		
  		// Statements
  		$arrCols				= Array();
-		$arrCols['Id']			= NULL;
 		$arrCols['Response']	= NULL;
 		$arrCols['LastUpdated']	= NULL;
+		$arrCols['Status']		= NULL;
+		$arrCols['Description']	= NULL;
  		$ubiRequest			= new StatementUpdateById("ProvisioningRequest", $arrCols);
  		
  		$selImport			= new StatementSelect("FileImport", "*", "FileType IN (".implode(', ', $arrFileTypes).") AND Status = ".FILE_COLLECTED);
@@ -228,6 +229,8 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 		 			$arrRequest['Id']			= $arrNormalised['Request'];
 		 			$arrRequest['Response']		= $arrNormalised['Id'];
 		 			$arrRequest['LastUpdated']	= $arrNormalised['EffectiveDate'];
+		 			$arrRequest['Status']		= $arrNormalised['RequestStatus'];
+		 			$arrRequest['Description']	= $arrNormalised['Description'];
 		 			$ubiRequest->Execute($arrRequest);
 		 		}
 		 		
@@ -237,14 +240,14 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 				$arrServiceCarrier = $selServiceCarrier->Fetch();
 				switch ($arrNormalised['Type'])
 				{
-					case REQUEST_LOSS_FULL:
+					case PROVISIONING_TYPE_LOSS_FULL:
 						if ($arrNormalised['Carrier'] != $arrServiceCarrier['Carrier'])
 						{
 							$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
 						}
 						break;
 						
-					case REQUEST_LOSS_PRESELECT:
+					case PROVISIONING_TYPE_LOSS_PRESELECT:
 						if ($arrNormalised['Carrier'] != $arrServiceCarrier['CarrierPreselect'])
 						{
 							$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
