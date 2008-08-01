@@ -528,6 +528,11 @@ class Page
 	 */
 	function RenderBreadCrumbMenu()
 	{
+		if (!BreadCrumb()->HasBreadCrumbs())
+		{
+			return;
+		}
+		
 		$strHtmlCode = "<div id='BreadCrumbMenu'>\n";
 		foreach (DBO()->BreadCrumb as $objProperty)
 		{
@@ -606,13 +611,14 @@ class Page
 			$this->RenderContextMenu();
 		}
 		
-		// Close the header div
-		echo "\t\t</div> <!-- header -->\n";
-		
-		if ($bolWithBreadCrumbs && BreadCrumb()->HasBreadCrumbs())
+		if ($bolWithBreadCrumbs)
 		{
 			$this->RenderBreadCrumbMenu();
 		}
+		
+		// Close the header div
+		echo "\t\t</div> <!-- header -->\n";
+		
 	}
 
 	//------------------------------------------------------------------------//
