@@ -72,3 +72,11 @@ table.reflex td.TICKETING-STATUS-UNASSIGNED {
 table.reflex td.TICKETING-STATUS-ASSIGNED {
 	color: #ff0000;
 }
+
+a.reflex {
+	color: #ffde05;
+}
+
+a.reflex-new {
+	color: #ffde05;
+}
