@@ -10,14 +10,16 @@ div.message {
 	margin-bottom: 1em;
 } 
 
-div.message,div.error {
+div.error {
 	background: #ffecf0;
-	color: #d30;
+	color: #111;
 	border: 1px solid #d30;
 } 
 
-.ticketing_status_in_progress {
-	color: #4b699f;
+div.warning {
+	background: #ffc47f;
+	border: 1px solid #ff8822;
+	color: #111;
 }
 
 table.reflex {
@@ -101,4 +103,16 @@ a.reflex {
 
 a.reflex-new {
 	color: #ffde05;
+}
+
+table.reflex tr td.ticketing-status-in-progress, table.reflex tr td.ticketing-status-assigned, option.ticketing-status-assigned, option.ticketing-status-in-progress {
+	color: #060;
+}
+
+table.reflex tr td.ticketing-status-with-carrier, table.reflex tr td.ticketing-status-with-customer, option.ticketing-status-with-carrier, option.ticketing-status-with-customer {
+	color: #ff8822;
+}
+
+table.reflex tr td.ticketing-status-unassigned, table.reflex tr td.ticketing-status-deleted, option.ticketing-status-deleted, option.ticketing-status-unassigned {
+	color: #d30;
 }
