@@ -22,41 +22,45 @@ $arrSQLSelect	= Array();
 $arrSQLFields	= Array();
 
 //----------------------------------------------------------------------------//
-// Credit Cards Expiring Next Month
+// New Accounts Created after a Date
 //----------------------------------------------------------------------------//
 
 // General Data
-$arrDataReport['Name']			= "Credit Cards Expiring Next Month";
-$arrDataReport['Summary']		= "Displays a list of Accounts whose Credit Cards will Expire Next Month.";
+$arrDataReport['Name']			= "New Accounts Created after a Date";
+$arrDataReport['Summary']		= "Displays a list of Accounts which were created on or after a specified date.";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "CreditCard LEFT JOIN Account USING (AccountGroup)";
-$arrDataReport['SQLWhere']		= "((<Active> = 1 AND Account.CreditCard = CreditCard.Id AND Account.BillingType = ".BILLING_TYPE_CREDIT_CARD.") OR (<Active> = 0)) AND CONCAT(LPAD(CAST(CAST(ExpYear AS UNSIGNED) AS CHAR), 4, '2000'), '-', LPAD(CAST(CAST(ExpMonth AS UNSIGNED) AS CHAR), 2, '0'), '-01') = ADDDATE(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)";
+$arrDataReport['SQLTable']		= "Account JOIN Contact ON Account.PrimaryContact = Contact.Id";
+$arrDataReport['SQLWhere']		= "Account.CreatedOn >= <CreatedOn> AND Account.Archived = 0";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
-$arrDocReq[]	= "CreditCard";
+$arrDocReq[]	= "Account";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Account Group']			['Value']	= "DISTINCT Account.AccountGroup";
-
 $arrSQLSelect['Account #']				['Value']	= "Account.Id";
+$arrSQLSelect['Account #']				['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Business Name']			['Value']	= "Account.BusinessName";
 
-$arrSQLSelect['Expiry']					['Value']	= "CONCAT(LPAD(CAST(CAST(ExpMonth AS UNSIGNED) AS CHAR), 2, '0'), '/', LPAD(CAST(CAST(ExpYear AS UNSIGNED) AS CHAR), 4, '2000'))";
+$arrSQLSelect['Primary Contact']		['Value']	= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
+
+$arrSQLSelect['Contact Phone']			['Value']	= "CASE WHEN Contact.Phone = '' THEN Contact.Mobile ELSE Contact.Phone END";
+$arrSQLSelect['Contact Phone']			['Type']	= EXCEL_TYPE_FNN;
+
+$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(Account.CreatedOn, '%d/%M/%Y')";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 
 // SQL Fields
-$arrSQLFields['Active']	= Array(
+$arrSQLFields['CreatedOn']	= Array(
 										'Type'					=> "dataBoolean",
-										'Documentation-Entity'	=> "CreditCard",
-										'Documentation-Field'	=> "Active",
+										'Documentation-Entity'	=> "Account",
+										'Documentation-Field'	=> "CreatedOn",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
