@@ -58,7 +58,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
 $arrSQLFields['CreatedOn']	= Array(
-										'Type'					=> "dataBoolean",
+										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "Account",
 										'Documentation-Field'	=> "CreatedOn",
 									);
