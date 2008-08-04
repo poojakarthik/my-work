@@ -50,7 +50,7 @@ function VixenPopupClass()
 	// Returns TRUE if there are any popups present on the page
 	this.PopupsExist = function()
 	{
-		var elmPopupContainer = document.getElementById("PopupHolder");
+		var elmPopupContainer = $ID("PopupHolder");
 		
 		if (elmPopupContainer.childNodes.length != 0)
 		{
@@ -94,7 +94,7 @@ function VixenPopupClass()
 		}
 		
 		// Retrieve the current popup content element
-		var elmOldPopupContent = document.getElementById("VixenPopupContent__" + strId);
+		var elmOldPopupContent = $ID("VixenPopupContent__" + strId);
 
 		// Create a new one which will replace the old one
 		var elmNewPopupContent = document.createElement('div');
@@ -176,7 +176,7 @@ function VixenPopupClass()
 		elmPopup.innerHTML = strContent;
 
 		// set the top of the popup to the body.scrollTop, so that it doesn't move the page when it is added to it
-		elmPopup.style.top	= document.body.scrollTop;
+		elmPopup.style.top	= document.body.scrollTop + "px";
 
 		// Add the popup to the PopupHolder element
 		elmRoot = $ID('PopupHolder');
@@ -211,15 +211,15 @@ function VixenPopupClass()
 				elmOverlay.style.zIndex = ++dragObj.zIndex;
 				
 				intScroll = document.body.scrollTop;
-				
-				elmOverlay.style.height	= Math.max(document.body.scrollHeight, window.innerHeight);
+
+				elmOverlay.style.height	= Math.max(document.body.scrollHeight, window.innerHeight) + "px";
 				
 				// Find the width of the actual page by using the PageBody div, and adding its own width
 				// to the offset from the left side of the page (needs to include margins?)
-				var divPageBody = document.getElementById("PageBody");
+				var divPageBody = $ID("PageBody");
 				var intPageWidth = divPageBody.offsetWidth + divPageBody.offsetLeft;
 				
-				elmOverlay.style.width	= Math.max(document.body.offsetWidth, intPageWidth);
+				elmOverlay.style.width	= Math.max(document.body.offsetWidth, intPageWidth) + "px";
 				
 				if (this.arrOverlayZIndexHistory.length == 0)
 				{
@@ -280,44 +280,35 @@ function VixenPopupClass()
 		{
 			strWidth = this.objSizes.defaultsize;
 		}
-		elmPopup.style.width = strWidth;// + "px";
-//var strLefty	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
-//var strToppy	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+		elmPopup.style.width = strWidth + "px";
 
 		// Set the position (centre/pointer/target)
 		if (mixPosition == "centre")
 		{
 			// center the popup
-			elmPopup.style.left	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
-			elmPopup.style.top	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
-//elmPopup.style.left = strLefty + "px";			
-//elmPopup.style.top = strToppy + "px";			
-
+			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft) + "px";
+			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop) + "px";
 		}
 		else if (mixPosition == "[object MouseEvent]")
 		{
 			// set the popup to the cursor
-			elmPopup.style.left = mixPosition.clientX;
-			elmPopup.style.top = mixPosition.clientY;
+			elmPopup.style.left = mixPosition.clientX + "px";
+			elmPopup.style.top = mixPosition.clientY + "px";
 			
 		}
 		else if (typeof(mixPosition) == 'object')
 		{
 			// set the popup to the target
-			elmPopup.style.left = mixPosition.offsetLeft;
-			elmPopup.style.top = mixPosition.offsetTop;
+			elmPopup.style.left = mixPosition.offsetLeft + "px";
+			elmPopup.style.top = mixPosition.offsetTop + "px";
 		}
 		else
 		{
 			// set the popup, well, wherever it wants
 		}
 		
-		// Add the handler for dragging the popup around
-		// if (strModal != "modal")
-		// {
-    		mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
-    		mydragObj.addEventListener('mousedown', OpenHandler, false);
-		// }
+   		mydragObj = $ID('VixenPopupTopBar__' + strId);
+   		mydragObj.addEventListener('mousedown', OpenHandler, false);
 		
 		// Display the popup
 		elmPopup.style.visibility = 'visible';
@@ -435,7 +426,7 @@ function VixenPopupClass()
 			if (elmPopup.hasAttribute("modal"))
 			{
 				// The popup was modal.  Move the overlay div to its previous zIndex
-				var elmOverlay = document.getElementById("overlay");
+				var elmOverlay = $ID("overlay");
 				if (this.arrOverlayZIndexHistory.length != 0)
 				{
 					// Set the zIndex of the overlay to its previous zIndex
@@ -798,11 +789,11 @@ function VixenPopupClass()
 		var elmElement = null;
 		if (strElement)
 		{
-			elmElement = document.getElementById(strElement);
+			elmElement = $ID(strElement);
 		}
 	
 		// Try to find a previous splash
-		var elmExists = document.getElementById('VixenPopup__Splash');
+		var elmExists = $ID('VixenPopup__Splash');
 		if (elmExists)
 		{
 			// destroy it . . .
@@ -828,10 +819,10 @@ function VixenPopupClass()
 		elmPopup.innerHTML = strContent;
 
 		// set the top of the splash to the body.scrollTop, so that it doesn't move the page when it is added to it
-		elmPopup.style.top	= document.body.scrollTop;
+		elmPopup.style.top	= document.body.scrollTop + "px";
 
 		// Add the splash to the PopupHolder element
-		elmRoot = document.getElementById('PopupHolder');
+		elmRoot = $ID('PopupHolder');
 		elmRoot.appendChild(elmPopup);
 		
 		// Bring the splash to the front
@@ -844,7 +835,7 @@ function VixenPopupClass()
 		{
 			strWidth = this.objSizes.defaultsize;
 		}
-		elmPopup.style.width = strWidth;
+		elmPopup.style.width = strWidth + "px";
 		
 		// Set the position
 		// MSIE and Firefox use different properties to find out the width and height of the window
@@ -860,8 +851,8 @@ function VixenPopupClass()
 		}
 	
 		// center the splash
-		elmPopup.style.left	= ((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
-		elmPopup.style.top	= ((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2));
+		elmPopup.style.left	= (((intWindowInnerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft) + "px";
+		elmPopup.style.top	= (((intWindowInnerHeight / 2) - (elmPopup.offsetHeight / 2)))  + "px";
 		// Declaring it as being fixed position, must be done after left and top are set, not before it
 		elmPopup.style.position = "fixed";
 		
@@ -879,7 +870,7 @@ function VixenPopupClass()
 				intOffsetTop += elmElement.offsetTop;
 			}
 	
-			elmPopup.style.top = intOffsetTop - elmPopup.offsetHeight - 10;
+			elmPopup.style.top = intOffsetTop - elmPopup.offsetHeight - 10 + "px";
 		}
 		
 		// Display the splash
