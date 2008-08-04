@@ -123,20 +123,20 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						<td><?=$ticket->getPriority()->name?></td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Contact: </td>
-						<td><?=$contactName?></td>
-					</tr>
-					<tr class="alt">
-						<td class="title">Status: </td>
-						<td><?=$ticket->getStatus()->name?></td>
-					</tr>
-					<tr class="alt">
 						<td class="title">Customer Group: </td>
 						<td><?=$ticket->getCustomerGroup()->name?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Account: </td>
 						<td><?=$ticket->accountId ? $ticket->accountId : '[Not matched to an account]'?></td>
+					</tr>
+					<tr class="alt">
+						<td class="title">Contact: </td>
+						<td><?=$contactName?></td>
+					</tr>
+					<tr class="alt">
+						<td class="title">Status: </td>
+						<td><?=$ticket->getStatus()->name?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Category: </td>
@@ -160,8 +160,34 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 	private function render_edit($ticket)
 	{
 		$owner = $ticket->getOwner();
+		// WIP :: Sort this out properly!!
 		?>
+<script>
 
+	function onTicketingLoad()
+	{
+
+		funcSuccess = function() 
+		{
+			for (var i = 0, l = arguments.length; i < l; i++)
+			{
+				alert(i + " = " + arguments[i]);
+			}
+		}
+
+		funcFailure = function() {
+			alert('failed!');
+		}
+
+		remoteClass = 'Ticketing';
+		remoteMethod = 'validateAccount';
+		jsonFunc = jQuery.json.jsonFunction(funcSuccess, funcFailure, remoteClass, remoteMethod);
+		jsonFunc('1', 2, 'Hello world!');
+	}
+
+	Event.observe(window, 'load', onTicketingLoad, false);
+
+</script>
 <table class="reflex">
 	<caption>
 		<div id="caption_bar" name="caption_bar">
@@ -190,7 +216,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		</tr>
 		<tr class="alt">
 			<td class="title">Account: </td>
-			<td><input type="text" id="subject" name="subject" size="50"/></td>
+			<td><input type="text" id="account" name="subject" size="50"/></td>
 		</tr>
 		</form>
 	</tbody>

@@ -419,6 +419,9 @@ class Ticketing_Correspondance
 			$this->id = $outcome;
 		}
 		$this->_saved = TRUE;
+
+		Ticketing_Contact_Account::associate($this, $this->getTicket());
+
 		return TRUE;
 	}
 

@@ -186,8 +186,12 @@ class Ticketing_Ticket
 		{
 			// Each time we update the record, we need to copy the details to the history table
 			$this->recordHistoricCopy();
+
+			Ticketing_Contact_Account::associate($this, $this);
 		}
+
 		$this->_saved = TRUE;
+
 		return TRUE;
 	}
 
@@ -318,6 +322,11 @@ class Ticketing_Ticket
 			}
 		}
 		return $arrInstances;
+	}
+
+	public function getAccount()
+	{
+		return Account::getForId($this->accountId);
 	}
 
 	public function getContact()

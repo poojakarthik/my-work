@@ -103,6 +103,8 @@ final class Flex
 				case self::FLEX_CUSTOMER_SESSION:
 					$relativeFrameworkBase = 'html'.DIRECTORY_SEPARATOR.'customer'.DIRECTORY_SEPARATOR;
 					break;
+				default:
+					$relativeFrameworkBase = FALSE;
 			}
 		}
 		return $relativeFrameworkBase;
@@ -155,12 +157,15 @@ final class Flex
 
 		$relativeFrameworkBase = self::relativeFrameworkBase();
 
-		self::requireOnce(
-			$relativeFrameworkBase . 'definitions.php',
-			$relativeFrameworkBase . 'functions.php',
-
-			$relativeFrameworkBase . 'style_template/html_elements.php'
-		);
+		if ($relativeFrameworkBase)
+		{
+			self::requireOnce(
+				$relativeFrameworkBase . 'definitions.php',
+				$relativeFrameworkBase . 'functions.php',
+	
+				$relativeFrameworkBase . 'style_template/html_elements.php'
+			);
+		}
 	}
 
 	public static function autoload($strClassName)
@@ -179,7 +184,7 @@ final class Flex
 
 			// Check the framework for the class (although having classes here is probably not a good idea,
 			// except for classes to do with the display of a page)
-			if (file_exists(self::frameworkBase().'classes'.$accumulatedPath.$strClassName.'.php'))
+			if (self::frameworkBase() && file_exists(self::frameworkBase().'classes'.$accumulatedPath.$strClassName.'.php'))
 			{
 				require_once self::frameworkBase().'classes'.$accumulatedPath.$strClassName.'.php';
 				if (class_exists($strClassName, FALSE))

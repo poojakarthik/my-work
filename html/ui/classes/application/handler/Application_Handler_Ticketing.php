@@ -13,7 +13,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	{
 		if (!Ticketing_User::currentUserIsTicketingUser())
 		{
-			Application()->InsufficientPrivilegeDie();
+			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
 		// We need to load all of the tickets matching any passed criteria (in $_POST)
@@ -159,36 +159,13 @@ class Application_Handler_Ticketing extends Application_Handler
 			$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
 		}
 
+		$action = str_replace('-', '', $action);
+
 		$ticket = array_key_exists('ticketId', $_REQUEST) ? Ticketing_Ticket::getForId($_REQUEST['ticketId']) : NULL;
 
-		$permittedActions = array();
 		$editableValues = array();
 
-		if ($ticket)
-		{
-			$permittedActions[] = 'view';
-			$permittedActions[] = 'edit';
-
-			if (!$ticket->isAssigned() || ($currentUser->isAdminUser() && !$ticket->isAssignedTo($currentUser)))
-			{
-				$permittedActions[] = 'take';
-			}
-
-			if ($currentUser->isAdminUser())
-			{
-				if ($ticket->isAssigned())
-				{
-					$permittedActions[] = 're-assign';
-				}
-				else
-				{
-					$permittedActions[] = 'assign';
-				}
-				$permittedActions[] = 'delete';
-			}
-		}
-
-		$permittedActions[] = 'create';
+		$permittedActions = $this->getPermittedTicketActions($currentUser, $ticket);
 
 		$detailsToRender = array();
 
@@ -220,7 +197,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					break;
 
 				case 'assign':
-				case 're-assign':
+				case 'reassign':
 					$editableValues[] = 'ownerId';
 					$targetUser = NULL;
 					$targetUserId = count($subPath) ? $subPath[0] : NULL;
@@ -250,7 +227,19 @@ class Application_Handler_Ticketing extends Application_Handler
 					break;
 
 				case 'create':
-					$editableValues[] = 'ownerId';
+
+					if ($currentUser->isAdminUser())
+					{
+						$editableValues[] = 'ownerId';
+					}
+					$editableValues[] = 'priorityId';
+					$editableValues[] = 'subject';
+					$editableValues[] = 'accountId';
+					$editableValues[] = 'contactId';
+					$editableValues[] = 'statusId';
+					//$editableValues[] = 'customerGroupId'; // Customer group should come from account
+					$editableValues[] = 'categoryId';
+
 					if (array_key_exists('save', $_REQUEST))
 					{
 						// WIP :: Create a new ticket for the passed details, if valid
@@ -266,9 +255,126 @@ class Application_Handler_Ticketing extends Application_Handler
 					break;
 
 				case 'edit':
+
+					if ($currentUser->isAdminUser())
+					{
+						$editableValues[] = 'ownerId';
+					}
+					$editableValues[] = 'priorityId';
+					$editableValues[] = 'subject';
+					$editableValues[] = 'accountId';
+					$editableValues[] = 'contactId';
+					$editableValues[] = 'statusId';
+					//$editableValues[] = 'customerGroupId'; // Customer group should come from account
+					$editableValues[] = 'categoryId';
+
 					if (array_key_exists('save', $_REQUEST))
 					{
 						// WIP :: Validate the passed details and save if valid
+						$validatedValues = array();
+						$invalidValues = array();
+						foreach ($editableValues as $editableValue)
+						{
+							$value = array_key_exists($editableValue, $_REQUEST) ? trim($_REQUEST[$editableValue]) : NULL;
+							switch ($editableValue)
+							{
+								case 'ownerId':
+									$value =  $currentUser->isAdminUser() ? Ticketing_User::getForId(intval($value)) : NULL;
+									if (!$value && $currentUser->isAdminUser())
+									{
+										$invalidValues[$editableValue] = 'You must specify an owner for the ticket.';
+									}
+									else if ($currentUser->isAdminUser())
+									{
+										$validatedValues[$editableValue] = $value->id;
+									}
+									else
+									{
+										$validatedValues[$editableValue] = $currentUser->id;
+									}
+									break;
+
+								case 'priorityId':
+									$value = Ticketing_Priority::getForId(intval($value));
+									if (!$value)
+									{
+										$invalidValues[$editableValue] = 'You must specify a priority for the ticket.';
+									}
+									else
+									{
+										$validatedValues[$editableValue] = $value->id;
+									}
+									break;
+
+								case 'subject':
+									if (!$value)
+									{
+										$invalidValues[$editableValue] = 'Subject cannot be blank.';
+									}
+									else
+									{
+										$validatedValues[$editableValue] = $value;
+									}
+									break;
+
+								case 'accountId':
+									if (!$value)
+									{
+										$invalidValues[$editableValue] = 'You must specify a contact for the ticket.';
+										break;
+									}
+									// Need to check that the account exists
+									$value = Account::getForId(intval($value));
+									if (!$value)
+									{
+										$invalidValues[$editableValue] = 'The account number is invalid.';
+									}
+									else
+									{
+										$validatedValues[$editableValue] = $value->id;
+										$validatedValues['customerGroupId'] = $value->customerGroup;
+									}
+									break;
+									break;
+
+								case 'contactId':
+									$value = Ticketing_Contact::getForId(intval($value));
+									if (!$value)
+									{
+										$invalidValues[$editableValue] = 'You must specify a contact for the ticket.';
+									}
+									else
+									{
+										$validatedValues[$editableValue] = $value->id;
+									}
+									break;
+
+								case 'statusId':
+									// WIP :: Statuses that can be set are limited! Don't accept just because it's valid!!!
+									$value = Ticketing_Status::getForId(intval($value));
+									if (!$value)
+									{
+										$invalidValues[$editableValue] = 'You must specify a status for the ticket.';
+									}
+									else
+									{
+										$validatedValues[$editableValue] = $value->id;
+									}
+									break;
+
+								case 'categoryId':
+									$value = Ticketing_Category::getForId(intval($value));
+									if (!$value)
+									{
+										$invalidValues[$editableValue] = 'You must specify a category for the ticket.';
+									}
+									else
+									{
+										$validatedValues[$editableValue] = $value->id;
+									}
+									break;
+							}
+						}
 
 						$detailsToRender['saved'] = TRUE;
 					}
@@ -294,16 +400,49 @@ class Application_Handler_Ticketing extends Application_Handler
 		// We need to load the details of the ticket specified by a ticket_id in $_REQUEST
 		$detailsToRender['action'] = $action;
 		$detailsToRender['ticket'] = $ticket;
-		$detailsToRender['permitted_actions'] = $permittedActions;
+		$detailsToRender['permitted_actions'] = $this->getPermittedTicketActions($currentUser, $ticket);
+		$detailsToRender['editable_values'] = $editableValues;
 
 		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
+	}
+
+	private function getPermittedTicketActions($user, $ticket)
+	{
+		$permittedActions = array();
+		if ($ticket)
+		{
+			$permittedActions[] = 'view';
+			$permittedActions[] = 'edit';
+
+			if (!$ticket->isAssigned() || ($user->isAdminUser() && !$ticket->isAssignedTo($user)))
+			{
+				$permittedActions[] = 'take';
+			}
+
+			if ($user->isAdminUser())
+			{
+				if ($ticket->isAssigned())
+				{
+					$permittedActions[] = 'reassign';
+				}
+				else
+				{
+					$permittedActions[] = 'assign';
+				}
+				$permittedActions[] = 'delete';
+			}
+		}
+
+		$permittedActions[] = 'create';
+
+		return $permittedActions;
 	}
 
 	public function Contact($subPath)
 	{
 		if (!Ticketing_User::currentUserIsTicketingUser())
 		{
-			Application()->InsufficientPrivilegeDie();
+			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
 		// We need to load the details of the contact specified by a contact_id in $_REQUEST
@@ -319,7 +458,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	{
 		if (!Ticketing_User::currentUserIsTicketingUser())
 		{
-			Application()->InsufficientPrivilegeDie();
+			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
 		// WIP :: Kinda obvious ... this needs filling out a bit!
@@ -335,7 +474,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	{
 		if (!Ticketing_User::currentUserIsTicketingUser())
 		{
-			Application()->InsufficientPrivilegeDie();
+			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
 		// WIP :: Kinda obvious ... this needs filling out a bit!

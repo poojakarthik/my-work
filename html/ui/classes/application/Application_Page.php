@@ -131,7 +131,8 @@ class Application_Page extends Page
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
 		echo "\t\t<script type='text/javascript' src='javascript/prototype.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='javascript/ext.js' ></script>\n";
+		
+		//echo "\t\t<script type='text/javascript' src='javascript/ext.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='javascript/jquery.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='javascript/json.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='javascript/flex.js' ></script>\n";

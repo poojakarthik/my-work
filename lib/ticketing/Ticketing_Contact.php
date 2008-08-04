@@ -34,6 +34,64 @@ class Ticketing_Contact
 		return Ticketing_Contact::getForId($objCorrespondance->contactId);
 	}
 
+	public static function listById($arrIds)
+	{
+		
+	}
+
+	public static function listForAccountAndTicket($mixAccount, $ticket=NULL)
+	{
+		$contacts = array();
+		if ($mixAccount)
+		{
+			$accountContacts = self::listForAccount($mixAccount);
+			if (is_array($accountContacts))
+			{
+				$contacts = $accountContacts;
+			}
+		}
+		if ($ticket)
+		{
+			$ticketContact = $ticket->getContact();
+			if ($ticketContact)
+			{
+				array_unshift($contacts, $ticketContact);
+			}
+		}
+		return $contacts;
+	}
+
+	public static function listForAccount($mixAccount)
+	{
+		$accountId = $mixAccount instanceof Account ? $mixAccount->id : intval($mixAccount);
+
+		$arrCols = self::getColumns();
+		$arrColumns = array();
+		foreach($arrCols as $strCol)
+		{
+			$arrColumns[$strCol] = 'c.' . $strCol;
+		}
+
+		$selContacts = new StatementSelect(
+			'ticketing_contact_account t JOIN ticketing_contact c ON t.ticketing_contact_id = c.id', 
+			$arrColumns,
+			'account_id = <ACCOUNT_ID>');
+		$arrWhere = array('ACCOUNT_ID' => $accountId);
+
+		if (($outcome = $selContacts->Execute($arrWhere)) === FALSE)
+		{
+			throw new Exception('Failed to list contacts for account ' . $accountId . ': ' . $selContacts->Error());
+		}
+
+		$arrContacts = array();
+		while ($arrContact = $selContacts->Fetch())
+		{
+			$arrContacts[] = new self($arrContact);
+		}
+
+		return $arrContacts;
+	}
+
 	public function getAccountIds()
 	{
 		// Need to load the account ids associated with this contact
@@ -194,13 +252,13 @@ class Ticketing_Contact
 		return NULL;
 	}
 
-	public function __set($strName, $mxdValue)
+	public function __set($strName, $mixValue)
 	{
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
-			if ($this->{$strName} != $mxdValue)
+			if ($this->{$strName} != $mixValue)
 			{
-				$this->{$strName} = $mxdValue;
+				$this->{$strName} = $mixValue;
 				$this->_saved = FALSE;
 			}
 		}

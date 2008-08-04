@@ -43,6 +43,35 @@ class Application
 		return $instance;
 	}
 
+	public function LoadJsonHandler($strHandlerName, $strHandlerMethod, $subPath=NULL)
+	{
+		$strClass = 'JSON_Handler_'.$strHandlerName;
+
+		// Create JSON_Handler Object (autoloaded from /html/ui/classes/json/handler/)
+		try
+		{
+			// Create the handler object, passing in the path info as parameter
+			$this->objJsonHandler = new $strClass($subPath);
+
+			// Get the JSON request arguments
+			$arrArgs = array_key_exists('json', $_POST) ? JSON_Services::decode($_POST['json']) : array();
+			if (!is_array($arrArgs))
+			{
+				$arrArgs = array(0 => $arrArgs);
+			}
+
+			// Run the handler
+			$response = call_user_func_array(array(0 => $this->objJsonHandler, 1 => $strHandlerMethod), $arrArgs);
+		}
+		catch(Exception $e)
+		{
+			// Send back an error so the JavaScript knows it failed
+			$response = array('ERROR' => $e->getMessage());
+		}
+
+		echo JSON_Services::encode($response);
+	}
+
 	public function LoadPageHandler($strHandlerName, $strHandlerMethod, $subPath=NULL, $bolModal=FALSE)
 	{
 		// Check that the user's browser is supported.  This will die if the user's browser is not supported
