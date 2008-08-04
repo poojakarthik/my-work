@@ -51,7 +51,7 @@ $arrSQLSelect['Primary Contact']		['Value']	= "CONCAT(Contact.FirstName, ' ', Co
 $arrSQLSelect['Contact Phone']			['Value']	= "CASE WHEN Contact.Phone = '' THEN Contact.Mobile ELSE Contact.Phone END";
 $arrSQLSelect['Contact Phone']			['Type']	= EXCEL_TYPE_FNN;
 
-$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(Account.CreatedOn, '%d/%M/%Y')";
+$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(Account.CreatedOn, '%d/%m/%Y')";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
