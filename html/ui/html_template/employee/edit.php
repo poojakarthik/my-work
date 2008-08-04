@@ -283,9 +283,9 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			  			<input type='hidden' name='Id' value='27' />
 						<table border='0' cellpadding='3' cellspacing='0'>
 							<tr>
-								<th>Available Permissions :</th>
+								<th>Available Permissions</th>
 								<th></th>
-								<th>Selected Permissions :</th>
+								<th>Selected Permissions</th>
 							</tr>
 							<tr>
 								<td>
@@ -313,7 +313,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 					<div id='Permissions.View'$strViewDisplay>
 						<table border='0' cellpadding='3' cellspacing='0'>
 							<tr>
-								<th>Permissions :</th>
+								<th>Permissions</th>
 							</tr>
 							<tr>
 								<td>
@@ -326,7 +326,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		echo "
 				</div>
 			</div>
-			<div class='Seperator'></div>";
+			<div class='SmallSeperator'></div>";
 
 		echo "<script type='text/javascript'>EmployeeEdit.bolPerms = " . ($bolEditSelf ? "false" : "true") . "; EmployeePermissions.init();</script>";
 

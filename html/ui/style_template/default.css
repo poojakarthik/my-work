@@ -43,21 +43,9 @@ img[onclick]
 	cursor:	pointer;
 }
 
-a:link
+a:link, a:visited
 {
-	color: #F88017;
-	text-decoration:	none;		
-}
-
-a:active
-{
-	color: 				#0000FF;
-	text-decoration:	none;		
-}
-
-a:visited
-{
-	color: 				#0000FF;
+	color: #0000FF;
 	text-decoration:	none;		
 }
 
@@ -66,6 +54,13 @@ a:hover
 	color:				#0000FF;
 	text-decoration:	underline;
 }
+
+a:active
+{
+	color: 				#0000FF;
+	text-decoration:	none;		
+}
+
 
 /* An alternative to using anchor tags.  This will stop the hyperlink
  * from being displayed in the status bar
@@ -78,11 +73,6 @@ span[onclick]
 span[onclick]:hover
 {
 	text-decoration: underline;
-}
-
-div#BreadCrumbMenu a:hover
-{
-	text-decoration:	underline;
 }
 
 
@@ -135,11 +125,7 @@ li
 body
 {
 	margin:				0px;
-	font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
-	/*line-height:		18pt;*/
 	line-height:		1.2;
-	font-size:			10pt;
-	/*background-color:	#FFFFFF;*/
 }
 
 body.EmbeddedComponent
@@ -199,11 +185,11 @@ div#PageBody
 	/*width:			875px;*/
 	width:			90%;
 	clear:			both;
-	margin-left: auto;
-	margin-right: auto;
-	top:	10em;
+	margin-left:	auto;
+	margin-right:	auto;
+	top:			10em;
 	overflow:		auto;	
-	position: relative;
+	position:		relative;
 }
 
 div#PopupPageBody
@@ -215,10 +201,15 @@ div#PopupPageBody
 	 * You would use this function within the Page Template.  
 	 */
 
-/*background-color:	#F3F3F3;*/
-background-color:	#EFEBE7;
+	/*background-color:	#F3F3F3;*/
+	background-color:	#EFEBE7;
+	
+	padding:			3px;
+}
 
-padding:			3px;
+div#PopupHolder
+{
+	z-index:	50;
 }
 
 div#ImportReport
@@ -1334,7 +1325,7 @@ input.time
 {
 	border: 1px solid #000000;
 	background-color: #ffffff;
-	z-index: 100001;
+	z-index: 25;
 }
 
 /**************************************************************************/

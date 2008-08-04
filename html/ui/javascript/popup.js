@@ -179,7 +179,8 @@ function VixenPopupClass()
 		elmPopup.style.top	= document.body.scrollTop;
 
 		// Add the popup to the PopupHolder element
-		elmRoot = document.getElementById('PopupHolder');
+		elmRoot = $ID('PopupHolder');
+
 		elmRoot.appendChild(elmPopup);
 
 		//Going to run into some problems when having multiple popups
@@ -194,7 +195,7 @@ function VixenPopupClass()
 				// Create a div to capture all events
 				
 				// But first check if this overlay div already exists
-				var  elmOverlay = document.getElementById("overlay");
+				var  elmOverlay = $ID("overlay");
 				if (elmOverlay == null)
 				{
 					// the overlay div does not currently exist, so create it
@@ -211,7 +212,7 @@ function VixenPopupClass()
 				
 				intScroll = document.body.scrollTop;
 				
-                elmOverlay.style.height	= Math.max(document.body.offsetHeight, window.innerHeight);
+				elmOverlay.style.height	= Math.max(document.body.scrollHeight, window.innerHeight);
 				
 				// Find the width of the actual page by using the PageBody div, and adding its own width
 				// to the offset from the left side of the page (needs to include margins?)

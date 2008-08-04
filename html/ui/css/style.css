@@ -41,6 +41,23 @@ div#person {
 	height: 25px;
 }
 
+div#person a:link,
+div#person a:visited {
+	color: #ffde05;
+	text-decoration: none;
+}
+
+div#person a:hover {
+	color: #ffde05;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+div#person a:active {
+	color: #ffde05;
+	text-decoration: underline;
+}
+
 div#logo {
 	float: left;
 	width: 50%;

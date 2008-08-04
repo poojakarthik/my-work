@@ -82,6 +82,7 @@
 				</td>
 			</tr>
 			<!-- View Personal Details -->
+			<!-- 
 			<tr>
 				<td>
 					<a href="#" onclick="return FlexModalContent.display('./flex_modal_link.php/Employee/EmployeeDetails/', '400px', '500px')">
@@ -96,6 +97,7 @@
 					View and edit personal details.
 				</td>
 			</tr>
+			-->
 			<!-- If Admin... -->
 			<xsl:choose>
 				<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">

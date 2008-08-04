@@ -249,7 +249,7 @@ else
 if (dragObj == undefined)
 {
 	var dragObj = new Object();
-	dragObj.zIndex = 2;
+	dragObj.zIndex = 50;
 }
 
 function dragStart(event, id) {

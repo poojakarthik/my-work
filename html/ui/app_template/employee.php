@@ -409,6 +409,8 @@ class AppTemplateEmployee extends ApplicationTemplate
 							//$scriptInit .= "EmployeeView.Update();";
 							$scriptOnClose .= "EmployeeView.Update();";
 						}
+						$scriptInit		= "Vixen.Popup.Close('{$this->_objAjax->strId}');";
+						$scriptOnClose	= "if (window.EmployeeView) {EmployeeView.Update();}";
 	
 						$arrParams = array();
 						$arrParams["Message"] = "The information was successfully saved.";
