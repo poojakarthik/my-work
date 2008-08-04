@@ -204,7 +204,14 @@ class Email_Notification extends Zend_Mail
 		$emailNotification = new Email_Notification($intEmailNotification, $intCustomerGroupId);
 		$emailNotification->addTo($strToEmail);
 		$emailNotification->setSubject($strSubject);
-		$emailNotification->setBodyText($strTextMessage);
+		if ($strHTMLMessage)
+		{
+			$emailNotification->setBodyHtml($strHTMLMessage);
+		}
+		if ($strTextMessage)
+		{
+			$emailNotification->setBodyText($strTextMessage);
+		}
 		if ($arrAttachments)
 		{
 			foreach($arrAttachments as $attchment)
