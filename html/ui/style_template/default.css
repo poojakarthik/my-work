@@ -181,8 +181,6 @@ span[onclick]:hover
 /**************************************************************************/
 div#PageBody
 {
-	/*margin-left:		75px;*/
-	/*width:			875px;*/
 	width:			90%;
 	clear:			both;
 	margin-left:	auto;
@@ -209,7 +207,7 @@ div#PopupPageBody
 
 div#PopupHolder
 {
-	z-index:	50;
+	/*z-index:	50; */ 
 }
 
 div#ImportReport
@@ -1254,7 +1252,7 @@ input.time
 	position: absolute;
 	border: 1px solid #000000;
 	background-color: #ffffff;
-	z-index: 1001;
+	/*z-index: 1001;*/
 }
 
 .PopupBoxTopBar

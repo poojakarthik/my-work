@@ -136,7 +136,7 @@ function VixenPopupClass()
 		// If the title isn't specified then use the application name
 		strTitle = (strTitle == null) ? VIXEN_APPLICATION_NAME : strTitle;
 		// Try to find a previous popup
-		elmExists = document.getElementById('VixenPopup__' + strId);
+		elmExists = $ID('VixenPopup__' + strId);
 		if (elmExists)
 		{
 			// destroy it . . .
@@ -280,14 +280,19 @@ function VixenPopupClass()
 		{
 			strWidth = this.objSizes.defaultsize;
 		}
-		elmPopup.style.width = strWidth;
-		
+		elmPopup.style.width = strWidth;// + "px";
+//var strLefty	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
+//var strToppy	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+
 		// Set the position (centre/pointer/target)
 		if (mixPosition == "centre")
 		{
 			// center the popup
 			elmPopup.style.left	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
 			elmPopup.style.top	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+//elmPopup.style.left = strLefty + "px";			
+//elmPopup.style.top = strToppy + "px";			
+
 		}
 		else if (mixPosition == "[object MouseEvent]")
 		{

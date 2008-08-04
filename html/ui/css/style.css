@@ -86,7 +86,7 @@ div#menu {
 	width: 100%;
 }
 
-div#content {
+div#content {  /* Not used*/
 	padding-top: 1em;
 	z-index: -1000;
 	clear: both;

@@ -84,27 +84,6 @@ class Application_Page extends Page
 	}
 
 	//------------------------------------------------------------------------//
-	// RenderCSS
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderCSS()
-	 *
-	 * Renders the CSS part of the page
-	 *
-	 * Renders the CSS part of the page
-	 * 
-	 * @method
-	 */
-	function RenderCSS()
-	{
-		$cssFiles = glob(Flex::getBase() . '/html/ui/css/*.css');
-		foreach($cssFiles as $cssFile)
-		{
-			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/" . basename($cssFile) . "' />\n";
-		}
-	}
-
-	//------------------------------------------------------------------------//
 	// RenderHeaderJS
 	//------------------------------------------------------------------------//
 	/**
@@ -123,7 +102,7 @@ class Application_Page extends Page
 	{
 		// Load the old vixen framework for backward compatibility.
 		// Do this first to ensure that any new stuff doesn't get broken by it.
-		$arrJsFiles = array("vixen", "menu", "popup", "dhtml", "ajax", "event_handler", "login");
+		$arrJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login");
 		// Build the get variables for the javascript.php script
 		$strFiles = $this->_GetJsFilesQueryString($arrJsFiles);
 		// Echo the reference to the javascript.php script which retrieves all the javascript
@@ -223,23 +202,6 @@ class Application_Page extends Page
 	}
 
 	//------------------------------------------------------------------------//
-	// RenderFooter
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderFooter()
-	 *
-	 * Renders the footer of a page
-	 *
-	 * Renders the footer of a page
-	 * 
-	 * @method
-	 */
-	function RenderFooter()
-	{	
-		echo "</body>\n</html>\n";
-	}
-
-	//------------------------------------------------------------------------//
 	// RenderHeader
 	//------------------------------------------------------------------------//
 	/**
@@ -254,7 +216,6 @@ class Application_Page extends Page
 	function RenderHeader($bolWithSearch=TRUE)
 	{	
 		$strBaseDir = Flex::getUrlBase();
-		$strEmployeeConsoleLink = Href()->EmployeeConsole();
 
 		echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
@@ -269,18 +230,10 @@ class Application_Page extends Page
 	</head>
 	<body onload='Vixen.Init();'>
 		<div id='PopupHolder'></div>
-		<div id=\"header\" name=\"header\">
-			<div id=\"logo\">
-				<div id=\"blurb\" name=\"blurb\">Flex Customer Management System</div>
-			</div>\n";
-
-		if ($bolWithSearch && Flex::loggedIn())
-		{
-			$this->RenderSearchField();
-		}
+		<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>\n";
 	}
 
-	function RenderSearchField()
+	function RenderSearchField_REDUNDANT()
 	{
 		$usename = Flex::getDisplayName();
 		echo "
@@ -344,7 +297,7 @@ class Application_Page extends Page
 	 * 
 	 * @method
 	 */
-	function RenderContextMenu()
+	function RenderContextMenu_REDUNDANT()
 	{
 		// build array
 		$arrContextMenu = ContextMenu()->BuildArray();
@@ -357,7 +310,7 @@ class Application_Page extends Page
 		return;
 	}
 
-	private function renderMenuLevel($items, $level=0)
+	private function renderMenuLevel2_REDUNDANT($items, $level=0)
 	{
 		$indent = str_repeat("\t", 4 + (2 * $level));
 		if (!is_array($items) || empty($items))
@@ -381,42 +334,6 @@ class Application_Page extends Page
 		echo "$indent</ul>\n";
 	}
 
-
-	//------------------------------------------------------------------------//
-	// RenderBreadCrumbMenu
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderBreadCrumbMenu()
-	 *
-	 * Renders the breadcrumb menu
-	 *
-	 * Renders the breadcrumb menu
-	 * 
-	 * @method
-	 */
-	function RenderBreadCrumbMenu()
-	{
-		$objBreadCrumb = new HtmlTemplate_BreadCrumb(HTML_CONTEXT_DEFAULT);
-		$objBreadCrumb->Render();
-	}
-
-	//------------------------------------------------------------------------//
-	// RenderVixenHeader
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderVixenHeader()
-	 *
-	 * Renders the Vixen header
-	 *
-	 * Renders the Vixen header
-	 * 
-	 * @method
-	 */
-	function RenderVixenHeader()
-	{
-		$objHeader = new HtmlTemplate_DebugHeader(HTML_CONTEXT_DEFAULT);
-		$objHeader->Render();
-	}
 
 }
 

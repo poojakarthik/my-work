@@ -26,11 +26,11 @@
  */
 
 $this->RenderHeader();
-$this->RenderVixenHeader();
-$this->RenderBreadCrumbMenu();
-$this->RenderContextMenu();
+$this->RenderFlexHeader(TRUE, TRUE, TRUE);
+//$this->RenderBreadCrumbMenu();
+//$this->RenderContextMenu();
 ?>
-		<div id='content' class='maximum-area-body'>
+		<div id='PageBody' class='maximum-area-body'>
 			<?php $this->RenderColumn(COLUMN_ONE); ?>
 		</div>
 

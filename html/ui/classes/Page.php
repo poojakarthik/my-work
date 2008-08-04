@@ -387,7 +387,7 @@ class Page
 	 */
 	function RenderFooter()
 	{	
-		echo "</body>\n</html>\n";
+		echo "\n\t</body>\n</html>\n";
 	}
 		
 	//------------------------------------------------------------------------//
