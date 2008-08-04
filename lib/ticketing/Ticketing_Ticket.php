@@ -42,6 +42,17 @@ class Ticketing_Ticket
 		return $ticket;
 	}
 
+	public static function createBlank()
+	{
+		
+		return new self();
+	}
+
+	public function isSaved()
+	{
+		return $this->id !== NULL;
+	}
+
 	public static function createNew(Ticketing_Contact $contact, $strSubject, $custGroupId)
 	{
 		// At this point, about all we will know is the subject, the 
@@ -154,16 +165,19 @@ class Ticketing_Ticket
 		}
 		$arrValues = $this->getValuesToSave();
 
+		$now = date('Y-m-d H:i:s');
+
 		// No id means that this must be a new record
 		if (!$this->id)
 		{
 			$statement = new StatementInsert($this->getTableName(), $arrValues);
+			$this->creationDatetime = $this->modifiedDatetime = $now;
 		}
 		// This must be an update
 		else
 		{
 			$arrValues['Id'] = $this->id;
-			$arrValues['modified_datetime'] = date('Y-m-d H:i:s');
+			$this->modifiedDatetime = $arrValues['modified_datetime'] = $now;
 			$statement = new StatementUpdateById($this->getTableName(), $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)

@@ -18,13 +18,13 @@ class Ticketing_Contact_Account
 	 */	
 	public static function associate($mixContact, $mixAccount)
 	{
+		$contactId = $mixContact instanceof Ticketing_Contact ? $mixContact->id : 
+					 ($mixContact instanceof Ticketing_Ticket ? $mixContact->contactId : 
+					 ($mixContact instanceof Ticketing_Correspondance ? $mixContact->contactId 
+					 : intval($mixContact)));
 		$accountId = $mixAccount instanceof Account ? $mixAccount->id : 
 					 ($mixAccount instanceof Ticketing_Ticket ? $mixAccount->accountId
 					 : intval($mixAccount));
-		$contactId = $mixContact instanceof Ticeting_Contact ? $mixContact->id : 
-					 ($mixContact instanceof Ticeting_Ticket ? $mixContact->contactId : 
-					 ($mixContact instanceof Ticeting_Correspondance ? $mixContact->contactId 
-					 : intval($mixAccount)));
 
 		if (!$accountId)
 		{
@@ -32,8 +32,8 @@ class Ticketing_Contact_Account
 			return TRUE;
 		}
 
-		$selAssociation = new StatementSelect('ticketing_contact_account', array('id'), array('ticketing_contact_id = <TCID> AND account_id = <ACID>'));
-		$arrWhere = array('TCID' => $contactId, 'ACID' => $accountId);
+		$selAssociation = new StatementSelect('ticketing_contact_account', array('id'=>'id'), 'ticketing_contact_id = <TCID> AND account_id = <ACID>');
+		$arrWhere = array('TCID' => intval($contactId), 'ACID' => intval($accountId));
 		if (($outcome=$selAssociation->Execute($arrWhere)) === FALSE)
 		{
 			throw new Exception('Failed to check for association between account ' . $accountId . ' and contact ' . $contactId . ': ' . $selAssociation->Error());
@@ -63,22 +63,20 @@ class Ticketing_Contact_Account
 					LEFT OUTER JOIN ticketing_contact_account a
 					ON t.account_id = a.account_id
 					AND c.id = a.ticketing_contact_id
-					WHERE t.account_id IS NOT NULL 
-					and a.id IS NULL
 			";
 
 			$strWhere = "
-					t.id = <TICKET_ID>
-					t.account_id IS NOT NULL 
+					t.id = <TICKETID>
+					and t.account_id IS NOT NULL 
 					and a.id IS NULL
 			";
 
-			$arrWhere = array('TICKET_ID' => $mixContact->id);
+			$arrWhere = array('TICKETID' => intval($mixContact->id));
 
 			$strGroupBy = " t.account_id, c.contact_id ";
 
 			$selUnassociated = new StatementSelect($strTables, $arrColumns, $strWhere, "", "", $strGroupBy);
-			if (($mixReturn = $selUnassociated->Execute()) === FALSE)
+			if (($mixReturn = $selUnassociated->Execute($arrWhere)) === FALSE)
 			{
 				throw new Exception('Failed to check for contacts unassociated with accounts: ' . $selUnassociated->Error());
 			}

@@ -1,10 +1,31 @@
 <?php
 
-class JSON_Handler_Ticketing
+class JSON_Handler_Ticketing extends JSON_Handler
 {
-	public function validateAccount()
+	public function validateAccount($accountId, $ticketId)
 	{
-		return 'Consider that one validated!';
+		$response = array();
+		$response['isValid'] = FALSE;
+
+		// Need to check that an account exists for the given id.
+		$account = Account::getForId($accountId);
+		if ($account)
+		{
+			// The account is valid. Now we need to list the services for it.
+			$response['isValid'] = TRUE;
+		}
+
+		$ticket = Ticketing_Ticket::getForId($ticketId);
+
+		$contacts = Ticketing_Contact::listForAccountAndTicket($account, $ticket);
+		$response['contacts'] = array();
+		foreach ($contacts as $contact)
+		{
+			$response['contacts'][] = array('id' => $contact->id, 'name' => $contact->getName());
+		}
+
+		// If an account exists, we need to return a list of services and contacts for it
+		return $response;
 	}
 }
 

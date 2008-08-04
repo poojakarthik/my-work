@@ -176,6 +176,8 @@ class Application_Handler_Ticketing extends Application_Handler
 			$detailsToRender['error'] = 'You are not authorised to perform that action.';
 		}
 
+		$invalidValues = array();
+
 		try
 		{
 			if (!$ticket && $action != 'create')
@@ -204,9 +206,9 @@ class Application_Handler_Ticketing extends Application_Handler
 					if (!is_numeric($targetUserId)) $targetUserId = NULL;
 					if ($targetUserId === NULL)
 					{
-						if (array_key_exists('userId', $_REQUEST) && is_numeric($_REQUEST['userId']))
+						if (array_key_exists('ownerId', $_REQUEST) && is_numeric($_REQUEST['ownerId']))
 						{
-							$targetUserId = $_REQUEST['userId'];
+							$targetUserId = $_REQUEST['ownerId'];
 						}
 					}
 					if ($targetUserId !== NULL)
@@ -228,41 +230,25 @@ class Application_Handler_Ticketing extends Application_Handler
 
 				case 'create':
 
-					if ($currentUser->isAdminUser())
-					{
-						$editableValues[] = 'ownerId';
-					}
-					$editableValues[] = 'priorityId';
-					$editableValues[] = 'subject';
+					$ticket = Ticketing_Ticket::createBlank();
 					$editableValues[] = 'accountId';
-					$editableValues[] = 'contactId';
-					$editableValues[] = 'statusId';
-					//$editableValues[] = 'customerGroupId'; // Customer group should come from account
-					$editableValues[] = 'categoryId';
-
-					if (array_key_exists('save', $_REQUEST))
-					{
-						// WIP :: Create a new ticket for the passed details, if valid
-
-						$detailsToRender['saved'] = TRUE;
-					}
-					else
-					{
-
-						$detailsToRender['saved'] = FALSE;
-					}
-
-					break;
 
 				case 'edit':
 
+					if ($action == 'edit')
+					{
+						if (!$ticket->accountId)
+						{
+							$editableValues[] = 'accountId';
+						}
+					}
+
 					if ($currentUser->isAdminUser())
 					{
 						$editableValues[] = 'ownerId';
 					}
 					$editableValues[] = 'priorityId';
 					$editableValues[] = 'subject';
-					$editableValues[] = 'accountId';
 					$editableValues[] = 'contactId';
 					$editableValues[] = 'statusId';
 					//$editableValues[] = 'customerGroupId'; // Customer group should come from account
@@ -272,7 +258,6 @@ class Application_Handler_Ticketing extends Application_Handler
 					{
 						// WIP :: Validate the passed details and save if valid
 						$validatedValues = array();
-						$invalidValues = array();
 						foreach ($editableValues as $editableValue)
 						{
 							$value = array_key_exists($editableValue, $_REQUEST) ? trim($_REQUEST[$editableValue]) : NULL;
@@ -282,15 +267,16 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value =  $currentUser->isAdminUser() ? Ticketing_User::getForId(intval($value)) : NULL;
 									if (!$value && $currentUser->isAdminUser())
 									{
+										$ticket->ownerId = NULL;
 										$invalidValues[$editableValue] = 'You must specify an owner for the ticket.';
 									}
 									else if ($currentUser->isAdminUser())
 									{
-										$validatedValues[$editableValue] = $value->id;
+										$ticket->ownerId = $value->id;
 									}
 									else
 									{
-										$validatedValues[$editableValue] = $currentUser->id;
+										$ticket->ownerId = $currentUser->id;
 									}
 									break;
 
@@ -298,41 +284,44 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value = Ticketing_Priority::getForId(intval($value));
 									if (!$value)
 									{
+										$ticket->priorityId = NULL;
 										$invalidValues[$editableValue] = 'You must specify a priority for the ticket.';
 									}
 									else
 									{
-										$validatedValues[$editableValue] = $value->id;
+										$ticket->priorityId = $value->id;
 									}
 									break;
 
 								case 'subject':
 									if (!$value)
 									{
+										$ticket->subject = $value;
 										$invalidValues[$editableValue] = 'Subject cannot be blank.';
 									}
 									else
 									{
-										$validatedValues[$editableValue] = $value;
+										$ticket->subject = $value;
 									}
 									break;
 
 								case 'accountId':
 									if (!$value)
 									{
-										$invalidValues[$editableValue] = 'You must specify a contact for the ticket.';
+										$invalidValues[$editableValue] = 'You must specify an account for the ticket.';
 										break;
 									}
 									// Need to check that the account exists
 									$value = Account::getForId(intval($value));
 									if (!$value)
 									{
+										$ticket->accountId = $value->id;
 										$invalidValues[$editableValue] = 'The account number is invalid.';
 									}
 									else
 									{
-										$validatedValues[$editableValue] = $value->id;
-										$validatedValues['customerGroupId'] = $value->customerGroup;
+										$ticket->accountId = $value->id;
+										$ticket->customerGroupId = $value->customerGroup;
 									}
 									break;
 									break;
@@ -341,11 +330,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value = Ticketing_Contact::getForId(intval($value));
 									if (!$value)
 									{
+										$ticket->contactId = NULL;
 										$invalidValues[$editableValue] = 'You must specify a contact for the ticket.';
 									}
 									else
 									{
-										$validatedValues[$editableValue] = $value->id;
+										$ticket->contactId = $value->id;
 									}
 									break;
 
@@ -354,11 +344,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value = Ticketing_Status::getForId(intval($value));
 									if (!$value)
 									{
+										$ticket->statusId = NULL;
 										$invalidValues[$editableValue] = 'You must specify a status for the ticket.';
 									}
 									else
 									{
-										$validatedValues[$editableValue] = $value->id;
+										$ticket->statusId = $value->id;
 									}
 									break;
 
@@ -366,17 +357,28 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value = Ticketing_Category::getForId(intval($value));
 									if (!$value)
 									{
+										$ticket->categoryId = NULL;
 										$invalidValues[$editableValue] = 'You must specify a category for the ticket.';
 									}
 									else
 									{
-										$validatedValues[$editableValue] = $value->id;
+										$ticket->categoryId = $value->id;
 									}
 									break;
 							}
 						}
 
-						$detailsToRender['saved'] = TRUE;
+						if (!empty($invalidValues))
+						{
+							$detailsToRender['error'] = 'Please complete all mandatory fields.';
+							$detailsToRender['saved'] = FALSE;
+						}
+						else
+						{
+							$ticket->save();
+							$detailsToRender['saved'] = TRUE;
+							$action = 'save';
+						}
 					}
 					else
 					{
@@ -402,6 +404,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['ticket'] = $ticket;
 		$detailsToRender['permitted_actions'] = $this->getPermittedTicketActions($currentUser, $ticket);
 		$detailsToRender['editable_values'] = $editableValues;
+		$detailsToRender['invalid_values'] = $invalidValues;
 
 		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
@@ -409,7 +412,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	private function getPermittedTicketActions($user, $ticket)
 	{
 		$permittedActions = array();
-		if ($ticket)
+		if ($ticket && $ticket->isSaved())
 		{
 			$permittedActions[] = 'view';
 			$permittedActions[] = 'edit';

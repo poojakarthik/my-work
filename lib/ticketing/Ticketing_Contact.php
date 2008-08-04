@@ -36,7 +36,8 @@ class Ticketing_Contact
 
 	public static function listById($arrIds)
 	{
-		
+		// WIP:: Not implemented!!
+		throw new Exception(__CLASS__ . "::" . __FUNCTION__ . " (" . __FILE__ . "@line " . __LINE__ . ") Not implemented.");
 	}
 
 	public static function listForAccountAndTicket($mixAccount, $ticket=NULL)
@@ -63,7 +64,12 @@ class Ticketing_Contact
 
 	public static function listForAccount($mixAccount)
 	{
-		$accountId = $mixAccount instanceof Account ? $mixAccount->id : intval($mixAccount);
+		$accountId = $mixAccount ? ($mixAccount instanceof Account ? $mixAccount->id : intval($mixAccount)) : NULL;
+
+		if (!$accountId)
+		{
+			return array();
+		}
 
 		$arrCols = self::getColumns();
 		$arrColumns = array();
@@ -134,6 +140,7 @@ class Ticketing_Contact
 
 	public static function getForId($id)
 	{
+		if (!$id) return NULL;
 		return self::getFor("id = <Id>", array("Id" => $id));
 	}
 

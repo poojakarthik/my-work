@@ -49,6 +49,18 @@ class Account
 		}
 	}
 
+	// This is a dirty hack. It returns an array of array('id'=>x, 'fnn'=>x)
+	public function listServices()
+	{
+		$selServices = new StatementSelect('account_services', array('id' => 'id', 'fnn' => 'fnn'), 'account_id = <ACCOUNT_ID>');
+		$arrWhere = array('ACCOUNT_ID' => $this->id);
+		if (($outcome = $selServices->Execute()) === FALSE)
+		{
+			throw new Exception('Failed to load services for account: ' . $selServices->Error());
+		}
+		return $selServices->FetchAll();
+	}
+
 	public function getName()
 	{
 		return $this->businessName ? $this->businessName : ($this->tradingName ? $this->tradingName : '');
@@ -74,6 +86,10 @@ class Account
 		{
 			throw new Exception("Failed to check for existing account: " . $selUsers->Error());
 		}
+		if (!$outcome && !$bolAsArray)
+		{
+			return NULL;
+		}
 
 		$records = array();
 		while ($props = $selUsers->Fetch())
@@ -97,7 +113,8 @@ class Account
 		{
 			return self::$cache[$id];
 		}
-		return self::getFor("Id = <Id>", array("Id" => $id));
+		$account = self::getFor("Id = <Id>", array("Id" => $id));
+		return $account;
 	}
 
 	protected static function getColumns()
