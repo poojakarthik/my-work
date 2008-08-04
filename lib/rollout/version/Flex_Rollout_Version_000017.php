@@ -128,8 +128,8 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 
 			"ticketing_contact_account" => " CREATE TABLE ticketing_contact_account (
 										id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Id for the table',
-										ticketing_contact_id tinyint(1) NOT NULL COMMENT 'FK to ticketing_contact table',
-										account_id tinyint(1) NOT NULL COMMENT 'FK to Account table',
+										ticketing_contact_id bigint(20) NOT NULL COMMENT 'FK to ticketing_contact table',
+										account_id bigint(20) NOT NULL COMMENT 'FK to Account table',
 										PRIMARY KEY(Id)
 										) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Accounts associated with ticketing contact';
 									",
