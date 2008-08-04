@@ -231,6 +231,11 @@ jQuery.json = {
 			{
 				this.onSuccess.apply(null, argsArray);
 			}
+		},
+
+		defaultErrorHandler: function(error)
+		{
+			alert('An error occurred when communicating with the server.\n\nIf this continues, please contact your system administrator with the following details:\n\n' + error['ERROR']);
 		}
 
 	},
@@ -243,7 +248,7 @@ jQuery.json = {
 
 		if (onFailure == undefined || onFailure == null)
 		{
-			onFailure = function(){};
+			onFailure = jQuery.json.jsonFunctionHelper.defaultErrorHandler;
 		}
 
 		var responseHandler = jQuery.json.jsonFunctionHelper.validateJsonResponse.bind({
