@@ -1,8 +1,19 @@
+a,
+a:link,
+a:visited {
+	color: #FF4200;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
 div.message {
 	background: #CFFFCD;
 	font-weight: bold;
 	color: #111;
-	border: 1px solid #060;
+	border: .1em solid #060;
 	width: 90%;
 	padding: .5em;
 	margin-left: auto;
@@ -13,12 +24,12 @@ div.message {
 div.error {
 	background: #ffecf0;
 	color: #111;
-	border: 1px solid #d30;
+	border: .1em solid #d30;
 } 
 
 div.warning {
 	background: #ffc47f;
-	border: 1px solid #ff8822;
+	border: .1em solid #ff8822;
 	color: #111;
 }
 
@@ -26,8 +37,8 @@ table.reflex {
 	width: 90%;
 	margin-left: auto;
 	margin-right: auto;
-	border: 1px solid #333;
-	border-spacing: 0px;
+	border: .1em solid #333;
+	border-spacing: 0;
 }
 
 table.reflex caption div#caption_bar {
@@ -43,8 +54,8 @@ table.reflex caption div#caption_title{
 	background-color: #333;
 	text-align: center;
 	font-weight: bold;
-	padding-top: .25em;
-	padding-bottom: .25em;
+	padding-top: .4em;
+	padding-bottom: .4em;
 }
 
 table.reflex caption div#caption_options{
@@ -52,7 +63,7 @@ table.reflex caption div#caption_options{
 	width: 70%;
 	text-align: right;
 	font-weight: bold;
-	padding: 1px 5px;
+	padding: .1em .5em;
 }
 
 table.reflex thead, table.reflex tfoot {
@@ -69,7 +80,7 @@ table.reflex thead tr th, table.reflex tfoot tr th {
 table.reflex tfoot a,
 table.reflex tfoot a:visited,
 table.reflex tfoot a:link {
-		color: #ffde05 !important;
+	color: #ffde05 !important;
 }
 
 
@@ -89,7 +100,7 @@ table.reflex tr.alt td {
 
 a.button {
 	cursor: default;
-	border: 1px solid #111;
+	border: .1em solid #111;
 	color: #111;
 	background-color: #eee;
 	margin: .25em;
@@ -125,18 +136,18 @@ table.reflex tr td.ticketing-status-unassigned, table.reflex tr td.ticketing-sta
 }
 
 input, select, textarea {
-	border: 1px solid #111;
+	font-size: 1em;
+	border: .1em solid #111;
 	color: #111;
 	margin: .1em;
-	padding-left: .1em;
-	padding-right: .1em;
+	background-color: #fff;
 }
 
 input.required, select.required, textarea.required,
 input.invalid, select.invalid, textarea.invalid {
 	background: #ffecf0;
 	color: #111;
-	border: 1px solid #d30;
+	border: .1em solid #d30;
 }
 
 option.urgent-priority {
@@ -144,51 +155,68 @@ option.urgent-priority {
 	text-decoration: underline;
 }
 
-div#PopupPageBody
-{
-	background-color:	#EFEBE7;
-	
-	padding:			3px;
+div#PopupPageBody {
+	background-color:	#EFEBE7; 
 }
 
-
-.PopupBox
-{
+.PopupBox {
 	position: absolute;
-	border: 1px solid #000000;
-	background-color: #ffffff;
+	border: .1em solid #111;
+	background-color: #eee;
 }
 
-.PopupBoxTopBar
-{
-	font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
-	font-size: 10pt;
-	line-height: 18pt;
-	color: #FFFFFF;
-	background-color: #000000;
-	background-image:     url('img/template/background.png');
-	background-repeat:    repeat-x;
-	padding: 0px;
-	margin: 0px;
-	padding-left: 5px;
+.PopupBoxTopBar {
+	font-size: 1em;
+	line-height: 1.25em;
+	color: #eee;
+	font-weight: bold;
+	background-color: #111;
+	margin: 0;
+	padding: .25em;
 	cursor: default;
 
 }
-.PopupBoxClose
-{
+.PopupBoxClose {
 	float: right;
-	text-align: right;
-	height: 14px;
-	padding: 3px;
 }
 
 #PopupHolder #overlay {
 	position: absolute;
-	left: 0px;
-	top: 0px;
-	width:100%;
-	height:100%;
+	left: 0em;
+	top: 0em;
+	width: 100%;
+	height: 100%;
 	z-index: 1000;
-	background-color:	#000000;
+	background-color: #000;
 	opacity: .50;
+}
+
+div.DefaultOutput, div input.DefaultInputText, div select.DefaultInputText {
+	position: relative;
+	float: right;
+	width: 50%;
+}
+
+div.DefaultLabel {
+	position: relative;
+	margin: .5em;
+	font-weight: bold;
+}
+
+div.GroupedContent {
+	clear: both;
+	position: relative;
+	margin: .25em;
+	padding: .25em;
+	border: .1em solid #111;
+}
+
+div.SmallSeperator {
+	height: .25em;
+}
+
+div.ButtonContainer {
+	float: right;
+	padding: .25em;
+	margin: .25em;
 }

@@ -1,21 +1,9 @@
 body {
 	background-color: #fff;
 	font-family: Arial,Verdana,Helvetica;
-	margin: 0px;
+	margin: 0em;
 	font-size: .8em;
-	padding: 0px;
-}
-
-a,
-a:link,
-a:visited {
-	color: #FF4200;
-	font-weight: bold;
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
+	padding: 0em;
 }
 
 h1#page-title{
@@ -39,13 +27,13 @@ div#header {
 div#person_search {
 	float: top;
 	width: 99%;
-	height: 50px;
+	height: 4em;
 }
 
 div#person {
 	width: 100%;
 	text-align: right;
-	height: 25px;
+	height: 2em;
 }
 
 div#person a,
@@ -70,16 +58,16 @@ div#person a:active {
 div#logo {
 	float: left;
 	width: 50%;
-	height: 50px;
+	height: 4em;
 	display: block;
 	background-image: url("../img/template/yellow_billing_logo_small.png");
 	background-repeat: no-repeat;
 }
 
 div#logo div#blurb {
-	margin-left: 104px;
+	margin-left: 7em;
 	padding-top: .8em;
-	height: 50px;
+	height: 4em;
 	font-weight: bold;
 	font-size: 1.2em;
 	vertical-align: text-bottom;
@@ -88,7 +76,7 @@ div#logo div#blurb {
 div#search_bar {
 	width: 100%;
 	text-align: right;
-	height: 25px;
+	height: 2em;
 }
 
 div#menu {
@@ -107,7 +95,7 @@ div#content
 }
 
 div.debug-options {
-	padding-top: 15px;
+	padding-top: 1.2em;
 	position: absolute;
 	right: 1%;
 	top: 40;
