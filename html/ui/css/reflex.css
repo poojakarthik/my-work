@@ -119,6 +119,12 @@ table.reflex tr td.ticketing-status-unassigned, table.reflex tr td.ticketing-sta
 	color: #d30;
 }
 
+input.reflex-button, input.reflex-button {
+	border: 1px solid #111 !important;
+	color: #eee !important;
+	margin: .1em !important;
+}
+
 option.urgent-priority {
 	color: #d30;
 	text-decoration: underline;
