@@ -211,7 +211,8 @@ function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB, $strTableTyp
 			elseif ($strTableType === 'VIEW')
 			{
 				// Get View Details
-				if ($mixResult = $qryQuery->Execute("SELECT VIEW_DEFINITION FROM information_schema.views WHERE TABLE_NAME = '{$strTable}' AND TABLE_SCHEMA = '{$strSourceDB}'"))
+				$qryViewDetails	= new Query(FLEX_DATABASE_CONNECTION_ADMIN);
+				if ($mixResult = $qryViewDetails->Execute("SELECT VIEW_DEFINITION FROM information_schema.views WHERE TABLE_NAME = '{$strTable}' AND TABLE_SCHEMA = '{$strSourceDB}'"))
 				{
 					$arrViewDefinition	= $mixResult->fetch_array(MYSQL_ASSOC);
 					$strViewDefinition	= str_replace("$strSourceDB.", "$strDestinationDB.", $arrViewDefinition['VIEW_DEFINITION']);
@@ -230,7 +231,7 @@ function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB, $strTableTyp
 				}
 				else
 				{
-					CliEcho("ERROR: Unable to find VIEW definition for $strDestinationDB.$strTable!");
+					CliEcho("ERROR: Unable to find VIEW definition for $strDestinationDB.$strTable! ".$qryViewDetails->Error());
 					exit(7);
 				}
 			}
