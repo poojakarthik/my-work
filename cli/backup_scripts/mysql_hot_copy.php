@@ -70,7 +70,7 @@ if ($bolDumpTables === TRUE)
 {
 	// Yes, DROP all tables
 	CliEcho("Dropping all existing tables from Destination DB '$strDestinationDB'");
-	if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strDestinationDB WHERE Table_type IN ('BASE TABLE', 'VIEW') ORDER BY Table_type ASC")))
+	if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strDestinationDB WHERE Table_type IN ('BASE TABLE', 'VIEW')")))
 	{
 		// Error on ListTables
 		CliEcho("ERROR: \$qryListTables failed -- ".$qryListTables->Error());
@@ -101,7 +101,7 @@ CliEcho("\n * Copying Tables...");
 // get tables from Source DB
 $arrTables		= Array();
 $qryListTables	= new Query();
-if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strSourceDB WHERE Table_type IN ('BASE TABLE', 'VIEW') ORDER BY Table_type ASC")))
+if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strSourceDB WHERE Table_type IN ('BASE TABLE', 'VIEW')")))
 {
 	// Error on ListTables
 	CliEcho("ERROR: \$qryListTables failed -- ".$qryListTables->Error());
