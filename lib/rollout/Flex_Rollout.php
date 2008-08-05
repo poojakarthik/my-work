@@ -297,7 +297,7 @@ class Flex_Rollout
 		while ($arrTable = $objTables->fetch_assoc())
 		{
 			$strTable	= current($arrTable);
-			$strQuery	= "SHOW COLUMNS FROM $strTable WHERE LCASE(Field) IN ('id', 'const_name', 'description')";
+			$strQuery	= "SHOW COLUMNS FROM $strTable WHERE LCASE(Field) IN ('id', 'const_name', 'description', 'name')";
 			$objColumns	= $qryQuery->Execute($strQuery);
 			
 			if (!$objColumns)
@@ -305,33 +305,56 @@ class Flex_Rollout
 				throw new Exception("Failed to retrieve column listing for the '$strTable' table of the '$strDataSource' database. " . mysqli_errno() . '::' . mysqli_error());
 			}
 			
-			// Check if it has all 3 columns
-			$intColumns = 0;
-			$strId = '';
-			$strDescription = '';
+			// Check if it has id AND const_name AND description
+			$intRequiredColumns	= 0;
+			$strId				= NULL;
+			$strConstName		= NULL;
+			$strDescription		= NULL;
+			$strName			= NULL;
+			
 			while ($arrColumn = $objColumns->fetch_assoc())
 			{
 				if (strtolower($arrColumn['Field']) == "id") 
 				{
+					// Save the case sensitive id field
 					$strId = $arrColumn['Field'];
+					$intRequiredColumns++;
 				}
 				if (strtolower($arrColumn['Field']) == "description") 
 				{
+					// Save the case sensitive description field
 					$strDescription = $arrColumn['Field'];
+					$intRequiredColumns++;
 				}
-				$intColumns++;
+				if ($arrColumn['Field'] == "const_name")
+				{
+					// Save the case sensitive const_name field
+					$strConstName = $arrColumn['Field'];
+					$intRequiredColumns++;
+				}
+				if (strtolower($arrColumn['Field']) == "name")
+				{
+					// Save the case sensitive name field
+					$strName = $arrColumn['Field'];
+				}
 			}
 			
-			if ($intColumns != 3)
+			if ($intRequiredColumns != 3)
 			{
 				// This table does not have all three of the id, name and description columns
 				// Don't build constant declarations for it
 				continue;
 			}
 			
+			// If there was no acceptable "name" column, then use the description column
+			if ($strName === NULL)
+			{
+				$strName = $strDescription;
+			}
+			
 			// The table has all 3 columns, which means we should convert it to constant declarations
 			// Retrieve the values and create a constant group
-			$strQuery		= "SELECT $strId 'id', const_name 'const_name', $strDescription 'description' FROM $strTable WHERE const_name IS NOT NULL AND const_name != '' ORDER BY $strId ASC";
+			$strQuery		= "SELECT $strId 'id', const_name 'const_name', $strDescription 'description', $strName 'name' FROM $strTable WHERE const_name IS NOT NULL AND const_name != '' ORDER BY $strId ASC";
 
 			$objRecordSet	= $qryQuery->Execute($strQuery);
 			
@@ -377,7 +400,8 @@ class Flex_Rollout
 				
 				// Add the constant to the ConstantGroup
 				$arrConstantGroup[$arrRecord['id']] = array(	'Constant'		=> $arrRecord['const_name'],
-																'Description'	=> $arrRecord['description']
+																'Description'	=> $arrRecord['description'],
+																'Name'			=> $arrRecord['name']
 															);
 				
 				// Add the constant name to the list of constant names already used by this ConstantGroup
@@ -429,6 +453,7 @@ class Flex_Rollout
 				$strFileContents .= 
 "\$GLOBALS['*arrConstant']\t['$strConstantGroupName']\t[$mixValue]\t['Constant']\t= '{$arrConstant['Constant']}';
 \$GLOBALS['*arrConstant']\t['$strConstantGroupName']\t[$mixValue]\t['Description']\t= '{$arrConstant['Description']}';
+\$GLOBALS['*arrConstant']\t['$strConstantGroupName']\t[$mixValue]\t['Name']\t\t= '{$arrConstant['Name']}';
 ";
 			}
 		}
