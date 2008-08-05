@@ -70,7 +70,7 @@ if ($bolDumpTables === TRUE)
 {
 	// Yes, DROP all tables
 	CliEcho("Dropping all existing tables from Destination DB '$strDestinationDB'");
-	if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strDestinationDB WHERE Table_type IN ('BASE TABLE', 'VIEW')")))
+	if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strDestinationDB WHERE Table_type IN ('BASE TABLE', 'VIEW') ORDER BY Table_type ASC")))
 	{
 		// Error on ListTables
 		CliEcho("ERROR: \$qryListTables failed -- ".$qryListTables->Error());
@@ -83,8 +83,11 @@ if ($bolDumpTables === TRUE)
 		{
 			// Drop each table
 			CliEcho("\t + Dropping '{$arrRow[0]}'...");
+			
+			$strTableType	= ($arrRow[0] === 'BASE TABLE') ? 'TABLE' : 'VIEW';
+			
 			$qryQuery	= new Query();
-			if ($qryQuery->Execute("DROP TABLE IF EXISTS $strDestinationDB.{$arrRow[0]}") === FALSE)
+			if ($qryQuery->Execute("DROP $strTableType IF EXISTS $strDestinationDB.{$arrRow[0]}") === FALSE)
 			{
 				CliEcho("ERROR: Unable to drop existing table $strDestinationDB.{$arrRow[0]} -- ".$qryQuery->Error());
 				exit(5);
@@ -98,7 +101,7 @@ CliEcho("\n * Copying Tables...");
 // get tables from Source DB
 $arrTables		= Array();
 $qryListTables	= new Query();
-if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strSourceDB WHERE Table_type IN ('BASE TABLE', 'VIEW')")))
+if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strSourceDB WHERE Table_type IN ('BASE TABLE', 'VIEW') ORDER BY Table_type ASC")))
 {
 	// Error on ListTables
 	CliEcho("ERROR: \$qryListTables failed -- ".$qryListTables->Error());
@@ -108,16 +111,15 @@ else
 {
 	while ($arrRow = $mixResult->fetch_row())
 	{
-		$arrTables[]	= $arrRow[0];
+		$arrTables[$arrRow[0]]	= $arrRow[1];
 	}
 }
 
 // Copy specified Tables
-foreach($arrTables AS $strTable)
+foreach($arrTables as $strTable=>$strTableType)
 {
 	CliEcho(str_pad("\t + $strTable...", 35, ' ', STR_PAD_RIGHT), FALSE);
 	$strStatus	= '[   OK   ]';
-	
 	
 	if ($arrSpecifiedTables[$strTable])
 	{
@@ -130,7 +132,7 @@ foreach($arrTables AS $strTable)
 			$GLOBALS['fwkFramework']->StartWatch();
 			
 			// copy a table
-			if (!mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB))
+			if (!mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB, $strTableType))
 			{
 				$strStatus	= '[ FAILED ]';
 			}
@@ -144,7 +146,7 @@ foreach($arrTables AS $strTable)
 		$GLOBALS['fwkFramework']->StartWatch();
 		
 		// copy a table
-		if (!mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB))
+		if (!mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB, $strTableType))
 		{
 			$strStatus	= '[ FAILED ]';
 		}
@@ -168,8 +170,10 @@ exit;
 
 
 // COPY TABLE
-function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB)
+function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB, $strTableType = 'TABLE')
 {
+	$strTableType	= ($strTableType === 'BASE TABLE') ? 'TABLE' : $strTableType;
+	
 	if (defined('MYSQL_HOT_COPY_DEBUG') && MYSQL_HOT_COPY_DEBUG)
 	{
 		// Debug mode, so don't perform the copy
@@ -180,26 +184,55 @@ function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB)
 		$qryQuery	= new Query();
 		
 		// Drop Existing Table
-		if ($qryQuery->Execute("DROP TABLE IF EXISTS $strDestinationDB.$strTable") !== FALSE)
+		if ($qryQuery->Execute("DROP $strTableType IF EXISTS $strDestinationDB.$strTable") !== FALSE)
 		{
-			// Replace with new Table
-			if ($qryQuery->Execute("CREATE TABLE $strDestinationDB.$strTable LIKE $strSourceDB.$strTable") === FALSE)
+			if ($strTableType === 'TABLE')
 			{
-				CliEcho("ERROR: Unable to copy structure from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
-				exit(3);
-			}
-			else
-			{
-				// Copy data
-				if ($qryQuery->Execute("INSERT INTO $strDestinationDB.$strTable SELECT * FROM $strSourceDB.$strTable") === FALSE)
+				// Replace with new Table
+				if ($qryQuery->Execute("CREATE TABLE $strDestinationDB.$strTable LIKE $strSourceDB.$strTable") === FALSE)
 				{
-					CliEcho("ERROR: Unable to copy data from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
-					exit(4);
+					CliEcho("ERROR: Unable to copy structure from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
+					exit(3);
 				}
 				else
 				{
-					return TRUE;
+					// Copy data
+					if ($qryQuery->Execute("INSERT INTO $strDestinationDB.$strTable SELECT * FROM $strSourceDB.$strTable") === FALSE)
+					{
+						CliEcho("ERROR: Unable to copy data from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
+						exit(4);
+					}
+					else
+					{
+						return TRUE;
+					}
 				}
+			}
+			elseif ($strTableType === 'VIEW')
+			{
+				// Get View Details
+				if ($mixResult = $qryQuery->Execute("SELECT VIEW_DEFINITION FROM information_schema WHERE TABLE_NAME = '{$strTable}' AND TABLE_SCHEMA = '{$strSourceDB}'"))
+				{
+					$arrViewDefinition	= $mixResult->fetch_array(MYSQL_ASSOC);
+					$arrViewDefinition['VIEW_DEFINITION']	= str_replace("$strSourceDB.", "$strDestinationDB.", $arrViewDefinition['VIEW_DEFINITION']);
+					
+					// Replace with new View	
+					if ($qryQuery->Execute("CREATE VIEW $strDestinationDB.$strTable AS {$arrViewDefinition['VIEW_DEFINITION']}") === FALSE)
+					{
+						CliEcho("ERROR: Unable to copy VIEW from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
+						exit(3);
+					}
+				}
+				else
+				{
+					CliEcho("ERROR: Unable to find VIEW definition for $strDestinationDB.$strTable!");
+					exit(7);
+				}
+			}
+			else
+			{
+				CliEcho("ERROR: Table '$strTable' has an unsupported table type '$strTableType'");
+				exit(6);
 			}
 		}
 		else
