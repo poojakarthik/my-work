@@ -220,7 +220,7 @@ function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB, $strTableTyp
 					$strQuery	= "CREATE VIEW $strDestinationDB.$strTable AS {$arrViewDefinition['VIEW_DEFINITION']}";
 					if ($qryQuery->Execute($strQuery) === FALSE)
 					{
-						CliEcho("ERROR: Unable to copy VIEW from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
+						CliEcho("ERROR: Unable to copy VIEW from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error())."\n$strQuery";
 						exit(3);
 					}
 				}
