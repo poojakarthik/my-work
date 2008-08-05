@@ -65,6 +65,7 @@ switch ($argv[1])
 
 
 // Are we dumping all existing tables on the destination DB?
+$qryListTables	= new Query();
 if ($bolDumpTables === TRUE)
 {
 	// Yes, DROP all tables
