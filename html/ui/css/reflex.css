@@ -87,6 +87,8 @@ table.reflex a {
 
 table.reflex td.title {
 	width: 20%;
+	vertical-align: top;
+	font-weight: bold;
 }
 
 table.reflex td.TICKETING-STATUS-UNASSIGNED {
