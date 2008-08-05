@@ -319,6 +319,10 @@ function dragStart(event, id) {
 
   // Finding page width...
   var divPageBody = document.getElementById("PageBody");
+  if (divPageBody == undefined)
+  {
+  	divPageBody = document.getElementById("content");
+  }
   var intPageWidth = divPageBody.offsetWidth + divPageBody.offsetLeft;
   intPageWidth = Math.max(document.body.offsetWidth, intPageWidth);
   

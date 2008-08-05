@@ -205,11 +205,6 @@ div#PopupPageBody
 	padding:			3px;
 }
 
-div#PopupHolder
-{
-	/*z-index:	50; */ 
-}
-
 div#ImportReport
 {
 	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;

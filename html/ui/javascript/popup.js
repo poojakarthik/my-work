@@ -217,6 +217,10 @@ function VixenPopupClass()
 				// Find the width of the actual page by using the PageBody div, and adding its own width
 				// to the offset from the left side of the page (needs to include margins?)
 				var divPageBody = $ID("PageBody");
+				if (divPageBody == undefined)
+				{
+					divPageBody = $ID("content");
+				}
 				var intPageWidth = divPageBody.offsetWidth + divPageBody.offsetLeft;
 				
 				elmOverlay.style.width	= Math.max(document.body.offsetWidth, intPageWidth) + "px";
