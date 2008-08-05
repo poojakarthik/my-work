@@ -169,6 +169,8 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$detailsToRender = array();
 
+		$detailsToRender['services'] = array();
+
 		// Default the action if the selected action is not permitted
 		if (array_search($action, $permittedActions) === FALSE)
 		{
@@ -253,6 +255,9 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'statusId';
 					//$editableValues[] = 'customerGroupId'; // Customer group should come from account
 					$editableValues[] = 'categoryId';
+					$editableValues[] = 'serviceId';
+
+					$ticketServices = $ticket->getServiceIds();
 
 					if (array_key_exists('save', $_REQUEST))
 					{
@@ -260,7 +265,11 @@ class Application_Handler_Ticketing extends Application_Handler
 						$validatedValues = array();
 						foreach ($editableValues as $editableValue)
 						{
-							$value = array_key_exists($editableValue, $_REQUEST) ? trim($_REQUEST[$editableValue]) : NULL;
+							$value = array_key_exists($editableValue, $_REQUEST) ? $_REQUEST[$editableValue] : NULL;
+							if ($value !== NULL && !is_array($value))
+							{
+								$value = trim($value);
+							}
 							switch ($editableValue)
 							{
 								case 'ownerId':
@@ -365,6 +374,10 @@ class Application_Handler_Ticketing extends Application_Handler
 										$ticket->categoryId = $value->id;
 									}
 									break;
+
+								case 'serviceId':
+									$ticketServices = is_array($value) ? $value : array();
+									break;
 							}
 						}
 
@@ -372,17 +385,33 @@ class Application_Handler_Ticketing extends Application_Handler
 						{
 							$detailsToRender['error'] = 'Please complete all mandatory fields.';
 							$detailsToRender['saved'] = FALSE;
+							if ($ticket)
+							{
+								$account = $ticket->getAccount();
+								if ($account)
+								{
+									$detailsToRender['services'] = $account->listServices();
+								}
+							}
 						}
 						else
 						{
 							$ticket->save();
+							$ticket->setServices($ticketServices);
 							$detailsToRender['saved'] = TRUE;
 							$action = 'save';
 						}
 					}
 					else
 					{
-
+						if ($ticket)
+						{
+							$account = $ticket->getAccount();
+							if ($account)
+							{
+								$detailsToRender['services'] = $account->listServices();
+							}
+						}
 						$detailsToRender['saved'] = FALSE;
 					}
 

@@ -19,6 +19,7 @@ class Ticketing_Ticket
 	protected $categoryId = NULL;
 	protected $creationDatetime = NULL;
 	protected $modifiedDatetime = NULL;
+	protected $arrServices = NULL;
 
 	protected $_saved = FALSE;
 
@@ -356,6 +357,56 @@ class Ticketing_Ticket
 	public function getStatus()
 	{
 		return Ticketing_Status::getForId($this->statusId);
+	}
+
+	public function getServices($forceReset=FALSE)
+	{
+		if (!$this->id)
+		{
+			$this->arrServices = array();
+		}
+		else if ($forceReset || $this->arrServices === NULL)
+		{
+			$arrServices = Ticketing_Ticket_Service::listForTicket($this);
+			$this->arrServices = array();
+			foreach($arrServices as $objService)
+			{
+				$this->arrServices[$objService->serviceId] = $objService;
+			}
+		}
+		return $this->arrServices;
+	}
+
+	public function getServiceIds()
+	{
+		return array_keys($this->getServices());
+	}
+
+	public function setServices($arrServiceIds)
+	{
+		if (!$this->id)
+		{
+			throw new Exception('Internal System Error :: Cannot set services for a ticket before the ticket has been saved.');
+		}
+		$arrServicesToKeep = array();
+		$this->getServices();
+		foreach ($arrServiceIds as $serviceId)
+		{
+			if (!array_key_exists($serviceId, $this->arrServices))
+			{
+				$arrServiceToKeep[$serviceId] = Ticketing_Ticket_Service::createForTicket($this, $serviceId);
+			}
+			else
+			{
+				$arrServiceToKeep[$serviceId] = $this->arrServices[$serviceId];
+				unset($this->arrServices[$serviceId]);
+			}
+		}
+		foreach($this->arrServices as $objService)
+		{
+			$objService->delete();
+		}
+		$this->arrServices = $arrServiceToKeep;
 	}
 
 	public function isAssigned()

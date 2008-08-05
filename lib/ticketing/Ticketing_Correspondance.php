@@ -24,6 +24,8 @@ class Ticketing_Correspondance
 	private $deliveryStatusId = NULL;
 	private $customerGroupEmailId = NULL;
 	private $customerGroupEmail = NULL;
+	private $deliveryDatetime = NULL;
+	private $createdDetetime = NULL;
 
 	private $contact = NULL;
 
@@ -33,10 +35,24 @@ class Ticketing_Correspondance
 	{
 		$arrArgs = func_get_args();
 		// Ticket message number - Existing message!
-		if (count($arrArgs) == 1 && is_int($arrArgs[0]))
+		if (func_num_args() == 1 && is_int($arrArgs[0]))
 		{
 			$this->loadForCorrespondanceId($arrArgs[0]);
 		}
+		else if (func_num_args() >= 1 && is_array($arrArgs[0]))
+		{
+			$this->init($arrArgs[0]);
+		}
+	}
+
+	private function init($arrProperties)
+	{
+		foreach($arrProperties as $name => $value)
+		{
+			$this->{$name} = $value;
+		}
+		$this->_saved = TRUE;
+		
 	}
 
 	/**
@@ -229,6 +245,16 @@ class Ticketing_Correspondance
 		return $this->contact;
 	}
 
+	public function getSource()
+	{
+		return Ticketing_Correspondance_Source::getForId($this->sourceId);
+	}
+
+	public function getDeliveryStatus()
+	{
+		return Ticketing_Correspondance_Delivery_Status::getForId($this->deliveryStatusId);
+	}
+
 	public function getCustomerGroupEmail()
 	{
 		if ($this->customerGroupEmail !== NULL)
@@ -299,9 +325,9 @@ class Ticketing_Correspondance
 		return $arrValues;
 	}
 
-	public function getForTicket(Ticketing_Ticket $ticket)
+	public static function getForTicket(Ticketing_Ticket $ticket)
 	{
-		$arrColumns = $this->getColumns();
+		$arrColumns = self::getColumns();
 
 		$selMatches = new StatementSelect('ticketing_correspondance', $arrColumns, 'ticket_id = <TicketId>');
 		$arrWhere = array('TicketId' => $ticket->id);
@@ -315,7 +341,7 @@ class Ticketing_Correspondance
 		{
 			while($details = $selMatches->Fetch())
 			{
-				$arrInstances[] = new Ticketing_Correspondance($selMatches->Fetch());
+				$arrInstances[] = new Ticketing_Correspondance($details);
 			}
 		}
 		return $arrInstances;

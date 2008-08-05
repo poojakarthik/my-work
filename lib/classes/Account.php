@@ -2,42 +2,42 @@
 
 class Account
 {
-		private $id = NULL;
-		private $businessName = NULL;
-		private $tradingName = NULL;
-		private $abn = NULL;
-		private $acn = NULL;
-		private $address1 = NULL;
-		private $address2 = NULL;
-		private $suburb = NULL;
-		private $postcode = NULL;
-		private $state = NULL;
-		private $country = NULL;
-		private $billingType = NULL;
-		private $primaryContact = NULL;
-		private $customerGroup = NULL;
-		private $creditCard = NULL;
-		private $directDebit = NULL;
-		private $accountGroup = NULL;
-		private $lastBilled = NULL;
-		private $billingDate = NULL;
-		private $billingFreq = NULL;
-		private $billingFreqType = NULL;
-		private $billingMethod = NULL;
-		private $paymentTerms = NULL;
-		private $createdBy = NULL;
-		private $createdOn = NULL;
-		private $disableDDR = NULL;
-		private $disableLatePayment = NULL;
-		private $disableLateNotices = NULL;
-		private $latePaymentAmnesty = NULL;
-		private $sample = NULL;
-		private $archived = NULL;
-		private $creditControlStatus = NULL;
-		private $lastAutomaticInvoiceAction = NULL;
-		private $lastAutomaticInvoiceActionDatetime = NULL;
-		private $automaticBarringStatus = NULL;
-		private $automaticBarringDatetime = NULL;
+	private $id = NULL;
+	private $businessName = NULL;
+	private $tradingName = NULL;
+	private $abn = NULL;
+	private $acn = NULL;
+	private $address1 = NULL;
+	private $address2 = NULL;
+	private $suburb = NULL;
+	private $postcode = NULL;
+	private $state = NULL;
+	private $country = NULL;
+	private $billingType = NULL;
+	private $primaryContact = NULL;
+	private $customerGroup = NULL;
+	private $creditCard = NULL;
+	private $directDebit = NULL;
+	private $accountGroup = NULL;
+	private $lastBilled = NULL;
+	private $billingDate = NULL;
+	private $billingFreq = NULL;
+	private $billingFreqType = NULL;
+	private $billingMethod = NULL;
+	private $paymentTerms = NULL;
+	private $createdBy = NULL;
+	private $createdOn = NULL;
+	private $disableDDR = NULL;
+	private $disableLatePayment = NULL;
+	private $disableLateNotices = NULL;
+	private $latePaymentAmnesty = NULL;
+	private $sample = NULL;
+	private $archived = NULL;
+	private $creditControlStatus = NULL;
+	private $lastAutomaticInvoiceAction = NULL;
+	private $lastAutomaticInvoiceActionDatetime = NULL;
+	private $automaticBarringStatus = NULL;
+	private $automaticBarringDatetime = NULL;
 
 	protected static $cache = array();
 
@@ -52,9 +52,9 @@ class Account
 	// This is a dirty hack. It returns an array of array('id'=>x, 'fnn'=>x)
 	public function listServices()
 	{
-		$selServices = new StatementSelect('account_services', array('id' => 'id', 'fnn' => 'fnn'), 'account_id = <ACCOUNT_ID>');
+		$selServices = new StatementSelect('account_services', array('service_id' => 'service_id', 'fnn' => 'fnn'), 'account_id = <ACCOUNT_ID>');
 		$arrWhere = array('ACCOUNT_ID' => $this->id);
-		if (($outcome = $selServices->Execute()) === FALSE)
+		if (($outcome = $selServices->Execute($arrWhere)) === FALSE)
 		{
 			throw new Exception('Failed to load services for account: ' . $selServices->Error());
 		}

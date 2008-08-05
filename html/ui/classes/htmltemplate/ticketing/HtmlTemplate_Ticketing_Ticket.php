@@ -149,6 +149,19 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						<td><?=$ticket->getCategory()->name?></td>
 					</tr>
 					<tr class="alt">
+						<td class="title">Services: </td>
+						<td><?php
+							$ticketServices = $ticket->getServices();
+							$output = array();
+							foreach ($ticketServices as $service)
+							{
+								$output[] = htmlspecialchars($service->getFNN());
+							}
+							$output = implode('<br/>', $output);
+							echo $output ? $output : '[No related services]';
+						?></td>
+					</tr>
+					<tr class="alt">
 						<td class="title">Created: </td>
 						<td><?=$ticket->creationDatetime?></td>
 					</tr>
@@ -161,6 +174,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		</form>
 
 		<?php
+
+		$this->render_correspondances($ticket);
 	}
 
 	private function render_edit($ticket=FALSE, $requestedAction="Edit")
@@ -241,9 +256,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			{
 				var accountId = $ID('accountId');
 				var ticketId = $ID('ticketId');
+				var serviceId = $ID('serviceId');
 				if (accountId.value.length != 10) // WIP: HACK
 				{
-					accountIsInvalid();
+					accountId.className = 'invalid';
 					return;
 				}
 				if (accountId.lastAjax == accountId.value)
@@ -260,19 +276,20 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				var accountId = $ID('accountId');
 				if (!response['isValid'])
 				{
-					accountIsInvalid();
+					accountId.className = 'invalid';
 				}
 				else
 				{
 					accountId.className = 'valid';
 				}
 				populateContactList(response['contacts']);
+				populateServiceList(response['services']);
 			}
 
 			function populateContactList(contacts)
 			{
-				emptyContactList();
 				var contactId = $ID('contactId');
+				emptyElement(contactId);
 				for (var i = 0, l = contacts.length; i < l; i++)
 				{
 					var id = contacts[i]['id'];
@@ -284,19 +301,27 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				}
 			}
 
-			function emptyContactList()
+			function populateServiceList(services)
 			{
-				var contactId = $ID('contactId');
-				for (var i = contactId.childNodes.length; i >= 1; i--)
+				var serviceId = $ID('serviceId');
+				emptyElement(serviceId);
+				for (var i = 0, l = services.length; i < l; i++)
 				{
-					contactId.removeChild(contactId.childNodes[i-1]);
+					var id = services[i]['service_id'];
+					var name = services[i]['fnn'];
+					var option = document.createElement('option');
+					option.value = id;
+					option.appendChild(document.createTextNode(name));
+					serviceId.appendChild(option);
 				}
 			}
 
-			function accountIsInvalid()
+			function emptyElement(el)
 			{
-				var accountId = $ID('accountId');
-				accountId.className = 'invalid';
+				for (var i = el.length - 1; i >= 0; i--)
+				{
+					el.removeChild(el.childNodes[i]);
+				}
 			}
 
 			function onTicketingLoad()
@@ -526,6 +551,39 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						</td>
 					</tr>
 					<tr class="alt">
+						<td class="title">Services: </td>
+						<td>
+							<?php
+							$invalid = array_key_exists('serviceId', $invalidValues) ? 'invalid' : '';
+							if (array_search('serviceId', $editableValues) !== FALSE)
+							{
+								echo "<select id=\"serviceId\" multiple=\"multiple\" name=\"serviceId[]\" size=\"5\" class=\"$invalid\">";
+								$services = $this->mxdDataToRender['services'];
+								$ticketServices = $ticket->getServices();
+								foreach ($services as $service)
+								{
+									$serviceId = $service['service_id'];
+									$fnn = $service['fnn'];
+									$selected = array_key_exists($serviceId, $ticketServices) ? ' selected="selected"' : '';
+									echo "<option value=\"$serviceId\"$selected\">" . htmlspecialchars($fnn) . "</option>";
+								}
+								echo "</select>";
+							}
+							else
+							{
+								$ticketServices = $ticket->getServices();
+								$output = array();
+								foreach ($ticketServices as $serivce)
+								{
+									$output[] = htmlspecialchars($service->getFNN());
+								}
+								$output = implode('<br/>', $output);
+								echo $output ? $output : '[No related services]';
+							}
+							?>
+						</td>
+					</tr>
+					<tr class="alt">
 						<td class="title">Created: </td>
 						<td><?=$ticket->creationDatetime?></td>
 					</tr>
@@ -540,6 +598,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 
 		<?php
+
+		$this->render_correspondances($ticket);
 	}
 
 	private function no_ticket()
@@ -570,6 +630,84 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		<tr class="alt">
 			<td colspan="2" class="title">No ticket selected.</td>
 		</tr>
+	</tbody>
+</table>
+
+		<?php
+	}
+
+
+	private function render_correspondances($ticket)
+	{
+		if (!$ticket || !$ticket->isSaved())
+		{
+			return;
+		}
+
+		$correspondances = $ticket->getCorrespondances();
+		$noCorrespondances = count($correspondances) == 0;
+
+		?>
+<br/>
+<table class="reflex">
+	<caption>
+		<div id="caption_bar" name="caption_bar">
+		<div id="caption_title" name="caption_title">
+			Correspondances
+		</div>
+		<div id="caption_options" name="caption_options">
+		</div>
+		</div>
+	</caption>
+	<thead class="header">
+		<tr>
+			<th>Subject</th>
+			<th>Contact</th>
+			<th>Source</th>
+			<th>Delivery Status</th>
+			<th>Delivery Date/Time</th>
+			<th>Creation Date/Time</th>
+		</tr>
+	</thead>
+	<tfoot class="footer">
+		<tr>
+			<th colspan="6">&nbsp;</th>
+		</tr>
+	</tfoot>
+	<tbody>
+<?php
+			if ($noCorrespondances)
+			{
+?>
+		<tr class="alt">
+			<td colspan="6">There are no correspondances for this ticket.</td>
+		</tr>
+<?php
+			}
+			else
+			{
+				$alt = FALSE;
+				foreach($correspondances as $correspondance)
+				{
+					$altClass = $alt ? ' class="alt"' : '';
+					$alt = !$alt;
+					$contact = $correspondance->getContact();
+					$contactName = $contact ? $contact->getName() : '[No contact]';
+					$sourceName = $correspondance->getSource()->name;
+					$deliveryStatusName = $correspondance->getDeliveryStatus()->name;
+?>
+		<tr<?=$altClass?>>
+			<td><?=$correspondance->summary?></td>
+			<td><?=$contactName?></td>
+			<td><?=$sourceName?></td>
+			<td><?=$deliveryStatusName?></td>
+			<td><?=$correspondance->deliveryDatetime?></td>
+			<td><?=$correspondance->creationDatetime?></td>
+		</tr>
+<?php
+				}
+			}
+?>
 	</tbody>
 </table>
 

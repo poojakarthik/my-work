@@ -25,6 +25,8 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		}
 
 		// If an account exists, we need to return a list of services and contacts for it
+		$response['services'] = $account ? $account->listServices() : array();
+
 		return $response;
 	}
 }
