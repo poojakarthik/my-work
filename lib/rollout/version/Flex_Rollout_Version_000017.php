@@ -297,7 +297,7 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 									",
 
 			"ticketing_correspondance_delivery_status" => "INSERT INTO ticketing_correspondance_delivery_status (id, name, description, const_name) VALUES
-									(1, 'Received', 'Recieved', 'TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED'),
+									(1, 'Received', 'Received', 'TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED'),
 									(2, 'Not Sent',	'Not Sent', 'TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT'),
 									(3, 'Sent', 	'Sent', 	'TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT')
 									",
