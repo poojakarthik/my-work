@@ -165,11 +165,6 @@ input[type='button']:hover
 	cursor:	pointer;
 }
 
-img#SplashImage
-{
-	margin-top:	70px;
-}
-
 span[onclick]:hover
 {
 	cursor			: pointer;

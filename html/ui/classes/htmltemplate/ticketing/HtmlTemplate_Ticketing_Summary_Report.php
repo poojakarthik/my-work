@@ -16,23 +16,24 @@ class HtmlTemplate_Ticketing_Summary_Report extends FlexHtmlTemplate
 	{
 		// Build list of Ticket Owners
 		$strOwnerOptions = "";
-		foreach ($this->mxdDataToRender['Owners'] as $mixOwnerId=>$arrOwner)
+		foreach ($this->mxdDataToRender['Owners'] as $arrOwner)
 		{
-			$strOwnerOptions .= "<option value='$mixOwnerId'>". htmlspecialchars($arrOwner['Name'], ENT_QUOTES) ."</option>\n";
+			$strOwnerOptions .= "<option value='{$arrOwner['Id']}'>". htmlspecialchars($arrOwner['Name'], ENT_QUOTES) ."</option>\n";
 		}
 		
 		// Build list of Ticket Categories
 		$strCategoryOptions = "";
-		foreach ($this->mxdDataToRender['Categories'] as $mixCategoryId=>$arrCategory)
+		foreach ($this->mxdDataToRender['Categories'] as $arrCategory)
 		{
-			$strCategoryOptions .= "<option value='$mixCategoryId'>". htmlspecialchars($arrCategory['Name'], ENT_QUOTES) ."</option>\n";
+			$strCategoryOptions .= "<option value='{$arrCategory['Id']}'>". htmlspecialchars($arrCategory['Name'], ENT_QUOTES) ."</option>\n";
 		}
 		
 		// Build list of Ticket Statuses
 		$strStatusOptions = "";
-		foreach ($this->mxdDataToRender['Statuses'] as $mixStatusId=>$arrStatus)
+		foreach ($this->mxdDataToRender['Statuses'] as $arrStatus)
 		{
-			$strStatusOptions .= "<option value='$mixStatusId'>". htmlspecialchars($arrStatus['Name'], ENT_QUOTES) ."</option>\n";
+			$strStatusType = ($arrStatus['IsStatusType']) ? "IsStatusType='true'" : "";
+			$strStatusOptions .= "<option value='{$arrStatus['Id']}' $strStatusType>". htmlspecialchars($arrStatus['Name'], ENT_QUOTES) ."</option>\n";
 		}
 		
 		$strEarliestTime	= $this->mxdDataToRender['TimeRange']['Earliest'];
@@ -60,19 +61,19 @@ echo "
 			<tr class='alt'>
 				<td class='title'>Owners: </td>
 				<td>
-					<select id='Owners' name='Owners' size='8' multiple='multiple'>$strOwnerOptions</select>
+					<select id='Owners' name='Owners' size='8' multiple='multiple' class='Required'>$strOwnerOptions</select>
 				</td>
 			</tr>
 			<tr class='alt'>
 				<td class='title'>Categories: </td>
 				<td>
-					<select id='Categories' name='Categories' size='8' multiple='multiple' >$strCategoryOptions</select>
+					<select id='Categories' name='Categories' size='8' multiple='multiple' class='Required'>$strCategoryOptions</select>
 				</td>
 			</tr>
 			<tr class='alt'>
 				<td class='title'>Status: </td>
 				<td>
-					<select id='Statuses' name='Statuses' size='8' multiple='multiple' >$strStatusOptions</select>
+					<select id='Statuses' name='Statuses' size='8' multiple='multiple' class='Required'>$strStatusOptions</select>
 				</td>
 			</tr>
 			<tr class='alt'>

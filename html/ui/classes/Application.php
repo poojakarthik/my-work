@@ -104,19 +104,49 @@ class Application
 		
 		// Append default options to the Context Menu
 		ContextMenu()->Employee_Console();
+		ContextMenu()->Customer->View_Recent_Customers();
+		ContextMenu()->Customer->Find_Customer();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
-		//	ContextMenu()->Add_Customer();
+			ContextMenu()->Customer->Add_Customer();
 		}
-		//ContextMenu()->Find_Customer();
-		//ContextMenu()->View_Recent_Customers();
-		//ContextMenu()->Available_Plans();
+		ContextMenu()->Available_Plans();
+		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
+		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) !== TICKETING_USER_PERMISSION_NONE)
+		{
+			ContextMenu()->Ticketing->TicketingConsole();
+			ContextMenu()->Ticketing->ViewUserTickets();
+			ContextMenu()->Ticketing->AddTicket();
+		}
+		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
-			ContextMenu()->Admin_Console();
+			//ContextMenu()->Admin_Console();
+			ContextMenu()->Admin->AdvancedAccountSearch();
+			ContextMenu()->Admin->AdvancedContactSearch();
+			ContextMenu()->Admin->AdvancedServiceSearch();
+			
+			ContextMenu()->Admin->Adjustments->ManageAdjustments();
+			ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
+			ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
+			
+			ContextMenu()->Admin->PaymentDownload();
+			ContextMenu()->Admin->MoveDelinquentCDRs();
+			ContextMenu()->Admin->DataReports();
+			
+			ContextMenu()->Admin->ManageEmployees();
+			ContextMenu()->Admin->ManageInvoiceRunEvents();
+			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->View_All_Constants();
+				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
+			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
+			}
 		}
-
-		//ContextMenu()->Logout();
 		
 		
 		// Render Page

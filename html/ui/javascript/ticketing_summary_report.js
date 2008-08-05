@@ -105,6 +105,9 @@ function FlexTicketingSummaryReportClass()
 		var arrOwners		= new Array();
 		var arrCategories	= new Array();
 		var arrStatuses		= new Array();
+		var arrStatusTypes	= new Array();
+		var mixOwner		= null;
+		var mixCategory		= null;
 		
 		with (this.objInputs)
 		{
@@ -113,7 +116,15 @@ function FlexTicketingSummaryReportClass()
 			{
 				if (Owners.options[i].selected == true)
 				{
-					arrOwners.push(parseInt(Owners.options[i].value));
+					if (Owners.options[i].value == "all")
+					{
+						mixOwner = "all";
+					}
+					else
+					{
+						mixOwner = parseInt(Owners.options[i].value);
+					}
+					arrOwners.push(mixOwner);
 				}
 			}
 			
@@ -122,27 +133,45 @@ function FlexTicketingSummaryReportClass()
 			{
 				if (Categories.options[i].selected == true)
 				{
-					arrCategories.push(parseInt(Categories.options[i].value));
+					if (Categories.options[i].value == "all")
+					{
+						mixCategory = "all";
+					}
+					else
+					{
+						mixCategory = parseInt(Categories.options[i].value);
+					}
+					arrCategories.push(mixCategory);
 				}
 			}
 			
-			// Create a list of the selected statuses
+			// Create a list of the selected Statuses and StatusTypes
 			for (i in Statuses.options)
 			{
 				if (Statuses.options[i].selected == true)
 				{
-					arrStatuses.push(parseInt(Statuses.options[i].value));
+					if (Statuses.options[i].hasAttribute("IsStatusType"))
+					{
+						arrStatusTypes.push(parseInt(Statuses.options[i].value));
+					}
+					else
+					{
+						arrStatuses.push(parseInt(Statuses.options[i].value));
+					}
 				}
 			}
+			
+
 		}
 		
 		
 		// Define return handlers
 		funcSuccess = function(response)
 		{
+			Vixen.Popup.ClosePageLoadingSplash();
 			if (typeof(response) == "string")
 			{
-				$Alert(response);
+				alert("<pre>" + response + "</pre>");
 			}
 			else
 			{
@@ -153,21 +182,45 @@ function FlexTicketingSummaryReportClass()
 		remoteClass		= 'Ticketing';
 		remoteMethod	= 'buildSummaryReport';
 		jsonFunc		= jQuery.json.jsonFunction(funcSuccess, null, remoteClass, remoteMethod);
-		jsonFunc(arrOwners, arrCategories, arrStatuses, this.objInputs.EarliestTime.value, this.objInputs.LatestTime.value, this.objInputs.RenderMode.value);
+		Vixen.Popup.ShowPageLoadingSplash("Generating Report");
+		jsonFunc(arrOwners, arrCategories, arrStatusTypes, arrStatuses, this.objInputs.EarliestTime.value, this.objInputs.LatestTime.value, this.objInputs.RenderMode.value);
 
 	}
 	
 	// Validates the form and alerts the user to anything which is invalid
 	this.ValidateForm = function()
 	{
-		//if (!this.objInputs.StartDate.Validate("ShortDate"))
-		if (!$Validate("DateTime", this.objInputs.EarliestTime.value))
+		// Check that at least one owner has been selected
+		if (this.objInputs.Owners.selectedIndex == -1)
+		{
+			// No owner has been selected
+			$Alert("ERROR: Please specify at least one owner");
+			return false;
+		}
+	
+		// Check that at least one Category has been selected
+		if (this.objInputs.Categories.selectedIndex == -1)
+		{
+			// No category has been selected
+			$Alert("ERROR: Please specify at least one category");
+			return false;
+		}
+		
+		// Check that at least one Status has been selected
+		if (this.objInputs.Statuses.selectedIndex == -1)
+		{
+			// No status has been selected
+			$Alert("ERROR: Please specify at least one status");
+			return false;
+		}
+		
+		if (!$Validate("DateTime", this.objInputs.EarliestTime.value, true))
 		{
 			// The date is invalid
 			$Alert("ERROR: Earliest Time is invalid");
 			return false;
 		}
-		if (!$Validate("DateTime", this.objInputs.LatestTime.value))
+		if (!$Validate("DateTime", this.objInputs.LatestTime.value, true))
 		{
 			// The date is invalid
 			$Alert("ERROR: Latest Time is invalid");

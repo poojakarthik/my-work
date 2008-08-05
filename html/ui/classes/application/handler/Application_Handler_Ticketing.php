@@ -523,37 +523,45 @@ class Application_Handler_Ticketing extends Application_Handler
 	{
 		// Build Owner combo box data
 		$arrOwners = array();
-		$arrOwners['all'] = array(	"Id"		=> "all",
-									"Name"		=> "all"
-									);
+		$arrOwners[] = array(	"Id"	=> "all",
+								"Name"	=> "all"
+							);
 		
 		$arrTicketUsers = Ticketing_User::listAll();
 		foreach ($arrTicketUsers as $objUser)
 		{
-			$arrOwners[$objUser->id] = array(	"Id"		=> $objUser->id,
-												"Name"		=> $objUser->getName()
-											); 
+			$arrOwners[] = array(	"Id"	=> $objUser->id,
+									"Name"	=> $objUser->getName()
+								); 
 		}
 		
 		// Build Category combo box data
 		$arrCategories = array();
-		$arrCategories['all'] = array(	"Id"		=> "all",
-										"Name"		=> "all"
-										);
+		$arrCategories[] = array(	"Id"		=> "all",
+									"Name"		=> "all"
+									);
 		foreach ($GLOBALS['*arrConstant']['ticketing_category'] as $intCategory=>$arrCategory)
 		{
-			$arrCategories[$intCategory] = array(	"Id"		=> $intCategory,
-													"Name"		=> $arrCategory['Description']
-												);
+			$arrCategories[] = array(	"Id"		=> $intCategory,
+										"Name"		=> $arrCategory['Description']
+									);
 		}
 		
 		// Build Status combo box data
 		$arrStatuses = array();
+		foreach ($GLOBALS['*arrConstant']['ticketing_status_type'] as $intStatusType=>$arrStatusType)
+		{
+			$arrStatuses[] = array(	"Id"			=> $intStatusType,
+									"Name"			=> $arrStatusType['Description'],
+									"IsStatusType"	=> TRUE
+									);
+		}
 		foreach ($GLOBALS['*arrConstant']['ticketing_status'] as $intStatus=>$arrStatus)
 		{
-			$arrStatuses[$intStatus] = array(	"Id"		=> $intStatus,
-												"Name"		=> $arrStatus['Description']
-												);
+			$arrStatuses[] = array(	"Id"			=> $intStatus,
+									"Name"			=> $arrStatus['Description'],
+									"IsStatusType"	=> FALSE
+									);
 		}
 		
 		$arrTimeRange = array(	"Earliest"	=> "00:00:00 01/01/2008",

@@ -686,7 +686,7 @@ function VixenPopupClass()
 			strImage = "img/template/loading.gif";
 		}
 		
-		strContent =	"<div align='center' style='height:200px'><img id='SplashImage' src='" + strImage + "'></img>" +
+		strContent =	"<div align='center' style='height:200px'><img id='SplashImage' style='margin-top:70px' src='" + strImage + "'></img>" +
 						"<p><span id='VixenSplashDots'></span></p>" + 
 						"<br /><p><h2>" + strMessage + "</h2></p></div>\n";
 		
