@@ -33,6 +33,7 @@ if ($argc > 2)
 	}
 }
 
+$bolDumpTables	= FALSE;
 switch ($argv[1])
 {
 	case '-i':
@@ -44,7 +45,11 @@ switch ($argv[1])
 		}
 		break;
 	
-	case '-e':
+	case '-de':
+	case '-ed':
+	case '-d':
+		$bolDumpTables	= TRUE;
+	case '-e':		
 		$intMode	= MODE_EXCLUDE;
 		CliEcho("Tables to be skipped:");
 		foreach ($arrSpecifiedTables as $strTable=>$bolSkip)
@@ -59,14 +64,41 @@ switch ($argv[1])
 }
 
 
-
+// Are we dumping all existing tables on the destination DB?
+if ($bolDumpTables === TRUE)
+{
+	// Yes, DROP all tables
+	CliEcho("Dropping all existing tables from Destination DB '$strDestinationDB'");
+	if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strDestinationDB WHERE Table_type IN ('BASE TABLE', 'VIEW')")))
+	{
+		// Error on ListTables
+		CliEcho("ERROR: \$qryListTables failed -- ".$qryListTables->Error());
+		exit(2);
+	}
+	else
+	{
+		// Get list of tables
+		while ($arrRow = $mixResult->fetch_row())
+		{
+			CliEcho("\t + Dropping '{$arrRow[0]}'...");
+			/*// Drop each table
+			if ($qryQuery->Execute("DROP TABLE IF EXISTS $strDestinationDB.{$arrRow[0]}") === FALSE)
+			{
+				CliEcho("ERROR: Unable to drop existing table $strDestinationDB.{$arrRow[0]} -- ".$qryQuery->Error());
+				exit(5);
+			}*/
+		}
+	}
+}
 
 CliEcho("\n * Copying Tables...");
+
+die;
 
 // get tables from Source DB
 $arrTables		= Array();
 $qryListTables	= new Query();
-if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strSourceDB WHERE Table_type = 'BASE TABLE'")))
+if (!($mixResult = $qryListTables->Execute("SHOW FULL TABLES FROM $strSourceDB WHERE Table_type IN ('BASE TABLE', 'VIEW')")))
 {
 	// Error on ListTables
 	CliEcho("ERROR: \$qryListTables failed -- ".$qryListTables->Error());
@@ -148,7 +180,7 @@ function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB)
 		$qryQuery	= new Query();
 		
 		// Drop Existing Table
-		if ($qryQuery->Execute("DROP TABLE IF EXISTS $strDestinationDB.$strTable"))
+		if ($qryQuery->Execute("DROP TABLE IF EXISTS $strDestinationDB.$strTable") !== FALSE)
 		{
 			// Replace with new Table
 			if ($qryQuery->Execute("CREATE TABLE $strDestinationDB.$strTable LIKE $strSourceDB.$strTable") === FALSE)
