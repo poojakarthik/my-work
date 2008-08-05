@@ -6,9 +6,16 @@ body {
 	padding: 0px;
 }
 
-a {
-	color: #ffde05;
+a,
+a:link,
+a:visited {
+	color: #FF4200;
+	font-weight: bold;
 	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
 }
 
 h1#page-title{
@@ -41,10 +48,12 @@ div#person {
 	height: 25px;
 }
 
+div#person a,
 div#person a:link,
 div#person a:visited {
 	color: #ffde05;
 	text-decoration: none;
+	font-weight: normal;
 }
 
 div#person a:hover {

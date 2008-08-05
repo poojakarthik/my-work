@@ -66,6 +66,13 @@ table.reflex thead tr th, table.reflex tfoot tr th {
 	padding-bottom: .25em;
 }
 
+table.reflex tfoot a,
+table.reflex tfoot a:visited,
+table.reflex tfoot a:link {
+		color: #ffde05 !important;
+}
+
+
 table.reflex td, table.reflex th {
 	padding: .25em .5em;
 }
@@ -80,9 +87,15 @@ table.reflex tr.alt td {
 	color: #333
 }
 
-table.reflex a {
-	color: #F88017;
-	font-weight: bold;
+a.button {
+	cursor: default;
+	border: 1px solid #111;
+	color: #111;
+	background-color: #eee;
+	margin: .25em;
+	padding-left: .25em;
+	padding-right: .25em;
+	font-weight: normal;
 }
 
 table.reflex td.title {
@@ -97,14 +110,6 @@ table.reflex td.TICKETING-STATUS-UNASSIGNED {
 
 table.reflex td.TICKETING-STATUS-ASSIGNED {
 	color: #ff0000;
-}
-
-a.reflex {
-	color: #ffde05;
-}
-
-a.reflex-new {
-	color: #ffde05;
 }
 
 table.reflex tr td.ticketing-status-in-progress, table.reflex tr td.ticketing-status-assigned, option.ticketing-status-assigned, option.ticketing-status-in-progress, option.low-priority {
@@ -123,6 +128,15 @@ input, select, textarea {
 	border: 1px solid #111;
 	color: #111;
 	margin: .1em;
+	padding-left: .1em;
+	padding-right: .1em;
+}
+
+input.required, select.required, textarea.required,
+input.invalid, select.invalid, textarea.invalid {
+	background: #ffecf0;
+	color: #111;
+	border: 1px solid #d30;
 }
 
 option.urgent-priority {
