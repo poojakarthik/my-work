@@ -322,7 +322,7 @@
 	 * @param	array	$arrResponse			The Response received from the Carrier
 	 * @param	string	$strEffectiveDate		Id for the Service to update
 	 * 
-	 * @return	mixed							TRUE: Pass; string: Error Message; FALSE: Not Updated				
+	 * @return	mixed							TRUE: Pass; string: Error Message; FALSE: Redundant				
 	 *
 	 * @method
 	 */
@@ -365,7 +365,7 @@
 				else
 				{
 					// Current Status is newer, don't update
-					return TRUE;
+					return FALSE;
 				}
 				
 				// Get the Update Details for the Current Status + the Request Type

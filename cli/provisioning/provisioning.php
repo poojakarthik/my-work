@@ -218,50 +218,69 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 	 					break;
 	 					
 	 				default:
-	 					$arrNormalised['Status'] = RESPONSE_STATUS_IMPORTED;
+	 					
+	 					// Is this a duplicate?
+	 					$this->_selDuplicate	= new StatementSelect(	"ProvisioningResponse",
+	 																	"Id",
+	 																	"");
+	 					if (!$this->_selDuplicate->Execute($arrNormalised))
+	 					{
+		 					// Valid Response
+		 					$arrNormalised['Status'] = RESPONSE_STATUS_IMPORTED;
+		 					
+					 		// Attempt to link to a Request
+					 		if ($arrNormalised['Request'] = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised))
+					 		{
+					 			// Update Request Table if needed
+					 			$arrRequest = Array();
+					 			$arrRequest['Id']			= $arrNormalised['Request'];
+					 			$arrRequest['Response']		= $arrNormalised['Id'];
+					 			$arrRequest['LastUpdated']	= $arrNormalised['EffectiveDate'];
+					 			$arrRequest['Status']		= $arrNormalised['RequestStatus'];
+					 			$arrRequest['Description']	= $arrNormalised['Description'];
+					 			$ubiRequest->Execute($arrRequest);
+					 		}
+					 		
+				 			/*
+				 			// If the File Carrier doesn't match up with Service Carrier, then mark as redundant
+				 			$selServiceCarrier->Execute($arrNormalised);
+							$arrServiceCarrier = $selServiceCarrier->Fetch();
+							switch ($arrNormalised['Type'])
+							{
+								case PROVISIONING_TYPE_LOSS_FULL:
+									if ($arrNormalised['Carrier'] != $arrServiceCarrier['Carrier'])
+									{
+										$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
+									}
+									break;
+									
+								case PROVISIONING_TYPE_LOSS_PRESELECT:
+									if ($arrNormalised['Carrier'] != $arrServiceCarrier['CarrierPreselect'])
+									{
+										$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
+									}
+									break;
+							}*/
+					 		
+					 		// Update the Service (if needed)
+					 		//$this->_UpdateService($arrNormalised);
+						}
+						else
+						{
+							// This Response is a duplicate
+		 					$arrNormalised['Status']	= RESPONSE_STATUS_DUPLICATE;
+		 					$arrNormalised['Duplicate']	= $this->_selDuplicate->Fetch();
+						}
 	 			}
-	 			
-		 		// Attempt to link to a Request
-		 		if ($arrNormalised['Request'] = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised))
-		 		{
-		 			// Update Request Table if needed
-		 			$arrRequest = Array();
-		 			$arrRequest['Id']			= $arrNormalised['Request'];
-		 			$arrRequest['Response']		= $arrNormalised['Id'];
-		 			$arrRequest['LastUpdated']	= $arrNormalised['EffectiveDate'];
-		 			$arrRequest['Status']		= $arrNormalised['RequestStatus'];
-		 			$arrRequest['Description']	= $arrNormalised['Description'];
-		 			$ubiRequest->Execute($arrRequest);
-		 		}
-		 		
-	 			/*
-	 			// If the File Carrier doesn't match up with Service Carrier, then mark as redundant
-	 			$selServiceCarrier->Execute($arrNormalised);
-				$arrServiceCarrier = $selServiceCarrier->Fetch();
-				switch ($arrNormalised['Type'])
-				{
-					case PROVISIONING_TYPE_LOSS_FULL:
-						if ($arrNormalised['Carrier'] != $arrServiceCarrier['Carrier'])
-						{
-							$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
-						}
-						break;
-						
-					case PROVISIONING_TYPE_LOSS_PRESELECT:
-						if ($arrNormalised['Carrier'] != $arrServiceCarrier['CarrierPreselect'])
-						{
-							$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
-						}
-						break;
-				}*/
-		 		
-		 		// Update the Service (if needed)
-		 		//$this->_UpdateService($arrNormalised);
 		 		
 		 		// Insert into ProvisioningResponse Table
-		 		if ($insResponse->Execute($arrNormalised) === FALSE)
+		 		if (($arrNormalised['Id'] = $insResponse->Execute($arrNormalised)) === FALSE)
 		 		{
 		 			Debug($insResponse->Error());
+		 		}
+		 		elseif ($arrNormalised['Status'] === RESPONSE_STATUS_DUPLICATE)
+		 		{
+		 			CliEcho("Response #{$arrNormalised['Id']} is a duplicate of {$arrNormalised['Duplicate']['Id']}");
 		 		}
 	 		}
 	 		
