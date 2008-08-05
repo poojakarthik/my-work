@@ -240,11 +240,20 @@ class Page
 		$strMd5 = md5_file(MODULE_DEFAULT_CSS);
 		echo "\t\t<link rel='stylesheet' type='text/css' href='css.php?v=$strMd5' />\n";
 		
+		$arrCssFiles = array("menu.css", "style.css");
+		foreach ($arrCssFiles as $strCssFile)
+		{
+			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/{$strCssFile}' />\n";
+		}
+		
+		
+		/*  This code loads all files that are in the html/ui/css/ dir
 		$cssFiles = glob(Flex::getBase() . '/html/ui/css/*.css');
 		foreach($cssFiles as $cssFile)
 		{
 			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/" . basename($cssFile) . "' />\n";
 		}
+		*/
 		
 		
 	}
