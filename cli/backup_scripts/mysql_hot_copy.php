@@ -84,7 +84,7 @@ if ($bolDumpTables === TRUE)
 			// Drop each table
 			CliEcho("\t + Dropping '{$arrRow[0]}'...");
 			
-			$strTableType	= ($arrRow[0] === 'BASE TABLE') ? 'TABLE' : 'VIEW';
+			$strTableType	= ($arrRow[1] === 'BASE TABLE') ? 'TABLE' : 'VIEW';
 			
 			$qryQuery	= new Query();
 			if ($qryQuery->Execute("DROP $strTableType IF EXISTS $strDestinationDB.{$arrRow[0]}") === FALSE)
