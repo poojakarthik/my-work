@@ -29,6 +29,18 @@ class JSON_Handler_Ticketing extends JSON_Handler
 
 		return $response;
 	}
+	
+	// This will run the report, 
+	public function buildSummaryReport($arrOwners, $arrCategories, $arrStatuses, $strStartDate, $strEndDate, $strRenderMode)
+	{
+		if (count($arrOwners) == 0)
+		{
+			return "ERROR: Please select at least one owner";
+		}
+		
+		return true;
+	}
+	
 }
 
 ?>

@@ -84,6 +84,29 @@ class Application_Page extends Page
 	}
 
 	//------------------------------------------------------------------------//
+	// RenderCSS
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderCSS()
+	 *
+	 * Renders the CSS part of the page
+	 *
+	 * Renders the CSS part of the page
+	 * 
+	 * @method
+	 */
+	function RenderCSS()
+	{
+		$cssFiles = glob(Flex::getBase() . '/html/ui/css/*.css');
+		foreach($cssFiles as $cssFile)
+		{
+			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/" . basename($cssFile) . "' />\n";
+		}
+		
+		
+	}
+
+	//------------------------------------------------------------------------//
 	// RenderHeaderJS
 	//------------------------------------------------------------------------//
 	/**

@@ -41,6 +41,11 @@ InputMasks.time24hr =	{
 							format	: "__:__:__",
 							regex	: /^\d$/
 						}
+InputMasks.datetime	=	{
+							format	: "__:__:__ __/__/____",
+							regex	: /^\d$/
+						}
+
 
 // Event handler for all input masks
 function InputMaskListener(objEvent)

@@ -56,6 +56,7 @@ function VixenValidationClass()
 	this.regexLettersOnly				= /^[A-Za-z]+$/;
 	this.regexTime24Hr					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2}$/;
 	this.regexMonetaryValue				= /^\d+(\.(\d){0,2})?$/
+	this.regexDateTime					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2} (0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
 
 	// Wrapper for the individual validation functions.  This is used
 	// to manage bolRequired functionality.  If a value isn't required, and 
@@ -85,6 +86,11 @@ function VixenValidationClass()
 	this.ShortDate = function(mixValue)
 	{
 		return this.regexShortDate.test(mixValue);
+	}
+	
+	this.DateTime = function(mixValue)
+	{
+		return this.regexDateTime.test(mixValue);
 	}
 	
 	this.ShortDateInFuture = function(mixValue)

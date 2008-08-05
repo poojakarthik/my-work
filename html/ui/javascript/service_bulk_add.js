@@ -466,7 +466,6 @@ function VixenServiceBulkAddClass()
 				// Delete this node as it is a script element which isn't required
 				this.elmGenericTableRow.removeChild(this.elmGenericTableRow.childNodes[i]);
 			}
-			
 			else
 			{
 				i++;

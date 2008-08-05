@@ -46,6 +46,7 @@ class Application
 	public function LoadJsonHandler($strHandlerName, $strHandlerMethod, $subPath=NULL)
 	{
 		$strClass = 'JSON_Handler_'.$strHandlerName;
+		$objJSON = new JSON_Services();
 
 		// Create JSON_Handler Object (autoloaded from /html/ui/classes/json/handler/)
 		try
@@ -54,7 +55,7 @@ class Application
 			$this->objJsonHandler = new $strClass($subPath);
 
 			// Get the JSON request arguments
-			$arrArgs = array_key_exists('json', $_POST) ? JSON_Services::decode($_POST['json']) : array();
+			$arrArgs = array_key_exists('json', $_POST) ? $objJSON->decode($_POST['json']) : array();
 			if (!is_array($arrArgs))
 			{
 				$arrArgs = array(0 => $arrArgs);
@@ -69,7 +70,7 @@ class Application
 			$response = array('ERROR' => $e->getMessage());
 		}
 
-		echo JSON_Services::encode($response);
+		echo $objJSON->encode($response);
 	}
 
 	public function LoadPageHandler($strHandlerName, $strHandlerMethod, $subPath=NULL, $bolModal=FALSE)

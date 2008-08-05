@@ -518,16 +518,15 @@ class Application_Handler_Ticketing extends Application_Handler
 		$this->LoadPage('ticketing_attachment', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
 	
-	// Manages the Ticket Report functionality
-	public function Report()
+	// Manages the Ticketing Summary Report functionality
+	public function SummaryReport()
 	{
 		// Build Owner combo box data
 		$arrOwners = array();
-		/*$arrOwners['all'] = array(	"Id"		=> NULL,
-									"Name"		=> "all",
-									"Selected"	=> FALSE
+		$arrOwners['all'] = array(	"Id"		=> "all",
+									"Name"		=> "all"
 									);
-		*/
+		
 		$arrTicketUsers = Ticketing_User::listAll();
 		foreach ($arrTicketUsers as $objUser)
 		{
@@ -538,6 +537,9 @@ class Application_Handler_Ticketing extends Application_Handler
 		
 		// Build Category combo box data
 		$arrCategories = array();
+		$arrCategories['all'] = array(	"Id"		=> "all",
+										"Name"		=> "all"
+										);
 		foreach ($GLOBALS['*arrConstant']['ticketing_category'] as $intCategory=>$arrCategory)
 		{
 			$arrCategories[$intCategory] = array(	"Id"		=> $intCategory,
@@ -554,21 +556,20 @@ class Application_Handler_Ticketing extends Application_Handler
 												);
 		}
 		
-		$arrDate = array();
-		
-		$arrDateRange = array(	"Start"	=> "01/01/2008",
-								"End"	=> date("d/m/Y")
+		$arrTimeRange = array(	"Earliest"	=> "00:00:00 01/01/2008",
+								"Latest"	=> date("23:59:59 d/m/Y")
 							);
 		
 		$arrData = array(
 							"Owners"		=> $arrOwners,
 							"Categories"	=> $arrCategories,
 							"Statuses"		=> $arrStatuses,
-							"DateRange"		=> $arrDateRange
+							"TimeRange"		=> $arrTimeRange
 						);
 		
-		$this->LoadPage('ticketing_report', HTML_CONTEXT_DEFAULT, $arrData);
+		$this->LoadPage('ticketing_summary_report', HTML_CONTEXT_DEFAULT, $arrData);
 	}
+	
 }
 
 ?>
