@@ -214,10 +214,11 @@ function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB, $strTableTyp
 				if ($mixResult = $qryQuery->Execute("SELECT VIEW_DEFINITION FROM information_schema.views WHERE TABLE_NAME = '{$strTable}' AND TABLE_SCHEMA = '{$strSourceDB}'"))
 				{
 					$arrViewDefinition	= $mixResult->fetch_array(MYSQL_ASSOC);
-					$arrViewDefinition['VIEW_DEFINITION']	= str_replace("$strSourceDB.", "$strDestinationDB.", $arrViewDefinition['VIEW_DEFINITION']);
+					Debug($arrViewDefinition);
+					$strViewDefinition	= str_replace("$strSourceDB.", "$strDestinationDB.", $arrViewDefinition['VIEW_DEFINITION']);
 					
 					// Replace with new View
-					$strQuery	= "CREATE VIEW $strDestinationDB.$strTable AS {$arrViewDefinition['VIEW_DEFINITION']}";
+					$strQuery	= "CREATE VIEW $strDestinationDB.$strTable AS $strViewDefinition";
 					if ($qryQuery->Execute($strQuery) === FALSE)
 					{
 						CliEcho("ERROR: Unable to copy VIEW from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error()."\n$strQuery");
