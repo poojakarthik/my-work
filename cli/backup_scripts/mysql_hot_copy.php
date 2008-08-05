@@ -81,8 +81,9 @@ if ($bolDumpTables === TRUE)
 		// Get list of tables
 		while ($arrRow = $mixResult->fetch_row())
 		{
-			CliEcho("\t + Dropping '{$arrRow[0]}'...");
 			// Drop each table
+			CliEcho("\t + Dropping '{$arrRow[0]}'...");
+			$qryQuery	= new Query();
 			if ($qryQuery->Execute("DROP TABLE IF EXISTS $strDestinationDB.{$arrRow[0]}") === FALSE)
 			{
 				CliEcho("ERROR: Unable to drop existing table $strDestinationDB.{$arrRow[0]} -- ".$qryQuery->Error());
