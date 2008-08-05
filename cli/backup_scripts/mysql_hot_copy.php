@@ -216,8 +216,9 @@ function mysqlCopyTable($strTable, $strSourceDB, $strDestinationDB, $strTableTyp
 					$arrViewDefinition	= $mixResult->fetch_array(MYSQL_ASSOC);
 					$arrViewDefinition['VIEW_DEFINITION']	= str_replace("$strSourceDB.", "$strDestinationDB.", $arrViewDefinition['VIEW_DEFINITION']);
 					
-					// Replace with new View	
-					if ($qryQuery->Execute("CREATE VIEW $strDestinationDB.$strTable AS {$arrViewDefinition['VIEW_DEFINITION']}") === FALSE)
+					// Replace with new View
+					$strQuery	= "CREATE VIEW $strDestinationDB.$strTable AS {$arrViewDefinition['VIEW_DEFINITION']}";
+					if ($qryQuery->Execute($strQuery) === FALSE)
 					{
 						CliEcho("ERROR: Unable to copy VIEW from $strSourceDB.$strTable to $strDestinationDB.$strTable -- ".$qryQuery->Error());
 						exit(3);
