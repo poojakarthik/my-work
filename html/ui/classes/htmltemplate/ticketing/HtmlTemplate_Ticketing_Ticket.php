@@ -368,8 +368,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				<tfoot>
 					<tr>
 						<th colspan="2">
-							<input type="button" id="cancelButton" value="Cancel" onclick="document.location='<?=$cancel?>'" />
-							<input type="button" id="submitButton" value="Save" onclick="$ID('edit_ticket').submit()" />
+							<input type="button" class="reflex-button" value="Cancel" onclick="document.location='<?=$cancel?>'" />
+							<input type="button" class="reflex-button" value="Save" onclick="$ID('edit_ticket').submit()" />
 						</th>
 					</tr>
 				</tfoot>
@@ -647,6 +647,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$correspondances = $ticket->getCorrespondances();
 		$noCorrespondances = count($correspondances) == 0;
 
+		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondance/Create\">Create</a>";
+
 		?>
 <br/>
 <table class="reflex">
@@ -656,6 +658,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			Correspondances
 		</div>
 		<div id="caption_options" name="caption_options">
+			<?=$actionLinks?>
 		</div>
 		</div>
 	</caption>
