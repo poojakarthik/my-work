@@ -142,7 +142,27 @@ public $RecordSet = array();
 		$this->_arrStatusStatusTypeMap = $arrStatusStatusTypeMap;
 		
 		// Build the TimeRange WHERE clause
-		//TODO!
+		if ($this->_strLatestTime === NULL)
+		{
+			// No Latest Time was chosen, so use the NOW() function
+			$strLatestTime = "NOW()";
+		}
+		else
+		{
+			// LatestTime has been declared
+			$strLatestTime = "'{$this->_strLatestTime}'";
+		}
+		if ($this->_strEarliestTime === NULL)
+		{
+			// No EarliestTime has been specified.  Just limit it by LatestTime
+			$strTimeRangeConstraint = "modified_datetime <= $strLatestTime";
+		}
+		else
+		{
+			// An EarliestTime has been specified.  Limit the results to being between the 2 dates
+			$strTimeRangeConstraint = "modified_datetime BETWEEN '{$this->_strEarliestTime}' AND $strLatestTime";
+		}
+		
 		$strTimeRangeConstraint = "TRUE";
 		
 		// Build the owner constraint
@@ -278,7 +298,7 @@ $this->RecordSet[] = $arrRecord;
 			// Get the name of each StatusType
 			foreach ($arrFirstOwnerStatusTotals['StatusType'] as $intStatusType=>$intStatusTypeTotal)
 			{
-				$strHeaderColumns .= "\t\t<th>". GetConstantDescription($intStatusType, "ticketing_status_type") ."</th>\n";
+				$strHeaderColumns .= "\t\t<th>". htmlspecialchars(GetConstantDescription($intStatusType, "ticketing_status_type")) ."</th>\n";
 			}
 		}
 		// Check if the user has requested individual Status totals
@@ -287,13 +307,13 @@ $this->RecordSet[] = $arrRecord;
 			// Get the name of each StatusType
 			foreach ($arrFirstOwnerStatusTotals['Status'] as $intStatus=>$intStatusTotal)
 			{
-				$strHeaderColumns .= "\t\t<th>". GetConstantDescription($intStatus, "ticketing_status") ."</th>\n";
+				$strHeaderColumns .= "\t\t<th>". htmlspecialchars(GetConstantDescription($intStatus, "ticketing_status")) ."</th>\n";
 			}
 		}
 		
 		$strHeader = "
 <tr>
-	<th>&nbsp;</th>
+	<th></th>
 	$strHeaderColumns
 </tr>
 ";
@@ -307,7 +327,7 @@ $this->RecordSet[] = $arrRecord;
 			else
 			{
 				$objUser = Ticketing_User::getForId($mixOwner);
-				$strOwnerName = $objUser->getName();
+				$strOwnerName = htmlspecialchars($objUser->getName());
 			}
 			
 			// Build each row of the table
@@ -318,25 +338,25 @@ $this->RecordSet[] = $arrRecord;
 				// Work out the Category
 				if ($mixCategory === "All")
 				{
-					$strCategoryName = "All";
+					$strCategoryName = "All Categories";
 				}
 				else
 				{
-					$strCategoryName = GetConstantDescription($mixCategory, "ticketing_category");
+					$strCategoryName = htmlspecialchars(GetConstantDescription($mixCategory, "ticketing_category"));
 				}
 				
 				
-				$strRows .= "<tr ". (($bolAlternateRow)? "class='alt'":"") ."><td>$strCategoryName</td>";
+				$strRows .= "<tr ". (($bolAlternateRow)? "class='alt'":"") .">\n\t\t\t<td class='row-title'>$strCategoryName</td>\n";
 				foreach ($arrCategoryTotals['StatusType'] as $intTotal)
 				{
-					$strRows .= "<td>$intTotal</td>";
+					$strRows .= "\t\t\t<td>$intTotal</td>\n";
 				}
 				foreach ($arrCategoryTotals['Status'] as $intTotal)
 				{
-					$strRows .= "<td>$intTotal</td>";
+					$strRows .= "\t\t\t<td>$intTotal</td>\n";
 				}
 				
-				$strRows .= "</tr>";
+				$strRows .= "\t\t</tr>\n";
 				
 				$bolAlternateRow = !$bolAlternateRow;
 			}
@@ -370,6 +390,14 @@ $this->RecordSet[] = $arrRecord;
 	
 	private function GenerateAsExcel()
 	{
+		$strReport = "
+<html>
+	<head>
+		<meta http-equiv=\"content-type\" content=\"application/excel\">
+	</head>
+	<body>". $this->GenerateAsHtml() ."</body>
+</html>
+";
 	}
 
 }

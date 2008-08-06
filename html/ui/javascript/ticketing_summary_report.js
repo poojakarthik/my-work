@@ -170,20 +170,29 @@ function FlexTicketingSummaryReportClass()
 		{
 			Vixen.Popup.ClosePageLoadingSplash();
 			
-			var elmReportContainer = $ID("ReportResultsContainer");
-			elmReportContainer.innerHTML = response;
-			return true;
-			
-			$Alert(response);
-			return;
-			if (typeof(response) == "string")
+			if (response.Success)
 			{
-				alert("<pre>" + response + "</pre>");
+				// The report was successfully generated
+				if (response.Report !== null)
+				{
+					// The report has been returned.  Stick it in the page
+					var elmReportContainer = $ID("ReportResultsContainer");
+					elmReportContainer.innerHTML = response.Report;
+				}
+				else
+				{
+					// Retrieve the report from the server by relocating the page
+					if (response.ReportLocation != undefined)
+					{
+						window.location = response.ReportLocation;
+					}
+				}
 			}
 			else
 			{
-				$Alert("Everything is A Ok");
+				$Alert("Generating the report failed");
 			}
+			
 		}
 
 		remoteClass		= 'Ticketing';

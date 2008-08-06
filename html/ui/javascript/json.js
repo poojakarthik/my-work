@@ -235,6 +235,12 @@ jQuery.json = {
 
 		defaultErrorHandler: function(error)
 		{
+			// Close the Splash, if it is open
+			if (window.Vixen && window.Vixen.Popup)
+			{
+				window.Vixen.Popup.ClosePageLoadingSplash();
+			}
+			
 			alert('An error occurred when communicating with the server.\n\nIf this continues, please contact your system administrator with the following details:\n\n' + error['ERROR']);
 		}
 

@@ -825,8 +825,34 @@ class Application_Handler_Ticketing extends Application_Handler
 	}
 
 	// Manages the Ticketing Summary Report functionality
-	public function SummaryReport()
+	public function SummaryReport($subPath)
 	{
+		if (is_array($subPath) && count($subPath) == 1)
+		{
+			$strAction = strtolower(array_shift($subPath));
+			if ($strAction == "getreport")
+			{
+				// The user wants to retrieve the cached SummaryReport
+				if (	is_array($_SESSION['Ticketing']) && 
+						is_array($_SESSION['Ticketing']['SummaryReport']) && 
+						array_key_exists("Content", $_SESSION['Ticketing']['SummaryReport'])
+					)
+				{
+					// A report ha been cached
+					// Send it to the user
+					//header("Content-Type: application/x-msexcel");
+					header("Content-Type: application/excel");
+					header("Content-Disposition: attachment; filename=\"" . "ticketing_summary_report_". date("Y_m_d") . ".xls" . "\"");
+					echo $_SESSION['Ticketing']['SummaryReport']['Content'];
+					
+					// Remove it from the Session
+					unset($_SESSION['Ticketing']['SummaryReport']['Content']);
+					exit;
+				}
+			}
+		}
+		
+		
 		// Build Owner combo box data
 		$arrOwners = array();
 		$arrOwners[] = array(	"Id"	=> "all",
@@ -870,9 +896,15 @@ class Application_Handler_Ticketing extends Application_Handler
 									);
 		}
 		
-		$arrTimeRange = array(	"Earliest"	=> "00:00:00 01/01/2008",
-								"Latest"	=> date("23:59:59 d/m/Y")
-							);
+		$arrTimeRange		= array(	"Earliest"	=> date("00:00:00 d/m/Y", strtotime("-3 months")),
+										"Latest"	=> date("23:59:59 d/m/Y"),
+										"FromYear"	=> 2008,
+										"ToYear"	=> intval(date("Y")),
+										"DefaultYear"	=> intval(date("Y")),
+										"DefaultMonth"	=> intval(date("m")),
+										"DefaultDay"	=> intval(date("d")),
+										
+									);
 		
 		$arrData = array(
 							"Owners"		=> $arrOwners,

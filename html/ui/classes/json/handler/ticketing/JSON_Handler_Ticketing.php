@@ -33,13 +33,45 @@ class JSON_Handler_Ticketing extends JSON_Handler
 	// This will run the report, 
 	public function buildSummaryReport($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses, $strEarliestTime, $strLatestTime, $strRenderMode)
 	{
+		// Do preliminary validation of the Time constraints
+		
+		
 		
 		$objReportBuilder = new Ticketing_Summary_Report();
 		$objReportBuilder->SetBoundaryConditions($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses);
 
 		$objReportBuilder->BuildReport();
+
+		$strReport = $objReportBuilder->GetReport($strRenderMode);
 		
-		return $objReportBuilder->GetReport($strRenderMode);// . "<br /><pre>". print_r($objReportBuilder->GetTotals(), TRUE) ."</pre>";
+		$strRenderMode = strtolower($strRenderMode);
+		
+		if ($strRenderMode == "html")
+		{
+			// The user wants the output rendered in the page
+			return array(	"Success" => TRUE,
+							"Report" => $strReport
+						);
+		}
+		elseif ($strRenderMode == 'excel')
+		{
+			// The user wants to retrieve the report as an excel spreadsheet
+			// Store the report in the user's session, so that the user can retrieve it, not through ajax
+			$_SESSION['Ticketing']['SummaryReport']['Content'] = $strReport;
+			return array(	"Success" => TRUE,
+							"Report" => NULL,
+							"ReportLocation" => Href()->TicketingSummaryReport(TRUE)
+						);
+		}
+		else
+		{
+			// Rener it in the page
+			return array(	"Success" => TRUE,
+							"Report" => $strReport
+						);
+		}
+		
+		
 	}
 
 	public function getContactDetails($contactId)

@@ -7,7 +7,7 @@ class HtmlTemplate_Ticketing_Summary_Report extends FlexHtmlTemplate
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 		$this->LoadJavascript("ticketing_summary_report");
-		$this->LoadJavascript("date_time_picker_xy");
+		$this->LoadJavascript("date_time_picker_dynamic");
 		$this->LoadJavascript("validation");
 		$this->LoadJavascript("input_masks");
 	}
@@ -36,9 +36,7 @@ class HtmlTemplate_Ticketing_Summary_Report extends FlexHtmlTemplate
 			$strStatusOptions .= "<option value='{$arrStatus['Id']}' $strStatusType>". htmlspecialchars($arrStatus['Name'], ENT_QUOTES) ."</option>\n";
 		}
 		
-		$strEarliestTime	= $this->mxdDataToRender['TimeRange']['Earliest'];
-		$strLatestTime		= $this->mxdDataToRender['TimeRange']['Latest'];
-		
+		$arrTimeDetails = $this->mxdDataToRender['TimeRange'];
 
 echo "
 <form id='FormReportVariables'>
@@ -79,13 +77,15 @@ echo "
 			<tr class='alt'>
 				<td class='title'>Earliest Time: </td>
 				<td>
-					<input type='text' id='EarliestTime' name='EarliestTime' InputMask='DateTime' maxlength='19' value='$strEarliestTime' />
+					<input type='text' id='EarliestTime' name='EarliestTime' InputMask='DateTime' maxlength='19' value='{$arrTimeDetails['Earliest']}' />
+					<a href='javascript:DateChooser.showChooser(\"EarliestTime\", {$arrTimeDetails['FromYear']}, {$arrTimeDetails['ToYear']}, \"H:i:s d/m/Y\", true, true, true, {$arrTimeDetails['DefaultYear']}, {$arrTimeDetails['DefaultMonth']}, {$arrTimeDetails['DefaultDay']});'><img src='img/template/calendar_small.png' width='16' height='16' title='Calendar time picker' /></a>
 				</td>
 			</tr>
 			<tr class='alt'>
 				<td class='title'>Latest Time: </td>
 				<td>
-					<input type='text' id='LatestTime' name='LatestTime' InputMask='DateTime' maxlength='19' value='$strLatestTime' />
+					<input type='text' id='LatestTime' name='LatestTime' InputMask='DateTime' maxlength='19' value='{$arrTimeDetails['Latest']}' />
+					<a href='javascript:DateChooser.showChooser(\"LatestTime\", {$arrTimeDetails['FromYear']}, {$arrTimeDetails['ToYear']}, \"H:i:s d/m/Y\", true, true, true, {$arrTimeDetails['DefaultYear']}, {$arrTimeDetails['DefaultMonth']}, {$arrTimeDetails['DefaultDay']});'><img src='img/template/calendar_small.png' width='16' height='16' title='Calendar time picker' /></a>
 				</td>
 			</tr>
 			<tr class='alt'>

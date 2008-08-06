@@ -184,15 +184,16 @@ class MenuItems
 	 *
 	 * Compiles the Href to be executed when the TicketingSummaryReport menu item is clicked
 	 * 
-	 * @return	string				Href to be executed when the TicketingSummaryReport menu item is clicked
+	 * @param	bool	$bolRetrieveCachedReport	optional, defaults to false. Set to true to retrieve the last report generated, which is stored in the user's session object
+	 * @return	string								Href to be executed when the TicketingSummaryReport menu item is clicked
 	 *
 	 * @method
 	 */
-	function TicketingSummaryReport()
+	function TicketingSummaryReport($bolRetrieveCachedReport=FALSE)
 	{
 		$this->strContextMenuLabel = "Summary";
 		$this->strLabel = "Summary";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/SummaryReport";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/SummaryReport" . (($bolRetrieveCachedReport)? "/GetReport":"");
 	}
 	
 
