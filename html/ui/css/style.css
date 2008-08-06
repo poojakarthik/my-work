@@ -83,8 +83,7 @@ div#menu {
 	width: 100%;
 }
 
-div#content
-{
+div#content {
 	width:          90%;
 	clear:          both;
 	margin-left:    auto;
@@ -99,4 +98,9 @@ div.debug-options {
 	position: absolute;
 	right: 1%;
 	top: 40;
+}
+
+pre {
+	font-family: Arial,Verdana,Helvetica;
+	font-size: 1em;
 }
