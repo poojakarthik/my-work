@@ -3,8 +3,8 @@
 // Framework
 require_once("../../flex.require.php");
 
-$selCDR			= new StatementSelect("CDR"			, "RecordType.Description, DATE_FORMAT(StartDatetime, '%d/%m/%Y') AS `Date`, DATE_FORMAT(StartDatetime, '%H:%i:%s') AS `Time`, Destination AS `Called Party`, Description, Units as Duration, Cost", "Service = <Service> AND StartDatetime >= <StartDatetime>", "StartDatetime ASC");
-$selCDRInvoiced	= new StatementSelect("CDRInvoiced"	, "RecordType.Description, DATE_FORMAT(StartDatetime, '%d/%m/%Y') AS `Date`, DATE_FORMAT(StartDatetime, '%H:%i:%s') AS `Time`, Destination AS `Called Party`, Description, Units as Duration, Cost", "Service = <Service> AND StartDatetime >= <StartDatetime>", "StartDatetime ASC");
+$selCDR			= new StatementSelect("CDR"			, "DATE_FORMAT(StartDatetime, '%d/%m/%Y') AS `Date`, DATE_FORMAT(StartDatetime, '%H:%i:%s') AS `Time`, Destination AS `Called Party`, Description, Units as Duration, Cost", "Service = <Service> AND StartDatetime >= <StartDatetime>", "StartDatetime ASC");
+$selCDRInvoiced	= new StatementSelect("CDRInvoiced"	, "DATE_FORMAT(StartDatetime, '%d/%m/%Y') AS `Date`, DATE_FORMAT(StartDatetime, '%H:%i:%s') AS `Time`, Destination AS `Called Party`, Description, Units as Duration, Cost", "Service = <Service> AND StartDatetime >= <StartDatetime>", "StartDatetime ASC");
 
 /*define('PARAMETER_MODE_FNN'		, 1);
 define('PARAMETER_MODE_ACCOUNT'	, 2);
