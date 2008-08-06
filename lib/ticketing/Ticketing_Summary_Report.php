@@ -163,7 +163,6 @@ public $RecordSet = array();
 			$strTimeRangeConstraint = "modified_datetime BETWEEN '{$this->_strEarliestTime}' AND $strLatestTime";
 		}
 		
-		$strTimeRangeConstraint = "TRUE";
 		
 		// Build the owner constraint
 		$strOwnerConstraint = ($this->_bolAllOwners)? "owner_id IS NOT NULL" : "owner_id IN (". implode(", ", $this->_arrOwners) .")";

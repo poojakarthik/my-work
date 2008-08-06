@@ -840,11 +840,8 @@ class Application_Handler_Ticketing extends Application_Handler
 				{
 					// A report ha been cached
 					// Send it to the user
-					//header("Content-Type: application/x-msexcel");
 					header("Content-Type: application/excel");
-					//header("Content-Type: text/plain");
 					header("Content-Disposition: attachment; filename=\"" . "ticketing_summary_report_". date("Y_m_d") . ".xls" . "\"");
-//echo "This is a test.  The contents of the report is ". count($_SESSION['Ticketing']['SummaryReport']['Content']) ." chars long";
 					echo $_SESSION['Ticketing']['SummaryReport']['Content'];
 					
 					// Remove it from the Session
@@ -898,7 +895,8 @@ class Application_Handler_Ticketing extends Application_Handler
 									);
 		}
 		
-		$arrTimeRange		= array(	"Earliest"	=> date("00:00:00 d/m/Y", strtotime("-3 months")),
+		$arrTimeRange		= array(	//"Earliest"	=> date("00:00:00 d/m/Y", strtotime("-3 months")),
+										"Earliest"		=> NULL,
 										"Latest"	=> date("23:59:59 d/m/Y"),
 										"FromYear"	=> 2008,
 										"ToYear"	=> intval(date("Y")),

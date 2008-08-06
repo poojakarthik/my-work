@@ -52,9 +52,11 @@ class JSON_Handler_Ticketing extends JSON_Handler
 				{
 					// It is valid, convert it to ISO DateTime format
 					
-					//$arrTimeParts = explode(" ", $strTime);
-					//echo "$strTime is in the correct format | ";
-					//TODO!
+					$arrDateTimeParts = explode(" ", $strTime);
+					$arrDateParts	= explode("/", $arrDateTimeParts[1]);
+					$strTimePart	= $arrDateTimeParts[0];
+					$strDateTime	= "{$arrDateParts[2]}-{$arrDateParts[1]}-{$arrDateParts[0]} $strTimePart";
+					$arrTimeConstraints[$strConstraint] = $strDateTime;
 				}
 				else
 				{
@@ -73,7 +75,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		}
 		
 		$objReportBuilder = new Ticketing_Summary_Report();
-		$objReportBuilder->SetBoundaryConditions($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses);
+		$objReportBuilder->SetBoundaryConditions($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses, $arrTimeConstraints['EarliestTime'], $arrTimeConstraints['LatestTime']);
 
 		$objReportBuilder->BuildReport();
 
