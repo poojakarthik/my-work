@@ -72,6 +72,10 @@ table.reflex thead, table.reflex tfoot {
 	text-align: left;
 }
 
+table.reflex thead, table.reflex tfoot {
+	text-align: right;
+}
+
 table.reflex thead tr th, table.reflex tfoot tr th {
 	padding-top: .25em;
 	padding-bottom: .25em;
