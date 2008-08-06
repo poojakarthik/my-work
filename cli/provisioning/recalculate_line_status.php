@@ -11,11 +11,13 @@ $selResponses	= new StatementSelect("ProvisioningResponse JOIN provisioning_type
 CliEcho("\n[ RECALCULATING LINE STATUS ]\n");
 
 // Select all non-Archived Landline Services
-if ($selServices->Execute())
+$intCount	= 0;
+if ($intServiceCount = $selServices->Execute())
 {
 	while ($arrService = $selServices->Fetch())
 	{
-		CliEcho(" * {$arrService['Account']}::{$arrService['FNN']}...", FALSE);
+		$intCount++;
+		CliEcho(" * ($intCount/$intServiceCount){$arrService['Account']}::{$arrService['FNN']}...", FALSE);
 		
 		// DETERMINE CURRENT SERVICE LINE STATUS
 		if ($selResponses->Execute(Array('Service' => $arrService['Id'], 'Nature' => REQUEST_TYPE_NATURE_FULL_SERVICE)) !== FALSE)
