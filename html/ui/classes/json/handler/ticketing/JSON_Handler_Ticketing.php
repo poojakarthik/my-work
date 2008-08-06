@@ -37,6 +37,21 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		return print_r($arrOwners, TRUE);
 	}
 	
+
+	public function getContactDetails($contactId)
+	{
+		
+	}
+
+	public function getContactEditDetails($customerGroupId, $contactId=NULL)
+	{
+		
+	}
+
+	public function saveContactDetails($detailsId)
+	{
+		
+	}
 }
 
 ?>

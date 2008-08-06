@@ -59,7 +59,7 @@ class Email_Notification extends Zend_Mail
 		}
 	}
 
-	public function __construct($intEmailNotification, $intCustomerGroupId=NULL, $charset='iso-8859-1')
+	public function __construct($intEmailNotification=0, $intCustomerGroupId=NULL, $charset='iso-8859-1')
 	{
 		$this->setEmailNotification($intEmailNotification);
 		$this->setCustomerGroup($intCustomerGroupId);
@@ -133,6 +133,12 @@ class Email_Notification extends Zend_Mail
 	public static function getEmailAddresses($intEmailNotification, $intCustGroupId=NULL)
 	{
 		$addresses = array(EMAIL_ADDRESS_USAGE_FROM => array(), EMAIL_ADDRESS_USAGE_TO => array(), EMAIL_ADDRESS_USAGE_CC => array(), EMAIL_ADDRESS_USAGE_BCC => array());
+
+		if (!$intEmailNotification)
+		{
+			return $addresses;
+		}
+
 		$intEmailNotification = intval($intEmailNotification);
 	
 		$arrColumns = array(

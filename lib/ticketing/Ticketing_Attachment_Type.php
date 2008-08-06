@@ -15,6 +15,21 @@ class Ticketing_Attachment_Type
 		}
 	}
 
+	public function isBlacklisted()
+	{
+		return $this->blacklistStatusId === TICKETING_ATTACHMENT_BLACKLIST_STATUS_BLACK;
+	}
+
+	public function isGreylisted()
+	{
+		return $this->blacklistStatusId === TICKETING_ATTACHMENT_BLACKLIST_STATUS_GREY;
+	}
+
+	public function isWhitelisted()
+	{
+		return $this->blacklistStatusId === TICKETING_ATTACHMENT_BLACKLIST_STATUS_WHITE;
+	}
+
 	public function save()
 	{
 		if ($this->_saved)
@@ -51,18 +66,15 @@ class Ticketing_Attachment_Type
 		return TRUE;
 	}
 
+	public static function getForId($id)
+	{
+		return self::getFor('id = <TYPE_ID>', array('TYPE_ID' => $id));
+	}
+
 	public static function getForExtensionAndMimeType($strExtension, $strMimeType)
 	{
-		$selType = new StatementSelect(
-			'ticketing_attachment_type', 
-			array('id' => 'id', 'extension' => 'extension', 'mime_type' => 'mime_type', 'blacklist_status_id' => 'blacklist_status_id'),
-			'extension = <Extension>');
-		$arrWhere = array('Extension' => $strExtension);
-		if (($outcome = $selType->Execute($arrWhere)) === FALSE)
-		{
-			throw new Exception("Failed to check for attachment type with extension '$strExtension': " . $selType->Error());
-		}
-		if (!$outcome)
+		$objType = self::getFor('extension = <Extension>', array('Extension' => $strExtension));
+		if (!$objType)
 		{
 			$objType = new Ticketing_Attachment_Type();
 			$objType->extension = $strExtension;
@@ -74,12 +86,43 @@ class Ticketing_Attachment_Type
 			// Send an email to ybs to inform of the newly created attachment type, so that they may blacklist if necessary
 			self::sendEmailNotification($objType);
 		}
-		else
-		{
-			$objType = new Ticketing_Attachment_Type($selType->Fetch());
-		}
 		return $objType;
 	}
+
+	private static function getColumns()
+	{
+		return array('id', 'extension', 'mime_type', 'blacklist_status_id');
+	}
+
+	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
+	{
+		// Note: Email address should be unique, so only fetch the first record
+		$selMatches = new StatementSelect(
+			strtolower(__CLASS__), 
+			self::getColumns(), 
+			$strWhere,
+			$strSort,
+			$strLimit);
+		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
+		{
+			throw new Exception("Failed to load attachment type: " . $selMatches->Error());
+		}
+		if (!$outcome)
+		{
+			return $multiple ? array() : NULL;
+		}
+		$arrInstances = array();
+		while($details = $selMatches->Fetch())
+		{
+			$arrInstances[] = new Ticketing_Attachment_Type($details);
+			if (!$multiple)
+			{
+				return $arrInstances[0];
+			}
+		}
+		return $arrInstances;
+	}
+
 
 	public function sendEmailNotification($objType)
 	{
@@ -141,7 +184,7 @@ If this file type is safe please manually change it's blacklist_status_id to TIC
 	{
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
-			if ($this->{$strName} != $mxdValue)
+			if ($this->{$strName} !== $mxdValue)
 			{
 				$this->{$strName} = $mxdValue;
 				$this->_saved = FALSE;

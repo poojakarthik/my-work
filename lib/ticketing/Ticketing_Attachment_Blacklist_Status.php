@@ -25,6 +25,21 @@ class Ticketing_Attachment_Blacklist_Status
 		}
 	}
 
+	public function isBlacklisted()
+	{
+		return $this->id === TICKETING_ATTACHMENT_BLACKLIST_STATUS_BLACK;
+	}
+
+	public function isGreylisted()
+	{
+		return $this->id === TICKETING_ATTACHMENT_BLACKLIST_STATUS_GREY;
+	}
+
+	public function isWhitelisted()
+	{
+		return $this->id === TICKETING_ATTACHMENT_BLACKLIST_STATUS_WHITE;
+	}
+
 	public static function listAll()
 	{
 		static $instances;

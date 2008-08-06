@@ -34,7 +34,7 @@ class Ticketing_Customer_Group_Email
 		);
 	}
 
-	private static function getFor($where, $arrWhere)
+	private static function getFor($where, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
 	{
 		// Note: Email address should be unique, so only fetch the first record
 		$selMatches = new StatementSelect(
@@ -48,14 +48,32 @@ class Ticketing_Customer_Group_Email
 		}
 		if (!$outcome)
 		{
-			return NULL;
+			return $multiple ? array() : NULL;
 		}
-		return new Ticketing_Customer_Group_Email($selMatches->Fetch());
+		$arrInstances = array();
+		while($details = $selMatches->Fetch())
+		{
+			$arrInstances[] = new Ticketing_Customer_Group_Email($details);
+			if (!$multiple)
+			{
+				return $arrInstances[0];
+			}
+		}
+		return $arrInstances;
 	}
 
 	public static function getForId($id)
 	{
 		return self::getFor("id = <Id>", array("Id" => $id));
+	}
+
+	public static function listForCustomerGroupId($customerGroupId)
+	{
+		if (!$customerGroupId)
+		{
+			return array();
+		}
+		return self::getFor("customer_group_id = <CustomerGroupId>", array("CustomerGroupId" => $customerGroupId), TRUE);
 	}
 
 	public static function getForEmailAddress($strEmailAddress)

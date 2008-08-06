@@ -23,11 +23,12 @@ class Ticketing_Correspondance
 	private $userId = NULL;
 	private $deliveryStatusId = NULL;
 	private $customerGroupEmailId = NULL;
-	private $customerGroupEmail = NULL;
 	private $deliveryDatetime = NULL;
 	private $createdDetetime = NULL;
 
+	private $customerGroupEmail = NULL;
 	private $contact = NULL;
+	private $user = NULL;
 
 	private static $custGroupDomains = NULL;
 
@@ -45,6 +46,11 @@ class Ticketing_Correspondance
 		}
 	}
 
+	public function getAttachments()
+	{
+		return Ticketing_Attachment::listForCorrespondance($this);
+	}
+
 	private function init($arrProperties)
 	{
 		foreach($arrProperties as $name => $value)
@@ -53,6 +59,12 @@ class Ticketing_Correspondance
 		}
 		$this->_saved = TRUE;
 		
+	}
+
+	public static function createBlank()
+	{
+		
+		return new self();
 	}
 
 	/**
@@ -233,6 +245,10 @@ class Ticketing_Correspondance
 
 	public function getTicket()
 	{
+		if (!$this->ticketId)
+		{
+			return NULL;
+		}
 		return Ticketing_Ticket::forCorrespondance($this);
 	}
 
@@ -243,6 +259,15 @@ class Ticketing_Correspondance
 			$this->contact = Ticketing_Contact::getForId($this->contactId);
 		}
 		return $this->contact;
+	}
+
+	public function getUser()
+	{
+		if ($this->user == NULL)
+		{
+			$this->user = Ticketing_Contact::getForId($this->userId);
+		}
+		return $this->user;
 	}
 
 	public function getSource()
@@ -327,21 +352,81 @@ class Ticketing_Correspondance
 
 	public static function getForTicket(Ticketing_Ticket $ticket)
 	{
-		$arrColumns = self::getColumns();
+		return self::getFor('ticket_id = <TicketId>', array('TicketId' => $ticket->id), TRUE);
+	}
 
-		$selMatches = new StatementSelect('ticketing_correspondance', $arrColumns, 'ticket_id = <TicketId>');
-		$arrWhere = array('TicketId' => $ticket->id);
+	public static function getForId($intCorrespondanceId)
+	{
+		if (!$intCorrespondanceId)
+		{
+			return NULL;
+		}
+		return self::getFor('id = <CorrespondanceId>', array('CorrespondanceId' => $intCorrespondanceId));
+	}
 
+	public function isSaved()
+	{
+		return $this->id ? TRUE : FALSE;
+	}
+
+	public function isNotSent()
+	{
+		return $this->deliveryStatusId === TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
+	}
+
+	public function isSent()
+	{
+		return !$this->isNotSent();
+	}
+
+	public function isNotReceived()
+	{
+		return $this->deliveryStatusId !== TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
+	}
+
+	public function isIncomming()
+	{
+		return $this->deliveryStatusId === TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
+	}
+
+	public function isOutgoing()
+	{
+		return !$this->isIncomming();
+	}
+
+	public function isEmail()
+	{
+		return $this->sourceId === TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
+	}
+
+	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
+	{
+		// Note: Email address should be unique, so only fetch the first record
+		if (!$strSort || empty($strSort))
+		{
+			$strSort = 'creation_datetime DESC';
+		}
+		$selMatches = new StatementSelect(
+			strtolower(__CLASS__), 
+			self::getColumns(), 
+			$strWhere,
+			$strSort,
+			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing customer group email: " . $selMatches->Error());
+			throw new Exception("Failed to load correspondances: " . $selMatches->Error());
+		}
+		if (!$outcome)
+		{
+			return $multiple ? array() : NULL;
 		}
 		$arrInstances = array();
-		if ($outcome)
+		while($details = $selMatches->Fetch())
 		{
-			while($details = $selMatches->Fetch())
+			$arrInstances[] = new Ticketing_Correspondance($details);
+			if (!$multiple)
 			{
-				$arrInstances[] = new Ticketing_Correspondance($details);
+				return $arrInstances[0];
 			}
 		}
 		return $arrInstances;
@@ -396,15 +481,27 @@ class Ticketing_Correspondance
 	{
 		$ticket = $this->getTicket();
 		$contact = $ticket->getContact();
+		$customerGroupEmail = $this->getCustomerGroupEmail();
 
-		require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'Email_Notification.php';
+		if (!$ticket)
+		{
+			throw new Exception('No ticket found for correspondance.');
+		}
+		if (!$contact)
+		{
+			throw new Exception('No contact found for correspondance.');
+		}
+		if (!$customerGroupEmail)
+		{
+			throw new Exception('No customer group email found for correspondance.');
+		}
 
 		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM);
 
 		$email->addTo($contact->email, $contact->getName()); // The contact from the ticket (contact_id)
-		
-		// TODO: Check for previous outgoing correspondances and send to same address 
-		$email->setFrom($this->getCustomerGroupEmail()->email, $this->getCustomerGroupEmail()->name);
+
+		// TODO: Check for previous outgoing correspondances and send from same address 
+		$email->setFrom($customerGroupEmail->email, $customerGroupEmail->name);
 
 		$email->subject = $this->summary . " [T" . $this->ticketId . "Z]";
 		$email->text = $this->details;
@@ -412,8 +509,27 @@ class Ticketing_Correspondance
 		$email->send();
 
 		$this->deliveryStatus = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT;
+		$this->deliveryDatetime = date("Y-m-d H:i:s");
 		$this->_saved = FALSE;
 		$this->save();
+	}
+
+	public function delete()
+	{
+		$delInstance = new Query();
+		$strSQL = "DELETE FROM ticketing_attachment WHERE correspondance_id = " . $this->id;
+		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
+		{
+			throw new Exception('Failed to delete attachments for correspondance ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
+		}
+
+		$strSQL = "DELETE FROM " . strtolower(__CLASS__) . " WHERE id = " . $this->id;
+		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
+		{
+			throw new Exception('Failed to delete correspondance ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
+		}
+		$this->id = NULL;
+		$this->_saved = FALSE;
 	}
 
 	public function save()
@@ -432,8 +548,7 @@ class Ticketing_Correspondance
 		// This must be an update
 		else
 		{
-			
-			$arrValues['id'] = $this->id;
+			$arrValues['Id'] = $this->id;
 			$statement = new StatementUpdateById('ticketing_correspondance', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
@@ -473,6 +588,15 @@ class Ticketing_Correspondance
 				else if ($strName == 'contact')
 				{
 					$this->contactId = $mxdValue->id;
+				}
+
+				if ($strName == 'userId')
+				{
+					$this->user = NULL;
+				}
+				else if ($strName == 'user')
+				{
+					$this->userId = $mxdValue->id;
 				}
 
 				if ($strName == 'customerGroupEmailId')

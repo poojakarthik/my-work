@@ -8,6 +8,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		$count = count($this->mxdDataToRender['tickets']);
 		$startOffset = ($this->mxdDataToRender['offset'] + ($count ? 1 : 0));
 		$endOffset = $this->mxdDataToRender['offset'] + $count;
+		$limit = $this->mxdDataToRender['limit'];
 		$title = "Viewing $startOffset to $endOffset of $nrTickets Tickets";
 
 		$ownerId = array_key_exists('ownerId', $this->mxdDataToRender['filter']) ? $this->mxdDataToRender['filter']['ownerId']['value'] : NULL;
@@ -15,8 +16,35 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		$statusId = array_key_exists('statusId', $this->mxdDataToRender['filter']) ? $this->mxdDataToRender['filter']['statusId']['value'] : NULL;
 
 		$selected = ' SELECTED="SELECTED"';
+
+		$target = MenuItems::TicketingConsole();
+
+		$arrNavLinks = array();
+
+		if ($this->mxdDataToRender['offset'] > 0)
+		{
+			$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=0\">First</a>";
+			$offset = $this->mxdDataToRender['offset'] - $limit;
+			$offset = $offset < 0 ? 0 : $offset;
+			$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$offset\">Previous</a>";
+		}
+
+		if ($nrTickets > $endOffset)
+		{
+			$nrLastPage = $nrTickets % $limit;
+			$nrLastPage = $nrLastPage ? $nrLastPage : $limit;
+			if ($nrLastPage)
+			{
+				$offset = $nrTickets - $nrLastPage;
+				$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$endOffset\">Next</a>";
+				$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$offset\">Last</a>";
+			}
+		}
+
+		$navLinks = implode('&nbsp;&nbsp;', $arrNavLinks);
+
 		?>
-<form method="GET">
+<form method="GET" action="<?=$target?>">
 	<table id="ticketing" name="ticketing" class="reflex">
 		<caption>
 			<div id="caption_bar" name="caption_bar">
@@ -82,7 +110,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		</thead>
 		<tfoot>
 			<tr>
-				<th colspan=8 align=right> <a href="reflex.php/Ticketing/System/?last=1&offset=48">Next</a> Total Tickets: <?php echo $this->mxdDataToRender['ticket_count']; ?></th>
+				<th colspan=8 align=right>&nbsp;<?=$navLinks?></th>
 			</tr>
 		</tfoot>
 		<tbody>
@@ -90,8 +118,10 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		<?
 
 		$i = 0;
+		$noRecords = TRUE;
 		foreach ($this->mxdDataToRender['tickets'] as $ticket) 
 		{
+			$noRecords = FALSE;
 			$tr_alt = ($i++ % 2) ? "alt" : "";
 			$owner = $ticket->getOwner();
 			$ownerName = $owner ? $owner->getName() : "&nbsp;";
@@ -112,6 +142,13 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				<td>[actions]</td>
 			</tr>
 		<? 
+		}
+
+		if ($noRecords)
+		{
+			?>
+			<tr><td colspan="8">No tickets match your current filter.</td></tr>
+			<?php
 		}
 
 		?>

@@ -21,6 +21,34 @@ class Ticketing_Attachment
 		}
 	}
 
+	public function isBlacklisted()
+	{
+		return $this->blacklistOverride !== ACTIVE_STATUS_ACTIVE && $this->getType()->isBlacklisted();
+	}
+
+	public function isGreylisted()
+	{
+		return $this->getType()->isGreylisted();
+	}
+
+	public function isWhitelisted()
+	{
+		return $this->getType()->isWhitelisted();
+	}
+
+	public function getAppliedBlacklistStatus()
+	{
+		$id = $this->isGreylisted() ? TICKETING_ATTACHMENT_BLACKLIST_STATUS_GREY 
+									 : ($this->isWhitelisted() ? TICKETING_ATTACHMENT_BLACKLIST_STATUS_WHITE 
+									 						   : TICKETING_ATTACHMENT_BLACKLIST_STATUS_BLACK);
+		return Ticketing_Attachment_Blacklist_Status::getForId($id);
+	}
+
+	public function getType()
+	{
+		return Ticketing_Attachment_Type::getForId($this->attachmentTypeId);
+	}
+
 	public function save()
 	{
 		if ($this->_saved)
@@ -98,11 +126,56 @@ class Ticketing_Attachment
 		return Ticketing_Attachment_Type::getForExtensionAndMimeType($strExtension, $strFileType);
 	}
 
+	private static function getColumns()
+	{
+		return array(
+			'id',
+			'correspondance_id',
+			'file_name',
+			'attachment_type_id',
+			'blacklist_override',
+		);
+	}
+
+	public static function getForId($id)
+	{
+		return self::getFor('id = <ATTACHMENT_ID>', array('ATTACHMENT_ID' => $id));
+	}
+
+	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
+	{
+		// Note: Email address should be unique, so only fetch the first record
+		$selMatches = new StatementSelect(
+			strtolower(__CLASS__), 
+			self::getColumns(), 
+			$strWhere,
+			$strSort,
+			$strLimit);
+		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
+		{
+			throw new Exception("Failed to load attachment: " . $selMatches->Error());
+		}
+		if (!$outcome)
+		{
+			return $multiple ? array() : NULL;
+		}
+		$arrInstances = array();
+		while($details = $selMatches->Fetch())
+		{
+			$arrInstances[] = new Ticketing_Attachment($details);
+			if (!$multiple)
+			{
+				return $arrInstances[0];
+			}
+		}
+		return $arrInstances;
+	}
+
 	public static function load($id)
 	{
 		// Only load the fileName and fileType of the attachment
 		$arrWhere = array('RecordId' => $this->id);
-		$selAttachments = new StatementSelect('ticketing_attachment', array('id', 'file_name', 'attachment_type_id', 'correspondance_id', 'blacklist_override'), 'id = <RecordId>');
+		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'id = <RecordId>');
 		if (($outcome = $selAttachments->Execute()) === FALSE)
 		{
 			throw new Exception("Failed to load attachments for correspondance '{$correspondance->id}': " . $selAttachments->Error());
@@ -117,31 +190,30 @@ class Ticketing_Attachment
 		return $objAttachment;
 	}
 
-	private function init($arrProps)
+	private function init($arrProperties)
 	{
-		$this->id = $arrProps['id'];
-		$this->correspondanceId = $arrProps['correspondance_id'];
-		$this->fileName = $arrProps['file_name'];
-		$this->fileType = $arrProps['file_type'];
-		$this->fileContent = NULL;
+		foreach($arrProperties as $name => $value)
+		{
+			$this->{$name} = $value;
+		}
 		$this->_saved = TRUE;
+		
 	}
 
-	public static function listForCorrespondance(Ticketing_Correpondance $correspondance)
+	public static function listForCorrespondance(Ticketing_Correspondance $correspondance)
 	{
 		$arrWhere = array('CorrespondanceId' => $correspondance->id);
-		$selAttachments = new StatementSelect('ticketing_attachment', array('id', 'file_name', 'attachment_type_id', 'correspondance_id', 'blacklist_override'), 'correspondance_id = <CorrespondanceId>');
-		if (($outcome = $selAttachments->Execute()) === FALSE)
+		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'correspondance_id = <CorrespondanceId>');
+		if (($outcome = $selAttachments->Execute($arrWhere)) === FALSE)
 		{
 			throw new Exception("Failed to load attachments for correspondance '{$correspondance->id}': " . $selAttachments->Error());
 		}
 		$arrAttchments = array();
 		while ($attachment = $selAttachments->Fetch())
 		{
-			$objAttachment =& new Ticketing_Attachment();
-			$objAttachment->init($attachment);
-			$arrAttchments[] = $objAttachment;
+			$arrAttchments[] = new Ticketing_Attachment($attachment);
 		}
+		return $arrAttchments;
 	}
 
 	public function getFileContent()
@@ -162,7 +234,7 @@ class Ticketing_Attachment
 		// Do not store as it could cause memory issues.
 		$arrWhere = array('RecordId' => $this->id);
 		$selAttachment = new StatementSelect('ticketing_attachment', array('file_content'), 'id = <RecordId>');
-		if (($outcome = $selAttachment->Execute()) === FALSE)
+		if (($outcome = $selAttachment->Execute($arrWhere)) === FALSE)
 		{
 			throw new Exception("Failed to load attachment file content for attachment '{$this->id}': " . $selAttachments->Error());
 		}

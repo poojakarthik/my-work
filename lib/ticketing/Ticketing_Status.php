@@ -17,6 +17,7 @@ class Ticketing_Status
 			case 'value':
 				return $this->arrProperties['Id'];
 			case 'name':
+				return $this->arrProperties['Name'];
 			case 'description':
 				return $this->arrProperties['Description'];
 			case 'constant':

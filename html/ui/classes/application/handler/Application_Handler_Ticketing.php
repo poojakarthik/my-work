@@ -9,7 +9,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	}
 
 	// Handle a request for the home page of the ticketing system
-	public function Tickets($subPath, $bolOwnTickets=TRUE)
+	public function Tickets($subPath)
 	{
 		if (!Ticketing_User::currentUserIsTicketingUser())
 		{
@@ -22,104 +22,110 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$defaultLimit = 24;
 
-		if (array_key_exists('last', $_REQUEST) && array_key_exists('ticketing', $_SESSION) && array_key_exists('lastTicketList', $_SESSION['ticketing']))
+		$pathToken = count($subPath) ? strtolower($subPath[0]) : NULL;
+
+		// Default all search settings to be 'blank'
+		$offset = 0;
+		$limit = $defaultLimit;
+		$sort = array();
+		$columns = array();
+		$ownerId = NULL;
+		$statusId = NULL;
+		$categoryId = NULL;
+
+		// If viewing own tickets, default owner id to be the id of the currently logged in user
+		$bolOwnTickets = $pathToken == 'mine';
+		if ($bolOwnTickets)
+		{
+			$user = Ticketing_User::getCurrentUser();
+			$ownerId = $user->id;
+		}
+
+		// If this search is based on last search, default all search settings to be those of the last search
+		if (($pathToken == 'last' || array_key_exists('last', $_REQUEST)) && array_key_exists('ticketing', $_SESSION) && array_key_exists('lastTicketList', $_SESSION['ticketing']))
 		{
 			$lastQuery = unserialize($_SESSION['ticketing']['lastTicketList']);
 			$sort = $lastQuery['sort'];
 			$columns = $lastQuery['columns'];
-			$filter = $lastQuery['filter'];
+			$oldFilter = $lastQuery['filter'];
+			$ownerId = array_key_exists('ownerId', $oldFilter) ? $oldFilter['ownerId']['value'] : NULL;
+			$statusId = array_key_exists('statusId', $oldFilter) ? $oldFilter['statusId']['value'] : NULL;
+			$categoryId = array_key_exists('categoryId', $oldFilter) ? $oldFilter['categoryId']['value'] : NULL;
 			$limit = $lastQuery['limit'];
 			$offset = $lastQuery['offset'];
-			$bolOwnTickets = $lastQuery['own_tickets'];
-
-			if (array_key_exists('offset', $_REQUEST))
-			{
-				$offset = max(intval($_REQUEST['offset']), 0);
-			}
-			if (array_key_exists('limit', $_REQUEST))
-			{
-				$limit = intval($_REQUEST['limit']); 
-			}
-			if ($limit <= 0)
-			{
-				$limit = $defaultLimit;
-			}
 		}
-		else
+
+		if (array_key_exists('offset', $_REQUEST))
 		{
-			$sort = array();
-			if (array_key_exists('sort', $_REQUEST))
+			$offset = max(intval($_REQUEST['offset']), 0);
+		}
+
+		if (array_key_exists('limit', $_REQUEST))
+		{
+			$limit = intval($_REQUEST['limit']); 
+		}
+
+		if ($limit <= 0)
+		{
+			$limit = $defaultLimit;
+		}
+
+		if (array_key_exists('sort', $_REQUEST))
+		{
+			foreach ($_REQUEST['sort'] as $column => $ascDesc)
 			{
-				foreach ($_REQUEST['sort'] as $column => $ascDesc)
+				if (!$ascDesc)
 				{
-					if (!$ascDesc)
-					{
-						continue;
-					}
-					$column = preg_replace("/[^a-z_]+/i", '', $column);
-					if (!$column)
-					{
-						continue;
-					}
-					$sort[$column] = ($ascDesc[0]) == 'a';
+					continue;
 				}
-			}
-	
-			$columns = array();
-			if (array_key_exists('columns', $_REQUEST))
-			{
-				foreach($_REQUEST['columns'] as $column)
+				$column = preg_replace("/[^a-z_]+/i", '', $column);
+				if (!$column)
 				{
-					if (!$column)
-					{
-						continue;
-					}
-					$column = preg_replace("/[^a-z]+/i", '', $column);
-					if (!$column)
-					{
-						continue;
-					}
-					$columns[] = $column;
+					continue;
 				}
-			}
-	
-			$offset = max(array_key_exists('offset', $_REQUEST) ? intval($_REQUEST['offset']) : 0, 0);
-			$limit = array_key_exists('limit', $_REQUEST) ? intval($_REQUEST['limit']) : $defaultLimit;
-			if ($limit <= 0)
-			{
-				$limit = $defaultLimit;
-			}
-	
-			$ownerId = array_key_exists('ownerId', $_REQUEST) ? (strlen($_REQUEST['ownerId']) ? intval($_REQUEST['ownerId']) : NULL) : NULL;
-			$statusId = array_key_exists('statusId', $_REQUEST) ? (strlen($_REQUEST['statusId']) ? intval($_REQUEST['statusId']) : NULL) : NULL;
-			$categoryId = array_key_exists('categoryId', $_REQUEST) ? (strlen($_REQUEST['categoryId']) ? intval($_REQUEST['categoryId']) : NULL) : NULL;
-
-			// If viewing own tickets, enforce owner id to be the id of the currently logged in user
-			if ($bolOwnTickets)
-			{
-				$user = Ticketing_User::getCurrentUser();
-				$ownerId = $user->id;
-			}
-
-			$filter = array();
-			if ($ownerId !== NULL)
-			{
-				$filter['ownerId'] = array('value' => $ownerId, 'comparison' => '=');
-			}
-
-			if ($statusId !== NULL)
-			{
-				$filter['statusId'] = array('value' => $statusId, 'comparison' => '=');
-			}
-
-			if ($categoryId !== NULL)
-			{
-				$filter['categoryId'] = array('value' => $categoryId, 'comparison' => '=');
+				$sort[$column] = ($ascDesc[0]) == 'a';
 			}
 		}
+
+		if (array_key_exists('columns', $_REQUEST))
+		{
+			foreach($_REQUEST['columns'] as $column)
+			{
+				if (!$column)
+				{
+					continue;
+				}
+				$column = preg_replace("/[^a-z]+/i", '', $column);
+				if (!$column)
+				{
+					continue;
+				}
+				$columns[] = $column;
+			}
+		}
+
+		$ownerId = array_key_exists('ownerId', $_REQUEST) ? (strlen($_REQUEST['ownerId']) ? intval($_REQUEST['ownerId']) : NULL) : $ownerId;
+		$statusId = array_key_exists('statusId', $_REQUEST) ? (strlen($_REQUEST['statusId']) ? intval($_REQUEST['statusId']) : NULL) : $statusId;
+		$categoryId = array_key_exists('categoryId', $_REQUEST) ? (strlen($_REQUEST['categoryId']) ? intval($_REQUEST['categoryId']) : NULL) : $categoryId;
+
+		$filter = array();
+		if ($ownerId !== NULL)
+		{
+			$filter['ownerId'] = array('value' => $ownerId, 'comparison' => '=');
+		}
+
+		if ($statusId !== NULL)
+		{
+			$filter['statusId'] = array('value' => $statusId, 'comparison' => '=');
+		}
+
+		if ($categoryId !== NULL)
+		{
+			$filter['categoryId'] = array('value' => $categoryId, 'comparison' => '=');
+		}
+
 
 		$detailsToRender = array();
-		$detailsToRender['own_tickets'] = $bolOwnTickets;
 		$detailsToRender['columns'] = $columns;
 		$detailsToRender['sort'] = $sort;
 		$detailsToRender['filter'] = $filter;
@@ -261,7 +267,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 					if (array_key_exists('save', $_REQUEST))
 					{
-						// WIP :: Validate the passed details and save if valid
+						// Validate the passed details and save if valid
 						$validatedValues = array();
 						foreach ($editableValues as $editableValue)
 						{
@@ -425,7 +431,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		catch(Exception $exception)
 		{
 			$action = 'error';
-			$detailsToRender['error'] .= ': ' . $exception->getMessage();
+			$detailsToRender['error'] .= ($detailsToRender['error'] ? ': ' : '') . $exception->getMessage();
 		}
 
 		// We need to load the details of the ticket specified by a ticket_id in $_REQUEST
@@ -488,19 +494,299 @@ class Application_Handler_Ticketing extends Application_Handler
 
 	public function Correspondance($subPath)
 	{
-		if (!Ticketing_User::currentUserIsTicketingUser())
+		$currentUser = Ticketing_User::getCurrentUser();
+		if (!$currentUser->isUser())
 		{
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
+		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
+
+		if (is_numeric($action))
+		{
+			$_REQUEST['correspondanceId'] = $action;
+			$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
+		}
+
+		$action = str_replace('-', '', $action);
+
 		// WIP :: Kinda obvious ... this needs filling out a bit!
 		// We need to load the details of the contact specified by a contact_id in $_REQUEST
 		$detailsToRender = array();
+
+		$correspondance = Ticketing_Correspondance::getForId($_REQUEST['correspondanceId']);
+
+		$permittedActions = $this->getPermittedCorrespondanceActions($currentUser, $correspondance);
+
+		// Default the action if the selected action is not permitted
+		if (array_search($action, $permittedActions) === FALSE)
+		{
+			$action = 'error';
+			$detailsToRender['error'] = 'You are not authorised to perform that action.';
+		}
+
+		$editableValues = array();
+		$invalidValues = array();
+
+		try
+		{
+			if (!$correspondance && $action != 'create')
+			{
+				$detailsToRender['error'] = 'Unable to perform action';
+				throw new Exception('No correspondance selected.');
+			}
+
+			switch ($action)
+			{
+				case 'delete':
+
+					$correspondance->delete();
+
+					// Deleted the correspondance. Where to now? The ticket?
+					return $this->Ticket(array($correspondance->ticketId, 'view'));
+
+				case 'send':
+				case 'resend':
+
+					$correspondance->emailToCustomer();
+
+					break;
+
+				case 'create':
+
+					$ticketId = count($subPath) && is_numeric($subPath[0]) ? intval($subPath[0]) : (array_key_exists('ticketId', $_REQUEST) ? intval($_REQUEST['ticketId']) : NULL);
+
+					if ($ticketId === NULL)
+					{
+						throw new Exception('No ticket specified for adding correspondance to.');
+					}
+
+					$correspondance = Ticketing_Correspondance::createBlank();
+					$correspondance->user = $currentUser;
+					$correspondance->ticketId = $ticketId;
+					$detailsToRender['ticket'] = $correspondance->getTicket();
+					$correspondance->summary = $detailsToRender['ticket']->subject;
+					$correspondance->sourceId = TICKETING_CORRESPONDANCE_SOURCE_PHONE;
+					$correspondance->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
+
+				case 'edit':
+					// WIP :: FINISH THIS OFF FOR VERSION 1
+					$editableValues[] = 'summary';
+					$editableValues[] = 'details';
+					$editableValues[] = 'contactId';
+
+					if (!$correspondance->isSaved() || ($correspondance->isOutgoing() && $correspondance->isNotSent()))
+					{
+						$editableValues[] = 'sourceId';
+						$editableValues[] = 'customerGroupEmailId';
+					}
+
+					if ($action == 'create' || ($correspondance->isOutgoing() && $correspondance->isNotSent() && !$correspondance->isEmail()))
+					{
+						$editableValues[] = 'deliveryStatusId';
+					}
+
+					// Now need to validate the passed values and save if appropriate
+					if (array_key_exists('save', $_REQUEST))
+					{
+						// Validate the passed details and save if valid
+						$validatedValues = array();
+						foreach ($editableValues as $editableValue)
+						{
+							$value = array_key_exists($editableValue, $_REQUEST) ? $_REQUEST[$editableValue] : NULL;
+							if ($value !== NULL && !is_array($value))
+							{
+								$value = trim($value);
+							}
+							switch ($editableValue)
+							{
+								case 'summary':
+									$value =  trim($value);
+									if (!$value)
+									{
+										$correspondance->summary = '';
+										$invalidValues[$editableValue] = 'You must specify a subject for the correspondance.';
+									}
+									else
+									{
+										$correspondance->summary = $value;
+									}
+									break;
+
+								case 'details':
+									$value =  trim($value);
+									if (!$value)
+									{
+										$correspondance->details = '';
+										$invalidValues[$editableValue] = 'You must provide details of the correspondance.';
+									}
+									else
+									{
+										$correspondance->details = $value;
+									}
+									break;
+
+								case 'contactId':
+									$value = Ticketing_Contact::getForId(intval($value));
+									if (!$value)
+									{
+										$correspondance->contactId = NULL;
+										$invalidValues[$editableValue] = 'You must select a contact.';
+									}
+									else
+									{
+										$correspondance->contactId = $value->id;
+									}
+									break;
+
+								case 'sourceId':
+									$value = Ticketing_Correspondance_Source::getForId(intval($value));
+									if (!$value)
+									{
+										$correspondance->sourceId = NULL;
+										$invalidValues[$editableValue] = 'You must specify a source for the correspondance.';
+										break;
+									}
+									else
+									{
+										$correspondance->sourceId = $value->id;
+									}
+									break;
+
+								case 'customerGroupEmailId':
+									$value = Ticketing_Customer_Group_Email::getForId(intval($value));
+									if (!$value)
+									{
+										$correspondance->customerGroupEmailId = NULL;
+										$invalidValues[$editableValue] = 'You must specify a customer group email address.';
+									}
+									else
+									{
+										$correspondance->customerGroupEmailId = $value->id;
+									}
+									break;
+
+								case 'deliveryStatusId':
+									// WIP :: Statuses that can be set are limited! Don't accept just because it's valid!!!
+									$value = Ticketing_Correspondance_Delivery_Status::getForId(intval($value));
+									if (!$value)
+									{
+										$correspondance->deliveryStatusId = NULL;
+										$invalidValues[$editableValue] = 'You must specify a delivery status.';
+									}
+									else
+									{
+										$correspondance->deliveryStatusId = $value->id;
+									}
+									break;
+							}
+						}
+
+						if (!empty($invalidValues))
+						{
+							$detailsToRender['error'] = 'Please complete all mandatory fields.';
+							$detailsToRender['saved'] = FALSE;
+						}
+						else
+						{
+							$isNew = !$correspondance->isSaved();
+							$correspondance->save();
+							if ($isNew && $correspondance->isEmail() && $correspondance->isOutgoing() && $correspondance->isSent())
+							{
+								// We need to ensure that the email is sent
+								$correspondance->emailToCustomer();
+								$detailsToRender['email_sent'] = TRUE;
+							}
+							$detailsToRender['saved'] = TRUE;
+							$action = 'save';
+						}
+					}
+					else
+					{
+						$detailsToRender['saved'] = FALSE;
+					}
+
+					break;
+	
+				case 'error':
+				case 'view':
+				default:
+					break;
+			}
+		}
+		catch(Exception $exception)
+		{
+			$action = 'error';
+			$detailsToRender['error'] .= ($detailsToRender['error'] ? ': ' : '') . $exception->getMessage();
+		}
+
+		$detailsToRender['correspondance'] = $correspondance;
+		$detailsToRender['action'] = $action;
+		$detailsToRender['permitted_actions'] = $this->getPermittedCorrespondanceActions($currentUser, $correspondance);
 		$detailsToRender['ticketId'] = array_key_exists('ticketId', $_REQUEST) ? $_REQUEST['ticketId'] : NULL;
-		$detailsToRender['correspondance'] = Ticketing_Correspondance::getForId($_REQUEST['correspondanceId']);
+		$detailsToRender['editable_values'] = $editableValues;
+		$detailsToRender['invalid_values'] = $invalidValues;
 
 		$this->LoadPage('ticketing_correspondance', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
+
+
+	private function getPermittedCorrespondanceActions($user, $correspondance)
+	{
+		$permittedActions = array();
+
+		if ($correspondance)
+		{
+			if ($correspondance->isSaved())
+			{
+				$permittedActions[] = 'view';
+			}
+
+			if ($user->isAdminUser())
+			{
+				if ($correspondance->isSaved())
+				{
+					if ($correspondance->isOutgoing())
+					{
+						$permittedActions[] = 'edit';
+						if ($correspondance->isNotSent())
+						{
+							$permittedActions[] = 'delete';
+						}
+					}
+					else
+					{
+						$permittedActions[] = 'delete';
+					}
+				}
+			}
+			else
+			{
+				if ($correspondance->isOutgoing() && $correspondance->isNotSent() && $correspondance->isSaved())
+				{
+					$permittedActions[] = 'edit';
+					$permittedActions[] = 'delete';
+				}
+			}
+
+			if ($correspondance->isOutgoing() && $correspondance->isEmail() && $correspondance->isSaved())
+			{
+				if ($correspondance->isNotSent())
+				{
+					$permittedActions[] = 'send';
+				}
+				else
+				{
+					$permittedActions[] = 'resend';
+				}
+			}
+		}
+
+		$permittedActions[] = 'create';
+
+		return $permittedActions;
+	}
+
 
 	public function Attachment($subPath)
 	{
@@ -512,12 +798,21 @@ class Application_Handler_Ticketing extends Application_Handler
 		// WIP :: Kinda obvious ... this needs filling out a bit!
 		$detailsToRender = array();
 		$detailsToRender['ticketId'] = array_key_exists('ticketId', $_REQUEST) ? $_REQUEST['ticketId'] : NULL;
-		$detailsToRender['correspondanceId'] = array_key_exists('correspondanceId', $_REQUEST) ? $_REQUEST['correspondanceId'] : NULL;
-		$detailsToRender['attachment'] = Ticketing_Attachment::getForId($_REQUEST['attachmentId']);
 
-		$this->LoadPage('ticketing_attachment', HTML_CONTEXT_DEFAULT, $detailsToRender);
+		$attachmentId = count($subPath) ? $subPath[0] : NULL;
+		if (is_numeric($attachmentId))
+		{
+			$_REQUEST['attachmentId'] = $attachmentId;
+		}
+
+		$attachment = Ticketing_Attachment::getForId($_REQUEST['attachmentId']);
+
+		header("Content-Type: " . $attachment->mimeType);
+		header("Content-Disposition: download; filename=\"" . $attachment->fileName . "\"");
+		echo $attachment->getFileContent();
+		exit;
 	}
-	
+
 	// Manages the Ticketing Summary Report functionality
 	public function SummaryReport()
 	{

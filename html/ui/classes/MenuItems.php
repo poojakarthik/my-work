@@ -129,7 +129,7 @@ class MenuItems
 	{
 		$this->strContextMenuLabel = "View All Tickets";
 		$this->strLabel = "Tickets";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/System";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -150,7 +150,7 @@ class MenuItems
 	{
 		$this->strContextMenuLabel = "View My Tickets";
 		$this->strLabel = "My Tickets";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets/Mine";
 	}
 	
 	//------------------------------------------------------------------------//

@@ -17,11 +17,30 @@ class Ticketing_Correspondance_Source
 			case 'value':
 				return $this->arrProperties['Id'];
 			case 'name':
+				return $this->arrProperties['Name'];
 			case 'description':
 				return $this->arrProperties['Description'];
 			case 'constant':
 				return $this->arrProperties['Constant'];
 		}
+	}
+
+	public static function getAvailableSourcesForUser($user=NULL)
+	{
+		if (!$user)
+		{
+			$user = Ticketing_User::getCurrentUser();
+		}
+		$available = array();
+		if ($user->isUser())
+		{
+			$available[] = self::getForId(TICKETING_CORRESPONDANCE_SOURCE_PHONE);
+			$available[] = self::getForId(TICKETING_CORRESPONDANCE_SOURCE_EMAIL);
+		}
+		if ($user->isAdminUser())
+		{
+		}
+		return $available;
 	}
 
 	public static function listAll()

@@ -313,6 +313,10 @@ class Ticketing_Ticket
 	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
 	{
 		// Note: Email address should be unique, so only fetch the first record
+		if (!$strSort || empty($strSort))
+		{
+			$strSort = 'creation_datetime DESC';
+		}
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 
 			self::getColumns(), 

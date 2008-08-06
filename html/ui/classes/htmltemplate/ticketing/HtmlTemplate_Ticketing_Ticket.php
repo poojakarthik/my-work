@@ -91,7 +91,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		?>
 
-		<form id="view_ticket" name="view_ticket" target="">
+		<form id="view_ticket" name="view_ticket" method="POST">
 			<table id="ticketing" name="ticketing" class="reflex">
 				<caption>
 					<div id="caption_bar" name="caption_bar">
@@ -201,6 +201,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$actionLinks = array();
 		foreach($this->mxdDataToRender['permitted_actions'] as $action)
 		{
+			$id = '';
 			if ($action !== 'create')
 			{
 				$id = $ticket->id . '/';
@@ -568,6 +569,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 									echo "<option value=\"$serviceId\"$selected\">" . htmlspecialchars($fnn) . "</option>";
 								}
 								echo "</select>";
+								if (array_search('accountId', $editableValues) !== FALSE)
+								{
+									echo htmlspecialchars(' (Change account to see available services)');
+								}
 							}
 							else
 							{
@@ -647,7 +652,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$correspondances = $ticket->getCorrespondances();
 		$noCorrespondances = count($correspondances) == 0;
 
-		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondance/Create\">Create</a>";
+		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondance/Create/" . $ticket->id . "\">Create</a>";
 
 		?>
 <br/>
@@ -698,9 +703,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					$contactName = $contact ? $contact->getName() : '[No contact]';
 					$sourceName = $correspondance->getSource()->name;
 					$deliveryStatusName = $correspondance->getDeliveryStatus()->name;
+					$link = Flex::getUrlBase() . 'reflex.php/Ticketing/Correspondance/' . $correspondance->id . '/View';
 ?>
 		<tr<?=$altClass?>>
-			<td><?=$correspondance->summary?></td>
+			<td><a href="<?=$link?>"><?=$correspondance->summary?></a></td>
 			<td><?=$contactName?></td>
 			<td><?=$sourceName?></td>
 			<td><?=$deliveryStatusName?></td>
