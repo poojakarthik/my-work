@@ -173,6 +173,27 @@ class MenuItems
 		$this->strLabel = "New Ticket";
 		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Create";
 	}
+
+	//------------------------------------------------------------------------//
+	// TicketingSummaryReport
+	//------------------------------------------------------------------------//
+	/**
+	 * TicketingSummaryReport()
+	 *
+	 * Compiles the Href to be executed when the TicketingSummaryReport menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the TicketingSummaryReport menu item is clicked
+	 * 
+	 * @return	string				Href to be executed when the TicketingSummaryReport menu item is clicked
+	 *
+	 * @method
+	 */
+	function TicketingSummaryReport()
+	{
+		$this->strContextMenuLabel = "Summary";
+		$this->strLabel = "Summary";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/SummaryReport";
+	}
 	
 
 	//------------------------------------------------------------------------//
