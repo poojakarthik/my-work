@@ -49,7 +49,7 @@ elseif ($selCDRInvoiced->Execute(Array('Service' => $intService, 'StartDatetime'
 else
 {
 	$arrOutput	= Array();
-	
+	$arrCDR		= Array();
 	while ($arrCDR = $selCDR->Fetch())
 	{
 		foreach ($arrCDR as $strField=>&$mixValue)
