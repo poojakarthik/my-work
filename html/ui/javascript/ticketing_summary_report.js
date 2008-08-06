@@ -190,7 +190,7 @@ function FlexTicketingSummaryReportClass()
 			}
 			else
 			{
-				$Alert("Generating the report failed");
+				$Alert("Generating the report failed<br />" + response.Message);
 			}
 			
 		}

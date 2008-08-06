@@ -33,9 +33,44 @@ class JSON_Handler_Ticketing extends JSON_Handler
 	// This will run the report, 
 	public function buildSummaryReport($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses, $strEarliestTime, $strLatestTime, $strRenderMode)
 	{
+		$arrErrors = array();
 		// Do preliminary validation of the Time constraints
+		$arrTimeConstraints = array("EarliestTime"	=> $strEarliestTime,
+									"LatestTime"	=> $strLatestTime);
+		foreach ($arrTimeConstraints as $strConstraint=> $strTime)
+		{
+			$strTime = $strTime;
+			if ($strTime === "" || $strTime === NULL)
+			{
+				$arrTimeConstraints[$strConstraint] = NULL;
+			}
+			else
+			{
+				// Some sort of datetime has been declared
+				// Validate it
+				if (preg_match('/^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2} (0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/', $strTime))
+				{
+					// It is valid, convert it to ISO DateTime format
+					
+					//$arrTimeParts = explode(" ", $strTime);
+					echo "$strTime is in the correct format | ";
+					//TODO!
+				}
+				else
+				{
+					// It is invalid
+					$arrErrors[] = "$strConstraint ($strTime) is invalid";
+				}
+			}
+		}
 		
-		
+		if (count($arrErrors) > 0)
+		{
+			// Errors were found
+			return array(	"Success"	=> FALSE,
+							"Message"	=> "<pre>". implode("\n", $arrErrors) ."</pre>"
+						);
+		}
 		
 		$objReportBuilder = new Ticketing_Summary_Report();
 		$objReportBuilder->SetBoundaryConditions($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses);
