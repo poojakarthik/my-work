@@ -466,7 +466,7 @@ define("SQL_QUERY"				, 100);
 define("SQL_STATEMENT"			, 200);
 
 // Provisioning Request Status
-$GLOBALS['*arrConstant']	['RequestStatus']	[300]	['Constant']	= 'REQUEST_STATUS_WAITING';
+/*$GLOBALS['*arrConstant']	['RequestStatus']	[300]	['Constant']	= 'REQUEST_STATUS_WAITING';
 $GLOBALS['*arrConstant']	['RequestStatus']	[300]	['Description']	= 'Awaiting Dispatch';
 $GLOBALS['*arrConstant']	['RequestStatus']	[301]	['Constant']	= 'REQUEST_STATUS_PENDING';
 $GLOBALS['*arrConstant']	['RequestStatus']	[301]	['Description']	= 'Pending';
@@ -494,7 +494,7 @@ $GLOBALS['*arrConstant']	['ResponseStatus']	[401]	['Description']	= 'Unable to F
 $GLOBALS['*arrConstant']	['ResponseStatus']	[402]	['Constant']	= 'RESPONSE_STATUS_IMPORTED';
 $GLOBALS['*arrConstant']	['ResponseStatus']	[402]	['Description']	= 'Successfully Imported';
 $GLOBALS['*arrConstant']	['ResponseStatus']	[403]	['Constant']	= 'RESPONSE_STATUS_REDUNDANT';
-$GLOBALS['*arrConstant']	['ResponseStatus']	[403]	['Description']	= 'Redundant';
+$GLOBALS['*arrConstant']	['ResponseStatus']	[403]	['Description']	= 'Redundant';*/
 
 
 // Provisioning Request Status
