@@ -34,7 +34,12 @@ class JSON_Handler_Ticketing extends JSON_Handler
 	public function buildSummaryReport($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses, $strEarliestTime, $strLatestTime, $strRenderMode)
 	{
 		
-		return print_r($arrOwners, TRUE);
+		$objReportBuilder = new Ticketing_Summary_Report();
+		$objReportBuilder->SetBoundaryConditions($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses);
+
+		$objReportBuilder->BuildReport();
+		
+		return $objReportBuilder->GetReport($strRenderMode);// . "<br /><pre>". print_r($objReportBuilder->GetTotals(), TRUE) ."</pre>";
 	}
 	
 

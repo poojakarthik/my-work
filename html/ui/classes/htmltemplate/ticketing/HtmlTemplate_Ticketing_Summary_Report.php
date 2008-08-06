@@ -107,6 +107,10 @@ echo "
 		</tfoot>
 	</table>
 </form>
+
+<!-- Inline report results go here -->
+<div id='ReportResultsContainer'>
+</div>
 <script type='text/javascript'>Flex.TicketingSummaryReport.Initialise()</script>
 
 ";

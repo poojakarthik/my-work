@@ -169,6 +169,13 @@ function FlexTicketingSummaryReportClass()
 		funcSuccess = function(response)
 		{
 			Vixen.Popup.ClosePageLoadingSplash();
+			
+			var elmReportContainer = $ID("ReportResultsContainer");
+			elmReportContainer.innerHTML = response;
+			return true;
+			
+			$Alert(response);
+			return;
 			if (typeof(response) == "string")
 			{
 				alert("<pre>" + response + "</pre>");
