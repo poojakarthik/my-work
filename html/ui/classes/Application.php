@@ -118,7 +118,7 @@ class Application
 			ContextMenu()->Ticketing->ViewUserTickets();
 			ContextMenu()->Ticketing->AddTicket();
 		}
-		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) !== TICKETING_USER_PERMISSION_ADMIN)
+		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) === TICKETING_USER_PERMISSION_ADMIN)
 		{
 			ContextMenu()->Ticketing->Reports->TicketingSummaryReport();
 			
@@ -241,7 +241,7 @@ class Application
 			ContextMenu()->Ticketing->ViewUserTickets();
 			ContextMenu()->Ticketing->AddTicket();
 		}
-		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) !== TICKETING_USER_PERMISSION_ADMIN)
+		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) === TICKETING_USER_PERMISSION_ADMIN)
 		{
 			ContextMenu()->Ticketing->Reports->TicketingSummaryReport();
 			
