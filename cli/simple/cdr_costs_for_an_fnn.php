@@ -74,7 +74,7 @@ else
 	if (count($arrOutput))
 	{
 		//array_unshift($arrOutput, array_keys($arrCDR));
-		CliEcho("Writing file...".file_put_contents("/home/rdavis/cdr_cost_0298369100.csv", $arrOutput)."bytes");
+		CliEcho("Writing file...".file_put_contents("/home/rdavis/cdr_cost_0298369100.csv", implode("\n", $arrOutput))." bytes");
 	}
 	else
 	{
