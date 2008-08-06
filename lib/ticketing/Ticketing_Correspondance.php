@@ -24,7 +24,7 @@ class Ticketing_Correspondance
 	private $deliveryStatusId = NULL;
 	private $customerGroupEmailId = NULL;
 	private $deliveryDatetime = NULL;
-	private $createdDetetime = NULL;
+	private $creationDatetime = NULL;
 
 	private $customerGroupEmail = NULL;
 	private $contact = NULL;
@@ -200,7 +200,7 @@ class Ticketing_Correspondance
 		}
 		else
 		{
-			// If a contact does not exists for the email address, one will be created
+			// If a contact does not exists for the email address, one will be creation
 			$objCorrespondance->userId = NULL;
 			$objCorrespondance->contact = Ticketing_Contact::getForEmailAddress($from, $name);
 			$objCorrespondance->contactId = $objCorrespondance->contact->id;
@@ -223,7 +223,7 @@ class Ticketing_Correspondance
 			$objCorrespondance->ticketId = $arrDetails['ticket_id'];
 		}
 
-		// Load the ticket for this correspondance (if a ticket does not exist, one will be created)
+		// Load the ticket for this correspondance (if a ticket does not exist, one will be creation)
 		// Note: If this record has a ticket number that does not exist, a new ticket will be created.
 		$ticket = Ticketing_Ticket::forCorrespondance($objCorrespondance);
 
@@ -265,7 +265,7 @@ class Ticketing_Correspondance
 	{
 		if ($this->user == NULL)
 		{
-			$this->user = Ticketing_Contact::getForId($this->userId);
+			$this->user = Ticketing_User::getForId($this->userId);
 		}
 		return $this->user;
 	}
@@ -540,9 +540,13 @@ class Ticketing_Correspondance
 			return TRUE;
 		}
 		$arrValues = $this->getValuesToSave();
+
+		$now = date('Y-m-d H:i:s');
+
 		// No id means that this must be a new record
 		if (!$this->id)
 		{
+			$this->creationDatetime = $arrValues['creation_datetime'] = $now;
 			$statement = new StatementInsert('ticketing_correspondance', $arrValues);
 		}
 		// This must be an update
