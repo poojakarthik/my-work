@@ -60,6 +60,10 @@
 	padding-right: 1em;
 }
 
+#nav li ul a:first-child {
+	border-top: .1em solid #111;
+}
+
 #nav li ul a {
 	width: 14em;
 	border-left: .1em solid #111;
