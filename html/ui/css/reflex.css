@@ -224,3 +224,32 @@ div.ButtonContainer {
 	padding: .25em;
 	margin: .25em;
 }
+
+table tr.Even {
+	background-color: #eee;
+}
+
+table tr.Odd {
+	background-color: #ccc;
+}
+
+table tr.Hover {
+	background-color: #fff;
+}
+
+table tr.First {
+	margin-top: .25em;
+	background-color: #111;
+	color: #eee;
+}
+
+table.Listing {
+	margin: .25em;
+	width: 99%;
+	border .1em solid #111;
+}
+
+table.Listing tr.PrimarySelected th, table.Listing tr.PrimarySelected td {
+	background-color:#11FF33;
+	vertical-align:top;
+}
