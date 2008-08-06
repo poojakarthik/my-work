@@ -211,7 +211,7 @@ $this->RecordSet[] = $arrRecord;
 		if ($this->_bolAllCategories)
 		{
 			// It is
-			$this->AddTicketTotalToCategory("All", $mixCategory, $intStatus, $intTicketCount);
+			$this->AddTicketTotalToCategory($mixOwner, "All", $intStatus, $intTicketCount);
 		}
 		// Check if the individual category is being requested
 		if (array_key_exists($mixCategory, $this->_arrTotals[$mixOwner]))
@@ -227,7 +227,7 @@ $this->RecordSet[] = $arrRecord;
 		if (array_key_exists($intStatus, $this->_arrTotals[$mixOwner][$mixCategory]['Status']))
 		{
 			// It is.  Set it
-			$this->_arrTotals[$mixOwner][$mixCategory]['Status'][$intStatus] = $intTicketCount;
+			$this->_arrTotals[$mixOwner][$mixCategory]['Status'][$intStatus] += $intTicketCount;
 		}
 		
 		// Check if the StatusType of this status is being requested
