@@ -74,34 +74,34 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 		
 		// 5:	Populate service_line_status_update Table
 		$strSQL = "INSERT INTO service_line_status_update (id, current_line_status, provisioning_type, provisioning_type_status, new_line_status) VALUES 
-					(NULL,	NULL,	900,	303,	501)
-					(NULL,	NULL,	900,	302,	505)
-					(NULL,	NULL,	900,	301,	500)
-					(NULL,	501,	900,	303,	501)
-					(NULL,	505,	900,	303,	505)
-					(NULL,	NULL,	901,	303,	501)
-					(NULL,	NULL,	901,	302,	505)
-					(NULL,	NULL,	901,	301,	500)
-					(NULL,	501,	901,	303,	501)
-					(NULL,	505,	901,	303,	505)
-					(NULL,	NULL,	902,	303,	503)
-					(NULL,	NULL,	903,	303,	501)
-					(NULL,	NULL,	906,	303,	507)
-					(NULL,	NULL,	907,	303,	507)
-					(NULL,	NULL,	910,	303,	506)
-					(NULL,	501,	910,	303,	501)
-					(NULL,	NULL,	911,	303,	506)
-					(NULL,	501,	911,	303,	501)
-					(NULL,	NULL,	913,	303,	501)
-					(NULL,	NULL,	913,	302,	505)
-					(NULL,	NULL,	913,	301,	500)
-					(NULL,	501,	913,	303,	501)
-					(NULL,	505,	913,	303,	505)
-					(NULL,	NULL,	914,	303,	507)
-					(NULL,	NULL,	915,	303,	506)
-					(NULL,	NULL,	916,	303,	506)
-					(NULL,	501,	916,	303,	501)
-					(NULL,	NULL,	917,	303,	506)
+					(NULL,	NULL,	900,	303,	501),
+					(NULL,	NULL,	900,	302,	505),
+					(NULL,	NULL,	900,	301,	500),
+					(NULL,	501,	900,	303,	501),
+					(NULL,	505,	900,	303,	505),
+					(NULL,	NULL,	901,	303,	501),
+					(NULL,	NULL,	901,	302,	505),
+					(NULL,	NULL,	901,	301,	500),
+					(NULL,	501,	901,	303,	501),
+					(NULL,	505,	901,	303,	505),
+					(NULL,	NULL,	902,	303,	503),
+					(NULL,	NULL,	903,	303,	501),
+					(NULL,	NULL,	906,	303,	507),
+					(NULL,	NULL,	907,	303,	507),
+					(NULL,	NULL,	910,	303,	506),
+					(NULL,	501,	910,	303,	501),
+					(NULL,	NULL,	911,	303,	506),
+					(NULL,	501,	911,	303,	501),
+					(NULL,	NULL,	913,	303,	501),
+					(NULL,	NULL,	913,	302,	505),
+					(NULL,	NULL,	913,	301,	500),
+					(NULL,	501,	913,	303,	501),
+					(NULL,	505,	913,	303,	505),
+					(NULL,	NULL,	914,	303,	507),
+					(NULL,	NULL,	915,	303,	506),
+					(NULL,	NULL,	916,	303,	506),
+					(NULL,	501,	916,	303,	501),
+					(NULL,	NULL,	917,	303,	506),
 					(NULL,	501,	917,	303,	501);";
 		if (!$qryQuery->Execute($strSQL))
 		{
