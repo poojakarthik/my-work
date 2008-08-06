@@ -73,7 +73,7 @@ else
 	// Output to CSV
 	if (count($arrOutput))
 	{
-		array_unshift($arrOutput, array_keys($arrCDR));
+		//array_unshift($arrOutput, array_keys($arrCDR));
 		CliEcho("Writing file...".file_put_contents("/home/rdavis/cdr_cost_0298369100.csv", $arrCDR)."bytes");
 	}
 	else
