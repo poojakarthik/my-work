@@ -89,7 +89,7 @@
 		$arrColumns['PreselectionStatusDate']	= NULL;
 		$this->_ubiLineStatus			= new StatementUpdateById("Service", $arrColumns);
 		
-		$this->_selLineStatusAction		= new StatementSelect("provisioning_type LEFT JOIN service_line_status_update ON service_line_status_update.provisioning_type = provisioning_type.id", "new_line_status, provisioning_type_nature", "(current_line_status = <LineStatus> OR current_line_status IS NULL) AND provisioning_type = <Request>", "ISNULL(current_line_status) ASC", 1);
+		$this->_selLineStatusAction		= new StatementSelect("provisioning_type LEFT JOIN service_line_status_update ON service_line_status_update.provisioning_type = provisioning_type.id", "new_line_status, provisioning_type_nature", "(current_line_status = <LineStatus> OR current_line_status IS NULL) AND provisioning_request_status = <RequestStatus> AND provisioning_type = <Request>", "ISNULL(current_line_status) ASC", 1);
 
 		$this->_selProvisioningType		= new StatementSelect("provisioning_type", "*", "id = <id>");
  	}
@@ -369,7 +369,7 @@
 				}
 				
 				// Get the Update Details for the Current Status + the Request Type
-				if ($this->_selLineStatusAction->Execute(Array('LineStatus' => $intCurrentLineStatus, 'Request' => $arrProvisioningType['id'])))
+				if ($this->_selLineStatusAction->Execute(Array('LineStatus' => $intCurrentLineStatus, 'Request' => $arrProvisioningType['id'], 'RequestStatus' => $arrResponse['RequestStatus'])))
 				{
 					$arrLineStatusAction		= $this->_selLineStatusAction->Fetch();
 					$strCurrentEffectiveDate	= $strEffectiveDate;
