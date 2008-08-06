@@ -434,7 +434,7 @@
 		}
 		else
 		{
-			return "Unable to retrieve Line Status Details for Service '{$intService}'";
+			return "Unable to retrieve Line Status Details for Service '{$arrResponse['Service']}'";
 		}
 	}
  }
