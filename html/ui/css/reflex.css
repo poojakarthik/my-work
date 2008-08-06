@@ -272,3 +272,66 @@ table.Listing tr.PrimarySelected td {
 	background-color:#11FF33;
 	vertical-align:top;
 }
+
+/* Calendar styling. */
+
+.date-time td {
+    cursor: default;
+    text-align: center !important;
+    border-bottom: .1em dotted #c0c0c0;
+}
+
+.date-time .bar {
+    text-align: center;
+    background: #F2F5FF;
+    padding: .2em 0 .2em;
+}
+
+
+.date-time .date-time-active:hover {
+    color: #fff;
+    background: #666;
+}
+
+.date-time td.date-time-active-today {
+    border: .1em solid #111;
+}
+
+.date-time button {
+    border: none;
+    padding: 0;
+}
+
+.date-time title {
+    font-weight: bold;
+}
+
+.date-time th {
+    background: #fff;
+    color: #000;
+    border-bottom: .1em solid #c0c0c0;
+    text-align: center !important;
+    margin-top: .2em;
+}
+
+.date-time option, .date-time select {
+    font-size: 1em;
+}
+
+.date-time {
+    border: .2em solid #111;
+    background: #eee;
+    padding: .1em;
+    width: 15em;
+}
+
+.date-time table {
+    width: 100%;
+    font-size: 1em;
+    margin: 0 auto;
+}
+
+a img {
+	border: 0;
+	vertical-align: middle;
+}
