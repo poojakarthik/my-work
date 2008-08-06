@@ -20,6 +20,7 @@ if ($intServiceCount = $selServices->Execute())
 		CliEcho(" * ($intCount/$intServiceCount){$arrService['Account']}::{$arrService['FNN']}...", FALSE);
 		
 		// DETERMINE CURRENT SERVICE LINE STATUS
+		CliEcho("FS...", FALSE);
 		if ($selResponses->Execute(Array('Service' => $arrService['Id'], 'Nature' => REQUEST_TYPE_NATURE_FULL_SERVICE)) !== FALSE)
 		{
 			// Get all Responses
@@ -47,7 +48,6 @@ if ($intServiceCount = $selServices->Execute())
 					CliEcho($mixResponse);
 				}
 			}
-			CliEcho("FS...", FALSE);
 		}
 		else
 		{
@@ -56,6 +56,7 @@ if ($intServiceCount = $selServices->Execute())
 		}
 		
 		// DETERMINE CURRENT PROVISIONING LINE STATUS
+		CliEcho("PS...", FALSE);
 		if ($selResponses->Execute(Array('Service' => $arrService['Id'], 'Nature' => REQUEST_TYPE_NATURE_PRESELECTION)) !== FALSE)
 		{
 			// Get all Responses
@@ -83,13 +84,13 @@ if ($intServiceCount = $selServices->Execute())
 					CliEcho($mixResponse);
 				}
 			}
-			CliEcho("PS...");
 		}
 		else
 		{
 			CliEcho("ERROR: There was an error with Provisioning selResponses: ".$selResponses->Error());
 			exit(2);
 		}
+		CliEcho();
 	}
 }
 else
