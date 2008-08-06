@@ -239,6 +239,7 @@ class Application_Handler_Ticketing extends Application_Handler
 				case 'create':
 
 					$ticket = Ticketing_Ticket::createBlank();
+					$ticket->owner = $currentUser;
 					$editableValues[] = 'accountId';
 
 				case 'edit':

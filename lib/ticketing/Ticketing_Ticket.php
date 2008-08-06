@@ -22,6 +22,7 @@ class Ticketing_Ticket
 	protected $arrServices = NULL;
 
 	protected $_saved = FALSE;
+	protected $owner = NULL;
 
 	public static function forCorrespondance(Ticketing_Correspondance $correspondance)
 	{
@@ -425,6 +426,10 @@ class Ticketing_Ticket
 
 	public function getCategory()
 	{
+		if ($this->owner !== NULL)
+		{
+			return $this->owner;
+		}
 		return Ticketing_Category::getForId($this->categoryId);
 	}
 
@@ -518,6 +523,15 @@ class Ticketing_Ticket
 				else if ($strName == 'contact')
 				{
 					$this->contactId = $mxdValue->id;
+				}
+
+				if ($strName == 'ownerId')
+				{
+					$this->owner = NULL;
+				}
+				else if ($strName == 'owner')
+				{
+					$this->ownerId = $mxdValue->id;
 				}
 
 				if ($strName == 'customerGroupEmailId')
