@@ -842,7 +842,9 @@ class Application_Handler_Ticketing extends Application_Handler
 					// Send it to the user
 					//header("Content-Type: application/x-msexcel");
 					header("Content-Type: application/excel");
+					//header("Content-Type: text/plain");
 					header("Content-Disposition: attachment; filename=\"" . "ticketing_summary_report_". date("Y_m_d") . ".xls" . "\"");
+//echo "This is a test.  The contents of the report is ". count($_SESSION['Ticketing']['SummaryReport']['Content']) ." chars long";
 					echo $_SESSION['Ticketing']['SummaryReport']['Content'];
 					
 					// Remove it from the Session

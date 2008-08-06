@@ -398,6 +398,7 @@ $this->RecordSet[] = $arrRecord;
 	<body>". $this->GenerateAsHtml() ."</body>
 </html>
 ";
+		return $strReport;
 	}
 
 }

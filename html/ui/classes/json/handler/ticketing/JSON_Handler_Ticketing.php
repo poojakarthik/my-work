@@ -100,7 +100,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		}
 		else
 		{
-			// Rener it in the page
+			// Render it in the page
 			return array(	"Success" => TRUE,
 							"Report" => $strReport
 						);
