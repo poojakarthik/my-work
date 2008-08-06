@@ -691,6 +691,10 @@ class Application_Handler_Ticketing extends Application_Handler
 						else
 						{
 							$isNew = !$correspondance->isSaved();
+							if (!$correspondance->deliveryDatetime && (!$correspondance->isOutgoing() || $correspondance->isSent()))
+							{
+								$correspondance->deliveryDatetime = date('Y-m-d H:i:s');;
+							}
 							$correspondance->save();
 							if ($isNew && $correspondance->isEmail() && $correspondance->isOutgoing() && $correspondance->isSent())
 							{
@@ -747,9 +751,10 @@ class Application_Handler_Ticketing extends Application_Handler
 			{
 				if ($correspondance->isSaved())
 				{
+					$permittedActions[] = 'edit';
+
 					if ($correspondance->isOutgoing())
 					{
-						$permittedActions[] = 'edit';
 						if ($correspondance->isNotSent())
 						{
 							$permittedActions[] = 'delete';
@@ -763,9 +768,14 @@ class Application_Handler_Ticketing extends Application_Handler
 			}
 			else
 			{
-				if ($correspondance->isOutgoing() && $correspondance->isNotSent() && $correspondance->isSaved())
+				// Allow non-admin users to email anything OTHER than incomming emails or emails that have already been sent emails
+				if ($correspondance->isSaved() && (!$correspondance->isEmail() || ($correspondance->isOutgoing() && !$correspondance->isSent())))
 				{
 					$permittedActions[] = 'edit';
+				}
+
+				if ($correspondance->isOutgoing() && $correspondance->isNotSent() && $correspondance->isSaved())
+				{
 					$permittedActions[] = 'delete';
 				}
 			}

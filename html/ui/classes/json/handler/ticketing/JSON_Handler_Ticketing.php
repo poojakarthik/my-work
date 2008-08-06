@@ -2,7 +2,7 @@
 
 class JSON_Handler_Ticketing extends JSON_Handler
 {
-	public function validateAccount($accountId, $ticketId)
+	public function validateAccount($accountId, $ticketId=NULL)
 	{
 		$response = array();
 		$response['isValid'] = FALSE;
@@ -41,22 +41,53 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		
 		return $objReportBuilder->GetReport($strRenderMode);// . "<br /><pre>". print_r($objReportBuilder->GetTotals(), TRUE) ."</pre>";
 	}
-	
 
 	public function getContactDetails($contactId)
 	{
-		
+		return $this->contactProps(Ticketing_Contact::getForId($contactId));
 	}
 
-	public function getContactEditDetails($customerGroupId, $contactId=NULL)
+	public function saveContactDetails($contactId, $title, $firstName, $lastName, $jobTitle, $email, $fax, $mobile, $phone)
 	{
-		
+		$properties = array();
+
+		if (trim($contactId)) 	$properties['id'] = $contactId;
+		if (trim($title)) 		$properties['title'] = $title;
+		if (trim($firstName)) 	$properties['firstName'] = $firstName;
+		if (trim($lastName)) 	$properties['lastName'] = $lastName;
+		if (trim($jobTitle)) 	$properties['jobTitle'] = $jobTitle;
+		if (trim($email)) 		$properties['email'] = $email;
+		if (trim($fax)) 		$properties['fax'] = $fax;
+		if (trim($mobile)) 		$properties['mobile'] = $mobile;
+		if (trim($phone)) 		$properties['phone'] = $phone;
+
+		$contact = Ticketing_Contact::getWithProperties($properties);
+
+		// Need to associate with an account!!
+
+		return $this->contactProps($contact);
 	}
 
-	public function saveContactDetails($detailsId)
+	private function contactProps($contact)
 	{
-		
+		if (!$contact)
+		{
+			throw new Exception('Processing contact details failed.');
+		}
+		$props = array(
+			'title' 	=> $contact->title,
+			'firstName' => $contact->firstName,
+			'lastName' 	=> $contact->lastName,
+			'jobTitle' 	=> $contact->jobTitle,
+			'email' 	=> $contact->email,
+			'fax' 		=> $contact->fax,
+			'mobile' 	=> $contact->mobile,
+			'phone' 	=> $contact->phone,
+			'contactId' => $contact->id,
+		);
+		return $props;
 	}
+
 }
 
 ?>

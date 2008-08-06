@@ -2,6 +2,12 @@
 
 class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 {
+	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
+	{
+		parent::__construct($intContext, $strId, $mxdDataToRender);
+		$this->LoadJavascript('ticketing_contact');
+	}
+
 	public function Render()
 	{
 		$nrTickets = $this->mxdDataToRender['ticket_count'];

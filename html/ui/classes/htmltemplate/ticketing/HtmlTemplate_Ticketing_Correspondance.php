@@ -2,6 +2,12 @@
 
 class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 {
+	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
+	{
+		parent::__construct($intContext, $strId, $mxdDataToRender);
+		$this->LoadJavascript('ticketing_contact');
+	}
+
 	public function Render()
 	{
 		$correspondance = $this->mxdDataToRender['correspondance'];
@@ -234,7 +240,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 				</tfoot>
 				<tbody>
 <?php
-	if ($editing)
+	if ($correspondance->isSaved())
 	{
 ?>
 					<tr class="alt">
@@ -387,7 +393,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 						</td>
 					</tr>
 <?php
-	if ($editing)
+	if ($correspondance->isSaved())
 	{
 ?>
 					<tr class="alt">

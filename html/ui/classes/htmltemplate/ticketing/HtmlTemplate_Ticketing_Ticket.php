@@ -2,6 +2,13 @@
 
 class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 {
+
+	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
+	{
+		parent::__construct($intContext, $strId, $mxdDataToRender);
+		$this->LoadJavascript('ticketing_contact');
+	}
+
 	public function Render()
 	{
 		$ticket = $this->mxdDataToRender['ticket'];
@@ -197,6 +204,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			?>
 		<div class="message error"><?=$message?></div><?php
 		}
+
+		$editing = $requestedAction == 'Edit';
 
 		$actionLinks = array();
 		foreach($this->mxdDataToRender['permitted_actions'] as $action)
@@ -588,6 +597,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							?>
 						</td>
 					</tr>
+<?php
+if($ticket->isSaved())
+{
+?>
 					<tr class="alt">
 						<td class="title">Created: </td>
 						<td><?=$ticket->creationDatetime?></td>
@@ -596,6 +609,9 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						<td class="title">Last Modified: </td>
 						<td><?=$ticket->modifiedDatetime?></td>
 					</tr>
+<?php
+}
+?>
 				</tbody>
 			</table>
 		</form>

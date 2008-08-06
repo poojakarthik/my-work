@@ -133,6 +133,24 @@ class Ticketing_Contact
 		return new Ticketing_Contact($selContacts->Fetch());
 	}
 
+	public function getWithProperties($properties)
+	{
+		$id = NULL;
+		if (array_key_exists('id', $properties))
+		{
+			$id = $properties['id'];
+			unset($properties['id']);
+			$contact = Ticketing_Contact::getForId($id);
+		}
+		else
+		{
+			$contact = new Ticketing_Contact();
+		}
+		$contact->init($properties);
+		$contact->save();
+		return $contact;
+	}
+
 	public function autoReply()
 	{
 		return $this->autoReply === ACTIVE_STATUS_ACTIVE;
