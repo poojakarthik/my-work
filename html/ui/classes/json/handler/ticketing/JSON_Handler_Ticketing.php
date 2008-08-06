@@ -53,7 +53,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 					// It is valid, convert it to ISO DateTime format
 					
 					//$arrTimeParts = explode(" ", $strTime);
-					echo "$strTime is in the correct format | ";
+					//echo "$strTime is in the correct format | ";
 					//TODO!
 				}
 				else
