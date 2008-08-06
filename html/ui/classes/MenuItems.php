@@ -171,7 +171,7 @@ class MenuItems
 	{
 		$this->strContextMenuLabel = "Add New Ticket";
 		$this->strLabel = "New Ticket";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Add";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Create";
 	}
 	
 
