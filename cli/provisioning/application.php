@@ -226,7 +226,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 	 					// Is this a duplicate?
 	 					$this->_selDuplicate	= new StatementSelect(	"ProvisioningResponse",
 	 																	"Id",
-	 																	"");
+	 																	"Service = <Service> AND FNN = <FNN> AND Carrier = <Carrier> AND Type = <Type> AND Description = <Description> AND EffectiveDate = <EffectiveDate> AND Status = 402");
 	 					if (!$this->_selDuplicate->Execute($arrNormalised))
 	 					{
 		 					// Valid Response
