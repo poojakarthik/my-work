@@ -3,10 +3,14 @@
 // Framework
 require_once("../../flex.require.php");
 
+// Command Line Parameter
+$arrMinId['MinId']		= max(0, (int)$argv[1]);
+
+// Statements
 $arrUpdate				= Array();
 $arrUpdate['Status']	= RESPONSE_STATUS_DUPLICATE;
 $ubiResponse			= new StatementUpdateById("ProvisioningResponse", $arrUpdate);
-$selResponses			= new StatementSelect("ProvisioningResponse", "*", "1");
+$selResponses			= new StatementSelect("ProvisioningResponse", "*", "Id > <MinId>");
 $selDuplicate			= new StatementSelect(	"ProvisioningResponse",
 												"Id",
 												"Id < <Id> AND Service = <Service> AND FNN = <FNN> AND Carrier = <Carrier> AND Type = <Type> AND Description = <Description> AND EffectiveDate = <EffectiveDate> AND Status = 402",
@@ -19,7 +23,7 @@ CliEcho("\n[ MARKING DUPLICATED RESPONSES ]\n");
 $intUpdated		= 0;
 $intCount		= 0;
 $intTimeStart	= time();
-if (($intTotal = $selResponses->Execute()) !== FALSE)
+if (($intTotal = $selResponses->Execute($arrMinId)) !== FALSE)
 {
 	while ($arrResponse = $selResponses->Fetch())
 	{
