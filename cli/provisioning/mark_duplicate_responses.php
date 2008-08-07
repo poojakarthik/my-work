@@ -16,14 +16,16 @@ $selDuplicate			= new StatementSelect(	"ProvisioningResponse",
 CliEcho("\n[ MARKING DUPLICATED RESPONSES ]\n");
 
 // Get all Responses
-$intUpdated	= 0;
-$intCount	= 0;
+$intUpdated		= 0;
+$intCount		= 0;
+$intTimeStart	= time();
 if (($intTotal = $selResponses->Execute()) !== FALSE)
 {
 	while ($arrResponse = $selResponses->Fetch())
 	{
 		$intCount++;
-		CliEcho("#{$arrResponse['Id']}...", FALSE);
+		$intSplit	= time() - $intTimeStart;
+		CliEcho(" + ($intCount/$intTotal @ $intSplit)#{$arrResponse['Id']}...", FALSE);
 		
 		// Is this a Duplicate?
 		$mixResponse	= $selDuplicate->Execute($arrResponse);
