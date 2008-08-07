@@ -211,6 +211,15 @@ div#PopupPageBody {
 	opacity: .50;
 }
 
+div#BreadCrumbMenu {
+	clear: both;
+	padding:			.2em 0em .2em 1.5em;
+	width: 100%;
+	background-color: #fff;
+	color: #000;
+}
+
+
 div.DefaultOutput, 
 div input.DefaultInputText, 
 div select.DefaultInputText {
@@ -335,3 +344,17 @@ a img {
 	border: 0;
 	vertical-align: middle;
 }
+
+/*********************** Start Of Popup stuff *********************************/
+
+div.reflex-popup-overlary {
+	background-color	: #000000;
+	opacity				: 0.5;
+	position			: absolute;
+	top					: 0em;
+	left				: 0em;
+}
+
+
+
+/*********************** End Of Popup stuff ***********************************/
