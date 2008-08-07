@@ -52,7 +52,7 @@ if ($intServiceCount = $selServices->Execute())
 			{
 				WaitingIcon(TRUE);
 				$arrNormalised	= $appProvisioning->_arrExportModules[$arrResponse['Carrier']][$arrResponse['Type']]->Normalise($arrResponse['Raw'], DONKEY);
-				$mixResponse	= ImportBase::UpdateLineStatus($arrResponse);
+				$mixResponse	= ImportBase::UpdateLineStatus($arrNormalised);
 				if (is_string($mixResponse))
 				{
 					CliEcho($mixResponse);
@@ -93,7 +93,7 @@ if ($intServiceCount = $selServices->Execute())
 			{
 				WaitingIcon(TRUE);
 				$arrNormalised	= $appProvisioning->_arrExportModules[$arrResponse['Carrier']][$arrResponse['Type']]->Normalise($arrResponse['Raw'], DONKEY);
-				$mixResponse	= ImportBase::UpdateLineStatus($arrResponse);
+				$mixResponse	= ImportBase::UpdateLineStatus($arrNormalised);
 				if (is_string($mixResponse))
 				{
 					CliEcho($mixResponse);
