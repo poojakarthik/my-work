@@ -44,8 +44,10 @@ if ($intServiceCount = $selServices->Execute())
 			while ($arrResponse = $selResponses->Fetch())
 			{
 				WaitingIcon();
+				Debug($arrResponse);
 				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
 				$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
+				Debug($arrResponse);
 				
 				// Is this Response on the last EffectiveDate?
 				if ($intEffectiveDate < strtotime($arrResponse['EffectiveDate']))
