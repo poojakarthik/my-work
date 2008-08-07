@@ -205,18 +205,17 @@
 		if ((int)$arrData['Result'])
 		{
 			// Unsuccessful
-			$arrPDR['RequestStatus']		= REQUEST_STATUS_REJECTED;
-			$arrPDR['PreselectionStatus']	= SERVICE_LINE_REJECTED;
+			$arrPDR['request_status']		= REQUEST_STATUS_REJECTED;
 		}
 		elseif ($arrPDR['Description'] == 'Pending')
 		{
 			// Successful - Pending
-			$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;
+			$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 		}
 		else
 		{
 			// Successful - Completed
-			$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
+			$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 		}
 		//----------------------------------------------------------------//
  		

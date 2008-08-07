@@ -217,27 +217,29 @@
 				case '01':
 					$strLostTo						= $this->TranslateCarrierCode(PROVISIONING_CONTEXT_EPID, $arrPDR['LossPSD']);
 					$arrPDR['Description']			= "Churned to ".(($strLostTo) ? $strLostTo : 'Unknown Carrier');
-					$arrPDR['PreselectionStatus']	= SERVICE_LINE_CHURNED;
+					$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 					break;
 					
 				case '02':
+					$arrPDR['Type']					= PROVISIONING_TYPE_DISCONNECT_PRESELECT;
 					$arrPDR['Description']			= "Service Disconnected";
-					$arrPDR['PreselectionStatus']	= SERVICE_LINE_DISCONNECTED;
+					$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 					break;
 					
 				case '03':
 					$arrPDR['Description']			= "No PSD Point of Presence in Area";
-					$arrPDR['PreselectionStatus']	= SERVICE_LINE_REJECTED;
+					$arrPDR['request_status']		= REQUEST_STATUS_REJECTED;
 					break;
 					
 				case '04':
+					$arrPDR['Type']					= PROVISIONING_TYPE_PRESELECTION_REVERSE;
 					$arrPDR['Description']			= "Churn Reversed";
-					$arrPDR['PreselectionStatus']	= SERVICE_LINE_REVERSED;
+					$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 					break;
 					
 				default:
 					$arrPDR['Description']			= "Service Lost";
-					$arrPDR['PreselectionStatus']	= SERVICE_LINE_DISCONNECTED;
+					$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 					break;
 			}
 		}
@@ -251,21 +253,18 @@
 			{
 				case 'SUCCESSFUL':
 					$arrPDR['Description']			= "Churn Completed Successfully";
-					$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
-					$arrPDR['PreselectionStatus']	= SERVICE_LINE_ACTIVE;
+					$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 					break;
 					
 				case 'SUCCESSFUL*':
 					$arrPDR['Description']			= "Churn Completed Successfully (Already on Account)";
-					$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
-					$arrPDR['PreselectionStatus']	= SERVICE_LINE_ACTIVE;
+					$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 					break;
 					
 				case 'UNSUCCESSFUL':
 					$strRejected					= $this->TranslateCarrierCode(PROVISIONING_CONTEXT_REJECT, $arrPDR['LossCode']);
 					$arrPDR['Description']			= "Churn Rejected ($strRejected)";
-					$arrPDR['RequestStatus']		= REQUEST_STATUS_REJECTED;
-					$arrPDR['PreselectionStatus']	= SERVICE_LINE_REJECTED;
+					$arrPDR['request_status']		= REQUEST_STATUS_REJECTED;
 					break;
 					
 				default:
@@ -280,7 +279,7 @@
 			$arrPDR['Type']				= PROVISIONING_TYPE_PRESELECTION;
 			$arrPDR['EffectiveDate']	= $arrData['ChoiceYear'].'-'.$arrData['ChoiceMonth'].'-'.$arrData['ChoiceDay'];
 			$arrPDR['Description']		= "Pending";
-			$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;
+			$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 		}
 		else
 		{
@@ -288,7 +287,7 @@
 			$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
 			$arrPDR['EffectiveDate']	= $arrData['ReportYear'].'-'.$arrData['ReportMonth'].'-'.$arrData['ReportDay'];
 			$arrPDR['Description']		= "Activated";
-			$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;
+			$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 		}
 		//----------------------------------------------------------------//
 		

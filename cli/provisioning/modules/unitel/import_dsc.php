@@ -241,18 +241,18 @@
  			switch ($arrData['RecordType'])
  			{
 				case "S":	// Gain - new service
-					$arrPDR['Type']			= PROVISIONING_TYPE_FULL_SERVICE;
-					$arrPDR['Description']	= "Service Gained";
-					$arrPDR['LineStatus']	= SERVICE_LINE_ACTIVE;
+					$arrPDR['Type']				= PROVISIONING_TYPE_FULL_SERVICE;
+					$arrPDR['Description']		= "Service Gained";
+					$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 					
 					// This can span over multiple lines in the file
 					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
 					
 				case "G":	// Gain - reversal
-					$arrPDR['Type']			= PROVISIONING_TYPE_FULL_SERVICE;
-					$arrPDR['Description']	= "Service Gained by Reversal";
-					$arrPDR['LineStatus']	= SERVICE_LINE_ACTIVE;
+					$arrPDR['Type']				= PROVISIONING_TYPE_FULL_SERVICE;
+					$arrPDR['Description']		= "Service Gained by Reversal";
+					$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 					
 					// This can span over multiple lines in the file
 					$arrBaskets[]	= (int)$arrData['Basket'];
@@ -264,16 +264,17 @@
 					if ($arrPDR['Type'] || (int)$arrData['Basket'] != 6)
 					{
 						// If there are multiple lines, Full Service Loss
-						$arrPDR['Type']			= PROVISIONING_TYPE_LOSS_FULL;
-						$arrPDR['Description']	= "Service lost to Carrier #{$arrData['LostTo']}";
-						$arrPDR['LineStatus']	= SERVICE_LINE_CHURNED;
-						$bolFullServiceChurn	= TRUE;
+						$arrPDR['Type']				= PROVISIONING_TYPE_LOSS_FULL;
+						$arrPDR['Description']		= "Service lost to Carrier #{$arrData['LostTo']}";
+						$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
+						$bolFullServiceChurn		= TRUE;
 					}
 					else
 					{
 						// If there is only Basket 6, then Preslection Loss
-						$arrPDR['Type']			= PROVISIONING_TYPE_LOSS_VIRTUAL_PRESELECTION;
-						$arrPDR['Description']	= "Preselection lost to Carrier #{$arrData['LostTo']}";
+						$arrPDR['Type']				= PROVISIONING_TYPE_LOSS_VIRTUAL_PRESELECTION;
+						$arrPDR['Description']		= "Preselection lost to Carrier #{$arrData['LostTo']}";
+						$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 					}
 					
 					// This can span over multiple lines in the file
@@ -281,9 +282,9 @@
 					break;
 					
 				case "X":	// Loss - cancellation
-					$arrPDR['Type']			= PROVISIONING_TYPE_DISCONNECT_FULL;
-					$arrPDR['Description']	= "Service Cancelled/Disconnected";
-					$arrPDR['LineStatus']	= SERVICE_LINE_CANCELLED;
+					$arrPDR['Type']				= PROVISIONING_TYPE_DISCONNECT_FULL;
+					$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
+					$arrPDR['Description']		= "Service Cancelled/Disconnected";
 					
 					// This can span over multiple lines in the file
 					$arrBaskets[]	= (int)$arrData['Basket'];
@@ -297,39 +298,33 @@
 					break;
 					
 				case "P":	// Order pending with Telstra
-					$intRequestStatus			= REQUEST_STATUS_PENDING;
+					$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 					$arrPDR['Description']		= "Order Pending with Telstra";
-					$arrPDR['LineStatus']		= LINE_STATUS_PENDING;
 					break;
 					
 				case "W":	// Order waiting to be processed
-					$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;
+					$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 					$arrPDR['Description']		= "Order Pending with Unitel";
-					$arrPDR['LineStatus']		= SERVICE_LINE_PENDING;
 					break;
 					
 				case "A":	// Order actioned by WeBill
-					$arrPDR['RequestStatus']	= REQUEST_STATUS_PENDING;
+					$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 					$arrPDR['Description']		= "Order accepted by Unitel";
-					$arrPDR['LineStatus']		= SERVICE_LINE_PENDING;
 					break;
 					
 				case "D":	// Order disqualified by WeBill
-					$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
+					$arrPDR['request_status']	= REQUEST_STATUS_REJECTED;
 					$arrPDR['Description']		= "Order Rejected by Unitel - <Reason>";
-					$arrPDR['LineStatus']		= SERVICE_LINE_REJECTED;
 					break;
 					
 				case "R":	// Order rejected by Telstra
-					$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
+					$arrPDR['request_status']	= REQUEST_STATUS_REJECTED;
 					$arrPDR['Description']		= "Order Rejected by Telstra - <Reason>";
-					$arrPDR['LineStatus']		= SERVICE_LINE_REJECTED;
 					break;
 					
 				case "C":	// Order completed by Telstra
-					$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
+					$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 					$arrPDR['Description']		= "Order completed by Telstra";
-					$arrPDR['LineStatus']		= SERVICE_LINE_ACTIVE;
 					break;
 					
 				default:	// Unknown Record Type

@@ -397,7 +397,7 @@
 				}
 				
 				// Get the Update Details for the Current Status + the Request Type
-				if ($selLineStatusAction->Execute(Array('LineStatus' => $intCurrentLineStatus, 'Request' => $arrProvisioningType['id'], 'RequestStatus' => $arrResponse['RequestStatus'])))
+				if ($selLineStatusAction->Execute(Array('LineStatus' => $intCurrentLineStatus, 'Request' => $arrProvisioningType['id'], 'RequestStatus' => $arrResponse['request_status'])))
 				{
 					$arrLineStatusAction		= $selLineStatusAction->Fetch();
 					$strCurrentEffectiveDate	= $arrResponse['EffectiveDate'];

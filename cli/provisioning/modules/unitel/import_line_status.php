@@ -155,31 +155,31 @@
 		{
 			case 'Activation Confirmed':
 				$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
-				$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
+				$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 				
 			case 'Deactivation Confirmed':
 				$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
-				$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
+				$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 				
 			case 'Bar Confirmed':
 			case 'Barred by Another SP':
 				$arrPDR['Type']				= PROVISIONING_TYPE_BAR;
-				$arrPDR['RequestStatus']	= REQUEST_STATUS_COMPLETED;
+				$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 				
 			default:
 				$arrPDR['Type']				= PROVISIONING_TYPE_PRESELECTION;
-				$arrPDR['RequestStatus']	= REQUEST_STATUS_REJECTED;
+				$arrPDR['request_status']	= REQUEST_STATUS_REJECTED;
 		}
 		
 		if (stripos($arrData['PreselectionStatus'], 'Preselection Confirmed') !== FALSE)
 		{
 			$arrPDR['Type']					= PROVISIONING_TYPE_PRESELECTION;
-			$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
+			$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 		}
 		elseif (stripos($arrData['PreselectionStatus'], 'Lost to ') !== FALSE)
 		{
 			$arrPDR['Type']					= PROVISIONING_TYPE_LOSS_PRESELECT;
-			$arrPDR['RequestStatus']		= REQUEST_STATUS_COMPLETED;
+			$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 		}
 		//----------------------------------------------------------------//
 		
