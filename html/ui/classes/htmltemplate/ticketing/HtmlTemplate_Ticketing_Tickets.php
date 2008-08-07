@@ -52,6 +52,8 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			}
 		}
 
+		$sort = $this->mxdDataToRender['sort']; //?sort['modifiedDatetime']=d
+
 		$navLinks = implode('&nbsp;&nbsp;', $arrNavLinks);
 
 		?>
@@ -112,14 +114,134 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		</caption>
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Subject</th>
-				<th>Last Actioned</th>
-				<th>Received</th>
-				<th>Owner</th>
-				<th>Category</th>
-				<th>Status</th>
-				<th>Priority</th>
+				<th<?php
+					$col = 'id';
+					$sortDirection = 'a';
+					if (array_key_exists($col, $sort))
+					{
+						$sortDirection = $sort[$col] ? 'd' : 'a'; // i.e. Current values toggled!
+						$sortClass = $sort[$col] ? "reflex-sorted-ascending" : "reflex-sorted-descending";
+						echo " class=\"$sortClass\"";
+					}
+					else
+					{
+						echo " class=\"reflex-unsorted\"";
+					}
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					echo ' onclick="document.location = \''. $link . '\'"';
+				?>>ID</th>
+				<th<?php 
+					$col = 'subject';
+					$sortDirection = 'a';
+					if (array_key_exists($col, $sort))
+					{
+						$sortDirection = $sort[$col] ? 'd' : 'a'; // i.e. Current values toggled!
+						$sortClass = $sort[$col] ? "reflex-sorted-ascending" : "reflex-sorted-descending";
+						echo " class=\"$sortClass\"";
+					}
+					else
+					{
+						echo " class=\"reflex-unsorted\"";
+					}
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					echo ' onclick="document.location = \''. $link . '\'"';
+				?>>Subject</th>
+				<th<?php 
+					$col = 'modifiedDatetime';
+					$sortDirection = 'a';
+					if (array_key_exists($col, $sort))
+					{
+						$sortDirection = $sort[$col] ? 'd' : 'a'; // i.e. Current values toggled!
+						$sortClass = $sort[$col] ? "reflex-sorted-ascending" : "reflex-sorted-descending";
+						echo " class=\"$sortClass\"";
+					}
+					else
+					{
+						echo " class=\"reflex-unsorted\"";
+					}
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					echo ' onclick="document.location = \''. $link . '\'"';
+				?>>Last Actioned</th>
+				<th<?php 
+					$col = 'creationDatetime';
+					$sortDirection = 'a';
+					if (array_key_exists($col, $sort))
+					{
+						$sortDirection = $sort[$col] ? 'd' : 'a'; // i.e. Current values toggled!
+						$sortClass = $sort[$col] ? "reflex-sorted-ascending" : "reflex-sorted-descending";
+						echo " class=\"$sortClass\"";
+					}
+					else
+					{
+						echo " class=\"reflex-unsorted\"";
+					}
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					echo ' onclick="document.location = \''. $link . '\'"';
+				?>>Received</th>
+				<th<?php 
+					$col = 'ownerId';
+					$sortDirection = 'a';
+					if (array_key_exists($col, $sort))
+					{
+						$sortDirection = $sort[$col] ? 'd' : 'a'; // i.e. Current values toggled!
+						$sortClass = $sort[$col] ? "reflex-sorted-ascending" : "reflex-sorted-descending";
+						echo " class=\"$sortClass\"";
+					}
+					else
+					{
+						echo " class=\"reflex-unsorted\"";
+					}
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					echo ' onclick="document.location = \''. $link . '\'"';
+				?>>Owner</th>
+				<th<?php 
+					$col = 'categoryId';
+					$sortDirection = 'a';
+					if (array_key_exists($col, $sort))
+					{
+						$sortDirection = $sort[$col] ? 'd' : 'a'; // i.e. Current values toggled!
+						$sortClass = $sort[$col] ? "reflex-sorted-ascending" : "reflex-sorted-descending";
+						echo " class=\"$sortClass\"";
+					}
+					else
+					{
+						echo " class=\"reflex-unsorted\"";
+					}
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					echo ' onclick="document.location = \''. $link . '\'"';
+				?>>Category</th>
+				<th<?php 
+					$col = 'statusId';
+					$sortDirection = 'a';
+					if (array_key_exists($col, $sort))
+					{
+						$sortDirection = $sort[$col] ? 'd' : 'a'; // i.e. Current values toggled!
+						$sortClass = $sort[$col] ? "reflex-sorted-ascending" : "reflex-sorted-descending";
+						echo " class=\"$sortClass\"";
+					}
+					else
+					{
+						echo " class=\"reflex-unsorted\"";
+					}
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					echo ' onclick="document.location = \''. $link . '\'"';
+				?>>Status</th>
+				<th<?php 
+					$col = 'priorityId';
+					$sortDirection = 'a';
+					if (array_key_exists($col, $sort))
+					{
+						$sortDirection = $sort[$col] ? 'd' : 'a'; // i.e. Current values toggled!
+						$sortClass = $sort[$col] ? "reflex-sorted-ascending" : "reflex-sorted-descending";
+						echo " class=\"$sortClass\"";
+					}
+					else
+					{
+						echo " class=\"reflex-unsorted\"";
+					}
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					echo ' onclick="document.location = \''. $link . '\'"';
+				?>>Priority</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -130,7 +252,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		</tfoot>
 		<tbody>
 
-		<?
+		<?php
 
 		$i = 0;
 		$noRecords = TRUE;
@@ -156,7 +278,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				<td class="<?=$priority->cssClass?>"><?php echo $priority->name; ?></td>
 				<td>[actions]</td>
 			</tr>
-		<? 
+		<?php
 		}
 
 		if ($noRecords)

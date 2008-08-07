@@ -75,6 +75,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		if (array_key_exists('sort', $_REQUEST))
 		{
+			$sort = array();
 			foreach ($_REQUEST['sort'] as $column => $ascDesc)
 			{
 				if (!$ascDesc)
@@ -92,6 +93,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		if (array_key_exists('columns', $_REQUEST))
 		{
+			$column = array();
 			foreach($_REQUEST['columns'] as $column)
 			{
 				if (!$column)

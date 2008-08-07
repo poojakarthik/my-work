@@ -83,6 +83,29 @@ table.reflex tfoot tr th {
 	padding-bottom: .25em;
 }
 
+table.reflex th.reflex-unsorted, 
+table.reflex th.reflex-sorted-ascending, 
+table.reflex th.reflex-sorted-descending
+{
+	cursor: pointer;
+	background-position: 0% 50%; 
+	background-repeat: no-repeat; 
+	background-image: url(../img/template/order_neither.png);
+	padding-left: 0.8em;
+}
+
+table.reflex th.reflex-sorted-ascending
+{
+	background-color: #666;
+	background-image: url(../img/template/order_asc.png);
+}
+
+table.reflex th.reflex-sorted-descending
+{
+	background-color: #666;
+	background-image: url(../img/template/order_desc.png);
+}
+
 table.reflex tfoot a,
 table.reflex tfoot a:visited,
 table.reflex tfoot a:link {

@@ -282,6 +282,7 @@ class Ticketing_Ticket
 		$arrWhere = array();
 		foreach ($filter as $column => $style)
 		{
+			if (!property_exists(__CLASS__, $column)) continue;
 			$column = self::uglifyName($column);
 			switch($style['comparison'])
 			{
@@ -308,7 +309,8 @@ class Ticketing_Ticket
 		$strSort = '';
 		foreach ($sort as $column => $asc)
 		{
-			$strSort = ($strSort ? ', ' : '') . self::uglifyName($column) . ' ' . ($asc ? ' ASC ' : ' DESC ');
+			if (!property_exists(__CLASS__, $column)) continue;
+			$strSort .= ($strSort ? ', ' : '') . self::uglifyName($column) . ' ' . ($asc ? ' ASC ' : ' DESC ');
 		}
 		$strSort = $strSort ? $strSort : NULL;
 		$strLimit = intval($limit) ? (intval($offset) . ", " . intval($limit)): NULL;
