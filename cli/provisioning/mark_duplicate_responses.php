@@ -25,7 +25,7 @@ if (($intTotal = $selResponses->Execute()) !== FALSE)
 	{
 		$intCount++;
 		$intSplit	= time() - $intTimeStart;
-		CliEcho(" + ($intCount/$intTotal @ $intSplit)#{$arrResponse['Id']}...", FALSE);
+		CliEcho(" + ($intCount/$intTotal @ {$intSplit}s) #{$arrResponse['Id']}...", FALSE);
 		
 		// Is this a Duplicate?
 		$mixResponse	= $selDuplicate->Execute($arrResponse);
