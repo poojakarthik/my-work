@@ -42,8 +42,6 @@ if ($intServiceCount = $selServices->Execute())
 				}
 			}
 			
-			WaitingIcon(TRUE);
-			
 			// Which of these Responses is current?  Apply to Service in the order they would have come in
 			foreach ($arrCurrentResponses as $arrResponse)
 			{
@@ -83,8 +81,6 @@ if ($intServiceCount = $selServices->Execute())
 					}
 				}
 			}
-			
-			WaitingIcon(TRUE);
 			
 			// Which of these Responses is current?  Apply to Service in the order they would have come in
 			foreach ($arrCurrentResponses as $arrResponse)
