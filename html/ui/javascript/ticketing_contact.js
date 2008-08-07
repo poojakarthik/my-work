@@ -1,3 +1,93 @@
+var Reflex_Popup = Class.create();
+
+Object.extend(Reflex_Popup.prototype, {
+
+	overlay: null,
+	container: null,
+	titlePane: null,
+	titleButtonPane: null,
+	contentPane: null,
+	footerPane: null,
+
+	initialize: function()
+	{
+		this.overlay = document.createElement('div');
+		this.overlay.className = 'reflex-popup-overlay';
+
+		this.container = document.createElement('div');
+		this.container.className = 'reflex-popup';
+		this.overlay.appendChild(this.container);
+
+		var tb = document.createElement('div');
+		tb.className = 'reflex-popup-title-bar';
+		this.container.appendChild(tb);
+
+		this.titlePane = document.createElement('div');
+		this.titlePane.className = 'reflex-popup-title';
+		tb.appendChild(this.titlePane);
+
+		this.titleButtonPane = document.createElement('div');
+		this.titleButtonPane.className = 'reflex-popup-title-bar-buttons';
+		tb.appendChild(this.titleButtonPane);
+
+		this.contentPane = document.createElement('div');
+		this.contentPane.className = 'reflex-popup-content';
+		this.container.appendChild(this.contentPane);
+
+		this.footerPane = document.createElement('div');
+		this.footerPane.className = 'reflex-popup-footer';
+		this.container.appendChild(this.footerPane);
+	},
+
+	setTitle: function(title)
+	{
+		this.titlePane.innerHTML = '';
+		this.titlePane.appendChild(document.createTextNode(title));
+	},
+
+	setContent: function(content)
+	{
+		this.contentPane.innerHTML = '';
+		this.contentPane.appendChild(content);
+	},
+
+	setHeaderButtons: function(buttons)
+	{
+		this.titleButtonPane.innerHTML = '';
+		for (var i = 0, l = buttons.length; i < l; i++)
+		{
+			this.titleButtonPane.appendChild(buttons[i]);
+		}
+	},
+
+	setFooterButtons: function(buttons)
+	{
+		this.footerPane.innerHTML = '';
+		for (var i = 0, l = buttons.length; i < l; i++)
+		{
+			this.footerPane.appendChild(buttons[i]);
+		}
+	},
+
+	display: function(where)
+	{
+		if (!where)
+		{
+			where = document.body;
+		}
+		where.appendChild(this.overlay);
+	},
+
+	hide: function()
+	{
+		if (this.overlay.parentNode)
+		{
+			this.overlay.parentNode.removeChild(this.overlay);
+		}
+	}
+});
+
+
 var Ticketing_Contact = Class.create();
 
 Object.extend(Ticketing_Contact, {
@@ -53,16 +143,14 @@ Object.extend(Ticketing_Contact, {
 
 Object.extend(Ticketing_Contact.prototype, {
 
-	container: null,
-	viewPane: null,
-	editPane: null,
+	popup: null,
 	accountId: null,
 	contactId: null,
-	viewPanePopulated: false,
-	currentPaneIsView: null,
 	callback: null,
 	details: null,
 	inputs: null,
+
+	currentPaneIsView: false,
 
 	initialize: function(contactId, accountId, createdCallback)
 	{
@@ -75,29 +163,20 @@ Object.extend(Ticketing_Contact.prototype, {
 			throw new Exception('Both account and contact Ids are null.');
 		}
 
-		this.container = document.createElement('div');
-		this.container.className = 'ticketing-contact';
-
-		this.viewPane = document.createElement('div');
-		this.viewPane.className = 'view-pane';
-		this.container.appendChild(this.viewPane);
-		this.currentPaneIsView = true;
-
-		this.editPane = document.createElement('div');
-		this.editPane.className = 'edit-pane';
-		this.container.appendChild(this.editPane);
+		this.popup = new Reflex_Popup();
 
 		if (this.contactId != null)
 		{
-			this.currentPaneIsView = false;
 			Ticketing_Contact.getContactDetails(this.displayDetails.bind(this), this.contactId);
+			this.currentPaneIsView = true;
 		}
 		else
 		{
 			var details = { title: null, firstName: null, lastName: null, jobTitle: null, email: null, fax: null, mobile: null, phone: null };
 			this.displayDetails(details);
 		}
-		document.body.appendChild(this.container);
+
+		this.popup.display();
 	},
 
 	togglePanes: function()
@@ -105,15 +184,10 @@ Object.extend(Ticketing_Contact.prototype, {
 		if (this.currentPaneIsView)
 		{
 			this.populateEditPane();
-			this.editPane.style.display = 'block';
-			this.viewPane.style.display = 'none';
 		}
 		else
 		{
 			this.populateViewPane();
-			this.viewPane.style.display = 'block';
-			this.editPane.style.display = 'none';
-			this.destroyEditPane();
 		}
 		this.currentPaneIsView = !this.currentPaneIsView;
 	},
@@ -125,11 +199,8 @@ Object.extend(Ticketing_Contact.prototype, {
 
 	populateEditPane: function()
 	{
-		this.editPane.innerHTML = '';
 		var table = document.createElement('table');
 		table.className = 'reflex';
-
-		this.createCaption(table, 'View Contact Details');
 
 		var tr = null, td = null, input = null, button = null;
 		this.inputs = {};
@@ -178,11 +249,12 @@ Object.extend(Ticketing_Contact.prototype, {
 		td = tr.insertCell(-1);
 		td.colSpan = 2;
 
-		button = document.createElement('input');
+		buttons = [];
+
+		buttons[0] = button = document.createElement('input');
 		button.type = 'button';
 		button.className = 'reflex-button';
 		button.value = button.name = 'Cancel';
-		td.appendChild(button);
 
 		if (this.contactId == null) 
 		{
@@ -193,55 +265,22 @@ Object.extend(Ticketing_Contact.prototype, {
 			Event.observe(button, 'click', this.togglePanes.bind(this));
 		}
 
-		button = document.createElement('input');
+		buttons[1] = button = document.createElement('input');
 		button.type = 'button';
 		button.className = 'reflex-button';
 		button.value = button.name = 'Save';
-		td.appendChild(button);
 		Event.observe(button, 'click', this.submitDetails.bind(this));
 
-		this.createFooter(table);
-
-		this.editPane.appendChild(table);
-	},
-
-	createCaption: function (table, title)
-	{
-		var caption = table.insertRow(-1);
-		caption.className = 'table-caption-row';
-		caption = caption.insertCell(-1);
-		caption.colSpan = 2;
-		var cb = document.createElement('div');
-		var ct = document.createElement('div');
-		var co = document.createElement('div');
-		cb.className = 'caption_bar';
-		ct.className = 'caption_title';
-		co.className = 'caption_options';
-		caption.appendChild(cb);
-		cb.appendChild(ct);
-		cb.appendChild(co);
-		ct.appendChild(document.createTextNode(title));
-		return caption;
-	},
-
-	createFooter: function (table)
-	{
-		var footer = table.insertRow(-1);
-		footer.className = 'table-footer-row';
-		footer = footer.insertCell(-1);
-		footer.colSpan = 2;
-		footer.appendChild(document.createTextNode("\u00a0"));
-		return footer;
+		this.popup.setTitle(this.contactId == null ? 'Add New Contact' : 'Edit Contact Details');
+		this.popup.setContent(table);
+		this.popup.setFooterButtons(buttons);
 	},
 
 	populateViewPane: function()
 	{
-		if (this.viewPanePopulated) return;
-		this.viewPanePopulated = true;
+
 		var table = document.createElement('table');
 		table.className = 'reflex';
-
-		this.createCaption(table, 'View Contact Details');
 
 		var tr = null, td = null;
 
@@ -277,30 +316,27 @@ Object.extend(Ticketing_Contact.prototype, {
 		td = tr.insertCell(-1);td.className = 'title';td.appendChild(document.createTextNode('Phone:'));
 		td = tr.insertCell(-1);td.appendChild(document.createTextNode(this.details['phone']));
 
-		tr = table.insertRow(-1);
-		td = tr.insertCell(-1);
-		button = document.createElement('input');
+
+		var buttons = [];
+
+		buttons[0] = button = document.createElement('input');
 		button.type = 'button';
 		button.className = 'reflex-button';
 		button.value = button.name = 'Cancel';
-		td.appendChild(button);
 		Event.observe(button, 'click', this.destroy.bind(this));
 
 		if (this.accountId != null)
 		{
-			td = tr.insertCell(-1);
-			td.colSpan = 2;
-			var button = document.createElement('input');
+			buttons[1] = button = document.createElement('input');
 			button.type = 'button';
 			button.className = 'reflex-button';
 			button.value = button.name = 'Edit';
-			td.appendChild(button);
 			Event.observe(button, 'click', this.togglePanes.bind(this));
 		}
 
-		this.createFooter(table);
-
-		this.viewPane.appendChild(table);
+		this.popup.setTitle('View Contact Details');
+		this.popup.setContent(table);
+		this.popup.setFooterButtons(buttons);
 	},
 
 	submitDetails: function()
@@ -351,29 +387,20 @@ Object.extend(Ticketing_Contact.prototype, {
 	displayDetails: function(details)
 	{
 		this.details = details;
-		this.viewPane.innerHTML = '';
-		this.editPane.innerHTML = '';
-		this.viewPane.style.display = this.editPane.style.display = 'none';
-		this.viewPanePopulated = false;
 		if (this.contactId == null)
 		{
 			this.populateEditPane();
-			this.currentPaneIsView = false;
-			this.editPane.style.display = 'block';
 		}
 		else
 		{
 			this.populateViewPane();
-			this.currentPaneIsView = true;
-			this.viewPane.style.display = 'block';
 		}
 	},
 
 	destroy: function()
 	{
-		if (this.container == null) return;
-		this.container.parentNode.removeChild(this.container);
-		this.container = null;
+		this.callback = null;
+		this.popup.hide();
 	}
 
 });
