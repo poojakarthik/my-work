@@ -5,6 +5,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
+		$this->LoadJavascript('reflex_popup');
 		$this->LoadJavascript('ticketing_contact');
 	}
 
