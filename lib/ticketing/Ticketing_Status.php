@@ -25,7 +25,7 @@ class Ticketing_Status
 		}
 	}
 
-	public static function getAvailableStatusesForUser($user)
+	public static function getAvailableStatusesForUserAndTicket($user, $ticket=NULL)
 	{
 		$available = array();
 		if ($user->isUser())
@@ -35,7 +35,7 @@ class Ticketing_Status
 			$available[] = self::getForId(TICKETING_STATUS_WITH_CARRIER);
 			$available[] = self::getForId(TICKETING_STATUS_COMPLETED);
 		}
-		if ($user->isAdminUser())
+		if ($user->isAdminUser() && $ticket && $ticket->isSaved())
 		{
 			//$available[] = self::getForId(TICKETING_STATUS_UNASSIGNED);	// This status is set by the system when a ticket is first created
 			//$available[] = self::getForId(TICKETING_STATUS_ASSIGNED);		// This status is set by the system when the ticket is assigned/reassigned
