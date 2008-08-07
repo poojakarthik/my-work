@@ -145,8 +145,11 @@ function WaitingIcon($bolRestart = FALSE)
 	$strOutput	= "";
 	if (!$bolRestart)
 	{
+		$strOutput	= "\033[1D";
+	}
+	else
+	{
 		reset($arrIcon);
-		//$strOutput	= "\033[1D";
 	}
 	
 	// Get the next Icon
