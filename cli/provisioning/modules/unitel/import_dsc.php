@@ -413,7 +413,7 @@
 	 		{
 	 			// Found a match, return the Id
 	 			$arrReturn = $this->_selRequestByCarrierRef->Fetch();
-	 			return $arrReturn['Id'];
+	 			return $arrReturn;
 	 		}
 	 	}
 	 	

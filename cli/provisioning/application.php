@@ -233,16 +233,22 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 		 					$arrNormalised['Status'] = RESPONSE_STATUS_IMPORTED;
 		 					
 					 		// Attempt to link to a Request
-					 		if ($arrNormalised['Request'] = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised))
+					 		if ($arrLinkedRequest = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised))
 					 		{
-					 			// Update Request Table if needed
-					 			$arrRequest = Array();
-					 			$arrRequest['Id']			= $arrNormalised['Request'];
-					 			$arrRequest['Response']		= $arrNormalised['Id'];
-					 			$arrRequest['LastUpdated']	= $arrNormalised['EffectiveDate'];
-					 			$arrRequest['Status']		= $arrNormalised['RequestStatus'];
-					 			$arrRequest['Description']	= $arrNormalised['Description'];
-					 			$ubiRequest->Execute($arrRequest);
+					 			$arrNormalised['Request']	= $arrLinkedRequest['Id'];
+					 			
+						 		// Update Request Table if this is the most recent Response for this Request
+					 			if (strtotime($arrLinkedRequest['LastUpdated']) < strtotime($arrNormalised['EffectiveDate']))
+					 			{
+						 			$arrLinkedRequest['Response']		= $arrNormalised['Id'];
+						 			$arrLinkedRequest['LastUpdated']	= $arrNormalised['EffectiveDate'];
+						 			$arrLinkedRequest['Status']			= $arrNormalised['request_status'];
+						 			$arrLinkedRequest['Description']	= $arrNormalised['Description'];
+						 			if ($ubiRequest->Execute($arrLinkedRequest) === FALSE)
+						 			{
+						 				CliEcho("WARNING: Request Link Update failed: ".$ubiRequest->Error());
+						 			}
+					 			}
 					 		}
 					 		
 				 			/*
