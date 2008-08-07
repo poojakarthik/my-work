@@ -132,7 +132,7 @@ function WaitingIcon($bolRestart = FALSE)
 	}
 	
 	// Get the next Icon
-	if (!$strIcon = next($arrIcon))
+	if (!($strIcon = next($arrIcon)))
 	{
 		$strIcon	= reset($arrIcon);
 	}
