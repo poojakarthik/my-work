@@ -293,6 +293,18 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 	 		$arrFile['NormalisedOn']	= new MySQLFunction("NOW()");
 	 		$ubiFileImport->Execute($arrFile);
  		}
+ 		
+ 		// Delete all Duplicates
+ 		CliEcho("\n * Deleting Duplicate Responses...", FALSE);
+ 		$qryQuery	= new Query();
+ 		if ($qryQuery->Execute("DELETE FROM ProvisioningResponse WHERE Status = ".RESPONSE_STATUS_DUPLICATE) === FALSE)
+ 		{
+ 			CliEcho("\t\t\t[ FAILED ]\n\t -- ".$qryQuery->Error()); 			
+ 		}
+ 		else
+ 		{
+ 			CliEcho("\t\t\t[   OK   ]");
+ 		}
  	}
  	
  	//------------------------------------------------------------------------//
