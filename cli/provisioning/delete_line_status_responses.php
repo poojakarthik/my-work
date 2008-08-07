@@ -18,7 +18,7 @@ if (($intTotal = $selLineStatusFiles->Execute()) !== FALSE)
 	{
 		$intCount++;
 		$intSplit	= time() - $intTimeStart;
-		CliEcho(" + ($intCount/$intTotal @ $intSplit) #{$arrFileImport['Id']} -- '{$arrFileImport['FileName']}'\t\t\t", FALSE);
+		CliEcho(" + ($intCount/$intTotal @ {$intSplit}s) #{$arrFileImport['Id']} -- '{$arrFileImport['FileName']}'\t\t\t", FALSE);
 		
 		// Delete Responses from this File
 		if ($qryDelete->Execute("DELETE FROM ProvisioningResponse WHERE FileImport = {$arrFileImport['Id']}") === FALSE)
