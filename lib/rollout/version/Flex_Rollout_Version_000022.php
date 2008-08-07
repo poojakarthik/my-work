@@ -10,7 +10,7 @@
  *	5:	Populate service_line_status_update Table
  *	6:	Add provisioning_response_status Table
  *	7:	Populate provisioning_response_status Table
- *	8:	Add provisioning_response.request_status Field
+ *	8:	Add ProvisioningResponse.request_status Field
  */
 
 class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
@@ -134,13 +134,13 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE provisioning_response_status;";
 		
-		// 8:	Add provisioning_response.request_status Field
-		$strSQL = "ALTER TABLE provisioning_response ADD request_status BIGINT(20) NULL ;";
+		// 8:	Add ProvisioningResponse.request_status Field
+		$strSQL = "ALTER TABLE ProvisioningResponse ADD request_status BIGINT(20) NULL ;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add provisioning_response.request_status Field. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to add ProvisioningResponse.request_status Field. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "ALTER TABLE provisioning_response DROP request_status;";
+		$this->rollbackSQL[] = "ALTER TABLE ProvisioningResponse DROP request_status;";
 		
 	}
 	
