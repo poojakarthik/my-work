@@ -127,6 +127,7 @@ Object.extend(Ticketing_Contact.prototype, {
 	{
 		this.editPane.innerHTML = '';
 		var table = document.createElement('table');
+		table.className = 'reflex';
 		var tr = null, td = null, input = null, button = null;
 		this.inputs = {};
 
@@ -204,6 +205,7 @@ Object.extend(Ticketing_Contact.prototype, {
 		if (this.viewPanePopulated) return;
 		this.viewPanePopulated = true;
 		var table = document.createElement('table');
+		table.className = 'reflex';
 		var tr = null, td = null;
 
 		tr = table.insertRow(-1);
