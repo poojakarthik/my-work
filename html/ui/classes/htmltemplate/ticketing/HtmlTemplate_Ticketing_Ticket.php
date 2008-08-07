@@ -573,7 +573,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							if (array_search('statusId', $editableValues) !== FALSE)
 							{
 								?><select name='statusId' class="<?=$invalid?>"><?php
-								$statuses = Ticketing_Status::getAvailableStatusesForUser(Ticketing_User::getCurrentUser());
+								$statuses = Ticketing_Status::getAvailableStatusesForUserAndTicket(Ticketing_User::getCurrentUser(), $ticket);
 								foreach ($statuses as $status)
 								{
 									$selected = $ticket->statusId == $status->id ? ' selected="selected"' : '';
