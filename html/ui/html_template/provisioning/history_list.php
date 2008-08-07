@@ -328,7 +328,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 			{
 				//$strOutboundCell = "<img src='img/template/outbound.png' />";
 				$strOutboundCell	= "O";
-				$strStatusCell		= GetConstantDescription($arrRecord['Status'], "RequestStatus");
+				$strStatusCell		= GetConstantDescription($arrRecord['Status'], "provisioning_request_status");
 				
 				if ($arrRecord['Status'] == REQUEST_STATUS_WAITING && $bolUserHasOperatorPerm)
 				{
