@@ -21,7 +21,7 @@ if (($intTotal = $selLineStatusFiles->Execute()) !== FALSE)
 		CliEcho(" + ($intCount/$intTotal @ $intSplit) #{$arrFileImport['Id']} -- '{$arrFileImport['FileName']}'\t\t\t", FALSE);
 		
 		// Delete Responses from this File
-		if ($qryDelete->Execute("DELETE FROM ProvisioningResponse WHERE FileImport = {$arrFileImport['Id']}") !== FALSE)
+		if ($qryDelete->Execute("DELETE FROM ProvisioningResponse WHERE FileImport = {$arrFileImport['Id']}") === FALSE)
 		{
 			CliEcho("[ FAILED ]");
 			CliEcho("\t -- ERROR: DB Error in \$qryDelete: ".$qryDelete->Error());'' .
