@@ -24,13 +24,15 @@ $arrFileTypeConvert[PRV_AAPT_LOSS]					= FILE_IMPORT_PROVISIONING_AAPT_LOSS;
 CliEcho("\n[ RECALCULATING LINE STATUS ]\n");
 
 // Select all non-Archived Landline Services
-$intCount	= 0;
+$intCount		= 0;
+$intTimeStart	= time();
 if ($intServiceCount = $selServices->Execute())
 {
 	while ($arrService = $selServices->Fetch())
 	{
 		$intCount++;
-		CliEcho(" * ($intCount/$intServiceCount){$arrService['Account']}::{$arrService['FNN']}...", FALSE);
+		$intSplit	= time() - $intTimeStart;
+		CliEcho(" * ($intCount/$intServiceCount @ {$intSplit}s){$arrService['Account']}::{$arrService['FNN']}...", FALSE);
 		
 		// DETERMINE CURRENT SERVICE LINE STATUS
 		CliEcho("FS...", FALSE);
