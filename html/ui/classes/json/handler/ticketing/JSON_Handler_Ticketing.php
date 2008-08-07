@@ -129,7 +129,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		if (trim($mobile)) 		$properties['mobile'] = $mobile;
 		if (trim($phone)) 		$properties['phone'] = $phone;
 
-		if (!trim($firstName) && !trim($lastName) && !trim($email))
+		if ((!trim($firstName) && !trim($lastName) && !trim($email)) || (trim($email) && !EmailAddressValid($email)))
 		{
 			return 'INVALID';
 		}

@@ -264,7 +264,7 @@ Object.extend(Ticketing_Contact.prototype, {
 			this.inputs.lastName.className == 'invalid' && 
 			this.inputs.email.className == 'invalid') 
 		{
-			return window.alert('Please complete at least one of the highlighted fields.');
+			return window.alert('Please complete at least one of the highlighted fields and ensure that all entries are valid.');
 		}
 
 		Ticketing_Contact.setContactDetails(this.displaySavedDetails.bind(this),
@@ -288,7 +288,7 @@ Object.extend(Ticketing_Contact.prototype, {
 			this.inputs.firstName.className = 'invalid';
 			this.inputs.lastName.className = 'invalid';
 			this.inputs.email.className = 'invalid';
-			return window.alert('Please complete at least one of the highlighted fields.');
+			return window.alert('Please complete at least one of the highlighted fields and ensure that all entries are valid.');
 		}
 		var $new = this.contactId == null;
 		this.contactId = details['contactId'];
