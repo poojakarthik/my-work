@@ -31,7 +31,7 @@ if ($intServiceCount = $selServices->Execute())
 			$arrCurrentResponses	= Array();
 			while ($arrResponse = $selResponses->Fetch())
 			{
-				WaitingIcon();
+				WaitingIcon(TRUE);
 				if ($arrResponse)
 				{
 					// Is this Response on the last EffectiveDate?
@@ -50,7 +50,7 @@ if ($intServiceCount = $selServices->Execute())
 			// Which of these Responses is current?  Apply to Service in the order they would have come in
 			foreach ($arrCurrentResponses as $arrResponse)
 			{
-				WaitingIcon();
+				WaitingIcon(TRUE);
 				$mixResponse	= ImportBase::UpdateLineStatus($arrResponse);
 				if (is_string($mixResponse))
 				{
@@ -75,7 +75,7 @@ if ($intServiceCount = $selServices->Execute())
 			$arrCurrentResponses	= Array();
 			while ($arrResponse = $selResponses->Fetch())
 			{
-				WaitingIcon();
+				WaitingIcon(TRUE);
 				if ($arrResponse)
 				{
 					// Is this Response on the last EffectiveDate?
@@ -90,7 +90,7 @@ if ($intServiceCount = $selServices->Execute())
 			// Which of these Responses is current?  Apply to Service in the order they would have come in
 			foreach ($arrCurrentResponses as $arrResponse)
 			{
-				WaitingIcon();
+				WaitingIcon(TRUE);
 				$mixResponse	= ImportBase::UpdateLineStatus($arrResponse);
 				if (is_string($mixResponse))
 				{
