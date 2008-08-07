@@ -125,13 +125,36 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function TicketingConsole()
+	function TicketingConsole($lastQuery=FALSE)
 	{
 		$this->strContextMenuLabel = "View All Tickets";
 		$this->strLabel = "Tickets";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets";
+		$last = $lastQuery ? '/Last' : '';
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets$last";
 	}
 	
+
+	//------------------------------------------------------------------------//
+	// TicketingTicket
+	//------------------------------------------------------------------------//
+	/**
+	 * TicketingTicket()
+	 *
+	 * Compiles the Href to be executed when the TicketingTicket menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the TicketingTicket menu item is clicked
+	 * 
+	 * @return	string				Href to be executed when the TicketingTicket menu item is clicked
+	 *
+	 * @method
+	 */
+	function TicketingTicket($ticketId)
+	{
+		$this->strContextMenuLabel = "View Ticket $ticketId";
+		$this->strLabel = "View Ticket " . $ticketId;
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/$ticketId/View";
+	}
+
 	//------------------------------------------------------------------------//
 	// ViewUserTickets
 	//------------------------------------------------------------------------//

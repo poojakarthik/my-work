@@ -41,6 +41,9 @@ class Application_Handler_Ticketing extends Application_Handler
 			$ownerId = $user->id;
 		}
 
+		BreadCrumb()->Console();
+		BreadCrumb()->SetCurrentPage($bolOwnTickets ? "My Tickets" : "Tickets");
+
 		// If this search is based on last search, default all search settings to be those of the last search
 		if (($pathToken == 'last' || array_key_exists('last', $_REQUEST)) && array_key_exists('ticketing', $_SESSION) && array_key_exists('lastTicketList', $_SESSION['ticketing']))
 		{
@@ -157,6 +160,9 @@ class Application_Handler_Ticketing extends Application_Handler
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
+		BreadCrumb()->Console();
+		BreadCrumb()->TicketingConsole(TRUE);
+
 		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
 
 		if (is_numeric($action))
@@ -193,6 +199,11 @@ class Application_Handler_Ticketing extends Application_Handler
 				$detailsToRender['error'] = 'Unable to perform action';
 				throw new Exception('No ticket selected.');
 			}
+
+			$actionLabel = $action;
+			$actionLabel[0] = strtoupper($actionLabel);
+			$tid = $ticket ? ' ' . $ticket->id : '';
+			BreadCrumb()->SetCurrentPage("$actionLabel Ticket$tid");
 
 			switch ($action)
 			{
@@ -529,6 +540,8 @@ class Application_Handler_Ticketing extends Application_Handler
 		$editableValues = array();
 		$invalidValues = array();
 
+		$ticketId = array_key_exists('ticketId', $_REQUEST) ? intval($_REQUEST['ticketId']) : (count($subPath) && is_numeric($subPath[0]) ? intval($subPath[0]) : NULL);
+
 		try
 		{
 			if (!$correspondance && $action != 'create')
@@ -550,12 +563,11 @@ class Application_Handler_Ticketing extends Application_Handler
 				case 'resend':
 
 					$correspondance->emailToCustomer();
+					$ticketId = $correspondance->ticketId;
 
 					break;
 
 				case 'create':
-
-					$ticketId = count($subPath) && is_numeric($subPath[0]) ? intval($subPath[0]) : (array_key_exists('ticketId', $_REQUEST) ? intval($_REQUEST['ticketId']) : NULL);
 
 					if ($ticketId === NULL)
 					{
@@ -575,6 +587,8 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'summary';
 					$editableValues[] = 'details';
 					$editableValues[] = 'contactId';
+
+					$ticketId = $correspondance->ticketId;
 
 					if (!$correspondance->isSaved() || ($correspondance->isOutgoing() && $correspondance->isNotSent()))
 					{
@@ -716,6 +730,7 @@ class Application_Handler_Ticketing extends Application_Handler
 				case 'error':
 				case 'view':
 				default:
+					$ticketId = $correspondance ? $correspondance->ticketId : $ticketId;
 					break;
 			}
 		}
@@ -725,10 +740,22 @@ class Application_Handler_Ticketing extends Application_Handler
 			$detailsToRender['error'] .= ($detailsToRender['error'] ? ': ' : '') . $exception->getMessage();
 		}
 
+		BreadCrumb()->Console();
+		BreadCrumb()->TicketingConsole(TRUE);
+		if ($ticketId) 
+		{
+			BreadCrumb()->TicketingTicket($ticketId);
+		}
+		BreadCrumb()->TicketingConsole(TRUE);
+		$actionLabel = $action;
+		$actionLabel[0] = strtoupper($actionLabel[0]);
+		BreadCrumb()->SetCurrentPage("$actionLabel Correspondance");
+
+
 		$detailsToRender['correspondance'] = $correspondance;
 		$detailsToRender['action'] = $action;
 		$detailsToRender['permitted_actions'] = $this->getPermittedCorrespondanceActions($currentUser, $correspondance);
-		$detailsToRender['ticketId'] = array_key_exists('ticketId', $_REQUEST) ? $_REQUEST['ticketId'] : NULL;
+		$detailsToRender['ticketId'] = $ticketId;
 		$detailsToRender['editable_values'] = $editableValues;
 		$detailsToRender['invalid_values'] = $invalidValues;
 
@@ -827,6 +854,9 @@ class Application_Handler_Ticketing extends Application_Handler
 	// Manages the Ticketing Summary Report functionality
 	public function SummaryReport($subPath)
 	{
+		BreadCrumb()->Console();
+		BreadCrumb()->SetCurrentPage("Summary Report");
+
 		if (is_array($subPath) && count($subPath) == 1)
 		{
 			$strAction = strtolower(array_shift($subPath));
