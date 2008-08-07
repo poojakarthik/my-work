@@ -31,7 +31,7 @@ if ($intServiceCount = $selServices->Execute())
 			$arrCurrentResponses	= Array();
 			while ($arrResponse = $selResponses->Fetch())
 			{
-				WaitingIcon(TRUE);
+				WaitingIcon();
 				if ($arrResponse)
 				{
 					// Is this Response on the last EffectiveDate?
@@ -47,10 +47,15 @@ if ($intServiceCount = $selServices->Execute())
 				}
 			}
 			
+			WaitingIcon(TRUE);
+			
 			// Which of these Responses is current?  Apply to Service in the order they would have come in
 			foreach ($arrCurrentResponses as $arrResponse)
 			{
-				WaitingIcon(TRUE);
+				WaitingIcon();
+				
+				Debug($arrResponse);
+				
 				$arrNormalised	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$arrResponse['FileType']]->Normalise($arrResponse['Raw'], DONKEY);
 				$mixResponse	= ImportBase::UpdateLineStatus($arrNormalised);
 				if (is_string($mixResponse))
@@ -76,7 +81,7 @@ if ($intServiceCount = $selServices->Execute())
 			$arrCurrentResponses	= Array();
 			while ($arrResponse = $selResponses->Fetch())
 			{
-				WaitingIcon(TRUE);
+				WaitingIcon();
 				if ($arrResponse)
 				{
 					// Is this Response on the last EffectiveDate?
@@ -88,10 +93,15 @@ if ($intServiceCount = $selServices->Execute())
 				}
 			}
 			
+			WaitingIcon(TRUE);
+			
 			// Which of these Responses is current?  Apply to Service in the order they would have come in
 			foreach ($arrCurrentResponses as $arrResponse)
 			{
-				WaitingIcon(TRUE);
+				WaitingIcon();
+				
+				Debug($arrResponse);
+				
 				$arrNormalised	= $appProvisioning->_arrExportModules[$arrResponse['Carrier']][$arrResponse['FileType']]->Normalise($arrResponse['Raw'], DONKEY);
 				$mixResponse	= ImportBase::UpdateLineStatus($arrNormalised);
 				if (is_string($mixResponse))
