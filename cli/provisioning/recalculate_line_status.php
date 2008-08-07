@@ -102,7 +102,7 @@ if ($intServiceCount = $selServices->Execute())
 				
 				Debug($arrResponse);
 				
-				$arrNormalised	= $appProvisioning->_arrExportModules[$arrResponse['Carrier']][$arrResponse['FileType']]->Normalise($arrResponse['Raw'], DONKEY);
+				$arrNormalised	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$arrResponse['FileType']]->Normalise($arrResponse['Raw'], DONKEY);
 				$mixResponse	= ImportBase::UpdateLineStatus($arrNormalised);
 				if (is_string($mixResponse))
 				{
