@@ -98,7 +98,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		?>
 
-<button onclick='Ticketing_Contact.displayContact(null, 1000154811);' value='click me'>click me</button>
 		<form id="view_ticket" name="view_ticket" method="POST">
 			<table id="ticketing" name="ticketing" class="reflex">
 				<caption>
@@ -146,7 +145,9 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					</tr>
 					<tr class="alt">
 						<td class="title">Contact: </td>
-						<td><?=$contactName?></td>
+						<td><?=$contactName?>
+							<input type="button" class="reflex-button" onclick='Ticketing_Contact.displayContact(<?=$ticket->contactId?>, null);return false;' value='view' />
+						</td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Status: </td>
@@ -228,40 +229,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		$cancel = Flex::getUrlBase() . '/reflex.php/Ticketing/' . ($ticket->isSaved() ? 'Ticket/' . $ticket->id . '/View' : 'System/?last=true');
 
-		// WIP :: Sort this out properly!!
-		/*
-		<script>
-		
-			function onTicketingLoad()
-			{
-		
-				funcSuccess = function() 
-				{
-					for (var i = 0, l = arguments.length; i < l; i++)
-					{
-						alert(i + " = " + arguments[i]);
-					}
-				}
-		
-				funcFailure = function() {
-					alert('failed!');
-				}
-		
-				remoteClass = 'Ticketing';
-				remoteMethod = 'validateAccount';
-				jsonFunc = jQuery.json.jsonFunction(funcSuccess, funcFailure, remoteClass, remoteMethod);
-				jsonFunc('1', 2, 'Hello world!');
-			}
-		
-			Event.observe(window, 'load', onTicketingLoad, false);
-		
-		</script>
-		*/
-
 		?>
 		<script>
-
+//<!--
 			$validateAccounts = null;
+			$selectedContactValue = null;
 
 			function accountNumberChange()
 			{
@@ -307,6 +279,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					var name = contacts[i]['name'];
 					var option = document.createElement('option');
 					option.value = id;
+					option.selected = id == $selectedContactValue;
 					option.appendChild(document.createTextNode(name));
 					contactId.appendChild(option);
 				}
@@ -335,6 +308,65 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				}
 			}
 
+			function viewContactDetails()
+			{
+				var accountIdInput = $ID('accountId');
+				var accountId = null;
+				if (accountIdInput.className != 'invalid')
+				{
+					accountId = accountIdInput.value;;
+				}
+
+				var contactIdInput = $ID('contactId');
+				var contactId = null;
+				if (contactIdInput.tagName == 'SELECT')
+				{
+					var selectedIndex = contactIdInput.selectedIndex;
+					if (selectedIndex >= 0 && selectedIndex < contactIdInput.childNodes.length)
+					{
+						contactId = contactIdInput.childNodes[selectedIndex].value;
+					}
+				}
+				else
+				{
+					contactId = contactIdInput.value;
+				}
+
+				if (contactId == null)
+				{
+					alert('Please select a contact.');
+					return false;
+				}
+
+				Ticketing_Contact.displayContact(contactId, accountId);
+				return false;
+			}
+
+			function addContactCallBack(newContact)
+			{
+				$selectedContactValue = newContact['contactId'];
+				$ID('accountId').lastAjax = null;
+				$updateContacts($ID('accountId').value, $ID('ticketId').value);
+			}
+
+			function updatedContacts(response)
+			{
+				populateContactList(response['contacts']);
+			}
+
+			function addContact()
+			{
+				var accountIdInput = $ID('accountId');
+				if (accountIdInput.className == 'invalid' || accountIdInput.value == '')
+				{
+					alert('Please enter a valid account number.');
+					return false;
+				}
+				var accountId = accountIdInput.value;
+				Ticketing_Contact.displayContact(null, accountId, addContactCallBack);
+				return false;
+			}
+
 			function onTicketingLoad()
 			{
 				var accountId = $ID('accountId');
@@ -347,6 +379,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				remoteClass = 'Ticketing';
 				remoteMethod = 'validateAccount';
 				$validateAccounts = jQuery.json.jsonFunction(validatedAccount, null, remoteClass, remoteMethod);
+				$updateContacts = jQuery.json.jsonFunction(updatedContacts, null, remoteClass, remoteMethod);
 
 				Event.observe(accountId, 'blur', accountNumberChange);
 				Event.observe(accountId, 'keyup', accountNumberChange);
@@ -354,7 +387,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			}
 		
 			Event.observe(window, 'load', onTicketingLoad, false);
-		
+//-->		
 		</script>
 		<form id="edit_ticket" method="POST" name="edit_ticket" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/" . ($ticket->isSaved() ? $ticket->id . '/' : '') . $requestedAction; ?>">
 			<input type="hidden" name="save" value="1" />
@@ -473,15 +506,22 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						<td class="title">Account: </td>
 						<td>
 							<?php
+							$allowCreation = FALSE;
 							$invalid = array_key_exists('accountId', $invalidValues) ? 'invalid' : '';
 							if (array_search('accountId', $editableValues) !== FALSE)
 							{
 								$accountId = $ticket && $ticket->accountId ?$ticket->accountId : ''; 
 								?><input type="text" id="accountId" name="accountId" class="<?=$invalid?>" size="50" value="<?=$accountId?>" /><?php
+								$allowCreation = TRUE;
 							}
 							else
 							{
 								echo $ticket->accountId ? $ticket->accountId : '[Not matched to an account]';
+								if ($ticket->accountId)
+								{
+									echo '<input type="hidden" id="accountId" value="' . $ticket->accountId . '" />';
+									$allowCreation = TRUE;
+								}
 							}
 							?>
 						</td>
@@ -501,7 +541,15 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 									$selected = $contactId == $contact->id ? ' selected="selected"' : '';
 									?><option value="<?=$contact->id?>"<?=$selected?>><?=htmlspecialchars($contact->getName())?></option><?php
 								}
-								?></select><?php
+								?></select>
+								<input type="button" class="reflex-button" onclick='viewContactDetails();return false;' value='view' />
+								<?php
+								if ($allowCreation)
+								{
+									?>
+									<input type="button" class="reflex-button" onclick='addContact();return false;' value='add' />
+									<?php
+								}
 								if (array_search('accountId', $editableValues) !== FALSE)
 								{
 									echo htmlspecialchars(' (Change account to see available contacts)');
@@ -510,6 +558,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							else
 							{
 								echo $contactName;
+								$allowCreation = FALSE;
+								echo '<input type="hidden" id="contactId" value="' . $ticket->contactId . '" />';
 							}
 							?>
 						</td>

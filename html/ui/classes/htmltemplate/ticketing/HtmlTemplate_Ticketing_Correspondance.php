@@ -123,6 +123,10 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 				$contact = $correspondance->getContact();
 				$contactName = $contact ? $contact->getName() : '[No contact selected]';
 				echo htmlspecialchars($contactName);
+				if ($contact)
+				{
+					?><input type="button" class="reflex-button" onclick='Ticketing_Contact.displayContact(<?=$contact->id?>, null);return false;' value='view' /><?php
+				}
 			?></td>
 		</tr>
 		<tr class="alt">
@@ -212,6 +216,103 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		$ticket = array_key_exists('ticket', $this->mxdDataToRender) ? $this->mxdDataToRender['ticket'] : NULL;
 
 		?>
+		<script>
+//<!--
+			$selectedContactValue = null;
+
+			function onTicketingLoad()
+			{
+				var accountId = $ID('accountId');
+
+				if (accountId == undefined || accountId == null)
+				{
+					return;
+				}
+
+				remoteClass = 'Ticketing';
+				remoteMethod = 'validateAccount';
+				$updateContacts = jQuery.json.jsonFunction(updatedContacts, null, remoteClass, remoteMethod);
+			}
+		
+			Event.observe(window, 'load', onTicketingLoad, false);
+
+			function viewContactDetails()
+			{
+				var accountIdInput = $ID('accountId');
+				var accountId = accountIdInput ? accountIdInput.value : null;
+
+				var contactIdInput = $ID('contactId');
+				var contactId = null;
+				if (contactIdInput.tagName == 'SELECT')
+				{
+					var selectedIndex = contactIdInput.selectedIndex;
+					if (selectedIndex >= 0 && selectedIndex < contactIdInput.childNodes.length)
+					{
+						contactId = contactIdInput.childNodes[selectedIndex].value;
+					}
+				}
+				else
+				{
+					contactId = contactIdInput.value;
+				}
+
+				if (contactId == null)
+				{
+					alert('Please select a contact.');
+					return false;
+				}
+
+				Ticketing_Contact.displayContact(contactId, accountId);
+				return false;
+			}
+
+			function addContact()
+			{
+				var accountIdInput = $ID('accountId');
+				if (!accountIdInput) return;
+				var accountId = accountIdInput.value;;
+				Ticketing_Contact.displayContact(null, accountId, addContactCallBack);
+				return false;
+			}
+
+			function addContactCallBack(newContact)
+			{
+				$selectedContactValue = newContact['contactId'];
+				$ID('accountId').lastAjax = null;
+				$updateContacts($ID('accountId').value, $ID('ticketId').value);
+			}
+
+			function updatedContacts(response)
+			{
+				populateContactList(response['contacts']);
+			}
+
+			function populateContactList(contacts)
+			{
+				var contactId = $ID('contactId');
+				emptyElement(contactId);
+				for (var i = 0, l = contacts.length; i < l; i++)
+				{
+					var id = contacts[i]['id'];
+					var name = contacts[i]['name'];
+					var option = document.createElement('option');
+					option.value = id;
+					option.selected = id == $selectedContactValue;
+					option.appendChild(document.createTextNode(name));
+					contactId.appendChild(option);
+				}
+			}
+
+			function emptyElement(el)
+			{
+				for (var i = el.length - 1; i >= 0; i--)
+				{
+					el.removeChild(el.childNodes[i]);
+				}
+			}
+
+//-->		
+		</script>
 		<form id="edit_ticket" method="POST" name="edit_correspondance" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Correspondance/" . ($correspondance->isSaved() ? $correspondance->id . '/' : '') . $requestedAction . ($correspondance->isSaved() ? '' : '/' . $correspondance->ticketId); ?>">
 			<input type="hidden" name="save" value="1" />
 			<input type="hidden" id="ticketId" value="<?php echo $correspondance->ticketId; ?>" />
@@ -301,19 +402,35 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 									?><select id="contactId" name='contactId' class="<?=$invalid?>"><?php
 									$contactId = $correspondance->contactId ? $correspondance->contactId : NULL;
 									$ticket = $ticket ? $ticket : $correspondance->getTicket();
+									$accountId = $ticket->accountId ? $ticket->accountId : 'null';
 									$contacts = Ticketing_Contact::listForAccountAndTicket($ticket->accountId, $ticket);
 									foreach ($contacts as $contact)
 									{
 										$selected = $contactId == $contact->id ? ' selected="selected"' : '';
 										?><option value="<?=$contact->id?>"<?=$selected?>><?=htmlspecialchars($contact->getName())?></option><?php
 									}
-									?></select><?php
+									?></select>
+									<input type="button" class="reflex-button" onclick='viewContactDetails();return false;' value='view' />
+									<?php
+									if ($accountId)
+									{
+										?>
+										<input type="hidden" id="accountId" value="<?=$accountId?>" />
+										<input type="button" class="reflex-button" onclick='addContact();return false;' value='add' />
+										<?php
+									}
 								}
 								else
 								{
 									$contact = $correspondance->getContact();
 									$contactName = $contact ? $contact->getName() : '[No contact selected]';
+									$ticket = $ticket ? $ticket : $correspondance->getTicket();
+									$accountId = $ticket->accountId ? $ticket->accountId : 'null';
 									echo htmlspecialchars($contactName);
+									if ($contact)
+									{
+										?><input type="button" class="reflex-button" onclick='Ticketing_Contact.displayContact(<?=$ticket->contactId?>, <?=$accountId?>);return false;' value='view' /><?php
+									}
 								}
 							?>
 						</td>
