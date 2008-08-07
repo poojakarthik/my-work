@@ -128,6 +128,9 @@ Object.extend(Ticketing_Contact.prototype, {
 		this.editPane.innerHTML = '';
 		var table = document.createElement('table');
 		table.className = 'reflex';
+
+		this.createCaption(table, 'View Contact Details');
+
 		var tr = null, td = null, input = null, button = null;
 		this.inputs = {};
 
@@ -197,7 +200,38 @@ Object.extend(Ticketing_Contact.prototype, {
 		td.appendChild(button);
 		Event.observe(button, 'click', this.submitDetails.bind(this));
 
+		this.createFooter(table);
+
 		this.editPane.appendChild(table);
+	},
+
+	createCaption: function (table, title)
+	{
+		var caption = table.insertRow(-1);
+		caption.className = 'table-caption-row';
+		caption = caption.insertCell(-1);
+		caption.colSpan = 2;
+		var cb = document.createElement('div');
+		var ct = document.createElement('div');
+		var co = document.createElement('div');
+		cb.className = 'caption_bar';
+		ct.className = 'caption_title';
+		co.className = 'caption_options';
+		caption.appendChild(cb);
+		cb.appendChild(ct);
+		cb.appendChild(co);
+		ct.appendChild(document.createTextNode(title));
+		return caption;
+	},
+
+	createFooter: function (table)
+	{
+		var footer = table.insertRow(-1);
+		footer.className = 'table-footer-row';
+		footer = footer.insertCell(-1);
+		footer.colSpan = 2;
+		footer.appendChild(document.createTextNode("\u00a0"));
+		return footer;
 	},
 
 	populateViewPane: function()
@@ -206,6 +240,9 @@ Object.extend(Ticketing_Contact.prototype, {
 		this.viewPanePopulated = true;
 		var table = document.createElement('table');
 		table.className = 'reflex';
+
+		this.createCaption(table, 'View Contact Details');
+
 		var tr = null, td = null;
 
 		tr = table.insertRow(-1);
@@ -260,6 +297,8 @@ Object.extend(Ticketing_Contact.prototype, {
 			td.appendChild(button);
 			Event.observe(button, 'click', this.togglePanes.bind(this));
 		}
+
+		this.createFooter(table);
 
 		this.viewPane.appendChild(table);
 	},
