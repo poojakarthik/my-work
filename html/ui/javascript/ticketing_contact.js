@@ -74,7 +74,7 @@ Object.extend(Ticketing_Contact.prototype, {
 			throw new Exception('Both account and contact Ids are null.');
 		}
 
-		this.popup = new Reflex_Popup();
+		this.popup = new Reflex_Popup(50);
 
 		if (this.contactId != null)
 		{
@@ -86,7 +86,6 @@ Object.extend(Ticketing_Contact.prototype, {
 			var details = { title: null, firstName: null, lastName: null, jobTitle: null, email: null, fax: null, mobile: null, phone: null };
 			this.displayDetails(details);
 		}
-
 		this.popup.addCloseButton(this.destroy.bind(this));
 
 		this.popup.display();
@@ -317,4 +316,3 @@ Object.extend(Ticketing_Contact.prototype, {
 	}
 
 });
-

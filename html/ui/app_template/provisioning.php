@@ -139,8 +139,10 @@ class AppTemplateProvisioning extends ApplicationTemplate
 
 		// Retrieve the history
 		$mixResult = $this->GetHistory(DBO()->History->CategoryFilter->Value, DBO()->History->TypeFilter->Value, DBO()->Account->Id->Value, NULL, DBO()->History->MaxItems->Value);
-		DBO()->History->Records	= $mixResult;
+		// TODO check that $mixResult !== FALSE.  If it does, then an error has occured
 		
+		DBO()->History->Records	= $mixResult;
+
 		// Retrieve all outbound provisioning request types
 		DBL()->provisioning_type->SetColumns("id, name, outbound");
 		DBL()->provisioning_type->outbound = 1;

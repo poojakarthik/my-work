@@ -41,7 +41,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			$ownerId = $user->id;
 		}
 
-		BreadCrumb()->Console();
+		BreadCrumb()->EmployeeConsole();
 		BreadCrumb()->SetCurrentPage($bolOwnTickets ? "My Tickets" : "Tickets");
 
 		// If this search is based on last search, default all search settings to be those of the last search
@@ -180,7 +180,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
-		BreadCrumb()->Console();
+		BreadCrumb()->EmployeeConsole();
 		BreadCrumb()->TicketingConsole(TRUE);
 
 		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
@@ -760,7 +760,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			$detailsToRender['error'] .= ($detailsToRender['error'] ? ': ' : '') . $exception->getMessage();
 		}
 
-		BreadCrumb()->Console();
+		BreadCrumb()->EmployeeConsole();
 		BreadCrumb()->TicketingConsole(TRUE);
 		if ($ticketId) 
 		{
@@ -874,7 +874,13 @@ class Application_Handler_Ticketing extends Application_Handler
 	// Manages the Ticketing Summary Report functionality
 	public function SummaryReport($subPath)
 	{
-		BreadCrumb()->Console();
+		if (!Ticketing_User::currentUserIsTicketingUser())
+		{
+			AuthenticatedUser()->InsufficientPrivilegeDie();
+		}
+		
+		BreadCrumb()->EmployeeConsole();
+		BreadCrumb()->TicketingConsole();
 		BreadCrumb()->SetCurrentPage("Summary Report");
 
 		if (is_array($subPath) && count($subPath) == 1)

@@ -112,7 +112,7 @@ class HtmlTemplateDelinquentCDRs extends HtmlTemplate
 
 			
 			<span> Latest Date </span>
-			<input type='text' id='EndDate' InputMask='ShortDate' maxlength='10' value='$strEndingDate' style='width:85px'/>
+			<input type='text' id='EndDate' name='EndDate' InputMask='ShortDate' maxlength='10' value='$strEndingDate' style='width:85px'/>
 			<a href='javascript:DateChooser.showChooser(\"EndDate\", $intMinYear, $intMaxYear, \"d/m/Y\", false, true, true, $intDefaultYear, $intDefaultMonth, $intDefaultDay);'>
 				<img src='img/template/calendar_small.png' width='16' height='16' title='Date picker' />
 			</a>
