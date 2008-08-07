@@ -44,18 +44,21 @@ if ($intServiceCount = $selServices->Execute())
 			while ($arrResponse = $selResponses->Fetch())
 			{
 				WaitingIcon();
-				Debug($arrResponse);
+				//Debug($arrResponse);
 				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
 				$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
-				Debug($arrResponse);
+				//Debug($arrResponse);
 				
 				// Is this Response on the last EffectiveDate?
 				if ($intEffectiveDate < strtotime($arrResponse['EffectiveDate']))
 				{
+					//CliEcho("(".date("Y-m-d H:i:s", $intEffectiveDate).") $intEffectiveDate < ".strtotime($arrResponse['EffectiveDate'])." ({$arrResponse['EffectiveDate']})");
 					$arrCurrentResponses	= Array();
+					$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
 				}
 				if ($intEffectiveDate === strtotime($arrResponse['EffectiveDate']))
 				{
+					//CliEcho("(".date("Y-m-d H:i:s", $intEffectiveDate).") $intEffectiveDate === ".strtotime($arrResponse['EffectiveDate'])." ({$arrResponse['EffectiveDate']})");
 					$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
 					$arrCurrentResponses[]	= $arrResponse;
 				}
@@ -97,8 +100,15 @@ if ($intServiceCount = $selServices->Execute())
 				$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
 				
 				// Is this Response on the last EffectiveDate?
-				if ($intEffectiveDate <= strtotime($arrResponse['EffectiveDate']))
+				if ($intEffectiveDate < strtotime($arrResponse['EffectiveDate']))
 				{
+					//CliEcho("(".date("Y-m-d H:i:s", $intEffectiveDate).") $intEffectiveDate < ".strtotime($arrResponse['EffectiveDate'])." ({$arrResponse['EffectiveDate']})");
+					$arrCurrentResponses	= Array();
+					$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
+				}
+				if ($intEffectiveDate === strtotime($arrResponse['EffectiveDate']))
+				{
+					//CliEcho("(".date("Y-m-d H:i:s", $intEffectiveDate).") $intEffectiveDate === ".strtotime($arrResponse['EffectiveDate'])." ({$arrResponse['EffectiveDate']})");
 					$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
 					$arrCurrentResponses[]	= $arrResponse;
 				}
