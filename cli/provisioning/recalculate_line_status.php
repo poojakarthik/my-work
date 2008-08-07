@@ -6,7 +6,7 @@ $arrConfig			= LoadApplication();
 $appProvisioning	= new ApplicationProvisioning();
 
 $selServices	= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
-$selResponses	= new StatementSelect("ProvisioningResponse JOIN provisioning_type ON provisioning_type.id = ProvisioningResponse.Type", "ProvisioningResponse.*", "provisioning_type.provisioning_type_nature = <Nature> AND ProvisioningResponse.Service = <Service> AND ProvisioningResponse.Status = ".RESPONSE_STATUS_IMPORTED, "ProvisioningResponse.EffectiveDate DESC, ProvisioningResponse.ImportedOn ASC, ProvisioningResponse.Id ASC");
+$selResponses	= new StatementSelect("ProvisioningResponse JOIN provisioning_type ON provisioning_type.id = ProvisioningResponse.Type", "ProvisioningResponse.*", "provisioning_type.provisioning_type_nature = <Nature> AND ProvisioningResponse.Service = <Service> AND ProvisioningResponse.Status = ".RESPONSE_STATUS_IMPORTED);
 
 CliEcho("\n[ RECALCULATING LINE STATUS ]\n");
 
@@ -34,7 +34,11 @@ if ($intServiceCount = $selServices->Execute())
 				if ($arrResponse)
 				{
 					// Is this Response on the last EffectiveDate?
-					if ($intEffectiveDate <= strtotime($arrResponse['EffectiveDate']))
+					if ($intEffectiveDate < strtotime($arrResponse['EffectiveDate']))
+					{
+						$arrCurrentResponses	= Array();
+					}
+					if ($intEffectiveDate === strtotime($arrResponse['EffectiveDate']))
 					{
 						$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
 						$arrCurrentResponses[]	= $arrResponse;
