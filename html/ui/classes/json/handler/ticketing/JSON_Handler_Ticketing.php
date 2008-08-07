@@ -116,10 +116,9 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		return $this->contactProps(Ticketing_Contact::getForId($contactId));
 	}
 
-	public function saveContactDetails($contactId, $title, $firstName, $lastName, $jobTitle, $email, $fax, $mobile, $phone)
+	public function setContactDetails($contactId, $title, $firstName, $lastName, $jobTitle, $email, $fax, $mobile, $phone, $accountId)
 	{
 		$properties = array();
-
 		if (trim($contactId)) 	$properties['id'] = $contactId;
 		if (trim($title)) 		$properties['title'] = $title;
 		if (trim($firstName)) 	$properties['firstName'] = $firstName;
@@ -130,9 +129,15 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		if (trim($mobile)) 		$properties['mobile'] = $mobile;
 		if (trim($phone)) 		$properties['phone'] = $phone;
 
+		if (!trim($firstName) && !trim($lastName) && !trim($email))
+		{
+			return 'INVALID';
+		}
+
 		$contact = Ticketing_Contact::getWithProperties($properties);
 
 		// Need to associate with an account!!
+		Ticketing_Contact_Account::associate($contact, $accountId);
 
 		return $this->contactProps($contact);
 	}

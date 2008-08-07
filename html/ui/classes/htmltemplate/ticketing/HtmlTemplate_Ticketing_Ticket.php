@@ -98,6 +98,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		?>
 
+<button onclick='Ticketing_Contact.displayContact(null, 1000154811);' value='click me'>click me</button>
 		<form id="view_ticket" name="view_ticket" method="POST">
 			<table id="ticketing" name="ticketing" class="reflex">
 				<caption>
@@ -355,7 +356,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			Event.observe(window, 'load', onTicketingLoad, false);
 		
 		</script>
-
 		<form id="edit_ticket" method="POST" name="edit_ticket" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/" . ($ticket->isSaved() ? $ticket->id . '/' : '') . $requestedAction; ?>">
 			<input type="hidden" name="save" value="1" />
 			<input type="hidden" id="ticketId" value="<?php echo $ticket->id ? $ticket->id : ''; ?>" />

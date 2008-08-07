@@ -26,7 +26,7 @@ class Ticketing_Contact
 
 	public function getName()
 	{
-		return ($this->firstName ? $this->firstName : '') . ($this->firstName && $this->lastName ? ' ' : '') . ($this->lastName ? $this->lastName : '');
+		return ($this->firstName ? $this->firstName : '') . ($this->firstName && $this->lastName ? ' ' : '') . ($this->lastName ? $this->lastName : $this->email);
 	}
 
 	public static function getForCorrespondance(Ticketing_Correspondance $objCorrespondance)
@@ -145,8 +145,11 @@ class Ticketing_Contact
 		else
 		{
 			$contact = new Ticketing_Contact();
+			$contact->status = ACTIVE_STATUS_ACTIVE;
+			$contact->autoReply = ACTIVE_STATUS_ACTIVE;
 		}
 		$contact->init($properties);
+		$contact->_saved = false;
 		$contact->save();
 		return $contact;
 	}
