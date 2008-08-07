@@ -336,7 +336,7 @@
 		
 		if (!isset($selLineStatus))
 		{
-			$selLineStatus			= new StatementSelect("Service", "LineStatus, LineStatusDate, PreselectionStatus, PreselectionStatusDate", "Id = <Service>");
+			$selLineStatus			= new StatementSelect("Service", "Id, LineStatus, LineStatusDate, PreselectionStatus, PreselectionStatusDate", "Id = <Service>");
 		}
 		if (!isset($selProvisioningType))
 		{
