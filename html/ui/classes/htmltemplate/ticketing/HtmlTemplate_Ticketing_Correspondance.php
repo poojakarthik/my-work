@@ -139,11 +139,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		</tr>
 		<tr class="alt">
 			<td class="title">Source: </td>
-			<td><?=htmlspecialchars($correspondance->getSource()->name)?></td>
+			<td class="<?=$correspondance->getSource()->cssClass?>"><?=htmlspecialchars($correspondance->getSource()->name)?></td>
 		</tr>
 		<tr class="alt">
 			<td class="title">Delivery Status: </td>
-			<td><?php
+			<td class="<?=$correspondance->getDeliveryStatus()->cssClass?>"><?php
 				echo htmlspecialchars($correspondance->getDeliveryStatus()->name);
 			?></td>
 		</tr>
@@ -475,7 +475,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 									foreach ($sources as $source)
 									{
 										$selected = $sourceId == $source->id ? ' selected="selected"' : '';
-										?><option value="<?=$source->id?>"<?=$selected?>><?=htmlspecialchars($source->name)?></option><?php
+										?><option class="<?=$source->cssClass?>" value="<?=$source->id?>"<?=$selected?>><?=htmlspecialchars($source->name)?></option><?php
 									}
 									?></select><?php
 								}
@@ -499,7 +499,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 									foreach ($deliveryStatuses as $deliveryStatus)
 									{
 										$selected = $deliveryStatusId == $deliveryStatus->id ? ' selected="selected"' : '';
-										?><option value="<?=$deliveryStatus->id?>"<?=$selected?>><?=htmlspecialchars($deliveryStatus->name)?></option><?php
+										?><option class="<?=$deliveryStatus->cssClass?>" value="<?=$deliveryStatus->id?>"<?=$selected?>><?=htmlspecialchars($deliveryStatus->name)?></option><?php
 									}
 									?></select><?php
 								}

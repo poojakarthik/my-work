@@ -286,9 +286,13 @@ class Ticketing_Ticket
 			switch($style['comparison'])
 			{
 				case '=':
-					if ($style['value'] === NULL)
+					if ($style['value'] === NULL || (is_array($style['value']) && empty($style['value'])))
 					{
 						$where .= ($where ? ' AND ' : '') . " $column IS NULL";
+					}
+					else if (is_array($style['value']))
+					{
+						$where .= ($where ? ' AND ' : '') . " $column IN ('" . implode("','", $style['value']) . "')";
 					}
 					else
 					{

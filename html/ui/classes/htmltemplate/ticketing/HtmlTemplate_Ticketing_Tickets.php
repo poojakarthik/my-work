@@ -21,6 +21,10 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		$ownerId = array_key_exists('ownerId', $this->mxdDataToRender['filter']) ? $this->mxdDataToRender['filter']['ownerId']['value'] : NULL;
 		$categoryId = array_key_exists('categoryId', $this->mxdDataToRender['filter']) ? $this->mxdDataToRender['filter']['categoryId']['value'] : NULL;
 		$statusId = array_key_exists('statusId', $this->mxdDataToRender['filter']) ? $this->mxdDataToRender['filter']['statusId']['value'] : NULL;
+		if (is_array($statusId))
+		{
+			$statusId = implode(',', $statusId);
+		}
 
 		$selected = ' SELECTED="SELECTED"';
 
@@ -68,8 +72,9 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		{
 			$id = $user->id;
 			$name = htmlspecialchars($user->getName());
+			$class = $item->cssClass;
 			$strSelected = $ownerId === $id ? $selected : '';
-			echo "\t\t\t\t\t<option value=\"$id\"$strSelected>$name</option>\n";
+			echo "\t\t\t\t\t<option class=\"$class\" value=\"$id\"$strSelected>$name</option>\n";
 		}
 ?>
 				</select>
@@ -81,8 +86,9 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		{
 			$id = $item->id;
 			$name = htmlspecialchars($item->name);
+			$class = $item->cssClass;
 			$strSelected = $categoryId === $id ? $selected : '';
-			echo "\t\t\t\t\t<option value=\"$id\"$strSelected>$name</option>\n";
+			echo "\t\t\t\t\t<option class=\"$class\" value=\"$id\"$strSelected>$name</option>\n";
 		}
 ?>
 				</select>
@@ -92,10 +98,11 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 <?php
 		foreach ($this->mxdDataToRender['statuses'] as $item)
 		{
-			$id = $item->id;
+			$id = $item->getStatusIds();
 			$name = htmlspecialchars($item->name);
+			$class = $item->cssClass;
 			$strSelected = $statusId === $id ? $selected : '';
-			echo "\t\t\t\t\t<option value=\"$id\"$strSelected>$name</option>\n";
+			echo "\t\t\t\t\t<option class=\"$class\" value=\"$id\"$strSelected>$name</option>\n";
 		}
 ?>
 				</select>
@@ -112,12 +119,13 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				<th>Owner</th>
 				<th>Category</th>
 				<th>Status</th>
+				<th>Priority</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
-				<th colspan=8 align=right>&nbsp;<?=$navLinks?></th>
+				<th colspan=9 align=right>&nbsp;<?=$navLinks?></th>
 			</tr>
 		</tfoot>
 		<tbody>
@@ -133,9 +141,8 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			$owner = $ticket->getOwner();
 			$ownerName = $owner ? $owner->getName() : "&nbsp;";
 			$category = $ticket->getCategory();
-			$categoryColClass = strtolower(str_replace('_', '-', $category->constant));
 			$status = $ticket->getStatus();
-			$statusColClass = strtolower(str_replace('_', '-', $status->constant));
+			$priority = $ticket->getPriority();
 		?>
 
 			<tr class="<?=$tr_alt?>">
@@ -144,8 +151,9 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				<td><?php echo $ticket->modifiedDatetime; ?></td>
 				<td><?php echo $ticket->creationDatetime; ?></td>
 				<td><?php echo $ownerName; ?></td>
-				<td class="<?=$categoryColClass?>"><?php echo $category->name; ?></td>
-				<td class="<?=$statusColClass?>"><?php echo $status->name; ?></td>
+				<td class="<?=$category->cssClass?>"><?php echo $category->name; ?></td>
+				<td class="<?=$status->cssClass?>"><?php echo $status->name; ?></td>
+				<td class="<?=$priority->cssClass?>"><?php echo $priority->name; ?></td>
 				<td>[actions]</td>
 			</tr>
 		<? 

@@ -108,7 +108,24 @@ class Application_Handler_Ticketing extends Application_Handler
 		}
 
 		$ownerId = array_key_exists('ownerId', $_REQUEST) ? (strlen($_REQUEST['ownerId']) ? intval($_REQUEST['ownerId']) : NULL) : $ownerId;
-		$statusId = array_key_exists('statusId', $_REQUEST) ? (strlen($_REQUEST['statusId']) ? intval($_REQUEST['statusId']) : NULL) : $statusId;
+
+		$statusId = array_key_exists('statusId', $_REQUEST) ? (strlen($_REQUEST['statusId']) ? $_REQUEST['statusId'] : NULL) : $statusId;
+		if ($statusId !== NULL && !is_array($statusId))
+		{
+			if (strpos($statusId, ',') !== FALSE)
+			{
+				$statusId = explode(',', $statusId);
+				foreach($statusId as $i => $v)
+				{
+					$statusId[$i] = intval($v);
+				}
+			}
+			else
+			{
+				$statusId = intval($statusId);
+			}
+		}
+
 		$categoryId = array_key_exists('categoryId', $_REQUEST) ? (strlen($_REQUEST['categoryId']) ? intval($_REQUEST['categoryId']) : NULL) : $categoryId;
 
 		$filter = array();
@@ -146,7 +163,8 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$detailsToRender['tickets'] = Ticketing_Ticket::findMatching($columns, $sort, $filter, $offset, $limit);
 		$detailsToRender['users'] = Ticketing_User::listAll();
-		$detailsToRender['statuses'] = Ticketing_Status::listAll();
+		
+		$detailsToRender['statuses'] = array_merge(Ticketing_Status_Type::listAll(), Ticketing_Status::listAll());
 		$detailsToRender['categories'] = Ticketing_Category::listAll();
 
 		$this->LoadPage('ticketing_tickets', HTML_CONTEXT_DEFAULT, $detailsToRender);

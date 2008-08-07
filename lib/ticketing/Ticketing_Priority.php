@@ -22,6 +22,8 @@ class Ticketing_Priority
 				return $this->arrProperties['Description'];
 			case 'constant':
 				return $this->arrProperties['Constant'];
+			case 'cssclass':
+				return str_replace('_', '-', strtolower($this->arrProperties['Constant']));
 		}
 	}
 

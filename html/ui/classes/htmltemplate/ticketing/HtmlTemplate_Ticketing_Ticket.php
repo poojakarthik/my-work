@@ -134,7 +134,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					</tr>
 					<tr class="alt">
 						<td class="title">Priority: </td>
-						<td><?=$ticket->getPriority()->name?></td>
+						<td class="<?=$ticket->getPriority()->cssClass?>"><?=$ticket->getPriority()->name?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Customer Group: </td>
@@ -152,11 +152,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					</tr>
 					<tr class="alt">
 						<td class="title">Status: </td>
-						<td><?=$ticket->getStatus()->name?></td>
+						<td class="<?=$ticket->getStatus()->cssClass?>"><?=$ticket->getStatus()->name?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Category: </td>
-						<td><?=$ticket->getCategory()->name?></td>
+						<td class="<?=$ticket->getCategory()->cssClass?>"><?=$ticket->getCategory()->name?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Services: </td>
@@ -469,7 +469,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								foreach ($priorities as $priority)
 								{
 									$selected = $ticket->priorityId == $priority->id ? ' selected="selected"' : '';
-									?><option value="<?=$priority->id?>"<?=$selected?>><?=$priority->name?></option><?php
+									?><option class="<?=$priority->cssClass?>" value="<?=$priority->id?>"<?=$selected?>><?=$priority->name?></option><?php
 								}
 								?></select><?php
 							}
@@ -577,7 +577,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								foreach ($statuses as $status)
 								{
 									$selected = $ticket->statusId == $status->id ? ' selected="selected"' : '';
-									?><option value="<?=$status->id?>"<?=$selected?>><?=htmlspecialchars($status->name)?></option><?php
+									?><option class="<?=$status->cssClass?>" value="<?=$status->id?>"<?=$selected?>><?=htmlspecialchars($status->name)?></option><?php
 								}
 								?></select><?php
 							}
@@ -600,7 +600,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								foreach ($categories as $category)
 								{
 									$selected = $ticket->categoryId == $category->id ? ' selected="selected"' : '';
-									echo "<option value=\"$category->id\"$selected\">" . htmlspecialchars($category->name) . "</option>";
+									echo "<option class=\"" . $category->cssClass . "\" value=\"$category->id\"$selected\">" . htmlspecialchars($category->name) . "</option>";
 								}
 								echo "</select>";
 							}

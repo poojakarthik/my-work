@@ -1,8 +1,9 @@
 <?php
 
-class Ticketing_Correspondance_Source 
+class Ticketing_Status_Type
 {
 	protected $arrProperties = array();
+	private $statusIds = NULL;
 
 	protected function __construct($arrProps)
 	{
@@ -27,22 +28,9 @@ class Ticketing_Correspondance_Source
 		}
 	}
 
-	public static function getAvailableSourcesForUser($user=NULL)
+	public function getStatusIds()
 	{
-		if (!$user)
-		{
-			$user = Ticketing_User::getCurrentUser();
-		}
-		$available = array();
-		if ($user->isUser())
-		{
-			$available[] = self::getForId(TICKETING_CORRESPONDANCE_SOURCE_PHONE);
-			$available[] = self::getForId(TICKETING_CORRESPONDANCE_SOURCE_EMAIL);
-		}
-		if ($user->isAdminUser())
-		{
-		}
-		return $available;
+		return implode(',', $this->listStatusIds());
 	}
 
 	public static function listAll()
@@ -58,6 +46,25 @@ class Ticketing_Correspondance_Source
 			}
 		}
 		return $instances;
+	}
+
+	public function listStatusIds()
+	{
+		if ($this->statusIds === NULL)
+		{
+			$selSelect = new StatementSelect('ticketing_status', 'id', 'status_type_id = <StatusTypeId>');
+			$arrWhere = array('StatusTypeId' => $this->id);
+			if (($outcome = $selSelect->Execute($arrWhere)) === FALSE)
+			{
+				throw new Exception('Failed to find statuses for status type ' . $this->id);
+			}
+			$this->statusIds = array();
+			while($props = $selSelect->Fetch())
+			{
+				$this->statusIds[] = $props['id'];
+			}
+		}
+		return $this->statusIds;
 	}
 
 	public static function getForId($id)
