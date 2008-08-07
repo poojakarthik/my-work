@@ -626,7 +626,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 				echo $content;
 			?></td>
 			<td><?=$attachmentTypeName?></td>
-			<td><?=$blacklistStatusName?></td>
+			<td class="<?=$blacklistStatus->cssClass?>"><?=$blacklistStatusName?></td>
 		</tr>
 <?php
 			}
