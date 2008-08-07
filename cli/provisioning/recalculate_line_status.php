@@ -46,6 +46,9 @@ if ($intServiceCount = $selServices->Execute())
 				WaitingIcon();
 				if ($arrResponse)
 				{
+					$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
+					$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
+					
 					// Is this Response on the last EffectiveDate?
 					if ($intEffectiveDate < strtotime($arrResponse['EffectiveDate']))
 					{
@@ -66,11 +69,7 @@ if ($intServiceCount = $selServices->Execute())
 			{
 				WaitingIcon();
 				
-				Debug($arrResponse);
-				
-				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
-				$arrNormalised	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
-				$mixResponse	= ImportBase::UpdateLineStatus($arrNormalised);
+				$mixResponse	= ImportBase::UpdateLineStatus($arrResponse);
 				if (is_string($mixResponse))
 				{
 					CliEcho($mixResponse);
@@ -97,6 +96,9 @@ if ($intServiceCount = $selServices->Execute())
 				WaitingIcon();
 				if ($arrResponse)
 				{
+					$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
+					$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
+					
 					// Is this Response on the last EffectiveDate?
 					if ($intEffectiveDate <= strtotime($arrResponse['EffectiveDate']))
 					{
@@ -113,11 +115,7 @@ if ($intServiceCount = $selServices->Execute())
 			{
 				WaitingIcon();
 				
-				Debug($arrResponse);
-				
-				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
-				$arrNormalised	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
-				$mixResponse	= ImportBase::UpdateLineStatus($arrNormalised);
+				$mixResponse	= ImportBase::UpdateLineStatus($arrResponse);
 				if (is_string($mixResponse))
 				{
 					CliEcho($mixResponse);
