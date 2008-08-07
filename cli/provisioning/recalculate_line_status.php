@@ -44,21 +44,18 @@ if ($intServiceCount = $selServices->Execute())
 			while ($arrResponse = $selResponses->Fetch())
 			{
 				WaitingIcon();
-				if ($arrResponse)
+				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
+				$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
+				
+				// Is this Response on the last EffectiveDate?
+				if ($intEffectiveDate < strtotime($arrResponse['EffectiveDate']))
 				{
-					$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
-					$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
-					
-					// Is this Response on the last EffectiveDate?
-					if ($intEffectiveDate < strtotime($arrResponse['EffectiveDate']))
-					{
-						$arrCurrentResponses	= Array();
-					}
-					if ($intEffectiveDate === strtotime($arrResponse['EffectiveDate']))
-					{
-						$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
-						$arrCurrentResponses[]	= $arrResponse;
-					}
+					$arrCurrentResponses	= Array();
+				}
+				if ($intEffectiveDate === strtotime($arrResponse['EffectiveDate']))
+				{
+					$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
+					$arrCurrentResponses[]	= $arrResponse;
 				}
 			}
 			
@@ -94,17 +91,14 @@ if ($intServiceCount = $selServices->Execute())
 			while ($arrResponse = $selResponses->Fetch())
 			{
 				WaitingIcon();
-				if ($arrResponse)
+				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
+				$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
+				
+				// Is this Response on the last EffectiveDate?
+				if ($intEffectiveDate <= strtotime($arrResponse['EffectiveDate']))
 				{
-					$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
-					$arrResponse	= $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY);
-					
-					// Is this Response on the last EffectiveDate?
-					if ($intEffectiveDate <= strtotime($arrResponse['EffectiveDate']))
-					{
-						$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
-						$arrCurrentResponses[]	= $arrResponse;
-					}
+					$intEffectiveDate		= strtotime($arrResponse['EffectiveDate']);
+					$arrCurrentResponses[]	= $arrResponse;
 				}
 			}
 			
@@ -144,7 +138,7 @@ exit(0);
 // WaitingIcon
 function WaitingIcon($bolRestart = FALSE)
 {
-	static	$arrIcon	= Array('-', '\\', '|', '/');
+	static	$arrIcon	= Array(1, 2, 3, 4, 5, 6, 7, 8, 9);
 	static	$intIndex	= 0;
 	
 	// Are we overwriting the last Icon?
