@@ -63,7 +63,7 @@ class HtmlTemplateDelinquentCDRs extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("delinquent_cdrs");
-		$this->LoadJavascript("date_time_picker_xy");
+		$this->LoadJavascript("date_time_picker_dynamic");
 		$this->LoadJavascript("validation");
 		$this->LoadJavascript("input_masks");
 	}
@@ -83,29 +83,39 @@ class HtmlTemplateDelinquentCDRs extends HtmlTemplate
 	function Render()
 	{
 		$intNextBillDate	= GetStartDateTimeForNextBillingPeriod();
-		$strStartingDate	= date("d/m/Y", strtotime("-185 days", $intNextBillDate));
+		$intStartingDate	= strtotime("-185 days", $intNextBillDate);
+		
+		$strStartingDate	= date("d/m/Y", $intStartingDate);
 		$strEndingDate		= date("d/m/Y", $intNextBillDate);
 		
 		$strYearLowerLimit	= substr($strStartingDate, 6);
 		$strYearUpperLimit	= substr($strEndingDate, 6);
+		
+		$intMaxYear			= intval(date("Y", $intNextBillDate));
+		$intMinYear			= intval(date("Y", $intStartingDate));
+		
+		$intDefaultYear		= $intMaxYear;
+		$intDefaultMonth	= intval(date("m", $intNextBillDate));
+		$intDefaultDay		= intval(date("d", $intNextBillDate));
+		
+		
 		
 		echo "
 <div class='GroupedContent'>
 	<div id='Container_SelectionControls' style='height:25px'>
 		<div class='Left'>
 			<span>Earliest Date </span>
-			<input type='text' id='StartDate' InputMask='ShortDate' maxlength='10' value='$strStartingDate' $strYearLowerLimit style='width:85px'/>
-			<a href='javascript:DateChooser.showChooser(\$ID(\"StartDate\"), \$ID(\"StartingDateCalender\"), $strYearLowerLimit, $strYearUpperLimit, \"d/m/Y\", false, true, true, $strYearLowerLimit);'>
-				<img src='img/template/calendar_small.png'/>
+			<input type='text' id='StartDate' name='StartDate' InputMask='ShortDate' maxlength='10' value='$strStartingDate' style='width:85px'/>
+			<a href='javascript:DateChooser.showChooser(\"StartDate\", $intMinYear, $intMaxYear, \"d/m/Y\", false, true, true, $intDefaultYear, $intDefaultMonth, $intDefaultDay);'>
+				<img src='img/template/calendar_small.png' width='16' height='16' title='Date picker' />
 			</a>
-			<div id='StartingDateCalender' class='date-time select-free' style='display:none; visibility:hidden;'></div>
+
 			
 			<span> Latest Date </span>
-			<input type='text' id='EndDate' InputMask='ShortDate' maxlength='10' value='$strEndingDate' $strYearUpperLimit style='width:85px'/>
-			<a href='javascript:DateChooser.showChooser(\$ID(\"EndDate\"), \$ID(\"EndingDateCalender\"), $strYearLowerLimit, $strYearUpperLimit, \"d/m/Y\", false, true, true, $strYearUpperLimit);'>
-				<img src='img/template/calendar_small.png'/>
+			<input type='text' id='EndDate' InputMask='ShortDate' maxlength='10' value='$strEndingDate' style='width:85px'/>
+			<a href='javascript:DateChooser.showChooser(\"EndDate\", $intMinYear, $intMaxYear, \"d/m/Y\", false, true, true, $intDefaultYear, $intDefaultMonth, $intDefaultDay);'>
+				<img src='img/template/calendar_small.png' width='16' height='16' title='Date picker' />
 			</a>
-			<div id='EndingDateCalender' class='date-time select-free' style='display:none; visibility:hidden;'></div>
 		</div>
 
 		<div class='Right'>
