@@ -326,7 +326,7 @@
 	 */
 	static function UpdateLineStatus($arrResponse)
 	{
-		Debug($arrResponse);
+		//Debug($arrResponse);
 		
 		// Init Statements
 		static $selLineStatus		= NULL;

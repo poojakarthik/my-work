@@ -165,9 +165,13 @@ function WaitingIcon($bolRestart = FALSE)
 	}
 	
 	// Get the next Icon
-	if (!($strIcon = next($arrIcon)))
+	if (!($arrCurrentIcon = each($arrIcon)))
 	{
 		$strIcon	= reset($arrIcon);
+	}
+	else
+	{
+		$strIcon	= $arrCurrentIcon['value'];
 	}
 	CliEcho($strOutput.$strIcon, FALSE);
 }
