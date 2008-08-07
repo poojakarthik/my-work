@@ -34,6 +34,7 @@ if (($intTotal = $selResponses->Execute()) !== FALSE)
 			// Yes, it's a Duplicate
 			$arrDuplicate	= $selDuplicate->Fetch();
 			CliEcho(" is a Duplicate of #{$arrDuplicate['Id']}! Updating Response...\t", FALSE);
+			sleep(1);
 			
 			// Update the Response
 			$arrResponse['Status']	= RESPONSE_STATUS_DUPLICATE;
