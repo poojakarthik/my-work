@@ -76,7 +76,7 @@
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "*", "CarrierRef = <CarrierRef>");
  		$this->_selRequestByFNN			= new StatementSelect(	"ProvisioningRequest", "*", 
 																"Carrier = <Carrier> AND FNN = <FNN> AND Type = <Type> AND RequestedOn < <EffectiveDate>");
-		$this->_selTranslateCarrierCode	= new StatementSelect("ProvisioningTranslation", "Description", "Context = <Context> AND CarrierCode = <CarrierCode>");
+		$this->_selTranslateCarrierCode	= new StatementSelect("ProvisioningTranslation", "flex_code", "Context = <Context> AND CarrierCode = <CarrierCode>");
 		
 		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_INPUT);
 		
@@ -272,7 +272,7 @@
 	 	}
 	 	
 	 	$arrValue	= $this->_selTranslateCarrierCode->Fetch();
-	 	return $arrValue['Description'];
+	 	return $arrValue['flex_code'];
 	 }
  	
  	

@@ -7,7 +7,7 @@ require_once("../../flex.require.php");
 $arrInsert	= Array();
 $arrInsert['Context']		= NULL;
 $arrInsert['CarrierCode']	= NULL;
-$arrInsert['Description']	= NULL;
+$arrInsert['flex_code']	= NULL;
 $insEPID	= new StatementInsert("ProvisioningTranslation", $arrInsert);
 
 $strFile	= "/home/richdavis/Desktop/EPID_Import.csv";
@@ -49,7 +49,7 @@ while (!feof($ptrFile))
 			CliEcho($strLine);
 		}
 		
-		$arrEPID['Description']	= trim($arrMatches[1][0]);
+		$arrEPID['flex_code']	= trim($arrMatches[1][0]);
 		
 		CliEcho(" + '{$arrEPID['Description']}': {$arrEPID['CarrierCode']}");
 		Debug($arrEPID);

@@ -29,7 +29,7 @@ while (!feof($ptrFile))
 	
 	$arrCode['Context']		= PROVISIONING_CONTEXT_LOSS_UNITEL;
 	$arrCode['CarrierCode']	= str_pad($arrLine[0], 3, '0', STR_PAD_LEFT);
-	$arrCode['Description']	= $arrLine[1];
+	$arrCode['flex_code']	= $arrLine[1];
 	CliEcho("Code: {$arrCode['CarrierCode']};\tValue: {$arrCode['Description']}...\t\t\t", FALSE);
 	if ($insCode->Execute($arrCode) === FALSE)
 	{
