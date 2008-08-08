@@ -16,7 +16,7 @@ class Ticketing_Summary_Report
 	protected $_arrReport				= array();
 	protected $_arrTotals				= array();
 	protected $_arrStatusStatusTypeMap	= array();
-public $RecordSet = array();
+
 	public function __construct()
 	{
 	}
@@ -218,7 +218,6 @@ GROUP BY owner_id, category_id, status_id
 				// It is
 				$this->AddTicketTotalToOwner($arrRecord['owner_id'], $arrRecord['category_id'], $arrRecord['status_id'], $arrRecord['ticket_count']);
 			}
-$this->RecordSet[] = $arrRecord;	
 		}
 		
 		return TRUE;
@@ -317,16 +316,41 @@ $this->RecordSet[] = $arrRecord;
 </tr>
 ";
 		
+		// Build time constraint description
+		if ($this->_strEarliestTime !== NULL)
+		{
+			$strEarliestTime = date("H:i:s d/m/Y", strtotime($this->_strEarliestTime));
+		}
+		
+		if ($this->_strLatestTime !== NULL)
+		{
+			$strLatestTime = date("H:i:s d/m/Y", strtotime($this->_strLatestTime));
+		}
+		else
+		{
+			// LatestTime was not defined, but NOW() would have been used
+			$strLatestTime = date("H:i:s d/m/Y", strtotime(GetCurrentISODateTime()));
+		}
+		
+		//Tickets that were worked on (ticketing_ticket modified) as at [Latest] and since [Earliest]
+		$strTitleTemplate = "Tickets worked on by <Owner> as at $strLatestTime";
+		if ($this->_strEarliestTime !== NULL)
+		{
+			// Only the EarliestTime constraint has been declared
+			$strTitleTemplate .= " and since $strEarliestTime";
+		}
+		
+		
 		foreach ($this->_arrTotals as $mixOwner=>$arrOwnerTotals)
 		{
 			if ($mixOwner === "All")
 			{
-				$strOwnerName = "All Owners";
+				$strTitle = str_replace("<Owner>", "any owner", $strTitleTemplate);
 			}
 			else
 			{
 				$objUser = Ticketing_User::getForId($mixOwner);
-				$strOwnerName = htmlspecialchars($objUser->getName());
+				$strTitle = str_replace("<Owner>", htmlspecialchars($objUser->getName()), $strTitleTemplate);
 			}
 			
 			// Build each row of the table
@@ -366,7 +390,7 @@ $this->RecordSet[] = $arrRecord;
 <table class='reflex' id='owner_id_$mixOwner'>
 	<caption>
 		<div id='caption_bar'>
-			<div id='caption_title'> $strOwnerName
+			<div id='caption_title'> $strTitle
 			</div>
 		</div>
 	</caption>

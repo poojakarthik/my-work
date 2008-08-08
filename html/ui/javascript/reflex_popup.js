@@ -3,6 +3,8 @@ var Reflex_Popup = Class.create();
 // Static class variables are defined here
 Object.extend(Reflex_Popup, {
 	
+	collection	: null,
+	
 	// Stores the current z index of the overlay div
 	intOverlayZIndex : null
 	
