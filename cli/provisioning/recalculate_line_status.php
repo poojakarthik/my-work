@@ -32,7 +32,7 @@ if ($intServiceCount = $selServices->Execute())
 	{
 		$intCount++;
 		$intSplit	= time() - $intTimeStart;
-		$fltPercent	= round(($intCount / $intTotal) * 100, 1);
+		$fltPercent	= round(($intCount / $intServiceCount) * 100, 1);
 		CliEcho(" * ($intCount/$intServiceCount {$fltPercent}% @ {$intSplit}s){$arrService['Account']}::{$arrService['FNN']}...", FALSE);
 		
 		// DETERMINE CURRENT SERVICE LINE STATUS
