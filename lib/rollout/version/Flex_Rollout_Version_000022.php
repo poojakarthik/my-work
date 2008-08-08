@@ -11,6 +11,7 @@
  *	6:	Add provisioning_response_status Table
  *	7:	Populate provisioning_response_status Table
  *	8:	Add ProvisioningResponse.request_status Field
+ *	9:	Rename ProvisioningTranslation.Description to flex_code
  */
 
 class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
@@ -142,6 +143,13 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "ALTER TABLE ProvisioningResponse DROP request_status;";
 		
+		// 9:	Rename ProvisioningTranslation.Description to flex_code
+		$strSQL = "ALTER TABLE ProvisioningTranslation CHANGE Description flex_code VARCHAR(1024) NOT NULL COMMENT 'Flex Internal Code';";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to rename ProvisioningTranslation.Description to flex_code. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "ALTER TABLE ProvisioningTranslation CHANGE flex_code Description VARCHAR(1024) NOT NULL COMMENT 'Text Description';";
 	}
 	
 	function rollback()
