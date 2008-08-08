@@ -379,13 +379,13 @@
 				}
 				
 				// Is this Status newer than the current Status?
-				if ($arrResponse['EffectiveDate'] > $strCurrentEffectiveDate)
+				if (strtotime($arrResponse['EffectiveDate']) > strtotime($strCurrentEffectiveDate))
 				{
 					// Current Status is older than this Status
 					$intCurrentLineStatus	= NULL;
 					
 				}
-				elseif ($arrResponse['EffectiveDate'] === $strCurrentEffectiveDate)
+				elseif (strtotime($arrResponse['EffectiveDate']) === strtotime($strCurrentEffectiveDate))
 				{
 					// Same Date
 					$intActionLineStatus	= $intCurrentLineStatus;
@@ -393,6 +393,7 @@
 				else
 				{
 					// Current Status is newer, don't update
+					CliEcho("({$arrResponse['Id']}) -- Current Status ($strCurrentEffectiveDate) is newer than ({$arrResponse['EffectiveDate']})");
 					return FALSE;
 				}
 				
@@ -410,12 +411,14 @@
 					}
 					else
 					{
+						CliEcho("Line Status Updated to ".GetConstantDescription($arrLineStatusAction['new_line_status'], 'service_line_status'));
 						return TRUE;
 					}
 				}
 				else
 				{
 					// No Definition or Default for this Relationship, don't update
+					CliEcho("No Definition for ({$arrResponse['Id']}) -- not updating");
 					return TRUE;
 				}
 			}
@@ -436,6 +439,7 @@
 		}
 		else
 		{
+			Debug();
 			return "Unable to retrieve Line Status Details for Service '{$arrResponse['Service']}'";
 		}
 	}
