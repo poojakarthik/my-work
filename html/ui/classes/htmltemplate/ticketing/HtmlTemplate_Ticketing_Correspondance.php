@@ -31,14 +31,16 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		return $this->render_edit($correspondance, 'Create');
 	}
 
-	private function render_send($correspondance)
+	private function render_send($correspondance, $okMessage='The email has been sent.')
 	{
-		return $this->render_view($correspondance, 'The email has been sent.');
+		$error = $this->mxdDataToRender['send_error'] ? TRUE : FALSE;
+		$message = $error ? $this->mxdDataToRender['send_error'] : $okMessage;
+		return $this->render_view($correspondance, $message, $error);
 	}
 
 	private function render_resend($correspondance)
 	{
-		return $this->render_view($correspondance, 'The email has been re-sent.');
+		return $this->render_send($correspondance, 'The email has been re-sent.');
 	}
 
 	private function render_error($ticket)
@@ -165,8 +167,8 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 	private function render_save($correspondance)
 	{
-		$message = array_key_exists('email_sent', $this->mxdDataToRender) && $this->mxdDataToRender['email_sent'] 
-			? "The correspondance has been saved and the email sent." 
+		$message = array_key_exists('email_not_sent', $this->mxdDataToRender) && $this->mxdDataToRender['email_not_sent'] 
+			? "The correspondance has been saved BUT THE EMAIL HAS NOT BEEN SENT." 
 			: "The correspondance has been saved.";
 		$this->render_view($correspondance, $message);
 	}
@@ -540,7 +542,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								$invalid = array_key_exists('details', $invalidValues) ? 'invalid' : '';
 								if (array_search('details', $editableValues) !== FALSE)
 								{
-									?><textarea type="text" id="details" name="details" class="<?=$invalid?>" style="position: relative; width: 100%; height: 24em;"><?=htmlspecialchars($correspondance->details)?></textarea><?php
+									?><textarea type="text" id="details" name="details" class="<?=$invalid?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($correspondance->details)?></textarea><?php
 								}
 								else
 								{

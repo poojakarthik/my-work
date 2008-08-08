@@ -653,6 +653,24 @@ class Page
 		$strUserPreferencesLink = Href()->ViewUserDetails();
 
 		echo "
+			<script>
+				function quickSearch()
+				{
+					var cat = \$ID('quick_search_category');
+					var base = cat.options[0].value;
+					var criteria = \$ID('search_string').value;
+					if (criteria == '')
+					{
+						$Alert('Please enter a search term.');
+						return;
+					}
+					document.location = base + '?for=' + criteria;
+				}
+				function quickSearchOnEnter(event)
+				{
+					if (event && event.keyCode && event.keyCode == 13) quickSearch();
+				}
+			</script>
 			<div id='person_search' name='person_search'>
 				<div id='person' name='person'>
 					Logged in as: $strUserName
@@ -660,13 +678,14 @@ class Page
 					| <a onclick='Vixen.Logout();'>Logout</a>
 				</div>
 				<div id='search_bar' name='search_bar'>
-					Search: 
-					<input type='text' id='search_string' name='search_string' />
-					<select name='category' id='category'>
-	
-						<option>Tickets</option>
-					</select>
-					<input type='submit' id='Search' name='Search' value='Search' onclick='\$Alert(\"Search feature is not yet implemented\")'/>
+					<form action='#' onsubmit='quickSearch();return false;'>
+						Search: 
+						<input type='text' id='search_string' name='search_string' onkeypress='quickSearchOnEnter(event)' />
+						<select name='category' id='quick_search_category'>
+							<option value='reflex.php/Ticketing/QuickSearch/'>Tickets</option> 
+						</select>
+						<input type='submit' id='Search' name='Search' value='Search'/>
+					</form>
 				</div>
 			</div> <!-- person_search-->\n";
 	}

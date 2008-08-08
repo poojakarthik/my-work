@@ -24,6 +24,13 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$pathToken = count($subPath) ? strtolower($subPath[0]) : NULL;
 
+		if ($pathToken == 'all' || $pathToken == 'mine')
+		{
+			$id = Ticketing_Status_Type_Conglomerate::TICKETING_STATUS_TYPE_CONGLOMERATE_OPEN_OR_PENDING;
+			$status = Ticketing_Status_Type_Conglomerate::getForId($id);
+			$_REQUEST['statusId'] = $status->getStatusIds();
+		}
+
 		// Default all search settings to be 'blank'
 		$offset = 0;
 		$limit = $defaultLimit;
@@ -119,12 +126,12 @@ class Application_Handler_Ticketing extends Application_Handler
 				$statusId = explode(',', $statusId);
 				foreach($statusId as $i => $v)
 				{
-					$statusId[$i] = intval($v);
+					$statusId[$i] = $v;
 				}
 			}
 			else
 			{
-				$statusId = intval($statusId);
+				$statusId = $statusId;
 			}
 		}
 
@@ -166,13 +173,13 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['tickets'] = Ticketing_Ticket::findMatching($columns, $sort, $filter, $offset, $limit);
 		$detailsToRender['users'] = Ticketing_User::listAll();
 		
-		$detailsToRender['statuses'] = array_merge(Ticketing_Status_Type::listAll(), Ticketing_Status::listAll());
+		$detailsToRender['statuses'] = array_merge(Ticketing_Status_Type_Conglomerate::listAll(), Ticketing_Status::listAll());
 		$detailsToRender['categories'] = Ticketing_Category::listAll();
 
 		$this->LoadPage('ticketing_tickets', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
 
-	public function Ticket($subPath)
+	public function Ticket($subPath, $ticket=NULL)
 	{
 		$currentUser = Ticketing_User::getCurrentUser();
 		if (!$currentUser->isUser())
@@ -193,7 +200,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$action = str_replace('-', '', $action);
 
-		$ticket = array_key_exists('ticketId', $_REQUEST) ? Ticketing_Ticket::getForId($_REQUEST['ticketId']) : NULL;
+		$ticket = $ticket ? $ticket : (array_key_exists('ticketId', $_REQUEST) ? Ticketing_Ticket::getForId($_REQUEST['ticketId']) : NULL);
 
 		$editableValues = array();
 
@@ -503,8 +510,6 @@ class Application_Handler_Ticketing extends Application_Handler
 			}
 		}
 
-		$permittedActions[] = 'create';
-
 		return $permittedActions;
 	}
 
@@ -570,6 +575,8 @@ class Application_Handler_Ticketing extends Application_Handler
 				throw new Exception('No correspondance selected.');
 			}
 
+			$sendError = '';
+
 			switch ($action)
 			{
 				case 'delete':
@@ -582,7 +589,14 @@ class Application_Handler_Ticketing extends Application_Handler
 				case 'send':
 				case 'resend':
 
-					$correspondance->emailToCustomer();
+					try
+					{
+						$correspondance->emailToCustomer();
+					}
+					catch (Exception $e)
+					{
+						$sendError = $e->getMessage();
+					}
 					$ticketId = $correspondance->ticketId;
 
 					break;
@@ -602,6 +616,8 @@ class Application_Handler_Ticketing extends Application_Handler
 					$correspondance->sourceId = TICKETING_CORRESPONDANCE_SOURCE_PHONE;
 					$correspondance->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
 
+					$oldDeliveryStatus = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
+
 				case 'edit':
 					// WIP :: FINISH THIS OFF FOR VERSION 1
 					$editableValues[] = 'summary';
@@ -609,6 +625,11 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'contactId';
 
 					$ticketId = $correspondance->ticketId;
+
+					if ($action == 'edit')
+					{
+						$oldDeliveryStatus = $correspondance->deliveryStatusId;
+					}
 
 					if (!$correspondance->isSaved() || ($correspondance->isOutgoing() && $correspondance->isNotSent()))
 					{
@@ -724,17 +745,23 @@ class Application_Handler_Ticketing extends Application_Handler
 						}
 						else
 						{
-							$isNew = !$correspondance->isSaved();
+							$sendAfterSave = FALSE;
+							if ($oldDeliveryStatus == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT && 
+								$correspondance->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT &&
+								$correspondance->isEmail() && $correspondance->isOutgoing())
+							{
+								$correspondance->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
+								$sendAfterSave = TRUE;
+							}
 							if (!$correspondance->deliveryDatetime && (!$correspondance->isOutgoing() || $correspondance->isSent()))
 							{
 								$correspondance->deliveryDatetime = date('Y-m-d H:i:s');;
 							}
 							$correspondance->save();
-							if ($isNew && $correspondance->isEmail() && $correspondance->isOutgoing() && $correspondance->isSent())
+							if ($sendAfterSave)
 							{
 								// We need to ensure that the email is sent
-								$correspondance->emailToCustomer();
-								$detailsToRender['email_sent'] = TRUE;
+								$detailsToRender['email_not_sent'] = TRUE;
 							}
 							$detailsToRender['saved'] = TRUE;
 							$action = 'save';
@@ -766,7 +793,6 @@ class Application_Handler_Ticketing extends Application_Handler
 		{
 			BreadCrumb()->TicketingTicket($ticketId);
 		}
-		BreadCrumb()->TicketingConsole(TRUE);
 		$actionLabel = $action;
 		$actionLabel[0] = strtoupper($actionLabel[0]);
 		BreadCrumb()->SetCurrentPage("$actionLabel Correspondance");
@@ -774,6 +800,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$detailsToRender['correspondance'] = $correspondance;
 		$detailsToRender['action'] = $action;
+		$detailsToRender['send_error'] = $sendError;
 		$detailsToRender['permitted_actions'] = $this->getPermittedCorrespondanceActions($currentUser, $correspondance);
 		$detailsToRender['ticketId'] = $ticketId;
 		$detailsToRender['editable_values'] = $editableValues;
@@ -971,7 +998,42 @@ class Application_Handler_Ticketing extends Application_Handler
 		
 		$this->LoadPage('ticketing_summary_report', HTML_CONTEXT_DEFAULT, $arrData);
 	}
-	
+
+	public function QuickSearch($subPath)
+	{
+		$for = trim($_REQUEST['for']);
+		$isTicketNumber = FALSE;
+		if (preg_match("/^T[0-9\t ]*[0-9]+[0-9\t ]*Z\$/i", $for))
+		{
+			$cleansed = preg_replace("/[^0-9]+/", '', $for);
+			// Check to see if it is a ticket number
+			$match = Ticketing_Ticket::getForId(intval($cleansed));
+			if ($match)
+			{
+				return $this->Ticket(array(), $match);
+			}
+		}
+		if (preg_match("/^[0-9\t ]*[0-9]+[0-9\t ]*\$/i", $for))
+		{
+			$cleansed = preg_replace("/[^0-9]+/", '', $for);
+			// Check to see if it is a ticket number
+			$match = Ticketing_Ticket::getForId(intval($cleansed));
+			if ($match)
+			{
+				return $this->Ticket(array(), $match);
+			}
+		}
+
+		BreadCrumb()->EmployeeConsole();
+		BreadCrumb()->TicketingConsole(TRUE);
+		BreadCrumb()->SetCurrentPage("Quick Search for: " . $for);
+
+		$detailsToRender['action'] = 'search';
+		$detailsToRender['ticket'] = NULL;
+		$detailsToRender['message'] = 'No ticket was found for: ' . $for;
+
+		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
+	}
 }
 
 ?>

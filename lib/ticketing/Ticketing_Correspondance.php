@@ -480,8 +480,13 @@ class Ticketing_Correspondance
 	public function emailToCustomer()
 	{
 		$ticket = $this->getTicket();
-		$contact = $ticket->getContact();
+		$contact = $this->getContact();
 		$customerGroupEmail = $this->getCustomerGroupEmail();
+
+		if (!$contact->email || !EmailAddressValid($contact->email))
+		{
+			throw new Exception('Unable to send email to ' . $contact->getName() . ' as they do not have a valid email address.');
+		}
 
 		if (!$ticket)
 		{

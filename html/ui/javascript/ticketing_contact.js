@@ -74,10 +74,14 @@ Object.extend(Ticketing_Contact.prototype, {
 			throw new Exception('Both account and contact Ids are null.');
 		}
 
+		var loading = document.createElement('div');
+		loading.style.height = '20em';
+
 		this.popup = new Reflex_Popup(50);
 
 		if (this.contactId != null)
 		{
+			this.popup.setContent(loading);
 			Ticketing_Contact.getContactDetails(this.displayDetails.bind(this), this.contactId);
 			this.currentPaneIsView = true;
 		}
@@ -263,7 +267,7 @@ Object.extend(Ticketing_Contact.prototype, {
 			this.inputs.lastName.className == 'invalid' && 
 			this.inputs.email.className == 'invalid') 
 		{
-			return window.alert('Please complete at least one of the highlighted fields and ensure that all entries are valid.');
+			return $Alert('Please complete at least one of the highlighted fields and ensure that all entries are valid.');
 		}
 
 		Ticketing_Contact.setContactDetails(this.displaySavedDetails.bind(this),
@@ -287,7 +291,7 @@ Object.extend(Ticketing_Contact.prototype, {
 			this.inputs.firstName.className = 'invalid';
 			this.inputs.lastName.className = 'invalid';
 			this.inputs.email.className = 'invalid';
-			return window.alert('Please complete at least one of the highlighted fields and ensure that all entries are valid.');
+			return $Alert('Please complete at least one of the highlighted fields and ensure that all entries are valid.');
 		}
 		var $new = this.contactId == null;
 		this.contactId = details['contactId'];

@@ -3,18 +3,61 @@ var Reflex_Popup = Class.create();
 // Static class variables are defined here
 Object.extend(Reflex_Popup, {
 	
-	collection	: null,
-	
 	// Stores the current z index of the overlay div
-	intOverlayZIndex : null
+	intOverlayZIndex : null,
 	
-	// Stores the 
+	// Stores the container and opacity divs
+	overlay: document.createElement('div'),
+	opaquePane: document.createElement('div'),
 
+	display: function(popup)
+	{
+		// If the overlay only contains the opaque pane, we need to add the overlay to the page
+		if (Reflex_Popup.overlay.childNodes.length == 1)
+		{
+			document.body.appendChild(Reflex_Popup.overlay);
+		}
+		// We can now add the popup container to the overlay
+		Reflex_Popup.overlay.appendChild(popup.container);
+		Reflex_Popup.position(popup.container);
+	},
+
+	hide: function(popup)
+	{
+		// If the popup is in the page, remove it
+		if (popup.container.parentNode)
+		{
+			popup.container.parentNode.removeChild(popup.container);
+		}
+		// If the overlay only contains the opaque pane, remove the overlay from the page
+		if (Reflex_Popup.overlay.childNodes.length == 1)
+		{
+			if (Reflex_Popup.overlay.parentNode)
+			{
+				Reflex_Popup.overlay.parentNode.removeChild(Reflex_Popup.overlay);
+			}
+		}
+		// Otherwise we can re-append the second to last element (the previous popup in the stack)
+		else
+		{
+			Reflex_Popup.overlay.appendChild(Reflex_Popup.overlay.childNodes[Reflex_Popup.overlay.childNodes.length - 2])
+		}
+	},
+
+	position: function(childNode)
+	{
+		// Centre the popup
+		childNode.style.left	= ((Reflex_Popup.overlay.clientWidth - childNode.clientWidth)/2)+"px";
+		childNode.style.top		= ((Reflex_Popup.overlay.clientHeight - childNode.clientHeight)/2)+"px";
+	}
 });
+
+Reflex_Popup.overlay.className = 'reflex-popup-overlay';
+Reflex_Popup.opaquePane.className = 'reflex-popup-opaque';
+Reflex_Popup.overlay.appendChild(Reflex_Popup.opaquePane);
 
 Object.extend(Reflex_Popup.prototype, {
 
-	overlay			: null,
 	container		: null,
 	titlePane		: null,
 	titleButtonPane	: null,
@@ -24,10 +67,6 @@ Object.extend(Reflex_Popup.prototype, {
 	// intWidth should be specified in units of em
 	initialize: function(intWidth)
 	{
-		// Build Overlay
-		this.overlay = document.createElement('div');
-		this.overlay.className = 'reflex-popup-overlay';
-
 		this.container = document.createElement('div');
 		this.container.className = 'reflex-popup';
 		this.container.style.width = intWidth + "em";
@@ -102,40 +141,13 @@ Object.extend(Reflex_Popup.prototype, {
 		}
 	},
 
-	display: function(where)
+	display: function()
 	{
-		if (!where)
-		{
-			where = document.body;
-		}
-		
-		// Add the overlay div
-		where.appendChild(this.overlay);
-		
-		this.container.style.visibility = "hidden";
-		
-		// set the top of the popup to the body.scrollTop, so that it doesn't move the page when it is added to it
-		this.container.style.top = document.body.scrollTop + "px";
-		where.appendChild(this.container);
-
-		// Centre the popup
-		this.container.style.left	= (((window.innerWidth / 2) - (this.container.offsetWidth / 2)) + document.body.scrollLeft) + "px";
-		this.container.style.top	= (((window.innerHeight / 2) - (this.container.offsetHeight / 2)) + document.body.scrollTop) + "px";
-		this.container.style.visibility = "visible";
-		
+		Reflex_Popup.display(this);
 	},
 
 	hide: function()
 	{
-		if (this.overlay.parentNode)
-		{
-			this.overlay.parentNode.removeChild(this.overlay);
-		}
-		
-		if (this.container.parentNode)
-		{
-			this.container.parentNode.removeChild(this.container);
-		}
-		
+		Reflex_Popup.hide(this);
 	}
 });

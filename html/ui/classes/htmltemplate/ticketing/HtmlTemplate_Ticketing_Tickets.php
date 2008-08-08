@@ -28,7 +28,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 		$selected = ' SELECTED="SELECTED"';
 
-		$target = MenuItems::TicketingConsole();
+		$target = MenuItems::TicketingConsole(NULL);
 
 		$arrNavLinks = array();
 
@@ -254,6 +254,8 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 		<?php
 
+		$currentUser = Ticketing_User::getCurrentUser();
+
 		$i = 0;
 		$noRecords = TRUE;
 		foreach ($this->mxdDataToRender['tickets'] as $ticket) 
@@ -265,6 +267,17 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			$category = $ticket->getCategory();
 			$status = $ticket->getStatus();
 			$priority = $ticket->getPriority();
+
+			$base = Flex::getUrlBase() . '/reflex.php/Ticketing/Ticket/' . $ticket->id . '/';
+			$actions = $this->getPermittedTicketActions($currentUser, $ticket);
+
+			foreach ($actions as $a => $action)
+			{
+				$actions[$a] = "<a href='$base$action'>" . htmlspecialchars($action) . "</a>";
+			}
+
+			$actions = implode(' ', $actions);
+			$actions = $actions ? $actions : '&nbsp;';
 		?>
 
 			<tr class="<?=$tr_alt?>">
@@ -276,7 +289,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				<td class="<?=$category->cssClass?>"><?php echo $category->name; ?></td>
 				<td class="<?=$status->cssClass?>"><?php echo $status->name; ?></td>
 				<td class="<?=$priority->cssClass?>"><?php echo $priority->name; ?></td>
-				<td>[actions]</td>
+				<td><?=$actions?></td>
 			</tr>
 		<?php
 		}
@@ -284,7 +297,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		if ($noRecords)
 		{
 			?>
-			<tr><td colspan="8">No tickets match your current filter.</td></tr>
+			<tr><td colspan="9">No tickets match your current filter.</td></tr>
 			<?php
 		}
 
@@ -294,6 +307,37 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 </form>
 		<?php
 	}
+
+	private function getPermittedTicketActions($user, $ticket)
+	{
+		$permittedActions = array();
+		if ($ticket && $ticket->isSaved())
+		{
+			$permittedActions[] = 'View';
+			$permittedActions[] = 'Edit';
+
+			if (!$ticket->isAssigned() || ($user->isAdminUser() && !$ticket->isAssignedTo($user)))
+			{
+				$permittedActions[] = 'Take';
+			}
+
+			if ($user->isAdminUser())
+			{
+				if ($ticket->isAssigned())
+				{
+					$permittedActions[] = 'Reassign';
+				}
+				else
+				{
+					$permittedActions[] = 'Assign';
+				}
+				$permittedActions[] = 'Delete';
+			}
+		}
+
+		return $permittedActions;
+	}
+
 }
 
 ?>

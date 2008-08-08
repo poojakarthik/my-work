@@ -129,7 +129,7 @@ class MenuItems
 	{
 		$this->strContextMenuLabel = "View All Tickets";
 		$this->strLabel = "Tickets";
-		$last = $lastQuery ? '/Last' : '';
+		$last = $lastQuery ? '/Last' : ($lastQuery === FALSE ? '/All' : '');
 		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets$last";
 	}
 	
