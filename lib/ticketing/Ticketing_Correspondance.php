@@ -513,7 +513,7 @@ class Ticketing_Correspondance
 
 		$email->send();
 
-		$this->deliveryStatus = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT;
+		$this->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT;
 		$this->deliveryDatetime = date("Y-m-d H:i:s");
 		$this->_saved = FALSE;
 		$this->save();
