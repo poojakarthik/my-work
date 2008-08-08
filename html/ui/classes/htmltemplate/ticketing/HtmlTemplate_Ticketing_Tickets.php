@@ -26,6 +26,16 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			$statusId = implode(',', $statusId);
 		}
 
+		$currentUser = Ticketing_User::getCurrentUser();
+
+		$possibleActions = array(/*'View', */'Edit', 'Take');
+		if ($currentUser->isAdminUser())
+		{
+			$possibleActions[] = 'Assign';
+			$possibleActions[] = 'Delete';
+		}
+		$nrPossibleActions = count($possibleActions);
+
 		$selected = ' SELECTED="SELECTED"';
 
 		$target = MenuItems::TicketingConsole(NULL);
@@ -242,19 +252,17 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Priority</th>
-				<th>Actions</th>
+				<th colspan="<?=$nrPossibleActions?>">Actions</th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
-				<th colspan=9 align=right>&nbsp;<?=$navLinks?></th>
+				<th colspan="<?=(8+$nrPossibleActions)?>" align=right>&nbsp;<?=$navLinks?></th>
 			</tr>
 		</tfoot>
 		<tbody>
 
 		<?php
-
-		$currentUser = Ticketing_User::getCurrentUser();
 
 		$i = 0;
 		$noRecords = TRUE;
@@ -270,6 +278,18 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 			$base = Flex::getUrlBase() . '/reflex.php/Ticketing/Ticket/' . $ticket->id . '/';
 			$actions = $this->getPermittedTicketActions($currentUser, $ticket);
+			$actionCells = array();
+
+			foreach($possibleActions as $action)
+			{
+				$actionLink = $actions[$action] ? "<a href='$base$action'>" . htmlspecialchars($action) . "</a>" : "&nbsp;";
+				if ($action == 'Assign' && !$actions[$action])
+				{
+					$action = 'Reassign';
+					$actionLink = $actions[$action] ? "<a href='$base$action'>" . htmlspecialchars($action) . "</a>" : "&nbsp;";
+				}
+				$actionCells[] = "<td>$actionLink</td>";
+			}
 
 			foreach ($actions as $a => $action)
 			{
@@ -289,7 +309,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				<td class="<?=$category->cssClass?>"><?php echo $category->name; ?></td>
 				<td class="<?=$status->cssClass?>"><?php echo $status->name; ?></td>
 				<td class="<?=$priority->cssClass?>"><?php echo $priority->name; ?></td>
-				<td><?=$actions?></td>
+				<?=implode('', $actionCells)?>
 			</tr>
 		<?php
 		}
@@ -297,7 +317,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		if ($noRecords)
 		{
 			?>
-			<tr><td colspan="9">No tickets match your current filter.</td></tr>
+			<tr><td colspan="<?=(8+$nrPossibleActions)?>">No tickets match your current filter.</td></tr>
 			<?php
 		}
 
@@ -310,28 +330,28 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 	private function getPermittedTicketActions($user, $ticket)
 	{
-		$permittedActions = array();
+		$permittedActions = array('View' => FALSE, 'Edit' => FALSE, 'Take' => FALSE, 'Reassign' => FALSE, 'Assign' => FALSE, 'Delete' => FALSE);
 		if ($ticket && $ticket->isSaved())
 		{
-			$permittedActions[] = 'View';
-			$permittedActions[] = 'Edit';
+			$permittedActions['View'] = TRUE;
+			$permittedActions['Edit'] = TRUE;
 
 			if (!$ticket->isAssigned() || ($user->isAdminUser() && !$ticket->isAssignedTo($user)))
 			{
-				$permittedActions[] = 'Take';
+				$permittedActions['Take'] = TRUE;
 			}
 
 			if ($user->isAdminUser())
 			{
 				if ($ticket->isAssigned())
 				{
-					$permittedActions[] = 'Reassign';
+					$permittedActions['Reassign'] = TRUE;
 				}
 				else
 				{
-					$permittedActions[] = 'Assign';
+					$permittedActions['Assign'] = TRUE;
 				}
-				$permittedActions[] = 'Delete';
+				$permittedActions['Delete'] = TRUE;
 			}
 		}
 

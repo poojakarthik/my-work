@@ -211,7 +211,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['services'] = array();
 
 		// Default the action if the selected action is not permitted
-		if (array_search($action, $permittedActions) === FALSE)
+		if ($action !== 'create' && array_search($action, $permittedActions) === FALSE)
 		{
 			$action = 'error';
 			$detailsToRender['error'] = 'You are not authorised to perform that action.';
@@ -486,6 +486,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	private function getPermittedTicketActions($user, $ticket)
 	{
 		$permittedActions = array();
+
 		if ($ticket && $ticket->isSaved())
 		{
 			$permittedActions[] = 'view';
