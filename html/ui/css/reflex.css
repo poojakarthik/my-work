@@ -147,31 +147,43 @@ table.reflex td.title {
 
 table.reflex tr td.ticketing-status-in-progress,
 table.reflex tr td.ticketing-status-completed,
+table.reflex tr td.ticketing-priority-low,
+table.reflex tr td.ticketing-priority-type-all,
+table.reflex tr td.ticketing-priority-type-closed,
 option.ticketing-status-completed, 
 option.ticketing-status-in-progress, 
-option.low-priority {
+option.ticketing-status-type-closed, 
+option.ticketing-priority-low {
 	color: #060;
 }
 
 table.reflex tr td.ticketing-status-with-carrier, 
 table.reflex tr td.ticketing-status-with-customer, 
+table.reflex tr td.ticketing-status-with-internal, 
+table.reflex tr td.ticketing-priority-medium,
 option.ticketing-status-with-carrier, 
 option.ticketing-status-with-customer, 
-option.medium-priotiy {
+option.ticketing-status-with-internal, 
+option.ticketing-status-type-open, 
+option.ticketing-status-type-conglomerate-open-pending,
+option.ticketing-priority-medium {
 	color: #ff8822;
 }
 
 table.reflex tr td.ticketing-status-assigned, 
 table.reflex tr td.ticketing-status-unassigned, 
 table.reflex tr td.ticketing-status-deleted, 
+table.reflex tr td.ticketing-priority-high,
 option.ticketing-status-assigned, 
 option.ticketing-status-unassigned, 
 option.ticketing-status-deleted, 
-option.high-priority {
+option.ticketing-status-type-pending, 
+option.ticketing-priority-high {
 	color: #d30;
 }
 
-option.urgent-priority {
+table.reflex tr td.ticketing-priority-urgent,
+option.ticketing-priority-urgent {
 	color: #d30;
 	text-decoration: underline;
 }
