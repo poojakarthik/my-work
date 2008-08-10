@@ -240,13 +240,18 @@ class Ticketing_Ticket
 		$arrWhere = array();
 		foreach ($filter as $column => $style)
 		{
+			if (!property_exists(__CLASS__, $column)) continue;
 			$column = self::uglifyName($column);
 			switch($style['comparison'])
 			{
 				case '=':
-					if ($style['value'] === NULL)
+					if ($style['value'] === NULL || (is_array($style['value']) && empty($style['value'])))
 					{
 						$where .= ($where ? ' AND ' : '') . " $column IS NULL";
+					}
+					else if (is_array($style['value']))
+					{
+						$where .= ($where ? ' AND ' : '') . " $column IN ('" . implode("','", $style['value']) . "')";
 					}
 					else
 					{
