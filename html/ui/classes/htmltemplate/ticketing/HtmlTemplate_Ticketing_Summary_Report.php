@@ -109,7 +109,7 @@ echo "
 </form>
 
 <!-- Inline report results go here -->
-<div id='ReportResultsContainer'>
+<div id='ReportResultsContainer' style='margin-bottom: 15em'>
 </div>
 <script type='text/javascript'>Flex.TicketingSummaryReport.Initialise()</script>
 
