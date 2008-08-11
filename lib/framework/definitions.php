@@ -506,14 +506,14 @@ $GLOBALS['*arrConstant']	['RequestDirection']	[1]	['Description']	= 'Incoming';
 
 
 // Service Status
-$GLOBALS['*arrConstant']	['Service']	[400]	['Constant']	= 'SERVICE_ACTIVE';
+/*$GLOBALS['*arrConstant']	['Service']	[400]	['Constant']	= 'SERVICE_ACTIVE';
 $GLOBALS['*arrConstant']	['Service']	[400]	['Description']	= 'Active';
 $GLOBALS['*arrConstant']	['Service']	[402]	['Constant']	= 'SERVICE_DISCONNECTED';
 $GLOBALS['*arrConstant']	['Service']	[402]	['Description']	= 'Disconnected';
 $GLOBALS['*arrConstant']	['Service']	[403]	['Constant']	= 'SERVICE_ARCHIVED';
 $GLOBALS['*arrConstant']	['Service']	[403]	['Description']	= 'Archived';
 $GLOBALS['*arrConstant']	['Service']	[404]	['Constant']	= 'SERVICE_PENDING';
-$GLOBALS['*arrConstant']	['Service']	[404]	['Description']	= 'Pending Activation';
+$GLOBALS['*arrConstant']	['Service']	[404]	['Description']	= 'Pending Activation';*/
 
 
 // Service Line Status
