@@ -818,9 +818,7 @@ div#BreadCrumbMenu
 
 div#MenuItem
 {
-	height:			75px;
-	margin-left:	20px;
-	width:			100%;
+	height:	6em;
 }
 
 .MenuItemIcon
