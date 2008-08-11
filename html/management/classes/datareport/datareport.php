@@ -212,6 +212,14 @@
 								$oblarrValue->Push($oblOption);
 							}
 							//die;
+							
+							// Does this have an ALL/IGNORE option?
+							if (is_array($arrInput['DBSelect']['IgnoreField']))
+							{
+								$oblOption =& new $arrInput['DBSelect']['ValueType']('Option', $arrInput['DBSelect']['IgnoreField']['Value']);
+								$oblOption->setAttribute('Label', $arrInput['DBSelect']['IgnoreField']['Label']);
+								$oblarrValue->Push($oblOption);
+							}
 						}
 						elseif (is_subclass_of ($arrInput ['Type'], "dataPrimitive") || is_subclass_of ($arrInput ['Type'], "dataObject"))
 						{
