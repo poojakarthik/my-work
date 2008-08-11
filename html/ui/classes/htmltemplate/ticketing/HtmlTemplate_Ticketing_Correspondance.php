@@ -23,7 +23,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 	{
 		// This method would never be called - A deleted correspondance would not be viewed.
 		// Instead, the user will have been redirected to the 'view ticket' page.
-		return $this->render_view($correspondance, 'The correspondance has been deleted.');
+		return $this->render_view($correspondance, 'The correspondence has been deleted.');
 	}
 
 	private function render_create($correspondance)
@@ -77,7 +77,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 			}
 			$action[0] = strtoupper($action[0]);
 			$action = htmlspecialchars($action);
-			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondance/$id$action$tid\">$action</a>";
+			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/$id$action$tid\">$action</a>";
 		}
 		$actionLinks = implode(' | ', $actionLinks);
 
@@ -87,7 +87,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 	<caption>
 		<div id="caption_bar" name="caption_bar">
 		<div id="caption_title" name="caption_title">
-			Viewing Correspondance
+			Viewing Correspondence
 		</div>
 		<div id="caption_options" name="caption_options"><?=$actionLinks?>
 		</div>
@@ -168,8 +168,8 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 	private function render_save($correspondance)
 	{
 		$message = array_key_exists('email_not_sent', $this->mxdDataToRender) && $this->mxdDataToRender['email_not_sent'] 
-			? "The correspondance has been saved BUT THE EMAIL HAS NOT BEEN SENT." 
-			: "The correspondance has been saved.";
+			? "The correspondence has been saved BUT THE EMAIL HAS NOT BEEN SENT." 
+			: "The correspondence has been saved.";
 		$this->render_view($correspondance, $message);
 	}
 
@@ -203,7 +203,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 			}
 			$action[0] = strtoupper($action[0]);
 			$action = htmlspecialchars($action);
-			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondance/$id$action$tid\">$action</a>";
+			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/$id$action$tid\">$action</a>";
 		}
 		$actionLinks = implode(' | ', $actionLinks);
 
@@ -214,7 +214,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		$cancel = Flex::getUrlBase() . '/reflex.php/Ticketing/Ticket/' . $correspondance->ticketId . '/View';
 
 		$editing = $requestedAction == 'Edit';
-		$title = ($editing ? 'Editing Correspondance' : 'Creating Correspondance') . ' for Ticket ' . $correspondance->ticketId;
+		$title = ($editing ? 'Editing Correspondence' : 'Creating Correspondence') . ' for Ticket ' . $correspondance->ticketId;
 
 		$ticket = array_key_exists('ticket', $this->mxdDataToRender) ? $this->mxdDataToRender['ticket'] : NULL;
 
@@ -316,7 +316,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 //-->		
 		</script>
-		<form id="edit_ticket" method="POST" name="edit_correspondance" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Correspondance/" . ($correspondance->isSaved() ? $correspondance->id . '/' : '') . $requestedAction . ($correspondance->isSaved() ? '' : '/' . $correspondance->ticketId); ?>">
+		<form id="edit_ticket" method="POST" name="edit_correspondance" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/" . ($correspondance->isSaved() ? $correspondance->id . '/' : '') . $requestedAction . ($correspondance->isSaved() ? '' : '/' . $correspondance->ticketId); ?>">
 			<input type="hidden" name="save" value="1" />
 			<input type="hidden" id="ticketId" value="<?php echo $correspondance->ticketId; ?>" />
 			<table class="reflex">
@@ -642,7 +642,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 	private function no_correspondance($message=NULL)
 	{
-		$error = $message ? $message : 'No correspondance selected.';
+		$error = $message ? $message : 'No correspondence selected.';
 		?>
 
 <table class="reflex">

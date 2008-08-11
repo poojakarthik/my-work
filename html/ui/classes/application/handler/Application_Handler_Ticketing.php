@@ -441,6 +441,12 @@ class Application_Handler_Ticketing extends Application_Handler
 						}
 						else
 						{
+							// If the ticket has not yet been assigned to anyone, it must be left in the unstarted state.
+							if (!$ticket->ownerId)
+							{
+								$ticket->statusId = TICKETING_STATUS_UNASSIGNED;
+							}
+
 							$ticket->save();
 							$ticket->setServices($ticketServices);
 							$detailsToRender['saved'] = TRUE;
@@ -530,6 +536,10 @@ class Application_Handler_Ticketing extends Application_Handler
 		$this->LoadPage('ticketing_contact', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
 
+	public function Correspondence($subPath)
+	{
+		return $this->Correspondance($subPath);
+	}
 	public function Correspondance($subPath)
 	{
 		$currentUser = Ticketing_User::getCurrentUser();
@@ -573,7 +583,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			if (!$correspondance && $action != 'create')
 			{
 				$detailsToRender['error'] = 'Unable to perform action';
-				throw new Exception('No correspondance selected.');
+				throw new Exception('No correspondence selected.');
 			}
 
 			$sendError = '';
@@ -606,7 +616,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 					if ($ticketId === NULL)
 					{
-						throw new Exception('No ticket specified for adding correspondance to.');
+						throw new Exception('No ticket specified for adding correspondence to.');
 					}
 
 					$correspondance = Ticketing_Correspondance::createBlank();
@@ -662,7 +672,7 @@ class Application_Handler_Ticketing extends Application_Handler
 									if (!$value)
 									{
 										$correspondance->summary = '';
-										$invalidValues[$editableValue] = 'You must specify a subject for the correspondance.';
+										$invalidValues[$editableValue] = 'You must specify a subject for the correspondence.';
 									}
 									else
 									{
@@ -675,7 +685,7 @@ class Application_Handler_Ticketing extends Application_Handler
 									if (!$value)
 									{
 										$correspondance->details = '';
-										$invalidValues[$editableValue] = 'You must provide details of the correspondance.';
+										$invalidValues[$editableValue] = 'You must provide details of the correspondence.';
 									}
 									else
 									{
@@ -701,7 +711,7 @@ class Application_Handler_Ticketing extends Application_Handler
 									if (!$value)
 									{
 										$correspondance->sourceId = NULL;
-										$invalidValues[$editableValue] = 'You must specify a source for the correspondance.';
+										$invalidValues[$editableValue] = 'You must specify a source for the correspondence.';
 										break;
 									}
 									else
@@ -796,7 +806,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		}
 		$actionLabel = $action;
 		$actionLabel[0] = strtoupper($actionLabel[0]);
-		BreadCrumb()->SetCurrentPage("$actionLabel Correspondance");
+		BreadCrumb()->SetCurrentPage("$actionLabel Correspondence");
 
 
 		$detailsToRender['correspondance'] = $correspondance;

@@ -178,7 +178,7 @@ class Ticketing_Attachment
 		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'id = <RecordId>');
 		if (($outcome = $selAttachments->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to load attachments for correspondance '{$correspondance->id}': " . $selAttachments->Error());
+			throw new Exception("Failed to load attachments for correspondence '{$correspondance->id}': " . $selAttachments->Error());
 		}
 		if (!$outcome)
 		{
@@ -206,7 +206,7 @@ class Ticketing_Attachment
 		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'correspondance_id = <CorrespondanceId>');
 		if (($outcome = $selAttachments->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load attachments for correspondance '{$correspondance->id}': " . $selAttachments->Error());
+			throw new Exception("Failed to load attachments for correspondence '{$correspondance->id}': " . $selAttachments->Error());
 		}
 		$arrAttchments = array();
 		while ($attachment = $selAttachments->Fetch())

@@ -126,7 +126,7 @@ class Ticketing_Correspondance
 				if (!array_key_exists('customer_group_id', $arrDetails))
 				{
 					// TODO:: Don't give up so easy! If a ticket has been specified, check for a previous correspondance and use the address from that.
-					throw new Exception('Unable to create correspondance as email address could not be determined for a sender.');
+					throw new Exception('Unable to create correspondence as email address could not be determined for a sender.');
 				}
 				$custGroupEmail = Ticketing_Customer_Group_Config::getForId($arrDetails['customer_group_id']);
 				$emailIdField = 'default_email_id';
@@ -414,7 +414,7 @@ class Ticketing_Correspondance
 			$strLimit);
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load correspondances: " . $selMatches->Error());
+			throw new Exception("Failed to load correspondences: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{
@@ -490,15 +490,15 @@ class Ticketing_Correspondance
 
 		if (!$ticket)
 		{
-			throw new Exception('No ticket found for correspondance.');
+			throw new Exception('No ticket found for correspondence.');
 		}
 		if (!$contact)
 		{
-			throw new Exception('No contact found for correspondance.');
+			throw new Exception('No contact found for correspondence.');
 		}
 		if (!$customerGroupEmail)
 		{
-			throw new Exception('No customer group email found for correspondance.');
+			throw new Exception('No customer group email found for correspondence.');
 		}
 
 		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM);
@@ -525,13 +525,13 @@ class Ticketing_Correspondance
 		$strSQL = "DELETE FROM ticketing_attachment WHERE correspondance_id = " . $this->id;
 		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
 		{
-			throw new Exception('Failed to delete attachments for correspondance ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
+			throw new Exception('Failed to delete attachments for correspondence ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
 		}
 
 		$strSQL = "DELETE FROM " . strtolower(__CLASS__) . " WHERE id = " . $this->id;
 		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
 		{
-			throw new Exception('Failed to delete correspondance ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
+			throw new Exception('Failed to delete correspondence ' . $this->id . ' from ticket ' . $this->ticketId . ': ' . $delInstance->Error());
 		}
 		$this->id = NULL;
 		$this->_saved = FALSE;
@@ -562,7 +562,7 @@ class Ticketing_Correspondance
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
-			throw new Exception('Failed to save correspondance details: ' . $statement->Error());
+			throw new Exception('Failed to save correspondence details: ' . $statement->Error());
 		}
 		if (!$this->id)
 		{

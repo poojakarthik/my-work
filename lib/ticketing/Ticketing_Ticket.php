@@ -507,7 +507,7 @@ class Ticketing_Ticket
 
 		if (($correspondance=TicketingTicket::createForDetails($arrDetails)) === NULL)
 		{
-			throw new Exception('Failed to create the correspondance.');
+			throw new Exception('Failed to create the correspondence.');
 		}
 		return $correspondance;
 	}

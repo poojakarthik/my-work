@@ -10,7 +10,7 @@ class Ticketing_Contact_Account
 	/**
 	 * Associates a ticketing contact (passed by id or as an object associated with a contact) 
 	 * with an account (passed by id or as an object associated with an account).
-	 * If the passed 'account' is a ticket, all correspondance contacts for that ticket are also
+	 * If the passed 'account' is a ticket, all correspondence contacts for that ticket are also
 	 * associated with the account.
 	 * 
 	 * @param $mixContact mixed Ticketing Conatact Id (numeric), Ticketing Contact, Ticketing Ticket or Ticketing Correspondance

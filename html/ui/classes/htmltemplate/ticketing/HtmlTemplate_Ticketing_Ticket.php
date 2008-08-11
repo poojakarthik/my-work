@@ -32,10 +32,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 	private function render_assign($ticket)
 	{
-		$this->render_reassign($ticket, TRUE);
+		$this->render_reassign($ticket, TRUE, "Assign");
 	}
 
-	private function render_reassign($ticket, $assigned=FALSE)
+	private function render_reassign($ticket, $assigned=FALSE, $actionName="Re-assign")
 	{
 		$targetUser = $this->mxdDataToRender['targetUser'];
 		if ($targetUser)
@@ -44,7 +44,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		}
 		else
 		{
-			$this->render_edit($ticket, "Re-assign");
+			$this->render_edit($ticket, $actionName);
 		}
 	}
 
@@ -715,6 +715,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 	}
 
 
+	private function render_correspondences($ticket)
+	{
+		return $this->render_correspondances($ticket);
+	}
 	private function render_correspondances($ticket)
 	{
 		if (!$ticket || !$ticket->isSaved())
@@ -725,7 +729,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$correspondances = $ticket->getCorrespondances();
 		$noCorrespondances = count($correspondances) == 0;
 
-		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondance/Create/" . $ticket->id . "\">Create</a>";
+		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/Create/" . $ticket->id . "\">Create</a>";
 
 		?>
 		<br/>
@@ -733,7 +737,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			<caption>
 				<div id="caption_bar" name="caption_bar">
 				<div id="caption_title" name="caption_title">
-					Correspondances
+					Correspondences
 				</div>
 				<div id="caption_options" name="caption_options">
 					<?=$actionLinks?>
@@ -761,7 +765,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					{
 		?>
 				<tr class="alt">
-					<td colspan="6">There are no correspondances for this ticket.</td>
+					<td colspan="6">There are no correspondences for this ticket.</td>
 				</tr>
 		<?php
 					}
@@ -776,7 +780,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							$contactName = $contact ? $contact->getName() : '[No contact]';
 							$sourceName = $correspondance->getSource()->name;
 							$deliveryStatusName = $correspondance->getDeliveryStatus()->name;
-							$link = Flex::getUrlBase() . 'reflex.php/Ticketing/Correspondance/' . $correspondance->id . '/View';
+							$link = Flex::getUrlBase() . 'reflex.php/Ticketing/Correspondence/' . $correspondance->id . '/View';
 		?>
 				<tr<?=$altClass?>>
 					<td><a href="<?=$link?>"><?=$correspondance->summary?></a></td>
