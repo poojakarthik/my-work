@@ -12,6 +12,8 @@
  *	7:	Populate provisioning_response_status Table
  *	8:	Add ProvisioningResponse.request_status Field
  *	9:	Rename ProvisioningTranslation.Description to flex_code
+ *	10:	Add service_status Table
+ *	11:	Populate service_status Table
  */
 
 class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
@@ -150,6 +152,32 @@ class Flex_Rollout_Version_000022 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to rename ProvisioningTranslation.Description to flex_code. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE ProvisioningTranslation CHANGE flex_code Description VARCHAR(1024) NOT NULL COMMENT 'Text Description';";
+		
+		// 10:	Add service_status Table
+		$strSQL = "CREATE TABLE service_status " .
+					"(" .
+						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for the Service Status', " .
+						"name VARCHAR(256) NOT NULL COMMENT 'Name for the Service Status', " .
+						"description VARCHAR(512) NOT NULL COMMENT 'Description for the Service Status'," .
+						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Service Status'" .
+					") ENGINE = innodb;";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to create service_status Table. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "DROP TABLE service_status;";
+		
+		// 11:	Populate service_status
+		$strSQL = "INSERT INTO service_status (id, name, description, const_name) VALUES 
+					(400, 'Active'			, 'Active'				, 'SERVICE_ACTIVE'), 
+					(402, 'Disconnected'	, 'Disconnected'		, 'SERVICE_DISCONNECTED'), 
+					(403, 'Archived'		, 'Archived'			, 'SERVICE_ARCHIVED'), 
+					(404, 'Pending'			, 'Pending Activation'	, 'SERVICE_PENDING');";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to populate service_status Table. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "TRUNCATE TABLE service_status;";
 	}
 	
 	function rollback()
