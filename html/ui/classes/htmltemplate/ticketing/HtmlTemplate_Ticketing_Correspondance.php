@@ -11,36 +11,36 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 	public function Render()
 	{
-		$correspondance = $this->mxdDataToRender['correspondance'];
+		$correspondence = $this->mxdDataToRender['correspondence'];
 		$renderer = strtolower('render_'.str_replace('-', '', $this->mxdDataToRender['action']));
 		if (method_exists($this, $renderer))
 		{
-			$this->{$renderer}($correspondance);
+			$this->{$renderer}($correspondence);
 		}
 	}
 
-	private function render_delete($correspondance)
+	private function render_delete($correspondence)
 	{
-		// This method would never be called - A deleted correspondance would not be viewed.
+		// This method would never be called - A deleted correspondence would not be viewed.
 		// Instead, the user will have been redirected to the 'view ticket' page.
-		return $this->render_view($correspondance, 'The correspondence has been deleted.');
+		return $this->render_view($correspondence, 'The correspondence has been deleted.');
 	}
 
-	private function render_create($correspondance)
+	private function render_create($correspondence)
 	{
-		return $this->render_edit($correspondance, 'Create');
+		return $this->render_edit($correspondence, 'Create');
 	}
 
-	private function render_send($correspondance, $okMessage='The email has been sent.')
+	private function render_send($correspondence, $okMessage='The email has been sent.')
 	{
 		$error = $this->mxdDataToRender['send_error'] ? TRUE : FALSE;
 		$message = $error ? $this->mxdDataToRender['send_error'] : $okMessage;
-		return $this->render_view($correspondance, $message, $error);
+		return $this->render_view($correspondence, $message, $error);
 	}
 
-	private function render_resend($correspondance)
+	private function render_resend($correspondence)
 	{
-		return $this->render_send($correspondance, 'The email has been re-sent.');
+		return $this->render_send($correspondence, 'The email has been re-sent.');
 	}
 
 	private function render_error($ticket)
@@ -49,11 +49,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		$this->render_view($ticket, $errorMessage, TRUE);
 	}
 
-	private function render_view($correspondance, $message=NULL, $bolIsError=FALSE)
+	private function render_view($correspondence, $message=NULL, $bolIsError=FALSE)
 	{
-		if (!$correspondance)
+		if (!$correspondence)
 		{
-			return $this->no_correspondance($message);
+			return $this->no_correspondence($message);
 		}
 
 		if ($message)
@@ -69,11 +69,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 			$tid = '';
 			if ($action !== 'create')
 			{
-				$id = $correspondance->id . '/';
+				$id = $correspondence->id . '/';
 			}
 			else
 			{
-				$tid = '/' . $correspondance->ticketId;
+				$tid = '/' . $correspondence->ticketId;
 			}
 			$action[0] = strtoupper($action[0]);
 			$action = htmlspecialchars($action);
@@ -106,16 +106,16 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 	<tbody>
 		<tr class="alt">
 			<td class="title">Created: </td>
-			<td><?=htmlspecialchars($correspondance->creationDatetime)?></td>
+			<td><?=htmlspecialchars($correspondence->creationDatetime)?></td>
 		</tr>
 		<tr class="alt">
 			<td class="title">Summary: </td>
-			<td><?=htmlspecialchars($correspondance->summary)?></td>
+			<td><?=htmlspecialchars($correspondence->summary)?></td>
 		</tr>
 		<tr class="alt">
 			<td class="title">User: </td>
 			<td><?php
-				$user = $correspondance->getUser();
+				$user = $correspondence->getUser();
 				$userName = $user ? $user->getName() : '[No user selected]';
 				echo htmlspecialchars($userName);
 			?></td>
@@ -123,7 +123,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		<tr class="alt">
 			<td class="title">Contact: </td>
 			<td><?php
-				$contact = $correspondance->getContact();
+				$contact = $correspondence->getContact();
 				$contactName = $contact ? $contact->getName() : '[No contact selected]';
 				echo htmlspecialchars($contactName);
 				if ($contact)
@@ -135,50 +135,50 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		<tr class="alt">
 			<td class="title">Customer Group Email: </td>
 			<td><?php
-				$customerGroupEmail = $correspondance->getCustomerGroupEmail();
+				$customerGroupEmail = $correspondence->getCustomerGroupEmail();
 				echo htmlspecialchars($customerGroupEmail ? $customerGroupEmail->email : '[No customer group email address selected]');
 			?></td>
 		</tr>
 		<tr class="alt">
 			<td class="title">Source: </td>
-			<td class="<?=$correspondance->getSource()->cssClass?>"><?=htmlspecialchars($correspondance->getSource()->name)?></td>
+			<td class="<?=$correspondence->getSource()->cssClass?>"><?=htmlspecialchars($correspondence->getSource()->name)?></td>
 		</tr>
 		<tr class="alt">
 			<td class="title">Delivery Status: </td>
-			<td class="<?=$correspondance->getDeliveryStatus()->cssClass?>"><?php
-				echo htmlspecialchars($correspondance->getDeliveryStatus()->name);
+			<td class="<?=$correspondence->getDeliveryStatus()->cssClass?>"><?php
+				echo htmlspecialchars($correspondence->getDeliveryStatus()->name);
 			?></td>
 		</tr>
 		<tr class="alt">
 			<td class="title">Delivery Date/Time: </td>
-			<td><?=htmlspecialchars($correspondance->deliveryDatetime)?></td>
+			<td><?=htmlspecialchars($correspondence->deliveryDatetime)?></td>
 		</tr>
 		<tr class="alt">
 			<td class="title">Details: </td>
-			<td><pre><?=htmlspecialchars($correspondance->details)?></pre></td>
+			<td><pre><?=htmlspecialchars($correspondence->details)?></pre></td>
 		</tr>
 	</tbody>
 </table>
 
 		<?php
 
-		$this->render_attachments($correspondance);
+		$this->render_attachments($correspondence);
 	}
 
-	private function render_save($correspondance)
+	private function render_save($correspondence)
 	{
 		$message = array_key_exists('email_not_sent', $this->mxdDataToRender) && $this->mxdDataToRender['email_not_sent'] 
 			? "The correspondence has been saved BUT THE EMAIL HAS NOT BEEN SENT." 
 			: "The correspondence has been saved.";
-		$this->render_view($correspondance, $message);
+		$this->render_view($correspondence, $message);
 	}
 
 
-	private function render_edit($correspondance, $requestedAction="Edit")
+	private function render_edit($correspondence, $requestedAction="Edit")
 	{
-		if (!$correspondance)
+		if (!$correspondence)
 		{
-			return $this->no_correspondance();
+			return $this->no_correspondence();
 		}
 
 		$message = array_key_exists('error', $this->mxdDataToRender) ? $this->mxdDataToRender['error'] : '';
@@ -195,11 +195,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 			$id = '';
 			if ($action !== 'create')
 			{
-				$id = $correspondance->id . '/';
+				$id = $correspondence->id . '/';
 			}
 			else
 			{
-				$tid = '/' . $correspondance->ticketId;
+				$tid = '/' . $correspondence->ticketId;
 			}
 			$action[0] = strtoupper($action[0]);
 			$action = htmlspecialchars($action);
@@ -211,10 +211,10 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 		$invalidValues = $this->mxdDataToRender['invalid_values'];
 
-		$cancel = Flex::getUrlBase() . '/reflex.php/Ticketing/Ticket/' . $correspondance->ticketId . '/View';
+		$cancel = Flex::getUrlBase() . '/reflex.php/Ticketing/Ticket/' . $correspondence->ticketId . '/View';
 
 		$editing = $requestedAction == 'Edit';
-		$title = ($editing ? 'Editing Correspondence' : 'Creating Correspondence') . ' for Ticket ' . $correspondance->ticketId;
+		$title = ($editing ? 'Editing Correspondence' : 'Creating Correspondence') . ' for Ticket ' . $correspondence->ticketId;
 
 		$ticket = array_key_exists('ticket', $this->mxdDataToRender) ? $this->mxdDataToRender['ticket'] : NULL;
 
@@ -316,9 +316,9 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 //-->		
 		</script>
-		<form id="edit_ticket" method="POST" name="edit_correspondance" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/" . ($correspondance->isSaved() ? $correspondance->id . '/' : '') . $requestedAction . ($correspondance->isSaved() ? '' : '/' . $correspondance->ticketId); ?>">
+		<form id="edit_ticket" method="POST" name="edit_correspondence" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/" . ($correspondence->isSaved() ? $correspondence->id . '/' : '') . $requestedAction . ($correspondence->isSaved() ? '' : '/' . $correspondence->ticketId); ?>">
 			<input type="hidden" name="save" value="1" />
-			<input type="hidden" id="ticketId" value="<?php echo $correspondance->ticketId; ?>" />
+			<input type="hidden" id="ticketId" value="<?php echo $correspondence->ticketId; ?>" />
 			<table class="reflex">
 				<caption>
 					<div id="caption_bar" name="caption_bar">
@@ -344,12 +344,12 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 				</tfoot>
 				<tbody>
 <?php
-	if ($correspondance->isSaved())
+	if ($correspondence->isSaved())
 	{
 ?>
 					<tr class="alt">
 						<td class="title">Created: </td>
-						<td><?=htmlspecialchars($correspondance->creationDatetime)?></td>
+						<td><?=htmlspecialchars($correspondence->creationDatetime)?></td>
 					</tr>
 <?php
 	}
@@ -361,11 +361,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								$invalid = array_key_exists('summary', $invalidValues) ? 'invalid' : '';
 								if (array_search('summary', $editableValues) !== FALSE)
 								{
-									?><input type="text" id="summary" name="summary" class="<?=$invalid?>" size="50" value="<?=htmlspecialchars($correspondance->summary)?>" /><?php
+									?><input type="text" id="summary" name="summary" class="<?=$invalid?>" size="50" value="<?=htmlspecialchars($correspondence->summary)?>" /><?php
 								}
 								else
 								{
-									echo htmlspecialchars($correspondance->summary);
+									echo htmlspecialchars($correspondence->summary);
 								}
 							?>
 						</td>
@@ -381,14 +381,14 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 									$owners = Ticketing_User::listAll();
 									foreach ($owners as $owner)
 									{
-										$selected = $correspondance->userId == $owner->id ? ' selected="selected"' : '';
+										$selected = $correspondence->userId == $owner->id ? ' selected="selected"' : '';
 										?><option value="<?=$owner->id?>"<?=$selected?>><?=$owner->getName()?></option><?php
 									}
 									?></select><?php
 								}
 								else
 								{
-									$user = $correspondance->getUser();
+									$user = $correspondence->getUser();
 									$userName = $user ? $user->getName() : '[No user selected]';
 									echo htmlspecialchars($userName);
 								}
@@ -403,8 +403,8 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								if (array_search('contactId', $editableValues) !== FALSE)
 								{
 									?><select id="contactId" name='contactId' class="<?=$invalid?>"><?php
-									$contactId = $correspondance->contactId ? $correspondance->contactId : NULL;
-									$ticket = $ticket ? $ticket : $correspondance->getTicket();
+									$contactId = $correspondence->contactId ? $correspondence->contactId : NULL;
+									$ticket = $ticket ? $ticket : $correspondence->getTicket();
 									$accountId = $ticket->accountId ? $ticket->accountId : 'null';
 									$contacts = Ticketing_Contact::listForAccountAndTicket($ticket->accountId, $ticket);
 									foreach ($contacts as $contact)
@@ -425,9 +425,9 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								}
 								else
 								{
-									$contact = $correspondance->getContact();
+									$contact = $correspondence->getContact();
 									$contactName = $contact ? $contact->getName() : '[No contact selected]';
-									$ticket = $ticket ? $ticket : $correspondance->getTicket();
+									$ticket = $ticket ? $ticket : $correspondence->getTicket();
 									$accountId = $ticket->accountId ? $ticket->accountId : 'null';
 									echo htmlspecialchars($contactName);
 									if ($contact)
@@ -446,8 +446,8 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								if (array_search('customerGroupEmailId', $editableValues) !== FALSE)
 								{
 									?><select id="customerGroupEmailId" name='customerGroupEmailId' class="<?=$invalid?>"><?php
-									$custGroupEmailId = $correspondance->customerGroupEmailId ? $correspondance->customerGroupEmailId : NULL;
-									$ticket = $ticket ? $ticket : $correspondance->getTicket();
+									$custGroupEmailId = $correspondence->customerGroupEmailId ? $correspondence->customerGroupEmailId : NULL;
+									$ticket = $ticket ? $ticket : $correspondence->getTicket();
 									$custGroupEmails = Ticketing_Customer_Group_Email::listForCustomerGroupId($ticket->customerGroupId);
 									foreach ($custGroupEmails as $custGroupEmail)
 									{
@@ -458,7 +458,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								}
 								else
 								{
-									$customerGroupEmail = $correspondance->getCustomerGroupEmail();
+									$customerGroupEmail = $correspondence->getCustomerGroupEmail();
 									echo htmlspecialchars($customerGroupEmail ? $customerGroupEmail->email : '[No customer group email address selected]');
 								}
 							?>
@@ -472,7 +472,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								if (array_search('sourceId', $editableValues) !== FALSE)
 								{
 									?><select id="sourceId" name='sourceId' class="<?=$invalid?>"><?php
-									$sourceId = $correspondance->sourceId ? $correspondance->sourceId : NULL;
+									$sourceId = $correspondence->sourceId ? $correspondence->sourceId : NULL;
 									$sources = Ticketing_Correspondance_Source::getAvailableSourcesForUser();
 									foreach ($sources as $source)
 									{
@@ -483,7 +483,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								}
 								else
 								{
-									echo htmlspecialchars($correspondance->getSource()->name);
+									echo htmlspecialchars($correspondence->getSource()->name);
 								}
 							?>
 						</td>
@@ -496,7 +496,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								if (array_search('deliveryStatusId', $editableValues) !== FALSE)
 								{
 									?><select id="deliveryStatusId" name='deliveryStatusId' class="<?=$invalid?>"><?php
-									$deliveryStatusId = $correspondance->deliveryStatusId ? $correspondance->deliveryStatusId : NULL;
+									$deliveryStatusId = $correspondence->deliveryStatusId ? $correspondence->deliveryStatusId : NULL;
 									$deliveryStatuses = Ticketing_Correspondance_Delivery_Status::getAvailableSourcesForUser();
 									foreach ($deliveryStatuses as $deliveryStatus)
 									{
@@ -507,13 +507,13 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								}
 								else
 								{
-									echo htmlspecialchars($correspondance->getDeliveryStatus()->name);
+									echo htmlspecialchars($correspondence->getDeliveryStatus()->name);
 								}
 							?>
 						</td>
 					</tr>
 <?php
-	if ($correspondance->isSaved())
+	if ($correspondence->isSaved())
 	{
 ?>
 					<tr class="alt">
@@ -523,11 +523,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								$invalid = array_key_exists('deliveryDatetime', $invalidValues) ? 'invalid' : '';
 								if (array_search('deliveryDatetime', $editableValues) !== FALSE)
 								{
-									?><input type="text" id="deliveryDatetime" name="deliveryDatetime" class="<?=$invalid?>" size="50" value="<?=htmlspecialchars($correspondance->deliveryDatetime)?>" /><?php
+									?><input type="text" id="deliveryDatetime" name="deliveryDatetime" class="<?=$invalid?>" size="50" value="<?=htmlspecialchars($correspondence->deliveryDatetime)?>" /><?php
 								}
 								else
 								{
-									echo htmlspecialchars($correspondance->deliveryDatetime);
+									echo htmlspecialchars($correspondence->deliveryDatetime);
 								}
 							?>
 						</td>
@@ -542,11 +542,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								$invalid = array_key_exists('details', $invalidValues) ? 'invalid' : '';
 								if (array_search('details', $editableValues) !== FALSE)
 								{
-									?><textarea type="text" id="details" name="details" class="<?=$invalid?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($correspondance->details)?></textarea><?php
+									?><textarea type="text" id="details" name="details" class="<?=$invalid?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($correspondence->details)?></textarea><?php
 								}
 								else
 								{
-									echo htmlspecialchars($correspondance->details);
+									echo htmlspecialchars($correspondence->details);
 								}
 							?>
 						</td>
@@ -556,17 +556,17 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 		<?php
 
-		return $this->render_attachments($correspondance);
+		return $this->render_attachments($correspondence);
 	}
 
-	private function render_attachments($correspondance)
+	private function render_attachments($correspondence)
 	{
-		if (!$correspondance || !$correspondance->isSaved())
+		if (!$correspondence || !$correspondence->isSaved())
 		{
 			return;
 		}
 
-		$attachments = $correspondance->getAttachments();
+		$attachments = $correspondence->getAttachments();
 		$noAttachments = count($attachments) ? FALSE : TRUE;
 		?>
 <br/>
@@ -640,7 +640,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		<?php
 	}
 
-	private function no_correspondance($message=NULL)
+	private function no_correspondence($message=NULL)
 	{
 		$error = $message ? $message : 'No correspondence selected.';
 		?>

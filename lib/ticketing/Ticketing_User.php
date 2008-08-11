@@ -132,9 +132,9 @@ class Ticketing_User
 		return $user;
 	}
 
-	public static function getForCorrespondance(Ticketing_Correspondance $objCorrespondance)
+	public static function getForCorrespondence(Ticketing_Correspondance $objCorrespondence)
 	{
-		return Ticketing_User::getForId($objCorrespondance->userId);
+		return Ticketing_User::getForId($objCorrespondence->userId);
 	}
 
 	public static function getForTicket(Ticketing_Ticket $objTicket)

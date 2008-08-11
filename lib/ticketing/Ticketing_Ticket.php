@@ -24,9 +24,9 @@ class Ticketing_Ticket
 	protected $_saved = FALSE;
 	protected $owner = NULL;
 
-	public static function forCorrespondance(Ticketing_Correspondance $correspondance)
+	public static function forCorrespondence(Ticketing_Correspondance $correspondence)
 	{
-		$mxdTicketId = $correspondance->ticketId;
+		$mxdTicketId = $correspondence->ticketId;
 
 		$ticket = NULL;
 
@@ -38,7 +38,7 @@ class Ticketing_Ticket
 		}
 		if (!$ticket)
 		{
-			$ticket = self::createNew($correspondance->getContact(), $correspondance->summary, $correspondance->getCustomerGroupEmail()->customerGroupId);
+			$ticket = self::createNew($correspondence->getContact(), $correspondence->summary, $correspondence->getCustomerGroupEmail()->customerGroupId);
 		}
 
 		return $ticket;
@@ -76,7 +76,7 @@ class Ticketing_Ticket
 		$objTicket->creationDatetime = $objTicket->modifiedDatetime = date('Y-m-d H-i-s');
 
 		// We can check to see if the contact is associated with just one account. 
-		// If so, should we set that account on this correspondance by default?
+		// If so, should we set that account on this correspondence by default?
 		$accountIds = $contact->getAccountIds();
 		if (count($accountIds) === 1)
 		{
@@ -464,19 +464,19 @@ class Ticketing_Ticket
 		return self::getFor("id = <Id>", array("Id" => $id));
 	}
 
-	public function getCorrespondances()
+	public function getCorrespondences()
 	{
 		return Ticketing_Correspondance::getForTicket($this);
 	}
 
-	public function addCorrespondance($strSubject, $strMessage, $arrAttchments=NULL, $intSource=TICKETING_CORRESPONDANCE_SOURCE_PHONE, $bolInbound=FALSE, $bolAlreadyCommunicated=TRUE, $defaultGroupEmail=NULL, $contactOrUserId=NULL)
+	public function addCorrespondence($strSubject, $strMessage, $arrAttchments=NULL, $intSource=TICKETING_CORRESPONDANCE_SOURCE_PHONE, $bolInbound=FALSE, $bolAlreadyCommunicated=TRUE, $defaultGroupEmail=NULL, $contactOrUserId=NULL)
 	{
 		$now = date('Y-m-d H:i:s');
 		$arrDetails = array(
 			'source_id' 	=>	$intSource, 	// The source id (TICKETING_CORRESPONDANCE_SOURCE_xxx)
-			'summary'		=>	$strSubject, 	// String summary (single line) (eg: Email subject) of the correspondance
+			'summary'		=>	$strSubject, 	// String summary (single line) (eg: Email subject) of the correspondence
 			'details'		=>	$strMessage, 	// String description of the email, much more detailed than the summary
-			'ticket_id'		=>	$this->id, 		//If not specified, a new ticket will be created for the correspondance
+			'ticket_id'		=>	$this->id, 		//If not specified, a new ticket will be created for the correspondence
 			'customer_group_id' => $this->customerGroupId, //(id of record in ticketing_customer_group_config table) to use default address for
 			'creation_datetime'	=> $now, 		// Date in 'YYYY-mm-dd HH:ii:ss' format (Defaults to current date/time)
 		);
@@ -505,11 +505,11 @@ class Ticketing_Ticket
 			$arrDetails['user_id'] = $contactOrUserId; // Integer id of ticketing system user creating the record (NULL if created by customer)
 		}
 
-		if (($correspondance=TicketingTicket::createForDetails($arrDetails)) === NULL)
+		if (($correspondence=TicketingTicket::createForDetails($arrDetails)) === NULL)
 		{
 			throw new Exception('Failed to create the correspondence.');
 		}
-		return $correspondance;
+		return $correspondence;
 	}
 
 	public function __get($strName)

@@ -297,7 +297,10 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'priorityId';
 					$editableValues[] = 'subject';
 					$editableValues[] = 'contactId';
-					$editableValues[] = 'statusId';
+					if ($ticket->isAssigned() || $currentUser->isAdminUser())
+					{
+						$editableValues[] = 'statusId';
+					}
 					//$editableValues[] = 'customerGroupId'; // Customer group should come from account
 					$editableValues[] = 'categoryId';
 					$editableValues[] = 'serviceId';
@@ -538,10 +541,6 @@ class Application_Handler_Ticketing extends Application_Handler
 
 	public function Correspondence($subPath)
 	{
-		return $this->Correspondance($subPath);
-	}
-	public function Correspondance($subPath)
-	{
 		$currentUser = Ticketing_User::getCurrentUser();
 		if (!$currentUser->isUser())
 		{
@@ -562,9 +561,9 @@ class Application_Handler_Ticketing extends Application_Handler
 		// We need to load the details of the contact specified by a contact_id in $_REQUEST
 		$detailsToRender = array();
 
-		$correspondance = Ticketing_Correspondance::getForId($_REQUEST['correspondanceId']);
+		$correspondence = Ticketing_Correspondance::getForId($_REQUEST['correspondanceId']);
 
-		$permittedActions = $this->getPermittedCorrespondanceActions($currentUser, $correspondance);
+		$permittedActions = $this->getPermittedCorrespondenceActions($currentUser, $correspondence);
 
 		// Default the action if the selected action is not permitted
 		if (array_search($action, $permittedActions) === FALSE)
@@ -580,7 +579,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		try
 		{
-			if (!$correspondance && $action != 'create')
+			if (!$correspondence && $action != 'create')
 			{
 				$detailsToRender['error'] = 'Unable to perform action';
 				throw new Exception('No correspondence selected.');
@@ -592,23 +591,23 @@ class Application_Handler_Ticketing extends Application_Handler
 			{
 				case 'delete':
 
-					$correspondance->delete();
+					$correspondence->delete();
 
-					// Deleted the correspondance. Where to now? The ticket?
-					return $this->Ticket(array($correspondance->ticketId, 'view'));
+					// Deleted the correspondence. Where to now? The ticket?
+					return $this->Ticket(array($correspondence->ticketId, 'view'));
 
 				case 'send':
 				case 'resend':
 
 					try
 					{
-						$correspondance->emailToCustomer();
+						$correspondence->emailToCustomer();
 					}
 					catch (Exception $e)
 					{
 						$sendError = $e->getMessage();
 					}
-					$ticketId = $correspondance->ticketId;
+					$ticketId = $correspondence->ticketId;
 
 					break;
 
@@ -619,13 +618,13 @@ class Application_Handler_Ticketing extends Application_Handler
 						throw new Exception('No ticket specified for adding correspondence to.');
 					}
 
-					$correspondance = Ticketing_Correspondance::createBlank();
-					$correspondance->user = $currentUser;
-					$correspondance->ticketId = $ticketId;
-					$detailsToRender['ticket'] = $correspondance->getTicket();
-					$correspondance->summary = $detailsToRender['ticket']->subject;
-					$correspondance->sourceId = TICKETING_CORRESPONDANCE_SOURCE_PHONE;
-					$correspondance->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
+					$correspondence = Ticketing_Correspondance::createBlank();
+					$correspondence->user = $currentUser;
+					$correspondence->ticketId = $ticketId;
+					$detailsToRender['ticket'] = $correspondence->getTicket();
+					$correspondence->summary = $detailsToRender['ticket']->subject;
+					$correspondence->sourceId = TICKETING_CORRESPONDANCE_SOURCE_PHONE;
+					$correspondence->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
 
 					$oldDeliveryStatus = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
 
@@ -635,20 +634,20 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'details';
 					$editableValues[] = 'contactId';
 
-					$ticketId = $correspondance->ticketId;
+					$ticketId = $correspondence->ticketId;
 
 					if ($action == 'edit')
 					{
-						$oldDeliveryStatus = $correspondance->deliveryStatusId;
+						$oldDeliveryStatus = $correspondence->deliveryStatusId;
 					}
 
-					if (!$correspondance->isSaved() || ($correspondance->isOutgoing() && $correspondance->isNotSent()))
+					if (!$correspondence->isSaved() || ($correspondence->isOutgoing() && $correspondence->isNotSent()))
 					{
 						$editableValues[] = 'sourceId';
 						$editableValues[] = 'customerGroupEmailId';
 					}
 
-					if ($action == 'create' || ($correspondance->isOutgoing() && $correspondance->isNotSent() && !$correspondance->isEmail()))
+					if ($action == 'create' || ($correspondence->isOutgoing() && $correspondence->isNotSent() && !$correspondence->isEmail()))
 					{
 						$editableValues[] = 'deliveryStatusId';
 					}
@@ -671,12 +670,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value =  trim($value);
 									if (!$value)
 									{
-										$correspondance->summary = '';
+										$correspondence->summary = '';
 										$invalidValues[$editableValue] = 'You must specify a subject for the correspondence.';
 									}
 									else
 									{
-										$correspondance->summary = $value;
+										$correspondence->summary = $value;
 									}
 									break;
 
@@ -684,12 +683,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value =  trim($value);
 									if (!$value)
 									{
-										$correspondance->details = '';
+										$correspondence->details = '';
 										$invalidValues[$editableValue] = 'You must provide details of the correspondence.';
 									}
 									else
 									{
-										$correspondance->details = $value;
+										$correspondence->details = $value;
 									}
 									break;
 
@@ -697,12 +696,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value = Ticketing_Contact::getForId(intval($value));
 									if (!$value)
 									{
-										$correspondance->contactId = NULL;
+										$correspondence->contactId = NULL;
 										$invalidValues[$editableValue] = 'You must select a contact.';
 									}
 									else
 									{
-										$correspondance->contactId = $value->id;
+										$correspondence->contactId = $value->id;
 									}
 									break;
 
@@ -710,13 +709,13 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value = Ticketing_Correspondance_Source::getForId(intval($value));
 									if (!$value)
 									{
-										$correspondance->sourceId = NULL;
+										$correspondence->sourceId = NULL;
 										$invalidValues[$editableValue] = 'You must specify a source for the correspondence.';
 										break;
 									}
 									else
 									{
-										$correspondance->sourceId = $value->id;
+										$correspondence->sourceId = $value->id;
 									}
 									break;
 
@@ -724,12 +723,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value = Ticketing_Customer_Group_Email::getForId(intval($value));
 									if (!$value)
 									{
-										$correspondance->customerGroupEmailId = NULL;
+										$correspondence->customerGroupEmailId = NULL;
 										$invalidValues[$editableValue] = 'You must specify a customer group email address.';
 									}
 									else
 									{
-										$correspondance->customerGroupEmailId = $value->id;
+										$correspondence->customerGroupEmailId = $value->id;
 									}
 									break;
 
@@ -738,12 +737,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value = Ticketing_Correspondance_Delivery_Status::getForId(intval($value));
 									if (!$value)
 									{
-										$correspondance->deliveryStatusId = NULL;
+										$correspondence->deliveryStatusId = NULL;
 										$invalidValues[$editableValue] = 'You must specify a delivery status.';
 									}
 									else
 									{
-										$correspondance->deliveryStatusId = $value->id;
+										$correspondence->deliveryStatusId = $value->id;
 									}
 									break;
 							}
@@ -758,17 +757,17 @@ class Application_Handler_Ticketing extends Application_Handler
 						{
 							$sendAfterSave = FALSE;
 							if ($oldDeliveryStatus == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT && 
-								$correspondance->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT &&
-								$correspondance->isEmail() && $correspondance->isOutgoing())
+								$correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT &&
+								$correspondence->isEmail() && $correspondence->isOutgoing())
 							{
-								$correspondance->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
+								$correspondence->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
 								$sendAfterSave = TRUE;
 							}
-							if (!$correspondance->deliveryDatetime && (!$correspondance->isOutgoing() || $correspondance->isSent()))
+							if (!$correspondence->deliveryDatetime && (!$correspondence->isOutgoing() || $correspondence->isSent()))
 							{
-								$correspondance->deliveryDatetime = date('Y-m-d H:i:s');;
+								$correspondence->deliveryDatetime = date('Y-m-d H:i:s');;
 							}
-							$correspondance->save();
+							$correspondence->save();
 							if ($sendAfterSave)
 							{
 								// We need to ensure that the email is sent
@@ -788,7 +787,7 @@ class Application_Handler_Ticketing extends Application_Handler
 				case 'error':
 				case 'view':
 				default:
-					$ticketId = $correspondance ? $correspondance->ticketId : $ticketId;
+					$ticketId = $correspondence ? $correspondence->ticketId : $ticketId;
 					break;
 			}
 		}
@@ -809,10 +808,10 @@ class Application_Handler_Ticketing extends Application_Handler
 		BreadCrumb()->SetCurrentPage("$actionLabel Correspondence");
 
 
-		$detailsToRender['correspondance'] = $correspondance;
+		$detailsToRender['correspondence'] = $correspondence;
 		$detailsToRender['action'] = $action;
 		$detailsToRender['send_error'] = $sendError;
-		$detailsToRender['permitted_actions'] = $this->getPermittedCorrespondanceActions($currentUser, $correspondance);
+		$detailsToRender['permitted_actions'] = $this->getPermittedCorrespondenceActions($currentUser, $correspondence);
 		$detailsToRender['ticketId'] = $ticketId;
 		$detailsToRender['editable_values'] = $editableValues;
 		$detailsToRender['invalid_values'] = $invalidValues;
@@ -821,26 +820,26 @@ class Application_Handler_Ticketing extends Application_Handler
 	}
 
 
-	private function getPermittedCorrespondanceActions($user, $correspondance)
+	private function getPermittedCorrespondenceActions($user, $correspondence)
 	{
 		$permittedActions = array();
 
-		if ($correspondance)
+		if ($correspondence)
 		{
-			if ($correspondance->isSaved())
+			if ($correspondence->isSaved())
 			{
 				$permittedActions[] = 'view';
 			}
 
 			if ($user->isAdminUser())
 			{
-				if ($correspondance->isSaved())
+				if ($correspondence->isSaved())
 				{
 					$permittedActions[] = 'edit';
 
-					if ($correspondance->isOutgoing())
+					if ($correspondence->isOutgoing())
 					{
-						if ($correspondance->isNotSent())
+						if ($correspondence->isNotSent())
 						{
 							$permittedActions[] = 'delete';
 						}
@@ -854,20 +853,20 @@ class Application_Handler_Ticketing extends Application_Handler
 			else
 			{
 				// Allow non-admin users to email anything OTHER than incomming emails or emails that have already been sent emails
-				if ($correspondance->isSaved() && (!$correspondance->isEmail() || ($correspondance->isOutgoing() && !$correspondance->isSent())))
+				if ($correspondence->isSaved() && (!$correspondence->isEmail() || ($correspondence->isOutgoing() && !$correspondence->isSent())))
 				{
 					$permittedActions[] = 'edit';
 				}
 
-				if ($correspondance->isOutgoing() && $correspondance->isNotSent() && $correspondance->isSaved())
+				if ($correspondence->isOutgoing() && $correspondence->isNotSent() && $correspondence->isSaved())
 				{
 					$permittedActions[] = 'delete';
 				}
 			}
 
-			if ($correspondance->isOutgoing() && $correspondance->isEmail() && $correspondance->isSaved())
+			if ($correspondence->isOutgoing() && $correspondence->isEmail() && $correspondence->isSaved())
 			{
-				if ($correspondance->isNotSent())
+				if ($correspondence->isNotSent())
 				{
 					$permittedActions[] = 'send';
 				}

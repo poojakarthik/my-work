@@ -29,9 +29,9 @@ class Ticketing_Contact
 		return ($this->firstName ? $this->firstName : '') . ($this->firstName && $this->lastName ? ' ' : '') . ($this->lastName ? $this->lastName : $this->email);
 	}
 
-	public static function getForCorrespondance(Ticketing_Correspondance $objCorrespondance)
+	public static function getForCorrespondence(Ticketing_Correspondance $objCorrespondence)
 	{
-		return Ticketing_Contact::getForId($objCorrespondance->contactId);
+		return Ticketing_Contact::getForId($objCorrespondence->contactId);
 	}
 
 	public static function listById($arrIds)

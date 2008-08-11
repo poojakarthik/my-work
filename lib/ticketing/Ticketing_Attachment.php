@@ -87,7 +87,7 @@ class Ticketing_Attachment
 		return TRUE;
 	}
 
-	public static function create(Ticketing_Correspondance $objCorrespondance, $strFileName, $strFileType, $strFileContent)
+	public static function create(Ticketing_Correspondance $objCorrespondence, $strFileName, $strFileType, $strFileContent)
 	{
 		$objAttachmentType = self::discoverAttachmentType($strFileType, $strFileName);
 
@@ -99,7 +99,7 @@ class Ticketing_Attachment
 
 		$objAttachment = new Ticketing_Attachment();
 
-		$objAttachment->correspondanceId = $objCorrespondance->id;
+		$objAttachment->correspondanceId = $objCorrespondence->id;
 		$objAttachment->fileName = trim($strFileName);
 		$objAttachment->attachmentTypeId = $objAttachmentType->id;
 		$objAttachment->fileContent = $strFileContent;
@@ -178,7 +178,7 @@ class Ticketing_Attachment
 		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'id = <RecordId>');
 		if (($outcome = $selAttachments->Execute()) === FALSE)
 		{
-			throw new Exception("Failed to load attachments for correspondence '{$correspondance->id}': " . $selAttachments->Error());
+			throw new Exception("Failed to load attachments for record '{$id}': " . $selAttachments->Error());
 		}
 		if (!$outcome)
 		{
@@ -200,13 +200,13 @@ class Ticketing_Attachment
 		
 	}
 
-	public static function listForCorrespondance(Ticketing_Correspondance $correspondance)
+	public static function listForCorrespondence(Ticketing_Correspondance $correspondence)
 	{
-		$arrWhere = array('CorrespondanceId' => $correspondance->id);
-		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'correspondance_id = <CorrespondanceId>');
+		$arrWhere = array('CorrespondenceId' => $correspondence->id);
+		$selAttachments = new StatementSelect('ticketing_attachment', self::getColumns(), 'correspondance_id = <CorrespondenceId>');
 		if (($outcome = $selAttachments->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to load attachments for correspondence '{$correspondance->id}': " . $selAttachments->Error());
+			throw new Exception("Failed to load attachments for correspondence '{$correspondence->id}': " . $selAttachments->Error());
 		}
 		$arrAttchments = array();
 		while ($attachment = $selAttachments->Fetch())

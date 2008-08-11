@@ -58,7 +58,7 @@ class Ticketing_Service
 
 		foreach($xmlFiles as $xmlFile)
 		{
-			$correspondance = NULL;
+			$correspondence = NULL;
 
 			try
 			{
@@ -83,17 +83,17 @@ class Ticketing_Service
 				$details['delivery_datetime'] = $details['creation_datetime'] = date('Y-m-d H-i-s');
 
 				// Load the details into the ticketing system
-				$correspondance = Ticketing_Correspondance::createForDetails($details);
-				// If a correspondance was created...
-				if ($correspondance)
+				$correspondence = Ticketing_Correspondance::createForDetails($details);
+				// If a correspondence was created...
+				if ($correspondence)
 				{
-					// Acknowledge receipt of the correspondance
-					$correspondance->acknowledgeReceipt();
+					// Acknowledge receipt of the correspondence
+					$correspondence->acknowledgeReceipt();
 				}
 
 				// Determine whether we will be backing up files
-				$bolBackup = $correspondance ? ($strBackupDirectory ? TRUE : FALSE) : ($strJunkDirectory ? TRUE : FALSE);
-				$strMoveToDir = $correspondance ? $strBackupDirectory : $strJunkDirectory;
+				$bolBackup = $correspondence ? ($strBackupDirectory ? TRUE : FALSE) : ($strJunkDirectory ? TRUE : FALSE);
+				$strMoveToDir = $correspondence ? $strBackupDirectory : $strJunkDirectory;
 
 				$dbAccess->TransactionCommit();
 			}

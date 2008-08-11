@@ -51,7 +51,7 @@ class Ticketing_Contact_Account
 		}
 
 		// If the contact was passed as a ticket, we need to ensure that all of the ticket
-		// correspondances are associated with the ticket account
+		// correspondences are associated with the ticket account
 		if ($mixContact instanceof Ticketing_Ticket)
 		{
 			$arrColumns = array('account_id' => 't.account_id', 'contact_id' => 'c.contact_id');
@@ -91,7 +91,7 @@ class Ticketing_Contact_Account
 
 	public static function listAccountsForContact()
 	{
-		// WIP ?? This should be implemented with a view to being used when entering a correspondance/ticket.
+		// WIP ?? This should be implemented with a view to being used when entering a correspondence/ticket.
 		// If a contact has been identified, the user/contact should be able to select an account
 	}
 }

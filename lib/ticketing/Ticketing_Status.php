@@ -37,6 +37,10 @@ class Ticketing_Status
 		$available = array();
 		if ($user->isUser())
 		{
+			if ($ticket && !$ticket->isAssigned())
+			{
+				$available[] = self::getForId(TICKETING_STATUS_UNASSIGNED);
+			}
 			$available[] = self::getForId(TICKETING_STATUS_IN_PROGRESS);
 			$available[] = self::getForId(TICKETING_STATUS_WITH_CUSTOMER);
 			$available[] = self::getForId(TICKETING_STATUS_WITH_CARRIER);

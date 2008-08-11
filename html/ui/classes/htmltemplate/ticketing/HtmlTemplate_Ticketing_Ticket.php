@@ -191,7 +191,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		<?php
 
-		$this->render_correspondances($ticket);
+		$this->render_correspondences($ticket);
 	}
 
 	private function render_edit($ticket=FALSE, $requestedAction="Edit")
@@ -677,7 +677,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		<?php
 
-		$this->render_correspondances($ticket);
+		$this->render_correspondences($ticket);
 	}
 
 	private function no_ticket($header='Error', $message='No ticket selected.')
@@ -717,17 +717,13 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 	private function render_correspondences($ticket)
 	{
-		return $this->render_correspondances($ticket);
-	}
-	private function render_correspondances($ticket)
-	{
 		if (!$ticket || !$ticket->isSaved())
 		{
 			return;
 		}
 
-		$correspondances = $ticket->getCorrespondances();
-		$noCorrespondances = count($correspondances) == 0;
+		$correspondences = $ticket->getCorrespondences();
+		$noCorrespondences = count($correspondences) == 0;
 
 		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/Create/" . $ticket->id . "\">Create</a>";
 
@@ -761,7 +757,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			</tfoot>
 			<tbody>
 		<?php
-					if ($noCorrespondances)
+					if ($noCorrespondences)
 					{
 		?>
 				<tr class="alt">
@@ -772,23 +768,23 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					else
 					{
 						$alt = FALSE;
-						foreach($correspondances as $correspondance)
+						foreach($correspondences as $correspondence)
 						{
 							$altClass = $alt ? ' class="alt"' : '';
 							$alt = !$alt;
-							$contact = $correspondance->getContact();
+							$contact = $correspondence->getContact();
 							$contactName = $contact ? $contact->getName() : '[No contact]';
-							$sourceName = $correspondance->getSource()->name;
-							$deliveryStatusName = $correspondance->getDeliveryStatus()->name;
-							$link = Flex::getUrlBase() . 'reflex.php/Ticketing/Correspondence/' . $correspondance->id . '/View';
+							$sourceName = $correspondence->getSource()->name;
+							$deliveryStatusName = $correspondence->getDeliveryStatus()->name;
+							$link = Flex::getUrlBase() . 'reflex.php/Ticketing/Correspondence/' . $correspondence->id . '/View';
 		?>
 				<tr<?=$altClass?>>
-					<td><a href="<?=$link?>"><?=$correspondance->summary?></a></td>
+					<td><a href="<?=$link?>"><?=$correspondence->summary?></a></td>
 					<td><?=$contactName?></td>
 					<td><?=$sourceName?></td>
 					<td><?=$deliveryStatusName?></td>
-					<td><?=$correspondance->deliveryDatetime?></td>
-					<td><?=$correspondance->creationDatetime?></td>
+					<td><?=$correspondence->deliveryDatetime?></td>
+					<td><?=$correspondence->creationDatetime?></td>
 				</tr>
 		<?php
 						}
