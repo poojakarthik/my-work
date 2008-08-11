@@ -81,6 +81,9 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		}
 		$actionLinks = implode(' | ', $actionLinks);
 
+		$details = str_replace(array("\n", "\t"), array("<br/>\n", "&nbsp;&nbsp;&nbsp;&nbsp;"), htmlspecialchars($correspondence->details));
+		
+
 		?>
 
 <table class="reflex">
@@ -155,7 +158,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		</tr>
 		<tr class="alt">
 			<td class="title">Details: </td>
-			<td><pre><?=htmlspecialchars($correspondence->details)?></pre></td>
+			<td><?=$details?></td>
 		</tr>
 	</tbody>
 </table>
