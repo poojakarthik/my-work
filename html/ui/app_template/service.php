@@ -1281,7 +1281,7 @@ class AppTemplateService extends ApplicationTemplate
 			$arrServiceRec		= $arrServiceDetails['ServiceRec'];
 			$arrExtraDetails	= $arrServiceDetails['ExtraDetailsRec'];
 			$intPlanId			= $arrServiceDetails['PlanId'];
-			$strStatus			= GetConstantDescription($arrServiceRec['Status'], "Service");
+			$strStatus			= GetConstantDescription($arrServiceRec['Status'], "service_status");
 			$strNote .= "\n". GetConstantDescription($arrServiceRec['ServiceType'], "service_type") ." - {$arrServiceRec['FNN']} ($strStatus)";
 			
 			$mixResult = $insService->Execute($arrServiceRec);
@@ -2279,8 +2279,8 @@ class AppTemplateService extends ApplicationTemplate
 				}
 				
 				// Build the note part detailing the Status change
-				$strOldStatus	= GetConstantDescription(DBO()->Service->Status->Value, "Service");
-				$strNewStatus	= GetConstantDescription(DBO()->Service->NewStatus->Value, "Service");
+				$strOldStatus	= GetConstantDescription(DBO()->Service->Status->Value, "service_status");
+				$strNewStatus	= GetConstantDescription(DBO()->Service->NewStatus->Value, "service_status");
 				$strChangesNote = "Status changed from $strOldStatus to $strNewStatus.{$strProvisioningNote}\n". $strChangesNote;
 			}
 
