@@ -1675,7 +1675,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		else
 		{
 			// Invalid Status to change to
-			$this->_strErrorMsg = "Can not change the status of the service to ". GetConstantDescription($intStatus, "Service");
+			$this->_strErrorMsg = "Can not change the status of the service to ". GetConstantDescription($intStatus, "service_status");
 			return FALSE;
 		}
 		
@@ -1930,14 +1930,14 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			$strCreatedOn	= OutputMask()->LongDateAndTime($strCreatedOn);
 			$strClosedOn	= OutputMask()->LongDateAndTime($strClosedOn);
 			//TODO! I think this will have to be changed to check into the nature of closure
-			$this->_strErrorMsg = "This service cannot be ". GetConstantDescription($intStatus, "Service") ." as its CreatedOn TimeStamp ($strCreatedOn) is greater than its ClosedOn TimeStamp ($strClosedOn) signifying that it was never actually used by this account";
+			$this->_strErrorMsg = "This service cannot be ". GetConstantDescription($intStatus, "service_status") ." as its CreatedOn TimeStamp ($strCreatedOn) is greater than its ClosedOn TimeStamp ($strClosedOn) signifying that it was never actually used by this account";
 			return FALSE;
 		}
 
 		if ($strClosedOn > $strTimeStamp)
 		{
 			// The is a closure scheduled for a future date, don't let them change the status
-			$this->_strErrorMsg = "This service cannot be ". GetConstantDescription($intStatus, "Service") . " as it is scheduled to close at a later date";
+			$this->_strErrorMsg = "This service cannot be ". GetConstantDescription($intStatus, "service_status") . " as it is scheduled to close at a later date";
 			return FALSE;
 		}
 		

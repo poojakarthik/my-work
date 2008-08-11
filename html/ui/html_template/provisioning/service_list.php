@@ -223,7 +223,7 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 			
 			
 			// Build the Status cell
-			$strStatus = GetConstantDescription($arrService['History'][0]['Status'], "Service");
+			$strStatus = GetConstantDescription($arrService['History'][0]['Status'], "service_status");
 			//$strStatusCell = "<span title='$strStatusDesc $strStatusDescDate'>$strStatus<span>";
 			$strStatusCell = $strStatus;
 			

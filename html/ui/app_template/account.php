@@ -1345,7 +1345,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			if (count($arrModifiedServices) > 0)
 			{
 				// Some services have had their status updated
-				$strChangesNote .= "\nThe following services have been set to ". GetConstantDescription($intModifiedServicesNewStatus, "Service") .":";
+				$strChangesNote .= "\nThe following services have been set to ". GetConstantDescription($intModifiedServicesNewStatus, "service_status") .":";
 				foreach ($arrModifiedServices as $arrService)
 				{
 					$strChangesNote .= "\n". GetConstantDescription($arrService['ServiceType'], "ServiceType") .": {$arrService['FNN']}";

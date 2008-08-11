@@ -73,7 +73,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		}
 		
 		DBO()->Service->FNN->RenderOutput();
-		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);		
 		
 		
 		DBO()->CurrentRatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);

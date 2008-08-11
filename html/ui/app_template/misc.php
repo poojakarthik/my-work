@@ -267,7 +267,7 @@ class AppTemplateMisc extends ApplicationTemplate
 			
 			$strIndial = ($arrRecord['Indial100']) ? "(Indial) " : "         ";
 			
-			$strStatus = GetConstantDescription($arrRecord['Status'], "Service");
+			$strStatus = GetConstantDescription($arrRecord['Status'], "service_status");
 			$strStatus = str_pad($strStatus, 13, " ", STR_PAD_RIGHT);
 						
 			// Build a description for the Service

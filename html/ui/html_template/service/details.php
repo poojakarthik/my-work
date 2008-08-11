@@ -117,7 +117,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();
-		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);
 		echo "</div>\n";
 		
 		// Register a listener to handle when the service has been updated
@@ -154,7 +154,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		}
 		
 		DBO()->Service->FNN->RenderOutput();
-		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);		
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);		
 		echo "</div>\n";
 		echo "<div class='SmallSeperator'></div>\n";	
 	}
@@ -268,7 +268,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			}
 		}
 		
-		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("Service"), RENDER_OUTPUT);
+		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);
 		
 		$objService		= ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);		
 		$arrLastEvent	= HtmlTemplateServiceHistory::GetLastEvent($objService);

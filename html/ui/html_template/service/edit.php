@@ -156,11 +156,11 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
 			// The status cannot be changed
-			$arrStatusOptions[DBO()->Service->CurrentStatus->Value] = $GLOBALS['*arrConstant']['Service'][DBO()->Service->CurrentStatus->Value];
+			$arrStatusOptions[DBO()->Service->CurrentStatus->Value] = $GLOBALS['*arrConstant']['service_status'][DBO()->Service->CurrentStatus->Value];
 		}
 		else
 		{
-			$arrStatusOptions = $GLOBALS['*arrConstant']['Service'];
+			$arrStatusOptions = $GLOBALS['*arrConstant']['service_status'];
 			if ($objService->GetStatus() != SERVICE_PENDING)
 			{
 				// Remove the SERVICE_PENDING option
