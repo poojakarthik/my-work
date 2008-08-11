@@ -1077,7 +1077,7 @@ class PropertyToken
 	 */
 	function IsInvalid()
 	{
-		return !array_key_exists($this->_strProperty, $this->_dboOwner->_arrValid) || $this->_dboOwner->_arrValid[$this->_strProperty] === FALSE;
+		return array_key_exists($this->_strProperty, $this->_dboOwner->_arrValid) && $this->_dboOwner->_arrValid[$this->_strProperty] === FALSE;
 	}
 
 
