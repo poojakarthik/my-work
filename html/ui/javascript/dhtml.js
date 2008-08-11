@@ -289,7 +289,7 @@ function dragStart(event, id) {
   // popup width/height  + hardcoded border width * 2
   var popup_width = dragObj.elNode.style.width.substr(0, dragObj.elNode.style.width.length - 2) * 1 + 2;
   var popup_height = dragObj.elNode.clientHeight + 2;
-  
+
   // not used
   // HACK HACK HACK This is hardcoded to be the height of the top bar of the popup (18px currently) + a little bit
   var header_height = 25; 
@@ -306,7 +306,6 @@ function dragStart(event, id) {
     x = event.clientX + window.scrollX;
     y = event.clientY + window.scrollY;
   }
-	
 	
   // Save starting positions of cursor and element.
   dragObj.cursorStartX = x;
@@ -325,7 +324,7 @@ function dragStart(event, id) {
   }
   var intPageWidth = divPageBody.offsetWidth + divPageBody.offsetLeft;
   intPageWidth = Math.max(document.body.offsetWidth, intPageWidth);
-  
+ 
   // Set limits of movement
   dragObj.elNode.limits = Object();
   dragObj.elNode.limits.drag_horizontal = TRUE;
@@ -376,6 +375,7 @@ function dragGo(event) {
 	var drag_left = dragObj.elStartLeft + x - dragObj.cursorStartX;
 	var drag_top = dragObj.elStartTop  + y - dragObj.cursorStartY;
 	
+
 	if (!dragObj.elNode.limits)
 	{
 		dragObj.elNode.style.left = drag_left + "px";
@@ -388,13 +388,13 @@ function dragGo(event) {
 		{
 			if (dragObj.elNode.limits.drag_left && drag_left < dragObj.elNode.limits.drag_left)
 			{
-				drag_left = dragObj.elNode.limits.drag_left + "px";
+				drag_left = dragObj.elNode.limits.drag_left;
 			}
 			else if (dragObj.elNode.limits.drag_right && drag_left > dragObj.elNode.limits.drag_right)
 			{
 				drag_left = dragObj.elNode.limits.drag_right;
 			}
-			dragObj.elNode.style.left = drag_left;
+			dragObj.elNode.style.left = drag_left + "px";
 		}
 		
 		if(dragObj.elNode.limits.drag_vertical !== FALSE)
