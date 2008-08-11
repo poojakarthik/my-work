@@ -208,7 +208,7 @@
 			{
 				// Add the system note
 				$intEmployeeId		= $aemAuthenticatedEmployee->Pull('Id')->getValue();
-				$strServiceType		= GetConstantDescription($arrService['ServiceType'], "ServiceType");
+				$strServiceType		= GetConstantDescription($arrService['ServiceType'], "service_type");
 				$intAccountGroup	= $arrService['AccountGroup'];
 				$intAccount			= $arrService['Account'];
 				$strServiceFNN		= $arrService['FNN'];
