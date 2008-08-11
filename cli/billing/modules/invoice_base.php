@@ -113,12 +113,12 @@ abstract class BillingModuleInvoice
 		// Current Service Details
 		$arrService					= Array();
 		//$arrService['FNN']			= "Service.FNN";
-		$arrService['CostCentre']	= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END)";
-		$arrService['Indial100']	= "MAX(Service.Indial100)";
-		$arrService['ForceRender']	= "Service.ForceInvoiceRender";
-		$arrService['PlanCharge']	= "ServiceTotal.PlanCharge";
-		$arrService['RatePlan']		= "RatePlan.Name";
-		$arrService['InAdvance']	= "RatePlan.InAdvance";
+		$arrService['CostCentre']		= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END)";
+		$arrService['Indial100']		= "MAX(Service.Indial100)";
+		$arrService['ForceRender']		= "Service.ForceInvoiceRender";
+		$arrService['PlanCharge']		= "ServiceTotal.PlanCharge";
+		$arrService['RatePlan']			= "RatePlan.Name";
+		$arrService['InAdvance']		= "RatePlan.InAdvance";
 		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																	$arrService,
 																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND Service.Id = <CurrentId> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)",
@@ -148,7 +148,7 @@ abstract class BillingModuleInvoice
 																	"Account = <Account> AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
 		
 		$this->_selCustomerData				= new StatementSelect(	"Account LEFT JOIN Invoice ON Account.Id = Invoice.Account",
-																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup, COUNT(Invoice.Id) AS InvoiceCount",
+																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup, COUNT(Invoice.Id) AS InvoiceCount, BillingType",
 																	"Account.Id = <Account>",
 																	NULL,
 																	NULL,

@@ -204,6 +204,8 @@
 		$xmlBillExpress	= $this->_AddElement($xmlPayment, 'BillExpress');
 		$this->_AddElement($xmlBillExpress, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));		// FIXME
 		
+		$this->_AddAttribute($xmlPayment, 'DirectDebit', (in_array($arrCustomer['BillingType'], Array(BILLING_TYPE_CREDIT_CARD, BILLING_TYPE_DIRECT_DEBIT)) ? 1 : 0));
+		
 		//--------------------------------------------------------------------//
 		// Statement
 		//--------------------------------------------------------------------//
@@ -781,7 +783,7 @@
 				$arrItem['Time']			= date("H:i:s", strtotime($arrCDR['StartDatetime']));
 				$arrItem['CalledParty']		= $arrCDR['Destination'];
 				$arrItem['Description']		= $arrCDR['Description'];
-				$arrItem['KB']				= (int)$arrCDR['Units'];
+				$arrItem['Data']			= (int)$arrCDR['Units'];
 				$arrItem['Charge']			= number_format($arrCDR['Charge'], 2, '.', '');
 				break;
 			
