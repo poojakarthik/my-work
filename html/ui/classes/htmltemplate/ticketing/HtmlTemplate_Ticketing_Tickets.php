@@ -28,9 +28,10 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 		$currentUser = Ticketing_User::getCurrentUser();
 
-		$possibleActions = array(/*'View', */'Edit', 'Take');
+		$possibleActions = array(/*'View', */'Edit');
 		if ($currentUser->isAdminUser())
 		{
+			$possibleActions[] = 'Take';
 			$possibleActions[] = 'Assign';
 			$possibleActions[] = 'Delete';
 		}
@@ -336,7 +337,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			$permittedActions['View'] = TRUE;
 			$permittedActions['Edit'] = TRUE;
 
-			if (!$ticket->isAssigned() || ($user->isAdminUser() && !$ticket->isAssignedTo($user)))
+			if ($user->isAdminUser() && !$ticket->isAssignedTo($user))
 			{
 				$permittedActions['Take'] = TRUE;
 			}

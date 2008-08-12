@@ -501,7 +501,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			$permittedActions[] = 'view';
 			$permittedActions[] = 'edit';
 
-			if (!$ticket->isAssigned() || ($user->isAdminUser() && !$ticket->isAssignedTo($user)))
+			if ($user->isAdminUser() && !$ticket->isAssignedTo($user))
 			{
 				$permittedActions[] = 'take';
 			}
@@ -1044,6 +1044,170 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
+
+
+	public function Admin($subPath)
+	{
+		if (!Ticketing_User::currentUserIsTicketingAdminUser())
+		{
+			AuthenticatedUser()->InsufficientPrivilegeDie();
+		}
+
+		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
+
+		$config = Ticketing_Config::load();
+
+		$detailsToRender = array();
+		$detailsToRender['error'] = '';
+		$invalidValues = array();
+
+		// Need to check to see if we are editing general settings
+		if ($action == 'edit')
+		{
+			$detailsToRender['saved'] = FALSE;
+			if (array_key_exists('save', $_REQUEST))
+			{
+				// WIP :: Validate the submitted paths before saving
+				$strSourcePath = array_key_exists('sourcePath', $_REQUEST) ? trim($_REQUEST['sourcePath']) : NULL;
+				$strBackupPath = array_key_exists('backupPath', $_REQUEST) ? trim($_REQUEST['backupPath']) : NULL;
+				$strJunkPath = array_key_exists('junkPath', $_REQUEST) ? trim($_REQUEST['junkPath']) : NULL;
+
+				// MUST NOT BE BLANK AND MUST BE VALID
+				if (!$strSourcePath)
+				{
+					$invalidValues['sourcePath'] = 'You must specify a source directory.';
+				}
+				$config->setSourceDirectory($strSourcePath ? $strSourcePath : NULL);
+
+				// CAN BE BLANK BUT IF SET MUST BE VALID
+				$config->setBackupDirectory($strBackupPath ? $strBackupPath : NULL);
+
+				// CAN BE BLANK BUT IF SET MUST BE VALID
+				$config->setJunkDirectory($strJunkPath ? $strJunkPath : NULL);
+
+				if (!empty($invalidValues))
+				{
+					$detailsToRender['error'] = 'Please correct all highlighted fields.';
+					
+				}
+				else
+				{
+					$config->save();
+					$detailsToRender['saved'] = TRUE;
+					$action = 'save';
+				}
+			}
+		}
+
+		BreadCrumb()->EmployeeConsole();
+		BreadCrumb()->SetCurrentPage("Ticketing Administration");
+
+		// The admin interface allows the setting of the mail paths and settings per customer group
+		$detailsToRender['action'] = $action;
+		$detailsToRender['config'] = $config;
+		$detailsToRender['invalid_values'] = $invalidValues;
+		$this->LoadPage('ticketing_admin', HTML_CONTEXT_DEFAULT, $detailsToRender);
+	}
+
+
+	public function GroupAdmin($subPath)
+	{
+		if (!Ticketing_User::currentUserIsTicketingAdminUser())
+		{
+			AuthenticatedUser()->InsufficientPrivilegeDie();
+		}
+
+		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
+
+		if (is_numeric($action))
+		{
+			$_REQUEST['customerGroupId'] = $action;
+			$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
+		}
+
+		// Customer group id
+		$customerGroupId = array_key_exists('customerGroupId', $_REQUEST) ? $_REQUEST['customerGroupId'] : NULL;
+
+		// Check that the customer group id is valid
+		$customerGroup = $customerGroupId ? Customer_Group::getForId($customerGroupId) : NULL;
+
+		$detailsToRender = array();
+		$detailsToRender['error'] = '';
+		$invalidValues = array();
+
+		try 
+		{
+			// Return an error if there is no customer group
+			if (!$customerGroup)
+			{
+				throw new Exception('No customer group selected.');
+			}
+
+			// Need to check to see if we are editing general settings
+			$customerGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroup($customerGroup);
+
+			if ($action == 'edit')
+			{
+				// Check to see if we are editing and saving
+				// The details are: acknowledge_email_receipts, email_receipt_acknowledgement, default_email_id
+				if (array_key_exists('save', $_REQUEST))
+				{
+					$acknowledgeEmailReceipts = array_key_exists('acknowledgeEmailReceipts', $_REQUEST) ? intval($_REQUEST['acknowledgeEmailReceipts']) : FALSE;
+					$customerGroupConfig->setAcknowledgeEmailReceipts($acknowledgeEmailReceipts);
+
+					if ($customerGroupConfig->acknowledgeEmailReceipts())
+					{
+						$emailReceiptAcknowledgement = array_key_exists('emailReceiptAcknowledgement', $_REQUEST) ? trim($_REQUEST['emailReceiptAcknowledgement']) : NULL;
+						$customerGroupConfig->emailReceiptAcknowledgement = $emailReceiptAcknowledgement;
+						if (!$emailReceiptAcknowledgement)
+						{
+							$invalidValues['emailReceiptAcknowledgement'] = 'To acknowledge email recipts you must specify an acknowledgement email.';
+						}
+					}
+
+					$defaultEmailId = array_key_exists('defaultEmailId', $_REQUEST) ? intval($_REQUEST['defaultEmailId']) : 0;
+					$defaultEmail = $defaultEmailId ? Ticketing_Customer_Group_Email::getForId($defaultEmailId) : NULL;
+					if (!$defaultEmail)
+					{
+						$invalidValues['defaultEmailId'] = 'You must specify a default email address to use for this customer group.';
+					}
+					else
+					{
+						$customerGroupConfig->defaultEmailId = $defaultEmail->id;
+					}
+
+					if (!empty($invalidValues))
+					{
+						$detailsToRender['error'] = implode(" \n", $invalidValues);
+					}
+					else
+					{
+						$customerGroupConfig->save();
+						$detailsToRender['saved'] = TRUE;
+						$action = 'save';
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			$action = 'error';
+			$detailsToRender['error'] .= ($detailsToRender['error'] ? ': ' : '') . $e->getMessage();
+		}
+
+		BreadCrumb()->EmployeeConsole();
+		BreadCrumb()->TicketingAdmin();
+		BreadCrumb()->SetCurrentPage("Customer Group: " . $customerGroup->name);
+
+		// The admin interface allows the setting of the mail paths and settings per customer group
+		$detailsToRender['action'] = $action;
+		$detailsToRender['customer_group'] = $customerGroup;
+		$detailsToRender['customer_group_config'] = $customerGroupConfig;
+		$detailsToRender['invalid_values'] = $invalidValues;
+		$this->LoadPage('ticketing_group_admin', HTML_CONTEXT_DEFAULT, $detailsToRender);
+	}
+
+
 }
 
 ?>
