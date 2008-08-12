@@ -334,7 +334,8 @@ function dragStart(event, id) {
   // dragObj.elNode.limits.drag_right = document.body.offsetWidth - popup_width;
   dragObj.elNode.limits.drag_right = intPageWidth - popup_width;
   // dragObj.elNode.limits.drag_bottom = document.body.scrollTop + window.innerHeight - header_height; 
-  dragObj.elNode.limits.drag_bottom = Math.max(document.body.offsetHeight, window.innerHeight) - popup_height;
+  //dragObj.elNode.limits.drag_bottom = Math.max(document.body.offsetHeight, window.innerHeight) - popup_height;
+  dragObj.elNode.limits.drag_bottom = (window.innerHeight + window.scrollMaxY) - popup_height;
   
   // Update element's z-index.
   dragObj.elNode.style.zIndex = ++dragObj.zIndex;

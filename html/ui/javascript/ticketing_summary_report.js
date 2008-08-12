@@ -44,14 +44,6 @@ function FlexTicketingSummaryReportClass()
 {
 	// Inputs
 	this.objInputs = {};
-	/* Deprecated
-	this.elmOwners		= null;
-	this.elmCategories	= null;
-	this.elmStatuses	= null;
-	this.elmStartDate	= null;
-	this.elmEndDate		= null;
-	this.elmRenderMode	= null;
-	*/
 	
 	//------------------------------------------------------------------------//
 	// Initialise

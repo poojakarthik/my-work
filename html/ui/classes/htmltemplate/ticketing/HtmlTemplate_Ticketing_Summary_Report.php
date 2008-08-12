@@ -59,19 +59,19 @@ echo "
 			<tr class='alt'>
 				<td class='title'>Owners: </td>
 				<td>
-					<select id='Owners' name='Owners' size='8' multiple='multiple' class='Required'>$strOwnerOptions</select>
+					<select id='Owners' name='Owners' size='8' multiple='multiple' class='required'>$strOwnerOptions</select>
 				</td>
 			</tr>
 			<tr class='alt'>
 				<td class='title'>Categories: </td>
 				<td>
-					<select id='Categories' name='Categories' size='8' multiple='multiple' class='Required'>$strCategoryOptions</select>
+					<select id='Categories' name='Categories' size='8' multiple='multiple' class='required'>$strCategoryOptions</select>
 				</td>
 			</tr>
 			<tr class='alt'>
 				<td class='title'>Status: </td>
 				<td>
-					<select id='Statuses' name='Statuses' size='8' multiple='multiple' class='Required'>$strStatusOptions</select>
+					<select id='Statuses' name='Statuses' size='8' multiple='multiple' class='required'>$strStatusOptions</select>
 				</td>
 			</tr>
 			<tr class='alt'>

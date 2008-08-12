@@ -212,7 +212,8 @@ function VixenPopupClass()
 				
 				intScroll = document.body.scrollTop;
 
-				elmOverlay.style.height	= Math.max(document.body.scrollHeight, window.innerHeight) + "px";
+				//elmOverlay.style.height	= Math.max(document.body.scrollHeight, window.innerHeight) + "px";
+				elmOverlay.style.height	= (window.innerHeight + window.scrollMaxY) + "px";
 				
 				// Find the width of the actual page by using the PageBody div, and adding its own width
 				// to the offset from the left side of the page (needs to include margins?)
@@ -290,8 +291,8 @@ function VixenPopupClass()
 		if (mixPosition == "centre")
 		{
 			// center the popup
-			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft) + "px";
-			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop) + "px";
+			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + window.scrollX) + "px";
+			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + window.scrollY) + "px";
 		}
 		else if (mixPosition == "[object MouseEvent]")
 		{
