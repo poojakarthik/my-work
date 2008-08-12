@@ -144,7 +144,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strName			= htmlspecialchars($arrRatePlan['Name'], ENT_QUOTES);
 			$strViewPlanHref	= Href()->ViewPlan($arrRatePlan['Id']);
 			$strNameCell		= "<a href='$strViewPlanHref' title='$strDescription'>$strName</a>";
-			$strServiceType		= htmlspecialchars(GetConstantDescription($arrRatePlan['service_type'], "ServiceType"), ENT_QUOTES);
+			$strServiceType		= htmlspecialchars(GetConstantDescription($arrRatePlan['ServiceType'], "service_type"), ENT_QUOTES);
 			$strCustomerGroup	= htmlspecialchars(GetConstantDescription($arrRatePlan['customer_group'], "CustomerGroup"), ENT_QUOTES);
 			$strStatusCell		= GetConstantDescription($arrRatePlan['Archived'], "RateStatus");
 			

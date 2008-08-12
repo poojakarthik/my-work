@@ -177,7 +177,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		echo "<div class='GroupedContent'>\n";
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		DBO()->Service->FNN->RenderOutput();	
-		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
+		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
 		
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{

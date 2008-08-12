@@ -1348,7 +1348,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strChangesNote .= "\nThe following services have been set to ". GetConstantDescription($intModifiedServicesNewStatus, "service_status") .":";
 				foreach ($arrModifiedServices as $arrService)
 				{
-					$strChangesNote .= "\n". GetConstantDescription($arrService['ServiceType'], "ServiceType") .": {$arrService['FNN']}";
+					$strChangesNote .= "\n". GetConstantDescription($arrService['ServiceType'], "service_type") .": {$arrService['FNN']}";
 				}
 			}
 			if (count($arrServicesFailedToProvision) > 0)
@@ -1357,7 +1357,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				$strChangesNote .= "\n\nProvisioning requests failed to be automatically generated for the following services:";
 				foreach ($arrServicesFailedToProvision as $arrService)
 				{
-					$strChangesNote .= "\n". GetConstantDescription($arrService['ServiceType'], "ServiceType") .": {$arrService['FNN']}";
+					$strChangesNote .= "\n". GetConstantDescription($arrService['ServiceType'], "service_type") .": {$arrService['FNN']}";
 				}
 			}
 			

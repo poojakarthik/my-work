@@ -252,7 +252,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 			
 			// Set up the values for the record
 			$intStartTime			= strtotime($arrCDR['StartDatetime']);
-			$arrCDR['ServiceType']	= GetConstantDescription($arrCDR['ServiceType'], "ServiceType");
+			$arrCDR['ServiceType']	= GetConstantDescription($arrCDR['ServiceType'], "service_type");
 			$arrCDR['Date']			= date("d/m/Y", $intStartTime);
 			$arrCDR['Time']			= date("H:i:s", $intStartTime);
 			$arrCDR['Duration']		= date("H:i:s", mktime(0, 0, $arrCDR['Units'], 0, 0, 0));

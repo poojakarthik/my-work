@@ -520,14 +520,14 @@ class AppTemplatePlan extends ApplicationTemplate
 			if (!DBO()->RatePlan->CarrierFullService->Value)
 			{
 				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
-				$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "ServiceType");
+				$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "service_type");
 				return "ERROR: $strServiceType requires Carrier Full Service to be declared";
 			}
 			// CarrierPreselection
 			if (!DBO()->RatePlan->CarrierPreselection->Value)
 			{
 				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
-				$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "ServiceType");
+				$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "service_type");
 				return "ERROR: $strServiceType requires Carrier Preselection to be declared";
 			}
 		}
@@ -552,7 +552,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		if ($selRatePlanName->Execute($arrWhere) > 0)
 		{
 			// The Name is already being used by another rate plan
-			$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "ServiceType");
+			$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "service_type");
 			$strCustomerGroup = GetConstantDescription(DBO()->RatePlan->customer_group->Value, "CustomerGroup");
 			DBO()->RatePlan->Name->SetToInvalid();
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
