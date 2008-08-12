@@ -36,7 +36,7 @@ abstract class Application_Handler extends ApplicationTemplate
 		}
 		if (!file_exists($file))
 		{
-			throw new Exception("Failed to find $strPageName template in " . TEMPLATE_BASE_DIR.(($this->_intTemplateMode == AJAX_MODE) ? "ajax_template" : "page_template") . ".");
+			throw new Exception("Failed to find $strPageName template ($file) in " . TEMPLATE_BASE_DIR.(($this->_intTemplateMode == AJAX_MODE) ? "ajax_template" : "page_template") . ".");
 		}
 		if ($this->_intTemplateMode == AJAX_MODE)
 		{

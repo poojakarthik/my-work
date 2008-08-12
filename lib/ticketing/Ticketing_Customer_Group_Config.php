@@ -23,6 +23,12 @@ class Ticketing_Customer_Group_Config
 		return $this->acknowledgeEmailReceipts === ACTIVE_STATUS_ACTIVE;
 	}
 
+	public function setAcknowledgeEmailReceipts($bolSendAcknowledgements)
+	{
+		$this->_saved = $this->_saved && ($this->acknowledgeEmailReceipts() ===  $bolSendAcknowledgements);
+		$this->acknowledgeEmailReceipts = $bolSendAcknowledgements ? ACTIVE_STATUS_ACTIVE : ACTIVE_STATUS_INACTIVE;
+	}
+
 	private static function getColumns()
 	{
 		return array(
@@ -32,6 +38,71 @@ class Ticketing_Customer_Group_Config
 			'emailReceiptAcknowledgement' => 'email_receipt_acknowledgement',
 			'defaultEmailId' => 'default_email_id',
 		);
+	}
+
+	protected function getValuesToSave()
+	{
+		$arrColumns = self::getColumns();
+		$arrValues = array();
+		foreach ($arrColumns as $strColumn)
+		{
+			if ($strColumn == 'id') 
+			{
+				continue;
+			}
+			$arrValues[$strColumn] = $this->{$strColumn};
+		}
+		return $arrValues;
+	}
+
+	public function save()
+	{
+		if ($this->_saved)
+		{
+			// Nothing to save
+			return TRUE;
+		}
+		$arrValues = $this->getValuesToSave();
+
+		// No id means that this must be a new record
+		if (!$this->id)
+		{
+			$statement = new StatementInsert(strtolower(__CLASS__), $arrValues);
+		}
+		// This must be an update
+		else
+		{
+			$arrValues['Id'] = $this->id;
+			$statement = new StatementUpdateById(strtolower(__CLASS__), $arrValues);
+		}
+		if (($outcome = $statement->Execute($arrValues)) === FALSE)
+		{
+			throw new Exception('Failed to save customer group email details: ' . $statement->Error());
+		}
+		if (!$this->id)
+		{
+			$this->id = $outcome;
+		}
+		$this->_saved = TRUE;
+
+		return TRUE;
+	}
+
+	public static function getForCustomerGroup($customerGroup)
+	{
+		if (!$customerGroup)
+		{
+			return NULL;
+		}
+		$instance = self::getForCustomerGroupId($customerGroup->id);
+		if (!$instance)
+		{
+			$instance = new Ticketing_Customer_Group_Config();
+			$instance->customerGroupId = $customerGroup->id;
+			$instance->acknowledgeEmailReceipts = ACTIVE_STATUS_INACTIVE;
+			$instance->_saved = FALSE;
+		}
+		return $instance;
 	}
 
 	private static function getFor($where, $arrWhere)

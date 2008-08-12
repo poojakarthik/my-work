@@ -545,7 +545,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								$invalid = array_key_exists('details', $invalidValues) ? 'invalid' : '';
 								if (array_search('details', $editableValues) !== FALSE)
 								{
-									?><textarea type="text" id="details" name="details" class="<?=$invalid?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($correspondence->details)?></textarea><?php
+									?><textarea id="details" name="details" class="<?=$invalid?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($correspondence->details)?></textarea><?php
 								}
 								else
 								{

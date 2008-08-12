@@ -112,8 +112,31 @@ class MenuItems
 	
 
 	//------------------------------------------------------------------------//
-	// TicketingConsole
+	// TicketingAdmin
 	//------------------------------------------------------------------------//
+	/**
+	//------------------------------------------------------------------------//
+	// TicketingAdmin
+	//------------------------------------------------------------------------//
+	/**
+	 * TicketingConsole()
+	 *
+	 * Compiles the Href to be executed when the TicketingConsole menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the TicketingConsole menu item is clicked
+	 * 
+	 * @return	string				Href to be executed when the TicketingConsole menu item is clicked
+	 *
+	 * @method
+	 */
+	function TicketingAdmin()
+	{
+		$this->strContextMenuLabel = "Ticketing Administration";
+		$this->strLabel = "Ticketing Administration";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Admin";
+	}
+	
+
 	/**
 	 * TicketingConsole()
 	 *

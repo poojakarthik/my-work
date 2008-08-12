@@ -121,6 +121,11 @@ class Ticketing_User
 		return self::getCurrentUser()->isUser();
 	}
 
+	public static function currentUserIsTicketingAdminUser()
+	{
+		return self::getCurrentUser()->isAdminUser();
+	}
+
 	public static function getForEmployeeId($intEmployeeId)
 	{
 		$user = self::getFor("employee_id = <EmployeeId>", array("EmployeeId" => $intEmployeeId));

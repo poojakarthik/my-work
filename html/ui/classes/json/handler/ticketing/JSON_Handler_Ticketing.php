@@ -4,6 +4,11 @@ class JSON_Handler_Ticketing extends JSON_Handler
 {
 	public function validateAccount($accountId, $ticketId=NULL)
 	{
+		if (!Ticketing_User::currentUserIsTicketingUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+
 		$response = array();
 		$response['isValid'] = FALSE;
 
@@ -29,10 +34,15 @@ class JSON_Handler_Ticketing extends JSON_Handler
 
 		return $response;
 	}
-	
+
 	// This will run the report, 
 	public function buildSummaryReport($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses, $strEarliestTime, $strLatestTime, $strRenderMode)
 	{
+		if (!Ticketing_User::currentUserIsTicketingUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+
 		$arrErrors = array();
 		// Do preliminary validation of the Time constraints
 		$arrTimeConstraints = array("EarliestTime"	=> $strEarliestTime,
@@ -51,7 +61,6 @@ class JSON_Handler_Ticketing extends JSON_Handler
 				if (preg_match('/^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2} (0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/', $strTime))
 				{
 					// It is valid, convert it to ISO DateTime format
-					
 					$arrDateTimeParts = explode(" ", $strTime);
 					$arrDateParts	= explode("/", $arrDateTimeParts[1]);
 					$strTimePart	= $arrDateTimeParts[0];
@@ -113,11 +122,21 @@ class JSON_Handler_Ticketing extends JSON_Handler
 
 	public function getContactDetails($contactId)
 	{
+		if (!Ticketing_User::currentUserIsTicketingUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+
 		return $this->contactProps(Ticketing_Contact::getForId($contactId));
 	}
 
 	public function setContactDetails($contactId, $title, $firstName, $lastName, $jobTitle, $email, $fax, $mobile, $phone, $accountId)
 	{
+		if (!Ticketing_User::currentUserIsTicketingUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+
 		$properties = array();
 		if (trim($contactId)) 	$properties['id'] = $contactId;
 		if (trim($title)) 		$properties['title'] = $title;
@@ -162,6 +181,75 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		return $props;
 	}
 
+	public function deleteGroupEmail($intGroupEmailId)
+	{
+		if (!Ticketing_User::currentUserIsTicketingAdminUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+
+		$objGroupEmail = Ticketing_Customer_Group_Email::getForId($intGroupEmailId);
+		if (!$objGroupEmail)
+		{
+			throw new Exception("No such customer group email exists. It may have been deleted by another user.");
+		}
+		$objGroupEmail->delete();
+		return $intGroupEmailId;
+	}
+
+	public function saveGroupEmail($intGroupEmailId=NULL, $customerGroupId, $strEmail, $strName, $bolAutoReply)
+	{
+		if (!Ticketing_User::currentUserIsTicketingAdminUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+
+		$strEmail = strtolower(trim($strEmail));
+		$strName = trim($strName);
+		$bolAutoReply = $bolAutoReply ? TRUE : FALSE;
+		if (!EmailAddressValid($strEmail))
+		{
+			return array('INVALID' => "The email address '$strEmail' is invalid.");
+		}
+
+		// Check that the email address is not already in use
+		$existing = Ticketing_Customer_Group_Email::getForEmailAddress($strEmail);
+		if ($existing && $existing->id != $intGroupEmailId)
+		{
+			return array('INVALID' => "The email address '$strEmail' is already in use.");
+		}
+
+		// If we are editing
+		if ($intGroupEmailId)
+		{
+			$email = Ticketing_Customer_Group_Email::getForId($intGroupEmailId);
+			if (!$email)
+			{
+				return array('INVALID' => "The group email address specified ($intGroupEmailId) could not be found.");
+			}
+			$email->email = $strEmail;
+			$email->name = $strName;
+			$email->setAutoReply($bolAutoReply);
+		}
+		else
+		{
+			$customerGroup = Customer_Group::getForId($customerGroupId);
+			if (!$customerGroup)
+			{
+				return array('ERROR' => "The specified customer group does not exist.");
+			}
+			$email = Ticketing_Customer_Group_Email::createForDetails($customerGroupId, $strEmail, $strName, $bolAutoReply);
+		}
+		$email->save();
+		$savedValues = array(
+			'id' => $email->id,
+			'name' => $email->name,
+			'email' => $email->email,
+			'autoReply' => $email->autoReply(),
+			'new' => ($intGroupEmailId ? FALSE : TRUE),
+		);
+		return $savedValues;
+	}
 }
 
 ?>
