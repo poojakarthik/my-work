@@ -254,13 +254,14 @@
 		public function AddDirectDebit ($arrData)
 		{
 			$arrDirectDebit = Array (
-				'AccountGroup'	=> $this->Pull ('Id')->getValue (),
-				'BankName'		=> $arrData ['BankName'],
-				'BSB'			=> $arrData ['BSB'],
-				'AccountNumber' => $arrData ['AccountNumber'],
-				'AccountName'	=> $arrData ['AccountName'],
+				'AccountGroup'	=> $this->Pull('Id')->getValue (),
+				'BankName'		=> $arrData['BankName'],
+				'BSB'			=> $arrData['BSB'],
+				'AccountNumber' => $arrData['AccountNumber'],
+				'AccountName'	=> $arrData['AccountName'],
 				'Archived'		=> 0,
-				'created_on'	=> GetCurrentISODateTime()
+				'created_on'	=> GetCurrentISODateTime(),
+				'employee_id'	=> $arrData['employee_id']
 			);
 			
 			$insDirectDebit = new StatementInsert ('DirectDebit');
@@ -361,15 +362,16 @@
 			}
 			
 			$arrCreditCard = Array (
-				'AccountGroup'	=> $this->Pull ('Id')->getValue (),
-				'CardType'		=> $arrData ['CardType'],
-				'Name'			=> $arrData ['Name'],
-				'CardNumber'	=> Encrypt($arrData ['CardNumber']),
-				'ExpMonth'		=> $arrData ['ExpMonth'],
-				'ExpYear'		=> $arrData ['ExpYear'],
-				'CVV'			=> Encrypt($arrData ['CVV']),
+				'AccountGroup'	=> $this->Pull('Id')->getValue (),
+				'CardType'		=> $arrData['CardType'],
+				'Name'			=> $arrData['Name'],
+				'CardNumber'	=> Encrypt($arrData['CardNumber']),
+				'ExpMonth'		=> $arrData['ExpMonth'],
+				'ExpYear'		=> $arrData['ExpYear'],
+				'CVV'			=> Encrypt($arrData['CVV']),
 				'Archived'		=> 0,
-				'created_on'	=> GetCurrentISODateTime()
+				'created_on'	=> GetCurrentISODateTime(),
+				'employee_id'	=> $arrData['employee_id']
 			);
 			
 			$insCreditCard = new StatementInsert ('CreditCard');

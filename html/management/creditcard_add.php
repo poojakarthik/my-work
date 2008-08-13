@@ -100,7 +100,8 @@
 					'CardNumber'		=> $_POST ['CreditCard']['CardNumber'],
 					'ExpMonth'			=> $_POST ['CreditCard']['ExpMonth'],
 					'ExpYear'			=> $_POST ['CreditCard']['ExpYear'],
-					'CVV'				=> $_POST ['CreditCard']['CVV']
+					'CVV'				=> $_POST ['CreditCard']['CVV'],
+					'employee_id'		=> $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue()
 				)
 			);
 			

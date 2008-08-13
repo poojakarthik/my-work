@@ -73,7 +73,8 @@
 					"BankName"			=> $_POST ['DirectDebit']['BankName'],
 					"BSB"				=> $_POST ['DirectDebit']['BSB'],
 					"AccountNumber"		=> $_POST ['DirectDebit']['AccountNumber'],
-					"AccountName"		=> $_POST ['DirectDebit']['AccountName']
+					"AccountName"		=> $_POST ['DirectDebit']['AccountName'],
+					"employee_id"		=> $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue()
 				)
 			);
 			
