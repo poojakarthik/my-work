@@ -42,21 +42,24 @@ class CarrierModule
 	 *
 	 * Constructor
 	 * 
-	 * @param	integer		$intModuleType			CarrierModule type
+	 * @param	integer		$intCarrier						Carrier to load this Module for
+	 * @param	integer		$intModuleType					CarrierModule type
+	 * @param	integer		$intCustomerGroup	[optional]	CustomerGroup to load this Module for (default: NULL)
 	 * 
-	 * @return	ImportBase
+	 * @return	CarrierModule
 	 *
 	 * @method
 	 */
- 	function __construct($intCarrier, $intModuleType)
+ 	function __construct($intCarrier, $intModuleType, $intCustomerGroup = NULL)
  	{
  		// Defaults
- 		$this->_arrModuleConfig		= Array();
- 		$this->_intModuleType		= $intModuleType;
- 		$this->_intModuleCarrier	= $intCarrier;
+ 		$this->_arrModuleConfig			= Array();
+ 		$this->_intModuleType			= $intModuleType;
+ 		$this->_intModuleCarrier		= $intCarrier;
+ 		$this->_intModuleCustomerGroup	= $intCustomerGroup;
  		
  		// Statements
-		$this->_selCarrierModule	= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = <Type>");
+		$this->_selCarrierModule	= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = <Type> AND customer_group = <CustomerGroup>");
 		$this->_selModuleConfig		= new StatementSelect("CarrierModuleConfig", "*", "CarrierModule = <Id>");
 		
 	 	$arrCols					= Array();
@@ -66,7 +69,6 @@ class CarrierModule
  		$arrCols	= Array();
  		$arrCols['LastSentOn']		= new MySQLFunction("NOW()");
  		$this->_ubiCarrierModule	= new StatementUpdateById("CarrierModule", $arrCols);
- 		
  		
  		// Load Config
  		$this->LoadModuleConfig();
@@ -242,9 +244,10 @@ class CarrierModule
 	 function LoadModuleConfig()
 	 {
 	 	$arrWhere = Array();
-	 	$arrWhere['Carrier']	= $this->_intModuleCarrier;
-	 	$arrWhere['Module']		= get_class($this);
-	 	$arrWhere['Type']		= $this->_intModuleType;
+	 	$arrWhere['Carrier']		= $this->_intModuleCarrier;
+	 	$arrWhere['Module']			= get_class($this);
+	 	$arrWhere['Type']			= $this->_intModuleType;
+	 	$arrWhere['CustomerGroup']	= $this->_intModuleCustomerGroup;
 	 	if ($this->_selCarrierModule->Execute($arrWhere))
 	 	{
 	 		$arrModule	= $this->_selCarrierModule->Fetch();
@@ -395,6 +398,7 @@ class CarrierModule
 	 	$arrWhere['Carrier']			= $intCarrier;
 	 	$arrWhere['Module']				= get_class($this);
 	 	$arrWhere['Type']				= $this->_intModuleType;
+	 	$arrWhere['CustomerGroup']		= $this->_intModuleCustomerGroup;
 	 	if (!$this->_selCarrierModule->Execute($arrWhere))
 	 	{
 			// Insert the CarrierModule data
@@ -408,6 +412,7 @@ class CarrierModule
 		 	$arrCarrierModule['Frequency']			= $this->_intFrequency;
 		 	$arrCarrierModule['LastSentOn']			= '0000-00-00 00:00:00';
 		 	$arrCarrierModule['EarliestDelivery']	= $this->_intEarliestDelivery;
+		 	$arrCarrierModule['customer_group']		= $this->_intModuleCustomerGroup;
 	 		if (!$intCarrierModule = $insCarrierModule->Execute($arrCarrierModule))
 	 		{
 	 			return "MySQL Error: ".$insCarrierModule->Error();
@@ -542,6 +547,25 @@ class CarrierModule
 	 public function GetCarrier()
 	 {
 	 	return $this->_intModuleCarrier;
+	 }
+	 
+ 	//------------------------------------------------------------------------//
+	// GetCustomerGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * GetCustomerGroup()
+	 *
+	 * Returns the CustomerGroup that is implementing this Module
+	 * 
+	 * Returns the CustomerGroup that is implementing this Module
+	 *  
+	 * @return	integer								int: CustomerGroup; NULL: Available to all CustomerGroups
+	 *
+	 * @method
+	 */
+	 public function GetCustomerGroup()
+	 {
+	 	return $this->_intModuleCustomerGroup;
 	 }
 }
 
