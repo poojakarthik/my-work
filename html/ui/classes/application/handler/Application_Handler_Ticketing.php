@@ -910,6 +910,19 @@ class Application_Handler_Ticketing extends Application_Handler
 		exit;
 	}
 
+
+	public function AttachmentTypes($subPath)
+	{
+		if (!Ticketing_User::currentUserIsTicketingAdminUser())
+		{
+			AuthenticatedUser()->InsufficientPrivilegeDie();
+		}
+
+		$detailsToRender = array();
+		$this->LoadPage('ticketing_attachment_types', HTML_CONTEXT_DEFAULT, $detailsToRender);
+	}
+
+
 	// Manages the Ticketing Summary Report functionality
 	public function SummaryReport($subPath)
 	{
@@ -1014,6 +1027,11 @@ class Application_Handler_Ticketing extends Application_Handler
 
 	public function QuickSearch($subPath)
 	{
+		if (!Ticketing_User::currentUserIsTicketingUser())
+		{
+			AuthenticatedUser()->InsufficientPrivilegeDie();
+		}
+
 		$for = trim($_REQUEST['for']);
 		$isTicketNumber = FALSE;
 		if (preg_match("/^T[0-9\t ]*[0-9]+[0-9\t ]*Z\$/i", $for))

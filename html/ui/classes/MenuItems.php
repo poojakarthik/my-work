@@ -137,6 +137,32 @@ class MenuItems
 	}
 	
 
+	//------------------------------------------------------------------------//
+	// TicketingAttachmentTypes
+	//------------------------------------------------------------------------//
+	/**
+	//------------------------------------------------------------------------//
+	// TicketingAttachmentTypes
+	//------------------------------------------------------------------------//
+	/**
+	 * TicketingAttachmentTypes()
+	 *
+	 * Compiles the Href to be executed when the TicketingAttachmentTypes menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the TicketingAttachmentTypes menu item is clicked
+	 * 
+	 * @return	string				Href to be executed when the TicketingAttachmentTypes menu item is clicked
+	 *
+	 * @method
+	 */
+	function TicketingAttachmentTypes()
+	{
+		$this->strContextMenuLabel = "Ticketing Attachment Types";
+		$this->strLabel = "Ticketing Attachment Types";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/AttachmentTypes";
+	}
+	
+
 	/**
 	 * TicketingConsole()
 	 *

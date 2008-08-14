@@ -265,6 +265,65 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		$attachment->setBlacklistOverride($bolOverride);
 		return array('id' => $attachment->id, 'allowOverride' => ($attachment->allowBlacklistOverride() ? TRUE : FALSE));
 	}
+
+	public function saveTicketingAttachmentType($attachmentTypeId, $extension, $mimeType, $blacklistStatusId)
+	{
+		if (!Ticketing_User::currentUserIsTicketingAdminUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+
+		$attachmentTypeId = $attachmentTypeId ? intval($attachmentTypeId) : NULL;
+		$extension = preg_replace("/^\.+/", '', strtolower(trim($extension)));
+
+		if (!$extension)
+		{
+			return array('INVALID' => "You must specify a file extension.");
+		}
+
+		$mimeType = trim($mimeType);
+		if (!preg_match("/^[^\/]+\/[^\/]+$/", $mimeType))
+		{
+			throw new Exception("You must enter a valid mime type.");
+		}
+
+		$blacklistStatus = Ticketing_Attachment_Blacklist_Status::getForId(intval($blacklistStatusId));
+		if (!$blacklistStatus)
+		{
+			throw new Exception("You must speciify a valid blacklist status.");
+		}
+
+		$type = Ticketing_Attachment_Type::getForExtension($extension);
+		if ($type && (!$attachmentTypeId || $attachmentTypeId != $type->id))
+		{
+			return array('INVALID' => "File extension '$extension' already exists.");
+		}
+
+		if ($attachmentTypeId)
+		{
+			$type = Ticketing_Attachment_Type::getForId(intval($attachmentTypeId));
+			if (!$type)
+			{
+				throw new Exception('Attachment type not found for id ' . $attachmentTypeId);
+			}
+			$type->extension = $extension;
+			$type->mimeType = $mimeType;
+			$type->setBlacklistStatus($blacklistStatus);
+			$type->save();
+		}
+		else
+		{
+			$type = Ticketing_Attachment_Type::getForExtensionAndMimeType($extension, $mimeType, $blacklistStatus);
+		}
+		return array(
+			'id' => $type->id,
+			'extension' => $type->extension,
+			'mimeType' => $type->mimeType,
+			'statusName' => $blacklistStatus->name,
+			'className' => $blacklistStatus->cssName,
+			'new' => ($attachmentTypeId ? FALSE : TRUE)
+		);
+	}
 }
 
 ?>

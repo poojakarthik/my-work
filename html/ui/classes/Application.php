@@ -61,6 +61,12 @@ class Application
 				$arrArgs = array(0 => $arrArgs);
 			}
 
+			// Check that the function exists
+			if (!method_exists($this->objJsonHandler, $strHandlerMethod))
+			{
+				throw new Exception ('The requested function is not supported: ' . $strHandlerName . '::' . $strHandlerMethod);
+			}
+
 			// Run the handler
 			$response = call_user_func_array(array(0 => $this->objJsonHandler, 1 => $strHandlerMethod), $arrArgs);
 		}
@@ -122,6 +128,7 @@ class Application
 		{
 			ContextMenu()->Ticketing->Reports->TicketingSummaryReport();
 			ContextMenu()->Ticketing->Administration->TicketingAdmin();
+			ContextMenu()->Ticketing->Administration->TicketingAttachmentTypes();
 		}
 		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
@@ -245,6 +252,7 @@ class Application
 		{
 			ContextMenu()->Ticketing->Reports->TicketingSummaryReport();
 			ContextMenu()->Ticketing->Administration->TicketingAdmin();
+			ContextMenu()->Ticketing->Administration->TicketingAttachmentTypes();
 		}
 		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))

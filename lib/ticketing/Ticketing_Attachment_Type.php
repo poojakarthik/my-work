@@ -48,6 +48,42 @@ class Ticketing_Attachment_Type
 		$this->_saved = FALSE;
 	}
 
+	public function getBlacklistStatus()
+	{
+		return Ticketing_Attachment_Blacklist_Status::getForId($this->blacklistStatusId);
+	}
+
+	public function setBlacklistStatus(Ticketing_Attachment_Blacklist_Status $blacklistStatus)
+	{
+		$this->blacklistStatusId = $blacklistStatus->id;
+		$this->_saved = false;
+	}
+
+	public static function getColumnNames()
+	{
+		return array(
+			'id',
+			'extension',
+			'mime_type',
+			'blacklist_status_id',
+		);
+	}
+
+	protected function getValuesToSave()
+	{
+		$arrColumns = self::getColumns();
+		$arrValues = array();
+		foreach ($arrColumns as $strColumn)
+		{
+			if ($strColumn == 'id') 
+			{
+				continue;
+			}
+			$arrValues[$strColumn] = $this->{$strColumn};
+		}
+		return $arrValues;
+	}
+
 	public function save()
 	{
 		if ($this->_saved)
@@ -55,11 +91,8 @@ class Ticketing_Attachment_Type
 			// Nothing to save
 			return TRUE;
 		}
-		$arrValues = array(
-			'extension' => $this->extension, 
-			'mime_type' => $this->mimeType, 
-			'blacklist_status_id' => $this->blacklistStatusId, 
-		);
+		$arrValues = $this->getValuesToSave();
+
 		// No id means that this must be a new record
 		if (!$this->id)
 		{
@@ -68,8 +101,7 @@ class Ticketing_Attachment_Type
 		// This must be an update
 		else
 		{
-			
-			$arrValues['id'] = $this->id;
+			$arrValues['Id'] = $this->id;
 			$statement = new StatementUpdateById('ticketing_attachment_type', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
@@ -89,20 +121,28 @@ class Ticketing_Attachment_Type
 		return self::getFor('id = <TYPE_ID>', array('TYPE_ID' => $id));
 	}
 
-	public static function getForExtensionAndMimeType($strExtension, $strMimeType)
+	public static function getForExtension($strExtension)
 	{
-		$objType = self::getFor('extension = <Extension>', array('Extension' => $strExtension));
+		return self::getFor('extension = <Extension>', array('Extension' => $strExtension));
+	}
+
+	public static function getForExtensionAndMimeType($strExtension, $strMimeType, $blacklistStatus=NULL)
+	{
+		$objType = self::getForExtension($strExtension);
 		if (!$objType)
 		{
 			$objType = new Ticketing_Attachment_Type();
 			$objType->extension = $strExtension;
 			$objType->mimeType = $strMimeType;
 			// Default the attachment type to being grey-listed.
-			$objType->blacklistStatusId = TICKETING_ATTACHMENT_BLACKLIST_STATUS_GREY;
+			$objType->blacklistStatusId = $blacklistStatus ? $blacklistStatus->id : TICKETING_ATTACHMENT_BLACKLIST_STATUS_GREY;
 			$objType->save();
 
 			// Send an email to ybs to inform of the newly created attachment type, so that they may blacklist if necessary
-			self::sendEmailNotification($objType);
+			if (!$blacklistStatus)
+			{
+				self::sendEmailNotification($objType);
+			}
 		}
 		return $objType;
 	}
@@ -114,6 +154,10 @@ class Ticketing_Attachment_Type
 
 	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
 	{
+		if (!$strSort || empty($strSort))
+		{
+			$strSort = 'extension ASC';
+		}
 		// Note: Email address should be unique, so only fetch the first record
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 
@@ -141,6 +185,10 @@ class Ticketing_Attachment_Type
 		return $arrInstances;
 	}
 
+	public static function listAll()
+	{
+		return self::getFor('', array(), TRUE);
+	}
 
 	public function sendEmailNotification($objType)
 	{
