@@ -19,7 +19,7 @@ if (is_int(stripos($argv[1], '?')))
 $intCarrier		= (int)$argv[1];
 $strClassName	= trim($argv[2]);
 
-if (!GetConstantName($intCarrier, 'Carrier'))
+if (!GetConstantName($intCarrier, 'carrier'))
 {
 	CliEcho("ERROR: '$intCarrier' is not a valid Carrier Id!\n");
 	die;

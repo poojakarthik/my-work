@@ -71,7 +71,7 @@
 	 */
  	function __construct($intCarrier)
  	{
- 		parent::__construct($intCarrier, MODULE_TYPE_PROVISIONING_OUTPUT);
+ 		parent::__construct($intCarrier, MODULE_TYPE_PAYMENT_DIRECT_DEBIT);
  		
  		// Defaults
  		$this->intCarrier		= $intCarrier;
@@ -79,25 +79,13 @@
  		$this->_arrDefine		= Array();
  		$this->_arrFileContent	= Array();
  		$this->bolExported		= FALSE;
- 		$this->_intMinRequests	= 1;
+ 		$this->_intMinRequests	= 0;
  		$this->_strFileContents	= '';
  		
  		// Statements
- 		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "Id", "CarrierRef = <CarrierRef>");
- 		
- 		$this->_selRequestByFNN			= new StatementSelect("ProvisioningRequest", "Id", 
-												"FNN = <FNN> AND Type = <Type> AND Status = ".REQUEST_STATUS_PENDING);
- 		
- 		$this->_selSequenceNumber		= new StatementSelect(	"Config",
-																"Value",
-																"Application = ".APPLICATION_PROVISIONING .
-																	" AND Module = '" . get_class($this) . "'" .
-																	" AND Name = <Name>");
-		
- 		$this->_selServiceAddress		= new StatementSelect("ServiceAddress", "*", "Service = <Service>");
  		
  		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_OUTPUT);
- 	} 	
+ 	}
  	
  	
  	//------------------------------------------------------------------------//
@@ -119,7 +107,7 @@
 	 */
  	protected function _Render($bolRenderToFile = TRUE)
  	{
- 		$strDirectory		= FILES_BASE_PATH."export/provisioning/".strtolower(GetConstantDescription($this->_intModuleCarrier, 'Carrier'))."/".get_class($this)."/";
+ 		$strDirectory		= FILES_BASE_PATH."export/payment/directdebit/".strtolower(GetConstantDescription($this->_intModuleCarrier, 'carrier'))."/".get_class($this)."/";
  		$arrResult			= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
  		$this->_strFilePath	= $strDirectory . $arrResult['Line'];
  		
@@ -459,7 +447,7 @@
 						$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' with value '$strDate' is not a valid {$arrType[1]} date";
 						return Array('Pass' => FALSE, 'Line' => $strMessage);
  					}
- 					$mixValue	= $strDate; 					
+ 					$mixValue	= $strDate;
  					break;
  				
  				default:
@@ -535,7 +523,7 @@
 	 * @method
 	 */
 	 protected function _Deliver()
-	 {	 	
+	 {
 	 	// Debug
 	 	//return Array('Pass' => TRUE, 'Message' => "Delivery Bypassed");
 	 	
@@ -555,7 +543,7 @@
 	 			break;
 	 	}
 	 	
-	 	// Update the FileExport and ProvisioningRequest tables	 	
+	 	// Update the FileExport and ProvisioningRequest tables
 	 	$arrCols					= Array();
  		$arrCols['Id']				= $this->_intFileExport;
  		$arrCols['Status']			= ($mixResult['Pass']) ? FILE_DELIVERED : FILE_DELIVERY_FAILED;
@@ -962,223 +950,6 @@
  		$this->_intFileExport	= $intFileExport;
  		
  		return Array('Pass' => TRUE, 'Description' => "UpdateDB() Successful");
- 	}
- 	
- 	
- 	//------------------------------------------------------------------------//
-	// _CleanServiceAddress
-	//------------------------------------------------------------------------//
-	/**
-	 * _CleanServiceAddress()
-	 *
-	 * Finds the Service Address Details for a Service, and cleans them as necessary
-	 *
-	 * Finds the Service Address Details for a Service, and cleans them as necessary
-	 * 
-	 * @param	integer	$intService		The Service to grab Address Details for
-	 * 
-	 * @return	mixed					array	: Cleaned array of ServiceAddress info
-	 * 									string	: Error message
-	 *
-	 * @method
-	 */
- 	protected function _CleanServiceAddress($intService)
- 	{
- 		// Retrieve Service Address details
- 		if (!$this->_selServiceAddress->Execute(Array('Service' => $intService)))
- 		{
- 			// Error
- 			return "There is no Service Address information for this Service";
- 		}
- 		$arrAddress	= $this->_selServiceAddress->Fetch();
- 		
-		$arrClean = Array( 'Residential' => $arrAddress['Residential'] );
-		
-		// Check our mandatory fields
-		$arrClean['BillName']			= (!$arrAddress['BillName'])		? FALSE : $arrAddress['BillName'];
-		$arrClean['BillAddress1']		= (!$arrAddress['BillAddress1'])	? FALSE : $arrAddress['BillAddress1'];
-		$arrClean['BillLocality']		= (!$arrAddress['BillLocality'])	? FALSE : $arrAddress['BillLocality'];
-		$arrClean['BillPostcode']		= (!$arrAddress['BillPostcode'])	? FALSE : $arrAddress['BillPostcode'];
-		$arrClean['ServiceLocality']	= (!$arrAddress['ServiceLocality'])	? FALSE : $arrAddress['ServiceLocality'];
-		$arrClean['ServiceState']		= (!$arrAddress['ServiceState'])	? FALSE : $arrAddress['ServiceState'];
-		$arrClean['ServicePostcode']	= (!$arrAddress['ServicePostcode'])	? FALSE : $arrAddress['ServicePostcode'];
-		
-
-		if ($arrAddress['Residential'])
-		{
-			// Residential-Specific
-			// Mandatory
-			$arrClean['EndUserTitle']		= (!$arrAddress['EndUserTitle'])			? FALSE : $arrAddress['EndUserTitle'];
-			$arrClean['EndUserGivenName']	= (!$arrAddress['EndUserGivenName'])		? FALSE : $arrAddress['EndUserGivenName'];
-			$arrClean['EndUserFamilyName']	= (!$arrAddress['EndUserFamilyName'])		? FALSE : $arrAddress['EndUserFamilyName'];
-			$arrClean['DateOfBirth']		= ($arrAddress['DateOfBirth'] == "000000")	? FALSE : $arrAddress['DateOfBirth'];
-			
-			// Empty
-			$arrClean['EndUserCompanyName']	= "";
-			$arrClean['ABN']				= "";
-			$arrClean['TradingName']		= "";
-			
-			// Optional
-			$arrClean['Employer']			= $arrAddress['Employer'];
-			$arrClean['Occupation']			= $arrAddress['Occupation'];
-		}
-		else
-		{
-			// Business-Specific
-			// Mandatory
-			$arrClean['EndUserCompanyName']	= (!$arrAddress['EndUserCompanyName'])	? FALSE : $arrAddress['EndUserCompanyName'];
-			$arrClean['ABN']				= (!$arrAddress['ABN'])					? FALSE : $arrAddress['ABN'];
-			
-			// Empty
-			$arrClean['EndUserTitle']		= "";
-			$arrClean['EndUserGivenName']	= "";
-			$arrClean['EndUserFamilyName']	= "";
-			$arrClean['DateOfBirth']		= "";
-			$arrClean['Employer']			= "";
-			$arrClean['Occupation']			= "";
-			
-			// Optional
-			$arrClean['TradingName']		= $arrAddress['TradingName'];
-		}
-		
-		// ServiceAddress
-		switch ($arrAddress['ServiceAddressType'])
-		{
-			// LOTs
-			case "LOT":
-				// Mandatory
-				$arrClean['ServiceAddressTypeNumber']		= (!$arrAddress['ServiceAddressTypeNumber'])	? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
-				
-				// Dependent
-				if ($arrAddress['ServiceStreetName'])
-				{
-					$arrClean['ServiceStreetName']			= $arrAddress['ServiceStreetName'];
-					$arrClean['ServiceStreetTypeSuffix']	= $arrAddress['ServiceStreetTypeSuffix'];
-					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
-					$arrClean['ServiceStreetType']			= (!$arrAddress['ServiceStreetType'])			? FALSE : $arrAddress['ServiceStreetType'];
-				}
-				elseif ($arrAddress['ServicePropertyName'])
-				{
-					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
-				}
-				else
-				{
-					$arrClean['ServiceStreetName']			= FALSE;
-					$arrClean['ServicePropertyName']		= FALSE;
-				}
-				
-				// Empty
-				$arrClean['ServiceStreetNumberStart']		= "";
-				$arrClean['ServiceStreetNumberEnd']			= "";
-				$arrClean['ServiceStreetNumberSuffix']		= "";
-				
-				// Optional
-				$arrClean['ServiceAddressTypeSuffix']		= $arrAddress['ServiceAddressTypeSuffix'];
-				break;
-			
-			// Postal addresses
-			case "POB":
-			case "PO":
-			case "BAG":
-			case "CMA":
-			case "CMB":
-			case "PB":
-			case "GPO":
-			case "MS":
-			case "RMD":
-			case "RMB":
-			case "LB":
-			case "RMS":
-			case "RSD":
-				// Mandatory
-				$arrClean['ServiceAddressTypeNumber']		=	(!$arrAddress['ServiceAddressTypeNumber'])	? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
-				
-				// Empty
-				$arrClean['ServiceStreetNumberStart']		= "";
-				$arrClean['ServiceStreetNumberEnd']			= "";
-				$arrClean['ServiceStreetNumberSuffix']		= "";
-				$arrClean['ServiceStreetName']				= "";
-				$arrClean['ServiceStreetType']				= "";
-				$arrClean['ServiceStreetTypeSuffix']		= "";
-				$arrClean['ServicePropertyName']			= "";
-				
-				// Optional	
-				$arrClean['ServiceAddressTypeSuffix']		= $arrAddress['ServiceAddressTypeSuffix'];
-				break;
-			
-			// Standard addresses
-			default:
-				// Mandatory
-				
-				
-				// Dependent
-				if ($arrAddress['ServiceAddressType'])
-				{
-					$arrClean['ServiceAddressTypeNumber']	= (!$arrAddress['ServiceAddressTypeNumber'])	? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
-					$arrClean['ServiceAddressTypeSuffix']	= $arrAddress['ServiceAddressTypeSuffix'];
-				}
-				else
-				{
-					$arrClean['ServiceAddressTypeNumber']	= "";
-					$arrClean['ServiceAddressTypeSuffix']	= "";
-				}
-				
-				if ($arrAddress['ServiceStreetName'])
-				{
-					$arrClean['ServiceStreetName']			= $arrAddress['ServiceStreetName'];
-					$arrClean['ServiceStreetTypeSuffix']	= $arrAddress['ServiceStreetTypeSuffix'];
-					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
-					$arrClean['ServiceStreetType']			= (!$arrAddress['ServiceStreetType'])			? FALSE : $arrAddress['ServiceStreetType'];
-					
-					if ($arrAddress['ServiceStreetNumberStart'])
-					{
-						$arrClean['ServiceStreetNumberStart']	= trim($arrAddress['ServiceStreetNumberStart']);
-						$arrClean['ServiceStreetNumberEnd']		= (!$arrAddress['ServiceStreetNumberEnd'])	? "     " : trim($arrAddress['ServiceStreetNumberEnd']);
-						$arrClean['ServiceStreetNumberSuffix']	= $arrAddress['ServiceStreetNumberSuffix'];
-					}
-					else
-					{
-						$arrClean['ServiceStreetNumberStart']	= FALSE;
-					}
-				}
-				elseif ($arrAddress['ServicePropertyName'])
-				{
-					$arrClean['ServicePropertyName']			= $arrAddress['ServicePropertyName'];
-				}
-				else
-				{
-					$arrClean['ServiceStreetName']				= FALSE;
-					$arrClean['ServicePropertyName']			= FALSE;
-				}
-				break;
-		}
-		
-		// add optional fields
-		$arrClean['BillAddress2']	= $arrAddress['BillAddress2'];
-		
-		// Trim all fields
-		$strError	= "";
-		foreach ($arrClean as $strField=>$mixValue)
-		{
-			if ($mixValue === FALSE)
-			{
-				$strError .= "Mandatory Service Address Field '$strField' is Empty\n";
-			}
-			else
-			{
-				$arrClean[$strField]	= trim($mixValue);
-			}
-		}
-		
-		// Return Cleaned Array or Error Messages
-		if ($strError)
-		{
-			return trim($strError);
-		}
-		else
-		{
-			return $arrClean;
-		}
  	}
  	
  	

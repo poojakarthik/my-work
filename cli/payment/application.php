@@ -115,7 +115,7 @@
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$this->_arrPaymentModules[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
- 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrPaymentModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'carrier')." : ".$this->_arrPaymentModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
 		
  		// Load Direct Debit CarrierModules
@@ -862,20 +862,32 @@
 	 		}
 	 		
 	 		// Run the Module
-	 		$arrResult	= $modModule->Run();
-	 		if ($arrResult['Success'] === FALSE)
+	 		$arrRunResult	= $modModule->Run();
+	 		if ($arrRunResult['Success'] === TRUE)
 	 		{
-	 			// An Error Occurred
-	 			// TODO
-	 		}
-	 		elseif (is_int($arrResult['AccountGroupsCharged']))
-	 		{
-	 			// Success, Charges Sent
-	 			$intAccountGroupsCharged	+= $arrResult['AccountGroupsCharged'];
+		 		// Export/Send the module
+	 			$arrExportResult	= $modModule->Export();
+		 		if ($arrExportResult['Success'] === TRUE)
+		 		{
+			 		if (is_int($arrExportResult['AccountGroupsCharged']))
+			 		{
+			 			// Success, Charges Sent
+			 			$intAccountGroupsCharged	+= $arrExportResult['AccountGroupsCharged'];
+			 		}
+			 		elseif ($arrExportResult['Success'] === FALSE)
+			 		{
+			 			
+			 		}
+			 		else
+			 		{
+			 			// Success, no Charges Sent (aka Failed for a sane reason)
+			 			// TODO
+			 		}
+		 		}
 	 		}
 	 		else
 	 		{
-	 			// Success, no Charges Sent (aka Failed for a sane reason)
+	 			// An Error Occurred
 	 			// TODO
 	 		}
 	 	}

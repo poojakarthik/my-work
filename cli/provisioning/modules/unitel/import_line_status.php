@@ -157,6 +157,10 @@
 				$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
 				$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 				
+			case 'Activation Raised':
+				$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
+				$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
+				
 			case 'Deactivation Confirmed':
 				$arrPDR['Type']				= PROVISIONING_TYPE_ACTIVATION;
 				$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
@@ -190,7 +194,7 @@
  		
 		//----------------------------------------------------------------//
 		// Description & EffectiveDate
-		if (trim($arrData['PreselectionStatus']))
+		if (trim($arrData['ChurnDate']))
 		{
 			$arrPDR['Description']		= $arrData['PreselectionStatus'];
 			$arrPDR['EffectiveDate']	= date("Y-m-d", strtotime($arrData['UnitelStatusDate']));

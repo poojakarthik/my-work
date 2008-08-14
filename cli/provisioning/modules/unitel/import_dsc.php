@@ -344,6 +344,8 @@
  				// Convert Unitel Error Code to Text
  				$arrPDR['Description']	= str_ireplace('<Reason>', $this->TranslateCarrierCode(PROVISIONING_CONTEXT_REJECT_UNITEL, $arrData['ReasonCode']), $arrPDR['Description']);
  			}
+ 			
+ 			$arrPDR['Description']	.= " (Baskets: ".implode(', ', $arrBaskets).")";
  			//----------------------------------------------------------------//
 			
 			//----------------------------------------------------------------//

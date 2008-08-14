@@ -233,7 +233,7 @@ class NormalisationModuleM2 extends NormalisationModule
 		// return output array
 		return $this->_OutputCDR();
 	}
-
+	
 	//------------------------------------------------------------------------//
 	// ConvertTime
 	//------------------------------------------------------------------------//

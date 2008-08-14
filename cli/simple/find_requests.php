@@ -22,9 +22,9 @@ foreach ($arrIgnoreList as $strFNN)
 	$selRequests->Execute(Array('FNN' => $strFNN));
 	while ($arrRequest = $selRequests->Fetch())
 	{
-		$strOutput	=	GetConstantDescription($arrRequest['RequestType'], 'Request');
+		$strOutput	=	GetConstantDescription($arrRequest['RequestType'], 'provisioning_type');
 		$strOutput	.=	" : " . $arrRequest['RequestDateTime'];
-		$strOutput	.=	" : " . GetConstantDescription($arrRequest['Status'], 'RequestStatus');
+		$strOutput	.=	" : " . GetConstantDescription($arrRequest['Status'], 'provisioning_request_status');
 		CliEcho("\t + $strOutput");
 	}
 }

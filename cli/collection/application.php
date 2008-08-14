@@ -72,7 +72,7 @@ class ApplicationCollection extends ApplicationBaseClass
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
- 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
+ 			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'carrier')." : ".$this->_arrModules[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
 	}
 	
@@ -103,13 +103,13 @@ class ApplicationCollection extends ApplicationBaseClass
 		// For each module
 		foreach ($this->_arrModules as $intCarrier=>&$arrFileTypes)
 		{
-			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'Carrier'));
+			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'carrier'));
 			foreach ($arrFileTypes as $intResourceType=>&$modModule)
 			{
 				CliEcho("\n\t\t * Resource: ".GetConstantDescription($intResourceType, 'FileResource'));
 				
 				// Download paths
-				$strCarrierName			= preg_replace("/\W/", '_', GetConstantDescription($intCarrier, 'Carrier'));
+				$strCarrierName			= preg_replace("/\W/", '_', GetConstantDescription($intCarrier, 'carrier'));
 				$strDownloadDirectory	= FILES_BASE_PATH."download/current/{$strCarrierName}/".GetConstantName($intResourceType, 'FileResource').'/';
 				@mkdir($strDownloadDirectory, 0777, TRUE);
 				
@@ -373,7 +373,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		else
 		{
 			// Copy to final location
-			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intFileType, 'FileImport').'/';
+			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'carrier').'/'.GetConstantName($intFileType, 'FileImport').'/';
 			@mkdir($strDestination, 0777, TRUE);
 			$strNewFileName	= basename($strFilePath);
 			$strNewFileName	.= date("_Ymdhis");

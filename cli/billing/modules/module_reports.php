@@ -599,7 +599,7 @@ class BillingModuleReports
 				$wksWorksheet->writeString(4, 8, "Invoice Run"		, $arrFormat['TextBold']);
 				
 				$wksWorksheet->writeString(2, 1, "Telco Blue");										// FIXME: Use Customer Name
-				$wksWorksheet->writeString(3, 1, GetConstantDescription($arrRatePlan['ServiceType'], 'ServiceType'));
+				$wksWorksheet->writeString(3, 1, GetConstantDescription($arrRatePlan['ServiceType'], 'service_type'));
 				$wksWorksheet->writeString(4, 1, $arrRatePlan['Description']);
 				$wksWorksheet->writeString(2, 9, date("d/m/Y", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])));
 				$wksWorksheet->writeString(3, 9, date("F Y", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate']))));
