@@ -289,7 +289,7 @@
 												<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Super Admin']) = 1">
 												<tr>
 													<td>
-														<a href="../ui/reflex.php/Ticketing/System">
+														<a href="../ui/reflex.php/Ticketing/System/Mine">
 															<img src="img/template/ticketing_system.png" title="Ticketing System" class="MenuIcon" />
 														</a>
 													</td>
@@ -298,7 +298,7 @@
 												<xsl:when test="/Response/Ticketing = 1">
 												<tr>
 													<td>
-														<a href="../ui/reflex.php/Ticketing/System">
+														<a href="../ui/reflex.php/Ticketing/System/Mine">
 															<img src="img/template/ticketing_system.png" title="Ticketing System" class="MenuIcon" />
 														</a>
 													</td>
