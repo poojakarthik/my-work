@@ -250,6 +250,21 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		);
 		return $savedValues;
 	}
+
+	public function changeAttachmentBlacklistOverride($attachmentId, $bolOverride)
+	{
+		if (!Ticketing_User::currentUserIsTicketingAdminUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+		$attachment = Ticketing_Attachment::getForId($attachmentId);
+		if (!$attachment)
+		{
+			throw new Exception("No attachment found with Id '$attachmentId'.");
+		}
+		$attachment->setBlacklistOverride($bolOverride);
+		return array('id' => $attachment->id, 'allowOverride' => ($attachment->allowBlacklistOverride() ? TRUE : FALSE));
+	}
 }
 
 ?>

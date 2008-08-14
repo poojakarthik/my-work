@@ -26,6 +26,18 @@ class Ticketing_Attachment
 		return $this->blacklistOverride !== ACTIVE_STATUS_ACTIVE && $this->getType()->isBlacklisted();
 	}
 
+	public function allowBlacklistOverride()
+	{
+		return $this->blacklistOverride === ACTIVE_STATUS_ACTIVE;
+	}
+
+	public function setBlacklistOverride($boolOverride)
+	{
+		$this->blacklistOverride = ($boolOverride ? ACTIVE_STATUS_ACTIVE : ACTIVE_STATUS_INACTIVE);
+		$this->_saved = FALSE;
+		$this->save();
+	}
+
 	public function isGreylisted()
 	{
 		return $this->getType()->isGreylisted();
@@ -60,9 +72,12 @@ class Ticketing_Attachment
 			'correspondance_id' => $this->correspondanceId, 
 			'file_name' => $this->fileName, 
 			'attachment_type_id' => $this->attachmentTypeId, 
-			'file_content' => $this->fileContent, 
 			'blacklist_override' => $this->blacklistOverride
 		);
+		if ($this->fileContent)
+		{
+			$arrValues['file_content'] = $this->fileContent;
+		}
 		// No id means that this must be a new record
 		if (!$this->id)
 		{
@@ -72,7 +87,7 @@ class Ticketing_Attachment
 		else
 		{
 			
-			$arrValues['id'] = $this->id;
+			$arrValues['Id'] = $this->id;
 			$statement = new StatementUpdateById('ticketing_attachment', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)

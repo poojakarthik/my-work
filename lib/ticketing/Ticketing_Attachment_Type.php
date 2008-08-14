@@ -20,14 +20,32 @@ class Ticketing_Attachment_Type
 		return $this->blacklistStatusId === TICKETING_ATTACHMENT_BLACKLIST_STATUS_BLACK;
 	}
 
+	public function setBlacklisted()
+	{
+		$this->blacklistStatusId = TICKETING_ATTACHMENT_BLACKLIST_STATUS_BLACK;
+		$this->_saved = FALSE;
+	}
+
 	public function isGreylisted()
 	{
 		return $this->blacklistStatusId === TICKETING_ATTACHMENT_BLACKLIST_STATUS_GREY;
 	}
 
+	public function setGreylisted()
+	{
+		$this->blacklistStatusId = TICKETING_ATTACHMENT_BLACKLIST_STATUS_GREY;
+		$this->_saved = FALSE;
+	}
+
 	public function isWhitelisted()
 	{
 		return $this->blacklistStatusId === TICKETING_ATTACHMENT_BLACKLIST_STATUS_WHITE;
+	}
+
+	public function setWhitelisted()
+	{
+		$this->blacklistStatusId = TICKETING_ATTACHMENT_BLACKLIST_STATUS_WHITE;
+		$this->_saved = FALSE;
 	}
 
 	public function save()

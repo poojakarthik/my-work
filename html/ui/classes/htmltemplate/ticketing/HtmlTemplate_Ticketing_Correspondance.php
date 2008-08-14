@@ -571,6 +571,76 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 		$attachments = $correspondence->getAttachments();
 		$noAttachments = count($attachments) ? FALSE : TRUE;
+
+
+		?>
+		<script>
+			function downloadWarning()
+			{
+				return window.confirm('This file may contain harmful content.\n\nClick OK to download, or Cancel.');
+			}
+		</script>
+		<?php
+
+
+		if (Ticketing_User::currentUserIsTicketingAdminUser())
+		{
+			?>
+			<script>
+			<!--
+				$toggleBlock = null;
+
+				function toggleBlock(button)
+				{
+					button.disabled = true;
+					var block = button.value == 'Block Download';
+					var id = button.id.substr(13);
+					$toggleBlock(id, !block);
+				}
+
+				function toggledBlock(response)
+				{
+					var attachmentId = response['id'];
+					var blocked = !response['allowOverride'];
+					var button = $ID('toggle_block_' + attachmentId);
+					button.value = blocked ? 'Unblock Download' : 'Block Download';
+					var td = $ID('attachment_link_' + attachmentId);
+					var text = td.textContent;
+					td.innerHTML = '';
+					if (blocked)
+					{
+						td.appendChild(document.createTextNode(text));
+					}
+					else
+					{
+						var a = document.createElement('a');
+						a.appendChild(document.createTextNode(text));
+						a.href = '<?=Flex::getUrlBase() . '/reflex.php/Ticketing/Attachment/'?>' + attachmentId;
+						a.setAttribute('onclick', 'return downloadWarning();');
+						td.appendChild(a);
+					}
+					button.disabled = false;
+				}
+
+				function onTicketingAttachmentListLoad()
+				{
+					remoteClass = 'Ticketing';
+					remoteMethod = 'changeAttachmentBlacklistOverride';
+					$toggleBlock = jQuery.json.jsonFunction(toggledBlock, null, remoteClass, remoteMethod);
+				}
+			
+				Event.observe(window, 'load', onTicketingAttachmentListLoad, false);
+				//-->
+			</script>
+			<?php
+		}
+
+
+
+
+
+
+
 		?>
 <br/>
 <table class="reflex">
@@ -617,21 +687,28 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 				$blacklistStatusName = $blacklistStatus->name;
 ?>
 		<tr<?=$altClass?>>
-			<td><?php
+			<td id="attachment_link_<?=$attachment->id?>"><?php
 				$content = htmlspecialchars($attachment->fileName);
-				if (!$blacklistStatus->isBlacklisted())
+				if (!$attachment->isBlacklisted())
 				{
 					$warning = '';
-					if ($blacklistStatus->isGreylisted())
+					if (!$attachment->isWhitelisted())
 					{
-						$warning = ' onclick="return window.confirm(\'This file may contain harmful content.\n\nClick confirm to download, or cancel.\');" ';
+						$warning = ' onclick="return downloadWarning();"';
 					}
 					$content = '<a href="' . Flex::getUrlBase() . '/reflex.php/Ticketing/Attachment/' . $attachment->id . '" '.$warning.'/>' . $content . '</a>';
 				}
 				echo $content;
 			?></td>
 			<td><?=$attachmentTypeName?></td>
-			<td class="<?=$blacklistStatus->cssClass?>"><?=$blacklistStatusName?></td>
+			<td id="attachment_status_<?=$attachment->id?>" class="<?=$blacklistStatus->cssClass?>"><?=$blacklistStatusName?>
+			<?php
+				if (Ticketing_User::currentUserIsTicketingAdminUser() && $blacklistStatus->isBlacklisted())
+				{
+					echo "<input type=\"button\" class=\"reflex-button\" onclick=\"toggleBlock(this)\" id=\"toggle_block_$attachment->id\" value=\"" . ($attachment->allowBlacklistOverride() ? 'Block Download' : 'Unblock Download') . "\"/>";
+				}
+			?>
+			</td>
 		</tr>
 <?php
 			}

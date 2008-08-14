@@ -464,6 +464,25 @@ class Ticketing_Ticket
 		return self::getFor("id = <Id>", array("Id" => $id));
 	}
 
+	public function getCustomerGroupEmail()
+	{
+		$correspondances = $this->getCorrespondences();
+		foreach($correspondances as $correspondance)
+		{
+			$customerGroupEmail = $correspondance->getCustomerGroupEmail();
+			if ($customerGroupEmail)
+			{
+				return $customerGroupEmail;
+			}
+		}
+		$config = Ticketing_Customer_Group_Config::getForCustomerGroupId($this->customerGroupId);
+		if (!$config)
+		{
+			return NULL;
+		}
+		return $config->getDefaultCustomerGroupEmail();
+	}
+
 	public function getCorrespondences()
 	{
 		return Ticketing_Correspondance::getForTicket($this);

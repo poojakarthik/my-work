@@ -112,16 +112,16 @@ class Application
 		}
 		ContextMenu()->Available_Plans();
 		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
-		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) !== TICKETING_USER_PERMISSION_NONE)
+		if (Ticketing_User::currentUserIsTicketingUser())
 		{
 			ContextMenu()->Ticketing->TicketingConsole();
 			ContextMenu()->Ticketing->ViewUserTickets();
 			ContextMenu()->Ticketing->AddTicket();
 		}
-		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) === TICKETING_USER_PERMISSION_ADMIN)
+		if (Ticketing_User::currentUserIsTicketingAdminUser())
 		{
 			ContextMenu()->Ticketing->Reports->TicketingSummaryReport();
-			
+			ContextMenu()->Ticketing->Administration->TicketingAdmin();
 		}
 		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
@@ -235,16 +235,16 @@ class Application
 		ContextMenu()->Available_Plans();
 		
 		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
-		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) !== TICKETING_USER_PERMISSION_NONE)
+		if (Ticketing_User::currentUserIsTicketingUser())
 		{
 			ContextMenu()->Ticketing->TicketingConsole();
 			ContextMenu()->Ticketing->ViewUserTickets();
 			ContextMenu()->Ticketing->AddTicket();
 		}
-		if (Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId()) === TICKETING_USER_PERMISSION_ADMIN)
+		if (Ticketing_User::currentUserIsTicketingAdminUser())
 		{
 			ContextMenu()->Ticketing->Reports->TicketingSummaryReport();
-			
+			ContextMenu()->Ticketing->Administration->TicketingAdmin();
 		}
 		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))

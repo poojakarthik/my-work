@@ -625,6 +625,8 @@ class Application_Handler_Ticketing extends Application_Handler
 					$correspondence->summary = $detailsToRender['ticket']->subject;
 					$correspondence->sourceId = TICKETING_CORRESPONDANCE_SOURCE_PHONE;
 					$correspondence->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED;
+					$customerGroupEmail = $detailsToRender['ticket']->getCustomerGroupEmail();
+					$correspondence->customerGroupEmailId = $customerGroupEmail->id;
 
 					$oldDeliveryStatus = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
 

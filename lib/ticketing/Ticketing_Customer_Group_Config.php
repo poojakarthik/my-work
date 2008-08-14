@@ -132,6 +132,11 @@ class Ticketing_Customer_Group_Config
 		return self::getFor("customer_group_id = <CustomerGroupId>", array("CustomerGroupId" => $id));
 	}
 
+	public function getDefaultCustomerGroupEmail()
+	{
+		return Ticketing_Customer_Group_Email::getForId($this->defaultEmailId);
+	}
+
 	protected function init($arrProperties)
 	{
 		foreach($arrProperties as $name => $property)
