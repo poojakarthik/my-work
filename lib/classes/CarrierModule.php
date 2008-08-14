@@ -385,7 +385,7 @@ class CarrierModule
 	 	$insCarrierModule		= new StatementInsert("CarrierModule");
 		$insCarrierModuleConfig	= new StatementInsert("CarrierModuleConfig");
 		
-	 	if (!GetConstantName($intCarrier, 'Carrier'))
+	 	if (!GetConstantName($intCarrier, 'carrier'))
 	 	{
 	 		// Invalid Carrier Specified
 	 		return "Invalid Carrier '$intCarrier' Specified";
