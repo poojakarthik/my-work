@@ -44,6 +44,7 @@ class Ticketing_Status
 			$available[] = self::getForId(TICKETING_STATUS_IN_PROGRESS);
 			$available[] = self::getForId(TICKETING_STATUS_WITH_CUSTOMER);
 			$available[] = self::getForId(TICKETING_STATUS_WITH_CARRIER);
+			$available[] = self::getForId(TICKETING_STATUS_WITH_INTERNAL);
 			$available[] = self::getForId(TICKETING_STATUS_COMPLETED);
 		}
 		if ($user->isAdminUser() && $ticket && $ticket->isSaved())

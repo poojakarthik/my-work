@@ -23,7 +23,14 @@ class Ticketing_User
 
 	public static function listAll()
 	{
-		return self::getFor(array(), array(), TRUE);
+		$all = self::getFor(array(), array(), TRUE);
+		$arrAllByName = array();
+		foreach ($all as $user)
+		{
+			$arrAllByName[$user->getName()] = $user;
+		}
+		ksort($arrAllByName);
+		return $arrAllByName;
 	}
 
 	public static function setPermissionForEmployeeId($employeeId, $permission=TICKETING_USER_PERMISSION_NONE)
