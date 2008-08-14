@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Version x of database update.
+ * Version 27 of database update.
  * This version: -
  *	1:	adds employee_id field to CreditCard table
  *	2:	adds employee_id field to DirectDebit table

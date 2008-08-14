@@ -966,10 +966,11 @@ class Application_Handler_Ticketing extends Application_Handler
 		$arrCategories[] = array(	"Id"		=> "all",
 									"Name"		=> "all"
 									);
-		foreach ($GLOBALS['*arrConstant']['ticketing_category'] as $intCategory=>$arrCategory)
+		$arrAllCategories = Ticketing_Category::listAll();
+		foreach ($arrAllCategories as $intCategory=>$objCategory)
 		{
 			$arrCategories[] = array(	"Id"		=> $intCategory,
-										"Name"		=> $arrCategory['Description']
+										"Name"		=> $objCategory->description
 									);
 		}
 		
