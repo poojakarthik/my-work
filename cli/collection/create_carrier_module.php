@@ -20,7 +20,7 @@ $intCarrier		= (int)$argv[1];
 $strClassName	= trim($argv[2]);
 $strConfigPath	= trim($argv[3]);
 
-if (!GetConstantName($intCarrier, 'carrier'))
+if (!GetConstantName($intCarrier, 'Carrier'))
 {
 	CliEcho("ERROR: '$intCarrier' is not a valid Carrier Id!\n");
 	die;
