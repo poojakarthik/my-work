@@ -42,11 +42,17 @@ class Ticketing_Category
 		static $instances;
 		if (!isset($instances))
 		{
-			$instances = array();
+			$arrNameSort = array();
 			foreach ($GLOBALS['*arrConstant'][strtolower(__CLASS__)] as $id => $props)
 			{
 				$props['Id'] = $id;
-				$instances[$id] = new self($props);
+				$arrNameSort[$props['Name']] = $props;
+			}
+			ksort($arrNameSort);
+			$instances = array();
+			foreach ($arrNameSort as $props)
+			{
+				$instances[$props['Id']] = new self($props);
 			}
 		}
 		return $instances;
