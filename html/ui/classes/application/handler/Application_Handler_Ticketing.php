@@ -397,7 +397,7 @@ class Application_Handler_Ticketing extends Application_Handler
 									break;
 
 								case 'statusId':
-									// WIP :: Statuses that can be set are limited! Don't accept just because it's valid!!!
+									// Statuses that can be set are limited! Don't accept just because it's valid!!!
 									$value = Ticketing_Status::getForId(intval($value));
 									if (!$value)
 									{
@@ -406,7 +406,15 @@ class Application_Handler_Ticketing extends Application_Handler
 									}
 									else
 									{
-										$ticket->statusId = $value->id;
+										if (!$value->validForUserAndTicket($currentUser, $ticket))
+										{
+											$ticket->statusId = NULL;
+											$invalidValues[$editableValue] = 'You are not allowed to select that status.';
+										}
+										else
+										{
+											$ticket->statusId = $value->id;
+										}
 									}
 									break;
 
@@ -557,7 +565,6 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$action = str_replace('-', '', $action);
 
-		// WIP :: Kinda obvious ... this needs filling out a bit!
 		// We need to load the details of the contact specified by a contact_id in $_REQUEST
 		$detailsToRender = array();
 
@@ -631,7 +638,6 @@ class Application_Handler_Ticketing extends Application_Handler
 					$oldDeliveryStatus = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
 
 				case 'edit':
-					// WIP :: FINISH THIS OFF FOR VERSION 1
 					$editableValues[] = 'summary';
 					$editableValues[] = 'details';
 					$editableValues[] = 'contactId';
@@ -735,7 +741,6 @@ class Application_Handler_Ticketing extends Application_Handler
 									break;
 
 								case 'deliveryStatusId':
-									// WIP :: Statuses that can be set are limited! Don't accept just because it's valid!!!
 									$value = Ticketing_Correspondance_Delivery_Status::getForId(intval($value));
 									if (!$value)
 									{
@@ -892,7 +897,6 @@ class Application_Handler_Ticketing extends Application_Handler
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
-		// WIP :: Kinda obvious ... this needs filling out a bit!
 		$detailsToRender = array();
 		$detailsToRender['ticketId'] = array_key_exists('ticketId', $_REQUEST) ? $_REQUEST['ticketId'] : NULL;
 
@@ -1088,7 +1092,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			$detailsToRender['saved'] = FALSE;
 			if (array_key_exists('save', $_REQUEST))
 			{
-				// WIP :: Validate the submitted paths before saving
+				// Cannot validate the submitted paths before saving as they are on the backend 
 				$strSourcePath = array_key_exists('sourcePath', $_REQUEST) ? trim($_REQUEST['sourcePath']) : NULL;
 				$strBackupPath = array_key_exists('backupPath', $_REQUEST) ? trim($_REQUEST['backupPath']) : NULL;
 				$strJunkPath = array_key_exists('junkPath', $_REQUEST) ? trim($_REQUEST['junkPath']) : NULL;

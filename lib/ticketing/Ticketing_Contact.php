@@ -36,7 +36,7 @@ class Ticketing_Contact
 
 	public static function listById($arrIds)
 	{
-		// WIP:: Not implemented!!
+		// WIP ?? Not implemented!! Would be useful in version 2 (?) when correspondances can have multiple contacts
 		throw new Exception(__CLASS__ . "::" . __FUNCTION__ . " (" . __FILE__ . "@line " . __LINE__ . ") Not implemented.");
 	}
 

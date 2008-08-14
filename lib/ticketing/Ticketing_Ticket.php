@@ -282,7 +282,6 @@ class Ticketing_Ticket
 
 	public static function findMatching($columns=NULL, $sort=NULL, $filter=NULL, $offset=0, $limit=NULL)
 	{
-		// WIP :: Fully implement this function
 		$where = '';
 		$arrWhere = array();
 		foreach ($filter as $column => $style)

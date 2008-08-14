@@ -56,6 +56,29 @@ class Ticketing_Status
 		return $available;
 	}
 
+	public function validForUserAndTicket($user, $ticket=NULL)
+	{
+		if (!$user->isUser())
+		{
+			return FALSE;
+		}
+		switch ($this->id)
+		{
+			case TICKETING_STATUS_IN_PROGRESS:
+			case TICKETING_STATUS_WITH_CUSTOMER:
+			case TICKETING_STATUS_WITH_CARRIER:
+			case TICKETING_STATUS_WITH_INTERNAL:
+			case TICKETING_STATUS_COMPLETED:
+				return TRUE;
+			case TICKETING_STATUS_UNASSIGNED:
+				return ($ticket && !$ticket->isAssigned());
+			case TICKETING_STATUS_DELETED:
+				return ($user->isAdminUser() && $ticket && $ticket->isSaved());
+			default:
+				return FALSE;
+		}
+	}
+
 	public static function listAll()
 	{
 		static $instances;
