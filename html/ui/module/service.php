@@ -2052,7 +2052,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		if ($insRequest->Execute($arrInsertValues) === FALSE)
 		{
 			// The request could not be made
-			$strRequest = GetConstantDescription($intRequest, "Request");
+			$strRequest = GetConstantDescription($intRequest, "provisioning_type");
 			$strCarrier	= GetConstantDescription($intCarrier, "Carrier");
 			$this->_strErrorMsg = "Unexpected database error occurred while trying to make a '$strRequest' request to the '$strCarrier' carrier";
 			return FALSE;

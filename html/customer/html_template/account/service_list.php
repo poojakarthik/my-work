@@ -139,7 +139,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 			}
 			
 			Table()->Services->AddRow($dboService->FNN->AsValue(),
-									$dboService->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType")),
+									$dboService->ServiceType->AsCallback("GetConstantDescription", Array("service_type")),
 									$strPlanCell,
 									$dboService->TotalUnbilled->AsValue(),
 									$strNature,

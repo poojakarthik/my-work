@@ -215,7 +215,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 	 * It expects the following objects to be defined:
 	 * 		DBO()->Account->Id			Id of the account to provision services of
 	 * 		DBO()->Request->Type		type of provisioning request.  Must belong to the 
-	 * 									"Request" constant group defined in definitions.php
+	 * 									"provisioning_type" constant group defined in database_constants.php
 	 * 		DBO()->Request->ServiceIds	Array of Service Ids which the provisioning request
 	 * 									will be applied to.  It is assumed that these all belong
 	 * 									to the account specified by DBO()->Account->Id
