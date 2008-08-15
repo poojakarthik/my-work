@@ -35,7 +35,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to add payment_terms.direct_debit_days and direct_debit_minimum Fields. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "ALTER TABLE payment_terms DROP direct_debit_days, direct_debit_minimum;";
+		$this->rollbackSQL[] = "ALTER TABLE payment_terms DROP direct_debit_days, DROP direct_debit_minimum;";
 		
 		// 	2:	Populate payment_terms.direct_debit_days and direct_debit_minimum Fields
 		$strSQL = "UPDATE payment_terms SET " .
