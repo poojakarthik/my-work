@@ -95,6 +95,32 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->UnbilledAdjustments->RenderOutput();
 		DBO()->Account->UnbilledCDRs->RenderOutput();
 		
+		// Display the details of their primary address
+		echo "<br/><h2 class='Account'>Account Address Details</h2>\n";
+		if (trim(DBO()->Account->Address1->Value))
+		{
+			DBO()->Account->Address1->RenderOutput();
+		}
+		if (trim(DBO()->Account->Address2->Value))
+		{
+			DBO()->Account->Address2->RenderOutput();
+		}
+		if (trim(DBO()->Account->Suburb->Value))
+		{
+			DBO()->Account->Suburb->RenderOutput();
+		}
+		if (trim(DBO()->Account->State->Value))
+		{
+			DBO()->Account->State->RenderOutput();
+		}
+		if (trim(DBO()->Account->Postcode->Value))
+		{
+			DBO()->Account->Postcode->RenderOutput();
+		}
+		if (trim(DBO()->Account->Country->Value))
+		{
+			DBO()->Account->Country->RenderOutput();
+		}
 		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";
