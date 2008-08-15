@@ -73,10 +73,10 @@
 	 *
 	 * @method
 	 */
- 	function __construct($intCarrier)
+ 	function __construct($intCarrier, $intCustomerGroup)
  	{
  		// Parent Constructor
- 		parent::__construct($intCarrier);
+ 		parent::__construct($intCarrier, $intCustomerGroup);
  		
  		// Carrier Reference / Line Number Init
  		$this->intCarrierReference	= 0;

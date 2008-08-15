@@ -25,6 +25,11 @@ if (!GetConstantName($intCarrier, 'Carrier'))
 	CliEcho("ERROR: '$intCarrier' is not a valid Carrier Id!\n");
 	die;
 }
+elseif (!GetConstantName($intCustomerGroup, 'CustomerGroup'))
+{
+	CliEcho("ERROR: '$intCustomerGroup' is not a valid CustomerGroup!\n");
+	die;
+}
 elseif (!class_exists($strClassName) || !is_subclass_of($strClassName, 'CarrierModule'))
 {
 	CliEcho("ERROR: '$strClassName' is not a valid CarrierModule Class!\n");
@@ -32,7 +37,7 @@ elseif (!class_exists($strClassName) || !is_subclass_of($strClassName, 'CarrierM
 }
 
 CliEcho("Creating new Module...\t\t\t", FALSE);
-$objModule	= new $strClassName($intCarrier);
+$objModule	= new $strClassName($intCarrier, $intCustomerGroup);
 
 if (!$objModule)
 {
