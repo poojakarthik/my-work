@@ -29,7 +29,7 @@ class Ticketing_Status
 
 	public function getStatusIds()
 	{
-		return $this->id;
+		return "{$this->id}";
 	}
 
 	public static function getAvailableStatusesForUserAndTicket($user, $ticket=NULL)
