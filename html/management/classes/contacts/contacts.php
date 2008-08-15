@@ -134,7 +134,7 @@
 				"PassWord"			=> sha1 ($arrDetails ['PassWord']),
 				"CustomerContact"	=> (($arrDetails ['CustomerContact'] == true) ? "1" : "0"),
 				"SessionId"			=> "",
-				"SessionExpire"		=> "",
+				"SessionExpire"		=> "1970-01-01 00:00:00",
 				"Archived"			=> 0
 			);
 			
