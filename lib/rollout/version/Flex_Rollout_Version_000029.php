@@ -79,7 +79,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate resource_type_nature Table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "TRUNCATE TABLE resource_type_nature';";
+		$this->rollbackSQL[] = "TRUNCATE TABLE resource_type_nature;";
 		
 		//	6:	Add resource_type Table to replace FileImport, FileExport, FileResource ConstantGroups
 		$strSQL = "CREATE TABLE resource_type " .
@@ -126,7 +126,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					(5202	, 'AAPT Rejections Report'				, 'AAPT Rejections Report'				, 'RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_REJECT'					, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')), 
 					(5203	, 'AAPT Loss Report'					, 'AAPT Loss Report'					, 'RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LOSS'					, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')), 
 					
-					(4000	, 'Unitel Land Line CDR File'			, 'Unitel Land Line CDR File'			, 'RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD						, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')), 
+					(4000	, 'Unitel Land Line CDR File'			, 'Unitel Land Line CDR File'			, 'RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD'						, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')), 
 					(4001	, 'Unitel Mobile CDR File'				, 'Unitel Mobile CDR File'				, 'RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE'							, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')), 
 					(4002	, 'Unitel Service & Equipment CDR File'	, 'Unitel Service & Equipment CDR File'	, 'RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E'						, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE')), 
 					
@@ -153,7 +153,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate resource_type Table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "TRUNCATE TABLE resource_type';";
+		$this->rollbackSQL[] = "TRUNCATE TABLE resource_type;";
 		
 		//	8:	Add carrier_module_type Table
 		$strSQL = "CREATE TABLE carrier_module_type " .
@@ -181,7 +181,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate carrier_module_type Table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "TRUNCATE TABLE carrier_module_type';";
+		$this->rollbackSQL[] = "TRUNCATE TABLE carrier_module_type;";
 		
 		//	10:	Remove all ConfigConstants in the ModuleType ConfigConstantGroup
 		$strSQL = "DELETE FROM ConfigConstant WHERE ConstantGroup = (SELECT Id FROM ConfigConstantGroup WHERE Name = 'ModuleType');";
