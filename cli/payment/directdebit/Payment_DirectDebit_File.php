@@ -37,10 +37,10 @@
  *
  * @prefix		exp
  *
- * @package		cli.payment
+ * @package		cli.payment.directdebit
  * @class		Payment_DirectDebit_File
  */
- class Payment_DirectDebit_File extends CarrierModule
+ class Payment_DirectDebit_File extends Payment_DirectDebit
  {
  	//------------------------------------------------------------------------//
 	// Properties
@@ -69,12 +69,13 @@
 	 *
 	 * @method
 	 */
- 	function __construct($intCarrier)
+ 	function __construct($intCarrier, $intCustomerGroup)
  	{
- 		parent::__construct($intCarrier, MODULE_TYPE_PAYMENT_DIRECT_DEBIT);
+ 		parent::__construct($intCarrier, $intCustomerGroup);
  		
  		// Defaults
  		$this->intCarrier		= $intCarrier;
+ 		$this->intCustomerGroup	= $intCustomerGroup;
  		$this->_strDelimiter	= ",";
  		$this->_arrDefine		= Array();
  		$this->_arrFileContent	= Array();
@@ -82,8 +83,10 @@
  		$this->_intMinRequests	= 0;
  		$this->_strFileContents	= '';
  		
- 		// Statements 		
- 		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_OUTPUT);
+ 		// Statements
+		$this->_selEmailNotification	= new StatementSelect(	"email_noticiation_address",
+																"*",
+																"customer_group_id = <CustomerGroup> AND email_address_usage_id = <Usage> AND email_notification_id = ".EMAIL_NOTIFICATION_DIRECT_DEBIT_REPORT);
  	}
  	
  	
@@ -533,12 +536,54 @@
 	 			break;
 	 		
 	 		case 'EmailAttach':
-	 			$mixResult	= $this->_DeliverEmailAttachment();
-	 			break;
-	 		
 	 		case 'Email':
 	 		case 'EmailText':
-	 			$mixResult	= $this->_DeliverEmail();
+	 			// Prepare Email Addresses
+				$strEmailAddress	= &$this->GetConfigField('Destination');
+				$strSubject			= &$this->GetConfigField('Subject');
+				$strReplyTo			= &$this->GetConfigField('ReplyTo');
+				$strCC				= &$this->GetConfigField('CarbonCopy');
+				
+				// TO
+				if ($this->_selEmailNotification->Execute(Array('CustomerGroup' => $this->intCustomerGroup, 'Usage' => EMAIL_ADDRESS_USAGE_TO)))
+				{
+					$arrEmails	= Array();
+					while ($arrEmail = $this->_selEmailNotification->Fetch())
+					{
+						$arrEmails[]	= $arrEmail['email_address'];
+					}
+					$strEmailAddress	= implode(', ', $arrEmails);
+				}
+				// FROM
+				if ($this->_selEmailNotification->Execute(Array('CustomerGroup' => $this->intCustomerGroup, 'Usage' => EMAIL_ADDRESS_USAGE_FROM)))
+				{
+					$arrEmails	= Array();
+					while ($arrEmail = $this->_selEmailNotification->Fetch())
+					{
+						$arrEmails[]	= $arrEmail['email_address'];
+					}
+					$strReplyTo			= implode(', ', $arrEmails);
+				}
+				// CC
+				if ($this->_selEmailNotification->Execute(Array('CustomerGroup' => $this->intCustomerGroup, 'Usage' => EMAIL_ADDRESS_USAGE_CC)))
+				{
+					$arrEmails	= Array();
+					while ($arrEmail = $this->_selEmailNotification->Fetch())
+					{
+						$arrEmails[]	= $arrEmail['email_address'];
+					}
+					$strCC				= implode(', ', $arrEmails);
+				}
+	 			
+	 			// Deliver
+	 			if ($this->_strDeliveryType === 'EmailAttach')
+	 			{
+	 				$mixResult	= $this->_DeliverEmailAttachment();
+	 			}
+	 			else
+	 			{
+	 				$mixResult	= $this->_DeliverEmail();
+	 			}
 	 			break;
 	 	}
 	 	
@@ -657,7 +702,7 @@
 			$strEmailAddress .= ', ' . $strCC;
 		}
 		
-		if (PROVISIONING_DEBUG_MODE === TRUE)
+		if (PAYMENTS_DEBUG_MODE === TRUE)
 		{
 	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
 		}
@@ -705,7 +750,7 @@
 			$strEmailAddress .= ', ' . $strCC;
 		}
 		
-		if (PROVISIONING_DEBUG_MODE === TRUE)
+		if (PAYMENTS_DEBUG_MODE === TRUE)
 		{
 	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
 		}
@@ -945,39 +990,15 @@
  		{
  			return Array('Pass' => FALSE, 'Description' => "Unable to create FileExport DB entry!");
  		}
- 		
- 		$this->_intFileExport	= $intFileExport;
- 		
- 		return Array('Pass' => TRUE, 'Description' => "UpdateDB() Successful");
- 	}
- 	
- 	
- 	//------------------------------------------------------------------------//
-	// GetTypes
-	//------------------------------------------------------------------------//
-	/**
-	 * GetTypes()
-	 *
-	 * Gets a list of the Provisioning Types this Output Module supports
-	 *
-	 * Gets a list of the Provisioning Types this Output Module supports
-	 * 
-	 * @return	array						Indexed array of Provisioning Types
-	 * @method
-	 */
- 	function GetTypes()
- 	{
- 		$arrTypes	= Array();
- 		
- 		foreach ($this->_arrDefine as $mixType=>$arrProperties)
+ 		else
  		{
- 			if (is_int($mixType))
- 			{
- 				$arrTypes[]	= $mixType;
- 			}
+ 			$this->_intFileExport	= $intFileExport;
+ 			
+	 		// Add entry to currently non-existent payment_request table
+	 		// TODO
  		}
- 		
- 		return $arrTypes;
+ 		 		
+ 		return Array('Pass' => TRUE, 'Description' => "UpdateDB() Successful");
  	}
 }
 ?>

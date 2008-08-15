@@ -101,7 +101,7 @@ $GLOBALS['*arrConstant']	['FileStatus']	[302]	['Description']	= 'Delivered';
 $GLOBALS['*arrConstant']	['FileStatus']	[303]	['Constant']	= 'FILE_DELIVERY_FAILED';
 $GLOBALS['*arrConstant']	['FileStatus']	[303]	['Description']	= 'Delivery Failed';
 
-
+/*
 //----------------------------------------------------------------------------//
 // EXPORT File Types
 //----------------------------------------------------------------------------//
@@ -212,6 +212,15 @@ $GLOBALS['*arrConstant']	['FileResource']	[10004]	['Constant']	= 'FILE_RESOURCE_
 $GLOBALS['*arrConstant']	['FileResource']	[10004]	['Description']	= 'Local Path';
 //----------------------------------------------------------------------------//
 
+//----------------------------------------------------------------------------//
+// Resource Types
+//----------------------------------------------------------------------------//
+$GLOBALS['*arrConstant']	['ResourceType']	[11000]	['Constant']	= 'RESOURCE_TYPE_SECUREPAY_CREDIT_CARD_FILE';
+$GLOBALS['*arrConstant']	['ResourceType']	[11000]	['Description']	= 'SecurePay Credit Card File';
+$GLOBALS['*arrConstant']	['ResourceType']	[11001]	['Constant']	= 'RESOURCE_TYPE_SECUREPAY_BANK_TRANSFER_FILE';
+$GLOBALS['*arrConstant']	['ResourceType']	[10001]	['Description']	= 'SecurePay Bank Transfer (Direct Debit) File';
+//----------------------------------------------------------------------------//
+*/
 // ERROR TABLE
 define("FATAL_ERROR_LEVEL"			, 10000);
 

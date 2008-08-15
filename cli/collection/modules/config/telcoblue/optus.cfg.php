@@ -3,10 +3,10 @@
 require_once("../../../../../flex.require.php");
 
 // Archived Files
-$arrArchiveFiles[FILE_IMPORT_CDR_OPTUS_STANDARD]	['Regex']			= "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_[sl]\.dat$/misU";
-$arrArchiveFiles[FILE_IMPORT_CDR_OPTUS_STANDARD]	['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrArchiveFiles[FILE_IMPORT_CDR_OPTUS_STANDARD]	['DownloadUnique']	= TRUE;
-$arrArchiveFiles[FILE_IMPORT_CDR_OPTUS_STANDARD]	['Paths']			[]	= '';
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]	['Regex']			= "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_[sl]\.dat$/misU";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]	['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]	['DownloadUnique']	= TRUE;
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD]	['Paths']			[]	= '';
 
 // General Files
 $arrStructure['ARCHIVE']							['PathDefine']		= $arrArchiveFiles;

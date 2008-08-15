@@ -43,7 +43,7 @@
  class ImportOptusPPR extends ImportBase
  {
 	public $intBaseCarrier	= CARRIER_OPTUS;
-	public $intBaseFileType	= FILE_IMPORT_PROVISIONING_OPTUS_PPR;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_OPTUS_PPR;
 	
  	//------------------------------------------------------------------------//
 	// __construct

@@ -147,9 +147,34 @@ class CarrierModule
 	 						$strReplace	= date("Y-m-d H:i:s");
 	 						break;
 	 					
+	 					case 'date':
+	 						$strReplace	= date("Y-m-d");
+	 						break;
+	 						
 	 					default:
 	 						// Unrecognised Function - ignore
 	 						$strReplace	= "<Error::Unrecognised Function '$strAction'>";
+	 						
+	 						//CliEcho("Unrecognised Function '$strAction'");
+	 						continue 3;
+	 				}
+	 				break;
+	 			
+	 			case 'property':
+	 				//CliEcho("Found PROPERTY Placeholder : '$strAction'");
+	 				switch (strtolower($strAction))
+	 				{
+	 					case 'customergroup':
+	 						$strReplace	= GetConstantDescription($this->_intModuleCustomerGroup, 'CustomerGroup');
+	 						break;
+	 					
+	 					case 'carrier':
+	 						$strReplace	= GetConstantDescription($this->_intModuleCarrier, 'Carrier');
+	 						break;
+	 						
+	 					default:
+	 						// Unrecognised Function - ignore
+	 						$strReplace	= "<Error::Unrecognised Property '$strAction'>";
 	 						
 	 						//CliEcho("Unrecognised Function '$strAction'");
 	 						continue 3;

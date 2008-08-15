@@ -44,7 +44,7 @@
  {
 	
 	public $intBaseCarrier	= CARRIER_UNITEL;
-	public $intBaseFileType	= FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS;
 	
  	//------------------------------------------------------------------------//
 	// __construct

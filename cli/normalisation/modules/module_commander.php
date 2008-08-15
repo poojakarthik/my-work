@@ -44,7 +44,7 @@
 class NormalisationModuleCommander extends NormalisationModule
 {
 	public $intBaseCarrier	= CARRIER_UNITEL;
-	public $intBaseFileType	= FILE_IMPORT_CDR_UNITEL_MOBILE;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE;
 	
 	//------------------------------------------------------------------------//
 	// __construct

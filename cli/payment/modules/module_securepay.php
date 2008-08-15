@@ -46,7 +46,7 @@
  class PaymentModuleSecurePay extends PaymentModule
  {
 	public $intBaseCarrier	= CARRIER_PAYMENT;
-	public $intBaseFileType	= FILE_IMPORT_PAYMENT_SECUREPAY_STANDARD;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_PAYMENT_SECUREPAY_STANDARD;
 	
  	function __construct($intCarrier)
  	{

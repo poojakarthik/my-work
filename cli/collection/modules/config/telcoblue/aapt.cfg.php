@@ -3,26 +3,26 @@
 require_once("../../../../../flex.require.php");
 
 // CDR
-$arrArchiveFiles[FILE_IMPORT_CDR_AAPT_STANDARD]				['Regex']		= "/^W\d{9}\.[A-La-l][0-3]\d$/";
-$arrArchiveFiles[FILE_IMPORT_CDR_AAPT_STANDARD]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrArchiveFiles[FILE_IMPORT_CDR_AAPT_STANDARD]				['Paths']		[]	= '/';
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_STANDARD]				['Regex']		= "/^W\d{9}\.[A-La-l][0-3]\d$/";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_STANDARD]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_STANDARD]				['Paths']		[]	= '/';
 
 // PROVISIONING
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_EOE_RETURN]	['Regex']		= "/^..\d{6}\.\d{2}$/";
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_EOE_RETURN]	['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_EOE_RETURN]	['Paths']		[]	= '/';
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_EOE_RETURN]	['Regex']		= "/^..\d{6}\.\d{2}$/";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_EOE_RETURN]	['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_EOE_RETURN]	['Paths']		[]	= '/';
 
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_LSD]			['Regex']		= "/^\d{8}\.(LSD|lsd)$/";
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_LSD]			['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_LSD]			['Paths']		[]	= '/';
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LSD]			['Regex']		= "/^\d{8}\.(LSD|lsd)$/";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LSD]			['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LSD]			['Paths']		[]	= '/';
 
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_REJECT]		['Regex']		= "/^R\d{9}\.\d{5}$/";
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_REJECT]		['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_REJECT]		['Paths']		[]	= '/';
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_REJECT]		['Regex']		= "/^R\d{9}\.\d{5}$/";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_REJECT]		['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_REJECT]		['Paths']		[]	= '/';
 
-/*$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_LOSS]		['Regex']		= "";
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_LOSS]		['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrArchiveFiles[FILE_IMPORT_PROVISIONING_AAPT_LOSS]		['Paths']		[]	= '/';*/
+/*$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LOSS]		['Regex']		= "";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LOSS]		['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
+$arrArchiveFiles[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LOSS]		['Paths']		[]	= '/';*/
 
 // Encapsulating Archive(s)
 $arrStructure['XML_ARCHIVE']								['PathDefine']		= $arrArchiveFiles;

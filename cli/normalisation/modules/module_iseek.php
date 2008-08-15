@@ -45,7 +45,7 @@
 class NormalisationModuleIseek extends NormalisationModule
 {
 	public $intBaseCarrier	= CARRIER_ISEEK;
-	public $intBaseFileType	= FILE_IMPORT_CDR_ISEEK_ADSL1;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_ADSL1;
 	
 	//------------------------------------------------------------------------//
 	// __construct

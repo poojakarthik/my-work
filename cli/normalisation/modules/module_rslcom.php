@@ -44,7 +44,7 @@
 class NormalisationModuleRSLCOM extends NormalisationModule
 {
 	public $intBaseCarrier	= CARRIER_UNITEL;
-	public $intBaseFileType	= FILE_IMPORT_CDR_UNITEL_STANDARD;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD;
 
 	//------------------------------------------------------------------------//
 	// __construct

@@ -46,7 +46,7 @@
  class PaymentModuleCheque extends PaymentModule
  {
 	public $intBaseCarrier	= CARRIER_PAYMENT;
-	public $intBaseFileType	= FILE_IMPORT_PAYMENT_CHEQUE;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_PAYMENT_CHEQUE;
 	
  	function __construct($intCarrier)
  	{

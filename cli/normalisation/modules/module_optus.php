@@ -45,7 +45,7 @@
 class NormalisationModuleOptus extends NormalisationModule
 {
 	public $intBaseCarrier	= CARRIER_OPTUS;
-	public $intBaseFileType	= FILE_IMPORT_CDR_OPTUS_STANDARD;
+	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_OPTUS_STANDARD;
 	
 	//------------------------------------------------------------------------//
 	// __construct

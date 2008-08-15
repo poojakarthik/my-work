@@ -124,9 +124,9 @@
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$modModule	= new $arrModule['Module']($arrModule['Carrier']);
- 			$this->_arrDirectDebitModules[$modModule->intBillingType]	= &$modModule;
+ 			$this->_arrDirectDebitModules[$arrModule['customer_group']][$modModule->intBillingType]	= &$modModule;
  			
- 			CliEcho("\t + ".GetConstantDescription($modModule->intBillingType, 'BillingType')." : ".$this->_arrDirectDebitModules[$modModule->intBillingType]->strDescription);	
+ 			CliEcho("\t + ".GetConstantDescription($arrModule['customer_group'], 'CustomerGroup')." : ".GetConstantDescription($modModule->intBillingType, 'BillingType'));	
  		}
 	}
 	
@@ -148,7 +148,6 @@
  	{
 		// IMPORT PAYMENTS
 		$this->Import();
-		
 		
 		// NORMALISE PAYMENTS
 		$this->_rptPaymentReport->AddMessage(MSG_NORMALISE_TITLE);
@@ -779,10 +778,10 @@
 	 }
 	
 	//------------------------------------------------------------------------//
-	// RunDirectDebit
+	// RunDirectDebits
 	//------------------------------------------------------------------------//
 	/**
-	 * RunDirectDebit()
+	 * RunDirectDebits()
 	 *
 	 * Performs Direct Debits Payments
 	 *
@@ -791,105 +790,151 @@
 	 * 
 	 * @param	boolean	$bolForce			[optional]	TRUE: Direct Debits will run no matter what day it is in the Billing Cycle (not recommended)
 	 *
-	 * @return	array									['Success']	: TRUE on success, FALSE on error
-	 * 													['Message']	: Error Message
+	 * @return	array									['Success']		: TRUE on success, FALSE on error
+	 * 													['Description']	: Error Message
 	 *
 	 * @method
 	 */
-	 function RunDirectDebit($bolForce = FALSE)
+	 function RunDirectDebits($bolForce = FALSE)
 	 {
 	 	$intRunDate	= time();
 	 	
 	 	// Are the Direct Debits due?
 	 	if ($bolForce !== TRUE)
 	 	{
-	 		// Retrieve payment_terms Details, and determine if today is the Invoice Due Date
-	 		$selPaymentTerms	= new StatementSelect("payment_terms", "payment_terms", "1", "id DESC", "1");
-	 		if (!$selPaymentTerms->Execute())
+	 		// Retrieve Direct Debit Scheduling Details, and determine if today is the Invoice Due Date
+	 		$selSchedule	= new StatementSelect(	"InvoiceRun LEFT JOIN automatic_invoice_run_event ON InvoiceRun.Id = automatic_invoice_run_event.invoice_run_id",
+														"InvoiceRun.InvoiceRun, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id",
+														"automatic_invoice_run_id = ".AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT,
+														"InvoiceRun.BillingDate DESC, automatic_invoice_run_event.id DESC",
+														"1");
+			
+			$arrUpdateCols	= Array();
+			$arrUpdateCols['actioned_datetime']	= NULL;
+			$ubiSchedule	= new StatementUpdateById("automatic_invoice_run_event", $arrUpdateCols);
+			
+	 		if (!$selSchedule->Execute())
 	 		{
-	 			// No Payment Terms Specified
-	 			if ($selPaymentTerms->Error())
+	 			// No Event Scheduled
+	 			if ($selSchedule->Error())
 	 			{
-	 				return Array('Success' => FALSE, 'Message' => "ERROR: DB Error in \$selPaymentTerms: ".$selPaymentTerms->Error());
+	 				return Array('Success' => FALSE, 'Description' => "ERROR: DB Error in \$selSchedule: ".$selSchedule->Error());
 	 			}
 	 			else
 	 			{
-	 				return Array('Success' => FALSE, 'Message' => "ERROR: No Payment Terms found in the payment_terms Table!");
+	 				return Array('Success' => FALSE, 'Description' => "ERROR: No Payment Terms found in the payment_terms Table!");
 	 			}
 	 		}
-	 		$arrPaymentTerms	= $selPaymentTerms->Fetch();
-	 		
-	 		// Retrieve most recent InvoiceRun Details
-	 		$selInvoiceRun		= new StatementSelect("InvoiceRun", "BillingDate", "1", "id DESC", 1);
-	 		if (!$selInvoiceRun->Execute())
-	 		{
-	 			// No Payment Terms Specified
-	 			if ($selInvoiceRun->Error())
-	 			{
-	 				return Array('Success' => FALSE, 'Message' => "ERROR: DB Error in \$selInvoiceRun: ".$selInvoiceRun->Error());
-	 			}
-	 			else
-	 			{
-	 				// Not actually an Error, as there could very well be no InvoiceRuns
-	 				Array('Success' => TRUE, 'Message' => "No InvoiceRuns to Direct Debit");
-	 			}
-	 		}
-	 		$arrInvoiceRun	= $selInvoiceRun->Fetch();
+	 		$arrSchedule	= $selSchedule->Fetch();
 	 		
 	 		// Determine Direct Debit Payment Date
-	 		$intPaymentDate	= strtotime("+{$arrPaymentTerms['payment_terms']} days", strtotime($arrInvoiceRun['BillingDate']));
-	 		if ($intPaymentDate > $intRunDate)
+	 		if (strtotime($arrSchedule['scheduled_datetime']) > $intRunDate)
 	 		{
 	 			// We haven't reached the Direct Debit date yet
-	 			return Array('Success' => TRUE, 'Message' => "Direct Debits are not due yet, expected on ".date('Y-m-d', $intPaymentDate));
+	 			return Array('Success' => TRUE, 'Description' => "Direct Debits are not due yet, expected on {$arrSchedule['scheduled_datetime']}");
+	 		}
+	 		elseif ($arrSchedule['actioned_datetime'] !== NULL)
+	 		{
+	 			// Direct Debits have already been run for this InvoiceRun
+	 			return Array('Success' => TRUE, 'Description' => "Direct Debits have already run for InvoiceRun {$arrSchedule['InvoiceRun']}, on {$arrSchedule['actioned_datetime']}");
 	 		}
 	 	}
 	 	
-	 	/* FIXME: Move to DirectDebit base class */
-	 	// Get list of AccountGroups and debts to settle
-	 	$selAccountDebts	= new StatementSelect("Invoice JOIN Account USING (AccountGroup)", "Account.AccountGroup, SUM(Invoice.Balance) AS Charge", "Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")");
-	 	/* FIXME: Move to DirectDebit base class */
-	 	
+		// Retrieve Direct Debit Minimum
+		$selDDMin	= new StatementSelect(	"payment_terms", "direct_debit_minimum", "1", "id DESC", "1");
+		if (!$selDDMin->Execute())
+		{
+			if ($selDDMin->Error())
+			{
+				// DB Error
+				// TODO
+			}
+			else
+			{
+				// No payment_terms defined
+				// TODO
+			}
+		}
+		$arrDDMin			= $selDDMin->Fetch();
+	 	$selAccountDebts	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Account, SUM(Invoice.Balance) AS Charge", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")", "Account.Id", NULL, "Account.Id HAVING Charge >= {$arrDDMin['direct_debit_minimum']}");
+		
 	 	// Process Direct Debits for each Billing Type
 	 	$intAccountGroupsCharged	= 0;
-	 	foreach ($this->_arrDirectDebitModules as $intBillingType=>&$modModule)
+	 	foreach ($this->_arrDirectDebitModules as $intCustomerGroup=>&$arrBillingTypes)
 	 	{
-	 		// Ensure we're only trying to Direct Debit people who should be
-	 		if ($intBillingType === BILLING_TYPE_ACCOUNT)
-	 		{
-	 			// Account Billing is non-Direct Debit, so ignore
-	 			continue;
-	 		}
-	 		
-	 		// Run the Module
-	 		$arrRunResult	= $modModule->Run();
-	 		if ($arrRunResult['Success'] === TRUE)
-	 		{
-		 		// Export/Send the module
-	 			$arrExportResult	= $modModule->Export();
-		 		if ($arrExportResult['Success'] === TRUE)
+		 	foreach ($arrBillingTypes as $intBillingType=>&$modModule)
+		 	{
+		 		// HACKHACKHACK: Ensure we're only trying to Direct Debit people who should be
+		 		if ($intBillingType === BILLING_TYPE_ACCOUNT)
 		 		{
-			 		if (is_int($arrExportResult['AccountGroupsCharged']))
-			 		{
-			 			// Success, Charges Sent
-			 			$intAccountGroupsCharged	+= $arrExportResult['AccountGroupsCharged'];
-			 		}
-			 		elseif ($arrExportResult['Success'] === FALSE)
-			 		{
-			 			
-			 		}
-			 		else
-			 		{
-			 			// Success, no Charges Sent (aka Failed for a sane reason)
-			 			// TODO
-			 		}
+		 			// Account Billing is non-Direct Debit, so ignore
+		 			continue;
 		 		}
-	 		}
-	 		else
-	 		{
-	 			// An Error Occurred
-	 			// TODO
-	 		}
+		 		
+			 	// Get list of AccountGroups and debts to settle
+			 	if ($selAccountDebts->Execute(Array('CustomerGroup' => $intCustomerGroup, 'BillingType' => $intBillingType)))
+			 	{
+			 		while ($arrAccountGroup	= $selAccountDebts)
+			 		{
+				 		// Run the Module
+				 		$arrRunResult	= $modModule->Output($arrAccountGroup);
+				 		if ($arrRunResult['Success'] === TRUE)
+				 		{
+				 			// Success
+				 			// TODO
+				 		}
+				 		else
+				 		{
+				 			// An Error Occurred
+				 			// TODO
+				 		}
+			 		}
+			 		
+			 		// Export/Send the module
+		 			$arrExportResult	= $modModule->Export();
+			 		if ($arrExportResult['Success'] === TRUE)
+			 		{
+				 		if (is_int($arrExportResult['AccountGroupsCharged']))
+				 		{
+				 			// Success, Charges Sent
+				 			$intAccountGroupsCharged	+= $arrExportResult['AccountGroupsCharged'];
+				 			
+				 			// Update automatic_invoice_action_id Entry
+				 			$arrSchedule['actioned_datetime']	= date("Y-m-d H:i:s", $intRunDate);
+				 			if ($ubiSchedule->Execute($arrSchedule) === FALSE)
+				 			{
+				 				// Error
+				 				// TODO
+				 			}
+				 			else
+				 			{
+				 				// Success
+				 				// TODO
+				 			}
+				 		}
+				 		elseif ($arrExportResult['Success'] === FALSE)
+				 		{
+				 			// Error
+				 			// TODO
+				 		}
+				 		else
+				 		{
+				 			// Success, no Charges Sent (aka Failed for a sane reason)
+				 			// TODO
+				 		}
+			 		}
+			 	}
+			 	elseif ($selAccountDebts->Error())
+			 	{
+			 		// An Error Occurred
+			 		// TODO
+			 	}
+			 	else
+			 	{
+			 		// No Matches
+			 		// TODO
+			 	}
+		 	}
 	 	}
 	 }
  }

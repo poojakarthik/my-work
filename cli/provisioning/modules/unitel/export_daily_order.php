@@ -53,7 +53,7 @@ HIl<?php
 	protected	$_ptrFile;
 	
 	public $intBaseCarrier			= CARRIER_UNITEL;
-	public $intBaseFileType			= FILE_EXPORT_PROVISIONING_UNITEL_DAILY_ORDER;
+	public $intBaseFileType			= RESOURCE_TYPE_FILE_EXPORT__PROVISIONING_UNITEL_DAILY_ORDER;
 	public $_strDeliveryType		= 'FTP';
 	
 	public $_intFrequencyType		= FREQUENCY_DAY;
