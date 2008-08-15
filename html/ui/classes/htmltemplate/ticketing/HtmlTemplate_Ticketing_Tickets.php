@@ -67,6 +67,72 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 		$navLinks = implode('&nbsp;&nbsp;', $arrNavLinks);
 
+?>
+<script>
+
+	var autorefresh = null;
+	var ticker = null;
+	var countdownFrom = 150;
+	var countdown = countdownFrom;
+	var cookieName = 'autoRefreshTicketList';
+	var timeRemaining = null;
+
+	function toggleAutorefresh()
+	{
+		countdown = countdownFrom;
+		if (autorefresh.checked)
+		{
+			ticker = window.setInterval("refreshCountdown()", 1000);
+		}
+		else if (ticker != null)
+		{
+			window.clearTimeout(ticker);
+		}
+		timeRemaining.innerHTML = '';
+		timeRemaining.appendChild(document.createTextNode(countdown));
+		Flex.cookie.create(cookieName, autorefresh.checked ? 'true' : 'false', 30);
+	}
+
+	function refreshCountdown()
+	{
+		countdown = countdown - 1;
+		if (autorefresh.checked && countdown <= 0) //>
+		{
+			window.clearTimeout(ticker);
+			document.location.reload();
+			timeRemaining.innerHTML = '';
+			timeRemaining.appendChild(document.createTextNode('0'));
+		}
+		else
+		{
+			timeRemaining.innerHTML = '';
+			timeRemaining.appendChild(document.createTextNode(countdown));
+		}
+	}
+
+	function startCountdown()
+	{
+		var refreshPanel = $ID('refreshPanel');
+		autorefresh = document.createElement('input');
+		autorefresh.type = 'checkbox';
+		Event.observe(autorefresh, 'click', toggleAutorefresh);
+		refreshPanel.appendChild(autorefresh);
+		refreshPanel.appendChild(document.createElement('span'));
+		refreshPanel.childNodes[1].appendChild(document.createTextNode('Auto-refresh in '));
+		timeRemaining = document.createElement('span');
+		timeRemaining.appendChild(document.createTextNode(countdown));
+		refreshPanel.appendChild(timeRemaining);
+		refreshPanel.appendChild(document.createElement('span'));
+		refreshPanel.childNodes[3].appendChild(document.createTextNode(' seconds'));
+		var cookieValue = Flex.cookie.read(cookieName);
+		autorefresh.checked = (cookieValue == null || cookieValue == 'true');
+		toggleAutorefresh();
+	}
+	Event.observe(window, 'load', startCountdown);
+
+</script>
+<?php
+
 		?>
 <form method="GET" action="<?=$target?>">
 	<table id="ticketing" name="ticketing" class="reflex">
@@ -258,7 +324,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		</thead>
 		<tfoot>
 			<tr>
-				<th colspan="<?=(8+$nrPossibleActions)?>" align=right>&nbsp;<?=$navLinks?></th>
+				<th colspan="<?=(8+$nrPossibleActions)?>" align=right>&nbsp;<div id='refreshPanel' /><?=$navLinks?></th>
 			</tr>
 		</tfoot>
 		<tbody>
