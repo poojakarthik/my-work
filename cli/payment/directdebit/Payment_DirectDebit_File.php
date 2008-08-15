@@ -86,7 +86,7 @@
  		// Statements
 		$this->_selEmailNotification	= new StatementSelect(	"email_noticiation_address",
 																"*",
-																"customer_group_id = <CustomerGroup> AND email_address_usage_id = <Usage> AND email_notification_id = ".EMAIL_NOTIFICATION_DIRECT_DEBIT_REPORT);
+																"(customer_group_id = <CustomerGroup> OR customer_group_id IS NULL) AND email_address_usage_id = <Usage> AND email_notification_id = ".EMAIL_NOTIFICATION_DIRECT_DEBIT_REPORT);
  	}
  	
  	
