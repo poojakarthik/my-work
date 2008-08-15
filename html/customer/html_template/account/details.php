@@ -96,7 +96,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->UnbilledCDRs->RenderOutput();
 		
 		// Display the details of their primary address
-		echo "<br/><h2 class='Account'>Account Address Details</h2>\n";
+		echo "<br/><h2 class='Account'>Address Details</h2>\n";
 		if (trim(DBO()->Account->Address1->Value))
 		{
 			DBO()->Account->Address1->RenderOutput();
@@ -121,6 +121,42 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			DBO()->Account->Country->RenderOutput();
 		}
+		
+		// Display the contact details
+		echo "<br/><h2 class='Account'>Contact Details</h2>\n";
+		if (trim(DBO()->Contact->Title->Value))
+		{
+			DBO()->Contact->Title->RenderOutput();
+		}
+		if (trim(DBO()->Contact->FirstName->Value))
+		{
+			DBO()->Contact->FirstName->RenderOutput();
+		}
+		if (trim(DBO()->Contact->LastName->Value))
+		{
+			DBO()->Contact->LastName->RenderOutput();
+		}
+		if (trim(DBO()->Contact->JobTitle->Value))
+		{
+			DBO()->Contact->JobTitle->RenderOutput();
+		}
+		if (trim(DBO()->Contact->Email->Value))
+		{
+			DBO()->Contact->Email->RenderOutput();
+		}
+		if (trim(DBO()->Contact->Phone->Value))
+		{
+			DBO()->Contact->Phone->RenderOutput();
+		}
+		if (trim(DBO()->Contact->Mobile->Value))
+		{
+			DBO()->Contact->Mobile->RenderOutput();
+		}
+		if (trim(DBO()->Contact->Fax->Value))
+		{
+			DBO()->Contact->Fax->RenderOutput();
+		}
+		
 		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";
