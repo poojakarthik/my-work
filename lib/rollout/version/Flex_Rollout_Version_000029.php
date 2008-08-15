@@ -206,7 +206,7 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 		
 		//	12:	Add CarrierModule.customer_group Field
 		$strSQL = "ALTER TABLE CarrierModule " .
-					"ADD customer_group BIGINT(20) NULL COMMENT 'The Customer Group that this Module is associated with.  NULL: All CustomerGroups';";
+					"ADD customer_group BIGINT(20) NULL COMMENT 'The Customer Group that this Module is associated with.  NULL: All CustomerGroups' AFTER Carrier;";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add CarrierModule.customer_group and Field. ' . $qryQuery->Error());
