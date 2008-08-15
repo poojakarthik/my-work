@@ -40,7 +40,7 @@
  * @package		cli.payment
  * @class		Payment_DirectDebit
  */
- class Payment_DirectDebit extends CarrierModule
+ abstract class Payment_DirectDebit extends CarrierModule
  {
  	//------------------------------------------------------------------------//
 	// Properties
@@ -110,10 +110,7 @@
 	 *
 	 * @method
 	 */
-	abstract function Output($arrRequest)
- 	{
- 		// No Default Functionality
- 	}
+	abstract function Output($arrRequest);
  	
  	//------------------------------------------------------------------------//
 	// Export
@@ -130,10 +127,7 @@
 	 *
 	 * @method
 	 */
-	abstract function Export()
- 	{
- 		// No Default Functionality
- 	}
+	abstract function Export();
  	
  	//------------------------------------------------------------------------//
 	// _GetAccountDetails
