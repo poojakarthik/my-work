@@ -213,9 +213,14 @@ class Ticketing_Correspondance
 		// TODO: Q: Could this apply to more than one ticket?
 		$arrMatches = array();
 		$strTReg = "/\[?T[0-9 ]+Z\]? */i";
+		$strBReg = "/\[T[0-9]+Z\]/";
 		if (preg_match($strTReg, $objCorrespondence->summary, $arrMatches))
 		{
 			$objCorrespondence->summary = preg_replace($strTReg, "", $objCorrespondence->summary);
+			$objCorrespondence->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
+		}
+		else if(preg_match($strBReg, $objCorrespondence->details, $arrMatches))
+		{
 			$objCorrespondence->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
 		}
 
@@ -455,6 +460,14 @@ class Ticketing_Correspondance
 			$contact = $this->getContact();
 			$contact->autoReply = ACTIVE_STATUS_INACTIVE;
 			$contact->save();
+			return;
+		}
+
+		$strDoNotReply = "/do *not *reply/i";
+		if (preg_match($strDoNotReply, $this->summary) || preg_match($strDoNotReply, $this->details))
+		{
+			// This is probably an auto-generated response from another system.
+			// Do not send a reply.
 			return;
 		}
 
