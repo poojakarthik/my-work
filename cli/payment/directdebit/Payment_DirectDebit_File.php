@@ -40,7 +40,7 @@
  * @package		cli.payment.directdebit
  * @class		Payment_DirectDebit_File
  */
- class Payment_DirectDebit_File extends Payment_DirectDebit
+ abstract class Payment_DirectDebit_File extends Payment_DirectDebit
  {
  	//------------------------------------------------------------------------//
 	// Properties
