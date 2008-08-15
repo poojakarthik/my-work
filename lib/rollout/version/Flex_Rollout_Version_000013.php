@@ -135,6 +135,17 @@ class Flex_Rollout_Version_000013 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add new Carriers. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DELETE FROM Carrier WHERE Name IN ('M2', 'BPAY Westpac', 'BillExpress', 'SecurePay');";
+
+		$strSQL = "DELETE FROM ConfigConstant WHERE ConstantGroup IN (SELECT id FROM ConfigConstantGroup WHERE Name = 'Carrier')";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to delete Carrier config constants. ' . $qryQuery->Error());
+		}
+		$strSQL = "DELETE FROM ConfigConstantGroup WHERE Name = 'Carrier'";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to delete Carrier config constant group. ' . $qryQuery->Error());
+		}
 	}
 	
 	function rollback()

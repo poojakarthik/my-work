@@ -38,7 +38,7 @@ class Flex_Rollout_Version_000012 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add const_name columns to credit_control_status table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE credit_control_status DROP const_name";
-		$strSQL = "UPDATE credit_control_status SET const_name = UCASE(CONCAT('credit_control_status_', REPLACE(name, ' ', '_'))";
+		$strSQL = "UPDATE credit_control_status SET const_name = UCASE(CONCAT('credit_control_status_', REPLACE(name, ' ', '_')))";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate name and const_name columns to credit_control_status table. ' . $qryQuery->Error());
