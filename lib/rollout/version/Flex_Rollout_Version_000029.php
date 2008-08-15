@@ -209,9 +209,9 @@ class Flex_Rollout_Version_000029 extends Flex_Rollout_Version
 					"ADD customer_group BIGINT(20) NULL COMMENT 'The Customer Group that this Module is associated with.  NULL: All CustomerGroups';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add payment_terms.direct_debit_days and direct_debit_minimum Fields. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to add CarrierModule.customer_group and Field. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "ALTER TABLE payment_terms DROP direct_debit_days, direct_debit_minimum;";
+		$this->rollbackSQL[] = "ALTER TABLE CarrierModule DROP customer_group;";
 		
 		//	13:	Add Direct Debit Report details to email_notification
 		$strSQL = "INSERT INTO email_notification (id, name, description, const_name, allow_customer_group_emails) VALUES " .
