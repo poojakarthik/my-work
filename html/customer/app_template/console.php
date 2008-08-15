@@ -85,7 +85,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		
 		// Load the clients primary account
 		DBO()->Account->Load();
-		
+
 		// If the user can view all accounts in their account group then load these too
 		if (DBO()->Contact->CustomerContact->Value)
 		{
@@ -93,7 +93,6 @@ class AppTemplateConsole extends ApplicationTemplate
 			DBL()->Account->Archived = 0;
 			DBL()->Account->Load();
 		}
-		
 		// Make sure that the Account requested belongs to the account group that the contact belongs to
 		$bolUserCanViewAccount = FALSE;
 		if (AuthenticatedUser()->_arrUser['CustomerContact'])
@@ -138,7 +137,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
 		// Setup BreadCrumb Menu
-		$strWelcome = "Welcome " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
+		$strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
 		BreadCrumb()->SetCurrentPage($strWelcome);
 		
 		$this->LoadPage('console');
