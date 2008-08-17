@@ -2493,7 +2493,22 @@
  		$selAccountEmail	= new StatementSelect(	"(Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact USING (Account)",
  													"Invoice.Account, CustomerGroup, Email, FirstName",
  													"Invoice.Account = <Account> AND Email != '' AND DeliveryMethod = 1 AND InvoiceRun = <InvoiceRun>");
-		$updDeliveryMethod = new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
+		$updDeliveryMethod	= new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
+		
+		$selCustomerGroup	= new StatementSelect("CustomerGroup", "*", "1");
+		if ($selCustomerGroup->Execute() === FALSE)
+		{
+			// DB Error
+			Debug($selCustomerGroup->Error());
+			return FALSE;
+		}
+		$arrCustomerGroups	= Array();
+		while ($arrCustomerGroup = $selCustomerGroup->Fetch())
+		{
+			$arrCustomerGroups[$arrCustomerGroup['Id']]	= $arrCustomerGroup;
+		}
+		
+		
 		
  		// Loop through each PDF
  		$intPassed	= 0;
@@ -2521,27 +2536,13 @@
  			foreach ($arrDetails as $arrDetail)
  			{
 	 			// Set email details based on Customer Group
-	 			switch ($arrDetail['CustomerGroup'])
-	 			{
-	 				case CUSTOMER_GROUP_VOICETALK:
-			 			$arrHeaders = Array	(
-			 									'From'		=> "billing@voicetalk.com.au",
-			 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
-			 								);
-	 					$strContent	=	"Please find attached your most recent invoice from Voicetalk\n\n" .
-	 									"Regards\n\n" .
-	 									"The Team at Voicetalk";
-	 					break;
-	 				default:
-			 			$arrHeaders = Array	(
-			 									'From'		=> "billing@telcoblue.com.au",
-			 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
-			 								);
-	 					$strContent	=	"Please find attached your most recent invoice from Telco Blue\n\n" .
-	 									"Regards\n\n" .
-	 									"The Team at Telco Blue";
-	 					break;
-	 			}
+	 			$arrHeaders = Array	(
+	 									'From'		=> $arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail'],
+	 									'Subject'	=> "{$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Telephone Billing for $strBillingPeriod"
+	 								);
+				$strContent	=	"Please find attached your most recent Invoice from {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}\n\n" .
+								"Regards\n\n" .
+								"The Team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}";	 			
 		 		
 		 		// Does the customer have a first name?
 		 		if (trim($arrDetail['FirstName']))
