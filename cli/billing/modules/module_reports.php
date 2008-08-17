@@ -71,6 +71,8 @@ class BillingModuleReports
  			$this->_arrProfitData	= $arrProfitData;
  		}
  		
+ 		$this->_strCustomerName		= trim($GLOBALS['**arrCustomerConfig']['FriendlyName']);
+ 		
  		// Base Path
  		$intBillPeriod				= strtotime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate']));
  		$strYear					= date("Y", $intBillPeriod);
@@ -363,7 +365,7 @@ class BillingModuleReports
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Service Summary for Telco Blue");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Service Summary for {$this->_strCustomerName}");
 		$wksWorksheet->writeString(0, 1, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -582,7 +584,7 @@ class BillingModuleReports
 				$wksWorksheet->setColumn(9, 9, 2.82 * $fltExcelWidthRatio);
 				
 				// Write Worksheet Header
-				$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Plan Summary for Telco Blue");
+				$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Plan Summary for {$this->_strCustomerName}");
 				$wksWorksheet->writeString(0, 4, $strPageTitle, $arrFormat['PageTitle']);
 				
 				for ($i = 0; $i <= 9; $i++)
@@ -591,14 +593,14 @@ class BillingModuleReports
 					$wksWorksheet->writeBlank(5, $i, $arrFormat['Spacer']);
 				}
 				
-				$wksWorksheet->writeString(2, 0, "Customer"			, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(2, 0, "Customer Group"	, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(3, 0, "Service Type"		, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(4, 0, "Plan"				, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(2, 8, "Bill Date"		, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(3, 8, "Billing Period"	, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(4, 8, "Invoice Run"		, $arrFormat['TextBold']);
 				
-				$wksWorksheet->writeString(2, 1, "Telco Blue");										// FIXME: Use Customer Name
+				$wksWorksheet->writeString(2, 1, ($arrRatePlan['CustomerGroup'] === NULL) ? 'All' : GetConstantDescription($arrRatePlan['CustomerGroup'], 'CustomerGroup'));
 				$wksWorksheet->writeString(3, 1, GetConstantDescription($arrRatePlan['ServiceType'], 'service_type'));
 				$wksWorksheet->writeString(4, 1, $arrRatePlan['Description']);
 				$wksWorksheet->writeString(2, 9, date("d/m/Y", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])));
@@ -820,7 +822,7 @@ class BillingModuleReports
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Adjustment Summary for Telco Blue");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Adjustment Summary for {$this->_strCustomerName}");
 		$wksWorksheet->writeString(0, 2, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -1023,7 +1025,7 @@ class BillingModuleReports
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Customer Summary for Telco Blue");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Customer Summary for {$this->_strCustomerName}");
 		$wksWorksheet->writeString(0, 1, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -1245,7 +1247,7 @@ class BillingModuleReports
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Recurring Adjustment Summary for Telco Blue");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Recurring Adjustment Summary for {$this->_strCustomerName}");
 		$wksWorksheet->writeString(0, 4, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -1500,7 +1502,7 @@ class BillingModuleReports
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Adjustment by Employee Summary for Telco Blue");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Adjustment by Employee Summary for {$this->_strCustomerName}");
 		$wksWorksheet->writeString(0, 2, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -1647,7 +1649,7 @@ class BillingModuleReports
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Invoice Summary for Telco Blue");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Invoice Summary for {$this->_strCustomerName}");
 		$wksWorksheet->writeString(0, 1, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -2042,7 +2044,7 @@ class BillingModuleReports
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle	= strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Customer Group Summary for Telco Blue");
+		$strPageTitle	= strtoupper(date("F", strtotime("-1 month", strtotime($this->_arrProfitData['ThisMonth']['BillingDate'])))." Customer Group Summary for {$this->_strCustomerName}");
 		
 		$arrOutline	= Array();
 		$intLine	= 0;
