@@ -475,21 +475,7 @@ function ReplaceAliases($strMessage, $arrAliases)
  */
 function GetCarrierName($intCarrier)
 {
-	switch($intCarrier)
-	{
-		case CARRIER_UNITEL:
-			return "Unitel";
-		case CARRIER_UNITEL_VOICETALK:
-			return "Unitel (VoiceTalk)";
-		case CARRIER_OPTUS:
-			return "Optus";
-		case CARRIER_AAPT:
-			return "AAPT";
-		case CARRIER_ISEEK:
-			return "iSeek";
-		default:
-			return FALSE;
-	}
+	return GetConstantDescription($intCarrier, 'Carrier');
 }	
 
 //------------------------------------------------------------------------//
