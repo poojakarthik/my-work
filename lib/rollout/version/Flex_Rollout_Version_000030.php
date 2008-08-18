@@ -46,9 +46,9 @@ class Flex_Rollout_Version_000030 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to drop flex_*_cdr.RecordType. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType;";
-		$this->rollbackSQL[] = "CREATE TABLE {$strCDRDB}.RecordType LIKE {$strCDRDB}.RecordType_bk;" .
 		$this->rollbackSQL[] = "INSERT INTO {$strCDRDB}.RecordType (SELECT * FROM {$strCDRDB}.RecordType_bk);";
+		$this->rollbackSQL[] = "CREATE TABLE {$strCDRDB}.RecordType LIKE {$strCDRDB}.RecordType_bk;";
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType;";
 		
 		$strSQL = "CREATE TABLE {$strCDRDB}.RecordType LIKE {$strFlexDB}.RecordType;";
 		if (!$qryQuery->Execute($strSQL))
@@ -61,7 +61,7 @@ class Flex_Rollout_Version_000030 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to Copy flex_*.RecordType to flex_*_cdr.RecordType. ' . $qryQuery->Error());
 		}
-				
+		
 	}
 	
 	function rollback()
