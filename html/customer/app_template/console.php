@@ -125,9 +125,28 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
 		// Setup BreadCrumb Menu
-		$strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
-		BreadCrumb()->SetCurrentPage($strWelcome);
-		
+		# $strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
+		# BreadCrumb()->SetCurrentPage($strWelcome);
+
+		// Breadcrumb menu
+		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
+		if (DBO()->Account->BusinessName->Value)
+		{
+			// Display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Make Payment - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
+		}
+		elseif (DBO()->Account->TradingName->Value)
+		{
+			// Display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Make Payment - " . substr(DBO()->Account->TradingName->Value, 0, 60));
+		}
+		else
+		{
+			// Don't display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Make Payment");
+		}
+
+
 		$this->LoadPage('pay');
 
 		return TRUE;	 	
@@ -229,8 +248,26 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
 		// Setup BreadCrumb Menu
-		$strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
-		BreadCrumb()->SetCurrentPage($strWelcome);
+		# $strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
+		# BreadCrumb()->SetCurrentPage($strWelcome);
+		
+		// Breadcrumb menu
+		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
+		if (DBO()->Account->BusinessName->Value)
+		{
+			// Display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Edit Account - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
+		}
+		elseif (DBO()->Account->TradingName->Value)
+		{
+			// Display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Edit Account - " . substr(DBO()->Account->TradingName->Value, 0, 60));
+		}
+		else
+		{
+			// Don't display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Edit Account");
+		}
 		
 		$this->LoadPage('edit');
 
