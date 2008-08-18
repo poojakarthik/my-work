@@ -162,8 +162,7 @@
  			else
  			{
  				$arrBankDetails	= $this->_selBankDetails->Fetch();
- 				Debug($arrBankDetails);
- 				$arrAccountDetails['DirectDebit']	= ($arrBankDetails) ? $arrBankDetails : FALSE;
+ 				$arrAccountDetails['DirectDebit']	= $arrBankDetails;
  			}
  			
  			// Get Credit Card Details
@@ -175,8 +174,7 @@
  			else
  			{
  				$arrCreditCard	= $this->_selCreditCard->Fetch();
- 				Debug($arrCreditCard);
- 				$arrAccountDetails['DirectDebit']	= ($arrCreditCard) ? $arrCreditCard : FALSE;
+ 				$arrAccountDetails['DirectDebit']	= $arrCreditCard;
  			}
  			
  			// Return Account Details
