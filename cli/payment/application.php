@@ -865,6 +865,8 @@
 	 	$intAccountGroupsCharged	= 0;
 	 	foreach ($this->_arrDirectDebitModules as $intCustomerGroup=>&$arrBillingTypes)
 	 	{
+		 	CliEcho(" * ".GetConstantDescription($intCustomerGroup, 'CustomerGroup'));
+		 	
 		 	foreach ($arrBillingTypes as $intBillingType=>&$modModule)
 		 	{
 		 		// HACKHACKHACK: Ensure we're only trying to Direct Debit people who should be
@@ -874,12 +876,14 @@
 		 			continue;
 		 		}
 		 		
+		 		CliEcho("\t * ".GetConstantDescription($intBillingType, 'BillingType'));
+		 		
 			 	// Get list of AccountGroups and debts to settle
 			 	if ($selAccountDebts->Execute(Array('CustomerGroup' => $intCustomerGroup, 'BillingType' => $intBillingType)))
 			 	{
 			 		while ($arrAccount	= $selAccountDebts->Fetch())
 			 		{
-				 		CliEcho("Debiting Account #{$arrAccount['Account']}...\t\t\t", FALSE);
+				 		CliEcho("\t\t + Debiting Account #{$arrAccount['Account']}...\t\t\t", FALSE);
 				 		
 				 		// Run the Module
 				 		$arrRunResult	= $modModule->Output($arrAccount);
@@ -892,7 +896,7 @@
 				 		{
 				 			// An Error Occurred
 				 			CliEcho("[ FAILED ]");
-				 			CliEcho("\t -- {$arrRunResult['Message']}{$arrRunResult['Description']}");
+				 			CliEcho("\t\t\t -- {$arrRunResult['Message']}{$arrRunResult['Description']}");
 				 		}
 			 		}
 			 		
@@ -938,10 +942,13 @@
 			 	else
 			 	{
 			 		// No Matches
-			 		CliEcho("There were no Accounts to debit.");
+			 		CliEcho("\t\t -- There were no Accounts to debit.");
 			 	}
 		 	}
 	 	}
+	 	
+	 	// Everything appears to have run fine
+	 	return Array('Success' => TRUE);
 	 }
  }
 
