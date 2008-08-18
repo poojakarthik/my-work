@@ -195,7 +195,7 @@
  		
  		// Get Account Details
  		$arrAccountDetails	= $this->_GetAccountDetails($arrRequest['Account']);
- 		if (!$arrAccountDetails || $arrAccountDetails['BankDetails'])
+ 		if (!$arrAccountDetails || !$arrAccountDetails['BankDetails'])
  		{
  			return Array('Success' => FALSE, 'Description' => "Unable to retrieve Account Details");
  		}
