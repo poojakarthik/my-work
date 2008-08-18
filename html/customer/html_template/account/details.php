@@ -16,7 +16,10 @@
  * @class	HtmlTemplateAccountDetails
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountDetails extends HtmlTemplate
+ 
+
+
+ class HtmlTemplateAccountDetails extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -65,6 +68,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 *
 	 * @method
 	 */
+	 
 	function Render()
 	{
 		echo "<div class='NarrowContent'>\n";
@@ -96,66 +100,112 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->UnbilledCDRs->RenderOutput();
 		
 		// Display the details of their primary address
-		echo "<br/><h2 class='Account'>Address Details</h2>\n";
-		if (trim(DBO()->Account->Address1->Value))
-		{
-			DBO()->Account->Address1->RenderOutput();
-		}
-		if (trim(DBO()->Account->Address2->Value))
-		{
-			DBO()->Account->Address2->RenderOutput();
-		}
-		if (trim(DBO()->Account->Suburb->Value))
-		{
-			DBO()->Account->Suburb->RenderOutput();
-		}
-		if (trim(DBO()->Account->State->Value))
-		{
-			DBO()->Account->State->RenderOutput();
-		}
-		if (trim(DBO()->Account->Postcode->Value))
-		{
-			DBO()->Account->Postcode->RenderOutput();
-		}
-		if (trim(DBO()->Account->Country->Value))
-		{
-			DBO()->Account->Country->RenderOutput();
-		}
 		
+		$db_user = $GLOBALS['**arrDatabase']['flex']['User'];
+		$db_pass = $GLOBALS['**arrDatabase']['flex']['Password'];
+		$db_name = $GLOBALS['**arrDatabase']['flex']['Database'];
+		$db_host = $GLOBALS['**arrDatabase']['flex']['URL'];
+
+		$MySQLDatabase = new MySQLDatabase($db_host, $db_name, $db_user, $db_pass, $db_handler);
+		# Debug only...
+		# if($MySQLDatabase->is_connected()){
+		#  echo "connected...";
+		# }
+		$intAccountId = DBO()->Account->Id->Value;
+		$arrAccountTable = $MySQLDatabase->execute("SELECT * FROM Account WHERE Id='$intAccountId'");
+
+		while($data = mysql_fetch_array($arrAccountTable))
+		{
+			foreach($data as $key=>$val)
+			{
+				$$key = $val;
+			}
+		}
+
+		print "<br/>
+		<TABLE>
+		<TR>
+			<TD colspan=\"2\"><IMG SRC=\"./img/template/account.gif\" WIDTH=\"16\" HEIGHT=\"16\" BORDER=\"0\" ALT=\"\"> <B>Address Details</B></TD>
+		</TR>
+		<TR>
+			<TD width=\"200\">Address1: </TD>
+			<TD>$Address1</TD>
+		</TR>
+		<TR>
+			<TD>Address2: </TD>
+			<TD>$Address2</TD>
+		</TR>
+		<TR>
+			<TD>Suburb: </TD>
+			<TD>$Suburb</TD>
+		</TR>
+		<TR>
+			<TD>State: </TD>
+			<TD>$State</TD>
+		</TR>
+		<TR>
+			<TD>Postcode: </TD>
+			<TD>$Postcode</TD>
+		</TR>
+		<TR>
+			<TD>Country: </TD>
+			<TD>$Country</TD>
+		</TR>
+		</TABLE>
+		<br/>";
+
 		// Display the contact details
-		echo "<br/><h2 class='Account'>Contact Details</h2>\n";
-		if (trim(DBO()->Contact->Title->Value))
+		$arrContactTable = $MySQLDatabase->execute("SELECT * FROM Contact WHERE Account='$intAccountId'");
+
+		while($data = mysql_fetch_array($arrContactTable))
 		{
-			DBO()->Contact->Title->RenderOutput();
+			foreach($data as $key=>$val)
+			{
+				$$key = $val;
+			}
 		}
-		if (trim(DBO()->Contact->FirstName->Value))
-		{
-			DBO()->Contact->FirstName->RenderOutput();
-		}
-		if (trim(DBO()->Contact->LastName->Value))
-		{
-			DBO()->Contact->LastName->RenderOutput();
-		}
-		if (trim(DBO()->Contact->JobTitle->Value))
-		{
-			DBO()->Contact->JobTitle->RenderOutput();
-		}
-		if (trim(DBO()->Contact->Email->Value))
-		{
-			DBO()->Contact->Email->RenderOutput();
-		}
-		if (trim(DBO()->Contact->Phone->Value))
-		{
-			DBO()->Contact->Phone->RenderOutput();
-		}
-		if (trim(DBO()->Contact->Mobile->Value))
-		{
-			DBO()->Contact->Mobile->RenderOutput();
-		}
-		if (trim(DBO()->Contact->Fax->Value))
-		{
-			DBO()->Contact->Fax->RenderOutput();
-		}
+
+
+
+		print "
+		<TABLE>
+		<TR>
+			<TD colspan=\"2\"><IMG SRC=\"./img/template/account.gif\" WIDTH=\"16\" HEIGHT=\"16\" BORDER=\"0\" ALT=\"\"> <B>Contact Details</B></TD>
+		</TR>
+		<TR>
+			<TD width=\"200\">Title: </TD>
+			<TD>$Title</TD>
+		</TR>
+		<TR>
+			<TD>FirstName: </TD>
+			<TD>$FirstName</TD>
+		</TR>
+		<TR>
+			<TD>LastName: </TD>
+			<TD>$LastName</TD>
+		</TR>
+		<TR>
+			<TD>JobTitle: </TD>
+			<TD>$JobTitle</TD>
+		</TR>
+		<TR>
+			<TD>Email: </TD>
+			<TD>$Email</TD>
+		</TR>
+		<TR>
+			<TD>Phone: </TD>
+			<TD>$Phone</TD>
+		</TR>
+		<TR>
+			<TD>Mobile: </TD>
+			<TD>$Mobile</TD>
+		</TR>
+		<TR>
+			<TD>Fax: </TD>
+			<TD>$Fax</TD>
+		</TR>
+		</TABLE>
+		";
 		
 		echo "<div class='Seperator'></div>\n";
 		
