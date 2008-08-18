@@ -56,6 +56,8 @@
 	public $intBaseFileType		= RESOURCE_TYPE_FILE_EXPORT_SECUREPAY_CREDIT_CARD_FILE;
 	public $_strDeliveryType	= 'EmailAttach';
 	
+	public $strDescription;
+	
 	
  	//------------------------------------------------------------------------//
 	// __construct
