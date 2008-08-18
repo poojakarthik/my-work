@@ -106,7 +106,7 @@ class CarrierModule
 	 	
 	 	if (is_string($mixValue))
 	 	{
-	 		$intCount	= preg_match_all("/<(Config|Function)::([A-Za-z]+)>/i", $mixValue, $arrResults, PREG_SET_ORDER);
+	 		$intCount	= preg_match_all("/<(Config|Function|Property)::([A-Za-z]+)>/i", $mixValue, $arrResults, PREG_SET_ORDER);
 	 	}
 	 	
 	 	//CliEcho("$intCount Placeholders found in '$mixValue'");
