@@ -101,7 +101,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "   </tr>\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		echo "        <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/square_black.gif\"> <a href=\"./flex.php/Console/Edit/\"><font size=\"2\">Edit Account Details</font></a>\n";
+		echo "        <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/square_black.gif\"> <a href=\"./flex.php/Console/Edit/\"><font size=\"2\">Edit Contact Details</font></a>\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "</table>\n";
