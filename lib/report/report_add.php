@@ -26,13 +26,25 @@ $arrSQLFields	= Array();
 //----------------------------------------------------------------------------//
 
 // General Data
-$arrDataReport['Name']			= "Service Line Status Report";
-$arrDataReport['Summary']		= "Displays a List of all ";
+$arrDataReport['Name']			= "New Direct Debits in a Period";
+$arrDataReport['Summary']		= "Displays a List of all new Direct Debit entries in Flex and the Employee who added them in a specified period.";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "Service JOIN Account ON Service.Account = Account.Id";
-$arrDataReport['SQLWhere']		= "(LineStatus = <LineStatus> OR <LineStatus> IS NULL) AND (PreselectionStatus = <PreselectionStatus> OR <PreselectionStatus> IS NULL) AND (Service.Status = <ServiceStatus> OR <ServiceStatus> IS NULL) AND Account.Archived != 1 AND Service.Status != 403 AND ServiceType = 102";
+$arrDataReport['SQLTable']		= "(Account JOIN CreditCard USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = CreditCard.employee_id";
+$arrDataReport['SQLWhere']		= "Account.Archived != 1 AND CreditCard.Archived = 0 
+									AND CAST(CreditCard.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
+									GROUP BY CreditCard.employee_id, AccountGroup
+									
+									UNION
+									
+									SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, Account.Id AS `Account #`, Account.BusinessName AS `Business Name`, DATE_FORMAT(CreditCard.created_on, '%d/%m/%Y') AS `Created On`
+									FROM (Account JOIN DirectDebit USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DirectDebit.employee_id
+									WHERE Account.Archived != 1 AND DirectDebit.Archived = 0 
+									AND CAST(DirectDebit.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
+									GROUP BY DirectDebit.employee_id, AccountGroup
+									
+									ORDER BY ISNULL(EmployeeName) ASC, EmployeeName ASC, CreatedOn";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
@@ -41,84 +53,29 @@ $arrDocReq[]	= "Account";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
+$arrSQLSelect['Employee']				['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
+
 $arrSQLSelect['Account #']				['Value']	= "Account.Id";
 $arrSQLSelect['Account #']				['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Business Name']			['Value']	= "Account.BusinessName";
 
-$arrSQLSelect['Service FNN']			['Value']	= "Service.FNN";
-$arrSQLSelect['Service FNN']			['Type']	= EXCEL_TYPE_FNN;
-
-$arrSQLSelect['Full Line Status']		['Value']	= "CASE WHEN Contact.Phone = '' THEN Contact.Mobile ELSE Contact.Phone END";
-
-$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(Account.CreatedOn, '%d/%m/%Y')";
+$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(CreditCard.created_on, '%d/%m/%Y')";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 
 // SQL Fields
-$arrColumns = Array();
-$arrColumns['Label']	= "description";
-$arrColumns['Value']	= "id";
-
-$arrSelect = Array();
-$arrSelect['Table']			= "service_line_status";
-$arrSelect['Columns']		= $arrColumns;
-$arrSelect['Where']			= "1";
-$arrSelect['OrderBy']		= "";
-$arrSelect['Limit']			= NULL;
-$arrSelect['GroupBy']		= NULL;
-$arrSelect['ValueType']		= "dataInteger";
-
-$arrSelect['IgnoreField']	= Array('Allow' => TRUE, 'Label' => "* Show All *", 'Value' => NULL, 'Position' => 'First');
-$arrSQLFields['LineStatus']			= Array(
-												'Type'					=> "StatementSelect",
-												'DBSelect'				=> $arrSelect,
-												'Documentation-Entity'	=> "Service",
-												'Documentation-Field'	=> "LineStatus",
-											);
-
-$arrColumns = Array();
-$arrColumns['Label']	= "description";
-$arrColumns['Value']	= "id";
-
-$arrSelect = Array();
-$arrSelect['Table']			= "service_line_status";
-$arrSelect['Columns']		= $arrColumns;
-$arrSelect['Where']			= "1";
-$arrSelect['OrderBy']		= "";
-$arrSelect['Limit']			= NULL;
-$arrSelect['GroupBy']		= NULL;
-$arrSelect['ValueType']		= "dataInteger";
-
-$arrSelect['IgnoreField']	= Array('Label' => "* Show All *", 'Value' => NULL, 'Position' => 'First');
-$arrSQLFields['PreselectionStatus']	= Array(
-												'Type'					=> "StatementSelect",
-												'DBSelect'				=> $arrSelect,
-												'Documentation-Entity'	=> "Service",
-												'Documentation-Field'	=> "PreselectionStatus",
-											);
-
-$arrColumns = Array();
-$arrColumns['Label']	= "description";
-$arrColumns['Value']	= "id";
-
-$arrSelect = Array();
-$arrSelect['Table']			= "service_status";
-$arrSelect['Columns']		= $arrColumns;
-$arrSelect['Where']			= "1";
-$arrSelect['OrderBy']		= "";
-$arrSelect['Limit']			= NULL;
-$arrSelect['GroupBy']		= NULL;
-$arrSelect['ValueType']		= "dataInteger";
-
-$arrSelect['IgnoreField']	= Array('Label' => "* Show All *", 'Value' => NULL);			
-$arrSQLFields['ServiceStatus']		= Array(
-												'Type'					=> "StatementSelect",
-												'DBSelect'				=> $arrSelect,
-												'Documentation-Entity'	=> "Service",
-												'Documentation-Field'	=> "Status",
-											);
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 //----------------------------------------------------------------------------//
