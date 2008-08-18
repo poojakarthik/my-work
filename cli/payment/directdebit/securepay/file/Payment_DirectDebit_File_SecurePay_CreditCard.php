@@ -104,7 +104,7 @@
  		$this->_arrModuleConfig['ReplyTo']			['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['ReplyTo']			['Description']	= "Reply-To Email Address";
  		
- 		$this->_arrModuleConfig['EmailContent']		['Default']		= "<Addressee>,\n\n Please find the <Property::CustomerGroup> Direct Debit (Credit Card) Report for <Function::Date> attached to this email.  Please reply to this email if you have any issues.\n\nYellow Billing Services ";
+ 		$this->_arrModuleConfig['EmailContent']		['Default']		= "<Addressee>,\n\nPlease find the <Property::CustomerGroup> Direct Debit (Credit Card) Report for <Function::Date> attached to this email.  Please reply to this email if you have any issues.\n\nYellow Billing Services ";
  		$this->_arrModuleConfig['EmailContent']		['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['EmailContent']		['Description']	= "Content for the Email";
 		
