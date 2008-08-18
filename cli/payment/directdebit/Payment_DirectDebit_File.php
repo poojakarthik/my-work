@@ -110,7 +110,7 @@
 	 */
  	protected function _Render($bolRenderToFile = TRUE)
  	{
- 		$strDirectory		= FILES_BASE_PATH."export/payment/directdebit/".strtolower(GetConstantDescription($this->_intModuleCarrier, 'Carrier'))."/".get_class($this)."/";
+ 		$strDirectory		= FILES_BASE_PATH."export/payment/directdebit/".strtolower(GetConstantName($this->intCustomerGroup, 'CustomerGroup'))."/".strtolower(GetConstantDescription($this->_intModuleCarrier, 'Carrier'))."/".get_class($this)."/";
  		$arrResult			= $this->_RenderLineTXT($this->_arrFilename, FALSE, '');
  		$this->_strFilePath	= $strDirectory . $arrResult['Line'];
  		
