@@ -151,7 +151,7 @@
 			$message .= "This message is to confirm your account has been updated.\n\n";
 			$message .= "Request was made by IP $_SERVER[REMOTE_ADDR]\n";
 			$message .= "At the approximate time:" . date("D M j G:i:s T Y") . "\n\n";
-			$message .= "To view these changes plan login to your account.\n\n";
+			$message .= "To view these changes please login to your account.\n\n";
 			$message .= "Kind Regards\n";
 			$message .= "Customer Service Group\n";
 			$headers = 'From: ' . NOTIFICATION_REPLY_EMAIL . "\r\n" .
