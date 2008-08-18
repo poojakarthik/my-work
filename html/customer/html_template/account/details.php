@@ -111,6 +111,7 @@
 		# if($MySQLDatabase->is_connected()){
 		#  echo "connected...";
 		# }
+		/*
 		$intAccountId = DBO()->Account->Id->Value;
 		$arrAccountTable = $MySQLDatabase->execute("SELECT * FROM Account WHERE Id='$intAccountId'");
 
@@ -206,7 +207,7 @@
 		</TR>
 		</TABLE>
 		";
-		
+		*/
 		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";
