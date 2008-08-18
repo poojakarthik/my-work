@@ -71,9 +71,104 @@
 	 
 	function Render()
 	{
+		
+		$db_user = $GLOBALS['**arrDatabase']['flex']['User'];
+		$db_pass = $GLOBALS['**arrDatabase']['flex']['Password'];
+		$db_name = $GLOBALS['**arrDatabase']['flex']['Database'];
+		$db_host = $GLOBALS['**arrDatabase']['flex']['URL'];
+
+		// Connect to database using the new execute function in MySQLDatabase Class.
+		$MySQLDatabase = new MySQLDatabase($db_host, $db_name, $db_user, $db_pass, $db_handler);
+		
+		// Get account Id, we need to auto fill some form details.
+		$intAccountId = DBO()->Account->Id->Value;
+		
+		// Grab the contact details
+		$arrContactTable = $MySQLDatabase->execute("SELECT * FROM Contact WHERE Account='$intAccountId'");
+			
+		while($data = mysql_fetch_array($arrContactTable))
+		{
+			foreach($data as $key=>$val)
+			{
+				$$key = $val;
+			}
+		}
+		
 		echo "<div class='NarrowContent'>\n";
-	
-		echo "TO Add: Credit card form...";
+		$mixShowName = "$FirstName $LastName";
+		if($Title!==""){
+			$mixShowName = "$Title $FirstName $LastName";
+		}
+		
+		print "Making a payment is fast and easy,<br/>Please supply the required details below.<br/><br/>";
+		print "
+		<!-- We dont want any caching of this page.. -->
+		<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\">
+		<form method=\"POST\" action=\"./flex.php/Console/Pay/\">
+		<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
+		<TABLE>
+		<TR>
+			<TD colspan=\"2\"><IMG SRC=\"./img/template/account.gif\" WIDTH=\"16\" HEIGHT=\"16\" BORDER=\"0\" ALT=\"\"> <B>Payment Details</B></TD>
+		</TR>
+		<TR>
+			<TD width=\"200\">Email*</TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"\" VALUE=\"$Email\"></TD>
+		</TR>
+		<TR>
+			<TD>Name on card*</TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"\" VALUE=\"$mixShowName\"></TD>
+		</TR>
+		<TR>
+			<TD>Cred Card Type*</TD>
+			<TD><SELECT NAME=\"\">
+				<OPTION VALUE=\"\" SELECTED>
+				<OPTION VALUE=\"\">
+			</SELECT></TD>
+		</TR>
+		<TR>
+			<TD>Credit Card Number*</TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"\"></TD>
+		</TR>
+		<TR>
+			<TD>Expiry</TD>
+			<TD><SELECT NAME=\"\">
+				<OPTION VALUE=\"\" SELECTED>month
+				<OPTION VALUE=\"\">
+			</SELECT>
+			<SELECT NAME=\"\">
+				<OPTION VALUE=\"\" SELECTED>year
+				<OPTION VALUE=\"\">
+			</SELECT></TD>
+		</TR>
+		<TR>
+			<TD>CVV*</TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"\" SIZE=\"5\"></TD>
+		</TR>
+		<TR>
+			<TD>Amount to pay*</TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"\" SIZE=\"10\"></TD>
+		</TR>
+		<TR>
+			<TD>\$ to SecurePay</TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"\" VALUE=\"WILL NEED JAVA SCRIPT\" DISABLED></TD>
+		</TR>
+		<TR>
+			<TD>\$ Outstanding after paymnt</TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"\" VALUE=\"WILL NEED JAVA SCRIPT\" DISABLED></TD>
+		</TR>
+		<TR>
+			<TD>Enable Direct Debit.</TD>
+			<TD><INPUT TYPE=\"checkbox\" NAME=\"\"></TD>
+		</TR>
+		</TABLE>
+		<br/>
+		<TABLE>
+		<TR>
+			<TD width=\"200\"></TD>
+			<TD><INPUT TYPE=\"submit\" VALUE=\"Make Payment\"></TD>
+		</TR>
+		</TABLE>
+		";
 		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";
