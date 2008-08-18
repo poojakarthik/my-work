@@ -21,26 +21,46 @@ class Flex_Rollout_Version_000030 extends Flex_Rollout_Version
 		$strFlexDB	= $GLOBALS['**arrDatabase']['flex']['Database'];
 		
 		//	1:	Back up flex_*_cdr.RecordType to flex_*_cdr.RecordType_bk
-		$strSQL = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType_bk; \n" .
-					"CREATE TABLE {$strCDRDB}.RecordType_bk LIKE {$strCDRDB}.RecordType; \n" .
-					"INSERT INTO {$strCDRDB}.RecordType_bk (SELECT * FROM {$strCDRDB}.RecordType);";
+		$strSQL = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType_bk;";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to Back up flex_*_cdr.RecordType to flex_*_cdr.RecordType_bk. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to drop backup table flex_*_cdr.RecordType_bk. ' . $qryQuery->Error());
+		}
+		
+		$strSQL = "CREATE TABLE {$strCDRDB}.RecordType_bk LIKE {$strCDRDB}.RecordType;";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to create backup table flex_*_cdr.RecordType_bk. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType_bk;";
 		
+		$strSQL = "INSERT INTO {$strCDRDB}.RecordType_bk (SELECT * FROM {$strCDRDB}.RecordType);";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to back up flex_*_cdr.RecordType to flex_*_cdr.RecordType_bk. ' . $qryQuery->Error());
+		}
+		
 		//	2:	Copy flex_*.RecordType to flex_*_cdr.RecordType
-		$strSQL = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType;\n" .
-					"CREATE TABLE {$strCDRDB}.RecordType LIKE {$strFlexDB}.RecordType;\n" .
-					"INSERT INTO {$strCDRDB}.RecordType (SELECT * FROM {$strFlexDB}.RecordType);\n";
+		$strSQL = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to drop flex_*_cdr.RecordType. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType;";
+		$this->rollbackSQL[] = "CREATE TABLE {$strCDRDB}.RecordType LIKE {$strCDRDB}.RecordType_bk;" .
+		$this->rollbackSQL[] = "INSERT INTO {$strCDRDB}.RecordType (SELECT * FROM {$strCDRDB}.RecordType_bk);";
+		
+		$strSQL = "CREATE TABLE {$strCDRDB}.RecordType LIKE {$strFlexDB}.RecordType;";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed create table flex_*_cdr.RecordType like flex_*.RecordType. ' . $qryQuery->Error());
+		}
+		
+		$strSQL = "INSERT INTO {$strCDRDB}.RecordType (SELECT * FROM {$strFlexDB}.RecordType);";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to Copy flex_*.RecordType to flex_*_cdr.RecordType. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType;\n" .
-								"CREATE TABLE {$strCDRDB}.RecordType LIKE {$strCDRDB}.RecordType_bk;\n" .
-								"INSERT INTO {$strCDRDB}.RecordType (SELECT * FROM {$strCDRDB}.RecordType_bk);\n";
 				
 	}
 	
