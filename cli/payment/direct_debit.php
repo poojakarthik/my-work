@@ -6,6 +6,16 @@ $arrConfig		= LoadApplication();
 $appPayments	= new ApplicationPayment($arrConfig);
 
 // Run Direct Debits
-$appPayments->RunDirectDebits();
-exit(0);
+$arrResponse	= $appPayments->RunDirectDebits();
+
+if ($arrResponse['Success'] === TRUE || $arrResponse === TRUE)
+{
+	// Direct Debits run successfully
+	exit(0);
+}
+else
+{
+	// Error
+	Debug($arrResponse['Description']);
+}
 ?>
