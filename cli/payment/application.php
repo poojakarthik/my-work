@@ -128,7 +128,6 @@
  			
  			CliEcho("\t + ".GetConstantDescription($arrModule['customer_group'], 'CustomerGroup')." : ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".GetConstantDescription($modModule->intBillingType, 'BillingType'));	
  		}
- 		Debug($this->_arrDirectDebitModules);
  		
  		CliEcho();
 	}

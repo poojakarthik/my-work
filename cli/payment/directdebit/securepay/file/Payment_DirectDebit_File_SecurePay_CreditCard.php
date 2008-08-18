@@ -56,7 +56,8 @@
 	public $intBaseFileType		= RESOURCE_TYPE_FILE_EXPORT_SECUREPAY_CREDIT_CARD_FILE;
 	public $_strDeliveryType	= 'EmailAttach';
 	
-	public $strDescription;
+	public	$strDescription;
+	public	$intBillingType		= BILLING_TYPE_CREDIT_CARD;
 	
 	
  	//------------------------------------------------------------------------//
@@ -212,8 +213,7 @@
  		$arrRendered['FlexAccount']		= $arrRequest['Account'];
  		$arrRendered['CustomerName']	= substr(preg_replace("/\W+/misU", '_', trim($arrRequest['BusinessName'])), 0, 32);
  		
- 		$arrRendered['**Type']		= $arrRequest['Type'];
- 		$arrRendered['**Request']	= $arrRequest['Id'];
+ 		$arrRendered['**Type']		= BILLING_TYPE_CREDIT_CARD;
  		$this->_arrFileContent[]	= $arrRendered;
  		
  		// Return the modified Request
