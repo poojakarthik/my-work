@@ -86,11 +86,11 @@
  															"Id = <Account>");
  		
  		$this->_selCreditCard		= new StatementSelect(	"Account JOIN CreditCard ON Account.CreditCard = CreditCard.Id",
- 															"*",
+ 															"CreditCard.*",
  															"Account.Id = <Account>");
  		
  		$this->_selBankDetails		= new StatementSelect(	"Account JOIN DirectDebit ON Account.DirectDebit = DirectDebit.Id",
- 															"*",
+ 															"DirectDebit.*",
  															"Account.Id = <Account>");
  	}
  	
@@ -141,8 +141,8 @@
 	 * 
 	 * @param	integer	$intAccount		Account to get details for
 	 * 
-	 * @return	mixed						array: Account Details
-	 * 										FALSE: Error
+	 * @return	mixed						array	: Account Details
+	 * 										string	: Error
 	 *
 	 * @method
 	 */
@@ -157,24 +157,24 @@
  			if ($this->_selBankDetails->Execute(Array('Account' => $intAccount)) === FALSE)
  			{
  				// DB Error
- 				Debug($this->_selBankDetails->Error());
- 				return FALSE;
+ 				return "ERROR: _selBankDetails failed: ".$this->_selBankDetails->Error();
  			}
  			else
  			{
- 				$arrAccountDetails['DirectDebit']	= ($arrBankDetails = $this->_selBankDetails->Fetch()) ? $arrBankDetails : FALSE;
+ 				$arrBankDetails	= $this->_selBankDetails->Fetch();
+ 				$arrAccountDetails['DirectDebit']	= ($arrBankDetails) ? $arrBankDetails : FALSE;
  			}
  			
  			// Get Credit Card Details
  			if ($this->_selCreditCard->Execute(Array('Account' => $intAccount)) === FALSE)
  			{
  				// DB Error
- 				Debug($this->_selCreditCard->Error());
- 				return FALSE;
+ 				return "ERROR: _selCreditCard failed: ".$this->_selCreditCard->Error();
  			}
  			else
  			{
- 				$arrAccountDetails['DirectDebit']	= ($arrBankDetails = $this->_selCreditCard->Fetch()) ? $arrBankDetails : FALSE;
+ 				$arrCreditCard	= $this->_selCreditCard->Fetch();
+ 				$arrAccountDetails['DirectDebit']	= ($arrCreditCard) ? $arrCreditCard : FALSE;
  			}
  			
  			// Return Account Details
@@ -186,13 +186,12 @@
  			if ($this->_selCustomerDetails->Error())
  			{
  				// DB Error
- 				Debug($this->_selCustomerDetails->Error());
- 				return FALSE;
+ 				return "ERROR: _selCustomerDetails failed: ".$this->_selCustomerDetails->Error();
  			}
  			else
  			{
  				// Bad Account #
- 				return FALSE;
+ 				return "Account '$intAccount' does not exist!";
  			}
  		}
  	}
