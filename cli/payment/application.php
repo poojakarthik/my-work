@@ -124,7 +124,7 @@
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
  			$modModule	= new $arrModule['Module']($arrModule['Carrier'], $arrModule['customer_group']);
- 			$this->_arrDirectDebitModules[$arrModule['customer_group']][$modModule->intBillingType]	= &$modModule;
+ 			$this->_arrDirectDebitModules[$arrModule['customer_group']][$modModule->intBillingType]	= $modModule;
  			
  			CliEcho("\t + ".GetConstantDescription($arrModule['customer_group'], 'CustomerGroup')." : ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".GetConstantDescription($modModule->intBillingType, 'BillingType'));	
  		}
