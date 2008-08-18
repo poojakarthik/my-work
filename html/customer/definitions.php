@@ -25,8 +25,10 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
- 
+
+// Email used for confirmation when account is edited.
+ Define ('NOTIFICATION_REPLY_EMAIL', 	"noreply@customerservicegroup.com");
+
 //----------------------------------------------------------------------------//
 // CONSTANTS
 //----------------------------------------------------------------------------//
