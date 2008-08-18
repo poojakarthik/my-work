@@ -162,6 +162,7 @@
  			else
  			{
  				$arrBankDetails	= $this->_selBankDetails->Fetch();
+ 				Debug($arrBankDetails);
  				$arrAccountDetails['DirectDebit']	= ($arrBankDetails) ? $arrBankDetails : FALSE;
  			}
  			
@@ -174,6 +175,7 @@
  			else
  			{
  				$arrCreditCard	= $this->_selCreditCard->Fetch();
+ 				Debug($arrCreditCard);
  				$arrAccountDetails['DirectDebit']	= ($arrCreditCard) ? $arrCreditCard : FALSE;
  			}
  			
