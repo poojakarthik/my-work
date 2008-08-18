@@ -154,7 +154,7 @@
 			$message .= "To view these changes plan login to your account.\n\n";
 			$message .= "Kind Regards\n";
 			$message .= "Customer Service Group\n";
-			$headers = 'From: noreply@customerservicegroup.com' . "\r\n" .
+			$headers = 'From: ' . NOTIFICATION_REPLY_EMAIL . "\r\n" .
 				'X-Mailer: Flex/' . phpversion();
 			# supress email errors.
 			@mail($to, $subject, $message, $headers);
