@@ -157,7 +157,7 @@
 			$headers = 'From: noreply@customerservicegroup.com' . "\r\n" .
 				'X-Mailer: Flex/' . phpversion();
 			# supress email errors.
-			mail($to, $subject, $message, $headers);
+			@mail($to, $subject, $message, $headers);
 
 		}
 		
