@@ -128,6 +128,8 @@
  			
  			CliEcho("\t + ".GetConstantDescription($arrModule['customer_group'], 'CustomerGroup')." : ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".GetConstantDescription($modModule->intBillingType, 'BillingType'));	
  		}
+ 		Debug($this->_arrDirectDebitModules);
+ 		
  		CliEcho();
 	}
 	
@@ -946,6 +948,7 @@
 			 	}
 		 	}
 	 	}
+	 	CliEcho();
 	 	
 	 	// Everything appears to have run fine
 	 	return Array('Success' => TRUE);
