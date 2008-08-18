@@ -49,7 +49,7 @@ class Flex_Data_Model
 		$modelDef = array();
 		$modelDef['Name']		= $tableName; 
 		$modelDef['Type']		= 'InnoDB'; 
-		$modelDef['Id']			= 'Id'; 
+		//$modelDef['Id']			= 'Id'; 
 		$modelDef['Index'][]	= ''; 
 		$modelDef['Unique'][]	= ''; 
 
@@ -200,6 +200,11 @@ class Flex_Data_Model
 			$modelDef['Column'][$colDef['Field']]['Null']		= $colDef['Null'] === "YES";
 			$modelDef['Column'][$colDef['Field']]['Default']	= $colDef['Default'] === null;
 			$modelDef['Column'][$colDef['Field']]['ObLib']		= $colDef['ObLib'];
+		}
+		else
+		{
+			// This is the Id for the Table
+			$modelDef['Id']	= $colDef['Field'];
 		}
 	}
 }
