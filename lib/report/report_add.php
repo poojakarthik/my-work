@@ -60,7 +60,7 @@ $arrSQLSelect['Account #']				['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Business Name']			['Value']	= "Account.BusinessName";
 
-$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(CreditCard.created_on, '%d/%m/%Y')";
+$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(DD.created_on, '%d/%m/%Y')";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
