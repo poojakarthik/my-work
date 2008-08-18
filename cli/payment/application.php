@@ -798,6 +798,8 @@
 	 */
 	 function RunDirectDebits($bolForce = FALSE)
 	 {
+	 	CliEcho("\n[ PERFORMING DIRECT DEBITS ]\n");
+	 	
 	 	$intRunDate	= time();
 	 	
 	 	// Are the Direct Debits due?
@@ -875,19 +877,22 @@
 			 	// Get list of AccountGroups and debts to settle
 			 	if ($selAccountDebts->Execute(Array('CustomerGroup' => $intCustomerGroup, 'BillingType' => $intBillingType)))
 			 	{
-			 		while ($arrAccountGroup	= $selAccountDebts)
+			 		while ($arrAccount	= $selAccountDebts->Fetch())
 			 		{
+				 		CliEcho("Debiting Account #{$arrAccount['Account']}...\t\t\t", FALSE);
+				 		
 				 		// Run the Module
-				 		$arrRunResult	= $modModule->Output($arrAccountGroup);
-				 		if ($arrRunResult['Success'] === TRUE)
+				 		$arrRunResult	= $modModule->Output($arrAccount);
+				 		if ($arrRunResult['Success'] === TRUE || $arrRunResult['Pass'] === TRUE || $arrRunResult === TRUE)
 				 		{
 				 			// Success
-				 			// TODO
+				 			CliEcho("[   OK   ]");
 				 		}
 				 		else
 				 		{
 				 			// An Error Occurred
-				 			// TODO
+				 			CliEcho("[ FAILED ]");
+				 			CliEcho("\t -- {$arrRunResult['Message']}{$arrRunResult['Description']}");
 				 		}
 			 		}
 			 		
@@ -905,7 +910,7 @@
 				 			if ($ubiSchedule->Execute($arrSchedule) === FALSE)
 				 			{
 				 				// Error
-				 				// TODO
+				 				return Array('Success' => FALSE, 'Description' => "ERROR: \$ubiSchedule failed: ".$ubiSchedule->Error());
 				 			}
 				 			else
 				 			{
@@ -915,25 +920,25 @@
 				 		}
 				 		elseif ($arrExportResult['Success'] === FALSE)
 				 		{
-				 			// Error
-				 			// TODO
+				 			// Error -- pass through
+				 			return $arrExportResult;
 				 		}
 				 		else
 				 		{
 				 			// Success, no Charges Sent (aka Failed for a sane reason)
-				 			// TODO
+				 			// TODO -- should this ever happen?
 				 		}
 			 		}
 			 	}
 			 	elseif ($selAccountDebts->Error())
 			 	{
 			 		// An Error Occurred
-			 		// TODO
+				 	return Array('Success' => FALSE, 'Description' => "ERROR: \$selAccountDebts failed: ".$selAccountDebts->Error());
 			 	}
 			 	else
 			 	{
 			 		// No Matches
-			 		// TODO
+			 		CliEcho("There were no Accounts to debit.");
 			 	}
 		 	}
 	 	}

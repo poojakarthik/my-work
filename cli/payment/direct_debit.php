@@ -13,11 +13,15 @@ $arrResponse	= $appPayments->RunDirectDebits();
 if ($arrResponse['Success'] === TRUE || $arrResponse === TRUE)
 {
 	// Direct Debits run successfully
+	CliEcho("Direct Debits successfully run!");
+	Debug($arrResponse);
 	exit(0);
 }
 else
 {
 	// Error
+	CliEcho("Direct Debits failed!");
 	Debug($arrResponse['Description']);
+	exit(1);
 }
 ?>
