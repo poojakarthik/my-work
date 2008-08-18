@@ -448,6 +448,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								if (array_search('ownerId', $editableValues) !== FALSE)
 								{
 									?><select name='ownerId' class="<?=$invalid?>"><?php
+									if (!$ticket->ownerId)
+									{
+										?><option value="" selected="selected">Unassigned</option><?php
+									}
 									$owners = Ticketing_User::listAll();
 									foreach ($owners as $owner)
 									{

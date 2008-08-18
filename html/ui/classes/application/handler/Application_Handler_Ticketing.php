@@ -324,8 +324,16 @@ class Application_Handler_Ticketing extends Application_Handler
 									$value =  $currentUser->isAdminUser() ? Ticketing_User::getForId(intval($value)) : NULL;
 									if (!$value && $currentUser->isAdminUser())
 									{
-										$ticket->ownerId = NULL;
-										$invalidValues[$editableValue] = 'You must specify an owner for the ticket.';
+										if ($action == 'edit' && $ticket->ownerId)
+										{
+											$ticket->ownerId = NULL;
+											$invalidValues[$editableValue] = 'You cannot unassign a ticket. Please specify an owner for the ticket.';
+										}
+										else if ($action == 'create')
+										{
+											$ticket->ownerId = NULL;
+											$invalidValues[$editableValue] = 'Please specify an owner for the ticket.';
+										}
 									}
 									else if ($currentUser->isAdminUser())
 									{
@@ -363,9 +371,16 @@ class Application_Handler_Ticketing extends Application_Handler
 									break;
 
 								case 'accountId':
+									if (!$ticket->accountId && !$value)
+									{
+										$ticket->accountId = NULL;
+										//$invalidValues[$editableValue] = 'You must specify an account for the ticket.';
+										break;
+									}
 									if (!$value)
 									{
-										$invalidValues[$editableValue] = 'You must specify an account for the ticket.';
+										$ticket->accountId = NULL;
+										$invalidValues[$editableValue] = 'You cannot remove a ticket from an account.';
 										break;
 									}
 									// Need to check that the account exists
@@ -380,7 +395,6 @@ class Application_Handler_Ticketing extends Application_Handler
 										$ticket->accountId = $value->id;
 										$ticket->customerGroupId = $value->customerGroup;
 									}
-									break;
 									break;
 
 								case 'contactId':
