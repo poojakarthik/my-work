@@ -178,6 +178,7 @@
  			}
  			
  			// Return Account Details
+ 			Debug($arrAccountDetails);
  			return $arrAccountDetails;
  		}
  		else
