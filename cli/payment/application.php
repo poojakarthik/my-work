@@ -909,19 +909,6 @@
 				 		{
 				 			// Success, Charges Sent
 				 			$intAccountGroupsCharged	+= $arrExportResult['AccountGroupsCharged'];
-				 			
-				 			// Update automatic_invoice_action_id Entry
-				 			$arrSchedule['actioned_datetime']	= date("Y-m-d H:i:s", $intRunDate);
-				 			if ($ubiSchedule->Execute($arrSchedule) === FALSE)
-				 			{
-				 				// Error
-				 				return Array('Success' => FALSE, 'Description' => "ERROR: \$ubiSchedule failed: ".$ubiSchedule->Error());
-				 			}
-				 			else
-				 			{
-				 				// Success
-				 				// TODO
-				 			}
 				 		}
 				 		elseif ($arrExportResult['Success'] === FALSE)
 				 		{
@@ -952,6 +939,15 @@
 		 	}
 	 	}
 	 	CliEcho();
+		
+		// Update automatic_invoice_action_id Entry
+		CliEcho("* Saving Direct Debit State back to DB...");
+		$arrSchedule['actioned_datetime']	= date("Y-m-d H:i:s", $intRunDate);
+		if ($ubiSchedule->Execute($arrSchedule) === FALSE)
+		{
+			// Error
+			return Array('Success' => FALSE, 'Description' => "ERROR: \$ubiSchedule failed: ".$ubiSchedule->Error());
+		}
 	 	
 	 	// Everything appears to have run fine
 	 	return Array('Success' => TRUE);

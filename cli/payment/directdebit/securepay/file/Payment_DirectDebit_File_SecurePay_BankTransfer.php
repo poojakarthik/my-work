@@ -210,10 +210,10 @@
  		$arrRendered	= Array();
  		$arrRendered['BSB']				= (int)$arrAccountDetails['DirectDebit']['BSB'];
  		$arrRendered['BankAccount']		= (int)$arrAccountDetails['DirectDebit']['AccountNumber'];
- 		$arrRendered['AccountName']		= substr(preg_replace("/\W+/misU", '_', trim($arrAccountDetails['DirectDebit']['AccountName'])), 0, 32);
+ 		$arrRendered['AccountName']		= substr(preg_replace("/[\W\ ]+/misU", '_', trim($arrAccountDetails['DirectDebit']['AccountName'])), 0, 32);
  		$arrRendered['AmountCharged']	= ceil($arrRequest['Charge'] * 100);
  		$arrRendered['FlexAccount']		= $arrRequest['Account'];
- 		$arrRendered['CustomerName']	= substr(preg_replace("/\W+/misU", '_', trim($arrRequest['BusinessName'])), 0, 32);
+ 		$arrRendered['CustomerName']	= substr(preg_replace("/[\W\ ]+/misU", '_', trim($arrRequest['BusinessName'])), 0, 32);
  		
  		$arrRendered['**Type']		= BILLING_TYPE_DIRECT_DEBIT;
  		$this->_arrFileContent[]	= $arrRendered;
