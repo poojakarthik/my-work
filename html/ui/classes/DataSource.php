@@ -1,5 +1,22 @@
 <?php
 
+//----------------------------------------------------------------------------//
+// Database Framework
+//----------------------------------------------------------------------------//
+/**
+ * Database
+ *
+ *
+ * @package	ui_app
+ * @class	Database
+ *  
+ * MySQLDatabase($db_host, $db_name, $db_user, $db_pass, $db_handler);
+ * 
+ * 
+ */
+
+
+
 class SOAPDataSource {
 
 }
