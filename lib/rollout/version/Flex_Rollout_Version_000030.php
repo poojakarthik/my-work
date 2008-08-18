@@ -21,9 +21,9 @@ class Flex_Rollout_Version_000030 extends Flex_Rollout_Version
 		$strFlexDB	= $GLOBALS['**arrDatabase']['flex']['Database'];
 		
 		//	1:	Back up flex_*_cdr.RecordType to flex_*_cdr.RecordType_bk
-		$strSQL = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType_bk;\n" .
-					"CREATE TABLE {$strCDRDB}.RecordType_bk LIKE {$strCDRDB}.RecordType;\n" .
-					"INSERT INTO {$strCDRDB}.RecordType_bk (SELECT * FROM {$strCDRDB}.RecordType);\n";
+		$strSQL = "DROP TABLE IF EXISTS {$strCDRDB}.RecordType_bk; \n" .
+					"CREATE TABLE {$strCDRDB}.RecordType_bk LIKE {$strCDRDB}.RecordType; \n" .
+					"INSERT INTO {$strCDRDB}.RecordType_bk (SELECT * FROM {$strCDRDB}.RecordType);";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to Back up flex_*_cdr.RecordType to flex_*_cdr.RecordType_bk. ' . $qryQuery->Error());
@@ -64,7 +64,7 @@ class Flex_Rollout_Version_000030 extends Flex_Rollout_Version
 		$strCDRDB	= $GLOBALS['**arrDatabase']['cdr']['Database'];
 		$strFlexDB	= $GLOBALS['**arrDatabase']['flex']['Database'];
 		
-		// Remove flex_*_cdr.RecordType_bk Backup Table
+		//	3:	Remove flex_*_cdr.RecordType_bk Backup Table (at commit)
 		$qryQuery = new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		if (!$qryQuery->Execute("DROP TABLE IF EXISTS {$strCDRDB}.RecordType_bk"))
 		{
