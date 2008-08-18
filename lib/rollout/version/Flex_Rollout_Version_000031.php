@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Version 28 of database update.
+ * Version 31 of database update.
  * This version: -
- *	1:	Introduces Sales and Winbacks categories to ticketing system
+ *	1:	Introduces Payment Query category to ticketing system
  */
 
-class Flex_Rollout_Version_000028 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000031 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 
@@ -14,16 +14,22 @@ class Flex_Rollout_Version_000028 extends Flex_Rollout_Version
 	{
 		$qryQuery	= new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$dbaDB		= DataAccess::getDataAccess(FLEX_DATABASE_CONNECTION_ADMIN);
-		
+
+		// The live db will have had this value hacked in already. Remove it first so that the rollout does not fail!
+		$strSQL = "DELETE FROM ticketing_category WHERE id = 13";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to remove existing entry from ticketing_category table. ' . $qryQuery->Error());
+		}
+
 		// 1:	Increase size of fields used for storing paths in the ticketing_config table
 		$strSQL = "INSERT INTO ticketing_category (id, name, description, const_name) VALUES
-						(11, 'Sales', 'Sales', 'TICKETING_CATEGORY_SALES'),
-						(12, 'Winbacks', 'Winbacks', 'TICKETING_CATEGORY_WINBACKS')";
+						(13, 'Payment Query', 'Payment query', 'TICKETING_CATEGORY_PAYMENT_QUERY')";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to insert into ticketing_category table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DELETE FROM ticketing_category WHERE id in (11, 12)";
+		$this->rollbackSQL[] = "DELETE FROM ticketing_category WHERE id = 13";
 	}
 
 	function rollback()
