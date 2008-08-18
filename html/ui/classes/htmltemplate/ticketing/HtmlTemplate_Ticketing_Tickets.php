@@ -204,7 +204,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>ID</th>
 				<th<?php 

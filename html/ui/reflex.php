@@ -7,7 +7,7 @@ require_once '../../lib/classes/Flex.php';
 if (!Flex::continueSession(Flex::FLEX_ADMIN_SESSION))
 {
 	// Redirect the user to the login page
-	header("Location: " . Flex::getUrlBase() . "/login.php");
+	header("Location: " . Flex::getUrlBase() . "login.php");
 	exit;
 }
 

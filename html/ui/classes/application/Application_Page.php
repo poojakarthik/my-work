@@ -254,22 +254,6 @@ class Application_Page extends Page
 	<body onload='Vixen.Init();'>
 		<div id='PopupHolder'></div>
 		<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>\n";
-
-/*		echo "
-<html>
-	<head>
-		<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" />
-		<meta name=\"generator\" content=\"Flex\" />
-		<title>Flex - $this->_strPageName</title>
-		<base href='$strBaseDir'/>\n";
-		$this->RenderHeaderJS();
-		$this->RenderCSS();
-		echo "
-	</head>
-	<body onload='Vixen.Init();'>
-		<div id='PopupHolder'></div>
-		<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>\n";
-*/
 	}
 
 	function RenderSearchField_REDUNDANT()

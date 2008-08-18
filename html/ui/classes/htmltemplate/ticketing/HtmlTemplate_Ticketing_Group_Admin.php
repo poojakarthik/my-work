@@ -55,7 +55,7 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 						Customer Group Settings: <?=$customerGroup->name?>
 					</div>
 					<div id="caption_options" name="caption_options">
-						<a href="<?=Flex::getUrlBase()?>/reflex.php/Ticketing/GroupAdmin/<?=$customerGroup->id?>/Edit" >Edit</a>
+						<a href="<?=Flex::getUrlBase()?>reflex.php/Ticketing/GroupAdmin/<?=$customerGroup->id?>/Edit" >Edit</a>
 					</div>
 					</div>
 				</caption>

@@ -50,7 +50,7 @@ class HtmlTemplate_Ticketing_Admin extends FlexHtmlTemplate
 						System Settings
 					</div>
 					<div id="caption_options" name="caption_options">
-						<a href="<?=Flex::getUrlBase()?>/reflex.php/Ticketing/Admin/Edit" >Edit</a>
+						<a href="<?=Flex::getUrlBase()?>reflex.php/Ticketing/Admin/Edit" >Edit</a>
 					</div>
 					</div>
 				</caption>
