@@ -863,7 +863,7 @@
 	 	$selAccountDebts	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Account, SUM(Invoice.Balance) AS Charge", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")", "Account.Id", NULL, "Account.Id HAVING Charge >= {$arrDDMin['direct_debit_minimum']}");
 		
 	 	// Process Direct Debits for each Billing Type
-	 	$intAccountGroupsCharged	= 0;
+	 	$intAccountsCharged	= 0;
 	 	foreach ($this->_arrDirectDebitModules as $intCustomerGroup=>&$arrBillingTypes)
 	 	{
 		 	CliEcho(" * ".GetConstantDescription($intCustomerGroup, 'CustomerGroup'));
@@ -905,12 +905,12 @@
 		 			$arrExportResult	= $modModule->Export();
 			 		if ($arrExportResult['Pass'] === TRUE)
 			 		{
-				 		if (is_int($arrExportResult['AccountGroupsCharged']))
+				 		if (is_int($arrExportResult['AccountsCharged']))
 				 		{
 				 			// Success, Charges Sent
-				 			$intAccountGroupsCharged	+= $arrExportResult['AccountGroupsCharged'];
+				 			$intAccountsCharged	+= $arrExportResult['AccountsCharged'];
 				 		}
-				 		elseif ($arrExportResult['Success'] === FALSE)
+				 		elseif ($arrExportResult['Pass'] === FALSE)
 				 		{
 				 			// Error -- pass through
 				 			return $arrExportResult;
@@ -950,7 +950,7 @@
 		}
 	 	
 	 	// Everything appears to have run fine
-	 	return Array('Success' => TRUE);
+	 	return Array('Success' => TRUE, 'AccountsCharged' => $intAccountsCharged);
 	 }
  }
 

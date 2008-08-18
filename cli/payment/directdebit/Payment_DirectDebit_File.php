@@ -973,6 +973,7 @@
  		// Make sure this file doesn't get exported again
  		$this->bolExported	= TRUE;
  		
+ 		$mixResult['AccountsCharged']	= count($this->_arrFileContent);
  		return $mixResult;
  	}
  	
