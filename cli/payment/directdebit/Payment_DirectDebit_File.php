@@ -628,21 +628,7 @@
  		{
  			return Array('Pass' => FALSE, 'Description' => "Unable to update FileExport to Delivered Status");
  		}
- 		else
- 		{
-	 		// Update ProvisioningRequest records
-	 		$arrCols	= Array();
-	 		$arrCols['Status']		= REQUEST_STATUS_DELIVERED;
-	 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
-	 		$arrCols['FileExport']	= $this->_intFileExport;
-	 		$ubiRequest				= new StatementUpdateById("ProvisioningRequest", $arrCols);
-	 		foreach ($this->_arrFileContent as $arrRequest)
-	 		{
-	 			$arrCols['Id']	= $arrRequest['**Request'];
-	 			$ubiRequest->Execute($arrCols);
-	 		}
- 		}
- 		 		
+		
 		return Array('Pass' => TRUE, 'Description' => "File Successfully Delivered");
 	 }
 	
