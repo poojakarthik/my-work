@@ -77,6 +77,7 @@
  		$this->intCarrier		= $intCarrier;
  		$this->intCustomerGroup	= $intCustomerGroup;
  		$this->_strDelimiter	= ",";
+ 		$this->_strNewLine		= "\n";
  		$this->_arrDefine		= Array();
  		$this->_arrFileContent	= Array();
  		$this->bolExported		= FALSE;
