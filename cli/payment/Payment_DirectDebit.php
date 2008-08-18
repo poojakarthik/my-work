@@ -162,7 +162,7 @@
  			}
  			else
  			{
- 				$arrAccountDetails['DirectDebit']	= ($arrBankDetails = $this->_selBankDetails->Fetch()) ? $arrBankDetails : NULL;
+ 				$arrAccountDetails['DirectDebit']	= ($arrBankDetails = $this->_selBankDetails->Fetch()) ? $arrBankDetails : FALSE;
  			}
  			
  			// Get Credit Card Details
@@ -174,11 +174,11 @@
  			}
  			else
  			{
- 				$arrAccountDetails['DirectDebit']	= ($arrBankDetails = $this->_selCreditCard->Fetch()) ? $arrBankDetails : NULL;
+ 				$arrAccountDetails['DirectDebit']	= ($arrBankDetails = $this->_selCreditCard->Fetch()) ? $arrBankDetails : FALSE;
  			}
  			
  			// Return Account Details
- 			Debug($arrAccountDetails);
+ 			//Debug($arrAccountDetails);
  			return $arrAccountDetails;
  		}
  		else
