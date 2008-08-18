@@ -31,18 +31,18 @@ $arrDataReport['Summary']		= "Displays a List of all new Direct Debit entries in
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "(Account JOIN CreditCard USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = CreditCard.employee_id";
-$arrDataReport['SQLWhere']		= "Account.Archived != 1 AND CreditCard.Archived = 0 
-									AND CAST(CreditCard.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
-									GROUP BY CreditCard.employee_id, AccountGroup
+$arrDataReport['SQLTable']		= "(Account JOIN CreditCard DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id";
+$arrDataReport['SQLWhere']		= "Account.Archived != 1 AND DD.Archived = 0 
+									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
+									GROUP BY DD.employee_id, AccountGroup
 									
 									UNION
 									
-									SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, Account.Id AS `Account #`, Account.BusinessName AS `Business Name`, DATE_FORMAT(CreditCard.created_on, '%d/%m/%Y') AS `Created On`
-									FROM (Account JOIN DirectDebit USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DirectDebit.employee_id
-									WHERE Account.Archived != 1 AND DirectDebit.Archived = 0 
-									AND CAST(DirectDebit.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
-									GROUP BY DirectDebit.employee_id, AccountGroup
+									SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, Account.Id AS `Account #`, Account.BusinessName AS `Business Name`, DATE_FORMAT(DD.created_on, '%d/%m/%Y') AS `Created On`
+									FROM (Account JOIN DirectDebit DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id
+									WHERE Account.Archived != 1 AND DD.Archived = 0 
+									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
+									GROUP BY DD.employee_id, AccountGroup
 									
 									ORDER BY ISNULL(EmployeeName) ASC, EmployeeName ASC, CreatedOn";
 $arrDataReport['SQLGroupBy']	= "";
