@@ -5,6 +5,8 @@ require_once("../../flex.require.php");
 $arrConfig		= LoadApplication();
 $appPayments	= new ApplicationPayment($arrConfig);
 
+define("PAYMENTS_DEBUG_MODE"	, TRUE);
+
 // Run Direct Debits
 $arrResponse	= $appPayments->RunDirectDebits();
 

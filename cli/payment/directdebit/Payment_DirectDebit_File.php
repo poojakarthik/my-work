@@ -554,6 +554,19 @@
 					}
 					$strEmailAddress	= implode(', ', $arrEmails);
 				}
+				else
+				{
+					if ($this->_selEmailNotification->Error())
+					{
+						// DB Error
+						return Array('Pass' => FALSE, 'Message' => "ERROR: _selEmailNotification failed: ".$this->_selEmailNotification->Error());
+					}
+					else
+					{
+						return Array('Pass' => FALSE, 'Message' => "There is no addressee defined!");
+					}
+				}
+				
 				// FROM
 				if ($this->_selEmailNotification->Execute(Array('CustomerGroup' => $this->intCustomerGroup, 'Usage' => EMAIL_ADDRESS_USAGE_FROM)))
 				{
@@ -564,6 +577,19 @@
 					}
 					$strReplyTo			= implode(', ', $arrEmails);
 				}
+				else
+				{
+					if ($this->_selEmailNotification->Error())
+					{
+						// DB Error
+						return Array('Pass' => FALSE, 'Message' => "ERROR: _selEmailNotification failed: ".$this->_selEmailNotification->Error());
+					}
+					else
+					{
+						return Array('Pass' => FALSE, 'Message' => "There is no 'from' address defined!");
+					}
+				}
+				
 				// CC
 				if ($this->_selEmailNotification->Execute(Array('CustomerGroup' => $this->intCustomerGroup, 'Usage' => EMAIL_ADDRESS_USAGE_CC)))
 				{
@@ -573,6 +599,11 @@
 						$arrEmails[]	= $arrEmail['email_address'];
 					}
 					$strCC				= implode(', ', $arrEmails);
+				}
+				elseif ($this->_selEmailNotification->Error())
+				{
+					// DB Error
+					return Array('Pass' => FALSE, 'Message' => "ERROR: _selEmailNotification failed: ".$this->_selEmailNotification->Error());
 				}
 	 			
 	 			// Deliver

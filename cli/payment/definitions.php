@@ -31,8 +31,6 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
-define("PAYMENTS_DEBUG_MODE"	, TRUE);
-
 // user name
 define("USER_NAME"	, "Payment_app");
 

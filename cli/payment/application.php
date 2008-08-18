@@ -823,7 +823,7 @@
 	 			}
 	 			else
 	 			{
-	 				return Array('Success' => FALSE, 'Description' => "ERROR: No Payment Terms found in the payment_terms Table!");
+	 				return Array('Success' => FALSE, 'Description' => "ERROR: Direct Debits have not been scheduled!");
 	 			}
 	 		}
 	 		$arrSchedule	= $selSchedule->Fetch();
