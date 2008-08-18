@@ -199,7 +199,7 @@
  		{
  			return Array('Success' => FALSE, 'Description' => "Unable to retrieve Account Details : ".$arrAccountDetails);
  		}
- 		elseif (!$arrAccountDetails['BankDetails'])
+ 		elseif (!$arrAccountDetails['DirectDebit'])
  		{
  			return Array('Success' => FALSE, 'Description' => "Unable to retrieve Account Details : ".print_r($arrAccountDetails, TRUE));
  		}
@@ -208,9 +208,9 @@
  		// RENDER
  		//--------------------------------------------------------------------//
  		$arrRendered	= Array();
- 		$arrRendered['BSB']				= (int)$arrAccountDetails['BankDetails']['BSB'];
- 		$arrRendered['BankAccount']		= (int)$arrAccountDetails['BankDetails']['AccountNumber'];
- 		$arrRendered['AccountName']		= substr(preg_replace("/\W+/misU", '_', trim($arrAccountDetails['BankDetails']['AccountName'])), 0, 32);
+ 		$arrRendered['BSB']				= (int)$arrAccountDetails['DirectDebit']['BSB'];
+ 		$arrRendered['BankAccount']		= (int)$arrAccountDetails['DirectDebit']['AccountNumber'];
+ 		$arrRendered['AccountName']		= substr(preg_replace("/\W+/misU", '_', trim($arrAccountDetails['DirectDebit']['AccountName'])), 0, 32);
  		$arrRendered['AmountCharged']	= ceil($arrRequest['Charge'] * 100);
  		$arrRendered['FlexAccount']		= $arrRequest['Account'];
  		$arrRendered['CustomerName']	= substr(preg_replace("/\W+/misU", '_', trim($arrRequest['BusinessName'])), 0, 32);
