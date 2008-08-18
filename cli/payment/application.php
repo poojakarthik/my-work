@@ -903,7 +903,7 @@
 			 		
 			 		// Export/Send the module
 		 			$arrExportResult	= $modModule->Export();
-			 		if ($arrExportResult['Success'] === TRUE)
+			 		if ($arrExportResult['Pass'] === TRUE)
 			 		{
 				 		if (is_int($arrExportResult['AccountGroupsCharged']))
 				 		{
@@ -933,6 +933,10 @@
 				 			// Success, no Charges Sent (aka Failed for a sane reason)
 				 			// TODO -- should this ever happen?
 				 		}
+			 		}
+			 		else
+			 		{
+			 			return Array('Success' => FALSE, 'Description' => $arrExportResult['Description']);
 			 		}
 			 	}
 			 	elseif ($selAccountDebts->Error())
