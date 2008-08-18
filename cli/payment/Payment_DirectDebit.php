@@ -172,7 +172,7 @@
  			}
  			else
  			{
- 				$arrAccountDetails['DirectDebit']	= $this->_selCreditCard->Fetch();
+ 				$arrAccountDetails['CreditCard']	= $this->_selCreditCard->Fetch();
  			}
  			
  			// Return Account Details
