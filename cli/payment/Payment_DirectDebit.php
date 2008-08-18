@@ -166,7 +166,7 @@
  			}
  			
  			// Get Credit Card Details
- 			if (!$this->_selCreditCard->Execute(Array('Account' => $intAccount)))
+ 			if ($this->_selCreditCard->Execute(Array('Account' => $intAccount)) === FALSE)
  			{
  				// DB Error
  				Debug($this->_selCreditCard->Error());
