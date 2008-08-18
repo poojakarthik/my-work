@@ -84,12 +84,6 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "<table width='100%' border='0' class=\"main_table\">\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		#echo "         $strViewUnbilledChargesLabel\n";
-		echo "        <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/square_black.gif\"> <a href=\"./flex.php/Console/Home/\"><font size=\"2\">Console Home</font></a><br/><br/>\n";
-		echo "      </td>\n";
-		echo "   </tr>\n";
-		echo "   <tr>\n";
-		echo "      <td>\n";
 		echo "        <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/square_black.gif\"> <a href=\"./flex.php/Console/Pay/\"><font size=\"2\">Pay Your Account Here</font></a>\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
