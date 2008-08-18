@@ -135,7 +135,19 @@
 				$$key = $val;
 			}
 		}
-
+		unset($data);
+		
+		// Display the contact details
+		$arrContactTable = $MySQLDatabase->execute("SELECT * FROM Contact WHERE Account='$intAccountId'");
+			
+		while($data = mysql_fetch_array($arrContactTable))
+		{
+			foreach($data as $key=>$val)
+			{
+				$$key = $val;
+			}
+		}
+			
 		/* 
 		 * If the form has been submitted update the database 
 		 * with the new user details and send an email to the user.
@@ -202,22 +214,7 @@
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Country\" VALUE=\"$Country\"></TD>
 			</TR>
 			</TABLE>
-			<br/>";
-			
-			// Display the contact details
-			$arrContactTable = $MySQLDatabase->execute("SELECT * FROM Contact WHERE Account='$intAccountId'");
-			
-			while($data = mysql_fetch_array($arrContactTable))
-			{
-				foreach($data as $key=>$val)
-				{
-					$$key = $val;
-				}
-			}
-			
-			
-			
-			print "
+			<br/>
 			<TABLE>
 			<TR>
 			<TD colspan=\"2\"><IMG SRC=\"./img/template/account.gif\" WIDTH=\"16\" HEIGHT=\"16\" BORDER=\"0\" ALT=\"\"> <B>Contact Details</B></TD>
