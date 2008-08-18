@@ -81,15 +81,22 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		$strViewInvoicesAndPayments = Href()->ViewInvoicesAndPayments(DBO()->Account->Id->Value);
 		$strViewInvoicesAndPaymentsLabel = "<span><a href='$strViewInvoicesAndPayments' >&nbsp;&nbsp;View Invoices and Payments</a></span>";
 		
-		echo "<table width='100%' border='0'>\n";
+		echo "<table width='100%' border='0' class=\"main_table\">\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		echo "         $strViewUnbilledChargesLabel\n";
+		#echo "         $strViewUnbilledChargesLabel\n";
+		echo "        <a href=\"./flex.php/Account/ViewUnbilledCharges/?Account.Id=" . DBO()->Account->Id->Value . "\"><font size=\"2\">View Unbilled Charges</font></a>\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		echo "         $strViewInvoicesAndPaymentsLabel\n";
+		#echo "         $strViewInvoicesAndPaymentsLabel\n";
+		echo "        <a href=\"./flex.php/Account/ListInvoicesAndPayments/?Account.Id=" . DBO()->Account->Id->Value . "\"><font size=\"2\">View Invoices and Payments</font></a>\n";
+		echo "      </td>\n";
+		echo "   </tr>\n";
+		echo "   <tr>\n";
+		echo "      <td>\n";
+		echo "        <br/><a href=\"./flex.php/Console/Edit/\"><font size=\"2\">Edit Account Details</font></a>\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "</table>\n";
