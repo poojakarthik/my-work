@@ -81,7 +81,7 @@
  		$this->_arrDefine		= Array();
  		$this->_arrFileContent	= Array();
  		$this->bolExported		= FALSE;
- 		$this->_intMinRequests	= 0;
+ 		$this->_intMinRequests	= 1;
  		$this->_strFileContents	= '';
  		
  		// Statements
