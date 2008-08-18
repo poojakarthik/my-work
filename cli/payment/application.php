@@ -123,11 +123,12 @@
  		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_PAYMENT_DIRECT_DEBIT));
  		while ($arrModule = $this->_selCarrierModules->Fetch())
  		{
- 			$modModule	= new $arrModule['Module']($arrModule['Carrier']);
+ 			$modModule	= new $arrModule['Module']($arrModule['Carrier'], $arrModule['customer_group']);
  			$this->_arrDirectDebitModules[$arrModule['customer_group']][$modModule->intBillingType]	= &$modModule;
  			
  			CliEcho("\t + ".GetConstantDescription($arrModule['customer_group'], 'CustomerGroup')." : ".GetConstantDescription($modModule->intBillingType, 'BillingType'));	
  		}
+ 		CliEcho();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -847,12 +848,12 @@
 			if ($selDDMin->Error())
 			{
 				// DB Error
-				// TODO
+				return Array('Success' => FALSE, 'Description' => "ERROR: \$selDDMin failed: ".$selDDMin->Error());
 			}
 			else
 			{
 				// No payment_terms defined
-				// TODO
+				return Array('Success' => FALSE, 'Description' => "ERROR: No payment_terms defined!");
 			}
 		}
 		$arrDDMin			= $selDDMin->Fetch();
