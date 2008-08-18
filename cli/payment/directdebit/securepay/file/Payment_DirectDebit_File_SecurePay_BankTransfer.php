@@ -201,7 +201,7 @@
  		}
  		elseif (!$arrAccountDetails['DirectDebit'])
  		{
- 			return Array('Success' => FALSE, 'Description' => "Unable to retrieve Account Details : ".print_r($arrAccountDetails, TRUE));
+ 			return Array('Success' => FALSE, 'Description' => "Unable to retrieve Bank Transfer Details : ".print_r($arrAccountDetails, TRUE));
  		}
  		
  		//--------------------------------------------------------------------//

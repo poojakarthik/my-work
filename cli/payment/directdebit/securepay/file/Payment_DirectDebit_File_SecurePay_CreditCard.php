@@ -196,7 +196,7 @@
  		}
  		elseif (!$arrAccountDetails['CreditCard'])
  		{
- 			return Array('Success' => FALSE, 'Description' => "Unable to retrieve Account Details : ".print_r($arrAccountDetails, TRUE));
+ 			return Array('Success' => FALSE, 'Description' => "Unable to retrieve Credit Card Details : ".print_r($arrAccountDetails, TRUE));
  		}
  		
  		//--------------------------------------------------------------------//
