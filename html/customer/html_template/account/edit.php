@@ -124,18 +124,6 @@
 		$mixUpdateAccountQuery .= " WHERE Id='$intAccountId'";
 		$mixUpdateContactQuery .= " WHERE Account='$intAccountId'";
 		
-		/* 
-		 * If the form has been submitted update the database 
-		 * with the new user details and send an email to the user.
-		 * */
-		if(isset($intUpdateAccountId))
-		{
-			// Found form input.
-			$MySQLDatabase->execute("$mixUpdateAccountQuery");
-			$MySQLDatabase->execute("$mixUpdateContactQuery");
-			#@mail();
-		}
-		
 		// Select from database using the new execute function in MySQLDatabase Class.
 		$arrAccountTable = $MySQLDatabase->execute("SELECT * FROM Account WHERE Id='$intAccountId'");
 		
@@ -148,6 +136,31 @@
 			}
 		}
 
+		/* 
+		 * If the form has been submitted update the database 
+		 * with the new user details and send an email to the user.
+		 * */
+		if(isset($intUpdateAccountId))
+		{
+			// Found form input.
+			$MySQLDatabase->execute("$mixUpdateAccountQuery");
+			$MySQLDatabase->execute("$mixUpdateContactQuery");
+			$to      = "$Email";
+			$subject = 'Confirmation: Account Updated';
+			$message = 'Hello,\n\n';
+			$message .= "This message is to confirm your account has been updated.\n\n";
+			$message .= "Request was made by IP $_SERVER[REMOTE_ADDR]\n";
+			$message .= "At the approximate time:" . date("D M j G:i:s T Y") . "\n\n";
+			$message .= "To view these changes plan login to your account.\n\n";
+			$message .= "Kind Regards\n";
+			$message .= "Customer Service Group\n";
+			$headers = 'From: noreply@customerservicegroup.com' . "\r\n" .
+				'X-Mailer: Flex/' . phpversion();
+			# supress email errors.
+			mail($to, $subject, $message, $headers);
+
+		}
+		
 		if(isset($intUpdateAccountId))
 		{
 			print "Thank you for taking the time to update your account,<br/><font color=\"green\">your changes have been completed. <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/check.gif\"></font><br/><br/>";
