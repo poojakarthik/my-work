@@ -35,18 +35,15 @@ $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= 	"(" . 
 										"(" .
 											"(" .
-												"(" .
-													"Service LEFT JOIN Account ON Account.Id = Service.Account" .
-												") " .
-												"LEFT JOIN Contact ON Account.PrimaryContact = Contact.Id" .
+												"Service LEFT JOIN Account ON Account.Id = Service.Account" .
 											") " .
-											"LEFT JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service" .
+											"LEFT JOIN Contact ON Account.PrimaryContact = Contact.Id" .
 										") " .
-										"LEFT JOIN RatePlan ON SRP.RatePlan = RatePlan.Id" .
+										"LEFT JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service" .
 									") " .
-									"LEFT JOIN Service ServiceCount ON Account.Id = Service.Account";
+									"LEFT JOIN RatePlan ON SRP.RatePlan = RatePlan.Id" .
 
-$arrDataReport['SQLWhere']		= "Service.Status = 400 AND ADDDATE(CAST(Service.LatestCDR AS DATE), INTERVAL 30 DAY) BETWEEN <StartDate> AND <EndDate> AND ServiceType = 101";
+$arrDataReport['SQLWhere']		= "Service.Status = 400 AND ADDDATE(CAST(Service.LatestCDR AS DATE), INTERVAL 30 DAY) BETWEEN <StartDate> AND <EndDate> AND Service.ServiceType = 101";
 $arrDataReport['SQLGroupBy']	= "Service.Id ORDER BY Account.Id";
 
 // Documentation Reqs
@@ -69,9 +66,6 @@ $arrSQLSelect['Lost Service FNN']		['Type']	= EXCEL_TYPE_FNN;
 $arrSQLSelect['Lost Service Plan']		['Value']	= "RatePlan.Name";
 
 $arrSQLSelect['Last Tolled Date']		['Value']	= "Service.LatestCDR";
-
-$arrSQLSelect['Active Services']		['Value']	= "COUNT(DISTINCT CASE WHEN ServiceCount.ClosedOn IS NULL THEN ServiceCount.Id ELSE NULL END)";
-$arrSQLSelect['Active Services']		['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
