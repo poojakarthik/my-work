@@ -21,38 +21,59 @@ $arrDocReq		= Array();
 $arrSQLSelect	= Array();
 $arrSQLFields	= Array();
 
-//----------------------------------------------------------------------------//
-// Direct Debits by Employee Summary
-//----------------------------------------------------------------------------//
-
-// General Data
-$arrDataReport['Name']			= "Direct Debits by Employee Summary";
-$arrDataReport['Summary']		= "Displays a list of Employees, and how many Direct Debit Accounts they've set up in a specified period.";
+ 
+ //---------------------------------------------------------------------------//
+ // LOST MOBILE SERVICES
+ //---------------------------------------------------------------------------//
+ 
+$arrDataReport['Name']			= "Lost Services (Mobiles) in a Date Period";
+$arrDataReport['Summary']		= "Lists all of the Mobile Services which were lost in the specified period";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
-$arrDataReport['Priviledges']	= 2147483648;
+$arrDataReport['Priviledges']	= 2147483648;									// Debug
+//$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "(Employee LEFT JOIN CreditCard ON (Employee.Id = CreditCard.employee_id AND CreditCard.Archived = 0)) LEFT JOIN DirectDebit ON (Employee.Id = DirectDebit.employee_id AND DirectDebit.Archived = 0)";
-$arrDataReport['SQLWhere']		= "(DirectDebit.Id IS NULL OR CAST(DirectDebit.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>) AND (CreditCard.Id IS NULL OR CAST(CreditCard.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>)";
-$arrDataReport['SQLGroupBy']	= "Employee.Id\n HAVING `Credit Card` > 0 OR `Bank Transfer` > 0\n ORDER BY Employee ASC";
+$arrDataReport['SQLTable']		= 	"(" .
+										"(" .
+											"(" .
+												"Service LEFT JOIN Account ON Account.Id = Service.Account" .
+											") " .
+											"LEFT JOIN Contact ON Account.PrimaryContact = Contact.Id" .
+										") " .
+										"LEFT JOIN ServiceRatePlan SRP ON PR.Service = SRP.Service" .
+									") " .
+									"LEFT JOIN RatePlan ON SRP.RatePlan = RatePlan.Id";
+
+$arrDataReport['SQLWhere']		= "Service.Status = 400 AND SUBDATE(CAST(Service.LatestCDR AS DATE), INTERVAL 30 DAY) BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "Service.Id ORDER BY Account.Id";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
-$arrDocReq[]	= "Account";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Employee']				['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
+$arrSQLSelect['Account No.']			['Value']	= "Account.Id";
 
-$arrSQLSelect['Credit Card']			['Value']	= "COUNT(DISTINCT CreditCard.Id)";
-$arrSQLSelect['Credit Card']			['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Customer Name']			['Value']	= "Account.BusinessName";
 
-$arrSQLSelect['Bank Transfer']			['Value']	= "COUNT(DISTINCT DirectDebit.Id)";
-$arrSQLSelect['Bank Transfer']			['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Primary Contact']		['Value']	= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
+
+$arrSQLSelect['Contact Phone']			['Value']	= "Contact.Phone";
+$arrSQLSelect['Contact Phone']			['Type']	= EXCEL_TYPE_FNN;
+
+$arrSQLSelect['Lost Service FNN']		['Value']	= "Service.FNN";
+$arrSQLSelect['Lost Service FNN']		['Type']	= EXCEL_TYPE_FNN;
+
+$arrSQLSelect['Lost Service Plan']		['Value']	= "RatePlan.Name";
+
+$arrSQLSelect['Last Tolled Date']		['Value']	= "Service.LatestCDR";
+
+$arrSQLSelect['Active Services']		['Value']	= "COUNT(DISTINCT CASE WHEN Service.ClosedOn IS NULL THEN Service.Id ELSE NULL END)";
+$arrSQLSelect['Active Services']		['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
-
 // SQL Fields
+$arrColumns = Array();
 $arrSQLFields['StartDate']	= Array(
 										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "DataReport",
@@ -64,7 +85,6 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Field'	=> "EndDateRange",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-
 //----------------------------------------------------------------------------//
 // Insert the Data Report
 //----------------------------------------------------------------------------//
