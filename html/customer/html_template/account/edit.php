@@ -84,7 +84,6 @@
 		{
 			$$mixKey=$mixVal;
 		}
-
 		
 		// Display the details of their primary address
 		if(isset($intUpdateAccountId))
