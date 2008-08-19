@@ -86,11 +86,13 @@
 		}
 		
 		// Display the details of their primary address
-		if(isset($intUpdateAccountId))
+		$intAccountUpdated = DBO()->Account->Updated->Value;
+		echo "$intAccountUpdated";
+		if($intAccountUpdated=="1")
 		{
 			print "Thank you for taking the time to update your account,<br/><font color=\"green\">your changes have been completed. <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/check.gif\"></font><br/><br/>";
 		}
-		if(!isset($intUpdateAccountId))
+		if($intAccountUpdated!="1")
 		{
 			print "Thank you for taking the time to update your account,<br/>Please apply new options below.<br/><br/>";
 			print "
