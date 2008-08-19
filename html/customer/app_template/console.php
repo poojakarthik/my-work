@@ -362,8 +362,9 @@ class AppTemplateConsole extends ApplicationTemplate
 		# I couldnt find the style for the URL you are using?
 		if($arrFetchCustomerStyleConfiguration == "")
 		{
-			$this->LoadPage('Error');
-			return FALSE;
+			// Load Default Style...
+			$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `customer_style_configuration` WHERE customr_url=\"telcoblue.yellowbilling.com.au\"");
+			DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
 		}
 
 		$this->LoadPage('edit');
