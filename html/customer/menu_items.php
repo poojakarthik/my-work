@@ -131,7 +131,8 @@ class MenuItems
 	 */
 	function GetBaseURL()
 	{
-		return preg_replace("/flex.php\/.*$/", "", $_SERVER['REQUEST_URI']);
+		$strUrl = preg_replace("/flex.php\/.*$/", "", $_SERVER['REQUEST_URI']);
+		return preg_replace("/reflex.php\/.*$/", "", $strUrl);
 	}
 
 
