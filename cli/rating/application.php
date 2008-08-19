@@ -1718,6 +1718,29 @@
 
 
 	//------------------------------------------------------------------------//
+	// CDRFindRate()
+	//------------------------------------------------------------------------//
+	/**
+	 * CDRFindRate()
+	 *
+	 * Finds the appropriate Rate for a given CDR
+	 *
+	 * Finds the appropriate Rate for a given CDR
+	 *
+	 * @return	mixed	array	rate details
+	 * 					bool	FALSE if rate not found
+	 * @method
+	 */
+	public function CDRFindRate($arrCDR)
+	{
+		$this->_arrCurrentCDR	= $arrCDR;
+		
+		return $this->_FindRateNew();
+	}
+	 
+
+
+	//------------------------------------------------------------------------//
 	// _Debug()
 	//------------------------------------------------------------------------//
 	/**
