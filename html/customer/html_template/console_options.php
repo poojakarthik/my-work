@@ -75,33 +75,39 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		
 		// build the "View Unbilled Charges for Account" link
 		$strViewUnbilledCharges = Href()->ViewUnbilledChargesForAccount(DBO()->Account->Id->Value);
-		$strViewUnbilledChargesLabel = "<span><a href='$strViewUnbilledCharges' >&nbsp;&nbsp;View Unbilled Charges</a></span>";
+		$strViewUnbilledChargesLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strViewUnbilledCharges' >&nbsp;&nbsp;View Unbilled Charges</a></span>";
 
 		// build the "View Invoices and Payments" link
 		$strViewInvoicesAndPayments = Href()->ViewInvoicesAndPayments(DBO()->Account->Id->Value);
-		$strViewInvoicesAndPaymentsLabel = "<span><a href='$strViewInvoicesAndPayments' >&nbsp;&nbsp;View Invoices and Payments</a></span>";
-		
+		$strViewInvoicesAndPaymentsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strViewInvoicesAndPayments' >&nbsp;&nbsp;View Invoices and Payments</a></span>";
+
+		// EditContactDetails link
+		$strEditContactDetails = Href()->EditContactDetails(DBO()->Account->Id->Value);
+		$strEditContactDetailsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strEditContactDetails' >&nbsp;&nbsp;Edit Contact Details</a></span>";
+
+		// Make Payment link.
+		$strMakePayment = Href()->MakePayment(DBO()->Account->Id->Value);
+		$strMakePaymentLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strMakePayment' >&nbsp;&nbsp;Pay Your Account Here</a></span>";
+
 		echo "<table width='100%' border='0' class=\"main_table\">\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		echo "        <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/square_black.gif\"> <a href=\"./flex.php/Console/Pay/\"><font size=\"2\">Pay Your Account Here</font></a>\n";
+		echo "        $strMakePaymentLabel\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		#echo "         $strViewUnbilledChargesLabel\n";
-		echo "        <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/square_black.gif\"> <a href=\"./flex.php/Account/ViewUnbilledCharges/?Account.Id=" . DBO()->Account->Id->Value . "\"><font size=\"2\">View Unbilled Charges</font></a>\n";
+		echo "			$strViewUnbilledChargesLabel\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		#echo "         $strViewInvoicesAndPaymentsLabel\n";
-		echo "        <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/square_black.gif\"> <a href=\"./flex.php/Account/ListInvoicesAndPayments/?Account.Id=" . DBO()->Account->Id->Value . "\"><font size=\"2\">View Invoices and Payments</font></a>\n";
+		echo "			$strViewInvoicesAndPaymentsLabel\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		echo "        <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/square_black.gif\"> <a href=\"./flex.php/Console/Edit/\"><font size=\"2\">Edit Contact Details</font></a>\n";
+		echo "			$strEditContactDetailsLabel\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "</table>\n";
