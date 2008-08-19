@@ -22,30 +22,18 @@ $arrSQLSelect	= Array();
 $arrSQLFields	= Array();
 
 //----------------------------------------------------------------------------//
-// Service Line Status Report
+// Direct Debits by Employee Summary
 //----------------------------------------------------------------------------//
 
 // General Data
-$arrDataReport['Name']			= "New Direct Debits in a Period";
-$arrDataReport['Summary']		= "Displays a List of all new Direct Debit entries in Flex and the Employee who added them in a specified period.";
+$arrDataReport['Name']			= "Direct Debits by Employee Summary";
+$arrDataReport['Summary']		= "Displays a list of Employees, and how many Direct Debit Accounts they've set up in a specified period.";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "(Account JOIN CreditCard DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id";
-$arrDataReport['SQLWhere']		= "Account.Archived != 1 AND DD.Archived = 0 
-									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
-									GROUP BY DD.employee_id, Account.AccountGroup
-									
-									UNION
-									
-									SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, Account.Id AS `Account #`, Account.BusinessName AS `Business Name`, DATE_FORMAT(DD.created_on, '%Y-%m-%d') AS `Created On`
-									FROM (Account JOIN DirectDebit DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id
-									WHERE Account.Archived != 1 AND DD.Archived = 0 
-									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
-									GROUP BY DD.employee_id, Account.AccountGroup
-									
-									ORDER BY ISNULL(Employee) ASC, Employee ASC, `Created On` ASC";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['SQLTable']		= "(Employee LEFT JOIN CreditCard ON (Employee.Id = CreditCard.employee_id AND CreditCard.Archived = 0)) LEFT JOIN DirectDebit ON (Employee.Id = DirectDebit.employee_id AND DirectDebit.Archived = 0)";
+$arrDataReport['SQLWhere']		= "(DirectDebit.Id IS NULL OR CAST(DirectDebit.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>) AND (CreditCard.Id IS NULL OR CAST(CreditCard.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>)";
+$arrDataReport['SQLGroupBy']	= "Employee.Id\n HAVING `Credit Card` > 0 OR `Bank Transfer` > 0\n ORDER BY Employee ASC";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
@@ -55,12 +43,11 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 // SQL Select
 $arrSQLSelect['Employee']				['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
 
-$arrSQLSelect['Account #']				['Value']	= "Account.Id";
-$arrSQLSelect['Account #']				['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Credit Card']			['Value']	= "COUNT(DISTINCT CreditCard.Id)";
+$arrSQLSelect['Credit Card']			['Type']	= EXCEL_TYPE_INTEGER;
 
-$arrSQLSelect['Business Name']			['Value']	= "Account.BusinessName";
-
-$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(DD.created_on, '%Y-%m-%d')";
+$arrSQLSelect['Bank Transfer']			['Value']	= "COUNT(DISTINCT DirectDebit.Id)";
+$arrSQLSelect['Bank Transfer']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
