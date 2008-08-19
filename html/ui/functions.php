@@ -1233,7 +1233,18 @@ function GetDBConnection($mixUsingSystem)
 	return $dbConnection;
 }
 
-/* standard input checking */
+/*
+ *
+ * Error checking/form validation.
+ *
+ * $error_response = more technical information, only should be used for debugging purposes ..
+ *
+ * Format: InputValidation(string Name, Input to check, string Type, Field max Length);
+ * String types : 
+ * email, numbers, letters, mixed, multiword
+ *
+ *
+ */
 function InputValidation($strName,$mixInput,$strType,$intLength){
 	$strFoundError=FALSE;
 	$strErrorResponse="";
