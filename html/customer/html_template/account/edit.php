@@ -72,107 +72,21 @@
 	function Render()
 	{
 		echo "<div class='NarrowContent'>\n";
-	
+
+		// Put db fields into usable variables... e.g. `Email` field is now `$Email`
+		$mixFetchAccountDetails=DBO()->Account;
+		foreach($mixFetchAccountDetails as $mixKey=>$mixVal)
+		{
+			$$mixKey=$mixVal;
+		}
+		$mixFetchContactDetails=DBO()->Contact;
+		foreach($mixFetchContactDetails as $mixKey=>$mixVal)
+		{
+			$$mixKey=$mixVal;
+		}
+
 		
 		// Display the details of their primary address
-		
-		$db_user = $GLOBALS['**arrDatabase']['flex']['User'];
-		$db_pass = $GLOBALS['**arrDatabase']['flex']['Password'];
-		$db_name = $GLOBALS['**arrDatabase']['flex']['Database'];
-		$db_host = $GLOBALS['**arrDatabase']['flex']['URL'];
-
-		// Connect to database using the new execute function in MySQLDatabase Class.
-		$MySQLDatabase = new MySQLDatabase($db_host, $db_name, $db_user, $db_pass, $db_handler);
-		# Debug only...
-		# if($MySQLDatabase->is_connected()){
-		#  echo "connected...";
-		# }
-		
-		// Build queries...
-		$mixUpdateAccountQuery = "UPDATE Account SET ";
-		$mixUpdateContactQuery = "UPDATE Contact SET ";
-		
-		// Get account Id
-		$intAccountId = DBO()->Account->Id->Value;
-		
-		// Loop through our Post variables from the form input.
-		foreach($_POST as $key=>$val)
-		{
-			// Convert special characters to HTML entities.
-			$$key=htmlspecialchars("$val", ENT_QUOTES);
-			if(eregi("mixAccount_",$key))
-			{
-				if(strlen($mixUpdateAccountQuery)!="19")
-				{
-					$mixUpdateAccountQuery .= ",";
-				}
-				# Debug only...
-				# echo "1. $key=>$val<br/>";
-				$mixUpdateAccountQuery .= str_replace("mixAccount_","",$key) . "=\"$val\"";
-			}
-		 	if(eregi("mixContact_",$key))
-			{
-				if(strlen($mixUpdateContactQuery)!="19")
-				{
-					$mixUpdateContactQuery .= ",";
-				}
-				# Debug only...
-				# echo "2. $key=>$val<br/>";
-				$mixUpdateContactQuery .= str_replace("mixContact_","",$key) . "=\"$val\"";
-			}
-		}
-		$mixUpdateAccountQuery .= " WHERE Id='$intAccountId'";
-		$mixUpdateContactQuery .= " WHERE Account='$intAccountId'";
-		
-		// Select from database using the new execute function in MySQLDatabase Class.
-		$arrAccountTable = $MySQLDatabase->execute("SELECT * FROM Account WHERE Id='$intAccountId'");
-		
-		// Loop through table row and assign each field to a unique variable.
-		while($data = mysql_fetch_array($arrAccountTable))
-		{
-			foreach($data as $key=>$val)
-			{
-				$$key = $val;
-			}
-		}
-		unset($data);
-		
-		// Display the contact details
-		$arrContactTable = $MySQLDatabase->execute("SELECT * FROM Contact WHERE Account='$intAccountId'");
-			
-		while($data = mysql_fetch_array($arrContactTable))
-		{
-			foreach($data as $key=>$val)
-			{
-				$$key = $val;
-			}
-		}
-			
-		/* 
-		 * If the form has been submitted update the database 
-		 * with the new user details and send an email to the user.
-		 * */
-		if(isset($intUpdateAccountId))
-		{
-			// Found form input.
-			$MySQLDatabase->execute("$mixUpdateAccountQuery");
-			$MySQLDatabase->execute("$mixUpdateContactQuery");
-			$to      = "$Email";
-			$subject = 'Confirmation: Account Updated';
-			$message = 'Hello,\n\n';
-			$message .= "This message is to confirm your account has been updated.\n\n";
-			$message .= "Request was made by IP $_SERVER[REMOTE_ADDR]\n";
-			$message .= "At the approximate time:" . date("D M j G:i:s T Y") . "\n\n";
-			$message .= "To view these changes please login to your account.\n\n";
-			$message .= "Kind Regards\n";
-			$message .= "Customer Service Group\n";
-			$headers = 'From: ' . NOTIFICATION_REPLY_EMAIL . "\r\n" .
-				'X-Mailer: Flex/' . phpversion();
-			# supress email errors.
-			@mail($to, $subject, $message, $headers);
-
-		}
-		
 		if(isset($intUpdateAccountId))
 		{
 			print "Thank you for taking the time to update your account,<br/><font color=\"green\">your changes have been completed. <img src=\"/" . CUSTOMER_URL_NAME . "/trunk/html/images/generic/check.gif\"></font><br/><br/>";
