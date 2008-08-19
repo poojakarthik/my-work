@@ -944,6 +944,16 @@ class AppTemplateAccount extends ApplicationTemplate
 			return TRUE;
 		}
 
+		if (DBO()->Account->WithTIO->Value == TRUE && trim(DBO()->Account->tio_reference_number->Value) == "")
+		{
+			// The user has specified that the Account is with the TIO, but has not specified a reference number
+			DBO()->Account->tio_reference_number->SetToInvalid();
+		}
+		if (DBO()->Account->WithTIO->Value == FALSE)
+		{
+			DBO()->Account->tio_reference_number = NULL;
+		}
+
 		// If the validation has failed display the invalid fields
 		if (DBO()->Account->IsInvalid())
 		{
@@ -954,7 +964,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Merge the Account data from the database with the newly defined details
 		DBO()->Account->LoadMerge();
-		
+
 		// This will store the properties that have been changed and have to cascade 
 		// to tables other than the Account table, which I believe is only the 
 		// ServiceAddress table at the moment
@@ -1055,6 +1065,11 @@ class AppTemplateAccount extends ApplicationTemplate
 								DBO()->Account->Sample->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
 		}
+		if (DBO()->Account->tio_reference_number->Value != DBO()->CurrentAccount->tio_reference_number->Value)
+		{
+			$strChangesNote .= "T.I.O Reference Number was changed from '". DBO()->CurrentAccount->tio_reference_number->Value ."' to '". DBO()->Account->tio_reference_number->Value ."'\n";
+		}
+		
 		if (DBO()->Account->LatePaymentAmnesty->Value != DBO()->CurrentAccount->LatePaymentAmnesty->Value)
 		{
 			// When refering to END_OF_TIME, we just want the date part, not the time part
@@ -1150,7 +1165,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// Set the columns to save
-		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, credit_control_status, LatePaymentAmnesty");
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, credit_control_status, LatePaymentAmnesty, tio_reference_number");
 														
 		if (!DBO()->Account->Save())
 		{

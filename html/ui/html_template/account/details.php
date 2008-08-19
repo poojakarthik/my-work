@@ -279,6 +279,19 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		DBO()->Account->automatic_barring_status->RenderOutput();
 
+		if (DBO()->Account->tio_reference_number->Value !== NULL)
+		{
+			// This account has a TIO reference number.  Display it
+			$strTIORefNum = htmlspecialchars(DBO()->Account->tio_reference_number->Value, ENT_QUOTES);
+			echo "
+<div class='DefaultElement'>
+	<div class='DefaultOutput'>$strTIORefNum</div>
+	<div class='DefaultLabel'>
+		<span> &nbsp;</span>
+		<span>T.I.O. Reference Number :</span>
+	</div>
+</div>";
+		}
 		
 		echo "</div>\n"; // GroupedContent
 		
@@ -517,6 +530,30 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->ChargeAdminFee = !(DBO()->Account->DisableDDR->Value);
 		}
 		DBO()->Account->ChargeAdminFee->RenderInput();
+		
+		// TIO reference number and checkbox
+		if ((DBO()->Account->tio_reference_number->Value !== NULL && trim(DBO()->Account->tio_reference_number->Value) != "") || (DBO()->Account->WithTIO->Value))
+		{
+			$strTIOChecked		= "checked='checked'";
+			$strTIODisplayStyle	= "visibility:visible;display:inline;";
+			$strTIOLabel		= "T.I.O Reference Number";
+		}
+		else
+		{
+			$strTIOChecked		= "";
+			$strTIODisplayStyle	= "visibility:hidden;display:none;";
+			$strTIOLabel		= "With T.I.O.";
+		}
+		$strTIORefNum 		= htmlspecialchars(DBO()->Account->tio_reference_number->Value, ENT_QUOTES);
+		$strTIOTextboxClass	= (DBO()->Account->tio_reference_number->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
+
+		echo "
+<div style='top:2px;position:relative;height:25px;'>
+	<span>&nbsp;&nbsp;</span><span id='TIOLabel'>$strTIOLabel</span>
+	<input type='checkbox' id='Account.WithTIO' name='Account.WithTIO' $strTIOChecked style='position:absolute;left:197px'/>
+	<input type='text' id='Account.tio_reference_number' name='Account.tio_reference_number' value='$strTIORefNum' class='$strTIOTextboxClass' style='{$strTIODisplayStyle}position:absolute;left:223px;width:305px;'/>
+</div>
+";
 		
 		echo "</div>\n"; // GroupedContent
 		

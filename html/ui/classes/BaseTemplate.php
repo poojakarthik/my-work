@@ -14,12 +14,9 @@
  * @package	ui_app
  * @class	BaseTemplate
  */
- 
 
 class BaseTemplate
 {
-
-
 }
 
 ?>

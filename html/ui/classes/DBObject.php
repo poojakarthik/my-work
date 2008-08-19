@@ -639,9 +639,9 @@ class DBObject extends DBObjectBase
 	 	// store the raw result
 		$this->_arrResult = $arrData;
 		
-		foreach ($arrData AS $strKey=>$mixValue)
+		foreach ($arrData as $strKey=>$mixValue)
 		{
-			if (!isset($this->_arrProperties[$strKey]))
+			if (!array_key_exists($strKey, $this->_arrProperties))
 			{
 				$this->_arrProperties[$strKey] = $mixValue;
 			}

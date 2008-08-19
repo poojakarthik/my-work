@@ -132,12 +132,12 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
-		echo "\t\t<script type='text/javascript' src='javascript/prototype.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='../ui/javascript/prototype.js' ></script>\n";
 		
 		//echo "\t\t<script type='text/javascript' src='javascript/ext.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='javascript/jquery.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='javascript/json.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='javascript/flex.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='../ui/javascript/jquery.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='../ui/javascript/json.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='../ui/javascript/flex.js' ></script>\n";
 		// TODO: Add a non-vixen login handler to flex.js for when the session has timed out
 
 		// Prepend the js files that all pages require, to the list of js files to include
