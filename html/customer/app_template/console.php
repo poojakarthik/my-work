@@ -354,18 +354,6 @@ class AppTemplateConsole extends ApplicationTemplate
 		
 		DBO()->Account->Array = $mixFetchAccountDetails;
 		DBO()->Contact->Array = $mixFetchContactDetails;
-		
-		// Load Style Configuration based on domain name 
-		$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `customer_style_configuration` WHERE customr_url=\"$_SERVER[HTTP_HOST]\"");
-		DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
-		
-		# I couldnt find the style for the URL you are using?
-		if($arrFetchCustomerStyleConfiguration == "")
-		{
-			// Load Default Style...
-			$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `customer_style_configuration` WHERE customr_url=\"telcoblue.yellowbilling.com.au\"");
-			DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
-		}
 
 		$this->LoadPage('edit');
 		return TRUE;	 	
