@@ -38,7 +38,7 @@ $arrDataReport['SQLWhere']		= "Account.Archived != 1 AND DD.Archived = 0
 									
 									UNION
 									
-									SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, Account.Id AS `Account #`, Account.BusinessName AS `Business Name`, DATE_FORMAT(DD.created_on, '%d/%m/%Y') AS `Created On`
+									SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, Account.Id AS `Account #`, Account.BusinessName AS `Business Name`, DATE_FORMAT(DD.created_on, '%Y-%m-%d') AS `Created On`
 									FROM (Account JOIN DirectDebit DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id
 									WHERE Account.Archived != 1 AND DD.Archived = 0 
 									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
@@ -60,7 +60,7 @@ $arrSQLSelect['Account #']				['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Business Name']			['Value']	= "Account.BusinessName";
 
-$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(DD.created_on, '%d/%m/%Y')";
+$arrSQLSelect['Created On']				['Value']	= "DATE_FORMAT(DD.created_on, '%Y-%m-%d')";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
