@@ -1234,41 +1234,41 @@ function GetDBConnection($mixUsingSystem)
 }
 
 /* standard input checking */
-function InputValidation($name,$input,$type,$length){
-	$found_error=0;
-	$error_response=0;
-	switch ($type) {
+function InputValidation($strName,$mixInput,$strType,$intLength){
+	$strFoundError=FALSE;
+	$strErrorResponse="";
+	switch ($strType) {
 		case "email":
-		if (!eregi("^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,6}$", $input)) {
-			$found_error=1;
-			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		if (!eregi("^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,6}$", $mixInput)) {
+			$strFoundError=TRUE;
+			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "numbers":
-		if(!eregi("^[0-9]{1,$length}$",$input)){
-			$found_error=1;
-			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		if(!eregi("^[0-9]{1,$intLength}$",$mixInput)){
+			$strFoundError=TRUE;
+			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "letters":
-		if(!eregi("^[a-zA-Z]{1,$length}$",$input)){
-			$found_error=1;
-			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		if(!eregi("^[a-zA-Z]{1,$intLength}$",$mixInput)){
+			$strFoundError=TRUE;
+			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "mixed":
-		if(!eregi("^[a-zA-Z0-9]{1,$length}$",$input)){
-			$found_error=1;
-			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		if(!eregi("^[a-zA-Z0-9]{1,$intLength}$",$mixInput)){
+			$strFoundError=TRUE;
+			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "multiword":
-		if(!eregi("^[[:space:]a-zA-Z0-9_.-]{1,$length}$",$input)){
-			$found_error=1;
-			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		if(!eregi("^[[:space:]a-zA-Z0-9_.-]{1,$intLength}$",$mixInput)){
+			$strFoundError=TRUE;
+			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 	}
-	return array ($found_error,$error_response);
+	return array ($strFoundError,$strErrorResponse);
 }
 ?>
