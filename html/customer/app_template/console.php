@@ -145,7 +145,17 @@ class AppTemplateConsole extends ApplicationTemplate
 			// Don't display the business name in the bread crumb menu
 			BreadCrumb()->SetCurrentPage("Make Payment");
 		}
+		// Display the details of their primary address
+		
+		// Connect to database
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 
+		// Get account Id, we need to auto fill some form details.
+		$intAccountId = DBO()->Account->Id->Value;
+
+		// get row from database with user details.
+		$mixFetchAccountDetails=$dbConnection->fetchone("SELECT * FROM Contact WHERE Account='$intAccountId' ORDER BY Id DESC limit 1");
+		DBO()->Account=$mixFetchAccountDetails;
 
 		$this->LoadPage('pay');
 
