@@ -1232,4 +1232,43 @@ function GetDBConnection($mixUsingSystem)
 	}
 	return $dbConnection;
 }
+
+/* standard input checking */
+function InputValidation($name,$input,$type,$length){
+	$found_error=0;
+	$error_response=0;
+	switch ($type) {
+		case "email":
+		if (!eregi("^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,6}$", $input)) {
+			$found_error=1;
+			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		}
+		break;
+		case "numbers":
+		if(!eregi("^[0-9]{1,$length}$",$input)){
+			$found_error=1;
+			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		}
+		break;
+		case "letters":
+		if(!eregi("^[a-zA-Z]{1,$length}$",$input)){
+			$found_error=1;
+			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		}
+		break;
+		case "mixed":
+		if(!eregi("^[a-zA-Z0-9]{1,$length}$",$input)){
+			$found_error=1;
+			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		}
+		break;
+		case "multiword":
+		if(!eregi("^[[:space:]a-zA-Z0-9_.-]{1,$length}$",$input)){
+			$found_error=1;
+			$error_response="Invalid input for field: $name, max length: $length, characters accepted: $type";
+		}
+		break;
+	}
+	return array ($found_error,$error_response);
+}
 ?>
