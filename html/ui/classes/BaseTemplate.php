@@ -16,8 +16,7 @@
  */
  
 
-include_once('../ui/classes/DataSource.php');
-class BaseTemplate extends MySQLDatabase
+class BaseTemplate
 {
 
 
