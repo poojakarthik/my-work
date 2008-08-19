@@ -279,9 +279,6 @@ class AppTemplateConsole extends ApplicationTemplate
 			BreadCrumb()->SetCurrentPage("Edit Account");
 		}
 		
-		// Connect to database
-		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-
 		// Get account Id, we need to auto fill some form details.
 		$intAccountId = DBO()->Account->Id->Value;
 
