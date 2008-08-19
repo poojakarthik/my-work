@@ -13,8 +13,6 @@ $arrConfig = LoadApplication();
 
 define('FLEX_RATING_BATCH_SIZE'	, 1000);
 
-echo "<pre>\n";
-
 // Turn on reporting
 $arrConfig['Reporting'] = TRUE;
 
@@ -97,11 +95,6 @@ Debug("Donkey Account = $".$appRating->_DonkeyAccount);
 //TODO!!!! - send the report
 
 // finished
-echo("\n-- End of Rating --\n");
-echo "</pre>\n";
-die();
-
-
-
-
+CliEcho("\n-- End of Rating --\n");
+exit(0);
 ?>
