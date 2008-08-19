@@ -1597,12 +1597,13 @@
 		{
 			$this->_Debug("Destination is on the same Account: Trying to find a Destination Fleet Rate...");
 			
-			$arrWhere['Account']		= $arrDestinationOwner['Account'];
-			$arrWhere['AccountGroup']	= $arrDestinationOwner['AccountGroup'];
-			$arrWhere['Service']		= $arrDestinationOwner['Service'];
-			$arrWhere['Fleet']			= TRUE;
-			$arrWhere['RecordType']		= DONKEY;								// Must be DONKEY, because Fleet calls can occur between ServiceTypes, and therefore between RecordTypes
-			if ($this->_selRate->Execute($arrWhere) === FALSE)
+			$arrFleetWhere					= $arrWhere;
+			$arrFleetWhere['Account']		= $arrDestinationOwner['Account'];
+			$arrFleetWhere['AccountGroup']	= $arrDestinationOwner['AccountGroup'];
+			$arrFleetWhere['Service']		= $arrDestinationOwner['Service'];
+			$arrFleetWhere['Fleet']			= TRUE;
+			$arrFleetWhere['RecordType']	= DONKEY;							// Must be DONKEY, because Fleet calls can occur between ServiceTypes, and therefore between RecordTypes
+			if ($this->_selRate->Execute($arrFleetWhere) === FALSE)
 			{
 				// Error
 				Debug($this->_selRate->Error());
