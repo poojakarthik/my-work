@@ -227,6 +227,28 @@ class MenuItems
 		return $this->GetBaseURL()."flex.php/Console/Home/";
 	}
 
+
+	//------------------------------------------------------------------------//
+	// EditContactDetails 
+	//------------------------------------------------------------------------//
+	function EditContactDetails($intAccountId)
+	{
+		$this->strLabel	= "Edit Contact Details";
+		
+		return $this->GetBaseURL()."flex.php/Console/Edit/?Account.Id=$intAccountId";
+	}
+
+
+	//------------------------------------------------------------------------//
+	// MakePayment 
+	//------------------------------------------------------------------------//
+	function MakePayment($intAccountId)
+	{
+		$this->strLabel	= "Pay Your Account Here";
+		
+		return $this->GetBaseURL()."flex.php/Console/Pay/";
+	}
+	
 	//------------------------------------------------------------------------//
 	// LoadAccountInHomePage 
 	//------------------------------------------------------------------------//
