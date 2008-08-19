@@ -37,8 +37,15 @@ if (!$selCDR->Execute(Array('Id' => $intCDR)))
 		CliEcho("\nInvalid CDR record requested.  Please double-check the Id ($intCDR).\n");
 		die;
 	}
+	else
+	{
+		$arrCDR	= $selCDRInvoiced->Fetch();
+	}
 }
-$arrCDR		= $selCDR->Fetch();
+else
+{
+	$arrCDR	= $selCDR->Fetch();
+}
 
 // Rate the CDR
 $arrRate	= $appRating->CDRFindRate($arrCDR);
