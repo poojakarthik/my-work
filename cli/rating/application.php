@@ -246,7 +246,7 @@
 												"Rate.Fleet = <Fleet> AND \n" .
 												"ServiceRateGroup.Active = 1 AND \n" .
 												"Destination = <Destination> AND \n" .
-												"Rate.RecordType = <RecordType> AND \n" .
+												"(Rate.RecordType = <RecordType> OR <RecordType> = ".DONKEY.") AND \n" .
 												"(<StartDatetime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime OR <ClosestRate> = 1)";
 		
 		$this->_selRate	= new StatementSelect(	"((ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup) JOIN RateGroupRate ON RateGroupRate.RateGroup = RateGroup.Id) JOIN Rate ON Rate.Id = RateGroupRate.Rate",
@@ -1595,12 +1595,13 @@
 		$arrDestinationOwner	= FindFNNOwner($this->_arrCurrentCDR['Destination'], $this->_arrCurrentCDR['StartDatetime']);
 		if ($arrDestinationOwner['Account'] === $this->_arrCurrentCDR['Account'])
 		{
-			$this->_Debug("Trying to find a Destination Fleet Rate");
+			$this->_Debug("Destination is on the same Account: Trying to find a Destination Fleet Rate...");
 			
 			$arrWhere['Account']		= $arrDestinationOwner['Account'];
 			$arrWhere['AccountGroup']	= $arrDestinationOwner['AccountGroup'];
 			$arrWhere['Service']		= $arrDestinationOwner['Service'];
 			$arrWhere['Fleet']			= TRUE;
+			$arrWhere['RecordType']		= DONKEY;								// Must be DONKEY, because Fleet calls can occur between ServiceTypes, and therefore between RecordTypes
 			if ($this->_selRate->Execute($arrWhere) === FALSE)
 			{
 				// Error
@@ -1608,7 +1609,7 @@
 			}
 			elseif ($arrDestinationRate = $this->_selRate->Fetch())
 			{
-				$this->_Debug("Found a Destination Fleet Rate");
+				$this->_Debug("Found a Destination Fleet Rate!");
 				// Found a Fleet Rate
 				$bolFleet	= TRUE;
 			}
@@ -1627,7 +1628,7 @@
 		}
 		elseif ($arrRate = $this->_selRate->Fetch())
 		{
-			$this->_Debug("Found a Source ".(($bolFleet) ? "Fleet" : "Standard")." Rate");
+			$this->_Debug("Found a Source ".(($bolFleet) ? "Fleet" : "Standard")." Rate!");
 			// Found a Rate
 			$this->_arrCurrentRate	= $arrRate;
 		}
@@ -1643,7 +1644,7 @@
 			}
 			elseif ($arrRate = $this->_selRate->Fetch())
 			{
-				$this->_Debug("Couldn't find a Fleet Rate, found a Standard Rate");
+				$this->_Debug("Couldn't find a Fleet Rate, found a Standard Rate!");
 				// Found a Standard Rate
 				$this->_arrCurrentRate	= $arrRate;
 			}
@@ -1652,7 +1653,7 @@
 		// If there is still no Rate, then check for a close match
 		if (!$this->_arrCurrentRate)
 		{
-			$this->_Debug("Couldn't find a direct match Rate, looking for a close match");
+			$this->_Debug("Couldn't find a direct match Rate, looking for a close match...");
 			$arrWhere['ClosestRate']	= TRUE;
 			$arrWhere['Fleet']			= 0;
 			if (($intCount = $this->_selRate->Execute($arrWhere)) === FALSE)
@@ -1660,7 +1661,7 @@
 				// Error
 				Debug($this->_selRate->Error());
 			}
-			$this->_Debug("Found $intCount close matches");
+			$this->_Debug("Found $intCount close matches...");
 			
 			// Process each Rate candidate to find the best match
 			$arrBestMatch				= Array();
@@ -1684,12 +1685,12 @@
 			// Select the best match
 			if ($arrBestMatch['Id'])
 			{
-				$this->_Debug("Found a close match");
+				$this->_Debug("Found a close match!");
 				$this->_arrCurrentRate	= $arrBestMatch;
 			}
 			else
 			{
-				$this->_Debug("Could not find a close match");
+				$this->_Debug("Could not find a close match!");
 			}
 		}
 		
@@ -1711,7 +1712,7 @@
 		}
 		else
 		{
-			$this->_Debug("Could not find a Rate");
+			$this->_Debug("Could not find a Rate!");
 			return FALSE;
 		}
 	}
