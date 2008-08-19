@@ -1213,4 +1213,23 @@ function MakeCSVLine($arrFields, $arrFieldOrder=NULL, $strDelimiter=',', $strEnc
 
 
 
+function GetDBConnection($mixUsingSystem)
+{
+	switch ($mixUsingSystem) {
+		
+		case "mysqli":
+		$dbConnection = new MySQLDatabase($GLOBALS['**arrDatabase']['flex']['URL'], $GLOBALS['**arrDatabase']['flex']['Database'], $GLOBALS['**arrDatabase']['flex']['User'], $GLOBALS['**arrDatabase']['flex']['Password'], $db_handler);
+		break;
+		
+		case "mssql":
+		$dbConnection = new MSSQLDatabase($GLOBALS['**arrDatabase']['flex']['URL'], $GLOBALS['**arrDatabase']['flex']['Database'], $GLOBALS['**arrDatabase']['flex']['User'], $GLOBALS['**arrDatabase']['flex']['Password'], $db_handler);
+		break;
+
+		case "postgres":
+		$dbConnection = new PostgresDatabase($GLOBALS['**arrDatabase']['flex']['URL'], $GLOBALS['**arrDatabase']['flex']['Database'], $GLOBALS['**arrDatabase']['flex']['User'], $GLOBALS['**arrDatabase']['flex']['Password'], $db_handler);
+		break;
+
+	}
+	return $dbConnection;
+}
 ?>
