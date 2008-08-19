@@ -72,28 +72,13 @@
 	function Render()
 	{
 		
-		$db_user = $GLOBALS['**arrDatabase']['flex']['User'];
-		$db_pass = $GLOBALS['**arrDatabase']['flex']['Password'];
-		$db_name = $GLOBALS['**arrDatabase']['flex']['Database'];
-		$db_host = $GLOBALS['**arrDatabase']['flex']['URL'];
-
-		// Connect to database using the new execute function in MySQLDatabase Class.
-		$MySQLDatabase = new MySQLDatabase($db_host, $db_name, $db_user, $db_pass, $db_handler);
-		
-		// Get account Id, we need to auto fill some form details.
-		$intAccountId = DBO()->Account->Id->Value;
-		
-		// Grab the contact details
-		$arrContactTable = $MySQLDatabase->execute("SELECT * FROM Contact WHERE Account='$intAccountId'");
-			
-		while($data = mysql_fetch_array($arrContactTable))
+		$mixFetchAccountDetails=DBO()->Account;
+		foreach($mixFetchAccountDetails as $mixKey=>$mixVal)
 		{
-			foreach($data as $key=>$val)
-			{
-				$$key = $val;
-			}
+			// Put db fields into usable variables... e.g. `Email` field is now `$Email`
+			$$mixKey=$mixVal;
 		}
-		
+
 		echo "<div class='NarrowContent'>\n";
 		$mixShowName = "$FirstName $LastName";
 		if($Title!==""){
