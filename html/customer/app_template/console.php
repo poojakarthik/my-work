@@ -154,8 +154,8 @@ class AppTemplateConsole extends ApplicationTemplate
 		$intAccountId = DBO()->Account->Id->Value;
 
 		// get row from database with user details.
-		$mixFetchAccountDetails=$dbConnection->fetchone("SELECT * FROM Contact WHERE Account='$intAccountId' ORDER BY Id DESC limit 1");
-		DBO()->Account=$mixFetchAccountDetails;
+		$mixFetchAccountDetails = $dbConnection->fetchone("SELECT * FROM Contact WHERE Account='$intAccountId' ORDER BY Id DESC limit 1");
+		DBO()->Account->Array = $mixFetchAccountDetails;
 
 		$this->LoadPage('pay');
 
@@ -342,15 +342,17 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				$this->LoadPage('edit_successful');
 
+				return TRUE;
+
 			}
 
 		}
 
 		// get row from database with user details.
-		$mixFetchAccountDetails=$dbConnection->fetchone("SELECT * FROM Account WHERE Id='$intAccountId' ORDER BY Id DESC limit 1");
-		$mixFetchContactDetails=$dbConnection->fetchone("SELECT * FROM Contact WHERE Account='$intAccountId' ORDER BY Id DESC limit 1");
-		DBO()->Account=$mixFetchAccountDetails;
-		DBO()->Contact=$mixFetchContactDetails;
+		$mixFetchAccountDetails = $dbConnection->fetchone("SELECT * FROM Account WHERE Id='$intAccountId' ORDER BY Id DESC limit 1");
+		$mixFetchContactDetails = $dbConnection->fetchone("SELECT * FROM Contact WHERE Account='$intAccountId' ORDER BY Id DESC limit 1");
+		DBO()->Account->Array = $mixFetchAccountDetails;
+		DBO()->Contact->Array = $mixFetchContactDetails;
 
 		$this->LoadPage('edit');
 

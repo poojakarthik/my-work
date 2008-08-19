@@ -72,11 +72,11 @@
 	function Render()
 	{
 		
-		$mixFetchAccountDetails=DBO()->Account;
+		$mixFetchAccountDetails = DBO()->Account->Array->Value;
 		foreach($mixFetchAccountDetails as $mixKey=>$mixVal)
 		{
 			// Put db fields into usable variables... e.g. `Email` field is now `$Email`
-			$$mixKey=$mixVal;
+			$$mixKey = $mixVal;
 		}
 
 		echo "<div class='NarrowContent'>\n";

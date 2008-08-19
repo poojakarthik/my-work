@@ -74,15 +74,15 @@
 		echo "<div class='NarrowContent'>\n";
 
 		// Put db fields into usable variables... e.g. `Email` field is now `$Email`
-		$mixFetchAccountDetails=DBO()->Account;
+		$mixFetchAccountDetails = DBO()->Account->Array->Value;
 		foreach($mixFetchAccountDetails as $mixKey=>$mixVal)
 		{
-			$$mixKey=$mixVal;
+			$$mixKey = $mixVal;
 		}
-		$mixFetchContactDetails=DBO()->Contact;
+		$mixFetchContactDetails = DBO()->Contact->Array->Value;
 		foreach($mixFetchContactDetails as $mixKey=>$mixVal)
 		{
-			$$mixKey=$mixVal;
+			$$mixKey = $mixVal;
 		}
 		
 		// Display the details of their primary address
