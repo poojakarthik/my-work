@@ -34,7 +34,7 @@ $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "(Account JOIN CreditCard DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id";
 $arrDataReport['SQLWhere']		= "Account.Archived != 1 AND DD.Archived = 0 
 									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
-									GROUP BY DD.employee_id, AccountGroup
+									GROUP BY DD.employee_id, Account.AccountGroup
 									
 									UNION
 									
@@ -42,9 +42,9 @@ $arrDataReport['SQLWhere']		= "Account.Archived != 1 AND DD.Archived = 0
 									FROM (Account JOIN DirectDebit DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id
 									WHERE Account.Archived != 1 AND DD.Archived = 0 
 									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
-									GROUP BY DD.employee_id, AccountGroup
+									GROUP BY DD.employee_id, Account.AccountGroup
 									
-									ORDER BY ISNULL(EmployeeName) ASC, EmployeeName ASC, CreatedOn";
+									ORDER BY ISNULL(Employee) ASC, Employee ASC, `Created On` ASC";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
