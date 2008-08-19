@@ -291,11 +291,6 @@ class AppTemplateConsole extends ApplicationTemplate
 		 * */
 		foreach($_POST as $key=>$val)
 		{
-			//
-			//
-			// TODO: create validation/error/exploit checking function-!!!
-			//
-			//
 			 $$key=$val;
 		}
 
@@ -304,7 +299,6 @@ class AppTemplateConsole extends ApplicationTemplate
 
 		if(isset($intUpdateAccountId))
 		{
-
 			$strFoundInputError=FALSE; 
 			# HO is working on some validation stuf.
 
@@ -345,6 +339,9 @@ class AppTemplateConsole extends ApplicationTemplate
 					'X-Mailer: Flex/' . phpversion();
 				# supress email errors.
 				@mail($to, $subject, $message, $headers);
+
+				$this->LoadPage('edit_successful');
+
 			}
 
 		}
