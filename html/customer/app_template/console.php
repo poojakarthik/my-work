@@ -279,6 +279,76 @@ class AppTemplateConsole extends ApplicationTemplate
 			BreadCrumb()->SetCurrentPage("Edit Account");
 		}
 		
+		// Connect to database
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+
+		// Get account Id, we need to auto fill some form details.
+		$intAccountId = DBO()->Account->Id->Value;
+
+		/* 
+		 * If the form has been submitted update the database 
+		 * with the new user details and send an email to the user.
+		 * */
+		foreach($_POST as $key=>$val)
+		{
+			//
+			//
+			// TODO: create validation/error/exploit checking function-!!!
+			//
+			//
+			 $$key=$val;
+		}
+
+		// Connect to database
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+
+		if(isset($intUpdateAccountId))
+		{
+			
+			// Found form input.
+			$dbConnection->execute("
+			UPDATE Account SET 
+				Address1=\"$mixAccount_Address1\",
+				Address2=\"$mixAccount_Address2\",
+				Suburb=\"$mixAccount_Suburb\",
+				State=\"$mixAccount_State\",
+				Postcode=\"$mixAccount_Postcode\",
+				Country=\"$mixAccount_Country\" 
+			WHERE Id='$intAccountId'");
+
+			$dbConnection->execute("
+			UPDATE Contact SET 
+				FirstName=\"$mixContact_FirstName\",
+				LastName=\"$mixContact_LastName\",
+				JobTitle=\"$mixContact_JobTitle\",
+				Email=\"$mixContact_Email\",
+				Phone=\"$mixContact_Phone\",
+				Mobile=\"$mixContact_Mobile\",
+				Fax=\"$mixContact_Fax\" 
+			WHERE Account='$intAccountId'");
+
+			$to      = "$Email";
+			$subject = 'Confirmation: Account Updated';
+			$message = 'Hello,\n\n';
+			$message .= "This message is to confirm your account has been updated.\n\n";
+			$message .= "Request was made by IP $_SERVER[REMOTE_ADDR]\n";
+			$message .= "At the approximate time:" . date("D M j G:i:s T Y") . "\n\n";
+			$message .= "To view these changes please login to your account.\n\n";
+			$message .= "Kind Regards\n";
+			$message .= "Customer Service Group\n";
+			$headers = 'From: ' . NOTIFICATION_REPLY_EMAIL . "\r\n" .
+				'X-Mailer: Flex/' . phpversion();
+			# supress email errors.
+			@mail($to, $subject, $message, $headers);
+
+		}
+
+		// get row from database with user details.
+		$mixFetchAccountDetails=$dbConnection->fetchone("SELECT * FROM Account WHERE Id='$intAccountId' ORDER BY Id DESC limit 1");
+		$mixFetchContactDetails=$dbConnection->fetchone("SELECT * FROM Contact WHERE Account='$intAccountId' ORDER BY Id DESC limit 1");
+		DBO()->Account=$mixFetchAccountDetails;
+		DBO()->Contact=$mixFetchContactDetails;
+
 		$this->LoadPage('edit');
 
 		return TRUE;	 	
