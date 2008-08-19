@@ -84,7 +84,7 @@
 		{
 			$$mixKey = $mixVal;
 		}
-		
+
 		// Display the details of their primary address
 		$intAccountUpdated = DBO()->Account->Updated->Value;
 		echo "$intAccountUpdated";
@@ -94,6 +94,7 @@
 		}
 		if($intAccountUpdated!="1")
 		{
+
 			print "Thank you for taking the time to update your account,<br/>Please apply new options below.<br/><br/>";
 			print "
 			<!-- We dont want any caching of this page.. -->
