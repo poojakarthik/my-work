@@ -11,6 +11,7 @@
  *	6:	Add invoice_run_id Field to all tables (except InvoiceRun) which currently have a VARCHAR() InvoiceRun field and populate
  *	7:	Add invoice_run_schedule Table
  *	8:	Populate invoice_run_schedule Table
+ *	9:	Remove Sample Invoice Run details from the payment_terms table
  */
 
 class Flex_Rollout_Version_000032 extends Flex_Rollout_Version
@@ -178,7 +179,23 @@ class Flex_Rollout_Version_000032 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate invoice_run_schedule Table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "TRUNCATE TABLE invoice_run_schedule;";		
+		$this->rollbackSQL[] = "TRUNCATE TABLE invoice_run_schedule;";
+		
+		//	9:	Remove Sample Invoice Run details from the payment_terms table
+		$strSQL = "ALTER TABLE payment_terms " .
+					"DROP samples_internal_initial_days, " .
+					"DROP samples_internal_final_days, " .
+					"DROP samples_bronze_days, " .
+					"DROP samples_silver_days;";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to remove Sample Invoice Run details from the payment_terms table. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "ALTER TABLE payment_terms " .
+									"ADD samples_internal_initial_days SMALLINT(6) NOT NULL COMMENT 'Offset in days from the Billing Date that the Initial YBS Internal Samples are run',
+									ADD samples_internal_final_days SMALLINT(6) NOT NULL COMMENT 'Offset in days from the Billing Date that the Final YBS Internal Samples are run',
+									ADD samples_bronze_days SMALLINT(6) NOT NULL COMMENT 'Offset in days from the Billing Date that the Bronze Samples are run',
+									ADD samples_silver_days SMALLINT(6) NOT NULL COMMENT 'Offset in days from the Billing Date that the Silver Samples are run';";
 		
 	}
 	
