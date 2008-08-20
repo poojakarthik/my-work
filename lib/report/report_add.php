@@ -27,7 +27,8 @@ $arrSQLFields	= Array();
  //---------------------------------------------------------------------------//
  
 $arrDataReport['Name']			= "Non-Tolling Services in a Date Period for a Service Type";
-$arrDataReport['Summary']		= "Lists all of the Services which have not tolled ";
+$arrDataReport['Summary']		= "Lists all of the Services which have not tolled since the specified Last Tolling Date for the specified Service Type";
+$arrDataReport['FileName']		= "<ServiceType::Label> Service that have not tolled since <LatestCDR>";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
@@ -43,7 +44,7 @@ $arrDataReport['SQLTable']		= 	"(" .
 									") " .
 									"LEFT JOIN RatePlan ON SRP.RatePlan = RatePlan.Id";
 
-$arrDataReport['SQLWhere']		= "Service.ServiceType = <ServiceType> AND Service.Status = 400 AND CAST(Service.LatestCDR AS DATE) <= <LatestCDR>";
+$arrDataReport['SQLWhere']		= "Service.ServiceType = <ServiceType> AND Service.Status = 400 AND Service.LatestCDR <= CONCAT(<LatestCDR>, ' 23:59:59')";
 $arrDataReport['SQLGroupBy']	= "Service.Id ORDER BY Account.Id";
 
 // Documentation Reqs
