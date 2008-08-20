@@ -73,7 +73,7 @@
 	{
 		echo "<div class='NarrowContent'>\n";
 
-		print "Thank you for taking the time to update your account,<br/><font color=\"green\">your changes have been completed. <img src=\"" . Href()->GetBaseUrl() . "/img/generic/check.gif\"></font><br/><br/>";
+		print "Thank you for taking the time to update your account,<br/>your changes have been completed. <img src=\"" . Href()->GetBaseUrl() . "/img/generic/check.gif\"><br/><br/>";
 		
 		echo "<div class='Seperator'></div>\n";
 		

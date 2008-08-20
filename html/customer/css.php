@@ -87,10 +87,10 @@ fclose($resHandle);
 
 // Changes to be made: OldValue => NewValue;
 $arrChangesToCSS = array();
-$arrChangesToCSS['#ffbf00'] = "#$customer_primary_color";
-$arrChangesToCSS['#FfF8b5'] = "#$customer_secondary_color";
-$arrChangesToCSS['#ffd800'] = "#$customer_breadcrum_menu_color"; // the text portion.
-$arrChangesToCSS['#f0e000'] = "#$customer_breadcrum_menu_color"; // the actual link.
+$arrChangesToCSS['[customer_primary_color]'] = "#$customer_primary_color";
+$arrChangesToCSS['[customer_secondary_color]'] = "#$customer_secondary_color";
+$arrChangesToCSS['[customer_breadcrum_menu_color]'] = "#$customer_breadcrum_menu_color"; // the text portion.
+$arrChangesToCSS['[customer_breadcrum_menu_link_color]'] = "#$customer_breadcrum_menu_color"; // the actual link.
 
 foreach($arrChangesToCSS as $mixKey=>$mixVal)
 {

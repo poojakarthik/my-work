@@ -55,7 +55,7 @@
 	div#BreadCrumbMenu a:visited,
 	div#BreadCrumbMenu a:hover
 	{
-		color:					#f0e000 !important;
+		color:					[customer_breadcrum_menu_link_color] !important;
 		text-decoration:		none;
 		font-weight:			bolder;
 	}
@@ -269,7 +269,7 @@ span.IncorrectLogin
 		background-repeat:		repeat-x;
 		background-position:	100%;
 		background-image:		url('./img/template/menubg2.png');
-		background-color:		#ffbf00;
+		background-color:		[customer_primary_color];
 		position:				relative;
 	}
 	
@@ -288,7 +288,7 @@ span.IncorrectLogin
 		position: 				absolute;
 		bottom: 				0;
 		left: 					0;
-		color: 					#ffd800;
+		color: 					[customer_breadcrum_menu_color];
 		padding: 				2px;
 	}
 	
@@ -636,7 +636,7 @@ span.IncorrectLogin
 	table.Listing tr.Even th,
 	table.Listing tr.Even td
 	{
-		background-color:		#FfF8b5;
+		background-color:		[customer_secondary_color];
 	}
 
 	table.Listing tr.Archived td
