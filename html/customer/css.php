@@ -91,6 +91,7 @@ $customer_css = stream_get_contents($handle);
 fclose($handle);
 
 $customer_css = str_replace("#ffbf00","#$customer_primary_color",$customer_css);
+$customer_css = str_replace("#FfF8b5","#$customer_secondary_color",$customer_css);
 
 echo $customer_css;
 

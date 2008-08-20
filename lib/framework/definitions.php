@@ -35,7 +35,7 @@
 Define ('DEFAULT_CUSTOMER_LOGO', "logo.png");
 Define ('DEFAULT_CUSTOMER_LOGO_TYPE', "png");
 Define ('DEFAULT_CUSTOMER_PRIMARY_COLOR', "ffbf00");
-Define ('DEFAULT_CUSTOMER_SECONDARY_COLOR', "");
+Define ('DEFAULT_CUSTOMER_SECONDARY_COLOR', "FfF8b5");
 Define ('DEFAULT_CUSTOMER_EXTERNAL_NAME', "Yellow Billing");
 
 // viXen File Storage Base Directory
