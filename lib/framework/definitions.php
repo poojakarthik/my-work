@@ -31,6 +31,13 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
+// Defaut styles - used if we cant find any valid style from CustomerGroup (based on URL)
+Define ('DEFAULT_CUSTOMER_LOGO', "logo.png");
+Define ('DEFAULT_CUSTOMER_LOGO_TYPE', "logo.png");
+Define ('DEFAULT_CUSTOMER_PRIMARY_COLOR', "");
+Define ('DEFAULT_CUSTOMER_SECONDARY_COLOR', "");
+Define ('DEFAULT_CUSTOMER_EXTERNAL_NAME', "Yellow Billing");
+
 // viXen File Storage Base Directory
 define("FILE_BASE_DIR"				, "/home/vixen/");
 
