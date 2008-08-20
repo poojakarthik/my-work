@@ -66,14 +66,9 @@ DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration
 # I couldnt find the style for the URL you are using?
 if($arrFetchCustomerStyleConfiguration == "")
 {
-	$ExternalName = DEFAULT_CUSTOMER_EXTERNAL_NAME;
 	$customer_primary_color = DEFAULT_CUSTOMER_PRIMARY_COLOR;
 	$customer_secondary_color = DEFAULT_CUSTOMER_SECONDARY_COLOR;
-	$customer_logo = DEFAULT_CUSTOMER_LOGO;
-	$customer_logo_type = DEFAULT_CUSTOMER_LOGO_TYPE;
-	$handle = fopen("./$customer_logo", "rb");
-	$customer_logo = stream_get_contents($handle);
-	fclose($handle);
+	$customer_breadcrum_menu_color = DEFAULT_CUSTOMER_BREADCRUM_MENU_COLOR;
 }
 # I could find something?
 if($arrFetchCustomerStyleConfiguration != "")
@@ -86,15 +81,25 @@ if($arrFetchCustomerStyleConfiguration != "")
 }
 
 
-$handle = fopen("default.css", "rb");
-$customer_css = stream_get_contents($handle);
-fclose($handle);
+$resHandle = fopen("default.css", "rb");
+$customer_css = stream_get_contents($resHandle);
+fclose($resHandle);
 
-$customer_css = str_replace("#ffbf00","#$customer_primary_color",$customer_css);
-$customer_css = str_replace("#FfF8b5","#$customer_secondary_color",$customer_css);
+// Changes to be made: OldValue => NewValue;
+$arrChangesToCSS = array();
+$arrChangesToCSS['#ffbf00'] = "#$customer_primary_color";
+$arrChangesToCSS['#FfF8b5'] = "#$customer_secondary_color";
+$arrChangesToCSS['#ffd800'] = "#$customer_breadcrum_menu_color"; // the text portion.
+$arrChangesToCSS['#f0e000'] = "#$customer_breadcrum_menu_color"; // the actual link.
+
+foreach($arrChangesToCSS as $mixKey=>$mixVal)
+{
+	$customer_css = str_replace("$mixKey","$mixVal",$customer_css);
+}
 
 echo $customer_css;
 
+// Old way of just using one css file for all users.
 #require_once('default.css');
 
 ?>
