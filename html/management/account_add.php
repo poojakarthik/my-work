@@ -578,7 +578,7 @@
 			
 			$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
 			
-			header ('Location: ../ui/flex.php/Account/Overview/?Account.Id=' . $actAccount->Pull ('Id')->getValue ());
+			header ('Location: ../admin/flex.php/Account/Overview/?Account.Id=' . $actAccount->Pull ('Id')->getValue ());
 			exit;
 		}
 	}

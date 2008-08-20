@@ -404,7 +404,7 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>../ui/flex.php/Account/InvoicesAndPayments/?Account.Id=</xsl:text>
+									<xsl:text>../admin/flex.php/Account/InvoicesAndPayments/?Account.Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>View Invoices &amp; Payments</xsl:text>
@@ -486,7 +486,7 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>../ui/flex.php/Account/InvoicesAndPayments/?Account.Id=</xsl:text>
+									<xsl:text>../admin/flex.php/Account/InvoicesAndPayments/?Account.Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>Make Payment</xsl:text>

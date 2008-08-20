@@ -109,7 +109,7 @@
 		}
 		else
 		{
-			header ('Location: ../ui/flex.php/Service/View/?Service.Id=' . $_POST ['Service']);
+			header ('Location: ../admin/flex.php/Service/View/?Service.Id=' . $_POST ['Service']);
 			exit;
 		}
 	}
@@ -120,7 +120,7 @@
 	}
 	else if ($actAccount)
 	{
-		header ('Location: ../ui/flex.php/Account/Overview/?Account.Id=' . $_POST ['Account']);
+		header ('Location: ../admin/flex.php/Account/Overview/?Account.Id=' . $_POST ['Account']);
 		exit;
 	}
 	

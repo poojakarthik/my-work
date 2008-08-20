@@ -46,7 +46,7 @@
 	// If the employee to be editted is a GOD user, then redirect back to the Employee Listing page
 	if ($empEmployee->Pull('Privileges')->getValue() == USER_PERMISSION_GOD)
 	{
-		header("Location: ../ui/flex.php/Employee/EmployeeList/");
+		header("Location: ../admin/flex.php/Employee/EmployeeList/");
 	}
 	//HACK! HACK! HACK! 
 	

@@ -6,7 +6,7 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	header("Location: ../ui/flex.php/Plan/View/?RatePlan.Id=". $_GET['Id']);
+	header("Location: ../admin/flex.php/Plan/View/?RatePlan.Id=". $_GET['Id']);
 
 	// call application loader
 	require ('config/application_loader.php');

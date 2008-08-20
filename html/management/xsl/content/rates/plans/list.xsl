@@ -15,7 +15,7 @@
 		<!--TODO!bash! [ANSWERED] Why can I search for an empty field? show an error!-->
 		<!--TODO!bash! A: Because you may want to view all Plans of a certain Service Type. -->
 		
-		<form method="GET" action="../ui/flex.php/Plan/AvailablePlans/">
+		<form method="GET" action="../admin/flex.php/Plan/AvailablePlans/">
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">

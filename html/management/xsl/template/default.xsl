@@ -210,7 +210,7 @@
 												<li>
 													Rates
 													<ul>
-														<li><a href="../ui/flex.php/Plan/AvailablePlans/">List Rate Plans</a></li>
+														<li><a href="../admin/flex.php/Plan/AvailablePlans/">List Rate Plans</a></li>
 														<li><a href="rates_plan_add.php">Create Rate Plan</a></li>
 														<li><a href="rates_group_list.php">List Rate Groups</a></li>
 														<li><a href="rates_group_add.php">Create Rate Group</a></li>
@@ -271,7 +271,7 @@
 											</tr>
 											<tr>
 												<td>
-													<a href="../ui/flex.php/Plan/AvailablePlans/">
+													<a href="../admin/flex.php/Plan/AvailablePlans/">
 														<img src="img/template/plans.png" title="View Available Plans" class="MenuIcon" />
 													</a>
 												</td>
@@ -289,7 +289,7 @@
 												<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Super Admin']) = 1">
 												<tr>
 													<td>
-														<a href="../ui/reflex.php/Ticketing/System/Mine">
+														<a href="../admin/reflex.php/Ticketing/System/Mine">
 															<img src="img/template/ticketing_system.png" title="Ticketing System" class="MenuIcon" />
 														</a>
 													</td>
@@ -298,7 +298,7 @@
 												<xsl:when test="/Response/Ticketing = 1">
 												<tr>
 													<td>
-														<a href="../ui/reflex.php/Ticketing/System/Mine">
+														<a href="../admin/reflex.php/Ticketing/System/Mine">
 															<img src="img/template/ticketing_system.png" title="Ticketing System" class="MenuIcon" />
 														</a>
 													</td>
@@ -380,7 +380,7 @@
 													
 													<xsl:when test="name(.) = 'Employees'">
 														<xsl:attribute name="href">
-															<xsl:text>../ui/flex.php/Employee/EmployeeList/</xsl:text>
+															<xsl:text>../admin/flex.php/Employee/EmployeeList/</xsl:text>
 														</xsl:attribute>
 														<xsl:text>View Employees</xsl:text>
 													</xsl:when>

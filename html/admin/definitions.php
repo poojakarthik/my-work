@@ -31,14 +31,11 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 $strVixenBaseDir = GetVixenBase();
-Define('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "html/ui/");
+Define('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "html/admin/");
 Define('MODULE_BASE_DIR', 		$strVixenBaseDir . "html/ui/");
-Define('MODULE_DEFAULT_CSS', 	$strVixenBaseDir . "html/ui/style_template/default.css");
-Define('LOCAL_BASE_DIR', 		$strVixenBaseDir . "html/ui/");
+Define('MODULE_DEFAULT_CSS', 	$strVixenBaseDir . "html/admin/style_template/default.css");
+Define('LOCAL_BASE_DIR', 		$strVixenBaseDir . "html/admin/");
 Define('FRAMEWORK_BASE_DIR', 	$strVixenBaseDir . "html/ui/");
-Define('RELATIVE_FRAMEWORK_DIR',	"../ui/");
-Define('RELATIVE_APP_DIR',			"../management/");
-
 
 
 // Define which flavour of browsers are supported by this application

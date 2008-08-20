@@ -69,7 +69,7 @@
 			<!-- View Available Plans -->
 			<tr>
 				<td>
-					<a href="../ui/flex.php/Plan/AvailablePlans/">
+					<a href="../admin/flex.php/Plan/AvailablePlans/">
 						<img src="img/template/plans.png" title="View Plan Details" class="MenuIcon" />
 					</a>
 				</td>

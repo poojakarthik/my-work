@@ -39,7 +39,7 @@
 	if ($empEmployee->Pull('Privileges')->getValue() == USER_PERMISSION_GOD && 
 		$athAuthentication->AuthenticatedEmployee()->Pull('Privileges')->getValue() != USER_PERMISSION_GOD)
 	{
-		header("Location: ../ui/flex.php/Employee/EmployeeList/");
+		header("Location: ../admin/flex.php/Employee/EmployeeList/");
 	}
 	//HACK! HACK! HACK! 
 	

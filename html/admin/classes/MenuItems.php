@@ -84,7 +84,7 @@ class MenuItems
 	public $strContextMenuLabel;
 
 	const OLD_FRAMEWORK = "../management/";
-	const NEW_FRAMEWORK = "../ui/";
+	const NEW_FRAMEWORK = "../admin/";
 
 	
 	//------------------------------------------------------------------------//

@@ -195,7 +195,7 @@
 			}
 			if ($intService)
 			{
-				header ('Location: ../ui/flex.php/Service/View/?Service.Id=' . $intService);
+				header ('Location: ../admin/flex.php/Service/View/?Service.Id=' . $intService);
 				exit;
 			}
 			

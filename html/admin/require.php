@@ -30,27 +30,28 @@
 // Framework Requirements
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'flex.require.php');
 
+// Set Application Framework Dir
+$strApplicationFrameworkDir	= "html/ui/";
+
 // Set Application Dir
-$strApplicationDir = "html/ui/";
-// If absolute paths don't work then use: 
-// $strApplicationDir = "../ui/"; and use require_once instead of VixenRequire
+$strApplicationDir			= "html/admin/";
 
 // Application Requirements
-VixenRequire($strApplicationDir.'definitions.php');
-VixenRequire($strApplicationDir.'functions.php');
-VixenRequire($strApplicationDir.'framework.php');
-VixenRequire($strApplicationDir.'menu_items.php');
-VixenRequire($strApplicationDir.'application.php');
+VixenRequire($strApplicationDir.			'definitions.php');
+VixenRequire($strApplicationFrameworkDir.	'functions.php');
+VixenRequire($strApplicationFrameworkDir.	'framework.php');
+VixenRequire($strApplicationDir.			'menu_items.php');
+VixenRequire($strApplicationFrameworkDir.	'application.php');
 
-VixenRequire($strApplicationDir.'db/db_access_ui.php');
-VixenRequire($strApplicationDir.'db/db_object_base.php');
-VixenRequire($strApplicationDir.'db/db_object.php');
-VixenRequire($strApplicationDir.'db/db_list.php');
-VixenRequire($strApplicationDir.'db/token.php');
-VixenRequire($strApplicationDir.'vixen_table.php');
+VixenRequire($strApplicationFrameworkDir.	'db/db_access_ui.php');
+VixenRequire($strApplicationFrameworkDir.	'db/db_object_base.php');
+VixenRequire($strApplicationFrameworkDir.	'db/db_object.php');
+VixenRequire($strApplicationFrameworkDir.	'db/db_list.php');
+VixenRequire($strApplicationFrameworkDir.	'db/token.php');
+VixenRequire($strApplicationFrameworkDir.	'vixen_table.php');
 
-VixenRequire($strApplicationDir.'json.php');
+VixenRequire($strApplicationFrameworkDir.	'json.php');
 
-VixenRequire($strApplicationDir . 'style_template/html_elements.php');
+VixenRequire($strApplicationFrameworkDir . 'style_template/html_elements.php');
 
 ?>

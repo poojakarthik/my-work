@@ -37,7 +37,7 @@
 	}
 	catch (Exception $e)
 	{
-		header ('Location: ../ui/flex.php/Service/View/?Service.Id=' . $srvService->Pull ('Id')->getValue ()); exit;
+		header ('Location: ../admin/flex.php/Service/View/?Service.Id=' . $srvService->Pull ('Id')->getValue ()); exit;
 	}
 	
 	// Error Remembering

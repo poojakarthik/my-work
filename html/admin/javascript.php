@@ -48,7 +48,7 @@ if (array_key_exists('v', $_GET) && array_key_exists('HTTP_IF_MODIFIED_SINCE', $
  */
  
 Define ('LOCAL_BASE_DIR', ".");
-Define ('FRAMEWORK_BASE_DIR', ".");
+Define ('FRAMEWORK_BASE_DIR', "../ui");
 
 // include the framework javascript_builder.php file
 require_once(FRAMEWORK_BASE_DIR . "/javascript_builder.php");

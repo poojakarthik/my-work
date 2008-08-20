@@ -66,7 +66,7 @@
 							<xsl:if test="/Response/ShowLogout">
 								<div class="Seperator"></div>
 								<br/>
-								<a href="../ui/logout.php">Click Here</a> to log out
+								<a href="../admin/logout.php">Click Here</a> to log out
 							</xsl:if>
 						</div>
 						

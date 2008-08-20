@@ -8,6 +8,6 @@
 	
 	
 	$intAccount = $_GET['Id'];
-	header("Location: ../ui/flex.php/Account/InvoicesAndPayments/?Account.Id=$intAccount");
+	header("Location: ../admin/flex.php/Account/InvoicesAndPayments/?Account.Id=$intAccount");
 	
 ?>

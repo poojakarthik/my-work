@@ -15,7 +15,7 @@ $strMethod 		= $arrScript[1];
 require_once '../../lib/classes/Flex.php';
 
 // load framework
-require_once('../ui/require.php');
+require_once('../admin/require.php');
 
 // instanciate application
 $Application = Application::instance();

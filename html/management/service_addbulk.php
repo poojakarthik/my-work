@@ -319,7 +319,7 @@
 							)
 						);
 						
-						header ('Location: ../ui/flex.php/Service/View/?Service.Id=' . $srvService->Pull ('Id')->getValue ());
+						header ('Location: ../admin/flex.php/Service/View/?Service.Id=' . $srvService->Pull ('Id')->getValue ());
 						exit;
 					}
 					catch (Exception $e)

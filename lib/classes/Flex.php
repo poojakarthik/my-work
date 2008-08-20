@@ -116,7 +116,7 @@ final class Flex
 			switch(session_name())
 			{
 				case self::FLEX_ADMIN_SESSION:
-					$relativeApplicationBase = 'html'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR;
+					$relativeApplicationBase = 'html'.DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR;
 					break;
 				case self::FLEX_CUSTOMER_SESSION:
 					$relativeApplicationBase = 'html'.DIRECTORY_SEPARATOR.'customer'.DIRECTORY_SEPARATOR;

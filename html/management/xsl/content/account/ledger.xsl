@@ -285,7 +285,7 @@
 			</tr>
 			<!-- <xsl:for-each select="/Response/AccountPayments/Results/rangeSample/InvoicePayment"> -->
 			<xsl:for-each select="/Response/Payments/Record">
-			<form method="POST" name="payments" id="payments" action="../ui/flex.php/Account/InvoicesAndPayments/?Account.Id=">
+			<form method="POST" name="payments" id="payments" action="../admin/flex.php/Account/InvoicesAndPayments/?Account.Id=">
 				<input name="Account" type="hidden">
 					<xsl:attribute name="value">
 						<xsl:value-of select="/Response/Account/Id" />
