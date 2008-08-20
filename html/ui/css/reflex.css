@@ -198,19 +198,36 @@ textarea {
 	background-color: #fff;
 }
 
+input[type="checkbox"] {
+	border: none;
+}
+
 textarea {
 	font-family: Arial,Verdana,Helvetica;
 }
 
 input.required, 
 select.required, 
-textarea.required,
+textarea.required{
+	background: #fff;
+	color: #111;
+	border: .1em solid #da8;
+}
+
 input.invalid, 
 select.invalid, 
 textarea.invalid {
 	background: #ffecf0;
 	color: #111;
 	border: .1em solid #d30;
+}
+
+input.valid, 
+select.valid, 
+textarea.valid {
+	background: #ecfff0;
+	color: #111;
+	border: .1em solid #3d0;
 }
 
 div#PopupPageBody {
