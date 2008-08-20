@@ -41,6 +41,7 @@ class Flex_Rollout
 		$nrConnections = count($arrConnectionNames);
 		$arrConnections = array();
 
+		$ccVersionNumber = 33;
 
 		$errors = array();
 
@@ -70,6 +71,21 @@ class Flex_Rollout
 			$errors[] = "WARNING: Failed to build new database_constants.php file. ". $e->getMessage();
 		}
 		
+		// We always want to update the credit_card_details.js file
+		// Rebuild the credit_card_details.js file
+		if ($intVersion >= $ccVersionNumber)
+		{
+			try
+			{
+				self::GenerateCreditCardDetailsJS();
+			}
+			catch (Exception $e)
+			{
+				// Error occurred.  All rollback actions have been performed
+				$errors[] = "WARNING: Failed to build new credit_card_details.js file.";
+			}
+		}
+
 
 		$errors = implode("\n", $errors);
 
@@ -161,6 +177,7 @@ class Flex_Rollout
 		}
 
 		// Commit the database changes
+		$intEndVersion = $intVersion;
 		for ($i = 0; $i < $nrConnections; $i++)
 		{
 			try
@@ -172,6 +189,7 @@ class Flex_Rollout
 				else
 				{
 					$arrConnections[$i]->TransactionCommit();
+					$intEndVersion++;
 				}
 			}
 			catch (Exception $e)
@@ -220,6 +238,20 @@ class Flex_Rollout
 		{
 			// Error occurred.  All rollback actions have been performed
 			$errors[] = "WARNING: Failed to build new database_constants.php file.";
+		}
+
+		// Rebuild the credit_card_details.js file
+		if ($intEndVersion >= $ccVersionNumber)
+		{
+			try
+			{
+				self::GenerateCreditCardDetailsJS();
+			}
+			catch (Exception $e)
+			{
+				// Error occurred.  All rollback actions have been performed
+				$errors[] = "WARNING: Failed to build new credit_card_details.js file.";
+			}
 		}
 
 		$errors = implode("\n", $errors);
@@ -289,7 +321,7 @@ class Flex_Rollout
 		$objTables	= $qryQuery->Execute("SHOW TABLES");
 		if (!$objTables)
 		{
-			throw new Exception("Failed to retrieve tables of the '$strDataSource' database. " . mysqli_errno() . '::' . mysqli_error());
+			throw new Exception("Failed to retrieve tables of the '$strDataSource' database: " . $qryQuery->Error());
 		}
 		
 		// For each table of the database, check if constants should be built for it
@@ -302,7 +334,7 @@ class Flex_Rollout
 			
 			if (!$objColumns)
 			{
-				throw new Exception("Failed to retrieve column listing for the '$strTable' table of the '$strDataSource' database. " . mysqli_errno() . '::' . mysqli_error());
+				throw new Exception("Failed to retrieve column listing for the '$strTable' table of the '$strDataSource' database: " . $qryQuery->Error());
 			}
 			
 			// Check if it has id AND const_name AND description
@@ -360,7 +392,7 @@ class Flex_Rollout
 			
 			if (!$objRecordSet)
 			{
-				throw new Exception("Failed to retrieve the contents of the '$strTable' table of the '$strDataSource' database. " . mysqli_errno() . '::' . mysqli_error());
+				throw new Exception("Failed to retrieve the contents of the '$strTable' table of the '$strDataSource' database: " . $qryQuery->Error());
 			}
 			
 			// Build the constant group
@@ -497,7 +529,118 @@ class Flex_Rollout
 		}
 	}
 	
-	
+	public static function GenerateCreditCardDetailsJS()
+	{
+		$strDataSource = "flex";
+		
+		// Retrieve a list of all tables in the database
+		$qryQuery	= new StatementSelect('credit_card_type', array('id', 'name', 'description', 'const_name', 'surcharge', 'valid_lengths', 'valid_prefixes', 'cvv_length', 'minimum_amount', 'maximum_amount'));
+		$nrCreditCards	= $qryQuery->Execute();
+		if ($nrCreditCards === FALSE)
+		{
+			throw new Exception("Failed to retrieve credit card type details from database: " . $qryQuery->Error());
+		}
+		$ccDetails = $qryQuery->FetchAll();
+		$js = "
+CreditCardType = Class.create();
+Object.extend(CreditCardType, 
+{
+	types: [\n";
+		$prefixTypes = "";
+		$idTypes = "";
+		$prefixLengths = array();
+		$maxCVV = 0;
+		$minCVV = 999;
+		$maxCardLength = 0;
+		$minCardLength = 999;
+		$minPrefixLength = 999;
+		for ($i = 0; $i < $nrCreditCards; $i++)
+		{
+			$d = $ccDetails[$i];
+			$js .= $i ? ",\n" : '';
+			$prefixes = explode(',', $ccDetails[$i]['valid_prefixes']);
+			$lengths = explode(',', $ccDetails[$i]['valid_lengths']);
+			$js .= "		{ id: " . $d['id'] . ", name: '" . $d['name'] . "', description: '" . $d['description'] . "'" 
+						. ", const_name: '" . $d['const_name'] . "', surcharge: " . $d['surcharge'] . ", valid_prefixes: ['" . implode("','", $prefixes) . "']" 
+						. ", valid_lengths: [" . $d['valid_lengths'] . "], cvv_length: " . $d['cvv_length'] 
+						. ", minimum_amount: " . $d['minimum_amount'] . ", maximum_amount: " . $d['maximum_amount'] . "}";
+
+			$idTypes .= ($idTypes ? ",\n\t\t\t  " : '') . 'ID_' . $d['id'] . ": $i";
+
+			$prefixTypes .= ($prefixTypes ? ",\n\t\t\t\t  " : '') . 'PREFIX_' . implode(": $i,\n\t\t\t\t  PREFIX_", $prefixes) . ": $i";
+			foreach($prefixes as $prefix)
+			{
+				$prefixLengths[] = strlen($prefix);
+			}
+			$maxCVV = max($maxCVV, $d['cvv_length']);
+			$minCVV = min($minCVV, $d['cvv_length']);
+			$maxCardLength = max($maxCardLength, max($lengths));
+			$minCardLength = min($minCardLength, min($lengths));
+			$minPrefixLength = min($minPrefixLength, min($prefixLengths));
+		}
+		$prefixLengths = array_unique($prefixLengths);
+		asort($prefixLengths);
+		$js .= "
+	],
+
+	minCvvLength: $minCVV,
+
+	maxCvvLength: $maxCVV,
+
+	minCardNumberLength: $minCardLength,
+
+	maxCardNumberLength: $maxCardLength,
+
+	minPrefixLength: $minPrefixLength,
+
+	prefixLengths: [" . implode(',', $prefixLengths) . "],
+
+	prefixTypes: {{$prefixTypes}},
+
+	idTypes: {{$idTypes}},
+
+	cardTypeForNumber: function(cardNumber)
+	{
+		var cardNumberLen = cardNumber.length;
+		for (var i = 0; i < " . count($prefixLengths) . "; i++)
+		{
+			var len = CreditCardType.prefixLengths[i];
+			if (cardNumberLen < len) break;
+			var type = CreditCardType.cardTypeForPrefix(cardNumber.substr(0, len));
+			if (type) return type;
+		}
+		return false;
+	},
+
+	cardTypeForPrefix: function(prefix)
+	{
+		if (typeof CreditCardType.prefixTypes['PREFIX_' + prefix] == 'undefined')
+		{
+			return false;
+		}
+		return CreditCardType.types[CreditCardType.prefixTypes['PREFIX_' + prefix]];
+	},
+
+	cardTypeForId: function(id)
+	{
+		if (typeof CreditCardType.idTypes['ID_' + id] == 'undefined')
+		{
+			return false;
+		}
+		return CreditCardType.types[CreditCardType.idTypes['ID_' + id]];
+	},
+
+	indexOfType: function(type)
+	{
+		return CreditCardType.idTypes['ID_' + type['id']];
+	}
+});\n";
+
+		$strFilePath	= GetVixenBase() . 'html' . DIRECTORY_SEPARATOR ."ui". DIRECTORY_SEPARATOR ."javascript". DIRECTORY_SEPARATOR ."credit_card_type.js";
+		$jsFile = fopen($strFilePath, "w");
+		fwrite($jsFile, $js);
+		fclose($jsFile);
+	}
 }
 
 ?>
