@@ -1,0 +1,106 @@
+body {
+	background-color: #fff;
+	font-family: Arial,Verdana,Helvetica;
+	margin: 0em;
+	font-size: .8em;
+	padding: 0em;
+}
+
+h1#page-title{
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	color: #000;
+	margin-top: -0.6em;
+}
+
+div#header {
+	width: 100%;
+	background-color: #111;
+	color: #eee;
+	background-image: url("../img/template/background.png");
+	background-repeat: repeat-x;
+	position: fixed;
+	z-index: 10;
+}
+
+div#person_search {
+	float: top;
+	width: 99%;
+	height: 4em;
+}
+
+div#person {
+	width: 100%;
+	text-align: right;
+	height: 2em;
+}
+
+div#person a,
+div#person a:link,
+div#person a:visited {
+	color: #ffde05;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+div#person a:hover {
+	color: #ffde05;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+div#person a:active {
+	color: #ffde05;
+	text-decoration: underline;
+}
+
+div#logo {
+	float: left;
+	width: 50%;
+	height: 4em;
+	display: block;
+	background-image: url("../img/template/yellow_billing_logo_small.png");
+	background-repeat: no-repeat;
+}
+
+div#logo div#blurb {
+	margin-left: 7em;
+	padding-top: .8em;
+	height: 4em;
+	font-weight: bold;
+	font-size: 1.2em;
+	vertical-align: text-bottom;
+}
+
+div#search_bar {
+	width: 100%;
+	text-align: right;
+	height: 2em;
+}
+
+div#menu {
+	width: 100%;
+}
+
+div#content {
+	width:          90%;
+	clear:          both;
+	margin-left:    auto;
+	margin-right:   auto;
+	top:            10em;
+	overflow:       auto;
+	position:       relative;
+}
+
+div.debug-options {
+	padding-top: 1.2em;
+	position: absolute;
+	right: 1%;
+	top: 40;
+}
+
+pre {
+	font-family: Arial,Verdana,Helvetica;
+	font-size: 1em;
+}

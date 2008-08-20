@@ -38,8 +38,6 @@ Define('MODULE_BASE_DIR', 		$strVixenBaseDir . "html/customer/");
 Define('MODULE_DEFAULT_CSS', 	$strVixenBaseDir . "html/customer/default.css");
 Define('LOCAL_BASE_DIR', 		$strVixenBaseDir . "html/customer/");
 Define('FRAMEWORK_BASE_DIR', 	$strVixenBaseDir . "html/ui/");
-Define('RELATIVE_FRAMEWORK_DIR',	"../ui/");
-Define('RELATIVE_APP_DIR',			"../customer/");
 
 
 // Define which flavour of browsers are supported by this application
