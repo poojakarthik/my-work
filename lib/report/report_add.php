@@ -23,11 +23,11 @@ $arrSQLFields	= Array();
 
  
  //---------------------------------------------------------------------------//
- // LOST MOBILE SERVICES
+ // NON-TOLLING SERVICES
  //---------------------------------------------------------------------------//
  
-$arrDataReport['Name']			= "Lost Services (Mobiles) in a Date Period";
-$arrDataReport['Summary']		= "Lists all of the Mobile Services which were lost in the specified period";
+$arrDataReport['Name']			= "Non-Tolling Services in a Date Period for a Service Type";
+$arrDataReport['Summary']		= "Lists all of the Services which have not tolled ";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
@@ -41,13 +41,14 @@ $arrDataReport['SQLTable']		= 	"(" .
 										") " .
 										"LEFT JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service" .
 									") " .
-									"LEFT JOIN RatePlan ON SRP.RatePlan = RatePlan.Id" .
+									"LEFT JOIN RatePlan ON SRP.RatePlan = RatePlan.Id";
 
-$arrDataReport['SQLWhere']		= "Service.Status = 400 AND ADDDATE(CAST(Service.LatestCDR AS DATE), INTERVAL 30 DAY) BETWEEN <StartDate> AND <EndDate> AND Service.ServiceType = 101";
+$arrDataReport['SQLWhere']		= "Service.ServiceType = <ServiceType> AND Service.Status = 400 AND CAST(Service.LatestCDR AS DATE) <= <LatestCDR>";
 $arrDataReport['SQLGroupBy']	= "Service.Id ORDER BY Account.Id";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
+$arrDocReq[]	= "Service";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
@@ -71,15 +72,29 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
 $arrColumns = Array();
-$arrSQLFields['StartDate']	= Array(
-										'Type'					=> "dataDate",
-										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "StartDateRange",
+$arrColumns['Label']	= "description";
+$arrColumns['Value']	= "id";
+
+$arrSelect = Array();
+$arrSelect['Table']		= "service_type";
+$arrSelect['Columns']	= $arrColumns;
+$arrSelect['Where']		= "const_name NOT IN ('SERVICE_TYPE_ADSL', 'SERVICE_TYPE_DIALUP')";
+$arrSelect['OrderBy']	= "description ASC";
+$arrSelect['Limit']		= NULL;
+$arrSelect['GroupBy']	= NULL;
+$arrSelect['ValueType']	= "dataInteger";
+
+$arrSQLFields['ServiceType']	= Array(
+										'Type'					=> "StatementSelect",
+										'DBSelect'				=> $arrSelect,
+										'Documentation-Entity'	=> "Service",
+										'Documentation-Field'	=> "ServiceType",
 									);
-$arrSQLFields['EndDate']	= Array(
+									
+$arrSQLFields['LatestCDR']	= Array(
 										'Type'					=> "dataDate",
-										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "EndDateRange",
+										'Documentation-Entity'	=> "Service",
+										'Documentation-Field'	=> "LatestCDR",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 //----------------------------------------------------------------------------//
