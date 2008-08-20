@@ -90,27 +90,14 @@ final class Flex
 		return $framework;
 	}
 
-	private static function relativeFrameworkBase()
+	// Returns the relative base path of the Framework for the applications
+	public static function relativeFrameworkBase()
 	{
-		static $relativeFrameworkBase;
-		if (!isset($relativeFrameworkBase))
-		{
-			switch(session_name())
-			{
-				case self::FLEX_ADMIN_SESSION:
-					$relativeFrameworkBase = 'html'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR;
-					break;
-				case self::FLEX_CUSTOMER_SESSION:
-					$relativeFrameworkBase = 'html'.DIRECTORY_SEPARATOR.'customer'.DIRECTORY_SEPARATOR;
-					break;
-				default:
-					$relativeFrameworkBase = FALSE;
-			}
-		}
-		return $relativeFrameworkBase;
+		return 'html'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR;
 	}
 
-	private static function frameworkBase()
+	// Returns the absolute base path of the Framework for the applications
+	public static function frameworkBase()
 	{
 		static $frameworkBase;
 		if (!isset($frameworkBase))
@@ -118,6 +105,38 @@ final class Flex
 			$frameworkBase = self::getBase() . self::relativeFrameworkBase();
 		}
 		return $frameworkBase;
+	}
+
+	// Returns the relative base path of the web application
+	public static function relativeApplicationBase()
+	{
+		static $relativeApplicationBase;
+		if (!isset($relativeApplicationBase))
+		{
+			switch(session_name())
+			{
+				case self::FLEX_ADMIN_SESSION:
+					$relativeApplicationBase = 'html'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR;
+					break;
+				case self::FLEX_CUSTOMER_SESSION:
+					$relativeApplicationBase = 'html'.DIRECTORY_SEPARATOR.'customer'.DIRECTORY_SEPARATOR;
+					break;
+				default:
+					$relativeApplicationBase = FALSE;
+			}
+		}
+		return $relativeApplicationBase;
+	}
+	
+	// Returns the absolute base path of the web application
+	public static function applicationBase()
+	{
+		static $applicationBase;
+		if (!isset($applicationBase))
+		{
+			$applicationBase = self::getBase() . self::relativeApplicationBase();
+		}
+		return $applicationBase;
 	}
 
 	public static function load()
@@ -155,14 +174,19 @@ final class Flex
 
 		self::framework();
 
-		$relativeFrameworkBase = self::relativeFrameworkBase();
+		// Include files from the Application (either admin or customer app)
+		$relativeApplicationBase = self::relativeApplicationBase();
+		if ($relativeApplicationBase)
+		{
+			self::requireOnce($relativeApplicationBase . 'definitions.php');
+		}
 
+		// Include files from the Framework
+		$relativeFrameworkBase = self::relativeFrameworkBase();
 		if ($relativeFrameworkBase)
 		{
 			self::requireOnce(
-				$relativeFrameworkBase . 'definitions.php',
 				$relativeFrameworkBase . 'functions.php',
-	
 				$relativeFrameworkBase . 'style_template/html_elements.php'
 			);
 		}
@@ -178,12 +202,24 @@ final class Flex
 		array_unshift($subDirs, '');
 
 		$accumulatedPath = '';
+		//TODO! Instead of having 1 loop which tests all 4 possible locations, It should be as 4 separate loops, because there is a precedence to the locations
 		foreach ($subDirs as $subDir)
 		{
 			$accumulatedPath .= $subDir . DIRECTORY_SEPARATOR;
 
-			// Check the framework for the class (although having classes here is probably not a good idea,
-			// except for classes to do with the display of a page)
+			// Check the specific application for the class
+			// Classes specific to the web application (admin or customer) will be located here 
+			if (self::applicationBase() && file_exists(self::applicationBase().'classes'.$accumulatedPath.$strClassName.'.php'))
+			{
+				require_once self::applicationBase().'classes'.$accumulatedPath.$strClassName.'.php';
+				if (class_exists($strClassName, FALSE))
+				{
+					return TRUE;
+				}
+			}
+			
+			// Check the applications framework for the class
+			// Classes that are used by all of the web applications will be located here
 			if (self::frameworkBase() && file_exists(self::frameworkBase().'classes'.$accumulatedPath.$strClassName.'.php'))
 			{
 				require_once self::frameworkBase().'classes'.$accumulatedPath.$strClassName.'.php';
@@ -194,6 +230,7 @@ final class Flex
 			}
 
 			// Check the lib/classes directory for the class (all classes should probably be ket here)
+			// All model classes are kept here
 			if (file_exists(self::getBase().'lib/classes'.$accumulatedPath.$strClassName.'.php'))
 			{
 				require_once self::getBase().'lib/classes'.$accumulatedPath.$strClassName.'.php';
@@ -291,6 +328,11 @@ final class Flex
 			$base = realpath(dirname(__FILE__) . '/../../').DIRECTORY_SEPARATOR;
 		}
 		return $base;
+	}
+
+	public static function getRelativeBase()
+	{
+		return "..". DIRECTORY_SEPARATOR ."..". DIRECTORY_SEPARATOR;
 	}
 
 	public static function requireOnce()

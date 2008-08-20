@@ -97,13 +97,20 @@ class Application_Page extends Page
 	 */
 	function RenderCSS()
 	{
-		$cssFiles = glob(Flex::getBase() . '/html/ui/css/*.css');
+		// Include the menu.css, reflex.css and style.css files
+		$strRelativePath = Flex::getRelativeBase() . Flex::relativeApplicationBase();
+		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/menu.css' />\n";
+		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/reflex.css' />\n";
+		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/style.css' />\n";
+		
+		/* Include all css files in the css directory 
+		$strRelativePath = Flex::getRelativeBase() . Flex::relativeApplicationBase();
+		$cssFiles = glob("{$strRelativePath}css/*.css");
 		foreach($cssFiles as $cssFile)
 		{
-			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/" . basename($cssFile) . "' />\n";
+			echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/" . basename($cssFile) . "' />\n";
 		}
-		
-		
+		*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -132,12 +139,13 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
-		echo "\t\t<script type='text/javascript' src='../ui/javascript/prototype.js' ></script>\n";
+		$strFrameworkDir = Flex::getRelativeBase() . Flex::relativeFrameworkBase();
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
 		
 		//echo "\t\t<script type='text/javascript' src='javascript/ext.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='../ui/javascript/jquery.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='../ui/javascript/json.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='../ui/javascript/flex.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/jquery.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/json.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex.js' ></script>\n";
 		// TODO: Add a non-vixen login handler to flex.js for when the session has timed out
 
 		// Prepend the js files that all pages require, to the list of js files to include
@@ -151,8 +159,58 @@ class Application_Page extends Page
 
 		foreach($arrJsFiles as $strJsFile)
 		{
-			echo "\t\t<script type='text/javascript' src='javascript/$strJsFile.js' ></script>\n";
+			// Find the relative path of the javascript file
+			$strJsFileRelativePath = $this->_GetJsFileRelativePath($strJsFile .".js");
+			if ($strJsFileRelativePath !== FALSE)
+			{
+				// The file was found
+				echo "\t\t<script type='text/javascript' src='$strJsFileRelativePath' ></script>\n";
+				//echo "\t\t<script type='text/javascript' src='javascript/$strJsFile.js' ></script>\n";
+			}
 		}
+	}
+
+	//------------------------------------------------------------------------//
+	// _GetJsFileRelativePath
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetJsFileRelativePath()
+	 *
+	 * Returns the relative path of the javascript file in question (including the filename)
+	 *
+	 * Returns the relative path of the javascript file in question (including the filename)
+	 * It first looks in the application's javascript directory and if it is not found there
+	 * then it will look in the app framework's javascript directory
+	 *
+	 * @param	string $strJsFile	javascript file to find.  Include the .js extension
+	 *
+	 * @return	string				relative path of the javascript file (ie ../management/javascript/hello.js)
+	 * @method
+	 */
+	private function _GetJsFileRelativePath($strJsFile)
+	{
+		// Look for the file in the application's javascript dir
+		$strFile = Flex::getRelativeBase() . Flex::relativeApplicationBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
+		
+		$arrFiles = glob($strFile);
+		if (is_array($arrFiles) && count($arrFiles) == 1)
+		{
+			// The file was found
+			return $strFile;
+		}
+		
+		// Look for the file in the application's javascript dir
+		$strFile = Flex::getRelativeBase() . Flex::relativeFrameworkBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
+		$arrFiles = glob($strFile);
+		if (is_array($arrFiles) && count($arrFiles) == 1)
+		{
+			// The file was found
+			return $strFile;
+		}
+		
+		// The file could not be found
+		return FALSE;
+		
 	}
 
 	//------------------------------------------------------------------------//
@@ -184,7 +242,9 @@ class Application_Page extends Page
 
 		foreach($arrJsFiles as $strJsFile)
 		{
-			echo "\t\t<script type='text/javascript' src='javascript/$strJsFile.js' ></script>\n";
+			$strJsFileRelativePath = $this->_GetJsFileRelativePath($strJsFile .".js");
+			echo "\t\t<script type='text/javascript' src='$strJsFileRelativePath' ></script>\n";
+			//echo "\t\t<script type='text/javascript' src='javascript/$strJsFile.js' ></script>\n";
 		}
 	}
 
