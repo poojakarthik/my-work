@@ -24,17 +24,23 @@ DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration
 # I couldnt find the style for the URL you are using?
 if($arrFetchCustomerStyleConfiguration == "")
 {
-	// Load Default Style...
-	$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url=\"https://telcoblue.yellowbilling.com.au\" LIMIT 1");
-	DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
+	$ExternalName = DEFAULT_CUSTOMER_EXTERNAL_NAME;
+	$customer_primary_color = DEFAULT_CUSTOMER_PRIMARY_COLOR;
+	$customer_secondary_color = DEFAULT_CUSTOMER_SECONDARY_COLOR;
+	$customer_logo = DEFAULT_CUSTOMER_LOGO;
+	$customer_logo_type = DEFAULT_CUSTOMER_LOGO_TYPE;
+	$handle = fopen("./$customer_logo", "rb");
+	$customer_logo = stream_get_contents($handle);
+	fclose($handle);
 }
-$arrFetchCustomerStyleConfiguration = DBO()->customer_style_configuration->Array->Value;
-#print_r($arrFetchCustomerStyleConfiguration);
-#exit;
-
-foreach($arrFetchCustomerStyleConfiguration as $mixKey=>$mixVal)
+# I could find something?
+if($arrFetchCustomerStyleConfiguration != "")
 {
-	$$mixKey = $mixVal;
+	$arrFetchCustomerStyleConfiguration = DBO()->customer_style_configuration->Array->Value;
+	foreach($arrFetchCustomerStyleConfiguration as $mixKey=>$mixVal)
+	{
+		$$mixKey = $mixVal;
+	}
 }
 
 header("Content-Type: image/$customer_logo_type");

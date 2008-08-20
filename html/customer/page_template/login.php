@@ -42,18 +42,16 @@
 	# I couldnt find the style for the URL you are using?
 	if($arrFetchCustomerStyleConfiguration == "")
 	{
-		// Load Default Style...
-		$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url=\"https://telcoblue.yellowbilling.com.au\" LIMIT 1");
-		DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
+		$ExternalName = DEFAULT_CUSTOMER_EXTERNAL_NAME;
 	}
-
-	$arrFetchCustomerStyleConfiguration = DBO()->customer_style_configuration->Array->Value;
-	#print_r($arrFetchCustomerStyleConfiguration);
-	#exit;
-
-	foreach($arrFetchCustomerStyleConfiguration as $mixKey=>$mixVal)
+	# I could find something?
+	if($arrFetchCustomerStyleConfiguration != "")
 	{
-		$$mixKey = $mixVal;
+		$arrFetchCustomerStyleConfiguration = DBO()->customer_style_configuration->Array->Value;
+		foreach($arrFetchCustomerStyleConfiguration as $mixKey=>$mixVal)
+		{
+			$$mixKey = $mixVal;
+		}
 	}
 	// Open the pageBody container
 	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ManagementConsole"), "$ExternalName Customer System");
