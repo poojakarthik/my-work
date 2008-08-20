@@ -32,8 +32,31 @@
 	// Load the common layout for this app
 	require_once dirname(__FILE__) . "/../layout_template/common_layout.php";
 	
+	// Connect to database
+	$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+
+	// Load Style Configuration based on domain name 
+	$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url LIKE \"%$_SERVER[HTTP_HOST]\" LIMIT 1");
+	DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
+
+	# I couldnt find the style for the URL you are using?
+	if($arrFetchCustomerStyleConfiguration == "")
+	{
+		// Load Default Style...
+		$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url=\"https://telcoblue.yellowbilling.com.au\" LIMIT 1");
+		DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
+	}
+
+	$arrFetchCustomerStyleConfiguration = DBO()->customer_style_configuration->Array->Value;
+	#print_r($arrFetchCustomerStyleConfiguration);
+	#exit;
+
+	foreach($arrFetchCustomerStyleConfiguration as $mixKey=>$mixVal)
+	{
+		$$mixKey = $mixVal;
+	}
 	// Open the pageBody container
-	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ManagementConsole"), "Yellow Billing Customer System");
+	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ManagementConsole"), "$ExternalName Customer System");
 	
 	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
 	
