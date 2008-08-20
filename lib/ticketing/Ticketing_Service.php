@@ -70,25 +70,30 @@ class Ticketing_Service
 				// Parse the file
 				$details = self::parseXmlFile($xmlFile);
 
-				// Set delivery status to received (this is inbound)
-				$details['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED; //
-
-				// XML files originate from emails
-				$details['source_id'] = TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
-
-				// System user id
-				//$details['user_id'] = USER_ID;
-
-				// Set delivery time (to system) same as creation time (now)
-				$details['delivery_datetime'] = $details['creation_datetime'] = date('Y-m-d H-i-s');
-
-				// Load the details into the ticketing system
-				$correspondence = Ticketing_Correspondance::createForDetails($details);
-				// If a correspondence was created...
-				if ($correspondence)
+				// Check that there is a sender
+				$correspondence = FALSE;
+				if (array_key_exists('from', $details))
 				{
-					// Acknowledge receipt of the correspondence
-					$correspondence->acknowledgeReceipt();
+					// Set delivery status to received (this is inbound)
+					$details['delivery_status'] = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_RECEIVED; //
+	
+					// XML files originate from emails
+					$details['source_id'] = TICKETING_CORRESPONDANCE_SOURCE_EMAIL;
+	
+					// System user id
+					//$details['user_id'] = USER_ID;
+	
+					// Set delivery time (to system) same as creation time (now)
+					$details['delivery_datetime'] = $details['creation_datetime'] = date('Y-m-d H-i-s');
+	
+					// Load the details into the ticketing system
+					$correspondence = Ticketing_Correspondance::createForDetails($details);
+					// If a correspondence was created...
+					if ($correspondence)
+					{
+						// Acknowledge receipt of the correspondence
+						$correspondence->acknowledgeReceipt();
+					}
 				}
 
 				// Determine whether we will be backing up files
@@ -217,10 +222,14 @@ class Ticketing_Service
 		$details['subject'] = $dom->getElementsByTagName('subject')->item(0)->textContent;
 
 		$email = $dom->getElementsByTagName('from')->item(0);
-		$details['from'] = array(
-			'name' => $email->getElementsByTagName('name')->item(0)->textContent,
-			'address' => $email->getElementsByTagName('email')->item(0)->textContent,
-		);
+		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : null;
+		if ($emailAddress && EmailAddressValid($emailAddress))
+		{
+			$details['from'] = array(
+				'name' => $email->getElementsByTagName('name')->item(0)->textContent,
+				'address' => $emailAddress,
+			);
+		}
 
 		$details['to'] = array();
 		$emails = $dom->getElementsByTagName('to');

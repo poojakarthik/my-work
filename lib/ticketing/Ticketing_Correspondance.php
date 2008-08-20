@@ -484,8 +484,15 @@ class Ticketing_Correspondance
 
 		require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'Email_Notification.php';
 
+		// Check that we have a valid recipient address for the acknowledgement
+		$emailAddress = $this->getContact()->email;
+		if (!$emailAddress || !EmailAddressValid($emailAddress))
+		{
+			return;
+		}
+
 		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM, $customerGroupId);
-		$email->to = $this->getContact()->email;
+		$email->to = $emailAddress;
 		$email->from = $custGroupEmail->email;
 		$email->subject = $this->summary . " [T" . $this->ticketId . "Z]";
 		$emailText = $custGroupConfig->emailReceiptAcknowledgement;
