@@ -34,7 +34,7 @@
 // Defaut styles - used if we cant find any valid style from CustomerGroup (based on URL)
 Define ('DEFAULT_CUSTOMER_LOGO', "logo.png");
 Define ('DEFAULT_CUSTOMER_LOGO_TYPE', "png");
-Define ('DEFAULT_CUSTOMER_PRIMARY_COLOR', "");
+Define ('DEFAULT_CUSTOMER_PRIMARY_COLOR', "ffbf00");
 Define ('DEFAULT_CUSTOMER_SECONDARY_COLOR', "");
 Define ('DEFAULT_CUSTOMER_EXTERNAL_NAME', "Yellow Billing");
 
