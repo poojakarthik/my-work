@@ -88,7 +88,6 @@
 		print "Making a payment is fast and easy,<br/>Please supply the required details below.<br/><br/>";
 		print "
 		<!-- We dont want any caching of this page.. -->
-		<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\">
 		<form method=\"POST\" action=\"./flex.php/Console/Pay/\">
 		<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
 		<TABLE>

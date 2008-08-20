@@ -98,7 +98,6 @@
 			print "Thank you for taking the time to update your account,<br/>Please apply new options below.<br/><br/>";
 			print "
 			<!-- We dont want any caching of this page.. -->
-			<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\">
 			<form method=\"POST\" action=\"./flex.php/Console/Edit/\">
 			<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
 			<TABLE>
