@@ -68,7 +68,7 @@ if($arrFetchCustomerStyleConfiguration == "")
 {
 	$customer_primary_color = DEFAULT_CUSTOMER_PRIMARY_COLOR;
 	$customer_secondary_color = DEFAULT_CUSTOMER_SECONDARY_COLOR;
-	$customer_breadcrum_menu_color = DEFAULT_CUSTOMER_BREADCRUM_MENU_COLOR;
+	$customer_breadcrumb_menu_color = DEFAULT_CUSTOMER_BREADCRUMB_MENU_COLOR;
 }
 # I could find something?
 if($arrFetchCustomerStyleConfiguration != "")
@@ -89,8 +89,8 @@ fclose($resHandle);
 $arrChangesToCSS = array();
 $arrChangesToCSS['[customer_primary_color]'] = "#$customer_primary_color";
 $arrChangesToCSS['[customer_secondary_color]'] = "#$customer_secondary_color";
-$arrChangesToCSS['[customer_breadcrum_menu_color]'] = "#$customer_breadcrum_menu_color"; // the text portion.
-$arrChangesToCSS['[customer_breadcrum_menu_link_color]'] = "#$customer_breadcrum_menu_color"; // the actual link.
+$arrChangesToCSS['[customer_breadcrumb_menu_color]'] = "#$customer_breadcrumb_menu_color"; // the text portion.
+$arrChangesToCSS['[customer_breadcrumb_menu_link_color]'] = "#$customer_breadcrumb_menu_color"; // the actual link.
 
 foreach($arrChangesToCSS as $mixKey=>$mixVal)
 {

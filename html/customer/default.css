@@ -55,7 +55,7 @@
 	div#BreadCrumbMenu a:visited,
 	div#BreadCrumbMenu a:hover
 	{
-		color:					[customer_breadcrum_menu_link_color] !important;
+		color:					[customer_breadcrumb_menu_link_color] !important;
 		text-decoration:		none;
 		font-weight:			bolder;
 	}
@@ -288,7 +288,7 @@ span.IncorrectLogin
 		position: 				absolute;
 		bottom: 				0;
 		left: 					0;
-		color: 					[customer_breadcrum_menu_color];
+		color: 					[customer_breadcrumb_menu_color];
 		padding: 				2px;
 	}
 	

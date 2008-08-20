@@ -37,7 +37,7 @@ Define ('DEFAULT_CUSTOMER_LOGO_TYPE', "png");
 Define ('DEFAULT_CUSTOMER_PRIMARY_COLOR', "ffbf00");
 Define ('DEFAULT_CUSTOMER_SECONDARY_COLOR', "FfF8b5");
 Define ('DEFAULT_CUSTOMER_EXTERNAL_NAME', "Yellow Billing");
-Define ('DEFAULT_CUSTOMER_BREADCRUM_MENU_COLOR', "ffd800");
+Define ('DEFAULT_CUSTOMER_BREADCRUMB_MENU_COLOR', "ffd800");
 
 // viXen File Storage Base Directory
 define("FILE_BASE_DIR"				, "/home/vixen/");
