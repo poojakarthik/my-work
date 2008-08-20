@@ -41,7 +41,7 @@ class Flex_Rollout
 		$nrConnections = count($arrConnectionNames);
 		$arrConnections = array();
 
-		$ccVersionNumber = 33;
+		$ccVersionNumber = 32;
 
 		$errors = array();
 
