@@ -9,7 +9,7 @@ $arrDestinationTranslation['Carrier']		= CARRIER_M2;
 $arrDestinationTranslation['CarrierCode']	= NULL;
 $arrDestinationTranslation['Description']	= NULL;
 $insDestinationTranslation	= new StatementInsert("DestinationTranslation", $arrDestinationTranslation);
-$selDestination				= new StatementSelect("Destination", "Description", "Context = 1 AND Description = <Destination>");
+$selDestination				= new StatementSelect("Destination", "Code", "Context = 1 AND Description = <Destination>");
 
 $strInFile		= "/home/rdavis/m2_country_code_conversion_import.csv";
 
