@@ -1215,6 +1215,7 @@ function MakeCSVLine($arrFields, $arrFieldOrder=NULL, $strDelimiter=',', $strEnc
 
 function GetDBConnection($mixUsingSystem)
 {
+	$db_handler = NULL;
 	switch ($mixUsingSystem) {
 		
 		case "mysqli":
