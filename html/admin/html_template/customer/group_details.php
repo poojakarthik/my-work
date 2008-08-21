@@ -130,9 +130,13 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->InternalName->RenderOutput();
 		DBO()->CustomerGroup->ExternalName->RenderOutput();
 		DBO()->CustomerGroup->OutboundEmail->RenderOutput();
+		DBO()->CustomerGroup->flex_url->RenderOutput();
+		DBO()->CustomerGroup->email_domain->RenderOutput();
+		DBO()->CustomerGroup->customer_primary_color->RenderOutput();
+		DBO()->CustomerGroup->customer_secondary_color->RenderOutput();
 		
 		echo "</div>\n"; // GroupedContent
-		
+
 		// Render the buttons
 		if ($bolUserIsSuperAdmin)
 		{
@@ -144,7 +148,25 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		{
 			echo "<div class='SmallSeparator'></div>\n";
 		}
-		
+
+		echo "<h2 class='CustomerGroup'>Add/Change Primary Logo</h2>\n";
+		echo "<div class='GroupedContent'>\n";
+		foreach($_GET as $key=>$val)
+		{
+			 $$key=$val;
+		}
+		print "
+			<form enctype=\"multipart/form-data\" action=\"./flex.php/CustomerGroup/ChangeLogo/\" method=\"POST\">
+			   <!-- MAX_FILE_SIZE must precede the file input field -->
+			   <input type=\"hidden\" name=\"CustomerGroup_Id\" value=\"$CustomerGroup_Id\" />
+			   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"30000\" />
+			   <!-- Name of input element determines name in $_FILES array -->
+			   Send this file: <input name=\"userfile\" type=\"file\" />
+			   <input type=\"submit\" value=\"Send File\" />
+			</form>
+			</div>
+			<br/><br/>";
+
 		// Initialise the CustomerGroupDetails object and register the OnCustomerGroupDetailsUpdate Listener
 		$intCustomerGroupId = DBO()->CustomerGroup->Id->Value;
 		$strJavascript = "Vixen.CustomerGroupDetails.InitialiseView($intCustomerGroupId, '{$this->_strContainerDivId}');";
@@ -177,6 +199,10 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->InternalName->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->ExternalName->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->OutboundEmail->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->customer_primary_color->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->customer_secondary_color->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		
 		echo "</div>\n"; // GroupedContent
 

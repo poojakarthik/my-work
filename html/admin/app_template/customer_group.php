@@ -125,7 +125,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				Ajax()->RenderHtmlTemplate("CustomerGroupNew", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				return TRUE;
 			}
-			
+			##### DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail");
 			// The CustomerGroup is valid.  Save it
 			if (!DBO()->CustomerGroup->Save())
 			{
@@ -150,7 +150,43 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		return TRUE;
 	}
-	
+
+
+	function ChangeLogo()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		// Breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->SetCurrentPage("Modify Customer Group");
+
+		if(array_key_exists('CustomerGroup_Id', $_POST))
+		{
+			$strFileName = $_FILES['userfile']['name'];
+			$strTmpName  = $_FILES['userfile']['tmp_name'];
+			$strFileType = $_FILES['userfile']['type'];
+			
+			$resImage      = fopen($strTmpName, 'r');
+			$mixContent = fread($resImage, filesize($strTmpName));
+			fclose($resImage);
+
+			DBO()->CustomerGroup->customer_logo = $mixContent;
+			DBO()->CustomerGroup->customer_logo_type = $strFileType;
+			DBO()->CustomerGroup->SetColumns("customer_logo,customer_logo_type");
+			DBO()->CustomerGroup->Save();
+
+		}
+
+		// Declare which Page Template to use
+		$this->LoadPage('customer_group_change_logo');
+
+		return TRUE;
+	}
+
 	//------------------------------------------------------------------------//
 	// View
 	//------------------------------------------------------------------------//
@@ -301,6 +337,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save())
 		{

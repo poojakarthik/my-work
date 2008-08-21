@@ -1,27 +1,27 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2008 VOIPTEL Pty Ltd
+// (c) copyright 2007 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// group_new.php
+// rate_group_import.php
 //----------------------------------------------------------------------------//
 /**
- * group_new
+ * rate_group_import
  *
- * HTML Template for the CustomerGroupNew HTML object
+ * HTML Template for the Import Rate Group HTML object
  *
- * HTML Template for the CustomerGroupNew HTML object
+ * HTML Template for the Import Rate Group HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays the form used to add a new Customer Group.
+ * which displays the form used to add a rate group.
  *
- * @file		group_new.php
+ * @file		rate_group_import.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel 'MagnumSwordFortress' Dawkins
- * @version		8.01
+ * @version		7.12
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -29,21 +29,23 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateCustomerGroupNew
+// HtmlTemplateRateGroupImport
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateCustomerGroupNew
+ * HtmlTemplateRateGroupImport
  *
- * HTML Template class for the CustomerGroupNew HTML object
+ * A specific HTML Template object
  *
- * HTML Template class for the CustomerGroupNew HTML object
- * displays the form used to add a new CustomerGroup
+ * A specific HTML Template object
+ *
+ *
+ * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateCustomerGroupNew
+ * @class	HtmlTemplateRateGroupImport
  * @extends	HtmlTemplate
  */
-class HtmlTemplateCustomerGroupNew extends HtmlTemplate
+class HtmlTemplateCustomerGroupChangeLogo extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -72,15 +74,14 @@ class HtmlTemplateCustomerGroupNew extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
-	 * @param	string	$strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext, $strId)
+	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		$this->_strContainerDivId = $strId;
 	}
+	
 	
 	//------------------------------------------------------------------------//
 	// Render
@@ -91,33 +92,40 @@ class HtmlTemplateCustomerGroupNew extends HtmlTemplate
 	 * Render this HTML Template
 	 *
 	 * Render this HTML Template
+	 * 
 	 *
 	 * @method
 	 */
 	function Render()
-	{	
-		$this->FormStart("NewCustomerGroup", "CustomerGroup", "Add");
+	{
+		if(array_key_exists('CustomerGroup_Id', $_POST))
+		{
 
-		echo "<div class='WideForm'>\n";
+			$strFileName = $_FILES['userfile']['name'];
+			$strFileType = $_FILES['userfile']['type'];
+			echo "<h2 class='CustomerGroup'>The logo has now been updated.</h2>\n";
+			echo "<div class='GroupedContent'>\n";
+			echo "
+			<TABLE>
+			<TR>
+				<TD width=\"200\">File Name: </TD>
+				<TD>$strFileName</TD>
+			</TR>
+			<TR>
+				<TD>File Type: </TD>
+				<TD>$strFileType</TD>
+			</TR>
+			<TR>
+				<TD></TD>
+				<TD></TD>
+			</TR>
+			</TABLE>";
+			echo "</div><br/><br/>";
+			echo "<META HTTP-EQUIV=Refresh CONTENT=\"5; URL=/flex/trunk/html/" . Href()->ViewCustomerGroup($_POST['CustomerGroup_Id']) . "\">";
+		}
 
-		DBO()->CustomerGroup->InternalName->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->ExternalName->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->OutboundEmail->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->customer_primary_color->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->customer_secondary_color->RenderInput(CONTEXT_DEFAULT, TRUE);
-		
-		echo "</div>"; // WideForm
-		
-		// Create the buttons
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "window.location = '". Href()->ViewAllCustomerGroups() ."'");
-		$this->AjaxSubmit("Ok");
-		echo "</div></div>\n";	
-
-		$this->FormEnd();
 	}
+	
 }
 
 ?>
