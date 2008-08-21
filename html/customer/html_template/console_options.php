@@ -81,9 +81,9 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		$strViewInvoicesAndPayments = Href()->ViewInvoicesAndPayments(DBO()->Account->Id->Value);
 		$strViewInvoicesAndPaymentsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strViewInvoicesAndPayments' >&nbsp;&nbsp;View Invoices and Payments</a></span>";
 
-		// EditContactDetails link
-		$strEditContactDetails = Href()->EditContactDetails(DBO()->Account->Id->Value);
-		$strEditContactDetailsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strEditContactDetails' >&nbsp;&nbsp;Edit Contact Details</a></span>";
+		// EditAccountDetails link
+		$strEditAccountDetails = Href()->EditAccountDetails(DBO()->Account->Id->Value);
+		$strEditAccountDetailsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strEditAccountDetails' >&nbsp;&nbsp;Edit Account Details</a></span>";
 
 		// Make Payment link.
 		$strMakePayment = Href()->MakePayment(DBO()->Account->Id->Value);
@@ -107,7 +107,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "   </tr>\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
-		echo "			$strEditContactDetailsLabel\n";
+		echo "			$strEditAccountDetailsLabel\n";
 		echo "      </td>\n";
 		echo "   </tr>\n";
 		echo "</table>\n";
