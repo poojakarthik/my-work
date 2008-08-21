@@ -28,35 +28,18 @@ while ($arrLine = fgetcsv($resInputFile))
 	$arrRecordTypeTranslation['Carrier']		= CARRIER_M2;
 	$arrRecordTypeTranslation['CarrierCode']	= trim($arrLine[0]);
 	$arrRecordTypeTranslation['Description']	= trim($arrLine[1]);
-	$arrRecordTypeTranslation['Destination']	= trim($arrLine[2]);
+	$arrRecordTypeTranslation['Code']			= trim($arrLine[2]);
 	
-	// Get Destination Code
-	if ($selRecordType->Execute($arrRecordTypeTranslation))
+	// Insert into the Database
+	if ($insRecordTypeTranslation->Execute($arrRecordTypeTranslation))
 	{
-		$arrDestination	= $selRecordType->Fetch();
-		
-		// Insert into the Database
-		$arrRecordTypeTranslation['Code']	= $arrDestination['Code'];
-		if ($insRecordTypeTranslation->Execute($arrRecordTypeTranslation))
-		{
-			// Success
-			CliEcho("Inserted '{$arrRecordTypeTranslation['Description']}'!");
-		}
-		else
-		{
-			// DB Error
-			throw new Exception($insRecordTypeTranslation->Error());
-		}
-	}
-	elseif ($selRecordType->Error())
-	{
-		// DB Error
-		throw new Exception($selRecordType->Error());
+		// Success
+		CliEcho("Inserted '{$arrRecordTypeTranslation['Description']}'!");
 	}
 	else
 	{
-		// We don't handle this Call Type
-		CliEcho("SKIPPING '{$arrRecordTypeTranslation['Description']}'!");
+		// DB Error
+		throw new Exception($insRecordTypeTranslation->Error());
 	}
 }
 
