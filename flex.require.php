@@ -45,6 +45,7 @@ else
 
 // Load flex.cfg.php for path constants
 $strPath	= dirname(__FILE__);
+require_once("$strPath/flex.modules.php");
 require_once("$strPath/flex.cfg.php");
 
 // Load functions.php and call LoadFramework()

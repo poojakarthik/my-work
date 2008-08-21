@@ -49,6 +49,13 @@ class Account
 		}
 	}
 
+	public function getBalance()
+	{
+		// TODO: Implement the account balance functionality here
+		$framework = function_exists('Framework') ? Framework() : Flex::framework();
+		return $framework->GetAccountBalance($this->id);
+	}
+
 	// This is a dirty hack. It returns an array of array('id'=>x, 'fnn'=>x)
 	public function listServices()
 	{

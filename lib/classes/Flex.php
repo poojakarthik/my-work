@@ -107,6 +107,16 @@ final class Flex
 		return $frameworkBase;
 	}
 
+	public static function isAdminSession()
+	{
+		return session_name() == self::FLEX_ADMIN_SESSION;
+	}
+
+	public static function isCustomerSession()
+	{
+		return session_name() == self::FLEX_CUSTOMER_SESSION;
+	}
+
 	// Returns the relative base path of the web application
 	public static function relativeApplicationBase()
 	{
@@ -169,6 +179,7 @@ final class Flex
 		}
 
 		self::requireOnce(
+			'flex.modules.php',
 			'flex.cfg.php',
 			'lib/framework/functions.php');
 

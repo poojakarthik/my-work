@@ -160,11 +160,16 @@ Object.extend(CreditCardPayment.prototype,
 		}
 		if (allowDD) this.allowDD = true;
 
-		this.popup = new Reflex_Popup(50);
+		this.preparePopup();
 		this.popup.setTitle('Secure Credit Card Payment');
-		this.popup.addCloseButton(this.cancel.bind(this));
 		this.displayForm();
 		this.popup.display();
+	},
+
+	preparePopup: function()
+	{
+		this.popup = new Reflex_Popup(50);
+		this.popup.addCloseButton(this.cancel.bind(this));
 	},
 
 	displayForm: function(errorMessage)
@@ -659,5 +664,84 @@ Object.extend(CreditCardPayment.prototype,
 	cancel: function()
 	{
 		this.popup.hide();
+	}
+});
+
+var CreditCardPaymentPanel = Class.create();
+Object.extend(CreditCardPaymentPanel.prototype, CreditCardPayment.prototype);
+Object.extend(CreditCardPaymentPanel.prototype, 
+{
+	CreditCardPayment$initialize: CreditCardPayment.prototype.initialize,
+
+	container: null,
+
+	initialize: function(accountNumber, abn, companyName, contactName, contactEmail, amountOwing, allowDD, containerId)
+	{
+		this.container = $ID(containerId);
+		this.CreditCardPayment$initialize(accountNumber, abn, companyName, contactName, contactEmail, amountOwing, allowDD);
+	},
+
+	preparePopup: function()
+	{
+		this.popup = new DynamicallyLoadedPanel(this.container);
+	}
+});
+
+var DynamicallyLoadedPanel = Class.create();
+Object.extend(DynamicallyLoadedPanel.prototype, 
+{
+	container: null,
+	titlePane: null,
+	contentPane: null,
+	footerPane: null,
+
+	initialize: function(container)
+	{
+		this.container = container;
+		this.titlePane = document.createElement('div');
+		this.contentPane = document.createElement('div');
+		this.footerPane = document.createElement('div');
+		this.container.appendChild(this.titlePane);
+		this.container.appendChild(this.contentPane);
+		this.container.appendChild(this.footerPane);
+	},
+
+	addCloseButton: function(callback)
+	{
+	},
+
+	setTitle: function(title)
+	{
+		this.titlePane.innerHTML = '';
+		this.titlePane.appendChild(document.createTextNode(title));
+	},
+
+	setContent: function(content)
+	{
+		this.contentPane.innerHTML = '';
+		this.contentPane.appendChild(content);
+	},
+
+	setHeaderButtons: function(buttons)
+	{
+	},
+
+	setFooterButtons: function(buttons)
+	{
+		this.footerPane.innerHTML = '';
+		for (var i = 0, l = buttons.length; i < l; i++)
+		{
+			this.footerPane.appendChild(buttons[i]);
+		}
+	},
+
+	display: function()
+	{
+		this.container.style.display  = 'block';
+	},
+
+	hide: function()
+	{
+		this.container.style.display  = 'none';
 	}
 });
