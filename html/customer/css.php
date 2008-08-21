@@ -56,50 +56,61 @@ if (!Flex::continueSession(Flex::FLEX_ADMIN_SESSION))
 // Load the Flex framework and application
 Flex::load();
 
-// Connect to database
-$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 
-// Load Style Configuration based on domain name 
-$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url LIKE \"%$_SERVER[HTTP_HOST]\" LIMIT 1");
-DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
+// to be removed, just to test if css is being loaded correctly.
+$Debug_Use_Old_Way = FALSE;
+if(!$Debug_Use_Old_Way)
+{
 
-# I couldnt find the style for the URL you are using?
-if($arrFetchCustomerStyleConfiguration == "")
-{
-	$customer_primary_color = DEFAULT_CUSTOMER_PRIMARY_COLOR;
-	$customer_secondary_color = DEFAULT_CUSTOMER_SECONDARY_COLOR;
-	$customer_breadcrumb_menu_color = DEFAULT_CUSTOMER_BREADCRUMB_MENU_COLOR;
-}
-# I could find something?
-if($arrFetchCustomerStyleConfiguration != "")
-{
-	$arrFetchCustomerStyleConfiguration = DBO()->customer_style_configuration->Array->Value;
-	foreach($arrFetchCustomerStyleConfiguration as $mixKey=>$mixVal)
+	// Connect to database
+	$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+
+	// Load Style Configuration based on domain name 
+	$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url LIKE \"%$_SERVER[HTTP_HOST]\" LIMIT 1");
+	DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
+
+	# I couldnt find the style for the URL you are using?
+	if($arrFetchCustomerStyleConfiguration == "")
 	{
-		$$mixKey = $mixVal;
+		$customer_primary_color = DEFAULT_CUSTOMER_PRIMARY_COLOR;
+		$customer_secondary_color = DEFAULT_CUSTOMER_SECONDARY_COLOR;
+		$customer_breadcrumb_menu_color = DEFAULT_CUSTOMER_BREADCRUMB_MENU_COLOR;
 	}
+	# I could find something?
+	if($arrFetchCustomerStyleConfiguration != "")
+	{
+		$arrFetchCustomerStyleConfiguration = DBO()->customer_style_configuration->Array->Value;
+		foreach($arrFetchCustomerStyleConfiguration as $mixKey=>$mixVal)
+		{
+			$$mixKey = $mixVal;
+		}
+	}
+
+
+	$resHandle = fopen("default.css", "rb");
+	$customer_css = stream_get_contents($resHandle);
+	fclose($resHandle);
+
+	// Changes to be made: OldValue => NewValue;
+	$arrChangesToCSS = array();
+	$arrChangesToCSS['[customer_primary_color]'] = "#$customer_primary_color";
+	$arrChangesToCSS['[customer_secondary_color]'] = "#$customer_secondary_color";
+	$arrChangesToCSS['[customer_breadcrumb_menu_color]'] = "#$customer_breadcrumb_menu_color"; // the text portion.
+	$arrChangesToCSS['[customer_breadcrumb_menu_link_color]'] = "#$customer_breadcrumb_menu_color"; // the actual link.
+
+	foreach($arrChangesToCSS as $mixKey=>$mixVal)
+	{
+		$customer_css = str_replace("$mixKey","$mixVal",$customer_css);
+	}
+
+	echo $customer_css;
+
 }
-
-
-$resHandle = fopen("default.css", "rb");
-$customer_css = stream_get_contents($resHandle);
-fclose($resHandle);
-
-// Changes to be made: OldValue => NewValue;
-$arrChangesToCSS = array();
-$arrChangesToCSS['[customer_primary_color]'] = "#$customer_primary_color";
-$arrChangesToCSS['[customer_secondary_color]'] = "#$customer_secondary_color";
-$arrChangesToCSS['[customer_breadcrumb_menu_color]'] = "#$customer_breadcrumb_menu_color"; // the text portion.
-$arrChangesToCSS['[customer_breadcrumb_menu_link_color]'] = "#$customer_breadcrumb_menu_color"; // the actual link.
-
-foreach($arrChangesToCSS as $mixKey=>$mixVal)
+if($Debug_Use_Old_Way)
 {
-	$customer_css = str_replace("$mixKey","$mixVal",$customer_css);
+
+	// Old way of just using one css file for all users.
+	require_once('default.css');
+
 }
-
-echo $customer_css;
-
-// Old way of just using one css file for all users.
-#require_once('default.css');
-
 ?>

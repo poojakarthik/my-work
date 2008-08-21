@@ -231,9 +231,9 @@ class MenuItems
 	//------------------------------------------------------------------------//
 	// EditContactDetails 
 	//------------------------------------------------------------------------//
-	function EditContactDetails($intAccountId)
+	function EditAccountDetails($intAccountId)
 	{
-		$this->strLabel	= "Edit Contact Details";
+		$this->strLabel	= "Edit Account Details";
 		
 		return $this->GetBaseURL()."flex.php/Console/Edit/?Account.Id=$intAccountId";
 	}

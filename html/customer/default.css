@@ -302,7 +302,7 @@ span.IncorrectLogin
 	{
 		height:					90px;
 		width:					100%;
-		background-image:		url(./img/template/logo.php);
+		background-image:		url(./logo.php);
 		background-repeat:		no-repeat;
 		background-position:	15px 17px;
 	}
