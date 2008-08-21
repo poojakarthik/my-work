@@ -56,7 +56,7 @@ while ($arrLine = fgetcsv($resInputFile))
 	}
 	
 	// Write the modified line to the Output File
-	fwrite($resOutputFile, implode(',', $arrLine));
+	fwrite($resOutputFile, implode(',', $arrLine)."\n");
 }
 
 // Cleanup
