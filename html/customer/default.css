@@ -28,6 +28,22 @@
 /**************************************************************************/
 /* GENERIC																  */
 /**************************************************************************/
+	.GroupedContent
+	{
+		margin:				0px;
+		padding:			5px;
+		border:				solid 1px #D1D1D1;
+		background-color:	#EFEBE7;
+		position:			relative;
+	}
+	h2.CustomerGroup
+	{
+		background-repeat:		no-repeat;
+		background-position:	center left;
+		padding-left:			22px;
+		margin-bottom:			5px;
+		height:					21px;
+	}
 	input, select
 	{
 		font-family:			"Nimbus Sans NL", Tahoma, sans-serif;

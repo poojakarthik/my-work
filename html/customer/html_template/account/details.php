@@ -71,10 +71,10 @@
 	 
 	function Render()
 	{
-		echo "<div class='NarrowContent'>\n";
-		
-		// Display the details of their primary account
+		#echo "<div class='NarrowContent'>\n";
+	
 		echo "<h2 class='Account'>Account Details</h2>\n";
+		echo "<div class='GroupedContent'>\n";
 		DBO()->Account->Id->RenderOutput();
 		if (DBO()->Account->BusinessName->Value)
 		{
@@ -112,13 +112,11 @@
 		   </div>
 		</div>";
 
-		// Display the details of their primary address
-		echo "<div class='Seperator'></div>\n";
+		echo "</div><br/><br/>";
 		
-
-		
-		// Display the details of their primary account
 		echo "<h2 class='Account'>Address Details</h2>\n";
+		echo "<div class='GroupedContent'>\n";
+		// Display the details of their primary account
 		if (DBO()->Account->Address1->Value)
 		{
 			DBO()->Account->Address1->RenderOutput();
@@ -143,11 +141,10 @@
 		{
 			DBO()->Account->Country->RenderOutput();
 		}
+		echo "</div><br/><br/>";
 
-
-		echo "<div class='Seperator'></div>\n";
-		// Display the details of their primary account
 		echo "<h2 class='Account'>Contact Details</h2>\n";
+		echo "<div class='GroupedContent'>\n";
 		if (DBO()->Contact->Title->Value)
 		{
 			DBO()->Contact->Title->RenderOutput();
