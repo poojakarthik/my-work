@@ -55,7 +55,8 @@ while ($arrLine = fgetcsv($resInputFile))
 	}
 	else
 	{
-		throw new Exception("'{$arrDestinationTranslation['Destination']} is not a valid Flex Destination!'");
+		// We don't handle this Destination
+		CliEcho("SKIPPING '{$arrDestinationTranslation['Description']}'!");
 	}
 }
 
