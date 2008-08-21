@@ -72,10 +72,16 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "<div class='NarrowContent'>\n";
 
 		echo "<h2 class='Options'>Options</h2>\n";
+
+		require_once dirname(__FILE__) . '/../../../lib/classes/credit/card/Credit_Card_Payment.php';
 		
-		// build the "View Unbilled Charges for Account" link
-		$strMakePayment = Href()->MakePayment(DBO()->Account->Id->Value);
-		$strMakePaymentLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strMakePayment' >&nbsp;&nbsp;Pay Your Account Here</a></span>";
+		$bolCC = Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->Id->Value);
+		if ($bolCC)
+		{
+			// build the "View Unbilled Charges for Account" link
+			$strMakePayment = Href()->MakePayment(DBO()->Account->Id->Value);
+			$strMakePaymentLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strMakePayment' >&nbsp;&nbsp;Pay Your Account Here</a></span>";
+		}
 
 		// build the "View Unbilled Charges for Account" link
 		$strViewUnbilledCharges = Href()->ViewUnbilledChargesForAccount(DBO()->Account->Id->Value);
@@ -91,11 +97,16 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 
 
 		echo "<table width='100%' border='0' class=\"main_table\">\n";
-		echo "   <tr>\n";
-		echo "      <td>\n";
-		echo "			$strMakePaymentLabel\n";
-		echo "      </td>\n";
-		echo "   </tr>\n";
+		
+		if ($bolCC)
+		{
+			echo "   <tr>\n";
+			echo "      <td>\n";
+			echo "			$strMakePaymentLabel\n";
+			echo "      </td>\n";
+			echo "   </tr>\n";
+		}
+		
 		echo "   <tr>\n";
 		echo "      <td>\n";
 		echo "			$strViewUnbilledChargesLabel\n";
