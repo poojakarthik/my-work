@@ -20,7 +20,7 @@ class Credit_Card_Payment
 		{
 			return FALSE;
 		}
-		$panel = $targetContainerId ? '<div id="credit-card-payment-panel"></div>' : '';
+		$panel = $targetContainerId ? '' : '<div id="credit-card-payment-panel"></div>';
 		$targetContainerId = $targetContainerId ? $targetContainerId : 'credit-card-payment-panel';
 
 		$panel .= "
@@ -32,13 +32,13 @@ class Credit_Card_Payment
 			Event.observe(window, \"load\", creditCardPaymentOnLoad);
 		//--></script>";
 
-		return $params ? "<input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' onclick=\"new CreditCardPayment($paramas)\" />" : FALSE;
+		return $panel;
 	}
 
 	public static function getPopupActionButton($accountId)
 	{
 		$params = self::getJavaScriptActionParams($accountId);
-		return $params ? "<input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' onclick=\"new CreditCardPayment($paramas)\" />" : FALSE;
+		return $params ? "<input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' onclick=\"new CreditCardPayment($paramas);return false;\" />" : FALSE;
 	}
 
 	// Should probably detect this automatically and use the primary contact details
@@ -112,7 +112,7 @@ class Credit_Card_Payment
 
 		// Output a link for making a credit card payment, using the credit_card_payment.js file.
 		$allowDD = Flex::isCustomerSession() ? 'true' : 'false';
-		return "{$account->id}, '{$account->abn}', '$accountName', '$contactName', '$contactEmail', $amountOwing, $allowDD)' />";
+		return "{$account->id}, '{$account->abn}', '$accountName', '$contactName', '$contactEmail', $amountOwing, $allowDD";
 	}
 }
 
