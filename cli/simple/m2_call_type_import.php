@@ -18,7 +18,7 @@ $resInputFile	= fopen($strInFile, 'r');
 // Parse the Input File
 while ($arrLine = fgetcsv($resInputFile))
 {
-	if (substr($arrLine[0], 0, 1) !== '/')
+	if (strtolower(trim($arrLine[0])) === 'tariff')
 	{
 		// Non-Data Row
 		continue;
