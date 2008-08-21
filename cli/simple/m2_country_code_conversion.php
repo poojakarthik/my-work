@@ -3,7 +3,7 @@
 // Framework
 require_once("../../flex.require.php");
 
-$selDestination	= new StatementSelect("Destination", "", "Context = 1 AND ((<Exact> = 1 AND Description = <Description>) OR (Description LIKE <Description>))");
+$selDestination	= new StatementSelect("Destination", "Description", "Context = 1 AND ((<Exact> = 1 AND Description = <Description>) OR (Description LIKE <Description>))");
 
 $strInFile		= "/home/rdavis/m2_country_code_conversion.csv";
 $strOutFile		= "/home/rdavis/m2_country_code_conversion_updated.csv";
