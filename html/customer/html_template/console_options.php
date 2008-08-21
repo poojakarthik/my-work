@@ -74,6 +74,10 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "<h2 class='Options'>Options</h2>\n";
 		
 		// build the "View Unbilled Charges for Account" link
+		$strMakePayment = Href()->MakePayment(DBO()->Account->Id->Value);
+		$strMakePaymentLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strMakePayment' >&nbsp;&nbsp;Pay Your Account Here</a></span>";
+
+		// build the "View Unbilled Charges for Account" link
 		$strViewUnbilledCharges = Href()->ViewUnbilledChargesForAccount(DBO()->Account->Id->Value);
 		$strViewUnbilledChargesLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strViewUnbilledCharges' >&nbsp;&nbsp;View Unbilled Charges</a></span>";
 
@@ -85,7 +89,13 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		$strEditAccountDetails = Href()->EditAccountDetails(DBO()->Account->Id->Value);
 		$strEditAccountDetailsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strEditAccountDetails' >&nbsp;&nbsp;Edit Account Details</a></span>";
 
+
 		echo "<table width='100%' border='0' class=\"main_table\">\n";
+		echo "   <tr>\n";
+		echo "      <td>\n";
+		echo "			$strMakePaymentLabel\n";
+		echo "      </td>\n";
+		echo "   </tr>\n";
 		echo "   <tr>\n";
 		echo "      <td>\n";
 		echo "			$strViewUnbilledChargesLabel\n";

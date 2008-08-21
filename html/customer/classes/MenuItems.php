@@ -246,7 +246,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Pay Your Account Here";
 		
-		return $this->GetBaseURL()."flex.php/Console/Pay/";
+		return $this->GetBaseURL()."flex.php/Console/Pay/?Account.Id=$intAccountId";
 	}
 	
 	//------------------------------------------------------------------------//
