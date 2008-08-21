@@ -1,7 +1,7 @@
 <?php
 
 // Get the Flex class...
-require_once '../../../../lib/classes/Flex.php';
+require_once '../../lib/classes/Flex.php';
 
 // ******** AUTHENTICATION ********
 if (!Flex::continueSession(Flex::FLEX_ADMIN_SESSION))
@@ -29,7 +29,7 @@ if($arrFetchCustomerStyleConfiguration == "")
 	$customer_secondary_color = DEFAULT_CUSTOMER_SECONDARY_COLOR;
 	$customer_logo = DEFAULT_CUSTOMER_LOGO;
 	$customer_logo_type = DEFAULT_CUSTOMER_LOGO_TYPE;
-	$handle = fopen("./$customer_logo", "rb");
+	$handle = fopen("./img/template/$customer_logo", "rb");
 	$customer_logo = stream_get_contents($handle);
 	fclose($handle);
 }
@@ -43,7 +43,7 @@ if($arrFetchCustomerStyleConfiguration != "")
 	}
 }
 
-header("Content-Type: image/$customer_logo_type");
+header("Content-Type: $customer_logo_type");
 echo $customer_logo;
 
 ?>
