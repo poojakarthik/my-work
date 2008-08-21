@@ -3,6 +3,16 @@
 class Credit_Card_Payment
 {
 
+	public static function availableForCustomerGroup($mxdCustomerGroupOrId)
+	{
+		if (!FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+		{
+			return FALSE;
+		}
+		require_once dirname(__FILE__) . '/Credit_Card_Payment_Config.php';
+		return Credit_Card_Payment_Config::getForCustomerGroup($mxdCustomerGroupOrId);
+	}
+
 	public static function getPaymentPanel($accountId, $targetContainerId=NULL)
 	{
 		$params = self::getJavaScriptActionParams($accountId);
