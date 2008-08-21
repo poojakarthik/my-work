@@ -54,6 +54,13 @@
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
+
+		$this->LoadJavascript('prototype');
+		$this->LoadJavascript('jquery');
+		$this->LoadJavascript('json');
+		$this->LoadJavascript('reflex_popup');
+		$this->LoadJavascript('credit_card_type');
+		$this->LoadJavascript('credit_card_payment');
 	}
 	
 	//------------------------------------------------------------------------//
