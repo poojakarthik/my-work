@@ -146,16 +146,6 @@ class AppTemplateConsole extends ApplicationTemplate
 			BreadCrumb()->SetCurrentPage("Make Payment");
 		}
 		// Display the details of their primary address
-		
-		// Connect to database
-		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-
-		// Get account Id, we need to auto fill some form details.
-		$intAccountId = DBO()->Account->Id->Value;
-
-		// get row from database with user details.
-		$mixFetchAccountDetails = $dbConnection->fetchone("SELECT * FROM Contact WHERE Account='$intAccountId' ORDER BY Id DESC limit 1");
-		DBO()->Account->Array = $mixFetchAccountDetails;
 
 		$this->LoadPage('pay');
 
@@ -278,68 +268,72 @@ class AppTemplateConsole extends ApplicationTemplate
 			// Don't display the business name in the bread crumb menu
 			BreadCrumb()->SetCurrentPage("Edit Account");
 		}
-		
-		// Connect to database
-		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-
 		// Get account Id, we need to auto fill some form details.
 		$intAccountId = DBO()->Account->Id->Value;
+		$strOldEmailAddress = DBO()->Contact->Email->Value;
 
-		/* 
-		 * If the form has been submitted update the database 
-		 * with the new user details and send an email to the user.
-		 * */
-		foreach($_POST as $key=>$val)
-		{
-			 $$key=$val;
-		}
-
-		// Connect to database
-		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-
-		if(isset($intUpdateAccountId))
+		if(array_key_exists('intUpdateAccountId', $_POST))
 		{
 			$strFoundInputError=FALSE; 
 			# HO is working on some validation stuf.
 
 			// If no error was found, continue with processing.
 			if(!$strFoundInputError){
-				// Found form input.
-				$dbConnection->execute("
-				UPDATE Account SET 
-					Address1=\"$mixAccount_Address1\",
-					Address2=\"$mixAccount_Address2\",
-					Suburb=\"$mixAccount_Suburb\",
-					State=\"$mixAccount_State\",
-					Postcode=\"$mixAccount_Postcode\",
-					Country=\"$mixAccount_Country\" 
-				WHERE Id='$intAccountId'");
+				
+				DBO()->Account->Address1 = $_POST['mixAccount_Address1'];
+				DBO()->Account->Address2 = $_POST['mixAccount_Address2'];
+				DBO()->Account->Suburb = $_POST['mixAccount_Suburb'];
+				DBO()->Account->State = $_POST['mixAccount_State'];
+				DBO()->Account->Postcode = $_POST['mixAccount_Postcode'];
+				DBO()->Account->BillingMethod = $_POST['mixAccount_BillingMethod'];
+				DBO()->Account->Country = $_POST['mixAccount_Country'];
+				DBO()->Account->SetColumns("Address1,Address2,Suburb,State,Postcode,BillingMethod,Country");
+				DBO()->Account->Save();
+				# Debug.
+				# var_dump($_POST);exit;
 
-				$dbConnection->execute("
-				UPDATE Contact SET 
-					FirstName=\"$mixContact_FirstName\",
-					LastName=\"$mixContact_LastName\",
-					JobTitle=\"$mixContact_JobTitle\",
-					Email=\"$mixContact_Email\",
-					Phone=\"$mixContact_Phone\",
-					Mobile=\"$mixContact_Mobile\",
-					Fax=\"$mixContact_Fax\" 
-				WHERE Account='$intAccountId'");
+				DBO()->Contact->FirstName = $_POST['mixContact_FirstName'];
+				DBO()->Contact->LastName = $_POST['mixContact_LastName'];
+				DBO()->Contact->JobTitle = $_POST['mixContact_JobTitle'];
+				DBO()->Contact->Email = $_POST['mixContact_Email'];
+				DBO()->Contact->Phone = $_POST['mixContact_Phone'];
+				DBO()->Contact->Mobile = $_POST['mixContact_Mobile'];
+				DBO()->Contact->Fax = $_POST['mixContact_Fax'];
+				DBO()->Contact->SetColumns("FirstName,LastName,JobTitle,Email,Phone,Mobile,Fax");
+				DBO()->Contact->Save();
+				
+				$to      = $_POST['mixContact_Email'];
+				$subject = "Account Updated #$intAccountId";
+				$message = "The account changes below have been made:\n\n";
 
-				$to      = "$Email";
-				$subject = 'Confirmation: Account Updated';
-				$message = 'Hello,\n\n';
-				$message .= "This message is to confirm your account has been updated.\n\n";
-				$message .= "Request was made by IP $_SERVER[REMOTE_ADDR]\n";
-				$message .= "At the approximate time:" . date("D M j G:i:s T Y") . "\n\n";
-				$message .= "To view these changes please login to your account.\n\n";
+				$message .= "FirstName: $_POST[mixContact_FirstName]\n";
+				$message .= "LastName: $_POST[mixContact_LastName]\n";
+				$message .= "JobTitle: $_POST[mixContact_JobTitle]\n";
+				$message .= "Email: $_POST[mixContact_Email]\n";
+				$message .= "Phone: $_POST[mixContact_Phone]\n";
+				$message .= "Mobile: $_POST[mixContact_Mobile]\n";
+				$message .= "Fax: $_POST[mixContact_Fax]\n";
+				$message .= "Address1: $_POST[mixAccount_Address1]\n";
+				$message .= "Address2: $_POST[mixAccount_Address2]\n";
+				$message .= "Suburb: $_POST[mixAccount_Suburb]\n";
+				$message .= "State: $_POST[mixAccount_State]\n";
+				$message .= "Postcode: $_POST[mixAccount_Postcode]\n";
+
+				$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$mixAccount_BillingMethod]['Description'];
+				$message .= "BillingMethod: $_POST[strNewBillingMethod]\n";
+
+				$message .= "Country: $_POST[mixAccount_Country]\n\n";
+
 				$message .= "Kind Regards\n";
 				$message .= "Customer Service Group\n";
-				$headers = 'From: ' . NOTIFICATION_REPLY_EMAIL . "\r\n" .
+				if($strOldEmailAddress!="$_POST[mixContact_Email]")
+				{
+					$headers .= "CC: $_POST[mixContact_Email]\r\n";
+				}
+				$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
 					'X-Mailer: Flex/' . phpversion();
 				# supress email errors.
-				@mail($to, $subject, $message, $headers);
-
+				@mail($strOldEmailAddress, $subject, $message, $headers);
 				$this->LoadPage('edit_successful');
 
 				return TRUE;
@@ -347,13 +341,6 @@ class AppTemplateConsole extends ApplicationTemplate
 			}
 
 		}
-
-		// get row from database with user details.
-		$mixFetchAccountDetails = $dbConnection->fetchone("SELECT * FROM Account WHERE Id='$intAccountId' ORDER BY Id DESC limit 1");
-		$mixFetchContactDetails = $dbConnection->fetchone("SELECT * FROM Contact WHERE Account='$intAccountId' ORDER BY Id DESC limit 1");
-		
-		DBO()->Account->Array = $mixFetchAccountDetails;
-		DBO()->Contact->Array = $mixFetchContactDetails;
 
 		$this->LoadPage('edit');
 		return TRUE;	 	
