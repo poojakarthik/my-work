@@ -92,7 +92,8 @@ class HtmlTemplateLoggedOut extends HtmlTemplate
 		
 		echo "<span class='DefaultOutputSpan Default'>$strLogoutMsg</span>\n";
 		echo "<br /><br />\n";
-		echo "<a href='$strLoginHref' ><span>". APP_NAME ." Login</span></a>\n";
+		echo "<a href='$strLoginHref' ><span>Customer System Login</span></a>\n";
+		//echo "<a href='$strLoginHref' ><span>". APP_NAME ." Login</span></a>\n";
 		
 		/* There is no home page, so for now we will omit this link...
 		echo "<br />\n";
