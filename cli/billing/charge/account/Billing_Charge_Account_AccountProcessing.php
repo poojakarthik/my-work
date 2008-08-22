@@ -6,18 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// charge_nonddr
+// Billing_Charge_Account_AccountProcessing
 //----------------------------------------------------------------------------//
 /**
- * charge_nonddr
+ * Billing_Charge_Account_AccountProcessing
  *
  * Non Direct Debit Fee module for the Billing Application
  *
  * Non Direct Debit Fee module for the Billing Application
  *
- * @file		charge_nonddr.php
+ * @file		Billing_Charge_Account_AccountProcessing.php
  * @language	PHP
- * @package		framework
+ * @package		cli.billing.charge
  * @author		Rich Davis
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd
@@ -27,10 +27,10 @@
 
 
 //----------------------------------------------------------------------------//
-// ChargeNonDirectDebit
+// Billing_Charge_Account_AccountProcessing
 //----------------------------------------------------------------------------//
 /**
- * ChargeNonDirectDebit
+ * Billing_Charge_Account_AccountProcessing
  *
  * Non Direct Debit Fee module for the Billing Application
  *
@@ -39,10 +39,10 @@
  *
  * @prefix		chg
  *
- * @package		billing_app
- * @class		ChargeNonDirectDebit
+ * @package		cli.billing.charge.account
+ * @class		Billing_Charge_Account_AccountProcessing
  */
- class ChargeNonDirectDebit extends ChargeBaseAccount
+ class Billing_Charge_Account_AccountProcessing extends Billing_Charge_Account
  {
  	
 	//------------------------------------------------------------------------//
@@ -55,7 +55,7 @@
 	 *
 	 * Constructor for the Non Direct Debit Charge Object
 	 *
-	 * @return			ChargeNonDirectDebit
+	 * @return			Billing_Charge_Account_AccountProcessing
 	 *
 	 * @method
 	 */

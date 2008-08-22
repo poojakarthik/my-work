@@ -40,13 +40,18 @@ VixenRequire($strModuleDir."invoice_billprint.php");
 VixenRequire($strModuleDir."module_reports.php");
 
 // Charge Modules
-VixenRequire($strModuleDir."charge_base.php");
-VixenRequire($strModuleDir."charge_account_base.php");
-VixenRequire($strModuleDir."charge_service_base.php");
-VixenRequire($strModuleDir."charge_latepayment.php");
-VixenRequire($strModuleDir."charge_nonddr.php");
-VixenRequire($strModuleDir."charge_inbound.php");
-VixenRequire($strModuleDir."charge_pinnacle.php");
+VixenRequire("cli/billing/Billing_Charge.php");
+
+$strChargeDir	= "cli/billing/charge/";
+VixenRequire($strChargeDir."Billing_Charge_Account.php");
+VixenRequire($strChargeDir."Billing_Charge_Service.php");
+
+VixenRequire($strChargeDir."account/Billing_Charge_Account_AccountProcessing.php");
+VixenRequire($strChargeDir."account/Billing_Charge_Account_LatePayment.php");
+VixenRequire($strChargeDir."account/Billing_Charge_Account_Postage.php");
+
+VixenRequire($strChargeDir."service/Billing_Charge_Service_Inbound.php");
+VixenRequire($strChargeDir."service/Billing_Charge_Service_Service.php");
 
 // Remote Copy
 VixenRequire("lib/framework/remote_copy.php");

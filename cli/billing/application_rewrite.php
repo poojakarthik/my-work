@@ -159,29 +159,20 @@
 		$this->arrInvoiceData 	['DeliveryMethod']	= NULL;
 		$this->insTempInvoice						= new StatementInsert("InvoiceTemp", $this->arrInvoiceData 	);
 		$this->insServiceTotal						= new StatementInsert("ServiceTotal");
-		
-		
-		// Init Charge Modules
-		// TODO future: Only init these if they're enabled for this Yellow Billing client
-		/*$this->_arrChargeModules[CHARGE_MODULE_NON_DDR]			= new ChargeNonDirectDebit();
-		$this->_arrChargeModules[CHARGE_MODULE_LATE_PAYMENT]	= new ChargeLatePayment();
-		$this->_arrChargeModules[CHARGE_MODULE_INBOUND]			= new ChargeInboundService();
-		$this->_arrChargeModules[CHARGE_MODULE_PINNACLE]		= new ChargePinnacle();*/
-		//$this->_arrChargeModules[CHARGE_MODULE_PLAN]			= new ChargePlan();
-		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_ADVANCE]	= new ChargePlanAdvance();
-		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_ARREARS]	= new ChargePlanArrears();
-		//$this->_arrChargeModules[CHARGE_MODULE_PLAN_CREDIT]		= new ChargePlanCredit();
-		
-		$this->_arrAccountChargeModules[CHARGE_MODULE_NON_DDR]		= new ChargeNonDirectDebit();
-		
-		$this->_arrServiceChargeModules[CHARGE_MODULE_INBOUND]		= new ChargeInboundService();
-		$this->_arrServiceChargeModules[CHARGE_MODULE_PINNACLE]		= new ChargePinnacle();
 																
 		$this->_selServiceTotalCheck	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND InvoiceRun = <InvoiceRun>");
 		
 		$this->_selEarliestCDR		= new StatementSelect("Service", "EarliestCDR", "Id = <Service>");
 		$this->_selPlanDate			= new StatementSelect("ServiceRatePlan", "StartDatetime", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime AND Active = 1", "CreatedOn DESC", 1);
 		$this->_selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)");
+		
+		// Init Charge Modules
+		// TODO future: Only init these if they're enabled for this Yellow Billing client
+		
+		$this->_arrAccountChargeModules[CHARGE_MODULE_NON_DDR]		= new Billing_Charge_Account_AccountProcessing();
+		
+		$this->_arrServiceChargeModules[CHARGE_MODULE_INBOUND]		= new Billing_Charge_Service_Inbound();
+		$this->_arrServiceChargeModules[CHARGE_MODULE_PINNACLE]		= new Billing_Charge_Service_Pinnacle();
 	}
 	
 	//------------------------------------------------------------------------//

@@ -6,18 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// charge_service_base
+// Billing_Charge_Service
 //----------------------------------------------------------------------------//
 /**
- * charge_service_base
+ * Billing_Charge_Service
  *
  * Service Base Charge module for the Billing Application
  *
  * Service Base Charge module for the Billing Application
  *
- * @file		charge_service_base.php
+ * @file		Billing_Charge_Service.php
  * @language	PHP
- * @package		framework
+ * @package		cli.billing.charge
  * @author		Rich Davis
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd
@@ -27,10 +27,10 @@
 
 
 //----------------------------------------------------------------------------//
-// ChargeBaseService
+// Billing_Charge_Service
 //----------------------------------------------------------------------------//
 /**
- * ChargeBaseService
+ * Billing_Charge_Service
  *
  * Service Base Charge module for the Billing Application
  *
@@ -39,10 +39,10 @@
  *
  * @prefix		chg
  *
- * @package		billing_app
- * @class		ChargeBaseService
+ * @package		cli.billing.charge
+ * @class		Billing_Charge_Service
  */
- abstract class ChargeBaseService extends ChargeBase
+ abstract class Billing_Charge_Service extends Billing_Charge
  {
  	public $strChargeType;
  	
@@ -56,7 +56,7 @@
 	 *
 	 * Constructor for the Charge Object
 	 *
-	 * @return			ChargeBaseService
+	 * @return			Billing_Charge_Service
 	 *
 	 * @method
 	 */

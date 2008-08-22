@@ -15,9 +15,9 @@
  *
  * Account Base Charge module for the Billing Application
  *
- * @file		charge_account_base.php
+ * @file		Billing_Charge_Account.php
  * @language	PHP
- * @package		framework
+ * @package		cli.billing.charge
  * @author		Rich Davis
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd
@@ -39,7 +39,7 @@
  *
  * @prefix		chg
  *
- * @package		billing.charge
+ * @package		cli.billing.charge
  * @class		Billing_Charge_Account
  */
  abstract class Billing_Charge_Account extends Billing_Charge

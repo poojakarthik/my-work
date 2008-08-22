@@ -6,18 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// charge_pinnacle
+// Billing_Charge_Service_Pinnacle
 //----------------------------------------------------------------------------//
 /**
- * charge_pinnacle
+ * Billing_Charge_Service_Pinnacle
  *
  * Pinnacle Service Fee module for the Billing Application
  *
  * Pinnacle Service Fee module for the Billing Application
  *
- * @file		charge_pinnacle.php
+ * @file		Billing_Charge_Service_Pinnacle.php
  * @language	PHP
- * @package		framework
+ * @package		cli.billing.charge.service
  * @author		Rich Davis
  * @version		8.05
  * @copyright	2008 VOIPTEL Pty Ltd
@@ -27,10 +27,10 @@
 
 
 //----------------------------------------------------------------------------//
-// ChargePinnacle
+// Billing_Charge_Service_Pinnacle
 //----------------------------------------------------------------------------//
 /**
- * ChargePinnacle
+ * Billing_Charge_Service_Pinnacle
  *
  * Pinnacle Service Fee module for the Billing Application
  *
@@ -39,10 +39,10 @@
  *
  * @prefix		chg
  *
- * @package		billing_app
- * @class		ChargePinnacle
+ * @package		cli.billing.charge.service
+ * @class		Billing_Charge_Service_Pinnacle
  */
- class ChargePinnacle extends ChargeBaseService
+ class Billing_Charge_Service_Pinnacle extends Billing_Charge_Service
  {
  	
 	//------------------------------------------------------------------------//
@@ -55,7 +55,7 @@
 	 *
 	 * Constructor for the Pinnacle Service Fee Object
 	 *
-	 * @return			ChargePinnacle
+	 * @return			Billing_Charge_Service_Pinnacle
 	 *
 	 * @method
 	 */

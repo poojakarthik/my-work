@@ -6,18 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// postage
+// Billing_Charge_Account_Postage
 //----------------------------------------------------------------------------//
 /**
- * postage
+ * Billing_Charge_Account_Postage
  *
  * Invoice Postage Fee module for the Billing Application
  *
  * Invoice Postage Fee module for the Billing Application
  *
- * @file		postage.php
+ * @file		Billing_Charge_Account_Postage.php
  * @language	PHP
- * @package		billing.charge.account
+ * @package		cli.billing.charge.account
  * @author		Rich Davis
  * @version		8.08
  * @copyright	2008 VOIPTEL Pty Ltd
@@ -39,8 +39,8 @@
  *
  * @prefix		chg
  *
- * @package		billing.charge.account
- * @class		BillingChargeAccountPostage
+ * @package		cli.billing.charge.account
+ * @class		Billing_Charge_Account_Postage
  */
  class Billing_Charge_Account_Postage extends Billing_Charge_Account
  {

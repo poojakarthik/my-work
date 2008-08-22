@@ -6,18 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// charge_inbound
+// Billing_Charge_Service_Inbound
 //----------------------------------------------------------------------------//
 /**
- * charge_inbound
+ * Billing_Charge_Service_Inbound
  *
  * Inbound Service Fee module for the Billing Application
  *
  * Inbound Service Fee module for the Billing Application
  *
- * @file		charge_inbound.php
+ * @file		Billing_Charge_Service_Inbound.php
  * @language	PHP
- * @package		framework
+ * @package		cli.billing.charge.service
  * @author		Rich Davis
  * @version		8.05
  * @copyright	2008 VOIPTEL Pty Ltd
@@ -27,10 +27,10 @@
 
 
 //----------------------------------------------------------------------------//
-// ChargeInboundService
+// Billing_Charge_Service_Inbound
 //----------------------------------------------------------------------------//
 /**
- * ChargeInboundService
+ * Billing_Charge_Service_Inbound
  *
  * Inbound Service Fee module for the Billing Application
  *
@@ -39,10 +39,10 @@
  *
  * @prefix		chg
  *
- * @package		billing_app
- * @class		ChargeInboundService
+ * @package		cli.billing.charge.service
+ * @class		Billing_Charge_Service_Inbound
  */
- class ChargeInboundService extends ChargeBaseService
+ class Billing_Charge_Service_Inbound extends Billing_Charge_Service
  {
  	
 	//------------------------------------------------------------------------//
@@ -55,7 +55,7 @@
 	 *
 	 * Constructor for the Inbound Service Fee Charge Object
 	 *
-	 * @return			ChargeInboundService
+	 * @return			Billing_Charge_Service_Inbound
 	 *
 	 * @method
 	 */

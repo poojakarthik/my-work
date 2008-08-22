@@ -6,18 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// charge_latepayment
+// Billing_Charge_Account_LatePayment
 //----------------------------------------------------------------------------//
 /**
- * charge_latepayment
+ * Billing_Charge_Account_LatePayment
  *
  * Late Payment Fee module for the Billing Application
  *
  * Late Payment Fee module for the Billing Application
  *
- * @file		charge_latepayment.php
+ * @file		Billing_Charge_Account_LatePayment.php
  * @language	PHP
- * @package		framework
+ * @package		cli.billing.charge.account
  * @author		Rich Davis
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd
@@ -27,10 +27,10 @@
 
 
 //----------------------------------------------------------------------------//
-// ChargeLatePayment
+// Billing_Charge_Account_LatePayment
 //----------------------------------------------------------------------------//
 /**
- * ChargeLatePayment
+ * Billing_Charge_Account_LatePayment
  *
  * Late Payment Fee module for the Billing Application
  *
@@ -39,10 +39,10 @@
  *
  * @prefix		chg
  *
- * @package		billing_app
- * @class		ChargeLatePayment
+ * @package		cli.billing.charge.account
+ * @class		Billing_Charge_Account_LatePayment
  */
- class ChargeLatePayment extends ChargeBaseAccount
+ class Billing_Charge_Account_LatePayment extends Billing_Charge_Account
  {
  	
 	//------------------------------------------------------------------------//
@@ -55,7 +55,7 @@
 	 *
 	 * Constructor for the Late Payment Charge Object
 	 *
-	 * @return			ChargeLatePayment
+	 * @return			Billing_Charge_Account_LatePayment
 	 *
 	 * @method
 	 */
