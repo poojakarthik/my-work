@@ -47,6 +47,15 @@
 		{
 			throw new Exception("Missing Table Id for : $strTable");
 		}
+		// This is a hack to fix a problem introduced when another problem was fixed that had already been hacked around, the hack not working after the original problem was resolved.
+		if ($strId == 'id')
+		{
+			if (array_key_exists('Id', $arrColumns))
+			{
+				$arrColumns['id'] = $arrColumns['Id'];
+				unset($arrColumns['Id']);
+			}
+		}
 		$strWhere = "$strId = <$strId>";
 		parent::__construct($strTable, $strWhere, $arrColumns);
 	}
