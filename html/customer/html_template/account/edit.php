@@ -88,10 +88,9 @@
 			<form method=\"POST\" action=\"./flex.php/Console/Edit/\">
 			<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
 
+			<h2 class='Account'>Billing Details</h2>
+			<div class='GroupedContent'>
 			<TABLE>
-			<TR>
-			<TD colspan=\"2\"><IMG SRC=\"./img/template/account.gif\" WIDTH=\"16\" HEIGHT=\"16\" BORDER=\"0\" ALT=\"\"> <B>Billing Details</B></TD>
-			</TR>
 			<TR VALIGN=\"TOP\">
 				<TD width=\"200\">Billing Method: </TD>
 				<TD>";
@@ -123,11 +122,12 @@
 				print "</TD>
 			</TR>
 			</TABLE>
+			</div>
 			<br/>
+
+			<h2 class='Account'>Address Details</h2>
+			<div class='GroupedContent'>
 			<TABLE>
-			<TR>
-			<TD colspan=\"2\"><IMG SRC=\"./img/template/account.gif\" WIDTH=\"16\" HEIGHT=\"16\" BORDER=\"0\" ALT=\"\"> <B>Address Details</B></TD>
-			</TR>
 			<TR>
 			<TD width=\"200\">Address Line 1: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . DBO()->Account->Address1->Value . "\"></TD>
@@ -153,11 +153,12 @@
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Country\" VALUE=\"" . DBO()->Account->Country->Value . "\"></TD>
 			</TR>
 			</TABLE>
+			</div>
 			<br/>
+
+			<h2 class='Account'>Contact Details</h2>
+			<div class='GroupedContent'>
 			<TABLE>
-			<TR>
-			<TD colspan=\"2\"><IMG SRC=\"./img/template/account.gif\" WIDTH=\"16\" HEIGHT=\"16\" BORDER=\"0\" ALT=\"\"> <B>Contact Details</B></TD>
-			</TR>
 			<TR>
 			<TD width=\"200\">Title: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"Title\" VALUE=\"" . DBO()->Contact->Title->Value . "\"></TD>
@@ -191,6 +192,8 @@
 			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Fax\" VALUE=\"" . DBO()->Contact->Fax->Value . "\"></TD>
 			</TR>
 			</TABLE>
+			</div>
+
 			<br/>
 			<TABLE>
 			<TR>
