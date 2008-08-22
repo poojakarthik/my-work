@@ -757,7 +757,20 @@ class Application
 			if ($selSelectStatement->Count() == 1)
 			{
 				$currentUser = $selSelectStatement->Fetch();
-				
+
+				// Get the Account table.
+				DBO()->Account->Id = $currentUser['Account'];
+				DBO()->Account->Load();
+
+				// Get the CustomerGroup table.
+				DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
+				DBO()->CustomerGroup->Load();
+
+				// Check if CustomersGroup in database matches the URL being used.
+				if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
+					header("Location: " . DBO()->CustomerGroup->flex_url->Value);
+				}
+
 				// If the user logging in is not the same user to which previous session data belongs, clear out the old stuff!
 				if (!array_key_exists('User', $_SESSION) || $_SESSION['User']['Id'] != $currentUser['Id'])
 				{
