@@ -119,9 +119,11 @@ class HtmlTemplateCustomerGroupChangeLogo extends HtmlTemplate
 				<TD></TD>
 				<TD></TD>
 			</TR>
-			</TABLE>";
-			echo "</div><br/><br/>";
-			echo "<META HTTP-EQUIV=Refresh CONTENT=\"5; URL=/flex/trunk/html/" . Href()->ViewCustomerGroup($_POST['CustomerGroup_Id']) . "\">";
+			</TABLE>
+			</div><br/><br/>
+			<A HREF=". Href()->ViewCustomerGroup($_POST['CustomerGroup_Id']) .">Continue Editing Customer Group</A>";
+		
+		
 		}
 
 	}

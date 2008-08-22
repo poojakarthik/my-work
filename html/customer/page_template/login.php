@@ -104,7 +104,7 @@
 			</tr>
 			<tr>
 				<td colspan=2>
-					<input type="submit" id='VixenSubmit' value="Continue &#xBB;" class="Right"/>
+					<input type="submit" id='VixenSubmit' value="Login &#xBB;" class="Right"/>
 					<?php
 						if (DBO()->Login->ShowLink->Value)
 						{
