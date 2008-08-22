@@ -129,11 +129,11 @@
 			<TD colspan=\"2\"><IMG SRC=\"./img/template/account.gif\" WIDTH=\"16\" HEIGHT=\"16\" BORDER=\"0\" ALT=\"\"> <B>Address Details</B></TD>
 			</TR>
 			<TR>
-			<TD width=\"200\">Address1: </TD>
+			<TD width=\"200\">Address Line 1: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . DBO()->Account->Address1->Value . "\"></TD>
 			</TR>
 			<TR>
-			<TD>Address2: </TD>
+			<TD>Address Line 2: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . DBO()->Account->Address2->Value . "\"></TD>
 			</TR>
 			<TR>
@@ -163,19 +163,19 @@
 			<TD><INPUT TYPE=\"text\" NAME=\"Title\" VALUE=\"" . DBO()->Contact->Title->Value . "\"></TD>
 			</TR>
 			<TR>
-			<TD>FirstName: </TD>
+			<TD>First Name: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_FirstName\" VALUE=\"" . DBO()->Contact->FirstName->Value . "\"></TD>
 			</TR>
 			<TR>
-			<TD>LastName: </TD>
+			<TD>Last Name: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_LastName\" VALUE=\"" . DBO()->Contact->LastName->Value . "\"></TD>
 			</TR>
 			<TR>
-			<TD>JobTitle: </TD>
+			<TD>Job Title: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . DBO()->Contact->JobTitle->Value . "\"></TD>
 			</TR>
 			<TR>
-			<TD>Email: </TD>
+			<TD>E-mail: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . DBO()->Contact->Email->Value . "\"></TD>
 			</TR>
 			<TR>
