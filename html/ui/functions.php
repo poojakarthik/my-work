@@ -1283,4 +1283,16 @@ function InputValidation($strName,$mixInput,$strType,$intLength){
 	}
 	return array ($strFoundError,$strErrorResponse);
 }
+
+function RandomString($len, $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
+{
+    $string = '';
+    for ($i = 0; $i < $len; $i++)
+    {
+        $pos = rand(0, strlen($chars)-1);
+        $string .= $chars{$pos};
+    }
+    return $string;
+}
+
 ?>

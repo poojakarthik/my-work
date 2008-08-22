@@ -160,6 +160,24 @@ class MenuItems
 
 
 	//------------------------------------------------------------------------//
+	// ResetPassword()
+	//------------------------------------------------------------------------//
+	/**
+	 * ResetPassword()
+	 *
+	 * 
+	 * @return	string	action to be executed when linking to the ResetPassword Console
+	 *
+	 * @method
+	 */
+	function ResetPassword()
+	{
+		$this->strLabel	= "Reset Password";
+
+		return $this->GetBaseURL()."./flex.php/Console/Password/";
+	}
+
+	//------------------------------------------------------------------------//
 	// ManagementConsole()
 	//------------------------------------------------------------------------//
 	/**

@@ -475,5 +475,79 @@ class AppTemplateConsole extends ApplicationTemplate
 
 
     //----- DO NOT REMOVE -----//
+    
+    
+    
+  
+	//------------------------------------------------------------------------//
+	// Logout
+	//------------------------------------------------------------------------//
+	/**
+	 * Logout()
+	 *
+	 * Performs the logic for logging out the user
+	 * 
+	 * Performs the logic for logging out the user
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Password()
+	{
+
+
+		// Connect to database
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+		
+		// Check if the form has been submitted.
+		if(array_key_exists('mixUserName', $_POST))
+		{
+			// By default all password requests will fail.
+			DBO()->Fail = TRUE;
+
+			// Check the syntax of the username entered by user..
+			$mixInput = $_POST['mixUserName'];
+			list($strFoundError,$strErrorResponse) = InputValidation("UserName",$mixInput,"mixed",31);
+
+			// If there is no UserName errror
+			if(!$strFoundError)
+			{
+				//then we can check the database for a record.
+				$strCustEmail = $dbConnection->fetchone("SELECT Email,Account FROM `Contact` WHERE UserName = \"$mixInput\" LIMIT 1");
+
+				// if the email address exists in db then we reset the pass..
+				if($strCustEmail->Email)
+				{
+					// Reset password
+					$strTxtPassword = RandomString("10");
+					$dbConnection->execute("UPDATE `Contact` SET `PassWord` = SHA1( '$strTxtPassword' ) WHERE UserName = \"$mixInput\"");
+
+					// And send an email...
+					$to      = $strCustEmail->Email;
+					$subject = "Account Updated #" . $strCustEmail->Account;
+					$message = "The account changes below have been made:\n\n";
+					$message .= "New Password: $strTxtPassword\n\n";
+					$message .= "Kind Regards\n";
+					$message .= "Customer Service Group\n";
+					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+						'X-Mailer: Flex/' . phpversion();
+					# supress email errors.
+					@mail($to, $subject, $message, $headers);
+					DBO()->Fail = FALSE;
+				}
+			}
+
+			// email not found in db?
+			if(DBO()->Fail)
+			{
+				// Brute Force attack prevention.
+				sleep(9);
+			}
+		}
+
+		$this->LoadPage('reset_password');
+		return TRUE;
+	}
 	
 }
