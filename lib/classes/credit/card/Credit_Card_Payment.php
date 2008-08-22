@@ -5,7 +5,7 @@ class Credit_Card_Payment
 
 	public static function availableForCustomerGroup($mxdCustomerGroupOrId)
 	{
-		if (!FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
 		{
 			return FALSE;
 		}
@@ -46,7 +46,7 @@ class Credit_Card_Payment
 	private static function getJavaScriptActionParams($accountId)
 	{
 		// Check that the module is enabled
-		if (!FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
 		{
 			return FALSE;
 		}
