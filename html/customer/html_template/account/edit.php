@@ -140,9 +140,28 @@
 			<TD>Suburb: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Suburb\" VALUE=\"" . DBO()->Account->Suburb->Value . "\"></TD>
 			</TR>
+
 			<TR>
 			<TD>State: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_State\" VALUE=\"" . DBO()->Account->State->Value . "\"></TD>
+			<TD>
+				<SELECT NAME=\"mixAccount_State\">";
+				
+				foreach($GLOBALS['*arrConstant']['ServiceStateType'] as $strStateName=>$resStateName){
+					$strStateDescription = $GLOBALS['*arrConstant']['ServiceStateType']["$strStateName"]['Description'];
+					if($strStateName == DBO()->Account->State->Value)
+					{
+						$mixStates .= "<OPTION VALUE=\"$strStateName\" SELECTED>$strStateDescription</OPTION>\n";
+					}
+					else
+					{
+						$mixStates .= "<OPTION VALUE=\"$strStateName\">$strStateDescription</OPTION>\n";
+					}
+				}
+
+				print "
+				$mixStates
+				</SELECT>
+				</TD>
 			</TR>
 			<TR>
 			<TD>Postcode: </TD>
