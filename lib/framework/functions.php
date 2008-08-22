@@ -5283,4 +5283,56 @@ function ListAutomatableCarriers($intProvisioningTypeConstant, $bolInbound=FALSE
 	return $carriers[$key];
 }
 
+
+//------------------------------------------------------------------------//
+// FlexModuleActive
+//------------------------------------------------------------------------//
+/**
+ * FlexModuleActive()
+ * 
+ * Determines whether a Flex Module is activated or not
+ * 
+ * Determines whether a Flex Module is activated or not.  If the module doesn't exist
+ * in the database, it returns NULL (and should be treated as inactive)
+ *
+ * @param	string	$strModuleName		The name of the Module to Check
+ *
+ * @return	mixed						TRUE: Active; FALSE: Inactive; NULL: Not present
+ * 
+ * @function
+ * 
+ */
+function FlexModuleActive($strModuleName)
+{
+	// Init Statement
+	static	$selFlexModule;
+	$selFlexModule	= (isset($selFlexModule)) ? $selFlexModule : new StatementSelect("flex_module", "status_id", "name = <Name>");
+	
+	// Check Module Status
+	if ($selFlexModule->Execute(Array('Name' => $strModuleName)) === FALSE)
+	{
+		// DB Error
+		throw new Exception("DB ERROR: ".$selFlexModule->Error());
+	}
+	elseif ($arrModule = $selFlexModule->Fetch())
+	{
+		// Module Exists - is it active?
+		if ($arrModule['status_id'] === ACTIVE_STATUS_ACTIVE)
+		{
+			// Active
+			return TRUE;
+		}
+		else
+		{
+			// Inactive
+			return FALSE;
+		}
+	}
+	else
+	{
+		// Module doesn't exist
+		return NULL;
+	}
+}
+
 ?>
