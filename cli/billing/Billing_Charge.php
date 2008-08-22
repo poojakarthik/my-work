@@ -6,10 +6,10 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// charge_base
+// Billing_Charge
 //----------------------------------------------------------------------------//
 /**
- * charge_base
+ * Billing_Charge
  *
  * Base Charge module for the Billing Application
  *
@@ -27,10 +27,10 @@
 
 
 //----------------------------------------------------------------------------//
-// ChargeBase
+// Billing_Charge
 //----------------------------------------------------------------------------//
 /**
- * ChargeBase
+ * Billing_Charge
  *
  * Base Charge module for the Billing Application
  *
@@ -39,10 +39,10 @@
  *
  * @prefix		chg
  *
- * @package		billing_app
- * @class		ChargeBase
+ * @package		billing
+ * @class		Billing_Charge
  */
- abstract class ChargeBase
+ abstract class Billing_Charge
  {
  	public $strChargeType;
  	
@@ -56,7 +56,7 @@
 	 *
 	 * Constructor for the Charge Object
 	 *
-	 * @return			BaseCharge
+	 * @return			Billing_Charge
 	 *
 	 * @method
 	 */
