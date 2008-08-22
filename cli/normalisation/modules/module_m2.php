@@ -85,8 +85,8 @@ class NormalisationModuleM2 extends NormalisationModule
 		$arrDefine['Quantity']				['Index']		= 11;	// Quantity of a product
 		$arrDefine['ChargeAmount']			['Index']		= 12;	// Charge to YBS Customer in Cents
 		$arrDefine['Tariff']				['Index']		= 13;	// M2 Tariff Code (Call Type)
-		$arrDefine['ForeignChargeType']		['Index']		= 14;	// Originating Carrier Call Type
-		$arrDefine['ForiegnCallDescCode']	['Index']		= 15;	// Originating Carrier Call Description
+		$arrDefine['ForeignChargeType']		['Index']		= 14;	// Originating Carrier Call Type (M2 Internal)
+		$arrDefine['ForiegnCallDescCode']	['Index']		= 15;	// International Roaming Foreign Carrier Code
 		$arrDefine['ServiceName']			['Index']		= 16;	// Name associated with ther Service number
 		$arrDefine['ServiceDepartment']		['Index']		= 17;	// Department that the Service number belongs to
 		$arrDefine['InstalmentNumber']		['Index']		= 18;	// Instalment number for this record of this product
@@ -173,38 +173,61 @@ class NormalisationModuleM2 extends NormalisationModule
 		$mixValue 						= $strRecordType.$this->_FetchRawCDR('ReferenceNumber');
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
-		// StartDateTime & EndDateTime
-		 $strStartDatetime	= $this->ConvertTime($this->_FetchRawCDR('ChargeDate')).' '.$this->_FetchRawCDR('ChargeTime');
-		if ($this->_FetchRawCDR('ChargeDateEnd'))
-		{
-		 	// Other Charges?
-			$this->_AppendCDR('StartDatetime', $strStartDatetime);
-			$this->_AppendCDR('EndDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDateEnd')).' 00:00:00');
-		}
-		else
-		{
-		 	// Usage
-			$intSeconds			= (int)$this->_FetchRawCDR('Duration');
-			$strEndDatetime		= date("Y-m-d H:i:s", strtotime("+{$intSeconds} seconds", strtotime($strStartDatetime)));
-			
-			$this->_AppendCDR('StartDatetime', $strStartDatetime);
-			$this->_AppendCDR('EndDatetime', $strEndDatetime);
-		}
-		
 		// Record Type-specific fields
+		$mixCarrierCode					= $this->_FetchRawCDR('Tariff');
+		$strRecordCode					= NULL;
 		switch ($strRecordType)
 		{
 			// Usage Records
 			case 'US':
+				// Determine Call Type
+				$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+				$intRecordType 					= $this->FindRecordType($intServiceType, $strRecordCode); 
+				$this->_AppendCDR('RecordType', $intRecordType);
 				
 				// Units (seconds or KB)
 				$this->_AppendCDR('Units', (int)$this->_FetchRawCDR('Duration'));
 				
+				// StartDatetime & EndDatetime
+				$strStartDatetime	= $this->ConvertTime($this->_FetchRawCDR('ChargeDate')).' '.$this->_FetchRawCDR('ChargeTime');
+				$this->_AppendCDR('StartDatetime', $strStartDatetime);
+				if (in_array($strRecordCode, Array('3G', 'GPRS')))
+				{
+					// Data
+					// No EndDatetime
+				}
+				else
+				{
+					// Call
+					$intSeconds			= (int)$this->_FetchRawCDR('Duration');
+					$strEndDatetime		= date("Y-m-d H:i:s", strtotime("+{$intSeconds} seconds", strtotime($strStartDatetime)));
+					$this->_AppendCDR('EndDatetime', $strEndDatetime);
+				}
 				break;
 			
 			// Other Charges
 			case 'OC':
+				// Record Type is Other Charges & Credits
+				$intRecordType					= $this->FindRecordType($intServiceType, 'OC&C');
+				
+				// Quantity?
+				$this->_AppendCDR('Units', (int)$this->_FetchRawCDR('Quantity'));
+				
+				// StartDatetime & EndDatetime
+				$this->_AppendCDR('StartDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDate')));
+				$this->_AppendCDR('EndDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDateEnd')));
 				break;
+		}
+		
+		// Destination Code & Description (only if we have a context)
+		if ($this->_intContext > 0)
+		{
+			$arrDestinationCode 		= $this->FindDestination($mixCarrierCode);
+			if ($arrDestinationCode)
+			{
+				$this->_AppendCDR('DestinationCode'	, $arrDestinationCode['Code']);
+				$this->_AppendCDR('Description'		, $arrDestinationCode['Description']);
+			}
 		}
 		
 		// Cost
