@@ -1103,7 +1103,8 @@
 		// update Invoice Status to COMMITTED, or SETTLED if the invoice balance is zero
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
+		$arrUpdateData['Status']	= new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
+		$arrUpdateData['SettledOn']	= new MySQLFunction("IF(Balance > 0, NULL, NOW())");
 		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status IN (".INVOICE_PRINT.", ".INVOICE_TEMP.")", $arrUpdateData);
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
