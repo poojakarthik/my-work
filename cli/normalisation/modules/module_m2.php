@@ -133,9 +133,11 @@ class NormalisationModuleM2 extends NormalisationModule
 				break;
 			
 			case 'US':
-			case 'OC':
 				break;
-			
+				
+			case 'OC':
+				// M2 say that they will never send 'OC' records, but this is here just incase they decide to
+				SendEmail("rich@voiptelsystems.com.au", "M2 CDR RecordType 'OC' Encountered!", "Unhandled M2 CDR RecordType 'OC' Encountered in CDR #{$arrCDR['Id']}");
 			default:
 				// Unrecognised Type
 				return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
@@ -207,16 +209,7 @@ class NormalisationModuleM2 extends NormalisationModule
 			
 			// Other Charges
 			case 'OC':
-				// Record Type is Other Charges & Credits
-				$intRecordType					= $this->FindRecordType($intServiceType, 'OC&C');
-				
-				// Quantity?
-				$this->_AppendCDR('Units', (int)$this->_FetchRawCDR('Quantity'));
-				
-				// StartDatetime & EndDatetime
-				$this->_AppendCDR('StartDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDate')));
-				$this->_AppendCDR('EndDatetime', $this->ConvertTime($this->_FetchRawCDR('ChargeDateEnd')));
-				break;
+				// Unhandled at the moment - this is just a placeholder
 		}
 		
 		// Destination Code & Description (only if we have a context)
