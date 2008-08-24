@@ -51,7 +51,7 @@ VixenRequire($strChargeDir."account/Billing_Charge_Account_LatePayment.php");
 VixenRequire($strChargeDir."account/Billing_Charge_Account_Postage.php");
 
 VixenRequire($strChargeDir."service/Billing_Charge_Service_Inbound.php");
-VixenRequire($strChargeDir."service/Billing_Charge_Service_Service.php");
+VixenRequire($strChargeDir."service/Billing_Charge_Service_Pinnacle.php");
 
 // Remote Copy
 VixenRequire("lib/framework/remote_copy.php");
