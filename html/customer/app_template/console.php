@@ -299,9 +299,36 @@ class AppTemplateConsole extends ApplicationTemplate
 				DBO()->Contact->Phone = $_POST['mixContact_Phone'];
 				DBO()->Contact->Mobile = $_POST['mixContact_Mobile'];
 				DBO()->Contact->Fax = $_POST['mixContact_Fax'];
-				DBO()->Contact->SetColumns("FirstName,LastName,JobTitle,Email,Phone,Mobile,Fax");
+
+				$mixFoundError = FALSE;
+				if($_POST['mixAccount_OldPassword'] != "" && SHA1($_POST['mixAccount_OldPassword']) != DBO()->Contact->PassWord->Value)
+				{
+					$mixFoundError = TRUE;
+				}
+				if($_POST['mixAccount_NewPassword1'] != $_POST['mixAccount_NewPassword2'])
+				{
+					$mixFoundError = TRUE;
+				}
+				if($_POST['mixAccount_NewPassword1'] == "")
+				{
+					$mixFoundError = TRUE;
+				}
+				list($strFoundError,$strErrorResponse) = InputValidation("Password",$_POST['mixAccount_NewPassword1'],"mixed","40");
+				if($strFoundError == TRUE)
+				{
+					$mixFoundError = TRUE;
+				}
+				if($mixFoundError == FALSE)
+				{
+					DBO()->Contact->SetColumns("FirstName,LastName,JobTitle,Email,Phone,Mobile,Fax,PassWord");
+					DBO()->Contact->PassWord = SHA1($_POST['mixAccount_NewPassword1']);
+				}
+				if($mixFoundError)
+				{
+					DBO()->Contact->SetColumns("FirstName,LastName,JobTitle,Email,Phone,Mobile,Fax");
+				}
 				DBO()->Contact->Save();
-				
+
 				$to      = $_POST['mixContact_Email'];
 				$subject = "Account Updated #$intAccountId";
 				$message = "The account changes below have been made:\n\n";

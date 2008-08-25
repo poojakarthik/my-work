@@ -82,7 +82,6 @@
 		}
 		if($intAccountUpdated!="1")
 		{
-			print "Thank you for taking the time to update your account,<br/>Please apply new options below.<br/><br/>";
 			print "
 			<!-- We dont want any caching of this page.. -->
 			<form method=\"POST\" action=\"./flex.php/Console/Edit/\">
@@ -125,15 +124,40 @@
 			</div>
 			<br/>
 
+
+
+			<h2 class='Account'>Account Password</h2>
+			<div class='GroupedContent'>
+			<TABLE>
+			<TR VALIGN=\"TOP\">
+			<TR>
+				<TD width=\"200\">Old Password: </TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_OldPassword\" VALUE=\"\"></TD>
+			</TR>
+			<TR>
+				<TD width=\"200\">New Password: </TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_NewPassword1\" VALUE=\"\" maxlength=\"40\"></TD>
+			</TR>
+			<TR>
+				<TD width=\"200\">Repeat New Password: </TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_NewPassword2\" VALUE=\"\" maxlength=\"40\"></TD>
+			</TR>
+			<TR>
+				<TD colspan=\"2\"><FONT SIZE=\"1\">If you do not wish to change your password please leave these fields blank.</FONT></TD>
+			</TR>
+			</TABLE>
+			</div>
+			<br/>
+
 			<h2 class='Account'>Address Details</h2>
 			<div class='GroupedContent'>
 			<TABLE>
 			<TR>
-			<TD width=\"200\">Address Line 1: </TD>
+			<TD width=\"200\">Address line 1: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . DBO()->Account->Address1->Value . "\"></TD>
 			</TR>
 			<TR>
-			<TD>Address Line 2: </TD>
+			<TD>Address line 2: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . DBO()->Account->Address2->Value . "\"></TD>
 			</TR>
 			<TR>
@@ -165,11 +189,15 @@
 			</TR>
 			<TR>
 			<TD>Postcode: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Postcode\" VALUE=\"" . DBO()->Account->Postcode->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Postcode\" VALUE=\"" . DBO()->Account->Postcode->Value . "\" size=\"4\" maxlength=\"4\"></TD>
 			</TR>
 			<TR>
 			<TD>Country: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Country\" VALUE=\"" . DBO()->Account->Country->Value . "\"></TD>
+			<TD>
+				<SELECT NAME=\"mixAccount_Country\">
+				<OPTION VALUE=\"" . DBO()->Account->Country->Value . "\" SELECTED>" . DBO()->Account->Country->Value . "</OPTION>
+				</SELECT>
+				</TD>
 			</TR>
 			</TABLE>
 			</div>

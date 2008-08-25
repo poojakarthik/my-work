@@ -75,7 +75,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 
 		require_once dirname(__FILE__) . '/../../../lib/classes/credit/card/Credit_Card_Payment.php';
 		
-		$bolCC = Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->Id->Value);
+		$bolCC = Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value);
 		if ($bolCC)
 		{
 			// build the "View Unbilled Charges for Account" link
