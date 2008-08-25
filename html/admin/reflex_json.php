@@ -8,6 +8,7 @@ if (!Flex::continueSession(Flex::FLEX_ADMIN_SESSION))
 {
 	// Prompt the user to extend their session or logout
 	$response = array('ERROR'=>'LOGIN');
+	require_once dirname(__FILE__) . '/../../lib/classes/json/JSON_Services.php';
 	echo JSON_Services::encode($response);
 	exit;
 }

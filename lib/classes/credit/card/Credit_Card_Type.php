@@ -9,6 +9,9 @@ class Credit_Card_Type
 	protected $surcharge;
 	protected $validLengths;
 	protected $validPrefixes;
+	protected $cvvLength;
+	protected $minimumAmount;
+	protected $maximumAmount;
 
 	protected function __construct($arrProperties=NULL)
 	{
@@ -37,7 +40,10 @@ class Credit_Card_Type
 			'surcharge',
 			'valid_lengths',
 			'valid_prefixes',
-		);
+			'cvv_length',
+			'minimum_amount',
+			'maximum_amount',
+			);
 	}
 
 	protected function getValuesToSave()
@@ -99,9 +105,45 @@ class Credit_Card_Type
 		static $instances;
 		if (!isset($instances))
 		{
-			$instances = self::getFor('', NULL, TRUE);
+			$all = self::getFor('', NULL, TRUE);
+			$instances = array();
+			foreach ($all as $one)
+			{
+				$instances[$one->id] = $one;
+			}
 		}
 		return $instances;
+	}
+
+	public function cardNumberIsValid($strCardNumber)
+	{
+		$strCardNumber = preg_replace("/[^0-9]+/", "", $strCardNumber);
+		$lengths = $this->valid_lengths;
+		if (array_search(strlen($strCardNumber), $lengths) === FALSE)
+		{
+			return FALSE;
+		}
+		$prefixes = $this->valid_prefixes;
+		$found = FALSE;
+		foreach($prefixes as $prefix)
+		{
+			if (strpos($strCardNumber, $prefix) === 0)
+			{
+				$found = TRUE;
+				break;
+			}
+		}
+		if (!$found)
+		{
+			return FALSE;
+		}
+		return CheckLuhn($strCardNumber) ? $strCardNumber : FALSE;
+	}
+
+	public function cvvIsValid($strCvv)
+	{
+		$strCvv = preg_replace("/[^0-9]+/", "", $strCvv);
+		return (strlen($strCvv) === $this->cvvLength) ? $strCvv : FALSE;
 	}
 
 	public static function getForId($id)
@@ -175,8 +217,9 @@ class Credit_Card_Type
 		{
 			if ($this->{$strName} !== $mxdValue)
 			{
-				if ($strName == 'validLengths' || $strName == 'validPrefixes')
+				if (($strName == 'validLengths' || $strName == 'validPrefixes') && is_array($mxdValue))
 				{
+					throw new Exception('wtf');
 					$mxdValue = implode(',', $mxdValue);
 				}
 

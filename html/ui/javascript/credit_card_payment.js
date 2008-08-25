@@ -13,6 +13,7 @@ Object.extend(CreditCardPayment,
 	cvvReg: /^[0-9]{3,4}$/,
 	whitespaceReg: /^[ \n\r\t]+$/,
 	monetaryValueReg: /^\d+[\d,]*(\.\d{0,2}|)?$/,
+	directDebitTermsAndConditions: null,
 
 	listCardTypes: function()
 	{
@@ -379,7 +380,16 @@ Object.extend(CreditCardPayment.prototype,
 
 			this.paymentForm.appendChild(table);
 
-
+			// Add the buttons (cancel & submit)
+			var buttonCancel = document.createElement('input');
+			var buttonSubmit = document.createElement('input');
+			buttonCancel.className = buttonSubmit.className = 'reflex-button';
+			buttonCancel.type = buttonSubmit.type = 'button';
+			buttonCancel.value = 'Cancel';
+			buttonSubmit.value = 'Submit';
+			Event.observe(buttonCancel, 'click', this.cancel.bind(this));
+			Event.observe(buttonSubmit, 'click', this.submitPayment.bind(this));
+			this.popup.setFooterButtons([buttonCancel, buttonSubmit]);
 		}
 
 		if (errorMessage)
@@ -394,6 +404,76 @@ Object.extend(CreditCardPayment.prototype,
 		}
 
 		this.popup.setContent(this.paymentForm);
+	},
+
+	submitPayment: function(bolAgreedToTermsAndConditions)
+	{
+		if (typeof bolAgreedToTermsAndConditions != 'boolean')
+		{
+			bolAgreedToTermsAndConditions = false;
+		}
+
+		// Validate the data
+		if (!this.validate())
+		{
+			$Alert('Please correct all errors and try again.');
+			return;
+		}
+
+		// Ensure that the user has agreed to the terms and conditions
+		if (this.allowDD && this.inputDD.checked && !bolAgreedToTermsAndConditions)
+		{
+			this.termsAndConditions();
+			return false; 
+		}
+
+		var $submit = jQuery.json.jsonFunction(this.submitted.bind(this), null, 'Credit_Card_Payment', 'makePayment');
+
+		// Gather the validated values and submit to the server
+		$submit(this.accountNumber,
+				this.inputEmail.value,
+				this.inputCardType.options[this.inputCardType.selectedIndex].value,
+				this.inputCardNumber.value,
+				this.inputCVV.value,
+				this.inputMonth.options[this.inputMonth.selectedIndex].value,
+				this.inputYear.options[this.inputYear.selectedIndex].value,
+				this.inputName.value,
+				this.inputAmount.value,
+				this.inputDD.checked);
+	},
+
+	submitted: function(response)
+	{
+		// Check the 'OUTCOME' property of the response
+		var outcome = response['OUTCOME'];
+
+		// INVALID = problem with the submitted values
+
+		// UNAVAILABLE = The SecurePay servers could not be contacted
+
+		// FAILED = A problem occurred communicating with the SecurePay servers
+
+		// SUCCESS = The payment was made and DD details stored (if appropriate)
+
+		// The details of the response (the confirmation message)
+		// need to be displayed to the user, assuming it all worked.
+
+	},
+
+	termsAndConditions: function()
+	{
+		// Create a terms and conditions popup
+		var termsPopup = new Reflex_Popup(50);
+		termsPopup.setTitle('Direct Debit Terms & Conditions');
+		termsPopup.addCloseButton(this.cancel.bind(this));
+
+		// Create the content div and add the cancel/continue buttons
+
+		var cancelFuncBound = termsPopup.hide.bind(termsPopup);
+
+		var accept = this.submitPayment.bind(this);
+		var acceptFunc = function() { this.accept(true); }
+		var acceptFuncBound = acceptFunc.bind({accept:acceptFunc});
 	},
 
 	appendCurrency: function(td)
@@ -419,8 +499,9 @@ Object.extend(CreditCardPayment.prototype,
 		return Math.round((amount * 100) * cardType['surcharge'])/100;
 	},
 
-	changeAmount: function()
+	changeAmount: function(highlightBlankFields)
 	{
+		highlightBlankFields = typeof highlightBlankFields != 'boolean' ? false : highlightBlankFields;
 		var cardType = this.getSelectedCardType();
 		var bolAmountEntered = false;
 		var bolAmountIsValid = true;
@@ -444,6 +525,11 @@ Object.extend(CreditCardPayment.prototype,
 			}
 			bolAmountEntered = true;
 		}
+		if (highlightBlankFields && !bolAmountEntered)
+		{
+			bolAmountEntered = true;
+			bolAmountIsValid = false;
+		}
 		this.setValidity(this.inputAmount, bolAmountEntered, true, bolAmountIsValid);
 
 		this.updateBalances();
@@ -451,26 +537,39 @@ Object.extend(CreditCardPayment.prototype,
 		return bolAmountEntered && bolAmountIsValid;
 	},
 
-	changeEmail: function()
+	changeEmail: function(highlightBlankFields)
 	{
+		highlightBlankFields = typeof highlightBlankFields != 'boolean' ? false : highlightBlankFields;
 		var bolEmailEntered = this.inputEmail.value != '';
 		var bolEmailIsValid = bolEmailEntered && CreditCardPayment.checkEmail(this.inputEmail.value);
+		if (highlightBlankFields && !bolEmailEntered)
+		{
+			bolEmailEntered = true;
+			bolEmailIsValid = false;
+		}
 		this.setValidity(this.inputEmail, bolEmailEntered, true, bolEmailIsValid);
 		return bolEmailEntered && bolEmailIsValid;
 	},
 
-	changeExpiry: function()
+	changeExpiry: function(highlightBlankFields)
 	{
+		highlightBlankFields = typeof highlightBlankFields != 'boolean' ? false : highlightBlankFields;
 		var bolExpiryValid = CreditCardPayment.checkExpiry(this.inputMonth.options[this.inputMonth.selectedIndex].value, this.inputYear.options[this.inputYear.selectedIndex].value);
 		this.setValidity(this.inputMonth, true, true, bolExpiryValid);
 		this.setValidity(this.inputYear, true, true, bolExpiryValid);
 		return bolExpiryValid;
 	},
 
-	changeName: function()
+	changeName: function(highlightBlankFields)
 	{
+		highlightBlankFields = typeof highlightBlankFields != 'boolean' ? false : highlightBlankFields;
 		var bolNameEntered = this.inputName.value != '';
 		var bolNameIsValid = bolNameEntered && (this.inputName.value.replace(/[^a-zA-Z]+/g, '') != '');
+		if (highlightBlankFields && !bolNameEntered)
+		{
+			bolNameEntered = true;
+			bolNameIsValid = false;
+		}
 		this.setValidity(this.inputName, bolNameEntered, true, bolNameIsValid);
 		return bolNameEntered && bolNameIsValid;
 	},
@@ -501,10 +600,11 @@ Object.extend(CreditCardPayment.prototype,
 		this.changeCardType(skipInitialTidy);
 	},
 
-	changeNumber: function(skipInitialTidy, bolDueToChangeType)
+	changeNumber: function(skipInitialTidy, bolDueToChangeType, highlightBlankFields)
 	{
 		skipInitialTidy = typeof skipInitialTidy != 'boolean' ? false : skipInitialTidy;
 		bolDueToChangeType = typeof bolDueToChangeType != 'boolean' ? false : bolDueToChangeType;
+		highlightBlankFields = typeof highlightBlankFields != 'boolean' ? false : highlightBlankFields;
 		var cardType = validateType = this.getSelectedCardType();
 
 		var bolCardTypeEntered = cardType ? true : false;
@@ -548,28 +648,38 @@ Object.extend(CreditCardPayment.prototype,
 				bolCardTypeEntered = bolCardTypeIsValid = true;
 			}
 		}
+		else if (highlightBlankFields)
+		{
+			bolCardTypeIsValid = false;
+			bolCardTypeEntered = true;
+			bolCardNumberIsValid = false;
+			bolCardNumberEntered = true;
+		}
 
 		this.setValidity(this.inputCardType, bolCardTypeEntered, true, bolCardTypeIsValid);
 		this.setValidity(this.inputCardNumber, bolCardNumberEntered, true, bolCardNumberIsValid);
+		return bolCardTypeEntered && bolCardTypeIsValid && bolCardNumberEntered && bolCardNumberIsValid;
 	},
 
-	changeCardType: function(skipInitialTidy)
+	changeCardType: function(skipInitialTidy, highlightBlankFields)
 	{
 		skipInitialTidy = typeof skipInitialTidy != 'boolean' ? false : skipInitialTidy;
+		highlightBlankFields = typeof highlightBlankFields != 'boolean' ? false : highlightBlankFields;
 		// If a number has been entered, verify that the number matches the card type
 		if (!skipInitialTidy && this.inputCardType.options[0].value == '')
 		{
 			this.inputCardType.removeChild(this.inputCardType.options[0]);
 		}
 		var bolOK = this.getSelectedCardType();
-		bolOK = this.changeNumber(skipInitialTidy, true) && bolOK;
-		bolOK = this.changeCVV() && bolOK;
-		bolOK = this.changeAmount() && bolOK;
+		bolOK = this.changeNumber(skipInitialTidy, true, highlightBlankFields) && bolOK;
+		bolOK = this.changeCVV(highlightBlankFields) && bolOK;
+		bolOK = this.changeAmount(highlightBlankFields) && bolOK;
 		return bolOK;
 	},
 
-	changeCVV: function()
+	changeCVV: function(highlightBlankFields)
 	{
+		highlightBlankFields = typeof highlightBlankFields != 'boolean' ? false : highlightBlankFields;
 		var cardType = this.getSelectedCardType();
 		var bolCvvEntered = false;
 		var bolCvvIsValid = true;
@@ -584,16 +694,23 @@ Object.extend(CreditCardPayment.prototype,
 			}
 			bolCvvEntered = true;
 		}
+		if (highlightBlankFields && !bolCvvEntered)
+		{
+			bolCvvEntered = true;
+			bolCvvIsValid = false;
+		}
 		this.setValidity(this.inputCVV, bolCvvEntered, true, bolCvvIsValid);
+		return bolCvvEntered && bolCvvIsValid;
 	},
 
 	validate: function(skipInitialTidy)
 	{
 		skipInitialTidy = typeof skipInitialTidy != 'boolean' ? false : skipInitialTidy;
-		var bolOK = this.changeCardType(skipInitialTidy);
-		bolOK = this.changeName() && bolOK;
-		bolOK = this.changeExpiry() && bolOK;
-		bolOK = this.changeEmail() && bolOK;
+		var highlightBlankFields = true;
+		var bolOK = this.changeCardType(skipInitialTidy, highlightBlankFields);
+		bolOK = this.changeName(highlightBlankFields) && bolOK;
+		bolOK = this.changeExpiry(highlightBlankFields) && bolOK;
+		bolOK = this.changeEmail(highlightBlankFields) && bolOK;
 		return bolOK
 	},
 
@@ -636,29 +753,6 @@ Object.extend(CreditCardPayment.prototype,
 		var idx = this.inputCardType.selectedIndex;
 		var cardTypeId = this.inputCardType.options[idx].value;
 		return CreditCardType.cardTypeForId(cardTypeId);
-	},
-
-	displayConfirmation: function(response)
-	{
-		if (response['INVALID'])
-		{
-			$Alert(response['INVALID']);
-			return;
-		}
-
-		var confirmationPane = document.createElement('div');
-
-		this.popup.setContent(this.confirmationPane);
-	},
-
-	submit: function()
-	{
-		// User clicked submit. Validate all data entered.
-		
-		// If invalid, show user a userful message
-		
-		// If valid, submit to server with displayConfimation as the response handler
-		var responseHandler = this.displayConfirmation.bind(this);
 	},
 
 	cancel: function()
