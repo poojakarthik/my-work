@@ -52,41 +52,35 @@ class CommonLayout
 		<div id="Header" class="sectionContainer">
 			<div id="Banner"></div>
 			<div class="MenuContainer">
-			<?php
-				if ($bolIncludeLogout)
-				{
-			?>
-			<table class="LogoutContainer">
-			<tr>
-				<td class="LogoutLeft">&nbsp;</td>
-				<td class="LogoutMiddle">
-				<?php
-					//display the logout link
-					$strUserName	= AuthenticatedUser()->_arrUser['UserName'];
-					$strLogoutHref	= Href()->LogoutUser();
-					echo "<span class='LoginUserLabel'>Account: </span><span class='LoginUserName'>$strUserName </span><button class='logout' onmouseover='this.tmpClassName=this.className;this.className+=\"Hover\";' onmouseout=\"this.className=this.tmpClassName;\" onclick='document.location=\"$strLogoutHref\"' title='logout'></button>\n";
-				?>
-				</td>
-				<td class="LogoutRight">&nbsp;</td>
-			</tr>
-			</table>
-			<?php
-				}
-				echo "<div class='MenuItemsContainer'>";
-				// Get version.
-				$strShowIE6Code=FALSE;
-				if(eregi("MSIE 6.0",$_SERVER['HTTP_USER_AGENT']))
-				{
-					$strShowIE6Code=TRUE;
-				}
+					<?php
+						if ($bolIncludeLogout)
+						{
+?>
+<table class="LogoutContainer">
+<tr>
+<td class="LogoutLeft">&nbsp;</td>
+<td class="LogoutMiddle">
+<?php
 
-				// $strCustomerPrimaryColor
-				if(!$strShowIE6Code)
-				{
-					echo "<div class='MenuOptionsContainer'>\n";
+							//display the logout link
+							$strUserName	= AuthenticatedUser()->_arrUser['UserName'];
+							$strLogoutHref	= Href()->LogoutUser();
+							echo "<span class='LoginUserLabel'>Account: </span><span class='LoginUserName'>$strUserName </span><button class='logout' onmouseover='this.tmpClassName=this.className;this.className+=\"Hover\";' onmouseout=\"this.className=this.tmpClassName;\" onclick='document.location=\"$strLogoutHref\"' title='logout'></button>\n";
+?>
+</td>
+<td class="LogoutRight">&nbsp;</td>
+</tr>
+</table>
+<?php
+						}
+					?>
+				<div class='MenuItemsContainer'>
+					<div class='MenuOptionsContainer'>
+					<?php
+
 					if ($arrMenuOptions !== NULL && count($arrMenuOptions))
 					{
-						echo "<ul class='CommonHeaderMenu' style=\"line-height: 33px\">";
+						echo "<ul class='CommonHeaderMenu'>";
 						
 						for ($i = 0, $l = count($arrMenuOptions); $i < $l; $i++)
 						{
@@ -109,47 +103,15 @@ class CommonLayout
 
 						echo "</ul>";
 					}
-					print "</div>";
-				}
-				// IE Compatible links table.
-				if($strShowIE6Code)
-				{
-					$mixLinksTable = "
-					<table width=100% align=left cellpadding=0 cellspacing=0 bgcolor=#000000 height=33>
-					<tr class='LinksTable'>
-						<td width=15></td>
-						<td>
-						<table align=left cellpadding=2 cellspacing=1 bgcolor=#696969 height=33>
-						<tr class='LinksTable'>";
-						for ($i = 0, $l = count($arrMenuOptions); $i < $l; $i++)
-						{
-							$href = Href();
 
-							$url = call_user_func_array(Array($href, $arrMenuOptions[$i]), array());
-							
-							$label = $href->GetLastMenuItemLabel();
-							if ($label === NULL)
-							{
-								$label = "&nbsp;";
-							}
-							$mixTdWidth = number_format(strlen($label)*7, 2, '.', ''); // the td width will change depending on the word size.
-							$mixLinksTable .= "
-								<TD width=130 align=center>&nbsp;<a href=\"$url\">$label</a></TD>";
-							
-						}
-						$mixLinksTable .= "
-						</tr>
-						</table></td>
-					</tr>
-					</table>";
-					echo "$mixLinksTable";
-				}
-				echo "<div class='MenuBreadCrumbContainer'>";
-					
-				if ($bolIncludeBreadCrumbMenu)
-				{
-					$objLayoutTemplate->RenderBreadCrumbMenu();
-				}
+					?>
+					</div>
+					<div class='MenuBreadCrumbContainer'>
+				<?php 
+					if ($bolIncludeBreadCrumbMenu)
+					{
+						$objLayoutTemplate->RenderBreadCrumbMenu();
+					}
 				?>
 					</div>
 				</div>

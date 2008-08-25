@@ -450,9 +450,11 @@ class Application
 	{
 		if (!Browser()->IsSupported)
 		{
+			/*
 			echo APP_NAME . " does not support your current browser<br />\n";
 			echo "It only supports the following browsers: " . SUPPORTED_BROWSERS_DESCRIPTION . "\n";
 			die;
+			*/
 		}
 	}
 	

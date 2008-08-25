@@ -69,6 +69,12 @@
 		echo "</div>\n";
 	}
 
+	// Get version.
+	$strShowIE6Code=FALSE;
+	if(eregi("MSIE 6.0",$_SERVER['HTTP_USER_AGENT']))
+	{
+		$strShowIE6Code=TRUE;
+	}
 
 	// Render the login table
 ?>
@@ -118,6 +124,7 @@
 				</td>
 			</tr>
 		</table>
+
 
 	<?php
 	
