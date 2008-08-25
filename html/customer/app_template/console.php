@@ -301,20 +301,20 @@ class AppTemplateConsole extends ApplicationTemplate
 				DBO()->Contact->Fax = $_POST['mixContact_Fax'];
 
 				$mixFoundError = FALSE;
-				if($_POST['mixAccount_OldPassword'] != "" && SHA1($_POST['mixAccount_OldPassword']) != DBO()->Contact->PassWord->Value)
+				if($_POST['mixAccount_OldPassword'] != "" || $_POST['mixAccount_NewPassword2'] != "" || $_POST['mixAccount_NewPassword1'] != "")
 				{
 					$mixFoundError = TRUE;
 				}
+				if(SHA1($_POST['mixAccount_OldPassword']) != DBO()->Contact->PassWord->Value)
+				{
+					$mixFoundError = TRUE;
+				}
+
 				if($_POST['mixAccount_NewPassword1'] != $_POST['mixAccount_NewPassword2'])
 				{
 					$mixFoundError = TRUE;
 				}
-				if($_POST['mixAccount_NewPassword1'] == "")
-				{
-					$mixFoundError = TRUE;
-				}
-				list($strFoundError,$strErrorResponse) = InputValidation("Password",$_POST['mixAccount_NewPassword1'],"mixed","40");
-				if($strFoundError == TRUE)
+				if(strlen($_POST['mixAccount_NewPassword1'])>"40" || strlen($_POST['mixAccount_NewPassword1'])<"6")
 				{
 					$mixFoundError = TRUE;
 				}

@@ -74,26 +74,27 @@
 		echo "<div class='NarrowContent'>\n";
 
 		$mixFoundError = FALSE;
-		if($_POST['mixAccount_OldPassword'] != "" && SHA1($_POST['mixAccount_NewPassword1']) != DBO()->Contact->PassWord->Value)
+		if($_POST['mixAccount_OldPassword'] != "" || $_POST['mixAccount_NewPassword2'] != "" || $_POST['mixAccount_NewPassword1'] != "")
 		{
-			$mixFoundError = TRUE;
+			if(SHA1($_POST['mixAccount_NewPassword1']) != DBO()->Contact->PassWord->Value)
+			{
+				$mixFoundError = TRUE;
+			}
 		}
 		if($_POST['mixAccount_NewPassword1'] != $_POST['mixAccount_NewPassword2'])
 		{
 			$mixFoundError = TRUE;
 		}
-		if($mixFoundError)
-		{
-			echo "Error: Password not updated, the old/new passwords did not match.<br/>";
-		}
-
-		list($strFoundError,$strErrorResponse) = InputValidation("Password",$_POST['mixAccount_NewPassword1'],"mixed","40");
-		if($strFoundError)
+		if(strlen($_POST['mixAccount_NewPassword1'])<"6" || strlen($_POST['mixAccount_NewPassword1'])>"40")
 		{
 			$mixFoundError = TRUE;
-			print "Error: Password not updated, characters allowed: A-Z and 0-9, max length 40.<br/>";
 		}
-		if(!$mixFoundError)
+		if($mixFoundError)
+		{
+			print "There was an error with the passwords entered.<br/>";
+			print "<br/><A HREF=\"javascript:history.go(-1)\">Return and correct errors.</A>";
+		}
+		if($mixFoundError == FALSE)
 		{
 			print "Thank you for taking the time to update your account,<br/>your changes have been completed. <img src=\"" . Href()->GetBaseUrl() . "/img/generic/check.gif\"><br/><br/>";
 		}
