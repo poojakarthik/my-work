@@ -50,7 +50,14 @@ class CommonLayout
 		<div class="pageContainerLeft"><div class="pageContainerShadow"></div></div>
 
 		<div id="Header" class="sectionContainer">
-			<div id="Banner"></div>
+		<link rel="stylesheet" type="text/css" media="screen" href="ie.css" />
+		<TABLE height=90 width=100% cellpadding=0 cellspacing=0>
+		<TR>
+			<TD width=10></TD>
+			<TD><img src="logo.php?logo=logo.png" WIDTH="320" HEIGHT="60" BORDER="0" ALT=""></TD>
+		</TR>
+		</TABLE>
+			<!-- <div id="Banner"></div> -->
 			<div class="MenuContainer">
 			<?php
 				if ($bolIncludeLogout)

@@ -42,8 +42,6 @@ if($arrFetchCustomerStyleConfiguration != "")
 		$$mixKey = $mixVal;
 	}
 }
-
 header("Content-Type: $customer_logo_type");
 echo $customer_logo;
-
 ?>
