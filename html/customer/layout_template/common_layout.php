@@ -54,7 +54,7 @@ class CommonLayout
 		<TABLE height=90 width=100% cellpadding=0 cellspacing=0>
 		<TR>
 			<TD width=10></TD>
-			<TD><img src="logo.php?logo=logo.png" WIDTH="320" HEIGHT="60" BORDER="0" ALT=""></TD>
+			<TD><img src="logo.php" WIDTH="320" HEIGHT="60" BORDER="0" ALT=""></TD>
 		</TR>
 		</TABLE>
 			<!-- <div id="Banner"></div> -->
