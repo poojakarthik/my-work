@@ -230,16 +230,16 @@
 															"Id",
 															"Id != <Id> AND " .
 															"FNN = <FNN> AND " .
-															"Source = <Source> AND " .
-															"Destination = <Destination> AND " .
-															"StartDatetime = <StartDatetime> AND " .
-															"EndDatetime = <EndDatetime> AND " .
+															"Source <=> <Source> AND " .
+															"Destination <=> <Destination> AND " .
+															"StartDatetime <=> <StartDatetime> AND " .
+															"EndDatetime <=> <EndDatetime> AND " .
 															"Units = <Units> AND " .
 															"Cost = <Cost> AND " .
 															"RecordType = <RecordType> AND " .
 															"RecordType NOT IN (10, 15, 33, 21) AND " .
 															"Credit = <Credit> AND " .
-															"Description = <Description> AND " .
+															"Description <=> <Description> AND " .
 															"Status != ".CDR_DUPLICATE,
 															NULL,
 															1);

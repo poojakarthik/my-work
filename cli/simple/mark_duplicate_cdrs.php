@@ -4,21 +4,22 @@
 require_once("../../flex.require.php");
 
 // Statements
-$selCDR				= new StatementSelect("CDR", "*", "Status IN (101, 107, 150, 151) AND StartDatetime >= '2008-04-01 00:00:00'");
+$selCDR				= new StatementSelect("CDR", "*", "Status IN (101, 107, 150, 151) AND StartDatetime >= '2008-07-01 00:00:00'");
 
 $selFindDuplicate	= new StatementSelect(	"CDR",
 											"Id",
 											"Id != <Id> AND " .
 											"FNN = <FNN> AND " .
-											"Source = <Source> AND " .
-											"Destination = <Destination> AND " .
-											"StartDatetime = <StartDatetime> AND " .
-											"EndDatetime = <EndDatetime> AND " .
+											"Source <=> <Source> AND " .
+											"Destination <=> <Destination> AND " .
+											"StartDatetime <=> <StartDatetime> AND " .
+											"EndDatetime <=> <EndDatetime> AND " .
 											"Units = <Units> AND " .
 											"Cost = <Cost> AND " .
 											"RecordType = <RecordType> AND " .
 											"RecordType NOT IN (10, 15, 33) AND " .
 											"Credit = <Credit> AND " .
+											"Description <=> <Description> AND " .
 											"Status != ".CDR_DUPLICATE,
 											NULL,
 											1);
