@@ -269,7 +269,7 @@ class Cli_App_InvoiceXMLTest extends Cli
 				for ($categoryItem = array_shift($categoryItems); $categoryItem !== NULL; $categoryItem = array_shift($categoryItems))
 				{					
 					// ... and if it is still in the array, it must be a duplicate!
-					if (array_search($categoryItem, $categoryItems) !== FALSE && $categoryName !== 'Mobile Originated SMS')
+					if (array_search($categoryItem, $categoryItems) !== FALSE && !stristr($categoryName, 'SMS'))
 					{
 						throw new Exception("Duplicate charge found in itemisation of '$categoryName' for FNN '$fnn'>> $categoryItem.");
 					}
