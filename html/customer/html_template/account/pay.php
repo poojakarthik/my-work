@@ -84,9 +84,12 @@
 		if ($strPanel)
 		{
 			echo $strPanel;
-			return;
+
 		}
-		echo "You ain't got it configurrated dufus!";
+		if (!$strPanel)
+		{
+			echo "Configuration has not been set for your Customer Group.";
+		}
 	}
 }
 

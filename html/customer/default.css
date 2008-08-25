@@ -26,6 +26,30 @@
 /**************************************************************************/
 
 /**************************************************************************/
+/* CREDIT CARD PAYMENT.																  */
+/**************************************************************************/
+	div#credit-card-payment-panel
+	{
+		font-weight: bold;
+	}
+	table.reflex
+	{
+			margin:				7px;
+			padding:			10px;
+			border:				solid 1px #D1D1D1;
+			background-color:	#EFEBE7;
+			position:			relative;
+			width: 450px;
+	}
+	input.required, 
+	select.required
+	{
+		background: #fff;
+		color: #111;
+		border: .1em solid #da8;
+	}
+
+/**************************************************************************/
 /* GENERIC																  */
 /**************************************************************************/
 	.GroupedContent
