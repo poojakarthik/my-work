@@ -389,7 +389,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color");
+		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save())
 		{

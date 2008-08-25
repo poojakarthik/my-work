@@ -134,6 +134,7 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->email_domain->RenderOutput();
 		DBO()->CustomerGroup->customer_primary_color->RenderOutput();
 		DBO()->CustomerGroup->customer_secondary_color->RenderOutput();
+		DBO()->CustomerGroup->customer_exit_url->RenderOutput();
 		
 		echo "</div>\n"; // GroupedContent
 
@@ -203,6 +204,7 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->customer_primary_color->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->customer_secondary_color->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->customer_exit_url->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		
 		echo "</div>\n"; // GroupedContent
 

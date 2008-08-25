@@ -107,6 +107,7 @@ class HtmlTemplateCustomerGroupNew extends HtmlTemplate
 		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->CustomerGroup->customer_primary_color->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->CustomerGroup->customer_secondary_color->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->CustomerGroup->customer_exit_url->RenderInput(CONTEXT_DEFAULT, TRUE);
 		
 		echo "</div>"; // WideForm
 		
