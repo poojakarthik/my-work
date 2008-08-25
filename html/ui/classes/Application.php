@@ -794,6 +794,32 @@ class Application
 
 		if ($_SESSION['LoggedIn'])
 		{
+
+			// user is already logged in. Get the CustomerGroup
+			$selSelectStatement = new StatementSelect (
+				"Contact", 
+				"*", 
+				"UserName = <UserName> AND PassWord = <PassWord> AND Archived = 0", 
+				null, 
+				"1"
+			);
+			
+			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['UserName'], "PassWord"=>$_SESSION['User']['PassWord']));
+			$currentUser = $selSelectStatement->Fetch();
+
+			// Get the Account table.
+			DBO()->Account->Id = $currentUser['Account'];
+			DBO()->Account->Load();
+
+			// Get the CustomerGroup table.
+			DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
+			DBO()->CustomerGroup->Load();
+
+			// Check if CustomersGroup in database matches the URL being used.
+			if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
+				header("Location: " . DBO()->CustomerGroup->flex_url->Value);
+			}
+
 			//Update the user's session details in the employee table of the database
 			$_SESSION['SessionDuration'] = USER_TIMEOUT;
 			$_SESSION['SessionExpire'] = time() + $_SESSION['SessionDuration'];
