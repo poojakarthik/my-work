@@ -259,30 +259,6 @@ class Page
 	}
 
 	//------------------------------------------------------------------------//
-	// RenderClientCSS
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderClientCSS()
-	 *
-	 * Renders the CSS part of the page, for the customer app
-	 *
-	 * Renders the CSS part of the page, for the customer app
-	 * 
-	 * @method
-	 */
-	function RenderClientCSS()
-	{
-		$strMd5 = md5_file(MODULE_DEFAULT_CSS);
-		echo "\t\t<link rel='stylesheet' type='text/css' href='css.php?v=$strMd5' />\n";
-		
-		$arrCssFiles = array("reflex.css");
-		foreach ($arrCssFiles as $strCssFile)
-		{
-			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/{$strCssFile}' />\n";
-		}
-	}
-	
-	//------------------------------------------------------------------------//
 	// RenderHeaderJS
 	//------------------------------------------------------------------------//
 	/**
@@ -544,7 +520,7 @@ class Page
 		echo "<title>Flex - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
-		$this->RenderClientCSS();
+		$this->RenderCSS();
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init()'>\n";
 		
