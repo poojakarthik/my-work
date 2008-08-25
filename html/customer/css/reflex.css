@@ -1,0 +1,490 @@
+a,
+a:link,
+a:visited {
+	color: #FF4200;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+div.message {
+	background: #CFFFCD;
+	font-weight: bold;
+	color: #111;
+	border: .1em solid #060;
+	width: 90%;
+	padding: .5em;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1em;
+} 
+
+div.error {
+	background: #ffecf0;
+	color: #111;
+	border: .1em solid #d30;
+} 
+
+div.warning {
+	background: #ffc47f;
+	border: .1em solid #ff8822;
+	color: #111;
+}
+
+table.reflex {
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+	border: .1em solid #333;
+	border-spacing: 0;
+}
+
+table.reflex caption div#caption_bar {
+	width: 100%;
+	clear: both;
+}
+
+table.reflex caption div#caption_title{
+	float: left;
+	width: 25%;
+	height: 100%;
+	color: #eee;
+	background-color: #333;
+	text-align: center;
+	font-weight: bold;
+	padding-top: .4em;
+	padding-bottom: .4em;
+}
+
+table.reflex caption div#caption_options{
+	float: right;
+	width: 70%;
+	text-align: right;
+	font-weight: bold;
+	padding: .1em .5em;
+}
+
+table.reflex thead,
+table.reflex tfoot {
+	background-color: #333;
+	color: #eee;
+	text-align: left;
+}
+
+table.reflex tfoot {
+	text-align: right;
+}
+
+table.reflex thead tr th,
+table.reflex tfoot tr th {
+	padding-top: .25em;
+	padding-bottom: .25em;
+}
+
+table.reflex th.reflex-unsorted, 
+table.reflex th.reflex-sorted-ascending, 
+table.reflex th.reflex-sorted-descending
+{
+	cursor: pointer;
+	background-position: 0% 50%; 
+	background-repeat: no-repeat; 
+	background-image: url(../img/template/order_neither.png);
+	padding-left: 0.8em;
+}
+
+table.reflex th.reflex-sorted-ascending
+{
+	background-color: #666;
+	background-image: url(../img/template/order_asc.png);
+}
+
+table.reflex th.reflex-sorted-descending
+{
+	background-color: #666;
+	background-image: url(../img/template/order_desc.png);
+}
+
+table.reflex tfoot a,
+table.reflex tfoot a:visited,
+table.reflex tfoot a:link {
+	color: #ffde05 !important;
+}
+
+
+table.reflex td,
+table.reflex th {
+	padding: .25em .5em;
+}
+
+table.reflex tr td {
+	background-color: #eee;
+	color: #333
+}
+
+table.reflex tr.alt td {
+	background-color: #fff;
+	color: #333
+}
+
+a.button {
+	cursor: default;
+	border: .1em solid #111;
+	color: #111;
+	background-color: #eee;
+	margin: .25em;
+	padding-left: .25em;
+	padding-right: .25em;
+	font-weight: normal;
+}
+
+table.reflex td.title {
+	width: 20%;
+	vertical-align: top;
+	font-weight: bold;
+}
+
+table.reflex tr td.ticketing-status-in-progress,
+table.reflex tr td.ticketing-status-completed,
+table.reflex tr td.ticketing-priority-low,
+table.reflex tr td.ticketing-priority-type-all,
+table.reflex tr td.ticketing-priority-type-closed,
+option.ticketing-status-completed, 
+option.ticketing-status-in-progress, 
+option.ticketing-status-type-closed, 
+option.ticketing-priority-low {
+	color: #060;
+}
+
+table.reflex tr td.ticketing-status-with-carrier, 
+table.reflex tr td.ticketing-status-with-customer, 
+table.reflex tr td.ticketing-status-with-internal, 
+table.reflex tr td.ticketing-priority-medium,
+option.ticketing-status-with-carrier, 
+option.ticketing-status-with-customer, 
+option.ticketing-status-with-internal, 
+option.ticketing-status-type-open, 
+option.ticketing-status-type-conglomerate-open-pending,
+option.ticketing-priority-medium {
+	color: #ff8822;
+}
+
+table.reflex tr td.ticketing-status-assigned, 
+table.reflex tr td.ticketing-status-unassigned, 
+table.reflex tr td.ticketing-status-deleted, 
+table.reflex tr td.ticketing-priority-high,
+option.ticketing-status-assigned, 
+option.ticketing-status-unassigned, 
+option.ticketing-status-deleted, 
+option.ticketing-status-type-pending, 
+option.ticketing-priority-high {
+	color: #d30;
+}
+
+table.reflex tr td.ticketing-priority-urgent,
+option.ticketing-priority-urgent {
+	color: #d30;
+	text-decoration: underline;
+}
+
+input, 
+select, 
+textarea {
+	font-size: 1em;
+	border: .1em solid #111;
+	color: #111;
+	margin: .1em;
+	background-color: #fff;
+}
+
+input[type="checkbox"] {
+	border: none;
+}
+
+textarea {
+	font-family: Arial,Verdana,Helvetica;
+}
+
+input.required, 
+select.required, 
+textarea.required{
+	background: #fff;
+	color: #111;
+	border: .1em solid #da8;
+}
+
+input.invalid, 
+select.invalid, 
+textarea.invalid {
+	background: #ffecf0;
+	color: #111;
+	border: .1em solid #d30;
+}
+
+input.valid, 
+select.valid, 
+textarea.valid {
+	background: #ecfff0;
+	color: #111;
+	border: .1em solid #3d0;
+}
+
+div#PopupPageBody {
+	background-color:	#EFEBE7; 
+}
+
+.PopupBox {
+	position: absolute;
+	border: .1em solid #111;
+	background-color: #eee;
+}
+
+.PopupBoxTopBar {
+	font-size: 1em;
+	line-height: 1.25em;
+	color: #eee;
+	font-weight: bold;
+	background-color: #111;
+	margin: 0;
+	padding: .25em;
+	cursor: default;
+}
+
+.PopupBoxClose {
+	float: right;
+}
+
+#PopupHolder #overlay {
+	position: absolute;
+	left: 0em;
+	top: 0em;
+	width: 100%;
+	height: 100%;
+	z-index: 1000;
+	background-color: #000;
+	opacity: .50;
+}
+
+div#BreadCrumbMenu {
+	clear				: both;
+	padding				: .2em 0em .2em 1.5em;
+	width				: 100%;
+	background-color	: #fff;
+	color				: #000;
+}
+
+
+div.DefaultOutput, 
+div input.DefaultInputText, 
+div select.DefaultInputText {
+	position: relative;
+	float: right;
+	width: 50%;
+}
+
+div.DefaultLabel {
+	position: relative;
+	margin: .5em;
+	font-weight: bold;
+}
+
+div.GroupedContent {
+	clear: both;
+	position: relative;
+	margin: .25em;
+	padding: .25em;
+	border: .1em solid #111;
+}
+
+div.SmallSeperator {
+	height: .25em;
+}
+
+div.ButtonContainer {
+	float: right;
+	padding: .25em;
+	margin: .25em;
+}
+
+table tr.Even {
+	background-color: #eee;
+}
+
+table tr.Odd {
+	background-color: #ccc;
+}
+
+table tr.Hover {
+	background-color: #fff;
+}
+
+table tr.First {
+	margin-top: .25em;
+	background-color: #333;
+	color: #eee;
+}
+
+table.Listing {
+	margin: .25em;
+	width: 99%;
+	border .1em solid #333;
+}
+
+table.Listing tr.PrimarySelected th, 
+table.Listing tr.PrimarySelected td {
+	background-color:#11FF33;
+	vertical-align:top;
+}
+
+/* Calendar styling. */
+
+.date-time td {
+    cursor: default;
+    text-align: center !important;
+    border-bottom: .1em dotted #c0c0c0;
+}
+
+.date-time .bar {
+    text-align: center;
+    background: #F2F5FF;
+    padding: .2em 0 .2em;
+}
+
+
+.date-time .date-time-active:hover {
+    color: #fff;
+    background: #666;
+}
+
+.date-time td.date-time-active-today {
+    border: .1em solid #111;
+}
+
+.date-time button {
+    border: none;
+    padding: 0;
+}
+
+.date-time title {
+    font-weight: bold;
+}
+
+.date-time th {
+    background: #fff;
+    color: #000;
+    border-bottom: .1em solid #c0c0c0;
+    text-align: center !important;
+    margin-top: .2em;
+}
+
+.date-time option, .date-time select {
+    font-size: 1em;
+}
+
+.date-time {
+    border: .2em solid #111;
+    background: #eee;
+    padding: .1em;
+    width: 15em;
+}
+
+.date-time table {
+    width: 100%;
+    font-size: 1em;
+    margin: 0 auto;
+}
+
+a img {
+	border: 0;
+	vertical-align: middle;
+}
+
+/*********************** Start Of Popup stuff *********************************/
+
+div.reflex-popup-overlay {
+	position			: fixed;
+	top					: 0em;
+	left				: 0em;
+	width				: 100%;
+	height				: 100%;
+	
+	z-index: 45;
+}
+
+div.reflex-popup-opaque {
+	position			: absolute;
+	top					: 0;
+	left				: 0;
+	width				: 100%;
+	height				: 100%;
+	background-color	: #000000;
+	opacity				: 0.25;
+}
+
+div.reflex-popup {
+	margin				: auto;
+	border				: 0.1em solid #000000;
+	background-color	: #efefef;
+	z-index				: 50;
+	position			: absolute;
+}
+
+div.reflex-popup table.reflex {
+	width: 98%;
+	margin-left: 1%;
+	margin-right: 1%;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	border: .1em solid #333;
+	border-spacing: 0;
+}
+
+div.reflex-popup-title-bar {
+	height				: auto;
+	background-color	: #000000;
+	padding				: 3px;
+}
+
+div.reflex-popup-title {
+	color : #EEEEEE;
+	float : left;
+	width : 79%;
+	
+}
+
+div.reflex-popup-title-bar-buttons {
+	float : right;
+	width : 20%;
+}
+
+div.reflex-popup-content {
+}
+
+div.reflex-popup-footer {
+	position	: relative;
+	text-align	: right;
+	bottom		: 0;
+	right		: 0;
+	padding-right: 1%;
+	padding-left: 1%;
+	padding-top: 0;
+	padding-bottom: 0.5em;
+}
+
+
+/*********************** End Of Popup stuff ***********************************/
+
+div.clear {
+	float:	none;
+	clear:	both;
+}
+
+div#refreshPanel
+{
+	color: #ffde05;
+	position: absolute;
+	left: 5%;
+	bottom: 0;
+	padding: 0 0.3em 0.2em 0;
+}
