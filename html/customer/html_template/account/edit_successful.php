@@ -74,12 +74,13 @@
 		echo "<div class='NarrowContent'>\n";
 
 		$mixFoundError = FALSE;
-		if($_POST['mixAccount_OldPassword'] != "" || $_POST['mixAccount_NewPassword2'] != "" || $_POST['mixAccount_NewPassword1'] != "")
+		if($_POST['mixAccount_OldPassword'] == "" || $_POST['mixAccount_NewPassword1'] == "" || $_POST['mixAccount_NewPassword2'] == "")
 		{
-			if(SHA1($_POST['mixAccount_NewPassword1']) != DBO()->Contact->PassWord->Value)
-			{
-				$mixFoundError = TRUE;
-			}
+			$mixFoundError = TRUE;
+		}
+		if(SHA1($_POST['mixAccount_NewPassword1']) != DBO()->Contact->PassWord->Value)
+		{
+			$mixFoundError = TRUE;
 		}
 		if($_POST['mixAccount_NewPassword1'] != $_POST['mixAccount_NewPassword2'])
 		{
