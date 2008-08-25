@@ -84,7 +84,7 @@ class Ticketing_Customer_Group_Email
 		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
+			$arrValues['id'] = $this->id;
 			$statement = new StatementUpdateById(strtolower(__CLASS__), $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)

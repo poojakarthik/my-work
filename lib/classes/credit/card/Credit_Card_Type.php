@@ -77,7 +77,7 @@ class Credit_Card_Type
 		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
+			$arrValues['id'] = $this->id;
 			$statement = new StatementUpdateById($this->getTableName(), $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)

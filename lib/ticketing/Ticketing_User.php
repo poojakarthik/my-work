@@ -236,7 +236,7 @@ class Ticketing_User
 		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
+			$arrValues['id'] = $this->id;
 			$statement = new StatementUpdateById('ticketing_user', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)

@@ -178,7 +178,7 @@ class Ticketing_Ticket
 		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
+			$arrValues['id'] = $this->id;
 			$this->modifiedDatetime = $arrValues['modified_datetime'] = $now;
 			$statement = new StatementUpdateById($this->getTableName(), $arrValues);
 		}

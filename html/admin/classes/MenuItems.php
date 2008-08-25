@@ -350,6 +350,29 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// ViewCustomerGroupCreditCardConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewCustomerGroupCreditCardConfig()
+	 *
+	 * Compiles the Href to be executed when the ViewCustomerGroupCreditCardConfig menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewCustomerGroupCreditCardConfig menu item is clicked
+	 * 
+	 * @param	int		$intId					id of the CustomerGroup
+	 *
+	 * @return	string				Href to be executed when the ViewCustomerGroup menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewCustomerGroupCreditCardConfig($intId, $strAction='View')
+	{
+		$this->strLabel	= "Credit Card Configuration";
+		$this->strContextMenuLabel = "";
+		return self::NEW_FRAMEWORK . "reflex.php/CustomerGroup/CreditCardConfig/$intId/$strAction";
+	}
+	
+	//------------------------------------------------------------------------//
 	// AddDocumentResource
 	//------------------------------------------------------------------------//
 	/**

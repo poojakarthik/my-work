@@ -7,6 +7,9 @@ class Credit_Card_Payment_Config
 	private $password = null;
 	private $confirmationText = null;
 	private $directDebitText = null;
+	private $confirmationEmail = null;
+	private $directDebitEmail = null;
+	private $directDebitDisclaimer = null;
 	private $customerGroupId = null;
 
 	private $customerGroup = null;
@@ -17,6 +20,11 @@ class Credit_Card_Payment_Config
 		{
 			$this->init($arrProperties);
 		}
+	}
+
+	public function isSaved()
+	{
+		return $this->id !== NULL;
 	}
 
 	protected function init($arrProperties)
@@ -36,6 +44,9 @@ class Credit_Card_Payment_Config
 			'password',
 			'confirmation_text',
 			'direct_debit_text',
+			'confirmation_email',
+			'direct_debit_email',
+			'direct_debit_disclaimer',
 			'customer_group_id',
 		);
 	}
@@ -77,7 +88,7 @@ class Credit_Card_Payment_Config
 		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
+			$arrValues['id'] = $this->id;
 			$statement = new StatementUpdateById($this->getTableName(), $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
@@ -92,6 +103,18 @@ class Credit_Card_Payment_Config
 		$this->_saved = TRUE;
 
 		return TRUE;
+	}
+
+	public function delete()
+	{
+		$delInstance = new Query();
+		$strSQL = "DELETE FROM " . strtolower(__CLASS__) . " WHERE id = " . $this->id;
+		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
+		{
+			throw new Exception('Failed to delete credit card configuration ' . $this->id . ' from credit_card_payment_config: ' . $delInstance->Error());
+		}
+		$this->id = NULL;
+		$this->_saved = FALSE;
 	}
 
 	public static function getForCustomerGroup($mxdCustomerGroupOrId, $bolCreateIfNotExists=FALSE)

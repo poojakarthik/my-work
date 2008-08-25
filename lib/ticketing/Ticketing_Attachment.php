@@ -87,7 +87,7 @@ class Ticketing_Attachment
 		else
 		{
 			
-			$arrValues['Id'] = $this->id;
+			$arrValues['id'] = $this->id;
 			$statement = new StatementUpdateById('ticketing_attachment', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)

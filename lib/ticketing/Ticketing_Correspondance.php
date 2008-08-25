@@ -583,7 +583,7 @@ class Ticketing_Correspondance
 		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
+			$arrValues['id'] = $this->id;
 			$statement = new StatementUpdateById('ticketing_correspondance', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)

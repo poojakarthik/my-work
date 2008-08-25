@@ -169,7 +169,7 @@ class Ticketing_Ticket_Service
 		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
+			$arrValues['id'] = $this->id;
 			$statement = new StatementUpdateById('ticketing_ticket_service', $arrValues);
 		}
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)

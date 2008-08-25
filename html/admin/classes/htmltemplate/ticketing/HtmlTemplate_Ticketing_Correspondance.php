@@ -81,7 +81,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 		}
 		$actionLinks = implode(' | ', $actionLinks);
 
-		$details = str_replace(array("\n", "\t", "  "), array("<br/>\n", "&nbsp;&nbsp;&nbsp;&nbsp;", "&nbsp;&nbsp;"), htmlspecialchars($correspondence->details));
+		$details = str_replace(array("\n", "\t", "   ", "  "), array("<br/>\n", "&nbsp;&nbsp; &nbsp;", "&nbsp; &nbsp;", "&nbsp;&nbsp;"), htmlspecialchars($correspondence->details));
 		
 
 		?>

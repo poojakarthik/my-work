@@ -188,6 +188,58 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	}
 
 	//------------------------------------------------------------------------//
+	// CreditCardConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * CreditCardConfig()
+	 *
+	 * Handles the logic for CreditCardConfig Customer Group functionality
+	 * 
+	 * Handles the logic for CreditCardConfig Customer Group functionality
+	 * Assumes DBO()->CustomerGroup->Id to be set
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function CreditCardConfig()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
+
+		// Load the CustomerGroupDetails
+		if (!DBO()->CustomerGroup->Load())
+		{
+			DBO()->Error->Message = "The Customer Group with account id: ". DBO()->CustomerGroup->Id->value ." could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+
+		// Load the CustomerGroupDetails
+		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+		{
+			DBO()->Error->Message = "The Credit Card Payment module has not been enabled in Flex.";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+
+		// Breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+		{
+			BreadCrumb()->System_Settings_Menu();
+		}
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->SetCurrentPage("Credit Card Config");
+
+		// Declare which Page Template to use
+		$this->LoadPage('customer_group_credit_card_config');
+
+		return TRUE;
+	}
+
+	//------------------------------------------------------------------------//
 	// View
 	//------------------------------------------------------------------------//
 	/**

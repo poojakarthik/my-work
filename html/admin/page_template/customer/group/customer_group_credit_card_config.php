@@ -25,19 +25,10 @@
  *
  */
 
-// Set the page title
-$this->Page->SetName("Customer Group");
+$customerGroupName = ($mxdDataToRender && array_key_exists('customerGroup', $mxdDataToRender) && $mxdDataToRender['customerGroup']) ? ' ' . $mxdDataToRender['customerGroup']->name : '';
 
-//Sset the layout template for the page.
-$this->Page->SetLayout('1Column');
-
-// Add the Html Objects to their respective columns
-$this->Page->AddObject('CustomerGroupDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "CustomerGroupDetailsContainerDiv");
-$this->Page->AddObject('CustomerGroupDocumentTemplates', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
-
-if (defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') && FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
-{
-	$this->Page->AddObject('CustomerGroupCreditCardConfigLink', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
-}
+$this->Page->SetName("Customer Group$customerGroupName - Secure Pay Configuration");
+$this->Page->SetLayout('full_area');
+$this->Page->AddObject('Customer_Group_Credit_Card_Config');
 
 ?>
