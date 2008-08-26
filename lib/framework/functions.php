@@ -1828,7 +1828,7 @@ function GetVixenBase()
  *
  * @function
  */
-function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE)
+function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConstants=TRUE)
 {
 	// Get viXen base dir
 	if (!$strFrameworkDir)
@@ -1861,7 +1861,10 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE)
 	
 	// Retrieve all constants stored in the database
 	// Note that this will not override constants that have already been defined
-	BuildConstantsFromDB();
+	if ($loadDbConstants)
+	{
+		BuildConstantsFromDB();
+	}
 	
 	// Load viXen/Flex customer config file
 	$strPath = dirname(dirname(dirname(__FILE__))) . "/customer.cfg.php";

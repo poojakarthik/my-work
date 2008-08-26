@@ -4,7 +4,7 @@ class Credit_Card_Payment
 {
 
 
-	public static function makePayment($intAccountId, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $bolDD)
+	public static function makePayment($intAccountId, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $bolDD, &$response)
 	{
 		// Check that the module is enabled
 		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
@@ -111,10 +111,25 @@ class Credit_Card_Payment
 
 		// OK. That's everything validated. Now we can start talking to SecurePay...
 		// $account, $strEmail, $cardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $bolDD
+
+		// Build an array of 'magic tokens' to be inserted into the message
+		$tokens = array();
+
+		// Send the confirmation email
+
+		$response['MESSAGE'] = self::replaceMessageTokens($bolDD ? $creditCardPaymentConfig->directDebitText : $creditCardPaymentConfig->confirmationText, $tokens);
+
 	}
 
-
-
+	private static function replaceMessageTokens($message, $tokens)
+	{
+		foreach ($tokens as $token => $value)
+		{
+			$token = preg_quote('[' . $token . ']');
+			$message = preg_replace("/$token/i", $value, $message);
+		}
+		return $message;
+	}
 
 	public static function availableForCustomerGroup($mxdCustomerGroupOrId)
 	{

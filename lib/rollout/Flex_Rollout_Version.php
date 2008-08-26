@@ -1,7 +1,5 @@
 <?php
 
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'flex.require.php');
-
 abstract class Flex_Rollout_Version
 {
 

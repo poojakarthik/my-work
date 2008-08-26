@@ -1,8 +1,11 @@
 <?php
 
-// Note: Supress errors whilst loading application as there may well be some if the 
+// Note: Suppress errors whilst loading application as there may well be some if the 
 // database model files have not yet been generated.
-@require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'flex.require.php');
+$_SESSION = array();
+// Load Flex.php
+require_once(dirname(__FILE__) . "/../../lib/classes/Flex.php");
+Flex::load(FALSE);
 require_once('Flex_Rollout_Version.php');
 
 class Flex_Rollout

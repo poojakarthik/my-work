@@ -80,12 +80,12 @@ final class Flex
 		$_SESSION = array();
 	}
 
-	public static function framework()
+	public static function framework($loadDbConstants=TRUE)
 	{
 		static $framework;
 		if (!isset($framework))
 		{
-			$framework = LoadFramework(NULL, TRUE);
+			$framework = LoadFramework(NULL, TRUE, $loadDbConstants);
 		}
 		return $framework;
 	}
@@ -149,7 +149,7 @@ final class Flex
 		return $applicationBase;
 	}
 
-	public static function load()
+	public static function load($loadDbConstants=TRUE)
 	{
 		// Only load once or we'll have problems with autoloading...
 		static $loaded;
@@ -183,7 +183,7 @@ final class Flex
 			'flex.cfg.php',
 			'lib/framework/functions.php');
 
-		self::framework();
+		self::framework($loadDbConstants);
 
 		// Include files from the Application (either admin or customer app)
 		$relativeApplicationBase = self::relativeApplicationBase();

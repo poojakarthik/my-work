@@ -167,9 +167,9 @@ if (Vixen == undefined)
 }
 
 // Wrapper for the Vixen.Popup.Alert function
-function $Alert(strMessage, strSize, strTitle)
+function $Alert(strMessage, strSize, strPopupId, strWindowType, strTitle)
 {
-	Vixen.Popup.Alert(strMessage, strSize, strTitle);
+	Vixen.Popup.Alert(strMessage, strSize, strPopupId, strWindowType, strTitle);
 }
 
 

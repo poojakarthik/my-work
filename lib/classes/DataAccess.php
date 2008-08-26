@@ -114,7 +114,7 @@ class DataAccess
 		if ( !array_key_exists('**arrDatabase', $GLOBALS) || !$GLOBALS['**arrDatabase']
 		  || !array_key_exists($strConnectionType, $GLOBALS['**arrDatabase']) || !$GLOBALS['**arrDatabase'][$strConnectionType])
 		{
-			throw new Exception("Database Configuration not found!");
+			throw new Exception("Database Configuration '$strConnectionType' not found!");
 		}
 
 		$arrDBConfig = $GLOBALS['**arrDatabase'][$strConnectionType];

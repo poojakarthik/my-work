@@ -439,7 +439,7 @@ Object.extend(CreditCardPayment.prototype,
 		// Validate the data
 		if (!this.validate())
 		{
-			$Alert('Please correct all errors and try again.', null, 'Invalid Values Entered');
+			$Alert('Please correct all errors and try again.', null, null, null, 'Invalid Values Entered');
 			return;
 		}
 
@@ -519,11 +519,66 @@ Object.extend(CreditCardPayment.prototype,
 		if (outcome == 'SUCCESS')
 		{
 			// Need to display the confirmation message and change buttons to OK
+			this.showConfirmationMessage(response['MESSAGE']);
 		}
 
 		// The details of the response (the confirmation message)
 		// need to be displayed to the user, assuming it all worked.
 
+	},
+
+	showConfirmationMessage: function(message)
+	{
+		var acknowledgeFuncBound = this.closeAfterCompletion.bind(this);
+
+		// Create the content div and add the cancel/continue buttons
+		var panel = document.createElement('div');
+		var messageBox = document.createElement('div');
+		messageBox.className = 'reflex-popup-text-content';
+
+		var messageBar = document.createElement('h1');
+		messageBar.appendChild(document.createTextNode('Your payment has been processed.'));
+		panel.appendChild(messageBar);
+		panel.appendChild(messageBox);
+
+
+
+		var messageLines = message.replace(/\t{1,1}/g, '\u00a0\u00a0\u00a0\u00a0').split("\n");
+		for(var i = 0, l = messageLines.length; i < l; i++)
+		{
+			if (i > 0)
+			{
+				messageBox.appendChild(document.createElement('br'));
+			}
+			messageBox.appendChild(document.createTextNode(messageLines[i]));
+		}
+
+		this.popup.setContent(panel);
+		if (this.hasCancelButton)
+		{
+			var buttonAcknowledge = document.createElement('input');
+			buttonAcknowledge.className = 'reflex-button';
+			buttonAcknowledge.type = 'button';
+			buttonAcknowledge.value = 'OK';
+
+			Event.observe(buttonAcknowledge, 'click', acknowledgeFuncBound);
+
+			this.popup.addCloseButton(this.cancel.bind(this));
+			this.popup.setFooterButtons([buttonAcknowledge]);
+		}
+
+		this.popup.display();
+		this.popup.recentre();
+	},
+
+	closeAfterCompletion: function()
+	{
+		if (this.hasCancelButton)
+		{
+			this.cancel();
+			document.location.reload();
+			return false;
+		}
 	},
 
 	confirmBeforeSubmit: function()
@@ -593,8 +648,9 @@ Object.extend(CreditCardPayment.prototype,
 		tr.insertCell(-1).appendChild(document.createTextNode('Amount to Pay:'));
 		td = tr.insertCell(-1);
 		this.appendCurrency(td);
-		var el = this.displaySurcharge.cloneNode(false);
-		el.appendChild(document.createTextNode(this.tidyAmount(this.inputAmount.value)));
+		var el = this.displaySurcharge.cloneNode(true);
+		el.innerHTML = '';
+		el.value = this.tidyAmount(this.inputAmount.value);
 		td.appendChild(el);
 
 		tr = table.insertRow(-1);
@@ -716,7 +772,7 @@ Object.extend(CreditCardPayment.prototype,
 	{
 		if (!this.acceptTermsCheckbox.checked)
 		{
-			$Alert("Please tick the checkbox to confirm that you have read, understood and agree be bound by these Terms and Conditions.");
+			$Alert("Please tick the checkbox to confirm that you have read, understood and agree be bound by these Terms and Conditions.", null, null, null, 'Direct Debit Setup');
 			return false;
 		}
 		this.termsPopup.hide();

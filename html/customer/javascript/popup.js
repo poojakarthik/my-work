@@ -507,12 +507,25 @@ function VixenPopupClass()
 	 *
 	 * @method
 	 */
-	this.Alert = function(strMessage, strSize, strTitle)
+	this.Alert = function(strMessage, strSize, strPopupId, strWindowType, strTitle)
 	{
+		if (strWindowType == null)
+		{
+			var strWindowType = "autohide";
+			var strOkButtonOnClick = "";
+		}
+		else
+		{
+			var strOkButtonOnClick = "onclick='Vixen.Popup.Close(this)'";
+		}
 		// set a default value for strSize
 		if (strSize == null)
 		{
 			strSize = "AlertSize";
+		}
+		if (strPopupId == null)
+		{
+			strPopupId = "VixenAlertBox";
 		}
 		if (strTitle == null)
 		{
@@ -524,7 +537,7 @@ function VixenPopupClass()
 						"<p></div>\n" +
 						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
 						"<" + "script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
-		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide', strTitle);
+		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType, strTitle);
 	}
 	
 	//------------------------------------------------------------------------//
