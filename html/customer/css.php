@@ -66,7 +66,7 @@ if(!$Debug_Use_Old_Way)
 	$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 
 	// Load Style Configuration based on domain name 
-	$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url LIKE \"%$_SERVER[HTTP_HOST]\" LIMIT 1");
+	$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url LIKE \"%$_SERVER[HTTP_HOST]%\" LIMIT 1");
 	DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
 
 	# I couldnt find the style for the URL you are using?
