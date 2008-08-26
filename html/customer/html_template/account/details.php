@@ -101,6 +101,14 @@
 		{
 			$strUnbilledAdjustments = "$0.00";
 		}
+		if($strUnbilledAdjustments != "0")
+		{
+			$strUnbilledAdjustments = "$" . number_format($strUnbilledAdjustments, 2, '.', '');
+		}
+		if(eregi("-",$strUnbilledAdjustments))
+		{
+			$strUnbilledAdjustments = str_replace("-","",$strUnbilledAdjustments) . " CR";
+		}
 		echo "
 		<div class='DefaultElement'>
 		   <div id='Account.UnbilledAdjustments.Output' name='Account.UnbilledAdjustments' class='DefaultOutput Currency '>$strUnbilledAdjustments</div>
@@ -110,7 +118,7 @@
 
 		   </div>
 		</div>";
-		DBO()->Account->UnbilledAdjustments->RenderOutput();
+		//DBO()->Account->UnbilledAdjustments->RenderOutput();
 		DBO()->Account->UnbilledCDRs->RenderOutput();
 		
 
