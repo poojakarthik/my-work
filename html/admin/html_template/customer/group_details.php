@@ -163,7 +163,7 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 			   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"30000\" />
 			   <!-- Name of input element determines name in $_FILES array -->
 			   Send this file: <input name=\"userfile\" type=\"file\" />
-			   <input type=\"submit\" value=\"Send File\" />
+			   <input type=\"submit\" value=\"Send File\" /> (320x60 pixel gif, e.g. voicetalk_logo_320x60.gif)
 			</form>
 			</div>
 			<br/><br/>";
