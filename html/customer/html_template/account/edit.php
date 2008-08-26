@@ -54,6 +54,8 @@
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
+
+		$this->LoadJavascript('edit_account_details');
 	}
 	
 	//------------------------------------------------------------------------//
@@ -84,7 +86,7 @@
 		{
 			print "
 			<!-- We dont want any caching of this page.. -->
-			<form method=\"POST\" action=\"./flex.php/Console/Edit/\">
+			<form method=\"POST\" action=\"./flex.php/Console/Edit/\" onsubmit=\"return validate_form(this)\">
 			<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
 
 			<h2 class='Account'>Billing Details</h2>
@@ -208,7 +210,7 @@
 			<TABLE>
 			<TR>
 			<TD width=\"200\">Title: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"Title\" VALUE=\"" . DBO()->Contact->Title->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Title\" VALUE=\"" . DBO()->Contact->Title->Value . "\"></TD>
 			</TR>
 			<TR>
 			<TD>First Name: </TD>
