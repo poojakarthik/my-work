@@ -457,8 +457,14 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
+		$strShowLastLogin = "Never";
+		$intLastLogin = DBO()->Contact->LoginLogin->Value;
+		if($intLastLogin != "")
+		{
+			$strShowLastLogin = date("F j, Y, g:i a",$intLastLogin);
+		}
 		// Setup BreadCrumb Menu
-		$strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account. Last Login: \n";
+		$strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account. Last Login: $strShowLastLogin\n";
 		BreadCrumb()->SetCurrentPage($strWelcome);
 		
 		$this->LoadPage('console');
