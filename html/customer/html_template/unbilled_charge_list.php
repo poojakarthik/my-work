@@ -85,21 +85,25 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 
 			if ($dboCharge->Nature->Value == NATURE_DR)
 			{
+				/*
 				Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
 											$dboCharge->ChargeType->AsValue(),
 											$dboCharge->Description->AsValue(),
 											$dboCharge->Amount->AsCallback("AddGST"),
 											"&nbsp;");
+				*/
 				// Add the charge to the total adjustments
 				$fltTotalAdjustments += $dboCharge->Amount->Value;
 			}
 			else
 			{
+				/*
 				Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
 											$dboCharge->ChargeType->AsValue(),
 											$dboCharge->Description->AsValue(),
 											$dboCharge->Amount->AsCallback("AddGST"),
 											"<span>". NATURE_CR ."</span>");
+				*/
 				// Subtract the charge from the total adjustments
 				$fltTotalAdjustments -= $dboCharge->Amount->Value;
 			}
@@ -108,7 +112,8 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 		// Add GST to the total adjustments
 		$fltTotalAdjustments = AddGST($fltTotalAdjustments);
 		
-		if (Table()->Adjustments->RowCount() == 0)
+		//if (Table()->Adjustments->RowCount() == 0)
+		if ($fltTotalAdjustments == 0)
 		{
 			// There are no adjustments to stick in this table
 			Table()->Adjustments->AddRow("<span>No adjustments to display</span>");
@@ -137,6 +142,37 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 			Table()->Adjustments->SetRowColumnSpan(3, 1, 1);
 		}
 		
+
+		// add the rows
+		foreach (DBL()->Charge as $dboCharge)
+		{
+
+			if ($dboCharge->Nature->Value == NATURE_DR)
+			{
+				Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
+											$dboCharge->ChargeType->AsValue(),
+											$dboCharge->Description->AsValue(),
+											$dboCharge->Amount->AsCallback("AddGST"),
+											"&nbsp;");
+				// Add the charge to the total adjustments
+				$fltTotalAdjustments += $dboCharge->Amount->Value;
+			}
+			else
+			{
+				Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
+											$dboCharge->ChargeType->AsValue(),
+											$dboCharge->Description->AsValue(),
+											$dboCharge->Amount->AsCallback("AddGST"),
+											"<span>". NATURE_CR ."</span>");
+				// Subtract the charge from the total adjustments
+				$fltTotalAdjustments -= $dboCharge->Amount->Value;
+			}
+		}
+
+		Table()->Adjustments->AddRow($strTotal, $strTotalAdjustments, $strNature);
+		Table()->Adjustments->SetRowAlignment("left", "right", "center");
+		Table()->Adjustments->SetRowColumnSpan(3, 1, 1);
+
 		Table()->Adjustments->Render();
 		
 		echo "<div class='Seperator'></div>\n";
