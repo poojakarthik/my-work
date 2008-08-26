@@ -99,6 +99,11 @@ class Contact
 		);
 	}
 
+	public function canAccessAccount($objAccount)
+	{
+		return ($this->customerContact == 1 && $this->accountGroup == $objAccount->accountGroup) || $this->account == $objAccount->id;
+	}
+
 	protected function getValuesToSave()
 	{
 		$arrColumns = self::getColumns();
@@ -179,6 +184,7 @@ class Contact
 
 	private function tidyName($name)
 	{
+		if (preg_match("/^[A-Z]+$/", $name)) $name = strtolower($name);
 		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 		$tidy[0] = strtolower($tidy[0]);
 		return $tidy;

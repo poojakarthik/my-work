@@ -101,11 +101,11 @@ class Account
 		$records = array();
 		while ($props = $selUsers->Fetch())
 		{
-			if (!array_key_exists($props['id'], self::$cache))
+			if (!array_key_exists($props['Id'], self::$cache))
 			{
-				self::$cache[$props['id']] = new Account($props);
+				self::$cache[$props['Id']] = new Account($props);
 			}
-			$records[] = self::$cache[$props['id']];
+			$records[] = self::$cache[$props['Id']];
 			if (!$bolAsArray)
 			{
 				return $records[0];
@@ -198,6 +198,7 @@ class Account
 
 	private function tidyName($name)
 	{
+		if (preg_match("/^[A-Z]+$/", $name)) $name = strtolower($name);
 		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 		$tidy[0] = strtolower($tidy[0]);
 		return $tidy;

@@ -28,9 +28,10 @@ class Credit_Card_Payment
 		else if (Flex::isCustomerSession())
 		{
 			// Check that the requested account is in the authenticated customers account group
-			if ($account->accountGroup != $_SESSION['AccountGroup'])
+			$contact = Contact::getForId($_SESSION['User']['Id']);
+			if (!$contact || !$contact->canAccessAccount($account))
 			{
-				throw new Exception("Invalid user account selected for creadit card payment.");
+				throw new Exception("Invalid user account selected for credit card payment.");
 			}
 		}
 		else
@@ -135,10 +136,12 @@ class Credit_Card_Payment
 		$panel = $targetContainerId ? '' : '<div id="credit-card-payment-panel"></div>';
 		$targetContainerId = $targetContainerId ? $targetContainerId : 'credit-card-payment-panel';
 
+		$disclaimer = str_replace(array('"', "\n", "\r"), array('\\"', '\\n', ''), $params[1]->directDebitDisclaimer);
+
 		$panel .= "
 		<script><!--
 			function creditCardPaymentOnLoad()
-			{\n" . (Flex::isCustomerSession() ? ("\t\t\t\tCreditCardPaymentPanel.directDebitTermsAndConditions = \"" . str_replace(array('"', "\n"), array('\\"', '\\n'), $params[1]->directDebitEmail) . "\"") : "") . "
+			{\n" . (Flex::isCustomerSession() ? ("\t\t\t\tCreditCardPayment.directDebitTermsAndConditions = \"$disclaimer\"") : "") . "
 				new CreditCardPaymentPanel(".$params[0].", \"$targetContainerId\");
 			}
 			Event.observe(window, \"load\", creditCardPaymentOnLoad);
@@ -150,14 +153,18 @@ class Credit_Card_Payment
 	public static function getPopupActionButton($accountId)
 	{
 		$params = self::getJavaScriptActionParams($accountId);
+		$disclaimer = '';
+		if ($params)
+		{
+			$disclaimer = str_replace(array('"', "\n", "\r"), array('\\"', '\\n', ''), $params[1]->directDebitDisclaimer);
+		}
 		return $params ? "
 		<script><!--
 			function creditCardPaymentOnLoad()
-			{\n" . (Flex::isCustomerSession() ? ("\t\t\t\tCreditCardPaymentPanel.directDebitTermsAndConditions = \"" . str_replace(array('"', "\n"), array('\\"', '\\n'), $params[1]->directDebitEmail) . "\"") : "") . "
-				new CreditCardPaymentPanel(".$params[0].", \"$targetContainerId\");
+			{\n" . (Flex::isCustomerSession() ? ("\t\t\t\tCreditCardPayment.directDebitTermsAndConditions = \"$disclaimer\"") : "") . "
 			}
 			Event.observe(window, \"load\", creditCardPaymentOnLoad);
-		//--></script><input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' onclick=\"new CreditCardPayment(".$params[0].");return false;\" />" : FALSE;
+		//--></script><input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' value=\"Pay by Credit Card\" onclick=\"new CreditCardPayment(".$params[0].");return false;\" />" : FALSE;
 	}
 
 	// Should probably detect this automatically and use the primary contact details

@@ -129,6 +129,9 @@ Object.extend(CreditCardPayment.prototype,
 	paymentForm: null,
 	errorMessage: null,
 	popup: null,
+	termsPopup: null,
+	hasCancelButton: true,
+	entryPanelButtons: null,
 
 	inputEmail: null,
 	inputCardType: null,
@@ -169,7 +172,8 @@ Object.extend(CreditCardPayment.prototype,
 
 	preparePopup: function()
 	{
-		this.popup = new Reflex_Popup(50);
+		if (this.popup == null) this.popup = new Reflex_Popup(50);
+		this.popup.setHeaderButtons([]);
 		this.popup.addCloseButton(this.cancel.bind(this));
 	},
 
@@ -183,6 +187,7 @@ Object.extend(CreditCardPayment.prototype,
 			this.inputEmail.className = 'required';
 			this.inputEmail.value = this.contactEmail;
 			this.inputEmail.maxLength = 255;
+			this.inputEmail.size = this.hasCancelButton ? 40 : 30;
 			this.inputCardType = document.createElement('select');
 			this.inputCardType.className = 'required';
 			// Populate the select (Default to none-selected)
@@ -285,6 +290,7 @@ Object.extend(CreditCardPayment.prototype,
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Account:'));
 			tr.insertCell(-1).appendChild(document.createTextNode(this.accountNumber));
+			if (this.hasCancelButton) tr.cells[0].style.width = '35%';
 
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Company:'));
@@ -306,6 +312,7 @@ Object.extend(CreditCardPayment.prototype,
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Credit Card Type:'));
 			tr.insertCell(-1).appendChild(this.inputCardType);
+			if (this.hasCancelButton) tr.cells[0].style.width = '35%';
 
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Name on Card:'));
@@ -389,7 +396,15 @@ Object.extend(CreditCardPayment.prototype,
 			buttonSubmit.value = 'Submit';
 			Event.observe(buttonCancel, 'click', this.cancel.bind(this));
 			Event.observe(buttonSubmit, 'click', this.submitPayment.bind(this));
-			this.popup.setFooterButtons([buttonCancel, buttonSubmit]);
+
+			if (!this.hasCancelButton)
+			{
+				this.entryPanelButtons = [buttonSubmit];
+			}
+			else
+			{
+				this.entryPanelButtons = [buttonCancel, buttonSubmit];
+			}
 		}
 
 		if (errorMessage)
@@ -403,11 +418,19 @@ Object.extend(CreditCardPayment.prototype,
 			this.errorMessage.style.display = 'none';
 		}
 
+		this.popup.setFooterButtons(this.entryPanelButtons);
+
 		this.popup.setContent(this.paymentForm);
+		this.popup.recentre();
 	},
 
-	submitPayment: function(bolAgreedToTermsAndConditions)
+	submitPayment: function(bolConfirmed, bolAgreedToTermsAndConditions)
 	{
+		if (typeof bolConfirmed != 'boolean')
+		{
+			bolConfirmed = false;
+		}
+
 		if (typeof bolAgreedToTermsAndConditions != 'boolean')
 		{
 			bolAgreedToTermsAndConditions = false;
@@ -416,8 +439,14 @@ Object.extend(CreditCardPayment.prototype,
 		// Validate the data
 		if (!this.validate())
 		{
-			$Alert('Please correct all errors and try again.');
+			$Alert('Please correct all errors and try again.', null, 'Invalid Values Entered');
 			return;
+		}
+
+		if (!bolConfirmed)
+		{
+			this.confirmBeforeSubmit();
+			return false; 
 		}
 
 		// Ensure that the user has agreed to the terms and conditions
@@ -427,6 +456,7 @@ Object.extend(CreditCardPayment.prototype,
 			return false; 
 		}
 
+		this.showProcessing();
 		var $submit = jQuery.json.jsonFunction(this.submitted.bind(this), null, 'Credit_Card_Payment', 'makePayment');
 
 		// Gather the validated values and submit to the server
@@ -442,6 +472,38 @@ Object.extend(CreditCardPayment.prototype,
 				this.inputDD.checked);
 	},
 
+	showProcessing: function()
+	{
+		this.popup.setHeaderButtons([]);
+		this.popup.setFooterButtons([]);
+		var panel = document.createElement('div');
+		panel.className = 'processing-credit-card-payment';
+
+		//panel.style.width = this.paymentForm.offsetWidth + 'px';
+		//panel.style.height = this.paymentForm.offsetHeight + 'px';
+
+		var p = null, img = null;
+
+		img = document.createElement('div');
+		img.className = 'reflex-loading-image';
+		panel.appendChild(img);
+
+		p = document.createElement('p');
+		img.appendChild(p);
+		p.appendChild(document.createTextNode('Processing payment.'));
+		img.appendChild(document.createElement('br'));
+		img.appendChild(document.createElement('br'));
+		img.appendChild(document.createElement('br'));
+		img.appendChild(document.createElement('br'));
+		img.appendChild(document.createElement('br'));
+		p = document.createElement('p');
+		img.appendChild(p);
+		p.appendChild(document.createTextNode('Please wait.'));
+
+		this.popup.setContent(panel);
+		this.popup.recentre();
+	},
+
 	submitted: function(response)
 	{
 		// Check the 'OUTCOME' property of the response
@@ -454,26 +516,219 @@ Object.extend(CreditCardPayment.prototype,
 		// FAILED = A problem occurred communicating with the SecurePay servers
 
 		// SUCCESS = The payment was made and DD details stored (if appropriate)
+		if (outcome == 'SUCCESS')
+		{
+			// Need to display the confirmation message and change buttons to OK
+		}
 
 		// The details of the response (the confirmation message)
 		// need to be displayed to the user, assuming it all worked.
 
 	},
 
+	confirmBeforeSubmit: function()
+	{
+		// Set the content of the popup to be the confirmation page
+		// Don't forget to do the buttons too!
+		var confirmForm = document.createElement('div');
+		var message = document.createElement('h1');
+		confirmForm.appendChild(message);
+		message.appendChild(document.createTextNode("Please check the details below before continuing."));
+
+		var table = document.createElement('table');
+		table.className = 'reflex';
+		var tr = null, td = null;
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Account:'));
+		tr.insertCell(-1).appendChild(document.createTextNode(this.accountNumber));
+		if (this.hasCancelButton) tr.cells[0].style.width = '35%';
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Company:'));
+		tr.insertCell(-1).appendChild(document.createTextNode(this.companyName));
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('ABN:'));
+		tr.insertCell(-1).appendChild(document.createTextNode(this.abn));
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Email:'));
+		tr.insertCell(-1).appendChild(document.createTextNode(this.inputEmail.value));
+
+		confirmForm.appendChild(table);
+
+		table = document.createElement('table');
+		table.className = 'reflex';
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Credit Card Type:'));
+		tr.insertCell(-1).appendChild(document.createTextNode(this.getSelectedCardType()['name']));
+		if (this.hasCancelButton) tr.cells[0].style.width = '35%';
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Name on Card:'));
+		tr.insertCell(-1).appendChild(document.createTextNode(this.inputName.value));
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Card Number:'));
+		tr.insertCell(-1).appendChild(document.createTextNode(this.inputCardNumber.value));
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('CVV:'));
+		tr.insertCell(-1).appendChild(document.createTextNode(this.inputCVV.value));
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Expiry Date:'));
+		td = tr.insertCell(-1).appendChild(document.createTextNode(this.inputMonth.options[this.inputMonth.selectedIndex].value + '/' + this.inputYear.options[this.inputYear.selectedIndex].value + ' (mm/yyyy)'));
+
+		if (this.allowDD)
+		{
+			tr = table.insertRow(-1);
+			tr.insertCell(-1).appendChild(document.createTextNode('Use Details For Direct Debit:'));
+			tr.insertCell(-1).appendChild(document.createTextNode(this.inputDD.checked ? 'Store these card details and use for Direct Debit' : 'Do not store these details for Direct Debit'));
+		}
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Amount to Pay:'));
+		td = tr.insertCell(-1);
+		this.appendCurrency(td);
+		var el = this.displaySurcharge.cloneNode(false);
+		el.appendChild(document.createTextNode(this.tidyAmount(this.inputAmount.value)));
+		td.appendChild(el);
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Credit Card Surcharge:'));
+		td = tr.insertCell(-1);
+		this.appendCurrency(td)
+		td.appendChild(this.displaySurcharge.cloneNode(true));
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Total Payment:'));
+		td = tr.insertCell(-1);
+		this.appendCurrency(td)
+		td.appendChild(this.displayTotal.cloneNode(true));
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Current Balance:'));
+		td = tr.insertCell(-1);
+		this.appendCurrency(td)
+		td.appendChild(this.displayOutstandingPrior.cloneNode(true));
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Balance After Payment:'));
+		td = tr.insertCell(-1);
+		this.appendCurrency(td)
+		td.appendChild(this.displayOutstandingAfter.cloneNode(true));
+
+		confirmForm.appendChild(table);
+
+		// Add the buttons (cancel & submit)
+		var buttonCancel = document.createElement('input');
+		var buttonSubmit = document.createElement('input');
+		buttonCancel.className = buttonSubmit.className = 'reflex-button';
+		buttonCancel.type = buttonSubmit.type = 'button';
+		buttonCancel.value = 'Back';
+		buttonSubmit.value = 'Continue';
+		Event.observe(buttonCancel, 'click', this.cancelSubmit.bind(this));
+		Event.observe(buttonSubmit, 'click', this.confirmSubmit.bind(this));
+
+		this.popup.setFooterButtons([buttonCancel, buttonSubmit]);
+
+		this.popup.setContent(confirmForm);
+	},
+
+	confirmSubmit: function()
+	{
+		this.submitPayment(true, false);
+	},
+
+	cancelSubmit: function()
+	{
+		// Set the content of the popup to be the initial entry form
+		// Don't forget to do the buttons too!
+		this.preparePopup();
+		this.displayForm();
+	},
+
 	termsAndConditions: function()
 	{
+		if (this.termsPopup != null) return;
 		// Create a terms and conditions popup
-		var termsPopup = new Reflex_Popup(50);
-		termsPopup.setTitle('Direct Debit Terms & Conditions');
-		termsPopup.addCloseButton(this.cancel.bind(this));
+		this.termsPopup = new Reflex_Popup(32);
+		this.termsPopup.setTitle('Direct Debit Terms & Conditions');
+
+		var cancelFuncBound = this.rejectTermsAndConditions.bind(this);
+		var acceptFuncBound = this.acceptTermsAndConditions.bind(this);
+
+		this.termsPopup.addCloseButton(cancelFuncBound);
 
 		// Create the content div and add the cancel/continue buttons
+		var panel = document.createElement('div');
+		var terms = document.createElement('div');
+		var termsText = document.createElement('div');
+		terms.appendChild(termsText);
+		panel.appendChild(terms);
+		terms.style.width = "25em";
+		terms.style.height = "30em";
+		terms.style.overflow = "auto";
+		terms.style.border = "1px solid black";
+		terms.style.background = '#fff';
+		termsText.style.color = '#000';
 
-		var cancelFuncBound = termsPopup.hide.bind(termsPopup);
+		//alert(CreditCardPayment.directDebitTermsAndConditions);
+		var termsAndConditions = CreditCardPayment.directDebitTermsAndConditions.replace(/\t{1,1}/g, '\u00a0\u00a0\u00a0\u00a0').split("\n");
+		for(var i = 0, l = termsAndConditions.length; i < l; i++)
+		{
+			if (i > 0)
+			{
+				termsText.appendChild(document.createElement('br'));
+			}
+			termsText.appendChild(document.createTextNode(termsAndConditions[i]));
+		}
 
-		var accept = this.submitPayment.bind(this);
-		var acceptFunc = function() { this.accept(true); }
-		var acceptFuncBound = acceptFunc.bind({accept:acceptFunc});
+		this.acceptTermsCheckbox = document.createElement('input');
+		this.acceptTermsCheckbox.type = 'checkbox';
+		this.acceptTermsCheckbox.id = 'acceptTermsCheckbox';
+		var lab = document.createElement('label');
+		panel.appendChild(lab);
+		lab.appendChild(this.acceptTermsCheckbox);
+		lab.setAttribute('for', 'acceptTermsCheckbox');
+		lab.appendChild(document.createTextNode('I have read, understood and agree to be bound by the Terms and Conditions shown above.'));
+
+		var buttonCancel = document.createElement('input');
+		var buttonSubmit = document.createElement('input');
+		buttonCancel.className = buttonSubmit.className = 'reflex-button';
+		buttonCancel.type = buttonSubmit.type = 'button';
+		buttonCancel.value = 'Cancel';
+		buttonSubmit.value = 'Accept';
+		Event.observe(buttonCancel, 'click', cancelFuncBound);
+
+		Event.observe(buttonSubmit, 'click', acceptFuncBound);
+
+		this.termsPopup.setContent(panel);
+		this.termsPopup.setFooterButtons([buttonCancel, buttonSubmit]);
+
+		this.termsPopup.display();
+	},
+
+	acceptTermsAndConditions: function()
+	{
+		if (!this.acceptTermsCheckbox.checked)
+		{
+			$Alert("Please tick the checkbox to confirm that you have read, understood and agree be bound by these Terms and Conditions.");
+			return false;
+		}
+		this.termsPopup.hide();
+		this.termsPopup = null;
+		this.submitPayment(true, true);
+	},
+
+	rejectTermsAndConditions: function()
+	{
+		this.termsPopup.hide();
+		this.termsPopup = null;
+		this.cancelSubmit();
 	},
 
 	appendCurrency: function(td)
@@ -768,6 +1023,7 @@ Object.extend(CreditCardPaymentPanel.prototype,
 	CreditCardPayment$initialize: CreditCardPayment.prototype.initialize,
 
 	container: null,
+	hasCancelButton: false,
 
 	initialize: function(accountNumber, abn, companyName, contactName, contactEmail, amountOwing, allowDD, containerId)
 	{
@@ -777,7 +1033,7 @@ Object.extend(CreditCardPaymentPanel.prototype,
 
 	preparePopup: function()
 	{
-		this.popup = new DynamicallyLoadedPanel(this.container);
+		if (this.popup == null) this.popup = new DynamicallyLoadedPanel(this.container);
 	}
 });
 
@@ -832,6 +1088,11 @@ Object.extend(DynamicallyLoadedPanel.prototype,
 	display: function()
 	{
 		this.container.style.display  = 'block';
+	},
+
+	recentre: function()
+	{
+		
 	},
 
 	hide: function()

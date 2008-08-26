@@ -516,6 +516,7 @@ function VixenAjaxClass()
 	{
 		for (intKey in objInput)
 		{
+			if (typeof objInput[intKey] == 'function') continue;
 			switch (objInput[intKey].Type)
 			{
 				case "ClosePopup":

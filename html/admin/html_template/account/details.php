@@ -65,6 +65,13 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		$this->LoadJavascript("account_details");
 		$this->LoadJavascript("constants");
+
+		$this->LoadJavascript("prototype");
+		$this->LoadJavascript("jquery");
+		$this->LoadJavascript("json");
+		$this->LoadJavascript("reflex_popup");
+		$this->LoadJavascript("credit_card_type");
+		$this->LoadJavascript("credit_card_payment");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -198,7 +205,22 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("BillingMethod"), RENDER_OUTPUT);
 		}
 		
-		DBO()->Account->Balance->RenderOutput();
+?>
+<div class="DefaultElement">
+	<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency">$<?php DBO()->Account->Balance->Render(); ?><?php
+		require_once dirname(__FILE__) . '/../../../../lib/classes/credit/card/Credit_Card_Payment.php';
+		if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value))
+		{
+			echo Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
+		}
+	?></div>
+	<div id="Account.Balance.Label" class="DefaultLabel">
+		<span> &nbsp;</span>
+		<span id="Account.Balance.Label.Text">Balance : </span>
+	</div>
+</div>
+<?php
+
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
 		

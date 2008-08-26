@@ -507,12 +507,16 @@ function VixenPopupClass()
 	 *
 	 * @method
 	 */
-	this.Alert = function(strMessage, strSize)
+	this.Alert = function(strMessage, strSize, strTitle)
 	{
 		// set a default value for strSize
 		if (strSize == null)
 		{
 			strSize = "AlertSize";
+		}
+		if (strTitle == null)
+		{
+			strTitle = VIXEN_APPLICATION_NAME;
 		}
 	
 		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
@@ -520,7 +524,7 @@ function VixenPopupClass()
 						"<p></div>\n" +
 						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
 						"<" + "script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
-		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
+		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide', strTitle);
 	}
 	
 	//------------------------------------------------------------------------//

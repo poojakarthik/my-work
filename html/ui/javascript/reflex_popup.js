@@ -141,6 +141,11 @@ Object.extend(Reflex_Popup.prototype, {
 		}
 	},
 
+	recentre: function()
+	{
+		Reflex_Popup.position(this.container);
+	},
+
 	display: function()
 	{
 		Reflex_Popup.display(this);

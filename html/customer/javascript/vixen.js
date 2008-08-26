@@ -166,6 +166,13 @@ if (Vixen == undefined)
 	var Vixen = new VixenRootClass();
 }
 
+// Wrapper for the Vixen.Popup.Alert function
+function $Alert(strMessage, strSize, strTitle)
+{
+	Vixen.Popup.Alert(strMessage, strSize, strTitle);
+}
+
+
 //----------------------------------------------------------------------------//
 // Library functions
 //----------------------------------------------------------------------------//
