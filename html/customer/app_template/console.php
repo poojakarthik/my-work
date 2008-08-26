@@ -336,18 +336,18 @@ class AppTemplateConsole extends ApplicationTemplate
 				$subject = "Account Updated #$intAccountId";
 				$message = "The account changes below have been made:\n\n";
 
-				$message .= "FirstName: $_POST[mixContact_FirstName]\n";
-				$message .= "LastName: $_POST[mixContact_LastName]\n";
-				$message .= "JobTitle: $_POST[mixContact_JobTitle]\n";
-				$message .= "Email: $_POST[mixContact_Email]\n";
-				$message .= "Phone: $_POST[mixContact_Phone]\n";
-				$message .= "Mobile: $_POST[mixContact_Mobile]\n";
-				$message .= "Fax: $_POST[mixContact_Fax]\n";
-				$message .= "Address1: $_POST[mixAccount_Address1]\n";
-				$message .= "Address2: $_POST[mixAccount_Address2]\n";
-				$message .= "Suburb: $_POST[mixAccount_Suburb]\n";
-				$message .= "State: $_POST[mixAccount_State]\n";
-				$message .= "Postcode: $_POST[mixAccount_Postcode]\n";
+				$message .= "FirstName: " . $_POST['mixContact_FirstName'] . "\n";
+				$message .= "LastName: " . $_POST['mixContact_LastName'] . "\n";
+				$message .= "JobTitle: " . $_POST['mixContact_JobTitle'] . "\n";
+				$message .= "Email: " . $_POST['mixContact_Email'] . "\n";
+				$message .= "Phone: " . $_POST['mixContact_Phone'] . "\n";
+				$message .= "Mobile: " . $_POST['mixContact_Mobile'] . "\n";
+				$message .= "Fax: " . $_POST['mixContact_Fax'] . "\n";
+				$message .= "Address1: " . $_POST['mixAccount_Address1'] . "\n";
+				$message .= "Address2: " . $_POST['mixAccount_Address2'] . "\n";
+				$message .= "Suburb: " . $_POST['mixAccount_Suburb'] . "\n";
+				$message .= "State: " . $_POST['mixAccount_State'] . "\n";
+				$message .= "Postcode: " . $_POST['mixAccount_Postcode'] . "\n";
 
 				$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$mixAccount_BillingMethod]['Description'];
 				$message .= "BillingMethod: $_POST[strNewBillingMethod]\n";
