@@ -767,6 +767,11 @@ class Application
 				// Get the CustomerGroup table.
 				DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 				DBO()->CustomerGroup->Load();
+				
+				// Save when the user last logged in.
+				DBO()->Contact->LastLogin = time();
+				DBO()->Contact->SetColumns("LastLogin");
+				DBO()->Contact->Save();
 
 				// Check if CustomersGroup in database matches the URL being used.
 				if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
