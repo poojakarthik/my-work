@@ -1638,7 +1638,7 @@ $GLOBALS['*arrConstant']	['RateStatus']	[1]	['Description']	= 'Archived';
 $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Constant']	= 'RATE_STATUS_DRAFT';
 $GLOBALS['*arrConstant']	['RateStatus']	[2]	['Description']	= 'Draft';
 
-// DataTypes for Constants
+/*// DataTypes for Constants
 $GLOBALS['*arrConstant']	['DataType']	[1]	['Constant']	= 'DATA_TYPE_STRING';
 $GLOBALS['*arrConstant']	['DataType']	[1]	['Description']	= 'String';
 $GLOBALS['*arrConstant']	['DataType']	[2]	['Constant']	= 'DATA_TYPE_INTEGER';
@@ -1650,7 +1650,7 @@ $GLOBALS['*arrConstant']	['DataType']	[4]	['Description']	= 'Boolean';
 $GLOBALS['*arrConstant']	['DataType']	[5]	['Constant']	= 'DATA_TYPE_SERIALISED';
 $GLOBALS['*arrConstant']	['DataType']	[5]	['Description']	= 'Serialised';
 $GLOBALS['*arrConstant']	['DataType']	[6]	['Constant']	= 'DATA_TYPE_ARRAY';
-$GLOBALS['*arrConstant']	['DataType']	[6]	['Description']	= 'Array';
+$GLOBALS['*arrConstant']	['DataType']	[6]	['Description']	= 'Array';*/
 
 // Frequency Types
 $GLOBALS['*arrConstant']	['FrequencyType']	[1]	['Constant']	= 'FREQUENCY_SECOND';
