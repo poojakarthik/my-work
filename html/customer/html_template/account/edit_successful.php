@@ -71,7 +71,7 @@
 	 
 	function Render()
 	{
-		echo "<div class='NarrowContent'>\n";
+		echo "<br/><br/><div class='NarrowContent'>\n";
 
 		$mixFoundError = FALSE;
 		if($_POST['mixAccount_OldPassword'] != "" || $_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")

@@ -30,9 +30,6 @@
  *
  */
 
-// set the page title
-$this->Page->SetName('Console');
-
 // set the layout template for the page.
 $this->Page->SetLayout('4column');
 

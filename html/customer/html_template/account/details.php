@@ -73,7 +73,8 @@
 	{
 		#echo "<div class='NarrowContent'>\n";
 	
-		echo "<h2 class='Account'>Account Details</h2>\n";
+		echo "<H2>Home</H2><br/><br/>
+		<h2 class='Account'>Account Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		DBO()->Account->Id->RenderOutput();
 		if (DBO()->Account->BusinessName->Value)

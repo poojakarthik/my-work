@@ -81,6 +81,7 @@
 		// this is going to be replaced with HO's form.
 		require_once dirname(__FILE__) . '/../../../../lib/classes/credit/card/Credit_Card_Payment.php';
 		$strPanel = Credit_Card_Payment::getPaymentPanel(DBO()->Account->Id->Value);
+		print "<br/><br/>";
 		if ($strPanel)
 		{
 			echo $strPanel;

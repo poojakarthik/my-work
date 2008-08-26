@@ -69,7 +69,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div class='NarrowContent'>\n";
+		echo "<br/><br/><div class='NarrowContent'>\n";
 
 		echo "<h2 class='Options'>Options</h2>\n";
 
