@@ -275,7 +275,6 @@ class AppTemplateConsole extends ApplicationTemplate
 		if(array_key_exists('intUpdateAccountId', $_POST))
 		{
 			$strFoundInputError=FALSE; 
-			# HO is working on some validation stuf.
 
 			// If no error was found, continue with processing.
 			if(!$strFoundInputError){
@@ -365,12 +364,15 @@ class AppTemplateConsole extends ApplicationTemplate
 					'X-Mailer: Flex/' . phpversion();
 				# supress email errors.
 				@mail($strOldEmailAddress, $subject, $message, $headers);
+
 				$this->LoadPage('edit_successful');
-
 				return TRUE;
-
 			}
-
+			else
+			{
+				$this->LoadPage('edit_failure');
+				return TRUE;
+			}
 		}
 
 		$this->LoadPage('edit');

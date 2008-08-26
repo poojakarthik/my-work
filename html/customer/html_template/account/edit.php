@@ -156,15 +156,15 @@
 			<TABLE>
 			<TR>
 			<TD width=\"200\">Street Address: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . DBO()->Account->Address1->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD></TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . DBO()->Account->Address2->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address2->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>Suburb: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Suburb\" VALUE=\"" . DBO()->Account->Suburb->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Suburb\" VALUE=\"" . htmlspecialchars(DBO()->Account->Suburb->Value) . "\"></TD>
 			</TR>
 
 			<TR>
@@ -191,13 +191,13 @@
 			</TR>
 			<TR>
 			<TD>Postcode: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Postcode\" VALUE=\"" . DBO()->Account->Postcode->Value . "\" size=\"4\" maxlength=\"4\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Postcode\" VALUE=\"" . htmlspecialchars(DBO()->Account->Postcode->Value) . "\" size=\"4\" maxlength=\"4\"></TD>
 			</TR>
 			<TR>
 			<TD>Country: </TD>
 			<TD>
 				<SELECT NAME=\"mixAccount_Country\">
-				<OPTION VALUE=\"" . DBO()->Account->Country->Value . "\" SELECTED>" . DBO()->Account->Country->Value . "</OPTION>
+				<OPTION VALUE=\"" . htmlspecialchars(DBO()->Account->Country->Value) . "\" SELECTED>" . htmlspecialchars(DBO()->Account->Country->Value) . "</OPTION>
 				</SELECT>
 				</TD>
 			</TR>
@@ -210,35 +210,35 @@
 			<TABLE>
 			<TR>
 			<TD width=\"200\">Title: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Title\" VALUE=\"" . DBO()->Contact->Title->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Title\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>First Name: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_FirstName\" VALUE=\"" . DBO()->Contact->FirstName->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_FirstName\" VALUE=\"" . htmlspecialchars(DBO()->Contact->FirstName->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>Last Name: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_LastName\" VALUE=\"" . DBO()->Contact->LastName->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_LastName\" VALUE=\"" . htmlspecialchars(DBO()->Contact->LastName->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>Job Title: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . DBO()->Contact->JobTitle->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . htmlspecialchars(DBO()->Contact->JobTitle->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>E-mail: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . DBO()->Contact->Email->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>Phone: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Phone\" VALUE=\"" . DBO()->Contact->Phone->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Phone\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Phone->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>Mobile: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Mobile\" VALUE=\"" . DBO()->Contact->Mobile->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Mobile\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Mobile->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>Fax: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Fax\" VALUE=\"" . DBO()->Contact->Fax->Value . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Fax\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Fax->Value) . "\"></TD>
 			</TR>
 			</TABLE>
 			</div>
