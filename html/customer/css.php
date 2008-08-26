@@ -84,6 +84,8 @@ if(!$Debug_Use_Old_Way)
 		{
 			$$mixKey = $mixVal;
 		}
+		// this is not being used for now...
+		$customer_breadcrumb_menu_color = $customer_secondary_color;
 	}
 
 
