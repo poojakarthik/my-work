@@ -74,21 +74,13 @@
 		echo "<div class='NarrowContent'>\n";
 
 		$mixFoundError = FALSE;
-		if($_POST['mixAccount_OldPassword'] == "" || $_POST['mixAccount_NewPassword1'] == "" || $_POST['mixAccount_NewPassword2'] == "")
+		if($_POST['mixAccount_OldPassword'] != "" || $_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
 		{
-			$mixFoundError = TRUE;
-		}
-		if(SHA1($_POST['mixAccount_NewPassword1']) != DBO()->Contact->PassWord->Value)
-		{
-			$mixFoundError = TRUE;
-		}
-		if($_POST['mixAccount_NewPassword1'] != $_POST['mixAccount_NewPassword2'])
-		{
-			$mixFoundError = TRUE;
-		}
-		if(strlen($_POST['mixAccount_NewPassword1'])<"6" || strlen($_POST['mixAccount_NewPassword1'])>"40")
-		{
-			$mixFoundError = TRUE;
+			// they have tried to change the password.. lets check if it went ok...
+			if(SHA1($_POST['mixAccount_NewPassword1']) != DBO()->Contact->PassWord->Value)
+			{
+				$mixFoundError = TRUE;
+			}
 		}
 		if($mixFoundError)
 		{
