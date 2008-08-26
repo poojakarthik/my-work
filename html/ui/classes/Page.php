@@ -520,7 +520,8 @@ class Page
 		echo "<title>Flex - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
-		$this->RenderCSS();
+		// we dont want to load menu.cs or style.css, they exist in the admin only.
+		// $this->RenderCSS();
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init()'>\n";
 		
