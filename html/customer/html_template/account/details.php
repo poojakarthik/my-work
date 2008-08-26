@@ -96,7 +96,20 @@
 		
 		DBO()->Account->CustomerBalance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
-		
+		$strUnbilledAdjustments = DBO()->Account->UnbilledAdjustments->Value;
+		if($strUnbilledAdjustments == "0")
+		{
+			$strUnbilledAdjustments = "$0.00";
+		}
+		echo "
+		<div class='DefaultElement'>
+		   <div id='Account.UnbilledAdjustments.Output' name='Account.UnbilledAdjustments' class='DefaultOutput Currency '>$strUnbilledAdjustments</div>
+		   <div id='Account.UnbilledAdjustments.Label' class='DefaultLabel'>
+			  <span> &nbsp;</span>
+			  <span id='Account.UnbilledAdjustments.Label.Text'>Unbilled Debits & Credits : </span>
+
+		   </div>
+		</div>";
 		DBO()->Account->UnbilledAdjustments->RenderOutput();
 		DBO()->Account->UnbilledCDRs->RenderOutput();
 		

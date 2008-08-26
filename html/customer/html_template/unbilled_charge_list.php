@@ -70,7 +70,7 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<h2 class='Adjustment'>Unbilled Adjustments</h2>\n";
+		echo "<h2 class='Adjustment'>Unbilled Debits & Credits</h2>\n";
 				
 		Table()->Adjustments->SetHeader("Date", "Code", "Description", "Amount (inc GST)", "&nbsp;");
 		Table()->Adjustments->SetWidth("10%", "15%", "50%", "20%", "5%");

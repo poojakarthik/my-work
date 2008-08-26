@@ -146,6 +146,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			$arrRecord['DateCreatedTimeStamp'] 	= strtotime($dboPayment->PaidOn->Value);
 			$arrRecord['Id'] 					= $dboPayment->TXNReference->AsValue();
 			$arrRecord['Date'] 					= $dboPayment->PaidOn->AsValue();
+			$arrRecord['PaymentType'] 					= $dboPayment->PaymentType->Value;
 			
 			// Work out what will be displayed in the Debit and Credit columns of the table
 			$arrRecord['CreditValue']			= $dboPayment->Amount->Value;
@@ -186,6 +187,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			// build values for the columns of the table
 			$strRecordType 	= "<span class='DefaultOutputSpan'>{$arrRecord['Type']}</span>";
 			$strRefNum		= $arrRecord['Id'];
+			$strPaymentType	= $arrRecord['PaymentType'];
 			$strDate		= $arrRecord['Date'];
 			$strCredit		= $arrRecord['Credit'];
 			$strDebit		= $arrRecord['Debit'];
@@ -216,8 +218,11 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 				// Values specific to Payments
 				$strInvoicePdfLabel = "&nbsp;";
 			}
-			
-			Table()->InvoicesAndPayments->AddRow($strRecordType, $strDate, $strRefNum, $strCredit, $strDebit, $strInvoicePdfLabel);
+
+			// Display the payment type, e.g. Credit Card, BillExpress, etc, etc
+			$mixPaymentType = $GLOBALS['*arrConstant']['PaymentType']["$strPaymentType"]['Description'];
+			$mixRefAndType = "$strRefNum - $mixPaymentType";
+			Table()->InvoicesAndPayments->AddRow($strRecordType, $strDate, $mixRefAndType, $strCredit, $strDebit, $strInvoicePdfLabel);
 			
 			$fltCreditTotal	+= $arrRecord['CreditValue'];
 			$fltDebitTotal	+= $arrRecord['DebitValue'];
