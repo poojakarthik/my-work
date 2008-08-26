@@ -5,7 +5,7 @@
 $_SESSION = array();
 // Load Flex.php
 require_once(dirname(__FILE__) . "/../../lib/classes/Flex.php");
-Flex::load(FALSE);
+Flex::load();
 require_once('Flex_Rollout_Version.php');
 
 class Flex_Rollout

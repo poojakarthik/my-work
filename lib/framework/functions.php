@@ -4382,16 +4382,16 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 		{
 			switch ($arrConstant['Type'])
 			{
-				case DATA_TYPE_STRING:
+				case 1: //DATA_TYPE_STRING:
 					$mixValue = (string)$arrConstant['Value']; 
 					break;
-				case DATA_TYPE_INTEGER:
+				case 2: //DATA_TYPE_INTEGER:
 					$mixValue = (integer)$arrConstant['Value'];
 					break;
-				case DATA_TYPE_FLOAT:
+				case 3: //DATA_TYPE_FLOAT:
 					$mixValue = (float)$arrConstant['Value'];
 					break;
-				case DATA_TYPE_BOOLEAN:
+				case 4: //DATA_TYPE_BOOLEAN:
 					$mixValue = (bool)$arrConstant['Value'];
 					break;
 				default:
