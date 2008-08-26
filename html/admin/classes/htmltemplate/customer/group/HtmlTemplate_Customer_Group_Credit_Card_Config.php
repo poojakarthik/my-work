@@ -83,7 +83,7 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 		$customerGroup = $this->mxdDataToRender['customerGroup'];
 
 		$edit = '<a href="' . Href()->ViewCustomerGroupCreditCardConfig($config->customerGroupId, 'Edit') . '" >Edit</a>';
-		$delete = $config->isSaved() ? (' | <a href="' . Href()->ViewCustomerGroupCreditCardConfig($config->customerGroupId, 'Delete') . '" >Delete</a>') : '';
+		$delete = $config->isSaved() ? (' | <a href="' . Href()->ViewCustomerGroupCreditCardConfig($config->customerGroupId, 'Delete') . '" onclick="return window.confirm(\'You are about to delete these configuration details and disable credit card payments for this customer group.\n\n*** THIS ACTION CANNOT BE UNDONE ***\n\nClick \\\'OK\\\' to continue or \\\'Cancel\\\' to keep the existing settings.\')" >Delete</a>') : '';
 
 		$confirmationText = str_replace(array("\n", "\t", "   ", "  "), array("<br/>\n", "&nbsp;&nbsp; &nbsp;", "&nbsp; &nbsp;", "&nbsp;&nbsp;"), htmlspecialchars($config->confirmationText));
 		$confirmationEmail = str_replace(array("\n", "\t", "   ", "  "), array("<br/>\n", "&nbsp;&nbsp; &nbsp;", "&nbsp; &nbsp;", "&nbsp;&nbsp;"), htmlspecialchars($config->confirmationEmail));
@@ -189,7 +189,7 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 		$actions = $editing ? ('<a href="'.Href()->ViewCustomerGroupCreditCardConfig($config->customerGroupId, 'View').'" >View</a>') 
 							: '';
 
-		$actions .= $config->isSaved() ? (' | <a href="' . Href()->ViewCustomerGroupCreditCardConfig($config->customerGroupId, 'Delete') . '" >Delete</a>') : '';
+		$actions .= $config->isSaved() ? (' | <a href="' . Href()->ViewCustomerGroupCreditCardConfig($config->customerGroupId, 'Delete') . '" onclick="return window.confirm(\'You are about to delete these configuration details and disable credit card payments for this customer group.\n\n*** THIS ACTION CANNOT BE UNDONE ***\n\nClick \\\'OK\\\' to continue or \\\'Cancel\\\' to keep the existing settings.\')" >Delete</a>') : '';
 
 		$title = 'Secure Pay Configuration';
 
