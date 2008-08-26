@@ -118,14 +118,21 @@
 		echo "<h2 class='Account'>Address Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		// Display the details of their primary account
-		if (DBO()->Account->Address1->Value)
-		{
-			DBO()->Account->Address1->RenderOutput();
-		}
-		if (DBO()->Account->Address2->Value)
-		{
-			DBO()->Account->Address2->RenderOutput();
-		}
+		echo "
+		<div class='DefaultElement'>
+		   <div id='Account.Address1.Output' name='Account.Address1' class='DefaultOutput Default '>" . DBO()->Account->Address1->Value . "&nbsp;</div>
+		   <div id='Account.Address1.Label' class='DefaultLabel'>
+			  <span> &nbsp;</span>
+			  <span id='Account.Address1.Label.Text'>Street Address : </span>
+		   </div>
+		</div>
+		<div class='DefaultElement'>
+		   <div id='Account.Address2.Output' name='Account.Address2' class='DefaultOutput Default '>" . DBO()->Account->Address2->Value . "&nbsp;</div>
+		   <div id='Account.Address2.Label' class='DefaultLabel'>
+			  <span> &nbsp;</span>
+			  <span id='Account.Address2.Label.Text'></span>
+		   </div>
+		</div>";
 		if (trim(DBO()->Account->Suburb->Value))
 		{
 			DBO()->Account->Suburb->RenderOutput();

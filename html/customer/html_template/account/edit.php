@@ -153,11 +153,11 @@
 			<div class='GroupedContent'>
 			<TABLE>
 			<TR>
-			<TD width=\"200\">Address line 1: </TD>
+			<TD width=\"200\">Street Address: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . DBO()->Account->Address1->Value . "\"></TD>
 			</TR>
 			<TR>
-			<TD>Address line 2: </TD>
+			<TD></TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . DBO()->Account->Address2->Value . "\"></TD>
 			</TR>
 			<TR>
