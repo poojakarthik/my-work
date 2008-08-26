@@ -284,7 +284,7 @@ class CarrierModule
 	 		$this->_selModuleConfig->Execute($arrModule);
 	 		while ($arrConfig = $this->_selModuleConfig->Fetch())
 	 		{
-	 			$this->_arrModuleConfig[$arrConfig['Name']]['Value']	= $this->_DecodeValue($arrConfig['Value'], $arrConfig['Type']);
+	 			$this->_arrModuleConfig[$arrConfig['Name']]['Value']	= Module_Config::DecodeValue($arrConfig['Value'], $arrConfig['Type']);
 	 			$this->_arrModuleConfig[$arrConfig['Name']]['Id']		= $arrConfig['Id'];
 	 		}
 	 		
@@ -327,7 +327,7 @@ class CarrierModule
 	 		
 	 		$arrModuleConfig			= Array();
 	 		$arrModuleConfig['Id']		= $arrProperties['Id'];
-	 		$arrModuleConfig['Value']	= $this->_EncodeValue($arrProperties['Value'], $arrProperties['Type']);
+	 		$arrModuleConfig['Value']	= Module_Config::EncodeValue($arrProperties['Value'], $arrProperties['Type']);
 	 		$mixResult					= $this->_ubiModuleConfig->Execute($arrModuleConfig);
 	 		if ($mixResult === FALSE)
 	 		{
@@ -451,7 +451,7 @@ class CarrierModule
 				$arrModuleConfig['CarrierModule']	= $intCarrierModule;
 				$arrModuleConfig['Name']			= $strField;
 				$arrModuleConfig['Type']			= $arrProperties['Type'];
-				$arrModuleConfig['Value']			= $this->_EncodeValue($arrProperties['Default'], $arrProperties['Type']);
+				$arrModuleConfig['Value']			= Module_Config::EncodeValue($arrProperties['Default'], $arrProperties['Type']);
 				$arrModuleConfig['Description']		= $arrProperties['Description'];
 				if (!$insCarrierModuleConfig->Execute($arrModuleConfig))
 				{
@@ -466,93 +466,6 @@ class CarrierModule
 	 	{
 	 		return "The Module '".get_class($this)."' already exists for Carrier '$intCarrier'";
 	 	}
-	 }
-	 
- 	//------------------------------------------------------------------------//
-	// _DecodeValue
-	//------------------------------------------------------------------------//
-	/**
-	 * _DecodeValue()
-	 *
-	 * Converts a CarrierModuleConfig field to its PHP counterpart
-	 * 
-	 * Converts a CarrierModuleConfig field to its PHP counterpart
-	 * 
-	 * @param	string	$strValue					DB Value to convert to PHP variable
-	 * @param	integer	$intDataType	[optional]	Data Type to cast; Default: DATA_TYPE_STRING
-	 * 
-	 * @return	mixed								Cast value 
-	 *
-	 * @method
-	 */
-	 private function _DecodeValue($strValue, $intDataType = DATA_TYPE_STRING)
-	 {
-	 	$mixValue	= NULL;
-	 	switch ($intDataType)
-	 	{
-	 		
-	 		case DATA_TYPE_INTEGER:
-	 			$mixValue	= (int)$strValue;
-	 			break;
-	 		
-	 		case DATA_TYPE_FLOAT:
-	 			$mixValue	= (float)$strValue;
-	 			break;
-	 		
-	 		case DATA_TYPE_BOOLEAN:
-	 			$mixValue	= (bool)$strValue;
-	 			break;
-	 		
-	 		case DATA_TYPE_SERIALISED:
-	 		case DATA_TYPE_ARRAY:
-	 			$mixValue	= unserialize($strValue);
-	 			break;
-	 		
-	 		default:
-	 		case DATA_TYPE_STRING:
-	 			$mixValue	= (string)$strValue;
-	 			break;
-	 	}
-	 	
-	 	return $mixValue;
-	 }
-	 
- 	//------------------------------------------------------------------------//
-	// _EncodeValue
-	//------------------------------------------------------------------------//
-	/**
-	 * _EncodeValue()
-	 *
-	 * Converts a PHP value to its CarrierModuleConfig counterpart
-	 * 
-	 * Converts a PHP value to its CarrierModuleConfig counterpart
-	 * 
-	 * @param	mixed	$mixValue					PHP value to convert to DB
-	 * @param	integer	$intDataType	[optional]	Data Type to cast; Default: DATA_TYPE_STRING
-	 * 
-	 * @return	mixed								Cast value
-	 *
-	 * @method
-	 */
-	 private function _EncodeValue($mixValue, $intDataType = DATA_TYPE_STRING)
-	 {
-	 	switch ($intDataType)
-	 	{
-	 		case DATA_TYPE_SERIALISED:
-	 		case DATA_TYPE_ARRAY:
-	 			$mixValue	= serialize($mixValue);
-	 			break;
-	 		
-	 		default:
-	 		case DATA_TYPE_STRING:
-	 		case DATA_TYPE_INTEGER:
-	 		case DATA_TYPE_FLOAT:
-	 		case DATA_TYPE_BOOLEAN:
-	 			$mixValue	= (string)$mixValue;
-	 			break;
-	 	}
-	 	
-	 	return $mixValue;
 	 }
 	 
  	//------------------------------------------------------------------------//
