@@ -38,6 +38,7 @@ class Account
 	private $lastAutomaticInvoiceActionDatetime = NULL;
 	private $automaticBarringStatus = NULL;
 	private $automaticBarringDatetime = NULL;
+	private $tioReferenceNumber = NULL;
 
 	protected static $cache = array();
 
@@ -123,6 +124,12 @@ class Account
 		$account = self::getFor("Id = <Id>", array("Id" => $id));
 		return $account;
 	}
+	
+	// Empties the cache
+	public static function emptyCache()
+	{
+		self::$cache = array();
+	}
 
 	protected static function getColumns()
 	{
@@ -162,7 +169,8 @@ class Account
 			'last_automatic_invoice_action',
 			'last_automatic_invoice_action_datetime',
 			'automatic_barring_status',
-			'automatic_barring_datetime'
+			'automatic_barring_datetime',
+			'tio_reference_number'
 		);
 	}
 

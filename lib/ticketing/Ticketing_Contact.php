@@ -132,7 +132,7 @@ class Ticketing_Contact
 		}
 		return new Ticketing_Contact($selContacts->Fetch());
 	}
-
+	
 	public function getWithProperties($properties)
 	{
 		$id = NULL;

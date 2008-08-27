@@ -6,7 +6,7 @@
  *	1:	Adds Account.tio_reference_number field
  *	2:	Adds customer_status table
  *	3:	Populates the customer_status table
- *	4:	Adds customer_status_action_required table
+ *	4:	Adds customer_status_action table
  *	5:	Adds account_customer_status_history table
  */
 
@@ -35,7 +35,7 @@ class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
 						description VARCHAR(1000) NOT NULL COMMENT 'A description of the criteria required to satisfy this status',
 						default_action_description VARCHAR(1000) NOT NULL COMMENT 'Description of what credit control personel should do with customer',
 						precedence INT(10) NOT NULL COMMENT 'Order in which the statuses are tested. Customer status with precedence 1 will be tested before customer status with precidence 2.  Customer is assigned the first status which it satisfies',
-						test_function VARCHAR(255) NOT NULL COMMENT 'Name of the function which tests for this Customer Status'
+						test VARCHAR(255) NOT NULL COMMENT 'Identifies the ''test'' which is used to check that the criteria has been met'
 					) ENGINE = innodb COMMENT = 'Defines the various Customer Statuses and how they are tested';";
 		if (!$qryQuery->Execute($strSQL))
 		{
@@ -44,7 +44,7 @@ class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status";
 		
 		// 3:	Populate the customer_status table
-		$strSQL = "INSERT INTO customer_status (id, name, description, default_action_description, precedence, test_function) VALUES
+		$strSQL = "INSERT INTO customer_status (id, name, description, default_action_description, precedence, test) VALUES
 					(1, 'L', 'Lost Customer (all services lost)', 'Collect any outstanding monies and attempt win back.', 1, 'LostCustomer'),
 					(2, 'J', 'T.I.O issue pending', 'This account cannot be credit managed or barred.  Handled by Customer Service Manager only.', 2, 'AccountWithTIO'),
 					(3, 'I', 'Account has dispute with invoice', 'Collect undisputed amount.  Dispute handled by CSM or TL.', 3, 'AccountInDispute'),
@@ -63,21 +63,36 @@ class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DELETE FROM customer_status WHERE id IN (1,2,3,4,5,6,7,8,9,10,11,12)";
 
-		// 4:	Add customer_status_action_required table
-		$strSQL = "CREATE TABLE customer_status
+		// 4:	Add customer_status_action table
+		$strSQL = "CREATE TABLE customer_status_action
 					(
-						id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for this Customer Status',
-						name VARCHAR(50) NOT NULL COMMENT 'The status name',
-						description VARCHAR(1000) NOT NULL COMMENT 'A description of the criteria required to satisfy this status',
-						default_action_required_description VARCHAR(1000) NOT NULL COMMENT 'Description of what credit control personel should do with customer',
-						precedence INT(10) NOT NULL COMMENT 'Order in which the statuses are tested. customer status with precedence 1 will be tested before customer status with precidence 2.  Customer is assigned the first status which it satisfies',
-						test_function VARCHAR(255) NOT NULL COMMENT 'Name of the function which tests for this Customer Status'
-					) ENGINE = innodb;";
+						id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id',
+						customer_status_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK customer_status table',
+						role_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK role table',
+						description VARCHAR(1000) NOT NULL COMMENT 'description of the required action that the employee must take when of this role/customer_status'
+					) ENGINE = innodb COMMENT = 'Defines the action to be taken by a user, for a customer of a given customer status';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create customer_status table. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to create customer_status_action table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status";
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status_action";
+
+		// 5:	Add account_customer_status_history table
+		$strSQL = "CREATE TABLE customer_status_history
+					(
+						id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id',
+						account_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK Account table',
+						invoice_run_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK InvoiceRun table',
+						last_updated DATETIME NOT NULL COMMENT 'time at which the status was last calculated',
+						customer_status_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK customer_status table',
+						invoice_paid_on DATETIME NULL COMMENT 'The time at which the invoice became fully paid'
+					) ENGINE = innodb COMMENT = 'Defines most recently calculated customer status for a given invoice run/account';";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to create account_customer_status_history table. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS account_customer_status_history";
+
 
 	}
 	
