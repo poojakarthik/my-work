@@ -772,11 +772,11 @@ class Application
 				DBO()->Contact->Id = $currentUser['Id'];
 				DBO()->Contact->Load();
 
-				DBO()->Contact->LastLogin = "" . DBO()->Contact->CurrentLogin->Value;
+				DBO()->Contact->LastLogin = $currentUser['CurrentLogin'];
 				DBO()->Contact->CurrentLogin = time();
 
 				// Save when the user last logged in.
-				DBO()->Contact->SetColumns("LastLogin,CurrentLogin");
+				// DBO()->Contact->SetColumns("LastLogin,CurrentLogin");
 				DBO()->Contact->Save();
 
 				// Check if CustomersGroup in database matches the URL being used.
