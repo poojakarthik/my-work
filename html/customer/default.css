@@ -28,6 +28,37 @@
 /**************************************************************************/
 /* CREDIT CARD PAYMENT.																  */
 /**************************************************************************/
+
+	input.validation-error-tootltip-button {
+	  visibility: hidden;
+	  width: 18px;
+	  height: 18px;
+	  border: none;
+	  cursor: pointer;
+	  margin-left: 0.2em;
+	  background-color: inherit;
+	  background-repeat: no-repeat;
+	  background-image: url("./img/template/close.gif");
+	  background-position: 50% 50%;
+	}
+
+	td[contains-invalid-input=true] input.validation-error-tootltip-button {
+	  visibility: visible;
+	}
+
+	div.validation-error-tootltip {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  color: black;
+	  background: white;
+	  border: 0.1em solid black;
+	  z-index: 10000;
+	  padding: 0.4em;
+	  max-width: 20em;
+	}
+
+
 	div#credit-card-payment-panel
 	{
 		font-weight: bold;
