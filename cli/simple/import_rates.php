@@ -170,7 +170,7 @@ if ($ptrFile)
 	{
 		// Insert RateGroup
 		CliEcho("Inserting RateGroup...");
-		if (/*($arrRateGroup['Id'] = $insRateGroup->Execute($arrRateGroup)) === */FALSE)
+		if (($arrRateGroup['Id'] = $insRateGroup->Execute($arrRateGroup)) === FALSE)
 		{
 			throw new Exception("ERROR: ".$insRateGroup->Error());
 		}
@@ -179,7 +179,7 @@ if ($ptrFile)
 		CliEcho("Inserting Rates...");
 		foreach ($arrRateGroup['**Rates'] as &$arrRate)
 		{
-			if (/*($arrRate['Id'] = $insRate->Execute($arrRate)) === */FALSE)
+			if (($arrRate['Id'] = $insRate->Execute($arrRate)) === FALSE)
 			{
 				throw new Exception("ERROR: ".$insRate->Error());
 			}
@@ -194,7 +194,7 @@ if ($ptrFile)
 		$arrRateGroupRate['RateGroup']	= $arrRateGroup['Id'];
 		$arrRateGroupRate['Rate']		= $arrRate['Id'];
 		
-		if (/*$insRateGroupRate->Execute($arrRateGroupRate) === */FALSE)
+		if ($insRateGroupRate->Execute($arrRateGroupRate) === FALSE)
 		{
 			throw new Exception("ERROR: ".$insRateGroupRate->Error());
 		}
