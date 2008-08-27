@@ -430,7 +430,7 @@ function VixenAjaxClass()
 			try
 			{
 				// Convert reply into data object
-				eval("objData = " + strJsonCommands);
+				objData = JSON.parse(strJsonCommands);
 
 				if (!objData)
 				{
@@ -514,7 +514,7 @@ function VixenAjaxClass()
 	//this.ajaxHandler = function(objInput)
 	function ajaxHandler(objInput)
 	{
-		for (intKey in objInput)
+		for (intKey=0; intKey < objInput.length; intKey++)
 		{
 			if (typeof objInput[intKey] == 'function') continue;
 			switch (objInput[intKey].Type)

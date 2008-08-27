@@ -528,7 +528,7 @@ class JSON_Services
 		else
 		{
 			// It doesn't exist so use the version defined in this class
-			return $this->decodeRecursive($str);
+			return self::instance()->decodeRecursive($str);
 		}
 	}
 
@@ -561,7 +561,7 @@ class JSON_Services
 		else
 		{
 			// It doesn't exist so use the version defined in this class
-			return $this->encodeRecursive($str);
+			return self::instance()->encodeRecursive($str);
 		}
 	}
 

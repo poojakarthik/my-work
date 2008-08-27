@@ -502,3 +502,49 @@ div#refreshPanel
 	bottom: 0;
 	padding: 0 0.3em 0.2em 0;
 }
+
+
+/*****************************Property Input Stuff*****************************/
+/*This is currently only included in Framework3 because Framework2's "Login" popup uses it.  Nothing else in Framework3 should use it*/
+div.PropertyInputControlContainer
+{
+	width:	100%;
+}
+
+.PropertyInputControlLabel,
+.PropertyInputControlLabelRequired
+{
+	float:			left;
+	width:			46%;
+	padding-left:	2%;
+	padding-right:	1%;
+}
+.PropertyInputControlLabelRequired
+{
+	background-image:		url('img/template/required_input.png');
+	background-repeat:		no-repeat;
+	background-position:	-2% 0%;
+
+}
+
+.PropertyInputControl
+{
+	float: right;
+	width: 49%;
+	margin-left: 1%;
+}
+div.PropertyInputControlClear
+{
+	float:	none;
+	clear:	both;
+}
+
+div.MsgNotice
+{
+	margin:				5px 3px;
+	padding:			5px;
+	border:				solid 1px #D1D1D1;
+	background-color:	#FFFFCC;
+	position:			relative;
+}
+/*****************************Property Input Stuff*****************************/
