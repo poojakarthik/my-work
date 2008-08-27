@@ -25,61 +25,131 @@
 /*	TASKBAR														  		  */
 /**************************************************************************/
 
+
+/**************************************************************************/
+/* EDIT PAGE														  */
+/**************************************************************************/
+.edit-account-table-style
+{
+	font-size:	12px;
+	width:		450px
+}
+
 /**************************************************************************/
 /* CREDIT CARD PAYMENT.																  */
 /**************************************************************************/
 
-	input.validation-error-tootltip-button {
-	  visibility: hidden;
-	  width: 18px;
-	  height: 18px;
-	  border: none;
-	  cursor: pointer;
-	  margin-left: 0.2em;
-	  background-color: inherit;
-	  background-repeat: no-repeat;
-	  background-image: url("./img/template/close.gif");
-	  background-position: 50% 50%;
-	}
+/* CCV tool tip start */
+div.cvv-image-tooltip {
+      position: absolute;
+      z-index: 10000;
+}
 
-	td[contains-invalid-input=true] input.validation-error-tootltip-button {
-	  visibility: visible;
-	}
+div.cvv-image-tooltip img {
+      clear: both;
+      margin: 0.2em;
+      float: left;
+}
 
-	div.validation-error-tootltip {
-	  position: absolute;
-	  top: 0;
-	  left: 0;
-	  color: black;
-	  background: white;
-	  border: 0.1em solid black;
-	  z-index: 10000;
-	  padding: 0.4em;
-	  max-width: 20em;
-	}
+.tooltip-source-element {
+      color: #00f;
+      text-decoration: underline;
+      cursor: pointer;
+}
+/* CCV tool tip end */
 
 
-	div#credit-card-payment-panel
-	{
-		font-weight: bold;
-	}
-	table.reflex
-	{
-			margin:				7px;
-			padding:			10px;
-			border:				solid 1px #D1D1D1;
-			background-color:	#EFEBE7;
-			position:			relative;
-			width: 450px;
-			clear: both;
-	}
-	input.required, 
-	select.required
-	{
-		background: #fff;
-		color: #111;
-		border: .1em solid #da8;
-	}
+input.validation-error-tootltip-button {
+  visibility: hidden;
+  width: 18px;
+  height: 18px;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.2em;
+  background-color: inherit;
+  background-repeat: no-repeat;
+  background-image: url("./img/template/close.gif");
+  background-position: 50% 50%;
+}
+
+td[contains-invalid-input=true] input.validation-error-tootltip-button {
+  visibility: visible;
+}
+
+div.validation-error-tootltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: black;
+  background: white;
+  border: 0.1em solid black;
+  z-index: 10000;
+  padding: 0.4em;
+  max-width: 20em;
+}
+
+div#credit-card-payment-panel
+{
+	font-weight: bold;
+	font-size: 12px;
+	font: arial;
+}
+
+div#credit-card-payment-panel h1
+{
+	margin-left: 7;
+	padding:	3px;
+	font:	verdana;
+	font-size: 14px;
+	width: auto;
+}
+
+/* Title start */
+div.dynamically-loaded-panel-title
+{
+	font-size:			12px;
+	font:				verdana;
+	background-color:	#EFEBE7;
+	text-align	: left;
+	padding:	3px;
+	margin-left: 7;
+	width: 442px;
+	border:				solid 1px #D1D1D1;
+}
+/* Title end */
+
+/* Footer start */
+div.dynamically-loaded-panel-footer
+{
+	background-color:	#FFFFFF;
+	text-align	: right;
+	padding:			3px;
+	width: 442px;
+	height: 20px;
+	margin-left: 7;
+	border:				solid 1px #FFFFFF;
+}
+/* Footer end */
+
+table.reflex
+{
+	font-size:			12px;
+	font:				verdana;
+	margin:				7px;
+	padding:			10px;
+	border:				solid 1px #D1D1D1;
+	background-color:	#EFEBE7;
+	position:			relative;
+	width: 450px;
+	clear: both;
+}
+input.required, 
+select.required
+{
+	background: #fff;
+	color: #111;
+	border: .1em solid #da8;
+}
 
 
 
@@ -174,7 +244,6 @@ div.reflex-popup-footer {
 		background-color:	#EFEBE7;
 		position:			relative;
 	}
-
 	.LinksTable
 	{
 		font:				arial;

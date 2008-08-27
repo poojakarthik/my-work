@@ -515,7 +515,9 @@ class AppTemplateConsole extends ApplicationTemplate
 				$message .= "State: " . $_POST['mixAccount_State'] . "\n";
 				$message .= "Postcode: " . $_POST['mixAccount_Postcode'] . "\n";
 
-				$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$mixAccount_BillingMethod]['Description'];
+				$intBillMethod = htmlspecialchars($_POST['mixAccount_BillingMethod']);
+				$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$intBillMethod]['Description'];
+
 				$message .= "BillingMethod: $strNewBillingMethod\n";
 
 				$message .= "Country: $_POST[mixAccount_Country]\n\n";

@@ -91,7 +91,7 @@
 
 			<h2 class='Account'>Billing Details</h2>
 			<div class='GroupedContent'>
-			<TABLE>
+			<TABLE class=\"edit-account-table-style\">
 			<TR VALIGN=\"TOP\">
 				<TD width=\"200\">Billing Method: </TD>
 				<TD>";
@@ -130,7 +130,7 @@
 
 			<h2 class='Account'>Account Password</h2>
 			<div class='GroupedContent'>
-			<TABLE>
+			<TABLE class=\"edit-account-table-style\">
 			<TR VALIGN=\"TOP\">
 			<TR>
 				<TD width=\"200\">Old Password: </TD>
@@ -153,7 +153,7 @@
 
 			<h2 class='Account'>Address Details</h2>
 			<div class='GroupedContent'>
-			<TABLE>
+			<TABLE class=\"edit-account-table-style\">
 			<TR>
 			<TD width=\"200\">Street Address: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\"></TD>
@@ -207,7 +207,7 @@
 
 			<h2 class='Account'>Contact Details</h2>
 			<div class='GroupedContent'>
-			<TABLE>
+			<TABLE class=\"edit-account-table-style\">
 			<TR>
 			<TD width=\"200\">Title: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Title\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\"></TD>
@@ -244,17 +244,14 @@
 			</div>
 
 			<br/>
-			<TABLE>
+			<TABLE class=\"edit-account-table-style\">
 			<TR>
-			<TD width=\"200\"></TD>
-			<TD><INPUT TYPE=\"submit\" VALUE=\"Update Details\"></TD>
+				<TD align=right><INPUT TYPE=\"submit\" VALUE=\"Update Details\"></TD>
 			</TR>
 			</TABLE>
 			";
 		}
-		
-		echo "<div class='Seperator'></div>\n";
-		
+
 		echo "</div>\n";
 	}
 }

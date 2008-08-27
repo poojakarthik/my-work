@@ -100,7 +100,7 @@
 		print "
 		<h2 class='Account'>Billing Details</h2>
 		<div class='GroupedContent'>
-		<TABLE>
+		<TABLE class=\"edit-account-table-style\">
 		<TR>
 			<TD width=\"200\">Billing Method: </TD>
 			<TD>$strNewBillingMethod</TD>
@@ -112,7 +112,7 @@
 		print "
 		<h2 class='Account'>Address Details</h2>
 		<div class='GroupedContent'>
-		<TABLE>
+		<TABLE class=\"edit-account-table-style\">
 		<TR>
 			<TD width=\"200\">Street Address: </TD>
 			<TD>" . htmlspecialchars($_POST['mixAccount_Address1']) . "</TD>
@@ -144,7 +144,7 @@
 		print "
 		<h2 class='Account'>Contact Details</h2>
 		<div class='GroupedContent'>
-		<TABLE>
+		<TABLE class=\"edit-account-table-style\">
 		<TR>
 			<TD width=\"200\">First Name: </TD>
 			<TD>" . htmlspecialchars($_POST['mixContact_FirstName']) . "</TD>
@@ -180,11 +180,14 @@
 		</TABLE>
 		</div>
 		<br/>
-		<input type=\"submit\" value=\"Confirm Changes\">
+
+		<TABLE class=\"edit-account-table-style\">
+		<TR>
+			<TD align=right><input type=\"submit\" value=\"Confirm Changes\"></TD>
+		</TR>
+		</TABLE>
 		</form>
 		";
-
-		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";
 	}
