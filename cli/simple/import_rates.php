@@ -91,8 +91,8 @@ if ($ptrFile)
 				//							= $arrLine[3];							// Unused
 				$arrRate['Name']			= $arrLine[4];
 				$arrRate['Description']		= $arrLine[5];
-				$arrRate['StartTime']		= $arrLine[6];
-				$arrRate['EndTime']			= $arrLine[7];
+				$arrRate['StartTime']		= date("H:i:s", strtotime($arrLine[6]));
+				$arrRate['EndTime']			= date("H:i:s", strtotime($arrLine[7]));
 				$arrRate['Monday']			= (int)$arrLine[8];
 				$arrRate['Tuesday']			= (int)$arrLine[9];
 				$arrRate['Wednesday']		= (int)$arrLine[10];
