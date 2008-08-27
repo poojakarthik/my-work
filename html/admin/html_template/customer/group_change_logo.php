@@ -100,9 +100,14 @@ class HtmlTemplateCustomerGroupChangeLogo extends HtmlTemplate
 	{
 		if(array_key_exists('CustomerGroup_Id', $_POST))
 		{
-
+			$mixRedirectLink = Href()->ViewCustomerGroup($_POST['CustomerGroup_Id']);
+			if($_POST['CustomerGroup_Id'] == "")
+			{
+				$mixRedirectLink = "./flex.php/CustomerGroup/ViewAll/";
+			}
 			$strFileName = $_FILES['userfile']['name'];
 			$strFileType = $_FILES['userfile']['type'];
+
 			echo "<h2 class='CustomerGroup'>The logo has now been updated.</h2>\n";
 			echo "<div class='GroupedContent'>\n";
 			echo "
@@ -121,7 +126,7 @@ class HtmlTemplateCustomerGroupChangeLogo extends HtmlTemplate
 			</TR>
 			</TABLE>
 			</div><br/><br/>
-			<A HREF=". Href()->ViewCustomerGroup($_POST['CustomerGroup_Id']) .">Continue Editing Customer Group</A>";
+			<A HREF=$mixRedirectLink>Continue Editing Customer Group</A>";
 		
 		
 		}

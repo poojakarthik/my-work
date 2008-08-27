@@ -166,6 +166,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		if(array_key_exists('CustomerGroup_Id', $_POST))
 		{
+			if(!empty($_POST['CustomerGroup_Id']))
+			{
 			$strFileName = $_FILES['userfile']['name'];
 			$strTmpName  = $_FILES['userfile']['tmp_name'];
 			$strFileType = $_FILES['userfile']['type'];
@@ -174,10 +176,18 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			$mixContent = fread($resImage, filesize($strTmpName));
 			fclose($resImage);
 
+			DBO()->CustomerGroup->Id = $_POST['CustomerGroup_Id'];
+			DBO()->CustomerGroup->Load();
 			DBO()->CustomerGroup->customer_logo = $mixContent;
 			DBO()->CustomerGroup->customer_logo_type = $strFileType;
 			DBO()->CustomerGroup->SetColumns("customer_logo,customer_logo_type");
 			DBO()->CustomerGroup->Save();
+			}
+			else
+			{
+				// Group ID entered was empty.
+				$this->LoadPage('customer_group_view');
+			}
 
 		}
 
