@@ -1283,8 +1283,11 @@ Object.extend(DynamicallyLoadedPanel.prototype,
 	{
 		this.container = container;
 		this.titlePane = document.createElement('div');
+		this.titlePane.className = 'dynamically-loaded-panel-title';
 		this.contentPane = document.createElement('div');
+		this.contentPane.className = 'dynamically-loaded-panel-content';
 		this.footerPane = document.createElement('div');
+		this.footerPane.className = 'dynamically-loaded-panel-footer';
 		this.container.appendChild(this.titlePane);
 		this.container.appendChild(this.contentPane);
 		this.container.appendChild(this.footerPane);
