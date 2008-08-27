@@ -148,9 +148,14 @@ if ($ptrFile)
 				$arrRateGroup['**Rates'][]	= $arrRate;
 			}
 		}
+		elseif($arrLine[0] === '' && $arrLine[1] == '')
+		{
+			// I think we can assume this is a blank line
+			continue;
+		}
 		else
 		{
-			throw new Exception("What the fuck kind of row has ".count($arrLine)." columns? @ Line {$intLine}");
+			throw new Exception("Unexpected Row '".implode(',', $arrLine)."'");
 		}
 	}
 	CliEcho();
