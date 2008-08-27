@@ -80,24 +80,40 @@
 
 		echo "	
 		<div class='GroupedContent'>
-		<TABLE class=\"customer-standard-table-style\">
-		<TR>
-			<TD width=\"200\">Business Name: </TD>
-			<TD>" . DBO()->Account->BusinessName->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Trading Name: </TD>
-			<TD>" . DBO()->Account->TradingName->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>ABN: </TD>
-			<TD>" . DBO()->Account->ABN->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>ACN: </TD>
-			<TD>" . DBO()->Account->ACN->Value . "</TD>
-		</TR>";
-
+		<TABLE class=\"customer-standard-table-style\">";
+		
+		if(DBO()->Account->BusinessName->Value)
+		{
+			print "
+			<TR>
+				<TD width=\"200\">Business Name: </TD>
+				<TD>" . DBO()->Account->BusinessName->Value . "</TD>
+			</TR>";
+		}
+		if(DBO()->Account->TradingName->Value)
+		{
+			print "
+			<TR>
+				<TD>Trading Name: </TD>
+				<TD>" . DBO()->Account->TradingName->Value . "</TD>
+			</TR>";
+		}
+		if(DBO()->Account->ABN->Value)
+		{
+			print "
+			<TR>
+				<TD>ABN: </TD>
+				<TD>" . DBO()->Account->ABN->Value . "</TD>
+			</TR>";
+		}
+		if(DBO()->Account->ACN->Value)
+		{
+			print "
+			<TR>
+				<TD>ACN: </TD>
+				<TD>" . DBO()->Account->ACN->Value . "</TD>
+			</TR>";
+		}
 		$strCustomerBalance = "$" . number_format(DBO()->Account->CustomerBalance->Value, 2, '.', '');
 		if(eregi("-",$strCustomerBalance))
 		{
