@@ -626,7 +626,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
 		
 		$strShowLastLogin = "Never";
-		$intLastLogin = DBO()->Contact->LoginLogin->Value;
+		$intLastLogin = DBO()->Contact->LastLogin->Value;
 		if($intLastLogin != "")
 		{
 			$strShowLastLogin = date("F j, Y, g:i a",$intLastLogin);

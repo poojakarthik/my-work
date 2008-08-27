@@ -768,6 +768,10 @@ class Application
 				DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 				DBO()->CustomerGroup->Load();
 				
+					// Get the Account table.
+				DBO()->Contact->Id = $currentUser['Id'];
+				DBO()->Contact->Load();
+
 				// Save when the user last logged in.
 				DBO()->Contact->LastLogin = time();
 				DBO()->Contact->SetColumns("LastLogin");
