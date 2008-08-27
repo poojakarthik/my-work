@@ -82,6 +82,12 @@
 				$mixFoundError = TRUE;
 			}
 		}
+		print "
+		<div class='customer-standard-table-title-style'>Confirmation</div>
+		<div class='GroupedContent'>
+		<TABLE class=\"customer-standard-table-style\">
+		<TR>
+			<TD>";
 		if($mixFoundError)
 		{
 			print "There was an error with the passwords entered.<br/>";
@@ -91,6 +97,11 @@
 		{
 			print "Thank you for taking the time to update your account,<br/>your changes have been completed. <img src=\"" . Href()->GetBaseUrl() . "/img/generic/check.gif\"><br/><br/>";
 		}
+		print "</TD>
+		</TR>
+		</TABLE>
+		</div>";
+
 		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";

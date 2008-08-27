@@ -74,7 +74,7 @@
 	{
 		echo "<br/><br/><div class='NarrowContent'>\n";
 
-		echo "Please confirm the new changes below: <br/><br/>";
+		echo "<div class='customer-standard-table-title-style'><FONT COLOR='red'>Please confirm the new changes below</FONT></div><br/><br/>";
 
 		echo "
 		<form method=\"POST\" action=\"./flex.php/Console/Edit/\"\">
@@ -98,9 +98,10 @@
 		$intBillMethod = htmlspecialchars($_POST['mixAccount_BillingMethod']);
 		$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$intBillMethod]['Description'];
 		print "
-		<h2 class='Account'>Billing Details</h2>
+		<div class='customer-standard-table-title-style'>Billing Details</div>
+		<!-- <h2 class='Account'>Billing Details</h2> -->
 		<div class='GroupedContent'>
-		<TABLE class=\"edit-account-table-style\">
+		<TABLE class=\"customer-standard-table-style\">
 		<TR>
 			<TD width=\"200\">Billing Method: </TD>
 			<TD>$strNewBillingMethod</TD>
@@ -110,9 +111,10 @@
 		<br/>";
 
 		print "
-		<h2 class='Account'>Address Details</h2>
+		<div class='customer-standard-table-title-style'>Address Details</div>
+		<!-- <h2 class='Account'>Address Details</h2> -->
 		<div class='GroupedContent'>
-		<TABLE class=\"edit-account-table-style\">
+		<TABLE class=\"customer-standard-table-style\">
 		<TR>
 			<TD width=\"200\">Street Address: </TD>
 			<TD>" . htmlspecialchars($_POST['mixAccount_Address1']) . "</TD>
@@ -142,9 +144,10 @@
 		<br/>";
 
 		print "
-		<h2 class='Account'>Contact Details</h2>
+		<div class='customer-standard-table-title-style'>Contact Details</div>
+		<!-- <h2 class='Account'>Contact Details</h2> -->
 		<div class='GroupedContent'>
-		<TABLE class=\"edit-account-table-style\">
+		<TABLE class=\"customer-standard-table-style\">
 		<TR>
 			<TD width=\"200\">First Name: </TD>
 			<TD>" . htmlspecialchars($_POST['mixContact_FirstName']) . "</TD>
@@ -181,7 +184,7 @@
 		</div>
 		<br/>
 
-		<TABLE class=\"edit-account-table-style\">
+		<TABLE class=\"customer-standard-table-style\">
 		<TR>
 			<TD align=right><input type=\"submit\" value=\"Confirm Changes\"></TD>
 		</TR>

@@ -72,9 +72,22 @@
 	function Render()
 	{
 		echo "<br/><br/><div class='NarrowContent'>\n";
+		
+		print "
+		<div class='customer-standard-table-title-style'>Failure notice</div>
+		<div class='GroupedContent'>
+		<TABLE class=\"customer-standard-table-style\">
+		<TR>
+			<TD>";
 
 		print "There was an error processing your request.<br/>";
 		print "<br/><A HREF=\"javascript:history.go(-1)\">Please return and try again.</A>";
+
+		print "</TD>
+		</TR>
+		</TABLE>
+		</div>";
+
 		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";

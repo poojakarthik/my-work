@@ -73,6 +73,13 @@
 	{
 		echo "<br/><br/><div class='NarrowContent'>\n";
 
+		print "
+		<div class='customer-standard-table-title-style'>Password Failure</div>
+		<div class='GroupedContent'>
+		<TABLE class=\"customer-standard-table-style\">
+		<TR>
+			<TD>";
+
 		print "There was an error processing your password change request.<br/>
 		Please check the requirements below:<br/><br/>
 		<ul>
@@ -83,6 +90,12 @@
 			<li> The password length should match 6 - 40 characters in length.
 		</ul>";
 		print "<br/><A HREF=\"javascript:history.go(-1)\">Please return and try again.</A>";
+
+		print "</TD>
+		</TR>
+		</TABLE>
+		</div>";
+
 		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";

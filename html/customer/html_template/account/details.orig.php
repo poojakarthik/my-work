@@ -73,78 +73,9 @@
 	{
 		#echo "<div class='NarrowContent'>\n";
 	
-		echo "<H2>Home</H2><br/><br/>";
-
-		echo "<div class='customer-standard-table-title-style'>Account Details</div>\n";
-		//echo "<h2 class='Account'>Account Details</h2>\n";
-
-		echo "	
-		<div class='GroupedContent'>
-		<TABLE class=\"customer-standard-table-style\">
-		<TR>
-			<TD width=\"200\">Business Name: </TD>
-			<TD>" . DBO()->Account->BusinessName->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Trading Name: </TD>
-			<TD>" . DBO()->Account->TradingName->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>ABN: </TD>
-			<TD>" . DBO()->Account->ABN->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>ACN: </TD>
-			<TD>" . DBO()->Account->ACN->Value . "</TD>
-		</TR>";
-
-		$strCustomerBalance = "$" . number_format(DBO()->Account->CustomerBalance->Value, 2, '.', '');
-		if(eregi("-",$strCustomerBalance))
-		{
-			$strCustomerBalance = str_replace("-","",$strCustomerBalance) . " CR";
-		}
-		print "
-		<TR>
-			<TD>Customer Balance: </TD>
-			<TD>$strCustomerBalance</TD>
-		</TR>
-		<TR>
-			<TD>Overdue: </TD>
-			<TD>" . "$" . number_format(Framework()->GetOverdueBalance(DBO()->Account->Id->Value), 2, '.', '') . "</TD>
-		</TR>";
-
-		$strUnbilledAdjustments = "$" . number_format(DBO()->Account->UnbilledAdjustments->Value, 2, '.', '');
-		if(eregi("-",$strUnbilledAdjustments))
-		{
-			$strUnbilledAdjustments = str_replace("-","",$strUnbilledAdjustments) . " CR";
-		}
-		print "
-		<TR>
-			<TD>Unbilled Debits & Credits: </TD>
-			<TD>$strUnbilledAdjustments</TD>
-		</TR>
-		<TR>
-			<TD>Unbilled Calls: </TD>
-			<TD>" . "$" . number_format(DBO()->Account->UnbilledCDRs->Value, 2, '.', '') . "</TD>
-		</TR>";
-
-		
-		$BillingMethod = DBO()->Account->BillingMethod->Value;
-		$strDescriptionOfMethod = $GLOBALS['*arrConstant']['BillingMethod'][$BillingMethod]['Description'];
-		print "
-		<TR>
-			<TD>Billing Method: </TD>
-			<TD>$strDescriptionOfMethod</TD>
-		</TR>
-		</TABLE>
-		</div>
-		<br/>\n";
-
-/*
-		echo "<div class='GroupedContent'>";
-
-
-
+		echo "<H2>Home</H2><br/><br/>
+		<h2 class='Account'>Account Details</h2>\n";
+		echo "<div class='GroupedContent'>\n";
 		DBO()->Account->Id->RenderOutput();
 		if (DBO()->Account->BusinessName->Value)
 		{
@@ -165,7 +96,6 @@
 		
 		DBO()->Account->CustomerBalance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
-		
 		$strUnbilledAdjustments = DBO()->Account->UnbilledAdjustments->Value;
 		if($strUnbilledAdjustments == "0")
 		{
@@ -205,43 +135,7 @@
 		</div>";
 
 		echo "</div><br/><br/>";
-		*/
-
-		echo "<div class='customer-standard-table-title-style'>Address Details</div>\n";
-		//echo "<h2 class='Account'>Address Details</h2>\n";
-
-		echo "	
-		<div class='GroupedContent'>
-		<TABLE class=\"customer-standard-table-style\">
-		<TR>
-			<TD width=\"200\">Street Address: </TD>
-			<TD>" . DBO()->Account->Address1->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>&nbsp;</TD>
-			<TD>" . DBO()->Account->Address2->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Suburb: </TD>
-			<TD>" . DBO()->Account->Suburb->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>State: </TD>
-			<TD>" . DBO()->Account->State->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Postcode: </TD>
-			<TD>" . DBO()->Account->Postcode->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Country: </TD>
-			<TD>" . DBO()->Account->Country->Value . "</TD>
-		</TR>
-		</TABLE>
-		</div>
-		<br/><br/>";
 		
-		/*
 		echo "<h2 class='Account'>Address Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		// Display the details of their primary account
@@ -278,55 +172,6 @@
 		}
 		echo "</div><br/><br/>";
 
-		*/
-
-
-
-		echo "<div class='customer-standard-table-title-style'>Contact Details</div>\n";
-
-		echo "	
-		<div class='GroupedContent'>
-		<TABLE class=\"customer-standard-table-style\">
-		<TR>
-			<TD width=\"200\">Title: </TD>
-			<TD>" . DBO()->Contact->Title->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>First Name: </TD>
-			<TD>" . DBO()->Contact->FirstName->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Last Name: </TD>
-			<TD>" . DBO()->Contact->LastName->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Job Title: </TD>
-			<TD>" . DBO()->Contact->JobTitle->Value . "</TD>
-		</TR>";
-
-		$strDisplayEmailAddress = trim(DBO()->Contact->Email->Value);
-		print "
-		<TR>
-			<TD>E-Mail: </TD>
-			<TD>$strDisplayEmailAddress</TD>
-		</TR>
-		<TR>
-			<TD>Phone: </TD>
-			<TD>" . DBO()->Contact->Phone->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Mobile: </TD>
-			<TD>" . DBO()->Contact->Mobile->Value . "</TD>
-		</TR>
-		<TR>
-			<TD>Fax: </TD>
-			<TD>" . DBO()->Contact->Fax->Value . "</TD>
-		</TR>
-		</TABLE>
-		</div>
-		<br/>";
-
-		/*
 		echo "<h2 class='Account'>Contact Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		if (DBO()->Contact->Title->Value)
@@ -368,8 +213,8 @@
 		{
 			DBO()->Contact->Fax->RenderOutput();
 		}
-		*/
 
+		echo "</div>\n";
 	}
 }
 

@@ -29,7 +29,17 @@
 /**************************************************************************/
 /* EDIT PAGE														  */
 /**************************************************************************/
-.edit-account-table-style
+.customer-standard-table-title-style
+{
+	font-size:	12px;
+	width:		450px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+.customer-standard-table-style
 {
 	font-size:	12px;
 	width:		450px
