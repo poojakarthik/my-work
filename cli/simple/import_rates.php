@@ -7,7 +7,7 @@ CliEcho("\n[ IMPORT RATES ]\n");
 
 // Command line arguments
 $strFilePath	= trim($argv[1]);
-$strUndoPath	= $strFilePath.'undo';
+$strUndoPath	= $strFilePath.'.undo.sql';
 if (!is_file($strFilePath))
 {
 	CliEcho("USAGE: 'php import_rates.php <FilePath>'\n");
@@ -196,43 +196,48 @@ if ($ptrFile)
 				$arrUndoRateIds[]	= $arrRateGroup['**Rates'][$intKey]['Id'];
 			}
 		}
-	}
 	
-	// Insert RateGroupRates
-	CliEcho("Inserting RateGroupRates...");
-	foreach ($arrRateGroup['**Rates'] as $arrRate)
-	{
-		$arrRateGroupRate	= Array();
-		$arrRateGroupRate['RateGroup']	= $arrRateGroup['Id'];
-		$arrRateGroupRate['Rate']		= $arrRate['Id'];
-		
-		if (($intRateGroupRateId = $insRateGroupRate->Execute($arrRateGroupRate)) === FALSE)
+		// Insert RateGroupRates
+		CliEcho("Inserting RateGroupRates...");
+		foreach ($arrRateGroup['**Rates'] as $arrRate)
 		{
-			throw new Exception("ERROR: ".$insRateGroupRate->Error());
+			$arrRateGroupRate	= Array();
+			$arrRateGroupRate['RateGroup']	= $arrRateGroup['Id'];
+			$arrRateGroupRate['Rate']		= $arrRate['Id'];
+			
+			if (($intRateGroupRateId = $insRateGroupRate->Execute($arrRateGroupRate)) === FALSE)
+			{
+				throw new Exception("ERROR: ".$insRateGroupRate->Error());
+			}
+			
+			$arrRateGroupRateIds[]	= $intRateGroupRateId;
 		}
 		
-		$arrRateGroupRateIds[]	= $intRateGroupRateId;
-	}
-	
-	// Create "Undo" file
-	CliEcho("Creating Undo File...");
-	$ptrUndoFile	= fopen($strUndoPath, 'w');
-	if ($ptrUndoFile)
-	{
-		fwrite($ptrUndoFile, "# RateGroupRate Records\n");
-		fwrite($ptrUndoFile, "DELETE FROM RateGroupRate WHERE Id IN (".implode(', ', $arrRateGroupRateIds).");\n\n");
-		
-		fwrite($ptrUndoFile, "# RateGroup Record\n");
-		fwrite($ptrUndoFile, "DELETE FROM RateGroup WHERE Id = {$intRateGroupId};\n\n");
-		
-		fwrite($ptrUndoFile, "# Rate Records\n");
-		fwrite($ptrUndoFile, "DELETE FROM Rate WHERE Id IN (".implode(', ', $arrUndoRateIds).");\n");
-		
-		fclose($ptrUndoFile);
+		// Create "Undo" file
+		CliEcho("Creating Undo File...");
+		$ptrUndoFile	= fopen($strUndoPath, 'w');
+		if ($ptrUndoFile)
+		{
+			fwrite($ptrUndoFile, "# RateGroupRate Records\n");
+			fwrite($ptrUndoFile, "DELETE FROM RateGroupRate WHERE Id IN (".implode(', ', $arrRateGroupRateIds).");\n\n");
+			
+			fwrite($ptrUndoFile, "# RateGroup Record\n");
+			fwrite($ptrUndoFile, "DELETE FROM RateGroup WHERE Id = {$intRateGroupId};\n\n");
+			
+			fwrite($ptrUndoFile, "# Rate Records\n");
+			fwrite($ptrUndoFile, "DELETE FROM Rate WHERE Id IN (".implode(', ', $arrUndoRateIds).");\n");
+			
+			fclose($ptrUndoFile);
+		}
+		else
+		{
+			CliEcho("WARNING: Unable to write Undo file!");
+		}
 	}
 	else
 	{
-		CliEcho("WARNING: Unable to write Undo file!");
+		// There is nothing to insert.  At all.  Why did we bother?  Who knows.  I blame Bash.
+		CliEcho("[!] No new data to insert.  The database has not been modified.");
 	}
 	CliEcho();
 }
