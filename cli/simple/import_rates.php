@@ -58,10 +58,10 @@ if ($ptrFile)
 					$arrCompare	= $selRateGroup->Fetch();
 					foreach ($arrRateGroup as $strField=>$mixValue)
 					{
-						if ($mixValue !== $arrCompare[$mixValue])
+						if ($mixValue !== $arrCompare[$strField])
 						{
 							// This field doesn't match!
-							throw new Exception("ERROR: Imported {$strField} === '{$mixValue}', but Existing value is '{$arrCompare[$mixValue]}'!");
+							throw new Exception("ERROR: Imported {$strField} === '{$mixValue}', but Existing value is '{$arrCompare[$strField]}'!");
 						}
 					}
 					
@@ -128,10 +128,10 @@ if ($ptrFile)
 					$arrCompare	= $selRate->Fetch();
 					foreach ($arrRate as $strField=>$mixValue)
 					{
-						if ($mixValue !== $arrCompare[$mixValue])
+						if ($mixValue !== $arrCompare[$strField])
 						{
 							// This field doesn't match!
-							throw new Exception("ERROR: Imported {$strField} === '{$mixValue}', but Existing value is '{$arrCompare[$mixValue]}'!");
+							throw new Exception("ERROR: Imported {$strField} === '{$mixValue}', but Existing value is '{$arrCompare[$strField]}'!");
 						}
 					}
 					
