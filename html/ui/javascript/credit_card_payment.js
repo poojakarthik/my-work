@@ -184,12 +184,14 @@ Object.extend(CreditCardPayment.prototype,
 			var option = null;
 			this.inputEmail = document.createElement('input');
 			this.inputEmail.type= 'text';
+			this.inputEmail.id = 'cc-input-email';
 			this.inputEmail.className = 'required';
 			this.inputEmail.value = this.contactEmail;
 			this.inputEmail.maxLength = 255;
 			this.inputEmail.size = this.hasCancelButton ? 40 : 30;
 			this.inputCardType = document.createElement('select');
 			this.inputCardType.className = 'required';
+			this.inputCardType.id = 'cc-input-type';
 			// Populate the select (Default to none-selected)
 			var cardTypes = CreditCardPayment.listCardTypes();
 			option = document.createElement('option');
@@ -206,7 +208,9 @@ Object.extend(CreditCardPayment.prototype,
 			this.inputCardNumber = document.createElement('input');
 			this.inputCardNumber.type= 'text';
 			this.inputCardNumber.className = 'required';
+			this.inputCardNumber.id = 'cc-input-number';
 			this.inputCVV = document.createElement('input');
+			this.inputCVV.id = 'cc-input-cvv';
 			this.inputCVV.type= 'text';
 			this.inputCVV.className = 'required';
 			this.inputCVV.maxLength = CreditCardType.maxCvvLength;
@@ -234,6 +238,7 @@ Object.extend(CreditCardPayment.prototype,
 			var curr_year = d.getFullYear();
 
 			this.inputMonth = document.createElement('select');
+			this.inputMonth.id = 'cc-input-month';
 			this.inputMonth.className = 'required';
 			// Populate the select and default to this month
 			for (var month = 1; month <= 12; month++)
@@ -250,6 +255,7 @@ Object.extend(CreditCardPayment.prototype,
 			}
 
 			this.inputYear = document.createElement('select');
+			this.inputYear.id = 'cc-input-year';
 			this.inputYear.className = 'required';
 			// Populate the select and default to this year
 			for (var year = curr_year; year <= (curr_year + 10); year++)
@@ -269,14 +275,17 @@ Object.extend(CreditCardPayment.prototype,
 			this.inputName.type= 'text';
 			this.inputName.value= this.contactName;
 			this.inputName.maxLength = 255;
+			this.inputName.id = 'cc-input-name';
 			this.inputAmount = document.createElement('input');
 			this.inputAmount.className = 'required';
 			this.inputAmount.type= 'text';
 			this.inputAmount.value= this.amountOwing;
 			this.inputAmount.maxLength = ("" + CreditCardType.maxCardPayment).length + 3;
+			this.inputAmount.id = 'cc-input-amount';
 			this.inputDD = document.createElement('input');
 			this.inputDD.type= 'checkbox';
 			this.inputDD.checked = false;
+			this.inputDD.id = 'cc-input-dd';
 
 			this.paymentForm = document.createElement('div');
 			this.errorMessage = document.createElement('p');
@@ -303,6 +312,7 @@ Object.extend(CreditCardPayment.prototype,
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Email:'));
 			tr.insertCell(-1).appendChild(this.inputEmail);
+			this.appendErrorHelp(tr.cells[1], this.inputEmail);
 
 			this.paymentForm.appendChild(table);
 
@@ -313,18 +323,22 @@ Object.extend(CreditCardPayment.prototype,
 			tr.insertCell(-1).appendChild(document.createTextNode('Credit Card Type:'));
 			tr.insertCell(-1).appendChild(this.inputCardType);
 			if (this.hasCancelButton) tr.cells[0].style.width = '35%';
+			this.appendErrorHelp(tr.cells[1], this.inputCardType);
 
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Name on Card:'));
 			tr.insertCell(-1).appendChild(this.inputName);
+			this.appendErrorHelp(tr.cells[1], this.inputName);
 
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Card Number:'));
 			tr.insertCell(-1).appendChild(this.inputCardNumber);
+			this.appendErrorHelp(tr.cells[1], this.inputCardNumber);
 
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('CVV:'));
 			tr.insertCell(-1).appendChild(this.inputCVV);
+			this.appendErrorHelp(tr.cells[1], this.inputCVV);
 
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Expiry Date:'));
@@ -333,12 +347,14 @@ Object.extend(CreditCardPayment.prototype,
 			td.appendChild(this.inputYear);
 			td.appendChild(document.createElement('span'));
 			td.childNodes[2].appendChild(document.createTextNode('mm/yyyy'));
+			this.appendErrorHelp(tr.cells[1], this.inputMonth);
 
 			if (this.allowDD)
 			{
 				tr = table.insertRow(-1);
 				tr.insertCell(-1).appendChild(document.createTextNode('Use Details For Direct Debit:'));
 				tr.insertCell(-1).appendChild(this.inputDD);
+				this.appendErrorHelp(tr.cells[1], this.inputDD);
 			}
 
 			tr = table.insertRow(-1);
@@ -346,6 +362,7 @@ Object.extend(CreditCardPayment.prototype,
 			td = tr.insertCell(-1);
 			this.appendCurrency(td)
 			td.appendChild(this.inputAmount);
+			this.appendErrorHelp(tr.cells[1], this.inputAmount);
 
 			tr = table.insertRow(-1);
 			tr.insertCell(-1).appendChild(document.createTextNode('Credit Card Surcharge:'));
@@ -795,6 +812,42 @@ Object.extend(CreditCardPayment.prototype,
 		td.appendChild(span);
 	},
 
+	appendErrorHelp: function(td, errorInput)
+	{
+		var button  =document.createElement('input');
+		button.type = 'button';
+		button.className = 'validation-error-tootltip-button';
+		var obj = { boundHoverFunction: null, boundUnhoverFunction: null, errorInput: errorInput, tootltip: null, button: button };
+		obj.boundHoverFunction = this.showToolTip.bind(obj);
+		obj.boundUnhoverFunction = this.hideToolTip.bind(obj);
+		Event.observe(button, 'mouseover', obj.boundHoverFunction);
+		Event.observe(button, 'mouseout', obj.boundUnhoverFunction);
+		td.appendChild(button);
+	},
+
+	showToolTip: function(event)
+	{
+		if (typeof this.tooltip != 'undefined' && this.tooltip != null)
+		{
+			this.tooltip.innerHTML = '';
+		}
+		else
+		{
+			this.tooltip = document.createElement('div');
+			this.tooltip.className = 'validation-error-tootltip';
+		}
+		var position = Element.cumulativeOffset(this.button);
+		this.tooltip.appendChild(document.createTextNode(this.errorInput.getAttribute('validityError')));
+		this.tooltip.style.top = '' + position.top + 'px';
+		this.tooltip.style.left = '' + (position.left + this.button.clientWidth + 8) + 'px';
+		document.body.appendChild(this.tooltip);
+	},
+
+	hideToolTip: function(event)
+	{
+		if (this.tooltip.parentNode) this.tooltip.parentNode.removeChild(this.tooltip);
+	},
+
 	tidyAmount: function(flt)
 	{
 		if (typeof flt == 'string') flt = parseFloat(flt.replace(/[^0-9\.]+/g, ''));
@@ -816,6 +869,7 @@ Object.extend(CreditCardPayment.prototype,
 		var cardType = this.getSelectedCardType();
 		var bolAmountEntered = false;
 		var bolAmountIsValid = true;
+		var strValidityError = '';
 		if (this.inputAmount.value != '')
 		{
 			var cleansed = this.inputAmount.value.replace(/[^0-9\.]+/g, '');
@@ -827,12 +881,26 @@ Object.extend(CreditCardPayment.prototype,
 				{
 					var total = Math.floor((amount + this.calculateSurcharge(cardType, amount)) * 100)/100;
 					bolAmountIsValid = cardType['minimum_amount'] <= total && total <= cardType['maximum_amount'];
+					if (!bolAmountIsValid)
+					{
+						var minAmount = this.tidyAmount(cardType['minimum_amount'] / (1 + cardType['surcharge']));
+						var maxAmount = this.tidyAmount(cardType['maximum_amount'] / (1 + cardType['surcharge']));
+						strValidityError = 'Amount to Pay must be between $' + minAmount + ' and $' + maxAmount + ' for the selected Credit Card Type.';
+					}
 				}
 				else
 				{
 					amount = Math.floor(amount);
 					bolAmountIsValid = amount > 0;
+					if (!bolAmountIsValid)
+					{
+						strValidityError = 'Amount to Pay must be greater than 0 (zero).';
+					}
 				}
+			}
+			else
+			{
+				strValidityError = 'The Amount to Pay enetered is invalid. It must must be number greater than 0 (zero).';
 			}
 			bolAmountEntered = true;
 		}
@@ -840,8 +908,12 @@ Object.extend(CreditCardPayment.prototype,
 		{
 			bolAmountEntered = true;
 			bolAmountIsValid = false;
+			if (!bolAmountIsValid)
+			{
+				strValidityError = 'You must enter an Amount to Pay.';
+			}
 		}
-		this.setValidity(this.inputAmount, bolAmountEntered, true, bolAmountIsValid);
+		this.setValidity(this.inputAmount, bolAmountEntered, true, bolAmountIsValid, strValidityError);
 
 		this.updateBalances();
 		this.updateSurcharges();
@@ -858,7 +930,12 @@ Object.extend(CreditCardPayment.prototype,
 			bolEmailEntered = true;
 			bolEmailIsValid = false;
 		}
-		this.setValidity(this.inputEmail, bolEmailEntered, true, bolEmailIsValid);
+		var strValidityError = '';
+		if (!bolEmailIsValid)
+		{
+			strValidityError = 'You must enter a valid Email address.';
+		}
+		this.setValidity(this.inputEmail, bolEmailEntered, true, bolEmailIsValid, strValidityError);
 		return bolEmailEntered && bolEmailIsValid;
 	},
 
@@ -866,8 +943,13 @@ Object.extend(CreditCardPayment.prototype,
 	{
 		highlightBlankFields = typeof highlightBlankFields != 'boolean' ? false : highlightBlankFields;
 		var bolExpiryValid = CreditCardPayment.checkExpiry(this.inputMonth.options[this.inputMonth.selectedIndex].value, this.inputYear.options[this.inputYear.selectedIndex].value);
-		this.setValidity(this.inputMonth, true, true, bolExpiryValid);
-		this.setValidity(this.inputYear, true, true, bolExpiryValid);
+		var strValidityError = '';
+		if (!bolExpiryValid)
+		{
+			strValidityError = 'The selecetd Expiry Date is in the past.';
+		}
+		this.setValidity(this.inputMonth, true, true, bolExpiryValid, strValidityError);
+		this.setValidity(this.inputYear, true, true, bolExpiryValid, strValidityError);
 		return bolExpiryValid;
 	},
 
@@ -881,7 +963,12 @@ Object.extend(CreditCardPayment.prototype,
 			bolNameEntered = true;
 			bolNameIsValid = false;
 		}
-		this.setValidity(this.inputName, bolNameEntered, true, bolNameIsValid);
+		var strValidityError = '';
+		if (!bolNameIsValid)
+		{
+			strValidityError = 'You must enter the card holder name as shown on the credit card.';
+		}
+		this.setValidity(this.inputName, bolNameEntered, true, bolNameIsValid, strValidityError);
 		return bolNameEntered && bolNameIsValid;
 	},
 
@@ -921,6 +1008,9 @@ Object.extend(CreditCardPayment.prototype,
 		var bolCardTypeEntered = cardType ? true : false;
 		var bolCardTypeIsValid = bolCardTypeEntered;
 
+		var strTypeValidityError = bolCardTypeIsValid ? '' : 'You must select the Credit Card Type.';
+		var strNumberValidityError = '';
+
 		// Check that the card number is a valid card number. If not, highlight as invalid.
 		var bolCardNumberEntered = this.inputCardNumber.value != '';
 		var cardNumber = this.inputCardNumber.value.replace(/[^0-9]+/g, '');
@@ -931,6 +1021,7 @@ Object.extend(CreditCardPayment.prototype,
 			if (!validateType)
 			{
 				bolCardNumberIsValid = false;
+				strNumberValidityError = 'The Card Number entered does not match any of the accepted credit card types.';
 			}
 			else
 			{
@@ -942,11 +1033,13 @@ Object.extend(CreditCardPayment.prototype,
 				{
 					bolCardNumberIsValid = false;
 					bolCardTypeIsValid = false;
+					strTypeValidityError = strNumberValidityError = 'The selected Credit Card Type does not match the Card Number entered.';
 				}
 				else
 				{
 					bolCardTypeEntered = bolCardTypeIsValid = true;
 					bolCardNumberIsValid = CreditCardPayment.checkCardNumber(cardNumber, validateType['id']);
+					strNumberValidityError = 'The Card Number entered is invalid.';
 				}
 			}
 		}
@@ -957,6 +1050,20 @@ Object.extend(CreditCardPayment.prototype,
 			{
 				this.setCardType(validateType, skipInitialTidy);
 				bolCardTypeEntered = bolCardTypeIsValid = true;
+				var strLens = '';
+				for (var i = 0, l = validateType['valid_lengths'].length; i < l; i++)
+				{
+					strLens += ((i == 0) ? '' : (i == (l-1) ? ' or ' : ', ')) + validateType['valid_lengths'][i];
+				}
+				strNumberValidityError = 'Card numbers for the selected Credit Card Type are ' + strLens + ' digits long.';
+			}
+			else if (cardNumber.length >= CreditCardType.minCardNumberLength)
+			{
+				strNumberValidityError = 'The Card Number entered does not match any of the accepted credit card types.';
+			}
+			else
+			{
+				strNumberValidityError = 'The Card Number entered is not long enough.';
 			}
 		}
 		else if (highlightBlankFields)
@@ -965,10 +1072,12 @@ Object.extend(CreditCardPayment.prototype,
 			bolCardTypeEntered = true;
 			bolCardNumberIsValid = false;
 			bolCardNumberEntered = true;
+			strTypeValidityError = 'You must select the type of Credit Card Type for the payment.';
+			strNumberValidityError = 'You must enter the Card Number.';
 		}
 
-		this.setValidity(this.inputCardType, bolCardTypeEntered, true, bolCardTypeIsValid);
-		this.setValidity(this.inputCardNumber, bolCardNumberEntered, true, bolCardNumberIsValid);
+		this.setValidity(this.inputCardType, bolCardTypeEntered, true, bolCardTypeIsValid, strTypeValidityError);
+		this.setValidity(this.inputCardNumber, bolCardNumberEntered, true, bolCardNumberIsValid, strNumberValidityError);
 		return bolCardTypeEntered && bolCardTypeIsValid && bolCardNumberEntered && bolCardNumberIsValid;
 	},
 
@@ -994,14 +1103,40 @@ Object.extend(CreditCardPayment.prototype,
 		var cardType = this.getSelectedCardType();
 		var bolCvvEntered = false;
 		var bolCvvIsValid = true;
+		var strValidityError = '';
 		if (this.inputCVV.value != '')
 		{
 			var cleansed = this.inputCVV.value.replace(/[^0-9]+/g, '');
 			bolCvvIsValid = this.inputCVV.value.match(/^ *[0-9]+[ 0-9]*$/) && !isNaN(parseInt(cleansed));
 			if (bolCvvIsValid)
 			{
-				if (cardType) bolCvvIsValid = cleansed.length == cardType['cvv_length'];
-				else bolCvvIsValid = cleansed.length >= CreditCardType.minCvvLength && cleansed.length <= CreditCardType.maxCvvLength;
+				if (cardType) 
+				{
+					bolCvvIsValid = cleansed.length == cardType['cvv_length'];
+					strValidityError = 'The CVV for the selected Credit Card Type must be ' + cardType['cvv_length'] + ' digits long.';
+				}
+				else 
+				{
+					bolCvvIsValid = cleansed.length >= CreditCardType.minCvvLength && cleansed.length <= CreditCardType.maxCvvLength;
+					var dif = CreditCardType.maxCvvLength - CreditCardType.minCvvLength;
+					strValidityError = (dif == 0) ? 'Valid CVVs are between ' + CreditCardType.minCvvLength + ' digits long.'
+												  : ((dif == 1) ? 'Valid CVVs are ' + CreditCardType.minCvvLength + ' or ' + CreditCardType.maxCvvLength + ' digits long.'
+												  				: 'Valid CVVs are between ' + CreditCardType.minCvvLength + ' and ' + CreditCardType.maxCvvLength + ' digits long.');
+				}
+			}
+			else
+			{
+				if (cardType) 
+				{
+					strValidityError = 'The CVV enetered is invalid. It must must be a ' + cardType['cvv_length'] + ' digit number for the selected Credit Card Type.';
+				}
+				else
+				{
+					var dif = CreditCardType.maxCvvLength - CreditCardType.minCvvLength;
+					strValidityError = (dif == 0) ? 'The CVV enetered is invalid. It must must be a ' + CreditCardType.minCvvLength + ' digit number.'
+												  : ((dif == 1) ? 'The CVV enetered is invalid. It must must be a ' + CreditCardType.minCvvLength + ' or ' + CreditCardType.maxCvvLength + ' digit number.'
+												  				: 'The CVV enetered is invalid. It must must be a number between ' + CreditCardType.minCvvLength + ' and ' + CreditCardType.maxCvvLength + ' digits long.');
+				}
 			}
 			bolCvvEntered = true;
 		}
@@ -1009,8 +1144,9 @@ Object.extend(CreditCardPayment.prototype,
 		{
 			bolCvvEntered = true;
 			bolCvvIsValid = false;
+			strValidityError = 'You must enter the CVV for the credit card.';
 		}
-		this.setValidity(this.inputCVV, bolCvvEntered, true, bolCvvIsValid);
+		this.setValidity(this.inputCVV, bolCvvEntered, true, bolCvvIsValid, strValidityError);
 		return bolCvvEntered && bolCvvIsValid;
 	},
 
@@ -1054,9 +1190,11 @@ Object.extend(CreditCardPayment.prototype,
 		this.displayTotal.value = totalAmount;
 	},
 
-	setValidity: function(element, entered, required, valid)
+	setValidity: function(element, entered, required, valid, validityError)
 	{
 		element.className = (!entered || valid) ? (required ? (entered ? 'valid' : 'required') : (entered ? 'valid' : '')) : 'invalid';
+		element.setAttribute('validityError', validityError);
+		element.parentNode.setAttribute('contains-invalid-input', (entered && !valid) ? 'true' : 'false');
 	},
 
 	getSelectedCardType: function()
