@@ -7,6 +7,7 @@ CliEcho("\n[ IMPORT RATES ]\n");
 
 // Command line arguments
 $strFilePath	= trim($argv[1]);
+$strUndoPath	= $strFilePath.'undo';
 if (!is_file($strFilePath))
 {
 	CliEcho("USAGE: 'php import_rates.php <FilePath>'\n");
@@ -165,6 +166,10 @@ if ($ptrFile)
 	$insRateGroup		= new StatementInsert("RateGroup");
 	$insRateGroupRate	= new StatementInsert("RateGroupRate");
 	
+	$intRateGroupId			= NULL;
+	$arrUndoRateIds			= Array();
+	$arrRateGroupRateIds	= Array();
+	
 	// Insert RateGroup & Rates
 	if (!$arrRateGroup['Id'])
 	{
@@ -174,11 +179,12 @@ if ($ptrFile)
 		{
 			throw new Exception("ERROR: ".$insRateGroup->Error());
 		}
+		$intRateGroupId	= $arrRateGroup['Id'];
 		
 		// Insert Rates
 		CliEcho("Inserting Rates...");
 		foreach ($arrRateGroup['**Rates'] as $intKey=>$arrRate)
-		{
+		{			
 			// Ensure we're only inserting rates that don't exist
 			if (!$arrRate['Id'])
 			{
@@ -186,6 +192,8 @@ if ($ptrFile)
 				{
 					throw new Exception("ERROR: ".$insRate->Error());
 				}
+				
+				$arrUndoRateIds[]	= $arrRateGroup['**Rates'][$intKey]['Id'];
 			}
 		}
 	}
@@ -198,10 +206,33 @@ if ($ptrFile)
 		$arrRateGroupRate['RateGroup']	= $arrRateGroup['Id'];
 		$arrRateGroupRate['Rate']		= $arrRate['Id'];
 		
-		if ($insRateGroupRate->Execute($arrRateGroupRate) === FALSE)
+		if (($intRateGroupRateId = $insRateGroupRate->Execute($arrRateGroupRate)) === FALSE)
 		{
 			throw new Exception("ERROR: ".$insRateGroupRate->Error());
 		}
+		
+		$arrRateGroupRateIds[]	= $intRateGroupRateId;
+	}
+	
+	// Create "Undo" file
+	CliEcho("Creating Undo File...");
+	$ptrUndoFile	= fopen($strUndoPath, 'w');
+	if ($ptrUndoFile)
+	{
+		fwrite($ptrUndoFile, "# RateGroupRate Records\n");
+		fwrite($ptrUndoFile, "DELETE FROM RateGroupRate WHERE Id IN (".implode(', ', $arrRateGroupRateIds).");\n\n");
+		
+		fwrite($ptrUndoFile, "# RateGroup Record\n");
+		fwrite($ptrUndoFile, "DELETE FROM RateGroup WHERE Id = {$intRateGroupId};\n\n");
+		
+		fwrite($ptrUndoFile, "# Rate Records\n");
+		fwrite($ptrUndoFile, "DELETE FROM Rate WHERE Id IN (".implode(', ', $arrUndoRateIds).");\n");
+		
+		fclose($ptrUndoFile);
+	}
+	else
+	{
+		CliEcho("WARNING: Unable to write Undo file!");
 	}
 	CliEcho();
 }
