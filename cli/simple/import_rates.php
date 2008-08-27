@@ -59,7 +59,7 @@ if ($ptrFile)
 					$arrCompare	= $selRateGroup->Fetch();
 					foreach ($arrRateGroup as $strField=>$mixValue)
 					{
-						if ($mixValue !== $arrCompare[$strField])
+						if ($strField !== '**Rates' && $mixValue !== $arrCompare[$strField])
 						{
 							// This field doesn't match!
 							throw new Exception("ERROR: Imported {$strField} is '{$mixValue}', but Existing value is '{$arrCompare[$strField]}'!");
