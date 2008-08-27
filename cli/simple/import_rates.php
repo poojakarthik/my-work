@@ -7,7 +7,7 @@ CliEcho("\n[ IMPORT RATES ]\n");
 
 // Command line arguments
 $strFilePath	= trim($argv[1]);
-if (!file_exists($strFilePath))
+if (!is_file($strFilePath))
 {
 	CliEcho("USAGE: 'php import_rates.php <FilePath>'\n");
 	CliEcho("\t<FilePath>\t: The path to the Rate CSV file to import");
@@ -61,7 +61,7 @@ if ($ptrFile)
 						if ($mixValue !== $arrCompare[$strField])
 						{
 							// This field doesn't match!
-							throw new Exception("ERROR: Imported {$strField} === '{$mixValue}', but Existing value is '{$arrCompare[$strField]}'!");
+							throw new Exception("ERROR: Imported {$strField} is '{$mixValue}', but Existing value is '{$arrCompare[$strField]}'!");
 						}
 					}
 					
@@ -131,7 +131,7 @@ if ($ptrFile)
 						if ($mixValue !== $arrCompare[$strField])
 						{
 							// This field doesn't match!
-							throw new Exception("ERROR: Imported {$strField} === '{$mixValue}', but Existing value is '{$arrCompare[$strField]}'!");
+							throw new Exception("ERROR: Imported {$strField} is '{$mixValue}', but Existing value is '{$arrCompare[$strField]}'!");
 						}
 					}
 					
