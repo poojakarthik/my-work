@@ -59,6 +59,7 @@ if ($ptrFile)
 					$arrCompare	= $selRateGroup->Fetch();
 					foreach ($arrRateGroup as $strField=>$mixValue)
 					{
+						settype($arrCompare[$strField], gettype($mixValue));
 						if ($strField !== '**Rates' && $mixValue !== $arrCompare[$strField])
 						{
 							// This field doesn't match!
@@ -119,7 +120,7 @@ if ($ptrFile)
 				$arrRate['ExsRatePerUnit']	= (float)$arrLine[30];
 				$arrRate['ExsMarkup']		= (float)$arrLine[31];
 				$arrRate['ExsPercentage']	= (float)$arrLine[32];
-					
+				
 				// Does this Rate already exist?
 				if ($selRate->Execute($arrRate))
 				{
@@ -129,6 +130,7 @@ if ($ptrFile)
 					$arrCompare	= $selRate->Fetch();
 					foreach ($arrRate as $strField=>$mixValue)
 					{
+						settype($arrCompare[$strField], gettype($mixValue));
 						if ($mixValue !== $arrCompare[$strField])
 						{
 							// This field doesn't match!
