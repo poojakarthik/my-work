@@ -69,7 +69,7 @@ if ($ptrFile)
 					
 					// We wont insert this RateGroup
 					$arrRateGroup['Id']	= $arrCompare['Id'];
-					CliEcho("\t\t [+] All fields match -- will use RateGroup with Id {$arrCompare[$strField]} instead of inserting");
+					CliEcho("\t\t [+] All fields match -- will use RateGroup with Id {$arrCompare['Id']} instead of inserting");
 				}
 			}
 		}
@@ -140,7 +140,7 @@ if ($ptrFile)
 					
 					// We wont insert this Rate
 					$arrRate['Id']	= $arrCompare['Id'];
-					CliEcho("\t\t [+] All fields match -- will use Rate with Id {$arrCompare[$strField]} instead of inserting");
+					CliEcho("\t\t [+] All fields match -- will use Rate with Id {$arrCompare['Id']} instead of inserting");
 				}
 				elseif ($arrRateGroup['Id'])
 				{
