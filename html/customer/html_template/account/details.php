@@ -239,7 +239,7 @@
 		</TR>
 		</TABLE>
 		</div>
-		<br/><br/>";
+		<br/>";
 		
 		/*
 		echo "<h2 class='Account'>Address Details</h2>\n";
