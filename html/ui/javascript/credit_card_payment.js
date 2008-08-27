@@ -336,8 +336,22 @@ Object.extend(CreditCardPayment.prototype,
 			this.appendErrorHelp(tr.cells[1], this.inputCardNumber);
 
 			tr = table.insertRow(-1);
-			tr.insertCell(-1).appendChild(document.createTextNode('CVV:'));
+			var span = document.createElement(span);
+			span.appendChild(document.createTextNode('CVV:'));
+			
+			var tooltip = document.createElement('div');
+			tooltip.className = 'cvv-image-tooltip';
+			var img = document.createElement('img');
+			img.src = '../ui/img/template/cvv_visa.gif';
+			tooltip.appendChild(img);
+			img = document.createElement('img');
+			img.src = '../ui/img/template/cvv_amex.gif';
+			tooltip.appendChild(img);
+			this.addTooltip(span, tooltip);
+			
+			tr.insertCell(-1).appendChild(span);
 			tr.insertCell(-1).appendChild(this.inputCVV);
+			
 			this.appendErrorHelp(tr.cells[1], this.inputCVV);
 
 			tr = table.insertRow(-1);
@@ -810,6 +824,32 @@ Object.extend(CreditCardPayment.prototype,
 		span.appendChild(document.createTextNode('$'));
 		span.style['float'] = 'left';
 		td.appendChild(span);
+	},
+
+	addTooltip: function(forElement, tooltipElement)
+	{
+		forElement.className += ' tooltip-source-element';
+		var tooltip = { tooltip: tooltipElement };
+		Event.observe(forElement, 'mouseover', this.showTooltip.bind(tooltip));
+		Event.observe(forElement, 'mouseout', this.hideTooltip.bind(tooltip));
+	},
+
+	showTooltip: function(event)
+	{
+		if (!this.tooltip.parentNode) document.body.appendChild(this.tooltip);
+		event = event ? event : document.event;
+		var top = Event.pointerY(event);
+		var left = Event.pointerX(event);
+		this.tooltip.style.display = 'block';
+		this.tooltip.style.top = '' + (Event.pointerY(event) + 3) + 'px';
+		this.tooltip.style.left = '' + (Event.pointerX(event)) + 'px';
+		this.tooltip.style.visibility = 'visible';
+	},
+
+	hideTooltip: function()
+	{
+		this.tooltip.style.display = 'none';
+		this.tooltip.style.visibility = 'hidden';
 	},
 
 	appendErrorHelp: function(td, errorInput)

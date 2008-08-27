@@ -379,6 +379,23 @@ div.validation-error-tootltip {
 	max-width: 20em;
 }
 
+div.cvv-image-tooltip {
+	position: absolute;
+	z-index: 10000;
+}
+
+div.cvv-image-tooltip img {
+	clear: both;
+	margin: 0.2em;
+	float: left;
+}
+
+.tooltip-source-element {
+	color: #00f;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 /*********************** End Of Popup stuff ***********************************/
 
 /*********************** End of reflex stuff *********************************/
