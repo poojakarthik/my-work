@@ -191,7 +191,6 @@ jQuery.json = {
 		callPostJson: function()
 		{
 			this.localFunc.funcArgs = $A(arguments);
-			this.localFunc.funcRemote = this;
 
 			var data = {
 				json: jQuery.json.encode(this.localFunc.funcArgs)
@@ -215,7 +214,8 @@ jQuery.json = {
 					// Prompt user to extend session or logout
 					// Get the username and password from them.
 					// Then invoke the callPostJson function.
-					this.funcRemote.apply(null, this.funcArgs);
+					// TODO WIP Implement ajax login here and then uncomment the following line (or do something cleverer)
+					//this.funcRemote.apply(null, this.funcArgs);
 				}
 
 				success = false;
@@ -264,13 +264,13 @@ jQuery.json = {
 			funcArgs: null
 		}); 
 		
-		var jsonFunction = jQuery.json.jsonFunctionHelper.callPostJson.bind({
+		responseHandler.funcRemote = jQuery.json.jsonFunctionHelper.callPostJson.bind({
 			funcClass: remoteClass,
 			funcName: remoteMethod,
 			localFunc: responseHandler
 		});
 
-		return jsonFunction;
+		return responseHandler.funcRemote;
 	}
 
 };
