@@ -177,11 +177,15 @@ if ($ptrFile)
 		
 		// Insert Rates
 		CliEcho("Inserting Rates...");
-		foreach ($arrRateGroup['**Rates'] as &$arrRate)
+		foreach ($arrRateGroup['**Rates'] as $intKey=>$arrRate)
 		{
-			if (($arrRate['Id'] = $insRate->Execute($arrRate)) === FALSE)
+			// Ensure we're only inserting rates that don't exist
+			if (!$arrRate['Id'])
 			{
-				throw new Exception("ERROR: ".$insRate->Error());
+				if (($arrRateGroup['**Rates'][$intKey]['Id'] = $insRate->Execute($arrRate)) === FALSE)
+				{
+					throw new Exception("ERROR: ".$insRate->Error());
+				}
 			}
 		}
 	}
