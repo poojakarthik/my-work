@@ -93,6 +93,9 @@
 		<input type=\"hidden\" name=\"mixContact_Email\" value=\"" . htmlspecialchars($_POST['mixContact_Email']) . "\">
 		<input type=\"hidden\" name=\"mixContact_Phone\" value=\"" . htmlspecialchars($_POST['mixContact_Phone']) . "\">
 		<input type=\"hidden\" name=\"mixContact_Mobile\" value=\"" . htmlspecialchars($_POST['mixContact_Mobile']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_OldPassword\" value=\"" . htmlspecialchars($_POST['mixAccount_OldPassword']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_NewPassword1\" value=\"" . htmlspecialchars($_POST['mixAccount_NewPassword1']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_NewPassword2\" value=\"" . htmlspecialchars($_POST['mixAccount_NewPassword2']) . "\">
 		<input type=\"hidden\" name=\"mixContact_Fax\" value=\"" . htmlspecialchars($_POST['mixContact_Fax']) . "\">";
 
 		$intBillMethod = htmlspecialchars($_POST['mixAccount_BillingMethod']);

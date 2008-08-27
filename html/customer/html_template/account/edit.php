@@ -136,15 +136,15 @@
 			<TR VALIGN=\"TOP\">
 			<TR>
 				<TD width=\"200\">Old Password: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_OldPassword\" VALUE=\"\"></TD>
+				<TD><INPUT TYPE=\"password\" NAME=\"mixAccount_OldPassword\" VALUE=\"\"></TD>
 			</TR>
 			<TR>
 				<TD width=\"200\">New Password: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_NewPassword1\" VALUE=\"\" maxlength=\"40\"></TD>
+				<TD><INPUT TYPE=\"password\" NAME=\"mixAccount_NewPassword1\" VALUE=\"\" maxlength=\"40\"></TD>
 			</TR>
 			<TR>
 				<TD width=\"200\">Repeat New Password: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_NewPassword2\" VALUE=\"\" maxlength=\"40\"></TD>
+				<TD><INPUT TYPE=\"password\" NAME=\"mixAccount_NewPassword2\" VALUE=\"\" maxlength=\"40\"></TD>
 			</TR>
 			<TR>
 				<TD colspan=\"2\"><FONT SIZE=\"1\">If you do not wish to change your password please leave these fields blank.</FONT></TD>
