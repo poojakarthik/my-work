@@ -216,6 +216,8 @@ jQuery.json = {
 					// Then invoke the callPostJson function.
 					// TODO WIP Implement ajax login here and then uncomment the following line (or do something cleverer)
 					//this.funcRemote.apply(null, this.funcArgs);
+					// ... and get rid of the next line
+					arguments[0]['ERROR'] = "Your session has timed out. Please log and and then log back in again to continue.";
 				}
 
 				success = false;
