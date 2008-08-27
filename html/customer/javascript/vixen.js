@@ -101,10 +101,11 @@ function VixenRootClass()
 			var evt = window.event;
 		}
 		
-		if (evt.target.type == "textarea")
-		{
-			return TRUE;	
-		}
+		// TODO: I need to write a fix for this...
+		// if (evt.target.type == "textarea")
+		// {
+		// 	return TRUE;	
+		// }
 		
 		if (evt.KeyCode)
 		{

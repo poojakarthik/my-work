@@ -1,0 +1,193 @@
+<?php
+//----------------------------------------------------------------------------//
+// HtmlTemplateAccountDetails
+//----------------------------------------------------------------------------//
+/**
+ * HtmlTemplateAccountDetails
+ *
+ * HTML Template object for the Account Details
+ *
+ * HTML Template object for the Account Details
+ *
+ *
+ * @prefix	<prefix>
+ *
+ * @package	web_app
+ * @class	HtmlTemplateAccountDetails
+ * @extends	HtmlTemplate
+ */
+ 
+
+
+ class HtmlTemplateAccountEditConfirm extends HtmlTemplate
+{
+	//------------------------------------------------------------------------//
+	// _intContext
+	//------------------------------------------------------------------------//
+	/**
+	 * _intContext
+	 *
+	 * the context in which the html object will be rendered
+	 *
+	 * the context in which the html object will be rendered
+	 *
+	 * @type		integer
+	 *
+	 * @property
+	 */
+	public $_intContext;
+
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct
+	 *
+	 * Constructor
+	 *
+	 * Constructor - java script required by the HTML object is loaded here
+	 *
+	 * @param	int		$intContext		context in which the html object will be rendered
+	 *
+	 * @method
+	 */
+	function __construct($intContext)
+	{
+		$this->_intContext = $intContext;
+
+	}
+	
+	//------------------------------------------------------------------------//
+	// Render
+	//------------------------------------------------------------------------//
+	/**
+	 * Render()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	 
+	function Render()
+	{
+		echo "<br/><br/><div class='NarrowContent'>\n";
+
+		echo "Please confirm the new changes below: <br/><br/>";
+
+		echo "
+		<form method=\"POST\" action=\"./flex.php/Console/Edit/\"\">
+		<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"" . htmlspecialchars($_POST['intUpdateAccountId']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_Address1\" value=\"" . htmlspecialchars($_POST['mixAccount_Address1']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_Address2\" value=\"" . htmlspecialchars($_POST['mixAccount_Address2']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_Suburb\" value=\"" . htmlspecialchars($_POST['mixAccount_Suburb']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_State\" value=\"" . htmlspecialchars($_POST['mixAccount_State']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_Postcode\" value=\"" . htmlspecialchars($_POST['mixAccount_Postcode']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_BillingMethod\" value=\"" . htmlspecialchars($_POST['mixAccount_BillingMethod']) . "\">
+		<input type=\"hidden\" name=\"mixAccount_Country\" value=\"" . htmlspecialchars($_POST['mixAccount_Country']) . "\">
+		<input type=\"hidden\" name=\"mixContact_FirstName\" value=\"" . htmlspecialchars($_POST['mixContact_FirstName']) . "\">
+		<input type=\"hidden\" name=\"mixContact_LastName\" value=\"" . htmlspecialchars($_POST['mixContact_LastName']) . "\">
+		<input type=\"hidden\" name=\"mixContact_Title\" value=\"" . htmlspecialchars($_POST['mixContact_Title']) . "\">
+		<input type=\"hidden\" name=\"mixContact_JobTitle\" value=\"" . htmlspecialchars($_POST['mixContact_JobTitle']) . "\">
+		<input type=\"hidden\" name=\"mixContact_Email\" value=\"" . htmlspecialchars($_POST['mixContact_Email']) . "\">
+		<input type=\"hidden\" name=\"mixContact_Phone\" value=\"" . htmlspecialchars($_POST['mixContact_Phone']) . "\">
+		<input type=\"hidden\" name=\"mixContact_Mobile\" value=\"" . htmlspecialchars($_POST['mixContact_Mobile']) . "\">
+		<input type=\"hidden\" name=\"mixContact_Fax\" value=\"" . htmlspecialchars($_POST['mixContact_Fax']) . "\">";
+
+		$intBillMethod = htmlspecialchars($_POST['mixAccount_BillingMethod']);
+		$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$intBillMethod]['Description'];
+		print "
+		<h2 class='Account'>Billing Details</h2>
+		<div class='GroupedContent'>
+		<TABLE>
+		<TR>
+			<TD width=\"200\">Billing Method: </TD>
+			<TD>$strNewBillingMethod</TD>
+		</TR>
+		</TABLE>
+		</div>
+		<br/>";
+
+		print "
+		<h2 class='Account'>Address Details</h2>
+		<div class='GroupedContent'>
+		<TABLE>
+		<TR>
+			<TD width=\"200\">Street Address: </TD>
+			<TD>" . htmlspecialchars($_POST['mixAccount_Address1']) . "</TD>
+		</TR>
+		<TR>
+			<TD></TD>
+			<TD>" . htmlspecialchars($_POST['mixAccount_Address2']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Suburb: </TD>
+			<TD>" . htmlspecialchars($_POST['mixAccount_Suburb']) . "</TD>
+		</TR>
+		<TR>
+			<TD>State: </TD>
+			<TD>" . htmlspecialchars($_POST['mixAccount_State']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Postcode: </TD>
+			<TD>" . htmlspecialchars($_POST['mixAccount_Postcode']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Country: </TD>
+			<TD>" . htmlspecialchars($_POST['mixAccount_Country']) . "</TD>
+		</TR>
+		</TABLE>
+		</div>
+		<br/>";
+
+		print "
+		<h2 class='Account'>Contact Details</h2>
+		<div class='GroupedContent'>
+		<TABLE>
+		<TR>
+			<TD width=\"200\">First Name: </TD>
+			<TD>" . htmlspecialchars($_POST['mixContact_FirstName']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Last Name: </TD>
+			<TD>" . htmlspecialchars($_POST['mixContact_LastName']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Title: </TD>
+			<TD>" . htmlspecialchars($_POST['mixContact_Title']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Job Title: </TD>
+			<TD>" . htmlspecialchars($_POST['mixContact_JobTitle']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Email: </TD>
+			<TD>" . htmlspecialchars($_POST['mixContact_Email']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Phone: </TD>
+			<TD>" . htmlspecialchars($_POST['mixContact_Phone']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Mobile: </TD>
+			<TD>" . htmlspecialchars($_POST['mixContact_Mobile']) . "</TD>
+		</TR>
+		<TR>
+			<TD>Fax: </TD>
+			<TD>" . htmlspecialchars($_POST['mixContact_Fax']) . "</TD>
+		</TR>
+		</TABLE>
+		</div>
+		<br/>
+		<input type=\"submit\" value=\"Confirm Changes\">
+		</form>
+		";
+
+		echo "<div class='Seperator'></div>\n";
+		
+		echo "</div>\n";
+	}
+}
+
+?>

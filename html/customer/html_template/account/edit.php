@@ -86,7 +86,7 @@
 		{
 			print "
 			<!-- We dont want any caching of this page.. -->
-			<form method=\"POST\" action=\"./flex.php/Console/Edit/\" onsubmit=\"return validate_form(this)\">
+			<form method=\"POST\" action=\"./flex.php/Console/EditConfirm/\" onsubmit=\"return validate_form(this)\">
 			<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
 
 			<h2 class='Account'>Billing Details</h2>
@@ -210,7 +210,11 @@
 			<TABLE>
 			<TR>
 			<TD width=\"200\">Title: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Title\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Title\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\"></TD>
+			</TR>
+			<TR>
+			<TD>Job Title: </TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . htmlspecialchars(DBO()->Contact->JobTitle->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>First Name: </TD>
@@ -219,10 +223,6 @@
 			<TR>
 			<TD>Last Name: </TD>
 			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_LastName\" VALUE=\"" . htmlspecialchars(DBO()->Contact->LastName->Value) . "\"></TD>
-			</TR>
-			<TR>
-			<TD>Job Title: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . htmlspecialchars(DBO()->Contact->JobTitle->Value) . "\"></TD>
 			</TR>
 			<TR>
 			<TD>E-mail: </TD>

@@ -154,15 +154,178 @@ class AppTemplateConsole extends ApplicationTemplate
 	 
 	 
 	 
+
+//------------------------------------------------------------------------//
+// Confirm Edit account details.
+//------------------------------------------------------------------------//
+/**
+ * EditConfirm()
+ *
+ * Displays a confirmation to the user
+ * 
+ * Displays a confirmation to the user
+ *
+ * @return		void
+ * @method
+ *
+ */
+ function EditConfirm()
+ {
+
+
+	// Check user authorization and permissions
+	AuthenticatedUser()->CheckClientAuth();
+	
+	// Retrieve the client's details
+	DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+	if (!DBO()->Contact->Load())
+	{
+		// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+		DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
+		$this->LoadPage('error');
+		return FALSE;
+	}
+	
+	if (DBO()->Account->Id->Value)
+	{
+		// A specific account has been specified, so load the details of it
+		// DBO()->Account->Id has already been initialised
+	}
+	else
+	{
+		// No specific account has been specified, so load the contact's primary account
+		DBO()->Account->Id = DBO()->Contact->Account->Value;
+	}
+	
+	// Load the clients primary account
+	DBO()->Account->Load();
+
+	// If the user can view all accounts in their account group then load these too
+	if (DBO()->Contact->CustomerContact->Value)
+	{
+		DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
+		DBL()->Account->Archived = 0;
+		DBL()->Account->Load();
+	}
+	// Make sure that the Account requested belongs to the account group that the contact belongs to
+	$bolUserCanViewAccount = FALSE;
+	if (AuthenticatedUser()->_arrUser['CustomerContact'])
+	{
+		// The user can only view the account, if it belongs to the account group that they belong to
+		if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
+		{
+			$bolUserCanViewAccount = TRUE;
+		}
+	}
+	elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+	{
+		// The user can only view the account, if it is their primary account
+		$bolUserCanViewAccount = TRUE;
+	}
+	
+	if (!$bolUserCanViewAccount)
+	{
+		// The user does not have permission to view the requested account
+		BreadCrumb()->Console();
+		BreadCrumb()->SetCurrentPage("Error");
+		DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value;
+		$this->LoadPage('Error');
+		return FALSE;
+	}
+
+	// Calculate the Account Balance
+	DBO()->Account->CustomerBalance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+	
+	// Calculate the Account Overdue Amount
+	$fltOverdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
+	if ($fltOverdue < 0)
+	{
+		$fltOverdue = 0;
+	}
+	DBO()->Account->Overdue = $fltOverdue;
+	
+	// Calculate the Account's total unbilled adjustments (inc GST)
+	DBO()->Account->UnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+	
+	// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
+	DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
+	
+	// Setup BreadCrumb Menu
+	# $strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
+	# BreadCrumb()->SetCurrentPage($strWelcome);
+	
+	// Breadcrumb menu
+	BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
+	if (DBO()->Account->BusinessName->Value)
+	{
+		// Display the business name in the bread crumb menu
+		BreadCrumb()->SetCurrentPage("Edit Account - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
+	}
+	elseif (DBO()->Account->TradingName->Value)
+	{
+		// Display the business name in the bread crumb menu
+		BreadCrumb()->SetCurrentPage("Edit Account - " . substr(DBO()->Account->TradingName->Value, 0, 60));
+	}
+	else
+	{
+		// Don't display the business name in the bread crumb menu
+		BreadCrumb()->SetCurrentPage("Edit Account");
+	}
+
+
+	// Get account Id, we need to auto fill some form details.
+	$intAccountId = DBO()->Account->Id->Value;
+	$strOldEmailAddress = DBO()->Contact->Email->Value;
+
+	if(array_key_exists('intUpdateAccountId', $_POST))
+	{
+		$strFoundInputError=FALSE; 
+
+		// If no error was found, continue with processing.
+		if(!$strFoundInputError){
+			
+
+			$mixFoundError = FALSE;
+			if($_POST['mixAccount_OldPassword'] != "" || $_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
+			{
+				if(SHA1($_POST['mixAccount_OldPassword']) != DBO()->Contact->PassWord->Value)
+				{
+					$mixFoundError = TRUE;
+				}
+				if(strlen($_POST['mixAccount_NewPassword1'])>"40" || strlen($_POST['mixAccount_NewPassword1'])<"6")
+				{
+					$mixFoundError = TRUE;
+				}
+				if($_POST['mixAccount_NewPassword1'] != $_POST['mixAccount_NewPassword2'])
+				{
+					$mixFoundError = TRUE;
+				}
+			}
+			if($mixFoundError)
+			{
+				$this->LoadPage('edit_passfail');
+				return TRUE;
+			}
+			$this->LoadPage('edit_confirm');
+			return TRUE;
+		}
+		else
+		{
+			$this->LoadPage('edit_failure');
+			return TRUE;
+		}
+	}
+ }
+
 	//------------------------------------------------------------------------//
 	// Edit account details.
 	//------------------------------------------------------------------------//
 	/**
-	 * Home()
+	 * Edit()
 	 *
-	 * Performs the logic for the Homepage of the website
+	 * Allow user to modfy account,contact and billing details.
 	 * 
-	 * Performs the logic for the Homepage of the website
+	 * Allow user to modfy account,contact and billing details.
 	 *
 	 * @return		void
 	 * @method
@@ -268,6 +431,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			// Don't display the business name in the bread crumb menu
 			BreadCrumb()->SetCurrentPage("Edit Account");
 		}
+
 		// Get account Id, we need to auto fill some form details.
 		$intAccountId = DBO()->Account->Id->Value;
 		$strOldEmailAddress = DBO()->Contact->Email->Value;
@@ -293,6 +457,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				DBO()->Contact->FirstName = $_POST['mixContact_FirstName'];
 				DBO()->Contact->LastName = $_POST['mixContact_LastName'];
+				DBO()->Contact->Title = $_POST['mixContact_Title'];
 				DBO()->Contact->JobTitle = $_POST['mixContact_JobTitle'];
 				DBO()->Contact->Email = $_POST['mixContact_Email'];
 				DBO()->Contact->Phone = $_POST['mixContact_Phone'];
@@ -323,12 +488,12 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 				if($mixFoundError == FALSE)
 				{
-					DBO()->Contact->SetColumns("FirstName,LastName,JobTitle,Email,Phone,Mobile,Fax,PassWord");
+					DBO()->Contact->SetColumns("FirstName,LastName,Title,JobTitle,Email,Phone,Mobile,Fax,PassWord");
 					DBO()->Contact->PassWord = SHA1($_POST['mixAccount_NewPassword1']);
 				}
 				if($mixFoundError)
 				{
-					DBO()->Contact->SetColumns("FirstName,LastName,JobTitle,Email,Phone,Mobile,Fax");
+					DBO()->Contact->SetColumns("FirstName,LastName,Title,JobTitle,Email,Phone,Mobile,Fax");
 				}
 				DBO()->Contact->Save();
 
@@ -338,6 +503,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				$message .= "FirstName: " . $_POST['mixContact_FirstName'] . "\n";
 				$message .= "LastName: " . $_POST['mixContact_LastName'] . "\n";
+				$message .= "Title: " . $_POST['mixContact_Title'] . "\n";
 				$message .= "JobTitle: " . $_POST['mixContact_JobTitle'] . "\n";
 				$message .= "Email: " . $_POST['mixContact_Email'] . "\n";
 				$message .= "Phone: " . $_POST['mixContact_Phone'] . "\n";
@@ -350,7 +516,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$message .= "Postcode: " . $_POST['mixAccount_Postcode'] . "\n";
 
 				$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$mixAccount_BillingMethod]['Description'];
-				$message .= "BillingMethod: $_POST[strNewBillingMethod]\n";
+				$message .= "BillingMethod: $strNewBillingMethod\n";
 
 				$message .= "Country: $_POST[mixAccount_Country]\n\n";
 

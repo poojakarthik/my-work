@@ -19,7 +19,7 @@
  
 
 
- class HtmlTemplateAccountEditFailure extends HtmlTemplate
+ class HtmlTemplateAccountEditPassfail extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -73,7 +73,15 @@
 	{
 		echo "<br/><br/><div class='NarrowContent'>\n";
 
-		print "There was an error processing your request.<br/>";
+		print "There was an error processing your password change request.<br/>
+		Please check the requirements below:<br/><br/>
+		<ul>
+			<li> Old Password cannot be left blank
+			<li> New Password cannot be left blank.
+			<li> Both new passwords must match.
+			<li> The Old password must match with your current password
+			<li> The password length should match 6 - 40 characters in length.
+		</ul>";
 		print "<br/><A HREF=\"javascript:history.go(-1)\">Please return and try again.</A>";
 		echo "<div class='Seperator'></div>\n";
 		
