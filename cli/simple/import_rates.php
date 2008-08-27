@@ -33,7 +33,7 @@ if ($ptrFile)
 	while ($arrLine = fgetcsv($ptrFile))
 	{
 		$intLine++;
-		if (count($arrLine) === 6)
+		if (trim($arrLine[1]) && !trim($arrLine[6]))
 		{
 			// Make sure we ignore Header Rows
 			if ((int)$arrLine[0])
@@ -71,7 +71,7 @@ if ($ptrFile)
 				}
 			}
 		}
-		elseif (count($arrLine) === 33)
+		elseif (trim($arrLine[6]))
 		{
 			// Make sure we ignore Header Rows
 			if ((int)$arrLine[0])
@@ -120,13 +120,13 @@ if ($ptrFile)
 				$arrRate['ExsPercentage']	= (float)$arrLine[32];
 					
 				// Does this Rate already exist?
-				if ($selRateGroup->Execute($arrRate))
+				if ($selRate->Execute($arrRate))
 				{
 					// Yes, do all of the fields match up?
 					CliEcho("\t\t [!] Rate with name '{$arrRate['Name']}' already exists!  Checking if all fields match...");
 					
-					$arrCompare	= $selRateGroup->Fetch();
-					foreach ($arrRateGroup as $strField=>$mixValue)
+					$arrCompare	= $selRate->Fetch();
+					foreach ($arrRate as $strField=>$mixValue)
 					{
 						if ($mixValue !== $arrCompare[$mixValue])
 						{
