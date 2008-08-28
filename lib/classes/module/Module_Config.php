@@ -51,7 +51,7 @@ class Module_Config
 		$selModuleConfig	= new StatementSelect($strTable, "*", "{$strForeignKey} = <ModuleId>");
 		if ($selModuleConfig->Execute(Array('ModuleId' => $this->intModuleId)))
 		{
-			while ($arrConfig = $this->_selModuleConfig->Fetch())
+			while ($arrConfig = $selModuleConfig->Fetch())
 			{
 				$this->_arrModuleConfig[$arrConfig['name']]['Value']	= self::DecodeValue($arrConfig['value'], $arrConfig['type']);
 				$this->_arrModuleConfig[$arrConfig['name']]['Id']		= $arrConfig['id'];
