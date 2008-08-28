@@ -33,8 +33,8 @@ $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "((CDR JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN Carrier ON Carrier.Id = CDR.Carrier) JOIN service_type ON RecordType.ServiceType = service_type.id";
-$arrDataReport['SQLWhere']		= "CDR.Status = IN (150, 198) AND Credit = 0";
-$arrDataReport['SQLGroupBy']	= "Carrier.Id, CDR.RecordType \n ORDER BY Carrier.Name ASC, service_type.description, RecordType.Description";
+$arrDataReport['SQLWhere']		= "CDR.Status IN (150, 198) AND Credit = 0";
+$arrDataReport['SQLGroupBy']	= "Carrier.Id, CDR.RecordType \n ORDER BY Carrier.Id ASC, service_type.id, RecordType.Id";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
@@ -48,19 +48,19 @@ $arrSQLSelect['Service Type']			['Value']	= "service_type.description";
 $arrSQLSelect['Call Type']				['Value']	= "RecordType.Description";
 
 $arrSQLSelect['Unique FNNs']			['Value']	= "COUNT(DISTINCT CDR.FNN)";
-$arrSQLSelect['Unique FNNs']			['Value']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Unique FNNs']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Total Calls']			['Value']	= "COUNT(CDR.Id)";
-$arrSQLSelect['Total Calls']			['Value']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Total Calls']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Total Units']			['Value']	= "SUM(CDR.Units)";
-$arrSQLSelect['Total Units']			['Value']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Total Units']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Total Cost']				['Value']	= "SUM(CDR.Cost)";
-$arrSQLSelect['Total Cost']				['Value']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Total Cost']				['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrSQLSelect['Total Rated']			['Value']	= "SUM(CDR.Charge)";
-$arrSQLSelect['Total Rated']			['Value']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Total Rated']			['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
