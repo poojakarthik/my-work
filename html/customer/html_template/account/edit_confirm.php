@@ -74,7 +74,7 @@
 	{
 		echo "<br/><br/><div class='NarrowContent'>\n";
 
-		echo "<div class='customer-standard-table-title-style'><FONT COLOR='red'>Please confirm the new changes below</FONT></div><br/><br/>";
+		echo "<div class='customer-standard-table-title-style-notice'><FONT COLOR='red'>Please confirm the new changes below</FONT></div><br/><br/>";
 
 		echo "
 		<form method=\"POST\" action=\"./flex.php/Console/Edit/\"\">
@@ -101,7 +101,7 @@
 		$intBillMethod = htmlspecialchars($_POST['mixAccount_BillingMethod']);
 		$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$intBillMethod]['Description'];
 		print "
-		<div class='customer-standard-table-title-style'>Billing Details</div>
+		<div class='customer-standard-table-title-style-confirm-details'>Billing Details</div>
 		<!-- <h2 class='Account'>Billing Details</h2> -->
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
@@ -114,7 +114,7 @@
 		<br/>";
 
 		print "
-		<div class='customer-standard-table-title-style'>Address Details</div>
+		<div class='customer-standard-table-title-style-confirm-details'>Address Details</div>
 		<!-- <h2 class='Account'>Address Details</h2> -->
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
@@ -147,7 +147,7 @@
 		<br/>";
 
 		print "
-		<div class='customer-standard-table-title-style'>Contact Details</div>
+		<div class='customer-standard-table-title-style-confirm-details'>Contact Details</div>
 		<!-- <h2 class='Account'>Contact Details</h2> -->
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">

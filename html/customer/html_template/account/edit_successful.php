@@ -83,7 +83,7 @@
 			}
 		}
 		print "
-		<div class='customer-standard-table-title-style'>Confirmation</div>
+		<div class='customer-standard-table-title-style-confirmation'>Confirmation</div>
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
@@ -95,7 +95,7 @@
 		}
 		if($mixFoundError == FALSE)
 		{
-			print "Thank you for taking the time to update your account,<br/>your changes have been completed. <img src=\"" . Href()->GetBaseUrl() . "/img/generic/check.gif\"><br/><br/>";
+			print "Thank you for taking the time to update your account.<br/><br/>Your changes have been completed.<br/><br/>";
 		}
 		print "</TD>
 		</TR>

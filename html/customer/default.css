@@ -26,6 +26,51 @@
 /**************************************************************************/
 
 
+/**************************************************************************/
+/* NOTICE BAR STYLE, e.g. confirm your details.											  */
+/**************************************************************************/
+.customer-standard-table-title-style-notice
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/message_notice.png");
+	background-position: 5px 50%;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+.customer-standard-table-title-style-confirm-details
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/icon_moveright.png");
+	background-position: 5px 50%;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+.customer-standard-table-title-style-confirmation
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/generic/check.gif");
+	background-position: 5px 50%;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
 
 /**************************************************************************/
 /* STYLE FOR LOGIN AREA													  */
@@ -52,14 +97,65 @@
 }
 
 /**************************************************************************/
-/* EDIT PAGE														  */
+/* DETAILS PAGE														  */
 /**************************************************************************/
-.customer-standard-table-title-style
+.customer-standard-table-title-style-account
 {
+	text-indent: 30; 
 	font-size:	12px;
 	width:		442px
 	background-color:	#EFEBE7;
 	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/cash.png");
+	background-position: 5px 50%;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+.customer-standard-table-title-style-address
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/email.png");
+	background-position: 5px 50%;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+.customer-standard-table-title-style-contact
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/report.png");
+	background-position: 5px 50%;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+
+
+/**************************************************************************/
+/* EDIT PAGE														  */
+/**************************************************************************/
+.customer-standard-table-title-style
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/generic/square_black.gif");
+	background-position: 5px 50%;
 	padding:	3px;
 	margin-bottom: 7;
 	font-weight:	bold;
