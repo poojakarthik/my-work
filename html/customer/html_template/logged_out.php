@@ -76,7 +76,17 @@ class HtmlTemplateLoggedOut extends HtmlTemplate
 		
 		echo "<div class='WideContent' style='height:300px;'>\n";
 		
-		
+		print "
+		<br/><br/>
+		<TABLE align=center class=login-table-style-main-title>
+		<TR>
+			<TD>Logged Out</TD>
+		</TR>
+		</TABLE>
+		<TABLE align=center class=login-table-style-main>
+		<TR VALIGN=\"TOP\">
+			<TD>";
+
 		if (AuthenticatedUser()->_arrUser != NULL)
 		{
 			// The user was logged in when they tried to log out.  The logging out has been successful.
@@ -100,6 +110,12 @@ class HtmlTemplateLoggedOut extends HtmlTemplate
 		echo "<a href='$strMainPageHref' ><span>Back to homepage</span></a>\n";
 		*/
 		
+			print "
+			</TD>
+		</TR>
+		</TABLE>
+		<br/>";
+
 		echo "</div>\n"; // WideContent
 
 		

@@ -32,7 +32,8 @@
 
 
 // Set the page title
-$this->Page->SetName('Logout');
+//$this->Page->SetName('Logout');
+$this->Page->SetName('');
 
 $this->Page->SetLayout('logout_layout');
 
