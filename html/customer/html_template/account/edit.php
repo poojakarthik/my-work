@@ -89,7 +89,7 @@
 			<form method=\"POST\" action=\"./flex.php/Console/EditConfirm/\" onsubmit=\"return validate_form(this)\">
 			<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
 
-			<div class='customer-standard-table-title-style'>Billing Details</div>
+			<div class='customer-standard-table-title-style-billing'>Billing Details</div>
 			<!-- <h2 class='Account'>Billing Details</h2> -->
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">
@@ -129,7 +129,7 @@
 
 
 
-			<div class='customer-standard-table-title-style'>Account Password</div>
+			<div class='customer-standard-table-title-style-password'>Account Password</div>
 			<!-- <h2 class='Account'>Account Password</h2> -->
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">
@@ -154,7 +154,7 @@
 			</div>
 			<br/>
 
-			<div class='customer-standard-table-title-style'>Address Details</div>
+			<div class='customer-standard-table-title-style-address'>Address Details</div>
 			<!-- <h2 class='Account'>Address Details</h2> -->
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">
@@ -209,7 +209,7 @@
 			</div>
 			<br/>
 
-			<div class='customer-standard-table-title-style'>Contact Details</div>
+			<div class='customer-standard-table-title-style-contact'>Contact Details</div>
 			<!-- <h2 class='Account'>Contact Details</h2> -->
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">

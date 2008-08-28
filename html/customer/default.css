@@ -71,6 +71,34 @@
 	margin-bottom: 7;
 	font-weight:	bold;
 }
+.customer-standard-table-title-style-billing
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/invoice.gif");
+	background-position: 5px 50%;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+.customer-standard-table-title-style-password
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/file.png");
+	background-position: 5px 50%;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
 
 /**************************************************************************/
 /* STYLE FOR LOGIN AREA													  */
@@ -238,6 +266,10 @@ div#credit-card-payment-panel h1
 /* Title start */
 div.dynamically-loaded-panel-title
 {
+	text-indent:	30px;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/cash.png");
+	background-position: 5px 50%;
 	font-size:			12px;
 	font:				verdana;
 	border:				solid 1px #D1D1D1;
