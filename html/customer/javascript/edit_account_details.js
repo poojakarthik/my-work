@@ -35,7 +35,7 @@ function validate_form(thisform)
 	}
 
 
-	if (/^\w+([\+\.-]?\w+)*@\w+([\+\.-]?\w+)*(\.\w{2,4})+$/.test(thisform.mixContact_Email.value))
+	if (/^\w+([\+\.-]?\w+)*@\w+([\+\.-]?\w+)*(\.\w{2,6})+$/.test(thisform.mixContact_Email.value))
 	{
 		return (true)
 	}
