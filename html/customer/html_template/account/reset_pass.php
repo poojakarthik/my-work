@@ -73,8 +73,23 @@
 	{
 		echo "<div class='NarrowContent'>\n";
 
+		print "
+		<div class='customer-standard-table-title-style'>Billing Details</div>
+		<!-- <h2 class='Account'>Reset Password</h2> -->
+		<div class='GroupedContent'>
+		<TABLE class=\"customer-standard-table-style\">
+		<TR VALIGN=\"TOP\">
+			<TD width=\"200\">Billing Method: </TD>
+			<TD>";
+
 		print "reset password form.";
-		
+	
+		print "</TD>
+			</TR>
+		</TABLE>
+		</div>
+		<br/>";
+
 		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";

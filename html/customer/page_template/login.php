@@ -77,6 +77,15 @@
 	}
 
 	// Render the login table
+		print "
+		<TABLE style=\"border: solid 1px #D1D1D1; color: #000000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<TR>
+			<TD>Customer Login.</TD>
+		</TR>
+		</TABLE>
+		<TABLE style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TR VALIGN=\"TOP\">
+			<TD>";
 ?>
 		<table id='LoginTable'>
 			<tr>
@@ -127,7 +136,11 @@
 
 
 	<?php
-	
+				print "
+			</TD>
+		</TR>
+		</TABLE>
+		<br/>";
 	// Hide $_POST values in the form for subsequent use...
 	foreach ($_POST as $strKey=>$strValue)
 	{

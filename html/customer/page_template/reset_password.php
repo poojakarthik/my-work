@@ -40,6 +40,15 @@
 	if(!array_key_exists('mixUserName', $_POST))
 	{
 		print "
+		<TABLE style=\"border: solid 1px #D1D1D1; color: #000000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<TR>
+			<TD>Reset Password - enter a valid username.</TD>
+		</TR>
+		</TABLE>
+		<TABLE style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TR VALIGN=\"TOP\">
+			<TD>";
+		print "
 		<table id='LoginTable'>
 			<tr>
 				<td>
@@ -57,7 +66,15 @@
 					<INPUT TYPE=\"submit\" VALUE=\"Send Password >>\">
 				</td>
 			</tr>
-		</table>
+		</table>";
+
+			print "
+			</TD>
+		</TR>
+		</TABLE>
+		<br/>";
+
+	print "
 	</form>";
 	}
 	else{
@@ -65,16 +82,44 @@
 		# I could find something?
 		if(!DBO()->Fail)
 		{
+		print "
+		<TABLE style=\"border: solid 1px #D1D1D1; color: #33CC00; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<TR>
+			<TD>Reset Password Success</TD>
+		</TR>
+		</TABLE>
+		<TABLE style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TR VALIGN=\"TOP\">
+			<TD>";
 			print "A new password has been issued.<br/>
 			Please allow a few minutes for the e-mail to arrive.";
 			echo "<br /><br />\n";
 			echo "<a href='$strLoginHref' ><span>Customer System Login</span></a>\n";
+			print "
+			</TD>
+		</TR>
+		</TABLE>
+		<br/>";
 		}
 		if(DBO()->Fail)
 		{
+		print "
+		<TABLE style=\"border: solid 1px #D1D1D1; color: #FF0000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<TR>
+			<TD>Reset Password Failure</TD>
+		</TR>
+		</TABLE>
+		<TABLE style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TR VALIGN=\"TOP\">
+			<TD>";
 			print "The username entered does not exist.";
 			echo "<br /><br />\n";
 			echo "<a href='" . Href()->ResetPassword() . "' ><span>Please Try Again</span></a>\n";
+			print "
+			</TD>
+		</TR>
+		</TABLE>
+		<br/>";
 		}
 
 	}
