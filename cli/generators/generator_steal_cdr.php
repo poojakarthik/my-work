@@ -1,10 +1,10 @@
 <?php
 require_once("../../flex.require.php");
 
-$strURL			= '10.50.50.16';
-$strUser		= 'vixen';
-$strPassword	= 'V1x3n';
-$strDatabase	= 'vixen';
+$strURL			= '10.50.50.132';
+$strUser		= 'ybs_admin';
+$strPassword	= 'Y3ll0w4dmiN#';
+$strDatabase	= 'flex_telcoblue';
 
 $arrCols = DataAccess::getDataAccess()->FetchClean('CDR');
 unset($arrCols['CarrierRef']);
