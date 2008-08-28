@@ -145,7 +145,9 @@
  		}
  		else
  		{
-	 		// Create the Module
+	 		$insChargeModule				= new StatementInsert("billing_charge_module");
+	 		
+	 		// Create the Module	 		
 	 		$arrModule						= Array();
 	 		$arrModule['class']				= $strClass;
 	 		$arrModule['customer_group_id']	= $strClass;
