@@ -134,7 +134,7 @@
  	public static function CreateModule($strClass, $arrConfigDefinition, $intCustomerGroup)
  	{
  		// Do we have an instance for this Customer Group?
- 		$selModuleExists	= new StatementSelect("billing_charge_module", "Id", "customer_group_id = <CustomerGroup> AND class = <Class>");
+ 		$selModuleExists	= new StatementSelect("billing_charge_module", "Id", "customer_group_id <=> <CustomerGroup> AND class = <Class>");
  		if ($selModuleExists->Execute(Array('CustomerGroup' => $intCustomerGroup, 'Class' => $strClass)))
  		{
  			throw new Exception("This CustomerGroup/Module definition already exists!");

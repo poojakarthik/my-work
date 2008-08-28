@@ -16,7 +16,7 @@ if (!SubclassOf($strClass, 'Billing_Charge'))
 	CliEcho("'$strClass' does not inherit from Billing_Charge!");
 }
 
-if ($strCustomerGroup === '*')
+if (strtoupper($strCustomerGroup) === 'ALL')
 {
 	$intCustomerGroup				= NULL;
 	$strCustomerGroupDescription	= "All/Default";
@@ -29,7 +29,7 @@ elseif (GetConstantDescription((int)$strCustomerGroup, 'CustomerGroup'))
 else
 {
 	$bolValidParameters	= FALSE;
-	CliEcho("'$strCustomerGroup' is not a valid Customer Group (nor a * wildcard)!");
+	CliEcho("'$strCustomerGroup' is not a valid Customer Group (nor the 'ALL' wildcard)!");
 }
 
 // On error, print out usage
