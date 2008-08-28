@@ -242,8 +242,8 @@ function VixenPopupClass()
 				//  what about on the div itself?
 				if(document.all)
 				{
-					document.attachEvent("mousedown", CloseHandler);
-					document.attachEvent("keydown", CloseHandler);
+					document.attachEvent("onmousedown", CloseHandler);
+					document.attachEvent("onkeydown", CloseHandler);
 				}
 				if (typeof document.addEventListener != 'undefined')
 				{
@@ -359,7 +359,7 @@ function VixenPopupClass()
     		mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
 			if(document.all)
 			{
-				mydragObj.attachEvent("mousedown", OpenHandler);
+				mydragObj.attachEvent("onmousedown", OpenHandler);
 			}
 			if (typeof document.addEventListener != 'undefined')
 			{	
@@ -377,8 +377,10 @@ function VixenPopupClass()
 		
 		function CloseHandler(event)
 		{
+			event = event ? event : window.event;
+			var target = event.target ? event.target : event.srcElement;
 			// for AUTOHIDE only (strId is a parameter of the Create method, of which this function is defined within)
-			if (event.target.id.indexOf(strId) >= 0)
+			if (target.id.indexOf(strId) >= 0)
 			{
 				// Top bar, looking to drag 
 			}			
@@ -386,13 +388,20 @@ function VixenPopupClass()
 			{
 				// MouseDown on page
 				Vixen.Popup.Close(strId);
-				
-				// Remove the Event listeners required to make it an autohide popup
-				// This is currently handled by the VixenPopupClass->Close method
-				// The following commented out lines can be removed
-				document.removeEventListener('mousedown', CloseHandler, TRUE);
-				document.removeEventListener('keyup', CloseHandler, TRUE);
-				
+
+				if(document.all)
+				{
+					document.detachEvent('onmousedown',CloseHandler)
+					document.detachEvent('onkeyup',CloseHandler)
+				}
+				if (typeof document.addEventListener != 'undefined')
+				{	
+					// Remove the Event listeners required to make it an autohide popup
+					// This is currently handled by the VixenPopupClass->Close method
+					// The following commented out lines can be removed
+					document.removeEventListener('mousedown', CloseHandler, TRUE);
+					document.removeEventListener('keyup', CloseHandler, TRUE);
+				}
 				// load the new location if one was specified
 				if (Vixen.Popup.strLocationOnClose)
 				{
@@ -554,11 +563,19 @@ function VixenPopupClass()
 		{
 			strTitle = VIXEN_APPLICATION_NAME;
 		}
-	//
+		//
+		// close window button doesnt work in IE.. hack below turns it into a text link..
+		if(document.all)
+		{
+			strAlertCode = "<div align='center' style='margin-bottom: 10px'><a href=\"./flex.php/Console/Pay/\" onclick=\"javascript:VixenAlertBox.close();\">Close Alert</a><br></div>";
+		}
+		if(!document.all)
+		{
+			strAlertCode = "<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>";
+		}
 		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						//"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
-						"<p></div>\n" +
-						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>" +
+						"<p></div>\n" + strAlertCode + 
 						"<" + "script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
 		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType, strTitle);
 	}
