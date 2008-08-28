@@ -296,7 +296,7 @@ class Module_Config
 			$arrModuleConfig	= Array();
 			$arrModuleConfig[$strForeignKey]	= $intModuleId;
 			$arrModuleConfig['name']			= $strField;
-			$arrModuleConfig['type']			= $arrProperties['Type'];
+			$arrModuleConfig['data_type_id']	= $arrProperties['Type'];
 			$arrModuleConfig['value']			= self::EncodeValue($arrProperties['Default'], $arrProperties['Type']);
 			$arrModuleConfig['description']		= $arrProperties['Description'];
 			
