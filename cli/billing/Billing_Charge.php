@@ -131,7 +131,7 @@
 	 *
 	 * @method
 	 */
- 	protected static function CreateModule($strClass, $arrConfigDefinition, $intCustomerGroup)
+ 	public static function CreateModule($strClass, $arrConfigDefinition, $intCustomerGroup)
  	{
  		// Do we have an instance for this Customer Group?
  		$selModuleExists	= new StatementSelect("billing_charge_module", "Id", "customer_group_id = <CustomerGroup> AND class = <Class>");
