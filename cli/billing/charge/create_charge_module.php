@@ -21,7 +21,7 @@ if ($strCustomerGroup === '*')
 	$intCustomerGroup				= NULL;
 	$strCustomerGroupDescription	= "All/Default";
 } 
-elseif (!GetConstantDescription((int)$strCustomerGroup, 'CustomerGroup'))
+elseif (GetConstantDescription((int)$strCustomerGroup, 'CustomerGroup'))
 {
 	$intCustomerGroup				= (int)$intCustomerGroup;
 	$strCustomerGroupDescription	= GetConstantDescription((int)$intCustomerGroup, 'CustomerGroup');
