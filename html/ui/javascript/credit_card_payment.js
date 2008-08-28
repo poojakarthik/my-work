@@ -347,7 +347,7 @@ Object.extend(CreditCardPayment.prototype,
 			img = document.createElement('img');
 			img.src = '../ui/img/template/cvv_amex.gif';
 			tooltip.appendChild(img);
-			this.addTooltip(span, tooltip);
+			this.addCvvToolTip(span, tooltip);
 			
 			tr.insertCell(-1).appendChild(span);
 			tr.insertCell(-1).appendChild(this.inputCVV);
@@ -541,21 +541,37 @@ Object.extend(CreditCardPayment.prototype,
 		var outcome = response['OUTCOME'];
 
 		// INVALID = problem with the submitted values
+		if (outcome == 'INVALID')
+		{
+			// Need to display the confirmation message and change buttons to OK
+			$Alert('Your payment request could not be processed:\n\n' + response['MESSAGE'] + '\n\nPlease check your details and try again.');
+			this.preparePopup();
+			this.displayForm();
+			return false;
+		}
 
 		// UNAVAILABLE = The SecurePay servers could not be contacted
-
 		// FAILED = A problem occurred communicating with the SecurePay servers
+		if (outcome == 'UNAVAILABLE' || outcome == 'FAILED')
+		{
+			// Need to display the confirmation message and change buttons to OK
+			$Alert('Your payment request could not be processed:\n\n' + response['MESSAGE'] + '\n\nPlease try again later.');
+			this.preparePopup();
+			this.displayForm();
+			return false;
+		}
 
 		// SUCCESS = The payment was made and DD details stored (if appropriate)
 		if (outcome == 'SUCCESS')
 		{
 			// Need to display the confirmation message and change buttons to OK
 			this.showConfirmationMessage(response['MESSAGE']);
+			return true;
 		}
 
 		// The details of the response (the confirmation message)
 		// need to be displayed to the user, assuming it all worked.
-
+alert(outcome);
 	},
 
 	showConfirmationMessage: function(message)
@@ -826,17 +842,22 @@ Object.extend(CreditCardPayment.prototype,
 		td.appendChild(span);
 	},
 
-	addTooltip: function(forElement, tooltipElement)
+	addCvvToolTip: function(forElement, tooltipElement)
 	{
 		forElement.className += ' tooltip-source-element';
-		var tooltip = { tooltip: tooltipElement };
-		Event.observe(forElement, 'mouseover', this.showTooltip.bind(tooltip));
-		Event.observe(forElement, 'mouseout', this.hideTooltip.bind(tooltip));
+		var tooltip = { tooltip: tooltipElement, tooltipParent: this.getToolTipParent() };
+		Event.observe(forElement, 'mouseover', this.showCvvToolTip.bind(tooltip));
+		Event.observe(forElement, 'mouseout', this.hideCvvToolTip.bind(tooltip));
 	},
 
-	showTooltip: function(event)
+	getToolTipParent: function()
 	{
-		if (!this.tooltip.parentNode) document.body.appendChild(this.tooltip);
+		return Reflex_Popup.overlay;
+	},
+
+	showCvvToolTip: function(event)
+	{
+		if (!this.tooltip.parentNode) this.tooltipParent.appendChild(this.tooltip);
 		event = event ? event : document.event;
 		var top = Event.pointerY(event);
 		var left = Event.pointerX(event);
@@ -846,10 +867,11 @@ Object.extend(CreditCardPayment.prototype,
 		this.tooltip.style.visibility = 'visible';
 	},
 
-	hideTooltip: function()
+	hideCvvToolTip: function()
 	{
 		this.tooltip.style.display = 'none';
 		this.tooltip.style.visibility = 'hidden';
+		if (this.tooltip.parentNode) this.tooltip.parentNode.removeChild(this.tooltip);
 	},
 
 	appendErrorHelp: function(td, errorInput)
@@ -857,7 +879,7 @@ Object.extend(CreditCardPayment.prototype,
 		var button  =document.createElement('input');
 		button.type = 'button';
 		button.className = 'validation-error-tootltip-button';
-		var obj = { boundHoverFunction: null, boundUnhoverFunction: null, errorInput: errorInput, tootltip: null, button: button };
+		var obj = { boundHoverFunction: null, boundUnhoverFunction: null, errorInput: errorInput, tootltip: null, button: button, tooltipParent: this.getToolTipParent() };
 		obj.boundHoverFunction = this.showToolTip.bind(obj);
 		obj.boundUnhoverFunction = this.hideToolTip.bind(obj);
 		Event.observe(button, 'mouseover', obj.boundHoverFunction);
@@ -880,7 +902,7 @@ Object.extend(CreditCardPayment.prototype,
 		this.tooltip.appendChild(document.createTextNode(this.errorInput.getAttribute('validityError')));
 		this.tooltip.style.top = '' + position.top + 'px';
 		this.tooltip.style.left = '' + (position.left + this.button.clientWidth + 8) + 'px';
-		document.body.appendChild(this.tooltip);
+		this.tooltipParent.appendChild(this.tooltip);
 	},
 
 	hideToolTip: function(event)
@@ -1263,6 +1285,11 @@ Object.extend(CreditCardPaymentPanel.prototype,
 	{
 		this.container = $ID(containerId);
 		this.CreditCardPayment$initialize(accountNumber, abn, companyName, contactName, contactEmail, amountOwing, allowDD);
+	},
+
+	getToolTipParent: function()
+	{
+		return document.body;
 	},
 
 	preparePopup: function()
