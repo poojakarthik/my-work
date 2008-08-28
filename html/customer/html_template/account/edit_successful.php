@@ -74,7 +74,7 @@
 		echo "<br/><br/><div class='NarrowContent'>\n";
 
 		$mixFoundError = FALSE;
-		if($_POST['mixAccount_OldPassword'] != "" || $_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
+		if($_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
 		{
 			// they have tried to change the password.. lets check if it went ok...
 			if(SHA1($_POST['mixAccount_NewPassword1']) != DBO()->Contact->PassWord->Value)

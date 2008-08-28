@@ -286,7 +286,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			
 
 			$mixFoundError = FALSE;
-			if($_POST['mixAccount_OldPassword'] != "" || $_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
+			if($_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
 			{
 				if(SHA1($_POST['mixAccount_OldPassword']) != DBO()->Contact->PassWord->Value)
 				{
