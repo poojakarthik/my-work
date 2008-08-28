@@ -36,7 +36,7 @@
 	$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 
 	// Load Style Configuration based on domain name 
-	$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url LIKE \"%$_SERVER[HTTP_HOST]\" LIMIT 1");
+	$arrFetchCustomerStyleConfiguration = $dbConnection->fetchone("SELECT * FROM `CustomerGroup` WHERE flex_url LIKE \"%$_SERVER[HTTP_HOST]%\" LIMIT 1");
 	DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration;
 
 	# I couldnt find the style for the URL you are using?
@@ -54,8 +54,9 @@
 		}
 	}
 	// Open the pageBody container
-	#CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ManagementConsole"), "$ExternalName Customer System");
-	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ResetPassword"), "$ExternalName Customer System");
+	 // CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ManagementConsole"), "$ExternalName Customer System");
+	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ResetPassword"), "$ExternalName Customer System");
+	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ResetPassword"), "");
 	
 	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
 	
@@ -78,12 +79,13 @@
 
 	// Render the login table
 		print "
-		<TABLE align=center style=\"border: solid 1px #D1D1D1; color: #000000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<br/><br/>
+		<TABLE align=center class=login-table-style-main-title>
 		<TR>
-			<TD>Customer Login.</TD>
+			<TD>$ExternalName Customer System - Login</TD>
 		</TR>
 		</TABLE>
-		<TABLE align=center style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
 ?>

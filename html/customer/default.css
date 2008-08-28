@@ -26,6 +26,31 @@
 /**************************************************************************/
 
 
+
+/**************************************************************************/
+/* STYLE FOR LOGIN AREA													  */
+/**************************************************************************/
+.login-table-style-main-title
+{
+	border: solid 1px #D1D1D1; 
+	color: #000000; 
+	width:442px; 
+	font-size:12px;
+	padding:3px;
+	margin-bottom:7;
+	font-weight:bold;
+}
+.login-table-style-main
+{
+	border: solid 1px #D1D1D1; 
+	background-color: #EFEBE7; 
+	width: 442px; 
+	font-size:12px;
+	padding:3px;
+	margin-bottom:7;
+	font-weight:normal;
+}
+
 /**************************************************************************/
 /* EDIT PAGE														  */
 /**************************************************************************/

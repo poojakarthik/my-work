@@ -32,7 +32,8 @@
 	// Load the common layout for this app
 	require_once dirname(__FILE__) . "/../layout_template/common_layout.php";
 	
-	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console"), "$ExternalName Customer System");
+	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console"), "$ExternalName Customer System");
+	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console"), "");
 	
 	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
 	
@@ -40,12 +41,13 @@
 	if(!array_key_exists('mixUserName', $_POST))
 	{
 		print "
-		<TABLE align=center style=\"border: solid 1px #D1D1D1; color: #000000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<br/><br/>
+		<TABLE align=center class=login-table-style-main-title>
 		<TR>
-			<TD>Reset Password - enter a valid username.</TD>
+			<TD>$ExternalName Customer System - Reset Password</TD>
 		</TR>
 		</TABLE>
-		<TABLE align=center style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
 		print "
@@ -83,12 +85,13 @@
 		if(!DBO()->Fail)
 		{
 		print "
-		<TABLE align=center style=\"border: solid 1px #D1D1D1; color: #33CC00; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<br/><br/>
+		<TABLE align=center class=login-table-style-main-title>
 		<TR>
-			<TD>Reset Password Success</TD>
+			<TD>$ExternalName Customer System - Reset Password Success</TD>
 		</TR>
 		</TABLE>
-		<TABLE align=center style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
 			print "A new password has been issued.<br/>
@@ -104,12 +107,13 @@
 		if(DBO()->Fail)
 		{
 		print "
-		<TABLE align=center style=\"border: solid 1px #D1D1D1; color: #FF0000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<br/><br/>
+		<TABLE align=center class=login-table-style-main-title>
 		<TR>
-			<TD>Reset Password Failure</TD>
+			<TD>$ExternalName Customer System - Reset Password Failure</TD>
 		</TR>
 		</TABLE>
-		<TABLE align=center style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
 			print "The username entered does not exist.";
