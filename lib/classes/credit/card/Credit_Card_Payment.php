@@ -251,13 +251,17 @@ class Credit_Card_Payment
 
 		// Build an array of 'magic tokens' to be inserted into the message
 		$tokens = array();
-		$tokens['DATETIME'] = date('g:i:sA, jS M Y', $time);
+		$balanceBefore = self::amount2dp($balanceBefore);
+		if ($balanceBefore[0] == '-') $balanceBefore = substr($balanceBefore, 1) . ' CR';
+		$balanceAfter = self::amount2dp($account->getBalance());
+		if ($balanceAfter[0] == '-') $balanceAfter = substr($balanceAfter, 1) . ' CR';
+		$tokens['DATE_TIME'] = date('g:i:sA, jS M Y', $time);
 		$tokens['PAYMENT_REFERENCE'] = $purchaseOrderNo;
 		$tokens['AMOUNT_APPLIED'] = $fltAmount;
 		$tokens['AMOUNT_SURCHARGE'] = $fltSurcharge;
 		$tokens['AMOUNT_TOTAL'] = $fltTotal;
-		$tokens['BALANCE_BEFORE'] = '$' . self::amount2dp($balanceBefore);
-		$tokens['BALANCE_AFTER'] = '$' . self::amount2dp($account->getBalance());
+		$tokens['BALANCE_BEFORE'] = '$' . $balanceBefore;
+		$tokens['BALANCE_AFTER'] = '$' . $balanceAfter;
 		$tokens['ACCOUNT_NUMBER'] = $account->id;
 		$tokens['CONTACT_NAME'] = $contact->getName();
 		$tokens['CONTACT_EMAIL'] = $contact->email;
@@ -288,15 +292,17 @@ class Credit_Card_Payment
 	{
 		if (is_float($strAmountInDollars))
 		{
-			$strAmountInCents = ''.round($strAmountInDollars*100);
+			$neg = $strAmountInDollars < 0 ? '-' : '';
+			$strAmountInCents = ''.round(abs($strAmountInDollars)*100);
 			if (strlen($strAmountInCents) <= 2)
 			{
 				$strAmountInDollars = '0.'.$strAmountInCents;
 			}
 			else
 			{
-				$strAmountInDollars = substr($strAmountInDollars, -2) . '.' . substr($strAmountInDollars, strlen($strAmountInDollars) - 2);
+				$strAmountInDollars = substr($strAmountInCents, 0, -2) . '.' . substr($strAmountInCents, - 2);
 			}
+			$strAmountInDollars = $neg.$strAmountInDollars;
 		}
 		$nrDecPlaces = (strpos($strAmountInDollars, '.') === FALSE) ? 0 : (strlen($strAmountInDollars) - strpos($strAmountInDollars, '.') - 1);
 		if ($nrDecPlaces != 2)
