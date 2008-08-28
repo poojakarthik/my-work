@@ -184,13 +184,7 @@
 		$this->_selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)");
 		
 		// Init Charge Modules
-		// TODO future: Only init these if they're enabled for this Yellow Billing client
-		
-		$this->_arrAccountChargeModules[CHARGE_MODULE_NON_DDR]		= new Billing_Charge_Account_AccountProcessing();
-		
-		$this->_arrServiceChargeModules[CHARGE_MODULE_INBOUND]		= new Billing_Charge_Service_Inbound();
-		$this->_arrServiceChargeModules[CHARGE_MODULE_PINNACLE]		= new Billing_Charge_Service_Pinnacle();
-		
+		$this->_arrBillingChargeModules	= Billing_Charge::LoadModules();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -604,7 +598,7 @@
 				// Add in Service modular charges
 				if (!$bolRegenerate)
 				{
-					foreach ($this->_arrServiceChargeModules as $chgModule)
+					foreach ($this->_arrBillingChargeModules[$arrAccount['CustomerGroup']]['Billing_Charge_Service'] as $chgModule)
 					{
 						// Generate charge
 						$mixResult = $chgModule->Generate(Array('InvoiceRun' => $this->_strInvoiceRun), $arrService);
@@ -654,20 +648,21 @@
 				// insert into ServiceTotal
 				//$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
 				$arrServiceTotal = Array();
-				$arrServiceTotal['FNN']				= $arrService['FNN'];
-				$arrServiceTotal['AccountGroup']	= $arrAccount['AccountGroup'];
-				$arrServiceTotal['Account']			= $arrAccount['Id'];
-				$arrServiceTotal['Service']			= $arrService['Service'];
-				$arrServiceTotal['InvoiceRun']		= $this->_strInvoiceRun;
-				$arrServiceTotal['CappedCharge']	= $fltCappedCDRCharge;
-				$arrServiceTotal['UncappedCharge']	= $fltUncappedCDRCharge;
-				$arrServiceTotal['TotalCharge']		= $fltTotalCharge;
-				$arrServiceTotal['Credit']			= $fltServiceCredits;
-				$arrServiceTotal['Debit']			= $fltServiceDebits;
-				$arrServiceTotal['RatePlan']		= $arrService['RatePlan'];
-				$arrServiceTotal['CappedCost']		= $fltCappedCDRCost;
-				$arrServiceTotal['UncappedCost']	= $fltUncappedCDRCost;
-				$arrServiceTotal['PlanCharge']		= $arrService['MinMonthly'];
+				$arrServiceTotal['FNN']					= $arrService['FNN'];
+				$arrServiceTotal['AccountGroup']		= $arrAccount['AccountGroup'];
+				$arrServiceTotal['Account']				= $arrAccount['Id'];
+				$arrServiceTotal['Service']				= $arrService['Service'];
+				$arrServiceTotal['InvoiceRun']			= $this->_strInvoiceRun;
+				$arrServiceTotal['CappedCharge']		= $fltCappedCDRCharge;
+				$arrServiceTotal['UncappedCharge']		= $fltUncappedCDRCharge;
+				$arrServiceTotal['TotalCharge']			= $fltTotalCharge;
+				$arrServiceTotal['Credit']				= $fltServiceCredits;
+				$arrServiceTotal['Debit']				= $fltServiceDebits;
+				$arrServiceTotal['RatePlan']			= $arrService['RatePlan'];
+				$arrServiceTotal['CappedCost']			= $fltCappedCDRCost;
+				$arrServiceTotal['UncappedCost']		= $fltUncappedCDRCost;
+				$arrServiceTotal['PlanCharge']			= $arrService['MinMonthly'];
+				$arrServiceTotal['service_rate_plan']	= $arrService['ServiceRatePlan'];
 				
 				if (!$this->insServiceTotal->Execute($arrServiceTotal))
 				{
@@ -794,7 +789,7 @@
 			// Add in Account modular charges
 			if (!$bolRegenerate)
 			{
-				foreach ($this->_arrAccountChargeModules as $chgModule)
+				foreach ($this->_arrBillingChargeModules[$arrAccount['CustomerGroup']]['Billing_Charge_Account'] as $chgModule)
 				{
 					// Generate charge
 					$mixResult = $chgModule->Generate($arrInvoiceData, $arrAccount);
@@ -1333,15 +1328,16 @@
 		if ($strInvoiceRun)
 		{
 			// Remove Billing-time modular charges
-			foreach ($this->_arrAccountChargeModules as $chgModule)
+			foreach ($this->_arrBillingChargeModules as $arrCustomerGroups)
 			{
-				// Revoke Account charges
-				$mixResult = $chgModule->RevokeAll($strInvoiceRun);
-			}
-			foreach ($this->_arrServiceChargeModules as $chgModule)
-			{
-				// Revoke Service charges
-				$mixResult = $chgModule->RevokeAll($strInvoiceRun);
+				foreach ($arrCustomerGroups as $arrModuleTypes)
+				{
+					foreach ($arrModuleTypes as $chgModule)
+					{
+						// Revoke Billing Charge Modules
+						$mixResult = $chgModule->RevokeAll($strInvoiceRun);
+					}
+				}
 			}
 			
 			// Remove Plan Charge Adjustments
@@ -1751,16 +1747,17 @@
 		}		
 		
 		// Remove Billing-time modular charges
-		foreach ($this->_arrAccountChargeModules as $chgModule)
-		{
-			// Revoke Account charges
-			$mixResult = $chgModule->RevokeAll($strInvoiceRun);
-		}
-		foreach ($this->_arrServiceChargeModules as $chgModule)
-		{
-			// Revoke Service charges
-			$mixResult = $chgModule->RevokeAll($strInvoiceRun);
-		}
+			foreach ($this->_arrBillingChargeModules as $arrCustomerGroups)
+			{
+				foreach ($arrCustomerGroups as $arrModuleTypes)
+				{
+					foreach ($arrModuleTypes as $chgModule)
+					{
+						// Revoke Billing Charge Modules
+						$mixResult = $chgModule->RevokeAll($strInvoiceRun);
+					}
+				}
+			}
 		
 		
 		// clean up ServiceTotal table
@@ -1908,6 +1905,22 @@
 		// Report Title
 		$this->_rptBillingReport->AddMessage("[ REVOKING SINGLE INVOICE ]"."\n");
 		
+		// Get Account Details
+		$selAccount	= new StatementSelect("Account", "*", "Id = <Account>");
+		if (!$selAccount->Execute(Array('Id' => $intAccount)))
+		{
+			if ($selAccount->Error())
+			{
+				throw new Exception("DB ERROR: ".$selAccount->Error());
+			}
+			else
+			{
+				// Bad Account Number
+				throw new Exception("Account Number '$intAccount' does not exist!");
+			}
+		}
+		$arrAccount	= $selAccount->Fetch();
+		
 		// Get InvoiceRun of the current Temporary Invoice Run
 		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
 		if ($selGetInvoiceRun->Execute() === FALSE)
@@ -1957,15 +1970,13 @@
 		if ($strInvoiceRun)
 		{
 			// Remove Billing-time modular charges
-			foreach ($this->_arrAccountChargeModules as $chgModule)
+			foreach ($this->_arrBillingChargeModules[$arrAccount['CustomerGroup']] as $arrModuleTypes)
 			{
-				// Revoke Account charges
-				$mixResult = $chgModule->Revoke($strInvoiceRun, $intAccount);
-			}
-			foreach ($this->_arrServiceChargeModules as $chgModule)
-			{
-				// Revoke Service charges
-				$mixResult = $chgModule->Revoke($strInvoiceRun, $intAccount);
+				foreach ($arrModuleTypes as $chgModule)
+				{
+					// Revoke Billing Charge Modules
+					$mixResult	= $chgModule->Revoke($strInvoiceRun, $intAccount);
+				}
 			}
 			
 			// clean up ServiceTotal table

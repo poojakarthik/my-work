@@ -10,6 +10,7 @@
  *
  * Handles various Module Configuration schemas in Flex
  *
+ * @prefix	cfg
  * @package	lib.classes.module
  * @class	Module_Config
  */
@@ -30,16 +31,18 @@ class Module_Config
 	 * @param	string	$strTable					Name of the Table to use
 	 * @param	string	$strForeignKey				Name of the Foreign Key column in Table
 	 * @param	integer	$intModuleId				Id of the Module who's config we're dealing with
+	 * @param	array	$arrConfigDefinition		Config Definition Array
 	 * 
 	 * @return	Module_Config
 	 *
 	 * @method
 	 */
-	public function __construct($strTable, $strForeignKey, $intModuleId)
+	public function __construct($strTable, $strForeignKey, $intModuleId, $arrConfigDefinition)
 	{
 		$this->strTable			= $strTable;
 		$this->strForeignKey	= $strForeignKey;
 		$this->intModuleId		= $intModuleId;
+		$this->_arrModuleConfig	= $arrConfigDefinition;
 		
 		// Load the Module Config
 		$selModuleConfig	= new StatementSelect($strTable, "*", "{$strForeignKey} = <ModuleId>");
@@ -181,7 +184,7 @@ class Module_Config
 	 *
 	 * @method
 	 */
-	 function _ParseField($strName, $strParent = NULL)
+	 private function _ParseField($strName, $strParent = NULL)
 	 {
 		$mixValue	= &$this->_arrModuleConfig[$strName]['Value'];
 		
@@ -263,6 +266,51 @@ class Module_Config
 		return $mixValue;
 	 }
 	
+	
+	//------------------------------------------------------------------------//
+	// Create
+	//------------------------------------------------------------------------//
+	/**
+	 * Create()
+	 *
+	 * Creates Module Config information in the DB
+	 * 
+	 * Creates Module Config information in the DB
+	 * 
+	 * @param	string	$strTable					Name of the Table to use
+	 * @param	string	$strForeignKey				Name of the Foreign Key column in Table
+	 * @param	integer	$intModuleId				Id of the Module who's config we're dealing with
+	 * @param	array	$arrConfigDefinition		Config Definition Array
+	 * 
+	 * @return	boolean							Pass/Fail
+	 *
+	 * @method
+	 */
+	static public function Create($strTable, $strForeignKey, $intModuleId, $arrConfigDefinition)
+	 {
+		$intModuleConfig	= new StatementInsert($strTable);
+		
+		// Insert the Module Config data
+		foreach ($arrConfigDefinition as $strField=>$arrProperties)
+		{
+			$arrModuleConfig	= Array();
+			$arrModuleConfig[$strForeignKey]	= $intModuleId;
+			$arrModuleConfig['name']			= $strField;
+			$arrModuleConfig['type']			= $arrProperties['Type'];
+			$arrModuleConfig['value']			= self::EncodeValue($arrProperties['Default'], $arrProperties['Type']);
+			$arrModuleConfig['description']		= $arrProperties['Description'];
+			
+			$intId	= $intModuleConfig->Execute($arrModuleConfig);
+			if (!$intId)
+			{
+				throw new Exception("DB ERROR: ".$intModuleConfig->Error());
+			}
+		}
+		
+		// Return the Insert Id
+		return TRUE;
+	 }
+	
 	//------------------------------------------------------------------------//
 	// DecodeValue
 	//------------------------------------------------------------------------//
@@ -280,7 +328,7 @@ class Module_Config
 	 *
 	 * @method
 	 */
-	static function DecodeValue($strValue, $intDataType = DATA_TYPE_STRING)
+	public static function DecodeValue($strValue, $intDataType = DATA_TYPE_STRING)
 	{
 		$mixValue	= NULL;
 		switch ($intDataType)
@@ -329,7 +377,7 @@ class Module_Config
 	 *
 	 * @method
 	 */
-	static function EncodeValue($mixValue, $intDataType = DATA_TYPE_STRING)
+	public static function EncodeValue($mixValue, $intDataType = DATA_TYPE_STRING)
 	{
 		switch ($intDataType)
 		{

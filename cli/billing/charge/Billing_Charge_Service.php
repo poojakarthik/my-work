@@ -44,8 +44,6 @@
  */
  abstract class Billing_Charge_Service extends Billing_Charge
  {
- 	public $strChargeType;
- 	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -55,19 +53,22 @@
 	 * Constructor for the Charge Object
 	 *
 	 * Constructor for the Charge Object
+	 * 
+	 * @param	integer	$intModuleId					The billing_charge_module.id for this Module
 	 *
-	 * @return			Billing_Charge_Service
+	 * @return											Billing_Charge_Service
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intModuleId)
  	{
+ 		// Call parent constructor
+ 		parent::__construct($intModuleId);
+ 		
  		// Statements					
-		$this->_qryDelete = new Query();
+		$this->_qryDelete		= new Query();
 		$this->_selGetAccounts	= new StatementSelect("Invoice", "Account", "InvoiceRun = <InvoiceRun> UNION SELECT Account FROM InvoiceTemp WHERE InvoiceRun = <InvoiceRun>");
 		$this->_selGetServices	= new StatementSelect("ServiceTotal", "Service", "InvoiceRun = <InvoiceRun>");
-		
-		$this->_strChargeType	= NULL;
  	}
  	
  	
@@ -111,7 +112,7 @@
  		//Debug("InvoiceRun: '$strInvoiceRun'\nAccount: $intAccount\nCharge Type: '$this->_strChargeType'");
  		
  		// Delete the charge
- 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount AND ChargeType = '$this->_strChargeType' AND InvoiceRun = '$strInvoiceRun'");
+ 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount AND ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND InvoiceRun = '$strInvoiceRun'");
  	}
  	
  	

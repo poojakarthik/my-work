@@ -47,7 +47,6 @@ VixenRequire($strChargeDir."Billing_Charge_Account.php");
 VixenRequire($strChargeDir."Billing_Charge_Service.php");
 
 VixenRequire($strChargeDir."account/Billing_Charge_Account_AccountProcessing.php");
-VixenRequire($strChargeDir."account/Billing_Charge_Account_LatePayment.php");
 VixenRequire($strChargeDir."account/Billing_Charge_Account_Postage.php");
 
 VixenRequire($strChargeDir."service/Billing_Charge_Service_Inbound.php");

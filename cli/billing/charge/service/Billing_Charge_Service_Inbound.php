@@ -44,6 +44,23 @@
  */
  class Billing_Charge_Service_Inbound extends Billing_Charge_Service
  {
+	protected static $_arrConfigDefinition	= Array(
+														'ChargeType'	=> Array(
+																					'Default'		=> 'INB',
+																					'Type'			=> DATA_TYPE_STRING,
+																					'Desctiption'	=> "The ChargeType assigned to this Module"
+																				),
+														'Description'	=> Array(
+																					'Default'		=> "Inbound Service Fee",
+																					'Type'			=> DATA_TYPE_STRING,
+																					'Desctiption'	=> "The Description that will appear on the Invoice"
+																				),
+														'Amount'		=> Array(
+																					'Default'		=> 15.00,
+																					'Type'			=> DATA_TYPE_FLOAT,
+																					'Desctiption'	=> "The Fixed Amount to charge all Services that qualify"
+																				) 
+													);
  	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -54,15 +71,17 @@
 	 * Constructor for the Inbound Service Fee Charge Object
 	 *
 	 * Constructor for the Inbound Service Fee Charge Object
+	 * 
+	 * @param	integer	$intModuleId					The billing_charge_module.id for this Module
 	 *
-	 * @return			Billing_Charge_Service_Inbound
+	 * @return											Billing_Charge_Service_Inbound
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($intModuleId)
  	{
  		// Call parent constructor
- 		parent::__construct();
+ 		parent::__construct($intModuleId);
 		
  		// Statements
 		$this->_selINB15Services = new StatementSelect(	"CDR", 
@@ -71,8 +90,6 @@
 														NULL, 
 														NULL, 
 														"Service \n HAVING CDRCount > 0");
-		
-		$this->_strChargeType	= "INB";
  	}
  	
  	
@@ -100,11 +117,11 @@
 			{
 				$arrCharge = Array();
 				$arrCharge['Nature']		= 'DR';
-				$arrCharge['Description']	= "Inbound Service Fee";
-				$arrCharge['ChargeType']	= $this->_strChargeType;
+				$arrCharge['Description']	= $this->_cfgModuleConfig->Description;
+				$arrCharge['ChargeType']	= $this->_cfgModuleConfig->ChargeType;
 				$arrCharge['CreatedOn']		= date("Y-m-d");
 				$arrCharge['ChargedOn']		= date("Y-m-d");
-				$arrCharge['Amount']		= 15.00;
+				$arrCharge['Amount']		= $this->_cfgModuleConfig->Amount;
 				$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
 				$arrCharge['Service'] 		= $arrServiceDetails['Service'];
 				$arrCharge['Account'] 		= $arrServiceDetails['Account'];
@@ -138,6 +155,27 @@
  	{
  		// Call Parent Revoke()
  		return parent::Revoke($strInvoiceRun, $intAccount);
+ 	}
+ 	
+ 	
+	//------------------------------------------------------------------------//
+	// CreateModule
+	//------------------------------------------------------------------------//
+	/**
+	 * CreateModule()
+	 *
+	 * Creates a Module Instance in the Database
+	 *
+	 * Creates a Module Instance in the Database.  Remove when we start using PHP v5.3
+	 *
+	 * @return	integer							Insert Id
+	 *
+	 * @method
+	 */
+ 	protected static function CreateModule()
+ 	{
+ 		// Call Parent CreateModule, because PHP 5.2 doesn't support Late Static Binding :(
+ 		return parent::CreateModule(__CLASS__, self::$_arrConfigDefinition);
  	}
  }
  
