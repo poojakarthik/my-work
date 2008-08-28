@@ -181,7 +181,7 @@ class Credit_Card_Payment
 		$calculatedSurcharge = $cardType->calculateSurcharge($amount);
 		if (abs($calculatedSurcharge - $surcharge) >= 0.005)
 		{
-			throw new Exception('The surcharge specified is incorrect.');
+			throw new Exception('The surcharge specified is incorrect.'.$surcharge. ' : ' . $calculatedSurcharge . ' : ' . abs($calculatedSurcharge - $surcharge));
 		}
 
 		// OK. That's everything validated. Now we can start talking to SecurePay...
@@ -204,7 +204,8 @@ class Credit_Card_Payment
 
 		// Need to check the XML response is valid and that the status code (SecurePayMessage/Status/statusCode) == "000".
 		$matches = array();
-		$statusCode = '999'; // WIP - Get actual status code of response
+		$statusCode = '999';
+		// Get actual status code of response
 		if (preg_match("/\<statusCode(?:| [^\>]*)\>([^\>]*)\</i", $response, $matches))
 		{
 			$statusCode = $matches[1];
@@ -244,9 +245,11 @@ class Credit_Card_Payment
 		// Payment has been processed!
 		// WIP: Store details of the payment in the credit_card_payment_history table
 
+		// Record the balance before applying the payment
+		$balanceBefore = $account->getBalance();
 
 		// WIP: Apply the payment to the account
-		$balanceBefore = $account->getBalance();
+		// WIP: Add an adjustment to the account for the credit card surcharge
 
 
 		// Build an array of 'magic tokens' to be inserted into the message
@@ -348,37 +351,37 @@ class Credit_Card_Payment
 		$preauthid = htmlspecialchars($preauthid);
 		$txnid = htmlspecialchars($txnid);
 
-		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<SecurePayMessage>
-	<MessageInfo>
-		<messageID>$messageId</messageID>
-		<messageTimestamp>$timestamp</messageTimestamp>
-		<timeoutValue>60</timeoutValue>
-		<apiVersion>xml-4.2</apiVersion>
-	</MessageInfo>
-	<MerchantInfo>
-		<merchantID>$merchantId</merchantID>
-		<password>$merchantPassword</password>
-	</MerchantInfo>
-	<RequestType>$requestType</RequestType>
-	<Payment>
-		<TxnList count=\"1\">
-			<Txn ID=\"1\">
-				<txnType>$paymentType</txnType>
-				<txnSource>23</txnSource>
-				<amount>$paymentAmount</amount>
-				<currency>$currency</currency>
-				<purchaseOrderNo>$purchaseOrderNo</purchaseOrderNo>
-				" . (strlen($preauthid) ? "<preauthID>$preauthid</preauthID>" : '') . "
-				" . (strlen($txnid) ? "<txnID>$txnid</txnID>" : '') . "
-				<CreditCardInfo>
-					<cardNumber>$cardNumber</cardNumber>
-					<cvv>$cvv</cvv>
-					<expiryDate>$expiryMonth/$expiryYear</expiryDate>
-				</CreditCardInfo>
-			</Txn>
-		</TxnList>
-	</Payment>
+		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r
+<SecurePayMessage>\r
+	<MessageInfo>\r
+		<messageID>$messageId</messageID>\r
+		<messageTimestamp>$timestamp</messageTimestamp>\r
+		<timeoutValue>60</timeoutValue>\r
+		<apiVersion>xml-4.2</apiVersion>\r
+	</MessageInfo>\r
+	<MerchantInfo>\r
+		<merchantID>$merchantId</merchantID>\r
+		<password>$merchantPassword</password>\r
+	</MerchantInfo>\r
+	<RequestType>$requestType</RequestType>\r
+	<Payment>\r
+		<TxnList count=\"1\">\r
+			<Txn ID=\"1\">\r
+				<txnType>$paymentType</txnType>\r
+				<txnSource>23</txnSource>\r
+				<amount>$paymentAmount</amount>\r
+				<currency>$currency</currency>\r
+				<purchaseOrderNo>$purchaseOrderNo</purchaseOrderNo>\r
+				" . (strlen($preauthid) ? "<preauthID>$preauthid</preauthID>" : '') . "\r
+				" . (strlen($txnid) ? "<txnID>$txnid</txnID>" : '') . "\r
+				<CreditCardInfo>\r
+					<cardNumber>$cardNumber</cardNumber>\r
+					<cvv>$cvv</cvv>\r
+					<expiryDate>$expiryMonth/$expiryYear</expiryDate>\r
+				</CreditCardInfo>\r
+			</Txn>\r
+		</TxnList>\r
+	</Payment>\r
 </SecurePayMessage>";
 	}
 
@@ -429,6 +432,10 @@ class Credit_Card_Payment
 		/* Retrieve the HTML headers (and discard) */
 		/*******************************************/
 
+		$itimelimit = 120;
+		stream_set_timeout($h, $itimelimit);
+		set_time_limit($itimelimit + 10);
+
 		$headers = "";
 		while ($str = @fgets($h, 4096)) 
 		{
@@ -467,7 +474,13 @@ class Credit_Card_Payment
 			$str = @fgets($h, 4096);
 			if ($str === FALSE)
 			{
-				throw new Credit_Card_Payment_Communication_Exception("Failed to read body of response from SecurePay server.");
+				$body = trim($body);
+				if ($body && strlen($body) > 19 && strtolower(substr($body, -19)) == "</securepaymessage>")
+				{
+					// We reached the end of the stream, but PHP is naf at recognising it!
+					break;
+				}
+				throw new Credit_Card_Payment_Communication_Exception("Failed to read body of response from SecurePay server.".strtolower(substr($body, -19)));
 			}
 			if (!trim($str))
 			{
