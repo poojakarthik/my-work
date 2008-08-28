@@ -16,7 +16,7 @@ class Flex_Rollout_Version_000043 extends Flex_Rollout_Version
 		$dbaDB		= DataAccess::getDataAccess(FLEX_DATABASE_CONNECTION_ADMIN);
 		
 		// 1:	Add payment_terms.direct_debit_days and direct_debit_minimum Fields
-		$strSQL = "ALTER TABLE billing_charge_module ADD customer_group_id BIGINT(20) NULL COMMENT 'Customer Group that this Module applies to (NULL = ALL)';";
+		$strSQL = "ALTER TABLE billing_charge_module ADD customer_group_id BIGINT(20) NULL COMMENT 'Customer Group that this Module applies to (NULL = ALL)' AFTER class;";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add billing_charge_module.customer_group_id Field. ' . $qryQuery->Error());
