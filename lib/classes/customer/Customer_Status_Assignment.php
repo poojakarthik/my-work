@@ -80,14 +80,15 @@ class Customer_Status_Assignment
 		$this->_bolSaved = FALSE;
 	}
 	
-	// Used to set the InvoicePaidOn property
-	public function setInvoicePaidOn($strPaidOnDatetime)
+	// Used to set the InvoicePaid property
+	// Valid values for $mixInvoicePaid are NULL, TRUE and FALSE 
+	public function setInvoicePaid($mixInvoicePaid)
 	{
 		if ($this->_bolNeedsRefresh)
 		{
 			throw new Exception("Cannot modify Customer_Status_Object because it needs to be refreshed from the database");
 		}
-		$this->invoicePaidOn = $strPaidOnDatetime;
+		$this->invoicePaid = $mixInvoicePaid;
 		$this->_bolSaved = FALSE;
 	}
 	
@@ -102,8 +103,16 @@ class Customer_Status_Assignment
 		{
 			throw new Exception("Cannot save Customer_Status_Object which currently needs to be refreshed from the database");
 		}
-
-		$arrFields = self::getColumns();
+		
+		// Process the values to save
+		$arrFields = array_fill_keys(self::getColumns(), NULL);
+		foreach ($arrFields as $strField=>$Nully)
+		{
+			$arrFields[$strField] = $this->__get($strField);
+		}
+		
+		// The last_updated property has to be set to the SQL NOW() function
+		$arrFields['last_updated'] = new MySQLFunction("NOW()");
 
 		if ($this->id === NULL)
 		{
@@ -111,11 +120,17 @@ class Customer_Status_Assignment
 			if (!isset($insCustomerStatusHistory))
 			{
 				// Create the StatementInsert object
-				$arrColumns = array_fill_keys($arrFields, NULL);
-				$insCustomerStatusHistory = new StatementInsert("customer_status_history", $arrColumns);
+				$insCustomerStatusHistory = new StatementInsert("customer_status_history", $arrFields);
 			}
 			
 			// Make the insert
+			if (($intNewId = $insCustomerStatusHistory->Execute($arrFields)) === FALSE)
+			{
+				throw new Exception("Failed to insert record into customer_status_history table for account: {$this->accountId}, invoice run: {$this->invoiceRunId} - ". $insCustomerStatusHistory->Error());
+			}
+			
+			// Store the new id
+			$this->id = $intNewId;
 		}
 		else
 		{
@@ -123,22 +138,21 @@ class Customer_Status_Assignment
 			if (!isset($updCustomerStatusHistory))
 			{
 				// Create the StatementInsert object
-				$arrColumns = array_fill_keys($arrFields, NULL);
-				$updCustomerStatusHistory = new StatementUpdateById("customer_status_history", $arrColumns);
+				$updCustomerStatusHistory = new StatementUpdateById("customer_status_history", $arrFields);
 			}
 			
-			//TODO!			//TODO!			//TODO!			//TODO!			//TODO!			//TODO!			//TODO!			//TODO!			//TODO!
-			// Make the Update 
+			// Make the update 
+			if (($intRecordsAffected = $updCustomerStatusHistory->Execute($arrFields)) === FALSE)
+			{
+				// Update failed
+				throw new Exception("Failed to update record in customer_status_history table for account: {$this->accountId}, invoice run: {$this->invoiceRunId} (id: {$this->id})- ". $updCustomerStatusHistory->Error());
+			}
+			if ($intRecordsAffected === 0)
+			{
+				// Could not find record with the specified id
+				throw new Exception("Failed to update record in customer_status_history table for account: {$this->accountId}, invoice run: {$this->invoiceRunId}, because the record with id = {$this->id}, could not be found");
+			}
 		}
-		
-			"id",
-			"account_id",
-			"invoice_run_id",
-			"last_updated",
-			"customer_status_id",
-			"invoice_paid_on"
-
-		
 		
 		$this->_bolNeedsRefresh = TRUE;
 		$this->_bolSaved = TRUE;
@@ -148,7 +162,7 @@ class Customer_Status_Assignment
 	// throws an exception on failure
 	// If $bolGetAsObject == FALSE then returns the id of the customer_status_record
 	// If $bolGetAsObject == TRUE then returns a Customer_Status_Assignment object defining the Customer Status Assignment
-	public static function declareAssignment($intAccountId, $intInvoiceRunId, $intCustomerStatusId, $strInvoicePaidOn, $bolGetAsObject=FALSE)
+	public static function declareAssignment($intAccountId, $intInvoiceRunId, $intCustomerStatusId, $bolInvoicePaid, $bolGetAsObject=FALSE)
 	{
 		$objAssignment = self::getForAccountInvoiceRun($intAccountId, $intInvoiceRunId);
 		
@@ -161,7 +175,7 @@ class Customer_Status_Assignment
 		}
 		
 		$objAssignment->setCustomerStatusId($intCustomerStatusId);
-		$objAssignment->setInvoicePaidOn($strInvoicePaidOn);
+		$objAssignment->setInvoicePaidOn($bolInvoicePaid);
 
 		$objAssignment->save();
 		
@@ -177,7 +191,6 @@ class Customer_Status_Assignment
 			// Note that this won't use the __get function, which is good because I don't wont the object to refresh
 			return $objAssignment->id;
 		}
-		
 	}
 	
 

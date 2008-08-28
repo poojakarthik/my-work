@@ -83,7 +83,9 @@ class Customer_Status_Calculator
 	// This will calculate the status, and then update/insert the appropriate record in the customer_status_history folder AND return the Customer_Status_Assignment object created
 	// returns FALSE if the Account does not satisfy any of the Customer_Statuses
 	// throws exception on error
-	public static function updateFor($mixAccount, $intInvoiceRunId=NULL)
+	// If $bolGetAsObject == FALSE then returns the id of the customer_status_record
+	// If $bolGetAsObject == TRUE then returns a Customer_Status_Assignment object defining the Customer Status Assignment
+	public static function updateFor($mixAccount, $intInvoiceRunId=NULL, $bolGetAsObject=FALSE)
 	{
 		if (!is_object($mixAccount))
 		{
@@ -103,9 +105,23 @@ class Customer_Status_Calculator
 			return FALSE;
 		}
 		
-		
-		
-		
+		// Work out if the invoice has been paid
+		if ($objAccount->invoiceId === NULL)
+		{
+			// The account doesn't have an invoice, for this invoice run
+			$bolInvoicePaid = NULL;
+		}
+		elseif ($objAccount->invoiceSettledOn != NULL || $objAccount->invoiceBalance <= 0.01)
+		{
+			// The invoice has been paid (if invoice balance <= 0.01 then it is considered to have been paid)
+			$bolInvoicePaid = TRUE;
+		}
+		else
+		{
+			$bolInvoicePaid = FALSE;
+		}
+
+		return Customer_Status_Assignment::declareAssignment($objAccount->accountId, $objAccount->invoiceRunId, $intCustomerStatus, $bolInvoicePaid, $bolGetAsObject);
 	}
 	
 	

@@ -18,14 +18,45 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 			$arrArgs = $this->getValidatedArguments();
 
 			// Get the Invoice runs
-			$selInvoiceRuns = new StatmentSelect("InvoiceRun", "Id, InvoiceRun, BillingDate", "(BillingDate + INTERVAL 40 DAY) > NOW()");
+			$selInvoiceRuns = new StatmentSelect("InvoiceRun", "Id, InvoiceRun, BillingDate", "(BillingDate + INTERVAL 40 DAY) > NOW()", "Id DESC");
 			
 			if (($outcome = $selInvoiceRuns->Execute()) === FALSE)
 			{
 				throw new Exception("Failed to retrieve Invoice Run information: ". $selInvoiceRuns->Error());
 			}
 			
+			$arrInvoiceRuns = $selInvoiceRuns->FetchAll();
+			
+			// Loop through each invoice run returned (this will do the most recent InvoiceRun First)
+			$arrResults = array();
+			foreach ($arrInvoiceRuns as $arrInvoiceRun)
+			{
+				$intSuccessful		= 0;
+				$intUnclassifiable	= 0;
+				$intFailed			= 0;
+				$arrAccountIds = Customer_Status_Calculator::getEligibleAccounts($arrInvoiceRun['Id']);
+				
+				foreach($arrAccountIds as $intAccountId)
+				{
+					try
+					{
+						$intRecId = Customer_Status_Calculator::updateFor($intAccountId, $arrInvoiceRun["Id"]);
+						if ($intRecId === FALSE)
+						{
+							// The account did not satisfy any of the CustomerStatuses
+						}
+					}
+					catch (Exception $e)
+					{
+					}
+				}
+				
+				$arrResults[$arrInvoiceRun['InvoiceRun']] = array();
+			}
+			
+			
 	
+
 			$arrAccountIds = array();
 			while ($arrAccount = $selEligibleAccounts->Fetch())
 			{
@@ -57,7 +88,7 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 			// Must have worked! Exit with 'OK' code 0
 			return 0;
 		}
-		catch(Exception $exception)
+		catch (Exception $exception)
 		{
 			$this->showUsage("ERROR: " . $exception->getMessage());
 		}
