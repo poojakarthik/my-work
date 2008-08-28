@@ -74,7 +74,7 @@
 		echo "<br/><br/><div class='NarrowContent'>\n";
 
 		print "
-		<div class='customer-standard-table-title-style'>Password Failure</div>
+		<div class='customer-standard-table-title-style-notice'>Password Failure</div>
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
@@ -83,11 +83,10 @@
 		print "There was an error processing your password change request.<br/>
 		Please check the requirements below:<br/><br/>
 		<ul>
-			<li> Old Password cannot be left blank
-			<li> New Password cannot be left blank.
+			<li> New password can't be left blank.
 			<li> Both new passwords must match.
-			<li> The Old password must match with your current password
-			<li> The password length should match 6 - 40 characters in length.
+			<li> Old password must match with your current password.
+			<li> Password length should match 6 - 40 characters.
 		</ul>";
 		print "<br/><A HREF=\"javascript:history.go(-1)\">Please return and try again.</A>";
 

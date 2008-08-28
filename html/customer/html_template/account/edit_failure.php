@@ -74,7 +74,7 @@
 		echo "<br/><br/><div class='NarrowContent'>\n";
 		
 		print "
-		<div class='customer-standard-table-title-style'>Failure notice</div>
+		<div class='customer-standard-table-title-style-notice'>Failure notice</div>
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
