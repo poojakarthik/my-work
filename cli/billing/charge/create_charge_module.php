@@ -23,8 +23,8 @@ if ($strCustomerGroup === '*')
 } 
 elseif (GetConstantDescription((int)$strCustomerGroup, 'CustomerGroup'))
 {
-	$intCustomerGroup				= (int)$intCustomerGroup;
-	$strCustomerGroupDescription	= GetConstantDescription((int)$intCustomerGroup, 'CustomerGroup');
+	$intCustomerGroup				= (int)$strCustomerGroup;
+	$strCustomerGroupDescription	= GetConstantDescription($intCustomerGroup, 'CustomerGroup');
 }
 else
 {
