@@ -128,9 +128,9 @@ function VixenPopupClass()
 		
 		// . . . and create it
 		elmPopup = document.createElement('div');
-		elmPopup.setAttribute('className', 'PopupBox');
+		elmPopup.className = 'PopupBox';
 		elmPopup.setAttribute('class', 'PopupBox');
-		elmPopup.setAttribute('Id', 'VixenPopup__' + strId);
+		elmPopup.id = 'VixenPopup__' + strId;
 		
 		// Set the content of the popup box
 		if (!strContent)
@@ -245,7 +245,7 @@ function VixenPopupClass()
 					document.attachEvent("onmousedown", CloseHandler);
 					document.attachEvent("onkeydown", CloseHandler);
 				}
-				if (typeof document.addEventListener != 'undefined')
+				else
 				{
 					document.addEventListener('mousedown', CloseHandler, TRUE);
 					document.addEventListener('keydown', CloseHandler, TRUE);
@@ -394,7 +394,7 @@ function VixenPopupClass()
 					document.detachEvent('onmousedown',CloseHandler)
 					document.detachEvent('onkeyup',CloseHandler)
 				}
-				if (typeof document.addEventListener != 'undefined')
+				else
 				{	
 					// Remove the Event listeners required to make it an autohide popup
 					// This is currently handled by the VixenPopupClass->Close method
@@ -476,7 +476,7 @@ function VixenPopupClass()
 			document.body.style.overflow = "visible"; // Why is this done?
 			
 			// Do clean up actions, specific to the type of popup
-			if (elmPopup.hasAttribute("modal"))
+			if (elmPopup.getAttribute("modal") != null)
 			{
 				// The popup was modal.  Move the overlay div to its previous zIndex
 				var elmOverlay = document.getElementById("overlay");
@@ -565,13 +565,13 @@ function VixenPopupClass()
 		}
 		//
 		// close window button doesnt work in IE.. hack below turns it into a text link..
-		if(document.all)
+		if(false && document.all)
 		{
-			strAlertCode = "<div align='center' style='margin-bottom: 10px'><a href=\"./flex.php/Console/Pay/\" onclick=\"javascript:VixenAlertBox.close();\">Close Alert</a><br></div>";
+			strAlertCode = "<div align='center' style='margin-bottom: 10px'><a href=\"#\" onclick=\"VixenAlertBox.close(); return false;\">Close Alert</a><br></div>";
 		}
-		if(!document.all)
+		if(true || !document.all)
 		{
-			strAlertCode = "<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK'><br></div>";
+			strAlertCode = "<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' onclick='Vixen.Popup.Close(\"" + strPopupId +"\");' value='OK'><br></div>";
 		}
 		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						//"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
