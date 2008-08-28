@@ -24,7 +24,7 @@ if ($strCustomerGroup === '*')
 elseif (!GetGonstantDescription((int)$strCustomerGroup, 'CustomerGroup'))
 {
 	$intCustomerGroup				= (int)$intCustomerGroup;
-	$strCustomerGroupDescription	= GetGonstantDescription((int)$intCustomerGroup, 'CustomerGroup');
+	$strCustomerGroupDescription	= GetConstantDescription((int)$intCustomerGroup, 'CustomerGroup');
 }
 else
 {
@@ -41,6 +41,9 @@ if ($bolValidParameters === FALSE)
 	CLiEcho();
 	exit(1);
 }
+
+CliEcho("CLASS\t\t\t: {$strClass}");
+CliEcho("CUSTOMER GROUP\t: {$strCustomerGroupDescription}");
 
 // Create Module
 // HACKHACKHACK: Need to do this, because PHP 5.2 doesn't support Late Static Binding
