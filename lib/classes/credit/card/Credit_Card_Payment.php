@@ -2,9 +2,41 @@
 
 class Credit_Card_Payment
 {
+	const PAYMENT_TYPE_CREDIT_CARD_PAYMENT = '0';
+	const PAYMENT_TYPE_CREDIT_CARD_REFUND = '4';
+	const PAYMENT_TYPE_CREDIT_CARD_REVERSAL = '6';
+	const PAYMENT_TYPE_CREDIT_CARD_PRE_AUTHORISATION = '10';
+	const PAYMENT_TYPE_CREDIT_CARD_COMPLETE = '11';
+	const PAYMENT_TYPE_DIRECT_DEBIT = '15';
+	const PAYMENT_TYPE_DIRECT_CREDIT = '17';
 
+	const REQUEST_TYPE_PAYMENT = 'Payment';
+	const REQUEST_TYPE_PERIODIC = 'Periodic';
+	const REQUEST_TYPE_ECHO = 'Echo';
 
-	public static function makePayment($intAccountId, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $bolDD, &$response)
+	const CURRENCY_AUD = 'AUD';
+
+	protected static $realHost = "www.securepay.com.au/xmlapi/payment";
+	protected static $testHost = "www.securepay.com.au/test/payment";
+
+	public static function getHost()
+	{
+		if (self::isTestMode())
+		{
+			return self::$testHost;
+		}
+		else
+		{
+			return self::$realHost;
+		}
+	}
+
+	public static function isTestMode()
+	{
+		return (!defined('CREDIT_CARD_PAYMENT_TEST_MODE') || CREDIT_CARD_PAYMENT_TEST_MODE !== FALSE);
+	}
+
+	public static function makePayment($intAccountId, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, &$resultProperties)
 	{
 		// Check that the module is enabled
 		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
@@ -24,6 +56,11 @@ class Credit_Card_Payment
 		{
 			// Prevent admins from setting up direct debits
 			$bolDD = FALSE;
+			$contact = Contact::getForId($account->primaryContact);
+			if (!$contact)
+			{
+				throw new Exception("Failed to load primary contact details for the account.");
+			}
 		}
 		else if (Flex::isCustomerSession())
 		{
@@ -65,7 +102,6 @@ class Credit_Card_Payment
 		{
 			throw new Exception('The expiry date has already passed.');
 		}
-		mktime(0, 0, 0, $intMonth, 1, $intYear);
 
 		// Validate the email address
 		if (!EmailAddressValid($strEmail))
@@ -103,22 +139,374 @@ class Credit_Card_Payment
 
 		// Check that the amount has been specified and that is is a positive amount between the min and max permitted for the card type.
 		$fltAmount = preg_replace(array("/^0+/", "/[^0-9\.\-]+/"), "", '0'.$fltAmount);
+		if ($fltAmount[0] == '.') $fltAmount = '0' . $fltAmount;
 		$amount = floatVal($fltAmount);
-		if (!$fltAmount || strpos($fltAmount, '-') !== FALSE || $amount < $cardType->minimumAmount || $amount > $cardType->maximumAmount)
+		if (!$fltAmount || strpos($fltAmount, '-') !== FALSE || !preg_match("/^(0|[1-9]+[0-9]*)(|\.[0-9]*)$/", $fltAmount))
 		{
 			throw new Exception('Invalid amount specified.');
+		}
+		$fltAmount = self::amount2dp($fltAmount);
+
+		// Check that the amount has been specified and that is is a positive amount between the min and max permitted for the card type.
+		$fltSurcharge = preg_replace(array("/^0+/", "/[^0-9\.\-]+/"), "", '0'.$fltSurcharge);
+		if ($fltSurcharge[0] == '.') $fltSurcharge = '0' . $fltSurcharge;
+		$surcharge = floatVal($fltSurcharge);
+		if (!$fltSurcharge || strpos($fltSurcharge, '-') !== FALSE || !preg_match("/^(0|[1-9]+[0-9]*)(|\.[0-9]*)$/", $fltSurcharge))
+		{
+			throw new Exception('Invalid surcharge specified.'.$fltSurcharge);
+		}
+		$fltSurcharge = self::amount2dp($fltSurcharge);
+
+		// Check that the amount has been specified and that is is a positive amount between the min and max permitted for the card type.
+		$fltTotal = preg_replace(array("/^0+/", "/[^0-9\.\-]+/"), "", '0'.$fltTotal);
+		if ($fltTotal[0] == '.') $fltTotal = '0' . $fltTotal;
+		$total = floatVal($fltTotal);
+		if (!$fltTotal || strpos($fltTotal, '-') !== FALSE || $total < $cardType->minimumAmount || $total > $cardType->maximumAmount || !preg_match("/^(0|[1-9]+[0-9]*)(|\.[0-9]*)$/", $fltTotal))
+		{
+			throw new Exception('Invalid total specified.');
+		}
+		$fltTotal = self::amount2dp($fltTotal);
+
+		$cAmount = intval(self::amountInCents($fltAmount));
+		$cSurcharge = intval(self::amountInCents($fltSurcharge));
+		$cTotal = intval(self::amountInCents($fltTotal));
+
+		// Check that the amount + surcharge comes to total and that the surcharge is right for the credit card type.
+		if (abs($cTotal - ($cSurcharge + $cAmount)) > 0)
+		{
+			throw new Exception('The amounts specified do not add up.');
+		}
+
+		// Complain if there is anything other than a truly trivial difference in surcharge from that which is expected
+		$calculatedSurcharge = $cardType->calculateSurcharge($amount);
+		if (abs($calculatedSurcharge - $surcharge) >= 0.005)
+		{
+			throw new Exception('The surcharge specified is incorrect.');
 		}
 
 		// OK. That's everything validated. Now we can start talking to SecurePay...
 		// $account, $strEmail, $cardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $bolDD
 
+		$time = time();
+
+		$messageId = substr($account->id . '.' . base64_encode($time), 0, 30);
+
+		$purchaseOrderNo = $account->id . '.' . $time;
+
+		$xmlmessage = self::setPaymentCreditCard($creditCardPaymentConfig->merchantId, $creditCardPaymentConfig->password, $time, $messageId, $fltTotal, $purchaseOrderNo, $strCardNumber, $strCVV, $intMonth, $intYear);
+
+		$host = self::getHost();
+
+		$response = self::openSocket($host, $xmlmessage);
+
+		//throw new Exception("\n\n\n\n\n\n\n\n" . $xmlmessage . "\n\n\n\n\n\n\n\n" . $response . "\n\n\n\n\n\n\n");
+
+
+		// Need to check the XML response is valid and that the status code (SecurePayMessage/Status/statusCode) == "000".
+		$matches = array();
+		$statusCode = '999'; // WIP - Get actual status code of response
+		if (preg_match("/\<statusCode(?:| [^\>]*)\>([^\>]*)\</i", $response, $matches))
+		{
+			$statusCode = $matches[1];
+		}
+		// If not, we should throw a Credit_Card_Payment_Remote_Processing_Error exception
+		if ($statusCode !== '000')
+		{
+			throw new Credit_Card_Payment_Remote_Processing_Error($statusCode);
+		}
+
+		// Need to check the XML payment response is ok and that the response code (SecurePayMessage/Payment/TxnList/Txn/responseCode) == "00".
+		$responseCode = 'xx';
+		$responseText = '';
+
+		// Get the actual response code from the response
+		if (preg_match("/\<responseCode(?:| [^\>]*)\>([^\>]*)\</i", $response, $matches))
+		{
+			$responseCode = $matches[1];
+		}
+		// Get the actual response code from the response
+		if (preg_match("/\<responseText(?:| [^\>]*)\>([^\>]*)\</i", $response, $matches))
+		{
+			$responseText = $matches[1];
+		}
+
+		// Check to see if the transaction was approved
+		// This should be determined from the SecurePayMessage/Payment/TxnList/Txn/approved element in the XML (always 'Yes' or 'No'))
+		$approved = preg_match("/\<approved(?:| [^\>]*)\>Yes\</i", $response); 
+		// If not approved, we should return a message containing the response text (SecurePayMessage/Payment/TxnList/Txn/responseText)
+		if (!$approved)
+		{
+			$resultProperties['MESSAGE'] = "$responseText ($responseCode)";
+			throw new Credit_Card_Payment_Validation_Exception($responseCode, $responseText);
+		}
+
+
+		// Payment has been processed!
+		// WIP: Store details of the payment in the credit_card_payment_history table
+
+
+		// WIP: Apply the payment to the account
+		$balanceBefore = $account->getBalance();
+
+
 		// Build an array of 'magic tokens' to be inserted into the message
 		$tokens = array();
+		$tokens['DATETIME'] = date('g:i:sA, jS M Y', $time);
+		$tokens['PAYMENT_REFERENCE'] = $purchaseOrderNo;
+		$tokens['AMOUNT_APPLIED'] = $fltAmount;
+		$tokens['AMOUNT_SURCHARGE'] = $fltSurcharge;
+		$tokens['AMOUNT_TOTAL'] = $fltTotal;
+		$tokens['BALANCE_BEFORE'] = '$' . self::amount2dp($balanceBefore);
+		$tokens['BALANCE_AFTER'] = '$' . self::amount2dp($account->getBalance());
+		$tokens['ACCOUNT_NUMBER'] = $account->id;
+		$tokens['CONTACT_NAME'] = $contact->getName();
+		$tokens['CONTACT_EMAIL'] = $contact->email;
 
-		// Send the confirmation email
+		// Send the payment confirmation email
+		$emailBody = self::replaceMessageTokens($creditCardPaymentConfig->confirmationEmail, $tokens);
 
-		$response['MESSAGE'] = self::replaceMessageTokens($bolDD ? $creditCardPaymentConfig->directDebitText : $creditCardPaymentConfig->confirmationText, $tokens);
+		if ($bolDD)
+		{
+			// Send the direct debit confirmation email
+			$emailBody = self::replaceMessageTokens($creditCardPaymentConfig->directDebitEmail, $tokens);
+		}
 
+		$outputMessage = $creditCardPaymentConfig->confirmationText . ($bolDD ? ("\n\n\n" . $creditCardPaymentConfig->directDebitText) : '');
+
+		$resultProperties['MESSAGE'] = self::replaceMessageTokens($bolDD ? $creditCardPaymentConfig->directDebitText : $creditCardPaymentConfig->confirmationText, $tokens);
+		return TRUE;
+	}
+
+	private static function getGmtTimeStamp($time)
+	{
+		$O = str_pad(intval(intval(date('Z', $time))/60), 3, '0', STR_PAD_LEFT);
+		$ms = str_pad((intval(date('u', $time))%1000), 3, '0', STR_PAD_LEFT);
+		return date("YdmHis", $time)."{$ms}000" . ($O < 0 ? '-' : '+') . $O;
+	}
+
+	private static function amount2dp($strAmountInDollars)
+	{
+		if (is_float($strAmountInDollars))
+		{
+			$strAmountInCents = ''.round($strAmountInDollars*100);
+			if (strlen($strAmountInCents) <= 2)
+			{
+				$strAmountInDollars = '0.'.$strAmountInCents;
+			}
+			else
+			{
+				$strAmountInDollars = substr($strAmountInDollars, -2) . '.' . substr($strAmountInDollars, strlen($strAmountInDollars) - 2);
+			}
+		}
+		$nrDecPlaces = (strpos($strAmountInDollars, '.') === FALSE) ? 0 : (strlen($strAmountInDollars) - strpos($strAmountInDollars, '.') - 1);
+		if ($nrDecPlaces != 2)
+		{
+			if ($nrDecPlaces < 2)
+			{
+				$strAmountInDollars .= str_repeat('0', 2 - $nrDecPlaces);
+			}
+			else
+			{
+				$strAmountInDollars = substr($strAmountInDollars, 0, (strlen($strAmountInDollars) - $nrDecPlaces) + 2);
+			}
+		}
+		return $strAmountInDollars;
+	}
+
+	private static function amountInCents($strAmountInDollars)
+	{
+		return str_replace('.', '', self::amount2dp($strAmountInDollars));
+	}
+
+	private static function setPaymentCreditCard($merchantId, $merchantPassword, $time, $messageId, $paymentAmount, $purchaseOrderNo, $cardNumber, $cvv, $expiryMonth, $expiryYear, $requestType=self::REQUEST_TYPE_PAYMENT, $paymentType=self::PAYMENT_TYPE_CREDIT_CARD_PAYMENT, $currency=self::CURRENCY_AUD, $preauthid='', $txnid='')
+	{
+		$timestamp = self::getGmtTimeStamp($time);
+		$expiryMonth = (intval($expiryMonth) >= 10 ? '' : '0') . intval($expiryMonth);
+		$expiryYear = intval($expiryYear) % 100;
+		$expiryYear = (intval($expiryYear) >= 10 ? '' : '0') . intval($expiryYear);
+		$paymentAmount = self::amountInCents($paymentAmount);
+
+		$merchantId = htmlspecialchars($merchantId);
+		$merchantPassword = htmlspecialchars($merchantPassword);
+		$time = htmlspecialchars($time);
+		$messageId = htmlspecialchars($messageId);
+		$currency = htmlspecialchars($currency);// . ' amt=' . $paymentAmount;
+		$paymentAmount = htmlspecialchars($paymentAmount);
+		$purchaseOrderNo = htmlspecialchars($purchaseOrderNo);
+		$cardNumber = htmlspecialchars($cardNumber);
+		$cvv = htmlspecialchars($cvv);
+		$expiryMonth = htmlspecialchars($expiryMonth);
+		$expiryYear = htmlspecialchars($expiryYear);
+		$requestType = htmlspecialchars($requestType);
+		$paymentType = htmlspecialchars($paymentType);
+		$preauthid = htmlspecialchars($preauthid);
+		$txnid = htmlspecialchars($txnid);
+
+/* 
+// This is the example request taken from the SecurePay pdf guide
+return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<SecurePayMessage>
+	<MessageInfo>
+		<messageID>8af793f9af34bea0cf40f5fb750f64</messageID>
+		<messageTimestamp>20042303111214383000+660</messageTimestamp>
+		<timeoutValue>60</timeoutValue>
+		<apiVersion>xml-4.2</apiVersion>
+	</MessageInfo>
+	<MerchantInfo>
+		<merchantID>ABC0001</merchantID>
+		<password>abc123</password>
+	</MerchantInfo>
+	<RequestType>Payment</RequestType>
+	<Payment>
+		<TxnList count=\"1\">
+			<Txn ID=\"1\">
+				<txnType>0</txnType>
+				<txnSource>23</txnSource>
+				<amount>200</amount>
+				<currency>AUD</currency>
+				<purchaseOrderNo>test</purchaseOrderNo>
+				<CreditCardInfo>
+					<cardNumber>4242424242424242</cardNumber>
+					<expiryDate>08/08</expiryDate>
+				</CreditCardInfo>
+			</Txn>
+		</TxnList>
+	</Payment>
+</SecurePayMessage>";
+//*/
+		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<SecurePayMessage>
+	<MessageInfo>
+		<messageID>$messageId</messageID>
+		<messageTimestamp>$timestamp</messageTimestamp>
+		<timeoutValue>60</timeoutValue>
+		<apiVersion>xml-4.2</apiVersion>
+	</MessageInfo>
+	<MerchantInfo>
+		<merchantID>$merchantId</merchantID>
+		<password>$merchantPassword</password>
+	</MerchantInfo>
+	<RequestType>$requestType</RequestType>
+	<Payment>
+		<TxnList count=\"1\">
+			<Txn ID=\"1\">
+				<txnType>$paymentType</txnType>
+				<txnSource>23</txnSource>
+				<amount>$paymentAmount</amount>
+				<currency>$currency</currency>
+				<purchaseOrderNo>$purchaseOrderNo</purchaseOrderNo>
+				" . (strlen($preauthid) ? "<preauthID>$preauthid</preauthID>" : '') . "
+				" . (strlen($txnid) ? "<txnID>$txnid</txnID>" : '') . "
+				<CreditCardInfo>
+					<cardNumber>$cardNumber</cardNumber>
+					<cvv>$cvv</cvv>
+					<expiryDate>$expiryMonth/$expiryYear</expiryDate>
+				</CreditCardInfo>
+			</Txn>
+		</TxnList>
+	</Payment>
+</SecurePayMessage>";
+	}
+
+	private static function openSocket($host, $query)
+	{
+		/**************************/
+		/* Secure Socket Function */
+		/**************************/
+
+		// Break the URL into usable parts
+		$path = explode('/',$host);
+		$host = $path[0];
+		unset($path[0]);
+		$path = '/'.(implode('/',$path));
+
+		// Prepare the post query
+		$post  = "POST $path HTTP/1.1\r\n";
+		$post .= "Host: $host\r\n";
+		$post .= "Content-type: application/x-www-form-urlencoded\r\n";
+		$post .= "Content-type: text/xml\r\n";
+		$post .= "Content-length: ".strlen($query)."\r\n";
+		$post .= "Connection: close\r\n\r\n$query";
+
+		/***********************************************/
+		/* Open the secure socket and post the message */
+		/***********************************************/
+		$h = @fsockopen("ssl://".$host, 443, $errno, $errstr);
+
+		if ($errstr)
+		{
+			throw new Credit_Card_Payment_Communication_Exception("$errstr ($errno)");
+		}
+		if ($h === FALSE)
+		{
+			throw new Credit_Card_Payment_Communication_Exception("Failed to connect to SecurePay server.");
+		}
+		$ok = @fwrite($h,$post);
+		if ($ok === FALSE)
+		{
+			throw new Credit_Card_Payment_Communication_Exception("Failed to submit request to SecurePay server.");
+		}
+		if ($ok !== strlen($post))
+		{
+			throw new Credit_Card_Payment_Communication_Exception("Failed to submit complete request to SecurePay server.");
+		}
+
+		/*******************************************/
+		/* Retrieve the HTML headers (and discard) */
+		/*******************************************/
+
+		$headers = "";
+		while ($str = @fgets($h, 4096)) 
+		{
+			if ($str === FALSE)
+			{
+				throw new Credit_Card_Payment_Communication_Exception("Failed to read response headers from SecurePay server.");
+			}
+			if (!trim($str))
+			{
+				break;
+			}
+			$headers .= trim($str) . "\n";
+		}
+
+		$headers2 = "";
+		while ($str = @fgets($h, 4096)) 
+		{
+			if ($str === FALSE)
+			{
+				throw new Credit_Card_Payment_Communication_Exception("Failed to read response from SecurePay server.");
+			}
+			if (!trim($str))
+			{
+				break;
+			}
+			$headers2 .= trim($str) . "\n";
+		}
+
+		/**********************************************************/
+		/* Retrieve the response */
+		/**********************************************************/
+	
+		$body = "";
+		while (!feof($h)) 
+		{
+			$str = @fgets($h, 4096);
+			if ($str === FALSE)
+			{
+				throw new Credit_Card_Payment_Communication_Exception("Failed to read body of response from SecurePay server.");
+			}
+			if (!trim($str))
+			{
+				break;
+			}
+			$body .= $str;
+		}
+
+		// Close the socket
+		@fclose($h);
+
+		// Return the body of the response
+		return $body;
 	}
 
 	private static function replaceMessageTokens($message, $tokens)
@@ -259,6 +647,118 @@ class Credit_Card_Payment
 }
 
 class Credit_Card_Payment_Not_Enabled_Exception 	extends Exception { function __construct()	{ parent::__construct("Credit Card Payments are not enabled in Flex."); 				} }
-class Credit_Card_Payment_Not_Configurred_Exception extends Exception { function __construct() 	{ parent::__construct("Credit Card Payments have not been configurred in Flex Admin."); } }
+class Credit_Card_Payment_Not_Configurred_Exception	extends Exception { function __construct() 	{ parent::__construct("Credit Card Payments have not been configurred in Flex Admin."); } }
+class Credit_Card_Payment_Communication_Exception	extends Exception { }
 
+class Credit_Card_Payment_Remote_Processing_Error extends Exception
+{
+	private $statusCode;
+
+	function __construct($statusCode)
+	{
+		$this->statusCode = $statusCode;
+		parent::__construct($this->_getMessage());
+	}
+
+	static function getKnownErrors()
+	{
+		static $knownErrors;
+		if (!isset($knownErrors))
+		{
+			$knownErrors = array(
+				"000" => array("Normal", "Message processed correctly (check transaction response for details)."),
+				"504" => array("Invalid Merchant ID If Merchant ID does not follow the format XXXDDDD, where X is a letter and D is a digit, or Merchant ID is not found in SecurePay's database."),
+				"505" => array("Invalid URL", "The URL passed to either Echo, Query, or Payment object is invalid."),
+				"510" => array("Unable To Connect To Server", "Produced by SecurePay Client API when unable to establish connection to SecurePay Payment Gateway."),
+				"511" => array("Server Connection Aborted During Transaction", "Produced by SecurePay Client API when connection to SecurePay Payment Gateway is lost after the payment transaction has been sent."),
+				"512" => array("Transaction timed out By Client", "Produced by SecurePay Client API when no response to payment transaction has been received from SecurePay Payment Gateway within predefined time period (default 80 seconds)."),
+				"513" => array("General Database Error", "Unable to read information from the database."),
+				"514" => array("Error loading properties file", "Payment Gateway encountered an error while loading configuration information for this transaction."),
+				"515" => array("Fatal Unknown Error", "Transaction could not be processed by the Payment Gateway due to unknown reasons."),
+				"516" => array("Request type unavailable", "SecurePay system doesn't support the requested transaction type."),
+				"517" => array("Message Format Error", "SecurePay Payment Gateway couldn't correctly interpret the transaction message sent."),
+				"524" => array("Response not received", "The client could not receive a response from the server."),
+				"545" => array("System maintenance in progress", "The system maintenance is in progress and the system is currently unable to process transactions."),
+				"550" => array("Invalid password", "The merchant has attempted to process a request with an invalid password."),
+				"575" => array("Not implemented", "This functionality has not yet been implemented."),
+				"577" => array("Too Many Records for Processing", "The maximum number of allowed events in a single message has been exceeded."),
+				"580" => array("Process method has not been called", "The process() method on either Echo, Payment or Query object has not been called."),
+				"595" => array("Merchant Disabled", "SecurePay has disabled the merchant and the requests from this merchant will not be processed."),
+			);
+		}
+		return $knownErrors;
+	}
+
+	private function _getMessage()
+	{
+		$knownErrors = self::getKnownErrors();
+		if (!array_key_exists($this->statusCode, $knownErrors))
+		{
+			return "SecurePay failed to process the request and were unable to identify the problem.";
+		}
+		return $knownErrors[$this->statusCode][1];
+	}
+
+	function getSubject()
+	{
+		$knownErrors = self::getKnownErrors();
+		if (!array_key_exists($this->statusCode, $knownErrors))
+		{
+			return "Problem Unknown";
+		}
+		return $knownErrors[$this->statusCode][0];
+	}
+
+	function getStatusCode()
+	{
+		return $this->statusCode;
+	}
+}
+
+
+class Credit_Card_Payment_Validation_Exception extends Exception
+{
+	private $statusCode;
+
+	function __construct($statusCode, $strMessage)
+	{
+		$this->statusCode = $statusCode;
+		parent::__construct($this->_getMessage($strMessage));
+	}
+
+	static function getKnownErrors()
+	{
+		static $knownErrors;
+		if (!isset($knownErrors))
+		{
+			$knownErrors = array(
+				"01" => "The Credit Card number does not match the Card Type.",
+				"02" => "The expiry date Month entered for the credit card is invalid.",
+				"03" => "The expiry date year entered for the credit card is invalid.",
+				"04" => "The expiry date entered for the credit card is invalid.",
+				"05" => "The credit card number entered is invalid.",
+				"06" => "The credit card number entered appears to be for a type of credit card that we do not accept.",
+				"07" => "The credit card number entered appears to be for a type of credit card that we do not accept.",
+				"08" => "We cannot accept your card as it is blacklisted, if you feel you have received this message in error please contact your card issuer.",
+				"09" => "You have not entered the correct amount of digits for the credit card number.",
+				"10" => "The CVV number entered is the incorrect length.",
+			);
+		}
+		return $knownErrors;
+	}
+
+	private function _getMessage($strMessage)
+	{
+		$knownErrors = self::getKnownErrors();
+		if (!array_key_exists($this->statusCode, $knownErrors))
+		{
+			return "SecurePay failed to process the request and provided the following details: $strMessage ({$this->statusCode}).";
+		}
+		return $knownErrors[$this->statusCode];
+	}
+
+	function getStatusCode()
+	{
+		return $this->statusCode;
+	}}
 ?>

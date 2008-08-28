@@ -30,6 +30,11 @@ class Credit_Card_Type
 		$this->_saved = TRUE;
 	}
 
+	public function calculateSurcharge($fltAmount)
+	{
+		return $fltAmount * $this->surcharge;
+	}
+
 	protected static function getColumns()
 	{
 		return array(

@@ -31,7 +31,11 @@ class Contact
 
 	public function getName()
 	{
-		return ($this->firstName ? $this->firstName : '') . ($this->firstName && $this->lastName ? ' ' : '') . ($this->lastName ? $this->lastName : $this->email);
+		return (($this->title && !$this->firstName && $this->lastName) ? $this->title . ' ' : '') . // Output a title if we have a title and surname but no christian name 
+				($this->firstName ? $this->firstName : '') . // Output a cristian name if we have one
+				($this->firstName && $this->lastName ? ' ' : '') . // If we have both christian and surname, put a space between them
+				($this->lastName ? $this->lastName : '') . // If we have a surname, output it
+				(!$this->firstName && !$this->lastName ? $this->email : ''); // If we have neither christian name nor surname, output the email address
 	}
 
 	private static function getFor($where, $arrWhere)

@@ -143,6 +143,7 @@ Object.extend(CreditCardPayment.prototype,
 	inputAmount: null,
 	inputDD: null,
 
+	displayAmount: null,
 	displaySurcharge: null,
 	displayTotal: null,
 	displayOutstandingPrior: null,
@@ -499,7 +500,9 @@ Object.extend(CreditCardPayment.prototype,
 				this.inputMonth.options[this.inputMonth.selectedIndex].value,
 				this.inputYear.options[this.inputYear.selectedIndex].value,
 				this.inputName.value,
-				this.inputAmount.value,
+				this.displayAmount.value,
+				this.displaySurcharge.value,
+				this.displayTotal.value,
 				this.inputDD.checked);
 	},
 
@@ -695,10 +698,9 @@ alert(outcome);
 		tr.insertCell(-1).appendChild(document.createTextNode('Amount to Pay:'));
 		td = tr.insertCell(-1);
 		this.appendCurrency(td);
-		var el = this.displaySurcharge.cloneNode(true);
-		el.innerHTML = '';
-		el.value = this.tidyAmount(this.inputAmount.value);
-		td.appendChild(el);
+		this.displayAmount = this.displaySurcharge.cloneNode(true);
+		this.displayAmount.value = this.tidyAmount(this.inputAmount.value);
+		td.appendChild(this.displayAmount);
 
 		tr = table.insertRow(-1);
 		tr.insertCell(-1).appendChild(document.createTextNode('Credit Card Surcharge:'));
