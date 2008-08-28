@@ -55,4 +55,8 @@ VixenRequire($strChargeDir."service/Billing_Charge_Service_Pinnacle.php");
 // Remote Copy
 VixenRequire("lib/framework/remote_copy.php");
 
+// Module Config
+// FIXME: Remove this when we're only using Reflex
+VixenRequire("lib/classes/module/Module_Config.php");
+
  ?>
