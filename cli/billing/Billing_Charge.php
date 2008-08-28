@@ -122,17 +122,22 @@
 	 * Creates a Module Instance in the Database
 	 *
 	 * Creates a Module Instance in the Database
+	 * 
+	 * @param	string	$strClass				The Child Class this Module uses
+	 * @param	array	$arrConfigDefinition	The Module Config Definition
+	 * @param	integer	$intCustomerGroup		The Customer Group that this will apply to.  NULL = ALL
 	 *
 	 * @return	integer							Insert Id
 	 *
 	 * @method
 	 */
- 	protected static function CreateModule($strClass, $arrConfigDefinition)
+ 	protected static function CreateModule($strClass, $arrConfigDefinition, $intCustomerGroup)
  	{
  		// Create the Module
- 		$arrModule			= Array();
- 		$arrModule['class']	= $strClass;
-		$arrModule['id']	= $insChargeModule->Execute($arrModule);
+ 		$arrModule						= Array();
+ 		$arrModule['class']				= $strClass;
+ 		$arrModule['customer_group_id']	= $strClass;
+		$arrModule['id']				= $insChargeModule->Execute($arrModule);
 		if (!$arrModule['id'])
 		{
 			throw new Exception("DB ERROR: ".$insChargeModule->Error());
@@ -165,11 +170,24 @@
  		static	$bolInit			= FALSE;
  		static	$selModules;
  		static	$selModuleConfig;
+ 		static	$arrCustomerGroups;
  		if (!$bolInit)
  		{
-	 		$selModules			= new StatementSelect("billing_charge_module", "*", "active_status_id = ".ACTIVE_STATUS_ACTIVE);
+	 		$selModules			= new StatementSelect("billing_charge_module", "*", "active_status_id = ".ACTIVE_STATUS_ACTIVE, "ISNULL(customer_group_id) DESC");
 	 		$selModuleConfig	= new StatementSelect("billing_charge_module_config", "*", "billing_module_config_id = <id>");
-	 		$bolInit			= TRUE;
+	 		
+	 		// Get list of CustomerGroups
+	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id", "1");
+	 		if ($selCustomerGroups->Execute() === FALSE)
+	 		{
+	 			throw new Exception("DB Error: ".$selCustomerGroups->Error());
+	 		}
+	 		else
+	 		{
+	 			$arrCustomerGroups	= $selCustomerGroups->FetchAll();
+	 		}
+	 		
+	 		$bolInit	= TRUE;
  		}
  		
  		// Retrieve all Billing Charge Modules
@@ -195,7 +213,21 @@
  				
  				// Instanciate the Class
  				$modModule	= new $arrModule['class']($arrModule['**Config']);
- 				$arrModules[$arrModule['customer_group_id']][get_parent_class($modModule)][get_class($modModule)]	= &$modModule;
+ 				
+ 				// Is this Module for All CustomerGroups, or just one?
+ 				if ($arrModule['customer_group_id'] === NULL)
+ 				{
+ 					// All CustomerGroups, although this can be overridden later
+ 					foreach ($arrCustomerGroups as $arrCustomerGroup)
+ 					{
+ 						$arrModules[$arrCustomerGroup['Id']][get_parent_class($modModule)][get_class($modModule)]	= &$modModule;
+ 					}
+ 				}
+ 				else
+ 				{
+ 					// Just One CustomerGroup.  If there is already an "All" Module defined, then override it
+ 					$arrModules[$arrModule['customer_group_id']][get_parent_class($modModule)][get_class($modModule)]	= &$modModule;
+ 				}
  			}
  			
  			// Return array of Billing Charge Modules

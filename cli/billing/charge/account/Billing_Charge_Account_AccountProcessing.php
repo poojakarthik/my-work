@@ -209,15 +209,17 @@
 	 * Creates a Module Instance in the Database
 	 *
 	 * Creates a Module Instance in the Database.  Remove when we start using PHP v5.3
+	 * 
+	 * @param	integer	$intCustomerGroup		The Customer Group that this will apply to.  NULL = ALL
 	 *
 	 * @return	integer							Insert Id
 	 *
 	 * @method
 	 */
- 	protected static function CreateModule()
+ 	protected static function CreateModule($intCustomerGroup)
  	{
  		// Call Parent CreateModule, because PHP 5.2 doesn't support Late Static Binding :(
- 		return parent::CreateModule(__CLASS__, self::$_arrConfigDefinition);
+ 		return parent::CreateModule(__CLASS__, self::$_arrConfigDefinition, $intCustomerGroup);
  	}
  }
  
