@@ -189,7 +189,7 @@
  	public static function CreateModule($intCustomerGroup)
  	{
  		// Call Parent CreateModule, because PHP 5.2 doesn't support Late Static Binding :(
- 		return parent::CreateModule(__CLASS__, self::$_arrConfigDefinition);
+ 		return parent::CreateModule(__CLASS__, self::$_arrConfigDefinition, $intCustomerGroup);
  	}
  }
  
