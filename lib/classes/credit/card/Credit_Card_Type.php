@@ -32,7 +32,7 @@ class Credit_Card_Type
 
 	public function calculateSurcharge($fltAmount)
 	{
-		return $fltAmount * $this->surcharge;
+		return round($fltAmount * $this->surcharge, 2);
 	}
 
 	protected static function getColumns()
