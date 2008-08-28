@@ -35,14 +35,15 @@ else
 // On error, print out usage
 if ($bolValidParameters === FALSE)
 {
+	CliEcho();
 	CliEcho("USAGE: 'php create_charge_module [ClassName] [CustomerGroup]'");
-	CliEcho("\tClassName\t\t: Billing_Charge subclass in implement");
+	CliEcho("\tClassName\t: Billing_Charge subclass in implement");
 	CliEcho("\tCustomerGroup\t: CustomerGroup.Id or '*' to apply to all CustomerGroups (can be overridden by CustomerGroup-specific modules)");
-	CLiEcho();
+	CliEcho();
 	exit(1);
 }
 
-CliEcho("CLASS\t\t\t: {$strClass}");
+CliEcho("CLASS\t\t: {$strClass}");
 CliEcho("CUSTOMER GROUP\t: {$strCustomerGroupDescription}");
 
 // Create Module
