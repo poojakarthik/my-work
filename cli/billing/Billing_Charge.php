@@ -219,7 +219,7 @@
  					while ($arrConfigField = $selModuleConfig->Fetch())
  					{
  						// Decode the Field
- 						$arrModule['**Config'][$arrConfigField['name']]	= Module_Carrier::DecodeValue($arrConfigField['value'], $arrConfigField['data_type_id']);
+ 						$arrModule['**Config'][$arrConfigField['name']]	= Module_Config::DecodeValue($arrConfigField['value'], $arrConfigField['data_type_id']);
  					}
  				}
  				else
