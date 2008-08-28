@@ -23,80 +23,48 @@ $arrSQLFields	= Array();
 
  
  //---------------------------------------------------------------------------//
- // NON-TOLLING SERVICES
+ // CALL TYPE STATISTICS FOR A CARRIER
  //---------------------------------------------------------------------------//
  
-$arrDataReport['Name']			= "Non-Tolling Services in a Date Period for a Service Type";
-$arrDataReport['Summary']		= "Lists all of the Services which have not tolled since the specified Last Tolling Date for the specified Service Type";
-$arrDataReport['FileName']		= "<ServiceType::Label> Service that have not tolled since <LatestCDR>";
+$arrDataReport['Name']			= "Call Type Statistics for a Carrier";
+$arrDataReport['Summary']		= "Lists Call Type summaries for each Carrier";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= 	"(" . 
-										"(" .
-											"(" .
-												"Service LEFT JOIN Account ON Account.Id = Service.Account" .
-											") " .
-											"LEFT JOIN Contact ON Account.PrimaryContact = Contact.Id" .
-										") " .
-										"LEFT JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service" .
-									") " .
-									"LEFT JOIN RatePlan ON SRP.RatePlan = RatePlan.Id";
-
-$arrDataReport['SQLWhere']		= "Service.ServiceType = <ServiceType> AND Service.Status = 400 AND Service.LatestCDR <= CONCAT(<LatestCDR>, ' 23:59:59')";
-$arrDataReport['SQLGroupBy']	= "Service.Id ORDER BY Account.Id";
+$arrDataReport['SQLTable']		= "((CDR JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN Carrier ON Carrier.Id = CDR.Carrier) JOIN service_type ON RecordType.ServiceType = service_type.id";
+$arrDataReport['SQLWhere']		= "CDR.Status = IN (150, 198) AND Credit = 0";
+$arrDataReport['SQLGroupBy']	= "Carrier.Id, CDR.RecordType \n ORDER BY Carrier.Name ASC, service_type.description, RecordType.Description";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
-$arrDocReq[]	= "Service";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Account No.']			['Value']	= "Account.Id";
+$arrSQLSelect['Carrier']				['Value']	= "Carrier.Name";
 
-$arrSQLSelect['Customer Name']			['Value']	= "Account.BusinessName";
+$arrSQLSelect['Service Type']			['Value']	= "service_type.description";
 
-$arrSQLSelect['Primary Contact']		['Value']	= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
+$arrSQLSelect['Call Type']				['Value']	= "RecordType.Description";
 
-$arrSQLSelect['Contact Phone']			['Value']	= "Contact.Phone";
-$arrSQLSelect['Contact Phone']			['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Unique FNNs']			['Value']	= "COUNT(DISTINCT CDR.FNN)";
+$arrSQLSelect['Unique FNNs']			['Value']	= EXCEL_TYPE_INTEGER;
 
-$arrSQLSelect['Lost Service FNN']		['Value']	= "Service.FNN";
-$arrSQLSelect['Lost Service FNN']		['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Total Calls']			['Value']	= "COUNT(CDR.Id)";
+$arrSQLSelect['Total Calls']			['Value']	= EXCEL_TYPE_INTEGER;
 
-$arrSQLSelect['Lost Service Plan']		['Value']	= "RatePlan.Name";
+$arrSQLSelect['Total Units']			['Value']	= "SUM(CDR.Units)";
+$arrSQLSelect['Total Units']			['Value']	= EXCEL_TYPE_INTEGER;
 
-$arrSQLSelect['Last Tolled Date']		['Value']	= "Service.LatestCDR";
+$arrSQLSelect['Total Cost']				['Value']	= "SUM(CDR.Cost)";
+$arrSQLSelect['Total Cost']				['Value']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Total Rated']			['Value']	= "SUM(CDR.Charge)";
+$arrSQLSelect['Total Rated']			['Value']	= EXCEL_TYPE_CURRENCY;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
-$arrColumns = Array();
-$arrColumns['Label']	= "description";
-$arrColumns['Value']	= "id";
-
-$arrSelect = Array();
-$arrSelect['Table']		= "service_type";
-$arrSelect['Columns']	= $arrColumns;
-$arrSelect['Where']		= "const_name NOT IN ('SERVICE_TYPE_ADSL', 'SERVICE_TYPE_DIALUP')";
-$arrSelect['OrderBy']	= "description ASC";
-$arrSelect['Limit']		= NULL;
-$arrSelect['GroupBy']	= NULL;
-$arrSelect['ValueType']	= "dataInteger";
-
-$arrSQLFields['ServiceType']	= Array(
-										'Type'					=> "StatementSelect",
-										'DBSelect'				=> $arrSelect,
-										'Documentation-Entity'	=> "Service",
-										'Documentation-Field'	=> "ServiceType",
-									);
-									
-$arrSQLFields['LatestCDR']	= Array(
-										'Type'					=> "dataDate",
-										'Documentation-Entity'	=> "Service",
-										'Documentation-Field'	=> "LatestCDR",
-									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 //----------------------------------------------------------------------------//
 // Insert the Data Report
