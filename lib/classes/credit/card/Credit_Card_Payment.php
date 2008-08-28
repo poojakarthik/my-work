@@ -336,7 +336,7 @@ class Credit_Card_Payment
 		$merchantPassword = htmlspecialchars($merchantPassword);
 		$time = htmlspecialchars($time);
 		$messageId = htmlspecialchars($messageId);
-		$currency = htmlspecialchars($currency);// . ' amt=' . $paymentAmount;
+		$currency = htmlspecialchars($currency);
 		$paymentAmount = htmlspecialchars($paymentAmount);
 		$purchaseOrderNo = htmlspecialchars($purchaseOrderNo);
 		$cardNumber = htmlspecialchars($cardNumber);
@@ -348,38 +348,6 @@ class Credit_Card_Payment
 		$preauthid = htmlspecialchars($preauthid);
 		$txnid = htmlspecialchars($txnid);
 
-/* 
-// This is the example request taken from the SecurePay pdf guide
-return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<SecurePayMessage>
-	<MessageInfo>
-		<messageID>8af793f9af34bea0cf40f5fb750f64</messageID>
-		<messageTimestamp>20042303111214383000+660</messageTimestamp>
-		<timeoutValue>60</timeoutValue>
-		<apiVersion>xml-4.2</apiVersion>
-	</MessageInfo>
-	<MerchantInfo>
-		<merchantID>ABC0001</merchantID>
-		<password>abc123</password>
-	</MerchantInfo>
-	<RequestType>Payment</RequestType>
-	<Payment>
-		<TxnList count=\"1\">
-			<Txn ID=\"1\">
-				<txnType>0</txnType>
-				<txnSource>23</txnSource>
-				<amount>200</amount>
-				<currency>AUD</currency>
-				<purchaseOrderNo>test</purchaseOrderNo>
-				<CreditCardInfo>
-					<cardNumber>4242424242424242</cardNumber>
-					<expiryDate>08/08</expiryDate>
-				</CreditCardInfo>
-			</Txn>
-		</TxnList>
-	</Payment>
-</SecurePayMessage>";
-//*/
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <SecurePayMessage>
 	<MessageInfo>

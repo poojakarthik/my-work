@@ -131,32 +131,60 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 						<td><?=htmlspecialchars($config->password)?></td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Payment Confirmation Message: </td>
+						<td class="title">Payment Confirmation Message: <br/><em>[See table below for special values]</em></td>
 						<td><?=$confirmationText?></td>
 
 					</tr>
 					<tr class="alt">
-						<td class="title">Payment Confirmation Email: </td>
+						<td class="title">Payment Confirmation Email: <br/><em>[See table below for special values]</em></td>
 						<td><?=$confirmationEmail?></td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Direct Debit Disclaimer/Terms: </td>
+						<td class="title">Direct Debit Disclaimer/Terms: <br/><em>[See table below for special values]</em></td>
 						<td><?=$directDebitDisclaimer?></td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Direct Debit Confirmation Message: </td>
+						<td class="title">Direct Debit Confirmation Message: <br/><em>[See table below for special values]</em></td>
 						<td><?=$directDebitText?></td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Direct Debit Confirmation Email: </td>
+						<td class="title">Direct Debit Confirmation Email: <br/><em>[See table below for special values]</em></td>
 						<td><?=$directDebitEmail?></td>
 					</tr>
 				</tbody>
 			</table>
 		</form>
-
+		<br/>
+		<br/>
 		<?php
 
+		$this->renderSpecialValuesTable();
+
+	}
+
+	private function getMagicStrings()
+	{
+		$magicStrings = array(
+			"DATE_TIME" => "will be replaced by the date and time of the action.",
+			"PAYMENT_REFERENCE" => "will be replaced by the unique payment reference number.",
+			"APPLIED_AMOUNT" => "will be replaced by the payment amount applied to the balance of the account.",
+			"AMOUNT_SURCHARGE" => "will be replaced by the amount of the credit card surcharge for the transaction.",
+			"AMOUNT_TOTAL" => "will be replaced by the amount actually charged to their credit card.",
+			"ACCOUNT_NUMBER" => "will be replaced by the account number.",
+			"BALANCE_BEFORE" => "will be replaced by the balance of the account before applying the payment.",
+			"BALANCE_AFTER" => "will be replaced by the balance of the account after applying the payment.",
+			"CONTACT_NAME" => "will be replaced by the contact name.",
+			"CONTACT_EMAIL" => "will be replaced by the email address a confirmation message was sent to.",
+		);
+		$output = '';
+		foreach ($magicStrings as $token => $value)
+		{
+			$output .= "					<tr class=\"alt\">\n".
+			"						<td class=\"title\">[" . $token . "]</td>\n".
+			"						<td>" . htmlspecialchars($value) . "</td>\n".
+			"					</tr>";
+		}
+		return $output;
 	}
 
 	private function render_save()
@@ -234,30 +262,30 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 						</td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Payment Confirmation Message: </td>
+						<td class="title">Payment Confirmation Message: <br/><em>[See table below for special values]</em></td>
 
 						<td><textarea id="confirmationText" name="confirmationText" class="<?=array_key_exists("confirmationText", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->confirmationText)?></textarea>
 						</td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Payment Confirmation Email: </td>
+						<td class="title">Payment Confirmation Email: <br/><em>[See table below for special values]</em></td>
 						<td><textarea id="confirmationEmail" name="confirmationEmail" class="<?=array_key_exists("confirmationEmail", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->confirmationEmail)?></textarea>
 						</td>
 
 					</tr>
 					<tr class="alt">
-						<td class="title">Direct Debit Disclaimer/Terms: </td>
+						<td class="title">Direct Debit Disclaimer/Terms: <br/><em>[See table below for special values]</em></td>
 						<td><textarea id="directDebitDisclaimer" name="directDebitDisclaimer" class="<?=array_key_exists("directDebitDisclaimer", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitDisclaimer)?></textarea>
 						</td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Payment &amp; Direct Debit Confirmation Message: </td>
+						<td class="title">Payment &amp; Direct Debit Confirmation Message: <br/><em>[See table below for special values]</em></td>
 
 						<td><textarea id="directDebitText" name="directDebitText" class="<?=array_key_exists("directDebitText", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitText)?></textarea>
 						</td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Payment &amp; Direct Debit Confirmation Email: </td>
+						<td class="title">Payment &amp; Direct Debit Confirmation Email: <br/><em>[See table below for special values]</em></td>
 						<td><textarea id="directDebitEmail" name="directDebitEmail" class="<?=array_key_exists("directDebitEmail", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitEmail)?></textarea>
 
 						</td>
@@ -267,9 +295,45 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 		</form>
 		<br/>
 		<br/>
-
 		<?php
 
+		$this->renderSpecialValuesTable();
+	}
+
+	private function renderSpecialValuesTable()
+	{
+		?>
+
+		<table>
+			<table id="credit_card_magic_strings" name="credit_card_magic_strings" class="reflex">
+				<caption>
+					<div id="caption_bar" name="caption_bar">
+
+						<div id="caption_title" name="caption_title">
+							Dynamically Replaced Valuse For Messages
+						</div>
+						<div id="caption_options" name="caption_options">
+						</div>
+					</div>
+				</caption>
+				<thead>
+					<tr>
+						<th colspan="2">&nbsp;</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th colspan="2">&nbsp;</th>
+					</tr>
+				</tfoot>
+				<tbody>
+					<?=$this->getMagicStrings()?>
+				</tbody>
+		</table>
+		<br/>
+		<br/>
+
+		<?php
 	}
 }
 
