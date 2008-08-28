@@ -55,15 +55,16 @@
 	 * Constructor for the Charge Object
 	 * 
 	 * @param	integer	$intModuleId					The billing_charge_module.id for this Module
+	 * @param	array	$arrConfigDefinition			The Config Definition for this module
 	 *
 	 * @return											Billing_Charge_Account
 	 *
 	 * @method
 	 */
- 	function __construct($intModuleId)
+ 	function __construct($intModuleId, $arrConfigDefinition)
  	{
  		// Call parent constructor
- 		parent::__construct($intModuleId);
+ 		parent::__construct($intModuleId, $arrConfigDefinition);
  		
  		// Statements					
 		$this->_qryDelete		= new Query();

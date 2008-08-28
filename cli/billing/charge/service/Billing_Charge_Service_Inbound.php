@@ -81,7 +81,7 @@
  	function __construct($intModuleId)
  	{
  		// Call parent constructor
- 		parent::__construct($intModuleId);
+ 		parent::__construct($intModuleId, self::$_arrConfigDefinition);
 		
  		// Statements
 		$this->_selINB15Services = new StatementSelect(	"CDR", 

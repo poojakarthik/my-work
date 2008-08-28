@@ -36,15 +36,16 @@
 	 * Constructor for the Charge Object
 	 * 
 	 * @param	integer	$intModuleId					The billing_charge_module.id for this Module
+	 * @param	array	$arrConfigDefinition			The Config Definition for this module
 	 *
 	 * @return											Billing_Charge
 	 *
 	 * @method
 	 */
- 	function __construct($intModuleId)
+ 	function __construct($intModuleId, $arrConfigDefinition)
  	{
  		// Module Config Object
- 		$this->_cfgModuleConfig	= new Module_Config("billing_charge_module_config", "billing_charge_module_id", $intModuleId);
+ 		$this->_cfgModuleConfig	= new Module_Config("billing_charge_module_config", "billing_charge_module_id", $intModuleId, $arrConfigDefinition);
  		
  		// Statements
 		$this->_qryDelete		= new Query();
@@ -211,24 +212,9 @@
  		if ($selModules->Execute() !== FALSE)
  		{
  			while ($arrModule = $selModules->Fetch())
- 			{
- 				// Retrieve the Module Config
- 				if ($selModuleConfig->Execute($arrModule) !== FALSE)
- 				{
- 					$arrModule['**Config']	= Array();
- 					while ($arrConfigField = $selModuleConfig->Fetch())
- 					{
- 						// Decode the Field
- 						$arrModule['**Config'][$arrConfigField['name']]	= Module_Config::DecodeValue($arrConfigField['value'], $arrConfigField['data_type_id']);
- 					}
- 				}
- 				else
- 				{
- 					throw new Exception("DB ERROR: ".$selModuleConfig->Error());
- 				}
- 				
+ 			{ 				
  				// Instanciate the Class
- 				$modModule	= new $arrModule['class']($arrModule['**Config']);
+ 				$modModule	= new $arrModule['class']($arrModule['id']);
  				
  				// Is this Module for All CustomerGroups, or just one?
  				if ($arrModule['customer_group_id'] === NULL)

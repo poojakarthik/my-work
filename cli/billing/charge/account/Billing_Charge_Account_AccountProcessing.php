@@ -86,7 +86,7 @@
  	function __construct($intModuleId)
  	{
  		// Call parent constructor
- 		parent::__construct($intModuleId);
+ 		parent::__construct($intModuleId, self::$_arrConfigDefinition);
  		
  		// Statements		
 		$this->_selTollingAccounts = new StatementSelect(	"CDR USE INDEX (Account_2)",
