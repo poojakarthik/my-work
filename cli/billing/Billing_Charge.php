@@ -133,20 +133,33 @@
 	 */
  	protected static function CreateModule($strClass, $arrConfigDefinition, $intCustomerGroup)
  	{
- 		// Create the Module
- 		$arrModule						= Array();
- 		$arrModule['class']				= $strClass;
- 		$arrModule['customer_group_id']	= $strClass;
-		$arrModule['id']				= $insChargeModule->Execute($arrModule);
-		if (!$arrModule['id'])
-		{
-			throw new Exception("DB ERROR: ".$insChargeModule->Error());
-		}
-		
-		// Create Module Configuration using Default Values
-		Module_Config::Create("billing_charge_module_config", "billing_charge_module_id", $arrModule['id'], $arrConfigDefinition);
- 		
- 		return $arrModule['id'];
+ 		// Do we have an instance for this Customer Group?
+ 		$selModuleExists	= new StatementSelect("billing_charge_module", "Id", "customer_group_id = <CustomerGroup> AND class = <Class>");
+ 		if ($selModuleExists->Execute(Array('CustomerGroup' => $intCustomerGroup, 'Class' => $strClass)))
+ 		{
+ 			throw new Exception("This CustomerGroup/Module definition already exists!");
+ 		}
+ 		elseif ($selModuleExists->Error())
+ 		{
+ 			throw new Exception("DB ERROR: ".$selModuleExists->Error());
+ 		}
+ 		else
+ 		{
+	 		// Create the Module
+	 		$arrModule						= Array();
+	 		$arrModule['class']				= $strClass;
+	 		$arrModule['customer_group_id']	= $strClass;
+			$arrModule['id']				= $insChargeModule->Execute($arrModule);
+			if (!$arrModule['id'])
+			{
+				throw new Exception("DB ERROR: ".$insChargeModule->Error());
+			}
+			
+			// Create Module Configuration using Default Values
+			Module_Config::Create("billing_charge_module_config", "billing_charge_module_id", $arrModule['id'], $arrConfigDefinition);
+	 		
+	 		return $arrModule['id'];
+ 		}
  	}
  	
  	
