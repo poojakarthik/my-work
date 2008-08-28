@@ -16,7 +16,11 @@
  */
 class Module_Config
 {
-	protected $_arrModuleConfig	= Array();
+	protected	$_arrModuleConfig	= Array();
+	public		$strTable;
+	public		$strForeignKey;
+	public		$intModuleId;
+	private		$_arrModuleConfig;
 	
 	//------------------------------------------------------------------------//
 	// __construct
