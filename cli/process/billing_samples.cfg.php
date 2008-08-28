@@ -17,7 +17,7 @@ $arrSubscript = Array();
 $arrSubscript['Command']			= 'php mysql_hot_copy.php -e UnitelFundedFNNs';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'backup_scripts/';
 $arrSubscript['ChildDie']			= TRUE;
-$arrConfig['DBCopy']				= $arrSubscript;
+//$arrConfig['DBCopy']				= $arrSubscript;
 
 // Normalisation
 $arrSubscript = Array();
