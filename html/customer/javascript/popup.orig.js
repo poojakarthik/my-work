@@ -240,16 +240,8 @@ function VixenPopupClass()
 			{
 				// clicking ANYWHERE will close the div
 				//  what about on the div itself?
-				if(document.all)
-				{
-					document.attachEvent("mousedown", CloseHandler);
-					document.attachEvent("keydown", CloseHandler);
-				}
-				if (typeof document.addEventListener != 'undefined')
-				{
-					document.addEventListener('mousedown', CloseHandler, TRUE);
-					document.addEventListener('keydown', CloseHandler, TRUE);
-				}
+				document.addEventListener('mousedown', CloseHandler, TRUE);
+				document.addEventListener('keydown', CloseHandler, TRUE);
 
 				// flag this popup as being autohide
 				elmPopup.setAttribute("autohide", "autohide");
@@ -320,51 +312,36 @@ function VixenPopupClass()
 				}
 		}
 		
-		if(document.all)
+		// Set the position (centre/pointer/target)
+		if (mixPosition == "centre")
+		{
+			// center the popup
+			elmPopup.style.left	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
+			elmPopup.style.top	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+		}
+		else if (mixPosition == "[object MouseEvent]")
+		{
+			// set the popup to the cursor
+			elmPopup.style.left = mixPosition.clientX;
+			elmPopup.style.top = mixPosition.clientY;
+			
+		}
+		else if (typeof(mixPosition) == 'object')
+		{
+			// set the popup to the target
+			elmPopup.style.left = mixPosition.offsetLeft;
+			elmPopup.style.top = mixPosition.offsetTop;
+		}
+		else
 		{
 			// set the popup, well, wherever it wants
-				elmPopup.style.left = '400';
-				elmPopup.style.top = '200';
 		}
-		if (typeof document.addEventListener != 'undefined')
-		{
-			// Set the position (centre/pointer/target)
-			if (mixPosition == "centre")
-			{		
-				// center the popup
-				elmPopup.style.left	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
-				elmPopup.style.top	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
-			}
-			else if (mixPosition == "[object MouseEvent]")
-			{
-				// set the popup to the cursor
-				elmPopup.style.left = mixPosition.clientX;
-				elmPopup.style.top = mixPosition.clientY;
-				
-			}
-			else if (typeof(mixPosition) == 'object')
-			{
-				// set the popup to the target
-				elmPopup.style.left = mixPosition.offsetLeft;
-				elmPopup.style.top = mixPosition.offsetTop;
-			}
-			else
-			{
-				// set the popup, well, wherever it wants
-			}
-		}
+		
 		// Add the handler for dragging the popup around
 		// if (strModal != "modal")
 		// {
     		mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
-			if(document.all)
-			{
-				mydragObj.attachEvent("mousedown", OpenHandler);
-			}
-			if (typeof document.addEventListener != 'undefined')
-			{	
-    			mydragObj.addEventListener('mousedown', OpenHandler, false);
-			}
+    		mydragObj.addEventListener('mousedown', OpenHandler, false);
 		// }
 		
 		// Display the popup
@@ -554,7 +531,7 @@ function VixenPopupClass()
 		{
 			strTitle = VIXEN_APPLICATION_NAME;
 		}
-	//
+	
 		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						//"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
 						"<p></div>\n" +
