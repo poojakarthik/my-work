@@ -190,7 +190,7 @@
  		if (!$bolInit)
  		{
 	 		$selModules			= new StatementSelect("billing_charge_module", "*", "active_status_id = ".ACTIVE_STATUS_ACTIVE, "ISNULL(customer_group_id) DESC");
-	 		$selModuleConfig	= new StatementSelect("billing_charge_module_config", "*", "billing_module_config_id = <id>");
+	 		$selModuleConfig	= new StatementSelect("billing_charge_module_config", "*", "billing_charge_module_id = <id>");
 	 		
 	 		// Get list of CustomerGroups
 	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id", "1");
