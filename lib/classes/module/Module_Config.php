@@ -20,7 +20,6 @@ class Module_Config
 	public		$strTable;
 	public		$strForeignKey;
 	public		$intModuleId;
-	private		$_arrModuleConfig;
 	
 	//------------------------------------------------------------------------//
 	// __construct
