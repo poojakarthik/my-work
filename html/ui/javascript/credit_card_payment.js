@@ -860,12 +860,11 @@ alert(outcome);
 	showCvvToolTip: function(event)
 	{
 		if (!this.tooltip.parentNode) this.tooltipParent.appendChild(this.tooltip);
-		event = event ? event : document.event;
-		var top = Event.pointerY(event);
-		var left = Event.pointerX(event);
 		this.tooltip.style.display = 'block';
-		this.tooltip.style.top = '' + (Event.pointerY(event) + 3) + 'px';
-		this.tooltip.style.left = '' + (Event.pointerX(event)) + 'px';
+		var element = Event.element(event = event ? event : document.event);
+		var position = Element.cumulativeOffset(element);
+		this.tooltip.style.top = '' + (position.top + element.clientHeight + 32) + 'px';
+		this.tooltip.style.left = '' + (position.left) + 'px';
 		this.tooltip.style.visibility = 'visible';
 	},
 
