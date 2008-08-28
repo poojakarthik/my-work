@@ -702,7 +702,10 @@ class AppTemplateConsole extends ApplicationTemplate
 	 */
 	function Password()
 	{
-
+		
+		// eventually user will not even see a flex login page, so this page will need to be separate.
+		// Password() - doesn't seem to work as expected but does work.
+		error_reporting(0);
 
 		// Connect to database
 		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
