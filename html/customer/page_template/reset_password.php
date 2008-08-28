@@ -40,12 +40,12 @@
 	if(!array_key_exists('mixUserName', $_POST))
 	{
 		print "
-		<TABLE style=\"border: solid 1px #D1D1D1; color: #000000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<TABLE align=center style=\"border: solid 1px #D1D1D1; color: #000000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
 		<TR>
 			<TD>Reset Password - enter a valid username.</TD>
 		</TR>
 		</TABLE>
-		<TABLE style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TABLE align=center style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
 		<TR VALIGN=\"TOP\">
 			<TD>";
 		print "
@@ -83,12 +83,12 @@
 		if(!DBO()->Fail)
 		{
 		print "
-		<TABLE style=\"border: solid 1px #D1D1D1; color: #33CC00; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<TABLE align=center style=\"border: solid 1px #D1D1D1; color: #33CC00; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
 		<TR>
 			<TD>Reset Password Success</TD>
 		</TR>
 		</TABLE>
-		<TABLE style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TABLE align=center style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
 		<TR VALIGN=\"TOP\">
 			<TD>";
 			print "A new password has been issued.<br/>
@@ -104,12 +104,12 @@
 		if(DBO()->Fail)
 		{
 		print "
-		<TABLE style=\"border: solid 1px #D1D1D1; color: #FF0000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<TABLE align=center style=\"border: solid 1px #D1D1D1; color: #FF0000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
 		<TR>
 			<TD>Reset Password Failure</TD>
 		</TR>
 		</TABLE>
-		<TABLE style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TABLE align=center style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
 		<TR VALIGN=\"TOP\">
 			<TD>";
 			print "The username entered does not exist.";

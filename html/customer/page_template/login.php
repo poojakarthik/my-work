@@ -78,12 +78,12 @@
 
 	// Render the login table
 		print "
-		<TABLE style=\"border: solid 1px #D1D1D1; color: #000000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
+		<TABLE align=center style=\"border: solid 1px #D1D1D1; color: #000000; width:442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:bold;\">
 		<TR>
 			<TD>Customer Login.</TD>
 		</TR>
 		</TABLE>
-		<TABLE style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
+		<TABLE align=center style=\"border: solid 1px #D1D1D1; background-color: #EFEBE7; width: 442px; font-size:12px;padding:3px;margin-bottom:7;font-weight:normal;\">
 		<TR VALIGN=\"TOP\">
 			<TD>";
 ?>
