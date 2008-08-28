@@ -105,10 +105,11 @@ class Customer_Status_Assignment
 		}
 		
 		// Process the values to save
-		$arrFields = array_fill_keys(self::getColumns(), NULL);
-		foreach ($arrFields as $strField=>$Nully)
+		$arrColumns	= self::getColumns();
+		$arrFields	= array();
+		foreach ($arrColumns as $strColumn)
 		{
-			$arrFields[$strField] = $this->__get($strField);
+			$arrFields[$strColumn] = $this->__get($strColumn);
 		}
 		
 		// The last_updated property has to be set to the SQL NOW() function
@@ -175,7 +176,7 @@ class Customer_Status_Assignment
 		}
 		
 		$objAssignment->setCustomerStatusId($intCustomerStatusId);
-		$objAssignment->setInvoicePaidOn($bolInvoicePaid);
+		$objAssignment->setInvoicePaid($bolInvoicePaid);
 
 		$objAssignment->save();
 		

@@ -64,7 +64,7 @@ abstract class Cli
 
 		$this->_arrCommandLineArguments[self::SWITCH_SILENT] = array(
 			self::ARG_REQUIRED		=> FALSE,
-			self::ARG_DESCRIPTION	=> "no not output messages to console [optional, default is to output messages]",
+			self::ARG_DESCRIPTION	=> "do not output messages to console [optional, default is to output messages]",
 			self::ARG_DEFAULT		=> FALSE,
 			self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 		);
