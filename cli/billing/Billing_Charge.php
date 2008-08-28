@@ -150,7 +150,8 @@
 	 		// Create the Module	 		
 	 		$arrModule						= Array();
 	 		$arrModule['class']				= $strClass;
-	 		$arrModule['customer_group_id']	= $strClass;
+	 		$arrModule['customer_group_id']	= $intCustomerGroup;
+	 		$arrModule['active_status_id']	= ACTIVE_STATUS_INACTIVE;
 			$arrModule['id']				= $insChargeModule->Execute($arrModule);
 			if (!$arrModule['id'])
 			{
