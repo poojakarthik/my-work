@@ -84,6 +84,63 @@ class Account
 		return Account::getForId($objTicket->accountId);
 	}
 
+	/**
+	 * Applies a payment to an account
+	 * 
+	 * *** THIS HAS ONLY BEEN TESTED FOR CREDIT CARD PAYMENTS ***
+	 */
+	public function applyPayment($intEmployeeId, $contact, $time, $totalAmount, $txnId, $strUniqueReference, $paymentType, $creditCardNumber=NULL, $creditCardType=NULL, $surcharge=NULL)
+	{
+		$arrCCH = array();
+		$arrPayment = array();
+		$arrCharge = array();
+
+		$arrCCH['account_id'] = $arrPayment['Account'] = $arrCharge['Account'] = $this->id;
+		$arrPayment['AccountGroup'] = $arrCharge['AccountGroup'] = $this->accountGroup;
+		$arrCCH['employee_id'] = $arrPayment['EnteredBy'] = $arrCharge['CreatedBy'] = $this->id;
+		$arrCCH['contact_id'] = $contact->id;
+		$arrCCH['receipt_number'] = $strUniqueReference;
+		$arrCCH['amount'] = $arrPayment['Amount'] = $arrPayment['Balance'] = $totalAmount;
+		$arrCharge['Amount'] = RemoveGST($surcharge);
+		$arrCCH['payment_datetime'] = date('Y-m-d H:i:s', $time);
+		$arrPayment['PaidOn'] = $arrCharge['CreatedOn'] = $arrCharge['ChargedOn'] = date('Y-m-d', $time);
+		$arrCCH['txn_id'] = $arrPayment['TXNReference'] = $txnId;
+		$arrPayment['OriginId'] = ($paymentType == PAYMENT_TYPE_CREDIT_CARD) ? (substr($creditCardNumber, 0, 6) . '...' . substr($creditCardNumber, -3)) : '';
+		$arrPayment['Status'] = $arrCharge['Status'] = CHARGE_APPROVED;
+		$arrCharge['LinkType'] = CHARGE_LINK_PAYMENT;
+		$arrCharge['ChargeType'] = "CCS";
+		$arrCharge['Nature'] = "DR";
+		$arrCharge['Description'] = ($paymentType == PAYMENT_TYPE_CREDIT_CARD) ? ($creditCardType->name . ' Surcharge for Payment on ' . date('d/m/Y', $time) . ' (' . $totalAmount . ') @ ' . (round(floatval($creditCardType->surcharge)*100, 2)) . '%') : '';
+		$arrPayment['Payment'] = $arrCharge['Notes'] = '';
+		$arrPayment['PaymentType'] = $arrPayment['OriginType'] = $paymentType;
+
+		$insPayment = new StatementInsert('Payment');
+		if (($paymentId = $insPayment->Execute($arrPayment)) === FALSE)
+		{
+			// Eak!!
+			throw new Exception('Failed to create payment record: ' . $insPayment->Error());
+		}
+
+		if ($paymentType == PAYMENT_TYPE_CREDIT_CARD)
+		{
+			$arrCCH['payment_id'] = $arrCharge['LinkId'] = $paymentId;
+
+			$insCharge = new StatementInsert('Charge');
+			if (($id = $insCharge->Execute($arrCharge)) === FALSE)
+			{
+				// Eak!!
+				throw new Exception('Failed to create payment charge: ' . $insCharge->Error());
+			}
+
+			$insCreditCardHistory = new StatementInsert('credit_card_payment_history');
+			if (($id = $insCreditCardHistory->Execute($arrCCH)) === FALSE)
+			{
+				// Eak!!
+				throw new Exception('Failed to create credit card payment history: ' . $insCreditCardHistory->Error());
+			}
+		}
+	}
+
 	private static function getFor($where, $arrWhere, $bolAsArray=FALSE)
 	{
 		$selUsers = new StatementSelect(
@@ -123,6 +180,53 @@ class Account
 		}
 		$account = self::getFor("Id = <Id>", array("Id" => $id));
 		return $account;
+	}
+
+	protected function getValuesToSave()
+	{
+		$arrColumns = self::getColumns();
+		$arrValues = array();
+		foreach($arrColumns as $strColumn)
+		{
+			if ($strColumn == 'id') 
+			{
+				continue;
+			}
+			$arrValues[$strColumn] = $this->{$strColumn};
+		}
+		return $arrValues;
+	} 
+
+	public function save()
+	{
+		if ($this->_saved)
+		{
+			// Nothing to save
+			return TRUE;
+		}
+		$arrValues = $this->getValuesToSave();
+
+		// No id means that this must be a new record
+		if (!$this->id)
+		{
+			$statement = new StatementInsert('Account', $arrValues);
+		}
+		// This must be an update
+		else
+		{
+			$arrValues['Id'] = $this->id;
+			$statement = new StatementUpdateById('Account', $arrValues);
+		}
+		if (($outcome = $statement->Execute($arrValues)) === FALSE)
+		{
+			throw new Exception('Failed to save account details: ' . $statement->Error());
+		}
+		if (!$this->id)
+		{
+			$this->id = $outcome;
+		}
+		$this->_saved = TRUE;
+		return TRUE;
 	}
 	
 	// Empties the cache
@@ -170,7 +274,7 @@ class Account
 			'last_automatic_invoice_action_datetime',
 			'automatic_barring_status',
 			'automatic_barring_datetime',
-			'tio_reference_number'
+			'tio_reference_number',
 		);
 	}
 
@@ -197,9 +301,10 @@ class Account
 		if ($strName[0] === '_') return; // It is read only!
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
-			if ($this->{$strName} != $mxdValue)
+			if ($this->{$strName} !== $mxdValue)
 			{
 				$this->{$strName} = $mxdValue;
+				$this->_saved = FALSE;
 			}
 		}
 	}

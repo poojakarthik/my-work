@@ -56,6 +56,7 @@ class Credit_Card_Payment
 		{
 			// Prevent admins from setting up direct debits
 			$bolDD = FALSE;
+			$employeeId = Flex::getUserId();
 			$contact = Contact::getForId($account->primaryContact);
 			if (!$contact)
 			{
@@ -65,7 +66,8 @@ class Credit_Card_Payment
 		else if (Flex::isCustomerSession())
 		{
 			// Check that the requested account is in the authenticated customers account group
-			$contact = Contact::getForId($_SESSION['User']['Id']);
+			$contact = Contact::getForId(Flex::getUserId());
+			$employeeId = USER_ID;
 			if (!$contact || !$contact->canAccessAccount($account))
 			{
 				throw new Exception("Invalid user account selected for credit card payment.");
@@ -248,15 +250,63 @@ class Credit_Card_Payment
 			$txnId = $matches[1];
 		}
 
-		// Payment has been processed!
-		// WIP: Store details of the payment in the credit_card_payment_history table
-
 		// Record the balance before applying the payment
 		$balanceBefore = $account->getBalance();
 
-		// WIP: Apply the payment to the account
-		// WIP: Add an adjustment to the account for the credit card surcharge
+		// Payment has been processed!
+		try
+		{
+			// WIP: Store details of the payment in the credit_card_payment_history table
+			// WIP: Apply the payment to the account
+			// WIP: Add an adjustment to the account for the credit card surcharge
+			TransactionStart();
+			$account->applyPayment($employeeId, $contact, $time, $fltTotal, $txnId, $purchaseOrderNo, PAYMENT_TYPE_CREDIT_CARD, $strCardNumber, $cardType, $surcharge);
+			TransactionCommit();
+		}
+		catch (Exception $e)
+		{
+			TransactionRollback();
+			// Oh jees... payment has been processed but we can't log it???
+			// WIP: Probably best send an email or something!
+			throw $e;
+		}
 
+
+		try
+		{
+			$bolFailedDD = FALSE;
+			// WIP: If doing DD, also need to create an entry in the credit card table
+			if ($bolDD)
+			{
+				TransactionStart();
+				$insCreditCard = new StatementInsert('CreditCard');
+				$arrValues = array(
+					'AccountGroup'	=> $account->accountGroup,
+					'CardType'		=> $cardType->id,
+					'Name'			=> $strName,
+					'CardNumber'	=> Encrypt($strCardNumber),
+					'ExpMonth'		=> str_pad($intMonth, 2, '0', STR_PAD_LEFT),
+					'ExpYear'		=> $intYear,
+					'CVV'			=> Encrypt($intCVV),
+					'Archived'		=> 0,
+					'created_on'	=> date('Y-m-d H:i:s', $time),
+					'employee_id'	=> $employeeId,
+				);
+				if (($intCreditCardId = $insCreditCard->Execute($arrValues)) === FALSE)
+				{
+					throw new Exception('Failed to store details for direct debit: ' . $insCreditCard->Error());
+				}
+				$account->creditCard = $intCreditCardId;
+				$account->billingType = BILLING_TYPE_CREDIT_CARD;
+				$account->save();
+				TransactionCommit();
+			}
+		}
+		catch (Exception $e)
+		{
+			TransactionRollback();
+			$bolFailedDD = TRUE;
+		}
 
 		// Build an array of 'magic tokens' to be inserted into the message
 		$tokens = array();
@@ -264,7 +314,7 @@ class Credit_Card_Payment
 		if ($balanceBefore[0] == '-') $balanceBefore = substr($balanceBefore, 1) . ' CR';
 		$balanceAfter = self::amount2dp($account->getBalance());
 		if ($balanceAfter[0] == '-') $balanceAfter = substr($balanceAfter, 1) . ' CR';
-		
+
 		$tokenList = self::listMessageTokens();
 		foreach ($tokenList as $token => $description)
 		{
@@ -303,18 +353,56 @@ class Credit_Card_Payment
 			}
 		}
 
-		// Send the payment confirmation email
-		$emailBody = self::replaceMessageTokens($creditCardPaymentConfig->confirmationEmail, $tokens);
+		$bolCanSendEmail = EmailAddressValid($contact->email);
+		$bolFailedToEmail = FALSE;
 
-		if ($bolDD)
+		if ($bolCanSendEmail)
 		{
-			// Send the direct debit confirmation email
-			$emailBody = self::replaceMessageTokens($creditCardPaymentConfig->directDebitEmail, $tokens);
+			$customerGroup = Customer_Group::getForId($account->customerGroup);
+
+			try
+			{
+				// Send the payment confirmation email
+				$emailBody = self::replaceMessageTokens($creditCardPaymentConfig->confirmationEmail, $tokens);
+				$email = new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $account->customerGroup);
+				$email->subject = $customerGroup->name . " Credit Card Payment Confirmation (Ref: $purchaseOrderNo / $txnId)";
+				$email->text = self::replaceMessageTokens($creditCardPaymentConfig->confirmationEmail, $tokens);
+				$email->to = $contact->email;
+				$email->send();
+
+				if ($bolDD && !$bolFailedDD)
+				{
+					// Send the direct debit confirmation email
+					$email = new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $account->customerGroup);
+					$email->subject = $customerGroup->name . " Direct Debit Setup Confirmation";
+					$email->text = self::replaceMessageTokens($creditCardPaymentConfig->directDebitEmail, $tokens);
+					$email->to = $contact->email;
+					$email->send();
+				}
+			}
+			catch (Exception $e)
+			{
+				$bolFailedToEmail = TRUE;
+			}
 		}
 
-		$outputMessage = $creditCardPaymentConfig->confirmationText . ($bolDD ? ("\n\n\n" . $creditCardPaymentConfig->directDebitText) : '');
+		$outputMessage = $creditCardPaymentConfig->confirmationText . 
+			($bolDD 
+				? ("\n\n\n" . ($bolFailedDD 
+								? 'We were unable to store your details for Direct Debit at this time. Please try again later.' 
+								: $creditCardPaymentConfig->directDebitText)) 
+				: '');
 
-		$resultProperties['MESSAGE'] = self::replaceMessageTokens($bolDD ? $creditCardPaymentConfig->directDebitText : $creditCardPaymentConfig->confirmationText, $tokens);
+		if (!$bolCanSendEmail)
+		{
+			$outputMessage .= "\n\n\nCould not send " . (($bolDD && !$bolFailedDD) ? '' : 'a ') . "confirmation email" . (($bolDD && !$bolFailedDD) ? 's' : '') . " as the email address on record is invalid.";
+		}
+		else if ($bolFailedToEmail)
+		{
+			$outputMessage .= "\n\n\nThe system failed to send " . (($bolDD && !$bolFailedDD) ? '' : 'a ') . "confirmation email" . (($bolDD && !$bolFailedDD) ? 's' : '') . ".";
+		}
+
+		$resultProperties['MESSAGE'] = self::replaceMessageTokens($outputMessage, $tokens);
 		return TRUE;
 	}
 
