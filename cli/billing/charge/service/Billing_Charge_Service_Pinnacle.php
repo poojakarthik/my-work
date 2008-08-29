@@ -81,7 +81,7 @@
  	function __construct($intModuleId)
  	{
  		// Call parent constructor
- 		parent::__construct($intModuleId, $_arrConfigDefinition);
+ 		parent::__construct($intModuleId, self::$_arrConfigDefinition);
 		
  		// Statements
 		$this->_selPM15Services = new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service",
