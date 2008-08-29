@@ -90,10 +90,15 @@ final class Flex
 		return $framework;
 	}
 
+	public static function frameworkUrlBase()
+	{
+		return self::getUrlBase() . '../ui/';
+	}
+
 	// Returns the relative base path of the Framework for the applications
 	public static function relativeFrameworkBase()
 	{
-		return 'ui'.DIRECTORY_SEPARATOR;
+		return 'html'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR;
 	}
 
 	// Returns the absolute base path of the Framework for the applications
@@ -117,6 +122,26 @@ final class Flex
 		return session_name() == self::FLEX_CUSTOMER_SESSION;
 	}
 
+	public static function applicationUrlBase()
+	{
+		static $applicationUrlBase;
+		if (!isset($applicationUrlBase))
+		{
+			switch(session_name())
+			{
+				case self::FLEX_ADMIN_SESSION:
+					$applicationUrlBase = self::getUrlBase() . '../admin/';
+					break;
+				case self::FLEX_CUSTOMER_SESSION:
+					$applicationUrlBase = self::getUrlBase() . '../customer/';
+					break;
+				default:
+					$applicationUrlBase = FALSE;
+			}
+		}
+		return $applicationUrlBase;
+	}
+
 	// Returns the relative base path of the web application
 	public static function relativeApplicationBase()
 	{
@@ -126,10 +151,10 @@ final class Flex
 			switch(session_name())
 			{
 				case self::FLEX_ADMIN_SESSION:
-					$relativeApplicationBase = 'admin'.DIRECTORY_SEPARATOR;
+					$relativeApplicationBase = 'html' . DIRECTORY_SEPARATOR . 'admin'.DIRECTORY_SEPARATOR;
 					break;
 				case self::FLEX_CUSTOMER_SESSION:
-					$relativeApplicationBase = 'customer'.DIRECTORY_SEPARATOR;
+					$relativeApplicationBase = 'html' . DIRECTORY_SEPARATOR . 'customer'.DIRECTORY_SEPARATOR;
 					break;
 				default:
 					$relativeApplicationBase = FALSE;
@@ -343,7 +368,7 @@ final class Flex
 
 	public static function getRelativeBase()
 	{
-		return "..". DIRECTORY_SEPARATOR;
+		return "..". DIRECTORY_SEPARATOR ."..". DIRECTORY_SEPARATOR;
 	}
 
 	public static function requireOnce()
@@ -356,7 +381,7 @@ final class Flex
 				self::requireOnce($arg);
 			}
 			else
-			{
+			{if  (!file_exists(self::getBase().$arg)) throw new Exception('Required file not found.');
 				require_once self::getBase().$arg;
 			}
 		}

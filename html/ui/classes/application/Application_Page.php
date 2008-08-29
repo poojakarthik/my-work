@@ -98,13 +98,13 @@ class Application_Page extends Page
 	function RenderCSS()
 	{
 		// Include the menu.css, reflex.css and style.css files
-		$strRelativePath = Flex::getRelativeBase() . Flex::relativeApplicationBase();
+		$strRelativePath = Flex::applicationUrlBase();
 		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/menu.css' />\n";
 		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/reflex.css' />\n";
 		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/style.css' />\n";
 		
 		/* Include all css files in the css directory 
-		$strRelativePath = Flex::getRelativeBase() . Flex::relativeApplicationBase();
+		$strRelativePath = Flex::applicationUrlBase();
 		$cssFiles = glob("{$strRelativePath}css/*.css");
 		foreach($cssFiles as $cssFile)
 		{
@@ -139,7 +139,7 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
-		$strFrameworkDir = Flex::getRelativeBase() . Flex::relativeFrameworkBase();
+		$strFrameworkDir = Flex::frameworkUrlBase();
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
 		
 		//echo "\t\t<script type='text/javascript' src='javascript/ext.js' ></script>\n";
@@ -190,7 +190,7 @@ class Application_Page extends Page
 	private function _GetJsFileRelativePath($strJsFile)
 	{
 		// Look for the file in the application's javascript dir
-		$strFile = Flex::getRelativeBase() . Flex::relativeApplicationBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
+		$strFile = Flex::applicationUrlBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
 		
 		$arrFiles = glob($strFile);
 		if (is_array($arrFiles) && count($arrFiles) == 1)
@@ -200,7 +200,7 @@ class Application_Page extends Page
 		}
 		
 		// Look for the file in the application's javascript dir
-		$strFile = Flex::getRelativeBase() . Flex::relativeFrameworkBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
+		$strFile = Flex::frameworkUrlBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
 		$arrFiles = glob($strFile);
 		if (is_array($arrFiles) && count($arrFiles) == 1)
 		{
