@@ -52,7 +52,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// WIP: This is likely to be a user data validation error. Should not throw the exception.
+			// This is likely to be a user data validation error. Should not throw the exception.
 			$response['OUTCOME'] = 'INVALID';
 			$response['MESSAGE'] = $e->getMessage();
 		}
