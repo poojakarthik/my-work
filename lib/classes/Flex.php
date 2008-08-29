@@ -93,7 +93,7 @@ final class Flex
 	// Returns the relative base path of the Framework for the applications
 	public static function relativeFrameworkBase()
 	{
-		return 'html'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR;
+		return 'ui'.DIRECTORY_SEPARATOR;
 	}
 
 	// Returns the absolute base path of the Framework for the applications
@@ -126,10 +126,10 @@ final class Flex
 			switch(session_name())
 			{
 				case self::FLEX_ADMIN_SESSION:
-					$relativeApplicationBase = 'html'.DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR;
+					$relativeApplicationBase = 'admin'.DIRECTORY_SEPARATOR;
 					break;
 				case self::FLEX_CUSTOMER_SESSION:
-					$relativeApplicationBase = 'html'.DIRECTORY_SEPARATOR.'customer'.DIRECTORY_SEPARATOR;
+					$relativeApplicationBase = 'customer'.DIRECTORY_SEPARATOR;
 					break;
 				default:
 					$relativeApplicationBase = FALSE;
@@ -343,7 +343,7 @@ final class Flex
 
 	public static function getRelativeBase()
 	{
-		return "..". DIRECTORY_SEPARATOR ."..". DIRECTORY_SEPARATOR;
+		return "..". DIRECTORY_SEPARATOR;
 	}
 
 	public static function requireOnce()
