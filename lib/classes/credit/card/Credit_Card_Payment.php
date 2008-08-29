@@ -241,6 +241,12 @@ class Credit_Card_Payment
 			throw new Credit_Card_Payment_Validation_Exception($responseCode, $responseText);
 		}
 
+		// Find the TXN Id for the payment
+		$txnId = '';
+		if (preg_match("/\<txnID(?:| [^\>]*)\>([0-9]+)\<\/txnID\>/i", $response, $matches))
+		{
+			$txnId = $matches[1];
+		}
 
 		// Payment has been processed!
 		// WIP: Store details of the payment in the credit_card_payment_history table
@@ -258,16 +264,44 @@ class Credit_Card_Payment
 		if ($balanceBefore[0] == '-') $balanceBefore = substr($balanceBefore, 1) . ' CR';
 		$balanceAfter = self::amount2dp($account->getBalance());
 		if ($balanceAfter[0] == '-') $balanceAfter = substr($balanceAfter, 1) . ' CR';
-		$tokens['DATE_TIME'] = date('g:i:sA, jS M Y', $time);
-		$tokens['PAYMENT_REFERENCE'] = $purchaseOrderNo;
-		$tokens['AMOUNT_APPLIED'] = $fltAmount;
-		$tokens['AMOUNT_SURCHARGE'] = $fltSurcharge;
-		$tokens['AMOUNT_TOTAL'] = $fltTotal;
-		$tokens['BALANCE_BEFORE'] = '$' . $balanceBefore;
-		$tokens['BALANCE_AFTER'] = '$' . $balanceAfter;
-		$tokens['ACCOUNT_NUMBER'] = $account->id;
-		$tokens['CONTACT_NAME'] = $contact->getName();
-		$tokens['CONTACT_EMAIL'] = $contact->email;
+		
+		$tokenList = self::listMessageTokens();
+		foreach ($tokenList as $token => $description)
+		{
+			switch ($token)
+			{
+				case 'DATE_TIME':
+					$tokens[$token] = date('g:i:sA, jS M Y', $time);
+					break;
+				case 'PAYMENT_REFERENCE':
+					$tokens[$token] = $purchaseOrderNo;
+					break;
+				case 'AMOUNT_APPLIED':
+					$tokens[$token] = $fltAmount;
+					break;
+				case 'AMOUNT_SURCHARGE':
+					$tokens[$token] = $fltSurcharge;
+					break;
+				case 'AMOUNT_TOTAL':
+					$tokens[$token] = $fltTotal;
+					break;
+				case 'BALANCE_BEFORE':
+					$tokens[$token] = '$' . $balanceBefore;
+					break;
+				case 'BALANCE_AFTER':
+					$tokens[$token] = '$' . $balanceAfter;
+					break;
+				case 'ACCOUNT_NUMBER':
+					$tokens[$token] = $account->id;
+					break;
+				case 'CONTACT_NAME':
+					$tokens[$token] = $contact->getName();
+					break;
+				case 'CONTACT_EMAIL':
+					$tokens[$token] = $contact->email;
+					break;
+			}
+		}
 
 		// Send the payment confirmation email
 		$emailBody = self::replaceMessageTokens($creditCardPaymentConfig->confirmationEmail, $tokens);
@@ -504,6 +538,22 @@ class Credit_Card_Payment
 			$message = preg_replace("/$token/i", $value, $message);
 		}
 		return $message;
+	}
+
+	public static function listMessageTokens()
+	{
+		return array(
+			"DATE_TIME" 		=> "will be replaced by the date and time of the action.",
+			"PAYMENT_REFERENCE"	=> "will be replaced by the unique payment reference number.",
+			"APPLIED_AMOUNT" 	=> "will be replaced by the payment amount applied to the balance of the account.",
+			"AMOUNT_SURCHARGE" 	=> "will be replaced by the amount of the credit card surcharge for the transaction.",
+			"AMOUNT_TOTAL" 		=> "will be replaced by the amount actually charged to their credit card.",
+			"ACCOUNT_NUMBER" 	=> "will be replaced by the account number.",
+			"BALANCE_BEFORE" 	=> "will be replaced by the balance of the account before applying the payment.",
+			"BALANCE_AFTER" 	=> "will be replaced by the balance of the account after applying the payment.",
+			"CONTACT_NAME" 		=> "will be replaced by the contact name.",
+			"CONTACT_EMAIL" 	=> "will be replaced by the email address a confirmation message was sent to.",
+		);
 	}
 
 	public static function availableForCustomerGroup($mxdCustomerGroupOrId)

@@ -164,18 +164,8 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 
 	private function getMagicStrings()
 	{
-		$magicStrings = array(
-			"DATE_TIME" => "will be replaced by the date and time of the action.",
-			"PAYMENT_REFERENCE" => "will be replaced by the unique payment reference number.",
-			"APPLIED_AMOUNT" => "will be replaced by the payment amount applied to the balance of the account.",
-			"AMOUNT_SURCHARGE" => "will be replaced by the amount of the credit card surcharge for the transaction.",
-			"AMOUNT_TOTAL" => "will be replaced by the amount actually charged to their credit card.",
-			"ACCOUNT_NUMBER" => "will be replaced by the account number.",
-			"BALANCE_BEFORE" => "will be replaced by the balance of the account before applying the payment.",
-			"BALANCE_AFTER" => "will be replaced by the balance of the account after applying the payment.",
-			"CONTACT_NAME" => "will be replaced by the contact name.",
-			"CONTACT_EMAIL" => "will be replaced by the email address a confirmation message was sent to.",
-		);
+		require_once dirname(__FILE__) . '/../../../../../../lib/classes/credit/card/Credit_Card_Payment.php';
+		$magicStrings = Credit_Card_Payment::listMessageTokens();
 		$output = '';
 		foreach ($magicStrings as $token => $value)
 		{
