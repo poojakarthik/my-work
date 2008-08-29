@@ -777,8 +777,12 @@ class Application
 
 				// Save when the user last logged in.
 				// DBO()->Contact->SetColumns("LastLogin,CurrentLogin");
-				DBO()->Contact->Save();
 
+				// Seems to be a bug where empty rows are being added, hopefully this will resolve it?
+				if(DBO()->Contact->Id !== "")
+				{
+					DBO()->Contact->Save();
+				}
 				// Check if CustomersGroup in database matches the URL being used.
 				if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
 					header("Location: " . DBO()->CustomerGroup->flex_url->Value);
