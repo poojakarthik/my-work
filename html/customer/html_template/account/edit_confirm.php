@@ -105,7 +105,7 @@
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
-			<TD width=\"200\">Billing Method: </TD>
+			<TD width=\"160\">Billing Method: </TD>
 			<TD>$strNewBillingMethod</TD>
 		</TR>
 		</TABLE>
@@ -118,7 +118,7 @@
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
-			<TD width=\"200\">Street Address: </TD>
+			<TD width=\"160\">Street Address: </TD>
 			<TD>" . htmlspecialchars($_POST['mixAccount_Address1']) . "</TD>
 		</TR>
 		<TR>
@@ -151,7 +151,7 @@
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
-			<TD width=\"200\">First Name: </TD>
+			<TD width=\"160\">First Name: </TD>
 			<TD>" . htmlspecialchars($_POST['mixContact_FirstName']) . "</TD>
 		</TR>
 		<TR>
