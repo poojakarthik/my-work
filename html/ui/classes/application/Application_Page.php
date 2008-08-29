@@ -190,22 +190,22 @@ class Application_Page extends Page
 	private function _GetJsFileRelativePath($strJsFile)
 	{
 		// Look for the file in the application's javascript dir
-		$strFile = Flex::applicationUrlBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
+		$strFile = $strFile = Flex::getRelativeBase() . Flex::relativeApplicationBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
 		
 		$arrFiles = glob($strFile);
 		if (is_array($arrFiles) && count($arrFiles) == 1)
 		{
 			// The file was found
-			return $strFile;
+			return Flex::applicationUrlBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
 		}
 		
 		// Look for the file in the application's javascript dir
-		$strFile = Flex::frameworkUrlBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
+		$strFile = $strFile = Flex::getRelativeBase() . Flex::relativeFrameworkBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
 		$arrFiles = glob($strFile);
 		if (is_array($arrFiles) && count($arrFiles) == 1)
 		{
 			// The file was found
-			return $strFile;
+			return Flex::frameworkUrlBase() . "javascript". DIRECTORY_SEPARATOR . $strJsFile;
 		}
 		
 		// The file could not be found
