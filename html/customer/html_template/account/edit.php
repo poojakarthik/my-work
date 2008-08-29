@@ -94,7 +94,7 @@
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">
 			<TR VALIGN=\"TOP\">
-				<TD width=\"200\">Billing Method: </TD>
+				<TD width=\"160\">Billing Method: </TD>
 				<TD>";
 				
 				$BillingMethod = DBO()->Account->BillingMethod->Value;
@@ -135,7 +135,7 @@
 			<TABLE class=\"customer-standard-table-style\">
 			<TR VALIGN=\"TOP\">
 			<TR>
-				<TD width=\"200\">Old Password: </TD>
+				<TD width=\"160\">Old Password: </TD>
 				<TD><INPUT TYPE=\"password\" NAME=\"mixAccount_OldPassword\" VALUE=\"\"></TD>
 			</TR>
 			<TR>
@@ -159,12 +159,12 @@
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">
 			<TR>
-			<TD width=\"200\">Street Address: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\"></TD>
+			<TD width=\"160\">Street Address: </TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\" size=\"35\" maxlength=\"255\"></TD>
 			</TR>
 			<TR>
 			<TD></TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address2->Value) . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address2->Value) . "\" size=\"35\" maxlength=\"255\"></TD>
 			</TR>
 			<TR>
 			<TD>Suburb: </TD>
@@ -214,8 +214,8 @@
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">
 			<TR>
-			<TD width=\"200\">Title: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Title\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\"></TD>
+			<TD width=\"160\">Title: </TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Title\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\" size=\"10\" maxlength=\"255\"></TD>
 			</TR>
 			<TR>
 			<TD>Job Title: </TD>
@@ -231,7 +231,7 @@
 			</TR>
 			<TR>
 			<TD>E-mail: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\" size=\"35\" maxlength=\"255\"></TD>
 			</TR>
 			<TR>
 			<TD>Phone: </TD>
