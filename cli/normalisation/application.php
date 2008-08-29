@@ -313,7 +313,7 @@
 			{
 				// Report the error, and UPDATE the database with a new status, then move to the next file
 				new ExceptionVixen("Specified CDR File doesn't exist", $this->_errErrorHandler, CDR_FILE_DOESNT_EXIST);
-				$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
+				$arrCDRFile["Status"] = FILE_IMPORT_FAILED;
 				if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 				{
 
@@ -328,10 +328,10 @@
 			switch($arrCDRFile["Status"])
 			{
 				/*
-				case CDRFILE_REIMPORT:
+				case FILE_REIMPORT:
 					$this->CascadeDeleteCDRs();
 				*/
-				case CDRFILE_WAITING:
+				case FILE_COLLECTED:
 					$this->InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles);
 
 					break;
@@ -454,7 +454,7 @@
 		try
 		{
 			// Set the File status to "Importing"
-			$arrCDRFile["Status"] = CDRFILE_IMPORTING;
+			$arrCDRFile["Status"] = FILE_IMPORTING;
 			$arrCDRFile['ImportedOn'] 	= new MySQLFunction("NOW()");
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
@@ -524,7 +524,7 @@
 			fclose($fileCDRFile);
 			
 			// Set the File status to "Normalised"
-			$arrCDRFile["Status"]		= CDRFILE_NORMALISED;
+			$arrCDRFile["Status"]		= FILE_IMPORTED;
 			//$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
@@ -536,7 +536,7 @@
 			$errErrorHandler->PHPExceptionCatcher($exvException);
 			
 			// Set the File status to "Failed"
-			$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
+			$arrCDRFile["Status"] = FILE_IMPORT_FAILED;
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
 				$updUpdateCDRFiles->Error();

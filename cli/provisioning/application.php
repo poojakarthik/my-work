@@ -153,7 +153,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
  		$insResponse		= new StatementInsert("ProvisioningResponse", $arrCols);
  		
  		$arrData = Array();
- 		$arrData['Status']			= FILE_NORMALISED;
+ 		$arrData['Status']			= FILE_IMPORTED;
  		$arrData['NormalisedOn']	= new MySQLFunction("NOW()");
  		$ubiFileImport		= new StatementUpdateById("FileImport", $arrData);
  		
@@ -295,7 +295,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 	 		}
 	 		
 	 		// Update FileImport
-	 		$arrFile['Status']			= FILE_NORMALISED;
+	 		$arrFile['Status']			= FILE_IMPORTED;
 	 		$arrFile['NormalisedOn']	= new MySQLFunction("NOW()");
 	 		$ubiFileImport->Execute($arrFile);
  		}

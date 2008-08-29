@@ -260,7 +260,7 @@
 			{
 				// Report the error, and UPDATE the database with a new status, then move to the next file
 				$arrColumns['Id']		= $arrFile['Id'];
-				$arrColumns['Status']	= CDRFILE_IMPORT_FAILED;
+				$arrColumns['Status']	= FILE_IMPORT_FAILED;
 				if ($this->_ubiPaymentFile->Execute($arrColumns) === FALSE)
 				{
 					
@@ -274,7 +274,7 @@
 			// update file status
 			$arrColumns = Array();
 			$arrColumns['Id']		= $arrFile['Id'];
-			$arrColumns['Status']	= CDRFILE_IMPORTING;
+			$arrColumns['Status']	= FILE_IMPORTING;
 			if ($this->_ubiPaymentFile->Execute($arrColumns) === FALSE)
 			{
 				continue;
@@ -305,7 +305,7 @@
 			// update file status
 			$arrColumns = Array();
 			$arrColumns['Id']		= $arrFile['Id'];
-			$arrColumns['Status']	= CDRFILE_IMPORTED;
+			$arrColumns['Status']	= FILE_IMPORTED;
 			if ($this->_ubiPaymentFile->Execute($arrColumns) === FALSE)
 			{
 			
