@@ -25,6 +25,15 @@
 /*	TASKBAR														  		  */
 /**************************************************************************/
 
+/**************************************************************************/
+/* NOTICE BAR STYLE, e.g. confirm your details.											  */
+/**************************************************************************/
+.customer-standard-display-title
+{
+	font-size:	16px;
+	padding:	3px;
+	font-weight:	bold;
+}
 
 /**************************************************************************/
 /* NOTICE BAR STYLE, e.g. confirm your details.											  */
@@ -171,8 +180,38 @@
 }
 
 
+
 /**************************************************************************/
-/* EDIT PAGE														  */
+/* MENU OPTIONS											  */
+/**************************************************************************/
+.customer-standard-table-style-menu-options
+{
+	
+	font-size:	12px;
+	width:		375px;
+	text-indent: 10; 
+	background-color:	#FFFFFF;
+	border:				solid 1px #D1D1D1;
+
+}
+.customer-standard-table-style-menu-options-title
+{
+	
+	font-size:	12px;
+	width:		367px;
+	text-indent: 10; 
+	color:	[customer_breadcrumb_menu_link_color];
+	background-repeat:		repeat-x;
+	background-image:		url('./img/template/menu-options-bg.gif');
+	background-position: 0px 100%;
+	border:				solid 1px #D1D1D1;
+	padding:	3px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+
+/**************************************************************************/
+/* SITE WIDE STYLES													  */
 /**************************************************************************/
 .customer-standard-table-title-style
 {

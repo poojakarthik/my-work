@@ -69,9 +69,8 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<br/><br/><div class='NarrowContent'>\n";
-
-		echo "<h2 class='Options'>Options</h2>\n";
+		//echo "<br/><br/><div class='NarrowContent'>\n";
+		echo "<br/><br/>\n";
 
 		require_once dirname(__FILE__) . '/../../../lib/classes/credit/card/Credit_Card_Payment.php';
 		
@@ -96,7 +95,9 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		$strEditAccountDetailsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strEditAccountDetails' >&nbsp;&nbsp;Edit Account Details</a></span>";
 
 
-		echo "<table width='100%' border='0' class=\"main_table\">\n";
+		//echo "<h2 class='Options'>Options</h2>\n";
+		echo "<div class='customer-standard-table-style-menu-options-title'>Options</div>\n";
+		echo "<table class=\"customer-standard-table-style-menu-options\">\n";
 		
 		if ($bolCC)
 		{
@@ -124,7 +125,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "   </tr>\n";
 		echo "</table>\n";
 				
-		echo "</div>\n";
+		//echo "</div>\n";
 	}
 }
 

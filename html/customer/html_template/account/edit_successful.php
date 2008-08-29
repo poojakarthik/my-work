@@ -71,7 +71,7 @@
 	 
 	function Render()
 	{
-		echo "<br/><br/><div class='NarrowContent'>\n";
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
 		$mixFoundError = FALSE;
 		if($_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
@@ -102,9 +102,6 @@
 		</TABLE>
 		</div>";
 
-		echo "<div class='Seperator'></div>\n";
-		
-		echo "</div>\n";
 	}
 }
 

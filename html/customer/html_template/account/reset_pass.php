@@ -71,8 +71,8 @@
 	 
 	function Render()
 	{
-		echo "<div class='NarrowContent'>\n";
 
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 		print "
 		<div class='customer-standard-table-title-style'>Billing Details</div>
 		<!-- <h2 class='Account'>Reset Password</h2> -->
@@ -89,10 +89,6 @@
 		</TABLE>
 		</div>
 		<br/>";
-
-		echo "<div class='Seperator'></div>\n";
-		
-		echo "</div>\n";
 	}
 }
 

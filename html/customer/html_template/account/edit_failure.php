@@ -71,7 +71,7 @@
 	 
 	function Render()
 	{
-		echo "<br/><br/><div class='NarrowContent'>\n";
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 		
 		print "
 		<div class='customer-standard-table-title-style-notice'>Failure notice</div>
@@ -88,9 +88,6 @@
 		</TABLE>
 		</div>";
 
-		echo "<div class='Seperator'></div>\n";
-		
-		echo "</div>\n";
 	}
 }
 

@@ -72,8 +72,7 @@
 	 
 	function Render()
 	{
-		echo "<br/><br/><div class='NarrowContent'>\n";
-
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 		echo "<div class='customer-standard-table-title-style-notice'><FONT COLOR='red'>Please confirm the new changes below</FONT></div><br/><br/>";
 
 		echo "

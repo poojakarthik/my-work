@@ -73,7 +73,7 @@
 	 
 	function Render()
 	{
-		echo "<br/><br/><div class='NarrowContent'>\n";
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
 		// Display the details of their primary address
 		$intAccountUpdated = DBO()->Account->Updated->Value;

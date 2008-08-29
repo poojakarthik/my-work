@@ -73,7 +73,7 @@
 	{
 		#echo "<div class='NarrowContent'>\n";
 	
-		echo "<H2>Home</H2><br/><br/>";
+		echo "<div class='customer-standard-display-title'>Home</div><br/><br/>";
 
 		echo "<div class='customer-standard-table-title-style-account'>Account Details</div>\n";
 		//echo "<h2 class='Account'>Account Details</h2>\n";
