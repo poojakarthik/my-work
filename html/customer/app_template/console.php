@@ -687,14 +687,12 @@ class AppTemplateConsole extends ApplicationTemplate
     
   
 	//------------------------------------------------------------------------//
-	// Logout
+	// Password
 	//------------------------------------------------------------------------//
 	/**
-	 * Logout()
+	 * Password()
 	 *
-	 * Performs the logic for logging out the user
-	 * 
-	 * Performs the logic for logging out the user
+	 * Resends the users password to the primary email.
 	 *
 	 * @return		void
 	 * @method
@@ -757,6 +755,95 @@ class AppTemplateConsole extends ApplicationTemplate
 		}
 
 		$this->LoadPage('reset_password');
+		return TRUE;
+	}
+	
+
+
+	//------------------------------------------------------------------------//
+	// Username
+	//------------------------------------------------------------------------//
+	/**
+	 * Username()
+	 *
+	 * Resends the users Username to the primary email.
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Username()
+	{
+		
+		// eventually user will not even see a flex login page, so this page will need to be separate.
+		// Password() - doesn't seem to work as expected but does work.
+		error_reporting(0);
+
+		// Connect to database
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+		
+		// Check if the form has been submitted.
+		if(array_key_exists('mixFirstName', $_POST))
+		{
+			// echo "pass 1. " . $_POST['mixFirstName'];
+			// By default all password requests will fail.
+			DBO()->Fail = TRUE;
+
+			// Check the syntax of the username entered by user..
+			$bolFoundError=FALSE;
+			list($strFoundError,$strErrorResponse) = InputValidation("mixFirstName",$_POST['mixFirstName'],"mixed",31);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				// echo "fail 1. $strErrorResponse " . $_POST['mixFirstName'];
+			}
+			list($strFoundError,$strErrorResponse) = InputValidation("mixLastName",$_POST['mixLastName'],"mixed",31);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				// echo "fail 2. $strErrorResponse " . $_POST['mixLastName'];
+			}
+			list($strFoundError,$strErrorResponse) = InputValidation("mixEmail",$_POST['mixEmail'],"email",255);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				// echo "fail 3. $strErrorResponse " . $_POST['mixEmail'];
+			}
+
+			// If there is no UserName errror
+			if(!$bolFoundError)
+			{
+				// echo "pass 2. " . $_POST['mixFirstName'];
+				//then we can check the database for a record.
+				$strCustEmail = $dbConnection->fetchone("SELECT Account,UserName,FirstName,LastName,Email FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" LIMIT 1");
+
+				// if the email address exists in db then we reset the pass..
+				if($strCustEmail->FirstName == "$_POST[mixFirstName]" && $strCustEmail->LastName == "$_POST[mixLastName]")
+				{
+					// And send an email...
+					$to      = $strCustEmail->Email;
+					$subject = "Account Notice #" . $strCustEmail->Account;
+					$message = "Hello,\n\n";
+					$message .= "Your username is: " . $strCustEmail->UserName . "\n\n";
+					$message .= "Kind Regards\n";
+					$message .= "Customer Service Group\n";
+					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+						'X-Mailer: Flex/' . phpversion();
+					# supress email errors.
+					@mail($to, $subject, $message, $headers);
+					DBO()->Fail = FALSE;
+				}
+			}
+
+			// email not found in db?
+			if(DBO()->Fail)
+			{
+				// Brute Force attack prevention.
+				sleep(9);
+			}
+		}
+
+		$this->LoadPage('resend_username');
 		return TRUE;
 	}
 	

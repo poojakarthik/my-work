@@ -176,6 +176,23 @@ class MenuItems
 
 		return $this->GetBaseURL()."./flex.php/Console/Password/";
 	}
+	//------------------------------------------------------------------------//
+	// ResendUsername()
+	//------------------------------------------------------------------------//
+	/**
+	 * ResendUsername()
+	 *
+	 * 
+	 * @return	string	action to be executed when linking to the ResendUsername Console
+	 *
+	 * @method
+	 */
+	function ResendUsername()
+	{
+		$this->strLabel	= "Resend Username";
+
+		return $this->GetBaseURL()."./flex.php/Console/Username/";
+	}
 
 	//------------------------------------------------------------------------//
 	// ManagementConsole()

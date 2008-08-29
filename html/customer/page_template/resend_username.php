@@ -38,13 +38,13 @@
 	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
 	
 	// Render the reset password page
-	if(!array_key_exists('mixUserName', $_POST))
+	if(!array_key_exists('mixFirstName', $_POST))
 	{
 		print "
 		<br/><br/>
 		<TABLE align=center class=login-table-style-main-title>
 		<TR>
-			<TD>Customer System - Reset Password</TD>
+			<TD>Customer System - Resend Username</TD>
 		</TR>
 		</TABLE>
 		<TABLE align=center class=login-table-style-main>
@@ -54,10 +54,26 @@
 		<table id='LoginTable'>
 			<tr>
 				<td>
-					<label for=\"UserName\" style='font-size: 10pt;'>Username:</label>
+					<label for=\"UserName\" style='font-size: 10pt;'>First Name:</label>
 				</td>
 				<td>
-					<input type=\"text\" name=\"mixUserName\" class=\"LoginBox\" maxlength=\"21\"/>
+					<input type=\"text\" name=\"mixFirstName\" class=\"LoginBox\" maxlength=\"21\"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for=\"UserName\" style='font-size: 10pt;'>Last Name:</label>
+				</td>
+				<td>
+					<input type=\"text\" name=\"mixLastName\" class=\"LoginBox\" maxlength=\"21\"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for=\"UserName\" style='font-size: 10pt;'>Email:</label>
+				</td>
+				<td>
+					<input type=\"text\" name=\"mixEmail\" class=\"LoginBox\" maxlength=\"21\"/>
 				</td>
 			</tr>
 			<tr>
@@ -65,7 +81,7 @@
 					<label for=\"UserName\" style='font-size: 10pt;'></label>
 				</td>
 				<td>
-					<INPUT TYPE=\"submit\" VALUE=\"Send Password >>\">
+					<INPUT TYPE=\"submit\" VALUE=\"Send Username >>\">
 				</td>
 			</tr>
 		</table>";
@@ -74,7 +90,7 @@
 			</TD>
 		</TR>
 		</TABLE>
-		<A HREF=\"./flex.php/Console/Username/\">Click here to retrieve your username</A><br/>";
+		<A HREF=\"./flex.php/Console/Password/\">Click here to retrieve your password</A><br/>";
 
 	print "
 	</form>";
@@ -88,13 +104,13 @@
 		<br/><br/>
 		<TABLE align=center class=login-table-style-main-title>
 		<TR>
-			<TD>$ExternalName Customer System - Reset Password Success</TD>
+			<TD>Customer System - Resend Username Success</TD>
 		</TR>
 		</TABLE>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
-			print "A new password has been issued.<br/>
+			print "Your username has been sent.<br/>
 			Please allow a few minutes for the e-mail to arrive.";
 			echo "<br /><br />\n";
 			echo "<a href='$strLoginHref' ><span>Customer System Login</span></a>\n";
@@ -110,15 +126,15 @@
 		<br/><br/>
 		<TABLE align=center class=login-table-style-main-title>
 		<TR>
-			<TD>$ExternalName Customer System - Reset Password Failure</TD>
+			<TD>Customer System - Resend Username Failure</TD>
 		</TR>
 		</TABLE>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
-			print "The username entered does not exist.";
+			print "The details entered were invalid.";
 			echo "<br /><br />\n";
-			echo "<a href='" . Href()->ResetPassword() . "' ><span>Please Try Again</span></a>\n";
+			echo "<a href='" . Href()->ResendUsername() . "' ><span>Please Try Again</span></a>\n";
 			print "
 			</TD>
 		</TR>
