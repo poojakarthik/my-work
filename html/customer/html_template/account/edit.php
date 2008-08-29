@@ -113,11 +113,11 @@
 					// Only show Post as a billing method for customers already on post.
 					if($i != "0")
 					{
-						echo "<INPUT TYPE=\"radio\" NAME=\"mixAccount_BillingMethod\" VALUE=\"$i\"$strShowChecked> $strDescriptionOfMethod<br/>";
+						echo "<INPUT TYPE=\"radio\" class=\"edit-details-radio-buttons\" NAME=\"mixAccount_BillingMethod\" VALUE=\"$i\"$strShowChecked> $strDescriptionOfMethod<br/>";
 					}
 					if($i == "0" && $BillingMethod == "0")
 					{
-						echo "<INPUT TYPE=\"radio\" NAME=\"mixAccount_BillingMethod\" VALUE=\"$i\"$strShowChecked> $strDescriptionOfMethod<br/>";
+						echo "<INPUT TYPE=\"radio\" class=\"edit-details-radio-buttons\" NAME=\"mixAccount_BillingMethod\" VALUE=\"$i\"$strShowChecked> $strDescriptionOfMethod<br/>";
 					}
 				}
 
