@@ -30,5 +30,6 @@ $thisDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 require_once $thisDir.'../classes/Framework.php';
 require_once $thisDir.'../classes/ApplicationBaseClass.php';
 require_once $thisDir.'../classes/CarrierModule.php';
+require_once $thisDir.'../classes/module/Module_Config.php';
 
 ?>
