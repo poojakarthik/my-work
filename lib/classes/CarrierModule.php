@@ -59,7 +59,7 @@ class CarrierModule
  		$this->_intModuleCustomerGroup	= $intCustomerGroup;
  		
  		// Statements
-		$this->_selCarrierModule	= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = <Type> AND customer_group = <CustomerGroup>");
+		$this->_selCarrierModule	= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = <Type> AND customer_group <=> <CustomerGroup>");
 		$this->_selModuleConfig		= new StatementSelect("CarrierModuleConfig", "*", "CarrierModule = <Id>");
 		
 	 	$arrCols					= Array();
