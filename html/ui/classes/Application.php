@@ -901,11 +901,51 @@ class Application
 	 */
 	function LogoutClient()
 	{
-		// Blank the PHP session
-		$_SESSION = array();
-		$_SESSION['LoggedIn'] = FALSE;
 
-		return TRUE;
+		// Redirect customer to customer_exit_url from database or to default logged_out page.
+		if ($_SESSION['LoggedIn'])
+		{
+			// user is already logged in. Get the CustomerGroup
+			$selSelectStatement = new StatementSelect (
+				"Contact", 
+				"*", 
+				"UserName = <UserName> AND PassWord = <PassWord> AND Archived = 0", 
+				null, 
+				"1"
+			);
+			
+			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['UserName'], "PassWord"=>$_SESSION['User']['PassWord']));
+			$currentUser = $selSelectStatement->Fetch();
+
+			// Get the Account table.
+			DBO()->Account->Id = $currentUser['Account'];
+			DBO()->Account->Load();
+
+			// Get the CustomerGroup table.
+			DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
+			DBO()->CustomerGroup->Load();
+
+			// Check if CustomersGroup in database matches the URL being used.
+			if(DBO()->CustomerGroup->customer_exit_url->Value)
+			{
+				// Blank the PHP session
+				$_SESSION = array();
+				$_SESSION['LoggedIn'] = FALSE;
+				header("Location: " . DBO()->CustomerGroup->customer_exit_url->Value);
+
+				return TRUE;
+			}
+			else
+			{
+				// If no customer group is found load default logged_out page...
+
+				// Blank the PHP session
+				$_SESSION = array();
+				$_SESSION['LoggedIn'] = FALSE;
+
+				return TRUE;
+			}
+		}
 	}
 	
 	
