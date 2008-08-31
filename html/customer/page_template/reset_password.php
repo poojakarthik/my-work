@@ -49,7 +49,7 @@
 		</TABLE>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
-			<TD>";
+			<TD align=\"center\">";
 		print "
 		<table id='LoginTable'>
 			<tr>

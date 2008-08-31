@@ -87,7 +87,7 @@
 		</TABLE>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
-			<TD>";
+			<TD align=\"center\">";
 ?>
 		<table id='LoginTable'>
 			<tr>
