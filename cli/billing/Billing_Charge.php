@@ -222,13 +222,13 @@
  					// All CustomerGroups, although this can be overridden later
  					foreach ($arrCustomerGroups as $arrCustomerGroup)
  					{
- 						$arrModules[$arrCustomerGroup['Id']][get_parent_class($modModule)][get_class($modModule)]	= &$modModule;
+ 						$arrModules[$arrCustomerGroup['Id']][get_parent_class($modModule)][get_class($modModule)]	= $modModule;
  					}
  				}
  				else
  				{
  					// Just One CustomerGroup.  If there is already an "All" Module defined, then override it
- 					$arrModules[$arrModule['customer_group_id']][get_parent_class($modModule)][get_class($modModule)]	= &$modModule;
+ 					$arrModules[$arrModule['customer_group_id']][get_parent_class($modModule)][get_class($modModule)]	= $modModule;
  				}
  			}
  			
