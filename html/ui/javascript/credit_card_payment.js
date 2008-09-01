@@ -823,7 +823,10 @@ alert(outcome);
 	{
 		if (!this.acceptTermsCheckbox.checked)
 		{
-			$Alert("Please tick the checkbox to confirm that you have read, understood and agree be bound by these Terms and Conditions.", null, null, null, 'Direct Debit Setup');
+			// the $Alert() below is appearing behind the terms (all browsers have this problem.) 
+			// below is just a quick work-around - not final.
+			alert("Please tick the checkbox to confirm that you have read, understood and agree be bound by these Terms and Conditions.");
+			//$Alert("Please tick the checkbox to confirm that you have read, understood and agree be bound by these Terms and Conditions.", null, null, null, 'Direct Debit Setup');
 			return false;
 		}
 		this.termsPopup.hide();
