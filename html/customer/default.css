@@ -25,6 +25,11 @@
 /*	TASKBAR														  		  */
 /**************************************************************************/
 
+/* "CVV" Tooltip looks like "CW", work-around below */
+.tooltip-source-element
+{
+	letter-spacing: 2px;
+}
 input.displayOnly[disabled] {
 	font-size: 1em;
 	border: none;
