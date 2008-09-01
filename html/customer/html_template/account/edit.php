@@ -160,11 +160,11 @@
 			<TABLE class=\"customer-standard-table-style\">
 			<TR>
 			<TD width=\"160\">Street Address: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\" size=\"35\" maxlength=\"255\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
 			</TR>
 			<TR>
 			<TD></TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address2->Value) . "\" size=\"35\" maxlength=\"255\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address2->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
 			</TR>
 			<TR>
 			<TD>Suburb: </TD>
@@ -231,7 +231,7 @@
 			</TR>
 			<TR>
 			<TD>E-mail: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\" size=\"35\" maxlength=\"255\"></TD>
+			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
 			</TR>
 			<TR>
 			<TD>Phone: </TD>
