@@ -33,7 +33,16 @@ input.displayOnly[disabled] {
 	background-color: #f9f9f9;
 	text-align: right;
 }
-
+/* For IE6 */
+.displayOnly
+{
+	font-size: 1em;
+	border: none;
+	color: #000 !important;
+	margin: .2em;
+	background-color: #f9f9f9;
+	text-align: right;
+}
 input.valid, 
 select.valid, 
 textarea.valid {
@@ -302,7 +311,6 @@ input.validation-error-tootltip-button {
   background-image: url("./img/template/tooltip_error.gif");
   background-position: 50% 50%;
 }
-
 td[contains-invalid-input=true] input.validation-error-tootltip-button {
   visibility: visible;
 }
@@ -503,7 +511,15 @@ div.reflex-popup-footer {
 		border: none;
 		border-collapse: collapse;
 		padding: 0;
-		background-color: #eee;
+		background-color: #f9f9f9;
+	}
+	/* For IE6 */
+	#cc-input-dd
+	{
+		border: none;
+		border-collapse: collapse;
+		padding: 0;
+		background-color: #f9f9f9;
 	}
 	img
 	{
