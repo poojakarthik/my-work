@@ -50,7 +50,7 @@ abstract class Cli
 		$this->_arrCommandLineArguments[self::SWITCH_LOG] = array(
 			self::ARG_LABEL			=> "LOG_FILE", 
 			self::ARG_REQUIRED		=> FALSE,
-			self::ARG_DESCRIPTION	=> "is a writable file location to write log messages to (EMAIL or PRINT) [optional, default is no logging]",
+			self::ARG_DESCRIPTION	=> "is a writable file location to write log messages to [optional, default is no logging]",
 			self::ARG_DEFAULT		=> FALSE,
 			self::ARG_VALIDATION	=> 'Cli::_validFile("%1$s", FALSE)'
 		);
