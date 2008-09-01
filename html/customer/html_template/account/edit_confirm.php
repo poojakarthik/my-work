@@ -99,6 +99,28 @@
 
 		$intBillMethod = htmlspecialchars($_POST['mixAccount_BillingMethod']);
 		$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$intBillMethod]['Description'];
+		
+		// If the user is changing there password: display a notice on this page, 
+		// they may not change any other details so we need to let them know what this update is for.
+		if(array_key_exists('mixAccount_NewPassword1', $_POST))
+		{
+			if($_POST['mixAccount_NewPassword1'] != "")
+			{
+				print "
+				<div class='customer-standard-table-title-style-confirm-details'>Password Change</div>
+				<!-- <h2 class='Account'>Password Details</h2> -->
+				<div class='GroupedContent'>
+				<TABLE class=\"customer-standard-table-style\">
+				<TR>
+				<TD width=\"160\">Password change: </TD>
+				<TD>Yes</TD>
+				</TR>
+				</TABLE>
+				</div>
+				<br/>";		
+			}
+		}
+		
 		print "
 		<div class='customer-standard-table-title-style-confirm-details'>Billing Details</div>
 		<!-- <h2 class='Account'>Billing Details</h2> -->
@@ -111,7 +133,7 @@
 		</TABLE>
 		</div>
 		<br/>";
-
+		
 		print "
 		<div class='customer-standard-table-title-style-confirm-details'>Address Details</div>
 		<!-- <h2 class='Account'>Address Details</h2> -->
