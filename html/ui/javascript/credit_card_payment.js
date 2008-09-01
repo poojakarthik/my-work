@@ -285,7 +285,7 @@ Object.extend(CreditCardPayment.prototype,
 			this.inputAmount.id = 'cc-input-amount';
 			this.inputDD = document.createElement('input');
 			this.inputDD.type= 'checkbox';
-			this.inputDD.checked = false;
+			this.inputDD.checked = this.inputDD.isChecked = false;
 			this.inputDD.id = 'cc-input-dd';
 
 			this.paymentForm = document.createElement('div');
@@ -416,6 +416,7 @@ Object.extend(CreditCardPayment.prototype,
 			Event.observe(this.inputName, 'keyup', this.changeName.bind(this));
 			Event.observe(this.inputEmail, 'change', this.changeEmail.bind(this));
 			Event.observe(this.inputEmail, 'keyup', this.changeEmail.bind(this));
+			Event.observe(this.inputDD, 'click', this.changeDD.bind(this));
 
 			this.paymentForm.appendChild(table);
 
@@ -438,6 +439,8 @@ Object.extend(CreditCardPayment.prototype,
 				this.entryPanelButtons = [buttonCancel, buttonSubmit];
 			}
 		}
+
+		this.inputDD.checked = this.inputDD.isChecked;
 
 		if (errorMessage)
 		{
@@ -482,7 +485,7 @@ Object.extend(CreditCardPayment.prototype,
 		}
 
 		// Ensure that the user has agreed to the terms and conditions
-		if (this.allowDD && this.inputDD.checked && !bolAgreedToTermsAndConditions)
+		if (this.allowDD && this.inputDD.isChecked && !bolAgreedToTermsAndConditions)
 		{
 			this.termsAndConditions();
 			return false; 
@@ -980,6 +983,11 @@ alert(outcome);
 		this.updateBalances();
 		this.updateSurcharges();
 		return bolAmountEntered && bolAmountIsValid;
+	},
+
+	changeDD: function()
+	{
+		this.inputDD.isChecked = this.inputDD.checked;
 	},
 
 	changeEmail: function(highlightBlankFields)
