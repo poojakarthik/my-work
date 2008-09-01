@@ -739,7 +739,6 @@ alert(outcome);
 		Event.observe(buttonSubmit, 'click', this.confirmSubmit.bind(this));
 
 		this.popup.setFooterButtons([buttonCancel, buttonSubmit]);
-
 		this.popup.setContent(confirmForm);
 	},
 
@@ -1309,6 +1308,9 @@ Object.extend(DynamicallyLoadedPanel.prototype,
 
 	initialize: function(container)
 	{
+		this.cache = document.createElement('div');
+		this.cache.style.display = 'none';
+		document.body.appendChild(this.cache);
 		this.container = container;
 		this.titlePane = document.createElement('div');
 		this.titlePane.className = 'dynamically-loaded-panel-title';
@@ -1325,6 +1327,14 @@ Object.extend(DynamicallyLoadedPanel.prototype,
 	{
 	},
 
+	emptyElement: function(element)
+	{
+		for (var i = element.childNodes.length - 1; i >= 0; i--)
+		{
+			this.cache.appendChild(element.childNodes[i]);
+		}
+	},
+
 	setTitle: function(title)
 	{
 		this.titlePane.innerHTML = '';
@@ -1333,7 +1343,7 @@ Object.extend(DynamicallyLoadedPanel.prototype,
 
 	setContent: function(content)
 	{
-		this.contentPane.innerHTML = '';
+		this.emptyElement(this.contentPane);
 		this.contentPane.appendChild(content);
 	},
 
@@ -1343,7 +1353,7 @@ Object.extend(DynamicallyLoadedPanel.prototype,
 
 	setFooterButtons: function(buttons)
 	{
-		this.footerPane.innerHTML = '';
+		this.emptyElement(this.footerPane);
 		for (var i = 0, l = buttons.length; i < l; i++)
 		{
 			this.footerPane.appendChild(buttons[i]);
