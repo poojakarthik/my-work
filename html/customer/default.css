@@ -25,6 +25,30 @@
 /*	TASKBAR														  		  */
 /**************************************************************************/
 
+input.displayOnly[disabled] {
+	font-size: 1em;
+	border: none;
+	color: #000 !important;
+	margin: .2em;
+	background-color: #f9f9f9;
+	text-align: right;
+}
+
+input.valid, 
+select.valid, 
+textarea.valid {
+	background: #ecfff0;
+	color: #111;
+	border: .1em solid #3d0;
+}
+input.invalid, 
+select.invalid, 
+textarea.invalid {
+	background: #ffecf0;
+	color: #111;
+	border: .1em solid #d30;
+}
+
 /**************************************************************************/
 /* NOTICE BAR STYLE, e.g. confirm your details.											  */
 /**************************************************************************/
@@ -43,7 +67,7 @@
 	text-indent: 30; 
 	font-size:	12px;
 	width:		442px
-	background-color:	#EFEBE7;
+	background-color:	#f9f9f9;
 	border:				solid 1px #D1D1D1;
 	background-repeat: no-repeat;
 	background-image: url("./img/template/message_notice.png");
@@ -125,7 +149,7 @@
 .login-table-style-main
 {
 	border: solid 1px #D1D1D1; 
-	background-color: #EFEBE7; 
+	background-color: #f9f9f9; 
 	width: 442px; 
 	font-size:12px;
 	padding:3px;
@@ -141,7 +165,7 @@
 	text-indent: 30; 
 	font-size:	12px;
 	width:		442px
-	background-color:	#EFEBE7;
+	background-color:	#f9f9f9;
 	border:				solid 1px #D1D1D1;
 	background-repeat: no-repeat;
 	background-image: url("./img/template/cash.png");
@@ -155,7 +179,7 @@
 	text-indent: 30; 
 	font-size:	12px;
 	width:		442px
-	background-color:	#EFEBE7;
+	background-color:	#f9f9f9;
 	border:				solid 1px #D1D1D1;
 	background-repeat: no-repeat;
 	background-image: url("./img/template/email.png");
@@ -169,7 +193,7 @@
 	text-indent: 30; 
 	font-size:	12px;
 	width:		442px
-	background-color:	#EFEBE7;
+	background-color:	#f9f9f9;
 	border:				solid 1px #D1D1D1;
 	background-repeat: no-repeat;
 	background-image: url("./img/template/report.png");
@@ -227,7 +251,7 @@
 	text-indent: 30; 
 	font-size:	12px;
 	width:		442px
-	background-color:	#EFEBE7;
+	background-color:	#f9f9f9;
 	border:				solid 1px #D1D1D1;
 	background-repeat: no-repeat;
 	background-image: url("./img/generic/square_black.gif");
@@ -275,7 +299,7 @@ input.validation-error-tootltip-button {
   margin-left: 0.2em;
   background-color: inherit;
   background-repeat: no-repeat;
-  background-image: url("./img/template/close.gif");
+  background-image: url("./img/template/tooltip_error.gif");
   background-position: 50% 50%;
 }
 
@@ -348,7 +372,7 @@ table.reflex
 	margin:				7px;
 	padding:			10px;
 	border:				solid 1px #D1D1D1;
-	background-color:	#EFEBE7;
+	background-color:	#f9f9f9;
 	position:			relative;
 	width: 450px;
 	clear: both;
@@ -451,7 +475,7 @@ div.reflex-popup-footer {
 		margin:				0px;
 		padding:			5px;
 		border:				solid 1px #D1D1D1;
-		background-color:	#EFEBE7;
+		background-color:	#f9f9f9;
 		position:			relative;
 	}
 	.LinksTable
