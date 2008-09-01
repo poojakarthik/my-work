@@ -499,7 +499,12 @@ div.reflex-popup-footer {
 		margin-bottom:			1px;
 		border:					solid 1px #000000;
 	}
-	
+	input[type="checkbox"] {
+		border: none;
+		border-collapse: collapse;
+		padding: 0;
+		background-color: #eee;
+	}
 	img
 	{
 		border:					0;

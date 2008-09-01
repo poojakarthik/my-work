@@ -473,7 +473,7 @@ function VixenPopupClass()
 		if (elmPopup)
 		{
 			elmPopup.parentNode.removeChild(elmPopup);
-			document.body.style.overflow = "visible"; // Why is this done?
+			//document.body.style.overflow = "visible"; // Why is this done?
 			
 			// Do clean up actions, specific to the type of popup
 			if (elmPopup.getAttribute("modal") != null)
