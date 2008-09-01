@@ -1,11 +1,5 @@
 <?php
 
-	
-//TODO! Add the test functions to this class as well as the calculate function
-// The functions will get the account object passed to them
-
-
-
 //----------------------------------------------------------------------------//
 // Customer_Status
 //----------------------------------------------------------------------------//
@@ -27,7 +21,7 @@ class Customer_Status
 	private $precedence					= NULL;
 	private $test						= NULL;
 	private $cssClass					= NULL;
-	private $arrActionDescriptions		= NULL;
+	private $_arrActionDescriptions		= NULL;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -167,7 +161,7 @@ class Customer_Status
 	 * 
 	 * Returns the action description that the user should follow when dealing with a customer of this Customer Status
 	 *
-	 * @param		int		$intUserId		Optional. user_role_id of the user dealing with the customer
+	 * @param		int		$intUserRole		Optional. user_role_id of the user dealing with the customer
 	 * @return		string	
 	 * @method
 	 */
@@ -178,26 +172,26 @@ class Customer_Status
 			// Return the default action description
 			return $this->defaultActionDescription;
 		}
-		if (!is_array($this->arrActionDescriptions))
+		if (!is_array($this->_arrActionDescriptions))
 		{
 			// Load the actions in from the database
-			$selActions = new StatementSelect("customer_status_action", array("role_id", "description"), "customer_status_id = <StatusId>");
+			$selActions = new StatementSelect("customer_status_action", array("user_role_id", "description"), "customer_status_id = <StatusId>");
 			if (($outcome = $selActions->Execute(array("StatusId" => $this->id))) === FALSE)
 			{
 				throw new Exception("Failed to retrieve User Actions for Customer Status {$this->name} : ". $selActions->Error());
 			}
 			
-			$this->arrActionDescriptions = array();
+			$this->_arrActionDescriptions = array();
 			while ($arrAction = $selActions->Fetch())
 			{
-				$this->arrActionDescriptions[$arrAction['role_id']] = $arrAction['description'];
+				$this->_arrActionDescriptions[$arrAction['user_role_id']] = $arrAction['description'];
 			}
 		}
 		
-		if (array_key_exists($intUserRole, $this->arrActionDescriptions))
+		if (array_key_exists($intUserRole, $this->_arrActionDescriptions))
 		{
 			// Found it
-			return $this->arrActionDescriptions[$intUserRole];
+			return $this->_arrActionDescriptions[$intUserRole];
 		}
 		else
 		{
@@ -248,6 +242,11 @@ class Customer_Status
 	 */
 	public function __get($strName)
 	{
+		if ($strName[0] === '_')
+		{
+			// Don't allow access to data attributes that start with '_'
+			return NULL;
+		}
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
 			return $this->{$strName};

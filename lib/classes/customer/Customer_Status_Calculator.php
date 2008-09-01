@@ -14,9 +14,6 @@
  */
 class Customer_Status_Calculator
 {
-	// An invoice with a balance less than or equal to this figure, will be considered paid
-	const INVOICE_PAID_BALANCE_LIMIT = 0.01;
-	
 	// Returns array of account ids for all accounts that are eligible for having a customer status calculated
 	public static function getEligibleAccounts($intInvoiceRun)
 	{
@@ -109,23 +106,7 @@ class Customer_Status_Calculator
 			return FALSE;
 		}
 		
-		// Work out if the invoice has been paid
-		if ($objAccount->invoiceId === NULL)
-		{
-			// The account doesn't have an invoice, for this invoice run
-			$bolInvoicePaid = NULL;
-		}
-		elseif ($objAccount->invoiceSettledOn != NULL || $objAccount->invoiceBalance <= self::INVOICE_PAID_BALANCE_LIMIT)
-		{
-			// The invoice has been paid (if invoice balance <= 0.01 then it is considered to have been paid)
-			$bolInvoicePaid = TRUE;
-		}
-		else
-		{
-			$bolInvoicePaid = FALSE;
-		}
-
-		return Customer_Status_Assignment::declareAssignment($objAccount->accountId, $objAccount->invoiceRunId, $intCustomerStatus, $bolInvoicePaid, $bolGetAsObject);
+		return Customer_Status_Assignment::declareAssignment($objAccount->accountId, $objAccount->invoiceRunId, $intCustomerStatus, $bolGetAsObject);
 	}
 	
 	

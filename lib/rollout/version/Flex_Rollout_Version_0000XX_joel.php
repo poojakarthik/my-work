@@ -3,11 +3,13 @@
 /**
  * Version XX (ex-ex) of database update.
  * This version: -
- *	1:	Adds Account.tio_reference_number field
- *	2:	Adds customer_status table
- *	3:	Populates the customer_status table
- *	4:	Adds customer_status_action table
- *	5:	Adds account_customer_status_history table
+ *	1:	Adds customer_status table
+ *	2:	Populates the customer_status table
+ *	3:	Adds customer_status_action table
+ *	4:	Adds customer_status_history table
+ *	5:	Adds the user_role table
+ *	6:	Populates the user_role table
+ *	7:	Adds the user_role_id column to the Employee table (FK into user_role table)
  */
 
 class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
@@ -19,15 +21,7 @@ class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
 		$qryQuery	= new Query(FLEX_DATABASE_CONNECTION_ADMIN);
 		$dbaDB		= DataAccess::getDataAccess(FLEX_DATABASE_CONNECTION_ADMIN);
 		
-		// 1:	Add Account.tio_reference_number field
-		$strSQL = "ALTER TABLE `Account` ADD `tio_reference_number` VARCHAR(150) NULL COMMENT 'reference number when dealing with the T.I.O.' AFTER `automatic_barring_datetime`;";
-		if (!$qryQuery->Execute($strSQL))
-		{
-			throw new Exception(__CLASS__ . ' Failed to add Account.tio_reference_number field. ' . $qryQuery->Error());
-		}
-		$this->rollbackSQL[] = "ALTER TABLE Account DROP tio_reference_number;";
-		
-		// 2:	Add customer_status table
+		// 1:	Add customer_status table
 		$strSQL = "CREATE TABLE customer_status
 					(
 						id BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY COMMENT 'Unique Id for this Customer Status',
@@ -43,7 +37,7 @@ class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status";
 		
-		// 3:	Populate the customer_status table
+		// 2:	Populate the customer_status table
 		$strSQL = "INSERT INTO customer_status (id, name, description, default_action_description, precedence, test) VALUES
 					(1, 'L', 'Lost Customer (all services lost)', 'Collect any outstanding monies and attempt win back.', 1, 'LostCustomer'),
 					(2, 'J', 'T.I.O issue pending', 'This account cannot be credit managed or barred.  Handled by Customer Service Manager only.', 2, 'AccountWithTIO'),
@@ -63,12 +57,12 @@ class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DELETE FROM customer_status WHERE id IN (1,2,3,4,5,6,7,8,9,10,11,12)";
 
-		// 4:	Add customer_status_action table
+		// 3:	Add customer_status_action table
 		$strSQL = "CREATE TABLE customer_status_action
 					(
 						id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id',
 						customer_status_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK customer_status table',
-						role_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK role table',
+						user_role_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK user_role table',
 						description VARCHAR(1000) NOT NULL COMMENT 'description of the required action that the employee must take when of this role/customer_status'
 					) ENGINE = innodb COMMENT = 'Defines the action to be taken by a user, for a customer of a given customer status';";
 		if (!$qryQuery->Execute($strSQL))
@@ -77,22 +71,59 @@ class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status_action";
 
-		// 5:	Add account_customer_status_history table
+		// 4:	Add customer_status_history table
 		$strSQL = "CREATE TABLE customer_status_history
 					(
 						id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id',
 						account_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK Account table',
 						invoice_run_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK InvoiceRun table',
 						last_updated DATETIME NOT NULL COMMENT 'time at which the status was last calculated',
-						customer_status_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK customer_status table',
-						invoice_paid TINYINT(1) UNSIGNED NULL COMMENT 'Boolean value defining if the invoice has been paid or not (0 = not paid, 1 = paid, NULL = Account didn''t have an invoice in the InvoiceRun)'
+						customer_status_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK customer_status table'
 					) ENGINE = innodb COMMENT = 'Defines most recently calculated customer status for a given invoice run/account';";
 		if (!$qryQuery->Execute($strSQL))
 		{
-			throw new Exception(__CLASS__ . ' Failed to create account_customer_status_history table. ' . $qryQuery->Error());
+			throw new Exception(__CLASS__ . ' Failed to create customer_status_history table. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DROP TABLE IF EXISTS account_customer_status_history";
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS customer_status_history";
 
+		// 5:	Add the user_role table
+		$strSQL = "CREATE TABLE user_role
+					(
+						id BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY COMMENT 'Unique Id for this user role',
+						name VARCHAR(255) NOT NULL COMMENT 'name of the user role',
+						description VARCHAR(255) NOT NULL COMMENT 'description of the user role',
+						const_name VARCHAR(255) NOT NULL COMMENT 'constant name'
+					) ENGINE = innodb COMMENT = 'Defines the various User Roles';";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to create user_role table. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS user_role";
+
+		// 6:	Populate the user_role table
+		$strSQL = "INSERT INTO user_role (id, name, description, const_name) VALUES
+					(1, 'Flex Admin', 'Flex System Administrator', 'USER_ROLE_FLEX_ADMIN'),
+					(2, 'Manager', 'Manager', 'USER_ROLE_MANAGER'),
+					(3, 'Team Leader', 'Team Leader', 'USER_ROLE_TEAM_LEADER'),
+					(4, 'Customer Service Representitive', 'Customer Service Representitive', 'USER_ROLE_CUSTOMER_SERVICE_REPRESENTITIVE'),
+					(5, 'Credit Control Manager', 'Credit Control Manager', 'USER_ROLE_CREDIT_CONTROL_MANAGER'),
+					(6, 'Sales', 'Sales', 'USER_ROLE_SALES'),
+					(7, 'Admin Manager', 'Admin Manager', 'USER_ROLE_ADMIN_MANAGER'),
+					(8, 'Adminion', 'Admin Minion', 'USER_ROLE_ADMINION'),
+					(9, 'Accounts', 'Accounts', 'USER_ROLE_ACCOUNTS');";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to populate the user_role table. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "DELETE FROM user_role WHERE id IN (1,2,3,4,5,6,7,8,9)";
+
+		// 7:	Add the user_role_id column to the Employee table (FK into user_role table)
+		$strSQL = "ALTER TABLE Employee ADD user_role_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK into user_role table, defining the role of the employee' AFTER Archived;";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to add Employee.user_role_id field. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "ALTER TABLE Employee DROP user_role_id;";
 
 	}
 	

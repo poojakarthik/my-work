@@ -204,7 +204,6 @@ final class Flex
 		}
 
 		self::requireOnce(
-			'flex.modules.php',
 			'flex.cfg.php',
 			'lib/framework/functions.php');
 

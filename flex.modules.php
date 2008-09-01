@@ -1,5 +1,0 @@
-<?php
-
-define('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS', TRUE);
-
-?>

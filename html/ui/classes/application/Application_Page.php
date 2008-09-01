@@ -140,6 +140,7 @@ class Application_Page extends Page
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
 		$strFrameworkDir = Flex::frameworkUrlBase();
+		
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
 		
 		//echo "\t\t<script type='text/javascript' src='javascript/ext.js' ></script>\n";
@@ -156,7 +157,6 @@ class Application_Page extends Page
 
 		// Remove any duplicates from the list
 		$arrJsFiles = array_unique($GLOBALS['*arrJavaScript']);
-
 		foreach($arrJsFiles as $strJsFile)
 		{
 			// Find the relative path of the javascript file

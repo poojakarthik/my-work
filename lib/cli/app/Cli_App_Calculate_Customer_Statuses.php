@@ -21,11 +21,11 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 			$strArgDate			= $arrArgs[self::SWITCH_BILLING_DATE];
 			
 			if	(
-				($intArgDays !== NULL && $intArgInvoiceRunId !== NULL)
-				||
-				($intArgDays !== NULL && $strArgDate !== NULL)
-				||
-				($intArgInvoiceRunId !== NULL && $strArgDate !== NULL)
+					($intArgDays !== NULL && $intArgInvoiceRunId !== NULL)
+					||
+					($intArgDays !== NULL && $strArgDate !== NULL)
+					||
+					($intArgInvoiceRunId !== NULL && $strArgDate !== NULL)
 				)
 			{
 				// you can only choose one

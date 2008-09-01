@@ -29,9 +29,6 @@ class Customer_Status_Assignment
 	// id of the customer status that this object relates to
 	private $customerStatusId			= NULL;
 	
-	// boolean defining whether or not the invoice has been paid (NULL means the account didn't have an invoice in this invoice run) 
-	private $invoicePaid				= NULL;
-	
 	private $_bolNeedsRefresh			= NULL;
 	private $_bolSaved					= NULL;
 	
@@ -67,7 +64,6 @@ class Customer_Status_Assignment
 			$this->_bolSaved = TRUE;
 		}
 	}
-
 	
 	// Used to set the Customer Status property
 	public function setCustomerStatusId($intStatus)
@@ -77,18 +73,6 @@ class Customer_Status_Assignment
 			throw new Exception("Cannot modify Customer_Status_Object because it needs to be refreshed from the database");
 		}
 		$this->customerStatusId = $intStatus;
-		$this->_bolSaved = FALSE;
-	}
-	
-	// Used to set the InvoicePaid property
-	// Valid values for $mixInvoicePaid are NULL, TRUE and FALSE 
-	public function setInvoicePaid($mixInvoicePaid)
-	{
-		if ($this->_bolNeedsRefresh)
-		{
-			throw new Exception("Cannot modify Customer_Status_Object because it needs to be refreshed from the database");
-		}
-		$this->invoicePaid = $mixInvoicePaid;
 		$this->_bolSaved = FALSE;
 	}
 	
@@ -163,7 +147,7 @@ class Customer_Status_Assignment
 	// throws an exception on failure
 	// If $bolGetAsObject == FALSE then returns the id of the customer_status_record
 	// If $bolGetAsObject == TRUE then returns a Customer_Status_Assignment object defining the Customer Status Assignment
-	public static function declareAssignment($intAccountId, $intInvoiceRunId, $intCustomerStatusId, $bolInvoicePaid, $bolGetAsObject=FALSE)
+	public static function declareAssignment($intAccountId, $intInvoiceRunId, $intCustomerStatusId, $bolGetAsObject=FALSE)
 	{
 		$objAssignment = self::getForAccountInvoiceRun($intAccountId, $intInvoiceRunId);
 		
@@ -176,7 +160,6 @@ class Customer_Status_Assignment
 		}
 		
 		$objAssignment->setCustomerStatusId($intCustomerStatusId);
-		$objAssignment->setInvoicePaid($bolInvoicePaid);
 
 		$objAssignment->save();
 		
@@ -330,8 +313,7 @@ class Customer_Status_Assignment
 						"account_id",
 						"invoice_run_id",
 						"last_updated",
-						"customer_status_id",
-						"invoice_paid"
+						"customer_status_id"
 					);
 	}
 
