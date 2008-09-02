@@ -153,7 +153,7 @@ function VixenHighlightClass()
 			tblTarget 	= Vixen.table[strTable];
 			// bolSkip = FALSE;
 			// check for skip table
-			for (intTable in arrSkipTables)
+			for (intTable=0; intTable < arrSkipTables.length; intTable++)
 			{
 				if (arrSkipTables[intTable] == strTable)
 				{
@@ -177,12 +177,12 @@ function VixenHighlightClass()
 			Vixen.Slide.CollapseAll(strTable);
 		
 			// for each row
-			for (intRow in tblTarget.row)
+			for (intRow=0; intRow < tblTarget.row.length; intRow++)
 			{
 				objRow = tblTarget.row[intRow];
 				
 				// for each index
-				for (intIndex in arrIndexes)
+				for (intIndex=0; intIndex < arrIndexes.length; intIndex++)
 				{
 					for (strIndex in arrIndexes[intIndex])
 					{
@@ -205,7 +205,7 @@ function VixenHighlightClass()
 							{					
 								for (intRowIndex in objRow.index[strIndex])
 								{
-									for (intIndexEntry in arrIndexes[intIndex][strIndex])
+									for (intIndexEntry=0; intIndexEntry < arrIndexes[intIndex][strIndex].length; intIndexEntry++)
 									{
 										if (objRow.index[strIndex][intRowIndex] == arrIndexes[intIndex][strIndex][intIndexEntry])
 										{
