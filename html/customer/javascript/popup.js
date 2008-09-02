@@ -276,7 +276,7 @@ function VixenPopupClass()
 		
 		// Bring the popup to the front
 		//  check the zindex in CSS, might need to be increased somewhat
-		elmPopup.style.zIndex = ++dragObj.zIndex;
+		elmPopup.style.zIndex = 50 + (++dragObj.zIndex);
 
 		// Set the size of the popup
 		switch (strSize.toLowerCase())
@@ -870,7 +870,7 @@ function VixenPopupClass()
 		
 		// Bring the splash to the front
 		//  check the zindex in CSS, might need to be increased somewhat
-		elmPopup.style.zIndex = ++dragObj.zIndex;
+		elmPopup.style.zIndex = 50 + (++dragObj.zIndex);
 
 		// Set the size of the splash
 		switch (strSize)
