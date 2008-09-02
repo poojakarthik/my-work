@@ -315,6 +315,10 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			echo "</div>";
 			DBO()->Rate->StdMinCharge->RenderInput(CONTEXT_DEFAULT, TRUE);
 			DBO()->Rate->StdFlagfall->RenderInput(CONTEXT_DEFAULT, TRUE);
+			
+			// HACK! HACK! HACK! I'm doing this so it truncates the float to 2 decimal places.  All other properties are "Decimals", and don't have this problem
+			DBO()->Rate->discount_percentage = OutputMask()->FormatFloat(DBO()->Rate->discount_percentage->Value, 2, 2);
+						
 			DBO()->Rate->discount_percentage->RenderInput(CONTEXT_DEFAULT);
 			echo "</div>\n"; // PassThrough
 

@@ -338,7 +338,7 @@ class Validation
 	 */
 	static function UnsignedFloat($mixValue)
 	{
-		if ((float)$mixValue > 0 && (string)(float)$mixValue == (string)$mixValue)
+		if ((float)$mixValue >= 0 && (string)(float)$mixValue == (string)$mixValue)
 		{
 			return TRUE;
 		}

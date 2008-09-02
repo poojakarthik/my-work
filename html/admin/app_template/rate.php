@@ -237,7 +237,6 @@ class AppTemplateRate extends ApplicationTemplate
 		DBO()->Rate->ExsMarkup				= ltrim(DBO()->Rate->ExsMarkup->Value, '$');
 		DBO()->Rate->StdFlagfall			= ltrim(DBO()->Rate->StdFlagfall->Value, '$');
 		DBO()->Rate->StdMinCharge			= ltrim(DBO()->Rate->StdMinCharge->Value, '$');
-		DBO()->Rate->discount_percentage	= ltrim(DBO()->Rate->discount_percentage->Value, '$');
 	
 		// Test initial validation of fields
 		if (DBO()->Rate->IsInvalid())
