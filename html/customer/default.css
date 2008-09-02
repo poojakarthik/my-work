@@ -238,9 +238,11 @@ textarea.invalid {
 }
 .customer-standard-table-style-menu-options-title
 {
-	
 	font-size:	12px;
-	width:		367px;
+	/* for firefox compatibility. */
+	width:		367px !important;
+	/* for ie6 compatibility. */
+	width:		375px;
 	text-indent: 10; 
 	color:	[customer_breadcrumb_menu_link_color];
 	background-repeat:		repeat-x;
@@ -333,6 +335,7 @@ div#credit-card-payment-panel
 	font-weight: bold;
 	font-size: 12px;
 	font: arial;
+	width: 442;
 }
 
 div#credit-card-payment-panel h1
@@ -357,7 +360,11 @@ div.dynamically-loaded-panel-title
 	text-align	: left;
 	padding:	3px;
 	margin-left: 7;
-	width: 442px;
+	margin-bottom:				7px;
+	/* for firefox compatibility. */
+	width: 439px !important; 
+	/* for ie6 compatibility. */
+	width: 447px;
 }
 /* Title end */
 
@@ -367,7 +374,7 @@ div.dynamically-loaded-panel-footer
 	background-color:	#FFFFFF;
 	text-align	: right;
 	padding:			3px;
-	width: 442px;
+	width: 447px;
 	height: 20px;
 	margin-left: 7;
 	border:				solid 1px #FFFFFF;
@@ -378,12 +385,13 @@ table.reflex
 {
 	font-size:			12px;
 	font:				verdana;
-	margin:				7px;
-	padding:			10px;
+	margin-left: 7;
+	margin-bottom:				7px;
+	padding:			3px;
 	border:				solid 1px #D1D1D1;
 	background-color:	#f9f9f9;
 	position:			relative;
-	width: 450px;
+	width:447px;
 	clear: both;
 }
 input.required, 

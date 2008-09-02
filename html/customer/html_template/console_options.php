@@ -93,20 +93,8 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		// EditAccountDetails link
 		$strEditAccountDetails = Href()->EditAccountDetails(DBO()->Account->Id->Value);
 		$strEditAccountDetailsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strEditAccountDetails' >&nbsp;&nbsp;Edit Account Details</a></span>";
-
-
-		// echo "<h2 class='Options'>Options</h2>\n"; // original Option Title.
-
-		// this wont work in IE6 without displaying a space after it, reason: known only by IE6... 
-		// echo "<div class='customer-standard-table-style-menu-options-title'>Options</div>\n";
-		// working variation:
-		echo "
-		<TABLE background=\"./img/template/menu-options-bg.gif\" style=\"font-size: 12px; width: 375px; text-indent: 10; color: #d3d4d4; border: solid 1px #D1D1D1; margin-bottom: 7; font-weight: bold;\">
-		<TR>
-			<TD>Options</TD>
-		</TR>
-		</TABLE>";
-
+ 
+		echo "<div class='customer-standard-table-style-menu-options-title'>Options</div>\n";
 		echo "<table class=\"customer-standard-table-style-menu-options\">\n";
 		
 		if ($bolCC)
