@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000047 extends Flex_Rollout_Version
 						description VARCHAR(1024) NOT NULL COMMENT 'description',
 						const_name VARCHAR(1024) NOT NULL COMMENT 'constant name',
 						active TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'boolean value (0 = module is turned off, 1 = module is turned on)'
-					) ENGINE = innodb COMMENT = 'Defines the flex modules and whether or not they are being used by this instance of flex';";
+					) ENGINE = innodb COMMENT = 'Defines flex modules and whether they are to be used by flex';";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to create the flex_module table. ' . $qryQuery->Error());
