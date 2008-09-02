@@ -134,7 +134,9 @@ abstract class ModuleService
 		
 		$strWhere	= "	Account = (SELECT Account FROM Service WHERE Id = <ServiceId>)
 						AND
-						FNN = (SELECT FNN FROM Service WHERE Id = <ServiceId>)";
+						FNN = (SELECT FNN FROM Service WHERE Id = <ServiceId>)
+						AND
+						(ClosedOn IS NULL OR (ClosedOn >= CreatedOn))";
 		$arrWhere	= Array("ServiceId" => $intService);
 		
 		$selServices	= new StatementSelect("Service", "*", $strWhere, "Id DESC");
