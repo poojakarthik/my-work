@@ -667,7 +667,7 @@ class Credit_Card_Payment
 		$disclaimer = str_replace(array('"', "\n", "\r"), array('\\"', '\\n', ''), $params[1]->directDebitDisclaimer);
 
 		$panel .= "
-		<script><!--
+		<script type=\"text/javascript\"><!--
 			function creditCardPaymentOnLoad()
 			{\n" . (Flex::isCustomerSession() ? ("\t\t\t\tCreditCardPayment.directDebitTermsAndConditions = \"$disclaimer\"") : "") . "
 				new CreditCardPaymentPanel(".$params[0].", \"$targetContainerId\");

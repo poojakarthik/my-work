@@ -89,7 +89,7 @@ if(!$Debug_Use_Old_Way)
 	}
 
 
-	$resHandle = fopen("default.css", "rb");
+	$resHandle = fopen("css/default.css", "rb");
 	$customer_css = stream_get_contents($resHandle);
 	fclose($resHandle);
 
@@ -112,7 +112,7 @@ if($Debug_Use_Old_Way)
 {
 
 	// Old way of just using one css file for all users.
-	require_once('default.css');
+	require_once('css/default.css');
 
 }
 ?>

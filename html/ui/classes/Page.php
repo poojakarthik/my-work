@@ -513,7 +513,7 @@ class Page
 		header( 'Cache-Control: post-check=0, pre-check=0', false );
 		header( 'Pragma: no-cache' );
 		
-		echo "<html><head>
+		echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html><head>
 		<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\">
 		<META HTTP-EQUIV=\"Expires\" CONTENT=\"-1\">
 		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";

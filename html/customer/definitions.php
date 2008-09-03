@@ -35,7 +35,7 @@
 $strVixenBaseDir = GetVixenBase();
 Define('TEMPLATE_BASE_DIR', 	$strVixenBaseDir . "html/customer/");
 Define('MODULE_BASE_DIR', 		$strVixenBaseDir . "html/customer/");
-Define('MODULE_DEFAULT_CSS', 	$strVixenBaseDir . "html/customer/default.css");
+Define('MODULE_DEFAULT_CSS', 	$strVixenBaseDir . "html/customer/css/default.css");
 Define('LOCAL_BASE_DIR', 		$strVixenBaseDir . "html/customer/");
 Define('FRAMEWORK_BASE_DIR', 	$strVixenBaseDir . "html/ui/");
 

@@ -16,7 +16,7 @@
 		$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 	}
 	
-	$strMd5 = md5_file(TEMPLATE_BASE_DIR."default.css");
+	$strMd5 = md5_file(TEMPLATE_BASE_DIR."css/default.css");
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml"><head><title>Flex Systems Login</title>
