@@ -251,7 +251,7 @@
 			<br/>
 			<TABLE class=\"customer-standard-table-style\">
 			<TR>
-				<TD align=right><INPUT TYPE=\"submit\" VALUE=\"Update Details\"></TD>
+				<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = '../Home'\"> <INPUT TYPE=\"submit\" VALUE=\"Update Details\"></TD>
 			</TR>
 			</TABLE>
 			";

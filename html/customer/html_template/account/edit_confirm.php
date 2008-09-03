@@ -210,7 +210,7 @@
 
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
-			<TD align=right><input type=\"submit\" value=\"Confirm Changes\"></TD>
+			<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = '../Home'\"> <input type=\"submit\" value=\"Confirm Changes\"></TD>
 		</TR>
 		</TABLE>
 		</form>
