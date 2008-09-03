@@ -334,7 +334,7 @@ function dragStart(event, id) {
   dragObj.elNode.limits.drag_bottom = Math.max(document.body.offsetHeight, window.innerHeight) - popup_height;
   
   // Update element's z-index.
-  dragObj.elNode.style.zIndex = ++dragObj.zIndex;
+  //dragObj.elNode.style.zIndex = ++dragObj.zIndex;
   
   // Capture mousemove and mouseup events on the page.
 

@@ -194,12 +194,12 @@ function VixenPopupClass()
 				
 				intScroll = document.body.scrollTop;
 				//intScrollLeft = document.body.scrollLeft;
-                //document.body.style.overflow = "hidden";
-               	//document.body.scrollTop = intScroll;
+				//document.body.style.overflow = "hidden";
+				//document.body.scrollTop = intScroll;
 				
 
 				
-                elmOverlay.style.height	= Math.max(document.body.offsetHeight, window.innerHeight);
+				elmOverlay.style.height	= Math.max(document.body.offsetHeight, window.innerHeight);
 				
 				// all of these return width of browser, with or without scrollbars
 				// document.body.offsetWidth does not return the width of the document (like it does with the height)
@@ -227,7 +227,7 @@ function VixenPopupClass()
 				// flag this popup as being modal
 				elmPopup.setAttribute("modal", "modal");
 				
-                break;
+				break;
 			}
 			case "nonmodal":
 			{
@@ -326,14 +326,16 @@ function VixenPopupClass()
 				elmPopup.style.left = '400';
 				elmPopup.style.top = '200';
 		}
-		if (typeof document.addEventListener != 'undefined')
+		//if (typeof document.addEventListener != 'undefined')
 		{
 			// Set the position (centre/pointer/target)
 			if (mixPosition == "centre")
 			{		
 				// center the popup
-				elmPopup.style.left	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
-				elmPopup.style.top	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+				var winWidth = window.innerWidth ? window.innerWidth : document.body.offsetWidth;
+				var winHeight = window.innerHeight ? window.innerHeight : document.body.offsetHeight;
+				elmPopup.style.left	= '' + (((winWidth - elmPopup.offsetWidth) / 2) + document.body.scrollLeft) + 'px';
+				elmPopup.style.top	= '' + (((winHeight - elmPopup.offsetHeight) / 2) + document.body.scrollTop) + 'px';
 			}
 			else if (mixPosition == "[object MouseEvent]")
 			{
