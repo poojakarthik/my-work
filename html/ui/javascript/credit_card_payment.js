@@ -210,6 +210,7 @@ Object.extend(CreditCardPayment.prototype,
 			this.inputCardNumber.type= 'text';
 			this.inputCardNumber.className = 'required';
 			this.inputCardNumber.id = 'cc-input-number';
+			this.inputCardNumber.maxLength = CreditCardType.maxCardNumberLength + 4;
 			this.inputCVV = document.createElement('input');
 			this.inputCVV.id = 'cc-input-cvv';
 			this.inputCVV.type= 'text';
@@ -1086,8 +1087,9 @@ alert(outcome);
 
 		// Check that the card number is a valid card number. If not, highlight as invalid.
 		var bolCardNumberEntered = this.inputCardNumber.value != '';
+		var rubbish = this.inputCardNumber.value.replace(/[0-9 ]+/g, '');
 		var cardNumber = this.inputCardNumber.value.replace(/[^0-9]+/g, '');
-		var bolCardNumberIsValid = !bolCardNumberEntered || (cardNumber.length >= CreditCardType.minCardNumberLength && cardNumber.length <= CreditCardType.maxCardNumberLength);
+		var bolCardNumberIsValid = (rubbish == '') && (!bolCardNumberEntered || (cardNumber.length >= CreditCardType.minCardNumberLength && cardNumber.length <= CreditCardType.maxCardNumberLength));
 		if (bolCardNumberEntered && bolCardNumberIsValid)
 		{
 			validateType = CreditCardPayment.getCCType(cardNumber);
@@ -1118,7 +1120,7 @@ alert(outcome);
 		}
 		else if (bolCardNumberEntered)
 		{
-			validateType = CreditCardPayment.getCCType(cardNumber);
+			validateType = (rubbish == '') && CreditCardPayment.getCCType(cardNumber);
 			if (validateType)
 			{
 				this.setCardType(validateType, skipInitialTidy);
@@ -1129,6 +1131,10 @@ alert(outcome);
 					strLens += ((i == 0) ? '' : (i == (l-1) ? ' or ' : ', ')) + validateType['valid_lengths'][i];
 				}
 				strNumberValidityError = 'Card numbers for the selected Credit Card Type are ' + strLens + ' digits long.';
+			}
+			else if (rubbish != '')
+			{
+				strNumberValidityError = 'The Card Number can only contain numbers and spaces.';
 			}
 			else if (cardNumber.length >= CreditCardType.minCardNumberLength)
 			{
