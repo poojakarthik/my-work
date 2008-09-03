@@ -191,7 +191,9 @@ function VixenServiceMovementClass()
 	this.FindAccount = function()
 	{
 		// Validate the AccountId
-		if (!this.objInputs.AccountId.Validate("PositiveInteger"))
+		//if (!this.objInputs.AccountId.Validate("PositiveInteger"))
+		// This is a work around because Element.prototype.Validate doesn't work if prototype.js has been included
+		if (!$Validate("PositiveInteger", this.objInputs.AccountId.value))
 		{
 			$Alert("ERROR: The Account Id is invalid");
 			return false;
@@ -308,7 +310,9 @@ function VixenServiceMovementClass()
 			return true;
 		}
 
-		if (!this.objInputs.EffectiveOnDate.Validate("ShortDate"))
+		//if (!this.objInputs.EffectiveOnDate.Validate("ShortDate"))
+		// This is a work around because Element.prototype.Validate doesn't work if prototype.js has been included
+		if (!$Validate("ShortDate", this.objInputs.EffectiveOnDate.value))
 		{
 			// The date is invalid
 			$Alert("ERROR: EffectiveOn date is invalid");
