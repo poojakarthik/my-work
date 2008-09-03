@@ -422,9 +422,9 @@ div#VixenPopupContent__VixenAlertBox
 	
 }
 div.reflex-popup-overlay {
-	position			: absolute;
-	bottom				: 0em;
-	right				: 0em;
+	position			: fixed;
+	top					: 0em;
+	left				: 0em;
 	width				: 100%;
 	height				: 100%;
 	

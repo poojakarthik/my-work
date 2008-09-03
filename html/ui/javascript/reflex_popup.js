@@ -16,6 +16,10 @@ Object.extend(Reflex_Popup, {
 		if (Reflex_Popup.overlay.childNodes.length == 1)
 		{
 			document.body.appendChild(Reflex_Popup.overlay);
+			if (document.all)
+			{
+				Reflex_Popup.fakeFixedPosition();
+			}
 		}
 		// We can now add the popup container to the overlay
 		Reflex_Popup.overlay.appendChild(popup.container);
@@ -49,12 +53,33 @@ Object.extend(Reflex_Popup, {
 		// Centre the popup
 		childNode.style.left	= ((Reflex_Popup.overlay.clientWidth - childNode.clientWidth)/2)+"px";
 		childNode.style.top		= ((Reflex_Popup.overlay.clientHeight - childNode.clientHeight)/2)+"px";
+	},
+
+
+	initFakeFixedPosition: function()
+	{
+		Reflex_Popup.overlay.style.position = 'absolute';
+		Event.observe(window, 'resize', Reflex_Popup.fakeFixedPosition);
+		Event.observe(window, 'scroll', Reflex_Popup.fakeFixedPosition);
+	},
+	fakeFixedPosition: function()
+	{
+		if (Reflex_Popup.overlay)
+		{
+			Reflex_Popup.overlay.style.top = '' + document.body.scrollTop + 'px';
+			Reflex_Popup.overlay.style.left = '' + document.body.scrollLeft + 'px';
+		}
 	}
 });
 
 Reflex_Popup.overlay.className = 'reflex-popup-overlay';
 Reflex_Popup.opaquePane.className = 'reflex-popup-opaque';
 Reflex_Popup.overlay.appendChild(Reflex_Popup.opaquePane);
+
+if (document.all)
+{
+	Event.observe(window, 'load', Reflex_Popup.initFakeFixedPosition);
+}
 
 Object.extend(Reflex_Popup.prototype, {
 
