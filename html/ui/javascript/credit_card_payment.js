@@ -809,6 +809,8 @@ alert(outcome);
 		terms.style.border = "1px solid black";
 		terms.style.background = '#fff';
 		termsText.style.color = '#000';
+		termsText.style.margin = '0';
+		termsText.style.padding = '2px';
 
 		//alert(CreditCardPayment.directDebitTermsAndConditions);
 		var termsAndConditions = CreditCardPayment.directDebitTermsAndConditions.replace(/\t{1,1}/g, '\u00a0\u00a0\u00a0\u00a0').split("\n");
