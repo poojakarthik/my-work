@@ -337,7 +337,7 @@ Object.extend(CreditCardPayment.prototype,
 			this.appendErrorHelp(tr.cells[1], this.inputCardNumber);
 
 			tr = table.insertRow(-1);
-			var span = document.createElement(span);
+			var span = document.createElement('span');
 			span.appendChild(document.createTextNode('CVV:'));
 			
 			var tooltip = document.createElement('div');
@@ -862,7 +862,7 @@ alert(outcome);
 
 	showCvvToolTip: function(event)
 	{
-		if (!this.tooltip.parentNode) this.tooltipParent.appendChild(this.tooltip);
+		this.tooltipParent.appendChild(this.tooltip);
 		this.tooltip.style.display = 'block';
 		var element = Event.element(event = event ? event : document.event);
 		var position = Element.cumulativeOffset(element);
@@ -1266,6 +1266,7 @@ alert(outcome);
 		element.className = (!entered || valid) ? (required ? (entered ? 'valid' : 'required') : (entered ? 'valid' : '')) : 'invalid';
 		element.setAttribute('validityError', validityError);
 		element.parentNode.setAttribute('contains-invalid-input', (entered && !valid) ? 'true' : 'false');
+		((entered && !valid) ? Element.addClassName : Element.removeClassName)(element.parentNode, 'contains-invalid-input');
 	},
 
 	getSelectedCardType: function()
