@@ -36,7 +36,7 @@ class Credit_Card_Payment
 		return (!defined('CREDIT_CARD_PAYMENT_TEST_MODE') || CREDIT_CARD_PAYMENT_TEST_MODE !== FALSE);
 	}
 
-	public static function makePayment($intAccountId, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, &$resultProperties)
+	public static function makePayment($intAccountId, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, $strPassword, &$resultProperties)
 	{
 		// Check that the module is enabled
 		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
@@ -72,6 +72,13 @@ class Credit_Card_Payment
 			{
 				throw new Exception("Invalid user account selected for credit card payment.");
 			}
+
+			// Check that the customer provided a valid password
+			if ($bolDD && !$contact->passwordIsValid($strPassword))
+			{
+				throw new Credit_Card_Payment_Incorrect_Password_Exception();
+			}
+			
 		}
 		else
 		{
@@ -356,7 +363,7 @@ class Credit_Card_Payment
 		$bolCanSendEmail = EmailAddressValid($contact->email);
 		$bolFailedToEmail = FALSE;
 
-		if ($bolCanSendEmail)
+		if ($bolCanSendEmail && !self::isTestMode())
 		{
 			$customerGroup = Customer_Group::getForId($account->customerGroup);
 
@@ -771,6 +778,7 @@ class Credit_Card_Payment
 
 }
 
+class Credit_Card_Payment_Incorrect_Password_Exception extends Exception { function __construct()	{ parent::__construct("The customer password specified was incorrect."); 				} }
 class Credit_Card_Payment_Not_Enabled_Exception 	extends Exception { function __construct()	{ parent::__construct("Credit Card Payments are not enabled in Flex."); 				} }
 class Credit_Card_Payment_Not_Configurred_Exception	extends Exception { function __construct() 	{ parent::__construct("Credit Card Payments have not been configurred in Flex Admin."); } }
 class Credit_Card_Payment_Communication_Exception	extends Exception { }

@@ -142,6 +142,7 @@ Object.extend(CreditCardPayment.prototype,
 	inputName: null,
 	inputAmount: null,
 	inputDD: null,
+	inputPassword: null,
 
 	displayAmount: null,
 	displaySurcharge: null,
@@ -288,6 +289,14 @@ Object.extend(CreditCardPayment.prototype,
 			this.inputDD.type= 'checkbox';
 			this.inputDD.checked = this.inputDD.isChecked = false;
 			this.inputDD.id = 'cc-input-dd';
+			this.inputPassword = document.createElement('input');
+			this.inputPassword.className = 'required';
+			this.inputPassword.type= 'password';
+			this.inputPassword.id = 'cc-input-password';
+			this.acceptTermsCheckbox = document.createElement('input');
+			this.acceptTermsCheckbox.type = 'checkbox';
+			this.acceptTermsCheckbox.id = 'acceptTermsCheckbox';
+			this.acceptTermsCheckbox.isChecked = false;
 
 			this.paymentForm = document.createElement('div');
 			this.errorMessage = document.createElement('p');
@@ -507,7 +516,10 @@ Object.extend(CreditCardPayment.prototype,
 				this.displayAmount.value,
 				this.displaySurcharge.value,
 				this.displayTotal.value,
-				this.inputDD.checked);
+				this.inputDD.checked,
+				this.inputPassword.value);
+		this.acceptTermsCheckbox.isChecked = true;;
+		this.inputPassword.value = '';
 	},
 
 	showProcessing: function()
@@ -554,6 +566,16 @@ Object.extend(CreditCardPayment.prototype,
 			$Alert('Your payment request could not be processed:\n\n' + response['MESSAGE'] + '\n\nPlease check your details and try again.');
 			this.preparePopup();
 			this.displayForm();
+			return false;
+		}
+
+		// PASSWORD = the password entered is invalid
+		if (outcome == 'PASSWORD')
+		{
+			// Need to display the confirmation message and change buttons to OK
+			this.preparePopup();
+			this.termsAndConditions();
+			$Alert('The password you entered was incorrect.\n\nPlease correct and try again.');
 			return false;
 		}
 
@@ -761,6 +783,8 @@ alert(outcome);
 
 	termsAndConditions: function()
 	{
+		this.inputPassword.value = '';
+
 		if (this.termsPopup != null) return;
 		// Create a terms and conditions popup
 		this.termsPopup = new Reflex_Popup(32);
@@ -797,14 +821,20 @@ alert(outcome);
 			termsText.appendChild(document.createTextNode(termsAndConditions[i]));
 		}
 
-		this.acceptTermsCheckbox = document.createElement('input');
-		this.acceptTermsCheckbox.type = 'checkbox';
-		this.acceptTermsCheckbox.id = 'acceptTermsCheckbox';
 		var lab = document.createElement('label');
 		panel.appendChild(lab);
 		lab.appendChild(this.acceptTermsCheckbox);
 		lab.setAttribute('for', 'acceptTermsCheckbox');
 		lab.appendChild(document.createTextNode('I have read, understood and agree to be bound by the Terms and Conditions shown above.'));
+
+		panel.appendChild(document.createElement('br'));
+		var table = document.createElement('table');
+		table.className = 'reflex';
+		panel.appendChild(table);
+
+		tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Please enter your password:'));
+		tr.insertCell(-1).appendChild(this.inputPassword);
 
 		var buttonCancel = document.createElement('input');
 		var buttonSubmit = document.createElement('input');
@@ -820,6 +850,8 @@ alert(outcome);
 		this.termsPopup.setFooterButtons([buttonCancel, buttonSubmit]);
 
 		this.termsPopup.display();
+
+		this.acceptTermsCheckbox.checked = this.acceptTermsCheckbox.isChecked;
 	},
 
 	acceptTermsAndConditions: function()
@@ -830,6 +862,12 @@ alert(outcome);
 			$Alert("Please tick the checkbox to confirm that you have read, understood and agree be bound by these Terms and Conditions.", null, null, null, 'Direct Debit Setup');
 			return false;
 		}
+		if (this.inputPassword.value == '')
+		{
+			//alert("Please tick the checkbox to confirm that you have read, understood and agree be bound by these Terms and Conditions.");
+			$Alert("Please enter your password.", null, null, null, 'Direct Debit Setup');
+			return false;
+		}
 		this.termsPopup.hide();
 		this.termsPopup = null;
 		this.submitPayment(true, true);
@@ -837,6 +875,7 @@ alert(outcome);
 
 	rejectTermsAndConditions: function()
 	{
+		this.acceptTermsCheckbox.checked = this.acceptTermsCheckbox.isChecked = false;
 		this.termsPopup.hide();
 		this.termsPopup = null;
 		this.cancelSubmit();

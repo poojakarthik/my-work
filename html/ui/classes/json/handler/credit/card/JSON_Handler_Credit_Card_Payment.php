@@ -3,7 +3,7 @@
 class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 {
 
-	public function makePayment($intAccountNumber, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD)
+	public function makePayment($intAccountNumber, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, $strPassword)
 	{
 		$response = array();
 		
@@ -11,7 +11,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		{
 			$response['OUTCOME'] = 'FAILED';
 			$response['MESSAGE'] = 'Unknown';
-			if (Credit_Card_Payment::makePayment($intAccountNumber, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, $response))
+			if (Credit_Card_Payment::makePayment($intAccountNumber, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, $strPassword, $response))
 			{
 				$response['OUTCOME'] = 'SUCCESS';
 			}
@@ -29,6 +29,10 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		{
 			// Should send an email to alert us to the fact that payments are failing - there is likely a bug in the UI!!
 			throw $e;
+		}
+		catch (Credit_Card_Payment_Incorrect_Password_Exception $e)
+		{
+			$response['OUTCOME'] = 'PASSWORD';
 		}
 		catch (Credit_Card_Payment_Communication_Exception $e)
 		{
