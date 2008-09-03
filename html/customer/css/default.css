@@ -532,14 +532,18 @@ div.reflex-loading-image p {
 /* GENERIC																  */
 /**************************************************************************/
 
-.processing-credit-card-payment
-{
-		margin:				0px;
-		padding:			5px;
-		border:				solid 1px #D1D1D1;
-		background-color:	#f9f9f9;
-		position:			relative;
-}
+	.processing-credit-card-payment
+	{
+			margin:				0px;
+			padding:			5px;
+			border:				solid 1px #D1D1D1;
+			background-color:	#f9f9f9;
+			position:			relative;
+			/* for firefox compatibility. */
+			width: 442px !important; 
+			/* for ie6 compatibility. */
+			width: 454px;
+	}
 	.GroupedContent
 	{
 		margin:				0px;
