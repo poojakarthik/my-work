@@ -47,6 +47,11 @@ $this->Page->SetName($strPageName);
 $this->Page->SetLayout('3Column_65_35');
 
 // add the Html Objects to their respective columns
+if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS))
+{
+	$this->Page->AddObject(AccountCustomerStatusHistory, COLUMN_TWO);
+}
+
 $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "AccountDetailsDiv");
 $this->Page->AddObject('AccountContactsList', COLUMN_ONE, HTML_CONTEXT_PAGE);
 $this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);

@@ -167,15 +167,21 @@ class Customer_Status
 	 */
 	public function getActionDescription($intUserRole=NULL)
 	{
+		static $selActions;
+		
 		if ($intUserRole === NULL)
 		{
 			// Return the default action description
 			return $this->defaultActionDescription;
 		}
+		
+		if (!isset($selActions))
+		{
+			$selActions = new StatementSelect("customer_status_action", array("user_role_id", "description"), "customer_status_id = <StatusId>");
+		}
 		if (!is_array($this->_arrActionDescriptions))
 		{
 			// Load the actions in from the database
-			$selActions = new StatementSelect("customer_status_action", array("user_role_id", "description"), "customer_status_id = <StatusId>");
 			if (($outcome = $selActions->Execute(array("StatusId" => $this->id))) === FALSE)
 			{
 				throw new Exception("Failed to retrieve User Actions for Customer Status {$this->name} : ". $selActions->Error());

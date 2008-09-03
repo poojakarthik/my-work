@@ -178,11 +178,6 @@ class Flex_Module
 	 */
 	public function __get($strName)
 	{
-		if ($strName[0] === '_')
-		{
-			// Don't allow access to data attributes that start with '_'
-			return NULL;
-		}
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
 			return $this->{$strName};

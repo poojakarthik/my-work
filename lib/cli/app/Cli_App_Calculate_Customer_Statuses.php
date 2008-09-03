@@ -51,6 +51,12 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 			{
 				$strWhere = "BillingDate = '". date("Y-m-d", $strArgDate) ."'";
 			}
+			else
+			{
+				// Neither of -d -i or -b were used
+				throw new Exception("Boundary conditions have not been specified.  Choose one of either -d, -i or -b");
+			}
+			
 			
 			$selInvoiceRuns = new StatementSelect("InvoiceRun", "Id, InvoiceRun, BillingDate", $strWhere, "Id DESC");
 			

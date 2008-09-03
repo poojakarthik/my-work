@@ -10,6 +10,8 @@
  *	5:	Adds the user_role table
  *	6:	Populates the user_role table
  *	7:	Adds the user_role_id column to the Employee table (FK into user_role table)
+ *	8:	Adds INDEX (account_id/invoice_run_id) to the customer_status_history table
+ *	9:	Adds INDEX (invoice_run_id/account) to the automatic_invoice_action_history table
  */
 
 class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
@@ -125,6 +127,21 @@ class Flex_Rollout_Version_0000XX extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "ALTER TABLE Employee DROP user_role_id;";
 
+		// 8:	Add INDEX (account_id/invoice_run_id) to the customer_status_history table
+		$strSQL = "ALTER TABLE `customer_status_history` ADD INDEX `account_id_invoice_run_id` (`account_id`,`invoice_run_id`);";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to add index (account_id/invoice_run_id) to customer_status_history table. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "ALTER TABLE `customer_status_history` DROP INDEX `account_id_invoice_run_id`;";
+		
+ 		// 9:	Add INDEX (invoice_run_id/account) to the automatic_invoice_action_history table
+		$strSQL = "ALTER TABLE `automatic_invoice_action_history` ADD INDEX `invoice_run_id_account` (`invoice_run_id`, `account`);";
+		if (!$qryQuery->Execute($strSQL))
+		{
+			throw new Exception(__CLASS__ . ' Failed to add index (account_id/invoice_run_id) to customer_status_history table. ' . $qryQuery->Error());
+		}
+		$this->rollbackSQL[] = "ALTER TABLE `automatic_invoice_action_history` DROP INDEX `invoice_run_id_account`;";
 	}
 	
 	function rollback()

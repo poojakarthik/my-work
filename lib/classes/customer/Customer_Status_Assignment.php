@@ -181,18 +181,10 @@ class Customer_Status_Assignment
 	// Returns array of Customer_Status_Assignment objects for the specified account
 	// The objects will be ordered in descending order of invoice_run_id
 	// If $intLimit is specified then the most recent $intLimit assignments will be retrieved
+	// IF there are no customer_status_history records for this account, then it will return an empty array
 	public static function getForAccount($intAccountId, $intLimit=NULL)
 	{
-		$arrAssignments = self::getFor("account_id = <AccountId>", array("AccountId"=>$intAccountId), $intLimit);
-		
-		if (is_array($arrAssignments) && count($arrAssignments) == 1)
-		{
-			return $arrAssignments[0];
-		}
-		else
-		{
-			return FALSE;
-		}
+		return self::getFor("account_id = <AccountId>", array("AccountId"=>$intAccountId), $intLimit);
 	}
 
 	// Note that this method doesn't make use of the ::getFor method, because I want to cache the StatementSelect object used
@@ -290,7 +282,7 @@ class Customer_Status_Assignment
 	 */
 	public function getCustomerStatus()
 	{
-		Customer_Status::getForId($this->customerStatusId);
+		return Customer_Status::getForId($this->customerStatusId);
 	}
 
 	//------------------------------------------------------------------------//

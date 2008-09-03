@@ -84,7 +84,7 @@ class Customer_Status_Calculator
 	// This will calculate the status, and then update/insert the appropriate record in the customer_status_history folder AND return the Customer_Status_Assignment object created
 	// returns FALSE if the Account does not satisfy any of the Customer_Statuses
 	// throws exception on error
-	// If $bolGetAsObject == FALSE then returns the id of the customer_status_record
+	// If $bolGetAsObject == FALSE then returns the id of the customer_status_history record which was created/updated
 	// If $bolGetAsObject == TRUE then returns a Customer_Status_Assignment object defining the Customer Status Assignment
 	public static function updateFor($mixAccount, $intInvoiceRunId=NULL, $bolGetAsObject=FALSE)
 	{
@@ -105,7 +105,7 @@ class Customer_Status_Calculator
 			// A CustomerStatus could not be assigned
 			return FALSE;
 		}
-		
+
 		return Customer_Status_Assignment::declareAssignment($objAccount->accountId, $objAccount->invoiceRunId, $intCustomerStatus, $bolGetAsObject);
 	}
 	
