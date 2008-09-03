@@ -334,7 +334,6 @@ div.validation-error-tootltip {
   z-index: 10000;
   padding: 0.4em;
   max-width: 20em;
-  text-align: left;
 }
 
 div#credit-card-payment-panel
@@ -422,9 +421,9 @@ div#VixenPopupContent__VixenAlertBox
 	
 }
 div.reflex-popup-overlay {
-	position			: absolute;
-	bottom				: 0em;
-	right				: 0em;
+	position			: fixed;
+	top					: 0em;
+	left				: 0em;
 	width				: 100%;
 	height				: 100%;
 	
@@ -567,6 +566,7 @@ div.reflex-loading-image p {
 	{
 		font-family:			"Nimbus Sans NL", Tahoma, sans-serif;
 		margin-bottom:			1px;
+		padding-left:			3px;
 		border:					solid 1px #000000;
 	}
 	input[type="checkbox"] {
