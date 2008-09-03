@@ -536,6 +536,7 @@ div.reflex-popup-footer {
 	img
 	{
 		border:					0;
+		behavior: url(iepngfix.htc); 
 	}
 	
 	a:link,
