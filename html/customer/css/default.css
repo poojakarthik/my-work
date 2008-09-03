@@ -318,6 +318,10 @@ td[contains-invalid-input=true] input.validation-error-tootltip-button {
   visibility: visible;
 }
 
+td.contains-invalid-input input.validation-error-tootltip-button {
+  visibility: visible;
+}
+
 div.validation-error-tootltip {
   position: absolute;
   top: 0;
