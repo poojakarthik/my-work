@@ -457,14 +457,22 @@ div.reflex-popup table.reflex {
 div.reflex-popup-title-bar {
 	height				: auto;
 	background-color	: #000000;
-	padding				: 3px;
+	padding				: 1px;
+	margin:	0px;
+	text-align:	left;
+	text-indent:	5px;
+}
+div.reflex-popup-content{
+	text-align:	left;
+	overflow:	visible;
+	margin: 10px;
 }
 
 div.reflex-popup-title {
 	color : #EEEEEE;
 	float : left;
 	width : 79%;
-	
+	margin:	0px;
 }
 
 div.reflex-popup-title-bar-buttons {
@@ -475,7 +483,14 @@ div.reflex-popup-title-bar-buttons {
 div.reflex-popup-content h1 {
 	width: 100%
 }
-
+/* For IE6 */
+#acceptTermsCheckbox
+{
+	border: none;
+	border-collapse: collapse;
+	padding: 0;
+	background-color: #f9f9f9;
+}
 div.reflex-popup-footer {
 	position	: relative;
 	text-align	: right;
@@ -486,7 +501,22 @@ div.reflex-popup-footer {
 	padding-top: 0;
 	padding-bottom: 0.5em;
 }
+input.reflex-button {
+	margin-left: 0.5em;
+}
+div.reflex-loading-image {
+	background-repeat: no-repeat;
+	background-image: url("../img/template/loading.gif");
+	background-position: 50% 50%;
+	margin: auto;
+	display: block;
+	position: default;
+	text-align: center;
+}
 
+div.reflex-loading-image p {
+	text-align: center;
+}
 
 /*********************** End Of Popup stuff ***********************************/
 
@@ -1664,6 +1694,8 @@ span.IncorrectLogin
 		margin:					0;
 		padding-left:			5px;
 		cursor:					default;
+		text-align:	left;
+		text-indent:	5px;
 		
 	}
 	.PopupBoxClose
@@ -1671,7 +1703,8 @@ span.IncorrectLogin
 		float:					right;
 		text-align:				right;
 		height:					14px;
-		padding:				3px;
+		padding:				2px;
+		margin:	5;
 	}
 	
 	.PopupMedium,
