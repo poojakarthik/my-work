@@ -99,7 +99,7 @@
 						}
 						else
 						{
-							echo "<span class='DefaultOutputSpan Default'>&nbsp;</span>";
+							echo "<span class='DefaultOutputSpan Default'><!-- &nbsp; --></span>";
 						}
 					?>
 				</td>

@@ -569,6 +569,7 @@ div.reflex-loading-image p {
 	}
 	input, select
 	{
+		font-size: 8pt;
 		font-family:			"Nimbus Sans NL", Tahoma, sans-serif;
 		margin-bottom:			1px;
 		padding-left:			3px;
@@ -1040,11 +1041,10 @@ span.IncorrectLogin
 
 	.LoginBox 
 	{
-		width:					200px;
+		font-size:				8pt;
 		border:					solid 1px #666666;
 		padding:				3px;
 		font-family:			"Nimbus Sans L", "Tahoma";
-		height:					30px;
 	}
 
 
