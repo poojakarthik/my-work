@@ -326,35 +326,34 @@ function VixenPopupClass()
 				elmPopup.style.left = '400';
 				elmPopup.style.top = '200';
 		}
-		//if (typeof document.addEventListener != 'undefined')
-		{
-			// Set the position (centre/pointer/target)
-			if (mixPosition == "centre")
-			{		
-				// center the popup
-				var winWidth = window.innerWidth ? window.innerWidth : document.body.offsetWidth;
-				var winHeight = window.innerHeight ? window.innerHeight : document.body.offsetHeight;
-				elmPopup.style.left	= '' + (((winWidth - elmPopup.offsetWidth) / 2) + document.body.scrollLeft) + 'px';
-				elmPopup.style.top	= '' + (((winHeight - elmPopup.offsetHeight) / 2) + document.body.scrollTop) + 'px';
-			}
-			else if (mixPosition == "[object MouseEvent]")
-			{
-				// set the popup to the cursor
-				elmPopup.style.left = mixPosition.clientX;
-				elmPopup.style.top = mixPosition.clientY;
-				
-			}
-			else if (typeof(mixPosition) == 'object')
-			{
-				// set the popup to the target
-				elmPopup.style.left = mixPosition.offsetLeft;
-				elmPopup.style.top = mixPosition.offsetTop;
-			}
-			else
-			{
-				// set the popup, well, wherever it wants
-			}
+
+		// Set the position (centre/pointer/target)
+		if (mixPosition == "centre")
+		{		
+			// center the popup
+			var winWidth = window.innerWidth ? window.innerWidth : document.body.offsetWidth;
+			var winHeight = window.innerHeight ? window.innerHeight : document.body.offsetHeight;
+			elmPopup.style.left	= '' + (((winWidth - elmPopup.offsetWidth) / 2) + document.body.scrollLeft) + 'px';
+			elmPopup.style.top	= '' + (((winHeight - elmPopup.offsetHeight) / 2) + document.body.scrollTop) + 'px';
 		}
+		else if (mixPosition == "[object MouseEvent]")
+		{
+			// set the popup to the cursor
+			elmPopup.style.left = mixPosition.clientX;
+			elmPopup.style.top = mixPosition.clientY;
+			
+		}
+		else if (typeof(mixPosition) == 'object')
+		{
+			// set the popup to the target
+			elmPopup.style.left = mixPosition.offsetLeft;
+			elmPopup.style.top = mixPosition.offsetTop;
+		}
+		else
+		{
+			// set the popup, well, wherever it wants
+		}
+
 		// Add the handler for dragging the popup around
 		// if (strModal != "modal")
 		// {
