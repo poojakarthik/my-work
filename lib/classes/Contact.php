@@ -123,6 +123,11 @@ class Contact
 		return $arrValues;
 	} 
 
+	public function passwordIsValid($strPassword)
+	{
+		return $strPassword && sha1($strPassword) == $this->password;
+	}
+
 	public function save()
 	{
 		if ($this->_saved)
