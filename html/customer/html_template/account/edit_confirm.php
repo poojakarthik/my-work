@@ -208,6 +208,17 @@
 		</div>
 		<br/>
 
+		<div class='customer-standard-table-title-style-confirm-details'>Disclaimer</div>
+		<div class='GroupedContent'>
+		<TABLE class=\"customer-standard-table-style\">
+		<TR>
+			<TD>Making changes to your account details may affect the way details  are represented when you receive your bill.
+The contact person allocated will be required to verify their personal contact details when calling into the service centre for account information.</TD>
+		</TR>
+		</TABLE>
+		</div>
+		<br/>
+
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
 			<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = '../Home'\"> <input type=\"submit\" value=\"Confirm Changes\"></TD>
