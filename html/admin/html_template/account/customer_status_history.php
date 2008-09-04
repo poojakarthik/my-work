@@ -129,16 +129,16 @@ class HtmlTemplateAccountCustomerStatusHistory extends HtmlTemplate
 <div class='TinySeparator'></div>
 <table id='CustomerStatusDetails' class='{$arrFirst['cssClass']}'>
 	<tr valign='top'>
-		<td>Updated</td>
-		<td id='CustomerStatusDetails.LastUpdated'>{$arrFirst['lastUpdated']}</td>
+		<td>Action</td>
+		<td id='CustomerStatusDetails.Action'>{$arrFirst['action']}</td>
 	</tr>
 	<tr valign='top'>
 		<td id='CustomerStatusDetails.Name'>{$arrFirst['name']}</td>
 		<td id='CustomerStatusDetails.Description'>{$arrFirst['description']}</td>
 	</tr>
 	<tr valign='top'>
-		<td>Action</td>
-		<td id='CustomerStatusDetails.Action'>{$arrFirst['action']}</td>
+		<td>Updated</td>
+		<td id='CustomerStatusDetails.LastUpdated'>{$arrFirst['lastUpdated']}</td>
 	</tr>
 </table>
 <div class='SmallSeparator'></div>

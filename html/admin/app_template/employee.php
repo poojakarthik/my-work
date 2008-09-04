@@ -342,6 +342,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 						$updatedColumns[] = "DOB";
 						$updatedColumns[] = "Archived";
 						$updatedColumns[] = "Privileges";
+						$updatedColumns[] = "user_role_id";
 					}
 	
 					// If changing the password, allow  it to be updated

@@ -14,6 +14,8 @@
  */
 class Customer_Status
 {
+	const ACTION_DESCRIPTION_MAX_LENGTH = 1000;
+	
 	private $id							= NULL;
 	private $name						= NULL;
 	private $description				= NULL;
@@ -167,32 +169,13 @@ class Customer_Status
 	 */
 	public function getActionDescription($intUserRole=NULL)
 	{
-		static $selActions;
-		
-		if ($intUserRole === NULL)
+		if ($intUserRole == NULL)
 		{
 			// Return the default action description
 			return $this->defaultActionDescription;
 		}
 		
-		if (!isset($selActions))
-		{
-			$selActions = new StatementSelect("customer_status_action", array("user_role_id", "description"), "customer_status_id = <StatusId>");
-		}
-		if (!is_array($this->_arrActionDescriptions))
-		{
-			// Load the actions in from the database
-			if (($outcome = $selActions->Execute(array("StatusId" => $this->id))) === FALSE)
-			{
-				throw new Exception("Failed to retrieve User Actions for Customer Status {$this->name} : ". $selActions->Error());
-			}
-			
-			$this->_arrActionDescriptions = array();
-			while ($arrAction = $selActions->Fetch())
-			{
-				$this->_arrActionDescriptions[$arrAction['user_role_id']] = $arrAction['description'];
-			}
-		}
+		$this->_loadAllActionDescriptions();
 		
 		if (array_key_exists($intUserRole, $this->_arrActionDescriptions))
 		{
@@ -204,6 +187,208 @@ class Customer_Status
 			// No Action Description could be found specific to this user
 			return $this->defaultActionDescription;
 		}
+	}
+
+	// Returns TRUE if a specific action description exists for $intUserRole, else FALSE
+	public function hasActionDescription($intUserRole)
+	{
+		$this->_loadAllActionDescriptions();
+		return array_key_exists($intUserRole, $this->_arrActionDescriptions);
+	}
+	
+	// Returns the id of the customer_status_history record if it could be found, FALSE if it can't be found
+	// If it could be found then it is added/updated in $this->_arrActionDescriptions
+	// If it couldn't be found then it is removed from $this->_arrActionDescriptions
+	private function _loadSingleActionDescription($intUserRole)
+	{
+		static $selAction;
+		if (!is_array($this->_arrActionDescriptions))
+		{
+			$this->_loadAllActionDescriptions();
+		}
+		
+		if (!isset($selAction))
+		{
+			$selAction = new StatementSelect("customer_status_action", array("id", "user_role_id", "description"), "customer_status_id = <CustomerStatusId> AND user_role_id = <UserRoleId>");
+		}
+		
+		if (($intRecCount = $selAction->Execute(array("CustomerStatusId" => $this->id, "UserRoleId" => $intUserRole))) === FALSE)
+		{
+			throw new Exception("Failed to retrieve User Action for Customer Status {$this->name}, User Role Id: $intUserRole - ". $selAction->Error());
+		}
+		if ($intRecCount > 1)
+		{
+			// There are multiple records in the customer_status_action table refering to this customer_status_id/user_role_id combination
+			throw new Exception("Retrieved multiple records from the customer_status_action table where customer status id = {$this->id} and user role id = $intUserRole");
+		}
+		if ($intRecCount == 0)
+		{
+			// No record was returned
+			return FALSE;
+		}
+		
+		// A single record was found
+		$arrAction = $selAction->Fetch();
+		
+		$this->_arrActionDescriptions[$arrAction['user_role_id']] = $arrAction['description'];
+		return $arrAction['id'];
+	}
+	
+	// inserts/updates the appropraite customer_status_action record, and updates $this->_arrActionDescriptions
+	// it assumes both $intUserRole and $strDescription are valid
+	// if $intUserRole === NULL then the default ActionDescription is updated (customer_status table), and $this->defaultActionDescription is also updated 
+	public function setActionDescription($intUserRole=NULL, $strDescription)
+	{
+		static $updDefaultAction;
+		static $updAction;
+		static $insAction;
+		
+		if ($intUserRole === NULL)
+		{
+			// Update the default action description
+			$arrFields = array(	"id" => $this->id,
+								"default_action_description" => $strDescription
+							);
+			if (!isset($updDefaultAction))
+			{
+				$updDefaultAction = new StatementUpdateById("customer_status", $arrFields);
+			}
+			
+			// Make the update 
+			if (($intRecordsAffected = $updDefaultAction->Execute($arrFields)) === FALSE)
+			{
+				// Update failed
+				throw new Exception("Failed to update customer_status.default_action_description for where customer_status.id = {$this->id} - ". $updDefaultAction->Error());
+			}
+			
+			// Update the object
+			$this->defaultActionDescription = $strDescription;
+			return;
+		}
+		
+		// Check if the record already exists
+		if (($intId = $this->_loadSingleActionDescription($intUserRole)) === FALSE)
+		{
+			// A record doesn't already exist, insert it
+			$arrFields = array(	"id"					=> NULL,
+								"customer_status_id"	=> $this->id,
+								"user_role_id"			=> $intUserRole,
+								"description"			=> $strDescription
+							);
+			if (!isset($insAction))
+			{
+				$insAction = new StatementInsert("customer_status_action", $arrFields);
+			}
+			
+			// Make the insert
+			if (($intNewId = $insAction->Execute($arrFields)) === FALSE)
+			{
+				throw new Exception("Failed to insert record into customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $insAction->Error());
+			}
+		}
+		else
+		{
+			// The record already exists, update it
+			$arrFields = array(	"id"					=> $intId,
+								"description"			=> $strDescription
+							);
+			if (!isset($updAction))
+			{
+				$updAction = new StatementUpdateById("customer_status_action", $arrFields);
+			}
+			
+			// Make the update
+			if (($intRecordsAffected = $updAction->Execute($arrFields)) === FALSE)
+			{
+				// Update failed
+				throw new Exception("Failed to update record in customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $updAction->Error());
+			}
+		}
+		
+		// Update $this->_arrActionDescriptions (it has already been initialised)
+		$this->_arrActionDescriptions[$intUserRole] = $strDescription;
+	}
+
+	//returns TRUE/FALSE signifying validity. and if invalid, $arrErrors will have descriptions of the errors
+	//appended to it as individual error messages.
+	public static function isValidActionDescription($strDescription, &$arrErrors)
+	{
+		// A description is valid if it is a string which is not empty and does not exceed the length of Customer_Status::ACTION_DESCRIPTION_MAX_LENGTH
+		if (!is_string($strDescription))
+		{
+			$arrErrors[] = "not a string";
+			return FALSE;
+		}
+		$intLength = strlen($strDescription);
+		if ($intLength == 0)
+		{
+			$arrErrors[] = "empty string";
+			return FALSE;
+		}
+		if ($intLength > self::ACTION_DESCRIPTION_MAX_LENGTH)
+		{
+			$arrErrors[] = "exceeds maximum length of ". self::ACTION_DESCRIPTION_MAX_LENGTH ." characters";
+			return FALSE;
+		}
+		return TRUE;
+	} 
+	
+	
+	private function _loadAllActionDescriptions()
+	{
+		// It is assumed that the defaultActionDescription is always up to date
+		static $selActions;
+		
+		if (!is_array($this->_arrActionDescriptions))
+		{
+			if (!isset($selActions))
+			{
+				$selActions = new StatementSelect("customer_status_action", array("user_role_id", "description"), "customer_status_id = <CustomerStatusId>");
+			}
+			
+			// Load the actions in from the database
+			if (($outcome = $selActions->Execute(array("CustomerStatusId" => $this->id))) === FALSE)
+			{
+				throw new Exception("Failed to retrieve User Actions for Customer Status {$this->name} : ". $selActions->Error());
+			}
+			$this->_arrActionDescriptions = array();
+			while ($arrAction = $selActions->Fetch())
+			{
+				$this->_arrActionDescriptions[$arrAction['user_role_id']] = $arrAction['description'];
+			}
+		}
+	}
+	
+	// Removes the customer_status_action record where customer_status_id = $this->id and user_role_id = $intUserRole
+	// returns void.  throws exception on error
+	// Note: the default action description can not be deleted
+	public function deleteActionDescription($intUserRole)
+	{
+		$qryDeleteAction = new Query();
+		
+		$strDeleteQuery = "DELETE FROM customer_status_action WHERE customer_status_id = {$this->id} AND user_role_id = $intUserRole";
+		
+		if ($qryDeleteAction->Execute($strDeleteQuery) === FALSE)
+		{
+			// Delete Failed
+			throw new Exception("Failed to delete record in customer_status_action table for customer status id: {$this->id}, user role id: $intUserRole - ". $qryDeleteAction->Error());
+		}
+		
+		// The delete worked, now remove it from $this->_arrActionDescriptions if it exists
+		if (is_array($this->_arrActionDescriptions) && array_key_exists($intUserRole, $this->_arrActionDescriptions))
+		{
+			unset($this->_arrActionDescriptions[$intUserRole]);
+		}
+	}
+	
+	// returns $this->arrActionDescriptions (key = user_role_id, value = description)
+	// This does not return the detault Action Description
+	public function getAllActionDescriptions()
+	{
+		// It is assumed that the defaultActionDescription is always up to date
+		$this->_loadAllActionDescriptions();
+				
+		return $this->_arrActionDescriptions;
 	}
 
 	//------------------------------------------------------------------------//

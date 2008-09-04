@@ -78,6 +78,9 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	 */
 	private function _RenderFullDetail()
 	{
+		$objUserRole = User_Role::getForId(DBO()->Employee->user_role_id->Value);
+		$strUserRole = ($objUserRole != NULL)? $objUserRole->name : "[Not Specified]";
+		
 		echo "<!-- START HtmlTemplateEmployeeEdit -->\n";
 		$bolAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		$bolAdding		= FALSE;
@@ -160,7 +163,6 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		}
 
 		// If the current user is super admin OR (a ticketing admin and not editing self), allow modification
-		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
 		{
 			echo "
@@ -193,6 +195,46 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 </div>
 			";
 		}
+		
+		if (!$bolEditSelf && $bolAdminUser)
+		{
+			// The user can change the role of the employee
+			$arrUserRoles = User_Role::getAll();
+			$strRoleOptions = "";
+			$strSelected = "";
+			foreach ($arrUserRoles as $objRole)
+			{
+				if ($objUserRole !== NULL)
+				{
+					$strSelected = ($objUserRole->id === $objRole->id)? "selected='selected'": "";
+				}
+				$strRoleOptions .= "<option $strSelected value='{$objRole->id}'>{$objRole->name}</option>";
+			}
+			
+			echo "
+<div class='DefaultElement'>
+	<select id='Employee.user_role_id' name='Employee.user_role_id' class='DefaultInputText Default' style='width:210px'>$strRoleOptions</select>
+	<div id='Employee.user_role_id.Label' class='DefaultLabel'>
+		<span> &nbsp;</span>
+		<span id='Employee.user_role_id.Label.Text'>Role : </span>
+	</div>
+</div>
+";
+		}
+		else
+		{
+			// User can not change their role
+			echo "
+<div class='DefaultElement'>
+   <div class='DefaultOutput Default'>$strUserRole</div>
+   <div class='DefaultLabel'>
+      <span> &nbsp;</span>
+      <span>Role : </span>
+   </div>
+</div>
+";
+		}
+		
 
 		echo "</div>";
 
@@ -223,6 +265,16 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
    </div>
 </div>
 		";
+		
+		echo "
+<div class='DefaultElement'>
+   <div class='DefaultOutput Default'>$strUserRole</div>
+   <div class='DefaultLabel'>
+      <span> &nbsp;</span>
+      <span>Role : </span>
+   </div>
+</div>
+";
 
 		echo "</div>";
 		echo "</div>";
