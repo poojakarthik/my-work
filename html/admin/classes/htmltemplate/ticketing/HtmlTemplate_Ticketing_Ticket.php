@@ -783,7 +783,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							$link = Flex::getUrlBase() . 'reflex.php/Ticketing/Correspondence/' . $correspondence->id . '/View';
 		?>
 				<tr<?=$altClass?>>
-					<td><a href="<?=$link?>"><?=$correspondence->summary?></a></td>
+					<td><a href="<?=$link?>"><?=$correspondence->summary ? $correspondence->summary : '<em>[No Subject]</em>'?></a></td>
 					<td><?=$contactName?></td>
 					<td><?=$sourceName?></td>
 					<td><?=$deliveryStatusName?></td>
