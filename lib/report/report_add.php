@@ -21,51 +21,46 @@ $arrDocReq		= Array();
 $arrSQLSelect	= Array();
 $arrSQLFields	= Array();
 
- 
- //---------------------------------------------------------------------------//
- // CALL TYPE STATISTICS FOR A CARRIER
- //---------------------------------------------------------------------------//
- 
-$arrDataReport['Name']			= "Call Type Statistics for a Carrier";
-$arrDataReport['Summary']		= "Lists Call Type summaries for each Carrier";
+
+//---------------------------------------------------------------------------//
+// CREDIT CARD PAYMENTS SUMMARY BY EMPLOYEE
+//---------------------------------------------------------------------------//
+
+$arrDataReport['Name']			= "Credit Card Payments Summary by Employee";
+$arrDataReport['Summary']		= "Shows the number of Credit Card Payments each Employee made in a given time period";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "((CDR JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN Carrier ON Carrier.Id = CDR.Carrier) JOIN service_type ON RecordType.ServiceType = service_type.id";
-$arrDataReport['SQLWhere']		= "CDR.Status IN (150, 198) AND Credit = 0";
-$arrDataReport['SQLGroupBy']	= "Carrier.Id, CDR.RecordType \n ORDER BY Carrier.Id ASC, service_type.id, RecordType.Id";
+$arrDataReport['SQLTable']		= "credit_card_payment_history JOIN Employee ON Employee.Id = credit_card_payment_history.employee_id";
+$arrDataReport['SQLWhere']		= "CAST(payment_datetime AS DATE) BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Carrier']				['Value']	= "Carrier.Name";
+$arrSQLSelect['Employee']				['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
 
-$arrSQLSelect['Service Type']			['Value']	= "service_type.description";
-
-$arrSQLSelect['Call Type']				['Value']	= "RecordType.Description";
-
-$arrSQLSelect['Unique FNNs']			['Value']	= "COUNT(DISTINCT CDR.FNN)";
-$arrSQLSelect['Unique FNNs']			['Type']	= EXCEL_TYPE_INTEGER;
-
-$arrSQLSelect['Total Calls']			['Value']	= "COUNT(CDR.Id)";
-$arrSQLSelect['Total Calls']			['Type']	= EXCEL_TYPE_INTEGER;
-
-$arrSQLSelect['Total Units']			['Value']	= "SUM(CDR.Units)";
-$arrSQLSelect['Total Units']			['Type']	= EXCEL_TYPE_INTEGER;
-
-$arrSQLSelect['Total Cost']				['Value']	= "SUM(CDR.Cost)";
-$arrSQLSelect['Total Cost']				['Type']	= EXCEL_TYPE_CURRENCY;
-
-$arrSQLSelect['Total Rated']			['Value']	= "SUM(CDR.Charge)";
-$arrSQLSelect['Total Rated']			['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Payments Made']			['Value']	= "COUNT(credit_card_payment_history.Id)";
+$arrSQLSelect['Payments Made']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
 //----------------------------------------------------------------------------//
 // Insert the Data Report
 //----------------------------------------------------------------------------//

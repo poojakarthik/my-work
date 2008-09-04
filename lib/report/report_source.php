@@ -1478,4 +1478,180 @@ $arrSQLFields['EndDate']	= Array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
- ?>
+//----------------------------------------------------------------------------//
+// Direct Debits by Employee Summary
+//----------------------------------------------------------------------------//
+
+// General Data
+$arrDataReport['Name']			= "Direct Debits by Employee Summary";
+$arrDataReport['Summary']		= "Displays a list of Employees, and how many Direct Debit Accounts they've set up in a specified period.";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "	(
+										SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, CreditCard.Id AS CreditCard, NULL AS BankTransfer
+										FROM Employee JOIN CreditCard ON (Employee.Id = CreditCard.employee_id AND CreditCard.Archived = 0)";
+$arrDataReport['SQLWhere']		= "		CAST(DirectDebit.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
+										
+										UNION
+										
+										SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, NULL AS CreditCard, DirectDebit.Id AS BankTransfer
+										FROM Employee JOIN DirectDebit ON (Employee.Id = DirectDebit.employee_id AND DirectDebit.Archived = 0)
+										WHERE CAST(DirectDebit.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
+									)";
+$arrDataReport['SQLGroupBy']	= "Employee.Id\n HAVING `Credit Card` > 0 OR `Bank Transfer` > 0\n ORDER BY Employee ASC";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDocReq[]	= "Account";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Employee']				['Value']	= "Employee";
+
+$arrSQLSelect['Credit Card']			['Value']	= "COUNT(DISTINCT CreditCard.Id)";
+$arrSQLSelect['Credit Card']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Bank Transfer']			['Value']	= "COUNT(DISTINCT BankTransfer.Id)";
+$arrSQLSelect['Bank Transfer']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+
+// SQL Fields
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+
+ //---------------------------------------------------------------------------//
+ // NON-TOLLING SERVICES
+ //---------------------------------------------------------------------------//
+ 
+$arrDataReport['Name']			= "Non-Tolling Services in a Date Period for a Service Type";
+$arrDataReport['Summary']		= "Lists all of the Services which have not tolled since the specified Last Tolling Date for the specified Service Type";
+$arrDataReport['FileName']		= "<ServiceType::Label> Services that have not tolled since <LatestCDR>";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;									// Debug
+//$arrDataReport['Priviledges']	= 1;											// Live
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= 	"(" . 
+										"(" .
+											"(" .
+												"Service LEFT JOIN Account ON Account.Id = Service.Account" .
+											") " .
+											"LEFT JOIN Contact ON Account.PrimaryContact = Contact.Id" .
+										") " .
+										"LEFT JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service" .
+									") " .
+									"LEFT JOIN RatePlan ON SRP.RatePlan = RatePlan.Id";
+
+$arrDataReport['SQLWhere']		= "Service.ServiceType = <ServiceType> AND Service.Status = 400 AND Service.LatestCDR <= CONCAT(<LatestCDR>, ' 23:59:59')";
+$arrDataReport['SQLGroupBy']	= "Service.Id ORDER BY Account.Id";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDocReq[]	= "Service";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Account No.']			['Value']	= "Account.Id";
+
+$arrSQLSelect['Customer Name']			['Value']	= "Account.BusinessName";
+
+$arrSQLSelect['Primary Contact']		['Value']	= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
+
+$arrSQLSelect['Contact Phone']			['Value']	= "Contact.Phone";
+$arrSQLSelect['Contact Phone']			['Type']	= EXCEL_TYPE_FNN;
+
+$arrSQLSelect['Lost Service FNN']		['Value']	= "Service.FNN";
+$arrSQLSelect['Lost Service FNN']		['Type']	= EXCEL_TYPE_FNN;
+
+$arrSQLSelect['Lost Service Plan']		['Value']	= "RatePlan.Name";
+
+$arrSQLSelect['Last Tolled Date']		['Value']	= "Service.LatestCDR";
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrColumns = Array();
+$arrColumns['Label']	= "description";
+$arrColumns['Value']	= "id";
+
+$arrSelect = Array();
+$arrSelect['Table']		= "service_type";
+$arrSelect['Columns']	= $arrColumns;
+$arrSelect['Where']		= "const_name NOT IN ('SERVICE_TYPE_ADSL', 'SERVICE_TYPE_DIALUP')";
+$arrSelect['OrderBy']	= "description ASC";
+$arrSelect['Limit']		= NULL;
+$arrSelect['GroupBy']	= NULL;
+$arrSelect['ValueType']	= "dataInteger";
+
+$arrSQLFields['ServiceType']	= Array(
+										'Type'					=> "StatementSelect",
+										'DBSelect'				=> $arrSelect,
+										'Documentation-Entity'	=> "Service",
+										'Documentation-Field'	=> "ServiceType",
+									);
+									
+$arrSQLFields['LatestCDR']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "Service",
+										'Documentation-Field'	=> "LatestCDR",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+//---------------------------------------------------------------------------//
+// CALL TYPE STATISTICS FOR A CARRIER
+//---------------------------------------------------------------------------//
+
+$arrDataReport['Name']			= "Call Type Statistics for a Carrier";
+$arrDataReport['Summary']		= "Lists Call Type summaries for each Carrier";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;									// Debug
+//$arrDataReport['Priviledges']	= 1;											// Live
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "((CDR JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN Carrier ON Carrier.Id = CDR.Carrier) JOIN service_type ON RecordType.ServiceType = service_type.id";
+$arrDataReport['SQLWhere']		= "CDR.Status IN (150, 198) AND Credit = 0";
+$arrDataReport['SQLGroupBy']	= "Carrier.Id, CDR.RecordType \n ORDER BY Carrier.Id ASC, service_type.id, RecordType.Id";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Carrier']				['Value']	= "Carrier.Name";
+
+$arrSQLSelect['Service Type']			['Value']	= "service_type.description";
+
+$arrSQLSelect['Call Type']				['Value']	= "RecordType.Description";
+
+$arrSQLSelect['Unique FNNs']			['Value']	= "COUNT(DISTINCT CDR.FNN)";
+$arrSQLSelect['Unique FNNs']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Total Calls']			['Value']	= "COUNT(CDR.Id)";
+$arrSQLSelect['Total Calls']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Total Units']			['Value']	= "SUM(CDR.Units)";
+$arrSQLSelect['Total Units']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Total Cost']				['Value']	= "SUM(CDR.Cost)";
+$arrSQLSelect['Total Cost']				['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Total Rated']			['Value']	= "SUM(CDR.Charge)";
+$arrSQLSelect['Total Rated']			['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+?>
