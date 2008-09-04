@@ -377,7 +377,7 @@ Object.extend(CreditCardPayment.prototype,
 			if (this.allowDD)
 			{
 				tr = table.insertRow(-1);
-				tr.insertCell(-1).appendChild(document.createTextNode('Use Details For Direct Debit:'));
+				tr.insertCell(-1).appendChild(document.createTextNode('Pay by Direct Debit from now on:'));
 				tr.insertCell(-1).appendChild(this.inputDD);
 				this.appendErrorHelp(tr.cells[1], this.inputDD);
 			}
