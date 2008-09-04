@@ -638,8 +638,9 @@ class AppTemplateConsole extends ApplicationTemplate
 		{
 			$strShowLastLogin = date("F j, Y, g:i a",$intLastLogin);
 		}
+
 		// Setup BreadCrumb Menu
-		$strWelcome = "Welcome " . DBO()->Contact->Title->Value ." " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account. Last Login: $strShowLastLogin\n";
+		$strWelcome = "<div class=\"welcome_message\">Welcome " . DBO()->Contact->FirstName->Value . ". Last Login: $strShowLastLogin</div>\n";
 		BreadCrumb()->SetCurrentPage($strWelcome);
 		
 		$this->LoadPage('console');

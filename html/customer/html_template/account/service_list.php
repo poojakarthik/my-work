@@ -71,7 +71,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<h2 class='Services'>Services</h2>\n";
+		echo "<h2 class='Services'>Unblled service charges</h2>\n";
 		
 		Table()->Services->SetHeader("FNN", "Service Type", "Current Plan", "Unbilled Charges (inc GST)", "&nbsp;", "&nbsp;");
 		Table()->Services->SetWidth("10%", "15%", "40%", "25%", "5%", "5%");

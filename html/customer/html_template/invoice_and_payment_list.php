@@ -174,7 +174,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		
 		// create the Invoices and Payments table
 		Table()->InvoicesAndPayments->SetHeader("Type", "Date", "Ref #", "Credit (inc GST)", "Debit (inc GST)", "&nbsp;");
-		Table()->InvoicesAndPayments->SetWidth("15%", "15%", "25%", "25%", "15%", "5%");
+		Table()->InvoicesAndPayments->SetWidth("8%", "15%", "25%", "25%", "15%", "12%");
 		Table()->InvoicesAndPayments->SetAlignment("left", "left", "left", "right", "right", "center");
 		
 		// Declare variables used to calculate the total Credits and Debits
@@ -205,7 +205,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 					// The pdf exists
 					// Build "download invoice pdf" link
 					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, $strInvoiceRun);
-					$strInvoicePdfLabel	= "<span><a href='$strInvoicePdfHref'><img src='img/template/pdf.gif' title='Download PDF Invoice' /></a></span>";
+					$strInvoicePdfLabel	= "<span><a href='$strInvoicePdfHref'><img src='img/template/pdf.gif' title='Download PDF Invoice' /></a> <a href='$strInvoicePdfHref'>View my bill</a></span>";
 				}
 				else
 				{

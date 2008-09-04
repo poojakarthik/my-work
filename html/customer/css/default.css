@@ -24,7 +24,11 @@
 /*	DISPLAY FORMATS														  */
 /*	TASKBAR														  		  */
 /**************************************************************************/
-
+.welcome_message
+{
+	font-weight:	bold;
+	color:	[customer_secondary_color];
+}
 input.displayOnly[disabled] {
 	font-size: 1em;
 	border: none;
