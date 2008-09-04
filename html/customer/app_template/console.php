@@ -438,6 +438,11 @@ class AppTemplateConsole extends ApplicationTemplate
 
 		if(array_key_exists('intUpdateAccountId', $_POST))
 		{
+			// remove any code from input. no reason why customer would need to use <
+			foreach($_POST as $key=>$val)
+			{
+				$_POST[$key]=str_replace("<","&lt;",$val);
+			}
 			$strFoundInputError=FALSE; 
 
 			// If no error was found, continue with processing.
