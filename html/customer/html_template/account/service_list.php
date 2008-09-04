@@ -71,8 +71,15 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<h2 class='Services'>Unblled service charges</h2>\n";
-		
+		// echo "<h2 class='Services'>Unblled service charges</h2>\n";
+		echo "
+		<TABLE width=\"100%\">
+		<TR>
+			<TD style=\"width: 200px; text-indent: 5;\"><img src=\"img/template/service.gif\"></TD>
+			<TD style=\"text-indent: 175; font-weight: bold;\">Unblled service charges</TD>
+		</TR>
+		</TABLE>\n";
+
 		Table()->Services->SetHeader("FNN", "Service Type", "Current Plan", "Unbilled Charges (inc GST)", "&nbsp;", "&nbsp;");
 		Table()->Services->SetWidth("10%", "15%", "40%", "25%", "5%", "5%");
 		Table()->Services->SetAlignment("left", "left", "left", "right", "left", "right");
