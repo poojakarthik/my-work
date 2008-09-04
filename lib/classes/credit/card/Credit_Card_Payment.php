@@ -800,7 +800,7 @@ class Credit_Card_Payment_Remote_Processing_Error extends Exception
 		{
 			$knownErrors = array(
 				"000" => array("Normal", "Message processed correctly (check transaction response for details)."),
-				"504" => array("Invalid Merchant ID If Merchant ID does not follow the format XXXDDDD, where X is a letter and D is a digit, or Merchant ID is not found in SecurePay's database."),
+				"504" => array("Invalid Merchant ID", "If Merchant ID does not follow the format XXXDDDD, where X is a letter and D is a digit, or Merchant ID is not found in SecurePay's database."),
 				"505" => array("Invalid URL", "The URL passed to either Echo, Query, or Payment object is invalid."),
 				"510" => array("Unable To Connect To Server", "Produced by SecurePay Client API when unable to establish connection to SecurePay Payment Gateway."),
 				"511" => array("Server Connection Aborted During Transaction", "Produced by SecurePay Client API when connection to SecurePay Payment Gateway is lost after the payment transaction has been sent."),

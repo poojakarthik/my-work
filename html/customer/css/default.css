@@ -280,7 +280,34 @@ textarea.invalid {
 /**************************************************************************/
 /* CREDIT CARD PAYMENT.																  */
 /**************************************************************************/
-
+div.reflex-popup-text-content
+{
+	font-size:			12px;
+	font:				verdana;
+	margin-left: 0;
+	margin-bottom:				7px;
+	padding:			3px;
+	border:				solid 1px #D1D1D1;
+	background-color:	#f9f9f9;
+	position:			relative;
+	/* for firefox compatibility. */
+	width: 446px !important; 
+	/* for ie6 compatibility. */
+	width: 454px;
+	clear: both;
+}
+.processing-credit-card-payment
+{
+		margin:				0px;
+		padding:			5px;
+		border:				solid 1px #D1D1D1;
+		background-color:	#f9f9f9;
+		position:			relative;
+		/* for firefox compatibility. */
+		width: 442px !important; 
+		/* for ie6 compatibility. */
+		width: 454px;
+}
 /* CCV tool tip start */
 div.cvv-image-tooltip {
       position: absolute;
@@ -531,19 +558,6 @@ div.reflex-loading-image p {
 /**************************************************************************/
 /* GENERIC																  */
 /**************************************************************************/
-
-	.processing-credit-card-payment
-	{
-			margin:				0px;
-			padding:			5px;
-			border:				solid 1px #D1D1D1;
-			background-color:	#f9f9f9;
-			position:			relative;
-			/* for firefox compatibility. */
-			width: 442px !important; 
-			/* for ie6 compatibility. */
-			width: 454px;
-	}
 	.GroupedContent
 	{
 		margin:				0px;
