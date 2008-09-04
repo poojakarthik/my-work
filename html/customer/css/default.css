@@ -26,6 +26,7 @@
 /**************************************************************************/
 .welcome_message
 {
+	text-indent: 10px;
 	font-weight:	bold;
 	color:	[customer_secondary_color];
 }
