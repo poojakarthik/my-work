@@ -19,6 +19,9 @@ class Credit_Card_Payment
 	protected static $realHost = "www.securepay.com.au/xmlapi/payment";
 	protected static $testHost = "www.securepay.com.au/test/payment";
 
+	const TOKEN_START = '[';
+	const TOKEN_END = ']';
+
 	public static function getHost()
 	{
 		if (self::isTestMode())
@@ -263,9 +266,9 @@ class Credit_Card_Payment
 		// Payment has been processed!
 		try
 		{
-			// WIP: Store details of the payment in the credit_card_payment_history table
-			// WIP: Apply the payment to the account
-			// WIP: Add an adjustment to the account for the credit card surcharge
+			// Store details of the payment in the credit_card_payment_history table
+			// Apply the payment to the account
+			// Add an adjustment to the account for the credit card surcharge
 			TransactionStart();
 			$account->applyPayment($employeeId, $contact, $time, $fltTotal, $txnId, $purchaseOrderNo, PAYMENT_TYPE_CREDIT_CARD, $strCardNumber, $cardType, $surcharge);
 			TransactionCommit();
@@ -278,11 +281,10 @@ class Credit_Card_Payment
 			throw $e;
 		}
 
-
 		try
 		{
 			$bolFailedDD = FALSE;
-			// WIP: If doing DD, also need to create an entry in the credit card table
+			// If doing DD, also need to create an entry in the credit card table
 			if ($bolDD)
 			{
 				TransactionStart();
@@ -327,35 +329,44 @@ class Credit_Card_Payment
 		{
 			switch ($token)
 			{
-				case 'DATE_TIME':
+				case self::TOKEN_START . 'DATE_TIME' . self::TOKEN_END:
 					$tokens[$token] = date('g:i:sA, jS M Y', $time);
 					break;
-				case 'PAYMENT_REFERENCE':
+				case self::TOKEN_START . 'PAYMENT_REFERENCE' . self::TOKEN_END:
 					$tokens[$token] = $purchaseOrderNo;
 					break;
-				case 'AMOUNT_APPLIED':
-					$tokens[$token] = $fltAmount;
+				case self::TOKEN_START . 'AMOUNT_APPLIED' . self::TOKEN_END:
+					$tokens[$token] = '$' . $fltAmount;
 					break;
-				case 'AMOUNT_SURCHARGE':
-					$tokens[$token] = $fltSurcharge;
+				case self::TOKEN_START . 'AMOUNT_SURCHARGE' . self::TOKEN_END:
+					$tokens[$token] = '$' . $fltSurcharge;
 					break;
-				case 'AMOUNT_TOTAL':
-					$tokens[$token] = $fltTotal;
+				case self::TOKEN_START . 'AMOUNT_TOTAL' . self::TOKEN_END:
+					$tokens[$token] = '$' . $fltTotal;
 					break;
-				case 'BALANCE_BEFORE':
+				case self::TOKEN_START . 'BALANCE_BEFORE' . self::TOKEN_END:
 					$tokens[$token] = '$' . $balanceBefore;
 					break;
-				case 'BALANCE_AFTER':
+				case self::TOKEN_START . 'BALANCE_AFTER' . self::TOKEN_END:
 					$tokens[$token] = '$' . $balanceAfter;
 					break;
-				case 'ACCOUNT_NUMBER':
+				case self::TOKEN_START . 'ACCOUNT_NUMBER' . self::TOKEN_END:
 					$tokens[$token] = $account->id;
 					break;
-				case 'CONTACT_NAME':
+				case self::TOKEN_START . 'CONTACT_NAME' . self::TOKEN_END:
 					$tokens[$token] = $contact->getName();
 					break;
-				case 'CONTACT_EMAIL':
+				case self::TOKEN_START . 'CONTACT_EMAIL' . self::TOKEN_END:
 					$tokens[$token] = $contact->email;
+					break;
+				case self::TOKEN_START . 'COMPANY_ABN' . self::TOKEN_END:
+					$tokens[$token] = $account->abn;
+					break;
+				case self::TOKEN_START . 'COMPANY_NAME' . self::TOKEN_END:
+					$tokens[$token] = $account->businessName ? $account->businessName : $account->tradingName;
+					break;
+				case self::TOKEN_START . 'CARD_NUMBER' . self::TOKEN_END:
+					$tokens[$token] = (substr($strCardNumber, 0, 4) . str_repeat('.', strlen($strCardNumber) - 8) . substr($strCardNumber, -4));
 					break;
 			}
 		}
@@ -363,7 +374,9 @@ class Credit_Card_Payment
 		$bolCanSendEmail = EmailAddressValid($contact->email);
 		$bolFailedToEmail = FALSE;
 
-		if ($bolCanSendEmail && !self::isTestMode())
+		if ($bolCanSendEmail && 
+			(!self::isTestMode() || 
+			(defined('SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE') && SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE === TRUE)))
 		{
 			$customerGroup = Customer_Group::getForId($account->customerGroup);
 
@@ -629,8 +642,11 @@ class Credit_Card_Payment
 	{
 		foreach ($tokens as $token => $value)
 		{
-			$token = preg_quote('[' . $token . ']');
-			$message = preg_replace("/$token/i", $value, $message);
+			do 
+			{
+				$oldMessage = $message;
+				$message = str_replace($token, $value, $message);
+			} while($oldMessage != $message);
 		}
 		return $message;
 	}
@@ -638,16 +654,19 @@ class Credit_Card_Payment
 	public static function listMessageTokens()
 	{
 		return array(
-			"DATE_TIME" 		=> "will be replaced by the date and time of the action.",
-			"PAYMENT_REFERENCE"	=> "will be replaced by the unique payment reference number.",
-			"APPLIED_AMOUNT" 	=> "will be replaced by the payment amount applied to the balance of the account.",
-			"AMOUNT_SURCHARGE" 	=> "will be replaced by the amount of the credit card surcharge for the transaction.",
-			"AMOUNT_TOTAL" 		=> "will be replaced by the amount actually charged to their credit card.",
-			"ACCOUNT_NUMBER" 	=> "will be replaced by the account number.",
-			"BALANCE_BEFORE" 	=> "will be replaced by the balance of the account before applying the payment.",
-			"BALANCE_AFTER" 	=> "will be replaced by the balance of the account after applying the payment.",
-			"CONTACT_NAME" 		=> "will be replaced by the contact name.",
-			"CONTACT_EMAIL" 	=> "will be replaced by the email address a confirmation message was sent to.",
+			self::TOKEN_START . "DATE_TIME" . self::TOKEN_END 			=> "will be replaced by the date and time of the action.",
+			self::TOKEN_START . "PAYMENT_REFERENCE" . self::TOKEN_END	=> "will be replaced by our unique payment reference number.",
+			self::TOKEN_START . "AMOUNT_APPLIED" . self::TOKEN_END 		=> "will be replaced by the payment amount applied to the balance of the account.",
+			self::TOKEN_START . "AMOUNT_SURCHARGE" . self::TOKEN_END 	=> "will be replaced by the amount of the credit card surcharge for the transaction.",
+			self::TOKEN_START . "AMOUNT_TOTAL" . self::TOKEN_END 		=> "will be replaced by the amount actually charged to their credit card.",
+			self::TOKEN_START . "ACCOUNT_NUMBER" . self::TOKEN_END 		=> "will be replaced by the account number.",
+			self::TOKEN_START . "COMPANY_ABN" . self::TOKEN_END 		=> "will be replaced by the ABN of the company.",
+			self::TOKEN_START . "COMPANY_NAME" . self::TOKEN_END 		=> "will be replaced by the name of the company.",
+			self::TOKEN_START . "BALANCE_BEFORE" . self::TOKEN_END 		=> "will be replaced by the balance of the account before applying the payment.",
+			self::TOKEN_START . "BALANCE_AFTER" . self::TOKEN_END 		=> "will be replaced by the balance of the account after applying the payment.",
+			self::TOKEN_START . "CARD_NUMBER" . self::TOKEN_END 		=> "will be replaced by the first and last four (4) digits of the credit card number.",
+			self::TOKEN_START . "CONTACT_EMAIL" . self::TOKEN_END 		=> "will be replaced by the email address a confirmation message was sent to.",
+			self::TOKEN_START . "CONTACT_NAME" . self::TOKEN_END 		=> "will be replaced by the contact name.",
 		);
 	}
 

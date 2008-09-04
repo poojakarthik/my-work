@@ -125,26 +125,24 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 						<td class="title">Merchant ID: </td>
 						<td><?=htmlspecialchars($config->merchantId)?></td>
 					</tr>
-
 					<tr class="alt">
 						<td class="title">Password: </td>
 						<td><?=htmlspecialchars($config->password)?></td>
 					</tr>
 					<tr class="alt">
+						<td class="title">Direct Debit Disclaimer/Terms: </td>
+						<td><?=$directDebitDisclaimer?></td>
+					</tr>
+					<tr class="alt">
 						<td class="title">Payment Confirmation Message: <br/><em>[See table below for special values]</em></td>
 						<td><?=$confirmationText?></td>
-
 					</tr>
 					<tr class="alt">
 						<td class="title">Payment Confirmation Email: <br/><em>[See table below for special values]</em></td>
 						<td><?=$confirmationEmail?></td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Direct Debit Disclaimer/Terms: <br/><em>[See table below for special values]</em></td>
-						<td><?=$directDebitDisclaimer?></td>
-					</tr>
-					<tr class="alt">
-						<td class="title">Direct Debit Confirmation Message: <br/><em>[See table below for special values]</em></td>
+						<td class="title">Direct Debit Confirmation Message: <br/><em>[Appended to Payment Confirmation Message]</em><br/><em>[See table below for special values]</em></td>
 						<td><?=$directDebitText?></td>
 					</tr>
 					<tr class="alt">
@@ -170,7 +168,7 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 		foreach ($magicStrings as $token => $value)
 		{
 			$output .= "					<tr class=\"alt\">\n".
-			"						<td class=\"title\">[" . $token . "]</td>\n".
+			"						<td class=\"title\">" . htmlspecialchars($token) . "</td>\n".
 			"						<td>" . htmlspecialchars($value) . "</td>\n".
 			"					</tr>";
 		}
@@ -242,43 +240,31 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 				<tbody>
 					<tr class="alt">
 						<td class="title">Merchant ID: </td>
-						<td><input type="text" id="merchantId" name="merchantId" class="<?=array_key_exists("merchantId", $invalidValues) ? 'invalid' : ''?>" size="50" value="<?=htmlspecialchars($config->merchantId)?>" />
-						</td>
-
+						<td><input type="text" id="merchantId" name="merchantId" class="<?=array_key_exists("merchantId", $invalidValues) ? 'invalid' : ''?>" size="50" value="<?=htmlspecialchars($config->merchantId)?>" /></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Password: </td>
-						<td><input type="text" id="password" name="password" class="<?=array_key_exists("password", $invalidValues) ? 'invalid' : ''?>" size="50" value="<?=htmlspecialchars($config->password)?>" />
-						</td>
+						<td><input type="text" id="password" name="password" class="<?=array_key_exists("password", $invalidValues) ? 'invalid' : ''?>" size="50" value="<?=htmlspecialchars($config->password)?>" /></td>
+					</tr>
+					<tr class="alt">
+						<td class="title">Direct Debit Disclaimer/Terms: </td>
+						<td><textarea id="directDebitDisclaimer" name="directDebitDisclaimer" class="<?=array_key_exists("directDebitDisclaimer", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitDisclaimer)?></textarea></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Payment Confirmation Message: <br/><em>[See table below for special values]</em></td>
-
-						<td><textarea id="confirmationText" name="confirmationText" class="<?=array_key_exists("confirmationText", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->confirmationText)?></textarea>
-						</td>
+						<td><textarea id="confirmationText" name="confirmationText" class="<?=array_key_exists("confirmationText", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->confirmationText)?></textarea></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Payment Confirmation Email: <br/><em>[See table below for special values]</em></td>
-						<td><textarea id="confirmationEmail" name="confirmationEmail" class="<?=array_key_exists("confirmationEmail", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->confirmationEmail)?></textarea>
-						</td>
-
+						<td><textarea id="confirmationEmail" name="confirmationEmail" class="<?=array_key_exists("confirmationEmail", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->confirmationEmail)?></textarea></td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Direct Debit Disclaimer/Terms: <br/><em>[See table below for special values]</em></td>
-						<td><textarea id="directDebitDisclaimer" name="directDebitDisclaimer" class="<?=array_key_exists("directDebitDisclaimer", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitDisclaimer)?></textarea>
-						</td>
+						<td class="title">Direct Debit Confirmation Message: <br/><em>[Appended to Payment Confirmation Message]</em><br/><em>[See table below for special values]</em></td>
+						<td><textarea id="directDebitText" name="directDebitText" class="<?=array_key_exists("directDebitText", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitText)?></textarea></td>
 					</tr>
 					<tr class="alt">
-						<td class="title">Payment &amp; Direct Debit Confirmation Message: <br/><em>[See table below for special values]</em></td>
-
-						<td><textarea id="directDebitText" name="directDebitText" class="<?=array_key_exists("directDebitText", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitText)?></textarea>
-						</td>
-					</tr>
-					<tr class="alt">
-						<td class="title">Payment &amp; Direct Debit Confirmation Email: <br/><em>[See table below for special values]</em></td>
-						<td><textarea id="directDebitEmail" name="directDebitEmail" class="<?=array_key_exists("directDebitEmail", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitEmail)?></textarea>
-
-						</td>
+						<td class="title">Direct Debit Confirmation Email: <br/><em>[See table below for special values]</em></td>
+						<td><textarea id="directDebitEmail" name="directDebitEmail" class="<?=array_key_exists("directDebitEmail", $invalidValues) ? 'invalid' : ''?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($config->directDebitEmail)?></textarea></td>
 					</tr>
 				</tbody>
 			</table>
@@ -300,7 +286,7 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 					<div id="caption_bar" name="caption_bar">
 
 						<div id="caption_title" name="caption_title">
-							Dynamically Replaced Valuse For Messages
+							Special Values For Messages
 						</div>
 						<div id="caption_options" name="caption_options">
 						</div>
