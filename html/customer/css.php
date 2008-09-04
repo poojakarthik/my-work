@@ -95,10 +95,10 @@ if(!$Debug_Use_Old_Way)
 
 	// Changes to be made: OldValue => NewValue;
 	$arrChangesToCSS = array();
-	$arrChangesToCSS['[customer_primary_color]'] = "#$customer_primary_color";
-	$arrChangesToCSS['[customer_secondary_color]'] = "#$customer_secondary_color";
-	$arrChangesToCSS['[customer_breadcrumb_menu_color]'] = "#$customer_breadcrumb_menu_color"; // the text portion.
-	$arrChangesToCSS['[customer_breadcrumb_menu_link_color]'] = "#$customer_breadcrumb_menu_color"; // the actual link.
+	$arrChangesToCSS['[customer_primary_color]'] = "$customer_primary_color";
+	$arrChangesToCSS['[customer_secondary_color]'] = "$customer_secondary_color";
+	$arrChangesToCSS['[customer_breadcrumb_menu_color]'] = "$customer_breadcrumb_menu_color"; // the text portion.
+	$arrChangesToCSS['[customer_breadcrumb_menu_link_color]'] = "$customer_breadcrumb_menu_color"; // the actual link.
 
 	foreach($arrChangesToCSS as $mixKey=>$mixVal)
 	{

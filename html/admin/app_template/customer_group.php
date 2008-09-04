@@ -398,7 +398,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate("CustomerGroupDetails", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 			return TRUE;
 		}
-		
+
+		DBO()->CustomerGroup->customer_primary_color = htmlspecialchars(DBO()->CustomerGroup->customer_primary_color->Value);
+		DBO()->CustomerGroup->customer_secondary_color = htmlspecialchars(DBO()->CustomerGroup->customer_secondary_color->Value);
 		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save())
