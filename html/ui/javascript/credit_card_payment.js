@@ -684,7 +684,7 @@ alert(outcome);
 		tr.insertCell(-1).appendChild(document.createTextNode(this.abn));
 
 		tr = table.insertRow(-1);
-		tr.insertCell(-1).appendChild(document.createTextNode('Email:'));
+		tr.insertCell(-1).appendChild(document.createTextNode('Confirmation Email:'));
 		tr.insertCell(-1).appendChild(document.createTextNode(this.inputEmail.value));
 
 		confirmForm.appendChild(table);
