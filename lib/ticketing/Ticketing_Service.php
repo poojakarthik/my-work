@@ -243,7 +243,7 @@ class Ticketing_Service
 		}
 
 		$details['cc'] = array();
-		$emails = $dom->getElementsByTagName('from');
+		$emails = $dom->getElementsByTagName('cc');
 		for ($x = 0; $x < $emails->length; $x++)
 		{
 			$email = $emails->item($x);
