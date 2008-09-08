@@ -520,7 +520,7 @@ class Zend_Mail extends Zend_Mime_Message
         if ($this->_from === null) {
             $email = strtr($email,"\r\n\t",'???');
             $this->_from = $email;
-            $this->_storeHeader('From', $this->_encodeHeader('"'.$name.'"').' <'.$email.'>', true);
+            $this->_storeHeader('From', ($name != '' ? $this->_encodeHeader('"'.$name.' "') : '').'<'.$email.'>', true);
         } else {
             /**
              * @see Zend_Mail_Exception
