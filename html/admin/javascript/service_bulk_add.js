@@ -96,11 +96,34 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 		Vixen.ServiceBulkAdd.intLastDealerChosen = this.elmDealer.value;
 	}
 	
+	this.FnnFocusHandler = function(event)
+	{
+		event.target.hasFocus = true;
+		var other = (event.target == this.elmFnn) ? this.elmFnnConfirm : this.elmFnn;
+		other.hasFocus = false;
+		event.target.setAttribute('type', 'text');
+		other.setAttribute('type', 'password');
+	}
+
+	this.FnnBlurHandler = function(event)
+	{
+		event.target.hasFocus = false;
+		if (!this.elmFnn.hasFocus && !this.elmFnnConfirm.hasFocus)
+		{
+			this.elmFnn.setAttribute('type', 'text');
+			this.elmFnnConfirm.setAttribute('type', 'text');
+		}
+	}
+
 	// Register event listeners
 	this.elmFnn.addEventListener('keyup', this.FnnUpdateListener.bind(this), true);
 	this.elmFnn.addEventListener('change', this.FnnUpdateListener.bind(this), true);
+	this.elmFnn.addEventListener('blur', this.FnnBlurHandler.bind(this), true);
+	this.elmFnn.addEventListener('focus', this.FnnFocusHandler.bind(this), true);
 	this.elmFnnConfirm.addEventListener('keyup', this.FnnUpdateListener.bind(this), true);
 	this.elmFnnConfirm.addEventListener('change', this.FnnUpdateListener.bind(this), true);
+	this.elmFnnConfirm.addEventListener('blur', this.FnnBlurHandler.bind(this), true);
+	this.elmFnnConfirm.addEventListener('focus', this.FnnFocusHandler.bind(this), true);
 	this.elmPlan.addEventListener('change', this.PlanChangeListener.bind(this), true);
 	this.elmCostCentre.addEventListener('change', this.CostCentreChangeListener.bind(this), true);
 	this.elmDealer.addEventListener('change', this.DealerChangeListener.bind(this), true);
@@ -119,6 +142,7 @@ function ServiceInputComponent(elmServiceType, elmFnn, elmFnnConfirm, elmPlan, e
 		objEvent.preventDefault();
 	}
 	
+
 	// Prevents the user from copying or pasting the text in the Fnn Textboxes
 	// This is done so that they have to physically type the fnn in twice.  They can't copy/paste it
 	function FnnTextboxKeyHandler(objEvent)
