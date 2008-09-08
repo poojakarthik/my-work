@@ -201,9 +201,9 @@ class Ticketing_Attachment_Type
 		$email->addHeader("X-MSMail-Priority", "High");
 		$email->addHeader("Importance", "High");
 
-		$email->subject = "URGENT: An unknow file type has entered the ticketing system (Ext: {$objType->extension}, Mime: {$objType->mimeType})";
+		$email->subject = "URGENT: An unknown file type has entered the ticketing system (Ext: {$objType->extension}, Mime: {$objType->mimeType})";
 
-		$email->text  = "An email attchment has been received into the ticketing system that has an unrecognised file extension: {$objType->extension}
+		$email->text  = "An email attachment has been received into the ticketing system that has an unrecognised file extension: {$objType->extension}
 A grey-listed ticket_attachment_type (id = {$objType->id}) has been created for the extension with a mime type of: {$objType->mimeType}
 If this file type poses a threat to ticketing system users please manually change it's blacklist_status_id to TICKETING_ATTACHMENT_BLACKLIST_STATUS_BLACK (" . TICKETING_ATTACHMENT_BLACKLIST_STATUS_BLACK . ") immediately.
 If this file type is safe please manually change it's blacklist_status_id to TICKETING_ATTACHMENT_BLACKLIST_STATUS_WHITE (" . TICKETING_ATTACHMENT_BLACKLIST_STATUS_WHITE . ").\n";
