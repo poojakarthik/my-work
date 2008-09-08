@@ -34,6 +34,14 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		{
 			$response['OUTCOME'] = 'PASSWORD';
 		}
+		catch (Credit_Card_Payment_Communication_Response_Exception $e)
+		{
+			// Could possibly send an email to alert us to the fact that payments are failing, although this is likely to be temporary.
+			// Maybe only do this when running in test mode?
+			$response['OUTCOME'] = 'UNAVAILABLE';
+			$response['MESSAGE'] = 'We were unable to read the response from SecurePay so we do not know whether the payment succeeded or failed. Please do not retry payment at this time.';
+			if (Credit_Card_Payment::isTestMode()) $response['MESSAGE'] = $e->getMessage();
+		}
 		catch (Credit_Card_Payment_Communication_Exception $e)
 		{
 			// Could possibly send an email to alert us to the fact that payments are failing, although this is likely to be temporary.

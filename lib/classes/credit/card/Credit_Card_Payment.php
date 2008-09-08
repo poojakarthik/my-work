@@ -357,7 +357,7 @@ class Credit_Card_Payment
 					$tokens[$token] = $contact->getName();
 					break;
 				case self::TOKEN_START . 'CONTACT_EMAIL' . self::TOKEN_END:
-					$tokens[$token] = $contact->email;
+					$tokens[$token] = $strEmail;
 					break;
 				case self::TOKEN_START . 'COMPANY_ABN' . self::TOKEN_END:
 					$tokens[$token] = $account->abn;
@@ -371,7 +371,7 @@ class Credit_Card_Payment
 			}
 		}
 
-		$bolCanSendEmail = EmailAddressValid($contact->email);
+		$bolCanSendEmail = EmailAddressValid($strEmail);
 		$bolFailedToEmail = FALSE;
 
 		if ($bolCanSendEmail && 
@@ -387,7 +387,7 @@ class Credit_Card_Payment
 				$email = new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $account->customerGroup);
 				$email->subject = $customerGroup->name . " Credit Card Payment Confirmation (Ref: $purchaseOrderNo / $txnId)";
 				$email->text = self::replaceMessageTokens($creditCardPaymentConfig->confirmationEmail, $tokens);
-				$email->to = $contact->email;
+				$email->to = $strEmail;
 				$email->send();
 
 				if ($bolDD && !$bolFailedDD)
@@ -396,7 +396,7 @@ class Credit_Card_Payment
 					$email = new Email_Notification(EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION, $account->customerGroup);
 					$email->subject = $customerGroup->name . " Direct Debit Setup Confirmation";
 					$email->text = self::replaceMessageTokens($creditCardPaymentConfig->directDebitEmail, $tokens);
-					$email->to = $contact->email;
+					$email->to = $strEmail;
 					$email->send();
 				}
 			}
@@ -583,7 +583,7 @@ class Credit_Card_Payment
 		{
 			if ($str === FALSE)
 			{
-				throw new Credit_Card_Payment_Communication_Exception("Failed to read response headers from SecurePay server.");
+				throw new Credit_Card_Payment_Communication_Response_Exception("Failed to read response headers from SecurePay server.");
 			}
 			if (!trim($str))
 			{
@@ -597,7 +597,7 @@ class Credit_Card_Payment
 		{
 			if ($str === FALSE)
 			{
-				throw new Credit_Card_Payment_Communication_Exception("Failed to read response from SecurePay server.");
+				throw new Credit_Card_Payment_Communication_Response_Exception("Failed to read response from SecurePay server.");
 			}
 			if (!trim($str))
 			{
@@ -622,7 +622,7 @@ class Credit_Card_Payment
 					// We reached the end of the stream, but PHP is naf at recognising it!
 					break;
 				}
-				throw new Credit_Card_Payment_Communication_Exception("Failed to read body of response from SecurePay server.".strtolower(substr($body, -19)));
+				throw new Credit_Card_Payment_Communication_Response_Exception("Failed to read body of response from SecurePay server.".strtolower(substr($body, -19)));
 			}
 			if (!trim($str))
 			{
@@ -801,6 +801,7 @@ class Credit_Card_Payment_Incorrect_Password_Exception extends Exception { funct
 class Credit_Card_Payment_Not_Enabled_Exception 	extends Exception { function __construct()	{ parent::__construct("Credit Card Payments are not enabled in Flex."); 				} }
 class Credit_Card_Payment_Not_Configurred_Exception	extends Exception { function __construct() 	{ parent::__construct("Credit Card Payments have not been configurred in Flex Admin."); } }
 class Credit_Card_Payment_Communication_Exception	extends Exception { }
+class Credit_Card_Payment_Communication_Response_Exception	extends Credit_Card_Payment_Communication_Exception { }
 
 class Credit_Card_Payment_Remote_Processing_Error extends Exception
 {
