@@ -43,7 +43,7 @@
  */
 class HtmlTemplateAccountCustomerStatusHistory extends HtmlTemplate
 {
-	const MAX_INVOICE_RUNS = 12;
+	const MAX_INVOICE_RUNS = 6;
 	
 	//------------------------------------------------------------------------//
 	// __construct

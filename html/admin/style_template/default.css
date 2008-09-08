@@ -1687,74 +1687,74 @@ div.PropertyInputControlClear
 /*** Customer Status classes */
 .customer-status-l
 {
-	background-color: #000000;
-	color: #FFFFFF;
+	background-color: #000;
+	color: #FFF;
 }
 
 .customer-status-j
 {
-	background-color: #333333;
-	color: #FFFFFF;
+	background-color: #333;
+	color: #FFF;
 }
 
 .customer-status-i
 {
-	background-color: #666666;
-	color: #FFFFFF;
+	background-color: #666;
+	color: #FFF;
 }
 
 .customer-status-h
 {
-	background-color: #999999;
-	color: #000000;
+	background-color: #999;
+	color: #000;
 }
 
 .customer-status-g
 {
-	background-color: #CCCCCC;
-	color: #000000;
+	background-color: #CCC;
+	color: #000;
 }
 
 .customer-status-f
 {
-	background-color: #00FF00;
-	color: #000000;
+	background-color: #C00;
+	color: #FFF;
 }
 
 .customer-status-e
 {
-	background-color: #33FF33;
-	color: #000000;
+	background-color: #F00;
+	color: #FFF;
 }
 
 .customer-status-d
 {
-	background-color: #66FF66;
-	color: #000000;
+	background-color: #C60;
+	color: #FFF;
 }
 
 .customer-status-c
 {
-	background-color: #003366;
-	color: #FFFFFF;
+	background-color: #C90;
+	color: #000;
 }
 
 .customer-status-b
 {
-	background-color: #003399;
-	color: #FFFFFF;
+	background-color: #009900;
+	color: #FFF;
 }
 
 .customer-status-a
 {
-	background-color: #0033CC;
-	color: #FFFFFF;
+	background-color: #00CC00;
+	color: #000;
 }
 
 .customer-status-aaa
 {
-	background-color: #0033FF;
-	color: #FFFFFF;
+	background-color: #00FF00;
+	color: #000;
 }
 
 table.customer-status-history
