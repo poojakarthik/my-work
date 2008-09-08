@@ -372,7 +372,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 				
 				//Save the employee
 				if (!DBO()->Employee->IsInvalid())
-				{
+				{					
 					// This could update multiple tables, so needs to be done within a single transaction
 					
 	

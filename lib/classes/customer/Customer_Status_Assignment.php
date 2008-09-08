@@ -284,6 +284,31 @@ class Customer_Status_Assignment
 	{
 		return Customer_Status::getForId($this->customerStatusId);
 	}
+	
+	// Returns the action description based on the user role, customer status and whether or not the account has an overdue amount
+	// if $intUserRole === NULL then the default descriptions are used
+	public function getActionDescription($intUserRole=NULL)
+	{
+		return $this->getCustomerStatus()->getActionDescription($intUserRole, $this->paymentRequired());
+	}
+
+	// returns the overdue amount for the account (including GST)
+	// this value will be cahced if $bolForceRefesh == FALSE
+	// This can never be negitive as you can never have an overdue credit
+	public function paymentRequired($bolForceRefresh=FALSE)
+	{
+		static $bolPaymentRequired;
+		if (!isset($bolPaymentRequired) || $bolForceRefresh)
+		{
+			if (($fltOverdueAmount = $GLOBALS['fwkFramework']->GetOverdueBalance($this->accountId)) === FALSE)
+			{
+				// An error occurred
+				throw new Exception("Error occurred when trying to calculate the overdue balance for account: {$this->accountId}");
+			}
+			$bolPaymentRequired = (bool)($fltOverdueAmount > 0.0);
+		}
+		return $bolPaymentRequired;
+	}
 
 	//------------------------------------------------------------------------//
 	// getColumns

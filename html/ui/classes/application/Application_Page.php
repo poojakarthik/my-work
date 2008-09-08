@@ -2,7 +2,7 @@
 
 class Application_Page extends Page
 {
-	protected $mxdDataToRender = NULL;
+	public $mxdDataToRender = NULL;
 
 	function __construct($mxdDataToRender=NULL)
 	{

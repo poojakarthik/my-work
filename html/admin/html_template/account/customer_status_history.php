@@ -43,6 +43,8 @@
  */
 class HtmlTemplateAccountCustomerStatusHistory extends HtmlTemplate
 {
+	const MAX_INVOICE_RUNS = 12;
+	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -81,12 +83,10 @@ class HtmlTemplateAccountCustomerStatusHistory extends HtmlTemplate
 	function Render()
 	{
 		$intAccountId = DBO()->Account->Id->Value;
+		$intUserRoleId = $_SESSION['User']['user_role_id'];
 		
-		// Retrieve the CustomerStatusAssignment for this account, for the last 6 invoice runs
-		$arrStatusHistory = Customer_Status_Assignment::getForAccount($intAccountId, 6);
-		
-		//TODO! once the Employee_user-role_id is implemented, us it instead
-		$intUserRoleId = NULL;
+		// Retrieve the CustomerStatusAssignment for this account, for the last self::MAX_INVOICE_RUNS invoice runs
+		$arrStatusHistory = Customer_Status_Assignment::getForAccount($intAccountId, self::MAX_INVOICE_RUNS);
 		
 		if (count($arrStatusHistory) == 0)
 		{
@@ -112,7 +112,7 @@ class HtmlTemplateAccountCustomerStatusHistory extends HtmlTemplate
 
 			$arrHistoryDetails[] = array(	"name"			=> htmlspecialchars($objCustomerStatus->name),
 											"description"	=> htmlspecialchars($objCustomerStatus->description),
-											"action"		=> htmlspecialchars($objCustomerStatus->getActionDescription($intUserRoleId)),
+											"action"		=> htmlspecialchars($objStatusAssignment->getActionDescription($intUserRoleId)),
 											"lastUpdated"	=> date("jS M, Y g:i:s a", strtotime($objStatusAssignment->lastUpdated)),
 											"cssClass"		=> $objCustomerStatus->cssClass
 										);

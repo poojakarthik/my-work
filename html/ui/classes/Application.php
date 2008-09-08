@@ -153,6 +153,7 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
 				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
+				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
 			{
@@ -277,6 +278,7 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
 				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
+				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
 			{
@@ -969,7 +971,6 @@ class Application
 		return (int)$id;
 	}
 
-	
 	//----------------------------------------------------------------------------//
 	// __get
 	//----------------------------------------------------------------------------//

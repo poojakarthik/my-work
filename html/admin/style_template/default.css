@@ -1685,41 +1685,76 @@ div.PropertyInputControlClear
 
 
 /*** Customer Status classes */
-.customer-status-i,
-.customer-status-j,
 .customer-status-l
+{
+	background-color: #000000;
+	color: #FFFFFF;
+}
+
+.customer-status-j
+{
+	background-color: #333333;
+	color: #FFFFFF;
+}
+
+.customer-status-i
 {
 	background-color: #666666;
 	color: #FFFFFF;
 }
 
-.customer-status-aaa,
-.customer-status-a
-{
-	background-color: #00FFC0;
-	color: #000000;
-}
-
-.customer-status-b,
-.customer-status-c
-{
-	background-color: #FFFFFF;
-	color: #000000;
-}
-
-.customer-status-d,
-.customer-status-e,
-.customer-status-f
-{
-	background-color: #fbebe1;
-	color: #000000;
-}
-
-.customer-status-g,
 .customer-status-h
 {
-	background-color: #f2dbdb;
+	background-color: #999999;
 	color: #000000;
+}
+
+.customer-status-g
+{
+	background-color: #CCCCCC;
+	color: #000000;
+}
+
+.customer-status-f
+{
+	background-color: #00FF00;
+	color: #000000;
+}
+
+.customer-status-e
+{
+	background-color: #33FF33;
+	color: #000000;
+}
+
+.customer-status-d
+{
+	background-color: #66FF66;
+	color: #000000;
+}
+
+.customer-status-c
+{
+	background-color: #003366;
+	color: #FFFFFF;
+}
+
+.customer-status-b
+{
+	background-color: #003399;
+	color: #FFFFFF;
+}
+
+.customer-status-a
+{
+	background-color: #0033CC;
+	color: #FFFFFF;
+}
+
+.customer-status-aaa
+{
+	background-color: #0033FF;
+	color: #FFFFFF;
 }
 
 table.customer-status-history

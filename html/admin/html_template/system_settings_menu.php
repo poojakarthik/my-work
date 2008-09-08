@@ -90,6 +90,15 @@ class HtmlTemplateSystemSettingsMenu extends HtmlTemplate
 		$strItemDescription = "Manage system payment process";
 		$strHref = Href()->ManagePaymentTerms();
 		$this->_RenderMenuItem($strImage, $strItemName, $strItemDescription, $strHref);
+		
+		// Render the link the the "Manage Customer Statuses" page
+		$strImage = "img/template/contact.png";
+		$strItemName = "Manage Customer Statuses";
+		$strItemDescription = "Manage Customer Statuses";
+		$strHref = Href()->ManageCustomerStatuses();
+		$this->_RenderMenuItem($strImage, $strItemName, $strItemDescription, $strHref);
+		
+		
 	}	
 	
 	private function _RenderMenuItem($strImage, $strItemName, $strItemDescription, $strHref)

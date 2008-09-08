@@ -16,14 +16,15 @@ class Customer_Status
 {
 	const ACTION_DESCRIPTION_MAX_LENGTH = 1000;
 	
-	private $id							= NULL;
-	private $name						= NULL;
-	private $description				= NULL;
-	private $defaultActionDescription	= NULL;
-	private $precedence					= NULL;
-	private $test						= NULL;
-	private $cssClass					= NULL;
-	private $_arrActionDescriptions		= NULL;
+	private $id									= NULL;
+	private $name								= NULL;
+	private $description						= NULL;
+	private $defaultActionDescription			= NULL;
+	private $defaultOverdueActionDescription	= NULL;
+	private $precedence							= NULL;
+	private $test								= NULL;
+	private $cssClass							= NULL;
+	private $_arrActionDescriptions				= NULL;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -98,13 +99,14 @@ class Customer_Status
 	 * Returns the Customer_Status object with the id specified
 	 *
 	 * @param	int 				$intId		id of the Customer Status to return		
-	 * @return	Customer_Status	
+	 * @return	mix					Customer_Status : if found
+	 * 								NULL			: if not found	
 	 * @method
 	 */
 	public static function getForId($intId)
 	{
 		$arrCustomerStatuses = self::getAll();
-		return $arrCustomerStatuses[$intId];
+		return (array_key_exists($intId, $arrCustomerStatuses))? $arrCustomerStatuses[$intId] : NULL;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -148,6 +150,7 @@ class Customer_Status
 						"name",
 						"description",
 						"default_action_description",
+						"default_overdue_action_description",
 						"precedence",
 						"test"
 					);
@@ -164,15 +167,17 @@ class Customer_Status
 	 * Returns the action description that the user should follow when dealing with a customer of this Customer Status
 	 *
 	 * @param		int		$intUserRole		Optional. user_role_id of the user dealing with the customer
+	 * @param		bool	$bolIsOverdue		Optional. defaults to FALSE, returns the overdue_description if set to TRUE, else returns the normal description
+	 * 
 	 * @return		string	
 	 * @method
 	 */
-	public function getActionDescription($intUserRole=NULL)
+	public function getActionDescription($intUserRole=NULL, $bolIsOverdue=FALSE)
 	{
 		if ($intUserRole == NULL)
 		{
 			// Return the default action description
-			return $this->defaultActionDescription;
+			return ($bolIsOverdue)? $this->defaultOverdueActionDescription : $this->defaultActionDescription;
 		}
 		
 		$this->_loadAllActionDescriptions();
@@ -180,12 +185,12 @@ class Customer_Status
 		if (array_key_exists($intUserRole, $this->_arrActionDescriptions))
 		{
 			// Found it
-			return $this->_arrActionDescriptions[$intUserRole];
+			return ($bolIsOverdue)? $this->_arrActionDescriptions[$intUserRole]['Overdue'] : $this->_arrActionDescriptions[$intUserRole]['Normal'];
 		}
 		else
 		{
 			// No Action Description could be found specific to this user
-			return $this->defaultActionDescription;
+			return ($bolIsOverdue)? $this->defaultOverdueActionDescription : $this->defaultActionDescription;
 		}
 	}
 
@@ -209,7 +214,7 @@ class Customer_Status
 		
 		if (!isset($selAction))
 		{
-			$selAction = new StatementSelect("customer_status_action", array("id", "user_role_id", "description"), "customer_status_id = <CustomerStatusId> AND user_role_id = <UserRoleId>");
+			$selAction = new StatementSelect("customer_status_action", array("id", "user_role_id", "description", "overdue_description"), "customer_status_id = <CustomerStatusId> AND user_role_id = <UserRoleId>");
 		}
 		
 		if (($intRecCount = $selAction->Execute(array("CustomerStatusId" => $this->id, "UserRoleId" => $intUserRole))) === FALSE)
@@ -230,14 +235,16 @@ class Customer_Status
 		// A single record was found
 		$arrAction = $selAction->Fetch();
 		
-		$this->_arrActionDescriptions[$arrAction['user_role_id']] = $arrAction['description'];
+		$this->_arrActionDescriptions[$arrAction['user_role_id']] = array(	"Normal"	=> $arrAction['description'],
+																			"Overdue"	=> $arrAction['overdue_description']
+																		);
 		return $arrAction['id'];
 	}
 	
 	// inserts/updates the appropraite customer_status_action record, and updates $this->_arrActionDescriptions
 	// it assumes both $intUserRole and $strDescription are valid
 	// if $intUserRole === NULL then the default ActionDescription is updated (customer_status table), and $this->defaultActionDescription is also updated 
-	public function setActionDescription($intUserRole=NULL, $strDescription)
+	public function setActionDescription($intUserRole=NULL, $strNormalDescription, $strOverdueDescription)
 	{
 		static $updDefaultAction;
 		static $updAction;
@@ -246,8 +253,9 @@ class Customer_Status
 		if ($intUserRole === NULL)
 		{
 			// Update the default action description
-			$arrFields = array(	"id" => $this->id,
-								"default_action_description" => $strDescription
+			$arrFields = array(	"id" 									=> $this->id,
+								"default_action_description" 			=> $strNormalDescription,
+								"default_overdue_action_description"	=> $strOverdueDescription
 							);
 			if (!isset($updDefaultAction))
 			{
@@ -262,7 +270,8 @@ class Customer_Status
 			}
 			
 			// Update the object
-			$this->defaultActionDescription = $strDescription;
+			$this->defaultActionDescription			= $strNormalDescription;
+			$this->defaultOverdueActionDescription	= $strOverdueDescription;
 			return;
 		}
 		
@@ -273,7 +282,8 @@ class Customer_Status
 			$arrFields = array(	"id"					=> NULL,
 								"customer_status_id"	=> $this->id,
 								"user_role_id"			=> $intUserRole,
-								"description"			=> $strDescription
+								"description"			=> $strNormalDescription,
+								"overdue_description"	=> $strOverdueDescription
 							);
 			if (!isset($insAction))
 			{
@@ -290,7 +300,8 @@ class Customer_Status
 		{
 			// The record already exists, update it
 			$arrFields = array(	"id"					=> $intId,
-								"description"			=> $strDescription
+								"description"			=> $strNormalDescription,
+								"overdue_description"	=> $strOverdueDescription
 							);
 			if (!isset($updAction))
 			{
@@ -306,7 +317,9 @@ class Customer_Status
 		}
 		
 		// Update $this->_arrActionDescriptions (it has already been initialised)
-		$this->_arrActionDescriptions[$intUserRole] = $strDescription;
+		$this->_arrActionDescriptions[$intUserRole] = array("Normal"	=> $strNormalDescription,
+															"Overdue"	=> $strOverdueDescription
+															);
 	}
 
 	//returns TRUE/FALSE signifying validity. and if invalid, $arrErrors will have descriptions of the errors
@@ -333,7 +346,6 @@ class Customer_Status
 		return TRUE;
 	} 
 	
-	
 	private function _loadAllActionDescriptions()
 	{
 		// It is assumed that the defaultActionDescription is always up to date
@@ -343,7 +355,7 @@ class Customer_Status
 		{
 			if (!isset($selActions))
 			{
-				$selActions = new StatementSelect("customer_status_action", array("user_role_id", "description"), "customer_status_id = <CustomerStatusId>");
+				$selActions = new StatementSelect("customer_status_action", array("user_role_id", "description", "overdue_description"), "customer_status_id = <CustomerStatusId>");
 			}
 			
 			// Load the actions in from the database
@@ -354,7 +366,9 @@ class Customer_Status
 			$this->_arrActionDescriptions = array();
 			while ($arrAction = $selActions->Fetch())
 			{
-				$this->_arrActionDescriptions[$arrAction['user_role_id']] = $arrAction['description'];
+				$this->_arrActionDescriptions[$arrAction['user_role_id']] = array(	"Normal"	=> $arrAction['description'],
+																					"Overdue"	=> $arrAction['overdue_description']
+																				);
 			}
 		}
 	}
@@ -381,7 +395,8 @@ class Customer_Status
 		}
 	}
 	
-	// returns $this->arrActionDescriptions (key = user_role_id, value = description)
+	// returns $this->arrActionDescriptions (key = user_role_id, value = array['Normal'] = normal description)
+	//																			['Overdue'] = overdue description
 	// This does not return the detault Action Description
 	public function getAllActionDescriptions()
 	{
@@ -390,6 +405,8 @@ class Customer_Status
 				
 		return $this->_arrActionDescriptions;
 	}
+
+
 
 	//------------------------------------------------------------------------//
 	// init

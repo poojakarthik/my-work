@@ -268,6 +268,72 @@ class MenuItems
 		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/SummaryReport" . (($bolRetrieveCachedReport)? "/GetReport":"");
 	}
 	
+	//------------------------------------------------------------------------//
+	// ManageCustomerStatuses
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageCustomerStatuses()
+	 *
+	 * Compiles the Href to be executed when the ManageCustomerStatuses menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageCustomerStatuses menu item is triggered
+	 * 
+	 * @return	string			Href
+	 *
+	 * @method
+	 */
+	function ManageCustomerStatuses()
+	{
+		$this->strContextMenuLabel = "Manage Customer Statuses";
+		$this->strLabel = "Customer Statuses";
+		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/ViewAll";
+	}
+	
+	//------------------------------------------------------------------------//
+	// ViewCustomerStatus
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewCustomerStatus()
+	 *
+	 * Compiles the Href to be executed when the ViewCustomerStatus menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewCustomerStatus menu item is triggered
+	 * 
+	 * @param	integer			id of the customer status to view
+	 * @return	string			Href
+	 *
+	 * @method
+	 */
+	function ViewCustomerStatus($intId)
+	{
+		$strName = Customer_Status::getForId($intId)->name;
+		$this->strContextMenuLabel = "View Customer Status $strName";
+		$this->strLabel = $strName;
+		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/View/$intId";
+	}
+	
+	//------------------------------------------------------------------------//
+	// EditCustomerStatus
+	//------------------------------------------------------------------------//
+	/**
+	 * EditCustomerStatus()
+	 *
+	 * Compiles the Href to be executed when the EditCustomerStatus menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the EditCustomerStatus menu item is triggered
+	 * 
+	 * @param	integer			id of the customer status to edit
+	 * @return	string			Href
+	 *
+	 * @method
+	 */
+	function EditCustomerStatus($intId)
+	{
+		$strName = Customer_Status::getForId($intId)->name;
+		$this->strContextMenuLabel = "Edit Customer Status $strName";
+		$this->strLabel = $strName;
+		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/Edit/$intId";
+	}
 
 	//------------------------------------------------------------------------//
 	// ViewServiceRatePlan

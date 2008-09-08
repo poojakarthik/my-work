@@ -313,6 +313,12 @@ div.SmallSeperator {
 	height: .25em;
 }
 
+/* And now spelt properly */
+
+div.SmallSeparator {
+	height: .25em;
+}
+
 div.ButtonContainer {
 	float: right;
 	padding: .25em;
