@@ -125,7 +125,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				Ajax()->RenderHtmlTemplate("CustomerGroupNew", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				return TRUE;
 			}
-			##### DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail");
+			// DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail");
 			// The CustomerGroup is valid.  Save it
 			if (!DBO()->CustomerGroup->Save())
 			{
@@ -401,7 +401,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		DBO()->CustomerGroup->customer_primary_color = htmlspecialchars(DBO()->CustomerGroup->customer_primary_color->Value);
 		DBO()->CustomerGroup->customer_secondary_color = htmlspecialchars(DBO()->CustomerGroup->customer_secondary_color->Value);
-		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url");
+		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save())
 		{

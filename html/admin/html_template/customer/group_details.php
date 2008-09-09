@@ -129,12 +129,33 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		// Render the details of the CustomerGroup
 		DBO()->CustomerGroup->InternalName->RenderOutput();
 		DBO()->CustomerGroup->ExternalName->RenderOutput();
+		DBO()->CustomerGroup->external_name_possessive->RenderOutput();
 		DBO()->CustomerGroup->OutboundEmail->RenderOutput();
 		DBO()->CustomerGroup->flex_url->RenderOutput();
 		DBO()->CustomerGroup->email_domain->RenderOutput();
 		DBO()->CustomerGroup->customer_primary_color->RenderOutput();
 		DBO()->CustomerGroup->customer_secondary_color->RenderOutput();
 		DBO()->CustomerGroup->customer_exit_url->RenderOutput();
+
+		DBO()->CustomerGroup->abn->RenderOutput();
+		DBO()->CustomerGroup->acn->RenderOutput();
+		DBO()->CustomerGroup->bill_pay_biller_code->RenderOutput();
+		DBO()->CustomerGroup->business_payable_name->RenderOutput();
+		DBO()->CustomerGroup->business_payable_address->RenderOutput();
+		DBO()->CustomerGroup->credit_card_payment_phone->RenderOutput();
+
+		DBO()->CustomerGroup->customer_service_contact_name->RenderOutput();
+		DBO()->CustomerGroup->customer_service_phone->RenderOutput();
+		DBO()->CustomerGroup->customer_service_email->RenderOutput();
+
+		DBO()->CustomerGroup->faults_phone->RenderOutput();
+
+		DBO()->CustomerGroup->business_phone->RenderOutput();
+		DBO()->CustomerGroup->business_fax->RenderOutput();
+		DBO()->CustomerGroup->business_web->RenderOutput();
+		DBO()->CustomerGroup->business_contact_email->RenderOutput();
+		DBO()->CustomerGroup->business_info_email->RenderOutput();
+
 		
 		echo "</div>\n"; // GroupedContent
 
@@ -199,12 +220,34 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		// Render the details of the CustomerGroup
 		DBO()->CustomerGroup->InternalName->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->ExternalName->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		
+		DBO()->CustomerGroup->external_name_possessive->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		
 		DBO()->CustomerGroup->OutboundEmail->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->customer_primary_color->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->customer_secondary_color->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->customer_exit_url->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+
+		DBO()->CustomerGroup->abn->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>11, "style:width"=>"100px"));
+		DBO()->CustomerGroup->acn->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>9, "style:width"=>"100px"));
+		DBO()->CustomerGroup->bill_pay_biller_code->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>5, "style:width"=>"50px"));
+		DBO()->CustomerGroup->business_payable_name->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->business_payable_address->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->credit_card_payment_phone->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>50, "style:width"=>"200px"));
+
+		DBO()->CustomerGroup->customer_service_contact_name->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->customer_service_phone->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>50, "style:width"=>"200px"));
+		DBO()->CustomerGroup->customer_service_email->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+
+		DBO()->CustomerGroup->faults_phone->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>50, "style:width"=>"200px"));
+
+		DBO()->CustomerGroup->business_phone->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>50, "style:width"=>"200px"));
+		DBO()->CustomerGroup->business_fax->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>50, "style:width"=>"200px"));
+		DBO()->CustomerGroup->business_web->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->business_contact_email->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->business_info_email->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		
 		echo "</div>\n"; // GroupedContent
 
