@@ -57,7 +57,12 @@ class Flex_Rollout_Version_000052 extends Flex_Rollout_Version
 					DROP credit_card_payment_phone,
 					DROP faults_phone
 					;";
-		
+
+		$strSQL = "DELETE FROM credit_card_type WHERE const_name = 'CREDIT_CARD_TYPE_BANKCARD'";
+		if (($outcome = $qryQuery->Execute($strSQL)) === FALSE)
+		{
+			throw new Exception(__CLASS__ . ' Failed to delete Bankcard from crdit_card_type table. ' . $qryQuery->Error());
+		}
 	}
 	
 	function rollback()
