@@ -144,8 +144,6 @@ class HtmlTemplateAccountCustomerStatusHistory extends HtmlTemplate
 <div class='SmallSeparator'></div>
 <script type='text/javascript'>Vixen.CustomerStatusHistory.Initialise($jsonHistoryDetails)</script>
 ";
-
-		
 	}
 
 }

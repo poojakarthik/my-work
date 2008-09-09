@@ -46,22 +46,6 @@
 class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -105,7 +89,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		DBO()->Account->Id->RenderHidden();
 		//DBO()->ChargeType->Id->RenderHidden();
 		
-		echo "<div class='WideForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 		
 		// Check if the recurring charge is being applied to a service
 		if (DBO()->Service->Id->Value)
@@ -203,6 +187,30 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		$strRecurringFreq = $arrChargeTypes[$intChargeTypeId]['RecurringFreq'] ." ". $arrChargeTypes[$intChargeTypeId]['RecurringFreqTypeAsText'];
 		DBO()->RecurringChargeType->RecurringFreq->RenderArbitrary($strRecurringFreq, RENDER_OUTPUT);
 
+		// If Today is the 29th - 31st of the month, then the user has to choose whether to snap the charge to the 28th or the 1st of next month
+		$intNow				= strtotime(GetCurrentISODateTime());
+		$intCurrentDay		= intval(date("d", $intNow));
+		$intCurrentMonth	= intval(date("m", $intNow));
+		$intCurrentYear		= intval(date("Y", $intNow));
+		
+		if (($intCurrentDay >= 29) && ($intCurrentDay <= 31))
+		{
+			// The user will have to choose to snap the recurring charge to the 28th or the 1st of next month
+			$strStartDate28th	= date("d/m/Y", mktime(0, 0, 0, $intCurrentMonth, 28, $intCurrentYear));
+			$strStartDate1st	= date("d/m/Y", mktime(0, 0, 0, $intCurrentMonth + 1, 1, $intCurrentYear));
+			echo "
+<div class='DefaultElement' id='StartDateSnapControl'>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Start Date Snap To :</div>
+	<div class='DefaultOutput'>
+		<select id='RecurringCharge.SnapToDayOfMonth' name='RecurringCharge.SnapToDayOfMonth'>
+			<option value='28' selected='selected'>$strStartDate28th</option>
+			<option value='1'>$strStartDate1st</option>
+		</select>
+	</div>
+</div>
+";
+		}
+
 		// Display the Minimum Charge
 		DBO()->RecurringCharge->MinCharge->RenderInput(CONTEXT_INCLUDES_GST, TRUE);
 
@@ -217,7 +225,19 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
+		// Create the in_advance checkbox
+		echo "
+<div class='DefaultElement'>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Charge in Advance</div>
+	<div class='DefaultOutput'>
+		<input type='checkbox' id='RecurringCharge.in_advance' name='RecurringCharge.in_advance' style='padding-left:3px;' ></input>
+	</div>
+</div>
+";
+
+		
 		// Create the EndDate label
+		echo "<div class='TinySeparator'></div>";
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;End Date:</div>\n";
 		echo "   <div id='EndDate' class='DefaultOutput'>&nbsp;</div>\n";

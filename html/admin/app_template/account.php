@@ -479,7 +479,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
-		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Account");

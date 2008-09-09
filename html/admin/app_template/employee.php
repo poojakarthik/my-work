@@ -374,7 +374,6 @@ class AppTemplateEmployee extends ApplicationTemplate
 				if (!DBO()->Employee->IsInvalid())
 				{					
 					// This could update multiple tables, so needs to be done within a single transaction
-					
 	
 					//echo "Employee is NOT invalid Employee would be saved";
 					if (DBO()->Employee->Save())

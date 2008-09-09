@@ -149,9 +149,12 @@ class Application
 			ContextMenu()->Admin->ManageEmployees();
 			ContextMenu()->Admin->ManageInvoiceRunEvents();
 			
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
+			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
 				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}
@@ -273,10 +276,13 @@ class Application
 			
 			ContextMenu()->Admin->ManageEmployees();
 			ContextMenu()->Admin->ManageInvoiceRunEvents();
-			
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
+			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
 				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}

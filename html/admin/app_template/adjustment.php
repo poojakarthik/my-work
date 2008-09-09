@@ -315,10 +315,48 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->RecurringCharge->ApprovedBy		= NULL;
 				
 				// Date the adjustment was created (the current date)
-				$strCurrentDate = GetCurrentDateForMySQL();
-				DBO()->RecurringCharge->CreatedOn		= $strCurrentDate;
-				DBO()->RecurringCharge->StartedOn		= $strCurrentDate;
-				DBO()->RecurringCharge->LastChargedOn	= $strCurrentDate;
+				
+	
+				$strCurrentDate						= GetCurrentISODate();
+				$intNow								= strtotime(GetCurrentISODateTime());
+				$intCurrentDay						= intval(date("d", $intNow));
+				$intCurrentMonth					= intval(date("m", $intNow));
+				$intCurrentYear						= intval(date("Y", $intNow));
+				DBO()->RecurringCharge->CreatedOn	= $strCurrentDate;
+
+				if ($intCurrentDay >= 29 && $intCurrentDay <= 31)
+				{
+					// The StartedOn date has to snap to either the 28th or the 1st of next month
+					switch (intval(DBO()->RecurringCharge->SnapToDayOfMonth->Value))
+					{
+						case 1:
+								// Set the start date to the 1st of next month
+								DBO()->RecurringCharge->StartedOn = date("Y-m-d", mktime(0, 0, 0, $intCurrentMonth + 1, 1, $intCurrentYear));
+								break;
+							
+						case 28:
+						default:
+								// Set the start date to the 28th of the current month
+								DBO()->RecurringCharge->StartedOn = date("Y-m-d", mktime(0, 0, 0, $intCurrentMonth, 28, $intCurrentYear));
+								break;
+					}
+					
+				}
+				else
+				{
+					DBO()->RecurringCharge->StartedOn = $strCurrentDate;
+				}
+				
+				if (DBO()->RecurringCharge->in_advance->Value == TRUE)
+				{
+					// Charging in advance
+					DBO()->RecurringCharge->LastChargedOn = NULL;
+				}
+				else
+				{
+					// Charging in arrears
+					DBO()->RecurringCharge->LastChargedOn = DBO()->RecurringCharge->StartedOn->Value;
+				}
 				
 				// Details regarding the type of charge
 				DBO()->RecurringCharge->ChargeType			= DBO()->RecurringChargeType->ChargeType->Value;
@@ -349,6 +387,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$strNote .= "Nature: " . DBO()->RecurringCharge->Nature->FormattedValue() . "\n";
 				$strNote .= "Minimum Charge: $strMinCharge (inc GST)\n";
 				$strNote .= "Recurring Charge: $strRecursionCharge (inc GST)\n";
+				$strNote .= (DBO()->RecurringCharge->in_advance->Value == TRUE)? "Charged in advance\n" : "Charged in arrears\n";
 
 				// Save the recurring adjustment to the charge table of the vixen database
 				if (!DBO()->RecurringCharge->Save())

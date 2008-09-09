@@ -55,6 +55,8 @@ function VixenValidateRecurringAdjustmentClass()
 	var _fltCurrentRecursionCharge;
 	var _fltCurrentMinCharge;
 	var _intCurrentTimesToCharge;
+	
+	var elmStartDateSnapControl;
 
 	//------------------------------------------------------------------------//
 	// _objChargeTypeData
@@ -98,10 +100,10 @@ function VixenValidateRecurringAdjustmentClass()
 		this._objChargeTypeData = objChargeTypeData;
 		
 		// retrieve references to the elements
-		this._elmRecursionCharge		= document.getElementById("RecurringCharge.RecursionCharge");
-		this._elmMinCharge				= document.getElementById("RecurringCharge.MinCharge");
-		this._elmTimesToCharge			= document.getElementById("TimesToCharge");
-		this._elmRecurringChargeTypeId	= document.getElementById("RecurringChargeType.Id");
+		this._elmRecursionCharge		= $ID("RecurringCharge.RecursionCharge");
+		this._elmMinCharge				= $ID("RecurringCharge.MinCharge");
+		this._elmTimesToCharge			= $ID("TimesToCharge");
+		this._elmRecurringChargeTypeId	= $ID("RecurringChargeType.Id");
 
 		//add event listeners
 		this._elmRecursionCharge.onkeyup	= function(){Vixen.ValidateRecurringAdjustment.RecursionChargeChanged()};
@@ -111,7 +113,7 @@ function VixenValidateRecurringAdjustmentClass()
 		
 		this.DeclareChargeType(intCurrentChargeTypeId);
 
-		document.getElementById("ChargeTypeCombo").focus();
+		$ID("ChargeTypeCombo").focus();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -178,16 +180,16 @@ function VixenValidateRecurringAdjustmentClass()
 		if (this._objChargeTypeData[intChargeTypeId].Fixed == 1)
 		{
 			// disable the textboxes
-			this._elmRecursionCharge.disabled = TRUE;
-			this._elmMinCharge.disabled = TRUE;
-			this._elmTimesToCharge.disabled = TRUE;
+			this._elmRecursionCharge.disabled = true;
+			this._elmMinCharge.disabled = true;
+			this._elmTimesToCharge.disabled = true;
 		}
 		else
 		{
 			// enable the textboxes
-			this._elmRecursionCharge.disabled = FALSE;
-			this._elmMinCharge.disabled = FALSE;
-			this._elmTimesToCharge.disabled = FALSE;
+			this._elmRecursionCharge.disabled = false;
+			this._elmMinCharge.disabled = false;
+			this._elmTimesToCharge.disabled = false;
 		}
 	}
 	
@@ -210,7 +212,7 @@ function VixenValidateRecurringAdjustmentClass()
 		if (isNaN(this._intTimesToCharge))
 		{
 			this._elmTimesToCharge.value = "";
-			this._intCurrentTimesToCharge = NULL;
+			this._intCurrentTimesToCharge = null;
 		}
 		else
 		{

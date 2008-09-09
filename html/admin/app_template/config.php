@@ -63,7 +63,7 @@ class AppTemplateConfig extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_GOD);
 		
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();

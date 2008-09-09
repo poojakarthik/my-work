@@ -198,7 +198,9 @@ define("PERMISSION_OPERATOR_VIEW"			, 0x80);	$arrPermissions[PERMISSION_OPERATOR
 define("PERMISSION_SUPER_ADMIN"				, 0x3FF);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 1023 (256 + All other permissions except DEBUG and GOD) 
 define("PERMISSION_CUSTOMER_GROUP_ADMIN"	, 0x200);	$arrPermissions[PERMISSION_CUSTOMER_GROUP_ADMIN]	= "Customer Group Admin";	// 512
 define("PERMISSION_DEBUG"					, 0x80000000);
-define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFFFFFF);
+define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFFFFFF); // This constant is legacy
+define("PERMISSION_GOD"						, 0x7FFFFFFFFFFFFFFF);
+
 
 $GLOBALS['Permissions']	= $arrPermissions;
 
