@@ -80,11 +80,7 @@
 	// Render the login table
 		print "
 		<br/><br/>
-		<TABLE align=center class=login-table-style-main-title>
-		<TR>
-			<TD>$ExternalName Customer System - Login</TD>
-		</TR>
-		</TABLE>
+		<center><div class='customer-standard-table-style-menu-options-login'>$ExternalName Customer System - Login</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD align=\"center\">";

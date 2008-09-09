@@ -233,7 +233,6 @@ textarea.invalid {
 /**************************************************************************/
 .customer-standard-table-style-menu-options
 {
-	
 	font-size:	12px;
 	width:		375px;
 	text-indent: 10; 
@@ -1879,3 +1878,22 @@ span.IncorrectLogin
 		height:					16px;
 		vertical-align:			text-top;
 	}
+
+
+.customer-standard-table-style-menu-options-login
+{
+	font-size:	12px;
+	/* for firefox compatibility. */
+	width:		434px !important;
+	/* for ie6 compatibility. */
+	width:		442px;
+	text-indent: 10; 
+	color:	[customer_breadcrumb_menu_link_color];
+	background-repeat:		repeat-x;
+	background-image:		url('./img/template/menu-options-bg.gif');
+	background-position: 0px 100%;
+	border:				solid 1px #D1D1D1;
+	padding:	0px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
