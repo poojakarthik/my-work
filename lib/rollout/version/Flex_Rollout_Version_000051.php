@@ -32,7 +32,7 @@ class Flex_Rollout_Version_000051 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "UPDATE provisioning_type SET name = 'Preselection Lost (Diconnected)', description = 'Preselection Lost (Diconnected)' WHERE id = 917;";
 		
 		// 2:	Adds the RecurringCharge.in_advance field
-		$strSQL = "ALTER TABLE RecurringCharge ADD in_advance TINYINT(1) NOT NULL COMMENT '1: Charged in Advance; 0: Charged in Arrears' AFTER Continuable;";
+		$strSQL = "ALTER TABLE RecurringCharge ADD in_advance TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1: Charged in Advance; 0: Charged in Arrears' AFTER Continuable;";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the RecurringCharge.in_advance field. ' . $qryQuery->Error());
