@@ -16,6 +16,7 @@ class Flex_Rollout_Version_000052 extends Flex_Rollout_Version
 
 		// 1:	Add new columns to CustomerGroup table 
 		$strSQL = "ALTER TABLE CustomerGroup 
+					ADD external_name_possessive varchar(255) DEFAULT NULL COMMENT 'Possessive name (e.g. MyCo\'\'s payment plan...)',
 					ADD bill_pay_biller_code INT(5) DEFAULT NULL COMMENT 'BillPay biller code (a 5 digit number)',
 					ADD abn CHAR(11) DEFAULT NULL COMMENT 'ABN of business (11 digits)',
 					ADD acn CHAR(9) DEFAULT NULL COMMENT 'ACN of company (9 digits)',
@@ -29,8 +30,6 @@ class Flex_Rollout_Version_000052 extends Flex_Rollout_Version
 					ADD customer_service_contact_name varchar(255) DEFAULT NULL COMMENT 'Contact name in customer service department',
 					ADD business_payable_name varchar(255) DEFAULT NULL COMMENT 'Name payments should be made out to',
 					ADD business_payable_address varchar(255) DEFAULT NULL COMMENT 'Address postal payments should mailed to',
-					ADD business_friendly_name varchar(255) DEFAULT NULL COMMENT 'Friendly name for business',
-					ADD business_friendly_name_possessive varchar(255) DEFAULT NULL COMMENT 'Possessive name (e.g. MyCo\'\'s payment plan...)',
 					ADD credit_card_payment_phone varchar(50) DEFAULT NULL COMMENT 'Phone number customers call to pay by credit card',
 					ADD faults_phone varchar(50) DEFAULT NULL COMMENT 'Phone number customers call to report faults'
 					";
@@ -39,6 +38,7 @@ class Flex_Rollout_Version_000052 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add columns to CustomerGroup table. ' . $qryQuery->Error());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE CustomerGroup 
+					DROP external_name_possessive,
 					DROP bill_pay_biller_code,
 					DROP abn,
 					DROP acn,
@@ -52,8 +52,6 @@ class Flex_Rollout_Version_000052 extends Flex_Rollout_Version
 					DROP customer_service_contact_name,
 					DROP business_payable_name,
 					DROP business_payable_address,
-					DROP business_friendly_name,
-					DROP business_friendly_name_possessive,
 					DROP credit_card_payment_phone,
 					DROP faults_phone
 					;";
