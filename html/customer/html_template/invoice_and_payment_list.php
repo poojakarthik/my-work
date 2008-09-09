@@ -99,6 +99,14 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 	{
 		echo "<div class='WideContent'>\n";
 		
+		echo "
+		<TABLE width=\"100%\">
+		<TR>
+			<TD style=\"width: 200px; text-indent: 5; font-size: 8pt;\"><a href=\"#\" onclick=\"javascript:window.print();return false;\">Print This Page</a></TD>
+			<TD style=\"text-indent: 175; font-weight: bold;\"><!-- anything can go here --></TD>
+		</TR>
+		</TABLE>\n";
+
 		// The list of invoices and payments will have to be ordered by the date they were created
 		// Make a single array of the data that you want to display and then sort it
 		

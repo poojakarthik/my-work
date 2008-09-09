@@ -74,7 +74,7 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 		echo "
 		<TABLE width=\"100%\">
 		<TR>
-			<TD style=\"width: 200px; text-indent: 5; font-size: 8pt;\">View Itemisation</TD>
+			<TD style=\"width: 200px; text-indent: 5; font-size: 8pt;\">View Itemisation | <a href=\"#\" onclick=\"javascript:window.print();return false;\">Print This Page</a></TD>
 			<TD style=\"text-indent: 175; font-weight: bold;\">Unbilled Debits & Credits</TD>
 		</TR>
 		</TABLE>\n";
