@@ -69,46 +69,14 @@
 								  "AND RecurringFreq > 0 " .
 								  "AND RecurringCharge.Archived = 0 " .
 								  "AND Account.Archived = ".ACCOUNT_STATUS_ACTIVE." " .
-								  "AND Service.ClosedOn IS NULL AND " .
+								  "AND Service.Status = ".SERVICE_STATUS_ACTIVE." NULL AND " .
 								  "(" .
 								  "		Continuable = 1 " .
 								  "		OR " .
 								  "		(Continuable = 0 AND MinCharge > TotalCharged)" .
 								  ") " .
-								  "AND " .
-								  "(" .
-								  "		LastChargedOn IS NULL" .
-								  "		OR" .
-								  "		(" .
-								  "			RecurringFreqType = ".BILLING_FREQ_DAY." " .
-								  "			AND " .
-								  "			NOW() >= ADDDATE(LastChargedOn, INTERVAL RecurringFreq DAY)" .
-								  "		)" .
-								  "		OR" .
-								  "		(" .
-								  "			RecurringFreqType = ".BILLING_FREQ_MONTH." " .
-								  "			AND " .
-								  "			NOW() >= ADDDATE(LastChargedOn, INTERVAL RecurringFreq MONTH)" .
-								  "		)" .
-								  "		OR" .
-								  "		(" .
-								  "			RecurringFreqType = ".BILLING_FREQ_HALF_MONTH." " .
-								  "			AND " .
-								  "			(" .
-								  "				(" .
-								  "					DATE_FORMAT(LastChargedOn, '%e') < 15 " .
-								  "					AND " .
-								  "					NOW() >= ADDDATE(LastChargedOn, INTERVAL 14 DAY)" .
-								  "				) " .
-								  "				OR " .
-								  "				(" .
-								  "					DATE_FORMAT(LastChargedOn, '%e') > 14" .
-								  "					AND " .
-								  "					NOW() >= ADDDATE(SUBDATE(LastChargedOn, INTERVAL 14 DAY), INTERVAL 1 MONTH)" .
-								  "				)" .
-								  "			)" .
-								  "		)" .
-								  ")";
+								  "AND NOW() >= ADDDATE(StartedOn, INTERVAL RecurringFreq * (TotalRecursions + IF(in_advance = 1, 0, 1)) MONTH)";
+								  
 		$this->_selGetCharges	= new StatementSelect("(RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account) LEFT JOIN Service ON Service.Id = RecurringCharge.Service", "RecurringCharge.*", $arrWhere, NULL, "1000");
 		
 		$arrColumns = Array();
@@ -161,7 +129,6 @@
 				$this->_rptRecurringChargesReport->AddMessageVariables(MSG_LINE, Array('<Id>' => $arrCharge['Id']), FALSE);
 				
 				// Calculate partial charge if needed
-				// -HOHOHO- Q: Shouldn't this check if the TotalCharged + RecursionCharge _<_ MinCharge, rather than _>_?
 				if (!$arrCharge['Continuable'] && ($arrCharge['TotalCharged'] + $arrCharge['RecursionCharge']) > $arrCharge['MinCharge'])
 				{
 					// final (partial) charge for a non-continuable charge
@@ -169,37 +136,21 @@
 				}
 				
 				// Calculate the charge date
-				$strDate = $arrCharge['LastChargedOn'];
-				if ($strDate === NULL)
+				switch ($arrCharge['RecurringFreqType'])
 				{
-					// This charge hasn't been run before, so charge on the StartDate
-					$arrCharge['LastChargedOn'] = $arrCharge['StartDate'];
-				}
-				else
-				{
-					switch ($arrCharge['RecurringFreqType'])
-					{
-						case BILLING_FREQ_DAY:
-							$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." days", strtotime($arrCharge['LastChargedOn'])));
-							break;
-						case BILLING_FREQ_MONTH:
-							$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." months", strtotime($arrCharge['LastChargedOn'])));
-							break;
-						case BILLING_FREQ_HALF_MONTH:
-							if ((int)date("d", strtotime($arrCharge['LastChargedOn'])) < 15)
-							{
-								$strDate	= date("Y-m-d", strtotime("+14 days", strtotime($arrCharge['LastChargedOn'])));
-							}
-							else
-							{
-								$strDate	= date("Y-m-d", strtotime("-14 days", strtotime($arrCharge['LastChargedOn'])));
-								$strDate	= date("Y-m-d", strtotime("+1 month", strtotime($strDate)));
-							}
-							break;
-						default:
-							$this->_rptRecurringChargesReport->AddMessage(MSG_FAIL.MSG_REASON."Invalid RecurringFreqType ".$arrCharge['RecurringFreqType']);
-							continue;
-					}
+					case BILLING_FREQ_DAY:
+						CliEcho("Flex no longer supports BILLING_FREQ_DAY for Recurring Charges!");
+						continue;
+					case BILLING_FREQ_MONTH:
+						$intTotalRecursions	= ($arrCharge['in_advance']) ? $arrCharge['TotalRecursions'] : $arrCharge['TotalRecursions'] + 1;
+						$strDate			= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." months", strtotime($arrCharge['StartedOn'])));
+						break;
+					case BILLING_FREQ_HALF_MONTH:
+						CliEcho("Flex no longer supports BILLING_FREQ_HALF_MONTH for Recurring Charges!");
+						continue;
+					default:
+						$this->_rptRecurringChargesReport->AddMessage(MSG_FAIL.MSG_REASON."Invalid RecurringFreqType ".$arrCharge['RecurringFreqType']);
+						continue;
 				}
 				$arrCharge['LastChargedOn'] = $strDate;
 				
