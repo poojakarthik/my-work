@@ -1388,7 +1388,7 @@ span.IncorrectLogin
 	
 	td.LogoutMiddle button.logoutHover
 	{
-		background-color:		#ffbf00;
+		background-color:		[customer_primary_color];
 	}
 	
 	td.LogoutMiddle span.LoginUserLabel
