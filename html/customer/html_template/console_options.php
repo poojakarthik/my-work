@@ -125,13 +125,11 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		<BR><BR>\n";
 				
 		echo "<div class='customer-standard-table-style-menu-options-title'>Secure Payments</div>\n";
-		echo "<table class=\"customer-standard-table-style-menu-options\">\n";
+		echo "<table class=\"customer-standard-table-style-menu-options-info\">\n";
 		
 			echo "   <tr>\n";
-			echo "      <td align=center>\n";
-			echo "			<IMG SRC=\"./img/generic/logo_securepay.gif\" WIDTH=\"136\" HEIGHT=\"58\" BORDER=\"0\" ALT=\"\"><br/>
-			All payments are processed securely by one of Australias leading payment gateways.\n";
-			echo "      </td>\n";
+			echo "      <td><IMG SRC=\"./img/generic/logo_securepay.gif\" WIDTH=\"136\" HEIGHT=\"58\" BORDER=\"0\" ALT=\"\"></td>";
+			echo "		<td>All payments are processed securely by one of Australias leading payment gateways.</td>\n";
 			echo "   </tr>
 			</table>\n";
 		//echo "</div>\n";

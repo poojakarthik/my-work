@@ -241,6 +241,16 @@ textarea.invalid {
 	border:				solid 1px #D1D1D1;
 
 }
+.customer-standard-table-style-menu-options-info
+{
+	
+	font-size:	12px;
+	width:		375px;
+	text-indent: 0; 
+	background-color:	#FFFFFF;
+	border:				solid 1px #D1D1D1;
+
+}
 .customer-standard-table-style-menu-options-title
 {
 	font-size:	12px;
