@@ -78,7 +78,16 @@
 	 
 	function Render()
 	{
-		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>
+		<IMG SRC=\"./img/generic/cc_payments_accepted.jpg\" WIDTH=\"402\" HEIGHT=\"47\" BORDER=\"0\" ALT=\"\"><br/><br/>
+		<div class='customer-standard-table-title-style-confirm-details'>Important Payment Information</div>
+		<div class='GroupedContent'>
+		<TABLE class=\"customer-standard-table-style\">
+		<TR>
+			<TD>Credit card payments are processed by SecurePay in Australian dollars (AUD.)</TD>
+		</TR>
+		</TABLE>
+		</div><br/>";
 		// this is going to be replaced with HO's form.
 		require_once dirname(__FILE__) . '/../../../../lib/classes/credit/card/Credit_Card_Payment.php';
 		$strPanel = Credit_Card_Payment::getPaymentPanel(DBO()->Account->Id->Value);
