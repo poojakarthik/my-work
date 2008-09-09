@@ -42,11 +42,7 @@
 	{
 		print "
 		<br/><br/>
-		<TABLE align=center class=login-table-style-main-title>
-		<TR>
-			<TD>Customer System - Reset Password</TD>
-		</TR>
-		</TABLE>
+		<center><div class='customer-standard-table-style-menu-options-login'>Customer System - Reset Password</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD align=\"center\">";
@@ -86,11 +82,7 @@
 		{
 		print "
 		<br/><br/>
-		<TABLE align=center class=login-table-style-main-title>
-		<TR>
-			<TD>$ExternalName Customer System - Reset Password Success</TD>
-		</TR>
-		</TABLE>
+		<center><div class='customer-standard-table-style-menu-options-login'>$ExternalName Customer System - Reset Password Success</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
@@ -108,11 +100,7 @@
 		{
 		print "
 		<br/><br/>
-		<TABLE align=center class=login-table-style-main-title>
-		<TR>
-			<TD>$ExternalName Customer System - Reset Password Failure</TD>
-		</TR>
-		</TABLE>
+		<center><div class='customer-standard-table-style-menu-options-login'>$ExternalName Customer System - Reset Password Failure</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";

@@ -78,11 +78,7 @@ class HtmlTemplateLoggedOut extends HtmlTemplate
 		
 		print "
 		<br/><br/>
-		<TABLE align=center class=login-table-style-main-title>
-		<TR>
-			<TD>Logged Out</TD>
-		</TR>
-		</TABLE>
+		<center><div class='customer-standard-table-style-menu-options-login'>Logged Out</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";

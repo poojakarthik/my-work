@@ -42,11 +42,7 @@
 	{
 		print "
 		<br/><br/>
-		<TABLE align=center class=login-table-style-main-title>
-		<TR>
-			<TD>Customer System - Resend Username</TD>
-		</TR>
-		</TABLE>
+		<center><div class='customer-standard-table-style-menu-options-login'>Customer System - Resend Username</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD align=\"center\">";
@@ -102,11 +98,7 @@
 		{
 		print "
 		<br/><br/>
-		<TABLE align=center class=login-table-style-main-title>
-		<TR>
-			<TD>Customer System - Resend Username Success</TD>
-		</TR>
-		</TABLE>
+		<center><div class='customer-standard-table-style-menu-options-login'>Customer System - Resend Username Success</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
@@ -124,11 +116,7 @@
 		{
 		print "
 		<br/><br/>
-		<TABLE align=center class=login-table-style-main-title>
-		<TR>
-			<TD>Customer System - Resend Username Failure</TD>
-		</TR>
-		</TABLE>
+		<center><div class='customer-standard-table-style-menu-options-login'>Customer System - Resend Username Failure</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";

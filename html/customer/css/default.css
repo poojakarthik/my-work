@@ -1884,7 +1884,7 @@ span.IncorrectLogin
 {
 	font-size:	12px;
 	/* for firefox compatibility. */
-	width:		434px !important;
+	width:		440px !important;
 	/* for ie6 compatibility. */
 	width:		442px;
 	text-indent: 10; 
