@@ -71,17 +71,17 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		// echo "<h2 class='Services'>Unblled service charges</h2>\n";
+		// echo "<h2 class='Services'>Unbilled service charges</h2>\n";
 		echo "
 		<TABLE width=\"100%\">
 		<TR>
 			<TD style=\"width: 200px; text-indent: 5;\"><img src=\"img/template/service.gif\"></TD>
-			<TD style=\"text-indent: 175; font-weight: bold;\">Unblled service charges</TD>
+			<TD style=\"text-indent: 175; font-weight: bold;\">Unbilled service charges</TD>
 		</TR>
 		</TABLE>\n";
 
 		Table()->Services->SetHeader("FNN", "Service Type", "Current Plan", "Unbilled Charges (inc GST)", "&nbsp;", "&nbsp;");
-		Table()->Services->SetWidth("10%", "15%", "40%", "25%", "5%", "5%");
+		Table()->Services->SetWidth("10%", "15%", "35%", "20%", "5%", "15%");
 		Table()->Services->SetAlignment("left", "left", "left", "right", "left", "right");
 		
 		// Declare variable to store the Total Charges
@@ -127,7 +127,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 
 			// build the "View Unbilled Charges for Service" link
 			$strViewUnbilledCharges = Href()->ViewUnbilledChargesForService($dboService->Id->Value);
-			$strViewUnbilledChargesLabel = "<span><a href='$strViewUnbilledCharges' title='View'><img src='img/template/cdr.gif'></img></a></span>";
+			$strViewUnbilledChargesLabel = "<span><a href='$strViewUnbilledCharges' title='View'>View Itemisation</a></span>";
 
 			if ($dboService->TotalUnbilled->Value < 0)
 			{
@@ -224,7 +224,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 
 			// build the "View Unbilled Charges for Service" link
 			$strViewUnbilledCharges = Href()->ViewUnbilledChargesForService($dboService->Id->Value);
-			$strViewUnbilledChargesLabel = "<span><a href='$strViewUnbilledCharges' title='View'><img src='img/template/cdr.gif'></img></a></span>";
+			$strViewUnbilledChargesLabel = "<span><a href='$strViewUnbilledCharges' title='View'>View Itemisation</img></a></span>";
 
 			if ($dboService->TotalUnbilled->Value < 0)
 			{
