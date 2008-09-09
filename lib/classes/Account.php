@@ -97,7 +97,7 @@ class Account
 
 		$arrCCH['account_id'] = $arrPayment['Account'] = $arrCharge['Account'] = $this->id;
 		$arrPayment['AccountGroup'] = $arrCharge['AccountGroup'] = $this->accountGroup;
-		$arrCCH['employee_id'] = $arrPayment['EnteredBy'] = $arrCharge['CreatedBy'] = $this->id;
+		$arrCCH['employee_id'] = $arrPayment['EnteredBy'] = $arrCharge['CreatedBy'] = $intEmployeeId;
 		$arrCCH['contact_id'] = $contact->id;
 		$arrCCH['receipt_number'] = $strUniqueReference;
 		$arrCCH['amount'] = $arrPayment['Amount'] = $arrPayment['Balance'] = $totalAmount;
