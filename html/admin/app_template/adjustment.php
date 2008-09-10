@@ -314,9 +314,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Approved By
 				DBO()->RecurringCharge->ApprovedBy		= NULL;
 				
-				// Date the adjustment was created (the current date)
-				
-	
 				$strCurrentDate						= GetCurrentISODate();
 				$intNow								= strtotime(GetCurrentISODateTime());
 				$intCurrentDay						= intval(date("d", $intNow));

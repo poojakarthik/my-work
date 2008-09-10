@@ -66,7 +66,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		// Load all java script specific to the page here
-		$this->LoadJavascript("validate_recurring_adjustment");
+		$this->LoadJavascript("recurring_adjustment_add");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -115,7 +115,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' style='width:100%' onchange='Vixen.ValidateRecurringAdjustment.DeclareChargeType(this.value)'>\n";
+		echo "      <select id='ChargeTypeCombo' style='width:100%' onchange='Vixen.RecurringAdjustmentAdd.DeclareChargeType(this.value)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
@@ -133,6 +133,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 			$arrChargeTypeData['RecurringFreqTypeAsText']	= $dboChargeType->RecurringFreqType->FormattedValue();
 			$arrChargeTypeData['RecurringFreqType']			= $dboChargeType->RecurringFreqType->Value;
 			$arrChargeTypeData['RecurringFreq']				= $dboChargeType->RecurringFreq->Value;
+			$arrChargeTypeData['Continuable']				= (boolean)($dboChargeType->Continuable->Value == TRUE);
 			
 			// Add GST to the Minimum Charge and format it as a money value
 			$fltMinChargeIncGST 					= AddGST($dboChargeType->MinCharge->Value);
@@ -178,6 +179,10 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		DBO()->RecurringChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->RecurringChargeType->Nature->RenderOutput();
 		
+		// Display whether or not the charge is continuable (keeps getting charged after the minimum charge is reached
+		DBO()->RecurringChargeType->Continuable = $arrChargeTypes[$intChargeTypeId]['Continuable'];
+		DBO()->RecurringChargeType->Continuable->RenderOutput();
+		
 		// Display the cancellation fee
 		DBO()->RecurringChargeType->CancellationFee = $arrChargeTypes[$intChargeTypeId]['CancellationFee'];
 		DBO()->RecurringChargeType->CancellationFee->RenderOutput(CONTEXT_INCLUDES_GST);
@@ -198,13 +203,24 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 			// The user will have to choose to snap the recurring charge to the 28th or the 1st of next month
 			$strStartDate28th	= date("d/m/Y", mktime(0, 0, 0, $intCurrentMonth, 28, $intCurrentYear));
 			$strStartDate1st	= date("d/m/Y", mktime(0, 0, 0, $intCurrentMonth + 1, 1, $intCurrentYear));
+			if (DBO()->RecurringCharge->SnapToDayOfMonth->Value == 1)
+			{
+				$strSnapTo1StSelected	= "selected='selected'";
+				$strSnapTo28ThSelected	= "";
+			}
+			else
+			{
+				$strSnapTo28ThSelected	= "selected='selected'";
+				$strSnapTo1StSelected	= "";
+			}
+			
 			echo "
 <div class='DefaultElement' id='StartDateSnapControl'>
 	<div class='DefaultLabel'>&nbsp;&nbsp;Start Date Snap To :</div>
 	<div class='DefaultOutput'>
 		<select id='RecurringCharge.SnapToDayOfMonth' name='RecurringCharge.SnapToDayOfMonth'>
-			<option value='28' selected='selected'>$strStartDate28th</option>
-			<option value='1'>$strStartDate1st</option>
+			<option value='28' $strSnapTo28ThSelected>$strStartDate28th</option>
+			<option value='1' $strSnapTo1StSelected>$strStartDate1st</option>
 		</select>
 	</div>
 </div>
@@ -221,7 +237,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Times to Charge</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <input type='text' id='TimesToCharge' value='' style='padding-left:3px;width:165px' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged(event)'></input>\n";
+		echo "      <input type='text' id='TimesToCharge' value='' style='padding-left:3px;width:165px' onkeyup='Vixen.RecurringAdjustmentAdd.TimesChargedChanged(event)'></input>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
 		
@@ -255,7 +271,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		$strJsonCode = Json()->encode($arrChargeTypes);
 
 		$intCurrentChargeTypeId = DBO()->RecurringChargeType->Id->Value;
-		echo "<script type='text/javascript'>Vixen.ValidateRecurringAdjustment.InitialiseForm($strJsonCode, $intCurrentChargeTypeId);</script>\n";
+		echo "<script type='text/javascript'>Vixen.RecurringAdjustmentAdd.InitialiseForm($strJsonCode, $intCurrentChargeTypeId);</script>\n";
 				
 		$this->FormEnd();
 	}

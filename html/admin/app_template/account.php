@@ -419,7 +419,7 @@ class AppTemplateAccount extends ApplicationTemplate
 								'RecurringFreq'=>'RC.RecurringFreq', 'MinCharge'=>'RC.MinCharge', 'RecursionCharge'=>'RC.RecursionCharge',
 								'CancellationFee'=>'RC.CancellationFee', 'Continuable'=>'RC.Continuable', 'PlanCharge'=>'RC.PlanCharge',
 								'UniqueCharge'=>'RC.UniqueCharge', 'TotalCharged'=>'RC.TotalCharged', 'TotalRecursions'=>'RC.TotalRecursions',
-								'Archived'=>'RC.Archived', 'FNN'=>'S.FNN');
+								'Archived'=>'RC.Archived', 'in_advance'=>'RC.in_advance', 'FNN'=>'S.FNN');
 		DBL()->RecurringCharge->SetColumns($arrColumns);
 		DBL()->RecurringCharge->SetTable("RecurringCharge AS RC LEFT OUTER JOIN Service AS S ON RC.Service = S.Id");
 		
@@ -427,7 +427,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// On account of how the Property token works 
 		$intAccountId = DBO()->Account->Id->Value;
 		DBL()->RecurringCharge->Where->Set("RC.Account = <Account> AND RC.Archived = 0", Array("Account"=>$intAccountId));
-		DBL()->RecurringCharge->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->RecurringCharge->OrderBy("StartedOn DESC, Id DESC");
 		DBL()->RecurringCharge->Load();
 		
 		// Calculate the Account Balance

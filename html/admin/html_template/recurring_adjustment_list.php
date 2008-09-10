@@ -123,11 +123,11 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 					$strDeleteRecurringAdjustmentLabel = "<span>&nbsp;</span>";
 				}
 				
-				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->CreatedOn->AsValue(), $dboRecurringCharge->Description->AsValue(), $strDeleteRecurringAdjustmentLabel);
+				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->StartedOn->AsValue(), $dboRecurringCharge->Description->AsValue(), $strDeleteRecurringAdjustmentLabel);
 			}
 			else
 			{
-				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->CreatedOn->AsValue(), $dboRecurringCharge->Description->AsValue());
+				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->StartedOn->AsValue(), $dboRecurringCharge->Description->AsValue());
 			}
 			
 			// Add tooltip
@@ -167,7 +167,24 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				$dboRecurringCharge->TimesToCharge = "Infinity";
 			}
 			
+			if ($dboRecurringCharge->in_advance->Value == TRUE)
+			{
+				$dboRecurringCharge->charged = "In Advance";
+			}
+			else
+			{
+				// Recurring Adjustment is charged in arrears
+				if ($dboRecurringCharge->LastChargedOn->Value == $dboRecurringCharge->StartedOn->Value)
+				{
+					// The LastChargedOn does not truely represent the last time the account was charged
+					// Set it to NULL
+					$dboRecurringCharge->LastChargedOn = NULL;
+				}
+				$dboRecurringCharge->charged = "In Arrears";
+			}
+			$strToolTipHtml .= $dboRecurringCharge->charged->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->LastChargedOn->AsOutput();
+			
 			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 			$strToolTipHtml .= $dboRecurringCharge->Nature->AsOutput();
 			DBO()->ChargeTypesAvailable->RecurringFreqType = $dboRecurringCharge->RecurringFreqType->Value;
@@ -183,6 +200,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			
 			
 			$intTimesToCharge = $dboRecurringCharge->TimesToCharge->Value;
+			
 			// Work out the end date
 			if (is_numeric($intTimesToCharge))
 			{
