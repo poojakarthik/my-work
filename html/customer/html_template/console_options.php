@@ -123,7 +123,9 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "   </tr>\n";
 		echo "</table>
 		<BR><BR>\n";
-				
+
+		if ($bolCC)
+		{
 		echo "<div class='customer-standard-table-style-menu-options-title'>Secure Payments</div>\n";
 		echo "<table class=\"customer-standard-table-style-menu-options-info\">\n";
 		
@@ -132,6 +134,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 			echo "		<td>All payments are processed securely by one of Australias leading payment gateways.</td>\n";
 			echo "   </tr>
 			</table>\n";
+		}
 		//echo "</div>\n";
 	}
 }
