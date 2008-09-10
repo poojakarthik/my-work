@@ -223,7 +223,7 @@
 		echo "</div><br/><br/>";
 		*/
 
-		echo "<div class='customer-standard-table-title-style-address'>Address Details</div>\n";
+		echo "<div class='customer-standard-table-title-style-address'>Billing Address Details</div>\n";
 		//echo "<h2 class='Account'>Address Details</h2>\n";
 
 		echo "	
