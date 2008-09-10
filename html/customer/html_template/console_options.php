@@ -133,8 +133,16 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 			echo "      <td><IMG SRC=\"./img/generic/logo_securepay.gif\" WIDTH=\"136\" HEIGHT=\"58\" BORDER=\"0\" ALT=\"\"></td>";
 			echo "		<td>All payments are processed securely by one of Australias leading payment gateways.</td>\n";
 			echo "   </tr>
-			</table>\n";
+			</table><BR><BR>\n";
 		}
+
+		echo "<div class='customer-standard-table-style-menu-options-title'>Our Partners</div>\n";
+		echo "<table class=\"customer-standard-table-style-menu-options-info\">\n";
+		
+			echo "   <tr>\n";
+			echo "      <td><A HREF=\"http://www.yellowbilling.com.au/\" target=\"\_blank\"><IMG SRC=\"./img/template/logo.png\" WIDTH=\"320\" HEIGHT=\"60\" BORDER=\"0\" ALT=\"\"></A><BR>With management highly experienced in the telecommunications industry, Yellow Billing Services is well placed to deal with some of the potentially tricky issues facing service providers today.</td>\n";
+			echo "   </tr>
+			</table>\n";
 		//echo "</div>\n";
 	}
 }

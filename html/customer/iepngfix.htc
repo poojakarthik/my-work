@@ -60,7 +60,7 @@ function iePNGFix(init)
 
  if (isSrc && this.src && /IMG|INPUT/.test(nodeName))
  {
-  if ((/\.php/i).test(src))
+  if ((/\.php/i).test(src) || (/\.png/i).test(src))
   {
    filt(src, 1);
    src = blankImg;

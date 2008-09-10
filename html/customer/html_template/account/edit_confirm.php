@@ -135,7 +135,7 @@
 		<br/>";
 		
 		print "
-		<div class='customer-standard-table-title-style-confirm-details'>Address Details</div>
+		<div class='customer-standard-table-title-style-confirm-details'>Billing Address Details</div>
 		<!-- <h2 class='Account'>Address Details</h2> -->
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
