@@ -303,7 +303,8 @@
 				{
 					$_selFindOwner		= new StatementSelect(	"Service JOIN Account ON Account.Id = Service.Account",
 																		"Account.Id AS Account, Service.AccountGroup AS AccountGroup, Service.Id AS Service",
-																		"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (<DateTime> BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= <DateTime>))",
+																		"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND " .
+																			"((<DateOnly> = 0 AND <DateTime> BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= <DateTime>)) OR (<DateOnly> = 1 AND CAST(<DateTime> AS DATE) BETWEEN CAST(Service.CreatedOn AS DATE) AND CAST(Service.ClosedOn AS DATE) OR (Service.ClosedOn IS NULL AND CAST(Service.CreatedOn AS DATE) <= CAST(<DateTime> AS DATE))))",
 																		"Service.CreatedOn DESC, Service.Id DESC");
 				}
 				return $_selFindOwner;
@@ -1401,11 +1402,12 @@
 	 * Finds the Owner of a given FNN
 	 *
 	 * @param	string	$strFNN					The FNN to own
-	 * @param	integer	$strDate				The date to own on (datetimes also accepted)
+	 * @param	integer	$strDatetime			The Datetime to own on
+	 * @param	boolean	$bolDateOnly			Date comparison only (instead of Datetime)
 	 *
 	 * @return	mixed							Array of Owner Details or String Error				
 	 */
-	 function FindFNNOwner($strFNN, $strDate)
+	 function FindFNNOwner($strFNN, $strDatetime, $bolDateOnly=FALSE)
 	 {
 	 	// Check Data
 	 	if (!IsValidFNN($strFNN))
@@ -1413,20 +1415,20 @@
 	 		// Invalid FNN
 	 		return "'$strFNN' is not a valid FNN!";
 	 	}
-	 	if (!strtotime($strDate))
+	 	if (!strtotime($strDatetime))
 	 	{
 	 		// Invalid Date
-	 		return "'$strDate' is not a valid Date String!";
+	 		return "'$strDatetime' is not a valid Datetime String!";
 	 	}
 	 	
 	 	// Find the Owner
 	 	$arrWhere = Array();
 	 	$arrWhere['FNN']			= $strFNN;
-	 	$arrWhere['DateTime']		= $strDate;
+	 	$arrWhere['DateTime']		= $strDatetime;
 	 	$arrWhere['IndialRange']	= substr($strFNN, 0, -2).'__';
-	 	
+	 	$arrWhere['DateOnly']		= (int)$bolDateOnly;
 	 	$mixResult	= $this->_selFindOwner->Execute($arrWhere);
-
+		
 	 	if ($mixResult === FALSE)
 	 	{
 	 		// Error

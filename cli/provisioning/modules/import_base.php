@@ -295,7 +295,7 @@
 	 function FindFNNOwner($arrPDR)
 	 {
 		// Find Owner
-		if (is_array($arrOwner = FindFNNOwner($arrPDR['FNN'], $arrPDR['EffectiveDate'])))
+		if (is_array($arrOwner = FindFNNOwner($arrPDR['FNN'], $arrPDR['EffectiveDate'], TRUE)))
 		{
 			$arrPDR = array_merge($arrOwner, $arrPDR);
 		}

@@ -2843,15 +2843,16 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvo
  * 
  * @param	string	$strFNN				FNN to find owner for
  * @param	string	$strDatetime		Date to find owner on
+ * @param	boolean	$bolDateOnly		Date comparison only (instead of Datetime)
  *
  * @return	bool					
  *
  * @method
  */
-function FindFNNOwner($strFNN, $strDate)
+function FindFNNOwner($strFNN, $strDatetime, $bolDateOnly=FALSE)
 {
 	// Passthrough to Framework::FindFNNOwner()
-	return $GLOBALS['fwkFramework']->FindFNNOwner($strFNN, $strDate);
+	return $GLOBALS['fwkFramework']->FindFNNOwner($strFNN, $strDatetime, $bolDateOnly);
 }
 
 //------------------------------------------------------------------------//
