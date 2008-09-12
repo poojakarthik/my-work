@@ -1367,7 +1367,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strRateGroupCSV = "";
 		$strFilename = "";
 		
-		$arrRateGroupColumns = Array("RateGroup Id", "Name", "Description", "Service Type",	"Record Type", "Fleet");		
+		$arrRateGroupColumns = Array("RateGroup Id", "Name", "Description", "Service Type",	"Record Type", "Fleet", "CapLimit (optional)");		
 
 		$arrRateColumnNames = Array("Rate Id", 	"Editable", "Destination Code",
 												"Destination",												
@@ -1386,6 +1386,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 												"Excluded from Cap Plan",
 												"Prorate",
 												"Minimum Charge (\$)",
+												"Discount (%) (1.5 = 1.5%) (optional)",
 												"Standard Flagfall (\$)",
 												"Standard Billing Units",
 												"Charge Per Single Unit (\$)",
@@ -1415,14 +1416,15 @@ class AppTemplateRateGroup extends ApplicationTemplate
 										DBO()->RateGroup->Description->Value,
 										DBO()->RateGroup->ServiceType->Value,
 										DBO()->RateGroup->RecordType->Value,
-										DBO()->RateGroup->Fleet->Value
+										DBO()->RateGroup->Fleet->Value,
+										DBO()->RateGroup->CapLimit->Value
 									);
 			
 			$arrColumnNames = Array("RateId"=>"R.Id", "Editable"=>"IF(R.Archived = ". RATE_STATUS_DRAFT .", \"Yes\", \"No\")",
 														"DestinationCode"=>"D.Code", "DestinationDescription"=>"D.Description", "RateName"=>"R.Name", "RateDescription"=>"R.Description",
 														"StartTime"=>"R.StartTime", "EndTime"=>"R.EndTime", "Monday"=>"R.Monday", "Tuesday"=>"R.Tuesday", "Wednesday"=>"R.Wednesday",
 														"Thursday"=>"R.Thursday", "Friday"=>"R.Friday", "Saturday"=>"R.Saturday", "Sunday"=>"R.Sunday", "PassThrough"=>"R.PassThrough",
-														"Uncapped"=>"R.Uncapped", "Prorate"=>"R.Prorate", "StdMinCharge"=>"R.StdMinCharge", "StdFlagfall"=>"R.StdFlagfall", "StdUnits"=>"R.StdUnits",
+														"Uncapped"=>"R.Uncapped", "Prorate"=>"R.Prorate", "StdMinCharge"=>"R.StdMinCharge", "discount_percentage"=>"R.discount_percentage", "StdFlagfall"=>"R.StdFlagfall", "StdUnits"=>"R.StdUnits",
 														"StdRatePerUnit"=>"R.StdRatePerUnit", "StdMarkup"=>"R.StdMarkup", "StdPercentage"=>"R.StdPercentage", "CapUnits"=>"R.CapUnits",
 														"CapCost"=>"R.CapCost", "CapUsage"=>"R.CapUsage", "CapLimit"=>"R.CapLimit", "ExsFlagfall"=>"R.ExsFlagfall", "ExsUnits"=>"R.ExsUnits",
 														"ExsRatePerUnit"=>"R.ExsRatePerUnit", "ExsMarkup"=>"R.ExsMarkup","ExsPercentage"=>"R.ExsPercentage");
@@ -1446,30 +1448,30 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			// Export a skeleton csv for the given RecordType defined in RecordType
 			DBO()->RecordType->Load();
 			
-			$arrBlankRateGroup = Array(NULL,NULL,NULL, DBO()->RecordType->ServiceType->Value, DBO()->RecordType->Id->Value, DBO()->RateGroup->Fleet->Value);
+			$arrBlankRateGroup = Array(NULL,NULL,NULL, DBO()->RecordType->ServiceType->Value, DBO()->RecordType->Id->Value, DBO()->RateGroup->Fleet->Value, NULL);
 			
 			// Default Values (including precision)
 			$arrRate = Array(NULL, "Editable"=>"Yes", "DestinationCode"=>NULL, "DestinationDescription"=>NULL, "RateName"=>"<RateGroupName> - <Destination>", "RateDescription"=>"<RateGroupName> - <Destination>",
-								"00:00:00",	"23:59:59", 1, 1, 1, 1, 1, 1,
-											1,
-											0,
-											0,
-											0,
-											"0.0000",
-											"0.0000",
-											1,
-											"0.00000000",
-											"0.00000000",
-											"0.0000",
-											0,
-											"0.0000",
-											0,
-											"0.0000",
-											"0.0000",
-											0,
-											"0.00000000",
-											"0.00000000",
-											"0.0000"
+								"00:00:00",	"23:59:59", 1, 1, 1, 1, 1, 1,1,
+											"PassThrough"			=> 0,
+											"Uncapped"				=> 0,
+											"Prorate"				=> 0,
+											"StdMinCharge"			=> "0.0000",
+											"discount_percentage"	=> NULL,
+											"StdFlagfall"			=> "0.0000",
+											"StdUnits"				=> 1,
+											"StdRatePerUnit"		=> "0.00000000",
+											"StdMarkup"				=> "0.00000000",
+											"StdPercentage"			=> "0.0000",
+											"CapUnits"				=> 0,
+											"CapCost"				=> "0.0000",
+											"CapUsage"				=> 0,
+											"CapLimit"				=> "0.0000",
+											"ExsFlagfall"			=> "0.0000",
+											"ExsUnits"				=> 0,
+											"ExsRatePerUnit"		=> "0.00000000",
+											"ExsMarkup"				=> "0.00000000",
+											"ExsPercentage"			=> "0.0000"
 										);
 										
 			$strRateGroupCSV .= MakeCSVLine($arrRateGroupColumns);
@@ -1644,10 +1646,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	private function _ImportCSV($arrRecordType, $bolIsFleet, $bolCommit, &$arrReport)
 	{
 		// Declare the keys for the records stored in the csv file
-		$arrRateGroupKeys	= Array("Id", "Name", "Description", "ServiceType", "RecordType", "Fleet");
+		$arrRateGroupKeys	= Array("Id", "Name", "Description", "ServiceType", "RecordType", "Fleet", "CapLimit");
 		$arrRateKeys		= Array("Id", "Editable", "Destination", "DestinationDescription", "Name", "Description", 
 									"StartTime", "EndTime", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
-									"Sunday", "PassThrough", "Uncapped", "Prorate", "StdMinCharge", "StdFlagfall", "StdUnits",
+									"Sunday", "PassThrough", "Uncapped", "Prorate", "StdMinCharge", "discount_percentage", "StdFlagfall", "StdUnits",
 									"StdRatePerUnit", "StdMarkup", "StdPercentage", "CapUnits", "CapCost", "CapUsage", "CapLimit",
 									"ExsFlagfall", "ExsUnits", "ExsRatePerUnit", "ExsMarkup", "ExsPercentage");
 
@@ -1657,7 +1659,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// This will store the report regarding how the import went; why it was unsuccessful, etc
 		$arrReport	= Array();
 
-		$arrReport[] = ($bolCommit)? "Importing and committing RateGroup\n" : "Importing RateGroup as Draft\n";   
+		$arrReport[] = ($bolCommit)? "Importing and committing RateGroup\n" : "Importing RateGroup as Draft\n";
 		
 		// Get a file pointer to the uploaded CSV file which defines the RateGroup
 		$arrReport[] = "Opening File: {$_FILES['RateGroupCSVFile']['name']} ...";
@@ -1691,7 +1693,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			return FALSE;
 		}
 	
-		// We only want the first 6 values of the csv record
+		// We only want the first 7 values of the csv record
 		$arrRateGroup = array_combine($arrRateGroupKeys, array_slice($arrRateGroup, 0, count($arrRateGroupKeys)));
 		$arrReport[] = "\tOk";
 	
@@ -1960,6 +1962,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$arrRateGroup['RecordType']		= (int)$arrRateGroup['RecordType'];
 		$arrRateGroup['ServiceType']	= (int)$arrRateGroup['ServiceType'];
 		$arrRateGroup['Fleet']			= (int)$arrRateGroup['Fleet'];
+		$arrRateGroup['CapLimit']		= (strlen($arrRateGroup['CapLimit']) == 0)? NULL : (float)$arrRateGroup['CapLimit'];
 		
 		// Trim whitespace from the Name and Description
 		$arrRateGroup['Name'] = trim($arrRateGroup['Name']);
@@ -2258,6 +2261,29 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			// The value may still be considered a string.  Type cast it to a float
 			$arrRate[$strKey] = (float)$arrRate[$strKey];
 		}
+		
+		// Validate all properties must be floats or NULL
+		$arrOptionalFloatProperties = array("discount_percentage");
+		foreach ($arrOptionalFloatProperties as $strKey)
+		{
+			if (strlen($arrRate[$strKey]) == 0)
+			{
+				// The value is NULL
+				$arrRate[$strKey] = NULL;
+			}
+			elseif (!is_numeric($arrRate[$strKey]))
+			{
+				$bolFailed = TRUE;
+				$arrReport[] = "\tERROR: $strKey must be numerical";
+			}
+			else
+			{
+				// The value may still be considered a string.  Type cast it to a float
+				$arrRate[$strKey] = (float)$arrRate[$strKey];
+			}
+		}
+		
+		
 		
 		// If validation has already failed, do not continue
 		if ($bolFailed)
