@@ -40,9 +40,7 @@ if ($selAccounts->Execute() === FALSE)
 else
 {
 	while ($arrAccount = $selAccounts->Fetch())
-	{
-		CliEcho(" + {$arrAccount['Account']}...");
-		
+	{		
 		// Get the last non-zero Invoice details
 		if ($selLastNonZeroInvoice->Execute($arrAccount) === FALSE)
 		{
@@ -75,6 +73,7 @@ else
 				else
 				{
 					// Not all Services Lost! -- skip this Account
+					CliEcho(" + {$arrAccount['Account']}...");
 					CliEcho("\t -- Not all Services lost 6+ months ago!");
 					continue;
 				}
@@ -86,6 +85,7 @@ else
 			else
 			{
 				// No Services lost 6+ months ago -- skip this Account
+				CliEcho(" + {$arrAccount['Account']}...");
 				CliEcho("\t -- No Services lost 6+ months ago!");
 				continue;
 			}
@@ -93,6 +93,7 @@ else
 		else
 		{
 			// No last non-zero Invoice -- skip this Account
+			CliEcho(" + {$arrAccount['Account']}...");
 			CliEcho("\t -- No non-zero Invoices!");
 			continue;
 		}		
