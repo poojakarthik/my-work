@@ -27,8 +27,12 @@ $selLostServices	= new StatementSelect(	"(Service JOIN ServiceTotal ON Service.I
 											"Service.FNN AS FNN, RatePlan.Name AS LastPlan",
 											"LatestCDR <= SUBDATE(CURDATE(), INTERVAL 6 MONTH) AND Service.Account = <Account> AND ServiceTotal.InvoiceRun = <InvoiceRun>");
 
+CliEcho("\n[ ACCOUNTS LOST +1 MONTHS AGO ]\n");
+
 // Get list of Accounts
-$resOutputFile	= fopen("/home/rdavis/customers_lost_more_than_6_months_ago.csv", 'w');
+$strOutputFile	= "/home/rdavis/customers_lost_more_than_6_months_ago.csv";
+$resOutputFile	= fopen($strOutputFile, 'w');
+CliEcho("Writing to '{$strOutputFile}'...\n");
 if ($selAccounts->Execute() === FALSE)
 {
 	throw new Exception($selAccounts->Error());
@@ -37,6 +41,8 @@ else
 {
 	while ($arrAccount = $selAccounts->Fetch())
 	{
+		CliEcho(" + {$arrAccount['Account']}...");
+		
 		// Get the last non-zero Invoice details
 		if ($selLastNonZeroInvoice->Execute($arrAccount) === FALSE)
 		{
@@ -66,6 +72,12 @@ else
 						fwrite($resOutputFile, '"'.implode('","', $arrCSVLine).'"'."\n");
 					}
 				}
+				else
+				{
+					// Not all Services Lost! -- skip this Account
+					CliEcho("\t -- Not all Services lost 6+ months ago!");
+					continue;
+				}
 			}
 			elseif ($selLostServices->Error())
 			{
@@ -74,12 +86,14 @@ else
 			else
 			{
 				// No Services lost 6+ months ago -- skip this Account
+				CliEcho("\t -- No Services lost 6+ months ago!");
 				continue;
 			}
 		}
 		else
 		{
 			// No last non-zero Invoice -- skip this Account
+			CliEcho("\t -- No non-zero Invoices!");
 			continue;
 		}		
 	}
