@@ -295,36 +295,57 @@
 				case "B":	// Change - number & address
 					$arrPDR['Type']				= PROVISIONING_TYPE_CHANGE_ADDRESS;
 					$arrPDR['Description']		= "Address Changed";
+					
+					// This can span over multiple lines in the file
+					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
 					
 				case "P":	// Order pending with Telstra
 					$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 					$arrPDR['Description']		= "Order Pending with Telstra";
+					
+					// This can span over multiple lines in the file
+					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
 					
 				case "W":	// Order waiting to be processed
 					$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 					$arrPDR['Description']		= "Order Pending with Unitel";
+					
+					// This can span over multiple lines in the file
+					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
 					
 				case "A":	// Order actioned by WeBill
 					$arrPDR['request_status']	= REQUEST_STATUS_PENDING;
 					$arrPDR['Description']		= "Order accepted by Unitel";
+					
+					// This can span over multiple lines in the file
+					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
 					
 				case "D":	// Order disqualified by WeBill
 					$arrPDR['request_status']	= REQUEST_STATUS_REJECTED;
 					$arrPDR['Description']		= "Order Rejected by Unitel - <Reason>";
+					
+					// This can span over multiple lines in the file
+					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
 					
 				case "R":	// Order rejected by Telstra
 					$arrPDR['request_status']	= REQUEST_STATUS_REJECTED;
 					$arrPDR['Description']		= "Order Rejected by Telstra - <Reason>";
+					
+					// This can span over multiple lines in the file
+					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
 					
 				case "C":	// Order completed by Telstra
 					$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
 					$arrPDR['Description']		= "Order completed by Telstra";
+					
+					// This can span over multiple lines in the file
+					$arrBaskets[]	= (int)$arrData['Basket'];
 					break;
 					
 				default:	// Unknown Record Type
