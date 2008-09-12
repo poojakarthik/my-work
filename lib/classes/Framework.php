@@ -304,7 +304,7 @@
 					$_selFindOwner		= new StatementSelect(	"Service JOIN Account ON Account.Id = Service.Account",
 																		"Account.Id AS Account, Service.AccountGroup AS AccountGroup, Service.Id AS Service",
 																		"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND " .
-																			"((<DateOnly> = 0 AND <DateTime> BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= <DateTime>)) OR (<DateOnly> = 1 AND CAST(<DateTime> AS DATE) BETWEEN CAST(Service.CreatedOn AS DATE) AND CAST(Service.ClosedOn AS DATE) OR (Service.ClosedOn IS NULL AND CAST(Service.CreatedOn AS DATE) <= CAST(<DateTime> AS DATE))))",
+																			"((<DateOnly> = 0 AND (<DateTime> BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= <DateTime>))) OR (<DateOnly> = 1 AND (CAST(<DateTime> AS DATE) BETWEEN CAST(Service.CreatedOn AS DATE) AND CAST(Service.ClosedOn AS DATE) OR (Service.ClosedOn IS NULL AND CAST(Service.CreatedOn AS DATE) <= CAST(<DateTime> AS DATE)))))",
 																		"Service.CreatedOn DESC, Service.Id DESC");
 				}
 				return $_selFindOwner;
@@ -1427,6 +1427,7 @@
 	 	$arrWhere['DateTime']		= $strDatetime;
 	 	$arrWhere['IndialRange']	= substr($strFNN, 0, -2).'__';
 	 	$arrWhere['DateOnly']		= (int)$bolDateOnly;
+	 	
 	 	$mixResult	= $this->_selFindOwner->Execute($arrWhere);
 		
 	 	if ($mixResult === FALSE)
