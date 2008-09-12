@@ -63,7 +63,7 @@ class Invoice_Run
 	 *
 	 * @param	int 				$intId		id of the InvoiceRun record to retrieve		
 	 * @return	mixed 							Invoice_Run object	: if it exists
-	 * 											FALSE				: if it doesn't exist
+	 * 											NULL				: if it doesn't exist
 	 * @method
 	 */
 	public static function getForId($intId)
@@ -82,7 +82,7 @@ class Invoice_Run
 		if ($mixRecCount === 0)
 		{
 			// Could not find the InvoiceRun record
-			return FALSE;
+			return NULL;
 		}
 		else
 		{

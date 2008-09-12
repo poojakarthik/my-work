@@ -103,13 +103,14 @@ class Application
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		$this->objAppTemplate->SetModal($bolModal);
 	
+		ContextMenu()->Employee_Console();
+		
 		// Run AppTemplate
 		$fltStart = microtime(TRUE);		
 		$this->objAppTemplate->{$strHandlerMethod}($subPath);
 		$fltAppTemplateTime = microtime(TRUE) - $fltStart;		
 		
 		// Append default options to the Context Menu
-		ContextMenu()->Employee_Console();
 		ContextMenu()->Customer->View_Recent_Customers();
 		ContextMenu()->Customer->Find_Customer();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))

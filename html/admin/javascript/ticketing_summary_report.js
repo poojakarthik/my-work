@@ -100,11 +100,12 @@ function FlexTicketingSummaryReportClass()
 		var arrStatusTypes	= new Array();
 		var mixOwner		= null;
 		var mixCategory		= null;
+		var i;
 		
 		with (this.objInputs)
 		{
 			// Create a list of the selected owners
-			for (i in Owners.options)
+			for (i=0; i < Owners.options.length; i++)
 			{
 				if (Owners.options[i].selected == true)
 				{
@@ -121,7 +122,7 @@ function FlexTicketingSummaryReportClass()
 			}
 			
 			// Create a list of the selected categories
-			for (i in Categories.options)
+			for (i=0; i < Categories.options.length; i++)
 			{
 				if (Categories.options[i].selected == true)
 				{
@@ -138,7 +139,7 @@ function FlexTicketingSummaryReportClass()
 			}
 			
 			// Create a list of the selected Statuses and StatusTypes
-			for (i in Statuses.options)
+			for (i=0; i < Statuses.options.length; i++)
 			{
 				if (Statuses.options[i].selected == true)
 				{

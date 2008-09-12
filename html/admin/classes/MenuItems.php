@@ -284,7 +284,7 @@ class MenuItems
 	 */
 	function ManageCustomerStatuses()
 	{
-		$this->strContextMenuLabel = "Manage Customer Statuses";
+		$this->strContextMenuLabel = "Customer Statuses";
 		$this->strLabel = "Customer Statuses";
 		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/ViewAll";
 	}
@@ -335,6 +335,78 @@ class MenuItems
 		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/Edit/$intId";
 	}
 
+	//------------------------------------------------------------------------//
+	// CustomerStatusSummaryReport
+	//------------------------------------------------------------------------//
+	/**
+	 * CustomerStatusSummaryReport()
+	 *
+	 * Compiles the Href to be executed when the CustomerStatusSummaryReport menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the CustomerStatusSummaryReport menu item is triggered
+	 * 
+	 * @return	string			Href
+	 *
+	 * @method
+	 */
+	function CustomerStatusSummaryReport($bolRetrieveCachedReport=FALSE)
+	{
+		$this->strContextMenuLabel = "Summary Report";
+		$this->strLabel = "Summary Report";
+		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/SummaryReport" . (($bolRetrieveCachedReport)? "/GetReport":"");
+	}
+	
+	//------------------------------------------------------------------------//
+	// CustomerStatusAccountReport
+	//------------------------------------------------------------------------//
+	/**
+	 * CustomerStatusAccountReport()
+	 *
+	 * Compiles the Href to be executed when the CustomerStatusAccountReport menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the CustomerStatusAccountReport menu item is triggered
+	 * 
+	 * @return	string			Href
+	 *
+	 * @method
+	 */
+	function CustomerStatusAccountReport($bolRetrieveCachedReport=FALSE)
+	{
+		$this->strContextMenuLabel = "Account Report";
+		$this->strLabel = "Account Report";
+		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/AccountReport" . (($bolRetrieveCachedReport)? "/GetReport":"");
+	}
+	
+	//------------------------------------------------------------------------//
+	// GenerateCustomerStatusAccountReport
+	//------------------------------------------------------------------------//
+	/**
+	 * GenerateCustomerStatusAccountReport()
+	 *
+	 * Compiles the Href to be executed when the GenerateCustomerStatusAccountReport functionality is triggered
+	 *
+	 * Compiles the Href to be executed when the GenerateCustomerStatusAccountReport functionality is triggered
+	 * 
+	 * @return	string			Href
+	 *
+	 * @method
+	 */
+	function GenerateCustomerStatusAccountReport($intInvoiceRun, $arrCustomerGroups=NULL, $arrCustomerStatuses=NULL)
+	{
+		$strGetVars = "?InvoiceRun=$intInvoiceRun";
+		if (is_array($arrCustomerGroups))
+		{
+			$strGetVars .= implode("&CustomerGroup[]=", $arrCustomerGroups);
+		}
+		if (is_array($arrCustomerStatuses))
+		{
+			$strGetVars .= implode("&CustomerStatus[]=", $arrCustomerStatuses);
+		}
+		
+		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/AccountReport/GenerateReport/$strGetVars";
+	}
+	
+	
 	//------------------------------------------------------------------------//
 	// ViewServiceRatePlan
 	//------------------------------------------------------------------------//

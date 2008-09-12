@@ -133,6 +133,101 @@ class JSON_Handler_Customer_Status extends JSON_Handler
 		
 		return array("Success"	=> TRUE);
 	}
+	
+	// This will run the report, 
+	public function buildSummaryReport($arrCustomerGroups, $arrCustomerStatuses, $arrInvoiceRuns, $strRenderMode)
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+
+		$objReportBuilder = new Customer_Status_Summary_Report();
+		$objReportBuilder->SetBoundaryConditions($arrCustomerGroups, $arrCustomerStatuses, $arrInvoiceRuns);
+
+		$objReportBuilder->BuildReport();
+
+		$strReport = $objReportBuilder->GetReport($strRenderMode);
+		
+		$strRenderMode = strtolower($strRenderMode);
+		
+		if ($strRenderMode == "html")
+		{
+			// The user wants the output rendered in the page
+			return array(	"Success" => TRUE,
+							"Report" => $strReport
+						);
+		}
+		elseif ($strRenderMode == 'excel')
+		{
+			// The user wants to retrieve the report as an excel spreadsheet
+			// Store the report in the user's session, so that the user can retrieve it, not through ajax
+			$_SESSION['CustomerStatus']['SummaryReport']['Content'] = $strReport;
+			return array(	"Success" => TRUE,
+							"Report" => NULL,
+							"ReportLocation" => Href()->CustomerStatusSummaryReport(TRUE)
+						);
+		}
+		else
+		{
+			// Render it in the page
+			return array(	"Success" => TRUE,
+							"Report" => $strReport
+						);
+		}
+	}
+	
+	// While the Account Report can handle multiple Invoice Runs, there is the potential of the report to be too ridiculously big
+	// So I have limitted it to the first InvoiceRun in the array of InvoiceRuns 
+	public function buildAccountReport($arrCustomerGroups, $arrCustomerStatuses, $arrInvoiceRuns, $strRenderMode)
+	{
+		// We current only support excel for this one
+		$strRenderMode = "excel";
+		
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+
+		if (is_array($arrInvoiceRuns) && count($arrInvoiceRuns) > 1)
+		{
+			// Limit it to the first one in the array
+			$arrInvoiceRuns = array($arrInvoiceRuns[0]);
+		}
+
+		$objReportBuilder = new Customer_Status_Account_Report();
+		$objReportBuilder->SetBoundaryConditions($arrCustomerGroups, $arrCustomerStatuses, $arrInvoiceRuns);
+
+		$objReportBuilder->BuildReport();
+
+		$strReport = $objReportBuilder->GetReport($strRenderMode);
+		
+		$strRenderMode = strtolower($strRenderMode);
+		
+		if ($strRenderMode == "html")
+		{
+			// The user wants the output rendered in the page
+			return array(	"Success" => TRUE,
+							"Report" => $strReport
+						);
+		}
+		elseif ($strRenderMode == 'excel')
+		{
+			// The user wants to retrieve the report as an excel spreadsheet
+			// Store the report in the user's session, so that the user can retrieve it, not through ajax
+			$_SESSION['CustomerStatus']['AccountReport']['Content'] = $strReport;
+			return array(	"Success" => TRUE,
+							"Report" => NULL,
+							"ReportLocation" => Href()->CustomerStatusAccountReport(TRUE)
+						);
+		}
+		else
+		{
+			// Render it in the page
+			return array(	"Success" => TRUE,
+							"Report" => $strReport
+						);
+		}
+		
+		
+	}
+	
 
 }
 
