@@ -4,7 +4,7 @@ require_once("../../flex.require.php");
 
 $arrAccount	= Array();
 $arrAccount['Account']			= "Account.Id";
-$arrAccount['Business Name']	= "Account.BusinessName";
+$arrAccount['BusinessName']		= "Account.BusinessName";
 $arrAccount['Contact']			= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
 $arrAccount['Phone']			= "Contact.Phone";
 $arrAccount['Mobile']			= "Contact.Mobile";
@@ -61,7 +61,7 @@ else
 					{
 						$arrCSVLine	= Array(
 												$arrAccount['Account'],
-												$arrAccount['Business Name'],
+												$arrAccount['BusinessName'],
 												$arrAccount['CustomerGroup'],
 												$arrAccount['Contact'],
 												str_pad(($arrAccount['Phone']) ? $arrAccount['Phone'] : $arrAccount['Mobile'], 10, '0', STR_PAD_LEFT),
