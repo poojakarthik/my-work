@@ -23,9 +23,9 @@ $selLastNonZeroInvoice	= new StatementSelect(	"Invoice",
 												"CreatedOn DESC",
 												"1");
 
-$selLostServices	= new StatementSelect(	"(Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id",
-											"Service.FNN AS FNN, RatePlan.Name AS LastPlan",
-											"LatestCDR <= SUBDATE(CURDATE(), INTERVAL 6 MONTH) AND Service.Account = <Account> AND ServiceTotal.InvoiceRun = <InvoiceRun>");
+$selLostServices	= new StatementSelect(	"(Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service) LEFT JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id, RatePlan CurrentRatePlan",
+											"Service.FNN AS FNN, RatePlan.Name AS LastPlan, CurrentRatePlan.Name AS CurrentPlan",
+											"LatestCDR <= SUBDATE(CURDATE(), INTERVAL 6 MONTH) AND Service.Account = <Account> AND ServiceTotal.InvoiceRun = <InvoiceRun> AND CurrentRatePlan.Id = (SELECT RatePlan FROM ServiceRatePlan WHERE Service = Service.Id ORDER BY Id DESC LIMIT 1)");
 
 CliEcho("\n[ ACCOUNTS LOST +1 MONTHS AGO ]\n");
 
@@ -64,7 +64,7 @@ else
 												$arrAccount['Contact'],
 												str_pad(($arrAccount['Phone']) ? $arrAccount['Phone'] : $arrAccount['Mobile'], 10, '0', STR_PAD_LEFT),
 												$arrService['FNN'],
-												$arrService['LastPlan'],
+												($arrService['LastPlan']) ? $arrService['LastPlan'] : $arrService['CurrentPlan'],
 												$arrLastInvoice['Total'] + $arrLastInvoice['Tax'],
 											);
 						fwrite($resOutputFile, '"'.implode('","', $arrCSVLine).'"'."\n");
