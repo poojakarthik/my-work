@@ -101,6 +101,19 @@ class HtmlTemplateRateGroupView extends HtmlTemplate
 		DBO()->RateGroup->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);
 		DBO()->RecordType->Name->RenderOutput();
 		DBO()->RateGroup->Fleet->RenderOutput();
+		
+		$fltCapLimit = DBO()->RateGroup->CapLimit->Value;
+		if ($fltCapLimit !== NULL)
+		{
+			// HACK! HACK! HACK!
+			// This isn't really a hack, it's just REALLY ugly code to get the label to have '($)' appended to it
+			$fltCapLimit = OutputMask()->FormatFloat($fltCapLimit, 2, 2);
+			DBO()->RateGroup->{'CapLimit ($)'} = $fltCapLimit;
+			DBO()->RateGroup->{'CapLimit ($)'}->RenderOutput();
+			// HACK! HACK! HACK!
+			//DBO()->RateGroup->CapLimit->RenderArbitrary($fltCapLimit, RENDER_OUTPUT);
+		}
+		
 		$intRetrievedRatesCount = DBL()->Rate->RecordCount();
 		
 		// Draw the search components
