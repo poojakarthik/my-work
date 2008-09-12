@@ -9,7 +9,7 @@ $arrAccount['Contact']			= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
 $arrAccount['Phone']			= "Contact.Phone";
 $arrAccount['Mobile']			= "Contact.Mobile";
 $arrAccount['ServiceCount']		= "COUNT(DISTINCT Service.Id)";
-$arrAccount['CustomerGroup']	= "CustomerGroup.Name";
+$arrAccount['CustomerGroup']	= "CustomerGroup.InternalName";
 $selAccounts	= new StatementSelect(	"((Account JOIN Contact ON Account.PrimaryContact = Contact.Id) JOIN Service ON Account.Id = Service.Account) JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id",
 										$arrAccount,
 										"Service.LatestCDR IS NOT NULL",
