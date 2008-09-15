@@ -910,11 +910,6 @@
 				 			// Success, Charges Sent
 				 			$intAccountsCharged	+= $arrExportResult['AccountsCharged'];
 				 		}
-				 		elseif ($arrExportResult['Pass'] === FALSE)
-				 		{
-				 			// Error -- pass through
-				 			return $arrExportResult;
-				 		}
 				 		else
 				 		{
 				 			// Success, no Charges Sent (aka Failed for a sane reason)
@@ -923,7 +918,7 @@
 			 		}
 			 		else
 			 		{
-			 			return Array('Success' => FALSE, 'Description' => $arrExportResult['Description']);
+			 			return Array('Success' => FALSE, 'Description' => $arrExportResult['Description'], 'arrExportResult' => $arrExportResult);
 			 		}
 			 	}
 			 	elseif ($selAccountDebts->Error())

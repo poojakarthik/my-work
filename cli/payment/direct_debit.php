@@ -21,7 +21,7 @@ else
 {
 	// Error
 	CliEcho("Direct Debits failed!");
-	Debug($arrResponse['Description']);
+	Debug($arrResponse);
 	exit(1);
 }
 ?>
