@@ -479,6 +479,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		 * Validation process:
 		 *		V1: Check that a Name and Description have been declared
 		 *		V1: Check that the MinCharge, ChargeCap and UsageCap are valid monetary values
+		 *		V1: Check that the "scalable" details are valid, if the plan has been flagged as scalable 
 		 *		V2: Check that a service type has been declared
 		 *		V3: If ServiceType == LandLine, Check that CarrierFullService and CarrierPreselection have been declared
 		 *		V4: Check that the Name is unique when compared with all other Rate Plans, for a given CustomerGroup/ServiceType combination (including all archived and draft plans)
@@ -504,6 +505,43 @@ class AppTemplatePlan extends ApplicationTemplate
 		if ((float)DBO()->RatePlan->RecurringCharge->Value == 0)
 		{
 			DBO()->RatePlan->RecurringCharge = NULL;
+		}
+		
+		if (DBO()->RatePlan->scalable->Value == TRUE)
+		{
+			$arrErrors = array();
+			// The plan is scalable.  Validate the min and max services
+			if ((!is_numeric(DBO()->RatePlan->minimum_services->Value)) || ((integer)DBO()->RatePlan->minimum_services->Value < 0))
+			{
+				DBO()->RatePlan->minimum_services->SetToInvalid();
+				$arrErrors[] = "Minimum Services must be a positive whole number";
+			}
+			if ((!is_numeric(DBO()->RatePlan->maximum_services->Value)) || ((integer)DBO()->RatePlan->maximum_services->Value < 1))
+			{
+				DBO()->RatePlan->maximum_services->SetToInvalid();
+				$arrErrors[] = "Maximum Services must be a positive whole number, greater than 0";
+			}
+			if (count($arrErrors))
+			{
+				// Errors have been encountered
+				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+				return "ERROR: " . implode(".  ", $arrErrors) . ".";
+			}
+			
+			$intMinServices = (integer)DBO()->RatePlan->minimum_services->Value;
+			$intMaxServices = (integer)DBO()->RatePlan->maximum_services->Value;
+			if ($intMinServices > $intMaxServices)
+			{
+				DBO()->RatePlan->minimum_services->SetToInvalid();
+				DBO()->RatePlan->maximum_services->SetToInvalid();
+				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+				return "ERROR: Minimum Services must be smaller than or equal to Maximum Services";
+			}
+		}
+		else
+		{
+			DBO()->RatePlan->minimum_services = NULL;
+			DBO()->RatePlan->maximum_services = NULL;
 		}
 		
 		// V2: ServiceType

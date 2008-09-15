@@ -147,6 +147,20 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			{
 				$dboRatePlan->ContractTerm->RenderOutput();
 			}
+			
+			if ($dboRatePlan->scalable->Value == TRUE)
+			{
+				// Display the "scalable" details
+				$dboRatePlan->scalable->RenderArbitrary("Yes", RENDER_OUTPUT);
+				$dboRatePlan->minimum_services->RenderOutput();
+				$dboRatePlan->maximum_services->RenderOutput();
+			}
+			else
+			{
+				// The plan is not scalable
+				$dboRatePlan->scalable->RenderArbitrary("Not Scalable", RENDER_OUTPUT);
+			}
+			
 			$dboRatePlan->MinMonthly->RenderOutput();
 			$dboRatePlan->ChargeCap->RenderOutput();
 			$dboRatePlan->UsageCap->RenderOutput();

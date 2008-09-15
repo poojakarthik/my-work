@@ -48,22 +48,6 @@
 class HtmlTemplatePlanAdd extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
-	// _intContext
-	//------------------------------------------------------------------------//
-	/**
-	 * _intContext
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * the context in which the html object will be rendered
-	 *
-	 * @type		integer
-	 *
-	 * @property
-	 */
-	public $_intContext;
-	
-	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -173,24 +157,63 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "<h2 class='Plan'>Plan Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 		
-		// Only apply the output mask if the DBO()->RatePlan is not invalid
+		// Only apply the output mask if the DBO()->RatePlan is not invalid ( ~ valid)
 		$bolApplyOutputMask = !DBO()->RatePlan->IsInvalid();
 
 		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"480px", "attribute:maxlength"=>255));
 		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask, Array("style:width"=>"480px", "attribute:maxlength"=>255));
 		echo "<div class='SmallSeparator'></div>";
 		
-		echo "<div id='Container_PlanDetails' style='width:100%;height:140px'>";
+		echo "<div id='Container_PlanDetails' style='width:100%;height:auto'>";
 		echo "<div id='PlanDetailsColumn1' style='width:50%;float:left'>";		
-		DBO()->RatePlan->Shared->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->RatePlan->Shared->RenderInput(CONTEXT_DEFAULT);
 		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->RecurringCharge->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		DBO()->RatePlan->discount_cap->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
+		
+		// Render the "scalable, minimum_services & maximum_services" input controls
+		if (DBO()->RatePlan->scalable->Value == TRUE)
+		{
+			// The plan has been flagged as scalable
+			$intMinServices			= DBO()->RatePlan->minimum_services->Value;
+			$intMaxServices			= DBO()->RatePlan->maximum_services->Value;
+			$strChecked				= "checked='checked'";
+			$strContainerStyle		= "display:block;visibility:visible";
+		}
+		else
+		{
+			// The plan is not scalable
+			$intMinServices		= NULL;
+			$intMaxServices		= NULL;
+			$strChecked			= "";
+			$strContainerStyle	= "display:none;visibility:hidden";
+		}
+		
+		$strMinServicesClass	= (DBO()->RatePlan->minimum_services->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
+		$strMaxServicesClass	= (DBO()->RatePlan->maximum_services->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
+
+		echo "
+<div class='DefaultElement'>
+	<input type='checkbox' id='ScalableCheckbox' name='RatePlan.scalable' $strChecked onclick='Vixen.RatePlanAdd.ScalableOnChange()' class='DefaultInputCheckBox2 Default' />
+	<div class='DefaultLabel'>&nbsp;&nbsp;Scalable :</div>
+</div>
+<div id='Scalable_ExtraDetailsContainer' style='$strContainerStyle;margin-top:5px'>
+	<div class='DefaultElement'>
+		<input type='text' id='RatePlan.minimum_services' name='RatePlan.minimum_services' class='$strMinServicesClass' value='$intMinServices' maxlength='4'/>
+		<div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Minimum Services :</div>
+	</div>
+	<div class='DefaultElement'>
+		<input type='text' id='RatePlan.maximum_services' name='RatePlan.maximum_services' class='$strMaxServicesClass' value='$intMaxServices' maxlength='4'/>
+		<div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Maximum Services :</div>
+	</div>
+</div>
+";
+		
 		echo "</div>";  // PlanDetailsColumn1
 		echo "<div id='PlanDetailsColumn2' style='width:50%;float:left'>";
-		DBO()->RatePlan->InAdvance->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->RatePlan->InAdvance->RenderInput(CONTEXT_DEFAULT);
 		DBO()->RatePlan->ContractTerm->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		
 		// Build the list of carriers
@@ -283,9 +306,11 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 
 		echo "</div>";  // PlanDetailsColumn2
+		echo "<div style='float:none; clear:both;'></div>";
 		echo "</div>";  // Container_PlanDetails
 		echo "</div>\n"; // GroupedContent
 		echo "<div class='SmallSeperator'></div>\n";
+		echo "<script type='text/javascript'>Vixen.RatePlanAdd.Initialise()</script>";
 	}
 	
 	//------------------------------------------------------------------------//

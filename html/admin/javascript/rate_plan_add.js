@@ -42,6 +42,32 @@
  */
 function VixenRatePlanAddClass()
 {
+	this.elmScalable					= null;
+	this.elmScalableDetailsContainter	= null;
+		
+	// Initialises the form
+	this.Initialise = function()
+	{
+		this.elmScalable					= $ID("ScalableCheckbox");
+		this.elmScalableDetailsContainter	= $ID("Scalable_ExtraDetailsContainer");
+	}
+	
+	// Shows/Hides the Extra details that are required if the plan is scalable
+	this.ScalableOnChange = function()
+	{
+		if (this.elmScalable.checked)
+		{
+			// Show the Scalable extra details
+			this.elmScalableDetailsContainter.style.display		= "block";
+			this.elmScalableDetailsContainter.style.visibility	= "visible";
+		}
+		else
+		{
+			// Hide the Scalable extra details
+			this.elmScalableDetailsContainter.style.display		= "none";
+			this.elmScalableDetailsContainter.style.visibility	= "hidden";
+		}
+	}
 	
 	//------------------------------------------------------------------------//
 	// ChangeServiceType

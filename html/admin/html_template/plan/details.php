@@ -113,6 +113,20 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		{
 			DBO()->RatePlan->ContractTerm->RenderOutput();
 		}
+		
+		if (DBO()->RatePlan->scalable->Value == TRUE)
+		{
+			// Display the "scalable" details
+			DBO()->RatePlan->scalable->RenderArbitrary("Yes", RENDER_OUTPUT);
+			DBO()->RatePlan->minimum_services->RenderOutput();
+			DBO()->RatePlan->maximum_services->RenderOutput();
+		}
+		else
+		{
+			// The plan is not scalable
+			DBO()->RatePlan->scalable->RenderArbitrary("Not Scalable", RENDER_OUTPUT);
+		}
+		
 		echo "</td><td width='50%'>\n";
 		DBO()->RatePlan->CustomerGroup = DBO()->RatePlan->customer_group->Value;
 		DBO()->RatePlan->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);

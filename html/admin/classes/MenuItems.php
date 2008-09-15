@@ -770,6 +770,27 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// CustomerVerification
+	//------------------------------------------------------------------------//
+	/**
+	 * CustomerVerification()
+	 *
+	 * Compiles the Href to be executed when the CustomerVerification functionality is triggered
+	 *
+	 * Compiles the Href to be executed when the CustomerVerification functionality is triggered
+	 * 
+	 * @return	string			Href
+	 *
+	 * @method
+	 */
+	function CustomerVerification()
+	{
+		$this->strContextMenuLabel = "Find Customer";
+		$this->strLabel = "Customer Verification";
+		return self::NEW_FRAMEWORK . "reflex.php/Customer/Verification";
+	}
+	
+	//------------------------------------------------------------------------//
 	// AddServices
 	//------------------------------------------------------------------------//
 	/**
