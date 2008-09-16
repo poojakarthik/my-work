@@ -3628,12 +3628,13 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 
 	switch ($intAutomaticInvoiceActionType)
 	{
-		case AUTOMATIC_INVOICE_ACTION_LATE_FEES:
-		case AUTOMATIC_INVOICE_ACTION_LATE_FEES_LIST:
 		case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER_LIST:
 		case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
+		case AUTOMATIC_INVOICE_ACTION_LATE_FEES:
+		case AUTOMATIC_INVOICE_ACTION_LATE_FEES_LIST:
 		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
 		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE_LIST:
+			$strAccountBillingType = "AND Account.BillingType = " . BILLING_TYPE_ACCOUNT;
 			$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
 			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 			break;
@@ -3710,7 +3711,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun
 		JOIN Account 
 		  ON Account.Id = Invoice.Account
-	         AND Account.Archived IN ($arrApplicableAccountStatuses)
+	         AND Account.Archived IN ($arrApplicableAccountStatuses) $strAccountBillingType
 	         AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		JOIN credit_control_status 
 		  ON Account.credit_control_status = credit_control_status.id
