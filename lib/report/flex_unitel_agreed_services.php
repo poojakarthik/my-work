@@ -78,12 +78,19 @@ if ($resOutputFile)
 					// Get Flex Service Details
 					CliEcho("O", FALSE);
 					$arrServiceOwner	= FindFNNOwner($arrService['FNN'], $strEffectiveDate);
-					CliEcho("D", FALSE);
-					if ($selService->Execute($arrServiceOwner) === FALSE)
+					if ($arrServiceOwner)
 					{
-						throw new Exception($selService->Error());
+						CliEcho("D", FALSE);
+						if ($selService->Execute($arrServiceOwner) === FALSE)
+						{
+							throw new Exception($selService->Error());
+						}
+						$arrServiceDetails	= $selService->Fetch();
 					}
-					$arrServiceDetails	= $selService->Fetch();
+					else
+					{
+						$arrServiceDetails	= Array();
+					}
 					CliEcho("C", FALSE);
 					if ($selServiceDetails->Execute(Array('FNN' => $arrService['FNN'], 'FNNIndial' => substr($arrService['FNN'], 0, -2).'__')) === FALSE)
 					{
