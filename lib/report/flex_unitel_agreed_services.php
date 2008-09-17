@@ -17,7 +17,7 @@ $selServiceDetails	= new StatementSelect("Service", "MIN(EarliestCDR) AS Earlies
 $selLastResponse	= new StatementSelect(	"(ProvisioningResponse PR JOIN provisioning_type ON provisioning_type.id = PR.Type) JOIN Service ON Service.Id = PR.Service", 
 											"PR.Description, PR.EffectiveDate, PR.ImportedOn", 
 											"PR.Status = 402 AND (PR.FNN = <FNN> OR (PR.FNN LIKE <FNNIndial> AND Indial100 = 1)) AND PR.Carrier = <Carrier> AND provisioning_type_nature = ".REQUEST_TYPE_NATURE_FULL_SERVICE,
-											"ISNULL(PR.EffectiveDate) ASC, PR.EffectiveDate DESC, PR.ImportedOn DESC",
+											"PR.EffectiveDate DESC, PR.ImportedOn DESC",
 											"1");
 
 $arrServiceTemplate	= Array(
