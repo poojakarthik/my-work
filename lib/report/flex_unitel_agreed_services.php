@@ -96,7 +96,7 @@ if ($resOutputFile)
 					$arrServiceDetails	= array_merge($arrServiceDetails, $selLastResponse->Fetch());
 					
 					// Finalise Output Row
-					$arrService['Carrier']										= GetConstantDescription('Carrier', $intCarrier);
+					$arrService['Carrier']										= GetConstantDescription($intCarrier, 'Carrier');
 					$arrService['Flex Account']									= $arrServiceOwner['Account'];
 					$arrService['Flex Earliest CDR']							= $arrServiceDetails['EarliestCDR'];
 					$arrService['Flex Latest CDR']								= $arrServiceDetails['LatestCDR'];
