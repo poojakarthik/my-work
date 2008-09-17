@@ -852,5 +852,149 @@ class AppTemplateConsole extends ApplicationTemplate
 		$this->LoadPage('resend_username');
 		return TRUE;
 	}
+
+
+	function Setup()
+	{
+		
+		// eventually user will not even see a flex login page, so this page will need to be separate.
+		// Password() - doesn't seem to work as expected but does work.
+		error_reporting(0);
+
+		// Connect to database
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+		
+		// Check if the form has been submitted.
+		if(array_key_exists('mixFirstName', $_POST))
+		{
+			// echo "pass 1. " . $_POST['mixFirstName'];
+			// By default all password requests will fail.
+			DBO()->Fail = TRUE;
+
+			// Check the syntax of the username entered by user..
+			$bolFoundError=FALSE;
+			list($strFoundError,$strErrorResponse) = InputValidation("mixFirstName",$_POST['mixFirstName'],"mixed",31);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				echo "fail 1. $strErrorResponse " . $_POST['mixFirstName'];
+			}
+			list($strFoundError,$strErrorResponse) = InputValidation("mixLastName",$_POST['mixLastName'],"mixed",31);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				echo "fail 2. $strErrorResponse " . $_POST['mixLastName'];
+			}
+			list($strFoundError,$strErrorResponse) = InputValidation("mixAccountNumber",$_POST['mixAccountNumber'],"numbers",255);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				echo "fail 3. $strErrorResponse " . $_POST['mixAccountNumber'];
+			}
+			list($strFoundError,$strErrorResponse) = InputValidation("mixBirthDay",$_POST['mixBirthDay'],"numbers",255);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				echo "fail 3. $strErrorResponse " . $_POST['mixBirthDay'];
+			}
+			list($strFoundError,$strErrorResponse) = InputValidation("mixBirthMonth",$_POST['mixBirthMonth'],"numbers",255);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				echo "fail 3. $strErrorResponse " . $_POST['mixBirthMonth'];
+			}
+			list($strFoundError,$strErrorResponse) = InputValidation("mixBirthYear",$_POST['mixBirthYear'],"numbers",255);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				echo "fail 3. $strErrorResponse " . $_POST['mixBirthYear'];
+			}
+			list($strFoundError,$strErrorResponse) = InputValidation("mixABN",$_POST['mixABN'],"numbers",255);
+			if($strFoundError)
+			{
+				$bolFoundError=TRUE;
+				echo "fail 3. $strErrorResponse " . $_POST['mixABN'];
+			}
+			if($_POST['mixNewPass1'] != $_POST['mixNewPass2'])
+			{
+				$bolFoundError = TRUE;
+				echo "fail 3. $strErrorResponse " . $_POST['mixNewPass2'];
+			}
+			if(strlen($_POST['mixNewPass1'])>"40" || strlen($_POST['mixNewPass1'])<"6")
+			{
+				$bolFoundError = TRUE;
+				echo "fail 3. $strErrorResponse " . $_POST['mixNewPass2'];
+			}
+
+			/*
+
+			fields I will be working with:
+
+			mixAccountNumber
+			mixFirstName
+			mixLastName
+			mixBirthDay
+			mixBirthMonth
+			mixBirthYear
+			mixABN
+
+			*/
+
+			// If there is no UserName errror
+			if(!$bolFoundError)
+			{
+
+				// we can check the database for a record. 1
+				$strCustContact = $dbConnection->fetchone("SELECT FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" LIMIT 1");
+				
+				// we can check the database for a record. 2
+				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"$_POST[mixAccountNumber]\" LIMIT 1");
+
+				if($strCustContact->LastLogin != NULL)
+				{
+					// they have logged in before, print error message or redirect, or both!.
+					print "Error you have logged in before!.";
+
+				}
+				else
+				{
+					// if the email address exists in db then we reset the pass..
+					if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]" && $strCustAccount->ABN == "$_POST[mixABN]")
+					{
+						
+						// And send an email...
+						$to      = $strCustContact->Email;
+						$subject = "Account Notice #" . $strCustContact->Account;
+						$message = "Hello,\n\n";
+						$message .= "Your username is: " . $strCustContact->UserName . "\n\n";
+						$message .= "Kind Regards\n";
+						$message .= "Customer Service Group\n";
+						$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+							'X-Mailer: Flex/' . phpversion();
+						# supress email errors.
+						#@mail($to, $subject, $message, $headers);
+						DBO()->Fail = FALSE;
+						DBO()->Contact->Email = $strCustContact->Email;
+						DBO()->Contact->FirstName = $strCustContact->FirstName;
+						DBO()->Contact->LastName = $strCustContact->LastName;
+						DBO()->Contact->DOB = $strCustContact->DOB;
+						DBO()->Account->ABN = $strCustAccount->ABN;
+						DBO()->Contact->Account = $strCustContact->Account;
+					}
+				}
+			}
+
+			// not found in db?
+			if(DBO()->Fail)
+			{
+				// Brute Force attack prevention.
+				sleep(0);
+				//sleep(9);
+			}
+		}
+
+		$this->LoadPage('setup_account');
+		return TRUE;
+	}
 	
 }

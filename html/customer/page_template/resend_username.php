@@ -33,7 +33,7 @@
 	require_once dirname(__FILE__) . "/../layout_template/common_layout.php";
 	
 	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console"), "$ExternalName Customer System");
-	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console",1=>"ResetPassword",2=>"ResendUsername"), "");
+	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console",1=>"ResetPassword",2=>"ResendUsername",3=>"SetupAccount"), "");
 	
 	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
 	

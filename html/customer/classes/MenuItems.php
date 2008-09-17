@@ -160,6 +160,24 @@ class MenuItems
 
 
 	//------------------------------------------------------------------------//
+	// SetupAccount()
+	//------------------------------------------------------------------------//
+	/**
+	 * SetupAccount()
+	 *
+	 * 
+	 * @return	string	action to be executed when linking to the SetupAccount Console
+	 *
+	 * @method
+	 */
+	function SetupAccount()
+	{
+		$this->strLabel	= "Setup Account";
+
+		return $this->GetBaseURL()."./flex.php/Console/Setup/";
+	}
+
+	//------------------------------------------------------------------------//
 	// ResetPassword()
 	//------------------------------------------------------------------------//
 	/**
