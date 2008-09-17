@@ -184,7 +184,7 @@
 		$this->_selHasInvoicedCDRs	= new StatementSelect("ServiceTotal", "Id", "Service = <Service> AND (UncappedCost > 0.0 OR CappedCost > 0.0)");
 		
 		// Init Charge Modules
-		$this->_arrBillingChargeModules	= Billing_Charge::LoadModules();
+		$this->_arrBillingChargeModules	= Billing_Charge::getModules();
 	}
 	
 	//------------------------------------------------------------------------//
