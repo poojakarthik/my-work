@@ -194,6 +194,7 @@ function SplitABRLine($strLine)
 	foreach ($arrDefinition as $strField=>$arrFieldDefinition)
 	{
 		$arrSplit[$strField]	= substr($strLine, $arrFieldDefinition['Start'], $arrFieldDefinition['Length']);
+		CliEcho($arrSplit[$strField]);
 		settype($arrSplit[$strField], $arrFieldDefinition['Type']);
 	}
 	
