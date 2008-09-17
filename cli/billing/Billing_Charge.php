@@ -181,14 +181,14 @@
 	 *
 	 * @method
 	 */
- 	public static function LoadModules()
+ 	public static function getModules()
  	{
  		// Define & init static variables
- 		static	$bolInit			= FALSE;
+ 		static	$arrModules			= Array();
  		static	$selModules;
  		static	$selModuleConfig;
  		static	$arrCustomerGroups;
- 		if (!$bolInit)
+ 		if (!isset($arrModules))
  		{
 	 		$selModules			= new StatementSelect("billing_charge_module", "*", "active_status_id = ".ACTIVE_STATUS_ACTIVE, "ISNULL(customer_group_id) DESC");
 	 		$selModuleConfig	= new StatementSelect("billing_charge_module_config", "*", "billing_charge_module_id = <id>");
@@ -203,42 +203,40 @@
 	 		{
 	 			$arrCustomerGroups	= $selCustomerGroups->FetchAll();
 	 		}
-	 		
-	 		$bolInit	= TRUE;
- 		}
- 		
- 		// Retrieve all Billing Charge Modules
- 		$arrModules	= Array();
- 		if ($selModules->Execute() !== FALSE)
- 		{
- 			while ($arrModule = $selModules->Fetch())
- 			{ 				
- 				// Instanciate the Class
- 				$modModule	= new $arrModule['class']($arrModule['id']);
- 				
- 				// Is this Module for All CustomerGroups, or just one?
- 				if ($arrModule['customer_group_id'] === NULL)
- 				{
- 					// All CustomerGroups, although this can be overridden later
- 					foreach ($arrCustomerGroups as $arrCustomerGroup)
- 					{
- 						$arrModules[$arrCustomerGroup['Id']][get_parent_class($modModule)][get_class($modModule)]	= $modModule;
- 					}
- 				}
- 				else
- 				{
- 					// Just One CustomerGroup.  If there is already an "All" Module defined, then override it
- 					$arrModules[$arrModule['customer_group_id']][get_parent_class($modModule)][get_class($modModule)]	= $modModule;
- 				}
- 			}
  			
- 			// Return array of Billing Charge Modules
- 			return $arrModules;
+	 		// Retrieve all Billing Charge Modules
+	 		$arrModules	= Array();
+	 		if ($selModules->Execute() !== FALSE)
+	 		{
+	 			while ($arrModule = $selModules->Fetch())
+	 			{ 				
+	 				// Instanciate the Class
+	 				$modModule	= new $arrModule['class']($arrModule['id']);
+	 				
+	 				// Is this Module for All CustomerGroups, or just one?
+	 				if ($arrModule['customer_group_id'] === NULL)
+	 				{
+	 					// All CustomerGroups, although this can be overridden later
+	 					foreach ($arrCustomerGroups as $arrCustomerGroup)
+	 					{
+	 						$arrModules[$arrCustomerGroup['Id']][get_parent_class($modModule)][get_class($modModule)]	= $modModule;
+	 					}
+	 				}
+	 				else
+	 				{
+	 					// Just One CustomerGroup.  If there is already an "All" Module defined, then override it
+	 					$arrModules[$arrModule['customer_group_id']][get_parent_class($modModule)][get_class($modModule)]	= $modModule;
+	 				}
+	 			}
+	 		}
+	 		else
+	 		{
+	 			throw new Exception("DB ERROR: ".$selModules->Error());
+	 		}
  		}
- 		else
- 		{
- 			throw new Exception("DB ERROR: ".$selModules->Error());
- 		}
+	 	
+		// Return array of Billing Charge Modules
+		return $arrModules;
  	}
  }
  
