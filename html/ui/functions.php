@@ -1253,31 +1253,31 @@ function InputValidation($strName,$mixInput,$strType,$intLength){
 		case "email":
 		if (!eregi("^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,6}$", $mixInput)) {
 			$strFoundError=TRUE;
-			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
+			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "numbers":
 		if(!eregi("^[0-9]{1,$intLength}$",$mixInput)){
 			$strFoundError=TRUE;
-			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
+			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "letters":
 		if(!eregi("^[a-zA-Z]{1,$intLength}$",$mixInput)){
 			$strFoundError=TRUE;
-			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
+			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "mixed":
 		if(!eregi("^[a-zA-Z0-9]{1,$intLength}$",$mixInput)){
 			$strFoundError=TRUE;
-			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
+			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "multiword":
 		if(!eregi("^[[:space:]a-zA-Z0-9_.-]{1,$intLength}$",$mixInput)){
 			$strFoundError=TRUE;
-			$strErrorResponse="Invalid input for field: $strName, max length: $intLength, characters accepted: $strType";
+			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 	}

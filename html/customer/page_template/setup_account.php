@@ -162,7 +162,7 @@
 			</TD>
 		</TR>
 		</TABLE>
-		If you have already activated your account, <A HREF=\"./flex.php/Console/Password/\">click here to retrieve your password</A><br/>";
+		If you have already activated your account, <A HREF=\"" . Href()->ResendPassword() . "\">click here to retrieve your password</A><br/>";
 
 	print "
 	</form>";
@@ -177,41 +177,41 @@
 		<center><div class='customer-standard-table-style-menu-options-login'>Customer System - Please Confirm Details</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
-			<TD>";
-
-			print "The details entered appear valid, to complete these changes please enter a valid email address.<br/>";
+			<TD>
+			<input type=\"hidden\" name=\"mixAccountNumber\" value=\"$_POST[mixAccountNumber]\">
+			<input type=\"hidden\" name=\"mixFirstName\" value=\"$_POST[mixFirstName]\">
+			<input type=\"hidden\" name=\"mixLastName\" value=\"$_POST[mixLastName]\">
+			<input type=\"hidden\" name=\"mixBirthDay\" value=\"$_POST[mixBirthDay]\">
+			<input type=\"hidden\" name=\"mixBirthMonth\" value=\"$_POST[mixBirthMonth]\">
+			<input type=\"hidden\" name=\"mixBirthYear\" value=\"$_POST[mixBirthYear]\">
+			<input type=\"hidden\" name=\"mixABN\" value=\"$_POST[mixABN]\">
+			<input type=\"hidden\" name=\"mixNewPass1\" value=\"$_POST[mixNewPass1]\">
+			<input type=\"hidden\" name=\"mixNewPass2\" value=\"$_POST[mixNewPass2]\">
+			The details entered appear valid, please confirm your email address.<br/><br/>";
 			echo "<table id='LoginTable'>
 			<tr>
 				<td>
 					<label for=\"UserName\" style='font-size: 10pt;'>Email:</label>
 				</td>
-				<td>
-					<input type=\"text\" name=\"mixAccountNumber\" class=\"LoginBox\" maxlength=\"21\"/ VALUE=\"" . DBO()->Contact->Email->Value . "\">
-				</td>
+				<td><INPUT TYPE=\"text\" NAME=\"mixEmail\" VALUE=\"" . DBO()->Contact->Email->Value . "\" size=\"35\"></td>
 			</tr>
 			<tr>
 				<td>
 					<label for=\"UserName\" style='font-size: 10pt;'>Account Number:</label>
 				</td>
-				<td>
-					<input type=\"text\" name=\"mixAccountNumber\" class=\"LoginBox\" maxlength=\"21\"/ VALUE=\"" . DBO()->Contact->Account->Value . "\" DISABLED>
-				</td>
+				<td>" . DBO()->Contact->Account->Value . "</td>
 			</tr>
 			<tr>
 				<td>
 					<label for=\"UserName\" style='font-size: 10pt;'>First Name:</label>
 				</td>
-				<td>
-					<input type=\"text\" name=\"mixFirstName\" class=\"LoginBox\" maxlength=\"21\"/ VALUE=\"" . DBO()->Contact->FirstName->Value . "\" DISABLED>
-				</td>
+				<td>" . DBO()->Contact->FirstName->Value . "</td>
 			</tr>
 			<tr>
 				<td>
 					<label for=\"UserName\" style='font-size: 10pt;'>Last Name:</label>
 				</td>
-				<td>
-					<input type=\"text\" name=\"mixLastName\" class=\"LoginBox\" maxlength=\"21\"/ VALUE=\"" . DBO()->Contact->LastName->Value . "\" DISABLED>
-				</td>
+				<td>" . DBO()->Contact->LastName->Value . "</td>
 			</tr>
 			<tr>
 				<td valign=\"bottom\" style=\"padding-bottom: 5px;\">
@@ -223,25 +223,13 @@
 				<td>
 					<label for=\"UserName\" style='font-size: 10pt;'>ABN:</label>
 				</td>
-				<td>
-					<input type=\"text\" name=\"mixABN\" class=\"LoginBox\" maxlength=\"21\" size=\"30\"/ VALUE=\"" . DBO()->Account->ABN->Value . "\" DISABLED>
-				</td>
+				<td>" . DBO()->Account->ABN->Value . "</td>
 			</tr>
 			<tr>
 				<td>
-					<label for=\"UserName\" style='font-size: 10pt;'>Type a new password:</label>
+					<label for=\"UserName\" style='font-size: 10pt;'>New password:</label>
 				</td>
-				<td>
-					<input type=\"text\" name=\"mixNewPass1\" class=\"LoginBox\" maxlength=\"21\"/ VALUE=\"***********\" DISABLED>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for=\"UserName\" style='font-size: 10pt;'>Repeat new password:</label>
-				</td>
-				<td>
-					<input type=\"text\" name=\"mixNewPass2\" class=\"LoginBox\" maxlength=\"21\"/ VALUE=\"***********\" DISABLED>
-				</td>
+				<td>Hidden</td>
 			</tr>
 			<tr>
 				<td>
@@ -266,9 +254,9 @@
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
-			print "The details entered were invalid.";
-			echo "<br /><br />\n";
-			echo "<a href='" . Href()->ResendUsername() . "' ><span>Please Try Again</span></a>\n";
+			print "Your request has failed due to one or more errors, details below:";
+			echo "<br /><br />" . DBO()->ErrorMessage . "<br />\n";
+			echo "<a href=\"javascript: window.history.go(-1)\"><span>Please Try Again</span></a>\n";
 			print "
 			</TD>
 		</TR>

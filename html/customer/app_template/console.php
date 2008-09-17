@@ -870,60 +870,61 @@ class AppTemplateConsole extends ApplicationTemplate
 			// echo "pass 1. " . $_POST['mixFirstName'];
 			// By default all password requests will fail.
 			DBO()->Fail = TRUE;
+			DBO()->ErrorMessage = "";
 
 			// Check the syntax of the username entered by user..
 			$bolFoundError=FALSE;
-			list($strFoundError,$strErrorResponse) = InputValidation("mixFirstName",$_POST['mixFirstName'],"mixed",31);
+			list($strFoundError,$strErrorResponse) = InputValidation("First Name",$_POST['mixFirstName'],"mixed",31);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
-				echo "fail 1. $strErrorResponse " . $_POST['mixFirstName'];
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("mixLastName",$_POST['mixLastName'],"mixed",31);
+			list($strFoundError,$strErrorResponse) = InputValidation("Last Name",$_POST['mixLastName'],"mixed",31);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
-				echo "fail 2. $strErrorResponse " . $_POST['mixLastName'];
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("mixAccountNumber",$_POST['mixAccountNumber'],"numbers",255);
+			list($strFoundError,$strErrorResponse) = InputValidation("Account Number",$_POST['mixAccountNumber'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
-				echo "fail 3. $strErrorResponse " . $_POST['mixAccountNumber'];
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("mixBirthDay",$_POST['mixBirthDay'],"numbers",255);
+			list($strFoundError,$strErrorResponse) = InputValidation("Birth Day",$_POST['mixBirthDay'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
-				echo "fail 3. $strErrorResponse " . $_POST['mixBirthDay'];
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("mixBirthMonth",$_POST['mixBirthMonth'],"numbers",255);
+			list($strFoundError,$strErrorResponse) = InputValidation("Birth Month",$_POST['mixBirthMonth'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
-				echo "fail 3. $strErrorResponse " . $_POST['mixBirthMonth'];
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("mixBirthYear",$_POST['mixBirthYear'],"numbers",255);
+			list($strFoundError,$strErrorResponse) = InputValidation("Birth Year",$_POST['mixBirthYear'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
-				echo "fail 3. $strErrorResponse " . $_POST['mixBirthYear'];
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("mixABN",$_POST['mixABN'],"numbers",255);
+			list($strFoundError,$strErrorResponse) = InputValidation("ABN",$_POST['mixABN'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
-				echo "fail 3. $strErrorResponse " . $_POST['mixABN'];
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
 			if($_POST['mixNewPass1'] != $_POST['mixNewPass2'])
 			{
 				$bolFoundError = TRUE;
-				echo "fail 3. $strErrorResponse " . $_POST['mixNewPass2'];
+				DBO()->ErrorMessage .= "Invalid input for password fields, passwords do not match<br/>";
 			}
 			if(strlen($_POST['mixNewPass1'])>"40" || strlen($_POST['mixNewPass1'])<"6")
 			{
 				$bolFoundError = TRUE;
-				echo "fail 3. $strErrorResponse " . $_POST['mixNewPass2'];
+				DBO()->ErrorMessage .= "Invalid input: password must be greater then 6 chars and less then 40.<br/>";
 			}
 
 			/*
@@ -945,7 +946,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			{
 
 				// we can check the database for a record. 1
-				$strCustContact = $dbConnection->fetchone("SELECT FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" LIMIT 1");
+				$strCustContact = $dbConnection->fetchone("SELECT FirstName,LastName,DOB,LastLogin,Email,Account,UserName FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" LIMIT 1");
 				
 				// we can check the database for a record. 2
 				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"$_POST[mixAccountNumber]\" LIMIT 1");
@@ -953,34 +954,72 @@ class AppTemplateConsole extends ApplicationTemplate
 				if($strCustContact->LastLogin != NULL)
 				{
 					// they have logged in before, print error message or redirect, or both!.
-					print "Error you have logged in before!.";
+					DBO()->ErrorMessage .= "Error you have already setup your account, if you forget your password: <a href=\"" . Href()->ResendPassword() . "\">go here</a>" . "<br/>";
 
+				}
+				else if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]" && $strCustAccount->ABN == "$_POST[mixABN]")
+				{
+					
+					// And send an email...
+					$to      = $strCustContact->Email;
+					$subject = "Account Notice #" . $strCustContact->Account;
+					$message = "Hello,\n\n";
+					$message .= "Your username is: " . $strCustContact->UserName . "\n\n";
+					$message .= "Kind Regards\n";
+					$message .= "Customer Service Group\n";
+					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+						'X-Mailer: Flex/' . phpversion();
+					# supress email errors.
+					#@mail($to, $subject, $message, $headers);
+					DBO()->Fail = FALSE;
+					DBO()->Contact->Email = $strCustContact->Email;
+					DBO()->Contact->FirstName = $strCustContact->FirstName;
+					DBO()->Contact->LastName = $strCustContact->LastName;
+					DBO()->Contact->DOB = $strCustContact->DOB;
+					DBO()->Account->ABN = $strCustAccount->ABN;
+					DBO()->Contact->Account = $strCustContact->Account;
+					DBO()->Contact->UserName = $strCustContact->UserName;
+					DBO()->OK = TRUE;
 				}
 				else
 				{
-					// if the email address exists in db then we reset the pass..
-					if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]" && $strCustAccount->ABN == "$_POST[mixABN]")
-					{
-						
-						// And send an email...
-						$to      = $strCustContact->Email;
-						$subject = "Account Notice #" . $strCustContact->Account;
-						$message = "Hello,\n\n";
-						$message .= "Your username is: " . $strCustContact->UserName . "\n\n";
-						$message .= "Kind Regards\n";
-						$message .= "Customer Service Group\n";
-						$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
-							'X-Mailer: Flex/' . phpversion();
-						# supress email errors.
-						#@mail($to, $subject, $message, $headers);
-						DBO()->Fail = FALSE;
-						DBO()->Contact->Email = $strCustContact->Email;
-						DBO()->Contact->FirstName = $strCustContact->FirstName;
-						DBO()->Contact->LastName = $strCustContact->LastName;
-						DBO()->Contact->DOB = $strCustContact->DOB;
-						DBO()->Account->ABN = $strCustAccount->ABN;
-						DBO()->Contact->Account = $strCustContact->Account;
-					}
+					DBO()->ErrorMessage .= "Invalid input: not all details matched.<br>";
+				}
+				
+			}
+
+			/* they have submitted the first page */
+			if(DBO()->OK && DBO()->Fail==FALSE && array_key_exists('mixEmail', $_POST))
+			{
+				/* if DBO()->OK then we have confirmed all details, we just need to verify the email */
+				list($bolFoundEmail,$strErrorResponse) = InputValidation("mixEmail",$_POST['mixEmail'],"email",255);
+				if($bolFoundEmail)
+				{
+					DBO()->Fail = TRUE;
+					DBO()->ErrorMessage .= "$strErrorResponse<br/>";
+					$this->LoadPage('setup_account');
+					return TRUE;
+				}
+				else
+				{
+					$mixNewPass = sha1 ("$_POST[mixNewPass1]");
+					$mixNewEmail = "$_POST[mixEmail]";
+
+					$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+					$dbConnection->execute("UPDATE Contact SET PassWord=\"$mixNewPass\",Email=\"$mixNewEmail\" WHERE Account=\"" . DBO()->Contact->Account->Value . "\"");
+					
+					// And send an email...
+					$subject = "Account Setup" . DBO()->Contact->Account->Value;
+					$message = "Hello,\n\n";
+					$message .= "Your username is:" . DBO()->Contact->UserName->Value . "\n";
+					$message .= "Your password is:" . $_POST['mixNewPass1'] . "\n\n";
+					$message .= "Kind Regards\n";
+					$message .= "Customer Service Group\n";
+					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+						'X-Mailer: Flex/' . phpversion();
+					mail($mixNewEmail, $subject, $message, $headers);
+					$this->LoadPage('setup_completed');
+					return TRUE;
 				}
 			}
 
