@@ -172,7 +172,7 @@ function SplitABRLine($strLine)
 																'Type'		=> 'string'
 															),
 									'Basket'		=> Array(
-																'Start'		=> 28,
+																'Start'		=> 38,
 																'Length'	=> 3,
 																'Type'		=> 'integer'
 															),
