@@ -72,7 +72,8 @@ if ($resOutputFile)
 				if ($arrService === NULL)
 				{
 					CliEcho("\t + First Service '{$arrLine['FNN']}'...", FALSE);
-					$arrService	= $arrServiceTemplate;
+					$arrService			= $arrServiceTemplate;
+					$arrService['FNN']	= $arrLine['FNN'];
 				}
 				// Is this a new FNN?
 				elseif ($arrService['FNN'] != $arrLine['FNN'])
