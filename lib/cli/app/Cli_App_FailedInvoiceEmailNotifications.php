@@ -34,7 +34,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			}
 
 			$matches = array();
-			preg_match_all("/.+ said: 5{1,1}[0-9]{2,2} .*\<([^\>]+)\>/", $log, $matches);
+			preg_match_all("/ to=\<([^\>\n\r]+)\>[^\n\r]+status=bounced/", $log, $matches);
 			@$arrEmailAddresses = array_unique($matches[1]);
 			if (!$arrEmailAddresses || !count($arrEmailAddresses))
 			{
