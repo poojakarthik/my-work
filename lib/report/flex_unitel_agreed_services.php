@@ -36,7 +36,10 @@ $arrServiceTemplate	= Array(
 								'Last Provisioning Response Effective Date'	=> NULL
 							);
 
+CliEcho("\n[ FLEX vs UNITEL AGREED BASKETS ]\n");
+
 // Open the output file
+CliEcho(" * Opening Output File '{$strOutputPath}'...");
 $resOutputFile	= fopen($strOutputPath, 'w');
 if ($resOutputFile)
 {
@@ -48,6 +51,7 @@ if ($resOutputFile)
 	foreach ($arrReportPaths as $intCarrier=>$strPath)
 	{
 		// Load the file
+		CliEcho(" * Opening Input File '{$strPath}'...");
 		$resInputFile	= fopen($strPath, 'r');
 		if ($resInputFile)
 		{
@@ -67,6 +71,7 @@ if ($resOutputFile)
 				// Is this the first Service in the Report?
 				if ($arrService === NULL)
 				{
+					CliEcho("\t + First Service '{$arrLine['FNN']}'...");
 					$arrService	= $arrServiceTemplate;
 				}
 				// Is this a new FNN?
@@ -103,6 +108,7 @@ if ($resOutputFile)
 					
 					// Clean up the Current Service
 					$arrService	= $arrServiceTemplate;
+					CliEcho("\t + New Service '{$arrLine['FNN']}'...");
 				}
 				
 				// Add this basket to the current Service
