@@ -14,11 +14,8 @@ $arrReportPaths		= Array(
 // Statements
 $selService			= new StatementSelect("Service", "*", "Id = <Service>");
 $selServiceDetails	= new StatementSelect("Service", "MIN(EarliestCDR) AS EarliestCDR, MAX(LatestCDR) AS LatestCDR", "FNN = <FNN> OR (FNN LIKE <FNNIndial> AND Indial100 = 1)");
-$selLastResponse	= new StatementSelect(	"(ProvisioningResponse PR JOIN provisioning_type ON provisioning_type.id = PR.Type) JOIN Service ON Service.Id = PR.Service", 
-											"PR.Description, PR.EffectiveDate, PR.ImportedOn", 
-											"PR.Status = 402 AND (PR.FNN = <FNN> OR (PR.FNN LIKE <FNNIndial> AND Indial100 = 1)) AND PR.Carrier = <Carrier> AND provisioning_type_nature = ".REQUEST_TYPE_NATURE_FULL_SERVICE,
-											"PR.EffectiveDate DESC, PR.ImportedOn DESC",
-											"1");
+$selIdsForFNN		= new StatementSelect("Service", "Id", "FNN = <FNN> OR (FNN LIKE <FNNIndial> AND Indial100 = 1)");
+$qryQuery			= new Query();
 
 $arrServiceTemplate	= Array(
 								'Carrier'									=> NULL,
@@ -93,12 +90,21 @@ if ($resOutputFile)
 						throw new Exception($selServiceDetails->Error());
 					}
 					$arrServiceDetails	= array_merge($arrServiceDetails, $selServiceDetails->Fetch());
-					CliEcho("P", FALSE);
-					if ($selLastResponse->Execute(Array('Carrier' => $intCarrier, 'FNN' => $arrService['FNN'], 'FNNIndial' => substr($arrService['FNN'], 0, -2).'__')) === FALSE)
+					CliEcho("I", FALSE);
+					if ($selIdsForFNN->Execute(Array('FNN' => $arrService['FNN'], 'FNNIndial' => substr($arrService['FNN'], 0, -2).'__')) === FALSE)
 					{
-						throw new Exception($selLastResponse->Error());
+						throw new Exception($selIdsForFNN->Error());
 					}
-					if ($arrLastResponse = $selLastResponse->Fetch())
+					$arrServiceIds	= $selIdsForFNN->FetchAll();
+					$strServiceIds	= implode(', ', $arrServiceIds);
+					CliEcho("P", FALSE);
+					$strSQL		= "SELECT PR.Description, PR.EffectiveDate, PR.ImportedOn FROM ProvisioningResponse PR JOIN provisioning_type ON provisioning_type.id = PR.Type WHERE PR.Status = 402 AND Service IN ($strServiceIds) AND PR.Carrier = {$intCarrier} AND provisioning_type_nature = ".REQUEST_TYPE_NATURE_FULL_SERVICE." ORDER BY PR.EffectiveDate DESC, PR.ImportedOn DESC LIMIT 1";
+					$resResult	= $qryQuery->Execute($strSQL);
+					if ($resResult === FALSE)
+					{
+						throw new Exception($qryQuery->Error());
+					}
+					if ($arrLastResponse = $resResult->fetch_assoc())
 					{
 						$arrServiceDetails	= array_merge($arrServiceDetails, $arrLastResponse);
 					}
