@@ -78,16 +78,12 @@ if ($resOutputFile)
 					// Get Flex Service Details
 					CliEcho("O", FALSE);
 					$arrServiceOwner	= FindFNNOwner($arrService['FNN'], $strEffectiveDate);
-					if ($arrServiceOwner)
+					CliEcho("D", FALSE);
+					if ($selService->Execute($arrServiceOwner) === FALSE)
 					{
-						CliEcho("D", FALSE);
-						if ($selService->Execute($arrServiceOwner) === FALSE)
-						{
-							throw new Exception($selService->Error());
-						}
-						$arrServiceDetails	= $selService->Fetch();
+						throw new Exception($selService->Error());
 					}
-					else
+					if (!($arrServiceDetails = $selService->Fetch()))
 					{
 						$arrServiceDetails	= Array();
 					}
@@ -108,16 +104,19 @@ if ($resOutputFile)
 						$arrServiceIds[]	= $arrServiceId['Id'];
 					}
 					$strServiceIds	= implode(', ', $arrServiceIds);
-					CliEcho("P", FALSE);
-					$strSQL		= "SELECT PR.Description, PR.EffectiveDate, PR.ImportedOn FROM ProvisioningResponse PR JOIN provisioning_type ON provisioning_type.id = PR.Type WHERE PR.Status = 402 AND Service IN ($strServiceIds) AND PR.Carrier = {$intCarrier} AND provisioning_type_nature = ".REQUEST_TYPE_NATURE_FULL_SERVICE." ORDER BY PR.EffectiveDate DESC, PR.ImportedOn DESC LIMIT 1";
-					$resResult	= $qryQuery->Execute($strSQL);
-					if ($resResult === FALSE)
+					if ($strServiceIds)
 					{
-						throw new Exception($qryQuery->Error());
-					}
-					if ($arrLastResponse = $resResult->fetch_assoc())
-					{
-						$arrServiceDetails	= array_merge($arrServiceDetails, $arrLastResponse);
+						CliEcho("P", FALSE);
+						$strSQL		= "SELECT PR.Description, PR.EffectiveDate, PR.ImportedOn FROM ProvisioningResponse PR JOIN provisioning_type ON provisioning_type.id = PR.Type WHERE PR.Status = 402 AND Service IN ($strServiceIds) AND PR.Carrier = {$intCarrier} AND provisioning_type_nature = ".REQUEST_TYPE_NATURE_FULL_SERVICE." ORDER BY PR.EffectiveDate DESC, PR.ImportedOn DESC LIMIT 1";
+						$resResult	= $qryQuery->Execute($strSQL);
+						if ($resResult === FALSE)
+						{
+							throw new Exception($qryQuery->Error());
+						}
+						if ($arrLastResponse = $resResult->fetch_assoc())
+						{
+							$arrServiceDetails	= array_merge($arrServiceDetails, $arrLastResponse);
+						}
 					}
 					CliEcho("W", FALSE);
 					
