@@ -162,7 +162,7 @@
 			</TD>
 		</TR>
 		</TABLE>
-		If you have already activated your account, <A HREF=\"" . Href()->ResendPassword() . "\">click here to retrieve your password</A><br/>";
+		If you have already activated your account, <A HREF=\"" . Href()->ResetPassword() . "\">click here to retrieve your password</A><br/>";
 
 	print "
 	</form>";
