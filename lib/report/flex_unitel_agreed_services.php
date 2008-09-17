@@ -63,6 +63,7 @@ if ($resOutputFile)
 				{
 					continue;
 				}
+				CliEcho();
 				
 				// Split the line
 				$arrLine		= SplitABRLine($strLine);
@@ -71,7 +72,7 @@ if ($resOutputFile)
 				// Is this the first Service in the Report?
 				if ($arrService === NULL)
 				{
-					CliEcho("\t + First Service '{$arrLine['FNN']}'...");
+					CliEcho("\t + First Service '{$arrLine['FNN']}'...", FALSE);
 					$arrService	= $arrServiceTemplate;
 				}
 				// Is this a new FNN?
@@ -108,7 +109,7 @@ if ($resOutputFile)
 					
 					// Clean up the Current Service
 					$arrService	= $arrServiceTemplate;
-					CliEcho("\t + New Service '{$arrLine['FNN']}'...");
+					CliEcho("\t + New Service '{$arrLine['FNN']}'...", FALSE);
 				}
 				
 				// Add this basket to the current Service
@@ -133,6 +134,7 @@ if ($resOutputFile)
 						$strLastChange	= $arrLine['LastChange'];
 				}
 				$arrService['Basket '.$arrLine['Basket']]	= $strLastChange." on ".$strEffectiveDate;
+				CliEcho(" {$arrLine['Basket']}", FALSE);
 			}
 			
 			// Close the input file
