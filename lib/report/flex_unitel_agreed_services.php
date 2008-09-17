@@ -15,7 +15,7 @@ $arrReportPaths		= Array(
 $selService			= new StatementSelect("Service", "*", "Id = <Service>");
 $selServiceDetails	= new StatementSelect("Service", "MIN(EarliestCDR) AS EarliestCDR, MAX(LatestCDR) AS LatestCDR", "FNN = <FNN> OR (FNN LIKE <FNNIndial> AND Indial100 = 1)");
 $selLastResponse	= new StatementSelect(	"ProvisioningResponse PR JOIN provisioning_type ON provisioning_type.id = PR.Type", 
-											"PR,Description, EffectiveDate, ImportedOn", 
+											"PR.Description, EffectiveDate, ImportedOn", 
 											"(FNN = <FNN> OR (FNN LIKE <FNNIndial> AND Indial100 = 1)) AND Carrier = <Carrier> AND provisioning_type_nature = ".REQUEST_TYPE_NATURE_FULL_SERVICE,
 											"ISNULL(EffectiveDate) ASC, EffectiveDate DESC, ImportedOn DESC",
 											"1");
