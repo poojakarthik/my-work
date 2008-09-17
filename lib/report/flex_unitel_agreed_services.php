@@ -94,7 +94,10 @@ if ($resOutputFile)
 					{
 						throw new Exception($selLastResponse->Error());
 					}
-					$arrServiceDetails	= array_merge($arrServiceDetails, $selLastResponse->Fetch());
+					if ($arrLastResponse = $selLastResponse->Fetch())
+					{
+						$arrServiceDetails	= array_merge($arrServiceDetails, $arrLastResponse);
+					}
 					
 					// Finalise Output Row
 					$arrService['Carrier']										= GetConstantDescription($intCarrier, 'Carrier');
