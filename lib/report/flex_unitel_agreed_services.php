@@ -7,8 +7,8 @@ $strEffectiveDate	= '2008-09-01 00:00:00';
 $intEffectiveDate	= strtotime($strEffectiveDate);
 $strOutputPath		= "/home/rdavis/flex_unitel_agreed_services_".date('Ymd', $intEffectiveDate).".csv";
 $arrReportPaths		= Array(
-								CARRIER_UNITEL => '/home/rdavis/unitel_abr_'.date('Ymd', $intEffectiveDate).'.txt',
-								CARRIER_UNITEL_VOICETALK => '/home/rdavis/unitelvt_abr_'.date('Ymd', $intEffectiveDate).'.txt'
+								CARRIER_UNITEL => '/home/rdavis/rsl058a20080901.txt',
+								CARRIER_UNITEL_VOICETALK => '/home/rdavis/rsl321a20080901.txt'
 							);
 
 // Statements
