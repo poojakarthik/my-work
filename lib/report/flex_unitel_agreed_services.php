@@ -63,7 +63,6 @@ if ($resOutputFile)
 				{
 					continue;
 				}
-				CliEcho();
 				
 				// Split the line
 				$arrLine		= SplitABRLine($strLine);
@@ -109,7 +108,7 @@ if ($resOutputFile)
 					
 					// Clean up the Current Service
 					$arrService	= $arrServiceTemplate;
-					CliEcho("\t + New Service '{$arrLine['FNN']}'...", FALSE);
+					CliEcho("\n\t + New Service '{$arrLine['FNN']}'...", FALSE);
 				}
 				
 				// Add this basket to the current Service
@@ -139,6 +138,7 @@ if ($resOutputFile)
 			
 			// Close the input file
 			fclose($resInputFile);
+			CliEcho();
 		}
 	}
 }
@@ -196,6 +196,9 @@ function SplitABRLine($strLine)
 		$arrSplit[$strField]	= settype(substr($strLine, $arrFieldDefinition['Start'], $arrFieldDefinition['Length']), $arrFieldDefinition['Type']);
 	}
 	
+	Debug($strLine);
+	Debug($arrSplit);
+	die;
 	return $arrSplit;
 }
 
