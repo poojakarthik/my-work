@@ -56,7 +56,7 @@ if ($resOutputFile)
 		if ($resInputFile)
 		{
 			// Parse each line
-			while ($strLine)
+			while ($strLine = fgets($resInputFile))
 			{
 				// Ignore Headers and Footers
 				if (in_array(substr($strLine, 0, 1), Array('H', 'T')))
