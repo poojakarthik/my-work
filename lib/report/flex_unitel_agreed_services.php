@@ -12,7 +12,7 @@ $arrReportPaths		= Array(
 							);
 
 // Statements
-$selService			= new StatementSelect("Service", "*", "Service = <Service>");
+$selService			= new StatementSelect("Service", "*", "Id = <Service>");
 $selServiceDetails	= new StatementSelect("Service", "MIN(EarliestCDR) AS EarliestCDR, MAX(LatestCDR) AS LatestCDR", "FNN = <FNN> OR (FNN LIKE <FNNIndial> AND Indial100 = 1)");
 $selLastResponse	= new StatementSelect(	"ProvisioningResponse JOIN provisioning_type ON provisioning_type.id = ProvisioningResponse.Type", 
 											"Description, EffectiveDate, ImportedOn", 
