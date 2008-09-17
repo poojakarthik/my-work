@@ -95,7 +95,11 @@ if ($resOutputFile)
 					{
 						throw new Exception($selIdsForFNN->Error());
 					}
-					$arrServiceIds	= $selIdsForFNN->FetchAll();
+					$arrServiceIds	= Array();
+					while ($arrServiceId = $selIdsForFNN->Fetch())
+					{
+						$arrServiceIds[]	= $arrServiceId['Id'];
+					}
 					$strServiceIds	= implode(', ', $arrServiceIds);
 					CliEcho("P", FALSE);
 					$strSQL		= "SELECT PR.Description, PR.EffectiveDate, PR.ImportedOn FROM ProvisioningResponse PR JOIN provisioning_type ON provisioning_type.id = PR.Type WHERE PR.Status = 402 AND Service IN ($strServiceIds) AND PR.Carrier = {$intCarrier} AND provisioning_type_nature = ".REQUEST_TYPE_NATURE_FULL_SERVICE." ORDER BY PR.EffectiveDate DESC, PR.ImportedOn DESC LIMIT 1";
