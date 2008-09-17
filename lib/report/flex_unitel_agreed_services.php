@@ -106,6 +106,7 @@ if ($resOutputFile)
 					$arrService['Flex Latest CDR']								= $arrServiceDetails['LatestCDR'];
 					$arrService['Last Provisioning Response']					= $arrServiceDetails['Description'];
 					$arrService['Last Provisioning Response Effective Date']	= date('d/m/Y', strtotime(($arrServiceDetails['EffectiveDate']) ? $arrServiceDetails['EffectiveDate'] : $arrServiceDetails['ImportedOn']));
+					$arrService['Last Provisioning Response Effective Date']	= ($arrService['Last Provisioning Response Effective Date'] === '01/01/1970') ? '' : $arrService['Last Provisioning Response Effective Date'];
 					
 					// Add the current Service to the Report
 					fwrite($resOutputFile, '"'.implode('","', $arrService).'"'."\n");
