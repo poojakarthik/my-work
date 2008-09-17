@@ -114,8 +114,6 @@ if ($resOutputFile)
 				
 				// Add this basket to the current Service
 				$arrService['FNN']	= $arrLine['FNN'];
-				
-				$strEffectiveDate	= date("d/m/Y", strtotime($arrLine['EffectiveDate']));
 				switch ($arrLine['LastChange'])
 				{
 					case 'S':
@@ -133,7 +131,7 @@ if ($resOutputFile)
 					default:
 						$strLastChange	= $arrLine['LastChange'];
 				}
-				$arrService['Basket '.$arrLine['Basket']]	= $strLastChange." on ".$strEffectiveDate;
+				$arrService['Basket '.$arrLine['Basket']]	= $strLastChange." on ".date("d/m/Y", strtotime($arrLine['EffectiveDate']));
 				CliEcho(" {$arrLine['Basket']}", FALSE);
 			}
 			
