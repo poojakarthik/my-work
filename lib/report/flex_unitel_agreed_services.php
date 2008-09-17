@@ -79,17 +79,21 @@ if ($resOutputFile)
 				elseif ($arrService['FNN'] != $arrLine['FNN'])
 				{
 					// Get Flex Service Details
+					CliEcho("O", FALSE);
 					$arrServiceOwner	= FindFNNOwner($arrService['FNN'], $strEffectiveDate);
+					CliEcho("D", FALSE);
 					if ($selService->Execute($arrServiceOwner) === FALSE)
 					{
 						throw new Exception($selService->Error());
 					}
 					$arrServiceDetails	= $selService->Fetch();
+					CliEcho("C", FALSE);
 					if ($selServiceDetails->Execute(Array('FNN' => $arrService['FNN'], 'FNNIndial' => substr($arrService['FNN'], 0, -2).'__')) === FALSE)
 					{
 						throw new Exception($selServiceDetails->Error());
 					}
 					$arrServiceDetails	= array_merge($arrServiceDetails, $selServiceDetails->Fetch());
+					CliEcho("P", FALSE);
 					if ($selLastResponse->Execute(Array('Carrier' => $intCarrier, 'FNN' => $arrService['FNN'], 'FNNIndial' => substr($arrService['FNN'], 0, -2).'__')) === FALSE)
 					{
 						throw new Exception($selLastResponse->Error());
@@ -98,6 +102,7 @@ if ($resOutputFile)
 					{
 						$arrServiceDetails	= array_merge($arrServiceDetails, $arrLastResponse);
 					}
+					CliEcho("W", FALSE);
 					
 					// Finalise Output Row
 					$arrService['Carrier']										= GetConstantDescription($intCarrier, 'Carrier');
