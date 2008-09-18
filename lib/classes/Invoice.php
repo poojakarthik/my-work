@@ -198,9 +198,25 @@ class Invoice
 		
 		//----------------------- GENERATE INVOICE DATA ----------------------//
 		// Mark Account Adjustments
+		$arrWhere	= Array('Account' => $objAccount->Id);
+		$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'InvoiceRun' => $this->InvoiceRun, 'invoice_run_id' => $this->invoice_run_id);
+		$updMarkAccountCharges	= self::_preparedStatement('updMarkAccountCharges');
+		if ($updMarkAccountCharges->Execute($arrData, $arrWhere) === FALSE)
+		{
+			// Database Error -- throw Exception
+			throw new Exception("DB ERROR: ".$updMarkAccountCharges->Error());
+		}
+		
+		// Get Charge Totals
 		// TODO
 		
-		// Calculate Tax Total
+		// Calculate Preliminary Invoice Values
+		// TODO
+		
+		// Generate Account Billing Time Charges
+		// TODO
+		
+		// Calculate and Insert Final Invoice Values
 		// TODO
 		//--------------------------------------------------------------------//
 	}
@@ -755,6 +771,8 @@ class Invoice
 				// UPDATE BY IDS
 				
 				// UPDATES
+				case 'updMarkAccountCharges':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status = ".CHARGE_APPROVED, Array('Status'=>NULL, 'InvoiceRun'=>NULL, 'invoice_run_id'=>NULL));
 				
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
