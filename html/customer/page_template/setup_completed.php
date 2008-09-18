@@ -44,7 +44,7 @@
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD align=center>";
-			echo "<br />Thank you, password has been set, you can now access the system.<br /><br />\n";
+			echo "<br />Thank you, password has been set, you can now access the system.<br /><br />The username and password have been emailed to you.<br/><br/>\n";
 			echo "<a href=\"" . Href()->Console() . "\"><span>Please click here to login</span></a>\n";
 			print "
 			</TD>
