@@ -871,6 +871,12 @@ class AppTemplateConsole extends ApplicationTemplate
 	}
 
 
+	/* 
+	 * Function Setup();
+	 *
+	 * Function sets a new email address and allows user to set his/her password for the first time 
+	 * This function will only work if they have not logged in before, otherwise we assume this has already been done...
+	 */
 	function Setup()
 	{
 		
@@ -884,7 +890,6 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Check if the form has been submitted.
 		if(array_key_exists('mixFirstName', $_POST))
 		{
-			// echo "pass 1. " . $_POST['mixFirstName'];
 			// By default all password requests will fail.
 			DBO()->Fail = TRUE;
 			DBO()->ErrorMessage = "";
@@ -944,20 +949,6 @@ class AppTemplateConsole extends ApplicationTemplate
 				DBO()->ErrorMessage .= "Invalid input: password must be greater then 6 chars and less then 40.<br/>";
 			}
 
-			/*
-
-			fields I will be working with:
-
-			mixAccountNumber
-			mixFirstName
-			mixLastName
-			mixBirthDay
-			mixBirthMonth
-			mixBirthYear
-			mixABN
-
-			*/
-
 			// If there is no UserName errror
 			if(!$bolFoundError)
 			{
@@ -976,18 +967,6 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 				else if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]" && $strCustAccount->ABN == "$_POST[mixABN]")
 				{
-					
-					// And send an email...
-					$to      = $strCustContact->Email;
-					$subject = "Account Notice #" . $strCustContact->Account;
-					$message = "Hello,\n\n";
-					$message .= "Your username is: " . $strCustContact->UserName . "\n\n";
-					$message .= "Kind Regards\n";
-					$message .= "Customer Service Group\n";
-					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
-						'X-Mailer: Flex/' . phpversion();
-					# supress email errors.
-					#@mail($to, $subject, $message, $headers);
 					DBO()->Fail = FALSE;
 					DBO()->Contact->Email = $strCustContact->Email;
 					DBO()->Contact->FirstName = $strCustContact->FirstName;
@@ -1009,7 +988,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(DBO()->OK && DBO()->Fail==FALSE && array_key_exists('mixEmail', $_POST))
 			{
 				/* if DBO()->OK then we have confirmed all details, we just need to verify the email */
-				list($bolFoundEmail,$strErrorResponse) = InputValidation("mixEmail",$_POST['mixEmail'],"email",255);
+				list($bolFoundEmail,$strErrorResponse) = InputValidation("Email",$_POST['mixEmail'],"email",255);
 				if($bolFoundEmail)
 				{
 					DBO()->Fail = TRUE;
@@ -1025,7 +1004,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 					$dbConnection->execute("UPDATE Contact SET PassWord=\"$mixNewPass\",Email=\"$mixNewEmail\" WHERE Account=\"" . DBO()->Contact->Account->Value . "\"");
 					
-					// And send an email...
+					/* Mail the user with there new password and username, then show thank you page.. */
 					$subject = "Account Setup" . DBO()->Contact->Account->Value;
 					$message = "Hello,\n\n";
 					$message .= "Your username is:" . DBO()->Contact->UserName->Value . "\n";
@@ -1044,8 +1023,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(DBO()->Fail)
 			{
 				// Brute Force attack prevention.
-				sleep(0);
-				//sleep(9);
+				sleep(9);
 			}
 		}
 
