@@ -954,7 +954,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				if($strCustContact->LastLogin != NULL)
 				{
 					// they have logged in before, print error message or redirect, or both!.
-					DBO()->ErrorMessage .= "Error you have already setup your account, if you forget your password: <a href=\"" . Href()->ResendPassword() . "\">go here</a>" . "<br/>";
+					DBO()->ErrorMessage .= "Error you have already setup your account, if you forget your password: <a href=\"" . Href()->ResetPassword() . "\">go here</a>" . "<br/>";
 
 				}
 				else if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]" && $strCustAccount->ABN == "$_POST[mixABN]")
