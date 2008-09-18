@@ -728,10 +728,20 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(!$strFoundError)
 			{
 				//then we can check the database for a record.
-				$strCustEmail = $dbConnection->fetchone("SELECT Email,Account FROM `Contact` WHERE UserName = \"$mixInput\" LIMIT 1");
+				$strCustEmail = $dbConnection->fetchone("SELECT Email,Account,LastLogin FROM `Contact` WHERE UserName = \"$mixInput\" LIMIT 1");
+
+				/* Before we can send the username, check and make sure they have already activated and entered a valid email */
+				if($strCustEmail->LastLogin == NULL)
+				{
+					/* if they don't have an activated account we redirect to activation page */
+					unset($_POST['mixFirstName']);
+					$bolFoundError=TRUE;
+					$this->LoadPage('setup_account');
+					return TRUE;
+				}
 
 				// if the email address exists in db then we reset the pass..
-				if($strCustEmail->Email)
+				if($strCustEmail->Email && $bolFoundError==FALSE)
 				{
 					// Reset password
 					$strTxtPassword = RandomString("10");
@@ -819,12 +829,19 @@ class AppTemplateConsole extends ApplicationTemplate
 			// If there is no UserName errror
 			if(!$bolFoundError)
 			{
-				// echo "pass 2. " . $_POST['mixFirstName'];
 				//then we can check the database for a record.
-				$strCustEmail = $dbConnection->fetchone("SELECT Account,UserName,FirstName,LastName,Email FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" LIMIT 1");
-
+				$strCustEmail = $dbConnection->fetchone("SELECT Account,UserName,FirstName,LastName,Email,LastLogin FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" LIMIT 1");
+				/* Before we can send the username, check and make sure they have already activated and entered a valid email */
+				if($strCustEmail->LastLogin == NULL)
+				{
+					/* if they don't have an activated account we redirect to activation page */
+					unset($_POST['mixFirstName']);
+					$bolFoundError=TRUE;
+					$this->LoadPage('setup_account');
+					return TRUE;
+				}
 				// if the email address exists in db then we reset the pass..
-				if($strCustEmail->FirstName == "$_POST[mixFirstName]" && $strCustEmail->LastName == "$_POST[mixLastName]")
+				if($strCustEmail->FirstName == "$_POST[mixFirstName]" && $strCustEmail->LastName == "$_POST[mixLastName]" && $bolFoundError==FALSE)
 				{
 					// And send an email...
 					$to      = $strCustEmail->Email;
