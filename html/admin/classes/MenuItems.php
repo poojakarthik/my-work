@@ -748,10 +748,10 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
-	// FindCustomer
+	// FindCustomerOld
 	//------------------------------------------------------------------------//
 	/**
-	 * FindCustomer()
+	 * FindCustomerOld()
 	 *
 	 * Compiles the Href to be executed when the FindCustomer menu item is clicked
 	 *
@@ -762,12 +762,35 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function FindCustomer()
+	function FindCustomerOld()
 	{
 		$this->strLabel	= "Find Customer";
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Find Customer (Old)";
 		return self::OLD_FRAMEWORK . "contact_verify.php";
 	}
+	
+	//------------------------------------------------------------------------//
+	// CustomerSearch
+	//------------------------------------------------------------------------//
+	/**
+	 * CustomerSearch()
+	 *
+	 * Compiles the Href to be executed when the CustomerSearch functionality is triggered
+	 *
+	 * Compiles the Href to be executed when the CustomerSearch functionality is triggered
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string				Href
+	 *
+	 * @method
+	 */
+	function CustomerSearch()
+	{
+		$this->strLabel	= "Customer Search";
+		$this->strContextMenuLabel = "Search";
+		return "javascript:FlexSearch.displayPopup()";
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// CustomerVerification

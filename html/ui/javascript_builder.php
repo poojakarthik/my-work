@@ -126,7 +126,8 @@ function VixenIncludeJsFiles($arrFilenames, $bolStripComments=FALSE)
 		{
 			// This regex strips all the multi line and single line comments out of the js file
 			// WIP :: Fix this up! Removing comments is good, but this breaks on prototype.js
-			$strJavascriptToSend .= $strContents;//@preg_replace('((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\n\s*\/\/.*))', '', $strContents);
+			//$strJavascriptToSend .= $strContents;//@preg_replace('((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\n\s*\/\/.*))', '', $strContents);
+			$strJavascriptToSend .= @preg_replace('((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\n\s*\/\/.*))', '', $strContents);
 		}
 		else
 		{

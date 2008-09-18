@@ -1712,6 +1712,35 @@ $GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Constant']	= 'FLEX_DA
 $GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Description']	= 'CDR Database Connection';
 
 
+// Search Types
+$GLOBALS['*arrConstant']	['SearchType']	[1]	['Constant']	= 'SEARCH_TYPE_ACCOUNT_ID';
+$GLOBALS['*arrConstant']	['SearchType']	[1]	['Description']	= 'Account Id';
+$GLOBALS['*arrConstant']	['SearchType']	[1]	['Name']		= 'Account Id';
+$GLOBALS['*arrConstant']	['SearchType']	[2]	['Constant']	= 'SEARCH_TYPE_CONTACT_NAME';
+$GLOBALS['*arrConstant']	['SearchType']	[2]	['Description']	= 'Contact Name';
+$GLOBALS['*arrConstant']	['SearchType']	[2]	['Name']		= 'Contact Name';
+$GLOBALS['*arrConstant']	['SearchType']	[3]	['Constant']	= 'SEARCH_TYPE_FNN';
+$GLOBALS['*arrConstant']	['SearchType']	[3]	['Description']	= 'FNN';
+$GLOBALS['*arrConstant']	['SearchType']	[3]	['Name']		= 'FNN';
+$GLOBALS['*arrConstant']	['SearchType']	[4]	['Constant']	= 'SEARCH_TYPE_SERVICE_ID';
+$GLOBALS['*arrConstant']	['SearchType']	[4]	['Description']	= 'Service Id';
+$GLOBALS['*arrConstant']	['SearchType']	[4]	['Name']		= 'Service Id';
+$GLOBALS['*arrConstant']	['SearchType']	[5]	['Constant']	= 'SEARCH_TYPE_INVOICE_ID';
+$GLOBALS['*arrConstant']	['SearchType']	[5]	['Description']	= 'Invoice Id';
+$GLOBALS['*arrConstant']	['SearchType']	[5]	['Name']		= 'Invoice Id';
+$GLOBALS['*arrConstant']	['SearchType']	[6]	['Constant']	= 'SEARCH_TYPE_ABN';
+$GLOBALS['*arrConstant']	['SearchType']	[6]	['Description']	= 'ABN';
+$GLOBALS['*arrConstant']	['SearchType']	[6]	['Name']		= 'ABN';
+$GLOBALS['*arrConstant']	['SearchType']	[7]	['Constant']	= 'SEARCH_TYPE_ACN';
+$GLOBALS['*arrConstant']	['SearchType']	[7]	['Description']	= 'ACN';
+$GLOBALS['*arrConstant']	['SearchType']	[7]	['Name']		= 'ACN';
+$GLOBALS['*arrConstant']	['SearchType']	[8]	['Constant']	= 'SEARCH_TYPE_ACCOUNT_NAME';
+$GLOBALS['*arrConstant']	['SearchType']	[8]	['Description']	= 'Account Name';
+$GLOBALS['*arrConstant']	['SearchType']	[8]	['Name']		= 'Account Name';
+
+
+
+
 // Special paths
 define("PATH_PAYMENT_UPLOADS"			, FILES_BASE_PATH."payments/");
 define("PATH_INVOICE_PDFS"				, FILES_BASE_PATH."invoices/");

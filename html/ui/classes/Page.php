@@ -275,38 +275,37 @@ class Page
 	 */
 	function RenderHeaderJS()
 	{
-		// The Javascript autoloader is no longer used as it cannot guarantee 
-		// the files are interpreted before they are required by explicit calls 
-		// to the functions and objects they contain.  We can therefore no longer
-		// guarantee that a js file is loaded only once, but so long as any objects
-		// created in the js files, are only created if they don't already exist,
-		// then this shouldn't be a problem.
-		//echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/autoloader.js' ></script>\n";
-		//echo "<script type='text/javascript'>VixenSetJavascriptBaseDir('". JAVASCRIPT_BASE_DIR ."')</script>\n";
-		
-		/*
-		echo "<script type='text/javascript' src='javascript.php?File=vixen.js' ></script>\n";
-		echo "<script type='text/javascript' src='javascript.php?File=menu.js' ></script>\n";
-		echo "<script type='text/javascript' src='javascript.php?File=popup.js' ></script>\n";
-		echo "<script type='text/javascript' src='javascript.php?File=dhtml.js' ></script>\n";
-		echo "<script type='text/javascript' src='javascript.php?File=ajax.js' ></script>\n";
-		echo "<script type='text/javascript' src='javascript.php?File=event_handler.js' ></script>\n";
-		*/
-		
-		// Prepend the js files that all pages require, to the list of js files to include
+		// Include reference to all the standard javascript files, which should be included on every page
+		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search");
+		$strFiles = $this->_GetJsFilesQueryString($arrStandardJsFiles);
+		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
+
+		// Add direct links to the following files as they are large and this will result in automatic caching of them
+		$strFrameworkDir = Flex::frameworkUrlBase();
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/jquery.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/json.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex.js' ></script>\n";
+
+		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
 		{
 			$GLOBALS['*arrJavaScript'] = Array();
 		}
-		array_unshift($GLOBALS['*arrJavaScript'], "vixen", "popup", "dhtml", "ajax", "event_handler", "login");
-		
-		// Remove any duplicates from the list
-		$arrJsFiles = array_unique($GLOBALS['*arrJavaScript']);
+
+		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex"));
+
+		foreach ($arrStandardJsFiles as $strFile)
+		{
+			if (($intKey = array_search($strFile, $arrRemainingJsFiles)) !== FALSE)
+			{
+				array_splice($arrRemainingJsFiles, $intKey, 1);
+			}
+		}
 		
 		// Build the get variables for the javascript.php script
-		$strFiles = $this->_GetJsFilesQueryString($arrJsFiles);
-
-		// Echo the reference to the javascript.php script which retrieves all the javascript
+		$strFiles = $this->_GetJsFilesQueryString($arrRemainingJsFiles);
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 	}
 	
@@ -653,26 +652,16 @@ class Page
 		$strUserName = Flex::getDisplayName();
 		
 		$strUserPreferencesLink = Href()->ViewUserDetails();
+		
+		$strCategoryOptions = "";
+		$arrSearchTypes = Customer_Search::getSearchTypes();
+		foreach ($arrSearchTypes as $intSearchType=>$arrSearchType)
+		{
+			$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='$intSearchType'>{$arrSearchType['Name']}</option>";
+		}
+		$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets'>Tickets</option>";
 
 		echo "
-			<script>
-				function quickSearch()
-				{
-					var cat = \$ID('quick_search_category');
-					var base = cat.options[0].value;
-					var criteria = \$ID('search_string').value;
-					if (criteria == '')
-					{
-						$Alert('Please enter a search term.');
-						return;
-					}
-					document.location = base + '?for=' + criteria;
-				}
-				function quickSearchOnEnter(event)
-				{
-					if (event && event.keyCode && event.keyCode == 13) quickSearch();
-				}
-			</script>
 			<div id='person_search' name='person_search'>
 				<div id='person' name='person'>
 					Logged in as: $strUserName
@@ -680,11 +669,10 @@ class Page
 					| <a onclick='Vixen.Logout();'>Logout</a>
 				</div>
 				<div id='search_bar' name='search_bar'>
-					<form action='#' onsubmit='quickSearch();return false;'>
+					<form action='#' onsubmit='FlexSearch.quickSearch();return false;'>
 						Search: 
-						<input type='text' id='search_string' name='search_string' onkeypress='quickSearchOnEnter(event)' />
-						<select name='category' id='quick_search_category'>
-							<option value='reflex.php/Ticketing/QuickSearch/'>Tickets</option> 
+						<input type='text' id='search_string' name='search_string' onkeypress='FlexSearch.quickSearchOnEnter(event)' />
+						<select name='category' id='quick_search_category'>$strCategoryOptions
 						</select>
 						<input type='submit' id='Search' name='Search' value='Search'/>
 					</form>

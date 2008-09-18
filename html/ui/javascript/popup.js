@@ -15,6 +15,7 @@
  */
 function VixenPopupClass()
 {
+	this.elmPopupContainer					= null;
 	this.strContentCode						= "";
 	this.strLocationOnClose					= "";
 	this.intTimeoutIdForPageLoadingSplash	= null;
@@ -42,25 +43,28 @@ function VixenPopupClass()
 		elmExists = this.GetPopupElement(strId);
 		if (elmExists)
 		{
-			return TRUE;
+			return true;
 		}
-		return FALSE;
+		return false;
 	}
 	
 	// Returns TRUE if there are any popups present on the page
 	this.PopupsExist = function()
 	{
-		var elmPopupContainer = $ID("PopupHolder");
+		if (this.elmPopupContainer == null)
+		{
+			this.elmPopupContainer = $ID("PopupHolder");
+		}
 		
-		if (elmPopupContainer.childNodes.length != 0)
+		if (this.elmPopupContainer.childNodes.length != 0)
 		{
 			// Popups exist
-			return TRUE;
+			return true;
 		}
 		else
 		{
 			// There are no popups
-			return FALSE;
+			return false;
 		}
 	}
 	
@@ -69,7 +73,30 @@ function VixenPopupClass()
 	// Returns null if the popup cannot be found
 	this.GetPopupElement = function(strId)
 	{
-		return document.getElementById('VixenPopup__' + strId);
+		var strPopupId = 'VixenPopup__' + strId;
+		if (this.elmPopupContainer == null)
+		{
+			this.elmPopupContainer = $ID("PopupHolder");
+		}
+		
+		for (var i=0; i < this.elmPopupContainer.childNodes.length; i++)
+		{
+			if (this.elmPopupContainer.childNodes[i].id == strPopupId)
+			{
+				return this.elmPopupContainer.childNodes[i];
+			}
+		}
+		return null;
+	}
+	
+	this.Centre = function(strPopupId)
+	{
+		var elmPopup = this.GetPopupElement(strPopupId);
+		if (elmPopup != null)
+		{
+			elmPopup.style.left	= (((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + window.scrollX) + "px";
+			elmPopup.style.top	= (((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + window.scrollY) + "px";
+		}
 	}
 	
 	// Set the title of a popup

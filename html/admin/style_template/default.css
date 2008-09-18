@@ -61,13 +61,10 @@ a:active
 	text-decoration:	none;		
 }
 
-
-/* An alternative to using anchor tags.  This will stop the hyperlink
- * from being displayed in the status bar
- */
+a[onclick],
 span[onclick]
 {
-	cursor: pointer;
+	cursor : pointer;
 }
 
 span[onclick]:hover

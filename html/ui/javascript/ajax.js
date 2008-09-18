@@ -144,7 +144,7 @@ function VixenAjaxClass()
 		// Retrieve the form which is being submitted (the form as an element)
 		objFormElement = document.getElementById(strFormId);
 
-		for (intKey in objFormElement.elements)
+		for (intKey=0; intKey < objFormElement.elements.length; intKey++)
 		{
 			strElementName	= objFormElement.elements[intKey].name;
 
