@@ -56,7 +56,7 @@
 	// Open the pageBody container
 	 // CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ManagementConsole"), "$ExternalName Customer System");
 	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ResetPassword"), "$ExternalName Customer System");
-	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ResetPassword",1=>"ResendUsername",2=>"SetupAccount"), "");
+	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console",1=>"ResetPassword",2=>"ResendUsername",3=>"SetupAccount"), "");
 	
 	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
 	

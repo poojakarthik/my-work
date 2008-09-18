@@ -25,7 +25,8 @@
 <link rel='stylesheet' type='text/css' href='css.php?v=<?php echo $strMd5; ?>' />
 </head>
 
-			<body onload='document.getElementById("VixenUserNameId").focus()'>
+			<!-- <body onload='document.getElementById("VixenUserNameId").focus()'> -->
+			<body>
 
 <?php
 
