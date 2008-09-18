@@ -236,7 +236,7 @@
 					<label for=\"UserName\" style='font-size: 10pt;'></label>
 				</td>
 				<td>
-					<INPUT TYPE=\"button\" VALUE=\"Cancel\" onClick=\"javascript:document.location='" . Href()->Console() . "'\"> <INPUT TYPE=\"submit\" VALUE=\"Confirm Changes >>\">
+					<INPUT TYPE=\"button\" VALUE=\"Cancel\" onClick=\"javascript:document.location='" . Href()->Console() . "'\"> <INPUT TYPE=\"button\" VALUE=\"Go Back\" onClick=\"javascript:window.history.go(-1)\"> <INPUT TYPE=\"submit\" VALUE=\"Confirm Changes >>\">
 				</td>
 			</tr>
 		</table>\n";
