@@ -284,23 +284,35 @@ class AppTemplateConsole extends ApplicationTemplate
 		// If no error was found, continue with processing.
 		if(!$strFoundInputError){
 			
-
+			DBO()->ErrorMessage = "";
 			$mixFoundError = FALSE;
 			if($_POST['mixAccount_NewPassword1'] != "" || $_POST['mixAccount_NewPassword2'] != "")
 			{
 				if(SHA1($_POST['mixAccount_OldPassword']) != DBO()->Contact->PassWord->Value)
 				{
+					DBO()->ErrorMessage .= "Invalid input: Old password does not match<br/>";
 					$mixFoundError = TRUE;
 				}
 				if(strlen($_POST['mixAccount_NewPassword1'])>"40" || strlen($_POST['mixAccount_NewPassword1'])<"6")
 				{
+					DBO()->ErrorMessage .= "Invalid input: New password length is wrong. max = 40, min = 6<br/>";
 					$mixFoundError = TRUE;
 				}
 				if($_POST['mixAccount_NewPassword1'] != $_POST['mixAccount_NewPassword2'])
 				{
+					DBO()->ErrorMessage .= "Invalid input: New passwords do not match<br/>";
 					$mixFoundError = TRUE;
 				}
 			}
+
+			/* check email */
+			list($strFoundError,$strErrorResponse) = InputValidation("Email",$_POST['mixContact_Email'],"email",255);
+			if($strFoundError)
+			{
+				$mixFoundError=TRUE;
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
+			}
+
 			if($mixFoundError)
 			{
 				$this->LoadPage('edit_passfail');

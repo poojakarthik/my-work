@@ -1251,6 +1251,13 @@ function InputValidation($strName,$mixInput,$strType,$intLength){
 	$strErrorResponse="";
 	switch ($strType) {
 		case "email":
+		preg_match('/^(.*\@)+(.*)$/', $mixInput, $mixMatch);
+		$mixMailRecord = getmxrr($mixMatch['2'],$mxhosts=null,$weight=null);
+		if(!$mixMailRecord)
+		{	
+			$strFoundError=TRUE;
+			$strErrorResponse="The email address does not have a valid MX record, please check your email address and make sure it is valid. If you believe this is a temporary email issue please try again.<br><br>If problems persist, please try a different email address.";
+		}
 		if (!eregi("^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,6}$", $mixInput)) {
 			$strFoundError=TRUE;
 			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";

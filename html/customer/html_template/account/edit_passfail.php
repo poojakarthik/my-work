@@ -80,14 +80,8 @@
 		<TR>
 			<TD>";
 
-		print "There was an error processing your password change request.<br/>
-		Please check the requirements below:<br/><br/>
-		<ul>
-			<li> New password can't be left blank.
-			<li> Both new passwords must match.
-			<li> Old password must match with your current password.
-			<li> Password length should match 6 - 40 characters.
-		</ul>";
+		print "There was an error processing your password change request.<br/><br/>
+		" . DBO()->ErrorMessage . "";
 		print "<br/><A HREF=\"javascript:history.go(-1)\">Please return and try again.</A>";
 
 		print "</TD>
