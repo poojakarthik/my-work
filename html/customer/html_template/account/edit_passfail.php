@@ -80,7 +80,7 @@
 		<TR>
 			<TD>";
 
-		print "There was an error processing your password change request.<br/><br/>
+		print "There was an error processing your request.<br/><br/>
 		" . DBO()->ErrorMessage . "";
 		print "<br/><A HREF=\"javascript:history.go(-1)\">Please return and try again.</A>";
 
