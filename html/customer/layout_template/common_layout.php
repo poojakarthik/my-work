@@ -51,12 +51,12 @@ class CommonLayout
 
 		<div id="Header" class="sectionContainer">
 		<link rel="stylesheet" type="text/css" media="screen" href="ie.css" />
-		<TABLE height=90 width=100% cellpadding=0 cellspacing=0>
-		<TR>
-			<TD width=10></TD>
-			<TD><img src="logo.php" WIDTH="320" HEIGHT="60" BORDER="0" ALT=""></TD>
-		</TR>
-		</TABLE>
+		<table style="height: 90px; width: 100%;" cellpadding=0 cellspacing=0>
+		<tr>
+			<td width=10></td>
+			<td><img src="logo.php" WIDTH="320" HEIGHT="60" BORDER="0" ALT=""></td>
+		</tr>
+		</table>
 			<!-- <div id="Banner"></div> -->
 			<div class="MenuContainer">
 			<?php
