@@ -50,7 +50,6 @@ class CommonLayout
 		<div class="pageContainerLeft"><div class="pageContainerShadow"></div></div>
 
 		<div id="Header" class="sectionContainer">
-		<link rel="stylesheet" type="text/css" media="screen" href="ie.css" />
 		<table style="height: 90px; width: 100%;" cellpadding=0 cellspacing=0>
 		<tr>
 			<td width=10></td>
