@@ -84,7 +84,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 
 		// build the "View Unbilled Charges for Account" link
 		$strViewUnbilledCharges = Href()->ViewUnbilledChargesForAccount(DBO()->Account->Id->Value);
-		$strViewUnbilledChargesLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strViewUnbilledCharges' >&nbsp;&nbsp;View Unbilled Debits & Credits</a></span>";
+		$strViewUnbilledChargesLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strViewUnbilledCharges' >&nbsp;&nbsp;View Unbilled Debits &amp; Credits</a></span>";
 
 		// build the "View Invoices and Payments" link
 		$strViewInvoicesAndPayments = Href()->ViewInvoicesAndPayments(DBO()->Account->Id->Value);
@@ -140,7 +140,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "<table class=\"customer-standard-table-style-menu-options-info\">\n";
 		
 			echo "   <tr>\n";
-			echo "      <td><A HREF=\"http://www.yellowbilling.com.au/\" target=\"\_blank\"><IMG SRC=\"./img/template/logo.png\" WIDTH=\"320\" HEIGHT=\"60\" BORDER=\"0\" ALT=\"\"></A><BR>With management highly experienced in the telecommunications industry, Yellow Billing Services is well placed to deal with some of the potentially tricky issues facing service providers today.</td>\n";
+			echo "      <td><A HREF=\"http://www.yellowbilling.com.au/\" target=\"_blank\"><IMG SRC=\"./img/template/logo.png\" WIDTH=\"320\" HEIGHT=\"60\" BORDER=\"0\" ALT=\"\"></A></td>\n";
 			echo "   </tr>
 			</table>\n";
 		//echo "</div>\n";
