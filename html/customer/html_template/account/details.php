@@ -136,7 +136,7 @@
 		}
 		print "
 		<TR>
-			<TD>Unbilled Debits & Credits: </TD>
+			<TD>Unbilled Debits &amp; Credits: </TD>
 			<TD>$strUnbilledAdjustments</TD>
 		</TR>
 		<TR>
