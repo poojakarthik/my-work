@@ -282,11 +282,11 @@ class Customer_Search
 		{
 			$qryQuery = new Query();
 		}
-		
+
 		$objRecordSet = $qryQuery->Execute($strQuery);
 		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to execute query: $strQuery - " . mysqli_errno() . '::' . mysqli_error());
+			throw new Exception("Failed to execute query: $strQuery - " . $qryQuery->Error());
 		}
 
 		$arrRecordSet = array();

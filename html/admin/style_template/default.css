@@ -1782,3 +1782,26 @@ table#CustomerStatusDetails tr td:first-child
 	width:			20%;
 	text-align:		center;
 }
+
+
+
+/* Table stuff*/
+
+table.form-data
+{
+	width			: 99%;
+	margin-left		: auto;
+	margin-right	: auto;
+}
+
+table.form-data td,
+table.form-data th
+{
+	padding	: 0em 0em;
+}
+
+table.form-data td.title
+{
+	vertical-align	: top;
+	font-weight		: bold;
+}

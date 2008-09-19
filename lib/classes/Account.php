@@ -78,6 +78,32 @@ class Account
 	{
 		return Customer_Group::getForId($this->customerGroup);
 	}
+	
+	// Returns a list of ContactIds or Contact objects, defining the contacts that can be associated with this account
+	// In both cases, the key to the array will be the id of the contact
+	// This will return an empty string if there are no Contacts for this account
+	public function getContacts($bolAsObjects=FALSE)
+	{
+		$strQuery = "	SELECT c.Id AS ContactId
+						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
+						WHERE a.Id = {$this->id}";
+		$qryQuery = new Query();
+		
+		$objRecordSet = $qryQuery->Execute($strQuery);
+		if (!$objRecordSet)
+		{
+			throw new Exception("Failed to retrieve contacts for account: {$this->id} - " . $qryQuery->Error());
+		}
+
+		$arrContacts = array();
+
+		while ($arrRecord = $objRecordSet->fetch_assoc())
+		{
+			$arrContacts[$arrRecord['ContactId']] = ($bolAsObjects)? Contact::getForId($arrRecord['ContactId']) : $arrRecord['ContactId'];
+		}
+
+		return $arrContacts;
+	}
 
 	public static function getForTicket(Ticketing_Ticket $objTicket)
 	{

@@ -114,7 +114,7 @@ pre {
 
 
 table.reflex {
-	width: 100%; /* This was previously set to 90%*/
+	width: 99%; /* This was previously set to 90%*/
 	margin-left: auto;
 	margin-right: auto;
 	border: .1em solid #333;
@@ -213,6 +213,12 @@ table.reflex td.title {
 	vertical-align: top;
 	font-weight: bold;
 }
+
+table.highlight-rows tbody tr:hover td
+{
+	background-color: #ffc;
+}
+
 
 input.required, 
 select.required, 

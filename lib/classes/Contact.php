@@ -105,8 +105,43 @@ class Contact
 
 	public function canAccessAccount($objAccount)
 	{
-		return ($this->customerContact == 1 && $this->accountGroup == $objAccount->accountGroup) || $this->account == $objAccount->id;
+		/*
+		 *  A contact can access an account if:
+		 * 	The contact is flagged as a CustomerContact (Contact.CustomerContact == 1) and the contact is in the same AccountGroup as the Account
+		 * 	OR
+		 * 	Account.Id == Contact.Account
+		 * 	OR
+		 * 	Account.PrimaryContract == Contact.Id
+		 */
+		return ($this->customerContact == 1 && $this->accountGroup == $objAccount->accountGroup) || ($this->account == $objAccount->id) || ($objAccount->primaryContact == $this->account);
 	}
+	
+	// Returns a list of AccountIds or Account objects, defining the Accounts that can be associated with this contact
+	// In both cases, the key to the array will be the id of the account
+	// This will return an empty string if there are no Accounts for this Contact
+	public function getAccounts($bolAsObjects=FALSE)
+	{
+		$strQuery = "	SELECT a.Id AS AccountId
+						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
+						WHERE c.Id = {$this->id}";
+		$qryQuery = new Query();
+		
+		$objRecordSet = $qryQuery->Execute($strQuery);
+		if (!$objRecordSet)
+		{
+			throw new Exception("Failed to retrieve accounts for contact: {$this->id} - " . $qryQuery->Error());
+		}
+
+		$arrAccounts = array();
+
+		while ($arrRecord = $objRecordSet->fetch_assoc())
+		{
+			$arrAccounts[$arrRecord['AccountId']] = ($bolAsObjects)? Account::getForId($arrRecord['AccountId']) : $arrRecord['AccountId'];
+		}
+
+		return $arrAccounts;
+	}
+	
 
 	protected function getValuesToSave()
 	{

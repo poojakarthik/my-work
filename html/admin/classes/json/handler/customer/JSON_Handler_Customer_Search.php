@@ -5,10 +5,10 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 	const RESULTS_PER_PAGE = 10;
 	
 	//------------------------------------------------------------------------//
-	// quickSearch
+	// search
 	//------------------------------------------------------------------------//
 	/**
-	 * quickSearch()
+	 * search()
 	 *
 	 * Handles ajax request from client, to search for Accounts/Contacts/Services
 	 * 
@@ -16,34 +16,57 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 	 *
 	 * @param	string	$strConstraint				String to search on
 	 * @param	string	$intConstraintType			Search string type. Defaults to NULL, in which all logical interpretations of the search string are used to search on 
-	 * @param	string	$strSearchType				Search type.  Must be one of the Customer_Search::SEARCH_TYPE_ constants.  defaults to Customer_Search::SEARCH_TYPE_ACCOUNTS
+	 * @param	string	$strSearchType				[optional] Search type.  Must be one of the Customer_Search::SEARCH_TYPE_ constants.  defaults to Customer_Search::SEARCH_TYPE_ACCOUNTS
+	 * @param	bool	$bolIncludeArchived			[optional] flag defining whether or not to include archived items in the search. Defaults to FALSE
 	 * @param	int		$intOffset					Offset into the result set
+	 * @param	bool	$bolForceRefresh			[optional].  If set to FALSE the function will use the cached results for this search if they exist.  Defaults to TRUE
 	 * 
 	 * @return	array		["Success"]				TRUE if search was executed successfully, else FALSE
 	 * 						["RecordCount"]			Number of records returned by the search (only defined on success)
-	 * 						["Content"]				Content for the popup which will display the results (only defined on success)
+	 * 						["Results"]				html defining the Results and how they are displayed(only defined on success)
+	 *						["SearchType"]			$intSearchType
+	 *						["Constraint"]			$strConstraint
+	 *						["ConstraintType"]		$intConstraintType
+	 *						["IncludeArchived"]		$bolIncludeArchived 
 	 * 						["ErrorMessage"]		Declares what went wrong (only defined when Success == FALSE)
 	 * @method
 	 */
-	public function search($intSearchType, $strConstraint, $intConstraintType=NULL, $bolIncludeArchived=FALSE, $intOffset=0)
+	public function search($intSearchType, $strConstraint, $intConstraintType=NULL, $bolIncludeArchived=FALSE, $intOffset=0, $bolForceRefresh=TRUE)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 		
 		try
 		{
-			$strConstraint = trim($strConstraint);
-			
-			if ($strConstraint == "")
+			// Check if the results for this search are currently cached
+			if (!$bolForceRefresh && $this->_hasCachedResults($intSearchType, $strConstraint, $intConstraintType, $bolIncludeArchived))
 			{
-				throw new Exception("Invalid search string");
+				// The user already has the results to this search, cached in their session details, and have not requested a refresh
+				$arrResults = $_SESSION['CustomerSearch']['Results'];
 			}
-			
-			// Make the constraint safe for embedding in queries
-			$qryQuery = new Query();
-			$strEscapedConstraint = $qryQuery->EscapeString($strConstraint);
+			else
+			{
+				// The search is not cached, or a refresh has been forced
+				$strConstraint = trim($strConstraint);
+				
+				if ($strConstraint == "")
+				{
+					throw new Exception("Invalid search string");
+				}
+				
+				// Make the constraint safe for embedding in queries
+				$qryQuery = new Query();
+				$strEscapedConstraint = $qryQuery->EscapeString($strConstraint);
+	
+				$arrResults = Customer_Search::findFor($intSearchType, $strEscapedConstraint, $intConstraintType, $bolIncludeArchived);
 
-			$arrResults = Customer_Search::findFor($intSearchType, $strEscapedConstraint, $intConstraintType, $bolIncludeArchived);
+				// Cache the details of the search
+				$_SESSION['CustomerSearch']['Results']			= $arrResults;
+				$_SESSION['CustomerSearch']['SearchType']		= $intSearchType;
+				$_SESSION['CustomerSearch']['Constraint']		= $strConstraint;
+				$_SESSION['CustomerSearch']['ConstraintType']	= $intConstraintType;
+				$_SESSION['CustomerSearch']['IncludeArchived']	= $bolIncludeArchived;
+			}
 			
 			switch ($intSearchType)
 			{
@@ -59,6 +82,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 					$strResultsHtml = $this->_buildContactResultsTable($arrResults, $intOffset);
 					break;
 			}
+			
 			
 			return array(	"Success"			=> TRUE,
 							"RecordCount"		=> count($arrResults),
@@ -130,6 +154,18 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 		}
 	}
 	
+	// checks if the search has been cached in the user's session details
+	private function _hasCachedResults($intSearchType, $strConstraint, $intConstraintType, $bolIncludeArchived)
+	{
+		return 	(isset($_SESSION) && is_array($_SESSION) && 
+				array_key_exists("CustomerSearch", $_SESSION) && is_array($_SESSION['CustomerSearch']) &&
+				array_key_exists("Results", $_SESSION['CustomerSearch']) &&	is_array($_SESSION['CustomerSearch']['Results']) &&
+				$_SESSION['CustomerSearch']['SearchType'] == $intSearchType &&
+				$_SESSION['CustomerSearch']['Constraint'] == $strConstraint &&
+				$_SESSION['CustomerSearch']['ConstraintType'] == $intConstraintType &&
+				$_SESSION['CustomerSearch']['IncludeArchived'] == $bolIncludeArchived);
+				
+	}
 
 	private function _getPaginationDetails($intRecCount, $intOffset=0)
 	{
@@ -215,7 +251,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 				$strStatus			= htmlspecialchars(GetConstantDescription($objAccount->archived, "account_status"));
 			
 				$strRows .= "
-<tr $strRowClass>
+<tr $strRowClass onclick='FlexCustomerVerification.load(null, $strAccountId)' style='cursor:pointer'>
 	<td>$strAccountId</td>
 	<td>$strBusinessName</td>
 	<td>$strTradingName</td>
@@ -250,7 +286,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 		
 		
 		$strHtml = "
-<table class='reflex'>
+<table class='reflex highlight-rows'>
 	<thead>
 		<tr>
 			<th>Account #</th>
@@ -329,7 +365,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 				}
 			
 				$strRows .= "
-<tr $strRowClass>
+<tr $strRowClass onclick='FlexCustomerVerification.load({$objContact->id}, null)' style='cursor:pointer'>
 	<td>$strContactName</td>
 	<td>$strContactStatus</td>
 	<td>$strAccountId</td>
@@ -365,7 +401,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 		
 		
 		$strHtml = "
-<table class='reflex'>
+<table class='reflex highlight-rows'>
 	<thead>
 		<tr>
 			<th>Contact</th>

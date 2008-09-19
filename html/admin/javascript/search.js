@@ -27,7 +27,7 @@ var FlexSearch = {
 		}
 		else
 		{
-			this.customerSearch(parseInt(mixSearchType),strCriteria, null, null);
+			this.customerSearch(parseInt(mixSearchType),strCriteria, null, null, 0, true);
 		}
 	},
 	
@@ -36,17 +36,18 @@ var FlexSearch = {
 		document.location = "reflex.php/Ticketing/QuickSearch/?for=" + strCriteria;
 	},
 	
-	customerSearch : function(intSearchType, strConstraint, intConstraintType, bolIncludeArchived, intOffset)
+	customerSearch : function(intSearchType, strConstraint, intConstraintType, bolIncludeArchived, intOffset, bolForceRefresh)
 	{
 		intConstraintType	= (intConstraintType == undefined)? null : intConstraintType;
 		bolIncludeArchived	= (bolIncludeArchived == undefined)? false : bolIncludeArchived;
 		intOffset			= (intOffset == undefined)? 0 : intOffset;
+		bolForceRefresh		= (bolForceRefresh == undefined)? true : bolForceRefresh;
 	
 		remoteClass		= 'Customer_Search';
 		remoteMethod	= 'search';
 		jsonFunc		= jQuery.json.jsonFunction(this.customerSearchReturnHandler.bind(this), null, remoteClass, remoteMethod);
 		Vixen.Popup.ShowPageLoadingSplash("Searching", null, null, null, 1500);
-		jsonFunc(intSearchType, strConstraint, intConstraintType, bolIncludeArchived, intOffset);
+		jsonFunc(intSearchType, strConstraint, intConstraintType, bolIncludeArchived, intOffset, bolForceRefresh);
 	},
 	
 	// Return handler for search
@@ -219,7 +220,7 @@ var FlexSearch = {
 		}
 	},
 
-	searchTypeComboOnChange : function(objTarget)
+	searchTypeComboOnChange : function(objEvent)
 	{
 		var intSearchType = this.popupControls.SearchType.value;
 		var currentSearchType = this.popupControls.SearchType.getAttribute("currentSearchType");
@@ -252,7 +253,7 @@ var FlexSearch = {
 	{
 		if (this.cachedResults != null)
 		{
-			this.customerSearch(this.cachedResults.searchType, this.cachedResults.constraint, this.cachedResults.constraintType, this.cachedResults.includeArchived, intOffset);
+			this.customerSearch(this.cachedResults.searchType, this.cachedResults.constraint, this.cachedResults.constraintType, this.cachedResults.includeArchived, intOffset, false);
 		}
 		else
 		{
@@ -272,7 +273,7 @@ var FlexSearch = {
 		else
 		{
 			var intConstraintType = (this.popupControls.ConstraintType.value == 0)? null : parseInt(this.popupControls.ConstraintType.value);
-			this.customerSearch(parseInt(this.popupControls.SearchType.value), strConstraint, intConstraintType, this.popupControls.IncludeArchived.checked);
+			this.customerSearch(parseInt(this.popupControls.SearchType.value), strConstraint, intConstraintType, this.popupControls.IncludeArchived.checked, 0, true);
 		}
 
 	}
