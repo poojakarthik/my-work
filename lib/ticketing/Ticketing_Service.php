@@ -222,7 +222,10 @@ class Ticketing_Service
 		$details['subject'] = $dom->getElementsByTagName('subject')->item(0)->textContent;
 
 		$email = $dom->getElementsByTagName('from')->item(0);
-		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : null;
+		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
+		$emailAddress = trim($emailAddress);
+		if (substr($emailAddress, 0, 4) == '&lt;') $emailAddress = substr($emailAddress, 4);
+		if (substr($emailAddress, -4) == '&gt;') $emailAddress = substr($emailAddress, 0, -4);
 		if ($emailAddress && EmailAddressValid($emailAddress))
 		{
 			$details['from'] = array(
