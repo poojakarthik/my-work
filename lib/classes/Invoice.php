@@ -103,6 +103,9 @@ class Invoice
 		$objAccount->revokeInvoice();
 		
 		//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
+		$this->invoice_run_id	= $objInvoiceRun->Id;
+		$this->InvoiceRun		= $objInvoiceRun->InvoiceRun;
+		
 		// Retrieve a list of Invoiceable FNNs for this Account
 		$selInvoiceableFNNs	= $this->_preparedStatement('selInvoiceableFNNs');
 		if ($selInvoiceableFNNs->Execute($arrAccount) === FALSE)
@@ -207,14 +210,43 @@ class Invoice
 			throw new Exception("DB ERROR: ".$updMarkAccountCharges->Error());
 		}
 		
-		// Get Charge Totals
-		// TODO
+		// Get Preliminary Charge Totals
+		$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
+		if ($selAccountChargeTotals->Execute($arrData, $arrWhere) === FALSE)
+		{
+			// Database Error -- throw Exception
+			throw new Exception("DB ERROR: ".$selAccountChargeTotals->Error());
+		}
+		$arrAccountChargeTotals	= Array();
+		while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
+		{
+			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][($arrAccountChargeTotal['global_tax_exempt'])	? 'ExTax' : 'IncTax']	= $arrAccountChargeTotal['Total'];
+			$fltTotalCharge	+= ($arrAccountChargeTotal['Nature'] === 'DR') ? $arrAccountChargeTotal['Total'] : -$arrAccountChargeTotal['Total'];
+		}
 		
 		// Calculate Preliminary Invoice Values
-		// TODO
+		$this->AccountBalance	= $this->Framework->GetAccountBalance($arrAccount['Id']);
+		if ($this->AccountBalance === FALSE)
+		{
+			throw new Exception("Unable to calculate Account Balance for {$objAccount->Id}");
+		}
+		$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
+		$this->Balance			= $this->Total + $this->Tax;
+		$this->TotalOwing		= $this->Balance + $this->AccountBalance;
+		$this->AccountGroup		= $objAccount->AccountGroup;
+		$this->Account			= $objAccount->Id;
+		$this->CreatedOn		= $objInvoiceRun->BillingDate;
+		$this->DueOn			= date("Y-m-d", strtotime("+ {$objAccount->PaymentTerms} days", strtotime($objInvoiceRun->BillingDate)));
+		$this->Disputed			= 0.0;
+		$this->Status			= INVOICE_TEMP;
 		
 		// Generate Account Billing Time Charges
-		// TODO
+		$arrModules	= Billing_Charge::getModules();
+		foreach ($this->_arrBillingChargeModules[$objAccount->CustomerGroup]['Billing_Charge_Account'] as $chgModule)
+		{
+			// Generate charge
+			$mixResult = $chgModule->Generate($objInvoiceRun->toArray(), $arrServiceDetails);
+		}
 		
 		// Calculate and Insert Final Invoice Values
 		// TODO
@@ -475,7 +507,7 @@ class Invoice
 		{
 			$arrChargeTotals[$arrChargeTotal['Nature']][($arrChargeTotal['global_tax_exempt'])	? 'ExTax' : 'IncTax']	= $arrChargeTotal['Total'];
 			
-			$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Amount'] : -$arrChargeTotal['Amount'];
+			$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
 		$arrServiceTotal['Tax']	+= Invoice::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax']);
 		$arrServiceTotal['Tax']	-= Invoice::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax']);
