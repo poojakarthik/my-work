@@ -37,6 +37,12 @@ $arrScript 		= explode('/', $strScript);
 $strTemplate 	= $arrScript[0];
 $strMethod 		= $arrScript[1];
 
+// Include the Flax class
+require_once("../../lib/classes/Flex.php");
+
+// Load Framework
+Flex::load();
+
 // load framework
 require_once('require.php');
 
