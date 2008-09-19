@@ -74,7 +74,7 @@
 		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
 		print "
-		<div class='customer-standard-table-title-style-notice'>Password Failure</div>
+		<div class='customer-standard-table-title-style-notice'>Edit Failure</div>
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
