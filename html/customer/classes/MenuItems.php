@@ -190,7 +190,7 @@ class MenuItems
 	 */
 	function ResetPassword()
 	{
-		$this->strLabel	= "Reset Password";
+		$this->strLabel	= "Lost Login";
 
 		return $this->GetBaseURL()."./flex.php/Console/Password/";
 	}
