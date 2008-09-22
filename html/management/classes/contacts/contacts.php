@@ -76,7 +76,7 @@
 		
 		public static function UnarchivedUsername ($strUsername)
 		{
-			$selUsername = new StatementSelect ('Contact', 'Id', 'UserName = <UserName> AND Archived = 0', null, 1);
+			$selUsername = new StatementSelect ('Contact', 'Id', 'Email = <UserName> AND Archived = 0', null, 1);
 			$selUsername->Execute (Array ('UserName' => $strUsername));
 			
 			// If it wasn't found - throw an error
@@ -130,7 +130,7 @@
 				"Phone"				=> $arrDetails ['Phone'],
 				"Fax"				=> $arrDetails ['Fax'],
 				"Mobile"			=> $arrDetails ['Mobile'],
-				"UserName"			=> $arrDetails ['UserName'],
+				//"UserName"			=> $arrDetails ['UserName'],
 				"PassWord"			=> sha1 ($arrDetails ['PassWord']),
 				"CustomerContact"	=> (($arrDetails ['CustomerContact'] == true) ? "1" : "0"),
 				"SessionId"			=> "",

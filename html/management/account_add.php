@@ -301,7 +301,7 @@
 		{
 			try
 			{
-				$cntUsername = Contacts::UnarchivedUsername ($_POST ['Contact']['UserName']);
+				$cntUsername = Contacts::UnarchivedUsername ($_POST ['Contact']['Email']);
 			}
 			catch (Exception $e)
 			{
