@@ -734,16 +734,16 @@ class AppTemplateConsole extends ApplicationTemplate
 
 			// Check the syntax of the username entered by user..
 			$mixInput = $_POST['mixUserName'];
-			list($strFoundError,$strErrorResponse) = InputValidation("UserName",$mixInput,"mixed",31);
+			list($strFoundError,$strErrorResponse) = InputValidation("UserName",$mixInput,"email",255);
 
 			// If there is no UserName errror
 			if(!$strFoundError)
 			{
 				//then we can check the database for a record.
-				$strCustEmail = $dbConnection->fetchone("SELECT Email,Account,LastLogin FROM `Contact` WHERE Email = \"$mixInput\" LIMIT 1");
+				$strCustEmail = $dbConnection->fetchone("SELECT Id,Email,Account,LastLogin FROM `Contact` WHERE Email = \"$mixInput\" LIMIT 1");
 
 				/* Before we can send the username, check and make sure they have already activated and entered a valid email */
-				if($strCustEmail->LastLogin == NULL)
+				if($strCustEmail->LastLogin == NULL && $strCustEmail->Id != NULL)
 				{
 					/* if they don't have an activated account we redirect to activation page */
 					unset($_POST['mixFirstName']);
@@ -964,7 +964,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				// we can check the database for a record. 1
 				// Since there is duplicate account numbers we check there first name...?
-				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" AND FirstName=\"$_POST[mixFirstName]\" LIMIT 1");
+				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" AND FirstName LIKE \"$_POST[mixFirstName]\" AND LastName LIKE \"$_POST[mixLastName]\" LIMIT 1");
 				
 				// we can check the database for a record. 2
 				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"$_POST[mixAccountNumber]\" LIMIT 1");
@@ -997,10 +997,12 @@ class AppTemplateConsole extends ApplicationTemplate
 			/* they have submitted the first page */
 			if(DBO()->OK && DBO()->Fail==FALSE && array_key_exists('mixEmail', $_POST))
 			{
-
 				/* if DBO()->OK then we have confirmed all details, we just need to verify the email */
 				list($bolFoundEmail,$strErrorResponse) = InputValidation("Email",$_POST['mixEmail'],"email",255);
-				$strCustContact = $dbConnection->fetchone("SELECT Id,Email FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" LIMIT 1");
+
+				// we allow a duplicate email, only if its there's...
+				$intIdCheck = DBO()->Contact->Id->Value;
+				$strCustContact = $dbConnection->fetchone("SELECT Id,Email FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" AND Id != \"$intIdCheck\" LIMIT 1");
 				if($strCustContact)
 				{
 					$bolFoundEmail=TRUE;

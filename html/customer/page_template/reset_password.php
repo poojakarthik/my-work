@@ -51,10 +51,10 @@
 		<table id='LoginTable'>
 			<tr>
 				<td>
-					<label for=\"UserName\" style='font-size: 10pt;'>Username:</label>
+					<label for=\"UserName\" style='font-size: 10pt;'>Email:</label>
 				</td>
 				<td>
-					<input type=\"text\" name=\"mixUserName\" class=\"LoginBox\" maxlength=\"21\"/>
+					<input type=\"text\" name=\"mixUserName\" class=\"LoginBox\" maxlength=\"255\"/>
 				</td>
 			</tr>
 			<tr>
@@ -70,8 +70,7 @@
 			print "
 			</TD>
 		</TR>
-		</TABLE>
-		<A HREF=\"./flex.php/Console/Username/\">Click here to retrieve your username</A><br/>";
+		</TABLE>";
 
 	print "
 	</form>";
@@ -105,7 +104,7 @@
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
-			print "The username entered does not exist.";
+			print "The email entered does not exist.";
 			echo "<br /><br />\n";
 			echo "<a href='" . Href()->ResetPassword() . "' ><span>Please Try Again</span></a>\n";
 			print "

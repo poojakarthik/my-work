@@ -36,7 +36,7 @@
 	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console"), "$ExternalName Customer System");
 	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console",1=>"ResetPassword",2=>"SetupAccount"), "");
 	
-	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
+	echo "<form method='POST' action='" . Href()->SetupAccount() . "'>";
 	
 	// Render the reset password page
 	if(!array_key_exists('mixFirstName', $_POST))
