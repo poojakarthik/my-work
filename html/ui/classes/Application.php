@@ -792,6 +792,7 @@ class Application
 				// Seems to be a bug where empty rows are being added, hopefully this will resolve it?
 				if(DBO()->Contact->Id !== "")
 				{
+					// DBO()->Contact->SetColumns("LastLogin,CurrentLogin");
 					DBO()->Contact->Save();
 				}
 				// Check if CustomersGroup in database matches the URL being used.
