@@ -77,6 +77,9 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 			<TD style=\"width: 200px; text-indent: 5; font-size: 8pt;\"><a href=\"#\" onclick=\"javascript:window.print();return false;\"><IMG SRC=\"./img/generic/Button_Printer.jpg\" WIDTH=\"18\" HEIGHT=\"20\" BORDER=\"0\" ALT=\"\"></a> <a href=\"#\" onclick=\"javascript:window.print();return false;\">Print This Page</a></TD>
 			<TD style=\"text-indent: 175; font-weight: bold;\">Unbilled Debits & Credits</TD>
 		</TR>
+		<TR>
+			<TD COLSPAN=\"2\" style=\"text-indent: 5; font-size: 8pt;\"><a href=\"http://www.adobe.com/\"><img src=\"./img/template/acrobat_15x15.jpg\" width=\"15\" height=\"15\" border=\"0\" alt=\"\"></a> Please ensure you have the latest copy of acrobat reader and provider link to download. <a href=\"http://www.adobe.com/\">Download Acrobat Reader</a></TD>
+		</TR>
 		</TABLE>\n";
 				
 		Table()->Adjustments->SetHeader("Date", "Code", "Description", "Amount (inc GST)", "&nbsp;");
