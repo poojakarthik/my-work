@@ -23,31 +23,35 @@ $arrSQLFields	= Array();
 
 
 //---------------------------------------------------------------------------//
-// CREDIT CARD PAYMENTS SUMMARY BY EMPLOYEE
+// CREDIT CARD PAYMENT DETAILS
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Credit Card Payments Summary by Employee";
-$arrDataReport['Summary']		= "Shows the number of Credit Card Payments each Employee made in a given time period";
+$arrDataReport['Name']			= "Credit Card Payment Details";
+$arrDataReport['Summary']		= "Show a list of Credit Card Payments made through Flex for a given date period";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "credit_card_payment_history JOIN Employee ON Employee.Id = credit_card_payment_history.employee_id";
+$arrDataReport['SQLTable']		= "(credit_card_payment_history JOIN Employee ON Employee.Id = credit_card_payment_history.employee_id) JOIN Account ON Account.Id = credit_card_payment_history.account_id";
 $arrDataReport['SQLWhere']		= "CAST(payment_datetime AS DATE) BETWEEN <StartDate> AND <EndDate>";
-$arrDataReport['SQLGroupBy']	= "Employee.Id";
+$arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Employee']				['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
+$arrSQLSelect['Employee']			['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
 
-$arrSQLSelect['Payments Made']			['Value']	= "COUNT(credit_card_payment_history.id)";
-$arrSQLSelect['Payments Made']			['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Account #']			['Value']	= "Account.Id";
+$arrSQLSelect['Account #']			['Type']	= EXCEL_TYPE_INTEGER;
 
-$arrSQLSelect['Payment Total']			['Value']	= "SUM(credit_card_payment_history.amount)";
-$arrSQLSelect['Payment Total']			['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Account Name']		['Value']	= "Account.Id";
+
+$arrSQLSelect['Payment Date']		['Value']	= "DATE_FORMAT(payment_datetime, '%d/%m/%Y %H:%i:%s')";
+
+$arrSQLSelect['Amount']				['Value']	= "credit_card_payment_history.amount";
+$arrSQLSelect['Amount']				['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
