@@ -250,7 +250,7 @@
 					<div class='GroupedContent'>
 					<TABLE class=\"customer-standard-table-style\">
 					<TR VALIGN=\"TOP\">
-					<TD width=\"160\">Form 4:</TD>
+					<TD width=\"160\">Something here?:</TD>
 					<TD></TD>
 					</TR>
 					</TABLE>
@@ -259,6 +259,8 @@
 					break;
 
 					case "5":
+					// 5 = Other
+					/*
 					echo "<div class='customer-standard-table-title-style-password'>Details of request</div>
 					<div class='GroupedContent'>
 					<TABLE class=\"customer-standard-table-style\">
@@ -269,6 +271,7 @@
 					</TABLE>
 					</div>
 					<br/>";
+					*/
 					break;
 
 					default:
