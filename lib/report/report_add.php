@@ -34,7 +34,7 @@ $arrDataReport['Priviledges']	= 2147483648;									// Debug
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "credit_card_payment_history JOIN Employee ON Employee.Id = credit_card_payment_history.employee_id";
 $arrDataReport['SQLWhere']		= "CAST(payment_datetime AS DATE) BETWEEN <StartDate> AND <EndDate>";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['SQLGroupBy']	= "Employee.Id";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
@@ -43,8 +43,11 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 // SQL Select
 $arrSQLSelect['Employee']				['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
 
-$arrSQLSelect['Payments Made']			['Value']	= "COUNT(credit_card_payment_history.Id)";
+$arrSQLSelect['Payments Made']			['Value']	= "COUNT(credit_card_payment_history.id)";
 $arrSQLSelect['Payments Made']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Payment Total']			['Value']	= "SUM(credit_card_payment_history.amount)";
+$arrSQLSelect['Payment Total']			['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
