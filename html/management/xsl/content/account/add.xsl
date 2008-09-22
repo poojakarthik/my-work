@@ -141,6 +141,9 @@
 					<xsl:when test="/Response/Error = 'Contact UserName Exists'">
 						The Username you entered already exists. Please enter a unique Username.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact Email Exists'">
+						The Email you entered already exists. Please enter a unique Email.
+					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact PassWord'">
 						Please enter a Password.
 					</xsl:when>
@@ -1088,31 +1091,6 @@
 					<tr>
 						<td colspan="3">
 							<div class="MicroSeperator"></div>
-						</td>
-					</tr>
-					<!-- TODO!!!! - LOW PRIORITY - auto generate username-->
-					<tr>
-						<xsl:choose>
-						<xsl:when test="/Response/AccountGroup">
-							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
-						</xsl:when>
-						<xsl:otherwise>
-							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
-						</xsl:otherwise>
-					</xsl:choose>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Contact')" />
-								<xsl:with-param name="field" select="string('UserName')" />
-							</xsl:call-template>
-						</th>
-						<td>
-							<input type="text" name="Contact[UserName]" class="input-string" maxlength="31">
-								<xsl:attribute name="value">
-									<xsl:text></xsl:text>
-									<xsl:value-of select="/Response/ui-values/Contact/UserName" />
-								</xsl:attribute>
-							</input>
 						</td>
 					</tr>
 					<tr>

@@ -283,12 +283,16 @@
 	$oblarrContact->Push	(new dataString	('Fax',					$_POST ['Contact']['Fax']));
 	
 	// XPath:	/Response/ui-values/Contact/UserName
-	$oblarrContact->Push	(new dataString	('UserName',			$_POST ['Contact']['UserName']));
+	//$oblarrContact->Push	(new dataString	('UserName',			$_POST ['Contact']['UserName']));
 	
 	// XPath:	/Response/ui-values/Contact/UserName
 	$oblarrContact->Push	(new dataString	('PassWord',			$_POST ['Contact']['PassWord']));
 	
-	
+	$selUserNames = new StatementSelect ('Contact', 'Id', 'Email = <UserName>', null, 1);
+	$selUserNames->Execute (Array ('UserName' => $_POST['Contact']['Email']));
+	$bolUserNameTaken = ($selUserNames->Count () == 1);
+
+
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we have identified a Business Name
 	if ($_POST ['Account'])
@@ -495,15 +499,15 @@
 			// This throws an error if a Contact's Fax Number is specified but is Invalid
 			$oblstrError->setValue ('Contact Fax Invalid');
 		}
-		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['UserName'])
-		{
+		//else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['UserName'])
+		//{
 			// This throws an error if the Contact's Username is Blank
-			$oblstrError->setValue ('Contact UserName Empty');
-		}
-		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && $cntUsername)
+			//$oblstrError->setValue ('Contact UserName Empty');
+		//}
+		else if ($bolUserNameTaken)
 		{
 			// This throws an error if the User Name exists
-			$oblstrError->setValue ('Contact UserName Exists');
+			$oblstrError->setValue ('Contact Email Exists');
 		}
 		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['PassWord'])
 		{
@@ -570,7 +574,7 @@
 						"Phone"					=> $_POST ['Contact']['Phone'],
 						"Mobile"				=> $_POST ['Contact']['Mobile'],
 						"Fax"					=> $_POST ['Contact']['Fax'],
-						"UserName"				=> $_POST ['Contact']['UserName'],
+						//"UserName"				=> $_POST ['Contact']['UserName'],
 						"PassWord"				=> $_POST ['Contact']['PassWord']
 					)
 				)

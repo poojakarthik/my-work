@@ -161,6 +161,22 @@
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Contact')" />
+											<xsl:with-param name="field" select="string('UserName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Contact/UserName" />
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<div class="MicroSeperator"></div>
+									</td>
+								</tr>
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Contact')" />
 											<xsl:with-param name="field" select="string('CustomerContact')" />
 										</xsl:call-template>
 									</th>
