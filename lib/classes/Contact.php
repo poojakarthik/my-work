@@ -15,7 +15,7 @@ class Contact
 	private $fax = NULL;
 	private $mobile = NULL;
 	private $phone = NULL;
-	private $username = NULL;
+	//private $username = NULL;
 	private $password = NULL;
 	private $archived = NULL;
 
@@ -97,7 +97,7 @@ class Contact
 			'Fax',
 			'Mobile',
 			'Phone',
-			'Username',
+			//'Username',
 			'Password',
 			'Archived',
 		);
