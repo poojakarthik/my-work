@@ -7,7 +7,7 @@
  *	2:  Removes known duplicate emails.
  */
 
-class Flex_Rollout_Version_000053 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000054 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
