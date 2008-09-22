@@ -289,8 +289,27 @@ class MenuItems
 		$this->strLabel	= "Edit Account Details";
 		
 		return $this->GetBaseURL()."flex.php/Console/Edit/?Account.Id=$intAccountId";
+	}	
+	
+	//------------------------------------------------------------------------//
+	// SupportRequest 
+	//------------------------------------------------------------------------//
+	function SupportRequest($intAccountId)
+	{
+		$this->strLabel	= "Support Request";
+		
+		return $this->GetBaseURL()."flex.php/Console/Support/?Account.Id=$intAccountId";
 	}
-
+	
+	//------------------------------------------------------------------------//
+	// EditContactDetails 
+	//------------------------------------------------------------------------//
+	function CustomerFAQ($intAccountId)
+	{
+		$this->strLabel	= "Customer FAQ";
+		
+		return $this->GetBaseURL()."flex.php/Console/FAQ/?Account.Id=$intAccountId";
+	}
 
 	//------------------------------------------------------------------------//
 	// MakePayment 

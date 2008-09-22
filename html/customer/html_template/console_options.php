@@ -94,6 +94,14 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		$strEditAccountDetails = Href()->EditAccountDetails(DBO()->Account->Id->Value);
 		$strEditAccountDetailsLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strEditAccountDetails' >&nbsp;&nbsp;Edit Account Details</a></span>";
  
+		// Support link
+		$strSupportRequest = Href()->SupportRequest(DBO()->Account->Id->Value);
+		$strSupportRequestLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strSupportRequest' >&nbsp;&nbsp;Support Request</a></span>";
+ 
+		// FAQ Link
+		$strCustomerFAQ = Href()->CustomerFAQ(DBO()->Account->Id->Value);
+		$strCustomerFAQLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strCustomerFAQ' >&nbsp;&nbsp;Frequently Asked Questions</a></span>";
+ 
 		echo "<div class='customer-standard-table-style-menu-options-title'>Options</div>\n";
 		echo "<table class=\"customer-standard-table-style-menu-options\">\n";
 		
@@ -120,6 +128,14 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "      <td>\n";
 		echo "			$strEditAccountDetailsLabel\n";
 		echo "      </td>\n";
+		echo "   </tr>\n";
+		echo "   <tr>\n";
+		echo "      <td>\n";
+		echo "			$strSupportRequestLabel\n";
+		echo "      </td>\n";
+		echo "   </tr>\n";
+		echo "   <tr>\n";
+		echo "      <td>$strCustomerFAQLabel\n";
 		echo "   </tr>\n";
 		echo "</table>
 		<BR><BR>\n";
