@@ -759,7 +759,7 @@ class Application
 			$selSelectStatement = new StatementSelect (
 				"Contact", 
 				"*", 
-				"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
+				"Email = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
 				null, 
 				"1"
 			);
@@ -825,7 +825,7 @@ class Application
 			$selSelectStatement = new StatementSelect (
 				"Contact", 
 				"*", 
-				"UserName = <UserName> AND PassWord = <PassWord> AND Archived = 0", 
+				"Email = <UserName> AND PassWord = <PassWord> AND Archived = 0", 
 				null, 
 				"1"
 			);
@@ -920,7 +920,7 @@ class Application
 			$selSelectStatement = new StatementSelect (
 				"Contact", 
 				"*", 
-				"UserName = <UserName> AND PassWord = <PassWord> AND Archived = 0", 
+				"Email = <UserName> AND PassWord = <PassWord> AND Archived = 0", 
 				null, 
 				"1"
 			);

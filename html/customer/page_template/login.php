@@ -105,7 +105,7 @@
 					<label for="UserName" style='font-size: 10pt;'>Username:</label>
 				</td>
 				<td>
-					<input type="text" id='VixenUserNameId' name="VixenUserName" class="LoginBox" maxlength="21"/>
+					<input type="text" id='VixenUserNameId' name="VixenUserName" class="LoginBox" maxlength="255"/>
 				</td>
 			</tr>
 			<tr>

@@ -740,7 +740,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(!$strFoundError)
 			{
 				//then we can check the database for a record.
-				$strCustEmail = $dbConnection->fetchone("SELECT Email,Account,LastLogin FROM `Contact` WHERE UserName = \"$mixInput\" LIMIT 1");
+				$strCustEmail = $dbConnection->fetchone("SELECT Email,Account,LastLogin FROM `Contact` WHERE Email = \"$mixInput\" LIMIT 1");
 
 				/* Before we can send the username, check and make sure they have already activated and entered a valid email */
 				if($strCustEmail->LastLogin == NULL)
@@ -757,7 +757,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				{
 					// Reset password
 					$strTxtPassword = RandomString("10");
-					$dbConnection->execute("UPDATE `Contact` SET `PassWord` = SHA1( '$strTxtPassword' ) WHERE UserName = \"$mixInput\"");
+					$dbConnection->execute("UPDATE `Contact` SET `PassWord` = SHA1( '$strTxtPassword' ) WHERE Email = \"$mixInput\"");
 
 					// And send an email...
 					$to      = $strCustEmail->Email;
@@ -842,7 +842,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(!$bolFoundError)
 			{
 				//then we can check the database for a record.
-				$strCustEmail = $dbConnection->fetchone("SELECT Account,UserName,FirstName,LastName,Email,LastLogin FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" LIMIT 1");
+				$strCustEmail = $dbConnection->fetchone("SELECT Account,FirstName,LastName,Email,LastLogin FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" LIMIT 1");
 				/* Before we can send the username, check and make sure they have already activated and entered a valid email */
 				if($strCustEmail->LastLogin == NULL)
 				{
@@ -859,7 +859,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					$to      = $strCustEmail->Email;
 					$subject = "Account Notice #" . $strCustEmail->Account;
 					$message = "Hello,\n\n";
-					$message .= "Your username is: " . $strCustEmail->UserName . "\n\n";
+					$message .= "Your username is: " . $strCustEmail->Email . "\n\n";
 					$message .= "Kind Regards\n";
 					$message .= "Customer Service Group\n";
 					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
@@ -963,7 +963,8 @@ class AppTemplateConsole extends ApplicationTemplate
 			{
 
 				// we can check the database for a record. 1
-				$strCustContact = $dbConnection->fetchone("SELECT FirstName,LastName,DOB,LastLogin,Email,Account,UserName FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" LIMIT 1");
+				// Since there is duplicate account numbers we check there first name...?
+				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" AND FirstName=\"$_POST[mixFirstName]\" LIMIT 1");
 				
 				// we can check the database for a record. 2
 				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"$_POST[mixAccountNumber]\" LIMIT 1");
@@ -977,13 +978,13 @@ class AppTemplateConsole extends ApplicationTemplate
 				else if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]" && $strCustAccount->ABN == "$_POST[mixABN]")
 				{
 					DBO()->Fail = FALSE;
+					DBO()->Contact->Id = $strCustContact->Id;
 					DBO()->Contact->Email = $strCustContact->Email;
 					DBO()->Contact->FirstName = $strCustContact->FirstName;
 					DBO()->Contact->LastName = $strCustContact->LastName;
 					DBO()->Contact->DOB = $strCustContact->DOB;
 					DBO()->Account->ABN = $strCustAccount->ABN;
 					DBO()->Contact->Account = $strCustContact->Account;
-					DBO()->Contact->UserName = $strCustContact->UserName;
 					DBO()->OK = TRUE;
 				}
 				else
@@ -996,8 +997,18 @@ class AppTemplateConsole extends ApplicationTemplate
 			/* they have submitted the first page */
 			if(DBO()->OK && DBO()->Fail==FALSE && array_key_exists('mixEmail', $_POST))
 			{
+
 				/* if DBO()->OK then we have confirmed all details, we just need to verify the email */
 				list($bolFoundEmail,$strErrorResponse) = InputValidation("Email",$_POST['mixEmail'],"email",255);
+				$strCustContact = $dbConnection->fetchone("SELECT Id,Email FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" LIMIT 1");
+				if($strCustContact)
+				{
+					$bolFoundEmail=TRUE;
+					DBO()->Fail = TRUE;
+					DBO()->ErrorMessage .= "The email address entered already exists.<br/>";
+					$this->LoadPage('setup_account');
+					return TRUE;
+				}
 				if($bolFoundEmail)
 				{
 					DBO()->Fail = TRUE;
@@ -1005,19 +1016,19 @@ class AppTemplateConsole extends ApplicationTemplate
 					$this->LoadPage('setup_account');
 					return TRUE;
 				}
-				else
+				if(!$bolFoundEmail)
 				{
 					$mixNewPass = sha1 ("$_POST[mixNewPass1]");
 					$mixNewEmail = "$_POST[mixEmail]";
 
 					$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-					$dbConnection->execute("UPDATE Contact SET PassWord=\"$mixNewPass\",Email=\"$mixNewEmail\" WHERE Account=\"" . DBO()->Contact->Account->Value . "\"");
+					$dbConnection->execute("UPDATE Contact SET PassWord=\"$mixNewPass\",Email=\"$mixNewEmail\" WHERE Id=\"" . DBO()->Contact->Id->Value . "\"");
 					
 					/* Mail the user with there new password and username, then show thank you page.. */
 					$subject = "Account Setup" . DBO()->Contact->Account->Value;
 					$message = "Hello,\n\n";
-					$message .= "Your username is:" . DBO()->Contact->UserName->Value . "\n";
-					$message .= "Your password is:" . $_POST['mixNewPass1'] . "\n\n";
+					$message .= "Your username is: " . DBO()->Contact->Email->Value . "\n";
+					$message .= "Your password is: " . $_POST['mixNewPass1'] . "\n\n";
 					$message .= "Kind Regards\n";
 					$message .= "Customer Service Group\n";
 					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
