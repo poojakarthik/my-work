@@ -53,9 +53,6 @@
 						<xsl:when test="/Response/Error = 'UserName Exists'">
 							The Username you entered already exists. Please enter a unique Username.
 						</xsl:when>
-						<xsl:when test="/Response/Error = 'Email Exists'">
-							The Email you entered already exists. Please enter a unique Email.
-						</xsl:when>
 					</xsl:choose>
 				</div>
 				<div class="Seperator"></div>
@@ -248,6 +245,23 @@
 						<tr>
 							<td>
 								<div class="MicroSeperator"></div>
+							</td>
+						</tr>
+						<tr>
+							<td><strong><span class="Red">*</span></strong></td>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('UserName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="UserName" class="input-string" maxlength="31">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/UserName" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>

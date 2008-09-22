@@ -830,7 +830,7 @@ class Application
 				"1"
 			);
 			
-			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['UserName'], "PassWord"=>$_SESSION['User']['PassWord']));
+			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['Email'], "PassWord"=>$_SESSION['User']['PassWord']));
 			$currentUser = $selSelectStatement->Fetch();
 
 			// Get the Account table.

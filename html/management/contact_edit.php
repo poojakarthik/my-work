@@ -58,7 +58,8 @@
 	$oblstrPhone			= $oblarrUIValues->Push (new dataString ('Phone'			, $cntContact->Pull ('Phone')->getValue ()));
 	$oblstrMobile			= $oblarrUIValues->Push (new dataString ('Mobile'			, $cntContact->Pull ('Mobile')->getValue ()));
 	$oblstrFax				= $oblarrUIValues->Push (new dataString ('Fax'				, $cntContact->Pull ('Fax')->getValue ()));
-	$oblstrUserName			= $oblarrUIValues->Push (new dataString ('UserName'			, $cntContact->Pull ('UserName')->getValue ()));
+	//$oblstrUserName			= $oblarrUIValues->Push (new dataString ('UserName'			, $cntContact->Pull ('UserName')->getValue ()));
+	$oblstrUserName			= $oblarrUIValues->Push (new dataString ('UserName'			, $cntContact->Pull ('Email')->getValue ()));
 	$oblstrPassWord			= $oblarrUIValues->Push (new dataString ('PassWord'			, ''));
 	$oblbolCustomerContact	= $oblarrUIValues->Push (new dataBoolean('CustomerContact'	, $cntContact->Pull ('CustomerContact')->getValue ()));
 	
@@ -91,12 +92,10 @@
 		{
 			// A username is not duplicated if no *other* Archive (Unarchived) 
 			// Contact exists with the Same Username
-			$selUserNames = new StatementSelect ('Contact', 'Id', 'UserName = <UserName> AND Archived = 0 AND Id != <Id>', null, 1);
-			$selUserNames->Execute (Array ('UserName' => $_POST ['UserName'], 'Id' => $cntContact->Pull ('Id')->getValue ()));
-			
+			$selUserNames = new StatementSelect ('Contact', 'Id', 'Email = <UserName> AND Archived = 0 AND Id != <Id>', null, 1);
+			$selUserNames->Execute (Array ('UserName' => $_POST ['Email'], 'Id' => $cntContact->Pull ('Id')->getValue ()));
 			$bolUserNameTaken = ($selUserNames->Count () == 1);
 		}
-		
 		if (!$_POST ['FirstName'])
 		{
 			// Ensure that the Contact has a First Name
@@ -142,17 +141,17 @@
 			// If a Fax number is Entered, check that it is valid
 			$oblstrError->setValue ('Fax Invalid');
 		}
-		else if (!$_POST ['UserName'])
-		{
+		//else if (!$_POST ['UserName'])
+		//{
 			// Ensure that the Contact has a User Name
-			$oblstrError->setValue ('UserName Empty');
-		}
+			//$oblstrError->setValue ('UserName Empty');
+		//}
 		else if ($bolUserNameTaken)
 		{
 			// This error is Displayed when the Username being requested already
 			// exists on another Contact in the Database. The value of $bolUserNameTaken
 			// (above) decided in a previous block.
-			$oblstrError->setValue ('UserName Exists');
+			$oblstrError->setValue ('Email Exists');
 		}
 		else
 		{
@@ -171,7 +170,7 @@
 					'Phone'				=> $_POST ['Phone'],
 					'Mobile'			=> $_POST ['Mobile'],
 					'Fax'				=> $_POST ['Fax'],
-					'UserName'			=> $_POST ['UserName'],
+					//'UserName'			=> $_POST ['UserName'],
 					'PassWord'			=> $_POST ['PassWord']
 				)
 			);
@@ -203,7 +202,7 @@
 		$oblstrPhone->setValue			($_POST ['Phone']);
 		$oblstrMobile->setValue			($_POST ['Mobile']);
 		$oblstrFax->setValue			($_POST ['Fax']);
-		$oblstrUserName->setValue		($_POST ['UserName']);
+		//$oblstrUserName->setValue		($_POST ['UserName']);
 		$oblstrPassWord->setValue		($_POST ['PassWord']);
 		$oblbolCustomerContact->setValue($_POST ['CustomerContact']);
 	}
