@@ -1424,6 +1424,13 @@ $GLOBALS['*arrConstant']	['BillingType']	[2]	['Description']	= 'Credit Card';
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Constant']	= 'BILLING_TYPE_ACCOUNT';
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Description']	= 'Account';
 
+// Support Types
+$GLOBALS['*arrConstant']	['SupportType']	[1]	['Description']	= 'Logging a fault to an existing service';
+$GLOBALS['*arrConstant']	['SupportType']	[2]	['Description']	= 'Make a change to an existing service';
+$GLOBALS['*arrConstant']	['SupportType']	[3]	['Description']	= 'Disconnect a no longer required line number';
+$GLOBALS['*arrConstant']	['SupportType']	[4]	['Description']	= 'Add a new line';
+$GLOBALS['*arrConstant']	['SupportType']	[5]	['Description']	= 'Other';
+
 // Payment Terms
 define("PAYMENT_TERMS_DEFAULT"			, 14);
 

@@ -295,8 +295,29 @@ class AppTemplateConsole extends ApplicationTemplate
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
 		BreadCrumb()->SetCurrentPage("Support Request");
 
-		$this->LoadPage('support');
-		return TRUE;	 	
+		$bolFoundErrors = TRUE;
+		$bolFoundSubmit = FALSE;
+		DBO()->ErrorMessage = "";
+
+		if(array_key_exists('intRequestTypeSubmit',$_POST))
+		{
+			$bolFoundSubmit = TRUE;
+			if($bolFoundErrors)
+			{
+				$this->LoadPage('support_errors');
+				return TRUE;
+			}
+			else
+			{
+				$this->LoadPage('support_confirmation');
+				return TRUE;
+			}
+		}
+		if(!$bolFoundSubmit)
+		{
+			$this->LoadPage('support');
+			return TRUE;
+		}	 	
 	 }
 
 

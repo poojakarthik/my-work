@@ -85,13 +85,13 @@
 				<TR>
 				<TD>Request Type: </TD>
 				<TD>
-					<SELECT NAME=\"intRequestType\">
-						<OPTION VALUE=\"1\">Logging a fault to an existing service</OPTION>
-						<OPTION VALUE=\"2\">Make a change to an existing service</OPTION>
-						<OPTION VALUE=\"3\">Disconnect a no longer required line number</OPTION>
-						<OPTION VALUE=\"4\">Add a new line</OPTION>
-						<OPTION VALUE=\"5\">Other</OPTION>
-					</SELECT>
+					<SELECT NAME=\"intRequestType\">";
+						for($i=1; $i<6; $i++)
+						{
+							$mixDescription = $GLOBALS['*arrConstant']['SupportType'][$i]['Description'];
+							print "<OPTION VALUE=\"$i\">$mixDescription</option>";
+						}
+					print "</SELECT>
 					</TD>
 				</TR>
 				</TABLE>
@@ -101,6 +101,8 @@
 			{
 
 				echo "
+				<input type=\"hidden\" name=\"intRequestType\" value=\"$_POST[intRequestType]\">
+				<input type=\"hidden\" name=\"intRequestTypeSubmit\" value=\"1\">
 				<div class='customer-standard-table-title-style-address'>Address Details</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
