@@ -313,6 +313,16 @@ class AppTemplateConsole extends ApplicationTemplate
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
 
+			// Connect to database
+			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+			$strCustContactEmail = $dbConnection->fetchone("SELECT Id,Email FROM `Contact` WHERE Email = \"$_POST[mixContact_Email]\" AND Id != \"" . DBO()->Contact->Id->Value . "\" LIMIT 1");
+			// Check for duplicate email being used...
+			if($strCustContactEmail)
+			{
+				$mixFoundError=TRUE;
+				DBO()->ErrorMessage .= "The email address entered already exists.<br/>";
+			}
+			
 			if($mixFoundError)
 			{
 				$this->LoadPage('edit_passfail');
