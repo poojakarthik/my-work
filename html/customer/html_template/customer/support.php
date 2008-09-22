@@ -86,7 +86,7 @@
 				<TD>Request Type: </TD>
 				<TD>
 					<SELECT NAME=\"intRequestType\">";
-						for($i=1; $i<6; $i++)
+						for($i=1; $i<count($GLOBALS['*arrConstant']['SupportType'])+1; $i++)
 						{
 							$mixDescription = $GLOBALS['*arrConstant']['SupportType'][$i]['Description'];
 							print "<OPTION VALUE=\"$i\">$mixDescription</option>";

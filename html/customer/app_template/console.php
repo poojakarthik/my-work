@@ -295,7 +295,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
 		BreadCrumb()->SetCurrentPage("Support Request");
 
-		$bolFoundErrors = TRUE;
+		$bolFoundErrors = FALSE;
 		$bolFoundSubmit = FALSE;
 		DBO()->ErrorMessage = "";
 
