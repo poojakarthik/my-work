@@ -46,7 +46,7 @@ $arrSQLSelect['Employee']			['Value']	= "CONCAT(Employee.LastName, ', ', Employe
 $arrSQLSelect['Account #']			['Value']	= "Account.Id";
 $arrSQLSelect['Account #']			['Type']	= EXCEL_TYPE_INTEGER;
 
-$arrSQLSelect['Account Name']		['Value']	= "Account.Id";
+$arrSQLSelect['Account Name']		['Value']	= "Account.BusinessName";
 
 $arrSQLSelect['Payment Date']		['Value']	= "DATE_FORMAT(payment_datetime, '%d/%m/%Y %H:%i:%s')";
 
