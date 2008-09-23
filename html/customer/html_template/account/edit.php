@@ -55,7 +55,9 @@
 	{
 		$this->_intContext = $intContext;
 
-		$this->LoadJavascript('edit_account_details');
+		$this->LoadJavascript('javascript_functions');
+		$this->LoadJavascript('javascript_validation');
+		$this->LoadJavascript('javascript_error_box');
 	}
 	
 	//------------------------------------------------------------------------//
@@ -86,7 +88,7 @@
 		{
 			print "
 			<!-- We dont want any caching of this page.. -->
-			<form method=\"POST\" action=\"./flex.php/Console/EditConfirm/\" onsubmit=\"return validate_form(this)\">
+			<form method=\"POST\" action=\"./flex.php/Console/EditConfirm/\" onsubmit=\"return validate_edit_details(this)\">
 			<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
 
 			<div class='customer-standard-table-title-style-billing'>Billing Details</div>
@@ -254,6 +256,7 @@
 				<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = './'\"> <INPUT TYPE=\"submit\" VALUE=\"Update Details\"></TD>
 			</TR>
 			</TABLE>
+			<div id=\"error_box\"></div>
 			";
 		}
 

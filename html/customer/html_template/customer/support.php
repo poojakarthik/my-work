@@ -54,6 +54,10 @@
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
+
+		$this->LoadJavascript('javascript_functions');
+		$this->LoadJavascript('javascript_validation');
+		$this->LoadJavascript('javascript_error_box');
 	}
 	
 	//------------------------------------------------------------------------//
@@ -74,10 +78,10 @@
 
 			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
-			echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\">";
 
 			if(!array_key_exists('intRequestType', $_POST))
 			{
+				echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\">";
 				echo "<div class='customer-standard-table-title-style-password'>Select your request category</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
@@ -99,7 +103,7 @@
 			}
 			else if(is_numeric($_POST['intRequestType']))
 			{
-
+				echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\" onsubmit=\"return validate_support_request(this)\">";
 				echo "
 				<input type=\"hidden\" name=\"intRequestType\" value=\"$_POST[intRequestType]\">
 				<input type=\"hidden\" name=\"intRequestTypeSubmit\" value=\"1\">
@@ -310,8 +314,8 @@
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
 				<TR VALIGN=\"TOP\">
-				<TD width=\"160\">Comments:</TD>
-				<TD><TEXTAREA NAME=\"\" ROWS=\"5\" COLS=\"35\"></TEXTAREA></TD>
+				<TD width=\"160\">Details of request:</TD>
+				<TD><TEXTAREA NAME=\"mixAdditionalComments\" ROWS=\"5\" COLS=\"35\"></TEXTAREA></TD>
 				</TR>
 				</TABLE>
 				</div>
@@ -377,7 +381,8 @@ If the fault is with private equipment and not with the Telstra network then Tel
 			<TR>
 				<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = './'\"> <INPUT TYPE=\"submit\" VALUE=\"Continue\"></TD>
 			</TR>
-			</TABLE>";
+			</TABLE>
+			<div id=\"error_box\"></div>";
 
 			echo "</form>";
 	}

@@ -303,6 +303,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		{
 
 			/*
+				Validation needs to be done on all these fields.
 				intRequestType
 				intRequestTypeSubmit
 				mixAccount_Address1
@@ -324,6 +325,15 @@ class AppTemplateConsole extends ApplicationTemplate
 				intDisconnectNumber2
 				intDisconnectNumber3
 				mixServiceType
+				mixAdditionalComments
+				mixContact_Title
+				mixContact_JobTitle
+				mixContact_FirstName
+				mixContact_LastName
+				mixContact_Email
+				mixContact_Phone
+				mixContact_Mobile
+				mixContact_Fax
 			*/
 			
 			$bolFoundSubmit = TRUE;

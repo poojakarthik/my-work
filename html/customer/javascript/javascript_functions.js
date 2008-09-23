@@ -1,0 +1,51 @@
+/*
+ * Author: Ryan Forrester
+ *
+ * File: javascript_functions.js
+ * Purpose: mostly validation..
+ *
+ * 
+ */
+
+/* function to validate empty fields */
+function validate_required(field,alerttxt)
+{
+	if (field.value==null|| field.value=="")
+	{
+		//var field = field
+		show_it(field,alerttxt)
+		return false;
+	}
+	else 
+	{
+		return true;
+	}
+}
+
+/* function to validate an email address */
+function validate_email(field,alerttxt)
+{
+	if (/^\w+([\+\.-]?\w+)*@\w+([\+\.-]?\w+)*(\.\w{2,6})+$/.test(field.value))
+	{
+		return true;
+	}
+	else 
+	{
+		show_it(field,alerttxt)
+		return false;
+	}
+}
+
+/* function to validate a phone number */
+function validate_phone(field,alerttxt)
+{
+   /* can be used for xx-xxxx-xxxx
+    * if(field.value.search(/\d{2}\-\d{4}\-\d{4}/)==-1) 
+    */
+
+   if(field.value.search(/\d{2}\d{4}\d{4}/)==-1)
+   {
+      show_it(field,alerttxt)
+      return false;
+   }
+}
