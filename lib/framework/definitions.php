@@ -455,6 +455,7 @@ define("INVOICE_EMAIL_SUBJECT", "Telephone Billing for <billperiod>.");
 define("DONKEY"						, -1);
 
 // Service Types
+/*
 $GLOBALS['*arrConstant']	['ServiceType']	[1]	['Constant']	= 'SERVICE_TYPE_ADSL';
 $GLOBALS['*arrConstant']	['ServiceType']	[1]	['Description']	= 'ADSL';
 $GLOBALS['*arrConstant']	['ServiceType']	[2]	['Constant']	= 'SERVICE_TYPE_MOBILE';
@@ -463,7 +464,7 @@ $GLOBALS['*arrConstant']	['ServiceType']	[3]	['Constant']	= 'SERVICE_TYPE_LAND_L
 $GLOBALS['*arrConstant']	['ServiceType']	[3]	['Description']	= 'Land Line';
 $GLOBALS['*arrConstant']	['ServiceType']	[4]	['Constant']	= 'SERVICE_TYPE_OTHER';
 $GLOBALS['*arrConstant']	['ServiceType']	[4]	['Description']	= 'Other';
-/*$GLOBALS['*arrConstant']	['ServiceType']	[103]	['Constant']	= 'SERVICE_TYPE_INBOUND';
+$GLOBALS['*arrConstant']	['ServiceType']	[103]	['Constant']	= 'SERVICE_TYPE_INBOUND';
 $GLOBALS['*arrConstant']	['ServiceType']	[103]	['Description']	= 'Inbound 1300/1800';
 $GLOBALS['*arrConstant']	['ServiceType']	[104]	['Constant']	= 'SERVICE_TYPE_DIALUP';
 $GLOBALS['*arrConstant']	['ServiceType']	[104]	['Description']	= 'Dialup Internet';*/

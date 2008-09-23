@@ -72,7 +72,8 @@
 	function Render()
 	{
 
-		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>
+			<img src=\"./img/template/support.jpg\" width=\"212\" height=\"50\" border=\"0\" alt=\"\"><br/><br/>";
 		echo "<div class='customer-standard-table-title-style-notice'><FONT COLOR='red'>Please confirm the new request below</FONT></div><br/><br/>";
 
 		echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\"\">";
@@ -127,7 +128,7 @@
 						<tr valign=\"top\">
 							<td>$mixContent[0]</td>
 							<td>$mixContent[1]</td>
-							<td$mixShowNotice>$mixShowExpire</td>
+							<td$mixShowNotice>" . date("d-m-Y",strtotime($mixShowExpire)) . "</td>
 						</tr>";
 						$val2 = "$mixContent[0]";
 					}
@@ -341,7 +342,7 @@
 		print "
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
-			<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = './'\"> <input type=\"submit\" value=\"Confirm Changes\"></TD>
+			<TD align=right><INPUT TYPE=\"button\" VALUE=\"Back\" onclick=\"javascript:history.go(-1)\"> <input type=\"submit\" value=\"Confirm Changes\"></TD>
 		</TR>
 		</TABLE>
 		</form>

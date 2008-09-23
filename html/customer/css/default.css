@@ -29,6 +29,10 @@
 {
 	color: red;
 }
+.text_row_standout
+{
+	font-weight: bold;
+}
 /* Customer Style for the error box */
 #error_box
 {

@@ -76,7 +76,8 @@
 	function Render()
 	{
 
-			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
+			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>
+			<img src=\"./img/template/support.jpg\" width=\"212\" height=\"50\" border=\"0\" alt=\"\"><br/><br/>";
 
 			// Create list of customer services
 			DBO()->Account->Services = AppTemplateConsole::GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
@@ -90,10 +91,10 @@
 			$mixServiceList = "
 			<table class=\"customer-standard-table-style\">
 			<tr valign=\"top\">
-				<td>Select:</td>
-				<td>Service</td>
-				<td>Plan</td>
-				<td>Contract Ends</td>
+				<td class=\"text_row_standout\">Select:</td>
+				<td class=\"text_row_standout\">Service</td>
+				<td class=\"text_row_standout\">Plan</td>
+				<td class=\"text_row_standout\">Contract Ends</td>
 			</tr>";
 			foreach($arrLines as $count=>$mixLine)
 			{
@@ -108,7 +109,7 @@
 					<td><input type=\"checkbox\" name=\"intFaultLine[$count]\" value=\"$mixContent[0]||$mixContent[1]||$mixShowExpire\" id=\"intFaultLine[$count]\"></td>
 					<td><label for=\"intFaultLine[$count]\">$mixContent[0]</label></td>
 					<td><label for=\"intFaultLine[$count]\">$mixContent[1]</label></td>
-					<td><label for=\"intFaultLine[$count]\">$mixShowExpire</label></td>
+					<td><label for=\"intFaultLine[$count]\">" . date("d-m-Y",strtotime($mixShowExpire)) . "</label></td>
 				</tr>";
 			}
 			$mixServiceList .= "</table>";
@@ -273,8 +274,16 @@
 					break;
 
 					case "4":
-					/* nothing */
-					echo "";
+					echo "<div class='customer-standard-table-title-style-password'>Type of service</div>
+					<div class='GroupedContent'>
+					<TABLE class=\"customer-standard-table-style\">
+					<TR VALIGN=\"TOP\">
+						<TD width=\"160\">Service Type:</TD>
+						<TD>$mixTypeOfServiceList</TD>
+					</TR>
+					</TABLE>
+					</div>
+					<br/>";
 					break;
 
 					case "5":
@@ -283,23 +292,23 @@
 					$mixServiceList
 					</div>
 					<br/>";
+					echo "<div class='customer-standard-table-title-style-password'>Type of service</div>
+					<div class='GroupedContent'>
+					<TABLE class=\"customer-standard-table-style\">
+					<TR VALIGN=\"TOP\">
+						<TD width=\"160\">Service Type:</TD>
+						<TD>$mixTypeOfServiceList</TD>
+					</TR>
+					</TABLE>
+					</div>
+					<br/>";
+
 					break;
 
 					default:
 					// Unable to determine request type..?
 					break;
 				}
-
-				echo "<div class='customer-standard-table-title-style-password'>Type of service</div>
-				<div class='GroupedContent'>
-				<TABLE class=\"customer-standard-table-style\">
-				<TR VALIGN=\"TOP\">
-					<TD width=\"160\">Service Type:</TD>
-					<TD>$mixTypeOfServiceList</TD>
-				</TR>
-				</TABLE>
-				</div>
-				<br/>";
 
 				echo "<div class='customer-standard-table-title-style-password'>Brief instructions</div>
 				<div class='GroupedContent'>
@@ -370,7 +379,7 @@ If the fault is with private equipment and not with the Telstra network then Tel
 			<br/>
 			<TABLE class=\"customer-standard-table-style\">
 			<TR>
-				<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = './'\"> <INPUT TYPE=\"submit\" VALUE=\"Continue\"></TD>
+				<TD align=right><INPUT TYPE=\"button\" VALUE=\"Back\" onclick=\"javascript:history.go(-1)\"> <INPUT TYPE=\"submit\" VALUE=\"Continue\"></TD>
 			</TR>
 			</TABLE>
 			<div id=\"error_box\"></div>";

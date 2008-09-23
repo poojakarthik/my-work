@@ -511,13 +511,13 @@ class AppTemplateConsole extends ApplicationTemplate
 				{
 					case "1":
 					while(@list($key,$value)=each($_POST['intFaultLine'])) {
-						$arrFieldsList["Faulty Line $key"] = "$value";
+						$arrFieldsList["FNN $key"] = "$value";
 					}
 					break;
 
 					case "2":
 					while(@list($key,$value)=each($_POST['intFaultLine'])) {
-						$arrFieldsList["Faulty Line $key"] = "$value";
+						$arrFieldsList["FNN $key"] = "$value";
 					}
 					$arrFieldsList['Diversions Required'] = $_POST['intDiversionsRequired'];
 					$arrFieldsList['Diversion From Number'] = $_POST['intDiversionFromNumber'];
@@ -526,7 +526,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 					case "3":
 					while(@list($key,$value)=each($_POST['intFaultLine'])) {
-						$arrFieldsList["Faulty Line $key"] = "$value";
+						$arrFieldsList["FNN $key"] = "$value";
 					}
 					break; 
 					
@@ -536,7 +536,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					
 					case "5":
 					while(@list($key,$value)=each($_POST['intFaultLine'])) {
-						$arrFieldsList["Faulty Line $key"] = "$value";
+						$arrFieldsList["FNN $key"] = "$value";
 					}
 					break; 
 
