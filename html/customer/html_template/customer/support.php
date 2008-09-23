@@ -166,27 +166,27 @@
 					<TABLE class=\"customer-standard-table-style\">
 					<TR VALIGN=\"TOP\">
 						<TD width=\"160\">Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intFaultLine1\"></TD>
 					</TR>
 					<TR VALIGN=\"TOP\">
 						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intFaultLine2\"></TD>
 					</TR>
 					<TR VALIGN=\"TOP\">
 						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intFaultLine3\"></TD>
 					</TR>
 					<TR VALIGN=\"TOP\">
 						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intFaultLine4\"></TD>
 					</TR>
 					<TR VALIGN=\"TOP\">
 						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intFaultLine5\"></TD>
 					</TR>
 					<TR VALIGN=\"TOP\">
 						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intFaultLine6\"></TD>
 					</TR>
 					</TABLE>
 					</div>
@@ -200,8 +200,8 @@
 					<TR VALIGN=\"TOP\">
 					<TD width=\"160\">Are any diversions required:</TD>
 					<TD>
-						<INPUT TYPE=\"radio\" NAME=\"\"> Yes<br>
-						<INPUT TYPE=\"radio\" NAME=\"\"> No
+						<input type=\"radio\" name=\"intDiversionsRequired\" value=\"1\"> Yes<br>
+						<input type=\"radio\" name=\"intDiversionsRequired\" value=\"0\"> No
 					</TD>
 					</TR>					
 					<TD width=\"160\">If so:</TD>
@@ -213,9 +213,9 @@
 							<TD>Diverted to number</TD>
 						</TR>
 						<TR>
-							<TD><INPUT TYPE=\"text\" NAME=\"\"></TD>
+							<TD><INPUT TYPE=\"text\" NAME=\"intDiversionFromNumber\"></TD>
 							<TD><IMG SRC=\"./img/template/arrow_right.jpg\" WIDTH=\"34\" HEIGHT=\"11\" BORDER=\"0\" ALT=\"\"></TD>
-							<TD><INPUT TYPE=\"text\" NAME=\"\"></TD>
+							<TD><INPUT TYPE=\"text\" NAME=\"intDiversionToNumber\"></TD>
 						</TR>
 						</TABLE>
 					</TD>
@@ -232,15 +232,15 @@
 					<TABLE class=\"customer-standard-table-style\">
 					<TR VALIGN=\"TOP\">
 						<TD width=\"160\">Service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intDisconnectNumber1\"></TD>
 					</TR>
 					<TR VALIGN=\"TOP\">
 						<TD>Service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intDisconnectNumber2\"></TD>
 					</TR>
 					<TR VALIGN=\"TOP\">
 						<TD>Service line number:</TD>
-						<TD><input type=\"text\" name=\"\"></TD>
+						<TD><input type=\"text\" name=\"intDisconnectNumber3\"></TD>
 					</TR>
 					</TABLE>
 					</div>
@@ -248,6 +248,8 @@
 					break;
 
 					case "4":
+					// 4 = Add new service..
+					/*
 					echo "<div class='customer-standard-table-title-style-password'>Add a new line</div>
 					<div class='GroupedContent'>
 					<TABLE class=\"customer-standard-table-style\">
@@ -258,6 +260,7 @@
 					</TABLE>
 					</div>
 					<br/>";
+					*/
 					break;
 
 					case "5":
@@ -267,7 +270,7 @@
 					<div class='GroupedContent'>
 					<TABLE class=\"customer-standard-table-style\">
 					<TR VALIGN=\"TOP\">
-					<TD width=\"160\">Form 5:</TD>
+					<TD width=\"160\">Something here?:</TD>
 					<TD></TD>
 					</TR>
 					</TABLE>
@@ -277,16 +280,7 @@
 					break;
 
 					default:
-					echo "<div class='customer-standard-table-title-style-password'>Unable to determine</div>
-					<div class='GroupedContent'>
-					<TABLE class=\"customer-standard-table-style\">
-					<TR VALIGN=\"TOP\">
-\					<TD width=\"160\">Form 6:</TD>
-					<TD></TD>
-					</TR>
-					</TABLE>
-					</div>
-					<br/>";
+					// Unable to determine request type..?
 					break;
 				}
 
@@ -296,12 +290,15 @@
 				<TR VALIGN=\"TOP\">
 				<TD width=\"160\">Service Type:</TD>
 				<TD>
-					<select name=\"\">
-						<option>Please Select One</option>
-						<option value=\"ADSL Service\">ADSL Service</option>
-						<option value=\"Voice Line Service\">Voice Line</option>
-						<option value=\"Mobile Service\">Mobile</option>
-						<option value=\"Other\">Other</option>
+					<select name=\"mixServiceType\">";
+
+						for($i=1; $i<count($GLOBALS['*arrConstant']['ServiceType'])+1; $i++)
+						{
+							$mixServiceDescription = $GLOBALS['*arrConstant']['ServiceType'][$i]['Description'];
+							print "<option value=\"$i\">$mixServiceDescription</option>";
+						}
+
+						print "
 					</select>		
 				</TD>
 				</TR>

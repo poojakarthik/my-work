@@ -301,6 +301,31 @@ class AppTemplateConsole extends ApplicationTemplate
 
 		if(array_key_exists('intRequestTypeSubmit',$_POST))
 		{
+
+			/*
+				intRequestType
+				intRequestTypeSubmit
+				mixAccount_Address1
+				mixAccount_Address2
+				mixAccount_Suburb
+				mixAccount_State
+				mixAccount_Postcode
+				mixAccount_Country
+				intFaultLine1
+				intFaultLine2
+				intFaultLine3
+				intFaultLine4
+				intFaultLine5
+				intFaultLine6
+				intDiversionsRequired
+				intDiversionFromNumber
+				intDiversionToNumber
+				intDisconnectNumber1
+				intDisconnectNumber2
+				intDisconnectNumber3
+				mixServiceType
+			*/
+			
 			$bolFoundSubmit = TRUE;
 			if($bolFoundErrors)
 			{
