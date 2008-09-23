@@ -78,7 +78,7 @@
 	 
 	function Render()
 	{
-		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>
+		echo "<div class='customer-standard-display-title'>&nbsp;</div>
 		<IMG SRC=\"./img/generic/cc_payments_accepted.jpg\" WIDTH=\"402\" HEIGHT=\"47\" BORDER=\"0\" ALT=\"\"><br/><br/>
 		<div class='customer-standard-table-title-style-confirm-details'>Important Payment Information</div>
 		<div class='GroupedContent'>

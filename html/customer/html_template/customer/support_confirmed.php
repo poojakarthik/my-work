@@ -71,8 +71,7 @@
 	 
 	function Render()
 	{
-		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>
-			<img src=\"./img/template/support.jpg\" width=\"212\" height=\"50\" border=\"0\" alt=\"\"><br/><br/>";
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
 		print "
 		<div class='customer-standard-table-title-style-confirmation'>Confirmation</div>

@@ -89,8 +89,7 @@
 			$arrSupportConfig['ServiceType'][3]['Description'] = 'Land Line';
 			$arrSupportConfig['ServiceType'][4]['Description'] = 'Other';
 
-			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>
-			<img src=\"./img/template/support.jpg\" width=\"212\" height=\"50\" border=\"0\" alt=\"\"><br/><br/>";
+			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
 			// Create list of customer services
 			DBO()->Account->Services = AppTemplateConsole::GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);

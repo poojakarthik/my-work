@@ -71,7 +71,7 @@
 	 
 	function Render()
 	{
-		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
+			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
 		print "
 		<div class='customer-standard-table-title-style-notice'>Request Failure</div>
