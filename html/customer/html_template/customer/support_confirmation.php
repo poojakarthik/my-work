@@ -128,7 +128,18 @@
 						<tr valign=\"top\">
 							<td>$mixContent[0]</td>
 							<td>$mixContent[1]</td>
-							<td$mixShowNotice>" . date("d-m-Y",strtotime($mixShowExpire)) . "</td>
+							<td$mixShowNotice>";
+							
+						if($mixShowExpire !== "" && $mixShowExpire !== "N/a")
+						{
+							$mixServiceList .= date("d-m-Y",strtotime($mixShowExpire));
+						}
+						if($mixShowExpire == "N/a")
+						{
+							$mixServiceList .= "$mixShowExpire";
+						}
+
+						$mixServiceList .= "</td>
 						</tr>";
 						$val2 = "$mixContent[0]";
 					}
