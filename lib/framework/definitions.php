@@ -456,18 +456,17 @@ define("DONKEY"						, -1);
 
 // Service Types
 /*
-$GLOBALS['*arrConstant']	['ServiceType']	[1]	['Constant']	= 'SERVICE_TYPE_ADSL';
-$GLOBALS['*arrConstant']	['ServiceType']	[1]	['Description']	= 'ADSL';
-$GLOBALS['*arrConstant']	['ServiceType']	[2]	['Constant']	= 'SERVICE_TYPE_MOBILE';
-$GLOBALS['*arrConstant']	['ServiceType']	[2]	['Description']	= 'Mobile';
-$GLOBALS['*arrConstant']	['ServiceType']	[3]	['Constant']	= 'SERVICE_TYPE_LAND_LINE';
-$GLOBALS['*arrConstant']	['ServiceType']	[3]	['Description']	= 'Land Line';
-$GLOBALS['*arrConstant']	['ServiceType']	[4]	['Constant']	= 'SERVICE_TYPE_OTHER';
-$GLOBALS['*arrConstant']	['ServiceType']	[4]	['Description']	= 'Other';
+$GLOBALS['*arrConstant']	['ServiceType']	[100]	['Constant']	= 'SERVICE_TYPE_ADSL';
+$GLOBALS['*arrConstant']	['ServiceType']	[100]	['Description']	= 'ADSL';
+$GLOBALS['*arrConstant']	['ServiceType']	[101]	['Constant']	= 'SERVICE_TYPE_MOBILE';
+$GLOBALS['*arrConstant']	['ServiceType']	[101]	['Description']	= 'Mobile';
+$GLOBALS['*arrConstant']	['ServiceType']	[102]	['Constant']	= 'SERVICE_TYPE_LAND_LINE';
+$GLOBALS['*arrConstant']	['ServiceType']	[102]	['Description']	= 'Land Line';
 $GLOBALS['*arrConstant']	['ServiceType']	[103]	['Constant']	= 'SERVICE_TYPE_INBOUND';
 $GLOBALS['*arrConstant']	['ServiceType']	[103]	['Description']	= 'Inbound 1300/1800';
 $GLOBALS['*arrConstant']	['ServiceType']	[104]	['Constant']	= 'SERVICE_TYPE_DIALUP';
-$GLOBALS['*arrConstant']	['ServiceType']	[104]	['Description']	= 'Dialup Internet';*/
+$GLOBALS['*arrConstant']	['ServiceType']	[104]	['Description']	= 'Dialup Internet';
+*/
 
 
 // Context
@@ -1427,18 +1426,6 @@ $GLOBALS['*arrConstant']	['BillingType']	[2]	['Constant']	= 'BILLING_TYPE_CREDIT
 $GLOBALS['*arrConstant']	['BillingType']	[2]	['Description']	= 'Credit Card';
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Constant']	= 'BILLING_TYPE_ACCOUNT';
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Description']	= 'Account';
-
-// Support Types
-$GLOBALS['*arrConstant']	['SupportType']	[1]	['Constant']	= 'SUPPORT_TYPE_FAULT';
-$GLOBALS['*arrConstant']	['SupportType']	[1]	['Description']	= 'Logging a fault to an existing service';
-$GLOBALS['*arrConstant']	['SupportType']	[2]	['Constant']	= 'SUPPORT_TYPE_CHANGE';
-$GLOBALS['*arrConstant']	['SupportType']	[2]	['Description']	= 'Make a change to an existing service';
-$GLOBALS['*arrConstant']	['SupportType']	[3]	['Constant']	= 'SUPPORT_TYPE_DISCONNECT';
-$GLOBALS['*arrConstant']	['SupportType']	[3]	['Description']	= 'Disconnect a no longer required line number';
-$GLOBALS['*arrConstant']	['SupportType']	[4]	['Constant']	= 'SUPPORT_TYPE_ADD';
-$GLOBALS['*arrConstant']	['SupportType']	[4]	['Description']	= 'Add a new line';
-$GLOBALS['*arrConstant']	['SupportType']	[5]	['Constant']	= 'SUPPORT_TYPE_OTHER';
-$GLOBALS['*arrConstant']	['SupportType']	[5]	['Description']	= 'Other';
 
 // Payment Terms
 define("PAYMENT_TERMS_DEFAULT"			, 14);

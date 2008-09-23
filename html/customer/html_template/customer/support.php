@@ -76,6 +76,19 @@
 	function Render()
 	{
 
+			// Temporarily putting this here until its moved to a better placed.
+			// Configuration for the support page.
+			$arrSupportConfig['SupportType'][1]['Description'] = 'Logging a fault to an existing service';
+			$arrSupportConfig['SupportType'][2]['Description'] = 'Make a change to an existing service';
+			$arrSupportConfig['SupportType'][3]['Description'] = 'Disconnect a no longer required line number';
+			$arrSupportConfig['SupportType'][4]['Description'] = 'Add a new line';
+			$arrSupportConfig['SupportType'][5]['Description'] = 'Other';
+
+			$arrSupportConfig['ServiceType'][1]['Description'] = 'ADSL';
+			$arrSupportConfig['ServiceType'][2]['Description'] = 'Mobile';
+			$arrSupportConfig['ServiceType'][3]['Description'] = 'Land Line';
+			$arrSupportConfig['ServiceType'][4]['Description'] = 'Other';
+
 			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>
 			<img src=\"./img/template/support.jpg\" width=\"212\" height=\"50\" border=\"0\" alt=\"\"><br/><br/>";
 
@@ -109,7 +122,16 @@
 					<td><input type=\"checkbox\" name=\"intFaultLine[$count]\" value=\"$mixContent[0]||$mixContent[1]||$mixShowExpire\" id=\"intFaultLine[$count]\"></td>
 					<td><label for=\"intFaultLine[$count]\">$mixContent[0]</label></td>
 					<td><label for=\"intFaultLine[$count]\">$mixContent[1]</label></td>
-					<td><label for=\"intFaultLine[$count]\">" . date("d-m-Y",strtotime($mixShowExpire)) . "</label></td>
+					<td><label for=\"intFaultLine[$count]\">";
+						if($mixShowExpire !== "" && $mixShowExpire !== "N/a")
+						{
+							$mixServiceList .= date("d-m-Y",strtotime($mixShowExpire));
+						}
+						if($mixShowExpire == "N/a")
+						{
+							$mixServiceList .= "$mixShowExpire";
+						}
+				$mixServiceList .= "</label></td>
 				</tr>";
 			}
 			$mixServiceList .= "</table>";
@@ -117,9 +139,9 @@
 
 			// Create  list of available services 
 			$mixTypeOfServiceList = "<table>";
-			for($i=1; $i<count($GLOBALS['*arrConstant']['ServiceType'])+1; $i++)
+			for($i=1; $i<count($arrSupportConfig['ServiceType'])+1; $i++)
 			{
-				$mixServiceDescription = $GLOBALS['*arrConstant']['ServiceType'][$i]['Description'];
+				$mixServiceDescription = $arrSupportConfig['ServiceType'][$i]['Description'];
 				$mixTypeOfServiceList .= "
 				<tr>
 					<td><input type=\"checkbox\" name=\"mixServiceType[$i]\" VALUE=\"$mixServiceDescription\"></td>
@@ -143,9 +165,9 @@
 				<TD>Request Type: </TD>
 				<TD>
 					<SELECT NAME=\"intRequestType\">";
-						for($i=1; $i<count($GLOBALS['*arrConstant']['SupportType'])+1; $i++)
+						for($i=1; $i<count($arrSupportConfig['SupportType'])+1; $i++)
 						{
-							$mixDescription = $GLOBALS['*arrConstant']['SupportType'][$i]['Description'];
+							$mixDescription = $arrSupportConfig['SupportType'][$i]['Description'];
 							print "<OPTION VALUE=\"$i\">$mixDescription</option>";
 						}
 					print "</SELECT>
