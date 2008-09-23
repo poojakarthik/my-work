@@ -301,42 +301,77 @@ class AppTemplateConsole extends ApplicationTemplate
 
 		if(array_key_exists('intRequestTypeSubmit',$_POST))
 		{
-
-			/*
-				Validation needs to be done on all these fields.
-				intRequestType
-				intRequestTypeSubmit
-				mixAccount_Address1
-				mixAccount_Address2
-				mixAccount_Suburb
-				mixAccount_State
-				mixAccount_Postcode
-				mixAccount_Country
-				intFaultLine1
-				intFaultLine2
-				intFaultLine3
-				intFaultLine4
-				intFaultLine5
-				intFaultLine6
-				intDiversionsRequired
-				intDiversionFromNumber
-				intDiversionToNumber
-				intDisconnectNumber1
-				intDisconnectNumber2
-				intDisconnectNumber3
-				mixServiceType
-				mixAdditionalComments
-				mixContact_Title
-				mixContact_JobTitle
-				mixContact_FirstName
-				mixContact_LastName
-				mixContact_Email
-				mixContact_Phone
-				mixContact_Mobile
-				mixContact_Fax
-			*/
+			$arrFieldsList = NULL;
+			$arrFieldsList = array();
+			$arrFieldsList['Request Type'] = $GLOBALS['*arrConstant']['SupportType'][$_POST['intRequestType']]['Description'] . "\n";
 			
+				switch($_POST['intRequestType'])
+				{
+					case "1":
+					$arrFieldsList['Faulty Line 1'] = $_POST['intFaultLine1'];
+					$arrFieldsList['Faulty Line 2'] = $_POST['intFaultLine2'];
+					$arrFieldsList['Faulty Line 3'] = $_POST['intFaultLine3'];
+					$arrFieldsList['Faulty Line 4'] = $_POST['intFaultLine4'];
+					$arrFieldsList['Faulty Line 5'] = $_POST['intFaultLine5'];
+					$arrFieldsList['Faulty Line 6'] = $_POST['intFaultLine6'] . "\n";
+					break;
+
+					case "2":
+					$arrFieldsList['Diversions Required'] = $_POST['intDiversionsRequired'];
+					$arrFieldsList['Diversion From Number'] = $_POST['intDiversionFromNumber'];
+					$arrFieldsList['Diversion To Number'] = $_POST['intDiversionToNumber'] . "\n";
+					break; 
+
+					case "3":
+					$arrFieldsList['Disconnect Number 1'] = $_POST['intDisconnectNumber1'];
+					$arrFieldsList['Disconnect Number 2'] = $_POST['intDisconnectNumber2'];
+					$arrFieldsList['Disconnect Number 3'] = $_POST['intDisconnectNumber3'] . "\n";				
+					break; 
+					
+					case "4":
+					// no additional fields
+					break; 
+					
+					case "5":
+					// no additional fields
+					break; 
+
+					default:
+					// Unable to determine request type..?
+					break;
+				}
+
+			$arrFieldsList['Service Type'] = $_POST['mixServiceType'];
+			$arrFieldsList['Request Details'] = $_POST['mixCustomerComments'] . "\n";
+
+			$arrFieldsList['Contact Title'] = $_POST['mixContact_Title'];
+			$arrFieldsList['Contact Job Title'] = $_POST['mixContact_JobTitle'];
+			$arrFieldsList['Contact First Name'] = $_POST['mixContact_FirstName'];
+			$arrFieldsList['Contact Last Name'] = $_POST['mixContact_LastName'];
+			$arrFieldsList['Contact Email'] = $_POST['mixContact_Email'];
+			$arrFieldsList['Contact Phone'] = $_POST['mixContact_Phone'];
+			$arrFieldsList['Contact Mobile'] = $_POST['mixContact_Mobile'];
+			$arrFieldsList['Contact Fax'] = $_POST['mixContact_Fax'];
+			$arrFieldsList['Contact Address Line 1'] = $_POST['mixAccount_Address1'];
+			$arrFieldsList['Contact Address Line 2'] = $_POST['mixAccount_Address2'];
+			$arrFieldsList['Contact Suburb'] = $_POST['mixAccount_Suburb'];
+			$arrFieldsList['Contact State'] = $_POST['mixAccount_State'];
+			$arrFieldsList['Contact Postcode'] = $_POST['mixAccount_Postcode'];
+			$arrFieldsList['Contact Country'] = $_POST['mixAccount_Country'];
+
+			list($bolFoundErrors,$strErrorResponse) = InputValidation("Email",$_POST['mixContact_Email'],"email",255);
+			if($bolFoundErrors)
+			{
+				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
+			}
+			foreach($arrFieldsList as $key=>$val)
+			{
+				// remove any unwanted code/bad input. this input is later send via email so need to be clean.
+				$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
+				$$key=$val;
+			}
 			$bolFoundSubmit = TRUE;
+
 			if($bolFoundErrors)
 			{
 				$this->LoadPage('support_errors');
@@ -344,6 +379,18 @@ class AppTemplateConsole extends ApplicationTemplate
 			}
 			else
 			{
+
+				$subject = "Account Support Request";
+				$message = "Details below\n\n";
+				foreach($arrFieldsList as $key=>$val)
+				{
+					$message .= "$key: $val\n";
+				}
+				$message .= "\nKind Regards\n";
+				$message .= "Customer Service Group\n";
+				$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" . 'X-Mailer: Flex/' . phpversion();
+				mail("ryanjf@gmail.com", $subject, $message, $headers);
+
 				$this->LoadPage('support_confirmation');
 				return TRUE;
 			}

@@ -315,7 +315,7 @@
 				<TABLE class=\"customer-standard-table-style\">
 				<TR VALIGN=\"TOP\">
 				<TD width=\"160\">Details of request:</TD>
-				<TD><TEXTAREA NAME=\"mixAdditionalComments\" ROWS=\"5\" COLS=\"35\"></TEXTAREA></TD>
+				<TD><textarea name=\"mixCustomerComments\" rows=\"5\" cols=\"35\"></textarea></TD>
 				</TR>
 				</TABLE>
 				</div>

@@ -38,8 +38,6 @@ function validate_edit_details(thisform)
 		{mixContact_Email.focus();return false;}
 		if (validate_email(mixContact_Email,"Invalid E-mail Address! Please re-enter.")==false)
 		{mixContact_Email.focus();return false;}
-
-
 	}
 }
 
@@ -49,8 +47,6 @@ function validate_support_request(thisform)
 	{
 		if (validate_required(mixAccount_Address1,"Address line 1 must be filled out!")==false)
 		{mixAccount_Address1.focus();return false;}
-		if (validate_required(mixAccount_Address2,"Address line 2 must be filled out!")==false)
-		{mixAccount_Address2.focus();return false;}
 		if (validate_required(mixAccount_Suburb,"Suburb must be filled out!")==false)
 		{mixAccount_Suburb.focus();return false;}
 		if (validate_required(mixAccount_State,"State must be filled out!")==false)
@@ -61,8 +57,6 @@ function validate_support_request(thisform)
 		{mixAccount_Country.focus();return false;}
 		if (validate_required(mixContact_Title,"Title must be filled out!")==false)
 		{mixContact_Title.focus();return false;}
-		if (validate_required(mixContact_JobTitle,"Job Title must be filled out!")==false)
-		{mixContact_JobTitle.focus();return false;}
 		if (validate_required(mixContact_FirstName,"First Name must be filled out!")==false)
 		{mixContact_FirstName.focus();return false;}
 		if (validate_required(mixContact_LastName,"Last Name must be filled out!")==false)
@@ -71,13 +65,9 @@ function validate_support_request(thisform)
 		{mixContact_Email.focus();return false;}
 		if (validate_email(mixContact_Email,"Invalid E-mail Address! Please re-enter.")==false)
 		{mixContact_Email.focus();return false;}
-		if (validate_phone(mixContact_Phone,"Phone must be filled out!")==false)
+		if (validate_phone(mixContact_Phone,"The phone number you entered is not valid.\r\nPlease enter a phone number with the format 0123456789 (ten numbers long).")==false)
 		{mixContact_Phone.focus();return false;}
-		if (validate_phone(mixContact_Mobile,"Mobile must be filled out!")==false)
-		{mixContact_Mobile.focus();return false;}
-		if (validate_required(mixContact_Fax,"Fax must be filled out!")==false)
-		{mixContact_Fax.focus();return false;}
-		if (validate_required(mixAdditionalComments,"Details of the request are required!")==false)
-		{mixAdditionalComments.focus();return false;}
+		if (validate_required(mixCustomerComments,"Details of the request are required!")==false)
+		{mixCustomerComments.focus();return false;}
 	}
 }
