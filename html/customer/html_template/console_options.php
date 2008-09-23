@@ -96,7 +96,7 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
  
 		// Support link
 		$strSupportRequest = Href()->SupportRequest(DBO()->Account->Id->Value);
-		$strSupportRequestLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strSupportRequest' >&nbsp;&nbsp;Support Request</a></span>";
+		$strSupportRequestLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strSupportRequest' >&nbsp;&nbsp;Create Support Request</a></span>";
  
 		// FAQ Link
 		$strCustomerFAQ = Href()->CustomerFAQ(DBO()->Account->Id->Value);

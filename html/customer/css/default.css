@@ -25,6 +25,10 @@
 /*	TASKBAR														  		  */
 /**************************************************************************/
 
+.text_notice
+{
+	color: red;
+}
 /* Customer Style for the error box */
 #error_box
 {

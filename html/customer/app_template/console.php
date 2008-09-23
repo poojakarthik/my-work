@@ -228,6 +228,208 @@ class AppTemplateConsole extends ApplicationTemplate
 
 
 
+	function GetServices($intAccount, $intFilter=SERVICE_ACTIVE)
+	{
+		// Load all the services belonging to the account
+		// OLD method
+		//DBL()->Service->Where->Set("Account = <Account>", Array("Account"=>DBO()->Account->Id->Value));
+		//DBL()->Service->OrderBy("ServiceType ASC, FNN ASC, Id DESC");
+		//DBL()->Service->Load();
+		
+		// Retrieve all the services belonging to the account
+		$strTables	= "	Service AS S 
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
+								FROM ServiceRatePlan AS SRP2 
+								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
+								ORDER BY SRP2.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
+								FROM ServiceRatePlan AS SRP4 
+								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
+								ORDER BY SRP4.CreatedOn DESC
+								LIMIT 1
+								)
+						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
+		$arrColumns	= Array("Id" 						=> "S.Id",
+							"FNN"						=> "S.FNN",
+							"ServiceType"				=> "S.ServiceType", 
+							"Status"		 			=> "S.Status",
+							"LineStatus"				=> "S.LineStatus",
+							"LineStatusDate"			=> "S.LineStatusDate",
+							"CreatedOn"					=> "S.CreatedOn", 
+							"ClosedOn"					=> "S.ClosedOn",
+							"CreatedBy"					=> "S.CreatedBy", 
+							"ClosedBy"					=> "S.ClosedBy",
+							"NatureOfCreation"			=> "S.NatureOfCreation",
+							"NatureOfClosure"			=> "S.NatureOfClosure",
+							"LastOwner"					=> "S.LastOwner",
+							"NextOwner"					=> "S.NextOwner",
+							"CurrentPlanId" 			=> "RP1.Id",
+							"CurrentPlanName"			=> "RP1.Name",
+							"CurrentPlanContractTerm"	=> "RP1.ContractTerm",
+							"CurrentPlanStartDatetime"	=> "SRP1.StartDatetime",
+							"CurrentPlanEndDatetime"	=> "SRP1.EndDatetime",
+							"CurrentPlanContractExpiresOn"	=> "SRP1.StartDatetime + INTERVAL RP1.ContractTerm MONTH",
+
+							"FuturePlanId"				=> "RP2.Id",
+							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanContractTerm"	=> "RP2.ContractTerm",
+							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime",
+							"FuturePlanEndDatetime"		=> "SRP3.EndDatetime",
+							"FuturePlanContractExpiresOn"	=> "SRP3.StartDatetime + INTERVAL RP2.ContractTerm MONTH");
+		$strWhere	= "S.Account = <AccountId> AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
+		$arrWhere	= Array("AccountId" => $intAccount);
+		$strOrderBy	= ("S.ServiceType ASC, S.FNN ASC, S.Id DESC");
+		
+		$selServices = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+		if ($selServices->Execute($arrWhere) === FALSE)
+		{
+			// An error occurred
+			return FALSE;
+		}
+		
+		$arrServices	= Array();
+		$arrRecord		= $selServices->Fetch();
+		while ($arrRecord !== FALSE)
+		{
+			// Create the Service Array
+			$arrService = Array (
+									"Id"			=> $arrRecord['Id'],
+									"FNN"			=> $arrRecord['FNN'],
+									"ServiceType"	=> $arrRecord['ServiceType']
+								);
+
+			// Add details about the Service's current plan, if it has one
+			if ($arrRecord['CurrentPlanId'] != NULL)
+			{
+				$arrService['CurrentPlan'] = Array	(
+														"Id"	=> $arrRecord['CurrentPlanId'],
+														"Name"	=> $arrRecord['CurrentPlanName'],
+														"ContractTerm"	=> $arrRecord['CurrentPlanContractTerm'],
+														"StartDatetime"	=> $arrRecord['CurrentPlanStartDatetime'],
+														"EndDatetime"	=> $arrRecord['CurrentPlanEndDatetime'],
+														"ContractExpiresOn"	=> $arrRecord['CurrentPlanContractExpiresOn']
+													);
+			}
+			else
+			{
+				$arrService['CurrentPlan'] = NULL;
+			}
+			
+			// Add details about the Service's Future scheduled plan, if it has one
+			if ($arrRecord['FuturePlanId'] != NULL)
+			{
+				$arrService['FuturePlan'] = Array	(
+														"Id"	=> $arrRecord['FuturePlanId'],
+														"Name"	=> $arrRecord['FuturePlanName'],
+														"ContractTerm"	=> $arrRecord['CurrentPlanContractTerm'],
+														"StartDatetime"	=> $arrRecord['FuturePlanStartDatetime'],
+														"EndDatetime"	=> $arrRecord['CurrentPlanEndDatetime'],
+														"ContractExpiresOn"	=> $arrRecord['CurrentPlanContractExpiresOn']
+													);
+			}
+			else
+			{
+				$arrService['FuturePlan'] = NULL;
+			}
+			
+			// Add this record's details to the history array
+			$arrService['History']		= Array();
+			$arrService['History'][]	= Array	(
+													"ServiceId"			=> $arrRecord['Id'],
+													"CreatedOn"			=> $arrRecord['CreatedOn'],
+													"ClosedOn"			=> $arrRecord['ClosedOn'],
+													"CreatedBy"			=> $arrRecord['CreatedBy'],
+													"ClosedBy"			=> $arrRecord['ClosedBy'],
+													"NatureOfCreation"	=> $arrRecord['NatureOfCreation'],
+													"NatureOfClosure"	=> $arrRecord['NatureOfClosure'],
+													"LastOwner"			=> $arrRecord['LastOwner'],
+													"NextOwner"			=> $arrRecord['NextOwner'],
+													"Status"			=> $arrRecord['Status'],
+													"LineStatus"		=> $arrRecord['LineStatus'],
+													"LineStatusDate"	=> $arrRecord['LineStatusDate']
+												);
+			 
+			
+			// If multiple Service records relate to the one actual service then they will be consecutive in the RecordSet
+			// Find each one and add it to the Status history
+			while (($arrRecord = $selServices->Fetch()) !== FALSE)
+			{
+				if ($arrRecord['FNN'] == $arrService['FNN'])
+				{
+					// This record relates to the same Service
+					$arrService['History'][]	= Array	(
+															"ServiceId"	=> $arrRecord['Id'],
+															"CreatedOn"			=> $arrRecord['CreatedOn'],
+															"ClosedOn"			=> $arrRecord['ClosedOn'],
+															"CreatedBy"			=> $arrRecord['CreatedBy'],
+															"ClosedBy"			=> $arrRecord['ClosedBy'],
+															"NatureOfCreation"	=> $arrRecord['NatureOfCreation'],
+															"NatureOfClosure"	=> $arrRecord['NatureOfClosure'],
+															"LastOwner"			=> $arrRecord['LastOwner'],
+															"NextOwner"			=> $arrRecord['NextOwner'],
+															"Status"			=> $arrRecord['Status'],
+															"LineStatus"		=> $arrService['LineStatus'],
+															"LineStatusDate"	=> $arrService['LineStatusDate']
+														);
+				}
+				else
+				{
+					// We have moved on to the next Service
+					break;
+				}
+			}
+			
+			// Add the Service to the array of Services
+			$arrServices[] = $arrService;
+		}
+		
+		// Apply the filter
+		$strNow = GetCurrentISODateTime();
+		if ($intFilter)
+		{
+			$arrTempServices	= $arrServices;
+			$arrServices		= Array();
+			
+			foreach ($arrTempServices as $arrService)
+			{
+				switch ($intFilter)
+				{
+					case SERVICE_ACTIVE:
+						// Only keep the Service if ClosedOn IS NULL OR NOW() OR in the future
+						if ($arrService['History'][0]['ClosedOn'] == NULL || $arrService['History'][0]['ClosedOn'] >= $strNow)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+					
+					case SERVICE_DISCONNECTED:
+						// Only keep the Service if Status == Disconnected AND ClosedOn < NOW()
+						if ($arrService['History'][0]['Status'] == SERVICE_DISCONNECTED && $arrService['History'][0]['ClosedOn'] < $strNow)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+					
+					case SERVICE_ARCHIVED:
+						// Only keep the Service if Status == Archived AND ClosedOn < NOW()
+						if ($arrService['History'][0]['Status'] == SERVICE_ARCHIVED && $arrService['History'][0]['ClosedOn'] < $strNow)
+						{
+							// Keep it
+							$arrServices[] = $arrService;
+						}
+						break;
+				}
+			}
+		}
+		
+		return $arrServices;
+	}
+
 
 	 // User Support
 	 function Support()
@@ -308,24 +510,24 @@ class AppTemplateConsole extends ApplicationTemplate
 				switch($_POST['intRequestType'])
 				{
 					case "1":
-					$arrFieldsList['Faulty Line 1'] = $_POST['intFaultLine1'];
-					$arrFieldsList['Faulty Line 2'] = $_POST['intFaultLine2'];
-					$arrFieldsList['Faulty Line 3'] = $_POST['intFaultLine3'];
-					$arrFieldsList['Faulty Line 4'] = $_POST['intFaultLine4'];
-					$arrFieldsList['Faulty Line 5'] = $_POST['intFaultLine5'];
-					$arrFieldsList['Faulty Line 6'] = $_POST['intFaultLine6'] . "\n";
+					while(@list($key,$value)=each($_POST['intFaultLine'])) {
+						$arrFieldsList["Faulty Line $key"] = "$value";
+					}
 					break;
 
 					case "2":
+					while(@list($key,$value)=each($_POST['intFaultLine'])) {
+						$arrFieldsList["Faulty Line $key"] = "$value";
+					}
 					$arrFieldsList['Diversions Required'] = $_POST['intDiversionsRequired'];
 					$arrFieldsList['Diversion From Number'] = $_POST['intDiversionFromNumber'];
 					$arrFieldsList['Diversion To Number'] = $_POST['intDiversionToNumber'] . "\n";
 					break; 
 
 					case "3":
-					$arrFieldsList['Disconnect Number 1'] = $_POST['intDisconnectNumber1'];
-					$arrFieldsList['Disconnect Number 2'] = $_POST['intDisconnectNumber2'];
-					$arrFieldsList['Disconnect Number 3'] = $_POST['intDisconnectNumber3'] . "\n";				
+					while(@list($key,$value)=each($_POST['intFaultLine'])) {
+						$arrFieldsList["Faulty Line $key"] = "$value";
+					}
 					break; 
 					
 					case "4":
@@ -333,7 +535,9 @@ class AppTemplateConsole extends ApplicationTemplate
 					break; 
 					
 					case "5":
-					// no additional fields
+					while(@list($key,$value)=each($_POST['intFaultLine'])) {
+						$arrFieldsList["Faulty Line $key"] = "$value";
+					}
 					break; 
 
 					default:
@@ -341,7 +545,11 @@ class AppTemplateConsole extends ApplicationTemplate
 					break;
 				}
 
-			$arrFieldsList['Service Type'] = $_POST['mixServiceType'];
+
+				while(@list($key,$value)=each($_POST['mixServiceType'])) {
+					$arrFieldsList["Service Type $key"] = "$value";
+				}
+
 			$arrFieldsList['Request Details'] = $_POST['mixCustomerComments'] . "\n";
 
 			$arrFieldsList['Contact Title'] = $_POST['mixContact_Title'];
@@ -377,9 +585,8 @@ class AppTemplateConsole extends ApplicationTemplate
 				$this->LoadPage('support_errors');
 				return TRUE;
 			}
-			else
+			if(array_key_exists('intRequestTypeSubmitFinal',$_POST))
 			{
-
 				$subject = "Account Support Request";
 				$message = "Details below\n\n";
 				foreach($arrFieldsList as $key=>$val)
@@ -390,10 +597,12 @@ class AppTemplateConsole extends ApplicationTemplate
 				$message .= "Customer Service Group\n";
 				$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" . 'X-Mailer: Flex/' . phpversion();
 				mail("ryanjf@gmail.com", $subject, $message, $headers);
-
-				$this->LoadPage('support_confirmation');
+				$this->LoadPage('support_confirmed');
 				return TRUE;
 			}
+
+			$this->LoadPage('support_confirmation');
+			return TRUE;
 		}
 		if(!$bolFoundSubmit)
 		{

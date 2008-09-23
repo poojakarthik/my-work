@@ -75,29 +75,33 @@
 		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 		echo "<div class='customer-standard-table-title-style-notice'><FONT COLOR='red'>Please confirm the new changes below</FONT></div><br/><br/>";
 
+		foreach($_POST as $key=>$val)
+		{
+			$$key=htmlspecialchars("$val", ENT_QUOTES);
+		}
 		echo "
 		<form method=\"POST\" action=\"./flex.php/Console/Edit/\"\">
-		<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"" . htmlspecialchars($_POST['intUpdateAccountId']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_Address1\" value=\"" . htmlspecialchars($_POST['mixAccount_Address1']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_Address2\" value=\"" . htmlspecialchars($_POST['mixAccount_Address2']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_Suburb\" value=\"" . htmlspecialchars($_POST['mixAccount_Suburb']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_State\" value=\"" . htmlspecialchars($_POST['mixAccount_State']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_Postcode\" value=\"" . htmlspecialchars($_POST['mixAccount_Postcode']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_BillingMethod\" value=\"" . htmlspecialchars($_POST['mixAccount_BillingMethod']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_Country\" value=\"" . htmlspecialchars($_POST['mixAccount_Country']) . "\">
-		<input type=\"hidden\" name=\"mixContact_FirstName\" value=\"" . htmlspecialchars($_POST['mixContact_FirstName']) . "\">
-		<input type=\"hidden\" name=\"mixContact_LastName\" value=\"" . htmlspecialchars($_POST['mixContact_LastName']) . "\">
-		<input type=\"hidden\" name=\"mixContact_Title\" value=\"" . htmlspecialchars($_POST['mixContact_Title']) . "\">
-		<input type=\"hidden\" name=\"mixContact_JobTitle\" value=\"" . htmlspecialchars($_POST['mixContact_JobTitle']) . "\">
-		<input type=\"hidden\" name=\"mixContact_Email\" value=\"" . htmlspecialchars($_POST['mixContact_Email']) . "\">
-		<input type=\"hidden\" name=\"mixContact_Phone\" value=\"" . htmlspecialchars($_POST['mixContact_Phone']) . "\">
-		<input type=\"hidden\" name=\"mixContact_Mobile\" value=\"" . htmlspecialchars($_POST['mixContact_Mobile']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_OldPassword\" value=\"" . htmlspecialchars($_POST['mixAccount_OldPassword']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_NewPassword1\" value=\"" . htmlspecialchars($_POST['mixAccount_NewPassword1']) . "\">
-		<input type=\"hidden\" name=\"mixAccount_NewPassword2\" value=\"" . htmlspecialchars($_POST['mixAccount_NewPassword2']) . "\">
-		<input type=\"hidden\" name=\"mixContact_Fax\" value=\"" . htmlspecialchars($_POST['mixContact_Fax']) . "\">";
+		<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intUpdateAccountId\">
+		<input type=\"hidden\" name=\"mixAccount_Address1\" value=\"$mixAccount_Address1\">
+		<input type=\"hidden\" name=\"mixAccount_Address2\" value=\"$mixAccount_Address2\">
+		<input type=\"hidden\" name=\"mixAccount_Suburb\" value=\"$mixAccount_Suburb\">
+		<input type=\"hidden\" name=\"mixAccount_State\" value=\"$mixAccount_State\">
+		<input type=\"hidden\" name=\"mixAccount_Postcode\" value=\"$mixAccount_Postcode\">
+		<input type=\"hidden\" name=\"mixAccount_BillingMethod\" value=\"$mixAccount_BillingMethod\">
+		<input type=\"hidden\" name=\"mixAccount_Country\" value=\"$mixAccount_Country\">
+		<input type=\"hidden\" name=\"mixContact_FirstName\" value=\"$mixContact_FirstName\">
+		<input type=\"hidden\" name=\"mixContact_LastName\" value=\"$mixContact_LastName\">
+		<input type=\"hidden\" name=\"mixContact_Title\" value=\"$mixContact_Title\">
+		<input type=\"hidden\" name=\"mixContact_JobTitle\" value=\"$mixContact_JobTitle\">
+		<input type=\"hidden\" name=\"mixContact_Email\" value=\"$mixContact_Email\">
+		<input type=\"hidden\" name=\"mixContact_Phone\" value=\"$mixContact_Phone\">
+		<input type=\"hidden\" name=\"mixContact_Mobile\" value=\"$mixContact_Mobile\">
+		<input type=\"hidden\" name=\"mixAccount_OldPassword\" value=\"$mixAccount_OldPassword\">
+		<input type=\"hidden\" name=\"mixAccount_NewPassword1\" value=\"$mixAccount_NewPassword1\">
+		<input type=\"hidden\" name=\"mixAccount_NewPassword2\" value=\"$mixAccount_NewPassword2\">
+		<input type=\"hidden\" name=\"mixContact_Fax\" value=\"$mixContact_Fax\">";
 
-		$intBillMethod = htmlspecialchars($_POST['mixAccount_BillingMethod']);
+		$intBillMethod = $_POST['mixAccount_BillingMethod'];
 		$strNewBillingMethod = $GLOBALS['*arrConstant']['BillingMethod'][$intBillMethod]['Description'];
 		
 		// If the user is changing there password: display a notice on this page, 
@@ -141,27 +145,27 @@
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
 			<TD width=\"160\">Street Address: </TD>
-			<TD>" . htmlspecialchars($_POST['mixAccount_Address1']) . "</TD>
+			<TD>$mixAccount_Address1</TD>
 		</TR>
 		<TR>
 			<TD></TD>
-			<TD>" . htmlspecialchars($_POST['mixAccount_Address2']) . "</TD>
+			<TD>$mixAccount_Address2</TD>
 		</TR>
 		<TR>
 			<TD>Suburb: </TD>
-			<TD>" . htmlspecialchars($_POST['mixAccount_Suburb']) . "</TD>
+			<TD>$mixAccount_Suburb</TD>
 		</TR>
 		<TR>
 			<TD>State: </TD>
-			<TD>" . htmlspecialchars($_POST['mixAccount_State']) . "</TD>
+			<TD>$mixAccount_State</TD>
 		</TR>
 		<TR>
 			<TD>Postcode: </TD>
-			<TD>" . htmlspecialchars($_POST['mixAccount_Postcode']) . "</TD>
+			<TD>$mixAccount_Postcode</TD>
 		</TR>
 		<TR>
 			<TD>Country: </TD>
-			<TD>" . htmlspecialchars($_POST['mixAccount_Country']) . "</TD>
+			<TD>$mixAccount_Country</TD>
 		</TR>
 		</TABLE>
 		</div>
@@ -174,35 +178,35 @@
 		<TABLE class=\"customer-standard-table-style\">
 		<TR>
 			<TD width=\"160\">First Name: </TD>
-			<TD>" . htmlspecialchars($_POST['mixContact_FirstName']) . "</TD>
+			<TD>$mixContact_FirstName</TD>
 		</TR>
 		<TR>
 			<TD>Last Name: </TD>
-			<TD>" . htmlspecialchars($_POST['mixContact_LastName']) . "</TD>
+			<TD>$mixContact_LastName</TD>
 		</TR>
 		<TR>
 			<TD>Title: </TD>
-			<TD>" . htmlspecialchars($_POST['mixContact_Title']) . "</TD>
+			<TD>$mixContact_Title</TD>
 		</TR>
 		<TR>
 			<TD>Job Title: </TD>
-			<TD>" . htmlspecialchars($_POST['mixContact_JobTitle']) . "</TD>
+			<TD>$mixContact_JobTitle</TD>
 		</TR>
 		<TR>
 			<TD>Email: </TD>
-			<TD>" . htmlspecialchars($_POST['mixContact_Email']) . "</TD>
+			<TD>$mixContact_Email</TD>
 		</TR>
 		<TR>
 			<TD>Phone: </TD>
-			<TD>" . htmlspecialchars($_POST['mixContact_Phone']) . "</TD>
+			<TD>$mixContact_Phone</TD>
 		</TR>
 		<TR>
 			<TD>Mobile: </TD>
-			<TD>" . htmlspecialchars($_POST['mixContact_Mobile']) . "</TD>
+			<TD>$mixContact_Mobile</TD>
 		</TR>
 		<TR>
 			<TD>Fax: </TD>
-			<TD>" . htmlspecialchars($_POST['mixContact_Fax']) . "</TD>
+			<TD>$mixContact_Fax</TD>
 		</TR>
 		</TABLE>
 		</div>

@@ -78,7 +78,59 @@
 
 			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
+			// Create list of customer services
+			DBO()->Account->Services = AppTemplateConsole::GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
+			$arrServices			= DBO()->Account->Services->Value;
+			$arrLines = array();
+			foreach($arrServices as $arrService)
+			{
+				$count++;
+				$arrLines[$count] = $arrService['FNN'] . "||" . $arrService['CurrentPlan']['Name'] . "||" . $arrService['CurrentPlan']['ContractExpiresOn'];
+			}
+			$mixServiceList = "
+			<table class=\"customer-standard-table-style\">
+			<tr valign=\"top\">
+				<td>Select:</td>
+				<td>Service</td>
+				<td>Plan</td>
+				<td>Contract Ends</td>
+			</tr>";
+			foreach($arrLines as $count=>$mixLine)
+			{
+				$mixContent = explode("||",$mixLine);
+				$mixShowExpire = $mixContent[2];
+				if(!$mixShowExpire)
+				{
+					$mixShowExpire = "N/a";
+				}
+				$mixServiceList .= "
+				<tr valign=\"top\">
+					<td><input type=\"checkbox\" name=\"intFaultLine[$count]\" value=\"$mixContent[0]||$mixContent[1]||$mixShowExpire\" id=\"intFaultLine[$count]\"></td>
+					<td><label for=\"intFaultLine[$count]\">$mixContent[0]</label></td>
+					<td><label for=\"intFaultLine[$count]\">$mixContent[1]</label></td>
+					<td><label for=\"intFaultLine[$count]\">$mixShowExpire</label></td>
+				</tr>";
+			}
+			$mixServiceList .= "</table>";
 
+
+			// Create  list of available services 
+			$mixTypeOfServiceList = "<table>";
+			for($i=1; $i<count($GLOBALS['*arrConstant']['ServiceType'])+1; $i++)
+			{
+				$mixServiceDescription = $GLOBALS['*arrConstant']['ServiceType'][$i]['Description'];
+				$mixTypeOfServiceList .= "
+				<tr>
+					<td><input type=\"checkbox\" name=\"mixServiceType[$i]\" VALUE=\"$mixServiceDescription\"></td>
+					<td>$mixServiceDescription</td>
+				</tr>";
+			}
+			$mixTypeOfServiceList .= "</table>";
+
+
+
+
+			// If no submission then print default options.
 			if(!array_key_exists('intRequestType', $_POST))
 			{
 				echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\">";
@@ -101,6 +153,8 @@
 				</TABLE>
 				</div>";
 			}
+
+			// If first option selected then show page two.
 			else if(is_numeric($_POST['intRequestType']))
 			{
 				echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\" onsubmit=\"return validate_support_request(this)\">";
@@ -112,15 +166,15 @@
 				<TABLE class=\"customer-standard-table-style\">
 				<TR>
 				<TD width=\"160\">Street Address: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . DBO()->Account->Address1->Value . "\" size=\"30\" maxlength=\"255\"></TD>
 				</TR>
 				<TR>
 				<TD></TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address2->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . DBO()->Account->Address2->Value . "\" size=\"30\" maxlength=\"255\"></TD>
 				</TR>
 				<TR>
 				<TD>Suburb: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Suburb\" VALUE=\"" . htmlspecialchars(DBO()->Account->Suburb->Value) . "\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Suburb\" VALUE=\"" . DBO()->Account->Suburb->Value . "\"></TD>
 				</TR>
 
 				<TR>
@@ -147,13 +201,13 @@
 				</TR>
 				<TR>
 				<TD>Postcode: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Postcode\" VALUE=\"" . htmlspecialchars(DBO()->Account->Postcode->Value) . "\" size=\"4\" maxlength=\"4\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Postcode\" VALUE=\"" . DBO()->Account->Postcode->Value . "\" size=\"4\" maxlength=\"4\"></TD>
 				</TR>
 				<TR>
 				<TD>Country: </TD>
 				<TD>
 					<SELECT NAME=\"mixAccount_Country\">
-					<OPTION VALUE=\"" . htmlspecialchars(DBO()->Account->Country->Value) . "\" SELECTED>" . htmlspecialchars(DBO()->Account->Country->Value) . "</OPTION>
+					<OPTION VALUE=\"" . DBO()->Account->Country->Value . "\" SELECTED>" . DBO()->Account->Country->Value . "</OPTION>
 					</SELECT>
 					</TD>
 				</TR>
@@ -167,38 +221,18 @@
 					case "1":
 					echo "<div class='customer-standard-table-title-style-password'>Logging a fault to an existing service</div>
 					<div class='GroupedContent'>
-					<TABLE class=\"customer-standard-table-style\">
-					<TR VALIGN=\"TOP\">
-						<TD width=\"160\">Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"intFaultLine1\"></TD>
-					</TR>
-					<TR VALIGN=\"TOP\">
-						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"intFaultLine2\"></TD>
-					</TR>
-					<TR VALIGN=\"TOP\">
-						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"intFaultLine3\"></TD>
-					</TR>
-					<TR VALIGN=\"TOP\">
-						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"intFaultLine4\"></TD>
-					</TR>
-					<TR VALIGN=\"TOP\">
-						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"intFaultLine5\"></TD>
-					</TR>
-					<TR VALIGN=\"TOP\">
-						<TD>Faulty service line number:</TD>
-						<TD><input type=\"text\" name=\"intFaultLine6\"></TD>
-					</TR>
-					</TABLE>
+					$mixServiceList
 					</div>
 					<br/>";
 					break; 	
 
 					case "2":
-					echo "<div class='customer-standard-table-title-style-password'>Make a change to an existing service</div>
+					echo "<div class='customer-standard-table-title-style-password'>Select the service you wish to change</div>
+					<div class='GroupedContent'>
+					$mixServiceList
+					</div>
+					<br/>";
+					echo "<div class='customer-standard-table-title-style-password'>Create Diversions</div>
 					<div class='GroupedContent'>
 					<TABLE class=\"customer-standard-table-style\">
 					<TR VALIGN=\"TOP\">
@@ -233,54 +267,22 @@
 					echo "
 					<div class='customer-standard-table-title-style-password'>Disconnect a no longer required line number</div>
 					<div class='GroupedContent'>
-					<TABLE class=\"customer-standard-table-style\">
-					<TR VALIGN=\"TOP\">
-						<TD width=\"160\">Service line number:</TD>
-						<TD><input type=\"text\" name=\"intDisconnectNumber1\"></TD>
-					</TR>
-					<TR VALIGN=\"TOP\">
-						<TD>Service line number:</TD>
-						<TD><input type=\"text\" name=\"intDisconnectNumber2\"></TD>
-					</TR>
-					<TR VALIGN=\"TOP\">
-						<TD>Service line number:</TD>
-						<TD><input type=\"text\" name=\"intDisconnectNumber3\"></TD>
-					</TR>
-					</TABLE>
+					$mixServiceList
 					</div>
 					<br/>";
 					break;
 
 					case "4":
-					// 4 = Add new service..
-					/*
-					echo "<div class='customer-standard-table-title-style-password'>Add a new line</div>
-					<div class='GroupedContent'>
-					<TABLE class=\"customer-standard-table-style\">
-					<TR VALIGN=\"TOP\">
-					<TD width=\"160\">Something here?:</TD>
-					<TD></TD>
-					</TR>
-					</TABLE>
-					</div>
-					<br/>";
-					*/
+					/* nothing */
+					echo "";
 					break;
 
 					case "5":
-					// 5 = Other
-					/*
-					echo "<div class='customer-standard-table-title-style-password'>Details of request</div>
+					echo "<div class='customer-standard-table-title-style-password'>Select the service this query is related to</div>
 					<div class='GroupedContent'>
-					<TABLE class=\"customer-standard-table-style\">
-					<TR VALIGN=\"TOP\">
-					<TD width=\"160\">Something here?:</TD>
-					<TD></TD>
-					</TR>
-					</TABLE>
+					$mixServiceList
 					</div>
 					<br/>";
-					*/
 					break;
 
 					default:
@@ -292,25 +294,14 @@
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
 				<TR VALIGN=\"TOP\">
-				<TD width=\"160\">Service Type:</TD>
-				<TD>
-					<select name=\"mixServiceType\">";
-
-						for($i=1; $i<count($GLOBALS['*arrConstant']['ServiceType'])+1; $i++)
-						{
-							$mixServiceDescription = $GLOBALS['*arrConstant']['ServiceType'][$i]['Description'];
-							print "<option value=\"$i\">$mixServiceDescription</option>";
-						}
-
-						print "
-					</select>		
-				</TD>
+					<TD width=\"160\">Service Type:</TD>
+					<TD>$mixTypeOfServiceList</TD>
 				</TR>
 				</TABLE>
 				</div>
 				<br/>";
 
-				echo "<div class='customer-standard-table-title-style-password'>Brief description</div>
+				echo "<div class='customer-standard-table-title-style-password'>Brief instructions</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
 				<TR VALIGN=\"TOP\">
@@ -327,35 +318,35 @@
 				<TABLE class=\"customer-standard-table-style\">
 				<TR>
 				<TD width=\"160\">Title: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Title\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\" size=\"10\" maxlength=\"255\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Title\" VALUE=\"" . DBO()->Contact->Title->Value . "\" size=\"10\" maxlength=\"255\"></TD>
 				</TR>
 				<TR>
 				<TD>Job Title: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . htmlspecialchars(DBO()->Contact->JobTitle->Value) . "\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . DBO()->Contact->JobTitle->Value . "\"></TD>
 				</TR>
 				<TR>
 				<TD>First Name: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_FirstName\" VALUE=\"" . htmlspecialchars(DBO()->Contact->FirstName->Value) . "\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_FirstName\" VALUE=\"" . DBO()->Contact->FirstName->Value . "\"></TD>
 				</TR>
 				<TR>
 				<TD>Last Name: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_LastName\" VALUE=\"" . htmlspecialchars(DBO()->Contact->LastName->Value) . "\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_LastName\" VALUE=\"" . DBO()->Contact->LastName->Value . "\"></TD>
 				</TR>
 				<TR>
 				<TD>E-mail: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . DBO()->Contact->Email->Value . "\" size=\"30\" maxlength=\"255\"></TD>
 				</TR>
 				<TR>
 				<TD>Phone: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Phone\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Phone->Value) . "\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Phone\" VALUE=\"" . DBO()->Contact->Phone->Value . "\"></TD>
 				</TR>
 				<TR>
 				<TD>Mobile: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Mobile\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Mobile->Value) . "\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Mobile\" VALUE=\"" . DBO()->Contact->Mobile->Value . "\"></TD>
 				</TR>
 				<TR>
 				<TD>Fax: </TD>
-				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Fax\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Fax->Value) . "\"></TD>
+				<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Fax\" VALUE=\"" . DBO()->Contact->Fax->Value . "\"></TD>
 				</TR>
 				</TABLE>
 				</div>
