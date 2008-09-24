@@ -58,7 +58,7 @@ abstract class DB_Database {
 			error_log("Invalid query: $sql $error");
 
 			if (!$error_notified && !$cms_meta->ajax) {
-				$cms_meta->display_message('Sorry, an error occurred while processing this page, which may affect the results you see below. The Service Centre team at Brennan have been notified of this problem and will take action to correct it.', 'error');
+				//$cms_meta->display_message('Sorry, an error occurred while processing this page, which may affect the results you see below. The Service Centre team at Brennan have been notified of this problem and will take action to correct it.', 'error');
 				$error_notified = true;
 			}
 
@@ -79,12 +79,13 @@ ERROR;
 				$message = "Automatic Database Error Report generated at $now from user $realname ($username).\n\nGETTED DATA:\n\n$getted_data\n\nPOSTED DATA:\n\n$posted_data\n\nDATABASE ERROR:\n\n$error\n\nHOST:\n\n$this->host\n\nDATABASE:$this->db\n\nSQL:\n\n$sql\n\nBACKTRACE:\n\n$backtrace";
 
 				// Increment the number of DB query errors in a static log file.
+				/*
 				$filename = 'cms_errors-' . date('Y-m') . '.log';
 				$log_path = dirname(dirname(__FILE__)) . "/log/$filename";
 				$monthly_count = ($count = file_get_contents($log_path)) ? $count + 1 : 1;
 				file_put_contents($log_path, $monthly_count);
-
-				@mail(DEV_EMAIL, $subject, $message, FROM_CMS_EMAIL);
+				*/
+				@mail("rforrester@yellowbilling.com.au", $subject, $message, FROM_CMS_EMAIL);
 				$this->handler->sent_feedback = true;
 			}
 		}

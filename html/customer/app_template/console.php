@@ -220,7 +220,39 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
 		BreadCrumb()->SetCurrentPage("Customer FAQ");
+		
+		if(array_key_exists('s',$_GET))
+		{
+			// This portion of the code builds the search query.
+			$search = $_GET['s'];
+			$splitted = split ('[ +]', $search);
+			$count=0;
+			$bolFoundWord = FALSE;
+			$select= "SELECT * FROM customer_faq WHERE ";
+			foreach($splitted as $word){
+				if($count != "0"&&strlen($word)>="2"){
+					$select.= " AND ";
+				}
+				if(strlen($word)>="2"){
+					$bolFoundWord = TRUE;
+					$select.="customer_faq_subject LIKE \"%$word%\" OR customer_faq_contents LIKE \"%$word%\"";
+					$count++;
+				}
+			}
+			// By default we show all results if the search term is less then 2 chars.
+			if(!$bolFoundWord)
+			{
+				$select.="customer_faq_subject LIKE \"%\" OR customer_faq_contents LIKE \"%\"";
+			}
 
+			// This portion of the code exeutes the query fetching an array..
+			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+			$strCustomerFAQ = $dbConnection->fetch("$select",$array=true);
+
+			// Return an array with results to our page.
+			DBO()->Search->Results = $strCustomerFAQ;
+		}
+		
 		$this->LoadPage('faq');
 
 		return TRUE;	 	

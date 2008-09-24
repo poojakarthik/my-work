@@ -71,15 +71,66 @@
 	 
 	function Render()
 	{
-		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>
-		<div class='customer-standard-table-title-style-confirm-details'>Important Information</div>
+		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
+		echo "<form method=\"GET\" action=\"./flex.php/Console/FAQ/\">";
+
+		echo "
+		<div class='customer-standard-table-title-style-confirm-details'>Search FAQ Database</div>
 		<div class='GroupedContent'>
-		<TABLE class=\"customer-standard-table-style\">
-		<TR>
-			<TD>FAQ</TD>
-		</TR>
-		</TABLE>
+		<table class=\"customer-standard-table-style\">
+		<tr>
+			<td><input type=\"text\" name=\"s\" value=\"$_GET[s]\" size=\"45\"> <INPUT TYPE=\"reset\"> <INPUT TYPE=\"submit\" VALUE=\"Search\"> [<A HREF=\"./flex.php/Console/FAQ/?s=%\">show all</A>]</td>
+		</tr>
+		</table>
 		</div><br/>";
+
+		if(DBO()->Search->Results->Value)
+		{
+			print "<table width=\"100%\">
+			<tr>
+				<td>Title</td>
+				<td>Last Updated</td>
+				<td>Hits</td>
+			</tr>";
+			foreach(DBO()->Search->Results->Value as $results){
+				foreach($results as $key=>$val){
+					$$key=$val;
+				}
+				/* 
+					After the above loop, available fields are:
+					$customer_faq_id
+					$customer_faq_subject
+					$customer_faq_contents
+					$customer_faq_time_added
+					$customer_faq_time_updated
+					$customer_faq_download
+					$customer_faq_group
+					$customer_faq_hits
+				*/
+				echo "
+				<tr>
+					<td><A HREF=\"javascript:view_faq($customer_faq_id)\">$customer_faq_subject</A></td>
+					<td>$customer_faq_time_updated</td>
+					<td>$customer_faq_hits</td>
+				</tr>";
+			}
+			print "</table>";
+		}
+		else
+		{
+			echo "<div class='customer-standard-table-title-style-password'>Top 10 questions</div>
+			<div class='GroupedContent'>
+			<TABLE class=\"customer-standard-table-style\">
+			<TR VALIGN=\"TOP\">
+			<TD width=\"10\"></TD>
+			<TD></TD>
+			</TR>
+			</TABLE>
+			</div>
+			<br/>";
+		}
+
+		echo "</FORM>";
 	}
 }
 
