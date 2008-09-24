@@ -59,6 +59,8 @@ abstract class DB_Database {
 
 			if (!$error_notified && !$cms_meta->ajax) {
 				//$cms_meta->display_message('Sorry, an error occurred while processing this page, which may affect the results you see below. The Service Centre team at Brennan have been notified of this problem and will take action to correct it.', 'error');
+				throw new Exception ("<div style=\"color: red; height: 100; width: 100%; text-align: left; border: 1px solid #dedede;\">$sql: $error</div>");
+
 				$error_notified = true;
 			}
 
@@ -112,6 +114,11 @@ ERROR;
 			$data[] = $row;
 		}
 		return $data;
+	}
+
+	public function fetch_array($sql) {
+		$function = $this->function_prefix . '_fetch_array';
+		return $function($sql);
 	}
 
 	/**

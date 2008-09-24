@@ -84,22 +84,22 @@
 		</table>
 		</div><br/>";
 
-		if(DBO()->Search->Results->Value)
+		if(DBO()->Search->Result->Value)
 		{
-			echo "<div class='customer-standard-table-title-style-password'>Search Results</div>
+			echo "<div class='customer-standard-table-title-style-password'>Search Results: " . DBO()->Total->Search->Value . "</div>
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">
 			<TR VALIGN=\"TOP\">
 			<TD width=\"10\"></TD>
 			<TD>";
-
+			
 			print "<table width=\"100%\">
 			<tr>
 				<td>Title</td>
 				<td>Last Updated</td>
 				<td>Hits</td>
 			</tr>";
-			foreach(DBO()->Search->Results->Value as $results){
+			foreach(DBO()->Search->Result->Value as $results){
 				foreach($results as $key=>$val){
 					$$key=$val;
 				}

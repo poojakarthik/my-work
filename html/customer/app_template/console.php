@@ -228,7 +228,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			$splitted = split ('[ +]', $search);
 			$count=0;
 			$bolFoundWord = FALSE;
-			$select= "SELECT * FROM customer_faq WHERE ";
+			$select= "SELECT SQL_CALC_FOUND_ROWS * FROM customer_faq WHERE ";
 			foreach($splitted as $word){
 				if($count != "0"&&strlen($word)>="2"){
 					$select.= " AND ";
@@ -250,8 +250,14 @@ class AppTemplateConsole extends ApplicationTemplate
 			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 			$strCustomerFAQ = $dbConnection->fetch("$select",$array=true);
 
+			// Count how many results there are, this can be used for pagination.
+			$resCountResults = $dbConnection->execute("SELECT FOUND_ROWS()");
+			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
+
 			// Return an array with results to our page.
-			DBO()->Search->Results = $strCustomerFAQ;
+			DBO()->Search->Result = $strCustomerFAQ;
+			DBO()->Total->Search = "$intTotalResults";
+
 		}
 		else
 		 {
