@@ -18,11 +18,20 @@ class Cli_App_Rollout extends Cli
 			{
 				$this->log("Running in test mode. All changes will be rolled back.", TRUE);
 			}
-
-			// Include the Rollout handler class 
-			$this->requireOnce('lib/rollout/Flex_Rollout.php');
-
-			Flex_Rollout::updateToLatestVersion(NULL, $arrArgs[self::SWITCH_TEST_RUN]);
+			
+			try 
+			{
+				$this->requireOnce('lib/rollout/Flex_Rollout_Incremental.php');
+	
+				Flex_Rollout_Incremental::updateToLatestVersion(NULL, $arrArgs[self::SWITCH_TEST_RUN]);
+			}
+			catch (NonIncrementalRolloutException $ex)
+			{
+				// Include the Rollout handler class 
+				$this->requireOnce('lib/rollout/Flex_Rollout.php');
+	
+				Flex_Rollout::updateToLatestVersion(NULL, $arrArgs[self::SWITCH_TEST_RUN]);
+			}
 
 			$this->log("Finished.");
 			return 0;
