@@ -531,6 +531,51 @@ class Page
 	
 	
 	//------------------------------------------------------------------------//
+	// RenderClientPOPHeader
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderClientPOPHeader()
+	 *
+	 * Renders the header of a page, for the client app (web_app)
+	 *
+	 * Renders the header of a page, for the client app (web_app)
+	 * 
+	 * @method
+	 */
+	function RenderClientPOPHeader()
+	{	
+		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
+		$intLastSlash = strrpos($arrScript[0], "/");
+		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
+		if ($_SERVER['HTTPS'])
+		{
+			$strBaseDir = "https://{$_SERVER['SERVER_NAME']}$strBaseDir";
+		}
+		else
+		{
+			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
+		}
+
+		/* This was used to guarantee the most recent javascript files were retrieved
+		  every time a page was requested */
+		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
+		header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
+		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+		header( 'Cache-Control: post-check=0, pre-check=0', false );
+		header( 'Pragma: no-cache' );
+		
+		echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html><head>
+		<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\">
+		<META HTTP-EQUIV=\"Expires\" CONTENT=\"-1\">
+		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
+		echo "<title>Flex - $this->_strPageName</title>\n";
+		echo "<base href='$strBaseDir'/>\n";
+		$this->RenderCSS();
+		echo "</head>\n";
+		echo "<body>\n";
+	}
+	
+	//------------------------------------------------------------------------//
 	// RenderBreadCrumbMenu
 	//------------------------------------------------------------------------//
 	/**
