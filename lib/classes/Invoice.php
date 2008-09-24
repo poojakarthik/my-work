@@ -183,14 +183,14 @@ class Invoice
 			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
 			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
-			$intPeriodStart		= $arrUsageDetails['intPeriodStart'];
-			$intPeriodEnd		= $arrUsageDetails['intPeriodEnd'];
 			
 			$fltCDRCappedTotal		= $arrDetails['fltTaxExemptCappedCharge'] + $arrDetails['fltTaxableCappedCharge'];
 			$fltTaxableCappedCharge	= $arrDetails['fltTaxableCappedCharge'];
 			
 			// Determine and add in Plan Credit
-			$fltPlanCredit			= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			$fltPlanCredit	= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
+			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
 			
 			// Determine Usage
@@ -377,8 +377,6 @@ class Invoice
 			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
 			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
-			$intPeriodStart		= $arrUsageDetails['intPeriodStart'];
-			$intPeriodEnd		= $arrUsageDetails['intPeriodEnd'];
 		}
 		//--------------------------------------------------------------------//
 		
@@ -451,6 +449,8 @@ class Invoice
 		{
 			// Determine and add in Plan Credit
 			$fltPlanCredit	= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
+			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);			
 			
 			// Determine Usage
@@ -825,11 +825,9 @@ class Invoice
 		
 		// Return usage data
 		return Array(
-						'MinMonthly'		=> $fltMinimumCharge,
-						'ChargeCap'			=> $fltUsageStart,
-						'UsageCap'			=> $fltUsageLimit,
-						'intPeriodStart'	=> $intPeriodStart,
-						'intPeriodEnd'		=> $intPeriodEnd
+						'MinMonthly'			=> $fltMinimumCharge,
+						'ChargeCap'				=> $fltUsageStart,
+						'UsageCap'				=> $fltUsageLimit,
 					);
 	}
 	
