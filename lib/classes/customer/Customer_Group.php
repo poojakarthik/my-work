@@ -39,8 +39,6 @@ class Customer_Group
 	private $customerServiceContactName		= NULL;
 	private $businessPayableName			= NULL;
 	private $businessPayableAddress			= NULL;
-	private $businessFriendlyName			= NULL;
-	private $businessFriendlyNamePossessive	= NULL;
 	private $creditCardPaymentPhone			= NULL;
 	private $faultsPhone					= NULL;
 	
@@ -148,8 +146,6 @@ class Customer_Group
 						"customer_service_contact_name",
 						"business_payable_name",
 						"business_payable_address",
-						"business_friendly_name",
-						"business_friendly_name_possessive",
 						"credit_card_payment_phone",
 						"faults_phone"
 					);
