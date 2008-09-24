@@ -2,6 +2,7 @@
 
 abstract class Flex_Rollout_Version
 {
+	const NEW_SYSTEM_CUTOVER = 60;
 
 	public function getInstance($className)
 	{
@@ -105,6 +106,26 @@ abstract class Flex_Rollout_Version
 			$ok = FALSE;
 		} while(!is_numeric($response));
 		return floatval($response);
+	}
+
+	/**
+	 * This function can be invoked by the subclass to interact with a user at the command line
+	 * and wait for a yes (TRUE)/no (FALSE) response.
+	 */
+	public function getUserResponseYesNo($message)
+	{
+		$ok = TRUE;
+		do
+		{
+			$msg = "\n".$message . " (enter 'y' for yes or 'n' for no)";
+			if (!$ok)
+			{
+				$msg = "\nInvalid response. Please enter 'y' for yes or 'n' for no." . $msg;
+			}
+			$response = strtolower(trim($this->getUserResponse($msg)));
+			$ok = FALSE;
+		} while(!$response || ($response[0] != 'y' && $response[0] != 'n'));
+		return $response[0] == 'y';
 	}
 }
 ?>

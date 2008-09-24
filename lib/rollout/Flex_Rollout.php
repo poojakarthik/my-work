@@ -11,8 +11,9 @@ require_once('Flex_Rollout_Version.php');
 class Flex_Rollout
 {
 
-	public function updateToLatestVersion($intVersion=NULL, $bolTestOnly=FALSE)
+	public static function updateToLatestVersion($intVersion=NULL, $bolTestOnly=FALSE)
 	{
+		//unset($GLOBALS['**arrDatabase']['cdr']);
 		// Turn on error reporting for all rollout errors
 		@mysqli_report(MYSQLI_REPORT_ALL);
 
@@ -54,6 +55,7 @@ class Flex_Rollout
 			try
 			{
 				@mysqli_report(MYSQLI_REPORT_ERROR);
+				//if ($arrConnectionNames[$i] == FLEX_DATABASE_CONNECTION_CDR) continue;
 				Flex_Data_Model::generateDataModelForDatabase($arrConnectionNames[$i]);
 			}
 			catch (Exception $e)
@@ -61,7 +63,7 @@ class Flex_Rollout
 				$errors[] = "ERROR: Rollout failed to generate new data model for data source '" . $arrConnectionNames[$i] . "'.\nThis must be resolved manually (or by re-running rollout).\n" . $e->getMessage();
 			}
 		}
-		
+
 		// We always want to update the database_constants.php file
 		// Rebuild the database_constants.php file
 		try
@@ -89,12 +91,11 @@ class Flex_Rollout
 			}
 		}
 
-
 		$errors = implode("\n", $errors);
 
 		if ($errors)
 		{
-			throw new Exception($errors);
+			throw new Exception("Errors occurred: ".$errors);
 		}
 
 		$errors = array();
@@ -129,6 +130,10 @@ class Flex_Rollout
 			// Roll out each change in order
 			for($index = 0; $index < $nrVersions; $index++)
 			{
+				if ($versions[$index] >= Flex_Rollout_Version::NEW_SYSTEM_CUTOVER)
+				{
+					break;
+				}
 				$arrVersions[$versions[$index]]->rollout();
 			}
 			$index--;
@@ -203,6 +208,7 @@ class Flex_Rollout
 			try
 			{
 				@mysqli_report(MYSQLI_REPORT_ERROR);
+				//if ($arrConnectionNames[$i] == FLEX_DATABASE_CONNECTION_CDR) continue;
 				Flex_Data_Model::generateDataModelForDatabase($arrConnectionNames[$i]);
 			}
 			catch (Exception $e)
