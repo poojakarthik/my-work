@@ -19,7 +19,8 @@
 	
 	if ($athAuthentication->isAuthenticated ())
 	{
-		header ('Location: console.php'); exit;
+		//header ('Location: console.php'); exit;
+		header ("Location: ../admin/reflex.php/Console/View/"); exit;
 	}
 	
 	if (isset ($_POST ['UserName']) && isset ($_POST ['PassWord']))
@@ -28,7 +29,8 @@
 		if ($athAuthentication->Login ($_POST ['UserName'], $_POST ['PassWord']))
 		{
 			// Foward to Console Interface
-			header ("Location: console.php?PabloSays=1"); exit;
+			//header ("Location: console.php?PabloSays=1"); exit;
+			header ("Location: ../admin/reflex.php/Console/View/"); exit;
 		}
 		
 		// If the UserName and the PassWord fields do not match the informatiom in the database

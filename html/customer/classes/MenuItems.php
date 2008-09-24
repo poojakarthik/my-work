@@ -231,7 +231,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Management Console";
 
-		return $this->GetBaseURL()."../management/index.php";
+		return $this->GetBaseURL()."../admin/index.php";
 	}
 
 	//------------------------------------------------------------------------//

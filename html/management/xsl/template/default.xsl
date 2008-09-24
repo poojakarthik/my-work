@@ -255,6 +255,8 @@
 													</td>
 												</tr>
 											</xsl:if>
+											<!-- This functionality is only available in Frameworks 2 and 3 now -->
+											<!--
 											<tr>
 												<td>
 													<a href="contact_verify.php">
@@ -269,6 +271,7 @@
 													</a>
 												</td>
 											</tr>
+											-->
 											<tr>
 												<td>
 													<a href="../admin/flex.php/Plan/AvailablePlans/">

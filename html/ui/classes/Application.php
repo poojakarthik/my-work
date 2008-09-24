@@ -112,7 +112,6 @@ class Application
 		
 		// Append default options to the Context Menu
 		ContextMenu()->Customer->View_Recent_Customers();
-		ContextMenu()->Customer->Find_Customer_Old();
 		ContextMenu()->Customer->Customer_Search();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
@@ -238,7 +237,6 @@ class Application
 		
 		// Append default options to the Context Menu
 		ContextMenu()->Customer->View_Recent_Customers();
-		ContextMenu()->Customer->Find_Customer_Old();
 		ContextMenu()->Customer->Customer_Search();
 		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))

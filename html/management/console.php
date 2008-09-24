@@ -5,6 +5,8 @@
 	//
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
+
+	header("Location: ../admin/reflex.php/Console/View/");
 	
 	
 	// call application loader

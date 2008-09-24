@@ -118,6 +118,12 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 				$arrSearchType['AllowableConstraintTypes'] = Customer_Search::getAllowableConstraintTypes($intSearchType);
 			}
 			
+			if (AuthenticatedUser()->UserHasPerm(JSON_Handler_Customer_Verification::REQUIRED_PERMISSIONS_TO_OVERRIDE_VERIFICATION))
+			{
+				// The user can override validation
+				$strValidationOverride = "<td>Bypass Verify <input type='checkbox' id='OverrideVerification' name='OverrideVerification'></input></td>";
+			}
+			
 			// Build contents for the popup
 			$strHtml = "
 <div id='PopupPageBody'>
@@ -125,16 +131,17 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 		<form id='CustomerSearchPopupForm'>
 			<table style='width:100%' cellpadding='0' cellspacing='0'>
 				<tr>
-					<td>Search For <select id='SearchType' name='SearchType' ></select></td>
+					<td>Search For <select id='SearchType' name='SearchType'></select></td>
 					<td>By <select id='ConstraintType' name='ConstraintType'></select></td>
 					<td>With <input type='text' id='Constraint' name='Constraint' value='' maxlength='100' ></input></td>
 					<td>Show Archived <input type='checkbox' id='IncludeArchived' name='IncludeArchived'/></td>
+					$strValidationOverride
 					<td align='right'><input type='button' onclick='FlexSearch.submitSearch()' value='Search'></input></td>
 				</tr>
 			</table>
 		</form>
 	</div>
-	<div id='CustomerSearchPopupResultsContainer' class='GroupedContent' style='margin-top:5px'></div>
+	<div id='CustomerSearchPopupResultsContainer' class='GroupedContent' style='margin-top:5px;display:none'></div>
 	<div style='padding-top:3px;height:auto:width:100%'>
 		<input type='button' value='Close' onclick='Vixen.Popup.Close(this)' style='float:right'></input>
 		<div style='clear:both;float:none'></div>
@@ -251,12 +258,13 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 				$strStatus			= htmlspecialchars(GetConstantDescription($objAccount->archived, "account_status"));
 			
 				$strRows .= "
-<tr $strRowClass onclick='FlexCustomerVerification.load(null, $strAccountId)' style='cursor:pointer'>
+<tr $strRowClass onclick='FlexSearch.loadAccount($strAccountId)' style='cursor:pointer'>
 	<td>$strAccountId</td>
 	<td>$strBusinessName</td>
 	<td>$strTradingName</td>
 	<td>$strStatus</td>
 </tr>";
+
 
 				$bolAlt = !$bolAlt;
 			}
@@ -365,14 +373,13 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 				}
 			
 				$strRows .= "
-<tr $strRowClass onclick='FlexCustomerVerification.load({$objContact->id}, null)' style='cursor:pointer'>
+<tr $strRowClass onclick='FlexSearch.loadContact({$objContact->id})' style='cursor:pointer'>
 	<td>$strContactName</td>
 	<td>$strContactStatus</td>
 	<td>$strAccountId</td>
 	<td>$strAccountName</td>
 	<td>$strAccountStatus</td>
 </tr>";
-
 				$bolAlt = !$bolAlt;
 			}
 		}

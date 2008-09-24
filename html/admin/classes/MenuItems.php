@@ -700,7 +700,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Console";
 		$this->strContextMenuLabel = "Console";
-		return self::OLD_FRAMEWORK . "console.php";
+		return self::NEW_FRAMEWORK . "reflex.php/Console/View/";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -786,31 +786,9 @@ class MenuItems
 	 */
 	function CustomerSearch()
 	{
-		$this->strLabel	= "Customer Search";
-		$this->strContextMenuLabel = "Search";
-		return "javascript:FlexSearch.displayPopup()";
-	}
-	
-	
-	//------------------------------------------------------------------------//
-	// CustomerVerification
-	//------------------------------------------------------------------------//
-	/**
-	 * CustomerVerification()
-	 *
-	 * Compiles the Href to be executed when the CustomerVerification functionality is triggered
-	 *
-	 * Compiles the Href to be executed when the CustomerVerification functionality is triggered
-	 * 
-	 * @return	string			Href
-	 *
-	 * @method
-	 */
-	function CustomerVerification()
-	{
+		$this->strLabel	= "Find Customer";
 		$this->strContextMenuLabel = "Find Customer";
-		$this->strLabel = "Customer Verification";
-		return self::NEW_FRAMEWORK . "reflex.php/Customer/Verification";
+		return "javascript:FlexSearch.displayPopup()";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -975,6 +953,28 @@ class MenuItems
 		$this->strContextMenuLabel = "";
 		return self::OLD_FRAMEWORK . "contact_add.php?Account=$intAccountId";
 	}
+	
+	//------------------------------------------------------------------------//
+	// BugList
+	//------------------------------------------------------------------------//
+	/**
+	 * BugList
+	 *
+	 * Compiles the Href to be executed when the BugList functionality is requested
+	 *
+	 * Compiles the Href to be executed when the BugList functionality is requested
+	 * 
+	 * @return	string		Href
+	 *
+	 * @method
+	 */
+	function BugList()
+	{
+		$this->strLabel	= "Bug List";
+		$this->strContextMenuLabel = "Bug List";
+		return self::OLD_FRAMEWORK . "bug_list.php";
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// ChangePaymentMethod

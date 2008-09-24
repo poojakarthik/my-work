@@ -17,7 +17,7 @@ class Flex_Rollout_Version_000060 extends Flex_Rollout_Version
 		// 1:	Add employee_message table
 		$strSQL = "CREATE TABLE employee_message
 					(
-						id BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY COMMENT 'unique id for this message',
+						id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for this message',
 						created_on DATETIME NOT NULL COMMENT 'timestamp for when this record was created',
 						effective_on DATETIME NOT NULL COMMENT 'time at which this message will come into effect',
 						message LONGTEXT NOT NULL COMMENT 'the message'

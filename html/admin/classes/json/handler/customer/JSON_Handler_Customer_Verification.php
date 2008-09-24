@@ -2,18 +2,110 @@
 
 class JSON_Handler_Customer_Verification extends JSON_Handler
 {
+	const REQUIRED_ACCOUNT_SCORE = 10;
+	const REQUIRED_CONTACT_SCORE = 10;
+
+	const REQUIRED_PERMISSIONS_TO_OVERRIDE_VERIFICATION = PERMISSION_OPERATOR;
+	const PAGE_CONTACT = "contact";
+	const PAGE_ACCOUNT = "account";
+
+	// The Customer Verification script
+	// It verifies the customer's details, and returns the link to the page that the user wants
+	public function verify($intContactId, $intAccountId, $objVerifiedContactProperties=NULL, $objVerifiedAccountProperties=NULL, $strRequestedPage=NULL, $bolOverrideVerification=FALSE)
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		
+		try
+		{
+			if ($intContactId == NULL && $intAccountId == NULL)
+			{
+				throw new Exception("Neither Contact Id nor Account Id have been specified");
+			}
+			
+			if ($intAccountId != NULL && $intContactId != NULL)
+			{
+				// Both the AccountId and ContactId have been specified
+				// Check that the Contact belongs to the Account
+				$objAccount = Account::getForId($intAccountId);
+				$arrAccountContacts = $objAccount->getContacts();
+				if (!array_key_exists($intContactId, $arrAccountContacts))
+				{
+					throw new Exception("Contact with id: $intContactId can not be associated with Account with id: $intAccountId, ". $objAccount->getName());
+				}
+			}
+			
+			// Verify details
+			if ($bolOverrideVerification == FALSE)
+			{
+				//TODO! It is assumed that the customer has been verified on the client side.  They should now be verified on the Server side, so as to protect against hacks
+			}
+			else
+			{
+				// The user wants to override verification
+				// Make sure they have permission to
+				if (!AuthenticatedUser()->UserHasPerm(self::REQUIRED_PERMISSIONS_TO_OVERRIDE_VERIFICATION))
+				{
+					throw new Exception("The user does not have the necessary privileges to override customer verification");
+				}
+			}
+			
+			// Work out where to redirect the user
+			switch ($strRequestedPage)
+			{
+				case (self::PAGE_CONTACT):
+					$strLocation = Href()->ViewContact($intContactId);
+					break;
+				case (self::PAGE_ACCOUNT):
+					$strLocation = Href()->AccountOverview($intAccountId);
+					break;
+				default:
+					if ($intAccountId != NULL)
+					{
+						$strLocation = Href()->AccountOverview($intAccountId);
+					}
+					elseif ($intContactId != NULL)
+					{
+						$strLocation = Href()->ViewContact($intContactId);
+					}
+					else
+					{
+						// This scenario should never happen
+						throw new Exception("Invalid page to redirect to: $strRequestedPage");
+					}
+			}
+
+			// Record the Customer Verification in the EmployeeAccountAudit table
+			TransactionStart();
+			$objUser = Employee::getForId(AuthenticatedUser()->GetUserId());
+			$objUser->recordCustomerInAccountHistory($intAccountId, $intContactId);
+			TransactionCommit();
+			
+			return array(	"Success"			=> TRUE,
+							"PageToRelocateTo"	=> $strLocation
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(	"Success"		=> FALSE,
+							"ErrorMessage"	=> $e->getMessage()
+						);
+		}
+	}
+
+	
 	//------------------------------------------------------------------------//
-	// quickSearch
+	// buildPopup
 	//------------------------------------------------------------------------//
 	/**
-	 * quickSearch()
+	 * buildPopup()
 	 *
-	 * Handles ajax request from client, to search for Accounts/Contacts/Services
+	 * Handles ajax request from client, to build the VerifyCustomer popup
 	 * 
-	 * Handles ajax request from client, to search for Accounts/Contacts/Services
+	 * Handles ajax request from client, to build the VerifyCustomer popup
 	 *
 	 * @param	int		$intContactId
-	 * @param	int		$intAccountId				
+	 * @param	int		$intAccountId
 	 * 
 	 * @return	array		["Success"]				TRUE if search was executed successfully, else FALSE
 	 * 						["ErrorMessage"]		Declares what went wrong (only defined when Success == FALSE)
@@ -54,8 +146,8 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 					{
 						// There is only one account that they can view, have it be the default one
 						reset($arrAccounts);
-						$objAccount = current($arrAccounts);
-						$intAccountId = $objAccount->id;
+						$objAccount		= current($arrAccounts);
+						$intAccountId	= $objAccount->id;
 					}
 					else
 					{
@@ -111,11 +203,43 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 			$arrCustomer['Contacts'] = array();
 			foreach ($arrContacts as $objContact)
 			{
+				$intDOB = strtotime($objContact->dob);
+				if ($objContact->dob == "0000-00-00" || $intDOB === FALSE)
+				{
+					// The Address is invalid
+					$arrDOB = NULL;
+				}
+				else
+				{
+					// The contact has a valid DOB
+					$arrDOB = array("Sha1"		=> sha1(date("j/n/Y", $intDOB)),
+									"Weight"	=> 5
+									);
+				}
+				
+				if (EmailAddressValid($objContact->email))
+				{
+					// The contact has a valid Email Address
+					$arrEmail = array(	"Sha1"		=> sha1(strtolower($objContact->email)),
+										"Weight"	=> 5
+										);
+				}
+				else
+				{
+					$arrEmail = NULL;
+				}
+				
+				// All contacts have a password
+				$arrPassword = array(	"Sha1"		=> $objContact->password,
+										"Weight"	=> 10
+									);
+				
 				$arrCustomer['Contacts'][$objContact->id] = array(	"Id"			=> $objContact->id,
 																	"Name"			=> htmlspecialchars($objContact->getName()),
-																	"Sha1DOB"		=> ($objContact->dob == "0000-00-00")? NULL : sha1(date("d/m/Y", strtotime($objContact->dob))),
-																	"Sha1Email"		=> (strlen($objContact->email) == 0)? NULL : sha1($objContact->email),
-																	"Sha1Password"	=> $objContact->password
+																	"Verifiable"	=> array(	"DOB"		=> $arrDOB,
+																								"Email"		=> $arrEmail,
+																								"Password"	=> $arrPassword
+																							)
 																);
 			}
 			
@@ -126,12 +250,41 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 				$strAddress = str_replace("\n\n", "\n", $strAddress);
 				$strAddress = str_replace("\n", "<br />", $strAddress);
 				
+				// Every account has an address
+				$arrAddress = array("Value"		=> $strAddress,
+									"Weight"	=> 5
+									);
+				if (strlen($objAccount->abn) != 0)
+				{
+					$arrABN = array("Sha1"		=> sha1(str_replace(" ", "", $objAccount->abn)),
+									"Weight"	=> 5
+									);
+				}
+				else
+				{
+					$arrABN = NULL;
+				}
+				
+				if (strlen($objAccount->acn) != 0)
+				{
+					$arrACN = array("Sha1"		=> sha1(str_replace(" ", "", $objAccount->acn)),
+									"Weight"	=> 5
+									);
+				}
+				else
+				{
+					$arrACN = NULL;
+				}
+				
+				
 				$arrCustomer['Accounts'][$objAccount->id] = array(	"Id"			=> $objAccount->id,
 																	"Name"			=> htmlspecialchars($objAccount->getName()),
 																	"BusinessName"	=> (strlen($objAccount->businessName) == 0)? NULL : htmlspecialchars($objAccount->businessName),
 																	"TradingName"	=> (strlen($objAccount->tradingName) == 0)? NULL : htmlspecialchars($objAccount->tradingName),
-																	"Address"		=> $strAddress,
-																	"Sha1ABN"		=> (strlen($objAccount->abn) == 0)? NULL : sha1(str_replace(" ", "", $objAccount->abn))
+																	"Verifiable"	=> array(	"Address"	=> $arrAddress,
+																								"ABN"		=> $arrABN,
+																								"ACN"		=> $arrACN
+																							)
 																);
 			}
 			
@@ -140,9 +293,11 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 			
 			
 			
-			return array(	"Success"		=> TRUE,
-							"Customer"		=> $arrCustomer,
-							"PopupContent"	=> $strPopupContent
+			return array(	"Success"						=> TRUE,
+							"Customer"						=> $arrCustomer,
+							"RequiredScoreToVerifyAccount"	=> self::REQUIRED_ACCOUNT_SCORE,
+							"RequiredScoreToVerifyContact"	=> self::REQUIRED_CONTACT_SCORE,
+							"PopupContent"					=> $strPopupContent
 						);
 		}
 		catch (Exception $e)
@@ -159,7 +314,7 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 		if (isset($arrCustomer['FixedContact']) && $arrCustomer['FixedContact'] == TRUE)
 		{
 			// The Contact is known, and cannot be changed
-			$strContactControl = "<span id='CustomerVerificationPopup_Contact' name='CustomerVerificationPopup_Contact'>". htmlspecialchars($arrCustomer['Contacts'][$arrCustomer['SelectedContact']]['Name']) ."</span>";
+			$strContactControl = "<span id='CustomerVerificationPopup_Contact' name='CustomerVerificationPopup_Contact'>{$arrCustomer['Contacts'][$arrCustomer['SelectedContact']]['Name']}</span>";
 		}
 		else
 		{
@@ -167,7 +322,7 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 			$strOptions = "<option value='0' >&nbsp;</option>";
 			foreach ($arrCustomer['Contacts'] as $intId=>$arrContact)
 			{
-				$strOptions .= "<option value='$intId'>". htmlspecialchars($arrContact['Name']) ."</option>";
+				$strOptions .= "<option value='$intId'>{$arrContact['Name']}</option>";
 			}
 			
 			$strContactControl = "<select id='CustomerVerificationPopup_Contact' name='CustomerVerificationPopup_Contact' style='width:100%'>$strOptions</select>";	
@@ -176,7 +331,7 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 		if (isset($arrCustomer['FixedAccount']) && $arrCustomer['FixedAccount'] == TRUE)
 		{
 			// The Account is known, and cannot be changed
-			$strAccountControl = "<span id='CustomerVerificationPopup_Account' name='CustomerVerificationPopup_Account'>{$arrCustomer['Accounts'][$arrCustomer['SelectedAccount']]['Id']} - ". htmlspecialchars($arrCustomer['Accounts'][$arrCustomer['SelectedAccount']]['Name']) ."</span>";
+			$strAccountControl = "<span id='CustomerVerificationPopup_Account' name='CustomerVerificationPopup_Account'>{$arrCustomer['Accounts'][$arrCustomer['SelectedAccount']]['Id']} - {$arrCustomer['Accounts'][$arrCustomer['SelectedAccount']]['Name']}</span>";
 		}
 		else
 		{
@@ -184,23 +339,55 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 			$strOptions = "<option value='0'>&nbsp;</option";
 			foreach ($arrCustomer['Accounts'] as $intId=>$arrAccount)
 			{
-				$strOptions .= "<option value='$intId'>{$arrAccount['Id']} - ". htmlspecialchars($arrAccount['Name']) ."</option>";
+				$strOptions .= "<option value='$intId'>{$arrAccount['Id']} - {$arrAccount['Name']}</option>";
 			}
 			
 			$strAccountControl = "<select id='CustomerVerificationPopup_Account' name='CustomerVerificationPopup_Account' style='width:100%'>$strOptions</select>";
 		}
 		
+		// Build Date combo boxes
+		$strOptions = "<option value='0'>&nbsp</option>";
+		for ($i = 1; $i <= 31; $i++)
+		{
+			$strOptions .= "<option value='$i'>$i</option>";
+		}
+		$strDaysCombo = "<select id='CustomerVerificationPopup_ContactDOBDay' name='CustomerVerificationPopup_ContactDOBDay'>$strOptions</select>";
+		
+		$strMonthsCombo = "
+<select id='CustomerVerificationPopup_ContactDOBMonth' name='CustomerVerificationPopup_ContactDOBMonth'>
+	<option value='0'>&nbsp;</option>
+	<option value='1'>01 - Jan</option>
+	<option value='2'>02 - Feb</option>
+	<option value='3'>03 - Mar</option>
+	<option value='4'>04 - Apr</option>
+	<option value='5'>05 - May</option>
+	<option value='6'>06 - Jun</option>
+	<option value='7'>07 - Jul</option>
+	<option value='8'>08 - Aug</option>
+	<option value='9'>09 - Sep</option>
+	<option value='10'>10 - Oct</option>
+	<option value='11'>11 - Nov</option>
+	<option value='12'>12 - Dec</option>
+</select>";
+		
+		$strOptions = "<option value='0'>&nbsp;</option>\n";
+		$intMaxYear = intval(date("Y")) - 15;
+		for ($i = $intMaxYear; $i > $intMaxYear -90; $i--)
+		{
+			$strOptions .= "<option value='$i'>$i</option>\n";
+		}
+		$strYearsCombo = "<select id='CustomerVerificationPopup_ContactDOBYear' name='CustomerVerificationPopup_ContactDOBYear'>$strOptions</select>";
+		
 		$strHtml = "
 <div id='PopupPageBody'>
 	<form id='CustomerVerificationPopup_Form' name='CustomerVerificationPopup_Form'>
 		<div id='CustomerVerificationPopup_VerificationStatus' name='CustomerVerificationPopup_VerificationStatus' class='MsgNotice'>
-			INSERT CUSTOMER VERIFICATION STATUS HERE
 		</div>
 		<div class='GroupedContent'>
 			<table class='form-data'>
 				<tr>
 					<td class='title' style='width:30%'>Contact</td>
-					<td >$strContactControl</td>
+					<td>$strContactControl</td>
 				</tr>
 				<tr>
 					<td class='title'>Account</td>
@@ -208,10 +395,10 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 				</tr>
 			</table>
 		</div>
-		<div id='CustomerVerificationPopup_AccountDetailsContainer' name='CustomerVerificationPopup_AccountDetailsContainer' class='GroupedContent' style='margin-top:5px'>
+		<div id='CustomerVerificationPopup_AccountDetailsContainer' name='CustomerVerificationPopup_AccountDetailsContainer' class='GroupedContent' style='margin-top:5px;display:none'>
 			<table class='form-data'>
-				<tr>
-					<td class='title' style='width:30%' id='CustomerVerificationPopup_AccountBusinessNameContainer' name='CustomerVerificationPopup_AccountBusinessNameContainer'>Business Name</td>
+				<tr id='CustomerVerificationPopup_AccountBusinessNameContainer' name='CustomerVerificationPopup_AccountBusinessNameContainer'>
+					<td class='title' style='width:30%'>Business Name</td>
 					<td>
 						<span id='CustomerVerificationPopup_AccountBusinessName' name='CustomerVerificationPopup_AccountBusinessName'>INSERT BUSINESS NAME HERE</span>
 					</td>
@@ -240,9 +427,15 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 						<input type='text' id='CustomerVerificationPopup_AccountABN' name='CustomerVerificationPopup_AccountABN' maxlength='11'></input>
 					</td>
 				</tr>
+				<tr id='CustomerVerificationPopup_AccountACNContainer' name='CustomerVerificationPopup_AccountACNContainer'>
+					<td class='title'>ACN</td>
+					<td>
+						<input type='text' id='CustomerVerificationPopup_AccountACN' name='CustomerVerificationPopup_AccountACN' maxlength='9'></input>
+					</td>
+				</tr>
 			</table>
 		</div>
-		<div id='CustomerVerificationPopup_ContactDetailsContainer' name='CustomerVerificationPopup_ContactDetailsContainer' class='GroupedContent' style='margin-top:5px'>
+		<div id='CustomerVerificationPopup_ContactDetailsContainer' name='CustomerVerificationPopup_ContactDetailsContainer' class='GroupedContent' style='margin-top:5px;display:none'>
 			<table class='form-data'>
 				<tr>
 					<td class='title' style='width:30%'>Password</td>
@@ -250,25 +443,27 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 						<input type='text' id='CustomerVerificationPopup_ContactPassword' name='CustomerVerificationPopup_ContactPassword' maxlength='255'></input>
 					</td>
 				</tr>
-				<tr id='CustomerVerificationPopup_ContactDOBContainer' name='CustomerVerificationPopup_ContactDOBContainer'>
-					<td class='title'>Date Of Birth</td>
-					<td>
-						<input type='text' id='CustomerVerificationPopup_ContactDOB' name='CustomerVerificationPopup_ContactDOB' maxlength='10'></input>
-					</td>
-				</tr>
 				<tr id='CustomerVerificationPopup_ContactEmailContainer' name='CustomerVerificationPopup_ContactEmailContainer'>
-					<td class='title'>Email Address</td>
+					<td class='title' style='width:30%'>Email Address</td>
 					<td>
 						<input type='text' id='CustomerVerificationPopup_ContactEmail' name='CustomerVerificationPopup_ContactEmail' maxlength='255'></input>
+					</td>
+				</tr>
+				<tr id='CustomerVerificationPopup_ContactDOBContainer' name='CustomerVerificationPopup_ContactDOBContainer'>
+					<td class='title' style='width:30%'>Date Of Birth</td>
+					<td style='width:70%'>
+						$strDaysCombo / $strMonthsCombo / $strYearsCombo
 					</td>
 				</tr>
 			</table>
 		</div>
 	</form>
 	<div style='padding-top:3px;height:auto:width:100%'>
-		<input type='button' value='Close' onclick='Vixen.Popup.Close(this)' style='float:right;margin-left:3px'></input>
-		<input type='button' id='CustomerVerificationPopup_AccountButton' name='CustomerVerificationPopup_AccountButton' value='Account Overview' onclick='FlexCustomerVerification.ViewAccount()' style='float:right;margin-left:3px'></input>
-		<input type='button' id='CustomerVerificationPopup_ContactButton' name='CustomerVerificationPopup_ContactButton' value='Contact Details' onclick='FlexCustomerVerification.ViewContact()' style='float:right;margin-left:3px'></input>
+		<div style='float:right'>
+			<input type='button' id='CustomerVerificationPopup_ContactButton' name='CustomerVerificationPopup_ContactButton' value='Contact Details' onclick='FlexCustomerVerification.viewContact()' style='margin-left:3px'></input>
+			<input type='button' id='CustomerVerificationPopup_AccountButton' name='CustomerVerificationPopup_AccountButton' value='Account Overview' onclick='FlexCustomerVerification.viewAccount()' style='margin-left:3px'></input>
+			<input type='button' value='Close' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>
+		</div>
 		<div style='clear:both;float:none'></div>
 	</div>
 </div>

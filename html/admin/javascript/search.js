@@ -1,4 +1,9 @@
 var FlexSearch = {
+	strOverrideCookieName	: 'overrideCustomerVerification',
+	intOverrideCookieLife	: 30,
+	strContactLink			: null,
+	strAccountLink			: null,
+	
 	quickSearchOnEnter : function(event)
 	{
 		if (event && event.keyCode && event.keyCode == 13)
@@ -72,14 +77,7 @@ var FlexSearch = {
 		}
 		else
 		{
-			if (response.ErrorMessage != undefined)
-			{
-				$Alert("Search failed<br />" + response.ErrorMessage);
-			}
-			else
-			{
-				$Alert("Search failed");
-			}
+			$Alert("Search failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
 		}
 	},
 	
@@ -108,7 +106,8 @@ var FlexSearch = {
 		{
 			// The popup is already displayed.
 			// stick the results in it
-			this.popupControls.ResultsContainer.innerHTML = strResultsHtml;
+			this.popupControls.ResultsContainer.innerHTML		= strResultsHtml;
+			this.popupControls.ResultsContainer.style.display	= "block";
 			
 			// Update the controls to reflect the search
 			this.popupControls.SearchType.value			= intSearchType;
@@ -151,6 +150,11 @@ var FlexSearch = {
 		if (response.Success)
 		{
 			this.searchTypes = response.SearchTypes;
+			
+			// These links will be used if the user overrides
+			this.strContactLink = response.ContactLink;
+			this.strAccountLink = response.AccountLink;
+			
 			Vixen.Popup.Create("CustomerSearch", response.PopupContent, "extralarge", "centre", "modal", "Search");
 			
 			// Initialise the popup
@@ -164,6 +168,16 @@ var FlexSearch = {
 					this.popupControls[elmControl.getAttribute("name")] = elmControl;
 				}
 			}
+			
+			if (this.popupControls.OverrideVerification)
+			{
+				var strOverrideVerification = Flex.cookie.read(this.strOverrideCookieName);
+				var bolOverrideVerification = (strOverrideVerification == 'true')? true : false;
+				
+				this.popupControls.OverrideVerification.checked = bolOverrideVerification;
+				Event.startObserving(this.popupControls.OverrideVerification, "change", this.overrideVerificationOnChange.bind(this), true);
+			}
+			
 			
 			this.popupControls.ResultsContainer = $ID("CustomerSearchPopupResultsContainer");
 			
@@ -183,6 +197,7 @@ var FlexSearch = {
 			{
 				// There are results to be displayed
 				this.popupControls.ResultsContainer.innerHTML	= this.cachedResults.resultsHtml;
+				this.popupControls.ResultsContainer.style.display = "block";
 				this.popupControls.SearchType.value				= this.cachedResults.searchType;
 				this.searchTypeComboOnChange();
 				this.popupControls.ConstraintType.value			= (this.cachedResults.constraintType == null)? 0 : this.cachedResults.constraintType;
@@ -199,14 +214,7 @@ var FlexSearch = {
 		}
 		else
 		{
-			if (response.ErrorMessage != undefined)
-			{
-				$Alert("Failed to open Customer Search popup<br />" + response.ErrorMessage);
-			}
-			else
-			{
-				$Alert("Failed to open Customer Search popup");
-			}
+			$Alert("Failed to open Customer Search popup" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
 		}
 
 	},
@@ -248,6 +256,11 @@ var FlexSearch = {
 		this.popupControls.SearchType.setAttribute("currentSearchType", intSearchType);
 	},
 	
+	overrideVerificationOnChange : function(objEvent)
+	{
+		Flex.cookie.create(this.strOverrideCookieName, this.popupControls.OverrideVerification.checked ? 'true' : 'false', this.intOverrideCookieLife);
+	},
+	
 	// This is used to retrieve a new page of results, when a result set is paginated
 	getResults : function(intOffset)
 	{
@@ -276,6 +289,35 @@ var FlexSearch = {
 			this.customerSearch(parseInt(this.popupControls.SearchType.value), strConstraint, intConstraintType, this.popupControls.IncludeArchived.checked, 0, true);
 		}
 
+	},
+	
+	loadAccount : function(intAccountId)
+	{
+		if (this.popupControls.OverrideVerification != undefined && this.popupControls.OverrideVerification.checked)
+		{
+			// Don't bother verifying (this overrides verification, but records the customer in the EmployeeAccountAudit)
+			FlexCustomerVerification.verifyOnServer(null, intAccountId, null, null, FlexCustomerVerification.PAGE_ACCOUNT, true);
+		}
+		else
+		{
+			// Load the Verification popup
+			FlexCustomerVerification.load(null, intAccountId);
+		}
+	},
+	
+	loadContact : function(intContactId)
+	{
+		if (this.popupControls.OverrideVerification != undefined && this.popupControls.OverrideVerification.checked)
+		{
+			// Don't bother verifying (this overrides verification, but records the customer in the EmployeeAccountAudit)
+			FlexCustomerVerification.verifyOnServer(intContactId, null, null, null, FlexCustomerVerification.PAGE_CONTACT, true);
+		}
+		else
+		{
+			// Load the Verification popup
+			FlexCustomerVerification.load(intContactId, null);
+		}
 	}
+	
 	
 };
