@@ -121,7 +121,7 @@ class Flex_Rollout
 			catch (Exception $e)
 			{
 				$dbName = $arrConnectionNames[$i];
-				throw new Exception("Rollout failed to $step database ''$dbName' prior to starting: " . $e->getMessage());
+				throw new Exception("Rollout failed to $step database '$dbName' prior to starting: " . $e->getMessage());
 			}
 		}
 
@@ -140,7 +140,7 @@ class Flex_Rollout
 
 			// Using the default database connection, update the database version number
 			$arrValues = array(
-				'version' => max($versions),
+				'version' => $versions[$index],
 				'rolled_out_date' => date('Y-m-d H:i:s')
 			);
 			$insVersion = new StatementInsert($strTables);
