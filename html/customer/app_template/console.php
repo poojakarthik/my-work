@@ -244,6 +244,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			{
 				$select.="customer_faq_subject LIKE \"%\" OR customer_faq_contents LIKE \"%\"";
 			}
+			$select.=" ORDER BY customer_faq_subject";
 
 			// This portion of the code exeutes the query fetching an array..
 			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
@@ -252,7 +253,17 @@ class AppTemplateConsole extends ApplicationTemplate
 			// Return an array with results to our page.
 			DBO()->Search->Results = $strCustomerFAQ;
 		}
-		
+		else
+		 {
+			// Query for the top 10
+			$select= "SELECT * FROM customer_faq ORDER BY customer_faq_hits DESC LIMIT 10";
+			// This portion of the code exeutes the query fetching an array..
+			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+			$strCustomerTop10 = $dbConnection->fetch("$select",$array=true);
+
+			// Return an array with results to our page.
+			DBO()->Search->Topten = $strCustomerTop10;
+		}
 		$this->LoadPage('faq');
 
 		return TRUE;	 	

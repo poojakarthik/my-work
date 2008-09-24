@@ -79,13 +79,20 @@
 		<div class='GroupedContent'>
 		<table class=\"customer-standard-table-style\">
 		<tr>
-			<td><input type=\"text\" name=\"s\" value=\"$_GET[s]\" size=\"45\"> <INPUT TYPE=\"reset\"> <INPUT TYPE=\"submit\" VALUE=\"Search\"> [<A HREF=\"./flex.php/Console/FAQ/?s=%\">show all</A>]</td>
+			<td><input type=\"text\" name=\"s\" value=\"$_GET[s]\" size=\"45\"> <INPUT TYPE=\"reset\"> <INPUT TYPE=\"submit\" VALUE=\"Search\"> [<A HREF=\"./flex.php/Console/FAQ/?s=\">show all</A>]</td>
 		</tr>
 		</table>
 		</div><br/>";
 
 		if(DBO()->Search->Results->Value)
 		{
+			echo "<div class='customer-standard-table-title-style-password'>Search Results</div>
+			<div class='GroupedContent'>
+			<TABLE class=\"customer-standard-table-style\">
+			<TR VALIGN=\"TOP\">
+			<TD width=\"10\"></TD>
+			<TD>";
+
 			print "<table width=\"100%\">
 			<tr>
 				<td>Title</td>
@@ -115,6 +122,13 @@
 				</tr>";
 			}
 			print "</table>";
+
+			print "
+			</TD>
+			</TR>
+			</TABLE>
+			</div>
+			<br/>";
 		}
 		else
 		{
@@ -123,7 +137,30 @@
 			<TABLE class=\"customer-standard-table-style\">
 			<TR VALIGN=\"TOP\">
 			<TD width=\"10\"></TD>
-			<TD></TD>
+			<TD>";
+			
+			
+			print "<table width=\"100%\">
+			<tr>
+				<td>Title</td>
+				<td>Last Updated</td>
+				<td>Hits</td>
+			</tr>";
+			foreach(DBO()->Search->Topten->Value as $results){
+				foreach($results as $key=>$val){
+					$$key=$val;
+				}
+				echo "
+				<tr>
+					<td><A HREF=\"javascript:view_faq($customer_faq_id)\">$customer_faq_subject</A></td>
+					<td>$customer_faq_time_updated</td>
+					<td>$customer_faq_hits</td>
+				</tr>";
+			}
+			print "</table>";
+
+			print "
+			</TD>
 			</TR>
 			</TABLE>
 			</div>
