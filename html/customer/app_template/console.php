@@ -221,42 +221,110 @@ class AppTemplateConsole extends ApplicationTemplate
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
 		BreadCrumb()->SetCurrentPage("Customer FAQ");
 		
-		if(array_key_exists('s',$_GET))
+
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+
+		if(array_key_exists('view',$_GET))
 		{
+			$intView = 0;
+			$arrFAQResults = NULL;
+			if(is_numeric($_GET['view']))
+			{
+				$intView = $_GET['view'];
+				$strSelect= "SELECT * FROM customer_faq WHERE customer_faq_id = \"$intView\"";
+				$arrFAQResults = $dbConnection->fetchone("$strSelect");
+			}
+
+			// Return an array with results to our page.
+			DBO()->FAQ->Result = $arrFAQResults;
+			$this->LoadPage('faq_view');
+			return TRUE;	
+		}
+		else if(array_key_exists('s',$_GET))
+		{
+			if(!isset($_GET['start']) || !is_numeric($_GET['start']))
+			{
+				$_GET['start']="0";
+			}
+
 			// This portion of the code builds the search query.
-			$search = $_GET['s'];
-			$splitted = split ('[ +]', $search);
-			$count=0;
+			$intStart = $_GET['start'];
+			$intResultsPerPage = "10";
+			$mixSearch = $_GET['s'];
+			$arrSplitted = split ('[ +]', $mixSearch);
+			$intCount=0;
 			$bolFoundWord = FALSE;
-			$select= "SELECT SQL_CALC_FOUND_ROWS * FROM customer_faq WHERE ";
-			foreach($splitted as $word){
-				if($count != "0"&&strlen($word)>="2"){
-					$select.= " AND ";
+			$mixSelect= "SELECT SQL_CALC_FOUND_ROWS * FROM customer_faq WHERE ";
+			foreach($arrSplitted as $mixWord){
+				if($intCount != "0"&&strlen($mixWord)>="2"){
+					$mixSelect.= " AND ";
 				}
-				if(strlen($word)>="2"){
+				if(strlen($mixWord)>="2"){
 					$bolFoundWord = TRUE;
-					$select.="customer_faq_subject LIKE \"%$word%\" OR customer_faq_contents LIKE \"%$word%\"";
-					$count++;
+					$mixSelect.="customer_faq_subject LIKE \"%$mixWord%\" OR customer_faq_contents LIKE \"%$mixWord%\"";
+					$intCount++;
 				}
 			}
 			// By default we show all results if the search term is less then 2 chars.
 			if(!$bolFoundWord)
 			{
-				$select.="customer_faq_subject LIKE \"%\" OR customer_faq_contents LIKE \"%\"";
+				$mixSelect.="customer_faq_subject LIKE \"%\" OR customer_faq_contents LIKE \"%\"";
 			}
-			$select.=" ORDER BY customer_faq_subject";
+			$mixSelect.=" ORDER BY customer_faq_subject LIMIT $intStart,$intResultsPerPage";
 
 			// This portion of the code exeutes the query fetching an array..
-			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-			$strCustomerFAQ = $dbConnection->fetch("$select",$array=true);
+			$strCustomerFAQ = $dbConnection->fetch("$mixSelect",$array=true);
 
 			// Count how many results there are, this can be used for pagination.
 			$resCountResults = $dbConnection->execute("SELECT FOUND_ROWS()");
 			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
 
+			$intPrevious = $intStart-$intResultsPerPage;
+			$intNext = $intStart+$intResultsPerPage;
+			$intCurrent = $intStart;
+
 			// Return an array with results to our page.
 			DBO()->Search->Result = $strCustomerFAQ;
 			DBO()->Total->Search = "$intTotalResults";
+			DBO()->Total->Start = "$intStart";
+			DBO()->Total->NextPage = $intNext;
+
+			$intPages = $intTotalResults/$intResultsPerPage;
+			if($intPages>1)
+			{
+				$mixLinksDisplay .= "Result Page: ";
+				$cnt=1;
+				if($intStart>=$intResultsPerPage)
+				{
+
+					$mixLinksDisplay .= "<a href='./flex.php/Console/FAQ/?s=$mixSearch&start=$intPrevious' class='next'>Previous</A>&nbsp;&nbsp; ";
+
+				}
+				for($i=0; $i<$intPages; $i++){
+
+					$intCurrentPageNumber = $i*$intResultsPerPage;
+					$intBackFourPages = $start-$intResultsPerPage*7;
+					$intForwardFourPages = $start+$intResultsPerPage*7;
+
+					if($intCurrentPageNumber<$intForwardFourPages&&$intCurrentPageNumber>$intBackFourPages){
+						if($intCurrentPageNumber==$intStart){
+							$mixLinksDisplay .= "$cnt \n";
+						}
+						else{
+							$mixLinksDisplay .= "<a href='./flex.php/Console/FAQ/?s=$mixSearch&start=$intCurrentPageNumber'>$cnt</A></a> \n";
+						}
+					}
+
+					$cnt++;
+				
+				}
+				if($intNext+1<"$intTotalResults"){
+
+					$mixLinksDisplay .= "&nbsp;&nbsp;<A href='./flex.php/Console/FAQ/?s=$mixSearch&start=$intNext' class='next'>Next</A>";
+				
+				}
+			}
+			DBO()->Search->Pages = "$mixLinksDisplay";
 
 		}
 		else
@@ -264,14 +332,12 @@ class AppTemplateConsole extends ApplicationTemplate
 			// Query for the top 10
 			$select= "SELECT * FROM customer_faq ORDER BY customer_faq_hits DESC LIMIT 10";
 			// This portion of the code exeutes the query fetching an array..
-			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 			$strCustomerTop10 = $dbConnection->fetch("$select",$array=true);
 
 			// Return an array with results to our page.
 			DBO()->Search->Topten = $strCustomerTop10;
 		}
 		$this->LoadPage('faq');
-
 		return TRUE;	 	
 	 }
 

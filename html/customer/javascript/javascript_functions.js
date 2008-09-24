@@ -49,3 +49,11 @@ function validate_phone(field,alerttxt)
       return false;
    }
 }
+
+
+function view_faq (faqid)
+{
+	faqpopup = window.open("./flex.php/Console/FAQ/?view="+faqid, "FAQ" , "width=500,height=400,resizable=0,menubar=0,toolbar=0,location=0,directories=0,scrollbars=0,status=0");
+	faqpopup.moveTo(300,200);
+	faqpopup.focus();
+}

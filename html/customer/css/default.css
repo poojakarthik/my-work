@@ -25,6 +25,32 @@
 /*	TASKBAR														  		  */
 /**************************************************************************/
 
+.popup_title_faq
+{
+	text-indent: 30; 
+	font-size:	12px;
+	width:		500;
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/icon_moveright.png");
+	background-position: 5px 50%;
+	padding:	5px;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+
+.popup_content_faq
+{
+	font-size:	12px;
+	width:		500;
+	margin:				0px;
+	padding:			5px;
+	border:				solid 1px #D1D1D1;
+	background-color:	#f9f9f9;
+	position:			relative;
+}
+
 .text_notice
 {
 	color: red;

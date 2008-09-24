@@ -54,6 +54,7 @@
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
+		$this->LoadJavascript('javascript_functions');
 	}
 	
 	//------------------------------------------------------------------------//
@@ -86,7 +87,7 @@
 
 		if(DBO()->Search->Result->Value)
 		{
-			echo "<div class='customer-standard-table-title-style-password'>Search Results: " . DBO()->Total->Search->Value . "</div>
+			echo "<div class='customer-standard-table-title-style-password'>Results " . DBO()->Total->Start->Value . " - " . DBO()->Total->NextPage->Value . " of about " . DBO()->Total->Search->Value . "</div>
 			<div class='GroupedContent'>
 			<TABLE class=\"customer-standard-table-style\">
 			<TR VALIGN=\"TOP\">
@@ -116,7 +117,7 @@
 				*/
 				echo "
 				<tr>
-					<td><A HREF=\"javascript:view_faq($customer_faq_id)\">$customer_faq_subject</A></td>
+					<td>$customer_faq_id. <A HREF=\"javascript:view_faq($customer_faq_id)\">$customer_faq_subject</A></td>
 					<td>$customer_faq_time_updated</td>
 					<td>$customer_faq_hits</td>
 				</tr>";
@@ -129,6 +130,16 @@
 			</TABLE>
 			</div>
 			<br/>";
+
+			echo "
+			<div class='customer-standard-table-title-style-confirm-details'>Result Pages</div>
+			<div class='GroupedContent'>
+			<table class=\"customer-standard-table-style\">
+			<tr>
+				<td>" . DBO()->Search->Pages->Value . "</td>
+			</tr>
+			</table>
+			</div><br/>";
 		}
 		else
 		{
