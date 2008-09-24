@@ -152,7 +152,7 @@ class Invoice
 			if ($arrServiceDetails['ServiceTotal']['Shared'])
 			{
 				Cli_App_Billing::debug("\t\t ! Service is on Shared Plan {$arrServiceDetails['ServiceTotal']['RatePlan']}...");
-				$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['Services'][]					= &$arrServiceDetails;
+				$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['Services'][$intServiceId]		= &$arrServiceDetails;
 				$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxExemptCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxExemptCappedCharge'];
 				$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxableCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxableCappedCharge'];
 			}
@@ -175,103 +175,23 @@ class Invoice
 				throw new Exception("Unable to retrieve details for RatePlan with Id '{$intRatePlan}'!");
 			}
 			
-			// Add in Plan Charges in Advance and Arrears			$selEarliestCDR	= $this->_preparedStatement('selEarliestCDR');
-			if ($selEarliestCDR->Execute(Array('Service' => $intServiceId)))
-			{
-				$arrEarliestCDR	= $selEarliestCDR->Fetch();
-			}
-			elseif ($selEarliestCDR->Error())
-			{
-				throw new Exception("DB ERROR: ".$selEarliestCDR->Error());
-			}
-			else
-			{
-				throw new Exception("Unable to get EarliestCDR details for {$arrAccount['Id']}{$arrServiceDetails['FNN']}!");
-			}
+			$arrServiceIds		= array_keys($arrDetails['Services']);			
 			
-			// Is the Service tolling?
-			if ($strEarliestCDR)
-			{
-				$fltMinimumCharge	= (float)$arrPlanDetails['MinMonthly'];
-				$fltUsageStart		= (float)$arrPlanDetails['ChargeCap'];
-				$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
-				
-				// Yes -- Does this Service have any Invoiced CDRs?
-				$selHasInvoicedCDRs	= $this->_preparedStatement('selHasInvoicedCDRs');
-				$mixResult			= $selHasInvoicedCDRs->Execute(Array('Service' => $intServiceId));
-				if ($mixResult === FALSE)
-				{
-					throw new Exception("DB ERROR: ".$selHasInvoicedCDRs->Error());
-				}
-				elseif (!$mixResult)
-				{
-					// No -- Is this on a Charge-in-Advance Plan?
-					if ($arrPlanDetails['InAdvance'])
-					{
-						$selLastPlanInvoiced	= $this->_preparedStatement('selLastPlanInvoiced');
-						if ($selLastPlanInvoiced->Execute(Array('Service' => $intServiceId)) !== FALSE)
-						{
-							$arrLastPlanInvoiced	= $selLastPlanInvoiced->Fetch();
-							if ($arrLastPlanInvoiced === FALSE || $arrLastPlanInvoiced['RatePlan'] !== $arrPlanDetails['Id'])
-							{
-								// The this Plan has not been invoiced before, so generate a Charge in Advance
-								$intPeriodStart	= $objInvoiceRun->intInvoiceDatetime;
-								$intPeriodEnd	= strtotime("-1 day", strtotime("+1 month", $objInvoiceRun->intInvoiceDatetime));
-								$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
-							}
-						}
-						else
-						{
-							throw new Exception("DB ERROR: ".$selLastPlanInvoiced->Error());
-						}
-					}
-					
-					// Prorate the Charges and Usage details in Arrears
-					$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, strtotime($strEarliestCDR), $objInvoiceRun->intLastInvoiceDatetime, $objInvoiceRun->intInvoiceDatetime);
-					$fltUsageStart		= Invoice::prorate($fltUsageStart		, strtotime($strEarliestCDR), $objInvoiceRun->intLastInvoiceDatetime, $objInvoiceRun->intInvoiceDatetime);
-					$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, strtotime($strEarliestCDR), $objInvoiceRun->intLastInvoiceDatetime, $objInvoiceRun->intInvoiceDatetime);
-					
-					$strChargeType	= 'PCAR';
-					$intPeriodStart	= strtotime($strEarliestCDR);
-					$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
-					$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails['Name'], $objInvoiceRun->intLastInvoiceDatetime, strtotime("-1 day", $objInvoiceRun->intLastInvoiceDatetime), $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
-				}
-				else
-				{
-					// Charge the Standard Plan Charge
-					if ($arrPlanDetails['InAdvance'])
-					{
-						$strChargeType	= 'PCAD';
-						$intPeriodStart	= $objInvoiceRun->intInvoiceDatetime;
-						$intPeriodEnd	= strtotime("-1 day", strtotime("+1 month", $objInvoiceRun->intInvoiceDatetime));
-					}
-					else
-					{
-						$strChargeType	= 'PCAR';
-						$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
-						$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
-					}
-					$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
-				}
-			}
-			else
-			{
-				// No -- ignore all Plan Charges, because we haven't tolled yet
-				$fltMinimumCharge	= 0.0;
-				$fltUsageStart		= 0.0;
-				$fltUsageLimit		= 0.0;
-			}
+			// Add Plan Charges
+			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrServiceIds, TRUE);
 			
-			
-			$fltMinimumCharge	= (float)$arrPlanDetails['MinMonthly'];
-			$fltUsageStart		= (float)$arrPlanDetails['ChargeCap'];
-			$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
+			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
+			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
+			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
+			$intPeriodStart		= $arrUsageDetails['intPeriodStart'];
+			$intPeriodEnd		= $arrUsageDetails['intPeriodEnd'];
 			
 			$fltCDRCappedTotal		= $arrDetails['fltTaxExemptCappedCharge'] + $arrDetails['fltTaxableCappedCharge'];
 			$fltTaxableCappedCharge	= $arrDetails['fltTaxableCappedCharge'];
 			
 			// Determine and add in Plan Credit
 			$fltPlanCredit			= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
 			
 			// Determine Usage
 			$fltSharedTotal			= min($fltCDRCappedTotal, $fltUsageStart);
@@ -454,6 +374,11 @@ class Invoice
 		else
 		{
 			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, Array($intServiceId), FALSE);
+			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
+			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
+			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
+			$intPeriodStart		= $arrUsageDetails['intPeriodStart'];
+			$intPeriodEnd		= $arrUsageDetails['intPeriodEnd'];
 		}
 		//--------------------------------------------------------------------//
 		
@@ -526,7 +451,7 @@ class Invoice
 		{
 			// Determine and add in Plan Credit
 			$fltPlanCredit	= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
-			$fltTotalCharge	-= $fltPlanCredit;
+			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);			
 			
 			// Determine Usage
 			$fltTotalCharge	= min($fltCDRCappedTotal, $fltUsageStart);
@@ -851,9 +776,9 @@ class Invoice
 						if ($arrPlanInvoicedBefore['SamePlan'] === 0)
 						{
 							// The this Plan has not been invoiced before, so generate a Charge in Advance
-							$intPeriodStart	= $objInvoiceRun->intInvoiceDatetime;
-							$intPeriodEnd	= strtotime("-1 day", strtotime("+1 month", $objInvoiceRun->intInvoiceDatetime));
-							$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
+							$intAdvancePeriodStart	= $objInvoiceRun->intInvoiceDatetime;
+							$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $objInvoiceRun->intInvoiceDatetime));
+							$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intAdvancePeriodStart, $intAdvancePeriodEnd, $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 						}
 					}
 					else
@@ -887,7 +812,7 @@ class Invoice
 					$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
 					$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 				}
-				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
+				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 			}
 		}
 		else
@@ -900,9 +825,11 @@ class Invoice
 		
 		// Return usage data
 		return Array(
-						'fltMinimumCharge'	=> $fltMinimumCharge,
-						'fltUsageStart'		=> $fltUsageStart,
-						'fltUsageLimit'		=> $fltUsageLimit
+						'MinMonthly'		=> $fltMinimumCharge,
+						'ChargeCap'			=> $fltUsageStart,
+						'UsageCap'			=> $fltUsageLimit,
+						'intPeriodStart'	=> $intPeriodStart,
+						'intPeriodEnd'		=> $intPeriodEnd
 					);
 	}
 	
