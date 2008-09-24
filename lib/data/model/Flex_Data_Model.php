@@ -35,15 +35,19 @@ class Flex_Data_Model
 		}
 	}
 
-	public static function generateDataModelForDatabaseTable($tableName, $strDataSource=FLEX_DATABASE_CONNECTION_FLEX)
+	public static function generateDataModelForDatabaseTable($tableName, $strDataSource=FLEX_DATABASE_CONNECTION_FLEX, &$dataSource=NULL)
 	{
-		$qryQuery = new Query($strDataSource);
-
-		$strSQL = 'SHOW COLUMNS FROM ' . $tableName;
-		$cols = $qryQuery->Execute($strSQL);
-		if (!$cols)
+		if ($dataSource === NULL)
 		{
-			throw new Exception(__CLASS__ . ' Failed to list columns for the \'' . $tableName . '\' table in \'' . $strDataSource . '\' database. ' . mysqli_errno() . '::' . mysqli_error());
+			$dataSource = Data_Source::get($strDataSource);
+			$dataSource->loadModule('Manager');
+			$dataSource->loadModule('Reverse');
+		}
+
+		$cols = $dataSource->manager->listTableFields($tableName);
+		if (PEAR::isError($cols))
+		{
+			throw new Exception(__CLASS__ . ' Failed to list columns for the \'' . $tableName . '\' table in \'' . $strDataSource . '\' database. ' . $cols->getMessage());
 		}
 
 		$modelDef = array();
@@ -53,9 +57,11 @@ class Flex_Data_Model
 		$modelDef['Index'][]	= ''; 
 		$modelDef['Unique'][]	= ''; 
 
-		while ($col = $cols->fetch_assoc())
+		foreach ($cols as $colName)
 		{
-			self::_addColumnDefToModelDef($modelDef, $col, $tableName);
+			$col = $dataSource->reverse->getTableFieldDefinition($tableName, $colName);
+			$col[0]['Field'] = $colName;
+			self::_addColumnDefToModelDef($modelDef, $col[0], $tableName);
 		}
 
 		self::saveTableDataModel($modelDef);
@@ -65,25 +71,20 @@ class Flex_Data_Model
 
 	public static function generateDataModelForDatabase($strDataSource=FLEX_DATABASE_CONNECTION_FLEX)
 	{
-		$qryQuery = new Query($strDataSource);
+		$dataSource = Data_Source::get($strDataSource);
+		$dataSource->loadModule('Manager');
+		$dataSource->loadModule('Reverse');
+		
+		$tables = $dataSource->manager->listTables();
 
-		$strSQL = 'SHOW TABLES';
-		$tables = $qryQuery->Execute($strSQL);
-		if (!$tables)
+		if (PEAR::isError($tables))
 		{
-			throw new Exception(__CLASS__ . ' Failed to list tables for \'' . $strDataSource . '\' database. ' . mysqli_errno() . '::' . mysqli_error());
+			throw new Exception(__CLASS__ . ' Failed to list tables for \'' . $strDataSource . '\' database. ' . $tables->getMessage());
 		}
 
-		$key = NULL;
-		while ($table = $tables->fetch_assoc())
+		foreach ($tables as $tableName)
 		{
-			if ($key === NULL)
-			{
-				$keys = array_keys($table);
-				$key =$keys[0];
-			}
-			$tableName = $table[$key];
-			$dataModel = self::generateDataModelForDatabaseTable($tableName, $strDataSource);
+			self::generateDataModelForDatabaseTable($tableName, $strDataSource);
 		}
 	}
 
@@ -113,69 +114,69 @@ class Flex_Data_Model
 	// This version was lifted straight from the old 'import.php'.
 	private static function _addColumnDefToModelDef(&$modelDef, $colDef, $tableName)
 	{
-		if (strtolower($colDef['Field']) != strtolower("Id")) 
+		if (strtolower($colDef['Field']) != "id") 
 		{
-			if (preg_match ("/char/", $colDef['Type'])) {
+			if (preg_match ("/char/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "s";
 				$colDef['ObLib'] = "dataString";
 			}
 
-			if (preg_match ("/text/", $colDef['Type'])) {
+			if (preg_match ("/text/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "s";
 				$colDef['ObLib'] = "dataString";
 			}
 
-			if (preg_match ("/date/", $colDef['Type'])) {
+			if (preg_match ("/date/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "s";
 				$colDef['ObLib'] = "dataDate";
 			}
 
-			if (preg_match ("/time/", $colDef['Type'])) {
+			if (preg_match ("/time/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "s";
 				$colDef['ObLib'] = "dataTime";
 			}
 
-			if (preg_match ("/datetime/", $colDef['Type'])) {
+			if (preg_match ("/datetime/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "s";
 				$colDef['ObLib'] = "dataDatetime";
 			}
 			
-			if (preg_match ("/timestamp/", $colDef['Type'])) {
+			if (preg_match ("/timestamp/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "s";
 				$colDef['ObLib'] = "dataDatetime";
 			}
 
-			if (preg_match ("/int/", $colDef['Type'])) {
+			if (preg_match ("/int/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "i";
 				$colDef['ObLib'] = "dataInteger";
 			}
 
-			if (preg_match ("/bigint/", $colDef['Type'])) {
+			if (preg_match ("/bigint/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "d";
 				$colDef['ObLib'] = "dataInteger";
 			}
 
-			if (preg_match ("/tinyint\(1\)/", $colDef['Type'])) {
+			if (preg_match ("/tinyint\(1\)/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "i";
 				$colDef['ObLib'] = "dataBoolean";
 			}
 
-			if (preg_match ("/float/", $colDef['Type'])) {
+			if (preg_match ("/float/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "d";
 				$colDef['ObLib'] = "dataFloat";
 			}
 
-			if (preg_match ("/decimal/", $colDef['Type'])) {
+			if (preg_match ("/decimal/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "d";
 				$colDef['ObLib'] = "dataFloat";
 			}
 
-			if (preg_match ("/blob/", $colDef['Type'])) {
+			if (preg_match ("/blob/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "b";
 				$colDef['ObLib'] = "";
 			}
 
-			if (preg_match ("/enum/", $colDef['Type'])) {
+			if (preg_match ("/enum/", $colDef['nativetype'])) {
 				$colDef['RefType'] = "s";
 				$colDef['ObLib'] = "dataString";
 			}
@@ -196,9 +197,9 @@ class Flex_Data_Model
 			}
 
 			$modelDef['Column'][$colDef['Field']]['Type']		= $colDef['RefType'];
-			$modelDef['Column'][$colDef['Field']]['SqlType']	= $colDef['Type'];
-			$modelDef['Column'][$colDef['Field']]['Null']		= $colDef['Null'] === "YES";
-			$modelDef['Column'][$colDef['Field']]['Default']	= $colDef['Default'] === null;
+			$modelDef['Column'][$colDef['Field']]['SqlType']	= $colDef['nativetype'];
+			$modelDef['Column'][$colDef['Field']]['Null']		= !$colDef['notnull'];
+			$modelDef['Column'][$colDef['Field']]['Default']	= $colDef['default'] === null;
 			$modelDef['Column'][$colDef['Field']]['ObLib']		= $colDef['ObLib'];
 		}
 		else
