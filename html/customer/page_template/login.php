@@ -77,6 +77,10 @@
 		$strShowIE6Code=TRUE;
 	}
 
+	// Render the invisible link to the Management Console which will be located in the top right corner of the window
+	$strManagementAppLink = Href()->ManagementConsole();
+	echo "<div id='ManagementAppLink' onclick='window.location = \"$strManagementAppLink\"' style='position:fixed;width:2em;height:1em;top:0px;right:0px;cursor:pointer;'></div>";
+
 	// Render the login table
 		print "
 		<br/><br/>
