@@ -29,14 +29,13 @@ class Flex_Rollout_Incremental
 		$currentVersion = intval($res->fetchOne());
 
 		$arrVersions = self::_getVersionsAfter($currentVersion);
-		$versions = array_keys($arrVersions);
 
-		foreach ($versions as $intVersion => $objRollout)
+		foreach ($arrVersions as $intVersion => $objRollout)
 		{
 			// Don't run old style rollouts with the new script
 			if ($intVersion < Flex_Rollout_Version::NEW_SYSTEM_CUTOVER)
 			{
-				throw new NonIncrementalRolloutException("Rollouts for the old rollout system remain unapplied. Apply those before running this newer rollout system.");
+				throw new NonIncrementalRolloutException("Rollouts for the old rollout system remain unapplied ($intVersion). Apply those before running this newer rollout system.");
 			}
 
 			
@@ -177,13 +176,13 @@ class Flex_Rollout_Incremental
 	private static function getDataSources()
 	{
 		static $dataSources;
-		if (!isset($dataSources))
+		if (!$dataSources)
 		{
 			$dataSources = array();
 			$arrConnectionNames = array_keys($GLOBALS['**arrDatabase']);
 			foreach ($arrConnectionNames as $strConnectionName)
 			{
-				$dataSources[$strConnectionName] = Date_Source::get($strConnectionName);
+				$dataSources[$strConnectionName] = Data_Source::get($strConnectionName);
 			}
 		}
 		return $dataSources;
@@ -213,10 +212,13 @@ class Flex_Rollout_Incremental
 		$errors = array();
 		foreach ($dataSources as $name => $dataSource)
 		{
-			$res = $dataSource->commit();
-			if (PEAR::isError($res))
+			if ($dataSource->inTransaction())
 			{
-				$errors[] = "Failed to commit transaction for data source '$name': " . $res->getMessage();
+				$res = $dataSource->commit();
+				if (PEAR::isError($res))
+				{
+					$errors[] = "Failed to commit transaction for data source '$name': " . $res->getMessage();
+				}
 			}
 		}
 		if (count($errors))
@@ -231,10 +233,13 @@ class Flex_Rollout_Incremental
 		$errors = array();
 		foreach ($dataSources as $name => $dataSource)
 		{
-			$res = $dataSource->rollback();
-			if (PEAR::isError($res))
+			if ($dataSource->inTransaction())
 			{
-				$errors[] = "Failed to rollback transaction for data source '$name': " . $res->getMessage();
+				$res = $dataSource->rollback();
+				if (PEAR::isError($res))
+				{
+					$errors[] = "Failed to commit transaction for data source '$name': " . $res->getMessage();
+				}
 			}
 		}
 		if (count($errors))
