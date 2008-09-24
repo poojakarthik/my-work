@@ -21,12 +21,14 @@ class Cli_App_Rollout extends Cli
 			
 			try 
 			{
+				$this->log("Trying to apply new style scripts.", TRUE);
 				$this->requireOnce('lib/rollout/Flex_Rollout_Incremental.php');
 	
 				Flex_Rollout_Incremental::updateToLatestVersion(NULL, $arrArgs[self::SWITCH_TEST_RUN]);
 			}
 			catch (NonIncrementalRolloutException $ex)
 			{
+				$this->log($ex->getMessage(), TRUE);
 				// Include the Rollout handler class 
 				$this->requireOnce('lib/rollout/Flex_Rollout.php');
 	
