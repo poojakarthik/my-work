@@ -276,7 +276,7 @@ class Page
 	function RenderHeaderJS()
 	{
 		// Include reference to all the standard javascript files, which should be included on every page
-		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification");
+		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification", "validation");
 		$strFiles = $this->_GetJsFilesQueryString($arrStandardJsFiles);
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 

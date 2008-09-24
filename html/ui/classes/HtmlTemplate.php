@@ -88,9 +88,9 @@ class HtmlTemplate extends BaseTemplate
 	/**
 	 * LoadJavascript()
 	 *
-	 * Loads a js file to the internal array
+	 * Loads a js file to the internal array (appends it)
 	 * 
-	 * Loads a js file to the internal array
+	 * Loads a js file to the internal array (appends it)
 	 *
 	 * @param		string	$strFilename	The name of the js file to load
 	 *
@@ -101,7 +101,12 @@ class HtmlTemplate extends BaseTemplate
 	function LoadJavascript($strFilename)
 	{
 		// add $strFilename to global javascript function array
-		$GLOBALS['*arrJavaScript'][$strFilename] = $strFilename;
+		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
+		{
+			$GLOBALS['*arrJavaScript'] = array();
+		}
+
+		$GLOBALS['*arrJavaScript'][] = $strFilename;
 	}
 
 	//------------------------------------------------------------------------//
