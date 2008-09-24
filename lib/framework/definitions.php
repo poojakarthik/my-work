@@ -1690,6 +1690,20 @@ $GLOBALS['*arrConstant']	['ServiceCreation']	[105]	['Description']	= 'Account Ch
 $GLOBALS['*arrConstant']	['ServiceCreation']	[106]	['Constant']	= 'SERVICE_CREATION_STATUS_CHANGED';
 $GLOBALS['*arrConstant']	['ServiceCreation']	[106]	['Description']	= 'Status Changed';
 
+// Date Truncation Modes, for use with TruncateTime()
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['s']	['Constant']	= 'DATE_TRUNCATE_SECOND';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['s']	['Description']	= 'Second';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['i']	['Constant']	= 'DATE_TRUNCATE_MINUTE';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['i']	['Description']	= 'Minute';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['H']	['Constant']	= 'DATE_TRUNCATE_HOUR';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['H']	['Description']	= 'Hour';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['d']	['Constant']	= 'DATE_TRUNCATE_DAY';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['d']	['Description']	= 'Day';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['m']	['Constant']	= 'DATE_TRUNCATE_MONTH';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['m']	['Description']	= 'Month';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['Y']	['Constant']	= 'DATE_TRUNCATE_YEAR';
+$GLOBALS['*arrConstant']	['DateTruncateMode']	['Y']	['Description']	= 'Year';
+
 
 // Nature of Service Record Closure
 // Identifies the reason why a Service record was Closed

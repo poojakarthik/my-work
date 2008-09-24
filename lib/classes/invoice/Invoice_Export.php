@@ -1,47 +1,17 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2006 VOIPTEL Pty Ltd
-//
-// NOT FOR EXTERNAL DISTRIBUTION
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-// invoice_base
+// Invoice_Export
 //----------------------------------------------------------------------------//
 /**
- * invoice_base
+ * Invoice_Export
  *
- * Billing module for Invoice Printing Base Class
+ * Handles preparation for Invoice Export
+ * 
+ * Handles preparation for Invoice Export
  *
- * Billing module for Invoice Printing Base Class
- *
- * @file		module_printing.php
- * @language	PHP
- * @package		billing
- * @author		Jared 'flame' Herbohn, Rich 'Waste' Davis
- * @version		8.05
- * @copyright	2008 VOIPTEL Pty Ltd
- * @license		NOT FOR EXTERNAL DISTRIBUTION
- *
+ * @class	Invoice_Export
  */
-
-
-//----------------------------------------------------------------------------//
-// BillingModuleInvoice
-//----------------------------------------------------------------------------//
-/**
- * BillingModuleInvoice
- *
- * Billing module for Invoice Printing Base Class
- *
- * Billing module for Invoice Printing Base Class
- *
- * @prefix		bil
- *
- * @package		billing
- * @class		BillingModuleInvoice
- */
-abstract class BillingModuleInvoice
+abstract class Invoice_Export
 {
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -49,51 +19,20 @@ abstract class BillingModuleInvoice
 	/**
 	 * __construct()
 	 *
-	 * Constructor method for BillingModuleInvoice
+	 * Constructor method for Invoice_Export
 	 *
-	 * Constructor method for BillingModuleInvoice
-	 *
-	 * @return		BillingModuleInvoice
-	 *
-	 * @method
+	 * Constructor method for Invoice_Export
+	 * 
+	 * @constructor
 	 */
- 	function __construct($ptrThisDB, $arrConfig)
+ 	function __construct()
  	{
-		// Set up the database reference
-		$this->db = $ptrThisDB;
-		
-		// Init member variables
-		$this->_strFilename		= NULL;
-		$this->_strSampleFile	= NULL;
-		
-		switch (strtoupper($arrConfig['PrintingMode']))
-		{
-			case 'FINAL':
-				$this->_strCDRTable		= 'CDR';
-				$this->_strInvoiceTable	= 'Invoice';
-				$this->_intCDRStatus	= CDR_INVOICED;
-				break;
-				
-			case 'COMMITTED_REPRINT':
-				$this->_strCDRTable		= 'CDRInvoiced';
-				$this->_strInvoiceTable	= 'Invoice';
-				$this->_intCDRStatus	= CDR_INVOICED;
-				break;
-				
-			default:
-				$this->_strCDRTable		= 'CDR';
-				$this->_strInvoiceTable	= 'InvoiceTemp';
-				$this->_intCDRStatus	= CDR_TEMP_INVOICE;
-				break;
-		}
-		
-		Debug("CDR Table: {$this->_strCDRTable}; Invoice Table: {$this->_strInvoiceTable};");
-		sleep(1);
+		$this->_strCDRTable		= 'CDR';
+		$this->_strInvoiceTable	= 'Invoice';
 		
 		//--------------------------------------------------------------------//
 		// Statements
 		//--------------------------------------------------------------------//
-		
 		// Account FNNs
 		$arrCols				= Array();
 		$arrCols['CurrentId']	= "MAX(ServiceTotal.Service)";
@@ -103,7 +42,7 @@ abstract class BillingModuleInvoice
 		$arrCols['RangeEnd']	= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeEnd, 2, '0')) WHEN Service.Indial100 = 1 THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), '99') ELSE ServiceTotal.FNN END";
 		$this->_selAccountFNNs	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)",
 														$arrCols,
-														"ServiceTotal.Account = <Account> AND ServiceTotal.InvoiceRun = <InvoiceRun>",
+														"ServiceTotal.Account = <Account> AND ServiceTotal.invoice_run_id = <invoice_run_id>",
 														"Service.ServiceType, Extension",
 														NULL,
 														"Extension");
@@ -121,31 +60,31 @@ abstract class BillingModuleInvoice
 		$arrService['InAdvance']		= "RatePlan.InAdvance";
 		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																	$arrService,
-																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND Service.Id = <CurrentId> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)",
+																	"ServiceTotal.invoice_run_id = <invoice_run_id> AND Service.Id = <CurrentId> AND ServiceTotal.FNN = <FNN> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)",
 																	"Service.ServiceType, Service.FNN, ServiceExtension.Name",
 																	NULL,
 																	"Service.FNN, ServiceExtension.Name");
 		
 		$this->_selServiceInstances			= new StatementSelect(	"(ServiceTotal JOIN Service ON ServiceTotal.Service = Service.Id) LEFT JOIN RatePlan ON RatePlan.Id = ServiceTotal.RatePlan", 
 																	"ServiceTotal.Service AS Id, RatePlan.Name AS RatePlan, ServiceTotal.PlanCharge AS PlanCharge", 
-																	"ServiceTotal.InvoiceRun = <InvoiceRun> AND ServiceTotal.Account = <Account> AND (ServiceTotal.FNN BETWEEN <RangeStart> AND <RangeEnd> OR ServiceTotal.FNN = <FNN>)");
+																	"ServiceTotal.invoice_run_id = <invoice_run_id> AND ServiceTotal.Account = <Account> AND (ServiceTotal.FNN BETWEEN <RangeStart> AND <RangeEnd> OR ServiceTotal.FNN = <FNN>)");
 		
 		$this->_selAccountSummary			= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
 																	"RG.Description AS Description, SUM(STT.Charge) AS Total, SUM(Records) AS Records, RG.DisplayType AS DisplayType",
-																	"Account = <Account> AND InvoiceRun = <InvoiceRun>",
+																	"Account = <Account> AND invoice_run_id = <invoice_run_id>",
 																	"RG.Description",
 																	NULL,
 																	"RG.Id");
 		
 		$this->_selAccountSummaryCharges	= new StatementSelect(	"Charge",
 																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
-																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
-																	"Account = <Account> AND InvoiceRun = <InvoiceRun> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%' AND Service IS NOT NULL");
+																	//"Account = <Id> AND invoice_run_id = <invoice_run_id> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+																	"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%' AND Service IS NOT NULL");
 		
 		$this->_selPlanCharges				= new StatementSelect(	"Charge",
 																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit, COUNT(Id) AS Records",
-																	//"Account = <Id> AND InvoiceRun = <InvoiceRun> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
-																	"Account = <Account> AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
+																	//"Account = <Id> AND invoice_run_id = <invoice_run_id> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
+																	"Account = <Account> AND invoice_run_id = <invoice_run_id> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
 		
 		$this->_selCustomerData				= new StatementSelect(	"Account LEFT JOIN Invoice ON Account.Id = Invoice.Account",
 																	"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup, COUNT(Invoice.Id) AS InvoiceCount, BillingType",
@@ -156,21 +95,21 @@ abstract class BillingModuleInvoice
 		
 		$this->_selPlanAdjustments			= new StatementSelect(	"Charge",
 																	"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
-																	"InvoiceRun = <InvoiceRun> AND Account = <Account> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')",
+																	"invoice_run_id = <invoice_run_id> AND Account = <Account> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')",
 																	NULL,
 																	NULL,
 																	"Account");
 		
 		$this->_selPlanChargeTotals			= new StatementSelect(	"ServiceTotal",
 																	"SUM(PlanCharge) AS PlanChargeTotal, SUM(UncappedCharge + CappedCharge) AS RatedTotal, SUM(TotalCharge) AS GrandServiceTotal, COUNT(Id) AS Records",
-																	"InvoiceRun = <InvoiceRun> AND Account = <Account>",
+																	"invoice_run_id = <invoice_run_id> AND Account = <Account>",
 																	NULL,
 																	NULL,
 																	"Account");
 		
 		$this->_selAccountAdjustments		= new StatementSelect(	"Charge",
 																	"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description",
-																	"InvoiceRun = <InvoiceRun> AND Account = <Account> AND Service IS NULL AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'");
+																	"invoice_run_id = <invoice_run_id> AND Account = <Account> AND Service IS NULL AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'");
 		
  	}
  	
@@ -214,7 +153,7 @@ abstract class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	abstract protected function BuildOutput($strInvoiceRun, $arrAccounts = Array());
+ 	abstract protected function BuildOutput($arrInvoiceRun, $arrAccounts = Array());
  	
  	//------------------------------------------------------------------------//
 	// SendOutput()
@@ -232,7 +171,7 @@ abstract class BillingModuleInvoice
 	 *
 	 * @method
 	 */
- 	abstract protected function SendOutput($strInvoiceRun);
+ 	abstract protected function SendOutput($arrInvoiceRun);
  	
   	//------------------------------------------------------------------------//
 	// _Debug()
@@ -307,7 +246,7 @@ abstract class BillingModuleInvoice
  						(
 							"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
 							$arrColumns,
-		 					"$strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
+		 					"$strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd> AND invoice_run_id = <invoice_run_id> AND GroupType.Id = RecordType.GroupId",
 		 					"ServiceTypeTotal.FNN, GroupType.Description",
 		 					NULL,
 		 					"GroupType.Description DESC"
@@ -322,7 +261,7 @@ abstract class BillingModuleInvoice
 							"$strWhereService AND " .
 							"RecordGroup.Id = RecordType.GroupId AND " .
 							"RecordGroup.Itemised = 1 AND " .
-							"{$this->_strCDRTable}.InvoiceRun = <InvoiceRun> AND " .
+							"{$this->_strCDRTable}.invoice_run_id = <invoice_run_id> AND " .
 							"FNN BETWEEN <RangeStart> AND <RangeEnd>",
 							"RecordGroup.Description",
 							NULL,
@@ -351,9 +290,7 @@ abstract class BillingModuleInvoice
 						"$strWhereService AND " .
 						"RecordGroup.Id = RecordType.GroupId AND " .
 						"RecordGroup.Id = <RecordGroup> AND " .
-						/*"RecordGroup.Itemised = 1 AND " .*/
-						"{$this->_strCDRTable}.InvoiceRun = <InvoiceRun> AND " .
-						"{$this->_strCDRTable}.Status = ".$this->_intCDRStatus." AND " .
+						"{$this->_strCDRTable}.invoice_run_id = <invoice_run_id> AND " .
 						"FNN BETWEEN <RangeStart> AND <RangeEnd>",
 						"{$this->_strCDRTable}.StartDatetime"
  					);
@@ -368,7 +305,7 @@ abstract class BillingModuleInvoice
 					(	
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND InvoiceRun = <InvoiceRun> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'"
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'"
 					);
 	 				break;
 	 				
@@ -377,7 +314,7 @@ abstract class BillingModuleInvoice
 					(
 						"ServiceTotal",
 						"SUM(TotalCharge + Debit - Credit) AS TotalCharge, PlanCharge",
-						"$strWhereService AND InvoiceRun = <InvoiceRun>",
+						"$strWhereService AND invoice_run_id = <invoice_run_id>",
 						NULL,
 						NULL,
 						"Service"
@@ -389,7 +326,7 @@ abstract class BillingModuleInvoice
 					(
 	 					"Charge",
 						"SUM(Amount) AS Charge, 'Service Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
-						"$strWhereService AND InvoiceRun = <InvoiceRun>",
+						"$strWhereService AND invoice_run_id = <invoice_run_id>",
 						"Nature",
 						2,
 						"Nature"
@@ -408,7 +345,7 @@ abstract class BillingModuleInvoice
 					(
 	 					"(ServiceTypeTotal JOIN RecordType ON RecordType.Id = ServiceTypeTotal.RecordType) JOIN RecordType RecordGroup ON RecordType.GroupId = RecordGroup.Id",
 						$arrRecordType,
-						"InvoiceRun = <InvoiceRun> AND $strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd>",
+						"invoice_run_id = <invoice_run_id> AND $strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd>",
 						"RecordGroup.Description",
 						NULL,
 						"RecordGroup.Id"
@@ -424,7 +361,7 @@ abstract class BillingModuleInvoice
 					(	
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND InvoiceRun = <InvoiceRun> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')"
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')"
 					);
 	 				break;
 	 			
@@ -565,7 +502,7 @@ abstract class BillingModuleInvoice
 		foreach ($arrAccountFNNs as $intKey=>$arrService)
 		{
 			// Get details from the Current Service
-			$arrService['InvoiceRun']	= $arrInvoice['InvoiceRun'];
+			$arrService['invoice_run_id']	= $arrInvoice['invoice_run_id'];
 			if ($this->_selServiceDetails->Execute($arrService) === FALSE)
 			{
 				Debug("Error on _selServiceDetails!");
@@ -584,12 +521,12 @@ abstract class BillingModuleInvoice
 				
 				// Get all Service Ids that are associated with this FNN
 				$arrWhere = Array();
-				$arrWhere['Account']	= $arrInvoice['Account'];
-				$arrWhere['FNN']		= $arrService['FNN'];
-				$arrWhere['Extension']	= $arrService['Extension'];
-				$arrWhere['RangeStart']	= $arrService['RangeStart'];
-				$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
-				$arrWhere['InvoiceRun']	= $arrInvoice['InvoiceRun'];
+				$arrWhere['Account']		= $arrInvoice['Account'];
+				$arrWhere['FNN']			= $arrService['FNN'];
+				$arrWhere['Extension']		= $arrService['Extension'];
+				$arrWhere['RangeStart']		= $arrService['RangeStart'];
+				$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
+				$arrWhere['invoice_run_id']	= $arrInvoice['invoice_run_id'];
 				if ($this->_selServiceInstances->Execute($arrWhere) === FALSE)
 				{
 					Debug("Error on _selServiceInstances!");
@@ -617,9 +554,9 @@ abstract class BillingModuleInvoice
 			
 			// Get Record Types
 			$arrWhere	= Array();
-			$arrWhere['InvoiceRun']	= $arrInvoice['InvoiceRun'];
-			$arrWhere['RangeStart']	= $arrService['RangeStart'];
-			$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
+			$arrWhere['invoice_run_id']	= $arrInvoice['invoice_run_id'];
+			$arrWhere['RangeStart']		= $arrService['RangeStart'];
+			$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
 			$arrRecordTypes	= $this->_BillingFactory(BILL_FACTORY_RECORD_TYPES, $arrService, $arrWhere);
 			foreach ($arrRecordTypes as $arrRecordType)
 			{

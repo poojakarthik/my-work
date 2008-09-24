@@ -160,7 +160,7 @@ class HtmlTemplateConfigConstantEdit extends HtmlTemplate
 				echo "<div class='DefaultElement'>\n";
 				echo "   <div class='DefaultLabel' style='padding-left:8px'>Data Type :</div>\n";
 				echo "      <select id='DataTypeCombo' name='ConfigConstant.Type' class='DefaultInputComboBox' style='width:100px;'>\n";
-				foreach ($GLOBALS['*arrConstant']['DataType'] as $intKey=>$arrValue)
+				foreach ($GLOBALS['*arrConstant']['data_type'] as $intKey=>$arrValue)
 				{
 					// Check if this is the currently selected DataType
 					$strSelected = (DBO()->ConfigConstant->Type->Value == $intKey) ? "selected='selected'" : "";
