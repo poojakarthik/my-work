@@ -570,7 +570,7 @@ class Page
 		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>Flex - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
-		$this->RenderCSS();
+		echo "\t\t<link rel='stylesheet' type='text/css' href='./css/popup.css' />\n";
 		echo "</head>\n";
 		echo "<body>\n";
 	}
