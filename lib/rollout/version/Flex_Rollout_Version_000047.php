@@ -17,8 +17,11 @@ class Flex_Rollout_Version_000047 extends Flex_Rollout_Version
 		$dbaDB		= DataAccess::getDataAccess(FLEX_DATABASE_CONNECTION_ADMIN);
 		
 		// 1:	Create the flex_module table
-		$strSQL = "DROP TABLE IF EXISTS flex_module;
-					CREATE TABLE flex_module
+		if (!$qryQuery->Execute("DROP TABLE IF EXISTS flex_module;"))
+		{
+			throw new Exception(__CLASS__ . ' Failed to drop the flex_module table (if exists). ' . $qryQuery->Error());
+		}
+		$strSQL = " CREATE TABLE flex_module
 					(
 						id BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY COMMENT 'Unique id for the module',
 						name VARCHAR(1024) NOT NULL COMMENT 'Unique name for the module',
