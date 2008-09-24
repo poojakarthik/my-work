@@ -522,7 +522,8 @@ class Page
 		$this->RenderHeaderJS();
 		$this->RenderCSS();
 		echo "</head>\n";
-		echo "<body onload='Vixen.Init()'>\n";
+		//echo "<body onload='Vixen.Init()'>\n";
+		echo "<body>\n";
 		
 		// the following div holds any popup windows that are instantiated within the page
 		echo "<div id='PopupHolder'></div>\n";
