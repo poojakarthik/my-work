@@ -147,7 +147,7 @@ class Application
 			ContextMenu()->Admin->MoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 			
-			ContextMenu()->Admin->ManageEmployees();
+			ContextMenu()->Admin->Employees->ManageEmployees();
 			ContextMenu()->Admin->ManageInvoiceRunEvents();
 			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
@@ -156,6 +156,7 @@ class Application
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
+				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}
@@ -275,7 +276,7 @@ class Application
 			ContextMenu()->Admin->MoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 			
-			ContextMenu()->Admin->ManageEmployees();
+			ContextMenu()->Admin->Employees->ManageEmployees();
 			ContextMenu()->Admin->ManageInvoiceRunEvents();
 
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
@@ -284,6 +285,7 @@ class Application
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
+				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}

@@ -47,7 +47,7 @@ class Employee_Message
 	// If $bolGetAsObject == TRUE then returns an Employee_Message object defining the Employee Message
 	public static function declareMessage($strMessage, $strEffectiveOn, $bolGetAsObject=FALSE)
 	{
-		$arrData = array(	"created_on"	=> new MySQLFunction("NOW()"),
+		$arrData = array(	"created_on"	=> GetCurrentISODateTime(),
 							"effective_on"	=> $strEffectiveOn,
 							"message"		=> $strMessage
 						);
@@ -131,6 +131,57 @@ class Employee_Message
 		return $arrRecordSet;
 	}
 	
+	// I should be returning all records that have been effective since the one that was effective at time $strTime
+	// Which should inlcude the one that was effective at time $strTime
+	
+	// Retrieves all messages that have an effective_on timestamp >= $strTime (ISO DateTime), and have not been completely overridden
+	// returns an empty array, if no records match these conditions
+	public static function getAllEffectiveSince($strTime)
+	{
+		$qryQuery = new Query();
+		
+		$strColumns = implode(", ", self::getColumns());
+		
+		$strQuery = "	SELECT $strColumns
+						FROM employee_message AS em1
+						WHERE 	(	em1.id >= (
+												SELECT id
+												FROM employee_message
+												WHERE effective_on <= '$strTime'
+												ORDER BY created_on DESC
+												LIMIT 1 )
+									OR
+									(
+												SELECT COUNT(id)
+												FROM employee_message
+												WHERE effective_on <= '$strTime'
+												ORDER BY created_on DESC
+												LIMIT 1
+									) = 0
+								)
+								AND (
+									SELECT COUNT( id )
+									FROM employee_message AS em2
+									WHERE em2.id > em1.id AND em2.effective_on <= em1.effective_on AND em2.created_on >= em1.created_on
+									) = 0
+						ORDER BY em1.created_on DESC , em1.effective_on DESC;";		
+		$objRecordSet = $qryQuery->Execute($strQuery);
+		if (!$objRecordSet)
+		{
+			throw new Exception("Failed to retrieve employee_message records in effective since $strTime - " . $qryQuery->Error());
+		}
+
+		$arrRecordSet = array();
+		
+		while ($arrRecord = $objRecordSet->fetch_assoc())
+		{
+			$arrRecordSet[] = new Employee_Message($arrRecord);
+		}
+
+		return $arrRecordSet;
+	}
+	
+	
 	// returns the effective message as of $strTime.  if $strTime is NULL, then it uses NOW()
 	// returns Employee_Message object, if one was found, else returns NULL
 	public static function getForTime($strTime=NULL)
@@ -145,7 +196,7 @@ class Employee_Message
 		$strColumns	= implode(", ", self::getColumns());
 		
 		$strQuery = "	SELECT $strColumns
-						FROM employee_message AS em1
+						FROM employee_message
 						WHERE effective_on <= '$strTime'
 						ORDER BY created_on DESC
 						LIMIT 1;";
@@ -185,6 +236,31 @@ class Employee_Message
 						"created_on"	=> "created_on",
 						"effective_on"	=> "effective_on",
 						"message"		=> "message"
+					);
+	}
+
+	//------------------------------------------------------------------------//
+	// toArray
+	//------------------------------------------------------------------------//
+	/**
+	 * toArray()
+	 *
+	 * returns the object's properties defined as an associative array
+	 * 
+	 * returns the object's properties defined as an associative array
+	 *
+	 * @return		array defining the Employee_Message
+	 * @method
+	 */
+	public function toArray()
+	{
+		//TODO! this could be made to use the getColumns function, so that it doesn't have to define each property explicitly
+		
+		return array(
+						"id"			=> $this->id,
+						"createdOn"		=> $this->createdOn,
+						"effectiveOn"	=> $this->effectiveOn,
+						"message"		=> $this->message
 					);
 	}
 

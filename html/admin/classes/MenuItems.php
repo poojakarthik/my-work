@@ -110,6 +110,32 @@ class MenuItems
 		return NULL;
 	}
 	
+	//------------------------------------------------------------------------//
+	// EmployeeMessageManagement
+	//------------------------------------------------------------------------//
+	/**
+	//------------------------------------------------------------------------//
+	// EmployeeMessageManagement
+	//------------------------------------------------------------------------//
+	/**
+	 * EmployeeMessageManagement()
+	 *
+	 * Compiles the Href to be executed when the EmployeeMessageManagement functionality is requested
+	 *
+	 * Compiles the Href to be executed when the EmployeeMessageManagement functionality is requested
+	 * 
+	 * @return	string				Href
+	 *
+	 * @method
+	 */
+	function EmployeeMessageManagement()
+	{
+		$this->strContextMenuLabel = "Daily Message Management";
+		$this->strLabel = "Daily Message Management";
+		return self::NEW_FRAMEWORK . "reflex.php/Employee/ManageDailyMessages";
+	}
+
+
 
 	//------------------------------------------------------------------------//
 	// TicketingAdmin
