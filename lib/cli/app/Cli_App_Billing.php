@@ -121,6 +121,7 @@ class Cli_App_Billing extends Cli
 				$intInvoiceDatetime	= strtotime("+1 month", $intInvoiceDatetime);
 			}
 			$strInvoiceDate	= date("Y-m-d", $intInvoiceDatetime);
+			$this->log("Predicted Billing Date\t: {$strInvoiceDate}");
 			
 			// Are there any Invoice Runs Scheduled for today?
 			if ($selInvoiceRunSchedule->Execute(Array('InvoiceDate' => $strInvoiceDate)))
