@@ -68,7 +68,7 @@
 			$arrColumns['Amount']	= "Payment.Amount";			
 		
 			//Pull information and store it
-			$selSelect = new StatementSelect("InvoicePayment LEFT OUTER JOIN Invoice USING (InvoiceRun, Account), Payment",
+			$selSelect = new StatementSelect("InvoicePayment LEFT OUTER JOIN Invoice USING (invoice_run_id, Account), Payment",
 							$arrColumns,
 						"InvoicePayment.Account = <Id> AND Payment.Id = InvoicePayment.Payment", 'Payment.PaidOn DESC');
 			$arrWhere = Array('Id' => $actAccount->Pull ('Id')->getValue());

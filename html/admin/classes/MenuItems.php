@@ -1859,12 +1859,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewInvoicePDF($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun="")
+	function ViewInvoicePDF($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRun="")
 	{
 		$this->strContextMenuLabel = "";
 
-		$this->strLabel = "pdf acct: $intAccount, $intInvoiceId/$strInvoiceRun";
-		return self::OLD_FRAMEWORK . "invoice_pdf.php?Account=$intAccount&Invoice=$intInvoiceId&InvoiceRun=$strInvoiceRun&Year=$intYear&Month=$intMonth";
+		$this->strLabel = "pdf acct: $intAccount, $intInvoiceId/$intInvoiceRun";
+		return self::OLD_FRAMEWORK . "invoice_pdf.php?Account=$intAccount&Invoice=$intInvoiceId&invoice_run_id=$intInvoiceRun&Year=$intYear&Month=$intMonth";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2210,7 +2210,7 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EmailPDFInvoice($intId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun)
+	function EmailPDFInvoice($intId, $intYear, $intMonth, $intInvoiceId, $intInvoiceRun)
 	{
 		$this->strContextMenuLabel = "";
 		
@@ -2219,7 +2219,7 @@ class MenuItems
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
 		$arrData['Invoice']['Id'] = $intInvoiceId;
-		$arrData['Invoice']['InvoiceRun'] = $strInvoiceRun;
+		$arrData['Invoice']['invoice_run_id'] = $intInvoiceRun;
 		$arrData['Invoice']['Year'] = $intYear;
 		$arrData['Invoice']['Month'] = $intMonth;
 		

@@ -292,11 +292,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// check if a pdf exists for the invoice
-		if (InvoicePDFExists(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, DBO()->Invoice->InvoiceRun->Value))
+		if (InvoicePDFExists(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, intval(DBO()->Invoice->invoice_run_id->Value)))
 		{
 			// Try to pull the Invoice PDF
-			$strInvoice = GetPDFContent(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, DBO()->Invoice->InvoiceRun->Value);
-			$strInvoiceFilename = GetPdfFilename(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, DBO()->Invoice->InvoiceRun->Value);
+			$strInvoice = GetPDFContent(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, DBO()->Invoice->invoice_run_id->Value);
+			$strInvoiceFilename = GetPdfFilename(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value, DBO()->Invoice->Id->Value, DBO()->Invoice->invoice_run_id->Value);
 			header("Content-Type: application/pdf");
 			header("Content-Disposition: attachment; filename=\"$strInvoiceFilename\"");
 			echo $strInvoice;

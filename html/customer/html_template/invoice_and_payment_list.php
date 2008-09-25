@@ -117,7 +117,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		$arrInvoicesAndPayments = Array();
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
-			$arrRecord['InvoiceRun'] 					= $dboInvoice->InvoiceRun->Value;
+			$arrRecord['invoice_run_id']				= $dboInvoice->invoice_run_id->Value;
 			$arrRecord['InvoiceId'] 					= $dboInvoice->Id->Value;
 
 			$arrRecord['Type'] 					= "Invoice";  // This may not be required, but if it is, it should probably be changed to a constant.  Although it's only ever going to be used in this function
@@ -205,17 +205,17 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			
 			if ($arrRecord['Type'] == 'Invoice')
 			{	
-				$strInvoiceRun = $arrRecord['InvoiceRun'];
+				$intInvoiceRunId = $arrRecord['invoice_run_id'];
 				$strInvoiceId = $arrRecord['InvoiceId'];
 				// Find out if there is a pdf for this invoice
 				$intInvoiceDate 	= strtotime("-1 month", $arrRecord['DateCreatedTimeStamp']);
 				$intInvoiceYear 	= (int)date("Y", $intInvoiceDate);
 				$intInvoiceMonth 	= (int)date("m", $intInvoiceDate);
-				if (InvoicePDFExists(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, $strInvoiceRun))
+				if (InvoicePDFExists(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, intval($intInvoiceRunId)))
 				{
 					// The pdf exists
 					// Build "download invoice pdf" link
-					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, $strInvoiceRun);
+					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth, $strInvoiceId, $intInvoiceRunId);
 					$strInvoicePdfLabel	= "<span><a href='$strInvoicePdfHref'><img src='img/template/pdf.gif' title='Download PDF Invoice' /></a> <a href='$strInvoicePdfHref'>View my bill</a></span>";
 				}
 				else

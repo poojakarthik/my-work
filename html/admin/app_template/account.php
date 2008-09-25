@@ -397,7 +397,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Build the list of columns to use for the Charge DBL (as it is pulling this information from 2 tables)
 		$arrColumns = Array(	'Id' => 'C.Id',	'AccountGroup'=>'C.AccountGroup',	'Account'=>'C.Account',	'Service'=>'C.Service',
-								'InvoiceRun'=>'C.InvoiceRun',	'CreatedBy'=>'C.CreatedBy', 'CreatedOn'=>'C.CreatedOn', 'ApprovedBy'=>'C.ApprovedBy',
+								'invoice_run_id'=>'C.invoice_run_id',	'CreatedBy'=>'C.CreatedBy', 'CreatedOn'=>'C.CreatedOn', 'ApprovedBy'=>'C.ApprovedBy',
 								'ChargeType'=>'C.ChargeType', 'Description'=>'C.Description', 'ChargedOn'=>'C.ChargedOn', 'Nature'=>'C.Nature',
 								'Amount'=>'C.Amount', 'Invoice'=>'C.Invoice', 'Notes'=>'C.Notes', 'Status'=>'C.Status', 'LinkType' => 'C.LinkType',
 								'LinkId' => 'C.LinkId', 'FNN'=>'S.FNN');

@@ -113,7 +113,7 @@
 		{
 			$cgsCharges = new Charges ();
 			$cgsCharges->Constrain ('Account'		, '=', $this->Pull ('Account')->getValue ());
-			$cgsCharges->Constrain ('InvoiceRun'	, '=', $this->Pull ('InvoiceRun')->getValue ());
+			$cgsCharges->Constrain ('invoice_run_id'	, '=', $this->Pull ('invoice_run_id')->getValue ());
 			return $cgsCharges;
 		}
 		
@@ -135,7 +135,7 @@
 		public function ServiceTotals ()
 		{
 			$stlServiceTotals = new ServiceTotals;
-			$stlServiceTotals->Constrain ('InvoiceRun',	'=',	$this->Pull ('InvoiceRun')->getValue ());
+			$stlServiceTotals->Constrain ('invoice_run_id',	'=',	$this->Pull ('invoice_run_id')->getValue ());
 			$stlServiceTotals->Constrain ('Account',	'=',	$this->Pull ('Account')->getValue ());
 			
 			return $stlServiceTotals;
@@ -161,12 +161,12 @@
 			$selServiceTotal = new StatementSelect (
 				'ServiceTotal', 
 				'Id', 
-				'Id = <Id> AND InvoiceRun = <InvoiceRun>', 
+				'Id = <Id> AND invoice_run_id = <invoice_run_id>', 
 				null, 
 				1
 			);
 			
-			$selServiceTotal->Execute (Array ('Id' => $intServiceTotal, 'InvoiceRun' => $this->Pull ('InvoiceRun')->getValue ()));
+			$selServiceTotal->Execute (Array ('Id' => $intServiceTotal, 'invoice_run_id' => $this->Pull ('invoice_run_id')->getValue ()));
 			
 			if ($selServiceTotal->Count () <> 1)
 			{
@@ -277,7 +277,7 @@
 						'AccountGroup'	=> $this->Pull ('AccountGroup')->getValue (),
 						'Account'		=> $this->Pull ('Account')->getValue (),
 						'Service'		=> NULL,
-						'InvoiceRun'	=> NULL,
+						'invoice_run_id'	=> NULL,
 						'CreatedBy'		=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 						'CreatedOn'		=> new MySQLFunction ('NOW()'),
 						'ApprovedBy'	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
@@ -303,7 +303,7 @@
 						'AccountGroup'	=> $this->Pull ('AccountGroup')->getValue (),
 						'Account'		=> $this->Pull ('Account')->getValue (),
 						'Service'		=> NULL,
-						'InvoiceRun'	=> NULL,
+						'invoice_run_id'	=> NULL,
 						'CreatedBy'		=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 						'CreatedOn'		=> new MySQLFunction ('NOW()'),
 						'ApprovedBy'	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),

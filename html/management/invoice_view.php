@@ -73,18 +73,22 @@
 	
 	// Get the CDRs the Invoice has
 	// We may also want to Constrain this to only show a Certain Record Type
+	// WIP = THIS WON'T WORK ON THE POSTGRES DB!!!
+/*
 	$cdrCDRs = $Style->attachObject ($invInvoice->CDRs ());
-	$cdrCDRs->Constrain ('Service',			'=',	$sttServiceTotal->Pull ('Service')->getValue ());
+	$cdrCDRs->Constrain ('service',			'=',	$sttServiceTotal->Pull ('Service')->getValue ());
+	$cdrCDRs->Constrain ('invoice_run_id',  '=',	$invInvoice->Pull ('invoice_run_id')->getValue ());
 	
 	if ($_GET ['RecordType'])
 	{
-		$cdrCDRs->Constrain ('RecordType',	'=',	$_GET ['RecordType']);
+		$cdrCDRs->Constrain ('record_type',	'=',	$_GET ['RecordType']);
 	}
 	
 	$cdrCDRs->Sample (
 		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1,
 		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 30
 	);
+*/
 	
 	// Get a list of Record Types
 	$rtsRecordTypes = $Style->attachObject (new RecordTypes);

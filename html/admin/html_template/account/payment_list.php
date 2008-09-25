@@ -138,10 +138,10 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 							if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
 							{
 								// The current InvoicePayment record relates to the payment.
-								// Find the invoice that relates to this InvoiceRun
+								// Find the invoice that relates to this invoice_run_id
 								foreach (DBL()->Invoice as $dboInvoice)
 								{
-									if ($dboInvoice->InvoiceRun->Value == $dboInvoicePayment->InvoiceRun->Value)
+									if ($dboInvoice->invoice_run_id->Value == $dboInvoicePayment->invoice_run_id->Value)
 									{
 										// An invoice has been found
 										$bolHasInvoice = TRUE;
@@ -194,13 +194,13 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
                 if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
                 {
                     // The current InvoicePayment record relates to the payment so add it as an index
-					Table()->PaymentTable->AddIndex("InvoiceRun", $dboInvoicePayment->InvoiceRun->Value);
+					Table()->PaymentTable->AddIndex("invoice_run_id", $dboInvoicePayment->invoice_run_id->Value);
 					
-					// Find the invoice that relates to this InvoiceRun
-					$strInvoiceRun = $dboInvoicePayment->InvoiceRun->Value;
+					// Find the invoice that relates to this invoice_run_id
+					$intInvoiceRunId = $dboInvoicePayment->invoice_run_id->Value;
 					foreach (DBL()->Invoice as $dboInvoice)
 					{
-						if ($dboInvoice->InvoiceRun->Value == $strInvoiceRun)
+						if ($dboInvoice->invoice_run_id->Value == $intInvoiceRunId)
 						{
 							// the current invoice relates to the current payment
 							// define data for the row's drop down details
@@ -298,7 +298,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		else
 		{
 			// Link this table to the invoice table, and the adjustments table
-			Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
+			Table()->PaymentTable->LinkTable("InvoiceTable", "invoice_run_id");
 			
 			// The current implementation of the highlight functionality cannot handle the recursive table links
 			//Table()->PaymentTable->LinkTable("AdjustmentTable", "PaymentId");

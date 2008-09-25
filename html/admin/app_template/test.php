@@ -52,13 +52,13 @@ class AppTemplateTest extends ApplicationTemplate
 				if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
 				{
 					// The current InvoicePayment record relates to the payment so add it as an index
-					Table()->Payment->AddIndex("InvoiceRun", $dboInvoicePayment->InvoiceRun->Value);
+					Table()->Payment->AddIndex("invoice_run_id", $dboInvoicePayment->invoice_run_id->Value);
 				}
 			}
 		}
 		
 		// Link the invoice table to the payment table so that highlighting a record in the payment table, will highlight related records in the invoice table
-		Table()->Payment->LinkTable("Invoice", "InvoiceRun");
+		Table()->Payment->LinkTable("Invoice", "invoice_run_id");
 		
 		// Create the invoice table
 		Table()->Invoice->SetHeader("Created On", "InvoiceId", "Account", "Due On", "Total", "Balance");
@@ -70,11 +70,11 @@ class AppTemplateTest extends ApplicationTemplate
 										$dboInvoice->DueOn->Value,
 										$dboInvoice->Total->Value,
 										$dboInvoice->Balance->Value);
-				Table()->Invoice->AddIndex("InvoiceRun", $dboInvoice->InvoiceRun->Value);
+				Table()->Invoice->AddIndex("invoice_run_id", $dboInvoice->invoice_run_id->Value);
 		}
 		
 		// Link the payment table to the invoice table so that highlighting a record in the invoice table, will highlight related records in the invoice table
-		Table()->Payment->LinkTable("Payment", "InvoiceRun");
+		Table()->Payment->LinkTable("Payment", "invoice_run_id");
 		
 		//Debug(Table()->Payment->Info());
 		//Debug(Table()->Invoice->Info());

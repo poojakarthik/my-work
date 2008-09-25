@@ -53,7 +53,7 @@ class Customer_Status_Account_Details
 									"InvoiceDisputed"	=> "i.Disputed"
 								);
 			$strWhere	= "i.Account = <AccountId> AND ir.id = <InvoiceRunId>";
-			$strTables	= "Invoice AS i INNER JOIN InvoiceRun AS ir ON i.InvoiceRun = ir.InvoiceRun";
+			$strTables	= "Invoice AS i INNER JOIN InvoiceRun AS ir ON i.invoice_run_id = ir.Id";
 			$this->_selInvoice = new StatementSelect($strTables, $arrColumns, $strWhere);
 		}
 		if ($this->_selInvoiceActionHistory === NULL)

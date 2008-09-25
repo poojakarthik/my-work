@@ -25,15 +25,15 @@
 			$_GET ['Year'],
 			$_GET ['Month'],
 			$_GET ['Invoice'],
-			$_GET ['InvoiceRun']
+			$_GET ['invoice_run_id']
 		);
 		
-		if ($strInvoice == "")
+		if (!$strInvoice)
 		{
 			throw new Exception ("Not Found");
 		}
 
-		$strInvoiceFilename = GetPdfFilename($_GET['Account'], $_GET['Year'], $_GET['Month'], $_GET ['Invoice'], $_GET ['InvoiceRun']);
+		$strInvoiceFilename = GetPdfFilename($_GET['Account'], $_GET['Year'], $_GET['Month'], $_GET ['Invoice'], $_GET ['invoice_run_id']);
 
 		header("Content-Type: application/pdf");
 		header("Content-Disposition: attachment; filename=\"$strInvoiceFilename\"");

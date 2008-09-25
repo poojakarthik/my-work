@@ -191,7 +191,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);
 			
 			// Add indexes
-			Table()->AdjustmentTable->AddIndex("InvoiceRun", $dboCharge->InvoiceRun->Value);
+			Table()->AdjustmentTable->AddIndex("invoice_run_id", $dboCharge->invoice_run_id->Value);
 			if ($dboCharge->LinkType->Value == CHARGE_LINK_PAYMENT)
 			{
 				// This charge relates directly to a payment
@@ -221,7 +221,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		else
 		{
 			// Link other tables to this one
-			Table()->AdjustmentTable->LinkTable("InvoiceTable", "InvoiceRun");
+			Table()->AdjustmentTable->LinkTable("InvoiceTable", "invoice_run_id");
 			Table()->AdjustmentTable->LinkTable("RecurringAdjustmentTable", "RecurringAdjustmentId");
 			
 			// The current implementation of the highlighting of associated records cannot handle this link

@@ -18,14 +18,14 @@ $selAccounts	= new StatementSelect(	"((Account JOIN Contact ON Account.PrimaryCo
 										"Account.Id");
 
 $selLastNonZeroInvoice	= new StatementSelect(	"Invoice",
-												"Id, InvoiceRun, Total, Tax",
+												"Id, invoice_run_id, Total, Tax",
 												"Account = <Account> AND Total != 0.0",
 												"CreatedOn DESC",
 												"1");
 
 $selLostServices	= new StatementSelect(	"(Service LEFT JOIN ServiceTotal ON Service.Id = ServiceTotal.Service) LEFT JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id, RatePlan CurrentRatePlan",
 											"Service.FNN AS FNN, RatePlan.Name AS LastPlan, CurrentRatePlan.Name AS CurrentPlan",
-											"LatestCDR <= SUBDATE(CURDATE(), INTERVAL 6 MONTH) AND Service.Account = <Account> AND ServiceTotal.InvoiceRun = <InvoiceRun> AND CurrentRatePlan.Id = (SELECT RatePlan FROM ServiceRatePlan WHERE Service = Service.Id ORDER BY Id DESC LIMIT 1)");
+											"LatestCDR <= SUBDATE(CURDATE(), INTERVAL 6 MONTH) AND Service.Account = <Account> AND ServiceTotal.invoice_run_id = <invoice_run_id> AND CurrentRatePlan.Id = (SELECT RatePlan FROM ServiceRatePlan WHERE Service = Service.Id ORDER BY Id DESC LIMIT 1)");
 
 CliEcho("\n[ ACCOUNTS LOST +1 MONTHS AGO ]\n");
 
@@ -49,7 +49,7 @@ else
 		if ($arrLastInvoice = $selLastNonZeroInvoice->Fetch())
 		{
 			// Get List of Services lost 6+ months ago
-			if ($intLostServiceCount = $selLostServices->Execute(Array('Account' => $arrAccount['Account'], 'InvoiceRun' => $arrLastInvoice['InvoiceRun'])))
+			if ($intLostServiceCount = $selLostServices->Execute(Array('Account' => $arrAccount['Account'], 'invoice_run_id' => $arrLastInvoice['invoice_run_id'])))
 			{
 				// Are all of the Services Lost?
 				if ($intLostServiceCount === $arrAccount['ServiceCount'])

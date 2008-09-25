@@ -114,12 +114,12 @@ class Cli_App_LateNoticeRun extends Cli
 							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = realpath(FILES_BASE_PATH) . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $pathDate . DIRECTORY_SEPARATOR . $custGroupName;
 						}
 
-						$invoiceRun = $arrDetails['Account']['InvoiceRun'];
-						if (!array_key_exists($invoiceRun, $invoiceRunAutoFields[$intAutomaticInvoiceAction]))
+						$invoiceRunId = $arrDetails['Account']['invoice_run_id'];
+						if (!array_key_exists($invoiceRunId, $invoiceRunAutoFields[$intAutomaticInvoiceAction]))
 						{
-							$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRun] = 0;
+							$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRunId] = 0;
 						}
-						$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRun]++;
+						$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRunId]++;
 
 						switch ($arrDetails['Account']['DeliveryMethod'])
 						{
@@ -199,7 +199,7 @@ class Cli_App_LateNoticeRun extends Cli
 										$arrSummary[$strCustGroupName][$strLetterType]['pdfs'][] = $targetFile;
 	
 										// We need to log the fact that we've created it, by updating the account automatic_invoice_action
-										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType stored for printing in $outputDirectory", $invoiceRun);
+										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType stored for printing in $outputDirectory", $invoiceRunId);
 										if ($outcome !== TRUE)
 										{
 											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
@@ -264,7 +264,7 @@ class Cli_App_LateNoticeRun extends Cli
 										$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
 
 										// We need to log the fact that we've sent it, by updating the account automatic_invoice_action
-										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRun);
+										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
 										if ($outcome !== TRUE)
 										{
 											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
@@ -289,9 +289,9 @@ class Cli_App_LateNoticeRun extends Cli
 
 			foreach ($invoiceRunAutoFields as $intAutomaticInvoiceAction => $invoiceRunCounts)
 			{
-				foreach ($invoiceRunCounts as $invoiceRun => $count)
+				foreach ($invoiceRunCounts as $invoiceRunId => $count)
 				{
-					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, $intAutomaticInvoiceAction);
+					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction);
 					if ($result !== TRUE)
 					{
 						$arrGeneralErrors[] = $result;
@@ -450,24 +450,24 @@ class Cli_App_LateNoticeRun extends Cli
 		}
 	}
 
-	private function changeInvoiceRunAutoActionDateTime($invoiceRun, $intAutomaticInvoiceAction)
+	private function changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction)
 	{
 		$qryQuery = new Query();
-		$invoiceRun = $qryQuery->EscapeString($invoiceRun);
-		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id IN (SELECT Id FROM InvoiceRun WHERE InvoiceRun = '$invoiceRun') AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
+		$invoiceRunId = $qryQuery->EscapeString($invoiceRunId);
+		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id IN (SELECT Id FROM InvoiceRun WHERE invoice_run_id = '$invoiceRunId') AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
 
 		$message = TRUE;
 		if (!$qryQuery->Execute($strSQL))
 		{
-			$message = ' Failed to update automatic_invoice_run_event for invoice_run ' . $invoiceRun . ' and action ' . $intAutomaticInvoiceAction . ' to ' . $this->runDateTime . '. '. $qryQuery->Error();
+			$message = ' Failed to update automatic_invoice_run_event for invoice_run ' . $invoiceRunId . ' and action ' . $intAutomaticInvoiceAction . ' to ' . $this->runDateTime . '. '. $qryQuery->Error();
 			$this->log($message, TRUE);
 		}
 		return $message;
 	}
 
-	private function changeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $invoiceRun)
+	private function changeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $invoiceRunId)
 	{
-		$error = ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $this->runDateTime, $invoiceRun);
+		$error = ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $this->runDateTime, $invoiceRunId);
 		if ($error !== TRUE)
 		{
 			$this->log($error, TRUE);

@@ -156,7 +156,7 @@ class Flex_Data_Model
 				$colDef['ObLib'] = "dataInteger";
 			}
 
-			if (preg_match ("/tinyint\(1\)/", $colDef['nativetype'])) {
+			if (preg_match ("/tinyint\(1\)/", $colDef['nativetype']) || ($colDef['nativetype'] == 'tinyint' && $colDef['length'] == 1)) {
 				$colDef['RefType'] = "i";
 				$colDef['ObLib'] = "dataBoolean";
 			}

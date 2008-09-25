@@ -101,7 +101,7 @@ class HtmlTemplateInvoiceEmail extends HtmlTemplate
 		
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Invoice->Id->RenderHidden();
-		DBO()->Invoice->InvoiceRun->RenderHidden();
+		DBO()->Invoice->invoice_run_id->RenderHidden();
 		DBO()->Invoice->Year->RenderHidden();
 		DBO()->Invoice->Month->RenderHidden();
 		

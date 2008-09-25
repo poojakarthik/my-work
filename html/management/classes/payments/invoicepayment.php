@@ -72,7 +72,7 @@
 			$arrColumns['Status']		= "Payment.Status";
 			
 			//Pull information and store it
-			$selSelect = new StatementSelect("InvoicePayment LEFT OUTER JOIN Invoice USING (InvoiceRun, Account), Payment",
+			$selSelect = new StatementSelect("InvoicePayment LEFT OUTER JOIN Invoice USING (invoice_run_id, Account), Payment",
 							$arrColumns,
 						"InvoicePayment.Id = <Id> AND Payment.Id = InvoicePayment.Payment", '', 1);
 			$arrWhere = Array('Id'=>$intId);

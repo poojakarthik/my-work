@@ -179,7 +179,6 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 	private function changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction)
 	{
 		$qryQuery = new Query();
-		$invoiceRun = $qryQuery->EscapeString($invoiceRun);
 		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id = $invoiceRunId AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
 		$message = TRUE;
 		if (!$qryQuery->Execute($strSQL))
@@ -272,7 +271,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 			$GLOBALS['fwkFramework']->AddNote("Late Payment Fee of \${$lateFee} automatically applied to account.", SYSTEM_NOTE_TYPE, USER_ID, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
 
 			$strReason = "Overdue balance of $" . $arrAccount['Overdue'] . " remained unpaid";
-			ChangeAccountAutomaticInvoiceAction($arrAccount['AccountId'], $arrAccount['AccountStatus'], AUTOMATIC_INVOICE_ACTION_LATE_FEES, $strReason, $this->runDateTime, $arrAccount['InvoiceRun']);
+			ChangeAccountAutomaticInvoiceAction($arrAccount['AccountId'], $arrAccount['AccountStatus'], AUTOMATIC_INVOICE_ACTION_LATE_FEES, $strReason, $this->runDateTime, $arrAccount['invoice_run_id']);
 
 			return TRUE;
 		}

@@ -317,7 +317,7 @@
 								<xsl:with-param name="field" select="string('InvoiceRun')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/InvoiceRun" /></td>
+						<td><xsl:value-of select="/Response/CDR/invoice_run_id" /></td>
 					</tr>
 					
 					<!-- SequenceNo -->

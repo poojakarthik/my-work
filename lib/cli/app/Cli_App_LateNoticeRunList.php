@@ -80,12 +80,12 @@ class Cli_App_LateNoticeRunList extends Cli
 
 				foreach($arrAccounts as $arrAccount)
 				{
-					$invoiceRun = $arrAccount['InvoiceRun'];
-					if (!array_key_exists($invoiceRun, $invoiceRunAutoFields[$intAutomaticInvoiceAction]))
+					$invoiceRunId = $arrAccount['invoice_run_id'];
+					if (!array_key_exists($invoiceRunId, $invoiceRunAutoFields[$intAutomaticInvoiceAction]))
 					{
-						$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRun] = 0;
+						$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRunId] = 0;
 					}
-					$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRun]++;
+					$invoiceRunAutoFields[$intAutomaticInvoiceAction][$invoiceRunId]++;
 
 					if (!array_key_exists($arrAccount['CustomerGroupName'], $arrSummary))
 					{
@@ -110,12 +110,12 @@ class Cli_App_LateNoticeRunList extends Cli
 			$this->log("Categorized account actions. Updating account action history...");
 			foreach ($invoiceRunAutoFields as $intAutomaticInvoiceAction => $invoiceRunCounts)
 			{
-				foreach ($invoiceRunCounts as $invoiceRun => $count)
+				foreach ($invoiceRunCounts as $invoiceRunId => $count)
 				{
-					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRun, $intAutomaticInvoiceAction);
+					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction);
 					if ($result !== TRUE)
 					{
-						throw new Exception("Error: Failed to mark late notice run list event as complete for invoice run $invoiceRun: $result");
+						throw new Exception("Error: Failed to mark late notice run list event as complete for invoice run $invoiceRunId: $result");
 					}
 				}
 			}
@@ -262,17 +262,17 @@ class Cli_App_LateNoticeRunList extends Cli
 		}
 	}
 
-	private function changeInvoiceRunAutoActionDateTime($invoiceRun, $intAutomaticInvoiceAction)
+	private function changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction)
 	{
-		$this->log("Setting InvoiceRun $invoiceRun action $intAutomaticInvoiceAction as completed on " . $this->runDateTime);
+		$this->log("Setting InvoiceRun $invoiceRunId action $intAutomaticInvoiceAction as completed on " . $this->runDateTime);
 		$qryQuery = new Query();
-		$invoiceRun = $qryQuery->EscapeString($invoiceRun);
-		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id IN (SELECT Id FROM InvoiceRun WHERE InvoiceRun = '$invoiceRun') AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
+		$invoiceRunId = $qryQuery->EscapeString($invoiceRunId);
+		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id IN (SELECT Id FROM InvoiceRun WHERE invoice_run_id = '$invoiceRunId') AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
 
 		$message = TRUE;
 		if (!$qryQuery->Execute($strSQL))
 		{
-			$message = ' Failed to update automatic_invoice_run_event for invoice_run ' . $invoiceRun . ' and action ' . $intAutomaticInvoiceAction . ' to ' . $this->runDateTime . '. '. $qryQuery->Error();
+			$message = ' Failed to update automatic_invoice_run_event for invoice_run ' . $invoiceRunId . ' and action ' . $intAutomaticInvoiceAction . ' to ' . $this->runDateTime . '. '. $qryQuery->Error();
 			$this->log($message, TRUE);
 		}
 		return $message;

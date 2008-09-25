@@ -85,11 +85,11 @@
 			// Note: As this object is used for retreiving results that can be paged accross, returning
 			// a resultset that is a combination from two databases would require more considerable work
 			// to get working smoothly.
-			parent::__construct ('CDRs-Invoiced', 'CDRInvoiced', 'CDR', FLEX_DATABASE_CONNECTION_CDR);
+			parent::__construct ('CDRs-Invoiced', 'cdr_invoiced', 'CDR', FLEX_DATABASE_CONNECTION_CDR);
 			
-			$this->Constrain	('InvoiceRun',		'=',	$invInvoice->Pull ('InvoiceRun')->getValue ());
-			$this->Constrain	('Account',			'=',	$invInvoice->Pull ('Account')->getValue ());
-			$this->Order		('StartDatetime');
+			$this->Constrain	('invoice_run_id',		'=',	$invInvoice->Pull ('invoice_run_id')->getValue ());
+			$this->Constrain	('account',			'=',	$invInvoice->Pull ('Account')->getValue ());
+			$this->Order		('start_date_time');
 		}
 	}
 	

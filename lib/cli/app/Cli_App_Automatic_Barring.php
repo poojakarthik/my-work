@@ -102,7 +102,7 @@ class Cli_App_Automatic_Barring extends Cli
 					$accountId 			= intval($account['AccountId']);
 					$accountGroupId		= intval($account['AccountGroupId']);
 					$customerGroupId 	= intval($account['CustomerGroupId']);
-					$invoiceRun 		= $account['InvoiceRun'];
+					$invoiceRunId 		= $account['invoice_run_id'];
 					$customerGroupName 	= $account['CustomerGroupName'];
 					$amountOverdue 		= $account['Overdue'];
 
@@ -120,7 +120,7 @@ class Cli_App_Automatic_Barring extends Cli
 					$this->log('Barring account ' . $accountId);
 					try
 					{
-						$barOutcome[$accountId] = BarAccount($accountId, $accountGroupId, TRUE, $invoiceRun);
+						$barOutcome[$accountId] = BarAccount($accountId, $accountGroupId, TRUE, $invoiceRunId);
 					}
 					catch (Exception $e)
 					{
@@ -202,7 +202,7 @@ class Cli_App_Automatic_Barring extends Cli
 						$customerGroupId 	= intval($account['CustomerGroupId']);
 						$customerGroupName 	= $account['CustomerGroupName'];
 						$amountOverdue 		= $account['Overdue'];
-						$invoiceRun 		= $account['InvoiceRun'];
+						$invoiceRunId 		= $account['invoice_run_id'];
 
 						if (!array_key_exists($customerGroupName, $unbarSummary))
 						{
@@ -218,7 +218,7 @@ class Cli_App_Automatic_Barring extends Cli
 						$this->log('Unbarring account ' . $accountId);
 						try
 						{
-							$unbarOutcome[$accountId] = UnbarAccount($accountId, $accountGroupId, TRUE, $invoiceRun);
+							$unbarOutcome[$accountId] = UnbarAccount($accountId, $accountGroupId, TRUE, $invoiceRunId);
 						}
 						catch (Exception $e)
 						{
@@ -665,7 +665,7 @@ class Cli_App_Automatic_Barring extends Cli
 	private function changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction)
 	{
 		$qryQuery = new Query();
-		$invoiceRun = $qryQuery->EscapeString($invoiceRun);
+		$invoiceRunId = $qryQuery->EscapeString($invoiceRunId);
 		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id = $invoiceRunId AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
 		$message = TRUE;
 		if (!$qryQuery->Execute($strSQL))

@@ -66,15 +66,15 @@ class AppTemplateInvoice extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		// Set up some variables to use
-		$arrEmails		= Array(); // List of emails from Other Email address box
-		$arrEmailList	= Array(); // Emails from checkboxes
-		$arrExploded	= Array();
-		$arrPDFtoSend	= Array();
-		$intInvoiceId	= DBO()->Invoice->Id->Value;
-		$strInvoiceRun	= DBO()->Invoice->InvoiceRun->Value;
-		$intYear		= DBO()->Invoice->Year->Value;
-		$intMonth		= DBO()->Invoice->Month->Value;
-		$intAccount		= DBO()->Account->Id->Value;
+		$arrEmails			= Array(); // List of emails from Other Email address box
+		$arrEmailList		= Array(); // Emails from checkboxes
+		$arrExploded		= Array();
+		$arrPDFtoSend		= Array();
+		$intInvoiceId		= DBO()->Invoice->Id->Value;
+		$intInvoiceRunId	= DBO()->Invoice->invoice_run_id->Value;
+		$intYear			= DBO()->Invoice->Year->Value;
+		$intMonth			= DBO()->Invoice->Month->Value;
+		$intAccount			= DBO()->Account->Id->Value;
 		
 		// check if the form was submitted
 		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice')) 
@@ -113,8 +113,8 @@ class AppTemplateInvoice extends ApplicationTemplate
 			}
 
 			// Get PDF filenames
-			$strPDFtoSend = GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun, DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL);
-			$strInvoiceFileName = GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
+			$strPDFtoSend = GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId, DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL);
+			$strInvoiceFileName = GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId);
 
 			// Load account details for sending the email
 			$strTables	= "Account AS A INNER JOIN CustomerGroup AS CG ON A.CustomerGroup = CG.Id";
@@ -205,29 +205,9 @@ class AppTemplateInvoice extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// Retrieve the CDRs relating to the invoice
-		$arrColumns = Array(	"ServiceType"			=>	"CDRI.ServiceType", 
-								"FNN"					=>	"CDRI.FNN",
-								"RecordType"			=>	"CDRI.RecordType",
-								"RecordTypeDescription"	=>	"RT.Description",
-								"Destination"			=>	"CDRI.Destination",
-								"StartDatetime"			=>	"CDRI.StartDatetime",
-								"Units"					=>	"CDRI.Units",
-								"Charge"				=>	"CDRI.Charge");
-		$strWhere = "CDRI.Account = <Account> AND CDRI.InvoiceRun = <InvoiceRun>";
-		$strTables = "CDRInvoiced AS CDRI INNER JOIN RecordType AS RT ON CDRI.RecordType = RT.Id";
+		require_once dirname(__FILE__) . '/../../../lib/classes/CDR.php';
+		$cdrs = CDR::getForInvoice(DBO()->Invoice);
 		
-		$selCDR = new StatementSelect($strTables, $arrColumns, $strWhere, "ServiceType, FNN, RecordTypeDescription, StartDatetime", '', '', FLEX_DATABASE_CONNECTION_CDR);
-		$intNumRecords = $selCDR->Execute(Array("Account"=> DBO()->Invoice->Account->Value, "InvoiceRun"=> DBO()->Invoice->InvoiceRun->Value));
-		
-		if ($intNumRecords === FALSE)
-		{
-			// An error occurred and the cdrs could not be retrieved
-			DBO()->Error->Message = "Retrieving CDR records from the database failed, unexpectedly";
-			$this->LoadPage('error');
-			return TRUE;
-		}
-				
 		$strCallDetailsCSV = "";
 		$arrColumnNames = Array("ServiceType", "FNN", "RecordType", "Date", "Time", "Called Party", "Duration", "Charge (\$)");
 		$arrColumnOrder = Array("ServiceType", "FNN", "RecordTypeDescription", "Date", "Time", "Destination", "Duration", "Charge");
@@ -241,7 +221,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$intLastFNN			= NULL;
 		
 		// Add each call (CDR) to the CSV file
-		while (($arrCDR = $selCDR->Fetch()) !== FALSE)
+		foreach ($cdrs as $arrCDR)
 		{
 			if (($intLastFNN !== NULL) && (($intLastRecordType != $arrCDR['RecordType']) || ($intLastFNN != $arrCDR['FNN']))) 
 			{

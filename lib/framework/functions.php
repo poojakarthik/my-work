@@ -2616,9 +2616,9 @@ function ListPDFSamples($intAccountId)
  *
  * @method
  */ 
-function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun)
+function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mxdInvoiceRun)
 {
-	$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}.xml";
+	$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml";
 	$arrPDFs = glob($strGlob);
 	if ($arrPDFs && count($arrPDFs))
 	{
@@ -2627,7 +2627,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $st
 
 	if ($intInvoiceId)
 	{
-		$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml";
+		$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml";
 		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs))
 		{
@@ -2635,7 +2635,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $st
 		}
 	}
 
-	$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}.xml.bz2";
+	$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml.bz2";
 	$arrPDFs = glob($strGlob);
 	if ($arrPDFs && count($arrPDFs))
 	{
@@ -2644,7 +2644,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $st
 
 	if ($intInvoiceId)
 	{
-		$strGlob = PATH_INVOICE_PDFS ."xml/$strInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
+		$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}_{$intInvoiceId}.xml.bz2";
 		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs))
 		{
@@ -2654,12 +2654,27 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $st
 
 	if ($intInvoiceId)
 	{
+		$intMonth = substr('0'.$intMonth, -2);
 		$strGlob = PATH_INVOICE_PDFS ."pdf/$intYear/$intMonth/{$intAccountId}_{$intInvoiceId}.pdf";
 		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs))
 		{
 			return $arrPDFs[0];
 		}
+	}
+
+	if (is_int($mxdInvoiceRun))
+	{
+		// We must have just searched using an invoice run id.
+		// Historically we have stored against the invoice run name (InvoiceRun.InvoiceRun),
+		// so we should have a go searching with this before we give up.
+		$selInvoiceRun = new StatementSelect('InvoiceRun', 'InvoiceRun', 'Id=<Id>');
+		if ($mxdOutcome	= $selInvoiceRun->Execute(Array('Id' => $mxdInvoiceRun)))
+		{
+			$arrInvoiceRun = $selInvoiceRun->Fetch();
+			$strInvoiceRun = strval($arrInvoiceRun['InvoiceRun']);
+			return InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
+		}		
 	}
 
 	return FALSE;
@@ -2679,16 +2694,16 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $st
  * @param	int		$intYear			Year to match
  * @param	int		$intMonth			Month to match
  * @param	int		$intInvoiceId		Id of invoice
- * @param	int		$strInvoiceRun		Invoice run of invoice
+ * @param	int		$intInvoiceRunId	Invoice run of invoice
  *
  * @return	mixed						string: filename of the PDF invoice
  * 										FALSE: there was an error
  * 
  * @function
  */
-function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun)
+function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId)
 {
-	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
+	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, intval($intInvoiceRunId));
 	if (!$mxdInvoicePath)
 	{
 		return FALSE;
@@ -2718,9 +2733,9 @@ function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $strInv
  * 
  * @function
  */
-function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun, $intTargetMedia=0)
+function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId, $intTargetMedia=0)
 {
-	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
+	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, intval($intInvoiceRunId));
 
 	if (!$mxdInvoicePath)
 	{
@@ -3429,7 +3444,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED));
 
 	$arrColumns = array(
-							'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
+							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' ELSE Invoice.invoice_run_id END)",
 							'AccountId'				=> "Invoice.Account",
 							'AccountGroupId'		=> "Account.AccountGroup",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
@@ -3491,7 +3506,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 	$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
 
 	$arrColumns = array(
-							'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
+							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' ELSE Invoice.invoice_run_id END)",
 							'AccountId'				=> "Invoice.Account",
 							'AccountGroupId'		=> "Account.AccountGroup",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
@@ -3522,7 +3537,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		JOIN Invoice
 		  ON InvoiceRun.Id IN ($strInvoiceRunIds)
 		 AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
-		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun
+		 AND InvoiceRun.Id = Invoice.invoice_run_id
 		JOIN Account 
 		  ON Account.Id = Invoice.Account
 		 AND Account.Archived IN ($strApplicableAccountStatuses) 
@@ -3657,7 +3672,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 	$strApplicableInvoiceStatuses = implode(", ", $arrApplicableInvoiceStatuses);
 
 	// Find all Accounts that fit the requirements for Late Notice generation
-	$arrColumns = Array(	'InvoiceRun'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' WHEN LENGTH(Invoice.InvoiceRun) = 14 THEN Invoice.InvoiceRun ELSE '' END)",
+	$arrColumns = Array(	'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
 							'AccountId'				=> "Invoice.Account",
 							'AccountGroup'			=> "Account.AccountGroup",
 							'BusinessName'			=> "Account.BusinessName",
@@ -3706,9 +3721,9 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		SELECT DISTINCT(Account.Id) 
 		FROM InvoiceRun 
 		JOIN Invoice
-		  ON InvoiceRun.id IN ($strInvoiceRunIds)
+		  ON InvoiceRun.Id IN ($strInvoiceRunIds)
 	     AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
-		 AND InvoiceRun.InvoiceRun = Invoice.InvoiceRun
+		 AND InvoiceRun.Id = Invoice.invoice_run_id
 		JOIN Account 
 		  ON Account.Id = Invoice.Account
 	         AND Account.Archived IN ($arrApplicableAccountStatuses) $strAccountBillingType
