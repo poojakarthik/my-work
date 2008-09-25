@@ -135,8 +135,9 @@
  		{
  			Debug($this->_selGetAccounts->Error());
  		}
- 		while ($objAccount = new Account($this->_selGetAccounts->Fetch()))
+ 		while ($arrAccount = $this->_selGetAccounts->Fetch())
  		{
+ 			$objAccount	= new Account($arrAccount);
  			$this->Revoke($objInvoiceRun, $objAccount);
  		}
  	}

@@ -299,8 +299,9 @@ class Invoice_Run
 		}
 		
 		// Generate an Invoice for each Account
-		while ($objAccount = new Account($selInvoiceableAccounts->Fetch()))
+		while ($arrAccount = $selInvoiceableAccounts->Fetch())
 		{
+			$objAccount	= new Account($arrAccount);
 			Cli_App_Billing::debug(" + Generating Invoice for {$objAccount->Id}...");
 			$objInvoice	= new Invoice();
 			$objInvoice->generate($objAccount, $this);
@@ -331,9 +332,10 @@ class Invoice_Run
 		{
 			throw new Exception("DB ERROR: ".$selTemporaryInvoiceRuns->Error());
 		}
-		while ($objInvoiceRun = new Invoice_Run($selTemporaryInvoiceRuns->Fetch()))
+		while ($arrInvoiceRun = $selTemporaryInvoiceRuns->Fetch())
 		{
 			// Revoke each Invoice Run
+			$objInvoiceRun = new Invoice_Run($arrInvoiceRun);
 			Cli_App_Billing::debug(" + Revoking Invoice Run with Id {$objInvoiceRun->Id}...");
 			$objInvoiceRun->revoke();
 		}
@@ -365,9 +367,10 @@ class Invoice_Run
 		{
 			throw new Exception("DB ERROR: ".$selTemporaryInvoiceRunsByCustomerGroup->Error());
 		}
-		while ($objInvoiceRun = new Invoice_Run($selTemporaryInvoiceRunsByCustomerGroup->Fetch()))
+		while ($arrInvoiceRun =$selTemporaryInvoiceRunsByCustomerGroup->Fetch())
 		{
 			// Revoke each Invoice Run
+			$objInvoiceRun	= new Invoice_Run($arrInvoiceRun);
 			Cli_App_Billing::debug(" + Revoking Invoice Run with Id {$objInvoiceRun->Id}...");
 			$objInvoiceRun->revoke();
 		}
@@ -407,9 +410,10 @@ class Invoice_Run
 		{
 			throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
 		}
-		while ($objInvoice = new Invoice($selInvoicesByInvoiceRun->Fetch()))
+		while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
 		{
 			// Revoke each Invoice
+			$objInvoice = new Invoice($arrInvoice);
 			Cli_App_Billing::debug(" * Revoking Invoice with Id {$objInvoice->Id}...");
 			$objInvoice->revoke();
 		}
@@ -444,9 +448,10 @@ class Invoice_Run
 		{
 			throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
 		}
-		while ($objInvoice = new Invoice($selInvoicesByInvoiceRun->Fetch()))
+		while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
 		{
 			// Export the Invoice
+			$objInvoice = new Invoice($arrInvoice);
 			$objInvoice->export();
 		}
 	}

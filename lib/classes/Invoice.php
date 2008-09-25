@@ -563,8 +563,9 @@ class Invoice
 			throw new Exception("DB ERROR: ".$selTemporaryInvoicesByAccount->Error());
 		}
 		
-		while ($objInvoice = new Invoice($selTemporaryInvoicesByAccount->Fetch()))
+		while ($arrInvoice = $selTemporaryInvoicesByAccount->Fetch())
 		{
+			$objInvoice = new Invoice($arrInvoice);
 			$objInvoice->revoke();
 		}
 	}
