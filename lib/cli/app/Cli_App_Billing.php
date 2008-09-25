@@ -180,6 +180,7 @@ class Cli_App_Billing extends Cli
 				self::ARG_LABEL			=> "INVOICE_RUN_ID",
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE and EXPORT)",
+				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
 		);
