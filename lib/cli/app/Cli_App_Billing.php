@@ -153,11 +153,16 @@ class Cli_App_Billing extends Cli
 		throw new Exception("Cli_App_Billing::_commit() has not been implemented yet!");
 	}
 	
-	public static function debug($strMessage, $bolNewLine=TRUE)
+	public static function debug($mixMessage, $bolNewLine=TRUE)
 	{
 		if (defined('BILLING_TEST_MODE') && BILLING_TEST_MODE)
 		{
-			CliEcho($strMessage, $bolNewLine);
+			if (!is_scalar($mixMessage))
+			{
+				$mixMessage	= print_r($mixMessage, TRUE);
+			}
+			
+			$this->log($mixMessage, $bolNewLine);
 		}
 	}
 	
