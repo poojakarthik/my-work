@@ -171,6 +171,22 @@ class Flex_Rollout_Incremental
 		{
 			throw new Exception("Failed to re-generate constants file (i): " . $e->getMessage());
 		}
+
+
+		// We always want to update the data model, as this ensures a model exists
+		$arrConnectionNames = array_keys($GLOBALS['**arrDatabase']);
+		for ($i = 0, $l = count($arrConnectionNames); $i < $l; $i++)
+		{
+			try
+			{
+				//if ($arrConnectionNames[$i] == FLEX_DATABASE_CONNECTION_CDR) continue;
+				Flex_Data_Model::generateDataModelForDatabase($arrConnectionNames[$i]);
+			}
+			catch (Exception $e)
+			{
+				throw new Exception("Rollout failed to generate new data model for data source '" . $arrConnectionNames[$i] . "'.\nThis must be resolved manually (or by re-running rollout).\n" . $e->getMessage());
+			}
+		}
 	}
 
 	private static function getDataSources()
