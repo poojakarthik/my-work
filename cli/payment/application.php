@@ -585,11 +585,11 @@
 		}
 		
 		// add an invoice payment record
-		$arrInvoicePayment['InvoiceRun']	= $this->_arrCurrentInvoice['InvoiceRun'];
-		$arrInvoicePayment['Account']		= $this->_arrCurrentPayment['Account'];
-		$arrInvoicePayment['AccountGroup']	= $this->_arrCurrentPayment['AccountGroup'];
-		$arrInvoicePayment['Payment']		= $this->_arrCurrentPayment['Id'];
-		$arrInvoicePayment['Amount']		= $fltPayment;
+		$arrInvoicePayment['invoice_run_id']	= $this->_arrCurrentInvoice['invoice_run_id'];
+		$arrInvoicePayment['Account']			= $this->_arrCurrentPayment['Account'];
+		$arrInvoicePayment['AccountGroup']		= $this->_arrCurrentPayment['AccountGroup'];
+		$arrInvoicePayment['Payment']			= $this->_arrCurrentPayment['Id'];
+		$arrInvoicePayment['Amount']			= $fltPayment;
 		if ($this->_insInvoicePayment->Execute($arrInvoicePayment) === FALSE)
 		{
 			Debug($this->_insInvoicePayment->Error());
@@ -754,8 +754,8 @@
 	 */
 	 function ConsolidateInvoicePayments()
 	 {
-	 	$selDuplicates		= new StatementSelect("InvoicePayment", "Payment, InvoiceRun", "InvoiceRun != 'Etech'", NULL, NULL, "Payment, Invoice HAVING COUNT(Id) > 1");
-	 	$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "Payment = <Payment> AND InvoiceRun = <InvoiceRun> AND Id != <Id>");
+	 	$selDuplicates		= new StatementSelect("InvoicePayment", "Payment, invoice_run_id", "invoice_run_id != 'Etech'", NULL, NULL, "Payment, Invoice HAVING COUNT(Id) > 1");
+	 	$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "Payment = <Payment> AND invoice_run_id = <invoice_run_id> AND Id != <Id>");
 	 	$ubiInvoicePayment	= new StatementUpdateById("InvoicePayment", Array('Amount' => NULL));
 	 	$qryDelete			= new Query();
 	 	
@@ -810,7 +810,7 @@
 	 	{
 	 		// Retrieve Direct Debit Scheduling Details, and determine if today is the Invoice Due Date
 	 		$selSchedule	= new StatementSelect(	"InvoiceRun LEFT JOIN automatic_invoice_run_event ON InvoiceRun.Id = automatic_invoice_run_event.invoice_run_id",
-														"InvoiceRun.InvoiceRun, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id AS id",
+														"InvoiceRun.invoice_run_id, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id AS id",
 														"actioned_datetime IS NULL AND automatic_invoice_action_id = ".AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT,
 														"InvoiceRun.BillingDate DESC, automatic_invoice_run_event.id DESC",
 														"1");
@@ -842,7 +842,7 @@
 	 		elseif ($arrSchedule['actioned_datetime'] !== NULL)
 	 		{
 	 			// Direct Debits have already been run for this InvoiceRun
-	 			return Array('Success' => TRUE, 'Description' => "Direct Debits have already run for InvoiceRun {$arrSchedule['InvoiceRun']}, on {$arrSchedule['actioned_datetime']}");
+	 			return Array('Success' => TRUE, 'Description' => "Direct Debits have already run for InvoiceRun {$arrSchedule['invoice_run_id']}, on {$arrSchedule['actioned_datetime']}");
 	 		}
 	 	}
 	 	

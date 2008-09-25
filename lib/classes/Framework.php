@@ -1146,7 +1146,7 @@
 	 	$arrCols['Balance']	= 'Invoice.Balance';
 	 	$arrCols['Invoice']	= 'Invoice.Id';
 	 	$arrCols['Id']		= 'InvoicePayment.Id';
-	 	$selInvoicePayments = new StatementSelect("(Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment) JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment.Id = $intPayment AND Payment.Account = InvoicePayment.Account AND Payment.Account = Invoice.Account");
+	 	$selInvoicePayments = new StatementSelect("(Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment) JOIN Invoice ON (InvoicePayment.invoice_run_id = Invoice.invoice_run_id AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment.Id = $intPayment AND Payment.Account = InvoicePayment.Account AND Payment.Account = Invoice.Account");
 	 	$selInvoicePayments->Execute();
 	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
 	 	$qryDelete = new Query();
