@@ -261,9 +261,10 @@ class Invoice_Run
 		Cli_App_Billing::debug(" * Creating initial InvoiceRun record...");
 		// Create the initial InvoiceRun record
 		$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
+		$this->InvoiceRun				= date("YmdHis");
 		$this->invoice_run_type_id		= $intInvoiceRunType;
 		$this->invoice_run_schedule_id	= $intScheduledInvoiceRun;
-		$this->invoice_run_status		= INVOICE_RUN_STATUS_TEMPORARY;
+		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
 		$this->customer_group_id		= $intCustomerGroup;
 		$this->save();
 		
