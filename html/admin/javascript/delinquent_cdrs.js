@@ -202,10 +202,10 @@ function VixenDelinquentCDRsClass()
 		{
 			this.elmFNNSelector.removeChild(this.elmFNNSelector.firstChild);
 		}
-		
+
 		// Add the new options to the listbox
 		var elmOption;
-		for (i in objResponse)
+		for (var i=0; i < objResponse.length; i++)
 		{
 			elmOption = document.createElement('option');
 			elmOption.style.whiteSpace = "pre";
@@ -410,7 +410,7 @@ function VixenDelinquentCDRsClass()
 	 * @return	void
 	 * @method
 	 */
-	this.HighlightRow = function(objThis, bolHighlight, intCDR)
+	this.HighlightRow = function(bolHighlight, intCDR)
 	{
 		this.arrCDRs[intCDR].Row.className = (bolHighlight)? "Hover" : this.arrCDRs[intCDR].DefaultClassName;
 	}
@@ -435,7 +435,7 @@ function VixenDelinquentCDRsClass()
 	 * @return	void
 	 * @method
 	 */
-	this.OpenDeclareServicePopup = function(objThis, intCDRIndex)
+	this.OpenDeclareServicePopup = function(intCDRIndex)
 	{
 		if (Vixen.Ajax.strFormCurrentlyProcessing)
 		{
@@ -454,7 +454,7 @@ function VixenDelinquentCDRsClass()
 		else
 		{
 			// Must be a bulk assignment
-			for (i in this.arrCDRs)
+			for (var i=0; i < this.arrCDRs.length; i++)
 			{
 				if (this.arrCDRs[i].elmCheckBox.checked)
 				{
@@ -504,7 +504,7 @@ function VixenDelinquentCDRsClass()
 		
 		intServiceId = (intServiceId == 0) ? null : intServiceId;
 		
-		for (i in this.arrSelectedCDRs)
+		for (var i=0; i < this.arrSelectedCDRs.length; i++)
 		{
 			this.arrCDRs[this.arrSelectedCDRs[i]].Service = intServiceId;
 			this.UpdateDeclaredService(this.arrSelectedCDRs[i]);
@@ -608,7 +608,7 @@ function VixenDelinquentCDRsClass()
 		{
 			// Prompt the user to confirm the "commit" action
 			var strSummary = "";
-			for (i in objServiceCounts)
+			for (var i=0; i < objServiceCounts.length; i++)
 			{
 				strSummary += "<br />" + objServiceCounts[i] + " CDR(s) being added to service: " + i;
 			}
@@ -706,10 +706,10 @@ function VixenDelinquentCDRsClass()
 	 */
 	this.RemoveCDRs = function(arrCDRsToRemove)
 	{
-		for (i in arrCDRsToRemove)
+		for (var i=0; i < arrCDRsToRemove.length; i++)
 		{
 			// Find the CDR in the array of all CDRs
-			for (j = 0; j < this.arrCDRs.length; j++)
+			for (var j=0; j < this.arrCDRs.length; j++)
 			{
 				if (this.arrCDRs[j].Id == arrCDRsToRemove[i])
 				{
@@ -722,7 +722,7 @@ function VixenDelinquentCDRsClass()
 
 		var arrNewCDRs = new Array();
 		var objNewCDR;
-		for (i = 0; i < this.arrCDRs.length; i++)
+		for (i=0; i < this.arrCDRs.length; i++)
 		{
 			objNewCDR =	{
 							Id		: this.arrCDRs[i].Id,
@@ -853,7 +853,7 @@ function VixenDelinquentCDRsClass()
 	this.ShowFromCDR = function(intFirstCDR)
 	{
 		// Hide all rows
-		for (i in this.arrCDRs)
+		for (var i=0; i < this.arrCDRs.length; i++)
 		{
 			this.arrCDRs[i].Row.style.display = "none";
 		}
@@ -892,7 +892,7 @@ function VixenDelinquentCDRsClass()
 	 */
 	this.SelectAllCDRs = function(bolChecked)
 	{
-		for (i in this.arrCDRs)
+		for (var i=0; i < this.arrCDRs.length; i++)
 		{
 			this.arrCDRs[i].elmCheckBox.checked = bolChecked;
 		}
@@ -915,7 +915,7 @@ function VixenDelinquentCDRsClass()
 	 * @return	void
 	 * @method
 	 */
-	this.SelectCDR = function(objThis, intCDRIndex)
+	this.SelectCDR = function(intCDRIndex)
 	{
 		//this.arrCDRs[intCDRIndex].elmCheckBox.checked = (!this.arrCDRs[intCDRIndex].elmCheckBox.checked);
 		var bolChecked = this.arrCDRs[intCDRIndex].elmCheckBox.checked;
@@ -926,7 +926,7 @@ function VixenDelinquentCDRsClass()
 		else
 		{
 			var bolAllChecked = true;
-			for (i in this.arrCDRs)
+			for (var i=0; i < this.arrCDRs.length; i++)
 			{
 				bolAllChecked = (bolAllChecked && this.arrCDRs[i].elmCheckBox.checked);
 			}

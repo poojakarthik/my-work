@@ -585,7 +585,7 @@ function VixenServiceBulkAddClass()
 		var intServiceCount = 0;
 		var intTotalActive	= 0;
 		var intTotalPending	= 0;
-		for (i in this.arrServices)
+		for (var i=0; i < this.arrServices.length; i++)
 		{
 			if (this.arrServices[i].intServiceType != null)
 			{
@@ -631,7 +631,7 @@ function VixenServiceBulkAddClass()
 		// Validate the cost textboxes and the Plan details
 		var arrInvalidCostFields = new Array();
 		var arrInvalidPlanFields = new Array();
-		for (i in this.arrServices)
+		for (var i=0; i < this.arrServices.length; i++)
 		{
 			// Check that this row defines a new service (the FNNs match and it is a valid FNN)
 			if (this.arrServices[i].intServiceType != null)
@@ -693,7 +693,7 @@ function VixenServiceBulkAddClass()
 		// Check that the new services aren't already defined in the database
 		var objService;
 		var arrDeclaredServices = new Array();
-		for (i in this.arrServices)
+		for (var i=0; i < this.arrServices.length; i++)
 		{
 			if (this.arrServices[i].intServiceType != null)
 			{
@@ -751,7 +751,7 @@ function VixenServiceBulkAddClass()
 			if (this.objServiceTypeDetails[i].strPopupId != null)
 			{
 				// Services of this ServiceType require extra details to be defined
-				for (j in this.arrServices)
+				for (var j=0; j < this.arrServices.length; j++)
 				{
 					if (this.arrServices[j].intServiceType == i)
 					{
@@ -836,7 +836,7 @@ function VixenServiceBulkAddClass()
 		if (bolClear)
 		{
 			// Clear all of the flags, before flagging the ones defined in arrInvalidServices
-			for (i in this.arrServices)
+			for (var i=0; i < this.arrServices.length; i++)
 			{
 				this.arrServices[i].FlagFnnTextboxes(false);
 			}
@@ -844,7 +844,7 @@ function VixenServiceBulkAddClass()
 		
 		if (arrInvalidServices != undefined)
 		{
-			for (i in arrInvalidServices)
+			for (var i=0; i < arrInvalidServices.length; i++)
 			{
 				this.arrServices[arrInvalidServices[i]].FlagFnnTextboxes(true);
 			}
@@ -858,7 +858,7 @@ function VixenServiceBulkAddClass()
 		if (bolClear)
 		{
 			// Clear all of the flags, before flagging the ones defined in arrInvalidServices
-			for (i in this.arrServices)
+			for (var i=0; i < this.arrServices.length; i++)
 			{
 				this.arrServices[i].FlagCostTextbox(false);
 			}
@@ -866,7 +866,7 @@ function VixenServiceBulkAddClass()
 		
 		if (arrInvalidServices != undefined)
 		{
-			for (i in arrInvalidServices)
+			for (var i=0; i < arrInvalidServices.length; i++)
 			{
 				this.arrServices[arrInvalidServices[i]].FlagCostTextbox(true);
 			}
@@ -880,7 +880,7 @@ function VixenServiceBulkAddClass()
 		if (bolClear)
 		{
 			// Clear all of the flags, before flagging the ones defined in arrInvalidServices
-			for (i in this.arrServices)
+			for (var i=0; i < this.arrServices.length; i++)
 			{
 				this.arrServices[i].FlagPlanCombo(false);
 			}
@@ -888,7 +888,7 @@ function VixenServiceBulkAddClass()
 		
 		if (arrInvalidServices != undefined)
 		{
-			for (i in arrInvalidServices)
+			for (var i=0; i < arrInvalidServices.length; i++)
 			{
 				this.arrServices[arrInvalidServices[i]].FlagPlanCombo(true);
 			}
@@ -901,7 +901,7 @@ function VixenServiceBulkAddClass()
 		// Compile all the data
 		var objService;
 		var arrDeclaredServices = new Array();
-		for (i in this.arrServices)
+		for (var i=0; i < this.arrServices.length; i++)
 		{
 			if (this.arrServices[i].intServiceType != null)
 			{

@@ -57,7 +57,7 @@ function VixenServiceExtraDetailsLandLineClass()
 		var elmForm = $ID("VixenForm_LandLine");
 
 		var strElementId = null;
-		for (intKey in elmForm.elements)
+		for (var intKey=0; intKey < elmForm.elements.length; intKey++)
 		{
 			strElementId = elmForm.elements[intKey].id;
 

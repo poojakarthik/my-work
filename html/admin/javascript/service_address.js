@@ -67,7 +67,7 @@ function VixenServiceAddressClass()
 		// Store a reference to each input element on the form
 		var elmForm = document.getElementById("VixenForm_ServiceAddress");
 		var strElementId;
-		for (intKey in elmForm.elements)
+		for (var intKey=0; intKey < elmForm.elements.length; intKey++)
 		{
 			strElementId = elmForm.elements[intKey].id;
 
@@ -191,11 +191,11 @@ function VixenServiceAddressClass()
 				this.SetRequired(strControl, false);
 			}
 		}
-		for (i in arrControlsNotAllowed)
+		for (var i=0; i < arrControlsNotAllowed.length; i++)
 		{
 			this.SetDisabled(arrControlsNotAllowed[i], true);
 		}
-		for (i in arrRequiredControls)
+		for (i=0; i < arrRequiredControls.length; i++)
 		{
 			this.SetRequired(arrRequiredControls[i], true);
 		}
@@ -396,7 +396,7 @@ function VixenServiceAddressClass()
 		// Store a reference to each input element on the form
 		var elmForm = $ID("VixenForm_ServiceAddress");
 		var strElementId;
-		for (intKey in elmForm.elements)
+		for (var intKey=0; intKey < elmForm.elements.length; intKey++)
 		{
 			strElementId = elmForm.elements[intKey].id;
 

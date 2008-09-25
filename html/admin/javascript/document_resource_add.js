@@ -220,7 +220,7 @@ function VixenDocumentResourceAddClass()
 		
 		var strExtension		= strFile.substr(intExtensionStart + 1);
 		var bolFoundFileType	= false;
-		for (i in this.arrFileTypes)
+		for (var i=0; i < this.arrFileTypes.length; i++)
 		{
 			if (strExtension == this.arrFileTypes[i].Extension.toLowerCase())
 			{

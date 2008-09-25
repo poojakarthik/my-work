@@ -55,7 +55,7 @@ function VixenConstantsClass()
 	{
 		var mixValue;
 		this.Group[strConstantGroup] = {};
-		for (i in objConstantGroup)
+		for (var i=0; i < objConstantGroup.length; i++)
 		{
 			// Try casting the value to an integer
 			mixValue = parseInt(i);

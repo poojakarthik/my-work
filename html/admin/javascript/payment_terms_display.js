@@ -115,12 +115,12 @@ function VixenPaymentTermsDisplayClass()
 			this.latePaymentFeeActual.value = parseFloat(this.latePaymentFee.value);
 		}
 
-		for (var i in this.invoiceActions)
+		for (var i=0; i < this.invoiceActions.length; i++)
 		{
 			this.invoiceActionsActual[i].value = parseInt(this.invoiceActions[i].value);
 		}
 
-		for (var i in this.invoiceActionResponses)
+		for (var i=0; i < this.invoiceActionResponses.length; i++)
 		{
 			this.invoiceActionResponsesActual[i].value = parseInt(this.invoiceActionResponses[i].value);
 		}
@@ -157,7 +157,7 @@ function VixenPaymentTermsDisplayClass()
 		this.invoiceActionResponses = new Array();
 		this.invoiceActionResponsesActual = new Array();
 		this.invoiceActionsLabel = new Array();
-		for (var i in arrInvoiceActionIds)
+		for (var i=0; i < arrInvoiceActionIds.length; i++)
 		{
 			var id = arrInvoiceActionIds[i];
 			this.invoiceActions[i] = document.getElementById('invoiceActions.' + id);
@@ -169,7 +169,7 @@ function VixenPaymentTermsDisplayClass()
 			fields[(i*2) + 5] = this.invoiceActionResponses[i];
 		}
 
-		for (var i in fields)
+		for (var i=0; i < fields.length; i++)
 		{
 			var field = fields[i];
 			field.addEventListener( "change", onChange, false);
@@ -193,7 +193,7 @@ function VixenPaymentTermsDisplayClass()
 			this.alertAndFocus("Payment Terms must allow at least one day after invoicing.", "paymentTerms");
 			return false;
 		}
-		for (var i in this.invoiceActions)
+		for (var i=0; i < this.invoiceActions.length; i++)
 		{
 			if (isNaN(parseInt(this.invoiceActions[i].value)) || parseInt(this.invoiceActions[i].value) < 0)
 			{
@@ -202,7 +202,7 @@ function VixenPaymentTermsDisplayClass()
 			}
 		}
 
-		for (var i in this.invoiceActionResponses)
+		for (var i=0; i < this.invoiceActionResponses.length; i++)
 		{
 			if (isNaN(parseInt(this.invoiceActionResponses[i].value)) || parseInt(this.invoiceActionResponses[i].value) < 0)
 			{
