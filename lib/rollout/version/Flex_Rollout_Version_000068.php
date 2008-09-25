@@ -44,7 +44,7 @@ class Flex_Rollout_Version_000068 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "ALTER TABLE service_status DROP can_invoice;";
 		
 		// 4:	Populates the service_status.can_invoice field
-		$strSQL = "UPDATE account_status SET can_invoice = 1 WHERE name IN ('Active', 'Disconnected');";
+		$strSQL = "UPDATE service_status SET can_invoice = 1 WHERE name IN ('Active', 'Disconnected');";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
