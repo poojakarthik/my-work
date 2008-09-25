@@ -162,7 +162,8 @@ class Cli_App_Billing extends Cli
 				$mixMessage	= print_r($mixMessage, TRUE);
 			}
 			
-			$this->log($mixMessage, $bolNewLine);
+			echo $mixMessage . ($bolNewLine) ? "\n" : '';
+			flush();
 		}
 	}
 	
