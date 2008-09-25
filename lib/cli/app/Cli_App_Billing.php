@@ -35,6 +35,7 @@ class Cli_App_Billing extends Cli
 			// Any additional Includes
 			//$this->requireOnce('flex.require.php');
 			$this->requireOnce('lib/classes/Flex.php');
+			Flex::load();
 			
 			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
