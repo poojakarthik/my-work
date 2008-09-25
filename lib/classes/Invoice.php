@@ -964,7 +964,7 @@ class Invoice
 	public function save()
 	{
 		// Do we have an Id for this instance?
-		if ($this->Id)
+		if ($this->Id !== NULL)
 		{
 			// Update
 			$ubiSelf	= self::_preparedStatement("ubiSelf");

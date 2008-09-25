@@ -475,7 +475,7 @@ class Invoice_Run
 		Cli_App_Billing::debug(" * ENTERING save()...");
 		
 		// Do we have an Id for this instance?
-		if ($this->Id)
+		if ($this->Id !== NULL)
 		{
 			// Update
 			Cli_App_Billing::debug(" * Updating Invoice Run with Id {$this->Id}...");

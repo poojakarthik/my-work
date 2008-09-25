@@ -141,7 +141,8 @@ class Cli_App_Billing extends Cli
 					$this->log("Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".GetConstantDescription($arrInvoiceRunSchedule['customer_group_id'], 'CustomerGroup'));
 					
 					// Yes, so lets Generate!
-					Invoice_Run::generate($arrInvoiceRunSchedule['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
+					$objInvoiceRun	= new Invoice_Run();
+					$objInvoiceRun->generate($arrInvoiceRunSchedule['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
 				}
 			}
 			elseif ($selInvoiceRunSchedule->Error())
