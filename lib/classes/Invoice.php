@@ -644,6 +644,31 @@ class Invoice
 	}
 	
 	//------------------------------------------------------------------------//
+	// commit
+	//------------------------------------------------------------------------//
+	/**
+	 * commit()
+	 *
+	 * Commits a Temporary Invoice
+	 * 
+	 * Commits a Temporary Invoice
+	 *
+	 * @return		void
+	 * 
+	 * @constructor
+	 */
+	public function commit()
+	{
+		// Ensure that this is a Temporary Invoice
+		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
+		{
+			throw new Exception("Cannot commit Invoice #{$this->Id} because it is not Temporary!");
+		}
+		
+		
+	}
+	
+	//------------------------------------------------------------------------//
 	// export
 	//------------------------------------------------------------------------//
 	/**

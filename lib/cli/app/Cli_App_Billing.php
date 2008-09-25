@@ -95,7 +95,7 @@ class Cli_App_Billing extends Cli
 	{
 		// Are there any Invoice Runs due?
 		$selPaymentTerms		= new StatementSelect("payment_terms", "invoice_day, payment_terms", "1", "id DESC", "1");
-		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "CURDATE() = ADDDATE(<InvoiceDate>, INTERVAL invoice_day_offset DAY");
+		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "<InvoiceDate> = ADDDATE(CURDATE(), INTERVAL invoice_day_offset DAY");
 		
 		if (!$selPaymentTerms->Execute())
 		{
