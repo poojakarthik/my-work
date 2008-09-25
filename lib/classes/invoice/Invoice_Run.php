@@ -553,7 +553,7 @@ class Invoice_Run
 				case 'selInvoiceableAccounts':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account JOIN account_status ON Account.Archived = account_status.id", "Account.*", "CustomerGroup = <customer_group_id> AND Account.CreatedOn < '{$strInvoiceDatetime}' AND account_status.can_invoice = 1");
 				case 'selLastInvoiceRunByCustomerGroup':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "customer_group_id = <customer_group_id> AND invoice_run_status_id = ".INVOICE_STATUS_COMMITTED, "BillingDate DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "customer_group_id = <customer_group_id> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
 					break;
 				
 				// INSERTS
