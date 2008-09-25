@@ -78,7 +78,7 @@
 			foreach($arrFAQ as $key=>$val){
 				$$key=$val;
 			}
-			$customer_faq_contents = str_replace("\n","<br>",$customer_faq_contents);
+			$contents = str_replace("\n","<br>",$contents);
 			echo "
 			<TABLE cellpadding=\"10\" width=\"100%\">
 			<TR>
@@ -90,12 +90,12 @@
 				</TABLE>
 				<TABLE class=\"popup_title_faq\" width=\"100%\">
 				<TR>
-					<TD>$customer_faq_subject</TD>
+					<TD>$title</TD>
 				</TR>
 				</TABLE>
 				<TABLE class=\"popup_content_faq\" width=\"100%\">
 				<TR>
-					<TD valign=\"top\">$customer_faq_contents</TD>
+					<TD valign=\"top\">$contents</TD>
 				</TR>
 				</TABLE>
 				<TABLE class=\"popup_footer_faq\" width=\"100%\">

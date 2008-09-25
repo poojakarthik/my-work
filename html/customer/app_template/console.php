@@ -242,7 +242,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(is_numeric($_GET['view']))
 			{
 				$intView = $_GET['view'];
-				$strSelect= "SELECT * FROM customer_faq WHERE customer_faq_id = \"$intView\" AND customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\"";
+				$strSelect= "SELECT * FROM customer_faq WHERE id = \"$intView\" AND customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\"";
 				$arrFAQResults = $dbConnection->fetchone("$strSelect");
 			}
 			// Return an array with results to our page.
@@ -255,7 +255,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		if (array_key_exists('all',$_GET))
 		{
 
-			$select= "SELECT * FROM customer_faq WHERE customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\" ORDER BY customer_faq_subject DESC LIMIT $intStart,$intResultsPerPage";
+			$select= "SELECT * FROM customer_faq WHERE customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\" ORDER BY title DESC LIMIT $intStart,$intResultsPerPage";
 			// This portion of the code exeutes the query fetching an array..
 			$arrCustomerFAQ = $dbConnection->fetch("$select",$array=true);
 
@@ -280,10 +280,57 @@ class AppTemplateConsole extends ApplicationTemplate
 		if(array_key_exists('s',$_GET))
 		{
 
-			$mixSelect = "SELECT *, MATCH (customer_faq_subject, customer_faq_contents)AGAINST (\"$mixSearch\") as relevency
-			FROM customer_faq
-			WHERE customer_faq_group = 2 AND (MATCH (customer_faq_subject, customer_faq_contents)AGAINST (\"$mixSearch\") > 0) ORDER BY relevency DESC LIMIT $intStart,$intResultsPerPage";
+			$mixSelect = "
+				SELECT * ,
+				MATCH (
+				title, contents
+				)
+				AGAINST (
+				'title'
+				IN BOOLEAN
+				MODE
+				) AS rank
+				FROM customer_faq
+				WHERE customer_group_id =2
+				AND MATCH (
+				title, contents
+				)
+				AGAINST (
+				\"$mixSearch\"
+				IN BOOLEAN
+				MODE
+				) >=0
+				HAVING (
+			";
 
+			$splitted = split ('[ +]', $mixSearch);
+
+			$count=0;
+ 			$bolFoundWord = FALSE;
+			foreach($splitted as $word){
+				if($count != "0"&&strlen($word)>="2"){
+					$mixSelect.= " OR ";
+				}
+				if(strlen($word)>="2"){
+					$bolFoundWord = TRUE;
+					$mixSelect.="title LIKE '%$word%' OR contents LIKE '%$word%'";
+					$count++;
+				}
+			}
+			// By default we show all results if the search term is less then 2 chars.
+			if(!$bolFoundWord)
+			{
+				// todo error.
+				$mixSelect.="title LIKE '%' OR contents LIKE '%'";
+			}
+
+
+
+			$mixSelect .= ")
+				ORDER BY rank DESC
+				LIMIT $intStart,$intResultsPerPage;";
+
+			echo "$mixSelect";
 			// This portion of the code exeutes the query fetching an array..
 			$strCustomerFAQ = $dbConnection->fetch("$mixSelect",$array=true);
 
@@ -307,7 +354,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 	
 		// show top ten
-		$select= "SELECT * FROM customer_faq ORDER BY customer_faq_hits DESC LIMIT 10";
+		$select= "SELECT * FROM customer_faq WHERE customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\" ORDER BY hits DESC LIMIT 10";
 		// This portion of the code exeutes the query fetching an array..
 		$strCustomerTop10 = $dbConnection->fetch("$select",$array=true);
 

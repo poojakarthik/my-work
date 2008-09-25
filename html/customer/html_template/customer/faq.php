@@ -104,22 +104,11 @@
 				foreach($results as $key=>$val){
 					$$key=$val;
 				}
-				/* 
-					After the above loop, available fields are:
-					$customer_faq_id
-					$customer_faq_subject
-					$customer_faq_contents
-					$customer_faq_time_added
-					$customer_faq_time_updated
-					$customer_faq_download
-					$customer_faq_group
-					$customer_faq_hits
-				*/
 				echo "
 				<tr>
-					<td>$customer_faq_id. <A HREF=\"javascript:view_faq($customer_faq_id)\">$customer_faq_subject</A></td>
-					<td>$customer_faq_time_updated</td>
-					<td>$customer_faq_hits</td>
+					<td>$id. <A HREF=\"javascript:view_faq($id)\">$title</A></td>
+					<td>$time_updated</td>
+					<td>$hits</td>
 				</tr>";
 			}
 			print "</table>";
@@ -156,19 +145,17 @@
 			
 			print "<table width=\"100%\">
 			<tr>
-				<td>Title</td>
-				<td>Last Updated</td>
-				<td>Hits</td>
+				<td>FAQ Title</td>
 			</tr>";
+			$count=0;
 			foreach(DBO()->Search->Topten->Value as $results){
+				$count++;
 				foreach($results as $key=>$val){
 					$$key=$val;
 				}
 				echo "
 				<tr>
-					<td><A HREF=\"javascript:view_faq($customer_faq_id)\">$customer_faq_subject</A></td>
-					<td>$customer_faq_time_updated</td>
-					<td>$customer_faq_hits</td>
+					<td>$count. <A HREF=\"javascript:view_faq($id)\">$title</A></td>
 				</tr>";
 			}
 			print "</table>";
