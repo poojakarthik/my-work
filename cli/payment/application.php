@@ -443,7 +443,7 @@
 	 function Process()
 	 {
 		// Check to see if we're in the middle of a Billing Run
-		$selTempInvoice = new StatementSelect("InvoiceTemp", "Id", 1);
+		$selTempInvoice = new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP);
 		if ($selTempInvoice->Execute())
 		{
 			// Don't process payments, there is a Temp Invoice Run

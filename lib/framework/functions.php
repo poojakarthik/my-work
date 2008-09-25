@@ -3203,7 +3203,7 @@ function AddCreditCardSurcharge($intPayment)
  */
 function IsInvoicing()
 {
-	$selInvoiceTemp	= new StatementSelect("InvoiceTemp", "Id", "", "", "1");
+	$selInvoiceTemp	= new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP, "", "1");
 	$intRows		= $selInvoiceTemp->Execute();
 	
 	// If there are records in the InvoiceTemp Table, then the invoicing process is occurring
