@@ -278,6 +278,7 @@ class Invoice_Run
 			// We have an old InvoiceRun
 			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
 			$this->intLastInvoiceDatetime	= strtotime($arrLastInvoiceRun['BillingDate']);
+			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (retrieved)");
 		}
 		elseif ($selInvoiceRun->Error())
 		{
@@ -288,7 +289,7 @@ class Invoice_Run
 			// No InvoiceRuns, so lets calculate when it should have been
 			// For now, we will (and can probably always) assume that the Bill was supposed to be run exactly 1 month ago
 			$this->intLastInvoiceDatetime	= strtotime("-1 month", $intInvoiceDatetime);
-			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (calculated)", FALSE);
+			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (calculated)");
 		}
 		
 		// Retrieve a list of Accounts to be Invoiced
