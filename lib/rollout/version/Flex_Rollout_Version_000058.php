@@ -122,7 +122,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 						"customer_group_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'CusotmerGroup this InvoiceRun applies to', " .
 						"description VARCHAR(512) NOT NULL COMMENT 'Description for the Scheduled Invoice Run', " .
 						"invoice_day_offset INT(11) NOT NULL COMMENT 'Offset in days from the Billing Date that this will run', " .
-						"invoice_run_type_id BIGINT(20) NOT NULL COMMENT 'The Type of Invoice Run';" .
+						"invoice_run_type_id BIGINT(20) NOT NULL COMMENT 'The Type of Invoice Run'" .
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
@@ -182,7 +182,7 @@ class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 						"rate_percentage DECIMAL(13, 4) NOT NULL COMMENT 'The Tax Rate Percentage (eg. 0.10 for 10%)', " .
 						"global TINYINT(1) NOT NULL COMMENT '1: This Tax Rate is applied to everything except exempted charges (should only be one of these); 0: This tax is only applied to specific charges', " .
 						"start_datetime DATETIME NOT NULL COMMENT 'The date this tax becomes effective', " .
-						"end_datetime DATETIME NOT NULL COMMENT 'The date this tax expires';" .
+						"end_datetime DATETIME NOT NULL COMMENT 'The date this tax expires'" .
 					") ENGINE = innodb;";
 		if (!$qryQuery->Execute($strSQL))
 		{
