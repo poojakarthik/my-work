@@ -33,7 +33,7 @@ class Cli_App_Billing extends Cli
 			}
 			
 			// Any additional Includes
-			$this->requireOnce('flex.require.php');
+			//$this->requireOnce('flex.require.php');
 			$this->requireOnce('lib/classes/Flex.php');
 			
 			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
@@ -128,7 +128,7 @@ class Cli_App_Billing extends Cli
 			{
 				while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
 				{
-					$this->log("Generating {'{$arrInvoiceRunSchedule['description']}'} Invoice Run for ".GetConstantDescription($arrInvoiceRunSchedule['customer_group_id'], 'CustomerGroup'));
+					$this->log("Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".GetConstantDescription($arrInvoiceRunSchedule['customer_group_id'], 'CustomerGroup'));
 					
 					// Yes, so lets Generate!
 					Invoice_Run::generate($arrInvoiceRunSchedule['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
