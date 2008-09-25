@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Version 56 of database update.
+ * Version 58 of database update.
  * This version: -
  *	1:	Create the invoice_run_type Table
  *	2:	Populate the invoice_run_type Table
@@ -19,7 +19,7 @@
  *	14:	Add Charge.global_tax_exempt
  */
 
-class Flex_Rollout_Version_000056 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000058 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
