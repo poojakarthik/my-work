@@ -2,7 +2,7 @@
 
 abstract class Flex_Rollout_Version
 {
-	const NEW_SYSTEM_CUTOVER = 60;
+	const NEW_SYSTEM_CUTOVER = 65;
 
 	public function getInstance($className)
 	{

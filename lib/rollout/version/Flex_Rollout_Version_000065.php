@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Version 60 (Sixty) of database update.
+ * Version 65 (Sixty-Five) of database update.
  * This version: -
  *	1:	Adds employee_message table
  */
 
-class Flex_Rollout_Version_000060 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000065 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
