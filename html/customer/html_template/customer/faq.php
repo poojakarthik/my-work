@@ -80,12 +80,12 @@
 		<div class='GroupedContent'>
 		<table class=\"customer-standard-table-style\">
 		<tr>
-			<td><input type=\"text\" name=\"s\" value=\"$_GET[s]\" size=\"45\"> <INPUT TYPE=\"reset\"> <INPUT TYPE=\"submit\" VALUE=\"Search\"> [<A HREF=\"./flex.php/Console/FAQ/?s=\">show all</A>]</td>
+			<td><input type=\"text\" name=\"s\" value=\"$_GET[s]\" size=\"30\"> <INPUT TYPE=\"reset\"> <INPUT TYPE=\"submit\" VALUE=\"Search\"> [<A HREF=\"./flex.php/Console/FAQ/?s=\">show all</A>]</td>
 		</tr>
 		</table>
 		</div><br/>";
 
-		if(DBO()->Search->Result->Value)
+		if(DBO()->Search->Result->Value !== NULL)
 		{
 			echo "<div class='customer-standard-table-title-style-password'>Results " . DBO()->Total->Start->Value . " - " . DBO()->Total->NextPage->Value . " of about " . DBO()->Total->Search->Value . "</div>
 			<div class='GroupedContent'>
@@ -131,15 +131,18 @@
 			</div>
 			<br/>";
 
-			echo "
-			<div class='customer-standard-table-title-style-confirm-details'>Result Pages</div>
-			<div class='GroupedContent'>
-			<table class=\"customer-standard-table-style\">
-			<tr>
-				<td>" . DBO()->Search->Pages->Value . "</td>
-			</tr>
-			</table>
-			</div><br/>";
+			if(DBO()->Search->Pages->Value)
+			{
+				echo "
+				<div class='customer-standard-table-title-style-confirm-details'>Result Pages</div>
+				<div class='GroupedContent'>
+				<table class=\"customer-standard-table-style\">
+				<tr>
+					<td>" . DBO()->Search->Pages->Value . "</td>
+				</tr>
+				</table>
+				</div><br/>";
+			}
 		}
 		else
 		{

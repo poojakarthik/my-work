@@ -71,15 +71,45 @@
 	 
 	function Render()
 	{
-		$arrFAQ = DBO()->FAQ->Result->Value;
 
-		foreach($arrFAQ as $key=>$val){
-			$$key=$val;
+		if(DBO()->FAQ->Result->Value)
+		{
+			$arrFAQ = DBO()->FAQ->Result->Value;
+			foreach($arrFAQ as $key=>$val){
+				$$key=$val;
+			}
+			echo "
+			<TABLE cellpadding=\"10\" width=\"100%\">
+			<TR>
+				<TD>
+				<TABLE class=\"popup_footer_faq\" width=\"100%\">
+				<TR>
+					<TD><input type=\"button\" value=\"close window\" onClick=\"javascript:window.close()\"></TD>
+				</TR>
+				</TABLE>
+				<TABLE class=\"popup_title_faq\" width=\"100%\">
+				<TR>
+					<TD>$customer_faq_subject</TD>
+				</TR>
+				</TABLE>
+				<TABLE class=\"popup_content_faq\" width=\"100%\">
+				<TR>
+					<TD valign=\"top\">$customer_faq_contents</TD>
+				</TR>
+				</TABLE>
+				<TABLE class=\"popup_footer_faq\" width=\"100%\">
+				<TR>
+					<TD><input type=\"button\" value=\"close window\" onClick=\"javascript:window.close()\"></TD>
+				</TR>
+				</TABLE>
+				</TD>
+			</TR>
+			</TABLE>";
 		}
-		echo "
-		<div class='popup_title_faq'>$customer_faq_subject</div>
-		<div class='popup_content_faq'>$customer_faq_contents</div><br>
-		<div style=\"width: 500; text-align: right;\"><input type=\"button\" value=\"close window\" onClick=\"javascript:window.close()\"></div>";
+		else
+		{
+			echo "<CENTER>Invalid FAQ specified.</CENTER>";
+		}
 	}
 }
 

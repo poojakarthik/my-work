@@ -6,7 +6,7 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// 4column.php
+// popup.php
 //----------------------------------------------------------------------------//
 /**
  * popup
@@ -26,28 +26,6 @@
  */
 
 require_once dirname(__FILE__)."/common_layout.php";
-
-$this->RenderClientHeader();
-
-CommonLayout::OpenPageBody($this, FALSE, FALSE);
-
-
-?>
-<table width='100%' border='0'>
-	<tr>
-		<td width='100%' valign='top'>
-			
-			<?php $this->RenderColumn(COLUMN_ONE); ?>
-			
-		</td>
-	</tr>
-</table>
-
-<?php 
-
-CommonLayout::ClosePageBody($this);
-
-$this->RenderFooter();
-
-
+$this->RenderClientPOPHeader();
+$this->RenderColumn(COLUMN_ONE);
 ?>

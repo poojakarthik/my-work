@@ -1266,7 +1266,7 @@ function InputValidation($strName,$mixInput,$strType,$intLength){
 		case "numbers":
 		if(!eregi("^[0-9]{1,$intLength}$",$mixInput)){
 			$strFoundError=TRUE;
-			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
+			$strErrorResponse="Incorrect $strName entered. The $strName should be a maximum of $intLength characters long and contain only numbers. e.g. 0123456789";
 		}
 		break;
 		case "letters":

@@ -53,7 +53,10 @@ function validate_phone(field,alerttxt)
 
 function view_faq (faqid)
 {
-	faqpopup = window.open("./flex.php/Console/FAQ/?view="+faqid, "FAQ" , "width=500,height=400,resizable=0,menubar=0,toolbar=0,location=0,directories=0,scrollbars=0,status=0");
-	faqpopup.moveTo(300,200);
+	var left = Math.floor((screen.availWidth - 600) / 2);
+	//var top = Math.floor((screen.availHeight - 600) / 2);
+
+	faqpopup = window.open("./flex.php/Console/FAQ/?view="+faqid, "FAQ" , "width=600,height=450,left="+left+",top=100,resizable=0,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=0");
+	//faqpopup.moveTo(300,200);
 	faqpopup.focus();
 }

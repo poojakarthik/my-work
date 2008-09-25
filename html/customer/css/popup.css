@@ -1,0 +1,36 @@
+/* for the popup faq starts */
+.popup_title_faq
+{
+	text-indent: 30; 
+	font-size:	12px;
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("../img/template/icon_moveright.png");
+	background-position: 5px 50%;
+	padding:	5px;
+	margin-top: 7;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
+
+.popup_content_faq
+{
+	font-size:	12px;
+	height:		360px !important;
+	height:		340px;
+	margin-top: 7;
+	margin-bottom: 7;
+	padding:			5px;
+	border:				solid 1px #D1D1D1;
+	background-color:	#f9f9f9;
+	position:			relative;
+}
+.popup_footer_faq
+{
+	padding:	0px;
+	margin-top: 0;
+	margin-bottom: 0;
+	text-align: right;
+}
+/* for the popup faq ends */

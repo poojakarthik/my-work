@@ -138,7 +138,7 @@
 					<label for=\"UserName\" style='font-size: 10pt;'>Type a new password:</label>
 				</td>
 				<td>
-					<input type=\"text\" name=\"mixNewPass1\" class=\"LoginBox\" maxlength=\"21\"/>
+					<input type=\"password\" name=\"mixNewPass1\" class=\"LoginBox\" maxlength=\"21\"/>
 				</td>
 			</tr>
 			<tr>
@@ -146,7 +146,7 @@
 					<label for=\"UserName\" style='font-size: 10pt;'>Repeat new password:</label>
 				</td>
 				<td>
-					<input type=\"text\" name=\"mixNewPass2\" class=\"LoginBox\" maxlength=\"21\"/>
+					<input type=\"password\" name=\"mixNewPass2\" class=\"LoginBox\" maxlength=\"21\"/>
 				</td>
 			</tr>
 			<tr>
@@ -195,6 +195,18 @@
 					<label for=\"UserName\" style='font-size: 10pt;'>Email:</label>
 				</td>
 				<td><INPUT TYPE=\"text\" NAME=\"mixEmail\" VALUE=\"" . DBO()->Contact->Email->Value . "\" size=\"35\"></td>
+			</tr>
+			<tr>
+				<td>
+					<label for=\"UserName\" style='font-size: 10pt;'>Phone:</label>
+				</td>
+				<td><INPUT TYPE=\"text\" NAME=\"mixPhone\" VALUE=\"" . DBO()->Contact->Phone->Value . "\" size=\"30\"></td>
+			</tr>
+			<tr>
+				<td>
+					<label for=\"UserName\" style='font-size: 10pt;'>Mobile:</label>
+				</td>
+				<td><INPUT TYPE=\"text\" NAME=\"mixMobile\" VALUE=\"" . DBO()->Contact->Mobile->Value . "\" size=\"30\"></td>
 			</tr>
 			<tr>
 				<td>
