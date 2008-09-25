@@ -41,7 +41,7 @@ class Invoice_Run
 	 * @return	void
 	 * @constructor
 	 */
-	private function __construct($arrProperties=Array(), $bolLoadById=FALSE)
+	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
 	{
 		// Joel's implementation
 		if ($arrProperties)
