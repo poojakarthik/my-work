@@ -14,13 +14,13 @@ class Flex_Rollout_Version_000059 extends Flex_Rollout_Version
 	{
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 
-		$strSQL = "DROP TABLE `customer_faq`;";
+		$strSQL = "DROP TABLE IF EXISTS `customer_faq`;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to run query1. ' . $result->getMessage());
 		}
-		$strSQL = "CREATE TABLE `customer_faq` (
+		$strSQL = "CREATE TABLE IF NOT EXISTS `customer_faq` (
 		`id` MEDIUMINT( 11 ) NOT NULL AUTO_INCREMENT COMMENT 'Field to record faq ids',
 		`title` VARCHAR( 255 ) NULL COMMENT 'field for faq title',
 		`contents` TEXT NULL COMMENT 'field for faq contents',
@@ -42,7 +42,7 @@ class Flex_Rollout_Version_000059 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to run query3. ' . $result->getMessage());
 		}
-		$this->rollbackSQL[] = "CREATE TABLE `customer_faq` (
+		$this->rollbackSQL[] = "CREATE TABLE IF NOT EXISTS `customer_faq` (
 		`id` MEDIUMINT( 11 ) NOT NULL AUTO_INCREMENT COMMENT 'Field to record faq ids',
 		`title` VARCHAR( 255 ) NULL COMMENT 'field for faq title',
 		`contents` TEXT NULL COMMENT 'field for faq contents',
