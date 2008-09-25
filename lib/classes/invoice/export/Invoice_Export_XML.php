@@ -15,7 +15,7 @@
  *
  * Billing Module for Invoice Export to XML
  *
- * @file		invoice_xml.php
+ * @file		Invoice_Export_XML.php
  * @language	PHP
  * @package		billing
  * @author		Rich 'Waste' Davis
@@ -41,7 +41,7 @@
  * @package		billing
  * @class		Invoice_Export_XML
  */
- class Invoice_Export_XML extends Invoice_Export
+ class Invoice_Export_XM
  {
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -62,14 +62,14 @@
  	}
  	
  	//------------------------------------------------------------------------//
-	// AddInvoice()
+	// export()
 	//------------------------------------------------------------------------//
 	/**
-	 * AddInvoice()
+	 * export()
 	 *
-	 * Adds an invoice to the bill
+	 * Exports an Invoice to XML
 	 *
-	 * Adds an invoice to the bill
+	 * Exports an Invoice to XML
 	 * 
 	 * @param		array		$arrInvoice							Associative array of details for this Invoice
 	 * @param		boolean		$bolDebug				[optional]	TRUE	: Doesn't write to file, returns XML data
@@ -79,94 +79,94 @@
 	 *
 	 * @method
 	 */
- 	function AddInvoice($arrInvoice, $bolDebug = FALSE)
+ 	static public function export($arrInvoice, $bolDebug = FALSE)
  	{
 		// Init Output Array
 		$arrOutputData	= Array();
 		
 		// Get Customer Information
-		$arrCustomer	= $this->_GetCustomerData($arrInvoice);
+		$arrCustomer	= Invoice_Export::getCustomerData($arrInvoice);
 		
 		// Init our XML Document
-		$this->_domDocument					= new DOMDocument('1.0'); 
-		$this->_domDocument->formatOutput	= TRUE;
+		$domDocument				= new DOMDocument('1.0'); 
+		$domDocument->formatOutput	= TRUE;
 		
 		//--------------------------------------------------------------------//
 		// Service (Data retrieval only)
 		//--------------------------------------------------------------------//
-		$arrServices	= $this->_GetServices($arrInvoice);
+		$arrServices	= Invoice_Export::getServices($arrInvoice);
 		
 		//--------------------------------------------------------------------//
 		// Document Object
 		//--------------------------------------------------------------------//
-		$xmlDocument	= $this->_AddElement($this->_domDocument, 'Document');
-		$this->_AddElement($xmlDocument, 'DocumentType', 'DOCUMENT_TYPE_INVOICE');
-		$this->_AddElement($xmlDocument, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
-		$this->_AddElement($xmlDocument, 'CreationDate', date('Y-m-d H:i:s', strtotime($arrInvoice['CreatedOn'])));
-		$this->_AddElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'DeliveryMethod'));
-		$this->_AddAttribute($xmlDocument, 'DateIssued', date('j M y', strtotime($arrInvoice['CreatedOn'])));
+		$xmlDocument	= self::_addElement($domDocument, 'Document');
+		self::_addElement($xmlDocument, 'DocumentType', 'DOCUMENT_TYPE_INVOICE');
+		self::_addElement($xmlDocument, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
+		self::_addElement($xmlDocument, 'CreationDate', date('Y-m-d H:i:s', strtotime($arrInvoice['CreatedOn'])));
+		self::_addElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'DeliveryMethod'));
+		self::_addAttribute($xmlDocument, 'DateIssued', date('j M y', strtotime($arrInvoice['CreatedOn'])));
 		
 		//--------------------------------------------------------------------//
 		// Invoice Object
 		//--------------------------------------------------------------------//
-		$xmlInvoice	= $this->_AddElement($xmlDocument, 'Invoice');
-		$this->_AddAttribute($xmlInvoice, 'Id', ($this->_strInvoiceTable == 'Invoice') ? $arrInvoice['Id'] : 'SAMPLE');
-		//$this->_AddAttribute($xmlInvoice, 'DeliveryMethod'	, GetConstantName($arrInvoice['DeliveryMethod'], 'BillingMethod'));
+		$xmlInvoice	= self::_addElement($xmlDocument, 'Invoice');
+		self::_addAttribute($xmlInvoice, 'Id', $arrInvoice['Id']);
+		//self::_addAttribute($xmlInvoice, 'DeliveryMethod'	, GetConstantName($arrInvoice['DeliveryMethod'], 'BillingMethod'));
 		
 		//--------------------------------------------------------------------//
 		// Currency Symbol (at the moment, we always use AUD, so $)
 		//--------------------------------------------------------------------//
-		$xmlCurrency	= $this->_AddElement($xmlInvoice, 'Currency');
-		$xmlSymbol		= $this->_AddElement($xmlCurrency, 'Symbol', '$');
-		$this->_AddAttribute($xmlSymbol, 'Location', 'Prefix');
-		$xmlNegative	= $this->_AddElement($xmlCurrency, 'Negative', 'CR');
-		$this->_AddAttribute($xmlNegative, 'Location', 'Suffix');
+		$xmlCurrency	= self::_addElement($xmlInvoice, 'Currency');
+		$xmlSymbol		= self::_addElement($xmlCurrency, 'Symbol', '$');
+		self::_addAttribute($xmlSymbol, 'Location', 'Prefix');
+		$xmlNegative	= self::_addElement($xmlCurrency, 'Negative', 'CR');
+		self::_addAttribute($xmlNegative, 'Location', 'Suffix');
 		
 		//--------------------------------------------------------------------//
 		// Account Information
 		//--------------------------------------------------------------------//
-		$xmlAccount	= $this->_AddElement($xmlInvoice, 'Account');
-		$this->_AddAttribute($xmlAccount, 'Id', $arrInvoice['Account']);
-		$this->_AddAttribute($xmlAccount, 'Name', $arrCustomer['BusinessName']);
-		$this->_AddAttribute($xmlAccount, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
-		$this->_AddAttribute($xmlAccount, 'NewCustomer', ($arrCustomer['InvoiceCount'] > 0) ? 0 : 1);
-		$this->_AddElement($xmlAccount, 'Addressee', $arrCustomer['BusinessName']);
-		$this->_AddElement($xmlAccount, 'AddressLine1', $arrCustomer['Address1']);
-		$this->_AddElement($xmlAccount, 'AddressLine2', $arrCustomer['Address2']);
-		$this->_AddElement($xmlAccount, 'Suburb', $arrCustomer['Suburb']);
-		$this->_AddElement($xmlAccount, 'Postcode', $arrCustomer['Postcode']);
-		$this->_AddElement($xmlAccount, 'State', $arrCustomer['State']);
+		$xmlAccount	= self::_addElement($xmlInvoice, 'Account');
+		self::_addAttribute($xmlAccount, 'Id', $arrInvoice['Account']);
+		self::_addAttribute($xmlAccount, 'Name', $arrCustomer['BusinessName']);
+		self::_addAttribute($xmlAccount, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
+		self::_addAttribute($xmlAccount, 'NewCustomer', ($arrCustomer['InvoiceCount'] > 0) ? 0 : 1);
+		self::_addElement($xmlAccount, 'Addressee', $arrCustomer['BusinessName']);
+		self::_addElement($xmlAccount, 'AddressLine1', $arrCustomer['Address1']);
+		self::_addElement($xmlAccount, 'AddressLine2', $arrCustomer['Address2']);
+		self::_addElement($xmlAccount, 'Suburb', $arrCustomer['Suburb']);
+		self::_addElement($xmlAccount, 'Postcode', $arrCustomer['Postcode']);
+		self::_addElement($xmlAccount, 'State', $arrCustomer['State']);
 		
 		//--------------------------------------------------------------------//
 		// Account Summary & Itemisation
 		//--------------------------------------------------------------------//
-		$arrAccountCategories	= $this->_GetAccountCharges($arrInvoice);
-		$xmlItemisation	= $this->_AddElement($xmlInvoice, 'Charges');
+		$arrAccountCategories	= Invoice_Export::getAccountCharges($arrInvoice);
+		$xmlItemisation	= self::_addElement($xmlInvoice, 'Charges');
 		
 		// Charge Itemisation
 		foreach ($arrAccountCategories as $strName=>$arrCategory)
 		{
-			$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
-			$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
-			$this->_AddAttribute($xmlItemisationType, 'GrandTotal', number_format($arrCategory['TotalCharge'], 2, '.', ''));
-			$this->_AddAttribute($xmlItemisationType, 'Records', @count($arrCategory['Itemisation']));
-			$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
+			$xmlItemisationType	= self::_addElement($xmlItemisation, 'Category');
+			self::_addAttribute($xmlItemisationType, 'Name', $strName);
+			self::_addAttribute($xmlItemisationType, 'GrandTotal', number_format($arrCategory['TotalCharge'], 2, '.', ''));
+			self::_addAttribute($xmlItemisationType, 'Records', @count($arrCategory['Itemisation']));
+			self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
 			
-			$xmlItemisationItems	= $this->_AddElement($xmlItemisationType, 'Items');
+			$xmlItemisationItems	= self::_addElement($xmlItemisationType, 'Items');
 			
 			if ($arrCategory['Itemisation'])
 			{
 				foreach ($arrCategory['Itemisation'] as $arrCDR)
 				{
-					$xmlItem	= $this->_AddElement($xmlItemisationItems, 'Item');
+					$xmlItem	= self::_addElement($xmlItemisationItems, 'Item');
 					
 					// Process the CDR
-					$arrItem	= $this->_CDR2Itemise($arrCDR, $arrCategory['DisplayType']);
+					$arrItem	= self::_itemiseCDR($arrCDR, $arrCategory['DisplayType']);
 					
 					// Item Fields
 					foreach ($arrItem as $strField=>$mixValue)
 					{
-						$this->_AddElement($xmlItem, $strField, $mixValue);
+						self::_addElement($xmlItem, $strField, $mixValue);
 					}
 				}
 			}
@@ -176,13 +176,13 @@
 		//--------------------------------------------------------------------//
 		// Payment Information
 		//--------------------------------------------------------------------//
-		$xmlPayment		= $this->_AddElement($xmlInvoice, 'PaymentDetails');
-		$xmlBPay		= $this->_AddElement($xmlPayment, 'BPay');
-		$this->_AddElement($xmlBPay, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));
-		$xmlBillExpress	= $this->_AddElement($xmlPayment, 'BillExpress');
-		$this->_AddElement($xmlBillExpress, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));		// FIXME
+		$xmlPayment		= self::_addElement($xmlInvoice, 'PaymentDetails');
+		$xmlBPay		= self::_addElement($xmlPayment, 'BPay');
+		self::_addElement($xmlBPay, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));
+		$xmlBillExpress	= self::_addElement($xmlPayment, 'BillExpress');
+		self::_addElement($xmlBillExpress, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));		// FIXME
 		
-		$this->_AddAttribute($xmlPayment, 'DirectDebit', (in_array($arrCustomer['BillingType'], Array(BILLING_TYPE_CREDIT_CARD, BILLING_TYPE_DIRECT_DEBIT)) ? 1 : 0));
+		self::_addAttribute($xmlPayment, 'DirectDebit', (in_array($arrCustomer['BillingType'], Array(BILLING_TYPE_CREDIT_CARD, BILLING_TYPE_DIRECT_DEBIT)) ? 1 : 0));
 		
 		//--------------------------------------------------------------------//
 		// Statement
@@ -193,16 +193,16 @@
 		$strBillingPeriodEnd	= date("j M y", strtotime("-1 day", strtotime(date("Y-m-01", $intBillingDate))));
 		
 		// Add to XML schema
-		$arrLastInvoice	= $this->_GetOldInvoice($arrInvoice, 1);
-		$xmlStatement	= $this->_AddElement($xmlInvoice, 'Statement');
-		$this->_AddElement($xmlStatement, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
-		$this->_AddElement($xmlStatement, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
-		$this->_AddElement($xmlStatement, 'Overdue', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
-		$this->_AddElement($xmlStatement, 'NewCharges', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
-		$this->_AddElement($xmlStatement, 'TotalOwing', number_format($arrInvoice['TotalOwing'], 2, '.', ''));
-		$this->_AddElement($xmlStatement, 'BillingPeriodStart', $strBillingPeriodStart);
-		$this->_AddElement($xmlStatement, 'BillingPeriodEnd', $strBillingPeriodEnd);
-		$this->_AddElement($xmlStatement, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
+		$arrLastInvoice	= Invoice_Export::getOldInvoice($arrInvoice, 1);
+		$xmlStatement	= self::_addElement($xmlInvoice, 'Statement');
+		self::_addElement($xmlStatement, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
+		self::_addElement($xmlStatement, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
+		self::_addElement($xmlStatement, 'Overdue', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
+		self::_addElement($xmlStatement, 'NewCharges', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
+		self::_addElement($xmlStatement, 'TotalOwing', number_format($arrInvoice['TotalOwing'], 2, '.', ''));
+		self::_addElement($xmlStatement, 'BillingPeriodStart', $strBillingPeriodStart);
+		self::_addElement($xmlStatement, 'BillingPeriodEnd', $strBillingPeriodEnd);
+		self::_addElement($xmlStatement, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
 		
 		//--------------------------------------------------------------------//
 		// Cost Centre Summary
@@ -218,18 +218,18 @@
 			}
 		}
 		
-		$xmlCostCentreSummary	= $this->_AddElement($xmlInvoice, 'CostCentreSummary');
+		$xmlCostCentreSummary	= self::_addElement($xmlInvoice, 'CostCentreSummary');
 		foreach ($arrCostCentres as $strName=>$arrCostCentre)
 		{
 			// Get Cost Centre Services
-			$xmlCostCentre	= $this->_AddElement($xmlCostCentreSummary, 'CostCentre');
-			$this->_AddAttribute($xmlCostCentre, 'Name', $strName);
-			$this->_AddAttribute($xmlCostCentre, 'Total', number_format($arrCostCentre['GrandTotal'], 2, '.', ''));
+			$xmlCostCentre	= self::_addElement($xmlCostCentreSummary, 'CostCentre');
+			self::_addAttribute($xmlCostCentre, 'Name', $strName);
+			self::_addAttribute($xmlCostCentre, 'Total', number_format($arrCostCentre['GrandTotal'], 2, '.', ''));
 			
 			foreach ($arrCostCentre['Services'] as $strFNN=>$fltServiceTotal)
 			{
-				$xmlService	= $this->_AddElement($xmlCostCentre, 'Service', number_format($fltServiceTotal, 2, '.', ''));
-				$this->_AddAttribute($xmlService, 'FNN', $strFNN);
+				$xmlService	= self::_addElement($xmlCostCentre, 'Service', number_format($fltServiceTotal, 2, '.', ''));
+				self::_addAttribute($xmlService, 'FNN', $strFNN);
 			}
 		}
 		
@@ -237,7 +237,7 @@
 		// Services XML
 		//--------------------------------------------------------------------//
 		$arrDebugCallTypes	= Array();
-		$xmlServices	= $this->_AddElement($xmlInvoice, 'Services');
+		$xmlServices	= self::_addElement($xmlInvoice, 'Services');
 		foreach ($arrServices as $arrService)
 		{
 			// Only Render if there is data or ForceInvoiceRender is set
@@ -246,37 +246,37 @@
 				continue;
 			}
 			
-			$xmlService	= $this->_AddElement($xmlServices, 'Service');
-			$this->_AddAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
-			$this->_AddAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
-			$this->_AddAttribute($xmlService, 'Plan', $arrService['RatePlan']);
-			$this->_AddAttribute($xmlService, 'GrandTotal', number_format($arrService['ServiceTotal'], 2, '.', ''));
+			$xmlService	= self::_addElement($xmlServices, 'Service');
+			self::_addAttribute($xmlService, 'FNN', ($arrService['Extension']) ? $arrService['Extension'] : $arrService['FNN']);
+			self::_addAttribute($xmlService, 'CostCentre', $arrService['CostCentre']);
+			self::_addAttribute($xmlService, 'Plan', $arrService['RatePlan']);
+			self::_addAttribute($xmlService, 'GrandTotal', number_format($arrService['ServiceTotal'], 2, '.', ''));
 			
 			// Service Itemisation
-			$xmlItemisation	= $this->_AddElement($xmlService, 'Itemisation');
+			$xmlItemisation	= self::_addElement($xmlService, 'Itemisation');
 			foreach ($arrService['RecordTypes'] as $strName=>$arrChargeType)
 			{
 				//Debug($arrService['RecordTypes']);
 				
-				$xmlItemisationType	= $this->_AddElement($xmlItemisation, 'Category');
-				$this->_AddAttribute($xmlItemisationType, 'Name', $strName);
-				$this->_AddAttribute($xmlItemisationType, 'GrandTotal', number_format($arrChargeType['TotalCharge'], 2, '.', ''));
-				$this->_AddAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
-				$this->_AddAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
+				$xmlItemisationType	= self::_addElement($xmlItemisation, 'Category');
+				self::_addAttribute($xmlItemisationType, 'Name', $strName);
+				self::_addAttribute($xmlItemisationType, 'GrandTotal', number_format($arrChargeType['TotalCharge'], 2, '.', ''));
+				self::_addAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
+				self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
 				
 				// Charge Itemisation
-				$xmlItemisationItems	= $this->_AddElement($xmlItemisationType, 'Items');
+				$xmlItemisationItems	= self::_addElement($xmlItemisationType, 'Items');
 				foreach ($arrChargeType['Itemisation'] as $arrCDR)
 				{
-					$xmlItem	= $this->_AddElement($xmlItemisationItems, 'Item');
+					$xmlItem	= self::_addElement($xmlItemisationItems, 'Item');
 					
 					// Process the CDR
-					$arrItem	= $this->_CDR2Itemise($arrCDR, $arrChargeType['DisplayType']);
+					$arrItem	= self::_itemiseCDR($arrCDR, $arrChargeType['DisplayType']);
 					
 					// Item Fields
 					foreach ($arrItem as $strField=>$mixValue)
 					{
-						$this->_AddElement($xmlItem, $strField, $mixValue);
+						self::_addElement($xmlItem, $strField, $mixValue);
 					}
 					
 					// Debug SUM of CDR values
@@ -285,16 +285,16 @@
 				}
 			}
 		}
-		$this->_Debug($arrDebugCallTypes);
+		Cli_App_Billing::debug($arrDebugCallTypes);
 		
 		// Determine Output/Return data
-		$strXMLOutput	= $this->_domDocument->saveXML();
+		$strXMLOutput	= $domDocument->saveXML();
 		if (!$bolDebug)
 		{
 			// Save to file, return success
 			$intAccount			= $arrInvoice['Account'];
 			$intCustomerGroup	= $arrCustomer['CustomerGroup'];
-			$strFullDirectory	= INVOICE_XML_PATH.$arrInvoice['InvoiceRun'];
+			$strFullDirectory	= $arrInvoice['invoice_run_id'];
 			
 			@mkdir($strFullDirectory, 0777, TRUE);
 			
@@ -308,80 +308,15 @@
 		}
 		
 		// Destroy XML object and return
-		unset($this->_domDocument);
+		unset($domDocument);
 		return $mixReturn;
 	 }
  	
  	//------------------------------------------------------------------------//
-	// BuildOutput()
+	// deliver()
 	//------------------------------------------------------------------------//
 	/**
-	 * BuildOutput()
-	 *
-	 * Builds the bill file
-	 *
-	 * Builds the bill file
-	 * 
-	 * @param		array		$arrAccounts	Indexed array of valid account numbers
-	 * 											which have invoices in the InvoiceTemp table
-	 * 											Only used with BILL_REPRINT_TEMP
-	 * 
-	 * @return		string						filename
-	 *
-	 * @method
-	 */
- 	function BuildOutput($strInvoiceRun, $arrAccounts = Array())
- 	{
-		// Get Invoice Detail
-		$arrInvoices	= Array();
-		if (!count($arrAccounts))
-		{
-			// Grab full list of Accounts
-			CliEcho("Retrieving full list of Invoices for '$strInvoiceRun'...");
-			$selAccounts	= new StatementSelect($this->_strInvoiceTable, "*", "InvoiceRun = <InvoiceRun>");
-			if ($selAccounts->Execute(Array('InvoiceRun' => $strInvoiceRun)) === FALSE)
-			{
-				Debug($selAccounts->Error());
-				return FALSE;
-			}
-			$arrInvoices	= $selAccounts->FetchAll();
-		}
-		else
-		{
-			// Grab specified Accounts
-			CliEcho("Retrieving specified list of Invoices for '$strInvoiceRun'...");
-			$selAccountsById	= new StatementSelect($this->_strInvoiceTable, "*", "Account = <Account> AND InvoiceRun = <InvoiceRun>");
-			foreach ($arrAccounts as $intAccount)
-			{
-				if ($selAccountsById->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun)) === FALSE)
-				{
-					Debug($selAccountsById->Error());
-					return FALSE;
-				}
-				if ($arrInvoice = $selAccountsById->Fetch())
-				{
-					$arrInvoices[]	= $arrInvoice;
-				}
-			}
-		}		
-		
-		// Generate Output for each Account
-		CliEcho("Generating XML...");
-		foreach ($arrInvoices as $arrInvoice)
-		{
-			CliEcho("{$arrInvoice['Account']}...");
-			$this->AddInvoice($arrInvoice);
-		}
-		
-		// Return Pass/Fail
-		return TRUE;
- 	}
- 	
- 	//------------------------------------------------------------------------//
-	// SendOutput()
-	//------------------------------------------------------------------------//
-	/**
-	 * SendOutput()
+	 * deliver()
 	 *
 	 * Sends the bill file
 	 *
@@ -393,8 +328,10 @@
 	 *
 	 * @method
 	 */
- 	function SendOutput($strInvoiceRun, $arrModes = NULL, $bolGeneratePDFs = TRUE)
+ 	static public function deliver($strInvoiceRun, $arrModes = NULL, $bolGeneratePDFs = TRUE)
  	{
+		throw new Exception(__CLASS__."::deliver() has not been implemented yet!");
+		
 		// Get list of CustomerGroups
 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "InternalName", "1");
 		$selCustomerGroups->Execute();
@@ -666,9 +603,9 @@
 	/**
 	 * _AddElement()
 	 *
-	 * Adds an Element to the $this->_domDocument XML Schema
+	 * Adds an Element to the $domDocument XML Schema
 	 *
-	 * Adds an Element to the $this->_domDocument XML Schema
+	 * Adds an Element to the $domDocument XML Schema
 	 * 
 	 * @param	element	&$xmlParent					The Parent DOMNode for this Element
 	 * @param	array	$strName					The name of this Element
@@ -678,7 +615,7 @@
 	 *
 	 * @method
 	 */
- 	protected function _AddElement(&$xmlParent, $strName, $mixValue = NULL)
+ 	protected static function _addElement(&$xmlParent, $strName, $mixValue = NULL)
  	{
  		if ($xmlParent instanceof DOMNode)
  		{
@@ -712,7 +649,7 @@
 	 *
 	 * @method
 	 */
- 	protected function _AddAttribute(&$xmlParent, $strName, $mixValue = NULL)
+ 	protected static function _addAttribute(&$xmlParent, $strName, $mixValue = NULL)
  	{
  		if ($xmlParent instanceof DOMNode)
  		{
@@ -727,10 +664,10 @@
  	}
  	
   	//------------------------------------------------------------------------//
-	// _CDR2Itemise()
+	// _itemiseCDR()
 	//------------------------------------------------------------------------//
 	/**
-	 * _CDR2Itemise()
+	 * _itemiseCDR()
 	 *
 	 * Converts a CDR Record to an Itemised Item, based on it's DisplayType
 	 *
@@ -744,7 +681,7 @@
 	 *
 	 * @method
 	 */
- 	protected function _CDR2Itemise($arrCDR, $intDisplayType)
+ 	protected static function _itemiseCDR($arrCDR, $intDisplayType)
  	{
  		$arrItem	= Array();
  		switch ($intDisplayType)

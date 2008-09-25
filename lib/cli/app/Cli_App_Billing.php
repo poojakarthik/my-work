@@ -40,6 +40,7 @@ class Cli_App_Billing extends Cli
 			{
 				define('BILLING_TEST_MODE'	, TRUE);
 			}
+			define('INVOICE_XML_PATH', FILES_BASE_PATH.'invoices/xml/');
 			
 			// Start a new Transcation
 			DataAccess::getDataAccess()->TransactionStart();
@@ -152,7 +153,7 @@ class Cli_App_Billing extends Cli
 	
 	public static function debug($strMessage, $bolNewLine=TRUE)
 	{
-		if (defined(BILLING_TEST_MODE) && BILLING_TEST_MODE)
+		if (defined('BILLING_TEST_MODE') && BILLING_TEST_MODE)
 		{
 			CliEcho($strMessage, $bolNewLine);
 		}
@@ -163,7 +164,7 @@ class Cli_App_Billing extends Cli
 		return array(
 			self::SWITCH_TEST_RUN => array(
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "For testing the Billing Implementation with dummy data",
+				self::ARG_DESCRIPTION	=> "Revokes the transaction that encapsualtes Billing, and provides debug data",
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
@@ -171,14 +172,14 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|EXPORT]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","EXPORT"))'
 			),
 			
 			self::SWITCH_INVOICE_RUN	=> array(
 				self::ARG_LABEL			=> "INVOICE_RUN_ID",
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT and REVOKE)",
+				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE and EXPORT)",
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
 		);

@@ -423,6 +423,35 @@ class Invoice_Run
 	}
 	
 	//------------------------------------------------------------------------//
+	// export
+	//------------------------------------------------------------------------//
+	/**
+	 * export()
+	 *
+	 * Exports an Invoice Run to XML
+	 * 
+	 * Exports an Invoice Run to XML.  The path used is [FILES_BASE_PATH]/invoices/xml/[Invoice_Run.Id]/[Invoice.Id].xml
+	 * 
+	 * @return		void
+	 * 
+	 * @constructor
+	 */
+	public function export()
+	{
+		// Select all Invoices for this Invoice Run
+		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
+		if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
+		}
+		while ($objInvoice = new Invoice($selInvoicesByInvoiceRun->Fetch()))
+		{
+			// Export the Invoice
+			$objInvoice->export();
+		}
+	}
+	
+	//------------------------------------------------------------------------//
 	// save
 	//------------------------------------------------------------------------//
 	/**

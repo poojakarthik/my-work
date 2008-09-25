@@ -324,6 +324,9 @@ class Invoice
 		
 		// Insert the Invoice Data
 		$this->save();
+		
+		// Export the Invoice
+		$this->export();
 		//--------------------------------------------------------------------//
 	}
 	
@@ -637,6 +640,25 @@ class Invoice
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// export
+	//------------------------------------------------------------------------//
+	/**
+	 * export()
+	 *
+	 * Exports an Invoice to XML
+	 * 
+	 * Exports an Invoice to XML.  The path used is [FILES_BASE_PATH]/invoices/xml/[Invoice_Run.Id]/[Invoice.Id].xml
+	 * 
+	 * @return		void
+	 * 
+	 * @constructor
+	 */
+	public function export()
+	{		
+		Invoice_Export_XML::export(get_object_vars($this));
 	}
 	
 	//------------------------------------------------------------------------//
