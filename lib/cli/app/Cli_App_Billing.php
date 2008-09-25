@@ -86,8 +86,17 @@ class Cli_App_Billing extends Cli
 		{
 			DataAccess::getDataAccess()->TransactionRollback();
 			
+			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
+			{
+				$strMessage	= $exception->__toString();
+			}
+			else
+			{
+				$strMessage	= $exception->getMessage();
+			}
+			
 			// We can now show the error message
-			$this->showUsage($exception->getMessage());
+			$this->showUsage($strMessage);
 			return 1;
 		}
 	}
@@ -161,9 +170,7 @@ class Cli_App_Billing extends Cli
 			{
 				$mixMessage	= print_r($mixMessage, TRUE);
 			}
-			
-			echo $mixMessage . ($bolNewLine) ? "\n" : '';
-			flush();
+			CliEcho($mixMessage, $bolNewLine);
 		}
 	}
 	
