@@ -48,6 +48,15 @@ abstract class Flex_Rollout_Version
 		// Default implementation does nothing
 	}
 
+	protected function outputMessage($strMessage)
+	{
+		if ($fh = fopen('php://stdout','w'))
+		{
+			fwrite($fh, $strMessage);
+			fclose($fh);
+		}
+	}
+
 	/**
 	 * This function can be invoked by the subclass to interact with a user at the command line.
 	 */
