@@ -113,10 +113,10 @@
 	 *
 	 * @method
 	 */
- 	function Generate($arrInvoiceRun, $arrService)
+ 	function Generate($objInvoice, $objService)
  	{
 		$fltTotalCharged	= 0.0;
- 		if ($this->_selPM15Services->Execute($arrService))
+ 		if ($this->_selPM15Services->Execute(Array('Service' => $objService->Id)))
  		{
 			while ($arrServiceDetails = $this->_selPM15Services->Fetch())
 			{
@@ -128,10 +128,10 @@
 				$arrCharge['ChargedOn']		= date("Y-m-d");
 				$arrCharge['Amount']		= $this->_cfgModuleConfig->Amount;
 				$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
-				$arrCharge['Service'] 		= $arrServiceDetails['Service'];
-				$arrCharge['Account'] 		= $arrServiceDetails['Account'];
-				$arrCharge['AccountGroup'] 	= $arrServiceDetails['AccountGroup'];
-				$arrCharge['InvoiceRun']	= $arrInvoiceRun['InvoiceRun'];
+				$arrCharge['Service'] 		= $objService->Id;
+				$arrCharge['Account'] 		= $objService->Account;
+				$arrCharge['AccountGroup'] 	= $objService->AccountGroup;
+				$arrCharge['InvoiceRun']	= $objInvoice->invoice_run_id;
  				$GLOBALS['fwkFramework']->AddCharge($arrCharge);
  				
  				$fltTotalCharged			+= $arrCharge['Amount'];
@@ -140,28 +140,6 @@
  		
  		return $fltTotalCharged;
  	}
- 	
- 	
-	//------------------------------------------------------------------------//
-	// Revoke
-	//------------------------------------------------------------------------//
-	/**
-	 * Revoke()
-	 *
-	 * Revokes a Pinnacle Service Fee for the given Invoice
-	 *
-	 * Revokes a Pinnacle Service Fee for the given Invoice
-	 *
-	 * @return	boolean
-	 *
-	 * @method
-	 */
- 	function Revoke($strInvoiceRun, $intAccount)
- 	{
- 		// Call Parent Revoke()
- 		return parent::Revoke($strInvoiceRun, $intAccount);
- 	}
- 	
  	
 	//------------------------------------------------------------------------//
 	// CreateModule

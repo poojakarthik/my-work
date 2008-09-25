@@ -44,6 +44,9 @@
  */
  abstract class Billing_Charge_Service extends Billing_Charge
  {
+	protected	$_selGetAccounts;
+	protected	$_selGetServices;
+	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -68,8 +71,8 @@
  		
  		// Statements					
 		$this->_qryDelete		= new Query();
-		$this->_selGetAccounts	= new StatementSelect("Invoice", "Account", "InvoiceRun = <InvoiceRun> UNION SELECT Account FROM InvoiceTemp WHERE InvoiceRun = <InvoiceRun>");
-		$this->_selGetServices	= new StatementSelect("ServiceTotal", "Service", "InvoiceRun = <InvoiceRun>");
+		$this->_selGetAccounts	= new StatementSelect("Invoice", "Account", "invoice_run_id = <invoice_run_id>");
+		$this->_selGetServices	= new StatementSelect("ServiceTotal", "Service", "invoice_run_id = <invoice_run_id>");
  	}
  	
  	
@@ -88,7 +91,7 @@
 	 *
 	 * @method
 	 */
- 	function Generate($arrInvoiceRun, $arrService)
+ 	function Generate($objInvoiceRun, $objService)
  	{
  		
  	}
@@ -108,12 +111,10 @@
 	 *
 	 * @method
 	 */
- 	function Revoke($strInvoiceRun, $intAccount)
+ 	function Revoke($objInvoiceRun, $objAccount)
  	{
- 		//Debug("InvoiceRun: '$strInvoiceRun'\nAccount: $intAccount\nCharge Type: '$this->_strChargeType'");
- 		
  		// Delete the charge
- 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount AND ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND InvoiceRun = '$strInvoiceRun'");
+ 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = {$objAccount->Id} AND ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoiceRun->Id}'");
  	}
  	
  	
@@ -131,16 +132,16 @@
 	 *
 	 * @method
 	 */
- 	function RevokeAll($strInvoiceRun)
+ 	function RevokeAll($objInvoiceRun)
  	{
  		// Delete the charges
- 		if (!$this->_selGetAccounts->Execute(Array('InvoiceRun' => $strInvoiceRun)))
+ 		if (!$this->_selGetAccounts->Execute(Array('invoice_run_id' => $objInvoiceRun->Id)))
  		{
  			Debug($this->_selGetAccounts->Error());
  		}
- 		while ($arrAccount = $this->_selGetAccounts->Fetch())
+ 		while ($objAccount = new Account($this->_selGetAccounts->Fetch()))
  		{
- 			$this->Revoke($strInvoiceRun, $arrAccount['Account']);
+ 			$this->Revoke($objInvoiceRun, $objAccount);
  		}
  	}
  }

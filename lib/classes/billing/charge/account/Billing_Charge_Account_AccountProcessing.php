@@ -131,29 +131,29 @@
 	 *
 	 * @method
 	 */
- 	function Generate($arrInvoice, $arrAccount)
+ 	function Generate($objInvoice, $objAccount)
  	{
  		// Does this account qualify?
- 		if ($arrAccount['DisableDDR'] == 1)
+ 		if ($objAccount->DisableDDR === 1)
  		{
  			// No, return TRUE
  			return TRUE;
  		}
  		
  		// Do we have a valid CreditCard/DirectDebit entry?
- 		if ($arrAccount['BillingType'] == BILLING_TYPE_CREDIT_CARD)
+ 		if ($objAccount->BillingType === BILLING_TYPE_CREDIT_CARD)
  		{
  			// Check for Credit Card
- 			if ($this->_selCreditCard->Execute(Array('AccountGroup' => $arrAccount['AccountGroup'])))
+ 			if ($this->_selCreditCard->Execute(Array('AccountGroup' => $objAccount->AccountGroup)))
  			{
  				// Valid Credit Card
  				return TRUE; 
  			}
  		}
- 		elseif ($arrAccount['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
+ 		elseif ($objAccount->BillingType == BILLING_TYPE_DIRECT_DEBIT)
  		{
  			// Check for DD Details
- 			if ($this->_selDirectDebit->Execute(Array('AccountGroup' => $arrAccount['AccountGroup'])))
+ 			if ($this->_selDirectDebit->Execute(Array('AccountGroup' => $objAccount->AccountGroup)))
  			{
  				// Valid DD Details
  				return TRUE;
@@ -161,14 +161,14 @@
  		}
  		
  		// Is the Invoice Total > NON_DDR_MINIMUM_CHARGE?
- 		if ($arrInvoice['Total'] < $this->_cfgModuleConfig->InvoiceMinimum)
+ 		if ($objInvoice->Total < $this->_cfgModuleConfig->InvoiceMinimum)
  		{
  			// Yes, return TRUE
  			return TRUE;
  		}
  		
  		// Is this Account tolling?
- 		if (!$this->_selTollingAccounts->Execute(Array('Account' => $arrAccount['Id'])))
+ 		if (!$this->_selTollingAccounts->Execute(Array('Account' => $objAccount->Id)))
  		{
  			// No, return TRUE
  			return TRUE;
@@ -184,9 +184,9 @@
 		$arrCharge['Amount']		= $this->_cfgModuleConfig->Amount;
 		$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
 		$arrCharge['Notes']			= "Automatically Added Charge";
-		$arrCharge['Account'] 		= $arrAccount['Id'];
-		$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
-		$arrCharge['InvoiceRun']	= $arrInvoice['InvoiceRun'];
+		$arrCharge['Account'] 		= $objAccount->Id;
+		$arrCharge['AccountGroup'] 	= $objAccount->AccountGroup;
+		$arrCharge['InvoiceRun']	= $objInvouce->invoice_run_id;
 		
 		// Return FALSE or amount charged
 		if (!$GLOBALS['fwkFramework']->AddCharge($arrCharge))

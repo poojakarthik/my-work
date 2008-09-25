@@ -120,25 +120,24 @@
 	 *
 	 * @method
 	 */
- 	function Generate($arrInvoice, $arrAccount)
+ 	function Generate($objInvoice, $objAccount)
  	{
  		// Does this account qualify?
- 		if ($arrAccount['BillingMethod'] !== BILLING_METHOD_POST)
+ 		if ($objAccount->BillingMethod !== BILLING_METHOD_POST)
  		{
  			// No, return TRUE
  			return TRUE;
  		}
  		
  		// Is the Invoice Total > Minimum Invoice Total?
- 		// FIXME -- Move this figure
- 		if ($arrInvoice['Total'] < $this->_cfgModuleConfig->InvoiceMinimum)
+ 		if ($objInvoice->Total < $this->_cfgModuleConfig->InvoiceMinimum)
  		{
  			// Yes, return TRUE
  			return TRUE;
  		}
  		
  		// Is this Account tolling?
- 		if (!$this->_selTollingAccounts->Execute(Array('Account' => $arrAccount['Id'])))
+ 		if (!$this->_selTollingAccounts->Execute(Array('Account' => $objAccount->Id)))
  		{
  			// No, return TRUE
  			return TRUE;
@@ -154,9 +153,9 @@
 		$arrCharge['Amount']		= $this->_cfgModuleConfig->Amount;
 		$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
 		$arrCharge['Notes']			= "Automatically Added Charge";
-		$arrCharge['Account'] 		= $arrAccount['Id'];
-		$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
-		$arrCharge['InvoiceRun']	= $arrInvoice['InvoiceRun'];
+		$arrCharge['Account'] 		= $objAccount->Id;
+		$arrCharge['AccountGroup'] 	= $objAccount->AccountGroup;
+		$arrCharge['InvoiceRun']	= $objInvoice->invoice_run_id;
 		
 		// Return FALSE or amount charged
 		if (!$GLOBALS['fwkFramework']->AddCharge($arrCharge))

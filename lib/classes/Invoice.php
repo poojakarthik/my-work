@@ -266,7 +266,7 @@ class Invoice
 		foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Account'] as $chgModule)
 		{
 			// Generate charge
-			$mixResult = $chgModule->Generate($objInvoiceRun, $arrServiceDetails);
+			$mixResult = $chgModule->Generate($this, $objAccount);
 		}
 		
 		// Revert to pre-Preliminary Totals
@@ -488,7 +488,7 @@ class Invoice
 		foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Service'] as $chgModule)
 		{
 			// Generate charge
-			$mixResult = $chgModule->Generate($objInvoiceRun, $arrServiceDetails);
+			$mixResult = $chgModule->Generate($this, new Service($arrServiceDetails, TRUE));
 		}
 		
 		// Retrieve Charge Totals
@@ -597,6 +597,7 @@ class Invoice
 		}
 		
 		// Remove Billing-Time Charges
+		$objAccount	= new Account(Array('Id' => $this->Account), TRUE);
 		$arrModules	= Billing_Charge::getModules();
 		foreach ($arrModules as $intCustomerGroup=>$arrModuleTypes)
 		{
@@ -604,8 +605,8 @@ class Invoice
 			{
 				foreach ($arrModules as $chgModule)
 				{
-					// Generate charge
-					$mixResult = $chgModule->Revoke($this->invoice_run_id, $this->Account);
+					// Revoke charge
+					$mixResult = $chgModule->Revoke($this, $objAccount);
 				}
 			}
 		}
