@@ -329,8 +329,10 @@ class AppTemplateConsole extends ApplicationTemplate
 			$mixSelect .= ")
 				ORDER BY rank DESC
 				LIMIT $intStart,$intResultsPerPage;";
-
-			echo "$mixSelect";
+			
+			// debug query
+			// echo "$mixSelect";
+			
 			// This portion of the code exeutes the query fetching an array..
 			$strCustomerFAQ = $dbConnection->fetch("$mixSelect",$array=true);
 
