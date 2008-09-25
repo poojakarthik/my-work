@@ -19,7 +19,7 @@
  
 
 
- class HtmlTemplateCustomerFAQ extends HtmlTemplate
+ class HtmlTemplateCustomerFAQAll extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -85,7 +85,7 @@
 		</table>
 		</div><br/>";
 
-		if(DBO()->Search->Result->Value !== NULL)
+		if(DBO()->FAQ->All->Value !== NULL)
 		{
 			echo "<div class='customer-standard-table-title-style-password'>Results " . DBO()->Total->Start->Value . " - " . DBO()->Total->NextPage->Value . " of about " . DBO()->Total->Search->Value . "</div>
 			<div class='GroupedContent'>
@@ -100,21 +100,10 @@
 				<td>Last Updated</td>
 				<td>Hits</td>
 			</tr>";
-			foreach(DBO()->Search->Result->Value as $results){
+			foreach(DBO()->FAQ->All->Value as $results){
 				foreach($results as $key=>$val){
 					$$key=$val;
 				}
-				/* 
-					After the above loop, available fields are:
-					$customer_faq_id
-					$customer_faq_subject
-					$customer_faq_contents
-					$customer_faq_time_added
-					$customer_faq_time_updated
-					$customer_faq_download
-					$customer_faq_group
-					$customer_faq_hits
-				*/
 				echo "
 				<tr>
 					<td>$customer_faq_id. <A HREF=\"javascript:view_faq($customer_faq_id)\">$customer_faq_subject</A></td>
@@ -146,39 +135,7 @@
 		}
 		else
 		{
-			echo "<div class='customer-standard-table-title-style-password'>Top 10 questions</div>
-			<div class='GroupedContent'>
-			<TABLE class=\"customer-standard-table-style\">
-			<TR VALIGN=\"TOP\">
-			<TD width=\"10\"></TD>
-			<TD>";
-			
-			
-			print "<table width=\"100%\">
-			<tr>
-				<td>Title</td>
-				<td>Last Updated</td>
-				<td>Hits</td>
-			</tr>";
-			foreach(DBO()->Search->Topten->Value as $results){
-				foreach($results as $key=>$val){
-					$$key=$val;
-				}
-				echo "
-				<tr>
-					<td><A HREF=\"javascript:view_faq($customer_faq_id)\">$customer_faq_subject</A></td>
-					<td>$customer_faq_time_updated</td>
-					<td>$customer_faq_hits</td>
-				</tr>";
-			}
-			print "</table>";
-
-			print "
-			</TD>
-			</TR>
-			</TABLE>
-			</div>
-			<br/>";
+			echo "Error";
 		}
 
 		echo "</FORM>";

@@ -72,12 +72,13 @@
 	function Render()
 	{
 
-		if(DBO()->FAQ->Result->Value)
+		if(DBO()->FAQ->View->Value)
 		{
-			$arrFAQ = DBO()->FAQ->Result->Value;
+			$arrFAQ = DBO()->FAQ->View->Value;
 			foreach($arrFAQ as $key=>$val){
 				$$key=$val;
 			}
+			$customer_faq_contents = str_replace("\n","<br>",$customer_faq_contents);
 			echo "
 			<TABLE cellpadding=\"10\" width=\"100%\">
 			<TR>

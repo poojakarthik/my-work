@@ -59,7 +59,7 @@
 	$oblstrMobile			= $oblarrUIValues->Push (new dataString ('Mobile'			, $cntContact->Pull ('Mobile')->getValue ()));
 	$oblstrFax				= $oblarrUIValues->Push (new dataString ('Fax'				, $cntContact->Pull ('Fax')->getValue ()));
 	//$oblstrUserName			= $oblarrUIValues->Push (new dataString ('UserName'			, $cntContact->Pull ('UserName')->getValue ()));
-	$oblstrUserName			= $oblarrUIValues->Push (new dataString ('UserName'			, $cntContact->Pull ('Email')->getValue ()));
+	//$oblstrUserName			= $oblarrUIValues->Push (new dataString ('UserName'			, $cntContact->Pull ('Email')->getValue ()));
 	$oblstrPassWord			= $oblarrUIValues->Push (new dataString ('PassWord'			, ''));
 	$oblbolCustomerContact	= $oblarrUIValues->Push (new dataBoolean('CustomerContact'	, $cntContact->Pull ('CustomerContact')->getValue ()));
 	
@@ -170,7 +170,6 @@
 					'Phone'				=> $_POST ['Phone'],
 					'Mobile'			=> $_POST ['Mobile'],
 					'Fax'				=> $_POST ['Fax'],
-					//'UserName'			=> $_POST ['UserName'],
 					'PassWord'			=> $_POST ['PassWord']
 				)
 			);

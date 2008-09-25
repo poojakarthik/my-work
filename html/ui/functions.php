@@ -1302,4 +1302,50 @@ function RandomString($len, $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
     return $string;
 }
 
+function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
+{
+
+	$intPrevious = $intStart-$intResultsPerPage;
+	$intNext = $intStart+$intResultsPerPage;
+	$intCurrent = $intStart;
+	$intPages = $intTotalResults/$intResultsPerPage;
+	$mixLinksDisplay = NULL;
+
+	if($intPages>1)
+	{
+		$mixLinksDisplay .= "Result Page: ";
+		$cnt=1;
+		if($intStart>=$intResultsPerPage)
+		{
+
+			$mixLinksDisplay .= "<a href='$mixSearchURL$mixSearch&start=$intPrevious'>Previous</A>&nbsp;&nbsp; ";
+
+		}
+		for($i=0; $i<$intPages; $i++){
+
+			$intCurrentPageNumber = $i*$intResultsPerPage;
+			$intBackFourPages = $start-$intResultsPerPage*7;
+			$intForwardFourPages = $start+$intResultsPerPage*7;
+
+			if($intCurrentPageNumber<$intForwardFourPages&&$intCurrentPageNumber>$intBackFourPages){
+				if($intCurrentPageNumber==$intStart){
+					$mixLinksDisplay .= "$cnt \n";
+				}
+				else{
+					$mixLinksDisplay .= "<a href='$mixSearchURL$mixSearch&start=$intCurrentPageNumber'>$cnt</A></a> \n";
+				}
+			}
+
+			$cnt++;
+		
+		}
+		if($intNext+1<"$intTotalResults"){
+
+			$mixLinksDisplay .= "&nbsp;&nbsp;<A href='$mixSearchURL$mixSearch&start=$intNext'>Next</A>";
+		
+		}
+	}
+	return array ($intNext,$mixLinksDisplay);
+}
+
 ?>

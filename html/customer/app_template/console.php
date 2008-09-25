@@ -224,6 +224,17 @@ class AppTemplateConsole extends ApplicationTemplate
 
 		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 
+		if(!isset($_GET['start']) || !is_numeric($_GET['start']))
+		{
+			$_GET['start']="0";
+		}
+
+		// This portion of the code builds the search query.
+		$intStart = $_GET['start'];
+		$intResultsPerPage = "10";
+		$mixSearch = $_GET['s'];
+
+		// view single faq
 		if(array_key_exists('view',$_GET))
 		{
 			$intView = 0;
@@ -231,48 +242,48 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(is_numeric($_GET['view']))
 			{
 				$intView = $_GET['view'];
-				$strSelect= "SELECT * FROM customer_faq WHERE customer_faq_id = \"$intView\"";
+				$strSelect= "SELECT * FROM customer_faq WHERE customer_faq_id = \"$intView\" AND customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\"";
 				$arrFAQResults = $dbConnection->fetchone("$strSelect");
 			}
-
 			// Return an array with results to our page.
-			DBO()->FAQ->Result = $arrFAQResults;
+			DBO()->FAQ->View = $arrFAQResults;
 			$this->LoadPage('faq_view');
 			return TRUE;	
 		}
-		else if(array_key_exists('s',$_GET))
-		{
-			if(!isset($_GET['start']) || !is_numeric($_GET['start']))
-			{
-				$_GET['start']="0";
-			}
 
-			// This portion of the code builds the search query.
-			$intStart = $_GET['start'];
-			$intResultsPerPage = "10";
-			$mixSearch = $_GET['s'];
-			$arrSplitted = split ('[ +]', $mixSearch);
-			$intCount=0;
-			$bolFoundWord = FALSE;
-			$mixSelect= "SELECT SQL_CALC_FOUND_ROWS * FROM customer_faq WHERE ";
-			//$mixSelect= "SELECT SQL_CALC_FOUND_ROWS * FROM customer_faq WHERE (SELECT  * FROM customer_faq WHERE customer_faq_group='2') AND ";
-			foreach($arrSplitted as $mixWord){
-				if($intCount != "0"&&strlen($mixWord)>="2"){
-					$mixSelect.= " AND ";
-				}
-				if(strlen($mixWord)>="2"){
-					$bolFoundWord = TRUE;
-					$mixSelect.="customer_faq_subject LIKE \"%$mixWord%\" OR customer_faq_contents LIKE \"%$mixWord%\"";
-					$intCount++;
-				}
-			}
-			// By default we show all results if the search term is less then 2 chars.
-			if(!$bolFoundWord)
-			{
-				$mixSelect.="customer_faq_subject LIKE \"%\" OR customer_faq_contents LIKE \"%\"";
-			}
-			$mixSelect.=" ORDER BY customer_faq_subject LIMIT $intStart,$intResultsPerPage";
-			echo $mixSelect;
+		// view all faqs
+		if (array_key_exists('all',$_GET))
+		{
+
+			$select= "SELECT * FROM customer_faq WHERE customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\" ORDER BY customer_faq_subject DESC LIMIT $intStart,$intResultsPerPage";
+			// This portion of the code exeutes the query fetching an array..
+			$arrCustomerFAQ = $dbConnection->fetch("$select",$array=true);
+
+			// Count how many results there are, this can be used for pagination.
+			$resCountResults = $dbConnection->execute("SELECT FOUND_ROWS()");
+			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
+
+			// links 
+			list($intNext,$mixLinksDisplay) = pagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?s=");
+
+			DBO()->Total->Search = "$intTotalResults";
+			DBO()->Total->Start = "$intStart";
+			DBO()->Total->NextPage = $intNext;
+			DBO()->Search->Pages = "$mixLinksDisplay";
+			DBO()->FAQ->All = $arrCustomerFAQ;
+
+			$this->LoadPage('faq_all');
+			return TRUE;	
+		}
+
+		// search faqs
+		if(array_key_exists('s',$_GET))
+		{
+
+			$mixSelect = "SELECT *, MATCH (customer_faq_subject, customer_faq_contents)AGAINST (\"$mixSearch\") as relevency
+			FROM customer_faq
+			WHERE customer_faq_group = 2 AND (MATCH (customer_faq_subject, customer_faq_contents)AGAINST (\"$mixSearch\") > 0) ORDER BY relevency DESC LIMIT $intStart,$intResultsPerPage";
+
 			// This portion of the code exeutes the query fetching an array..
 			$strCustomerFAQ = $dbConnection->fetch("$mixSelect",$array=true);
 
@@ -280,66 +291,31 @@ class AppTemplateConsole extends ApplicationTemplate
 			$resCountResults = $dbConnection->execute("SELECT FOUND_ROWS()");
 			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
 
-			$intPrevious = $intStart-$intResultsPerPage;
-			$intNext = $intStart+$intResultsPerPage;
-			$intCurrent = $intStart;
+			// links 
+			list($intNext,$mixLinksDisplay) = pagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?s=");
 
 			// Return an array with results to our page.
 			DBO()->Search->Result = $strCustomerFAQ;
 			DBO()->Total->Search = "$intTotalResults";
 			DBO()->Total->Start = "$intStart";
 			DBO()->Total->NextPage = $intNext;
-
-			$intPages = $intTotalResults/$intResultsPerPage;
-			if($intPages>1)
-			{
-				$mixLinksDisplay .= "Result Page: ";
-				$cnt=1;
-				if($intStart>=$intResultsPerPage)
-				{
-
-					$mixLinksDisplay .= "<a href='./flex.php/Console/FAQ/?s=$mixSearch&start=$intPrevious' class='next'>Previous</A>&nbsp;&nbsp; ";
-
-				}
-				for($i=0; $i<$intPages; $i++){
-
-					$intCurrentPageNumber = $i*$intResultsPerPage;
-					$intBackFourPages = $start-$intResultsPerPage*7;
-					$intForwardFourPages = $start+$intResultsPerPage*7;
-
-					if($intCurrentPageNumber<$intForwardFourPages&&$intCurrentPageNumber>$intBackFourPages){
-						if($intCurrentPageNumber==$intStart){
-							$mixLinksDisplay .= "$cnt \n";
-						}
-						else{
-							$mixLinksDisplay .= "<a href='./flex.php/Console/FAQ/?s=$mixSearch&start=$intCurrentPageNumber'>$cnt</A></a> \n";
-						}
-					}
-
-					$cnt++;
-				
-				}
-				if($intNext+1<"$intTotalResults"){
-
-					$mixLinksDisplay .= "&nbsp;&nbsp;<A href='./flex.php/Console/FAQ/?s=$mixSearch&start=$intNext' class='next'>Next</A>";
-				
-				}
-			}
 			DBO()->Search->Pages = "$mixLinksDisplay";
+			$this->LoadPage('faq');
+			return TRUE;	
 
 		}
-		else
-		 {
-			// Query for the top 10
-			$select= "SELECT * FROM customer_faq ORDER BY customer_faq_hits DESC LIMIT 10";
-			// This portion of the code exeutes the query fetching an array..
-			$strCustomerTop10 = $dbConnection->fetch("$select",$array=true);
 
-			// Return an array with results to our page.
-			DBO()->Search->Topten = $strCustomerTop10;
-		}
+	
+		// show top ten
+		$select= "SELECT * FROM customer_faq ORDER BY customer_faq_hits DESC LIMIT 10";
+		// This portion of the code exeutes the query fetching an array..
+		$strCustomerTop10 = $dbConnection->fetch("$select",$array=true);
+
+		// Return an array with results to our page.
+		DBO()->Search->Topten = $strCustomerTop10;
 		$this->LoadPage('faq');
-		return TRUE;	 	
+		return TRUE;
+		
 	 }
 
 
@@ -1500,31 +1476,31 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolFoundError=TRUE;
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("Account Number",$_POST['mixAccountNumber'],"numbers",20);
+			list($strFoundError,$strErrorResponse) = InputValidation("Account Number",$_POST['mixAccountNumber'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("Birth Day",$_POST['mixBirthDay'],"numbers",2);
+			list($strFoundError,$strErrorResponse) = InputValidation("Birth Day",$_POST['mixBirthDay'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("Birth Month",$_POST['mixBirthMonth'],"numbers",2);
+			list($strFoundError,$strErrorResponse) = InputValidation("Birth Month",$_POST['mixBirthMonth'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("Birth Year",$_POST['mixBirthYear'],"numbers",4);
+			list($strFoundError,$strErrorResponse) = InputValidation("Birth Year",$_POST['mixBirthYear'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			list($strFoundError,$strErrorResponse) = InputValidation("ABN",$_POST['mixABN'],"numbers",20);
+			list($strFoundError,$strErrorResponse) = InputValidation("ABN",$_POST['mixABN'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
@@ -1547,7 +1523,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				// we can check the database for a record. 1
 				// Since there is duplicate account numbers we check there first name...?
-				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account,Phone,Mobile FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" AND FirstName LIKE \"$_POST[mixFirstName]\" AND LastName LIKE \"$_POST[mixLastName]\" LIMIT 1");
+				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" AND FirstName LIKE \"$_POST[mixFirstName]\" AND LastName LIKE \"$_POST[mixLastName]\" LIMIT 1");
 				
 				// we can check the database for a record. 2
 				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"$_POST[mixAccountNumber]\" LIMIT 1");
@@ -1568,8 +1544,6 @@ class AppTemplateConsole extends ApplicationTemplate
 					DBO()->Contact->DOB = $strCustContact->DOB;
 					DBO()->Account->ABN = $strCustAccount->ABN;
 					DBO()->Contact->Account = $strCustContact->Account;
-					DBO()->Contact->Phone = $strCustContact->Phone;
-					DBO()->Contact->Mobile = $strCustContact->Mobile;
 					DBO()->OK = TRUE;
 				}
 				else
@@ -1582,53 +1556,34 @@ class AppTemplateConsole extends ApplicationTemplate
 			/* they have submitted the first page */
 			if(DBO()->OK && DBO()->Fail==FALSE && array_key_exists('mixEmail', $_POST))
 			{
-
 				/* if DBO()->OK then we have confirmed all details, we just need to verify the email */
-				list($strFoundError,$strErrorResponse) = InputValidation("Email",$_POST['mixEmail'],"email",255);
-				if($strFoundError)
-				{
-					$bolFoundError=TRUE;
-					DBO()->ErrorMessage .= "$strErrorResponse<br/>";
-				}
-				list($strFoundError,$strErrorResponse) = InputValidation("Phone",$_POST['mixPhone'],"numbers",10);
-				if($strFoundError)
-				{
-					$bolFoundError=TRUE;
-					DBO()->ErrorMessage .= "$strErrorResponse<br/>";
-				}
-				/*
-				list($strFoundError,$strErrorResponse) = InputValidation("Mobile",$_POST['mixMobile'],"numbers",10);
-				if($strFoundError)
-				{
-					$bolFoundError=TRUE;
-					DBO()->ErrorMessage .= "$strErrorResponse<br/>";
-				}
-				*/
+				list($bolFoundEmail,$strErrorResponse) = InputValidation("Email",$_POST['mixEmail'],"email",255);
+
 				// we allow a duplicate email, only if its there's...
 				$intIdCheck = DBO()->Contact->Id->Value;
 				$strCustContact = $dbConnection->fetchone("SELECT Id,Email FROM `Contact` WHERE Email = \"$_POST[mixEmail]\" AND Id != \"$intIdCheck\" LIMIT 1");
 				if($strCustContact)
 				{
+					$bolFoundEmail=TRUE;
 					DBO()->Fail = TRUE;
 					DBO()->ErrorMessage .= "The email address entered already exists.<br/>";
 					$this->LoadPage('setup_account');
 					return TRUE;
 				}
-				if($bolFoundError)
+				if($bolFoundEmail)
 				{
 					DBO()->Fail = TRUE;
+					DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 					$this->LoadPage('setup_account');
 					return TRUE;
 				}
-				if(!$bolFoundError)
+				if(!$bolFoundEmail)
 				{
 					$mixNewPass = sha1 ("$_POST[mixNewPass1]");
 					$mixNewEmail = "$_POST[mixEmail]";
-					$mixNewPhone = "$_POST[mixPhone]";
-					$mixNewMobile = "$_POST[mixMobile]";
 
 					$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-					$dbConnection->execute("UPDATE Contact SET PassWord=\"$mixNewPass\",Email=\"$mixNewEmail\",Phone=\"$mixNewPhone\",Mobile=\"$mixNewMobile\" WHERE Id=\"" . DBO()->Contact->Id->Value . "\"");
+					$dbConnection->execute("UPDATE Contact SET PassWord=\"$mixNewPass\",Email=\"$mixNewEmail\" WHERE Id=\"" . DBO()->Contact->Id->Value . "\"");
 					
 					/* Mail the user with there new password and username, then show thank you page.. */
 					$subject = "Account Setup" . DBO()->Contact->Account->Value;

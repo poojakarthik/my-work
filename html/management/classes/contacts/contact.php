@@ -245,8 +245,8 @@
 			// contacts without error checking occurring
 			if ($this->Pull ('Archived')->getValue () == 0)
 			{
-				$selUserNames = new StatementSelect ('Contact', 'Id', 'UserName = <UserName> AND Archived = 0 AND Id != <Id>', null, 1);
-				$selUserNames->Execute (Array ('UserName' => $_POST ['UserName'], 'Id' => $this->Pull ('Id')->getValue ()));
+				$selUserNames = new StatementSelect ('Contact', 'Id', 'Email = <Email> AND Archived = 0 AND Id != <Id>', null, 1);
+				$selUserNames->Execute (Array ('Email' => $_POST ['Email'], 'Id' => $this->Pull ('Id')->getValue ()));
 				
 				if ($selUserNames->Count () <> 0)
 				{
@@ -268,7 +268,7 @@
 				"Phone"				=> $arrDetails ['Phone'],
 				"Mobile"			=> $arrDetails ['Mobile'],
 				"Fax"				=> $arrDetails ['Fax'],
-				"UserName"			=> $arrDetails ['UserName']
+				//"UserName"			=> $arrDetails ['UserName']
 			);
 			
 			// If the Password is set, update it (with SHA1)
