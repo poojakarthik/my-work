@@ -94,8 +94,8 @@ class Invoice
 	 */
 	public function generate($objAccount, $objInvoiceRun)
 	{
-		Cli_App_Billing::debug(get_object_vars($objInvoiceRun));
-		Cli_App_Billing::debug(get_object_vars($objAccount));
+		Cli_App_Billing::debug($objInvoiceRun->toArray());
+		Cli_App_Billing::debug($objAccount->toArray());
 		
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
@@ -601,7 +601,7 @@ class Invoice
 		
 		// Change CDR Statuses back to CDR_RATED
 		$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
-		if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), get_object_vars($this)) === FALSE)
+		if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), $this->toArray()) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$updCDRRevoke->Error());
 		}
@@ -629,7 +629,7 @@ class Invoice
 		
 		// Change Charge Statuses back to CHARGE_APPROVED
 		$updChargeRevoke	= self::_preparedStatement('updChargeRevoke');
-		if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), get_object_vars($this)) === FALSE)
+		if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), $this->toArray()) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$updChargeRevoke->Error());
 		}
@@ -694,7 +694,7 @@ class Invoice
 	 */
 	public function export()
 	{		
-		Invoice_Export_XML::export(get_object_vars($this));
+		Invoice_Export_XML::export($this->toArray());
 	}
 	
 	//------------------------------------------------------------------------//
@@ -977,7 +977,7 @@ class Invoice
 		{
 			// Update
 			$ubiSelf	= self::_preparedStatement("ubiSelf");
-			if ($ubiSelf->Execute(get_object_vars($this)) === FALSE)
+			if ($ubiSelf->Execute($this->toArray()) === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$ubiSelf->Error());
 			}
@@ -987,7 +987,7 @@ class Invoice
 		{
 			// Insert
 			$insSelf	= self::_preparedStatement("insSelf");
-			$mixResult	= $insSelf->Execute(get_object_vars($this));
+			$mixResult	= $insSelf->Execute($this->toArray());
 			if ($mixResult === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$insSelf->Error());
@@ -1024,6 +1024,25 @@ class Invoice
 		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 		$tidy[0] = strtolower($tidy[0]);
 		return $tidy;
+	}
+	
+	//------------------------------------------------------------------------//
+	// toArray()
+	//------------------------------------------------------------------------//
+	/**
+	 * toArray()
+	 *
+	 * Returns an associative array modelling the Database Record
+	 *
+	 * Returns an associative array modelling the Database Record
+	 * 
+	 * @return	array										DB Record
+	 *
+	 * @method
+	 */
+	public function toArray()
+	{
+		return $this->_arrProperties;
 	}
 	
 	//------------------------------------------------------------------------//

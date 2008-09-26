@@ -259,7 +259,7 @@ class Invoice_Run
 		// Retrieve a list of Accounts to be Invoiced
 		Cli_App_Billing::debug(" * Getting list of Accounts to Invoice...");
 		$selInvoiceableAccounts	= self::_preparedStatement('selInvoiceableAccounts');
-		if ($selInvoiceableAccounts->Execute(get_object_vars($this)) === FALSE)
+		if ($selInvoiceableAccounts->Execute($this->toArray()) === FALSE)
 		{
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selInvoiceableAccounts->Error());
@@ -447,7 +447,7 @@ class Invoice_Run
 			// Update
 			Cli_App_Billing::debug(" * Updating Invoice Run with Id {$this->Id}...");
 			$ubiSelf	= self::_preparedStatement("ubiSelf");
-			if ($ubiSelf->Execute(get_object_vars($this)) === FALSE)
+			if ($ubiSelf->Execute($this->toArray()) === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$ubiSelf->Error());
 			}
@@ -458,7 +458,7 @@ class Invoice_Run
 			// Insert
 			Cli_App_Billing::debug(" * Inserting Invoice Run...");
 			$insSelf	= self::_preparedStatement("insSelf");
-			$mixResult	= $insSelf->Execute(get_object_vars($this));
+			$mixResult	= $insSelf->Execute($this->toArray());
 			if ($mixResult === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$insSelf->Error());
@@ -473,6 +473,25 @@ class Invoice_Run
 				return $mixResult;
 			}
 		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// toArray()
+	//------------------------------------------------------------------------//
+	/**
+	 * toArray()
+	 *
+	 * Returns an associative array modelling the Database Record
+	 *
+	 * Returns an associative array modelling the Database Record
+	 * 
+	 * @return	array										DB Record
+	 *
+	 * @method
+	 */
+	public function toArray()
+	{
+		return $this->_arrProperties;
 	}
 	
 	

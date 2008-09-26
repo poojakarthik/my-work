@@ -235,7 +235,7 @@ class Account
 		{
 			// Update
 			$ubiSelf	= self::_preparedStatement("ubiSelf");
-			if ($ubiSelf->Execute(get_object_vars($this)) === FALSE)
+			if ($ubiSelf->Execute($this->toArray()) === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$ubiSelf->Error());
 			}
@@ -244,7 +244,7 @@ class Account
 		{
 			// Insert
 			$insSelf	= self::_preparedStatement("insSelf");
-			$mixResult	= $insSelf->Execute(get_object_vars($this));
+			$mixResult	= $insSelf->Execute($this->toArray());
 			if ($mixResult === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$insSelf->Error());
@@ -345,6 +345,25 @@ class Account
 		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 		$tidy[0] = strtolower($tidy[0]);
 		return $tidy;
+	}
+	
+	//------------------------------------------------------------------------//
+	// toArray()
+	//------------------------------------------------------------------------//
+	/**
+	 * toArray()
+	 *
+	 * Returns an associative array modelling the Database Record
+	 *
+	 * Returns an associative array modelling the Database Record
+	 * 
+	 * @return	array										DB Record
+	 *
+	 * @method
+	 */
+	public function toArray()
+	{
+		return $this->_arrProperties;
 	}
 	
 	//------------------------------------------------------------------------//
