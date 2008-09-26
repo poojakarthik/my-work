@@ -272,7 +272,7 @@ class Invoice
 		foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Account'] as $chgModule)
 		{
 			// Generate charge
-			$mixResult = $chgModule->Generate($this, $objAccount);
+			$chgModule->Generate($this, $objAccount);
 		}
 		
 		// Revert to pre-Preliminary Totals
