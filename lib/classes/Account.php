@@ -20,7 +20,7 @@ class Account
 		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
 		
 		// Automatically load the Invoice using the passed Id
-		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : ($arrProperties['id']) ? $arrProperties['id'] : NULL;
+		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : (($arrProperties['id']) ? $arrProperties['id'] : NULL);
 		if ($bolLoadById && $intId)
 		{
 			$selById	= $this->_preparedStatement('selById');
