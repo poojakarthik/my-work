@@ -370,6 +370,11 @@ class Account
 				$this->_saved = FALSE;
 			}
 		}
+		else
+		{
+			// Property doesn't exist yet
+			$this->{$strName}	= $mxdValue;
+		}
 	}
 
 	private function tidyName($name)
