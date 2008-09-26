@@ -6,7 +6,7 @@ class Application_Handler_Console extends Application_Handler
 	public function View($subPath)
 	{
 		// Build Context Menu
-		ContextMenu()->Admin->BugList();
+		ContextMenu()->Console->BugList();
 		
 		try
 		{
