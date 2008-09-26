@@ -42,7 +42,7 @@ class Account
 
 	protected static $cache = array();
 
-	private function __construct($arrProperties=NULL, $bolPropertiesIncludeEmployeeDetails=FALSE)
+	public function __construct($arrProperties=NULL, $bolPropertiesIncludeEmployeeDetails=FALSE)
 	{
 		if ($arrProperties)
 		{
