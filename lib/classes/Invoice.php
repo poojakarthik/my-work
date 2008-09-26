@@ -1145,7 +1145,7 @@ class Invoice
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON InvoiceRun.Id = Invoice.invoice_run_id", "Invoice.*", "Account = <Account> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
 					break;
 				case 'selAccountChargeTotals':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("Charge", "", "Service IS NULL AND Account = <Account> AND Status = ".CHARGE_TEMP_INVOICE);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Charge", "Nature, SUM(Amount) AS Total", "Service IS NULL AND Account = <Account> AND Status = ".CHARGE_TEMP_INVOICE, NULL, NULL, "Nature");
 					break;
 				
 				// INSERTS
