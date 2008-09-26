@@ -14,16 +14,8 @@
  */
 class Invoice_Run
 {
-	private $id					= NULL;
-	private $invoiceRun			= NULL;
-	private $billingDate		= NULL;
-	private $invoiceCount		= NULL;
-	private $billCost			= NULL;
-	private $billRated			= NULL;
-	private $billInvoiced		= NULL;
-	private $billTax			= NULL;
-	private $balanceData		= NULL;
-	private $cdrArchivedState	= NULL;
+	private	$_arrTidyNames	= array();
+	private	$_arrProperties	= array();
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -151,29 +143,6 @@ class Invoice_Run
 						"cdr_archived_state"	=> "CDRArchivedState"
 					);
 	}
-
-	//------------------------------------------------------------------------//
-	// init
-	//------------------------------------------------------------------------//
-	/**
-	 * init()
-	 *
-	 * Initialises the InvoiceRun object
-	 * 
-	 * Initialises the InvoiceRun object
-	 *
-	 * @param		array	$arrProperties		assoc array modelling record of InvoiceRun table
-	 * @return		void
-	 * @method
-	 */
-	private function init($arrProperties)
-	{
-		foreach($arrProperties as $name => $value)
-		{
-			$this->{self::tidyName($name)} = $value;
-		}
-	}
-
 
 	//------------------------------------------------------------------------//
 	// __get

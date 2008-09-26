@@ -312,17 +312,6 @@ class Account
 		);
 	}
 
-	private function init($arrProperties)
-	{
-		// Create list of tidied names
-		$this->_arrTidyNames	= Array();
-		foreach($arrProperties as $name => $value)
-		{
-			$this->_arrTidyNames[self::tidyName($name)]	= $name;
-		}
-		
-	}
-
 	public function __get($strName)
 	{
 		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
