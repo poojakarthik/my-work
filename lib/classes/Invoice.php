@@ -1005,6 +1005,28 @@ class Invoice
 	}
 	
 	//------------------------------------------------------------------------//
+	// tidyName
+	//------------------------------------------------------------------------//
+	/**
+	 * tidyName()
+	 *
+	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
+	 * 
+	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
+	 * If the string is already in the xxxYxxZzz format, then it will not be changed
+	 *
+	 * @param	string	$strName
+	 * @return	string
+	 * @method
+	 */
+	private function tidyName($name)
+	{
+		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$tidy[0] = strtolower($tidy[0]);
+		return $tidy;
+	}
+	
+	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
 	/**
