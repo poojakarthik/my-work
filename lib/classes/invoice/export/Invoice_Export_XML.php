@@ -41,7 +41,7 @@
  * @package		billing
  * @class		Invoice_Export_XML
  */
- class Invoice_Export_XM
+ class Invoice_Export_XML
  {
 	//------------------------------------------------------------------------//
 	// __construct()
