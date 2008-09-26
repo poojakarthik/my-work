@@ -726,10 +726,10 @@ class Invoice
 	}
 	
 	//------------------------------------------------------------------------//
-	// calulateGlobalTaxComponent
+	// calculateGlobalTaxComponent
 	//------------------------------------------------------------------------//
 	/**
-	 * calulateGlobalTaxComponent()
+	 * calculateGlobalTaxComponent()
 	 *
 	 * Calculates the Global Tax Component for a given amount, and returns it
 	 *
@@ -742,7 +742,7 @@ class Invoice
 	 *
 	 * @method
 	 */
-	public static function calulateGlobalTaxComponent($fltAmount, $strEffectiveDate)
+	public static function calculateGlobalTaxComponent($fltAmount, $strEffectiveDate)
 	{
 		static	$arrGlobalTax;
 		if (!isset($arrGlobalTax))
