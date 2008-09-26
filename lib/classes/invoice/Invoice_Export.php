@@ -264,9 +264,6 @@ class Invoice_Export
 					$arrCategories['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
 					
 					$fltRatedTotal							+= $fltPlanChargeTotal;
-					
-					$this->_arrPlanCharges['Records']		+= count($arrPlanChargeItemisation);
-					$this->_arrPlanCharges['TotalCharge']	+= $fltPlanChargeTotal;
 				}
 			}
 			
@@ -359,7 +356,7 @@ class Invoice_Export
 		$selAccountSummary	= self::_preparedStatement('selAccountSummary');
 		if ($selAccountSummary->Execute($arrInvoice) === FALSE)
 		{
-			throw new Exception($this->_selAccountSummary->Error());
+			throw new Exception($selAccountSummary->Error());
 		}
 		else
 		{
