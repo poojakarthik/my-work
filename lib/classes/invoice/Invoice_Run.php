@@ -218,11 +218,9 @@ class Invoice_Run
 		$strInvoiceDatetime		= date($intInvoiceDatetime);
 		
 		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
-		Cli_App_Billing::debug(" * Revoking any Temporary Invoice Runs...");
 		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
 		
 		//------------------- START INVOICE RUN GENERATION -------------------//
-		Cli_App_Billing::debug(" * Creating initial InvoiceRun record...");
 		// Create the initial InvoiceRun record
 		$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
 		$this->InvoiceRun				= date("YmdHis");
@@ -338,7 +336,6 @@ class Invoice_Run
 		{
 			// Revoke each Invoice Run
 			$objInvoiceRun	= new Invoice_Run($arrInvoiceRun);
-			Cli_App_Billing::debug(" + Revoking Invoice Run with Id {$objInvoiceRun->Id}...");
 			$objInvoiceRun->revoke();
 		}
 	}
@@ -439,8 +436,6 @@ class Invoice_Run
 	 */
 	public function save()
 	{
-		Cli_App_Billing::debug(" * ENTERING save()...");
-		
 		// Do we have an Id for this instance?
 		if ($this->Id !== NULL)
 		{
@@ -536,7 +531,7 @@ class Invoice_Run
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "*", "customer_group_id = <customer_group_id> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
 					break;
 				case 'selInvoiceableAccounts':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account JOIN account_status ON Account.Archived = account_status.id", "Account.*", "CustomerGroup = <customer_group_id> AND Account.CreatedOn < '{$strInvoiceDatetime}' AND account_status.can_invoice = 1");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account JOIN account_status ON Account.Archived = account_status.id", "Account.*", "CustomerGroup = <customer_group_id> AND Account.CreatedOn < <BillingDate> AND account_status.can_invoice = 1");
 					break;
 				case 'selLastInvoiceRunByCustomerGroup':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
