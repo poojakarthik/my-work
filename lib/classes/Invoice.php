@@ -103,6 +103,7 @@ class Invoice
 		
 		$this->invoice_run_id	= $objInvoiceRun->Id;
 		$this->_objInvoiceRun	= $objInvoiceRun;
+		$this->_objAccount		= $objAccount;
 		$this->Total			= 0.0;
 		$this->Debits			= 0.0;
 		$this->Credits			= 0.0;
