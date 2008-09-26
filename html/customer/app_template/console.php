@@ -642,8 +642,10 @@ class AppTemplateConsole extends ApplicationTemplate
 		$bolFoundSubmit = FALSE;
 		DBO()->ErrorMessage = "";
 
+		// show the second page - not adding new service.
 		if(array_key_exists('intRequestTypeSubmit',$_POST))
 		{
+			$bolFoundSubmit = TRUE;
 			$arrFieldsList = NULL;
 			$arrFieldsList = array();
 			$arrFieldsList['Request Type'] = $GLOBALS['*arrConstant']['SupportType'][$_POST['intRequestType']]['Description'] . "\n";
@@ -719,7 +721,6 @@ class AppTemplateConsole extends ApplicationTemplate
 				$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
 				$$key=$val;
 			}
-			$bolFoundSubmit = TRUE;
 
 			if($bolFoundErrors)
 			{
@@ -745,6 +746,8 @@ class AppTemplateConsole extends ApplicationTemplate
 			$this->LoadPage('support_confirmation');
 			return TRUE;
 		}
+
+		// show the main dropdown menu, no input detected
 		if(!$bolFoundSubmit)
 		{
 			$this->LoadPage('support');

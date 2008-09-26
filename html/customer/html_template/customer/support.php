@@ -138,6 +138,8 @@
 
 			// Create  list of available services 
 			$mixTypeOfServiceList = "<table>";
+			$mixTypeOfServiceList_dropdown = "<table>
+			<select name=\"mixServiceType\">";
 			for($i=1; $i<count($arrSupportConfig['ServiceType'])+1; $i++)
 			{
 				$mixServiceDescription = $arrSupportConfig['ServiceType'][$i]['Description'];
@@ -145,9 +147,13 @@
 				<tr>
 					<td><input type=\"checkbox\" name=\"mixServiceType[$i]\" VALUE=\"$mixServiceDescription\"></td>
 					<td>$mixServiceDescription</td>
-				</tr>";
+				</tr>";				
+				$mixTypeOfServiceList_dropdown .= "	<option value=\"$i\">$mixServiceDescription</option>";
 			}
 			$mixTypeOfServiceList .= "</table>";
+			$mixTypeOfServiceList_dropdown .= "
+			</select>
+			</table>";
 
 
 
@@ -175,9 +181,26 @@
 				</TABLE>
 				</div>";
 			}
+			// detect if we are adding enw server
+			// check if this page has ben loaded before with array_key_exists..
+			if(is_numeric($_POST['intRequestType']) && $arrSupportConfig['SupportType'][$_POST['intRequestType']]['Description'] == "Add a new line" && !array_key_exists('intAddNewServiceCheck' ,$_POST))
+			{
+				echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\">";
+				echo "<input type=\"hidden\" name=\"intRequestType\" value=\"$_POST[intRequestType]\">"; // tell php we have already selected a first option
+				echo "<input type=\"hidden\" name=\"intAddNewServiceCheck\" value=\"1\">"; // tell php to bypass add service selection (this page)
+				echo "<div class='customer-standard-table-title-style-password'>Please select the service you wish to add</div>
+				<div class='GroupedContent'>$mixTypeOfServiceList_dropdown</div>
+				<br/>";
+			}
 
 			// If first option selected then show page two.
-			else if(is_numeric($_POST['intRequestType']))
+			if(is_numeric($_POST['intRequestType']) && $arrSupportConfig['SupportType'][$_POST['intRequestType']]['Description'] !== "Add a new line")
+			{
+				// skip the add service page.
+				$_POST['intAddNewServiceCheck'] = "1";
+			}
+			// If first option selected then show page two. only if add service page has been shown first...
+			if(is_numeric($_POST['intRequestType']) && array_key_exists('intAddNewServiceCheck' ,$_POST))
 			{
 				echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\" onsubmit=\"return validate_support_request(this)\">";
 				echo "
@@ -295,16 +318,252 @@
 					break;
 
 					case "4":
-					echo "<div class='customer-standard-table-title-style-password'>Type of service</div>
-					<div class='GroupedContent'>
-					<TABLE class=\"customer-standard-table-style\">
-					<TR VALIGN=\"TOP\">
-						<TD width=\"160\">Service Type:</TD>
-						<TD>$mixTypeOfServiceList</TD>
-					</TR>
-					</TABLE>
-					</div>
-					<br/>";
+						/*
+							1 = ADSL
+							2 = Mobile
+							3 = Land Line
+							4 = Other
+						*/
+
+						$mixServiceType = $_POST['mixServiceType'];
+						switch($mixServiceType)
+						{
+							case "1":
+							echo "
+							<div class='customer-standard-table-title-style-password'>DSL Setup</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR VALIGN=\"TOP\">
+							<TD width=\"160\">Select Option:</TD>
+							<TD>
+								<SELECT NAME=\"\">
+									<OPTION VALUE=\"\">New Connection</OPTION>
+									<OPTION VALUE=\"\">Port</OPTION>
+								</SELECT></TD>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>For new connections please complete this.</div>
+							<div class='GroupedContent'>
+							<TABLE>
+							<TR>
+								<TD width=\"160\">Line number</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"\"></TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>For existing connections (Porting), please complete below.</div>
+							<div class='GroupedContent'>
+							<TABLE>
+							<TR>
+								<TD width=\"160\">Line number</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"intLineNumber\"></TD>
+							</TR>
+							<TR>
+								<TD>DSL Type</TD>
+								<TD>
+									<SELECT NAME=\"mixDSLType\">
+										<OPTION VALUE=\"ADSL\">ADSL</OPTION>
+										<OPTION VALUE=\"ADSL2\">ADSL2</OPTION>
+										<OPTION VALUE=\"ADSL2+\">ADSL2+</OPTION>
+										<OPTION VALUE=\"ADSL2++\">ADSL2++</OPTION>
+										<OPTION VALUE=\"ISDN\">ISDN</OPTION>
+										<OPTION VALUE=\"HDSL\">HDSL</OPTION>
+										<OPTION VALUE=\"HDSL2\">HDSL2</OPTION>
+										<OPTION VALUE=\"SDSL\">SDSL</OPTION>
+										<OPTION VALUE=\"SHDSL\">SHDSL</OPTION>
+										<OPTION VALUE=\"G.SHDSL\">G.SHDSL</OPTION>
+										<OPTION VALUE=\"RADSL\">RADSL</OPTION>
+										<OPTION VALUE=\"VDSL\">VDSL</OPTION>
+										<OPTION VALUE=\"VDSL2\">VDSL2</OPTION>
+										<OPTION VALUE=\"UDSL\">UDSL</OPTION>
+										<OPTION VALUE=\"GDSL\">GDSL</OPTION>
+									</SELECT>								
+								</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Current Provider</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixCurrentProvider\"></TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Account Number</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixCurrentProvider\"> (with current provider)</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>Plan Choice.</div>
+							<div class='GroupedContent'>
+							<TABLE>
+							<TR>
+								<TD>Select New Plan</TD>
+								<TD>
+									<SELECT NAME=\"mixNewPlan\">
+										<OPTION VALUE=\"\"></OPTION>
+										<OPTION VALUE=\"\"></OPTION>
+									</SELECT>								
+								</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>";
+							break;
+
+							case "2":
+							echo "
+							<div class='customer-standard-table-title-style-password'>Mobile Setup</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR VALIGN=\"TOP\">
+							<TD width=\"160\">Select Option:</TD>
+							<TD>
+								<SELECT NAME=\"\">
+									<OPTION VALUE=\"\">New Activation</OPTION>
+									<OPTION VALUE=\"\">Port</OPTION>
+								</SELECT></TD>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>For existing connections (Porting), please complete below.</div>
+							<div class='GroupedContent'>
+							<TABLE>
+							<TR>
+								<TD width=\"160\">Current Phone</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"intPhoneNumber\"></TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Current Mobile</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"intMobileNumber\"></TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Current Carrier</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixCurrentProvider\"></TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Account Number</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixCurrentProvider\"> (with current provider)</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>Plan Choice.</div>
+							<div class='GroupedContent'>
+							<TABLE>
+							<TR>
+								<TD>Select New Plan</TD>
+								<TD>
+									<SELECT NAME=\"mixNewPlan\">
+										<OPTION VALUE=\"\"></OPTION>
+										<OPTION VALUE=\"\"></OPTION>
+									</SELECT>								
+								</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>";
+							break;
+							
+							case "3":
+							echo "
+							<div class='customer-standard-table-title-style-password'>Landline Setup</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR VALIGN=\"TOP\">
+							<TD width=\"160\">Select Type:</TD>
+							<TD>
+								<SELECT NAME=\"\">
+									<OPTION VALUE=\"\">PSTN</OPTION>
+									<OPTION VALUE=\"\">ISDN</OPTION>
+									<OPTION VALUE=\"\">Not Sure</OPTION>
+								</SELECT></TD>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>Options, choose either PSTN or ISDN, <B>NOT</B> both.</div>
+							<div class='GroupedContent'>
+							<TABLE>
+							<TR>
+								<TD width=\"160\">PSTN Options</TD>
+								<TD>
+									<TABLE>
+									<TR>
+										<TD width=\"160\">Message Bank</TD>
+										<TD><INPUT TYPE=\"text\" NAME=\"mixMessageBank\"></TD>
+									</TR>
+									<TR>
+										<TD>Line Hunt</TD>
+										<TD><INPUT TYPE=\"text\" NAME=\"mixLineHunt\"></TD>
+									</TR>
+									<TR>
+										<TD>Caller ID</TD>
+										<TD><INPUT TYPE=\"text\" NAME=\"mixCallerId\"></TD>
+									</TR>
+									<TR>
+										<TD>Fax Duet</TD>
+										<TD><INPUT TYPE=\"text\" NAME=\"mixFaxDuet\"></TD>
+									</TR>
+									<TR>
+										<TD>Fax Stream</TD>
+										<TD><INPUT TYPE=\"text\" NAME=\"mixFaxStream\"></TD>
+									</TR>
+									</TABLE>
+								</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">ISDN Options</TD>
+								<TD>
+									<TABLE>
+									<TR>
+										<TD width=\"160\">100 Indial Range</TD>
+										<TD><INPUT TYPE=\"text\" NAME=\"mixIndialRange\"></TD>
+									</TR>
+									<TR>
+										<TD>Caller ID</TD>
+										<TD><INPUT TYPE=\"text\" NAME=\"mixCallerId\"></TD>
+									</TR>
+									<TR>
+										<TD>On Ramp</TD>
+										<TD>
+											<SELECT NAME=\"mixOnRamp\">
+												<OPTION VALUE=\"2\">On Ramp 2</OPTION>
+												<OPTION VALUE=\"10\">On Ramp 10</OPTION>
+												<OPTION VALUE=\"20\">On Ramp 20</OPTION>
+												<OPTION VALUE=\"30\">On Ramp 30</OPTION>
+											</SELECT>	
+										</TD>
+									</TR>
+									</TABLE>
+								</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>Plan Choice.</div>
+							<div class='GroupedContent'>
+							<TABLE>
+							<TR>
+								<TD>Select New Plan</TD>
+								<TD>
+									<SELECT NAME=\"mixNewPlan\">
+										<OPTION VALUE=\"\"></OPTION>
+										<OPTION VALUE=\"\"></OPTION>
+									</SELECT>								
+								</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>";
+							break;
+							
+							case "4":
+							// Other = just show the details box....
+							break;
+							
+							default:
+							// Unable to determine request type..?
+							break;
+						}
 					break;
 
 					case "5":
