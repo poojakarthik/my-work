@@ -252,7 +252,7 @@ class Invoice
 		$this->Credits	+= $arrAccountChargeTotals['CR'];
 		
 		// Calculate Preliminary Invoice Values
-		$this->AccountBalance	= $this->Framework->GetAccountBalance($objAccount->Id);
+		$this->AccountBalance	= $GLOBALS['fwkFramework']->GetAccountBalance($objAccount->Id);
 		if ($this->AccountBalance === FALSE)
 		{
 			throw new Exception("Unable to calculate Account Balance for {$objAccount->Id}");
