@@ -561,10 +561,10 @@ class Invoice
 	 * 
 	 * @constructor
 	 */
-	public static function revokeByAccount($intAccount)
+	public static function revokeByAccount($objAccount)
 	{
 		$selTemporaryInvoicesByAccount	= self::_preparedStatement('selTemporaryInvoicesByAccount');
-		if ($selTemporaryInvoicesByAccount->Execute(Array('Account' => $intAccount)) === FALSE)
+		if ($selTemporaryInvoicesByAccount->Execute(Array('Account' => $objAccount->Id)) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$selTemporaryInvoicesByAccount->Error());
 		}
