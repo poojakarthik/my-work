@@ -753,7 +753,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(array_key_exists('intRequestType',$_POST) && array_key_exists('mixServiceType',$_POST))
 			{
 				// check if the user selected "Add a new line"
-				if($_POST['intRequestType'] == "4")
+				if($_POST['intRequestType'] == "4" && is_numeric($_POST['mixServiceType']))
 				{
 					$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 
