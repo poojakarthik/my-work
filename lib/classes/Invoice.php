@@ -951,7 +951,7 @@ class Invoice
 		$arrPlanCharge['Description']		= "{$strPlanName} ".$arrChargeTypes[$strChargeType]['Description']." from ".date("d/m/Y", $intPeriodStartDate)." to ".date("d/m/Y", $intPeriodEndDate);
 		$arrPlanCharge['ChargedOn']			= date("Y-m-d");
 		$arrPlanCharge['Amount']			= abs($fltAmount);
-		if (!$this->Framework->AddCharge($arrPlanCharge))
+		if (!$$GLOBALS['fwkFramework']->AddCharge($arrPlanCharge))
 		{
 			throw new Exception("Unable to create '{$arrPlanCharge['Description']}' for {$intAccount}::{$intService}!");
 		}
