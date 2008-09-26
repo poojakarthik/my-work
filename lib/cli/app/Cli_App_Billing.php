@@ -45,7 +45,7 @@ class Cli_App_Billing extends Cli
 			
 			// Start a new Transcation
 			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
-			$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not' : '') . " successfully started!");
+			$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
 			
 			// Perform the operation
 			switch ($this->_arrArgs[self::SWITCH_MODE])
@@ -56,6 +56,11 @@ class Cli_App_Billing extends Cli
 					break;
 					
 				case 'REVOKE':
+					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
+					{
+						throw new Exception("You must supply an Invoice Run Id when running REVOKE!");
+					}
+					
 					// Revoke Temporary Invoice Runs
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->revoke();
@@ -74,12 +79,12 @@ class Cli_App_Billing extends Cli
 			if (!$this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
 				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionCommit();
-				$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not' : '') . " successfully committed!");
+				$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully committed!");
 			}
 			else
 			{
 				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
-				$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not' : '') . " successfully revoked!");
+				$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
 			}
 			
 			$this->log("Finished.");
@@ -88,7 +93,7 @@ class Cli_App_Billing extends Cli
 		catch(Exception $exception)
 		{
 			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
-			$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not' : '') . " successfully revoked!");
+			$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
 			
 			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
