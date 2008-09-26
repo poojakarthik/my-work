@@ -42,11 +42,48 @@ class Account
 
 	protected static $cache = array();
 
-	public function __construct($arrProperties=NULL, $bolPropertiesIncludeEmployeeDetails=FALSE)
+	public function __construct($arrProperties=NULL, $bolPropertiesIncludeEmployeeDetails=FALSE, $bolLoadById=FALSE)
 	{
 		if ($arrProperties)
 		{
 			$this->init($arrProperties);
+		}
+		
+		// Rich's implementation
+		// Get list of columns from Data Model
+		$arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine('Account');
+		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
+		{
+			$this->{$strName}	= NULL;
+		}
+		
+		// Automatically load the Invoice using the passed Id
+		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : ($arrProperties['id']) ? $arrProperties['id'] : NULL;
+		if ($bolLoadById && $intId)
+		{
+			$selById	= $this->_preparedStatement('selById');
+			if ($selById->Execute(Array('Id' => $intId)))
+			{
+				$arrProperties	= $selById->Fetch();
+			}
+			elseif ($selById->Error())
+			{
+				throw new Exception("DB ERROR: ".$selById->Error());
+			}
+			else
+			{
+				// Do we want to Debug something?
+			}
+		}
+		
+		// Set Properties
+		if (is_array($arrProperties))
+		{
+			foreach ($arrProperties as $strName=>$mixValue)
+			{
+				// Load from the Database
+				$this->{$strName}	= $mixValue;
+			}
 		}
 	}
 
@@ -341,6 +378,57 @@ class Account
 		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 		$tidy[0] = strtolower($tidy[0]);
 		return $tidy;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _preparedStatement
+	//------------------------------------------------------------------------//
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 * 
+	 * @param	string		$strStatement						Name of the statement
+	 * 
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	private static function _preparedStatement($strStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
+		{
+			return $arrPreparedStatements[$strStatement];
+		}
+		else
+		{
+			switch ($strStatement)
+			{
+				// SELECTS
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account", "*", "Id = <Id>", NULL, 1);
+					break;
+				
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert("Account");
+					break;
+				
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Account");
+					break;
+				
+				// UPDATES
+				
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
+			}
+			return $arrPreparedStatements[$strStatement];
+		}
 	}
 }
 
