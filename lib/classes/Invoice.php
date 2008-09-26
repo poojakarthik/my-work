@@ -236,7 +236,7 @@ class Invoice
 		
 		// Get Preliminary Charge Totals
 		$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
-		if ($selAccountChargeTotals->Execute($arrData, $arrWhere) === FALSE)
+		if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
 		{
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selAccountChargeTotals->Error());
@@ -1143,6 +1143,9 @@ class Invoice
 					break;
 				case 'selTemporaryInvoicesByAccount':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON InvoiceRun.Id = Invoice.invoice_run_id", "Invoice.*", "Account = <Account> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
+					break;
+				case 'selAccountChargeTotals':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Charge", "", "Service IS NULL AND Account = <Account> AND Status = ".CHARGE_TEMP_INVOICE);
 					break;
 				
 				// INSERTS
