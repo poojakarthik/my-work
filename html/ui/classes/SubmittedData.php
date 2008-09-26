@@ -265,7 +265,7 @@ class SubmittedData
 		}
 	
 		// split name into object, property & [optional] context
-		$arrName = explode($strSeparator, $strName, 3);
+		$arrName = explode($strSeparator, $strName);
 		
 		// fail if we don't have object and property
 		if(!$arrName[0] || !$arrName[1])
@@ -274,15 +274,21 @@ class SubmittedData
 		}
 		
 		// make sure context is an int
-		$intContext = array_key_exists(2, $arrName) ? (int)$arrName[2] : 0;
+		$nrParts = count($arrName);
+		$lastPart = $arrName[$nrParts - 1];
+		$hasContext = $nrParts > 2 && preg_match("/^[0-9]+\$/", $lastPart);
+		$intContext = $hasContext ? array_pop($arrName) : 0;
 		if (!$intContext)
 		{
 			// if not set it to the default context
 			$intContext = CONTEXT_DEFAULT;
 		}
 		
+		$strObject = array_shift($arrName);
+		$strProerty = implode($strSeparator, $arrName);
+		
 		// add property to object
-		DBO()->{$arrName[0]}->AddProperty($arrName[1], $mixValue, $intContext);
+		DBO()->{$strObject}->AddProperty($strProerty, $mixValue, $intContext);
 		return TRUE;
 	}
 
