@@ -222,7 +222,7 @@ class Invoice
 			
 			// Add to Invoice Totals
 			$this->Debits	+= $fltSharedTotal;
-			$this->Tax		+= self::calculateGlobalTaxComponent($fltTaxableOverusage);
+			$this->Tax		+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
 		}
 		//--------------------------------------------------------------------//
 		
@@ -253,7 +253,7 @@ class Invoice
 		{
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']]	= $arrAccountChargeTotal['Total'];
 			
-			$this->Tax	+= ($arrAccountChargeTotal['global_tax_exempt']) ? 0.0 : self::calculateGlobalTaxComponent($arrAccountChargeTotal['Total'], $objInvoiceRun->intInvoiceDatetime);
+			$this->Tax	+= ($arrAccountChargeTotal['global_tax_exempt']) ? 0.0 : self::calculateGlobalTaxComponent($arrAccountChargeTotal['Total'], $this->_objInvoiceRun->intInvoiceDatetime);
 		}
 		$this->Debits	+= $arrAccountChargeTotals['DR'];
 		$this->Credits	+= $arrAccountChargeTotals['CR'];
@@ -299,7 +299,7 @@ class Invoice
 		{
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']]	= $arrAccountChargeTotal['Total'];
 			
-			$this->Tax	+= ($arrAccountChargeTotal['global_tax_exempt']) ? 0.0 : self::calculateGlobalTaxComponent($arrAccountChargeTotal['Total'], $objInvoiceRun->intInvoiceDatetime);
+			$this->Tax	+= ($arrAccountChargeTotal['global_tax_exempt']) ? 0.0 : self::calculateGlobalTaxComponent($arrAccountChargeTotal['Total'], $this->_objInvoiceRun->intInvoiceDatetime);
 		}
 		$this->Debits	+= $arrAccountChargeTotals['DR'];
 		$this->Credits	+= $arrAccountChargeTotals['CR'];
@@ -483,12 +483,12 @@ class Invoice
 			$fltTaxExemptOverusage	= max(0, $fltCDRCappedTotal - $fltUsageLimit) - $fltTaxableOverusage;
 			$fltTotalCharge			+= $fltTaxExemptOverusage;
 			
-			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage);
+			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
 		}
 		
 		// Add in Uncapped Charges & Credits
 		$fltTotalCharge			+= $fltCDRUncappedTotal;
-		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltCDRUncappedTotal);
+		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltCDRUncappedTotal, $this->_objInvoiceRun->intInvoiceDatetime);
 		
 		// Mark all Service Charges as TEMPORARY_INVOICE
 		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$objInvoiceRun->Id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")") === FALSE)
@@ -520,8 +520,8 @@ class Invoice
 			
 			$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
-		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax']);
-		$arrServiceTotal['Tax']	-= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax']);
+		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax'], $this->_objInvoiceRun->intInvoiceDatetime);
+		$arrServiceTotal['Tax']	-= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax'], $this->_objInvoiceRun->intInvoiceDatetime);
 		$fltServiceCredits		= $arrChargeTotals['CR']['IncTax'] + $arrChargeTotals['CR']['ExTax'];
 		$fltServiceDebits		= $arrChargeTotals['DR']['IncTax'] + $arrChargeTotals['DR']['ExTax'];
 		
