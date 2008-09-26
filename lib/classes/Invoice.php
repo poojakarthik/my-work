@@ -840,7 +840,7 @@ class Invoice
 							// The this Plan has not been invoiced before, so generate a Charge in Advance
 							$intAdvancePeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
 							$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
-							$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intAdvancePeriodStart, $intAdvancePeriodEnd, $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
+							$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intAdvancePeriodStart, $intAdvancePeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 						}
 					}
 					else
@@ -857,7 +857,7 @@ class Invoice
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= strtotime($strEarliestCDR);
 				$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
-				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails['Name'], $this->_objInvoiceRun->intLastInvoiceDatetime, strtotime("-1 day", $this->_objInvoiceRun->intLastInvoiceDatetime), $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
+				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails['Name'], $this->_objInvoiceRun->intLastInvoiceDatetime, strtotime("-1 day", $this->_objInvoiceRun->intLastInvoiceDatetime), $this->_objAccount->AccountGroup, $this->_objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 			}
 			else
 			{
@@ -874,7 +874,7 @@ class Invoice
 					$intPeriodStart	= $this->_objInvoiceRun->intLastInvoiceDatetime;
 					$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
 				}
-				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
+				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 			}
 		}
 		else
