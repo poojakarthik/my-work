@@ -111,7 +111,7 @@ class Invoice
 		// Retrieve a list of Invoiceable FNNs for this Account
 		Cli_App_Billing::debug("\t * Getting list of Invoiceable FNNs...");
 		$selInvoiceableFNNs	= $this->_preparedStatement('selInvoiceableFNNs');
-		if ($selInvoiceableFNNs->Execute($objAccount->toArray()) === FALSE)
+		if ($selInvoiceableFNNs->Execute(Array('InvoiceDatetime'=>$objInvoiceRun->strInvoiceDatetime, 'Account'=>$objAccount->Id)) === FALSE)
 		{
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selInvoiceableFNNs->Error());
