@@ -84,10 +84,29 @@
 			$arrSupportConfig['SupportType'][4]['Description'] = 'Add a new line';
 			$arrSupportConfig['SupportType'][5]['Description'] = 'Other';
 
-			$arrSupportConfig['ServiceType'][1]['Description'] = 'ADSL';
-			$arrSupportConfig['ServiceType'][2]['Description'] = 'Mobile';
-			$arrSupportConfig['ServiceType'][3]['Description'] = 'Land Line';
-			$arrSupportConfig['ServiceType'][4]['Description'] = 'Other';
+			// Create  list of available services 
+			$mixTypeOfServiceList = "<table>";
+			$mixTypeOfServiceList_dropdown = "<table>
+			<select name=\"mixServiceType\">";
+			for($i=100; $i<100+count($GLOBALS['*arrConstant']['service_type']); $i++)
+			{
+				$mixServiceDescription = $GLOBALS['*arrConstant']['service_type'][$i]['Description'];
+				if(!eregi("dialup",$mixServiceDescription))
+				{
+					$mixTypeOfServiceList .= "
+					<tr>
+						<td><input type=\"checkbox\" name=\"mixServiceType[$i]\" VALUE=\"$mixServiceDescription\"></td>
+						<td>$mixServiceDescription</td>
+					</tr>";				
+					$mixTypeOfServiceList_dropdown .= "	<option value=\"$i\">$mixServiceDescription</option>";
+				}
+			}
+			$mixTypeOfServiceList .= "</table>";
+			$mixTypeOfServiceList_dropdown .= "
+			</select>
+			</table>";
+
+
 
 			echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
@@ -134,26 +153,6 @@
 				</tr>";
 			}
 			$mixServiceList .= "</table>";
-
-
-			// Create  list of available services 
-			$mixTypeOfServiceList = "<table>";
-			$mixTypeOfServiceList_dropdown = "<table>
-			<select name=\"mixServiceType\">";
-			for($i=1; $i<count($arrSupportConfig['ServiceType'])+1; $i++)
-			{
-				$mixServiceDescription = $arrSupportConfig['ServiceType'][$i]['Description'];
-				$mixTypeOfServiceList .= "
-				<tr>
-					<td><input type=\"checkbox\" name=\"mixServiceType[$i]\" VALUE=\"$mixServiceDescription\"></td>
-					<td>$mixServiceDescription</td>
-				</tr>";				
-				$mixTypeOfServiceList_dropdown .= "	<option value=\"$i\">$mixServiceDescription</option>";
-			}
-			$mixTypeOfServiceList .= "</table>";
-			$mixTypeOfServiceList_dropdown .= "
-			</select>
-			</table>";
 
 
 
@@ -345,7 +344,7 @@
 							<br/>
 							<div class='customer-standard-table-title-style-password'>For new connections please complete this.</div>
 							<div class='GroupedContent'>
-							<TABLE>
+							<TABLE class=\"customer-standard-table-style\">
 							<TR>
 								<TD width=\"160\">Line number</TD>
 								<TD><INPUT TYPE=\"text\" NAME=\"\"></TD>
@@ -355,7 +354,7 @@
 							<br/>
 							<div class='customer-standard-table-title-style-password'>For existing connections (Porting), please complete below.</div>
 							<div class='GroupedContent'>
-							<TABLE>
+							<TABLE class=\"customer-standard-table-style\">
 							<TR>
 								<TD width=\"160\">Line number</TD>
 								<TD><INPUT TYPE=\"text\" NAME=\"intLineNumber\"></TD>
@@ -395,9 +394,9 @@
 							<br/>
 							<div class='customer-standard-table-title-style-password'>Plan Choice.</div>
 							<div class='GroupedContent'>
-							<TABLE>
+							<TABLE class=\"customer-standard-table-style\">
 							<TR>
-								<TD>Select New Plan</TD>
+								<TD width=\"160\">Select New Plan: </TD>
 								<TD>
 									<SELECT NAME=\"mixNewPlan\">
 										<OPTION VALUE=\"\"></OPTION>
@@ -427,13 +426,9 @@
 							<br/>
 							<div class='customer-standard-table-title-style-password'>For existing connections (Porting), please complete below.</div>
 							<div class='GroupedContent'>
-							<TABLE>
+							<TABLE class=\"customer-standard-table-style\">
 							<TR>
-								<TD width=\"160\">Current Phone</TD>
-								<TD><INPUT TYPE=\"text\" NAME=\"intPhoneNumber\"></TD>
-							</TR>
-							<TR>
-								<TD width=\"160\">Current Mobile</TD>
+								<TD width=\"160\">Current Mobile #</TD>
 								<TD><INPUT TYPE=\"text\" NAME=\"intMobileNumber\"></TD>
 							</TR>
 							<TR>
@@ -449,9 +444,9 @@
 							<br/>
 							<div class='customer-standard-table-title-style-password'>Plan Choice.</div>
 							<div class='GroupedContent'>
-							<TABLE>
+							<TABLE class=\"customer-standard-table-style\">
 							<TR>
-								<TD>Select New Plan</TD>
+								<TD width=\"160\">Select New Plan: </TD>
 								<TD>
 									<SELECT NAME=\"mixNewPlan\">
 										<OPTION VALUE=\"\"></OPTION>
@@ -482,48 +477,55 @@
 							<br/>
 							<div class='customer-standard-table-title-style-password'>Options, choose either PSTN or ISDN, <B>NOT</B> both.</div>
 							<div class='GroupedContent'>
-							<TABLE>
+							<TABLE class=\"customer-standard-table-style\">
 							<TR>
-								<TD width=\"160\">PSTN Options</TD>
-								<TD>
-									<TABLE>
+								<TD width=\"160\"></TD>
+								<TD><B>PSTN Options</B></TD>
+							</TR>
+							<TR>
+								<TD colspan=\"2\">
+									<TABLE class=\"customer-standard-table-style\">
 									<TR>
-										<TD width=\"160\">Message Bank</TD>
-										<TD><INPUT TYPE=\"text\" NAME=\"mixMessageBank\"></TD>
+										<TD width=\"160\">Message Bank: </TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixMessageBank\"></TD>
 									</TR>
 									<TR>
-										<TD>Line Hunt</TD>
-										<TD><INPUT TYPE=\"text\" NAME=\"mixLineHunt\"></TD>
+										<TD>Line Hunt: </TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLineHunt\"></TD>
 									</TR>
 									<TR>
-										<TD>Caller ID</TD>
-										<TD><INPUT TYPE=\"text\" NAME=\"mixCallerId\"></TD>
+										<TD>Caller ID: </TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixCallerId\"></TD>
 									</TR>
 									<TR>
-										<TD>Fax Duet</TD>
-										<TD><INPUT TYPE=\"text\" NAME=\"mixFaxDuet\"></TD>
+										<TD>Fax Duet: </TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixFaxDuet\"></TD>
 									</TR>
 									<TR>
-										<TD>Fax Stream</TD>
-										<TD><INPUT TYPE=\"text\" NAME=\"mixFaxStream\"></TD>
+										<TD>Fax Stream: </TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixFaxStream\"></TD>
 									</TR>
 									</TABLE>
+									<BR>
 								</TD>
 							</TR>
 							<TR>
-								<TD width=\"160\">ISDN Options</TD>
-								<TD>
-									<TABLE>
+								<TD width=\"160\"></TD>
+								<TD VALIGN=\"top\"><B>ISDN Options</B></TD>
+							</TR>
+							<TR>
+								<TD colspan=\"2\">
+									<TABLE class=\"customer-standard-table-style\">
 									<TR>
-										<TD width=\"160\">100 Indial Range</TD>
-										<TD><INPUT TYPE=\"text\" NAME=\"mixIndialRange\"></TD>
+										<TD width=\"160\">100 Indial Range: </TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixIndialRange\"></TD>
 									</TR>
 									<TR>
-										<TD>Caller ID</TD>
-										<TD><INPUT TYPE=\"text\" NAME=\"mixCallerId\"></TD>
+										<TD>Caller ID: </TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixCallerId\"></TD>
 									</TR>
 									<TR>
-										<TD>On Ramp</TD>
+										<TD>On Ramp: </TD>
 										<TD>
 											<SELECT NAME=\"mixOnRamp\">
 												<OPTION VALUE=\"2\">On Ramp 2</OPTION>
@@ -541,9 +543,9 @@
 							<br/>
 							<div class='customer-standard-table-title-style-password'>Plan Choice.</div>
 							<div class='GroupedContent'>
-							<TABLE>
+							<TABLE class=\"customer-standard-table-style\">
 							<TR>
-								<TD>Select New Plan</TD>
+								<TD width=\"160\">Select New Plan: </TD>
 								<TD>
 									<SELECT NAME=\"mixNewPlan\">
 										<OPTION VALUE=\"\"></OPTION>
