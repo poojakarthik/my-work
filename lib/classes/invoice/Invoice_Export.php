@@ -214,7 +214,7 @@ class Invoice_Export
 			if ($arrService['Primary'])
 			{
 				// Get Adjustments
-				$arrItemised	= self::_preparedStatementMultiService('selItemiseCharges', $arrService, $arrInvoice);
+				$arrItemised	= self::_preparedStatementMultiService('selItemisedCharges', $arrService, $arrInvoice);
 				if (count($arrItemised))
 				{
 					$fltAdjustmentsTotal	= 0.0;
@@ -316,7 +316,7 @@ class Invoice_Export
 				$arrCDR								= Array();
 				$arrCDR['Description']				= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
 				$arrCDR['Units']					= 1;
-				$arrCDR['Charge']					= ($arrAdjustment['Nature'] == 'DR') ? $arrAdjustment['Amount'] : 0-$arrAdjustment['Amount'];
+				$arrCDR['Charge']					= $arrAdjustment['Amount'];
 				$arrAdjustments['Itemisation'][]	= $arrCDR;
 				$fltAccountChargeTotal				+= $arrCDR['Charge'];
 			}
@@ -400,7 +400,6 @@ class Invoice_Export
 			}
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch())
 			{
-				$fltAmount													= ($arrPlanChargeSummary['Nature'] === 'DR') ? $arrPlanChargeSummary['Amount'] : 0-$arrPlanChargeSummary['Amount'];
 				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	+= $fltAmount;
 				$arrAccountSummary['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 				
@@ -504,13 +503,13 @@ class Invoice_Export
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
 																					//"Account = <Id> AND invoice_run_id = <invoice_run_id> AND LinkType NOT IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
-																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%' AND Service IS NOT NULL");
+																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR') AND Service IS NOT NULL");
 					break;
 				case 'selPlanCharges':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit, COUNT(Id) AS Records",
 																					//"Account = <Id> AND invoice_run_id = <invoice_run_id> AND LinkType IN (".CHARGE_LINK_PLAN_DEBIT.", ".CHARGE_LINK_PLAN_CREDIT.", ".CHARGE_LINK_PRORATA.")");
-																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')");
+																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR', 'PCR')");
 					break;
 				case 'selCustomerData':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Account LEFT JOIN Invoice ON Account.Id = Invoice.Account",
@@ -523,7 +522,7 @@ class Invoice_Export
 				case 'selPlanAdjustments':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND (ChargeType LIKE 'PCP%' OR ChargeType LIKE 'PCA%')",
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR')",
 																					NULL,
 																					NULL,
 																					"Account");
@@ -539,7 +538,12 @@ class Invoice_Export
 				case 'selAccountAdjustments':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND Service IS NULL AND ChargeType NOT LIKE 'PCP%' AND ChargeType NOT LIKE 'PCA%'");
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND Service IS NULL AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR')");
+					break;
+				case 'selPlanChargeSummary':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
+																					"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description",
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR')");
 					break;
 				
 				default:
