@@ -748,7 +748,7 @@ class Invoice
 		if (!isset($arrGlobalTax))
 		{
 			$qryQuery	= new Query();
-			$resResult	= $qryQuery->Execute("SELECT * FROM tax_type WHERE global = 1 AND <EffectiveDate> BETWEEN start_datetime AND end_datetime"); 
+			$resResult	= $qryQuery->Execute("SELECT * FROM tax_type WHERE global = 1 AND '{$strEffectiveDate}' BETWEEN start_datetime AND end_datetime"); 
 			if ($resResult)
 			{
 				$arrGlobalTax	= $resResult->fetch_assoc();
