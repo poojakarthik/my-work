@@ -54,6 +54,10 @@ class Flex_Rollout
 		{
 			try
 			{
+				if ($GLOBALS['**arrDatabase'][$arrConnectionNames[$i]]['Type'] !== 'mysqli')
+				{
+					throw new Exception("Unable to perform old-style rollouts as the configurred '" . $arrConnectionNames[$i] . "' database is a " . $GLOBALS['**arrDatabase'][$arrConnectionNames[$i]]['Type'] . " database (only mysqli is supported).");
+				}
 				@mysqli_report(MYSQLI_REPORT_ERROR);
 				//if ($arrConnectionNames[$i] == FLEX_DATABASE_CONNECTION_CDR) continue;
 				Flex_Data_Model::generateDataModelForDatabase($arrConnectionNames[$i]);
