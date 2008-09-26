@@ -1090,13 +1090,14 @@
 		}
 		
 		// merge with default data
-		$arrDefaultCharge ['Nature']		= 'DR';
-		$arrDefaultCharge ['Invoice']		= NULL;
-		$arrDefaultCharge ['Notes']			= "";
-		$arrDefaultCharge ['Description']	= "";
-		$arrDefaultCharge ['ChargeType']	= "";
-		$arrDefaultCharge ['Amount']		= 0.0;
-		$arrDefaultCharge ['Status']		= CHARGE_APPROVED;
+		$arrDefaultCharge ['Nature']			= 'DR';
+		$arrDefaultCharge ['Invoice']			= NULL;
+		$arrDefaultCharge ['Notes']				= "";
+		$arrDefaultCharge ['Description']		= "";
+		$arrDefaultCharge ['ChargeType']		= "";
+		$arrDefaultCharge ['Amount']			= 0.0;
+		$arrDefaultCharge ['global_tax_exempt']	= FALSE;
+		$arrDefaultCharge ['Status']			= CHARGE_APPROVED;
 		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
 		
 		// set date
