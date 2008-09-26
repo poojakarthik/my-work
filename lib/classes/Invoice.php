@@ -101,7 +101,6 @@ class Invoice
 		Cli_App_Billing::debug("\t* Revoking any existing Invoices for Account with Id {$objAccount->Id}...");
 		self::revokeByAccount($objAccount);
 		
-		//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
 		$this->invoice_run_id	= $objInvoiceRun->Id;
 		$this->_objInvoiceRun	= $objInvoiceRun;
 		$this->Total			= 0.0;
@@ -109,6 +108,7 @@ class Invoice
 		$this->Credits			= 0.0;
 		$this->Tax				= 0.0;
 		
+		//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
 		// Retrieve a list of Invoiceable FNNs for this Account
 		Cli_App_Billing::debug("\t * Getting list of Invoiceable FNNs...");
 		$selInvoiceableFNNs	= $this->_preparedStatement('selInvoiceableFNNs');
@@ -1015,8 +1015,6 @@ class Invoice
 
 	protected function __set($strName, $mxdValue)
 	{
-		if ($strName[0] === '_') return; // It is read only!
-		
 		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
 		
 		if (array_key_exists($strName, $this->_arrProperties))

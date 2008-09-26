@@ -320,8 +320,6 @@ class Account
 
 	protected function __set($strName, $mxdValue)
 	{
-		if ($strName[0] === '_') return; // It is read only!
-		
 		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
 		
 		if (array_key_exists($strName, $this->_arrProperties))
