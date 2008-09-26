@@ -1102,7 +1102,7 @@ class Invoice
 					break;
 				case 'selInvoiceableFNNs':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service JOIN service_status ON Service.Status = service_status.id",
-																					"Id, FNN, Indial100",
+																					"Service.Id, FNN, Indial100",
 																					"Account = <Account> AND CreatedOn < <InvoiceDatetime> AND (ClosedOn > <InvoiceDatetime> OR service_status.can_invoice = 1)");
 					break;
 				case 'selPlanDetails':
