@@ -397,7 +397,7 @@ class Invoice_Export
 			}
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch())
 			{
-				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	+= $fltAmount;
+				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	+= $arrPlanChargeSummary['Amount'];
 				$arrAccountSummary['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 				
 				if ($arrPlanChargeSummary['Service'] === NULL)
@@ -406,7 +406,7 @@ class Invoice_Export
 					$arrCDR															= Array();
 					$arrCDR['Description']											= ($arrPlanChargeSummary['ChargeType']) ? ($arrPlanChargeSummary['ChargeType']." - ".$arrPlanChargeSummary['Description']) : $arrPlanChargeSummary['Description'];
 					$arrCDR['Units']												= 1;
-					$arrCDR['Charge']												= $fltAmount;
+					$arrCDR['Charge']												= $arrPlanChargeSummary['Amount'];
 					$arrAccountSummary['Plan Charges & Credits']['Itemisation'][]	= $arrCDR;
 					$arrAccountSummary['Plan Charges & Credits']['Records']++;
 				}
