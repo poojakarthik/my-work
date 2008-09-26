@@ -592,7 +592,7 @@ class Invoice
 		
 		// Change CDR Statuses back to CDR_RATED
 		$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
-		if ($updCDRRevoke->Execute(get_object_vars($this)) === FALSE)
+		if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), get_object_vars($this)) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$updCDRRevoke->Error());
 		}
@@ -1087,6 +1087,12 @@ class Invoice
 				// UPDATES
 				case 'updMarkAccountCharges':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status = ".CHARGE_APPROVED, Array('Status'=>NULL, 'invoice_run_id'=>NULL));
+					break;
+				case 'updCDRRevoke':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "invoice_run_id = <Id>", Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
+					break;
+				case 'updChargeRevoke':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "invoice_run_id = <Id>", Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
 					break;
 				
 				default:
