@@ -39,7 +39,6 @@ class Invoice
 			$this->{$strName}	= NULL;
 		}
 		$this->{$arrTableDefine['Id']}								= NULL;
-		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $strName;
 		
 		// Automatically load the Invoice using the passed Id
 		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : ($arrProperties['id']) ? $arrProperties['id'] : NULL;
