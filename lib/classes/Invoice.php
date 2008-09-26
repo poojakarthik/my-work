@@ -1003,6 +1003,33 @@ class Invoice
 			}
 		}
 	}
+
+	public function __get($strName)
+	{
+		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
+		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
+	}
+
+	protected function __set($strName, $mxdValue)
+	{
+		if ($strName[0] === '_') return; // It is read only!
+		
+		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
+		
+		if (array_key_exists($strName, $this->_arrProperties))
+		{
+			$this->_arrProperties[$strName]	= $mxdValue;
+			
+			if ($this->{$strName} !== $mxdValue)
+			{
+				$this->_saved = FALSE;
+			}
+		}
+		else
+		{
+			$this->{$strName} = $mxdValue;
+		}
+	}
 	
 	//------------------------------------------------------------------------//
 	// tidyName

@@ -314,17 +314,17 @@ class Account
 
 	public function __get($strName)
 	{
-		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
-		return (isset($this->_arrProperties[$strName])) ? $this->_arrProperties[$strName] : NULL;
+		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
+		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
 	}
 
 	protected function __set($strName, $mxdValue)
 	{
 		if ($strName[0] === '_') return; // It is read only!
 		
-		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
+		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
 		
-		if (isset($this->_arrProperties[$strName]))
+		if (array_key_exists($strName, $this->_arrProperties))
 		{
 			$this->_arrProperties[$strName]	= $mxdValue;
 			
