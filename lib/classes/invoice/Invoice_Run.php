@@ -226,7 +226,7 @@ class Invoice_Run
 		$this->InvoiceRun				= date("YmdHis");
 		$this->invoice_run_type_id		= $intInvoiceRunType;
 		$this->invoice_run_schedule_id	= $intScheduledInvoiceRun;
-		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
+		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
 		$this->customer_group_id		= $intCustomerGroup;
 		$this->save();
 		
@@ -271,6 +271,10 @@ class Invoice_Run
 			$objInvoice	= new Invoice();
 			$objInvoice->generate($objAccount, $this);
 		}
+		
+		// Finalised InvoiceRun record
+		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
+		$this->save();
 		//--------------------------------------------------------------------//
 	}
 	
@@ -357,7 +361,7 @@ class Invoice_Run
 		Cli_App_Billing::debug(" * ENTERING revoke()...");
 		
 		// Is this InvoiceRun Temporary?
-		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
+		if (!in_array($this->invoice_run_status_id, Array(INVOICE_RUN_STATUS_TEMPORARY, INVOICE_RUN_STATUS_GENERATING)))
 		{
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
