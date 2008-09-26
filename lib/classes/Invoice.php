@@ -38,6 +38,8 @@ class Invoice
 		{
 			$this->{$strName}	= NULL;
 		}
+		$this->{$arrTableDefine['Id']}								= NULL;
+		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $strName;
 		
 		// Automatically load the Invoice using the passed Id
 		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : ($arrProperties['id']) ? $arrProperties['id'] : NULL;
@@ -96,7 +98,7 @@ class Invoice
 		
 		// Is there already an Invoice for this Account?  If so, revoke it
 		Cli_App_Billing::debug("\t* Revoking any existing Invoices for Account with Id {$objAccount->Id}...");
-		self::revoke($objAccount);
+		self::revokeByAccount($objAccount);
 		
 		//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
 		$this->invoice_run_id	= $objInvoiceRun->Id;
