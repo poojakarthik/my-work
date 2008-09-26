@@ -183,7 +183,7 @@ class Invoice_Export
 			{
 				// Get Call Itemisation
 				$arrWhere['RecordGroup']		= $arrRecordType['GroupId'];
-				$arrRecordType['Itemisation']	= self::_preparedStatementMultiService('selItemiseCalls', $arrService, $arrWhere);
+				$arrRecordType['Itemisation']	= self::_preparedStatementMultiService('selItemisedCalls', $arrService, $arrWhere);
 				
 				// Add Record Type to Service Array
 				$arrCategories[$arrRecordType['RecordGroup']]	= $arrRecordType;
