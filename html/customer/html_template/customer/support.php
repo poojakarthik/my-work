@@ -205,6 +205,7 @@
 				echo "
 				<input type=\"hidden\" name=\"intRequestType\" value=\"$_POST[intRequestType]\">
 				<input type=\"hidden\" name=\"intRequestTypeSubmit\" value=\"1\">
+				<input type=\"hidden\" name=\"mixServiceType\" value=\"$_POST[mixServiceType]\">
 				<div class='customer-standard-table-title-style-address'>Address Details</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
@@ -332,7 +333,7 @@
 							{
 								$$key=$val;
 							}
-							$mixPlanList .= "<OPTION VALUE=\"Plan Id: $Id, Plan Name: $Name\">$Name</OPTION>\n";
+							$mixPlanList .= "<OPTION VALUE=\"$Name\">$Name</OPTION>\n";
 						}
 						$mixServiceType = $_POST['mixServiceType'];
 						switch($mixServiceType)

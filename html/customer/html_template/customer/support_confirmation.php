@@ -256,9 +256,115 @@
 
 			// Add a new line
 			case "4":
-				echo "<div class='customer-standard-table-title-style-password'>Add a new line</div>
-				<div class='GroupedContent'>DETAILS</div>
-				<br/>";
+
+						// 100 - DSL
+						if($_POST['mixServiceType'] == "100")
+						{
+							echo "<div class='customer-standard-table-title-style-password'>DSL Setup</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\">DSL Setup</TD>
+								<TD>$_POST[mixDSLSetup]</TD>
+							</TR>
+							<TR>
+								<TD>Existing Connection</TD>
+								<TD>$_POST[mixDSLExistingConnection]</TD>
+							</TR>
+							<TR>
+								<TD>Current Provider</TD>
+								<TD>$_POST[mixDSLCurrentProvider]</TD>
+							</TR>
+							<TR>
+								<TD>Current Account</TD>
+								<TD>$_POST[mixDSLCurrentAccount]</TD>
+							</TR>
+							<TR>
+								<TD>New Plan</TD>
+								<TD>$_POST[mixDSLNewPlan]</TD>
+							</TR>
+							<TR>
+								<TD>Phone Number</TD>
+								<TD>$_POST[mixDSLPhoneNumber]</TD>
+							</TR>
+							</TABLE>
+							</div><br/>";
+						}
+						// 101 - Mobile
+						if($_POST['mixServiceType'] == "101")
+						{
+							echo "<div class='customer-standard-table-title-style-password'>Mobile Setup</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\">Setup</TD>
+								<TD>$_POST[mixMobileSetup]</TD>
+							</TR>
+							<TR>
+								<TD>Number</TD>
+								<TD>$_POST[mixMobileNumber]</TD>
+							</TR>
+							<TR>
+								<TD>Current Provider</TD>
+								<TD>$_POST[mixMobileCurrentProvider]</TD>
+							</TR>
+							<TR>
+								<TD>Current Account</TD>
+								<TD>$_POST[mixMobileCurrentAccount]</TD>
+							</TR>
+							<TR>
+								<TD>New Plan</TD>
+								<TD>$_POST[mixMobileNewPlan]</TD>
+							</TR>
+							</TABLE>
+							</div><br/>";
+						}
+						// 102 - Landline
+						if($_POST['mixServiceType'] == "102")
+						{
+
+							echo "<div class='customer-standard-table-title-style-password'>Mobile Setup</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\">Setup</TD>
+								<TD>$_POST[mixLandlineSetup]</TD>
+							</TR>
+							<TR>
+								<TD>PSTN Message Bank</TD>
+								<TD>$_POST[mixLandlinePSTNMessageBank]</TD>
+							</TR>
+							<TR>
+								<TD>PSTN Line Hunt</TD>
+								<TD>$_POST[mixLandlinePSTNLineHunt]</TD>
+							</TR>
+							<TR>
+								<TD>PSTN Caller Id</TD>
+								<TD>$_POST[mixLandlinePSTNCallerId]</TD>
+							</TR>
+							<TR>
+								<TD>PSTN Fax Duet</TD>
+								<TD>$_POST[mixLandlinePSTNFaxDuet]</TD>
+							</TR>
+							<TR>
+								<TD>PSTN Fax Stream</TD>
+								<TD>$_POST[mixLandlinePSTNFaxStream]</TD>
+							</TR>
+							<TR>
+								<TD>ISDN Indial Range</TD>
+								<TD>$_POST[mixLandlineISDNIndialRange]</TD>
+							</TR>
+							<TR>
+								<TD>ISDN Caller Id</TD>
+								<TD>$_POST[mixLandlineISDNCallerId]</TD>
+							</TR>
+							<TR>
+								<TD>ISDN On Ramp</TD>
+								<TD>$_POST[mixLandlineISDNOnRamp]</TD>
+							</TR>
+							</TABLE>
+							</div><br/>";
+						}
 			break;
 
 			// Other

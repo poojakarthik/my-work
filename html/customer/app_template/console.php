@@ -642,13 +642,32 @@ class AppTemplateConsole extends ApplicationTemplate
 		$bolFoundSubmit = FALSE;
 		DBO()->ErrorMessage = "";
 
+		foreach($_POST as $key=>$val)
+		{
+			// remove any unwanted code/bad input. this input is later send via email so need to be clean.
+			$key=htmlspecialchars(addslashes($key), ENT_QUOTES);
+			$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
+			$_POST[$key]=$val;
+			// print "cleaned: $_POST[$key] = $val;<br>\n";
+		}
+
+
 		// show the second page - not adding new service.
 		if(array_key_exists('intRequestTypeSubmit',$_POST))
 		{
+
+			// Temporarily putting this here until its moved to a better placed.
+			// Configuration for the support page.
+			$arrSupportConfig['SupportType'][1]['Description'] = 'Logging a fault to an existing service';
+			$arrSupportConfig['SupportType'][2]['Description'] = 'Make a change to an existing service';
+			$arrSupportConfig['SupportType'][3]['Description'] = 'Disconnect a no longer required line number';
+			$arrSupportConfig['SupportType'][4]['Description'] = 'Add a new line';
+			$arrSupportConfig['SupportType'][5]['Description'] = 'Other';
+
 			$bolFoundSubmit = TRUE;
 			$arrFieldsList = NULL;
 			$arrFieldsList = array();
-			$arrFieldsList['Request Type'] = $GLOBALS['*arrConstant']['SupportType'][$_POST['intRequestType']]['Description'] . "\n";
+			$arrFieldsList['Request Type'] = $arrSupportConfig['SupportType'][$_POST['intRequestType']]['Description'] . "\n";
 			
 				switch($_POST['intRequestType'])
 				{
@@ -674,7 +693,38 @@ class AppTemplateConsole extends ApplicationTemplate
 					break; 
 					
 					case "4":
-					// no additional fields
+						// 100 - DSL
+						if($_POST['mixServiceType'] == "100")
+						{
+							$arrFieldsList['DSL Setup'] = $_POST['mixDSLSetup'];
+							$arrFieldsList['DSL Existing Connection'] = $_POST['mixDSLExistingConnection'];
+							$arrFieldsList['DSL Current Provider'] = $_POST['mixDSLCurrentProvider'];
+							$arrFieldsList['DSL Current Account'] = $_POST['mixDSLCurrentAccount'];
+							$arrFieldsList['DSL New Plan'] = $_POST['mixDSLNewPlan'];
+							$arrFieldsList['DSL Phone Number'] = $_POST['mixDSLPhoneNumber'] . "\n";
+						}
+						// 101 - Mobile
+						if($_POST['mixServiceType'] == "101")
+						{
+							$arrFieldsList['Mobile Setup'] = $_POST['mixMobileSetup'];
+							$arrFieldsList['Mobile Number'] = $_POST['mixMobileNumber'];
+							$arrFieldsList['Mobile Current Provider'] = $_POST['mixMobileCurrentProvider'];
+							$arrFieldsList['Mobile Current Account'] = $_POST['mixMobileCurrentAccount'];
+							$arrFieldsList['Mobile New Plan'] = $_POST['mixMobileNewPlan'] . "\n";
+						}
+						// 102 - Landline
+						if($_POST['mixServiceType'] == "102")
+						{
+							$arrFieldsList['Landline Setup'] = $_POST['mixLandlineSetup'];
+							$arrFieldsList['Landline PSTN Message Bank'] = $_POST['mixLandlinePSTNMessageBank'];
+							$arrFieldsList['Landline PSTN Line Hunt'] = $_POST['mixLandlinePSTNLineHunt'];
+							$arrFieldsList['Landline PSTN Caller Id'] = $_POST['mixLandlinePSTNCallerId'];
+							$arrFieldsList['Landline PSTN Fax Duet'] = $_POST['mixLandlinePSTNFaxDuet'];
+							$arrFieldsList['Landline PSTN Fax Stream'] = $_POST['mixLandlinePSTNFaxStream'];
+							$arrFieldsList['Landline ISDN Indial Range'] = $_POST['mixLandlineISDNIndialRange'];
+							$arrFieldsList['Landline ISDN Caller Id'] = $_POST['mixLandlineISDNCallerId'];
+							$arrFieldsList['Landline ISDN On Ramp'] = $_POST['mixLandlineISDNOnRamp'] . "\n";
+						}
 					break; 
 					
 					case "5":
@@ -715,13 +765,6 @@ class AppTemplateConsole extends ApplicationTemplate
 			{
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
-			foreach($arrFieldsList as $key=>$val)
-			{
-				// remove any unwanted code/bad input. this input is later send via email so need to be clean.
-				$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
-				$$key=$val;
-			}
-
 			if($bolFoundErrors)
 			{
 				$this->LoadPage('support_errors');
