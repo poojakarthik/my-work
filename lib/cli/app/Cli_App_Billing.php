@@ -44,7 +44,8 @@ class Cli_App_Billing extends Cli
 			define('INVOICE_XML_PATH', FILES_BASE_PATH.'invoices/xml/');
 			
 			// Start a new Transcation
-			DataAccess::getDataAccess()->TransactionStart();
+			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
+			$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not' : '') . " successfully started!");
 			
 			// Perform the operation
 			switch ($this->_arrArgs[self::SWITCH_MODE])
@@ -72,11 +73,13 @@ class Cli_App_Billing extends Cli
 			// If not in test mode, Commit the Transaction
 			if (!$this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
-				DataAccess::getDataAccess()->TransactionCommit();
+				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionCommit();
+				$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not' : '') . " successfully committed!");
 			}
 			else
 			{
-				DataAccess::getDataAccess()->TransactionRollback();
+				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
+				$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not' : '') . " successfully revoked!");
 			}
 			
 			$this->log("Finished.");
@@ -84,7 +87,8 @@ class Cli_App_Billing extends Cli
 		}
 		catch(Exception $exception)
 		{
-			DataAccess::getDataAccess()->TransactionRollback();
+			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
+			$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not' : '') . " successfully revoked!");
 			
 			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
