@@ -183,7 +183,7 @@ class Invoice
 				// Database Error -- throw Exception
 				throw new Exception("DB ERROR: ".$selPlanDetailsById->Error());
 			}
-			elseif ($arrPlanDetails = $selPlanDetailsById->Fetch())
+			elseif (!($arrPlanDetails = $selPlanDetailsById->Fetch()))
 			{
 				throw new Exception("Unable to retrieve details for RatePlan with Id '{$intRatePlan}'!");
 			}
