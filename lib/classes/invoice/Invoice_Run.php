@@ -43,25 +43,15 @@ class Invoice_Run
 	 */
 	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
 	{
-		// Joel's implementation
-		if ($arrProperties)
-		{
-			$this->init($arrProperties);
-		}
-		if (is_string($this->balanceData))
-		{
-			$this->balanceData = unserialize($this->balanceData);
-		}
-		
-		// Rich's implementation
 		// Get list of columns from Data Model
 		$arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine('InvoiceRun');
 		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
 		{
-			$this->{$strName}	= NULL;
+			$this->_arrProperties[$strName]					= NULL;
+			$this->_arrTidyNames[self::tidyName($strName)]	= $strName;
 		}
-		$this->{$arrTableDefine['Id']}								= NULL;
-		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $strName;
+		$this->_arrProperties[$arrTableDefine['Id']]				= NULL;
+		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
 		
 		// Automatically load the Invoice using the passed Id
 		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : ($arrProperties['id']) ? $arrProperties['id'] : NULL;
@@ -201,12 +191,8 @@ class Invoice_Run
 	 */
 	public function __get($strName)
 	{
-		// Joel's implementation
-		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
-		{
-			return $this->{$strName};
-		}
-		return NULL;
+		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
+		return (isset($this->_arrProperties[$strName])) ? $this->_arrProperties[$strName] : NULL;
 	}
 	
 	//------------------------------------------------------------------------//

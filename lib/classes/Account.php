@@ -5,6 +5,7 @@ class Account
 	protected static $cache = array();
 	
 	private	$_arrTidyNames	= array();
+	private	$_arrProperties	= array();
 
 	public function __construct($arrProperties=NULL, $bolPropertiesIncludeEmployeeDetails=FALSE, $bolLoadById=FALSE)
 	{
@@ -12,11 +13,11 @@ class Account
 		$arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine('Account');
 		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
 		{
-			$this->{$strName}								= NULL;
+			$this->_arrProperties[$strName]					= NULL;
 			$this->_arrTidyNames[self::tidyName($strName)]	= $strName;
 		}
-		$this->{$arrTableDefine['Id']}								= NULL;
-		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $strName;
+		$this->_arrProperties[$arrTableDefine['Id']]				= NULL;
+		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
 		
 		// Automatically load the Invoice using the passed Id
 		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : ($arrProperties['id']) ? $arrProperties['id'] : NULL;
@@ -260,7 +261,6 @@ class Account
 		
 		$this->_saved = TRUE;
 		return TRUE;
-			
 	}
 	
 	// Empties the cache
@@ -325,13 +325,8 @@ class Account
 
 	public function __get($strName)
 	{
-		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName; 
-		
-		if (property_exists($this, $strName))
-		{
-			return $this->{$strName};
-		}
-		return NULL;
+		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
+		return (isset($this->_arrProperties[$strName])) ? $this->_arrProperties[$strName] : NULL;
 	}
 
 	protected function __set($strName, $mxdValue)
@@ -340,11 +335,19 @@ class Account
 		
 		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
 		
-		if (property_exists($this, $strName) && $this->{$strName} !== $mxdValue)
+		if (isset($this->_arrProperties[$strName]))
 		{
-			$this->_saved = FALSE;
+			$this->_arrProperties[$strName]	= $mxdValue;
+			
+			if ($this->{$strName} !== $mxdValue)
+			{
+				$this->_saved = FALSE;
+			}
 		}
-		$this->{$strName} = $mxdValue;
+		else
+		{
+			$this->{$strName} = $mxdValue;
+		}
 	}
 
 	private function tidyName($name)
