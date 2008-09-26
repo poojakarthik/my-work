@@ -922,6 +922,12 @@ class Invoice
 		static	$selChargeType;
 		static	$arrChargeTypes;
 		
+		// If the Plan Charge is $0, then don't insert it
+		if ($fltAmount === 0.0)
+		{
+			return TRUE;
+		}
+		
 		// Cache ChargeType details
 		if (!isset($arrChargeTypes[$strChargeType]))
 		{
