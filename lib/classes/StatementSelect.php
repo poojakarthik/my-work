@@ -358,7 +358,7 @@
 			// Trace
 			$this->Trace("Failed: ".$this->Error());
 			// Die in the rectal sphincter
-			new Exception($this->Error());
+			throw new Exception($this->Error());
 	 	}
 	 	
 		
