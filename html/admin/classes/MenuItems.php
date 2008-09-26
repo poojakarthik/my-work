@@ -135,8 +135,6 @@ class MenuItems
 		return self::NEW_FRAMEWORK . "reflex.php/Employee/ManageDailyMessages";
 	}
 
-
-
 	//------------------------------------------------------------------------//
 	// TicketingAdmin
 	//------------------------------------------------------------------------//
@@ -161,7 +159,6 @@ class MenuItems
 		$this->strLabel = "Ticketing Administration";
 		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Admin";
 	}
-	
 
 	//------------------------------------------------------------------------//
 	// TicketingAttachmentTypes
@@ -1496,17 +1493,29 @@ class MenuItems
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 *
 	 * @param	int		$intId		id of the service to view
-	 * @param	int		$strFNN		[optional] FNN of the service to view
+	 * @param	bool	$bolShowFNN		[optional] If TRUE, then the FNN will be shown in the breadcrumb menu,
+	 * 									if false then "Service" will be shown.  Defaults to FALSE
+	 * 									This should really only be set to TRUE if the menu item is being used in the breadcrumb menu
 	 *
 	 * @return	string				Href to be executed when the ViewService menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewService($intId, $strFNN=NULL)
+	function ViewService($intId, $bolShowFNN=FALSE)
 	{
 		$this->strContextMenuLabel = "Service Details";
 		
-		$this->strLabel	= "Service";//: $strFNN";
+		$strLabel = "Service";
+		if ($bolShowFNN)
+		{
+			$objService = new Service(array("Id"=>$intId, "FNN"=>NULL), TRUE);
+			if (isset($objService->FNN))
+			{
+				$strLabel = htmlspecialchars($objService->FNN);
+			}
+		}
+		
+		$this->strLabel	= $strLabel;
 		return self::NEW_FRAMEWORK . "flex.php/Service/View/?Service.Id=$intId";
 	}
 	
@@ -1607,16 +1616,29 @@ class MenuItems
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intAccountId		id of the account to view
+	 * @param	bool	$bolShowAccountName	[optional], defaults to false.  This should only be set to TRUE when being used for the breadcrumb menu.
+	 * 										It will use the account name instead of "Account" in the breadcrumb menu
 	 *
 	 * @return	string						Href to be executed when the AccountOverview menu item is clicked
 	 *
 	 * @method
 	 */
-	function AccountOverview($intAccountId)
+	function AccountOverview($intAccountId, $bolShowAccountName=FALSE)
 	{
 		$this->strContextMenuLabel = "Overview";
 		
-		$this->strLabel	= "Account";
+		$strLabel = "Account";
+		if ($bolShowAccountName)
+		{
+			$objAccount = Account::getForId($intAccountId);
+			if ($objAccount !== NULL)
+			{
+				$strLabel = htmlspecialchars(trim($objAccount->getName()));
+				$strLabel = ($strLabel == "")? "Account" : $strLabel;
+			}
+		}
+		
+		$this->strLabel	= $strLabel;
 
 		return self::NEW_FRAMEWORK . "flex.php/Account/Overview/?Account.Id=$intAccountId";
 	}

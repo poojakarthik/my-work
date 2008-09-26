@@ -21,11 +21,11 @@ class HtmlTemplate_Console extends FlexHtmlTemplate
 	<table class='reflex'>
 		<tbody>
 			<tr class='alt'>
-				<td class='title'>Daily Message :</td>
+				<td class='title'>Notice :</td>
 				<td>$strMessage</td>
 			</tr>
 			<tr class='alt'>
-				<td class='title'>Created : </td>
+				<td class='title'>Created :</td>
 				<td>$strTimestamp</td>
 			</tr>
 		</tbody>
@@ -41,8 +41,7 @@ class HtmlTemplate_Console extends FlexHtmlTemplate
 		echo "
 $strDailyMessageSection
 ";
-		
-		//echo "<iframe src='http://www.brisbanetimes.com.au' style='width:99%;height:6000px'></iframe";
+
 	}
 }
 

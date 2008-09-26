@@ -103,7 +103,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
+		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value, TRUE);
 		BreadCrumb()->SetCurrentPage("Services");
 		
 		// context menu
@@ -318,7 +318,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
+		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value, TRUE);
 		BreadCrumb()->SetCurrentPage("Invoices and Payments");
 		
 		// Setup all DBO and DBL objects required for the page

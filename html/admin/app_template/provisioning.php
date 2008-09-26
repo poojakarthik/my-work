@@ -97,26 +97,12 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		
 		// Set up the BreadCrumb menu
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value);
+		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value, TRUE);
 		if (DBO()->Service->Id->IsSet)
 		{
-			BreadCrumb()->ViewService(DBO()->Service->Id->Value);
+			BreadCrumb()->ViewService(DBO()->Service->Id->Value, TRUE);
 		}
 		BreadCrumb()->SetCurrentPage("Provisioning");
-		
-		if (DBO()->Service->Id->Value)
-		{
-			ContextMenu()->Service->View_Service(DBO()->Service->Id->Value);
-			ContextMenu()->Service->Plan->View_Service_Rate_Plan(DBO()->Service->Id->Value);
-			ContextMenu()->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);
-			ContextMenu()->Service->Edit_Service(DBO()->Service->Id->Value);
-			ContextMenu()->Service->Plan->Change_Plan(DBO()->Service->Id->Value);
-			ContextMenu()->Service->Move_Service(DBO()->Service->Id->Value);
-			ContextMenu()->Service->Adjustments->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
-			ContextMenu()->Service->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
-			ContextMenu()->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
-			ContextMenu()->Service->Notes->View_Service_Notes(DBO()->Service->Id->Value);
-		}
 		
 		// Set up the Context menu
 		ContextMenu()->Account->Account_Overview(DBO()->Account->Id->Value);
@@ -131,6 +117,20 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+
+		if (DBO()->Service->Id->Value)
+		{
+			ContextMenu()->Service->View_Service(DBO()->Service->Id->Value);
+			ContextMenu()->Service->Plan->View_Service_Rate_Plan(DBO()->Service->Id->Value);
+			ContextMenu()->Service->View_Unbilled_Charges(DBO()->Service->Id->Value);
+			ContextMenu()->Service->Edit_Service(DBO()->Service->Id->Value);
+			ContextMenu()->Service->Plan->Change_Plan(DBO()->Service->Id->Value);
+			ContextMenu()->Service->Move_Service(DBO()->Service->Id->Value);
+			ContextMenu()->Service->Adjustments->Add_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+			ContextMenu()->Service->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value, DBO()->Service->Id->Value);
+			ContextMenu()->Service->Notes->Add_Service_Note(DBO()->Service->Id->Value);
+			ContextMenu()->Service->Notes->View_Service_Notes(DBO()->Service->Id->Value);
+		}
 		
 		// Retrieve the Provisioning History for the Account
 		DBO()->History->CategoryFilter	= PROVISIONING_HISTORY_CATEGORY_BOTH;

@@ -40,7 +40,8 @@ class Service
 		}
 		
 		// Automatically load the object using the passed Id
-		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : ($arrProperties['id']) ? $arrProperties['id'] : NULL;
+		$intId	= $arrProperties['Id'] ? $arrProperties['Id'] : ($arrProperties['id'] ? $arrProperties['id'] : NULL);
+
 		if ($bolLoadById && $intId)
 		{
 			$selById	= $this->_preparedStatement('selById');
@@ -57,7 +58,6 @@ class Service
 				// Do we want to Debug something?
 			}
 		}
-		
 		// Set Properties
 		if (is_array($arrProperties))
 		{
