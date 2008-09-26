@@ -122,9 +122,14 @@ class Invoice
 		while ($arrFNN = $selInvoiceableFNNs->Fetch())
 		{
 			Cli_App_Billing::debug("\t\t * Getting details for FNN {$arrFNN['FNN']}...");
+			
 			// Get the Service Details for the current owner of this FNN (or indial range), on this Account
+			$arrWhere	= Array();
+			$arrWhere['FNN']			= $arrFNN['FNN'];
+			$arrWhere['IndialRange']	= substr($arrFNN['FNN'], 0, -2).'__';
+			$arrWhere['DateTime']		= $objInvoiceRun->strInvoiceDatetime;
 			$selCurrentService	= $this->_preparedStatement('selCurrentService');
-			if ($selCurrentService->Execute($arrFNN) === FALSE)
+			if ($selCurrentService->Execute($arrWhere) === FALSE)
 			{
 				// Database Error -- throw Exception
 				throw new Exception("DB ERROR: ".$selCurrentService->Error());
