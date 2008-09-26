@@ -1089,10 +1089,10 @@ class Invoice
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status = ".CHARGE_APPROVED, Array('Status'=>NULL, 'invoice_run_id'=>NULL));
 					break;
 				case 'updCDRRevoke':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "invoice_run_id = <Id>", Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "invoice_run_id = <invoice_run_id>", Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
 					break;
 				case 'updChargeRevoke':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "invoice_run_id = <Id>", Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "invoice_run_id = <invoice_run_id>", Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
 					break;
 				
 				default:
