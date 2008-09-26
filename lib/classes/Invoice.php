@@ -88,6 +88,9 @@ class Invoice
 	 */
 	public function generate($objAccount, $objInvoiceRun)
 	{
+		Cli_App_Billing::debug(get_object_vars($objInvoiceRun));
+		Cli_App_Billing::debug(get_object_vars($objAccount));
+		
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 		
