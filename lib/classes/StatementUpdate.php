@@ -140,14 +140,8 @@
 	 	else
 	 	{
 		 	// Full Update, so retrieve columns from the Table definition arrays
-		 	reset($this->db->arrTableDefine->{$this->_strTable}["Column"]);
-		 	for ($i = 0; $i < (count($this->db->arrTableDefine->{$this->_strTable}["Column"]) - 1); $i++)
-		 	{
-		 		$strQuery .= key($this->db->arrTableDefine->{$this->_strTable}["Column"]) . " = ?, ";
-		 		next($this->db->arrTableDefine->{$this->_strTable}["Column"]);
-		 	}
-		 	// Last column is different
-		 	$strQuery .= key($this->db->arrTableDefine->{$this->_strTable}["Column"]) . " = ?\n";
+		 	$arrFullCols	= array_keys($this->db->arrTableDefine->{$this->_strTable}['Column']);
+		 	$strQuery		.= implode(' = ?, ', $arrFullCols) . ' = ?\n';
 	 	}
 
 	 	// Add the WHERE clause
