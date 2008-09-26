@@ -5,9 +5,6 @@ class Application_Handler_Console extends Application_Handler
 	// View all the Customer Statuses in a tabulated format
 	public function View($subPath)
 	{
-		// Build Context Menu
-		ContextMenu()->Console->BugList();
-		
 		try
 		{
 			// Build the Daily Message
