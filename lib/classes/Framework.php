@@ -86,9 +86,9 @@
 		{
 			error_reporting(0);
 		}
-	 	$this->_errErrorHandler = new ErrorHandler(); 	
+	 	/*$this->_errErrorHandler = new ErrorHandler(); 	
 		set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
-		set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
+		set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));*/
 		
 		// start timing
 		$this->_intStartTime		= microtime(TRUE);

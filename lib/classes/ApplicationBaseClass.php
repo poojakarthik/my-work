@@ -74,7 +74,7 @@
 		$this->Framework = &$GLOBALS['fwkFramework'];
 		
 		// make global error handler available
-		$this->_errErrorHandler = $this->Framework->_errErrorHandler;
+		//$this->_errErrorHandler = $this->Framework->_errErrorHandler;
  		
  		// Get list of Carrier Modules
  		$this->_selCarrierModules	= new StatementSelect("CarrierModule", "*", "Type = <Type> AND Active = 1");
