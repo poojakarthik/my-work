@@ -141,7 +141,7 @@
 	 	{
 		 	// Full Update, so retrieve columns from the Table definition arrays
 		 	$arrFullCols	= array_keys($this->db->arrTableDefine->{$this->_strTable}['Column']);
-		 	$strQuery		.= implode(' = ?, ', $arrFullCols) . ' = ?\n';
+		 	$strQuery		.= implode(' = ?, ', $arrFullCols) . " = ?\n";
 	 	}
 
 	 	// Add the WHERE clause
