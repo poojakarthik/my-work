@@ -14,8 +14,13 @@
  */
 class Invoice_Run
 {
-	private	$_arrTidyNames	= array();
-	private	$_arrProperties	= array();
+	private	$_arrTidyNames		= array();
+	private	$_arrProperties		= array();
+	
+	public	$intInvoiceDatetime;
+	public	$strInvoiceDatetime;
+	public	$intLastInvoiceDatetime;
+	public	$strLastInvoiceDatetime;
 	
 	//------------------------------------------------------------------------//
 	// __construct
