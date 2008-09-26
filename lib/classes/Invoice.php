@@ -103,6 +103,7 @@ class Invoice
 		
 		//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
 		$this->invoice_run_id	= $objInvoiceRun->Id;
+		$this->_objInvoiceRun	= $objInvoiceRun;
 		$this->Total			= 0.0;
 		$this->Debits			= 0.0;
 		$this->Credits			= 0.0;
@@ -836,8 +837,8 @@ class Invoice
 						if ($arrPlanInvoicedBefore['SamePlan'] === 0)
 						{
 							// The this Plan has not been invoiced before, so generate a Charge in Advance
-							$intAdvancePeriodStart	= $objInvoiceRun->intInvoiceDatetime;
-							$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $objInvoiceRun->intInvoiceDatetime));
+							$intAdvancePeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
+							$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
 							$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intAdvancePeriodStart, $intAdvancePeriodEnd, $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 						}
 					}
@@ -848,14 +849,14 @@ class Invoice
 				}
 				
 				// Prorate the Charges and Usage details in Arrears
-				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, strtotime($strEarliestCDR), $objInvoiceRun->intLastInvoiceDatetime, $objInvoiceRun->intInvoiceDatetime);
-				$fltUsageStart		= Invoice::prorate($fltUsageStart		, strtotime($strEarliestCDR), $objInvoiceRun->intLastInvoiceDatetime, $objInvoiceRun->intInvoiceDatetime);
-				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, strtotime($strEarliestCDR), $objInvoiceRun->intLastInvoiceDatetime, $objInvoiceRun->intInvoiceDatetime);
+				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, strtotime($strEarliestCDR), $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime);
+				$fltUsageStart		= Invoice::prorate($fltUsageStart		, strtotime($strEarliestCDR), $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime);
+				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, strtotime($strEarliestCDR), $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime);
 				
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= strtotime($strEarliestCDR);
-				$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
-				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails['Name'], $objInvoiceRun->intLastInvoiceDatetime, strtotime("-1 day", $objInvoiceRun->intLastInvoiceDatetime), $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
+				$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
+				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails['Name'], $this->_objInvoiceRun->intLastInvoiceDatetime, strtotime("-1 day", $this->_objInvoiceRun->intLastInvoiceDatetime), $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 			}
 			else
 			{
@@ -863,14 +864,14 @@ class Invoice
 				if ($arrPlanDetails['InAdvance'])
 				{
 					$strChargeType	= 'PCAD';
-					$intPeriodStart	= $objInvoiceRun->intInvoiceDatetime;
-					$intPeriodEnd	= strtotime("-1 day", strtotime("+1 month", $objInvoiceRun->intInvoiceDatetime));
+					$intPeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
+					$intPeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
 				}
 				else
 				{
 					$strChargeType	= 'PCAR';
-					$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
-					$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
+					$intPeriodStart	= $this->_objInvoiceRun->intLastInvoiceDatetime;
+					$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
 				}
 				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 			}
