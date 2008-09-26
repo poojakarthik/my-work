@@ -371,7 +371,7 @@ class Invoice
 		//--------------------------- PLAN CHARGES ---------------------------//
 		// Retrieve Plan Details for the current Service
 		$selPlanDetails	= $this->_preparedStatement('selPlanDetails');
-		if ($selPlanDetails->Execute(Array('Service' => $intServiceId, 'EffectiveDate' => $objInvoiceRun->intInvoiceDatetime)) === FALSE)
+		if ($selPlanDetails->Execute(Array('Service' => $intServiceId, 'EffectiveDate' => $objInvoiceRun->strInvoiceDatetime)) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$selPlanDetails->Error());
 		}
