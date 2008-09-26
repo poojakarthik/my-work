@@ -144,24 +144,31 @@ class Invoice_Run
 					);
 	}
 
-	//------------------------------------------------------------------------//
-	// __get
-	//------------------------------------------------------------------------//
-	/**
-	 * __get()
-	 *
-	 * accessor method
-	 * 
-	 * accessor method
-	 *
-	 * @param	string	$strName	name of property to get. in either of the formats xxxYyyZzz or xxx_yyy_zzz 
-	 * @return	void
-	 * @method
-	 */
 	public function __get($strName)
 	{
 		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
 		return (isset($this->_arrProperties[$strName])) ? $this->_arrProperties[$strName] : NULL;
+	}
+
+	protected function __set($strName, $mxdValue)
+	{
+		if ($strName[0] === '_') return; // It is read only!
+		
+		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
+		
+		if (isset($this->_arrProperties[$strName]))
+		{
+			$this->_arrProperties[$strName]	= $mxdValue;
+			
+			if ($this->{$strName} !== $mxdValue)
+			{
+				$this->_saved = FALSE;
+			}
+		}
+		else
+		{
+			$this->{$strName} = $mxdValue;
+		}
 	}
 	
 	//------------------------------------------------------------------------//
