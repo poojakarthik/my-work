@@ -94,9 +94,6 @@ class Invoice
 	 */
 	public function generate($objAccount, $objInvoiceRun)
 	{
-		Cli_App_Billing::debug($objInvoiceRun->toArray());
-		Cli_App_Billing::debug($objAccount->toArray());
-		
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 		
