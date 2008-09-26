@@ -750,6 +750,18 @@ class AppTemplateConsole extends ApplicationTemplate
 		// show the main dropdown menu, no input detected
 		if(!$bolFoundSubmit)
 		{
+			if(array_key_exists('intRequestType',$_POST) && array_key_exists('mixServiceType',$_POST))
+			{
+				// check if the user selected "Add a new line"
+				if($_POST['intRequestType'] == "4")
+				{
+					$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+
+					// build a list of the available plans for the service type selected
+					$arrCustomerPlansResult = $dbConnection->fetch("SELECT * FROM RatePlan WHERE customer_group = \"" . DBO()->Account->CustomerGroup->Value . "\" AND ServiceType=\"$_POST[mixServiceType]\"",$array=true);
+					DBO()->CustomerPlans->ListPlans = $arrCustomerPlansResult;
+				}
+			}
 			$this->LoadPage('support');
 			return TRUE;
 		}	 	

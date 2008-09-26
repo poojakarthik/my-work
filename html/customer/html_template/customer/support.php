@@ -324,10 +324,20 @@
 							4 = Other
 						*/
 
+						$arrPlans = DBO()->CustomerPlans->ListPlans->Value;
+						$mixPlanList = "";
+						foreach($arrPlans as $arrPlan)
+						{
+							foreach($arrPlan as $key=>$val)
+							{
+								$$key=$val;
+							}
+							$mixPlanList .= "<OPTION VALUE=\"Plan Id: $Id, Plan Name: $Name\">$Name</OPTION>\n";
+						}
 						$mixServiceType = $_POST['mixServiceType'];
 						switch($mixServiceType)
 						{
-							case "1":
+							case "100":
 							echo "
 							<div class='customer-standard-table-title-style-password'>DSL Setup</div>
 							<div class='GroupedContent'>
@@ -335,20 +345,10 @@
 							<TR VALIGN=\"TOP\">
 							<TD width=\"160\">Select Option:</TD>
 							<TD>
-								<SELECT NAME=\"\">
-									<OPTION VALUE=\"\">New Connection</OPTION>
-									<OPTION VALUE=\"\">Port</OPTION>
+								<SELECT NAME=\"mixDSLSetup\">
+									<OPTION VALUE=\"New Connection\">New Connection</OPTION>
+									<OPTION VALUE=\"Port Old Connection\">Port Old Connection</OPTION>
 								</SELECT></TD>
-							</TABLE>
-							</div>
-							<br/>
-							<div class='customer-standard-table-title-style-password'>For new connections please complete this.</div>
-							<div class='GroupedContent'>
-							<TABLE class=\"customer-standard-table-style\">
-							<TR>
-								<TD width=\"160\">Line number</TD>
-								<TD><INPUT TYPE=\"text\" NAME=\"\"></TD>
-							</TR>
 							</TABLE>
 							</div>
 							<br/>
@@ -356,13 +356,9 @@
 							<div class='GroupedContent'>
 							<TABLE class=\"customer-standard-table-style\">
 							<TR>
-								<TD width=\"160\">Line number</TD>
-								<TD><INPUT TYPE=\"text\" NAME=\"intLineNumber\"></TD>
-							</TR>
-							<TR>
 								<TD>DSL Type</TD>
 								<TD>
-									<SELECT NAME=\"mixDSLType\">
+									<SELECT NAME=\"mixDSLExistingConnection\">
 										<OPTION VALUE=\"ADSL\">ADSL</OPTION>
 										<OPTION VALUE=\"ADSL2\">ADSL2</OPTION>
 										<OPTION VALUE=\"ADSL2+\">ADSL2+</OPTION>
@@ -383,11 +379,11 @@
 							</TR>
 							<TR>
 								<TD width=\"160\">Current Provider</TD>
-								<TD><INPUT TYPE=\"text\" NAME=\"mixCurrentProvider\"></TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixDSLCurrentProvider\"></TD>
 							</TR>
 							<TR>
 								<TD width=\"160\">Account Number</TD>
-								<TD><INPUT TYPE=\"text\" NAME=\"mixCurrentProvider\"> (with current provider)</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixDSLCurrentAccount\"> (with current provider)</TD>
 							</TR>
 							</TABLE>
 							</div>
@@ -398,18 +394,21 @@
 							<TR>
 								<TD width=\"160\">Select New Plan: </TD>
 								<TD>
-									<SELECT NAME=\"mixNewPlan\">
-										<OPTION VALUE=\"\"></OPTION>
-										<OPTION VALUE=\"\"></OPTION>
+									<SELECT NAME=\"mixDSLNewPlan\">
+										$mixPlanList
 									</SELECT>								
 								</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Line number</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixDSLPhoneNumber\"></TD>
 							</TR>
 							</TABLE>
 							</div>
 							<br/>";
 							break;
 
-							case "2":
+							case "101":
 							echo "
 							<div class='customer-standard-table-title-style-password'>Mobile Setup</div>
 							<div class='GroupedContent'>
@@ -417,9 +416,9 @@
 							<TR VALIGN=\"TOP\">
 							<TD width=\"160\">Select Option:</TD>
 							<TD>
-								<SELECT NAME=\"\">
-									<OPTION VALUE=\"\">New Activation</OPTION>
-									<OPTION VALUE=\"\">Port</OPTION>
+								<SELECT NAME=\"mixMobileSetup\">
+									<OPTION VALUE=\"New Connection\">New Activation</OPTION>
+									<OPTION VALUE=\"Port Old Connection\">Port Old Number</OPTION>
 								</SELECT></TD>
 							</TABLE>
 							</div>
@@ -429,15 +428,15 @@
 							<TABLE class=\"customer-standard-table-style\">
 							<TR>
 								<TD width=\"160\">Current Mobile #</TD>
-								<TD><INPUT TYPE=\"text\" NAME=\"intMobileNumber\"></TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixMobileNumber\"></TD>
 							</TR>
 							<TR>
 								<TD width=\"160\">Current Carrier</TD>
-								<TD><INPUT TYPE=\"text\" NAME=\"mixCurrentProvider\"></TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixMobileCurrentProvider\"></TD>
 							</TR>
 							<TR>
 								<TD width=\"160\">Account Number</TD>
-								<TD><INPUT TYPE=\"text\" NAME=\"mixCurrentProvider\"> (with current provider)</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixMobileCurrentAccount\"> (with current provider)</TD>
 							</TR>
 							</TABLE>
 							</div>
@@ -448,9 +447,8 @@
 							<TR>
 								<TD width=\"160\">Select New Plan: </TD>
 								<TD>
-									<SELECT NAME=\"mixNewPlan\">
-										<OPTION VALUE=\"\"></OPTION>
-										<OPTION VALUE=\"\"></OPTION>
+									<SELECT NAME=\"mixMobileNewPlan\">
+										$mixPlanList
 									</SELECT>								
 								</TD>
 							</TR>
@@ -459,7 +457,7 @@
 							<br/>";
 							break;
 							
-							case "3":
+							case "102":
 							echo "
 							<div class='customer-standard-table-title-style-password'>Landline Setup</div>
 							<div class='GroupedContent'>
@@ -467,10 +465,10 @@
 							<TR VALIGN=\"TOP\">
 							<TD width=\"160\">Select Type:</TD>
 							<TD>
-								<SELECT NAME=\"\">
-									<OPTION VALUE=\"\">PSTN</OPTION>
-									<OPTION VALUE=\"\">ISDN</OPTION>
-									<OPTION VALUE=\"\">Not Sure</OPTION>
+								<SELECT NAME=\"mixLandlineSetup\">
+									<OPTION VALUE=\"PSTN\">PSTN</OPTION>
+									<OPTION VALUE=\"ISDN\">ISDN</OPTION>
+									<OPTION VALUE=\"Not Sure\">Not Sure</OPTION>
 								</SELECT></TD>
 							</TABLE>
 							</div>
@@ -487,23 +485,23 @@
 									<TABLE class=\"customer-standard-table-style\">
 									<TR>
 										<TD width=\"160\">Message Bank: </TD>
-										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixMessageBank\"></TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLandlinePSTNMessageBank\"></TD>
 									</TR>
 									<TR>
 										<TD>Line Hunt: </TD>
-										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLineHunt\"></TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLandlinePSTNLineHunt\"></TD>
 									</TR>
 									<TR>
 										<TD>Caller ID: </TD>
-										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixCallerId\"></TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLandlinePSTNCallerId\"></TD>
 									</TR>
 									<TR>
 										<TD>Fax Duet: </TD>
-										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixFaxDuet\"></TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLandlinePSTNFaxDuet\"></TD>
 									</TR>
 									<TR>
 										<TD>Fax Stream: </TD>
-										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixFaxStream\"></TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLandlinePSTNFaxStream\"></TD>
 									</TR>
 									</TABLE>
 									<BR>
@@ -518,20 +516,20 @@
 									<TABLE class=\"customer-standard-table-style\">
 									<TR>
 										<TD width=\"160\">100 Indial Range: </TD>
-										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixIndialRange\"></TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLandlineISDNIndialRange\"></TD>
 									</TR>
 									<TR>
 										<TD>Caller ID: </TD>
-										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixCallerId\"></TD>
+										<TD><INPUT TYPE=\"checkbox\" NAME=\"mixLandlineISDNCallerId\"></TD>
 									</TR>
 									<TR>
 										<TD>On Ramp: </TD>
 										<TD>
-											<SELECT NAME=\"mixOnRamp\">
-												<OPTION VALUE=\"2\">On Ramp 2</OPTION>
-												<OPTION VALUE=\"10\">On Ramp 10</OPTION>
-												<OPTION VALUE=\"20\">On Ramp 20</OPTION>
-												<OPTION VALUE=\"30\">On Ramp 30</OPTION>
+											<SELECT NAME=\"mixLandlineISDNOnRamp\">
+												<OPTION VALUE=\"On Ramp 2\">On Ramp 2</OPTION>
+												<OPTION VALUE=\"On Ramp 10\">On Ramp 10</OPTION>
+												<OPTION VALUE=\"On Ramp 20\">On Ramp 20</OPTION>
+												<OPTION VALUE=\"On Ramp 30\">On Ramp 30</OPTION>
 											</SELECT>	
 										</TD>
 									</TR>
@@ -547,9 +545,8 @@
 							<TR>
 								<TD width=\"160\">Select New Plan: </TD>
 								<TD>
-									<SELECT NAME=\"mixNewPlan\">
-										<OPTION VALUE=\"\"></OPTION>
-										<OPTION VALUE=\"\"></OPTION>
+									<SELECT NAME=\"mixLandlineNewPlan\">
+										$mixPlanList
 									</SELECT>								
 								</TD>
 							</TR>
@@ -558,8 +555,8 @@
 							<br/>";
 							break;
 							
-							case "4":
-							// Other = just show the details box....
+							case "103":
+							// 1300 = just show the details box....
 							break;
 							
 							default:

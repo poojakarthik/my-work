@@ -195,19 +195,21 @@
 		switch($_POST['intRequestType'])
 		{
 
+			// Logging a fault to an existing service
 			case "1":
 			if($bolFaultLine)
 			{
-				echo "<div class='customer-standard-table-title-style-password'>Select the service this query is related to</div>
+				echo "<div class='customer-standard-table-title-style-password'>Logging a fault to an existing service</div>
 				<div class='GroupedContent'>
 				$mixServiceList
 				</div>
 				<br/>";
 			}
-			break; 	
+			break;
 
+			// Making a change to an existing service
 			case "2":
-			echo "<div class='customer-standard-table-title-style-password'>Select the service you wish to change</div>
+			echo "<div class='customer-standard-table-title-style-password'>Making a change to an existing service</div>
 			<div class='GroupedContent'>
 			$mixServiceList
 			</div>
@@ -240,10 +242,11 @@
 			<br/>";
 			break;
 
+			// Disconnect a no longer required line number
 			case "3":
 			if($bolFaultLine)
 			{
-				echo "<div class='customer-standard-table-title-style-password'>Select the service this query is related to</div>
+				echo "<div class='customer-standard-table-title-style-password'>Disconnect a no longer required line number</div>
 				<div class='GroupedContent'>
 				$mixServiceList
 				</div>
@@ -251,24 +254,19 @@
 			}
 			break;
 
+			// Add a new line
 			case "4":
-			/* nothing */
-			echo "";
-			break;
-
-			case "5":
-			if($bolFaultLine)
-			{
-				echo "<div class='customer-standard-table-title-style-password'>Select the service this query is related to</div>
-				<div class='GroupedContent'>
-				$mixServiceList
-				</div>
+				echo "<div class='customer-standard-table-title-style-password'>Add a new line</div>
+				<div class='GroupedContent'>DETAILS</div>
 				<br/>";
-			}
 			break;
 
-			default:
+			// Other
+			case "5":
+			break;
+
 			// Unable to determine request type..?
+			default:
 			break;
 		}
 		if($bolServiceType)
