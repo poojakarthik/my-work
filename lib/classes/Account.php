@@ -2,59 +2,18 @@
 
 class Account
 {
-	private $id = NULL;
-	private $businessName = NULL;
-	private $tradingName = NULL;
-	private $abn = NULL;
-	private $acn = NULL;
-	private $address1 = NULL;
-	private $address2 = NULL;
-	private $suburb = NULL;
-	private $postcode = NULL;
-	private $state = NULL;
-	private $country = NULL;
-	private $billingType = NULL;
-	private $primaryContact = NULL;
-	private $customerGroup = NULL;
-	private $creditCard = NULL;
-	private $directDebit = NULL;
-	private $accountGroup = NULL;
-	private $lastBilled = NULL;
-	private $billingDate = NULL;
-	private $billingFreq = NULL;
-	private $billingFreqType = NULL;
-	private $billingMethod = NULL;
-	private $paymentTerms = NULL;
-	private $createdBy = NULL;
-	private $createdOn = NULL;
-	private $disableDDR = NULL;
-	private $disableLatePayment = NULL;
-	private $disableLateNotices = NULL;
-	private $latePaymentAmnesty = NULL;
-	private $sample = NULL;
-	private $archived = NULL;
-	private $creditControlStatus = NULL;
-	private $lastAutomaticInvoiceAction = NULL;
-	private $lastAutomaticInvoiceActionDatetime = NULL;
-	private $automaticBarringStatus = NULL;
-	private $automaticBarringDatetime = NULL;
-	private $tioReferenceNumber = NULL;
-
 	protected static $cache = array();
+	
+	private	$_arrTidyNames	= array();
 
 	public function __construct($arrProperties=NULL, $bolPropertiesIncludeEmployeeDetails=FALSE, $bolLoadById=FALSE)
 	{
-		if ($arrProperties)
-		{
-			$this->init($arrProperties);
-		}
-		
-		// Rich's implementation
 		// Get list of columns from Data Model
 		$arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine('Account');
 		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
 		{
-			$this->{$strName}	= NULL;
+			$this->{$strName}								= NULL;
+			$this->_arrTidyNames[self::tidyName($strName)]	= $strName;
 		}
 		
 		// Automatically load the Invoice using the passed Id
@@ -267,29 +226,39 @@ class Account
 			// Nothing to save
 			return TRUE;
 		}
-		$arrValues = $this->getValuesToSave();
-
-		// No id means that this must be a new record
-		if (!$this->id)
+		
+		// Do we have an Id for this instance?
+		if ($this->Id !== NULL)
 		{
-			$statement = new StatementInsert('Account', $arrValues);
+			// Update
+			$ubiSelf	= self::_preparedStatement("ubiSelf");
+			if ($ubiSelf->Execute(get_object_vars($this)) === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$ubiSelf->Error());
+			}
 		}
-		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
-			$statement = new StatementUpdateById('Account', $arrValues);
+			// Insert
+			$insSelf	= self::_preparedStatement("insSelf");
+			$mixResult	= $insSelf->Execute(get_object_vars($this));
+			if ($mixResult === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$insSelf->Error());
+			}
+			if (is_int($mixResult))
+			{
+				$this->Id	= $mixResult;
+			}
+			else
+			{
+				throw new Exception('Failed to save account details: ' . $statement->Error());
+			}
 		}
-		if (($outcome = $statement->Execute($arrValues)) === FALSE)
-		{
-			throw new Exception('Failed to save account details: ' . $statement->Error());
-		}
-		if (!$this->id)
-		{
-			$this->id = $outcome;
-		}
+		
 		$this->_saved = TRUE;
 		return TRUE;
+			
 	}
 	
 	// Empties the cache
@@ -343,16 +312,20 @@ class Account
 
 	private function init($arrProperties)
 	{
+		// Create list of tidied names
+		$this->_arrTidyNames	= Array();
 		foreach($arrProperties as $name => $value)
 		{
-			$this->{$name} = $value;
+			$this->_arrTidyNames[self::tidyName($name)]	= $name;
 		}
 		
 	}
 
 	public function __get($strName)
 	{
-		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
+		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName; 
+		
+		if (property_exists($this, $strName))
 		{
 			return $this->{$strName};
 		}
@@ -362,19 +335,14 @@ class Account
 	protected function __set($strName, $mxdValue)
 	{
 		if ($strName[0] === '_') return; // It is read only!
-		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
+		
+		$strName	= isset($this->_arrTidyNames[$strName]) ? $this->_arrTidyNames[$strName] : $strName;
+		
+		if (property_exists($this, $strName) && $this->{$strName} !== $mxdValue)
 		{
-			if ($this->{$strName} !== $mxdValue)
-			{
-				$this->{$strName} = $mxdValue;
-				$this->_saved = FALSE;
-			}
+			$this->_saved = FALSE;
 		}
-		else
-		{
-			// Property doesn't exist yet
-			$this->{$strName}	= $mxdValue;
-		}
+		$this->{$strName} = $mxdValue;
 	}
 
 	private function tidyName($name)
