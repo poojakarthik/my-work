@@ -220,7 +220,6 @@ class Invoice_Run
 	{
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
-		$strInvoiceDatetime		= date($intInvoiceDatetime);
 		
 		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
 		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
@@ -236,7 +235,7 @@ class Invoice_Run
 		$this->save();
 		
 		$this->intInvoiceDatetime		= $intInvoiceDatetime;
-		$this->strInvoiceDatetime		= $strInvoiceDatetime;
+		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);
 		
 		// Retrieve the Bill Date of the last Invoice Run...
 		Cli_App_Billing::debug(" * Getting Last Invoice Date...", FALSE);
