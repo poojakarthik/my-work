@@ -1318,7 +1318,7 @@ function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
 		if($intStart>=$intResultsPerPage)
 		{
 
-			$mixLinksDisplay .= "<a href='$mixSearchURL$mixSearch&start=$intPrevious'>Previous</A>&nbsp;&nbsp; ";
+			$mixLinksDisplay .= "<a href='$mixURL$mixSearch&start=$intPrevious'>Previous</A>&nbsp;&nbsp; ";
 
 		}
 		for($i=0; $i<$intPages; $i++){
@@ -1332,7 +1332,7 @@ function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
 					$mixLinksDisplay .= "$cnt \n";
 				}
 				else{
-					$mixLinksDisplay .= "<a href='$mixSearchURL$mixSearch&start=$intCurrentPageNumber'>$cnt</A></a> \n";
+					$mixLinksDisplay .= "<a href='$mixURL$mixSearch&start=$intCurrentPageNumber'>$cnt</A></a> \n";
 				}
 			}
 
@@ -1341,7 +1341,7 @@ function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
 		}
 		if($intNext+1<"$intTotalResults"){
 
-			$mixLinksDisplay .= "&nbsp;&nbsp;<A href='$mixSearchURL$mixSearch&start=$intNext'>Next</A>";
+			$mixLinksDisplay .= "&nbsp;&nbsp;<A href='$mixURL$mixSearch&start=$intNext'>Next</A>";
 		
 		}
 	}

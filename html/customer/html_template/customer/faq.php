@@ -106,7 +106,7 @@
 				}
 				echo "
 				<tr>
-					<td>$id. <A HREF=\"javascript:view_faq($id)\">$title</A></td>
+					<td><A HREF=\"javascript:view_faq($id)\">$title</A></td>
 					<td>$time_updated</td>
 					<td>$hits</td>
 				</tr>";
@@ -119,7 +119,6 @@
 			</TABLE>
 			</div>
 			<br/>";
-
 			if(DBO()->Search->Pages->Value)
 			{
 				echo "

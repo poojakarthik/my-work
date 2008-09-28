@@ -243,6 +243,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			{
 				$intView = $_GET['view'];
 				$strSelect= "SELECT * FROM customer_faq WHERE id = \"$intView\" AND customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\"";
+				$dbConnection->execute("UPDATE `customer_faq` SET hits=hits+1 WHERE id = \"$intView\"");
 				$arrFAQResults = $dbConnection->fetchone("$strSelect");
 			}
 			// Return an array with results to our page.
@@ -255,7 +256,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		if (array_key_exists('all',$_GET))
 		{
 
-			$select= "SELECT * FROM customer_faq WHERE customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\" ORDER BY title DESC LIMIT $intStart,$intResultsPerPage";
+			$select= "SELECT SQL_CALC_FOUND_ROWS * FROM customer_faq WHERE customer_group_id=\"" . DBO()->Account->CustomerGroup->Value . "\" ORDER BY hits DESC LIMIT $intStart,$intResultsPerPage";
 			// This portion of the code exeutes the query fetching an array..
 			$arrCustomerFAQ = $dbConnection->fetch("$select",$array=true);
 
@@ -281,7 +282,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		{
 
 			$mixSelect = "
-				SELECT * ,
+				SELECT SQL_CALC_FOUND_ROWS * ,
 				MATCH (
 				title, contents
 				)
@@ -349,6 +350,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			DBO()->Total->Start = "$intStart";
 			DBO()->Total->NextPage = $intNext;
 			DBO()->Search->Pages = "$mixLinksDisplay";
+			//echo "<hr>$intNext,$mixLinksDisplay,$intStart,$intResultsPerPage,$intTotalResults<hr>";
 			$this->LoadPage('faq');
 			return TRUE;	
 
@@ -801,7 +803,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 
 					// build a list of the available plans for the service type selected
-					$arrCustomerPlansResult = $dbConnection->fetch("SELECT * FROM RatePlan WHERE customer_group = \"" . DBO()->Account->CustomerGroup->Value . "\" AND ServiceType=\"$_POST[mixServiceType]\"",$array=true);
+					$arrCustomerPlansResult = $dbConnection->fetch("SELECT * FROM RatePlan WHERE customer_group = \"" . DBO()->Account->CustomerGroup->Value . "\" AND ServiceType=\"$_POST[mixServiceType]\" ORDER BY Name",$array=true);
 					DBO()->CustomerPlans->ListPlans = $arrCustomerPlansResult;
 				}
 			}
