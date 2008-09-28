@@ -350,6 +350,7 @@
 									<OPTION VALUE=\"New Connection\">New Connection</OPTION>
 									<OPTION VALUE=\"Port Old Connection\">Port Old Connection</OPTION>
 								</SELECT></TD>
+							</TR>
 							</TABLE>
 							</div>
 							<br/>
@@ -421,6 +422,7 @@
 									<OPTION VALUE=\"New Connection\">New Activation</OPTION>
 									<OPTION VALUE=\"Port Old Connection\">Port Old Number</OPTION>
 								</SELECT></TD>
+							</TR>
 							</TABLE>
 							</div>
 							<br/>
@@ -470,7 +472,9 @@
 									<OPTION VALUE=\"PSTN\">PSTN</OPTION>
 									<OPTION VALUE=\"ISDN\">ISDN</OPTION>
 									<OPTION VALUE=\"Not Sure\">Not Sure</OPTION>
-								</SELECT></TD>
+								</SELECT>
+							</TD>
+							</TR>
 							</TABLE>
 							</div>
 							<br/>
@@ -556,8 +560,45 @@
 							<br/>";
 							break;
 							
+
 							case "103":
-							// 1300 = just show the details box....
+							echo "
+							<div class='customer-standard-table-title-style-password'>Inbound Setup</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR VALIGN=\"TOP\">
+							<TD width=\"160\">Select Option:</TD>
+							<TD>
+								<SELECT NAME=\"mixInboundSetup\">
+									<OPTION VALUE=\"New Connection\">New Activation</OPTION>
+									<OPTION VALUE=\"Port Old Connection\">Port Old Number</OPTION>
+								</SELECT></TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Current Account Number</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixInboundCurrentAccount\"> (with current provider)</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Answering Point</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixInboundAnsweringPoint\"></TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>Plan Choice.</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\">Select New Plan: </TD>
+								<TD>
+									<SELECT NAME=\"mixInboundNewPlan\">
+										$mixPlanList
+									</SELECT>								
+								</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>";
 							break;
 							
 							default:

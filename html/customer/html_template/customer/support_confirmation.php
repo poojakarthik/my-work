@@ -364,6 +364,39 @@
 							</TR>
 							</TABLE>
 							</div><br/>";
+						}						
+						// 103 - Inbound
+						if($_POST['mixServiceType'] == "103")
+						{
+							echo "
+							<div class='customer-standard-table-title-style-password'>Inbound Setup</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR VALIGN=\"TOP\">
+							<TD width=\"160\"></TD>
+							<TD><B>$_POST[mixInboundSetup]</B></TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Current Account Number</TD>
+								<TD>$_POST[mixInboundCurrentAccount]</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Answering Point</TD>
+								<TD>$_POST[mixInboundAnsweringPoint]</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>
+							<div class='customer-standard-table-title-style-password'>Plan Choice.</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\">New Plan: </TD>
+								<TD>$_POST[mixInboundNewPlan]</TD>
+							</TR>
+							</TABLE>
+							</div>
+							<br/>";
 						}
 			break;
 

@@ -727,6 +727,14 @@ class AppTemplateConsole extends ApplicationTemplate
 							$arrFieldsList['Landline ISDN Caller Id'] = $_POST['mixLandlineISDNCallerId'];
 							$arrFieldsList['Landline ISDN On Ramp'] = $_POST['mixLandlineISDNOnRamp'] . "\n";
 						}
+						// 103 - Inbound
+						if($_POST['mixServiceType'] == "103")
+						{
+							$arrFieldsList['Inbound Setup'] = $_POST['mixInboundSetup'];
+							$arrFieldsList['Inbound Current Account'] = $_POST['mixInboundCurrentAccount'];
+							$arrFieldsList['Inbound Answering Point'] = $_POST['mixInboundAnsweringPoint'];
+							$arrFieldsList['Inbound New Plan'] = $_POST['mixInboundNewPlan'] . "\n";
+						}
 					break; 
 					
 					case "5":
