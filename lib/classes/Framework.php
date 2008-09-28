@@ -1059,7 +1059,7 @@
 	 *
 	 * @method
 	 */
-	 function AddCharge($arrCharge)
+	 function AddCharge($arrCharge, $bolTaxExempt=FALSE)
 	 {
 		// make sure we have enough data to insert...
 		if ($arrCharge['Account'] === NULL)
@@ -1096,7 +1096,7 @@
 		$arrDefaultCharge ['Description']		= "";
 		$arrDefaultCharge ['ChargeType']		= "";
 		$arrDefaultCharge ['Amount']			= 0.0;
-		$arrDefaultCharge ['global_tax_exempt']	= FALSE;
+		$arrDefaultCharge ['global_tax_exempt']	= $bolTaxExempt ? TRUE : FALSE;
 		$arrDefaultCharge ['Status']			= CHARGE_APPROVED;
 		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
 		
