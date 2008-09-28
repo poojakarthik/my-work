@@ -79,7 +79,8 @@
 	function Render()
 	{
 		echo "<div class='customer-standard-display-title'>&nbsp;</div>
-		<IMG SRC=\"./img/generic/cc_payments_accepted.jpg\" WIDTH=\"402\" HEIGHT=\"47\" BORDER=\"0\" ALT=\"\"><br/><br/>
+		<IMG SRC=\"./img/generic/cc_payments_accepted.jpg\" WIDTH=\"402\" HEIGHT=\"47\" BORDER=\"0\" ALT=\"\"><br/>
+		<div class='small'>Secured by Equifax Secure INC. High grade encryption 256 bit.</div><br/><br/>
 		<div class='customer-standard-table-title-style-confirm-details'>Important Payment Information</div>
 		<div class='GroupedContent'>
 		<TABLE class=\"customer-standard-table-style\">
