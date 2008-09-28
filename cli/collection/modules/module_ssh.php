@@ -86,6 +86,15 @@
  		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
  		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
  		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
+ 		
+ 		// Additional
+ 		$this->_arrModuleConfig['SFTP']			['Default']		= FALSE;
+ 		$this->_arrModuleConfig['SFTP']			['Type']		= DATA_TYPE_BOOLEAN;
+ 		$this->_arrModuleConfig['SFTP']			['Description']	= "Enable/Disable SFTP";
+ 		
+ 		$this->_arrModuleConfig['Port']			['Default']		= 22;
+ 		$this->_arrModuleConfig['Port']			['Type']		= DATA_TYPE_INTEGER;
+ 		$this->_arrModuleConfig['Port']			['Description']	= "SSH Port";
  	}
  	
  	//------------------------------------------------------------------------//
@@ -107,9 +116,10 @@
 		$strHost		= $this->GetConfigField('Host');
 		$strUsername	= $this->GetConfigField('Username');
 		$strPassword	= $this->GetConfigField('Password');
+		$intPort		= $this->GetConfigField('Port');
 		
  		// Connect to SSH2 server
- 		if ($this->_resConnection = ssh2_connect($strHost))
+ 		if ($this->_resConnection = ssh2_connect($strHost, $intPort))
  		{
 	 		// Authenticate
 	 		if (ssh2_auth_password($this->_resConnection, $strUsername, $strPassword))
