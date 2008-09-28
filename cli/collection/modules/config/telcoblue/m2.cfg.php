@@ -6,7 +6,7 @@ require_once("../../../../../flex.require.php");
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_M2_STANDARD]				['Regex']			= "/^(cdr|bli)_[a-z0-9]+_[a-z0-9]+_\d+_\d+_\d{8}\.txt$/";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_M2_STANDARD]				['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_M2_STANDARD]				['DownloadUnique']	= TRUE;
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_M2_STANDARD]				['Paths']			[]	= '/home/telcoblue/Incoming/cdr/m2/';
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_M2_STANDARD]				['Paths']			[]	= '/';
 
 // Config
 $arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
