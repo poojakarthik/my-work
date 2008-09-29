@@ -295,7 +295,7 @@
  			while ($strFile = readdir($resOpenDir))
  			{
  				// Only add files
- 				if ($strFile !== '.' && $strFile !== '..' && is_file($strFile))
+ 				if ($strFile !== '.' && $strFile !== '..' && is_file("ssh2.sftp://{$this->_resSFTPConnection}{$strPath}{$strFile}"))
  				{
  					$arrFiles[]	= $strFile;
  				}
