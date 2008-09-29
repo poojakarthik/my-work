@@ -93,11 +93,9 @@
 		);
 
 		$mixOutPut .= "";
-		$intLoopStarted = FALSE;
-		$IntQuestionId = NULL; // by default, no question is selected
-		$arrSurveyCount = array();
-		$intQuestionNum=NULL;
-		$numbers = array();
+		$arrNumbers = array();
+		$intCount = 0;
+		$intSubCount = 0;
 		foreach(DBO()->Survey->Results->Value as $results)
 		{
 			foreach($results as $key=>$val){
@@ -110,83 +108,67 @@
 			<TABLE class=\"customer-standard-table-style\">
 			<TR VALIGN=\"TOP\">
 				<TD>";
-			
-			$mixQuestionEnd .= "
+			$mixQuestionEnd = "
 				</TD>
 			</TR>
 			</TABLE>
 			</div>
 			<br/>";
 
-			$foo = $numbers[$question_id];
-			if($foo=="")
+			// check if this one exists in array. end it.
+			$bolFound = FALSE;
+			foreach($arrNumbers as $key=>$val)
 			{
-				echo "S$question_id";
-				$numbers[$question_id]="$question_id";
-				//$mixOutPut .= "$mixQuestionStart";
-			}
-
-			$count++;
-			$mixCheckBoxStart = "";
-			$mixCheckBoxEnd = "";
-			
-
-			if($intQuestionNum == NULL)
-			{
-				$mixOutPut .= "<br>START $question_id<br>";
-			}
-			if($intQuestionNum !== NULL && $intQuestionNum !== $question_id)
-			{
-				$mixOutPut .= "<br>END $question_id<br><br>START $question_id<br>";
-			}
-
-			if($response_type == "checkbox")
-			{
-				$mixCheckBoxStart = "";
-				$mixCheckBoxEnd = "$option_name<br>";	
-			}
-			// First Item
-			if($IntQuestionId == NULL)
-			{
-				$mixOutPut .= "" . "debug: 1" . str_replace("[question]","strAnswer[$question_id]","$arrInputTypes[$response_type]") . "$mixCheckBoxEnd\n";				
-				$intLoopStarted = TRUE;
-			}
-			if($IntQuestionId == "$question_id" || $IntQuestionId == NULL)
-			{
-				if($response_type == "checkbox")
+				if($val == "$question_id")
 				{
-					$mixOutPut .= "
-					debug: 2" . "$mixCheckBoxStart" . str_replace("[question]","arrAnswer[$id]","$arrInputTypes[$response_type]") . "$mixCheckBoxEnd\n";
+					$bolFound = TRUE;
 				}
-				$mixOutPut .= "debug: 3" . str_replace("[option]","$option_name","$arrInputDropDown[$response_type]") . "\n";
 			}
 
-			// Last Item...
-			if($IntQuestionId !== "$question_id" && $IntQuestionId !== NULL)
+			// It doesnt exist, it's a main item, e.g. <select> or <input text>
+			if(!$bolFound)
 			{
-				$IntPrevious = $question_id-1;
-				$mixOutPut .= "$arrEndInputTypes[$response_type]" . "\n";
-				//echo "Ending...$IntPrevious<br>\n";
-				$IntQuestionId = NULL;
-				// start new question..
-				$mixOutPut .= "" . "debug: 4" . "$mixCheckBoxStart" . str_replace("[question]","strAnswer[$question_id]","$arrInputTypes[$response_type]") . "$mixCheckBoxEnd \n";
-				$mixOutPut .= "" . "debug: 5" . str_replace("[option]","$option_name","$arrInputDropDown[$response_type]") . "\n";
-				$intLoopStarted = TRUE;
+				if(count($arrNumbers)>1)
+				{
+					$mixOutPut .= "$mixQuestionEnd"; // End
+					$intSubCount=0;
+				}
+				$mixOutPut .= "$mixQuestionStart"; // Start
+				$intSubCount++;
+				##################################
+				# put main item here
+				##################################
+				$mixOutPut .= "$intSubCount. $response_type $question_id<br>";
 			}
-			$IntQuestionId = "$question_id";
-			$intQuestionNum = $question_id;
+			$intCount++;
+			$arrNumbers[$intCount] = "$question_id";
 
-			if($foo!==$question_id)
+			// already exists, its a sub item. e.g. <option value=>
+			if($bolFound)
 			{
-				echo "E, ";
-				//$mixOutPut .= "$mixQuestionEnd";
+				$intSubCount++;
+				##################################
+				# put sub item here
+				##################################
+				$mixOutPut .= "$intSubCount. $response_type $question_id<br>";
+			}
+			switch($response_type)
+			{
+				case "select":
+				break;
+				case "checkbox":
+				break;
+				case "textarea":
+				break;
+				case "text":
+				break;
 			}
 
 		}
-		if($intLoopStarted == TRUE)
+		// it will never end itself..
+		if(count($arrNumbers)>1)
 		{
-			$mixOutPut .= "debug: 6" . "$arrEndInputTypes[$response_type]" . "\n";
-			//echo "Ending...$question_id<br>\n";
+			$mixOutPut .= "$mixQuestionEnd";
 		}
 
 		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
