@@ -78,7 +78,8 @@
 				$$key=$val;
 			}
 
-			$mixQuestions .= "question: $question,  option_name: $option_name, option_type: $option_type<br>\n";
+			$mixQuestions .= "question: $question,  option_name: $option_name, response_type: $response_type<br>\n";
+			unset($question,$option_name,$response_type);
 		}
 
 		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";

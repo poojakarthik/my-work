@@ -444,7 +444,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		SELECT *
 		FROM survey t1
 		JOIN survey_questions t3 ON t1.id = t3.survey_id
-		JOIN survey_questions_options t2 ON t1.id = t2.survey_id
+		JOIN survey_questions_options t2 ON t3.id = t2.question_id
 		WHERE t1.start_date <= \"$mixDate\"";
 
 		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
@@ -736,7 +736,16 @@ class AppTemplateConsole extends ApplicationTemplate
 		{
 			// remove any unwanted code/bad input. this input is later send via email so need to be clean.
 			$key=htmlspecialchars(addslashes($key), ENT_QUOTES);
-			$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
+			if(!is_array($val)){
+				$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
+			}
+			else
+			{
+				foreach($val as $key2=>$val2)
+				{
+					$val[$key2]=htmlspecialchars(addslashes($val2), ENT_QUOTES);
+				}
+			}
 			$_POST[$key]=$val;
 			// print "cleaned: $_POST[$key] = $val;<br>\n";
 		}

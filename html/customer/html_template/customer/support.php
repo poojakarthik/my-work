@@ -180,8 +180,8 @@
 				</TABLE>
 				</div>";
 			}
-			// detect if we are adding enw server
-			// check if this page has ben loaded before with array_key_exists..
+			// detect if we are adding new service
+			// check if this page has been loaded before with array_key_exists..
 			if(is_numeric($_POST['intRequestType']) && $arrSupportConfig['SupportType'][$_POST['intRequestType']]['Description'] == "Add a new line" && !array_key_exists('intAddNewServiceCheck' ,$_POST))
 			{
 				echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\">";
