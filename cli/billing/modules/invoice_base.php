@@ -711,22 +711,22 @@ abstract class BillingModuleInvoice
 					$arrCDR['Units']			= 1;
 					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Charge from ".$strPlanChargePeriod;
 					$arrPlanChargeItemisation[]	= $arrCDR;
+				}
+				
+				// Check for ServiceTotal vs Rated Total, then add as CDR
+				$fltPlanCredit				= $arrService['ServiceTotal'] - ($fltRatedTotal + $fltPlanChargeTotal);
+				$this->_Debug("Plan Credit: \${$fltPlanCredit}");
+				if ($fltPlanCredit <= -0.01)
+				{
+					$fltPlanChargeTotal			+= $fltPlanCredit;
 					
-					// Check for ServiceTotal vs Rated Total, then add as CDR
-					$fltPlanCredit				= $arrService['ServiceTotal'] - ($fltRatedTotal + $fltPlanChargeTotal);
-					$this->_Debug("Plan Credit: \${$fltPlanCredit}");
-					if ($fltPlanCredit <= -0.01)
-					{
-						$fltPlanChargeTotal			+= $fltPlanCredit;
-						
-						$arrCDR	= Array();
-						$arrCDR['Charge']			= $fltPlanCredit;
-						$arrCDR['Units']			= 1;
-						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".$strPlanChargePeriod;
-						$arrPlanChargeItemisation[]	= $arrCDR;
-						
-						$this->_Debug("Added Plan Credit for \${$arrCDR['Charge']}");
-					}
+					$arrCDR	= Array();
+					$arrCDR['Charge']			= $fltPlanCredit;
+					$arrCDR['Units']			= 1;
+					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".$strPlanChargePeriod;
+					$arrPlanChargeItemisation[]	= $arrCDR;
+					
+					$this->_Debug("Added Plan Credit for \${$arrCDR['Charge']}");
 				}
 				
 				// Add to Service Array
