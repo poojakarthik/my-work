@@ -371,6 +371,81 @@ class AppTemplateConsole extends ApplicationTemplate
 
 
 
+
+
+	 // User FAQ
+	 function Survey()
+	 {
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckClientAuth();
+		
+		// Retrieve the client's details
+		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+		if (!DBO()->Contact->Load())
+		{
+			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
+			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		if (DBO()->Account->Id->Value)
+		{
+			// A specific account has been specified, so load the details of it
+			// DBO()->Account->Id has already been initialised
+		}
+		else
+		{
+			// No specific account has been specified, so load the contact's primary account
+			DBO()->Account->Id = DBO()->Contact->Account->Value;
+		}
+		
+		// Load the clients primary account
+		DBO()->Account->Load();
+
+		// If the user can view all accounts in their account group then load these too
+		if (DBO()->Contact->CustomerContact->Value)
+		{
+			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
+			DBL()->Account->Archived = 0;
+			DBL()->Account->Load();
+		}
+		// Make sure that the Account requested belongs to the account group that the contact belongs to
+		$bolUserCanViewAccount = FALSE;
+		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		{
+			// The user can only view the account, if it belongs to the account group that they belong to
+			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
+			{
+				$bolUserCanViewAccount = TRUE;
+			}
+		}
+		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		{
+			// The user can only view the account, if it is their primary account
+			$bolUserCanViewAccount = TRUE;
+		}
+		if (!$bolUserCanViewAccount)
+		{
+			// The user does not have permission to view the requested account
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
+			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value;
+			$this->LoadPage('Error');
+			return FALSE;
+		}
+
+		// Breadcrumb menu
+		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Customer Survey");
+
+		$this->LoadPage('survey');
+		return TRUE;
+		
+	 }
+
+
+
 	function GetServices($intAccount, $intFilter=SERVICE_ACTIVE)
 	{
 		// Load all the services belonging to the account

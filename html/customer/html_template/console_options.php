@@ -102,6 +102,10 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		$strCustomerFAQ = Href()->CustomerFAQ(DBO()->Account->Id->Value);
 		$strCustomerFAQLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strCustomerFAQ' >&nbsp;&nbsp;Frequently Asked Questions</a></span>";
  
+		// Customer Survey
+		$strCustomerSurvey = Href()->CustomerSurvey(DBO()->Account->Id->Value);
+		$strCustomerSurveyLabel = "<span><img src=\"" . Href()->GetBaseUrl() . "img/generic/square_black.gif\"> <a href='$strCustomerSurvey' >&nbsp;&nbsp;Customer Survey</a></span>";
+ 
 		echo "<div class='customer-standard-table-style-menu-options-title'>Options</div>\n";
 		echo "<table class=\"customer-standard-table-style-menu-options\">\n";
 		
@@ -136,6 +140,9 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "   </tr>\n";
 		echo "   <tr>\n";
 		echo "      <td>$strCustomerFAQLabel\n";
+		echo "   </tr>\n";
+		echo "   <tr>\n";
+		echo "      <td>$strCustomerSurveyLabel\n";
 		echo "   </tr>\n";
 		echo "</table>
 		<BR><BR>\n";

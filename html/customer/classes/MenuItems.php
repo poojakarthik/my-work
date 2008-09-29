@@ -160,6 +160,24 @@ class MenuItems
 
 
 	//------------------------------------------------------------------------//
+	// CustomerSurvey()
+	//------------------------------------------------------------------------//
+	/**
+	 * CustomerSurvey()
+	 *
+	 * 
+	 * @return	string	action to be executed when linking to the CustomerSurvey Console
+	 *
+	 * @method
+	 */
+	function CustomerSurvey()
+	{
+		$this->strLabel	= "Customer Survey";
+
+		return $this->GetBaseURL()."./flex.php/Console/Survey/";
+	}
+
+	//------------------------------------------------------------------------//
 	// SetupAccount()
 	//------------------------------------------------------------------------//
 	/**
