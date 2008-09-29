@@ -703,7 +703,7 @@ abstract class BillingModuleInvoice
 					// Add an adjustment (Date is hack fixed to 1 month periods)
 					$fltPlanChargeTotal			+= $arrService['PlanCharge'];
 					
-					$intPlanChargeDate			= ($arrService['InAdvance']) ? strtotime("+1 month", strtotime($arrInvoice['CreatedOn'])) : strtotime($arrInvoice['CreatedOn']); 
+					$intPlanChargeDate			= ($arrService['InAdvance']) ? strtotime("+1 month", strtotime($arrInvoice['CreatedOn'])) : strtotime($arrInvoice['CreatedOn']);
 					$strPlanChargePeriod		= date("01/m/Y", strtotime("-1 month", $intPlanChargeDate))." to ".date("d/m/Y", strtotime("-1 day", strtotime(date("Y-m-01", $intPlanChargeDate))));
 					
 					$arrCDR	= Array();
@@ -723,7 +723,7 @@ abstract class BillingModuleInvoice
 					$arrCDR	= Array();
 					$arrCDR['Charge']			= $fltPlanCredit;
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit from ".$strPlanChargePeriod;
+					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit";
 					$arrPlanChargeItemisation[]	= $arrCDR;
 					
 					$this->_Debug("Added Plan Credit for \${$arrCDR['Charge']}");
