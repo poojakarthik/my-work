@@ -117,6 +117,7 @@
 		$strUsername	= $this->GetConfigField('Username');
 		$strPassword	= $this->GetConfigField('Password');
 		$intPort		= $this->GetConfigField('Port');
+		$bolSFTP		= $this->GetConfigField('SFTP');
 		
  		// Connect to SSH2 server
  		if ($this->_resConnection = ssh2_connect($strHost, $intPort))
@@ -124,6 +125,12 @@
 	 		// Authenticate
 	 		if (ssh2_auth_password($this->_resConnection, $strUsername, $strPassword))
 	 		{
+				// Enable SFTP subsystem (if enabled)
+				if ($bolSFTP && !($this->_resSFTPConnection = ssh2_sftp($this->_resConnection)))
+				{
+					return "Unable to initialise SFTP subsystem";
+				}
+				
 				// Retrieve full file listing
 				$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
 				reset($this->_arrDownloadPaths);
@@ -196,14 +203,21 @@
 			$arrCurrentFile['LocalPath']	= $strDestination.basename($arrCurrentFile['RemotePath']);
 			
 			// Attempt to download this file
-			if (ssh2_scp_recv($this->_resConnection, $arrCurrentFile['RemotePath'], $arrCurrentFile['LocalPath']))
+			$strSFTPPath	= "ssh2.sftp://{$this->_resSFTPConnection}{$arrCurrentFile['RemotePath']}";
+			if ($this->_resSFTPConnection && ($resFileStream = fopen($strSFTPPath, 'r')))
 			{
+				// SFTP
+				if (file_put_contents($arrCurrentFile['LocalPath'], fread($resFileStream, filesize($strSFTPPath))))
+				{
+					return $arrCurrentFile;
+				}
+			}
+			elseif (ssh2_scp_recv($this->_resConnection, $arrCurrentFile['RemotePath'], $arrCurrentFile['LocalPath']))
+			{
+				// SCP
 				return $arrCurrentFile;
 			}
-			else
-			{
-				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}'";
-			}
+			return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}'";
 		}
  	}
 
@@ -255,6 +269,48 @@
  		return (bool)stristr($arrAttribs[1], "directory");
  	}
  	
+	//------------------------------------------------------------------------//
+	// _directoryListing
+	//------------------------------------------------------------------------//
+	/**
+	 * _directoryListing()
+	 *
+	 * Implements dir/ls for SSH2 connections
+	 *
+	 * Implements dir/ls for SSH2 connections
+	 * 
+	 * @param	string		$strPath		The path to ls
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 */	
+ 	protected function _directoryListing($strPath)
+ 	{
+ 		$arrFiles	= Array();
+ 		if ($this->_resSFTPConnection)
+ 		{
+ 			// SFTP
+ 			$resOpenDir	= opendir("ssh2.sftp://{$this->_resSFTPConnection}{$strPath}");
+ 			while ($strFile = readdir($resOpenDir))
+ 			{
+ 				// Only add files
+ 				if ($strFile !== '.' && $strFile !== '..' && is_file($strFile))
+ 				{
+ 					$arrFiles[]	= $strFile;
+ 				}
+ 			}
+ 		}
+ 		else
+ 		{
+ 			// SSH
+			$strFiles	= $this->_SSH2Execute("ls $strPath");
+			$arrFiles	= explode("\n", trim($strFiles));
+ 		}
+ 		
+ 		return $arrFiles;
+ 	}
+ 	
   	//------------------------------------------------------------------------//
 	// _GetDownloadPaths
 	//------------------------------------------------------------------------//
@@ -280,9 +336,7 @@
 			foreach ($arrFileType['Paths'] as $strPath)
 			{
 				// Get Directory Listing
-				$strFiles	= $this->_SSH2Execute("ls $strPath");
-				$arrFiles	= Array();
-				$arrFiles	= explode("\n", trim($strFiles));
+				$arrFiles	= $this->_directoryListing($strPath);
 				
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
@@ -291,9 +345,9 @@
 					{
 						$strFilePath	= trim($strFilePath);
 						
-						if ($this->_SSH2IsDir($strFilePath))
+						// Ignore directories
+						if (!$this->_resSFTPConnection && $this->_SSH2IsDir($strFilePath))
 						{
-							// This is a directory, ignore
 							continue;
 						}
 						
@@ -319,7 +373,8 @@
 						$arrFileType['FileImportType']	= $intFileType;
 						
 						// As far as we can tell, this file is valid
-						$arrDownloadPaths[]	= Array('RemotePath' => trim($strPath.'/'.$strFilePath), 'FileType' => $arrFileType);
+						$strPath	.= ($strPath) ? '/' : '';
+						$arrDownloadPaths[]	= Array('RemotePath' => trim($strPath.$strFilePath), 'FileType' => $arrFileType);
 					}
 				}
 			}
