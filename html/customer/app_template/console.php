@@ -265,7 +265,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
 
 			// links 
-			list($intNext,$mixLinksDisplay) = pagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?s=");
+			list($intNext,$mixLinksDisplay) = pagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?all=1");
 
 			DBO()->Total->Search = "$intTotalResults";
 			DBO()->Total->Start = "$intStart";

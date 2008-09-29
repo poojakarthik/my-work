@@ -97,18 +97,16 @@
 			print "<table width=\"100%\">
 			<tr>
 				<td>Title</td>
-				<td>Last Updated</td>
-				<td>Hits</td>
 			</tr>";
+			$count = DBO()->Total->Start->Value;
 			foreach(DBO()->Search->Result->Value as $results){
+				$count++;
 				foreach($results as $key=>$val){
 					$$key=$val;
 				}
 				echo "
 				<tr>
-					<td><A HREF=\"javascript:view_faq($id)\">$title</A></td>
-					<td>$time_updated</td>
-					<td>$hits</td>
+					<td>$count. <A HREF=\"javascript:view_faq($id)\">$title</A></td>
 				</tr>";
 			}
 			print "</table>";
