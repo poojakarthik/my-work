@@ -184,7 +184,7 @@
  	public static function getModules()
  	{
  		// Define & init static variables
- 		static	$arrModules			= Array();
+ 		static	$arrModules			= NULL;
  		static	$selModules;
  		static	$selModuleConfig;
  		static	$arrCustomerGroups;
