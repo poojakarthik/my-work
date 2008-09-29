@@ -126,7 +126,7 @@
 																"Id = 1000158098 OR " .
 																"Id = 1000155964 OR " .
 																"Id = 1000160897";	//  limited to 11 specified accounts
-		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")"); 
+		$this->selAccounts					= new StatementSelect("Account", "*", "Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.", ".ACCOUNT_STATUS_DEBT_COLLECTION.")"); 
 		
 		//$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		
@@ -306,19 +306,20 @@
 		$arrUpdateData = Array();
 		$arrUpdateData['InvoiceRun']	= '';
 		$arrUpdateData['Status']		= '';
-		$updChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
-		$selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
-													"SUM(CASE WHEN Rate.Uncapped THEN CDR.Charge ELSE 0 END) AS UncappedCharge, " .
-													"SUM(CASE WHEN Rate.Uncapped THEN CDR.Cost ELSE 0 END) AS UncappedCost, " .
-													"SUM(CASE WHEN Rate.Uncapped THEN 0 ELSE CDR.Charge END) AS CappedCharge, " .
-													"SUM(CASE WHEN Rate.Uncapped THEN 0 ELSE CDR.Cost END) AS CappedCost, " .
-													"CDR.RecordType AS RecordType",
-													"CDR.Service = <Service> AND " .
-													"CDR.Credit = 0".
-													" AND CDR.Status = ".CDR_TEMP_INVOICE ,
-													NULL,
-													NULL,
-													"CDR.RecordType, Rate.Uncapped");
+		$updChargeStatus		= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
+		$updServiceChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND Service = <Service> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
+		$selCDRTotals			= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
+														"SUM(CASE WHEN Rate.Uncapped THEN CDR.Charge ELSE 0 END) AS UncappedCharge, " .
+														"SUM(CASE WHEN Rate.Uncapped THEN CDR.Cost ELSE 0 END) AS UncappedCost, " .
+														"SUM(CASE WHEN Rate.Uncapped THEN 0 ELSE CDR.Charge END) AS CappedCharge, " .
+														"SUM(CASE WHEN Rate.Uncapped THEN 0 ELSE CDR.Cost END) AS CappedCost, " .
+														"CDR.RecordType AS RecordType",
+														"CDR.Service = <Service> AND " .
+														"CDR.Credit = 0".
+														" AND CDR.Status = ".CDR_TEMP_INVOICE ,
+														NULL,
+														NULL,
+														"CDR.RecordType, Rate.Uncapped");
 		
 		// Loop through the accounts we're billing
 		foreach ($arrAccounts as $arrAccount)
@@ -595,6 +596,28 @@
 					$arrSharedPlans[$arrService['RatePlan']]['UsageCap'] -= $fltUncappedCDRCharge;
 				}
 				
+				// Mark Service Adjustments
+				if (!$bolRegenerate)
+				{
+					$arrUpdateData					= Array();
+					$arrUpdateData['InvoiceRun']	= $this->_strInvoiceRun;
+					$arrUpdateData['Status']		= CHARGE_TEMP_INVOICE;
+					if($updServiceChargeStatus->Execute($arrUpdateData, Array('Account' => $arrAccount['Id'], 'Service' => $arrService['Service'])) === FALSE)
+					{
+						// Report and fail out
+						$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
+						$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
+						$this->_rptBillingReport->AddMessage(MSG_FAILED);
+						CliEcho("\n".__LINE__." >> Unable to Mark Credits & Debits for Account #{$arrAccount['Id']} :: Service #{$arrService['Service']}");
+						exit(1);
+					}
+					else
+					{
+						// Report and continue
+						//$this->_rptBillingReport->AddMessage(MSG_OK);
+					}
+				}
+				
 				// Add in Service modular charges
 				if (!$bolRegenerate)
 				{
@@ -820,29 +843,37 @@
 			$fltTotalOwing	= $fltBalance + $fltAccountBalance;
 			
 			// Determine Delivery Method
-			switch($arrAccount['BillingMethod'])
+			if ($arrAccount['Archived'] === ACCOUNT_STATUS_DEBT_COLLECTION)
 			{
-				case BILLING_METHOD_EMAIL:
-					if ($fltTotal+$fltTax != 0 || ($fltTotalOwing != 0 && $arrAccount['Status'] == ACCOUNT_STATUS_ACTIVE))
-					{
-						$intDeliveryMethod	= $arrAccount['BillingMethod'];
-					}
-					else
-					{
-						$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
-					}
-					break;
-					
-				default:
-					if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL)
-					{
-						$intDeliveryMethod	= $arrAccount['BillingMethod'];
-					}
-					else
-					{
-						$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
-					}
-					break;
+				// Debt Collection Accounts are generated, but never sent
+				$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+			}
+			else
+			{
+				switch($arrAccount['BillingMethod'])
+				{
+					case BILLING_METHOD_EMAIL:
+						if ($fltTotal+$fltTax != 0 || ($fltTotalOwing != 0 && $arrAccount['Status'] == ACCOUNT_STATUS_ACTIVE))
+						{
+							$intDeliveryMethod	= $arrAccount['BillingMethod'];
+						}
+						else
+						{
+							$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+						}
+						break;
+						
+					default:
+						if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL)
+						{
+							$intDeliveryMethod	= $arrAccount['BillingMethod'];
+						}
+						else
+						{
+							$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+						}
+						break;
+				}
 			}
 			
 			/*if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL || $arrAccount['BillingMethod'] == BILLING_METHOD_EMAIL)
