@@ -117,6 +117,7 @@ abstract class BillingModuleInvoice
 		$arrService['Indial100']		= "MAX(Service.Indial100)";
 		$arrService['ForceRender']		= "Service.ForceInvoiceRender";
 		$arrService['PlanCharge']		= "ServiceTotal.PlanCharge";
+		$arrService['UsageCap']			= "RatePlan.UsageCap";
 		$arrService['RatePlan']			= "RatePlan.Name";
 		$arrService['InAdvance']		= "RatePlan.InAdvance";
 		$this->_selServiceDetails			= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
@@ -713,20 +714,23 @@ abstract class BillingModuleInvoice
 					$arrPlanChargeItemisation[]	= $arrCDR;
 				}
 				
-				// Check for ServiceTotal vs Rated Total, then add as CDR
-				$fltPlanCredit				= $arrService['ServiceTotal'] - ($fltRatedTotal + $fltPlanChargeTotal);
-				$this->_Debug("Plan Credit: \${$fltPlanCredit}");
-				if ($fltPlanCredit <= -0.01)
+				if ((float)$arrService['UsageCap'] > 0.0)
 				{
-					$fltPlanChargeTotal			+= $fltPlanCredit;
-					
-					$arrCDR	= Array();
-					$arrCDR['Charge']			= $fltPlanCredit;
-					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit";
-					$arrPlanChargeItemisation[]	= $arrCDR;
-					
-					$this->_Debug("Added Plan Credit for \${$arrCDR['Charge']}");
+					// Check for ServiceTotal vs Rated Total, then add as CDR
+					$fltPlanCredit				= $arrService['ServiceTotal'] - ($fltRatedTotal + $fltPlanChargeTotal);
+					$this->_Debug("Plan Credit: \${$fltPlanCredit}");
+					if ($fltPlanCredit <= -0.01)
+					{
+						$fltPlanChargeTotal			+= $fltPlanCredit;
+						
+						$arrCDR	= Array();
+						$arrCDR['Charge']			= $fltPlanCredit;
+						$arrCDR['Units']			= 1;
+						$arrCDR['Description']		= "{$arrService['RatePlan']} Plan Credit";
+						$arrPlanChargeItemisation[]	= $arrCDR;
+						
+						$this->_Debug("Added Plan Credit for \${$arrCDR['Charge']}");
+					}
 				}
 				
 				// Add to Service Array
