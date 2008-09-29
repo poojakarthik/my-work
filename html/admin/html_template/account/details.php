@@ -456,11 +456,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			echo "      <select id='Account.BillingMethod' name='Account.BillingMethod' style='width:330px'>\n";
 			foreach ($GLOBALS['*arrConstant']['BillingMethod'] as $intConstant=>$arrBillingMethodSelection)
 			{
-				if ($intConstant == BILLING_METHOD_EMAIL_SENT)
+				if (($intConstant == BILLING_METHOD_EMAIL_SENT) || ($intConstant == BILLING_METHOD_DO_NOT_SEND && DBO()->Account->BillingMethod->Value != BILLING_METHOD_DO_NOT_SEND))
 				{
 					// Don't include this option
 					continue;
 				}
+				
 				$strSelected = (DBO()->Account->BillingMethod->Value == $intConstant) ? "selected='selected'" : "";
 				echo "		<option value='$intConstant' $strSelected>{$arrBillingMethodSelection['Description']}</option>\n";
 			}

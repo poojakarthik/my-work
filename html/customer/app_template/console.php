@@ -1228,20 +1228,26 @@ class AppTemplateConsole extends ApplicationTemplate
 			{
 				$_POST[$key]=str_replace("<","&lt;",$val);
 			}
-			$strFoundInputError=FALSE; 
-
-			// If no error was found, continue with processing.
-			if(!$strFoundInputError){
-				
-				DBO()->Account->Address1 = $_POST['mixAccount_Address1'];
-				DBO()->Account->Address2 = $_POST['mixAccount_Address2'];
-				DBO()->Account->Suburb = $_POST['mixAccount_Suburb'];
-				DBO()->Account->State = $_POST['mixAccount_State'];
-				DBO()->Account->Postcode = $_POST['mixAccount_Postcode'];
-				DBO()->Account->BillingMethod = $_POST['mixAccount_BillingMethod'];
-				DBO()->Account->Country = $_POST['mixAccount_Country'];
+			
+			try
+			{
+				TransactionStart();
+				DBO()->Account->Address1		= $_POST['mixAccount_Address1'];
+				DBO()->Account->Address2		= $_POST['mixAccount_Address2'];
+				DBO()->Account->Suburb			= $_POST['mixAccount_Suburb'];
+				DBO()->Account->State			= $_POST['mixAccount_State'];
+				DBO()->Account->Postcode		= $_POST['mixAccount_Postcode'];
+				DBO()->Account->BillingMethod	= $_POST['mixAccount_BillingMethod'];
+				DBO()->Account->Country			= $_POST['mixAccount_Country'];
 				DBO()->Account->SetColumns("Address1,Address2,Suburb,State,Postcode,BillingMethod,Country");
-				DBO()->Account->Save();
+				if (!DBO()->Account->Save())
+				{
+					throw new Exception("Could not save changes to account details");
+				}
+				
+				// Record the change of state in the account_history table
+				Account_History::recordCurrentState(DBO()->Account->Id->Value, NULL, GetCurrentISODateTime());
+				
 				# Debug.
 				# var_dump($_POST);exit;
 
@@ -1285,7 +1291,10 @@ class AppTemplateConsole extends ApplicationTemplate
 				{
 					DBO()->Contact->SetColumns("FirstName,LastName,Title,JobTitle,Email,Phone,Mobile,Fax");
 				}
-				DBO()->Contact->Save();
+				if (!DBO()->Contact->Save())
+				{
+					throw new Exception("Could not save changes to contact details");
+				}
 
 				$to      = $_POST['mixContact_Email'];
 				$subject = "Account Updated #$intAccountId";
@@ -1323,11 +1332,14 @@ class AppTemplateConsole extends ApplicationTemplate
 				# supress email errors.
 				@mail($strOldEmailAddress, $subject, $message, $headers);
 
+				TransactionCommit();
 				$this->LoadPage('edit_successful');
 				return TRUE;
 			}
-			else
+			catch (Exception $e)
 			{
+				TransactionRollback();
+				DBO()->Error->Message = $e->getMessage();
 				$this->LoadPage('edit_failure');
 				return TRUE;
 			}

@@ -548,12 +548,29 @@ class AppTemplateContact extends ApplicationTemplate
 		DBO()->Account->SetColumns("PrimaryContact");
 		DBO()->Account->PrimaryContact = DBO()->PrimaryContact->Id->Value;
 		
+		TransactionStart();
 		if (!DBO()->Account->Save())
 		{
 			// Updating the account record failed, unexpectedly.  Exit gracefully
+			TransactionRollback();
 			Ajax()->AddCommand("Alert", "ERROR: Updating the primary contact failed, unexpectedly");
 			return TRUE;
 		}
+
+		// Record any changes in the account_history table
+		try
+		{
+			Account_History::recordCurrentState(DBO()->Account->Id->Value, AuthenticatedUser()->GetUserId(), GetCurrentISODateTime());
+		}
+		catch (Exception $e)
+		{
+			// The state could not be recorded
+			TransactionRollback();
+			Ajax()->AddCommand("Alert", "ERROR: Could not save state of account.  ". $e->getMessage());
+			return;
+		}
+
+		TransactionCommit();
 		
 		// Load the details of the old primary contact, if there was one
 		$strOldContact = NULL;

@@ -1153,7 +1153,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			DBO()->credit_control_status_history->from_status = DBO()->CurrentAccount->credit_control_status->Value;
 			DBO()->credit_control_status_history->to_status = DBO()->Account->credit_control_status->Value;
 			DBO()->credit_control_status_history->employee = AuthenticatedUser()->GetUserId();
-			DBO()->credit_control_status_history->change_datetime = date('Y-m-d h:i:s');
+			DBO()->credit_control_status_history->change_datetime = GetCurrentISODateTime();
 			if (!DBO()->credit_control_status_history->Save())
 			{
 				// Saving the credit control status history record failed
@@ -1376,6 +1376,19 @@ class AppTemplateAccount extends ApplicationTemplate
 			}
 			
 			SaveSystemNote($strChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);
+		}
+
+		// Record any changes in the account_history table
+		try
+		{
+			Account_History::recordCurrentState(DBO()->Account->Id->Value, AuthenticatedUser()->GetUserId(), GetCurrentISODateTime());
+		}
+		catch (Exception $e)
+		{
+			// The state could not be recorded
+			TransactionRollback();
+			Ajax()->AddCommand("Alert", "ERROR: Could not save state of account.  ". $e->getMessage());
+			return;
 		}
 
 		// All Database interactions were successfull

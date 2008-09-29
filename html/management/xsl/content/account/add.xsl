@@ -147,6 +147,11 @@
 					<xsl:when test="/Response/Error = 'Contact PassWord'">
 						Please enter a Password.
 					</xsl:when>
+					<xsl:otherwise>
+						<xsl:if test="/Response/Error != ''">
+							<xsl:value-of select="/Response/Error" />
+						</xsl:if>
+					</xsl:otherwise>
 				</xsl:choose>
 			</div>
 		</xsl:if>

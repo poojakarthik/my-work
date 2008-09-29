@@ -307,7 +307,7 @@ class Credit_Card_Payment
 				}
 				$account->creditCard = $intCreditCardId;
 				$account->billingType = BILLING_TYPE_CREDIT_CARD;
-				$account->save();
+				$account->save($employeeId);
 				TransactionCommit();
 			}
 		}

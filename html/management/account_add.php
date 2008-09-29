@@ -297,6 +297,7 @@
 	// whether or not we have identified a Business Name
 	if ($_POST ['Account'])
 	{
+		$bolSuccess = FALSE;
 		if (!$acgAccountGroup || !$_POST ['Contact']['USE'])
 		{
 			try
@@ -517,6 +518,7 @@
 		
 		else
 		{
+			TransactionStart();
 			// If we reach this point in the Script, then we're probably going to make the Account
 			// All we have to do is make sure the Contact being requested to add exists in the Account
 			// that is being requested - if an account is being made in an Account Group
@@ -580,8 +582,28 @@
 				)
 			);
 			
-			$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
-			
+			try
+			{
+				// Record the initial state of the account
+				require_once("../../lib/classes/account/Account_History.php");
+				
+				$intEmployeeId	= $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
+				$intAccountId	= $actAccount->Pull('Id')->getValue();
+				Account_History::recordCurrentState($intAccountId, $intEmployeeId, GetCurrentISODateTime());
+				$bolSuccess = TRUE;
+				$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
+				TransactionCommit();
+			}
+			catch (Exception $e)
+			{
+				// The state could not be recorded
+				TransactionRollback();
+				$oblstrError->setValue("Could not save state of account - ". $e->getMessage());
+			}
+		}
+		
+		if ($bolSuccess)
+		{
 			header ('Location: ../admin/flex.php/Account/Overview/?Account.Id=' . $actAccount->Pull ('Id')->getValue ());
 			exit;
 		}

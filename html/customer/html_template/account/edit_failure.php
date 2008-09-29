@@ -71,6 +71,12 @@
 	 
 	function Render()
 	{
+		$strErrorMessage = "";
+		if (DBO()->Error->Message->IsSet)
+		{
+			$strErrorMessage = htmlspecialchars(DBO()->Error->Message->Value);
+		}
+
 		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 		
 		print "
@@ -80,7 +86,9 @@
 		<TR>
 			<TD>";
 
-		print "There was an error processing your request.<br/>";
+
+		print "There was an error processing your request:<br/>$strErrorMessage";
+		
 		print "<br/><A HREF=\"javascript:history.go(-1)\">Please return and try again.</A>";
 
 		print "</TD>

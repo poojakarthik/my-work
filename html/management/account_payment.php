@@ -125,13 +125,28 @@
 					exit;
 			}
 			
+			TransactionStart();
 			$actAccount->BillingTypeSelect($intBillingType, $objBillingVia);
-						
-			// System note is generated when payment method is changed
+			
+			// Record any changes in the account_history table
 			$intEmployeeId		= $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
 			$intAccountId		= $actAccount->Pull('Id')->getValue();
 			$intAccountGroup	= $acgAccountGroup->Pull('Id')->getValue();
-
+			try
+			{
+				require_once("../../lib/classes/account/Account_History.php");
+				Account_History::recordCurrentState($intAccountId, $intEmployeeId, GetCurrentISODateTime());
+			}
+			catch (Exception $e)
+			{
+				// The state could not be recorded
+				TransactionRollback();
+				throw new Exception("Could not save state of account - ". $e->getMessage());
+			}
+			
+			TransactionCommit();
+						
+			// System note is generated when payment method is changed
 			$strNote = "Payment method changed from $strOldBillingMethod to $strNewBillingMethod";
 	
 			$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, $intEmployeeId , $intAccountGroup, $intAccountId);

@@ -222,7 +222,9 @@ class Account
 		return $arrValues;
 	} 
 
-	public function save()
+	// $intEmployeeId is used for the account_history record which records the state of the account
+	// Setting this to NULL will make it use the system employee id (Account_History::SYSTEM_ACTION_EMPLOYEE_ID)
+	public function save($intEmployeeId=NULL)
 	{
 		if ($this->_saved)
 		{
@@ -239,7 +241,7 @@ class Account
 			{
 				throw new Exception("DB ERROR: ".$ubiSelf->Error());
 			}
-		}
+		} 
 		else
 		{
 			// Insert
@@ -258,6 +260,9 @@ class Account
 				throw new Exception('Failed to save account details: ' . $statement->Error());
 			}
 		}
+		
+		// Record the new state of the account
+		Account_History::recordCurrentState($this->Id, $intEmployeeId);
 		
 		$this->_saved = TRUE;
 		return TRUE;
