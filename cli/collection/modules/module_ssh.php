@@ -207,7 +207,7 @@
 			if ($this->_resSFTPConnection && ($resFileStream = fopen($strSFTPPath, 'r')))
 			{
 				// SFTP
-				if (file_put_contents($arrCurrentFile['LocalPath'], fread($resFileStream, filesize($strSFTPPath))))
+				if (file_put_contents($arrCurrentFile['LocalPath'], file_get_contents($strSFTPPath)))
 				{
 					return $arrCurrentFile;
 				}
