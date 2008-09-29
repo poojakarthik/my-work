@@ -373,7 +373,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 
 
-	 // User FAQ
+	 // User Survey
 	 function Survey()
 	 {
 		// Check user authorization and permissions
@@ -438,6 +438,19 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
 		BreadCrumb()->SetCurrentPage("Customer Survey");
+
+		$mixDate = date("Y-m-d H:i:s", time());
+		$mixSelect = "
+		SELECT *
+		FROM survey t1
+		JOIN survey_questions t3 ON t1.id = t3.survey_id
+		JOIN survey_questions_options t2 ON t1.id = t2.survey_id
+		WHERE t1.start_date <= \"$mixDate\"";
+
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+		$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
+		
+		DBO()->Survey->Results = $arrSurvey;
 
 		$this->LoadPage('survey');
 		return TRUE;

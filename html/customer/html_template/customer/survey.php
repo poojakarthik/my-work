@@ -71,15 +71,25 @@
 	 
 	function Render()
 	{
+
+		foreach(DBO()->Survey->Results->Value as $results)
+		{
+			foreach($results as $key=>$val){
+				$$key=$val;
+			}
+
+			$mixQuestions .= "question: $question,  option_name: $option_name, option_type: $option_type<br>\n";
+		}
+
 		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 		echo "<form method=\"GET\" action=\"./flex.php/Console/Survey/\">";
 
 		echo "
-		<div class='customer-standard-table-title-style-confirm-details'>Customer Survey</div>
+		<div class='customer-standard-table-title-style-confirm-details'>$title</div>
 		<div class='GroupedContent'>
 		<table class=\"customer-standard-table-style\">
 		<tr>
-			<td></td>
+			<td>$mixQuestions</td>
 		</tr>
 		</table>
 		</div><br/>";
