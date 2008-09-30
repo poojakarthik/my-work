@@ -1297,6 +1297,12 @@
 	 */
 	 function AddNote($strContent, $intType, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL)
 	 {
+	 	if ($intEmployee === NULL)
+	 	{
+	 		// Use the System User Employee Id
+	 		$intEmployee = USER_ID;
+	 	}
+	 	
 	 	// Sanity Check
 	 	if ($intService && $intContact)
 	 	{

@@ -148,12 +148,14 @@ class AppTemplateEmployee extends ApplicationTemplate
 		Breadcrumb()->Admin_Console();
 		BreadCrumb()->SetCurrentPage("Employee List");
 		
-		// Retrieve all Employees
+		// Retrieve all Employees except the system user
+		$strWhere = "Id != ". USER_ID;
 		
 		if (!array_key_exists('Archived', $_POST) || $_POST['Archived'] != 1)
 		{
-			DBL()->Employee->Archived = 0;
+			$strWhere .= " AND Archived = 0";
 		}
+		DBL()->Employee->Where->SetString($strWhere);
 
 		DBL()->Employee->OrderBy("LastName, FirstName, UserName");
 
@@ -193,9 +195,10 @@ class AppTemplateEmployee extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Employee List");
 		
 		// If only want non-archived Employees...
+		$strWhere = "Id != ". USER_ID;
 		if (DBO()->Search->Archived->Value == "0")
 		{
-			DBL()->Employee->Archived = 0;
+			$strWhere .= " AND Archived = 0";
 		}
 
 		$orderBy = "LastName, FirstName, UserName";
@@ -208,6 +211,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 			}
 		}
 
+		DBL()->Employee->Where->SetString($strWhere);
 		DBL()->Employee->OrderBy($orderBy);
 
 		DBL()->Employee->Load();

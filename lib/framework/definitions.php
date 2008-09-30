@@ -53,7 +53,8 @@ define("LOG_TO_FILE"				, TRUE);
 define("SAFE_LOGGING"				, FALSE);
 
 // Backend's Employee Id
-define("USER_ID"					, 999999999);
+//OLD define("USER_ID"					, 999999999);
+define("USER_ID"					, 0);
 
 // Applications
 define("APPLICATION_COLLECTION"		, 0);

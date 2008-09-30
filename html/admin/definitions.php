@@ -178,10 +178,6 @@ define('RATE_ALLOCATION_STATUS_CORRECTLY_ALLOCATED',			1);
 define('RATE_ALLOCATION_STATUS_OVER_ALLOCATED',					2);
 define('RATE_ALLOCATION_STATUS_BOTH_OVER_AND_UNDER_ALLOCATED',	3);
 
-// constant Employee Ids
-define('SYSTEM_EMPLOYEE_ID',	0);
-define('SYSTEM_EMPLOYEE_NAME', 	"Automated System");
-
 // Permissions
 // These are described as Hexedecimal values so they can be logically ORed together, without influencing eachother
 // When giving a user multiple permissions, they should be logically ORed together, not added together

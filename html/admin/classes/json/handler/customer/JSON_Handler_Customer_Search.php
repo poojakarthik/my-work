@@ -258,8 +258,8 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 				$strStatus			= htmlspecialchars(GetConstantDescription($objAccount->archived, "account_status"));
 			
 				$strRows .= "
-<tr $strRowClass onclick='FlexSearch.loadAccount($strAccountId)' style='cursor:pointer'>
-	<td>$strAccountId</td>
+<tr $strRowClass onclick='FlexSearch.loadAccount($strAccountId, event)'>
+	<td><a href='http://www.google.com'>$strAccountId</a></td>
 	<td>$strBusinessName</td>
 	<td>$strTradingName</td>
 	<td>$strStatus</td>
@@ -294,7 +294,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 		
 		
 		$strHtml = "
-<table class='reflex highlight-rows'>
+<table class='reflex highlight-rows' id='CustomerSearchPopupResultsTable' name='CustomerSearchPopupResultsTable'>
 	<thead>
 		<tr>
 			<th>Account #</th>
@@ -303,7 +303,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 			<th>Status</th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody style='cursor:pointer'>
 		$strRows
 	</tbody>
 	<tfoot class='footer'>
@@ -373,7 +373,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 				}
 			
 				$strRows .= "
-<tr $strRowClass onclick='FlexSearch.loadContact({$objContact->id})' style='cursor:pointer'>
+<tr $strRowClass onclick='FlexSearch.loadContact({$objContact->id}, event)'>
 	<td>$strContactName</td>
 	<td>$strContactStatus</td>
 	<td>$strAccountId</td>
@@ -418,7 +418,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 			<th>Status</th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody style='cursor:pointer'>
 		$strRows
 	</tbody>
 	<tfoot class='footer'>

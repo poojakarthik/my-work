@@ -217,7 +217,7 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 		<strong>New Owner</strong>
 		<div style='margin-bottom:8px;position:relative;'>
 			<span>Account Number :</span>
-			<span id='ServiceMovement.NewAccountId' style='position:absolute;left:30%'>9999999999</span>
+			<span id='ServiceMovement.NewAccountId' style='position:absolute;left:30%'>123</span>
 		</div>
 		<div style='margin-bottom:8px;position:relative;'>
 			<span>Account Name :</span>

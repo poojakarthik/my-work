@@ -561,6 +561,12 @@ function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue = NULL)
  */
 function GetEmployeeName($intEmployeeId)
 {
+	if ($intEmployeeId == USER_ID)
+	{
+		// System employee id
+		return "Automated System";
+	}
+	
 	// check if we have a cache of employees
 	if (!isset($GLOBALS['*arrEmployee']))
 	{
@@ -585,10 +591,6 @@ function GetEmployeeName($intEmployeeId)
 	{
 		// build the employee's name
 		$strName = $GLOBALS['*arrEmployee'][$intEmployeeId]['FirstName'] ." ". $GLOBALS['*arrEmployee'][$intEmployeeId]['LastName'];
-	}
-	elseif ($intEmployeeId === SYSTEM_EMPLOYEE_ID || $intEmployeeId === USER_ID)
-	{
-		$strName = SYSTEM_EMPLOYEE_NAME;
 	}
 	else
 	{
@@ -618,6 +620,12 @@ function GetEmployeeUserName($intEmployeeId)
 {
 	// Load all the employee details if they have not already been loaded
 	GetEmployeeName(0);
+	
+	if ($intEmployeeId === USER_ID)
+	{
+		// System employee record does not logically have a user name
+		return NULL;
+	}
 	
 	if (isset($GLOBALS['*arrEmployee'][$intEmployeeId]))
 	{
@@ -783,7 +791,7 @@ function SaveSystemNote($strNote, $intAccountGroup, $intAccount=NULL, $intContac
 		'Account'		=> $intAccount,
 		'Service'		=> $intService,
 		'Employee'		=> AuthenticatedUser()->_arrUser['Id'],
-		'Datetime'		=> new MySQLFunction("NOW()"),
+		'Datetime'		=> GetCurrentISODateTime(),
 		'NoteType'		=> SYSTEM_NOTE_TYPE
 	);
 

@@ -119,6 +119,7 @@ class Account_History
 			$arrData['id']					= NULL;
 			$arrData['change_timestamp']	= $strTimestamp;
 			$arrData['employee_id']			= $intEmployeeId;
+			$arrData['account_id']			= $intAccountId;
 			
 			foreach ($arrTrackedProperties as $strAlias=>$strProp)
 			{

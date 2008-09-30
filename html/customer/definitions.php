@@ -110,10 +110,6 @@ define('RENDER_VALUE',	"Value");
 define('RENDER_OUTPUT',	"Output");
 define('RENDER_INPUT',	"Input");
 
-// constant Employee Ids
-define('SYSTEM_EMPLOYEE_ID',	0);
-define('SYSTEM_EMPLOYEE_NAME', 	"Automated System");
-
 													$arrPermissions = Array ();
 define("PERMISSION_PUBLIC"				, 0x1);		$arrPermissions[PERMISSION_PUBLIC]		= "Public";			// 1
 define("PERMISSION_ADMIN"				, 0x2);		$arrPermissions[PERMISSION_ADMIN]		= "Admin";			// 2	
