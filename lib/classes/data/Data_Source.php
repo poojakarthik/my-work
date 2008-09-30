@@ -11,6 +11,12 @@ class Data_Source
 	
 	public static function get($strDataSourceName=self::PRIMARY_DATA_SOURCE, $bolNewConnection=FALSE)
 	{
+		static $arrRequestedDSNs;
+		if (!isset($arrRequestedDSNs))
+		{
+			$arrRequestedDSNs = array();
+		}
+		
 		$options = array(
 			'debug'       => 2,
 			'portability' => (MDB2_PORTABILITY_ALL - MDB2_PORTABILITY_FIX_CASE),
@@ -23,7 +29,19 @@ class Data_Source
 		}
 		else
 		{
-			return MDB2::singleton(self::dsnForName($strDataSourceName), $options);
+			// Implement a 'singleton' function replacement.
+			// The MDB2 'singleton' function provides one connection per database, rather than 
+			// one per user per database. This would make the admin and flex users share a connection
+			// with the privileges of whichever connected first.
+			if (!array_key_exists($strDataSourceName, $arrRequestedDSNs))
+			{
+				$arrRequestedDSNs[$strDataSourceName] = MDB2::connect(self::dsnForName($strDataSourceName), $options);
+				if (PEAR::isError($arrRequestedDSNs[$strDataSourceName]))
+				{
+					throw new Exception("Failed to connect to data source $strDataSourceName: " . $arrRequestedDSNs[$strDataSourceName]->getMessage());
+				}
+			}
+			return $arrRequestedDSNs[$strDataSourceName];
 		}
 	}
 	

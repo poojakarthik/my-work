@@ -12,12 +12,11 @@ require_once('Flex_Rollout_Version.php');
 
 class Flex_Rollout_Incremental
 {
-
 	public function updateToLatestVersion($nextVersionOnly=FALSE, $bolTestOnly=FALSE)
 	{
 		// Find the available updates
 		$db = Data_Source::get();
-		
+
 		$sql = "SELECT MAX(version) FROM database_version";
 		$res = $db->query($sql);
 		
@@ -38,8 +37,8 @@ class Flex_Rollout_Incremental
 				throw new NonIncrementalRolloutException("Rollouts for the old rollout system remain unapplied ($intVersion). Apply those before running this newer rollout system.");
 			}
 
-			
-			
+
+
 			try
 			{
 				// Try to generate the constants file so that there is always one for the rollout scripts
@@ -50,8 +49,8 @@ class Flex_Rollout_Incremental
 				throw new Exception("Failed to build constants file prior to attempting rollout $intVersion. Current version is $currentVersion.");
 			}
 
-			
-			
+
+
 			try
 			{
 				// Begin transactions for each of the configurred data sources
@@ -63,8 +62,8 @@ class Flex_Rollout_Incremental
 				throw new Exception("Failed to begin database transactions prior to attempting rollout $intVersion. Current version is $currentVersion.");
 			}
 
-			
-			
+
+
 			try
 			{
 				// Try to rollout the script (if this fails, we must roll-back script & db changes)
@@ -135,13 +134,38 @@ class Flex_Rollout_Incremental
 									$e->getMessage());
 			}
 
-			if (!$bolTestOnly)
+			if ($bolTestOnly)
 			{
 				$nextVersionOnly = TRUE;
 				// Rollback all changes made and exit.
 				// We can only try one test at a time with this incremental stuff!
+				$strRollbackFailMessage = "";
+				try
+				{
+					self::rollbackTransactions();
+				}
+				catch (Exception $e)
+				{
+					$strRollbackFailMessage .= "Failed to roll-back database changes after test: " . $e->getMessage();
+				}
+
+				try
+				{
+					$objRollout->rollback();
+				}
+				catch (Exception $e)
+				{
+					$strRollbackFailMessage .= "Failed to roll-back non-database changes after test: " . $e->getMessage();
+				}
+
+				@self::RollbackDatabaseConstantsFile();
 				
+				if ($strRollbackFailMessage)
+				{
+					throw new Exception($strRollbackFailMessage);
+				}
 				
+				break;
 			}
 			
 			$currentVersion = $intVersion;
@@ -254,7 +278,7 @@ class Flex_Rollout_Incremental
 				$res = $dataSource->rollback();
 				if (PEAR::isError($res))
 				{
-					$errors[] = "Failed to commit transaction for data source '$name': " . $res->getMessage();
+					$errors[] = "Failed to roll-back transaction for data source '$name': " . $res->getMessage();
 				}
 			}
 		}
