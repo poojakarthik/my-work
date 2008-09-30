@@ -500,20 +500,23 @@ class AppTemplateConsole extends ApplicationTemplate
 				"select" => "<select [REPLACE]>", 
 				"text" => "<input type='text' [REPLACE]>", 
 				"textarea" => "<textarea [REPLACE]>",
-				"checkbox" => "<input type='checkbox' [REPLACE]>"
+				"checkbox" => "<input type='checkbox' [REPLACE]>",
+				"radio" => "<input type='radio' [REPLACE]>"
 			);
 
 			$arrEndInputTypes = array(
 				"select" => "</select>", 
 				"text" => "", 
 				"textarea" => "</textarea>",
-				"checkbox" => ""
+				"checkbox" => "",
+				"radio" => ""
 			);
 			$arrInputDropDown = array(
 				"select" => "<option value='[REPLACE]'>[REPLACE]</option>", 
 				"text" => "", 
 				"textarea" => "",
-				"checkbox" => ""
+				"checkbox" => "",
+				"radio" => ""
 			);
 
 			$mixOutPut .= "";
@@ -576,6 +579,11 @@ class AppTemplateConsole extends ApplicationTemplate
 						$mixOutPut .= " $option_name<br>";
 						break;
 
+						case "radio":
+						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$response_type]");
+						$mixOutPut .= " $option_name<br>";
+						break;
+
 						default:
 						break;
 					}
@@ -602,6 +610,11 @@ class AppTemplateConsole extends ApplicationTemplate
 						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$response_type]") . " $option_name<br>";
 						break;
 						
+						case "radio":
+						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$response_type]");
+						$mixOutPut .= " $option_name<br>";
+						break;
+
 						case "textarea":
 						break;
 						
@@ -652,6 +665,20 @@ class AppTemplateConsole extends ApplicationTemplate
 					$mixBit = "";
 				}
 				$mixSQL .= "$mixBit\n(\"$_POST[intSurveyId]\",\"$bit[0]\",\"$value\",\"" . DBO()->Account->Id->Value . "\",\"$bit[1]\")";
+			}
+
+			// This is specifically for radio buttons.
+			while(@list($key,$value)=each($_POST['strRadio'])) {
+				$intNumCounts++;
+				$bit1 = explode("||",$key);
+				$bit2 = explode("||",$value);
+				$arrInput[$intNumCounts] = "$bit1[0]";
+				$mixBit = ",";
+				if($mixSQL == "")
+				{
+					$mixBit = "";
+				}
+				$mixSQL .= "$mixBit\n(\"$_POST[intSurveyId]\",\"$bit1[0]\",\"$bit2[1]\",\"" . DBO()->Account->Id->Value . "\",\"$bit2[0]\")";
 			}
 
 			// select all the questions from the database to test which ones are required.
