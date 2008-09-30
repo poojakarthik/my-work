@@ -346,7 +346,7 @@ class Invoice
 		$this->save();
 		
 		// Export the Invoice
-		$this->export();
+		//$this->export();
 		//--------------------------------------------------------------------//
 	}
 	
