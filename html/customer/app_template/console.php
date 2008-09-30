@@ -480,9 +480,12 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 			}
 			$mixSelect = "SELECT sq.*, sqo.*
-			FROM survey_question AS sq INNER JOIN survey_question_option AS sqo ON sq.id = sqo.question_id
+			FROM survey_question AS sq 
+			INNER JOIN survey_question_option AS sqo 
+			ON sq.id = sqo.question_id
 			WHERE sq.survey_id = \"$id\"";
 			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
+
 
 			/*
 			$mixSelect = "
@@ -497,26 +500,19 @@ class AppTemplateConsole extends ApplicationTemplate
 			*/
 
 			$arrInputTypes = array(
-				"select" => "<select [REPLACE]>", 
-				"text" => "<input type='text' [REPLACE]>", 
-				"textarea" => "<textarea [REPLACE]>",
-				"checkbox" => "<input type='checkbox' [REPLACE]>",
-				"radio" => "<input type='radio' [REPLACE]>"
+				"1" => "<select [REPLACE]>", 
+				"2" => "<input type='checkbox' [REPLACE]>",
+				"3" => "<input type='radio' [REPLACE]>",
+				"4" => "<textarea [REPLACE]>",
+				"5" => "<input type='text' [REPLACE]>"
 			);
 
 			$arrEndInputTypes = array(
-				"select" => "</select>", 
-				"text" => "", 
-				"textarea" => "</textarea>",
-				"checkbox" => "",
-				"radio" => ""
-			);
-			$arrInputDropDown = array(
-				"select" => "<option value='[REPLACE]'>[REPLACE]</option>", 
-				"text" => "", 
-				"textarea" => "",
-				"checkbox" => "",
-				"radio" => ""
+				"1" => "</select>", 
+				"2" => "",
+				"3" => "",
+				"4" => "</textarea>",
+				"5" => ""
 			);
 
 			$mixOutPut .= "";
@@ -569,19 +565,40 @@ class AppTemplateConsole extends ApplicationTemplate
 					##################################
 					switch($response_type)
 					{
-						case "select":
+						case "1":
 						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]'","$arrInputTypes[$response_type]");
-						$mixOutPut .= str_replace("[REPLACE]","$option_name","$arrInputDropDown[$response_type]");
+						$mixOutPut .= str_replace("[REPLACE]","$option_name","<option value='[REPLACE]'>[REPLACE]</option>");
 						break;
 
-						case "checkbox":
+						case "2":
 						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$response_type]");
 						$mixOutPut .= " $option_name<br>";
 						break;
 
-						case "radio":
+						case "3":
 						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$response_type]");
 						$mixOutPut .= " $option_name<br>";
+						break;
+
+						default:
+						break;
+					}
+					switch($option_type)
+					{
+						case "1":
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						break;
+						case "2":
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						break;
+						case "3":
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						break;
+						case "4":
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						break;
+						case "5":
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
 						break;
 
 						default:
@@ -602,23 +619,44 @@ class AppTemplateConsole extends ApplicationTemplate
 					##################################
 					switch($response_type)
 					{
-						case "select":
-						$mixOutPut .= str_replace("[REPLACE]","$option_name","$arrInputDropDown[$response_type]");
+						case "1":
+						$mixOutPut .= str_replace("[REPLACE]","$option_name","<option value='[REPLACE]'>[REPLACE]</option>");
 						break;
 						
-						case "checkbox":
+						case "2":
 						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$response_type]") . " $option_name<br>";
 						break;
 						
-						case "radio":
+						case "3":
 						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$response_type]");
 						$mixOutPut .= " $option_name<br>";
 						break;
 
-						case "textarea":
+						case "4":
 						break;
 						
-						case "text":
+						case "5":
+						break;
+
+						default:
+						break;
+					}
+					switch($option_type)
+					{
+						case "1":
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						break;
+						case "2":
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						break;
+						case "3":
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						break;
+						case "4":
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						break;
+						case "5":
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
 						break;
 
 						default:
