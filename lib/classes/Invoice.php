@@ -406,7 +406,7 @@ class Invoice
 		
 		//--------------------------- SERVICE TOTALS -------------------------//
 		// Mark all CDRs for this Service as TEMPORARY_INVOICE
-		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$objInvoiceRun->Id} WHERE Status = ".CDR_RATED." AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
+		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status = ".CDR_RATED." AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
 		$resResult	= $qryQuery->Execute($strSQL);
 		if ($resResult === FALSE)
 		{
@@ -499,7 +499,7 @@ class Invoice
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltCDRUncappedTotal, $this->_objInvoiceRun->intInvoiceDatetime);
 		
 		// Mark all Service Charges as TEMPORARY_INVOICE
-		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$objInvoiceRun->Id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")") === FALSE)
+		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
@@ -515,7 +515,7 @@ class Invoice
 		// Retrieve Charge Totals
 		$resResult	= $qryQuery->Execute(	"SELECT Charge.Nature, Charge.global_tax_exempt, SUM(Charge.Amount) AS Total " .
 											"FROM Charge " .
-											"WHERE Charge.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND Charge.invoice_run_id = {$objInvoiceRun->Id} " .
+											"WHERE Charge.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND Charge.invoice_run_id = {$this->invoice_run_id} " .
 											"GROUP BY Charge.Nature, Charge.global_tax_exempt");
 		if ($resResult === FALSE)
 		{
