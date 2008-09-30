@@ -34,7 +34,7 @@ class Flex_Rollout_Version_000069 extends Flex_Rollout_Version
 						INDEX account_id (account_id),
 						INDEX employee_id (employee_id),
 						FOREIGN KEY (account_id) REFERENCES Account(Id) ON DELETE CASCADE ON UPDATE CASCADE,
-						FOREIGN KEY (employee_id) REFERENCES Employee(Id) ON DELETE NO_ACTION ON UPDATE CASCADE
+						FOREIGN KEY (employee_id) REFERENCES Employee(Id) ON DELETE CASCADE ON UPDATE CASCADE
 					) ENGINE = innodb COMMENT = 'history of account table';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
