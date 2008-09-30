@@ -1096,7 +1096,7 @@
 		$arrDefaultCharge ['Description']		= "";
 		$arrDefaultCharge ['ChargeType']		= "";
 		$arrDefaultCharge ['Amount']			= 0.0;
-		$arrDefaultCharge ['global_tax_exempt']	= $bolTaxExempt ? TRUE : FALSE;
+		$arrDefaultCharge ['global_tax_exempt']	= ($bolTaxExempt) ? TRUE : FALSE;
 		$arrDefaultCharge ['Status']			= CHARGE_APPROVED;
 		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
 		
