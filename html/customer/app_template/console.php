@@ -453,15 +453,15 @@ class AppTemplateConsole extends ApplicationTemplate
 			$mixSelect = "
 			SELECT *
 			FROM (SELECT * FROM survey ORDER BY id ASC limit 1) AS t1
-			JOIN survey_questions t3 ON t1.id = t3.survey_id
-			JOIN survey_questions_options t2 ON t3.id = t2.question_id
+			JOIN survey_question t3 ON t1.id = t3.survey_id
+			JOIN survey_question_option t2 ON t3.id = t2.question_id
 			WHERE t1.start_date <= \"$mixDate\"";
 			/*
 			$mixSelect = "
 			SELECT *
 			FROM survey t1
-			JOIN survey_questions t3 ON t1.id = t3.survey_id
-			JOIN survey_questions_options t2 ON t3.id = t2.question_id
+			JOIN survey_question t3 ON t1.id = t3.survey_id
+			JOIN survey_question_option t2 ON t3.id = t2.question_id
 			WHERE t1.start_date <= \"$mixDate\"";
 			*/
 
@@ -627,7 +627,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			// select all the questions from the database to test which ones are required.
 			$mixSelect = "
 			SELECT *
-			FROM survey_questions 
+			FROM survey_question
 			WHERE survey_id = \"$_POST[intSurveyId]\" 
 			AND response_required = '1'";
 

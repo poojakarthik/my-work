@@ -94,7 +94,7 @@
 			<TD width=\"10\"></TD>
 			<TD>";
 			
-			print "<table width=\"100%\">
+			print "<table class=\"customer-standard-table-style\">
 			<tr>
 				<td>FAQ Title</td>
 			</tr>";
