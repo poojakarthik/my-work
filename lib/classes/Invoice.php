@@ -298,7 +298,7 @@ class Invoice
 		$arrAccountChargeTotals	= Array();
 		while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
 		{
-			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']]	= $arrAccountChargeTotal['Total'];
+			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']]	+= $arrAccountChargeTotal['Total'];
 			
 			$this->Tax	+= ($arrAccountChargeTotal['global_tax_exempt']) ? 0.0 : self::calculateGlobalTaxComponent($arrAccountChargeTotal['Total'], $this->_objInvoiceRun->intInvoiceDatetime);
 		}
@@ -1164,7 +1164,7 @@ class Invoice
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON InvoiceRun.Id = Invoice.invoice_run_id", "Invoice.*", "Account = <Account> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
 					break;
 				case 'selAccountChargeTotals':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("Charge", "Nature, SUM(Amount) AS Total", "Service IS NULL AND Account = <Account> AND Status = ".CHARGE_TEMP_INVOICE, NULL, NULL, "Nature");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Charge", "Nature, global_tax_exempt, SUM(Amount) AS Total", "Service IS NULL AND Account = <Account> AND Status = ".CHARGE_TEMP_INVOICE, NULL, NULL, "Nature, global_tax_exempt");
 					break;
 				
 				// INSERTS
