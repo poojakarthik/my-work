@@ -456,8 +456,136 @@ class AppTemplateConsole extends ApplicationTemplate
 
 			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
-			
-			DBO()->Survey->Form = $arrSurvey;
+
+			$arrInputTypes = array(
+				"select" => "<select [REPLACE]>", 
+				"text" => "<input type='text' [REPLACE]>", 
+				"textarea" => "<textarea [REPLACE]>",
+				"checkbox" => "<input type='checkbox' [REPLACE]>"
+			);
+
+			$arrEndInputTypes = array(
+				"select" => "</select>", 
+				"text" => "", 
+				"textarea" => "</textarea>",
+				"checkbox" => ""
+			);
+			$arrInputDropDown = array(
+				"select" => "<option value='[REPLACE]'>[REPLACE]</option>", 
+				"text" => "", 
+				"textarea" => "",
+				"checkbox" => ""
+			);
+
+			$mixOutPut .= "";
+			$arrNumbers = array();
+			$intCount = 0;
+			$intSubCount = 0;
+
+			foreach($arrSurvey as $results)
+			{
+				foreach($results as $key=>$val){
+					$$key=$val;
+				}
+
+				$mixQuestionStart = "
+				<div class='customer-standard-table-title-style-password'>$question</div>
+				<div class='GroupedContent'>
+				<TABLE class=\"customer-standard-table-style\">
+				<TR VALIGN=\"TOP\">
+					<TD>";
+				$mixQuestionEnd = "
+					</TD>
+				</TR>
+				</TABLE>
+				</div>
+				<br/>";
+
+				// check if this one exists in array. end it.
+				$bolFound = FALSE;
+				foreach($arrNumbers as $key=>$val)
+				{
+					if($val == "$question_id")
+					{
+						$bolFound = TRUE;
+					}
+				}
+
+				// It doesnt exist, it's a main item, e.g. <select> or <input text>
+				if(!$bolFound)
+				{
+					if(count($arrNumbers)>1)
+					{
+						$mixOutPut .= "$arrEndInputTypes[$response_type]" . "\n";
+						$mixOutPut .= "$mixQuestionEnd"; // End
+						$intSubCount=0;
+					}
+					$mixOutPut .= "$mixQuestionStart"; // Start
+					$intSubCount++;
+					##################################
+					# put main item here
+					##################################
+					switch($response_type)
+					{
+						case "select":
+						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]'","$arrInputTypes[$response_type]");
+						$mixOutPut .= str_replace("[REPLACE]","$option_name","$arrInputDropDown[$response_type]");
+						break;
+
+						case "checkbox":
+						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$response_type]");
+						$mixOutPut .= " $option_name<br>";
+						break;
+
+						default:
+						break;
+					}
+					##################################
+					//$mixOutPut .= "$intSubCount. $response_type $question_id<br>"; // for debug only..
+				}
+				$intCount++;
+				$arrNumbers[$intCount] = "$question_id";
+
+				// already exists, its a sub item. e.g. <option value=>
+				if($bolFound)
+				{
+					$intSubCount++;
+					##################################
+					# put sub item here
+					##################################
+					switch($response_type)
+					{
+						case "select":
+						$mixOutPut .= str_replace("[REPLACE]","$option_name","$arrInputDropDown[$response_type]");
+						break;
+						
+						case "checkbox":
+						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$response_type]") . " $option_name<br>";
+						break;
+						
+						case "textarea":
+						break;
+						
+						case "text":
+						break;
+
+						default:
+						break;
+					}
+					//$mixOutPut .= "$intSubCount. $response_type $question_id<br>"; // for debug only..
+				}
+
+			}
+			// it will never end itself..
+			if(count($arrNumbers)>1)
+			{
+				$mixOutPut .= "$mixQuestionEnd";
+			}
+	
+			$mixOutPut .= "<input type=\"hidden\" name=\"intSurveyId\" value=\"$survey_id\">";
+			DBO()->Survey->Title = $title;
+			DBO()->Survey->Form = $mixOutPut;
+
 		}
 		
 		// Survey form has been submitted.
@@ -500,11 +628,13 @@ class AppTemplateConsole extends ApplicationTemplate
 					break;
 				}
 			}
+
 			if(DBO()->Survery->Error->Value == NULL)
 			{
 				// all fields have been verified, no errors!.
 				DBO()->Survey->Results = TRUE;
 			}
+
 		}
 		$this->LoadPage('survey');
 		return TRUE;
