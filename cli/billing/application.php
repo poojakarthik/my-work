@@ -2243,7 +2243,7 @@
 				if ($resFEPROD)
 				{
 					// Log in
-					if (ssh2_auth_password($resFEPROD, 'rdavis', 'password'))
+					if (ssh2_auth_password($resFEPROD, 'rdavis', 'crimson1'))
 					{
 						// Init SFTP
 						$resSFTP	= ssh2_sftp($resFEPROD);
