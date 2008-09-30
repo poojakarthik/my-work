@@ -204,7 +204,7 @@
 		$xmlBillExpress	= $this->_AddElement($xmlPayment, 'BillExpress');
 		$this->_AddElement($xmlBillExpress, 'CustomerReference', $arrInvoice['Account'].MakeLuhn($arrInvoice['Account']));		// FIXME
 		
-		$this->_AddAttribute($xmlPayment, 'DirectDebit', (in_array($arrCustomer['BillingType'], Array(BILLING_TYPE_CREDIT_CARD, BILLING_TYPE_DIRECT_DEBIT)) ? 1 : 0));
+		$this->_AddAttribute($xmlPayment, 'DirectDebit', ($arrCustomer['BillingType'] === BILLING_TYPE_CREDIT_CARD || $arrCustomer['BillingType'] === BILLING_TYPE_DIRECT_DEBIT) ? 1 : 0);
 		
 		//--------------------------------------------------------------------//
 		// Statement
