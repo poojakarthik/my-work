@@ -452,20 +452,49 @@ class AppTemplateConsole extends ApplicationTemplate
 			$mixDate = date("Y-m-d H:i:s", time());
 			$mixSelect = "
 			SELECT *
-			FROM (SELECT * FROM survey ORDER BY id ASC limit 1) AS t1
-			JOIN survey_question t3 ON t1.id = t3.survey_id
-			JOIN survey_question_option t2 ON t3.id = t2.question_id
-			WHERE t1.start_date <= \"$mixDate\"";
+			FROM survey 
+			WHERE id NOT IN (	SELECT survey_id
+						FROM survey_completed
+						WHERE account_id = \"" . DBO()->Account->Id->Value . "\"
+					)
+			AND customer_group = \"" . DBO()->Account->CustomerGroup->Value . "\"
+			ORDER BY id ASC 
+			LIMIT 1";
+			$arrSurvey = $dbConnection->fetchone("$mixSelect");
+
+			if($arrSurvey)
+			{
+				foreach($arrSurvey as $key=>$val)
+				{
+					$$key=$val;
+					/*
+					id=>1
+					creation_date=>2008-09-30 09:45:57
+					start_date=>2008-09-29 14:21:41
+					end_date=>2008-09-29 14:21:41
+					created_by=>0
+					title=>Voicetalk Survey
+					conditions=>
+					customer_group=>2
+					*/
+				}
+			}
+			$mixSelect = "SELECT sq.*, sqo.*
+			FROM survey_question AS sq INNER JOIN survey_question_option AS sqo ON sq.id = sqo.question_id
+			WHERE sq.survey_id = \"$id\"";
+			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
+
 			/*
 			$mixSelect = "
 			SELECT *
-			FROM survey t1
+			FROM (
+				SELECT * FROM survey 
+				ORDER BY id ASC limit 1
+				) AS t1
 			JOIN survey_question t3 ON t1.id = t3.survey_id
 			JOIN survey_question_option t2 ON t3.id = t2.question_id
 			WHERE t1.start_date <= \"$mixDate\"";
 			*/
-
-			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
 
 			$arrInputTypes = array(
 				"select" => "<select [REPLACE]>", 
@@ -586,6 +615,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 
 			}
+		
 			// it will never end itself..
 			if(count($arrNumbers)>1)
 			{

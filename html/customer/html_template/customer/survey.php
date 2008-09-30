@@ -74,29 +74,52 @@
 
 		echo "<div class='customer-standard-display-title'>&nbsp;</div><br/><br/>";
 
+		$mixTitle = DBO()->Survey->Title->Value;
+		$mixForm = DBO()->Survey->Form->Value;
+	
 		if(DBO()->Survey->Form->Value !== NULL)
 		{
+			if($mixTitle == "" || $mixForm == "")
+			{
+				$mixTitle = "Survey";
+				$mixForm = "
+				<div class='GroupedContent'>
+				<table class=\"customer-standard-table-style\">
+				<tr>
+					<td>No Surveys are currently available, please check back later for new surveys.</td>
+				</tr>
+				</table>
+				</div><br/>";
+			}
 
-			echo "
-			<div class='customer-standard-table-title-style-confirm-details'>" . DBO()->Survey->Title->Value . "</div>
-			<div class='GroupedContent'>
-			<table class=\"customer-standard-table-style\">
-			<tr>
-				<td>Please complete all fields below</td>
-			</tr>
-			</table>
-			</div><br/>";
-			echo "<form method=\"POST\" action=\"./flex.php/Console/Survey/\">";
-			echo DBO()->Survey->Form->Value;
-			echo "
-			<br/>
-			<TABLE class=\"customer-standard-table-style\">
-			<TR>
-				<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = './'\"> <INPUT TYPE=\"submit\" VALUE=\"Submit Survey\"></TD>
-			</TR>
-			</TABLE>
-			<div id=\"error_box\"></div>";
-			echo "</form>";
+			echo "<div class='customer-standard-table-title-style-confirm-details'>$mixTitle</div>";
+			
+			if(DBO()->Survey->Title->Value != "" && DBO()->Survey->Form->Value != "")
+			{
+				echo "
+				<div class='GroupedContent'>
+				<table class=\"customer-standard-table-style\">
+				<tr>
+					<td>Please complete all fields below</td>
+				</tr>
+				</table>
+				</div><br/>
+				<form method=\"POST\" action=\"./flex.php/Console/Survey/\">";
+			}
+			
+			echo "<div class=\"small\">$mixForm</div><br/>\n";
+
+			if(DBO()->Survey->Title->Value != "" && DBO()->Survey->Form->Value != "")
+			{
+				echo "
+				<TABLE class=\"customer-standard-table-style\">
+				<TR>
+					<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = './'\"> <INPUT TYPE=\"submit\" VALUE=\"Submit Survey\"></TD>
+				</TR>
+				</TABLE>
+				<div id=\"error_box\"></div>";
+				echo "</form>";
+			}
 
 		}
 		else if(DBO()->Survey->Results->Value == TRUE)
