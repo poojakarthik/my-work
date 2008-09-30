@@ -69,7 +69,7 @@
 								  "AND RecurringFreq > 0 " .
 								  "AND RecurringCharge.Archived = 0 " .
 								  "AND Account.Archived = ".ACCOUNT_STATUS_ACTIVE." " .
-								  "AND Service.Status = ".SERVICE_ACTIVE." AND " .
+								  "AND (Service.Status = ".SERVICE_ACTIVE." OR Service.Status IS NULL) " .
 								  "(" .
 								  "		Continuable = 1 " .
 								  "		OR " .
