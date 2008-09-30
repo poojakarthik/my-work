@@ -440,21 +440,31 @@ class AppTemplateConsole extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Customer Survey");
 
 		DBO()->Survey->Form = NULL;
-		DBO()->Survery->Error = NULL;
+		DBO()->Survey->Error = NULL;
 		DBO()->Survey->Results = FALSE;
+
+		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 
 		// Survey form has not been submitted. run the query required to build the page.
 		if(!array_key_exists('intSurveyId',$_POST))
 		{
+
 			$mixDate = date("Y-m-d H:i:s", time());
+			$mixSelect = "
+			SELECT *
+			FROM (SELECT * FROM survey ORDER BY id ASC limit 1) AS t1
+			JOIN survey_questions t3 ON t1.id = t3.survey_id
+			JOIN survey_questions_options t2 ON t3.id = t2.question_id
+			WHERE t1.start_date <= \"$mixDate\"";
+			/*
 			$mixSelect = "
 			SELECT *
 			FROM survey t1
 			JOIN survey_questions t3 ON t1.id = t3.survey_id
 			JOIN survey_questions_options t2 ON t3.id = t2.question_id
 			WHERE t1.start_date <= \"$mixDate\"";
+			*/
 
-			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
 
 			$arrInputTypes = array(
@@ -489,7 +499,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 
 				$mixQuestionStart = "
-				<div class='customer-standard-table-title-style-password'>$question</div>
+				<div class='customer-standard-table-title-style-survey'>$question</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
 				<TR VALIGN=\"TOP\">
@@ -587,10 +597,17 @@ class AppTemplateConsole extends ApplicationTemplate
 			DBO()->Survey->Form = $mixOutPut;
 
 		}
-		
+
 		// Survey form has been submitted.
 		if(array_key_exists('intSurveyId',$_POST))
 		{
+
+			// prevent the same survey from being completed twice.
+			$arrCheckIfCompleted = $dbConnection->fetch("SELECT * FROM survey_completed WHERE account_id = \"" . DBO()->Account->Id->Value . "\" AND survey_id=\"$_POST[intSurveyId]\"",$array=true);
+			if($arrCheckIfCompleted)
+			{
+				DBO()->Survey->Error = "Error, you have already completed this survey, please try again later when a new survey becomes available.";
+			}
 
 			// Build an array of our valid responses.
 			$arrInput = array();
@@ -599,14 +616,21 @@ class AppTemplateConsole extends ApplicationTemplate
 				$intNumCounts++;
 				$bit = explode("||",$key);
 				$arrInput[$intNumCounts] = "$bit[0]";
+				$mixBit = ",";
+				if($mixSQL == "")
+				{
+					$mixBit = "";
+				}
+				$mixSQL .= "$mixBit\n(\"$_POST[intSurveyId]\",\"$bit[0]\",\"$value\",\"" . DBO()->Account->Id->Value . "\",\"$bit[1]\")";
 			}
 
 			// select all the questions from the database to test which ones are required.
 			$mixSelect = "
 			SELECT *
-			FROM survey_questions WHERE survey_id = \"$_POST[intSurveyId]\" AND response_required = '1'";
+			FROM survey_questions 
+			WHERE survey_id = \"$_POST[intSurveyId]\" 
+			AND response_required = '1'";
 
-			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
 			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
 
 			foreach($arrSurvey as $results)
@@ -624,15 +648,24 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 				if(!$bolFoundResponse)
 				{
-					DBO()->Survery->Error = "Error, no response for question: <br>$question<br><br>";
+					DBO()->Survey->Error = "Error, no response for question: <br>$question<br><br>";
 					break;
 				}
 			}
 
-			if(DBO()->Survery->Error->Value == NULL)
+			if(DBO()->Survey->Error->Value == NULL)
 			{
+
 				// all fields have been verified, no errors!.
 				DBO()->Survey->Results = TRUE;
+				$mixQuery = "
+				INSERT INTO survey_response 
+				(survey_id, question_id, response_text, account_id, response_id)
+				VALUES
+				$mixSQL;";
+				$dbConnection->execute("$mixQuery");
+				$dbConnection->execute("INSERT INTO survey_completed(date_completed,account_id,survey_id) VALUES(\"" . date("Y-m-d H:i:s", time()) . "\",\"" . DBO()->Account->Id->Value . "\",\"$_POST[intSurveyId]\")");
+
 			}
 
 		}

@@ -111,14 +111,19 @@
 			</table>
 			</div><br/>";
 		}
-		else if(DBO()->Survery->Error->Value !== NULL)
+		else if(DBO()->Survey->Error->Value !== NULL)
 		{
+			$return_link = "";
+			if(!eregi("already completed this survey",DBO()->Survey->Error->Value))
+			{
+				$return_link = "Please return and correct the errors, <A HREF=\"javascript:history.go(-1)\">click here</A>.";
+			}
 			echo "
 			<div class='customer-standard-table-title-style-notice'>Failure notice</div>
 			<div class='GroupedContent'>
 			<table class=\"customer-standard-table-style\">
 			<tr>
-				<td>" . DBO()->Survery->Error->Value . "Please return and correct the errors, <A HREF=\"javascript:history.go(-1)\">click here</A>.</td>
+				<td>" . DBO()->Survey->Error->Value . "$return_link</td>
 			</tr>
 			</table>
 			</div><br/>";

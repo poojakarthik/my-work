@@ -225,6 +225,22 @@ textarea.invalid {
 	margin-bottom: 7;
 	font-weight:	bold;
 }
+.customer-standard-table-title-style-survey
+{
+	padding-left: 30; 
+	padding-right:	3px;
+	padding-top:	3px;
+	padding-bottom:	3px;
+	font-size:	12px;
+	width:		442px
+	background-color:	#EFEBE7;
+	border:				solid 1px #D1D1D1;
+	background-repeat: no-repeat;
+	background-image: url("./img/template/file.png");
+	background-position: 5px 50%;
+	margin-bottom: 7;
+	font-weight:	bold;
+}
 
 /**************************************************************************/
 /* STYLE FOR LOGIN AREA													  */
