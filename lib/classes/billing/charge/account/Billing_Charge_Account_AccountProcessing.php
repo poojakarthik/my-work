@@ -176,17 +176,17 @@
  		
  		// Yes, add the charge
 		$arrCharge = Array();
-		$arrCharge['Nature']		= 'DR';
-		$arrCharge['Description']	= $this->_cfgModuleConfig->Description;
-		$arrCharge['ChargeType']	= $this->_cfgModuleConfig->ChargeType;
-		$arrCharge['ChargedOn']		= date("Y-m-d");
-		$arrCharge['CreatedOn']		= date("Y-m-d");
-		$arrCharge['Amount']		= $this->_cfgModuleConfig->Amount;
-		$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
-		$arrCharge['Notes']			= "Automatically Added Charge";
-		$arrCharge['Account'] 		= $objAccount->Id;
-		$arrCharge['AccountGroup'] 	= $objAccount->AccountGroup;
-		$arrCharge['InvoiceRun']	= $objInvouce->invoice_run_id;
+		$arrCharge['Nature']			= 'DR';
+		$arrCharge['Description']		= $this->_cfgModuleConfig->Description;
+		$arrCharge['ChargeType']		= $this->_cfgModuleConfig->ChargeType;
+		$arrCharge['ChargedOn']			= date("Y-m-d");
+		$arrCharge['CreatedOn']			= date("Y-m-d");
+		$arrCharge['Amount']			= $this->_cfgModuleConfig->Amount;
+		$arrCharge['Status']			= CHARGE_TEMP_INVOICE;
+		$arrCharge['Notes']				= "Automatically Added Charge";
+		$arrCharge['Account'] 			= $objAccount->Id;
+		$arrCharge['AccountGroup'] 		= $objAccount->AccountGroup;
+		$arrCharge['invoice_run_id']	= $objInvoice->invoice_run_id;
 		
 		// Return FALSE or amount charged
 		if (!$GLOBALS['fwkFramework']->AddCharge($arrCharge))

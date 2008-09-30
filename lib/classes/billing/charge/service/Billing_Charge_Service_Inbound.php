@@ -116,17 +116,17 @@
 			while ($arrServiceDetails = $this->_selINB15Services->Fetch())
 			{
 				$arrCharge = Array();
-				$arrCharge['Nature']		= 'DR';
-				$arrCharge['Description']	= $this->_cfgModuleConfig->Description;
-				$arrCharge['ChargeType']	= $this->_cfgModuleConfig->ChargeType;
-				$arrCharge['CreatedOn']		= date("Y-m-d");
-				$arrCharge['ChargedOn']		= date("Y-m-d");
-				$arrCharge['Amount']		= $this->_cfgModuleConfig->Amount;
-				$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
-				$arrCharge['Service'] 		= $objService->Id;
-				$arrCharge['Account'] 		= $objService->Account;
-				$arrCharge['AccountGroup'] 	= $objService->AccountGroup;
-				$arrCharge['InvoiceRun']	= $objInvoice->invoice_run_id;
+				$arrCharge['Nature']			= 'DR';
+				$arrCharge['Description']		= $this->_cfgModuleConfig->Description;
+				$arrCharge['ChargeType']		= $this->_cfgModuleConfig->ChargeType;
+				$arrCharge['CreatedOn']			= date("Y-m-d");
+				$arrCharge['ChargedOn']			= date("Y-m-d");
+				$arrCharge['Amount']			= $this->_cfgModuleConfig->Amount;
+				$arrCharge['Status']			= CHARGE_TEMP_INVOICE;
+				$arrCharge['Service'] 			= $objService->Id;
+				$arrCharge['Account'] 			= $objService->Account;
+				$arrCharge['AccountGroup'] 		= $objService->AccountGroup;
+				$arrCharge['invoice_run_id']	= $objInvoice->invoice_run_id;
  				$GLOBALS['fwkFramework']->AddCharge($arrCharge);
  				
  				$fltTotalCharged			+= $arrCharge['Amount'];

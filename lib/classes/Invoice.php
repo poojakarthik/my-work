@@ -406,7 +406,7 @@ class Invoice
 		
 		//--------------------------- SERVICE TOTALS -------------------------//
 		// Mark all CDRs for this Service as TEMPORARY_INVOICE
-		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE." WHERE Status = ".CDR_RATED." AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
+		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$objInvoiceRun->Id} WHERE Status = ".CDR_RATED." AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
 		$resResult	= $qryQuery->Execute($strSQL);
 		if ($resResult === FALSE)
 		{
