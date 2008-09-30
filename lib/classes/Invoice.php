@@ -156,10 +156,11 @@ class Invoice
 		$arrSharedPlans	= Array();
 		foreach ($arrServices as $intServiceId=>&$arrServiceDetails)
 		{
-			Cli_App_Billing::debug("\t + Generating Service Total Data for Service with Id {$intServiceId}...");
+			Cli_App_Billing::debug("\t + Generating Service Total Data for Service with Id {$intServiceId}...", FALSE);
 			$arrServiceDetails['ServiceTotal']	= $this->_generateService($arrServiceDetails, $objAccount, $objInvoiceRun);
 			$this->Debits						+= $arrServiceDetails['ServiceTotal']['TotalCharge'];
 			$this->Tax							+= $arrServiceDetails['ServiceTotal']['Tax'];
+			Cli_App_Billing::debug("\t Total: \${$arrServiceDetails['ServiceTotal']['TotalCharge']}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
 			
 			// Is this a Shared Plan?
 			if ($arrServiceDetails['ServiceTotal']['Shared'])
@@ -310,9 +311,9 @@ class Invoice
 		$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 		
 		// Determine Delivery Method
-		if ($objAccount->Archived === ACCOUNT_STATUS_DEBT_COLLECTION)
+		if ($objAccount->deliver_invoice === 0)
 		{
-			
+			$this->DeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
 		}
 		else
 		{
@@ -430,7 +431,7 @@ class Invoice
 		// Get CDR Total Details
 		$strSQL			= "	SELECT SUM(CDR.Cost) AS TotalCost, SUM(CDR.Charge) AS TotalCharge, Rate.Uncapped, CDR.Credit, RecordType.global_tax_exempt
 							FROM (CDR JOIN Rate ON CDR.Rate = Rate.Id) JOIN RecordType ON RecordType.Id = CDR.RecordType
-							WHERE CDR.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND CDR.Status = ".CDR_TEMP_INVOICE."
+							WHERE CDR.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND CDR.invoice_run_id = {$this->invoice_run_id}
 							GROUP BY Rate.Uncapped, CDR.Credit, RecordType.global_tax_exempt";
 		$resCDRTotals	= $qryQuery->Execute($strSQL);
 		if ($resCDRTotals === FALSE)
@@ -471,16 +472,16 @@ class Invoice
 		if (!$arrPlanDetails['Shared'])
 		{
 			// Determine and add in Plan Credit
-			$fltPlanCredit	= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
-			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
-			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
+			$fltPlanCredit			= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			$intPeriodStart			= $objInvoiceRun->intLastInvoiceDatetime;
+			$intPeriodEnd			= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);			
 			
 			// Determine Usage
-			$fltTotalCharge	= min($fltCDRCappedTotal, $fltUsageStart);
+			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
 			
 			// Apply the Minimum Monthly
-			$fltTotalCharge	= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltTotalCharge) : $fltTotalCharge;
+			$fltTotalCharge			= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltTotalCharge) : $fltTotalCharge;
 			
 			// Add in Taxable over-usage
 			$fltTaxableOverusage	= max(0, $fltTaxableCappedCharge - $fltUsageLimit);
@@ -514,8 +515,8 @@ class Invoice
 		// Retrieve Charge Totals
 		$resResult	= $qryQuery->Execute(	"SELECT Charge.Nature, Charge.global_tax_exempt, SUM(Charge.Amount) AS Total " .
 											"FROM Charge " .
-											"WHERE Charge.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND Charge.Status = ".CHARGE_TEMP_INVOICE.
-											" GROUP BY Charge.Nature, Charge.global_tax_exempt");
+											"WHERE Charge.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND Charge.invoice_run_id = {$objInvoiceRun->Id} " .
+											"GROUP BY Charge.Nature, Charge.global_tax_exempt");
 		if ($resResult === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$resResult->Error());
