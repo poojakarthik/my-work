@@ -439,19 +439,73 @@ class AppTemplateConsole extends ApplicationTemplate
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
 		BreadCrumb()->SetCurrentPage("Customer Survey");
 
-		$mixDate = date("Y-m-d H:i:s", time());
-		$mixSelect = "
-		SELECT *
-		FROM survey t1
-		JOIN survey_questions t3 ON t1.id = t3.survey_id
-		JOIN survey_questions_options t2 ON t3.id = t2.question_id
-		WHERE t1.start_date <= \"$mixDate\"";
+		DBO()->Survey->Form = NULL;
+		DBO()->Survery->Error = NULL;
+		DBO()->Survey->Results = FALSE;
 
-		$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
-		$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
+		// Survey form has not been submitted. run the query required to build the page.
+		if(!array_key_exists('intSurveyId',$_POST))
+		{
+			$mixDate = date("Y-m-d H:i:s", time());
+			$mixSelect = "
+			SELECT *
+			FROM survey t1
+			JOIN survey_questions t3 ON t1.id = t3.survey_id
+			JOIN survey_questions_options t2 ON t3.id = t2.question_id
+			WHERE t1.start_date <= \"$mixDate\"";
+
+			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
+			
+			DBO()->Survey->Form = $arrSurvey;
+		}
 		
-		DBO()->Survey->Results = $arrSurvey;
+		// Survey form has been submitted.
+		if(array_key_exists('intSurveyId',$_POST))
+		{
 
+			// Build an array of our valid responses.
+			$arrInput = array();
+			$intNumCounts=0;
+			while(@list($key,$value)=each($_POST['arrAnswer'])) {
+				$intNumCounts++;
+				$bit = explode("||",$key);
+				$arrInput[$intNumCounts] = "$bit[0]";
+			}
+
+			// select all the questions from the database to test which ones are required.
+			$mixSelect = "
+			SELECT *
+			FROM survey_questions WHERE survey_id = \"$_POST[intSurveyId]\" AND response_required = '1'";
+
+			$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
+
+			foreach($arrSurvey as $results)
+			{
+				foreach($results as $key=>$val){
+					$$key=$val;
+				}
+				$bolFoundResponse = FALSE;
+				foreach($arrInput as $value)
+				{
+					if($value == "$id")
+					{
+						$bolFoundResponse = TRUE;
+					}
+				}
+				if(!$bolFoundResponse)
+				{
+					DBO()->Survery->Error = "Error, no response for question: <br>$question<br><br>";
+					break;
+				}
+			}
+			if(DBO()->Survery->Error->Value == NULL)
+			{
+				// all fields have been verified, no errors!.
+				DBO()->Survey->Results = TRUE;
+			}
+		}
 		$this->LoadPage('survey');
 		return TRUE;
 		
