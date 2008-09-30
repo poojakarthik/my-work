@@ -6,6 +6,12 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	if (array_key_exists('ServiceTotal', $_GET) && $_GET ['ServiceTotal'])
+	{
+		header("Location: ../admin/reflex.php/Invoice/Service/" . $_GET ['ServiceTotal']);
+		exit;
+	}
+	
 	// call application loader
 	require ('config/application_loader.php');
 	

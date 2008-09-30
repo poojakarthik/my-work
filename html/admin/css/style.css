@@ -410,3 +410,8 @@ input#online-credit-card-payment-button
 {
 	
 }
+
+.amount-credit { color: green !important; }
+.amount-debit { color: blue !important; }
+th.amount, td.amount { text-align: right; }
+td.attention { color: red !important; }

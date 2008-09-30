@@ -1578,6 +1578,62 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"ExtraLarge\", \"Address Details\", \"Service\", \"EditAddress\", $strJsonCode)";
 	}
 	
+
+	//------------------------------------------------------------------------//
+	// ViewInvoicedCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewInvoicedCDR()
+	 *
+	 * Compiles the Href to be executed when the View Invoiced CDR menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the View Invoiced CDR menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intInvoiceRunId		id of the invoice_run to view
+	 * @param	int		$intCdrId				id of the CDR to view
+	 *
+	 * @return	string				Href to be executed when the View Invoiced CDR menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewInvoicedCDR($intServiceTotalId, $intInvoiceRunId, $intCdrId)
+	{
+		$this->strContextMenuLabel = "";
+		
+		$this->strLabel	= "Record";
+
+		return self::NEW_FRAMEWORK . "reflex.php/Invoice/CDR/$intServiceTotalId/$intInvoiceRunId/$intCdrId";
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// ViewCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewCDR()
+	 *
+	 * Compiles the Href to be executed when the View CDR menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the View CDR menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account to view
+	 *
+	 * @return	string				Href to be executed when the View CDR menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewCDR($intId)
+	{
+		$this->strContextMenuLabel = "";
+		
+		$this->strLabel	= "Record";
+
+		return self::OLD_FRAMEWORK . "cdr_view.php?Id=$intId";
+	}
+	
+	
 	//------------------------------------------------------------------------//
 	// InvoicesAndPayments
 	//------------------------------------------------------------------------//
@@ -1916,6 +1972,32 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// ViewInvoiceService
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewInvoiceService()
+	 *
+	 * Compiles the Href to be executed when the View Invoice menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the View Invoice menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intServiceTotal		service total number for the service
+	 * @param	str		$strFNN		FNN of the service
+	 *
+	 * @return	string					Href to be executed when the View Invoice menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewInvoiceService($intServiceTotal, $strFNN)
+	{
+		$this->strContextMenuLabel = "";
+		
+		$this->strLabel = "Service: $strFNN";
+		return self::NEW_FRAMEWORK . "reflex.php/Invoice/Service/$intServiceTotal";
+	}
+
+	//------------------------------------------------------------------------//
 	// ViewInvoice
 	//------------------------------------------------------------------------//
 	/**
@@ -1936,7 +2018,7 @@ class MenuItems
 	{
 		$this->strContextMenuLabel = "";
 		
-		$this->strLabel = "inv: $intInvoice";
+		$this->strLabel = "Invoice: $intInvoice";
 		return self::OLD_FRAMEWORK . "invoice_view.php?Invoice=$intInvoice";
 	}
 

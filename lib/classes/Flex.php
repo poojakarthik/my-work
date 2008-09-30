@@ -116,6 +116,11 @@ final class Flex
 	{
 		return session_name() == self::FLEX_ADMIN_SESSION;
 	}
+	
+	public static function authenticatedUserIsGod()
+	{
+		return self::loggedIn() && $_SESSION["User"]["Privileges"] == USER_PERMISSION_GOD;
+	}
 
 	public static function isCustomerSession()
 	{
