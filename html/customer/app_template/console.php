@@ -484,6 +484,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			INNER JOIN survey_question_option AS sqo 
 			ON sq.id = sqo.question_id
 			WHERE sq.survey_id = \"$id\"";
+			echo "$mixSelect";
 			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
 
 

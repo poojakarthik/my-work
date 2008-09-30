@@ -83,19 +83,19 @@
 			{
 				$mixTitle = "Survey";
 				$mixForm = "
+				<div class='customer-standard-table-title-style-notice'>Failure notice</div>
 				<div class='GroupedContent'>
 				<table class=\"customer-standard-table-style\">
 				<tr>
-					<td>No Surveys are currently available, please check back later for new surveys.</td>
+					<td>No surveys are currently available, please check back later for new surveys.</td>
 				</tr>
 				</table>
 				</div><br/>";
 			}
-
-			echo "<div class='customer-standard-table-title-style-confirm-details'>$mixTitle</div>";
 			
 			if(DBO()->Survey->Title->Value != "" && DBO()->Survey->Form->Value != "")
 			{
+				echo "<div class='customer-standard-table-title-style-confirm-details'>$mixTitle</div>";
 				echo "
 				<div class='GroupedContent'>
 				<table class=\"customer-standard-table-style\">
