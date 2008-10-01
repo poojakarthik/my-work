@@ -28,8 +28,6 @@ $arrInvoiceRun	= $selInvoiceRun->Fetch();
 // Email them Invoices
 EmailInvoices($arrInvoiceRun);
 
-$appBilling->FinaliseReport();
-
 // finished
 echo("\n\n-- End of Billing --\n");
 echo "</pre>";
