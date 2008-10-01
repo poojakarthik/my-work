@@ -1183,18 +1183,26 @@ class AppTemplateConsole extends ApplicationTemplate
 			}
 			if(array_key_exists('intRequestTypeSubmitFinal',$_POST))
 			{
-				$subject = "Account Support Request";
+
 				$message = "Details below\n\n";
+
+				$message .= "Account: " . DBO()->Contact->Account->Value . "\n";
 				foreach($arrFieldsList as $key=>$val)
 				{
 					$message .= "$key: $val\n";
 				}
 				$message .= "\nKind Regards\n";
 				$message .= "Customer Service Group\n";
-				$headers .= 'From: Customer Service Group<noreply@' . DBO()->CustomerGroup->email_domain->Value . ">\r\n" . 'X-Mailer: Flex/' . phpversion();
-				mail("ryanjf@gmail.com", $subject, $message, $headers);
+				
+				$email = new Email_Notification(EMAIL_NOTIFICATION_SUPPORT_FORM, DBO()->Account->CustomerGroup->Value);
+				$email->setFrom("$_POST[mixContact_Email]", "$_POST[mixContact_FirstName] $_POST[mixContact_LastName]");
+				$email->setSubject("Account Support Request - " . DBO()->Contact->Account->Value);
+				$email->setBodyText("$message");
+				$email->send();
+
 				$this->LoadPage('support_confirmed');
 				return TRUE;
+
 			}
 
 			$this->LoadPage('support_confirmation');
