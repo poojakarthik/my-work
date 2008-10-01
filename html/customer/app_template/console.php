@@ -1191,7 +1191,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 				$message .= "\nKind Regards\n";
 				$message .= "Customer Service Group\n";
-				$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" . 'X-Mailer: Flex/' . phpversion();
+				$headers .= 'From: Customer Service Group<noreply@' . DBO()->CustomerGroup->email_domain->Value . ">\r\n" . 'X-Mailer: Flex/' . phpversion();
 				mail("ryanjf@gmail.com", $subject, $message, $headers);
 				$this->LoadPage('support_confirmed');
 				return TRUE;
@@ -1631,7 +1631,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				{
 					$headers .= "CC: $_POST[mixContact_Email]\r\n";
 				}
-				$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+				$headers .= 'From: Customer Service Group<noreply@' . DBO()->CustomerGroup->email_domain->Value . ">\r\n" .
 					'X-Mailer: Flex/' . phpversion();
 				# supress email errors.
 				@mail($strOldEmailAddress, $subject, $message, $headers);
@@ -1855,7 +1855,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					$message .= "New Password: $strTxtPassword\n\n";
 					$message .= "Kind Regards\n";
 					$message .= "Customer Service Group\n";
-					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+					$headers .= 'From: Customer Service Group<noreply@' . DBO()->CustomerGroup->email_domain->Value . ">\r\n" .
 						'X-Mailer: Flex/' . phpversion();
 					# supress email errors.
 					@mail($to, $subject, $message, $headers);
@@ -1951,7 +1951,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					$message .= "Your username is: " . $strCustEmail->Email . "\n\n";
 					$message .= "Kind Regards\n";
 					$message .= "Customer Service Group\n";
-					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+					$headers .= 'From: Customer Service Group<noreply@' . DBO()->CustomerGroup->email_domain->Value . ">\r\n" .
 						'X-Mailer: Flex/' . phpversion();
 					# supress email errors.
 					@mail($to, $subject, $message, $headers);
@@ -2122,7 +2122,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					$message .= "Your password is: " . $_POST['mixNewPass1'] . "\n\n";
 					$message .= "Kind Regards\n";
 					$message .= "Customer Service Group\n";
-					$headers .= 'From: Customer Service Group<' . NOTIFICATION_REPLY_EMAIL . ">\r\n" .
+					$headers .= 'From: Customer Service Group<noreply@' . DBO()->CustomerGroup->email_domain->Value . ">\r\n" .
 						'X-Mailer: Flex/' . phpversion();
 					mail($mixNewEmail, $subject, $message, $headers);
 					$this->LoadPage('setup_completed');
