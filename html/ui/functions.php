@@ -1221,6 +1221,15 @@ function MakeCSVLine($arrFields, $arrFieldOrder=NULL, $strDelimiter=',', $strEnc
 
 
 
+
+/*
+ *
+ * GetDBConnection.
+ *
+ * Function to make a new database connection
+ * Example Usage: $dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+ *
+ */
 function GetDBConnection($mixUsingSystem)
 {
 	$db_handler = NULL;
@@ -1299,6 +1308,15 @@ function InputValidation($strName,$mixInput,$strType,$intLength){
 	return array ($strFoundError,$strErrorResponse);
 }
 
+
+/*
+ *
+ * RandomString()
+ *
+ * Function to generate a random string, can be used for anything, e.g. Random Securty codes, New passwords, etc.
+ * Usage: $strNewString = RandomString("10"); // 10 = length of new string
+ *
+ */
 function RandomString($len, $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
 {
     $string = '';
@@ -1310,6 +1328,14 @@ function RandomString($len, $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
     return $string;
 }
 
+/*
+ *
+ * pagination()
+ *
+ * Function to generate page links, i.e. when database reocrds need to be spread over multiple pages.
+ * Example usage: list($intNext,$mixLinksDisplay) = pagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?all=1");
+ *
+ */
 function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
 {
 
@@ -1356,6 +1382,16 @@ function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
 	return array ($intNext,$mixLinksDisplay);
 }
 
+/*
+ *
+ * clean_form_input()
+ *
+ * Function to clean form input, POST< GET, PUT, etc
+ * Example usage: $_POST = clean_form_input($_POST);
+ *
+ * Function should make data clean so it can be re-printed on a page or run in an SQL query.
+ *
+ */
 function clean_form_input($resMethod)
 {
 	foreach($resMethod as $key=>$val)
