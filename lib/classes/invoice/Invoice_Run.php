@@ -97,6 +97,8 @@ class Invoice_Run
 	 */
 	public static function getForId($intId)
 	{
+		//return new self(array("Id"=>$intId), TRUE);
+		
 		static $selInvoiceRun;
 		if (!isset($selInvoiceRun))
 		{
@@ -135,17 +137,28 @@ class Invoice_Run
 	 */
 	protected static function getColumns()
 	{
+		/*
+		 $arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine('InvoiceRun');
+		return array_merge(array_keys($arrTableDefine['Column']), array());
+		
+		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
+		{
+			$this->_arrProperties[$strName]					= NULL;
+			$this->_arrTidyNames[self::tidyName($strName)]	= $strName;
+		}
+		*/
+		
 		return array(
-						"id"					=> "Id",
-						"invoice_run"			=> "InvoiceRun",
-						"billing_date"			=> "BillingDate",
-						"invoice_count"			=> "InvoiceCount",
-						"bill_cost"				=> "BillCost",
-						"bill_rated"			=> "BillRated",
-						"bill_invoiced"			=> "BillInvoiced",
-						"bill_tax"				=> "BillTax",
-						"balance_data"			=> "BalanceData",
-						"cdr_archived_state"	=> "CDRArchivedState"
+						"Id",
+						"InvoiceRun",
+						"BillingDate",
+						"InvoiceCount",
+						"BillCost",
+						"BillRated",
+						"BillInvoiced",
+						"BillTax",
+						"BalanceData",
+						"CDRArchivedState"
 					);
 	}
 
