@@ -1060,6 +1060,18 @@ class Invoice
 			{
 				$this->_saved = FALSE;
 			}
+			
+			// DEBUG
+			switch ($strName)
+			{
+				case 'Total':
+				case 'Tax':
+				case 'Debits':
+				case 'Credits':
+					Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
+					Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};");
+					break;
+			}
 		}
 		else
 		{
