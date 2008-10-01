@@ -49,7 +49,7 @@ function EmailInvoices($arrInvoiceRun)
 	CliEcho("[ EMAILING INVOICES ]\n");
 	
 	// Get $strBillingPeriod & InvoiceRun
-	$strBillingPeriod 	= date("F Y", strtotime("-1 month", $arrInvoiceRun['BillingDate']));
+	$strBillingPeriod 	= date("F Y", strtotime("-1 month", strtotime($arrInvoiceRun['BillingDate'])));
 	
 	$selInvoices		= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id> AND DeliveryMethod = 1");
 	
@@ -138,6 +138,7 @@ function EmailInvoices($arrInvoiceRun)
 	 			$emlMail =& Mail::factory('mail');
 	 			
 	 			// Uncomment this to Debug
+	 			$strEmail			= 'rich@voiptelsystems.com.au';
 	 			$arrDebugEmails		= Array();
 	 			$arrDebugEmails[]	= 'rdavis@yellowbilling.com.au';
 	 			$arrDebugEmails[]	= 'turdminator@hotmail.com';
