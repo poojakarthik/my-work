@@ -810,7 +810,7 @@
 	 	{
 	 		// Retrieve Direct Debit Scheduling Details, and determine if today is the Invoice Due Date
 	 		$selSchedule	= new StatementSelect(	"InvoiceRun LEFT JOIN automatic_invoice_run_event ON InvoiceRun.Id = automatic_invoice_run_event.invoice_run_id",
-														"InvoiceRun.invoice_run_id, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id AS id",
+														"InvoiceRun.Id AS Id, InvoiceRun.Id AS invoice_run_id, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id AS id",
 														"actioned_datetime IS NULL AND automatic_invoice_action_id = ".AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT,
 														"InvoiceRun.BillingDate DESC, automatic_invoice_run_event.id DESC",
 														"1");
