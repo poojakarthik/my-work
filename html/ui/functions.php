@@ -1356,4 +1356,26 @@ function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
 	return array ($intNext,$mixLinksDisplay);
 }
 
+function clean_form_input($resMethod)
+{
+	foreach($resMethod as $key=>$val)
+	{
+		// remove any unwanted code/bad input. this input is later send via email so need to be clean.
+		$key=htmlspecialchars(addslashes($key), ENT_QUOTES);
+		if(!is_array($val)){
+			$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
+		}
+		else
+		{
+			foreach($val as $key2=>$val2)
+			{
+				$val[$key2]=htmlspecialchars(addslashes($val2), ENT_QUOTES);
+			}
+		}
+		$resMethod[$key]=$val;
+		//print "cleaned: $_POST[$key] = $val;<br>\n";
+	}
+	return($resMethod);
+}
+
 ?>

@@ -682,8 +682,11 @@ class AppTemplateConsole extends ApplicationTemplate
 		}
 
 		// Survey form has been submitted.
-		if(array_key_exists('intSurveyId',$_POST))
+		if(array_key_exists('intSurveyId',$_POST) && is_numeric("$_POST[intSurveyId]"))
 		{
+			
+			// Clean input
+			$_POST = clean_form_input($_POST);
 
 			// prevent the same survey from being completed twice.
 			$arrCheckIfCompleted = $dbConnection->fetch("SELECT * FROM survey_completed WHERE account_id = \"" . DBO()->Account->Id->Value . "\" AND survey_id=\"$_POST[intSurveyId]\"",$array=true);
@@ -704,7 +707,10 @@ class AppTemplateConsole extends ApplicationTemplate
 				{
 					$mixBit = "";
 				}
-				$mixSQL .= "$mixBit\n(\"$_POST[intSurveyId]\",\"$bit[0]\",\"$value\",\"" . DBO()->Account->Id->Value . "\",\"$bit[1]\")";
+				if($value !== "")
+				{
+					$mixSQL .= "$mixBit\n(\"$_POST[intSurveyId]\",\"$bit[0]\",\"$value\",\"" . DBO()->Account->Id->Value . "\",\"$bit[1]\")";
+				}
 			}
 
 			// This is specifically for radio buttons.
@@ -1046,24 +1052,8 @@ class AppTemplateConsole extends ApplicationTemplate
 		$bolFoundSubmit = FALSE;
 		DBO()->ErrorMessage = "";
 
-		foreach($_POST as $key=>$val)
-		{
-			// remove any unwanted code/bad input. this input is later send via email so need to be clean.
-			$key=htmlspecialchars(addslashes($key), ENT_QUOTES);
-			if(!is_array($val)){
-				$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
-			}
-			else
-			{
-				foreach($val as $key2=>$val2)
-				{
-					$val[$key2]=htmlspecialchars(addslashes($val2), ENT_QUOTES);
-				}
-			}
-			$_POST[$key]=$val;
-			// print "cleaned: $_POST[$key] = $val;<br>\n";
-		}
-
+		// Clean input
+		$_POST = clean_form_input($_POST);
 
 		// show the second page - not adding new service.
 		if(array_key_exists('intRequestTypeSubmit',$_POST))
