@@ -1336,7 +1336,7 @@ function RandomString($len, $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
  * Example usage: list($intNext,$mixLinksDisplay) = pagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?all=1");
  *
  */
-function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
+function MakePagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
 {
 
 	$intPrevious = $intStart-$intResultsPerPage;
@@ -1384,15 +1384,15 @@ function pagination($intStart,$intResultsPerPage,$intTotalResults,$mixURL)
 
 /*
  *
- * clean_form_input()
+ * CleanFormInput()
  *
- * Function to clean form input, POST< GET, PUT, etc
- * Example usage: $_POST = clean_form_input($_POST);
+ * Function to clean form input: POST, GET, PUT, etc
+ * Example usage: CleanFormInput($_POST);
  *
  * Function should make data clean so it can be re-printed on a page or run in an SQL query.
  *
  */
-function clean_form_input($resMethod)
+function CleanFormInput($resMethod)
 {
 	foreach($resMethod as $key=>$val)
 	{

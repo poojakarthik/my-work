@@ -265,7 +265,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
 
 			// links 
-			list($intNext,$mixLinksDisplay) = pagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?all=1");
+			list($intNext,$mixLinksDisplay) = MakePagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?all=1");
 
 			DBO()->Total->Search = "$intTotalResults";
 			DBO()->Total->Start = "$intStart";
@@ -342,7 +342,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
 
 			// links 
-			list($intNext,$mixLinksDisplay) = pagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?s=");
+			list($intNext,$mixLinksDisplay) = MakePagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?s=");
 
 			// Return an array with results to our page.
 			DBO()->Search->Result = $strCustomerFAQ;
@@ -686,7 +686,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		{
 			
 			// Clean input
-			$_POST = clean_form_input($_POST);
+			$_POST = CleanFormInput($_POST);
 
 			// prevent the same survey from being completed twice.
 			$arrCheckIfCompleted = $dbConnection->fetch("SELECT * FROM survey_completed WHERE account_id = \"" . DBO()->Account->Id->Value . "\" AND survey_id=\"$_POST[intSurveyId]\"",$array=true);
@@ -1053,7 +1053,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->ErrorMessage = "";
 
 		// Clean input
-		$_POST = clean_form_input($_POST);
+		$_POST = CleanFormInput($_POST);
 
 		// show the second page - not adding new service.
 		if(array_key_exists('intRequestTypeSubmit',$_POST))
