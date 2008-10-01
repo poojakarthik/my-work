@@ -40,6 +40,8 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the system user employee record to the Employee table. ' . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "ALTER TABLE Employee AUTO_INCREMENT = 1;";
+		$this->rollbackSQL[] = "DELETE FROM Employee WHERE FirstName = 'System' AND LastName = '' AND UserName = '' AND PassWord = 'no password';";
 		
 		$strSQL = "	UPDATE Employee
 					SET Id = $intNewSystemUserId
@@ -49,8 +51,8 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . " Failed to change the id of the system user employee record to $intNewSystemUserId. " . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "DELETE FROM Employee WHERE FirstName = 'System' AND LastName = '' AND UserName = '' AND PassWord = 'no password';";
 		// This should recalculate the auto_increment counter properly, if the above 2 queries have to rolled back
-		$this->rollbackSQL[] = "ALTER TABLE Employee AUTO_INCREMENT = 1;";
 		
 		$strSQL = "ALTER TABLE Employee AUTO_INCREMENT = 1;";
 		$result = $dbAdmin->query($strSQL);
@@ -100,6 +102,9 @@ class Flex_Rollout_Version_000072 extends Flex_Rollout_Version
 				throw new Exception(__CLASS__ . " Failed to update references to System User Employee id for {$arrDetails['Table']}.{$arrDetails['Column']} - " . $result->getMessage());
 			}
 			// Rollback should be handled by the transaction
+			$this->rollbackSQL[] = "UPDATE {$arrDetails['Table']}
+									SET {$arrDetails['Column']} = $intOldSystemUserId
+									WHERE {$arrDetails['Column']} = $intNewSystemUserId;";
 		}
 		
 		// 3:	Create the account_history table
