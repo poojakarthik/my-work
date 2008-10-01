@@ -15,7 +15,7 @@ $arrConfig = LoadApplication();
 
 // Check Parameters
 $strInvoiceRun	= $argv[1];
-$selInvoiceRun	= new StatementSelect("InvoiceRun", "*", "InvoiceRun = <InvoiceRun>");
+$selInvoiceRun	= new StatementSelect("InvoiceRun", "*, Id AS invoice_run_id", "InvoiceRun = <InvoiceRun>");
 if (!$selInvoiceRun->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 {
 	CliEcho("\n'$strInvoiceRun' is not a valid InvoiceRun!\n");
@@ -138,9 +138,12 @@ function EmailInvoices($arrInvoiceRun)
 	 			$emlMail =& Mail::factory('mail');
 	 			
 	 			// Uncomment this to Debug
-	 			$strEmail = 'rich@voiptelsystems.com.au';
-	 			$strEmail = 'turdminator@hotmail.com';
+	 			$arrDebugEmails		= Array();
+	 			$arrDebugEmails[]	= 'rdavis@yellowbilling.com.au';
+	 			$arrDebugEmails[]	= 'turdminator@hotmail.com';
 	 			
+	 			$strEmail	= (count($arrDebugEmails)) ? implode(', ', $arrDebugEmails) : $strEmail;
+	 				 			
 	 			// Send the email
 	 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
 	 			{
