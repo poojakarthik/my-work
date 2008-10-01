@@ -1360,7 +1360,7 @@ function clean_form_input($resMethod)
 {
 	foreach($resMethod as $key=>$val)
 	{
-		// remove any unwanted code/bad input. this input is later send via email so need to be clean.
+		// remove any unwanted code/bad input.
 		$key=htmlspecialchars(addslashes($key), ENT_QUOTES);
 		if(!is_array($val)){
 			$val=htmlspecialchars(addslashes($val), ENT_QUOTES);
