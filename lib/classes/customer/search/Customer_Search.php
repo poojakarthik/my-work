@@ -381,7 +381,7 @@ class Customer_Search
 		
 		$strQuery = "	SELECT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Service AS s ON a.Id = s.Account
-						WHERE ((s.FNN = '$strFNN' OR (s.Indial100 = 1 AND s.FNN LIKE '$strFnnIndial')) AND s.CreatedOn <= s.ClosedOn) $strArchivedConstraint
+						WHERE ((s.FNN = '$strFNN' OR (s.Indial100 = 1 AND s.FNN LIKE '$strFnnIndial')) AND (s.ClosedOn IS NULL OR s.CreatedOn <= s.ClosedOn)) $strArchivedConstraint
 						LIMIT ". self::MAX_RECORDS;
 		
 		return self::_find($strQuery, "AccountId");
