@@ -135,6 +135,7 @@ class Account
 		$arrCharge['LinkType'] = CHARGE_LINK_PAYMENT;
 		$arrCharge['ChargeType'] = "CCS";
 		$arrCharge['Nature'] = "DR";
+		$arrCharge['global_tax_exempt'] = 0;
 		$arrCharge['Description'] = ($paymentType == PAYMENT_TYPE_CREDIT_CARD) ? ($creditCardType->name . ' Surcharge for Payment on ' . date('d/m/Y', $time) . ' (' . $totalAmount . ') @ ' . (round(floatval($creditCardType->surcharge)*100, 2)) . '%') : '';
 		$arrPayment['Payment'] = $arrCharge['Notes'] = '';
 		$arrPayment['PaymentType'] = $arrPayment['OriginType'] = $paymentType;
