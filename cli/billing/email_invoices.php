@@ -8,8 +8,6 @@
 //----------------------------------------------------------------------------//
 // Emails Invoices to specified accounts
 //----------------------------------------------------------------------------//
- 
- echo "<pre>";
 
 // load application
 require_once("../../flex.require.php");
@@ -28,9 +26,6 @@ $arrInvoiceRun	= $selInvoiceRun->Fetch();
 // Email them Invoices
 EmailInvoices($arrInvoiceRun);
 
-// finished
-echo("\n\n-- End of Billing --\n");
-echo "</pre>";
 exit(0);
 
 
