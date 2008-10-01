@@ -17,20 +17,19 @@ $arrConfig = LoadApplication();
 
 // Check Parameters
 $strInvoiceRun	= $argv[1];
-$selInvoiceRun	= new StatementSelect("InvoiceRun", "Id", "InvoiceRun = <InvoiceRun>");
+$selInvoiceRun	= new StatementSelect("InvoiceRun", "*", "InvoiceRun = <InvoiceRun>");
 if (!$selInvoiceRun->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 {
 	CliEcho("\n'$strInvoiceRun' is not a valid InvoiceRun!\n");
 	exit(1);
 }
+$arrInvoiceRun	= $selInvoiceRun->Fetch();
 
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
 
 // execute bill
-$strPath = FILES_BASE_PATH."invoices/pdf/$strInvoiceRun/";
-//$strPath = "/home/richdavis/Desktop/Invoices/";
-$bolResponse = $appBilling->EmailInvoicePDFs($strPath);
+$bolResponse = $appBilling->EmailInvoices($arrInvoiceRun);
 
 $appBilling->FinaliseReport();
 

@@ -2478,52 +2478,32 @@
 	 
  	
   	//------------------------------------------------------------------------//
-	// EmailInvoicePDFs()
+	// EmailInvoices()
 	//------------------------------------------------------------------------//
 	/**
-	 * EmailInvoicePDFs()
+	 * EmailInvoices()
 	 *
 	 * Sends invoices in emails from the specified directory
 	 *
 	 * Sends invoices in emails from the specified directory
 	 *
-	 * @return		string		$strPath			Full path for directory to send invoices from
+	 * @return		array		$arrInvoiceRun			Invoice Run details
 	 *
 	 * @method
 	 */
- 	function EmailInvoicePDFs($strPath)
+ 	function EmailInvoices($arrInvoiceRun)
  	{
- 		$this->_rptBillingReport->AddMessage("[ EMAILING INVOICE PDFS ]\n");
- 		
- 		// Make sure our path is a string
- 		if (!is_string($strPath))
- 		{
- 			$this->_rptBillingReport->AddMessage('$strPath is not a string!');
- 			return FALSE;
- 		}
+ 		$this->_rptBillingReport->AddMessage("[ EMAILING INVOICES ]\n");
  		
  		// Get $strBillingPeriod & InvoiceRun
- 		$strBillingPeriod 	= date("F Y", strtotime("-1 month", time()));
- 		$selInvoiceRun		= new StatementSelect("InvoiceRun", "*", "1", "BillingDate DESC", 1);
- 		$selInvoiceRun->Execute();
- 		$arrInvoiceRun		= $selInvoiceRun->Fetch();
+ 		$strBillingPeriod 	= date("F Y", strtotime("-1 month", $arrInvoiceRun['BillingDate']));
  		
- 		// add trailing slash if not already there
- 		if (substr($strPath, 0, -1) != '/')
- 		{
- 			$strPath .= "/";
- 		}
- 		
- 		// Get all PDF paths
- 		$arrPDFPaths = glob($strPath."*.pdf");
- 		
+ 		$selInvoices		= new StatementSelect(	"Invoice", "*", "InvoiceRun = <InvoiceRun> AND DeliveryMethod = 1");
 		
- 		/*$selAccountEmail	= new StatementSelect(	"Account JOIN Contact ON Account.Id = Contact.Account",
- 													"Account.Id AS Account, CustomerGroup, Email, FirstName",
- 													"Account = <Account> AND Email != '' AND BillingMethod = ".BILLING_METHOD_EMAIL);*/
- 		$selAccountEmail	= new StatementSelect(	"(Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact USING (Account)",
- 													"Invoice.Account, CustomerGroup, Email, FirstName",
- 													"Invoice.Account = <Account> AND Email != '' AND DeliveryMethod = 1 AND InvoiceRun = <InvoiceRun>");
+ 		$selAccountEmail	= new StatementSelect(	"Account JOIN Contact ON Account.Id = Contact.Account",
+ 													"Contact.Account, CustomerGroup, Email, FirstName",
+ 													"Account.Id = <Account> AND Email != '' AND Contact.Archived = 0");
+ 		
 		$updDeliveryMethod	= new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
 		
 		$selCustomerGroup	= new StatementSelect("CustomerGroup", "*", "1");
@@ -2539,17 +2519,18 @@
 			$arrCustomerGroups[$arrCustomerGroup['Id']]	= $arrCustomerGroup;
 		}
 		
-		
-		
- 		// Loop through each PDF
+ 		// Loop through each Invoice
  		$intPassed	= 0;
  		$intIgnored	= 0;
- 		foreach ($arrPDFPaths as $strPDFPath) 
+ 		if ($selInvoices->Execute($arrInvoiceRun) === FALSE)
  		{
- 			// Get the account number from the filename, then find the account's email address
- 			$arrSplit = explode('.', basename($strPDFPath));
- 			
- 			if ($selAccountEmail->Execute(Array('Account' => $arrSplit[0], 'InvoiceRun' => $arrInvoiceRun['InvoiceRun'])) === FALSE)
+ 			Debug($selInvoices->Error());
+ 			return FALSE;
+ 		}
+ 		while ($arrInvoice = $selInvoices->Fetch()) 
+ 		{
+ 			// Get the account number from the filename, then find the account's email address 			
+ 			if ($selAccountEmail->Execute($arrInvoice) === FALSE)
  			{
  				Debug($selAccountEmail->Error());
  				return FALSE;
@@ -2561,7 +2542,7 @@
  				$intIgnored++;
  			}
  			
-	 		$this->_rptBillingReport->AddMessage("\n\t+ Emailing Invoice(s) for Account #".$arrSplit[0]."...");
+	 		$this->_rptBillingReport->AddMessage("\n\t+ Emailing Invoice(s) for Account #{$arrInvoice['Account']}...");
  			
  			// for each email-able contact
  			foreach ($arrDetails as $arrDetail)
@@ -2569,16 +2550,17 @@
 	 			// Set email details based on Customer Group
 	 			$arrHeaders = Array	(
 	 									'From'		=> $arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail'],
-	 									'Subject'	=> "{$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Telephone Billing for $strBillingPeriod"
+	 									'Subject'	=> "Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for $strBillingPeriod"
 	 								);
-				$strContent	=	"Please find attached your most recent Invoice from {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}\n\n" .
-								"Regards\n\n" .
-								"The Team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}";	 			
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice, for Account Number {$arrInvoice['Account']}, is now ready for viewing via the online customer portal.  To access the portal please go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your username & password.\n\n" .
+								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “Setup Account” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
+								"Regards,\n\n" .
+								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
 		 		
 		 		// Does the customer have a first name?
 		 		if (trim($arrDetail['FirstName']))
 		 		{
-		 			$strContent = "Dear ".$arrDetail['FirstName']."\n\n" . $strContent;
+		 			$strContent = "Dear ".$arrDetail['FirstName'].",\n\n" . $strContent;
 		 		}
 		 		
 	 			// Account for , separated email addresses
@@ -2598,14 +2580,13 @@
 		 			
 		 			$mimMime = new Mail_mime("\n");
 		 			$mimMime->setTXTBody($strContent);
-		 			$mimMime->addAttachment(file_get_contents($strPDFPath), 'application/pdf', $arrSplit[0].'_'.str_replace(' ', '_', $strBillingPeriod).".pdf", FALSE);
 					$strBody = $mimMime->get();
 					$strHeaders = $mimMime->headers($arrHeaders);
 		 			$emlMail =& Mail::factory('mail');
 		 			
 		 			// Uncomment this to Debug
-		 			//$strEmail = 'rich@voiptelsystems.com.au';
-		 			//$strEmail = 'turdminator@hotmail.com';
+		 			$strEmail = 'rich@voiptelsystems.com.au';
+		 			$strEmail = 'turdminator@hotmail.com';
 		 			
 		 			// Send the email
 		 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
@@ -2613,7 +2594,7 @@
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 		 				continue;
 		 			}
-		 			//die;
+		 			die;
 					
 					// Update DeliveryMethod
 					$arrUpdateData	= Array();
@@ -2641,7 +2622,7 @@
  			}
  		}
  		
- 		$this->_rptBillingReport->AddMessage("\n\t* Found ".(int)count($arrPDFPaths)." PDFs ($intIgnored ignored), $intPassed emails sent.\n");
+ 		$this->_rptBillingReport->AddMessage("\n\t* $intPassed emails sent.\n");
  	}
 	 
  	
