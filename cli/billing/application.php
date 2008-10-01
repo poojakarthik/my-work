@@ -2498,13 +2498,13 @@
  		// Get $strBillingPeriod & InvoiceRun
  		$strBillingPeriod 	= date("F Y", strtotime("-1 month", $arrInvoiceRun['BillingDate']));
  		
- 		$selInvoices		= new StatementSelect(	"Invoice", "*", "InvoiceRun = <InvoiceRun> AND DeliveryMethod = 1");
+ 		$selInvoices		= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id> AND DeliveryMethod = 1");
 		
  		$selAccountEmail	= new StatementSelect(	"Account JOIN Contact ON Account.Id = Contact.Account",
  													"Contact.Account, CustomerGroup, Email, FirstName",
  													"Account.Id = <Account> AND Email != '' AND Contact.Archived = 0");
  		
-		$updDeliveryMethod	= new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
+		$updDeliveryMethod	= new StatementUpdate("Invoice", "invoice_run_id = <invoice_run_id> AND Account = <Account>", Array('DeliveryMethod' => NULL));
 		
 		$selCustomerGroup	= new StatementSelect("CustomerGroup", "*", "1");
 		if ($selCustomerGroup->Execute() === FALSE)
@@ -2600,8 +2600,8 @@
 					$arrUpdateData	= Array();
 					$arrWhere		= Array();
 					$arrUpdateData['DeliveryMethod']	= BILLING_METHOD_EMAIL_SENT;
-					$arrWhere['InvoiceRun']	= $arrInvoiceRun['InvoiceRun'];
-					$arrWhere['Account']	= $arrDetail['Account'];
+					$arrWhere['invoice_run_id']	= $arrInvoiceRun['invoice_run_id'];
+					$arrWhere['Account']		= $arrDetail['Account'];
 					if ($updDeliveryMethod->Execute($arrUpdateData, $arrWhere))
 					{
 						//Debug("Success!");
