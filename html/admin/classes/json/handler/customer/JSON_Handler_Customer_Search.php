@@ -259,7 +259,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 			
 				$strRows .= "
 <tr $strRowClass onclick='FlexSearch.loadAccount($strAccountId, event)'>
-	<td><a href='http://www.google.com'>$strAccountId</a></td>
+	<td>$strAccountId</td>
 	<td>$strBusinessName</td>
 	<td>$strTradingName</td>
 	<td>$strStatus</td>
@@ -408,7 +408,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 		
 		
 		$strHtml = "
-<table class='reflex highlight-rows'>
+<table class='reflex highlight-rows' id='CustomerSearchPopupResultsTable' name='CustomerSearchPopupResultsTable'>
 	<thead>
 		<tr>
 			<th>Contact</th>

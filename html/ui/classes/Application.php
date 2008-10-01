@@ -117,6 +117,8 @@ class Application
 		{
 			ContextMenu()->Customer->Add_Customer();
 		}
+		ContextMenu()->Customer->Customer_Overdue_List();
+		
 		ContextMenu()->Available_Plans();
 		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
 		if (Ticketing_User::currentUserIsTicketingUser())
@@ -244,6 +246,7 @@ class Application
 		{
 			ContextMenu()->Customer->Add_Customer();
 		}
+		ContextMenu()->Customer->Customer_Overdue_List();
 		
 		ContextMenu()->Available_Plans();
 		

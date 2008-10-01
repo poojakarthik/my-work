@@ -815,6 +815,29 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// CustomerOverdueList
+	//------------------------------------------------------------------------//
+	/**
+	 * CustomerOverdueList()
+	 *
+	 * Compiles the Href to be executed when the CustomerOverdueList functionality is triggered
+	 *
+	 * Compiles the Href to be executed when the CustomerOverdueList functionality is triggered
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string				Href
+	 *
+	 * @method
+	 */
+	function CustomerOverdueList()
+	{
+		$this->strLabel	= "Overdue Customers";
+		$this->strContextMenuLabel = "Overdue Customers";
+		return "javascript:FlexCustomerOverdueList.displayPopup()";
+	}
+	
+	
+	//------------------------------------------------------------------------//
 	// AddServices
 	//------------------------------------------------------------------------//
 	/**

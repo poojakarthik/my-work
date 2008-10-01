@@ -3,6 +3,7 @@ var FlexSearch = {
 	intOverrideCookieLife	: 30,
 	strContactLink			: null,
 	strAccountLink			: null,
+	bolVerifyIfOneResult	: false,
 	
 	quickSearchOnEnter : function(event)
 	{
@@ -32,6 +33,7 @@ var FlexSearch = {
 		}
 		else
 		{
+			this.bolVerifyIfOneResult = true;
 			this.customerSearch(parseInt(mixSearchType),strCriteria, null, null, 0, true);
 		}
 	},
@@ -116,6 +118,19 @@ var FlexSearch = {
 			this.popupControls.Constraint.value			= mixConstraint;
 			this.popupControls.IncludeArchived.checked	= bolIncludeArchived;
 			Vixen.Popup.Centre("CustomerSearch");
+			
+			// Show the verification popup, if the conditions are right
+			if (intRecCount == 1 && this.bolVerifyIfOneResult && (!this.popupControls.OverrideVerification || !this.popupControls.OverrideVerification.checked))
+			{
+				// Reset the flag
+				this.bolVerifyIfOneResult = false;
+				
+				// Get the row
+				var elmTable = $ID("CustomerSearchPopupResultsTable");
+				var elmRow = elmTable.tBodies[0].rows[0];
+				//alert(elmRow.toString());
+				//TODO! trigger the verification page
+			}
 		}
 	},
 	
@@ -127,6 +142,7 @@ var FlexSearch = {
 		if (bolFlushCachedResults)
 		{
 			this.cachedResults = null;
+			this.bolVerifyIfOneResult = false;
 		}
 		remoteClass		= 'Customer_Search';
 		remoteMethod	= 'buildCustomerSearchPopup';
@@ -196,6 +212,8 @@ var FlexSearch = {
 			if (this.cachedResults != null)
 			{
 				// There are results to be displayed
+				this.displayResults(this.cachedResults.recordCount, this.cachedResults.resultsHtml, this.cachedResults.searchType, this.cachedResults.constraint, this.cachedResults.constraintType, this.cachedResults.includeArchived);
+				/*
 				this.popupControls.ResultsContainer.innerHTML	= this.cachedResults.resultsHtml;
 				this.popupControls.ResultsContainer.style.display = "block";
 				this.popupControls.SearchType.value				= this.cachedResults.searchType;
@@ -205,6 +223,7 @@ var FlexSearch = {
 				this.popupControls.IncludeArchived.checked		= this.cachedResults.includeArchived;
 
 				Vixen.Popup.Centre("CustomerSearch");
+				*/
 			}
 			else
 			{
@@ -291,33 +310,45 @@ var FlexSearch = {
 
 	},
 	
-	loadAccount : function(intAccountId)
+	loadAccount : function(intAccountId, objEvent)
 	{
 		if (this.popupControls.OverrideVerification != undefined && this.popupControls.OverrideVerification.checked)
 		{
 			// Don't bother verifying (this overrides verification, but records the customer in the EmployeeAccountAudit)
+			//Don't do anything.  This scenario will be handled by an anchor tag, so that the result can be opened in a new window
 			FlexCustomerVerification.verifyOnServer(null, intAccountId, null, null, FlexCustomerVerification.PAGE_ACCOUNT, true);
+			//alert("I'm not doing anything");
 		}
 		else
 		{
 			// Load the Verification popup
+			// Stop the event from triggering any anchor elements
+			if (objEvent)
+			{
+				objEvent.preventDefault();
+			}
+			
 			FlexCustomerVerification.load(null, intAccountId);
 		}
 	},
 	
-	loadContact : function(intContactId)
+	loadContact : function(intContactId, objEvent)
 	{
 		if (this.popupControls.OverrideVerification != undefined && this.popupControls.OverrideVerification.checked)
 		{
 			// Don't bother verifying (this overrides verification, but records the customer in the EmployeeAccountAudit)
+			//Don't do anything.  This scenario will be handled by an anchor tag, so that the result can be opened in a new window
 			FlexCustomerVerification.verifyOnServer(intContactId, null, null, null, FlexCustomerVerification.PAGE_CONTACT, true);
 		}
 		else
 		{
 			// Load the Verification popup
+			if (objEvent)
+			{
+				objEvent.preventDefault();
+			}
 			FlexCustomerVerification.load(intContactId, null);
 		}
 	}
-	
 	
 };
