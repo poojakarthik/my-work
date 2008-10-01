@@ -461,7 +461,6 @@ class AppTemplateConsole extends ApplicationTemplate
 			ORDER BY id ASC 
 			LIMIT 1";
 			$arrSurvey = $dbConnection->fetchone("$mixSelect");
-
 			if($arrSurvey)
 			{
 				foreach($arrSurvey as $key=>$val)
@@ -483,8 +482,8 @@ class AppTemplateConsole extends ApplicationTemplate
 			FROM survey_question AS sq 
 			INNER JOIN survey_question_option AS sqo 
 			ON sq.id = sqo.question_id
-			WHERE sq.survey_id = \"$id\"";
-			echo "$mixSelect";
+			WHERE sq.survey_id = \"$id\"
+			ORDER BY sqo.question_id,sqo.option_type";
 			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
 
 
@@ -528,7 +527,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 
 				$mixQuestionStart = "
-				<div class='customer-standard-table-title-style-survey'>$question</div>
+				<div class='customer-standard-table-title-style-survey'>[BOX_TITLE]</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
 				<TR VALIGN=\"TOP\">
@@ -559,7 +558,7 @@ class AppTemplateConsole extends ApplicationTemplate
 						$mixOutPut .= "$mixQuestionEnd"; // End
 						$intSubCount=0;
 					}
-					$mixOutPut .= "$mixQuestionStart"; // Start
+					$mixOutPut .= str_replace("[BOX_TITLE]","$question",$mixQuestionStart); // Start
 					$intSubCount++;
 					##################################
 					# put main item here
@@ -671,7 +670,9 @@ class AppTemplateConsole extends ApplicationTemplate
 			// it will never end itself..
 			if(count($arrNumbers)>1)
 			{
-				$mixOutPut .= "$mixQuestionEnd";
+				$mixOutPut .= "$mixQuestionEnd" . str_replace("[BOX_TITLE]","Survey Conditions",$mixQuestionStart) . "
+				$conditions
+				$mixQuestionEnd";
 			}
 	
 			$mixOutPut .= "<input type=\"hidden\" name=\"intSurveyId\" value=\"$survey_id\">";
