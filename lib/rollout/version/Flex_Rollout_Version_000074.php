@@ -3,7 +3,7 @@
 /**
  * Version 74 (Seventy Four) of database update.
  * This version: -
- *	1:	alerts `survey_question_option` table.
+ *	1:	alters `survey_question_option` table.
  */
 
 class Flex_Rollout_Version_000074 extends Flex_Rollout_Version

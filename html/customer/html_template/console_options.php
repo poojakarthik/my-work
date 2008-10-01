@@ -144,8 +144,15 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "   <tr>\n";
 		echo "      <td>$strCustomerSurveyLabel\n";
 		echo "   </tr>\n";
-		echo "</table>
-		<BR><BR>\n";
+		echo "</table>\n";
+	
+		echo "
+		<object type=\"application/x-shockwave-flash\" data=\"flash/survey.swf\" width=\"360\" height=\"128\">
+			<param name=\"movie\" value=\"flash/survey.swf\">
+			<param name=\"bgcolor\" value=\"#ffffff\">
+			<param name=\"quality\" value=\"high\">
+		</object>";
+
 		echo "<div class='customer-standard-table-style-menu-options-title'>Secure Payments</div>\n";
 		echo "<table class=\"customer-standard-table-style-menu-options-info\">\n";	
 		echo "   <tr>\n";
