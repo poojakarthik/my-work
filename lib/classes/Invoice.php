@@ -550,9 +550,23 @@ class Invoice
 		$arrServiceTotal['UncappedCost']		= $fltCDRUncappedCost;
 		$arrServiceTotal['PlanCharge']			= 0.0;							// Deprecated
 		$insServiceTotal	= self::_preparedStatement('insServiceTotal');
-		if ($insServiceTotal->Execute($arrServiceTotal) === FALSE)
+		if (($arrServiceTotal['Id'] = $insServiceTotal->Execute($arrServiceTotal)) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$insServiceTotal->Error());
+		}
+		
+		// Link each Service to the ServiceTotal
+		$insServiceTotalService	= self::_preparedStatement('insServiceTotalService');
+		foreach ($arrServiceDetails['Ids'] as $intServiceId)
+		{
+			$arrData	= Array(
+									'service_id'		=> $intServiceId,
+									'service_total_id'	=> $arrServiceTotal['Id']
+								);
+			if ($insServiceTotalService->Execute($arrServiceTotal) === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$insServiceTotal->Error());
+			}
 		}
 		
 		// Return the Service Total details
@@ -644,6 +658,12 @@ class Invoice
 		if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), $this->toArray()) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$updChargeRevoke->Error());
+		}
+		
+		// Remove service_total_service Records
+		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Id = service_total_id)") === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
 		
 		// Remove ServiceTotal Records
@@ -1171,6 +1191,9 @@ class Invoice
 				case 'insServiceTotal':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("ServiceTotal");
 					break;
+				case 'insServiceTotalService':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert("service_total_service");
+					break;					
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("Invoice");
 					break;
