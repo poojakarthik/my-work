@@ -691,7 +691,7 @@
 				<TD><TEXTAREA NAME=\"\" ROWS=\"5\" COLS=\"35\">I understand that Telstra determines on reasonable grounds that if the fault is not in the Telstra network (for example a fault in private equipment) an incorrect callout charge will apply.($105 inc GST)
 
 Telstra are responsible for the service to the Network Boundary Point of Customer Premises. This is the first socket in a residence and or business and the Main Distribution Frame (MDF) in a multi unit dwelling.
-If the fault is with private equipment and not with the Telstra network then Telco Blue will be charged a $105 call out fee from Telstra which will then be passed on to you the customer for payment on your next bill. Please note sometimes this charge can come through upto 90 days in arrears.</TEXTAREA></TD>
+If the fault is with private equipment and not with the Telstra network then there will be a $105 call out fee from Telstra which will then be passed on to you the customer for payment on your next bill. Please note sometimes this charge can come through upto 90 days in arrears.</TEXTAREA></TD>
 				</TR>
 				</TABLE>
 				</div>";

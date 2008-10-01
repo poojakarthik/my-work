@@ -466,16 +466,6 @@ class AppTemplateConsole extends ApplicationTemplate
 				foreach($arrSurvey as $key=>$val)
 				{
 					$$key=$val;
-					/*
-					id=>1
-					creation_date=>2008-09-30 09:45:57
-					start_date=>2008-09-29 14:21:41
-					end_date=>2008-09-29 14:21:41
-					created_by=>0
-					title=>Voicetalk Survey
-					conditions=>
-					customer_group=>2
-					*/
 				}
 			}
 			$mixSelect = "SELECT sq.*, sqo.*
@@ -485,19 +475,6 @@ class AppTemplateConsole extends ApplicationTemplate
 			WHERE sq.survey_id = \"$id\"
 			ORDER BY sqo.question_id,sqo.option_type";
 			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
-
-
-			/*
-			$mixSelect = "
-			SELECT *
-			FROM (
-				SELECT * FROM survey 
-				ORDER BY id ASC limit 1
-				) AS t1
-			JOIN survey_question t3 ON t1.id = t3.survey_id
-			JOIN survey_question_option t2 ON t3.id = t2.question_id
-			WHERE t1.start_date <= \"$mixDate\"";
-			*/
 
 			$arrInputTypes = array(
 				"1" => "<select [REPLACE]>", 
