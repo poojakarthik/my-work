@@ -239,35 +239,101 @@ class Account_History
 	}
 */
 
+	//------------------------------------------------------------------------//
+	// recordCurrentStateForAll
+	//------------------------------------------------------------------------//
+	/**
+	 * recordCurrentStateForAll()
+	 *
+	 * Records the current state of each account in the Account table (useful for batch processing)
+	 * 
+	 * Records the current state of each account in the Account table (useful for batch processing)
+	 * Throws an exception on error
+	 * Throws an exception if $strTimestamp is less than the timestamp of the record in the account_history table which is currently modelling the state of the account, for any account
+	 * (This scenario represents a data integrity issue, and any changes made to the account record should be rolled back)
+	 * This also assumes there is at least one tracked Account column.  It will break (throw an exception) if there isn't
+	 *
+	 * @param	int		$intEmployeeId		[optional] id of the employee who was responsible for any changes made to the state of the account record.
+	 * 										Defaults to NULL, signifying that the account's state was changed by an automated, backend process (no employee)
+	 * @param	string	$strTimestamp		[optional] time at which the account's state is considered to have been changed. 
+	 * 										Defaults to NULL, which will use the current time on the database server
+	 *  
+	 * @return	boolean						TRUE if the Account's state was actually changed necessitating a new record to be added to the account_history table
+	 * 										FALSE if the account's state hadn't changed, in which case, a record IS NOT added to the account_history table
+	 *
+	 * @method
+	 */
 	public static function recordCurrentStateForAll($intEmployeeId=NULL, $strTimestamp=NULL)
 	{
+		if ($intEmployeeId === NULL)
+		{
+			$intEmployeeId = self::SYSTEM_ACTION_EMPLOYEE_ID;
+		}
+		if ($strTimestamp === NULL)
+		{
+			$strTimestamp = GetCurrentISODateTime();
+		}
+		
 		// Check that there are no records in the account_history table with a creation_timestamp >= $strTimestamp, as this would flag a data integrity problem
-		//TODO!
+		$selCheckTimestamp = new StatementSelect("account_history", array("id"), "change_timestamp >= <Timestamp>", NULL, 1);
+		if (($intRecCount = $selCheckTimestamp->Execute(array("Timestamp"=>$strTimestamp))) === FALSE)
+		{
+			throw new Exception("Failed during check for account_history records with timestamp >= $strTimestamp - ". $selCheckTimestamp->Error());
+		}
+		if ($intRecCount != 0)
+		{
+			throw new Exception("Requested Timestamp for recording of account state ($strTimestamp) is less than or equal to the timestamp marked against at least one account in the account_history table, signifying a breach of data integrity");
+		}
+		
+		$arrTrackedAccountColumns	= self::getTrackedAccountColumns();
+		$arrTrackedHistoryColumns	= array_keys($arrTrackedAccountColumns);
+		$strTrackedColumnsForInsert	= implode(", ", $arrTrackedHistoryColumns);
+		$strTackedAccountColumns	= "a.". implode(", a.", $arrTrackedAccountColumns);
+		$arrComparingValues			= array();
+		foreach ($arrTrackedAccountColumns as $strHistoryColumn=>$strAccountColumn)
+		{
+			$arrComparingValues[] = "a.$strAccountColumn != ah.$strHistoryColumn";
+		}
+		$strCheckForChanges = implode(" OR ", $arrComparingValues);
 		
 		// Build the insert query
-		//TODO! The following query should work, but it doesn't raise an alert/exception
-		/*
-			INSERT INTO account_history (creation_timestamp, employee_id, account_id, billing_type, billing_method)
-			SELECT NOW(), <EmployeeId>, a.id, a.BillingType, a.BillingMethod
-			FROM Account as a LEFT JOIN account_history AS ah 
+		/*	It should look like this:
+			INSERT INTO account_history (change_timestamp, employee_id, account_id, billing_type, credit_card_id, direct_debit_id, billing_method, disable_ddr, late_payment_amnesty, tio_reference_number)
+			SELECT <Timestamp>, <EmployeeId>, a.id, a.BillingType, a.CreditCard, a.DirectDebit, a.BillingMethod, a.DisableDDR, a.LatePaymentAmnesty, a.tio_reference_number
+			FROM Account AS a LEFT JOIN account_history AS ah 
 				ON a.id = ah.account_id AND ah.id = (	SELECT id
 									FROM account_history
-									WHERE account_id = <AccountId>
-									ORDER BY creation_timestamp DESC
+									WHERE account_id = a.id
+									ORDER BY change_timestamp DESC
 									LIMIT 1
 								)
-			WHERE a.id = <AccountId>
-			AND (
-					ah.id IS NULL OR (	a.BillingMethod != ah.billing_method
-										OR a.BillingType != ah.billing_type
+			WHERE ah.id IS NULL OR (	a.BillingType != ah.billing_type
+										OR a.CreditCard != ah.credit_card_id
+										OR a.DirectDebit != ah.direct_debit_id
+										OR a.BillingMethod != ah.billing_method
 										OR a.DisableDDR != ah.disable_ddr
 										OR a.LatePaymentAmnesty != ah.late_payment_amnesty
-										OR tio_reference_number != ah.tio_reference_number
-										etc
+										OR a.tio_reference_number != ah.tio_reference_number
 									)
-				)
-			AND (ah.creation_timestamp IS NULL OR NOW() >= ah.creation_timestamp)
 		 */
+		 
+		$strInsertQuery = "	INSERT INTO account_history (change_timestamp, employee_id, account_id, $strTrackedColumnsForInsert)
+							SELECT '$strTimestamp', $intEmployeeId, a.Id, $strTackedAccountColumns
+							FROM Account AS a LEFT JOIN account_history AS ah 
+							ON a.Id = ah.account_id AND ah.id = (	SELECT id
+																	FROM account_history
+																	WHERE account_id = a.Id
+																	ORDER BY change_timestamp DESC
+																	LIMIT 1
+																)
+							WHERE ah.id IS NULL OR ($strCheckForChanges)";
+
+		$qryQuery = new Query();
+		$objRecordSet = $qryQuery->Execute($strInsertQuery);
+		if (!$objRecordSet)
+		{
+			throw new Exception("Updating the account_history table failed. Query: $strInsertQuery Error: " . $qryQuery->Error());
+		}
 	}
 	
 	public static function getAccountColumns()
