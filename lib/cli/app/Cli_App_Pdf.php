@@ -148,7 +148,7 @@ class Cli_App_Pdf extends Cli
 			{
 				$this->log("Processing XML file: $strSource");
 				// Make sure we have enough time to generate this PDF (2 minutes should hopefully always be enough!)...
-				set_time_limit(180);
+				set_time_limit(1800);
 
 				$fileContents = file_get_contents($strSource);
 
