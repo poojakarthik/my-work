@@ -3170,27 +3170,28 @@ function AddCreditCardSurcharge($intPayment)
 		{
 			// AccountGroup Payment
 			$selAccount->Execute($arrPayment);
-			$arrAccount				= $selAccount->Fetch();
-			$arrCharge['Account']	= $arrAccount['Account'];
+			$arrAccount					= $selAccount->Fetch();
+			$arrCharge['Account']		= $arrAccount['Account'];
 		}
 		else
 		{
 			// Account Payment
-			$arrCharge['Account']	= $arrPayment['Account'];
+			$arrCharge['Account']		= $arrPayment['Account'];
 		}
 		
-		$arrCharge['AccountGroup']	= $arrPayment['AccountGroup'];
-		$arrCharge['CreatedBy']		= $arrPayment['EnteredBy'];
-		$arrCharge['CreatedOn']		= date("Y-m-d");
-		$arrCharge['ChargeType']	= "CCS";
-		$arrCharge['Description']	= "$strType Surcharge for Payment on {$strDate} (\${$fltPaymentAmount}) @ $strPC%";
-		$arrCharge['ChargedOn']		= $arrPayment['PaidOn'];
-		$arrCharge['Nature']		= 'DR';
-		$arrCharge['Amount']		= $fltAmount;
-		$arrCharge['Notes']			= '';
-		$arrCharge['Status']		= CHARGE_APPROVED;
-		$arrCharge['LinkType']		= CHARGE_LINK_PAYMENT;
-		$arrCharge['LinkId']		= $intPayment;
+		$arrCharge['AccountGroup']		= $arrPayment['AccountGroup'];
+		$arrCharge['CreatedBy']			= $arrPayment['EnteredBy'];
+		$arrCharge['CreatedOn']			= date("Y-m-d");
+		$arrCharge['ChargeType']		= "CCS";
+		$arrCharge['Description']		= "$strType Surcharge for Payment on {$strDate} (\${$fltPaymentAmount}) @ $strPC%";
+		$arrCharge['ChargedOn']			= $arrPayment['PaidOn'];
+		$arrCharge['Nature']			= 'DR';
+		$arrCharge['Amount']			= $fltAmount;
+		$arrCharge['Notes']				= '';
+		$arrCharge['global_tax_exempt']	= '';
+		$arrCharge['Status']			= CHARGE_APPROVED;
+		$arrCharge['LinkType']			= CHARGE_LINK_PAYMENT;
+		$arrCharge['LinkId']			= $intPayment;
 		$mixResult = $insCharge->Execute($arrCharge);
 		//Debug($arrCharge);
 		return (bool)($mixResult !== FALSE);
