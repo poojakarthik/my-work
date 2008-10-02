@@ -68,7 +68,7 @@ class CommonLayout
 				<td class="LogoutMiddle">
 				<?php
 					//display the logout link
-					$strUserName	= AuthenticatedUser()->_arrUser['UserName'];
+					$strUserName	= AuthenticatedUser()->_arrUser['Account'];
 					$strLogoutHref	= Href()->LogoutUser();
 					echo "<span class='LoginUserLabel'>Account: </span><span class='LoginUserName'>$strUserName </span><button class='logout' onmouseover='this.tmpClassName=this.className;this.className+=\"Hover\";' onmouseout=\"this.className=this.tmpClassName;\" onclick='document.location=\"$strLogoutHref\"' title='logout'></button>\n";
 				?>

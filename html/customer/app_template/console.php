@@ -672,9 +672,11 @@ class AppTemplateConsole extends ApplicationTemplate
 				DBO()->Survey->Error = "Error, you have already completed this survey, please try again later when a new survey becomes available.";
 			}
 
+
 			// Build an array of our valid responses.
 			$arrInput = array();
 			$intNumCounts=0;
+
 			while(@list($key,$value)=each($_POST['arrAnswer'])) {
 				$intNumCounts++;
 				$bit = explode("||",$key);
@@ -689,6 +691,16 @@ class AppTemplateConsole extends ApplicationTemplate
 					$mixSQL .= "$mixBit\n(\"$_POST[intSurveyId]\",\"$bit[0]\",\"$value\",\"" . DBO()->Account->Id->Value . "\",\"$bit[1]\")";
 				}
 			}
+
+			/*
+			 * TODO:
+			 * If we were to fill the survey_response_option table, the data below would be required..:
+			 *
+			 * response_id = survey_response.id
+			 * option_id = survey_question_option.id ($bit[1])
+			 * option_text = $value
+			 * account_id = DBO()->Account->Id->Value
+			 */
 
 			// This is specifically for radio buttons.
 			while(@list($key,$value)=each($_POST['strRadio'])) {
@@ -738,12 +750,12 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				// all fields have been verified, no errors!.
 				DBO()->Survey->Results = TRUE;
-				$mixQuery = "
-				INSERT INTO survey_response 
-				(survey_id, question_id, response_text, account_id, response_id)
+				$mixQueryResponse = "
+				INSERT INTO survey_response(survey_id, question_id, response_text, account_id, response_id)
 				VALUES
 				$mixSQL;";
-				$dbConnection->execute("$mixQuery");
+
+				$dbConnection->execute("$mixQueryResponse");
 				$dbConnection->execute("INSERT INTO survey_completed(date_completed,account_id,survey_id) VALUES(\"" . date("Y-m-d H:i:s", time()) . "\",\"" . DBO()->Account->Id->Value . "\",\"$_POST[intSurveyId]\")");
 
 			}
