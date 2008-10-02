@@ -40,7 +40,7 @@
 
 		print "
 		<br/><br/>
-		<center><div class='customer-standard-table-style-menu-options-login'>Customer System - Setup New Account Completed</div></center>
+		<center><div class='customer-standard-table-style-menu-options-login'>Customer System - First Time User Setup Completed</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD align=center>";

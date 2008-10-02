@@ -190,7 +190,7 @@ class MenuItems
 	 */
 	function SetupAccount()
 	{
-		$this->strLabel	= "Setup Account";
+		$this->strLabel	= "First time user?";
 
 		return $this->GetBaseURL()."./flex.php/Console/Setup/";
 	}
@@ -208,7 +208,7 @@ class MenuItems
 	 */
 	function ResetPassword()
 	{
-		$this->strLabel	= "Lost Login";
+		$this->strLabel	= "Lost your password?";
 
 		return $this->GetBaseURL()."./flex.php/Console/Password/";
 	}
