@@ -647,9 +647,10 @@ class AppTemplateConsole extends ApplicationTemplate
 			// it will never end itself..
 			if(count($arrNumbers)>1)
 			{
-				$mixOutPut .= "$mixQuestionEnd" . str_replace("[BOX_TITLE]","Survey Conditions",$mixQuestionStart) . "
-				$conditions
-				$mixQuestionEnd";
+				$mixOutPut .= "
+					$mixQuestionEnd
+				" . str_replace("[BOX_TITLE]","Survey Conditions",$mixQuestionStart) . str_replace("\n","<br>",$conditions) . "
+					$mixQuestionEnd";
 			}
 	
 			$mixOutPut .= "<input type=\"hidden\" name=\"intSurveyId\" value=\"$survey_id\">";
