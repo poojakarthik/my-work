@@ -97,7 +97,7 @@
 			Debug($this->_arrNormalisedData['TXNReference']);
 		}
 		
-		if (!$arrValid[] = (bool)$this->_arrNormalisedData['EnteredBy'])									// 4
+		if (!$arrValid[] = ($this->_arrNormalisedData['EnteredBy'] >= 0))									// 4
 		{
 			Debug($this->_arrNormalisedData['EnteredBy']);
 		}
