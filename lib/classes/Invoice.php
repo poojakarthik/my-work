@@ -708,28 +708,38 @@ class Invoice
 		}
 		
 		// Commit the CDRs
-		// TODO
+		$updCDRsByAccount		= self::_preparedStatement('updCDRsByAccount');
+		if ($updCDRsByAccount->Execute(Array('Status'=>CDR_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
+		{
+			throw new Exception($updCDRsByAccount->Error());
+		}
 		
 		// Commit the Charges
-		// TODO
+		$updChargesByAccount	= self::_preparedStatement('updChargesByAccount');
+		if ($updChargesByAccount->Execute(Array('Status'=>CHARGE_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
+		{
+			throw new Exception($updChargesByAccount->Error());
+		}
 		
 		//------------------------------ ACCOUNT -----------------------------//
+		$objAccount	= new Account(Array('Id'=>$this->Account), FALSE, TRUE);
+		
 		// Update Account.LastBilled to InvoiceRun.BillingDate
-		// TODO
+		$objAccount->LastBilled	= $this->CreatedOn;
 		
 		// Update Account.Sample
-		// TODO
+		$objAccount->Sample		= min($objAccount->Sample+1, 0);
 		$objAccount->save();
 		
-		//------------------------------ SERVICE -----------------------------//
-		// Set ServiceRatePlan and ServiceRateGroup Records to Active
-		// TODO
-		
-		// Set ServiceRatePlan.LastChargedOn to InvoiceRun.BillingDate
-		// TODO
-		
+		//------------------------------ SERVICE -----------------------------//		
 		// Update Service.discount_start_datetime to NULL
-		// TODO
+		$strSQL	= "UPDATE (ServiceTotal JOIN service_total_service ON ServiceTotal.Service = service_total_service.service_total_id) JOIN Service ON Service.Id = service_total_service.service_id " .
+					" SET Service.discount_start_datetime = NULL " .
+					" WHERE ServiceTotal.Account = {$this->Account} AND invoice_run_id = {$this->invoice_run_id}";
+		if ($qryQuery->Execute($strSQL) === FALSE)
+		{
+			throw new Exception($qryQuery->Error());
+		}
 		
 		//------------------------------ INVOICE -----------------------------//
 		// Determine Invoice Status
