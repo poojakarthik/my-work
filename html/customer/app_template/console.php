@@ -2029,10 +2029,6 @@ class AppTemplateConsole extends ApplicationTemplate
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
 			/*
-			 * ABN is not a required field..
-			 */
-
-			/*
 			list($strFoundError,$strErrorResponse) = InputValidation("ABN",$_POST['mixABN'],"numbers",255);
 			if($strFoundError)
 			{
@@ -2062,13 +2058,30 @@ class AppTemplateConsole extends ApplicationTemplate
 				// we can check the database for a record. 2
 				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"$_POST[mixAccountNumber]\" LIMIT 1");
 
+
+				$intCustomerEnteredABN = $_POST['mixABN'];
+				$intABNInDB = $strCustAccount->ABN;
+				
+				// print "before stripping;<br>";
+				// print "\$intCustomerEnteredABN = $intCustomerEnteredABN<br>";
+				// print "\$intABNInDB = $intABNInDB<br>";
+				
+				$intCustomerEnteredABN = ereg_replace("[^0-9]", "", $intCustomerEnteredABN);
+				$intABNInDB = ereg_replace("[^0-9]", "", $intABNInDB);
+
+				// print "after stripping;<br>";
+				// print "\$intCustomerEnteredABN = $intCustomerEnteredABN<br>";
+				// print "\$intABNInDB = $intABNInDB<br>";
+
+
+
 				if($strCustContact->LastLogin != NULL)
 				{
 					// they have logged in before, print error message or redirect, or both!.
 					DBO()->ErrorMessage .= "Error you have already setup your account, if you forget your password: <a href=\"" . Href()->ResetPassword() . "\">go here</a>" . "<br/>";
 
 				}
-				else if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]" && $strCustAccount->ABN == "$_POST[mixABN]")
+				else if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]" && $intABNInDB == "$intCustomerEnteredABN")
 				{
 					DBO()->Fail = FALSE;
 					DBO()->Contact->Id = $strCustContact->Id;
@@ -2138,7 +2151,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(DBO()->Fail)
 			{
 				// Brute Force attack prevention.
-				sleep(9);
+				//sleep(9);
 			}
 		}
 
