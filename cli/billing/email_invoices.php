@@ -15,6 +15,7 @@ $arrConfig = LoadApplication();
 
 // Check Parameters
 $strInvoiceRun	= $argv[1];
+$bolIncludePDF	= (strtolower($argv[2]) === 'includepdf') ? TRUE : FALSE;
 $selInvoiceRun	= new StatementSelect("InvoiceRun", "*, Id AS invoice_run_id", "InvoiceRun = <InvoiceRun>");
 if (!$selInvoiceRun->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 {
@@ -24,15 +25,20 @@ if (!$selInvoiceRun->Execute(Array('InvoiceRun' => $strInvoiceRun)))
 $arrInvoiceRun	= $selInvoiceRun->Fetch();
 
 // Email them Invoices
-EmailInvoices($arrInvoiceRun);
+EmailInvoices($arrInvoiceRun, $bolIncludePDF);
 
 exit(0);
+//----------------------------- END OF ENTRY CODE -----------------------------/
 
 
 
-//------------------------------------------------------------------------//
+
+
+
+
+//----------------------------------------------------------------------------//
 // EmailInvoices()
-//------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /**
  * EmailInvoices()
  *
@@ -40,11 +46,12 @@ exit(0);
  *
  * Sends invoices in emails from the specified directory
  *
- * @return		array		$arrInvoiceRun			Invoice Run details
+ * @param	array	$arrInvoiceRun					Invoice Run details
+ * @param	boolean	$bolIncludePDF		[optional]	TRUE: Attach the PDF version of this Invoice
  *
  * @method
  */
-function EmailInvoices($arrInvoiceRun)
+function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 {
 	CliEcho("[ EMAILING INVOICES ]\n");
 	
@@ -72,6 +79,30 @@ function EmailInvoices($arrInvoiceRun)
 		$arrCustomerGroups[$arrCustomerGroup['Id']]	= $arrCustomerGroup;
 	}
 	
+	// Get list of PDFs
+	if ($bolIncludePDF)
+	{
+		$strPDFDirectory	= FILES_BASE_PATH."invoices/xml/{$arrInvoiceRun['InvoiceRun']}";
+		if (!is_dir($strPDFDirectory))
+		{
+			CliEcho("Cannot find PDF Path: ''{$strPDFDirectory}'");
+			$strPDFDirectory	= FILES_BASE_PATH."invoices/xml/{$arrInvoiceRun['Id']}";
+			if (!is_dir($strPDFDirectory))
+			{
+				CliEcho("Cannot find PDF Path: ''{$strPDFDirectory}'");
+				return FALSE;
+			}
+		}
+		
+		$arrPDFs		= glob($strPDFDirectory);
+		$arrAccountPDFs	= Array();
+		foreach ($arrPDFs as $strPath)
+		{
+			$arrExplode								= explode('.', basename($strPath));
+			$arrAccountPDFs[(int)$arrExplode[0]]	= $strPath;
+		}
+	}
+	
 	// Loop through each Invoice
 	$intPassed	= 0;
 	$intIgnored	= 0;
@@ -82,7 +113,7 @@ function EmailInvoices($arrInvoiceRun)
 	}
 	while ($arrInvoice = $selInvoices->Fetch()) 
 	{
-		// Get the account number from the filename, then find the account's email address 			
+		// Get the account number from the invoice, then find the account's email address 			
 		if ($selAccountEmail->Execute($arrInvoice) === FALSE)
 		{
 			Debug($selAccountEmail->Error());
@@ -133,16 +164,30 @@ function EmailInvoices($arrInvoiceRun)
 	 			
 	 			$mimMime = new Mail_mime("\n");
 	 			$mimMime->setTXTBody($strContent);
-				$strBody = $mimMime->get();
+	 			
+	 			if ($bolIncludePDF)
+	 			{
+	 				if (is_file($arrAccountPDFs[$arrInvoice['Account']]))
+	 				{
+	 					$mimMime->addAttachment(file_get_contents($arrAccountPDFs[$arrInvoice['Account']]), 'application/pdf', $arrInvoice['Account'].'_'.str_replace(' ', '_', $strBillingPeriod).".pdf", FALSE);
+	 				}
+	 				else
+	 				{
+	 					CliEcho("[ FAILED ]\n\t\t\t-Reason: PDF not found at '{$arrAccountPDFs[$arrInvoice['Account']]}'");
+	 					continue;
+	 				}
+ 				}
+ 				
+				$strBody = $mimMime->get();				
 				$strHeaders = $mimMime->headers($arrHeaders);
 	 			$emlMail =& Mail::factory('mail');
 	 			
 	 			// Uncomment this to Debug
-	 			/*$strEmail			= 'rich@voiptelsystems.com.au';
+	 			$strEmail			= 'rich@voiptelsystems.com.au';
 	 			$arrDebugEmails		= Array();
 	 			$arrDebugEmails[]	= 'rdavis@yellowbilling.com.au';
 	 			$arrDebugEmails[]	= 'turdminator@hotmail.com';
-	 			$strEmail	= (count($arrDebugEmails)) ? implode(', ', $arrDebugEmails) : $strEmail;*/
+	 			$strEmail	= (count($arrDebugEmails)) ? implode(', ', $arrDebugEmails) : $strEmail;
 	 				 			
 	 			// Send the email
 	 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
@@ -150,7 +195,7 @@ function EmailInvoices($arrInvoiceRun)
 	 				CliEcho("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 	 				continue;
 	 			}
-	 			//die;
+	 			die;
 				
 				// Update DeliveryMethod
 				$arrWhere					= Array();
