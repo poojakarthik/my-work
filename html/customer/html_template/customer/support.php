@@ -164,7 +164,7 @@
 
 
 
-			$mixLineList = "<option value=\"no value selected\"></option>\n";
+			$mixLineList = "";
 			for($i=1; $i<20; $i++)
 			{
 				$mixLineList .= "<option value=\"$i\">$i</option>\n";
@@ -293,6 +293,19 @@
 					$mixServiceList
 					</div>
 					<br/>";
+
+					echo "
+					<div class='customer-standard-table-title-style-password'>Enter the date your change should take place</div>
+					<div class='GroupedContent'>
+					<TABLE class=\"customer-standard-table-style\">
+					<TR>
+						<TD>Requested Date:</TD>
+						<TD><INPUT TYPE=\"text\" NAME=\"mixInstallDate\" VALUE=\"ASAP\" SIZE=\"11\"> or <input type=button value=\"select date\" onclick=\"displayDatePicker('mixInstallDate', false, 'dmy', '.');\"></TD>
+					</TR>
+					</TABLE>
+					</div>
+					<br/>";
+
 					echo "<div class='customer-standard-table-title-style-password'>Create Diversions</div>
 					<div class='GroupedContent'>
 					<TABLE class=\"customer-standard-table-style\">
@@ -696,11 +709,11 @@
 					break;
 				}
 
-				echo "<div class='customer-standard-table-title-style-password'>Brief instructions</div>
+				echo "<div class='customer-standard-table-title-style-password'>Details Of Request</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
 				<TR VALIGN=\"TOP\">
-				<TD width=\"160\">Details of request:</TD>
+				<TD width=\"160\">Additional Information:</TD>
 				<TD><textarea name=\"mixCustomerComments\" rows=\"5\" cols=\"35\"></textarea></TD>
 				</TR>
 				</TABLE>
