@@ -80,13 +80,14 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	}
 	
 	// Get list of PDFs
+	$arrAccountPDFs	= Array();
 	if ($bolIncludePDF)
 	{
-		$strPDFDirectory	= FILES_BASE_PATH."invoices/xml/{$arrInvoiceRun['InvoiceRun']}";
+		$strPDFDirectory	= FILES_BASE_PATH."invoices/pdf/{$arrInvoiceRun['InvoiceRun']}";
 		if (!is_dir($strPDFDirectory))
 		{
 			CliEcho("Cannot find PDF Path: ''{$strPDFDirectory}'");
-			$strPDFDirectory	= FILES_BASE_PATH."invoices/xml/{$arrInvoiceRun['Id']}";
+			$strPDFDirectory	= FILES_BASE_PATH."invoices/pdf/{$arrInvoiceRun['Id']}";
 			if (!is_dir($strPDFDirectory))
 			{
 				CliEcho("Cannot find PDF Path: ''{$strPDFDirectory}'");
@@ -94,8 +95,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 			}
 		}
 		
-		$arrPDFs		= glob($strPDFDirectory);
-		$arrAccountPDFs	= Array();
+		$arrPDFs		= glob($strPDFDirectory.'/*.pdf');
 		foreach ($arrPDFs as $strPath)
 		{
 			$arrExplode								= explode('.', basename($strPath));
@@ -136,10 +136,17 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  									'From'		=> $arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail'],
  									'Subject'	=> "Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for $strBillingPeriod"
  								);
-			$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice, for Account Number {$arrInvoice['Account']}, is now ready for viewing via the online customer portal.  To access the portal please go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your username & password.\n\n" .
+			/*$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice, for Account Number {$arrInvoice['Account']}, is now ready for viewing via the online customer portal.  To access the portal please go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your username & password.\n\n" .
 							"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “Setup Account” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
 							"Regards,\n\n" .
-							"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
+							"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";*/
+			
+			// FOR 2008-10-02 ONLY
+			$strContent		=	"Please find attached your Invoice for {$strBillingPeriod};\n\n" .
+								"IMPORTANT NOTE:   Your bill is now available online, please go to http://www.voicetalk.com.au and set up your online account. From next month onwards your bill will be only viewed via the online billing system.  This only takes a few seconds to set up and can be accessed at any time during each month. Feel free to call customer service for assistance.\n\n" .
+								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
+								"Regards,\n\n" .
+								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}";
 	 		
 	 		// Does the customer have a first name?
 	 		if (trim($arrDetail['FirstName']))
