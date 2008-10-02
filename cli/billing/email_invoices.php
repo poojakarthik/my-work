@@ -138,12 +138,11 @@ function EmailInvoices($arrInvoiceRun)
 	 			$emlMail =& Mail::factory('mail');
 	 			
 	 			// Uncomment this to Debug
-	 			$strEmail			= 'rich@voiptelsystems.com.au';
+	 			/*$strEmail			= 'rich@voiptelsystems.com.au';
 	 			$arrDebugEmails		= Array();
 	 			$arrDebugEmails[]	= 'rdavis@yellowbilling.com.au';
 	 			$arrDebugEmails[]	= 'turdminator@hotmail.com';
-	 			
-	 			$strEmail	= (count($arrDebugEmails)) ? implode(', ', $arrDebugEmails) : $strEmail;
+	 			$strEmail	= (count($arrDebugEmails)) ? implode(', ', $arrDebugEmails) : $strEmail;*/
 	 				 			
 	 			// Send the email
 	 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
@@ -151,7 +150,7 @@ function EmailInvoices($arrInvoiceRun)
 	 				CliEcho("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 	 				continue;
 	 			}
-	 			die;
+	 			//die;
 				
 				// Update DeliveryMethod
 				$arrWhere					= Array();
