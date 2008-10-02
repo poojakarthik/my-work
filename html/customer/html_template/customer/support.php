@@ -327,7 +327,7 @@
 
 						$arrPlans = DBO()->CustomerPlans->ListPlans->Value;
 						$mixPlanList = "";
-						$mixPlanList .= "<OPTION VALUE=\"\" SELECTED></OPTION>\n";
+						$mixPlanList .= "<OPTION VALUE=\"No Plan Selected\" SELECTED></OPTION>\n";
 						foreach($arrPlans as $arrPlan)
 						{
 							foreach($arrPlan as $key=>$val)
