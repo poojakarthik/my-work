@@ -84,6 +84,13 @@
 			$arrSupportConfig['SupportType'][4]['Description'] = 'Add a new line';
 			$arrSupportConfig['SupportType'][5]['Description'] = 'Other';
 
+
+			$arrSupportConfig['SupportType'][1]['AddressDescription'] = 'Service Address Details';
+			$arrSupportConfig['SupportType'][2]['AddressDescription'] = 'Service Address Details';
+			$arrSupportConfig['SupportType'][3]['AddressDescription'] = 'Service Address Details';
+			$arrSupportConfig['SupportType'][4]['AddressDescription'] = 'Install Address Details';
+			$arrSupportConfig['SupportType'][5]['AddressDescription'] = 'Service Address Details';
+
 			// Create  list of available services 
 			$mixTypeOfServiceList = "<table>";
 			$mixTypeOfServiceList_dropdown = "<table>
@@ -201,12 +208,15 @@
 			// If first option selected then show page two. only if add service page has been shown first...
 			if(is_numeric($_POST['intRequestType']) && array_key_exists('intAddNewServiceCheck' ,$_POST))
 			{
+				$intType = $_POST['intRequestType'];
+
 				echo "<form method=\"POST\" action=\"./flex.php/Console/Support/\" onsubmit=\"return validate_support_request(this)\">";
 				echo "
 				<input type=\"hidden\" name=\"intRequestType\" value=\"$_POST[intRequestType]\">
 				<input type=\"hidden\" name=\"intRequestTypeSubmit\" value=\"1\">
 				<input type=\"hidden\" name=\"mixServiceType\" value=\"$_POST[mixServiceType]\">
-				<div class='customer-standard-table-title-style-address'>Address Details</div>
+
+				<div class='customer-standard-table-title-style-address'>$arrSupportConfig[SupportType][$intType][AddressDescription]</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
 				<TR>

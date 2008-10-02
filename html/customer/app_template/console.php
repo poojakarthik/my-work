@@ -2028,12 +2028,18 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolFoundError=TRUE;
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
+			/*
+			 * ABN is not a required field..
+			 */
+
+			/*
 			list($strFoundError,$strErrorResponse) = InputValidation("ABN",$_POST['mixABN'],"numbers",255);
 			if($strFoundError)
 			{
 				$bolFoundError=TRUE;
 				DBO()->ErrorMessage .= "$strErrorResponse<br/>";
 			}
+			*/
 			if($_POST['mixNewPass1'] != $_POST['mixNewPass2'])
 			{
 				$bolFoundError = TRUE;
