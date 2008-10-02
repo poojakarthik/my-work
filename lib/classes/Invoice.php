@@ -702,12 +702,41 @@ class Invoice
 	public function commit()
 	{
 		// Ensure that this is a Temporary Invoice
-		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
+		if ($this->Status !== INVOICE_TEMP)
 		{
 			throw new Exception("Cannot commit Invoice #{$this->Id} because it is not Temporary!");
 		}
 		
+		// Commit the CDRs
+		// TODO
 		
+		// Commit the Charges
+		// TODO
+		
+		//------------------------------ ACCOUNT -----------------------------//
+		// Update Account.LastBilled to InvoiceRun.BillingDate
+		// TODO
+		
+		// Update Account.Sample
+		// TODO
+		$objAccount->save();
+		
+		//------------------------------ SERVICE -----------------------------//
+		// Set ServiceRatePlan and ServiceRateGroup Records to Active
+		// TODO
+		
+		// Set ServiceRatePlan.LastChargedOn to InvoiceRun.BillingDate
+		// TODO
+		
+		// Update Service.discount_start_datetime to NULL
+		// TODO
+		
+		//------------------------------ INVOICE -----------------------------//
+		// Determine Invoice Status
+		// TODO
+		
+		// Save
+		$this->save();
 	}
 	
 	//------------------------------------------------------------------------//

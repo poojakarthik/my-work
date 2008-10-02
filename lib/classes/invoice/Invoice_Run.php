@@ -348,9 +348,9 @@ class Invoice_Run
 	/**
 	 * revoke()
 	 *
-	 * Generates an Invoice Run
+	 * Revokes a Temporary Invoice Run
 	 *
-	 * Generates an Invoice Run
+	 * Revokes a Temporary Invoice Run
 	 *
 	 * @method
 	 */
@@ -390,6 +390,54 @@ class Invoice_Run
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// commit
+	//------------------------------------------------------------------------//
+	/**
+	 * commit()
+	 *
+	 * Commits a Temporary Invoice Run
+	 *
+	 * Commits a Temporary Invoice Run
+	 *
+	 * @method
+	 */
+	public function commit()
+	{
+		Cli_App_Billing::debug(" * ENTERING commit()...");
+		
+		// Is this InvoiceRun Temporary?
+		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
+		{
+			// No, throw an Exception
+			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
+		}
+		
+		// Init variables
+		static	$qryQuery;
+		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
+		
+		// Get list of Invoices to Commit
+		Cli_App_Billing::debug(" * Getting list of Invoices to Commit...");
+		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
+		if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
+		}
+		while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
+		{
+			// Commit each Invoice
+			$objInvoice	= new Invoice($arrInvoice);
+			Cli_App_Billing::debug(" * Committing Invoice with Id {$objInvoice->Id}...");
+			$objInvoice->commit();
+		}
+		
+		// Finalise entry in the InvoiceRun table
+		Cli_App_Billing::debug(" * Finalising Invoice Run with Id {$this->Id}");
+		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_COMMITTED;
+		$this->save();
 	}
 	
 	//------------------------------------------------------------------------//
