@@ -2061,19 +2061,17 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				$intCustomerEnteredABN = $_POST['mixABN'];
 				$intABNInDB = $strCustAccount->ABN;
-				
-				// print "before stripping;<br>";
-				// print "\$intCustomerEnteredABN = $intCustomerEnteredABN<br>";
-				// print "\$intABNInDB = $intABNInDB<br>";
-				
+
+				/* 
+				 * Format the ABN in the database and the users input so it contains numbers only! no spaces or dashs..
+				 *
+				 * Because not all customers have an abn: 
+				 * 1. Its not required they enter an abn
+				 * 2. So no level of security is lost, whatever they enter must match whatever is in the database. e.g. blank or a number.
+				 *
+				 */
 				$intCustomerEnteredABN = ereg_replace("[^0-9]", "", $intCustomerEnteredABN);
 				$intABNInDB = ereg_replace("[^0-9]", "", $intABNInDB);
-
-				// print "after stripping;<br>";
-				// print "\$intCustomerEnteredABN = $intCustomerEnteredABN<br>";
-				// print "\$intABNInDB = $intABNInDB<br>";
-
-
 
 				if($strCustContact->LastLogin != NULL)
 				{
