@@ -143,7 +143,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 			
 			// FOR 2008-10-02 ONLY
 			$strContent		=	"Please find attached your Invoice for {$strBillingPeriod};\n\n" .
-								"IMPORTANT NOTE:   Your bill is now available online, please go to http://www.voicetalk.com.au and set up your online account. From next month onwards your bill will be only viewed via the online billing system.  This only takes a few seconds to set up and can be accessed at any time during each month. Feel free to call customer service for assistance.\n\n" .
+								"IMPORTANT NOTE:   Your bill is now available online, please go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and set up your online account. From next month onwards your bill will be only viewed via the online billing system.  This only takes a few seconds to set up and can be accessed at any time during each month. Feel free to call customer service for assistance.\n\n" .
 								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
 								"Regards,\n\n" .
 								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}";
