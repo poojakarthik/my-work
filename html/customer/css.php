@@ -106,6 +106,12 @@ if(!$Debug_Use_Old_Way)
 	}
 
 	echo $customer_css;
+	echo "\n";
+	/*
+	 * Add the requirement for more css files to be loaded.
+	 * List here..:
+	 */
+	require_once('css/date_picker.css');
 
 }
 if($Debug_Use_Old_Way)
@@ -113,6 +119,7 @@ if($Debug_Use_Old_Way)
 
 	// Old way of just using one css file for all users.
 	require_once('css/default.css');
+	require_once('css/date_picker.css');
 
 }
 ?>

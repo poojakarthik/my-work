@@ -268,6 +268,14 @@
 								<TD>$_POST[mixDSLSetup]</TD>
 							</TR>
 							<TR>
+								<TD width=\"160\">How many new lines</TD>
+								<TD>$_POST[mixTotalLines]</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Requested Install Date</TD>
+								<TD>$_POST[mixInstallDate]</TD>
+							</TR>
+							<TR>
 								<TD>Existing Connection</TD>
 								<TD>$_POST[mixDSLExistingConnection]</TD>
 							</TR>
@@ -301,6 +309,14 @@
 								<TD>$_POST[mixMobileSetup]</TD>
 							</TR>
 							<TR>
+								<TD width=\"160\">How many new lines</TD>
+								<TD>$_POST[mixTotalLines]</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Requested Install Date</TD>
+								<TD>$_POST[mixInstallDate]</TD>
+							</TR>
+							<TR>
 								<TD>Number</TD>
 								<TD>$_POST[mixMobileNumber]</TD>
 							</TR>
@@ -329,6 +345,14 @@
 							<TR>
 								<TD width=\"160\">Setup</TD>
 								<TD>$_POST[mixLandlineSetup]</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">How many new lines</TD>
+								<TD>$_POST[mixTotalLines]</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Requested Install Date</TD>
+								<TD>$_POST[mixInstallDate]</TD>
 							</TR>
 							<TR>
 								<TD>PSTN Message Bank</TD>
@@ -375,6 +399,14 @@
 							<TR VALIGN=\"TOP\">
 							<TD width=\"160\"></TD>
 							<TD><B>$_POST[mixInboundSetup]</B></TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">How many new lines</TD>
+								<TD>$_POST[mixTotalLines]</TD>
+							</TR>
+							<TR>
+								<TD width=\"160\">Requested Install Date</TD>
+								<TD>$_POST[mixInstallDate]</TD>
 							</TR>
 							<TR>
 								<TD width=\"160\">Current Account Number</TD>

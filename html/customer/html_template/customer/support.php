@@ -58,6 +58,7 @@
 		$this->LoadJavascript('javascript_functions');
 		$this->LoadJavascript('javascript_validation');
 		$this->LoadJavascript('javascript_error_box');
+		$this->LoadJavascript('javascript_date_picker');
 	}
 	
 	//------------------------------------------------------------------------//
@@ -88,9 +89,9 @@
 			$arrSupportConfig['SupportType'][1]['AddressDescription'] = 'Service Address Details';
 			$arrSupportConfig['SupportType'][2]['AddressDescription'] = 'Service Address Details';
 			$arrSupportConfig['SupportType'][3]['AddressDescription'] = 'Service Address Details';
-			$arrSupportConfig['SupportType'][4]['AddressDescription'] = 'Install Address Details';
+			$arrSupportConfig['SupportType'][4]['AddressDescription'] = 'Installation Address';
 			$arrSupportConfig['SupportType'][5]['AddressDescription'] = 'Service Address Details';
-
+			
 			// Create  list of available services 
 			$mixTypeOfServiceList = "<table>";
 			$mixTypeOfServiceList_dropdown = "<table>
@@ -163,6 +164,12 @@
 
 
 
+			$mixLineList = "<option value=\"no value selected\"></option>\n";
+			for($i=1; $i<20; $i++)
+			{
+				$mixLineList .= "<option value=\"$i\">$i</option>\n";
+			}
+			$mixLineList .= "<option value=\"20+\">20+</option>\n";
 
 			// If no submission then print default options.
 			if(!array_key_exists('intRequestType', $_POST))
@@ -215,8 +222,7 @@
 				<input type=\"hidden\" name=\"intRequestType\" value=\"$_POST[intRequestType]\">
 				<input type=\"hidden\" name=\"intRequestTypeSubmit\" value=\"1\">
 				<input type=\"hidden\" name=\"mixServiceType\" value=\"$_POST[mixServiceType]\">
-
-				<div class='customer-standard-table-title-style-address'>$arrSupportConfig[SupportType][$intType][AddressDescription]</div>
+				<div class='customer-standard-table-title-style-address'>" . $arrSupportConfig['SupportType']["$_POST[intRequestType]"]['AddressDescription'] . "</div>
 				<div class='GroupedContent'>
 				<TABLE class=\"customer-standard-table-style\">
 				<TR>
@@ -362,6 +368,18 @@
 									<OPTION VALUE=\"Port Old Connection\">Port Old Connection</OPTION>
 								</SELECT></TD>
 							</TR>
+							<TR>
+								<TD>How many new lines:</TD>
+								<TD>
+									<select name=\"mixTotalLines\">
+										$mixLineList
+									</select>
+								</TD>
+							</TR>
+							<TR>
+								<TD>Requested Install Date:</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixInstallDate\" VALUE=\"ASAP\" SIZE=\"11\"> or <input type=button value=\"select date\" onclick=\"displayDatePicker('mixInstallDate', false, 'dmy', '.');\"></TD>
+							</TR>
 							</TABLE>
 							</div>
 							<br/>
@@ -434,6 +452,18 @@
 									<OPTION VALUE=\"Port Old Connection\">Port Old Number</OPTION>
 								</SELECT></TD>
 							</TR>
+							<TR>
+								<TD>How many new lines:</TD>
+								<TD>
+									<select name=\"mixTotalLines\">
+										$mixLineList
+									</select>
+								</TD>
+							</TR>
+							<TR>
+								<TD>Requested Install Date:</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixInstallDate\" VALUE=\"ASAP\" SIZE=\"11\"> or <input type=button value=\"select date\" onclick=\"displayDatePicker('mixInstallDate', false, 'dmy', '.');\"></TD>
+							</TR>
 							</TABLE>
 							</div>
 							<br/>
@@ -485,6 +515,18 @@
 									<OPTION VALUE=\"Not Sure\">Not Sure</OPTION>
 								</SELECT>
 							</TD>
+							</TR>
+							<TR>
+								<TD>How many new lines:</TD>
+								<TD>
+									<select name=\"mixTotalLines\">
+										$mixLineList
+									</select>
+								</TD>
+							</TR>
+							<TR>
+								<TD>Requested Install Date:</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixInstallDate\" VALUE=\"ASAP\" SIZE=\"11\"> or <input type=button value=\"select date\" onclick=\"displayDatePicker('mixInstallDate', false, 'dmy', '.');\"></TD>
 							</TR>
 							</TABLE>
 							</div>
@@ -584,6 +626,18 @@
 									<OPTION VALUE=\"New Connection\">New Activation</OPTION>
 									<OPTION VALUE=\"Port Old Connection\">Port Old Number</OPTION>
 								</SELECT></TD>
+							</TR>
+							<TR>
+								<TD>How many new lines:</TD>
+								<TD>
+									<select name=\"mixTotalLines\">
+										$mixLineList
+									</select>
+								</TD>
+							</TR>
+							<TR>
+								<TD>Requested Install Date:</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixInstallDate\" VALUE=\"ASAP\" SIZE=\"11\"> or <input type=button value=\"select date\" onclick=\"displayDatePicker('mixInstallDate', false, 'dmy', '.');\"></TD>
 							</TR>
 							<TR>
 								<TD width=\"160\">Current Account Number</TD>

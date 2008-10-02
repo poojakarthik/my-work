@@ -1086,6 +1086,11 @@ class AppTemplateConsole extends ApplicationTemplate
 					break; 
 					
 					case "4":
+
+						$arrFieldsList['DSL Setup'] = $_POST['mixDSLSetup'];
+						$arrFieldsList['How many new lines'] = $_POST['mixTotalLines'];
+						$arrFieldsList['Requested Install Date'] = $_POST['mixInstallDate'] . "\n";
+
 						// 100 - DSL
 						if($_POST['mixServiceType'] == "100")
 						{
@@ -1184,11 +1189,15 @@ class AppTemplateConsole extends ApplicationTemplate
 				$message .= "\nKind Regards\n";
 				$message .= "Customer Service Group\n";
 				
+				
 				$email = new Email_Notification(EMAIL_NOTIFICATION_SUPPORT_FORM, DBO()->Account->CustomerGroup->Value);
 				$email->setFrom("$_POST[mixContact_Email]", "$_POST[mixContact_FirstName] $_POST[mixContact_LastName]");
 				$email->setSubject("Account Support Request - " . DBO()->Contact->Account->Value);
 				$email->setBodyText("$message");
 				$email->send();
+				
+				// for debug only.
+				// mail("DEBUG-ADDRESS","TEST FORM DATA","$message");
 
 				$this->LoadPage('support_confirmed');
 				return TRUE;
