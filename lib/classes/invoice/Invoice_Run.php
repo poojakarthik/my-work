@@ -119,7 +119,7 @@ class Invoice_Run
 			return new self($selInvoiceRun->Fetch());
 		}
 	}
-
+	
 	//------------------------------------------------------------------------//
 	// getColumns
 	//------------------------------------------------------------------------//
@@ -141,13 +141,13 @@ class Invoice_Run
 		
 		return $arrColumns;
 	}
-
+	
 	public function __get($strName)
 	{
 		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
 		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
 	}
-
+	
 	protected function __set($strName, $mxdValue)
 	{
 		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;

@@ -725,6 +725,7 @@
 				break;
  		}
  		
+ 		$arrItem['TaxExempt']	= $arrCDR['TaxExempt'];
  		return $arrItem;
  	}
  }
