@@ -21,6 +21,7 @@ class Customer_Search
 	const CONSTRAINT_TYPE_INVOICE_ID	= 6;
 	const CONSTRAINT_TYPE_ABN			= 7;
 	const CONSTRAINT_TYPE_ACN			= 8;
+	const CONSTRAINT_TYPE_EMAIL			= 9;
 	
 	private static $arrConstraintTypes = array(	self::CONSTRAINT_TYPE_ACCOUNT_ID	=> array(	"Name"			=> "Account Id",
 																								"Description"	=> "Account Id"
@@ -45,6 +46,9 @@ class Customer_Search
 																							),
 												self::CONSTRAINT_TYPE_ACN			=> array(	"Name"			=> "ACN",
 																								"Description"	=> "ACN"
+																							),
+												self::CONSTRAINT_TYPE_EMAIL			=> array(	"Name"			=> "Email Address",
+																								"Description"	=> "Email Address"
 																							)
 												);
 	
@@ -83,11 +87,13 @@ class Customer_Search
 				$arrConstraints[self::CONSTRAINT_TYPE_INVOICE_ID]	= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_INVOICE_ID];
 				$arrConstraints[self::CONSTRAINT_TYPE_ABN]			= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_ABN];
 				$arrConstraints[self::CONSTRAINT_TYPE_ACN]			= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_ACN];
+				$arrConstraints[self::CONSTRAINT_TYPE_EMAIL]		= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_EMAIL];
 				break;
 			
 			case self::SEARCH_TYPE_CONTACTS:
 				$arrConstraints[self::CONSTRAINT_TYPE_CONTACT_NAME]	= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_CONTACT_NAME];
 				$arrConstraints[self::CONSTRAINT_TYPE_ACCOUNT_ID]	= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_ACCOUNT_ID];
+				$arrConstraints[self::CONSTRAINT_TYPE_EMAIL]		= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_EMAIL];
 				break;
 			
 			case self::SEARCH_TYPE_SERVICES:
@@ -190,6 +196,10 @@ class Customer_Search
 			case self::CONSTRAINT_TYPE_ACN:
 				$arrAccounts = self::_findAccountsForACN($mixConstraint, $bolIncludeArchived);
 				break;
+
+			case self::CONSTRAINT_TYPE_EMAIL:
+				$arrAccounts = self::_findAccountsForEmail($mixConstraint, $bolIncludeArchived);
+				break;
 				
 			default:
 				// We don't know what sort of search it is
@@ -230,6 +240,7 @@ class Customer_Search
 					{
 						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($mixConstraint, $bolIncludeArchived));
 					}
+					$arrAccounts = array_merge($arrAccounts, self::_findAccountsForEmail($mixConstraint, $bolIncludeArchived));
 				}
 				
 				break;
@@ -257,6 +268,10 @@ class Customer_Search
 			case self::CONSTRAINT_TYPE_CONTACT_NAME:
 				$arrContacts = self::_findContactsForContactName($mixConstraint, $bolIncludeArchived);
 				break;
+				
+			case self::CONSTRAINT_TYPE_EMAIL:
+				$arrContacts = self::_findContactsForEmail($mixConstraint, $bolIncludeArchived);
+				break;
 			
 			default:
 				if (is_numeric($mixConstraint))
@@ -266,6 +281,7 @@ class Customer_Search
 				else
 				{
 					$arrContacts = self::_findContactsForContactName($mixConstraint, $bolIncludeArchived);
+					$arrContacts = array_merge($arrContacts, self::_findContactsForEmail($mixConstraint, $bolIncludeArchived));
 				}
 				break;
 		}
@@ -345,7 +361,7 @@ class Customer_Search
 
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		
-		$strQuery = "	SELECT a.Id AS AccountId 
+		$strQuery = "	SELECT DISTINCT a.Id AS AccountId 
 						FROM Account AS a INNER JOIN Service AS s ON a.Id = s.Account
 						WHERE s.Id = $intServiceId $strArchivedConstraint";
 		
@@ -363,7 +379,7 @@ class Customer_Search
 	{
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		
-		$strQuery = "	SELECT Id
+		$strQuery = "	SELECT DISTINCT Id
 						FROM Account
 						WHERE (BusinessName LIKE '%$strAccountName%' OR TradingName LIKE '%$strAccountName%') $strArchivedConstraint
 						ORDER BY BusinessName ASC, TradingName ASC, Id DESC
@@ -379,7 +395,7 @@ class Customer_Search
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		
-		$strQuery = "	SELECT a.Id AS AccountId
+		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Service AS s ON a.Id = s.Account
 						WHERE ((s.FNN = '$strFNN' OR (s.Indial100 = 1 AND s.FNN LIKE '$strFnnIndial')) AND (s.ClosedOn IS NULL OR s.CreatedOn <= s.ClosedOn)) $strArchivedConstraint
 						LIMIT ". self::MAX_RECORDS;
@@ -397,7 +413,7 @@ class Customer_Search
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		
-		$strQuery = "	SELECT a.Id AS AccountId
+		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Invoice AS i ON a.Id = i.Account
 						WHERE i.Id = $intInvoiceId $strArchivedConstraint";
 		
@@ -414,7 +430,7 @@ class Customer_Search
 		$strABN = str_replace(" ", "", $strABN);
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
-		$strQuery = "	SELECT Id
+		$strQuery = "	SELECT DISTINCT Id
 						FROM Account
 						WHERE REPLACE(ABN, ' ', '') = '$strABN' $strArchivedConstraint
 						LIMIT ". self::MAX_RECORDS;
@@ -427,7 +443,7 @@ class Customer_Search
 		$strACN = str_replace(" ", "", $strACN);
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
-		$strQuery = "	SELECT Id
+		$strQuery = "	SELECT DISTINCT Id
 						FROM Account
 						WHERE REPLACE(ACN, ' ', '') = '$strACN' $strArchivedConstraint
 						LIMIT ". self::MAX_RECORDS;
@@ -439,7 +455,7 @@ class Customer_Search
 	private static function _findContactsForContactName($strContactName, $bolIncludeArchived)
 	{
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != 1";
-		$strQuery = "	SELECT Id
+		$strQuery = "	SELECT DISTINCT Id
 						FROM Contact
 						WHERE CONCAT(FirstName, ' ', LastName) LIKE '%$strContactName%' $strArchivedConstraint
 						ORDER BY LastName ASC, FirstName ASC, Id DESC
@@ -448,6 +464,30 @@ class Customer_Search
 		return self::_find($strQuery, "Id");
 	}
 	
+	// Returns array of all Contacts that match the email address passed.  If there aren't any, then this will be an empty array
+	private static function _findContactsForEmail($strEmail, $bolIncludeArchived)
+	{
+		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != 1";
+		$strQuery = "	SELECT DISTINCT Id
+						FROM Contact
+						WHERE Email LIKE '%$strEmail%' $strArchivedConstraint
+						ORDER BY LastName ASC, FirstName ASC, Id DESC
+						LIMIT ". self::MAX_RECORDS;
+
+		return self::_find($strQuery, "Id");
+	}
+
+	// Returns array of AccountIds for the Contact Email address.  If there aren't any then it returns an empty array
+	private static function _findAccountsForEmail($strEmail, $bolIncludeArchived)
+	{
+		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
+		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
+						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
+						WHERE c.Email LIKE '%$strEmail%' $strArchivedConstraint
+						LIMIT ". self::MAX_RECORDS;
+		
+		return self::_find($strQuery, "AccountId");
+	}
 	
 	// Returns array of AccountIds for the Contact Id passed.  If there aren't any then it returns an empty array
 	private static function _findAccountsForContactId($intContactId, $bolIncludeArchived)
@@ -458,7 +498,7 @@ class Customer_Search
 		}
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
-		$strQuery = "	SELECT a.Id AS AccountId
+		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE c.Id = $intContactId $strArchivedConstraint
 						LIMIT ". self::MAX_RECORDS;
@@ -475,7 +515,7 @@ class Customer_Search
 		}
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND c.Archived != 1";
-		$strQuery = "	SELECT c.Id AS ContactId
+		$strQuery = "	SELECT DISTINCT c.Id AS ContactId
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE a.Id = $intAccountId $strArchivedConstraint
 						LIMIT ". self::MAX_RECORDS;

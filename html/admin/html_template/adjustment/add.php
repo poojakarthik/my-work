@@ -132,7 +132,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' style='width:100%' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
@@ -232,7 +232,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
 
 		// give the ChargeTypeCombo initial focus
-		echo "<script type='text/javascript'>document.getElementById('ChargeTypeCombo').focus();</script>\n";
+		echo "<script type='text/javascript'>document.getElementById('Charge.charge_type_id').focus();</script>\n";
 		
 		$this->FormEnd();
 	}

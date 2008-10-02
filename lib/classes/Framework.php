@@ -1048,14 +1048,13 @@
 	/**
 	 * AddCharge()
 	 *
-	 * Find the record type from a Service Type & Record Code
+	 * Adds a charge 
 	 *
-	 * Find the record type from a Service Type & Record Code
+	 * Adds a charge
 	 * 
-	 *
-	 * @param	int		intServiceType		Service Type Constant
-	 * @param	string	strRecordCode		Vixen Record Type Code
-	 * @return	int		Record Type Id					
+	 * @param	array	$arrCharge			data for a Charge record you need at least 'Account' specified to find the owner
+	 * @param	bool	$bolTaxExempt		Optional, defaults to FALSE
+	 * @return	mixed						on success it returns the id of the new charge record. On failure it returns FALSE
 	 *
 	 * @method
 	 */
@@ -1073,7 +1072,6 @@
 		{
 			if ($this->_selFindChargeOwner->Execute($arrCharge) === FALSE)
 			{
-				Debug($this->_selFindChargeOwner);
 				return FALSE;
 			}
 			$arrResponse = $this->_selFindChargeOwner->Fetch();
@@ -1105,11 +1103,6 @@
 		
 		// Insert into DB
 		$insId = $this->_insCharge->Execute($arrCharge);
-		
-		if ($insId === FALSE)
-		{
-			Debug($this->_insCharge->Error());
-		}
 		
 		return $insId;
 	 }

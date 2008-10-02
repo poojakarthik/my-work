@@ -172,8 +172,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Set the status to CHARGE_WAITING
 				DBO()->Charge->Status = CHARGE_WAITING;
 
+				$arrData = DBO()->Charge->AsArray();
+				
+				$intChargeId = Framework()->AddCharge($arrData);
+
 				// Save the adjustment to the charge table of the vixen database
-				if (!DBO()->Charge->Save())
+				if ($intChargeId === FALSE)
 				{
 					// The adjustment did not save
 					Ajax()->AddCommand("Alert", "ERROR: Saving the adjustment failed, unexpectedly");
@@ -181,6 +185,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				}
 				else
 				{
+					DBO()->Charge->Id = $intChargeId;
 					// The adjustment was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("AlertReload", "The Adjustment has been successfully added");

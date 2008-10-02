@@ -229,11 +229,17 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 					$arrEmail = NULL;
 				}
 				
+if (strlen($objContact->password) != 0)
+{
 				// All contacts have a password
 				$arrPassword = array(	"Sha1"		=> $objContact->password,
 										"Weight"	=> 10
 									);
-				
+}
+else
+{
+	$arrPassword = NULL;
+}				
 				$arrCustomer['Contacts'][$objContact->id] = array(	"Id"			=> $objContact->id,
 																	"Name"			=> htmlspecialchars($objContact->getName()),
 																	"Verifiable"	=> array(	"DOB"		=> $arrDOB,
@@ -437,7 +443,7 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 		</div>
 		<div id='CustomerVerificationPopup_ContactDetailsContainer' name='CustomerVerificationPopup_ContactDetailsContainer' class='GroupedContent' style='margin-top:5px;display:none'>
 			<table class='form-data'>
-				<tr>
+				<tr id='CustomerVerificationPopup_ContactPasswordContainer' name='CustomerVerificationPopup_ContactPasswordContainer'>
 					<td class='title' style='width:30%'>Password</td>
 					<td>
 						<input type='text' id='CustomerVerificationPopup_ContactPassword' name='CustomerVerificationPopup_ContactPassword' maxlength='255'></input>

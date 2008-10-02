@@ -20,6 +20,7 @@ var FlexCustomerVerification = {
 	elmAccountACN				: null,
 	
 	elmContactPassword			: null,
+	elmContactPasswordContainer	: null,
 	elmContactDOBContainer		: null,
 	elmContactDOBDay			: null,
 	elmContactDOBMonth			: null,
@@ -90,6 +91,7 @@ var FlexCustomerVerification = {
 		this.elmAccountACNContainer		= $ID('CustomerVerificationPopup_AccountACNContainer');
 		this.elmAccountACN				= $ID('CustomerVerificationPopup_AccountACN');
 		this.elmContactDetailsContainer	= $ID('CustomerVerificationPopup_ContactDetailsContainer');
+		this.elmContactPasswordContainer	= $ID('CustomerVerificationPopup_ContactPasswordContainer');
 		this.elmContactPassword			= $ID('CustomerVerificationPopup_ContactPassword');
 		this.elmContactDOBContainer		= $ID('CustomerVerificationPopup_ContactDOBContainer');
 		this.elmContactDOBDay			= $ID('CustomerVerificationPopup_ContactDOBDay');
@@ -287,7 +289,15 @@ var FlexCustomerVerification = {
 			}
 			
 			// Set up the Contact Details form
-			this.verifyContactPassword();
+			if (this.objContact.Verifiable.Password != null)
+			{
+				this.verifyContactPassword();
+				this.elmContactPasswordContainer.style.display = "table-row";
+			}
+			else
+			{
+				this.elmContactPasswordContainer.style.display = "none";
+			}
 			
 			if (this.objContact.Verifiable.DOB != null)
 			{
