@@ -15,11 +15,8 @@ echo "<pre>";
 require_once("../../flex.require.php");
 LoadApplication();
 
-// Application entry point - create an instance of the application object
-$appBilling = new ApplicationBilling($arrConfig);
-
 // execute bill
-$bolResponse = $appBilling->PayNegativeBalances($strPath);
+$bolResponse = ApplicationBilling::PayNegativeBalances();
 
 $appBilling->FinaliseReport();
 

@@ -2638,7 +2638,7 @@
 	 *
 	 * @method
 	 */
- 	function PayNegativeBalances()
+ 	public static function PayNegativeBalances()
  	{
  		ob_start();
  		
