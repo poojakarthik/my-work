@@ -189,6 +189,8 @@
  			// We have an invalid type, so throw an exception
  			//throw new InvalidTypeException();
  			echo("Invalid Type!  Line 765\n");
+ 			Debug($mixColumns);
+ 			debug_print_backtrace();
  		}
 
 	 	// Add the FROM line
