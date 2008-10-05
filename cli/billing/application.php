@@ -2645,7 +2645,7 @@
  		$arrInvoiceColumns = Array();
  		$arrInvoiceColumns['Balance'] = NULL;
  		$selNegativeInvoices	= new StatementSelect("Invoice", "Id, Account, AccountGroup, Balance", "Status IN (101, 103) AND Balance < 0 AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
- 		$selPositiveInvoices	= new StatementSelect("Invoice", "Id, Balance, Status, InvoiceRun", "Status IN (101) AND Balance > 0 AND Account = <Account> AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
+ 		$selPositiveInvoices	= new StatementSelect("Invoice", "Id, Balance, Status, invoice_run_id", "Status IN (101) AND Balance > 0 AND Account = <Account> AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
  		$ubiInvoice				= new StatementUpdateById("Invoice", $arrInvoiceColumns);
  		$insInvoicePayment		= new StatementInsert("InvoicePayment");
  		
@@ -2711,11 +2711,11 @@
 				
 				// Add Credit Payment to InvoicePayment
 				$arrInvoicePayment = Array();
-				$arrInvoicePayment['InvoiceRun']	= $arrPositiveInvoice['InvoiceRun'];
-				$arrInvoicePayment['Account']		= $arrNegativeInvoice['Account'];
-				$arrInvoicePayment['AccountGroup']	= $arrNegativeInvoice['AccountGroup'];
-				$arrInvoicePayment['Payment']		= $arrNegativeInvoice['Id'];
-				$arrInvoicePayment['Amount']		= $fltPayment;
+				$arrInvoicePayment['invoice_run_id']	= $arrPositiveInvoice['invoice_run_id'];
+				$arrInvoicePayment['Account']			= $arrNegativeInvoice['Account'];
+				$arrInvoicePayment['AccountGroup']		= $arrNegativeInvoice['AccountGroup'];
+				$arrInvoicePayment['Payment']			= $arrNegativeInvoice['Id'];
+				$arrInvoicePayment['Amount']			= $fltPayment;
 				$insInvoicePayment->Execute($arrInvoicePayment);
 				
 				// Update the +ve Invoice
