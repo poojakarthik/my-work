@@ -18,8 +18,6 @@ LoadApplication();
 // execute bill
 $bolResponse = ApplicationBilling::PayNegativeBalances();
 
-$appBilling->FinaliseReport();
-
 // finished
 echo("\n\n-- End of Billing --\n");
 echo "</pre>";
