@@ -455,9 +455,9 @@ class AppTemplateConsole extends ApplicationTemplate
 			FROM survey 
 			WHERE id NOT IN (	SELECT survey_id
 						FROM survey_completed
-						WHERE account_id = \"" . DBO()->Account->Id->Value . "\"
+						WHERE contact_id = \"" . DBO()->Account->Id->Value . "\"
 					)
-			AND customer_group = \"" . DBO()->Account->CustomerGroup->Value . "\"
+			AND customer_group_id = \"" . DBO()->Account->CustomerGroup->Value . "\"
 			ORDER BY id ASC 
 			LIMIT 1";
 			$arrSurvey = $dbConnection->fetchone("$mixSelect");
@@ -471,9 +471,11 @@ class AppTemplateConsole extends ApplicationTemplate
 			$mixSelect = "SELECT sq.*, sqo.*
 			FROM survey_question AS sq 
 			INNER JOIN survey_question_option AS sqo 
-			ON sq.id = sqo.question_id
+			ON sq.id = sqo.survey_question_id
 			WHERE sq.survey_id = \"$id\"
-			ORDER BY sqo.question_id,sqo.option_type";
+			ORDER BY sqo.survey_question_id,sqo.survey_question_option_response_type_id";
+			// DEBUG
+			// echo "$mixSelect";
 			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
 
 			$arrInputTypes = array(
@@ -497,6 +499,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			$intCount = 0;
 			$intSubCount = 0;
 
+			//var_dump($arrSurvey);
 			foreach($arrSurvey as $results)
 			{
 				foreach($results as $key=>$val){
@@ -520,18 +523,17 @@ class AppTemplateConsole extends ApplicationTemplate
 				$bolFound = FALSE;
 				foreach($arrNumbers as $key=>$val)
 				{
-					if($val == "$question_id")
+					if($val == "$survey_question_id")
 					{
 						$bolFound = TRUE;
 					}
 				}
-
 				// It doesnt exist, it's a main item, e.g. <select> or <input text>
 				if(!$bolFound)
 				{
 					if(count($arrNumbers)>1)
 					{
-						$mixOutPut .= "$arrEndInputTypes[$response_type]" . "\n";
+						$mixOutPut .= "$arrEndInputTypes[$survey_question_response_type_id]" . "\n";
 						$mixOutPut .= "$mixQuestionEnd"; // End
 						$intSubCount=0;
 					}
@@ -540,42 +542,33 @@ class AppTemplateConsole extends ApplicationTemplate
 					##################################
 					# put main item here
 					##################################
-					switch($response_type)
+					switch($survey_question_response_type_id)
 					{
 						case "1":
-						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]'","$arrInputTypes[$response_type]");
+						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_response_type_id]");
 						$mixOutPut .= str_replace("[REPLACE]","$option_name","<option value='[REPLACE]'>[REPLACE]</option>");
 						break;
 
 						case "2":
-						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$response_type]");
+						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
 						$mixOutPut .= " $option_name<br>";
 						break;
 
 						case "3":
-						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$response_type]");
+						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$survey_question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$survey_question_response_type_id]");
 						$mixOutPut .= " $option_name<br>";
 						break;
 
 						default:
 						break;
 					}
-					switch($option_type)
+					switch($survey_question_option_response_type_id)
 					{
-						case "1":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
-						break;
-						case "2":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
-						break;
-						case "3":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
-						break;
 						case "4":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrOptAnswer[$survey_question_id||$id||$response_required||other]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
 						break;
 						case "5":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrOptAnswer[$survey_question_id||$id||$response_required||other]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
 						break;
 
 						default:
@@ -585,7 +578,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					//$mixOutPut .= "$intSubCount. $response_type $question_id<br>"; // for debug only..
 				}
 				$intCount++;
-				$arrNumbers[$intCount] = "$question_id";
+				$arrNumbers[$intCount] = "$survey_question_id";
 
 				// already exists, its a sub item. e.g. <option value=>
 				if($bolFound)
@@ -594,18 +587,18 @@ class AppTemplateConsole extends ApplicationTemplate
 					##################################
 					# put sub item here
 					##################################
-					switch($response_type)
+					switch($survey_question_response_type_id)
 					{
 						case "1":
 						$mixOutPut .= str_replace("[REPLACE]","$option_name","<option value='[REPLACE]'>[REPLACE]</option>");
 						break;
 						
 						case "2":
-						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$response_type]") . " $option_name<br>";
+						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]") . " $option_name<br>";
 						break;
 						
 						case "3":
-						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$response_type]");
+						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$survey_question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$survey_question_response_type_id]");
 						$mixOutPut .= " $option_name<br>";
 						break;
 
@@ -618,22 +611,13 @@ class AppTemplateConsole extends ApplicationTemplate
 						default:
 						break;
 					}
-					switch($option_type)
+					switch($survey_question_option_response_type_id)
 					{
-						case "1":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
-						break;
-						case "2":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
-						break;
-						case "3":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
-						break;
 						case "4":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrOptAnswer[$survey_question_id||$id||$response_required||other]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
 						break;
 						case "5":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$question_id||$id||$response_required||other]'","$arrInputTypes[$option_type]") . "<br>";
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrOptAnswer[$survey_question_id||$id||$response_required||other]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
 						break;
 
 						default:
@@ -667,11 +651,13 @@ class AppTemplateConsole extends ApplicationTemplate
 			$_POST = CleanFormInput($_POST);
 
 			// prevent the same survey from being completed twice.
-			$arrCheckIfCompleted = $dbConnection->fetch("SELECT * FROM survey_completed WHERE account_id = \"" . DBO()->Account->Id->Value . "\" AND survey_id=\"$_POST[intSurveyId]\"",$array=true);
+			$arrCheckIfCompleted = $dbConnection->fetch("SELECT * FROM survey_completed WHERE contact_id = \"" . DBO()->Contact->Account->Value . "\" AND survey_id=\"$_POST[intSurveyId]\"",$array=true);
 			if($arrCheckIfCompleted)
 			{
 				DBO()->Survey->Error = "Error, you have already completed this survey, please try again later when a new survey becomes available.";
 			}
+
+
 
 
 			// Build an array of our valid responses.
@@ -689,20 +675,9 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 				if($value !== "")
 				{
-					$mixSQL .= "$mixBit\n(\"$_POST[intSurveyId]\",\"$bit[0]\",\"$value\",\"" . DBO()->Account->Id->Value . "\",\"$bit[1]\")";
+					$mixSQL .= "$mixBit\n(\"$bit[0]\", \"$value\", LAST_INSERT_ID())";
 				}
 			}
-
-			/*
-			 * TODO:
-			 * If we were to fill the survey_response_option table, the data below would be required..:
-			 *
-			 * response_id = survey_response.id
-			 * option_id = survey_question_option.id ($bit[1])
-			 * option_text = $value
-			 * account_id = DBO()->Account->Id->Value
-			 */
-
 			// This is specifically for radio buttons.
 			while(@list($key,$value)=each($_POST['strRadio'])) {
 				$intNumCounts++;
@@ -714,7 +689,22 @@ class AppTemplateConsole extends ApplicationTemplate
 				{
 					$mixBit = "";
 				}
-				$mixSQL .= "$mixBit\n(\"$_POST[intSurveyId]\",\"$bit1[0]\",\"$bit2[1]\",\"" . DBO()->Account->Id->Value . "\",\"$bit2[0]\")";
+				$mixSQL .= "$mixBit\n(\"$bit[0]\", \"$bit2[1]\", LAST_INSERT_ID())";
+			}
+
+			while(@list($key,$value)=each($_POST['arrOptAnswer'])) {
+				$intNumCounts++;
+				$bit = explode("||",$key);
+				$arrInput[$intNumCounts] = "$bit[0]";
+				$mixBit = ",";
+				if($mixOptSQL == "")
+				{
+					$mixBit = "";
+				}
+				if($value !== "")
+				{
+					$mixOptSQL .= "$mixBit\n(\"$bit[0]\", \"$value\", \"[mixLastSQLInsertId]\")";
+				}
 			}
 
 			// select all the questions from the database to test which ones are required.
@@ -749,15 +739,23 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(DBO()->Survey->Error->Value == NULL)
 			{
 
+				$dbConnection->execute("INSERT INTO survey_completed(date_completed,contact_id,survey_id) VALUES(\"" . date("Y-m-d H:i:s", time()) . "\",\"" . DBO()->Contact->Account->Value . "\",\"$_POST[intSurveyId]\")");
+				$intLastId = $dbConnection->fetchone("SELECT LAST_INSERT_ID();");
+				
+				foreach($intLastId as $intVal)
+				{
+					$intLastValue = $intVal;
+				}
 				// all fields have been verified, no errors!.
 				DBO()->Survey->Results = TRUE;
-				$mixQueryResponse = "
-				INSERT INTO survey_response(survey_id, question_id, response_text, account_id, response_id)
-				VALUES
-				$mixSQL;";
 
+				// Insert responses into database
+				$mixQueryResponse = "INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) VALUES $mixSQL;";
 				$dbConnection->execute("$mixQueryResponse");
-				$dbConnection->execute("INSERT INTO survey_completed(date_completed,account_id,survey_id) VALUES(\"" . date("Y-m-d H:i:s", time()) . "\",\"" . DBO()->Account->Id->Value . "\",\"$_POST[intSurveyId]\")");
+				$mixOptSQL=str_replace("[mixLastSQLInsertId]","$intLastValue",$mixOptSQL);
+				// Insert response options into database
+				$mixQueryResponseOptions = "INSERT INTO survey_completed_response_option(survey_question_option_id, option_text, survey_completed_id) VALUES $mixOptSQL;";
+				$dbConnection->execute("$mixQueryResponseOptions");
 
 			}
 
