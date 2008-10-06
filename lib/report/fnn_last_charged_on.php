@@ -13,7 +13,7 @@ if (!file_exists($strInputPath))
 	throw new Exception("CSV file '{$strInputPath}' does not exist!");
 }
 
-$strOutputPath	= dirname($strInputPath).basename($strInputPath, 'csv').'.output.csv';
+$strOutputPath	= dirname($strInputPath).basename($strInputPath, '.csv').'.output.csv';
 
 // Open the CSV files
 $resInputFile	= fopen($strInputPath, 'r');
@@ -42,6 +42,8 @@ if ($resInputFile && $resOutputFile)
 			
 			$arrOutputLine[]	= $arrLastChargedOn['MinEarliestCDR'];
 			$arrOutputLine[]	= $arrLastChargedOn['MaxLatestCDR'];
+			
+			fwrite($resOutputFile, implode(',', $arrOutputLine)."\n");
 		}
 	}
 	
