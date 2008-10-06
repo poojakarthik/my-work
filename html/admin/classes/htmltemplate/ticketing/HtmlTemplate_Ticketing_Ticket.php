@@ -148,7 +148,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					</tr>
 					<tr class="alt">
 						<td class="title">Account: </td>
-						<td><?=$ticket->accountId ? $ticket->accountId : '[Not matched to an account]'?></td>
+						<td><?=$ticket->accountId ? ('<a href="' . Href()->AccountOverview($ticket->accountId) . '">' . $ticket->accountId . '</a>') : '[Not matched to an account]'?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Contact: </td>
@@ -527,7 +527,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								}
 								else
 								{
-									echo $ticket->accountId ? $ticket->accountId : '[Not matched to an account]';
+									echo $ticket->accountId ? ('<a href="' . Href()->AccountOverview($ticket->accountId) . '">' . $ticket->accountId . '</a>') : '[Not matched to an account]';
+									//echo $ticket->accountId ? $ticket->accountId : '[Not matched to an account]';
 									if ($ticket->accountId)
 									{
 										echo '<input type="hidden" id="accountId" value="' . $ticket->accountId . '" />';
