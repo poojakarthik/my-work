@@ -16,6 +16,11 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		$startOffset = ($this->mxdDataToRender['offset'] + ($count ? 1 : 0));
 		$endOffset = $this->mxdDataToRender['offset'] + $count;
 		$limit = $this->mxdDataToRender['limit'];
+		$quickSearch = $this->mxdDataToRender['quickSearch'];
+		if ($quickSearch === NULL)
+		{
+			$quickSearch = '';
+		}
 		$title = "Viewing $startOffset to $endOffset of $nrTickets Tickets";
 
 		$ownerId = array_key_exists('ownerId', $this->mxdDataToRender['filter']) ? $this->mxdDataToRender['filter']['ownerId']['value'] : NULL;
@@ -142,6 +147,10 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					<?=$title?>
 				</div>
 				<div id="caption_options" name="caption_options">
+
+				Filter:
+				<input type="text" id="ticketFilter" name="quickSearch" value="<?=htmlspecialchars($quickSearch)?>"/>
+
 				Owner: 
 				<select id="ownerId" name="ownerId">
 					<option value=""<?=($ownerId===NULL ? $selected : '')?>>all</option>
@@ -369,7 +378,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 			<tr class="<?=$tr_alt?>">
 				<td><a href="reflex.php/Ticketing/Ticket/<?=$ticket->id?>/View"><?php echo $ticket->id; ?></a></td>
-				<td><?php echo $ticket->subject; ?></td>
+				<td><?php echo htmlspecialchars(trim($ticket->subject) ? $ticket->subject : '<em>[No Subject]</em>'); ?></td>
 				<td><?php echo $ticket->modifiedDatetime; ?></td>
 				<td><?php echo $ticket->creationDatetime; ?></td>
 				<td><?php echo $ownerName; ?></td>

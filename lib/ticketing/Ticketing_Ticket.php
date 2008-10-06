@@ -234,9 +234,9 @@ class Ticketing_Ticket
 		return new Ticketing_Ticket($selProperties->Fetch());
 	}
 
-	public static function countMatching($filter=NULL)
+	public static function countMatching($filter=NULL, $relatedString=NULL)
 	{
-		$where = '';
+		$where = self::getRelatedStringWhereClause($relatedString);
 		$arrWhere = array();
 		foreach ($filter as $column => $style)
 		{
@@ -279,11 +279,12 @@ class Ticketing_Ticket
 		$outcome = $selMatches->Fetch();
 		return intval($outcome['nr']);
 	}
-
-	public static function findMatching($columns=NULL, $sort=NULL, $filter=NULL, $offset=0, $limit=NULL)
+	
+	public static function findMatching($columns=NULL, $sort=NULL, $filter=NULL, $offset=0, $limit=NULL, $relatedString=NULL)
 	{
-		$where = '';
+		$where = self::getRelatedStringWhereClause($relatedString);
 		$arrWhere = array();
+
 		foreach ($filter as $column => $style)
 		{
 			if (!property_exists(__CLASS__, $column)) continue;
@@ -319,6 +320,70 @@ class Ticketing_Ticket
 		$strSort = $strSort ? $strSort : NULL;
 		$strLimit = intval($limit) ? (intval($offset) . ", " . intval($limit)): NULL;
 		return self::getFor($where, $arrWhere, TRUE, $strSort, $strLimit);
+	}
+
+	private static function getRelatedStringWhereClause($relatedString)
+	{
+		$relatedString = trim($relatedString);
+		if (!$relatedString)
+		{
+			return '';
+		}
+		$words = array_slice(explode(' ', preg_replace("/ {2,*}/", " ", $relatedString)), 0, 8);
+		$arrWords = array();
+		$arrSubjects = array();
+		$arrSummaries = array();
+		$arrContact = array();
+		$arrContactNr = array();
+		$arrFNN = array();
+		foreach ($words as $word)
+		{
+			$word = trim($word);
+			if (!$word)
+			{
+				continue;
+			}
+			$bolIsPhoneNumber = preg_match("/^[0-9]{8,10}$/", $word);
+			$word = $arrWords[] = Data_Source::get()->escape($word);
+			$arrSubjects[] = "subject LIKE '%$word%'";
+			$arrSummaries[] = "CONCAT(CASE WHEN summary IS NULL THEN '' ELSE  summary END, \" \", CASE WHEN details IS NULL THEN '' ELSE  details END) LIKE '%$word%'";
+			if ($bolIsPhoneNumber)
+			{
+				$arrContactNr[] = "phone LIKE '%$word' OR fax LIKE '%$word' OR mobile LIKE '%$word'";
+			}
+			else
+			{
+				$arrContact[] = "concat(CASE WHEN title IS NULL THEN '' ELSE  title END, \" \", CASE WHEN first_name IS NULL THEN '' ELSE  first_name END, \" \", CASE WHEN last_name IS NULL THEN '' ELSE  last_name END, \" \", CASE WHEN job_title IS NULL THEN '' ELSE  job_title END, \" \", CASE WHEN email IS NULL THEN '' ELSE  email END) LIKE '%$word%'";
+			}
+			if ($bolIsPhoneNumber) 
+			{
+				$arrFNN[] = "FNN LIKE \"%$word\"";
+			}
+		}
+		if (!($nr = count($arrWords)))
+		{
+			return '';
+		}
+
+		return 	"id IN (" .
+				"	SELECT distinct(id) FROM (" .
+				"		(SELECT id FROM ticketing_ticket WHERE " . implode(' AND ', $arrSubjects) . ") " .
+				" UNION (SELECT ticket_id as \"id\" FROM ticketing_correspondance WHERE (" . implode(' AND ', $arrSummaries) . ") ) " .
+		(count($arrContact) 
+			  ? (count($arrContactNr) 
+			 	    ? " UNION (SELECT ticket_id as \"id\" FROM ticketing_correspondance, ticketing_contact WHERE ticketing_correspondance.contact_id = ticketing_contact.id AND " . implode(' AND ', $arrContact) . " AND (" . implode(' OR ', $arrContactNr) . "))" 
+			        : " UNION (SELECT ticket_id as \"id\" FROM ticketing_correspondance, ticketing_contact WHERE ticketing_correspondance.contact_id = ticketing_contact.id AND " . implode(' AND ', $arrContact) . ")"
+				)
+			  : (count($arrContactNr) 
+			        ? " UNION (SELECT ticket_id as \"id\" FROM ticketing_correspondance, ticketing_contact WHERE ticketing_correspondance.contact_id = ticketing_contact.id AND (" . implode(' OR ', $arrContactNr) . "))"
+			        : ''
+			    )
+		) . 
+		(count($arrFNN) 
+		 	  ? " UNION (SELECT ticket_id as \"id\" FROM ticketing_ticket_service, Service WHERE Service.Id = ticketing_ticket_service.service_id AND (" . implode(' OR ', $arrFNN) . "))" 
+			  : ''
+		) .
+				") ids)";
 	}
 
 	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
