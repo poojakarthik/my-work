@@ -262,15 +262,56 @@ class Invoice_Run
 		}
 		
 		// Generate an Invoice for each Account
+		$this->InvoiceCount	= 0;
 		while ($arrAccount = $selInvoiceableAccounts->Fetch())
 		{
 			$objAccount	= new Account($arrAccount);
 			Cli_App_Billing::debug(" + Generating Invoice for {$objAccount->Id}...");
 			$objInvoice	= new Invoice();
 			$objInvoice->generate($objAccount, $this);
+			$this->InvoiceCount++;
 		}
 		
+		// Generated Balance Data
+		$selInvoiceTotals	= self::_preparedStatement('selInvoiceTotals');
+		if ($selInvoiceTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
+		{
+			// Database Error -- throw Exception
+			throw new Exception("DB ERROR: ".$selInvoiceTotals->Error());
+		}
+		$arrInvoiceTotals	= $selInvoiceTotals->Fetch();
+		
+		$selInvoiceBalanceHistory	= self::_preparedStatement('selInvoiceBalanceHistory');
+		if ($selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id)) === FALSE)
+		{
+			// Database Error -- throw Exception
+			throw new Exception("DB ERROR: ".$selInvoiceBalanceHistory->Error());
+		}
+		$arrCurrentBalanceTotal		= $selInvoiceTotals->Fetch();
+		$arrPreviousBalanceTotal	= $selInvoiceTotals->Fetch();
+		
+		$fltTotalOutstanding		= 0;
+		while ($arrBalanceTotal = $selInvoiceTotals->Fetch())
+		{
+			$fltTotalOutstanding	+= $arrCurrentBalanceTotal['TotalBalance'];
+		}
+		$fltTotalOutstanding		+= ($arrPreviousBalanceTotal['TotalBalance']) ? $arrPreviousBalanceTotal['TotalBalance'] : 0;
+		$fltTotalOutstanding		+= $arrCurrentBalanceTotal['TotalBalance'];
+		$this->BalanceData			=	serialize
+										(
+											Array
+											(
+												'TotalBalance'		=> $arrCurrentBalanceTotal['TotalBalance'],
+												'TotalOutstanding'	=> $fltTotalOutstanding,
+												'PreviousBalance'	=> $arrPreviousBalanceTotal['TotalBalance']
+											)
+										);
+		
 		// Finalised InvoiceRun record
+		$this->BillCost					= $arrInvoiceTotals['BillCost'];
+		$this->BillRated				= $arrInvoiceTotals['BillRated'];
+		$this->BillInvoiced				= $arrInvoiceTotals['BillInvoiced'];
+		$this->BillTax					= $arrInvoiceTotals['BillTax'];
 		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
 		$this->save();
 		//--------------------------------------------------------------------//
@@ -588,6 +629,12 @@ class Invoice_Run
 					break;
 				case 'selLastInvoiceRunByCustomerGroup':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
+					break;
+				case 'selInvoiceTotals':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN ServiceTypeTotal STT USING (invoice_run_id, Account)", "SUM(STT.Cost) AS BillCost, SUM(STT.Charge) AS BillRated, SUM(Invoice.Total) AS BillInvoiced, SUM(Invoice.Tax) AS BillTax", "invoice_run_id = <invoice_run_id>");
+					break;
+				case 'selInvoiceBalanceHistory':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id", "SUM(Balance) AS TotalBalance", "invoice_run_id <= <invoice_run_id> AND customer_group_id = <customer_group_id>", "invoice_run_id DESC");
 					break;
 				
 				// INSERTS

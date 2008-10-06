@@ -743,7 +743,13 @@ class Invoice
 		
 		//------------------------------ INVOICE -----------------------------//
 		// Determine Invoice Status
-		// TODO
+		$strSQL	= "UPDATE Invoice " .
+					" SET Status = IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.") " .
+					" WHERE Account = {$this->Account} AND invoice_run_id = {$this->invoice_run_id}";
+		if ($qryQuery->Execute($strSQL) === FALSE)
+		{
+			throw new Exception($qryQuery->Error());
+		}
 		
 		// Save
 		$this->save();
@@ -1259,10 +1265,13 @@ class Invoice
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status = ".CHARGE_APPROVED, Array('Status'=>NULL, 'invoice_run_id'=>NULL));
 					break;
 				case 'updCDRRevoke':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "invoice_run_id = <invoice_run_id>", Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
 					break;
 				case 'updChargeRevoke':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "invoice_run_id = <invoice_run_id>", Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
+					break;
+				case 'updInvoiceStatus':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Invoice", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('Status'=>NULL, 'SettledOn'=>NULL));
 					break;
 				
 				default:
