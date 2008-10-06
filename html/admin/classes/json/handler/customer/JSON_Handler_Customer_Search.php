@@ -134,7 +134,8 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 			</table>
 		</form>
 	</div>
-	<div id='CustomerSearchPopupResultsContainer' class='GroupedContent' style='margin-top:5px;display:none'></div>
+	<!-- <div id='CustomerSearchPopupResultsContainer' class='GroupedContent' style='margin-top:5px;display:none'></div> -->
+	<div id='CustomerSearchPopupResultsContainer' style='margin-top:5px;display:none'></div>
 	<div style='padding-top:3px;height:auto:width:100%'>
 		<input type='button' value='Close' onclick='Vixen.Popup.Close(this)' style='float:right'></input>
 		<div style='clear:both;float:none'></div>
