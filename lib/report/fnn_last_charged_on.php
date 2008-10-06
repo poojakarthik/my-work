@@ -21,7 +21,7 @@ $resOutputFile	= fopen($strOutputPath, 'w');
 if ($resInputFile && $resOutputFile)
 {
 	// Parse each line
-	while ($arrLine = fgetcsv($strInputPath))
+	while ($arrLine = fgetcsv($resInputFile))
 	{
 		// Get each FNN from the line
 		foreach ($arrLine as $strFNN)
