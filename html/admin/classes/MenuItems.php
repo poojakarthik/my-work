@@ -1460,32 +1460,17 @@ class MenuItems
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intContactId		id of the contact to view
-	 * @param	bool	$bolRecordInHistory	[optional], defaults to false. If set to true, then the contact will be logged in the EmployeeAccountAudit table, for the user
-	 * @param	int		$intAccountId		[optional], defaults to NULL.  If set to an account id, then this will be used in the EmployeeAccountAudit
 	 *
 	 * @return	string						Href to be executed when the ViewContact menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewContact($intContactId, $bolRecordInHistory=FALSE, $intAccountId=NULL)
+	function ViewContact($intContactId)
 	{
 		$this->strContextMenuLabel = "";
 		$this->strLabel	= "Contact: $intContactId";
 		
-		if ($bolRecordInHistory)
-		{
-			$strRecordInHistory = "&RecordInHistory=1";
-			if ($intAccountId !== NULL)
-			{
-				$strRecordInHistory .= "&HistoryAccount=$intAccountId";
-			}
-		}
-		else
-		{
-			$strRecordInHistory = "";
-		}
-		
-		return self::OLD_FRAMEWORK . "contact_view.php?Id={$intContactId}{$strRecordInHistory}";
+		return self::OLD_FRAMEWORK . "contact_view.php?Id={$intContactId}";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1502,14 +1487,12 @@ class MenuItems
 	 * @param	int		$intAccountId		id of the account to view
 	 * @param	bool	$bolShowAccountName	[optional], defaults to false.  This should only be set to TRUE when being used for the breadcrumb menu.
 	 * 										It will use the account name instead of "Account" in the breadcrumb menu
-	 * @param	bool	$bolRecordInHistory	[optional], defaults to false. If set to true, then the account will be logged in the EmployeeAccountAudit table, for the user
-	 * @param	int		$intContactId		[optional], defaults to NULL.  If set to a contact id, then this will be used in the EmployeeAccountAudit
 	 *
 	 * @return	string						Href to be executed when the AccountOverview menu item is clicked
 	 *
 	 * @method
 	 */
-	function AccountOverview($intAccountId, $bolShowAccountName=FALSE, $bolRecordInHistory=FALSE, $intContactId=NULL)
+	function AccountOverview($intAccountId, $bolShowAccountName=FALSE)
 	{
 		$this->strContextMenuLabel = "Overview";
 		
@@ -1524,22 +1507,9 @@ class MenuItems
 			}
 		}
 		
-		if ($bolRecordInHistory)
-		{
-			$strRecordInHistory = "&RecordInHistory=1";
-			if ($intContactId !== NULL)
-			{
-				$strRecordInHistory .= "&HistoryContact=$intContactId";
-			}
-		}
-		else
-		{
-			$strRecordInHistory = "";
-		}
-		
 		$this->strLabel	= $strLabel;
 
-		return self::NEW_FRAMEWORK . "flex.php/Account/Overview/?Account.Id={$intAccountId}{$strRecordInHistory}";
+		return self::NEW_FRAMEWORK . "flex.php/Account/Overview/?Account.Id={$intAccountId}";
 	}
 
 	
