@@ -59,7 +59,7 @@ foreach ($arrFiles as $strFile)
 }
 
 // Randomly choose number of customers to generate
-$intCustomers = rand(0, 5);
+$intCustomers = rand(50, 100);
 
 for ($i = 0; $i < $intCustomers; $i++)
 {

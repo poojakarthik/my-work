@@ -1,7 +1,9 @@
 <?php
 require_once("../../flex.require.php");
 
-$selRandomCustomer		= new StatementSelect("Account", "*", "Archived = 0", "RAND()", 1);
+$selCustomerCount		= new StatementSelect("Account", "Id", "Archived = 0");
+$intCustomerCount		= $selCustomerCount->Execute();
+
 $insService				= new StatementInsert("Service");
 $selPlan				= new StatementSelect("RatePlan", "Id", "ServiceType = <ServiceType>", "RAND()", 1);
 $qryServiceRateGroup	= new Query();
@@ -19,26 +21,31 @@ $arrCols['EndDatetime']		= NULL;
 $arrCols['Active']			= NULL;
 $insServiceRatePlan		= new StatementInsert("ServiceRatePlan", $arrCols);
 
-$intServices = rand(1, 20);
+$intServices = rand(25, 75);
 //while (($intCustomerServices = rand(1, ceil($intServices / 4))) > 0)
 for ($i = 0; $i < $intServices; $i++)
 {
+	$intRandCustomer		= rand(0, $intCustomerCount - 1);
+	CliEcho($intRandCustomer);
+	$selRandomCustomer              = new StatementSelect("Account", "*", "Archived = 0", NULL, "$intRandCustomer, 1");
 	$selRandomCustomer->Execute();
 	$arrCustomer = $selRandomCustomer->Fetch();
 	
 	$arrService['AccountGroup']		= $arrCustomer['AccountGroup'];
 	$arrService['Account']			= $arrCustomer['Id'];
 	$arrService['CreatedOn']		= date('Y-m-d');
-	$arrService['CreatedBy']		= 22;
+	$arrService['CreatedBy']		= 1;
 	$arrService['Carrier']			= CARRIER_UNITEL;
 	$arrService['CarrierPreselect']	= CARRIER_OPTUS;
 	$arrService['Status']			= SERVICE_ACTIVE;
 	$arrService['CappedCharge']		= 0.0;
 	$arrService['UncappedCharge']	= 0.0;
 	$arrService['Indial100']	= 0;
+	$arrService['ForceInvoiceRender']	= 0;
+	$arrService['Cost']			= 0.0;
 	
-	for ($i = 1; $i < $intServices; $i++)
-	{
+	/*for ($i = 1; $i < $intServices; $i++)
+	{*/
 		switch (rand(0, 20))
 		{
 			case 0:
@@ -56,21 +63,21 @@ for ($i = 0; $i < $intServices; $i++)
 			
 			case 18:
 				// 13
-				$arrService['FNN']			= rand(130000, 139999);
+				/*$arrService['FNN']			= rand(130000, 139999);
 				$arrService['ServiceType']	= SERVICE_TYPE_MOBILE;
-				break;
+				break;*/
 			
 			case 19:
 				// 1300
-				$arrService['FNN']			= rand(1300000000, 1300999999);
+				/*$arrService['FNN']			= rand(1300000000, 1300999999);
 				$arrService['ServiceType']	= SERVICE_TYPE_INBOUND;
-				break;
+				break;*/
 			
 			case 20:
 				// 1800
-				$arrService['FNN']			= rand(1800000000, 1800999999);
+				/*$arrService['FNN']			= rand(1800000000, 1800999999);
 				$arrService['ServiceType']	= SERVICE_TYPE_INBOUND;
-				break;
+				break;*/
 			
 			case 8:
 			case 9:
@@ -141,7 +148,7 @@ for ($i = 0; $i < $intServices; $i++)
 		$strQuery = str_replace('<Service>', $intService, $strServiceRateGroup);
 		$strQuery = str_replace('<RatePlan>', $arrPlan['Id'], $strQuery);
 		$qryServiceRateGroup->Execute($strQuery);
-	}
+	//}
 	
 	//$intServices -= $intCustomerServices;
 }
