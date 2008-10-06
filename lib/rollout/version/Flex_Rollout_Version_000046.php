@@ -4,7 +4,8 @@
  * Version 46 of database update.
  * This version: -
  *	1:	Alter credit_card_payment_history table
- *	2:	Add email_notification for payment confimations and direct debit setup
+ *	2:	Add email_notification for payment confimations and direct debit setup, and for the support form
+ *
  */
 
 class Flex_Rollout_Version_000046 extends Flex_Rollout_Version
@@ -30,12 +31,13 @@ class Flex_Rollout_Version_000046 extends Flex_Rollout_Version
 
 		//	2:	Add email_notification for payment confimations and direct debit setup
 		$strSQL = "INSERT INTO email_notification (id, name, description, const_name, allow_customer_group_emails) VALUES " .
-					"(NULL, 'Payment Confirmation', 'Email sent to customers to acknowledge payments and direct debit setup', 'EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION', 1);";
+					"(NULL, 'Payment Confirmation', 'Email sent to customers to acknowledge payments and direct debit setup', 'EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION', 1);".
+					"(NULL, 'Support Form', 'Support form', 'EMAIL_NOTIFICATION_SUPPORT_FORM', 1)";
 		if (!$qryQuery->Execute($strSQL))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add email_notification for payment confimations and direct debit setup. ' . $qryQuery->Error());
 		}
-		$this->rollbackSQL[] = "DELETE FROM email_notification WHERE const_name = 'EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION';";
+		$this->rollbackSQL[] = "DELETE FROM email_notification WHERE const_name = 'EMAIL_NOTIFICATION_PAYMENT_CONFIRMATION' OR const_name = 'EMAIL_NOTIFICATION_SUPPORT_FORM';";
 	}
 
 	function rollback()
