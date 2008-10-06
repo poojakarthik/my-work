@@ -2654,7 +2654,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 
 	if ($intInvoiceId)
 	{
-		$intMonth = substr('0'.$intMonth, -2);
+		$intMonth = intVal($intMonth);
 		$strGlob = PATH_INVOICE_PDFS ."pdf/$intYear/$intMonth/{$intAccountId}_{$intInvoiceId}.pdf";
 		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs))
