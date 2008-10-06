@@ -2312,24 +2312,24 @@ function ArchiveAccounts($arrAccounts)
  *
  * Starts a Transaction
  *
- * Starts a Transaction on the primary Database connection (when multiple connections
- * are supported)
+ * Starts a Transaction
  *
- * @return		boolean					TRUE	: Committed
- * 										FALSE	: Failed
+ * @param	string		$strConnectionType	optional, defaults to FLEX_DATABASE_CONNECTION_DEFAULT.  The specific database connection
+ * @return	boolean					TRUE	: Committed
+ * 									FALSE	: Failed
  *
  * @method
  */ 
-function TransactionStart()
+function TransactionStart($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
-	if (!DataAccess::connected())
+	if (!DataAccess::connected($strConnectionType))
 	{
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
 	
 	// Start Transaction
-	return DataAccess::getDataAccess()->TransactionStart();
+	return DataAccess::getDataAccess($strConnectionType)->TransactionStart();
 }
 
 //------------------------------------------------------------------------//
@@ -2342,21 +2342,22 @@ function TransactionStart()
  *
  * Rolls back the current Transaction, then re-enables AutoCommit
  *
- * @return		boolean					TRUE	: Rolled back
- * 										FALSE	: Failed
+ * @param	string		$strConnectionType	optional, defaults to FLEX_DATABASE_CONNECTION_DEFAULT.  The specific database connection
+ * @return	boolean					TRUE	: Rolled back
+ * 									FALSE	: Failed
  *
  * @method
  */ 
-function TransactionRollback()
+function TransactionRollback($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
-	if (!DataAccess::connected())
+	if (!DataAccess::connected($strConnectionType))
 	{
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
 	
 	// Rollback Transaction
-	return DataAccess::getDataAccess()->TransactionRollback();
+	return DataAccess::getDataAccess($strConnectionType)->TransactionRollback();
 }
 
 //------------------------------------------------------------------------//
@@ -2369,21 +2370,22 @@ function TransactionRollback()
  *
  * Commits the current Transaction, then re-enables AutoCommit
  *
- * @return		boolean					TRUE	: Started
- * 										FALSE	: Failed
+ * @param	string		$strConnectionType	optional, defaults to FLEX_DATABASE_CONNECTION_DEFAULT.  The specific database connection
+ * @return	boolean					TRUE	: Started
+ * 									FALSE	: Failed
  *
  * @method
  */ 
-function TransactionCommit()
+function TransactionCommit($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
-	if (!DataAccess::connected())
+	if (!DataAccess::connected($strConnectionType))
 	{
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
 	
 	// Commit Transaction
-	return DataAccess::getDataAccess()->TransactionCommit();
+	return DataAccess::getDataAccess($strConnectionType)->TransactionCommit();
 }
 
 //------------------------------------------------------------------------//

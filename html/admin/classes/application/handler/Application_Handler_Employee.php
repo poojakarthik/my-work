@@ -33,7 +33,6 @@ class Application_Handler_Employee extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 	}
-
 }
 
 ?>

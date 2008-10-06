@@ -221,7 +221,8 @@ jQuery.json = {
 					// TODO WIP Implement ajax login here and then uncomment the following line (or do something cleverer)
 					//this.funcRemote.apply(null, this.funcArgs);
 					// ... and get rid of the next line
-					arguments[0]['ERROR'] = "Your session has timed out. Please log out and then log back in again to continue.";
+					arguments[0]['ERROR'] = "Your session has timed out. Please log in to continue.";
+					Vixen.Popup.ShowAjaxPopup("LoginPopup", "medium", "Login", "User", "DisplayLoginPopup", null, "nonmodal");
 				}
 
 				success = false;

@@ -700,13 +700,18 @@ class Page
 		
 		$strUserPreferencesLink = Href()->ViewUserDetails();
 		
+		$strLastConstraint	= (array_key_exists("QuickSearch_Constraint", $_COOKIE))? htmlspecialchars($_COOKIE['QuickSearch_Constraint']) : "";
+		$mixLastSearchType	= (array_key_exists("QuickSearch_SearchType", $_COOKIE))? $_COOKIE['QuickSearch_SearchType'] : "";
+
 		$strCategoryOptions = "";
 		$arrSearchTypes = Customer_Search::getSearchTypes();
 		foreach ($arrSearchTypes as $intSearchType=>$arrSearchType)
 		{
-			$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='$intSearchType'>{$arrSearchType['Name']}</option>";
+			$strSelected = ($intSearchType == $mixLastSearchType) ? "selected='selected'" : "";
+			$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='$intSearchType' $strSelected>{$arrSearchType['Name']}</option>";
 		}
-		$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets'>Tickets</option>";
+		$strSelected = ($mixLastSearchType == "tickets")? "selected='selected'" : "";
+		$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets' $strSelected>Tickets</option>";
 
 		echo "
 			<div id='person_search' name='person_search'>
@@ -718,7 +723,7 @@ class Page
 				<div id='search_bar' name='search_bar'>
 					<form action='#' onsubmit='FlexSearch.quickSearch();return false;'>
 						Search: 
-						<input type='text' id='search_string' name='search_string' onkeypress='FlexSearch.quickSearchOnEnter(event)' />
+						<input type='text' id='search_string' name='search_string' value='$strLastConstraint' onkeypress='FlexSearch.quickSearchOnEnter(event)' />
 						<select name='category' id='quick_search_category'>$strCategoryOptions
 						</select>
 						<input type='submit' id='Search' name='Search' value='Search'/>

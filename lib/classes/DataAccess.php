@@ -165,6 +165,40 @@ class DataAccess
 	}
 	
 	//------------------------------------------------------------------------//
+	// FetchAllTableDefinitions
+	//------------------------------------------------------------------------//
+	/**
+	 * FetchAllTableDefinitions()
+	 *
+	 * returns an array declaring all table definitions for the database requested
+	 *
+	 * returns an array declaring all table definitions for the database requested
+	 *
+	 * @return		mixed	array of table definitions for tables that exist on the database this DataAccess object points to
+	 *
+	 * @method
+	 */ 
+	function FetchAllTableDefinitions()
+	{
+		$arrAllTables = $this->arrTableDefine->getAll();
+		$arrTables = array();
+		
+		// Check what tables exist in this database
+		foreach ($arrAllTables as $strTableName=>$arrTableDefinition)
+		{
+			$strQuery = "SELECT {$arrTableDefinition['Id']} FROM {$arrTableDefinition['Name']} LIMIT 1";
+			if ($this->refMysqliConnection->query($strQuery) !== FALSE)
+			{
+				// The table exists
+				$arrTables[$arrTableDefinition['Name']] = $arrTableDefinition;
+			}
+		}
+		
+		return $arrTables;
+	}
+	
+	
+	//------------------------------------------------------------------------//
 	// FetchClean
 	//------------------------------------------------------------------------//
 	/**

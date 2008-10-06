@@ -1,6 +1,9 @@
 var FlexSearch = {
-	strOverrideCookieName	: 'overrideCustomerVerification',
-	intOverrideCookieLife	: 30,
+	strSearchTypeCookieName	: 'QuickSearch_SearchType',
+	strConstraintCookieName	: 'QuickSearch_Constraint',
+	intCookieLife			: 30,
+	strOverrideCookieName	: 'overrideCustomerVerification',	// DEPRICATED
+	intOverrideCookieLife	: 30,								// DEPRICATED
 	strContactLink			: null,
 	strAccountLink			: null,
 	bolVerifyIfOneResult	: false,
@@ -17,30 +20,34 @@ var FlexSearch = {
 	{
 		// Trigger the search
 		var mixSearchType	= $ID('quick_search_category').value;
-		var strCriteria		= $ID('search_string').value;
+		var strConstraint	= $ID('search_string').value;
 		
-		strCriteria = strCriteria.replace(new RegExp("^([\\s]+)|([\\s]+)$", "gm"), "");
+		strConstraint = strConstraint.replace(new RegExp("^([\\s]+)|([\\s]+)$", "gm"), "");
 		
-		if (strCriteria == '')
+		if (strConstraint == '')
 		{
 			$Alert("Please enter a search term");
 			return;
 		}
 		
+		// Record the details of the search in cookies
+		Flex.cookie.create(this.strSearchTypeCookieName, mixSearchType, this.intCookieLife);
+		Flex.cookie.create(this.strConstraintCookieName, strConstraint, this.intCookieLife);
+		
 		if (mixSearchType == "tickets")
 		{
-			this.ticketSearch(strCriteria);
+			this.ticketSearch(strConstraint);
 		}
 		else
 		{
 			this.bolVerifyIfOneResult = true;
-			this.customerSearch(parseInt(mixSearchType),strCriteria, null, null, 0, true);
+			this.customerSearch(parseInt(mixSearchType), strConstraint, null, null, 0, true);
 		}
 	},
 	
-	ticketSearch : function(strCriteria)
+	ticketSearch : function(strConstraint)
 	{
-		document.location = "reflex.php/Ticketing/QuickSearch/?for=" + strCriteria;
+		document.location = "reflex.php/Ticketing/QuickSearch/?for=" + strConstraint;
 	},
 	
 	customerSearch : function(intSearchType, strConstraint, intConstraintType, bolIncludeArchived, intOffset, bolForceRefresh)
@@ -64,12 +71,6 @@ var FlexSearch = {
 
 		if (response.Success)
 		{
-			if (response.RecordCount == 0)
-			{
-				$Alert("No results were found for the search criteria");
-				return;
-			}
-			
 			with (response)
 			{
 				this.displayResults(RecordCount, Results, SearchType, Constraint, ConstraintType, IncludeArchived);
@@ -310,6 +311,7 @@ var FlexSearch = {
 
 	},
 	
+	//DEPRICATED
 	loadAccount : function(intAccountId, objEvent)
 	{
 		if (this.popupControls.OverrideVerification != undefined && this.popupControls.OverrideVerification.checked)
@@ -332,6 +334,7 @@ var FlexSearch = {
 		}
 	},
 	
+	//DEPRICATED
 	loadContact : function(intContactId, objEvent)
 	{
 		if (this.popupControls.OverrideVerification != undefined && this.popupControls.OverrideVerification.checked)

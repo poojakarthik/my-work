@@ -118,12 +118,6 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 				$arrSearchType['AllowableConstraintTypes'] = Customer_Search::getAllowableConstraintTypes($intSearchType);
 			}
 			
-			if (AuthenticatedUser()->UserHasPerm(JSON_Handler_Customer_Verification::REQUIRED_PERMISSIONS_TO_OVERRIDE_VERIFICATION))
-			{
-				// The user can override validation
-				$strValidationOverride = "<td>Bypass Verify <input type='checkbox' id='OverrideVerification' name='OverrideVerification'></input></td>";
-			}
-			
 			// Build contents for the popup
 			$strHtml = "
 <div id='PopupPageBody'>
@@ -135,7 +129,6 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 					<td>By <select id='ConstraintType' name='ConstraintType'></select></td>
 					<td>With <input type='text' id='Constraint' name='Constraint' value='' maxlength='100' ></input></td>
 					<td>Show Archived <input type='checkbox' id='IncludeArchived' name='IncludeArchived'/></td>
-					$strValidationOverride
 					<td align='right'><input type='button' onclick='FlexSearch.submitSearch()' value='Search'></input></td>
 				</tr>
 			</table>
@@ -225,8 +218,251 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 		
 	}
 	
+	
+	private function _buildServiceResultsTable($arrServiceIds, $intOffset=0)
+	{
+		return "[INSERT ServiceResultsTable HERE]";
+	}
+
 	// Builds a html table displaying details of the accounts
 	private function _buildAccountResultsTable($arrAccountIds, $intOffset=0)
+	{
+		$bolCanOverrideVerification = AuthenticatedUser()->UserHasPerm(JSON_Handler_Customer_Verification::REQUIRED_PERMISSIONS_TO_OVERRIDE_VERIFICATION);
+
+		$strRows = "";
+		$bolAlt = FALSE;
+		
+		// Work out what records we are showing
+		$intRecCount = count($arrAccountIds);
+		
+		$arrPageDetails = $this->_getPaginationDetails($intRecCount, $intOffset);
+		
+		if ($intRecCount == 0)
+		{
+			$strRows = "<tr><td colspan='5'>No records to display.  Please broaden your search criteria</td></tr>";
+			$strPageInfo = "&nbsp;";
+			
+		}
+		else
+		{
+			$strPageInfo = "Records {$arrPageDetails['FirstRecord']} to {$arrPageDetails['LastRecord']} of $intRecCount";
+			
+			for ($i = $arrPageDetails['FirstRecordIndex']; $i <= $arrPageDetails['LastRecordIndex']; $i++)
+			{
+				$objAccount = Account::getForId($arrAccountIds[$i]);
+	
+				$strRowClass = ($bolAlt)? "class='alt'" : "";
+				
+				$strAccountId		= $objAccount->id;
+				$strBusinessName	= htmlspecialchars($objAccount->businessName);
+				$strTradingName		= htmlspecialchars($objAccount->tradingName);
+				$strStatus			= htmlspecialchars(GetConstantDescription($objAccount->archived, "account_status"));
+			
+				$strVerifyCustomerLink = "FlexCustomerVerification.load(null, {$objAccount->id})";
+				if ($bolCanOverrideVerification)
+				{
+					$strLink = Href()->RecordCustomerInHistory(TRUE, Application_Handler_CustomerHistory::NEXT_PAGE_ACCOUNT_OVERVIEW, $objAccount->id, NULL);
+					$strAccountIdCell = "<a href='$strLink' title='Account Overview'>$strAccountId</a>";
+				}
+				else
+				{
+					$strAccountIdCell = $strAccountId;
+				}
+			
+				$strRows .= "
+<tr $strRowClass>
+	<td>$strAccountIdCell</td>
+	<td>$strBusinessName</td>
+	<td>$strTradingName</td>
+	<td>$strStatus</td>
+	<td align='right'><a href='javascript:$strVerifyCustomerLink'>Verify</a></td>
+</tr>";
+
+				$bolAlt = !$bolAlt;
+			}
+		}
+		
+		$arrPaginationOptions = array();
+		if ($arrPageDetails['FirstOffset'] !== NULL)
+		{
+			$arrPaginationOptions[] = "<a onclick='FlexSearch.getResults({$arrPageDetails['FirstOffset']})' title='First'>&lt;&lt;</a>";
+		}
+		if ($arrPageDetails['PreviousOffset'] !== NULL)
+		{
+			$arrPaginationOptions[] = "<a onclick='FlexSearch.getResults({$arrPageDetails['PreviousOffset']})' title='Previous'>&lt;</a>";
+		}
+		$strBackwardsPaginationOptions = implode(" &nbsp ", $arrPaginationOptions);
+		
+		$arrPaginationOptions = array();
+		if ($arrPageDetails['NextOffset'] !== NULL)
+		{
+			$arrPaginationOptions[] = "<a onclick='FlexSearch.getResults({$arrPageDetails['NextOffset']})' title='Next'>&gt;</a>";
+		}
+		if ($arrPageDetails['LastOffset'] !== NULL)
+		{
+			$arrPaginationOptions[] = "<a onclick='FlexSearch.getResults({$arrPageDetails['LastOffset']})' title='Last'>&gt;&gt;</a>";
+		}
+		$strForwardsPaginationOptions = implode(" &nbsp ", $arrPaginationOptions);
+		
+		
+		$strHtml = "
+<table class='reflex highlight-rows' id='CustomerSearchPopupResultsTable' name='CustomerSearchPopupResultsTable'>
+	<thead>
+		<tr>
+			<th>Account #</th>
+			<th>Business Name</th>
+			<th>Trading Name</th>
+			<th>Status</th>
+			<th>&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		$strRows
+	</tbody>
+	<tfoot class='footer'>
+		<tr>
+			<th colspan='5'>
+				<div style='text-align:center'>
+					<div style='float:left'>$strBackwardsPaginationOptions</div>
+					<div style='float:right'>$strForwardsPaginationOptions</div>
+					$strPageInfo
+				</div>
+			</th>
+		</tr>
+	</tfoot>
+</table>
+";
+		return $strHtml;
+	}
+
+	private function _buildContactResultsTable($arrContactIds, $intOffset=0)
+	{
+		$bolCanOverrideVerification = AuthenticatedUser()->UserHasPerm(JSON_Handler_Customer_Verification::REQUIRED_PERMISSIONS_TO_OVERRIDE_VERIFICATION);
+
+		$strRows = "";
+		$bolAlt = FALSE;
+		
+		// Work out what records we are showing
+		$intRecCount = count($arrContactIds);
+		
+		$arrPageDetails = $this->_getPaginationDetails($intRecCount, $intOffset);
+		
+		if ($intRecCount == 0)
+		{
+			$strRows = "<tr><td colspan='6'>No records to display.  Please broaden your search criteria</td></tr>";
+			$strPageInfo = "&nbsp;";
+		}
+		else
+		{
+			$strPageInfo = "Records {$arrPageDetails['FirstRecord']} to {$arrPageDetails['LastRecord']} of $intRecCount";
+
+			for ($i = $arrPageDetails['FirstRecordIndex']; $i <= $arrPageDetails['LastRecordIndex']; $i++)
+			{
+				$objContact = Contact::getForId($arrContactIds[$i]);
+				$objAccount = Account::getForId($objContact->account);
+
+				$strRowClass = ($bolAlt)? "class='alt'" : "";
+
+				$strContactNameCell	= htmlspecialchars($objContact->getName());
+				$strContactStatus	= ($objContact->archived)? "Archived" : "Active";
+				
+				if ($objAccount != NULL)
+				{
+					$strAccountIdCell	= $objAccount->id;
+					$strAccountName		= htmlspecialchars($objAccount->getName());
+					$strAccountStatus	= htmlspecialchars(GetConstantDescription($objAccount->archived, "account_status"));
+					if ($bolCanOverrideVerification)
+					{
+						$strAccountLink = Href()->RecordCustomerInHistory(TRUE, Application_Handler_CustomerHistory::NEXT_PAGE_ACCOUNT_OVERVIEW, $objAccount->id, $objContact->id);
+						$strAccountIdCell = "<a href='$strAccountLink' title='Account Overview'>{$objAccount->id}</a>";
+					}
+				}
+				else
+				{
+					$strAccountIdCell	= "";
+					$strAccountName		= "";
+					$strAccountStatus	= "";
+				}
+				
+				$strAccountId = ($objAccount != NULL)? $objAccount->id : "null";
+				$strVerifyCustomerLink = "FlexCustomerVerification.load({$objContact->id}, $strAccountId)";
+				if ($bolCanOverrideVerification)
+				{
+					$intAccountId		= ($objAccount != NULL)? $objAccount->id : NULL;
+					$strContactLink		= Href()->RecordCustomerInHistory(TRUE, Application_Handler_CustomerHistory::NEXT_PAGE_CONTACT_DETAILS, $intAccountId, $objContact->id);
+					$strContactNameCell = "<a href='$strContactLink' title='View Contact'>{$objContact->getName()}</a>";
+				}
+			
+				$strRows .= "
+<tr $strRowClass>
+	<td>$strContactNameCell</td>
+	<td>$strContactStatus</td>
+	<td>$strAccountIdCell</td>
+	<td>$strAccountName</td>
+	<td>$strAccountStatus</td>
+	<td align='right'><a href='javascript:$strVerifyCustomerLink'>Verify</a></td>
+</tr>";
+				$bolAlt = !$bolAlt;
+			}
+		}
+		
+		$arrPaginationOptions = array();
+		if ($arrPageDetails['FirstOffset'] !== NULL)
+		{
+			$arrPaginationOptions[] = "<a onclick='FlexSearch.getResults({$arrPageDetails['FirstOffset']})' title='First'>&lt;&lt;</a>";
+		}
+		if ($arrPageDetails['PreviousOffset'] !== NULL)
+		{
+			$arrPaginationOptions[] = "<a onclick='FlexSearch.getResults({$arrPageDetails['PreviousOffset']})' title='Previous'>&lt;</a>";
+		}
+		$strBackwardsPaginationOptions = implode(" &nbsp ", $arrPaginationOptions);
+		
+		$arrPaginationOptions = array();
+		if ($arrPageDetails['NextOffset'] !== NULL)
+		{
+			$arrPaginationOptions[] = "<a onclick='FlexSearch.getResults({$arrPageDetails['NextOffset']})' title='Next'>&gt;</a>";
+		}
+		if ($arrPageDetails['LastOffset'] !== NULL)
+		{
+			$arrPaginationOptions[] = "<a onclick='FlexSearch.getResults({$arrPageDetails['LastOffset']})' title='Last'>&gt;&gt;</a>";
+		}
+		$strForwardsPaginationOptions = implode(" &nbsp ", $arrPaginationOptions);
+		
+
+		$strHtml = "
+<table class='reflex highlight-rows' id='CustomerSearchPopupResultsTable' name='CustomerSearchPopupResultsTable'>
+	<thead>
+		<tr>
+			<th>Contact</th>
+			<th>Status</th>
+			<th>Account #</th>
+			<th>Name</th>
+			<th>Status</th>
+			<th>&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		$strRows
+	</tbody>
+	<tfoot class='footer'>
+		<tr>
+			<th colspan='6'>
+				<div style='text-align:center'>
+					<div style='float:left'>$strBackwardsPaginationOptions</div>
+					<div style='float:right'>$strForwardsPaginationOptions</div>
+					$strPageInfo
+				</div>
+			</th>
+		</tr>
+	</tfoot>
+</table>
+";
+		return $strHtml;
+	}
+
+	// DEPRICATED
+	// Builds a html table displaying details of the accounts
+	private function _buildAccountResultsTableOld($arrAccountIds, $intOffset=0)
 	{
 		$strRows = "";
 		$bolAlt = FALSE;
@@ -323,13 +559,9 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 ";
 		return $strHtml;
 	}
-	
-	private function _buildServiceResultsTable($arrServiceIds, $intOffset=0)
-	{
-		return "[INSERT ServiceResultsTable HERE]";
-	}
-	
-	private function _buildContactResultsTable($arrContactIds, $intOffset=0)
+
+	// DEPRICATED
+	private function _buildContactResultsTableOld($arrContactIds, $intOffset=0)
 	{
 		$strRows = "";
 		$bolAlt = FALSE;
@@ -438,7 +670,6 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 ";
 		return $strHtml;
 	}
-	
 
 	
 }

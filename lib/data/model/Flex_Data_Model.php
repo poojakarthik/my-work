@@ -109,6 +109,25 @@ class Flex_Data_Model
 		}
 		return self::$cache[$tableName];
 	}
+	
+	// Retrieves details for all tables in the database
+	public static function getAll()
+	{
+		$arrTableFiles = glob(self::_getTableModelFilePath("*"));
+		
+		foreach ($arrTableFiles as $strFile)
+		{
+			$strTableName = strtolower(str_replace(".php", "", str_replace(dirname($strFile). DIRECTORY_SEPARATOR, "", $strFile)));
+			if (!array_key_exists($strTableName, self::$cache))
+			{
+				// The table isn't currently cached
+				$modelDefinition = NULL;
+				require $strFile;
+				self::$cache[$strTableName] = $modelDefinition;
+			}
+		}
+		return self::$cache;
+	}
 
 	// This is a shocker! Should be re-written!!
 	// This version was lifted straight from the old 'import.php'.

@@ -178,8 +178,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// Load all the contacts who belong to the AccountGroup and can view the Account
-		$strWhere = "(AccountGroup = <AccountGroup> AND CustomerContact = 1) OR Account = <Account>";
-		$arrWhere = array("AccountGroup"=>DBO()->Account->AccountGroup->Value, "Account"=>DBO()->Account->Id->Value);
+		$strWhere = "(AccountGroup = <AccountGroup> AND CustomerContact = 1) OR Account = <Account> OR Id = <AccountPrimaryContact>";
+		$arrWhere = array("AccountGroup"=>DBO()->Account->AccountGroup->Value, "Account"=>DBO()->Account->Id->Value, "AccountPrimaryContact"=>DBO()->Account->PrimaryContact->Value);
 		DBL()->Contact->Where->Set($strWhere, $arrWhere);
 		DBL()->Contact->OrderBy("FirstName, LastName");
 		DBL()->Contact->Load();

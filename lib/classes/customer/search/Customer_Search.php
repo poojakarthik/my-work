@@ -246,14 +246,14 @@ class Customer_Search
 				break;
 		}
 		
-		return array_unique($arrAccounts);
+		return array_values(array_unique($arrAccounts));
 	}
 
 	private static function _findServicesFor($mixConstraint, $intConstraintType, $bolIncludeArchived)
 	{
 		//TODO! Implement this
 		$arrServices = array();
-		return array_unique($arrServices);
+		return array_values(array_unique($arrServices));
 	}
 	
 	private static function _findContactsFor($mixConstraint, $intConstraintType, $bolIncludeArchived)
@@ -286,7 +286,7 @@ class Customer_Search
 				break;
 		}
 		
-		return array_unique($arrContacts);
+		return array_values(array_unique($arrContacts));
 	}
 	
 	// If $strFieldToKeep is specified, then this field is extracted from each record of the record set, and the function returns an indexed array of only these values
