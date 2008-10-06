@@ -39,6 +39,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		$ownerId = NULL;
 		$statusId = NULL;
 		$categoryId = NULL;
+		$quickSearch = NULL;
 
 		// If viewing own tickets, default owner id to be the id of the currently logged in user
 		$bolOwnTickets = $pathToken == 'mine';
@@ -48,15 +49,13 @@ class Application_Handler_Ticketing extends Application_Handler
 			$ownerId = $user->id;
 		}
 
-		BreadCrumb()->EmployeeConsole();
-		BreadCrumb()->SetCurrentPage($bolOwnTickets ? "My Tickets" : "Tickets");
-
 		// If this search is based on last search, default all search settings to be those of the last search
 		if (($pathToken == 'last' || array_key_exists('last', $_REQUEST)) && array_key_exists('ticketing', $_SESSION) && array_key_exists('lastTicketList', $_SESSION['ticketing']))
 		{
 			$lastQuery = unserialize($_SESSION['ticketing']['lastTicketList']);
 			$sort = $lastQuery['sort'];
 			$columns = $lastQuery['columns'];
+			$quickSearch = $lastQuery['quickSearch'];
 			$oldFilter = $lastQuery['filter'];
 			$ownerId = array_key_exists('ownerId', $oldFilter) ? $oldFilter['ownerId']['value'] : NULL;
 			$statusId = array_key_exists('statusId', $oldFilter) ? $oldFilter['statusId']['value'] : NULL;
@@ -159,18 +158,33 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['sort'] = $sort;
 		$detailsToRender['filter'] = $filter;
 
-		$detailsToRender['ticket_count'] = Ticketing_Ticket::countMatching($filter);
+		$quickSearch = array_key_exists('quickSearch', $_REQUEST) ? trim($_REQUEST['quickSearch']) : $quickSearch;
+		
+		if ($quickSearch)
+		{
+			$quickSearch = trim(implode(' ', array_slice(array_unique(explode(' ', $quickSearch)), 0, 8)));
+		}
+
+		$detailsToRender['ticket_count'] = Ticketing_Ticket::countMatching($filter, $quickSearch);
 
 		if ($detailsToRender['ticket_count'] <= $offset)
 		{
 			$offset = $detailsToRender['ticket_count'] - ($detailsToRender['ticket_count'] % $limit);
 		}
 
+		$detailsToRender['quickSearch'] = $quickSearch;
+		
+		BreadCrumb()->EmployeeConsole();
+		BreadCrumb()->SetCurrentPage($bolOwnTickets ? "My Tickets" : "Tickets");
+
+
 		$detailsToRender['offset'] = $offset;
 		$detailsToRender['limit'] = $limit;
-		$_SESSION['ticketing']['lastTicketList'] = serialize($detailsToRender);
 
-		$detailsToRender['tickets'] = Ticketing_Ticket::findMatching($columns, $sort, $filter, $offset, $limit);
+		$lastTicketList = serialize($detailsToRender);
+		$_SESSION['ticketing']['lastTicketList'] = $lastTicketList;
+
+		$detailsToRender['tickets'] = Ticketing_Ticket::findMatching($columns, $sort, $filter, $offset, $limit, $quickSearch);
 		$detailsToRender['users'] = Ticketing_User::listAll();
 		
 		$detailsToRender['statuses'] = array_merge(Ticketing_Status_Type_Conglomerate::listAll(), Ticketing_Status::listAll());
@@ -1073,15 +1087,16 @@ class Application_Handler_Ticketing extends Application_Handler
 			}
 		}
 
-		BreadCrumb()->EmployeeConsole();
-		BreadCrumb()->TicketingConsole(TRUE);
-		BreadCrumb()->SetCurrentPage("Quick Search for: " . $for);
-
-		$detailsToRender['action'] = 'search';
-		$detailsToRender['ticket'] = NULL;
-		$detailsToRender['message'] = 'No ticket was found for: ' . $for;
-
-		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
+		// OK, looks like it's not a ticket number.
+		// We should now try to find all tickets that match on subject or contact or ...
+		unset($_REQUEST['last']);
+		unset($_REQUEST['offset']);
+		unset($_REQUEST['limit']);
+		unset($_REQUEST['ownerId']);
+		unset($_REQUEST['statusId']);
+		unset($_REQUEST['categoryId']);
+		$_REQUEST['quickSearch'] = $for;
+		return $this->Tickets($subPath);
 	}
 
 
