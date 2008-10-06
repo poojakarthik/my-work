@@ -760,19 +760,71 @@
 				</div>
 				<br>";
 
-
-				echo "<div class='customer-standard-table-title-style-password'>Terms and conditions</div>
-				<div class='GroupedContent'>
-				<TABLE class=\"customer-standard-table-style\">
-				<TR VALIGN=\"TOP\">
-				<TD width=\"160\">Please read:</TD>
-				<TD><TEXTAREA NAME=\"\" ROWS=\"5\" COLS=\"35\">I understand that Telstra determines on reasonable grounds that if the fault is not in the Telstra network (for example a fault in private equipment) an incorrect callout charge will apply.($105 inc GST)
+				switch($_POST['intRequestType'])
+				{
+					// Logging a fault to an existing service
+					case "1":
+						$mixTermsAndConditions = "I understand that if Telstra determines on reasonable grounds that if the fault is not in the Telstra network (for example a fault in private equipment) an incorrect callout charge will apply.
 
 Telstra are responsible for the service to the Network Boundary Point of Customer Premises. This is the first socket in a residence and or business and the Main Distribution Frame (MDF) in a multi unit dwelling.
-If the fault is with private equipment and not with the Telstra network then there will be a $105 call out fee from Telstra which will then be passed on to you the customer for payment on your next bill. Please note sometimes this charge can come through upto 90 days in arrears.</TEXTAREA></TD>
-				</TR>
-				</TABLE>
-				</div>";
+If the fault is with private equipment and not with the Telstra network then there will be a call out fee from Telstra which will then be passed on to you the customer for payment on your next bill. Please note sometimes this charge can come through upto 90 days in arrears. Incorrect call out fees may change at the discretion of Telstra.
+I understand that there may be charges associated with any request to redirect or divert a service number and call charges may also apply for redirected or diverted numbers.
+I understand that the Network Supplier and/or The Service Provider do not guarantee a fault free service. 
+I understand that further infrastucture upgrades may be required as identified by the Network Supplier.
+I understand that by submitting this request The Service Provider will resonably accept that this request is being made by an authorised party.";
+					break;
+					// Select the service you wish to change
+					case "2":
+						$mixTermsAndConditions = "I understand that this request will be completed by the Network Supplier (Telstra) and will be completed according to their Customer Service Guarantee Timeframes. I understand that The Service Provider will not be held responsible for any delays by the Network Supplier (Telstra). 
+I understand that there may be charges associated with any request to modify or configure a service.
+I understand that there may be recurring charges associated with any product or service requested for this service number.
+I understand that there may be charges associated with any request to redirect or divert a service number and call charges may also apply for redirected or diverted numbers.
+I understand that by submitting this request The Service Provider will resonably accept that this request is being made by an authorised party. 
+I understand that it is not the responsibility of the Service Provider to ensure that all information supplied is true and correct.";
+					break;
+					// Disconnect a no longer required line number
+					case "3":
+						$mixTermsAndConditions = "I understand that this request will be completed by the Network Supplier (Telstra) and will be completed according to their Customer Service Guarantee Timeframes. I understand that The Service Provider will not be held responsible for any delays by the Network Supplier (Telstra).
+I understand that there may be charges associated with any request to redirect or divert a service number and call charges may also apply for redirected or diverted numbers.
+I understand that once the disconnection request is submitted that this service number may not be available for reconnection. 
+I understand that it is not the responsibility of The Service Provider to ensure that the service being disconnected is being used for ADSL services, Alarm systems, Eftpos services or any other privately or externally maintained services or equipment connected to the service number.
+I understand that The Service Provider will assume this request is for an immediate disconnection unless otherwise specified. 
+I understand that by submitting this request The Service Provider will resonably accept that this request is being made by an authorised party.
+I understand that it is not the responsibility of the Service Provider to ensure that all information supplied is true and correct.";
+					break;
+					// Add a new service
+					case "4":
+						$mixTermsAndConditions = "I understand that this request will be completed by the Network Supplier and will be completed according to their Customer Service Guarantee Timeframes. I understand that The Service Provider will not be held responsible for any delays by the Network Supplier.
+I understand that there may be charges associated with any request for new services to be provisioned by the Network Supplier and/or Service Provider.
+I understand that I will be responsible for all ongoing call and/or service charges associated with the provision of any new service. 
+I understand that there may be charges associated with any request to redirect or divert a service number and call charges may also apply for redirected or diverted numbers.
+I understand that I will be responsible for any required infrastructure improvement or equipment within the network boundary point deemed required by the Network Supplier. 
+I understand that there may be charges for any required infrastructure improvement or equipment within the network boundary point undertaken by the Network Supplier .
+I understand that the Network Supplier and/or The Service Provider are not responsible for any privately maintained or connected equipment within the network boundary point. This equipment may include but is not limited to PABX equipment, telephony equipment, Security System equipment, EFTPOS equipment and Computer equipment.
+I understand that the Network Supplier and/or The Service Provider are not responsible for any privately maintained Mobile Telephony equipment unless stipulated by prior agreements.
+I understand that the Network Supplier and/or The Service Provider do not guarantee a fault free service.   
+I understand that it is not the responsibility of the Service Provider to ensure that all information supplied is true and correct.";
+					break;
+					// Select the service this query is related to
+					case "5":
+						$mixTermsAndConditions = "";
+					break;
+					default:
+						$mixTermsAndConditions = "";
+					break;
+				}
+				if($mixTermsAndConditions !== "")
+				{
+					echo "<div class='customer-standard-table-title-style-password'>Terms and conditions</div>
+					<div class='GroupedContent'>
+					<TABLE class=\"customer-standard-table-style\">
+					<TR VALIGN=\"TOP\">
+					<TD width=\"160\">Please read:</TD>
+					<TD><TEXTAREA NAME=\"\" ROWS=\"5\" COLS=\"35\">$mixTermsAndConditions</TEXTAREA></TD>
+					</TR>
+					</TABLE>
+					</div>";
+				}
 			}
 			print "
 			<br/>
