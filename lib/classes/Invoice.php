@@ -11,10 +11,9 @@
  *
  * @class	Invoice
  */
-class Invoice
-{	
-	private	$_arrTidyNames	= array();
-	private	$_arrProperties	= array();
+class Invoice extends ORM
+{
+	protected	$_strTableName	= "Invoice";
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -35,44 +34,8 @@ class Invoice
 	 */
 	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
 	{
-		// Get list of columns from Data Model
-		$arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine('Invoice');
-		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
-		{
-			$this->_arrProperties[$strName]					= NULL;
-			$this->_arrTidyNames[self::tidyName($strName)]	= $strName;
-		}
-		$this->_arrProperties[$arrTableDefine['Id']]				= NULL;
-		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
-		
-		// Automatically load the Invoice using the passed Id
-		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : (($arrProperties['id']) ? $arrProperties['id'] : NULL);
-		if ($bolLoadById && $intId)
-		{
-			$selById	= $this->_preparedStatement('selById');
-			if ($selById->Execute(Array('Id' => $intId)))
-			{
-				$arrProperties	= $selById->Fetch();
-			}
-			elseif ($selById->Error())
-			{
-				throw new Exception("DB ERROR: ".$selById->Error());
-			}
-			else
-			{
-				// Do we want to Debug something?
-			}
-		}
-		
-		// Set Properties
-		if (is_array($arrProperties))
-		{
-			foreach ($arrProperties as $strName=>$mixValue)
-			{
-				// Load from the Database
-				$this->{$strName}	= $mixValue;
-			}
-		}
+		// Parent constructor
+		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1039,73 +1002,12 @@ class Invoice
 		return TRUE;
 	}
 	
-	//------------------------------------------------------------------------//
-	// save
-	//------------------------------------------------------------------------//
-	/**
-	 * save()
-	 *
-	 * Inserts or Updates the Invoice Record for this instance
-	 *
-	 * Inserts or Updates the Invoice Record for this instance
-	 * 
-	 * @return	boolean							Pass/Fail
-	 *
-	 * @method
-	 */
-	public function save()
-	{
-		// Do we have an Id for this instance?
-		if ($this->Id !== NULL)
-		{
-			// Update
-			$ubiSelf	= self::_preparedStatement("ubiSelf");
-			if ($ubiSelf->Execute($this->toArray()) === FALSE)
-			{
-				throw new Exception("DB ERROR: ".$ubiSelf->Error());
-			}
-			return TRUE;
-		}
-		else
-		{
-			// Insert
-			$insSelf	= self::_preparedStatement("insSelf");
-			$mixResult	= $insSelf->Execute($this->toArray());
-			if ($mixResult === FALSE)
-			{
-				throw new Exception("DB ERROR: ".$insSelf->Error());
-			}
-			if (is_int($mixResult))
-			{
-				$this->Id	= $mixResult;
-				return TRUE;
-			}
-			else
-			{
-				return $mixResult;
-			}
-		}
-	}
-
-	public function __get($strName)
-	{
-		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
-		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
-	}
-
 	protected function __set($strName, $mxdValue)
 	{
-		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
+		parent::__set($strName, $mxdValue);
 		
 		if (array_key_exists($strName, $this->_arrProperties))
-		{
-			$this->_arrProperties[$strName]	= $mxdValue;
-			
-			if ($this->{$strName} !== $mxdValue)
-			{
-				$this->_saved = FALSE;
-			}
-			
+		{	
 			// DEBUG
 			switch ($strName)
 			{
@@ -1122,47 +1024,6 @@ class Invoice
 		{
 			$this->{$strName} = $mxdValue;
 		}
-	}
-	
-	//------------------------------------------------------------------------//
-	// tidyName
-	//------------------------------------------------------------------------//
-	/**
-	 * tidyName()
-	 *
-	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
-	 * 
-	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
-	 * If the string is already in the xxxYxxZzz format, then it will not be changed
-	 *
-	 * @param	string	$strName
-	 * @return	string
-	 * @method
-	 */
-	private function tidyName($name)
-	{
-		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
-		$tidy[0] = strtolower($tidy[0]);
-		return $tidy;
-	}
-	
-	//------------------------------------------------------------------------//
-	// toArray()
-	//------------------------------------------------------------------------//
-	/**
-	 * toArray()
-	 *
-	 * Returns an associative array modelling the Database Record
-	 *
-	 * Returns an associative array modelling the Database Record
-	 * 
-	 * @return	array										DB Record
-	 *
-	 * @method
-	 */
-	public function toArray()
-	{
-		return $this->_arrProperties;
 	}
 	
 	//------------------------------------------------------------------------//
