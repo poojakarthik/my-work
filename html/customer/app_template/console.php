@@ -555,7 +555,7 @@ class AppTemplateConsole extends ApplicationTemplate
 						break;
 
 						case "3":
-						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$survey_question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$survey_question_response_type_id]");
+						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
 						$mixOutPut .= " $option_name<br>";
 						break;
 
@@ -565,10 +565,10 @@ class AppTemplateConsole extends ApplicationTemplate
 					switch($survey_question_option_response_type_id)
 					{
 						case "4":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrOptAnswer[$survey_question_id||$id||$response_required||other]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
 						break;
 						case "5":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrOptAnswer[$survey_question_id||$id||$response_required||other]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
+						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
 						break;
 
 						default:
@@ -598,7 +598,7 @@ class AppTemplateConsole extends ApplicationTemplate
 						break;
 						
 						case "3":
-						$mixOutPut .= str_replace("[REPLACE]","name='strRadio[$survey_question_id||$response_required]' value='$id||$option_name'","$arrInputTypes[$survey_question_response_type_id]");
+						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
 						$mixOutPut .= " $option_name<br>";
 						break;
 
@@ -614,10 +614,10 @@ class AppTemplateConsole extends ApplicationTemplate
 					switch($survey_question_option_response_type_id)
 					{
 						case "4":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrOptAnswer[$survey_question_id||$id||$response_required||other]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
 						break;
 						case "5":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrOptAnswer[$survey_question_id||$id||$response_required||other]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
+						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
 						break;
 
 						default:
@@ -650,7 +650,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			// Clean input
 			$_POST = CleanFormInput($_POST);
 
-			// prevent the same survey from being completed twice.
+			// Prevent the same survey from being completed twice.
 			$arrCheckIfCompleted = $dbConnection->fetch("SELECT * FROM survey_completed WHERE contact_id = \"" . DBO()->Contact->Id->Value . "\" AND survey_id=\"$_POST[intSurveyId]\"",$array=true);
 			if($arrCheckIfCompleted)
 			{
@@ -658,104 +658,198 @@ class AppTemplateConsole extends ApplicationTemplate
 			}
 
 
-
-
 			// Build an array of our valid responses.
 			$arrInput = array();
-			$intNumCounts=0;
+			$intCounter = 0;
 
-			while(@list($key,$value)=each($_POST['arrAnswer'])) {
-				$intNumCounts++;
-				$bit = explode("||",$key);
-				$arrInput[$intNumCounts] = "$bit[0]";
-				$mixBit = ",";
-				if($mixSQL == "")
-				{
-					$mixBit = "";
-				}
-				if($value !== "")
-				{
-					$mixSQL .= "$mixBit\n(\"$bit[0]\", \"$value\", LAST_INSERT_ID())";
-				}
-			}
-			// This is specifically for radio buttons.
-			while(@list($key,$value)=each($_POST['strRadio'])) {
-				$intNumCounts++;
-				$bit1 = explode("||",$key);
-				$bit2 = explode("||",$value);
-				$arrInput[$intNumCounts] = "$bit1[0]";
-				$mixBit = ",";
-				if($mixSQL == "")
-				{
-					$mixBit = "";
-				}
-				$mixSQL .= "$mixBit\n(\"$bit[0]\", \"$bit2[1]\", LAST_INSERT_ID())";
+			while(@list($mixKey,$mixVal)=each($_POST['arrAnswer'])) {
+				$intCounter++;
+				$mixBit = explode("||",$mixKey);
+				$arrInput[$intCounter++] = "$mixBit[0]";
 			}
 
-			while(@list($key,$value)=each($_POST['arrOptAnswer'])) {
-				$intNumCounts++;
-				$bit = explode("||",$key);
-				$arrInput[$intNumCounts] = "$bit[0]";
-				$mixBit = ",";
-				if($mixOptSQL == "")
-				{
-					$mixBit = "";
-				}
-				if($value !== "")
-				{
-					$mixOptSQL .= "$mixBit\n(\"$bit[0]\", \"$value\", \"[mixLastSQLInsertId]\")";
-				}
-			}
-
-			// select all the questions from the database to test which ones are required.
+			// Select all survey questions so we know what our sql insert statement will look.
+			// This portion of the code also uses the results to check which fields are required and matches it against the input.
 			$mixSelect = "
-			SELECT *
-			FROM survey_question
-			WHERE survey_id = \"$_POST[intSurveyId]\" 
-			AND response_required = '1'";
+			SELECT sq.*, sqo.*
+			FROM survey_question AS sq 
+			INNER JOIN survey_question_option AS sqo 
+			ON sq.id = sqo.survey_question_id
+			WHERE sq.survey_id = \"$_POST[intSurveyId]\"
+			ORDER BY sqo.survey_question_id,sqo.survey_question_option_response_type_id";
+			$arrSurveyTest = $dbConnection->fetch("$mixSelect",$array=true);
+			
+			$intQueryCount = 0;
+			$mixQuerie = array();
+			$bolSurveyDebugMode = FALSE;
 
-			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
+			if($bolSurveyDebugMode)
+			{
+			print "
+				<TABLE border=1>
+				<TR>
+					<TD>SQO_id</TD>
+					<TD>S_id</TD>
+					<TD>response_required</TD>
+					<TD>SQ_response_type_id</TD>
+					<TD>question_num</TD>
+					<TD>SQ_id</TD>
+					<TD>option_name</TD>
+					<TD>SQO_response_type_id</TD>
+					<TD>Answer</TD>
+				</TR>";
+			}
 
-			foreach($arrSurvey as $results)
+			$arrNumbers = array();
+			$count = 0;
+			foreach($arrSurveyTest as $results)
 			{
 				foreach($results as $key=>$val){
 					$$key=$val;
 				}
-				$bolFoundResponse = FALSE;
-				foreach($arrInput as $value)
+
+
+				$mixAnswerInput = $_POST["arrAnswer"]["$survey_question_id||$id||$response_required"];
+				if($mixAnswerInput)
 				{
-					if($value == "$id")
+					// Its an answer to an option.
+					if($survey_question_option_response_type_id)
 					{
-						$bolFoundResponse = TRUE;
+						$mixQuerie[$intQueryCount++] = "INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) 
+						VALUES (\"$survey_question_id\", \"$option_name\", \"[replace_survey_completed_id]\");";
+						$mixQuerie[$intQueryCount++] = "INSERT INTO survey_completed_response_option(survey_question_option_id, option_text, survey_completed_response_id)
+						VALUES (\"$id\", \"$mixAnswerInput\", LAST_INSERT_ID());";
+						if($bolSurveyDebugMode)
+						{
+							echo "
+							<TR>
+								<TD COLSPAN=\"9\">
+								INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) 
+								VALUES (\"$survey_question_id\", \"$option_name\", SC_id);<BR>
+								INSERT INTO survey_completed_response_option(survey_question_option_id, option_text, survey_completed_response_id)
+								VALUES (\"$id\", \"$mixAnswerInput\", LAST_INSERT_ID());<br>\n</TD>
+							</TR>";
+						}
+					}
+					// Its an answer
+					else
+					{
+						$mixQuerie[$intQueryCount++] = "INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) 
+						VALUES (\"$survey_question_id\", \"$mixAnswerInput\", \"[replace_survey_completed_id]\");";
+						if($bolSurveyDebugMode)
+						{
+							echo "
+							<TR>
+								<TD COLSPAN=\"9\">
+								INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) 
+								VALUES (\"$survey_question_id\", \"$mixAnswerInput\", SC_id);<br>\n</TD>
+							</TR>";
+						}
 					}
 				}
-				if(!$bolFoundResponse)
+				$bolFound = FALSE;
+				foreach($arrNumbers as $key=>$val)
 				{
-					DBO()->Survey->Error = "Error, no response for question: <br>$question<br><br>";
-					break;
+					if($val == "$survey_question_id")
+					{
+						$bolFound = TRUE;
+					}
+				}
+				if(!$bolFound && $response_required == "1")
+				{
+					$count++;
+					$arrNumbers[$count] = "$survey_question_id";
+					if($bolSurveyDebugMode)
+					{
+						echo "
+						<TR>
+							<TD COLSPAN=\"9\">Found a question that is required $id.</TD>
+						</TR>";
+					}
+					$bolFoundResponse = FALSE;
+					foreach($arrInput as $value)
+					{
+						if($value == "$id")
+						{
+							$bolFoundResponse = TRUE;
+						}
+					}
+				}
+				if(!$bolFound && $response_required == "0")
+				{
+					$count++;
+					$arrNumbers[$count] = "$survey_question_id";
+					if($bolSurveyDebugMode)
+					{
+						echo "
+						<TR>
+							<TD COLSPAN=\"9\">Found a question that is NOT required $id.</TD>
+						</TR>";
+					}
+					$bolFoundResponse = FALSE;
+					foreach($arrInput as $value)
+					{
+						if($value == "$id")
+						{
+							$bolFoundResponse = TRUE;
+						}
+					}
+				}
+				if($survey_question_option_response_type_id)
+				{
+					if($bolSurveyDebugMode)
+					{
+						echo "
+						<TR>
+							<TD COLSPAN=\"9\">Found an option  $id.</TD>
+						</TR>";
+					}
+				}
+				if($bolSurveyDebugMode)
+				{
+					echo "
+					<TR>
+						<TD>$id</TD>
+						<TD>$survey_id</TD>
+						<TD>$response_required</TD>
+						<TD>$survey_question_response_type_id</TD>
+						<TD>$question_num</TD>
+						<TD>$survey_question_id</TD>
+						<TD>$option_name</TD>
+						<TD>$survey_question_option_response_type_id</TD>
+						<TD>$mixAnswerInput</TD>
+					</TR>";
 				}
 			}
-
+			if($bolSurveyDebugMode)
+			{
+				print "
+				</TABLE>";
+			}
 			if(DBO()->Survey->Error->Value == NULL)
 			{
 
+				// Add one record to survey completed table.
 				$dbConnection->execute("INSERT INTO survey_completed(date_completed,contact_id,survey_id) VALUES(\"" . date("Y-m-d H:i:s", time()) . "\",\"" . DBO()->Contact->Id->Value . "\",\"$_POST[intSurveyId]\")");
 				$intLastId = $dbConnection->fetchone("SELECT LAST_INSERT_ID();");
-				
 				foreach($intLastId as $intVal)
 				{
 					$intLastValue = $intVal;
 				}
+
+				// Add multiple records to survey_completed_response, survey_completed_response_option tables.
+				foreach($mixQuerie as $intQueryNumber=>$mixQuery)
+				{
+					if(is_numeric($intLastValue))
+					{
+						// This replacement is only for querys related to survey_completed_response.
+						$mixQuery = str_replace("[replace_survey_completed_id]","$intLastValue",$mixQuery);
+						$dbConnection->execute("$mixQuery");
+					}
+				}
+
 				// all fields have been verified, no errors!.
 				DBO()->Survey->Results = TRUE;
-
-				// Insert responses into database
-				$mixQueryResponse = "INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) VALUES $mixSQL;";
-				$dbConnection->execute("$mixQueryResponse");
-				$mixOptSQL=str_replace("[mixLastSQLInsertId]","$intLastValue",$mixOptSQL);
-				// Insert response options into database
-				$mixQueryResponseOptions = "INSERT INTO survey_completed_response_option(survey_question_option_id, option_text, survey_completed_id) VALUES $mixOptSQL;";
-				$dbConnection->execute("$mixQueryResponseOptions");
 
 			}
 
