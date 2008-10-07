@@ -101,8 +101,8 @@ while ($arrService = $selLostServices->Fetch())
 		
 		// Dump this line
 		fwrite($resOutputFile, '"'.implode('","', $arrOutput).'"'."\n");
-		CliEcho();
 	}
+	CliEcho();
 }
 CliEcho();
 exit(0);
