@@ -173,7 +173,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Charge->Status = CHARGE_WAITING;
 
 				$arrData = DBO()->Charge->AsArray();
-				
+
 				$intChargeId = Framework()->AddCharge($arrData);
 
 				// Save the adjustment to the charge table of the vixen database
@@ -642,11 +642,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Charge->Account		= DBO()->RecurringCharge->Account->Value;
 					DBO()->Charge->Service		= DBO()->RecurringCharge->Service->Value;
 					DBO()->Charge->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
-					DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
-					DBO()->Charge->ApprovedBy	= NULL;
+					DBO()->Charge->CreatedOn	= GetCurrentISODate();
+					DBO()->Charge->ApprovedBy	= USER_ID;
 					DBO()->Charge->ChargeType	= DBO()->RecurringCharge->ChargeType->Value;
 					DBO()->Charge->Description	= "CANCELLATION: ". DBO()->RecurringCharge->Description->Value;
-					DBO()->Charge->ChargedOn	= NULL;
+					DBO()->Charge->ChargedOn	= GetCurrentISODate();
 					DBO()->Charge->Nature		= NATURE_DR;
 					DBO()->Charge->Amount		= $fltChargeAmount;
 					DBO()->Charge->Invoice		= NULL;
@@ -655,8 +655,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Charge->LinkId		= DBO()->RecurringCharge->Id->Value;
 					DBO()->Charge->Status		= CHARGE_APPROVED;
 					
+					$arrData = DBO()->Charge->AsArray();
+					$intChargeId = Framework()->AddCharge($arrData);
+
 					// Save the charge
-					if (!DBO()->Charge->Save())
+					if ($intChargeId === FALSE)
 					{
 						// The charge could not be saved so rollback the transaction
 						TransactionRollback();
