@@ -776,7 +776,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					}
 					if(!$bolFoundResponse)
 					{
-						DBO()->Survey->Error = "Error, you must anser this question:<br>\n$question<br><br>\n";
+						DBO()->Survey->Error = "Error, you must answer this question:<br>\n$question<br><br>\n";
 					}
 				}
 				if(!$bolFound && $response_required == "0")
