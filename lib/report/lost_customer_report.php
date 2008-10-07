@@ -44,7 +44,7 @@ while ($intMonth > 0)
 Debug($arrPeriods);
 
 // Output file
-$resOutputFile	= fopen("/home/rdavis/telcoblue_lost_customers_report.csv");
+$resOutputFile	= fopen("/home/rdavis/telcoblue_lost_customers_report.csv", 'w');
 
 // Get the List of Services which were Lost at some stage in our period
 if (($intTotal = $selLostServices->Execute(Array('Start'=>$strPeriodStart, 'End'=>$strPeriodEnd))) === FALSE)
