@@ -378,12 +378,27 @@ class Customer_Search
 	private static function _findAccountsForAccountName($strAccountName, $bolIncludeArchived)
 	{
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
+
+		// Tokenise the contact name
+		$arrBusinessNameConditionParts	= array();
+		$arrTradingNameConditionParts	= array();
+		$strToken = strtok($strAccountName, " \n\t,");
+		while ($strToken !== FALSE)
+		{
+			$arrBusinessNameConditionParts[]	= "BusinessName LIKE '%$strToken%'";
+			$arrTradingNameConditionParts[]		= "TradingName LIKE '%$strToken%'";
+			$strToken = strtok(" \n\t,");
+		}
 		
-		$strQuery = "	SELECT DISTINCT Id
+		$strBusinessNameCondition	= implode(" AND ", $arrBusinessNameConditionParts);
+		$strTradingNameCondition	= implode(" AND ", $arrTradingNameConditionParts);
+
+		$strQuery = "	SELECT Id
 						FROM Account
-						WHERE (BusinessName LIKE '%$strAccountName%' OR TradingName LIKE '%$strAccountName%') $strArchivedConstraint
+						WHERE (($strBusinessNameCondition) OR ($strTradingNameCondition)) $strArchivedConstraint
 						ORDER BY BusinessName ASC, TradingName ASC, Id DESC
 						LIMIT ". self::MAX_RECORDS;
+
 		return self::_find($strQuery, "Id");
 	}
 	
@@ -455,9 +470,23 @@ class Customer_Search
 	private static function _findContactsForContactName($strContactName, $bolIncludeArchived)
 	{
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != 1";
-		$strQuery = "	SELECT DISTINCT Id
+
+		// Tokenise the contact name
+		$arrNameConditionParts = array();
+		$strToken = strtok($strContactName, " \n\t,");
+		while ($strToken !== FALSE)
+		{
+			$arrNameConditionParts[] = "FullName LIKE '%$strToken%'";
+			$strToken = strtok(" \n\t,");
+		}
+		
+		$strNameCondition = implode(" AND ", $arrNameConditionParts);
+				
+		$strQuery = "	SELECT Id, LastName, FirstName, Title, CONCAT(FirstName, ' ', LastName) AS FullName
 						FROM Contact
-						WHERE CONCAT(FirstName, ' ', LastName) LIKE '%$strContactName%' $strArchivedConstraint
+						WHERE TRUE $strArchivedConstraint
+						GROUP BY Id, LastName, FirstName, Title
+						HAVING ($strNameCondition)
 						ORDER BY LastName ASC, FirstName ASC, Id DESC
 						LIMIT ". self::MAX_RECORDS;
 
