@@ -455,7 +455,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			FROM survey 
 			WHERE id NOT IN (	SELECT survey_id
 						FROM survey_completed
-						WHERE contact_id = \"" . DBO()->Account->Id->Value . "\"
+						WHERE contact_id = \"" . DBO()->Contact->Id->Value . "\"
 					)
 			AND customer_group_id = \"" . DBO()->Account->CustomerGroup->Value . "\"
 			ORDER BY id ASC 
@@ -651,7 +651,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			$_POST = CleanFormInput($_POST);
 
 			// prevent the same survey from being completed twice.
-			$arrCheckIfCompleted = $dbConnection->fetch("SELECT * FROM survey_completed WHERE contact_id = \"" . DBO()->Contact->Account->Value . "\" AND survey_id=\"$_POST[intSurveyId]\"",$array=true);
+			$arrCheckIfCompleted = $dbConnection->fetch("SELECT * FROM survey_completed WHERE contact_id = \"" . DBO()->Contact->Id->Value . "\" AND survey_id=\"$_POST[intSurveyId]\"",$array=true);
 			if($arrCheckIfCompleted)
 			{
 				DBO()->Survey->Error = "Error, you have already completed this survey, please try again later when a new survey becomes available.";
@@ -739,7 +739,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			if(DBO()->Survey->Error->Value == NULL)
 			{
 
-				$dbConnection->execute("INSERT INTO survey_completed(date_completed,contact_id,survey_id) VALUES(\"" . date("Y-m-d H:i:s", time()) . "\",\"" . DBO()->Contact->Account->Value . "\",\"$_POST[intSurveyId]\")");
+				$dbConnection->execute("INSERT INTO survey_completed(date_completed,contact_id,survey_id) VALUES(\"" . date("Y-m-d H:i:s", time()) . "\",\"" . DBO()->Contact->Id->Value . "\",\"$_POST[intSurveyId]\")");
 				$intLastId = $dbConnection->fetchone("SELECT LAST_INSERT_ID();");
 				
 				foreach($intLastId as $intVal)

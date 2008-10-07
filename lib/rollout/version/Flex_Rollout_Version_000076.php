@@ -342,8 +342,6 @@ class Flex_Rollout_Version_000076 extends Flex_Rollout_Version
 		CHANGE option_text option_text LONGTEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL COMMENT 'this is the text/response from the user',
 		CHANGE contact_id account_id BIGINT( 20 ) NULL DEFAULT NULL COMMENT 'this is the customers account id';";
 
-
-		
 		$strSQL = "ALTER TABLE survey_question 
 		CHANGE response_type survey_question_response_type_id VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL COMMENT 'response type represents how the question is displayed, e.g. select, text, checkbox';";
 		$result = $dbAdmin->query($strSQL);
@@ -438,7 +436,7 @@ class Flex_Rollout_Version_000076 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter field survey_completed_response_option' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to alter table survey_question_option' . $result->getMessage());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE survey_question_option CHANGE survey_question_option_response_type_id survey_question_response_type_id BIGINT( 20 ) NULL DEFAULT NULL COMMENT 'the option type id represents if there is an additional field available in this question, e.g. a select box and a text box next to it.';";
 
@@ -473,15 +471,18 @@ class Flex_Rollout_Version_000076 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "ALTER TABLE survey_completed_response_option DROP survey_completed_response_id;";
 
-
 		
-		$strSQL = "ALTER TABLE survey_completed_response_option CHANGE survey_completed_response_id survey_completed_id BIGINT( 20 ) NULL DEFAULT NULL;";
+		$strSQL = "UPDATE survey_completed,Contact 
+		SET survey_completed.contact_id = Contact.Id 
+		WHERE survey_completed.contact_id = Contact.Account;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter field survey_completed_response_option' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to update field survey_completed.contact_id' . $result->getMessage());
 		}
-		$this->rollbackSQL[] = "ALTER TABLE survey_completed_response_option CHANGE survey_completed_response_id survey_completed_id MEDIUMINT( 11 );";
+		$this->rollbackSQL[] = "UPDATE survey_completed,Contact 
+		SET survey_completed.contact_id = Contact.Account 
+		WHERE survey_completed.contact_id = Contact.Id;";
 
 	}
 	
