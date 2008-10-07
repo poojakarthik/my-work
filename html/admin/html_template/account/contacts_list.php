@@ -114,8 +114,8 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 	{
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		
-		Table()->ContactTable->SetHeader("Name", "&nbsp;", "Phone#", "Status", "&nbsp;");
-		Table()->ContactTable->SetWidth("40%", "20%", "20%", "10%", "10%");
+		Table()->ContactTable->SetHeader("Name", "Email", "Phone#", "Status", "&nbsp;");
+		//Table()->ContactTable->SetWidth("40%", "20%", "20%", "10%", "10%");
 		Table()->ContactTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
 		
 		foreach (DBL()->Contact as $dboContact)
@@ -144,17 +144,13 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 			
 			// Build Name Cell
 			$strName		= ucwords(strtolower(trim("{$dboContact->Title->Value} {$dboContact->FirstName->Value} {$dboContact->LastName->Value}")));
-			$strNameCell	= "<span>$strName</span>";
+			$strNameCell	= htmlspecialchars($strName);
 			
 			// Build Primary Contact flag
 			if (DBO()->Account->PrimaryContact->Value == $dboContact->Id->Value)
 			{
 				// The current contact is the account's primary contact
-				$strPrimaryCell = "<span>(Primary Contact)</span>";
-			}
-			else
-			{
-				$strPrimaryCell = "<span>&nbsp;</span>";
+				$strNameCell .= " (Primary Contact)";
 			}
 			
 			// Build the phone number cell
@@ -168,10 +164,12 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 			}
 			else
 			{
-				$strPhoneCell = "<span>[Not Specified]</span>";
+				$strPhoneCell = "[Not Specified]";
 			}
 			
-			Table()->ContactTable->AddRow($strNameCell, $strPrimaryCell, $strPhoneCell, $strStatus, $strActionsCell);
+			$strEmailCell = (trim($dboContact->Email->Value) != "")? htmlspecialchars($dboContact->Email->Value) : "[Not Specified]";
+			
+			Table()->ContactTable->AddRow($strNameCell, $strEmailCell, $strPhoneCell, $strStatus, $strActionsCell);
 		}
 		
 		// If the account has no contacts then output an appropriate message in the table

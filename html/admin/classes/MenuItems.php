@@ -1540,7 +1540,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AccountContactsPopupId\", \"large\", null, \"Account\", \"ViewContacts\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AccountContactsPopupId\", \"extralarge\", null, \"Account\", \"ViewContacts\", $strJsonCode)";
 	}
 	
 	
