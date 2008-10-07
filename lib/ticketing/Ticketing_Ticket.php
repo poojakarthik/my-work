@@ -336,6 +336,8 @@ class Ticketing_Ticket
 		$arrContact = array();
 		$arrContactNr = array();
 		$arrFNN = array();
+		$arrAccounts = array();
+		$arrAccountNrs = array();
 		foreach ($words as $word)
 		{
 			$word = trim($word);
@@ -343,8 +345,17 @@ class Ticketing_Ticket
 			{
 				continue;
 			}
-			$bolIsPhoneNumber = preg_match("/^[0-9]{8,10}$/", $word);
+			$bolIsNumber = preg_match("/^[0-9]+$/", $word);
+			$bolIsPhoneNumber = $bolIsNumber && preg_match("/^[0-9]{8,10}$/", $word);
 			$word = $arrWords[] = Data_Source::get()->escape($word);
+			if ($bolIsNumber)
+			{
+				$arrAccountNrs[] = $word;
+			}
+			else
+			{
+				$arrAccounts[] = "BusinessName LIKE '%$word%'";
+			}
 			$arrSubjects[] = "subject LIKE '%$word%'";
 			$arrSummaries[] = "CONCAT(CASE WHEN summary IS NULL THEN '' ELSE  summary END, \" \", CASE WHEN details IS NULL THEN '' ELSE  details END) LIKE '%$word%'";
 			if ($bolIsPhoneNumber)
@@ -376,6 +387,16 @@ class Ticketing_Ticket
 				)
 			  : (count($arrContactNr) 
 			        ? " UNION (SELECT ticket_id as \"id\" FROM ticketing_correspondance, ticketing_contact WHERE ticketing_correspondance.contact_id = ticketing_contact.id AND (" . implode(' OR ', $arrContactNr) . "))"
+			        : ''
+			    )
+		) . 
+		(count($arrAccounts) 
+			  ? (count($arrAccountNrs) 
+			 	    ? " UNION (SELECT ticketing_ticket.id as \"id\" FROM ticketing_ticket, Account WHERE ticketing_ticket.account_id = Account.Id AND ((" . implode(' AND ', $arrAccounts) . ") OR (Account.Id IN (" . implode(', ', $arrAccountNrs) . ") OR Account.AccountGroup IN (" . implode(', ', $arrAccountNrs) . "))))" 
+			        : " UNION (SELECT ticketing_ticket.id as \"id\" FROM ticketing_ticket, Account WHERE ticketing_ticket.account_id = Account.Id AND " . implode(' AND ', $arrAccounts) . ")"
+				)
+			  : (count($arrAccountNrs) 
+			        ? " UNION (SELECT ticketing_ticket.id as \"id\" FROM ticketing_ticket, Account WHERE ticketing_ticket.account_id = Account.Id AND (Account.Id IN (" . implode(', ', $arrAccountNrs) . ") OR Account.AccountGroup IN (" . implode(', ', $arrAccountNrs) . ")))"
 			        : ''
 			    )
 		) . 
