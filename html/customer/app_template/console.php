@@ -1298,10 +1298,10 @@ class AppTemplateConsole extends ApplicationTemplate
 				$email->setFrom("$_POST[mixContact_Email]", "$_POST[mixContact_FirstName] $_POST[mixContact_LastName]");
 				$email->setSubject("Account Support Request - " . DBO()->Contact->Account->Value);
 				$email->setBodyText("$message");
-				//$email->send();
+				$email->send();
 				
 				// for debug only.
-				mail("ryanjf@gmail.com","TEST FORM DATA","$message");
+				// mail("DEBUG-ADDRESS","TEST FORM DATA","$message");
 
 				$this->LoadPage('support_confirmed');
 				return TRUE;
