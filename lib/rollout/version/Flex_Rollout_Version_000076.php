@@ -472,17 +472,17 @@ class Flex_Rollout_Version_000076 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "ALTER TABLE survey_completed_response_option DROP survey_completed_response_id;";
 
 		
-		$strSQL = "UPDATE survey_completed,Contact 
-		SET survey_completed.contact_id = Contact.Id 
-		WHERE survey_completed.contact_id = Contact.Account;";
+		$strSQL = "UPDATE survey_completed,Account 
+		SET survey_completed.contact_id = Account.PrimaryContact 
+		WHERE survey_completed.contact_id = Account.Id;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to update field survey_completed.contact_id' . $result->getMessage());
 		}
-		$this->rollbackSQL[] = "UPDATE survey_completed,Contact 
-		SET survey_completed.contact_id = Contact.Account 
-		WHERE survey_completed.contact_id = Contact.Id;";
+		$this->rollbackSQL[] = "UPDATE survey_completed,Account 
+		SET survey_completed.contact_id = Account.Id 
+		WHERE survey_completed.contact_id = Account.PrimaryContact;";
 
 	}
 	
