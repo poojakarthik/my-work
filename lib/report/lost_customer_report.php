@@ -35,7 +35,7 @@ $arrPeriods			= Array();
 while ($intMonth > 0)
 {
 	// Calculate Periods
-	$strPeriodName	= date("F y");
+	$strPeriodName	= date("F y", strtotime("-{$intMonth} months", $intReportDate));
 	$arrPeriods[$strPeriodName]['Start']	= date("Y-m-d H:i:s", strtotime("-{$intMonth} months", $intReportDate));
 	$arrPeriods[$strPeriodName]['End']		= date("Y-m-d H:i:s", strtotime("-1 second", strtotime("-".($intMonth-1)." months", $intReportDate)));
 	
