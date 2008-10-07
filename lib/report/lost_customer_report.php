@@ -64,7 +64,7 @@ while ($arrService = $selLostServices->Fetch())
 	// Process each period
 	foreach ($arrPeriods as $strPeriodName=>$arrDates)
 	{
-		CliEcho("{$strPeriodName}...");
+		CliEcho("{$strPeriodName}...", FALSE);
 		
 		$arrOutput['Month']	= $strPeriodName;
 		
@@ -101,6 +101,7 @@ while ($arrService = $selLostServices->Fetch())
 		
 		// Dump this line
 		fwrite($resOutputFile, '"'.implode('","', $arrOutput).'"'."\n");
+		CliEcho();
 	}
 }
 CliEcho();
