@@ -23,10 +23,9 @@ $arrOutputTemplate	= Array(
 							);
 
 // Init Periods
-$intHistoryMonths	= 3;
 $strReportDate		= "2008-10-01";
 $intReportDate		= strtotime($strReportDate);
-$intMonth			= $intHistoryMonths;
+$intMonth			= 3;
 
 $strPeriodStart		= date("Y-m-d H:i:s", strtotime("-{$intHistoryMonths} months", $intReportDate));
 $strPeriodEnd		= date("Y-m-d H:i:s", strtotime("-1 second", $intReportDate));
