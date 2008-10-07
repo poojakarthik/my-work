@@ -450,6 +450,173 @@
 							</TABLE>
 							</div>
 							<br/>";
+
+							echo "
+							<div class='customer-standard-table-title-style-password'>Relocations</div>
+							<div class='GroupedContent'>
+							<table class=\"customer-standard-table-style\">
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<B>Please Choose:</B>						
+								</td>
+								<td>
+								If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow " . DBO()->CustomerGroup->ExternalName->Value . " to connect a new service for you.</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td>
+									<TABLE style=\"font-size: 12px;\">
+									<TR>
+										<TD><input type=\"radio\" name=\"mixRelocationOption\" value=\"yes\"> yes</TD>
+									</TR>
+									<TR>
+										<TD><input type=\"radio\" name=\"mixRelocationOption\" value=\"no\"> no (UNABLE TO PROCEED)</TD>
+									</TR>
+									</TABLE>
+								</td>
+							</tr>
+							</table>
+							</div>
+							<br/>";
+
+
+							echo "
+							<div class='customer-standard-table-title-style-password'>Redirection / Announcement</div>
+							<div class='GroupedContent'>
+							<table class=\"customer-standard-table-style\">
+							<tr valign=\"top\">
+								<td width=\"160\">Do you require redirections:</td>
+								<td>
+								<select name=\"mixRedirectionOption\">
+									<option value=\"no\">no</option>
+									<option value=\"yes\">yes</option>
+								</select>
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td>
+									If yes which type of redirection do you require.
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>Redirection Setup:</td>
+									</tr>
+									</table>
+								</td>
+								<td>
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>
+											<select name=\"mixRedirectionPlan\">
+												<option value=\"\">please select</option>
+												<option value=\"3 Months Prepaid\">3 Months Prepaid</option>
+												<option value=\"6 Months Prepaid\">6 Months Prepaid</option>
+												<option value=\"12 Months Prepaid\">12 Months Prepaid</option>
+												<option value=\"Ongoing Redirection\">Ongoing Redirection</option>
+												<option value=\"Not Required\">Not Required</option>
+											</select>
+										</td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td>
+									*Announcement will announce the new number
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>Redirection Announcement:</td>
+									</tr>
+									</table>
+								</td>
+								<td>
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>
+											<select name=\"mixRedirectionAnnouncement\">
+												<option value=\"\">please select</option>
+												<option value=\"Redirection no announcement\">Redirection no announcement</option>
+												<option value=\"Redirecton with announcement\">Redirecton with announcement</option>
+												<option value=\"Announcement only\">Announcement only</option>
+												<option value=\"Not Required\">Not Required</option>
+											</select>
+										</td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							</table>
+							</div>
+							<br/>";
+
+							echo "
+							<div class='customer-standard-table-title-style-password'>Preferred Contractor</div>
+							<div class='GroupedContent'>
+							<table class=\"customer-standard-table-style\">
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<B>Option One:</B>						
+								</td>
+								<td>
+									Do you allow Telstra to connect your line past the Main Distribution Frame (MDF) and charge fee for service?
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td>
+									<TABLE style=\"font-size: 12px;\">
+									<TR>
+										<TD><input type=\"radio\" name=\"mixContractorOptionOne\" value=\"yes\"> yes</TD>
+									</TR>
+									<TR>
+										<TD><input type=\"radio\" name=\"mixContractorOptionOne\" value=\"no\"> no</TD>
+									</TR>
+									</TABLE>
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<b>Option Two:</b>
+								</td>
+								<td>
+									If no above, please supply the details of your preferred contractor.
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>Private Contractor Name:</td>
+									</tr>
+									<tr>
+										<td>Contact Number:</td>
+									</tr>
+									</table>
+								</td>
+								<td>
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td><input type=\"text\" name=\"mixContractorName\" value=\"\"></td>
+									</tr>
+									<tr>
+										<td><input type=\"text\" name=\"mixContractorNumber\" value=\"\"></td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							</table>
+							</div>
+							<br/>";
+
 							break;
 
 							case "101":
@@ -621,9 +788,181 @@
 									</SELECT>								
 								</TD>
 							</TR>
+							<TR>
+								<TD width=\"160\">Existing line number</TD>
+								<TD><INPUT TYPE=\"text\" NAME=\"mixPhoneNumber\"></TD>
+							</TR>
 							</TABLE>
 							</div>
 							<br/>";
+
+							echo "
+							<div class='customer-standard-table-title-style-password'>Relocations</div>
+							<div class='GroupedContent'>
+							<table class=\"customer-standard-table-style\">
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<B>Please Choose:</B>						
+								</td>
+								<td>
+								If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow " . DBO()->CustomerGroup->ExternalName->Value . " to connect a new service for you.</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td>
+									<TABLE style=\"font-size: 12px;\">
+									<TR>
+										<TD><input type=\"radio\" name=\"mixRelocationOption\" value=\"yes\"> yes</TD>
+									</TR>
+									<TR>
+										<TD><input type=\"radio\" name=\"mixRelocationOption\" value=\"no\"> no (UNABLE TO PROCEED)</TD>
+									</TR>
+									</TABLE>
+								</td>
+							</tr>
+							</table>
+							</div>
+							<br/>";
+
+
+							echo "
+							<div class='customer-standard-table-title-style-password'>Redirection / Announcement</div>
+							<div class='GroupedContent'>
+							<table class=\"customer-standard-table-style\">
+							<tr valign=\"top\">
+								<td width=\"160\">Do you require redirections:</td>
+								<td>
+								<select name=\"mixRedirectionOption\">
+									<option value=\"no\">no</option>
+									<option value=\"yes\">yes</option>
+								</select>
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td>
+									If yes which type of redirection do you require.
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>Redirection Setup:</td>
+									</tr>
+									</table>
+								</td>
+								<td>
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>
+											<select name=\"mixRedirectionPlan\">
+												<option value=\"\">please select</option>
+												<option value=\"3 Months Prepaid\">3 Months Prepaid</option>
+												<option value=\"6 Months Prepaid\">6 Months Prepaid</option>
+												<option value=\"12 Months Prepaid\">12 Months Prepaid</option>
+												<option value=\"Ongoing Redirection\">Ongoing Redirection</option>
+												<option value=\"Not Required\">Not Required</option>
+											</select>
+										</td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td>
+									*Announcement will announce the new number
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>Redirection Announcement:</td>
+									</tr>
+									</table>
+								</td>
+								<td>
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>
+											<select name=\"mixRedirectionAnnouncement\">
+												<option value=\"\">please select</option>
+												<option value=\"Redirection no announcement\">Redirection no announcement</option>
+												<option value=\"Redirecton with announcement\">Redirecton with announcement</option>
+												<option value=\"Announcement only\">Announcement only</option>
+												<option value=\"Not Required\">Not Required</option>
+											</select>
+										</td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							</table>
+							</div>
+							<br/>";
+
+
+							echo "
+							<div class='customer-standard-table-title-style-password'>Preferred Contractor</div>
+							<div class='GroupedContent'>
+							<table class=\"customer-standard-table-style\">
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<B>Option One:</B>						
+								</td>
+								<td>
+									Do you allow Telstra to connect your line past the Main Distribution Frame (MDF) and charge fee for service?
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td>
+									<TABLE style=\"font-size: 12px;\">
+									<TR>
+										<TD><input type=\"radio\" name=\"mixContractorOptionOne\" value=\"yes\"> yes</TD>
+									</TR>
+									<TR>
+										<TD><input type=\"radio\" name=\"mixContractorOptionOne\" value=\"no\"> no</TD>
+									</TR>
+									</TABLE>
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<b>Option Two:</b>
+								</td>
+								<td>
+									If no above, please supply the details of your preferred contractor.
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>Private Contractor Name:</td>
+									</tr>
+									<tr>
+										<td>Contact Number:</td>
+									</tr>
+									</table>
+								</td>
+								<td>
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td><input type=\"text\" name=\"mixContractorName\" value=\"\"></td>
+									</tr>
+									<tr>
+										<td><input type=\"text\" name=\"mixContractorNumber\" value=\"\"></td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							</table>
+							</div>
+							<br/>";
+
 							break;
 							
 

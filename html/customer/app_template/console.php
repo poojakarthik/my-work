@@ -1182,10 +1182,18 @@ class AppTemplateConsole extends ApplicationTemplate
 					break; 
 					
 					case "4":
-
-						$arrFieldsList['DSL Setup'] = $_POST['mixDSLSetup'];
+						
+						// Below options are used in multiple service types.
 						$arrFieldsList['How many new lines'] = $_POST['mixTotalLines'];
 						$arrFieldsList['Requested Install Date'] = $_POST['mixInstallDate'] . "\n";
+						$arrFieldsList['Do you allow Telstra to connect your line past the Main Distribution Frame (MDF) and charge fee for service?'] = $_POST['mixContractorOptionOne'];
+						$arrFieldsList['Private Contractor Name'] = $_POST['mixContractorName'];
+						$arrFieldsList['Private Contractor Number'] = $_POST['mixContractorNumber'];
+						$arrFieldsList['Existing line number'] = $_POST['mixPhoneNumber'];
+						$arrFieldsList['If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow us to connect a new service for you.'] = $_POST['mixRelocationOption'];
+						$arrFieldsList['Do you require redirections'] = $_POST['mixRedirectionOption'];
+						$arrFieldsList['Redirection Setup'] = $_POST['mixRedirectionPlan'];
+						$arrFieldsList['Redirection Announcement'] = $_POST['mixRedirectionAnnouncement'] . "\n";
 
 						// 100 - DSL
 						if($_POST['mixServiceType'] == "100")
@@ -1277,7 +1285,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				$message = "Details below\n\n";
 
-				$message .= "Account: " . DBO()->Contact->Account->Value . "\n";
+				$message .= "Account: " . DBO()->Account->Id->Value . "\n";
 				foreach($arrFieldsList as $key=>$val)
 				{
 					$message .= "$key: $val\n";
@@ -1290,10 +1298,10 @@ class AppTemplateConsole extends ApplicationTemplate
 				$email->setFrom("$_POST[mixContact_Email]", "$_POST[mixContact_FirstName] $_POST[mixContact_LastName]");
 				$email->setSubject("Account Support Request - " . DBO()->Contact->Account->Value);
 				$email->setBodyText("$message");
-				$email->send();
+				//$email->send();
 				
 				// for debug only.
-				// mail("DEBUG-ADDRESS","TEST FORM DATA","$message");
+				mail("ryanjf@gmail.com","TEST FORM DATA","$message");
 
 				$this->LoadPage('support_confirmed');
 				return TRUE;
@@ -1782,7 +1790,6 @@ class AppTemplateConsole extends ApplicationTemplate
 			// No specific account has been specified, so load the contact's primary account
 			DBO()->Account->Id = DBO()->Contact->Account->Value;
 		}
-		
 		// Load the clients primary account
 		DBO()->Account->Load();
 

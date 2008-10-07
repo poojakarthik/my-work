@@ -297,6 +297,94 @@
 							</TR>
 							</TABLE>
 							</div><br/>";
+
+
+
+
+							echo "<div class='customer-standard-table-title-style-password'>Relocations</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\"></TD>
+								<TD>If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow " . DBO()->CustomerGroup->ExternalName->Value . " to connect a new service for you.</TD>
+							</TR>							
+							<TR>
+								<TD width=\"160\">Selected Option: </TD>
+								<TD><B>$_POST[mixRelocationOption]</B></TD>
+							</TR>
+							</TABLE>
+							</div><br/>";
+
+
+							echo "<div class='customer-standard-table-title-style-password'>Redirection / Announcement</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\">Do you require redirections:</TD>
+								<TD>$_POST[mixRedirectionOption]</TD>
+							</TR>							
+							<TR>
+								<TD width=\"160\">Redirection Setup:</TD>
+								<TD><B>$_POST[mixRedirectionPlan]</B></TD>
+							</TR>						
+							<TR>
+								<TD width=\"160\">Redirection Announcement:</TD>
+								<TD><B>$_POST[mixRedirectionAnnouncement]</B></TD>
+							</TR>
+							</TABLE>
+							</div><br/>";
+
+
+							echo "
+							<div class='customer-standard-table-title-style-password'>Preferred Contractor</div>
+							<div class='GroupedContent'>
+							<table class=\"customer-standard-table-style\">
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<B>Option One:</B>						
+								</td>
+								<td>
+									Do you allow Telstra to connect your line past the Main Distribution Frame (MDF) and charge fee for service?
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td><B>$_POST[mixContractorOptionOne]</B></td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<b>Option Two:</b>
+								</td>
+								<td>
+									If no above, please supply the details of your preferred contractor.
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>Private Contractor Name:</td>
+									</tr>
+									<tr>
+										<td>Contact Number:</td>
+									</tr>
+									</table>
+								</td>
+								<td>
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td><B>$_POST[mixContractorName]</B></td>
+									</tr>
+									<tr>
+										<td><B>$_POST[mixContractorNumber]</B></td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							</table>
+							</div>
+							<br/>";
+
 						}
 						// 101 - Mobile
 						if($_POST['mixServiceType'] == "101")
@@ -339,7 +427,7 @@
 						if($_POST['mixServiceType'] == "102")
 						{
 
-							echo "<div class='customer-standard-table-title-style-password'>Mobile Setup</div>
+							echo "<div class='customer-standard-table-title-style-password'>Landline Setup</div>
 							<div class='GroupedContent'>
 							<TABLE class=\"customer-standard-table-style\">
 							<TR>
@@ -386,8 +474,102 @@
 								<TD>ISDN On Ramp</TD>
 								<TD>$_POST[mixLandlineISDNOnRamp]</TD>
 							</TR>
+							<TR>
+								<TD width=\"160\">Existing line number</TD>
+								<TD>$_POST[mixPhoneNumber]</TD>
+							</TR>
 							</TABLE>
 							</div><br/>";
+
+
+
+
+							echo "<div class='customer-standard-table-title-style-password'>Relocations</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\"></TD>
+								<TD>If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow " . DBO()->CustomerGroup->ExternalName->Value . " to connect a new service for you.</TD>
+							</TR>							
+							<TR>
+								<TD width=\"160\">Selected Option: </TD>
+								<TD><B>$_POST[mixRelocationOption]</B></TD>
+							</TR>
+							</TABLE>
+							</div><br/>";
+
+
+							echo "<div class='customer-standard-table-title-style-password'>Redirection / Announcement</div>
+							<div class='GroupedContent'>
+							<TABLE class=\"customer-standard-table-style\">
+							<TR>
+								<TD width=\"160\">Do you require redirections:</TD>
+								<TD>$_POST[mixRedirectionOption]</TD>
+							</TR>							
+							<TR>
+								<TD width=\"160\">Redirection Setup:</TD>
+								<TD><B>$_POST[mixRedirectionPlan]</B></TD>
+							</TR>						
+							<TR>
+								<TD width=\"160\">Redirection Announcement:</TD>
+								<TD><B>$_POST[mixRedirectionAnnouncement]</B></TD>
+							</TR>
+							</TABLE>
+							</div><br/>";
+
+
+
+
+
+							echo "
+							<div class='customer-standard-table-title-style-password'>Preferred Contractor</div>
+							<div class='GroupedContent'>
+							<table class=\"customer-standard-table-style\">
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<B>Option One:</B>						
+								</td>
+								<td>
+									Do you allow Telstra to connect your line past the Main Distribution Frame (MDF) and charge fee for service?
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\"></td>
+								<td><B>$_POST[mixContractorOptionOne]</B></td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<b>Option Two:</b>
+								</td>
+								<td>
+									If no above, please supply the details of your preferred contractor.
+								</td>
+							</tr>
+							<tr valign=\"top\">
+								<td width=\"160\">
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td>Private Contractor Name:</td>
+									</tr>
+									<tr>
+										<td>Contact Number:</td>
+									</tr>
+									</table>
+								</td>
+								<td>
+									<table style=\"font-size: 12px;\">
+									<tr>
+										<td><B>$_POST[mixContractorName]</B></td>
+									</tr>
+									<tr>
+										<td><B>$_POST[mixContractorNumber]</B></td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							</table>
+							</div>
+							<br/>";
 						}						
 						// 103 - Inbound
 						if($_POST['mixServiceType'] == "103")
