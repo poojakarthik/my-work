@@ -769,10 +769,14 @@ class AppTemplateConsole extends ApplicationTemplate
 					$bolFoundResponse = FALSE;
 					foreach($arrInput as $value)
 					{
-						if($value == "$id")
+						if($value == "$survey_question_id")
 						{
 							$bolFoundResponse = TRUE;
 						}
+					}
+					if(!$bolFoundResponse)
+					{
+						DBO()->Survey->Error = "Error, you must anser this question:<br>\n$question<br><br>\n";
 					}
 				}
 				if(!$bolFound && $response_required == "0")
