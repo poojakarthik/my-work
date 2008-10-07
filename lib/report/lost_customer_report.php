@@ -51,7 +51,8 @@ if (($intTotal = $selLostServices->Execute(Array('Start'=>$strPeriodStart, 'End'
 {
 	throw new Exception($selLostServices->Error());
 }
-$intCount	= 0;
+$intStartTime	= time();
+$intCount		= 0;
 while ($arrService = $selLostServices->Fetch())
 {
 	$intCount++;
@@ -102,7 +103,7 @@ while ($arrService = $selLostServices->Fetch())
 		// Dump this line
 		fwrite($resOutputFile, '"'.implode('","', $arrOutput).'"'."\n");
 	}
-	CliEcho();
+	CliEcho("\t\t".(time()-$intStartTime)."s");
 }
 CliEcho();
 exit(0);
