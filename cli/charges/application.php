@@ -169,8 +169,8 @@
 				$arrData['global_tax_exempt']	= 0;
 				$arrData['Nature']				= $arrCharge['Nature'];
 				$arrData['Amount']				= $arrCharge['RecursionCharge'];
-				$arrData['OriginType']			= CHARGE_LINK_RECURRING;
-				$arrData['OriginId']			= $arrCharge['Id'];
+				$arrData['LinkType']			= CHARGE_LINK_RECURRING;
+				$arrData['LinkId']				= $arrCharge['Id'];
 				$arrData['Notes']				= "";
 				if ($arrData['ApprovedBy'])
 				{
