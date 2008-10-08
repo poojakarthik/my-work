@@ -73,10 +73,9 @@
 		 *
 		 * @method
 		 */
-		
 		public function UnarchivedChargeType ($strChargeType)
 		{
-			$selChargeType = new StatementSelect ('ChargeType', 'Id', 'Archived = 0 AND ChargeType = <ChargeType>');
+			$selChargeType = new StatementSelect ('ChargeType', 'Id', 'Archived = 0 AND ChargeType LIKE <ChargeType>');
 			$selChargeType->Execute (Array ('ChargeType' => $strChargeType));
 			
 			if ($selChargeType->Count () == 0)

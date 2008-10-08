@@ -23,8 +23,10 @@
 	
 	// Start a new Account Search
 	$rclChargeTypes = $Style->attachObject (new ChargeTypes ());
-	$rclChargeTypes->Constrain	('Archived',	'=',	FALSE);
-	$rclChargeTypes->Order		('ChargeType',	TRUE);
+	$rclChargeTypes->Constrain('Archived', '=', FALSE);
+	$rclChargeTypes->Constrain('automatic_only', '=', 0);
+	
+	$rclChargeTypes->Order('ChargeType', TRUE);
 	$rclChargeTypes->Sample ();
 	
 	$Style->Output ('xsl/content/charges/charges/list.xsl');

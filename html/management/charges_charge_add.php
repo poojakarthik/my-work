@@ -60,10 +60,22 @@
 			// The Amount cannot be Empty
 			$oblstrError->setValue ('Amount Invalid');
 		}
-		else if ($cgtChargesTypes->UnarchivedChargeType ($_POST ['ChargeType']) !== false)
+		else if (($intExistingChargeTypeId = $cgtChargesTypes->UnarchivedChargeType($_POST['ChargeType'])) !== FALSE)
 		{
-			// A unarchived Charge Type must be unique
-			$oblstrError->setValue ('CType-Exists');
+			// An unarchived ChargeType exists with the exact same name
+			$objExistingChargeType = new ChargeType($intExistingChargeTypeId);
+			if ($objExistingChargeType->Pull('automatic_only')->getValue() == TRUE)
+			{
+				// The existing charge type is an automatic only one (can only be applied by a backend process), and cannot be archived by the user
+				$oblstrError->setValue ('CType-Exists-And-Is-Automatic-Only');
+			}
+			else
+			{
+				// The existing charge type is not an automatic only one, and can therefore be archived by the user
+				$oblstrError->setValue ('CType-Exists');
+			}
+			
+			
 		}
 		else
 		{

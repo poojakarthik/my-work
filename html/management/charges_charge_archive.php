@@ -20,6 +20,12 @@
 	try
 	{
 		$crgCharge = $Style->attachObject (new ChargeType (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
+		
+		// Make sure the ChargeType is not an automatic only one
+		if ($crgCharge->Pull('automatic_only')->getValue() == TRUE)
+		{
+			throw new Exception("Cannot archive an 'automatic only' Adjustment Type");
+		}
 	}
 	catch (Exception $e)
 	{

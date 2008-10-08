@@ -60,6 +60,7 @@
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/RecurringChargeType/ChargeType" />
 									</xsl:attribute>
+									<xsl:attribute name='maxlength'>10</xsl:attribute>
 								</input>
 							</td>
 						</tr>

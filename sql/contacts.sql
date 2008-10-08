@@ -14,7 +14,7 @@ create table contact (
 	first_name character varying,
 	middle_name character varying,
 	last_name character varying,
-	position_title character varying
+	position_title character varying,
 	username character varying,
 	password character varying,
 );

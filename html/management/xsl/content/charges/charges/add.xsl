@@ -30,6 +30,9 @@
 						<xsl:when test="/Response/Error = 'CType-Exists'">
 							The Adjustment Code you entered already exists.  Please enter a unique Adjustment Code, or archive the existing adjustment with this Charge Code.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'CType-Exists-And-Is-Automatic-Only'">
+							The Adjustment Code you entered is already being used by an Adjustment Type that is only ever automatically applied to accounts, and cannot be archived.  Please use a different Adjustment Code.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'Nature'">
 							Please select a valid Nature.
 						</xsl:when>
@@ -57,6 +60,7 @@
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ChargeType/ChargeType" />
 									</xsl:attribute>
+									<xsl:attribute name='maxlength'>10</xsl:attribute>
 								</input>
 							</td>
 						</tr>
