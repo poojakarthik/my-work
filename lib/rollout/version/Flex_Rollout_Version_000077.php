@@ -18,18 +18,20 @@ class Flex_Rollout_Version_000077 extends Flex_Rollout_Version
 		 
 		$strSQL = "ALTER TABLE CustomerGroup 
 		ADD customer_advert_image BLOB NULL COMMENT 'this field is used to store the raw image data for an advertisement in the customer interface',
-		ADD customer_advert_image_type CHAR( 9 ) NULL COMMENT 'this field sets the image type for the advertisement image uploaded, e.g. image/jpeg',
-		ADD customer_advert_url VARCHAR( 255 ) NULL COMMENT 'this url is used for the advertisement image';";
+		ADD customer_advert_image_type CHAR( 11 ) NULL COMMENT 'this field sets the image type for the advertisement image uploaded, e.g. image/jpeg',
+		ADD customer_advert_url VARCHAR( 255 ) NULL COMMENT 'this url is used for the advertisement image',
+		CHANGE customer_logo_type customer_logo_type CHAR( 11 ) NULL;";
 
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to alter table survey' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to alter table CustomerGroup' . $result->getMessage());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE CustomerGroup
 		DROP customer_advert_image,
 		DROP customer_advert_image_type,
-		DROP customer_advert_url;";
+		DROP customer_advert_url,
+		CHANGE customer_logo_type customer_logo_type CHAR( 9 ) NULL;";
 	}
 	
 	function rollback()
