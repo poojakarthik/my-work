@@ -266,7 +266,16 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// To avoid a double negative display ChargeAdminFee instead of DisableDDR
 		DBO()->Account->ChargeAdminFee = !(DBO()->Account->DisableDDR->Value);
 		DBO()->Account->ChargeAdminFee->RenderOutput();
-
+	
+?>
+<div class="DefaultElement">
+	<div id="Account.vip.Output" name="Account.vip" class="DefaultOutput"><?php echo (DBO()->Account->vip->Value ? 'VIP' : 'Non-VIP (Normal)'); ?></div>
+	<div id="Account.vip.Label" class="DefaultLabel">
+		<span> &nbsp;</span>
+		<span id="Account.Balance.Label.Text">VIP Status : </span>
+	</div>
+</div>
+<?php
 
 		// Details of last automated actions
 		// ... automatic notices sent
@@ -550,6 +559,21 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->ChargeAdminFee = !(DBO()->Account->DisableDDR->Value);
 		}
 		DBO()->Account->ChargeAdminFee->RenderInput();
+
+
+
+	
+?>
+<div class="DefaultElement">
+	<div class="DefaultLabel">&nbsp;&nbsp;VIP Status : </div>
+	<div class="DefaultOutput">
+		<select id='Account.vip' name='Account.vip' style='width:330px'>
+			<option value='0'<?php echo (DBO()->Account->vip->Value ? '' : ' selected="selected"'); ?>>Non-VIP (Normal)</option>
+			<option value='1'<?php echo (DBO()->Account->vip->Value ? ' selected="selected"' : ''); ?>>VIP</option>
+		</select>
+	</div>
+</div>
+<?php
 		
 		// TIO reference number and checkbox
 		if ((DBO()->Account->tio_reference_number->Value !== NULL && trim(DBO()->Account->tio_reference_number->Value) != "") || (DBO()->Account->WithTIO->Value))
