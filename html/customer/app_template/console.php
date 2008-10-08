@@ -2165,10 +2165,10 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				// we can check the database for a record. 1
 				// Since there is duplicate account numbers we check there first name...?
-				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"$_POST[mixAccountNumber]\" AND FirstName LIKE \"$_POST[mixFirstName]\" AND LastName LIKE \"$_POST[mixLastName]\" LIMIT 1");
-				
+				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"" . ereg_replace("[^0-9]", "", $_POST['mixAccountNumber']) . "\" AND FirstName LIKE \"" . trim($_POST['mixFirstName']) . "\" AND LastName LIKE \"" . trim($_POST['mixLastName']) . "\" LIMIT 1");
+
 				// we can check the database for a record. 2
-				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"$_POST[mixAccountNumber]\" LIMIT 1");
+				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"" . ereg_replace("[^0-9]", "", $_POST['mixAccountNumber']) . "\" LIMIT 1");
 
 
 				$intCustomerEnteredABN = $_POST['mixABN'];
