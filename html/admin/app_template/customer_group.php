@@ -243,7 +243,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		{
 			if(!empty($_POST['CustomerGroup_Id']))
 			{
-				if ((($_FILES["userfile"]["type"] == "image/gif") || ($_FILES["userfile"]["type"] == "image/jpeg")) && ($_FILES["userfile"]["size"] < 9000000))
+				if ((($_FILES["userfile"]["type"] == "image/gif") || ($_FILES["userfile"]["type"] == "image/jpeg") || ($_FILES["userfile"]["type"] == "image/png")) && ($_FILES["userfile"]["size"] < 9000000))
 				{
 					if ($_FILES["userfile"]["error"] > 0)
 					{
