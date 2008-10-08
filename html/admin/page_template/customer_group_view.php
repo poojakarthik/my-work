@@ -33,6 +33,9 @@ $this->Page->SetLayout('1Column');
 
 // Add the Html Objects to their respective columns
 $this->Page->AddObject('CustomerGroupDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "CustomerGroupDetailsContainerDiv");
+
+$this->Page->AddObject('CustomerGroupPaymentTermsLink', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+
 $this->Page->AddObject('CustomerGroupDocumentTemplates', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
 if (defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') && FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)

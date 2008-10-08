@@ -50,28 +50,45 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 
+		// Get the customer group id
+		$customerGroupId = DBO()->CustomerGroup->Id->Value;
+		DBO()->CustomerGroup->Load();
+
 		// Breadcrumb menu
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->System_Settings_Menu();
-		BreadCrumb()->SetCurrentPage("Payment Process");
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->ViewCustomerGroup($customerGroupId, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->SetCurrentPage("Payment Terms");
 
-		$qryQuery = new StatementSelect('payment_terms', array('id' => 'MAX(id)'));
+		$qryQuery = new StatementSelect('payment_terms', array('id' => 'MAX(id)'), 'customer_group_id = <CustomerGroupId>');
 		$id = 0;
-		if ($qryQuery->Execute())
+		if ($qryQuery->Execute(array('CustomerGroupId' => $customerGroupId)))
 		{
 			$id = $qryQuery->Fetch();
 			$id = $id['id'];
 		}
+		
+		$context = HTML_CONTEXT_VIEW;
+		if (!$id)
+		{
+			// Need to ensure that there are payment terms to set up for this customer group
+			$id = CreateDefaultPaymentTerms($customerGroupId);
+			
+			// Set the context straight to edit - nobody wants to view these ad-hoc defaults!
+			$context = HTML_CONTEXT_EDIT;
+		}
+
 		DBO()->payment_terms->Load($id);
 
-		$strWhere = "can_schedule = 1";
-		DBL()->automatic_invoice_action->SetColumns(array('id', 'name', 'days_from_invoice', 'response_days'));
-		DBL()->automatic_invoice_action->Where->Set($strWhere);
-		DBL()->automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
-		DBL()->automatic_invoice_action->Load();
+		$strWhere = "can_schedule = 1 AND customer_group_id = " . $customerGroupId;
+		DBL()->automatic_invoice_action_config->SetColumns(array('id', 'automatic_invoice_action_id', 'days_from_invoice', 'response_days'));
+		DBL()->automatic_invoice_action_config->Where->Set($strWhere);
+		DBL()->automatic_invoice_action_config->OrderBy("days_from_invoice, automatic_invoice_action_id");
+		DBL()->automatic_invoice_action_config->Load();
 
 		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('payment_terms_display');
+		$this->LoadPage('payment_terms_display', $context);
 
 		return TRUE;
 	}
@@ -100,21 +117,24 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
+		// Get the customer group id
+		$customerGroupId = DBO()->CustomerGroup->Id->Value;
+
 		// Load the CustomerGroup
-		$qryQuery = new StatementSelect('payment_terms', array('id' => 'MAX(id)'));
+		$qryQuery = new StatementSelect('payment_terms', array('id' => 'MAX(id)'), 'customer_group_id = <CustomerGroupId>');
 		$id = 0;
-		if ($qryQuery->Execute())
+		if ($qryQuery->Execute(array('CustomerGroupId' => $customerGroupId)))
 		{
 			$id = $qryQuery->Fetch();
 			$id = $id['id'];
 		}
 		DBO()->payment_terms->Load($id);
 
-		$strWhere = "can_schedule = 1";
-		DBL()->automatic_invoice_action->SetColumns(array('id', 'name', 'days_from_invoice', 'response_days'));
-		DBL()->automatic_invoice_action->Where->Set($strWhere);
-		DBL()->automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
-		DBL()->automatic_invoice_action->Load();
+		$strWhere = "can_schedule = 1 AND customer_group_id = " . $customerGroupId;
+		DBL()->automatic_invoice_action_config->SetColumns(array('id', 'automatic_invoice_action_id', 'days_from_invoice', 'response_days'));
+		DBL()->automatic_invoice_action_config->Where->Set($strWhere);
+		DBL()->automatic_invoice_action_config->OrderBy("days_from_invoice, automatic_invoice_action_id");
+		DBL()->automatic_invoice_action_config->Load();
 
 		// Work out which context to render the HtmlTemplate in
 		$intContext = HTML_CONTEXT_VIEW;
@@ -164,11 +184,13 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate("PaymentTermsDisplay", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 			return TRUE;
 		}
+		
+		$customerGroupId = DBO()->payment_terms->customer_group_id->Value;
 
 		// Load the current CustomerGroup
-		$qryQuery = new StatementSelect('payment_terms', array('id' => 'MAX(id)'));
+		$qryQuery = new StatementSelect('payment_terms', array('id' => 'MAX(id)'), 'customer_group_id = <CustomerGroupId>');
 		$id = 0;
-		if ($qryQuery->Execute())
+		if ($qryQuery->Execute(array('CustomerGroupId' => $customerGroupId)))
 		{
 			$id = $qryQuery->Fetch();
 			$id = $id['id'];
@@ -176,32 +198,33 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		DBO()->current_payment_terms->SetTable('payment_terms');
 		DBO()->current_payment_terms->Load($id);
 
-		$strWhere = "can_schedule = 1";
-		DBL()->current_automatic_invoice_action->SetTable('automatic_invoice_action');
-		DBL()->current_automatic_invoice_action->Where->Set($strWhere);
-		DBL()->current_automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
-		DBL()->current_automatic_invoice_action->Load();
+		$strWhere = "can_schedule = 1 AND customer_group_id = " . $customerGroupId;
+		DBL()->current_automatic_invoice_action_config->SetTable('automatic_invoice_action_config');
+		DBL()->current_automatic_invoice_action_config->SetColumns(array('id', 'automatic_invoice_action_id', 'days_from_invoice', 'response_days'));
+		DBL()->current_automatic_invoice_action_config->Where->Set($strWhere);
+		DBL()->current_automatic_invoice_action_config->OrderBy("days_from_invoice, automatic_invoice_action_id");
+		DBL()->current_automatic_invoice_action_config->Load();
 
 		TransactionStart();
 
-		foreach (DBL()->current_automatic_invoice_action as $dboAutomaticInvoiceAction)
+		foreach (DBL()->current_automatic_invoice_action_config as $dboAutomaticInvoiceActionConfig)
 		{
 			// Get the submitted version
-			$submitted = DBO()->{'automatic_invoice_action_' . $dboAutomaticInvoiceAction->id->Value};
+			$submitted = DBO()->{'automatic_invoice_action_' . $dboAutomaticInvoiceActionConfig->automatic_invoice_action_id->Value};
 
 			// Check to see if the value is set
-			if ($dboAutomaticInvoiceAction->id->Value == $submitted->Id->Value)
+			if ($dboAutomaticInvoiceActionConfig->automatic_invoice_action_id->Value == $submitted->Id->Value)
 			{
 				// Check to see if the value has been changed
-				if (intval($submitted->days_from_invoice->Value) != $dboAutomaticInvoiceAction->days_from_invoice->Value 
-					|| intval($submitted->response_days->Value) != $dboAutomaticInvoiceAction->response_days->Value)
+				if (intval($submitted->days_from_invoice->Value) != $dboAutomaticInvoiceActionConfig->days_from_invoice->Value 
+					|| intval($submitted->response_days->Value) != $dboAutomaticInvoiceActionConfig->response_days->Value)
 				{
 					// Update the value and change it
-					$dboAutomaticInvoiceAction->SetColumns(array('days_from_invoice', 'response_days'));
-					$dboAutomaticInvoiceAction->Id = $dboAutomaticInvoiceAction->id->Value;
-					$dboAutomaticInvoiceAction->days_from_invoice = intval($submitted->days_from_invoice->Value);
-					$dboAutomaticInvoiceAction->response_days = intval($submitted->response_days->Value);
-					if (!$dboAutomaticInvoiceAction->Save())
+					$dboAutomaticInvoiceActionConfig->SetColumns(array('days_from_invoice', 'response_days'));
+					$dboAutomaticInvoiceActionConfig->Id = $dboAutomaticInvoiceActionConfig->id->Value;
+					$dboAutomaticInvoiceActionConfig->days_from_invoice = intval($submitted->days_from_invoice->Value);
+					$dboAutomaticInvoiceActionConfig->response_days = intval($submitted->response_days->Value);
+					if (!$dboAutomaticInvoiceActionConfig->Save())
 					{
 						// The CustomerGroup could not be saved for some unforseen reason
 						TransactionRollback();
@@ -219,6 +242,7 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 			DBO()->payment_terms->late_payment_fee->Value != DBO()->current_payment_terms->late_payment_fee->Value)
 		{
 			// Copy over the values that we wish to save
+			DBO()->current_payment_terms->customer_group_id = DBO()->payment_terms->customer_group_id->Value;
 			DBO()->current_payment_terms->invoice_day = DBO()->payment_terms->invoice_day->Value;
 			DBO()->current_payment_terms->payment_terms = DBO()->payment_terms->payment_terms->Value;
 			DBO()->current_payment_terms->minimum_balance_to_pursue = DBO()->payment_terms->minimum_balance_to_pursue->Value;

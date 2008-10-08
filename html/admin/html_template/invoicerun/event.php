@@ -154,11 +154,11 @@ class HtmlTemplateInvoiceRunEvent extends HtmlTemplate
 
 	function _RenderInvoiceRunTable()
 	{
-		Table()->InvoiceRunTable->SetHeader("Billing Date", "Invoice Run", "Actions");
-		Table()->InvoiceRunTable->SetWidth("40%", "40%", "20%");
-		Table()->InvoiceRunTable->SetAlignment("Left", "Left", "Center");
+		Table()->InvoiceRunTable->SetHeader("Billing Date", "Invoice Run", "Customer Group", "Actions");
+		Table()->InvoiceRunTable->SetWidth("30%", "30%", "30%", "10%");
+		Table()->InvoiceRunTable->SetAlignment("Left", "Left", "Left", "Center");
 		Table()->InvoiceRunTable->SetSortable(TRUE);
-		Table()->InvoiceRunTable->SetSortFields("BillingDate", "InvoiceRun", null);
+		Table()->InvoiceRunTable->SetSortFields("BillingDate", "Id", "customer_group_id", null);
 		Table()->InvoiceRunTable->SetPageSize(24);
 		foreach (DBL()->InvoiceRun as $dboInvoiceRun)
 		{
@@ -167,16 +167,13 @@ class HtmlTemplateInvoiceRunEvent extends HtmlTemplate
 			$strView = "<img src='img/template/view.png' onclick='$strViewHref' alt='View Invoice Run'></img>";
 
 			Table()->InvoiceRunTable->AddRow(OutputMask()->LongDate($dboInvoiceRun->BillingDate->Value),
-											$dboInvoiceRun->InvoiceRun->AsValue(), 
+											$dboInvoiceRun->Id->AsValue(),
+											$dboInvoiceRun->customer_group_id->Value ? Customer_Group::getForId($dboInvoiceRun->customer_group_id->Value)->name : '[Mixed]',
 											$strView);
 		}
 
 		Table()->InvoiceRunTable->Render();
 	}
-
-
-
-
 
 
 
@@ -199,19 +196,28 @@ class HtmlTemplateInvoiceRunEvent extends HtmlTemplate
 
 		$this->FormStart("InvoiceRunEvents", "InvoiceRunEvents", "x");
 
+		$customerGroup = DBO()->InvoiceRun->customer_group_id->Value ? Customer_Group::getForId(1)->name : '[Mixed]'; 
+
 		echo "<div class='GroupedContent'>\n";
 		echo "
 <input type=hidden id='InvoiceRun.Id' name='InvoiceRun.Id' value='$intInvoiceRunId'/>
 <div class='DefaultElement'>
-	<div class='DefaultOutput Default ' style='margin-left: 60;'>" . OutputMask()->LongDate(DBO()->InvoiceRun->BillingDate->Value) . "</div>
+	<div class='DefaultOutput Default ' style='margin-left: 60;'><span class=\"DefaultOutputSpan Default\">" . OutputMask()->LongDate(DBO()->InvoiceRun->BillingDate->Value) . "</span></div>
 	<div class='DefaultLabel'>
 		<span id='invoiceActions.$id.Label.Text'>Billing Date : </span>
 	</div>
 </div>
 <div class='DefaultElement'>
-	<div class='DefaultOutput Default ' style='margin-left: 60;'>" . DBO()->InvoiceRun->InvoiceRun->AsValue() . "</div>
+	<div class='DefaultOutput Default ' style='margin-left: 60;'>" . DBO()->InvoiceRun->Id->AsValue() . "</div>
 	<div class='DefaultLabel'>
 		<span id='invoiceActions.$id.Label.Text'>Invoice Run : </span>
+	</div>
+</div>
+<div class='DefaultElement'>
+	<div class='DefaultOutput Default ' style='margin-left: 60;'><span class=\"DefaultOutputSpan Default\">" . htmlspecialchars($customerGroup) . "</span>
+</div>
+	<div class='DefaultLabel'>
+		<span id='invoiceActions.$id.Label.Text'>Customer Group : </span>
 	</div>
 </div>
 ";
@@ -231,10 +237,11 @@ class HtmlTemplateInvoiceRunEvent extends HtmlTemplate
 		Table()->InvoiceRunTable->SetHeader("Event", "Scheduled", "Actioned");
 		Table()->InvoiceRunTable->SetWidth("40%", "40%", "20%");
 		Table()->InvoiceRunTable->SetAlignment("Left", "Left", "Center");
-		foreach (DBL()->automatic_invoice_action as $invoiceAction)
+		foreach (DBL()->automatic_invoice_action_config as $invoiceAction)
 		{
-			$id = $invoiceAction->id->Value;
-			$name = $invoiceAction->name->Value;
+			$id = $invoiceAction->automatic_invoice_action_id->Value;
+			//$name = $invoiceAction->name->Value;
+			$name = GetConstantDescription($id, 'AUTOMATIC_INVOICE_ACTION');//$invoiceAction->name->Value;
 
 			// Get the event for this action
 			$dboEvent = $arrEvents[$id];
@@ -317,10 +324,10 @@ class HtmlTemplateInvoiceRunEvent extends HtmlTemplate
 		Table()->InvoiceRunTable->SetWidth("40%", "40%", "20%");
 		Table()->InvoiceRunTable->SetAlignment("Left", "Left", "Center");
 		$now = time();
-		foreach (DBL()->automatic_invoice_action as $invoiceAction)
+		foreach (DBL()->automatic_invoice_action_config as $invoiceActionConfig)
 		{
-			$id = $invoiceAction->id->Value;
-			$name = $invoiceAction->name->Value;
+			$id = $invoiceActionConfig->automatic_invoice_action_id->Value;
+			$name = GetConstantDescription($id, 'AUTOMATIC_INVOICE_ACTION');//$invoiceAction->name->Value;
 
 			// Get the event for this action
 			$dboEvent = $arrEvents[$id];
@@ -330,8 +337,8 @@ class HtmlTemplateInvoiceRunEvent extends HtmlTemplate
 				$fromYear = intval(date('Y'));
 				$toYear = $fromYear + 1;
 
-				$arrPaymentTerms = GetPaymentTerms();
-				$daysFromInvoice = $invoiceAction->days_from_invoice->Value;
+				$arrPaymentTerms = GetPaymentTerms(DBO()->InvoiceRun->customer_group_id->Value);
+				$daysFromInvoice = $invoiceActionConfig->days_from_invoice->Value;
 				$daysFromStartOfMonth = $daysFromInvoice + $arrPaymentTerms['invoice_day'];
 				$startOfMonth = mktime(0, 0, 0, intval(date('m')), 0, intval(date('y')));
 				$defaultTime = $startOfMonth + (24 * 60 * 60 * $daysFromStartOfMonth);

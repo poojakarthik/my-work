@@ -811,7 +811,7 @@
 	 		// Retrieve Direct Debit Scheduling Details, and determine if today is the Invoice Due Date
 	 		$selSchedule	= new StatementSelect(	"InvoiceRun LEFT JOIN automatic_invoice_run_event ON InvoiceRun.Id = automatic_invoice_run_event.invoice_run_id",
 														"InvoiceRun.Id AS Id, InvoiceRun.Id AS invoice_run_id, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id AS id",
-														"actioned_datetime IS NULL AND automatic_invoice_action_id = ".AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT,
+														"actioned_datetime IS NULL AND automatic_invoice_action_id = ". AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT,
 														"InvoiceRun.BillingDate DESC, automatic_invoice_run_event.id DESC",
 														"1");
 			
@@ -847,22 +847,9 @@
 	 	}
 	 	
 		// Retrieve Direct Debit Minimum
-		$selDDMin	= new StatementSelect(	"payment_terms", "direct_debit_minimum", "1", "id DESC", "1");
-		if (!$selDDMin->Execute())
-		{
-			if ($selDDMin->Error())
-			{
-				// DB Error
-				return Array('Success' => FALSE, 'Description' => "ERROR: \$selDDMin failed: ".$selDDMin->Error());
-			}
-			else
-			{
-				// No payment_terms defined
-				return Array('Success' => FALSE, 'Description' => "ERROR: No payment_terms defined!");
-			}
-		}
-		$arrDDMin			= $selDDMin->Fetch();
-	 	$selAccountDebts	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account", "Account, SUM(Invoice.Balance) AS Charge", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.")", "Account.Id", NULL, "Account.Id HAVING Charge >= {$arrDDMin['direct_debit_minimum']}");
+		// ... not needed now that we can join onto the payment_terms table for the customer group
+
+	 	$selAccountDebts	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account JOIN payment_terms ON payment_terms.customer_group_id = Account.CustomerGroup", "Account, SUM(Invoice.Balance) AS Charge", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.") AND payment_terms.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = <CustomerGroup>)", "Account.Id", NULL, "Account.Id HAVING Charge >= payment_terms.direct_debit_minimum");
 		
 	 	// Process Direct Debits for each Billing Type
 	 	$intAccountsCharged	= 0;

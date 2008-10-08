@@ -49,6 +49,7 @@ function VixenPaymentTermsDisplayClass()
 	this.invoiceActions = null;
 	this.invoiceActionsActual = null;
 	this.invoiceActionsLabel = null;
+	this.customerGroupId = null,
 
 	//------------------------------------------------------------------------//
 	// InitialiseView
@@ -65,9 +66,10 @@ function VixenPaymentTermsDisplayClass()
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseView = function(strContainerDivId)
+	this.InitialiseView = function(strContainerDivId, customerGroupId)
 	{
 		// Save the parameters
+		this.customerGroupId = customerGroupId;
 		this.strContainerDivId	= strContainerDivId;
 
 		// Register Event Listeners
@@ -126,8 +128,10 @@ function VixenPaymentTermsDisplayClass()
 		}
 	}
 
-	this.InitialiseEdit = function(strContainerDivId, arrInvoiceActionIds)
+	this.InitialiseEdit = function(strContainerDivId, arrInvoiceActionIds, customerGroupId)
 	{
+		this.customerGroupId = customerGroupId;
+
 		// Register Event Listeners
 		Vixen.EventHandler.AddListener("OnPaymentTermsUpdate", this.OnUpdate);
 
@@ -240,23 +244,25 @@ function VixenPaymentTermsDisplayClass()
 		window.setTimeout(delayed, 1);
 	}
 
-	this.RenderDetailsForEditing = function()
+	this.RenderDetailsForEditing = function(customerGroupId)
 	{
 		// Organise the data to send
 		var objData	=	{
 							Container		:	{	Id		:	this.strContainerDivId},
-							Context			:	{	Edit	:	true}
+							Context			:	{	Edit	:	true},
+							CustomerGroup	:	{	Id		:	customerGroupId}
 						};
 		// Call the AppTemplate method which renders just the PaymentTermsDisplay HtmlTemplate
 		Vixen.Ajax.CallAppTemplate("PaymentTerms", "RenderHtmlTemplatePaymentTermsDisplay", objData, null, true);
 	}
 	
-	this.CancelEdit = function()
+	this.CancelEdit = function(customerGroupId)
 	{
 		// Organise the data to send
 		var objData	=	{
 							Container		:	{	Id		:	this.strContainerDivId},
-							Context			:	{	View	:	true}
+							Context			:	{	View	:	true},
+							CustomerGroup	:	{	Id		:	customerGroupId}
 						};
 
 		// Call the AppTemplate method which renders just the PaymentTermsDisplay HtmlTemplate
@@ -282,7 +288,8 @@ function VixenPaymentTermsDisplayClass()
 		// Organise the data to send
 		var objData	=	{
 							Container		:	{	Id		:	Vixen.PaymentTermsDisplay.strContainerDivId},
-							Context			:	{	View	:	true}
+							Context			:	{	View	:	true},
+							CustomerGroup	:	{	Id		:	Vixen.PaymentTermsDisplay.customerGroupId}
 						};
 
 		// Call the AppTemplate method which renders just the PaymentTermsDisplay HtmlTemplate

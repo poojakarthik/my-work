@@ -9,20 +9,23 @@ class Data_Source
 		
 	}
 	
-	public static function get($strDataSourceName=self::PRIMARY_DATA_SOURCE, $bolNewConnection=FALSE)
+	public static function get($strDataSourceName=self::PRIMARY_DATA_SOURCE, $bolNewConnection=FALSE, $bolFooble=FALSE)
 	{
 		static $arrRequestedDSNs;
 		if (!isset($arrRequestedDSNs))
 		{
+			MDB2::classExists('who cares? this forces MDB2 to be loaded!!');
 			$arrRequestedDSNs = array();
 		}
-		
+
+		$unwantedPortabilityOptions = MDB2_PORTABILITY_FIX_CASE;
+
 		$options = array(
 			'debug'       => 2,
-			'portability' => (MDB2_PORTABILITY_ALL - MDB2_PORTABILITY_FIX_CASE),
+			'portability' => ((MDB2_PORTABILITY_ALL | $unwantedPortabilityOptions) ^ $unwantedPortabilityOptions),
 			'use_transactions' => TRUE,
 		);
-		
+
 		if ($bolNewConnection)
 		{
 			return MDB2::connect(self::dsnForName($strDataSourceName), $options);

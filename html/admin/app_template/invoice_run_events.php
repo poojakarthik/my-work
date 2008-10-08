@@ -175,9 +175,9 @@ class AppTemplateInvoiceRunEvents extends ApplicationTemplate
 		// Load the events for the invoice run
 		DBO()->InvoiceRun->Load();
 
-		DBL()->automatic_invoice_action->SetColumns(array('id', 'days_from_invoice', 'name'));
-		DBL()->automatic_invoice_action->OrderBy("days_from_invoice, name DESC");
-		DBL()->automatic_invoice_action->Load('can_schedule = 1');
+		DBL()->automatic_invoice_action_config->SetColumns(array('id', 'days_from_invoice', 'automatic_invoice_action_id'));
+		DBL()->automatic_invoice_action_config->OrderBy("days_from_invoice, automatic_invoice_action_id");
+		DBL()->automatic_invoice_action_config->Load('can_schedule = 1 AND customer_group_id ' . (DBO()->InvoiceRun->customer_group_id->Value ? (' = ' . DBO()->InvoiceRun->customer_group_id->Value) : ' IS NULL'));
 
 		$strWhere = "invoice_run_id = " . DBO()->InvoiceRun->Id->Value;
 		DBL()->automatic_invoice_run_event->SetColumns(array('id', 'scheduled_datetime', 'actioned_datetime', 'automatic_invoice_action_id'));

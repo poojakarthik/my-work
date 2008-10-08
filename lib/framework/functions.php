@@ -3382,12 +3382,13 @@ function EnsureLatestInvoiceRunEventsAreDefined()
 {
 	$arrColumns = array(
 		'invoice_run_id' 	=> 'last_invoice_run.invoice_run_id',
+		'customer_group_id' => 'last_invoice_run.customer_group_id',
 		'processed' 		=> 'existing.invoice_run_id',
 	);
 
 	$strTables = "
-		(SELECT MAX(Id) invoice_run_id FROM InvoiceRun) last_invoice_run
-		LEFT OUTER JOIN (SELECT MAX(invoice_run_id) invoice_run_id FROM automatic_invoice_run_event) existing
+		(SELECT customer_group_id, MAX(InvoiceRun.Id) invoice_run_id FROM InvoiceRun, invoice_run_status WHERE InvoiceRun.invoice_run_status_id = invoice_run_status.id AND invoice_run_status.const_name = 'INVOICE_RUN_STATUS_COMMITTED' GROUP BY customer_group_id) last_invoice_run
+		LEFT OUTER JOIN (SELECT DISTINCT(invoice_run_id) FROM automatic_invoice_run_event) existing
 		ON last_invoice_run.invoice_run_id = existing.invoice_run_id
 		HAVING processed IS NULL
 	";
@@ -3400,38 +3401,42 @@ function EnsureLatestInvoiceRunEventsAreDefined()
 		throw new Exception("Failed to find latest invoice run: " . $selInvoiceRun->Error());
 	}
 
-	$invoiceRun = $selInvoiceRun->Fetch();
+	$invoiceRuns = $selInvoiceRun->FetchAll();
 
-	if (!$invoiceRun)
+	if (!count($invoiceRuns))
 	{
 		// No invoice run to process
 		return;
 	}
 
-	$invoiceRunId = $invoiceRun['invoice_run_id'];
-
-	// Load up the automatic invoice actions
-	$strTables = 'automatic_invoice_action';
-	$arrColumns = array(
-		'automatic_invoice_action_id' => 'id'
-	);
-	$strWhere = 'can_schedule = 1';
-	$selInvoiceActions = new StatementSelect($strTables, $arrColumns, $strWhere);
-
-	$mxdReturn = $selInvoiceActions->Execute();
-	if ($mxdReturn === FALSE)
+	foreach ($invoiceRuns as $invoiceRun)
 	{
-		throw new Exception("Failed to load the automatic invoice actions: " . $selInvoiceActions->Error());
-	}
-	$arrColumns = array('automatic_invoice_action_id' => 0, 'invoice_run_id' => $invoiceRunId);
-	$insEvent  = new StatementInsert('automatic_invoice_run_event', $arrColumns);
-	while($invoiceAction = $selInvoiceActions->Fetch())
-	{
-		$arrColumns['automatic_invoice_action_id'] = $invoiceAction['automatic_invoice_action_id'];
-		$mxdReturn = $insEvent->Execute($arrColumns);
+		$invoiceRunId = $invoiceRun['invoice_run_id'];
+		$customerGroupId = $invoiceRun['customer_group_id'];
+	
+		// Load up the automatic invoice actions
+		$strTables = 'automatic_invoice_action_config';
+		$arrColumns = array(
+			'automatic_invoice_action_id' => 'automatic_invoice_action_id'
+		);
+		$strWhere = 'can_schedule = 1 AND customer_group_id' . ($customerGroupId ? " = $customerGroupId" : " IS NULL");
+		$selInvoiceActions = new StatementSelect($strTables, $arrColumns, $strWhere);
+
+		$mxdReturn = $selInvoiceActions->Execute();
 		if ($mxdReturn === FALSE)
 		{
-			throw new Exception("Failed to create invoice run ($invoiceRunId) event ($invoiceAction): " . $insEvent->Error());
+			throw new Exception("Failed to load the automatic invoice actions: " . $selInvoiceActions->Error());
+		}
+		$arrColumns = array('automatic_invoice_action_id' => 0, 'invoice_run_id' => $invoiceRunId);
+		$insEvent  = new StatementInsert('automatic_invoice_run_event', $arrColumns);
+		while($invoiceAction = $selInvoiceActions->Fetch())
+		{
+			$arrColumns['automatic_invoice_action_id'] = $invoiceAction['automatic_invoice_action_id'];
+			$mxdReturn = $insEvent->Execute($arrColumns);
+			if ($mxdReturn === FALSE)
+			{
+				throw new Exception("Failed to create invoice run ($invoiceRunId) event ($invoiceAction): " . $insEvent->Error());
+			}
 		}
 	}
 }
@@ -3453,6 +3458,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 							'CustomerGroupId'		=> "Account.CustomerGroup",
 							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
 							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+							'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables = "
@@ -3465,13 +3471,13 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		  ON Account.Id = Service.Account
 		JOIN CustomerGroup
 		  ON CustomerGroup.Id = Account.CustomerGroup
+		JOIN payment_terms 
+		  ON payment_terms.customer_group_id = Account.CustomerGroup
 	";
 
 	$strWhere	= "";
 
-	$pt = GetPaymentTerms();
-
-	$strGroupBy	= "Invoice.Account HAVING Overdue < ". $pt['minimum_balance_to_pursue'];
+	$strGroupBy	= "Invoice.Account HAVING Overdue < minBalanceToPursue";
 	$strOrderBy	= "Invoice.Account ASC";
 
 	/*
@@ -3515,6 +3521,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 							'CustomerGroupId'		=> "Account.CustomerGroup",
 							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
 							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+							'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables	= "
@@ -3532,7 +3539,8 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		 AND account_status.can_bar = 1
 		JOIN CustomerGroup 
 		  ON Account.CustomerGroup = CustomerGroup.Id
-		";
+		JOIN payment_terms
+		  ON payment_terms.customer_group_id = Account.CustomerGroup";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
@@ -3553,9 +3561,8 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		  ON Account.Archived = account_status.id
 		 AND account_status.can_bar = 1
 	)";
-	$pt = GetPaymentTerms();
 
-	$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue";
 	$strOrderBy	= "Invoice.Account ASC";
 
 	/*
@@ -3701,7 +3708,8 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 							'CreatedOn'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.CreatedOn END)",
 							'OutstandingNotOverdue'	=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance END)",
 							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
-							'TotalOutstanding'		=> "SUM(Invoice.Balance)");
+							'TotalOutstanding'		=> "SUM(Invoice.Balance)",
+							'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue");
 
 	$strTables	= "Invoice 
 		JOIN Account 
@@ -3718,7 +3726,9 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		JOIN Contact 
 		  ON Account.PrimaryContact = Contact.Id 
 		JOIN CustomerGroup 
-		  ON Account.CustomerGroup = CustomerGroup.Id";
+		  ON Account.CustomerGroup = CustomerGroup.Id
+		JOIN payment_terms
+		  ON payment_terms.customer_group_id = Account.CustomerGroup";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
@@ -3739,17 +3749,15 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		 AND account_status.send_late_notice = 1
 	)";
 
-	$pt = GetPaymentTerms();
-
 	$strOrderBy	= "Invoice.Account ASC";
-	$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue";
 
 	/*
 	// DEBUG: Output the query that gets run
 	$select = array();
 	foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
 	echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy\n\n";
-	*/
+	//*/
 
 	$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "", $strGroupBy);
 	$mxdReturn = $selOverdue->Execute();
@@ -3761,10 +3769,14 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 }
 
 
-function GetPaymentTerms()
+function GetPaymentTerms($customerGroupId)
 {
 	static $paymentTerms;
 	if (!isset($paymentTerms))
+	{
+		$paymentTerms = array();
+	}
+	if (!array_key_exists($customerGroupId, $paymentTerms))
 	{
 		// Need to load the payment terms from the payment_terms table
 		$arrColumns = array(
@@ -3774,7 +3786,7 @@ function GetPaymentTerms()
 			'late_payment_fee' 			=> 'late_payment_fee',
 		);
 
-		$strWhere = 'id IN (SELECT MAX(id) FROM payment_terms)';
+		$strWhere = 'id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id ' . (intval($customerGroupId) ? (' = ' . intval($customerGroupId)) : 'IS NULL') . ")";
 
 		$selSelect = new StatementSelect('payment_terms', $arrColumns, $strWhere);
 		$mxdResult = $selSelect->Execute();
@@ -3784,22 +3796,22 @@ function GetPaymentTerms()
 			throw new Exception('Failed to load payment terms.');
 		}
 
-		$payementTerms = $selSelect->FetchAll();
-		if (!count($payementTerms))
+		$payementTermsX = $selSelect->FetchAll();
+		if (!count($payementTermsX))
 		{
 			throw new Exception('Payment terms have not been configurred.');
 		}
 
-		$paymentTerms = $payementTerms[0];
+		$paymentTerms[$customerGroupId] = $payementTermsX[0];
 
-		$strTables = 'automatic_invoice_action';
-		$strWhere = 'NOT id = ' . AUTOMATIC_INVOICE_ACTION_NONE;
+		$strTables = 'automatic_invoice_action aa, automatic_invoice_action_config aac';
+		$strWhere = 'aa.id = aac.automatic_invoice_action_id AND aac.customer_group_id ' . (intval($customerGroupId) ? (' = ' . intval($customerGroupId)) : 'IS NULL') . ' AND NOT aa.id = ' . AUTOMATIC_INVOICE_ACTION_NONE;
 		$arrColumns = array(
-			'id' => 'id',
+			'id' => 'aa.id',
 			'days_from_invoice' => 'days_from_invoice',
 		);
 		$selSelect = new StatementSelect($strTables, $arrColumns, $strWhere);
-		$mxdResult = $selSelect->Execute();
+		$mxdResult = $selSelect->Execute(array('CustomerGroupId' => $customerGroupId));
 		if ($mxdResult === FALSE)
 		{
 			throw new Exception('Failed to load payment terms.');
@@ -3807,10 +3819,66 @@ function GetPaymentTerms()
 		$arrAutomaticInvoiceActions = $selSelect->FetchAll();
 		foreach ($arrAutomaticInvoiceActions as $arrAutomaticInvoiceAction)
 		{
-			$paymentTerms[$arrAutomaticInvoiceAction['id']] = $arrAutomaticInvoiceAction['days_from_invoice'];
+			$paymentTerms[$customerGroupId][$arrAutomaticInvoiceAction['id']] = $arrAutomaticInvoiceAction['days_from_invoice'];
 		}
 	}
-	return $paymentTerms;
+	return $paymentTerms[$customerGroupId];
+}
+
+
+function CreateDefaultPaymentTerms($customerGroupId)
+{
+	TransactionStart();
+	
+	// Create the default payment terms
+	$arrPaymentTerms = array(
+		'customer_group_id' => $customerGroupId,
+		'invoice_day' => '1',
+		'payment_terms' => '14',
+		'minimum_balance_to_pursue' => '0.01',
+		'late_payment_fee' => '0.00',
+		'created' => date('Y-m-d H:i:s'),
+		'direct_debit_days' => 15,
+		'direct_debit_minimum' => '0.01',
+	);
+	$insPaymentTerms = new StatementInsert("payment_terms", $arrPaymentTerms);
+	if (($id = $insPaymentTerms->Execute($arrPaymentTerms)) === FALSE)
+	{
+		TransactionRollback();
+		throw new Exception('Failed to create default payment terms for customer group ' . $customerGroupId . ': ' . $insPaymentTerms->Error());
+	}
+
+	// Create the default automatic_invoice_action_config entries
+	
+	// Load up the automatic invoice action configs for the NULL customer_group_id
+	$selAutoInvActions = new StatementSelect('automatic_invoice_action_config', 
+							array('automatic_invoice_action_id', 'days_from_invoice', 'can_schedule', 'response_days'), 
+							'customer_group_id IS NULL');
+	if (($result = $selAutoInvActions->Execute()) === FALSE)
+	{
+		TransactionRollback();
+		throw new Exception('Failed to load default automatic invoice action configurations: ' . $selAutoInvActions->Error());
+	}
+	$automaticInvoiceActions = $selAutoInvActions->FetchAll();
+	
+	$insAutoInvAction = NULL;
+	foreach ($automaticInvoiceActions as $automaticInvoiceAction)
+	{
+		$automaticInvoiceAction['customer_group_id'] = $customerGroupId;
+		if (!$insAutoInvAction)
+		{
+			$insAutoInvAction = new StatementInsert('automatic_invoice_action_config', $automaticInvoiceAction);
+		}
+		if (($result = $insAutoInvAction->Execute($automaticInvoiceAction)) === FALSE)
+		{
+			TransactionRollback();
+			throw new Exception('Failed to create default automatic invoice action configuration ' . $automaticInvoiceAction['automatic_invoice_action_id'] . ' for customer group ' . $customerGroupId . ': ' . $selAutoInvActions->Error());
+		}
+	}
+
+	TransactionCommit();
+	
+	return $id;
 }
 
 //------------------------------------------------------------------------//
@@ -4012,7 +4080,7 @@ function RecursiveMkdir($strPath, $intMode = 0777)
     return TRUE;
 }
 
-function GetAutomaticInvoiceActionResponseTime($intActionId)
+function GetAutomaticInvoiceActionResponseTime($intActionId, $intCustomerGroupId)
 {
 	static $cache;
 	if (!isset($cache))
@@ -4021,9 +4089,9 @@ function GetAutomaticInvoiceActionResponseTime($intActionId)
 	}
 	if (!array_key_exists($intActionId, $cache))
 	{
-		$arrColumns = array('response_days', 'response_days');
-		$strTables = "automatic_invoice_action";
-		$strWhere = "id = $intActionId";
+		$arrColumns = array('response_days' => 'response_days');
+		$strTables = "automatic_invoice_action_config";
+		$strWhere = "automatic_invoice_action_id = $intActionId AND " . ($intCustomerGroupId ? "customer_group_id = $intCustomerGroupId" : " IS NULL");
 		$selDays = new StatementSelect($strTables, $arrColumns, $strWhere);
 		$mxdReturn = $selDays->Execute();
 		$result = FALSE;
@@ -4085,7 +4153,7 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 	// Set up all values required of the notice, which have not been defined yet
 	$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
 
-	$responseDays = GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType);
+	$responseDays = GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType, $arrAccount['CustomerGroup']);
 	$actionDate = ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
 
 	// Always issue on the scheduled date!

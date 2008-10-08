@@ -33,7 +33,7 @@ $this->Page->SetName("Payment Process");
 $this->Page->SetLayout('1Column');
 
 // Add the Html Objects to their respective columns
-$this->Page->AddObject('PaymentTermsDisplay', COLUMN_ONE);
+$this->Page->AddObject('PaymentTermsDisplay', COLUMN_ONE, $intContext);
 
 
 ?>

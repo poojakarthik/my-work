@@ -159,10 +159,10 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 
 		";
 
-		foreach (DBL()->automatic_invoice_action as $invoiceAction)
+		foreach (DBL()->automatic_invoice_action_config as $invoiceAction)
 		{
 			$id = $invoiceAction->id->Value;
-			$name = $invoiceAction->name->Value;
+			$name = GetConstantDescription($invoiceAction->automatic_invoice_action_id->Value, 'AUTOMATIC_INVOICE_ACTION');
 			$daysFromInvoice = $invoiceAction->days_from_invoice->Value;
 			$responseDays = $invoiceAction->response_days->Value;
 
@@ -188,7 +188,7 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 		if ($bolUserIsSuperAdmin)
 		{
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
-			$this->Button("Edit Details", "Vixen.PaymentTermsDisplay.RenderDetailsForEditing();");
+			$this->Button("Edit Details", "Vixen.PaymentTermsDisplay.RenderDetailsForEditing(" . DBO()->payment_terms->customer_group_id->Value . ");");
 			echo "</div></div>\n";
 		}
 		else
@@ -197,7 +197,7 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 		}
 
 		// Initialise the PaymentTerms object and register the OnPaymentTermsUpdate Listener
-		$strJavascript = "function _payment_terms_onload() {Vixen.PaymentTermsDisplay.InitialiseView('{$this->_strContainerDivId}');}window.addEventListener('load', _payment_terms_onload, false)";
+		$strJavascript = "function _payment_terms_onload() {Vixen.PaymentTermsDisplay.InitialiseView('{$this->_strContainerDivId}', " . DBO()->payment_terms->customer_group_id->Value . ");}window.addEventListener('load', _payment_terms_onload, false)";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 	}
 
@@ -254,6 +254,7 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 
 		echo "
 <input id=\"payment_terms.Id\" name=\"payment_terms.Id\" value=\"\" type=\"hidden\">
+<input id=\"payment_terms.customer_group_id\" name=\"payment_terms.customer_group_id\" value=\"" . DBO()->payment_terms->customer_group_id->Value . "\" type=\"hidden\">
 <input id=\"payment_terms.invoice_day\" name=\"payment_terms.invoice_day\" value=\"" . DBO()->payment_terms->invoice_day->Value . "\" type=\"hidden\">
 <input id=\"payment_terms.payment_terms\" name=\"payment_terms.payment_terms\" value=\"" . DBO()->payment_terms->payment_terms->Value . "\" type=\"hidden\">
 <input id=\"payment_terms.minimum_balance_to_pursue\" name=\"payment_terms.minimum_balance_to_pursue\" value=\"" . DBO()->payment_terms->minimum_balance_to_pursue->Value . "\" type=\"hidden\">
@@ -296,10 +297,10 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 
 		";
 
-		foreach (DBL()->automatic_invoice_action as $invoiceAction)
+		foreach (DBL()->automatic_invoice_action_config as $invoiceAction)
 		{
-			$id = $invoiceAction->id->Value;
-			$name = $invoiceAction->name->Value;
+			$id = $invoiceAction->automatic_invoice_action_id->Value;
+			$name = GetConstantDescription($invoiceAction->automatic_invoice_action_id->Value, 'AUTOMATIC_INVOICE_ACTION');
 			$daysFromInvoice = $invoiceAction->days_from_invoice->Value;
 			$responseDays = $invoiceAction->response_days->Value;
 			$arrInvoiceActionIds[] = $id;
@@ -333,13 +334,13 @@ class HtmlTemplatePaymentTermsDisplay extends HtmlTemplate
 
 		// Render the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.PaymentTermsDisplay.CancelEdit();");
+		$this->Button("Cancel", "Vixen.PaymentTermsDisplay.CancelEdit(" . DBO()->payment_terms->customer_group_id->Value . ");");
 		$this->AjaxSubmit("Commit Changes", NULL, NULL, NULL, "InputSubmit", "PaymentTermsSubmit");
 
 		echo "</div></div>\n";
 
 		// Initialise the PaymentTermsDisplay object
-		$strJavascript = "Vixen.PaymentTermsDisplay.InitialiseEdit('{$this->_strContainerDivId}', new Array(" . implode(',', $arrInvoiceActionIds) . "));";
+		$strJavascript = "Vixen.PaymentTermsDisplay.InitialiseEdit('{$this->_strContainerDivId}', new Array(" . implode(',', $arrInvoiceActionIds) . "),  " . DBO()->payment_terms->customer_group_id->Value . ");";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
 
 		$this->FormEnd();

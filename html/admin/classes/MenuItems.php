@@ -675,11 +675,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ManagePaymentTerms()
+	function ManagePaymentTerms($customerGroupId)
 	{
 		$this->strLabel	= "Payment Process";
 		$this->strContextMenuLabel = "Manage Payment Process";
-		return self::NEW_FRAMEWORK . "flex.php/PaymentTerms/Manage/";
+		return self::NEW_FRAMEWORK . "flex.php/PaymentTerms/Manage/?CustomerGroup.Id=$customerGroupId";
 	}
 
 	//------------------------------------------------------------------------//

@@ -243,7 +243,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 			return TRUE;
 		}
 
-		$arrPaymentTerms = GetPaymentTerms();
+		$arrPaymentTerms = GetPaymentTerms($arrAccount['CustomerGroup']);
 
 		$lateFee = $arrPaymentTerms['late_payment_fee'];
 

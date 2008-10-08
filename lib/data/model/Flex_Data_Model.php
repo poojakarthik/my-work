@@ -71,7 +71,8 @@ class Flex_Data_Model
 
 	public static function generateDataModelForDatabase($strDataSource=FLEX_DATABASE_CONNECTION_FLEX)
 	{
-		$dataSource = Data_Source::get($strDataSource);
+		$dataSource = Data_Source::get($strDataSource, false, true);
+
 		$dataSource->loadModule('Manager');
 		$dataSource->loadModule('Reverse');
 		

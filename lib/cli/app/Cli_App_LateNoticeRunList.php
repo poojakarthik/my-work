@@ -199,7 +199,7 @@ class Cli_App_LateNoticeRunList extends Cli
 						if (!empty($letterTypeSummary['emails']))
 						{
 							$report[] = "Email: " . count($letterTypeSummary['emails']) . " {$letterType}s would be created and emailed.";
-							$attachment .= implode(",Email\n", $letterTypeSummary['prints']).",Email\n";
+							$attachment .= implode(",Email\n", $letterTypeSummary['emails']).",Email\n";
 						}
 						else
 						{

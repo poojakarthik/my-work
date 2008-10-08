@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Version 73 (Seventy three) of database update.
+ * Version 78 of database update.
  * This version: -
  *	1:	Creates and populates the automatic_invoice_action_config table
  *	2:	Re-structures the automatic_invoice_action table
@@ -9,7 +9,7 @@
  *  4:  Populates the payment terms table for each customer group
  */
 
-class Flex_Rollout_Version_000073 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000078 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
@@ -46,6 +46,8 @@ class Flex_Rollout_Version_000073 extends Flex_Rollout_Version
 		$values = $result->fetchAll();
 		$first = true;
 		$strSqlTemplate = "INSERT INTO automatic_invoice_action_config (automatic_invoice_action_id, customer_group_id, days_from_invoice, can_schedule, response_days) VALUES (xxx)";
+		$strSqlRollBackTemplate = "UPDATE automatic_invoice_action SET days_from_invoice=ddd, can_schedule=sss, response_days=rrr WHERE id=iii";
+		$rollbacks = array();
 		foreach($values as $record)
 		{
 			if ($first === true)
@@ -71,13 +73,34 @@ class Flex_Rollout_Version_000073 extends Flex_Rollout_Version
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert into automatic_invoice_action table (' . $xxx . '). ' . $result->getMessage());
 				}
+				
+				$rollbacks[] = str_replace(array('ddd', 'sss', 'rrr', 'iii'), array($record[2], $record[3], $record[4], $record[0]), $strSqlRollBackTemplate);
 			}
 		}
+		
+		$strSQL = " ALTER TABLE automatic_invoice_action DROP days_from_invoice, DROP can_schedule, DROP response_days";
+		
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to alter automatic_invoice_action table. ' . $result->getMessage());
+		}
+		foreach ($rollbacks as $rollback)
+		{
+			$this->rollbackSQL[] = $rollback;
+		}
+		$this->rollbackSQL[] = "
+				ALTER TABLE automatic_invoice_action 
+				ADD days_from_invoice smallint(5) default '0', 
+				ADD can_schedule tinyint(3) default '0' COMMENT 'Whether or not this action can be scheduled',
+				ADD response_days smallint(5) default '7' COMMENT 'Number of days from event that an external response must be made in' 
+			";
+
 
 		
 		$strSQL = "	ALTER TABLE payment_terms
 					ADD customer_group_id bigint(20) default NULL COMMENT 'FK to CustomerGroup table'
-					";
+			";
 
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
@@ -106,6 +129,7 @@ class Flex_Rollout_Version_000073 extends Flex_Rollout_Version
 				throw new Exception(__CLASS__ . ' Failed to insert into payment_terms table (' . $xxx . '). ' . $result->getMessage());
 			}
 		}
+		$this->rollbackSQL[] = "DELETE FROM payment_terms WHERE customer_group_id IS NOT NULL";
 
 	}
 	

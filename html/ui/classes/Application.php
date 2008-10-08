@@ -159,7 +159,6 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
-				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
@@ -289,7 +288,6 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
-				ContextMenu()->Admin->System_Settings->ManagePaymentTerms();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
