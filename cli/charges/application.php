@@ -74,10 +74,11 @@
 								  "		Continuable = 1 " .
 								  "		OR " .
 								  "		(Continuable = 0 AND MinCharge > TotalCharged)" .
-								  ") " .
-								  "AND NOW() >= NextChargeDate";
+								  ")\n" .
+								  "HAVING NOW() >= NextChargeDate\n" .
+								  "LIMIT 1000";
 								  
-		$this->_selGetCharges	= new StatementSelect("(RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account) LEFT JOIN Service ON Service.Id = RecurringCharge.Service", "RecurringCharge.*, ADDDATE(StartedOn, INTERVAL RecurringFreq * (TotalRecursions + IF(in_advance = 1, 0, 1)) MONTH) AS NextChargeDate", $arrWhere, NULL, "1000");
+		$this->_selGetCharges	= new StatementSelect("(RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account) LEFT JOIN Service ON Service.Id = RecurringCharge.Service", "RecurringCharge.*, ADDDATE(StartedOn, INTERVAL RecurringFreq * (TotalRecursions + IF(in_advance = 1, 0, 1)) MONTH) AS NextChargeDate", $arrWhere);
 		
 		$arrColumns = Array();
 		$arrColumns['Id']				= NULL;
