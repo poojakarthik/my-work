@@ -132,8 +132,9 @@
 				"Description"			=> $arrDetails ['Description'],
 				"Amount"				=> $fltAmount,
 				"Nature"				=> $arrDetails ['Nature'],
-				"Fixed"					=> (isset ($arrDetails ['Fixed']) ? $arrDetails ['Fixed'] : 0),
-				"Archived"				=> 0
+				"Fixed"					=> (isset($arrDetails['Fixed']) ? $arrDetails['Fixed'] : 0),
+				"Archived"				=> 0,
+				"automatic_only"		=> isset($arrDetails['automatic_only'])? $arrDetails['automatic_only'] : 0
 			);
 			
 			$insChargeType = new StatementInsert ('ChargeType');

@@ -104,8 +104,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			}
 		}
 
-		// Load all charge types that aren't archived
+		// Load all charge types that aren't archived and aren't flagged as automatic_only
 		DBL()->ChargeTypesAvailable->Archived = 0;
+		DBL()->ChargeTypesAvailable->automatic_only = 0;
 		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
 		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
 		DBL()->ChargeTypesAvailable->Load();

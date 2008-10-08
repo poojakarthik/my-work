@@ -28,7 +28,7 @@
 							Please enter an Adjustment Description
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CType-Exists'">
-							The Adjustment Code you entered already exists.  Please enter a unique Adjustment Code.
+							The Adjustment Code you entered already exists.  Please enter a unique Adjustment Code, or archive the existing adjustment with this Charge Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Nature'">
 							Please select a valid Nature.
