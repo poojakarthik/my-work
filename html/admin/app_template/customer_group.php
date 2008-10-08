@@ -260,13 +260,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 						$mixContent = fread($resImage, filesize($strTmpName));
 						fclose($resImage);
 
-						DBO()->CustomerGroup->Id = $_POST['CustomerGroup_Id'];
-						DBO()->CustomerGroup->Load();
-						DBO()->CustomerGroup->customer_advert_image = $mixContent;
-						DBO()->CustomerGroup->customer_advert_image_type = $strFileType;
-						DBO()->CustomerGroup->SetColumns("customer_advert_image,customer_advert_image_type");
-						DBO()->CustomerGroup->Save();
-
+						$dbConnection = GetDBConnection($GLOBALS['**arrDatabase']["flex"]['Type']);
+						$dbConnection->execute("UPDATE CustomerGroup SET customer_advert_image=\"" . base64_encode(serialize($mixContent)) . "\",customer_advert_image_type=\"$strFileType\" WHERE Id=\"$_POST[CustomerGroup_Id]\"");
 					}
 				}
 				else

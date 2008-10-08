@@ -147,6 +147,11 @@ class HtmlTemplateConsoleOptions extends HtmlTemplate
 		echo "</table>
 		<br><br>\n";
 
+		if(DBO()->CustomerGroup->customer_advert_url->Value)
+		{
+			echo "<a href=\"" . DBO()->CustomerGroup->customer_advert_url->Value . "\"><img src=\"./advertisement.php\"></a><br><br>";
+		}
+
 		echo "<div class='customer-standard-table-style-menu-options-title'>Secure Payments</div>\n";
 		echo "<table class=\"customer-standard-table-style-menu-options-info\">\n";	
 		echo "   <tr>\n";
