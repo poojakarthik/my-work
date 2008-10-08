@@ -562,7 +562,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 
 
-	
+	if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD))
+	{
 ?>
 <div class="DefaultElement">
 	<div class="DefaultLabel">&nbsp;&nbsp;VIP Status : </div>
@@ -574,6 +575,21 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	</div>
 </div>
 <?php
+	}
+	else 
+	{
+?>
+<div class="DefaultElement">
+	<div id="Account.vip.Output" name="Account.vip" class="DefaultOutput"><?php echo (DBO()->Account->vip->Value ? 'VIP' : 'Non-VIP (Normal)'); ?></div>
+	<div id="Account.vip.Label" class="DefaultLabel">
+		<span> &nbsp;</span>
+		<span id="Account.Balance.Label.Text">VIP Status : </span>
+	</div>
+</div>
+<?php
+
+	}
+
 		
 		// TIO reference number and checkbox
 		if ((DBO()->Account->tio_reference_number->Value !== NULL && trim(DBO()->Account->tio_reference_number->Value) != "") || (DBO()->Account->WithTIO->Value))
