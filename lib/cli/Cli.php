@@ -459,6 +459,16 @@ abstract class Cli
 		return $filename;
 	}
 
+	public static function _validFileNameWithOptionalExtension($filename)
+	{
+		$misc = "(){}[]<>&)-+*:_. ";
+		if (preg_match("/[^a-zA-Z0-9" . preg_quote($misc) ." ]+/", $filename))
+		{
+			throw new Exception("Filename contains invalid characters (Allowed: a-zA-Z0-9$misc): $filename");
+		}
+		return $filename;
+	}
+	
 	public static function _validReadableFileOrDirectory($file)
 	{
 		if (file_exists($file))

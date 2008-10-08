@@ -62,6 +62,12 @@
 	 	$this->Debug($mixResult);
 		return $mixResult;
 	 }
+	 
+	 // Returns the number of records affected by the last INSERT, UPDATE, REPLACE or DELETE query executed 
+	 function AffectedRows()
+	 {
+	 	return mysqli_affected_rows($this->db->refMysqliConnection);
+	 }
 }
 
 ?>

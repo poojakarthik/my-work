@@ -179,7 +179,8 @@ class Customer_Search
 				break;
 				
 			case self::CONSTRAINT_TYPE_FNN:
-				$arrAccounts = self::_findAccountsForFNN($mixConstraint, $bolIncludeArchived);
+				$strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
+				$arrAccounts = self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived);
 				break;
 				
 			case self::CONSTRAINT_TYPE_INVOICE_ID:
@@ -215,31 +216,40 @@ class Customer_Search
 					{
 						$arrAccounts[] = $intAccountId;
 					}
-					if (IsValidFNN($mixConstraint))
+					
+					// Remove none FNN valid chars from the search string
+					$strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
+					if (IsValidFNN($strConstraintAsFNN))
 					{
-						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($mixConstraint, $bolIncludeArchived));
+						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
 					}
 					// Check if $mixSearchItem is a valid ABN
+					$strConstraintAsABN = ereg_replace("[^0-9]", "", $mixConstraint);
 					//TODO! actually implement this validation.  (It currently only lives in a class within the oblib stuff.  It should be moved to lib/framework/functions.php)
 					if (TRUE)
 					{
-						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForABN($mixConstraint, $bolIncludeArchived));
+						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForABN($strConstraintAsABN, $bolIncludeArchived));
 					}
 					//Check if $mixSearchItem is a valid ACN
+					$strConstraintAsACN = ereg_replace("[^0-9]", "", $mixConstraint);
 					//TODO! actually implement this validation.  (we don't currently do any ACN validation)
 					if (TRUE)
 					{
-						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForACN($mixConstraint, $bolIncludeArchived));
+						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForACN($strConstraintAsACN, $bolIncludeArchived));
 					}
 				}
 				else
 				{
 					// It must be a string.  Test for AccountName and FNN
 					$arrAccounts = array_merge($arrAccounts, self::_findAccountsForAccountName($mixConstraint, $bolIncludeArchived));
-					if (IsValidFNN($mixConstraint))
+					
+					// Remove none FNN valid chars from the search string
+					$strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
+					if (IsValidFNN($strConstraintAsFNN))
 					{
-						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($mixConstraint, $bolIncludeArchived));
+						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
 					}
+					
 					$arrAccounts = array_merge($arrAccounts, self::_findAccountsForEmail($mixConstraint, $bolIncludeArchived));
 				}
 				
@@ -406,6 +416,9 @@ class Customer_Search
 	// This will also account for Indial100 ranges
 	private static function _findAccountsForFNN($strFNN, $bolIncludeArchived)
 	{
+		// Strip invalid chars from FNN
+		$strFNN = ereg_replace("[^0-9a-zA-Z]", "", $strFNN);
+		
 		$strFnnIndial = substr($strFNN, 0, -2) . '__';
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
@@ -413,6 +426,7 @@ class Customer_Search
 		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Service AS s ON a.Id = s.Account
 						WHERE ((s.FNN = '$strFNN' OR (s.Indial100 = 1 AND s.FNN LIKE '$strFnnIndial')) AND (s.ClosedOn IS NULL OR s.CreatedOn <= s.ClosedOn)) $strArchivedConstraint
+						ORDER BY a.BusinessName ASC, a.TradingName ASC, a.Id DESC
 						LIMIT ". self::MAX_RECORDS;
 		
 		return self::_find($strQuery, "AccountId");
@@ -442,12 +456,13 @@ class Customer_Search
 	
 	private static function _findAccountsForABN($strABN, $bolIncludeArchived)
 	{
-		$strABN = str_replace(" ", "", $strABN);
+		$strABN = ereg_replace("[^0-9]", "", $strABN);
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		$strQuery = "	SELECT DISTINCT Id
 						FROM Account
 						WHERE REPLACE(ABN, ' ', '') = '$strABN' $strArchivedConstraint
+						ORDER BY BusinessName ASC, TradingName ASC, Id DESC
 						LIMIT ". self::MAX_RECORDS;
 		
 		return self::_find($strQuery, "Id");
@@ -455,12 +470,13 @@ class Customer_Search
 	
 	private static function _findAccountsForACN($strACN, $bolIncludeArchived)
 	{
-		$strACN = str_replace(" ", "", $strACN);
+		$strACN = ereg_replace("[^0-9]", "", $strACN);
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		$strQuery = "	SELECT DISTINCT Id
 						FROM Account
 						WHERE REPLACE(ACN, ' ', '') = '$strACN' $strArchivedConstraint
+						ORDER BY BusinessName ASC, TradingName ASC, Id DESC
 						LIMIT ". self::MAX_RECORDS;
 		
 		return self::_find($strQuery, "Id");
@@ -513,6 +529,7 @@ class Customer_Search
 		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE c.Email LIKE '%$strEmail%' $strArchivedConstraint
+						ORDER BY a.BusinessName ASC, a.TradingName ASC, a.Id DESC
 						LIMIT ". self::MAX_RECORDS;
 		
 		return self::_find($strQuery, "AccountId");
@@ -530,6 +547,7 @@ class Customer_Search
 		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE c.Id = $intContactId $strArchivedConstraint
+						ORDER BY a.BusinessName ASC, a.TradingName ASC, a.Id DESC
 						LIMIT ". self::MAX_RECORDS;
 		
 		return self::_find($strQuery, "AccountId");
@@ -547,6 +565,7 @@ class Customer_Search
 		$strQuery = "	SELECT DISTINCT c.Id AS ContactId
 						FROM Account AS a INNER JOIN Contact AS c ON (c.CustomerContact = 1 AND a.AccountGroup = c.AccountGroup) OR (c.Account = a.Id) OR (c.Id = a.PrimaryContact)
 						WHERE a.Id = $intAccountId $strArchivedConstraint
+						ORDER BY c.LastName ASC, c.FirstName ASC, c.Id DESC
 						LIMIT ". self::MAX_RECORDS;
 		
 		return self::_find($strQuery, "ContactId");
