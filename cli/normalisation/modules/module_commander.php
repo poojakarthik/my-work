@@ -164,16 +164,16 @@ class NormalisationModuleCommander extends NormalisationModule
 		$this->_AppendCDR('ServiceType', $intServiceType);
 		
 		// RecordType
-		$mixCarrierCode					= $this->_FetchRawCDR('CallType');
-		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+		$mixRateId 						= $this->_FetchRawCDR('RateId');
+		$mixCallType					= ($mixRateId === '915') ? '915' : $this->_FetchRawCDR('CallType');		// Telstra On-Bill
+		$strRecordCode 					= $this->FindRecordCode($mixCallType);
 		$intRecordType 					= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $intRecordType);
 
 		// Destination Code & Description (only if we have a context)
 		if ($this->_intContext > 0)
 		{
-			$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
-			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+			$arrDestinationCode 			= $this->FindDestination($mixRateId);
 			if ($arrDestinationCode)
 			{
 				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
