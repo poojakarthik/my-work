@@ -6,21 +6,21 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// rate_group_import.php
+// group_change_advertisement.php
 //----------------------------------------------------------------------------//
 /**
- * rate_group_import
+ * group_change_advertisement
  *
- * HTML Template for the Import Rate Group HTML object
+ * HTML Template for the CustomerGroup Change Advertisement object
  *
- * HTML Template for the Import Rate Group HTML object
+ * HTML Template for the CustomerGroup Change Advertisement object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays the form used to add a rate group.
+ * which displays the form used to add a Advertisement.
  *
- * @file		rate_group_import.php
+ * @file		group_change_advertisement.php
  * @language	PHP
  * @package		ui_app
- * @author		Joel 'MagnumSwordFortress' Dawkins
+ * @author		Ryan
  * @version		7.12
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -29,10 +29,10 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateRateGroupImport
+// HtmlTemplateCustomerGroupChangeAdvertisement
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateRateGroupImport
+ * HtmlTemplateCustomerGroupChangeAdvertisement
  *
  * A specific HTML Template object
  *
@@ -42,7 +42,7 @@
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateRateGroupImport
+ * @class	HtmlTemplateCustomerGroupChangeAdvertisement
  * @extends	HtmlTemplate
  */
 class HtmlTemplateCustomerGroupChangeAdvertisement extends HtmlTemplate
