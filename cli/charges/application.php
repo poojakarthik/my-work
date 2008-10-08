@@ -69,15 +69,15 @@
 								  "AND RecurringFreq > 0 " .
 								  "AND RecurringCharge.Archived = 0 " .
 								  "AND Account.Archived = ".ACCOUNT_STATUS_ACTIVE." " .
-								  "AND (Service.Status = ".SERVICE_ACTIVE." OR Service.Status IS NULL) AND " .
+								  "AND (Service.Status = ".SERVICE_ACTIVE." OR Service IS NULL) AND " .
 								  "(" .
 								  "		Continuable = 1 " .
 								  "		OR " .
 								  "		(Continuable = 0 AND MinCharge > TotalCharged)" .
 								  ") " .
-								  "AND NOW() >= ADDDATE(StartedOn, INTERVAL RecurringFreq * (TotalRecursions + IF(in_advance = 1, 0, 1)) MONTH)";
+								  "AND NOW() >= NextChargeDate";
 								  
-		$this->_selGetCharges	= new StatementSelect("(RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account) LEFT JOIN Service ON Service.Id = RecurringCharge.Service", "RecurringCharge.*", $arrWhere, NULL, "1000");
+		$this->_selGetCharges	= new StatementSelect("(RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account) LEFT JOIN Service ON Service.Id = RecurringCharge.Service", "RecurringCharge.*, ADDDATE(StartedOn, INTERVAL RecurringFreq * (TotalRecursions + IF(in_advance = 1, 0, 1)) MONTH) AS NextChargeDate", $arrWhere, NULL, "1000");
 		
 		$arrColumns = Array();
 		$arrColumns['Id']				= NULL;
@@ -136,7 +136,7 @@
 				}
 				
 				// Calculate the charge date
-				switch ($arrCharge['RecurringFreqType'])
+				/*switch ($arrCharge['RecurringFreqType'])
 				{
 					case BILLING_FREQ_DAY:
 						CliEcho("Flex no longer supports BILLING_FREQ_DAY for Recurring Charges!");
@@ -151,24 +151,26 @@
 					default:
 						$this->_rptRecurringChargesReport->AddMessage(MSG_FAIL.MSG_REASON."Invalid RecurringFreqType ".$arrCharge['RecurringFreqType']);
 						continue;
-				}
+				}*/
+				$strDate					= $arrCharge['NextChargeDate'];
 				$arrCharge['LastChargedOn'] = $strDate;
 				
 				// Add Charge details to Charges Table
-				$arrData['AccountGroup']	= $arrCharge['AccountGroup'];
-				$arrData['Account']			= $arrCharge['Account'];
-				$arrData['Service']			= $arrCharge['Service'];
-				$arrData['CreatedBy']		= $arrCharge['CreatedBy'];
-				$arrData['CreatedOn']		= $arrCharge['CreatedOn'];
-				$arrData['ApprovedBy']		= $arrCharge['CreatedBy'];
-				$arrData['ChargeType']		= $arrCharge['ChargeType'];
-				$arrData['Description']		= $arrCharge['Description'];
-				$arrData['ChargedOn']		= $strDate;
-				$arrData['Nature']			= $arrCharge['Nature'];
-				$arrData['Amount']			= $arrCharge['RecursionCharge'];
-				$arrData['OriginType']		= CHARGE_LINK_RECURRING;
-				$arrData['OriginId']		= $arrCharge['Id'];
-				$arrData['Notes']			= "";
+				$arrData['AccountGroup']		= $arrCharge['AccountGroup'];
+				$arrData['Account']				= $arrCharge['Account'];
+				$arrData['Service']				= $arrCharge['Service'];
+				$arrData['CreatedBy']			= $arrCharge['CreatedBy'];
+				$arrData['CreatedOn']			= $arrCharge['CreatedOn'];
+				$arrData['ApprovedBy']			= $arrCharge['CreatedBy'];
+				$arrData['ChargeType']			= $arrCharge['ChargeType'];
+				$arrData['Description']			= $arrCharge['Description'];
+				$arrData['ChargedOn']			= $strDate;
+				$arrData['global_tax_exempt']	= 0;
+				$arrData['Nature']				= $arrCharge['Nature'];
+				$arrData['Amount']				= $arrCharge['RecursionCharge'];
+				$arrData['OriginType']			= CHARGE_LINK_RECURRING;
+				$arrData['OriginId']			= $arrCharge['Id'];
+				$arrData['Notes']				= "";
 				if ($arrData['ApprovedBy'])
 				{
 					$arrData['Status']			= CHARGE_APPROVED;
@@ -220,7 +222,7 @@
 
 				if ($this->_insAddToChargesTable->Execute($arrData) === FALSE)
 				{
-					Debug($this->_insAddToChargesTable->Error());
+					throw new Exception($this->_insAddToChargesTable->Error());
 				}
 				
 				// update RecuringCharge Table
@@ -231,7 +233,7 @@
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
 				if ($this->_ubiRecurringCharge->Execute($arrColumns) === FALSE)
 				{
-					Debug($this->_ubiRecurringCharge->Error());
+					throw new Exception($this->_ubiRecurringCharge->Error());
 				}
 				
 				// add to report
