@@ -152,6 +152,19 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	}
 
 
+	//------------------------------------------------------------------------//
+	// ChangeLogo
+	//------------------------------------------------------------------------//
+	/**
+	 * ChangeLogo()
+	 *
+	 * Handles the logic for adding a new customer group logo
+	 * 
+	 * Handles the logic for adding a new customer group logo
+	 *
+	 * @return		void
+	 * @method
+	 */
 	function ChangeLogo()
 	{
 		// Check user authorization and permissions
@@ -196,6 +209,85 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		return TRUE;
 	}
+
+
+
+
+
+	//------------------------------------------------------------------------//
+	// ChangeAdvertisement
+	//------------------------------------------------------------------------//
+	/**
+	 * ChangeAdvertisement()
+	 *
+	 * Handles the logic for adding a new customer group advertisement image
+	 * 
+	 * Handles the logic for adding a new customer group advertisement image
+	 *
+	 * @return		void
+	 * @method
+	 */
+	function ChangeAdvertisement()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		// Breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->ViewAllCustomerGroups();
+		BreadCrumb()->SetCurrentPage("Modify Customer Group");
+
+		if(array_key_exists('CustomerGroup_Id', $_POST))
+		{
+			if(!empty($_POST['CustomerGroup_Id']))
+			{
+				if ((($_FILES["userfile"]["type"] == "image/gif") || ($_FILES["userfile"]["type"] == "image/jpeg")) && ($_FILES["userfile"]["size"] < 9000000))
+				{
+					if ($_FILES["userfile"]["error"] > 0)
+					{
+						DBO()->ChangeAdvertisement->Error =  "Error: " . $_FILES["userfile"]["error"] . "<br />";
+					}
+					else
+					{
+
+						$strFileName = $_FILES['userfile']['name'];
+						$strTmpName  = $_FILES['userfile']['tmp_name'];
+						$strFileType = $_FILES['userfile']['type'];
+						
+						$resImage      = fopen($strTmpName, 'r');
+						$mixContent = fread($resImage, filesize($strTmpName));
+						fclose($resImage);
+
+						DBO()->CustomerGroup->Id = $_POST['CustomerGroup_Id'];
+						DBO()->CustomerGroup->Load();
+						DBO()->CustomerGroup->customer_advert_image = $mixContent;
+						DBO()->CustomerGroup->customer_advert_image_type = $strFileType;
+						DBO()->CustomerGroup->SetColumns("customer_advert_image,customer_advert_image_type");
+						DBO()->CustomerGroup->Save();
+
+					}
+				}
+				else
+				{
+					DBO()->ChangeAdvertisement->Error = "Invalid file";
+				}
+			}
+			else
+			{
+				// Group ID entered was empty.
+				$this->LoadPage('customer_group_view');
+			}
+
+		}
+
+		// Declare which Page Template to use
+		$this->LoadPage('customer_group_change_advertisement');
+
+		return TRUE;
+	}
+
 
 	//------------------------------------------------------------------------//
 	// CreditCardConfig
@@ -399,9 +491,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return TRUE;
 		}
 
-		DBO()->CustomerGroup->customer_primary_color = htmlspecialchars(DBO()->CustomerGroup->customer_primary_color->Value);
-		DBO()->CustomerGroup->customer_secondary_color = htmlspecialchars(DBO()->CustomerGroup->customer_secondary_color->Value);
-		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone");
+		DBO()->CustomerGroup->customer_primary_color = ereg_replace("[^a-zA-Z0-9]", "", DBO()->CustomerGroup->customer_primary_color->Value);
+		DBO()->CustomerGroup->customer_secondary_color = ereg_replace("[^a-zA-Z0-9]", "", DBO()->CustomerGroup->customer_secondary_color->Value);
+		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone,customer_advert_url");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save())
 		{

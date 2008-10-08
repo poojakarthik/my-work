@@ -156,6 +156,8 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->business_contact_email->RenderOutput();
 		DBO()->CustomerGroup->business_info_email->RenderOutput();
 
+		DBO()->CustomerGroup->customer_advert_url->RenderOutput();
+
 		
 		echo "</div>\n"; // GroupedContent
 
@@ -185,6 +187,21 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 			   <!-- Name of input element determines name in $_FILES array -->
 			   Send this file: <input name=\"userfile\" type=\"file\" />
 			   <input type=\"submit\" value=\"Send File\" /> (320x60 pixel gif, e.g. voicetalk_logo_320x60.gif)
+			</form>
+			</div>
+			<br/><br/>";
+
+
+		echo "<h2 class='CustomerGroup'>Add/Change Advertisement Image</h2>\n";
+		echo "<div class='GroupedContent'>\n";
+		print "
+			<form enctype=\"multipart/form-data\" action=\"./flex.php/CustomerGroup/ChangeAdvertisement/\" method=\"POST\">
+			   <!-- MAX_FILE_SIZE must precede the file input field -->
+			   <input type=\"hidden\" name=\"CustomerGroup_Id\" value=\"$CustomerGroup_Id\" />
+			   <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"9000000\" />
+			   <!-- Name of input element determines name in $_FILES array -->
+			   Send this file: <input name=\"userfile\" type=\"file\" />
+			   <input type=\"submit\" value=\"Send File\" />
 			</form>
 			</div>
 			<br/><br/>";
@@ -248,6 +265,8 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->business_web->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->business_contact_email->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->business_info_email->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+
+		DBO()->CustomerGroup->customer_advert_url->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		
 		echo "</div>\n"; // GroupedContent
 
