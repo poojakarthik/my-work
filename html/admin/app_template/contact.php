@@ -557,19 +557,6 @@ class AppTemplateContact extends ApplicationTemplate
 			return TRUE;
 		}
 
-		// Record any changes in the account_history table
-		try
-		{
-			Account_History::recordCurrentState(DBO()->Account->Id->Value, AuthenticatedUser()->GetUserId(), GetCurrentISODateTime());
-		}
-		catch (Exception $e)
-		{
-			// The state could not be recorded
-			TransactionRollback();
-			Ajax()->AddCommand("Alert", "ERROR: Could not save state of account.  ". $e->getMessage());
-			return;
-		}
-
 		TransactionCommit();
 		
 		// Load the details of the old primary contact, if there was one
