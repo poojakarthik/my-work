@@ -209,7 +209,7 @@ abstract class ORM
 	 *
 	 * @method
 	 */
-	abstract protected static function _preparedStatement($strStatement);
+	abstract private static function _preparedStatement($strStatement);
 	/*{
 		/*throw new Exception();
 		
