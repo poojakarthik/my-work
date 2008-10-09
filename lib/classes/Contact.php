@@ -147,13 +147,13 @@ class Contact
 	{
 		$arrColumns = self::getColumns();
 		$arrValues = array();
-		foreach($arrColumns as $strColumn)
+		foreach($arrColumns as $strAlias=>$strColumn)
 		{
-			if ($strColumn == 'id') 
+			if ($strAlias == 'id') 
 			{
 				continue;
 			}
-			$arrValues[$strColumn] = $this->{$strColumn};
+			$arrValues[$strColumn] = $this->{$strAlias};
 		}
 		return $arrValues;
 	} 
