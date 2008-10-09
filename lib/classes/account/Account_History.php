@@ -47,7 +47,7 @@ class Account_History
 		static $selAccount;
 		static $insAccountHistory;
 		
-		if ($intEmployeeId === NULL)
+		if ($intEmployeeId == NULL)
 		{
 			$intEmployeeId = self::SYSTEM_ACTION_EMPLOYEE_ID;
 		}
