@@ -99,7 +99,7 @@ abstract class ORM
 		if ($this->Id !== NULL)
 		{
 			// Update
-			$ubiSelf	= self::_preparedStatement("ubiSelf");
+			$ubiSelf	= $this->_preparedStatement("ubiSelf");
 			if ($ubiSelf->Execute($this->toArray()) === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$ubiSelf->Error());
@@ -109,7 +109,7 @@ abstract class ORM
 		else
 		{
 			// Insert
-			$insSelf	= self::_preparedStatement("insSelf");
+			$insSelf	= $this->_preparedStatement("insSelf");
 			$mixResult	= $insSelf->Execute($this->toArray());
 			if ($mixResult === FALSE)
 			{
