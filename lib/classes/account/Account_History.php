@@ -77,7 +77,7 @@ class Account_History
 			$selAccountHistory = new StatementSelect("account_history", self::getAccountHistoryColumns(), "account_id = <AccountId>", "change_timestamp DESC", 1);
 		}
 		
-		if (($intRecCount = $selAccountHistory->Execute(array("account_id"=>$intAccountId))) === FALSE)
+		if (($intRecCount = $selAccountHistory->Execute(array("AccountId"=>$intAccountId))) === FALSE)
 		{
 			throw new Exception("Failed to retrieve current account_history record for account id: $intAccountId - ". $selAccountHistory->Error());
 		}
