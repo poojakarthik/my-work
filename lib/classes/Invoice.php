@@ -528,7 +528,7 @@ class Invoice extends ORM
 								);
 			if ($insServiceTotalService->Execute($arrServiceTotal) === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$insServiceTotal->Error());
+				throw new Exception("DB ERROR: ".$insServiceTotalService->Error());
 			}
 		}
 		
