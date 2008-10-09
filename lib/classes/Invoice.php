@@ -310,7 +310,7 @@ class Invoice extends ORM
 		$this->save();
 		
 		// Export the Invoice
-		//$this->export();
+		$this->export();
 		//--------------------------------------------------------------------//
 	}
 	
