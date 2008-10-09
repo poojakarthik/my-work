@@ -155,7 +155,7 @@ class Invoice_Export
 				}
 				
 				$arrServices[] = $arrService;
-				Cli_App_Billing::debug($arrService);
+				//Cli_App_Billing::debug($arrService);
 			}
 		}
 		
@@ -569,6 +569,7 @@ class Invoice_Export
 		$intCount = count($arrService['Id']);
  		if (!$intCount)
  		{
+			Cli_App_Billing::debug("No Service Ids!");
 			Cli_App_Billing::debug($arrService);
  		}
  		
