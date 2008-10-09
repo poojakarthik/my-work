@@ -1285,10 +1285,12 @@
 	 * @param	integer	$intAccount						The Account to add a note to
 	 * @param	integer	$intService			optional	The Service to add a note to
 	 * @param	integer	$intContact			optional	The Contact to add a note to
+	 * @param	bool	$bolGetNoteId		optional	defaults to FALSE, if set to TRUE then the Id of the created note is returned, else a boolean is returned reporting on whether or not the insert worked
 	 *
-	 * @return	boolean
+	 * @return	mix			WHEN $bolGetNoteId == FALSE then function returns TRUE if the note insert worked, else returns FALSE
+	 * 						WHEN $bolGetNoteId == TRUE  then function returns the Id of the inserted note record, else returns FALSE if unsuccessful 
 	 */
-	 function AddNote($strContent, $intType, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL)
+	 function AddNote($strContent, $intType, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL, $bolGetNoteId=FALSE)
 	 {
 	 	if ($intEmployee === NULL)
 	 	{
@@ -1313,7 +1315,9 @@
 	 	$arrData['Employee']		= $intEmployee;
 	 	$arrData['Datetime']		= new MySQLFunction("NOW()");
 	 	$arrData['NoteType']		= $intType;
-	 	return (bool)$this->_insAddNote->Execute($arrData);
+	 	
+	 	$mixResult = $this->_insAddNote->Execute($arrData);
+	 	return ($bolGetNoteId)? $mixResult : ((bool)$mixResult);
 	 }
 	 
 	 

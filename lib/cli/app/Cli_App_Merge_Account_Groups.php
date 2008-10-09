@@ -15,6 +15,7 @@ class Cli_App_Merge_Account_Groups extends Cli
 	{
 		try
 		{
+			
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
 
@@ -31,12 +32,12 @@ class Cli_App_Merge_Account_Groups extends Cli
 			
 			if ($intReceivingAccountGroup !== NULL && $intDeprecatedAccountGroup !== NULL && $strReversalFilename === NULL)
 			{
-				// A consolidation has been requested
+				// A merge has been requested
 				$this->merge($intReceivingAccountGroup, $intDeprecatedAccountGroup, $bolTestMode);
 			}
 			elseif ($intReceivingAccountGroup === NULL && $intDeprecatedAccountGroup === NULL && $strReversalFilename !== NULL)
 			{
-				// A consolifation reversal has been requested
+				// A merge reversal has been requested
 				$this->reverse($strReversalFilename);
 			}
 			else
@@ -169,11 +170,11 @@ class Cli_App_Merge_Account_Groups extends Cli
 				
 				if ($intExpectedAffectedRowCount !== $intActualAffectedRowCount)
 				{
-					throw new Exception("There is a descrepancy between the records we are recording as having been updated, and those that actually were, when updating the '{$arrDetails['Table']}' table.  Expected affected row count: $intExpectedAffectedRowCount.  Actual affected row count: $intActualAffectedRowCount.");
+					throw new Exception("There is a discrepancy between the records we are recording as having been updated, and those that actually were, when updating the '{$arrDetails['Table']}' table.  Expected affected row count: $intExpectedAffectedRowCount.  Actual affected row count: $intActualAffectedRowCount.");
 				}
 
 				$intTotalAffectedRecords += $intActualAffectedRowCount;
-				$this->log("$intActualAffectedRowCount records updated", FALSE, FALSE, TRUE);
+				$this->log("\t$intActualAffectedRowCount records updated", FALSE, FALSE, TRUE);
 
 				// Write the updated records to the recovery file
 				$arrCSVRecord = array(	"Table"					=> $arrDetails['Table'], 
@@ -266,6 +267,12 @@ class Cli_App_Merge_Account_Groups extends Cli
 				if (($strQuery = fgets($resRecoverySQLFile)) === FALSE)
 				{
 					throw new Exception("Failed to read line $intCurrentFileLine from recovery file");
+				}
+				$strQuery = trim($strQuery);
+				if ($strQuery == "")
+				{
+					// A blank line
+					continue;
 				}
 				
 				if ($qryQuery->Execute($strQuery) === FALSE)

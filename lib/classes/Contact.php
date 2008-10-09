@@ -84,22 +84,22 @@ class Contact
 	protected static function getColumns()
 	{
 		return array(
-			'Id',
-			'AccountGroup',
-			'Title',
-			'FirstName',
-			'LastName',
-			'DOB',
-			'JobTitle',
-			'Email',
-			'Account',
-			'CustomerContact',
-			'Fax',
-			'Mobile',
-			'Phone',
+			'id'				=> 'Id',
+			'accountGroup'		=> 'AccountGroup',
+			'title'				=> 'Title',
+			'firstName'			=> 'FirstName',
+			'lastName'			=> 'LastName',
+			'dob'				=> 'DOB',
+			'jobTitle'			=> 'JobTitle',
+			'email'				=> 'Email',
+			'account'			=> 'Account',
+			'customerContact'	=> 'CustomerContact',
+			'fax'				=> 'Fax',
+			'mobile'			=> 'Mobile',
+			'phone'				=> 'Phone',
 			//'Username',
-			'Password',
-			'Archived',
+			'password'			=> 'PassWord',
+			'archived'			=> 'Archived'
 		);
 	}
 
