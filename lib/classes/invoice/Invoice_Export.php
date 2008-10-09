@@ -117,7 +117,7 @@ class Invoice_Export
 			throw new Exception($selAccountFNNs->Error());
 		}
 		$arrAccountFNNs	= $selAccountFNNs->FetchAll();
-		Cli_App_Billing::debug($arrAccountFNNs);
+		//Cli_App_Billing::debug($arrAccountFNNs);
 		
 		// Get List of Service IDs for each FNN
 		$arrServices			= Array();
@@ -141,13 +141,7 @@ class Invoice_Export
 				
 				// Get all Service Ids that are associated with this FNN
 				$arrWhere = Array();
-				$arrWhere['Account']		= $arrInvoice['Account'];
-				$arrWhere['FNN']			= $arrService['FNN'];
-				$arrWhere['Extension']		= $arrService['Extension'];
-				$arrWhere['RangeStart']		= $arrService['RangeStart'];
-				$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
-				$arrWhere['invoice_run_id']	= $arrInvoice['invoice_run_id'];
-				if ($selServiceInstances->Execute($arrWhere) === FALSE)
+				if ($selServiceInstances->Execute($arrService) === FALSE)
 				{
 					throw new Exception($selServiceInstances->Error());
 				}
