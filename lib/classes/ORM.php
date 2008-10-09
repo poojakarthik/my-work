@@ -211,7 +211,7 @@ abstract class ORM
 	 */
 	abstract protected static function _preparedStatement($strStatement)
 	{
-		throw new Exception();
+		/*throw new Exception();
 		
 		static	$arrPreparedStatements	= Array();
 		if (isset($arrPreparedStatements[$strStatement]))
@@ -243,7 +243,7 @@ abstract class ORM
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
 			return $arrPreparedStatements[$strStatement];
-		}
+		}*/
 	}
 }
 ?>
