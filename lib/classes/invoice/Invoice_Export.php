@@ -153,7 +153,7 @@ class Invoice_Export
 					$arrService['Id']	= Array();
 					while ($arrId = $selServiceInstances->Fetch())
 					{
-						$arrService['Id'][] = $arrId['Id'];
+						$arrService['Id'][] = $arrId['service_id'];
 					}
 				}
 				
