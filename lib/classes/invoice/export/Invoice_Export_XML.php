@@ -309,6 +309,15 @@
 			
 			$strFilename	= "$strFullDirectory/$intAccount.xml";
 			$mixReturn		= (bool)file_put_contents($strFilename, $strXMLOutput);
+			
+			if ($mixReturn)
+			{
+				Cli_App_Billing::debug("Successully exported to '{$strFilename}'");
+			}
+			else
+			{
+				Cli_App_Billing::debug("Unsuccessfully attempted to export to '{$strFilename}'");
+			}
 		}
 		else
 		{
