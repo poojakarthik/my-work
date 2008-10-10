@@ -300,14 +300,14 @@
 			// Save to file, return success
 			$intAccount			= $arrInvoice['Account'];
 			$intCustomerGroup	= $arrCustomer['CustomerGroup'];
-			$strFullDirectory	= $arrInvoice['invoice_run_id'];
+			$strFullDirectory	= FILES_BASE_PATH.'invoices/xml/'.$arrInvoice['invoice_run_id'];
 			
 			if (!file_exists($strFullDirectory))
 			{
 				mkdir($strFullDirectory, 0777, TRUE);
 			}
 			
-			$strFilename	= "$strFullDirectory/$intAccount.xml";
+			$strFilename	= "{$strFullDirectory}/{$intAccount}.xml";
 			$mixReturn		= (bool)file_put_contents($strFilename, $strXMLOutput);
 			
 			if ($mixReturn)
