@@ -2,8 +2,6 @@ var FlexSearch = {
 	strSearchTypeCookieName	: 'QuickSearch_SearchType',
 	strConstraintCookieName	: 'QuickSearch_Constraint',
 	intCookieLife			: 30,
-	strOverrideCookieName	: 'overrideCustomerVerification',	// DEPRICATED
-	intOverrideCookieLife	: 30,								// DEPRICATED
 	strContactLink			: null,
 	strAccountLink			: null,
 	bolVerifyIfOneResult	: false,
@@ -119,19 +117,6 @@ var FlexSearch = {
 			this.popupControls.Constraint.value			= mixConstraint;
 			this.popupControls.IncludeArchived.checked	= bolIncludeArchived;
 			Vixen.Popup.Centre("CustomerSearch");
-			
-			// Show the verification popup, if the conditions are right
-			if (intRecCount == 1 && this.bolVerifyIfOneResult && (!this.popupControls.OverrideVerification || !this.popupControls.OverrideVerification.checked))
-			{
-				// Reset the flag
-				this.bolVerifyIfOneResult = false;
-				
-				// Get the row
-				var elmTable = $ID("CustomerSearchPopupResultsTable");
-				var elmRow = elmTable.tBodies[0].rows[0];
-				//alert(elmRow.toString());
-				//TODO! trigger the verification page
-			}
 		}
 	},
 	
@@ -186,16 +171,6 @@ var FlexSearch = {
 				}
 			}
 			
-			if (this.popupControls.OverrideVerification)
-			{
-				var strOverrideVerification = Flex.cookie.read(this.strOverrideCookieName);
-				var bolOverrideVerification = (strOverrideVerification == 'true')? true : false;
-				
-				this.popupControls.OverrideVerification.checked = bolOverrideVerification;
-				Event.startObserving(this.popupControls.OverrideVerification, "change", this.overrideVerificationOnChange.bind(this), true);
-			}
-			
-			
 			this.popupControls.ResultsContainer = $ID("CustomerSearchPopupResultsContainer");
 			
 			// Register event listeners
@@ -214,17 +189,6 @@ var FlexSearch = {
 			{
 				// There are results to be displayed
 				this.displayResults(this.cachedResults.recordCount, this.cachedResults.resultsHtml, this.cachedResults.searchType, this.cachedResults.constraint, this.cachedResults.constraintType, this.cachedResults.includeArchived);
-				/*
-				this.popupControls.ResultsContainer.innerHTML	= this.cachedResults.resultsHtml;
-				this.popupControls.ResultsContainer.style.display = "block";
-				this.popupControls.SearchType.value				= this.cachedResults.searchType;
-				this.searchTypeComboOnChange();
-				this.popupControls.ConstraintType.value			= (this.cachedResults.constraintType == null)? 0 : this.cachedResults.constraintType;
-				this.popupControls.Constraint.value				= this.cachedResults.constraint;
-				this.popupControls.IncludeArchived.checked		= this.cachedResults.includeArchived;
-
-				Vixen.Popup.Centre("CustomerSearch");
-				*/
 			}
 			else
 			{
@@ -238,7 +202,6 @@ var FlexSearch = {
 		}
 
 	},
-	
 	
 	constraintTextBoxOnEnter : function(event)
 	{
@@ -276,11 +239,6 @@ var FlexSearch = {
 		this.popupControls.SearchType.setAttribute("currentSearchType", intSearchType);
 	},
 	
-	overrideVerificationOnChange : function(objEvent)
-	{
-		Flex.cookie.create(this.strOverrideCookieName, this.popupControls.OverrideVerification.checked ? 'true' : 'false', this.intOverrideCookieLife);
-	},
-	
 	// This is used to retrieve a new page of results, when a result set is paginated
 	getResults : function(intOffset)
 	{
@@ -308,50 +266,5 @@ var FlexSearch = {
 			var intConstraintType = (this.popupControls.ConstraintType.value == 0)? null : parseInt(this.popupControls.ConstraintType.value);
 			this.customerSearch(parseInt(this.popupControls.SearchType.value), strConstraint, intConstraintType, this.popupControls.IncludeArchived.checked, 0, true);
 		}
-
-	},
-	
-	//DEPRICATED
-	loadAccount : function(intAccountId, objEvent)
-	{
-		if (this.popupControls.OverrideVerification != undefined && this.popupControls.OverrideVerification.checked)
-		{
-			// Don't bother verifying (this overrides verification, but records the customer in the EmployeeAccountAudit)
-			//Don't do anything.  This scenario will be handled by an anchor tag, so that the result can be opened in a new window
-			FlexCustomerVerification.verifyOnServer(null, intAccountId, null, null, FlexCustomerVerification.PAGE_ACCOUNT, true);
-			//alert("I'm not doing anything");
-		}
-		else
-		{
-			// Load the Verification popup
-			// Stop the event from triggering any anchor elements
-			if (objEvent)
-			{
-				objEvent.preventDefault();
-			}
-			
-			FlexCustomerVerification.load(null, intAccountId);
-		}
-	},
-	
-	//DEPRICATED
-	loadContact : function(intContactId, objEvent)
-	{
-		if (this.popupControls.OverrideVerification != undefined && this.popupControls.OverrideVerification.checked)
-		{
-			// Don't bother verifying (this overrides verification, but records the customer in the EmployeeAccountAudit)
-			//Don't do anything.  This scenario will be handled by an anchor tag, so that the result can be opened in a new window
-			FlexCustomerVerification.verifyOnServer(intContactId, null, null, null, FlexCustomerVerification.PAGE_CONTACT, true);
-		}
-		else
-		{
-			// Load the Verification popup
-			if (objEvent)
-			{
-				objEvent.preventDefault();
-			}
-			FlexCustomerVerification.load(intContactId, null);
-		}
-	}
-	
+	}	
 };
