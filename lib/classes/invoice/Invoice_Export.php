@@ -452,13 +452,13 @@ class Invoice_Export
 			{
 				// SELECTS
 				case 'selAccountFNNs':
-					$arrCols					= Array();
-					$arrCols['ServiceTotal']	= "ServiceTotal.Id";
-					$arrCols['CurrentId']		= "ServiceTotal.Service";
-					$arrCols['FNN']				= "ServiceTotal.FNN";
-					$arrCols['Extension']		= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN ServiceExtension.Name ELSE ServiceTotal.FNN END";
-					$arrCols['RangeStart']		= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeStart, 2, '0')) WHEN Service.Indial100 = 1 THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), '00') ELSE ServiceTotal.FNN END";
-					$arrCols['RangeEnd']		= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeEnd, 2, '0')) WHEN Service.Indial100 = 1 THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), '99') ELSE ServiceTotal.FNN END";
+					$arrCols						= Array();
+					$arrCols['service_total_id']	= "ServiceTotal.Id";
+					$arrCols['CurrentId']			= "ServiceTotal.Service";
+					$arrCols['FNN']					= "ServiceTotal.FNN";
+					$arrCols['Extension']			= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN ServiceExtension.Name ELSE ServiceTotal.FNN END";
+					$arrCols['RangeStart']			= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeStart, 2, '0')) WHEN Service.Indial100 = 1 THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), '00') ELSE ServiceTotal.FNN END";
+					$arrCols['RangeEnd']			= "CASE WHEN ServiceExtension.Id IS NOT NULL THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), LPAD(ServiceExtension.RangeEnd, 2, '0')) WHEN Service.Indial100 = 1 THEN CONCAT(SUBSTRING(ServiceTotal.FNN, 1, CHAR_LENGTH(ServiceTotal.FNN)-2), '99') ELSE ServiceTotal.FNN END";
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"(ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)",
 																					$arrCols,
 																					"ServiceTotal.Account = <Account> AND ServiceTotal.invoice_run_id = <invoice_run_id>",
@@ -482,7 +482,7 @@ class Invoice_Export
 				case 'selServiceInstances':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"service_total_service",
 																					"service_id",
-																					"service_total_id = <ServiceTotal>");
+																					"service_total_id = <service_total_id>");
 					break;
 				case 'selAccountSummary':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"(ServiceTypeTotal STT JOIN RecordType RT ON STT.RecordType = RT.Id) JOIN RecordType RG ON RT.GroupId = RG.Id",
