@@ -124,7 +124,7 @@ class Invoice_Export
 		$selServiceInstances	= self::_preparedStatement('selServiceInstances');
 		foreach ($arrAccountFNNs as $intKey=>$arrService)
 		{
-			//Cli_App_Billing::debug($arrService);
+			Cli_App_Billing::debug($arrService);
 			
 			// Get details from the Current Service
 			$arrService['invoice_run_id']	= $arrInvoice['invoice_run_id'];
@@ -137,7 +137,7 @@ class Invoice_Export
 				$arrServiceDetails	= $selServiceDetails->Fetch();
 				$arrService			= array_merge($arrService, $arrServiceDetails);
 				
-				//Cli_App_Billing::debug($arrService);
+				Cli_App_Billing::debug($arrService);
 				
 				// Is this the Primary FNN?
 				$arrService['Primary']		= ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd']) ? TRUE : FALSE;
