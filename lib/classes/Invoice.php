@@ -309,16 +309,6 @@ class Invoice extends ORM
 		// Insert the Invoice Data
 		$this->save();
 		
-		// Debug the contents of the service_total_service Table
-		/*$selServiceTotalService	= new StatementSelect("ServiceTotal JOIN service_total_service ON ServiceTotal.Id = service_total_service.service_total_id", "*", "invoice_run_id = {$this->invoice_run_id}");
-		if ($selServiceTotalService->Execute() === FALSE)
-		{
-			throw new Exception($selServiceTotalService->Error());
-		}
-		
-		Cli_App_Billing::debug("Dumping service_total_service...");
-		Cli_App_Billing::debug($selServiceTotalService->FetchAll());*/
-		
 		// Export the Invoice
 		$this->export();
 		//--------------------------------------------------------------------//

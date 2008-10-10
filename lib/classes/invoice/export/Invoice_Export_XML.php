@@ -285,6 +285,7 @@
 				}
 			}
 		}
+		Cli_App_Billing::debug("Call Types:");
 		Cli_App_Billing::debug($arrDebugCallTypes);
 		
 		// Determine Output/Return data
@@ -296,7 +297,10 @@
 			$intCustomerGroup	= $arrCustomer['CustomerGroup'];
 			$strFullDirectory	= $arrInvoice['invoice_run_id'];
 			
-			@mkdir($strFullDirectory, 0777, TRUE);
+			if (!file_exists($strFullDirectory))
+			{
+				mkdir($strFullDirectory, 0777, TRUE);
+			}
 			
 			$strFilename	= "$strFullDirectory/$intAccount.xml";
 			$mixReturn		= (bool)file_put_contents($strFilename, $strXMLOutput);
