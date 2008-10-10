@@ -41,7 +41,7 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 									)";
 		*/
 		$strWhere = "Account.Archived IN ($strApplicableAccountStatuses) AND Invoice.Status IN ($strApplicableInvoiceStatuses)";
-		$pt = GetPaymentTerms();
+		$pt = GetPaymentTerms(NULL);
 	
 		$strOrderBy	= "Account.Archived ASC, Invoice.Account ASC";
 		$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
