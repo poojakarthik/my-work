@@ -54,7 +54,7 @@
 							The Username you entered already exists. Please enter a unique Username.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Email Exists'">
-							The Email you entered already exists. Please enter a unique Email.
+							The Email you entered is already being used by another active contact. Please enter a unique Email.
 						</xsl:when>
 					</xsl:choose>
 				</div>

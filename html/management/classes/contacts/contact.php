@@ -300,31 +300,32 @@
 		 *
 		 * @method
 		 */
-		
-		public function ArchiveStatus ($bolArchive)
+		public function ArchiveStatus($bolArchive)
 		{
-			// If we want to Unarchive a Contact, we have to Ensure that there isn't an unarchive (active)
-			// account with the same username
+			// If we want to Unarchive a Contact, we have to Ensure that there isn't an active
+			// contact with the same email address
+			$strEmailAddress = trim($this->Pull("Email")->getValue());
 			
-			if ($bolArchive == FALSE)
+			// If we are activating the contact, their email address can't be being used by an already active contact
+			// But only bother if the contact has an email address specified
+			if ($bolArchive == FALSE && $strEmailAddress != "")
 			{
-				$selContact = new StatementSelect ('Contact', 'count(*) AS length', 'UserName = <UserName> AND Archived = 0');
-				$selContact->Execute (Array ('UserName' => $this->Pull ('UserName')->getValue ()));
-				$arrUserNames = $selContact->Fetch ();
+				$selContact = new StatementSelect('Contact', 'count(*) AS length', 'Email = <Email> AND Archived = 0');
+				$selContact->Execute(Array('Email' => $strEmailAddress));
+				$arrContactsWithSameEmail = $selContact->Fetch ();
 				
-				if ($arrUserNames ['length'] <> 0)
+				if ($arrContactsWithSameEmail['length'] > 0)
 				{
-					throw new Exception ('UserName Obtained Elsewhere');
+					// The email address is currently being used
+					throw new Exception ('Email Exists');
 				}
 			}
 			
 			// Set up an Archive SET clause
-			$arrArchive = Array (
-				"Archived"	=>	($bolArchive == TRUE) ? "1" : "0"
-			);
+			$arrArchive = Array ("Archived"	=>	($bolArchive == TRUE)? 1 : 0);
 			
-			$updContact = new StatementUpdate ('Contact', 'Id = <Id>', $arrArchive, 1);
-			$updContact->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			$updContact = new StatementUpdate('Contact', 'Id = <Id>', $arrArchive, 1);
+			$updContact->Execute ($arrArchive, Array('Id' => $this->Pull('Id')->getValue()));
 		}
 	}
 	
