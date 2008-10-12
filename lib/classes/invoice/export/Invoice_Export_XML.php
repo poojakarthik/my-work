@@ -240,7 +240,7 @@
 		$xmlServices	= self::_addElement($xmlInvoice, 'Services');
 		foreach ($arrServices as $arrService)
 		{
-			Cli_App_Billing::debug("XML for {$arrService['FNN']}: ", FALSE);
+			Cli_App_Billing::debug("XML for {$arrService['FNN']}::{$arrService['Extension']}: ", FALSE);
 			
 			// Only Render if there is data or ForceInvoiceRender is set
 			if (!$arrService['IsRendered'])
