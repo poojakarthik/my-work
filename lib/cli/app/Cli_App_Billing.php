@@ -113,7 +113,7 @@ class Cli_App_Billing extends Cli
 	private function _generate()
 	{
 		// Are there any Invoice Runs due?
-		$selPaymentTerms		= new StatementSelect("payment_terms", "invoice_day, payment_terms", "1", "id DESC", "1");
+		$selPaymentTerms		= new StatementSelect("payment_terms", "invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
 		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "<InvoiceDate> = SUBDATE(CURDATE(), INTERVAL invoice_day_offset DAY)");
 		
 		if (!$selPaymentTerms->Execute())
