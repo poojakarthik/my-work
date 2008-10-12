@@ -962,6 +962,7 @@ class Invoice extends ORM
 		// If the Plan Charge is $0, then don't insert it
 		if (round($fltAmount, 2) === 0.0)
 		{
+			CliEcho("Ignoring {$strPlanName} {$strChargeType}");
 			return TRUE;
 		}
 		
