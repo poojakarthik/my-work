@@ -960,7 +960,7 @@ class Invoice extends ORM
 		static	$arrChargeTypes;
 		
 		// If the Plan Charge is $0, then don't insert it
-		if ($fltAmount === 0.0)
+		if (round($fltAmount, 2) === 0.0)
 		{
 			return TRUE;
 		}
