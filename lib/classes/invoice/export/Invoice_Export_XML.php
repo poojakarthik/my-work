@@ -246,7 +246,7 @@
 			if (!$arrService['IsRendered'])
 			{
 				Cli_App_Billing::debug("NOT RENDERING!");
-				Cli_App_Billing::debug($arrService);
+				//Cli_App_Billing::debug($arrService);
 				continue;
 			}
 			Cli_App_Billing::debug("Rendering...");
