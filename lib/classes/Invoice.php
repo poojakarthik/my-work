@@ -433,6 +433,14 @@ class Invoice extends ORM
 		$arrServiceTotal['fltTaxExemptCappedCharge']	= $fltTaxExemptCappedCharge;
 		$arrServiceTotal['fltTaxableCappedCharge']		= $fltTaxableCappedCharge;
 		
+		$fltTaxExemptCost	= $fltTaxExemptCappedCost + $fltTaxExemptUncappedCost;
+		$fltTaxExemptCharge	= $fltTaxExemptCappedCharge + $fltTaxExemptUncappedCharge;
+		if ($fltTaxExemptCost || $fltTaxExemptCharge)
+		{
+			Cli_App_Billing::debug("TAX EXEMPT CHARGES!");
+			Cli_App_Billing::debug($arrCDRTotals);
+		}
+		
 		// Calculate Service Plan Usage for non-Shared Services
 		$fltTotalCharge	= 0.0;
 		if (!$arrPlanDetails['Shared'])
