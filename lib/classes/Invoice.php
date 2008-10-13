@@ -217,7 +217,7 @@ class Invoice extends ORM
 		while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
 		{
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][$arrAccountChargeTotal['global_tax_exempt']]	= $arrAccountChargeTotal['Total'];
-			Cli_App_Billing::debug($arrAccountChargeTotal);
+			//Cli_App_Billing::debug($arrAccountChargeTotal);
 		}
 		$this->Debits	+= $arrAccountChargeTotals['DR'][0] + $arrAccountChargeTotals['DR'][1];
 		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
@@ -1021,7 +1021,7 @@ class Invoice extends ORM
 				case 'Credits':
 					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
 					$arrBacktrace	= debug_backtrace();
-					Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t@ Line {$arrBacktrace[0]['line']}");
+					Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
 					break;
 			}
 		}
