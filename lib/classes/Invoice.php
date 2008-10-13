@@ -187,7 +187,7 @@ class Invoice extends ORM
 			
 			// Add to Invoice Totals
 			Cli_App_Billing::debug("Shared Plan Total: \$".$fltSharedTotal);
-			$this->Debits	+= $fltSharedTotal;
+			$this->Debits	+= $fltCDRCappedTotal;
 			$this->Tax		+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
 		}
 		//--------------------------------------------------------------------//
@@ -474,6 +474,8 @@ class Invoice extends ORM
 				Cli_App_Billing::debug("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
 			}
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
+			
+			$fltTotalCharge	= $fltCDRCappedTotal;
 		}
 		
 		// Add in Uncapped Charges & Credits
