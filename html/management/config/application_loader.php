@@ -33,9 +33,10 @@
 //----------------------------------------------------------------------------//
 
 // Before we do anything is check that we're using Firefox
-if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE && stristr ($_SERVER ['HTTP_USER_AGENT'], 'Prism') === FALSE)
+if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE && stristr ($_SERVER ['HTTP_USER_AGENT'], 'Prism') === FALSE && stristr ($_SERVER ['HTTP_USER_AGENT'], 'Safari') === FALSE)
 {
 	echo "<p>Firefox Only - <a href='http://www.getfirefox.com/'>Get Firefox</a></p>";
+	echo "<p>Your browser identifies itself as: " . $_SERVER ['HTTP_USER_AGENT'] . ".</p>";
 	exit;
 }
 

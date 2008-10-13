@@ -128,6 +128,12 @@ class BrowserInfo
 			$this->_bolIsIE = FALSE;
 			$this->_bolIsNS = TRUE;
 		}
+		elseif (stristr($_SERVER ['HTTP_USER_AGENT'], 'Safari') !== FALSE)
+		{
+			$this->_intCurrentBrowser = BROWSER_SF;
+			$this->_bolIsIE = FALSE;
+			$this->_bolIsNS = TRUE;
+		}
 		else
 		{
 			// I don't know what browser it is.  It certainly isn't supported by any of our systems
