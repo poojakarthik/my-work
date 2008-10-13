@@ -150,7 +150,7 @@ class Cli_App_Billing extends Cli
 						
 						// Yes, so lets Generate!
 						$objInvoiceRun	= new Invoice_Run();
-						$objInvoiceRun->generate($arrInvoiceRunSchedule['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
+						$objInvoiceRun->generate($arrPaymentTerms['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
 					}
 				}
 				elseif ($selInvoiceRunSchedule->Error())
