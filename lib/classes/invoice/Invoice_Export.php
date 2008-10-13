@@ -264,9 +264,9 @@ class Invoice_Export
 			}
 			
 			// Handle ServiceTotals for Indials
-			if ($arrService['Indial100'])
+			if ($arrService['Indial100'] || $arrService['SharedPlan'])
 			{
-				// Indial 100s should only have Rated Totals
+				// Indial 100s & Shared Plans should only have Rated Totals
 				$arrService['ServiceTotal']	= $fltRatedTotal;
 			}
 			
@@ -472,6 +472,7 @@ class Invoice_Export
 					$arrService['Indial100']	= "MAX(Service.Indial100)";
 					$arrService['ForceRender']	= "Service.ForceInvoiceRender";
 					$arrService['RatePlan']		= "RatePlan.Name";
+					$arrService['SharedPlan']	= "RatePlan.Shared";
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																					$arrService,
 																					"ServiceTotal.invoice_run_id = <invoice_run_id> AND ServiceTotal.Service = <CurrentId> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)",
