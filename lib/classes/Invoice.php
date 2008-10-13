@@ -965,6 +965,7 @@ class Invoice extends ORM
 			CliEcho("Ignoring {$strPlanName} {$strChargeType}");
 			return TRUE;
 		}
+		CliEcho("Adding {$strPlanName} {$strChargeType} worth \${$fltAmount}");
 		
 		// Cache ChargeType details
 		if (!isset($arrChargeTypes[$strChargeType]))
