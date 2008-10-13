@@ -115,24 +115,34 @@ class Invoice extends ORM
 		//--------------------------------------------------------------------//
 		
 		//----------------------- GENERATE SERVICE DATA ----------------------//
-		// Generate Service Data
 		$arrSharedPlans	= Array();
 		foreach ($arrServices as $intServiceId=>&$arrServiceDetails)
 		{
 			Cli_App_Billing::debug("\t + Generating Service Total Data for Service with Id {$intServiceId}...", FALSE);
-			$arrServiceDetails['ServiceTotal']	= $this->_generateService($arrServiceDetails, $objAccount, $objInvoiceRun);
-			$this->Debits						+= $arrServiceDetails['ServiceTotal']['TotalCharge'] + $arrServiceDetails['ServiceTotal']['Debit'];
-			$this->Credits						+= $arrServiceDetails['ServiceTotal']['Credit'];
-			$this->Tax							+= $arrServiceDetails['ServiceTotal']['Tax'];
-			Cli_App_Billing::debug("\t Total: \${$arrServiceDetails['ServiceTotal']['TotalCharge']}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
 			
-			// Is this a Shared Plan?
-			if ($arrServiceDetails['ServiceTotal']['Shared'])
+			// Generate Service Total Data
+			$mixServiceTotal	= $this->_generateService($arrServiceDetails, $objAccount, $objInvoiceRun);
+			if ($mixServiceTotal !== FALSE)
 			{
-				Cli_App_Billing::debug("\t\t ! Service is on Shared Plan {$arrServiceDetails['ServiceTotal']['RatePlan']}...");
-				$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['Services'][$intServiceId]		= &$arrServiceDetails;
-				$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxExemptCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxExemptCappedCharge'];
-				$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxableCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxableCappedCharge'];
+				$arrServiceDetails['ServiceTotal']	= $mixServiceTotal;
+				$this->Debits						+= $arrServiceDetails['ServiceTotal']['TotalCharge'] + $arrServiceDetails['ServiceTotal']['Debit'];
+				$this->Credits						+= $arrServiceDetails['ServiceTotal']['Credit'];
+				$this->Tax							+= $arrServiceDetails['ServiceTotal']['Tax'];
+				Cli_App_Billing::debug("\t Total: \${$arrServiceDetails['ServiceTotal']['TotalCharge']}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
+				
+				// Is this a Shared Plan?
+				if ($arrServiceDetails['ServiceTotal']['Shared'])
+				{
+					Cli_App_Billing::debug("\t\t ! Service is on Shared Plan {$arrServiceDetails['ServiceTotal']['RatePlan']}...");
+					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['Services'][$intServiceId]		= &$arrServiceDetails;
+					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxExemptCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxExemptCappedCharge'];
+					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxableCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxableCappedCharge'];
+				}
+			}
+			else
+			{
+				// Unable to create Service Total Data (for a sane reason, eg. No Rate Plan)
+				Cli_App_Billing::debug("\t Service is not invoicable");
 			}
 		}
 		
@@ -356,6 +366,12 @@ class Invoice extends ORM
 			throw new Exception("DB ERROR: ".$selPlanDetails->Error());
 		}
 		$arrPlanDetails	= $selPlanDetails->Fetch();
+		
+		if (!$arrPlanDetails)
+		{
+			// There is no Plan for this Service, we can't Invoce it
+			return FALSE;
+		}
 		
 		// Determine & Add in Plan Charge & Usage Limit Details
 		if ($arrPlanDetails['Shared'])
