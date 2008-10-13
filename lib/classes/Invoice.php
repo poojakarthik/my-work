@@ -465,6 +465,10 @@ class Invoice extends ORM
 			$fltTaxExemptOverusage	= max(0, $fltCDRCappedTotal - $fltUsageLimit) - $fltTaxableOverusage;
 			$fltTotalCharge			+= $fltTaxExemptOverusage;
 			
+			if ($fltTaxExemptOverusage)
+			{
+				Cli_App_Billing::debug("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
+			}
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
 		}
 		
