@@ -43,6 +43,8 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey`' . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS survey;";
+
 
 		$strSQL = "CREATE TABLE IF NOT EXISTS `survey_completed` (
 		  `id` mediumint(11) NOT NULL auto_increment COMMENT 'id field',
@@ -56,6 +58,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_completed`' . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS survey_completed;";
 
 		$strSQL = "CREATE TABLE IF NOT EXISTS `survey_option_response_type` (
 		  `id` mediumint(11) NOT NULL auto_increment COMMENT 'id',
@@ -67,6 +70,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_option_response_type`' . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS survey_option_response_type;";
 
 		$strSQL = "CREATE TABLE IF NOT EXISTS `survey_question` (
 		  `id` mediumint(11) NOT NULL auto_increment COMMENT 'question Id',
@@ -82,6 +86,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_question`' . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS survey_question;";
 
 		$strSQL = "CREATE TABLE IF NOT EXISTS `survey_questions_response_type` (
 		  `id` mediumint(11) NOT NULL auto_increment COMMENT 'id',
@@ -93,6 +98,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_questions_response_type`' . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS survey_questions_response_type;";
 
 		$strSQL = "CREATE TABLE IF NOT EXISTS `survey_question_option` (
 		  `id` mediumint(11) NOT NULL auto_increment COMMENT 'id',
@@ -107,6 +113,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_question_option`' . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS survey_question_option;";
 
 		$strSQL = "CREATE TABLE IF NOT EXISTS `survey_response` (
 		  `id` mediumint(11) NOT NULL auto_increment COMMENT 'Id',
@@ -122,6 +129,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_response`' . $result->getMessage());
 		}
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS survey_response;";
 
 		$strSQL = "CREATE TABLE IF NOT EXISTS `survey_response_options` (
 		  `id` mediumint(11) NOT NULL auto_increment COMMENT 'id',
@@ -136,16 +144,7 @@ class Flex_Rollout_Version_000071 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to create tables. `survey_response_options`' . $result->getMessage());
 		}
-
-		$this->rollbackSQL[] = "DROP TABLE IF EXISTS `survey` ,
-		`survey_completed` ,
-		`survey_option_response_type` ,
-		`survey_question` ,
-		`survey_questions_response_type` ,
-		`survey_question_option` ,
-		`survey_response` ,
-		`survey_response_options` ;";
-
+		$this->rollbackSQL[] = "DROP TABLE IF EXISTS survey_response_options;";
 	}
 	
 	function rollback()
