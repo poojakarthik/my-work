@@ -166,7 +166,8 @@ class Invoice extends ORM
 			
 			// Determine and add in Plan Credit
 			Cli_App_Billing::debug("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
-			$fltPlanCredit	= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			//$fltPlanCredit	= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			$fltPlanCredit	= min($fltUsageLimit, $fltCDRCappedTotal) - ($fltUsageStart - $fltMinimumCharge);
 			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
@@ -175,7 +176,7 @@ class Invoice extends ORM
 			$fltSharedTotal			= min($fltCDRCappedTotal, $fltUsageStart);
 			
 			// Apply the Minimum Monthly
-			$fltSharedTotal			= ($fltMinimumCharge > 0.0) ? $fltMinimumCharge - max($fltMinimumCharge, $fltSharedTotal) : $fltSharedTotal;
+			$fltSharedTotal			= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltSharedTotal) : $fltSharedTotal;
 			
 			// Add in Taxable over-usage
 			$fltTaxableOverusage	= max(0, $fltTaxableCappedCharge - $fltUsageLimit);
@@ -438,7 +439,8 @@ class Invoice extends ORM
 		if (!$arrPlanDetails['Shared'])
 		{
 			// Determine and add in Plan Credit
-			$fltPlanCredit			= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			//$fltPlanCredit	= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
+			$fltPlanCredit	= min($fltUsageLimit, $fltCDRCappedTotal) - ($fltUsageStart - $fltMinimumCharge);
 			$intPeriodStart			= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd			= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);			
@@ -447,7 +449,7 @@ class Invoice extends ORM
 			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
 			
 			// Apply the Minimum Monthly
-			$fltTotalCharge			= ($fltMinimumCharge > 0.0) ? $fltMinimumCharge - max($fltMinimumCharge, $fltTotalCharge) : $fltTotalCharge;
+			$fltTotalCharge			= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltTotalCharge) : $fltTotalCharge;
 			
 			// Add in Taxable over-usage
 			$fltTaxableOverusage	= max(0, $fltTaxableCappedCharge - $fltUsageLimit);
