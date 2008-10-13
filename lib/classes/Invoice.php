@@ -165,6 +165,7 @@ class Invoice extends ORM
 			$fltTaxableCappedCharge	= $arrDetails['fltTaxableCappedCharge'];
 			
 			// Determine and add in Plan Credit
+			Cli_App_Billing::debug("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
 			$fltPlanCredit	= min(0, $fltUsageStart - min($fltCDRCappedTotal, $fltUsageLimit));
 			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
