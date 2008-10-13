@@ -534,7 +534,7 @@ class Invoice_Export
 					break;
 				case 'selPlanChargeSummary':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
-																					"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
+																					"ChargeType, Service, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
 																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR')");
 					break;
 				
