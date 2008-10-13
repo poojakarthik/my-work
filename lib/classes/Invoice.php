@@ -166,7 +166,7 @@ class Invoice extends ORM
 			$fltTaxableCappedCharge	= $arrDetails['fltTaxableCappedCharge'];
 			
 			// Determine and add in Plan Credit
-			Cli_App_Billing::debug("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
+			//Cli_App_Billing::debug("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
 			$fltPlanCredit	= min(max($fltUsageLimit, $fltMinimumCharge), $fltCDRCappedTotal) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
 			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
@@ -187,7 +187,7 @@ class Invoice extends ORM
 			$fltSharedTotal			+= $fltTaxExemptOverusage;
 			
 			// Add to Invoice Totals
-			Cli_App_Billing::debug("Shared Plan Total: \$".$fltSharedTotal);
+			//Cli_App_Billing::debug("Shared Plan Total: \$".$fltSharedTotal);
 			$this->Debits	+= $fltCDRCappedTotal;
 			$this->Tax		+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
 		}
@@ -221,11 +221,11 @@ class Invoice extends ORM
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][$arrAccountChargeTotal['global_tax_exempt']]	= $arrAccountChargeTotal['Total'];
 			//Cli_App_Billing::debug($arrAccountChargeTotal);
 		}
-		Cli_App_Billing::debug("Preliminary Account Charges START");
+		//Cli_App_Billing::debug("Preliminary Account Charges START");
 		$this->Debits	+= $arrAccountChargeTotals['DR'][0] + $arrAccountChargeTotals['DR'][1];
 		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->_objInvoiceRun->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->_objInvoiceRun->intInvoiceDatetime);
-		Cli_App_Billing::debug("Preliminary Account Charges END");
+		//Cli_App_Billing::debug("Preliminary Account Charges END");
 		//Cli_App_Billing::debug($arrAccountChargeTotals);
 		
 		// Calculate Preliminary Invoice Values
@@ -268,13 +268,13 @@ class Invoice extends ORM
 		while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
 		{
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][$arrAccountChargeTotal['global_tax_exempt']]	= $arrAccountChargeTotal['Total'];
-			Cli_App_Billing::debug($arrAccountChargeTotal);
+			//Cli_App_Billing::debug($arrAccountChargeTotal);
 		}
-		Cli_App_Billing::debug("Final Account Charges START");
+		//Cli_App_Billing::debug("Final Account Charges START");
 		$this->Debits	+= $arrAccountChargeTotals['DR'][0] + $arrAccountChargeTotals['DR'][1];
 		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->_objInvoiceRun->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->_objInvoiceRun->intInvoiceDatetime);
-		Cli_App_Billing::debug("Final Account Charges END");
+		//Cli_App_Billing::debug("Final Account Charges END");
 		
 		// Recalculate Final Invoice Values
 		$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
@@ -442,8 +442,8 @@ class Invoice extends ORM
 		$fltTaxExemptCharge	= $fltTaxExemptCappedCharge + $fltTaxExemptUncappedCharge;
 		if ($fltTaxExemptCost || $fltTaxExemptCharge)
 		{
-			Cli_App_Billing::debug("TAX EXEMPT CHARGES!");
-			Cli_App_Billing::debug($arrCDRTotals);
+			//Cli_App_Billing::debug("TAX EXEMPT CHARGES!");
+			//Cli_App_Billing::debug($arrCDRTotals);
 		}
 		
 		// Calculate Service Plan Usage for non-Shared Services
@@ -472,7 +472,7 @@ class Invoice extends ORM
 			
 			if ($fltTaxExemptOverusage)
 			{
-				Cli_App_Billing::debug("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
+				//Cli_App_Billing::debug("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
 			}
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
 			
@@ -1041,7 +1041,7 @@ class Invoice extends ORM
 				case 'Credits':
 					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
 					$arrBacktrace	= debug_backtrace();
-					Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
+					//Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
 					break;
 			}
 		}

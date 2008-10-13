@@ -182,6 +182,11 @@ class Cli_App_Billing extends Cli
 			}
 			CliEcho($mixMessage, $bolNewLine);
 		}
+		else
+		{
+			// FIXME: Output to normal log
+			CliEcho($mixMessage, $bolNewLine);
+		}
 	}
 	
 	function getCommandLineArguments()

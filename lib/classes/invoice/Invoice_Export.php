@@ -189,7 +189,7 @@ class Invoice_Export
 					$fltRatedTotal	+= $arrCDR['Charge'];
 					$fltCDRTotal	+= $arrCDR['Charge'];
 				}
-				Cli_App_Billing::debug("CDR Total for {$arrService['FNN']}: \${$fltCDRTotal}");
+				//Cli_App_Billing::debug("CDR Total for {$arrService['FNN']}: \${$fltCDRTotal}");
 			}
 			
 			// Handle ServiceTotals for non-Indials

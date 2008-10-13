@@ -332,7 +332,7 @@ class Invoice_Run
 	 */
 	public static function revokeAll()
 	{
-		Cli_App_Billing::debug(" * ENTERING RevokeAll...");
+		//Cli_App_Billing::debug(" * ENTERING RevokeAll...");
 		
 		// Select all Temporary InvoiceRuns
 		$selTemporaryInvoiceRuns	= self::_preparedStatement('selTemporaryInvoiceRuns');
@@ -367,7 +367,7 @@ class Invoice_Run
 	 */
 	public static function revokeByCustomerGroup($intCustomerGroup)
 	{
-		Cli_App_Billing::debug(" + ENTERING revokeByCustomerGroup({$intCustomerGroup})...");
+		//Cli_App_Billing::debug(" + ENTERING revokeByCustomerGroup({$intCustomerGroup})...");
 		
 		// Select all Temporary InvoiceRuns for this CustomerGroup
 		$selTemporaryInvoiceRunsByCustomerGroup	= self::_preparedStatement('selTemporaryInvoiceRunsByCustomerGroup');
@@ -397,7 +397,7 @@ class Invoice_Run
 	 */
 	public function revoke()
 	{
-		Cli_App_Billing::debug(" * ENTERING revoke()...");
+		//Cli_App_Billing::debug(" * ENTERING revoke()...");
 		
 		// Is this InvoiceRun Temporary?
 		if (!in_array($this->invoice_run_status_id, Array(INVOICE_RUN_STATUS_TEMPORARY, INVOICE_RUN_STATUS_GENERATING)))
