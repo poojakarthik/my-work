@@ -110,7 +110,7 @@ class Cli_App_Billing extends Cli
 	{
 		// Are there any Invoice Runs due?
 		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
-		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "<InvoiceDate> = SUBDATE(CURDATE(), INTERVAL invoice_day_offset DAY)");
+		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND <InvoiceDate> = SUBDATE(CURDATE(), INTERVAL invoice_day_offset DAY)");
 		
 		if (!$selPaymentTerms->Execute())
 		{
@@ -142,7 +142,7 @@ class Cli_App_Billing extends Cli
 				$this->log("\t\t * Predicted Billing Date\t: {$strInvoiceDate}");
 				
 				// Are there any Invoice Runs Scheduled for today?
-				if ($selInvoiceRunSchedule->Execute(Array('InvoiceDate' => $strInvoiceDate)))
+				if ($selInvoiceRunSchedule->Execute(Array('InvoiceDate' => $strInvoiceDate, 'customer_group_id' => $arrPaymentTerms['customer_group_id'])))
 				{
 					while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
 					{
