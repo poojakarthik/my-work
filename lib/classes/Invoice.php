@@ -1019,8 +1019,9 @@ class Invoice extends ORM
 				case 'Tax':
 				case 'Debits':
 				case 'Credits':
-					Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
-					Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};");
+					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
+					$arrBacktrace	= debug_backtrace();
+					Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t@ Line {$arrBacktrace[0]['line']};{$arrBacktrace[1]['line']}");
 					break;
 			}
 		}
