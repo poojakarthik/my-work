@@ -474,7 +474,7 @@ class Invoice extends ORM
 		
 		// Add in Uncapped Charges & Credits
 		$fltTotalCharge			+= $fltCDRUncappedTotal;
-		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltCDRUncappedTotal, $this->_objInvoiceRun->intInvoiceDatetime);
+		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableUncappedCharge, $this->_objInvoiceRun->intInvoiceDatetime);
 		
 		// Mark all Service Charges as TEMPORARY_INVOICE
 		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")") === FALSE)
