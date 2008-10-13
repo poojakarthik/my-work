@@ -255,7 +255,7 @@ class Invoice extends ORM
 		
 		// Get Final Charge Totals
 		$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
-		if ($selAccountChargeTotals->Execute($arrData, $arrWhere) === FALSE)
+		if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
 		{
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selAccountChargeTotals->Error());
