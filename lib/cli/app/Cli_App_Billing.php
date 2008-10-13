@@ -22,8 +22,6 @@ class Cli_App_Billing extends Cli
 	{
 		try
 		{
-			$this->log("Starting.");
-			
 			// The arguments are present and in a valid format if we get past this point.
 			$this->_arrArgs = $this->getValidatedArguments();
 			
@@ -86,8 +84,6 @@ class Cli_App_Billing extends Cli
 				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
 				$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
 			}
-			
-			$this->log("Finished.");
 			return 0;
 		}
 		catch(Exception $exception)
@@ -113,7 +109,7 @@ class Cli_App_Billing extends Cli
 	private function _generate()
 	{
 		// Are there any Invoice Runs due?
-		$selPaymentTerms		= new StatementSelect("payment_terms", "invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
+		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
 		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "<InvoiceDate> = SUBDATE(CURDATE(), INTERVAL invoice_day_offset DAY)");
 		
 		if (!$selPaymentTerms->Execute())
@@ -129,39 +125,43 @@ class Cli_App_Billing extends Cli
 		}
 		else
 		{
-			$arrPaymentTerms	= $selPaymentTerms->Fetch();
-			
-			// Predict the next Billing Date
-			$strDay				= str_pad($arrPaymentTerms['invoice_day'], 2, '0', STR_PAD_LEFT);
-			$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00"));
-			if ((int)date("d") > $arrPaymentTerms['invoice_day'])
+			// Process each set of current Payment Terms
+			while ($arrPaymentTerms = $selPaymentTerms->Fetch())
 			{
-				// Billing Date is next Month
-				$intInvoiceDatetime	= strtotime("+1 month", $intInvoiceDatetime);
-			}
-			$strInvoiceDate	= date("Y-m-d", $intInvoiceDatetime);
-			$this->log("Predicted Billing Date\t: {$strInvoiceDate}");
-			
-			// Are there any Invoice Runs Scheduled for today?
-			if ($selInvoiceRunSchedule->Execute(Array('InvoiceDate' => $strInvoiceDate)))
-			{
-				while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
+				$this->log("\tCustomer Group: ".GetConstantDescription($arrPaymentTerms['customer_group_id'], 'CustomerGroup'));
+				
+				// Predict the next Billing Date
+				$strDay				= str_pad($arrPaymentTerms['invoice_day'], 2, '0', STR_PAD_LEFT);
+				$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00"));
+				if ((int)date("d") > $arrPaymentTerms['invoice_day'])
 				{
-					$this->log("Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".GetConstantDescription($arrInvoiceRunSchedule['customer_group_id'], 'CustomerGroup'));
-					
-					// Yes, so lets Generate!
-					$objInvoiceRun	= new Invoice_Run();
-					$objInvoiceRun->generate($arrInvoiceRunSchedule['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
+					// Billing Date is next Month
+					$intInvoiceDatetime	= strtotime("+1 month", $intInvoiceDatetime);
 				}
-			}
-			elseif ($selInvoiceRunSchedule->Error())
-			{
-				throw new Exception("DB ERROR: ".$selInvoiceRunSchedule->Error());
-			}
-			else
-			{
-				$this->log("No Invoice Runs Scheduled for today");
-				return;
+				$strInvoiceDate	= date("Y-m-d", $intInvoiceDatetime);
+				$this->log("\t\t * Predicted Billing Date\t: {$strInvoiceDate}");
+				
+				// Are there any Invoice Runs Scheduled for today?
+				if ($selInvoiceRunSchedule->Execute(Array('InvoiceDate' => $strInvoiceDate)))
+				{
+					while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
+					{
+						$this->log("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".GetConstantDescription($arrInvoiceRunSchedule['customer_group_id'], 'CustomerGroup')."\n");
+						
+						// Yes, so lets Generate!
+						$objInvoiceRun	= new Invoice_Run();
+						$objInvoiceRun->generate($arrInvoiceRunSchedule['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
+					}
+				}
+				elseif ($selInvoiceRunSchedule->Error())
+				{
+					throw new Exception("DB ERROR: ".$selInvoiceRunSchedule->Error());
+				}
+				else
+				{
+					$this->log("\t\t ! No Invoice Runs Scheduled for today");
+					continue;
+				}
 			}
 		}
 	}
