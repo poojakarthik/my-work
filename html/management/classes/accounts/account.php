@@ -65,7 +65,7 @@
 			
 			if ($selAccount->Count () <> 1)
 			{
-				throw new Exception ('Account does not exist.');
+				throw new Exception ('Account [' . $intId . '] does not exist.');
 			}
 			
 			$selAccount->Fetch ($this);
