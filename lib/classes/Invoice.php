@@ -121,7 +121,8 @@ class Invoice extends ORM
 		{
 			Cli_App_Billing::debug("\t + Generating Service Total Data for Service with Id {$intServiceId}...", FALSE);
 			$arrServiceDetails['ServiceTotal']	= $this->_generateService($arrServiceDetails, $objAccount, $objInvoiceRun);
-			$this->Debits						+= $arrServiceDetails['ServiceTotal']['TotalCharge'];
+			$this->Debits						+= $arrServiceDetails['ServiceTotal']['TotalCharge'] + $arrServiceDetails['ServiceTotal']['Debits'];
+			$this->Credits						+= $arrServiceDetails['ServiceTotal']['Credits'];
 			$this->Tax							+= $arrServiceDetails['ServiceTotal']['Tax'];
 			Cli_App_Billing::debug("\t Total: \${$arrServiceDetails['ServiceTotal']['TotalCharge']}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
 			
@@ -510,7 +511,7 @@ class Invoice extends ORM
 		{
 			$arrChargeTotals[$arrChargeTotal['Nature']][($arrChargeTotal['global_tax_exempt'])	? 'ExTax' : 'IncTax']	= $arrChargeTotal['Total'];
 			
-			$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
+			//$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax'], $this->_objInvoiceRun->intInvoiceDatetime);
 		$arrServiceTotal['Tax']	-= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax'], $this->_objInvoiceRun->intInvoiceDatetime);
