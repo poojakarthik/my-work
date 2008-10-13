@@ -215,13 +215,12 @@ class Invoice extends ORM
 		$arrAccountChargeTotals	= Array();
 		while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
 		{
-			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']]	= $arrAccountChargeTotal['Total'];
-			
+			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][$arrAccountChargeTotal['global_tax_exempt']]	= $arrAccountChargeTotal['Total'];
 			Cli_App_Billing::debug($arrAccountChargeTotal);
-			$this->Tax	+= ($arrAccountChargeTotal['global_tax_exempt']) ? 0.0 : self::calculateGlobalTaxComponent($arrAccountChargeTotal['Total'], $this->_objInvoiceRun->intInvoiceDatetime);
 		}
-		$this->Debits	+= $arrAccountChargeTotals['DR'];
-		$this->Credits	+= $arrAccountChargeTotals['CR'];
+		$this->Debits	+= $arrAccountChargeTotals['DR'][0] + $arrAccountChargeTotals['DR'][1];
+		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
+		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->_objInvoiceRun->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->_objInvoiceRun->intInvoiceDatetime);
 		
 		// Calculate Preliminary Invoice Values
 		$this->AccountBalance	= $GLOBALS['fwkFramework']->GetAccountBalance($objAccount->Id);
