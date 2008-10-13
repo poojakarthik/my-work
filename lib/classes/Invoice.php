@@ -185,6 +185,7 @@ class Invoice extends ORM
 			$fltSharedTotal			+= $fltTaxExemptOverusage;
 			
 			// Add to Invoice Totals
+			Cli_App_Billing::debug("Shared Plan Total: \$".$fltSharedTotal);
 			$this->Debits	+= $fltSharedTotal;
 			$this->Tax		+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
 		}
