@@ -218,6 +218,7 @@ class Invoice extends ORM
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']]	= $arrAccountChargeTotal['Total'];
 			
 			$this->Tax	+= ($arrAccountChargeTotal['global_tax_exempt']) ? 0.0 : self::calculateGlobalTaxComponent($arrAccountChargeTotal['Total'], $this->_objInvoiceRun->intInvoiceDatetime);
+			Cli_App_Billing::debug($arrAccountChargeTotal);
 		}
 		$this->Debits	+= $arrAccountChargeTotals['DR'];
 		$this->Credits	+= $arrAccountChargeTotals['CR'];
