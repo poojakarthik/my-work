@@ -971,12 +971,12 @@ class Invoice extends ORM
 		static	$arrChargeTypes;
 		
 		// If the Plan Charge is $0, then don't insert it
-		if (round($fltAmount, 2) === 0.0)
+		/*if (round($fltAmount, 2) === 0.0)
 		{
 			CliEcho("Ignoring {$strPlanName} {$strChargeType}");
 			return TRUE;
 		}
-		CliEcho("Adding {$strPlanName} {$strChargeType} worth \${$fltAmount}");
+		CliEcho("Adding {$strPlanName} {$strChargeType} worth \${$fltAmount}");*/
 		
 		// Cache ChargeType details
 		if (!isset($arrChargeTypes[$strChargeType]))
