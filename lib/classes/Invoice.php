@@ -424,11 +424,11 @@ class Invoice extends ORM
 		
 		$fltTaxExemptCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['ExTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['ExTax'];
 		$fltTaxableCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['IncTax']; 
-		$fltCDRCappedCost			= $fltTaxableCappedCharge + $fltTaxExemptCappedCharge;
+		$fltCDRCappedCost			= $fltTaxableCappedCost + $fltTaxExemptCappedCost;
 		
 		$fltTaxExemptUncappedCost	= $arrCDRTotals['Cost']['Uncapped']['Debit']['ExTax'] - $arrCDRTotals['Cost']['Uncapped']['Credit']['ExTax'];
 		$fltTaxableUncappedCost		= $arrCDRTotals['Cost']['Uncapped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Uncapped']['Credit']['IncTax'];
-		$fltCDRUncappedCost			= $fltTaxableUncappedCharge + $fltTaxExemptUncappedCharge;
+		$fltCDRUncappedCost			= $fltTaxableUncappedCost + $fltTaxExemptUncappedCost;
 		
 		$arrServiceTotal['fltTaxExemptCappedCharge']	= $fltTaxExemptCappedCharge;
 		$arrServiceTotal['fltTaxableCappedCharge']		= $fltTaxableCappedCharge;
