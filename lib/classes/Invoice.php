@@ -121,8 +121,8 @@ class Invoice extends ORM
 		{
 			Cli_App_Billing::debug("\t + Generating Service Total Data for Service with Id {$intServiceId}...", FALSE);
 			$arrServiceDetails['ServiceTotal']	= $this->_generateService($arrServiceDetails, $objAccount, $objInvoiceRun);
-			$this->Debits						+= $arrServiceDetails['ServiceTotal']['TotalCharge'] + $arrServiceDetails['ServiceTotal']['Debits'];
-			$this->Credits						+= $arrServiceDetails['ServiceTotal']['Credits'];
+			$this->Debits						+= $arrServiceDetails['ServiceTotal']['TotalCharge'] + $arrServiceDetails['ServiceTotal']['Debit'];
+			$this->Credits						+= $arrServiceDetails['ServiceTotal']['Credit'];
 			$this->Tax							+= $arrServiceDetails['ServiceTotal']['Tax'];
 			Cli_App_Billing::debug("\t Total: \${$arrServiceDetails['ServiceTotal']['TotalCharge']}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
 			
