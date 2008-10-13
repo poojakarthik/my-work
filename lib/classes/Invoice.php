@@ -174,7 +174,7 @@ class Invoice extends ORM
 			$fltSharedTotal			= min($fltCDRCappedTotal, $fltUsageStart);
 			
 			// Apply the Minimum Monthly
-			$fltSharedTotal			= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltSharedTotal) : $fltSharedTotal;
+			$fltSharedTotal			= ($fltMinimumCharge > 0.0) ? $fltMinimumCharge - max($fltMinimumCharge, $fltSharedTotal) : $fltSharedTotal;
 			
 			// Add in Taxable over-usage
 			$fltTaxableOverusage	= max(0, $fltTaxableCappedCharge - $fltUsageLimit);
@@ -446,7 +446,7 @@ class Invoice extends ORM
 			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
 			
 			// Apply the Minimum Monthly
-			$fltTotalCharge			= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltTotalCharge) : $fltTotalCharge;
+			$fltTotalCharge			= ($fltMinimumCharge > 0.0) ? $fltMinimumCharge - max($fltMinimumCharge, $fltTotalCharge) : $fltTotalCharge;
 			
 			// Add in Taxable over-usage
 			$fltTaxableOverusage	= max(0, $fltTaxableCappedCharge - $fltUsageLimit);
