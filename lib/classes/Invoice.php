@@ -220,9 +220,11 @@ class Invoice extends ORM
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][$arrAccountChargeTotal['global_tax_exempt']]	= $arrAccountChargeTotal['Total'];
 			//Cli_App_Billing::debug($arrAccountChargeTotal);
 		}
+		Cli_App_Billing::debug("Preliminary Account Charges START");
 		$this->Debits	+= $arrAccountChargeTotals['DR'][0] + $arrAccountChargeTotals['DR'][1];
 		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->_objInvoiceRun->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->_objInvoiceRun->intInvoiceDatetime);
+		Cli_App_Billing::debug("Preliminary Account Charges END");
 		//Cli_App_Billing::debug($arrAccountChargeTotals);
 		
 		// Calculate Preliminary Invoice Values
@@ -267,9 +269,11 @@ class Invoice extends ORM
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][$arrAccountChargeTotal['global_tax_exempt']]	= $arrAccountChargeTotal['Total'];
 			Cli_App_Billing::debug($arrAccountChargeTotal);
 		}
+		Cli_App_Billing::debug("Final Account Charges START");
 		$this->Debits	+= $arrAccountChargeTotals['DR'][0] + $arrAccountChargeTotals['DR'][1];
 		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->_objInvoiceRun->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->_objInvoiceRun->intInvoiceDatetime);
+		Cli_App_Billing::debug("Final Account Charges END");
 		
 		// Recalculate Final Invoice Values
 		$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
