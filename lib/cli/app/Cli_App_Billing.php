@@ -168,11 +168,11 @@ class Cli_App_Billing extends Cli
 	
 	private function _preGenerateScripts()
 	{
-		// Run the Multi-part script
-		$strCommand	= "php multipart.php pre_billing.cfg.php";
-		
 		$strWorkingDirectory	= getcwd();
 		chdir(BACKEND_BASE_PATH.'process/');
+		
+		// Run the Multi-part script
+		$strCommand				= "php multipart.php pre_billing.cfg.php";
 		$ptrProcess				= popen($strCommand, 'r');
 		$arrBlank				= Array();
 		stream_set_blocking($ptrProcess, 0);
