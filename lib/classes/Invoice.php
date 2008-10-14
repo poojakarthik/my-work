@@ -14,7 +14,7 @@
 class Invoice extends ORM
 {
 	protected	$_strTableName	= "Invoice";
-	
+
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -22,14 +22,14 @@ class Invoice extends ORM
 	 * __construct()
 	 *
 	 * constructor
-	 * 
+	 *
 	 * constructor
 	 *
 	 * @param	array	$arrProperties 		[optional]	Associative array defining an invoice run with keys for each field of the InvoiceRun table
 	 * @param	boolean	$bolLoadById		[optional]	Automatically load the Invoice with the passed Id
-	 * 
+	 *
 	 * @return	void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
@@ -37,7 +37,7 @@ class Invoice extends ORM
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// generate
 	//------------------------------------------------------------------------//
@@ -45,25 +45,25 @@ class Invoice extends ORM
 	 * generate()
 	 *
 	 * Generates an Invoice and returns the instance
-	 * 
+	 *
 	 * Generates an Invoice and returns the instance
 	 *
 	 * @param		Account		$objAccount							The Account to generate the Invoice for
 	 * @param		Invoice_Run	$objInvoiceRun						The InvoiceRun we're generating
-	 * 
+	 *
 	 * @return		void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function generate($objAccount, $objInvoiceRun)
 	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-		
+
 		// Is there already an Invoice for this Account?  If so, revoke it
 		Cli_App_Billing::debug("\t* Revoking any existing Invoices for Account with Id {$objAccount->Id}...");
 		self::revokeByAccount($objAccount);
-		
+
 		$this->invoice_run_id	= $objInvoiceRun->Id;
 		$this->_objInvoiceRun	= $objInvoiceRun;
 		$this->_objAccount		= $objAccount;
@@ -71,7 +71,7 @@ class Invoice extends ORM
 		$this->Debits			= 0.0;
 		$this->Credits			= 0.0;
 		$this->Tax				= 0.0;
-		
+
 		//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
 		// Retrieve a list of Invoiceable FNNs for this Account
 		Cli_App_Billing::debug("\t * Getting list of Invoiceable FNNs...");
@@ -81,18 +81,19 @@ class Invoice extends ORM
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selInvoiceableFNNs->Error());
 		}
-		
+
 		// Process each Invoiceable FNN
 		$arrServices	= Array();
 		while ($arrFNN = $selInvoiceableFNNs->Fetch())
 		{
 			Cli_App_Billing::debug("\t\t * Getting details for FNN {$arrFNN['FNN']}...");
-			
+
 			// Get the Service Details for the current owner of this FNN (or indial range), on this Account
 			$arrWhere	= Array();
 			$arrWhere['FNN']			= $arrFNN['FNN'];
 			$arrWhere['IndialRange']	= substr($arrFNN['FNN'], 0, -2).'__';
 			$arrWhere['DateTime']		= $objInvoiceRun->strInvoiceDatetime;
+			$arrWhere['Account']		= $objAccount->Id;
 			$selCurrentService	= $this->_preparedStatement('selCurrentService');
 			if ($selCurrentService->Execute($arrWhere) === FALSE)
 			{
@@ -104,7 +105,7 @@ class Invoice extends ORM
 				// Error
 				throw new Exception("WTF -- No Invoiceable Service Id for apparently Invoiceable FNN '{$arrFNN['FNN']}'!");
 			}
-			
+
 			// Add this Service to our Invoicing Array
 			if (!isset($arrServices[$arrCurrentService['Id']]))
 			{
@@ -113,13 +114,13 @@ class Invoice extends ORM
 			$arrServices[$arrCurrentService['Id']]['Ids'][]	= $arrFNN['Id'];
 		}
 		//--------------------------------------------------------------------//
-		
+
 		//----------------------- GENERATE SERVICE DATA ----------------------//
 		$arrSharedPlans	= Array();
 		foreach ($arrServices as $intServiceId=>&$arrServiceDetails)
 		{
 			Cli_App_Billing::debug("\t + Generating Service Total Data for Service with Id {$intServiceId}...", FALSE);
-			
+
 			// Generate Service Total Data
 			$mixServiceTotal	= $this->_generateService($arrServiceDetails, $objAccount, $objInvoiceRun);
 			if ($mixServiceTotal !== FALSE)
@@ -129,7 +130,7 @@ class Invoice extends ORM
 				$this->Credits						+= $arrServiceDetails['ServiceTotal']['Credit'];
 				$this->Tax							+= $arrServiceDetails['ServiceTotal']['Tax'];
 				Cli_App_Billing::debug("\t Total: \${$arrServiceDetails['ServiceTotal']['TotalCharge']}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
-				
+
 				// Is this a Shared Plan?
 				if ($arrServiceDetails['ServiceTotal']['Shared'])
 				{
@@ -145,7 +146,7 @@ class Invoice extends ORM
 				Cli_App_Billing::debug("\t Service is not invoicable");
 			}
 		}
-		
+
 		// Calculate and Add in Shared Plan Charges and Credits as Account Charges
 		Cli_App_Billing::debug("\t * Generating Shared Plan Charges...");
 		foreach ($arrSharedPlans as $intRatePlan=>$arrDetails)
@@ -162,52 +163,52 @@ class Invoice extends ORM
 			{
 				throw new Exception("Unable to retrieve details for RatePlan with Id '{$intRatePlan}'!");
 			}
-			
-			$arrServiceIds		= array_keys($arrDetails['Services']);			
-			
+
+			$arrServiceIds		= array_keys($arrDetails['Services']);
+
 			// Add Plan Charges
 			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrServiceIds, TRUE);
-			
+
 			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
 			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
-			
+
 			$fltCDRCappedTotal		= $arrDetails['fltTaxExemptCappedCharge'] + $arrDetails['fltTaxableCappedCharge'];
 			$fltTaxableCappedCharge	= $arrDetails['fltTaxableCappedCharge'];
-			
+
 			// Determine and add in Plan Credit
 			//Cli_App_Billing::debug("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
 			$fltPlanCredit	= min(max($fltUsageLimit, $fltMinimumCharge), $fltCDRCappedTotal) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
 			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
-			
+
 			// Determine Usage
 			$fltSharedTotal			= min($fltCDRCappedTotal, $fltUsageStart);
-			
+
 			// Apply the Minimum Monthly
 			$fltSharedTotal			= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltSharedTotal) : $fltSharedTotal;
-			
+
 			// Add in Taxable over-usage
 			$fltTaxableOverusage	= max(0, $fltTaxableCappedCharge - $fltUsageLimit);
 			$fltSharedTotal			+= $fltTaxableOverusage;
-			
+
 			// Add in Tax exempt over-usage
 			$fltTaxExemptOverusage	= max(0, $fltCDRCappedTotal - $fltUsageLimit) - $fltTaxableOverusage;
 			$fltSharedTotal			+= $fltTaxExemptOverusage;
-			
+
 			// Add to Invoice Totals
 			//Cli_App_Billing::debug("Shared Plan Total: \$".$fltSharedTotal);
 			$this->Debits	+= $fltCDRCappedTotal;
 			$this->Tax		+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
 		}
 		//--------------------------------------------------------------------//
-		
+
 		//----------------------- GENERATE INVOICE DATA ----------------------//
 		$fltPreChargeDebitTotal		= $this->Debits;
 		$fltPreChargeCreditTotal	= $this->Credits;
 		$fltPreChargeTaxTotal		= $this->Tax;
-		
+
 		// Mark Account Adjustments
 		$arrWhere	= Array('Account' => $objAccount->Id);
 		$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id);
@@ -217,7 +218,7 @@ class Invoice extends ORM
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$updMarkAccountCharges->Error());
 		}
-		
+
 		// Get Preliminary Charge Totals
 		$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
 		if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
@@ -237,7 +238,7 @@ class Invoice extends ORM
 		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->_objInvoiceRun->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->_objInvoiceRun->intInvoiceDatetime);
 		//Cli_App_Billing::debug("Preliminary Account Charges END");
 		//Cli_App_Billing::debug($arrAccountChargeTotals);
-		
+
 		// Calculate Preliminary Invoice Values
 		$this->AccountBalance	= $GLOBALS['fwkFramework']->GetAccountBalance($objAccount->Id);
 		if ($this->AccountBalance === FALSE)
@@ -253,7 +254,7 @@ class Invoice extends ORM
 		$this->DueOn			= date("Y-m-d", strtotime("+ {$objAccount->PaymentTerms} days", strtotime($objInvoiceRun->BillingDate)));
 		$this->Disputed			= 0.0;
 		$this->Status			= INVOICE_TEMP;
-		
+
 		// Generate Account Billing Time Charges
 		$arrModules	= Billing_Charge::getModules();
 		foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Account'] as $chgModule)
@@ -261,12 +262,12 @@ class Invoice extends ORM
 			// Generate charge
 			$chgModule->Generate($this, $objAccount);
 		}
-		
+
 		// Revert to pre-Preliminary Totals
 		$this->Debits	= $fltPreChargeDebitTotal;
 		$this->Credits	= $fltPreChargeCreditTotal;
 		$this->Tax		= $fltPreChargeTaxTotal;
-		
+
 		// Get Final Charge Totals
 		$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
 		if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
@@ -285,12 +286,12 @@ class Invoice extends ORM
 		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->_objInvoiceRun->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->_objInvoiceRun->intInvoiceDatetime);
 		//Cli_App_Billing::debug("Final Account Charges END");
-		
+
 		// Recalculate Final Invoice Values
 		$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 		$this->Balance			= $this->Total + $this->Tax;
 		$this->TotalOwing		= $this->Balance + $this->AccountBalance;
-		
+
 		// Determine Delivery Method
 		if ($objAccount->deliver_invoice === 0)
 		{
@@ -310,7 +311,7 @@ class Invoice extends ORM
 						$this->DeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
 					}
 					break;
-					
+
 				default:
 					if ($this->Balance >= BILLING_MINIMUM_TOTAL || $this->TotalOwing >= BILLING_MINIMUM_TOTAL)
 					{
@@ -323,15 +324,15 @@ class Invoice extends ORM
 					break;
 			}
 		}
-		
+
 		// Insert the Invoice Data
 		$this->save();
-		
+
 		// Export the Invoice
 		$this->export();
 		//--------------------------------------------------------------------//
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _generateService
 	//------------------------------------------------------------------------//
@@ -341,7 +342,7 @@ class Invoice extends ORM
 	 * Generates a Service on an Invoice for a given Account and InvoiceRun
 	 *
 	 * Generates a Service on an Invoice for a given Account and InvoiceRun
-	 * 
+	 *
 	 * @param	array	$arrService					Details for the Service we're Invoicing
 	 * @param	array	$objAccount					Details for the Account we're Invoicing
 	 * @param	array	$objInvoiceRun				Details for the Invoice Run we're generating
@@ -354,10 +355,10 @@ class Invoice extends ORM
 	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-		
+
 		$arrServiceTotal	= Array();
 		$intServiceId		= $arrServiceDetails['Id'];
-		
+
 		//--------------------------- PLAN CHARGES ---------------------------//
 		// Retrieve Plan Details for the current Service
 		$selPlanDetails	= $this->_preparedStatement('selPlanDetails');
@@ -366,13 +367,13 @@ class Invoice extends ORM
 			throw new Exception("DB ERROR: ".$selPlanDetails->Error());
 		}
 		$arrPlanDetails	= $selPlanDetails->Fetch();
-		
+
 		if (!$arrPlanDetails)
 		{
 			// There is no Plan for this Service, we can't Invoce it
 			return FALSE;
 		}
-		
+
 		// Determine & Add in Plan Charge & Usage Limit Details
 		if ($arrPlanDetails['Shared'])
 		{
@@ -390,7 +391,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
 		}
 		//--------------------------------------------------------------------//
-		
+
 		//--------------------------- SERVICE TOTALS -------------------------//
 		// Mark all CDRs for this Service as TEMPORARY_INVOICE
 		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status = ".CDR_RATED." AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
@@ -399,7 +400,7 @@ class Invoice extends ORM
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Generate ServiceTypeTotals
 		$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, RecordType, Charge, Units, Records, RateGroup, Cost, invoice_run_id)";
 		$strExtensionsQuery .= " SELECT CDR.FNN, CDR.AccountGroup, CDR.Account, {$intServiceId} AS Service,";
@@ -414,7 +415,7 @@ class Invoice extends ORM
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Get CDR Total Details
 		$strSQL			= "	SELECT SUM(CDR.Cost) AS TotalCost, SUM(CDR.Charge) AS TotalCharge, Rate.Uncapped, CDR.Credit, RecordType.global_tax_exempt
 							FROM (CDR JOIN Rate ON CDR.Rate = Rate.Id) JOIN RecordType ON RecordType.Id = CDR.RecordType
@@ -434,26 +435,26 @@ class Invoice extends ORM
 			$arrCDRTotals['Charge']	[$strCapped][$strCredit][$strTax]	= $arrCDRTotal['TotalCharge'];
 			$arrCDRTotals['Cost']	[$strCapped][$strCredit][$strTax]	= $arrCDRTotal['TotalCost'];
 		}
-		
+
 		$fltTaxExemptCappedCharge	= $arrCDRTotals['Charge']['Capped']['Debit']['ExTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['ExTax'];
-		$fltTaxableCappedCharge		= $arrCDRTotals['Charge']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['IncTax']; 
+		$fltTaxableCappedCharge		= $arrCDRTotals['Charge']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['IncTax'];
 		$fltCDRCappedTotal			= $fltTaxableCappedCharge + $fltTaxExemptCappedCharge;
-		
+
 		$fltTaxExemptUncappedCharge	= $arrCDRTotals['Charge']['Uncapped']['Debit']['ExTax'] - $arrCDRTotals['Charge']['Uncapped']['Credit']['ExTax'];
 		$fltTaxableUncappedCharge	= $arrCDRTotals['Charge']['Uncapped']['Debit']['IncTax'] - $arrCDRTotals['Charge']['Uncapped']['Credit']['IncTax'];
 		$fltCDRUncappedTotal		= $fltTaxableUncappedCharge + $fltTaxExemptUncappedCharge;
-		
+
 		$fltTaxExemptCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['ExTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['ExTax'];
-		$fltTaxableCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['IncTax']; 
+		$fltTaxableCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['IncTax'];
 		$fltCDRCappedCost			= $fltTaxableCappedCost + $fltTaxExemptCappedCost;
-		
+
 		$fltTaxExemptUncappedCost	= $arrCDRTotals['Cost']['Uncapped']['Debit']['ExTax'] - $arrCDRTotals['Cost']['Uncapped']['Credit']['ExTax'];
 		$fltTaxableUncappedCost		= $arrCDRTotals['Cost']['Uncapped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Uncapped']['Credit']['IncTax'];
 		$fltCDRUncappedCost			= $fltTaxableUncappedCost + $fltTaxExemptUncappedCost;
-		
+
 		$arrServiceTotal['fltTaxExemptCappedCharge']	= $fltTaxExemptCappedCharge;
 		$arrServiceTotal['fltTaxableCappedCharge']		= $fltTaxableCappedCharge;
-		
+
 		$fltTaxExemptCost	= $fltTaxExemptCappedCost + $fltTaxExemptUncappedCost;
 		$fltTaxExemptCharge	= $fltTaxExemptCappedCharge + $fltTaxExemptUncappedCharge;
 		if ($fltTaxExemptCost || $fltTaxExemptCharge)
@@ -461,7 +462,7 @@ class Invoice extends ORM
 			//Cli_App_Billing::debug("TAX EXEMPT CHARGES!");
 			//Cli_App_Billing::debug($arrCDRTotals);
 		}
-		
+
 		// Calculate Service Plan Usage for non-Shared Services
 		$fltTotalCharge	= 0.0;
 		if (!$arrPlanDetails['Shared'])
@@ -470,41 +471,41 @@ class Invoice extends ORM
 			$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), $fltCDRCappedTotal) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
 			$intPeriodStart			= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd			= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
-			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);			
-			
+			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
+
 			// Determine Usage
 			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
-			
+
 			// Apply the Minimum Monthly
 			$fltTotalCharge			= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltTotalCharge) : $fltTotalCharge;
-			
+
 			// Add in Taxable over-usage
 			$fltTaxableOverusage	= max(0, $fltTaxableCappedCharge - $fltUsageLimit);
 			$fltTotalCharge			+= $fltTaxableOverusage;
-			
+
 			// Add in Tax exempt over-usage
 			$fltTaxExemptOverusage	= max(0, $fltCDRCappedTotal - $fltUsageLimit) - $fltTaxableOverusage;
 			$fltTotalCharge			+= $fltTaxExemptOverusage;
-			
+
 			if ($fltTaxExemptOverusage)
 			{
 				//Cli_App_Billing::debug("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
 			}
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
-			
+
 			$fltTotalCharge	= $fltCDRCappedTotal;
 		}
-		
+
 		// Add in Uncapped Charges & Credits
 		$fltTotalCharge			+= $fltCDRUncappedTotal;
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableUncappedCharge, $this->_objInvoiceRun->intInvoiceDatetime);
-		
+
 		// Mark all Service Charges as TEMPORARY_INVOICE
 		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Add in Service Billing-time Charges
 		$arrModules	= Billing_Charge::getModules();
 		foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Service'] as $chgModule)
@@ -512,7 +513,7 @@ class Invoice extends ORM
 			// Generate charge
 			$mixResult = $chgModule->Generate($this, new Service($arrServiceDetails, TRUE));
 		}
-		
+
 		// Retrieve Charge Totals
 		$resResult	= $qryQuery->Execute(	"SELECT Charge.Nature, Charge.global_tax_exempt, SUM(Charge.Amount) AS Total " .
 											"FROM Charge " .
@@ -526,14 +527,14 @@ class Invoice extends ORM
 		while ($arrChargeTotal = $resResult->fetch_assoc())
 		{
 			$arrChargeTotals[$arrChargeTotal['Nature']][($arrChargeTotal['global_tax_exempt'])	? 'ExTax' : 'IncTax']	= $arrChargeTotal['Total'];
-			
+
 			//$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax'], $this->_objInvoiceRun->intInvoiceDatetime);
 		$arrServiceTotal['Tax']	-= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax'], $this->_objInvoiceRun->intInvoiceDatetime);
 		$fltServiceCredits		= $arrChargeTotals['CR']['IncTax'] + $arrChargeTotals['CR']['ExTax'];
 		$fltServiceDebits		= $arrChargeTotals['DR']['IncTax'] + $arrChargeTotals['DR']['ExTax'];
-		
+
 		// Finalise and Insert Service Total
 		$arrServiceTotal['FNN']					= $arrServiceDetails['FNN'];
 		$arrServiceTotal['AccountGroup']		= $objAccount->AccountGroup;
@@ -555,7 +556,7 @@ class Invoice extends ORM
 		{
 			throw new Exception("DB ERROR: ".$insServiceTotal->Error());
 		}
-		
+
 		// Link each Service to the ServiceTotal
 		$insServiceTotalService	= self::_preparedStatement('insServiceTotalService');
 		foreach ($arrServiceDetails['Ids'] as $intServiceId)
@@ -569,12 +570,12 @@ class Invoice extends ORM
 				throw new Exception("DB ERROR: ".$insServiceTotalService->Error());
 			}
 		}
-		
+
 		// Return the Service Total details
 		return $arrServiceTotal;
 		//--------------------------------------------------------------------//
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// revokeByAccount
 	//------------------------------------------------------------------------//
@@ -582,13 +583,13 @@ class Invoice extends ORM
 	 * revokeByAccount()
 	 *
 	 * Revokes all Temporary Invoices for a given Account
-	 * 
+	 *
 	 * Revokes all Temporary Invoices for a given Account
 	 *
 	 * @param		integer	$intAccount							The Account Id to revoke Invoices for
-	 * 
+	 *
 	 * @return		void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public static function revokeByAccount($objAccount)
@@ -598,14 +599,14 @@ class Invoice extends ORM
 		{
 			throw new Exception("DB ERROR: ".$selTemporaryInvoicesByAccount->Error());
 		}
-		
+
 		while ($arrInvoice = $selTemporaryInvoicesByAccount->Fetch())
 		{
 			$objInvoice = new Invoice($arrInvoice);
 			$objInvoice->revoke();
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// revoke
 	//------------------------------------------------------------------------//
@@ -613,26 +614,26 @@ class Invoice extends ORM
 	 * revoke()
 	 *
 	 * Revokes a Temporary Invoice
-	 * 
+	 *
 	 * Revokes a Temporary Invoice
 	 *
 	 * @param		array	$arrAccount							The Account to generate the Invoice for
 	 * @return		void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function revoke()
 	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-		
+
 		// Change CDR Statuses back to CDR_RATED
 		$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
 		if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), $this->toArray()) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$updCDRRevoke->Error());
 		}
-		
+
 		// Remove Billing-Time Charges
 		$objAccount	= new Account(Array('Id' => $this->Account), TRUE);
 		$arrModules	= Billing_Charge::getModules();
@@ -647,45 +648,45 @@ class Invoice extends ORM
 				}
 			}
 		}
-		
+
 		// Remove Plan Charges
 		if ($qryQuery->Execute("DELETE FROM Charge WHERE ChargeType IN ('PCAD', 'PCAR', 'PCR') AND invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Change Charge Statuses back to CHARGE_APPROVED
 		$updChargeRevoke	= self::_preparedStatement('updChargeRevoke');
 		if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), $this->toArray()) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$updChargeRevoke->Error());
 		}
-		
+
 		// Remove service_total_service Records
 		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Id = service_total_id)") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Remove ServiceTotal Records
 		if ($qryQuery->Execute("DELETE FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Remove ServiceTypeTotal Records
 		if ($qryQuery->Execute("DELETE FROM ServiceTypeTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account}") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-		
+
 		// Remove Invoice Record
 		if ($qryQuery->Execute("DELETE FROM Invoice WHERE Id = {$this->Id}") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// commit
 	//------------------------------------------------------------------------//
@@ -693,11 +694,11 @@ class Invoice extends ORM
 	 * commit()
 	 *
 	 * Commits a Temporary Invoice
-	 * 
+	 *
 	 * Commits a Temporary Invoice
 	 *
 	 * @return		void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function commit()
@@ -707,32 +708,32 @@ class Invoice extends ORM
 		{
 			throw new Exception("Cannot commit Invoice #{$this->Id} because it is not Temporary!");
 		}
-		
+
 		// Commit the CDRs
 		$updCDRsByAccount		= self::_preparedStatement('updCDRsByAccount');
 		if ($updCDRsByAccount->Execute(Array('Status'=>CDR_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
 		{
 			throw new Exception($updCDRsByAccount->Error());
 		}
-		
+
 		// Commit the Charges
 		$updChargesByAccount	= self::_preparedStatement('updChargesByAccount');
 		if ($updChargesByAccount->Execute(Array('Status'=>CHARGE_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
 		{
 			throw new Exception($updChargesByAccount->Error());
 		}
-		
+
 		//------------------------------ ACCOUNT -----------------------------//
 		$objAccount	= new Account(Array('Id'=>$this->Account), FALSE, TRUE);
-		
+
 		// Update Account.LastBilled to InvoiceRun.BillingDate
 		$objAccount->LastBilled	= $this->CreatedOn;
-		
+
 		// Update Account.Sample
 		$objAccount->Sample		= min($objAccount->Sample+1, 0);
 		$objAccount->save();
-		
-		//------------------------------ SERVICE -----------------------------//		
+
+		//------------------------------ SERVICE -----------------------------//
 		// Update Service.discount_start_datetime to NULL
 		$strSQL	= "UPDATE (ServiceTotal JOIN service_total_service ON ServiceTotal.Service = service_total_service.service_total_id) JOIN Service ON Service.Id = service_total_service.service_id " .
 					" SET Service.discount_start_datetime = NULL " .
@@ -741,7 +742,7 @@ class Invoice extends ORM
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		//------------------------------ INVOICE -----------------------------//
 		// Determine Invoice Status
 		$strSQL	= "UPDATE Invoice " .
@@ -751,11 +752,11 @@ class Invoice extends ORM
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		// Save
 		$this->save();
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// export
 	//------------------------------------------------------------------------//
@@ -763,18 +764,18 @@ class Invoice extends ORM
 	 * export()
 	 *
 	 * Exports an Invoice to XML
-	 * 
+	 *
 	 * Exports an Invoice to XML.  The path used is [FILES_BASE_PATH]/invoices/xml/[Invoice_Run.Id]/[Invoice.Id].xml
-	 * 
+	 *
 	 * @return		void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function export()
-	{		
+	{
 		Invoice_Export_XML::export($this->toArray());
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// prorate
 	//------------------------------------------------------------------------//
@@ -784,7 +785,7 @@ class Invoice extends ORM
 	 * Prorates a given Charge for a defined period
 	 *
 	 * Prorates a given Charge for a defined period.
-	 * 
+	 *
 	 * @param	float	$fltAmount								Full value of the Charge
 	 * @param	integer	$intChargeStartDate						The date on which the Charge Period Starts
 	 * @param	integer	$intPeriodStartDate						The date on which the Billing Period Starts
@@ -805,7 +806,7 @@ class Invoice extends ORM
 		$fltProratedAmount			= round($fltProratedAmount, 2);
 		return $fltProratedAmount;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// calculateGlobalTaxComponent
 	//------------------------------------------------------------------------//
@@ -815,7 +816,7 @@ class Invoice extends ORM
 	 * Calculates the Global Tax Component for a given amount, and returns it
 	 *
 	 * Calculates the Global Tax Component for a given amount, and returns it
-	 * 
+	 *
 	 * @param	float	$fltAmount								Amount to be taxed
 	 * @param	string	$strEffectiveDate						The date to apply the tax on
 	 *
@@ -829,7 +830,7 @@ class Invoice extends ORM
 		if (!isset($arrGlobalTax))
 		{
 			$qryQuery	= new Query();
-			$resResult	= $qryQuery->Execute("SELECT * FROM tax_type WHERE global = 1 AND '{$strEffectiveDate}' BETWEEN start_datetime AND end_datetime"); 
+			$resResult	= $qryQuery->Execute("SELECT * FROM tax_type WHERE global = 1 AND '{$strEffectiveDate}' BETWEEN start_datetime AND end_datetime");
 			if ($resResult)
 			{
 				$arrGlobalTax	= $resResult->fetch_assoc();
@@ -843,12 +844,12 @@ class Invoice extends ORM
 				$arrGlobalTax	= Array('rate_percentage' => 0.0);
 			}
 		}
-		
+
 		return $fltAmount * $arrGlobalTax['rate_percentage'];
 	}
-	
-	
-	
+
+
+
 	//------------------------------------------------------------------------//
 	// _addPlanCharges
 	//------------------------------------------------------------------------//
@@ -858,7 +859,7 @@ class Invoice extends ORM
 	 * Adds Plan Charges for a given Service, or group of Shared Services
 	 *
 	 * Adds Plan Charges for a given Service, or group of Shared Services
-	 * 
+	 *
 	 * @param	string	$strChargeType							The ChargeType to Generate
 	 * @param	float	$fltAmount								The value of the Plan Charge
 	 * @param	string	$strPlanName							The Name of the Plan
@@ -867,7 +868,7 @@ class Invoice extends ORM
 	 * @param	integer	$intAccountGroup						Account Group Id
 	 * @param	integer	$intAccount								Account Id
 	 * @param	integer	$intService					[optional]	Service Id or NULL for Account Charge
-	 * 
+	 *
 	 * @return	boolean
 	 *
 	 * @method
@@ -877,25 +878,25 @@ class Invoice extends ORM
 		static	$qryQuery;
 		$qryQuery		= (isset($qryQuery)) ? $qryQuery : new Query();
 		$strServiceIds	= implode(', ', $arrServiceIds);
-		
+
 		// Get Earliest CDR Details
-		$resResult	= $qryQuery->Execute("SELECT MIN(EarliestCDR) AS EarliestCDR FROM Service WHERE Id IN ({$strServiceIds})"); 
+		$resResult	= $qryQuery->Execute("SELECT MIN(EarliestCDR) AS EarliestCDR FROM Service WHERE Id IN ({$strServiceIds})");
 		if ($resResult === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
 		$arrMinEarliestCDR	= $resResult->fetch_assoc();
 		$strEarliestCDR		= $arrMinEarliestCDR['EarliestCDR'];
-		
+
 		// Is the Service tolling?
 		if ($strEarliestCDR)
 		{
 			$fltMinimumCharge	= (float)$arrPlanDetails['MinMonthly'];
 			$fltUsageStart		= (float)$arrPlanDetails['ChargeCap'];
 			$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
-			
+
 			// Yes -- Does this Service have any Invoiced CDRs?
-			$resResult	= $qryQuery->Execute("SELECT Id FROM ServiceTypeTotal WHERE Service IN ({$strServiceIds}) AND Records > 0"); 
+			$resResult	= $qryQuery->Execute("SELECT Id FROM ServiceTypeTotal WHERE Service IN ({$strServiceIds}) AND Records > 0");
 			if ($resResult === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
@@ -905,7 +906,7 @@ class Invoice extends ORM
 				// No -- Is this on a Charge-in-Advance Plan?
 				if ($arrPlanDetails['InAdvance'])
 				{
-					$resResult	= $qryQuery->Execute("SELECT COUNT(CASE WHEN RatePlan = {$arrPlanDetails['Id']} THEN Id ELSE NULL END) AS SamePlan FROM ServiceTotal WHERE Service IN ({$strServiceIds}) GROUP BY invoice_run_id ORDER BY invoice_run_id DESC LIMIT 1"); 
+					$resResult	= $qryQuery->Execute("SELECT COUNT(CASE WHEN RatePlan = {$arrPlanDetails['Id']} THEN Id ELSE NULL END) AS SamePlan FROM ServiceTotal WHERE Service IN ({$strServiceIds}) GROUP BY invoice_run_id ORDER BY invoice_run_id DESC LIMIT 1");
 					if ($resResult !== FALSE)
 					{
 						$arrPlanInvoicedBefore	= $resResult->fetch_assoc();
@@ -922,12 +923,12 @@ class Invoice extends ORM
 						throw new Exception("DB ERROR: ".$selLastPlanInvoiced->Error());
 					}
 				}
-				
+
 				// Prorate the Charges and Usage details in Arrears
 				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, strtotime($strEarliestCDR), $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime);
 				$fltUsageStart		= Invoice::prorate($fltUsageStart		, strtotime($strEarliestCDR), $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime);
 				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, strtotime($strEarliestCDR), $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime);
-				
+
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= strtotime($strEarliestCDR);
 				$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
@@ -958,7 +959,7 @@ class Invoice extends ORM
 			$fltUsageStart		= 0.0;
 			$fltUsageLimit		= 0.0;
 		}
-		
+
 		// Return usage data
 		return Array(
 						'MinMonthly'			=> $fltMinimumCharge,
@@ -966,9 +967,9 @@ class Invoice extends ORM
 						'UsageCap'				=> $fltUsageLimit,
 					);
 	}
-	
-	
-	
+
+
+
 	//------------------------------------------------------------------------//
 	// _addPlanCharge
 	//------------------------------------------------------------------------//
@@ -978,7 +979,7 @@ class Invoice extends ORM
 	 * Adds a Plan Charge to a given Account or Service
 	 *
 	 * Adds a Plan Charge to a given Account or Service
-	 * 
+	 *
 	 * @param	string	$strChargeType							The ChargeType to Generate
 	 * @param	float	$fltAmount								The value of the Plan Charge
 	 * @param	string	$strPlanName							The Name of the Plan
@@ -987,7 +988,7 @@ class Invoice extends ORM
 	 * @param	integer	$intAccountGroup						Account Group Id
 	 * @param	integer	$intAccount								Account Id
 	 * @param	integer	$intService					[optional]	Service Id or NULL for Account Charge
-	 * 
+	 *
 	 * @return	boolean
 	 *
 	 * @method
@@ -996,7 +997,7 @@ class Invoice extends ORM
 	{
 		static	$selChargeType;
 		static	$arrChargeTypes;
-		
+
 		// If the Plan Charge is $0, then don't insert it
 		if (round($fltAmount, 2) === 0.0)
 		{
@@ -1004,7 +1005,7 @@ class Invoice extends ORM
 			return TRUE;
 		}
 		//CliEcho("Adding {$strPlanName} {$strChargeType} worth \${$fltAmount}");
-		
+
 		// Cache ChargeType details
 		if (!isset($arrChargeTypes[$strChargeType]))
 		{
@@ -1022,7 +1023,7 @@ class Invoice extends ORM
 				throw new Exception("Unable to retrieve details for ChargeType '{$strChargeType}'!");
 			}
 		}
-		
+
 		// Generate Charge
 		$arrPlanCharge						= Array();
 		$arrPlanCharge['AccountGroup']		= $intAccountGroup;
@@ -1041,13 +1042,13 @@ class Invoice extends ORM
 		}
 		return TRUE;
 	}
-	
+
 	protected function __set($strName, $mxdValue)
 	{
 		parent::__set($strName, $mxdValue);
-		
+
 		if (array_key_exists($strName, $this->_arrProperties))
-		{	
+		{
 			// DEBUG
 			switch ($strName)
 			{
@@ -1066,7 +1067,7 @@ class Invoice extends ORM
 			$this->{$strName} = $mxdValue;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -1076,9 +1077,9 @@ class Invoice extends ORM
 	 * Access a Static Cache of Prepared Statements used by Invoice
 	 *
 	 * Access a Static Cache of Prepared Statements used by Invoice
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -1104,21 +1105,21 @@ class Invoice extends ORM
 																					"Account = <Account> AND CreatedOn < <InvoiceDatetime> AND service_status.can_invoice = 1 AND (ClosedOn > <InvoiceDatetime> OR ClosedOn IS NULL)");
 					break;
 				case 'selPlanDetails':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan", 
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan",
 																					"RatePlan.*, ServiceRatePlan.Id AS ServiceRatePlan",
 																					"ServiceRatePlan.Service = <Service> AND <EffectiveDate> >= StartDatetime AND <EffectiveDate> < EndDatetime",
 																					"CreatedOn DESC",
 																					"1");
 					break;
 				case 'selPlanDetailsById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"RatePlan", 
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"RatePlan",
 																					"*",
 																					"Id = <RatePlan>");
 					break;
 				case 'selCurrentService':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service",
 																					"*",
-																					"(FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (<DateTime> BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= <DateTime>)) AND Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.")",
+																					"Account = <Account> AND (FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (<DateTime> BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= <DateTime>)) AND Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.")",
 																					"Id DESC",
 																					"1");
 					break;
@@ -1145,23 +1146,23 @@ class Invoice extends ORM
 				case 'selAccountChargeTotals':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Charge", "Nature, global_tax_exempt, SUM(Amount) AS Total", "Service IS NULL AND Account = <Account> AND Status = ".CHARGE_TEMP_INVOICE, NULL, NULL, "Nature, global_tax_exempt");
 					break;
-				
+
 				// INSERTS
 				case 'insServiceTotal':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("ServiceTotal");
 					break;
 				case 'insServiceTotalService':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("service_total_service");
-					break;					
+					break;
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("Invoice");
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Invoice");
 					break;
-				
+
 				// UPDATES
 				case 'updMarkAccountCharges':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status = ".CHARGE_APPROVED, Array('Status'=>NULL, 'invoice_run_id'=>NULL));
@@ -1175,7 +1176,7 @@ class Invoice extends ORM
 				case 'updInvoiceStatus':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Invoice", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('Status'=>NULL, 'SettledOn'=>NULL));
 					break;
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
