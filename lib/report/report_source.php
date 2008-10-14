@@ -25,13 +25,13 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
- 
- 
+
+
+
 //----------------------------------------------------------------------------//
 // PROFIT REPORT
 //----------------------------------------------------------------------------//
- 
+
 $arrDataReport	= Array();
 $arrDocReqs		= Array();
 $arrSQLSelect	= Array();
@@ -119,7 +119,7 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
  //---------------------------------------------------------------------------//
  // CURRENTLY BARRED SERVICES
  //---------------------------------------------------------------------------//
- 
+
  $arrDataReport['Name']			= "Currently Barred Services";
 $arrDataReport['Summary']		= "Lists all of the services which are currently barred";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
@@ -159,12 +159,12 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 // SQL Fields
 $arrColumns = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
- 
- 
+
+
  //---------------------------------------------------------------------------//
  // LOST SERVICES
  //---------------------------------------------------------------------------//
- 
+
 $arrDataReport['Name']			= "Lost Services in a Date Period";
 $arrDataReport['Summary']		= "Lists all of the services which were lost in the specified period";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
@@ -188,7 +188,7 @@ $arrDataReport['SQLTable']		= 	"(" .
 $arrDataReport['SQLWhere']		= "PR.ImportedOn BETWEEN <StartDate> AND ADDDATE(<EndDate>, INTERVAL 1 DAY) \n" .
 								"AND PR.Status = ".RESPONSE_STATUS_IMPORTED." AND PR.Request IS NULL \n" .
 								"AND PR.Type IN (".REQUEST_LOSS_PRESELECT.", ".REQUEST_LOSS_FULL.") \n" .
-								"AND SRP.Id = (SELECT ServiceRatePlan.Id FROM ServiceRatePlan WHERE ServiceRatePlan.Service = PR.Service AND PR.ImportedOn BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime ORDER BY ServiceRatePlan.CreatedOn DESC LIMIT 1) \n" . 
+								"AND SRP.Id = (SELECT ServiceRatePlan.Id FROM ServiceRatePlan WHERE ServiceRatePlan.Service = PR.Service AND PR.ImportedOn BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime ORDER BY ServiceRatePlan.CreatedOn DESC LIMIT 1) \n" .
 								"AND ((PR.Type = ".REQUEST_LOSS_PRESELECT." AND PR.Id = (SELECT Id FROM ProvisioningResponse PR2 WHERE PR2.Service = PR.Service AND PR2.Type IN (".REQUEST_LOSS_PRESELECT.", ".REQUEST_PRESELECTION.") ORDER BY EffectiveDate DESC LIMIT 1)) " .
 								"OR (PR.Type = ".REQUEST_LOSS_FULL." AND PR.Id = (SELECT Id FROM ProvisioningResponse PR2 WHERE PR2.Service = PR.Service AND PR2.Type IN (".REQUEST_LOSS_FULL.", ".REQUEST_FULL_SERVICE.") ORDER BY EffectiveDate DESC LIMIT 1)))";
 $arrDataReport['SQLGroupBy']	= "PR.Service ORDER BY Account.Id";
@@ -241,7 +241,7 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
  //---------------------------------------------------------------------------//
  // CDRS APPLIED TO ARCHIVED ACCOUNTS
  //---------------------------------------------------------------------------//
- 
+
 $arrDataReport['Name']			= "CDR Totals Applied to Archived Accounts";
 $arrDataReport['Summary']		= "Lists all Accounts which have CDRs debited against them, despite being Archived, for a specified period";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
@@ -298,7 +298,7 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
  //---------------------------------------------------------------------------//
  //  LOST SERVICES BY ACCOUNT
  //---------------------------------------------------------------------------//
- 
+
 $arrDataReport['Name']			= "Lost Services (By Account) in a Date Period";
 $arrDataReport['Summary']		= "Lists all of the Services which were lost in the specified period";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
@@ -383,7 +383,7 @@ $arrDataReport['SQLTable']		= 	"(" .
 $arrDataReport['SQLWhere']		= "PR.ImportedOn BETWEEN <StartDate> AND ADDDATE(<EndDate>, INTERVAL 1 DAY) \n" .
 								"AND PR.Status = ".RESPONSE_STATUS_IMPORTED." AND PR.Request IS NULL \n" .
 								"AND PR.Type IN (".REQUEST_LOSS_PRESELECT.", ".REQUEST_LOSS_FULL.") \n" .
-								"AND SRP.Id = (SELECT ServiceRatePlan.Id FROM ServiceRatePlan WHERE ServiceRatePlan.Service = PR.Service AND PR.ImportedOn BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime ORDER BY ServiceRatePlan.CreatedOn DESC LIMIT 1) \n" . 
+								"AND SRP.Id = (SELECT ServiceRatePlan.Id FROM ServiceRatePlan WHERE ServiceRatePlan.Service = PR.Service AND PR.ImportedOn BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime ORDER BY ServiceRatePlan.CreatedOn DESC LIMIT 1) \n" .
 								"AND ((PR.Type = ".REQUEST_LOSS_PRESELECT." AND PR.Id = (SELECT Id FROM ProvisioningResponse PR2 WHERE PR2.Service = PR.Service AND PR2.Type IN (".REQUEST_LOSS_PRESELECT.", ".REQUEST_PRESELECTION.") ORDER BY EffectiveDate DESC LIMIT 1)) " .
 								"OR (PR.Type = ".REQUEST_LOSS_FULL." AND PR.Id = (SELECT Id FROM ProvisioningResponse PR2 WHERE PR2.Service = PR.Service AND PR2.Type IN (".REQUEST_LOSS_FULL.", ".REQUEST_FULL_SERVICE.") ORDER BY EffectiveDate DESC LIMIT 1)))";
 $arrDataReport['SQLGroupBy']	= "PR.Service ORDER BY Account.Id";
@@ -485,7 +485,7 @@ $arrSQLFields['EndDate']	= Array(
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 //----------------------------------------------------------------------------//
-// Credit Card Report 
+// Credit Card Report
 //----------------------------------------------------------------------------//
 
 $strStartDate	= date("Y-m-01", time());
@@ -1412,7 +1412,7 @@ $arrSelect['Limit']			= NULL;
 $arrSelect['GroupBy']		= NULL;
 $arrSelect['ValueType']		= "dataInteger";
 
-$arrSelect['IgnoreField']	= Array('Label' => "* Show All *", 'Value' => NULL);			
+$arrSelect['IgnoreField']	= Array('Label' => "* Show All *", 'Value' => NULL);
 $arrSQLFields['ServiceStatus']		= Array(
 												'Type'					=> "StatementSelect",
 												'DBSelect'				=> $arrSelect,
@@ -1432,18 +1432,18 @@ $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "(Account JOIN CreditCard DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id";
-$arrDataReport['SQLWhere']		= "Account.Archived != 1 AND DD.Archived = 0 
+$arrDataReport['SQLWhere']		= "Account.Archived != 1 AND DD.Archived = 0
 									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
 									GROUP BY DD.employee_id, Account.AccountGroup
-									
+
 									UNION
-									
+
 									SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, Account.Id AS `Account #`, Account.BusinessName AS `Business Name`, DATE_FORMAT(DD.created_on, '%Y-%m-%d') AS `Created On`
 									FROM (Account JOIN DirectDebit DD USING (AccountGroup)) LEFT JOIN Employee ON Employee.Id = DD.employee_id
-									WHERE Account.Archived != 1 AND DD.Archived = 0 
+									WHERE Account.Archived != 1 AND DD.Archived = 0
 									AND CAST(DD.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
 									GROUP BY DD.employee_id, Account.AccountGroup
-									
+
 									ORDER BY ISNULL(Employee) ASC, Employee ASC, `Created On` ASC";
 $arrDataReport['SQLGroupBy']	= "";
 
@@ -1492,9 +1492,9 @@ $arrDataReport['SQLTable']		= "	(
 										SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, CreditCard.Id AS CreditCard, NULL AS BankTransfer
 										FROM Employee JOIN CreditCard ON (Employee.Id = CreditCard.employee_id AND CreditCard.Archived = 0)";
 $arrDataReport['SQLWhere']		= "		CAST(DirectDebit.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
-										
+
 										UNION
-										
+
 										SELECT CONCAT(Employee.LastName, ', ', Employee.FirstName) AS Employee, NULL AS CreditCard, DirectDebit.Id AS BankTransfer
 										FROM Employee JOIN DirectDebit ON (Employee.Id = DirectDebit.employee_id AND DirectDebit.Archived = 0)
 										WHERE CAST(DirectDebit.created_on AS DATE) BETWEEN <StartDate> AND <EndDate>
@@ -1535,7 +1535,7 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
  //---------------------------------------------------------------------------//
  // NON-TOLLING SERVICES
  //---------------------------------------------------------------------------//
- 
+
 $arrDataReport['Name']			= "Non-Tolling Services in a Date Period for a Service Type";
 $arrDataReport['Summary']		= "Lists all of the Services which have not tolled since the specified Last Tolling Date for the specified Service Type";
 $arrDataReport['FileName']		= "<ServiceType::Label> Services that have not tolled since <LatestCDR>";
@@ -1543,7 +1543,7 @@ $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= 	"(" . 
+$arrDataReport['SQLTable']		= 	"(" .
 										"(" .
 											"(" .
 												"Service LEFT JOIN Account ON Account.Id = Service.Account" .
@@ -1601,7 +1601,7 @@ $arrSQLFields['ServiceType']	= Array(
 										'Documentation-Entity'	=> "Service",
 										'Documentation-Field'	=> "ServiceType",
 									);
-									
+
 $arrSQLFields['LatestCDR']	= Array(
 										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "Service",
@@ -1697,5 +1697,53 @@ $arrSQLFields['EndDate']	= Array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
+
+
+
+//---------------------------------------------------------------------------//
+// CREDIT CARD PAYMENT DETAILS
+//---------------------------------------------------------------------------//
+
+$arrDataReport['Name']			= "Credit Card Payment Details";
+$arrDataReport['Summary']		= "Show a list of Credit Card Payments made through Flex for a given date period";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;									// Debug
+//$arrDataReport['Priviledges']	= 1;											// Live
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "(credit_card_payment_history JOIN Employee ON Employee.Id = credit_card_payment_history.employee_id) JOIN Account ON Account.Id = credit_card_payment_history.account_id";
+$arrDataReport['SQLWhere']		= "CAST(payment_datetime AS DATE) BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Employee']			['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
+
+$arrSQLSelect['Account #']			['Value']	= "Account.Id";
+$arrSQLSelect['Account #']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Account Name']		['Value']	= "Account.BusinessName";
+
+$arrSQLSelect['Payment Date']		['Value']	= "DATE_FORMAT(payment_datetime, '%d/%m/%Y %H:%i:%s')";
+
+$arrSQLSelect['Amount']				['Value']	= "credit_card_payment_history.amount";
+$arrSQLSelect['Amount']				['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 ?>

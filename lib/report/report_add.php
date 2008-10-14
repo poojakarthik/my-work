@@ -23,17 +23,17 @@ $arrSQLFields	= Array();
 
 
 //---------------------------------------------------------------------------//
-// CREDIT CARD PAYMENT DETAILS
+// ACCOUNTS CREATED IN A DATE PERIOD
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Credit Card Payment Details";
-$arrDataReport['Summary']		= "Show a list of Credit Card Payments made through Flex for a given date period";
+$arrDataReport['Name']			= "Accounts Created in a Date Period";
+$arrDataReport['Summary']		= "Show a list of Accounts which were created in the specified Date Period";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "(credit_card_payment_history JOIN Employee ON Employee.Id = credit_card_payment_history.employee_id) JOIN Account ON Account.Id = credit_card_payment_history.account_id";
-$arrDataReport['SQLWhere']		= "CAST(payment_datetime AS DATE) BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLTable']		= "Account JOIN Contact ON Account.Id = Contact.Account";
+$arrDataReport['SQLWhere']		= "Account.CreatedOn BETWEEN <StartDate> AND <EndDate> AND Account.Archived = 0";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
@@ -41,17 +41,15 @@ $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Employee']			['Value']	= "CONCAT(Employee.LastName, ', ', Employee.FirstName)";
-
 $arrSQLSelect['Account #']			['Value']	= "Account.Id";
 $arrSQLSelect['Account #']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Account Name']		['Value']	= "Account.BusinessName";
 
-$arrSQLSelect['Payment Date']		['Value']	= "DATE_FORMAT(payment_datetime, '%d/%m/%Y %H:%i:%s')";
+$arrSQLSelect['Contact']			['Value']	= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
 
-$arrSQLSelect['Amount']				['Value']	= "credit_card_payment_history.amount";
-$arrSQLSelect['Amount']				['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Contact Phone']		['Value']	= "CASE WHEN Contact.Phone != '' THEN Contact.Phone ELSE Contact.Mobile END";
+$arrSQLSelect['Contact Phone']		['Type']	= EXCEL_TYPE_FNN;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
