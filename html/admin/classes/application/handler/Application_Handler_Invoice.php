@@ -16,10 +16,11 @@ class Application_Handler_Invoice extends Application_Handler
 			$db = Data_Source::get();
 			
 			$sqlServiceTotal = "
-				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal
-				  FROM Invoice i, ServiceTotal t, Service s, Account a 
+				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal, CASE WHEN r.invoice_run_type_id = " . INVOICE_RUN_TYPE_LIVE . " THEN \"" . FLEX_DATABASE_CONNECTION_CDR . "\" ELSE \"" . FLEX_DATABASE_CONNECTION_DEFAULT . "\" END as DataSource
+				  FROM Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r 
 				 WHERE t.Id = $intServiceTotal 
 				   AND i.invoice_run_id = t.invoice_run_id 
+				   AND i.invoice_run_id = r.Id 
 				   AND i.Account = t.Account 
 				   AND s.Id = t.Service 
 				   AND a.Id = t.Account 
@@ -45,7 +46,8 @@ class Application_Handler_Invoice extends Application_Handler
 			$intServiceId = $serviceDetails['ServiceId'];
 			$intServiceType = $serviceDetails['ServiceType'];
 			$fnn = $serviceDetails['FNN'];
-	
+			$dataSource = $serviceDetails['DataSource'];
+
 			BreadCrumb()->EmployeeConsole();
 			BreadCrumb()->AccountOverview($intAccountId, true);
 			BreadCrumb()->InvoicesAndPayments($intAccountId);
@@ -97,7 +99,7 @@ class Application_Handler_Invoice extends Application_Handler
 
 			// Need to load up the CDRs from the cdr_invoiced table for the current range of CDRs & record type
 			
-			$cdrDb = Data_Source::get(FLEX_DATABASE_CONNECTION_CDR);
+			$cdrDb = Data_Source::get($dataSource);
 
 			$offset = 0;
 			$limit = 30;
@@ -111,24 +113,48 @@ class Application_Handler_Invoice extends Application_Handler
 
 			$alises = array('ChargeId', 'ChargeType', 'Description', 'FNN', 'Date', 'Amount', 'Nature');
 
-			$sqlCdrs = "
-				SELECT c.id as \"Id\", t.id as \"RecordTypeId\", t.name as \"RecordType\", c.description as \"Description\", t.description as \"DisplayType\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time - c.start_date_time as \"Duration\", c.start_date_time as \"StartDatetime\", c.units as \"Currency\", c.charge as \"Charge\"
-				  FROM cdr_invoiced c, record_type t
-				 WHERE invoice_run_id = $intInvoiceRunId
-				   AND account = $intAccountId
-				   AND c.record_type = t.id
-			       AND c.Service = $intServiceId
-			";
-
-			$sqlCountCdrs = "SELECT COUNT(*) FROM cdr_invoiced c WHERE invoice_run_id = $intInvoiceRunId AND account = $intAccountId AND c.Service = $intServiceId";
-
-			if ($arrDetailsToRender['filter']['recordType'])
+			if ($dataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
 			{
-				$sqlCdrs .= " AND c.record_type = " . $arrDetailsToRender['filter']['recordType'] . " ";
-				$sqlCountCdrs .= " AND c.record_type = " . $arrDetailsToRender['filter']['recordType'] . " ";
+				$sqlCdrs = "
+					SELECT c.Id as \"Id\", t.Id as \"RecordTypeId\", t.Name as \"RecordType\", c.Description as \"Description\", t.Description as \"DisplayType\", c.Source as \"Source\", c.Destination as \"Destination\", c.EndDatetime - c.StartDatetime as \"Duration\", c.StartDatetime as \"StartDatetime\", c.Units as \"Currency\", c.Charge as \"Charge\"
+					  FROM CDR c, RecordType t
+					 WHERE invoice_run_id = $intInvoiceRunId
+					   AND Account = $intAccountId
+					   AND c.RecordType = t.Id
+				       AND c.Service = $intServiceId
+				";
+	
+				$sqlCountCdrs = "SELECT COUNT(*) FROM CDR c WHERE invoice_run_id = $intInvoiceRunId AND Account = $intAccountId AND c.Service = $intServiceId";
+	
+				if ($arrDetailsToRender['filter']['recordType'])
+				{
+					$sqlCdrs .= " AND c.RecordType = " . $arrDetailsToRender['filter']['recordType'] . " ";
+					$sqlCountCdrs .= " AND c.RecordType = " . $arrDetailsToRender['filter']['recordType'] . " ";
+				}
+	
+				$sqlCdrs .= " ORDER BY c.Id LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
 			}
-
-			$sqlCdrs .= " ORDER BY c.id LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
+			else
+			{
+				$sqlCdrs = "
+					SELECT c.id as \"Id\", t.id as \"RecordTypeId\", t.name as \"RecordType\", c.description as \"Description\", t.description as \"DisplayType\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time - c.start_date_time as \"Duration\", c.start_date_time as \"StartDatetime\", c.units as \"Currency\", c.charge as \"Charge\"
+					  FROM cdr_invoiced c, record_type t
+					 WHERE invoice_run_id = $intInvoiceRunId
+					   AND account = $intAccountId
+					   AND c.record_type = t.id
+				       AND c.service = $intServiceId
+				";
+	
+				$sqlCountCdrs = "SELECT COUNT(*) FROM cdr_invoiced c WHERE invoice_run_id = $intInvoiceRunId AND account = $intAccountId AND c.Service = $intServiceId";
+	
+				if ($arrDetailsToRender['filter']['recordType'])
+				{
+					$sqlCdrs .= " AND c.record_type = " . $arrDetailsToRender['filter']['recordType'] . " ";
+					$sqlCountCdrs .= " AND c.record_type = " . $arrDetailsToRender['filter']['recordType'] . " ";
+				}
+	
+				$sqlCdrs .= " ORDER BY c.id LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
+			}
 
 			$res = $cdrDb->query($sqlCountCdrs);
 			if (PEAR::isError($res))
@@ -166,17 +192,17 @@ class Application_Handler_Invoice extends Application_Handler
 			}
 
 			$db = Data_Source::get();
-			$cdrDb = Data_Source::get(FLEX_DATABASE_CONNECTION_CDR);
 			
 			$intServiceTotal = intval($subPath[0]);
 			$intInvoiceRunId = intval($subPath[1]);
 			$intCdrId = intval($subPath[2]);
 			
 			$sqlServiceTotal = "
-				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal
-				  FROM Invoice i, ServiceTotal t, Service s, Account a 
+				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal, CASE WHEN r.invoice_run_type_id = " . INVOICE_RUN_TYPE_LIVE . " THEN \"" . FLEX_DATABASE_CONNECTION_CDR . "\" ELSE \"" . FLEX_DATABASE_CONNECTION_DEFAULT . "\" END as DataSource
+				  FROM Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r
 				 WHERE t.Id = $intServiceTotal 
 				   AND i.invoice_run_id = t.invoice_run_id 
+				   AND i.invoice_run_id = r.Id 
 				   AND i.Account = t.Account 
 				   AND s.Id = t.Service 
 				   AND a.Id = t.Account 
@@ -202,6 +228,9 @@ class Application_Handler_Invoice extends Application_Handler
 			$intServiceId = $serviceDetails['ServiceId'];
 			$intServiceType = $serviceDetails['ServiceType'];
 			$fnn = $serviceDetails['FNN'];
+			$dataSource = $serviceDetails['DataSource'];
+
+			$cdrDb = Data_Source::get($dataSource);
 
 			BreadCrumb()->EmployeeConsole();
 			BreadCrumb()->AccountOverview($intAccountId, true);
@@ -210,15 +239,30 @@ class Application_Handler_Invoice extends Application_Handler
 			BreadCrumb()->ViewInvoiceService($intServiceTotal, $fnn);
 			BreadCrumb()->SetCurrentPage("Record Id: " . $intCdrId);
 
-			$sqlCdr = "
-				SELECT t.name as \"RecordType\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time as \"EndDatetime\", c.start_date_time as \"StartDatetime\", c.units as \"Currency\", c.charge as \"Charge\",
-					   c.file as \"FileId\", c.carrier as \"CarrierId\", c.carrier_ref as \"CarrierRef\", c.cost as \"Cost\", c.status as \"Status\", c.destination_code as \"DestinationCode\", c.rate as \"RateId\", c.normalised_on as \"NormalisedOn\", c.rated_on as \"RatedOn\", c.sequence_no as \"SequenceNo\", c.credit as \"Credit\"
-				  FROM cdr_invoiced c, record_type t
-				 WHERE invoice_run_id = $intInvoiceRunId
-				   AND account = $intAccountId
-				   AND c.record_type = t.id
-			       AND c.Service = $intServiceId
-			";
+			if ($dataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
+			{
+				$sqlCdr = "
+					SELECT t.Name as \"RecordType\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.EndDatetime as \"EndDatetime\", c.StartDatetime as \"StartDatetime\", c.Units as \"Currency\", c.Charge as \"Charge\",
+						   c.File as \"FileId\", c.Carrier as \"CarrierId\", c.CarrierRef as \"CarrierRef\", c.Cost as \"Cost\", c.Status as \"Status\", c.DestinationCode as \"DestinationCode\", c.Rate as \"RateId\", c.NormalisedOn as \"NormalisedOn\", c.RatedOn as \"RatedOn\", c.SequenceNo as \"SequenceNo\", c.Credit as \"Credit\", 
+					  FROM CDR c, RecordType t
+					 WHERE invoice_run_id = $intInvoiceRunId
+					   AND Account = $intAccountId
+					   AND c.RecordType = t.Id
+				       AND c.Service = $intServiceId
+				";
+			}
+			else
+			{
+				$sqlCdr = "
+					SELECT t.name as \"RecordType\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time as \"EndDatetime\", c.start_date_time as \"StartDatetime\", c.units as \"Currency\", c.charge as \"Charge\",
+						   c.file as \"FileId\", c.carrier as \"CarrierId\", c.carrier_ref as \"CarrierRef\", c.cost as \"Cost\", c.status as \"Status\", c.destination_code as \"DestinationCode\", c.rate as \"RateId\", c.normalised_on as \"NormalisedOn\", c.rated_on as \"RatedOn\", c.sequence_no as \"SequenceNo\", c.credit as \"Credit\", 
+					  FROM cdr_invoiced c, record_type t
+					 WHERE invoice_run_id = $intInvoiceRunId
+					   AND account = $intAccountId
+					   AND c.record_type = t.id
+				       AND c.Service = $intServiceId
+				";
+			}
 
 			$res = $cdrDb->query($sqlCdr);
 			

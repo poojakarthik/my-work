@@ -364,9 +364,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
-		DBL()->Invoice->Account = DBO()->Account->Id->Value;
-		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
-		DBL()->Invoice->Load();
+		$this->loadInvoices();
 		
 		// Retrieve the Payments
 		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId> AND Account IS NULL)) AND (Status conditions)"
@@ -515,11 +513,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
 
-		// The DBList storing the invoices should be ordered so that the most recent is first
-		DBL()->Invoice->Account = DBO()->Account->Id->Value;
-		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
-		DBL()->Invoice->SetLimit(3);
-		DBL()->Invoice->Load();
+		$this->loadInvoices(3);
 
 		// Calculate the Account Balance
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance($intAccountId);
@@ -579,6 +573,85 @@ class AppTemplateAccount extends ApplicationTemplate
 		$this->LoadPage('account_overview');
 
 		return TRUE;
+	}
+	
+	function loadInvoices($limit=FALSE)
+	{
+		$intAccountId = DBO()->Account->Id->Value;
+
+		// The DBList storing the invoices should be ordered so that the most recent is first
+		$arrInvoiceColumns = array(	"Id"				=> "I.Id",
+									"AccountGroup"		=> "I.AccountGroup",
+									"Account"			=> "I.Account",
+									"CreatedOn"			=> "I.CreatedOn",
+									"DueOn"				=> "I.DueOn",
+									"SettledOn"			=> "I.SettledOn",
+									"Credits"			=> "I.Credits",
+									"Debits"			=> "I.Debits",
+									"Total"				=> "I.Total",
+									"Tax"				=> "I.Tax",
+									"TotalOwing"		=> "I.TotalOwing",
+									"Balance"			=> "I.Balance",
+									"Disputed"			=> "I.Disputed",
+									"AccountBalance"	=> "I.AccountBalance",
+									"DeliveryMethod"	=> "I.DeliveryMethod",
+									"Status"			=> "I.Status",
+									"invoice_run_id"	=> "I.invoice_run_id"
+									);
+		
+		
+		$arrPermittedTypes = array(INVOICE_RUN_TYPE_SAMPLES);
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+		{
+			$arrPermittedTypes[] = INVOICE_RUN_TYPE_INTERNAL_SAMPLES;
+		}
+		$strInvoiceTables = "Invoice AS I INNER JOIN InvoiceRun AS ir ON I.invoice_run_id = ir.Id";
+		
+		$strInvoiceWhere = "I.Account = $intAccountId AND I.Status != ". INVOICE_TEMP ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." AND ir.invoice_run_type_id = ". INVOICE_RUN_TYPE_LIVE;
+
+		DBL()->InvoicedInvoice->SetTable($strInvoiceTables);
+		DBL()->InvoicedInvoice->SetColumns($arrInvoiceColumns);
+		DBL()->InvoicedInvoice->Where->SetString($strInvoiceWhere);
+		DBL()->InvoicedInvoice->OrderBy("I.CreatedOn DESC, I.Id DESC");
+		if ($limit !== FALSE)
+		{
+			DBL()->InvoicedInvoice->SetLimit(intval($limit));
+		}
+		DBL()->InvoicedInvoice->Load();
+
+
+		$arrInvoiceColumns['Status'] = '"SAMPLE"';
+
+		$strInvoiceWhere = "" .
+			"       I.Account = $intAccountId " .
+			"   AND I.Status != ". INVOICE_TEMP .
+            "   AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED .
+            "   AND ir.invoice_run_type_id IN (". implode(",", $arrPermittedTypes) . ") " . 
+			"   AND ir.Id > (" .
+			"     SELECT MAX(Id) " .
+			"       FROM (" .
+			"          SELECT Irx.Id AS Id " .
+			"            FROM Invoice AS Inv " .
+			"                 INNER JOIN InvoiceRun AS Irx ON Inv.invoice_run_id = Irx.Id " .
+			"           WHERE Inv.Account = $intAccountId " .
+			"             AND Irx.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED .
+			"             AND Irx.invoice_run_type_id = " . INVOICE_RUN_TYPE_LIVE . 
+            "          UNION " .
+            "          SELECT 0 " .
+            "            FROM database_version " .
+            "           LIMIT 0, 1" .
+			"       ) invoice_run_ids" .
+			")";
+		DBL()->Invoice->SetTable($strInvoiceTables);
+		DBL()->Invoice->SetColumns($arrInvoiceColumns);
+		DBL()->Invoice->Where->SetString($strInvoiceWhere);
+		DBL()->Invoice->OrderBy("I.CreatedOn DESC, I.Id DESC");
+		DBL()->Invoice->Load();
+		
+		foreach (DBL()->InvoicedInvoice as $dboInvoicedInvoice)
+		{
+			DBL()->Invoice->AddRecord($dboInvoicedInvoice->AsArray());
+		}
 	}
 	
 	//------------------------------------------------------------------------//

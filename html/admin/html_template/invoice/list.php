@@ -122,6 +122,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 */
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
+			$bolIsSample = $dboInvoice->Status->Value == "SAMPLE";
+			
 			// Build the links 
 			$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
 			$intYear = (int)date("Y", $intDate);
@@ -139,7 +141,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a>";
 				
 				// Build "Email invoice pdf" link, if the user has OPERATOR privileges
-				if ($bolUserHasOperatorPerm)
+				if (!$bolIsSample && $bolUserHasOperatorPerm)
 				{
 					$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
 					$strEmailLabel = "<img src='img/template/email.png' title='Email PDF Invoice' onclick='$strEmailHref'></img>";
@@ -171,7 +173,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 											"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>", 
 											"<span class='Currency'>". $dboInvoice->AppliedAmount->FormattedValue() ."</span>",
 											"<span class='Currency'>". $dboInvoice->Balance->FormattedValue() ."</span>",
-											GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus"), 
+											($bolIsSample ? "SAMPLE" : GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus")), 
 											$strPdfLabel, 
 											$strEmailLabel,
 											$strViewInvoiceLabel,

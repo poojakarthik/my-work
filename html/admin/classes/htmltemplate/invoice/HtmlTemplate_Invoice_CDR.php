@@ -120,6 +120,10 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 			<td>Credit: </td>
 			<td class='" . ($this->mxdDataToRender['Credit'] = 1 ? 'amount-debit' : 'amount-credit') . "'>". htmlspecialchars($this->mxdDataToRender['Credit'] = 1 ? 'Credit' : 'Debit') . "</td>
 		</tr>
+		<tr>
+			<td>Raw CDR: </td>
+			<td><textarea>". htmlspecialchars($this->mxdDataToRender['CDR']) . "</textarea></td>
+		</tr>
 	</tbody>
 </table>
 <br/>
