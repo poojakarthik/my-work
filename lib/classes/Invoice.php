@@ -394,7 +394,7 @@ class Invoice extends ORM
 
 		//--------------------------- SERVICE TOTALS -------------------------//
 		// Mark all CDRs for this Service as TEMPORARY_INVOICE
-		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status = ".CDR_RATED." AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
+		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
 		$resResult	= $qryQuery->Execute($strSQL);
 		if ($resResult === FALSE)
 		{
@@ -1165,13 +1165,13 @@ class Invoice extends ORM
 
 				// UPDATES
 				case 'updMarkAccountCharges':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status = ".CHARGE_APPROVED, Array('Status'=>NULL, 'invoice_run_id'=>NULL));
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.")", Array('Status'=>NULL, 'invoice_run_id'=>NULL));
 					break;
 				case 'updCDRRevoke':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "Account = <Account> AND (invoice_run_id = <invoice_run_id> OR Status = ".CDR_TEMP_INVOICE.")", Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
 					break;
 				case 'updChargeRevoke':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND (invoice_run_id = <invoice_run_id> OR Status = ".CHARGE_TEMP_INVOICE.")", Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
 					break;
 				case 'updInvoiceStatus':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Invoice", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('Status'=>NULL, 'SettledOn'=>NULL));
