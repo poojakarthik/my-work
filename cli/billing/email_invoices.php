@@ -14,12 +14,12 @@ require_once("../../flex.require.php");
 $arrConfig = LoadApplication();
 
 // Check Parameters
-$strInvoiceRun	= $argv[1];
-$bolIncludePDF	= (strtolower($argv[2]) === 'includepdf') ? TRUE : FALSE;
-$selInvoiceRun	= new StatementSelect("InvoiceRun", "*, Id AS invoice_run_id", "InvoiceRun = <InvoiceRun>");
-if (!$selInvoiceRun->Execute(Array('InvoiceRun' => $strInvoiceRun)))
+$intInvoiceRunId	= (int)$argv[1];
+$bolIncludePDF		= (strtolower($argv[2]) === 'includepdf') ? TRUE : FALSE;
+$selInvoiceRun		= new StatementSelect("InvoiceRun", "*, Id AS invoice_run_id", "InvoiceRun = <invoice_run_id>");
+if (!$selInvoiceRun->Execute(Array('invoice_run_id' => $intInvoiceRunId)))
 {
-	CliEcho("\n'$strInvoiceRun' is not a valid InvoiceRun!\n");
+	CliEcho("\n'$strInvoiceRun' is not a valid InvoiceRun Id!\n");
 	exit(1);
 }
 $arrInvoiceRun	= $selInvoiceRun->Fetch();
@@ -56,7 +56,26 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	CliEcho("[ EMAILING INVOICES ]\n");
 	
 	// Get $strBillingPeriod & InvoiceRun
-	$strBillingPeriod 	= date("F Y", strtotime("-1 month", strtotime($arrInvoiceRun['BillingDate'])));
+	$strInvoiceDate 				= date("dmY", strtotime($arrInvoiceRun['BillingDate']));
+	$strBillingPeriodEndMonth		= date("F", strtotime("-1 day", strtotime($arrInvoiceRun['BillingDate'])));
+	$strBillingPeriodEndYear		= date("F", strtotime("-1 day", strtotime($arrInvoiceRun['BillingDate'])));
+	$strBillingPeriodStartMonth		= date("F Y", strtotime("-1 month", strtotime("-1 day", strtotime($arrInvoiceRun['BillingDate']))));
+	$strBillingPeriodStartYear		= date("F Y", strtotime("-1 month", strtotime("-1 day", strtotime($arrInvoiceRun['BillingDate']))));
+	
+	$strBillingPeriod				= $strBillingPeriodStartMonth;
+	
+	if ($strBillingPeriodStartYear !== $strBillingPeriodEndYear)
+	{
+		$strBillingPeriod			.= " {$strBillingPeriodStartYear} / {$strBillingPeriodEndMonth} {$strBillingPeriodEndYear}";
+	}
+	elseif ($strBillingPeriodStartMonth !== $strBillingPeriodEndMonth)
+	{
+		$strBillingPeriod			.= " / {$strBillingPeriodEndMonth} {$strBillingPeriodEndYear}";
+	}
+	else
+	{
+		$strBillingPeriod			.= " {$strBillingPeriodStartYear}";
+	}
 	
 	$selInvoices		= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id> AND DeliveryMethod = 1");
 	
@@ -136,17 +155,10 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  									'From'		=> $arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail'],
  									'Subject'	=> "Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for $strBillingPeriod"
  								);
-			/*$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice, for Account Number {$arrInvoice['Account']}, is now ready for viewing via the online customer portal.  To access the portal please go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your username & password.\n\n" .
+			$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice, for Account Number {$arrInvoice['Account']}, is now ready for viewing via the online customer portal.  To access the portal please go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your username & password.\n\n" .
 							"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “Setup Account” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
 							"Regards,\n\n" .
-							"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";*/
-			
-			// FOR 2008-10-02 ONLY
-			$strContent		=	"Please find attached your Invoice for {$strBillingPeriod};\n\n" .
-								"IMPORTANT NOTE:   Your bill is now available online, please go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and set up your online account. From next month onwards your bill will be only viewed via the online billing system.  This only takes a few seconds to set up and can be accessed at any time during each month. Feel free to call customer service for assistance.\n\n" .
-								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
-								"Regards,\n\n" .
-								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}";
+							"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
 	 		
 	 		// Does the customer have a first name?
 	 		if (trim($arrDetail['FirstName']))
@@ -176,7 +188,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	 			{
 	 				if (is_file($arrAccountPDFs[$arrInvoice['Account']]))
 	 				{
-	 					$mimMime->addAttachment(file_get_contents($arrAccountPDFs[$arrInvoice['Account']]), 'application/pdf', $arrInvoice['Account'].'_'.str_replace(' ', '_', $strBillingPeriod).".pdf", FALSE);
+	 					$mimMime->addAttachment(file_get_contents($arrAccountPDFs[$arrInvoice['Account']]), 'application/pdf', "{$arrInvoice['Account']}_{$strInvoiceDate}.pdf", FALSE);
 	 				}
 	 				else
 	 				{
