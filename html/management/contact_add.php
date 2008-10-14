@@ -90,11 +90,6 @@
 			// If a Fax number is Entered, check that it is valid
 			$oblstrError->setValue ('Fax Invalid');
 		}
-		else if (!$_POST ['UserName'])
-		{
-			// Check that a User Name was passed through
-			$oblstrError->setValue ('UserName Empty');
-		}
 		else if (!$_POST ['PassWord'])
 		{
 			// Check that a Pass Word was passed through
@@ -114,7 +109,7 @@
 			
 			try
 			{
-				$cntContact = Contacts::UnarchivedUsername ($_POST ['UserName']);
+				$cntContact = Contacts::UnarchivedUsername ($_POST ['Email']);
 			}
 			catch (Exception $e)
 			{
@@ -127,7 +122,7 @@
 			if ($cntContact)
 			{
 				// Display the "User Name Exists" error
-				$oblstrError->setValue ('UserName Exists');
+				$oblstrError->setValue ('Email Not Unique');
 			}
 			else
 			{
@@ -148,7 +143,6 @@
 						"Phone"				=> $_POST ['Phone'],
 						"Mobile"			=> $_POST ['Mobile'],
 						"Fax"				=> $_POST ['Fax'],
-						"UserName"			=> $_POST ['UserName'],
 						"PassWord"			=> $_POST ['PassWord'],
 						"CustomerContact"	=> $_POST ['CustomerContact'] == 1
 					)
@@ -177,7 +171,6 @@
 		$oblarrContact->Push (new dataString	('Phone'			, $_POST ['Phone']));
 		$oblarrContact->Push (new dataString	('Mobile'			, $_POST ['Mobile']));
 		$oblarrContact->Push (new dataString	('Fax'				, $_POST ['Fax']));
-		$oblarrContact->Push (new dataString	('UserName'			, $_POST ['UserName']));
 		$oblarrContact->Push (new dataString	('PassWord'			, $_POST ['PassWord']));
 		$oblarrContact->Push (new dataBoolean	('CustomerContact'	, $_POST ['CustomerContact'] == 1));
 	}

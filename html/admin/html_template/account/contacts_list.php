@@ -117,30 +117,11 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		Table()->ContactTable->SetHeader("Name", "Email", "Phone#", "Status", "&nbsp;");
 		//Table()->ContactTable->SetWidth("40%", "20%", "20%", "10%", "10%");
 		Table()->ContactTable->SetAlignment("Left", "Left", "Left", "Left", "Left");
-		
+		$arrContacts = array();
 		foreach (DBL()->Contact as $dboContact)
 		{
 			// Record the Status of the Contact
 			$strStatus = ($dboContact->Archived->Value) ? "Archived" : "Active";
-			
-			// Build the Actions Cell
-			$strViewContactLink = Href()->ViewContact($dboContact->Id->Value);
-			$strViewContact = "<a href='$strViewContactLink'><img src='img/template/article.png' title='View Contact Details'</a>";
-			if ($bolUserHasOperatorPerm && ($dboContact->Id->Value != DBO()->Account->PrimaryContact->Value) && ($dboContact->Archived->Value != 1))
-			{
-				// The contact is not the primary contact, and they are not archived
-				// Allow them to be set as the primary contact
-				//$strSetAsPrimaryContactLink	= "javascript:";
-				$strSetAsPrimaryContact		= "<img src='img/template/primary_contact.png' onclick='Vixen.AccountContactsList.SetPrimary({$dboContact->Id->Value})' title='Set as Primary Contact'</img>";
-			}
-			else
-			{
-				// The contact cannot be set as the primary, or it currently already is
-				$strSetAsPrimaryContact = "";
-			}
-			
-			
-			$strActionsCell = "{$strViewContact}&nbsp;{$strSetAsPrimaryContact}";
 			
 			// Build Name Cell
 			$strName		= ucwords(strtolower(trim("{$dboContact->Title->Value} {$dboContact->FirstName->Value} {$dboContact->LastName->Value}")));
@@ -152,6 +133,26 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 				// The current contact is the account's primary contact
 				$strNameCell .= " (Primary Contact)";
 			}
+			
+			
+			// Build the Actions Cell
+			$strViewContactLink = Href()->ViewContact($dboContact->Id->Value);
+			$strViewContact = "<a href='$strViewContactLink'><img src='img/template/article.png' title='View Contact Details'</a>";
+			if ($bolUserHasOperatorPerm && ($dboContact->Id->Value != DBO()->Account->PrimaryContact->Value) && ($dboContact->Archived->Value != 1))
+			{
+				// The contact is not the primary contact, and they are not archived
+				// Allow them to be set as the primary contact
+				//$strSetAsPrimaryContactLink	= "javascript:";
+				$jsonName = JSON_Services::encode($strNameCell);
+				$strSetAsPrimaryContact		= "<img src='img/template/primary_contact.png' onclick='Vixen.AccountContactsList.SetPrimary({$dboContact->Id->Value}, $jsonName)' title='Set as Primary Contact'</img>";
+			}
+			else
+			{
+				// The contact cannot be set as the primary, or it currently already is
+				$strSetAsPrimaryContact = "";
+			}
+			
+			$strActionsCell = "{$strViewContact}&nbsp;{$strSetAsPrimaryContact}";
 			
 			// Build the phone number cell
 			if (trim($dboContact->Phone->Value) != "")
@@ -176,7 +177,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		if (Table()->ContactTable->RowCount() == 0)
 		{
 			// There are no services to stick in this table
-			Table()->ContactTable->AddRow("<span>No contacts to display</span>");
+			Table()->ContactTable->AddRow("No contacts to display");
 			Table()->ContactTable->SetRowAlignment("left");
 			Table()->ContactTable->SetRowColumnSpan(5);
 		}
@@ -203,14 +204,46 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 	 */
 	private function _RenderInPage()
 	{
+		$bolHasButtons = FALSE;
 		echo "<h2 class='Contact'>Contacts</h2>\n";
 		$this->_RenderList();
+		// Check if there are more than 3
+		DBL()->Contact->SetLimit(4);
+		DBL()->Contact->Load();
 		
 		// Draw buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$strViewAccountContactsLink = Href()->ListContacts(DBO()->Account->Id->Value);
-		$this->Button("View All", $strViewAccountContactsLink);
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		{
+			// Include the AddContact button
+			$strAddContactHref = Href()->AddContact(DBO()->Account->Id->Value);
+			$this->Button("Add Contact", "window.location='$strAddContactHref'");
+			$bolHasButtons = TRUE;
+		}
+		
+		if (DBL()->Contact->RecordCount() > 3)
+		{
+			// Include the ViewAll button
+			$strViewAccountContactsLink = Href()->ListContacts(DBO()->Account->Id->Value);
+			$this->Button("View All", $strViewAccountContactsLink);
+			$bolHasButtons = TRUE;
+		}
 		echo "</div></div>\n";
+		
+		if (!$bolHasButtons)
+		{
+			// There are no buttons, so include a spacer
+			echo "<div class='TinySeparator'></div>\n";
+		}
+		
+		// Initialise the javascript object which facilitates this HtmlTemplate
+		$intAccountId = DBO()->Account->Id->Value;
+		$strJsCode = "	if (Vixen.AccountContactsList == undefined)
+						{
+							Vixen.AccountContactsList = new VixenAccountContactsListClass;
+						}
+						Vixen.AccountContactsList.Initialise($intAccountId, '{$this->_strContainerDivId}')";
+		echo "<script type='text/javascript'>$strJsCode</script>";
 	}
 	
 	//------------------------------------------------------------------------//

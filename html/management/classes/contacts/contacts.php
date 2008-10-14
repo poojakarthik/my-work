@@ -76,7 +76,7 @@
 		
 		public static function UnarchivedUsername ($strUsername)
 		{
-			$selUsername = new StatementSelect ('Contact', 'Id', 'Email = <UserName> AND Archived = 0', null, 1);
+			$selUsername = new StatementSelect ('Contact', 'Id', 'Email LIKE <UserName> AND Archived = 0', null, 1);
 			$selUsername->Execute (Array ('UserName' => $strUsername));
 			
 			// If it wasn't found - throw an error

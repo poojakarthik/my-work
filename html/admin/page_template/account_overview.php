@@ -53,6 +53,13 @@ if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS))
 	//$this->Page->AddObject(AccountCustomerStatusHistory, COLUMN_TWO);
 }
 
+$objAccountGroup = DBO()->Account->AccountGroupObject->Value;
+if (count($objAccountGroup->getAccounts()) > 1)
+{
+	// There are multiple accounts in this account group.  Display the AccountGroup component
+	$this->Page->AddObject('AccountGroupDetails', COLUMN_TWO);
+}
+
 $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "AccountDetailsDiv");
 $this->Page->AddObject('AccountContactsList', COLUMN_ONE, HTML_CONTEXT_PAGE);
 $this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);

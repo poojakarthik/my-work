@@ -315,6 +315,7 @@ class Account
 			'automatic_barring_status',
 			'automatic_barring_datetime',
 			'tio_reference_number',
+			'vip'
 		);
 	}
 

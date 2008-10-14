@@ -142,7 +142,7 @@
 						The Username you entered already exists. Please enter a unique Username.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact Email Exists'">
-						The Email you entered already exists. Please enter a unique Email.
+						The Email you entered is already in use by an active contact. Please use this contact, or enter a different email address.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact PassWord'">
 						Please enter a Password.

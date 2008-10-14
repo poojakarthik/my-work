@@ -119,7 +119,7 @@
 				// If the UserName is not Unique, error
 				try
 				{
-					$cntContact = Contacts::UnarchivedUsername ($_POST ['Contact']['UserName']);
+					$cntContact = Contacts::UnarchivedUsername ($_POST ['Contact']['Email']);
 				}
 				catch (Exception $e)
 				{
@@ -127,7 +127,7 @@
 				
 				if ($cntContact)
 				{
-					throw new Exception ('UserName Exists');
+					throw new Exception ('Contact Email Exists');
 				}
 			}
 			

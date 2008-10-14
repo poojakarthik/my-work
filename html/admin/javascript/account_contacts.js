@@ -72,8 +72,16 @@ function VixenAccountContactsListClass()
 		Vixen.EventHandler.AddListener("OnAccountPrimaryContactUpdate", this.OnUpdate);
 	}
 	
-	this.SetPrimary = function(intPrimaryContactId)
+	this.SetPrimary = function(intPrimaryContactId, strName, bolConfirmed)
 	{
+		if (!bolConfirmed)
+		{
+			// Prompt the user
+			var strMsg = "Are you sure you want to make "+ strName +" the primary contact for this account?";
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.AccountContactsList.SetPrimary(intPrimaryContactId, strName, true)});
+			return;
+		}
+	
 		// Organise the data to send
 		var objObjects 							= {};
 		objObjects.Objects 						= {};

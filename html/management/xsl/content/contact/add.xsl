@@ -100,11 +100,8 @@
 						<xsl:when test="/Response/Error = 'Fax Invalid'">
 							Please enter a valid Fax Number.
 						</xsl:when>
-						<xsl:when test="/Response/Error = 'UserName Empty'">
-							Please enter a Username.
-						</xsl:when>
-						<xsl:when test="/Response/Error = 'UserName Exists'">
-							The Username you entered already exists. Please enter a unique Username.
+						<xsl:when test="/Response/Error = 'Email Not Unique'">
+							A contact already exists with this email address, please use that contact, or specify a different email address
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'PassWord'">
 							Please enter a Password.
@@ -302,23 +299,6 @@
 						<tr>
 							<td>
 								<div class="MicroSeperator"></div>
-							</td>
-						</tr>
-						<tr>
-							<td class="Required"><strong><span class="Red">*</span></strong></td>
-							<th class="JustifiedWidth">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Contact')" />
-									<xsl:with-param name="field" select="string('UserName')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<input type="text" name="UserName" class="input-string" maxlength="31">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/UserName" />
-									</xsl:attribute>
-								</input>
 							</td>
 						</tr>
 						<tr>

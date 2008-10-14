@@ -492,27 +492,28 @@ class AppTemplateAccount extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
+		$intAccountId = DBO()->Account->Id->Value;
 		
 		// context menu
-		ContextMenu()->Account->Account_Overview(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Services->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
-		ContextMenu()->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Account_Overview($intAccountId);
+		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
+		ContextMenu()->Account->Services->List_Services($intAccountId);
+		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
+		ContextMenu()->Account->View_Cost_Centres($intAccountId);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account->Services->Add_Services(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Services->Add_Services($intAccountId);
+			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
+			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
+			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
+			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
+			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
+			ContextMenu()->Account->Add_Associated_Account($intAccountId);
+			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
+			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
+			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
 		}
-		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
 
 		// The DBList storing the invoices should be ordered so that the most recent is first
 		DBL()->Invoice->Account = DBO()->Account->Id->Value;
@@ -521,20 +522,27 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->Load();
 
 		// Calculate the Account Balance
-		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+		DBO()->Account->Balance = $this->Framework->GetAccountBalance($intAccountId);
 
 		// Calculate the Account Overdue Amount
-		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
+		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance($intAccountId);
 		
 		// Calculate the Account's total unbilled adjustments
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges($intAccountId);
 		
-		// Load the primary contact
+		// Load all contacts, with the primary being listed first, and then those belonging to this account specifically, then those belonging to the account group who can access this account
 		if (DBO()->Account->PrimaryContact->Value)
 		{
 			// Make sure the contact specified belongs to the AccountGroup
-			DBL()->Contact->Id				= DBO()->Account->PrimaryContact->Value;
-			DBL()->Contact->AccountGroup	= DBO()->Account->AccountGroup->Value; 
+			$intPrimaryContactId	= DBO()->Account->PrimaryContact->Value;
+			$intAccountGroupId		= DBO()->Account->AccountGroup->Value;
+			
+			DBL()->Contact->Where->SetString("Id = $intPrimaryContactId OR Account = $intAccountId OR (CustomerContact = 1 AND AccountGroup = $intAccountGroupId)");
+			DBL()->Contact->OrderBy("(Id = $intPrimaryContactId) DESC, (Account = $intAccountId) DESC, FirstName ASC, LastName ASC");
+			DBL()->Contact->SetLimit(3);
+			
+			//DBL()->Contact->Id				= DBO()->Account->PrimaryContact->Value;
+			//DBL()->Contact->AccountGroup	= DBO()->Account->AccountGroup->Value; 
 			DBL()->Contact->Load();
 		}
 		
@@ -563,6 +571,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Load the user notes
 		LoadNotes(DBO()->Account->Id->Value);
+		
+		// Retrieve the Account_Group object
+		DBO()->Account->AccountGroupObject = Account_Group::getForId(DBO()->Account->AccountGroup->Value);
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_overview');
