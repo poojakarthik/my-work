@@ -63,7 +63,7 @@ if (count($arrMissing))
 // Init Log File
 $strLogDir		= FILES_BASE_PATH."logs/multipart/";
 $strFileName	= basename(trim($argv[1]), '.cfg.php')."_".date("Ymdhis");
-mkdir($strLogDir, 0777, TRUE);
+@mkdir($strLogDir, 0777, TRUE);
 $resLogFile		= @fopen($strLogDir.$strFileName, 'w');
 
 // Run Scripts
