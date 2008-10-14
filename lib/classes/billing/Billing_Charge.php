@@ -192,23 +192,27 @@
 	 		$selModules			= new StatementSelect("billing_charge_module", "*", "active_status_id = ".ACTIVE_STATUS_ACTIVE, "ISNULL(customer_group_id) DESC");
 	 		$selModuleConfig	= new StatementSelect("billing_charge_module_config", "*", "billing_charge_module_id = <id>");
 	 		
+	 		$arrModules	= Array();
+	 		
 	 		// Get list of CustomerGroups
 	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id", "1");
 	 		if ($selCustomerGroups->Execute() === FALSE)
 	 		{
 	 			throw new Exception("DB Error: ".$selCustomerGroups->Error());
 	 		}
-	 		else
+	 		while ($arrCustomerGroup = $selCustomerGroups->Fetch())
 	 		{
-	 			$arrCustomerGroups	= $selCustomerGroups->FetchAll();
+	 			$arrModules[$arrCustomerGroup['Id']]['Billing_Charge_Account']	= Array();
+	 			$arrModules[$arrCustomerGroup['Id']]['Billing_Charge_Service']	= Array();
+	 				 			
+	 			$arrCustomerGroups[]	= $arrCustomerGroup;
 	 		}
  			
 	 		// Retrieve all Billing Charge Modules
-	 		$arrModules	= Array();
 	 		if ($selModules->Execute() !== FALSE)
 	 		{
 	 			while ($arrModule = $selModules->Fetch())
-	 			{ 				
+	 			{
 	 				// Instanciate the Class
 	 				$modModule	= new $arrModule['class']($arrModule['id']);
 	 				
