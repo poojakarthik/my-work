@@ -204,7 +204,7 @@
 	 		{
 	 			$arrModules[$arrCustomerGroup['Id']]['Billing_Charge_Account']	= Array();
 	 			$arrModules[$arrCustomerGroup['Id']]['Billing_Charge_Service']	= Array();
-	 				 			
+	 			
 	 			$arrCustomerGroups[]	= $arrCustomerGroup;
 	 		}
  			
