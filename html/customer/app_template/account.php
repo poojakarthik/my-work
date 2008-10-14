@@ -193,10 +193,34 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		$intAccountId = DBO()->Account->Id->Value;
+		
 		// Retrieve all Invoices and all Payments for the account
-		$strWhere = "Account = <Account> AND (Status != ". INVOICE_TEMP .")";
-		DBL()->Invoice->Account = DBO()->Account->Id->Value;
-		DBL()->Invoice->OrderBy("CreatedOn DESC");
+		$arrInvoiceColumns = array(	"Id"				=> "I.Id",
+									"AccountGroup"		=> "I.AccountGroup",
+									"Account"			=> "I.Account",
+									"CreatedOn"			=> "I.CreatedOn",
+									"DueOn"				=> "I.DueOn",
+									"SettledOn"			=> "I.SettledOn",
+									"Credits"			=> "I.Credits",
+									"Debits"			=> "I.Debits",
+									"Total"				=> "I.Total",
+									"Tax"				=> "I.Tax",
+									"TotalOwing"		=> "I.TotalOwing",
+									"Balance"			=> "I.Balance",
+									"Disputed"			=> "I.Disputed",
+									"AccountBalance"	=> "I.AccountBalance",
+									"DeliveryMethod"	=> "I.DeliveryMethod",
+									"Status"			=> "I.Status",
+									"invoice_run_id"	=> "I.invoice_run_id"
+									);
+		
+		$strInvoiceWhere = "I.Account = $intAccountId AND I.Status != ". INVOICE_TEMP ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." AND ir.invoice_run_type_id = ". INVOICE_RUN_TYPE_LIVE;
+		$strInvoiceTables = "Invoice AS I INNER JOIN InvoiceRun AS ir ON I.invoice_run_id = ir.Id";
+		DBL()->Invoice->SetTable($strInvoiceTables);
+		DBL()->Invoice->SetColumns($arrInvoiceColumns);
+		DBL()->Invoice->Where->SetString($strInvoiceWhere);
+		DBL()->Invoice->OrderBy("I.CreatedOn DESC");
 		DBL()->Invoice->Load();
 		
 		$strWhere = "(Account = <Account> OR (AccountGroup = <AccountGroup> AND Account IS NULL)) AND (Status = <PaymentPaying> OR Status = <PaymentFinished> OR Status = <PaymentWaiting>)";
