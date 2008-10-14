@@ -50,6 +50,7 @@ class Cli_App_Billing extends Cli
 			{
 				case 'GENERATE':
 					// Generate an Invoice Run
+					$this->_preGenerateScripts();
 					$this->_generate();
 					break;
 
