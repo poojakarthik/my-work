@@ -168,8 +168,9 @@ class Cli_App_Billing extends Cli
 	
 	private function _preGenerateScripts()
 	{
-		$strCommand	= "php multipart.php ";
-
+		// Run the Multi-part script
+		$strCommand	= "php multipart.php pre_billing.cfg.php";
+		
 		$strWorkingDirectory	= getcwd();
 		chdir(BACKEND_BASE_PATH.'process/');
 		$ptrProcess				= popen($strCommand, 'r');
@@ -181,12 +182,18 @@ class Cli_App_Billing extends Cli
 			if (stream_select($arrProcess, $arrBlank, $arrBlank, 0, 500000))
 			{
 				// Check for output every 0.5s
-				CliEcho(stream_get_contents($ptrProcess), FALSE);
+				self::debug(stream_get_contents($ptrProcess), FALSE);
 			}
 		}
 		$intReturnCode = pclose($ptrProcess);
-
+		
 		chdir($strWorkingDirectory);
+		
+		// Was there an error running a child script?
+		if ($intReturnCode > 0)
+		{
+			throw new Exception("There was an error running one of the pre-Generate Scripts");
+		}
 	}
 	
 	private function _commit()

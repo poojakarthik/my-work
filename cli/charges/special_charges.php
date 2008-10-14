@@ -17,15 +17,6 @@ $appCharge = new ApplicationCharge($arrConfig);
 // Remove/Mark Inbound S&E CDRs
 $appCharge->MarkInboundSAndECDR();
 
-// Add Landline S&E Credits
-$appCharge->AddLLSAndECredits();
-
-// Add Inbound Service Fee
-//$appCharge->AddActiveInboundFees();
-
-// Add Pinnacle Mobile Fees
-//$appCharge->AddPinnacleMobileFees();
-
 // finished
 echo("\n-- End of Charges::Special --\n");
 
