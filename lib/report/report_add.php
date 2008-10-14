@@ -51,6 +51,8 @@ $arrSQLSelect['Contact']			['Value']	= "CONCAT(Contact.FirstName, ' ', Contact.L
 $arrSQLSelect['Contact Phone']		['Value']	= "CASE WHEN Contact.Phone != '' THEN Contact.Phone ELSE Contact.Mobile END";
 $arrSQLSelect['Contact Phone']		['Type']	= EXCEL_TYPE_FNN;
 
+$arrSQLSelect['Date Created']		['Value']	= "Account.CreatedOn";
+
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
