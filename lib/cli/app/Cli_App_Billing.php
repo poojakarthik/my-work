@@ -54,6 +54,17 @@ class Cli_App_Billing extends Cli
 					$this->_generate();
 					break;
 
+				case 'EXPORT':
+					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
+					{
+						throw new Exception("You must supply an Invoice Run Id when running EXPORT!");
+					}
+
+					// Revoke Temporary Invoice Runs
+					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
+					$objInvoiceRun->export();
+					break;
+
 				case 'REVOKE':
 					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
 					{
