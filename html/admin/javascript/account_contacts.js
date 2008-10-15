@@ -77,7 +77,7 @@ function VixenAccountContactsListClass()
 		if (!bolConfirmed)
 		{
 			// Prompt the user
-			var strMsg = "Are you sure you want to make "+ strName +" the primary contact for this account?";
+			var strMsg = "Are you sure you want to make "+ strName +" the primary contact for this account?<br /><span style='color:#F00'>WARNING: Changing the primary contact will trigger a page reload and any unsaved details, such as notes, will be lost</span>";
 			Vixen.Popup.Confirm(strMsg, function(){Vixen.AccountContactsList.SetPrimary(intPrimaryContactId, strName, true)});
 			return;
 		}
