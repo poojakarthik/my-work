@@ -182,7 +182,7 @@ class Report_Management_InvoiceSummary extends Report_Management
 			$intBillingDate			= strtotime($arrData['BillingDate']);
 			$strPaymentPeriodEnd	= date("Y-m-d", strtotime("-1 day", strtotime(date("Y-m-01", $intBillingDate))));
 			$strPaymentPeriodStart	= date("Y-m-d", strtotime("-1 month", strtotime(date("Y-m-01", $intBillingDate))));
-			$selPaymentsReceived	= new StatementSelect("Payment", "SUM(Amount) AS Total", "Status IN (101, 103, 150) AND PaidOn BETWEEN '$strPaymentPeriodStart' AND '$strPaymentPeriodEnd'");
+			$selPaymentsReceived	= new StatementSelect("Payment", "SUM(Amount) AS Total", "Status IN (101, 103, 150) AND PaidOn BETWEEN '$strPaymentPeriodStart' AND '$strPaymentPeriodEnd' AND 0 < (SELECT COUNT(Id) FROM Account WHERE AccountGroup = Payment.AccountGroup AND CustomerGroup = {$arrData['customer_group_id']})");
 			if ($selPaymentsReceived->Execute() === FALSE)
 			{
 				Debug($selPaymentsReceived->Error());
