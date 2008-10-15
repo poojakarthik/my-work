@@ -117,15 +117,24 @@ abstract class Report_Management
 			$arrProfitData['ThisMonth']	= $objInvoiceRun->toArray();
 			
 			$selProfitData->Execute($arrProfitData['ThisMonth']);
-			$arrProfitData['LastMonth']	= $selProfitData->Fetch();
+			$arrLastMonth				= $selProfitData->Fetch();
+			if ($arrLastMonth)
+			{
+				$arrProfitData['LastMonth']	= $arrLastMonth;
+				
+				$selProfitData->Execute($arrProfitData['LastMonth']);
+				$arrMonthBeforeLast			= $selProfitData->Fetch();
+				
+				$arrProfitData['ThisMonth']['last_invoice_run_id']	= $arrProfitData['LastMonth']['invoice_run_id'];
+				$arrProfitData['ThisMonth']['LastBillingDate']		= $arrProfitData['LastMonth']['BillingDate'];
+				
+				if ($arrMonthBeforeLast)
+				{
+					$arrProfitData['LastMonth']['last_invoice_run_id']	= $arrMonthBeforeLast['invoice_run_id'];
+					$arrProfitData['LastMonth']['LastBillingDate']		= $arrMonthBeforeLast['BillingDate'];
+				}
+			}
 			
-			$selProfitData->Execute($arrProfitData['LastMonth']);
-			$arrMonthBeforeLast			= $selProfitData->Fetch();
-			
-			$arrProfitData['ThisMonth']['last_invoice_run_id']	= $arrProfitData['LastMonth']['invoice_run_id'];
-			$arrProfitData['ThisMonth']['LastBillingDate']		= $arrProfitData['LastMonth']['BillingDate'];
-			$arrProfitData['LastMonth']['last_invoice_run_id']	= $arrMonthBeforeLast['invoice_run_id'];
-			$arrProfitData['LastMonth']['LastBillingDate']		= $arrMonthBeforeLast['BillingDate'];
 		}
 		
 		return $arrProfitData;
