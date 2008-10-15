@@ -36,6 +36,7 @@ class Cli_App_Billing extends Cli
 
 			// Any additional Includes
 			//$this->requireOnce('flex.require.php');
+			require_once("Spreadsheet/Excel/Writer.php");
 			$this->requireOnce('lib/classes/Flex.php');
 			Flex::load();
 
