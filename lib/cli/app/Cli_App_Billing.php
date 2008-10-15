@@ -78,7 +78,7 @@ class Cli_App_Billing extends Cli
 
 					// Revoke Temporary Invoice Runs
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
-					Reports_Management::runAll($objInvoiceRun);
+					Report_Management::runAll($objInvoiceRun);
 					break;
 
 				case 'REVOKE':
