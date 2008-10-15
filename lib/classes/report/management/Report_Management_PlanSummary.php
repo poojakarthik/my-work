@@ -61,7 +61,7 @@ class Report_Management_PlanSummary extends Report_Management
 		
 		$selCallCredits	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.invoice_run_id = <invoice_run_id> AND ServiceTotal.invoice_run_id = <invoice_run_id> AND CDR.Credit = 1");
 		
-		$selRatePlans	= new StatementSelect("(RatePlan JOIN ServiceTotal ON RatePlan.Id = ServiceTotal.RatePlan) JOIN Account ON Account.Id = ServiceTotal.Account", "RatePlan.*", "CustomerGroup = <customer_group_id>", "RatePlan.ServiceType");
+		$selRatePlans	= new StatementSelect("(RatePlan JOIN ServiceTotal ON RatePlan.Id = ServiceTotal.RatePlan) JOIN Account ON Account.Id = ServiceTotal.Account", "DISTINCT RatePlan.*", "CustomerGroup = <customer_group_id>", "RatePlan.ServiceType");
 		$selMeanSpend	= new StatementSelect("ServiceTypeTotal STT JOIN ServiceTotal ST USING (invoice_run_id, Service)", "AVG(STT.Charge) AS MeanServiceSpend", "ST.invoice_run_id = <invoice_run_id> AND ST.RatePlan = <RatePlan> AND STT.RecordType = <RecordType>");
 		
 		$selMeanCredit	= new StatementSelect("CDR JOIN ServiceTotal ST USING (invoice_run_id, Service)", "SUM(CDR.Charge) AS TotalServiceCredit", "ST.invoice_run_id = <invoice_run_id> AND ST.RatePlan = <RatePlan> AND CDR.RecordType = <RecordType> AND CDR.Credit = 1");

@@ -116,8 +116,8 @@ class Report_Management_AdjustmentSummary extends Report_Management
 			$selAdjustmentSummary->Execute($arrData);
 			$arrAdjustmentSummary = $selAdjustmentSummary->Fetch();
 			$arrAdjustmentSummary['AdjustmentTotalValue']	= $arrAdjustmentSummary['DebitTotal'] - $arrAdjustmentSummary['CreditTotal'];
-			$arrAdjustmentSummary['MeanCreditValue']		= $arrAdjustmentSummary['CreditTotal'] / $arrAdjustmentSummary['CreditCount'];
-			$arrAdjustmentSummary['MeanDebitValue']			= $arrAdjustmentSummary['DebitTotal'] / $arrAdjustmentSummary['DebitCount'];
+			$arrAdjustmentSummary['MeanCreditValue']		= ($arrAdjustmentSummary['CreditCount']) ? $arrAdjustmentSummary['CreditTotal'] / $arrAdjustmentSummary['CreditCount'] : 'N/A';
+			$arrAdjustmentSummary['MeanDebitValue']			= ($arrAdjustmentSummary['DebitCount']) ? $arrAdjustmentSummary['DebitTotal'] / $arrAdjustmentSummary['DebitCount'] : 'N/A';
 			$arrAdjustmentSummary['MeanCustomerTotal']		= $arrAdjustmentSummary['AdjustmentTotalValue'] / $arrData['InvoiceCount'];
 			
 			$wksWorksheet->writeNumber(8, $intCol, $arrAdjustmentSummary['CreditCount']				, $arrFormat['Integer']);

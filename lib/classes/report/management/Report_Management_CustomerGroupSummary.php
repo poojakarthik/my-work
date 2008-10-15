@@ -77,6 +77,7 @@ class Report_Management_CustomerGroupSummary extends Report_Management
 				$intColumns			= 1 + ($intCustomerGroupCount * 2) + 1;
 				
 				// Get Data grouped by Invoice Run
+				$arrProfitData['CustomerGroups']	= Array();
 				foreach ($arrProfitData as $strPeriod=>&$arrProfitData)
 				{					
 					// Get Customer Group data

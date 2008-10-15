@@ -125,7 +125,7 @@ class Report_Management_CustomerSummary extends Report_Management
 			{
 				$fltGrandGrandTotal += $arrGrandTotal['GrandTotal'];
 			}
-			$flt80Percentile = $fltGrandGrandTotal / count($arrGrandTotals);
+			$flt80Percentile = (count($arrGrandTotals)) ? $fltGrandGrandTotal / count($arrGrandTotals) : 'N/A';
 			
 			$wksWorksheet->writeNumber(12, $intCol, $flt80Percentile					, $arrFormat['Currency']);
 			
@@ -141,7 +141,7 @@ class Report_Management_CustomerSummary extends Report_Management
 			}
 			
 			$wksWorksheet->writeString(13, 0, "Average Services per Customer"		, $arrFormat['TextBold']);
-			$wksWorksheet->writeNumber(13, $intCol, $arrServices[$intCol] / $intAccounts);
+			$wksWorksheet->writeNumber(13, $intCol, ($intAccounts) ? $arrServices[$intCol] / $intAccounts : 'N/A');
 			
 			$intCol++;
 		}
