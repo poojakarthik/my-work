@@ -17,7 +17,11 @@ class Cli_App_Billing extends Cli
 	const	SWITCH_TEST_RUN			= "t";
 	const	SWITCH_MODE				= "m";
 	const	SWITCH_INVOICE_RUN		= "i";
-
+	
+	const	FLEX_FRONTEND_HOST				= "10.50.50.131";
+	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
+	const	FLEX_FRONTEND_SHARED_KEY_FILE	= "/home/ybs-admin/.ssh/id_dsa";
+	
 	function run()
 	{
 		try
@@ -63,6 +67,7 @@ class Cli_App_Billing extends Cli
 					// Revoke Temporary Invoice Runs
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->export();
+					$this->log($this->_copyXML($objInvoiceRun->Id));
 					break;
 
 				case 'REVOKE':
@@ -163,6 +168,7 @@ class Cli_App_Billing extends Cli
 						// Yes, so lets Generate!
 						$objInvoiceRun	= new Invoice_Run();
 						$objInvoiceRun->generate($arrPaymentTerms['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
+						$this->log($this->_copyXML($objInvoiceRun->Id));
 					}
 				}
 				elseif ($selInvoiceRunSchedule->Error())
@@ -206,6 +212,15 @@ class Cli_App_Billing extends Cli
 		{
 			throw new Exception("There was an error running one of the pre-Generate Scripts");
 		}
+	}
+	
+	private function _copyXML($intInvoiceRunId)
+	{
+		$strFlexXMLPath	= FLEX_BASE_PATH."files/invoices/xml/";
+		
+		$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." -r {$strFlexXMLPath}{$intInvoiceRunId} ".self::FLEX_FRONTEND_USERNAME."@".FLEX_FRONTEND_HOST.":{$strFlexXMLPath}";
+		
+		return shell_exec($strSCPCommand);
 	}
 	
 	private function _commit()
