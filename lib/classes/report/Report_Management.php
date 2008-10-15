@@ -114,7 +114,8 @@ abstract class Report_Management
 		{
 			$selProfitData = new StatementSelect("InvoiceRun", "*, Id AS invoice_run_id", "customer_group_id = <customer_group_id> AND BillingDate < <BillingDate>", "BillingDate DESC", 1);
 			
-			$arrProfitData['ThisMonth']	= $objInvoiceRun->toArray();
+			$arrProfitData['ThisMonth']						= $objInvoiceRun->toArray();
+			$arrProfitData['ThisMonth']['invoice_run_id']	= $objInvoiceRun->Id;
 			
 			$selProfitData->Execute($arrProfitData['ThisMonth']);
 			$arrLastMonth				= $selProfitData->Fetch();
