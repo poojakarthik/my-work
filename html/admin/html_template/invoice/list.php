@@ -122,7 +122,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 */
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
-			$bolIsSample = $dboInvoice->Status->Value == "SAMPLE";
+			$bolIsSample = !is_numeric($dboInvoice->Status->Value);
 			
 			// Build the links 
 			$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
@@ -173,7 +173,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 											"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>", 
 											"<span class='Currency'>". $dboInvoice->AppliedAmount->FormattedValue() ."</span>",
 											"<span class='Currency'>". $dboInvoice->Balance->FormattedValue() ."</span>",
-											($bolIsSample ? "SAMPLE" : GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus")), 
+											($bolIsSample ? $dboInvoice->Status->Value : GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus")), 
 											$strPdfLabel, 
 											$strEmailLabel,
 											$strViewInvoiceLabel,

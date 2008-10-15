@@ -620,7 +620,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->InvoicedInvoice->Load();
 
 
-		$arrInvoiceColumns['Status'] = '"SAMPLE"';
+		$strInvoiceTables .= " LEFT OUTER JOIN invoice_run_schedule irs ON ir.invoice_run_schedule_id = irs.id";
+		$arrInvoiceColumns['Status'] = 'CASE WHEN irs.description IS NULL THEN "SAMPLE" ELSE irs.description END';
 
 		$strInvoiceWhere = "" .
 			"       I.Account = $intAccountId " .
