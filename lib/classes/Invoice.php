@@ -730,7 +730,7 @@ class Invoice extends ORM
 		$objAccount->LastBilled	= $this->CreatedOn;
 
 		// Update Account.Sample
-		$objAccount->Sample		= min($objAccount->Sample+1, 0);
+		$objAccount->Sample		= ($objAccount->Sample < 0) ? $objAccount->Sample++ : $objAccount->Sample;
 		$objAccount->save();
 
 		//------------------------------ SERVICE -----------------------------//
