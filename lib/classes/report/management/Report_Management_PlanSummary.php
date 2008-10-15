@@ -93,7 +93,7 @@ class Report_Management_PlanSummary extends Report_Management
 				$intI++;
 				
 				// Add new Worksheet
-				$strWorksheet = preg_replace("/\W+/misU", "_", $arrRatePlan['Name']);
+				$strWorksheet = substr(preg_replace("/\W+/misU", "_", $arrRatePlan['Name']), 0, 31);
 				Cli_App_Billing::debug($strWorksheet);
 				$wksWorksheet =& $wkbWorkbook->addWorksheet($strWorksheet);
 				
