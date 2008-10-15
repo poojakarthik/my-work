@@ -1,8 +1,13 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../' . 'flex.require.php';
+// Note: Suppress errors whilst loading application as there may well be some if the 
+// database model files have not yet been generated.
+$_SESSION = array();
+// Load Flex.php
+require_once(dirname(__FILE__) . "/../../classes/Flex.php");
+Flex::load();
 
-class Cli_App_Automatic_Barring extends Cli
+class Cli_App_Staggered_Automatic_Barring extends Cli
 {
 	const SWITCH_EFFECTIVE_DATE = "e";
 	const SWITCH_TEST_RUN = "t";
@@ -18,12 +23,11 @@ class Cli_App_Automatic_Barring extends Cli
 
 		set_time_limit(0);
 
-		$sendEmail = FALSE;
-
 		try
 		{
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
+
 
 			if ($arrArgs[self::SWITCH_TEST_RUN])
 			{
@@ -32,25 +36,76 @@ class Cli_App_Automatic_Barring extends Cli
 
 			$action = $arrArgs[self::SWITCH_LIST_RUN] ? AUTOMATIC_INVOICE_ACTION_BARRING_LIST : AUTOMATIC_INVOICE_ACTION_BARRING;
 
-			// This query is repeated by the ListLatePaymentAccounts function. Consider revising.
-			$arrInvoiceRunIds = ListInvoiceRunsForAutomaticInvoiceActionAndDate($action, $now);
-			if (!count($arrInvoiceRunIds))
+			$db = Data_Source::get();
+
+			// We need to check to see if the customer groups for the invoice runs are configured to use the staggered barring,
+			// that the baring should have started, that it has not completed, that it has not been run already today,
+			// that it should happen today and that it should happen on or before the current time.
+			// If so, we should load the invoice run id, the customer group for it and the max number of accounts to bar per day.
+			$barDate = $arrArgs[self::SWITCH_LIST_RUN] 
+				? 'FROM_DAYS(TO_DAYS(NOW()) + (CASE WHEN listing_time_of_day < barring_time_of_day THEN 0 ELSE 1 END))'
+				: 'DATE(NOW())';
+			
+			$thisDay = date('N');
+			$previousDay = $thisDay - 1;
+			if (!$previousDay) $previousDay = 7;
+			
+			$dayMatch = $arrArgs[self::SWITCH_LIST_RUN] 
+				? "((listing_time_of_day < barring_time_of_day AND apc.barring_days LIKE '%$thisDay%') OR (listing_time_of_day >= barring_time_of_day AND apc.barring_days LIKE '%$previousDay%'))"
+				: "apc.barring_days LIKE '%$thisDay%'";
+			
+			$strSQL = "
+				SELECT  
+					ir.Id AS \"invoice_run_id\",  
+					ir.customer_group_id AS \"customer_group_id\",  
+					apc.max_barrings_per_day,  
+					CASE WHEN ap.commencement_date_vip <= $barDate THEN 1 ELSE 0 END AS \"bar_vip\", 
+					CASE WHEN ap.commencement_date_first <= $barDate THEN 1 ELSE 0 END AS \"bar_first\", 
+					CASE WHEN ap.commencement_date_normal <= $barDate THEN 1 ELSE 0 END AS \"bar_normal\" 
+				FROM InvoiceRun ir, automated_invoice_run_process ap, automated_invoice_run_process_config apc 
+				WHERE apc.enabled = 1 
+				  AND (ap.commencement_date_normal <= $barDate OR ap.commencement_date_first <= $barDate OR ap.commencement_date_vip <= $barDate)
+				  AND ap.completed_date IS NULL
+				  AND (ap.last_" . ($arrArgs[self::SWITCH_LIST_RUN] ? "listing" : "processed") . "_date IS NULL OR ap.last_" . ($arrArgs[self::SWITCH_LIST_RUN] ? "listing" : "processed") . "_date < DATE(NOW()))
+				  AND $dayMatch
+				  AND apc." . ($arrArgs[self::SWITCH_LIST_RUN] ? "list" : "barr") . "ing_time_of_day < TIME(NOW()) 
+				  AND ir.id = ap.invoice_run_id 
+				  AND (ir.customer_group_id = apc.customer_group_id OR (ir.customer_group_id IS NULL AND apc.customer_group_id IS NULL))
+				";
+
+			if (PEAR::isError($result = $db->query($strSQL)))
 			{
-				$this->log("No applicable invoice runs found for barring.");
-			}
-			else
-			{
-				// Regardless of the outcome, we want to send an email to let users know that barring was applied to
-				// and invoice run, even if no accounts require barring.
-				$sendEmail = TRUE;
+				$this->showUsage('ERROR: Failed to load applicable invoice runs details: ' . $result->getMessage() . "\n\n" . $strSQL . "\n\n");
+				return 1;
 			}
 
+			$invoiceRuns = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
+			
+			if (!count($invoiceRuns))
+			{
+				$this->log("No invoice runs require barring at this time.");
+				return 0;
+			}
+
+			$arrInvoiceRuns = array();
+			$intAbsoluteMax = 0;
+			foreach ($invoiceRuns as $invoiceRun)
+			{
+				$invoiceRun['barrings_today'] = 0;
+				$invoiceRun['complete'] = TRUE;
+				$invoiceRun['remaining'] = 0;
+				$arrInvoiceRuns[$invoiceRun['invoice_run_id']] = $invoiceRun;
+				$intAbsoluteMax = max($intAbsoluteMax, $invoiceRun['max_barrings_per_day']);
+			}
+			$arrInvoiceRunIds = array_keys($arrInvoiceRuns);
+
 			$this->log('Beginning database transaction.');
+			$db->beginTransaction();
+
 			$conConnection = DataAccess::getDataAccess();
 			$conConnection->TransactionStart();
 
-
-			$this->log($arrArgs[self::SWITCH_LIST_RUN] ? "Listing accounts that would be barred" : "barring accounts");
+			$this->log($arrArgs[self::SWITCH_LIST_RUN] ? "Listing accounts that would be barred" : "Listing accounts to be barred");
 
 			$effectiveDate = $arrArgs[self::SWITCH_EFFECTIVE_DATE];
 
@@ -58,7 +113,11 @@ class Cli_App_Automatic_Barring extends Cli
 
 			$arrGeneralErrors = array();
 
-			$mixResult = ListAutomaticBarringAccounts($effectiveDate, $action);
+			// Barring needs to be done on a per-invoicerun basis...
+
+			$mixResult = ListStaggeredAutomaticBarringAccounts($effectiveDate, $arrInvoiceRunIds);
+
+			$this->log($arrArgs[self::SWITCH_LIST_RUN] ? "Listed accounts that would be barred..." : "Listed accounts to be barred...");
 
 			$barOutcome = array();
 			
@@ -68,6 +127,8 @@ class Cli_App_Automatic_Barring extends Cli
 			$manualBarAccounts = array();
 			$autoBars = array();
 			$autoBarAccounts = array();
+
+			$intNrAccountsAutomaticallyBarred = 0;
 
 			if (!is_array($mixResult))
 			{
@@ -82,9 +143,7 @@ class Cli_App_Automatic_Barring extends Cli
 				$nrAccounts = count($mixResult);
 				if ($nrAccounts)
 				{
-					$this->log("Barring $nrAccounts accounts.");
-					// We will send an email to say which accounts/services were barred
-					$sendEmail = TRUE;
+					$this->log("Barring accounts...");
 				}
 				else
 				{
@@ -92,13 +151,42 @@ class Cli_App_Automatic_Barring extends Cli
 				}
 				foreach($mixResult as $account)
 				{
+					$invoiceRunId 		= $account['invoice_run_id'];
+
+					if ($intNrAccountsAutomaticallyBarred >= $intAbsoluteMax)
+					{
+						//$this->log('Already barred combined daily limit of ' . $intAbsoluteMax . ' accounts.');
+						$arrInvoiceRuns[$invoiceRunId]['complete']= FALSE;
+						$arrInvoiceRuns[$invoiceRunId]['remaining']++;
+						continue;
+					}
+
 					$accountId 			= intval($account['AccountId']);
 					$accountGroupId		= intval($account['AccountGroupId']);
 					$customerGroupId 	= intval($account['CustomerGroupId']);
-					$invoiceRunId 		= $account['invoice_run_id'];
 					$customerGroupName 	= $account['CustomerGroupName'];
 					$amountOverdue 		= $account['Overdue'];
+					$ranking	 		= intval($account['ranking']);
 
+					if (($ranking == -2 /* VIP   */ && !$arrInvoiceRuns[$invoiceRunId]['bar_vip']) ||
+					    ($ranking == -1 /* FIRST */ && !$arrInvoiceRuns[$invoiceRunId]['bar_first']) ||
+					    ($ranking >= 0  /* NORMAL*/ && !$arrInvoiceRuns[$invoiceRunId]['bar_normal']))
+					{
+						// We aren't barring accounts of this status yet
+						$this->log('Not started barring accounts of status ' . $ranking . ' for invoice run ' . $invoiceRunId . ' yet.');
+						$arrInvoiceRuns[$invoiceRunId]['complete'] = FALSE;
+						$arrInvoiceRuns[$invoiceRunId]['remaining']++;
+						continue;
+					}
+
+					if ($arrInvoiceRuns[$invoiceRunId]['max_barrings_per_day'] <= $arrInvoiceRuns[$invoiceRunId]['barrings_today'] )
+					{
+						$this->log('Already barred daily limit of ' . $arrInvoiceRuns[$invoiceRunId]['max_barrings_per_day'] . ' for invoice run ' . $invoiceRunId . ' yet.');
+						$arrInvoiceRuns[$invoiceRunId]['complete'] = FALSE;
+						$arrInvoiceRuns[$invoiceRunId]['remaining']++;
+						continue;
+					}
+					
 					if (!array_key_exists($customerGroupName, $barSummary))
 					{
 						$barSummary[$customerGroupName] = array();
@@ -130,11 +218,15 @@ class Cli_App_Automatic_Barring extends Cli
 						$arrFNNs = array();
 						foreach($barOutcome[$accountId]['BARRED'] as $intServiceId => $arrDetails)
 						{
-							$arrFNNs[] = $arrDetails['FNN'] ." ($intServiceId)"; 
+							$arrFNNs[] = $arrDetails['FNN'] ." ($intServiceId)";
 							$autoBars[$customerGroupName][] = $accountId . ',' . $arrDetails['FNN'];
 						}
 						$barSummary[$customerGroupName][$accountId]['auto'] = $arrFNNs;
 						$this->log("The following services for account $accountId were automatically barred:\n" . implode("   \n", $arrFNNs));
+
+						// Increment the number of accounts automatically barred (in total and for the invoice run)
+						$intNrAccountsAutomaticallyBarred++;
+						$arrInvoiceRuns[$invoiceRunId]['barrings_today']++;
 					}
 					else
 					{
@@ -164,6 +256,7 @@ class Cli_App_Automatic_Barring extends Cli
 			if ($arrArgs[self::SWITCH_TEST_RUN])
 			{
 				$this->log('Rolling back database changes as this is only a test.');
+				$db->rollback();
 				$conConnection->TransactionRollback();
 			}
 			else
@@ -171,28 +264,47 @@ class Cli_App_Automatic_Barring extends Cli
 				if ($arrArgs[self::SWITCH_LIST_RUN])
 				{
 					$this->log('Rolling back database changes as this is only for listing purposes.');
+					$db->rollback();
 					$conConnection->TransactionRollback();
 
 					$this->log('Starting new transaction to update invoice run events.');
+					$db->beginTransaction();
 					$conConnection->TransactionStart();
 				}
 
 				if (!empty($arrInvoiceRunIds))
 				{
 
-					$this->log('Marking effected Invoice Runs as automatic bar listed.');
-					foreach ($arrInvoiceRunIds as $invoiceRunId)
+					$this->log('Marking automatic_invoice_process records as updated/completed.');
+					$date = date("Y-m-d");
+					foreach ($arrInvoiceRuns as $invoiceRunId => $details)
 					{
-						$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRunId, $action);
-						if ($result !== TRUE)
+						if ($arrArgs[self::SWITCH_LIST_RUN])
 						{
-							$arrGeneralErrors[] = $result;
-							$this->log($result, TRUE);
+							$strSQL = "UPDATE automated_invoice_run_process SET last_listing_date = '$date'";
+						}
+						else if ($details['complete'])
+						{
+							$strSQL = "UPDATE automated_invoice_run_process SET last_processed_date = '$date', completed_date = '$date'";
+							$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRunId, $details['complete']);
+							if ($result !== TRUE)
+							{
+								$arrGeneralErrors[] = $result;
+								$this->log($result, TRUE);
+							}
+						}
+						else
+						{
+							$strSQL = "UPDATE automated_invoice_run_process SET last_processed_date = '$date'";
+						}
+						$strSQL .= " WHERE invoice_run_id = " . $invoiceRunId . ";";
+
+						if (PEAR::isError($result = $db->query($strSQL)))
+						{
+							throw new Exception($result->getMessage());
 						}
 					}
 
-					// We will send an email to say that barring was run, even if no accounts were actually barred (unlikely!)
-					$sendEmail = TRUE;
 				}
 				else
 				{
@@ -200,18 +312,20 @@ class Cli_App_Automatic_Barring extends Cli
 				}
 
 				$this->log('Committing transaction.');
+				$db->commit();
 				$conConnection->TransactionCommit();
-			}
-
-			if (!$sendEmail)
-			{
-				$this->log("No changes were required, so not sending email. Exiting normally.");
-				return 0;
 			}
 
 			$strListing = $arrArgs[self::SWITCH_LIST_RUN] ? ' listing' : '';
 
+
+
+
+
+			//
 			// We now need to build a report detailing actions taken for each of the customer groups
+			//
+
 			$this->log("Building report");
 			$arrTmpActions = array();
 			if (!empty($barSummary)) $arrTmpActions[] = 'barring';
@@ -243,6 +357,22 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 
 
+			$report[] = "Note: After this staggered barring the following overdue accounts " . ($arrArgs[self::SWITCH_LIST_RUN] ? 'would' : '') . " remain unbarred: -";
+			foreach ($arrInvoiceRuns as $invoiceRunId => $details)
+			{
+				
+				if ($details['remaining'])
+				{
+					$report[] = "     Invoice run: $invoiceRunId - " . $details['remaining'] . " accounts.";
+				}
+				else
+				{
+					$report[] = "     Invoice run: $invoiceRunId -  None - Staggered barring " . ($arrArgs[self::SWITCH_LIST_RUN] ? "would be complete" : "has completed") . " for this invoice run.";
+				}
+			}
+			$report[] = "";
+			$report[] = "";
+
 			if (!empty($barSummary))
 			{
 				foreach ($barSummary as $custGroup => $custGroupBreakdown)
@@ -252,8 +382,8 @@ class Cli_App_Automatic_Barring extends Cli
 					{
 						$nrAccounts = count($autoBarAccounts[$custGroup]);
 						$nrServices = count($autoBars[$custGroup]);
-						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? ' would be' : ($nrServices == 1 ? ' was' : ' were');
-						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " " . $actionDesc . " barred automatically.";
+						$actionDesc = $arrArgs[self::SWITCH_LIST_RUN] ? 'would be' : ($nrServices == 1 ? 'was' : 'were');
+						$report[] = "$nrServices service" . ($nrServices == 1 ? "" : "s") . " for $nrAccounts account" . ($nrAccounts == 1 ? "" : "s") . " $actionDesc barred automatically.";
 					}
 					else
 					{
@@ -370,6 +500,7 @@ class Cli_App_Automatic_Barring extends Cli
 			}
 
 			$this->log("Sending report");
+			
 			$intNotification = $arrArgs[self::SWITCH_LIST_RUN] ? EMAIL_NOTIFICATION_AUTOMATIC_BARRING_LIST : EMAIL_NOTIFICATION_AUTOMATIC_BARRING_REPORT;
 			if ($this->sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body, $attachments))
 			{
@@ -386,7 +517,7 @@ class Cli_App_Automatic_Barring extends Cli
 		catch(Exception $exception)
 		{
 			$this->log('Rolling back database transaction.');
-			$conConnection->TransactionRollback();
+			$db->rollback();
 			
 			$this->log('Sending error report via email.');
 			$subject = '[ERROR]'. ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') .' Automatic barring failed - Database transaction rolled back at ' . date('Y-m-d H:i:s');
@@ -422,13 +553,13 @@ class Cli_App_Automatic_Barring extends Cli
 
 	private function changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction)
 	{
-		$qryQuery = new Query();
-		$invoiceRunId = $qryQuery->EscapeString($invoiceRunId);
+		$qryQuery = Data_Source::get();
+		$invoiceRunId = $qryQuery->escape($invoiceRunId);
 		$strSQL = "UPDATE automatic_invoice_run_event SET actioned_datetime = '$this->runDateTime' WHERE invoice_run_id = $invoiceRunId AND automatic_invoice_action_id = $intAutomaticInvoiceAction";
 		$message = TRUE;
-		if (!$qryQuery->Execute($strSQL))
+		if (PEAR::isError($result = $qryQuery->query($strSQL)))
 		{
-			$message = ' Failed to update automatic_invoice_run_event.actioned_datetime to ' . $this->runDateTime . ' for invoice run ' . $invoiceRunId . '  and event ' . $intAutomaticInvoiceAction . '. '. $qryQuery->Error();
+			$message = 'Failed to update automatic_invoice_run_event.actioned_datetime to ' . $this->runDateTime . ' for invoice run ' . $invoiceRunId . '  and event ' . $intAutomaticInvoiceAction . '. '. $result->getMessage();
 			$this->log($message, TRUE);
 		}
 		return $message;
@@ -467,4 +598,4 @@ class Cli_App_Automatic_Barring extends Cli
 }
 
 
-?>
+?>	

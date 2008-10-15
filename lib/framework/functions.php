@@ -3493,6 +3493,232 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 }
 
 
+function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRunIds)
+{
+	if (!$intEffectiveTime)
+	{
+		$intEffectiveTime = time();
+	}
+	
+	
+	$db = Data_Source::get();
+	$dbAdmin = Data_Source::get();
+
+	// If we don't know the customer group id ($intCustomerGroupId===FALSE) than we need to find it for the given invoice_run_id
+	$strSQL = "SELECT distinct(customer_group_id) FROM InvoiceRun WHERE Id IN (" . implode(',', $arrInvoiceRunIds) . ") AND customer_group_id IS NOT NULL";
+	if (PEAR::isError($result = $db->query($strSQL)))
+	{
+		throw new Exception("Failed to find customer group ids for invoice runs: \n$strSQL\n" . $result->getMessage());
+	}
+	$arrCustomerGroupIds = $result->fetchCol(0);
+	
+	$strCustomerGroupRestriction = count($arrCustomerGroupIds) ? "OR customer_group_id IN (" . implode(",", $arrCustomerGroupIds) . ")" : '';
+
+	$time = time();
+	
+	// Create a temporary table for the results
+	$tmpTableName = "tmp_staggered_barring_accounts_$time";
+
+	$strSQL = "DROP TABLE IF EXISTS $tmpTableName;";
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+	
+
+	$strSQL = "
+			CREATE TABLE $tmpTableName
+			(
+				id bigint(20) UNSIGNED NOT NULL auto_increment,
+				invoice_run_id bigint(20) unsigned NOT NULL,
+				AccountId bigint(20) unsigned NOT NULL,
+				AccountGroupId bigint(20) unsigned NOT NULL,
+				CustomerGroupId bigint(20) unsigned NOT NULL,
+				CustomerGroupName VARCHAR(255) DEFAULT '',
+				Overdue decimal(13,4) NOT NULL,
+				minBalanceToPursue decimal(13,4) NOT NULL,
+				PRIMARY KEY (id)
+			) ENGINE=InnoDB AUTO_INCREMENT=0;
+			";
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+
+	// Create a temporary ranking table for the results
+	$tmpRankTableName = "tmp_staggered_account_ranks_$time";
+
+	$strSQL = "DROP TABLE IF EXISTS $tmpRankTableName;";
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+
+	$strSQL = "
+			CREATE TABLE $tmpRankTableName
+			(
+				id bigint(20) UNSIGNED NOT NULL auto_increment,
+				account_id bigint(20) unsigned NOT NULL,
+				ranking decimal(13,4) NOT NULL,
+				PRIMARY KEY (id)
+			) ENGINE=InnoDB AUTO_INCREMENT=0;
+			";
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+
+
+	// Load the details into a temporary table
+	$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
+
+	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED));
+	$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
+
+	$arrColumns = array(
+							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' ELSE Invoice.invoice_run_id END)",
+							'AccountId'				=> "Invoice.Account",
+							'AccountGroupId'		=> "Account.AccountGroup",
+							'CustomerGroupId'		=> "Account.CustomerGroup",
+							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
+							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+							'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
+	);
+
+	$strTables	= "
+			 Invoice 
+		JOIN Account 
+		  ON Invoice.Account = Account.Id
+		 AND Account.Archived IN ($strApplicableAccountStatuses) 
+		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		JOIN credit_control_status 
+		  ON Account.credit_control_status = credit_control_status.id
+		 AND credit_control_status.can_bar = 1
+		JOIN account_status 
+		  ON Account.Archived = account_status.id
+		 AND account_status.can_bar = 1
+		JOIN CustomerGroup 
+		  ON Account.CustomerGroup = CustomerGroup.Id
+		JOIN payment_terms
+		  ON payment_terms.customer_group_id = Account.CustomerGroup";
+
+	$strWhere	= "Account.Id IN (
+		SELECT DISTINCT(Account.Id) 
+		FROM InvoiceRun 
+		JOIN Invoice
+		  ON InvoiceRun.Id IN (" . implode(', ', $arrInvoiceRunIds) . ")
+		 AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		 AND InvoiceRun.Id = Invoice.invoice_run_id
+		JOIN Account 
+		  ON Account.Id = Invoice.Account
+		 AND Account.Archived IN ($strApplicableAccountStatuses) 
+		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		JOIN credit_control_status 
+		  ON Account.credit_control_status = credit_control_status.id
+		 AND credit_control_status.can_bar = 1
+		JOIN account_status 
+		  ON Account.Archived = account_status.id
+		 AND account_status.can_bar = 1
+	)";
+
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND invoice_run_id IN (" . implode(', ', $arrInvoiceRunIds) . ")";
+	$strOrderBy	= "Invoice.Account ASC";
+
+	$select = array();
+	foreach($arrColumns as $alias => $column) $select[] = "$column AS \"$alias\"";
+	$tmpCols = implode(', ', array_keys($arrColumns));
+	$strSQL = "INSERT INTO $tmpTableName ($tmpCols) SELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy";
+	if (PEAR::isError($result = $db->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+
+	// Apply the ranking to the table for each account
+	$strSQL = "
+			INSERT INTO $tmpRankTableName (account_id, ranking)
+			SELECT account_id, CASE WHEN SUM(VIP) < 0 THEN SUM(VIP) WHEN COUNT(late) = 1 THEN 0 WHEN SUM(late) <= 0 THEN 0 ELSE ((SUM(late) / (COUNT(late) - 1))/86400) END AS \"ranking\"
+			FROM
+			(
+			
+				SELECT InvoicePayment.Account AS \"account_id\", 0 AS \"VIP\", InvoicePayment.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP(MAX(Payment.PaidOn)) - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\" 
+				FROM 
+					Payment, 
+					InvoicePayment, 
+					Invoice, 
+					$tmpTableName,
+						(
+						SELECT id AS \"invoice_run_id\"
+						FROM InvoiceRun
+						WHERE customer_group_id IS NULL $strCustomerGroupRestriction
+						ORDER BY id DESC
+						LIMIT 1, 6
+					) PreviousSixInvoiceRuns
+				WHERE Payment.Id = InvoicePayment.Payment
+				    AND InvoicePayment.invoice_run_id = PreviousSixInvoiceRuns.invoice_run_id
+				    AND Invoice.Account = $tmpTableName.AccountId 
+				    AND Invoice.Account = InvoicePayment.Account
+				    AND Invoice.invoice_run_id = InvoicePayment.invoice_run_id
+				    AND Invoice.Total > 0.10
+				    AND Invoice.Balance <= 0.10
+				GROUP BY InvoicePayment.Account, InvoicePayment.invoice_run_id, Invoice.CreatedOn
+			
+			UNION
+				SELECT Invoice.Account AS \"account_id\", 0 AS \"VIP\", Invoice.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP() - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\"
+				FROM 
+					Invoice, $tmpTableName,
+					(
+						SELECT id AS \"invoice_run_id\"
+						FROM InvoiceRun
+						WHERE customer_group_id IS NULL $strCustomerGroupRestriction
+						ORDER BY id DESC
+						LIMIT 1, 6
+					) PreviousSixInvoiceRuns
+				WHERE Invoice.Account = $tmpTableName.AccountId 
+				    AND Invoice.Balance > 0.10
+				    AND Invoice.Total > 0.10
+				    AND Invoice.invoice_run_id = PreviousSixInvoiceRuns.invoice_run_id
+			
+			UNION	
+				SELECT Account.Id AS \"account_id\", CASE WHEN SUM(vip) > 0 THEN -2 WHEN SUM(Invoice.Id) > 0 THEN 0 ELSE -1 END AS \"VIP\", 0 AS \"invoice_run_id\", 0 AS \"late\" 
+				FROM Account INNER JOIN $tmpTableName ON Account.Id = $tmpTableName.AccountId LEFT OUTER JOIN Invoice ON Account.Id = Invoice.Account
+				GROUP BY Account.Id
+			
+			) as AccountRankings
+			GROUP BY account_id
+	";
+	if (PEAR::isError($result = $db->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+
+	// Load the details from the tmp tables in reverse rank order (worst first)
+	$strSQL = "SELECT $tmpCols, ranking FROM $tmpTableName, $tmpRankTableName WHERE $tmpTableName.AccountId = $tmpRankTableName.account_id ORDER BY ranking DESC";
+	if (PEAR::isError($result = $db->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+	
+	$results = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
+
+	// Drop the temp tables
+	$strSQL = "DROP TABLE $tmpTableName;";
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+	
+	$strSQL = "DROP TABLE $tmpRankTableName;";
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+	{
+		throw new Exception($result->getMessage());
+	}
+
+	// Return the results
+	return $results;
+}
+
 function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOICE_ACTION_BARRING)
 {
 	if (!$intEffectiveTime)
