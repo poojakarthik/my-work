@@ -86,7 +86,7 @@ abstract class Report_Management
  		{
  			$strClassName	= basename($strClassPath, '.php');
 			Cli_App_Billing::debug("Generating {$strClassName}...");
- 			eval("{$strClassName}::run(\$arrProfitData, \$strReportBasePath, \$strCustomerName)");
+ 			eval("{$strClassName}::run(\$arrProfitData, \$strReportBasePath, \$strCustomerName);");
  		}
  		
  		return;
