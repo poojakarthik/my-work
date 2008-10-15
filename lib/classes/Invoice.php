@@ -703,6 +703,9 @@ class Invoice extends ORM
 	 */
 	public function commit()
 	{
+		static	$qryQuery;
+		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
+		
 		// Ensure that this is a Temporary Invoice
 		if ($this->Status !== INVOICE_TEMP)
 		{
