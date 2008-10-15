@@ -37,7 +37,7 @@ abstract class Report_Management
 	 *
 	 * @param	Invoice_Run	objInvoiceRun					The Invoice Run who's Management Reports we're generating
 	 *
-	 * @return	void
+	 * @return	string										Path to the Management Reports
 	 *
 	 * @constructor
 	 */
@@ -89,7 +89,7 @@ abstract class Report_Management
  			eval("{$strClassName}::run(\$arrProfitData, \$strReportBasePath, \$strCustomerName);");
  		}
  		
- 		return;
+ 		return $strReportBasePath;
  	}
 	
 	//------------------------------------------------------------------------//

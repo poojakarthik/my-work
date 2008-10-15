@@ -22,6 +22,8 @@ class Cli_App_Billing extends Cli
 	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
 	const	FLEX_FRONTEND_SHARED_KEY_FILE	= "/home/ybs-admin/.ssh/id_dsa";
 	
+	const	FLEX_MANAGEMENT_REPORT_PATH		= "/data/www/reports.yellowbilling.com.au/html/";
+	
 	function run()
 	{
 		try
@@ -79,7 +81,7 @@ class Cli_App_Billing extends Cli
 
 					// Revoke Temporary Invoice Runs
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
-					Report_Management::runAll($objInvoiceRun);
+					$this->_copyManagementReports(Report_Management::runAll($objInvoiceRun));
 					break;
 
 				case 'REVOKE':
@@ -239,7 +241,22 @@ class Cli_App_Billing extends Cli
 		
 		$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." -r {$strFlexXMLPath}{$intInvoiceRunId} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strFlexXMLPath}";
 		
+		self::debug($strSCPCommand);
 		return shell_exec($strSCPCommand);
+	}
+	
+	private function _copyManagementReports($strSourcePath)
+	{
+		if (is_dir($strSourcePath))
+		{
+			// Copy the Management Reports
+			$strDestinationPath	= str_replace(FLEX_BASE_PATH."files/reports/", self::FLEX_MANAGEMENT_REPORT_PATH.CUSTOMER_URL_NAME.'/', dirname($strSourcePath));
+			
+			$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." -r {$strSourcePath} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strFlexXMLPath}";
+			
+			self::debug($strSCPCommand);
+			return shell_exec($strSCPCommand);
+		}
 	}
 	
 	private function _commit()
