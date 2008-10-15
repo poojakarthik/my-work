@@ -44,7 +44,7 @@ abstract class Report_Management
  	public static function runAll(Invoice_Run $objInvoiceRun)
  	{
  		// Retrieve Profit Data
- 		$arrProfitData	= self::retrieveProfitData($objInvoiceRun);
+ 		$arrProfitData	= self::_retrieveProfitData($objInvoiceRun);
 		
 		// Customer Name
  		$strCustomerName	= GetConstantDescription($objInvoiceRun->customer_group_id, 'CustomerGroup');
