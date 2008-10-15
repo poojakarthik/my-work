@@ -69,6 +69,17 @@ class Cli_App_Billing extends Cli
 					$objInvoiceRun->export();
 					$this->log($this->_copyXML($objInvoiceRun->Id));
 					break;
+				
+				case 'REPORTS':
+					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
+					{
+						throw new Exception("You must supply an Invoice Run Id when running REPORTS!");
+					}
+
+					// Revoke Temporary Invoice Runs
+					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
+					Reports_Management::runAll($objInvoiceRun);
+					break;
 
 				case 'REVOKE':
 					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
@@ -266,14 +277,14 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|EXPORT]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","EXPORT"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|EXPORT|REPORTS]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","EXPORT","REPORTS"))'
 			),
 
 			self::SWITCH_INVOICE_RUN	=> array(
 				self::ARG_LABEL			=> "INVOICE_RUN_ID",
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE and EXPORT)",
+				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE, EXPORT, and REPORTS)",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
