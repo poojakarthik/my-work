@@ -75,15 +75,22 @@ class Cli_App_Billing extends Cli
 					{
 						throw new Exception("You must supply an Invoice Run Id when running REVOKE!");
 					}
-
+					
 					// Revoke Temporary Invoice Runs
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->revoke();
 					break;
 
 				case 'COMMIT':
+					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
+					{
+						throw new Exception("You must supply an Invoice Run Id when running COMMIT!");
+					}
+					
 					// Commit the Invoice Run
-					$this->_commit();
+					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
+					$objInvoiceRun->commit();
+					break;
 					break;
 
 				default:
@@ -226,7 +233,7 @@ class Cli_App_Billing extends Cli
 	private function _commit()
 	{
 		// TODO
-		throw new Exception("Cli_App_Billing::_commit() has not been implemented yet!");
+		
 	}
 
 	public static function debug($mixMessage, $bolNewLine=TRUE)
