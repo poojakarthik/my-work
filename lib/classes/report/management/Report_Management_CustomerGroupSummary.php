@@ -69,9 +69,9 @@ class Report_Management_CustomerGroupSummary extends Report_Management
 			$intColumns			= 1 + ($intCustomerGroupCount * 2) + 1;
 			
 			// Get Data grouped by Invoice Run
-			foreach ($arrProfitData as $strPeriod=>&$arrProfitData)
+			foreach ($arrProfitData as $strPeriod=>&$arrPeriodData)
 			{
-				$arrProfitData['CustomerGroups']	= Array();
+				$arrPeriodData['CustomerGroups']	= Array();
 				
 				// Get Customer Group data
 				foreach ($arrCustomerGroups as $arrCustomerGroup)
@@ -80,35 +80,35 @@ class Report_Management_CustomerGroupSummary extends Report_Management
 					
 					// Get Profit Summary
 					CliEcho("Getting Profit Summary...");
-					$selProfitSummary->Execute(Array('invoice_run_id' => $arrProfitData['invoice_run_id'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
-					$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary']	= $selProfitSummary->Fetch();
+					$selProfitSummary->Execute(Array('invoice_run_id' => $arrPeriodData['invoice_run_id'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
+					$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary']	= $selProfitSummary->Fetch();
 					
 					// Get Cost Summary
 					CliEcho("Getting Cost Summary...");
-					$selCostSummary->Execute(Array('invoice_run_id' => $arrProfitData['invoice_run_id'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
-					$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary']	= array_merge($arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary'], $selCostSummary->Fetch());
+					$selCostSummary->Execute(Array('invoice_run_id' => $arrPeriodData['invoice_run_id'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
+					$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary']	= array_merge($arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['ProfitSummary'], $selCostSummary->Fetch());
 					
 					// Get Delivery Summary
 					CliEcho("Getting Delivery Summary...");
-					$selDelivery->Execute(Array('invoice_run_id' => $arrProfitData['invoice_run_id'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
+					$selDelivery->Execute(Array('invoice_run_id' => $arrPeriodData['invoice_run_id'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
 					while ($arrDeliveryMethod = $selDelivery->Fetch())
 					{
 						switch ($arrDeliveryMethod['DeliveryMethod'])
 						{
 							case DELIVERY_METHOD_POST:
-								$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['PostTotal']		+= $arrDeliveryMethod['RetailValue'];
-								$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['PostCount']		+= $arrDeliveryMethod['InvoiceCount'];
+								$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['PostTotal']		+= $arrDeliveryMethod['RetailValue'];
+								$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['PostCount']		+= $arrDeliveryMethod['InvoiceCount'];
 								break;
 							
 							case DELIVERY_METHOD_DO_NOT_SEND:
-								$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['WithheldTotal']	+= $arrDeliveryMethod['RetailValue'];
-								$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['WithheldCount']	+= $arrDeliveryMethod['InvoiceCount'];
+								$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['WithheldTotal']	+= $arrDeliveryMethod['RetailValue'];
+								$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['WithheldCount']	+= $arrDeliveryMethod['InvoiceCount'];
 								break;
 							
 							case DELIVERY_METHOD_EMAIL:
 							case DELIVERY_METHOD_EMAIL_SENT:
-								$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['EmailTotal']		+= $arrDeliveryMethod['RetailValue'];
-								$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['EmailCount']		+= $arrDeliveryMethod['InvoiceCount'];
+								$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['EmailTotal']		+= $arrDeliveryMethod['RetailValue'];
+								$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['DeliverySummary']['EmailCount']		+= $arrDeliveryMethod['InvoiceCount'];
 								break;
 						}
 					}
@@ -117,25 +117,25 @@ class Report_Management_CustomerGroupSummary extends Report_Management
 					foreach ($arrDestinations as $strState)
 					{
 						CliEcho("Getting Destination Summary for {$strState}...");
-						$selDestination->Execute(Array('State' => $strState, 'invoice_run_id' => $arrProfitData['invoice_run_id'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
+						$selDestination->Execute(Array('State' => $strState, 'invoice_run_id' => $arrPeriodData['invoice_run_id'], 'CustomerGroup' => $arrCustomerGroup['CustomerGroup']));
 						while ($arrDestination = $selDestination->Fetch())
 						{
 							switch ($arrDestination['DeliveryMethod'])
 							{
 								case DELIVERY_METHOD_POST:
-									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['PostTotal']		+= $arrDestination['RetailValue'];
-									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['PostCount']		+= $arrDestination['InvoiceCount'];
+									$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['PostTotal']		+= $arrDestination['RetailValue'];
+									$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['PostCount']		+= $arrDestination['InvoiceCount'];
 									break;
 								
 								case DELIVERY_METHOD_DO_NOT_SEND:
-									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['WithheldTotal']	+= $arrDestination['RetailValue'];
-									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['WithheldCount']	+= $arrDestination['InvoiceCount'];
+									$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['WithheldTotal']	+= $arrDestination['RetailValue'];
+									$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['WithheldCount']	+= $arrDestination['InvoiceCount'];
 									break;
 								
 								case DELIVERY_METHOD_EMAIL:
 								case DELIVERY_METHOD_EMAIL_SENT:
-									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['EmailTotal']	+= $arrDestination['RetailValue'];
-									$arrProfitData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['EmailCount']	+= $arrDestination['InvoiceCount'];
+									$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['EmailTotal']	+= $arrDestination['RetailValue'];
+									$arrPeriodData['CustomerGroups'][$arrCustomerGroup['CustomerGroup']]['Destinations'][$strState]['EmailCount']	+= $arrDestination['InvoiceCount'];
 									break;
 							}
 						}
