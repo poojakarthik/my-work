@@ -849,7 +849,7 @@
 		// Retrieve Direct Debit Minimum
 		// ... not needed now that we can join onto the payment_terms table for the customer group
 
-	 	$selAccountDebts	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account JOIN payment_terms ON payment_terms.customer_group_id = Account.CustomerGroup", "Account, SUM(Invoice.Balance) AS Charge", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.") AND payment_terms.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = <CustomerGroup>)", "Account.Id", NULL, "Account.Id HAVING Charge >= payment_terms.direct_debit_minimum");
+	 	$selAccountDebts	= new StatementSelect("(Invoice JOIN Account ON Account.Id = Invoice.Account) JOIN payment_terms ON payment_terms.customer_group_id = Account.CustomerGroup", "Account, SUM(Invoice.Balance) AS Charge, direct_debit_minimum", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.") AND payment_terms.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = <CustomerGroup>)", "Account.Id", NULL, "Account.Id HAVING Charge >= payment_terms.direct_debit_minimum");
 		
 	 	// Process Direct Debits for each Billing Type
 	 	$intAccountsCharged	= 0;
