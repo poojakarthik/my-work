@@ -210,112 +210,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
-		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
-		//check if the form was submitted
-		/* DEPRICATED
-		if (SubmittedForm('AccountDetails', 'Apply Changes') && $bolUserHasOperatorPerm)
-		{
-			DBO()->CurrentAccount->Id = DBO()->Account->Id->Value;
-			DBO()->CurrentAccount->SetTable("Account");
-			DBO()->CurrentAccount->Load();
-			
-			// if DisableLatePayment === NULL, then, in this context, it logically equals 0
-			if (DBO()->CurrentAccount->DisableLatePayment->Value === NULL)
-			{
-				DBO()->CurrentAccount->DisableLatePayment = 0;
-			}
-			
-			// Check that the user can edit the account
-			$intAccountStatus = DBO()->Account->Archived->Value;
-			if (	($intAccountStatus == ACCOUNT_STATUS_ARCHIVED || $intAccountStatus == ACCOUNT_STATUS_DEBT_COLLECTION 
-					|| $intAccountStatus == ACCOUNT_STATUS_SUSPENDED) && (!$bolUserHasAdminPerm))
-			{
-				// The user can't edit the Account
-				Ajax()->AddCommand("AlertReload", "ERROR: Due to the account's status, and your permissions, you cannot edit this account");
-				return TRUE;
-			}
-		
-			//Save the AccountDetails
-			if (!DBO()->Account->IsInvalid())
-			{
-				// Define what will go in the system generated note
-				if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)
-				{
-					$strChangesNote .= "This account is ". ((DBO()->Account->DisableDDR->Value == 1) ? "no longer" : "now") ." charged an admin fee\n";
-				}		
-				if (DBO()->Account->DisableLatePayment->Value != DBO()->CurrentAccount->DisableLatePayment->Value)
-				{
-					$intCurrentValue = DBO()->CurrentAccount->DisableLatePayment->Value;
-					if ($intCurrentValue === NULL)
-					{
-						$intCurrentValue = 0;
-					}
-					$strChangesNote .=	"Charging of Late Payment Fee was changed from '".
-										DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue).
-										"' to '". DBO()->Account->DisableLatePayment->FormattedValue() ."'\n";	
-				}
-				if (DBO()->Account->DisableLateNotices->Value != DBO()->CurrentAccount->DisableLateNotices->Value)
-				{
-					$intCurrentValue = DBO()->CurrentAccount->DisableLateNotices->Value;
-					$strChangesNote .=	"Sending of Late Notices was changed from '".
-										DBO()->Account->DisableLateNotices->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue).
-										"' to '". DBO()->Account->DisableLateNotices->FormattedValue() ."'\n";
-										
-					// When this property is changed you have to update the LatePaymentAmnesty property
-					switch (DBO()->Account->DisableLateNotices->Value)
-					{
-						case 0:
-						case 1:
-							DBO()->Account->LatePaymentAmnesty = NULL;
-							break;
-							
-						case (-1):
-							// This account is ineligible to receive late notices, until after the due date of the current bill
-							DBO()->Account->LatePaymentAmnesty = $this->GetLatePaymentAmnestyDate(DBO()->CurrentAccount->PaymentTerms->Value);
-							//$intPaymentTerms					= DBO()->CurrentAccount->PaymentTerms->Value;
-							//DBO()->Account->LatePaymentAmnesty	= date("Y-m-d", strtotime("+{$intPaymentTerms} days", GetStartDateTimeForNextBillingPeriod()));
-							$strChangesNote .= "Late Notices will not be generated until after ". date("d/m/Y", strtotime(DBO()->Account->LatePaymentAmnesty->Value));
-							break;
-					}
-				}
-				else
-				{
-					// Retain the current value of Account.LateNoticeAmnesty
-					DBO()->Account->LatePaymentAmnesty = DBO()->CurrentAccount->LatePaymentAmnesty->Value;
-				}
-				
-				
-				// Update the record in the Account table
-				DBO()->Account->SetColumns("DisableDDR, DisableLatePayment, DisableLateNotices, LatePaymentAmnesty");
-				
-				// Save the payment to the payment table of the vixen database
-				if (!DBO()->Account->Save())
-				{
-					// The account details could not be updated
-					Ajax()->AddCommand("AlertReload", "ERROR: Updating the Account failed, unexpectedly");
-					return TRUE;
-				}
-				
-				// The account details were successfully updated
-				if ($strChangesNote)
-				{
-					$strSystemChangesNote = "Account details have been edited.  The following changes have been made:\n$strChangesNote";
-					SaveSystemNote($strSystemChangesNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, NULL);
-				}
-				Ajax()->AddCommand("Alert", "The Account details have been successfully updated");
-				
-				// Fire the OnNewNote Event
-				Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
-				
-				// Fire the OnAccountDetailsUpdate Event
-				$arrEvent['Account']['Id'] = DBO()->Account->Id->Value;
-				Ajax()->FireEvent(EVENT_ON_ACCOUNT_DETAILS_UPDATE, $arrEvent);
-				
-				return TRUE;
-			}
-		}
-		*/
-		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value, TRUE);
@@ -329,38 +223,28 @@ class AppTemplateAccount extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
+		$intAccountId = DBO()->Account->Id->Value;
 		
-		/* Currently Operators can view Archived accounts
-		// If the account is archived, check that the user has permission to view it
-		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_ARCHIVED && !$bolUserHasAdminPerm)
-		{
-			// The user does not have permission to view this account
-			DBO()->Error->Message = "You do not have permission to view account: ". DBO()->Account->Id->value ." because its status = " . GetConstantDescription(DBO()->Account->Archived->Value, "account_status");
-			$this->LoadPage('error');
-			return FALSE;
-		}
-		*/
-
 		// context menu
-		ContextMenu()->Account->Account_Overview(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Services->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
-		ContextMenu()->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Account_Overview($intAccountId);
+		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
+		ContextMenu()->Account->Services->List_Services($intAccountId);
+		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
+		ContextMenu()->Account->View_Cost_Centres($intAccountId);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account->Services->Add_Services(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Services->Add_Services($intAccountId);
+			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
+			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
+			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
+			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
+			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
+			ContextMenu()->Account->Add_Associated_Account($intAccountId);
+			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
+			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
+			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
 		}
-		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
 		
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
@@ -423,7 +307,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// I can't directly use a DBObject property or method as a parameter of another DBObject or DBList method
 		// On account of how the Property token works 
-		$intAccountId = DBO()->Account->Id->Value;
 		DBL()->RecurringCharge->Where->Set("RC.Account = <Account> AND RC.Archived = 0", Array("Account"=>$intAccountId));
 		DBL()->RecurringCharge->OrderBy("StartedOn DESC, Id DESC");
 		DBL()->RecurringCharge->Load();
@@ -437,10 +320,16 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Calculate the Account's total unbilled adjustments
 		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
-		// Load the primary contact
+		// Load all contacts, with the primary being listed first, and then those belonging to this account specifically, then those belonging to the account group who can access this account
 		if (DBO()->Account->PrimaryContact->Value)
 		{
-			DBL()->Contact->Id = DBO()->Account->PrimaryContact->Value;
+			// Make sure the contact specified belongs to the AccountGroup
+			$intPrimaryContactId	= DBO()->Account->PrimaryContact->Value;
+			$intAccountGroupId		= DBO()->Account->AccountGroup->Value;
+			
+			DBL()->Contact->Where->SetString("Id = $intPrimaryContactId OR Account = $intAccountId OR (CustomerContact = 1 AND AccountGroup = $intAccountGroupId)");
+			DBL()->Contact->OrderBy("(Id = $intPrimaryContactId) DESC, (Account = $intAccountId) DESC, FirstName ASC, LastName ASC");
+			DBL()->Contact->SetLimit(3);
 			DBL()->Contact->Load();
 		}
 		
@@ -534,9 +423,6 @@ class AppTemplateAccount extends ApplicationTemplate
 			DBL()->Contact->Where->SetString("Id = $intPrimaryContactId OR Account = $intAccountId OR (CustomerContact = 1 AND AccountGroup = $intAccountGroupId)");
 			DBL()->Contact->OrderBy("(Id = $intPrimaryContactId) DESC, (Account = $intAccountId) DESC, FirstName ASC, LastName ASC");
 			DBL()->Contact->SetLimit(3);
-			
-			//DBL()->Contact->Id				= DBO()->Account->PrimaryContact->Value;
-			//DBL()->Contact->AccountGroup	= DBO()->Account->AccountGroup->Value; 
 			DBL()->Contact->Load();
 		}
 		
