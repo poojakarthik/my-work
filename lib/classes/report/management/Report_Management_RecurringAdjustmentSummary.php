@@ -50,7 +50,7 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 		$arrCols['LastChargedOn']	= "RecurringCharge.LastChargedOn";
 		$selBreakdown	= new StatementSelect(	"(RecurringCharge LEFT JOIN Service ON Service.Id = RecurringCharge.Service) JOIN Account ON RecurringCharge.Account = Account.Id",
 												$arrCols,
-												"(RecurringCharge.LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND RecurringCharge.LastChargedOn <= <BillingDate>) OR (RecurringCharge.MinCharge > RecurringCharge.TotalCharged AND RecurringCharge.Archived = 0 AND Account.Archived = 0) AND Account.CustomerGroup = <customer_group_id>",
+												"((RecurringCharge.LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND RecurringCharge.LastChargedOn <= <BillingDate>) OR (RecurringCharge.MinCharge > RecurringCharge.TotalCharged AND RecurringCharge.Archived = 0 AND Account.Archived = 0)) AND Account.CustomerGroup = <customer_group_id>",
 												"RecurringCharge.ChargeType");
 		
 		// Create Workbook
