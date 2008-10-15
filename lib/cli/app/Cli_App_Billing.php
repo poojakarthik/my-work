@@ -218,7 +218,7 @@ class Cli_App_Billing extends Cli
 	{
 		$strFlexXMLPath	= FLEX_BASE_PATH."files/invoices/xml/";
 		
-		$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." -r {$strFlexXMLPath}{$intInvoiceRunId} ".self::FLEX_FRONTEND_USERNAME."@".FLEX_FRONTEND_HOST.":{$strFlexXMLPath}";
+		$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." -r {$strFlexXMLPath}{$intInvoiceRunId} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strFlexXMLPath}";
 		
 		return shell_exec($strSCPCommand);
 	}
