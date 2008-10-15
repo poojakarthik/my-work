@@ -59,8 +59,8 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	$strInvoiceDate 				= date("dmY", strtotime($arrInvoiceRun['BillingDate']));
 	$strBillingPeriodEndMonth		= date("F", strtotime("-1 day", strtotime($arrInvoiceRun['BillingDate'])));
 	$strBillingPeriodEndYear		= date("F", strtotime("-1 day", strtotime($arrInvoiceRun['BillingDate'])));
-	$strBillingPeriodStartMonth		= date("F Y", strtotime("-1 month", strtotime("-1 day", strtotime($arrInvoiceRun['BillingDate']))));
-	$strBillingPeriodStartYear		= date("F Y", strtotime("-1 month", strtotime("-1 day", strtotime($arrInvoiceRun['BillingDate']))));
+	$strBillingPeriodStartMonth		= date("F Y", strtotime("-1 month", strtotime($arrInvoiceRun['BillingDate'])));
+	$strBillingPeriodStartYear		= date("F Y", strtotime("-1 month", strtotime($arrInvoiceRun['BillingDate'])));
 	
 	$strBillingPeriod				= $strBillingPeriodStartMonth;
 	
