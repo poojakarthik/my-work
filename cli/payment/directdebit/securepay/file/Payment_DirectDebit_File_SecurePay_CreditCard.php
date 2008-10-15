@@ -215,7 +215,7 @@
  		$arrRendered['ExpiryDate']		=  "{$strExpMonth}/{$strExpYear}";
  		$arrRendered['AmountCharged']	= ceil($arrRequest['Charge'] * 100);
  		$arrRendered['FlexAccount']		= $arrRequest['Account'];
- 		$arrRendered['CustomerName']	= substr(preg_replace("/[^\w\ ]+/misU", '_', trim($arrAccountDetails['BusinessName'])), 0, 32);
+ 		$arrRendered['CustomerName']	= substr(preg_replace("/[^\w\ ]+/misU", '', trim($arrAccountDetails['BusinessName'])), 0, 32);
  		
  		$arrRendered['**Type']		= BILLING_TYPE_CREDIT_CARD;
  		$this->_arrFileContent[]	= $arrRendered;
