@@ -710,14 +710,14 @@ class Invoice extends ORM
 		}
 
 		// Commit the CDRs
-		$updCDRsByAccount		= self::_preparedStatement('updCDRsByAccount');
+		$updCDRsByAccount		= self::_preparedStatement('updCDRCommit');
 		if ($updCDRsByAccount->Execute(Array('Status'=>CDR_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
 		{
 			throw new Exception($updCDRsByAccount->Error());
 		}
 
 		// Commit the Charges
-		$updChargesByAccount	= self::_preparedStatement('updChargesByAccount');
+		$updChargesByAccount	= self::_preparedStatement('updChargeCommit');
 		if ($updChargesByAccount->Execute(Array('Status'=>CHARGE_INVOICED), Array('Account'=>$this->Account, 'invoice_run_id'=>$this->invoice_run_id)) === FALSE)
 		{
 			throw new Exception($updChargesByAccount->Error());
@@ -1175,6 +1175,12 @@ class Invoice extends ORM
 					break;
 				case 'updInvoiceStatus':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Invoice", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('Status'=>NULL, 'SettledOn'=>NULL));
+					break;
+				case 'updCDRCommit':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('Status'=>CDR_INVOICED));
+					break;
+				case 'updChargeCommit':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND invoice_run_id = <invoice_run_id>", Array('Status'=>CHARGE_INVOICED));
 					break;
 
 				default:
