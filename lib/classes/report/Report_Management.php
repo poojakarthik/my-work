@@ -48,6 +48,7 @@ abstract class Report_Management
 		
 		// Customer Name
  		$strCustomerName	= GetConstantDescription($objInvoiceRun->customer_group_id, 'CustomerGroup');
+		Cli_App_Billing::debug("Customer Name\t: {$strCustomerName}");
  		
  		// Billing Period
 		$strBillingPeriodEndMonth	= date("F", strtotime("-1 day", strtotime($objInvoiceRun->BillingDate)));
@@ -71,17 +72,20 @@ abstract class Report_Management
 		{
 			$strBillingPeriod			.= " {$strBillingPeriodStartYear}";
 		}
+		Cli_App_Billing::debug("Billing Period\t: {$strBillingPeriod}");
  		
  		// Base Path
  		$strReportBasePath	= FILES_BASE_PATH."reports/management/{$strBillingPeriodYear}/{$strBillingPeriodMonth}/";
  		$strReportBasePath	.= ($objInvoiceRun->customer_group_id) ? strtolower(str_replace(' ', '', $strCustomerName))."/" : '';
  		@mkdir($strReportBasePath, 0777, TRUE);
+		Cli_App_Billing::debug("Output Path\t: {$strReportBasePath}");
  		
  		// Run each Management Report
  		$arrClassFiles	= glob(FLEX_BASE_PATH."lib/classes/report/management/*.php");
  		foreach ($arrClassFiles as $strClassPath)
  		{
  			$strClassName	= basename($strClassPath, '.php');
+			Cli_App_Billing::debug("Generating {$strClassName}...");
  			eval("{$strClassName}::run(\$arrProfitData, \$strReportBasePath, \$strCustomerName)");
  		}
  		
