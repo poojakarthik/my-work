@@ -172,7 +172,7 @@ class Report_Management_InvoiceSummary extends Report_Management
 				$arrLastInvoiceTotal = $selLastInvoiceTotal->Fetch();
 				$fltTotalOutstanding			= $arrBalanceData['TotalBalance'] + $arrBalanceData['TotalOutstanding'];
 				$fltTotalOutstandingExInvoice	= $arrBalanceData['TotalOutstanding'];
-				$fltReceived					= ($arrLastInvoiceTotal['GrandTotal'] - $arrBalanceData['PreviousBalance']) / $arrLastInvoiceTotal['GrandTotal'];
+				$fltReceived					= ($arrLastInvoiceTotal['GrandTotal']) ? ($arrLastInvoiceTotal['GrandTotal'] - $arrBalanceData['PreviousBalance']) / $arrLastInvoiceTotal['GrandTotal'] : 'N/A';
 			}
 			
 			$wksWorksheet->write(26, $intCol, $fltTotalOutstanding			, $arrFormat['Currency']);

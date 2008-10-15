@@ -94,8 +94,14 @@ class Report_Management_PlanSummary extends Report_Management
 				
 				// Add new Worksheet
 				$strWorksheet = preg_replace("/\W+/misU", "_", $arrRatePlan['Name']);
-				Debug($strWorksheet);
+				Cli_App_Billing::debug($strWorksheet);
 				$wksWorksheet =& $wkbWorkbook->addWorksheet($strWorksheet);
+				
+				if (PEAR::isError($wksWorksheet))
+				{
+					throw new Exception($wksWorksheet->toString());
+				}
+				
 				$wksWorksheet->setLandscape();
 				$wksWorksheet->hideGridlines();
 				$wksWorksheet->fitToPages(1, 99);
