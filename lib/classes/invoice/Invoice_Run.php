@@ -281,6 +281,14 @@ class Invoice_Run
 		}
 		$arrInvoiceTotals	= $selInvoiceTotals->Fetch();
 		
+		$selInvoiceCDRTotals	= self::_preparedStatement('selInvoiceCDRTotals');
+		if ($selInvoiceCDRTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
+		{
+			// Database Error -- throw Exception
+			throw new Exception("DB ERROR: ".$selInvoiceCDRTotals->Error());
+		}
+		$arrInvoiceCDRTotals	= $selInvoiceCDRTotals->Fetch();
+		
 		$selInvoiceBalanceHistory	= self::_preparedStatement('selInvoiceBalanceHistory');
 		if ($selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id)) === FALSE)
 		{
@@ -308,8 +316,8 @@ class Invoice_Run
 										);
 		
 		// Finalised InvoiceRun record
-		$this->BillCost					= $arrInvoiceTotals['BillCost'];
-		$this->BillRated				= $arrInvoiceTotals['BillRated'];
+		$this->BillCost					= $arrInvoiceCDRTotals['BillCost'];
+		$this->BillRated				= $arrInvoiceCDRTotals['BillRated'];
 		$this->BillInvoiced				= $arrInvoiceTotals['BillInvoiced'];
 		$this->BillTax					= $arrInvoiceTotals['BillTax'];
 		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
@@ -631,7 +639,9 @@ class Invoice_Run
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
 					break;
 				case 'selInvoiceTotals':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN ServiceTypeTotal STT USING (invoice_run_id, Account)", "SUM(STT.Cost) AS BillCost, SUM(STT.Charge) AS BillRated, SUM(Invoice.Total) AS BillInvoiced, SUM(Invoice.Tax) AS BillTax", "invoice_run_id = <invoice_run_id>");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice", "SUM(Invoice.Total) AS BillInvoiced, SUM(Invoice.Tax) AS BillTax", "invoice_run_id = <invoice_run_id>");
+				case 'selInvoiceCDRTotals':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("ServiceTypeTotal STT", "SUM(STT.Cost) AS BillCost, SUM(STT.Charge) AS BillRated", "invoice_run_id = <invoice_run_id>");
 					break;
 				case 'selInvoiceBalanceHistory':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id", "SUM(Balance) AS TotalBalance", "invoice_run_id <= <invoice_run_id> AND customer_group_id = <customer_group_id>", "invoice_run_id DESC");
