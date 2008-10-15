@@ -30,8 +30,8 @@ class Report_Management_CustomerSummary extends Report_Management
  	public static function run($arrProfitData, $strReportBasePath, $strCustomerName)
  	{
 		$selServiceCount	= new StatementSelect("ServiceTotal", "Account, COUNT(Id) AS ServiceCount", "invoice_run_id = <invoice_run_id>", "ServiceCount", NULL, "Account");
-		$selInvoice 	= new StatementSelect("Invoice", "Id", "invoice_run_id = <invoice_run_id>");
-		$selCustomersGained	= new StatementSelect("Account", "Id", "CreatedOn BETWEEN <LastBillingDate> AND <BillingDate>");
+		$selInvoice 		= new StatementSelect("Invoice", "Id", "invoice_run_id = <invoice_run_id>");
+		$selCustomersGained	= new StatementSelect("Account", "Id", "CreatedOn BETWEEN <LastBillingDate> AND <BillingDate> AND CustomerGroup = <customer_group_id>");
 		
 		// Create Workbook
 		$strFilename = $strReportBasePath."Customer_Summary.xls";
