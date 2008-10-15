@@ -112,7 +112,7 @@ abstract class Report_Management
 		
 		if (!isset($arrProfitData))
 		{
-			$selProfitData = new StatementSelect("InvoiceRun", "*", "BillingDate < <BillingDate>", "BillingDate DESC", 1);
+			$selProfitData = new StatementSelect("InvoiceRun", "*", "customer_group_id = <customer_group_id> AND BillingDate < <BillingDate>", "BillingDate DESC", 1);
 			
 			$arrProfitData['ThisMonth']	= $objInvoiceRun->toArray();
 			
