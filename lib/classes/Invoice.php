@@ -745,17 +745,11 @@ class Invoice extends ORM
 		{
 			throw new Exception($qryQuery->Error());
 		}
-
+		
 		//------------------------------ INVOICE -----------------------------//
 		// Determine Invoice Status
-		$strSQL	= "UPDATE Invoice " .
-					" SET Status = IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.") " .
-					" WHERE Account = {$this->Account} AND invoice_run_id = {$this->invoice_run_id}";
-		if ($qryQuery->Execute($strSQL) === FALSE)
-		{
-			throw new Exception($qryQuery->Error());
-		}
-
+		$this->Status	= ($this->Balance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED;
+		
 		// Save
 		$this->save();
 	}
