@@ -29,12 +29,12 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 	 */
  	public static function run($arrProfitData, $strReportBasePath, $strCustomerName)
  	{
-		$selActiveCharges	= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "(RecurringCharge.LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND RecurringCharge.LastChargedOn <= <BillingDate>) OR (RecurringCharge.MinCharge > RecurringCharge.TotalCharged AND RecurringCharge.Archived = 0) AND Account.Archived = 0");
-		$selTotalCharged	= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "SUM(RecurringCharge.RecursionCharge) AS Total", "(LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND LastChargedOn <= <BillingDate>)");
-		$selChargeFinished	= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "(LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND LastChargedOn <= <BillingDate>) AND TotalCharged >= MinCharge");
-		$selChargeCancelled	= new StatementSelect("(RecurringCharge JOIN Charge USING (Account, ChargeType)) JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "Charge.Service <=> RecurringCharge.Service AND Charge.Description = CONCAT('CANCELLATION: ', RecurringCharge.Description) AND invoice_run_id = <invoice_run_id>");
+		$selActiveCharges	= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "(RecurringCharge.LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND RecurringCharge.LastChargedOn <= <BillingDate>) OR (RecurringCharge.MinCharge > RecurringCharge.TotalCharged AND RecurringCharge.Archived = 0) AND Account.Archived = 0 AND Account.CustomerGroup = <customer_group_id>");
+		$selTotalCharged	= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "SUM(RecurringCharge.RecursionCharge) AS Total", "(LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND LastChargedOn <= <BillingDate>) AND Account.CustomerGroup = <customer_group_id>");
+		$selChargeFinished	= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "(LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND LastChargedOn <= <BillingDate>) AND TotalCharged >= MinCharge AND Account.CustomerGroup = <customer_group_id>");
+		$selChargeCancelled	= new StatementSelect("(RecurringCharge JOIN Charge USING (Account, ChargeType)) JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "Charge.Service <=> RecurringCharge.Service AND Charge.Description = CONCAT('CANCELLATION: ', RecurringCharge.Description) AND invoice_run_id = <invoice_run_id> AND Account.CustomerGroup = <customer_group_id>");
 		//$selNewCharges		= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "(RecurringCharge.CreatedOn BETWEEN SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND <BillingDate>) AND 1 = (SELECT COUNT(Id) FROM Charge WHERE Charge.Account = RecurringCharge.Account AND Charge.Service <=> RecurringCharge.Service AND Charge.ChargeType = RecurringCharge.ChargeType)");
-		$selNewCharges		= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "(RecurringCharge.CreatedOn BETWEEN SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND <BillingDate>)");
+		$selNewCharges		= new StatementSelect("RecurringCharge JOIN Account ON Account.Id = RecurringCharge.Account", "RecurringCharge.Id", "(RecurringCharge.CreatedOn BETWEEN SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND <BillingDate>) AND Account.CustomerGroup = <customer_group_id>");
 		
 		$arrCols = Array();
 		$arrCols['Account']			= "RecurringCharge.Account";
@@ -50,7 +50,7 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 		$arrCols['LastChargedOn']	= "RecurringCharge.LastChargedOn";
 		$selBreakdown	= new StatementSelect(	"(RecurringCharge LEFT JOIN Service ON Service.Id = RecurringCharge.Service) JOIN Account ON RecurringCharge.Account = Account.Id",
 												$arrCols,
-												"(RecurringCharge.LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND RecurringCharge.LastChargedOn <= <BillingDate>) OR (RecurringCharge.MinCharge > RecurringCharge.TotalCharged AND RecurringCharge.Archived = 0 AND Account.Archived = 0)",
+												"(RecurringCharge.LastChargedOn > SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND RecurringCharge.LastChargedOn <= <BillingDate>) OR (RecurringCharge.MinCharge > RecurringCharge.TotalCharged AND RecurringCharge.Archived = 0 AND Account.Archived = 0) AND Account.CustomerGroup = <customer_group_id>",
 												"RecurringCharge.ChargeType");
 		
 		// Create Workbook
