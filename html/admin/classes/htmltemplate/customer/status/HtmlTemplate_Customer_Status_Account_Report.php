@@ -29,7 +29,8 @@ class HtmlTemplate_Customer_Status_Account_Report extends FlexHtmlTemplate
 		$strInvoiceRunOptions = "";
 		foreach ($this->mxdDataToRender['InvoiceRuns'] as $arrInvoiceRun)
 		{
-			$strName = date("d/m/Y", strtotime($arrInvoiceRun['BillingDate'])). " - Id: ". $arrInvoiceRun['Id'];
+			$strCustomerGroup = ($arrInvoiceRun['CustomerGroup'] !== NULL)? htmlspecialchars($arrInvoiceRun['CustomerGroup']) : "All Customer Groups";
+			$strName = date("d/m/Y", strtotime($arrInvoiceRun['BillingDate'])). " - Id: {$arrInvoiceRun['Id']} - $strCustomerGroup";
 			$strInvoiceRunOptions .= "<option value='{$arrInvoiceRun['Id']}'>$strName</option>\n";
 		}
 
