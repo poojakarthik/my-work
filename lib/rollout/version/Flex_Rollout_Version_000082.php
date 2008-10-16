@@ -6,6 +6,7 @@
  *	1:	Add the compression_algorithm table
  *	2:	Populate the compression_algorithm table
  *	3:	Add the FileImport.compression_algorithm_id field
+ *	4:	Populate the FileImport.compression_algorithm_id field
  */
 
 class Flex_Rollout_Version_000082 extends Flex_Rollout_Version
@@ -46,13 +47,21 @@ class Flex_Rollout_Version_000082 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "TRUNCATE TABLE compression_algorithm;";
 		
 		// 3:	Add the FileImport.compression_algorithm_id field
-		$strSQL = "ALTER TABLE FileImport ADD compression_algorithm_id BIGINT(20) NOT NULL DEFAULT (SELECT id FROM compression_algorithm WHERE name = 'None' LIMIT 1) COMMENT '(FK) Compression Algorithm applied at Collection' AFTER archive_location;";
+		$strSQL = "ALTER TABLE FileImport ADD compression_algorithm_id BIGINT(20) NOT NULL COMMENT '(FK) Compression Algorithm applied at Collection' AFTER archive_location;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the FileImport.compression_algorithm_id field. ' . $result->getMessage());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE FileImport DROP compression_algorithm_id;";
+		
+		// 4:	Populate the FileImport.compression_algorithm_id field
+		$strSQL = "UPDATE FileImport SET compression_algorithm_id = (SELECT id FROM compression_algorithm WHERE name = 'None' LIMIT 1) WHERE compression_algorithm_id NOT IN (SELECT id FROM compression_algorithm);";
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to populate the FileImport.compression_algorithm_id field. ' . $result->getMessage());
+		}
 	}
 	
 	function rollback()
