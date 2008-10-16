@@ -8,6 +8,7 @@ $appProvisioning	= new ApplicationProvisioning();
 ///*DEBUG QUERY*/$selServices	= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "Account = 1000154811 AND ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
 $selServices	= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
 $selResponses	= new StatementSelect("(ProvisioningResponse JOIN provisioning_type ON provisioning_type.id = ProvisioningResponse.Type) JOIN FileImport ON FileImport.Id = ProvisioningResponse.FileImport", "ProvisioningResponse.*, FileImport.FileType", "provisioning_type.provisioning_type_nature = <Nature> AND ProvisioningResponse.Service = <Service> AND ProvisioningResponse.Status = ".RESPONSE_STATUS_IMPORTED);
+$selLineStatus	= new StatementSelect("Service", "*", "Id = <Id>");
 
 // File Type Conversion Array (Key: Old Type; Value: New Type)
 $arrFileTypeConvert	= Array();
@@ -36,7 +37,7 @@ if ($intServiceCount = $selServices->Execute())
 		CliEcho(" * ($intCount/$intServiceCount {$fltPercent}% @ {$intSplit}s){$arrService['Account']}::{$arrService['FNN']}...", FALSE);
 		
 		// DETERMINE CURRENT SERVICE LINE STATUS
-		CliEcho("FS...", FALSE);
+		CliEcho("FS Current: {$arrService['LineStatus']}::{$arrService['LineStatusDate']}", FALSE);
 		if ($selResponses->Execute(Array('Service' => $arrService['Id'], 'Nature' => REQUEST_TYPE_NATURE_FULL_SERVICE)) !== FALSE)
 		{
 			WaitingIcon(TRUE);
@@ -48,8 +49,8 @@ if ($intServiceCount = $selServices->Execute())
 			{
 				WaitingIcon();
 				//Debug($arrResponse);
-				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
-				$arrResponse	= array_merge($arrResponse, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY));
+				//$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
+				//$arrResponse	= array_merge($arrResponse, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY));
 				//Debug($arrResponse);
 				
 				// Is this Response on the last EffectiveDate?
@@ -77,16 +78,22 @@ if ($intServiceCount = $selServices->Execute())
 				$mixResponse	= ImportBase::UpdateLineStatus($arrResponse);
 				if (is_string($mixResponse))
 				{
-					CliEcho($mixResponse);
+					throw new Exception($mixResponse);
 				}
 			}
+			
+			if ($selLineStatus->Execute($arrService) === FALSE)
+			{
+				throw new Exception($selLineStatus->Error());
+			}
+			$arrNewStatus	= $selLineStatus->Fetch();
+			CliEcho("; New: {$arrNewStatus['LineStatus']}::{$arrNewStatus['LineStatusDate']}");
 		}
 		else
 		{
-			CliEcho("ERROR: There was an error with Service selResponses: ".$selResponses->Error());
-			exit(2);
+			throw new Exception($selResponses->Error());
 		}
-		
+		/*
 		// DETERMINE CURRENT PROVISIONING LINE STATUS
 		CliEcho("PS...", FALSE);
 		if ($selResponses->Execute(Array('Service' => $arrService['Id'], 'Nature' => REQUEST_TYPE_NATURE_PRESELECTION)) !== FALSE)
@@ -136,6 +143,7 @@ if ($intServiceCount = $selServices->Execute())
 			CliEcho("ERROR: There was an error with Provisioning selResponses: ".$selResponses->Error());
 			exit(2);
 		}
+		*/
 		CliEcho();
 	}
 }
