@@ -145,7 +145,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 		$arrCols['Description']	= NULL;
  		$ubiRequest			= new StatementUpdateById("ProvisioningRequest", $arrCols);
  		
- 		$selImport			= new StatementSelect("FileImport", "*", "FileType IN (".implode(', ', $arrFileTypes).") AND Status = ".FILE_COLLECTED);
+ 		$selImport			= new StatementSelect("FileImport JOIN compression_algorithm ON FileImport.compression_algorithm_id = compression_algorithm.id", "FileImport.*, compression_algorithm.file_extension, compression_algorithm.php_stream_wrapper", "FileType IN (".implode(', ', $arrFileTypes).") AND Status = ".FILE_COLLECTED);
  		$selServiceCarrier	= new StatementSelect("Service", "Carrier, CarrierPreselect", "Id = <Service>");
  		
  		$arrCols				= $this->db->FetchClean("ProvisioningResponse");
@@ -176,7 +176,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
  			}
 	 			
 	 		// Open File for Reading
-	 		if (!@$ptrFile = fopen($arrFile['Location'], 'r'))
+	 		if (!@$ptrFile = fopen($arrFile['php_stream_wrapper'].$arrFile['Location'], 'r'))
 	 		{
 	 			// TODO: Error!
  				CliEcho("\t* Unable to read file '{$arrFile['Location']}'");

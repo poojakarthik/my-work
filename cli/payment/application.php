@@ -244,7 +244,7 @@
 		}
 		
 		$strWhere					= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
-		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", $strWhere);
+		$this->_selGetPaymentFiles	= new StatementSelect("FileImport JOIN compression_algorithm ON FileImport.compression_algorithm_id = compression_algorithm.id", "FileImport.*, compression_algorithm.file_extension, compression_algorithm.php_stream_wrapper", $strWhere);
 		
 		// Loop through the Payment File entries
 		$intCount	= 0;
@@ -283,7 +283,7 @@
 			}
 			
 			// Import
-			$ptrFile		= fopen($arrFile['Location'], "r");
+			$ptrFile		= fopen($arrFile['php_stream_wrapper'].$arrFile['Location'], "r");
 			$intSequence	= 1;
 			while (!feof($ptrFile))
 			{

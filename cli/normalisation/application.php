@@ -285,7 +285,7 @@
 		}
 		
 		$strWhere			= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
-		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere, NULL, $intLimit);
+		$selSelectCDRFiles 	= new StatementSelect("FileImport JOIN compression_algorithm ON FileImport.compression_algorithm_id = compression_algorithm.id", "FileImport.*, compression_algorithm.file_extension, compression_algorithm.php_stream_wrapper", $strWhere, NULL, $intLimit);
 		
 		$insInsertCDRLine	= new StatementInsert("CDR");
 		
@@ -309,7 +309,7 @@
 		while ($arrCDRFile = $selSelectCDRFiles->Fetch())
 		{
 			// Make sure the file exists
-			if (!file_exists($arrCDRFile["Location"]))
+			if (!file_exists($arrCDRFile['Location']))
 			{
 				// Report the error, and UPDATE the database with a new status, then move to the next file
 				new ExceptionVixen("Specified CDR File doesn't exist", $this->_errErrorHandler, CDR_FILE_DOESNT_EXIST);
@@ -476,7 +476,7 @@
 			}
 			
 			// Insert every CDR Line into the database
-			$fileCDRFile	= fopen($arrCDRFile["Location"], "r");
+			$fileCDRFile	= fopen($arrCDRFile['php_stream_wrapper'].$arrCDRFile['Location'], "r");
 			$intSequence	= 1;
 			while (!feof($fileCDRFile))
 			{

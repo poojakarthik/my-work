@@ -396,6 +396,21 @@ class ApplicationCollection extends ApplicationBaseClass
 					$arrFileImport['Status']	= FILE_NOT_UNIQUE;
 				}
 			}
+			
+			// Compress the Imported File using the BZ2 algorithm
+			if (file_put_contents("compress.bzip2://{$strDestination}.bz2", file_get_contents($strDestination)))
+			{
+				// Success, remove the uncompressed file
+				unlink($strDestination);
+				
+				$strDestination								.= '.bz2';
+				$arrFileImport['compression_algorithm_id']	= COMPRESSION_ALGORITHM_BZIP2;
+			}
+			else
+			{
+				// Failure, keep the old file, and continue as if nothing went wrong
+				$arrFileImport['compression_algorithm_id']	= COMPRESSION_ALGORITHM_NONE;
+			}
 		}
 		
 		if (!defined('COLLECTION_DEBUG_MODE') || !COLLECTION_DEBUG_MODE)
