@@ -49,8 +49,8 @@ if ($intServiceCount = $selServices->Execute())
 			{
 				WaitingIcon();
 				//Debug($arrResponse);
-				//$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
-				//$arrResponse	= array_merge($arrResponse, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY));
+				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
+				$arrResponse	= array_merge($arrResponse, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY));
 				//Debug($arrResponse);
 				
 				// Is this Response on the last EffectiveDate?
