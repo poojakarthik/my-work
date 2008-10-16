@@ -15,10 +15,16 @@
 class Customer_Status_Calculator
 {
 	// Returns array of account ids for all accounts that are eligible for having a customer status calculated
-	public static function getEligibleAccounts($intInvoiceRun)
+	public static function getEligibleAccounts($intInvoiceRunId)
 	{
 		// All Non Archived accounts are eligible
-		$selEligibleAccounts = new StatementSelect("Account", "Id", "Archived != ". ACCOUNT_STATUS_ARCHIVED);
+		$strWhere = "Archived != ". ACCOUNT_STATUS_ARCHIVED ." AND 
+(
+	(SELECT customer_group_id FROM InvoiceRun WHERE Id = $intInvoiceRunId) IS NULL
+OR
+	(SELECT customer_group_id FROM InvoiceRun WHERE Id = $intInvoiceRunId) = CustomerGroup
+)";
+		$selEligibleAccounts = new StatementSelect("Account", "Id", $strWhere);
 		
 		if (($outcome = $selEligibleAccounts->Execute()) === FALSE)
 		{

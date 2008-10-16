@@ -41,15 +41,15 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 			// Get the Invoice runs
 			if ($intArgDays !== NULL)
 			{
-				$strWhere = "(BillingDate + INTERVAL $intArgDays DAY) > NOW()";
+				$strWhere = "(IR.BillingDate + INTERVAL $intArgDays DAY) > NOW()";
 			}
 			elseif ($intArgInvoiceRunId !== NULL)
 			{
-				$strWhere = "Id = $intArgInvoiceRunId";
+				$strWhere = "IR.Id = $intArgInvoiceRunId";
 			}
 			elseif ($strArgDate !== NULL)
 			{
-				$strWhere = "BillingDate = '". date("Y-m-d", $strArgDate) ."'";
+				$strWhere = "IR.BillingDate = '". date("Y-m-d", $strArgDate) ."'";
 			}
 			else
 			{
@@ -57,8 +57,18 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 				throw new Exception("Boundary conditions have not been specified.  Choose one of either -d, -i or -b");
 			}
 			
+			$strWhere .= " AND IR.invoice_run_type_id = ". INVOICE_RUN_TYPE_LIVE ." AND IR.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED;
 			
-			$selInvoiceRuns = new StatementSelect("InvoiceRun", "Id, InvoiceRun, BillingDate", $strWhere, "Id DESC");
+			$arrColumns = array(
+								"Id"				=> "IR.Id",
+								"InvoiceRun"		=> "IR.InvoiceRun",
+								"BillingDate"		=> "IR.BillingDate",
+								"CustomerGroupId"	=> "CG.Id",
+								"CustomerGroupName"	=> "CG.InternalName"
+								);
+			$strTables = "InvoiceRun AS IR LEFT JOIN CustomerGroup AS CG ON IR.customer_group_id = CG.Id";
+			
+			$selInvoiceRuns = new StatementSelect($strTables, $arrColumns, $strWhere, "Id DESC");
 			
 			if (($outcome = $selInvoiceRuns->Execute()) === FALSE)
 			{
@@ -80,7 +90,9 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 			$arrResults = array();
 			foreach ($arrInvoiceRuns as $arrInvoiceRun)
 			{
-				$this->log("Processing Invoice Run: {$arrInvoiceRun['InvoiceRun']} (id: {$arrInvoiceRun['Id']})", FALSE, FALSE, TRUE);				
+				$strCustomerGroup = ($arrInvoiceRun['CustomerGroupId'] !== NULL)? "for customer group: {$arrInvoiceRun['CustomerGroupName']}" : "for all Customer Groups";
+				
+				$this->log("Processing Invoice Run: {$arrInvoiceRun['Id']}, $strCustomerGroup", FALSE, FALSE, TRUE);				
 				
 				$intSuccessful		= 0;
 				$intUnclassifiable	= 0;
@@ -113,7 +125,7 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 				$bolHasUnclassifiables	= ($bolHasUnclassifiables || ($intUnclassifiable > 0));
 				$bolHasErrors			= ($bolHasErrors || ($intFailed > 0));
 				
-				$strInvoiceRunSummary = "Summary for Invoice Run: {$arrInvoiceRun['InvoiceRun']} (id: {$arrInvoiceRun['Id']})
+				$strInvoiceRunSummary = "Summary for Invoice Run: {$arrInvoiceRun['Id']}, $strCustomerGroup
 \tBillingDate    : {$arrInvoiceRun['BillingDate']}
 \tTotalAccounts  : ". count($arrAccountIds) ."
 \tSuccessful     : $intSuccessful
