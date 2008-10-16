@@ -418,7 +418,7 @@
 				else
 				{
 					// No Definition or Default for this Relationship, don't update
-					CliEcho("No Definition for ({$arrResponse['Id']}) -- not updating");
+					CliEcho("No Definition for {$arrResponse['Id']} (LineStatus: {$intCurrentLineStatus}; Type: {$arrProvisioningType['id']}; RequestStatus: {$arrResponse['request_status']}) -- not updating");
 					return TRUE;
 				}
 			}
