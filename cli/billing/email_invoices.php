@@ -81,7 +81,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	
 	$selAccountEmail	= new StatementSelect(	"Account JOIN Contact USING (AccountGroup)",
 												"Contact.Account, CustomerGroup, Email, FirstName",
-												"Account.Id = <Account> AND Email != '' AND Contact.Archived = 0 AND (Contact.Account = Account.Id OR Contact.CustomerContact = 1)");
+												"Account.Id = <Account> AND Email != '' AND Contact.Archived = 0 AND (Contact.Account = Account.Id OR Contact.CustomerContact = 1 OR Account.PrimaryContact = Contact.Id)");
 	
 	$updDeliveryMethod	= new StatementUpdate("Invoice", "invoice_run_id = <invoice_run_id> AND Account = <Account>", Array('DeliveryMethod' => NULL));
 	
