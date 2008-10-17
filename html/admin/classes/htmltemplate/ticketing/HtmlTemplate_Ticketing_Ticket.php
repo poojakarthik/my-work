@@ -452,7 +452,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 									{
 										?><option value="" selected="selected">Unassigned</option><?php
 									}
-									$owners = Ticketing_User::listAll();
+									$owners = Ticketing_User::listAllActive();
 									foreach ($owners as $owner)
 									{
 										$selected = $ticket->ownerId == $owner->id ? ' selected="selected"' : '';

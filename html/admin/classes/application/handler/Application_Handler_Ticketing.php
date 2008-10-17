@@ -185,7 +185,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		$_SESSION['ticketing']['lastTicketList'] = $lastTicketList;
 
 		$detailsToRender['tickets'] = Ticketing_Ticket::findMatching($columns, $sort, $filter, $offset, $limit, $quickSearch);
-		$detailsToRender['users'] = Ticketing_User::listAll();
+		$detailsToRender['users'] = Ticketing_User::listAllWithTickets();
 		
 		$detailsToRender['statuses'] = array_merge(Ticketing_Status_Type_Conglomerate::listAll(), Ticketing_Status::listAll());
 		$detailsToRender['categories'] = Ticketing_Category::listAll();
