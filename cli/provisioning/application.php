@@ -236,19 +236,6 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 					 		if ($arrLinkedRequest = $this->_arrImportFiles[$arrFile['Carrier']][$arrFile['FileType']]->LinkToRequest($arrNormalised))
 					 		{
 					 			$arrNormalised['Request']	= $arrLinkedRequest['Id'];
-					 			
-						 		// Update Request Table if this is the most recent Response for this Request
-					 			if (strtotime($arrLinkedRequest['LastUpdated']) < strtotime($arrNormalised['EffectiveDate']))
-					 			{
-						 			$arrLinkedRequest['Response']		= $arrNormalised['Id'];
-						 			$arrLinkedRequest['LastUpdated']	= $arrNormalised['EffectiveDate'];
-						 			$arrLinkedRequest['Status']			= $arrNormalised['request_status'];
-						 			$arrLinkedRequest['Description']	= $arrNormalised['Description'];
-						 			if ($ubiRequest->Execute($arrLinkedRequest) === FALSE)
-						 			{
-						 				CliEcho("WARNING: Request Link Update failed: ".$ubiRequest->Error());
-						 			}
-					 			}
 					 		}
 					 		
 				 			/*
@@ -291,6 +278,21 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 		 		elseif ($arrNormalised['Status'] === RESPONSE_STATUS_DUPLICATE)
 		 		{
 		 			CliEcho("Response #{$arrNormalised['Id']} is a duplicate of {$arrNormalised['Duplicate']['Id']}");
+		 		}
+		 		elseif ($arrNormalised['Request'])
+		 		{
+			 		// Update Request Table if this is the most recent Response for this Request
+		 			if (strtotime($arrLinkedRequest['LastUpdated']) < strtotime($arrNormalised['EffectiveDate']))
+		 			{
+			 			$arrLinkedRequest['Response']		= $arrNormalised['Id'];
+			 			$arrLinkedRequest['LastUpdated']	= $arrNormalised['EffectiveDate'];
+			 			$arrLinkedRequest['Status']			= $arrNormalised['request_status'];
+			 			$arrLinkedRequest['Description']	= $arrNormalised['Description'];
+			 			if ($ubiRequest->Execute($arrLinkedRequest) === FALSE)
+			 			{
+			 				CliEcho("WARNING: Request Link Update failed: ".$ubiRequest->Error());
+			 			}
+		 			}
 		 		}
 	 		}
 	 		
