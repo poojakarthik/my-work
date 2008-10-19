@@ -6,7 +6,7 @@
  *	1:	Add the contract_exit_nature Table
  *	2:	Populate the contract_exit_nature Table
  *	3:	Add the contract_scheduled_end_datetime, contract_effective_end_datetime, contract_exit_nature_id fields to the ServiceRatePlan table
- *	4:	Add the contact_exit_fee, contract_payout_percentage fields to the RatePlan table
+ *	4:	Add the contract_exit_fee, contract_payout_percentage fields to the RatePlan table
  */
 
 class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
@@ -58,14 +58,14 @@ class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
 								"DROP contract_effective_end_datetime, " .
 								"DROP contract_exit_nature_id;";
 		
-		// 4:	Add the contact_exit_fee, contract_payout_percentage fields to the RatePlan table
+		// 4:	Add the contract_exit_fee, contract_payout_percentage fields to the RatePlan table
 		$strSQL = "ALTER TABLE RatePlan " .
-					"ADD contact_exit_fee DECIMAL(13, 4) NULL COMMENT 'Contact Exit Fee' AFTER ContractTerm," .
-					"ADD contract_payout_percentage DECIMAL(13, 4) NULL COMMENT 'Contact Payout Percentage' AFTER contact_exit_fee;";
+					"ADD contract_exit_fee DECIMAL(13, 4) NULL COMMENT 'Contract Exit Fee' AFTER ContractTerm," .
+					"ADD contract_payout_percentage DECIMAL(13, 4) NULL COMMENT 'Contract Payout Percentage' AFTER contract_exit_fee;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add the contact_exit_fee, contract_payout_percentage fields to the RatePlan table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add the contract_exit_fee, contract_payout_percentage fields to the RatePlan table. ' . $result->getMessage());
 		}
 		$this->rollbackSQL[] = "ALTER TABLE RatePlan " .
 								"DROP contract_scheduled_end_datetime, " .
