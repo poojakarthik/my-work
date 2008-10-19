@@ -61,7 +61,7 @@ class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
 		// 4:	Add the contact_exit_fee, contract_payout_percentage fields to the RatePlan table
 		$strSQL = "ALTER TABLE RatePlan " .
 					"ADD contact_exit_fee DECIMAL(13, 4) NULL COMMENT 'Contact Exit Fee' AFTER ContractTerm," .
-					"ADD contract_payout_percentage BIGINT(20) NULL COMMENT 'Contact Payout Percentage' AFTER contact_exit_fee;";
+					"ADD contract_payout_percentage DECIMAL(13, 4) NULL COMMENT 'Contact Payout Percentage' AFTER contact_exit_fee;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
