@@ -319,6 +319,9 @@ $GLOBALS['*arrConstant']['CDR'][176]['Description'] = 'CDR Credit Added';
 
 $GLOBALS['*arrConstant']['CDR'][201]['Constant']	= 'CDR_DUPLICATE';
 $GLOBALS['*arrConstant']['CDR'][201]['Description'] = 'Duplicate CDR';
+$GLOBALS['*arrConstant']['CDR'][202]['Constant']	= 'CDR_RECHARGE';
+$GLOBALS['*arrConstant']['CDR'][202]['Description'] = 'Recharged by Carrier';
+
 
 //TODO!rich! when you have time, update all constant definitons to work like the CDR ones
 

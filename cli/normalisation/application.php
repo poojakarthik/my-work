@@ -227,7 +227,7 @@
 		
 		// Duplicate CDR Query
 	 	$this->_selFindDuplicate	= new StatementSelect(	"CDR",
-															"Id",
+															"Id, CASE WHEN CarrierRef <=> <CarrierRef> THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status",
 															"Id != <Id> AND " .
 															"FNN = <FNN> AND " .
 															"Source <=> <Source> AND " .
@@ -240,7 +240,7 @@
 															"RecordType NOT IN (10, 15, 33, 21) AND " .
 															"Credit = <Credit> AND " .
 															"Description <=> <Description> AND " .
-															"Status != ".CDR_DUPLICATE,
+															"Status NOT IN (".CDR_DUPLICATE.", ".CDR_RECHARGE.")",
 															NULL,
 															1);
  	}
@@ -710,8 +710,9 @@
 					if ($this->_selFindDuplicate->Execute($arrCDR))
 					{
 						$arrDuplicateCDR        = $this->_selFindDuplicate->Fetch();
-						CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a duplicate of #{$arrDuplicateCDR['Id']}");
-						$arrCDR['Status']	= CDR_DUPLICATE;
+						$strMatchString			= ($arrDuplicateCDR['Status'] === CDR_DUPLICATE) ? 'duplicate' : 'recharge';
+						CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
+						$arrCDR['Status']		= $arrDuplicateCDR['Status'];
 					}
 					break;
 				case CDR_CANT_NORMALISE_INVALID:
