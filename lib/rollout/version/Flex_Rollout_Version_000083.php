@@ -9,7 +9,7 @@
  *	4:	Add the contact_exit_fee, contract_payout_percentage fields to the RatePlan table
  */
 
-class Flex_Rollout_Version_000082 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000083 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
