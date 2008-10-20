@@ -3591,6 +3591,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		  ON Invoice.Account = Account.Id
 		 AND Account.Archived IN ($strApplicableAccountStatuses) 
 		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		 AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
 		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		JOIN credit_control_status 
 		  ON Account.credit_control_status = credit_control_status.id
@@ -3613,6 +3614,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		JOIN Account 
 		  ON Account.Id = Invoice.Account
 		 AND Account.Archived IN ($strApplicableAccountStatuses) 
+		 AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
 		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 		JOIN credit_control_status 
