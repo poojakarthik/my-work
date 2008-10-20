@@ -148,25 +148,25 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 				$dboRatePlan->ContractTerm->RenderOutput();
 			
 				// Render Contract Details
-				$fltContractExitFee	= (float)DBO()->RatePlan->contract_exit_fee->Value;
+				$fltContractExitFee	= (float)$dboRatePlan->contract_exit_fee->Value;
 				if ($fltContractExitFee > 0)
 				{
-					DBO()->RatePlan->contract_exit_fee->RenderArbitrary('$'.number_format($fltContractExitFee, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+					$dboRatePlan->contract_exit_fee->RenderArbitrary('$'.number_format($fltContractExitFee, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 				}
 				else
 				{
-					DBO()->RatePlan->contract_exit_fee->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+					$dboRatePlan->contract_exit_fee->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 				}
-				$fltContractPayout	= (float)DBO()->RatePlan->contract_payout_percentage->Value;
+				$fltContractPayout	= (float)$dboRatePlan->contract_payout_percentage->Value;
 				if ($fltContractPayout > 0)
 				{
 					// HACKHACKHACK: Shitty way of printing out a nice name
-					DBO()->RatePlan->contract_payout	= $fltContractPayout;
-					DBO()->RatePlan->contract_payout->RenderArbitrary(number_format($fltContractPayout, 2, '.', '').'%', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+					$dboRatePlan->contract_payout	= $fltContractPayout;
+					$dboRatePlan->contract_payout->RenderArbitrary(number_format($fltContractPayout, 2, '.', '').'%', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 				}
 				else
 				{
-					DBO()->RatePlan->contract_payout->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+					$dboRatePlan->contract_payout->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 				}
 			}
 			
