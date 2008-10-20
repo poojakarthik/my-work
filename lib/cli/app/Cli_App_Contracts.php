@@ -159,7 +159,9 @@ class Cli_App_Contracts extends Cli
 	
 	private function _chargeFees()
 	{
+		throw new Exception("CHARGE mode is not implemented yet!");
 		
+		// TODO
 	}
 	
 	public static function debug($mixMessage, $bolNewLine=TRUE)
