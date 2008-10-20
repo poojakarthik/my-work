@@ -3030,14 +3030,19 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Declare the new plan for the service
 			// Insert a record into the ServiceRatePlan table
-			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
-			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
-			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRatePlan->CreatedOn 		= $strCurrentDateAndTime;
-			DBO()->ServiceRatePlan->StartDatetime 	= $strStartDatetime;
-			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
-			DBO()->ServiceRatePlan->LastChargedOn	= NULL;
-			DBO()->ServiceRatePlan->Active			= $intActive;
+			DBO()->ServiceRatePlan->Service 						= DBO()->Service->Id->Value;
+			DBO()->ServiceRatePlan->RatePlan 						= DBO()->NewPlan->Id->Value;
+			DBO()->ServiceRatePlan->CreatedBy 						= AuthenticatedUser()->_arrUser['Id'];
+			DBO()->ServiceRatePlan->CreatedOn 						= $strCurrentDateAndTime;
+			DBO()->ServiceRatePlan->StartDatetime 					= $strStartDatetime;
+			DBO()->ServiceRatePlan->EndDatetime 					= END_OF_TIME;
+			DBO()->ServiceRatePlan->LastChargedOn					= NULL;
+			DBO()->ServiceRatePlan->Active							= $intActive;
+			
+			$intContractTerm										= DBO()->NewPlan->ContractTerm->Value;
+			DBO()->ServiceRatePlan->contract_scheduled_end_datetime	= ($intContractTerm) ? strtotime("-1 second", strtotime("+{$intContractTerm} months", $intStartDatetime)) : NULL;
+			DBO()->ServiceRatePlan->contract_effective_end_datetime	= NULL;
+			DBO()->ServiceRatePlan->contract_exit_nature_id			= NULL;
 			
 			if (!DBO()->ServiceRatePlan->Save())
 			{

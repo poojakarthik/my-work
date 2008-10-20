@@ -146,6 +146,24 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			else
 			{
 				$dboRatePlan->ContractTerm->RenderOutput();
+			
+				// Render Contract Details
+				if ($dboRatePlan->contract_exit_fee->Value)
+				{
+					$dboRatePlan->contract_exit_fee->RenderOutput();
+				}
+				else
+				{
+					$dboRatePlan->contract_exit_fee->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+				}
+				if ($dboRatePlan->contract_payout_percentage->Value)
+				{
+					$dboRatePlan->contract_payout_percentage->RenderOutput();
+				}
+				else
+				{
+					$dboRatePlan->contract_payout_percentage->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+				}
 			}
 			
 			if ($dboRatePlan->scalable->Value == TRUE)
