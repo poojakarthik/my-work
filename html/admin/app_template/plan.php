@@ -498,10 +498,6 @@ class AppTemplatePlan extends ApplicationTemplate
 		{
 			DBO()->RatePlan->discount_cap = NULL;			
 		}
-		if ((integer)DBO()->RatePlan->ContractTerm->Value == 0)
-		{
-			DBO()->RatePlan->ContractTerm = NULL;
-		}
 		if ((float)DBO()->RatePlan->RecurringCharge->Value == 0)
 		{
 			DBO()->RatePlan->RecurringCharge = NULL;
@@ -542,6 +538,34 @@ class AppTemplatePlan extends ApplicationTemplate
 		{
 			DBO()->RatePlan->minimum_services = NULL;
 			DBO()->RatePlan->maximum_services = NULL;
+		}
+	
+		if ((integer)DBO()->RatePlan->ContractTerm->Value > 0)
+		{
+			$arrErrors = array();
+			// The Contract Term has been specified, validate the Details
+			if ((float)DBO()->RatePlan->contract_exit_fee->Value < 0)
+			{
+				DBO()->RatePlan->contract_exit_fee->SetToInvalid();
+				$arrErrors[] = "Contract Exit Fee must be greater than or equal to \$0";
+			}
+			if ((float)DBO()->RatePlan->contract_payout_percentage->Value < 0)
+			{
+				DBO()->RatePlan->contract_payout_percentage->SetToInvalid();
+				$arrErrors[] = "Contract Payout must be greater than or equal to 0%";
+			}
+			if (count($arrErrors))
+			{
+				// Errors have been encountered
+				Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+				return "ERROR: " . implode(".  ", $arrErrors) . ".";
+			}
+		}
+		else
+		{
+			DBO()->RatePlan->ContractTerm				= NULL;
+			DBO()->RatePlan->contract_exit_fee			= 0.0;
+			DBO()->RatePlan->contract_payout_percentage	= 0.0;
 		}
 		
 		// V2: ServiceType

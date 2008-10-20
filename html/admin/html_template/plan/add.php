@@ -214,7 +214,44 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "</div>";  // PlanDetailsColumn1
 		echo "<div id='PlanDetailsColumn2' style='width:50%;float:left'>";
 		DBO()->RatePlan->InAdvance->RenderInput(CONTEXT_DEFAULT);
-		DBO()->RatePlan->ContractTerm->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
+		
+		// Contract Payout Details (done by Rich, sorry if I fuck this up, haha)
+		$intContractTerm	= DBO()->RatePlan->ContractTerm->Value;
+		if ($intContractTerm > 0)
+		{
+			// The Plan has a Contract Length
+			$fltExitFee				= DBO()->RatePlan->contract_exit_fee->Value;
+			$fltPayoutPercentage	= DBO()->RatePlan->contract_payout_percentage->Value;
+			$strContainerStyle		= "display:block;visibility:visible";
+		}
+		else
+		{
+			// The Plan does not have a Contract Length
+			$fltExitFee				= 0.0;
+			$fltPayoutPercentage	= 0.0;
+			$strContainerStyle		= "display:none;visibility:hidden";
+		}
+		
+		$strContractTermClass		= (DBO()->RatePlan->ContractTerm->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
+		$strExitFeeClass			= (DBO()->RatePlan->contract_exit_fee->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
+		$strPayoutPercentageClass	= (DBO()->RatePlan->contract_payout_percentage->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
+
+		echo "
+<div class='DefaultElement'>
+	<input type='text' id='RatePlan.ContractTerm' name='RatePlan.ContractTerm' onchange='Vixen.RatePlanAdd.ContractTermOnChange()' class='{$strContractTermClass}' value='{$intContractTerm}'/>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Contract Term (months):</div>
+</div>
+<div id='Contract_ExtraDetailsContainer' style='$strContainerStyle;margin-top:5px'>
+	<div class='DefaultElement'>
+		<input type='text' id='RatePlan.contract_exit_fee' name='RatePlan.contract_exit_fee' class='$strExitFeeClass' value='$fltExitFee'/>
+		<div class='DefaultLabel'>&nbsp;&nbsp;Contract Exit Fee (\$):</div>
+	</div>
+	<div class='DefaultElement'>
+		<input type='text' id='RatePlan.contract_payout_percentage' name='RatePlan.contract_payout_percentage' class='$strPayoutPercentageClass' value='$fltPayoutPercentage'/>
+		<div class='DefaultLabel'>&nbsp;&nbsp;Contract Payout (%):</div>
+	</div>
+</div>
+";
 		
 		// Build the list of carriers
 		$arrCarriers = Array();

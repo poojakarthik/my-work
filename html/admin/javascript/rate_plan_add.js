@@ -50,6 +50,9 @@ function VixenRatePlanAddClass()
 	{
 		this.elmScalable					= $ID("ScalableCheckbox");
 		this.elmScalableDetailsContainter	= $ID("Scalable_ExtraDetailsContainer");
+
+		this.elmContractTerm				= $ID("RatePlan.ContractTerm");
+		this.elmContactDetailsContainter	= $ID("Contract_ExtraDetailsContainer");
 	}
 	
 	// Shows/Hides the Extra details that are required if the plan is scalable
@@ -66,6 +69,23 @@ function VixenRatePlanAddClass()
 			// Hide the Scalable extra details
 			this.elmScalableDetailsContainter.style.display		= "none";
 			this.elmScalableDetailsContainter.style.visibility	= "hidden";
+		}
+	}
+	
+	// Shows/Hides the Extra details that are required if it's a Contract Plan
+	this.ContractTermOnChange = function()
+	{
+		if (this.elmContractTerm.value > 0.0)
+		{
+			// Show the Contract extra details
+			this.elmContactDetailsContainter.style.display		= "block";
+			this.elmContactDetailsContainter.style.visibility	= "visible";
+		}
+		else
+		{
+			// Hide the Contract extra details
+			this.elmContactDetailsContainter.style.display		= "none";
+			this.elmContactDetailsContainter.style.visibility	= "hidden";
 		}
 	}
 	
