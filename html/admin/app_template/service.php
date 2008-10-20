@@ -3039,8 +3039,8 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->ServiceRatePlan->LastChargedOn					= NULL;
 			DBO()->ServiceRatePlan->Active							= $intActive;
 			
-			$intContractTerm										= DBO()->NewPlan->ContractTerm->Value;
-			DBO()->ServiceRatePlan->contract_scheduled_end_datetime	= ($intContractTerm) ? strtotime("-1 second", strtotime("+{$intContractTerm} months", $intStartDatetime)) : NULL;
+			$intContractTerm										= (int)DBO()->NewPlan->ContractTerm->Value;
+			DBO()->ServiceRatePlan->contract_scheduled_end_datetime	= ($intContractTerm > 0) ? strtotime("-1 second", strtotime("+{$intContractTerm} months", $intStartDatetime)) : NULL;
 			DBO()->ServiceRatePlan->contract_effective_end_datetime	= NULL;
 			DBO()->ServiceRatePlan->contract_exit_nature_id			= NULL;
 			
