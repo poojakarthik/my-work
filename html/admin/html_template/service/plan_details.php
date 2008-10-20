@@ -148,7 +148,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 				$dboRatePlan->ContractTerm->RenderOutput();
 			
 				// Render Contract Details
-				if ((float)$dboRatePlan->contract_exit_fee->Value)
+				if ((float)$dboRatePlan->contract_exit_fee->Value > 0)
 				{
 					DBO()->RatePlan->contract_exit_fee->RenderArbitrary('$'.number_format(DBO()->RatePlan->contract_exit_fee->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 				}
@@ -156,7 +156,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 				{
 					$dboRatePlan->contract_exit_fee->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 				}
-				if ((float)$dboRatePlan->contract_payout_percentage->Value)
+				if ((float)$dboRatePlan->contract_payout_percentage->Value > 0)
 				{
 					// HACKHACKHACK: Shitty way of printing out a nice name
 					DBO()->RatePlan->contract_payout	= DBO()->RatePlan->contract_payout_percentage->Value;
