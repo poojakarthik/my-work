@@ -29,6 +29,8 @@ class Cli_App_Contracts extends Cli
 			{
 				$this->log("Running in test mode. All changes will be rolled back.", TRUE);
 			}
+			
+			define('CLI_APP_TEST_MODE',	(bool)$this->_arrArgs[self::SWITCH_TEST_RUN]);
 
 			// Any additional Includes
 			//$this->requireOnce('flex.require.php');
@@ -166,7 +168,7 @@ class Cli_App_Contracts extends Cli
 	
 	public static function debug($mixMessage, $bolNewLine=TRUE)
 	{
-		if (defined('BILLING_TEST_MODE') && BILLING_TEST_MODE)
+		if (defined('CLI_APP_TEST_MODE') && CLI_APP_TEST_MODE)
 		{
 			if (!is_scalar($mixMessage))
 			{
