@@ -226,7 +226,7 @@
 		$this->_arrDelinquents = Array();
 		
 		// Duplicate CDR Query
-	 	$this->_selFindDuplicate	= new StatementSelect(	"CDR",
+	 	/*$this->_selFindDuplicate	= new StatementSelect(	"CDR",
 															"Id, CASE WHEN CarrierRef <=> <CarrierRef> THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status",
 															"Id != <Id> AND " .
 															"FNN = <FNN> AND " .
@@ -242,7 +242,7 @@
 															"Description <=> <Description> AND " .
 															"Status NOT IN (".CDR_DUPLICATE.", ".CDR_RECHARGE.")",
 															NULL,
-															1);
+															1);*/
  	}
 
 
@@ -686,6 +686,24 @@
 			}
 			
 			// Report
+			$qryQuery	= Query();
+			$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> '{$arrCDR['CarrierRef'}' THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
+										FROM CDR 
+										WHERE Id != {$arrCDR['Id'} AND 
+										FNN = '{$arrCDR['FNN'}' AND 
+										Source <=> '{$arrCDR['Source'}' AND 
+										Destination <=> '{$arrCDR['Destination'}' AND 
+										StartDatetime <=> '{$arrCDR['StartDatetime'}' AND 
+										EndDatetime <=> '{$arrCDR['EndDatetime'}' AND 
+										Units = {$arrCDR['Units'} AND 
+										Cost = {$arrCDR['Cost'} AND 
+										RecordType = {$arrCDR['RecordType'} AND 
+										RecordType NOT IN (10, 15, 33, 21) AND 
+										Credit = {$arrCDR['Credit'} AND 
+										Description <=> '{$arrCDR['Description'}' AND 
+										Status NOT IN (".CDR_DUPLICATE.", ".CDR_RECHARGE.")
+										ORDER BY Id DESC
+										LIMIT 1";
 			switch ($arrCDR['Status'])
 			{
 				case CDR_CANT_NORMALISE_NO_MODULE:
@@ -707,9 +725,10 @@
 					$intDelinquents++;
 					
 					// If this is a duplicate, make sure people cannot assign this CDR to an Account
-					if ($this->_selFindDuplicate->Execute($arrCDR))
+					//if ($this->_selFindDuplicate->Execute($arrCDR))
+					if ($mixResult = $qryQuery->Execute($strFindDuplicateSQL))
 					{
-						$arrDuplicateCDR        = $this->_selFindDuplicate->Fetch();
+						$arrDuplicateCDR        = $mixResult->fetch_assoc();
 						$strMatchString			= ($arrDuplicateCDR['Status'] === CDR_DUPLICATE) ? 'duplicate' : 'recharge';
 						CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
 						$arrCDR['Status']		= $arrDuplicateCDR['Status'];
@@ -729,11 +748,13 @@
 					break;
 				case CDR_NORMALISED:
 					// Normalised OK
-					if ($this->_selFindDuplicate->Execute($arrCDR))
+					//if ($this->_selFindDuplicate->Execute($arrCDR))
+					if ($mixResult = $qryQuery->Execute($strFindDuplicateSQL))
 					{
-						$arrDuplicateCDR	= $this->_selFindDuplicate->Fetch();
-						CliEcho("!!! CDR #{$arrCDR['Id']} is a duplicate of #{$arrDuplicateCDR['Id']}");
-						$arrCDR['Status']	= CDR_DUPLICATE;
+						$arrDuplicateCDR        = $mixResult->fetch_assoc();
+						$strMatchString			= ($arrDuplicateCDR['Status'] === CDR_DUPLICATE) ? 'duplicate' : 'recharge';
+						CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
+						$arrCDR['Status']		= $arrDuplicateCDR['Status'];
 					}
 					else
 					{
