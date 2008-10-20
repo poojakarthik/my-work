@@ -45,6 +45,7 @@ class Cli_App_Voice_Message extends Cli
 
 		foreach ($contacts as $contact)
 		{
+			$accountId = self::getName($contact["AccountId"]);
 			//$contactName = self::getName(trim($contact["FirstName"]));
 			//$amount = Flex::framework()->GetOverdueBalance($contact["AccountId"]);
 
@@ -83,6 +84,10 @@ class Cli_App_Voice_Message extends Cli
 //			}
 			
 			$output = $nr . ',' . $message;
+			if ($crap)
+			{
+				$output = $accountId . ',' . $message;
+			}
 			//$output = str_replace('[name]', $contactName, $output);
 			//$output = str_replace('[amount]', $amount, $output);
 			if ($crap && !$fx)
