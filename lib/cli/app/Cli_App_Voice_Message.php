@@ -86,7 +86,7 @@ class Cli_App_Voice_Message extends Cli
 			$output = $nr . ',' . $message;
 			if ($crap)
 			{
-				$output = $accountId . ',' . $message;
+				$output = $accountId . ',' . $output;
 			}
 			//$output = str_replace('[name]', $contactName, $output);
 			//$output = str_replace('[amount]', $amount, $output);
