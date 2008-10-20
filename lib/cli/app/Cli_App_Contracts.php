@@ -16,6 +16,7 @@ class Cli_App_Contracts extends Cli
 {
 	const	SWITCH_TEST_RUN			= "t";
 	const	SWITCH_MODE				= "m";
+	const	SWITCH_EFFECTIVE_DATE	= "d";
 	
 	function run()
 	{
@@ -43,7 +44,7 @@ class Cli_App_Contracts extends Cli
 			{
 				case 'UPDATE':
 					// Updates the Contract Details for each Service 
-					$this->_updateContracts();
+					$this->_updateContracts($this->_arrArgs[self::SWITCH_EFFECTIVE_DATE]);
 					break;
 
 				case 'CHARGE':
@@ -53,7 +54,7 @@ class Cli_App_Contracts extends Cli
 
 				case 'ALL':
 					// Updates the Contract Details and charges any outstanding Contract Fees
-					$this->_updateContracts();
+					$this->_updateContracts($this->_arrArgs[self::SWITCH_EFFECTIVE_DATE]);
 					$this->_chargeFees();
 					break;
 
@@ -96,7 +97,7 @@ class Cli_App_Contracts extends Cli
 	
 	private function _updateContracts($strEffectiveDate=NULL)
 	{
-		$strEffectiveDate	= ($strEffectiveDate) ? $strEffectiveDate : date("Y-m-d H:i:s");
+		$strEffectiveDate	= ($strEffectiveDate) ? date("Y-m-d H:i:s", strtotime($strEffectiveDate)) : date("Y-m-d H:i:s");
 		$intEffectiveDate	= strtotime($strEffectiveDate);
 		
 		$arrLossStatuses	= Array(SERVICE_LINE_DISCONNECTED, SERVICE_LINE_CHURNED, SERVICE_LINE_REVERSED);
@@ -193,6 +194,14 @@ class Cli_App_Contracts extends Cli
 				self::ARG_REQUIRED		=> TRUE,
 				self::ARG_DESCRIPTION	=> "Contracts operation to perform [UPDATE|CHARGE|ALL]",
 				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("UPDATE","CHARGE","ALL"))'
+			),
+
+			self::SWITCH_EFFECTIVE_DATE => array(
+				self::ARG_LABEL			=> "EFFECTIVE_DATE",
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "Effective Date for the Contract Calculations (YYYY-MM-DD format)",
+				self::ARG_DEFAULT		=> date("Y-m-d"),
+				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
 			)
 		);
 	}
