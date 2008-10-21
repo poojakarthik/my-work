@@ -95,7 +95,7 @@ try
 	}
 	
 	// DEBUG: Test Mode
-	throw new Exception("TEST MODE!");
+	//throw new Exception("TEST MODE!");
 }
 catch (Exception $eException)
 {
@@ -105,5 +105,5 @@ catch (Exception $eException)
 }
 
 // Commit Transaction
-DataAccess::getDataAccess()->TransactionRollback();
+DataAccess::getDataAccess()->TransactionCommit();
 ?>
