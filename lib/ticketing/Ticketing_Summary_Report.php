@@ -165,7 +165,7 @@ class Ticketing_Summary_Report
 		
 		
 		// Build the owner constraint
-		$strOwnerConstraint = ($this->_bolAllOwners)? "owner_id IS NOT NULL" : "owner_id IN (". implode(", ", $this->_arrOwners) .")";
+		$strOwnerConstraint = ($this->_bolAllOwners)? "1=1" : "owner_id IN (". implode(", ", $this->_arrOwners) .")";
 		
 		// Build the category constraint
 		$strCategoryConstraint = ($this->_bolAllCategories)? "TRUE" : "category_id IN (". implode(", ", $this->_arrCategories) .")";
