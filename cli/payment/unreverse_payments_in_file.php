@@ -119,5 +119,5 @@ catch (Exception $eException)
 }
 
 // Commit Transaction
-DataAccess::getDataAccess()->TransactionRollback();
+DataAccess::getDataAccess()->TransactionCommit();
 ?>
