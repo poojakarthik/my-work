@@ -25,7 +25,7 @@ if (!count($arrFileImportIds))
 
 // Init Statements
 $strFileImportIds	= implode(', ', $arrFileImportIds);
-$selPayments		= new StatementSelect("Payment", "*", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds})");
+$selPayments		= new StatementSelect("Payment", "*", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds}) AND Status IN (101, 103, 150)");
 
 // Open Accounts file
 $strContents	= str_replace("\r\n", "\n", file_get_contents($strAccountFilePath));
