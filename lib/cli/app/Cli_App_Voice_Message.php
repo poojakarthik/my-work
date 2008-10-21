@@ -24,12 +24,12 @@ class Cli_App_Voice_Message extends Cli
 	
 	public function runVT()
 	{
-		self::doForCG(2, "Your Voice talk account remains unpaid and suspension of your services will commence on the 23rd of October. To avoid suspension of your services please forward payment as soon as possible.", FILES_BASE_PATH . "/voicetalk.csv");
+		self::doForCG(2, "Your Voice talk telephone account remains unpaid and suspension of your services has been scheduled for thursday the 23rd of October. Please pay your Voice talk telephone account and forward your payment receipt as a matter of urgency to avoid unnecessary disruption to your services. If you have already paid your Voice Talk telephone account please forward your remittance advice. Thank you for your prompt attention.", FILES_BASE_PATH . "/voicetalk.csv");
 	}
 	
 	public function runTB()
 	{
-		self::doForCG(1, "Your Tel coe blue account remains unpaid and suspension of your services will commence on the 23rd of October. To avoid suspension of your services please forward payment as soon as possible.", FILES_BASE_PATH . "/telco_blue.csv");
+		self::doForCG(1, "Your Tel coe blue telephone account remains unpaid and suspension of your services has been scheduled for thursday the 23rd of October. Please pay your Tel coe blue telephone account and forward your  payment  receipt as a matter of urgency to avoid unnecessary disruption to your services. If you have already paid your Tel coe blue telephone account please forward your remittance advice. Thank you for your prompt attention.", FILES_BASE_PATH . "/telco_blue.csv");
 	}
 	
 	public function doForCG($cg, $message, $name)
