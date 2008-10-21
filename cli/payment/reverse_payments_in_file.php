@@ -29,6 +29,10 @@ $selPayments		= new StatementSelect("Payment", "Id", "Account = <Account> AND Am
 
 // Open Accounts file
 $arrLines	= file_get_contents($strAccountFilePath);
+if (!$arrLines)
+{
+	throw new Exception("Unable to open file '{$strAccountFilePath}'!");
+}
 
 // Start Transaction
 DataAccess::getDataAccess()->TransactionStart();
