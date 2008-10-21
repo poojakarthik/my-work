@@ -23,9 +23,10 @@ if (!count($arrFileImportIds))
 	throw new Exception("No valid FileImport Ids specified!");
 }
 
-// Init Statements
+// Init
+$arrPaymentStatuses	= Array(PAYMENT_WAITING, PAYMENT_PAYING, PAYMENT_FINISHED);
 $strFileImportIds	= implode(', ', $arrFileImportIds);
-$selPayments		= new StatementSelect("Payment", "*", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds}) AND Status IN (101, 103, 150)");
+$selPayments		= new StatementSelect("Payment", "*", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds})");
 
 // Open Accounts file
 $strContents	= str_replace("\r\n", "\n", file_get_contents($strAccountFilePath));
@@ -73,16 +74,22 @@ try
 			
 			while ($arrPayment = $selPayments->Fetch())
 			{
-				CliEcho("\t + Reversed Payment #{$arrPayment['Id']} (Paid: {$arrPayment['PaidOn']}; File: {$arrPayment['File']})");
-				// Reverse the Payment
-				/*if ($GLOBALS['fwkFramework']->ReversePayment($arrPayment['Id'], 0))
+				if (in_array($arrPayment['Status'], $arrPaymentStatuses))
 				{
-					CliEcho("\t + Reversed Payment #{$arrPayment['Id']}");
+					// Reverse the Payment
+					/*if ($GLOBALS['fwkFramework']->ReversePayment($arrPayment['Id'], 0))
+					{*/
+						CliEcho("\t + Reversed Payment #{$arrPayment['Id']} (Paid: {$arrPayment['PaidOn']}; File: {$arrPayment['File']})");
+					/*}
+					else
+					{
+						throw new Exception("Error Reversing Payment #{$arrPayment['Id']}");
+					}*/
 				}
 				else
 				{
-					throw new Exception("Error Reversing Payment #{$arrPayment['Id']}");
-				}*/
+					CliEcho("\t ! Cannot Reverse Payment #{$arrPayment['Id']} with Status '".GetConstantDescription($arrPayment['Status'], 'PaymentStatus')."'");
+				}
 			}
 		}
 	}
