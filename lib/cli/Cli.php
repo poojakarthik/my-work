@@ -345,8 +345,17 @@ abstract class Cli
 		if (!$alwaysEcho && !$this->logVerbose && !$isError) return;
 		if (!$this->logSilent || $alwaysEcho) 
 		{
-			echo $message . ($suppressNewLine ? "" : "\n");
-			flush();
+			$output = $message . ($suppressNewLine ? "" : "\n");
+			if ($fh = fopen('php://stdout','w'))
+			{
+				fwrite($fh, $output);
+				fclose($fh);
+			}
+			else
+			{
+				echo $output;
+				flush();
+			}
 		}
 		if (!$this->logVerbose && !$isError) return;
 		if ($this->logFile == NULL) return;
