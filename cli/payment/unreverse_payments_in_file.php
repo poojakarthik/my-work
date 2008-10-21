@@ -28,6 +28,7 @@ $arrPaymentStatuses	= Array(PAYMENT_REVERSED);
 $strFileImportIds	= implode(', ', $arrFileImportIds);
 $selPayments		= new StatementSelect("Payment", "*", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds})");
 $ubiPayment			= new StatementUpdateById("Payment", Array('Status'=>NULL));
+$qryQuery			= new Query();
 
 // Open Accounts file
 $strContents	= str_replace("\r\n", "\n", file_get_contents($strAccountFilePath));
