@@ -43,6 +43,12 @@ try
 	// For each Line in the file
 	foreach ($arrLines as $strLine)
 	{
+		if (!trim($strLine))
+		{
+			// Blank line
+			continue;
+		}
+		
 		// Parse the line
 		$arrLine	= split(',', $strLine);
 		$intAccount	= (int)$arrLine[0];
@@ -60,7 +66,7 @@ try
 		{
 			CliEcho("\t > Found {$mixResult} payments!");
 			
-			if ($mixResult > 2 || $mixResult = 0)
+			if ($mixResult > 2 || $mixResult < 1)
 			{
 				throw new Exception("Too many/few payments!");
 			}
