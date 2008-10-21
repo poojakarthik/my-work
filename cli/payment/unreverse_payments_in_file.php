@@ -82,7 +82,7 @@ try
 					$arrPayment['Status']	= PAYMENT_IMPORTED;
 					if ($ubiPayment->Execute($arrPayment))
 					{
-						if ($qryQuery->Execute("DELETE FROM Note WHERE Account = {$arrPayment['Account']} AND NoteType = 7 Note LIKE 'Administrators Reversed a Payment made on __/10/2008 for %'"))
+						if ($qryQuery->Execute("DELETE FROM Note WHERE Account = {$arrPayment['Account']} AND NoteType = 7 AND Note LIKE 'Administrators Reversed a Payment made on __/10/2008 for %'"))
 						{
 							CliEcho("\t + Unreversed Payment #{$arrPayment['Id']} (Paid: {$arrPayment['PaidOn']}; File: {$arrPayment['File']})");
 						}
