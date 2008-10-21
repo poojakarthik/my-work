@@ -661,6 +661,7 @@
 			$intDelinquents = 0;
 			$arrDelinquents = Array();
 	
+			$qryQuery	= new Query();
 	 		foreach ($arrCDRList as $arrCDR)
 	 		{
 				$intNormaliseTotal++;
@@ -705,7 +706,6 @@
 				}
 				
 				// Report
-				$qryQuery	= Query();
 				$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> '{$arrCDR['CarrierRef']}' THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
 											FROM CDR 
 											WHERE Id != {$arrCDR['Id']} AND 
