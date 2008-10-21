@@ -28,7 +28,8 @@ $strFileImportIds	= implode(', ', $arrFileImportIds);
 $selPayments		= new StatementSelect("Payment", "Id", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds})");
 
 // Open Accounts file
-$arrLines	= file_get_contents($strAccountFilePath);
+$strContents	= str_replace("\r\n", "\n", file_get_contents($strAccountFilePath));
+$arrLines		= explode("\n", $strContents);
 if (!$arrLines)
 {
 	throw new Exception("Unable to open file '{$strAccountFilePath}'!");
