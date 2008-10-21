@@ -24,12 +24,12 @@ class Cli_App_Voice_Message extends Cli
 	
 	public function runVT()
 	{
-		self::doForCG(2, "Your Voice talk account remains unpaid and suspension of your services will commence on the 22nd of October. To avoid suspension of your services please forward payment as soon as possible.", FILES_BASE_PATH . "/voicetalk.csv");
+		self::doForCG(2, "Your Voice talk account remains unpaid and suspension of your services will commence on the 23rd of October. To avoid suspension of your services please forward payment as soon as possible.", FILES_BASE_PATH . "/voicetalk.csv");
 	}
 	
 	public function runTB()
 	{
-		self::doForCG(1, "Your Tel coe blue account remains unpaid and suspension of your services will commence on the 22nd of October. To avoid suspension of your services please forward payment as soon as possible.", FILES_BASE_PATH . "/telco_blue.csv");
+		self::doForCG(1, "Your Tel coe blue account remains unpaid and suspension of your services will commence on the 23rd of October. To avoid suspension of your services please forward payment as soon as possible.", FILES_BASE_PATH . "/telco_blue.csv");
 	}
 	
 	public function doForCG($cg, $message, $name)
@@ -41,6 +41,7 @@ class Cli_App_Voice_Message extends Cli
 		$this->log("Found " . count($contacts) . " accounts for customer group $cg.");
 		
 		$f = fopen($name, 'w+');
+		$fx = null;
 		$first = true;
 
 		foreach ($contacts as $contact)
@@ -163,6 +164,7 @@ class Cli_App_Voice_Message extends Cli
 			 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 			 AND Account.CustomerGroup = $customerGroupId
 			 AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
+			 AND Account.vip = 0
 			JOIN credit_control_status 
 			  ON Account.credit_control_status = credit_control_status.id
 			 AND credit_control_status.can_bar = 1
@@ -190,6 +192,7 @@ class Cli_App_Voice_Message extends Cli
 			 AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
 			 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 			 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+			 AND Account.vip = 0
 			JOIN credit_control_status 
 			  ON Account.credit_control_status = credit_control_status.id
 			 AND credit_control_status.can_bar = 1
