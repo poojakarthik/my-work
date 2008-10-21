@@ -25,7 +25,7 @@ if (!count($arrFileImportIds))
 
 // Init Statements
 $strFileImportIds	= implode(', ', $arrFileImportIds);
-$selPayments		= new StatementSelect("Payment", "Id", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds})");
+$selPayments		= new StatementSelect("Payment", "*", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds})");
 
 // Open Accounts file
 $strContents	= str_replace("\r\n", "\n", file_get_contents($strAccountFilePath));
@@ -62,6 +62,7 @@ try
 			
 			while ($arrPayment = $selPayments->Fetch())
 			{
+				CliEcho("\t + Reversed Payment #{$arrPayment['Id']} (Paid: {$arrPayment['PaidOn']}; File: {$arrPayment['File']})");
 				// Reverse the Payment
 				/*if ($GLOBALS['fwkFramework']->ReversePayment($arrPayment['Id'], 0))
 				{
@@ -73,10 +74,10 @@ try
 				}*/
 			}
 		}
-		
-		// DEBUG: Test Mode
-		throw new Exception("TEST MODE!");
 	}
+	
+	// DEBUG: Test Mode
+	throw new Exception("TEST MODE!");
 }
 catch (Exception $eException)
 {
