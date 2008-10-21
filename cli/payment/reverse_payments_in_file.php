@@ -77,14 +77,14 @@ try
 				if (in_array($arrPayment['Status'], $arrPaymentStatuses))
 				{
 					// Reverse the Payment
-					/*if ($GLOBALS['fwkFramework']->ReversePayment($arrPayment['Id'], 0))
-					{*/
+					if ($GLOBALS['fwkFramework']->ReversePayment($arrPayment['Id'], 0))
+					{
 						CliEcho("\t + Reversed Payment #{$arrPayment['Id']} (Paid: {$arrPayment['PaidOn']}; File: {$arrPayment['File']})");
-					/*}
+					}
 					else
 					{
 						throw new Exception("Error Reversing Payment #{$arrPayment['Id']}");
-					}*/
+					}
 				}
 				else
 				{
