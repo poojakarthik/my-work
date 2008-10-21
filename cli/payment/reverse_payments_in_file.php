@@ -60,6 +60,11 @@ try
 		{
 			CliEcho("\t > Found {$mixResult} payments!");
 			
+			if ($mixResult > 2 || $mixResult = 0)
+			{
+				throw new Exception("Too many/few payments!");
+			}
+			
 			while ($arrPayment = $selPayments->Fetch())
 			{
 				CliEcho("\t + Reversed Payment #{$arrPayment['Id']} (Paid: {$arrPayment['PaidOn']}; File: {$arrPayment['File']})");
