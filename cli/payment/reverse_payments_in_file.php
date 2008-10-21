@@ -10,9 +10,8 @@ for ($i = 2; $i  < $argc; $i++)
 	if ($intFileImportId)
 	{
 		$arrFileImportIds[]	= $intFileImportId;
-	} 
+	}
 }
-$strFileImportIds	= implode(', ', $arrFileImportIds);
 
 // Validate Parameters
 if (!is_file($strAccountFilePath))
@@ -25,7 +24,8 @@ if (!count($arrFileImportIds))
 }
 
 // Init Statements
-$selPayments	= new StatementSelect("Payment", "Id", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds})");
+$strFileImportIds	= implode(', ', $arrFileImportIds);
+$selPayments		= new StatementSelect("Payment", "Id", "Account = <Account> AND Amount = <Amount> AND File IN ({$strFileImportIds})");
 
 // Open Accounts file
 $arrLines	= file_get_contents($strAccountFilePath);
