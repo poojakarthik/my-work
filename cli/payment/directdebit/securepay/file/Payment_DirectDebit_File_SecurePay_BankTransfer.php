@@ -154,6 +154,7 @@
 		$arrDefine['BSB']			['Type']		= 'Integer';
 		$arrDefine['BSB']			['Length']		= 6;
 		$arrDefine['BSB']			['PadChar']		= '0';
+		$arrDefine['BSB']			['PadType']		= STR_PAD_LEFT;
 		
 		$arrDefine['BankAccount']	['Index']		= 1;
 		$arrDefine['BankAccount']	['Type']		= 'Integer';
