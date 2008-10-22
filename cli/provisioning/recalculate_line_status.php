@@ -6,12 +6,22 @@ $arrConfig			= LoadApplication();
 $appProvisioning	= new ApplicationProvisioning();
 
 $bolUpdateAllFNNInstances	= TRUE;
+$bolMustHaveExistingStatus	= TRUE;
 
 ///*DEBUG QUERY*/$selServices		= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "Account = 1000154811 AND ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
-$selServices		= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
 $selResponses		= new StatementSelect("(ProvisioningResponse JOIN provisioning_type ON provisioning_type.id = ProvisioningResponse.Type) JOIN FileImport ON FileImport.Id = ProvisioningResponse.FileImport", "ProvisioningResponse.*, FileImport.FileType", "provisioning_type.provisioning_type_nature = <Nature> AND ProvisioningResponse.Service = <Service> AND ProvisioningResponse.Status = ".RESPONSE_STATUS_IMPORTED);
 $selLineStatus		= new StatementSelect("Service", "*", "Id = <Id>");
 $updFNNLineStatus	= new StatementUpdate("Service", "FNN = <FNN> AND (LineStatusDate < <LineStatusDate> OR LineStatusDate IS NULL)", Array('LineStatus'=>NULL, 'LineStatusDate'=>NULL));
+
+if ($bolMustHaveExistingStatus)
+{
+	$selServices		= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1 AND Service.LineStatus IS NOT NULL", "Account.Id, Service.FNN, Service.Id");
+}
+else
+{
+	$selServices		= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
+}
+
 
 // File Type Conversion Array (Key: Old Type; Value: New Type)
 $arrFileTypeConvert	= Array();
@@ -93,7 +103,7 @@ if ($intServiceCount = $selServices->Execute())
 			CliEcho("; New: {$arrNewStatus['LineStatus']}::{$arrNewStatus['LineStatusDate']}");
 			
 			// Update all Services with this FNN with this Status
-			if ($bolUpdateAllFNNInstances)
+			if ($bolUpdateAllFNNInstances && $arrNewStatus['LineStatus'])
 			{
 				if ($updFNNLineStatus->Execute($arrNewStatus, $arrNewStatus) === FALSE)
 				{
