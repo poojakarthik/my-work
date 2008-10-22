@@ -28,8 +28,7 @@ CREATE TABLE product_category
 INSERT INTO product_category (id, name, description)
 VALUES 
 (1, 'Service', 'Service'),
-(2, 'Hardware', 'Hardware'),
-(3, 'Account Modification', 'Account Modification');
+(2, 'Hardware', 'Hardware');
 
 /* product_type table
  */
@@ -51,10 +50,23 @@ VALUES
 (1, 'Landline', 'Landline', 1, 'ServiceLandline'),
 (2, 'Mobile', 'Mobile', 1, 'ServiceLandline'),
 (3, 'ADSL', 'ADSL', 1, 'ServiceADSL'),
-(4, 'Inbound', 'Inbound 13/1300/1800', 1, 'ServiceInbound'),
-(5, 'E-Bill', 'E-Bill', 3, 'AccountModificationEBill'),
-(6, 'Direct Debit', 'Direct Debit', 3, 'AccountModificationDirectDebit');
+(4, 'Inbound', 'Inbound 13/1300/1800', 1, 'ServiceInbound');
 
+/* product_status table
+ */
+CREATE TABLE product_status
+(
+	id INTEGER NOT NULL,
+	name CHARACTER VARYING NOT NULL,
+	description CHARACTER VARYING NOT NULL,
+
+	CONSTRAINT pk_product_status PRIMARY KEY (id),
+	CONSTRAINT un_product_status_name UNIQUE (name),
+);
+INSERT INTO product_status (id, name, description)
+VALUES
+(1, 'Active', 'Active'),
+(2, 'Inactive', 'Inactive');
 
 /* product table
  */
@@ -65,11 +77,13 @@ CREATE TABLE product
 	name CHARACTER VARYING NOT NULL,
 	description CHARACTER VARYING NOT NULL,
 	product_type_id INTEGER NOT NULL,
+	product_status_id INTEGER NOT NULL,
 	reference CHARACTER VARYING NULL,
 
 	CONSTRAINT pk_product PRIMARY KEY (id),
 	CONSTRAINT un_product_vendor_id_name UNIQUE (vendor_id, name),
 	CONSTRAINT fk_product_product_type_id FOREIGN KEY (product_type_id) REFERENCES product_type(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT fk_product_product_status_id FOREIGN KEY (product_status_id) REFERENCES product_status(id) ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT fk_product_vendor_id FOREIGN KEY (vendor_id) REFERENCES vendor(id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
@@ -287,8 +301,7 @@ CREATE TABLE dealer_status
 INSERT INTO dealer_status (id, name, description)
 VALUES
 (1, 'Active', 'Active'),
-(2, 'Archived', 'Archived');
-
+(2, 'Inactive', 'Inactive');
 
 
 /* dealer table
@@ -394,8 +407,8 @@ CREATE TABLE sale
 	created_on TIMESTAMP NOT NULL,
 	created_by INTEGER NOT NULL,
 	sale_status_id INTEGER NOT NULL,
-	voice_authorisation BYTEA NULL,
 	existing_account_id INTEGER NULL,
+	commission_paid_on TIMESTAMP NULL,
 
 	CONSTRAINT pk_sale PRIMARY KEY (id),
 	CONSTRAINT fk_sale_sale_type_id FOREIGN KEY (sale_type_id) REFERENCES sale_type(id) ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -403,6 +416,56 @@ CREATE TABLE sale
 	CONSTRAINT fk_sale_created_by_dealer_id FOREIGN KEY (created_by) REFERENCES dealer(id) ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT fk_sale_sale_status_id FOREIGN KEY (sale_status_id) REFERENCES sale_status(id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
+/* sale_voice_recording table
+ */
+CREATE TABLE sale_voice_recording
+(
+	id SERIAL,
+	sale_id INTEGER NOT NULL,
+	dealer_id INTEGER NOT NULL,
+	uploaded_on TIMESTAMP NOT NULL,
+	recording_created_on TIMESTAMP NOT NULL,
+	recording BYTEA NOT NULL,
+	description CHARACTER VARYING NULL,
+	
+	CONSTRAINT pk_sale_voice_recording PRIMARY KEY (id),
+	CONSTRAINT fk_sale_voice_recording_sale_id FOREIGN KEY (sale_id) REFERENCES sale(id) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT fk_sale_voice_recording_dealer_id FOREIGN KEY (dealer_id) REFERENCES dealer(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+);
+
+/* bill_payment_type table
+ */
+CREATE TABLE bill_payment_type
+(
+	id INTEGER NOT NULL,
+	name CHARACTER VARYING NOT NULL,
+	description CHARACTER VARYING NOT NULL,
+
+	CONSTRAINT pk_bill_payment_type PRIMARY KEY (id),
+	CONSTRAINT un_bill_payment_type_name UNIQUE (name)
+);
+INSERT INTO bill_payment_type (id, name, description)
+VALUES
+(1, 'Account', 'Account'),
+(2, 'Direct Debit', 'Direct Debit');
+
+/* bill_delivery_type table
+ */
+CREATE TABLE bill_delivery_type
+(
+	id INTEGER NOT NULL,
+	name CHARACTER VARYING NOT NULL,
+	description CHARACTER VARYING NOT NULL,
+
+	CONSTRAINT pk_bill_delivery_type PRIMARY KEY (id),
+	CONSTRAINT un_bill_delivery_type_name UNIQUE (name)
+);
+INSERT INTO bill_delivery_type (id, name, description)
+VALUES
+(1, 'Post', 'Post'),
+(2, 'Email', 'Email');
+
 
 /* sale_account table
  */
@@ -419,12 +482,123 @@ CREATE TABLE sale_account
 	suburb CHARACTER VARYING(255) NULL,
 	postcode CHARACTER(4) NOT NULL,
 	state_id INTEGER NOT NULL,
+	bill_payment_type_id INTEGER NOT NULL,
+	bill_delivery_type_id INTEGER NOT NULL,
 
 	CONSTRAINT pk_sale_account PRIMARY KEY (id),
 	CONSTRAINT un_sale_account_sale_id UNIQUE (sale_id),
 	CONSTRAINT fk_sale_account_sale_id FOREIGN KEY (sale_id) REFERENCES sale(id) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT fk_sale_account_state_id FOREIGN KEY (state_id) REFERENCES state(id) ON UPDATE CASCADE ON DELETE RESTRICT
+	CONSTRAINT fk_sale_account_state_id FOREIGN KEY (state_id) REFERENCES state(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT fk_sale_account_bill_payment_type_id FOREIGN KEY (bill_payment_type_id) REFERENCES bill_payment_type(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT fk_sale_account_bill_delivery_type_id FOREIGN KEY (bill_delivery_type_id) REFERENCES bill_delivery_type(id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
+/* sale_account_history table
+ */
+CREATE TABLE sale_account_history
+(
+	id SERIAL,
+	sale_account_id INTEGER NOT NULL,
+	changed_on DATETIME NOT NULL,
+	changed_by INTEGER NOT NULL,
+	bill_payment_type_id INTEGER NOT NULL,
+	bill_delivery_type_id INTEGER NOT NULL,
+
+	CONSTRAINT pk_sale_account_history PRIMARY KEY (id),
+	CONSTRAINT fk_sale_account_history_sale_account_id FOREIGN KEY (sale_account_id) REFERENCES sale_account(id) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT fk_sale_account_history_changed_by_dealer_id FOREIGN KEY (changed_by) REFERENCES dealer(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT fk_sale_account_history_bill_payment_type_id FOREIGN KEY (bill_payment_type_id) REFERENCES bill_payment_type(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT fk_sale_account_history_bill_delivery_type_id FOREIGN KEY (bill_delivery_type_id) REFERENCES bill_delivery_type(id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+/* direct_debit_type table
+ */
+CREATE TABLE direct_debit_type
+(
+	id INTEGER NOT NULL,
+	name CHARACTER VARYING NOT NULL,
+	description CHARACTER VARYING NOT NULL,
+
+	CONSTRAINT pk_direct_debit_type PRIMARY KEY (id),
+	CONSTRAINT un_direct_debit_type_name UNIQUE (name)
+);
+INSERT INTO direct_debit_type (id, name, description)
+VALUES
+(1, 'Bank Account', 'Bank Account'),
+(2, 'Credit Card', 'Credit Card');
+
+/* sale_account_direct_debit table
+ */
+CREATE TABLE sale_account_direct_debit
+(
+	id SERIAL,
+	sale_account_id INTEGER NOT NULL,
+	direct_debit_type_id INTEGER NOT NULL,
+
+	CONSTRAINT pk_sale_account_direct_debit PRIMARY KEY (id),
+	CONSTRAINT un_sale_account_direct_debit_sale_account_id UNIQUE (sale_account_id),
+	CONSTRAINT fk_sale_account_direct_debit_sale_account_id FOREIGN KEY (sale_account_id) REFERENCES sale_account(id) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT fk_sale_account_direct_debit_direct_debit_type_id FOREIGN KEY (direct_debit_type_id) REFERENCES direct_debit_type(id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+/* sale_account_direct_debit_bank_account table
+ */
+CREATE TABLE sale_account_direct_debit_bank_account
+(
+	id SERIAL,
+	sale_account_direct_debit_id INTEGER NOT NULL,
+	bank_name CHARACTER VARYING(255) NOT NULL,
+	bank_bsb CHARACTER(6) NOT NULL,
+	account_number CHARACTER VARYING NOT NULL,
+	account_name CHARACTER VARYING NOT NULL,
+
+	CONSTRAINT pk_sale_account_direct_debit_bank_account PRIMARY KEY (id),
+	CONSTRAINT un_sale_account_direct_debit_bank_account_sale_account_direct_debit_id UNIQUE (sale_account_direct_debit_id),
+	CONSTRAINT fk_sale_account_direct_debit_bank_account_sale_account_direct_debit_id FOREIGN KEY (sale_account_direct_debit_id) REFERENCES sale_account_direct_debit(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+/* credit_card_type table
+ */
+CREATE TABLE credit_card_type
+(
+	id INTEGER NOT NULL,
+	name CHARACTER VARYING NOT NULL,
+	description CHARACTER VARYING NOT NULL,
+	valid_lengths CHARACTER VARYING NOT NULL,
+	valid_prefixes CHARACTER VARYING NOT NULL,
+	cvv_length INTEGER NOT NULL,
+
+	CONSTRAINT pk_credit_card_type PRIMARY KEY (id),
+	CONSTRAINT un_credit_card_type_name UNIQUE (name),
+	CONSTRAINT chk_format_credit_card_type_valid_lengths CHECK (valid_lengths ~* '^\d{1,2}(,\d{1,2})*$'),
+	CONSTRAINT chk_format_credit_card_type_valid_prefixes CHECK (valid_prefixes ~* '^\d{1,2}(,\d{1,2})*$'),
+);
+INSERT INTO credit_card_type (id, name, description, valid_lengths, valid_prefixes, cvv_length)
+VALUES
+(1, 'VISA', 'VISA', '13,16', '4', 3),
+(2, 'MasterCard', 'MasterCard', '16', '51,52,53,54,55', 3),
+(4, 'American Express', 'American Express', '15', '34,37', 4),
+(5, 'Diners Club', 'Diners Club', '14', '30,36,38', 3);
+
+/* sale_account_direct_debit_credit_card table
+ */
+CREATE TABLE sale_account_direct_debit_credit_card
+(
+	id SERIAL,
+	sale_account_direct_debit_credit_card_id INTEGER NOT NULL,
+	credit_card_type_id INTEGER NOT NULL,
+	card_name CHARACTER VARYING NOT NULL,
+	card_number CHARACTER VARYING NOT NULL,
+	expiry_month INTEGER NOT NULL,
+	expiry_year INTEGER NOT NULL,
+	cvv CHARACTER VARYING NOT NULL,
+
+	CONSTRAINT pk_sale_account_direct_debit_credit_card PRIMARY KEY (id),
+	CONSTRAINT un_sale_account_direct_debit_credit_card_sale_account_direct_debit_id UNIQUE (sale_account_direct_debit_id),
+	CONSTRAINT fk_sale_account_direct_debit_credit_card_sale_account_direct_debit_id FOREIGN KEY (sale_account_direct_debit_id) REFERENCES sale_account_direct_debit(id) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT fk_sale_account_direct_debit_credit_card_credit_card_type_id FOREIGN KEY (credit_card_type_id) REFERENCES credit_card_type(id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
 
 /* contact_sale table
  */
@@ -497,7 +671,7 @@ CREATE TABLE sale_item_status_history
 );
 
 /************************************************************************************************************************/
-/********************************* START OF sale_item_product_type_ TABLES **********************************************/
+/************************ START OF sale_item_<product_category>_<product_type> TABLES ***********************************/
 /************************************************************************************************************************/
 /* Each Product Type that requires specific details defined, will have a table named "sale_item_<ProductCategory>_<ProductType>"
  */
@@ -549,94 +723,6 @@ CREATE TABLE sale_item_service_mobile
 	CONSTRAINT un_sale_item_service_mobile_sale_item_id UNIQUE (sale_item_id),
 	CONSTRAINT fk_sale_item_service_mobile_sale_item_id FOREIGN KEY (sale_item_id) REFERENCES sale_item(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT fk_sale_item_service_mobile_sim_state_id_state_id FOREIGN KEY (sim_state_id) REFERENCES state(id) ON UPDATE CASCADE ON DELETE RESTRICT
-);
-
-/* direct_debit_type table
- */
-CREATE TABLE direct_debit_type
-(
-	id INTEGER NOT NULL,
-	name CHARACTER VARYING NOT NULL,
-	description CHARACTER VARYING NOT NULL,
-
-	CONSTRAINT pk_direct_debit_type PRIMARY KEY (id),
-	CONSTRAINT un_direct_debit_type_name UNIQUE (name)
-);
-INSERT INTO direct_debit_type (id, name, description)
-VALUES
-(1, 'Bank Account', 'Bank Account'),
-(2, 'Credit Card', 'Credit Card');
-
-/* sale_item_account_mod_direct_debit table
- */
-CREATE TABLE sale_item_account_mod_direct_debit
-(
-	id SERIAL,
-	sale_item_id INTEGER NOT NULL,
-	direct_debit_type_id INTEGER NOT NULL,
-
-	CONSTRAINT pk_sale_item_account_mod_direct_debit PRIMARY KEY (id),
-	CONSTRAINT un_sale_item_account_mod_direct_debit_sale_item_id UNIQUE (sale_item_id),
-	CONSTRAINT fk_sale_item_account_mod_direct_debit_sale_item_id FOREIGN KEY (sale_item_id) REFERENCES sale_item(id) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT fk_sale_item_account_mod_direct_debit_direct_debit_type_id FOREIGN KEY (direct_debit_type_id) REFERENCES direct_debit_type(id) ON UPDATE CASCADE ON DELETE RESTRICT
-);
-
-/* sale_item_account_mod_direct_debit_bank_account table
- */
-CREATE TABLE sale_item_account_mod_direct_debit_bank_account
-(
-	id SERIAL,
-	sale_item_account_mod_direct_debit_id INTEGER NOT NULL,
-	bank_name CHARACTER VARYING(255) NOT NULL,
-	bank_bsb CHARACTER(6) NOT NULL,
-	account_number CHARACTER VARYING NOT NULL,
-	account_name CHARACTER VARYING NOT NULL,
-
-	CONSTRAINT pk_sale_item_account_mod_direct_debit_bank_account PRIMARY KEY (id),
-	CONSTRAINT un_sale_item_account_mod_direct_debit_bank_account_sale_item_account_mod_direct_debit_id UNIQUE (sale_item_account_mod_direct_debit_id),
-	CONSTRAINT fk_sale_item_account_mod_direct_debit_bank_account_sale_item_account_mod_direct_debit_id FOREIGN KEY (sale_item_account_mod_direct_debit_id) REFERENCES sale_item_account_mod_direct_debit(id) ON UPDATE CASCADE ON DELETE CASCADE,
-);
-
-/* credit_card_type table
- */
-CREATE TABLE credit_card_type
-(
-	id INTEGER NOT NULL,
-	name CHARACTER VARYING NOT NULL,
-	description CHARACTER VARYING NOT NULL,
-	valid_lengths CHARACTER VARYING NOT NULL,
-	valid_prefixes CHARACTER VARYING NOT NULL,
-	cvv_length INTEGER NOT NULL,
-
-	CONSTRAINT pk_credit_card_type PRIMARY KEY (id),
-	CONSTRAINT un_credit_card_type_name UNIQUE (name),
-	CONSTRAINT chk_format_credit_card_type_valid_lengths CHECK (valid_lengths ~* '^\d{1,2}(,\d{1,2})*$'),
-	CONSTRAINT chk_format_credit_card_type_valid_prefixes CHECK (valid_prefixes ~* '^\d{1,2}(,\d{1,2})*$'),
-);
-INSERT INTO credit_card_type (id, name, description, valid_lengths, valid_prefixes, cvv_length)
-VALUES
-(1, 'VISA', 'VISA', '13,16', '4', 3),
-(2, 'MasterCard', 'MasterCard', '16', '51,52,53,54,55', 3),
-(4, 'American Express', 'American Express', '15', '34,37', 4),
-(5, 'Diners Club', 'Diners Club', '14', '30,36,38', 3);
-
-/* sale_item_account_mod_direct_debit_credit_card table
- */
-CREATE TABLE sale_item_account_mod_direct_debit_credit_card
-(
-	id SERIAL,
-	sale_item_account_mod_direct_debit_id INTEGER NOT NULL,
-	credit_card_type_id INTEGER NOT NULL,
-	card_name CHARACTER VARYING NOT NULL,
-	card_number CHARACTER VARYING NOT NULL,
-	expiry_month INTEGER NOT NULL,
-	expiry_year INTEGER NOT NULL,
-	cvv CHARACTER VARYING NOT NULL,
-
-	CONSTRAINT pk_sale_item_account_mod_direct_debit_credit_card PRIMARY KEY (id),
-	CONSTRAINT un_sale_item_account_mod_direct_debit_credit_card_sale_item_account_mod_direct_debit_id UNIQUE (sale_item_account_mod_direct_debit_id),
-	CONSTRAINT fk_sale_item_account_mod_direct_debit_credit_card_sale_item_account_mod_direct_debit_id FOREIGN KEY (sale_item_account_mod_direct_debit_id) REFERENCES sale_item_account_mod_direct_debit(id) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT fk_sale_item_account_mod_direct_debit_credit_card_credit_card_type_id FOREIGN KEY (credit_card_type_id) REFERENCES credit_card_type(id) ON UPDATE CASCADE ON DELETE RESTRICT,
 );
 
 /* landline_type table
@@ -961,22 +1047,6 @@ VALUES
 ()
 
 
-
-
-
 /************************************************************************************************************************/
-/********************************* END OF sale_item_product_type_ TABLES ************************************************/
+/************************** END OF sale_item_<product_category>_<product_type> TABLES ***********************************/
 /************************************************************************************************************************/
-
-
-
---use timestamps (without time zone)
---use INTEGERs for numbers
---don't specify a length for CHARACTER VARYINGs
---
-
---INSERT INTO table RETURNING id
-
-
---ON DELETE SET NULL or ON DELETE CASCADE
---ON UPDATE CASCADE
