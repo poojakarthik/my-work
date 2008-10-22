@@ -11,7 +11,7 @@ $bolUpdateAllFNNInstances	= TRUE;
 $selServices		= new StatementSelect("Service JOIN Account ON Account.Id = Service.Account", "Service.*", "ServiceType = 102 AND Service.Status != 403 AND Account.Archived != 1", "Account.Id, Service.FNN, Service.Id");
 $selResponses		= new StatementSelect("(ProvisioningResponse JOIN provisioning_type ON provisioning_type.id = ProvisioningResponse.Type) JOIN FileImport ON FileImport.Id = ProvisioningResponse.FileImport", "ProvisioningResponse.*, FileImport.FileType", "provisioning_type.provisioning_type_nature = <Nature> AND ProvisioningResponse.Service = <Service> AND ProvisioningResponse.Status = ".RESPONSE_STATUS_IMPORTED);
 $selLineStatus		= new StatementSelect("Service", "*", "Id = <Id>");
-$updFNNLineStatus	= new StatementUpdate("Service", "FNN = <FNN> AND LineStatusDate < <LineStatusDate>", Array('LineStatus'=>NULL, 'LineStatusDate'=>NULL));
+$updFNNLineStatus	= new StatementUpdate("Service", "FNN = <FNN> AND (LineStatusDate < <LineStatusDate> OR LineStatusDate IS NULL)", Array('LineStatus'=>NULL, 'LineStatusDate'=>NULL));
 
 // File Type Conversion Array (Key: Old Type; Value: New Type)
 $arrFileTypeConvert	= Array();
@@ -97,7 +97,7 @@ if ($intServiceCount = $selServices->Execute())
 			{
 				if ($updFNNLineStatus->Execute($arrNewStatus, $arrNewStatus) === FALSE)
 				{
-					throw new Exception($selLineStatus->Error());
+					throw new Exception($updFNNLineStatus->Error());
 				}
 			}
 		}
