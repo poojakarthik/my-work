@@ -39,7 +39,7 @@ class Flex_Rollout_Version_000086 extends Flex_Rollout_Version
 		$fltDefaultContractPayoutPercentage	= ($fltDefaultContractPayoutPercentage) ? $fltDefaultContractPayoutPercentage : NULL;
 		$strSQL = "
 			INSERT INTO contract_terms (created_by, created_on, contract_payout_minimum_invoices, exit_fee_minimum_invoices)
-				VALUES (0, NOW(), $intSuspensionDays, $intFinalDemandDays)";
+				VALUES (0, NOW(), $intContractPayoutOffset, $intExitFeeOffset)";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
