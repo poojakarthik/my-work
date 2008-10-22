@@ -520,9 +520,9 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 			$db->rollback();
 			
 			$this->log('Sending error report via email.');
-			$subject = '[ERROR]'. ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') .' Automatic barring failed - Database transaction rolled back at ' . date('Y-m-d H:i:s');
+			$subject = '[ERROR]'. ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') .' Automatic barring' . ($arrArgs[self::SWITCH_LIST_RUN] ? ' list' : '') . ' failed - Database transaction rolled back at ' . date('Y-m-d H:i:s');
 			$body = array();
-			$body[] = 'The automatic account barring process failed. The database transaction was rolled back. The following error details are available: -'; 
+			$body[] = 'The staggered automatic account barring' . ($arrArgs[self::SWITCH_LIST_RUN] ? ' list' : '') . ' process failed. The database transaction was rolled back. The following error details are available: -'; 
 			$body[] = '';
 			$body[] = $exception->getMessage();
 			if (count($report))
