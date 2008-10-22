@@ -40,7 +40,7 @@ class Cli_App_Contracts extends Cli
 			// Start a new Transcation
 			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
 			$this->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
-
+			
 			// Perform the operation
 			switch ($this->_arrArgs[self::SWITCH_MODE])
 			{
@@ -48,22 +48,16 @@ class Cli_App_Contracts extends Cli
 					// Updates the Contract Details for each Service 
 					$this->_updateContracts($this->_arrArgs[self::SWITCH_EFFECTIVE_DATE]);
 					break;
-
-				case 'CHARGE':
-					// Charges any outstanding Contract Fees
-					$this->_chargeFees();
+					
+				case 'FIX':
+					// Fixes ServiceRatePlan records which were created before Contract Awareness was introduced
+					$this->_fixContracts();
 					break;
-
-				case 'ALL':
-					// Updates the Contract Details and charges any outstanding Contract Fees
-					$this->_updateContracts($this->_arrArgs[self::SWITCH_EFFECTIVE_DATE]);
-					$this->_chargeFees();
-					break;
-
+					
 				default:
 					throw new Exception("Invalid MODE '{$this->_arrArgs[self::SWITCH_MODE]}' specified!");
 			}
-
+			
 			// If not in test mode, Commit the Transaction
 			if (!$this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
@@ -99,6 +93,8 @@ class Cli_App_Contracts extends Cli
 	
 	private function _updateContracts($strEffectiveDate=NULL)
 	{
+		$this->log(":: Updating Contract Details ::\n");
+		
 		$strEffectiveDate	= ($strEffectiveDate) ? date("Y-m-d H:i:s", strtotime($strEffectiveDate)) : date("Y-m-d H:i:s");
 		$intEffectiveDate	= strtotime($strEffectiveDate);
 		
@@ -107,7 +103,7 @@ class Cli_App_Contracts extends Cli
 		
 		// Statements
 		$selContractServices	= new StatementSelect(	"Service JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service",
-														"Service.ClosedOn, Service.NatureOfClosure, Service.LineStatus, Service.LineStatusDate, SRP.*, SRP.Id AS ServiceRatePlanId",
+														"Service.Account, Service.FNN, Service.ClosedOn, Service.NatureOfClosure, Service.LineStatus, Service.LineStatusDate, SRP.*, SRP.Id AS ServiceRatePlanId",
 														"SRP.Id = (SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn LIMIT 1) AND contract_status_id = ".CONTRACT_STATUS_ACTIVE." AND Service.Status != ".SERVICE_STATUS_ARCHIVED);
 		$ubiServiceRatePlan		= new StatementUpdateById("ServiceRatePlan", Array('contract_effective_end_datetime'=>NULL, 'contract_status_id'=>NULL));
 		
@@ -120,6 +116,8 @@ class Cli_App_Contracts extends Cli
 		{
 			while ($arrContractService = $selContractServices->Fetch())
 			{
+				$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, FALSE);
+				
 				$intClosedOn				= strtotime($arrContractService['ClosedOn']);
 				$intLineStatusDate			= strtotime($arrContractService['LineStatusDate']);
 				$intScheduledEndDatetime	= strtotime($arrContractService['contract_scheduled_end_datetime']);
@@ -132,22 +130,47 @@ class Cli_App_Contracts extends Cli
 					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['contract_scheduled_end_datetime'];
 					$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_EXPIRED;
 				}
-				elseif ($intEffectiveDate > $intLineStatusDate && in_array($arrContractService['LineStatus'], $arrLossStatuses))
+				elseif ($intEffectiveDate > $intLineStatusDate)
 				{
 					// Contract has been Breached -- Loss notice via Carrier
 					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['LineStatusDate'];
 					$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_BREACHED;
+					
+					switch ($arrContractService['LineStatus'])
+					{
+						case SERVICE_LINE_DISCONNECTED:
+							$arrServiceRatePlan['contract_breach_reason_id']		= CONTRACT_BREACH_REASON_DISCONNECTED;
+							break;
+							
+						case SERVICE_LINE_CHURNED:
+							$arrServiceRatePlan['contract_breach_reason_id']		= CONTRACT_BREACH_REASON_CHURNED;
+							break;
+							
+						default:
+							// Line Status is not a Contract-breaker
+							$this->log("SKIPPED");
+							continue;
+					}
 				}
 				elseif ($intEffectiveDate > $intClosedOn && in_array($arrContractService['NatureOfClosure'], $arrLossClosures))
 				{
 					// Contract has been Breached -- Service prematurely closed
-					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['ClosedOn'];
-					$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_BREACHED;
+					$arrServiceRatePlan['contract_effective_end_datetime']		= $arrContractService['ClosedOn'];
+					$arrServiceRatePlan['contract_status_id']					= CONTRACT_STATUS_BREACHED;
+					$arrServiceRatePlan['contract_breach_reason_id']			= CONTRACT_BREACH_REASON_OTHER;
+					$arrServiceRatePlan['contract_breach_reason_description']	= "Service Prematurely Closed in Flex";
 				}
 				else
 				{
 					// Contract is still active
+					$this->log("SKIPPED");
 					continue;
+				}
+				
+				// Fill the Description field
+				if (!$arrServiceRatePlan['contract_breach_reason_description'])
+				{
+					$arrServiceRatePlan['contract_breach_reason_description']	= GetConstantDescription($arrServiceRatePlan['contract_breach_reason_id'], 'contract_breach_reason');
 				}
 				
 				// Update the ServiceRatePlan record
@@ -155,15 +178,42 @@ class Cli_App_Contracts extends Cli
 				{
 					throw new Exception($ubiServiceRatePlan->Error());
 				}
+				
+				$this->log("{$arrServiceRatePlan['contract_breach_reason_description']} @ {$arrServiceRatePlan['contract_effective_end_datetime']}");
 			}
 		}
 	}
 	
-	private function _chargeFees()
+	private function _fixContracts()
 	{
-		throw new Exception("CHARGE mode is not implemented yet!");
+		$strEffectiveDate		= date("Y-m-d 00:00:00");
 		
-		// TODO
+		$this->log(":: Fixing Old Contracts ::\n");
+		
+		// Statements
+		$selServiceRatePlans	= new StatementSelect(	"ServiceRatePlan SRP JOIN RatePlan ON RatePlan.Id = SRP.RatePlan",
+														"SRP.*, RatePlan.ContractTerm, RatePlan.Name",
+														"RatePlan.ContractTerm IS NOT NULL AND RatePlan.ContractTerm > 0 AND ServiceRatePlan.contract_scheduled_end_datetime IS NULL AND ServiceRatePlan.contract_status_id IS NULL AND ('{$strEffectiveDate}' BETWEEN StartDatetime AND EndDatetime OR EndDatetime = '9999-12-31 11:59:59')");
+		$ubiServiceRatePlan		= new StatementUpdateById("ServiceRatePlan", Array('contract_scheduled_end_datetime'=>NULL, 'contract_status_id'=>NULL));
+		
+		// Get list of Contracted ServiceRatePlans that are either current, or are scheduled to continue until the end of time
+		if ($selServiceRatePlans->Execute() === FALSE)
+		{
+			throw new Exception($selServiceRatePlans->Error());
+		}
+		else
+		{
+			while ($arrServiceRatePlan = $selServiceRatePlans->Fetch())
+			{
+				$this->log(" + {$arrServiceRatePlan['Service']}::{$arrServiceRatePlan['Name']}");
+				// Calculate Scheduled End of Contract
+				$arrServiceRatePlan['contract_scheduled_end_datetime']	= date("Y-m-d H:i:s", strtotime("-1 second", strtotime("+{$arrServiceRatePlan['ContractTerm']} months", strtotime($arrServiceRatePlan['StartDatetime']))));
+				if ($ubiServiceRatePlan->Execute($arrServiceRatePlan) === FALSE)
+				{
+					throw new Exception($ubiServiceRatePlan->Error());
+				}
+			}
+		}
 	}
 	
 	public static function debug($mixMessage, $bolNewLine=TRUE)
@@ -196,8 +246,8 @@ class Cli_App_Contracts extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Contracts operation to perform [UPDATE|CHARGE|ALL]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("UPDATE","CHARGE","ALL"))'
+				self::ARG_DESCRIPTION	=> "Contracts operation to perform [UPDATE|FIX]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("UPDATE","FIX"))'
 			),
 
 			self::SWITCH_EFFECTIVE_DATE => array(
