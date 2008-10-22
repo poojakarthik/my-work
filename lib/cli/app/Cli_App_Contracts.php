@@ -116,7 +116,7 @@ class Cli_App_Contracts extends Cli
 		{
 			while ($arrContractService = $selContractServices->Fetch())
 			{
-				$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, FALSE);
+				$this->log(" + {$arrContractService['Account']}::{$arrContractService['FNN']}... ", FALSE, TRUE);
 				
 				$intClosedOn				= strtotime($arrContractService['ClosedOn']);
 				$intLineStatusDate			= strtotime($arrContractService['LineStatusDate']);
@@ -205,7 +205,7 @@ class Cli_App_Contracts extends Cli
 		{
 			while ($arrServiceRatePlan = $selServiceRatePlans->Fetch())
 			{
-				$this->log(" + {$arrServiceRatePlan['Service']}::{$arrServiceRatePlan['Name']}...", FALSE, FALSE);
+				$this->log(" + {$arrServiceRatePlan['Service']}::{$arrServiceRatePlan['Name']}...", FALSE, TRUE);
 				
 				// Calculate Scheduled End of Contract
 				$arrServiceRatePlan['contract_scheduled_end_datetime']	= date("Y-m-d H:i:s", strtotime("-1 second", strtotime("+{$arrServiceRatePlan['ContractTerm']} months", strtotime($arrServiceRatePlan['StartDatetime']))));
