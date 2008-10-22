@@ -205,9 +205,11 @@ class Cli_App_Contracts extends Cli
 		{
 			while ($arrServiceRatePlan = $selServiceRatePlans->Fetch())
 			{
-				$this->log(" + {$arrServiceRatePlan['Service']}::{$arrServiceRatePlan['Name']}");
+				$this->log(" + {$arrServiceRatePlan['Service']}::{$arrServiceRatePlan['Name']}...", FALSE, FALSE);
+				
 				// Calculate Scheduled End of Contract
 				$arrServiceRatePlan['contract_scheduled_end_datetime']	= date("Y-m-d H:i:s", strtotime("-1 second", strtotime("+{$arrServiceRatePlan['ContractTerm']} months", strtotime($arrServiceRatePlan['StartDatetime']))));
+				$this->log("Started: {$arrServiceRatePlan['StartDatetime']}; Contract End: {$arrServiceRatePlan['contract_scheduled_end_datetime']}");
 				if ($ubiServiceRatePlan->Execute($arrServiceRatePlan) === FALSE)
 				{
 					throw new Exception($ubiServiceRatePlan->Error());
