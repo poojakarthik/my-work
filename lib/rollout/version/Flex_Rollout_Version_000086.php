@@ -22,7 +22,6 @@ class Flex_Rollout_Version_000086 extends Flex_Rollout_Version
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id for this version of the Contract Terms', " .
 						"created_by BIGINT(20) NOT NULL COMMENT '(FK) Employee who created this version', " .
 						"created_on DATETIME NOT NULL COMMENT 'Date this version was created', " .
-						"default_contract_payout_percentage DECIMAL(13,4) NULL COMMENT 'Default percentage of remaining Plan Fees charged when Contract is breached', " .
 						"contract_payout_minimum_invoices INT(10) NOT NULL COMMENT 'Minimum number of invoices for the contract before Contract Payouts are charged'," .
 						"exit_fee_minimum_invoices INT(10) NOT NULL COMMENT 'Minimum number of invoices for the contract before Exit Fees are charged'" .
 					") ENGINE = innodb;";
@@ -34,14 +33,13 @@ class Flex_Rollout_Version_000086 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "DROP TABLE IF EXISTS contract_terms;";
 		
 		// 2:	Populate the contract_terms Table
-		$fltDefaultContractPayoutPercentage	= $this->getUserResponseDecimal("Please enter the default Contract Payout Percentage (eg. 30.5 for 30.5%, 0 for No Default):");
 		$intContractPayoutOffset 			= $this->getUserResponseInteger("How many Invoices must a Contracted Plan appear on before it will be charged a Contract Payout?");
 		$intExitFeeOffset 					= $this->getUserResponseInteger("How many Invoices must a Contracted Plan appear on before it will be charged a Exit Fee?");
 		
 		$fltDefaultContractPayoutPercentage	= ($fltDefaultContractPayoutPercentage) ? $fltDefaultContractPayoutPercentage : NULL;
 		$strSQL = "
-			INSERT INTO contract_terms (created_by, created_on, default_contract_payout_percentage, contract_payout_minimum_invoices, exit_fee_minimum_invoices)
-				VALUES (0, NOW(), $fltDefaultContractPayoutPercentage, $intSuspensionDays, $intFinalDemandDays)";
+			INSERT INTO contract_terms (created_by, created_on, contract_payout_minimum_invoices, exit_fee_minimum_invoices)
+				VALUES (0, NOW(), $intSuspensionDays, $intFinalDemandDays)";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
