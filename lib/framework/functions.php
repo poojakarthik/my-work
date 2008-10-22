@@ -3502,7 +3502,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	
 	
 	$db = Data_Source::get();
-	$dbAdmin = Data_Source::get();
+	$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 
 	// If we don't know the customer group id ($intCustomerGroupId===FALSE) than we need to find it for the given invoice_run_id
 	$strSQL = "SELECT distinct(customer_group_id) FROM InvoiceRun WHERE Id IN (" . implode(',', $arrInvoiceRunIds) . ") AND customer_group_id IS NOT NULL";
