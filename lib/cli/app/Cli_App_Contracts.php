@@ -193,7 +193,7 @@ class Cli_App_Contracts extends Cli
 		// Statements
 		$selServiceRatePlans	= new StatementSelect(	"ServiceRatePlan SRP JOIN RatePlan ON RatePlan.Id = SRP.RatePlan",
 														"SRP.*, RatePlan.ContractTerm, RatePlan.Name",
-														"RatePlan.ContractTerm IS NOT NULL AND RatePlan.ContractTerm > 0 AND ServiceRatePlan.contract_scheduled_end_datetime IS NULL AND ServiceRatePlan.contract_status_id IS NULL AND ('{$strEffectiveDate}' BETWEEN StartDatetime AND EndDatetime OR EndDatetime = '9999-12-31 11:59:59')");
+														"RatePlan.ContractTerm IS NOT NULL AND RatePlan.ContractTerm > 0 AND SRP.contract_scheduled_end_datetime IS NULL AND SRP.contract_status_id IS NULL AND ('{$strEffectiveDate}' BETWEEN SRP.StartDatetime AND EndDatetime OR SRP.EndDatetime = '9999-12-31 11:59:59')");
 		$ubiServiceRatePlan		= new StatementUpdateById("ServiceRatePlan", Array('contract_scheduled_end_datetime'=>NULL, 'contract_status_id'=>NULL));
 		
 		// Get list of Contracted ServiceRatePlans that are either current, or are scheduled to continue until the end of time
