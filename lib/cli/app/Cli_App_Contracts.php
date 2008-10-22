@@ -209,6 +209,7 @@ class Cli_App_Contracts extends Cli
 				
 				// Calculate Scheduled End of Contract
 				$arrServiceRatePlan['contract_scheduled_end_datetime']	= date("Y-m-d H:i:s", strtotime("-1 second", strtotime("+{$arrServiceRatePlan['ContractTerm']} months", strtotime($arrServiceRatePlan['StartDatetime']))));
+				$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_ACTIVE;
 				$this->log("Started: {$arrServiceRatePlan['StartDatetime']}; Contract End: {$arrServiceRatePlan['contract_scheduled_end_datetime']}");
 				if ($ubiServiceRatePlan->Execute($arrServiceRatePlan) === FALSE)
 				{
