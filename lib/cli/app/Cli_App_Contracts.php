@@ -149,7 +149,7 @@ class Cli_App_Contracts extends Cli
 						default:
 							// Line Status is not a Contract-breaker
 							$this->log("SKIPPED");
-							continue;
+							continue 2;
 					}
 				}
 				elseif ($intClosedOn < $intEffectiveDate && in_array($arrContractService['NatureOfClosure'], $arrLossClosures))
