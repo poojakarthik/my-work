@@ -105,7 +105,7 @@ class Cli_App_Contracts extends Cli
 		$selContractServices	= new StatementSelect(	"Service JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service",
 														"Service.Account, Service.FNN, Service.ClosedOn, Service.NatureOfClosure, Service.LineStatus, Service.LineStatusDate, SRP.*, SRP.Id AS ServiceRatePlanId",
 														"SRP.Id = (SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn LIMIT 1) AND contract_status_id = ".CONTRACT_STATUS_ACTIVE." AND Service.Status != ".SERVICE_STATUS_ARCHIVED);
-		$ubiServiceRatePlan		= new StatementUpdateById("ServiceRatePlan", Array('contract_effective_end_datetime'=>NULL, 'contract_status_id'=>NULL));
+		$ubiServiceRatePlan		= new StatementUpdateById("ServiceRatePlan", Array('contract_effective_end_datetime'=>NULL, 'contract_status_id'=>NULL, 'contract_breach_reason_id'=>NULL, 'contract_breach_reason_description'=>NULL));
 		
 		// Get list of Services/Contracts to update
 		if ($selContractServices->Execute(Array('EffectiveDate' => $strEffectiveDate)) === FALSE)
@@ -130,7 +130,7 @@ class Cli_App_Contracts extends Cli
 					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['contract_scheduled_end_datetime'];
 					$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_EXPIRED;
 				}
-				elseif ($intEffectiveDate > $intLineStatusDate)
+				elseif ($intLineStatusDate < $intEffectiveDate)
 				{
 					// Contract has been Breached -- Loss notice via Carrier
 					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['LineStatusDate'];
@@ -152,7 +152,7 @@ class Cli_App_Contracts extends Cli
 							continue;
 					}
 				}
-				elseif ($intEffectiveDate > $intClosedOn && in_array($arrContractService['NatureOfClosure'], $arrLossClosures))
+				elseif ($intClosedOn < $intEffectiveDate && in_array($arrContractService['NatureOfClosure'], $arrLossClosures))
 				{
 					// Contract has been Breached -- Service prematurely closed
 					$arrServiceRatePlan['contract_effective_end_datetime']		= $arrContractService['ClosedOn'];
