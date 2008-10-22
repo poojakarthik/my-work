@@ -3501,7 +3501,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	}
 	
 	
-	$db = Data_Source::get();
+	$db = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 	$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 
 	// If we don't know the customer group id ($intCustomerGroupId===FALSE) than we need to find it for the given invoice_run_id
