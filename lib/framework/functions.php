@@ -496,7 +496,7 @@ function GetCarrierName($intCarrier)
  */
 function IsValidFNN($strFNN)
 {
-	return preg_match("/^((0\d{9}[i]?)|(13\d{4})|(1[389]00\d{6}))$/", $strFNN);
+	return preg_match("/^((0[123478]\d{8}[i]?)|(13\d{4})|(1[389]00\d{6}))$/", $strFNN);
 }
 
 //------------------------------------------------------------------------//
