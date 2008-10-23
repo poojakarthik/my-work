@@ -483,6 +483,10 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
+
+					$f = fopen(FILES_BASE_PATH . '/' . $attachment[self::EMAIL_ATTACHMENT_NAME], 'w');
+					fwrite($f, $attachment[self::EMAIL_ATTACHMENT_CONTENT]);
+					fclose($f);
 				}
 			}
 			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_That_Would_Be_Automatically_Barred_' : '_Automatically_Barred_Services_';
@@ -496,6 +500,10 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
+
+					$f = fopen(FILES_BASE_PATH . '/' . $attachment[self::EMAIL_ATTACHMENT_NAME], 'w');
+					fwrite($f, $attachment[self::EMAIL_ATTACHMENT_CONTENT]);
+					fclose($f);
 				}
 			}
 
