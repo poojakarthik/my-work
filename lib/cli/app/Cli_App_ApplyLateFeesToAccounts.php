@@ -254,7 +254,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 		$arrCharge['Description']	= "Late Payment Fee";
 		$arrCharge['ChargeType']	= $this->_strChargeType;
 		$arrCharge['Amount']		= $lateFee;
-		$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
+		$arrCharge['Status']		= CHARGE_APPROVED;
 		$arrCharge['Account'] 		= $arrAccount['AccountId'];
 		$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
 		$arrCharge['ChargedOn']		= date("Y-m-d");
