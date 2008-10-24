@@ -17,7 +17,7 @@ try
 	
 	$selBestServiceRatePlan	= new StatementSelect(	"ServiceRatePlan",
 													"Id",
-													"RatePlan = <RatePlan> AND Service = <Service> AND CreatedOn < <BillingDate> AND StartDatetime < EndDatetime".
+													"RatePlan = <RatePlan> AND Service = <Service> AND CreatedOn < <BillingDate> AND StartDatetime < EndDatetime",
 													"Id DESC",
 													"1"); 
 	
