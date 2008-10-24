@@ -37,7 +37,6 @@ class Application_Handler_Contract extends Application_Handler
 				}
 			}
 			$strOrderBy	= (count($arrOrderBy)) ? implode(', ', $arrOrderBy) : NULL;
-			Debug($strOrderBy);
 			
 			$selContractTerms	= new StatementSelect("contract_terms", "*", "1", "id DESC", "1");
 			if ($selContractTerms->Execute() === FALSE)
