@@ -36,6 +36,13 @@ class Application_Handler_Contract extends Application_Handler
 			}
 			$strOrderBy	= (count($arrOrderBy)) ? implode(', ', $arrOrderBy) : NULL;
 			
+			$selContractTerms	= new StatementSelect("contract_terms", "*", "1", "id DESC", "1");
+			if ($selContractTerms->Execute() === FALSE)
+			{
+				throw new Exception($selContractTerms->Error());
+			}
+			$arrContractTerms	= $selBreachedContracts->Fetch();
+			
 			// Get the list of Contracts to display
 			$arrColumns	= Array(
 									'id'				=> "SRP.Id",
@@ -49,11 +56,11 @@ class Application_Handler_Contract extends Application_Handler
 									'minMonthly'		=> "RatePlan.MinMonthly",
 									'monthsLeft'		=> "PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m'))",
 									'payout'			=> "CASE " .
-																"WHEN COUNT(ServiceTotal.Id) < (SELECT contract_payout_minimum_invoices FROM contract_terms ORDER BY id DESC LIMIT 1) THEN 0.0 " .
+																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['contract_payout_minimum_invoices']} THEN 0.0 " .
 																"ELSE ROUND(RatePlan.MinMonthly * PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m')) * (RatePlan.contract_payout_percentage / 100), 2) " .
 															"END",
 									'exitFee'			=> "CASE " .
-																"WHEN COUNT(ServiceTotal.Id) < (SELECT exit_fee_minimum_invoices FROM contract_terms ORDER BY id DESC LIMIT 1) THEN 0.0 " .
+																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['exit_fee_minimum_invoices']} THEN 0.0 " .
 																"ELSE RatePlan.contract_exit_fee " .
 															"END"
 								);
@@ -70,7 +77,7 @@ class Application_Handler_Contract extends Application_Handler
 			}
 			$arrDetailsToRender['Contracts']	= $selBreachedContracts->FetchAll();
 			
-			$this->LoadPage('console', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$this->LoadPage('contract_managebreached', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		catch (Exception $e)
 		{
