@@ -54,7 +54,7 @@ class Application_Handler_Contract extends Application_Handler
 									'contractBreached'	=> "CAST(SRP.contract_effective_end_datetime AS DATE)",
 									'contractInvoices'	=> "COUNT(ServiceTotal.Id)",
 									'breachNature'		=> "SRP.contract_breach_reason_description",
-									'minMonthly'		=> "RatePlan.MinMonthly",
+									'minMonthly'		=> "ROUND(RatePlan.MinMonthly, 2)",
 									'monthsLeft'		=> "PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m'))",
 									'payout'			=> "CASE " .
 																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['contract_payout_minimum_invoices']} THEN 0.0 " .
