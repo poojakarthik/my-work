@@ -65,6 +65,7 @@ class Cli_App_Voice_Message extends Cli
 		$arrGoodNumbers = array();
 		foreach ($arrPhoneNumbers as $accountId => $phone)
 		{
+			$this->log("Chacking validity of phone number '$phone' for account id '$accountId'");
 			$phoneNumber = $this->validifyPhoneNumber($phone);
 			
 			if ($phoneNumber === false)
@@ -77,6 +78,8 @@ class Cli_App_Voice_Message extends Cli
 			}
 		}
 		asort($arrGoodNumbers);
+		$this->log("Good numbers: " . count($arrGoodNumbers));
+		$this->log("Bad numbers: " . count($arrBadNumbers));
 		return $arrGoodNumbers;
 	}
 	
@@ -145,6 +148,8 @@ class Cli_App_Voice_Message extends Cli
 		$matches = array();
 		preg_match_all($reg, $contents, $matches);
 		$accountIds = $matches[1];
+		$accountIds = array_unique($accountIds);
+		$this->log("Nr account ids found: " . count($accountIds));
 		return $accountIds;
 	}
 
@@ -157,6 +162,8 @@ WHERE Account.PrimaryContact = Contact.Id
   AND
 Account.Id IN (" . implode(',', $arrAccountIds) . ")
 ";
+		
+		$this->log("SQL Query:\n\n" . $strSQL . "\n\n");
 		
 		$db = Data_Source::get();
 		$res = $db->query($strSQL);
@@ -174,6 +181,7 @@ Account.Id IN (" . implode(',', $arrAccountIds) . ")
 		{
 			$accountPhoneNumbers[$result['AccountId']] = $result['Phone'];
 		}
+		$this->log("Nr account id / phone numbers found: " . count($accountPhoneNumbers));
 		
 		return $accountPhoneNumbers;
 	}
