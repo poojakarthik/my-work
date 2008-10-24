@@ -63,7 +63,7 @@ try
 		}
 	}
 	
-	throw new Exception("TEST MODE!");
+	//throw new Exception("TEST MODE!");
 }
 catch (Exception $eException)
 {
