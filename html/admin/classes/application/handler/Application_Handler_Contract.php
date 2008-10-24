@@ -92,7 +92,8 @@ class Application_Handler_Contract extends Application_Handler
 				throw new Exception($selBreachedContractsCount->Error());
 			}
 			
-			if ($selBreachedContracts->Execute() === FALSE)
+			$intShown	= $selBreachedContracts->Execute();
+			if ($intShown === FALSE)
 			{
 				throw new Exception($selBreachedContracts->Error());
 			}
@@ -105,7 +106,7 @@ class Application_Handler_Contract extends Application_Handler
 															'intNext'		=> min($intTotal - self::RECORD_DISPLAY_LIMIT, $intOffset + self::RECORD_DISPLAY_LIMIT),
 															'intLast'		=> $intTotal - self::RECORD_DISPLAY_LIMIT,
 															'intStart'		=> $intOffset+1,
-															'intEnd'		=> min($intTotal - self::RECORD_DISPLAY_LIMIT, $intOffset + self::RECORD_DISPLAY_LIMIT),
+															'intEnd'		=> $intOffset+1+$intShown,
 															'intTotal'		=> $intTotal
 														);
 			
