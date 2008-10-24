@@ -50,6 +50,7 @@ class Application_Handler_Contract extends Application_Handler
 									'id'				=> "SRP.Id",
 									'account'			=> "Service.Account",
 									'service'			=> "Service.FNN",
+									'serviceId'			=> "SRP.Service",
 									'ratePlan'			=> "RatePlan.Name",
 									'contractTerm'		=> "RatePlan.ContractTerm",
 									'contractStarted'	=> "CAST(SRP.StartDatetime AS DATE)",
