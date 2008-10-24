@@ -74,8 +74,9 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 		$strSort	= '';
 		if (is_array($this->mxdDataToRender['Sort']))
 		{
-			$arrSortColumns		= array_keys($this->mxdDataToRender['Sort']);
-			$strSort			= (array_keys($arrSortColumns)) ? '&sort["'.reset($this->mxdDataToRender['Sort'][$arrSortColumns[0]]).'"]' : '';
+			$strDirection	= reset($this->mxdDataToRender['Sort']);
+			$strSortColumn	= key($this->mxdDataToRender['Sort']);
+			$strSort		= ($strSortColumn) ? '&sort["'.$strSortColumn.'"]='.$strDirection : '';
 		}
 		
 		// Pagination
