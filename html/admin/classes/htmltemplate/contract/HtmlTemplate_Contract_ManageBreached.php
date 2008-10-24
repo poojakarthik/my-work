@@ -72,16 +72,18 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 		$this->_arrGETVariables['sort']		= $this->mxdDataToRender['Sort'];
 		
 		// Pagination
+		$strSortColumn		= reset($this->mxdDataToRender['Sort']);
+		$strSort			= ($strSortColumn) ? '&sort[\"'.$strSortColumn.'\"]' : '';
 		$arrPaginationHTML	= Array();
 		if ($this->mxdDataToRender['Pagination']['intCurrent'])
 		{
-			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset=0'>First</a>";
-			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intPrevious']}'>Previous</a>";
+			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset=0{$strSort}'>First</a>";
+			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intPrevious']}{$strSort}'>Previous</a>";
 		}
 		if ($this->mxdDataToRender['Pagination']['intCurrent'] < $this->mxdDataToRender['Pagination']['intNext'])
 		{
-			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intNext']}'>Next</a>";
-			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intLast']}'>Last</a>";
+			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intNext']}{$strSort}'>Next</a>";
+			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intLast']}{$strSort}'>Last</a>";
 		}
 		$strPaginationHTML	= implode('&nbsp;|&nbsp;', $arrPaginationHTML);
 		
@@ -180,15 +182,15 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 			switch ($this->mxdDataToRender['Sort'][$strColId])
 			{
 				case 'a':
-					$strHTML .= " class='reflex-sorted-ascending' onclick=\"document.location = '../../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=d&offset={$this->_arrGETVariables['offset']}'\"";
+					$strHTML .= " class='reflex-sorted-ascending' onclick=\"document.location = '../../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=d&offset={$this->mxdDataToRender['Pagination']['intOffset']}'\"";
 					break;
 					
 				case 'd':
-					$strHTML .= " class='reflex-sorted-descending' onclick=\"document.location = '../../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=a&offset={$this->_arrGETVariables['offset']}'\"";
+					$strHTML .= " class='reflex-sorted-descending' onclick=\"document.location = '../../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=a&offset={$this->mxdDataToRender['Pagination']['intOffset']}'\"";
 					break;
 				
 				default:
-					$strHTML .= " class='reflex-unsorted' onclick=\"document.location = '../../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=a&offset={$this->_arrGETVariables['offset']}'\"";
+					$strHTML .= " class='reflex-unsorted' onclick=\"document.location = '../../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=a&offset={$this->mxdDataToRender['Pagination']['intOffset']}'\"";
 					break;
 			}
 		}
