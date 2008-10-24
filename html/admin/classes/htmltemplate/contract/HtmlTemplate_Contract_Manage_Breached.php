@@ -1,6 +1,6 @@
 <?php
 
-class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
+class HtmlTemplate_Contract_Manage_Breached extends FlexHtmlTemplate
 {
 	protected	$_arrColumns	= Array(
 											'Id'		=> Array(),

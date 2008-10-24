@@ -77,7 +77,7 @@ class Application_Handler_Contract extends Application_Handler
 			}
 			$arrDetailsToRender['Contracts']	= $selBreachedContracts->FetchAll();
 			
-			$this->LoadPage('contract_managebreached', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$this->LoadPage('contract_manage_breached', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		catch (Exception $e)
 		{
