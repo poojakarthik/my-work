@@ -9,12 +9,42 @@ Flex::load();
 
 class Cli_App_Voice_Message extends Cli
 {
+	const SWITCH_OUTPUT_FILE_PATH_AND_NAME = "f";
+	const SWITCH_ERROR_FILE_PATH_AND_NAME = "b";
+	const SWITCH_ACCOUNT_ID_FILE = "a";
+	const SWITCH_MESSAGE_FILE = "m";
+	const SWITCH_ACCOUNT_ID_INDEX = "i";
+
 	public function run()
 	{
 		try
 		{
-			self::runVT();
-			self::runTB();
+			// The arguments are present and in a valid format if we get past this point.
+			$arrArgs = $this->getValidatedArguments();
+
+			$arrBadNumbers = array();
+
+			$this->writeMessagesToFile(
+										$this->filterPhoneNumbers(
+											$this->getPhoneNumbersForAccountIds(
+												$this->extractAccountIdsFromFile($arrArgs[self::SWITCH_ACCOUNT_ID_FILE], $arrArgs[self::SWITCH_ACCOUNT_ID_INDEX])
+											), 
+											$arrBadNumbers
+										),
+										$this->readMessageFromFile($arrArgs[self::SWITCH_MESSAGE_FILE]),
+										$arrArgs[self::SWITCH_OUTPUT_FILE_PATH_AND_NAME]
+									);
+									
+			if ($arrArgs[self::SWITCH_ERROR_FILE_PATH_AND_NAME] !== null)
+			{
+				$file = $this->openFile($arrArgs[self::SWITCH_ERROR_FILE_PATH_AND_NAME]);
+				fwrite($file, "AccountId,Phone\n");
+				foreach($arrBadNumbers as $accountId => $phone)
+				{
+					fwrite($file, "$accountId,$phone\n");
+				}
+				fclose($file);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -22,191 +52,111 @@ class Cli_App_Voice_Message extends Cli
 		}
 	}
 	
-	public function runVT()
+	public function readMessageFromFile($messageFilePath)
 	{
-		self::doForCG(2, "Your Voice talk telephone account remains unpaid and suspension of your services has been scheduled for thursday the 23rd of October. Please pay your Voice talk telephone account and forward your payment receipt as a matter of urgency to avoid unnecessary disruption to your services. If you have already paid your Voice Talk telephone account please forward your remittance advice. Thank you for your prompt attention.", FILES_BASE_PATH . "/voicetalk.csv");
+		$contents = file_get_contents($messageFilePath);
+		$contents = str_replace("\n", "", $contents);
+		$contents = str_replace("\r", "", $contents);
+		return $contents;
 	}
 	
-	public function runTB()
+	public function filterPhoneNumbers($arrPhoneNumbers, &$arrBadNumbers)
 	{
-		self::doForCG(1, "Your Tel coe blue telephone account remains unpaid and suspension of your services has been scheduled for thursday the 23rd of October. Please pay your Tel coe blue telephone account and forward your  payment  receipt as a matter of urgency to avoid unnecessary disruption to your services. If you have already paid your Tel coe blue telephone account please forward your remittance advice. Thank you for your prompt attention.", FILES_BASE_PATH . "/telco_blue.csv");
-	}
-	
-	public function doForCG($cg, $message, $name)
-	{
-		$this->log("Processing customer group $cg.");
-		$intEffectiveTime = mktime(0,0,0,date('m'),(date('d')+2),date('Y'));
-		$this->log("Effective date: " . date("Y-m-d H:i:s", $intEffectiveTime));
-		$contacts = $this->listBarrableAccounts($intEffectiveTime, $cg);
-		$this->log("Found " . count($contacts) . " accounts for customer group $cg.");
-		
-		$f = fopen($name, 'w+');
-		$fx = null;
-		$first = true;
-
-		foreach ($contacts as $contact)
+		$arrGoodNumbers = array();
+		foreach ($arrPhoneNumbers as $accountId => $phone)
 		{
-			$accountId = self::getName($contact["AccountId"]);
-			//$contactName = self::getName(trim($contact["FirstName"]));
-			//$amount = Flex::framework()->GetOverdueBalance($contact["AccountId"]);
-
-			$nr = preg_replace("/[^0-9]+/", '', $contact["Phone"]);
+			$phoneNumber = $this->validifyPhoneNumber($phone);
 			
-			$l = strlen($nr);
-			
-			$crap = false;
-			
-			if ($l > 10 || $l < 9)
+			if ($phoneNumber === false)
 			{
-				$crap = true;
+				$arrBadNumbers[$accountId] = $phone;
 			}
-			if ($l == 9)
+			else
 			{
-				$nr = '0' . $nr;
-				$l = 10;
+				$arrGoodNumbers[] = $phoneNumber;
 			}
-			if ($nr[0] != '0')
-			{
-				$crap = true;
-			}
-			if (!$crap && $nr[1] == '4')
-			{
-				$crap = true;
-			}
-
-
-//			$amountx = explode('.', $amount);
-//			if (count($amountx) > 1)
-//			{
-//				$amount = $amountx[0] . ' and ';
-//				$cent = $amountx[1] . '0000000000000';
-//				$cent = substr($cent, 0, 2);
-//				$amount .= $cent . ' cents';
-//			}
-			
-			$output = $nr . ',' . $message;
-			if ($crap)
-			{
-				$output = $accountId . ',' . $output;
-			}
-			//$output = str_replace('[name]', $contactName, $output);
-			//$output = str_replace('[amount]', $amount, $output);
-			if ($crap && !$fx)
-			{
-				$fx = fopen($name.'.bad_phone_numbers', 'w+');
-			}
-			fwrite($crap ? $fx : $f, "\r\n".$output);
 		}
-		fclose($f);
-		if ($fx)
+		asort($arrGoodNumbers);
+		return $arrGoodNumbers;
+	}
+	
+	public function writeMessagesToFile($arrPhoneNumbers, $strMessage, $strOutputFilePath)
+	{
+		$file = $this->openFile($strOutputFilePath);
+		
+		$contents = implode($arrPhoneNumbers, ',' . $strMessage . "\n") . ',' . $strMessage;
+		
+		fwrite($file, $contents);
+		
+		fclose($file);
+	}
+	
+	public function validifyPhoneNumber($strPhoneNumber)
+	{
+		$nr = preg_replace("/[^0-9]+/", '', $strPhoneNumber);
+		
+		$l = strlen($nr);
+		
+		$crap = false;
+		
+		if ($l > 10 || $l < 9)
 		{
-			fclose($fx);
+			$crap = true;
+		}
+		if ($l == 9)
+		{
+			$nr = '0' . $nr;
+			$l = 10;
+		}
+		if ($nr[0] != '0')
+		{
+			$crap = true;
+		}
+		if (!$crap && $nr[1] == '4')
+		{
+			$crap = true;
 		}
 		
-		$contents = explode("\r\n", trim(file_get_contents($name)));
-		sort($contents);
-		$f = fopen($name, 'w+');
-		fwrite($f, implode("\r\n", $contents) . "\r\n");
+		return $crap ? false : $nr;
 	}
 	
-	public static function getName($firstName)
+	public function openFile($path)
 	{
-		return $firstName ? $firstName : 'customer';
+		$arrDirsToCreate = array();
+		$directory = dirname($path);
+		while (!file_exists($directory))
+		{
+			array_shift($arrDirsToCreate, $directory);
+			$directory = dirname($directory);
+		}
+		foreach ($arrDirsToCreate as $directory)
+		{
+			mkdir($directory, 0777, TRUE);
+		}
+		return fopen($path, 'w');
+	}
+	
+	public function extractAccountIdsFromFile($accountFilePath, $intIndex=0)
+	{
+		$contents = trim(file_get_contents($accountFilePath));
+		$val = "([^,]*)";
+		$cols = $intIndex ? str_repeat("(?:[^,]*,)", $intIndex) : '';
+		$reg = "/^$cols$val/m";
+		$matches = array();
+		preg_match_all($reg, $contents, $matches);
+		$accountIds = $matches[1];
+		return $accountIds;
 	}
 
-	public function listBarrableAccounts($intEffectiveTime, $customerGroupId)
+	public function getPhoneNumbersForAccountIds($arrAccountIds)
 	{
-		$db = Data_Source::get();
-		$res = $db->query("SELECT DISTINCT(invoice_run_id) FROM automated_invoice_run_process WHERE completed_date IS NULL");
-		if (PEAR::isError($res))
-		{
-			throw new Exception("Failed to list invoice runs: " . $res->getMessage());
-		}
-		$arrInvoiceRuns = $res->fetchCol();
-	
-		if (!$intEffectiveTime)
-		{
-			$intEffectiveTime = time();
-		}
-	
-		// First, we need to find which invoice runs are involved (if any)
-		$nr = count($arrInvoiceRuns);
-		$this->log("Found " . $nr . " invoice runs for customer group $customerGroupId.");
-		if (!$nr)
-		{
-			// No invoice runs, so no accounts
-			return array();
-		}
-		
-		$strInvoiceRuns = "InvoiceRun.Id IN (" . implode(', ', $arrInvoiceRuns) . ")";
-	
-		$strEffectiveDate = date("'Y-m-d'", $intEffectiveTime);
-	
-		$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED));
-		$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
-	
-		$arrColumns = array(
-								'AccountId'				=> "Invoice.Account",
-								//'AccountGroupId'		=> "Account.AccountGroup",
-								'Phone'					=> "Contact.Phone",
-								//'FirstName'				=> "Contact.FirstName",
-								//'LastName'				=> "Contact.LastName",
-								'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
-								'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
-		);
-	
-		$strTables	= "
-				 Invoice 
-			JOIN Account 
-			  ON Invoice.Account = Account.Id
-			 AND Account.Archived IN ($strApplicableAccountStatuses) 
-			 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
-			 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
-			 AND Account.CustomerGroup = $customerGroupId
-			 AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
-			 AND Account.vip = 0
-			JOIN credit_control_status 
-			  ON Account.credit_control_status = credit_control_status.id
-			 AND credit_control_status.can_bar = 1
-			JOIN account_status 
-			  ON Account.Archived = account_status.id
-			 AND account_status.can_bar = 1
-			JOIN CustomerGroup 
-			  ON Account.CustomerGroup = CustomerGroup.Id
-			JOIN payment_terms
-			  ON payment_terms.customer_group_id = Account.CustomerGroup 
-			JOIN Contact 
-			  ON Account.PrimaryContact = Contact.Id";
-	
-		$strWhere	= "Account.Id IN (
-			SELECT DISTINCT(Account.Id) 
-			FROM InvoiceRun 
-			JOIN Invoice
-			  ON InvoiceRun.Id IN (SELECT DISTINCT(invoice_run_id) FROM automated_invoice_run_process WHERE completed_date IS NULL)
-			 AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
-			 AND InvoiceRun.Id = Invoice.invoice_run_id
-			JOIN Account 
-			  ON Account.Id = Invoice.Account
-			 AND Account.CustomerGroup = $customerGroupId
-			 AND Account.Archived IN ($strApplicableAccountStatuses) 
-			 AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
-			 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
-			 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
-			 AND Account.vip = 0
-			JOIN credit_control_status 
-			  ON Account.credit_control_status = credit_control_status.id
-			 AND credit_control_status.can_bar = 1
-			JOIN account_status 
-			  ON Account.Archived = account_status.id
-			 AND account_status.can_bar = 1
-		)";
-	
-		$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue";
-		$strOrderBy	= "Invoice.Account ASC";
-	
-		$select = array();
-		foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
-		$strSQL = "SELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy\n\n";
+		$strSQL = "
+SELECT Contact.Phone AS Phone, Account.Id AS AccountId
+FROM Account, Contact
+WHERE Account.PrimaryContact = Contact.Id
+  AND
+Account.Id IN (" . implode(',', $arrAccountIds) . ")
+";
 		
 		$db = Data_Source::get();
 		$res = $db->query($strSQL);
@@ -215,7 +165,68 @@ class Cli_App_Voice_Message extends Cli
 			$this->log("\n\n$strSQL\n\n");
 			throw new Exception("Failed to load contact details for barring: " . $res->getMessage());
 		}
-		return $res->fetchAll(MDB2_FETCHMODE_ASSOC);
+		
+		$results = $res->fetchAll(MDB2_FETCHMODE_ASSOC);
+		
+		$accountPhoneNumbers = array();
+		
+		foreach ($results as $result)
+		{
+			$accountPhoneNumbers[$result['AccountId']] = $result['Phone'];
+		}
+		
+		return $accountPhoneNumbers;
+	}
+
+
+
+	function getCommandLineArguments()
+	{
+		$commandLineArguments = array(
+
+			self::SWITCH_ACCOUNT_ID_FILE => array(
+				self::ARG_LABEL 		=> "ACCOUNT_ID_FILE", 
+				self::ARG_REQUIRED 	=> TRUE,
+				self::ARG_DESCRIPTION => "is the full path of a readable csv file containing account ids (default column index of account id values is 0)",
+				self::ARG_DEFAULT 	=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validFile("%1$s", TRUE)'
+			),
+
+			self::SWITCH_ACCOUNT_ID_INDEX => array(
+				self::ARG_LABEL 		=> "ACCOUNT_ID_INDEX", 
+				self::ARG_REQUIRED 	=> FALSE,
+				self::ARG_DESCRIPTION => "is the column index of the account id value in the csv file (default is at the start of the line, i.e. 0)",
+				self::ARG_DEFAULT 	=> 0,
+				self::ARG_VALIDATION 	=> 'Cli::_validInteger("%1$s")'
+			),
+
+			self::SWITCH_MESSAGE_FILE => array(
+				self::ARG_LABEL 		=> "MESSAGE_FILE", 
+				self::ARG_REQUIRED 	=> TRUE,
+				self::ARG_DESCRIPTION => "is the full path of a readable file containing a single, comma-less line of text",
+				self::ARG_DEFAULT 	=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validFile("%1$s", TRUE)'
+			),
+
+			self::SWITCH_OUTPUT_FILE_PATH_AND_NAME => array(
+				self::ARG_LABEL 		=> "OUTPUT_FILE", 
+				self::ARG_REQUIRED 	=> TRUE,
+				self::ARG_DESCRIPTION => "is the full path of a writable file (if the path and/or file do not exist they will be created, otherwise overwritten)",
+				self::ARG_DEFAULT 	=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validWritableFileOrDirectory("%1$s", TRUE)'
+			),
+
+			self::SWITCH_ERROR_FILE_PATH_AND_NAME => array(
+				self::ARG_LABEL 		=> "BAD_NUMBERS_FILE", 
+				self::ARG_REQUIRED 	=> FALSE,
+				self::ARG_DESCRIPTION => "is the full path of a writable file (if the path and/or file do not exist they will be created, otherwise overwritten)",
+				self::ARG_DEFAULT 	=> NULL,
+				self::ARG_VALIDATION 	=> 'Cli::_validWritableFileOrDirectory("%1$s", TRUE)'
+			),
+			
+
+		);
+		return $commandLineArguments;
 	}
 }
 
