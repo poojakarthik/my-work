@@ -21,8 +21,9 @@ class Application_Handler_Contract extends Application_Handler
 			if (is_array($_REQUEST['sort']))
 			{
 				$arrDetailsToRender['Sort']	= $_REQUEST['sort'];
-				foreach ($_REQUEST['sort'] as $strColumn=>$strDirection)
+				foreach ($_REQUEST['sort'] as &$strColumn=>$strDirection)
 				{
+					$strColumn	= trim($strColumn, "'");
 					switch (trim($strDirection))
 					{
 						case 'a':
