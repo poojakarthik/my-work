@@ -149,7 +149,7 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 				<td>\${$arrContract['minMonthly']}</td>
 				<td>{$arrContract['monthsLeft']}</td>
 				<td><input id='contract_payout_percentage_{$arrContract['id']}' type='text' size='1' onkeyup='javascript:ManageContracts.calculatePayout(\"{$arrContract['id']}\")' onchange='javascript:ManageContracts.calculatePayout(\"{$arrContract['id']}\")' value='{$arrContract['payout']}'/>% (\$<span id='contract_payout_charge_{$arrContract['id']}'>{$arrContract['payoutAmount']}</span>)</td>
-				<td>\$<input id='contract_exit_fee_{$arrContract['id']}' type='text' size='2' value='{$arrContract['exitFee']}'/></td>
+				<td nowrap='nowrap'>\$<input id='contract_exit_fee_{$arrContract['id']}' type='text' size='2' value='{$arrContract['exitFee']}'/></td>
 				
 				<td nowrap='nowrap'><a onclick='javascript:ManageContracts.confirm(\"apply\", {$arrContract['id']})' ><img alt='Apply' src='img/template/tick.png'></a>&nbsp;<a onclick='javascript:ManageContracts.confirm(\"waive\", {$arrContract['id']})' ><img alt='Waive' src='img/template/delete.png'></a></td>
 			</tr>";
