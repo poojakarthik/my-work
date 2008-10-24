@@ -34,6 +34,7 @@ try
 	{
 		while ($arrServiceTotal = $selFuckedServiceTotals->Fetch())
 		{
+			$intCount++;
 			CliEcho(" + ({$intCount}/{$mixResult}) {$arrServiceTotal['Service']} @ {$arrServiceTotal['BillingDate']}...", FALSE);
 			
 			// Find the Best ServiceRatePlan match
