@@ -69,6 +69,13 @@ class Application_Handler_Contract extends Application_Handler
 																"ELSE ROUND(RatePlan.contract_exit_fee, 2) " .
 															"END"
 								);
+			$selBreachedContractsCount	= new StatementSelect(	"Service JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service JOIN Account ON Service.Account = Account.Id JOIN RatePlan ON RatePlan.Id = SRP.RatePlan JOIN ServiceTotal ON ServiceTotal.service_rate_plan = SRP.Id",
+																$arrColumns,
+																"contract_breach_fees_charged_on IS NULL AND contract_status_id = ".CONTRACT_STATUS_BREACHED." AND Service.Status != ".SERVICE_ARCHIVED,
+																$strOrderBy,
+																NULL,
+																"SRP.Id");
+															
 			$selBreachedContracts	= new StatementSelect(	"Service JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service JOIN Account ON Service.Account = Account.Id JOIN RatePlan ON RatePlan.Id = SRP.RatePlan JOIN ServiceTotal ON ServiceTotal.service_rate_plan = SRP.Id",
 															$arrColumns,
 															"contract_breach_fees_charged_on IS NULL AND contract_status_id = ".CONTRACT_STATUS_BREACHED." AND Service.Status != ".SERVICE_ARCHIVED,
@@ -76,11 +83,25 @@ class Application_Handler_Contract extends Application_Handler
 															$strLimit,
 															"SRP.Id");
 			
+			$intTotal	= $selBreachedContractsCount->Execute();
+			if ($intTotal === FALSE)
+			{
+				throw new Exception($selBreachedContractsCount->Error());
+			}
+			
 			if ($selBreachedContracts->Execute() === FALSE)
 			{
 				throw new Exception($selBreachedContracts->Error());
 			}
 			$arrDetailsToRender['Contracts']	= $selBreachedContracts->FetchAll();
+			
+			// Build Pagination
+			$arrDetailsToRender['Pagination']	= Array(
+															'intCurrent'	=> $intOffset,
+															'intPrevious'	=> max($intOffset - self::RECORD_DISPLAY_LIMIT, 0),
+															'intNext'		=> min($intTotal - self::RECORD_DISPLAY_LIMIT, $intOffset + self::RECORD_DISPLAY_LIMIT),
+															'intLast'		=> $intTotal - self::RECORD_DISPLAY_LIMIT
+														);
 			
 			$this->LoadPage('contract_manage_breached', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}

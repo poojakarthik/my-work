@@ -68,12 +68,12 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 	{
 		// Pagination
 		$arrPaginationHTML	= Array();
-		if ($this->mxdDataToRender['Pagination']['intPrevious'])
+		if ($this->mxdDataToRender['Pagination']['intCurrent'])
 		{
 			$arrPaginationHTML[]	= "<a href='../admin/reflex.php/Contract/ManageBreached/?offset=0'>First</a>";
 			$arrPaginationHTML[]	= "<a href='../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intPrevious']}'>Previous</a>";
 		}
-		if ($this->mxdDataToRender['Pagination']['intNext'])
+		if ($this->mxdDataToRender['Pagination']['intCurrent'] < $this->mxdDataToRender['Pagination']['intNext'])
 		{
 			$arrPaginationHTML[]	= "<a href='../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intNext']}'>Next</a>";
 			$arrPaginationHTML[]	= "<a href='../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intLast']}'>Last</a>";
@@ -141,7 +141,7 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 			<tr class='{$strRowClass}' valign='top'>
 				<td><input type='checkbox' /></td>
 				<td><a onclick='#' >{$arrContract['account']}</a><br />{$strAccountName}</td>
-				<td><a onclick='#' >{$arrContract['fnn']}</a></td>
+				<td><a onclick='#' >{$arrContract['service']}</a></td>
 				<td><a onclick='#' >{$arrContract['ratePlan']}</a><br />({$arrContract['contractTerm']} Months)</td>
 				<td>{$arrContract['contractStarted']}</td>
 				<td>{$arrContract['contractBreached']}<br />({$arrContract['contractInvoices']} Invoices)</td>
