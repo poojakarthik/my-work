@@ -11,7 +11,7 @@ class Application_Handler_Contract extends Application_Handler
 		try
 		{
 			// Check for any passed variables
-			$intOffset	= (int)$_REQUEST['offset'];
+			$intOffset					= (int)$_REQUEST['offset'];
 			
 			// Limit
 			$strLimit	= self::RECORD_DISPLAY_LIMIT . (($intOffset) ? " OFFSET {$intOffset}" : '');
@@ -20,6 +20,7 @@ class Application_Handler_Contract extends Application_Handler
 			$arrOrderBy	= Array();
 			if (is_array($_REQUEST['sort']))
 			{
+				$arrDetailsToRender['Sort']	= $_REQUEST['sort'];
 				foreach ($_REQUEST['sort'] as $strColumn=>$strDirection)
 				{
 					switch ($strDirection)
