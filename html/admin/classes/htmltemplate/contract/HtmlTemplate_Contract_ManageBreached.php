@@ -175,15 +175,15 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 			switch ($this->mxdDataToRender['Sort'][$strColId])
 			{
 				case 'a':
-					$strHTML .= " class='reflex-sorted-ascending' onclick='document.location = \"../admin/reflex.php/Contract/ManageBreached/?sort[\\\"{$strColId}\\\"]=d\"'";
+					$strHTML .= " class='reflex-sorted-ascending' onclick=\"document.location = '../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=d'\"";
 					break;
 					
 				case 'd':
-					$strHTML .= " class='reflex-sorted-descending' onclick='document.location = \"../admin/reflex.php/Contract/ManageBreached/?sort[\\\"{$strColId}\\\"]=a\"'";
+					$strHTML .= " class='reflex-sorted-descending' onclick=\"document.location = '../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=a'\"";
 					break;
 				
 				default:
-					$strHTML .= " class='reflex-unsorted' onclick='document.location = \"../admin/reflex.php/Contract/ManageBreached/?sort[\\\"{$strColId}\\\"]=a\"'";
+					$strHTML .= " class='reflex-unsorted' onclick=\"document.location = '../admin/reflex.php/Contract/ManageBreached/?sort[\'{$strColId}\']=a'\"";
 					break;
 			}
 		}
