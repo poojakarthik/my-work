@@ -188,7 +188,7 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 			}
 		}
 		
-		return ($bolShowTitle) ? ">{$strColName}</th>" : ">&nbsp;</th>";
+		return $strHTML.(($bolShowTitle) ? ">{$strColName}</th>" : ">&nbsp;</th>");
 	} 
 }
 
