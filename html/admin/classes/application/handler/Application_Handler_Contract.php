@@ -16,8 +16,6 @@ class Application_Handler_Contract extends Application_Handler
 			// Limit
 			$strLimit	= self::RECORD_DISPLAY_LIMIT . (($intOffset) ? " OFFSET {$intOffset}" : '');
 			
-			Debug($_REQUEST);
-			
 			// Sorting
 			$arrOrderBy	= Array();
 			if (is_array($_REQUEST['sort']))
@@ -25,7 +23,7 @@ class Application_Handler_Contract extends Application_Handler
 				$arrDetailsToRender['Sort']	= $_REQUEST['sort'];
 				foreach ($_REQUEST['sort'] as $strColumn=>$strDirection)
 				{
-					switch ($strDirection)
+					switch (trim($strDirection))
 					{
 						case 'a':
 							$arrOrderBy[]	= "{$strColumn} ASC";
@@ -38,6 +36,7 @@ class Application_Handler_Contract extends Application_Handler
 				}
 			}
 			$strOrderBy	= (count($arrOrderBy)) ? implode(', ', $arrOrderBy) : NULL;
+			Debug($strOrderBy);
 			
 			$selContractTerms	= new StatementSelect("contract_terms", "*", "1", "id DESC", "1");
 			if ($selContractTerms->Execute() === FALSE)
