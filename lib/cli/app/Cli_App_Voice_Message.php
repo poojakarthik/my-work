@@ -65,7 +65,7 @@ class Cli_App_Voice_Message extends Cli
 		$arrGoodNumbers = array();
 		foreach ($arrPhoneNumbers as $accountId => $phone)
 		{
-			$this->log("Chacking validity of phone number '$phone' for account id '$accountId'");
+			//$this->log("Chacking validity of phone number '$phone' for account id '$accountId'");
 			$phoneNumber = $this->validifyPhoneNumber($phone);
 			
 			if ($phoneNumber === false)
@@ -142,7 +142,7 @@ class Cli_App_Voice_Message extends Cli
 	public function extractAccountIdsFromFile($accountFilePath, $intIndex=0)
 	{
 		$contents = trim(file_get_contents($accountFilePath));
-		$val = "([^,]*)";
+		$val = "([0-9]+)";
 		$cols = $intIndex ? str_repeat("(?:[^,]*,)", $intIndex) : '';
 		$reg = "/^$cols$val/m";
 		$matches = array();
