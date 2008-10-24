@@ -16,6 +16,8 @@ class Application_Handler_Contract extends Application_Handler
 			// Limit
 			$strLimit	= self::RECORD_DISPLAY_LIMIT . (($intOffset) ? " OFFSET {$intOffset}" : '');
 			
+			Debug($_REQUEST);
+			
 			// Sorting
 			$arrOrderBy	= Array();
 			if (is_array($_REQUEST['sort']))
