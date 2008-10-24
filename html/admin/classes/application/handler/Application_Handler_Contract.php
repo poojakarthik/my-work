@@ -51,7 +51,7 @@ class Application_Handler_Contract extends Application_Handler
 									'ratePlan'			=> "RatePlan.Name",
 									'contractTerm'		=> "RatePlan.ContractTerm",
 									'contractStarted'	=> "CAST(SRP.StartDatetime AS DATE)",
-									'contractBreached'	=> "SRP.contract_effective_end_datetime",
+									'contractBreached'	=> "CAST(SRP.contract_effective_end_datetime AS DATE)",
 									'contractInvoices'	=> "COUNT(ServiceTotal.Id)",
 									'breachNature'		=> "SRP.contract_breach_reason_description",
 									'minMonthly'		=> "RatePlan.MinMonthly",
@@ -66,7 +66,7 @@ class Application_Handler_Contract extends Application_Handler
 															"END",
 									'exitFee'			=> "CASE " .
 																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['exit_fee_minimum_invoices']} THEN 0.00 " .
-																"ELSE RatePlan.contract_exit_fee " .
+																"ELSE ROUND(RatePlan.contract_exit_fee, 2) " .
 															"END"
 								);
 			$selBreachedContracts	= new StatementSelect(	"Service JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service JOIN Account ON Service.Account = Account.Id JOIN RatePlan ON RatePlan.Id = SRP.RatePlan JOIN ServiceTotal ON ServiceTotal.service_rate_plan = SRP.Id",

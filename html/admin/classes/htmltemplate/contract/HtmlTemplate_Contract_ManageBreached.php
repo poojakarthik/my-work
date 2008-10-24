@@ -102,18 +102,18 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 ";
 		
 		// Render TH's
-		$this->_buildTH('Id'				, FALSE	, FALSE);
-		$this->_buildTH('Account'			, TRUE	, TRUE);
-		$this->_buildTH('Service'			, TRUE	, TRUE);
-		$this->_buildTH('Rate Plan'			, TRUE	, TRUE);
-		$this->_buildTH('Contract Started'	, TRUE	, TRUE);
-		$this->_buildTH('Contract Breached'	, TRUE	, TRUE);
-		$this->_buildTH('Breach Nature'		, TRUE	, TRUE);
-		$this->_buildTH('Min Monthly'		, TRUE	, TRUE);
-		$this->_buildTH('Months Left'		, TRUE	, TRUE);
-		$this->_buildTH('Payout'			, TRUE	, TRUE);
-		$this->_buildTH('Exit Fee'			, TRUE	, TRUE);
-		$this->_buildTH('Actions'			, FALSE	, FALSE);
+		echo $this->_buildTH('Id'					, FALSE	, FALSE)."\n";
+		echo $this->_buildTH('Account'				, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Service'				, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Rate Plan'			, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Contract Started'		, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Contract Breached'	, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Breach Nature'		, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Min Monthly'			, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Months Left'			, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Payout'				, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Exit Fee'				, TRUE	, TRUE)."\n";
+		echo $this->_buildTH('Actions'				, FALSE	, FALSE)."\n";
 		
 		// Render Table Footer
 		echo "
