@@ -50,7 +50,7 @@ class Application_Handler_Contract extends Application_Handler
 									'monthsLeft'		=> "PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m'))",
 									'payout'			=> "CASE " .
 																"WHEN COUNT(ServiceTotal.Id) < (SELECT contract_payout_minimum_invoices FROM contract_terms ORDER BY id DESC LIMIT 1) THEN 0.0 " .
-																"ELSE ROUND(minMonthly * monthsLeft * (RatePlan.contract_payout_percentage / 100), 2) " .
+																"ELSE ROUND(RatePlan.MinMonthly * PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m')) * (RatePlan.contract_payout_percentage / 100), 2) " .
 															"END",
 									'exitFee'			=> "CASE " .
 																"WHEN COUNT(ServiceTotal.Id) < (SELECT exit_fee_minimum_invoices FROM contract_terms ORDER BY id DESC LIMIT 1) THEN 0.0 " .
